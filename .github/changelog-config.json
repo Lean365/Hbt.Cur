@@ -1,0 +1,63 @@
+{
+  "project": "Lean.Hbt",
+  "issues": true,
+  "pulls": true,
+  "pr-wo-labels": true,
+  "breaking-labels": ["breaking"],
+  "enhancement-labels": ["enhancement", "feature"],
+  "bug-labels": ["bug", "fix"],
+  "exclude-labels": ["duplicate", "question", "invalid", "wontfix"],
+  "author": true,
+  "compare-link": true,
+  "unreleased": true,
+  "since-tag": "",
+  "future-release": "",
+  "release-branch": "master",
+  "base": "CHANGELOG.md",
+  "user": "Lean365",
+  "project-url": "https://github.com/Lean365/Lean.Hbt",
+  "issue-line-labels": ["ALL"],
+  "max-issues": 200,
+  "add-sections": {
+    "feat": {
+      "prefix": "✨ Features",
+      "labels": ["feature", "enhancement"]
+    },
+    "fix": {
+      "prefix": "🐛 Bug Fixes",
+      "labels": ["bug", "fix"]
+    },
+    "docs": {
+      "prefix": "📝 Documentation",
+      "labels": ["documentation"]
+    },
+    "chore": {
+      "prefix": "🔧 Maintenance",
+      "labels": ["chore", "maintenance"]
+    },
+    "style": {
+      "prefix": "💄 Styling",
+      "labels": ["style"]
+    },
+    "refactor": {
+      "prefix": "♻️ Code Refactoring",
+      "labels": ["refactor"]
+    },
+    "perf": {
+      "prefix": "⚡ Performance Improvements",
+      "labels": ["performance"]
+    },
+    "test": {
+      "prefix": "✅ Testing",
+      "labels": ["test"]
+    },
+    "build": {
+      "prefix": "👷 Build System",
+      "labels": ["build"]
+    },
+    "ci": {
+      "prefix": "🔧 Continuous Integration",
+      "labels": ["ci"]
+    }
+  }
+} 
