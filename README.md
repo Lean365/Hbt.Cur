@@ -135,6 +135,13 @@ Lean.Hbt/
 │   │   │   ├── Identity/   # 🔐 身份认证
 │   │   │   ├── Logging/    # 📝 日志
 │   │   │   └── Common/     # 🔧 公共组件
+│   │   ├── Common/         # 🔧 公共层
+│   │   │   ├── Constants/  # 📋 常量定义
+│   │   │   ├── Enums/      # 📊 枚举定义
+│   │   │   ├── Extensions/ # 🔌 扩展方法
+│   │   │   ├── Helpers/    # 🛠️ 帮助类
+│   │   │   ├── Models/     # 📦 通用模型
+│   │   │   └── Utils/      # 🔧 工具类
 │   │   └── WebApi/        # 🌐 接口层
 │   │       ├── Controllers/ # 🎮 控制器
 │   │       ├── Filters/    # 🔍 过滤器
@@ -557,3 +564,223 @@ CREATE TABLE Hbt_Role (
 #### 4. 数据库约束
 - 表名前缀：`Hbt_`
   - 示例：`
+```
+
+### 📄 文件头和注释规范
+
+#### 1. 文件头规范
+所有源代码文件(.cs, .vue, .ts等)必须包含统一的文件头:
+```csharp
+//===================================================================
+// 项目名 : Lean.Hbt 
+// 文件名 : {文件名} 
+// 创建者 : {作者}
+// 创建时间: {yyyy-MM-dd} {HH:mm}
+// 版本号 : V1.0.0
+// 描述    : {文件用途简要说明}
+//===================================================================
+```
+
+#### 2. 代码注释规范
+
+##### C#代码注释
+- 类注释:
+```csharp
+/// <summary>
+/// 类功能描述
+/// </summary>
+/// <remarks>
+/// 创建者: {作者}
+/// 创建时间: {yyyy-MM-dd}
+/// 最后修改者: {最后修改人}
+/// 最后修改时间: {yyyy-MM-dd}
+/// </remarks>
+public class HbtUser
+{
+}
+```
+
+- 属性注释:
+```csharp
+/// <summary>
+/// 属性说明
+/// </summary>
+/// <value>可能的值说明</value>
+public string UserName { get; set; }
+```
+
+- 方法注释:
+```csharp
+/// <summary>
+/// 方法功能描述
+/// </summary>
+/// <param name="参数名">参数说明</param>
+/// <returns>返回值说明</returns>
+/// <exception cref="异常类型">可能抛出的异常说明</exception>
+public async Task<bool> UpdateUserAsync(int userId)
+{
+}
+```
+
+##### TypeScript/Vue代码注释
+- 组件注释:
+```typescript
+/**
+ * 组件功能描述
+ * @author 作者
+ * @date 创建时间
+ * @update 最后修改时间
+ */
+export default defineComponent({
+})
+```
+
+- 方法注释:
+```typescript
+/**
+ * 方法功能描述
+ * @param {参数类型} 参数名 - 参数说明
+ * @returns {返回类型} 返回值说明
+ */
+const handleSubmit = () => {
+}
+```
+
+#### 3. 注释规范要求
+- 所有**公开**的类、接口、方法和属性必须有中文注释
+- 复杂的私有方法应该有注释
+- 特别复杂的代码块应该有注释
+- 注释应该说明代码的作用、重要参数以及返回值
+- 注释应该解释代码的业务含义，而不是重复代码的内容
+- 及时更新注释，确保注释与代码的一致性
+- 删除注释掉的代码，不要将注释掉的代码提交到版本库
+
+#### 4. 注释示例
+```csharp
+/// <summary>
+/// 用户服务接口
+/// </summary>
+public interface IHbtUserService
+{
+    /// <summary>
+    /// 根据用户ID获取用户信息
+    /// </summary>
+    /// <param name="userId">用户ID</param>
+    /// <returns>用户信息</returns>
+    /// <exception cref="HbtNotFoundException">用户不存在时抛出此异常</exception>
+    Task<HbtUserDto> GetUserByIdAsync(long userId);
+
+    /// <summary>
+    /// 创建新用户
+    /// </summary>
+    /// <param name="createDto">用户创建信息</param>
+    /// <returns>新创建的用户ID</returns>
+    /// <exception cref="HbtValidationException">输入验证失败时抛出此异常</exception>
+    /// <exception cref="HbtDuplicateException">用户名重复时抛出此异常</exception>
+    Task<long> CreateUserAsync(HbtCreateUserDto createDto);
+}
+```
+
+### 📦 公共包引用
+
+#### 基础组件
+- Newtonsoft.Json (13.0.3) - JSON序列化/反序列化
+- SqlSugar (5.1.4.172) - ORM框架
+- EPPlus (7.5.2) - Excel导入导出
+- NLog (5.3.4) - 日志记录
+- Quartz (3.13.1) - 任务调度
+- SkiaSharp (3.116.1) - 图形处理
+
+#### 缓存组件
+- StackExchange.Redis (2.8.24) - Redis缓存
+- Microsoft.Extensions.Caching.Memory (8.0.1) - 内存缓存
+
+#### 认证授权
+- Microsoft.AspNetCore.Authentication.JwtBearer (8.0.1) - JWT认证
+- IdentityServer4 (4.1.2) - 身份认证服务器
+
+#### 通信组件
+- Microsoft.AspNetCore.SignalR (1.1.0) - 实时通信
+- RabbitMQ.Client (6.8.1) - 消息队列
+
+#### 工具组件
+- Mapster (7.4.0) - 对象映射
+- FluentValidation (11.9.0) - 数据验证
+- Swashbuckle.AspNetCore (6.5.0) - Swagger接口文档
+
+## 全局规范
+
+### 1. 序列化规范
+
+- **JSON序列化**: 全局统一使用 Newtonsoft.Json 进行序列化和反序列化
+  ```csharp
+  // 配置示例
+  services.AddControllers()
+      .AddNewtonsoftJson(options =>
+      {
+          // 日期格式化
+          options.SerializerSettings.DateFormatString = "yyyy-MM-dd HH:mm:ss";
+          // 忽略循环引用
+          options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+          // 忽略空值
+          options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
+          // 使用驼峰命名
+          options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+      });
+  ```
+  - 禁止使用 System.Text.Json
+  - 所有项目统一使用相同的序列化配置
+  - API 接口返回数据必须使用 Newtonsoft.Json 序列化
+
+### 2. 日志规范
+
+- **日志框架**: 全局统一使用 NLog 记录日志
+  ```xml
+  <!-- nlog.config 配置示例 -->
+  <?xml version="1.0" encoding="utf-8" ?>
+  <nlog xmlns="http://www.nlog-project.org/schemas/NLog.xsd"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        autoReload="true">
+    <targets>
+      <!-- 文件日志 -->
+      <target xsi:type="File" name="allfile" 
+              fileName="${basedir}/logs/${shortdate}.log"
+              layout="${longdate}|${event-properties:item=EventId_Id:whenEmpty=0}|${uppercase:${level}}|${logger}|${message} ${exception:format=tostring}" />
+      
+      <!-- 控制台日志 -->
+      <target xsi:type="Console" name="lifetimeConsole" 
+              layout="${MicrosoftConsoleLayout}" />
+    </targets>
+
+    <rules>
+      <!-- 记录所有日志 -->
+      <logger name="*" minlevel="Trace" writeTo="allfile" />
+      <!-- 控制台输出 -->
+      <logger name="Microsoft.Hosting.Lifetime" minlevel="Info" writeTo="lifetimeConsole" />
+    </rules>
+  </nlog>
+  ```
+  
+  - 日志级别规范：
+    - Trace: 追踪信息，用于开发调试
+    - Debug: 调试信息，可输出详细的程序运行状态
+    - Info: 一般信息，记录程序正常运行状态
+    - Warn: 警告信息，潜在的问题或即将出现的问题
+    - Error: 错误信息，程序发生错误但不影响运行
+    - Fatal: 致命错误，导致程序无法继续运行的错误
+
+  - 日志记录规范：
+    - 必须记录所有异常信息
+    - 必须记录关键业务操作
+    - 必须记录系统启动和关闭
+    - 必须记录用户登录和注销
+    - 必须记录数据库和缓存操作异常
+    - 必须记录第三方接口调用信息
+
+  - 日志格式规范：
+    - 时间戳必须精确到毫秒
+    - 必须包含日志级别
+    - 必须包含类名和方法名
+    - 必须包含线程ID
+    - 异常日志必须包含完整的堆栈信息
+    - 必须包含追踪ID用于分布式追踪

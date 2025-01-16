@@ -1,0 +1,6 @@
+@Lean.Hbt.WebApi_HostAddress = http://localhost:5249
+
+GET {{Lean.Hbt.WebApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
