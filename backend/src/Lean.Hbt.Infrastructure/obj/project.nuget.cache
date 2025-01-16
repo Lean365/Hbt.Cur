@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "PoAbzok4D0s=",
+  "dgSpecHash": "+U0pHNethr0=",
   "success": true,
-  "projectFilePath": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Infrastructure\\Lean.Hbt.Infrastructure.csproj",
+  "projectFilePath": "g:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Infrastructure\\Lean.Hbt.Infrastructure.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Davis.Cheng\\.nuget\\packages\\azure.core\\1.38.0\\azure.core.1.38.0.nupkg.sha512",
     "C:\\Users\\Davis.Cheng\\.nuget\\packages\\azure.identity\\1.11.4\\azure.identity.1.11.4.nupkg.sha512",
@@ -31,7 +31,8 @@
     "C:\\Users\\Davis.Cheng\\.nuget\\packages\\microsoft.sqlserver.server\\1.0.0\\microsoft.sqlserver.server.1.0.0.nupkg.sha512",
     "C:\\Users\\Davis.Cheng\\.nuget\\packages\\microsoft.win32.systemevents\\6.0.0\\microsoft.win32.systemevents.6.0.0.nupkg.sha512",
     "C:\\Users\\Davis.Cheng\\.nuget\\packages\\mysqlconnector\\2.2.5\\mysqlconnector.2.2.5.nupkg.sha512",
-    "C:\\Users\\Davis.Cheng\\.nuget\\packages\\newtonsoft.json\\13.0.2\\newtonsoft.json.13.0.2.nupkg.sha512",
+    "C:\\Users\\Davis.Cheng\\.nuget\\packages\\newtonsoft.json\\13.0.3\\newtonsoft.json.13.0.3.nupkg.sha512",
+    "C:\\Users\\Davis.Cheng\\.nuget\\packages\\nlog\\5.3.4\\nlog.5.3.4.nupkg.sha512",
     "C:\\Users\\Davis.Cheng\\.nuget\\packages\\npgsql\\5.0.18\\npgsql.5.0.18.nupkg.sha512",
     "C:\\Users\\Davis.Cheng\\.nuget\\packages\\oracle.manageddataaccess.core\\3.21.100\\oracle.manageddataaccess.core.3.21.100.nupkg.sha512",
     "C:\\Users\\Davis.Cheng\\.nuget\\packages\\oscar.data.sqlclient\\4.0.4\\oscar.data.sqlclient.4.0.4.nupkg.sha512",
@@ -40,7 +41,8 @@
     "C:\\Users\\Davis.Cheng\\.nuget\\packages\\sqlitepclraw.core\\2.1.10\\sqlitepclraw.core.2.1.10.nupkg.sha512",
     "C:\\Users\\Davis.Cheng\\.nuget\\packages\\sqlitepclraw.lib.e_sqlite3\\2.1.10\\sqlitepclraw.lib.e_sqlite3.2.1.10.nupkg.sha512",
     "C:\\Users\\Davis.Cheng\\.nuget\\packages\\sqlitepclraw.provider.e_sqlite3\\2.1.10\\sqlitepclraw.provider.e_sqlite3.2.1.10.nupkg.sha512",
-    "C:\\Users\\Davis.Cheng\\.nuget\\packages\\sqlsugarcore\\5.1.4.175\\sqlsugarcore.5.1.4.175.nupkg.sha512",
+    "C:\\Users\\Davis.Cheng\\.nuget\\packages\\sqlsugar\\5.1.4.173\\sqlsugar.5.1.4.173.nupkg.sha512",
+    "C:\\Users\\Davis.Cheng\\.nuget\\packages\\sqlsugarcore\\5.1.4.172\\sqlsugarcore.5.1.4.172.nupkg.sha512",
     "C:\\Users\\Davis.Cheng\\.nuget\\packages\\sqlsugarcore.dm\\8.6.0\\sqlsugarcore.dm.8.6.0.nupkg.sha512",
     "C:\\Users\\Davis.Cheng\\.nuget\\packages\\sqlsugarcore.kdbndp\\9.3.6.1128\\sqlsugarcore.kdbndp.9.3.6.1128.nupkg.sha512",
     "C:\\Users\\Davis.Cheng\\.nuget\\packages\\stackexchange.redis\\2.7.27\\stackexchange.redis.2.7.27.nupkg.sha512",
@@ -82,5 +84,26 @@
     "C:\\Users\\Davis.Cheng\\.nuget\\packages\\system.threading.tasks.extensions\\4.5.4\\system.threading.tasks.extensions.4.5.4.nupkg.sha512",
     "C:\\Users\\Davis.Cheng\\.nuget\\packages\\system.windows.extensions\\6.0.0\\system.windows.extensions.6.0.0.nupkg.sha512"
   ],
-  "logs": []
+  "logs": [
+    {
+      "code": "NU1603",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Lean.Hbt.Domain 依赖于 SqlSugar (>= 5.1.4.172)，但没有找到 SqlSugar 5.1.4.172。已改为解析 SqlSugar 5.1.4.173。",
+      "libraryId": "SqlSugar",
+      "targetGraphs": [
+        "net8.0"
+      ]
+    },
+    {
+      "code": "NU1701",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "已使用“.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8, .NETFramework,Version=v4.8.1”而不是项目目标框架“net8.0”还原包“SqlSugar 5.1.4.173”。此包可能与项目不完全兼容。",
+      "libraryId": "SqlSugar",
+      "targetGraphs": [
+        "net8.0"
+      ]
+    }
+  ]
 }

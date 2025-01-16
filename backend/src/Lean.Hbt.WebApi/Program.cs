@@ -3,6 +3,7 @@ using NLog.Web;
 using Lean.Hbt.Infrastructure.Extensions;
 using Lean.Hbt.Infrastructure.Swagger;
 using Lean.Hbt.Infrastructure.Persistence;
+using Lean.Hbt.WebApi.Middlewares;
 
 var logger = LogManager.Setup()
                       .LoadConfigurationFromFile("nlog.config")
@@ -34,6 +35,9 @@ try
     {
         app.UseHbtSwagger();
     }
+
+    // 使用全局异常处理中间件
+    app.UseHbtExceptionHandler();
 
     app.UseHttpsRedirection();
     app.UseAuthentication();

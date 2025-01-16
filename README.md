@@ -41,6 +41,12 @@
   - [环境配置](#️-环境配置)
 - [贡献指南](#-贡献指南)
 - [许可证](#-许可证)
+- [🔒 代码审查和分支保护规则](#-代码审查和分支保护规则)
+  - [📋 强制审查范围](#-强制审查范围)
+  - [🎯 审查重点](#-审查重点)
+  - [🌿 分支管理](#-分支管理)
+  - [🤖 自动化检查](#-自动化检查)
+  - [📚 文档要求](#-文档要求)
 
 ## 💫 项目简介
 
@@ -133,7 +139,7 @@ Lean.Hbt/
 │   │   ├── Infrastructure/ # 🏗️ 基础设施层
 │   │   │   ├── Persistence/ # 💾 持久化
 │   │   │   ├── Identity/   # 🔐 身份认证
-│   │   │   ├── Logging/    # 📝 日志
+│   │   │   ├── Logging/    # 日志
 │   │   │   └── Common/     # 🔧 公共组件
 │   │   ├── Common/         # 🔧 公共层
 │   │   │   ├── Constants/  # 📋 常量定义
@@ -390,7 +396,92 @@ CREATE TABLE Hbt_Role (
 - 刷新Token：POST /api/hbt/auth/refresh
 - 注销Token：POST /api/hbt/auth/logout
 
-## 🤝 贡献指南
+## 🔒 代码审查和分支保护规则
+
+### 📋 强制审查范围
+
+以下变更必须经过代码审查和批准才能合并:
+
+1. 字段命名变更
+   - 🏷️ 实体类中的字段名称
+   - 📊 数据库表和列名
+   - 📦 DTO对象的属性名
+   - 🎨 前端组件的数据属性名
+
+2. CRUD操作变更
+   - ➕ 增删改查方法的实现
+   - 🔍 查询条件和排序规则
+   - 📄 分页逻辑
+   - ✅ 数据验证规则
+   - 📤 返回结果格式
+
+3. 导入导出功能变更
+   - 📑 Excel导入导出模板
+   - 🔄 数据映射规则
+   - 📁 文件处理逻辑
+   - ✔️ 数据验证规则
+   - 📊 进度反馈机制
+
+### 🎯 审查重点
+
+1. 命名规范
+   - 📝 遵循项目统一的命名约定
+   - 🔄 保持前后端字段命名一致性
+   - 📊 确保数据库命名规范
+
+2. 代码一致性
+   - 🔄 CRUD实现必须遵循统一模式
+   - 📤 导入导出必须使用统一的工具类
+   - ❌ 异常处理必须统一
+   - 📝 日志记录必须规范
+
+3. 性能考虑
+   - 🚀 查询优化
+   - 📦 批量操作效率
+   - 💾 内存使用控制
+   - 🔄 并发处理
+
+### 🌿 分支管理
+
+1. 保护分支
+   - 🔒 master分支受保护,禁止直接推送
+   - 📥 所有更改通过Pull Request提交
+   - ✅ 至少需要一名审查者批准
+   - 🔄 CI检查必须通过
+
+2. 开发流程
+   - 🌿 从master创建feature分支
+   - 📝 完成开发后提交Pull Request
+   - ✅ 通过代码审查后合并到master
+   - 🧹 定期清理已合并的分支
+
+### 🤖 自动化检查
+
+1. 代码质量检查
+   - 📝 命名规范检查
+   - 🎨 代码格式检查
+   - 🔍 重复代码检查
+   - 📊 圈复杂度检查
+
+2. 测试要求
+   - ✅ 单元测试覆盖
+   - 🔄 集成测试通过
+   - 🚀 性能测试达标
+
+### 📚 文档要求
+
+1. 更新文档
+   - 📖 API文档同步更新
+   - 📊 数据库设计文档更新
+   - 📝 更新日志记录
+   - 📖 使用说明更新
+
+2. 注释要求
+   - 📝 类和方法必须有中文注释
+   - 💡 关键业务逻辑必须注释
+   - 📊 复杂算法必须详细注释
+
+## 贡献指南
 
 1. 🔄 Fork 项目
 2. 📝 创建特性分支
@@ -433,6 +524,15 @@ CREATE TABLE Hbt_Role (
     - 必须以 `Hbt` 开头，以 `Options` 或 `Settings` 结尾
   - DTO类：`public class HbtUserDto`
     - 必须以 `Hbt` 开头，以 `Dto` 结尾
+    - 每个实体必须包含以下基础DTO：
+      - 基础DTO：`HbtXxxDto` - 用于返回数据
+      - 分页查询DTO：`HbtXxxQueryDto` - 用于分页查询条件
+      - 创建DTO：`HbtXxxCreateDto` - 用于创建对象
+      - 更新DTO：`HbtXxxUpdateDto` - 用于更新对象
+      - 导入DTO：`HbtXxxImportDto` - 用于导入数据
+      - 导出DTO：`HbtXxxExportDto` - 用于导出数据
+      - 模板DTO：`HbtXxxTemplateDto` - 用于导入模板
+      - 其它DTO根据具体实体需求添加
   - 查询类：`public class HbtUserQuery`
     - 必须以 `Hbt` 开头，以 `Query` 结尾
   - 命令类：`public class HbtCreateUserCommand`
@@ -784,3 +884,190 @@ public interface IHbtUserService
     - 必须包含线程ID
     - 异常日志必须包含完整的堆栈信息
     - 必须包含追踪ID用于分布式追踪
+
+## DTO规范
+
+### 必需的DTO类型
+
+每个实体都必须包含以下DTO：
+
+1. 基础DTO (HbtXxxDto) - 用于返回数据
+2. 查询DTO (HbtXxxQueryDto) - 继承 HbtPagedQuery，用于分页查询
+3. 创建DTO (HbtXxxCreateDto) - 用于创建对象
+4. 更新DTO (HbtXxxUpdateDto) - 用于更新对象
+5. 导入DTO (HbtXxxImportDto) - 用于导入数据
+6. 导出DTO (HbtXxxExportDto) - 用于导出数据
+7. 模板DTO (HbtXxxTemplateDto) - 用于导入模板
+
+### 标准示例
+
+以下是用户模块的实体和DTO标准示例：
+
+#### 实体定义 (HbtUser.cs)
+
+```csharp
+[SugarTable("hbt_user", "用户表")]
+[SugarIndex("ix_user_name", nameof(UserName), OrderByType.Asc, true)]
+public class HbtUser : HbtBaseEntity
+{
+    /// <summary>
+    /// 用户名
+    /// </summary>
+    [SugarColumn(ColumnName = "user_name", ColumnDescription = "用户名", Length = 50, ColumnDataType = "nvarchar", IsNullable = false)]
+    public string UserName { get; set; }
+
+    /// <summary>
+    /// 昵称
+    /// </summary>
+    [SugarColumn(ColumnName = "nick_name", ColumnDescription = "昵称", Length = 50, ColumnDataType = "nvarchar", IsNullable = true)]
+    public string NickName { get; set; }
+
+    // ... 其他属性
+}
+```
+
+#### DTO定义 (HbtUserDto.cs)
+
+```csharp
+/// <summary>
+/// 用户基础信息DTO
+/// </summary>
+public class HbtUserDto
+{
+    /// <summary>
+    /// 用户ID
+    /// </summary>
+    public long UserId { get; set; }
+
+    /// <summary>
+    /// 用户名
+    /// </summary>
+    public string UserName { get; set; }
+
+    // ... 其他属性
+}
+
+/// <summary>
+/// 用户查询DTO
+/// </summary>
+public class HbtUserQueryDto : HbtPagedQuery
+{
+    /// <summary>
+    /// 用户名
+    /// </summary>
+    public string UserName { get; set; }
+
+    // ... 其他查询条件
+}
+
+/// <summary>
+/// 用户创建DTO
+/// </summary>
+public class HbtUserCreateDto
+{
+    /// <summary>
+    /// 用户名
+    /// </summary>
+    public string UserName { get; set; }
+
+    // ... 其他创建属性
+}
+
+/// <summary>
+/// 用户更新DTO
+/// </summary>
+public class HbtUserUpdateDto
+{
+    /// <summary>
+    /// 用户ID
+    /// </summary>
+    public long UserId { get; set; }
+
+    // ... 其他更新属性
+}
+
+/// <summary>
+/// 用户导入DTO
+/// </summary>
+public class HbtUserImportDto
+{
+    /// <summary>
+    /// 用户名
+    /// </summary>
+    public string UserName { get; set; }
+
+    // ... 其他导入字段
+}
+
+/// <summary>
+/// 用户导出DTO
+/// </summary>
+public class HbtUserExportDto
+{
+    /// <summary>
+    /// 用户名
+    /// </summary>
+    public string UserName { get; set; }
+
+    // ... 其他导出字段
+}
+
+/// <summary>
+/// 用户导入模板DTO
+/// </summary>
+public class HbtUserTemplateDto
+{
+    /// <summary>
+    /// 用户名
+    /// </summary>
+    public string UserName { get; set; }
+
+    // ... 其他模板字段
+}
+```
+
+### DTO设计规范
+
+1. 命名规范
+   - 所有DTO类必须以`Hbt`开头，以`Dto`结尾
+   - 查询DTO必须继承 `HbtPagedQuery`
+   - 属性名采用PascalCase命名
+
+2. 注释规范
+   - 必须包含类注释，说明用途
+   - 必须包含属性注释，说明含义
+   - 对于枚举值，在注释中说明每个值的含义
+
+3. 字段规范
+   - 基础DTO：包含展示所需的所有字段
+   - 查询DTO：包含所有查询条件字段
+   - 创建DTO：包含创建时需要的所有字段
+   - 更新DTO：包含可更新的字段，必须包含主键
+   - 导入/导出DTO：使用字符串类型表示枚举值，并在注释中说明值的含义
+
+4. 安全规范
+   - 密码等敏感字段不应在返回DTO中出现
+   - Salt等安全字段只在内部使用，不出现在任何DTO中
+
+5. 关联关系
+   - 创建和更新时使用ID列表表示多对多关系
+   - 查询结果使用名称列表展示关联数据
+   - 导入时使用逗号分隔的名称字符串
+
+6. 特殊处理
+   - 导入/导出/模板DTO中的枚举类型统一使用字符串
+   - 时间类型在导入/导出时使用字符串
+   - 关联关系在导入/导出时使用逗号分隔的字符串
+
+## 📚 开发规范文档
+
+### 前端规范
+- [Vue组件开发规范](docs/standards/frontend/vue/component-standards.md)
+- [Vue页面开发规范](docs/standards/frontend/vue/page-standards.md)
+- [TypeScript开发规范](docs/standards/frontend/typescript/typescript-standards.md)
+- [API接口规范](docs/standards/frontend/api/api-standards.md)
+- [多语言开发规范](docs/standards/frontend/i18n/i18n-standards.md)
+
+### 后端规范
+- [多语言开发规范](docs/standards/backend/i18n/i18n-standards.md)
+- [更多规范文档正在编写中...]

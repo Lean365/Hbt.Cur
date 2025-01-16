@@ -8,6 +8,7 @@
 //===================================================================
 
 using NLog;
+using ILogger = NLog.ILogger;
 
 namespace Lean.Hbt.Infrastructure.Logging
 {

@@ -1,9 +1,22 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="SqlSugarCore" Version="5.1.4.172" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="SqlSugar" Version="5.1.4.172" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Lean.Hbt.Common\Lean.Hbt.Common.csproj" />
+  </ItemGroup>
 
 </Project>
