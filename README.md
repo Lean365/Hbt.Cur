@@ -393,3 +393,167 @@ CREATE TABLE Hbt_Role (
 ## 📄 许可证
 
 [MIT License](LICENSE)
+
+## 📏 开发规范
+
+### 📝 命名规范
+
+#### 1. 后端命名规范 (C#)
+- 帕斯卡命名法(PascalCase)：
+  - 实体类：`public class HbtUser`
+    - 必须以 `Hbt` 开头，如：`HbtRole`, `HbtPermission`
+  - 控制器：`public class HbtUserController`
+    - 必须以 `Hbt` 开头，以 `Controller` 结尾
+  - 服务接口：`public interface IHbtUserService`
+    - 必须以 `IHbt` 开头，以 `Service` 结尾
+  - 服务实现：`public class HbtUserService`
+    - 必须以 `Hbt` 开头，以 `Service` 结尾
+  - 仓储接口：`public interface IHbtUserRepository`
+    - 必须以 `IHbt` 开头，以 `Repository` 结尾
+  - 仓储实现：`public class HbtUserRepository`
+    - 必须以 `Hbt` 开头，以 `Repository` 结尾
+  - 工具类：`public class HbtStringUtils`
+    - 必须以 `Hbt` 开头，以 `Utils` 结尾
+  - 扩展类：`public static class HbtStringExtensions`
+    - 必须以 `Hbt` 开头，以 `Extensions` 结尾
+  - 特性类：`public class HbtAuthAttribute`
+    - 必须以 `Hbt` 开头，以 `Attribute` 结尾
+  - 枚举类：`public enum HbtUserStatus`
+    - 必须以 `Hbt` 开头，表示业务含义
+  - 常量类：`public static class HbtConstants`
+    - 必须以 `Hbt` 开头，以 `Constants` 结尾
+  - 配置类：`public class HbtJwtOptions`
+    - 必须以 `Hbt` 开头，以 `Options` 或 `Settings` 结尾
+  - DTO类：`public class HbtUserDto`
+    - 必须以 `Hbt` 开头，以 `Dto` 结尾
+  - 查询类：`public class HbtUserQuery`
+    - 必须以 `Hbt` 开头，以 `Query` 结尾
+  - 命令类：`public class HbtCreateUserCommand`
+    - 必须以 `Hbt` 开头，以 `Command` 结尾
+  - 事件类：`public class HbtUserCreatedEvent`
+    - 必须以 `Hbt` 开头，以 `Event` 结尾
+
+- 驼峰命名法(camelCase)：
+  - 私有字段：`private string _userName;`
+  - 方法参数：`void UpdateUser(int userId)`
+  - 局部变量：`var userCount = 0;`
+- 特殊规则：
+  - 异步方法必须以Async结尾：`GetDataAsync()`
+  - 布尔属性/变量应该是问句：`IsActive`, `HasPermission`
+  - 集合属性应使用复数形式：`Users`, `OrderItems`
+
+#### 2. 前端命名规范 (Vue3 + TypeScript)
+- 文件命名：
+  - 组件文件：`PascalCase.vue`
+    - 示例：`UserProfile.vue`, `LoginForm.vue`
+  - 路由页面：`PascalCase.vue`
+    - 示例：`UserList.vue`, `RoleManagement.vue`
+  - 工具文件：`camelCase.ts`
+    - 示例：`httpClient.ts`, `dateUtils.ts`
+  - 类型文件：`PascalCase.type.ts`
+    - 示例：`User.type.ts`, `Response.type.ts`
+  - 样式文件：`kebab-case.scss`
+    - 示例：`main-layout.scss`, `theme-dark.scss`
+
+- 组件命名：
+  - 组件名：使用PascalCase
+    ```typescript
+    export default defineComponent({
+      name: 'UserProfile',
+    })
+    ```
+  - Props：使用camelCase
+    ```typescript
+    const props = defineProps<{
+      userId: number;
+      userName: string;
+    }>()
+    ```
+  - Emits：使用kebab-case
+    ```typescript
+    const emit = defineEmits<{
+      'update:modelValue': [value: string];
+      'status-change': [status: boolean];
+    }>()
+    ```
+
+- 变量命名：
+  - Ref/Reactive：使用camelCase
+    ```typescript
+    const userName = ref('');
+    const userState = reactive({
+      id: 0,
+      name: '',
+    });
+    ```
+  - 方法：使用camelCase
+    ```typescript
+    const handleSubmit = () => {};
+    const fetchUserData = async () => {};
+    ```
+
+- CSS命名(BEM规范)：
+  ```scss
+  .block {
+    &__element {
+      &--modifier {}
+    }
+  }
+  // 示例
+  .user-card {
+    &__avatar {
+      &--large {}
+    }
+    &__name {
+      &--bold {}
+    }
+  }
+  ```
+
+- Store命名(Pinia)：
+  ```typescript
+  // store/modules/userStore.ts
+  export const useUserStore = defineStore('user', {
+    state: () => ({
+      userInfo: null,
+      permissions: [],
+    }),
+    actions: {
+      async fetchUserInfo() {},
+    },
+  });
+  ```
+
+- API接口命名：
+  ```typescript
+  // api/modules/userApi.ts
+  export const userApi = {
+    getUserInfo: () => request.get('/api/user/info'),
+    updateUserProfile: (data: UserProfile) => 
+      request.put('/api/user/profile', data),
+  };
+  ```
+
+- 类型定义：
+  ```typescript
+  // types/user.type.ts
+  export interface UserInfo {
+    id: number;
+    userName: string;
+    email: string;
+  }
+
+  export type UserRole = 'admin' | 'user' | 'guest';
+  ```
+
+#### 3. 命名空间约束
+- 所有项目必须以 `Lean.Hbt` 开头
+- 模块命名规范：
+  - 领域层：`Lean.Hbt.Domain.{Module}`
+  - 应用层：`Lean.Hbt.Application.{Module}`
+  - 基础设施层：`Lean.Hbt.Infrastructure.{Module}`
+  - Web API层：`Lean.Hbt.WebApi`
+
+#### 4. 数据库约束
+- 表名前缀：`Hbt_`
+  - 示例：`
