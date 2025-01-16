@@ -1,20 +1,24 @@
 {
   "format": 1,
   "restore": {
-    "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.WebApi\\Lean.Hbt.WebApi.csproj": {}
+    "g:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.WebApi\\Lean.Hbt.WebApi.csproj": {}
   },
   "projects": {
-    "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.WebApi\\Lean.Hbt.WebApi.csproj": {
-      "version": "1.0.0",
+    "g:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Common\\Lean.Hbt.Common.csproj": {
+      "version": "0.0.1",
       "restore": {
-        "projectUniqueName": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.WebApi\\Lean.Hbt.WebApi.csproj",
-        "projectName": "Lean.Hbt.WebApi",
-        "projectPath": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.WebApi\\Lean.Hbt.WebApi.csproj",
+        "projectUniqueName": "g:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Common\\Lean.Hbt.Common.csproj",
+        "projectName": "Lean.Hbt.Common",
+        "projectPath": "g:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Common\\Lean.Hbt.Common.csproj",
         "packagesPath": "C:\\Users\\Davis.Cheng\\.nuget\\packages\\",
-        "outputPath": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.WebApi\\obj\\",
+        "outputPath": "g:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Common\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
         "configFilePaths": [
           "C:\\Users\\Davis.Cheng\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -39,7 +43,252 @@
           "enableAudit": "true",
           "auditLevel": "low",
           "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.100"
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "Newtonsoft.Json": {
+              "target": "Package",
+              "version": "[13.0.3, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.102/PortableRuntimeIdentifierGraph.json"
         }
+      }
+    },
+    "g:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Domain\\Lean.Hbt.Domain.csproj": {
+      "version": "0.0.1",
+      "restore": {
+        "projectUniqueName": "g:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Domain\\Lean.Hbt.Domain.csproj",
+        "projectName": "Lean.Hbt.Domain",
+        "projectPath": "g:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Domain\\Lean.Hbt.Domain.csproj",
+        "packagesPath": "C:\\Users\\Davis.Cheng\\.nuget\\packages\\",
+        "outputPath": "g:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Domain\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\Davis.Cheng\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "g:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Common\\Lean.Hbt.Common.csproj": {
+                "projectPath": "g:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Common\\Lean.Hbt.Common.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.100"
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "SqlSugar": {
+              "target": "Package",
+              "version": "[5.1.4.172, )"
+            },
+            "SqlSugarCore": {
+              "target": "Package",
+              "version": "[5.1.4.172, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.102/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "g:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Infrastructure\\Lean.Hbt.Infrastructure.csproj": {
+      "version": "0.0.1",
+      "restore": {
+        "projectUniqueName": "g:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Infrastructure\\Lean.Hbt.Infrastructure.csproj",
+        "projectName": "Lean.Hbt.Infrastructure",
+        "projectPath": "g:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Infrastructure\\Lean.Hbt.Infrastructure.csproj",
+        "packagesPath": "C:\\Users\\Davis.Cheng\\.nuget\\packages\\",
+        "outputPath": "g:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Infrastructure\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\Davis.Cheng\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "g:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Domain\\Lean.Hbt.Domain.csproj": {
+                "projectPath": "g:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Domain\\Lean.Hbt.Domain.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.100"
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "Microsoft.AspNetCore.Authentication.JwtBearer": {
+              "target": "Package",
+              "version": "[8.0.1, )"
+            },
+            "Microsoft.Extensions.Caching.StackExchangeRedis": {
+              "target": "Package",
+              "version": "[9.0.1, )"
+            },
+            "NLog": {
+              "target": "Package",
+              "version": "[5.3.4, )"
+            },
+            "SqlSugarCore": {
+              "target": "Package",
+              "version": "[5.1.4.172, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.102/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "g:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.WebApi\\Lean.Hbt.WebApi.csproj": {
+      "version": "0.0.1",
+      "restore": {
+        "projectUniqueName": "g:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.WebApi\\Lean.Hbt.WebApi.csproj",
+        "projectName": "Lean.Hbt.WebApi",
+        "projectPath": "g:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.WebApi\\Lean.Hbt.WebApi.csproj",
+        "packagesPath": "C:\\Users\\Davis.Cheng\\.nuget\\packages\\",
+        "outputPath": "g:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.WebApi\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\Davis.Cheng\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "g:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Common\\Lean.Hbt.Common.csproj": {
+                "projectPath": "g:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Common\\Lean.Hbt.Common.csproj"
+              },
+              "g:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Infrastructure\\Lean.Hbt.Infrastructure.csproj": {
+                "projectPath": "g:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Infrastructure\\Lean.Hbt.Infrastructure.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.100"
       },
       "frameworks": {
         "net8.0": {
@@ -48,6 +297,18 @@
             "Microsoft.AspNetCore.OpenApi": {
               "target": "Package",
               "version": "[8.0.11, )"
+            },
+            "NLog": {
+              "target": "Package",
+              "version": "[5.3.4, )"
+            },
+            "NLog.Web.AspNetCore": {
+              "target": "Package",
+              "version": "[5.3.4, )"
+            },
+            "Newtonsoft.Json": {
+              "target": "Package",
+              "version": "[13.0.3, )"
             },
             "Swashbuckle.AspNetCore": {
               "target": "Package",
@@ -73,7 +334,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.404/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.102/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

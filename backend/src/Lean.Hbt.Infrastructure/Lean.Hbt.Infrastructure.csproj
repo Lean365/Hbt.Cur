@@ -9,7 +9,12 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.1" />
     <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="9.0.1" />
-    <PackageReference Include="SqlSugarCore" Version="5.1.4.175" />
+    <PackageReference Include="SqlSugarCore" Version="5.1.4.172" />
+    <PackageReference Include="NLog" Version="5.3.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Lean.Hbt.Domain\Lean.Hbt.Domain.csproj" />
   </ItemGroup>
 
 </Project>
