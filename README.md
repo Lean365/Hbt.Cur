@@ -1,4 +1,4 @@
-# 🎯 黑冰台代码生成管理系统 (Lean.Hbt)
+﻿# 🎯 黑冰台代码生成管理系统 (Lean.Hbt)
 
 ## 📚 目录
 
@@ -295,6 +295,20 @@ Lean.Hbt/
 - 💾 持久化存储
 - 🔄 数据同步机制
 - 🔍 状态追踪
+
+### 🌐 多语言支持
+- 前端多语言
+  - 基于 Vue-i18n 实现
+  - 模块化的语言包管理
+  - 动态语言切换
+  - [前端多语言开发规范](docs/standards/frontend/i18n/i18n-standards.md)
+
+- 后端多语言
+  - 基于中间件实现语言切换
+  - 统一的异常消息国际化
+  - 数据验证消息国际化
+  - 业务消息国际化
+  - [后端多语言开发规范](docs/standards/backend/i18n/i18n-standards.md)
 
 ## 💻 开发环境
 
@@ -1061,6 +1075,12 @@ public class HbtUserTemplateDto
 
 ## 📚 开发规范文档
 
+### 后端规范
+- [多语言开发规范](docs/standards/backend/i18n/i18n-standards.md) - 后端多语言实现和使用指南
+- [命名规范](docs/standards/backend/naming-standards.md)
+- [接口规范](docs/standards/backend/api-standards.md)
+- [更多规范文档正在编写中...]
+
 ### 前端规范
 - [Vue组件开发规范](docs/standards/frontend/vue/component-standards.md)
 - [Vue页面开发规范](docs/standards/frontend/vue/page-standards.md)
@@ -1068,6 +1088,16 @@ public class HbtUserTemplateDto
 - [API接口规范](docs/standards/frontend/api/api-standards.md)
 - [多语言开发规范](docs/standards/frontend/i18n/i18n-standards.md)
 
-### 后端规范
-- [多语言开发规范](docs/standards/backend/i18n/i18n-standards.md)
-- [更多规范文档正在编写中...]
+## 后端开发规范
+
+后端开发规范包含以下内容：
+
+- ✅ [C#代码规范](docs/standards/backend/code-style.md) - 包含命名规范、代码格式、编码实践等完整规范
+- 🚧 [控制器开发规范](docs/standards/backend/controller-standards.md) - 开发中
+- 🚧 [服务层开发规范](docs/standards/backend/service-standards.md) - 开发中
+- 🚧 [仓储层开发规范](docs/standards/backend/repository-standards.md) - 开发中
+- 🚧 [实体开发规范](docs/standards/backend/entity-standards.md) - 开发中
+- 🚧 [异常处理规范](docs/standards/backend/exception-standards.md) - 开发中
+- 🚧 [日志开发规范](docs/standards/backend/logging-standards.md) - 开发中
+- 🚧 [命名规范](docs/standards/backend/naming-standards.md) - 开发中
+- 🚧 [DTO规范](docs/standards/backend/dto-standards.md) - 开发中
