@@ -1,0 +1,7 @@
+G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\obj\Debug\net8.0\Lean.Hbt.WebApi.csproj.AssemblyReference.cache
+G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\obj\Debug\net8.0\Lean.Hbt.WebApi.GeneratedMSBuildEditorConfig.editorconfig
+G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\obj\Debug\net8.0\Lean.Hbt.WebApi.AssemblyInfoInputs.cache
+G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\obj\Debug\net8.0\Lean.Hbt.WebApi.AssemblyInfo.cs
+G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\obj\Debug\net8.0\Lean.Hbt.WebApi.csproj.CoreCompileInputs.cache
+G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\obj\Debug\net8.0\Lean.Hbt.WebApi.MvcApplicationPartsAssemblyInfo.cache
+G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\obj\Debug\net8.0\Lean.Hbt.WebApi.sourcelink.json

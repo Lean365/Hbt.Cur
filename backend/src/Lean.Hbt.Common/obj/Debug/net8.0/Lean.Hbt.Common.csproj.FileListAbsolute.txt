@@ -1,0 +1,15 @@
+G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Common\bin\Debug\net8.0\Lean.Hbt.Common.deps.json
+G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Common\bin\Debug\net8.0\Lean.Hbt.Common.dll
+G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Common\bin\Debug\net8.0\Lean.Hbt.Common.pdb
+G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Common\bin\Debug\net8.0\Lean.Hbt.Common.xml
+G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Common\obj\Debug\net8.0\Lean.Hbt.Common.csproj.AssemblyReference.cache
+G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Common\obj\Debug\net8.0\Lean.Hbt.Common.GeneratedMSBuildEditorConfig.editorconfig
+G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Common\obj\Debug\net8.0\Lean.Hbt.Common.AssemblyInfoInputs.cache
+G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Common\obj\Debug\net8.0\Lean.Hbt.Common.AssemblyInfo.cs
+G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Common\obj\Debug\net8.0\Lean.Hbt.Common.csproj.CoreCompileInputs.cache
+G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Common\obj\Debug\net8.0\Lean.Hbt.Common.sourcelink.json
+G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Common\obj\Debug\net8.0\Lean.Hbt.Common.dll
+G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Common\obj\Debug\net8.0\refint\Lean.Hbt.Common.dll
+G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Common\obj\Debug\net8.0\Lean.Hbt.Common.xml
+G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Common\obj\Debug\net8.0\Lean.Hbt.Common.pdb
+G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Common\obj\Debug\net8.0\ref\Lean.Hbt.Common.dll

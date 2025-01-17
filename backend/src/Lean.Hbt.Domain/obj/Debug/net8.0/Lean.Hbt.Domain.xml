@@ -1,0 +1,675 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Lean.Hbt.Domain</name>
+    </assembly>
+    <members>
+        <member name="T:Lean.Hbt.Domain.Entities.HbtBaseEntity">
+            <summary>
+            基础实体类
+            </summary>
+            <remarks>
+            创建者: Lean365
+            创建时间: 2024-01-16
+            </remarks>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.HbtBaseEntity.Id">
+            <summary>
+            主键ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.HbtBaseEntity.CreateBy">
+            <summary>
+            创建者ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.HbtBaseEntity.CreateTime">
+            <summary>
+            创建时间
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.HbtBaseEntity.UpdateBy">
+            <summary>
+            更新者ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.HbtBaseEntity.UpdateTime">
+            <summary>
+            更新时间
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.HbtBaseEntity.DeleteBy">
+            <summary>
+            删除者ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.HbtBaseEntity.DeleteTime">
+            <summary>
+            删除时间
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.HbtBaseEntity.IsDeleted">
+            <summary>
+            删除标志（0代表存在 1代表删除）
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.HbtBaseEntity.Remark">
+            <summary>
+            备注
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Domain.Entities.Identity.HbtDept">
+            <summary>
+            部门实体
+            </summary>
+            <remarks>
+            创建者: Lean365
+            创建时间: 2024-01-16
+            </remarks>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtDept.DeptName">
+            <summary>
+            部门名称
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtDept.ParentId">
+            <summary>
+            父部门ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtDept.OrderNum">
+            <summary>
+            显示顺序
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtDept.Leader">
+            <summary>
+            负责人
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtDept.Phone">
+            <summary>
+            联系电话
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtDept.Email">
+            <summary>
+            邮箱
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtDept.Status">
+            <summary>
+            状态（0正常 1停用）
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtDept.TenantId">
+            <summary>
+            租户ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtDept.RoleDepts">
+            <summary>
+            角色部门关联
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtDept.UserDepts">
+            <summary>
+            用户部门关联
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtDept.Parent">
+            <summary>
+            父部门导航属性
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtDept.Children">
+            <summary>
+            子部门导航属性
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Domain.Entities.Identity.HbtMenu">
+            <summary>
+            菜单实体
+            </summary>
+            <remarks>
+            创建者: Lean365
+            创建时间: 2024-01-16
+            </remarks>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtMenu.MenuName">
+            <summary>
+            菜单名称
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtMenu.TransKey">
+            <summary>
+            翻译Key
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtMenu.ParentId">
+            <summary>
+            父菜单ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtMenu.OrderNum">
+            <summary>
+            显示顺序
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtMenu.Path">
+            <summary>
+            路由地址
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtMenu.Component">
+            <summary>
+            组件路径
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtMenu.IsFrame">
+            <summary>
+            是否为外链（0否 1是）
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtMenu.MenuType">
+            <summary>
+            菜单类型（0目录 1菜单 2按钮）
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtMenu.Visible">
+            <summary>
+            显示状态（0显示 1隐藏）
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtMenu.Status">
+            <summary>
+            菜单状态（0正常 1停用）
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtMenu.Perms">
+            <summary>
+            权限标识
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtMenu.Icon">
+            <summary>
+            菜单图标
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtMenu.TenantId">
+            <summary>
+            租户ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtMenu.RoleMenus">
+            <summary>
+            角色菜单关联
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtMenu.Parent">
+            <summary>
+            父菜单导航属性
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtMenu.Children">
+            <summary>
+            子菜单导航属性
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Domain.Entities.Identity.HbtPost">
+            <summary>
+            岗位实体
+            </summary>
+            <remarks>
+            创建者: Lean365
+            创建时间: 2024-01-16
+            </remarks>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtPost.PostCode">
+            <summary>
+            岗位编码
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtPost.PostName">
+            <summary>
+            岗位名称
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtPost.OrderNum">
+            <summary>
+            显示顺序
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtPost.Status">
+            <summary>
+            状态（0正常 1停用）
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtPost.TenantId">
+            <summary>
+            租户ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtPost.UserPosts">
+            <summary>
+            用户岗位关联
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Domain.Entities.Identity.HbtRole">
+            <summary>
+            角色实体
+            </summary>
+            <remarks>
+            创建者: Lean365
+            创建时间: 2024-01-16
+            </remarks>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtRole.RoleName">
+            <summary>
+            角色名称
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtRole.RoleKey">
+            <summary>
+            角色标识
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtRole.RoleSort">
+            <summary>
+            角色排序
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtRole.DataScope">
+            <summary>
+            数据范围（1：全部数据权限 2：自定数据权限 3：本部门数据权限 4：本部门及以下数据权限 5：仅本人数据权限）
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtRole.Status">
+            <summary>
+            状态（0正常 1停用）
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtRole.TenantId">
+            <summary>
+            租户ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtRole.RoleMenus">
+            <summary>
+            角色菜单关联
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtRole.RoleDepts">
+            <summary>
+            角色部门关联
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtRole.UserRoles">
+            <summary>
+            用户角色关联
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Domain.Entities.Identity.HbtRoleDept">
+            <summary>
+            角色部门关联实体
+            </summary>
+            <remarks>
+            创建者: Lean365
+            创建时间: 2024-01-16
+            </remarks>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtRoleDept.RoleId">
+            <summary>
+            角色ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtRoleDept.DeptId">
+            <summary>
+            部门ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtRoleDept.TenantId">
+            <summary>
+            租户ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtRoleDept.Role">
+            <summary>
+            角色导航属性
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtRoleDept.Dept">
+            <summary>
+            部门导航属性
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Domain.Entities.Identity.HbtRoleMenu">
+            <summary>
+            角色菜单关联实体
+            </summary>
+            <remarks>
+            创建者: Lean365
+            创建时间: 2024-01-16
+            </remarks>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtRoleMenu.RoleId">
+            <summary>
+            角色ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtRoleMenu.MenuId">
+            <summary>
+            菜单ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtRoleMenu.TenantId">
+            <summary>
+            租户ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtRoleMenu.Role">
+            <summary>
+            角色导航属性
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtRoleMenu.Menu">
+            <summary>
+            菜单导航属性
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Domain.Entities.Identity.HbtUser">
+            <summary>
+            用户实体
+            </summary>
+            <remarks>
+            创建者: Lean365
+            创建时间: 2024-01-16
+            </remarks>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtUser.UserName">
+            <summary>
+            用户名
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtUser.NickName">
+            <summary>
+            昵称
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtUser.EnglishName">
+            <summary>
+            英文名称
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtUser.UserType">
+            <summary>
+            用户类型（0系统用户 1普通用户）
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtUser.Password">
+            <summary>
+            密码
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtUser.Salt">
+            <summary>
+            盐值
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtUser.Email">
+            <summary>
+            邮箱
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtUser.PhoneNumber">
+            <summary>
+            手机号
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtUser.Gender">
+            <summary>
+            性别（0未知 1男 2女）
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtUser.Avatar">
+            <summary>
+            头像
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtUser.Status">
+            <summary>
+            状态（0正常 1停用）
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtUser.TenantId">
+            <summary>
+            租户ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtUser.UserRoles">
+            <summary>
+            用户角色关联
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtUser.UserDepts">
+            <summary>
+            用户部门关联
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtUser.UserPosts">
+            <summary>
+            用户岗位关联
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Domain.Entities.Identity.HbtUserDept">
+            <summary>
+            用户部门关联实体
+            </summary>
+            <remarks>
+            创建者: Lean365
+            创建时间: 2024-01-16
+            </remarks>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtUserDept.UserId">
+            <summary>
+            用户ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtUserDept.DeptId">
+            <summary>
+            部门ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtUserDept.TenantId">
+            <summary>
+            租户ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtUserDept.User">
+            <summary>
+            用户导航属性
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtUserDept.Dept">
+            <summary>
+            部门导航属性
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Domain.Entities.Identity.HbtUserPost">
+            <summary>
+            用户岗位关联实体
+            </summary>
+            <remarks>
+            创建者: Lean365
+            创建时间: 2024-01-16
+            </remarks>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtUserPost.UserId">
+            <summary>
+            用户ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtUserPost.PostId">
+            <summary>
+            岗位ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtUserPost.TenantId">
+            <summary>
+            租户ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtUserPost.User">
+            <summary>
+            用户导航属性
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtUserPost.Post">
+            <summary>
+            岗位导航属性
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Domain.Entities.Identity.HbtUserRole">
+            <summary>
+            用户角色关联实体
+            </summary>
+            <remarks>
+            创建者: Lean365
+            创建时间: 2024-01-16
+            </remarks>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtUserRole.UserId">
+            <summary>
+            用户ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtUserRole.RoleId">
+            <summary>
+            角色ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtUserRole.TenantId">
+            <summary>
+            租户ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtUserRole.User">
+            <summary>
+            用户导航属性
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtUserRole.Role">
+            <summary>
+            角色导航属性
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Domain.IServices.IHbtLogger">
+            <summary>
+            日志服务接口
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Domain.IServices.IHbtLogger.Debug(System.String,System.Object[])">
+            <summary>
+            记录调试信息
+            </summary>
+            <param name="message">日志消息</param>
+            <param name="args">格式化参数</param>
+        </member>
+        <member name="M:Lean.Hbt.Domain.IServices.IHbtLogger.Information(System.String,System.Object[])">
+            <summary>
+            记录信息
+            </summary>
+            <param name="message">日志消息</param>
+            <param name="args">格式化参数</param>
+        </member>
+        <member name="M:Lean.Hbt.Domain.IServices.IHbtLogger.Warning(System.String,System.Object[])">
+            <summary>
+            记录警告
+            </summary>
+            <param name="message">日志消息</param>
+            <param name="args">格式化参数</param>
+        </member>
+        <member name="M:Lean.Hbt.Domain.IServices.IHbtLogger.Error(System.String,System.Object[])">
+            <summary>
+            记录错误
+            </summary>
+            <param name="message">日志消息</param>
+            <param name="args">格式化参数</param>
+        </member>
+        <member name="M:Lean.Hbt.Domain.IServices.IHbtLogger.Error(System.Exception,System.String,System.Object[])">
+            <summary>
+            记录错误
+            </summary>
+            <param name="exception">异常信息</param>
+            <param name="message">日志消息</param>
+            <param name="args">格式化参数</param>
+        </member>
+        <member name="M:Lean.Hbt.Domain.IServices.IHbtLogger.Fatal(System.String,System.Object[])">
+            <summary>
+            记录致命错误
+            </summary>
+            <param name="message">日志消息</param>
+            <param name="args">格式化参数</param>
+        </member>
+        <member name="M:Lean.Hbt.Domain.IServices.IHbtLogger.Fatal(System.Exception,System.String,System.Object[])">
+            <summary>
+            记录致命错误
+            </summary>
+            <param name="exception">异常信息</param>
+            <param name="message">日志消息</param>
+            <param name="args">格式化参数</param>
+        </member>
+        <member name="T:Lean.Hbt.Domain.IServices.IHbtLoginPolicy">
+            <summary>
+            登录策略接口
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Domain.IServices.IHbtLoginPolicy.RecordFailedAttemptAsync(System.String)">
+            <summary>
+            记录登录失败
+            </summary>
+            <param name="userId">用户ID</param>
+            <returns>剩余尝试次数</returns>
+        </member>
+        <member name="M:Lean.Hbt.Domain.IServices.IHbtLoginPolicy.ResetFailedAttemptsAsync(System.String)">
+            <summary>
+            重置登录失败次数
+            </summary>
+            <param name="userId">用户ID</param>
+        </member>
+        <member name="M:Lean.Hbt.Domain.IServices.IHbtLoginPolicy.IsAccountLockedAsync(System.String)">
+            <summary>
+            检查账户是否被锁定
+            </summary>
+            <param name="userId">用户ID</param>
+            <returns>是否锁定</returns>
+        </member>
+        <member name="M:Lean.Hbt.Domain.IServices.IHbtLoginPolicy.GetLockoutRemainingMinutesAsync(System.String)">
+            <summary>
+            获取账户锁定剩余时间
+            </summary>
+            <param name="userId">用户ID</param>
+            <returns>剩余分钟数</returns>
+        </member>
+        <member name="T:Lean.Hbt.Domain.Repositories.IHbtRepository`1">
+            <summary>
+            SqlSugar通用仓储接口
+            </summary>
+            <typeparam name="T">实体类型</typeparam>
+            <remarks>
+            创建者: Lean365
+            创建时间: 2024-01-16
+            </remarks>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Repositories.IHbtRepository`1.Entities">
+            <summary>
+            获取 SimpleClient 实例
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Repositories.IHbtRepository`1.Context">
+            <summary>
+            获取 SqlSugarClient 实例
+            </summary>
+        </member>
+    </members>
+</doc>

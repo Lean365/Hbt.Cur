@@ -1,0 +1,6 @@
+G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\obj\Debug\net8.0\Lean.Hbt.Infrastructure.csproj.AssemblyReference.cache
+G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\obj\Debug\net8.0\Lean.Hbt.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\obj\Debug\net8.0\Lean.Hbt.Infrastructure.AssemblyInfoInputs.cache
+G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\obj\Debug\net8.0\Lean.Hbt.Infrastructure.AssemblyInfo.cs
+G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\obj\Debug\net8.0\Lean.Hbt.Infrastructure.csproj.CoreCompileInputs.cache
+G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\obj\Debug\net8.0\Lean.Hbt.Infrastructure.sourcelink.json

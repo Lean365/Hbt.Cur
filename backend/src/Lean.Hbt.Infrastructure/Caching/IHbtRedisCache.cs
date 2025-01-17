@@ -1,0 +1,53 @@
+//===================================================================
+// 项目名 : Lean.Hbt 
+// 文件名 : IHbtRedisCache.cs 
+// 创建者 : Lean365
+// 创建时间: 2024-01-16 10:00
+// 版本号 : V0.0.1
+// 描述    : Redis缓存接口
+//===================================================================
+
+namespace Lean.Hbt.Infrastructure.Caching
+{
+    /// <summary>
+    /// Redis缓存接口
+    /// </summary>
+    /// <remarks>
+    /// 创建者: Lean365
+    /// 创建时间: 2024-01-16
+    /// </remarks>
+    public interface IHbtRedisCache
+    {
+        /// <summary>
+        /// 设置缓存
+        /// </summary>
+        /// <typeparam name="T">缓存数据类型</typeparam>
+        /// <param name="key">缓存键</param>
+        /// <param name="value">缓存值</param>
+        /// <param name="expiry">过期时间</param>
+        /// <returns>异步任务</returns>
+        Task SetAsync<T>(string key, T value, TimeSpan? expiry = null);
+
+        /// <summary>
+        /// 获取缓存
+        /// </summary>
+        /// <typeparam name="T">缓存数据类型</typeparam>
+        /// <param name="key">缓存键</param>
+        /// <returns>缓存值，不存在返回默认值</returns>
+        Task<T?> GetAsync<T>(string key);
+
+        /// <summary>
+        /// 移除缓存
+        /// </summary>
+        /// <param name="key">缓存键</param>
+        /// <returns>异步任务</returns>
+        Task RemoveAsync(string key);
+
+        /// <summary>
+        /// 判断缓存是否存在
+        /// </summary>
+        /// <param name="key">缓存键</param>
+        /// <returns>是否存在</returns>
+        Task<bool> ExistsAsync(string key);
+    }
+} 

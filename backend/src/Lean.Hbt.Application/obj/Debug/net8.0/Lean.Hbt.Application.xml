@@ -1,0 +1,481 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Lean.Hbt.Application</name>
+    </assembly>
+    <members>
+        <member name="T:Lean.Hbt.Application.Identity.Dtos.HbtUserDto">
+            <summary>
+            用户基础信息DTO
+            </summary>
+            <remarks>
+            创建者: Lean365
+            创建时间: 2024-01-16
+            </remarks>
+        </member>
+        <member name="P:Lean.Hbt.Application.Identity.Dtos.HbtUserDto.UserId">
+            <summary>
+            用户ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Identity.Dtos.HbtUserDto.UserName">
+            <summary>
+            用户名
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Identity.Dtos.HbtUserDto.NickName">
+            <summary>
+            昵称
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Identity.Dtos.HbtUserDto.EnglishName">
+            <summary>
+            英文名称
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Identity.Dtos.HbtUserDto.UserType">
+            <summary>
+            用户类型（0系统用户 1普通用户）
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Identity.Dtos.HbtUserDto.PhoneNumber">
+            <summary>
+            手机号码
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Identity.Dtos.HbtUserDto.Email">
+            <summary>
+            邮箱
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Identity.Dtos.HbtUserDto.Gender">
+            <summary>
+            性别
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Identity.Dtos.HbtUserDto.Avatar">
+            <summary>
+            头像
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Identity.Dtos.HbtUserDto.DeptId">
+            <summary>
+            部门ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Identity.Dtos.HbtUserDto.DeptName">
+            <summary>
+            部门名称
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Identity.Dtos.HbtUserDto.Status">
+            <summary>
+            状态
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Identity.Dtos.HbtUserDto.TenantId">
+            <summary>
+            租户ID
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Application.Identity.Dtos.HbtUserQueryDto">
+            <summary>
+            用户查询DTO
+            </summary>
+            <remarks>
+            创建者: Lean365
+            创建时间: 2024-01-16
+            </remarks>
+        </member>
+        <member name="P:Lean.Hbt.Application.Identity.Dtos.HbtUserQueryDto.UserName">
+            <summary>
+            用户名
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Identity.Dtos.HbtUserQueryDto.PhoneNumber">
+            <summary>
+            手机号码
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Identity.Dtos.HbtUserQueryDto.Status">
+            <summary>
+            状态
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Identity.Dtos.HbtUserQueryDto.DeptId">
+            <summary>
+            部门ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Identity.Dtos.HbtUserQueryDto.UserType">
+            <summary>
+            用户类型
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Application.Identity.Dtos.HbtUserCreateDto">
+            <summary>
+            用户创建DTO
+            </summary>
+            <remarks>
+            创建者: Lean365
+            创建时间: 2024-01-16
+            </remarks>
+        </member>
+        <member name="P:Lean.Hbt.Application.Identity.Dtos.HbtUserCreateDto.UserName">
+            <summary>
+            用户名
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Identity.Dtos.HbtUserCreateDto.NickName">
+            <summary>
+            昵称
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Identity.Dtos.HbtUserCreateDto.EnglishName">
+            <summary>
+            英文名称
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Identity.Dtos.HbtUserCreateDto.UserType">
+            <summary>
+            用户类型（0系统用户 1普通用户）
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Identity.Dtos.HbtUserCreateDto.Password">
+            <summary>
+            密码
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Identity.Dtos.HbtUserCreateDto.PhoneNumber">
+            <summary>
+            手机号码
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Identity.Dtos.HbtUserCreateDto.Email">
+            <summary>
+            邮箱
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Identity.Dtos.HbtUserCreateDto.Gender">
+            <summary>
+            性别
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Identity.Dtos.HbtUserCreateDto.Avatar">
+            <summary>
+            头像
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Identity.Dtos.HbtUserCreateDto.DeptId">
+            <summary>
+            部门ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Identity.Dtos.HbtUserCreateDto.RoleIds">
+            <summary>
+            角色ID列表
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Identity.Dtos.HbtUserCreateDto.PostIds">
+            <summary>
+            岗位ID列表
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Identity.Dtos.HbtUserCreateDto.Remark">
+            <summary>
+            备注
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Identity.Dtos.HbtUserCreateDto.TenantId">
+            <summary>
+            租户ID
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Application.Identity.Dtos.HbtUserUpdateDto">
+            <summary>
+            用户更新DTO
+            </summary>
+            <remarks>
+            创建者: Lean365
+            创建时间: 2024-01-16
+            </remarks>
+        </member>
+        <member name="P:Lean.Hbt.Application.Identity.Dtos.HbtUserUpdateDto.UserId">
+            <summary>
+            用户ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Identity.Dtos.HbtUserUpdateDto.NickName">
+            <summary>
+            昵称
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Identity.Dtos.HbtUserUpdateDto.EnglishName">
+            <summary>
+            英文名称
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Identity.Dtos.HbtUserUpdateDto.PhoneNumber">
+            <summary>
+            手机号码
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Identity.Dtos.HbtUserUpdateDto.Email">
+            <summary>
+            邮箱
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Identity.Dtos.HbtUserUpdateDto.Gender">
+            <summary>
+            性别
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Identity.Dtos.HbtUserUpdateDto.Avatar">
+            <summary>
+            头像
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Identity.Dtos.HbtUserUpdateDto.DeptId">
+            <summary>
+            部门ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Identity.Dtos.HbtUserUpdateDto.RoleIds">
+            <summary>
+            角色ID列表
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Identity.Dtos.HbtUserUpdateDto.PostIds">
+            <summary>
+            岗位ID列表
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Identity.Dtos.HbtUserUpdateDto.Remark">
+            <summary>
+            备注
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Application.Identity.Dtos.HbtUserImportDto">
+            <summary>
+            用户导入DTO
+            </summary>
+            <remarks>
+            创建者: Lean365
+            创建时间: 2024-01-16
+            </remarks>
+        </member>
+        <member name="P:Lean.Hbt.Application.Identity.Dtos.HbtUserImportDto.UserName">
+            <summary>
+            用户名
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Identity.Dtos.HbtUserImportDto.NickName">
+            <summary>
+            昵称
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Identity.Dtos.HbtUserImportDto.EnglishName">
+            <summary>
+            英文名称
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Identity.Dtos.HbtUserImportDto.UserType">
+            <summary>
+            用户类型（0系统用户 1普通用户）
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Identity.Dtos.HbtUserImportDto.Password">
+            <summary>
+            密码
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Identity.Dtos.HbtUserImportDto.PhoneNumber">
+            <summary>
+            手机号码
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Identity.Dtos.HbtUserImportDto.Email">
+            <summary>
+            邮箱
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Identity.Dtos.HbtUserImportDto.Gender">
+            <summary>
+            性别(0=未知,1=男,2=女)
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Identity.Dtos.HbtUserImportDto.Avatar">
+            <summary>
+            头像
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Identity.Dtos.HbtUserImportDto.DeptName">
+            <summary>
+            部门名称
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Identity.Dtos.HbtUserImportDto.RoleNames">
+            <summary>
+            角色名称列表，逗号分隔
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Identity.Dtos.HbtUserImportDto.PostNames">
+            <summary>
+            岗位名称列表，逗号分隔
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Identity.Dtos.HbtUserImportDto.Remark">
+            <summary>
+            备注
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Application.Identity.Dtos.HbtUserExportDto">
+            <summary>
+            用户导出DTO
+            </summary>
+            <remarks>
+            创建者: Lean365
+            创建时间: 2024-01-16
+            </remarks>
+        </member>
+        <member name="P:Lean.Hbt.Application.Identity.Dtos.HbtUserExportDto.UserName">
+            <summary>
+            用户名
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Identity.Dtos.HbtUserExportDto.NickName">
+            <summary>
+            昵称
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Identity.Dtos.HbtUserExportDto.EnglishName">
+            <summary>
+            英文名称
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Identity.Dtos.HbtUserExportDto.UserType">
+            <summary>
+            用户类型
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Identity.Dtos.HbtUserExportDto.PhoneNumber">
+            <summary>
+            手机号码
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Identity.Dtos.HbtUserExportDto.Email">
+            <summary>
+            邮箱
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Identity.Dtos.HbtUserExportDto.Gender">
+            <summary>
+            性别
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Identity.Dtos.HbtUserExportDto.Avatar">
+            <summary>
+            头像
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Identity.Dtos.HbtUserExportDto.DeptName">
+            <summary>
+            部门名称
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Identity.Dtos.HbtUserExportDto.RoleNames">
+            <summary>
+            角色名称列表
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Identity.Dtos.HbtUserExportDto.PostNames">
+            <summary>
+            岗位名称列表
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Identity.Dtos.HbtUserExportDto.Status">
+            <summary>
+            状态
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Identity.Dtos.HbtUserExportDto.CreateTime">
+            <summary>
+            创建时间
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Application.Identity.Dtos.HbtUserTemplateDto">
+            <summary>
+            用户导入模板DTO
+            </summary>
+            <remarks>
+            创建者: Lean365
+            创建时间: 2024-01-16
+            </remarks>
+        </member>
+        <member name="P:Lean.Hbt.Application.Identity.Dtos.HbtUserTemplateDto.UserName">
+            <summary>
+            用户名
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Identity.Dtos.HbtUserTemplateDto.NickName">
+            <summary>
+            昵称
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Identity.Dtos.HbtUserTemplateDto.EnglishName">
+            <summary>
+            英文名称
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Identity.Dtos.HbtUserTemplateDto.UserType">
+            <summary>
+            用户类型(0=系统用户,1=普通用户)
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Identity.Dtos.HbtUserTemplateDto.Password">
+            <summary>
+            密码
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Identity.Dtos.HbtUserTemplateDto.PhoneNumber">
+            <summary>
+            手机号码
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Identity.Dtos.HbtUserTemplateDto.Email">
+            <summary>
+            邮箱
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Identity.Dtos.HbtUserTemplateDto.Gender">
+            <summary>
+            性别(0=未知,1=男,2=女)
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Identity.Dtos.HbtUserTemplateDto.Avatar">
+            <summary>
+            头像
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Identity.Dtos.HbtUserTemplateDto.DeptName">
+            <summary>
+            部门名称
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Identity.Dtos.HbtUserTemplateDto.RoleNames">
+            <summary>
+            角色名称列表，多个逗号分隔
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Identity.Dtos.HbtUserTemplateDto.PostNames">
+            <summary>
+            岗位名称列表，多个逗号分隔
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Identity.Dtos.HbtUserTemplateDto.Remark">
+            <summary>
+            备注
+            </summary>
+        </member>
+    </members>
+</doc>
