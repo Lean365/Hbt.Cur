@@ -1,14 +1,14 @@
 //===================================================================
-// 项目名 : Lean.Hbt 
-// 文件名 : HbtRole.cs 
+// 项目名 : Lean.Hbt
+// 文件名 : HbtRole.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-16 11:30
-// 版本号 : V0.0.1
+// 版本号 : V.0.0.1
 // 描述    : 角色实体类
 //===================================================================
 
-using SqlSugar;
 using Lean.Hbt.Common.Enums;
+using SqlSugar;
 
 namespace Lean.Hbt.Domain.Entities.Identity
 {
@@ -21,7 +21,7 @@ namespace Lean.Hbt.Domain.Entities.Identity
     /// </remarks>
     [SugarTable("hbt_role", "角色表")]
     [SugarIndex("ix_role_key", nameof(RoleKey), OrderByType.Asc, true)]
-    [SugarIndex("ix_tenant_role", $"{nameof(TenantId)},{nameof(RoleName)}", OrderByType.Asc, true)]
+    [SugarIndex("ix_tenant_role", nameof(TenantId), OrderByType.Asc, nameof(RoleName), OrderByType.Asc, true)]
     public class HbtRole : HbtBaseEntity
     {
         /// <summary>
@@ -46,19 +46,25 @@ namespace Lean.Hbt.Domain.Entities.Identity
         /// 数据范围（1：全部数据权限 2：自定数据权限 3：本部门数据权限 4：本部门及以下数据权限 5：仅本人数据权限）
         /// </summary>
         [SugarColumn(ColumnName = "data_scope", ColumnDescription = "数据范围", ColumnDataType = "int", IsNullable = false, DefaultValue = "1")]
-        public DataScope DataScope { get; set; }
+        public HbtDataScope DataScope { get; set; }
 
         /// <summary>
         /// 状态（0正常 1停用）
         /// </summary>
         [SugarColumn(ColumnName = "status", ColumnDescription = "状态（0正常 1停用）", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
-        public CommonStatus Status { get; set; }
+        public HbtStatus Status { get; set; }
 
         /// <summary>
         /// 租户ID
         /// </summary>
         [SugarColumn(ColumnName = "tenant_id", ColumnDescription = "租户ID", ColumnDataType = "bigint", IsNullable = false)]
         public long TenantId { get; set; }
+
+        /// <summary>
+        /// 租户
+        /// </summary>
+        [Navigate(NavigateType.OneToOne, nameof(TenantId))]
+        public HbtTenant Tenant { get; set; }
 
         /// <summary>
         /// 角色菜单关联
@@ -78,4 +84,4 @@ namespace Lean.Hbt.Domain.Entities.Identity
         [Navigate(NavigateType.OneToMany, nameof(HbtUserRole.RoleId))]
         public List<HbtUserRole> UserRoles { get; set; }
     }
-} 
+}

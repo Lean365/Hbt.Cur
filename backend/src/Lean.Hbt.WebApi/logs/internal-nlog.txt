@@ -1,0 +1,1303 @@
+2025-01-18 08:14:55.8503 Info Loading assembly name: NLog.Web.AspNetCore
+2025-01-18 08:14:55.8619 Info NLog.Web.AspNetCore, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.944. Product version: 5.3.4+c9ae8128ef4b6b6b6f2497cdaf451168b85d6ff7. GlobalAssemblyCache: False
+2025-01-18 08:14:55.9187 Info Registered target NLog.Targets.FileTarget(Name=allfile)
+2025-01-18 08:14:55.9337 Info Registered target NLog.Targets.FileTarget(Name=errorfile)
+2025-01-18 08:14:55.9337 Info Registered target NLog.Targets.FileTarget(Name=debugfile)
+2025-01-18 08:14:55.9337 Info Registered target NLog.Targets.ColoredConsoleTarget(Name=console)
+2025-01-18 08:14:55.9497 Info NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.2778. Product version: 5.3.4+73d83d3161d31288ca5c554cc50d27b6bed5f28b. GlobalAssemblyCache: False
+2025-01-18 08:14:55.9719 Info Validating config: TargetNames=allfile, errorfile, debugfile, console, ConfigItems=123, FilePath=G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config
+2025-01-18 08:14:55.9838 Info Configuration initialized.
+2025-01-18 08:14:57.6615 Info Shutdown() called. Logger closing...
+2025-01-18 08:14:57.6615 Info Closing old configuration.
+2025-01-18 08:14:57.6884 Info Logger has been closed down.
+2025-01-18 10:02:04.0750 Info Loading assembly name: NLog.Web.AspNetCore
+2025-01-18 10:02:04.1051 Info NLog.Web.AspNetCore, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.944. Product version: 5.3.4+c9ae8128ef4b6b6b6f2497cdaf451168b85d6ff7. GlobalAssemblyCache: False
+2025-01-18 10:02:04.2193 Info Registered target NLog.Targets.FileTarget(Name=allfile)
+2025-01-18 10:02:04.2193 Info Registered target NLog.Targets.FileTarget(Name=errorfile)
+2025-01-18 10:02:04.2312 Info Registered target NLog.Targets.FileTarget(Name=debugfile)
+2025-01-18 10:02:04.2588 Info Registered target NLog.Targets.ColoredConsoleTarget(Name=console)
+2025-01-18 10:02:04.2691 Info NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.2778. Product version: 5.3.4+73d83d3161d31288ca5c554cc50d27b6bed5f28b. GlobalAssemblyCache: False
+2025-01-18 10:02:04.3808 Info Validating config: TargetNames=allfile, errorfile, debugfile, console, ConfigItems=123, FilePath=G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config
+2025-01-18 10:02:04.3985 Info Configuration initialized.
+2025-01-18 10:02:05.6706 Info Shutdown() called. Logger closing...
+2025-01-18 10:02:05.6706 Info Closing old configuration.
+2025-01-18 10:02:05.6909 Info Logger has been closed down.
+2025-01-18 10:10:06.1268 Info Loading assembly name: NLog.Web.AspNetCore
+2025-01-18 10:10:06.1459 Info NLog.Web.AspNetCore, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.944. Product version: 5.3.4+c9ae8128ef4b6b6b6f2497cdaf451168b85d6ff7. GlobalAssemblyCache: False
+2025-01-18 10:10:06.2245 Info Registered target NLog.Targets.FileTarget(Name=allfile)
+2025-01-18 10:10:06.2245 Info Registered target NLog.Targets.FileTarget(Name=errorfile)
+2025-01-18 10:10:06.2245 Info Registered target NLog.Targets.FileTarget(Name=debugfile)
+2025-01-18 10:10:06.2399 Info Registered target NLog.Targets.ColoredConsoleTarget(Name=console)
+2025-01-18 10:10:06.2458 Info NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.2778. Product version: 5.3.4+73d83d3161d31288ca5c554cc50d27b6bed5f28b. GlobalAssemblyCache: False
+2025-01-18 10:10:06.2789 Info Validating config: TargetNames=allfile, errorfile, debugfile, console, ConfigItems=123, FilePath=G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config
+2025-01-18 10:10:06.2943 Info Configuration initialized.
+2025-01-18 10:10:06.8584 Info Validating config: TargetNames=allfile, errorfile, debugfile, console, ConfigItems=123, FilePath=G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config
+2025-01-18 10:10:07.7899 Info Shutdown() called. Logger closing...
+2025-01-18 10:10:07.7899 Info Closing old configuration.
+2025-01-18 10:10:07.8043 Info Logger has been closed down.
+2025-01-18 10:10:43.8220 Info Loading assembly name: NLog.Web.AspNetCore
+2025-01-18 10:10:43.8324 Info NLog.Web.AspNetCore, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.944. Product version: 5.3.4+c9ae8128ef4b6b6b6f2497cdaf451168b85d6ff7. GlobalAssemblyCache: False
+2025-01-18 10:10:43.8749 Info Registered target NLog.Targets.FileTarget(Name=allfile)
+2025-01-18 10:10:43.8749 Info Registered target NLog.Targets.FileTarget(Name=errorfile)
+2025-01-18 10:10:43.8749 Info Registered target NLog.Targets.FileTarget(Name=debugfile)
+2025-01-18 10:10:43.8859 Info Registered target NLog.Targets.ColoredConsoleTarget(Name=console)
+2025-01-18 10:10:43.8859 Info NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.2778. Product version: 5.3.4+73d83d3161d31288ca5c554cc50d27b6bed5f28b. GlobalAssemblyCache: False
+2025-01-18 10:10:43.9038 Info Validating config: TargetNames=allfile, errorfile, debugfile, console, ConfigItems=123, FilePath=G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config
+2025-01-18 10:10:43.9038 Info Configuration initialized.
+2025-01-18 10:10:44.0229 Info Validating config: TargetNames=allfile, errorfile, debugfile, console, ConfigItems=123, FilePath=G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config
+2025-01-18 10:10:44.2530 Info Shutdown() called. Logger closing...
+2025-01-18 10:10:44.2530 Info Closing old configuration.
+2025-01-18 10:10:44.2646 Info Logger has been closed down.
+2025-01-18 10:13:02.4869 Info Loading assembly name: NLog.Web.AspNetCore
+2025-01-18 10:13:02.4968 Info NLog.Web.AspNetCore, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.944. Product version: 5.3.4+c9ae8128ef4b6b6b6f2497cdaf451168b85d6ff7. GlobalAssemblyCache: False
+2025-01-18 10:13:02.5281 Info Registered target NLog.Targets.FileTarget(Name=allfile)
+2025-01-18 10:13:02.5281 Info Registered target NLog.Targets.FileTarget(Name=errorfile)
+2025-01-18 10:13:02.5281 Info Registered target NLog.Targets.FileTarget(Name=debugfile)
+2025-01-18 10:13:02.5281 Info Registered target NLog.Targets.ColoredConsoleTarget(Name=console)
+2025-01-18 10:13:02.5281 Info NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.2778. Product version: 5.3.4+73d83d3161d31288ca5c554cc50d27b6bed5f28b. GlobalAssemblyCache: False
+2025-01-18 10:13:02.5537 Info Validating config: TargetNames=allfile, errorfile, debugfile, console, ConfigItems=123, FilePath=G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config
+2025-01-18 10:13:02.5650 Info Configuration initialized.
+2025-01-18 10:13:02.7056 Info Validating config: TargetNames=allfile, errorfile, debugfile, console, ConfigItems=123, FilePath=G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config
+2025-01-18 10:13:02.9655 Info Shutdown() called. Logger closing...
+2025-01-18 10:13:02.9655 Info Closing old configuration.
+2025-01-18 10:13:02.9655 Info Logger has been closed down.
+2025-01-18 10:16:31.0036 Info Loading assembly name: NLog.Web.AspNetCore
+2025-01-18 10:16:31.0161 Info NLog.Web.AspNetCore, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.944. Product version: 5.3.4+c9ae8128ef4b6b6b6f2497cdaf451168b85d6ff7. GlobalAssemblyCache: False
+2025-01-18 10:16:31.0486 Info Registered target NLog.Targets.FileTarget(Name=allfile)
+2025-01-18 10:16:31.0486 Info Registered target NLog.Targets.FileTarget(Name=errorfile)
+2025-01-18 10:16:31.0486 Info Registered target NLog.Targets.FileTarget(Name=debugfile)
+2025-01-18 10:16:31.0628 Info Registered target NLog.Targets.ColoredConsoleTarget(Name=console)
+2025-01-18 10:16:31.0628 Info NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.2778. Product version: 5.3.4+73d83d3161d31288ca5c554cc50d27b6bed5f28b. GlobalAssemblyCache: False
+2025-01-18 10:16:31.0808 Info Validating config: TargetNames=allfile, errorfile, debugfile, console, ConfigItems=123, FilePath=G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config
+2025-01-18 10:16:31.0906 Info Configuration initialized.
+2025-01-18 10:16:31.2017 Info Validating config: TargetNames=allfile, errorfile, debugfile, console, ConfigItems=123, FilePath=G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config
+2025-01-18 10:16:31.4348 Info Shutdown() called. Logger closing...
+2025-01-18 10:16:31.4348 Info Closing old configuration.
+2025-01-18 10:16:31.4348 Info Logger has been closed down.
+2025-01-18 10:18:34.8347 Info Loading assembly name: NLog.Web.AspNetCore
+2025-01-18 10:18:34.8441 Info NLog.Web.AspNetCore, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.944. Product version: 5.3.4+c9ae8128ef4b6b6b6f2497cdaf451168b85d6ff7. GlobalAssemblyCache: False
+2025-01-18 10:18:34.8755 Info Registered target NLog.Targets.FileTarget(Name=allfile)
+2025-01-18 10:18:34.8755 Info Registered target NLog.Targets.FileTarget(Name=errorfile)
+2025-01-18 10:18:34.8755 Info Registered target NLog.Targets.FileTarget(Name=debugfile)
+2025-01-18 10:18:34.8897 Info Registered target NLog.Targets.ColoredConsoleTarget(Name=console)
+2025-01-18 10:18:34.8897 Info NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.2778. Product version: 5.3.4+73d83d3161d31288ca5c554cc50d27b6bed5f28b. GlobalAssemblyCache: False
+2025-01-18 10:18:34.9046 Info Validating config: TargetNames=allfile, errorfile, debugfile, console, ConfigItems=123, FilePath=G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config
+2025-01-18 10:18:34.9046 Info Configuration initialized.
+2025-01-18 10:18:35.0432 Info Validating config: TargetNames=allfile, errorfile, debugfile, console, ConfigItems=123, FilePath=G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config
+2025-01-18 10:18:49.7549 Info Shutdown() called. Logger closing...
+2025-01-18 10:18:49.7549 Info Closing old configuration.
+2025-01-18 10:18:49.7654 Info Logger has been closed down.
+2025-01-18 10:22:13.5940 Info Loading assembly name: NLog.Web.AspNetCore
+2025-01-18 10:22:13.6039 Info NLog.Web.AspNetCore, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.944. Product version: 5.3.4+c9ae8128ef4b6b6b6f2497cdaf451168b85d6ff7. GlobalAssemblyCache: False
+2025-01-18 10:22:13.7110 Info Registered target NLog.Targets.FileTarget(Name=allfile)
+2025-01-18 10:22:13.7110 Info Registered target NLog.Targets.FileTarget(Name=errorfile)
+2025-01-18 10:22:13.7110 Info Registered target NLog.Targets.FileTarget(Name=debugfile)
+2025-01-18 10:22:13.7215 Info Registered target NLog.Targets.ColoredConsoleTarget(Name=console)
+2025-01-18 10:22:13.7215 Info NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.2778. Product version: 5.3.4+73d83d3161d31288ca5c554cc50d27b6bed5f28b. GlobalAssemblyCache: False
+2025-01-18 10:22:13.7501 Info Validating config: TargetNames=allfile, errorfile, debugfile, console, ConfigItems=123, FilePath=G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config
+2025-01-18 10:22:13.7630 Info Configuration initialized.
+2025-01-18 10:22:14.3159 Info Validating config: TargetNames=allfile, errorfile, debugfile, console, ConfigItems=123, FilePath=G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config
+2025-01-18 10:22:29.3697 Info Shutdown() called. Logger closing...
+2025-01-18 10:22:29.3697 Info Closing old configuration.
+2025-01-18 10:22:29.3851 Info Logger has been closed down.
+2025-01-18 10:32:29.1238 Info Loading assembly name: NLog.Web.AspNetCore
+2025-01-18 10:32:29.1238 Info NLog.Web.AspNetCore, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.944. Product version: 5.3.4+c9ae8128ef4b6b6b6f2497cdaf451168b85d6ff7. GlobalAssemblyCache: False
+2025-01-18 10:32:29.1696 Info Registered target NLog.Targets.FileTarget(Name=allfile)
+2025-01-18 10:32:29.1696 Info Registered target NLog.Targets.FileTarget(Name=errorfile)
+2025-01-18 10:32:29.1696 Info Registered target NLog.Targets.FileTarget(Name=debugfile)
+2025-01-18 10:32:29.1696 Info Registered target NLog.Targets.ColoredConsoleTarget(Name=console)
+2025-01-18 10:32:29.1862 Info NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.2778. Product version: 5.3.4+73d83d3161d31288ca5c554cc50d27b6bed5f28b. GlobalAssemblyCache: False
+2025-01-18 10:32:29.1862 Info Validating config: TargetNames=allfile, errorfile, debugfile, console, ConfigItems=123, FilePath=G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config
+2025-01-18 10:32:29.2096 Info Configuration initialized.
+2025-01-18 10:32:29.3379 Info Validating config: TargetNames=allfile, errorfile, debugfile, console, ConfigItems=123, FilePath=G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config
+2025-01-18 10:32:44.2125 Info Shutdown() called. Logger closing...
+2025-01-18 10:32:44.2125 Info Closing old configuration.
+2025-01-18 10:32:44.2278 Info Logger has been closed down.
+2025-01-18 10:34:19.5895 Info Loading assembly name: NLog.Web.AspNetCore
+2025-01-18 10:34:19.6013 Info NLog.Web.AspNetCore, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.944. Product version: 5.3.4+c9ae8128ef4b6b6b6f2497cdaf451168b85d6ff7. GlobalAssemblyCache: False
+2025-01-18 10:34:19.6962 Info Registered target NLog.Targets.FileTarget(Name=allfile)
+2025-01-18 10:34:19.6989 Info Registered target NLog.Targets.FileTarget(Name=errorfile)
+2025-01-18 10:34:19.6989 Info Registered target NLog.Targets.FileTarget(Name=debugfile)
+2025-01-18 10:34:19.7308 Info Registered target NLog.Targets.ColoredConsoleTarget(Name=console)
+2025-01-18 10:34:19.7308 Info NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.2778. Product version: 5.3.4+73d83d3161d31288ca5c554cc50d27b6bed5f28b. GlobalAssemblyCache: False
+2025-01-18 10:34:19.7729 Info Validating config: TargetNames=allfile, errorfile, debugfile, console, ConfigItems=123, FilePath=G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config
+2025-01-18 10:34:19.7841 Info Configuration initialized.
+2025-01-18 10:34:20.5533 Info Validating config: TargetNames=allfile, errorfile, debugfile, console, ConfigItems=123, FilePath=G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config
+2025-01-18 10:34:31.8570 Info Shutdown() called. Logger closing...
+2025-01-18 10:34:31.8570 Info Closing old configuration.
+2025-01-18 10:34:31.8731 Info Logger has been closed down.
+2025-01-18 10:44:19.8143 Info Loading assembly name: NLog.Web.AspNetCore
+2025-01-18 10:44:19.8291 Info NLog.Web.AspNetCore, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.944. Product version: 5.3.4+c9ae8128ef4b6b6b6f2497cdaf451168b85d6ff7. GlobalAssemblyCache: False
+2025-01-18 10:44:19.9322 Info Registered target NLog.Targets.FileTarget(Name=allfile)
+2025-01-18 10:44:19.9347 Info Registered target NLog.Targets.FileTarget(Name=errorfile)
+2025-01-18 10:44:19.9347 Info Registered target NLog.Targets.FileTarget(Name=debugfile)
+2025-01-18 10:44:19.9533 Info Registered target NLog.Targets.ColoredConsoleTarget(Name=console)
+2025-01-18 10:44:19.9533 Info NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.2778. Product version: 5.3.4+73d83d3161d31288ca5c554cc50d27b6bed5f28b. GlobalAssemblyCache: False
+2025-01-18 10:44:19.9854 Info Validating config: TargetNames=allfile, errorfile, debugfile, console, ConfigItems=123, FilePath=G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config
+2025-01-18 10:44:20.0018 Info Configuration initialized.
+2025-01-18 10:44:20.5711 Info Validating config: TargetNames=allfile, errorfile, debugfile, console, ConfigItems=123, FilePath=G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config
+2025-01-18 10:44:33.0405 Info Shutdown() called. Logger closing...
+2025-01-18 10:44:33.0405 Info Closing old configuration.
+2025-01-18 10:44:33.0679 Info Logger has been closed down.
+2025-01-18 10:50:35.2863 Info Loading assembly name: NLog.Web.AspNetCore
+2025-01-18 10:50:35.3030 Info NLog.Web.AspNetCore, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.944. Product version: 5.3.4+c9ae8128ef4b6b6b6f2497cdaf451168b85d6ff7. GlobalAssemblyCache: False
+2025-01-18 10:50:35.3244 Info Registered target NLog.Targets.FileTarget(Name=allfile)
+2025-01-18 10:50:35.3398 Info Registered target NLog.Targets.FileTarget(Name=errorfile)
+2025-01-18 10:50:35.3398 Info Registered target NLog.Targets.FileTarget(Name=debugfile)
+2025-01-18 10:50:35.3398 Info Registered target NLog.Targets.ColoredConsoleTarget(Name=console)
+2025-01-18 10:50:35.3398 Info NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.2778. Product version: 5.3.4+73d83d3161d31288ca5c554cc50d27b6bed5f28b. GlobalAssemblyCache: False
+2025-01-18 10:50:35.3631 Info Validating config: TargetNames=allfile, errorfile, debugfile, console, ConfigItems=123, FilePath=G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config
+2025-01-18 10:50:35.3755 Info Configuration initialized.
+2025-01-18 10:50:35.5052 Info Validating config: TargetNames=allfile, errorfile, debugfile, console, ConfigItems=123, FilePath=G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config
+2025-01-18 10:50:48.9224 Info Shutdown() called. Logger closing...
+2025-01-18 10:50:48.9224 Info Closing old configuration.
+2025-01-18 10:50:48.9224 Info Logger has been closed down.
+2025-01-18 11:01:51.1351 Info Loading assembly name: NLog.Web.AspNetCore
+2025-01-18 11:01:51.1472 Info NLog.Web.AspNetCore, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.944. Product version: 5.3.4+c9ae8128ef4b6b6b6f2497cdaf451168b85d6ff7. GlobalAssemblyCache: False
+2025-01-18 11:01:51.1896 Info Registered target NLog.Targets.FileTarget(Name=allfile)
+2025-01-18 11:01:51.1896 Info Registered target NLog.Targets.FileTarget(Name=errorfile)
+2025-01-18 11:01:51.1896 Info Registered target NLog.Targets.FileTarget(Name=debugfile)
+2025-01-18 11:01:51.2029 Info Registered target NLog.Targets.ColoredConsoleTarget(Name=console)
+2025-01-18 11:01:51.2029 Info NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.2778. Product version: 5.3.4+73d83d3161d31288ca5c554cc50d27b6bed5f28b. GlobalAssemblyCache: False
+2025-01-18 11:01:51.2186 Info Validating config: TargetNames=allfile, errorfile, debugfile, console, ConfigItems=123, FilePath=G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config
+2025-01-18 11:01:51.2344 Info Configuration initialized.
+2025-01-18 11:01:51.3672 Info Validating config: TargetNames=allfile, errorfile, debugfile, console, ConfigItems=123, FilePath=G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config
+2025-01-18 11:01:56.2846 Info Shutdown() called. Logger closing...
+2025-01-18 11:01:56.2925 Info Closing old configuration.
+2025-01-18 11:01:56.2925 Info Logger has been closed down.
+2025-01-18 11:02:21.8144 Info Loading assembly name: NLog.Web.AspNetCore
+2025-01-18 11:02:21.8257 Info NLog.Web.AspNetCore, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.944. Product version: 5.3.4+c9ae8128ef4b6b6b6f2497cdaf451168b85d6ff7. GlobalAssemblyCache: False
+2025-01-18 11:02:21.8639 Info Registered target NLog.Targets.FileTarget(Name=allfile)
+2025-01-18 11:02:21.8639 Info Registered target NLog.Targets.FileTarget(Name=errorfile)
+2025-01-18 11:02:21.8639 Info Registered target NLog.Targets.FileTarget(Name=debugfile)
+2025-01-18 11:02:21.8759 Info Registered target NLog.Targets.ColoredConsoleTarget(Name=console)
+2025-01-18 11:02:21.8759 Info NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.2778. Product version: 5.3.4+73d83d3161d31288ca5c554cc50d27b6bed5f28b. GlobalAssemblyCache: False
+2025-01-18 11:02:21.8920 Info Validating config: TargetNames=allfile, errorfile, debugfile, console, ConfigItems=123, FilePath=G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config
+2025-01-18 11:02:21.8920 Info Configuration initialized.
+2025-01-18 11:02:22.0191 Info Validating config: TargetNames=allfile, errorfile, debugfile, console, ConfigItems=123, FilePath=G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config
+2025-01-18 11:02:23.1248 Info Shutdown() called. Logger closing...
+2025-01-18 11:02:23.1248 Info Closing old configuration.
+2025-01-18 11:02:23.1248 Info Logger has been closed down.
+2025-01-18 11:02:47.8870 Info Loading assembly name: NLog.Web.AspNetCore
+2025-01-18 11:02:47.8870 Info NLog.Web.AspNetCore, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.944. Product version: 5.3.4+c9ae8128ef4b6b6b6f2497cdaf451168b85d6ff7. GlobalAssemblyCache: False
+2025-01-18 11:02:47.9180 Info Registered target NLog.Targets.FileTarget(Name=allfile)
+2025-01-18 11:02:47.9180 Info Registered target NLog.Targets.FileTarget(Name=errorfile)
+2025-01-18 11:02:47.9334 Info Registered target NLog.Targets.FileTarget(Name=debugfile)
+2025-01-18 11:02:47.9334 Info Registered target NLog.Targets.ColoredConsoleTarget(Name=console)
+2025-01-18 11:02:47.9334 Info NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.2778. Product version: 5.3.4+73d83d3161d31288ca5c554cc50d27b6bed5f28b. GlobalAssemblyCache: False
+2025-01-18 11:02:47.9595 Info Validating config: TargetNames=allfile, errorfile, debugfile, console, ConfigItems=123, FilePath=G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config
+2025-01-18 11:02:47.9716 Info Configuration initialized.
+2025-01-18 11:02:48.0933 Info Validating config: TargetNames=allfile, errorfile, debugfile, console, ConfigItems=123, FilePath=G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config
+2025-01-18 11:02:49.9363 Info Shutdown() called. Logger closing...
+2025-01-18 11:02:49.9363 Info Closing old configuration.
+2025-01-18 11:02:49.9363 Info Logger has been closed down.
+2025-01-18 11:04:36.1426 Info Loading assembly name: NLog.Web.AspNetCore
+2025-01-18 11:04:36.1578 Info NLog.Web.AspNetCore, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.944. Product version: 5.3.4+c9ae8128ef4b6b6b6f2497cdaf451168b85d6ff7. GlobalAssemblyCache: False
+2025-01-18 11:04:36.2412 Info Registered target NLog.Targets.FileTarget(Name=allfile)
+2025-01-18 11:04:36.2412 Info Registered target NLog.Targets.FileTarget(Name=errorfile)
+2025-01-18 11:04:36.2458 Info Registered target NLog.Targets.FileTarget(Name=debugfile)
+2025-01-18 11:04:36.2458 Info Registered target NLog.Targets.ColoredConsoleTarget(Name=console)
+2025-01-18 11:04:36.2653 Info NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.2778. Product version: 5.3.4+73d83d3161d31288ca5c554cc50d27b6bed5f28b. GlobalAssemblyCache: False
+2025-01-18 11:04:36.2910 Info Validating config: TargetNames=allfile, errorfile, debugfile, console, ConfigItems=123, FilePath=G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config
+2025-01-18 11:04:36.3052 Info Configuration initialized.
+2025-01-18 11:04:37.1392 Info Validating config: TargetNames=allfile, errorfile, debugfile, console, ConfigItems=123, FilePath=G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config
+2025-01-18 11:04:40.9504 Info Shutdown() called. Logger closing...
+2025-01-18 11:04:40.9504 Info Closing old configuration.
+2025-01-18 11:04:40.9756 Info Logger has been closed down.
+2025-01-18 11:08:40.7651 Info Loading assembly name: NLog.Web.AspNetCore
+2025-01-18 11:08:40.7651 Info NLog.Web.AspNetCore, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.944. Product version: 5.3.4+c9ae8128ef4b6b6b6f2497cdaf451168b85d6ff7. GlobalAssemblyCache: False
+2025-01-18 11:08:40.8113 Info Registered target NLog.Targets.FileTarget(Name=allfile)
+2025-01-18 11:08:40.8113 Info Registered target NLog.Targets.FileTarget(Name=errorfile)
+2025-01-18 11:08:40.8113 Info Registered target NLog.Targets.FileTarget(Name=debugfile)
+2025-01-18 11:08:40.8113 Info Registered target NLog.Targets.ColoredConsoleTarget(Name=console)
+2025-01-18 11:08:40.8252 Info NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.2778. Product version: 5.3.4+73d83d3161d31288ca5c554cc50d27b6bed5f28b. GlobalAssemblyCache: False
+2025-01-18 11:08:40.8252 Info Validating config: TargetNames=allfile, errorfile, debugfile, console, ConfigItems=123, FilePath=G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config
+2025-01-18 11:08:40.8454 Info Configuration initialized.
+2025-01-18 11:08:40.9645 Info Validating config: TargetNames=allfile, errorfile, debugfile, console, ConfigItems=123, FilePath=G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config
+2025-01-18 11:08:41.9055 Info Shutdown() called. Logger closing...
+2025-01-18 11:08:41.9055 Info Closing old configuration.
+2025-01-18 11:08:41.9055 Info Logger has been closed down.
+2025-01-18 11:11:26.0519 Info Loading assembly name: NLog.Web.AspNetCore
+2025-01-18 11:11:26.0710 Info NLog.Web.AspNetCore, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.944. Product version: 5.3.4+c9ae8128ef4b6b6b6f2497cdaf451168b85d6ff7. GlobalAssemblyCache: False
+2025-01-18 11:11:26.1870 Info Registered target NLog.Targets.FileTarget(Name=allfile)
+2025-01-18 11:11:26.1870 Info Registered target NLog.Targets.FileTarget(Name=errorfile)
+2025-01-18 11:11:26.1870 Info Registered target NLog.Targets.FileTarget(Name=debugfile)
+2025-01-18 11:11:26.2088 Info Registered target NLog.Targets.ColoredConsoleTarget(Name=console)
+2025-01-18 11:11:26.2168 Info NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.2778. Product version: 5.3.4+73d83d3161d31288ca5c554cc50d27b6bed5f28b. GlobalAssemblyCache: False
+2025-01-18 11:11:26.2472 Info Validating config: TargetNames=allfile, errorfile, debugfile, console, ConfigItems=123, FilePath=G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config
+2025-01-18 11:11:26.2644 Info Configuration initialized.
+2025-01-18 11:11:26.9652 Info Validating config: TargetNames=allfile, errorfile, debugfile, console, ConfigItems=123, FilePath=G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config
+2025-01-18 11:11:28.0061 Info Shutdown() called. Logger closing...
+2025-01-18 11:11:28.0061 Info Closing old configuration.
+2025-01-18 11:11:28.0263 Info Logger has been closed down.
+2025-01-18 11:11:42.7049 Info Loading assembly name: NLog.Web.AspNetCore
+2025-01-18 11:11:42.7142 Info NLog.Web.AspNetCore, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.944. Product version: 5.3.4+c9ae8128ef4b6b6b6f2497cdaf451168b85d6ff7. GlobalAssemblyCache: False
+2025-01-18 11:11:42.7744 Info Registered target NLog.Targets.FileTarget(Name=allfile)
+2025-01-18 11:11:42.7744 Info Registered target NLog.Targets.FileTarget(Name=errorfile)
+2025-01-18 11:11:42.7772 Info Registered target NLog.Targets.FileTarget(Name=debugfile)
+2025-01-18 11:11:42.7772 Info Registered target NLog.Targets.ColoredConsoleTarget(Name=console)
+2025-01-18 11:11:42.7925 Info NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.2778. Product version: 5.3.4+73d83d3161d31288ca5c554cc50d27b6bed5f28b. GlobalAssemblyCache: False
+2025-01-18 11:11:42.8158 Info Validating config: TargetNames=allfile, errorfile, debugfile, console, ConfigItems=123, FilePath=G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config
+2025-01-18 11:11:42.8291 Info Configuration initialized.
+2025-01-18 11:11:43.3778 Info Validating config: TargetNames=allfile, errorfile, debugfile, console, ConfigItems=123, FilePath=G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config
+2025-01-18 11:11:44.6498 Info Shutdown() called. Logger closing...
+2025-01-18 11:11:44.6498 Info Closing old configuration.
+2025-01-18 11:11:44.6687 Info Logger has been closed down.
+2025-01-18 11:18:06.0179 Info Loading assembly name: NLog.Web.AspNetCore
+2025-01-18 11:18:06.0294 Info NLog.Web.AspNetCore, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.944. Product version: 5.3.4+c9ae8128ef4b6b6b6f2497cdaf451168b85d6ff7. GlobalAssemblyCache: False
+2025-01-18 11:18:06.0670 Info Registered target NLog.Targets.FileTarget(Name=allfile)
+2025-01-18 11:18:06.0670 Info Registered target NLog.Targets.FileTarget(Name=errorfile)
+2025-01-18 11:18:06.0670 Info Registered target NLog.Targets.FileTarget(Name=debugfile)
+2025-01-18 11:18:06.0786 Info Registered target NLog.Targets.ColoredConsoleTarget(Name=console)
+2025-01-18 11:18:06.0786 Info NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.2778. Product version: 5.3.4+73d83d3161d31288ca5c554cc50d27b6bed5f28b. GlobalAssemblyCache: False
+2025-01-18 11:18:06.0934 Info Validating config: TargetNames=allfile, errorfile, debugfile, console, ConfigItems=123, FilePath=G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config
+2025-01-18 11:18:06.0934 Info Configuration initialized.
+2025-01-18 11:18:06.2252 Info Validating config: TargetNames=allfile, errorfile, debugfile, console, ConfigItems=123, FilePath=G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config
+2025-01-18 11:18:09.4973 Info Shutdown() called. Logger closing...
+2025-01-18 11:18:09.4973 Info Closing old configuration.
+2025-01-18 11:18:09.5167 Info Logger has been closed down.
+2025-01-18 11:38:25.6129 Info Loading assembly name: NLog.Web.AspNetCore
+2025-01-18 11:38:25.6252 Info NLog.Web.AspNetCore, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.944. Product version: 5.3.4+c9ae8128ef4b6b6b6f2497cdaf451168b85d6ff7. GlobalAssemblyCache: False
+2025-01-18 11:38:25.7122 Info Registered target NLog.Targets.FileTarget(Name=allfile)
+2025-01-18 11:38:25.7122 Info Registered target NLog.Targets.FileTarget(Name=errorfile)
+2025-01-18 11:38:25.7157 Info Registered target NLog.Targets.FileTarget(Name=debugfile)
+2025-01-18 11:38:25.7157 Info Registered target NLog.Targets.ColoredConsoleTarget(Name=console)
+2025-01-18 11:38:25.7157 Info NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.2778. Product version: 5.3.4+73d83d3161d31288ca5c554cc50d27b6bed5f28b. GlobalAssemblyCache: False
+2025-01-18 11:38:25.7581 Info Validating config: TargetNames=allfile, errorfile, debugfile, console, ConfigItems=123, FilePath=G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config
+2025-01-18 11:38:25.7697 Info Configuration initialized.
+2025-01-18 11:38:26.4908 Info Validating config: TargetNames=allfile, errorfile, debugfile, console, ConfigItems=123, FilePath=G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config
+2025-01-18 11:38:31.2472 Info Shutdown() called. Logger closing...
+2025-01-18 11:38:31.2472 Info Closing old configuration.
+2025-01-18 11:38:31.2644 Info Logger has been closed down.
+2025-01-18 11:54:39.7885 Info Loading assembly name: NLog.Web.AspNetCore
+2025-01-18 11:54:39.8076 Info NLog.Web.AspNetCore, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.944. Product version: 5.3.4+c9ae8128ef4b6b6b6f2497cdaf451168b85d6ff7. GlobalAssemblyCache: False
+2025-01-18 11:54:39.8728 Info Registered target NLog.Targets.FileTarget(Name=allfile)
+2025-01-18 11:54:39.8728 Info Registered target NLog.Targets.FileTarget(Name=errorfile)
+2025-01-18 11:54:39.8728 Info Registered target NLog.Targets.FileTarget(Name=debugfile)
+2025-01-18 11:54:39.8942 Info Registered target NLog.Targets.ColoredConsoleTarget(Name=console)
+2025-01-18 11:54:39.8942 Info NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.2778. Product version: 5.3.4+73d83d3161d31288ca5c554cc50d27b6bed5f28b. GlobalAssemblyCache: False
+2025-01-18 11:54:39.9251 Info Validating config: TargetNames=allfile, errorfile, debugfile, console, ConfigItems=123, FilePath=G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config
+2025-01-18 11:54:39.9360 Info Configuration initialized.
+2025-01-18 11:54:40.6080 Info Validating config: TargetNames=allfile, errorfile, debugfile, console, ConfigItems=123, FilePath=G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config
+2025-01-18 11:54:42.0666 Info Shutdown() called. Logger closing...
+2025-01-18 11:54:42.0666 Info Closing old configuration.
+2025-01-18 11:54:42.0802 Info Logger has been closed down.
+2025-01-18 11:59:48.9735 Info Loading assembly name: NLog.Web.AspNetCore
+2025-01-18 11:59:48.9984 Info NLog.Web.AspNetCore, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.944. Product version: 5.3.4+c9ae8128ef4b6b6b6f2497cdaf451168b85d6ff7. GlobalAssemblyCache: False
+2025-01-18 11:59:49.1613 Info Registered target NLog.Targets.FileTarget(Name=allfile)
+2025-01-18 11:59:49.1613 Info Registered target NLog.Targets.FileTarget(Name=errorfile)
+2025-01-18 11:59:49.1613 Info Registered target NLog.Targets.FileTarget(Name=debugfile)
+2025-01-18 11:59:49.1808 Info Registered target NLog.Targets.ColoredConsoleTarget(Name=console)
+2025-01-18 11:59:49.1862 Info NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.2778. Product version: 5.3.4+73d83d3161d31288ca5c554cc50d27b6bed5f28b. GlobalAssemblyCache: False
+2025-01-18 11:59:49.2266 Info Validating config: TargetNames=allfile, errorfile, debugfile, console, ConfigItems=123, FilePath=G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config
+2025-01-18 11:59:49.2480 Info Configuration initialized.
+2025-01-18 11:59:50.6704 Info Validating config: TargetNames=allfile, errorfile, debugfile, console, ConfigItems=123, FilePath=G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config
+2025-01-18 11:59:55.1302 Info Shutdown() called. Logger closing...
+2025-01-18 11:59:55.1302 Info Closing old configuration.
+2025-01-18 11:59:55.1584 Info Logger has been closed down.
+2025-01-18 12:05:33.5763 Info Loading assembly name: NLog.Web.AspNetCore
+2025-01-18 12:05:33.5911 Info NLog.Web.AspNetCore, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.944. Product version: 5.3.4+c9ae8128ef4b6b6b6f2497cdaf451168b85d6ff7. GlobalAssemblyCache: False
+2025-01-18 12:05:33.6705 Info Registered target NLog.Targets.FileTarget(Name=allfile)
+2025-01-18 12:05:33.6705 Info Registered target NLog.Targets.FileTarget(Name=errorfile)
+2025-01-18 12:05:33.6705 Info Registered target NLog.Targets.FileTarget(Name=debugfile)
+2025-01-18 12:05:33.6867 Info Registered target NLog.Targets.ColoredConsoleTarget(Name=console)
+2025-01-18 12:05:33.6867 Info NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.2778. Product version: 5.3.4+73d83d3161d31288ca5c554cc50d27b6bed5f28b. GlobalAssemblyCache: False
+2025-01-18 12:05:33.7282 Info Validating config: TargetNames=allfile, errorfile, debugfile, console, ConfigItems=123, FilePath=G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config
+2025-01-18 12:05:33.7424 Info Configuration initialized.
+2025-01-18 12:05:34.5206 Info Validating config: TargetNames=allfile, errorfile, debugfile, console, ConfigItems=123, FilePath=G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config
+2025-01-18 12:05:36.0961 Info Shutdown() called. Logger closing...
+2025-01-18 12:05:36.0961 Info Closing old configuration.
+2025-01-18 12:05:36.1201 Info Logger has been closed down.
+2025-01-18 12:07:40.3957 Info Loading assembly name: NLog.Web.AspNetCore
+2025-01-18 12:07:40.4148 Info NLog.Web.AspNetCore, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.944. Product version: 5.3.4+c9ae8128ef4b6b6b6f2497cdaf451168b85d6ff7. GlobalAssemblyCache: False
+2025-01-18 12:07:40.4864 Info Registered target NLog.Targets.FileTarget(Name=allfile)
+2025-01-18 12:07:40.4864 Info Registered target NLog.Targets.FileTarget(Name=errorfile)
+2025-01-18 12:07:40.4864 Info Registered target NLog.Targets.FileTarget(Name=debugfile)
+2025-01-18 12:07:40.5007 Info Registered target NLog.Targets.ColoredConsoleTarget(Name=console)
+2025-01-18 12:07:40.5007 Info NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.2778. Product version: 5.3.4+73d83d3161d31288ca5c554cc50d27b6bed5f28b. GlobalAssemblyCache: False
+2025-01-18 12:07:40.5302 Info Validating config: TargetNames=allfile, errorfile, debugfile, console, ConfigItems=123, FilePath=G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config
+2025-01-18 12:07:40.5302 Info Configuration initialized.
+2025-01-18 12:07:41.3338 Info Validating config: TargetNames=allfile, errorfile, debugfile, console, ConfigItems=123, FilePath=G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config
+2025-01-18 12:07:43.9121 Info Shutdown() called. Logger closing...
+2025-01-18 12:07:43.9121 Info Closing old configuration.
+2025-01-18 12:07:43.9311 Info Logger has been closed down.
+2025-01-18 12:40:42.5461 Info Loading assembly name: NLog.Web.AspNetCore
+2025-01-18 12:40:42.5662 Info NLog.Web.AspNetCore, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.944. Product version: 5.3.4+c9ae8128ef4b6b6b6f2497cdaf451168b85d6ff7. GlobalAssemblyCache: False
+2025-01-18 12:40:42.6428 Info Registered target NLog.Targets.FileTarget(Name=allfile)
+2025-01-18 12:40:42.6428 Info Registered target NLog.Targets.FileTarget(Name=errorfile)
+2025-01-18 12:40:42.6428 Info Registered target NLog.Targets.FileTarget(Name=debugfile)
+2025-01-18 12:40:42.6585 Info Registered target NLog.Targets.ColoredConsoleTarget(Name=console)
+2025-01-18 12:40:42.6585 Info NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.2778. Product version: 5.3.4+73d83d3161d31288ca5c554cc50d27b6bed5f28b. GlobalAssemblyCache: False
+2025-01-18 12:40:42.6962 Info Validating config: TargetNames=allfile, errorfile, debugfile, console, ConfigItems=123, FilePath=G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config
+2025-01-18 12:40:42.7115 Info Configuration initialized.
+2025-01-18 12:40:43.4062 Info Validating config: TargetNames=allfile, errorfile, debugfile, console, ConfigItems=123, FilePath=G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config
+2025-01-18 12:40:52.6650 Info Shutdown() called. Logger closing...
+2025-01-18 12:40:52.6650 Info Closing old configuration.
+2025-01-18 12:40:52.6988 Info Logger has been closed down.
+2025-01-18 12:41:16.0630 Info Loading assembly name: NLog.Web.AspNetCore
+2025-01-18 12:41:16.0738 Info NLog.Web.AspNetCore, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.944. Product version: 5.3.4+c9ae8128ef4b6b6b6f2497cdaf451168b85d6ff7. GlobalAssemblyCache: False
+2025-01-18 12:41:16.1222 Info Registered target NLog.Targets.FileTarget(Name=allfile)
+2025-01-18 12:41:16.1222 Info Registered target NLog.Targets.FileTarget(Name=errorfile)
+2025-01-18 12:41:16.1366 Info Registered target NLog.Targets.FileTarget(Name=debugfile)
+2025-01-18 12:41:16.1366 Info Registered target NLog.Targets.ColoredConsoleTarget(Name=console)
+2025-01-18 12:41:16.1366 Info NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.2778. Product version: 5.3.4+73d83d3161d31288ca5c554cc50d27b6bed5f28b. GlobalAssemblyCache: False
+2025-01-18 12:41:16.1715 Info Validating config: TargetNames=allfile, errorfile, debugfile, console, ConfigItems=123, FilePath=G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config
+2025-01-18 12:41:16.1858 Info Configuration initialized.
+2025-01-18 12:41:16.7069 Info Validating config: TargetNames=allfile, errorfile, debugfile, console, ConfigItems=123, FilePath=G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config
+2025-01-18 12:41:28.1309 Info Shutdown() called. Logger closing...
+2025-01-18 12:41:28.1309 Info Closing old configuration.
+2025-01-18 12:41:28.1555 Info Logger has been closed down.
+2025-01-18 12:45:24.5918 Info Loading assembly name: NLog.Web.AspNetCore
+2025-01-18 12:45:24.6008 Info NLog.Web.AspNetCore, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.944. Product version: 5.3.4+c9ae8128ef4b6b6b6f2497cdaf451168b85d6ff7. GlobalAssemblyCache: False
+2025-01-18 12:45:24.6691 Info Registered target NLog.Targets.FileTarget(Name=allfile)
+2025-01-18 12:45:24.6691 Info Registered target NLog.Targets.FileTarget(Name=errorfile)
+2025-01-18 12:45:24.6691 Info Registered target NLog.Targets.FileTarget(Name=debugfile)
+2025-01-18 12:45:24.6860 Info Registered target NLog.Targets.ColoredConsoleTarget(Name=console)
+2025-01-18 12:45:24.6860 Info NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.2778. Product version: 5.3.4+73d83d3161d31288ca5c554cc50d27b6bed5f28b. GlobalAssemblyCache: False
+2025-01-18 12:45:24.7214 Info Validating config: TargetNames=allfile, errorfile, debugfile, console, ConfigItems=123, FilePath=G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config
+2025-01-18 12:45:24.7338 Info Configuration initialized.
+2025-01-18 12:45:25.2132 Info Validating config: TargetNames=allfile, errorfile, debugfile, console, ConfigItems=123, FilePath=G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config
+2025-01-18 12:45:41.8848 Info Shutdown() called. Logger closing...
+2025-01-18 12:45:41.8848 Info Closing old configuration.
+2025-01-18 12:45:41.9318 Info Logger has been closed down.
+2025-01-18 13:27:03.6646 Info Loading assembly name: NLog.Web.AspNetCore
+2025-01-18 13:27:03.6773 Info NLog.Web.AspNetCore, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.944. Product version: 5.3.4+c9ae8128ef4b6b6b6f2497cdaf451168b85d6ff7. GlobalAssemblyCache: False
+2025-01-18 13:27:03.7981 Info Registered target NLog.Targets.FileTarget(Name=allfile)
+2025-01-18 13:27:03.7981 Info Registered target NLog.Targets.FileTarget(Name=errorfile)
+2025-01-18 13:27:03.7981 Info Registered target NLog.Targets.FileTarget(Name=debugfile)
+2025-01-18 13:27:03.8152 Info Registered target NLog.Targets.ColoredConsoleTarget(Name=console)
+2025-01-18 13:27:03.8152 Info NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.2778. Product version: 5.3.4+73d83d3161d31288ca5c554cc50d27b6bed5f28b. GlobalAssemblyCache: False
+2025-01-18 13:27:03.8527 Info Validating config: TargetNames=allfile, errorfile, debugfile, console, ConfigItems=123, FilePath=G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config
+2025-01-18 13:27:03.8744 Info Configuration initialized.
+2025-01-18 13:27:04.4629 Info Validating config: TargetNames=allfile, errorfile, debugfile, console, ConfigItems=123, FilePath=G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config
+2025-01-18 13:27:22.4730 Info Shutdown() called. Logger closing...
+2025-01-18 13:27:22.4730 Info Closing old configuration.
+2025-01-18 13:27:22.4958 Info Logger has been closed down.
+2025-01-18 13:45:57.1748 Info Loading assembly name: NLog.Web.AspNetCore
+2025-01-18 13:45:57.1854 Info NLog.Web.AspNetCore, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.944. Product version: 5.3.4+c9ae8128ef4b6b6b6f2497cdaf451168b85d6ff7. GlobalAssemblyCache: False
+2025-01-18 13:45:57.2599 Error Error has been raised. Exception: NLog.NLogConfigurationException: 'ColoredConsoleTarget' cannot assign unknown property 'useDefaultRowHighlighting'='false'
+   at NLog.Config.LoggingConfigurationParser.SetPropertyValueFromString[T](T targetObject, String propertyName, String propertyValue, ValidatedConfigurationElement element)
+2025-01-18 13:45:57.3381 Error Exception when loading configuration G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config Exception: NLog.NLogConfigurationException: 'ColoredConsoleTarget' cannot assign unknown property 'useDefaultRowHighlighting'='false'
+   at NLog.Config.LoggingConfigurationParser.SetPropertyValueFromString[T](T targetObject, String propertyName, String propertyValue, ValidatedConfigurationElement element)
+   at NLog.Config.LoggingConfigurationParser.ConfigureObjectFromAttributes[T](T targetObject, ValidatedConfigurationElement element, Boolean ignoreType)
+   at NLog.Config.LoggingConfigurationParser.ParseTargetElement(Target target, ValidatedConfigurationElement targetElement, Dictionary`2 typeNameToDefaultTargetParameters)
+   at NLog.Config.LoggingConfigurationParser.AddNewTargetFromConfig(String targetTypeName, ValidatedConfigurationElement targetElement, Boolean asyncWrap, Dictionary`2 typeNameToDefaultTargetParameters, ValidatedConfigurationElement defaultWrapperElement)
+   at NLog.Config.LoggingConfigurationParser.ParseTargetsElement(ValidatedConfigurationElement targetsElement)
+   at NLog.Config.LoggingConfigurationParser.ParseNLogSection(ILoggingConfigurationElement configSection)
+   at NLog.Config.XmlLoggingConfiguration.ParseNLogSection(ILoggingConfigurationElement configSection)
+   at NLog.Config.LoggingConfigurationParser.LoadConfig(ILoggingConfigurationElement nlogConfig, String basePath)
+   at NLog.Config.XmlLoggingConfiguration.ParseNLogElement(ILoggingConfigurationElement nlogElement, String filePath, Boolean autoReloadDefault)
+   at NLog.Config.XmlLoggingConfiguration.ParseTopLevel(XmlLoggingConfigurationElement content, String filePath, Boolean autoReloadDefault)
+   at NLog.Config.XmlLoggingConfiguration.Initialize(XmlReader reader, String fileName, Boolean ignoreErrors)
+2025-01-18 13:45:57.3535 Error Error has been raised. Exception: NLog.NLogConfigurationException: Exception when loading configuration G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config
+ ---> NLog.NLogConfigurationException: 'ColoredConsoleTarget' cannot assign unknown property 'useDefaultRowHighlighting'='false'
+   at NLog.Config.LoggingConfigurationParser.SetPropertyValueFromString[T](T targetObject, String propertyName, String propertyValue, ValidatedConfigurationElement element)
+   at NLog.Config.LoggingConfigurationParser.ConfigureObjectFromAttributes[T](T targetObject, ValidatedConfigurationElement element, Boolean ignoreType)
+   at NLog.Config.LoggingConfigurationParser.ParseTargetElement(Target target, ValidatedConfigurationElement targetElement, Dictionary`2 typeNameToDefaultTargetParameters)
+   at NLog.Config.LoggingConfigurationParser.AddNewTargetFromConfig(String targetTypeName, ValidatedConfigurationElement targetElement, Boolean asyncWrap, Dictionary`2 typeNameToDefaultTargetParameters, ValidatedConfigurationElement defaultWrapperElement)
+   at NLog.Config.LoggingConfigurationParser.ParseTargetsElement(ValidatedConfigurationElement targetsElement)
+   at NLog.Config.LoggingConfigurationParser.ParseNLogSection(ILoggingConfigurationElement configSection)
+   at NLog.Config.XmlLoggingConfiguration.ParseNLogSection(ILoggingConfigurationElement configSection)
+   at NLog.Config.LoggingConfigurationParser.LoadConfig(ILoggingConfigurationElement nlogConfig, String basePath)
+   at NLog.Config.XmlLoggingConfiguration.ParseNLogElement(ILoggingConfigurationElement nlogElement, String filePath, Boolean autoReloadDefault)
+   at NLog.Config.XmlLoggingConfiguration.ParseTopLevel(XmlLoggingConfigurationElement content, String filePath, Boolean autoReloadDefault)
+   at NLog.Config.XmlLoggingConfiguration.Initialize(XmlReader reader, String fileName, Boolean ignoreErrors)
+   --- End of inner exception stack trace ---
+   at NLog.Config.XmlLoggingConfiguration.Initialize(XmlReader reader, String fileName, Boolean ignoreErrors)
+   at NLog.Config.XmlLoggingConfiguration..ctor(XmlReader reader, String fileName, LogFactory logFactory)
+   at NLog.Config.LoggingConfigurationFileLoader.LoadXmlLoggingConfiguration(XmlReader xmlReader, String configFile, LogFactory logFactory)
+2025-01-18 13:45:57.3707 Error Failed loading from config file location: G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config Exception: NLog.NLogConfigurationException: Exception when loading configuration G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config
+ ---> NLog.NLogConfigurationException: 'ColoredConsoleTarget' cannot assign unknown property 'useDefaultRowHighlighting'='false'
+   at NLog.Config.LoggingConfigurationParser.SetPropertyValueFromString[T](T targetObject, String propertyName, String propertyValue, ValidatedConfigurationElement element)
+   at NLog.Config.LoggingConfigurationParser.ConfigureObjectFromAttributes[T](T targetObject, ValidatedConfigurationElement element, Boolean ignoreType)
+   at NLog.Config.LoggingConfigurationParser.ParseTargetElement(Target target, ValidatedConfigurationElement targetElement, Dictionary`2 typeNameToDefaultTargetParameters)
+   at NLog.Config.LoggingConfigurationParser.AddNewTargetFromConfig(String targetTypeName, ValidatedConfigurationElement targetElement, Boolean asyncWrap, Dictionary`2 typeNameToDefaultTargetParameters, ValidatedConfigurationElement defaultWrapperElement)
+   at NLog.Config.LoggingConfigurationParser.ParseTargetsElement(ValidatedConfigurationElement targetsElement)
+   at NLog.Config.LoggingConfigurationParser.ParseNLogSection(ILoggingConfigurationElement configSection)
+   at NLog.Config.XmlLoggingConfiguration.ParseNLogSection(ILoggingConfigurationElement configSection)
+   at NLog.Config.LoggingConfigurationParser.LoadConfig(ILoggingConfigurationElement nlogConfig, String basePath)
+   at NLog.Config.XmlLoggingConfiguration.ParseNLogElement(ILoggingConfigurationElement nlogElement, String filePath, Boolean autoReloadDefault)
+   at NLog.Config.XmlLoggingConfiguration.ParseTopLevel(XmlLoggingConfigurationElement content, String filePath, Boolean autoReloadDefault)
+   at NLog.Config.XmlLoggingConfiguration.Initialize(XmlReader reader, String fileName, Boolean ignoreErrors)
+   --- End of inner exception stack trace ---
+   at NLog.Config.XmlLoggingConfiguration.Initialize(XmlReader reader, String fileName, Boolean ignoreErrors)
+   at NLog.Config.XmlLoggingConfiguration..ctor(XmlReader reader, String fileName, LogFactory logFactory)
+   at NLog.Config.LoggingConfigurationFileLoader.LoadXmlLoggingConfiguration(XmlReader xmlReader, String configFile, LogFactory logFactory)
+   at NLog.Config.LoggingConfigurationFileLoader.LoadXmlLoggingConfigurationFile(LogFactory logFactory, String configFile)
+   at NLog.Config.LoggingConfigurationFileLoader.TryLoadLoggingConfiguration(LogFactory logFactory, String configFile, LoggingConfiguration& config)
+2025-01-18 13:49:20.5818 Info Loading assembly name: NLog.Web.AspNetCore
+2025-01-18 13:49:20.5990 Info NLog.Web.AspNetCore, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.944. Product version: 5.3.4+c9ae8128ef4b6b6b6f2497cdaf451168b85d6ff7. GlobalAssemblyCache: False
+2025-01-18 13:49:20.7000 Info Registered target NLog.Targets.ColoredConsoleTarget(Name=console)
+2025-01-18 13:49:20.7255 Error Error has been raised. Exception: NLog.NLogConfigurationException: 'WhenLayoutRendererWrapper' has same property 'Inner=' assigned twice
+2025-01-18 13:49:20.7734 Error Error has been raised. Exception: NLog.NLogConfigurationException: 'FileTarget' cannot assign property 'Layout'='[${longdate}] ${pad:padding=5:inner=${level:uppercase=true}} | ${pad:padding=3:inner=${threadid}} | ${pad:padding=20:inner=${logger:shortName=true}} | ${message}${newline}${when:when=length('${aspnet-request-url}')>0:inner=请求地址: ${aspnet-request-url}${newline}}${when:when=length('${aspnet-mvc-controller}')>0:inner=控制器: ${aspnet-mvc-controller}${newline}}${when:when=length('${aspnet-mvc-action}')>0:inner=操作: ${aspnet-mvc-action}${newline}}${when:when=length('${aspnet-request-posted-body}')>0:inner=参数: ${aspnet-request-posted-body}${newline}}${when:when=length('${exception}')>0:inner=异常信息: ${exception:format=tostring}${newline}}----------------------------------------'. Error: 'WhenLayoutRendererWrapper' has same property 'Inner=' assigned twice
+ ---> NLog.NLogConfigurationException: 'WhenLayoutRendererWrapper' has same property 'Inner=' assigned twice
+   at NLog.Layouts.LayoutParser.ValidatePreviousParameterName(String previousParameterName, String parameterName, LayoutRenderer layoutRenderer, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.LayoutParser.ParseLayoutRenderer(ConfigurationItemFactory configurationItemFactory, SimpleStringReader stringReader, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.LayoutParser.CompileLayout(ConfigurationItemFactory configurationItemFactory, SimpleStringReader sr, Nullable`1 throwConfigExceptions, Boolean isNested, String& text)
+   at NLog.Layouts.LayoutParser.CompileLayout(String value, ConfigurationItemFactory configurationItemFactory, Nullable`1 throwConfigExceptions, String& text)
+   at NLog.Layouts.SimpleLayout.SetLayoutText(String value, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.SimpleLayout..ctor(String txt, ConfigurationItemFactory configurationItemFactory, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.SimpleLayout..ctor(String txt, ConfigurationItemFactory configurationItemFactory)
+   at NLog.Internal.PropertyHelper.TryParseLayoutValue(String stringValue, ConfigurationItemFactory configurationItemFactory)
+   at NLog.Internal.PropertyHelper.TryNLogSpecificConversion(Type propertyType, String value, ConfigurationItemFactory configurationItemFactory, Object& newValue)
+   at NLog.Internal.PropertyHelper.SetPropertyFromString(Object targetObject, PropertyInfo propInfo, String stringValue, ConfigurationItemFactory configurationItemFactory)
+   --- End of inner exception stack trace ---
+   at NLog.Internal.PropertyHelper.SetPropertyFromString(Object targetObject, PropertyInfo propInfo, String stringValue, ConfigurationItemFactory configurationItemFactory)
+   at NLog.Config.LoggingConfigurationParser.SetPropertyValueFromString[T](T targetObject, String propertyName, String propertyValue, ValidatedConfigurationElement element)
+2025-01-18 13:49:20.8606 Error Exception when loading configuration G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config Exception: NLog.NLogConfigurationException: 'FileTarget' cannot assign property 'Layout'='[${longdate}] ${pad:padding=5:inner=${level:uppercase=true}} | ${pad:padding=3:inner=${threadid}} | ${pad:padding=20:inner=${logger:shortName=true}} | ${message}${newline}${when:when=length('${aspnet-request-url}')>0:inner=请求地址: ${aspnet-request-url}${newline}}${when:when=length('${aspnet-mvc-controller}')>0:inner=控制器: ${aspnet-mvc-controller}${newline}}${when:when=length('${aspnet-mvc-action}')>0:inner=操作: ${aspnet-mvc-action}${newline}}${when:when=length('${aspnet-request-posted-body}')>0:inner=参数: ${aspnet-request-posted-body}${newline}}${when:when=length('${exception}')>0:inner=异常信息: ${exception:format=tostring}${newline}}----------------------------------------'. Error: 'WhenLayoutRendererWrapper' has same property 'Inner=' assigned twice
+ ---> NLog.NLogConfigurationException: 'WhenLayoutRendererWrapper' has same property 'Inner=' assigned twice
+   at NLog.Layouts.LayoutParser.ValidatePreviousParameterName(String previousParameterName, String parameterName, LayoutRenderer layoutRenderer, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.LayoutParser.ParseLayoutRenderer(ConfigurationItemFactory configurationItemFactory, SimpleStringReader stringReader, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.LayoutParser.CompileLayout(ConfigurationItemFactory configurationItemFactory, SimpleStringReader sr, Nullable`1 throwConfigExceptions, Boolean isNested, String& text)
+   at NLog.Layouts.LayoutParser.CompileLayout(String value, ConfigurationItemFactory configurationItemFactory, Nullable`1 throwConfigExceptions, String& text)
+   at NLog.Layouts.SimpleLayout.SetLayoutText(String value, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.SimpleLayout..ctor(String txt, ConfigurationItemFactory configurationItemFactory, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.SimpleLayout..ctor(String txt, ConfigurationItemFactory configurationItemFactory)
+   at NLog.Internal.PropertyHelper.TryParseLayoutValue(String stringValue, ConfigurationItemFactory configurationItemFactory)
+   at NLog.Internal.PropertyHelper.TryNLogSpecificConversion(Type propertyType, String value, ConfigurationItemFactory configurationItemFactory, Object& newValue)
+   at NLog.Internal.PropertyHelper.SetPropertyFromString(Object targetObject, PropertyInfo propInfo, String stringValue, ConfigurationItemFactory configurationItemFactory)
+   --- End of inner exception stack trace ---
+   at NLog.Internal.PropertyHelper.SetPropertyFromString(Object targetObject, PropertyInfo propInfo, String stringValue, ConfigurationItemFactory configurationItemFactory)
+   at NLog.Config.LoggingConfigurationParser.SetPropertyValueFromString[T](T targetObject, String propertyName, String propertyValue, ValidatedConfigurationElement element)
+   at NLog.Config.LoggingConfigurationParser.ConfigureObjectFromAttributes[T](T targetObject, ValidatedConfigurationElement element, Boolean ignoreType)
+   at NLog.Config.LoggingConfigurationParser.ParseTargetElement(Target target, ValidatedConfigurationElement targetElement, Dictionary`2 typeNameToDefaultTargetParameters)
+   at NLog.Config.LoggingConfigurationParser.AddNewTargetFromConfig(String targetTypeName, ValidatedConfigurationElement targetElement, Boolean asyncWrap, Dictionary`2 typeNameToDefaultTargetParameters, ValidatedConfigurationElement defaultWrapperElement)
+   at NLog.Config.LoggingConfigurationParser.ParseTargetsElement(ValidatedConfigurationElement targetsElement)
+   at NLog.Config.LoggingConfigurationParser.ParseNLogSection(ILoggingConfigurationElement configSection)
+   at NLog.Config.XmlLoggingConfiguration.ParseNLogSection(ILoggingConfigurationElement configSection)
+   at NLog.Config.LoggingConfigurationParser.LoadConfig(ILoggingConfigurationElement nlogConfig, String basePath)
+   at NLog.Config.XmlLoggingConfiguration.ParseNLogElement(ILoggingConfigurationElement nlogElement, String filePath, Boolean autoReloadDefault)
+   at NLog.Config.XmlLoggingConfiguration.ParseTopLevel(XmlLoggingConfigurationElement content, String filePath, Boolean autoReloadDefault)
+   at NLog.Config.XmlLoggingConfiguration.Initialize(XmlReader reader, String fileName, Boolean ignoreErrors)
+2025-01-18 13:49:20.8920 Error Error has been raised. Exception: NLog.NLogConfigurationException: Exception when loading configuration G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config
+ ---> NLog.NLogConfigurationException: 'FileTarget' cannot assign property 'Layout'='[${longdate}] ${pad:padding=5:inner=${level:uppercase=true}} | ${pad:padding=3:inner=${threadid}} | ${pad:padding=20:inner=${logger:shortName=true}} | ${message}${newline}${when:when=length('${aspnet-request-url}')>0:inner=请求地址: ${aspnet-request-url}${newline}}${when:when=length('${aspnet-mvc-controller}')>0:inner=控制器: ${aspnet-mvc-controller}${newline}}${when:when=length('${aspnet-mvc-action}')>0:inner=操作: ${aspnet-mvc-action}${newline}}${when:when=length('${aspnet-request-posted-body}')>0:inner=参数: ${aspnet-request-posted-body}${newline}}${when:when=length('${exception}')>0:inner=异常信息: ${exception:format=tostring}${newline}}----------------------------------------'. Error: 'WhenLayoutRendererWrapper' has same property 'Inner=' assigned twice
+ ---> NLog.NLogConfigurationException: 'WhenLayoutRendererWrapper' has same property 'Inner=' assigned twice
+   at NLog.Layouts.LayoutParser.ValidatePreviousParameterName(String previousParameterName, String parameterName, LayoutRenderer layoutRenderer, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.LayoutParser.ParseLayoutRenderer(ConfigurationItemFactory configurationItemFactory, SimpleStringReader stringReader, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.LayoutParser.CompileLayout(ConfigurationItemFactory configurationItemFactory, SimpleStringReader sr, Nullable`1 throwConfigExceptions, Boolean isNested, String& text)
+   at NLog.Layouts.LayoutParser.CompileLayout(String value, ConfigurationItemFactory configurationItemFactory, Nullable`1 throwConfigExceptions, String& text)
+   at NLog.Layouts.SimpleLayout.SetLayoutText(String value, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.SimpleLayout..ctor(String txt, ConfigurationItemFactory configurationItemFactory, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.SimpleLayout..ctor(String txt, ConfigurationItemFactory configurationItemFactory)
+   at NLog.Internal.PropertyHelper.TryParseLayoutValue(String stringValue, ConfigurationItemFactory configurationItemFactory)
+   at NLog.Internal.PropertyHelper.TryNLogSpecificConversion(Type propertyType, String value, ConfigurationItemFactory configurationItemFactory, Object& newValue)
+   at NLog.Internal.PropertyHelper.SetPropertyFromString(Object targetObject, PropertyInfo propInfo, String stringValue, ConfigurationItemFactory configurationItemFactory)
+   --- End of inner exception stack trace ---
+   at NLog.Internal.PropertyHelper.SetPropertyFromString(Object targetObject, PropertyInfo propInfo, String stringValue, ConfigurationItemFactory configurationItemFactory)
+   at NLog.Config.LoggingConfigurationParser.SetPropertyValueFromString[T](T targetObject, String propertyName, String propertyValue, ValidatedConfigurationElement element)
+   at NLog.Config.LoggingConfigurationParser.ConfigureObjectFromAttributes[T](T targetObject, ValidatedConfigurationElement element, Boolean ignoreType)
+   at NLog.Config.LoggingConfigurationParser.ParseTargetElement(Target target, ValidatedConfigurationElement targetElement, Dictionary`2 typeNameToDefaultTargetParameters)
+   at NLog.Config.LoggingConfigurationParser.AddNewTargetFromConfig(String targetTypeName, ValidatedConfigurationElement targetElement, Boolean asyncWrap, Dictionary`2 typeNameToDefaultTargetParameters, ValidatedConfigurationElement defaultWrapperElement)
+   at NLog.Config.LoggingConfigurationParser.ParseTargetsElement(ValidatedConfigurationElement targetsElement)
+   at NLog.Config.LoggingConfigurationParser.ParseNLogSection(ILoggingConfigurationElement configSection)
+   at NLog.Config.XmlLoggingConfiguration.ParseNLogSection(ILoggingConfigurationElement configSection)
+   at NLog.Config.LoggingConfigurationParser.LoadConfig(ILoggingConfigurationElement nlogConfig, String basePath)
+   at NLog.Config.XmlLoggingConfiguration.ParseNLogElement(ILoggingConfigurationElement nlogElement, String filePath, Boolean autoReloadDefault)
+   at NLog.Config.XmlLoggingConfiguration.ParseTopLevel(XmlLoggingConfigurationElement content, String filePath, Boolean autoReloadDefault)
+   at NLog.Config.XmlLoggingConfiguration.Initialize(XmlReader reader, String fileName, Boolean ignoreErrors)
+   --- End of inner exception stack trace ---
+   at NLog.Config.XmlLoggingConfiguration.Initialize(XmlReader reader, String fileName, Boolean ignoreErrors)
+   at NLog.Config.XmlLoggingConfiguration..ctor(XmlReader reader, String fileName, LogFactory logFactory)
+   at NLog.Config.LoggingConfigurationFileLoader.LoadXmlLoggingConfiguration(XmlReader xmlReader, String configFile, LogFactory logFactory)
+2025-01-18 13:49:20.9170 Error Failed loading from config file location: G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config Exception: NLog.NLogConfigurationException: Exception when loading configuration G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config
+ ---> NLog.NLogConfigurationException: 'FileTarget' cannot assign property 'Layout'='[${longdate}] ${pad:padding=5:inner=${level:uppercase=true}} | ${pad:padding=3:inner=${threadid}} | ${pad:padding=20:inner=${logger:shortName=true}} | ${message}${newline}${when:when=length('${aspnet-request-url}')>0:inner=请求地址: ${aspnet-request-url}${newline}}${when:when=length('${aspnet-mvc-controller}')>0:inner=控制器: ${aspnet-mvc-controller}${newline}}${when:when=length('${aspnet-mvc-action}')>0:inner=操作: ${aspnet-mvc-action}${newline}}${when:when=length('${aspnet-request-posted-body}')>0:inner=参数: ${aspnet-request-posted-body}${newline}}${when:when=length('${exception}')>0:inner=异常信息: ${exception:format=tostring}${newline}}----------------------------------------'. Error: 'WhenLayoutRendererWrapper' has same property 'Inner=' assigned twice
+ ---> NLog.NLogConfigurationException: 'WhenLayoutRendererWrapper' has same property 'Inner=' assigned twice
+   at NLog.Layouts.LayoutParser.ValidatePreviousParameterName(String previousParameterName, String parameterName, LayoutRenderer layoutRenderer, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.LayoutParser.ParseLayoutRenderer(ConfigurationItemFactory configurationItemFactory, SimpleStringReader stringReader, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.LayoutParser.CompileLayout(ConfigurationItemFactory configurationItemFactory, SimpleStringReader sr, Nullable`1 throwConfigExceptions, Boolean isNested, String& text)
+   at NLog.Layouts.LayoutParser.CompileLayout(String value, ConfigurationItemFactory configurationItemFactory, Nullable`1 throwConfigExceptions, String& text)
+   at NLog.Layouts.SimpleLayout.SetLayoutText(String value, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.SimpleLayout..ctor(String txt, ConfigurationItemFactory configurationItemFactory, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.SimpleLayout..ctor(String txt, ConfigurationItemFactory configurationItemFactory)
+   at NLog.Internal.PropertyHelper.TryParseLayoutValue(String stringValue, ConfigurationItemFactory configurationItemFactory)
+   at NLog.Internal.PropertyHelper.TryNLogSpecificConversion(Type propertyType, String value, ConfigurationItemFactory configurationItemFactory, Object& newValue)
+   at NLog.Internal.PropertyHelper.SetPropertyFromString(Object targetObject, PropertyInfo propInfo, String stringValue, ConfigurationItemFactory configurationItemFactory)
+   --- End of inner exception stack trace ---
+   at NLog.Internal.PropertyHelper.SetPropertyFromString(Object targetObject, PropertyInfo propInfo, String stringValue, ConfigurationItemFactory configurationItemFactory)
+   at NLog.Config.LoggingConfigurationParser.SetPropertyValueFromString[T](T targetObject, String propertyName, String propertyValue, ValidatedConfigurationElement element)
+   at NLog.Config.LoggingConfigurationParser.ConfigureObjectFromAttributes[T](T targetObject, ValidatedConfigurationElement element, Boolean ignoreType)
+   at NLog.Config.LoggingConfigurationParser.ParseTargetElement(Target target, ValidatedConfigurationElement targetElement, Dictionary`2 typeNameToDefaultTargetParameters)
+   at NLog.Config.LoggingConfigurationParser.AddNewTargetFromConfig(String targetTypeName, ValidatedConfigurationElement targetElement, Boolean asyncWrap, Dictionary`2 typeNameToDefaultTargetParameters, ValidatedConfigurationElement defaultWrapperElement)
+   at NLog.Config.LoggingConfigurationParser.ParseTargetsElement(ValidatedConfigurationElement targetsElement)
+   at NLog.Config.LoggingConfigurationParser.ParseNLogSection(ILoggingConfigurationElement configSection)
+   at NLog.Config.XmlLoggingConfiguration.ParseNLogSection(ILoggingConfigurationElement configSection)
+   at NLog.Config.LoggingConfigurationParser.LoadConfig(ILoggingConfigurationElement nlogConfig, String basePath)
+   at NLog.Config.XmlLoggingConfiguration.ParseNLogElement(ILoggingConfigurationElement nlogElement, String filePath, Boolean autoReloadDefault)
+   at NLog.Config.XmlLoggingConfiguration.ParseTopLevel(XmlLoggingConfigurationElement content, String filePath, Boolean autoReloadDefault)
+   at NLog.Config.XmlLoggingConfiguration.Initialize(XmlReader reader, String fileName, Boolean ignoreErrors)
+   --- End of inner exception stack trace ---
+   at NLog.Config.XmlLoggingConfiguration.Initialize(XmlReader reader, String fileName, Boolean ignoreErrors)
+   at NLog.Config.XmlLoggingConfiguration..ctor(XmlReader reader, String fileName, LogFactory logFactory)
+   at NLog.Config.LoggingConfigurationFileLoader.LoadXmlLoggingConfiguration(XmlReader xmlReader, String configFile, LogFactory logFactory)
+   at NLog.Config.LoggingConfigurationFileLoader.LoadXmlLoggingConfigurationFile(LogFactory logFactory, String configFile)
+   at NLog.Config.LoggingConfigurationFileLoader.TryLoadLoggingConfiguration(LogFactory logFactory, String configFile, LoggingConfiguration& config)
+2025-01-18 13:49:26.3124 Info Loading assembly name: NLog.Web.AspNetCore
+2025-01-18 13:49:26.3224 Info NLog.Web.AspNetCore, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.944. Product version: 5.3.4+c9ae8128ef4b6b6b6f2497cdaf451168b85d6ff7. GlobalAssemblyCache: False
+2025-01-18 13:49:26.3774 Info Registered target NLog.Targets.ColoredConsoleTarget(Name=console)
+2025-01-18 13:49:26.3965 Error Error has been raised. Exception: NLog.NLogConfigurationException: 'WhenLayoutRendererWrapper' has same property 'Inner=' assigned twice
+2025-01-18 13:49:26.4393 Error Error has been raised. Exception: NLog.NLogConfigurationException: 'FileTarget' cannot assign property 'Layout'='[${longdate}] ${pad:padding=5:inner=${level:uppercase=true}} | ${pad:padding=3:inner=${threadid}} | ${pad:padding=20:inner=${logger:shortName=true}} | ${message}${newline}${when:when=length('${aspnet-request-url}')>0:inner=请求地址: ${aspnet-request-url}${newline}}${when:when=length('${aspnet-mvc-controller}')>0:inner=控制器: ${aspnet-mvc-controller}${newline}}${when:when=length('${aspnet-mvc-action}')>0:inner=操作: ${aspnet-mvc-action}${newline}}${when:when=length('${aspnet-request-posted-body}')>0:inner=参数: ${aspnet-request-posted-body}${newline}}${when:when=length('${exception}')>0:inner=异常信息: ${exception:format=tostring}${newline}}----------------------------------------'. Error: 'WhenLayoutRendererWrapper' has same property 'Inner=' assigned twice
+ ---> NLog.NLogConfigurationException: 'WhenLayoutRendererWrapper' has same property 'Inner=' assigned twice
+   at NLog.Layouts.LayoutParser.ValidatePreviousParameterName(String previousParameterName, String parameterName, LayoutRenderer layoutRenderer, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.LayoutParser.ParseLayoutRenderer(ConfigurationItemFactory configurationItemFactory, SimpleStringReader stringReader, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.LayoutParser.CompileLayout(ConfigurationItemFactory configurationItemFactory, SimpleStringReader sr, Nullable`1 throwConfigExceptions, Boolean isNested, String& text)
+   at NLog.Layouts.LayoutParser.CompileLayout(String value, ConfigurationItemFactory configurationItemFactory, Nullable`1 throwConfigExceptions, String& text)
+   at NLog.Layouts.SimpleLayout.SetLayoutText(String value, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.SimpleLayout..ctor(String txt, ConfigurationItemFactory configurationItemFactory, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.SimpleLayout..ctor(String txt, ConfigurationItemFactory configurationItemFactory)
+   at NLog.Internal.PropertyHelper.TryParseLayoutValue(String stringValue, ConfigurationItemFactory configurationItemFactory)
+   at NLog.Internal.PropertyHelper.TryNLogSpecificConversion(Type propertyType, String value, ConfigurationItemFactory configurationItemFactory, Object& newValue)
+   at NLog.Internal.PropertyHelper.SetPropertyFromString(Object targetObject, PropertyInfo propInfo, String stringValue, ConfigurationItemFactory configurationItemFactory)
+   --- End of inner exception stack trace ---
+   at NLog.Internal.PropertyHelper.SetPropertyFromString(Object targetObject, PropertyInfo propInfo, String stringValue, ConfigurationItemFactory configurationItemFactory)
+   at NLog.Config.LoggingConfigurationParser.SetPropertyValueFromString[T](T targetObject, String propertyName, String propertyValue, ValidatedConfigurationElement element)
+2025-01-18 13:49:26.4959 Error Exception when loading configuration G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config Exception: NLog.NLogConfigurationException: 'FileTarget' cannot assign property 'Layout'='[${longdate}] ${pad:padding=5:inner=${level:uppercase=true}} | ${pad:padding=3:inner=${threadid}} | ${pad:padding=20:inner=${logger:shortName=true}} | ${message}${newline}${when:when=length('${aspnet-request-url}')>0:inner=请求地址: ${aspnet-request-url}${newline}}${when:when=length('${aspnet-mvc-controller}')>0:inner=控制器: ${aspnet-mvc-controller}${newline}}${when:when=length('${aspnet-mvc-action}')>0:inner=操作: ${aspnet-mvc-action}${newline}}${when:when=length('${aspnet-request-posted-body}')>0:inner=参数: ${aspnet-request-posted-body}${newline}}${when:when=length('${exception}')>0:inner=异常信息: ${exception:format=tostring}${newline}}----------------------------------------'. Error: 'WhenLayoutRendererWrapper' has same property 'Inner=' assigned twice
+ ---> NLog.NLogConfigurationException: 'WhenLayoutRendererWrapper' has same property 'Inner=' assigned twice
+   at NLog.Layouts.LayoutParser.ValidatePreviousParameterName(String previousParameterName, String parameterName, LayoutRenderer layoutRenderer, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.LayoutParser.ParseLayoutRenderer(ConfigurationItemFactory configurationItemFactory, SimpleStringReader stringReader, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.LayoutParser.CompileLayout(ConfigurationItemFactory configurationItemFactory, SimpleStringReader sr, Nullable`1 throwConfigExceptions, Boolean isNested, String& text)
+   at NLog.Layouts.LayoutParser.CompileLayout(String value, ConfigurationItemFactory configurationItemFactory, Nullable`1 throwConfigExceptions, String& text)
+   at NLog.Layouts.SimpleLayout.SetLayoutText(String value, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.SimpleLayout..ctor(String txt, ConfigurationItemFactory configurationItemFactory, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.SimpleLayout..ctor(String txt, ConfigurationItemFactory configurationItemFactory)
+   at NLog.Internal.PropertyHelper.TryParseLayoutValue(String stringValue, ConfigurationItemFactory configurationItemFactory)
+   at NLog.Internal.PropertyHelper.TryNLogSpecificConversion(Type propertyType, String value, ConfigurationItemFactory configurationItemFactory, Object& newValue)
+   at NLog.Internal.PropertyHelper.SetPropertyFromString(Object targetObject, PropertyInfo propInfo, String stringValue, ConfigurationItemFactory configurationItemFactory)
+   --- End of inner exception stack trace ---
+   at NLog.Internal.PropertyHelper.SetPropertyFromString(Object targetObject, PropertyInfo propInfo, String stringValue, ConfigurationItemFactory configurationItemFactory)
+   at NLog.Config.LoggingConfigurationParser.SetPropertyValueFromString[T](T targetObject, String propertyName, String propertyValue, ValidatedConfigurationElement element)
+   at NLog.Config.LoggingConfigurationParser.ConfigureObjectFromAttributes[T](T targetObject, ValidatedConfigurationElement element, Boolean ignoreType)
+   at NLog.Config.LoggingConfigurationParser.ParseTargetElement(Target target, ValidatedConfigurationElement targetElement, Dictionary`2 typeNameToDefaultTargetParameters)
+   at NLog.Config.LoggingConfigurationParser.AddNewTargetFromConfig(String targetTypeName, ValidatedConfigurationElement targetElement, Boolean asyncWrap, Dictionary`2 typeNameToDefaultTargetParameters, ValidatedConfigurationElement defaultWrapperElement)
+   at NLog.Config.LoggingConfigurationParser.ParseTargetsElement(ValidatedConfigurationElement targetsElement)
+   at NLog.Config.LoggingConfigurationParser.ParseNLogSection(ILoggingConfigurationElement configSection)
+   at NLog.Config.XmlLoggingConfiguration.ParseNLogSection(ILoggingConfigurationElement configSection)
+   at NLog.Config.LoggingConfigurationParser.LoadConfig(ILoggingConfigurationElement nlogConfig, String basePath)
+   at NLog.Config.XmlLoggingConfiguration.ParseNLogElement(ILoggingConfigurationElement nlogElement, String filePath, Boolean autoReloadDefault)
+   at NLog.Config.XmlLoggingConfiguration.ParseTopLevel(XmlLoggingConfigurationElement content, String filePath, Boolean autoReloadDefault)
+   at NLog.Config.XmlLoggingConfiguration.Initialize(XmlReader reader, String fileName, Boolean ignoreErrors)
+2025-01-18 13:49:26.5114 Error Error has been raised. Exception: NLog.NLogConfigurationException: Exception when loading configuration G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config
+ ---> NLog.NLogConfigurationException: 'FileTarget' cannot assign property 'Layout'='[${longdate}] ${pad:padding=5:inner=${level:uppercase=true}} | ${pad:padding=3:inner=${threadid}} | ${pad:padding=20:inner=${logger:shortName=true}} | ${message}${newline}${when:when=length('${aspnet-request-url}')>0:inner=请求地址: ${aspnet-request-url}${newline}}${when:when=length('${aspnet-mvc-controller}')>0:inner=控制器: ${aspnet-mvc-controller}${newline}}${when:when=length('${aspnet-mvc-action}')>0:inner=操作: ${aspnet-mvc-action}${newline}}${when:when=length('${aspnet-request-posted-body}')>0:inner=参数: ${aspnet-request-posted-body}${newline}}${when:when=length('${exception}')>0:inner=异常信息: ${exception:format=tostring}${newline}}----------------------------------------'. Error: 'WhenLayoutRendererWrapper' has same property 'Inner=' assigned twice
+ ---> NLog.NLogConfigurationException: 'WhenLayoutRendererWrapper' has same property 'Inner=' assigned twice
+   at NLog.Layouts.LayoutParser.ValidatePreviousParameterName(String previousParameterName, String parameterName, LayoutRenderer layoutRenderer, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.LayoutParser.ParseLayoutRenderer(ConfigurationItemFactory configurationItemFactory, SimpleStringReader stringReader, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.LayoutParser.CompileLayout(ConfigurationItemFactory configurationItemFactory, SimpleStringReader sr, Nullable`1 throwConfigExceptions, Boolean isNested, String& text)
+   at NLog.Layouts.LayoutParser.CompileLayout(String value, ConfigurationItemFactory configurationItemFactory, Nullable`1 throwConfigExceptions, String& text)
+   at NLog.Layouts.SimpleLayout.SetLayoutText(String value, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.SimpleLayout..ctor(String txt, ConfigurationItemFactory configurationItemFactory, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.SimpleLayout..ctor(String txt, ConfigurationItemFactory configurationItemFactory)
+   at NLog.Internal.PropertyHelper.TryParseLayoutValue(String stringValue, ConfigurationItemFactory configurationItemFactory)
+   at NLog.Internal.PropertyHelper.TryNLogSpecificConversion(Type propertyType, String value, ConfigurationItemFactory configurationItemFactory, Object& newValue)
+   at NLog.Internal.PropertyHelper.SetPropertyFromString(Object targetObject, PropertyInfo propInfo, String stringValue, ConfigurationItemFactory configurationItemFactory)
+   --- End of inner exception stack trace ---
+   at NLog.Internal.PropertyHelper.SetPropertyFromString(Object targetObject, PropertyInfo propInfo, String stringValue, ConfigurationItemFactory configurationItemFactory)
+   at NLog.Config.LoggingConfigurationParser.SetPropertyValueFromString[T](T targetObject, String propertyName, String propertyValue, ValidatedConfigurationElement element)
+   at NLog.Config.LoggingConfigurationParser.ConfigureObjectFromAttributes[T](T targetObject, ValidatedConfigurationElement element, Boolean ignoreType)
+   at NLog.Config.LoggingConfigurationParser.ParseTargetElement(Target target, ValidatedConfigurationElement targetElement, Dictionary`2 typeNameToDefaultTargetParameters)
+   at NLog.Config.LoggingConfigurationParser.AddNewTargetFromConfig(String targetTypeName, ValidatedConfigurationElement targetElement, Boolean asyncWrap, Dictionary`2 typeNameToDefaultTargetParameters, ValidatedConfigurationElement defaultWrapperElement)
+   at NLog.Config.LoggingConfigurationParser.ParseTargetsElement(ValidatedConfigurationElement targetsElement)
+   at NLog.Config.LoggingConfigurationParser.ParseNLogSection(ILoggingConfigurationElement configSection)
+   at NLog.Config.XmlLoggingConfiguration.ParseNLogSection(ILoggingConfigurationElement configSection)
+   at NLog.Config.LoggingConfigurationParser.LoadConfig(ILoggingConfigurationElement nlogConfig, String basePath)
+   at NLog.Config.XmlLoggingConfiguration.ParseNLogElement(ILoggingConfigurationElement nlogElement, String filePath, Boolean autoReloadDefault)
+   at NLog.Config.XmlLoggingConfiguration.ParseTopLevel(XmlLoggingConfigurationElement content, String filePath, Boolean autoReloadDefault)
+   at NLog.Config.XmlLoggingConfiguration.Initialize(XmlReader reader, String fileName, Boolean ignoreErrors)
+   --- End of inner exception stack trace ---
+   at NLog.Config.XmlLoggingConfiguration.Initialize(XmlReader reader, String fileName, Boolean ignoreErrors)
+   at NLog.Config.XmlLoggingConfiguration..ctor(XmlReader reader, String fileName, LogFactory logFactory)
+   at NLog.Config.LoggingConfigurationFileLoader.LoadXmlLoggingConfiguration(XmlReader xmlReader, String configFile, LogFactory logFactory)
+2025-01-18 13:49:26.5114 Error Failed loading from config file location: G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config Exception: NLog.NLogConfigurationException: Exception when loading configuration G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config
+ ---> NLog.NLogConfigurationException: 'FileTarget' cannot assign property 'Layout'='[${longdate}] ${pad:padding=5:inner=${level:uppercase=true}} | ${pad:padding=3:inner=${threadid}} | ${pad:padding=20:inner=${logger:shortName=true}} | ${message}${newline}${when:when=length('${aspnet-request-url}')>0:inner=请求地址: ${aspnet-request-url}${newline}}${when:when=length('${aspnet-mvc-controller}')>0:inner=控制器: ${aspnet-mvc-controller}${newline}}${when:when=length('${aspnet-mvc-action}')>0:inner=操作: ${aspnet-mvc-action}${newline}}${when:when=length('${aspnet-request-posted-body}')>0:inner=参数: ${aspnet-request-posted-body}${newline}}${when:when=length('${exception}')>0:inner=异常信息: ${exception:format=tostring}${newline}}----------------------------------------'. Error: 'WhenLayoutRendererWrapper' has same property 'Inner=' assigned twice
+ ---> NLog.NLogConfigurationException: 'WhenLayoutRendererWrapper' has same property 'Inner=' assigned twice
+   at NLog.Layouts.LayoutParser.ValidatePreviousParameterName(String previousParameterName, String parameterName, LayoutRenderer layoutRenderer, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.LayoutParser.ParseLayoutRenderer(ConfigurationItemFactory configurationItemFactory, SimpleStringReader stringReader, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.LayoutParser.CompileLayout(ConfigurationItemFactory configurationItemFactory, SimpleStringReader sr, Nullable`1 throwConfigExceptions, Boolean isNested, String& text)
+   at NLog.Layouts.LayoutParser.CompileLayout(String value, ConfigurationItemFactory configurationItemFactory, Nullable`1 throwConfigExceptions, String& text)
+   at NLog.Layouts.SimpleLayout.SetLayoutText(String value, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.SimpleLayout..ctor(String txt, ConfigurationItemFactory configurationItemFactory, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.SimpleLayout..ctor(String txt, ConfigurationItemFactory configurationItemFactory)
+   at NLog.Internal.PropertyHelper.TryParseLayoutValue(String stringValue, ConfigurationItemFactory configurationItemFactory)
+   at NLog.Internal.PropertyHelper.TryNLogSpecificConversion(Type propertyType, String value, ConfigurationItemFactory configurationItemFactory, Object& newValue)
+   at NLog.Internal.PropertyHelper.SetPropertyFromString(Object targetObject, PropertyInfo propInfo, String stringValue, ConfigurationItemFactory configurationItemFactory)
+   --- End of inner exception stack trace ---
+   at NLog.Internal.PropertyHelper.SetPropertyFromString(Object targetObject, PropertyInfo propInfo, String stringValue, ConfigurationItemFactory configurationItemFactory)
+   at NLog.Config.LoggingConfigurationParser.SetPropertyValueFromString[T](T targetObject, String propertyName, String propertyValue, ValidatedConfigurationElement element)
+   at NLog.Config.LoggingConfigurationParser.ConfigureObjectFromAttributes[T](T targetObject, ValidatedConfigurationElement element, Boolean ignoreType)
+   at NLog.Config.LoggingConfigurationParser.ParseTargetElement(Target target, ValidatedConfigurationElement targetElement, Dictionary`2 typeNameToDefaultTargetParameters)
+   at NLog.Config.LoggingConfigurationParser.AddNewTargetFromConfig(String targetTypeName, ValidatedConfigurationElement targetElement, Boolean asyncWrap, Dictionary`2 typeNameToDefaultTargetParameters, ValidatedConfigurationElement defaultWrapperElement)
+   at NLog.Config.LoggingConfigurationParser.ParseTargetsElement(ValidatedConfigurationElement targetsElement)
+   at NLog.Config.LoggingConfigurationParser.ParseNLogSection(ILoggingConfigurationElement configSection)
+   at NLog.Config.XmlLoggingConfiguration.ParseNLogSection(ILoggingConfigurationElement configSection)
+   at NLog.Config.LoggingConfigurationParser.LoadConfig(ILoggingConfigurationElement nlogConfig, String basePath)
+   at NLog.Config.XmlLoggingConfiguration.ParseNLogElement(ILoggingConfigurationElement nlogElement, String filePath, Boolean autoReloadDefault)
+   at NLog.Config.XmlLoggingConfiguration.ParseTopLevel(XmlLoggingConfigurationElement content, String filePath, Boolean autoReloadDefault)
+   at NLog.Config.XmlLoggingConfiguration.Initialize(XmlReader reader, String fileName, Boolean ignoreErrors)
+   --- End of inner exception stack trace ---
+   at NLog.Config.XmlLoggingConfiguration.Initialize(XmlReader reader, String fileName, Boolean ignoreErrors)
+   at NLog.Config.XmlLoggingConfiguration..ctor(XmlReader reader, String fileName, LogFactory logFactory)
+   at NLog.Config.LoggingConfigurationFileLoader.LoadXmlLoggingConfiguration(XmlReader xmlReader, String configFile, LogFactory logFactory)
+   at NLog.Config.LoggingConfigurationFileLoader.LoadXmlLoggingConfigurationFile(LogFactory logFactory, String configFile)
+   at NLog.Config.LoggingConfigurationFileLoader.TryLoadLoggingConfiguration(LogFactory logFactory, String configFile, LoggingConfiguration& config)
+2025-01-18 13:49:43.4446 Info Loading assembly name: NLog.Web.AspNetCore
+2025-01-18 13:49:43.4546 Info NLog.Web.AspNetCore, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.944. Product version: 5.3.4+c9ae8128ef4b6b6b6f2497cdaf451168b85d6ff7. GlobalAssemblyCache: False
+2025-01-18 13:49:43.5144 Info Registered target NLog.Targets.ColoredConsoleTarget(Name=console)
+2025-01-18 13:49:43.5327 Error Error has been raised. Exception: NLog.NLogConfigurationException: 'WhenLayoutRendererWrapper' has same property 'Inner=' assigned twice
+2025-01-18 13:49:43.5762 Error Error has been raised. Exception: NLog.NLogConfigurationException: 'FileTarget' cannot assign property 'Layout'='[${longdate}] ${pad:padding=5:inner=${level:uppercase=true}} | ${pad:padding=3:inner=${threadid}} | ${pad:padding=20:inner=${logger:shortName=true}} | ${message}${newline}${when:when=length('${aspnet-request-url}')>0:inner=请求地址: ${aspnet-request-url}${newline}}${when:when=length('${aspnet-mvc-controller}')>0:inner=控制器: ${aspnet-mvc-controller}${newline}}${when:when=length('${aspnet-mvc-action}')>0:inner=操作: ${aspnet-mvc-action}${newline}}${when:when=length('${aspnet-request-posted-body}')>0:inner=参数: ${aspnet-request-posted-body}${newline}}${when:when=length('${exception}')>0:inner=异常信息: ${exception:format=tostring}${newline}}----------------------------------------'. Error: 'WhenLayoutRendererWrapper' has same property 'Inner=' assigned twice
+ ---> NLog.NLogConfigurationException: 'WhenLayoutRendererWrapper' has same property 'Inner=' assigned twice
+   at NLog.Layouts.LayoutParser.ValidatePreviousParameterName(String previousParameterName, String parameterName, LayoutRenderer layoutRenderer, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.LayoutParser.ParseLayoutRenderer(ConfigurationItemFactory configurationItemFactory, SimpleStringReader stringReader, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.LayoutParser.CompileLayout(ConfigurationItemFactory configurationItemFactory, SimpleStringReader sr, Nullable`1 throwConfigExceptions, Boolean isNested, String& text)
+   at NLog.Layouts.LayoutParser.CompileLayout(String value, ConfigurationItemFactory configurationItemFactory, Nullable`1 throwConfigExceptions, String& text)
+   at NLog.Layouts.SimpleLayout.SetLayoutText(String value, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.SimpleLayout..ctor(String txt, ConfigurationItemFactory configurationItemFactory, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.SimpleLayout..ctor(String txt, ConfigurationItemFactory configurationItemFactory)
+   at NLog.Internal.PropertyHelper.TryParseLayoutValue(String stringValue, ConfigurationItemFactory configurationItemFactory)
+   at NLog.Internal.PropertyHelper.TryNLogSpecificConversion(Type propertyType, String value, ConfigurationItemFactory configurationItemFactory, Object& newValue)
+   at NLog.Internal.PropertyHelper.SetPropertyFromString(Object targetObject, PropertyInfo propInfo, String stringValue, ConfigurationItemFactory configurationItemFactory)
+   --- End of inner exception stack trace ---
+   at NLog.Internal.PropertyHelper.SetPropertyFromString(Object targetObject, PropertyInfo propInfo, String stringValue, ConfigurationItemFactory configurationItemFactory)
+   at NLog.Config.LoggingConfigurationParser.SetPropertyValueFromString[T](T targetObject, String propertyName, String propertyValue, ValidatedConfigurationElement element)
+2025-01-18 13:49:43.6318 Error Exception when loading configuration G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config Exception: NLog.NLogConfigurationException: 'FileTarget' cannot assign property 'Layout'='[${longdate}] ${pad:padding=5:inner=${level:uppercase=true}} | ${pad:padding=3:inner=${threadid}} | ${pad:padding=20:inner=${logger:shortName=true}} | ${message}${newline}${when:when=length('${aspnet-request-url}')>0:inner=请求地址: ${aspnet-request-url}${newline}}${when:when=length('${aspnet-mvc-controller}')>0:inner=控制器: ${aspnet-mvc-controller}${newline}}${when:when=length('${aspnet-mvc-action}')>0:inner=操作: ${aspnet-mvc-action}${newline}}${when:when=length('${aspnet-request-posted-body}')>0:inner=参数: ${aspnet-request-posted-body}${newline}}${when:when=length('${exception}')>0:inner=异常信息: ${exception:format=tostring}${newline}}----------------------------------------'. Error: 'WhenLayoutRendererWrapper' has same property 'Inner=' assigned twice
+ ---> NLog.NLogConfigurationException: 'WhenLayoutRendererWrapper' has same property 'Inner=' assigned twice
+   at NLog.Layouts.LayoutParser.ValidatePreviousParameterName(String previousParameterName, String parameterName, LayoutRenderer layoutRenderer, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.LayoutParser.ParseLayoutRenderer(ConfigurationItemFactory configurationItemFactory, SimpleStringReader stringReader, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.LayoutParser.CompileLayout(ConfigurationItemFactory configurationItemFactory, SimpleStringReader sr, Nullable`1 throwConfigExceptions, Boolean isNested, String& text)
+   at NLog.Layouts.LayoutParser.CompileLayout(String value, ConfigurationItemFactory configurationItemFactory, Nullable`1 throwConfigExceptions, String& text)
+   at NLog.Layouts.SimpleLayout.SetLayoutText(String value, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.SimpleLayout..ctor(String txt, ConfigurationItemFactory configurationItemFactory, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.SimpleLayout..ctor(String txt, ConfigurationItemFactory configurationItemFactory)
+   at NLog.Internal.PropertyHelper.TryParseLayoutValue(String stringValue, ConfigurationItemFactory configurationItemFactory)
+   at NLog.Internal.PropertyHelper.TryNLogSpecificConversion(Type propertyType, String value, ConfigurationItemFactory configurationItemFactory, Object& newValue)
+   at NLog.Internal.PropertyHelper.SetPropertyFromString(Object targetObject, PropertyInfo propInfo, String stringValue, ConfigurationItemFactory configurationItemFactory)
+   --- End of inner exception stack trace ---
+   at NLog.Internal.PropertyHelper.SetPropertyFromString(Object targetObject, PropertyInfo propInfo, String stringValue, ConfigurationItemFactory configurationItemFactory)
+   at NLog.Config.LoggingConfigurationParser.SetPropertyValueFromString[T](T targetObject, String propertyName, String propertyValue, ValidatedConfigurationElement element)
+   at NLog.Config.LoggingConfigurationParser.ConfigureObjectFromAttributes[T](T targetObject, ValidatedConfigurationElement element, Boolean ignoreType)
+   at NLog.Config.LoggingConfigurationParser.ParseTargetElement(Target target, ValidatedConfigurationElement targetElement, Dictionary`2 typeNameToDefaultTargetParameters)
+   at NLog.Config.LoggingConfigurationParser.AddNewTargetFromConfig(String targetTypeName, ValidatedConfigurationElement targetElement, Boolean asyncWrap, Dictionary`2 typeNameToDefaultTargetParameters, ValidatedConfigurationElement defaultWrapperElement)
+   at NLog.Config.LoggingConfigurationParser.ParseTargetsElement(ValidatedConfigurationElement targetsElement)
+   at NLog.Config.LoggingConfigurationParser.ParseNLogSection(ILoggingConfigurationElement configSection)
+   at NLog.Config.XmlLoggingConfiguration.ParseNLogSection(ILoggingConfigurationElement configSection)
+   at NLog.Config.LoggingConfigurationParser.LoadConfig(ILoggingConfigurationElement nlogConfig, String basePath)
+   at NLog.Config.XmlLoggingConfiguration.ParseNLogElement(ILoggingConfigurationElement nlogElement, String filePath, Boolean autoReloadDefault)
+   at NLog.Config.XmlLoggingConfiguration.ParseTopLevel(XmlLoggingConfigurationElement content, String filePath, Boolean autoReloadDefault)
+   at NLog.Config.XmlLoggingConfiguration.Initialize(XmlReader reader, String fileName, Boolean ignoreErrors)
+2025-01-18 13:49:43.6480 Error Error has been raised. Exception: NLog.NLogConfigurationException: Exception when loading configuration G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config
+ ---> NLog.NLogConfigurationException: 'FileTarget' cannot assign property 'Layout'='[${longdate}] ${pad:padding=5:inner=${level:uppercase=true}} | ${pad:padding=3:inner=${threadid}} | ${pad:padding=20:inner=${logger:shortName=true}} | ${message}${newline}${when:when=length('${aspnet-request-url}')>0:inner=请求地址: ${aspnet-request-url}${newline}}${when:when=length('${aspnet-mvc-controller}')>0:inner=控制器: ${aspnet-mvc-controller}${newline}}${when:when=length('${aspnet-mvc-action}')>0:inner=操作: ${aspnet-mvc-action}${newline}}${when:when=length('${aspnet-request-posted-body}')>0:inner=参数: ${aspnet-request-posted-body}${newline}}${when:when=length('${exception}')>0:inner=异常信息: ${exception:format=tostring}${newline}}----------------------------------------'. Error: 'WhenLayoutRendererWrapper' has same property 'Inner=' assigned twice
+ ---> NLog.NLogConfigurationException: 'WhenLayoutRendererWrapper' has same property 'Inner=' assigned twice
+   at NLog.Layouts.LayoutParser.ValidatePreviousParameterName(String previousParameterName, String parameterName, LayoutRenderer layoutRenderer, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.LayoutParser.ParseLayoutRenderer(ConfigurationItemFactory configurationItemFactory, SimpleStringReader stringReader, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.LayoutParser.CompileLayout(ConfigurationItemFactory configurationItemFactory, SimpleStringReader sr, Nullable`1 throwConfigExceptions, Boolean isNested, String& text)
+   at NLog.Layouts.LayoutParser.CompileLayout(String value, ConfigurationItemFactory configurationItemFactory, Nullable`1 throwConfigExceptions, String& text)
+   at NLog.Layouts.SimpleLayout.SetLayoutText(String value, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.SimpleLayout..ctor(String txt, ConfigurationItemFactory configurationItemFactory, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.SimpleLayout..ctor(String txt, ConfigurationItemFactory configurationItemFactory)
+   at NLog.Internal.PropertyHelper.TryParseLayoutValue(String stringValue, ConfigurationItemFactory configurationItemFactory)
+   at NLog.Internal.PropertyHelper.TryNLogSpecificConversion(Type propertyType, String value, ConfigurationItemFactory configurationItemFactory, Object& newValue)
+   at NLog.Internal.PropertyHelper.SetPropertyFromString(Object targetObject, PropertyInfo propInfo, String stringValue, ConfigurationItemFactory configurationItemFactory)
+   --- End of inner exception stack trace ---
+   at NLog.Internal.PropertyHelper.SetPropertyFromString(Object targetObject, PropertyInfo propInfo, String stringValue, ConfigurationItemFactory configurationItemFactory)
+   at NLog.Config.LoggingConfigurationParser.SetPropertyValueFromString[T](T targetObject, String propertyName, String propertyValue, ValidatedConfigurationElement element)
+   at NLog.Config.LoggingConfigurationParser.ConfigureObjectFromAttributes[T](T targetObject, ValidatedConfigurationElement element, Boolean ignoreType)
+   at NLog.Config.LoggingConfigurationParser.ParseTargetElement(Target target, ValidatedConfigurationElement targetElement, Dictionary`2 typeNameToDefaultTargetParameters)
+   at NLog.Config.LoggingConfigurationParser.AddNewTargetFromConfig(String targetTypeName, ValidatedConfigurationElement targetElement, Boolean asyncWrap, Dictionary`2 typeNameToDefaultTargetParameters, ValidatedConfigurationElement defaultWrapperElement)
+   at NLog.Config.LoggingConfigurationParser.ParseTargetsElement(ValidatedConfigurationElement targetsElement)
+   at NLog.Config.LoggingConfigurationParser.ParseNLogSection(ILoggingConfigurationElement configSection)
+   at NLog.Config.XmlLoggingConfiguration.ParseNLogSection(ILoggingConfigurationElement configSection)
+   at NLog.Config.LoggingConfigurationParser.LoadConfig(ILoggingConfigurationElement nlogConfig, String basePath)
+   at NLog.Config.XmlLoggingConfiguration.ParseNLogElement(ILoggingConfigurationElement nlogElement, String filePath, Boolean autoReloadDefault)
+   at NLog.Config.XmlLoggingConfiguration.ParseTopLevel(XmlLoggingConfigurationElement content, String filePath, Boolean autoReloadDefault)
+   at NLog.Config.XmlLoggingConfiguration.Initialize(XmlReader reader, String fileName, Boolean ignoreErrors)
+   --- End of inner exception stack trace ---
+   at NLog.Config.XmlLoggingConfiguration.Initialize(XmlReader reader, String fileName, Boolean ignoreErrors)
+   at NLog.Config.XmlLoggingConfiguration..ctor(XmlReader reader, String fileName, LogFactory logFactory)
+   at NLog.Config.LoggingConfigurationFileLoader.LoadXmlLoggingConfiguration(XmlReader xmlReader, String configFile, LogFactory logFactory)
+2025-01-18 13:49:43.6659 Error Failed loading from config file location: G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config Exception: NLog.NLogConfigurationException: Exception when loading configuration G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config
+ ---> NLog.NLogConfigurationException: 'FileTarget' cannot assign property 'Layout'='[${longdate}] ${pad:padding=5:inner=${level:uppercase=true}} | ${pad:padding=3:inner=${threadid}} | ${pad:padding=20:inner=${logger:shortName=true}} | ${message}${newline}${when:when=length('${aspnet-request-url}')>0:inner=请求地址: ${aspnet-request-url}${newline}}${when:when=length('${aspnet-mvc-controller}')>0:inner=控制器: ${aspnet-mvc-controller}${newline}}${when:when=length('${aspnet-mvc-action}')>0:inner=操作: ${aspnet-mvc-action}${newline}}${when:when=length('${aspnet-request-posted-body}')>0:inner=参数: ${aspnet-request-posted-body}${newline}}${when:when=length('${exception}')>0:inner=异常信息: ${exception:format=tostring}${newline}}----------------------------------------'. Error: 'WhenLayoutRendererWrapper' has same property 'Inner=' assigned twice
+ ---> NLog.NLogConfigurationException: 'WhenLayoutRendererWrapper' has same property 'Inner=' assigned twice
+   at NLog.Layouts.LayoutParser.ValidatePreviousParameterName(String previousParameterName, String parameterName, LayoutRenderer layoutRenderer, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.LayoutParser.ParseLayoutRenderer(ConfigurationItemFactory configurationItemFactory, SimpleStringReader stringReader, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.LayoutParser.CompileLayout(ConfigurationItemFactory configurationItemFactory, SimpleStringReader sr, Nullable`1 throwConfigExceptions, Boolean isNested, String& text)
+   at NLog.Layouts.LayoutParser.CompileLayout(String value, ConfigurationItemFactory configurationItemFactory, Nullable`1 throwConfigExceptions, String& text)
+   at NLog.Layouts.SimpleLayout.SetLayoutText(String value, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.SimpleLayout..ctor(String txt, ConfigurationItemFactory configurationItemFactory, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.SimpleLayout..ctor(String txt, ConfigurationItemFactory configurationItemFactory)
+   at NLog.Internal.PropertyHelper.TryParseLayoutValue(String stringValue, ConfigurationItemFactory configurationItemFactory)
+   at NLog.Internal.PropertyHelper.TryNLogSpecificConversion(Type propertyType, String value, ConfigurationItemFactory configurationItemFactory, Object& newValue)
+   at NLog.Internal.PropertyHelper.SetPropertyFromString(Object targetObject, PropertyInfo propInfo, String stringValue, ConfigurationItemFactory configurationItemFactory)
+   --- End of inner exception stack trace ---
+   at NLog.Internal.PropertyHelper.SetPropertyFromString(Object targetObject, PropertyInfo propInfo, String stringValue, ConfigurationItemFactory configurationItemFactory)
+   at NLog.Config.LoggingConfigurationParser.SetPropertyValueFromString[T](T targetObject, String propertyName, String propertyValue, ValidatedConfigurationElement element)
+   at NLog.Config.LoggingConfigurationParser.ConfigureObjectFromAttributes[T](T targetObject, ValidatedConfigurationElement element, Boolean ignoreType)
+   at NLog.Config.LoggingConfigurationParser.ParseTargetElement(Target target, ValidatedConfigurationElement targetElement, Dictionary`2 typeNameToDefaultTargetParameters)
+   at NLog.Config.LoggingConfigurationParser.AddNewTargetFromConfig(String targetTypeName, ValidatedConfigurationElement targetElement, Boolean asyncWrap, Dictionary`2 typeNameToDefaultTargetParameters, ValidatedConfigurationElement defaultWrapperElement)
+   at NLog.Config.LoggingConfigurationParser.ParseTargetsElement(ValidatedConfigurationElement targetsElement)
+   at NLog.Config.LoggingConfigurationParser.ParseNLogSection(ILoggingConfigurationElement configSection)
+   at NLog.Config.XmlLoggingConfiguration.ParseNLogSection(ILoggingConfigurationElement configSection)
+   at NLog.Config.LoggingConfigurationParser.LoadConfig(ILoggingConfigurationElement nlogConfig, String basePath)
+   at NLog.Config.XmlLoggingConfiguration.ParseNLogElement(ILoggingConfigurationElement nlogElement, String filePath, Boolean autoReloadDefault)
+   at NLog.Config.XmlLoggingConfiguration.ParseTopLevel(XmlLoggingConfigurationElement content, String filePath, Boolean autoReloadDefault)
+   at NLog.Config.XmlLoggingConfiguration.Initialize(XmlReader reader, String fileName, Boolean ignoreErrors)
+   --- End of inner exception stack trace ---
+   at NLog.Config.XmlLoggingConfiguration.Initialize(XmlReader reader, String fileName, Boolean ignoreErrors)
+   at NLog.Config.XmlLoggingConfiguration..ctor(XmlReader reader, String fileName, LogFactory logFactory)
+   at NLog.Config.LoggingConfigurationFileLoader.LoadXmlLoggingConfiguration(XmlReader xmlReader, String configFile, LogFactory logFactory)
+   at NLog.Config.LoggingConfigurationFileLoader.LoadXmlLoggingConfigurationFile(LogFactory logFactory, String configFile)
+   at NLog.Config.LoggingConfigurationFileLoader.TryLoadLoggingConfiguration(LogFactory logFactory, String configFile, LoggingConfiguration& config)
+2025-01-18 13:53:09.7113 Info Loading assembly name: NLog.Web.AspNetCore
+2025-01-18 13:53:09.7229 Info NLog.Web.AspNetCore, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.944. Product version: 5.3.4+c9ae8128ef4b6b6b6f2497cdaf451168b85d6ff7. GlobalAssemblyCache: False
+2025-01-18 13:53:09.7740 Info Registered target NLog.Targets.ColoredConsoleTarget(Name=console)
+2025-01-18 13:53:09.7934 Error Error has been raised. Exception: NLog.NLogConfigurationException: ${onhasproperties} cannot assign unknown property 'includeempty='
+2025-01-18 13:53:09.8286 Error Error has been raised. Exception: NLog.NLogConfigurationException: 'FileTarget' cannot assign property 'Layout'='${longdate} | ${level:uppercase=true} | ${logger:shortName=true} | ${message}${newline}${onhasproperties:includeempty=false:${newline}请求地址: ${aspnet-request-url}${newline}控制器: ${aspnet-mvc-controller}${newline}操作: ${aspnet-mvc-action}${newline}参数: ${aspnet-request-posted-body}}${newline}${exception:format=tostring:whenEmpty=}${newline}----------------------------------------'. Error: ${onhasproperties} cannot assign unknown property 'includeempty='
+ ---> NLog.NLogConfigurationException: ${onhasproperties} cannot assign unknown property 'includeempty='
+   at NLog.Layouts.LayoutParser.ParseLayoutRenderer(ConfigurationItemFactory configurationItemFactory, SimpleStringReader stringReader, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.LayoutParser.CompileLayout(ConfigurationItemFactory configurationItemFactory, SimpleStringReader sr, Nullable`1 throwConfigExceptions, Boolean isNested, String& text)
+   at NLog.Layouts.LayoutParser.CompileLayout(String value, ConfigurationItemFactory configurationItemFactory, Nullable`1 throwConfigExceptions, String& text)
+   at NLog.Layouts.SimpleLayout.SetLayoutText(String value, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.SimpleLayout..ctor(String txt, ConfigurationItemFactory configurationItemFactory, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.SimpleLayout..ctor(String txt, ConfigurationItemFactory configurationItemFactory)
+   at NLog.Internal.PropertyHelper.TryParseLayoutValue(String stringValue, ConfigurationItemFactory configurationItemFactory)
+   at NLog.Internal.PropertyHelper.TryNLogSpecificConversion(Type propertyType, String value, ConfigurationItemFactory configurationItemFactory, Object& newValue)
+   at NLog.Internal.PropertyHelper.SetPropertyFromString(Object targetObject, PropertyInfo propInfo, String stringValue, ConfigurationItemFactory configurationItemFactory)
+   --- End of inner exception stack trace ---
+   at NLog.Internal.PropertyHelper.SetPropertyFromString(Object targetObject, PropertyInfo propInfo, String stringValue, ConfigurationItemFactory configurationItemFactory)
+   at NLog.Config.LoggingConfigurationParser.SetPropertyValueFromString[T](T targetObject, String propertyName, String propertyValue, ValidatedConfigurationElement element)
+2025-01-18 13:53:09.8824 Error Exception when loading configuration G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config Exception: NLog.NLogConfigurationException: 'FileTarget' cannot assign property 'Layout'='${longdate} | ${level:uppercase=true} | ${logger:shortName=true} | ${message}${newline}${onhasproperties:includeempty=false:${newline}请求地址: ${aspnet-request-url}${newline}控制器: ${aspnet-mvc-controller}${newline}操作: ${aspnet-mvc-action}${newline}参数: ${aspnet-request-posted-body}}${newline}${exception:format=tostring:whenEmpty=}${newline}----------------------------------------'. Error: ${onhasproperties} cannot assign unknown property 'includeempty='
+ ---> NLog.NLogConfigurationException: ${onhasproperties} cannot assign unknown property 'includeempty='
+   at NLog.Layouts.LayoutParser.ParseLayoutRenderer(ConfigurationItemFactory configurationItemFactory, SimpleStringReader stringReader, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.LayoutParser.CompileLayout(ConfigurationItemFactory configurationItemFactory, SimpleStringReader sr, Nullable`1 throwConfigExceptions, Boolean isNested, String& text)
+   at NLog.Layouts.LayoutParser.CompileLayout(String value, ConfigurationItemFactory configurationItemFactory, Nullable`1 throwConfigExceptions, String& text)
+   at NLog.Layouts.SimpleLayout.SetLayoutText(String value, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.SimpleLayout..ctor(String txt, ConfigurationItemFactory configurationItemFactory, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.SimpleLayout..ctor(String txt, ConfigurationItemFactory configurationItemFactory)
+   at NLog.Internal.PropertyHelper.TryParseLayoutValue(String stringValue, ConfigurationItemFactory configurationItemFactory)
+   at NLog.Internal.PropertyHelper.TryNLogSpecificConversion(Type propertyType, String value, ConfigurationItemFactory configurationItemFactory, Object& newValue)
+   at NLog.Internal.PropertyHelper.SetPropertyFromString(Object targetObject, PropertyInfo propInfo, String stringValue, ConfigurationItemFactory configurationItemFactory)
+   --- End of inner exception stack trace ---
+   at NLog.Internal.PropertyHelper.SetPropertyFromString(Object targetObject, PropertyInfo propInfo, String stringValue, ConfigurationItemFactory configurationItemFactory)
+   at NLog.Config.LoggingConfigurationParser.SetPropertyValueFromString[T](T targetObject, String propertyName, String propertyValue, ValidatedConfigurationElement element)
+   at NLog.Config.LoggingConfigurationParser.ConfigureObjectFromAttributes[T](T targetObject, ValidatedConfigurationElement element, Boolean ignoreType)
+   at NLog.Config.LoggingConfigurationParser.ParseTargetElement(Target target, ValidatedConfigurationElement targetElement, Dictionary`2 typeNameToDefaultTargetParameters)
+   at NLog.Config.LoggingConfigurationParser.AddNewTargetFromConfig(String targetTypeName, ValidatedConfigurationElement targetElement, Boolean asyncWrap, Dictionary`2 typeNameToDefaultTargetParameters, ValidatedConfigurationElement defaultWrapperElement)
+   at NLog.Config.LoggingConfigurationParser.ParseTargetsElement(ValidatedConfigurationElement targetsElement)
+   at NLog.Config.LoggingConfigurationParser.ParseNLogSection(ILoggingConfigurationElement configSection)
+   at NLog.Config.XmlLoggingConfiguration.ParseNLogSection(ILoggingConfigurationElement configSection)
+   at NLog.Config.LoggingConfigurationParser.LoadConfig(ILoggingConfigurationElement nlogConfig, String basePath)
+   at NLog.Config.XmlLoggingConfiguration.ParseNLogElement(ILoggingConfigurationElement nlogElement, String filePath, Boolean autoReloadDefault)
+   at NLog.Config.XmlLoggingConfiguration.ParseTopLevel(XmlLoggingConfigurationElement content, String filePath, Boolean autoReloadDefault)
+   at NLog.Config.XmlLoggingConfiguration.Initialize(XmlReader reader, String fileName, Boolean ignoreErrors)
+2025-01-18 13:53:09.8988 Error Error has been raised. Exception: NLog.NLogConfigurationException: Exception when loading configuration G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config
+ ---> NLog.NLogConfigurationException: 'FileTarget' cannot assign property 'Layout'='${longdate} | ${level:uppercase=true} | ${logger:shortName=true} | ${message}${newline}${onhasproperties:includeempty=false:${newline}请求地址: ${aspnet-request-url}${newline}控制器: ${aspnet-mvc-controller}${newline}操作: ${aspnet-mvc-action}${newline}参数: ${aspnet-request-posted-body}}${newline}${exception:format=tostring:whenEmpty=}${newline}----------------------------------------'. Error: ${onhasproperties} cannot assign unknown property 'includeempty='
+ ---> NLog.NLogConfigurationException: ${onhasproperties} cannot assign unknown property 'includeempty='
+   at NLog.Layouts.LayoutParser.ParseLayoutRenderer(ConfigurationItemFactory configurationItemFactory, SimpleStringReader stringReader, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.LayoutParser.CompileLayout(ConfigurationItemFactory configurationItemFactory, SimpleStringReader sr, Nullable`1 throwConfigExceptions, Boolean isNested, String& text)
+   at NLog.Layouts.LayoutParser.CompileLayout(String value, ConfigurationItemFactory configurationItemFactory, Nullable`1 throwConfigExceptions, String& text)
+   at NLog.Layouts.SimpleLayout.SetLayoutText(String value, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.SimpleLayout..ctor(String txt, ConfigurationItemFactory configurationItemFactory, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.SimpleLayout..ctor(String txt, ConfigurationItemFactory configurationItemFactory)
+   at NLog.Internal.PropertyHelper.TryParseLayoutValue(String stringValue, ConfigurationItemFactory configurationItemFactory)
+   at NLog.Internal.PropertyHelper.TryNLogSpecificConversion(Type propertyType, String value, ConfigurationItemFactory configurationItemFactory, Object& newValue)
+   at NLog.Internal.PropertyHelper.SetPropertyFromString(Object targetObject, PropertyInfo propInfo, String stringValue, ConfigurationItemFactory configurationItemFactory)
+   --- End of inner exception stack trace ---
+   at NLog.Internal.PropertyHelper.SetPropertyFromString(Object targetObject, PropertyInfo propInfo, String stringValue, ConfigurationItemFactory configurationItemFactory)
+   at NLog.Config.LoggingConfigurationParser.SetPropertyValueFromString[T](T targetObject, String propertyName, String propertyValue, ValidatedConfigurationElement element)
+   at NLog.Config.LoggingConfigurationParser.ConfigureObjectFromAttributes[T](T targetObject, ValidatedConfigurationElement element, Boolean ignoreType)
+   at NLog.Config.LoggingConfigurationParser.ParseTargetElement(Target target, ValidatedConfigurationElement targetElement, Dictionary`2 typeNameToDefaultTargetParameters)
+   at NLog.Config.LoggingConfigurationParser.AddNewTargetFromConfig(String targetTypeName, ValidatedConfigurationElement targetElement, Boolean asyncWrap, Dictionary`2 typeNameToDefaultTargetParameters, ValidatedConfigurationElement defaultWrapperElement)
+   at NLog.Config.LoggingConfigurationParser.ParseTargetsElement(ValidatedConfigurationElement targetsElement)
+   at NLog.Config.LoggingConfigurationParser.ParseNLogSection(ILoggingConfigurationElement configSection)
+   at NLog.Config.XmlLoggingConfiguration.ParseNLogSection(ILoggingConfigurationElement configSection)
+   at NLog.Config.LoggingConfigurationParser.LoadConfig(ILoggingConfigurationElement nlogConfig, String basePath)
+   at NLog.Config.XmlLoggingConfiguration.ParseNLogElement(ILoggingConfigurationElement nlogElement, String filePath, Boolean autoReloadDefault)
+   at NLog.Config.XmlLoggingConfiguration.ParseTopLevel(XmlLoggingConfigurationElement content, String filePath, Boolean autoReloadDefault)
+   at NLog.Config.XmlLoggingConfiguration.Initialize(XmlReader reader, String fileName, Boolean ignoreErrors)
+   --- End of inner exception stack trace ---
+   at NLog.Config.XmlLoggingConfiguration.Initialize(XmlReader reader, String fileName, Boolean ignoreErrors)
+   at NLog.Config.XmlLoggingConfiguration..ctor(XmlReader reader, String fileName, LogFactory logFactory)
+   at NLog.Config.LoggingConfigurationFileLoader.LoadXmlLoggingConfiguration(XmlReader xmlReader, String configFile, LogFactory logFactory)
+2025-01-18 13:53:09.9164 Error Failed loading from config file location: G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config Exception: NLog.NLogConfigurationException: Exception when loading configuration G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config
+ ---> NLog.NLogConfigurationException: 'FileTarget' cannot assign property 'Layout'='${longdate} | ${level:uppercase=true} | ${logger:shortName=true} | ${message}${newline}${onhasproperties:includeempty=false:${newline}请求地址: ${aspnet-request-url}${newline}控制器: ${aspnet-mvc-controller}${newline}操作: ${aspnet-mvc-action}${newline}参数: ${aspnet-request-posted-body}}${newline}${exception:format=tostring:whenEmpty=}${newline}----------------------------------------'. Error: ${onhasproperties} cannot assign unknown property 'includeempty='
+ ---> NLog.NLogConfigurationException: ${onhasproperties} cannot assign unknown property 'includeempty='
+   at NLog.Layouts.LayoutParser.ParseLayoutRenderer(ConfigurationItemFactory configurationItemFactory, SimpleStringReader stringReader, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.LayoutParser.CompileLayout(ConfigurationItemFactory configurationItemFactory, SimpleStringReader sr, Nullable`1 throwConfigExceptions, Boolean isNested, String& text)
+   at NLog.Layouts.LayoutParser.CompileLayout(String value, ConfigurationItemFactory configurationItemFactory, Nullable`1 throwConfigExceptions, String& text)
+   at NLog.Layouts.SimpleLayout.SetLayoutText(String value, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.SimpleLayout..ctor(String txt, ConfigurationItemFactory configurationItemFactory, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.SimpleLayout..ctor(String txt, ConfigurationItemFactory configurationItemFactory)
+   at NLog.Internal.PropertyHelper.TryParseLayoutValue(String stringValue, ConfigurationItemFactory configurationItemFactory)
+   at NLog.Internal.PropertyHelper.TryNLogSpecificConversion(Type propertyType, String value, ConfigurationItemFactory configurationItemFactory, Object& newValue)
+   at NLog.Internal.PropertyHelper.SetPropertyFromString(Object targetObject, PropertyInfo propInfo, String stringValue, ConfigurationItemFactory configurationItemFactory)
+   --- End of inner exception stack trace ---
+   at NLog.Internal.PropertyHelper.SetPropertyFromString(Object targetObject, PropertyInfo propInfo, String stringValue, ConfigurationItemFactory configurationItemFactory)
+   at NLog.Config.LoggingConfigurationParser.SetPropertyValueFromString[T](T targetObject, String propertyName, String propertyValue, ValidatedConfigurationElement element)
+   at NLog.Config.LoggingConfigurationParser.ConfigureObjectFromAttributes[T](T targetObject, ValidatedConfigurationElement element, Boolean ignoreType)
+   at NLog.Config.LoggingConfigurationParser.ParseTargetElement(Target target, ValidatedConfigurationElement targetElement, Dictionary`2 typeNameToDefaultTargetParameters)
+   at NLog.Config.LoggingConfigurationParser.AddNewTargetFromConfig(String targetTypeName, ValidatedConfigurationElement targetElement, Boolean asyncWrap, Dictionary`2 typeNameToDefaultTargetParameters, ValidatedConfigurationElement defaultWrapperElement)
+   at NLog.Config.LoggingConfigurationParser.ParseTargetsElement(ValidatedConfigurationElement targetsElement)
+   at NLog.Config.LoggingConfigurationParser.ParseNLogSection(ILoggingConfigurationElement configSection)
+   at NLog.Config.XmlLoggingConfiguration.ParseNLogSection(ILoggingConfigurationElement configSection)
+   at NLog.Config.LoggingConfigurationParser.LoadConfig(ILoggingConfigurationElement nlogConfig, String basePath)
+   at NLog.Config.XmlLoggingConfiguration.ParseNLogElement(ILoggingConfigurationElement nlogElement, String filePath, Boolean autoReloadDefault)
+   at NLog.Config.XmlLoggingConfiguration.ParseTopLevel(XmlLoggingConfigurationElement content, String filePath, Boolean autoReloadDefault)
+   at NLog.Config.XmlLoggingConfiguration.Initialize(XmlReader reader, String fileName, Boolean ignoreErrors)
+   --- End of inner exception stack trace ---
+   at NLog.Config.XmlLoggingConfiguration.Initialize(XmlReader reader, String fileName, Boolean ignoreErrors)
+   at NLog.Config.XmlLoggingConfiguration..ctor(XmlReader reader, String fileName, LogFactory logFactory)
+   at NLog.Config.LoggingConfigurationFileLoader.LoadXmlLoggingConfiguration(XmlReader xmlReader, String configFile, LogFactory logFactory)
+   at NLog.Config.LoggingConfigurationFileLoader.LoadXmlLoggingConfigurationFile(LogFactory logFactory, String configFile)
+   at NLog.Config.LoggingConfigurationFileLoader.TryLoadLoggingConfiguration(LogFactory logFactory, String configFile, LoggingConfiguration& config)
+2025-01-18 13:55:29.4889 Info Loading assembly name: NLog.Web.AspNetCore
+2025-01-18 13:55:29.4992 Info NLog.Web.AspNetCore, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.944. Product version: 5.3.4+c9ae8128ef4b6b6b6f2497cdaf451168b85d6ff7. GlobalAssemblyCache: False
+2025-01-18 13:55:29.5519 Info Registered target NLog.Targets.ColoredConsoleTarget(Name=console)
+2025-01-18 13:55:29.5709 Error Error has been raised. Exception: NLog.NLogConfigurationException: ${onhasproperties} cannot assign unknown property 'includeempty='
+2025-01-18 13:55:29.6145 Error Error has been raised. Exception: NLog.NLogConfigurationException: 'FileTarget' cannot assign property 'Layout'='${longdate} | ${level:uppercase=true} | ${logger:shortName=true} | ${message}${newline}${onhasproperties:includeempty=false:${newline}请求地址: ${aspnet-request-url}${newline}控制器: ${aspnet-mvc-controller}${newline}操作: ${aspnet-mvc-action}${newline}参数: ${aspnet-request-posted-body}}${newline}${exception:format=tostring:whenEmpty=}${newline}----------------------------------------'. Error: ${onhasproperties} cannot assign unknown property 'includeempty='
+ ---> NLog.NLogConfigurationException: ${onhasproperties} cannot assign unknown property 'includeempty='
+   at NLog.Layouts.LayoutParser.ParseLayoutRenderer(ConfigurationItemFactory configurationItemFactory, SimpleStringReader stringReader, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.LayoutParser.CompileLayout(ConfigurationItemFactory configurationItemFactory, SimpleStringReader sr, Nullable`1 throwConfigExceptions, Boolean isNested, String& text)
+   at NLog.Layouts.LayoutParser.CompileLayout(String value, ConfigurationItemFactory configurationItemFactory, Nullable`1 throwConfigExceptions, String& text)
+   at NLog.Layouts.SimpleLayout.SetLayoutText(String value, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.SimpleLayout..ctor(String txt, ConfigurationItemFactory configurationItemFactory, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.SimpleLayout..ctor(String txt, ConfigurationItemFactory configurationItemFactory)
+   at NLog.Internal.PropertyHelper.TryParseLayoutValue(String stringValue, ConfigurationItemFactory configurationItemFactory)
+   at NLog.Internal.PropertyHelper.TryNLogSpecificConversion(Type propertyType, String value, ConfigurationItemFactory configurationItemFactory, Object& newValue)
+   at NLog.Internal.PropertyHelper.SetPropertyFromString(Object targetObject, PropertyInfo propInfo, String stringValue, ConfigurationItemFactory configurationItemFactory)
+   --- End of inner exception stack trace ---
+   at NLog.Internal.PropertyHelper.SetPropertyFromString(Object targetObject, PropertyInfo propInfo, String stringValue, ConfigurationItemFactory configurationItemFactory)
+   at NLog.Config.LoggingConfigurationParser.SetPropertyValueFromString[T](T targetObject, String propertyName, String propertyValue, ValidatedConfigurationElement element)
+2025-01-18 13:55:29.6778 Error Exception when loading configuration G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config Exception: NLog.NLogConfigurationException: 'FileTarget' cannot assign property 'Layout'='${longdate} | ${level:uppercase=true} | ${logger:shortName=true} | ${message}${newline}${onhasproperties:includeempty=false:${newline}请求地址: ${aspnet-request-url}${newline}控制器: ${aspnet-mvc-controller}${newline}操作: ${aspnet-mvc-action}${newline}参数: ${aspnet-request-posted-body}}${newline}${exception:format=tostring:whenEmpty=}${newline}----------------------------------------'. Error: ${onhasproperties} cannot assign unknown property 'includeempty='
+ ---> NLog.NLogConfigurationException: ${onhasproperties} cannot assign unknown property 'includeempty='
+   at NLog.Layouts.LayoutParser.ParseLayoutRenderer(ConfigurationItemFactory configurationItemFactory, SimpleStringReader stringReader, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.LayoutParser.CompileLayout(ConfigurationItemFactory configurationItemFactory, SimpleStringReader sr, Nullable`1 throwConfigExceptions, Boolean isNested, String& text)
+   at NLog.Layouts.LayoutParser.CompileLayout(String value, ConfigurationItemFactory configurationItemFactory, Nullable`1 throwConfigExceptions, String& text)
+   at NLog.Layouts.SimpleLayout.SetLayoutText(String value, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.SimpleLayout..ctor(String txt, ConfigurationItemFactory configurationItemFactory, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.SimpleLayout..ctor(String txt, ConfigurationItemFactory configurationItemFactory)
+   at NLog.Internal.PropertyHelper.TryParseLayoutValue(String stringValue, ConfigurationItemFactory configurationItemFactory)
+   at NLog.Internal.PropertyHelper.TryNLogSpecificConversion(Type propertyType, String value, ConfigurationItemFactory configurationItemFactory, Object& newValue)
+   at NLog.Internal.PropertyHelper.SetPropertyFromString(Object targetObject, PropertyInfo propInfo, String stringValue, ConfigurationItemFactory configurationItemFactory)
+   --- End of inner exception stack trace ---
+   at NLog.Internal.PropertyHelper.SetPropertyFromString(Object targetObject, PropertyInfo propInfo, String stringValue, ConfigurationItemFactory configurationItemFactory)
+   at NLog.Config.LoggingConfigurationParser.SetPropertyValueFromString[T](T targetObject, String propertyName, String propertyValue, ValidatedConfigurationElement element)
+   at NLog.Config.LoggingConfigurationParser.ConfigureObjectFromAttributes[T](T targetObject, ValidatedConfigurationElement element, Boolean ignoreType)
+   at NLog.Config.LoggingConfigurationParser.ParseTargetElement(Target target, ValidatedConfigurationElement targetElement, Dictionary`2 typeNameToDefaultTargetParameters)
+   at NLog.Config.LoggingConfigurationParser.AddNewTargetFromConfig(String targetTypeName, ValidatedConfigurationElement targetElement, Boolean asyncWrap, Dictionary`2 typeNameToDefaultTargetParameters, ValidatedConfigurationElement defaultWrapperElement)
+   at NLog.Config.LoggingConfigurationParser.ParseTargetsElement(ValidatedConfigurationElement targetsElement)
+   at NLog.Config.LoggingConfigurationParser.ParseNLogSection(ILoggingConfigurationElement configSection)
+   at NLog.Config.XmlLoggingConfiguration.ParseNLogSection(ILoggingConfigurationElement configSection)
+   at NLog.Config.LoggingConfigurationParser.LoadConfig(ILoggingConfigurationElement nlogConfig, String basePath)
+   at NLog.Config.XmlLoggingConfiguration.ParseNLogElement(ILoggingConfigurationElement nlogElement, String filePath, Boolean autoReloadDefault)
+   at NLog.Config.XmlLoggingConfiguration.ParseTopLevel(XmlLoggingConfigurationElement content, String filePath, Boolean autoReloadDefault)
+   at NLog.Config.XmlLoggingConfiguration.Initialize(XmlReader reader, String fileName, Boolean ignoreErrors)
+2025-01-18 13:55:29.6943 Error Error has been raised. Exception: NLog.NLogConfigurationException: Exception when loading configuration G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config
+ ---> NLog.NLogConfigurationException: 'FileTarget' cannot assign property 'Layout'='${longdate} | ${level:uppercase=true} | ${logger:shortName=true} | ${message}${newline}${onhasproperties:includeempty=false:${newline}请求地址: ${aspnet-request-url}${newline}控制器: ${aspnet-mvc-controller}${newline}操作: ${aspnet-mvc-action}${newline}参数: ${aspnet-request-posted-body}}${newline}${exception:format=tostring:whenEmpty=}${newline}----------------------------------------'. Error: ${onhasproperties} cannot assign unknown property 'includeempty='
+ ---> NLog.NLogConfigurationException: ${onhasproperties} cannot assign unknown property 'includeempty='
+   at NLog.Layouts.LayoutParser.ParseLayoutRenderer(ConfigurationItemFactory configurationItemFactory, SimpleStringReader stringReader, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.LayoutParser.CompileLayout(ConfigurationItemFactory configurationItemFactory, SimpleStringReader sr, Nullable`1 throwConfigExceptions, Boolean isNested, String& text)
+   at NLog.Layouts.LayoutParser.CompileLayout(String value, ConfigurationItemFactory configurationItemFactory, Nullable`1 throwConfigExceptions, String& text)
+   at NLog.Layouts.SimpleLayout.SetLayoutText(String value, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.SimpleLayout..ctor(String txt, ConfigurationItemFactory configurationItemFactory, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.SimpleLayout..ctor(String txt, ConfigurationItemFactory configurationItemFactory)
+   at NLog.Internal.PropertyHelper.TryParseLayoutValue(String stringValue, ConfigurationItemFactory configurationItemFactory)
+   at NLog.Internal.PropertyHelper.TryNLogSpecificConversion(Type propertyType, String value, ConfigurationItemFactory configurationItemFactory, Object& newValue)
+   at NLog.Internal.PropertyHelper.SetPropertyFromString(Object targetObject, PropertyInfo propInfo, String stringValue, ConfigurationItemFactory configurationItemFactory)
+   --- End of inner exception stack trace ---
+   at NLog.Internal.PropertyHelper.SetPropertyFromString(Object targetObject, PropertyInfo propInfo, String stringValue, ConfigurationItemFactory configurationItemFactory)
+   at NLog.Config.LoggingConfigurationParser.SetPropertyValueFromString[T](T targetObject, String propertyName, String propertyValue, ValidatedConfigurationElement element)
+   at NLog.Config.LoggingConfigurationParser.ConfigureObjectFromAttributes[T](T targetObject, ValidatedConfigurationElement element, Boolean ignoreType)
+   at NLog.Config.LoggingConfigurationParser.ParseTargetElement(Target target, ValidatedConfigurationElement targetElement, Dictionary`2 typeNameToDefaultTargetParameters)
+   at NLog.Config.LoggingConfigurationParser.AddNewTargetFromConfig(String targetTypeName, ValidatedConfigurationElement targetElement, Boolean asyncWrap, Dictionary`2 typeNameToDefaultTargetParameters, ValidatedConfigurationElement defaultWrapperElement)
+   at NLog.Config.LoggingConfigurationParser.ParseTargetsElement(ValidatedConfigurationElement targetsElement)
+   at NLog.Config.LoggingConfigurationParser.ParseNLogSection(ILoggingConfigurationElement configSection)
+   at NLog.Config.XmlLoggingConfiguration.ParseNLogSection(ILoggingConfigurationElement configSection)
+   at NLog.Config.LoggingConfigurationParser.LoadConfig(ILoggingConfigurationElement nlogConfig, String basePath)
+   at NLog.Config.XmlLoggingConfiguration.ParseNLogElement(ILoggingConfigurationElement nlogElement, String filePath, Boolean autoReloadDefault)
+   at NLog.Config.XmlLoggingConfiguration.ParseTopLevel(XmlLoggingConfigurationElement content, String filePath, Boolean autoReloadDefault)
+   at NLog.Config.XmlLoggingConfiguration.Initialize(XmlReader reader, String fileName, Boolean ignoreErrors)
+   --- End of inner exception stack trace ---
+   at NLog.Config.XmlLoggingConfiguration.Initialize(XmlReader reader, String fileName, Boolean ignoreErrors)
+   at NLog.Config.XmlLoggingConfiguration..ctor(XmlReader reader, String fileName, LogFactory logFactory)
+   at NLog.Config.LoggingConfigurationFileLoader.LoadXmlLoggingConfiguration(XmlReader xmlReader, String configFile, LogFactory logFactory)
+2025-01-18 13:55:29.7122 Error Failed loading from config file location: G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config Exception: NLog.NLogConfigurationException: Exception when loading configuration G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config
+ ---> NLog.NLogConfigurationException: 'FileTarget' cannot assign property 'Layout'='${longdate} | ${level:uppercase=true} | ${logger:shortName=true} | ${message}${newline}${onhasproperties:includeempty=false:${newline}请求地址: ${aspnet-request-url}${newline}控制器: ${aspnet-mvc-controller}${newline}操作: ${aspnet-mvc-action}${newline}参数: ${aspnet-request-posted-body}}${newline}${exception:format=tostring:whenEmpty=}${newline}----------------------------------------'. Error: ${onhasproperties} cannot assign unknown property 'includeempty='
+ ---> NLog.NLogConfigurationException: ${onhasproperties} cannot assign unknown property 'includeempty='
+   at NLog.Layouts.LayoutParser.ParseLayoutRenderer(ConfigurationItemFactory configurationItemFactory, SimpleStringReader stringReader, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.LayoutParser.CompileLayout(ConfigurationItemFactory configurationItemFactory, SimpleStringReader sr, Nullable`1 throwConfigExceptions, Boolean isNested, String& text)
+   at NLog.Layouts.LayoutParser.CompileLayout(String value, ConfigurationItemFactory configurationItemFactory, Nullable`1 throwConfigExceptions, String& text)
+   at NLog.Layouts.SimpleLayout.SetLayoutText(String value, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.SimpleLayout..ctor(String txt, ConfigurationItemFactory configurationItemFactory, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.SimpleLayout..ctor(String txt, ConfigurationItemFactory configurationItemFactory)
+   at NLog.Internal.PropertyHelper.TryParseLayoutValue(String stringValue, ConfigurationItemFactory configurationItemFactory)
+   at NLog.Internal.PropertyHelper.TryNLogSpecificConversion(Type propertyType, String value, ConfigurationItemFactory configurationItemFactory, Object& newValue)
+   at NLog.Internal.PropertyHelper.SetPropertyFromString(Object targetObject, PropertyInfo propInfo, String stringValue, ConfigurationItemFactory configurationItemFactory)
+   --- End of inner exception stack trace ---
+   at NLog.Internal.PropertyHelper.SetPropertyFromString(Object targetObject, PropertyInfo propInfo, String stringValue, ConfigurationItemFactory configurationItemFactory)
+   at NLog.Config.LoggingConfigurationParser.SetPropertyValueFromString[T](T targetObject, String propertyName, String propertyValue, ValidatedConfigurationElement element)
+   at NLog.Config.LoggingConfigurationParser.ConfigureObjectFromAttributes[T](T targetObject, ValidatedConfigurationElement element, Boolean ignoreType)
+   at NLog.Config.LoggingConfigurationParser.ParseTargetElement(Target target, ValidatedConfigurationElement targetElement, Dictionary`2 typeNameToDefaultTargetParameters)
+   at NLog.Config.LoggingConfigurationParser.AddNewTargetFromConfig(String targetTypeName, ValidatedConfigurationElement targetElement, Boolean asyncWrap, Dictionary`2 typeNameToDefaultTargetParameters, ValidatedConfigurationElement defaultWrapperElement)
+   at NLog.Config.LoggingConfigurationParser.ParseTargetsElement(ValidatedConfigurationElement targetsElement)
+   at NLog.Config.LoggingConfigurationParser.ParseNLogSection(ILoggingConfigurationElement configSection)
+   at NLog.Config.XmlLoggingConfiguration.ParseNLogSection(ILoggingConfigurationElement configSection)
+   at NLog.Config.LoggingConfigurationParser.LoadConfig(ILoggingConfigurationElement nlogConfig, String basePath)
+   at NLog.Config.XmlLoggingConfiguration.ParseNLogElement(ILoggingConfigurationElement nlogElement, String filePath, Boolean autoReloadDefault)
+   at NLog.Config.XmlLoggingConfiguration.ParseTopLevel(XmlLoggingConfigurationElement content, String filePath, Boolean autoReloadDefault)
+   at NLog.Config.XmlLoggingConfiguration.Initialize(XmlReader reader, String fileName, Boolean ignoreErrors)
+   --- End of inner exception stack trace ---
+   at NLog.Config.XmlLoggingConfiguration.Initialize(XmlReader reader, String fileName, Boolean ignoreErrors)
+   at NLog.Config.XmlLoggingConfiguration..ctor(XmlReader reader, String fileName, LogFactory logFactory)
+   at NLog.Config.LoggingConfigurationFileLoader.LoadXmlLoggingConfiguration(XmlReader xmlReader, String configFile, LogFactory logFactory)
+   at NLog.Config.LoggingConfigurationFileLoader.LoadXmlLoggingConfigurationFile(LogFactory logFactory, String configFile)
+   at NLog.Config.LoggingConfigurationFileLoader.TryLoadLoggingConfiguration(LogFactory logFactory, String configFile, LoggingConfiguration& config)
+2025-01-18 13:57:41.3464 Info Loading assembly name: NLog.Web.AspNetCore
+2025-01-18 13:57:41.3609 Info NLog.Web.AspNetCore, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.944. Product version: 5.3.4+c9ae8128ef4b6b6b6f2497cdaf451168b85d6ff7. GlobalAssemblyCache: False
+2025-01-18 13:57:41.4225 Info Registered target NLog.Targets.ColoredConsoleTarget(Name=console)
+2025-01-18 13:57:41.4397 Error Error has been raised. Exception: NLog.NLogConfigurationException: 'WhenLayoutRendererWrapper' has same property 'Inner=' assigned twice
+2025-01-18 13:57:41.4824 Error Error has been raised. Exception: NLog.NLogConfigurationException: 'FileTarget' cannot assign property 'Layout'='${longdate} | ${level:uppercase=true} | ${logger:shortName=true} | ${message}${newline}${when:when=length('${aspnet-request-url}') > 0:inner=请求地址: ${aspnet-request-url}${newline}}${when:when=length('${aspnet-mvc-controller}') > 0:inner=控制器: ${aspnet-mvc-controller}${newline}}${when:when=length('${aspnet-mvc-action}') > 0:inner=操作: ${aspnet-mvc-action}${newline}}${when:when=length('${aspnet-request-posted-body}') > 0:inner=参数: ${aspnet-request-posted-body}${newline}}${when:when=length('${exception}') > 0:inner=异常信息: ${exception:format=tostring}${newline}}----------------------------------------'. Error: 'WhenLayoutRendererWrapper' has same property 'Inner=' assigned twice
+ ---> NLog.NLogConfigurationException: 'WhenLayoutRendererWrapper' has same property 'Inner=' assigned twice
+   at NLog.Layouts.LayoutParser.ValidatePreviousParameterName(String previousParameterName, String parameterName, LayoutRenderer layoutRenderer, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.LayoutParser.ParseLayoutRenderer(ConfigurationItemFactory configurationItemFactory, SimpleStringReader stringReader, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.LayoutParser.CompileLayout(ConfigurationItemFactory configurationItemFactory, SimpleStringReader sr, Nullable`1 throwConfigExceptions, Boolean isNested, String& text)
+   at NLog.Layouts.LayoutParser.CompileLayout(String value, ConfigurationItemFactory configurationItemFactory, Nullable`1 throwConfigExceptions, String& text)
+   at NLog.Layouts.SimpleLayout.SetLayoutText(String value, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.SimpleLayout..ctor(String txt, ConfigurationItemFactory configurationItemFactory, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.SimpleLayout..ctor(String txt, ConfigurationItemFactory configurationItemFactory)
+   at NLog.Internal.PropertyHelper.TryParseLayoutValue(String stringValue, ConfigurationItemFactory configurationItemFactory)
+   at NLog.Internal.PropertyHelper.TryNLogSpecificConversion(Type propertyType, String value, ConfigurationItemFactory configurationItemFactory, Object& newValue)
+   at NLog.Internal.PropertyHelper.SetPropertyFromString(Object targetObject, PropertyInfo propInfo, String stringValue, ConfigurationItemFactory configurationItemFactory)
+   --- End of inner exception stack trace ---
+   at NLog.Internal.PropertyHelper.SetPropertyFromString(Object targetObject, PropertyInfo propInfo, String stringValue, ConfigurationItemFactory configurationItemFactory)
+   at NLog.Config.LoggingConfigurationParser.SetPropertyValueFromString[T](T targetObject, String propertyName, String propertyValue, ValidatedConfigurationElement element)
+2025-01-18 13:57:41.5424 Error Exception when loading configuration G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config Exception: NLog.NLogConfigurationException: 'FileTarget' cannot assign property 'Layout'='${longdate} | ${level:uppercase=true} | ${logger:shortName=true} | ${message}${newline}${when:when=length('${aspnet-request-url}') > 0:inner=请求地址: ${aspnet-request-url}${newline}}${when:when=length('${aspnet-mvc-controller}') > 0:inner=控制器: ${aspnet-mvc-controller}${newline}}${when:when=length('${aspnet-mvc-action}') > 0:inner=操作: ${aspnet-mvc-action}${newline}}${when:when=length('${aspnet-request-posted-body}') > 0:inner=参数: ${aspnet-request-posted-body}${newline}}${when:when=length('${exception}') > 0:inner=异常信息: ${exception:format=tostring}${newline}}----------------------------------------'. Error: 'WhenLayoutRendererWrapper' has same property 'Inner=' assigned twice
+ ---> NLog.NLogConfigurationException: 'WhenLayoutRendererWrapper' has same property 'Inner=' assigned twice
+   at NLog.Layouts.LayoutParser.ValidatePreviousParameterName(String previousParameterName, String parameterName, LayoutRenderer layoutRenderer, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.LayoutParser.ParseLayoutRenderer(ConfigurationItemFactory configurationItemFactory, SimpleStringReader stringReader, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.LayoutParser.CompileLayout(ConfigurationItemFactory configurationItemFactory, SimpleStringReader sr, Nullable`1 throwConfigExceptions, Boolean isNested, String& text)
+   at NLog.Layouts.LayoutParser.CompileLayout(String value, ConfigurationItemFactory configurationItemFactory, Nullable`1 throwConfigExceptions, String& text)
+   at NLog.Layouts.SimpleLayout.SetLayoutText(String value, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.SimpleLayout..ctor(String txt, ConfigurationItemFactory configurationItemFactory, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.SimpleLayout..ctor(String txt, ConfigurationItemFactory configurationItemFactory)
+   at NLog.Internal.PropertyHelper.TryParseLayoutValue(String stringValue, ConfigurationItemFactory configurationItemFactory)
+   at NLog.Internal.PropertyHelper.TryNLogSpecificConversion(Type propertyType, String value, ConfigurationItemFactory configurationItemFactory, Object& newValue)
+   at NLog.Internal.PropertyHelper.SetPropertyFromString(Object targetObject, PropertyInfo propInfo, String stringValue, ConfigurationItemFactory configurationItemFactory)
+   --- End of inner exception stack trace ---
+   at NLog.Internal.PropertyHelper.SetPropertyFromString(Object targetObject, PropertyInfo propInfo, String stringValue, ConfigurationItemFactory configurationItemFactory)
+   at NLog.Config.LoggingConfigurationParser.SetPropertyValueFromString[T](T targetObject, String propertyName, String propertyValue, ValidatedConfigurationElement element)
+   at NLog.Config.LoggingConfigurationParser.ConfigureObjectFromAttributes[T](T targetObject, ValidatedConfigurationElement element, Boolean ignoreType)
+   at NLog.Config.LoggingConfigurationParser.ParseTargetElement(Target target, ValidatedConfigurationElement targetElement, Dictionary`2 typeNameToDefaultTargetParameters)
+   at NLog.Config.LoggingConfigurationParser.AddNewTargetFromConfig(String targetTypeName, ValidatedConfigurationElement targetElement, Boolean asyncWrap, Dictionary`2 typeNameToDefaultTargetParameters, ValidatedConfigurationElement defaultWrapperElement)
+   at NLog.Config.LoggingConfigurationParser.ParseTargetsElement(ValidatedConfigurationElement targetsElement)
+   at NLog.Config.LoggingConfigurationParser.ParseNLogSection(ILoggingConfigurationElement configSection)
+   at NLog.Config.XmlLoggingConfiguration.ParseNLogSection(ILoggingConfigurationElement configSection)
+   at NLog.Config.LoggingConfigurationParser.LoadConfig(ILoggingConfigurationElement nlogConfig, String basePath)
+   at NLog.Config.XmlLoggingConfiguration.ParseNLogElement(ILoggingConfigurationElement nlogElement, String filePath, Boolean autoReloadDefault)
+   at NLog.Config.XmlLoggingConfiguration.ParseTopLevel(XmlLoggingConfigurationElement content, String filePath, Boolean autoReloadDefault)
+   at NLog.Config.XmlLoggingConfiguration.Initialize(XmlReader reader, String fileName, Boolean ignoreErrors)
+2025-01-18 13:57:41.5602 Error Error has been raised. Exception: NLog.NLogConfigurationException: Exception when loading configuration G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config
+ ---> NLog.NLogConfigurationException: 'FileTarget' cannot assign property 'Layout'='${longdate} | ${level:uppercase=true} | ${logger:shortName=true} | ${message}${newline}${when:when=length('${aspnet-request-url}') > 0:inner=请求地址: ${aspnet-request-url}${newline}}${when:when=length('${aspnet-mvc-controller}') > 0:inner=控制器: ${aspnet-mvc-controller}${newline}}${when:when=length('${aspnet-mvc-action}') > 0:inner=操作: ${aspnet-mvc-action}${newline}}${when:when=length('${aspnet-request-posted-body}') > 0:inner=参数: ${aspnet-request-posted-body}${newline}}${when:when=length('${exception}') > 0:inner=异常信息: ${exception:format=tostring}${newline}}----------------------------------------'. Error: 'WhenLayoutRendererWrapper' has same property 'Inner=' assigned twice
+ ---> NLog.NLogConfigurationException: 'WhenLayoutRendererWrapper' has same property 'Inner=' assigned twice
+   at NLog.Layouts.LayoutParser.ValidatePreviousParameterName(String previousParameterName, String parameterName, LayoutRenderer layoutRenderer, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.LayoutParser.ParseLayoutRenderer(ConfigurationItemFactory configurationItemFactory, SimpleStringReader stringReader, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.LayoutParser.CompileLayout(ConfigurationItemFactory configurationItemFactory, SimpleStringReader sr, Nullable`1 throwConfigExceptions, Boolean isNested, String& text)
+   at NLog.Layouts.LayoutParser.CompileLayout(String value, ConfigurationItemFactory configurationItemFactory, Nullable`1 throwConfigExceptions, String& text)
+   at NLog.Layouts.SimpleLayout.SetLayoutText(String value, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.SimpleLayout..ctor(String txt, ConfigurationItemFactory configurationItemFactory, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.SimpleLayout..ctor(String txt, ConfigurationItemFactory configurationItemFactory)
+   at NLog.Internal.PropertyHelper.TryParseLayoutValue(String stringValue, ConfigurationItemFactory configurationItemFactory)
+   at NLog.Internal.PropertyHelper.TryNLogSpecificConversion(Type propertyType, String value, ConfigurationItemFactory configurationItemFactory, Object& newValue)
+   at NLog.Internal.PropertyHelper.SetPropertyFromString(Object targetObject, PropertyInfo propInfo, String stringValue, ConfigurationItemFactory configurationItemFactory)
+   --- End of inner exception stack trace ---
+   at NLog.Internal.PropertyHelper.SetPropertyFromString(Object targetObject, PropertyInfo propInfo, String stringValue, ConfigurationItemFactory configurationItemFactory)
+   at NLog.Config.LoggingConfigurationParser.SetPropertyValueFromString[T](T targetObject, String propertyName, String propertyValue, ValidatedConfigurationElement element)
+   at NLog.Config.LoggingConfigurationParser.ConfigureObjectFromAttributes[T](T targetObject, ValidatedConfigurationElement element, Boolean ignoreType)
+   at NLog.Config.LoggingConfigurationParser.ParseTargetElement(Target target, ValidatedConfigurationElement targetElement, Dictionary`2 typeNameToDefaultTargetParameters)
+   at NLog.Config.LoggingConfigurationParser.AddNewTargetFromConfig(String targetTypeName, ValidatedConfigurationElement targetElement, Boolean asyncWrap, Dictionary`2 typeNameToDefaultTargetParameters, ValidatedConfigurationElement defaultWrapperElement)
+   at NLog.Config.LoggingConfigurationParser.ParseTargetsElement(ValidatedConfigurationElement targetsElement)
+   at NLog.Config.LoggingConfigurationParser.ParseNLogSection(ILoggingConfigurationElement configSection)
+   at NLog.Config.XmlLoggingConfiguration.ParseNLogSection(ILoggingConfigurationElement configSection)
+   at NLog.Config.LoggingConfigurationParser.LoadConfig(ILoggingConfigurationElement nlogConfig, String basePath)
+   at NLog.Config.XmlLoggingConfiguration.ParseNLogElement(ILoggingConfigurationElement nlogElement, String filePath, Boolean autoReloadDefault)
+   at NLog.Config.XmlLoggingConfiguration.ParseTopLevel(XmlLoggingConfigurationElement content, String filePath, Boolean autoReloadDefault)
+   at NLog.Config.XmlLoggingConfiguration.Initialize(XmlReader reader, String fileName, Boolean ignoreErrors)
+   --- End of inner exception stack trace ---
+   at NLog.Config.XmlLoggingConfiguration.Initialize(XmlReader reader, String fileName, Boolean ignoreErrors)
+   at NLog.Config.XmlLoggingConfiguration..ctor(XmlReader reader, String fileName, LogFactory logFactory)
+   at NLog.Config.LoggingConfigurationFileLoader.LoadXmlLoggingConfiguration(XmlReader xmlReader, String configFile, LogFactory logFactory)
+2025-01-18 13:57:41.5801 Error Failed loading from config file location: G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config Exception: NLog.NLogConfigurationException: Exception when loading configuration G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config
+ ---> NLog.NLogConfigurationException: 'FileTarget' cannot assign property 'Layout'='${longdate} | ${level:uppercase=true} | ${logger:shortName=true} | ${message}${newline}${when:when=length('${aspnet-request-url}') > 0:inner=请求地址: ${aspnet-request-url}${newline}}${when:when=length('${aspnet-mvc-controller}') > 0:inner=控制器: ${aspnet-mvc-controller}${newline}}${when:when=length('${aspnet-mvc-action}') > 0:inner=操作: ${aspnet-mvc-action}${newline}}${when:when=length('${aspnet-request-posted-body}') > 0:inner=参数: ${aspnet-request-posted-body}${newline}}${when:when=length('${exception}') > 0:inner=异常信息: ${exception:format=tostring}${newline}}----------------------------------------'. Error: 'WhenLayoutRendererWrapper' has same property 'Inner=' assigned twice
+ ---> NLog.NLogConfigurationException: 'WhenLayoutRendererWrapper' has same property 'Inner=' assigned twice
+   at NLog.Layouts.LayoutParser.ValidatePreviousParameterName(String previousParameterName, String parameterName, LayoutRenderer layoutRenderer, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.LayoutParser.ParseLayoutRenderer(ConfigurationItemFactory configurationItemFactory, SimpleStringReader stringReader, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.LayoutParser.CompileLayout(ConfigurationItemFactory configurationItemFactory, SimpleStringReader sr, Nullable`1 throwConfigExceptions, Boolean isNested, String& text)
+   at NLog.Layouts.LayoutParser.CompileLayout(String value, ConfigurationItemFactory configurationItemFactory, Nullable`1 throwConfigExceptions, String& text)
+   at NLog.Layouts.SimpleLayout.SetLayoutText(String value, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.SimpleLayout..ctor(String txt, ConfigurationItemFactory configurationItemFactory, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.SimpleLayout..ctor(String txt, ConfigurationItemFactory configurationItemFactory)
+   at NLog.Internal.PropertyHelper.TryParseLayoutValue(String stringValue, ConfigurationItemFactory configurationItemFactory)
+   at NLog.Internal.PropertyHelper.TryNLogSpecificConversion(Type propertyType, String value, ConfigurationItemFactory configurationItemFactory, Object& newValue)
+   at NLog.Internal.PropertyHelper.SetPropertyFromString(Object targetObject, PropertyInfo propInfo, String stringValue, ConfigurationItemFactory configurationItemFactory)
+   --- End of inner exception stack trace ---
+   at NLog.Internal.PropertyHelper.SetPropertyFromString(Object targetObject, PropertyInfo propInfo, String stringValue, ConfigurationItemFactory configurationItemFactory)
+   at NLog.Config.LoggingConfigurationParser.SetPropertyValueFromString[T](T targetObject, String propertyName, String propertyValue, ValidatedConfigurationElement element)
+   at NLog.Config.LoggingConfigurationParser.ConfigureObjectFromAttributes[T](T targetObject, ValidatedConfigurationElement element, Boolean ignoreType)
+   at NLog.Config.LoggingConfigurationParser.ParseTargetElement(Target target, ValidatedConfigurationElement targetElement, Dictionary`2 typeNameToDefaultTargetParameters)
+   at NLog.Config.LoggingConfigurationParser.AddNewTargetFromConfig(String targetTypeName, ValidatedConfigurationElement targetElement, Boolean asyncWrap, Dictionary`2 typeNameToDefaultTargetParameters, ValidatedConfigurationElement defaultWrapperElement)
+   at NLog.Config.LoggingConfigurationParser.ParseTargetsElement(ValidatedConfigurationElement targetsElement)
+   at NLog.Config.LoggingConfigurationParser.ParseNLogSection(ILoggingConfigurationElement configSection)
+   at NLog.Config.XmlLoggingConfiguration.ParseNLogSection(ILoggingConfigurationElement configSection)
+   at NLog.Config.LoggingConfigurationParser.LoadConfig(ILoggingConfigurationElement nlogConfig, String basePath)
+   at NLog.Config.XmlLoggingConfiguration.ParseNLogElement(ILoggingConfigurationElement nlogElement, String filePath, Boolean autoReloadDefault)
+   at NLog.Config.XmlLoggingConfiguration.ParseTopLevel(XmlLoggingConfigurationElement content, String filePath, Boolean autoReloadDefault)
+   at NLog.Config.XmlLoggingConfiguration.Initialize(XmlReader reader, String fileName, Boolean ignoreErrors)
+   --- End of inner exception stack trace ---
+   at NLog.Config.XmlLoggingConfiguration.Initialize(XmlReader reader, String fileName, Boolean ignoreErrors)
+   at NLog.Config.XmlLoggingConfiguration..ctor(XmlReader reader, String fileName, LogFactory logFactory)
+   at NLog.Config.LoggingConfigurationFileLoader.LoadXmlLoggingConfiguration(XmlReader xmlReader, String configFile, LogFactory logFactory)
+   at NLog.Config.LoggingConfigurationFileLoader.LoadXmlLoggingConfigurationFile(LogFactory logFactory, String configFile)
+   at NLog.Config.LoggingConfigurationFileLoader.TryLoadLoggingConfiguration(LogFactory logFactory, String configFile, LoggingConfiguration& config)
+2025-01-18 14:02:03.2908 Info Loading assembly name: NLog.Web.AspNetCore
+2025-01-18 14:02:03.3014 Info NLog.Web.AspNetCore, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.944. Product version: 5.3.4+c9ae8128ef4b6b6b6f2497cdaf451168b85d6ff7. GlobalAssemblyCache: False
+2025-01-18 14:02:03.3617 Info Registered target NLog.Targets.ColoredConsoleTarget(Name=console)
+2025-01-18 14:02:03.3795 Error Error has been raised. Exception: NLog.NLogConfigurationException: 'WhenLayoutRendererWrapper' has same property 'Inner=' assigned twice
+2025-01-18 14:02:03.4198 Error Error has been raised. Exception: NLog.NLogConfigurationException: 'FileTarget' cannot assign property 'Layout'='${longdate} | ${level:uppercase=true} | ${logger:shortName=true} | ${message}${newline}${when:when=length('${aspnet-request-url}') > 0:inner=请求地址: ${aspnet-request-url}${newline}}${when:when=length('${aspnet-mvc-controller}') > 0:inner=控制器: ${aspnet-mvc-controller}${newline}}${when:when=length('${aspnet-mvc-action}') > 0:inner=操作: ${aspnet-mvc-action}${newline}}${when:when=length('${aspnet-request-posted-body}') > 0:inner=参数: ${aspnet-request-posted-body}${newline}}${when:when=length('${exception}') > 0:inner=异常信息: ${exception:format=tostring}${newline}}----------------------------------------'. Error: 'WhenLayoutRendererWrapper' has same property 'Inner=' assigned twice
+ ---> NLog.NLogConfigurationException: 'WhenLayoutRendererWrapper' has same property 'Inner=' assigned twice
+   at NLog.Layouts.LayoutParser.ValidatePreviousParameterName(String previousParameterName, String parameterName, LayoutRenderer layoutRenderer, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.LayoutParser.ParseLayoutRenderer(ConfigurationItemFactory configurationItemFactory, SimpleStringReader stringReader, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.LayoutParser.CompileLayout(ConfigurationItemFactory configurationItemFactory, SimpleStringReader sr, Nullable`1 throwConfigExceptions, Boolean isNested, String& text)
+   at NLog.Layouts.LayoutParser.CompileLayout(String value, ConfigurationItemFactory configurationItemFactory, Nullable`1 throwConfigExceptions, String& text)
+   at NLog.Layouts.SimpleLayout.SetLayoutText(String value, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.SimpleLayout..ctor(String txt, ConfigurationItemFactory configurationItemFactory, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.SimpleLayout..ctor(String txt, ConfigurationItemFactory configurationItemFactory)
+   at NLog.Internal.PropertyHelper.TryParseLayoutValue(String stringValue, ConfigurationItemFactory configurationItemFactory)
+   at NLog.Internal.PropertyHelper.TryNLogSpecificConversion(Type propertyType, String value, ConfigurationItemFactory configurationItemFactory, Object& newValue)
+   at NLog.Internal.PropertyHelper.SetPropertyFromString(Object targetObject, PropertyInfo propInfo, String stringValue, ConfigurationItemFactory configurationItemFactory)
+   --- End of inner exception stack trace ---
+   at NLog.Internal.PropertyHelper.SetPropertyFromString(Object targetObject, PropertyInfo propInfo, String stringValue, ConfigurationItemFactory configurationItemFactory)
+   at NLog.Config.LoggingConfigurationParser.SetPropertyValueFromString[T](T targetObject, String propertyName, String propertyValue, ValidatedConfigurationElement element)
+2025-01-18 14:02:03.4775 Error Exception when loading configuration G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config Exception: NLog.NLogConfigurationException: 'FileTarget' cannot assign property 'Layout'='${longdate} | ${level:uppercase=true} | ${logger:shortName=true} | ${message}${newline}${when:when=length('${aspnet-request-url}') > 0:inner=请求地址: ${aspnet-request-url}${newline}}${when:when=length('${aspnet-mvc-controller}') > 0:inner=控制器: ${aspnet-mvc-controller}${newline}}${when:when=length('${aspnet-mvc-action}') > 0:inner=操作: ${aspnet-mvc-action}${newline}}${when:when=length('${aspnet-request-posted-body}') > 0:inner=参数: ${aspnet-request-posted-body}${newline}}${when:when=length('${exception}') > 0:inner=异常信息: ${exception:format=tostring}${newline}}----------------------------------------'. Error: 'WhenLayoutRendererWrapper' has same property 'Inner=' assigned twice
+ ---> NLog.NLogConfigurationException: 'WhenLayoutRendererWrapper' has same property 'Inner=' assigned twice
+   at NLog.Layouts.LayoutParser.ValidatePreviousParameterName(String previousParameterName, String parameterName, LayoutRenderer layoutRenderer, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.LayoutParser.ParseLayoutRenderer(ConfigurationItemFactory configurationItemFactory, SimpleStringReader stringReader, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.LayoutParser.CompileLayout(ConfigurationItemFactory configurationItemFactory, SimpleStringReader sr, Nullable`1 throwConfigExceptions, Boolean isNested, String& text)
+   at NLog.Layouts.LayoutParser.CompileLayout(String value, ConfigurationItemFactory configurationItemFactory, Nullable`1 throwConfigExceptions, String& text)
+   at NLog.Layouts.SimpleLayout.SetLayoutText(String value, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.SimpleLayout..ctor(String txt, ConfigurationItemFactory configurationItemFactory, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.SimpleLayout..ctor(String txt, ConfigurationItemFactory configurationItemFactory)
+   at NLog.Internal.PropertyHelper.TryParseLayoutValue(String stringValue, ConfigurationItemFactory configurationItemFactory)
+   at NLog.Internal.PropertyHelper.TryNLogSpecificConversion(Type propertyType, String value, ConfigurationItemFactory configurationItemFactory, Object& newValue)
+   at NLog.Internal.PropertyHelper.SetPropertyFromString(Object targetObject, PropertyInfo propInfo, String stringValue, ConfigurationItemFactory configurationItemFactory)
+   --- End of inner exception stack trace ---
+   at NLog.Internal.PropertyHelper.SetPropertyFromString(Object targetObject, PropertyInfo propInfo, String stringValue, ConfigurationItemFactory configurationItemFactory)
+   at NLog.Config.LoggingConfigurationParser.SetPropertyValueFromString[T](T targetObject, String propertyName, String propertyValue, ValidatedConfigurationElement element)
+   at NLog.Config.LoggingConfigurationParser.ConfigureObjectFromAttributes[T](T targetObject, ValidatedConfigurationElement element, Boolean ignoreType)
+   at NLog.Config.LoggingConfigurationParser.ParseTargetElement(Target target, ValidatedConfigurationElement targetElement, Dictionary`2 typeNameToDefaultTargetParameters)
+   at NLog.Config.LoggingConfigurationParser.AddNewTargetFromConfig(String targetTypeName, ValidatedConfigurationElement targetElement, Boolean asyncWrap, Dictionary`2 typeNameToDefaultTargetParameters, ValidatedConfigurationElement defaultWrapperElement)
+   at NLog.Config.LoggingConfigurationParser.ParseTargetsElement(ValidatedConfigurationElement targetsElement)
+   at NLog.Config.LoggingConfigurationParser.ParseNLogSection(ILoggingConfigurationElement configSection)
+   at NLog.Config.XmlLoggingConfiguration.ParseNLogSection(ILoggingConfigurationElement configSection)
+   at NLog.Config.LoggingConfigurationParser.LoadConfig(ILoggingConfigurationElement nlogConfig, String basePath)
+   at NLog.Config.XmlLoggingConfiguration.ParseNLogElement(ILoggingConfigurationElement nlogElement, String filePath, Boolean autoReloadDefault)
+   at NLog.Config.XmlLoggingConfiguration.ParseTopLevel(XmlLoggingConfigurationElement content, String filePath, Boolean autoReloadDefault)
+   at NLog.Config.XmlLoggingConfiguration.Initialize(XmlReader reader, String fileName, Boolean ignoreErrors)
+2025-01-18 14:02:03.4929 Error Error has been raised. Exception: NLog.NLogConfigurationException: Exception when loading configuration G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config
+ ---> NLog.NLogConfigurationException: 'FileTarget' cannot assign property 'Layout'='${longdate} | ${level:uppercase=true} | ${logger:shortName=true} | ${message}${newline}${when:when=length('${aspnet-request-url}') > 0:inner=请求地址: ${aspnet-request-url}${newline}}${when:when=length('${aspnet-mvc-controller}') > 0:inner=控制器: ${aspnet-mvc-controller}${newline}}${when:when=length('${aspnet-mvc-action}') > 0:inner=操作: ${aspnet-mvc-action}${newline}}${when:when=length('${aspnet-request-posted-body}') > 0:inner=参数: ${aspnet-request-posted-body}${newline}}${when:when=length('${exception}') > 0:inner=异常信息: ${exception:format=tostring}${newline}}----------------------------------------'. Error: 'WhenLayoutRendererWrapper' has same property 'Inner=' assigned twice
+ ---> NLog.NLogConfigurationException: 'WhenLayoutRendererWrapper' has same property 'Inner=' assigned twice
+   at NLog.Layouts.LayoutParser.ValidatePreviousParameterName(String previousParameterName, String parameterName, LayoutRenderer layoutRenderer, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.LayoutParser.ParseLayoutRenderer(ConfigurationItemFactory configurationItemFactory, SimpleStringReader stringReader, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.LayoutParser.CompileLayout(ConfigurationItemFactory configurationItemFactory, SimpleStringReader sr, Nullable`1 throwConfigExceptions, Boolean isNested, String& text)
+   at NLog.Layouts.LayoutParser.CompileLayout(String value, ConfigurationItemFactory configurationItemFactory, Nullable`1 throwConfigExceptions, String& text)
+   at NLog.Layouts.SimpleLayout.SetLayoutText(String value, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.SimpleLayout..ctor(String txt, ConfigurationItemFactory configurationItemFactory, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.SimpleLayout..ctor(String txt, ConfigurationItemFactory configurationItemFactory)
+   at NLog.Internal.PropertyHelper.TryParseLayoutValue(String stringValue, ConfigurationItemFactory configurationItemFactory)
+   at NLog.Internal.PropertyHelper.TryNLogSpecificConversion(Type propertyType, String value, ConfigurationItemFactory configurationItemFactory, Object& newValue)
+   at NLog.Internal.PropertyHelper.SetPropertyFromString(Object targetObject, PropertyInfo propInfo, String stringValue, ConfigurationItemFactory configurationItemFactory)
+   --- End of inner exception stack trace ---
+   at NLog.Internal.PropertyHelper.SetPropertyFromString(Object targetObject, PropertyInfo propInfo, String stringValue, ConfigurationItemFactory configurationItemFactory)
+   at NLog.Config.LoggingConfigurationParser.SetPropertyValueFromString[T](T targetObject, String propertyName, String propertyValue, ValidatedConfigurationElement element)
+   at NLog.Config.LoggingConfigurationParser.ConfigureObjectFromAttributes[T](T targetObject, ValidatedConfigurationElement element, Boolean ignoreType)
+   at NLog.Config.LoggingConfigurationParser.ParseTargetElement(Target target, ValidatedConfigurationElement targetElement, Dictionary`2 typeNameToDefaultTargetParameters)
+   at NLog.Config.LoggingConfigurationParser.AddNewTargetFromConfig(String targetTypeName, ValidatedConfigurationElement targetElement, Boolean asyncWrap, Dictionary`2 typeNameToDefaultTargetParameters, ValidatedConfigurationElement defaultWrapperElement)
+   at NLog.Config.LoggingConfigurationParser.ParseTargetsElement(ValidatedConfigurationElement targetsElement)
+   at NLog.Config.LoggingConfigurationParser.ParseNLogSection(ILoggingConfigurationElement configSection)
+   at NLog.Config.XmlLoggingConfiguration.ParseNLogSection(ILoggingConfigurationElement configSection)
+   at NLog.Config.LoggingConfigurationParser.LoadConfig(ILoggingConfigurationElement nlogConfig, String basePath)
+   at NLog.Config.XmlLoggingConfiguration.ParseNLogElement(ILoggingConfigurationElement nlogElement, String filePath, Boolean autoReloadDefault)
+   at NLog.Config.XmlLoggingConfiguration.ParseTopLevel(XmlLoggingConfigurationElement content, String filePath, Boolean autoReloadDefault)
+   at NLog.Config.XmlLoggingConfiguration.Initialize(XmlReader reader, String fileName, Boolean ignoreErrors)
+   --- End of inner exception stack trace ---
+   at NLog.Config.XmlLoggingConfiguration.Initialize(XmlReader reader, String fileName, Boolean ignoreErrors)
+   at NLog.Config.XmlLoggingConfiguration..ctor(XmlReader reader, String fileName, LogFactory logFactory)
+   at NLog.Config.LoggingConfigurationFileLoader.LoadXmlLoggingConfiguration(XmlReader xmlReader, String configFile, LogFactory logFactory)
+2025-01-18 14:02:03.5084 Error Failed loading from config file location: G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config Exception: NLog.NLogConfigurationException: Exception when loading configuration G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config
+ ---> NLog.NLogConfigurationException: 'FileTarget' cannot assign property 'Layout'='${longdate} | ${level:uppercase=true} | ${logger:shortName=true} | ${message}${newline}${when:when=length('${aspnet-request-url}') > 0:inner=请求地址: ${aspnet-request-url}${newline}}${when:when=length('${aspnet-mvc-controller}') > 0:inner=控制器: ${aspnet-mvc-controller}${newline}}${when:when=length('${aspnet-mvc-action}') > 0:inner=操作: ${aspnet-mvc-action}${newline}}${when:when=length('${aspnet-request-posted-body}') > 0:inner=参数: ${aspnet-request-posted-body}${newline}}${when:when=length('${exception}') > 0:inner=异常信息: ${exception:format=tostring}${newline}}----------------------------------------'. Error: 'WhenLayoutRendererWrapper' has same property 'Inner=' assigned twice
+ ---> NLog.NLogConfigurationException: 'WhenLayoutRendererWrapper' has same property 'Inner=' assigned twice
+   at NLog.Layouts.LayoutParser.ValidatePreviousParameterName(String previousParameterName, String parameterName, LayoutRenderer layoutRenderer, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.LayoutParser.ParseLayoutRenderer(ConfigurationItemFactory configurationItemFactory, SimpleStringReader stringReader, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.LayoutParser.CompileLayout(ConfigurationItemFactory configurationItemFactory, SimpleStringReader sr, Nullable`1 throwConfigExceptions, Boolean isNested, String& text)
+   at NLog.Layouts.LayoutParser.CompileLayout(String value, ConfigurationItemFactory configurationItemFactory, Nullable`1 throwConfigExceptions, String& text)
+   at NLog.Layouts.SimpleLayout.SetLayoutText(String value, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.SimpleLayout..ctor(String txt, ConfigurationItemFactory configurationItemFactory, Nullable`1 throwConfigExceptions)
+   at NLog.Layouts.SimpleLayout..ctor(String txt, ConfigurationItemFactory configurationItemFactory)
+   at NLog.Internal.PropertyHelper.TryParseLayoutValue(String stringValue, ConfigurationItemFactory configurationItemFactory)
+   at NLog.Internal.PropertyHelper.TryNLogSpecificConversion(Type propertyType, String value, ConfigurationItemFactory configurationItemFactory, Object& newValue)
+   at NLog.Internal.PropertyHelper.SetPropertyFromString(Object targetObject, PropertyInfo propInfo, String stringValue, ConfigurationItemFactory configurationItemFactory)
+   --- End of inner exception stack trace ---
+   at NLog.Internal.PropertyHelper.SetPropertyFromString(Object targetObject, PropertyInfo propInfo, String stringValue, ConfigurationItemFactory configurationItemFactory)
+   at NLog.Config.LoggingConfigurationParser.SetPropertyValueFromString[T](T targetObject, String propertyName, String propertyValue, ValidatedConfigurationElement element)
+   at NLog.Config.LoggingConfigurationParser.ConfigureObjectFromAttributes[T](T targetObject, ValidatedConfigurationElement element, Boolean ignoreType)
+   at NLog.Config.LoggingConfigurationParser.ParseTargetElement(Target target, ValidatedConfigurationElement targetElement, Dictionary`2 typeNameToDefaultTargetParameters)
+   at NLog.Config.LoggingConfigurationParser.AddNewTargetFromConfig(String targetTypeName, ValidatedConfigurationElement targetElement, Boolean asyncWrap, Dictionary`2 typeNameToDefaultTargetParameters, ValidatedConfigurationElement defaultWrapperElement)
+   at NLog.Config.LoggingConfigurationParser.ParseTargetsElement(ValidatedConfigurationElement targetsElement)
+   at NLog.Config.LoggingConfigurationParser.ParseNLogSection(ILoggingConfigurationElement configSection)
+   at NLog.Config.XmlLoggingConfiguration.ParseNLogSection(ILoggingConfigurationElement configSection)
+   at NLog.Config.LoggingConfigurationParser.LoadConfig(ILoggingConfigurationElement nlogConfig, String basePath)
+   at NLog.Config.XmlLoggingConfiguration.ParseNLogElement(ILoggingConfigurationElement nlogElement, String filePath, Boolean autoReloadDefault)
+   at NLog.Config.XmlLoggingConfiguration.ParseTopLevel(XmlLoggingConfigurationElement content, String filePath, Boolean autoReloadDefault)
+   at NLog.Config.XmlLoggingConfiguration.Initialize(XmlReader reader, String fileName, Boolean ignoreErrors)
+   --- End of inner exception stack trace ---
+   at NLog.Config.XmlLoggingConfiguration.Initialize(XmlReader reader, String fileName, Boolean ignoreErrors)
+   at NLog.Config.XmlLoggingConfiguration..ctor(XmlReader reader, String fileName, LogFactory logFactory)
+   at NLog.Config.LoggingConfigurationFileLoader.LoadXmlLoggingConfiguration(XmlReader xmlReader, String configFile, LogFactory logFactory)
+   at NLog.Config.LoggingConfigurationFileLoader.LoadXmlLoggingConfigurationFile(LogFactory logFactory, String configFile)
+   at NLog.Config.LoggingConfigurationFileLoader.TryLoadLoggingConfiguration(LogFactory logFactory, String configFile, LoggingConfiguration& config)
+2025-01-18 14:04:28.6803 Info Loading assembly name: NLog.Web.AspNetCore
+2025-01-18 14:04:28.6905 Info NLog.Web.AspNetCore, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.944. Product version: 5.3.4+c9ae8128ef4b6b6b6f2497cdaf451168b85d6ff7. GlobalAssemblyCache: False
+2025-01-18 14:04:28.7345 Info Registered target NLog.Targets.ColoredConsoleTarget(Name=console)
+2025-01-18 14:04:28.7537 Info Registered target NLog.Targets.FileTarget(Name=allfile)
+2025-01-18 14:04:28.7537 Info Registered target NLog.Targets.FileTarget(Name=errorfile)
+2025-01-18 14:04:28.7537 Info Registered target NLog.Targets.FileTarget(Name=initfile)
+2025-01-18 14:04:28.7649 Error Error has been raised. Exception: NLog.NLogConfigurationException: LoggingRule where all filters and FilterDefaultAction=Ignore : logNamePattern: (:All) levels: [ Debug Info Warn Error Fatal ] writeTo: [ initfile ]
+2025-01-18 14:04:28.7851 Error Exception when loading configuration G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config Exception: NLog.NLogConfigurationException: LoggingRule where all filters and FilterDefaultAction=Ignore : logNamePattern: (:All) levels: [ Debug Info Warn Error Fatal ] writeTo: [ initfile ]
+   at NLog.Config.LoggingConfigurationParser.ValidateLoggingRuleFilters(LoggingRule rule)
+   at NLog.Config.LoggingConfigurationParser.ParseRuleElement(ValidatedConfigurationElement loggerElement)
+   at NLog.Config.LoggingConfigurationParser.ParseRulesElement(ValidatedConfigurationElement rulesElement, IList`1 rulesCollection)
+   at NLog.Config.LoggingConfigurationParser.LoadConfig(ILoggingConfigurationElement nlogConfig, String basePath)
+   at NLog.Config.XmlLoggingConfiguration.ParseNLogElement(ILoggingConfigurationElement nlogElement, String filePath, Boolean autoReloadDefault)
+   at NLog.Config.XmlLoggingConfiguration.ParseTopLevel(XmlLoggingConfigurationElement content, String filePath, Boolean autoReloadDefault)
+   at NLog.Config.XmlLoggingConfiguration.Initialize(XmlReader reader, String fileName, Boolean ignoreErrors)
+2025-01-18 14:04:28.8236 Error Error has been raised. Exception: NLog.NLogConfigurationException: Exception when loading configuration G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config
+ ---> NLog.NLogConfigurationException: LoggingRule where all filters and FilterDefaultAction=Ignore : logNamePattern: (:All) levels: [ Debug Info Warn Error Fatal ] writeTo: [ initfile ]
+   at NLog.Config.LoggingConfigurationParser.ValidateLoggingRuleFilters(LoggingRule rule)
+   at NLog.Config.LoggingConfigurationParser.ParseRuleElement(ValidatedConfigurationElement loggerElement)
+   at NLog.Config.LoggingConfigurationParser.ParseRulesElement(ValidatedConfigurationElement rulesElement, IList`1 rulesCollection)
+   at NLog.Config.LoggingConfigurationParser.LoadConfig(ILoggingConfigurationElement nlogConfig, String basePath)
+   at NLog.Config.XmlLoggingConfiguration.ParseNLogElement(ILoggingConfigurationElement nlogElement, String filePath, Boolean autoReloadDefault)
+   at NLog.Config.XmlLoggingConfiguration.ParseTopLevel(XmlLoggingConfigurationElement content, String filePath, Boolean autoReloadDefault)
+   at NLog.Config.XmlLoggingConfiguration.Initialize(XmlReader reader, String fileName, Boolean ignoreErrors)
+   --- End of inner exception stack trace ---
+   at NLog.Config.XmlLoggingConfiguration.Initialize(XmlReader reader, String fileName, Boolean ignoreErrors)
+   at NLog.Config.XmlLoggingConfiguration..ctor(XmlReader reader, String fileName, LogFactory logFactory)
+   at NLog.Config.LoggingConfigurationFileLoader.LoadXmlLoggingConfiguration(XmlReader xmlReader, String configFile, LogFactory logFactory)
+2025-01-18 14:04:28.8236 Error Failed loading from config file location: G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config Exception: NLog.NLogConfigurationException: Exception when loading configuration G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config
+ ---> NLog.NLogConfigurationException: LoggingRule where all filters and FilterDefaultAction=Ignore : logNamePattern: (:All) levels: [ Debug Info Warn Error Fatal ] writeTo: [ initfile ]
+   at NLog.Config.LoggingConfigurationParser.ValidateLoggingRuleFilters(LoggingRule rule)
+   at NLog.Config.LoggingConfigurationParser.ParseRuleElement(ValidatedConfigurationElement loggerElement)
+   at NLog.Config.LoggingConfigurationParser.ParseRulesElement(ValidatedConfigurationElement rulesElement, IList`1 rulesCollection)
+   at NLog.Config.LoggingConfigurationParser.LoadConfig(ILoggingConfigurationElement nlogConfig, String basePath)
+   at NLog.Config.XmlLoggingConfiguration.ParseNLogElement(ILoggingConfigurationElement nlogElement, String filePath, Boolean autoReloadDefault)
+   at NLog.Config.XmlLoggingConfiguration.ParseTopLevel(XmlLoggingConfigurationElement content, String filePath, Boolean autoReloadDefault)
+   at NLog.Config.XmlLoggingConfiguration.Initialize(XmlReader reader, String fileName, Boolean ignoreErrors)
+   --- End of inner exception stack trace ---
+   at NLog.Config.XmlLoggingConfiguration.Initialize(XmlReader reader, String fileName, Boolean ignoreErrors)
+   at NLog.Config.XmlLoggingConfiguration..ctor(XmlReader reader, String fileName, LogFactory logFactory)
+   at NLog.Config.LoggingConfigurationFileLoader.LoadXmlLoggingConfiguration(XmlReader xmlReader, String configFile, LogFactory logFactory)
+   at NLog.Config.LoggingConfigurationFileLoader.LoadXmlLoggingConfigurationFile(LogFactory logFactory, String configFile)
+   at NLog.Config.LoggingConfigurationFileLoader.TryLoadLoggingConfiguration(LogFactory logFactory, String configFile, LoggingConfiguration& config)
+2025-01-18 14:05:32.8726 Info Loading assembly name: NLog.Web.AspNetCore
+2025-01-18 14:05:32.8831 Info NLog.Web.AspNetCore, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.944. Product version: 5.3.4+c9ae8128ef4b6b6b6f2497cdaf451168b85d6ff7. GlobalAssemblyCache: False
+2025-01-18 14:05:32.9283 Info Registered target NLog.Targets.ColoredConsoleTarget(Name=console)
+2025-01-18 14:05:32.9559 Info Registered target NLog.Targets.FileTarget(Name=allfile)
+2025-01-18 14:05:32.9559 Info Registered target NLog.Targets.FileTarget(Name=errorfile)
+2025-01-18 14:05:32.9559 Info Registered target NLog.Targets.FileTarget(Name=initfile)
+2025-01-18 14:05:32.9673 Error Error has been raised. Exception: NLog.NLogConfigurationException: LoggingRule where all filters and FilterDefaultAction=Ignore : logNamePattern: (:All) levels: [ Debug Info Warn Error Fatal ] writeTo: [ initfile ]
+2025-01-18 14:05:32.9884 Error Exception when loading configuration G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config Exception: NLog.NLogConfigurationException: LoggingRule where all filters and FilterDefaultAction=Ignore : logNamePattern: (:All) levels: [ Debug Info Warn Error Fatal ] writeTo: [ initfile ]
+   at NLog.Config.LoggingConfigurationParser.ValidateLoggingRuleFilters(LoggingRule rule)
+   at NLog.Config.LoggingConfigurationParser.ParseRuleElement(ValidatedConfigurationElement loggerElement)
+   at NLog.Config.LoggingConfigurationParser.ParseRulesElement(ValidatedConfigurationElement rulesElement, IList`1 rulesCollection)
+   at NLog.Config.LoggingConfigurationParser.LoadConfig(ILoggingConfigurationElement nlogConfig, String basePath)
+   at NLog.Config.XmlLoggingConfiguration.ParseNLogElement(ILoggingConfigurationElement nlogElement, String filePath, Boolean autoReloadDefault)
+   at NLog.Config.XmlLoggingConfiguration.ParseTopLevel(XmlLoggingConfigurationElement content, String filePath, Boolean autoReloadDefault)
+   at NLog.Config.XmlLoggingConfiguration.Initialize(XmlReader reader, String fileName, Boolean ignoreErrors)
+2025-01-18 14:05:33.0328 Error Error has been raised. Exception: NLog.NLogConfigurationException: Exception when loading configuration G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config
+ ---> NLog.NLogConfigurationException: LoggingRule where all filters and FilterDefaultAction=Ignore : logNamePattern: (:All) levels: [ Debug Info Warn Error Fatal ] writeTo: [ initfile ]
+   at NLog.Config.LoggingConfigurationParser.ValidateLoggingRuleFilters(LoggingRule rule)
+   at NLog.Config.LoggingConfigurationParser.ParseRuleElement(ValidatedConfigurationElement loggerElement)
+   at NLog.Config.LoggingConfigurationParser.ParseRulesElement(ValidatedConfigurationElement rulesElement, IList`1 rulesCollection)
+   at NLog.Config.LoggingConfigurationParser.LoadConfig(ILoggingConfigurationElement nlogConfig, String basePath)
+   at NLog.Config.XmlLoggingConfiguration.ParseNLogElement(ILoggingConfigurationElement nlogElement, String filePath, Boolean autoReloadDefault)
+   at NLog.Config.XmlLoggingConfiguration.ParseTopLevel(XmlLoggingConfigurationElement content, String filePath, Boolean autoReloadDefault)
+   at NLog.Config.XmlLoggingConfiguration.Initialize(XmlReader reader, String fileName, Boolean ignoreErrors)
+   --- End of inner exception stack trace ---
+   at NLog.Config.XmlLoggingConfiguration.Initialize(XmlReader reader, String fileName, Boolean ignoreErrors)
+   at NLog.Config.XmlLoggingConfiguration..ctor(XmlReader reader, String fileName, LogFactory logFactory)
+   at NLog.Config.LoggingConfigurationFileLoader.LoadXmlLoggingConfiguration(XmlReader xmlReader, String configFile, LogFactory logFactory)
+2025-01-18 14:05:33.0483 Error Failed loading from config file location: G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config Exception: NLog.NLogConfigurationException: Exception when loading configuration G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config
+ ---> NLog.NLogConfigurationException: LoggingRule where all filters and FilterDefaultAction=Ignore : logNamePattern: (:All) levels: [ Debug Info Warn Error Fatal ] writeTo: [ initfile ]
+   at NLog.Config.LoggingConfigurationParser.ValidateLoggingRuleFilters(LoggingRule rule)
+   at NLog.Config.LoggingConfigurationParser.ParseRuleElement(ValidatedConfigurationElement loggerElement)
+   at NLog.Config.LoggingConfigurationParser.ParseRulesElement(ValidatedConfigurationElement rulesElement, IList`1 rulesCollection)
+   at NLog.Config.LoggingConfigurationParser.LoadConfig(ILoggingConfigurationElement nlogConfig, String basePath)
+   at NLog.Config.XmlLoggingConfiguration.ParseNLogElement(ILoggingConfigurationElement nlogElement, String filePath, Boolean autoReloadDefault)
+   at NLog.Config.XmlLoggingConfiguration.ParseTopLevel(XmlLoggingConfigurationElement content, String filePath, Boolean autoReloadDefault)
+   at NLog.Config.XmlLoggingConfiguration.Initialize(XmlReader reader, String fileName, Boolean ignoreErrors)
+   --- End of inner exception stack trace ---
+   at NLog.Config.XmlLoggingConfiguration.Initialize(XmlReader reader, String fileName, Boolean ignoreErrors)
+   at NLog.Config.XmlLoggingConfiguration..ctor(XmlReader reader, String fileName, LogFactory logFactory)
+   at NLog.Config.LoggingConfigurationFileLoader.LoadXmlLoggingConfiguration(XmlReader xmlReader, String configFile, LogFactory logFactory)
+   at NLog.Config.LoggingConfigurationFileLoader.LoadXmlLoggingConfigurationFile(LogFactory logFactory, String configFile)
+   at NLog.Config.LoggingConfigurationFileLoader.TryLoadLoggingConfiguration(LogFactory logFactory, String configFile, LoggingConfiguration& config)
+2025-01-18 14:06:18.9512 Info Loading assembly name: NLog.Web.AspNetCore
+2025-01-18 14:06:18.9633 Info NLog.Web.AspNetCore, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.944. Product version: 5.3.4+c9ae8128ef4b6b6b6f2497cdaf451168b85d6ff7. GlobalAssemblyCache: False
+2025-01-18 14:06:19.0156 Info Registered target NLog.Targets.ColoredConsoleTarget(Name=console)
+2025-01-18 14:06:19.0508 Info Registered target NLog.Targets.FileTarget(Name=allfile)
+2025-01-18 14:06:19.0508 Info Registered target NLog.Targets.FileTarget(Name=errorfile)
+2025-01-18 14:06:19.0508 Info Registered target NLog.Targets.FileTarget(Name=initfile)
+2025-01-18 14:06:19.0656 Error Error has been raised. Exception: NLog.NLogConfigurationException: LoggingRule where all filters and FilterDefaultAction=Ignore : logNamePattern: (:All) levels: [ Debug Info Warn Error Fatal ] writeTo: [ initfile ]
+2025-01-18 14:06:19.0862 Error Exception when loading configuration G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config Exception: NLog.NLogConfigurationException: LoggingRule where all filters and FilterDefaultAction=Ignore : logNamePattern: (:All) levels: [ Debug Info Warn Error Fatal ] writeTo: [ initfile ]
+   at NLog.Config.LoggingConfigurationParser.ValidateLoggingRuleFilters(LoggingRule rule)
+   at NLog.Config.LoggingConfigurationParser.ParseRuleElement(ValidatedConfigurationElement loggerElement)
+   at NLog.Config.LoggingConfigurationParser.ParseRulesElement(ValidatedConfigurationElement rulesElement, IList`1 rulesCollection)
+   at NLog.Config.LoggingConfigurationParser.LoadConfig(ILoggingConfigurationElement nlogConfig, String basePath)
+   at NLog.Config.XmlLoggingConfiguration.ParseNLogElement(ILoggingConfigurationElement nlogElement, String filePath, Boolean autoReloadDefault)
+   at NLog.Config.XmlLoggingConfiguration.ParseTopLevel(XmlLoggingConfigurationElement content, String filePath, Boolean autoReloadDefault)
+   at NLog.Config.XmlLoggingConfiguration.Initialize(XmlReader reader, String fileName, Boolean ignoreErrors)
+2025-01-18 14:06:19.1349 Error Error has been raised. Exception: NLog.NLogConfigurationException: Exception when loading configuration G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config
+ ---> NLog.NLogConfigurationException: LoggingRule where all filters and FilterDefaultAction=Ignore : logNamePattern: (:All) levels: [ Debug Info Warn Error Fatal ] writeTo: [ initfile ]
+   at NLog.Config.LoggingConfigurationParser.ValidateLoggingRuleFilters(LoggingRule rule)
+   at NLog.Config.LoggingConfigurationParser.ParseRuleElement(ValidatedConfigurationElement loggerElement)
+   at NLog.Config.LoggingConfigurationParser.ParseRulesElement(ValidatedConfigurationElement rulesElement, IList`1 rulesCollection)
+   at NLog.Config.LoggingConfigurationParser.LoadConfig(ILoggingConfigurationElement nlogConfig, String basePath)
+   at NLog.Config.XmlLoggingConfiguration.ParseNLogElement(ILoggingConfigurationElement nlogElement, String filePath, Boolean autoReloadDefault)
+   at NLog.Config.XmlLoggingConfiguration.ParseTopLevel(XmlLoggingConfigurationElement content, String filePath, Boolean autoReloadDefault)
+   at NLog.Config.XmlLoggingConfiguration.Initialize(XmlReader reader, String fileName, Boolean ignoreErrors)
+   --- End of inner exception stack trace ---
+   at NLog.Config.XmlLoggingConfiguration.Initialize(XmlReader reader, String fileName, Boolean ignoreErrors)
+   at NLog.Config.XmlLoggingConfiguration..ctor(XmlReader reader, String fileName, LogFactory logFactory)
+   at NLog.Config.LoggingConfigurationFileLoader.LoadXmlLoggingConfiguration(XmlReader xmlReader, String configFile, LogFactory logFactory)
+2025-01-18 14:06:19.1489 Error Failed loading from config file location: G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config Exception: NLog.NLogConfigurationException: Exception when loading configuration G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config
+ ---> NLog.NLogConfigurationException: LoggingRule where all filters and FilterDefaultAction=Ignore : logNamePattern: (:All) levels: [ Debug Info Warn Error Fatal ] writeTo: [ initfile ]
+   at NLog.Config.LoggingConfigurationParser.ValidateLoggingRuleFilters(LoggingRule rule)
+   at NLog.Config.LoggingConfigurationParser.ParseRuleElement(ValidatedConfigurationElement loggerElement)
+   at NLog.Config.LoggingConfigurationParser.ParseRulesElement(ValidatedConfigurationElement rulesElement, IList`1 rulesCollection)
+   at NLog.Config.LoggingConfigurationParser.LoadConfig(ILoggingConfigurationElement nlogConfig, String basePath)
+   at NLog.Config.XmlLoggingConfiguration.ParseNLogElement(ILoggingConfigurationElement nlogElement, String filePath, Boolean autoReloadDefault)
+   at NLog.Config.XmlLoggingConfiguration.ParseTopLevel(XmlLoggingConfigurationElement content, String filePath, Boolean autoReloadDefault)
+   at NLog.Config.XmlLoggingConfiguration.Initialize(XmlReader reader, String fileName, Boolean ignoreErrors)
+   --- End of inner exception stack trace ---
+   at NLog.Config.XmlLoggingConfiguration.Initialize(XmlReader reader, String fileName, Boolean ignoreErrors)
+   at NLog.Config.XmlLoggingConfiguration..ctor(XmlReader reader, String fileName, LogFactory logFactory)
+   at NLog.Config.LoggingConfigurationFileLoader.LoadXmlLoggingConfiguration(XmlReader xmlReader, String configFile, LogFactory logFactory)
+   at NLog.Config.LoggingConfigurationFileLoader.LoadXmlLoggingConfigurationFile(LogFactory logFactory, String configFile)
+   at NLog.Config.LoggingConfigurationFileLoader.TryLoadLoggingConfiguration(LogFactory logFactory, String configFile, LoggingConfiguration& config)
+2025-01-18 14:07:28.9763 Info Loading assembly name: NLog.Web.AspNetCore
+2025-01-18 14:07:28.9933 Info NLog.Web.AspNetCore, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.944. Product version: 5.3.4+c9ae8128ef4b6b6b6f2497cdaf451168b85d6ff7. GlobalAssemblyCache: False
+2025-01-18 14:07:29.0442 Info Registered target NLog.Targets.ColoredConsoleTarget(Name=console)
+2025-01-18 14:07:29.0633 Info Registered target NLog.Targets.FileTarget(Name=allfile)
+2025-01-18 14:07:29.0633 Info Registered target NLog.Targets.FileTarget(Name=errorfile)
+2025-01-18 14:07:29.0633 Info Registered target NLog.Targets.FileTarget(Name=initfile)
+2025-01-18 14:07:29.0751 Info NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.4.2778. Product version: 5.3.4+73d83d3161d31288ca5c554cc50d27b6bed5f28b. GlobalAssemblyCache: False
+2025-01-18 14:07:29.1093 Info Validating config: TargetNames=console, initfile, allfile, errorfile, ConfigItems=107, FilePath=G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config
+2025-01-18 14:07:29.1219 Info Configuration initialized.
+2025-01-18 14:07:29.8663 Info Validating config: TargetNames=console, initfile, allfile, errorfile, ConfigItems=107, FilePath=G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\nlog.config
+2025-01-18 14:07:50.0924 Info Shutdown() called. Logger closing...
+2025-01-18 14:07:50.0924 Info Closing old configuration.
+2025-01-18 14:07:50.1171 Info Logger has been closed down.

@@ -1,5 +1,4 @@
-﻿
-Microsoft Visual Studio Solution File, Format Version 12.00
+﻿Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
@@ -46,7 +45,6 @@ Global
 		{5C3DAF7C-CD35-46C1-8FDA-777F06EC4C7B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{7566B941-450E-4DA2-ABF6-31BADB9825B7} = {237F389B-B37E-470A-A898-963F348B3369}
 		{FBC5DE98-B3C2-4201-9AEF-A3FAAF7048E0} = {7566B941-450E-4DA2-ABF6-31BADB9825B7}
 		{16BD9696-EA41-4CB7-A0F5-ECA5BBD96173} = {7566B941-450E-4DA2-ABF6-31BADB9825B7}
 		{70F2D6F7-475F-4A9C-9DA5-229DC155178B} = {7566B941-450E-4DA2-ABF6-31BADB9825B7}

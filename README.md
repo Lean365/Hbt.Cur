@@ -126,8 +126,7 @@ Lean.Hbt/
 │   │   ├── Application/    # 📱 应用层
 │   │   │   ├── Services/   # 🔧 应用服务
 │   │   │   ├── Dtos/      # 📄 数据传输对象
-│   │   │   ├── Interfaces/ # 📋 接口定义
-│   │   │   └── Mapster/    # 🔄 对象映射
+│   │   │   └── Interfaces/ # 📋 接口定义
 │   │   ├── Infrastructure/ # 🏗️ 基础设施层
 │   │   │   ├── Persistence/ # 💾 持久化
 │   │   │   ├── Identity/   # 🔐 身份认证
@@ -568,22 +567,22 @@ CREATE TABLE Hbt_Role (
 ## 📚 开发规范文档
 
 ### 前端规范
-- [Vue组件开发规范](docs/standards/frontend/component-standards.md)
-- [Vue页面开发规范](docs/standards/frontend/page-standards.md)
-- [TypeScript开发规范](docs/standards/frontend/typescript-standards.md)
-- [API接口规范](docs/standards/frontend/api-standards.md)
-- [多语言开发规范](docs/standards/frontend/i18n-standards.md)
+- [Vue组件开发规范](docs/standards/frontend/component-standards.md) - 全局通用
+- [Vue页面开发规范](docs/standards/frontend/page-standards.md) - 全局通用
+- [TypeScript开发规范](docs/standards/frontend/typescript-standards.md) - 全局通用
+- [API接口规范](docs/standards/frontend/api-standards.md) - 全局通用
+- [多语言开发规范](docs/standards/frontend/i18n-standards.md) - 全局通用
 
 ## 后端开发规范
 
 后端开发规范包含以下内容：
 
 - ✅ [C#代码规范](docs/standards/backend/code-style.md) - 包含命名规范、代码格式、编码实践等完整规范
-- 🚧 [控制器开发规范](docs/standards/backend/controller-standards.md) - 开发中
+- 🚧 [控制器开发规范](docs/standards/backend/controller-standards.md) - 全局通用
 - 🚧 [服务层开发规范](docs/standards/backend/service-standards.md) - 开发中
-- 🚧 [仓储层开发规范](docs/standards/backend/repository-standards.md) - 开发中
+- 🚧 [仓储层开发规范](docs/standards/backend/repository-standards.md) - 全局通用
 - 🚧 [实体开发规范](docs/standards/backend/entity-standards.md) - 开发中
-- 🚧 [异常处理规范](docs/standards/backend/exception-standards.md) - 开发中
-- 🚧 [日志开发规范](docs/standards/backend/logging-standards.md) - 开发中
-- 🚧 [命名规范](docs/standards/backend/naming-standards.md) - 开发中
-- 🚧 [DTO规范](docs/standards/backend/dto-standards.md) - 开发中
+- 🚧 [异常处理规范](docs/standards/backend/exception-standards.md) - 全局通用
+- 🚧 [日志实现规范](docs/standards/backend/logging-standards.md) - 全局通用
+- 🚧 [命名规范](docs/standards/backend/naming-standards.md) - 全局通用
+- 🚧 [DTO对象开发规范](docs/standards/backend/dto-standards.md) - 全局通用

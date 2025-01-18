@@ -1,14 +1,14 @@
 //===================================================================
-// 项目名 : Lean.Hbt 
-// 文件名 : HbtMenu.cs 
+// 项目名 : Lean.Hbt
+// 文件名 : HbtMenu.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-16 11:30
-// 版本号 : V0.0.1
+// 版本号 : V.0.0.1
 // 描述    : 菜单实体类
 //===================================================================
 
-using SqlSugar;
 using Lean.Hbt.Common.Enums;
+using SqlSugar;
 
 namespace Lean.Hbt.Domain.Entities.Identity
 {
@@ -62,25 +62,25 @@ namespace Lean.Hbt.Domain.Entities.Identity
         /// 是否为外链（0否 1是）
         /// </summary>
         [SugarColumn(ColumnName = "is_frame", ColumnDescription = "是否为外链（0否 1是）", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
-        public YesNo IsFrame { get; set; }
+        public HbtYesNo IsFrame { get; set; }
 
         /// <summary>
         /// 菜单类型（0目录 1菜单 2按钮）
         /// </summary>
         [SugarColumn(ColumnName = "menu_type", ColumnDescription = "菜单类型（0目录 1菜单 2按钮）", ColumnDataType = "int", IsNullable = false)]
-        public MenuType MenuType { get; set; }
+        public HbtMenuType MenuType { get; set; }
 
         /// <summary>
         /// 显示状态（0显示 1隐藏）
         /// </summary>
         [SugarColumn(ColumnName = "visible", ColumnDescription = "显示状态（0显示 1隐藏）", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
-        public VisibleStatus Visible { get; set; }
+        public HbtVisible Visible { get; set; }
 
         /// <summary>
         /// 菜单状态（0正常 1停用）
         /// </summary>
         [SugarColumn(ColumnName = "status", ColumnDescription = "菜单状态（0正常 1停用）", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
-        public CommonStatus Status { get; set; }
+        public HbtStatus Status { get; set; }
 
         /// <summary>
         /// 权限标识
@@ -100,6 +100,9 @@ namespace Lean.Hbt.Domain.Entities.Identity
         [SugarColumn(ColumnName = "tenant_id", ColumnDescription = "租户ID", ColumnDataType = "bigint", IsNullable = false)]
         public long TenantId { get; set; }
 
+        [Navigate(NavigateType.OneToOne, nameof(TenantId))]
+        public HbtTenant Tenant { get; set; }
+
         /// <summary>
         /// 角色菜单关联
         /// </summary>
@@ -118,4 +121,4 @@ namespace Lean.Hbt.Domain.Entities.Identity
         [Navigate(NavigateType.OneToMany, nameof(ParentId))]
         public List<HbtMenu> Children { get; set; }
     }
-} 
+}

@@ -1,0 +1,132 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Lean.Hbt.WebApi</name>
+    </assembly>
+    <members>
+        <member name="T:Lean.Hbt.WebApi.Controllers.HbtBaseController">
+            <summary>
+            控制器基类
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.HbtBaseController.Success(System.Object,System.String)">
+            <summary>
+            返回成功结果
+            </summary>
+            <param name="data">数据</param>
+            <param name="message">消息</param>
+            <returns>操作结果</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.HbtBaseController.Error(System.String,System.Int32)">
+            <summary>
+            返回失败结果
+            </summary>
+            <param name="message">错误消息</param>
+            <param name="code">错误代码</param>
+            <returns>操作结果</returns>
+        </member>
+        <member name="T:Lean.Hbt.WebApi.Controllers.Identity.HbtTenantController">
+            <summary>
+            租户管理
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtTenantController.#ctor(Lean.Hbt.Application.Services.Identity.IHbtTenantService)">
+            <summary>
+            构造函数
+            </summary>
+            <param name="tenantService">租户服务</param>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtTenantController.GetPagedListAsync(Lean.Hbt.Application.Dtos.Identity.HbtTenantQueryDto)">
+            <summary>
+            获取租户列表
+            </summary>
+            <param name="query">查询条件</param>
+            <returns>租户列表</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtTenantController.GetAsync(System.Int64)">
+            <summary>
+            获取租户详情
+            </summary>
+            <param name="id">租户ID</param>
+            <returns>租户详情</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtTenantController.CreateAsync(Lean.Hbt.Application.Dtos.Identity.HbtTenantCreateDto)">
+            <summary>
+            创建租户
+            </summary>
+            <param name="input">创建对象</param>
+            <returns>租户ID</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtTenantController.UpdateAsync(Lean.Hbt.Application.Dtos.Identity.HbtTenantUpdateDto)">
+            <summary>
+            更新租户
+            </summary>
+            <param name="input">更新对象</param>
+            <returns>是否成功</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtTenantController.DeleteAsync(System.Int64)">
+            <summary>
+            删除租户
+            </summary>
+            <param name="id">租户ID</param>
+            <returns>是否成功</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtTenantController.BatchDeleteAsync(System.Int64[])">
+            <summary>
+            批量删除租户
+            </summary>
+            <param name="ids">租户ID集合</param>
+            <returns>是否成功</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtTenantController.ExportAsync(Lean.Hbt.Application.Dtos.Identity.HbtTenantQueryDto)">
+            <summary>
+            导出租户数据
+            </summary>
+            <param name="query">查询条件</param>
+            <returns>导出数据列表</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtTenantController.UpdateStatusAsync(System.Int64,Lean.Hbt.Common.Enums.HbtStatus)">
+            <summary>
+            更新租户状态
+            </summary>
+            <param name="id">租户ID</param>
+            <param name="status">状态</param>
+            <returns>是否成功</returns>
+        </member>
+        <member name="T:Lean.Hbt.WebApi.Middlewares.HbtExceptionMiddleware">
+            <summary>
+            全局异常处理中间件
+            </summary>
+            <remarks>
+            创建者: Lean365
+            创建时间: 2024-01-05
+            </remarks>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Middlewares.HbtExceptionMiddleware.#ctor(Microsoft.AspNetCore.Http.RequestDelegate,Microsoft.Extensions.Logging.ILogger{Lean.Hbt.WebApi.Middlewares.HbtExceptionMiddleware})">
+            <summary>
+            构造函数
+            </summary>
+            <param name="next">请求委托</param>
+            <param name="logger">日志记录器</param>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Middlewares.HbtExceptionMiddleware.InvokeAsync(Microsoft.AspNetCore.Http.HttpContext)">
+            <summary>
+            处理请求
+            </summary>
+            <param name="context">HTTP上下文</param>
+            <returns>异步任务</returns>
+        </member>
+        <member name="T:Lean.Hbt.WebApi.Middlewares.HbtExceptionMiddlewareExtensions">
+            <summary>
+            中间件扩展方法
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Middlewares.HbtExceptionMiddlewareExtensions.UseHbtExceptionHandler(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+            <summary>
+            使用全局异常处理中间件
+            </summary>
+            <param name="app">应用程序构建器</param>
+            <returns>应用程序构建器</returns>
+        </member>
+    </members>
+</doc>

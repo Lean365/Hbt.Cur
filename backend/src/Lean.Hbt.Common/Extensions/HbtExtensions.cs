@@ -3,12 +3,13 @@
 // 文件名 : HbtExtensions.cs 
 // 创建者 : Lean365
 // 创建时间: 2024-01-05 10:00
-// 版本号 : V1.0.0
+// 版本号 : V.0.0.1
 // 描述    : 系统通用扩展方法
 //===================================================================
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using Lean.Hbt.Common.Constants;
 
 namespace Lean.Hbt.Common.Extensions
 {
@@ -29,7 +30,7 @@ namespace Lean.Hbt.Common.Extensions
             ContractResolver = new CamelCasePropertyNamesContractResolver(),
             Formatting = Formatting.Indented,
             NullValueHandling = NullValueHandling.Ignore,
-            DateFormatString = "yyyy-MM-dd HH:mm:ss"
+            DateFormatString = HbtConstants.DateTimeFormats.StandardDateTime
         };
 
         /// <summary>
@@ -83,7 +84,7 @@ namespace Lean.Hbt.Common.Extensions
         /// <returns>格式化后的日期字符串</returns>
         public static string ToDateString(this DateTime dateTime)
         {
-            return dateTime.ToString(Constants.HbtConstants.DateTimeFormats.DefaultDate);
+            return dateTime.ToString(HbtConstants.DateTimeFormats.StandardDate);
         }
 
         /// <summary>
@@ -93,7 +94,7 @@ namespace Lean.Hbt.Common.Extensions
         /// <returns>格式化后的日期时间字符串</returns>
         public static string ToDateTimeString(this DateTime dateTime)
         {
-            return dateTime.ToString(Constants.HbtConstants.DateTimeFormats.DefaultDateTime);
+            return dateTime.ToString(HbtConstants.DateTimeFormats.StandardDateTime);
         }
 
         /// <summary>
@@ -103,7 +104,7 @@ namespace Lean.Hbt.Common.Extensions
         /// <returns>格式化后的带毫秒的日期时间字符串</returns>
         public static string ToDateTimeWithMsString(this DateTime dateTime)
         {
-            return dateTime.ToString(Constants.HbtConstants.DateTimeFormats.DefaultDateTimeWithMs);
+            return dateTime.ToString(HbtConstants.DateTimeFormats.FullDateTime);
         }
     }
-} 
+}

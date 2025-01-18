@@ -1,23 +1,25 @@
 <Project>
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
-    <LangVersion>latest</LangVersion>
-    <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    
-    <!-- 版本信息 -->
+    <Nullable>enable</Nullable>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <!-- 版本号规范: V主版本号.次版本号.修订号 (V0.0.1~V9.99.999) -->
+    <!-- 主版本号(0-9): 重大功能变更或架构调整时增加 -->
+    <!-- 次版本号(0-99): 新功能添加但向下兼容时增加 -->
+    <!-- 修订号(0-999): bug修复和小改动时增加 -->
     <Version>0.0.1</Version>
-    <AssemblyVersion>0.0.1.0</AssemblyVersion>
-    <FileVersion>0.0.1.0</FileVersion>
+    <AssemblyVersion>0.0.1</AssemblyVersion>
+    <FileVersion>0.0.1</FileVersion>
+    <InformationalVersion>0.0.1</InformationalVersion>
     
-    <!-- 公司信息 -->
     <Company>Lean365</Company>
     <Authors>Lean365</Authors>
+    <Product>黑冰台</Product>
+    <Description>黑冰台业务系统</Description>
     <Copyright>Copyright © 2024 Lean365</Copyright>
-    <Product>Lean.Hbt</Product>
-    
-    <!-- 编译配置 -->
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <NoWarn>$(NoWarn);CS1591</NoWarn>
   </PropertyGroup>
 </Project> 

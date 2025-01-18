@@ -21,17 +21,32 @@ try
     builder.Logging.ClearProviders();
     builder.Host.UseNLog();
 
+    // 添加控制器服务
+    builder.Services.AddControllers();
+
+    // 添加 Swagger 服务
+    builder.Services.AddHbtSwagger();
+
     // 添加基础设施服务
-    builder.Services.AddHbtInfrastructure(builder.Configuration);
+    builder.Services.AddInfrastructure(builder.Configuration);
+
+    // 添加认证和授权服务
+    builder.Services.AddAuthentication();
+    builder.Services.AddAuthorization();
 
     // 添加配置
     builder.Services.Configure<HbtExcelOptions>(builder.Configuration.GetSection("Excel"));
 
     var app = builder.Build();
 
-    // 初始化种子数据
+    // 初始化数据库和种子数据
     using (var scope = app.Services.CreateScope())
     {
+        // 1. 初始化数据库和表结构
+        var dbContext = scope.ServiceProvider.GetRequiredService<HbtDbContext>();
+        await dbContext.InitializeAsync();
+
+        // 2. 初始化种子数据
         var dbSeed = scope.ServiceProvider.GetRequiredService<HbtDbSeed>();
         await dbSeed.InitializeAsync();
     }

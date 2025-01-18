@@ -52,7 +52,11 @@
           "dependencies": {
             "EPPlus": {
               "target": "Package",
-              "version": "[7.5.2, )"
+              "version": "[7.0.5, )"
+            },
+            "FluentValidation": {
+              "target": "Package",
+              "version": "[11.9.0, )"
             },
             "Microsoft.Extensions.Options": {
               "target": "Package",
@@ -61,6 +65,10 @@
             "Newtonsoft.Json": {
               "target": "Package",
               "version": "[13.0.3, )"
+            },
+            "SqlSugarCore": {
+              "target": "Package",
+              "version": "[5.1.4.127, )"
             }
           },
           "imports": [

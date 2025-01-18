@@ -1,9 +1,9 @@
 //===================================================================
-// 项目名 : Lean.Hbt 
-// 文件名 : HbtApiResult.cs 
+// 项目名 : Lean.Hbt
+// 文件名 : HbtApiResult.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-05 10:00
-// 版本号 : V1.0.0
+// 版本号 : V.0.0.1
 // 描述    : API统一响应模型
 //===================================================================
 
@@ -99,12 +99,12 @@ namespace Lean.Hbt.Common.Models
         /// <param name="data">数据</param>
         /// <param name="message">消息</param>
         /// <returns>成功的响应结果</returns>
-        public static HbtApiResult Success(object? data = null, string? message = "操作成功")
+        public static HbtApiResult Success(object? data = null, string message = "操作成功")
         {
             return new HbtApiResult
             {
                 Code = 200,
-                Msg = message,
+                Msg = message ?? "操作成功",
                 Data = data
             };
         }
@@ -120,9 +120,9 @@ namespace Lean.Hbt.Common.Models
             return new HbtApiResult
             {
                 Code = code,
-                Msg = message,
+                Msg = message ?? "操作失败",
                 Data = null
             };
         }
     }
-} 
+}

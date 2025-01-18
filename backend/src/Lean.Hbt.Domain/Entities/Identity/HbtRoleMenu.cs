@@ -1,6 +1,6 @@
 //===================================================================
-// 项目名 : Lean.Hbt 
-// 文件名 : HbtRoleMenu.cs 
+// 项目名 : Lean.Hbt
+// 文件名 : HbtRoleMenu.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-16 11:55
 // 版本号 : V0.0.1
@@ -19,7 +19,7 @@ namespace Lean.Hbt.Domain.Entities.Identity
     /// 创建时间: 2024-01-16
     /// </remarks>
     [SugarTable("hbt_role_menu", "角色菜单关联表")]
-    [SugarIndex("ix_role_menu", $"{nameof(RoleId)},{nameof(MenuId)}", OrderByType.Asc, true)]
+    [SugarIndex("ix_role_menu", nameof(RoleId), OrderByType.Asc, nameof(MenuId), OrderByType.Asc, true)]
     public class HbtRoleMenu : HbtBaseEntity
     {
         /// <summary>
@@ -40,6 +40,9 @@ namespace Lean.Hbt.Domain.Entities.Identity
         [SugarColumn(ColumnName = "tenant_id", ColumnDescription = "租户ID", ColumnDataType = "bigint", IsNullable = false)]
         public long TenantId { get; set; }
 
+        [Navigate(NavigateType.OneToOne, nameof(TenantId))]
+        public HbtTenant Tenant { get; set; }
+
         /// <summary>
         /// 角色导航属性
         /// </summary>
@@ -52,4 +55,4 @@ namespace Lean.Hbt.Domain.Entities.Identity
         [Navigate(NavigateType.OneToOne, nameof(MenuId))]
         public HbtMenu Menu { get; set; }
     }
-} 
+}

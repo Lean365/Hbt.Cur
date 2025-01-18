@@ -13,11 +13,12 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Lean365")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyCopyrightAttribute("Copyright © 2024 Lean365")]
-[assembly: System.Reflection.AssemblyFileVersionAttribute("0.0.1.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("0.0.1+be4fb3b033731445603516f138a361d87c8934f6")]
-[assembly: System.Reflection.AssemblyProductAttribute("Lean.Hbt")]
+[assembly: System.Reflection.AssemblyDescriptionAttribute("黑冰台业务系统")]
+[assembly: System.Reflection.AssemblyFileVersionAttribute("0.0.1")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("0.0.1+ca20ee76426f42c6ac2ee1f945c5d6bb87504e10")]
+[assembly: System.Reflection.AssemblyProductAttribute("黑冰台")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Lean.Hbt.Application")]
-[assembly: System.Reflection.AssemblyVersionAttribute("0.0.1.0")]
+[assembly: System.Reflection.AssemblyVersionAttribute("0.0.1")]
 
 // 由 MSBuild WriteCodeFragment 类生成。
 

@@ -1,0 +1,467 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Lean.Hbt.Infrastructure</name>
+    </assembly>
+    <members>
+        <member name="T:Lean.Hbt.Infrastructure.Authentication.HbtJwtHandler">
+            <summary>
+            JWT令牌处理器实现
+            </summary>
+            <remarks>
+            创建者: Lean365
+            创建时间: 2024-01-16
+            </remarks>
+        </member>
+        <member name="F:Lean.Hbt.Infrastructure.Authentication.HbtJwtHandler._configuration">
+            <summary>
+            配置接口
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Authentication.HbtJwtHandler.#ctor(Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            构造函数
+            </summary>
+            <param name="configuration">配置接口</param>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Authentication.HbtJwtHandler.GenerateToken(System.String,System.String,System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            生成JWT令牌
+            </summary>
+            <param name="userId">用户ID</param>
+            <param name="userName">用户名</param>
+            <param name="roles">用户角色列表</param>
+            <returns>JWT令牌字符串</returns>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Authentication.HbtJwtHandler.ValidateToken(System.String)">
+            <summary>
+            验证JWT令牌
+            </summary>
+            <param name="token">JWT令牌字符串</param>
+            <returns>验证通过返回声明主体，否则返回null</returns>
+        </member>
+        <member name="T:Lean.Hbt.Infrastructure.Authentication.IHbtJwtHandler">
+            <summary>
+            JWT令牌处理器接口
+            </summary>
+            <remarks>
+            创建者: Lean365
+            创建时间: 2024-01-16
+            </remarks>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Authentication.IHbtJwtHandler.GenerateToken(System.String,System.String,System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            生成JWT令牌
+            </summary>
+            <param name="userId">用户ID</param>
+            <param name="userName">用户名</param>
+            <param name="roles">用户角色列表</param>
+            <returns>JWT令牌字符串</returns>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Authentication.IHbtJwtHandler.ValidateToken(System.String)">
+            <summary>
+            验证JWT令牌
+            </summary>
+            <param name="token">JWT令牌字符串</param>
+            <returns>验证通过返回声明主体，否则返回null</returns>
+        </member>
+        <member name="T:Lean.Hbt.Infrastructure.Caching.HbtRedisCache">
+            <summary>
+            Redis缓存实现
+            </summary>
+            <remarks>
+            创建者: Lean365
+            创建时间: 2024-01-16
+            </remarks>
+        </member>
+        <member name="F:Lean.Hbt.Infrastructure.Caching.HbtRedisCache._cache">
+            <summary>
+            分布式缓存接口
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Caching.HbtRedisCache.#ctor(Microsoft.Extensions.Caching.Distributed.IDistributedCache)">
+            <summary>
+            构造函数
+            </summary>
+            <param name="cache">分布式缓存接口</param>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Caching.HbtRedisCache.SetAsync``1(System.String,``0,System.Nullable{System.TimeSpan})">
+            <summary>
+            设置缓存
+            </summary>
+            <typeparam name="T">缓存数据类型</typeparam>
+            <param name="key">缓存键</param>
+            <param name="value">缓存值</param>
+            <param name="expiry">过期时间</param>
+            <returns>异步任务</returns>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Caching.HbtRedisCache.GetAsync``1(System.String)">
+            <summary>
+            获取缓存
+            </summary>
+            <typeparam name="T">缓存数据类型</typeparam>
+            <param name="key">缓存键</param>
+            <returns>缓存值，不存在返回默认值</returns>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Caching.HbtRedisCache.RemoveAsync(System.String)">
+            <summary>
+            移除缓存
+            </summary>
+            <param name="key">缓存键</param>
+            <returns>异步任务</returns>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Caching.HbtRedisCache.ExistsAsync(System.String)">
+            <summary>
+            判断缓存是否存在
+            </summary>
+            <param name="key">缓存键</param>
+            <returns>是否存在</returns>
+        </member>
+        <member name="T:Lean.Hbt.Infrastructure.Caching.IHbtRedisCache">
+            <summary>
+            Redis缓存接口
+            </summary>
+            <remarks>
+            创建者: Lean365
+            创建时间: 2024-01-16
+            </remarks>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Caching.IHbtRedisCache.SetAsync``1(System.String,``0,System.Nullable{System.TimeSpan})">
+            <summary>
+            设置缓存
+            </summary>
+            <typeparam name="T">缓存数据类型</typeparam>
+            <param name="key">缓存键</param>
+            <param name="value">缓存值</param>
+            <param name="expiry">过期时间</param>
+            <returns>异步任务</returns>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Caching.IHbtRedisCache.GetAsync``1(System.String)">
+            <summary>
+            获取缓存
+            </summary>
+            <typeparam name="T">缓存数据类型</typeparam>
+            <param name="key">缓存键</param>
+            <returns>缓存值，不存在返回默认值</returns>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Caching.IHbtRedisCache.RemoveAsync(System.String)">
+            <summary>
+            移除缓存
+            </summary>
+            <param name="key">缓存键</param>
+            <returns>异步任务</returns>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Caching.IHbtRedisCache.ExistsAsync(System.String)">
+            <summary>
+            判断缓存是否存在
+            </summary>
+            <param name="key">缓存键</param>
+            <returns>是否存在</returns>
+        </member>
+        <member name="T:Lean.Hbt.Infrastructure.Data.IHbtDbContext">
+            <summary>
+            数据库上下文接口
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Infrastructure.Data.IHbtDbContext.Client">
+            <summary>
+            获取SqlSugar客户端
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Data.IHbtDbContext.BeginTran">
+            <summary>
+            开启事务
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Data.IHbtDbContext.CommitTran">
+            <summary>
+            提交事务
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Data.IHbtDbContext.RollbackTran">
+            <summary>
+            回滚事务
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Infrastructure.Extensions.HbtServiceCollectionExtensions">
+            <summary>
+            服务集合扩展
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Extensions.HbtServiceCollectionExtensions.AddInfrastructure(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)">
+            <summary>
+            添加基础设施服务
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Infrastructure.Logging.HbtLogger">
+            <summary>
+            日志实现类
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Logging.HbtLogger.#ctor">
+            <summary>
+            构造函数
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Logging.HbtLogger.Debug(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Logging.HbtLogger.Debug(System.String,System.Object[])">
+            <inheritdoc/>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Logging.HbtLogger.Info(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Logging.HbtLogger.Info(System.String,System.Object[])">
+            <inheritdoc/>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Logging.HbtLogger.Warn(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Logging.HbtLogger.Warn(System.String,System.Object[])">
+            <inheritdoc/>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Logging.HbtLogger.Error(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Logging.HbtLogger.Error(System.String,System.Exception)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Logging.HbtLogger.Error(System.String,System.Object[])">
+            <inheritdoc/>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Logging.HbtLogger.Fatal(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Logging.HbtLogger.Fatal(System.String,System.Exception)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Logging.HbtLogger.Fatal(System.String,System.Object[])">
+            <inheritdoc/>
+        </member>
+        <member name="T:Lean.Hbt.Infrastructure.Logging.HbtNLogger">
+            <summary>
+            NLog日志实现
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Infrastructure.Persistence.HbtDbContext">
+            <summary>
+            数据库上下文
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Persistence.HbtDbContext.#ctor(Microsoft.Extensions.Options.IOptions{SqlSugar.ConnectionConfig},Lean.Hbt.Domain.IServices.IHbtLogger)">
+            <summary>
+            构造函数
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Infrastructure.Persistence.HbtDbContext.Client">
+            <summary>
+            获取数据库客户端
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Persistence.HbtDbContext.BeginTran">
+            <summary>
+            开始事务
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Persistence.HbtDbContext.CommitTran">
+            <summary>
+            提交事务
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Persistence.HbtDbContext.RollbackTran">
+            <summary>
+            回滚事务
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Persistence.HbtDbContext.InitializeAsync">
+            <summary>
+            初始化数据库
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Infrastructure.Persistence.HbtDbSeed">
+            <summary>
+            数据库种子数据初始化
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Persistence.HbtDbSeed.#ctor(Lean.Hbt.Infrastructure.Persistence.HbtDbContext,Lean.Hbt.Domain.IServices.IHbtLogger)">
+            <summary>
+            构造函数
+            </summary>
+            <param name="context">数据库上下文</param>
+            <param name="logger">日志记录器</param>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Persistence.HbtDbSeed.InitializeAsync">
+            <summary>
+            初始化种子数据
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Persistence.HbtDbSeed.InitializeTenantAsync">
+            <summary>
+            初始化租户
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Persistence.HbtDbSeed.InitializeRoleAsync">
+            <summary>
+            初始化角色
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Persistence.HbtDbSeed.InitializeUserAsync">
+            <summary>
+            初始化用户
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Persistence.HbtDbSeed.InitializeDeptAsync">
+            <summary>
+            初始化部门
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Persistence.HbtDbSeed.InitializePostAsync">
+            <summary>
+            初始化岗位
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Infrastructure.Repositories.HbtRepository`1">
+            <summary>
+            SqlSugar仓储实现
+            </summary>
+            <typeparam name="T">实体类型</typeparam>
+            <remarks>
+            创建者: Lean365
+            创建时间: 2024-01-16
+            </remarks>
+        </member>
+        <member name="P:Lean.Hbt.Infrastructure.Repositories.HbtRepository`1.Entities">
+            <summary>
+            获取 SimpleClient 实例
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Infrastructure.Repositories.HbtRepository`1.Context">
+            <summary>
+            获取 SqlSugarClient 实例
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Infrastructure.Security.HbtAuditLog">
+            <summary>
+            审计日志实现
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Infrastructure.Security.HbtLoginPolicy">
+            <summary>
+            登录限制策略实现
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Infrastructure.Security.HbtPasswordPolicy">
+            <summary>
+            密码策略实现
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Infrastructure.Security.HbtSessionManager">
+            <summary>
+            会话管理实现
+            </summary>
+            <remarks>
+            创建者: Lean365
+            创建时间: 2024-01-16
+            </remarks>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Security.HbtSessionManager.CreateSessionAsync(System.String,System.String,System.String,System.String)">
+            <summary>
+            创建会话
+            </summary>
+            <param name="userId">用户ID</param>
+            <param name="userName">用户名</param>
+            <param name="ipAddress">IP地址</param>
+            <param name="userAgent">用户代理</param>
+            <returns>会话ID</returns>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Security.HbtSessionManager.GetSessionInfoAsync(System.String)">
+            <summary>
+            获取会话信息
+            </summary>
+            <param name="sessionId">会话ID</param>
+            <returns>会话信息</returns>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Security.HbtSessionManager.UpdateSessionAccessTimeAsync(System.String)">
+            <summary>
+            更新会话访问时间
+            </summary>
+            <param name="sessionId">会话ID</param>
+            <returns>异步任务</returns>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Security.HbtSessionManager.RemoveSessionAsync(System.String)">
+            <summary>
+            移除会话
+            </summary>
+            <param name="sessionId">会话ID</param>
+            <returns>异步任务</returns>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Security.HbtSessionManager.GetUserSessionsAsync(System.String)">
+            <summary>
+            获取用户所有会话
+            </summary>
+            <param name="userId">用户ID</param>
+            <returns>会话列表</returns>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Security.HbtSessionManager.RemoveUserSessionsAsync(System.String)">
+            <summary>
+            移除用户所有会话
+            </summary>
+            <param name="userId">用户ID</param>
+            <returns>异步任务</returns>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Security.HbtSessionManager.SaveSessionInfoAsync(System.String,System.String,Lean.Hbt.Domain.Models.Identity.HbtSessionInfo)">
+            <summary>
+            保存会话信息
+            </summary>
+            <param name="userId">用户ID</param>
+            <param name="sessionId">会话ID</param>
+            <param name="sessionInfo">会话信息</param>
+            <returns>异步任务</returns>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Security.HbtSessionManager.AddToUserSessionsAsync(System.String,System.String)">
+            <summary>
+            添加到用户会话列表
+            </summary>
+            <param name="userId">用户ID</param>
+            <param name="sessionId">会话ID</param>
+            <returns>异步任务</returns>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Security.HbtSessionManager.RemoveFromUserSessionsAsync(System.String,System.String)">
+            <summary>
+            从用户会话列表移除
+            </summary>
+            <param name="userId">用户ID</param>
+            <param name="sessionId">会话ID</param>
+            <returns>异步任务</returns>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Security.HbtSessionManager.GetUserSessionIdsAsync(System.String)">
+            <summary>
+            获取用户会话ID列表
+            </summary>
+            <param name="userId">用户ID</param>
+            <returns>会话ID列表</returns>
+        </member>
+        <member name="T:Lean.Hbt.Infrastructure.Swagger.HbtSwaggerSetup">
+            <summary>
+            Swagger配置
+            </summary>
+            <remarks>
+            创建者: Lean365
+            创建时间: 2024-01-16
+            </remarks>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Swagger.HbtSwaggerSetup.AddHbtSwagger(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            添加Swagger服务
+            </summary>
+            <param name="services">服务集合</param>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Swagger.HbtSwaggerSetup.UseHbtSwagger(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+            <summary>
+            使用Swagger中间件
+            </summary>
+            <param name="app">应用程序构建器</param>
+        </member>
+    </members>
+</doc>

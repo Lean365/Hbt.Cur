@@ -1,0 +1,297 @@
+2025-01-18 14:07:29.1219 | INFO | Program | 正在初始化应用程序...
+
+----------------------------------------
+2025-01-18 14:07:34.5706 | INFO | HbtNLogger | 数据库检查/创建成功
+
+----------------------------------------
+2025-01-18 14:07:35.5692 | DEBUG | HbtNLogger | SQL: EXECUTE sp_addextendedproperty N'MS_Description', N'创建者', N'user', N'dbo', N'table', N'hbt_user', N'column', N'create_by'
+Parameters: []
+
+----------------------------------------
+2025-01-18 14:07:35.6174 | DEBUG | HbtNLogger | SQL: EXECUTE sp_addextendedproperty N'MS_Description', N'创建时间', N'user', N'dbo', N'table', N'hbt_user', N'column', N'create_time'
+Parameters: []
+
+----------------------------------------
+2025-01-18 14:07:35.6637 | DEBUG | HbtNLogger | SQL: EXECUTE sp_addextendedproperty N'MS_Description', N'更新者', N'user', N'dbo', N'table', N'hbt_user', N'column', N'update_by'
+Parameters: []
+
+----------------------------------------
+2025-01-18 14:07:35.7024 | DEBUG | HbtNLogger | SQL: EXECUTE sp_addextendedproperty N'MS_Description', N'更新时间', N'user', N'dbo', N'table', N'hbt_user', N'column', N'update_time'
+Parameters: []
+
+----------------------------------------
+2025-01-18 14:07:36.2443 | INFO | HbtNLogger | 表 hbt_user 初始化成功
+
+----------------------------------------
+2025-01-18 14:07:36.6089 | DEBUG | HbtNLogger | SQL: EXECUTE sp_addextendedproperty N'MS_Description', N'创建者', N'user', N'dbo', N'table', N'hbt_role', N'column', N'create_by'
+Parameters: []
+
+----------------------------------------
+2025-01-18 14:07:36.6499 | DEBUG | HbtNLogger | SQL: EXECUTE sp_addextendedproperty N'MS_Description', N'创建时间', N'user', N'dbo', N'table', N'hbt_role', N'column', N'create_time'
+Parameters: []
+
+----------------------------------------
+2025-01-18 14:07:36.6907 | DEBUG | HbtNLogger | SQL: EXECUTE sp_addextendedproperty N'MS_Description', N'更新者', N'user', N'dbo', N'table', N'hbt_role', N'column', N'update_by'
+Parameters: []
+
+----------------------------------------
+2025-01-18 14:07:36.7323 | DEBUG | HbtNLogger | SQL: EXECUTE sp_addextendedproperty N'MS_Description', N'更新时间', N'user', N'dbo', N'table', N'hbt_role', N'column', N'update_time'
+Parameters: []
+
+----------------------------------------
+2025-01-18 14:07:37.1911 | INFO | HbtNLogger | 表 hbt_role 初始化成功
+
+----------------------------------------
+2025-01-18 14:07:37.8489 | DEBUG | HbtNLogger | SQL: EXECUTE sp_addextendedproperty N'MS_Description', N'创建者', N'user', N'dbo', N'table', N'hbt_menu', N'column', N'create_by'
+Parameters: []
+
+----------------------------------------
+2025-01-18 14:07:37.8893 | DEBUG | HbtNLogger | SQL: EXECUTE sp_addextendedproperty N'MS_Description', N'创建时间', N'user', N'dbo', N'table', N'hbt_menu', N'column', N'create_time'
+Parameters: []
+
+----------------------------------------
+2025-01-18 14:07:37.9295 | DEBUG | HbtNLogger | SQL: EXECUTE sp_addextendedproperty N'MS_Description', N'更新者', N'user', N'dbo', N'table', N'hbt_menu', N'column', N'update_by'
+Parameters: []
+
+----------------------------------------
+2025-01-18 14:07:37.9699 | DEBUG | HbtNLogger | SQL: EXECUTE sp_addextendedproperty N'MS_Description', N'更新时间', N'user', N'dbo', N'table', N'hbt_menu', N'column', N'update_time'
+Parameters: []
+
+----------------------------------------
+2025-01-18 14:07:38.4092 | INFO | HbtNLogger | 表 hbt_menu 初始化成功
+
+----------------------------------------
+2025-01-18 14:07:38.8441 | DEBUG | HbtNLogger | SQL: EXECUTE sp_addextendedproperty N'MS_Description', N'创建者', N'user', N'dbo', N'table', N'hbt_dept', N'column', N'create_by'
+Parameters: []
+
+----------------------------------------
+2025-01-18 14:07:38.8840 | DEBUG | HbtNLogger | SQL: EXECUTE sp_addextendedproperty N'MS_Description', N'创建时间', N'user', N'dbo', N'table', N'hbt_dept', N'column', N'create_time'
+Parameters: []
+
+----------------------------------------
+2025-01-18 14:07:38.9248 | DEBUG | HbtNLogger | SQL: EXECUTE sp_addextendedproperty N'MS_Description', N'更新者', N'user', N'dbo', N'table', N'hbt_dept', N'column', N'update_by'
+Parameters: []
+
+----------------------------------------
+2025-01-18 14:07:38.9669 | DEBUG | HbtNLogger | SQL: EXECUTE sp_addextendedproperty N'MS_Description', N'更新时间', N'user', N'dbo', N'table', N'hbt_dept', N'column', N'update_time'
+Parameters: []
+
+----------------------------------------
+2025-01-18 14:07:39.4329 | INFO | HbtNLogger | 表 hbt_dept 初始化成功
+
+----------------------------------------
+2025-01-18 14:07:39.7588 | DEBUG | HbtNLogger | SQL: EXECUTE sp_addextendedproperty N'MS_Description', N'创建者', N'user', N'dbo', N'table', N'hbt_post', N'column', N'create_by'
+Parameters: []
+
+----------------------------------------
+2025-01-18 14:07:39.7991 | DEBUG | HbtNLogger | SQL: EXECUTE sp_addextendedproperty N'MS_Description', N'创建时间', N'user', N'dbo', N'table', N'hbt_post', N'column', N'create_time'
+Parameters: []
+
+----------------------------------------
+2025-01-18 14:07:39.8395 | DEBUG | HbtNLogger | SQL: EXECUTE sp_addextendedproperty N'MS_Description', N'更新者', N'user', N'dbo', N'table', N'hbt_post', N'column', N'update_by'
+Parameters: []
+
+----------------------------------------
+2025-01-18 14:07:39.8795 | DEBUG | HbtNLogger | SQL: EXECUTE sp_addextendedproperty N'MS_Description', N'更新时间', N'user', N'dbo', N'table', N'hbt_post', N'column', N'update_time'
+Parameters: []
+
+----------------------------------------
+2025-01-18 14:07:40.3337 | INFO | HbtNLogger | 表 hbt_post 初始化成功
+
+----------------------------------------
+2025-01-18 14:07:40.5759 | DEBUG | HbtNLogger | SQL: EXECUTE sp_addextendedproperty N'MS_Description', N'创建者', N'user', N'dbo', N'table', N'hbt_user_role', N'column', N'create_by'
+Parameters: []
+
+----------------------------------------
+2025-01-18 14:07:40.6171 | DEBUG | HbtNLogger | SQL: EXECUTE sp_addextendedproperty N'MS_Description', N'创建时间', N'user', N'dbo', N'table', N'hbt_user_role', N'column', N'create_time'
+Parameters: []
+
+----------------------------------------
+2025-01-18 14:07:40.6590 | DEBUG | HbtNLogger | SQL: EXECUTE sp_addextendedproperty N'MS_Description', N'更新者', N'user', N'dbo', N'table', N'hbt_user_role', N'column', N'update_by'
+Parameters: []
+
+----------------------------------------
+2025-01-18 14:07:40.7004 | DEBUG | HbtNLogger | SQL: EXECUTE sp_addextendedproperty N'MS_Description', N'更新时间', N'user', N'dbo', N'table', N'hbt_user_role', N'column', N'update_time'
+Parameters: []
+
+----------------------------------------
+2025-01-18 14:07:41.1656 | INFO | HbtNLogger | 表 hbt_user_role 初始化成功
+
+----------------------------------------
+2025-01-18 14:07:41.3999 | DEBUG | HbtNLogger | SQL: EXECUTE sp_addextendedproperty N'MS_Description', N'创建者', N'user', N'dbo', N'table', N'hbt_user_dept', N'column', N'create_by'
+Parameters: []
+
+----------------------------------------
+2025-01-18 14:07:41.4400 | DEBUG | HbtNLogger | SQL: EXECUTE sp_addextendedproperty N'MS_Description', N'创建时间', N'user', N'dbo', N'table', N'hbt_user_dept', N'column', N'create_time'
+Parameters: []
+
+----------------------------------------
+2025-01-18 14:07:41.4808 | DEBUG | HbtNLogger | SQL: EXECUTE sp_addextendedproperty N'MS_Description', N'更新者', N'user', N'dbo', N'table', N'hbt_user_dept', N'column', N'update_by'
+Parameters: []
+
+----------------------------------------
+2025-01-18 14:07:41.5203 | DEBUG | HbtNLogger | SQL: EXECUTE sp_addextendedproperty N'MS_Description', N'更新时间', N'user', N'dbo', N'table', N'hbt_user_dept', N'column', N'update_time'
+Parameters: []
+
+----------------------------------------
+2025-01-18 14:07:41.9904 | INFO | HbtNLogger | 表 hbt_user_dept 初始化成功
+
+----------------------------------------
+2025-01-18 14:07:42.2168 | DEBUG | HbtNLogger | SQL: EXECUTE sp_addextendedproperty N'MS_Description', N'创建者', N'user', N'dbo', N'table', N'hbt_user_post', N'column', N'create_by'
+Parameters: []
+
+----------------------------------------
+2025-01-18 14:07:42.2575 | DEBUG | HbtNLogger | SQL: EXECUTE sp_addextendedproperty N'MS_Description', N'创建时间', N'user', N'dbo', N'table', N'hbt_user_post', N'column', N'create_time'
+Parameters: []
+
+----------------------------------------
+2025-01-18 14:07:42.2975 | DEBUG | HbtNLogger | SQL: EXECUTE sp_addextendedproperty N'MS_Description', N'更新者', N'user', N'dbo', N'table', N'hbt_user_post', N'column', N'update_by'
+Parameters: []
+
+----------------------------------------
+2025-01-18 14:07:42.3382 | DEBUG | HbtNLogger | SQL: EXECUTE sp_addextendedproperty N'MS_Description', N'更新时间', N'user', N'dbo', N'table', N'hbt_user_post', N'column', N'update_time'
+Parameters: []
+
+----------------------------------------
+2025-01-18 14:07:42.7820 | INFO | HbtNLogger | 表 hbt_user_post 初始化成功
+
+----------------------------------------
+2025-01-18 14:07:43.0082 | DEBUG | HbtNLogger | SQL: EXECUTE sp_addextendedproperty N'MS_Description', N'创建者', N'user', N'dbo', N'table', N'hbt_role_menu', N'column', N'create_by'
+Parameters: []
+
+----------------------------------------
+2025-01-18 14:07:43.0485 | DEBUG | HbtNLogger | SQL: EXECUTE sp_addextendedproperty N'MS_Description', N'创建时间', N'user', N'dbo', N'table', N'hbt_role_menu', N'column', N'create_time'
+Parameters: []
+
+----------------------------------------
+2025-01-18 14:07:43.0889 | DEBUG | HbtNLogger | SQL: EXECUTE sp_addextendedproperty N'MS_Description', N'更新者', N'user', N'dbo', N'table', N'hbt_role_menu', N'column', N'update_by'
+Parameters: []
+
+----------------------------------------
+2025-01-18 14:07:43.1290 | DEBUG | HbtNLogger | SQL: EXECUTE sp_addextendedproperty N'MS_Description', N'更新时间', N'user', N'dbo', N'table', N'hbt_role_menu', N'column', N'update_time'
+Parameters: []
+
+----------------------------------------
+2025-01-18 14:07:43.5989 | INFO | HbtNLogger | 表 hbt_role_menu 初始化成功
+
+----------------------------------------
+2025-01-18 14:07:43.8428 | DEBUG | HbtNLogger | SQL: EXECUTE sp_addextendedproperty N'MS_Description', N'创建者', N'user', N'dbo', N'table', N'hbt_role_dept', N'column', N'create_by'
+Parameters: []
+
+----------------------------------------
+2025-01-18 14:07:43.8850 | DEBUG | HbtNLogger | SQL: EXECUTE sp_addextendedproperty N'MS_Description', N'创建时间', N'user', N'dbo', N'table', N'hbt_role_dept', N'column', N'create_time'
+Parameters: []
+
+----------------------------------------
+2025-01-18 14:07:43.9256 | DEBUG | HbtNLogger | SQL: EXECUTE sp_addextendedproperty N'MS_Description', N'更新者', N'user', N'dbo', N'table', N'hbt_role_dept', N'column', N'update_by'
+Parameters: []
+
+----------------------------------------
+2025-01-18 14:07:43.9674 | DEBUG | HbtNLogger | SQL: EXECUTE sp_addextendedproperty N'MS_Description', N'更新时间', N'user', N'dbo', N'table', N'hbt_role_dept', N'column', N'update_time'
+Parameters: []
+
+----------------------------------------
+2025-01-18 14:07:44.4221 | INFO | HbtNLogger | 表 hbt_role_dept 初始化成功
+
+----------------------------------------
+2025-01-18 14:07:45.1476 | DEBUG | HbtNLogger | SQL: EXECUTE sp_addextendedproperty N'MS_Description', N'创建者', N'user', N'dbo', N'table', N'hbt_tenant', N'column', N'create_by'
+Parameters: []
+
+----------------------------------------
+2025-01-18 14:07:45.1888 | DEBUG | HbtNLogger | SQL: EXECUTE sp_addextendedproperty N'MS_Description', N'创建时间', N'user', N'dbo', N'table', N'hbt_tenant', N'column', N'create_time'
+Parameters: []
+
+----------------------------------------
+2025-01-18 14:07:45.2302 | DEBUG | HbtNLogger | SQL: EXECUTE sp_addextendedproperty N'MS_Description', N'更新者', N'user', N'dbo', N'table', N'hbt_tenant', N'column', N'update_by'
+Parameters: []
+
+----------------------------------------
+2025-01-18 14:07:45.2727 | DEBUG | HbtNLogger | SQL: EXECUTE sp_addextendedproperty N'MS_Description', N'更新时间', N'user', N'dbo', N'table', N'hbt_tenant', N'column', N'update_time'
+Parameters: []
+
+----------------------------------------
+2025-01-18 14:07:45.7148 | INFO | HbtNLogger | 表 hbt_tenant 初始化成功
+
+----------------------------------------
+2025-01-18 14:07:46.2332 | DEBUG | HbtNLogger | SQL: EXECUTE sp_addextendedproperty N'MS_Description', N'创建者', N'user', N'dbo', N'table', N'hbt_audit_log', N'column', N'create_by'
+Parameters: []
+
+----------------------------------------
+2025-01-18 14:07:46.2730 | DEBUG | HbtNLogger | SQL: EXECUTE sp_addextendedproperty N'MS_Description', N'创建时间', N'user', N'dbo', N'table', N'hbt_audit_log', N'column', N'create_time'
+Parameters: []
+
+----------------------------------------
+2025-01-18 14:07:46.3130 | DEBUG | HbtNLogger | SQL: EXECUTE sp_addextendedproperty N'MS_Description', N'更新者', N'user', N'dbo', N'table', N'hbt_audit_log', N'column', N'update_by'
+Parameters: []
+
+----------------------------------------
+2025-01-18 14:07:46.3548 | DEBUG | HbtNLogger | SQL: EXECUTE sp_addextendedproperty N'MS_Description', N'更新时间', N'user', N'dbo', N'table', N'hbt_audit_log', N'column', N'update_time'
+Parameters: []
+
+----------------------------------------
+2025-01-18 14:07:46.8276 | INFO | HbtNLogger | 表 hbt_audit_log 初始化成功
+
+----------------------------------------
+2025-01-18 14:07:47.1858 | DEBUG | HbtNLogger | SQL: EXECUTE sp_addextendedproperty N'MS_Description', N'创建者', N'user', N'dbo', N'table', N'hbt_login_log', N'column', N'create_by'
+Parameters: []
+
+----------------------------------------
+2025-01-18 14:07:47.2268 | DEBUG | HbtNLogger | SQL: EXECUTE sp_addextendedproperty N'MS_Description', N'创建时间', N'user', N'dbo', N'table', N'hbt_login_log', N'column', N'create_time'
+Parameters: []
+
+----------------------------------------
+2025-01-18 14:07:47.2677 | DEBUG | HbtNLogger | SQL: EXECUTE sp_addextendedproperty N'MS_Description', N'更新者', N'user', N'dbo', N'table', N'hbt_login_log', N'column', N'update_by'
+Parameters: []
+
+----------------------------------------
+2025-01-18 14:07:47.3090 | DEBUG | HbtNLogger | SQL: EXECUTE sp_addextendedproperty N'MS_Description', N'更新时间', N'user', N'dbo', N'table', N'hbt_login_log', N'column', N'update_time'
+Parameters: []
+
+----------------------------------------
+2025-01-18 14:07:47.7418 | INFO | HbtNLogger | 表 hbt_login_log 初始化成功
+
+----------------------------------------
+2025-01-18 14:07:48.2228 | DEBUG | HbtNLogger | SQL: EXECUTE sp_addextendedproperty N'MS_Description', N'创建者', N'user', N'dbo', N'table', N'hbt_exception_log', N'column', N'create_by'
+Parameters: []
+
+----------------------------------------
+2025-01-18 14:07:48.2635 | DEBUG | HbtNLogger | SQL: EXECUTE sp_addextendedproperty N'MS_Description', N'创建时间', N'user', N'dbo', N'table', N'hbt_exception_log', N'column', N'create_time'
+Parameters: []
+
+----------------------------------------
+2025-01-18 14:07:48.3048 | DEBUG | HbtNLogger | SQL: EXECUTE sp_addextendedproperty N'MS_Description', N'更新者', N'user', N'dbo', N'table', N'hbt_exception_log', N'column', N'update_by'
+Parameters: []
+
+----------------------------------------
+2025-01-18 14:07:48.3454 | DEBUG | HbtNLogger | SQL: EXECUTE sp_addextendedproperty N'MS_Description', N'更新时间', N'user', N'dbo', N'table', N'hbt_exception_log', N'column', N'update_time'
+Parameters: []
+
+----------------------------------------
+2025-01-18 14:07:48.7601 | INFO | HbtNLogger | 表 hbt_exception_log 初始化成功
+
+----------------------------------------
+2025-01-18 14:07:48.7601 | INFO | HbtNLogger | 数据库初始化完成
+
+----------------------------------------
+2025-01-18 14:07:49.9195 | ERROR | HbtNLogger | 种子数据初始化失败
+Microsoft.Data.SqlClient.SqlException (0x80131904): 不能将值 NULL 插入列 'LicenseStartTime'，表 'LeanHbt_Dev.dbo.hbt_tenant'；列不允许有 Null 值。INSERT 失败。
+语句已终止。
+   at Microsoft.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at Microsoft.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, SqlCommand command, Boolean callerHasConnectionLock, Boolean asyncClose)
+   at Microsoft.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+   at Microsoft.Data.SqlClient.SqlCommand.FinishExecuteReader(SqlDataReader ds, RunBehavior runBehavior, String resetOptionsString, Boolean isInternal, Boolean forDescribeParameterEncryption, Boolean shouldCacheForAlwaysEncrypted)
+   at Microsoft.Data.SqlClient.SqlCommand.CompleteAsyncExecuteReader(Boolean isInternal, Boolean forDescribeParameterEncryption)
+   at Microsoft.Data.SqlClient.SqlCommand.InternalEndExecuteNonQuery(IAsyncResult asyncResult, Boolean isInternal, String endMethod)
+   at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryInternal(IAsyncResult asyncResult)
+   at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryAsync(IAsyncResult asyncResult)
+   at Microsoft.Data.SqlClient.SqlCommand.<>c.<InternalExecuteNonQueryAsync>b__193_1(IAsyncResult asyncResult)
+   at System.Threading.Tasks.TaskFactory`1.FromAsyncCoreLogic(IAsyncResult iar, Func`2 endFunction, Action`1 endAction, Task`1 promise, Boolean requiresSynchronization)
+--- End of stack trace from previous location ---
+   at SqlSugar.AdoProvider.ExecuteCommandAsync(String sql, SugarParameter[] parameters)
+   at SqlSugar.InsertableProvider`1.ExecuteCommandAsync()
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbSeed.InitializeTenantAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbSeed.cs:line 101
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbSeed.InitializeAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbSeed.cs:line 43
+ClientConnectionId:74fa3224-53d2-4c39-b444-1ad22d3ccb93
+Error Number:515,State:2,Class:16
+----------------------------------------

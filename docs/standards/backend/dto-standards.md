@@ -420,14 +420,22 @@ namespace Lean.Hbt.Application.Dtos.Identity
    - 枚举类型必须说明每个值的含义
    - 不要在DTO中包含业务逻辑
 
-2. 属性规范
+2. 构造函数规范
+   - DTO类允许包含构造函数
+   - 必须提供无参构造函数
+   - 可以提供带参构造函数用于快速初始化
+   - 构造函数中只允许对本类属性赋值
+   - 不允许在构造函数中调用外部服务
+   - 不允许在构造函数中包含业务逻辑
+
+3. 属性规范
    - 属性名采用PascalCase命名法
    - 属性类型要与实体对应
    - 可以省略不需要的字段
    - 可以添加展示需要的字段
    - 敏感字段不要返回(如密码)
 
-3. 分类规范
+4. 分类规范
    - 基础DTO: 用于返回数据,包含基本字段
    - 查询DTO: 继承分页基类,包含查询条件
    - 创建DTO: 包含创建实体需要的字段
@@ -436,19 +444,30 @@ namespace Lean.Hbt.Application.Dtos.Identity
    - 导出DTO: 用于Excel导出,转换枚举显示值
    - 模板DTO: 用于生成导入模板,包含示例值
 
-4. 验证规范
-   - 必填字段使用特性验证
-   - 长度限制使用特性验证
-   - 格式验证使用特性验证
-   - 自定义验证写在Validator中
+5. 验证和映射规范
+   - 验证规则直接在DTO类中使用特性标注
+   - 必填字段使用[Required]特性
+   - 长度限制使用[MaxLength]等特性
+   - 格式验证使用[RegularExpression]等特性
+   - 使用Mapster自动映射同名属性
+   - 只有特殊情况(属性名不同或需要转换)时才需要配置映射
+   - 示例：
+     ```csharp
+     public class HbtUserDto
+     {
+         [Required(ErrorMessage = "用户名不能为空")]
+         [MaxLength(50, ErrorMessage = "用户名长度不能超过50个字符")]
+         public string UserName { get; set; }
 
-5. 映射规范
-   - 使用Mapster进行DTO和实体映射
-   - 在TypeAdapter中配置映射关系
-   - 特殊字段转换写在Mapper中
-   - 使用Adapt<T>()方法进行映射
-   - 使用AdaptToType()方法生成映射代码
-   - 复杂映射使用自定义IRegister配置
+         [Required(ErrorMessage = "昵称不能为空")]
+         [MaxLength(50, ErrorMessage = "昵称长度不能超过50个字符")]
+         public string NickName { get; set; }
+
+         // 只有特殊映射时才需要配置，比如：
+         [AdaptMember("Gender")]
+         public string GenderName { get; set; }
+     }
+     ```
 
 6. 安全规范
    - 密码等敏感字段不返回

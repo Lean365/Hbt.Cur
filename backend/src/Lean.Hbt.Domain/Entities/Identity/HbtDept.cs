@@ -1,14 +1,14 @@
 //===================================================================
-// 项目名 : Lean.Hbt 
-// 文件名 : HbtDept.cs 
+// 项目名 : Lean.Hbt
+// 文件名 : HbtDept.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-16 11:30
-// 版本号 : V0.0.1
+// 版本号 : V.0.0.1
 // 描述    : 部门实体类
 //===================================================================
 
-using SqlSugar;
 using Lean.Hbt.Common.Enums;
+using SqlSugar;
 
 namespace Lean.Hbt.Domain.Entities.Identity
 {
@@ -21,7 +21,7 @@ namespace Lean.Hbt.Domain.Entities.Identity
     /// </remarks>
     [SugarTable("hbt_dept", "部门表")]
     [SugarIndex("ix_dept_name", nameof(DeptName), OrderByType.Asc, true)]
-    [SugarIndex("ix_tenant_dept", $"{nameof(TenantId)},{nameof(DeptName)}", OrderByType.Asc, true)]
+    [SugarIndex("ix_tenant_dept", nameof(TenantId), OrderByType.Asc, nameof(DeptName), OrderByType.Asc, true)]
     public class HbtDept : HbtBaseEntity
     {
         /// <summary>
@@ -64,13 +64,19 @@ namespace Lean.Hbt.Domain.Entities.Identity
         /// 状态（0正常 1停用）
         /// </summary>
         [SugarColumn(ColumnName = "status", ColumnDescription = "状态（0正常 1停用）", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
-        public CommonStatus Status { get; set; }
+        public HbtStatus Status { get; set; }
 
         /// <summary>
         /// 租户ID
         /// </summary>
         [SugarColumn(ColumnName = "tenant_id", ColumnDescription = "租户ID", ColumnDataType = "bigint", IsNullable = false)]
         public long TenantId { get; set; }
+
+        /// <summary>
+        /// 租户导航属性
+        /// </summary>
+        [Navigate(NavigateType.OneToOne, nameof(TenantId))]
+        public HbtTenant Tenant { get; set; }
 
         /// <summary>
         /// 角色部门关联
@@ -96,4 +102,4 @@ namespace Lean.Hbt.Domain.Entities.Identity
         [Navigate(NavigateType.OneToMany, nameof(ParentId))]
         public List<HbtDept> Children { get; set; }
     }
-} 
+}

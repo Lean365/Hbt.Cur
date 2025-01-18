@@ -1,0 +1,934 @@
+2025-01-18 08:14:57.5429|0|FATAL|Lean.Hbt.WebApi.Program|应用程序启动失败 System.AggregateException: Some services are not able to be constructed (Error while validating the service descriptor 'ServiceType: Lean.Hbt.Infrastructure.Caching.IHbtRedisCache Lifetime: Singleton ImplementationType: Lean.Hbt.Infrastructure.Caching.HbtRedisCache': Unable to resolve service for type 'Microsoft.Extensions.Caching.Distributed.IDistributedCache' while attempting to activate 'Lean.Hbt.Infrastructure.Caching.HbtRedisCache'.) (Error while validating the service descriptor 'ServiceType: Lean.Hbt.Domain.IServices.IHbtLoginPolicy Lifetime: Scoped ImplementationType: Lean.Hbt.Infrastructure.Security.HbtLoginPolicy': Unable to resolve service for type 'Microsoft.Extensions.Caching.Distributed.IDistributedCache' while attempting to activate 'Lean.Hbt.Infrastructure.Caching.HbtRedisCache'.) (Error while validating the service descriptor 'ServiceType: Lean.Hbt.Domain.IServices.IHbtPasswordPolicy Lifetime: Scoped ImplementationType: Lean.Hbt.Infrastructure.Security.HbtPasswordPolicy': Unable to resolve service for type 'Microsoft.Extensions.Caching.Distributed.IDistributedCache' while attempting to activate 'Lean.Hbt.Infrastructure.Caching.HbtRedisCache'.) (Error while validating the service descriptor 'ServiceType: Lean.Hbt.Domain.IServices.IHbtSessionManager Lifetime: Scoped ImplementationType: Lean.Hbt.Infrastructure.Security.HbtSessionManager': Unable to resolve service for type 'Microsoft.Extensions.Caching.Distributed.IDistributedCache' while attempting to activate 'Lean.Hbt.Infrastructure.Caching.HbtRedisCache'.)
+ ---> System.InvalidOperationException: Error while validating the service descriptor 'ServiceType: Lean.Hbt.Infrastructure.Caching.IHbtRedisCache Lifetime: Singleton ImplementationType: Lean.Hbt.Infrastructure.Caching.HbtRedisCache': Unable to resolve service for type 'Microsoft.Extensions.Caching.Distributed.IDistributedCache' while attempting to activate 'Lean.Hbt.Infrastructure.Caching.HbtRedisCache'.
+ ---> System.InvalidOperationException: Unable to resolve service for type 'Microsoft.Extensions.Caching.Distributed.IDistributedCache' while attempting to activate 'Lean.Hbt.Infrastructure.Caching.HbtRedisCache'.
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceDescriptor serviceDescriptor, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   --- End of inner exception stack trace ---
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider..ctor(ICollection`1 serviceDescriptors, ServiceProviderOptions options)
+   --- End of inner exception stack trace ---
+ ---> (Inner Exception #1) System.InvalidOperationException: Error while validating the service descriptor 'ServiceType: Lean.Hbt.Domain.IServices.IHbtLoginPolicy Lifetime: Scoped ImplementationType: Lean.Hbt.Infrastructure.Security.HbtLoginPolicy': Unable to resolve service for type 'Microsoft.Extensions.Caching.Distributed.IDistributedCache' while attempting to activate 'Lean.Hbt.Infrastructure.Caching.HbtRedisCache'.
+ ---> System.InvalidOperationException: Unable to resolve service for type 'Microsoft.Extensions.Caching.Distributed.IDistributedCache' while attempting to activate 'Lean.Hbt.Infrastructure.Caching.HbtRedisCache'.
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceDescriptor serviceDescriptor, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   --- End of inner exception stack trace ---
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider..ctor(ICollection`1 serviceDescriptors, ServiceProviderOptions options)<---
+
+ ---> (Inner Exception #2) System.InvalidOperationException: Error while validating the service descriptor 'ServiceType: Lean.Hbt.Domain.IServices.IHbtPasswordPolicy Lifetime: Scoped ImplementationType: Lean.Hbt.Infrastructure.Security.HbtPasswordPolicy': Unable to resolve service for type 'Microsoft.Extensions.Caching.Distributed.IDistributedCache' while attempting to activate 'Lean.Hbt.Infrastructure.Caching.HbtRedisCache'.
+ ---> System.InvalidOperationException: Unable to resolve service for type 'Microsoft.Extensions.Caching.Distributed.IDistributedCache' while attempting to activate 'Lean.Hbt.Infrastructure.Caching.HbtRedisCache'.
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceDescriptor serviceDescriptor, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   --- End of inner exception stack trace ---
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider..ctor(ICollection`1 serviceDescriptors, ServiceProviderOptions options)<---
+
+ ---> (Inner Exception #3) System.InvalidOperationException: Error while validating the service descriptor 'ServiceType: Lean.Hbt.Domain.IServices.IHbtSessionManager Lifetime: Scoped ImplementationType: Lean.Hbt.Infrastructure.Security.HbtSessionManager': Unable to resolve service for type 'Microsoft.Extensions.Caching.Distributed.IDistributedCache' while attempting to activate 'Lean.Hbt.Infrastructure.Caching.HbtRedisCache'.
+ ---> System.InvalidOperationException: Unable to resolve service for type 'Microsoft.Extensions.Caching.Distributed.IDistributedCache' while attempting to activate 'Lean.Hbt.Infrastructure.Caching.HbtRedisCache'.
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceDescriptor serviceDescriptor, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   --- End of inner exception stack trace ---
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider..ctor(ICollection`1 serviceDescriptors, ServiceProviderOptions options)<---
+|Lean.Hbt.WebApi.Program.Main|
+2025-01-18 10:02:05.5749|0|FATAL|Lean.Hbt.WebApi.Program|应用程序启动失败 System.AggregateException: Some services are not able to be constructed (Error while validating the service descriptor 'ServiceType: Lean.Hbt.Infrastructure.Caching.IHbtRedisCache Lifetime: Singleton ImplementationType: Lean.Hbt.Infrastructure.Caching.HbtRedisCache': Unable to resolve service for type 'Microsoft.Extensions.Caching.Distributed.IDistributedCache' while attempting to activate 'Lean.Hbt.Infrastructure.Caching.HbtRedisCache'.) (Error while validating the service descriptor 'ServiceType: Lean.Hbt.Domain.IServices.IHbtLoginPolicy Lifetime: Scoped ImplementationType: Lean.Hbt.Infrastructure.Security.HbtLoginPolicy': Unable to resolve service for type 'Microsoft.Extensions.Caching.Distributed.IDistributedCache' while attempting to activate 'Lean.Hbt.Infrastructure.Caching.HbtRedisCache'.) (Error while validating the service descriptor 'ServiceType: Lean.Hbt.Domain.IServices.IHbtPasswordPolicy Lifetime: Scoped ImplementationType: Lean.Hbt.Infrastructure.Security.HbtPasswordPolicy': Unable to resolve service for type 'Microsoft.Extensions.Caching.Distributed.IDistributedCache' while attempting to activate 'Lean.Hbt.Infrastructure.Caching.HbtRedisCache'.) (Error while validating the service descriptor 'ServiceType: Lean.Hbt.Domain.IServices.IHbtSessionManager Lifetime: Scoped ImplementationType: Lean.Hbt.Infrastructure.Security.HbtSessionManager': Unable to resolve service for type 'Microsoft.Extensions.Caching.Distributed.IDistributedCache' while attempting to activate 'Lean.Hbt.Infrastructure.Caching.HbtRedisCache'.)
+ ---> System.InvalidOperationException: Error while validating the service descriptor 'ServiceType: Lean.Hbt.Infrastructure.Caching.IHbtRedisCache Lifetime: Singleton ImplementationType: Lean.Hbt.Infrastructure.Caching.HbtRedisCache': Unable to resolve service for type 'Microsoft.Extensions.Caching.Distributed.IDistributedCache' while attempting to activate 'Lean.Hbt.Infrastructure.Caching.HbtRedisCache'.
+ ---> System.InvalidOperationException: Unable to resolve service for type 'Microsoft.Extensions.Caching.Distributed.IDistributedCache' while attempting to activate 'Lean.Hbt.Infrastructure.Caching.HbtRedisCache'.
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceDescriptor serviceDescriptor, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   --- End of inner exception stack trace ---
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider..ctor(ICollection`1 serviceDescriptors, ServiceProviderOptions options)
+   --- End of inner exception stack trace ---
+ ---> (Inner Exception #1) System.InvalidOperationException: Error while validating the service descriptor 'ServiceType: Lean.Hbt.Domain.IServices.IHbtLoginPolicy Lifetime: Scoped ImplementationType: Lean.Hbt.Infrastructure.Security.HbtLoginPolicy': Unable to resolve service for type 'Microsoft.Extensions.Caching.Distributed.IDistributedCache' while attempting to activate 'Lean.Hbt.Infrastructure.Caching.HbtRedisCache'.
+ ---> System.InvalidOperationException: Unable to resolve service for type 'Microsoft.Extensions.Caching.Distributed.IDistributedCache' while attempting to activate 'Lean.Hbt.Infrastructure.Caching.HbtRedisCache'.
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceDescriptor serviceDescriptor, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   --- End of inner exception stack trace ---
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider..ctor(ICollection`1 serviceDescriptors, ServiceProviderOptions options)<---
+
+ ---> (Inner Exception #2) System.InvalidOperationException: Error while validating the service descriptor 'ServiceType: Lean.Hbt.Domain.IServices.IHbtPasswordPolicy Lifetime: Scoped ImplementationType: Lean.Hbt.Infrastructure.Security.HbtPasswordPolicy': Unable to resolve service for type 'Microsoft.Extensions.Caching.Distributed.IDistributedCache' while attempting to activate 'Lean.Hbt.Infrastructure.Caching.HbtRedisCache'.
+ ---> System.InvalidOperationException: Unable to resolve service for type 'Microsoft.Extensions.Caching.Distributed.IDistributedCache' while attempting to activate 'Lean.Hbt.Infrastructure.Caching.HbtRedisCache'.
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceDescriptor serviceDescriptor, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   --- End of inner exception stack trace ---
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider..ctor(ICollection`1 serviceDescriptors, ServiceProviderOptions options)<---
+
+ ---> (Inner Exception #3) System.InvalidOperationException: Error while validating the service descriptor 'ServiceType: Lean.Hbt.Domain.IServices.IHbtSessionManager Lifetime: Scoped ImplementationType: Lean.Hbt.Infrastructure.Security.HbtSessionManager': Unable to resolve service for type 'Microsoft.Extensions.Caching.Distributed.IDistributedCache' while attempting to activate 'Lean.Hbt.Infrastructure.Caching.HbtRedisCache'.
+ ---> System.InvalidOperationException: Unable to resolve service for type 'Microsoft.Extensions.Caching.Distributed.IDistributedCache' while attempting to activate 'Lean.Hbt.Infrastructure.Caching.HbtRedisCache'.
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceDescriptor serviceDescriptor, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   --- End of inner exception stack trace ---
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider..ctor(ICollection`1 serviceDescriptors, ServiceProviderOptions options)<---
+|Lean.Hbt.WebApi.Program.Main|
+2025-01-18 10:10:07.6836|0|ERROR|Lean.Hbt.Infrastructure.Logging.HbtNLogger|种子数据初始化失败 SqlSugar.SqlSugarException: 中文提示 : 连接字符串ConnectionString不能为Null
+English Message : ConnectionString is not null
+   at SqlSugar.MySqlProvider.GetDataReaderAsync(String sql, SugarParameter[] parameters)
+   at SqlSugar.QueryableProvider`1.GetDataAsync[TResult](KeyValuePair`2 sqlObj)
+   at SqlSugar.QueryableProvider`1._ToListAsync[TResult]()
+   at SqlSugar.QueryableProvider`1.AnyAsync()
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbSeed.InitializeTenantAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbSeed.cs:line 74
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbSeed.InitializeAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbSeed.cs:line 45|Lean.Hbt.Infrastructure.Logging.HbtNLogger.Error|
+2025-01-18 10:10:07.7655|0|FATAL|Lean.Hbt.WebApi.Program|应用程序启动失败 SqlSugar.SqlSugarException: 中文提示 : 连接字符串ConnectionString不能为Null
+English Message : ConnectionString is not null
+   at SqlSugar.MySqlProvider.GetDataReaderAsync(String sql, SugarParameter[] parameters)
+   at SqlSugar.QueryableProvider`1.GetDataAsync[TResult](KeyValuePair`2 sqlObj)
+   at SqlSugar.QueryableProvider`1._ToListAsync[TResult]()
+   at SqlSugar.QueryableProvider`1.AnyAsync()
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbSeed.InitializeTenantAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbSeed.cs:line 74
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbSeed.InitializeAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbSeed.cs:line 45
+   at Program.<Main>$(String[] args) in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\Program.cs:line 36|Lean.Hbt.WebApi.Program.Main|
+2025-01-18 10:10:44.2325|0|ERROR|Lean.Hbt.Infrastructure.Logging.HbtNLogger|种子数据初始化失败 SqlSugar.SqlSugarException: 中文提示 : 连接字符串ConnectionString不能为Null
+English Message : ConnectionString is not null
+   at SqlSugar.MySqlProvider.GetDataReaderAsync(String sql, SugarParameter[] parameters)
+   at SqlSugar.QueryableProvider`1.GetDataAsync[TResult](KeyValuePair`2 sqlObj)
+   at SqlSugar.QueryableProvider`1._ToListAsync[TResult]()
+   at SqlSugar.QueryableProvider`1.AnyAsync()
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbSeed.InitializeTenantAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbSeed.cs:line 74
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbSeed.InitializeAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbSeed.cs:line 45|Lean.Hbt.Infrastructure.Logging.HbtNLogger.Error|
+2025-01-18 10:10:44.2530|0|FATAL|Lean.Hbt.WebApi.Program|应用程序启动失败 SqlSugar.SqlSugarException: 中文提示 : 连接字符串ConnectionString不能为Null
+English Message : ConnectionString is not null
+   at SqlSugar.MySqlProvider.GetDataReaderAsync(String sql, SugarParameter[] parameters)
+   at SqlSugar.QueryableProvider`1.GetDataAsync[TResult](KeyValuePair`2 sqlObj)
+   at SqlSugar.QueryableProvider`1._ToListAsync[TResult]()
+   at SqlSugar.QueryableProvider`1.AnyAsync()
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbSeed.InitializeTenantAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbSeed.cs:line 74
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbSeed.InitializeAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbSeed.cs:line 45
+   at Program.<Main>$(String[] args) in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\Program.cs:line 36|Lean.Hbt.WebApi.Program.Main|
+2025-01-18 10:13:02.9365|0|ERROR|Lean.Hbt.Infrastructure.Logging.HbtNLogger|种子数据初始化失败 SqlSugar.SqlSugarException: 中文提示 : 连接字符串ConnectionString不能为Null
+English Message : ConnectionString is not null
+   at SqlSugar.MySqlProvider.GetDataReaderAsync(String sql, SugarParameter[] parameters)
+   at SqlSugar.QueryableProvider`1.GetDataAsync[TResult](KeyValuePair`2 sqlObj)
+   at SqlSugar.QueryableProvider`1._ToListAsync[TResult]()
+   at SqlSugar.QueryableProvider`1.AnyAsync()
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbSeed.InitializeTenantAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbSeed.cs:line 74
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbSeed.InitializeAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbSeed.cs:line 45|Lean.Hbt.Infrastructure.Logging.HbtNLogger.Error|
+2025-01-18 10:13:02.9655|0|FATAL|Lean.Hbt.WebApi.Program|应用程序启动失败 SqlSugar.SqlSugarException: 中文提示 : 连接字符串ConnectionString不能为Null
+English Message : ConnectionString is not null
+   at SqlSugar.MySqlProvider.GetDataReaderAsync(String sql, SugarParameter[] parameters)
+   at SqlSugar.QueryableProvider`1.GetDataAsync[TResult](KeyValuePair`2 sqlObj)
+   at SqlSugar.QueryableProvider`1._ToListAsync[TResult]()
+   at SqlSugar.QueryableProvider`1.AnyAsync()
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbSeed.InitializeTenantAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbSeed.cs:line 74
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbSeed.InitializeAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbSeed.cs:line 45
+   at Program.<Main>$(String[] args) in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\Program.cs:line 36|Lean.Hbt.WebApi.Program.Main|
+2025-01-18 10:16:31.4025|0|ERROR|Lean.Hbt.Infrastructure.Logging.HbtNLogger|种子数据初始化失败 SqlSugar.SqlSugarException: 中文提示 : 连接字符串ConnectionString不能为Null
+English Message : ConnectionString is not null
+   at SqlSugar.MySqlProvider.GetDataReaderAsync(String sql, SugarParameter[] parameters)
+   at SqlSugar.QueryableProvider`1.GetDataAsync[TResult](KeyValuePair`2 sqlObj)
+   at SqlSugar.QueryableProvider`1._ToListAsync[TResult]()
+   at SqlSugar.QueryableProvider`1.AnyAsync()
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbSeed.InitializeTenantAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbSeed.cs:line 74
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbSeed.InitializeAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbSeed.cs:line 45|Lean.Hbt.Infrastructure.Logging.HbtNLogger.Error|
+2025-01-18 10:16:31.4295|0|FATAL|Lean.Hbt.WebApi.Program|应用程序启动失败 SqlSugar.SqlSugarException: 中文提示 : 连接字符串ConnectionString不能为Null
+English Message : ConnectionString is not null
+   at SqlSugar.MySqlProvider.GetDataReaderAsync(String sql, SugarParameter[] parameters)
+   at SqlSugar.QueryableProvider`1.GetDataAsync[TResult](KeyValuePair`2 sqlObj)
+   at SqlSugar.QueryableProvider`1._ToListAsync[TResult]()
+   at SqlSugar.QueryableProvider`1.AnyAsync()
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbSeed.InitializeTenantAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbSeed.cs:line 74
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbSeed.InitializeAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbSeed.cs:line 45
+   at Program.<Main>$(String[] args) in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\Program.cs:line 36|Lean.Hbt.WebApi.Program.Main|
+2025-01-18 10:18:49.7181|0|ERROR|Lean.Hbt.Infrastructure.Logging.HbtNLogger|种子数据初始化失败 SqlSugar.SqlSugarException: 中文提示 :  连接数据库过程中发生错误，检查服务器是否正常连接字符串是否正确，错误信息：在与 SQL Server 建立连接时出现与网络相关的或特定于实例的错误。未找到或无法访问服务器。请验证实例名称是否正确并且 SQL Server 已配置为允许远程连接。 (provider: 命名管道提供程序, error: 40 - 无法打开与 SQL Server 的连接)DbType="SqlServer";ConfigId="".
+English Message : Connection open error . 在与 SQL Server 建立连接时出现与网络相关的或特定于实例的错误。未找到或无法访问服务器。请验证实例名称是否正确并且 SQL Server 已配置为允许远程连接。 (provider: 命名管道提供程序, error: 40 - 无法打开与 SQL Server 的连接)DbType="SqlServer";ConfigId="" 
+   at SqlSugar.Check.Exception(Boolean isException, String message, String[] args)
+   at SqlSugar.AdoProvider.CheckConnection()
+   at SqlSugar.SqlServerProvider.GetCommand(String sql, SugarParameter[] parameters)
+   at SqlSugar.AdoProvider.GetDataReaderAsync(String sql, SugarParameter[] parameters)
+   at SqlSugar.QueryableProvider`1.GetDataAsync[TResult](KeyValuePair`2 sqlObj)
+   at SqlSugar.QueryableProvider`1._ToListAsync[TResult]()
+   at SqlSugar.QueryableProvider`1.AnyAsync()
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbSeed.InitializeTenantAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbSeed.cs:line 74
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbSeed.InitializeAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbSeed.cs:line 45|Lean.Hbt.Infrastructure.Logging.HbtNLogger.Error|
+2025-01-18 10:18:49.7423|0|FATAL|Lean.Hbt.WebApi.Program|应用程序启动失败 SqlSugar.SqlSugarException: 中文提示 :  连接数据库过程中发生错误，检查服务器是否正常连接字符串是否正确，错误信息：在与 SQL Server 建立连接时出现与网络相关的或特定于实例的错误。未找到或无法访问服务器。请验证实例名称是否正确并且 SQL Server 已配置为允许远程连接。 (provider: 命名管道提供程序, error: 40 - 无法打开与 SQL Server 的连接)DbType="SqlServer";ConfigId="".
+English Message : Connection open error . 在与 SQL Server 建立连接时出现与网络相关的或特定于实例的错误。未找到或无法访问服务器。请验证实例名称是否正确并且 SQL Server 已配置为允许远程连接。 (provider: 命名管道提供程序, error: 40 - 无法打开与 SQL Server 的连接)DbType="SqlServer";ConfigId="" 
+   at SqlSugar.Check.Exception(Boolean isException, String message, String[] args)
+   at SqlSugar.AdoProvider.CheckConnection()
+   at SqlSugar.SqlServerProvider.GetCommand(String sql, SugarParameter[] parameters)
+   at SqlSugar.AdoProvider.GetDataReaderAsync(String sql, SugarParameter[] parameters)
+   at SqlSugar.QueryableProvider`1.GetDataAsync[TResult](KeyValuePair`2 sqlObj)
+   at SqlSugar.QueryableProvider`1._ToListAsync[TResult]()
+   at SqlSugar.QueryableProvider`1.AnyAsync()
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbSeed.InitializeTenantAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbSeed.cs:line 74
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbSeed.InitializeAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbSeed.cs:line 45
+   at Program.<Main>$(String[] args) in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\Program.cs:line 36|Lean.Hbt.WebApi.Program.Main|
+2025-01-18 10:22:29.2271|0|ERROR|Lean.Hbt.Infrastructure.Logging.HbtNLogger|种子数据初始化失败 SqlSugar.SqlSugarException: 中文提示 :  连接数据库过程中发生错误，检查服务器是否正常连接字符串是否正确，错误信息：Cannot open database "lean_hbt" requested by the login. The login failed.
+Login failed for user 'E-100313\Davis.Cheng'.DbType="SqlServer";ConfigId="".
+English Message : Connection open error . Cannot open database "lean_hbt" requested by the login. The login failed.
+Login failed for user 'E-100313\Davis.Cheng'.DbType="SqlServer";ConfigId="" 
+   at SqlSugar.Check.Exception(Boolean isException, String message, String[] args)
+   at SqlSugar.AdoProvider.CheckConnection()
+   at SqlSugar.SqlServerProvider.GetCommand(String sql, SugarParameter[] parameters)
+   at SqlSugar.AdoProvider.GetDataReaderAsync(String sql, SugarParameter[] parameters)
+   at SqlSugar.QueryableProvider`1.GetDataAsync[TResult](KeyValuePair`2 sqlObj)
+   at SqlSugar.QueryableProvider`1._ToListAsync[TResult]()
+   at SqlSugar.QueryableProvider`1.AnyAsync()
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbSeed.InitializeTenantAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbSeed.cs:line 74
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbSeed.InitializeAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbSeed.cs:line 45|Lean.Hbt.Infrastructure.Logging.HbtNLogger.Error|
+2025-01-18 10:22:29.3391|0|FATAL|Lean.Hbt.WebApi.Program|应用程序启动失败 SqlSugar.SqlSugarException: 中文提示 :  连接数据库过程中发生错误，检查服务器是否正常连接字符串是否正确，错误信息：Cannot open database "lean_hbt" requested by the login. The login failed.
+Login failed for user 'E-100313\Davis.Cheng'.DbType="SqlServer";ConfigId="".
+English Message : Connection open error . Cannot open database "lean_hbt" requested by the login. The login failed.
+Login failed for user 'E-100313\Davis.Cheng'.DbType="SqlServer";ConfigId="" 
+   at SqlSugar.Check.Exception(Boolean isException, String message, String[] args)
+   at SqlSugar.AdoProvider.CheckConnection()
+   at SqlSugar.SqlServerProvider.GetCommand(String sql, SugarParameter[] parameters)
+   at SqlSugar.AdoProvider.GetDataReaderAsync(String sql, SugarParameter[] parameters)
+   at SqlSugar.QueryableProvider`1.GetDataAsync[TResult](KeyValuePair`2 sqlObj)
+   at SqlSugar.QueryableProvider`1._ToListAsync[TResult]()
+   at SqlSugar.QueryableProvider`1.AnyAsync()
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbSeed.InitializeTenantAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbSeed.cs:line 74
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbSeed.InitializeAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbSeed.cs:line 45
+   at Program.<Main>$(String[] args) in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\Program.cs:line 36|Lean.Hbt.WebApi.Program.Main|
+2025-01-18 10:32:44.1102|0|ERROR|Lean.Hbt.Infrastructure.Logging.HbtNLogger|种子数据初始化失败 SqlSugar.SqlSugarException: 中文提示 :  连接数据库过程中发生错误，检查服务器是否正常连接字符串是否正确，错误信息：在与 SQL Server 建立连接时出现与网络相关的或特定于实例的错误。未找到或无法访问服务器。请验证实例名称是否正确并且 SQL Server 已配置为允许远程连接。 (provider: 命名管道提供程序, error: 40 - 无法打开与 SQL Server 的连接)DbType="SqlServer";ConfigId="".
+English Message : Connection open error . 在与 SQL Server 建立连接时出现与网络相关的或特定于实例的错误。未找到或无法访问服务器。请验证实例名称是否正确并且 SQL Server 已配置为允许远程连接。 (provider: 命名管道提供程序, error: 40 - 无法打开与 SQL Server 的连接)DbType="SqlServer";ConfigId="" 
+   at SqlSugar.Check.Exception(Boolean isException, String message, String[] args)
+   at SqlSugar.AdoProvider.CheckConnection()
+   at SqlSugar.SqlServerProvider.GetCommand(String sql, SugarParameter[] parameters)
+   at SqlSugar.AdoProvider.GetDataReaderAsync(String sql, SugarParameter[] parameters)
+   at SqlSugar.QueryableProvider`1.GetDataAsync[TResult](KeyValuePair`2 sqlObj)
+   at SqlSugar.QueryableProvider`1._ToListAsync[TResult]()
+   at SqlSugar.QueryableProvider`1.AnyAsync()
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbSeed.InitializeTenantAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbSeed.cs:line 81
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbSeed.InitializeAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbSeed.cs:line 45|Lean.Hbt.Infrastructure.Logging.HbtNLogger.Error|
+2025-01-18 10:32:44.1861|0|FATAL|Lean.Hbt.WebApi.Program|应用程序启动失败 SqlSugar.SqlSugarException: 中文提示 :  连接数据库过程中发生错误，检查服务器是否正常连接字符串是否正确，错误信息：在与 SQL Server 建立连接时出现与网络相关的或特定于实例的错误。未找到或无法访问服务器。请验证实例名称是否正确并且 SQL Server 已配置为允许远程连接。 (provider: 命名管道提供程序, error: 40 - 无法打开与 SQL Server 的连接)DbType="SqlServer";ConfigId="".
+English Message : Connection open error . 在与 SQL Server 建立连接时出现与网络相关的或特定于实例的错误。未找到或无法访问服务器。请验证实例名称是否正确并且 SQL Server 已配置为允许远程连接。 (provider: 命名管道提供程序, error: 40 - 无法打开与 SQL Server 的连接)DbType="SqlServer";ConfigId="" 
+   at SqlSugar.Check.Exception(Boolean isException, String message, String[] args)
+   at SqlSugar.AdoProvider.CheckConnection()
+   at SqlSugar.SqlServerProvider.GetCommand(String sql, SugarParameter[] parameters)
+   at SqlSugar.AdoProvider.GetDataReaderAsync(String sql, SugarParameter[] parameters)
+   at SqlSugar.QueryableProvider`1.GetDataAsync[TResult](KeyValuePair`2 sqlObj)
+   at SqlSugar.QueryableProvider`1._ToListAsync[TResult]()
+   at SqlSugar.QueryableProvider`1.AnyAsync()
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbSeed.InitializeTenantAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbSeed.cs:line 81
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbSeed.InitializeAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbSeed.cs:line 45
+   at Program.<Main>$(String[] args) in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\Program.cs:line 36|Lean.Hbt.WebApi.Program.Main|
+2025-01-18 10:34:31.7098|0|ERROR|Lean.Hbt.Infrastructure.Logging.HbtNLogger|种子数据初始化失败 SqlSugar.SqlSugarException: 中文提示 :  连接数据库过程中发生错误，检查服务器是否正常连接字符串是否正确，错误信息：无法打开登录所请求的数据库 "LeanHbt_Dev"。登录失败。
+用户 'sa' 登录失败。DbType="SqlServer";ConfigId="".
+English Message : Connection open error . 无法打开登录所请求的数据库 "LeanHbt_Dev"。登录失败。
+用户 'sa' 登录失败。DbType="SqlServer";ConfigId="" 
+   at SqlSugar.Check.Exception(Boolean isException, String message, String[] args)
+   at SqlSugar.AdoProvider.CheckConnection()
+   at SqlSugar.SqlServerProvider.GetCommand(String sql, SugarParameter[] parameters)
+   at SqlSugar.AdoProvider.GetDataReaderAsync(String sql, SugarParameter[] parameters)
+   at SqlSugar.QueryableProvider`1.GetDataAsync[TResult](KeyValuePair`2 sqlObj)
+   at SqlSugar.QueryableProvider`1._ToListAsync[TResult]()
+   at SqlSugar.QueryableProvider`1.AnyAsync()
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbSeed.InitializeTenantAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbSeed.cs:line 81
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbSeed.InitializeAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbSeed.cs:line 45|Lean.Hbt.Infrastructure.Logging.HbtNLogger.Error|
+2025-01-18 10:34:31.8238|0|FATAL|Lean.Hbt.WebApi.Program|应用程序启动失败 SqlSugar.SqlSugarException: 中文提示 :  连接数据库过程中发生错误，检查服务器是否正常连接字符串是否正确，错误信息：无法打开登录所请求的数据库 "LeanHbt_Dev"。登录失败。
+用户 'sa' 登录失败。DbType="SqlServer";ConfigId="".
+English Message : Connection open error . 无法打开登录所请求的数据库 "LeanHbt_Dev"。登录失败。
+用户 'sa' 登录失败。DbType="SqlServer";ConfigId="" 
+   at SqlSugar.Check.Exception(Boolean isException, String message, String[] args)
+   at SqlSugar.AdoProvider.CheckConnection()
+   at SqlSugar.SqlServerProvider.GetCommand(String sql, SugarParameter[] parameters)
+   at SqlSugar.AdoProvider.GetDataReaderAsync(String sql, SugarParameter[] parameters)
+   at SqlSugar.QueryableProvider`1.GetDataAsync[TResult](KeyValuePair`2 sqlObj)
+   at SqlSugar.QueryableProvider`1._ToListAsync[TResult]()
+   at SqlSugar.QueryableProvider`1.AnyAsync()
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbSeed.InitializeTenantAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbSeed.cs:line 81
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbSeed.InitializeAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbSeed.cs:line 45
+   at Program.<Main>$(String[] args) in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\Program.cs:line 36|Lean.Hbt.WebApi.Program.Main|
+2025-01-18 10:44:32.7205|0|ERROR|Lean.Hbt.Infrastructure.Logging.HbtNLogger|种子数据初始化失败 SqlSugar.SqlSugarException: 中文提示 :  连接数据库过程中发生错误，检查服务器是否正常连接字符串是否正确，错误信息：无法打开登录所请求的数据库 "LeanHbt_Dev"。登录失败。
+用户 'sa' 登录失败。DbType="SqlServer";ConfigId="".
+English Message : Connection open error . 无法打开登录所请求的数据库 "LeanHbt_Dev"。登录失败。
+用户 'sa' 登录失败。DbType="SqlServer";ConfigId="" 
+   at SqlSugar.Check.Exception(Boolean isException, String message, String[] args)
+   at SqlSugar.AdoProvider.CheckConnection()
+   at SqlSugar.SqlServerProvider.GetCommand(String sql, SugarParameter[] parameters)
+   at SqlSugar.AdoProvider.GetDataReaderAsync(String sql, SugarParameter[] parameters)
+   at SqlSugar.QueryableProvider`1.GetDataAsync[TResult](KeyValuePair`2 sqlObj)
+   at SqlSugar.QueryableProvider`1._ToListAsync[TResult]()
+   at SqlSugar.QueryableProvider`1.AnyAsync()
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbSeed.InitializeTenantAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbSeed.cs:line 81
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbSeed.InitializeAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbSeed.cs:line 45|Lean.Hbt.Infrastructure.Logging.HbtNLogger.Error|
+2025-01-18 10:44:32.9948|0|FATAL|Lean.Hbt.WebApi.Program|应用程序启动失败 SqlSugar.SqlSugarException: 中文提示 :  连接数据库过程中发生错误，检查服务器是否正常连接字符串是否正确，错误信息：无法打开登录所请求的数据库 "LeanHbt_Dev"。登录失败。
+用户 'sa' 登录失败。DbType="SqlServer";ConfigId="".
+English Message : Connection open error . 无法打开登录所请求的数据库 "LeanHbt_Dev"。登录失败。
+用户 'sa' 登录失败。DbType="SqlServer";ConfigId="" 
+   at SqlSugar.Check.Exception(Boolean isException, String message, String[] args)
+   at SqlSugar.AdoProvider.CheckConnection()
+   at SqlSugar.SqlServerProvider.GetCommand(String sql, SugarParameter[] parameters)
+   at SqlSugar.AdoProvider.GetDataReaderAsync(String sql, SugarParameter[] parameters)
+   at SqlSugar.QueryableProvider`1.GetDataAsync[TResult](KeyValuePair`2 sqlObj)
+   at SqlSugar.QueryableProvider`1._ToListAsync[TResult]()
+   at SqlSugar.QueryableProvider`1.AnyAsync()
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbSeed.InitializeTenantAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbSeed.cs:line 81
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbSeed.InitializeAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbSeed.cs:line 45
+   at Program.<Main>$(String[] args) in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\Program.cs:line 36|Lean.Hbt.WebApi.Program.Main|
+2025-01-18 10:50:48.8971|0|ERROR|Lean.Hbt.Infrastructure.Logging.HbtNLogger|数据库初始化失败 SqlSugar.SqlSugarException: 中文提示 :  连接数据库过程中发生错误，检查服务器是否正常连接字符串是否正确，错误信息：无法打开登录所请求的数据库 "LeanHbt_Dev"。登录失败。
+用户 'sa' 登录失败。DbType="SqlServer";ConfigId="".
+English Message : Connection open error . 无法打开登录所请求的数据库 "LeanHbt_Dev"。登录失败。
+用户 'sa' 登录失败。DbType="SqlServer";ConfigId="" 
+   at SqlSugar.Check.Exception(Boolean isException, String message, String[] args)
+   at SqlSugar.AdoProvider.CheckConnection()
+   at SqlSugar.SqlServerProvider.GetCommand(String sql, SugarParameter[] parameters)
+   at SqlSugar.AdoProvider.GetDataReader(String sql, SugarParameter[] parameters)
+   at SqlSugar.AdoProvider.SqlQuery[T,T2,T3,T4,T5,T6,T7](String sql, Object parameters)
+   at SqlSugar.AdoProvider.SqlQuery[T](String sql, SugarParameter[] parameters)
+   at SqlSugar.AdoProvider.SqlQuery[T](String sql, Object parameters)
+   at SqlSugar.DbMaintenanceProvider.GetDataBaseList()
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbContext.InitializeAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbContext.cs:line 53|Lean.Hbt.Infrastructure.Logging.HbtNLogger.Error|
+2025-01-18 10:50:48.9170|0|FATAL|Lean.Hbt.WebApi.Program|应用程序启动失败 SqlSugar.SqlSugarException: 中文提示 :  连接数据库过程中发生错误，检查服务器是否正常连接字符串是否正确，错误信息：无法打开登录所请求的数据库 "LeanHbt_Dev"。登录失败。
+用户 'sa' 登录失败。DbType="SqlServer";ConfigId="".
+English Message : Connection open error . 无法打开登录所请求的数据库 "LeanHbt_Dev"。登录失败。
+用户 'sa' 登录失败。DbType="SqlServer";ConfigId="" 
+   at SqlSugar.Check.Exception(Boolean isException, String message, String[] args)
+   at SqlSugar.AdoProvider.CheckConnection()
+   at SqlSugar.SqlServerProvider.GetCommand(String sql, SugarParameter[] parameters)
+   at SqlSugar.AdoProvider.GetDataReader(String sql, SugarParameter[] parameters)
+   at SqlSugar.AdoProvider.SqlQuery[T,T2,T3,T4,T5,T6,T7](String sql, Object parameters)
+   at SqlSugar.AdoProvider.SqlQuery[T](String sql, SugarParameter[] parameters)
+   at SqlSugar.AdoProvider.SqlQuery[T](String sql, Object parameters)
+   at SqlSugar.DbMaintenanceProvider.GetDataBaseList()
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbContext.InitializeAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbContext.cs:line 53
+   at Program.<Main>$(String[] args) in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\Program.cs:line 37|Lean.Hbt.WebApi.Program.Main|
+2025-01-18 11:01:56.2156|0|ERROR|Lean.Hbt.Infrastructure.Logging.HbtNLogger|数据库初始化失败 SqlSugar.SqlSugarException: 中文提示 : 类HbtUser 索引特性没找到列 ：TenantId,UserName
+English Message : HbtUser no   SugarIndex[ TenantId,UserName ]  found
+   at SqlSugar.Check.Exception(Boolean isException, String message, String[] args)
+   at SqlSugar.CodeFirstProvider.InitTables(Type entityType)
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbContext.<>c__DisplayClass5_0.<InitializeAsync>b__0() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbContext.cs:line 76
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+--- End of stack trace from previous location ---
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task& currentTaskSlot, Thread threadPoolThread)
+--- End of stack trace from previous location ---
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbContext.InitializeAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbContext.cs:line 76|Lean.Hbt.Infrastructure.Logging.HbtNLogger.Error|
+2025-01-18 11:01:56.2846|0|FATAL|Lean.Hbt.WebApi.Program|应用程序启动失败 SqlSugar.SqlSugarException: 中文提示 : 类HbtUser 索引特性没找到列 ：TenantId,UserName
+English Message : HbtUser no   SugarIndex[ TenantId,UserName ]  found
+   at SqlSugar.Check.Exception(Boolean isException, String message, String[] args)
+   at SqlSugar.CodeFirstProvider.InitTables(Type entityType)
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbContext.<>c__DisplayClass5_0.<InitializeAsync>b__0() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbContext.cs:line 76
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+--- End of stack trace from previous location ---
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task& currentTaskSlot, Thread threadPoolThread)
+--- End of stack trace from previous location ---
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbContext.InitializeAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbContext.cs:line 76
+   at Program.<Main>$(String[] args) in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\Program.cs:line 37|Lean.Hbt.WebApi.Program.Main|
+2025-01-18 11:02:23.0951|0|ERROR|Lean.Hbt.Infrastructure.Logging.HbtNLogger|数据库初始化失败 SqlSugar.SqlSugarException: 中文提示 : 类HbtUser 索引特性没找到列 ：TenantId,UserName
+English Message : HbtUser no   SugarIndex[ TenantId,UserName ]  found
+   at SqlSugar.Check.Exception(Boolean isException, String message, String[] args)
+   at SqlSugar.CodeFirstProvider.InitTables(Type entityType)
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbContext.<>c__DisplayClass5_0.<InitializeAsync>b__0() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbContext.cs:line 76
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+--- End of stack trace from previous location ---
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task& currentTaskSlot, Thread threadPoolThread)
+--- End of stack trace from previous location ---
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbContext.InitializeAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbContext.cs:line 76|Lean.Hbt.Infrastructure.Logging.HbtNLogger.Error|
+2025-01-18 11:02:23.1157|0|FATAL|Lean.Hbt.WebApi.Program|应用程序启动失败 SqlSugar.SqlSugarException: 中文提示 : 类HbtUser 索引特性没找到列 ：TenantId,UserName
+English Message : HbtUser no   SugarIndex[ TenantId,UserName ]  found
+   at SqlSugar.Check.Exception(Boolean isException, String message, String[] args)
+   at SqlSugar.CodeFirstProvider.InitTables(Type entityType)
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbContext.<>c__DisplayClass5_0.<InitializeAsync>b__0() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbContext.cs:line 76
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+--- End of stack trace from previous location ---
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task& currentTaskSlot, Thread threadPoolThread)
+--- End of stack trace from previous location ---
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbContext.InitializeAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbContext.cs:line 76
+   at Program.<Main>$(String[] args) in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\Program.cs:line 37|Lean.Hbt.WebApi.Program.Main|
+2025-01-18 11:02:49.9040|0|ERROR|Lean.Hbt.Infrastructure.Logging.HbtNLogger|数据库初始化失败 SqlSugar.SqlSugarException: 中文提示 : 类HbtUser 索引特性没找到列 ：TenantId,UserName
+English Message : HbtUser no   SugarIndex[ TenantId,UserName ]  found
+   at SqlSugar.Check.Exception(Boolean isException, String message, String[] args)
+   at SqlSugar.CodeFirstProvider.InitTables(Type entityType)
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbContext.<>c__DisplayClass5_0.<InitializeAsync>b__0() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbContext.cs:line 76
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+--- End of stack trace from previous location ---
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task& currentTaskSlot, Thread threadPoolThread)
+--- End of stack trace from previous location ---
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbContext.InitializeAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbContext.cs:line 76|Lean.Hbt.Infrastructure.Logging.HbtNLogger.Error|
+2025-01-18 11:02:49.9311|0|FATAL|Lean.Hbt.WebApi.Program|应用程序启动失败 SqlSugar.SqlSugarException: 中文提示 : 类HbtUser 索引特性没找到列 ：TenantId,UserName
+English Message : HbtUser no   SugarIndex[ TenantId,UserName ]  found
+   at SqlSugar.Check.Exception(Boolean isException, String message, String[] args)
+   at SqlSugar.CodeFirstProvider.InitTables(Type entityType)
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbContext.<>c__DisplayClass5_0.<InitializeAsync>b__0() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbContext.cs:line 76
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+--- End of stack trace from previous location ---
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task& currentTaskSlot, Thread threadPoolThread)
+--- End of stack trace from previous location ---
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbContext.InitializeAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbContext.cs:line 76
+   at Program.<Main>$(String[] args) in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\Program.cs:line 37|Lean.Hbt.WebApi.Program.Main|
+2025-01-18 11:04:40.7569|0|ERROR|Lean.Hbt.Infrastructure.Logging.HbtNLogger|数据库初始化失败 SqlSugar.SqlSugarException: 中文提示 : 类HbtUser 索引特性没找到列 ：TenantId,UserName
+English Message : HbtUser no   SugarIndex[ TenantId,UserName ]  found
+   at SqlSugar.Check.Exception(Boolean isException, String message, String[] args)
+   at SqlSugar.CodeFirstProvider.InitTables(Type entityType)
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbContext.<>c__DisplayClass5_0.<InitializeAsync>b__0() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbContext.cs:line 77
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+--- End of stack trace from previous location ---
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task& currentTaskSlot, Thread threadPoolThread)
+--- End of stack trace from previous location ---
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbContext.InitializeAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbContext.cs:line 77|Lean.Hbt.Infrastructure.Logging.HbtNLogger.Error|
+2025-01-18 11:04:40.9167|0|FATAL|Lean.Hbt.WebApi.Program|应用程序启动失败 SqlSugar.SqlSugarException: 中文提示 : 类HbtUser 索引特性没找到列 ：TenantId,UserName
+English Message : HbtUser no   SugarIndex[ TenantId,UserName ]  found
+   at SqlSugar.Check.Exception(Boolean isException, String message, String[] args)
+   at SqlSugar.CodeFirstProvider.InitTables(Type entityType)
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbContext.<>c__DisplayClass5_0.<InitializeAsync>b__0() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbContext.cs:line 77
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+--- End of stack trace from previous location ---
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task& currentTaskSlot, Thread threadPoolThread)
+--- End of stack trace from previous location ---
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbContext.InitializeAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbContext.cs:line 77
+   at Program.<Main>$(String[] args) in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\Program.cs:line 37|Lean.Hbt.WebApi.Program.Main|
+2025-01-18 11:08:41.8703|0|ERROR|Lean.Hbt.Infrastructure.Logging.HbtNLogger|数据库初始化失败 SqlSugar.SqlSugarException: 中文提示 : 类HbtUser 索引特性没找到列 ：TenantId,UserName
+English Message : HbtUser no   SugarIndex[ TenantId,UserName ]  found
+   at SqlSugar.Check.Exception(Boolean isException, String message, String[] args)
+   at SqlSugar.CodeFirstProvider.InitTables(Type entityType)
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbContext.<>c__DisplayClass5_0.<InitializeAsync>b__0() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbContext.cs:line 77
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+--- End of stack trace from previous location ---
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task& currentTaskSlot, Thread threadPoolThread)
+--- End of stack trace from previous location ---
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbContext.InitializeAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbContext.cs:line 77|Lean.Hbt.Infrastructure.Logging.HbtNLogger.Error|
+2025-01-18 11:08:41.9004|0|FATAL|Lean.Hbt.WebApi.Program|应用程序启动失败 SqlSugar.SqlSugarException: 中文提示 : 类HbtUser 索引特性没找到列 ：TenantId,UserName
+English Message : HbtUser no   SugarIndex[ TenantId,UserName ]  found
+   at SqlSugar.Check.Exception(Boolean isException, String message, String[] args)
+   at SqlSugar.CodeFirstProvider.InitTables(Type entityType)
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbContext.<>c__DisplayClass5_0.<InitializeAsync>b__0() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbContext.cs:line 77
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+--- End of stack trace from previous location ---
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task& currentTaskSlot, Thread threadPoolThread)
+--- End of stack trace from previous location ---
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbContext.InitializeAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbContext.cs:line 77
+   at Program.<Main>$(String[] args) in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\Program.cs:line 37|Lean.Hbt.WebApi.Program.Main|
+2025-01-18 11:11:27.8784|0|ERROR|Lean.Hbt.Infrastructure.Logging.HbtNLogger|数据库初始化失败 SqlSugar.SqlSugarException: 中文提示 : 类HbtUser 索引特性没找到列 ：TenantId,UserName
+English Message : HbtUser no   SugarIndex[ TenantId,UserName ]  found
+   at SqlSugar.Check.Exception(Boolean isException, String message, String[] args)
+   at SqlSugar.CodeFirstProvider.InitTables(Type entityType)
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbContext.<>c__DisplayClass5_0.<InitializeAsync>b__0() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbContext.cs:line 77
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+--- End of stack trace from previous location ---
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task& currentTaskSlot, Thread threadPoolThread)
+--- End of stack trace from previous location ---
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbContext.InitializeAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbContext.cs:line 77|Lean.Hbt.Infrastructure.Logging.HbtNLogger.Error|
+2025-01-18 11:11:27.9754|0|FATAL|Lean.Hbt.WebApi.Program|应用程序启动失败 SqlSugar.SqlSugarException: 中文提示 : 类HbtUser 索引特性没找到列 ：TenantId,UserName
+English Message : HbtUser no   SugarIndex[ TenantId,UserName ]  found
+   at SqlSugar.Check.Exception(Boolean isException, String message, String[] args)
+   at SqlSugar.CodeFirstProvider.InitTables(Type entityType)
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbContext.<>c__DisplayClass5_0.<InitializeAsync>b__0() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbContext.cs:line 77
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+--- End of stack trace from previous location ---
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task& currentTaskSlot, Thread threadPoolThread)
+--- End of stack trace from previous location ---
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbContext.InitializeAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbContext.cs:line 77
+   at Program.<Main>$(String[] args) in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\Program.cs:line 37|Lean.Hbt.WebApi.Program.Main|
+2025-01-18 11:11:44.5566|0|ERROR|Lean.Hbt.Infrastructure.Logging.HbtNLogger|数据库初始化失败 SqlSugar.SqlSugarException: 中文提示 : 类HbtUser 索引特性没找到列 ：TenantId,UserName
+English Message : HbtUser no   SugarIndex[ TenantId,UserName ]  found
+   at SqlSugar.Check.Exception(Boolean isException, String message, String[] args)
+   at SqlSugar.CodeFirstProvider.InitTables(Type entityType)
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbContext.<>c__DisplayClass5_0.<InitializeAsync>b__0() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbContext.cs:line 77
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+--- End of stack trace from previous location ---
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task& currentTaskSlot, Thread threadPoolThread)
+--- End of stack trace from previous location ---
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbContext.InitializeAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbContext.cs:line 77|Lean.Hbt.Infrastructure.Logging.HbtNLogger.Error|
+2025-01-18 11:11:44.6231|0|FATAL|Lean.Hbt.WebApi.Program|应用程序启动失败 SqlSugar.SqlSugarException: 中文提示 : 类HbtUser 索引特性没找到列 ：TenantId,UserName
+English Message : HbtUser no   SugarIndex[ TenantId,UserName ]  found
+   at SqlSugar.Check.Exception(Boolean isException, String message, String[] args)
+   at SqlSugar.CodeFirstProvider.InitTables(Type entityType)
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbContext.<>c__DisplayClass5_0.<InitializeAsync>b__0() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbContext.cs:line 77
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+--- End of stack trace from previous location ---
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task& currentTaskSlot, Thread threadPoolThread)
+--- End of stack trace from previous location ---
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbContext.InitializeAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbContext.cs:line 77
+   at Program.<Main>$(String[] args) in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\Program.cs:line 37|Lean.Hbt.WebApi.Program.Main|
+2025-01-18 11:18:09.4652|0|ERROR|Lean.Hbt.Infrastructure.Logging.HbtNLogger|数据库初始化失败 SqlSugar.SqlSugarException: 中文提示 : 类HbtUser 索引特性没找到列 ：TenantId,UserName
+English Message : HbtUser no   SugarIndex[ TenantId,UserName ]  found
+   at SqlSugar.Check.Exception(Boolean isException, String message, String[] args)
+   at SqlSugar.CodeFirstProvider.InitTables(Type entityType)
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbContext.<>c__DisplayClass5_0.<InitializeAsync>b__0() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbContext.cs:line 77
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+--- End of stack trace from previous location ---
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task& currentTaskSlot, Thread threadPoolThread)
+--- End of stack trace from previous location ---
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbContext.InitializeAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbContext.cs:line 77|Lean.Hbt.Infrastructure.Logging.HbtNLogger.Error|
+2025-01-18 11:18:09.4973|0|FATAL|Lean.Hbt.WebApi.Program|应用程序启动失败 SqlSugar.SqlSugarException: 中文提示 : 类HbtUser 索引特性没找到列 ：TenantId,UserName
+English Message : HbtUser no   SugarIndex[ TenantId,UserName ]  found
+   at SqlSugar.Check.Exception(Boolean isException, String message, String[] args)
+   at SqlSugar.CodeFirstProvider.InitTables(Type entityType)
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbContext.<>c__DisplayClass5_0.<InitializeAsync>b__0() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbContext.cs:line 77
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+--- End of stack trace from previous location ---
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task& currentTaskSlot, Thread threadPoolThread)
+--- End of stack trace from previous location ---
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbContext.InitializeAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbContext.cs:line 77
+   at Program.<Main>$(String[] args) in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\Program.cs:line 37|Lean.Hbt.WebApi.Program.Main|
+2025-01-18 11:38:30.7084|0|ERROR|Lean.Hbt.Infrastructure.Logging.HbtNLogger|数据库初始化失败 SqlSugar.SqlSugarException: 中文提示 : 类HbtUser 索引特性没找到列 ：TenantId,UserName
+English Message : HbtUser no   SugarIndex[ TenantId,UserName ]  found
+   at SqlSugar.Check.Exception(Boolean isException, String message, String[] args)
+   at SqlSugar.CodeFirstProvider.InitTables(Type entityType)
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbContext.<>c__DisplayClass5_0.<InitializeAsync>b__0() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbContext.cs:line 77
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+--- End of stack trace from previous location ---
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task& currentTaskSlot, Thread threadPoolThread)
+--- End of stack trace from previous location ---
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbContext.InitializeAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbContext.cs:line 77|Lean.Hbt.Infrastructure.Logging.HbtNLogger.Error|
+2025-01-18 11:38:31.2178|0|FATAL|Lean.Hbt.WebApi.Program|应用程序启动失败 SqlSugar.SqlSugarException: 中文提示 : 类HbtUser 索引特性没找到列 ：TenantId,UserName
+English Message : HbtUser no   SugarIndex[ TenantId,UserName ]  found
+   at SqlSugar.Check.Exception(Boolean isException, String message, String[] args)
+   at SqlSugar.CodeFirstProvider.InitTables(Type entityType)
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbContext.<>c__DisplayClass5_0.<InitializeAsync>b__0() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbContext.cs:line 77
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+--- End of stack trace from previous location ---
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task& currentTaskSlot, Thread threadPoolThread)
+--- End of stack trace from previous location ---
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbContext.InitializeAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbContext.cs:line 77
+   at Program.<Main>$(String[] args) in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\Program.cs:line 37|Lean.Hbt.WebApi.Program.Main|
+2025-01-18 11:54:41.9597|0|ERROR|Lean.Hbt.Infrastructure.Logging.HbtNLogger|数据库初始化失败 SqlSugar.SqlSugarException: 中文提示 : 类HbtUser 索引特性没找到列 ：TenantId,UserName
+English Message : HbtUser no   SugarIndex[ TenantId,UserName ]  found
+   at SqlSugar.Check.Exception(Boolean isException, String message, String[] args)
+   at SqlSugar.CodeFirstProvider.InitTables(Type entityType)
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbContext.<>c__DisplayClass5_0.<InitializeAsync>b__0() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbContext.cs:line 77
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+--- End of stack trace from previous location ---
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task& currentTaskSlot, Thread threadPoolThread)
+--- End of stack trace from previous location ---
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbContext.InitializeAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbContext.cs:line 77|Lean.Hbt.Infrastructure.Logging.HbtNLogger.Error|
+2025-01-18 11:54:42.0371|0|FATAL|Lean.Hbt.WebApi.Program|应用程序启动失败 SqlSugar.SqlSugarException: 中文提示 : 类HbtUser 索引特性没找到列 ：TenantId,UserName
+English Message : HbtUser no   SugarIndex[ TenantId,UserName ]  found
+   at SqlSugar.Check.Exception(Boolean isException, String message, String[] args)
+   at SqlSugar.CodeFirstProvider.InitTables(Type entityType)
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbContext.<>c__DisplayClass5_0.<InitializeAsync>b__0() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbContext.cs:line 77
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+--- End of stack trace from previous location ---
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task& currentTaskSlot, Thread threadPoolThread)
+--- End of stack trace from previous location ---
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbContext.InitializeAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbContext.cs:line 77
+   at Program.<Main>$(String[] args) in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\Program.cs:line 37|Lean.Hbt.WebApi.Program.Main|
+2025-01-18 11:59:54.9345|0|ERROR|Lean.Hbt.Infrastructure.Logging.HbtNLogger|数据库初始化失败 SqlSugar.SqlSugarException: 中文提示 : 类HbtUser 索引特性没找到列 ：TenantId,UserName
+English Message : HbtUser no   SugarIndex[ TenantId,UserName ]  found
+   at SqlSugar.Check.Exception(Boolean isException, String message, String[] args)
+   at SqlSugar.CodeFirstProvider.InitTables(Type entityType)
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbContext.<>c__DisplayClass5_0.<InitializeAsync>b__0() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbContext.cs:line 77
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+--- End of stack trace from previous location ---
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task& currentTaskSlot, Thread threadPoolThread)
+--- End of stack trace from previous location ---
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbContext.InitializeAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbContext.cs:line 77|Lean.Hbt.Infrastructure.Logging.HbtNLogger.Error|
+2025-01-18 11:59:55.0980|0|FATAL|Lean.Hbt.WebApi.Program|应用程序启动失败 SqlSugar.SqlSugarException: 中文提示 : 类HbtUser 索引特性没找到列 ：TenantId,UserName
+English Message : HbtUser no   SugarIndex[ TenantId,UserName ]  found
+   at SqlSugar.Check.Exception(Boolean isException, String message, String[] args)
+   at SqlSugar.CodeFirstProvider.InitTables(Type entityType)
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbContext.<>c__DisplayClass5_0.<InitializeAsync>b__0() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbContext.cs:line 77
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+--- End of stack trace from previous location ---
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task& currentTaskSlot, Thread threadPoolThread)
+--- End of stack trace from previous location ---
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbContext.InitializeAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbContext.cs:line 77
+   at Program.<Main>$(String[] args) in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\Program.cs:line 37|Lean.Hbt.WebApi.Program.Main|
+2025-01-18 12:05:35.9872|0|ERROR|Lean.Hbt.Infrastructure.Logging.HbtNLogger|数据库初始化失败 SqlSugar.SqlSugarException: 中文提示 : 类HbtUser 索引特性没找到列 ：TenantId,UserName
+English Message : HbtUser no   SugarIndex[ TenantId,UserName ]  found
+   at SqlSugar.Check.Exception(Boolean isException, String message, String[] args)
+   at SqlSugar.CodeFirstProvider.InitTables(Type entityType)
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbContext.<>c__DisplayClass5_0.<InitializeAsync>b__0() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbContext.cs:line 77
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+--- End of stack trace from previous location ---
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task& currentTaskSlot, Thread threadPoolThread)
+--- End of stack trace from previous location ---
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbContext.InitializeAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbContext.cs:line 77|Lean.Hbt.Infrastructure.Logging.HbtNLogger.Error|
+2025-01-18 12:05:36.0674|0|FATAL|Lean.Hbt.WebApi.Program|应用程序启动失败 SqlSugar.SqlSugarException: 中文提示 : 类HbtUser 索引特性没找到列 ：TenantId,UserName
+English Message : HbtUser no   SugarIndex[ TenantId,UserName ]  found
+   at SqlSugar.Check.Exception(Boolean isException, String message, String[] args)
+   at SqlSugar.CodeFirstProvider.InitTables(Type entityType)
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbContext.<>c__DisplayClass5_0.<InitializeAsync>b__0() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbContext.cs:line 77
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+--- End of stack trace from previous location ---
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task& currentTaskSlot, Thread threadPoolThread)
+--- End of stack trace from previous location ---
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbContext.InitializeAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbContext.cs:line 77
+   at Program.<Main>$(String[] args) in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\Program.cs:line 37|Lean.Hbt.WebApi.Program.Main|
+2025-01-18 12:07:43.8108|0|ERROR|Lean.Hbt.Infrastructure.Logging.HbtNLogger|数据库初始化失败 SqlSugar.SqlSugarException: 中文提示 : 类HbtRole 索引特性没找到列 ：TenantId,RoleName
+English Message : HbtRole no   SugarIndex[ TenantId,RoleName ]  found
+   at SqlSugar.Check.Exception(Boolean isException, String message, String[] args)
+   at SqlSugar.CodeFirstProvider.InitTables(Type entityType)
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbContext.<>c__DisplayClass5_0.<InitializeAsync>b__0() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbContext.cs:line 77
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+--- End of stack trace from previous location ---
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task& currentTaskSlot, Thread threadPoolThread)
+--- End of stack trace from previous location ---
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbContext.InitializeAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbContext.cs:line 77|Lean.Hbt.Infrastructure.Logging.HbtNLogger.Error|
+2025-01-18 12:07:43.8883|0|FATAL|Lean.Hbt.WebApi.Program|应用程序启动失败 SqlSugar.SqlSugarException: 中文提示 : 类HbtRole 索引特性没找到列 ：TenantId,RoleName
+English Message : HbtRole no   SugarIndex[ TenantId,RoleName ]  found
+   at SqlSugar.Check.Exception(Boolean isException, String message, String[] args)
+   at SqlSugar.CodeFirstProvider.InitTables(Type entityType)
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbContext.<>c__DisplayClass5_0.<InitializeAsync>b__0() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbContext.cs:line 77
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+--- End of stack trace from previous location ---
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task& currentTaskSlot, Thread threadPoolThread)
+--- End of stack trace from previous location ---
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbContext.InitializeAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbContext.cs:line 77
+   at Program.<Main>$(String[] args) in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\Program.cs:line 37|Lean.Hbt.WebApi.Program.Main|
+2025-01-18 12:40:52.5029|0|ERROR|Lean.Hbt.Infrastructure.Logging.HbtNLogger|数据库初始化失败 SqlSugar.SqlSugarException: 中文提示 : 类HbtUserRole 索引特性没找到列 ：UserId,RoleId
+English Message : HbtUserRole no   SugarIndex[ UserId,RoleId ]  found
+   at SqlSugar.Check.Exception(Boolean isException, String message, String[] args)
+   at SqlSugar.CodeFirstProvider.InitTables(Type entityType)
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbContext.<>c__DisplayClass5_0.<InitializeAsync>b__0() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbContext.cs:line 77
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+--- End of stack trace from previous location ---
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task& currentTaskSlot, Thread threadPoolThread)
+--- End of stack trace from previous location ---
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbContext.InitializeAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbContext.cs:line 77|Lean.Hbt.Infrastructure.Logging.HbtNLogger.Error|
+2025-01-18 12:40:52.6341|0|FATAL|Lean.Hbt.WebApi.Program|应用程序启动失败 SqlSugar.SqlSugarException: 中文提示 : 类HbtUserRole 索引特性没找到列 ：UserId,RoleId
+English Message : HbtUserRole no   SugarIndex[ UserId,RoleId ]  found
+   at SqlSugar.Check.Exception(Boolean isException, String message, String[] args)
+   at SqlSugar.CodeFirstProvider.InitTables(Type entityType)
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbContext.<>c__DisplayClass5_0.<InitializeAsync>b__0() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbContext.cs:line 77
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+--- End of stack trace from previous location ---
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task& currentTaskSlot, Thread threadPoolThread)
+--- End of stack trace from previous location ---
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbContext.InitializeAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbContext.cs:line 77
+   at Program.<Main>$(String[] args) in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\Program.cs:line 37|Lean.Hbt.WebApi.Program.Main|
+2025-01-18 12:41:27.9542|0|ERROR|Lean.Hbt.Infrastructure.Logging.HbtNLogger|种子数据初始化失败 Microsoft.Data.SqlClient.SqlException (0x80131904): 不能将值 NULL 插入列 'LicenseStartTime'，表 'LeanHbt_Dev.dbo.hbt_tenant'；列不允许有 Null 值。INSERT 失败。
+语句已终止。
+   at Microsoft.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at Microsoft.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, SqlCommand command, Boolean callerHasConnectionLock, Boolean asyncClose)
+   at Microsoft.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+   at Microsoft.Data.SqlClient.SqlCommand.FinishExecuteReader(SqlDataReader ds, RunBehavior runBehavior, String resetOptionsString, Boolean isInternal, Boolean forDescribeParameterEncryption, Boolean shouldCacheForAlwaysEncrypted)
+   at Microsoft.Data.SqlClient.SqlCommand.CompleteAsyncExecuteReader(Boolean isInternal, Boolean forDescribeParameterEncryption)
+   at Microsoft.Data.SqlClient.SqlCommand.InternalEndExecuteNonQuery(IAsyncResult asyncResult, Boolean isInternal, String endMethod)
+   at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryInternal(IAsyncResult asyncResult)
+   at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryAsync(IAsyncResult asyncResult)
+   at Microsoft.Data.SqlClient.SqlCommand.<>c.<InternalExecuteNonQueryAsync>b__193_1(IAsyncResult asyncResult)
+   at System.Threading.Tasks.TaskFactory`1.FromAsyncCoreLogic(IAsyncResult iar, Func`2 endFunction, Action`1 endAction, Task`1 promise, Boolean requiresSynchronization)
+--- End of stack trace from previous location ---
+   at SqlSugar.AdoProvider.ExecuteCommandAsync(String sql, SugarParameter[] parameters)
+   at SqlSugar.InsertableProvider`1.ExecuteCommandAsync()
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbSeed.InitializeTenantAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbSeed.cs:line 94
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbSeed.InitializeAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbSeed.cs:line 45
+ClientConnectionId:a7fa043a-625c-4e2f-a6a4-82043924fb24
+Error Number:515,State:2,Class:16|Lean.Hbt.Infrastructure.Logging.HbtNLogger.Error|
+2025-01-18 12:41:28.0859|0|FATAL|Lean.Hbt.WebApi.Program|应用程序启动失败 Microsoft.Data.SqlClient.SqlException (0x80131904): 不能将值 NULL 插入列 'LicenseStartTime'，表 'LeanHbt_Dev.dbo.hbt_tenant'；列不允许有 Null 值。INSERT 失败。
+语句已终止。
+   at Microsoft.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at Microsoft.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, SqlCommand command, Boolean callerHasConnectionLock, Boolean asyncClose)
+   at Microsoft.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+   at Microsoft.Data.SqlClient.SqlCommand.FinishExecuteReader(SqlDataReader ds, RunBehavior runBehavior, String resetOptionsString, Boolean isInternal, Boolean forDescribeParameterEncryption, Boolean shouldCacheForAlwaysEncrypted)
+   at Microsoft.Data.SqlClient.SqlCommand.CompleteAsyncExecuteReader(Boolean isInternal, Boolean forDescribeParameterEncryption)
+   at Microsoft.Data.SqlClient.SqlCommand.InternalEndExecuteNonQuery(IAsyncResult asyncResult, Boolean isInternal, String endMethod)
+   at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryInternal(IAsyncResult asyncResult)
+   at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryAsync(IAsyncResult asyncResult)
+   at Microsoft.Data.SqlClient.SqlCommand.<>c.<InternalExecuteNonQueryAsync>b__193_1(IAsyncResult asyncResult)
+   at System.Threading.Tasks.TaskFactory`1.FromAsyncCoreLogic(IAsyncResult iar, Func`2 endFunction, Action`1 endAction, Task`1 promise, Boolean requiresSynchronization)
+--- End of stack trace from previous location ---
+   at SqlSugar.AdoProvider.ExecuteCommandAsync(String sql, SugarParameter[] parameters)
+   at SqlSugar.InsertableProvider`1.ExecuteCommandAsync()
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbSeed.InitializeTenantAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbSeed.cs:line 94
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbSeed.InitializeAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbSeed.cs:line 45
+   at Program.<Main>$(String[] args) in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\Program.cs:line 41
+ClientConnectionId:a7fa043a-625c-4e2f-a6a4-82043924fb24
+Error Number:515,State:2,Class:16|Lean.Hbt.WebApi.Program.Main|
+2025-01-18 12:45:41.6277|0|ERROR|Lean.Hbt.Infrastructure.Logging.HbtNLogger|种子数据初始化失败 Microsoft.Data.SqlClient.SqlException (0x80131904): 不能将值 NULL 插入列 'TenantCode'，表 'LeanHbt_Dev.dbo.hbt_tenant'；列不允许有 Null 值。INSERT 失败。
+语句已终止。
+   at Microsoft.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at Microsoft.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, SqlCommand command, Boolean callerHasConnectionLock, Boolean asyncClose)
+   at Microsoft.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+   at Microsoft.Data.SqlClient.SqlCommand.FinishExecuteReader(SqlDataReader ds, RunBehavior runBehavior, String resetOptionsString, Boolean isInternal, Boolean forDescribeParameterEncryption, Boolean shouldCacheForAlwaysEncrypted)
+   at Microsoft.Data.SqlClient.SqlCommand.CompleteAsyncExecuteReader(Boolean isInternal, Boolean forDescribeParameterEncryption)
+   at Microsoft.Data.SqlClient.SqlCommand.InternalEndExecuteNonQuery(IAsyncResult asyncResult, Boolean isInternal, String endMethod)
+   at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryInternal(IAsyncResult asyncResult)
+   at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryAsync(IAsyncResult asyncResult)
+   at Microsoft.Data.SqlClient.SqlCommand.<>c.<InternalExecuteNonQueryAsync>b__193_1(IAsyncResult asyncResult)
+   at System.Threading.Tasks.TaskFactory`1.FromAsyncCoreLogic(IAsyncResult iar, Func`2 endFunction, Action`1 endAction, Task`1 promise, Boolean requiresSynchronization)
+--- End of stack trace from previous location ---
+   at SqlSugar.AdoProvider.ExecuteCommandAsync(String sql, SugarParameter[] parameters)
+   at SqlSugar.InsertableProvider`1.ExecuteCommandAsync()
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbSeed.InitializeTenantAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbSeed.cs:line 93
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbSeed.InitializeAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbSeed.cs:line 43
+ClientConnectionId:488d8229-bbd5-44ca-abd4-99e1e5291cd6
+Error Number:515,State:2,Class:16|Lean.Hbt.Infrastructure.Logging.HbtNLogger.Error|
+2025-01-18 12:45:41.8073|0|FATAL|Lean.Hbt.WebApi.Program|应用程序启动失败 Microsoft.Data.SqlClient.SqlException (0x80131904): 不能将值 NULL 插入列 'TenantCode'，表 'LeanHbt_Dev.dbo.hbt_tenant'；列不允许有 Null 值。INSERT 失败。
+语句已终止。
+   at Microsoft.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at Microsoft.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, SqlCommand command, Boolean callerHasConnectionLock, Boolean asyncClose)
+   at Microsoft.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+   at Microsoft.Data.SqlClient.SqlCommand.FinishExecuteReader(SqlDataReader ds, RunBehavior runBehavior, String resetOptionsString, Boolean isInternal, Boolean forDescribeParameterEncryption, Boolean shouldCacheForAlwaysEncrypted)
+   at Microsoft.Data.SqlClient.SqlCommand.CompleteAsyncExecuteReader(Boolean isInternal, Boolean forDescribeParameterEncryption)
+   at Microsoft.Data.SqlClient.SqlCommand.InternalEndExecuteNonQuery(IAsyncResult asyncResult, Boolean isInternal, String endMethod)
+   at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryInternal(IAsyncResult asyncResult)
+   at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryAsync(IAsyncResult asyncResult)
+   at Microsoft.Data.SqlClient.SqlCommand.<>c.<InternalExecuteNonQueryAsync>b__193_1(IAsyncResult asyncResult)
+   at System.Threading.Tasks.TaskFactory`1.FromAsyncCoreLogic(IAsyncResult iar, Func`2 endFunction, Action`1 endAction, Task`1 promise, Boolean requiresSynchronization)
+--- End of stack trace from previous location ---
+   at SqlSugar.AdoProvider.ExecuteCommandAsync(String sql, SugarParameter[] parameters)
+   at SqlSugar.InsertableProvider`1.ExecuteCommandAsync()
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbSeed.InitializeTenantAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbSeed.cs:line 93
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbSeed.InitializeAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbSeed.cs:line 43
+   at Program.<Main>$(String[] args) in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\Program.cs:line 41
+ClientConnectionId:488d8229-bbd5-44ca-abd4-99e1e5291cd6
+Error Number:515,State:2,Class:16|Lean.Hbt.WebApi.Program.Main|
+2025-01-18 13:27:22.2703|0|ERROR|Lean.Hbt.Infrastructure.Logging.HbtNLogger|种子数据初始化失败 Microsoft.Data.SqlClient.SqlException (0x80131904): 不能将值 NULL 插入列 'DbConnection'，表 'LeanHbt_Dev.dbo.hbt_tenant'；列不允许有 Null 值。INSERT 失败。
+语句已终止。
+   at Microsoft.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at Microsoft.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, SqlCommand command, Boolean callerHasConnectionLock, Boolean asyncClose)
+   at Microsoft.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+   at Microsoft.Data.SqlClient.SqlCommand.FinishExecuteReader(SqlDataReader ds, RunBehavior runBehavior, String resetOptionsString, Boolean isInternal, Boolean forDescribeParameterEncryption, Boolean shouldCacheForAlwaysEncrypted)
+   at Microsoft.Data.SqlClient.SqlCommand.CompleteAsyncExecuteReader(Boolean isInternal, Boolean forDescribeParameterEncryption)
+   at Microsoft.Data.SqlClient.SqlCommand.InternalEndExecuteNonQuery(IAsyncResult asyncResult, Boolean isInternal, String endMethod)
+   at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryInternal(IAsyncResult asyncResult)
+   at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryAsync(IAsyncResult asyncResult)
+   at Microsoft.Data.SqlClient.SqlCommand.<>c.<InternalExecuteNonQueryAsync>b__193_1(IAsyncResult asyncResult)
+   at System.Threading.Tasks.TaskFactory`1.FromAsyncCoreLogic(IAsyncResult iar, Func`2 endFunction, Action`1 endAction, Task`1 promise, Boolean requiresSynchronization)
+--- End of stack trace from previous location ---
+   at SqlSugar.AdoProvider.ExecuteCommandAsync(String sql, SugarParameter[] parameters)
+   at SqlSugar.InsertableProvider`1.ExecuteCommandAsync()
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbSeed.InitializeTenantAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbSeed.cs:line 100
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbSeed.InitializeAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbSeed.cs:line 43
+ClientConnectionId:fa34e111-e3b9-4386-9dfc-3a5b4f621507
+Error Number:515,State:2,Class:16|Lean.Hbt.Infrastructure.Logging.HbtNLogger.Error|
+2025-01-18 13:27:22.4234|0|FATAL|Lean.Hbt.WebApi.Program|应用程序启动失败 Microsoft.Data.SqlClient.SqlException (0x80131904): 不能将值 NULL 插入列 'DbConnection'，表 'LeanHbt_Dev.dbo.hbt_tenant'；列不允许有 Null 值。INSERT 失败。
+语句已终止。
+   at Microsoft.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at Microsoft.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, SqlCommand command, Boolean callerHasConnectionLock, Boolean asyncClose)
+   at Microsoft.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+   at Microsoft.Data.SqlClient.SqlCommand.FinishExecuteReader(SqlDataReader ds, RunBehavior runBehavior, String resetOptionsString, Boolean isInternal, Boolean forDescribeParameterEncryption, Boolean shouldCacheForAlwaysEncrypted)
+   at Microsoft.Data.SqlClient.SqlCommand.CompleteAsyncExecuteReader(Boolean isInternal, Boolean forDescribeParameterEncryption)
+   at Microsoft.Data.SqlClient.SqlCommand.InternalEndExecuteNonQuery(IAsyncResult asyncResult, Boolean isInternal, String endMethod)
+   at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryInternal(IAsyncResult asyncResult)
+   at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryAsync(IAsyncResult asyncResult)
+   at Microsoft.Data.SqlClient.SqlCommand.<>c.<InternalExecuteNonQueryAsync>b__193_1(IAsyncResult asyncResult)
+   at System.Threading.Tasks.TaskFactory`1.FromAsyncCoreLogic(IAsyncResult iar, Func`2 endFunction, Action`1 endAction, Task`1 promise, Boolean requiresSynchronization)
+--- End of stack trace from previous location ---
+   at SqlSugar.AdoProvider.ExecuteCommandAsync(String sql, SugarParameter[] parameters)
+   at SqlSugar.InsertableProvider`1.ExecuteCommandAsync()
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbSeed.InitializeTenantAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbSeed.cs:line 100
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbSeed.InitializeAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbSeed.cs:line 43
+   at Program.<Main>$(String[] args) in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\Program.cs:line 41
+ClientConnectionId:fa34e111-e3b9-4386-9dfc-3a5b4f621507
+Error Number:515,State:2,Class:16|Lean.Hbt.WebApi.Program.Main|
+2025-01-18 14:07:49.9195 | ERROR | HbtNLogger | 种子数据初始化失败
+Microsoft.Data.SqlClient.SqlException (0x80131904): 不能将值 NULL 插入列 'LicenseStartTime'，表 'LeanHbt_Dev.dbo.hbt_tenant'；列不允许有 Null 值。INSERT 失败。
+语句已终止。
+   at Microsoft.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at Microsoft.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, SqlCommand command, Boolean callerHasConnectionLock, Boolean asyncClose)
+   at Microsoft.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+   at Microsoft.Data.SqlClient.SqlCommand.FinishExecuteReader(SqlDataReader ds, RunBehavior runBehavior, String resetOptionsString, Boolean isInternal, Boolean forDescribeParameterEncryption, Boolean shouldCacheForAlwaysEncrypted)
+   at Microsoft.Data.SqlClient.SqlCommand.CompleteAsyncExecuteReader(Boolean isInternal, Boolean forDescribeParameterEncryption)
+   at Microsoft.Data.SqlClient.SqlCommand.InternalEndExecuteNonQuery(IAsyncResult asyncResult, Boolean isInternal, String endMethod)
+   at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryInternal(IAsyncResult asyncResult)
+   at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryAsync(IAsyncResult asyncResult)
+   at Microsoft.Data.SqlClient.SqlCommand.<>c.<InternalExecuteNonQueryAsync>b__193_1(IAsyncResult asyncResult)
+   at System.Threading.Tasks.TaskFactory`1.FromAsyncCoreLogic(IAsyncResult iar, Func`2 endFunction, Action`1 endAction, Task`1 promise, Boolean requiresSynchronization)
+--- End of stack trace from previous location ---
+   at SqlSugar.AdoProvider.ExecuteCommandAsync(String sql, SugarParameter[] parameters)
+   at SqlSugar.InsertableProvider`1.ExecuteCommandAsync()
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbSeed.InitializeTenantAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbSeed.cs:line 101
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbSeed.InitializeAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbSeed.cs:line 43
+ClientConnectionId:74fa3224-53d2-4c39-b444-1ad22d3ccb93
+Error Number:515,State:2,Class:16
+----------------------------------------
+2025-01-18 14:07:50.0516 | FATAL | Program | 应用程序启动失败
+Microsoft.Data.SqlClient.SqlException (0x80131904): 不能将值 NULL 插入列 'LicenseStartTime'，表 'LeanHbt_Dev.dbo.hbt_tenant'；列不允许有 Null 值。INSERT 失败。
+语句已终止。
+   at Microsoft.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at Microsoft.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, SqlCommand command, Boolean callerHasConnectionLock, Boolean asyncClose)
+   at Microsoft.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+   at Microsoft.Data.SqlClient.SqlCommand.FinishExecuteReader(SqlDataReader ds, RunBehavior runBehavior, String resetOptionsString, Boolean isInternal, Boolean forDescribeParameterEncryption, Boolean shouldCacheForAlwaysEncrypted)
+   at Microsoft.Data.SqlClient.SqlCommand.CompleteAsyncExecuteReader(Boolean isInternal, Boolean forDescribeParameterEncryption)
+   at Microsoft.Data.SqlClient.SqlCommand.InternalEndExecuteNonQuery(IAsyncResult asyncResult, Boolean isInternal, String endMethod)
+   at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryInternal(IAsyncResult asyncResult)
+   at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryAsync(IAsyncResult asyncResult)
+   at Microsoft.Data.SqlClient.SqlCommand.<>c.<InternalExecuteNonQueryAsync>b__193_1(IAsyncResult asyncResult)
+   at System.Threading.Tasks.TaskFactory`1.FromAsyncCoreLogic(IAsyncResult iar, Func`2 endFunction, Action`1 endAction, Task`1 promise, Boolean requiresSynchronization)
+--- End of stack trace from previous location ---
+   at SqlSugar.AdoProvider.ExecuteCommandAsync(String sql, SugarParameter[] parameters)
+   at SqlSugar.InsertableProvider`1.ExecuteCommandAsync()
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbSeed.InitializeTenantAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbSeed.cs:line 101
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbSeed.InitializeAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbSeed.cs:line 43
+   at Program.<Main>$(String[] args) in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\Program.cs:line 41
+ClientConnectionId:74fa3224-53d2-4c39-b444-1ad22d3ccb93
+Error Number:515,State:2,Class:16
+----------------------------------------
+2025-01-18 14:21:59.7225|Error|HbtNLogger|[初始化] 种子数据初始化失败Microsoft.Data.SqlClient.SqlException (0x80131904): 不能将值 NULL 插入列 'LicenseStartTime'，表 'LeanHbt_Dev.dbo.hbt_tenant'；列不允许有 Null 值。INSERT 失败。
+语句已终止。
+   at Microsoft.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at Microsoft.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, SqlCommand command, Boolean callerHasConnectionLock, Boolean asyncClose)
+   at Microsoft.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+   at Microsoft.Data.SqlClient.SqlCommand.FinishExecuteReader(SqlDataReader ds, RunBehavior runBehavior, String resetOptionsString, Boolean isInternal, Boolean forDescribeParameterEncryption, Boolean shouldCacheForAlwaysEncrypted)
+   at Microsoft.Data.SqlClient.SqlCommand.CompleteAsyncExecuteReader(Boolean isInternal, Boolean forDescribeParameterEncryption)
+   at Microsoft.Data.SqlClient.SqlCommand.InternalEndExecuteNonQuery(IAsyncResult asyncResult, Boolean isInternal, String endMethod)
+   at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryInternal(IAsyncResult asyncResult)
+   at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryAsync(IAsyncResult asyncResult)
+   at Microsoft.Data.SqlClient.SqlCommand.<>c.<InternalExecuteNonQueryAsync>b__193_1(IAsyncResult asyncResult)
+   at System.Threading.Tasks.TaskFactory`1.FromAsyncCoreLogic(IAsyncResult iar, Func`2 endFunction, Action`1 endAction, Task`1 promise, Boolean requiresSynchronization)
+--- End of stack trace from previous location ---
+   at SqlSugar.AdoProvider.ExecuteCommandAsync(String sql, SugarParameter[] parameters)
+   at SqlSugar.InsertableProvider`1.ExecuteCommandAsync()
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbSeed.InitializeTenantAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbSeed.cs:line 111
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbSeed.InitializeAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbSeed.cs:line 45
+ClientConnectionId:bcef4106-fe9f-4a78-8dfa-9f0fa6d41e7f
+Error Number:515,State:2,Class:16
+2025-01-18 14:21:59.8204|Fatal|Program|应用程序启动失败Microsoft.Data.SqlClient.SqlException (0x80131904): 不能将值 NULL 插入列 'LicenseStartTime'，表 'LeanHbt_Dev.dbo.hbt_tenant'；列不允许有 Null 值。INSERT 失败。
+语句已终止。
+   at Microsoft.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at Microsoft.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, SqlCommand command, Boolean callerHasConnectionLock, Boolean asyncClose)
+   at Microsoft.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+   at Microsoft.Data.SqlClient.SqlCommand.FinishExecuteReader(SqlDataReader ds, RunBehavior runBehavior, String resetOptionsString, Boolean isInternal, Boolean forDescribeParameterEncryption, Boolean shouldCacheForAlwaysEncrypted)
+   at Microsoft.Data.SqlClient.SqlCommand.CompleteAsyncExecuteReader(Boolean isInternal, Boolean forDescribeParameterEncryption)
+   at Microsoft.Data.SqlClient.SqlCommand.InternalEndExecuteNonQuery(IAsyncResult asyncResult, Boolean isInternal, String endMethod)
+   at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryInternal(IAsyncResult asyncResult)
+   at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryAsync(IAsyncResult asyncResult)
+   at Microsoft.Data.SqlClient.SqlCommand.<>c.<InternalExecuteNonQueryAsync>b__193_1(IAsyncResult asyncResult)
+   at System.Threading.Tasks.TaskFactory`1.FromAsyncCoreLogic(IAsyncResult iar, Func`2 endFunction, Action`1 endAction, Task`1 promise, Boolean requiresSynchronization)
+--- End of stack trace from previous location ---
+   at SqlSugar.AdoProvider.ExecuteCommandAsync(String sql, SugarParameter[] parameters)
+   at SqlSugar.InsertableProvider`1.ExecuteCommandAsync()
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbSeed.InitializeTenantAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbSeed.cs:line 111
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbSeed.InitializeAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbSeed.cs:line 45
+   at Program.<Main>$(String[] args) in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\Program.cs:line 41
+ClientConnectionId:bcef4106-fe9f-4a78-8dfa-9f0fa6d41e7f
+Error Number:515,State:2,Class:16
+2025-01-18 14:25:10.5286|Error|HbtNLogger|[初始化] 种子数据初始化失败Microsoft.Data.SqlClient.SqlException (0x80131904): 不能将值 NULL 插入列 'salt'，表 'LeanHbt_Dev.dbo.hbt_user'；列不允许有 Null 值。INSERT 失败。
+语句已终止。
+   at Microsoft.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at Microsoft.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, SqlCommand command, Boolean callerHasConnectionLock, Boolean asyncClose)
+   at Microsoft.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+   at Microsoft.Data.SqlClient.SqlCommand.FinishExecuteReader(SqlDataReader ds, RunBehavior runBehavior, String resetOptionsString, Boolean isInternal, Boolean forDescribeParameterEncryption, Boolean shouldCacheForAlwaysEncrypted)
+   at Microsoft.Data.SqlClient.SqlCommand.CompleteAsyncExecuteReader(Boolean isInternal, Boolean forDescribeParameterEncryption)
+   at Microsoft.Data.SqlClient.SqlCommand.InternalEndExecuteNonQuery(IAsyncResult asyncResult, Boolean isInternal, String endMethod)
+   at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryInternal(IAsyncResult asyncResult)
+   at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryAsync(IAsyncResult asyncResult)
+   at Microsoft.Data.SqlClient.SqlCommand.<>c.<InternalExecuteNonQueryAsync>b__193_1(IAsyncResult asyncResult)
+   at System.Threading.Tasks.TaskFactory`1.FromAsyncCoreLogic(IAsyncResult iar, Func`2 endFunction, Action`1 endAction, Task`1 promise, Boolean requiresSynchronization)
+--- End of stack trace from previous location ---
+   at SqlSugar.AdoProvider.ExecuteCommandAsync(String sql, SugarParameter[] parameters)
+   at SqlSugar.InsertableProvider`1.ExecuteCommandAsync()
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbSeed.InitializeUserAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbSeed.cs:line 213
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbSeed.InitializeAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbSeed.cs:line 53
+ClientConnectionId:fc260fc7-8289-439d-8ece-438d0d1829b2
+Error Number:515,State:2,Class:16
+2025-01-18 14:25:10.6687|Fatal|Program|应用程序启动失败Microsoft.Data.SqlClient.SqlException (0x80131904): 不能将值 NULL 插入列 'salt'，表 'LeanHbt_Dev.dbo.hbt_user'；列不允许有 Null 值。INSERT 失败。
+语句已终止。
+   at Microsoft.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at Microsoft.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, SqlCommand command, Boolean callerHasConnectionLock, Boolean asyncClose)
+   at Microsoft.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+   at Microsoft.Data.SqlClient.SqlCommand.FinishExecuteReader(SqlDataReader ds, RunBehavior runBehavior, String resetOptionsString, Boolean isInternal, Boolean forDescribeParameterEncryption, Boolean shouldCacheForAlwaysEncrypted)
+   at Microsoft.Data.SqlClient.SqlCommand.CompleteAsyncExecuteReader(Boolean isInternal, Boolean forDescribeParameterEncryption)
+   at Microsoft.Data.SqlClient.SqlCommand.InternalEndExecuteNonQuery(IAsyncResult asyncResult, Boolean isInternal, String endMethod)
+   at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryInternal(IAsyncResult asyncResult)
+   at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryAsync(IAsyncResult asyncResult)
+   at Microsoft.Data.SqlClient.SqlCommand.<>c.<InternalExecuteNonQueryAsync>b__193_1(IAsyncResult asyncResult)
+   at System.Threading.Tasks.TaskFactory`1.FromAsyncCoreLogic(IAsyncResult iar, Func`2 endFunction, Action`1 endAction, Task`1 promise, Boolean requiresSynchronization)
+--- End of stack trace from previous location ---
+   at SqlSugar.AdoProvider.ExecuteCommandAsync(String sql, SugarParameter[] parameters)
+   at SqlSugar.InsertableProvider`1.ExecuteCommandAsync()
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbSeed.InitializeUserAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbSeed.cs:line 213
+   at Lean.Hbt.Infrastructure.Persistence.HbtDbSeed.InitializeAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Persistence\HbtDbSeed.cs:line 53
+   at Program.<Main>$(String[] args) in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\Program.cs:line 41
+ClientConnectionId:fc260fc7-8289-439d-8ece-438d0d1829b2
+Error Number:515,State:2,Class:16
+2025-01-18 14:35:54.6467|Fatal|Program|应用程序启动失败System.InvalidOperationException: Unable to find the required services. Please add all the required services by calling 'IServiceCollection.AddAuthorization' in the application startup code.
+   at Microsoft.AspNetCore.Builder.AuthorizationAppBuilderExtensions.VerifyServicesRegistered(IApplicationBuilder app)
+   at Microsoft.AspNetCore.Builder.AuthorizationAppBuilderExtensions.UseAuthorization(IApplicationBuilder app)
+   at Program.<Main>$(String[] args) in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\Program.cs:line 55
+2025-01-18 14:39:34.2751|Fatal|Program|应用程序启动失败System.InvalidOperationException: Unable to find the required services. Please add all the required services by calling 'IServiceCollection.AddControllers' inside the call to 'ConfigureServices(...)' in the application startup code.
+   at Microsoft.AspNetCore.Builder.ControllerEndpointRouteBuilderExtensions.EnsureControllerServices(IEndpointRouteBuilder endpoints)
+   at Microsoft.AspNetCore.Builder.ControllerEndpointRouteBuilderExtensions.MapControllers(IEndpointRouteBuilder endpoints)
+   at Program.<Main>$(String[] args) in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\Program.cs:line 61
+2025-01-18 14:42:15.8235|Error|DeveloperExceptionPageMiddleware|An unhandled exception has occurred while executing the request.System.InvalidOperationException: Unable to resolve service for type 'Swashbuckle.AspNetCore.Swagger.ISwaggerProvider' while attempting to Invoke middleware 'Swashbuckle.AspNetCore.Swagger.SwaggerMiddleware'.
+   at lambda_method23(Closure, Object, HttpContext, IServiceProvider)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2025-01-18 14:42:16.3329|Error|DeveloperExceptionPageMiddleware|An unhandled exception has occurred while executing the request.System.InvalidOperationException: Unable to resolve service for type 'Swashbuckle.AspNetCore.Swagger.ISwaggerProvider' while attempting to Invoke middleware 'Swashbuckle.AspNetCore.Swagger.SwaggerMiddleware'.
+   at lambda_method23(Closure, Object, HttpContext, IServiceProvider)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2025-01-18 15:16:00.2549|Error|DeveloperExceptionPageMiddleware|An unhandled exception has occurred while executing the request.System.InvalidOperationException: Unable to resolve service for type 'Swashbuckle.AspNetCore.Swagger.ISwaggerProvider' while attempting to Invoke middleware 'Swashbuckle.AspNetCore.Swagger.SwaggerMiddleware'.
+   at lambda_method23(Closure, Object, HttpContext, IServiceProvider)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
+2025-01-18 15:16:00.4922|Error|DeveloperExceptionPageMiddleware|An unhandled exception has occurred while executing the request.System.InvalidOperationException: Unable to resolve service for type 'Swashbuckle.AspNetCore.Swagger.ISwaggerProvider' while attempting to Invoke middleware 'Swashbuckle.AspNetCore.Swagger.SwaggerMiddleware'.
+   at lambda_method23(Closure, Object, HttpContext, IServiceProvider)
+   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)

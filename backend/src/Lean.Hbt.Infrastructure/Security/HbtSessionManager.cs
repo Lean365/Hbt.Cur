@@ -1,16 +1,17 @@
 //===================================================================
-// 项目名 : Lean.Hbt 
-// 文件名 : HbtSessionManager.cs 
+// 项目名 : Lean.Hbt
+// 文件名 : HbtSessionManager.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-16 10:00
-// 版本号 : V0.0.1
+// 版本号 : V.0.0.1
 // 描述    : 会话管理实现
 //===================================================================
 
-using Lean.Hbt.Infrastructure.Caching;
-using Newtonsoft.Json;
-using Microsoft.Extensions.Options;
 using Lean.Hbt.Common.Options;
+using Lean.Hbt.Domain.Models.Identity;
+using Lean.Hbt.Domain.IServices;
+using Lean.Hbt.Infrastructure.Caching;
+using Microsoft.Extensions.Options;
 
 namespace Lean.Hbt.Infrastructure.Security
 {
@@ -23,12 +24,12 @@ namespace Lean.Hbt.Infrastructure.Security
     /// </remarks>
     public class HbtSessionManager : IHbtSessionManager
     {
-        private readonly SessionOptions _options;
+        private readonly HbtSessionOptions _options;
         private readonly IHbtRedisCache _cache;
 
-        public HbtSessionManager(IOptions<HbtSecurityOptions> options, IHbtRedisCache cache)
+        public HbtSessionManager(IOptions<HbtSessionOptions> options, IHbtRedisCache cache)
         {
-            _options = options.Value.Session;
+            _options = options.Value;
             _cache = cache;
         }
 
@@ -162,7 +163,7 @@ namespace Lean.Hbt.Infrastructure.Security
         private async Task SaveSessionInfoAsync(string userId, string sessionId, HbtSessionInfo sessionInfo)
         {
             var key = $"session:{sessionId}";
-            var expiry = _options.EnableSlidingExpiration 
+            var expiry = _options.EnableSlidingExpiration
                 ? TimeSpan.FromMinutes(_options.SessionExpiryMinutes)
                 : TimeSpan.FromMinutes(_options.SessionExpiryMinutes * 2);
             await _cache.SetAsync(key, sessionInfo, expiry);
@@ -207,45 +208,4 @@ namespace Lean.Hbt.Infrastructure.Security
             return await _cache.GetAsync<List<string>>(key) ?? new List<string>();
         }
     }
-
-    /// <summary>
-    /// 会话信息
-    /// </summary>
-    public class HbtSessionInfo
-    {
-        /// <summary>
-        /// 会话ID
-        /// </summary>
-        public string SessionId { get; set; }
-
-        /// <summary>
-        /// 用户ID
-        /// </summary>
-        public string UserId { get; set; }
-
-        /// <summary>
-        /// 用户名
-        /// </summary>
-        public string UserName { get; set; }
-
-        /// <summary>
-        /// IP地址
-        /// </summary>
-        public string IpAddress { get; set; }
-
-        /// <summary>
-        /// 用户代理
-        /// </summary>
-        public string UserAgent { get; set; }
-
-        /// <summary>
-        /// 最后访问时间
-        /// </summary>
-        public DateTime LastAccessTime { get; set; }
-
-        /// <summary>
-        /// 登录时间
-        /// </summary>
-        public DateTime LoginTime { get; set; }
-    }
-} 
+}

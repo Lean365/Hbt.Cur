@@ -1,6 +1,6 @@
 //===================================================================
-// 项目名 : Lean.Hbt 
-// 文件名 : HbtUserPost.cs 
+// 项目名 : Lean.Hbt
+// 文件名 : HbtUserPost.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-16 11:50
 // 版本号 : V0.0.1
@@ -19,7 +19,7 @@ namespace Lean.Hbt.Domain.Entities.Identity
     /// 创建时间: 2024-01-16
     /// </remarks>
     [SugarTable("hbt_user_post", "用户岗位关联表")]
-    [SugarIndex("ix_user_post", $"{nameof(UserId)},{nameof(PostId)}", OrderByType.Asc, true)]
+    [SugarIndex("ix_user_post", nameof(UserId), OrderByType.Asc, nameof(PostId), OrderByType.Asc, true)]
     public class HbtUserPost : HbtBaseEntity
     {
         /// <summary>
@@ -40,6 +40,9 @@ namespace Lean.Hbt.Domain.Entities.Identity
         [SugarColumn(ColumnName = "tenant_id", ColumnDescription = "租户ID", ColumnDataType = "bigint", IsNullable = false)]
         public long TenantId { get; set; }
 
+        [Navigate(NavigateType.OneToOne, nameof(TenantId))]
+        public HbtTenant Tenant { get; set; }
+
         /// <summary>
         /// 用户导航属性
         /// </summary>
@@ -52,4 +55,4 @@ namespace Lean.Hbt.Domain.Entities.Identity
         [Navigate(NavigateType.OneToOne, nameof(PostId))]
         public HbtPost Post { get; set; }
     }
-} 
+}

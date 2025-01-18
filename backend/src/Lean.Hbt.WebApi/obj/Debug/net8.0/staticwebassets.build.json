@@ -1,0 +1,12 @@
+{
+  "Version": 1,
+  "Hash": "NubAq3DguXxpY2tSXEvTVgUOyV/QlWkWvLDavrnfwwo=",
+  "Source": "Lean.Hbt.WebApi",
+  "BasePath": "_content/Lean.Hbt.WebApi",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": [],
+  "Endpoints": []
+}

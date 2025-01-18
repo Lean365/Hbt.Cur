@@ -3,7 +3,7 @@
 // 文件名 : HbtExceptionMiddleware.cs 
 // 创建者 : Lean365
 // 创建时间: 2024-01-05 10:00
-// 版本号 : V1.0.0
+// 版本号 : V.0.0.1
 // 描述    : 全局异常处理中间件
 //===================================================================
 
@@ -13,6 +13,12 @@ using Lean.Hbt.Common.Models;
 using Lean.Hbt.Common.Exceptions;
 using Lean.Hbt.Common.Constants;
 using Lean.Hbt.Infrastructure.Logging;
+using Lean.Hbt.Domain.IServices;
+using Microsoft.AspNetCore.Http;
+using System;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using System.Text.Json;
 
 namespace Lean.Hbt.WebApi.Middlewares
 {
@@ -26,14 +32,14 @@ namespace Lean.Hbt.WebApi.Middlewares
     public class HbtExceptionMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly IHbtLogger _logger;
+        private readonly ILogger<HbtExceptionMiddleware> _logger;
 
         /// <summary>
         /// 构造函数
         /// </summary>
         /// <param name="next">请求委托</param>
-        /// <param name="logger">日志服务</param>
-        public HbtExceptionMiddleware(RequestDelegate next, IHbtLogger logger)
+        /// <param name="logger">日志记录器</param>
+        public HbtExceptionMiddleware(RequestDelegate next, ILogger<HbtExceptionMiddleware> logger)
         {
             _next = next;
             _logger = logger;
@@ -58,13 +64,11 @@ namespace Lean.Hbt.WebApi.Middlewares
 
         private async Task HandleExceptionAsync(HttpContext context, Exception exception)
         {
-            context.Response.ContentType = "application/json";
-
             var response = exception switch
             {
                 HbtException hbtEx => new HbtApiResult
                 {
-                    Code = int.Parse(hbtEx.Code),
+                    Code = hbtEx.Code,
                     Msg = hbtEx.Message,
                     Data = null
                 },
@@ -76,24 +80,16 @@ namespace Lean.Hbt.WebApi.Middlewares
                 }
             };
 
-            // 设置HTTP状态码
-            context.Response.StatusCode = response.Code switch
-            {
-                401 => (int)HttpStatusCode.Unauthorized,
-                403 => (int)HttpStatusCode.Forbidden,
-                404 => (int)HttpStatusCode.NotFound,
-                400 => (int)HttpStatusCode.BadRequest,
-                _ => (int)HttpStatusCode.InternalServerError
-            };
+            context.Response.ContentType = "application/json";
+            context.Response.StatusCode = StatusCodes.Status500InternalServerError;
 
-            // 记录错误日志
             if (response.Code == 500)
             {
-                _logger.Error(exception, "未处理的异常");
+                _logger.LogError(exception, "未处理的异常");
             }
             else
             {
-                _logger.Warn($"业务异常: {exception.Message}");
+                _logger.LogWarning("业务异常: {Message}", response.Msg);
             }
 
             var settings = new JsonSerializerSettings

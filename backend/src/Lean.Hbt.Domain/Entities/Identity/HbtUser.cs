@@ -1,14 +1,14 @@
 //===================================================================
-// 项目名 : Lean.Hbt 
-// 文件名 : HbtUser.cs 
+// 项目名 : Lean.Hbt
+// 文件名 : HbtUser.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-16 11:30
-// 版本号 : V0.0.1
+// 版本号 : V.0.0.1
 // 描述    : 用户实体
 //===================================================================
 
-using SqlSugar;
 using Lean.Hbt.Common.Enums;
+using SqlSugar;
 
 namespace Lean.Hbt.Domain.Entities.Identity
 {
@@ -23,9 +23,21 @@ namespace Lean.Hbt.Domain.Entities.Identity
     [SugarIndex("ix_user_name", nameof(UserName), OrderByType.Asc, true)]
     [SugarIndex("ix_email", nameof(Email), OrderByType.Asc, true)]
     [SugarIndex("ix_phone", nameof(PhoneNumber), OrderByType.Asc, true)]
-    [SugarIndex("ix_tenant_user", $"{nameof(TenantId)},{nameof(UserName)}", OrderByType.Asc, true)]
+    [SugarIndex("ix_tenant_user", nameof(TenantId), OrderByType.Asc, nameof(UserName), OrderByType.Asc, true)]
     public class HbtUser : HbtBaseEntity
     {
+        /// <summary>
+        /// 租户ID
+        /// </summary>
+        [SugarColumn(ColumnName = "tenant_id", ColumnDescription = "租户ID", ColumnDataType = "bigint", IsNullable = false)]
+        public long TenantId { get; set; }
+
+        /// <summary>
+        /// 租户
+        /// </summary>
+        [Navigate(NavigateType.OneToOne, nameof(TenantId))]
+        public HbtTenant Tenant { get; set; }
+
         /// <summary>
         /// 用户名
         /// </summary>
@@ -48,7 +60,7 @@ namespace Lean.Hbt.Domain.Entities.Identity
         /// 用户类型（0系统用户 1普通用户）
         /// </summary>
         [SugarColumn(ColumnName = "user_type", ColumnDescription = "用户类型（0系统用户 1普通用户）", ColumnDataType = "int", IsNullable = false, DefaultValue = "1")]
-        public YesNo UserType { get; set; }
+        public HbtUserType UserType { get; set; }
 
         /// <summary>
         /// 密码
@@ -78,7 +90,7 @@ namespace Lean.Hbt.Domain.Entities.Identity
         /// 性别（0未知 1男 2女）
         /// </summary>
         [SugarColumn(ColumnName = "gender", ColumnDescription = "性别（0未知 1男 2女）", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
-        public Gender Gender { get; set; }
+        public HbtGender Gender { get; set; }
 
         /// <summary>
         /// 头像
@@ -90,13 +102,13 @@ namespace Lean.Hbt.Domain.Entities.Identity
         /// 状态（0正常 1停用）
         /// </summary>
         [SugarColumn(ColumnName = "status", ColumnDescription = "状态（0正常 1停用）", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
-        public CommonStatus Status { get; set; }
+        public HbtStatus Status { get; set; }
 
         /// <summary>
-        /// 租户ID
+        /// 最后修改密码时间
         /// </summary>
-        [SugarColumn(ColumnName = "tenant_id", ColumnDescription = "租户ID", ColumnDataType = "bigint", IsNullable = false)]
-        public long TenantId { get; set; }
+        [SugarColumn(ColumnName = "last_password_change_time", ColumnDescription = "最后修改密码时间", ColumnDataType = "datetime", IsNullable = true)]
+        public DateTime? LastPasswordChangeTime { get; set; }
 
         /// <summary>
         /// 用户角色关联
@@ -116,4 +128,4 @@ namespace Lean.Hbt.Domain.Entities.Identity
         [Navigate(NavigateType.OneToMany, nameof(HbtUserPost.UserId))]
         public List<HbtUserPost> UserPosts { get; set; }
     }
-} 
+}

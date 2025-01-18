@@ -1,9 +1,9 @@
 //===================================================================
-// 项目名 : Lean.Hbt 
-// 文件名 : HbtExcelHelper.cs 
+// 项目名 : Lean.Hbt
+// 文件名 : HbtExcelHelper.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-16 21:50
-// 版本号 : V1.0.0
+// 版本号 : V.0.0.1
 // 描述    : Excel导入导出帮助类
 //===================================================================
 
@@ -72,7 +72,7 @@ namespace Lean.Hbt.Common.Helpers
         public static Task<byte[]> ExportAsync<T>(IEnumerable<T> data, string sheetName = "Sheet1") where T : class
         {
             ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
-            
+
             using var package = new ExcelPackage();
             SetWorkbookProperties(package.Workbook);
             ExportToSheetAsync(package, data, sheetName);
@@ -89,12 +89,12 @@ namespace Lean.Hbt.Common.Helpers
         public static Task<List<T>> ImportAsync<T>(Stream fileStream, string sheetName = "Sheet1") where T : class, new()
         {
             ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
-            
+
             using var package = new ExcelPackage(fileStream);
             return ImportFromSheetAsync<T>(package, sheetName);
         }
 
-        #endregion
+        #endregion 单Sheet导入导出
 
         #region 多Sheet导入导出
 
@@ -106,7 +106,7 @@ namespace Lean.Hbt.Common.Helpers
         public static Task<byte[]> ExportMultiSheetAsync<T>(Dictionary<string, IEnumerable<T>> sheets) where T : class
         {
             ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
-            
+
             using var package = new ExcelPackage();
             SetWorkbookProperties(package.Workbook);
 
@@ -127,7 +127,7 @@ namespace Lean.Hbt.Common.Helpers
         public static Task<Dictionary<string, List<T>>> ImportMultiSheetAsync<T>(Stream fileStream) where T : class, new()
         {
             ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
-            
+
             using var package = new ExcelPackage(fileStream);
             var result = new Dictionary<string, List<T>>();
 
@@ -139,7 +139,7 @@ namespace Lean.Hbt.Common.Helpers
             return Task.FromResult(result);
         }
 
-        #endregion
+        #endregion 多Sheet导入导出
 
         #region 模板导入导出
 
@@ -152,7 +152,7 @@ namespace Lean.Hbt.Common.Helpers
         public static Task<byte[]> GenerateTemplateAsync<T>(string sheetName = "Sheet1") where T : class, new()
         {
             ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
-            
+
             using var package = new ExcelPackage();
             SetWorkbookProperties(package.Workbook);
             var worksheet = package.Workbook.Worksheets.Add(sheetName);
@@ -165,14 +165,14 @@ namespace Lean.Hbt.Common.Helpers
             // 写入表头
             for (int i = 0; i < properties.Count; i++)
             {
-                var displayName = properties[i].GetCustomAttribute<DisplayNameAttribute>()?.DisplayName 
+                var displayName = properties[i].GetCustomAttribute<DisplayNameAttribute>()?.DisplayName
                     ?? properties[i].Name;
                 var description = properties[i].GetCustomAttribute<DescriptionAttribute>()?.Description;
-                
+
                 // 设置表头
                 var cell = worksheet.Cells[1, i + 1];
                 cell.Value = displayName;
-                
+
                 // 添加注释说明
                 if (!string.IsNullOrEmpty(description))
                 {
@@ -236,7 +236,7 @@ namespace Lean.Hbt.Common.Helpers
             return package.GetAsByteArrayAsync();
         }
 
-        #endregion
+        #endregion 模板导入导出
 
         #region 私有辅助方法
 
@@ -255,7 +255,7 @@ namespace Lean.Hbt.Common.Helpers
             // 写入表头
             for (int i = 0; i < properties.Count; i++)
             {
-                var displayName = properties[i].GetCustomAttribute<DisplayNameAttribute>()?.DisplayName 
+                var displayName = properties[i].GetCustomAttribute<DisplayNameAttribute>()?.DisplayName
                     ?? properties[i].Name;
                 worksheet.Cells[1, i + 1].Value = displayName;
             }
@@ -268,7 +268,7 @@ namespace Lean.Hbt.Common.Helpers
                 {
                     var property = properties[col];
                     var value = property.GetValue(item);
-                    
+
                     // 特殊类型处理
                     if (property.PropertyType == typeof(DateTime) || property.PropertyType == typeof(DateTime?))
                     {
@@ -278,7 +278,7 @@ namespace Lean.Hbt.Common.Helpers
                     {
                         worksheet.Cells[row, col + 1].Style.Numberformat.Format = "#,##0.00";
                     }
-                    
+
                     worksheet.Cells[row, col + 1].Value = value;
                 }
                 row++;
@@ -312,10 +312,10 @@ namespace Lean.Hbt.Common.Helpers
                 var headerValue = worksheet.Cells[1, col].Value?.ToString();
                 if (string.IsNullOrEmpty(headerValue)) continue;
 
-                var property = properties.FirstOrDefault(p => 
-                    p.GetCustomAttribute<DisplayNameAttribute>()?.DisplayName == headerValue 
+                var property = properties.FirstOrDefault(p =>
+                    p.GetCustomAttribute<DisplayNameAttribute>()?.DisplayName == headerValue
                     || p.Name == headerValue);
-                
+
                 if (property != null)
                 {
                     headerMap[headerValue] = property;
@@ -389,6 +389,6 @@ namespace Lean.Hbt.Common.Helpers
             }
         }
 
-        #endregion
+        #endregion 私有辅助方法
     }
-} 
+}

@@ -4,23 +4,159 @@
         <name>Lean.Hbt.Domain</name>
     </assembly>
     <members>
+        <member name="T:Lean.Hbt.Domain.Entities.Audit.HbtAuditLog">
+            <summary>
+            审计日志实体
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Audit.HbtAuditLog.UserId">
+            <summary>
+            用户ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Audit.HbtAuditLog.UserName">
+            <summary>
+            用户名
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Audit.HbtAuditLog.Module">
+            <summary>
+            模块
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Audit.HbtAuditLog.Operation">
+            <summary>
+            操作
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Audit.HbtAuditLog.Method">
+            <summary>
+            方法
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Audit.HbtAuditLog.Parameters">
+            <summary>
+            参数
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Audit.HbtAuditLog.Result">
+            <summary>
+            结果
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Audit.HbtAuditLog.Elapsed">
+            <summary>
+            耗时(毫秒)
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Audit.HbtAuditLog.IpAddress">
+            <summary>
+            IP地址
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Audit.HbtAuditLog.UserAgent">
+            <summary>
+            用户代理
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Domain.Entities.Audit.HbtExceptionLogEntity">
+            <summary>
+            异常日志实体
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Audit.HbtExceptionLogEntity.UserId">
+            <summary>
+            用户ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Audit.HbtExceptionLogEntity.UserName">
+            <summary>
+            用户名
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Audit.HbtExceptionLogEntity.Method">
+            <summary>
+            方法
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Audit.HbtExceptionLogEntity.Parameters">
+            <summary>
+            参数
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Audit.HbtExceptionLogEntity.ExceptionType">
+            <summary>
+            异常类型
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Audit.HbtExceptionLogEntity.ExceptionMessage">
+            <summary>
+            异常消息
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Audit.HbtExceptionLogEntity.StackTrace">
+            <summary>
+            堆栈跟踪
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Audit.HbtExceptionLogEntity.IpAddress">
+            <summary>
+            IP地址
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Audit.HbtExceptionLogEntity.UserAgent">
+            <summary>
+            用户代理
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Domain.Entities.Audit.HbtLoginLog">
+            <summary>
+            登录日志实体
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Audit.HbtLoginLog.UserId">
+            <summary>
+            用户ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Audit.HbtLoginLog.UserName">
+            <summary>
+            用户名
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Audit.HbtLoginLog.IpAddress">
+            <summary>
+            IP地址
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Audit.HbtLoginLog.UserAgent">
+            <summary>
+            用户代理
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Audit.HbtLoginLog.Success">
+            <summary>
+            是否成功
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Audit.HbtLoginLog.Message">
+            <summary>
+            消息
+            </summary>
+        </member>
         <member name="T:Lean.Hbt.Domain.Entities.HbtBaseEntity">
             <summary>
-            基础实体类
+            实体基类
             </summary>
-            <remarks>
-            创建者: Lean365
-            创建时间: 2024-01-16
-            </remarks>
         </member>
         <member name="P:Lean.Hbt.Domain.Entities.HbtBaseEntity.Id">
             <summary>
-            主键ID
+            主键
             </summary>
         </member>
         <member name="P:Lean.Hbt.Domain.Entities.HbtBaseEntity.CreateBy">
             <summary>
-            创建者ID
+            创建者
             </summary>
         </member>
         <member name="P:Lean.Hbt.Domain.Entities.HbtBaseEntity.CreateTime">
@@ -30,7 +166,7 @@
         </member>
         <member name="P:Lean.Hbt.Domain.Entities.HbtBaseEntity.UpdateBy">
             <summary>
-            更新者ID
+            更新者
             </summary>
         </member>
         <member name="P:Lean.Hbt.Domain.Entities.HbtBaseEntity.UpdateTime">
@@ -40,7 +176,7 @@
         </member>
         <member name="P:Lean.Hbt.Domain.Entities.HbtBaseEntity.DeleteBy">
             <summary>
-            删除者ID
+            删除者
             </summary>
         </member>
         <member name="P:Lean.Hbt.Domain.Entities.HbtBaseEntity.DeleteTime">
@@ -50,7 +186,7 @@
         </member>
         <member name="P:Lean.Hbt.Domain.Entities.HbtBaseEntity.IsDeleted">
             <summary>
-            删除标志（0代表存在 1代表删除）
+            是否删除(0=未删除,1=已删除)
             </summary>
         </member>
         <member name="P:Lean.Hbt.Domain.Entities.HbtBaseEntity.Remark">
@@ -105,6 +241,11 @@
         <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtDept.TenantId">
             <summary>
             租户ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtDept.Tenant">
+            <summary>
+            租户导航属性
             </summary>
         </member>
         <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtDept.RoleDepts">
@@ -294,6 +435,11 @@
             租户ID
             </summary>
         </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtRole.Tenant">
+            <summary>
+            租户
+            </summary>
+        </member>
         <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtRole.RoleMenus">
             <summary>
             角色菜单关联
@@ -377,6 +523,86 @@
             菜单导航属性
             </summary>
         </member>
+        <member name="T:Lean.Hbt.Domain.Entities.Identity.HbtTenant">
+            <summary>
+            租户实体
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtTenant.TenantId">
+            <summary>
+            租户ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtTenant.TenantName">
+            <summary>
+            租户名称
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtTenant.TenantCode">
+            <summary>
+            租户编码
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtTenant.ContactPerson">
+            <summary>
+            联系人
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtTenant.ContactPhone">
+            <summary>
+            联系电话
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtTenant.ContactEmail">
+            <summary>
+            联系邮箱
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtTenant.Address">
+            <summary>
+            租户地址
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtTenant.DbConnection">
+            <summary>
+            数据库连接字符串
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtTenant.Domain">
+            <summary>
+            租户域名
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtTenant.LogoUrl">
+            <summary>
+            租户Logo
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtTenant.Theme">
+            <summary>
+            租户主题
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtTenant.LicenseStartTime">
+            <summary>
+            授权开始时间
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtTenant.LicenseEndTime">
+            <summary>
+            授权结束时间
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtTenant.MaxUserCount">
+            <summary>
+            最大用户数
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtTenant.Status">
+            <summary>
+            租户状态
+            </summary>
+        </member>
         <member name="T:Lean.Hbt.Domain.Entities.Identity.HbtUser">
             <summary>
             用户实体
@@ -385,6 +611,16 @@
             创建者: Lean365
             创建时间: 2024-01-16
             </remarks>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtUser.TenantId">
+            <summary>
+            租户ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtUser.Tenant">
+            <summary>
+            租户
+            </summary>
         </member>
         <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtUser.UserName">
             <summary>
@@ -441,9 +677,9 @@
             状态（0正常 1停用）
             </summary>
         </member>
-        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtUser.TenantId">
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtUser.LastPasswordChangeTime">
             <summary>
-            租户ID
+            最后修改密码时间
             </summary>
         </member>
         <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtUser.UserRoles">
@@ -563,59 +799,260 @@
             角色导航属性
             </summary>
         </member>
+        <member name="T:Lean.Hbt.Domain.IRepositories.IHbtRepository`1">
+            <summary>
+            通用仓储接口
+            </summary>
+            <typeparam name="TEntity">实体类型</typeparam>
+        </member>
+        <member name="P:Lean.Hbt.Domain.IRepositories.IHbtRepository`1.SqlSugarClient">
+            <summary>
+            获取SqlSugar客户端
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Domain.IRepositories.IHbtRepository`1.GetByIdAsync(System.Object)">
+            <summary>
+            根据ID获取实体
+            </summary>
+            <param name="id">实体ID</param>
+            <returns>实体</returns>
+        </member>
+        <member name="M:Lean.Hbt.Domain.IRepositories.IHbtRepository`1.GetAllAsync">
+            <summary>
+            获取所有实体
+            </summary>
+            <returns>实体列表</returns>
+        </member>
+        <member name="M:Lean.Hbt.Domain.IRepositories.IHbtRepository`1.GetListAsync(System.Linq.Expressions.Expression{System.Func{`0,System.Boolean}})">
+            <summary>
+            根据条件获取实体列表
+            </summary>
+            <param name="predicate">条件表达式</param>
+            <returns>实体列表</returns>
+        </member>
+        <member name="M:Lean.Hbt.Domain.IRepositories.IHbtRepository`1.GetPagedListAsync(System.Linq.Expressions.Expression{System.Func{`0,System.Boolean}},System.Int32,System.Int32)">
+            <summary>
+            分页获取实体列表
+            </summary>
+            <param name="predicate">条件表达式</param>
+            <param name="pageIndex">页码</param>
+            <param name="pageSize">每页大小</param>
+            <returns>分页结果</returns>
+        </member>
+        <member name="M:Lean.Hbt.Domain.IRepositories.IHbtRepository`1.IsAnyAsync(System.Linq.Expressions.Expression{System.Func{`0,System.Boolean}})">
+            <summary>
+            判断是否存在
+            </summary>
+            <param name="predicate">条件表达式</param>
+            <returns>是否存在</returns>
+        </member>
+        <member name="M:Lean.Hbt.Domain.IRepositories.IHbtRepository`1.InsertAsync(`0)">
+            <summary>
+            新增实体
+            </summary>
+            <param name="entity">实体</param>
+            <returns>是否成功</returns>
+        </member>
+        <member name="M:Lean.Hbt.Domain.IRepositories.IHbtRepository`1.InsertRangeAsync(System.Collections.Generic.List{`0})">
+            <summary>
+            批量新增实体
+            </summary>
+            <param name="entities">实体列表</param>
+            <returns>是否成功</returns>
+        </member>
+        <member name="M:Lean.Hbt.Domain.IRepositories.IHbtRepository`1.UpdateAsync(`0)">
+            <summary>
+            更新实体
+            </summary>
+            <param name="entity">实体</param>
+            <returns>是否成功</returns>
+        </member>
+        <member name="M:Lean.Hbt.Domain.IRepositories.IHbtRepository`1.UpdateRangeAsync(System.Collections.Generic.List{`0})">
+            <summary>
+            批量更新实体
+            </summary>
+            <param name="entities">实体列表</param>
+            <returns>是否成功</returns>
+        </member>
+        <member name="M:Lean.Hbt.Domain.IRepositories.IHbtRepository`1.DeleteAsync(System.Object)">
+            <summary>
+            删除实体
+            </summary>
+            <param name="id">实体ID</param>
+            <returns>是否成功</returns>
+        </member>
+        <member name="M:Lean.Hbt.Domain.IRepositories.IHbtRepository`1.DeleteRangeAsync(System.Object[])">
+            <summary>
+            批量删除实体
+            </summary>
+            <param name="ids">实体ID列表</param>
+            <returns>是否成功</returns>
+        </member>
+        <member name="T:Lean.Hbt.Domain.IServices.IHbtAuditLog">
+            <summary>
+            审计日志接口
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Domain.IServices.IHbtAuditLog.LogOperationAsync(System.Int64,System.String,System.String,System.String,System.String,System.String,System.String,System.Int64)">
+            <summary>
+            记录操作日志
+            </summary>
+            <param name="userId">用户ID</param>
+            <param name="userName">用户名</param>
+            <param name="module">模块</param>
+            <param name="operation">操作</param>
+            <param name="method">方法</param>
+            <param name="parameters">参数</param>
+            <param name="result">结果</param>
+            <param name="elapsed">耗时(ms)</param>
+            <returns>任务</returns>
+        </member>
+        <member name="M:Lean.Hbt.Domain.IServices.IHbtAuditLog.LogLoginAsync(System.Int64,System.String,System.String,System.String,System.Boolean,System.String)">
+            <summary>
+            记录登录日志
+            </summary>
+            <param name="userId">用户ID</param>
+            <param name="userName">用户名</param>
+            <param name="ipAddress">IP地址</param>
+            <param name="userAgent">用户代理</param>
+            <param name="result">结果</param>
+            <param name="message">消息</param>
+            <returns>任务</returns>
+        </member>
+        <member name="M:Lean.Hbt.Domain.IServices.IHbtAuditLog.LogExceptionAsync(System.Int64,System.String,System.String,System.String,System.Exception)">
+            <summary>
+            记录异常日志
+            </summary>
+            <param name="userId">用户ID</param>
+            <param name="userName">用户名</param>
+            <param name="method">方法</param>
+            <param name="parameters">参数</param>
+            <param name="exception">异常</param>
+            <returns>任务</returns>
+        </member>
+        <member name="T:Lean.Hbt.Domain.IServices.IHbtJwtHandler">
+            <summary>
+            JWT处理接口
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Domain.IServices.IHbtJwtHandler.CreateAccessToken(System.Int64,System.String,System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            创建访问令牌
+            </summary>
+            <param name="userId">用户ID</param>
+            <param name="userName">用户名</param>
+            <param name="roles">角色列表</param>
+            <returns>访问令牌</returns>
+        </member>
+        <member name="M:Lean.Hbt.Domain.IServices.IHbtJwtHandler.CreateRefreshToken(System.Int64)">
+            <summary>
+            创建刷新令牌
+            </summary>
+            <param name="userId">用户ID</param>
+            <returns>刷新令牌</returns>
+        </member>
+        <member name="M:Lean.Hbt.Domain.IServices.IHbtJwtHandler.ValidateAccessToken(System.String)">
+            <summary>
+            验证访问令牌
+            </summary>
+            <param name="token">访问令牌</param>
+            <returns>是否有效</returns>
+        </member>
+        <member name="M:Lean.Hbt.Domain.IServices.IHbtJwtHandler.ValidateRefreshToken(System.String)">
+            <summary>
+            验证刷新令牌
+            </summary>
+            <param name="token">刷新令牌</param>
+            <returns>是否有效</returns>
+        </member>
+        <member name="M:Lean.Hbt.Domain.IServices.IHbtJwtHandler.GetUserIdFromToken(System.String)">
+            <summary>
+            从令牌中获取用户ID
+            </summary>
+            <param name="token">令牌</param>
+            <returns>用户ID</returns>
+        </member>
         <member name="T:Lean.Hbt.Domain.IServices.IHbtLogger">
             <summary>
-            日志服务接口
+            日志接口
             </summary>
+        </member>
+        <member name="M:Lean.Hbt.Domain.IServices.IHbtLogger.Debug(System.String)">
+            <summary>
+            记录调试日志
+            </summary>
+            <param name="message">日志消息</param>
         </member>
         <member name="M:Lean.Hbt.Domain.IServices.IHbtLogger.Debug(System.String,System.Object[])">
             <summary>
-            记录调试信息
+            记录调试日志
             </summary>
             <param name="message">日志消息</param>
             <param name="args">格式化参数</param>
         </member>
-        <member name="M:Lean.Hbt.Domain.IServices.IHbtLogger.Information(System.String,System.Object[])">
+        <member name="M:Lean.Hbt.Domain.IServices.IHbtLogger.Info(System.String)">
             <summary>
-            记录信息
+            记录信息日志
+            </summary>
+            <param name="message">日志消息</param>
+        </member>
+        <member name="M:Lean.Hbt.Domain.IServices.IHbtLogger.Info(System.String,System.Object[])">
+            <summary>
+            记录信息日志
             </summary>
             <param name="message">日志消息</param>
             <param name="args">格式化参数</param>
         </member>
-        <member name="M:Lean.Hbt.Domain.IServices.IHbtLogger.Warning(System.String,System.Object[])">
+        <member name="M:Lean.Hbt.Domain.IServices.IHbtLogger.Warn(System.String)">
             <summary>
-            记录警告
+            记录警告日志
+            </summary>
+            <param name="message">日志消息</param>
+        </member>
+        <member name="M:Lean.Hbt.Domain.IServices.IHbtLogger.Warn(System.String,System.Object[])">
+            <summary>
+            记录警告日志
             </summary>
             <param name="message">日志消息</param>
             <param name="args">格式化参数</param>
+        </member>
+        <member name="M:Lean.Hbt.Domain.IServices.IHbtLogger.Error(System.String)">
+            <summary>
+            记录错误日志
+            </summary>
+            <param name="message">日志消息</param>
+        </member>
+        <member name="M:Lean.Hbt.Domain.IServices.IHbtLogger.Error(System.String,System.Exception)">
+            <summary>
+            记录错误日志
+            </summary>
+            <param name="message">日志消息</param>
+            <param name="ex">异常信息</param>
         </member>
         <member name="M:Lean.Hbt.Domain.IServices.IHbtLogger.Error(System.String,System.Object[])">
             <summary>
-            记录错误
+            记录错误日志
             </summary>
             <param name="message">日志消息</param>
             <param name="args">格式化参数</param>
         </member>
-        <member name="M:Lean.Hbt.Domain.IServices.IHbtLogger.Error(System.Exception,System.String,System.Object[])">
+        <member name="M:Lean.Hbt.Domain.IServices.IHbtLogger.Fatal(System.String)">
             <summary>
-            记录错误
+            记录致命错误日志
             </summary>
-            <param name="exception">异常信息</param>
             <param name="message">日志消息</param>
-            <param name="args">格式化参数</param>
+        </member>
+        <member name="M:Lean.Hbt.Domain.IServices.IHbtLogger.Fatal(System.String,System.Exception)">
+            <summary>
+            记录致命错误日志
+            </summary>
+            <param name="message">日志消息</param>
+            <param name="ex">异常信息</param>
         </member>
         <member name="M:Lean.Hbt.Domain.IServices.IHbtLogger.Fatal(System.String,System.Object[])">
             <summary>
-            记录致命错误
+            记录致命错误日志
             </summary>
-            <param name="message">日志消息</param>
-            <param name="args">格式化参数</param>
-        </member>
-        <member name="M:Lean.Hbt.Domain.IServices.IHbtLogger.Fatal(System.Exception,System.String,System.Object[])">
-            <summary>
-            记录致命错误
-            </summary>
-            <param name="exception">异常信息</param>
             <param name="message">日志消息</param>
             <param name="args">格式化参数</param>
         </member>
@@ -624,32 +1061,234 @@
             登录策略接口
             </summary>
         </member>
-        <member name="M:Lean.Hbt.Domain.IServices.IHbtLoginPolicy.RecordFailedAttemptAsync(System.String)">
+        <member name="M:Lean.Hbt.Domain.IServices.IHbtLoginPolicy.ValidateLoginAttemptAsync(System.String)">
+            <summary>
+            验证登录尝试
+            </summary>
+            <param name="userName">用户名</param>
+            <returns>是否允许登录</returns>
+        </member>
+        <member name="M:Lean.Hbt.Domain.IServices.IHbtLoginPolicy.RecordFailedLoginAsync(System.String)">
             <summary>
             记录登录失败
             </summary>
-            <param name="userId">用户ID</param>
-            <returns>剩余尝试次数</returns>
+            <param name="userName">用户名</param>
+            <returns>任务</returns>
         </member>
-        <member name="M:Lean.Hbt.Domain.IServices.IHbtLoginPolicy.ResetFailedAttemptsAsync(System.String)">
+        <member name="M:Lean.Hbt.Domain.IServices.IHbtLoginPolicy.RecordSuccessfulLoginAsync(System.String)">
             <summary>
-            重置登录失败次数
+            记录登录成功
             </summary>
-            <param name="userId">用户ID</param>
+            <param name="userName">用户名</param>
+            <returns>任务</returns>
         </member>
-        <member name="M:Lean.Hbt.Domain.IServices.IHbtLoginPolicy.IsAccountLockedAsync(System.String)">
+        <member name="M:Lean.Hbt.Domain.IServices.IHbtLoginPolicy.GetRemainingAttemptsAsync(System.String)">
             <summary>
-            检查账户是否被锁定
+            获取剩余登录尝试次数
             </summary>
-            <param name="userId">用户ID</param>
-            <returns>是否锁定</returns>
+            <param name="userName">用户名</param>
+            <returns>剩余次数</returns>
         </member>
         <member name="M:Lean.Hbt.Domain.IServices.IHbtLoginPolicy.GetLockoutRemainingMinutesAsync(System.String)">
             <summary>
-            获取账户锁定剩余时间
+            获取账户锁定剩余时间(分钟)
+            </summary>
+            <param name="userName">用户名</param>
+            <returns>剩余分钟</returns>
+        </member>
+        <member name="T:Lean.Hbt.Domain.IServices.IHbtPasswordPolicy">
+            <summary>
+            密码策略接口
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Domain.IServices.IHbtPasswordPolicy.ValidatePasswordComplexity(System.String)">
+            <summary>
+            验证密码复杂度
+            </summary>
+            <param name="password">密码</param>
+            <returns>是否符合要求</returns>
+        </member>
+        <member name="M:Lean.Hbt.Domain.IServices.IHbtPasswordPolicy.ValidatePasswordHistoryAsync(System.Int64,System.String)">
+            <summary>
+            验证密码历史
             </summary>
             <param name="userId">用户ID</param>
-            <returns>剩余分钟数</returns>
+            <param name="newPassword">新密码</param>
+            <returns>是否符合要求</returns>
+        </member>
+        <member name="M:Lean.Hbt.Domain.IServices.IHbtPasswordPolicy.RecordPasswordHistoryAsync(System.Int64,System.String)">
+            <summary>
+            记录密码历史
+            </summary>
+            <param name="userId">用户ID</param>
+            <param name="password">密码</param>
+            <returns>任务</returns>
+        </member>
+        <member name="M:Lean.Hbt.Domain.IServices.IHbtPasswordPolicy.ValidatePasswordExpirationAsync(System.Int64)">
+            <summary>
+            验证密码有效期
+            </summary>
+            <param name="userId">用户ID</param>
+            <returns>是否需要修改密码</returns>
+        </member>
+        <member name="M:Lean.Hbt.Domain.IServices.IHbtPasswordPolicy.GetPasswordExpirationDaysAsync(System.Int64)">
+            <summary>
+            获取密码到期剩余天数
+            </summary>
+            <param name="userId">用户ID</param>
+            <returns>剩余天数</returns>
+        </member>
+        <member name="T:Lean.Hbt.Domain.IServices.IHbtSessionManager">
+            <summary>
+            会话管理接口
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Domain.IServices.IHbtSessionManager.CreateSessionAsync(System.String,System.String,System.String,System.String)">
+            <summary>
+            创建会话
+            </summary>
+            <param name="userId">用户ID</param>
+            <param name="userName">用户名</param>
+            <param name="ipAddress">IP地址</param>
+            <param name="userAgent">用户代理</param>
+            <returns>会话ID</returns>
+        </member>
+        <member name="M:Lean.Hbt.Domain.IServices.IHbtSessionManager.GetSessionInfoAsync(System.String)">
+            <summary>
+            获取会话信息
+            </summary>
+            <param name="sessionId">会话ID</param>
+            <returns>会话信息</returns>
+        </member>
+        <member name="M:Lean.Hbt.Domain.IServices.IHbtSessionManager.GetUserSessionsAsync(System.String)">
+            <summary>
+            获取用户所有会话
+            </summary>
+            <param name="userId">用户ID</param>
+            <returns>会话列表</returns>
+        </member>
+        <member name="M:Lean.Hbt.Domain.IServices.IHbtSessionManager.RemoveSessionAsync(System.String)">
+            <summary>
+            移除会话
+            </summary>
+            <param name="sessionId">会话ID</param>
+            <returns>异步任务</returns>
+        </member>
+        <member name="M:Lean.Hbt.Domain.IServices.IHbtSessionManager.RemoveUserSessionsAsync(System.String)">
+            <summary>
+            移除用户所有会话
+            </summary>
+            <param name="userId">用户ID</param>
+            <returns>异步任务</returns>
+        </member>
+        <member name="M:Lean.Hbt.Domain.IServices.IHbtSessionManager.UpdateSessionAccessTimeAsync(System.String)">
+            <summary>
+            更新会话访问时间
+            </summary>
+            <param name="sessionId">会话ID</param>
+            <returns>异步任务</returns>
+        </member>
+        <member name="T:Lean.Hbt.Domain.Models.Identity.HbtSessionInfo">
+            <summary>
+            会话信息模型
+            </summary>
+            <remarks>
+            创建者: Lean365
+            创建时间: 2024-01-17
+            </remarks>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Models.Identity.HbtSessionInfo.SessionId">
+            <summary>
+            会话ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Models.Identity.HbtSessionInfo.UserId">
+            <summary>
+            用户ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Models.Identity.HbtSessionInfo.UserName">
+            <summary>
+            用户名
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Models.Identity.HbtSessionInfo.IpAddress">
+            <summary>
+            IP地址
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Models.Identity.HbtSessionInfo.UserAgent">
+            <summary>
+            用户代理
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Models.Identity.HbtSessionInfo.LastAccessTime">
+            <summary>
+            最后访问时间
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Models.Identity.HbtSessionInfo.LoginTime">
+            <summary>
+            登录时间
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Domain.Repositories.HbtRepositoryExtensions">
+            <summary>
+            SqlSugar通用仓储扩展方法
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Domain.Repositories.HbtRepositoryExtensions.AsQueryable``1(Lean.Hbt.Domain.Repositories.IHbtRepository{``0})">
+            <summary>
+            获取查询对象
+            </summary>
+            <typeparam name="T">实体类型</typeparam>
+            <param name="repository">仓储接口</param>
+            <returns>查询对象</returns>
+        </member>
+        <member name="M:Lean.Hbt.Domain.Repositories.HbtRepositoryExtensions.GetByIdAsync``1(Lean.Hbt.Domain.Repositories.IHbtRepository{``0},System.Object)">
+            <summary>
+            根据ID获取实体
+            </summary>
+            <typeparam name="T">实体类型</typeparam>
+            <param name="repository">仓储接口</param>
+            <param name="id">主键ID</param>
+            <returns>实体</returns>
+        </member>
+        <member name="M:Lean.Hbt.Domain.Repositories.HbtRepositoryExtensions.InsertAsync``1(Lean.Hbt.Domain.Repositories.IHbtRepository{``0},``0)">
+            <summary>
+            插入实体
+            </summary>
+            <typeparam name="T">实体类型</typeparam>
+            <param name="repository">仓储接口</param>
+            <param name="entity">实体</param>
+            <returns>是否成功</returns>
+        </member>
+        <member name="M:Lean.Hbt.Domain.Repositories.HbtRepositoryExtensions.UpdateAsync``1(Lean.Hbt.Domain.Repositories.IHbtRepository{``0},``0)">
+            <summary>
+            更新实体
+            </summary>
+            <typeparam name="T">实体类型</typeparam>
+            <param name="repository">仓储接口</param>
+            <param name="entity">实体</param>
+            <returns>是否成功</returns>
+        </member>
+        <member name="M:Lean.Hbt.Domain.Repositories.HbtRepositoryExtensions.DeleteByIdAsync``1(Lean.Hbt.Domain.Repositories.IHbtRepository{``0},System.Object)">
+            <summary>
+            根据ID删除实体
+            </summary>
+            <typeparam name="T">实体类型</typeparam>
+            <param name="repository">仓储接口</param>
+            <param name="id">主键ID</param>
+            <returns>是否成功</returns>
+        </member>
+        <member name="M:Lean.Hbt.Domain.Repositories.HbtRepositoryExtensions.DeleteAsync``1(Lean.Hbt.Domain.Repositories.IHbtRepository{``0},System.Linq.Expressions.Expression{System.Func{``0,System.Boolean}})">
+            <summary>
+            根据条件删除实体
+            </summary>
+            <typeparam name="T">实体类型</typeparam>
+            <param name="repository">仓储接口</param>
+            <param name="expression">条件表达式</param>
+            <returns>是否成功</returns>
         </member>
         <member name="T:Lean.Hbt.Domain.Repositories.IHbtRepository`1">
             <summary>

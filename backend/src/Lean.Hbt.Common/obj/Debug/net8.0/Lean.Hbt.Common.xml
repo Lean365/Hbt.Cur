@@ -6,246 +6,71 @@
     <members>
         <member name="T:Lean.Hbt.Common.Constants.HbtConstants">
             <summary>
-            系统常量定义类
+            常量定义
             </summary>
             <remarks>
             创建者: Lean365
-            创建时间: 2024-01-05
+            创建时间: 2024-01-17
             </remarks>
-        </member>
-        <member name="T:Lean.Hbt.Common.Constants.HbtConstants.Cache">
-            <summary>
-            缓存相关常量
-            </summary>
-        </member>
-        <member name="F:Lean.Hbt.Common.Constants.HbtConstants.Cache.KeyPrefix">
-            <summary>
-            缓存键前缀
-            </summary>
-        </member>
-        <member name="F:Lean.Hbt.Common.Constants.HbtConstants.Cache.DefaultExpiryMinutes">
-            <summary>
-            默认缓存过期时间(分钟)
-            </summary>
-        </member>
-        <member name="T:Lean.Hbt.Common.Constants.HbtConstants.Jwt">
-            <summary>
-            JWT相关常量
-            </summary>
-        </member>
-        <member name="F:Lean.Hbt.Common.Constants.HbtConstants.Jwt.TokenType">
-            <summary>
-            Token类型
-            </summary>
-        </member>
-        <member name="F:Lean.Hbt.Common.Constants.HbtConstants.Jwt.AuthorizationHeader">
-            <summary>
-            授权请求头名称
-            </summary>
-        </member>
-        <member name="T:Lean.Hbt.Common.Constants.HbtConstants.Roles">
-            <summary>
-            角色相关常量
-            </summary>
-        </member>
-        <member name="F:Lean.Hbt.Common.Constants.HbtConstants.Roles.Admin">
-            <summary>
-            管理员角色
-            </summary>
-        </member>
-        <member name="F:Lean.Hbt.Common.Constants.HbtConstants.Roles.User">
-            <summary>
-            普通用户角色
-            </summary>
-        </member>
-        <member name="F:Lean.Hbt.Common.Constants.HbtConstants.Roles.Guest">
-            <summary>
-            访客角色
-            </summary>
-        </member>
-        <member name="T:Lean.Hbt.Common.Constants.HbtConstants.ClaimTypes">
-            <summary>
-            声明类型常量
-            </summary>
-        </member>
-        <member name="F:Lean.Hbt.Common.Constants.HbtConstants.ClaimTypes.UserId">
-            <summary>
-            用户ID声明
-            </summary>
-        </member>
-        <member name="F:Lean.Hbt.Common.Constants.HbtConstants.ClaimTypes.UserName">
-            <summary>
-            用户名声明
-            </summary>
-        </member>
-        <member name="F:Lean.Hbt.Common.Constants.HbtConstants.ClaimTypes.TenantId">
-            <summary>
-            租户ID声明
-            </summary>
         </member>
         <member name="T:Lean.Hbt.Common.Constants.HbtConstants.ErrorCodes">
             <summary>
-            错误代码常量
+            错误代码
             </summary>
         </member>
         <member name="F:Lean.Hbt.Common.Constants.HbtConstants.ErrorCodes.Unauthorized">
             <summary>
-            未授权错误
+            未授权
             </summary>
         </member>
         <member name="F:Lean.Hbt.Common.Constants.HbtConstants.ErrorCodes.Forbidden">
             <summary>
-            禁止访问错误
+            禁止访问
             </summary>
         </member>
         <member name="F:Lean.Hbt.Common.Constants.HbtConstants.ErrorCodes.NotFound">
             <summary>
-            资源未找到错误
+            资源未找到
             </summary>
         </member>
         <member name="F:Lean.Hbt.Common.Constants.HbtConstants.ErrorCodes.ValidationFailed">
             <summary>
-            数据验证失败错误
+            数据验证失败
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Constants.HbtConstants.ErrorCodes.BusinessError">
+            <summary>
+            业务错误
             </summary>
         </member>
         <member name="F:Lean.Hbt.Common.Constants.HbtConstants.ErrorCodes.ServerError">
             <summary>
-            服务器内部错误
+            服务器错误
             </summary>
         </member>
         <member name="T:Lean.Hbt.Common.Constants.HbtConstants.DateTimeFormats">
             <summary>
-            日期时间格式常量
+            日期时间格式
             </summary>
         </member>
-        <member name="F:Lean.Hbt.Common.Constants.HbtConstants.DateTimeFormats.DefaultDate">
+        <member name="F:Lean.Hbt.Common.Constants.HbtConstants.DateTimeFormats.StandardDate">
             <summary>
-            默认日期格式
+            标准日期格式
             </summary>
         </member>
-        <member name="F:Lean.Hbt.Common.Constants.HbtConstants.DateTimeFormats.DefaultDateTime">
+        <member name="F:Lean.Hbt.Common.Constants.HbtConstants.DateTimeFormats.StandardTime">
             <summary>
-            默认日期时间格式
+            标准时间格式
             </summary>
         </member>
-        <member name="F:Lean.Hbt.Common.Constants.HbtConstants.DateTimeFormats.DefaultDateTimeWithMs">
+        <member name="F:Lean.Hbt.Common.Constants.HbtConstants.DateTimeFormats.StandardDateTime">
             <summary>
-            默认日期时间格式(含毫秒)
+            标准日期时间格式
             </summary>
         </member>
-        <member name="T:Lean.Hbt.Common.Enums.CommonStatus">
+        <member name="F:Lean.Hbt.Common.Constants.HbtConstants.DateTimeFormats.FullDateTime">
             <summary>
-            通用状态枚举
-            </summary>
-        </member>
-        <member name="F:Lean.Hbt.Common.Enums.CommonStatus.Normal">
-            <summary>
-            正常
-            </summary>
-        </member>
-        <member name="F:Lean.Hbt.Common.Enums.CommonStatus.Disabled">
-            <summary>
-            停用
-            </summary>
-        </member>
-        <member name="T:Lean.Hbt.Common.Enums.Gender">
-            <summary>
-            性别枚举
-            </summary>
-        </member>
-        <member name="F:Lean.Hbt.Common.Enums.Gender.Unknown">
-            <summary>
-            未知
-            </summary>
-        </member>
-        <member name="F:Lean.Hbt.Common.Enums.Gender.Male">
-            <summary>
-            男
-            </summary>
-        </member>
-        <member name="F:Lean.Hbt.Common.Enums.Gender.Female">
-            <summary>
-            女
-            </summary>
-        </member>
-        <member name="T:Lean.Hbt.Common.Enums.MenuType">
-            <summary>
-            菜单类型枚举
-            </summary>
-        </member>
-        <member name="F:Lean.Hbt.Common.Enums.MenuType.Directory">
-            <summary>
-            目录
-            </summary>
-        </member>
-        <member name="F:Lean.Hbt.Common.Enums.MenuType.Menu">
-            <summary>
-            菜单
-            </summary>
-        </member>
-        <member name="F:Lean.Hbt.Common.Enums.MenuType.Button">
-            <summary>
-            按钮
-            </summary>
-        </member>
-        <member name="T:Lean.Hbt.Common.Enums.VisibleStatus">
-            <summary>
-            显示状态枚举
-            </summary>
-        </member>
-        <member name="F:Lean.Hbt.Common.Enums.VisibleStatus.Show">
-            <summary>
-            显示
-            </summary>
-        </member>
-        <member name="F:Lean.Hbt.Common.Enums.VisibleStatus.Hide">
-            <summary>
-            隐藏
-            </summary>
-        </member>
-        <member name="T:Lean.Hbt.Common.Enums.YesNo">
-            <summary>
-            是否枚举
-            </summary>
-        </member>
-        <member name="F:Lean.Hbt.Common.Enums.YesNo.No">
-            <summary>
-            否
-            </summary>
-        </member>
-        <member name="F:Lean.Hbt.Common.Enums.YesNo.Yes">
-            <summary>
-            是
-            </summary>
-        </member>
-        <member name="T:Lean.Hbt.Common.Enums.DataScope">
-            <summary>
-            数据范围枚举
-            </summary>
-        </member>
-        <member name="F:Lean.Hbt.Common.Enums.DataScope.All">
-            <summary>
-            全部数据权限
-            </summary>
-        </member>
-        <member name="F:Lean.Hbt.Common.Enums.DataScope.Custom">
-            <summary>
-            自定数据权限
-            </summary>
-        </member>
-        <member name="F:Lean.Hbt.Common.Enums.DataScope.Department">
-            <summary>
-            本部门数据权限
-            </summary>
-        </member>
-        <member name="F:Lean.Hbt.Common.Enums.DataScope.DepartmentAndBelow">
-            <summary>
-            本部门及以下数据权限
-            </summary>
-        </member>
-        <member name="F:Lean.Hbt.Common.Enums.DataScope.Self">
-            <summary>
-            仅本人数据权限
+            完整日期时间格式
             </summary>
         </member>
         <member name="T:Lean.Hbt.Common.Enums.HbtBusinessType">
@@ -322,78 +147,204 @@
             撤销
             </summary>
         </member>
-        <member name="T:Lean.Hbt.Common.Exceptions.HbtException">
+        <member name="T:Lean.Hbt.Common.Enums.HbtStatus">
             <summary>
-            系统基础异常类
+            通用状态枚举
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtStatus.Normal">
+            <summary>
+            正常
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtStatus.Disabled">
+            <summary>
+            停用
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Common.Enums.HbtGender">
+            <summary>
+            性别枚举
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtGender.Unknown">
+            <summary>
+            未知
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtGender.Male">
+            <summary>
+            男
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtGender.Female">
+            <summary>
+            女
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Common.Enums.HbtMenuType">
+            <summary>
+            菜单类型枚举
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtMenuType.Directory">
+            <summary>
+            目录
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtMenuType.Menu">
+            <summary>
+            菜单
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtMenuType.Button">
+            <summary>
+            按钮
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Common.Enums.HbtVisible">
+            <summary>
+            显示状态枚举
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtVisible.Show">
+            <summary>
+            显示
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtVisible.Hide">
+            <summary>
+            隐藏
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Common.Enums.HbtYesNo">
+            <summary>
+            是否枚举
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtYesNo.No">
+            <summary>
+            否
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtYesNo.Yes">
+            <summary>
+            是
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Common.Enums.HbtUserType">
+            <summary>
+            用户类型枚举
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtUserType.Admin">
+            <summary>
+            管理员
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtUserType.User">
+            <summary>
+            普通用户
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Common.Enums.HbtDataScope">
+            <summary>
+            数据范围枚举
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtDataScope.All">
+            <summary>
+            全部数据权限
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtDataScope.Custom">
+            <summary>
+            自定数据权限
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtDataScope.Department">
+            <summary>
+            本部门数据权限
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtDataScope.DepartmentAndBelow">
+            <summary>
+            本部门及以下数据权限
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtDataScope.Self">
+            <summary>
+            仅本人数据权限
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Common.Exceptions.HbtBusinessException">
+            <summary>
+            业务异常类
             </summary>
             <remarks>
             创建者: Lean365
-            创建时间: 2024-01-05
+            创建时间: 2024-01-17
             </remarks>
         </member>
-        <member name="P:Lean.Hbt.Common.Exceptions.HbtException.Code">
-            <summary>
-            错误代码
-            </summary>
-        </member>
-        <member name="M:Lean.Hbt.Common.Exceptions.HbtException.#ctor(System.String,System.String)">
+        <member name="M:Lean.Hbt.Common.Exceptions.HbtBusinessException.#ctor(System.String)">
             <summary>
             构造函数
             </summary>
             <param name="message">错误消息</param>
-            <param name="code">错误代码</param>
         </member>
-        <member name="M:Lean.Hbt.Common.Exceptions.HbtException.#ctor(System.String,System.Exception,System.String)">
+        <member name="T:Lean.Hbt.Common.Exceptions.HbtException">
+            <summary>
+            自定义异常类
+            </summary>
+            <remarks>
+            创建者: Lean365
+            创建时间: 2024-01-17
+            </remarks>
+        </member>
+        <member name="P:Lean.Hbt.Common.Exceptions.HbtException.Code">
+            <summary>
+            错误码
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Common.Exceptions.HbtException.#ctor(System.String)">
+            <summary>
+            构造函数
+            </summary>
+            <param name="message">错误消息</param>
+        </member>
+        <member name="M:Lean.Hbt.Common.Exceptions.HbtException.#ctor(System.String,System.Int32)">
+            <summary>
+            构造函数
+            </summary>
+            <param name="message">错误消息</param>
+            <param name="code">错误码</param>
+        </member>
+        <member name="M:Lean.Hbt.Common.Exceptions.HbtException.#ctor(System.String,System.Exception)">
             <summary>
             构造函数
             </summary>
             <param name="message">错误消息</param>
             <param name="innerException">内部异常</param>
-            <param name="code">错误代码</param>
         </member>
-        <member name="T:Lean.Hbt.Common.Exceptions.HbtUnauthorizedException">
-            <summary>
-            未授权异常
-            </summary>
-        </member>
-        <member name="M:Lean.Hbt.Common.Exceptions.HbtUnauthorizedException.#ctor(System.String)">
+        <member name="M:Lean.Hbt.Common.Exceptions.HbtException.#ctor(System.String,System.Int32,System.Exception)">
             <summary>
             构造函数
             </summary>
             <param name="message">错误消息</param>
+            <param name="code">错误码</param>
+            <param name="innerException">内部异常</param>
         </member>
-        <member name="T:Lean.Hbt.Common.Exceptions.HbtForbiddenException">
+        <member name="T:Lean.Hbt.Common.Extensions.EnumExtensions">
             <summary>
-            禁止访问异常
+            枚举扩展方法
             </summary>
         </member>
-        <member name="M:Lean.Hbt.Common.Exceptions.HbtForbiddenException.#ctor(System.String)">
+        <member name="M:Lean.Hbt.Common.Extensions.EnumExtensions.GetDescription(System.Enum)">
             <summary>
-            构造函数
+            获取枚举的Description特性描述
             </summary>
-            <param name="message">错误消息</param>
-        </member>
-        <member name="T:Lean.Hbt.Common.Exceptions.HbtNotFoundException">
-            <summary>
-            资源未找到异常
-            </summary>
-        </member>
-        <member name="M:Lean.Hbt.Common.Exceptions.HbtNotFoundException.#ctor(System.String)">
-            <summary>
-            构造函数
-            </summary>
-            <param name="message">错误消息</param>
-        </member>
-        <member name="T:Lean.Hbt.Common.Exceptions.HbtValidationException">
-            <summary>
-            数据验证异常
-            </summary>
-        </member>
-        <member name="M:Lean.Hbt.Common.Exceptions.HbtValidationException.#ctor(System.String)">
-            <summary>
-            构造函数
-            </summary>
-            <param name="message">错误消息</param>
+            <param name="value">枚举值</param>
+            <returns>描述</returns>
         </member>
         <member name="T:Lean.Hbt.Common.Extensions.HbtExtensions">
             <summary>
@@ -686,6 +637,26 @@
             数据列表
             </summary>
         </member>
+        <member name="T:Lean.Hbt.Common.Options.HbtDbOptions">
+            <summary>
+            数据库配置选项
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtDbOptions.DbType">
+            <summary>
+            数据库类型
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtDbOptions.ConnectionString">
+            <summary>
+            连接字符串
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtDbOptions.TenantId">
+            <summary>
+            当前租户ID
+            </summary>
+        </member>
         <member name="T:Lean.Hbt.Common.Options.HbtExcelOptions">
             <summary>
             Excel配置选项
@@ -740,6 +711,266 @@
             <summary>
             管理者
             </summary>
+        </member>
+        <member name="T:Lean.Hbt.Common.Options.HbtJwtOptions">
+            <summary>
+            JWT配置选项
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtJwtOptions.SecretKey">
+            <summary>
+            密钥
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtJwtOptions.Issuer">
+            <summary>
+            发行者
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtJwtOptions.Audience">
+            <summary>
+            接收者
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtJwtOptions.ExpirationMinutes">
+            <summary>
+            过期时间(分钟)
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtJwtOptions.RefreshTokenExpirationDays">
+            <summary>
+            刷新令牌过期时间(天)
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Common.Options.HbtLoginPolicyOptions">
+            <summary>
+            登录策略配置选项
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtLoginPolicyOptions.MaxFailedAttempts">
+            <summary>
+            最大失败次数
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtLoginPolicyOptions.LockoutMinutes">
+            <summary>
+            锁定时间(分钟)
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtLoginPolicyOptions.AllowMultipleLogin">
+            <summary>
+            是否允许多端登录
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtLoginPolicyOptions.EnableLoginRestriction">
+            <summary>
+            是否启用登录限制
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Common.Options.HbtPasswordPolicyOptions">
+            <summary>
+            密码策略配置选项
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtPasswordPolicyOptions.MinLength">
+            <summary>
+            最小长度
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtPasswordPolicyOptions.MaxLength">
+            <summary>
+            最大长度
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtPasswordPolicyOptions.RequireDigit">
+            <summary>
+            是否需要数字
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtPasswordPolicyOptions.RequireLowercase">
+            <summary>
+            是否需要小写字母
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtPasswordPolicyOptions.RequireUppercase">
+            <summary>
+            是否需要大写字母
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtPasswordPolicyOptions.RequireNonAlphanumeric">
+            <summary>
+            是否需要特殊字符
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtPasswordPolicyOptions.ExpirationDays">
+            <summary>
+            密码过期天数
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtPasswordPolicyOptions.HistoryCount">
+            <summary>
+            密码历史记录数
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtPasswordPolicyOptions.EnablePasswordHistory">
+            <summary>
+            是否启用密码历史记录
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtPasswordPolicyOptions.EnablePasswordExpiration">
+            <summary>
+            是否启用密码过期
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtPasswordPolicyOptions.RequireSpecialChar">
+            <summary>
+            是否需要特殊字符
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtPasswordPolicyOptions.PasswordHistoryCount">
+            <summary>
+            密码历史记录数
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtPasswordPolicyOptions.PasswordExpirationDays">
+            <summary>
+            密码过期天数
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Common.Options.HbtRedisOptions">
+            <summary>
+            Redis配置选项
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtRedisOptions.ConnectionString">
+            <summary>
+            连接字符串
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtRedisOptions.InstanceName">
+            <summary>
+            实例名称
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtRedisOptions.DefaultDb">
+            <summary>
+            默认数据库
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtRedisOptions.ConnectTimeout">
+            <summary>
+            连接超时时间(毫秒)
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtRedisOptions.SyncTimeout">
+            <summary>
+            同步超时时间(毫秒)
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtRedisOptions.AllowAdmin">
+            <summary>
+            是否允许管理员操作
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtRedisOptions.Ssl">
+            <summary>
+            是否使用SSL
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtRedisOptions.Password">
+            <summary>
+            密码
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Common.Options.HbtSecurityOptions">
+            <summary>
+            安全配置选项
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtSecurityOptions.PasswordPolicy">
+            <summary>
+            密码策略选项
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtSecurityOptions.LoginPolicy">
+            <summary>
+            登录策略选项
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtSecurityOptions.Session">
+            <summary>
+            会话选项
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Common.Options.HbtSessionOptions">
+            <summary>
+            会话配置选项
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtSessionOptions.TimeoutMinutes">
+            <summary>
+            会话超时时间(分钟)
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtSessionOptions.EnableSlidingExpiration">
+            <summary>
+            是否启用滑动过期
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtSessionOptions.EnableAbsoluteExpiration">
+            <summary>
+            是否启用绝对过期
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtSessionOptions.AbsoluteExpirationHours">
+            <summary>
+            绝对过期时间(小时)
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtSessionOptions.AllowMultipleDevices">
+            <summary>
+            是否允许多设备登录
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtSessionOptions.MaxConcurrentSessions">
+            <summary>
+            最大并发会话数
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtSessionOptions.SessionExpiryMinutes">
+            <summary>
+            会话过期时间(分钟)
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Common.Utils.HbtPasswordUtils">
+            <summary>
+            密码工具类 - 提供密码加密和验证的基础功能
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Common.Utils.HbtPasswordUtils.CreateHash(System.String)">
+            <summary>
+            创建密码哈希
+            </summary>
+            <param name="password">原始密码</param>
+            <returns>(哈希后的密码, 盐值, 迭代次数)</returns>
+        </member>
+        <member name="M:Lean.Hbt.Common.Utils.HbtPasswordUtils.VerifyHash(System.String,System.String,System.String,System.Int32)">
+            <summary>
+            验证密码
+            </summary>
+            <param name="password">待验证的密码</param>
+            <param name="hash">已存储的哈希值</param>
+            <param name="salt">盐值</param>
+            <param name="iterations">迭代次数</param>
+            <returns>是否验证通过</returns>
+        </member>
+        <member name="M:Lean.Hbt.Common.Utils.HbtPasswordUtils.GenerateRandomString(System.Int32,System.String)">
+            <summary>
+            生成指定长度的随机字符串
+            </summary>
+            <param name="length">长度</param>
+            <param name="allowedChars">允许的字符集</param>
+            <returns>随机字符串</returns>
         </member>
         <member name="T:Lean.Hbt.Common.Utils.HbtUtils">
             <summary>

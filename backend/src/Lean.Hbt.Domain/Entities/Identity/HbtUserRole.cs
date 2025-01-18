@@ -1,6 +1,6 @@
 //===================================================================
-// 项目名 : Lean.Hbt 
-// 文件名 : HbtUserRole.cs 
+// 项目名 : Lean.Hbt
+// 文件名 : HbtUserRole.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-16 12:00
 // 版本号 : V0.0.1
@@ -19,7 +19,7 @@ namespace Lean.Hbt.Domain.Entities.Identity
     /// 创建时间: 2024-01-16
     /// </remarks>
     [SugarTable("hbt_user_role", "用户角色关联表")]
-    [SugarIndex("ix_user_role", $"{nameof(UserId)},{nameof(RoleId)}", OrderByType.Asc, true)]
+    [SugarIndex("ix_user_role", nameof(UserId), OrderByType.Asc, nameof(RoleId), OrderByType.Asc, true)]
     public class HbtUserRole : HbtBaseEntity
     {
         /// <summary>
@@ -40,6 +40,9 @@ namespace Lean.Hbt.Domain.Entities.Identity
         [SugarColumn(ColumnName = "tenant_id", ColumnDescription = "租户ID", ColumnDataType = "bigint", IsNullable = false)]
         public long TenantId { get; set; }
 
+        [Navigate(NavigateType.OneToOne, nameof(TenantId))]
+        public HbtTenant Tenant { get; set; }
+
         /// <summary>
         /// 用户导航属性
         /// </summary>
@@ -52,4 +55,4 @@ namespace Lean.Hbt.Domain.Entities.Identity
         [Navigate(NavigateType.OneToOne, nameof(RoleId))]
         public HbtRole Role { get; set; }
     }
-} 
+}
