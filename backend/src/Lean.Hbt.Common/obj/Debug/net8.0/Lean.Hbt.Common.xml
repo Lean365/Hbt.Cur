@@ -1372,6 +1372,16 @@
             会话选项
             </summary>
         </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtSecurityOptions.CsrfTokenExpirationMinutes">
+            <summary>
+            CSRF Token过期时间(分钟)
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtSecurityOptions.SessionExpirationMinutes">
+            <summary>
+            会话过期时间(分钟)
+            </summary>
+        </member>
         <member name="T:Lean.Hbt.Common.Options.HbtSessionOptions">
             <summary>
             会话配置选项

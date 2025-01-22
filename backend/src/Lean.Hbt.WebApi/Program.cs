@@ -77,6 +77,15 @@ try
     // 使用全局异常处理中间件
     app.UseHbtExceptionHandler();
 
+    // 使用会话安全中间件
+    app.UseHbtSessionSecurity();
+
+    // 使用SQL注入防护中间件
+    app.UseHbtSqlInjection();
+
+    // 使用CSRF防护中间件
+    app.UseHbtCsrf();
+
     app.UseHttpsRedirection();
 
     // 使用限流中间件

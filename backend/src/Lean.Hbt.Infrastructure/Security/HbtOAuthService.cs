@@ -1,14 +1,9 @@
-using System;
-using System.Net.Http;
-using System.Threading.Tasks;
-using System.Collections.Generic;
 using System.Web;
+using Lean.Hbt.Common.Options;
+using Lean.Hbt.Domain.Entities.Admin;
+using Lean.Hbt.Domain.Services;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
-using Lean.Hbt.Common.Options;
-using Lean.Hbt.Domain.Services;
-using Lean.Hbt.Domain.Repositories;
-using Lean.Hbt.Domain.Entities.Admin;
 
 namespace Lean.Hbt.Infrastructure.Security
 {
@@ -24,6 +19,9 @@ namespace Lean.Hbt.Infrastructure.Security
         /// <summary>
         /// 构造函数
         /// </summary>
+        /// <param name="options"></param>
+        /// <param name="configRepository"></param>
+        /// <param name="httpClient"></param>
         public HbtOAuthService(
             IOptions<HbtOAuthOptions> options,
             IHbtRepository<HbtSysConfig> configRepository,
@@ -34,6 +32,10 @@ namespace Lean.Hbt.Infrastructure.Security
             _httpClient = httpClient;
         }
 
+        /// <summary>
+        /// 获取配置
+        /// </summary>
+        /// <returns></returns>
         private async Task<HbtOAuthOptions> GetOptionsAsync()
         {
             var options = new HbtOAuthOptions
@@ -64,21 +66,27 @@ namespace Lean.Hbt.Infrastructure.Security
                             case "clientId":
                                 providerOptions.ClientId = config.ConfigValue;
                                 break;
+
                             case "clientSecret":
                                 providerOptions.ClientSecret = config.ConfigValue;
                                 break;
+
                             case "authorizationEndpoint":
                                 providerOptions.AuthorizationEndpoint = config.ConfigValue;
                                 break;
+
                             case "tokenEndpoint":
                                 providerOptions.TokenEndpoint = config.ConfigValue;
                                 break;
+
                             case "userInfoEndpoint":
                                 providerOptions.UserInfoEndpoint = config.ConfigValue;
                                 break;
+
                             case "redirectUri":
                                 providerOptions.RedirectUri = config.ConfigValue;
                                 break;
+
                             case "scope":
                                 providerOptions.Scope = config.ConfigValue;
                                 break;
@@ -169,4 +177,4 @@ namespace Lean.Hbt.Infrastructure.Security
             };
         }
     }
-} 
+}

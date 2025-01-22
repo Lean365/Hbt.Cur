@@ -7,26 +7,35 @@
 // 描述    : 安全配置选项
 //===================================================================
 
-namespace Lean.Hbt.Common.Options
+namespace Lean.Hbt.Common.Options;
+
+/// <summary>
+/// 安全配置选项
+/// </summary>
+public class HbtSecurityOptions
 {
     /// <summary>
-    /// 安全配置选项
+    /// 密码策略选项
     /// </summary>
-    public class HbtSecurityOptions
-    {
-        /// <summary>
-        /// 密码策略选项
-        /// </summary>
-        public HbtPasswordPolicyOptions PasswordPolicy { get; set; }
+    public HbtPasswordPolicyOptions PasswordPolicy { get; set; }
 
-        /// <summary>
-        /// 登录策略选项
-        /// </summary>
-        public HbtLoginPolicyOptions LoginPolicy { get; set; }
+    /// <summary>
+    /// 登录策略选项
+    /// </summary>
+    public HbtLoginPolicyOptions LoginPolicy { get; set; }
 
-        /// <summary>
-        /// 会话选项
-        /// </summary>
-        public HbtSessionOptions Session { get; set; }
-    }
+    /// <summary>
+    /// 会话选项
+    /// </summary>
+    public HbtSessionOptions Session { get; set; }
+
+    /// <summary>
+    /// CSRF Token过期时间(分钟)
+    /// </summary>
+    public int CsrfTokenExpirationMinutes { get; set; } = 30;
+
+    /// <summary>
+    /// 会话过期时间(分钟)
+    /// </summary>
+    public int SessionExpirationMinutes { get; set; } = 30;
 } 

@@ -10,7 +10,6 @@
 //===================================================================
 
 using System.Text.RegularExpressions;
-using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Common.Utils;
 using SqlSugar;
 
@@ -124,12 +123,6 @@ namespace Lean.Hbt.Domain.Entities.Audit
         /// </summary>
         [SugarColumn(ColumnName = "execution_time", IsNullable = false, DefaultValue = "0")]
         public long ExecutionTime { get; set; } = 0;
-
-        /// <summary>
-        /// 获取或设置创建时间
-        /// </summary>
-        [SugarColumn(ColumnName = "create_time", IsNullable = false)]
-        public DateTime CreateTime { get; set; } = DateTime.Now;
 
         /// <summary>
         /// 脱敏请求参数

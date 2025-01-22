@@ -1,5 +1,3 @@
-using System.Threading.Tasks;
-
 namespace Lean.Hbt.Domain.IServices.Security;
 
 /// <summary>
@@ -25,7 +23,7 @@ public interface IHbtCaptchaService
     /// 收集行为数据
     /// </summary>
     /// <param name="userId">用户ID</param>
-    /// <param name="behaviorData">行为数据</param>
+    /// <param name="data">行为数据</param>
     /// <returns>行为token</returns>
     Task<string> CollectBehaviorDataAsync(string userId, BehaviorData data);
 
@@ -77,4 +75,4 @@ public class Point
     /// 时间戳
     /// </summary>
     public long Timestamp { get; set; }
-} 
+}

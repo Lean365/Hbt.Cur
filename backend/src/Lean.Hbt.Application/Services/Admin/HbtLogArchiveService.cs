@@ -1,13 +1,11 @@
 using System.IO.Compression;
 using System.Linq.Expressions;
-using Microsoft.Extensions.Options;
 using Lean.Hbt.Common.Options;
 using Lean.Hbt.Domain.Entities.Admin;
 using Lean.Hbt.Domain.Entities.Audit;
 using Lean.Hbt.Domain.Repositories;
 using Lean.Hbt.Domain.Services.Admin;
-using Lean.Hbt.Domain.IServices;
-using Lean.Hbt.Domain.Entities;
+using Microsoft.Extensions.Options;
 
 namespace Lean.Hbt.Application.Services.Admin
 {
@@ -25,6 +23,17 @@ namespace Lean.Hbt.Application.Services.Admin
         private readonly IHbtRepository<HbtDbDiffLog> _dbDiffLogRepository;
         private readonly IHbtLogger _logger;
 
+        /// <summary>
+        /// 构造函数
+        /// </summary>
+        /// <param name="defaultOptions"></param>
+        /// <param name="configRepository"></param>
+        /// <param name="auditLogRepository"></param>
+        /// <param name="operLogRepository"></param>
+        /// <param name="loginLogRepository"></param>
+        /// <param name="exceptionLogRepository"></param>
+        /// <param name="dbDiffLogRepository"></param>
+        /// <param name="logger"></param>
         public HbtLogArchiveService(
             IOptions<LogArchiveOptions> defaultOptions,
             IHbtRepository<HbtSysConfig> configRepository,
@@ -103,12 +112,14 @@ namespace Lean.Hbt.Application.Services.Admin
         {
             var options = await GetConfigAsync();
             var archivePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, options.ArchivePath);
-            
+
             if (!Directory.Exists(archivePath))
                 return new List<string>();
 
             return Directory.GetFiles(archivePath, "*.zip")
                 .Select(Path.GetFileName)
+                .Where(name => name != null)
+                .Cast<string>()
                 .ToList();
         }
 
@@ -128,7 +139,7 @@ namespace Lean.Hbt.Application.Services.Admin
             }
         }
 
-        private async Task ArchiveLogTable<T>(ZipArchive archive, string entryName, IHbtRepository<T> repository, DateTime archiveDate, int batchSize) 
+        private async Task ArchiveLogTable<T>(ZipArchive archive, string entryName, IHbtRepository<T> repository, DateTime archiveDate, int batchSize)
             where T : HbtBaseEntity, new()
         {
             var entry = archive.CreateEntry(entryName);
@@ -172,4 +183,4 @@ namespace Lean.Hbt.Application.Services.Admin
             }
         }
     }
-} 
+}

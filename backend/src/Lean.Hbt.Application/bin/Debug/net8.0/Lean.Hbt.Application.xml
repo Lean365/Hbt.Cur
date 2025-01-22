@@ -5922,6 +5922,19 @@
             日志归档服务实现类
             </summary>
         </member>
+        <member name="M:Lean.Hbt.Application.Services.Admin.HbtLogArchiveService.#ctor(Microsoft.Extensions.Options.IOptions{Lean.Hbt.Common.Options.LogArchiveOptions},Lean.Hbt.Domain.Repositories.IHbtRepository{Lean.Hbt.Domain.Entities.Admin.HbtSysConfig},Lean.Hbt.Domain.Repositories.IHbtRepository{Lean.Hbt.Domain.Entities.Audit.HbtAuditLog},Lean.Hbt.Domain.Repositories.IHbtRepository{Lean.Hbt.Domain.Entities.Audit.HbtOperLog},Lean.Hbt.Domain.Repositories.IHbtRepository{Lean.Hbt.Domain.Entities.Audit.HbtLoginLog},Lean.Hbt.Domain.Repositories.IHbtRepository{Lean.Hbt.Domain.Entities.Audit.HbtExceptionLog},Lean.Hbt.Domain.Repositories.IHbtRepository{Lean.Hbt.Domain.Entities.Audit.HbtDbDiffLog},Lean.Hbt.Domain.IServices.IHbtLogger)">
+            <summary>
+            构造函数
+            </summary>
+            <param name="defaultOptions"></param>
+            <param name="configRepository"></param>
+            <param name="auditLogRepository"></param>
+            <param name="operLogRepository"></param>
+            <param name="loginLogRepository"></param>
+            <param name="exceptionLogRepository"></param>
+            <param name="dbDiffLogRepository"></param>
+            <param name="logger"></param>
+        </member>
         <member name="M:Lean.Hbt.Application.Services.Admin.HbtLogArchiveService.GetConfigAsync">
             <summary>
             获取日志归档配置

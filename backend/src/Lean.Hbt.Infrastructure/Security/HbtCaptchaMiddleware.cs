@@ -22,6 +22,10 @@ public class HbtCaptchaMiddleware
     /// <summary>
     /// 构造函数
     /// </summary>
+    /// <param name="next"></param>
+    /// <param name="cache"></param>
+    /// <param name="captchaService"></param>
+    /// <param name="options"></param>
     public HbtCaptchaMiddleware(
         RequestDelegate next,
         IDistributedCache cache,
@@ -142,4 +146,4 @@ public class HbtCaptchaMiddleware
             }
         );
     }
-} 
+}

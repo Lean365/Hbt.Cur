@@ -8,7 +8,6 @@
 // 版本号 : V0.0.1
 // 描述   : 翻译实体
 //===================================================================
-using Lean.Hbt.Common.Enums;
 using SqlSugar;
 
 namespace Lean.Hbt.Domain.Entities.Admin
@@ -42,12 +41,6 @@ namespace Lean.Hbt.Domain.Entities.Admin
         /// </summary>
         [SugarColumn(ColumnName = "module_name", ColumnDescription = "模块名称", Length = 100, ColumnDataType = "nvarchar", IsNullable = false)]
         public string ModuleName { get; set; } = string.Empty;
-
-        /// <summary>
-        /// 备注
-        /// </summary>
-        [SugarColumn(ColumnName = "remark", ColumnDescription = "备注", Length = 500, ColumnDataType = "nvarchar", IsNullable = true)]
-        public string? Remark { get; set; }
 
         /// <summary>
         /// 状态（0正常 1停用）

@@ -8,7 +8,6 @@
 // 版本号 : V0.0.1
 // 描述   : 字典数据实体
 //===================================================================
-using Lean.Hbt.Common.Enums;
 using SqlSugar;
 
 namespace Lean.Hbt.Domain.Entities.Admin
@@ -79,6 +78,9 @@ namespace Lean.Hbt.Domain.Entities.Admin
         [SugarColumn(ColumnName = "status", ColumnDescription = "状态（0正常 1停用）", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
         public HbtStatus Status { get; set; } = HbtStatus.Normal;
 
+        /// <summary>
+        /// 构造函数
+        /// </summary>
         public HbtDictData()
         {
             DictType = string.Empty;

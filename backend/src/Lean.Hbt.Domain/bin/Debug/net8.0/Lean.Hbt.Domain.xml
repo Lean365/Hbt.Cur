@@ -71,6 +71,11 @@
             状态（0正常 1停用）
             </summary>
         </member>
+        <member name="M:Lean.Hbt.Domain.Entities.Admin.HbtDictData.#ctor">
+            <summary>
+            构造函数
+            </summary>
+        </member>
         <member name="T:Lean.Hbt.Domain.Entities.Admin.HbtDictType">
             <summary>
             字典类型实体
@@ -196,11 +201,6 @@
             模块名称
             </summary>
         </member>
-        <member name="P:Lean.Hbt.Domain.Entities.Admin.HbtTranslation.Remark">
-            <summary>
-            备注
-            </summary>
-        </member>
         <member name="P:Lean.Hbt.Domain.Entities.Admin.HbtTranslation.Status">
             <summary>
             状态（0正常 1停用）
@@ -294,11 +294,6 @@
         <member name="P:Lean.Hbt.Domain.Entities.Audit.HbtAuditLog.ExecutionTime">
             <summary>
             获取或设置执行时间(毫秒)
-            </summary>
-        </member>
-        <member name="P:Lean.Hbt.Domain.Entities.Audit.HbtAuditLog.CreateTime">
-            <summary>
-            获取或设置创建时间
             </summary>
         </member>
         <member name="M:Lean.Hbt.Domain.Entities.Audit.HbtAuditLog.GetMaskedRequestParams">
@@ -2086,7 +2081,7 @@
             收集行为数据
             </summary>
             <param name="userId">用户ID</param>
-            <param name="behaviorData">行为数据</param>
+            <param name="data">行为数据</param>
             <returns>行为token</returns>
         </member>
         <member name="M:Lean.Hbt.Domain.IServices.Security.IHbtCaptchaService.ValidateBehaviorAsync(System.String)">

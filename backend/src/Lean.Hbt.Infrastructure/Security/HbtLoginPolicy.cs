@@ -8,10 +8,9 @@
 //===================================================================
 
 using Lean.Hbt.Common.Options;
+using Lean.Hbt.Domain.Entities.Admin;
 using Lean.Hbt.Domain.IServices;
 using Microsoft.Extensions.Options;
-using Lean.Hbt.Domain.Repositories;
-using Lean.Hbt.Domain.Entities.Admin;
 
 namespace Lean.Hbt.Infrastructure.Security
 {
@@ -31,7 +30,7 @@ namespace Lean.Hbt.Infrastructure.Security
         /// <param name="cache"></param>
         /// <param name="configRepository"></param>
         public HbtLoginPolicy(
-            IOptions<HbtLoginPolicyOptions> options, 
+            IOptions<HbtLoginPolicyOptions> options,
             IHbtRedisCache cache,
             IHbtRepository<HbtSysConfig> configRepository)
         {
@@ -39,6 +38,7 @@ namespace Lean.Hbt.Infrastructure.Security
             _cache = cache;
             _configRepository = configRepository;
         }
+
 
         private async Task<HbtLoginPolicyOptions> GetOptionsAsync()
         {

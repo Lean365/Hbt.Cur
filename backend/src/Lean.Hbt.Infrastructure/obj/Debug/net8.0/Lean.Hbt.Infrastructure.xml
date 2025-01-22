@@ -332,6 +332,16 @@
             初始化验证码配置
             </summary>
         </member>
+        <member name="T:Lean.Hbt.Infrastructure.Extensions.HbtCsrfExtensions">
+            <summary>
+            CSRF防护中间件扩展
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Extensions.HbtCsrfExtensions.UseHbtCsrf(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+            <summary>
+            使用CSRF防护中间件
+            </summary>
+        </member>
         <member name="T:Lean.Hbt.Infrastructure.Extensions.HbtPermissionExtensions">
             <summary>
             权限中间件扩展方法
@@ -364,6 +374,26 @@
         <member name="M:Lean.Hbt.Infrastructure.Extensions.HbtServiceCollectionExtensions.AddInfrastructure(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)">
             <summary>
             添加基础设施服务
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Infrastructure.Extensions.HbtSessionSecurityExtensions">
+            <summary>
+            会话安全中间件扩展
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Extensions.HbtSessionSecurityExtensions.UseHbtSessionSecurity(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+            <summary>
+            使用会话安全中间件
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Infrastructure.Extensions.HbtSqlInjectionExtensions">
+            <summary>
+            SQL注入防护中间件扩展
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Extensions.HbtSqlInjectionExtensions.UseHbtSqlInjection(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+            <summary>
+            使用SQL注入防护中间件
             </summary>
         </member>
         <member name="T:Lean.Hbt.Infrastructure.Logging.HbtNLogger">
@@ -692,6 +722,10 @@
             <summary>
             构造函数
             </summary>
+            <param name="next"></param>
+            <param name="cache"></param>
+            <param name="captchaService"></param>
+            <param name="options"></param>
         </member>
         <member name="M:Lean.Hbt.Infrastructure.Security.HbtCaptchaMiddleware.InvokeAsync(Microsoft.AspNetCore.Http.HttpContext)">
             <summary>
@@ -733,6 +767,14 @@
             验证码服务实现
             </summary>
         </member>
+        <member name="M:Lean.Hbt.Infrastructure.Security.HbtCaptchaService.#ctor(Microsoft.Extensions.Caching.Distributed.IDistributedCache,Microsoft.Extensions.Options.IOptions{Lean.Hbt.Common.Options.HbtCaptchaOptions},Lean.Hbt.Domain.Repositories.IHbtRepository{Lean.Hbt.Domain.Entities.Admin.HbtSysConfig})">
+            <summary>
+            初始化验证码服务
+            </summary>
+            <param name="cache">分布式缓存</param>
+            <param name="options">验证码配置选项</param>
+            <param name="repository">系统配置仓储</param>
+        </member>
         <member name="M:Lean.Hbt.Infrastructure.Security.HbtCaptchaService.GenerateSliderAsync">
             <summary>
             生成滑块验证码
@@ -771,6 +813,41 @@
         <member name="M:Lean.Hbt.Infrastructure.Security.HbtCaptchaService.CalculateTrackSmoothness(System.Collections.Generic.List{Lean.Hbt.Domain.IServices.Security.Point})">
             <summary>
             计算轨迹平滑度
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Infrastructure.Security.HbtCsrfMiddleware">
+            <summary>
+            CSRF防护中间件
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Security.HbtCsrfMiddleware.#ctor(Microsoft.AspNetCore.Http.RequestDelegate,Microsoft.Extensions.Caching.Distributed.IDistributedCache,Microsoft.Extensions.Options.IOptions{Lean.Hbt.Common.Options.HbtSecurityOptions})">
+            <summary>
+            构造函数
+            </summary>
+            <param name="next"></param>
+            <param name="cache"></param>
+            <param name="options"></param>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Security.HbtCsrfMiddleware.InvokeAsync(Microsoft.AspNetCore.Http.HttpContext)">
+            <summary>
+            调用中间件处理CSRF防护
+            </summary>
+            <param name="context">HTTP上下文</param>
+            <returns>处理结果</returns>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Security.HbtCsrfMiddleware.GenerateCsrfToken">
+            <summary>
+            生成CSRF Token
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Security.HbtCsrfMiddleware.CacheTokenAsync(System.String)">
+            <summary>
+            缓存Token
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Security.HbtCsrfMiddleware.ValidateCsrfTokenAsync(Microsoft.AspNetCore.Http.HttpContext)">
+            <summary>
+            验证CSRF Token
             </summary>
         </member>
         <member name="T:Lean.Hbt.Infrastructure.Security.HbtLoginPolicy">
@@ -844,6 +921,15 @@
             <summary>
             构造函数
             </summary>
+            <param name="options"></param>
+            <param name="configRepository"></param>
+            <param name="httpClient"></param>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Security.HbtOAuthService.GetOptionsAsync">
+            <summary>
+            获取配置
+            </summary>
+            <returns></returns>
         </member>
         <member name="M:Lean.Hbt.Infrastructure.Security.HbtOAuthService.GetAuthorizationUrlAsync(System.String,System.String)">
             <summary>
@@ -1056,6 +1142,79 @@
         <member name="M:Lean.Hbt.Infrastructure.Security.HbtSessionManager.GetAllSessionsAsync">
             <summary>
             获取所有会话
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Infrastructure.Security.HbtSessionSecurityMiddleware">
+            <summary>
+            会话安全中间件,用于防止会话劫持
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Security.HbtSessionSecurityMiddleware.#ctor(Microsoft.AspNetCore.Http.RequestDelegate,Microsoft.Extensions.Caching.Distributed.IDistributedCache,Microsoft.Extensions.Options.IOptions{Lean.Hbt.Common.Options.HbtSecurityOptions})">
+            <summary>
+            初始化会话安全中间件
+            </summary>
+            <param name="next">请求委托</param>
+            <param name="cache">分布式缓存</param>
+            <param name="options">安全配置选项</param>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Security.HbtSessionSecurityMiddleware.InvokeAsync(Microsoft.AspNetCore.Http.HttpContext)">
+            <summary>
+            调用中间件处理会话安全
+            </summary>
+            <param name="context">HTTP上下文</param>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Security.HbtSessionSecurityMiddleware.GenerateSessionCredentials">
+            <summary>
+            生成会话凭证
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Security.HbtSessionSecurityMiddleware.GenerateSecureToken">
+            <summary>
+            生成安全Token
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Security.HbtSessionSecurityMiddleware.ValidateSessionAsync(System.String,System.String)">
+            <summary>
+            验证会话
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Security.HbtSessionSecurityMiddleware.DetectSessionHijackingAsync(Microsoft.AspNetCore.Http.HttpContext,System.String)">
+            <summary>
+            检测会话劫持
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Security.HbtSessionSecurityMiddleware.UpdateSessionStateAsync(Microsoft.AspNetCore.Http.HttpContext,System.String)">
+            <summary>
+            更新会话状态
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Security.HbtSessionSecurityMiddleware.GetClientInfo(Microsoft.AspNetCore.Http.HttpContext)">
+            <summary>
+            获取客户端信息
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Infrastructure.Security.HbtSqlInjectionMiddleware">
+            <summary>
+            SQL注入防护中间件
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Security.HbtSqlInjectionMiddleware.#ctor(Microsoft.AspNetCore.Http.RequestDelegate,Microsoft.Extensions.Options.IOptions{Lean.Hbt.Common.Options.HbtSecurityOptions})">
+            <summary>
+            构造函数
+            </summary>
+            <param name="next"></param>
+            <param name="options"></param>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Security.HbtSqlInjectionMiddleware.InvokeAsync(Microsoft.AspNetCore.Http.HttpContext)">
+            <summary>
+            调用中间件
+            </summary>
+            <param name="context"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Security.HbtSqlInjectionMiddleware.ContainsSqlInjection(System.String)">
+            <summary>
+            检查是否包含SQL注入攻击
             </summary>
         </member>
         <member name="T:Lean.Hbt.Infrastructure.SignalR.HbtOnlineHub">

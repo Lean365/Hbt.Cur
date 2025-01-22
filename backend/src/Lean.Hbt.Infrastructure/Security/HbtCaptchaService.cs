@@ -27,6 +27,12 @@ public class HbtCaptchaService : IHbtCaptchaService
     private readonly string _sliderCachePrefix = "slider:";
     private readonly string _behaviorCachePrefix = "behavior:";
 
+    /// <summary>
+    /// 初始化验证码服务
+    /// </summary>
+    /// <param name="cache">分布式缓存</param>
+    /// <param name="options">验证码配置选项</param>
+    /// <param name="repository">系统配置仓储</param>
     public HbtCaptchaService(
         IDistributedCache cache,
         IOptions<HbtCaptchaOptions> options,

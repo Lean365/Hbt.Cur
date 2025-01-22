@@ -106,11 +106,11 @@ namespace Lean.Hbt.Infrastructure.Caching
         /// </summary>
         /// <param name="pattern">搜索模式</param>
         /// <returns>匹配的键列表</returns>
-        public async Task<List<string>> SearchKeysAsync(string pattern)
+        public Task<List<string>> SearchKeysAsync(string pattern)
         {
             var server = _connection.GetServer(_connection.GetEndPoints().First());
             var keys = server.Keys(pattern: pattern);
-            return keys.Select(k => k.ToString()).ToList();
+            return Task.FromResult(keys.Select(k => k.ToString()).ToList());
         }
     }
 } 
