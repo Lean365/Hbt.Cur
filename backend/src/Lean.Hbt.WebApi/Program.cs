@@ -10,9 +10,6 @@ using Microsoft.Extensions.Options;
 using Lean.Hbt.Common.Options;
 using Lean.Hbt.Common.Helpers;
 using Newtonsoft.Json;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
 using Microsoft.AspNetCore.Authorization;
 
 var logger = LogManager.Setup()
@@ -45,27 +42,7 @@ try
     // 添加基础设施服务
     builder.Services.AddInfrastructure(builder.Configuration);
 
-    // 添加认证和授权服务
-    builder.Services.AddAuthentication(options =>
-    {
-        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-    })
-    .AddJwtBearer(options =>
-    {
-        // JWT配置
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = builder.Configuration["Jwt:Issuer"],
-            ValidAudience = builder.Configuration["Jwt:Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
-        };
-    });
-
+    // 添加授权服务
     builder.Services.AddAuthorization(options =>
     {
         // 添加默认策略

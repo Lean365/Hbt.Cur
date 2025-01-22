@@ -2424,3 +2424,171 @@ English Message : HbtRole no   SugarIndex[ role_key ]  found
    at Microsoft.Extensions.Hosting.HostingAbstractionsHostExtensions.RunAsync(IHost host, CancellationToken token)
    at Microsoft.Extensions.Hosting.HostingAbstractionsHostExtensions.Run(IHost host)
    at Program.<Main>$(String[] args) in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\Program.cs:line 125
+2025-01-22 16:37:35.8115| Info|Program|正在初始化应用程序...
+2025-01-22 16:37:38.3759| Info|HbtNLogger|数据库检查/创建成功
+2025-01-22 16:37:38.4826| Info|HbtNLogger|[表结构] 更新表 hbt_id_user
+2025-01-22 16:37:39.2193| Info|HbtNLogger|[表结构] 更新表 hbt_id_role
+2025-01-22 16:37:40.1985| Info|HbtNLogger|[表结构] 更新表 hbt_id_menu
+2025-01-22 16:37:41.4831| Info|HbtNLogger|[表结构] 更新表 hbt_id_dept
+2025-01-22 16:37:42.5875| Info|HbtNLogger|[表结构] 更新表 hbt_id_post
+2025-01-22 16:37:43.5509| Info|HbtNLogger|[表结构] 更新表 hbt_id_user_role
+2025-01-22 16:37:44.3661| Info|HbtNLogger|[表结构] 更新表 hbt_id_user_dept
+2025-01-22 16:37:45.2942| Info|HbtNLogger|[表结构] 更新表 hbt_id_user_post
+2025-01-22 16:37:46.1253| Info|HbtNLogger|[表结构] 更新表 hbt_id_role_menu
+2025-01-22 16:37:46.9820| Info|HbtNLogger|[表结构] 更新表 hbt_id_role_dept
+2025-01-22 16:37:50.5390| Info|HbtNLogger|数据库初始化完成
+2025-01-22 16:37:50.5390| Info|HbtNLogger|[初始化] 开始初始化种子数据...
+2025-01-22 16:37:50.8467| Info|HbtNLogger|[更新] 租户 '默认租户' 更新成功
+2025-01-22 16:37:50.8467| Info|HbtNLogger|[初始化] 租户数据 - 新增: 0, 更新: 1
+2025-01-22 16:37:50.9120| Info|HbtNLogger|[更新] 角色 '超级管理员' 更新成功
+2025-01-22 16:37:50.9120| Info|HbtNLogger|[初始化] 角色数据 - 新增: 0, 更新: 1
+2025-01-22 16:37:51.0073| Info|HbtNLogger|[更新] 用户 'admin' 更新成功
+2025-01-22 16:37:51.0073| Info|HbtNLogger|[初始化] 用户数据 - 新增: 0, 更新: 1
+2025-01-22 16:37:51.0073| Info|HbtNLogger|[初始化] 部门数据 - 新增: 0, 更新: 0
+2025-01-22 16:37:51.0267| Info|HbtNLogger|[初始化] 岗位数据 - 新增: 0, 更新: 0
+2025-01-22 16:37:51.0655| Info|HbtNLogger|[更新] 系统配置 '缓存提供程序' 更新成功
+2025-01-22 16:37:51.0804| Info|HbtNLogger|[更新] 系统配置 '默认过期时间(分钟)' 更新成功
+2025-01-22 16:37:51.0804| Info|HbtNLogger|[更新] 系统配置 '启用滑动过期' 更新成功
+2025-01-22 16:37:51.1090| Info|HbtNLogger|[更新] 系统配置 '启用多级缓存' 更新成功
+2025-01-22 16:37:51.1294| Info|HbtNLogger|[更新] 系统配置 '内存缓存大小限制' 更新成功
+2025-01-22 16:37:51.1294| Info|HbtNLogger|[更新] 系统配置 '内存缓存压缩阈值' 更新成功
+2025-01-22 16:37:51.1612| Info|HbtNLogger|[更新] 系统配置 '过期扫描频率' 更新成功
+2025-01-22 16:37:51.1917| Info|HbtNLogger|[更新] 系统配置 'Redis实例名称' 更新成功
+2025-01-22 16:37:51.2221| Info|HbtNLogger|[更新] 系统配置 'Redis数据库' 更新成功
+2025-01-22 16:37:51.2433| Info|HbtNLogger|[更新] 系统配置 'Redis启用压缩' 更新成功
+2025-01-22 16:37:51.2554| Info|HbtNLogger|[更新] 系统配置 'Redis压缩阈值' 更新成功
+2025-01-22 16:37:51.2781| Info|HbtNLogger|[更新] 系统配置 'OAuth启用状态' 更新成功
+2025-01-22 16:37:51.3116| Info|HbtNLogger|[更新] 系统配置 'GitHub客户端ID' 更新成功
+2025-01-22 16:37:51.3443| Info|HbtNLogger|[更新] 系统配置 'GitHub客户端密钥' 更新成功
+2025-01-22 16:37:51.3774| Info|HbtNLogger|[更新] 系统配置 'GitHub授权端点' 更新成功
+2025-01-22 16:37:51.4032| Info|HbtNLogger|[更新] 系统配置 'GitHub令牌端点' 更新成功
+2025-01-22 16:37:51.4419| Info|HbtNLogger|[更新] 系统配置 'GitHub用户信息端点' 更新成功
+2025-01-22 16:37:51.4620| Info|HbtNLogger|[更新] 系统配置 'GitHub回调地址' 更新成功
+2025-01-22 16:37:51.4966| Info|HbtNLogger|[更新] 系统配置 'GitHub权限范围' 更新成功
+2025-01-22 16:37:51.5504| Info|HbtNLogger|[更新] 系统配置 'Google客户端ID' 更新成功
+2025-01-22 16:37:51.5814| Info|HbtNLogger|[更新] 系统配置 'Google客户端密钥' 更新成功
+2025-01-22 16:37:51.6074| Info|HbtNLogger|[更新] 系统配置 '日志清理启用状态' 更新成功
+2025-01-22 16:37:51.6329| Info|HbtNLogger|[更新] 系统配置 '日志保留天数' 更新成功
+2025-01-22 16:37:51.6467| Info|HbtNLogger|[更新] 系统配置 '日志清理执行时间' 更新成功
+2025-01-22 16:37:51.6621| Info|HbtNLogger|[更新] 系统配置 '批次清理数量' 更新成功
+2025-01-22 16:37:51.6756| Info|HbtNLogger|[更新] 系统配置 '日志类型' 更新成功
+2025-01-22 16:37:51.7059| Info|HbtNLogger|[更新] 系统配置 '日志归档启用状态' 更新成功
+2025-01-22 16:37:51.7381| Info|HbtNLogger|[更新] 系统配置 '归档触发天数' 更新成功
+2025-01-22 16:37:51.7670| Info|HbtNLogger|[更新] 系统配置 '归档执行时间' 更新成功
+2025-01-22 16:37:51.7670| Info|HbtNLogger|[更新] 系统配置 '归档批次大小' 更新成功
+2025-01-22 16:37:51.8134| Info|HbtNLogger|[更新] 系统配置 '归档存储路径' 更新成功
+2025-01-22 16:37:51.8264| Info|HbtNLogger|[更新] 系统配置 '归档文件格式' 更新成功
+2025-01-22 16:37:51.8423| Info|HbtNLogger|[更新] 系统配置 '归档压缩启用' 更新成功
+2025-01-22 16:37:51.8571| Info|HbtNLogger|[更新] 系统配置 '归档压缩格式' 更新成功
+2025-01-22 16:37:51.8727| Info|HbtNLogger|[更新] 系统配置 '密码最小长度' 更新成功
+2025-01-22 16:37:51.8860| Info|HbtNLogger|[更新] 系统配置 '密码复杂度要求' 更新成功
+2025-01-22 16:37:51.8976| Info|HbtNLogger|[更新] 系统配置 '密码过期天数' 更新成功
+2025-01-22 16:37:51.9120| Info|HbtNLogger|[更新] 系统配置 '密码历史记录数' 更新成功
+2025-01-22 16:37:51.9257| Info|HbtNLogger|[更新] 系统配置 '登录失败锁定次数' 更新成功
+2025-01-22 16:37:51.9257| Info|HbtNLogger|[更新] 系统配置 '锁定时间(分钟)' 更新成功
+2025-01-22 16:37:51.9522| Info|HbtNLogger|[更新] 系统配置 '会话超时时间(分钟)' 更新成功
+2025-01-22 16:37:51.9663| Info|HbtNLogger|[更新] 系统配置 '允许多端登录' 更新成功
+2025-01-22 16:37:51.9809| Info|HbtNLogger|[更新] 系统配置 'JWT密钥' 更新成功
+2025-01-22 16:37:51.9979| Info|HbtNLogger|[更新] 系统配置 'JWT过期时间(分钟)' 更新成功
+2025-01-22 16:37:52.0120| Info|HbtNLogger|[更新] 系统配置 '启用CORS' 更新成功
+2025-01-22 16:37:52.0264| Info|HbtNLogger|[更新] 系统配置 '允许的来源' 更新成功
+2025-01-22 16:37:52.0408| Info|HbtNLogger|[更新] 系统配置 '数据库类型' 更新成功
+2025-01-22 16:37:52.0553| Info|HbtNLogger|[更新] 系统配置 '数据库连接字符串' 更新成功
+2025-01-22 16:37:52.0779| Info|HbtNLogger|[更新] 系统配置 '最大连接池大小' 更新成功
+2025-01-22 16:37:52.0924| Info|HbtNLogger|[更新] 系统配置 '最小连接池大小' 更新成功
+2025-01-22 16:37:52.1065| Info|HbtNLogger|[更新] 系统配置 '连接超时时间' 更新成功
+2025-01-22 16:37:52.1202| Info|HbtNLogger|[更新] 系统配置 '命令超时时间' 更新成功
+2025-01-22 16:44:24.1845| Info|Program|正在初始化应用程序...
+2025-01-22 16:44:28.6845| Info|HbtNLogger|数据库检查/创建成功
+2025-01-22 16:44:29.1081| Info|HbtNLogger|[表结构] 更新表 hbt_id_user
+2025-01-22 16:44:30.2126| Info|HbtNLogger|[表结构] 更新表 hbt_id_role
+2025-01-22 16:44:30.3367| Info|HbtNLogger|[表结构] 更新表 hbt_id_menu
+2025-01-22 16:44:30.4841| Info|HbtNLogger|[表结构] 更新表 hbt_id_dept
+2025-01-22 16:44:30.6343| Info|HbtNLogger|[表结构] 更新表 hbt_id_post
+2025-01-22 16:44:30.7766| Info|HbtNLogger|[表结构] 更新表 hbt_id_user_role
+2025-01-22 16:44:30.8784| Info|HbtNLogger|[表结构] 更新表 hbt_id_user_dept
+2025-01-22 16:44:31.7858| Info|HbtNLogger|[表结构] 更新表 hbt_id_user_post
+2025-01-22 16:44:32.5705| Info|HbtNLogger|[表结构] 更新表 hbt_id_role_menu
+2025-01-22 16:44:33.3895| Info|HbtNLogger|[表结构] 更新表 hbt_id_role_dept
+2025-01-22 16:44:36.7728| Info|HbtNLogger|数据库初始化完成
+2025-01-22 16:44:36.7830| Info|HbtNLogger|[初始化] 开始初始化种子数据...
+2025-01-22 16:44:37.2292| Info|HbtNLogger|[更新] 租户 '默认租户' 更新成功
+2025-01-22 16:44:37.2292| Info|HbtNLogger|[初始化] 租户数据 - 新增: 0, 更新: 1
+2025-01-22 16:44:37.3169| Info|HbtNLogger|[更新] 角色 '超级管理员' 更新成功
+2025-01-22 16:44:37.3169| Info|HbtNLogger|[初始化] 角色数据 - 新增: 0, 更新: 1
+2025-01-22 16:44:37.4265| Info|HbtNLogger|[更新] 用户 'admin' 更新成功
+2025-01-22 16:44:37.4265| Info|HbtNLogger|[初始化] 用户数据 - 新增: 0, 更新: 1
+2025-01-22 16:44:37.4265| Info|HbtNLogger|[初始化] 部门数据 - 新增: 0, 更新: 0
+2025-01-22 16:44:37.4427| Info|HbtNLogger|[初始化] 岗位数据 - 新增: 0, 更新: 0
+2025-01-22 16:44:37.4823| Info|HbtNLogger|[更新] 系统配置 '缓存提供程序' 更新成功
+2025-01-22 16:44:37.4950| Info|HbtNLogger|[更新] 系统配置 '默认过期时间(分钟)' 更新成功
+2025-01-22 16:44:37.5062| Info|HbtNLogger|[更新] 系统配置 '启用滑动过期' 更新成功
+2025-01-22 16:44:37.5223| Info|HbtNLogger|[更新] 系统配置 '启用多级缓存' 更新成功
+2025-01-22 16:44:37.5350| Info|HbtNLogger|[更新] 系统配置 '内存缓存大小限制' 更新成功
+2025-01-22 16:44:37.5350| Info|HbtNLogger|[更新] 系统配置 '内存缓存压缩阈值' 更新成功
+2025-01-22 16:44:37.5578| Info|HbtNLogger|[更新] 系统配置 '过期扫描频率' 更新成功
+2025-01-22 16:44:37.5694| Info|HbtNLogger|[更新] 系统配置 'Redis实例名称' 更新成功
+2025-01-22 16:44:37.5807| Info|HbtNLogger|[更新] 系统配置 'Redis数据库' 更新成功
+2025-01-22 16:44:37.5807| Info|HbtNLogger|[更新] 系统配置 'Redis启用压缩' 更新成功
+2025-01-22 16:44:37.6035| Info|HbtNLogger|[更新] 系统配置 'Redis压缩阈值' 更新成功
+2025-01-22 16:44:37.6151| Info|HbtNLogger|[更新] 系统配置 'OAuth启用状态' 更新成功
+2025-01-22 16:44:37.6327| Info|HbtNLogger|[更新] 系统配置 'GitHub客户端ID' 更新成功
+2025-01-22 16:44:37.6490| Info|HbtNLogger|[更新] 系统配置 'GitHub客户端密钥' 更新成功
+2025-01-22 16:44:37.6607| Info|HbtNLogger|[更新] 系统配置 'GitHub授权端点' 更新成功
+2025-01-22 16:44:37.6757| Info|HbtNLogger|[更新] 系统配置 'GitHub令牌端点' 更新成功
+2025-01-22 16:44:37.6892| Info|HbtNLogger|[更新] 系统配置 'GitHub用户信息端点' 更新成功
+2025-01-22 16:44:37.6892| Info|HbtNLogger|[更新] 系统配置 'GitHub回调地址' 更新成功
+2025-01-22 16:44:37.7120| Info|HbtNLogger|[更新] 系统配置 'GitHub权限范围' 更新成功
+2025-01-22 16:44:37.7233| Info|HbtNLogger|[更新] 系统配置 'Google客户端ID' 更新成功
+2025-01-22 16:44:37.7233| Info|HbtNLogger|[更新] 系统配置 'Google客户端密钥' 更新成功
+2025-01-22 16:44:37.7464| Info|HbtNLogger|[更新] 系统配置 '日志清理启用状态' 更新成功
+2025-01-22 16:44:37.7576| Info|HbtNLogger|[更新] 系统配置 '日志保留天数' 更新成功
+2025-01-22 16:44:37.7691| Info|HbtNLogger|[更新] 系统配置 '日志清理执行时间' 更新成功
+2025-01-22 16:44:37.7691| Info|HbtNLogger|[更新] 系统配置 '批次清理数量' 更新成功
+2025-01-22 16:44:37.7920| Info|HbtNLogger|[更新] 系统配置 '日志类型' 更新成功
+2025-01-22 16:44:37.8033| Info|HbtNLogger|[更新] 系统配置 '日志归档启用状态' 更新成功
+2025-01-22 16:44:37.8150| Info|HbtNLogger|[更新] 系统配置 '归档触发天数' 更新成功
+2025-01-22 16:44:37.8150| Info|HbtNLogger|[更新] 系统配置 '归档执行时间' 更新成功
+2025-01-22 16:44:37.8377| Info|HbtNLogger|[更新] 系统配置 '归档批次大小' 更新成功
+2025-01-22 16:44:37.8494| Info|HbtNLogger|[更新] 系统配置 '归档存储路径' 更新成功
+2025-01-22 16:44:37.8494| Info|HbtNLogger|[更新] 系统配置 '归档文件格式' 更新成功
+2025-01-22 16:44:37.8779| Info|HbtNLogger|[更新] 系统配置 '归档压缩启用' 更新成功
+2025-01-22 16:44:37.8935| Info|HbtNLogger|[更新] 系统配置 '归档压缩格式' 更新成功
+2025-01-22 16:44:37.8935| Info|HbtNLogger|[更新] 系统配置 '密码最小长度' 更新成功
+2025-01-22 16:44:37.9178| Info|HbtNLogger|[更新] 系统配置 '密码复杂度要求' 更新成功
+2025-01-22 16:44:37.9351| Info|HbtNLogger|[更新] 系统配置 '密码过期天数' 更新成功
+2025-01-22 16:44:37.9474| Info|HbtNLogger|[更新] 系统配置 '密码历史记录数' 更新成功
+2025-01-22 16:44:37.9622| Info|HbtNLogger|[更新] 系统配置 '登录失败锁定次数' 更新成功
+2025-01-22 16:44:37.9749| Info|HbtNLogger|[更新] 系统配置 '锁定时间(分钟)' 更新成功
+2025-01-22 16:44:37.9863| Info|HbtNLogger|[更新] 系统配置 '会话超时时间(分钟)' 更新成功
+2025-01-22 16:44:38.0092| Info|HbtNLogger|[更新] 系统配置 '允许多端登录' 更新成功
+2025-01-22 16:44:38.0206| Info|HbtNLogger|[更新] 系统配置 'JWT密钥' 更新成功
+2025-01-22 16:44:38.0334| Info|HbtNLogger|[更新] 系统配置 'JWT过期时间(分钟)' 更新成功
+2025-01-22 16:44:38.0334| Info|HbtNLogger|[更新] 系统配置 '启用CORS' 更新成功
+2025-01-22 16:44:38.0549| Info|HbtNLogger|[更新] 系统配置 '允许的来源' 更新成功
+2025-01-22 16:44:38.0708| Info|HbtNLogger|[更新] 系统配置 '数据库类型' 更新成功
+2025-01-22 16:44:38.0839| Info|HbtNLogger|[更新] 系统配置 '数据库连接字符串' 更新成功
+2025-01-22 16:44:38.0839| Info|HbtNLogger|[更新] 系统配置 '最大连接池大小' 更新成功
+2025-01-22 16:44:38.1062| Info|HbtNLogger|[更新] 系统配置 '最小连接池大小' 更新成功
+2025-01-22 16:44:38.1178| Info|HbtNLogger|[更新] 系统配置 '连接超时时间' 更新成功
+2025-01-22 16:44:38.1293| Info|HbtNLogger|[更新] 系统配置 '命令超时时间' 更新成功
+2025-01-22 16:44:38.1293| Info|HbtNLogger|[更新] 系统配置 '启用读写分离' 更新成功
+2025-01-22 16:44:38.1567| Info|HbtNLogger|[更新] 系统配置 '只读连接字符串' 更新成功
+2025-01-22 16:44:38.1567| Info|HbtNLogger|[初始化] 系统配置数据 - 新增: 0, 更新: 54
+2025-01-22 16:44:38.2724| Info|HbtNLogger|[初始化] 验证码配置数据 - 新增: 0, 更新: 9
+2025-01-22 16:44:38.2724| Info|HbtNLogger|[初始化] 种子数据初始化完成
+2025-01-22 16:44:38.4616| Info|Program|应用程序启动成功
+2025-01-22 16:44:38.4913| Info|XmlKeyManager|User profile is available. Using 'C:\Users\Davis.Cheng\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2025-01-22 16:44:39.1946| Info|Lifetime|Now listening on: https://localhost:7229
+2025-01-22 16:44:39.1946| Info|Lifetime|Now listening on: http://localhost:5249
+2025-01-22 16:44:39.8506| Info|Lifetime|Application started. Press Ctrl+C to shut down.
+2025-01-22 16:44:39.8506| Info|Lifetime|Hosting environment: Development
+2025-01-22 16:44:39.8506| Info|Lifetime|Content root path: G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi
+2025-01-22 16:44:40.1539| Info|Diagnostics|Request starting HTTP/2 GET https://localhost:7229/swagger/index.html - - -
+2025-01-22 16:44:40.4877| Info|Diagnostics|Request finished HTTP/2 GET https://localhost:7229/swagger/index.html - 200 - text/html;charset=utf-8 348.6018ms
+2025-01-22 16:44:40.5034| Info|Diagnostics|Request starting HTTP/2 GET https://localhost:7229/_framework/aspnetcore-browser-refresh.js - - -
+2025-01-22 16:44:40.5034| Info|Diagnostics|Request finished HTTP/2 GET https://localhost:7229/_framework/aspnetcore-browser-refresh.js - 200 13766 application/javascript;+charset=utf-8 5.9997ms
+2025-01-22 16:44:40.5034| Info|Diagnostics|Request starting HTTP/2 GET https://localhost:7229/_vs/browserLink - - -
+2025-01-22 16:44:40.5624| Info|Diagnostics|Request finished HTTP/2 GET https://localhost:7229/_vs/browserLink - 200 - text/javascript;+charset=UTF-8 50.5929ms
+2025-01-22 16:44:40.6278| Info|Diagnostics|Request starting HTTP/2 GET https://localhost:7229/swagger/v1/swagger.json - - -
+2025-01-22 16:44:41.1738| Info|Diagnostics|Request finished HTTP/2 GET https://localhost:7229/swagger/v1/swagger.json - 200 - application/json;charset=utf-8 546.2897ms
