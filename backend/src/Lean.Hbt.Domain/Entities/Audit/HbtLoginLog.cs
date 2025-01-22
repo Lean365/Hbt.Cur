@@ -17,7 +17,7 @@ namespace Lean.Hbt.Domain.Entities.Audit
     /// <summary>
     /// 登录日志实体
     /// </summary>
-    [SugarTable("hbt_login_log", "登录日志表")]
+    [SugarTable("hbt_mon_login_log", "登录日志表")]
     [SugarIndex("ix_tenant_login", nameof(TenantId), OrderByType.Asc)]
     public class HbtLoginLog : HbtBaseEntity
     {

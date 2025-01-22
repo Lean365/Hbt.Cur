@@ -254,7 +254,9 @@ namespace Lean.Hbt.Infrastructure.Data.Contexts
                     typeof(HbtTranslation),
                     typeof(HbtLanguage),
                     typeof(HbtDictType),
-                    typeof(HbtDictData)
+                    typeof(HbtDictData),
+                    typeof(HbtLoginExtend),
+                    typeof(HbtDeviceExtend)
                 };
 
                 foreach (var entityType in entityTypes)

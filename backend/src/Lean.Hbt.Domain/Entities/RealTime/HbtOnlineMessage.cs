@@ -15,7 +15,7 @@ namespace Lean.Hbt.Domain.Entities.RealTime
     /// <summary>
     /// 在线消息实体
     /// </summary>
-    [SugarTable("hbt_online_message", "在线消息表")]
+    [SugarTable("hbt_rt_online_message", "在线消息表")]
     [SugarIndex("ix_tenant_message", nameof(TenantId), OrderByType.Asc, nameof(CreateTime), OrderByType.Desc)]
     public class HbtOnlineMessage : HbtBaseEntity
     {

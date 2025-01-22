@@ -21,7 +21,7 @@ namespace Lean.Hbt.Domain.Entities.Identity
     /// 创建者: Lean365
     /// 创建时间: 2024-01-16
     /// </remarks>
-    [SugarTable("hbt_dept", "部门表")]
+    [SugarTable("hbt_id_dept", "部门表")]
     [SugarIndex("ix_dept_name", nameof(DeptName), OrderByType.Asc, true)]
     [SugarIndex("ix_tenant_dept", nameof(TenantId), OrderByType.Asc, nameof(DeptName), OrderByType.Asc, true)]
     public class HbtDept : HbtBaseEntity

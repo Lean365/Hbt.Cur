@@ -17,7 +17,7 @@ namespace Lean.Hbt.Domain.Entities.Audit
     /// <summary>
     /// 数据库差异日志实体
     /// </summary>
-    [SugarTable("hbt_db_diff_log", "数据库差异日志表")]
+    [SugarTable("hbt_mon_diff_log", "数据库差异日志表")]
     [SugarIndex("ix_tenant_dbdiff", nameof(TenantId), OrderByType.Asc)]
     public class HbtDbDiffLog : HbtBaseEntity
     {

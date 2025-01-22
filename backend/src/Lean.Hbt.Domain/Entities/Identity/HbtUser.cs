@@ -21,7 +21,7 @@ namespace Lean.Hbt.Domain.Entities.Identity
     /// 创建者: Lean365
     /// 创建时间: 2024-01-16
     /// </remarks>
-    [SugarTable("hbt_user", "用户表")]
+    [SugarTable("hbt_id_user", "用户表")]
     [SugarIndex("ix_user_name", "user_name", OrderByType.Asc, true)]
     [SugarIndex("ix_email", "email", OrderByType.Asc, true)]
     [SugarIndex("ix_phone", "phone_number", OrderByType.Asc, true)]

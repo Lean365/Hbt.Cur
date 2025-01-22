@@ -548,6 +548,218 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "Lean.Hbt.WebApi.Controllers.Identity.HbtDeviceExtendController",
+    "Method": "GetPagedListAsync",
+    "RelativePath": "api/HbtDeviceExtend",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "UserId",
+        "Type": "System.Nullable\u00601[[System.Int64, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "TenantId",
+        "Type": "System.Nullable\u00601[[System.Int64, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "DeviceType",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "DeviceId",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "DeviceName",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "DeviceStatus",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "LastOnlineTimeStart",
+        "Type": "System.Nullable\u00601[[System.DateTime, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "LastOnlineTimeEnd",
+        "Type": "System.Nullable\u00601[[System.DateTime, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "PageIndex",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "PageSize",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Lean.Hbt.WebApi.Controllers.Identity.HbtDeviceExtendController",
+    "Method": "GetByUserIdAndDeviceIdAsync",
+    "RelativePath": "api/HbtDeviceExtend/{userId}/{deviceId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userId",
+        "Type": "System.Int64",
+        "IsRequired": true
+      },
+      {
+        "Name": "deviceId",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Lean.Hbt.WebApi.Controllers.Identity.HbtDeviceExtendController",
+    "Method": "UpdateOfflineInfoAsync",
+    "RelativePath": "api/HbtDeviceExtend/{userId}/{deviceId}/offline",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userId",
+        "Type": "System.Int64",
+        "IsRequired": true
+      },
+      {
+        "Name": "deviceId",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Lean.Hbt.WebApi.Controllers.Identity.HbtDeviceExtendController",
+    "Method": "UpdateDeviceInfoAsync",
+    "RelativePath": "api/HbtDeviceExtend/device",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "Lean.Hbt.Application.Dtos.Identity.HbtDeviceExtendUpdateRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Lean.Hbt.WebApi.Controllers.Identity.HbtDeviceExtendController",
+    "Method": "ExportAsync",
+    "RelativePath": "api/HbtDeviceExtend/export",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "UserId",
+        "Type": "System.Nullable\u00601[[System.Int64, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "TenantId",
+        "Type": "System.Nullable\u00601[[System.Int64, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "DeviceType",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "DeviceId",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "DeviceName",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "DeviceStatus",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "LastOnlineTimeStart",
+        "Type": "System.Nullable\u00601[[System.DateTime, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "LastOnlineTimeEnd",
+        "Type": "System.Nullable\u00601[[System.DateTime, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "ExportFields",
+        "Type": "System.String[]",
+        "IsRequired": false
+      },
+      {
+        "Name": "FileType",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Lean.Hbt.WebApi.Controllers.Identity.HbtDeviceExtendController",
+    "Method": "UpdateOnlinePeriodAsync",
+    "RelativePath": "api/HbtDeviceExtend/online-period",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "Lean.Hbt.Application.Dtos.Identity.HbtDeviceOnlinePeriodUpdateRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Lean.Hbt.WebApi.Controllers.Identity.HbtDeviceExtendController",
+    "Method": "GetByUserIdAsync",
+    "RelativePath": "api/HbtDeviceExtend/user/{userId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userId",
+        "Type": "System.Int64",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "Lean.Hbt.WebApi.Controllers.Admin.HbtDictDataController",
     "Method": "GetPagedListAsync",
     "RelativePath": "api/HbtDictData",
@@ -1069,6 +1281,182 @@
         "Name": "PageSize",
         "Type": "System.Int32",
         "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Lean.Hbt.WebApi.Controllers.Identity.HbtLoginExtendController",
+    "Method": "GetPagedListAsync",
+    "RelativePath": "api/HbtLoginExtend",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "UserId",
+        "Type": "System.Nullable\u00601[[System.Int64, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "TenantId",
+        "Type": "System.Nullable\u00601[[System.Int64, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "LoginType",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "LoginSource",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "LoginStatus",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "LastLoginTimeStart",
+        "Type": "System.Nullable\u00601[[System.DateTime, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "LastLoginTimeEnd",
+        "Type": "System.Nullable\u00601[[System.DateTime, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "PageIndex",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "PageSize",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Lean.Hbt.WebApi.Controllers.Identity.HbtLoginExtendController",
+    "Method": "GetByUserIdAsync",
+    "RelativePath": "api/HbtLoginExtend/{userId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userId",
+        "Type": "System.Int64",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Lean.Hbt.WebApi.Controllers.Identity.HbtLoginExtendController",
+    "Method": "UpdateOfflineInfoAsync",
+    "RelativePath": "api/HbtLoginExtend/{userId}/offline",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userId",
+        "Type": "System.Int64",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Lean.Hbt.WebApi.Controllers.Identity.HbtLoginExtendController",
+    "Method": "ExportAsync",
+    "RelativePath": "api/HbtLoginExtend/export",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "UserId",
+        "Type": "System.Nullable\u00601[[System.Int64, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "TenantId",
+        "Type": "System.Nullable\u00601[[System.Int64, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "LoginType",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "LoginSource",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "LoginStatus",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "LastLoginTimeStart",
+        "Type": "System.Nullable\u00601[[System.DateTime, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "LastLoginTimeEnd",
+        "Type": "System.Nullable\u00601[[System.DateTime, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "ExportFields",
+        "Type": "System.String[]",
+        "IsRequired": false
+      },
+      {
+        "Name": "FileType",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Lean.Hbt.WebApi.Controllers.Identity.HbtLoginExtendController",
+    "Method": "UpdateLoginInfoAsync",
+    "RelativePath": "api/HbtLoginExtend/login",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "Lean.Hbt.Application.Dtos.Identity.HbtLoginExtendUpdateRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Lean.Hbt.WebApi.Controllers.Identity.HbtLoginExtendController",
+    "Method": "UpdateOnlinePeriodAsync",
+    "RelativePath": "api/HbtLoginExtend/online-period",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "Lean.Hbt.Application.Dtos.Identity.HbtOnlinePeriodUpdateRequest",
+        "IsRequired": true
       }
     ],
     "ReturnTypes": []

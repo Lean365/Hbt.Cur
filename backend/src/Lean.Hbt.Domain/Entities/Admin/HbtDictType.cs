@@ -16,7 +16,7 @@ namespace Lean.Hbt.Domain.Entities.Admin
     /// <summary>
     /// 字典类型实体
     /// </summary>
-    [SugarTable("hbt_dict_type", "字典类型表")]
+    [SugarTable("hbt_sys_dict_type", "字典类型表")]
     public class HbtDictType : HbtBaseEntity
     {
         /// <summary>

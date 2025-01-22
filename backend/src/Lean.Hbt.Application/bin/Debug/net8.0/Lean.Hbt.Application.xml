@@ -2229,6 +2229,266 @@
             状态（正常/停用）
             </summary>
         </member>
+        <member name="T:Lean.Hbt.Application.Dtos.Identity.HbtDeviceExtendDto">
+            <summary>
+            设备扩展信息传输对象
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtDeviceExtendDto.UserId">
+            <summary>
+            用户ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtDeviceExtendDto.TenantId">
+            <summary>
+            租户ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtDeviceExtendDto.DeviceType">
+            <summary>
+            设备类型
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtDeviceExtendDto.DeviceId">
+            <summary>
+            设备标识
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtDeviceExtendDto.DeviceName">
+            <summary>
+            设备名称
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtDeviceExtendDto.DeviceModel">
+            <summary>
+            设备型号
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtDeviceExtendDto.OsType">
+            <summary>
+            操作系统类型
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtDeviceExtendDto.OsVersion">
+            <summary>
+            系统版本
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtDeviceExtendDto.BrowserType">
+            <summary>
+            浏览器类型
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtDeviceExtendDto.BrowserVersion">
+            <summary>
+            浏览器版本
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtDeviceExtendDto.Resolution">
+            <summary>
+            分辨率
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtDeviceExtendDto.DeviceStatus">
+            <summary>
+            设备状态
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtDeviceExtendDto.LastOnlineTime">
+            <summary>
+            最后在线时间
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtDeviceExtendDto.LastOfflineTime">
+            <summary>
+            最后离线时间
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtDeviceExtendDto.TodayOnlinePeriods">
+            <summary>
+            今日在线时段(JSON格式,例如:["09:00-12:00","14:00-18:00"])
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Application.Dtos.Identity.HbtDeviceExtendUpdateRequest">
+            <summary>
+            设备扩展信息更新请求
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtDeviceExtendUpdateRequest.UserId">
+            <summary>
+            用户ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtDeviceExtendUpdateRequest.TenantId">
+            <summary>
+            租户ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtDeviceExtendUpdateRequest.DeviceType">
+            <summary>
+            设备类型
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtDeviceExtendUpdateRequest.DeviceId">
+            <summary>
+            设备标识
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtDeviceExtendUpdateRequest.DeviceName">
+            <summary>
+            设备名称
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtDeviceExtendUpdateRequest.DeviceModel">
+            <summary>
+            设备型号
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtDeviceExtendUpdateRequest.OsType">
+            <summary>
+            操作系统类型
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtDeviceExtendUpdateRequest.OsVersion">
+            <summary>
+            系统版本
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtDeviceExtendUpdateRequest.BrowserType">
+            <summary>
+            浏览器类型
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtDeviceExtendUpdateRequest.BrowserVersion">
+            <summary>
+            浏览器版本
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtDeviceExtendUpdateRequest.Resolution">
+            <summary>
+            分辨率
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Application.Dtos.Identity.HbtDeviceOnlinePeriodUpdateRequest">
+            <summary>
+            设备在线时段更新请求
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtDeviceOnlinePeriodUpdateRequest.UserId">
+            <summary>
+            用户ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtDeviceOnlinePeriodUpdateRequest.DeviceId">
+            <summary>
+            设备ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtDeviceOnlinePeriodUpdateRequest.OnlinePeriod">
+            <summary>
+            在线时段(格式:"HH:mm-HH:mm")
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Application.Dtos.Identity.HbtDeviceExtendPageRequest">
+            <summary>
+            设备扩展信息分页查询请求
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtDeviceExtendPageRequest.UserId">
+            <summary>
+            用户ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtDeviceExtendPageRequest.TenantId">
+            <summary>
+            租户ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtDeviceExtendPageRequest.DeviceType">
+            <summary>
+            设备类型
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtDeviceExtendPageRequest.DeviceId">
+            <summary>
+            设备标识
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtDeviceExtendPageRequest.DeviceName">
+            <summary>
+            设备名称
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtDeviceExtendPageRequest.DeviceStatus">
+            <summary>
+            设备状态
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtDeviceExtendPageRequest.LastOnlineTimeStart">
+            <summary>
+            最后在线时间范围开始
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtDeviceExtendPageRequest.LastOnlineTimeEnd">
+            <summary>
+            最后在线时间范围结束
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Application.Dtos.Identity.HbtDeviceExtendExportRequest">
+            <summary>
+            设备扩展信息导出请求
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtDeviceExtendExportRequest.UserId">
+            <summary>
+            用户ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtDeviceExtendExportRequest.TenantId">
+            <summary>
+            租户ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtDeviceExtendExportRequest.DeviceType">
+            <summary>
+            设备类型
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtDeviceExtendExportRequest.DeviceId">
+            <summary>
+            设备标识
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtDeviceExtendExportRequest.DeviceName">
+            <summary>
+            设备名称
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtDeviceExtendExportRequest.DeviceStatus">
+            <summary>
+            设备状态
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtDeviceExtendExportRequest.LastOnlineTimeStart">
+            <summary>
+            最后在线时间范围开始
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtDeviceExtendExportRequest.LastOnlineTimeEnd">
+            <summary>
+            最后在线时间范围结束
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtDeviceExtendExportRequest.ExportFields">
+            <summary>
+            导出字段列表
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtDeviceExtendExportRequest.FileType">
+            <summary>
+            导出文件类型
+            </summary>
+        </member>
         <member name="T:Lean.Hbt.Application.Dtos.Identity.HbtLoginDto">
             <summary>
             登录请求传输对象
@@ -2339,6 +2599,316 @@
         <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtUserInfoDto.Permissions">
             <summary>
             权限列表
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Application.Dtos.Identity.HbtLoginExtendDto">
+            <summary>
+            登录扩展信息传输对象
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtLoginExtendDto.UserId">
+            <summary>
+            用户ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtLoginExtendDto.TenantId">
+            <summary>
+            租户ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtLoginExtendDto.RoleId">
+            <summary>
+            角色ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtLoginExtendDto.DeptId">
+            <summary>
+            部门ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtLoginExtendDto.PostId">
+            <summary>
+            岗位ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtLoginExtendDto.LoginType">
+            <summary>
+            登录类型
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtLoginExtendDto.LoginSource">
+            <summary>
+            登录来源
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtLoginExtendDto.LoginStatus">
+            <summary>
+            登录状态
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtLoginExtendDto.FirstLoginTime">
+            <summary>
+            首次登录时间
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtLoginExtendDto.FirstLoginIp">
+            <summary>
+            首次登录IP
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtLoginExtendDto.FirstLoginLocation">
+            <summary>
+            首次登录地点
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtLoginExtendDto.FirstLoginDeviceId">
+            <summary>
+            首次登录设备ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtLoginExtendDto.FirstLoginDeviceType">
+            <summary>
+            首次登录设备类型
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtLoginExtendDto.FirstLoginBrowser">
+            <summary>
+            首次登录浏览器类型
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtLoginExtendDto.FirstLoginOs">
+            <summary>
+            首次登录操作系统类型
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtLoginExtendDto.LastLoginTime">
+            <summary>
+            最后登录时间
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtLoginExtendDto.LastLoginIp">
+            <summary>
+            最后登录IP
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtLoginExtendDto.LastLoginLocation">
+            <summary>
+            最后登录地点
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtLoginExtendDto.LastLoginDeviceId">
+            <summary>
+            最后登录设备ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtLoginExtendDto.LastLoginDeviceType">
+            <summary>
+            最后登录设备类型
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtLoginExtendDto.LastLoginBrowser">
+            <summary>
+            最后登录浏览器类型
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtLoginExtendDto.LastLoginOs">
+            <summary>
+            最后登录操作系统类型
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtLoginExtendDto.LastOfflineTime">
+            <summary>
+            最后离线时间
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtLoginExtendDto.TodayOnlinePeriods">
+            <summary>
+            今日在线时段(JSON格式,例如:["09:00-12:00","14:00-18:00"])
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtLoginExtendDto.LoginCount">
+            <summary>
+            总登录次数
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtLoginExtendDto.ContinuousLoginDays">
+            <summary>
+            连续登录天数
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Application.Dtos.Identity.HbtLoginExtendUpdateRequest">
+            <summary>
+            登录扩展信息更新请求
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtLoginExtendUpdateRequest.UserId">
+            <summary>
+            用户ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtLoginExtendUpdateRequest.TenantId">
+            <summary>
+            租户ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtLoginExtendUpdateRequest.RoleId">
+            <summary>
+            角色ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtLoginExtendUpdateRequest.DeptId">
+            <summary>
+            部门ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtLoginExtendUpdateRequest.PostId">
+            <summary>
+            岗位ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtLoginExtendUpdateRequest.LoginType">
+            <summary>
+            登录类型
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtLoginExtendUpdateRequest.LoginSource">
+            <summary>
+            登录来源
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtLoginExtendUpdateRequest.IpAddress">
+            <summary>
+            IP地址
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtLoginExtendUpdateRequest.Location">
+            <summary>
+            地理位置
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtLoginExtendUpdateRequest.DeviceId">
+            <summary>
+            设备ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtLoginExtendUpdateRequest.DeviceType">
+            <summary>
+            设备类型
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtLoginExtendUpdateRequest.BrowserType">
+            <summary>
+            浏览器类型
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtLoginExtendUpdateRequest.OsType">
+            <summary>
+            操作系统类型
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Application.Dtos.Identity.HbtOnlinePeriodUpdateRequest">
+            <summary>
+            在线时段更新请求
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtOnlinePeriodUpdateRequest.UserId">
+            <summary>
+            用户ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtOnlinePeriodUpdateRequest.OnlinePeriod">
+            <summary>
+            在线时段(格式:"HH:mm-HH:mm")
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Application.Dtos.Identity.HbtLoginExtendPageRequest">
+            <summary>
+            登录扩展信息分页查询请求
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtLoginExtendPageRequest.UserId">
+            <summary>
+            用户ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtLoginExtendPageRequest.TenantId">
+            <summary>
+            租户ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtLoginExtendPageRequest.LoginType">
+            <summary>
+            登录类型
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtLoginExtendPageRequest.LoginSource">
+            <summary>
+            登录来源
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtLoginExtendPageRequest.LoginStatus">
+            <summary>
+            登录状态
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtLoginExtendPageRequest.LastLoginTimeStart">
+            <summary>
+            最后登录时间范围开始
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtLoginExtendPageRequest.LastLoginTimeEnd">
+            <summary>
+            最后登录时间范围结束
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Application.Dtos.Identity.HbtLoginExtendExportRequest">
+            <summary>
+            登录扩展信息导出请求
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtLoginExtendExportRequest.UserId">
+            <summary>
+            用户ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtLoginExtendExportRequest.TenantId">
+            <summary>
+            租户ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtLoginExtendExportRequest.LoginType">
+            <summary>
+            登录类型
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtLoginExtendExportRequest.LoginSource">
+            <summary>
+            登录来源
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtLoginExtendExportRequest.LoginStatus">
+            <summary>
+            登录状态
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtLoginExtendExportRequest.LastLoginTimeStart">
+            <summary>
+            最后登录时间范围开始
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtLoginExtendExportRequest.LastLoginTimeEnd">
+            <summary>
+            最后登录时间范围结束
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtLoginExtendExportRequest.ExportFields">
+            <summary>
+            导出字段列表
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtLoginExtendExportRequest.FileType">
+            <summary>
+            导出文件类型
             </summary>
         </member>
         <member name="T:Lean.Hbt.Application.Dtos.Identity.HbtMenuDto">
@@ -5638,6 +6208,91 @@
             检查是否存在循环引用
             </summary>
         </member>
+        <member name="T:Lean.Hbt.Application.Services.Identity.HbtDeviceExtendService">
+            <summary>
+            设备扩展信息服务实现
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Application.Services.Identity.HbtDeviceExtendService.#ctor(Lean.Hbt.Domain.Repositories.IHbtRepository{Lean.Hbt.Domain.Entities.Identity.HbtDeviceExtend},Lean.Hbt.Domain.IServices.IHbtLogger)">
+            <summary>
+            构造函数
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Application.Services.Identity.HbtDeviceExtendService.GetPagedListAsync(Lean.Hbt.Application.Dtos.Identity.HbtDeviceExtendPageRequest)">
+            <summary>
+            获取设备扩展信息分页列表
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Application.Services.Identity.HbtDeviceExtendService.ExportAsync(Lean.Hbt.Application.Dtos.Identity.HbtDeviceExtendExportRequest)">
+            <summary>
+            导出设备扩展信息
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Application.Services.Identity.HbtDeviceExtendService.UpdateDeviceInfoAsync(Lean.Hbt.Application.Dtos.Identity.HbtDeviceExtendUpdateRequest)">
+            <summary>
+            更新设备信息
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Application.Services.Identity.HbtDeviceExtendService.UpdateOfflineInfoAsync(System.Int64,System.String)">
+            <summary>
+            更新设备离线信息
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Application.Services.Identity.HbtDeviceExtendService.UpdateOnlinePeriodAsync(Lean.Hbt.Application.Dtos.Identity.HbtDeviceOnlinePeriodUpdateRequest)">
+            <summary>
+            更新设备在线时段
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Application.Services.Identity.HbtDeviceExtendService.GetByUserIdAndDeviceIdAsync(System.Int64,System.String)">
+            <summary>
+            获取用户的设备扩展信息
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Application.Services.Identity.HbtDeviceExtendService.GetByUserIdAsync(System.Int64)">
+            <summary>
+            获取用户的所有设备扩展信息
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Application.Services.Identity.HbtLoginExtendService">
+            <summary>
+            登录扩展信息服务实现
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Application.Services.Identity.HbtLoginExtendService.#ctor(Lean.Hbt.Domain.Repositories.IHbtRepository{Lean.Hbt.Domain.Entities.Identity.HbtLoginExtend},Lean.Hbt.Domain.IServices.IHbtLogger)">
+            <summary>
+            构造函数
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Application.Services.Identity.HbtLoginExtendService.GetPagedListAsync(Lean.Hbt.Application.Dtos.Identity.HbtLoginExtendPageRequest)">
+            <summary>
+            获取登录扩展信息分页列表
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Application.Services.Identity.HbtLoginExtendService.ExportAsync(Lean.Hbt.Application.Dtos.Identity.HbtLoginExtendExportRequest)">
+            <summary>
+            导出登录扩展信息
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Application.Services.Identity.HbtLoginExtendService.UpdateLoginInfoAsync(Lean.Hbt.Application.Dtos.Identity.HbtLoginExtendUpdateRequest)">
+            <summary>
+            更新用户登录信息
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Application.Services.Identity.HbtLoginExtendService.UpdateOfflineInfoAsync(System.Int64)">
+            <summary>
+            更新用户离线信息
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Application.Services.Identity.HbtLoginExtendService.UpdateOnlinePeriodAsync(Lean.Hbt.Application.Dtos.Identity.HbtOnlinePeriodUpdateRequest)">
+            <summary>
+            更新用户在线时段
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Application.Services.Identity.HbtLoginExtendService.GetByUserIdAsync(System.Int64)">
+            <summary>
+            获取用户登录扩展信息
+            </summary>
+        </member>
         <member name="T:Lean.Hbt.Application.Services.Identity.HbtLoginService">
             <summary>
             登录服务实现
@@ -6169,6 +6824,109 @@
             </summary>
             <param name="input">状态信息</param>
             <returns>是否成功</returns>
+        </member>
+        <member name="T:Lean.Hbt.Application.Services.Identity.IHbtDeviceExtendService">
+            <summary>
+            设备扩展信息服务接口
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Application.Services.Identity.IHbtDeviceExtendService.GetPagedListAsync(Lean.Hbt.Application.Dtos.Identity.HbtDeviceExtendPageRequest)">
+            <summary>
+            获取设备扩展信息分页列表
+            </summary>
+            <param name="query">查询条件</param>
+            <returns>分页列表</returns>
+        </member>
+        <member name="M:Lean.Hbt.Application.Services.Identity.IHbtDeviceExtendService.ExportAsync(Lean.Hbt.Application.Dtos.Identity.HbtDeviceExtendExportRequest)">
+            <summary>
+            导出设备扩展信息
+            </summary>
+            <param name="request">导出请求</param>
+            <returns>文件字节数组</returns>
+        </member>
+        <member name="M:Lean.Hbt.Application.Services.Identity.IHbtDeviceExtendService.UpdateDeviceInfoAsync(Lean.Hbt.Application.Dtos.Identity.HbtDeviceExtendUpdateRequest)">
+            <summary>
+            更新设备信息
+            </summary>
+            <param name="request">更新请求</param>
+            <returns>更新后的设备扩展信息</returns>
+        </member>
+        <member name="M:Lean.Hbt.Application.Services.Identity.IHbtDeviceExtendService.UpdateOfflineInfoAsync(System.Int64,System.String)">
+            <summary>
+            更新设备离线信息
+            </summary>
+            <param name="userId">用户ID</param>
+            <param name="deviceId">设备ID</param>
+            <returns>更新后的设备扩展信息</returns>
+        </member>
+        <member name="M:Lean.Hbt.Application.Services.Identity.IHbtDeviceExtendService.UpdateOnlinePeriodAsync(Lean.Hbt.Application.Dtos.Identity.HbtDeviceOnlinePeriodUpdateRequest)">
+            <summary>
+            更新设备在线时段
+            </summary>
+            <param name="request">在线时段更新请求</param>
+            <returns>更新后的设备扩展信息</returns>
+        </member>
+        <member name="M:Lean.Hbt.Application.Services.Identity.IHbtDeviceExtendService.GetByUserIdAndDeviceIdAsync(System.Int64,System.String)">
+            <summary>
+            获取用户的设备扩展信息
+            </summary>
+            <param name="userId">用户ID</param>
+            <param name="deviceId">设备ID</param>
+            <returns>设备扩展信息</returns>
+        </member>
+        <member name="M:Lean.Hbt.Application.Services.Identity.IHbtDeviceExtendService.GetByUserIdAsync(System.Int64)">
+            <summary>
+            获取用户的所有设备扩展信息
+            </summary>
+            <param name="userId">用户ID</param>
+            <returns>设备扩展信息列表</returns>
+        </member>
+        <member name="T:Lean.Hbt.Application.Services.Identity.IHbtLoginExtendService">
+            <summary>
+            登录扩展信息服务接口
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Application.Services.Identity.IHbtLoginExtendService.GetPagedListAsync(Lean.Hbt.Application.Dtos.Identity.HbtLoginExtendPageRequest)">
+            <summary>
+            获取登录扩展信息分页列表
+            </summary>
+            <param name="query">查询条件</param>
+            <returns>分页列表</returns>
+        </member>
+        <member name="M:Lean.Hbt.Application.Services.Identity.IHbtLoginExtendService.ExportAsync(Lean.Hbt.Application.Dtos.Identity.HbtLoginExtendExportRequest)">
+            <summary>
+            导出登录扩展信息
+            </summary>
+            <param name="request">导出请求</param>
+            <returns>文件字节数组</returns>
+        </member>
+        <member name="M:Lean.Hbt.Application.Services.Identity.IHbtLoginExtendService.UpdateLoginInfoAsync(Lean.Hbt.Application.Dtos.Identity.HbtLoginExtendUpdateRequest)">
+            <summary>
+            更新用户登录信息
+            </summary>
+            <param name="request">更新请求</param>
+            <returns>更新后的登录扩展信息</returns>
+        </member>
+        <member name="M:Lean.Hbt.Application.Services.Identity.IHbtLoginExtendService.UpdateOfflineInfoAsync(System.Int64)">
+            <summary>
+            更新用户离线信息
+            </summary>
+            <param name="userId">用户ID</param>
+            <returns>更新后的登录扩展信息</returns>
+        </member>
+        <member name="M:Lean.Hbt.Application.Services.Identity.IHbtLoginExtendService.UpdateOnlinePeriodAsync(Lean.Hbt.Application.Dtos.Identity.HbtOnlinePeriodUpdateRequest)">
+            <summary>
+            更新用户在线时段
+            </summary>
+            <param name="request">在线时段更新请求</param>
+            <returns>更新后的登录扩展信息</returns>
+        </member>
+        <member name="M:Lean.Hbt.Application.Services.Identity.IHbtLoginExtendService.GetByUserIdAsync(System.Int64)">
+            <summary>
+            获取用户登录扩展信息
+            </summary>
+            <param name="userId">用户ID</param>
+            <returns>登录扩展信息</returns>
         </member>
         <member name="T:Lean.Hbt.Application.Services.Identity.IHbtLoginService">
             <summary>

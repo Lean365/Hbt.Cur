@@ -282,6 +282,151 @@
             仅本人数据权限
             </summary>
         </member>
+        <member name="T:Lean.Hbt.Common.Enums.HbtLoginType">
+            <summary>
+            登录类型枚举
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtLoginType.Normal">
+            <summary>
+            普通登录
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtLoginType.OAuth">
+            <summary>
+            OAuth登录
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Common.Enums.HbtLoginSource">
+            <summary>
+            登录来源枚举
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtLoginSource.Web">
+            <summary>
+            网页
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtLoginSource.App">
+            <summary>
+            APP
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtLoginSource.MiniProgram">
+            <summary>
+            小程序
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Common.Enums.HbtLoginStatus">
+            <summary>
+            登录状态枚举
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtLoginStatus.Offline">
+            <summary>
+            离线
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtLoginStatus.Online">
+            <summary>
+            在线
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Common.Enums.HbtDeviceType">
+            <summary>
+            设备类型枚举
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtDeviceType.PC">
+            <summary>
+            PC
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtDeviceType.Android">
+            <summary>
+            Android
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtDeviceType.iOS">
+            <summary>
+            iOS
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Common.Enums.HbtBrowserType">
+            <summary>
+            浏览器类型枚举
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtBrowserType.Chrome">
+            <summary>
+            Chrome
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtBrowserType.Firefox">
+            <summary>
+            Firefox
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtBrowserType.Safari">
+            <summary>
+            Safari
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtBrowserType.Edge">
+            <summary>
+            Edge
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtBrowserType.IE">
+            <summary>
+            IE
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtBrowserType.Opera">
+            <summary>
+            Opera
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtBrowserType.Other">
+            <summary>
+            其他
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Common.Enums.HbtOsType">
+            <summary>
+            操作系统类型枚举
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtOsType.Windows">
+            <summary>
+            Windows
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtOsType.Linux">
+            <summary>
+            Linux
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtOsType.MacOS">
+            <summary>
+            MacOS
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtOsType.Android">
+            <summary>
+            Android
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtOsType.iOS">
+            <summary>
+            iOS
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtOsType.Other">
+            <summary>
+            其他
+            </summary>
+        </member>
         <member name="T:Lean.Hbt.Common.Enums.HbtLogLevel">
             <summary>
             日志级别枚举

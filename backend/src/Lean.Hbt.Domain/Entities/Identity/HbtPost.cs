@@ -17,7 +17,7 @@ namespace Lean.Hbt.Domain.Entities.Identity
     /// <summary>
     /// 岗位实体
     /// </summary>
-    [SugarTable("hbt_post", "岗位表")]
+    [SugarTable("hbt_id_post", "岗位表")]
     [SugarIndex("ix_post_code", nameof(PostCode), OrderByType.Asc, true)]
     [SugarIndex("ix_tenant_post", nameof(TenantId), OrderByType.Asc, nameof(PostCode), OrderByType.Asc, true)]
     public class HbtPost : HbtBaseEntity

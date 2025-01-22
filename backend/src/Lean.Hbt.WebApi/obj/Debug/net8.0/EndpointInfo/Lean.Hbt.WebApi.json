@@ -919,6 +919,360 @@
         }
       }
     },
+    "/api/HbtDeviceExtend": {
+      "get": {
+        "tags": [
+          "HbtDeviceExtend"
+        ],
+        "parameters": [
+          {
+            "name": "UserId",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "TenantId",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "DeviceType",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "$ref": "#/components/schemas/HbtDeviceType"
+            }
+          },
+          {
+            "name": "DeviceId",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "DeviceName",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "DeviceStatus",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "$ref": "#/components/schemas/HbtLoginStatus"
+            }
+          },
+          {
+            "name": "LastOnlineTimeStart",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "LastOnlineTimeEnd",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "PageIndex",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtDeviceExtend/{userId}/{deviceId}": {
+      "get": {
+        "tags": [
+          "HbtDeviceExtend"
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "deviceId",
+            "in": "path",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtDeviceExtend/{userId}/{deviceId}/offline": {
+      "put": {
+        "tags": [
+          "HbtDeviceExtend"
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "deviceId",
+            "in": "path",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtDeviceExtend/device": {
+      "put": {
+        "tags": [
+          "HbtDeviceExtend"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HbtDeviceExtendUpdateRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HbtDeviceExtendUpdateRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/HbtDeviceExtendUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtDeviceExtend/export": {
+      "get": {
+        "tags": [
+          "HbtDeviceExtend"
+        ],
+        "parameters": [
+          {
+            "name": "UserId",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "TenantId",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "DeviceType",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "$ref": "#/components/schemas/HbtDeviceType"
+            }
+          },
+          {
+            "name": "DeviceId",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "DeviceName",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "DeviceStatus",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "$ref": "#/components/schemas/HbtLoginStatus"
+            }
+          },
+          {
+            "name": "LastOnlineTimeStart",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "LastOnlineTimeEnd",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "ExportFields",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "FileType",
+            "in": "query",
+            "required": true,
+            "style": "form",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtDeviceExtend/online-period": {
+      "put": {
+        "tags": [
+          "HbtDeviceExtend"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HbtDeviceOnlinePeriodUpdateRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HbtDeviceOnlinePeriodUpdateRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/HbtDeviceOnlinePeriodUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtDeviceExtend/user/{userId}": {
+      "get": {
+        "tags": [
+          "HbtDeviceExtend"
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
     "/api/HbtDictData": {
       "get": {
         "tags": [
@@ -1810,6 +2164,302 @@
             }
           }
         ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtLoginExtend": {
+      "get": {
+        "tags": [
+          "HbtLoginExtend"
+        ],
+        "parameters": [
+          {
+            "name": "UserId",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "TenantId",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "LoginType",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "$ref": "#/components/schemas/HbtLoginType"
+            }
+          },
+          {
+            "name": "LoginSource",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "$ref": "#/components/schemas/HbtLoginSource"
+            }
+          },
+          {
+            "name": "LoginStatus",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "$ref": "#/components/schemas/HbtLoginStatus"
+            }
+          },
+          {
+            "name": "LastLoginTimeStart",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "LastLoginTimeEnd",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "PageIndex",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtLoginExtend/{userId}": {
+      "get": {
+        "tags": [
+          "HbtLoginExtend"
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtLoginExtend/{userId}/offline": {
+      "put": {
+        "tags": [
+          "HbtLoginExtend"
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtLoginExtend/export": {
+      "get": {
+        "tags": [
+          "HbtLoginExtend"
+        ],
+        "parameters": [
+          {
+            "name": "UserId",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "TenantId",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "LoginType",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "$ref": "#/components/schemas/HbtLoginType"
+            }
+          },
+          {
+            "name": "LoginSource",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "$ref": "#/components/schemas/HbtLoginSource"
+            }
+          },
+          {
+            "name": "LoginStatus",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "$ref": "#/components/schemas/HbtLoginStatus"
+            }
+          },
+          {
+            "name": "LastLoginTimeStart",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "LastLoginTimeEnd",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "ExportFields",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "FileType",
+            "in": "query",
+            "required": true,
+            "style": "form",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtLoginExtend/login": {
+      "put": {
+        "tags": [
+          "HbtLoginExtend"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HbtLoginExtendUpdateRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HbtLoginExtendUpdateRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/HbtLoginExtendUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtLoginExtend/online-period": {
+      "put": {
+        "tags": [
+          "HbtLoginExtend"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HbtOnlinePeriodUpdateRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HbtOnlinePeriodUpdateRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/HbtOnlinePeriodUpdateRequest"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "Success"
@@ -5155,6 +5805,19 @@
         },
         "additionalProperties": false
       },
+      "HbtBrowserType": {
+        "enum": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          99
+        ],
+        "type": "integer",
+        "format": "int32"
+      },
       "HbtDataScope": {
         "enum": [
           1,
@@ -5270,6 +5933,99 @@
           }
         },
         "additionalProperties": false
+      },
+      "HbtDeviceExtendUpdateRequest": {
+        "required": [
+          "deviceId",
+          "deviceType",
+          "userId"
+        ],
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "tenantId": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
+          },
+          "deviceType": {
+            "$ref": "#/components/schemas/HbtDeviceType"
+          },
+          "deviceId": {
+            "maxLength": 100,
+            "minLength": 1,
+            "type": "string"
+          },
+          "deviceName": {
+            "maxLength": 100,
+            "type": "string",
+            "nullable": true
+          },
+          "deviceModel": {
+            "maxLength": 100,
+            "type": "string",
+            "nullable": true
+          },
+          "osType": {
+            "$ref": "#/components/schemas/HbtOsType"
+          },
+          "osVersion": {
+            "maxLength": 50,
+            "type": "string",
+            "nullable": true
+          },
+          "browserType": {
+            "$ref": "#/components/schemas/HbtBrowserType"
+          },
+          "browserVersion": {
+            "maxLength": 50,
+            "type": "string",
+            "nullable": true
+          },
+          "resolution": {
+            "maxLength": 50,
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "HbtDeviceOnlinePeriodUpdateRequest": {
+        "required": [
+          "deviceId",
+          "onlinePeriod",
+          "userId"
+        ],
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "deviceId": {
+            "maxLength": 100,
+            "minLength": 1,
+            "type": "string"
+          },
+          "onlinePeriod": {
+            "minLength": 1,
+            "pattern": "^([0-1][0-9]|2[0-3]):[0-5][0-9]-([0-1][0-9]|2[0-3]):[0-5][0-9]$",
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "HbtDeviceType": {
+        "enum": [
+          0,
+          1,
+          2
+        ],
+        "type": "integer",
+        "format": "int32"
       },
       "HbtDictDataCreateDto": {
         "required": [
@@ -5583,6 +6339,101 @@
         "type": "integer",
         "format": "int32"
       },
+      "HbtLoginExtendUpdateRequest": {
+        "required": [
+          "browserType",
+          "deviceId",
+          "deviceType",
+          "ipAddress",
+          "loginSource",
+          "loginType",
+          "osType",
+          "userId"
+        ],
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "tenantId": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
+          },
+          "roleId": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
+          },
+          "deptId": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
+          },
+          "postId": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
+          },
+          "loginType": {
+            "$ref": "#/components/schemas/HbtLoginType"
+          },
+          "loginSource": {
+            "$ref": "#/components/schemas/HbtLoginSource"
+          },
+          "ipAddress": {
+            "maxLength": 50,
+            "minLength": 1,
+            "type": "string"
+          },
+          "location": {
+            "maxLength": 100,
+            "type": "string",
+            "nullable": true
+          },
+          "deviceId": {
+            "maxLength": 100,
+            "minLength": 1,
+            "type": "string"
+          },
+          "deviceType": {
+            "$ref": "#/components/schemas/HbtDeviceType"
+          },
+          "browserType": {
+            "$ref": "#/components/schemas/HbtBrowserType"
+          },
+          "osType": {
+            "$ref": "#/components/schemas/HbtOsType"
+          }
+        },
+        "additionalProperties": false
+      },
+      "HbtLoginSource": {
+        "enum": [
+          0,
+          1,
+          2
+        ],
+        "type": "integer",
+        "format": "int32"
+      },
+      "HbtLoginStatus": {
+        "enum": [
+          0,
+          1
+        ],
+        "type": "integer",
+        "format": "int32"
+      },
+      "HbtLoginType": {
+        "enum": [
+          0,
+          1
+        ],
+        "type": "integer",
+        "format": "int32"
+      },
       "HbtMenuCreateDto": {
         "required": [
           "menuName"
@@ -5771,6 +6622,37 @@
           }
         },
         "additionalProperties": false
+      },
+      "HbtOnlinePeriodUpdateRequest": {
+        "required": [
+          "onlinePeriod",
+          "userId"
+        ],
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "onlinePeriod": {
+            "minLength": 1,
+            "pattern": "^([0-1][0-9]|2[0-3]):[0-5][0-9]-([0-1][0-9]|2[0-3]):[0-5][0-9]$",
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "HbtOsType": {
+        "enum": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          99
+        ],
+        "type": "integer",
+        "format": "int32"
       },
       "HbtPostCreateDto": {
         "required": [

@@ -575,6 +575,129 @@
             <param name="status">状态</param>
             <returns>是否成功</returns>
         </member>
+        <member name="T:Lean.Hbt.WebApi.Controllers.Identity.HbtDeviceExtendController">
+            <summary>
+            设备扩展信息控制器
+            </summary>
+            <remarks>
+            创建者: Lean365
+            创建时间: 2024-01-22
+            </remarks>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtDeviceExtendController.#ctor(Lean.Hbt.Application.Services.Identity.IHbtDeviceExtendService)">
+            <summary>
+            构造函数
+            </summary>
+            <param name="deviceExtendService">设备扩展信息服务</param>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtDeviceExtendController.GetPagedListAsync(Lean.Hbt.Application.Dtos.Identity.HbtDeviceExtendPageRequest)">
+            <summary>
+            获取设备扩展信息分页列表
+            </summary>
+            <param name="query">查询条件</param>
+            <returns>分页列表</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtDeviceExtendController.ExportAsync(Lean.Hbt.Application.Dtos.Identity.HbtDeviceExtendExportRequest)">
+            <summary>
+            导出设备扩展信息
+            </summary>
+            <param name="query">查询条件</param>
+            <returns>导出数据列表</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtDeviceExtendController.UpdateDeviceInfoAsync(Lean.Hbt.Application.Dtos.Identity.HbtDeviceExtendUpdateRequest)">
+            <summary>
+            更新设备信息
+            </summary>
+            <param name="request">更新请求</param>
+            <returns>更新后的信息</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtDeviceExtendController.UpdateOfflineInfoAsync(System.Int64,System.String)">
+            <summary>
+            更新设备离线信息
+            </summary>
+            <param name="userId">用户ID</param>
+            <param name="deviceId">设备ID</param>
+            <returns>更新后的信息</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtDeviceExtendController.UpdateOnlinePeriodAsync(Lean.Hbt.Application.Dtos.Identity.HbtDeviceOnlinePeriodUpdateRequest)">
+            <summary>
+            更新设备在线时段
+            </summary>
+            <param name="request">在线时段更新请求</param>
+            <returns>更新后的信息</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtDeviceExtendController.GetByUserIdAndDeviceIdAsync(System.Int64,System.String)">
+            <summary>
+            获取用户的设备扩展信息
+            </summary>
+            <param name="userId">用户ID</param>
+            <param name="deviceId">设备ID</param>
+            <returns>设备扩展信息</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtDeviceExtendController.GetByUserIdAsync(System.Int64)">
+            <summary>
+            获取用户的所有设备扩展信息
+            </summary>
+            <param name="userId">用户ID</param>
+            <returns>设备扩展信息列表</returns>
+        </member>
+        <member name="T:Lean.Hbt.WebApi.Controllers.Identity.HbtLoginExtendController">
+            <summary>
+            登录扩展信息控制器
+            </summary>
+            <remarks>
+            创建者: Lean365
+            创建时间: 2024-01-22
+            </remarks>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtLoginExtendController.#ctor(Lean.Hbt.Application.Services.Identity.IHbtLoginExtendService)">
+            <summary>
+            构造函数
+            </summary>
+            <param name="loginExtendService">登录扩展信息服务</param>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtLoginExtendController.GetPagedListAsync(Lean.Hbt.Application.Dtos.Identity.HbtLoginExtendPageRequest)">
+            <summary>
+            获取登录扩展信息分页列表
+            </summary>
+            <param name="query">查询条件</param>
+            <returns>分页列表</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtLoginExtendController.ExportAsync(Lean.Hbt.Application.Dtos.Identity.HbtLoginExtendExportRequest)">
+            <summary>
+            导出登录扩展信息
+            </summary>
+            <param name="query">查询条件</param>
+            <returns>导出数据列表</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtLoginExtendController.UpdateLoginInfoAsync(Lean.Hbt.Application.Dtos.Identity.HbtLoginExtendUpdateRequest)">
+            <summary>
+            更新用户登录信息
+            </summary>
+            <param name="request">更新请求</param>
+            <returns>更新后的信息</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtLoginExtendController.UpdateOfflineInfoAsync(System.Int64)">
+            <summary>
+            更新用户离线信息
+            </summary>
+            <param name="userId">用户ID</param>
+            <returns>更新后的信息</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtLoginExtendController.UpdateOnlinePeriodAsync(Lean.Hbt.Application.Dtos.Identity.HbtOnlinePeriodUpdateRequest)">
+            <summary>
+            更新用户在线时段
+            </summary>
+            <param name="request">在线时段更新请求</param>
+            <returns>更新后的信息</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtLoginExtendController.GetByUserIdAsync(System.Int64)">
+            <summary>
+            获取用户登录扩展信息
+            </summary>
+            <param name="userId">用户ID</param>
+            <returns>登录扩展信息</returns>
+        </member>
         <member name="T:Lean.Hbt.WebApi.Controllers.Identity.HbtMenuController">
             <summary>
             菜单控制器

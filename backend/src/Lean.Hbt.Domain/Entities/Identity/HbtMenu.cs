@@ -21,7 +21,7 @@ namespace Lean.Hbt.Domain.Entities.Identity
     /// 创建者: Lean365
     /// 创建时间: 2024-01-16
     /// </remarks>
-    [SugarTable("hbt_menu", "菜单表")]
+    [SugarTable("hbt_id_menu", "菜单表")]
     public class HbtMenu : HbtBaseEntity
     {
         /// <summary>

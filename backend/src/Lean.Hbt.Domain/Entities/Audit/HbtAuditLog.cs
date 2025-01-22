@@ -9,17 +9,17 @@
 // 描述    : 审计日志实体
 //===================================================================
 
-using SqlSugar;
+using System.Text.RegularExpressions;
 using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Common.Utils;
-using System.Text.RegularExpressions;
+using SqlSugar;
 
 namespace Lean.Hbt.Domain.Entities.Audit
 {
     /// <summary>
     /// 审计日志实体
     /// </summary>
-    [SugarTable("hbt_audit_log", "审计日志表")]
+    [SugarTable("hbt_mon_audit_log", "审计日志表")]
     [SugarIndex("ix_tenant_audit", nameof(TenantId), OrderByType.Asc)]
     public class HbtAuditLog : HbtBaseEntity
     {
@@ -139,28 +139,28 @@ namespace Lean.Hbt.Domain.Entities.Audit
             if (string.IsNullOrEmpty(RequestParams)) return string.Empty;
 
             var maskedParams = RequestParams;
-            
+
             // 密码脱敏
             maskedParams = Regex.Replace(maskedParams, @"""password""\s*:\s*""[^""]*""", @"""password"":""********""");
-            
+
             // 手机号脱敏
-            maskedParams = Regex.Replace(maskedParams, @"""phoneNumber""\s*:\s*""([^""]*)""", m => 
+            maskedParams = Regex.Replace(maskedParams, @"""phoneNumber""\s*:\s*""([^""]*)""", m =>
                 $@"""phoneNumber"":""{HbtMaskUtils.MaskPhoneNumber(m.Groups[1].Value)}""");
-            
+
             // 邮箱脱敏
-            maskedParams = Regex.Replace(maskedParams, @"""email""\s*:\s*""([^""]*)""", m => 
+            maskedParams = Regex.Replace(maskedParams, @"""email""\s*:\s*""([^""]*)""", m =>
                 $@"""email"":""{HbtMaskUtils.MaskEmail(m.Groups[1].Value)}""");
-            
+
             // 身份证号脱敏
-            maskedParams = Regex.Replace(maskedParams, @"""idCard""\s*:\s*""([^""]*)""", m => 
+            maskedParams = Regex.Replace(maskedParams, @"""idCard""\s*:\s*""([^""]*)""", m =>
                 $@"""idCard"":""{HbtMaskUtils.MaskIdCard(m.Groups[1].Value)}""");
-            
+
             // 银行卡号脱敏
-            maskedParams = Regex.Replace(maskedParams, @"""bankCard""\s*:\s*""([^""]*)""", m => 
+            maskedParams = Regex.Replace(maskedParams, @"""bankCard""\s*:\s*""([^""]*)""", m =>
                 $@"""bankCard"":""{HbtMaskUtils.MaskBankCard(m.Groups[1].Value)}""");
-            
+
             // 地址脱敏
-            maskedParams = Regex.Replace(maskedParams, @"""address""\s*:\s*""([^""]*)""", m => 
+            maskedParams = Regex.Replace(maskedParams, @"""address""\s*:\s*""([^""]*)""", m =>
                 $@"""address"":""{HbtMaskUtils.MaskAddress(m.Groups[1].Value)}""");
 
             return maskedParams;
@@ -174,28 +174,28 @@ namespace Lean.Hbt.Domain.Entities.Audit
             if (string.IsNullOrEmpty(ResponseResult)) return string.Empty;
 
             var maskedResult = ResponseResult;
-            
+
             // 密码脱敏
             maskedResult = Regex.Replace(maskedResult, @"""password""\s*:\s*""[^""]*""", @"""password"":""********""");
-            
+
             // 手机号脱敏
-            maskedResult = Regex.Replace(maskedResult, @"""phoneNumber""\s*:\s*""([^""]*)""", m => 
+            maskedResult = Regex.Replace(maskedResult, @"""phoneNumber""\s*:\s*""([^""]*)""", m =>
                 $@"""phoneNumber"":""{HbtMaskUtils.MaskPhoneNumber(m.Groups[1].Value)}""");
-            
+
             // 邮箱脱敏
-            maskedResult = Regex.Replace(maskedResult, @"""email""\s*:\s*""([^""]*)""", m => 
+            maskedResult = Regex.Replace(maskedResult, @"""email""\s*:\s*""([^""]*)""", m =>
                 $@"""email"":""{HbtMaskUtils.MaskEmail(m.Groups[1].Value)}""");
-            
+
             // 身份证号脱敏
-            maskedResult = Regex.Replace(maskedResult, @"""idCard""\s*:\s*""([^""]*)""", m => 
+            maskedResult = Regex.Replace(maskedResult, @"""idCard""\s*:\s*""([^""]*)""", m =>
                 $@"""idCard"":""{HbtMaskUtils.MaskIdCard(m.Groups[1].Value)}""");
-            
+
             // 银行卡号脱敏
-            maskedResult = Regex.Replace(maskedResult, @"""bankCard""\s*:\s*""([^""]*)""", m => 
+            maskedResult = Regex.Replace(maskedResult, @"""bankCard""\s*:\s*""([^""]*)""", m =>
                 $@"""bankCard"":""{HbtMaskUtils.MaskBankCard(m.Groups[1].Value)}""");
-            
+
             // 地址脱敏
-            maskedResult = Regex.Replace(maskedResult, @"""address""\s*:\s*""([^""]*)""", m => 
+            maskedResult = Regex.Replace(maskedResult, @"""address""\s*:\s*""([^""]*)""", m =>
                 $@"""address"":""{HbtMaskUtils.MaskAddress(m.Groups[1].Value)}""");
 
             return maskedResult;

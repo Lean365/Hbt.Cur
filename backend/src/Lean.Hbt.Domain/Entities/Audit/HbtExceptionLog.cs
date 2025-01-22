@@ -17,7 +17,7 @@ namespace Lean.Hbt.Domain.Entities.Audit
     /// <summary>
     /// 异常日志实体
     /// </summary>
-    [SugarTable("hbt_exception_log", "异常日志表")]
+    [SugarTable("hbt_mon_exception_log", "异常日志表")]
     [SugarIndex("ix_tenant_exception", nameof(TenantId), OrderByType.Asc)]
     public class HbtExceptionLog : HbtBaseEntity
     {

@@ -502,3 +502,94 @@ Error Number:515,State:2,Class:16
    at Program.<Main>$(String[] args) in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\Program.cs:line 62
 ClientConnectionId:5b8cd33a-71fa-49c7-b12a-4556fbee8c41
 Error Number:515,State:2,Class:16
+2025-01-22 14:25:32.6011|Fatal|Program|应用程序启动失败SqlSugar.SqlSugarException: 无法继续执行，因为会话处于终止状态。
+当前命令发生服务器错误。结果(如果有)应被放弃。
+   at SqlSugar.Check.Exception(Boolean isException, String message, String[] args)
+   at SqlSugar.CodeFirstProvider.InitTables(Type entityType)
+   at Lean.Hbt.Infrastructure.Data.Contexts.HbtDbContext..ctor(IOptions`1 options, IHbtLogger logger) in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Data\Contexts\HbtDbContext.cs:line 128
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeDirectByRefWithFewArgs(Object obj, Span`1 copyOfArgs, BindingFlags invokeAttr)
+   at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+   at System.Reflection.RuntimeConstructorInfo.Invoke(BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitConstructor(ConstructorCallSite constructorCallSite, RuntimeResolverContext context)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSiteMain(ServiceCallSite callSite, TArgument argument)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitCache(ServiceCallSite callSite, RuntimeResolverContext context, ServiceProviderEngineScope serviceProviderEngine, RuntimeResolverLock lockType)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitScopeCache(ServiceCallSite callSite, RuntimeResolverContext context)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSite(ServiceCallSite callSite, TArgument argument)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.Resolve(ServiceCallSite callSite, ServiceProviderEngineScope scope)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.DynamicServiceProviderEngine.<>c__DisplayClass2_0.<RealizeService>b__0(ServiceProviderEngineScope scope)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(ServiceIdentifier serviceIdentifier, ServiceProviderEngineScope serviceProviderEngineScope)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.ServiceProviderEngineScope.GetService(Type serviceType)
+   at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService(IServiceProvider provider, Type serviceType)
+   at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService[T](IServiceProvider provider)
+   at Program.<Main>$(String[] args) in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\Program.cs:line 57
+2025-01-22 14:25:55.0961|Fatal|Program|应用程序启动失败SqlSugar.SqlSugarException: 中文提示 :  连接数据库过程中发生错误，检查服务器是否正常连接字符串是否正确，错误信息：无法打开登录所请求的数据库 "LeanHbt_Dev"。登录失败。
+用户 'sa' 登录失败。DbType="SqlServer";ConfigId="".
+English Message : Connection open error . 无法打开登录所请求的数据库 "LeanHbt_Dev"。登录失败。
+用户 'sa' 登录失败。DbType="SqlServer";ConfigId="" 
+   at SqlSugar.Check.Exception(Boolean isException, String message, String[] args)
+   at SqlSugar.AdoProvider.CheckConnection()
+   at SqlSugar.SqlServerProvider.GetCommand(String sql, SugarParameter[] parameters)
+   at SqlSugar.AdoProvider.GetDataReader(String sql, SugarParameter[] parameters)
+   at SqlSugar.AdoProvider.SqlQuery[T,T2,T3,T4,T5,T6,T7](String sql, Object parameters)
+   at SqlSugar.AdoProvider.SqlQuery[T](String sql, SugarParameter[] parameters)
+   at SqlSugar.AdoProvider.SqlQuery[T](String sql, Object parameters)
+   at SqlSugar.DbMaintenanceProvider.<>c__DisplayClass77_0`1.<GetListOrCache>b__0()
+   at SqlSugar.ReflectionInoCore`1.GetOrCreate(String cacheKey, Func`1 create)
+   at SqlSugar.ReflectionInoCacheService.GetOrCreate[V](String cacheKey, Func`1 create, Int32 cacheDurationInSeconds)
+   at SqlSugar.DbMaintenanceProvider.GetListOrCache[T](String cacheKey, String sql)
+   at SqlSugar.DbMaintenanceProvider.GetTableInfoList(Boolean isCache)
+   at SqlSugar.DbMaintenanceProvider.IsAnyTable(String tableName, Boolean isCache)
+   at SqlSugar.SqlServerDbMaintenance.IsAnyTable(String tableName, Boolean isCache)
+   at Lean.Hbt.Infrastructure.Data.Contexts.HbtDbContext..ctor(IOptions`1 options, IHbtLogger logger) in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Data\Contexts\HbtDbContext.cs:line 124
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeDirectByRefWithFewArgs(Object obj, Span`1 copyOfArgs, BindingFlags invokeAttr)
+   at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+   at System.Reflection.RuntimeConstructorInfo.Invoke(BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitConstructor(ConstructorCallSite constructorCallSite, RuntimeResolverContext context)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSiteMain(ServiceCallSite callSite, TArgument argument)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitCache(ServiceCallSite callSite, RuntimeResolverContext context, ServiceProviderEngineScope serviceProviderEngine, RuntimeResolverLock lockType)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitScopeCache(ServiceCallSite callSite, RuntimeResolverContext context)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSite(ServiceCallSite callSite, TArgument argument)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.Resolve(ServiceCallSite callSite, ServiceProviderEngineScope scope)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.DynamicServiceProviderEngine.<>c__DisplayClass2_0.<RealizeService>b__0(ServiceProviderEngineScope scope)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(ServiceIdentifier serviceIdentifier, ServiceProviderEngineScope serviceProviderEngineScope)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.ServiceProviderEngineScope.GetService(Type serviceType)
+   at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService(IServiceProvider provider, Type serviceType)
+   at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService[T](IServiceProvider provider)
+   at Program.<Main>$(String[] args) in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\Program.cs:line 57
+2025-01-22 14:26:52.6030|Fatal|Program|应用程序启动失败SqlSugar.SqlSugarException: 中文提示 :  连接数据库过程中发生错误，检查服务器是否正常连接字符串是否正确，错误信息：无法打开登录所请求的数据库 "LeanHbt_Dev"。登录失败。
+用户 'sa' 登录失败。DbType="SqlServer";ConfigId="".
+English Message : Connection open error . 无法打开登录所请求的数据库 "LeanHbt_Dev"。登录失败。
+用户 'sa' 登录失败。DbType="SqlServer";ConfigId="" 
+   at SqlSugar.Check.Exception(Boolean isException, String message, String[] args)
+   at SqlSugar.AdoProvider.CheckConnection()
+   at SqlSugar.SqlServerProvider.GetCommand(String sql, SugarParameter[] parameters)
+   at SqlSugar.AdoProvider.GetDataReader(String sql, SugarParameter[] parameters)
+   at SqlSugar.AdoProvider.SqlQuery[T,T2,T3,T4,T5,T6,T7](String sql, Object parameters)
+   at SqlSugar.AdoProvider.SqlQuery[T](String sql, SugarParameter[] parameters)
+   at SqlSugar.AdoProvider.SqlQuery[T](String sql, Object parameters)
+   at SqlSugar.DbMaintenanceProvider.<>c__DisplayClass77_0`1.<GetListOrCache>b__0()
+   at SqlSugar.ReflectionInoCore`1.GetOrCreate(String cacheKey, Func`1 create)
+   at SqlSugar.ReflectionInoCacheService.GetOrCreate[V](String cacheKey, Func`1 create, Int32 cacheDurationInSeconds)
+   at SqlSugar.DbMaintenanceProvider.GetListOrCache[T](String cacheKey, String sql)
+   at SqlSugar.DbMaintenanceProvider.GetTableInfoList(Boolean isCache)
+   at SqlSugar.DbMaintenanceProvider.IsAnyTable(String tableName, Boolean isCache)
+   at SqlSugar.SqlServerDbMaintenance.IsAnyTable(String tableName, Boolean isCache)
+   at Lean.Hbt.Infrastructure.Data.Contexts.HbtDbContext..ctor(IOptions`1 options, IHbtLogger logger) in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Data\Contexts\HbtDbContext.cs:line 124
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeDirectByRefWithFewArgs(Object obj, Span`1 copyOfArgs, BindingFlags invokeAttr)
+   at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+   at System.Reflection.RuntimeConstructorInfo.Invoke(BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitConstructor(ConstructorCallSite constructorCallSite, RuntimeResolverContext context)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSiteMain(ServiceCallSite callSite, TArgument argument)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitCache(ServiceCallSite callSite, RuntimeResolverContext context, ServiceProviderEngineScope serviceProviderEngine, RuntimeResolverLock lockType)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitScopeCache(ServiceCallSite callSite, RuntimeResolverContext context)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSite(ServiceCallSite callSite, TArgument argument)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.Resolve(ServiceCallSite callSite, ServiceProviderEngineScope scope)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.DynamicServiceProviderEngine.<>c__DisplayClass2_0.<RealizeService>b__0(ServiceProviderEngineScope scope)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(ServiceIdentifier serviceIdentifier, ServiceProviderEngineScope serviceProviderEngineScope)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.ServiceProviderEngineScope.GetService(Type serviceType)
+   at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService(IServiceProvider provider, Type serviceType)
+   at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService[T](IServiceProvider provider)
+   at Program.<Main>$(String[] args) in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\Program.cs:line 57

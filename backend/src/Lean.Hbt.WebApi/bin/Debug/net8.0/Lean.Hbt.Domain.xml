@@ -690,6 +690,221 @@
             子部门导航属性
             </summary>
         </member>
+        <member name="T:Lean.Hbt.Domain.Entities.Identity.HbtDeviceExtend">
+            <summary>
+            设备扩展信息实体
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtDeviceExtend.UserId">
+            <summary>
+            用户ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtDeviceExtend.TenantId">
+            <summary>
+            租户ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtDeviceExtend.DeviceType">
+            <summary>
+            设备类型
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtDeviceExtend.DeviceId">
+            <summary>
+            设备标识
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtDeviceExtend.DeviceName">
+            <summary>
+            设备名称
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtDeviceExtend.DeviceModel">
+            <summary>
+            设备型号
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtDeviceExtend.OsType">
+            <summary>
+            操作系统类型
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtDeviceExtend.OsVersion">
+            <summary>
+            系统版本
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtDeviceExtend.BrowserType">
+            <summary>
+            浏览器类型
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtDeviceExtend.BrowserVersion">
+            <summary>
+            浏览器版本
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtDeviceExtend.Resolution">
+            <summary>
+            分辨率
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtDeviceExtend.DeviceStatus">
+            <summary>
+            设备状态
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtDeviceExtend.LastOnlineTime">
+            <summary>
+            最后在线时间
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtDeviceExtend.LastOfflineTime">
+            <summary>
+            最后离线时间
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtDeviceExtend.TodayOnlinePeriods">
+            <summary>
+            今日在线时段(JSON格式,例如:["09:00-12:00","14:00-18:00"])
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Domain.Entities.Identity.HbtLoginExtend">
+            <summary>
+            登录扩展信息实体
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtLoginExtend.UserId">
+            <summary>
+            用户ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtLoginExtend.TenantId">
+            <summary>
+            租户ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtLoginExtend.RoleId">
+            <summary>
+            角色ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtLoginExtend.DeptId">
+            <summary>
+            部门ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtLoginExtend.PostId">
+            <summary>
+            岗位ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtLoginExtend.LoginType">
+            <summary>
+            登录类型
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtLoginExtend.LoginSource">
+            <summary>
+            登录来源
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtLoginExtend.LoginStatus">
+            <summary>
+            登录状态
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtLoginExtend.FirstLoginTime">
+            <summary>
+            首次登录时间
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtLoginExtend.FirstLoginIp">
+            <summary>
+            首次登录IP
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtLoginExtend.FirstLoginLocation">
+            <summary>
+            首次登录地点
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtLoginExtend.FirstLoginDeviceId">
+            <summary>
+            首次登录设备ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtLoginExtend.FirstLoginDeviceType">
+            <summary>
+            首次登录设备类型
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtLoginExtend.FirstLoginBrowser">
+            <summary>
+            首次登录浏览器类型
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtLoginExtend.FirstLoginOs">
+            <summary>
+            首次登录操作系统类型
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtLoginExtend.LastLoginTime">
+            <summary>
+            最后登录时间
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtLoginExtend.LastLoginIp">
+            <summary>
+            最后登录IP
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtLoginExtend.LastLoginLocation">
+            <summary>
+            最后登录地点
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtLoginExtend.LastLoginDeviceId">
+            <summary>
+            最后登录设备ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtLoginExtend.LastLoginDeviceType">
+            <summary>
+            最后登录设备类型
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtLoginExtend.LastLoginBrowser">
+            <summary>
+            最后登录浏览器类型
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtLoginExtend.LastLoginOs">
+            <summary>
+            最后登录操作系统类型
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtLoginExtend.LastOfflineTime">
+            <summary>
+            最后离线时间
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtLoginExtend.TodayOnlinePeriods">
+            <summary>
+            今日在线时段(JSON格式,例如:["09:00-12:00","14:00-18:00"])
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtLoginExtend.LoginCount">
+            <summary>
+            总登录次数
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtLoginExtend.ContinuousLoginDays">
+            <summary>
+            连续登录天数
+            </summary>
+        </member>
         <member name="T:Lean.Hbt.Domain.Entities.Identity.HbtMenu">
             <summary>
             菜单实体

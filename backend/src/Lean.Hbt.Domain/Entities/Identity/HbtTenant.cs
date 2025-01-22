@@ -18,7 +18,7 @@ namespace Lean.Hbt.Domain.Entities.Identity;
 /// <summary>
 /// 租户实体
 /// </summary>
-[SugarTable("hbt_tenant", TableDescription = "租户表")]
+[SugarTable("hbt_id_tenant", TableDescription = "租户表")]
 public class HbtTenant : HbtBaseEntity
 {
     /// <summary>

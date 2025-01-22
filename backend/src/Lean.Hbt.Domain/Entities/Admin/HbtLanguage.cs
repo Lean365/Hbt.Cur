@@ -16,7 +16,7 @@ namespace Lean.Hbt.Domain.Entities.Admin
     /// <summary>
     /// 语言实体
     /// </summary>
-    [SugarTable("hbt_language", "语言表")]
+    [SugarTable("hbt_sys_language", "语言表")]
     public class HbtLanguage : HbtBaseEntity
     {
         /// <summary>
