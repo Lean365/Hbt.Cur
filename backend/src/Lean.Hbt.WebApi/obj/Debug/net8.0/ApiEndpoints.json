@@ -118,6 +118,104 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "Lean.Hbt.WebApi.Controllers.Security.HbtCaptchaController",
+    "Method": "CollectBehaviorDataAsync",
+    "RelativePath": "api/HbtCaptcha/behavior/collect",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "Lean.Hbt.Application.Dtos.Security.BehaviorDataDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.String",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "Lean.Hbt.WebApi.Controllers.Security.HbtCaptchaController",
+    "Method": "ValidateBehaviorAsync",
+    "RelativePath": "api/HbtCaptcha/behavior/validate",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "token",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "Lean.Hbt.Application.Dtos.Security.CaptchaResultDto",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "Lean.Hbt.WebApi.Controllers.Security.HbtCaptchaController",
+    "Method": "GenerateSliderAsync",
+    "RelativePath": "api/HbtCaptcha/slider",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "Lean.Hbt.Application.Dtos.Security.SliderCaptchaDto",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "Lean.Hbt.WebApi.Controllers.Security.HbtCaptchaController",
+    "Method": "ValidateSliderAsync",
+    "RelativePath": "api/HbtCaptcha/slider/validate",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "Lean.Hbt.Application.Dtos.Security.SliderValidateDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "Lean.Hbt.Application.Dtos.Security.CaptchaResultDto",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
     "ContainingType": "Lean.Hbt.WebApi.Controllers.Audit.HbtDbDiffLogController",
     "Method": "GetPagedListAsync",
     "RelativePath": "api/HbtDbDiffLog",
@@ -2428,13 +2526,13 @@
         "IsRequired": false
       },
       {
-        "Name": "DeptId",
-        "Type": "System.Nullable\u00601[[System.Int64, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "Name": "UserType",
+        "Type": "System.String",
         "IsRequired": false
       },
       {
-        "Name": "UserType",
-        "Type": "System.String",
+        "Name": "DeptId",
+        "Type": "System.Nullable\u00601[[System.Int64, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
         "IsRequired": false
       },
       {
@@ -2591,13 +2689,13 @@
         "IsRequired": false
       },
       {
-        "Name": "DeptId",
-        "Type": "System.Nullable\u00601[[System.Int64, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "Name": "UserType",
+        "Type": "System.String",
         "IsRequired": false
       },
       {
-        "Name": "UserType",
-        "Type": "System.String",
+        "Name": "DeptId",
+        "Type": "System.Nullable\u00601[[System.Int64, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
         "IsRequired": false
       },
       {

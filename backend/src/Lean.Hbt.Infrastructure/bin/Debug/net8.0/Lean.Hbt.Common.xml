@@ -802,6 +802,91 @@
             多级缓存
             </summary>
         </member>
+        <member name="T:Lean.Hbt.Common.Options.HbtCaptchaOptions">
+            <summary>
+            验证码配置选项
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtCaptchaOptions.LoginFailThreshold">
+            <summary>
+            登录失败阈值
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtCaptchaOptions.LoginFailExpireMinutes">
+            <summary>
+            登录失败记录过期时间(分钟)
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtCaptchaOptions.Type">
+            <summary>
+            验证码类型
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtCaptchaOptions.Slider">
+            <summary>
+            滑块验证码选项
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtCaptchaOptions.Behavior">
+            <summary>
+            行为验证选项
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Common.Options.SliderOptions">
+            <summary>
+            滑块验证码选项
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.SliderOptions.Width">
+            <summary>
+            背景图片宽度
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.SliderOptions.Height">
+            <summary>
+            背景图片高度
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.SliderOptions.SliderWidth">
+            <summary>
+            滑块宽度
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.SliderOptions.Tolerance">
+            <summary>
+            验证容差(像素)
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.SliderOptions.ExpirationMinutes">
+            <summary>
+            缓存过期时间(分钟)
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Common.Options.BehaviorOptions">
+            <summary>
+            行为验证选项
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.BehaviorOptions.ScoreThreshold">
+            <summary>
+            验证通过的最低分数
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.BehaviorOptions.DataExpirationMinutes">
+            <summary>
+            行为数据缓存时间(分钟)
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.BehaviorOptions.EnableMachineLearning">
+            <summary>
+            是否启用机器学习模型
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.BehaviorOptions.ModelPath">
+            <summary>
+            机器学习模型路径
+            </summary>
+        </member>
         <member name="T:Lean.Hbt.Common.Options.HbtDbOptions">
             <summary>
             数据库配置选项

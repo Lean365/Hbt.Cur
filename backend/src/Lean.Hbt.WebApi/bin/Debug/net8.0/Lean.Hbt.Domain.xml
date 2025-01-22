@@ -1842,6 +1842,80 @@
             租户ID
             </summary>
         </member>
+        <member name="T:Lean.Hbt.Domain.IServices.Security.IHbtCaptchaService">
+            <summary>
+            验证码服务接口
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Domain.IServices.Security.IHbtCaptchaService.GenerateSliderAsync">
+            <summary>
+            生成滑块验证码
+            </summary>
+            <returns>背景图、滑块图、验证token</returns>
+        </member>
+        <member name="M:Lean.Hbt.Domain.IServices.Security.IHbtCaptchaService.ValidateSliderAsync(System.String,System.Int32)">
+            <summary>
+            验证滑块
+            </summary>
+            <param name="token">验证token</param>
+            <param name="xOffset">x轴偏移量</param>
+            <returns>验证结果</returns>
+        </member>
+        <member name="M:Lean.Hbt.Domain.IServices.Security.IHbtCaptchaService.CollectBehaviorDataAsync(System.String,Lean.Hbt.Domain.IServices.Security.BehaviorData)">
+            <summary>
+            收集行为数据
+            </summary>
+            <param name="userId">用户ID</param>
+            <param name="behaviorData">行为数据</param>
+            <returns>行为token</returns>
+        </member>
+        <member name="M:Lean.Hbt.Domain.IServices.Security.IHbtCaptchaService.ValidateBehaviorAsync(System.String)">
+            <summary>
+            验证行为特征
+            </summary>
+            <param name="token">行为token</param>
+            <returns>验证结果</returns>
+        </member>
+        <member name="T:Lean.Hbt.Domain.IServices.Security.BehaviorData">
+            <summary>
+            行为数据
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.IServices.Security.BehaviorData.MouseTrack">
+            <summary>
+            鼠标轨迹点集合
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.IServices.Security.BehaviorData.KeyIntervals">
+            <summary>
+            按键间隔集合(毫秒)
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.IServices.Security.BehaviorData.Duration">
+            <summary>
+            操作时长(毫秒)
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Domain.IServices.Security.Point">
+            <summary>
+            坐标点
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.IServices.Security.Point.X">
+            <summary>
+            X坐标
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.IServices.Security.Point.Y">
+            <summary>
+            Y坐标
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.IServices.Security.Point.Timestamp">
+            <summary>
+            时间戳
+            </summary>
+        </member>
         <member name="T:Lean.Hbt.Domain.Models.Identity.HbtSessionInfo">
             <summary>
             会话信息模型

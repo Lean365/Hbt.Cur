@@ -1118,6 +1118,36 @@
             <param name="minutes">超时时间(分钟)</param>
             <returns>清理数量</returns>
         </member>
+        <member name="T:Lean.Hbt.WebApi.Controllers.Security.HbtCaptchaController">
+            <summary>
+            验证码控制器
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Security.HbtCaptchaController.#ctor(Lean.Hbt.Domain.IServices.Security.IHbtCaptchaService)">
+            <summary>
+            构造函数
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Security.HbtCaptchaController.GenerateSliderAsync">
+            <summary>
+            生成滑块验证码
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Security.HbtCaptchaController.ValidateSliderAsync(Lean.Hbt.Application.Dtos.Security.SliderValidateDto)">
+            <summary>
+            验证滑块
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Security.HbtCaptchaController.CollectBehaviorDataAsync(Lean.Hbt.Application.Dtos.Security.BehaviorDataDto)">
+            <summary>
+            收集行为数据
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Security.HbtCaptchaController.ValidateBehaviorAsync(System.String)">
+            <summary>
+            验证行为特征
+            </summary>
+        </member>
         <member name="T:Lean.Hbt.WebApi.Extensions.HbtTenantExtensions">
             <summary>
             租户中间件扩展方法

@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "rGeKwKE+rMY=",
+  "dgSpecHash": "xvvU6Cxw8C4=",
   "success": true,
   "projectFilePath": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Infrastructure\\Lean.Hbt.Infrastructure.csproj",
   "expectedPackageFiles": [
@@ -51,6 +51,9 @@
     "C:\\Users\\Davis.Cheng\\.nuget\\packages\\oracle.manageddataaccess.core\\3.21.100\\oracle.manageddataaccess.core.3.21.100.nupkg.sha512",
     "C:\\Users\\Davis.Cheng\\.nuget\\packages\\oscar.data.sqlclient\\4.0.4\\oscar.data.sqlclient.4.0.4.nupkg.sha512",
     "C:\\Users\\Davis.Cheng\\.nuget\\packages\\pipelines.sockets.unofficial\\2.2.8\\pipelines.sockets.unofficial.2.2.8.nupkg.sha512",
+    "C:\\Users\\Davis.Cheng\\.nuget\\packages\\sixlabors.fonts\\2.0.1\\sixlabors.fonts.2.0.1.nupkg.sha512",
+    "C:\\Users\\Davis.Cheng\\.nuget\\packages\\sixlabors.imagesharp\\3.1.6\\sixlabors.imagesharp.3.1.6.nupkg.sha512",
+    "C:\\Users\\Davis.Cheng\\.nuget\\packages\\sixlabors.imagesharp.drawing\\2.1.1\\sixlabors.imagesharp.drawing.2.1.1.nupkg.sha512",
     "C:\\Users\\Davis.Cheng\\.nuget\\packages\\sqlitepclraw.bundle_e_sqlite3\\2.1.10\\sqlitepclraw.bundle_e_sqlite3.2.1.10.nupkg.sha512",
     "C:\\Users\\Davis.Cheng\\.nuget\\packages\\sqlitepclraw.core\\2.1.10\\sqlitepclraw.core.2.1.10.nupkg.sha512",
     "C:\\Users\\Davis.Cheng\\.nuget\\packages\\sqlitepclraw.lib.e_sqlite3\\2.1.10\\sqlitepclraw.lib.e_sqlite3.2.1.10.nupkg.sha512",

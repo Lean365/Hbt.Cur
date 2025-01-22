@@ -1,0 +1,145 @@
+//===================================================================
+// 项目名 : Lean.Hbt
+// 文件名 : HbtLoginDto.cs
+// 创建者 : Lean365
+// 创建时间: 2024-01-22 14:30
+// 版本号 : V1.0.0
+// 描述    : 登录数据传输对象
+//===================================================================
+
+using System.ComponentModel.DataAnnotations;
+using System.Collections.Generic;
+
+namespace Lean.Hbt.Application.Dtos.Identity;
+
+/// <summary>
+/// 登录请求传输对象
+/// </summary>
+/// <remarks>
+/// 创建者: Lean365
+/// 创建时间: 2024-01-22
+/// </remarks>
+public class HbtLoginDto
+{
+    /// <summary>
+    /// 租户ID
+    /// </summary>
+    [Required(ErrorMessage = "租户ID不能为空")]
+    public long TenantId { get; set; }
+
+    /// <summary>
+    /// 用户名
+    /// </summary>
+    [Required(ErrorMessage = "用户名不能为空")]
+    [MaxLength(50, ErrorMessage = "用户名长度不能超过50个字符")]
+    public string UserName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 密码
+    /// </summary>
+    [Required(ErrorMessage = "密码不能为空")]
+    [MaxLength(100, ErrorMessage = "密码长度不能超过100个字符")] 
+    public string Password { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 验证码令牌
+    /// </summary>
+    public string? CaptchaToken { get; set; }
+}
+
+/// <summary>
+/// 登录结果传输对象
+/// </summary>
+/// <remarks>
+/// 创建者: Lean365
+/// 创建时间: 2024-01-22
+/// </remarks>
+public class HbtLoginResultDto
+{
+    /// <summary>
+    /// 构造函数
+    /// </summary>
+    public HbtLoginResultDto()
+    {
+        AccessToken = string.Empty;
+        RefreshToken = string.Empty;
+        UserInfo = new HbtUserInfoDto();
+    }
+
+    /// <summary>
+    /// 访问令牌
+    /// </summary>
+    public string AccessToken { get; set; }
+
+    /// <summary>
+    /// 刷新令牌
+    /// </summary>
+    public string RefreshToken { get; set; }
+
+    /// <summary>
+    /// 过期时间(秒)
+    /// </summary>
+    public int ExpiresIn { get; set; }
+
+    /// <summary>
+    /// 用户信息
+    /// </summary>
+    public HbtUserInfoDto UserInfo { get; set; }
+}
+
+/// <summary>
+/// 用户信息DTO
+/// </summary>
+/// <remarks>
+/// 创建者: Lean365
+/// 创建时间: 2024-01-22
+/// </remarks>
+public class HbtUserInfoDto
+{
+    /// <summary>
+    /// 构造函数
+    /// </summary>
+    public HbtUserInfoDto()
+    {
+        UserName = string.Empty;
+        NickName = string.Empty;
+        TenantName = string.Empty;
+        Roles = new List<string>();
+        Permissions = new List<string>();
+    }
+
+    /// <summary>
+    /// 用户ID
+    /// </summary>
+    public long UserId { get; set; }
+
+    /// <summary>
+    /// 用户名
+    /// </summary>
+    public string UserName { get; set; }
+
+    /// <summary>
+    /// 昵称
+    /// </summary>
+    public string NickName { get; set; }
+
+    /// <summary>
+    /// 租户ID
+    /// </summary>
+    public long TenantId { get; set; }
+
+    /// <summary>
+    /// 租户名称
+    /// </summary>
+    public string TenantName { get; set; }
+
+    /// <summary>
+    /// 角色列表
+    /// </summary>
+    public List<string> Roles { get; set; }
+
+    /// <summary>
+    /// 权限列表
+    /// </summary>
+    public List<string> Permissions { get; set; }
+} 

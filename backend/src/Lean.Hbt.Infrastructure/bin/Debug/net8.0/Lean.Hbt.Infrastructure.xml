@@ -24,46 +24,30 @@
             </summary>
             <param name="configuration">配置接口</param>
         </member>
-        <member name="M:Lean.Hbt.Infrastructure.Authentication.HbtJwtHandler.GenerateToken(System.String,System.String,System.Collections.Generic.IEnumerable{System.String})">
+        <member name="M:Lean.Hbt.Infrastructure.Authentication.HbtJwtHandler.CreateAccessToken(System.Int64,System.String,System.Collections.Generic.IEnumerable{System.String})">
             <summary>
-            生成JWT令牌
+            创建访问令牌
             </summary>
-            <param name="userId">用户ID</param>
-            <param name="userName">用户名</param>
-            <param name="roles">用户角色列表</param>
-            <returns>JWT令牌字符串</returns>
         </member>
-        <member name="M:Lean.Hbt.Infrastructure.Authentication.HbtJwtHandler.ValidateToken(System.String)">
+        <member name="M:Lean.Hbt.Infrastructure.Authentication.HbtJwtHandler.CreateRefreshToken(System.Int64)">
             <summary>
-            验证JWT令牌
+            创建刷新令牌
             </summary>
-            <param name="token">JWT令牌字符串</param>
-            <returns>验证通过返回声明主体，否则返回null</returns>
         </member>
-        <member name="T:Lean.Hbt.Infrastructure.Authentication.IHbtJwtHandler">
+        <member name="M:Lean.Hbt.Infrastructure.Authentication.HbtJwtHandler.ValidateAccessToken(System.String)">
             <summary>
-            JWT令牌处理器接口
+            验证访问令牌
             </summary>
-            <remarks>
-            创建者: Lean365
-            创建时间: 2024-01-16
-            </remarks>
         </member>
-        <member name="M:Lean.Hbt.Infrastructure.Authentication.IHbtJwtHandler.GenerateToken(System.String,System.String,System.Collections.Generic.IEnumerable{System.String})">
+        <member name="M:Lean.Hbt.Infrastructure.Authentication.HbtJwtHandler.ValidateRefreshToken(System.String)">
             <summary>
-            生成JWT令牌
+            验证刷新令牌
             </summary>
-            <param name="userId">用户ID</param>
-            <param name="userName">用户名</param>
-            <param name="roles">用户角色列表</param>
-            <returns>JWT令牌字符串</returns>
         </member>
-        <member name="M:Lean.Hbt.Infrastructure.Authentication.IHbtJwtHandler.ValidateToken(System.String)">
+        <member name="M:Lean.Hbt.Infrastructure.Authentication.HbtJwtHandler.GetUserIdFromToken(System.String)">
             <summary>
-            验证JWT令牌
+            从令牌中获取用户ID
             </summary>
-            <param name="token">JWT令牌字符串</param>
-            <returns>验证通过返回声明主体，否则返回null</returns>
         </member>
         <member name="T:Lean.Hbt.Infrastructure.Caching.HbtCacheConfigManager">
             <summary>
@@ -300,12 +284,13 @@
             数据库种子数据初始化
             </summary>
         </member>
-        <member name="M:Lean.Hbt.Infrastructure.Data.Seeds.HbtDbSeed.#ctor(Lean.Hbt.Infrastructure.Data.Contexts.HbtDbContext,Lean.Hbt.Domain.IServices.IHbtLogger)">
+        <member name="M:Lean.Hbt.Infrastructure.Data.Seeds.HbtDbSeed.#ctor(Lean.Hbt.Infrastructure.Data.Contexts.HbtDbContext,Lean.Hbt.Domain.IServices.IHbtLogger,Lean.Hbt.Domain.Repositories.IHbtRepository{Lean.Hbt.Domain.Entities.Admin.HbtSysConfig})">
             <summary>
             构造函数
             </summary>
             <param name="context">数据库上下文</param>
             <param name="logger">日志记录器</param>
+            <param name="repository">系统配置仓储</param>
         </member>
         <member name="M:Lean.Hbt.Infrastructure.Data.Seeds.HbtDbSeed.InitializeAsync">
             <summary>
@@ -340,6 +325,11 @@
         <member name="M:Lean.Hbt.Infrastructure.Data.Seeds.HbtDbSeed.InitializeSysConfigAsync">
             <summary>
             初始化系统配置
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Data.Seeds.HbtDbSeed.InitializeCaptchaConfigAsync">
+            <summary>
+            初始化验证码配置
             </summary>
         </member>
         <member name="T:Lean.Hbt.Infrastructure.Extensions.HbtServiceCollectionExtensions">
@@ -652,6 +642,96 @@
             </summary>
             <param name="message"></param>
             <param name="ex"></param>
+        </member>
+        <member name="T:Lean.Hbt.Infrastructure.Security.HbtCaptchaMiddleware">
+            <summary>
+            验证码中间件
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Security.HbtCaptchaMiddleware.#ctor(Microsoft.AspNetCore.Http.RequestDelegate,Microsoft.Extensions.Caching.Distributed.IDistributedCache,Lean.Hbt.Domain.IServices.Security.IHbtCaptchaService,Microsoft.Extensions.Options.IOptions{Lean.Hbt.Common.Options.HbtCaptchaOptions})">
+            <summary>
+            构造函数
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Security.HbtCaptchaMiddleware.InvokeAsync(Microsoft.AspNetCore.Http.HttpContext)">
+            <summary>
+            处理请求
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Security.HbtCaptchaMiddleware.ShouldRequireCaptchaAsync(Microsoft.AspNetCore.Http.HttpContext)">
+            <summary>
+            检查是否需要验证码
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Security.HbtCaptchaMiddleware.ValidateCaptchaAsync(Microsoft.AspNetCore.Http.HttpContext)">
+            <summary>
+            验证验证码
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Security.HbtCaptchaMiddleware.IsLoginRequest(Microsoft.AspNetCore.Http.HttpContext)">
+            <summary>
+            是否是登录请求
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Security.HbtCaptchaMiddleware.IsLoginSuccess(Microsoft.AspNetCore.Http.HttpContext)">
+            <summary>
+            是否登录成功
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Security.HbtCaptchaMiddleware.GetLoginFailCountAsync(System.String)">
+            <summary>
+            获取登录失败次数
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Security.HbtCaptchaMiddleware.IncrementLoginFailCountAsync(Microsoft.AspNetCore.Http.HttpContext)">
+            <summary>
+            增加登录失败次数
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Infrastructure.Security.HbtCaptchaService">
+            <summary>
+            验证码服务实现
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Security.HbtCaptchaService.GenerateSliderAsync">
+            <summary>
+            生成滑块验证码
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Security.HbtCaptchaService.ValidateSliderAsync(System.String,System.Int32)">
+            <summary>
+            验证滑块
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Security.HbtCaptchaService.CollectBehaviorDataAsync(System.String,Lean.Hbt.Domain.IServices.Security.BehaviorData)">
+            <summary>
+            收集行为数据
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Security.HbtCaptchaService.ValidateBehaviorAsync(System.String)">
+            <summary>
+            验证行为特征
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Security.HbtCaptchaService.GenerateToken">
+            <summary>
+            生成随机token
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Security.HbtCaptchaService.ImageToBase64``1(SixLabors.ImageSharp.Image{``0})">
+            <summary>
+            图片转Base64
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Security.HbtCaptchaService.CalculateBehaviorScore(Lean.Hbt.Domain.IServices.Security.BehaviorData)">
+            <summary>
+            计算行为分数
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Security.HbtCaptchaService.CalculateTrackSmoothness(System.Collections.Generic.List{Lean.Hbt.Domain.IServices.Security.Point})">
+            <summary>
+            计算轨迹平滑度
+            </summary>
         </member>
         <member name="T:Lean.Hbt.Infrastructure.Security.HbtLoginPolicy">
             <summary>

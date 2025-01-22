@@ -2229,6 +2229,118 @@
             状态（正常/停用）
             </summary>
         </member>
+        <member name="T:Lean.Hbt.Application.Dtos.Identity.HbtLoginDto">
+            <summary>
+            登录请求传输对象
+            </summary>
+            <remarks>
+            创建者: Lean365
+            创建时间: 2024-01-22
+            </remarks>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtLoginDto.TenantId">
+            <summary>
+            租户ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtLoginDto.UserName">
+            <summary>
+            用户名
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtLoginDto.Password">
+            <summary>
+            密码
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtLoginDto.CaptchaToken">
+            <summary>
+            验证码令牌
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Application.Dtos.Identity.HbtLoginResultDto">
+            <summary>
+            登录结果传输对象
+            </summary>
+            <remarks>
+            创建者: Lean365
+            创建时间: 2024-01-22
+            </remarks>
+        </member>
+        <member name="M:Lean.Hbt.Application.Dtos.Identity.HbtLoginResultDto.#ctor">
+            <summary>
+            构造函数
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtLoginResultDto.AccessToken">
+            <summary>
+            访问令牌
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtLoginResultDto.RefreshToken">
+            <summary>
+            刷新令牌
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtLoginResultDto.ExpiresIn">
+            <summary>
+            过期时间(秒)
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtLoginResultDto.UserInfo">
+            <summary>
+            用户信息
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Application.Dtos.Identity.HbtUserInfoDto">
+            <summary>
+            用户信息DTO
+            </summary>
+            <remarks>
+            创建者: Lean365
+            创建时间: 2024-01-22
+            </remarks>
+        </member>
+        <member name="M:Lean.Hbt.Application.Dtos.Identity.HbtUserInfoDto.#ctor">
+            <summary>
+            构造函数
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtUserInfoDto.UserId">
+            <summary>
+            用户ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtUserInfoDto.UserName">
+            <summary>
+            用户名
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtUserInfoDto.NickName">
+            <summary>
+            昵称
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtUserInfoDto.TenantId">
+            <summary>
+            租户ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtUserInfoDto.TenantName">
+            <summary>
+            租户名称
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtUserInfoDto.Roles">
+            <summary>
+            角色列表
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtUserInfoDto.Permissions">
+            <summary>
+            权限列表
+            </summary>
+        </member>
         <member name="T:Lean.Hbt.Application.Dtos.Identity.HbtMenuDto">
             <summary>
             菜单基础DTO
@@ -3641,16 +3753,6 @@
             头像
             </summary>
         </member>
-        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtUserDto.DeptId">
-            <summary>
-            部门ID
-            </summary>
-        </member>
-        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtUserDto.DeptName">
-            <summary>
-            部门名称
-            </summary>
-        </member>
         <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtUserDto.Status">
             <summary>
             状态(0正常 1停用)
@@ -3666,9 +3768,24 @@
             租户ID
             </summary>
         </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtUserDto.TenantName">
+            <summary>
+            租户名称
+            </summary>
+        </member>
         <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtUserDto.CreateTime">
             <summary>
             创建时间
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtUserDto.Roles">
+            <summary>
+            角色列表
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtUserDto.Permissions">
+            <summary>
+            权限列表
             </summary>
         </member>
         <member name="T:Lean.Hbt.Application.Dtos.Identity.HbtUserQueryDto">
@@ -3700,14 +3817,14 @@
             状态(0正常 1停用)
             </summary>
         </member>
-        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtUserQueryDto.DeptId">
-            <summary>
-            部门ID
-            </summary>
-        </member>
         <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtUserQueryDto.UserType">
             <summary>
             用户类型
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Identity.HbtUserQueryDto.DeptId">
+            <summary>
+            部门ID
             </summary>
         </member>
         <member name="T:Lean.Hbt.Application.Dtos.Identity.HbtUserCreateDto">
@@ -4424,6 +4541,101 @@
         <member name="P:Lean.Hbt.Application.Dtos.RealTime.HbtOnlineUserExportDto.LastActivity">
             <summary>
             最后活动时间
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Application.Dtos.Security.SliderCaptchaDto">
+            <summary>
+            滑块验证码生成结果
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Security.SliderCaptchaDto.BackgroundImage">
+            <summary>
+            背景图片(Base64)
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Security.SliderCaptchaDto.SliderImage">
+            <summary>
+            滑块图片(Base64)
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Security.SliderCaptchaDto.Token">
+            <summary>
+            验证令牌
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Application.Dtos.Security.SliderValidateDto">
+            <summary>
+            滑块验证请求
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Security.SliderValidateDto.Token">
+            <summary>
+            验证令牌
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Security.SliderValidateDto.XOffset">
+            <summary>
+            X轴偏移量
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Application.Dtos.Security.BehaviorPointDto">
+            <summary>
+            行为数据点
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Security.BehaviorPointDto.X">
+            <summary>
+            X坐标
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Security.BehaviorPointDto.Y">
+            <summary>
+            Y坐标
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Security.BehaviorPointDto.Timestamp">
+            <summary>
+            时间戳
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Application.Dtos.Security.BehaviorDataDto">
+            <summary>
+            行为数据
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Security.BehaviorDataDto.UserId">
+            <summary>
+            用户ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Security.BehaviorDataDto.MouseTrack">
+            <summary>
+            鼠标轨迹
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Security.BehaviorDataDto.KeyIntervals">
+            <summary>
+            按键间隔(毫秒)
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Security.BehaviorDataDto.Duration">
+            <summary>
+            操作时长(毫秒)
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Application.Dtos.Security.CaptchaResultDto">
+            <summary>
+            验证结果
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Security.CaptchaResultDto.Success">
+            <summary>
+            是否通过验证
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Security.CaptchaResultDto.Message">
+            <summary>
+            错误消息
             </summary>
         </member>
         <member name="T:Lean.Hbt.Application.Services.Admin.HbtDictDataService">
@@ -5426,6 +5638,35 @@
             检查是否存在循环引用
             </summary>
         </member>
+        <member name="T:Lean.Hbt.Application.Services.Identity.HbtLoginService">
+            <summary>
+            登录服务实现
+            </summary>
+            <remarks>
+            创建者: Lean365
+            创建时间: 2024-01-22
+            </remarks>
+        </member>
+        <member name="M:Lean.Hbt.Application.Services.Identity.HbtLoginService.#ctor(Microsoft.Extensions.Logging.ILogger{Lean.Hbt.Application.Services.Identity.HbtLoginService},Lean.Hbt.Domain.Repositories.IHbtRepository{Lean.Hbt.Domain.Entities.Identity.HbtUser},Lean.Hbt.Domain.Repositories.IHbtRepository{Lean.Hbt.Domain.Entities.Identity.HbtTenant},Lean.Hbt.Domain.IServices.IHbtLoginPolicy,Lean.Hbt.Domain.IServices.Security.IHbtCaptchaService,Lean.Hbt.Domain.IServices.IHbtJwtHandler)">
+            <summary>
+            构造函数
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Application.Services.Identity.HbtLoginService.LoginAsync(Lean.Hbt.Application.Dtos.Identity.HbtLoginDto)">
+            <summary>
+            登录
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Application.Services.Identity.HbtLoginService.RefreshTokenAsync(System.String)">
+            <summary>
+            刷新令牌
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Application.Services.Identity.HbtLoginService.LogoutAsync(System.Int64)">
+            <summary>
+            登出
+            </summary>
+        </member>
         <member name="T:Lean.Hbt.Application.Services.Identity.HbtMenuService">
             <summary>
             菜单服务实现
@@ -5927,6 +6168,36 @@
             更新部门状态
             </summary>
             <param name="input">状态信息</param>
+            <returns>是否成功</returns>
+        </member>
+        <member name="T:Lean.Hbt.Application.Services.Identity.IHbtLoginService">
+            <summary>
+            登录服务接口
+            </summary>
+            <remarks>
+            创建者: Lean365
+            创建时间: 2024-01-22
+            </remarks>
+        </member>
+        <member name="M:Lean.Hbt.Application.Services.Identity.IHbtLoginService.LoginAsync(Lean.Hbt.Application.Dtos.Identity.HbtLoginDto)">
+            <summary>
+            用户登录
+            </summary>
+            <param name="loginDto">登录信息</param>
+            <returns>登录结果</returns>
+        </member>
+        <member name="M:Lean.Hbt.Application.Services.Identity.IHbtLoginService.RefreshTokenAsync(System.String)">
+            <summary>
+            刷新令牌
+            </summary>
+            <param name="refreshToken">刷新令牌</param>
+            <returns>登录结果</returns>
+        </member>
+        <member name="M:Lean.Hbt.Application.Services.Identity.IHbtLoginService.LogoutAsync(System.Int64)">
+            <summary>
+            用户登出
+            </summary>
+            <param name="userId">用户ID</param>
             <returns>是否成功</returns>
         </member>
         <member name="T:Lean.Hbt.Application.Services.Identity.IHbtMenuService">

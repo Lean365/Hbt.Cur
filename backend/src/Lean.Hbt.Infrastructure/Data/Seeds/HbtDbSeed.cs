@@ -13,6 +13,7 @@ using Lean.Hbt.Domain.Entities.Admin;
 using Lean.Hbt.Domain.Entities.Identity;
 using Lean.Hbt.Domain.IServices;
 using Lean.Hbt.Infrastructure.Data.Contexts;
+using Lean.Hbt.Domain.Repositories;
 
 namespace Lean.Hbt.Infrastructure.Data.Seeds;
 
@@ -23,16 +24,19 @@ public class HbtDbSeed
 {
     private readonly HbtDbContext _context;
     private readonly IHbtLogger _logger;
+    private readonly IHbtRepository<HbtSysConfig> _repository;
 
     /// <summary>
     /// 构造函数
     /// </summary>
     /// <param name="context">数据库上下文</param>
     /// <param name="logger">日志记录器</param>
-    public HbtDbSeed(HbtDbContext context, IHbtLogger logger)
+    /// <param name="repository">系统配置仓储</param>
+    public HbtDbSeed(HbtDbContext context, IHbtLogger logger, IHbtRepository<HbtSysConfig> repository)
     {
         _context = context;
         _logger = logger;
+        _repository = repository;
     }
 
     /// <summary>
@@ -67,6 +71,10 @@ public class HbtDbSeed
             // 6.初始化系统配置
             var configCount = await InitializeSysConfigAsync();
             _logger.Info($"[初始化] 系统配置数据 - 新增: {configCount.Item1}, 更新: {configCount.Item2}");
+
+            // 7.初始化验证码配置
+            var captchaCount = await InitializeCaptchaConfigAsync();
+            _logger.Info($"[初始化] 验证码配置数据 - 新增: {captchaCount.Item1}, 更新: {captchaCount.Item2}");
 
             _logger.Info("[初始化] 种子数据初始化完成");
         }
@@ -991,6 +999,148 @@ public class HbtDbSeed
                 await _context.Client.Insertable(config).ExecuteCommandAsync();
                 insertCount++;
                 _logger.Info($"[创建] 系统配置 '{config.ConfigName}' 创建成功");
+            }
+        }
+
+        return (insertCount, updateCount);
+    }
+
+    /// <summary>
+    /// 初始化验证码配置
+    /// </summary>
+    private async Task<(int, int)> InitializeCaptchaConfigAsync()
+    {
+        var insertCount = 0;
+        var updateCount = 0;
+
+        var captchaConfigs = new List<HbtSysConfig>
+        {
+            new()
+            {
+                ConfigName = "验证码类型",
+                ConfigKey = "Captcha:Type",
+                ConfigValue = "Slider",
+                ConfigType = 1,
+                OrderNum = 140,
+                Status = HbtStatus.Normal,
+                Remark = "验证码类型(Slider/Behavior)",
+                CreateTime = DateTime.Now,
+                CreateBy = "system"
+            },
+            new()
+            {
+                ConfigName = "滑块验证码宽度",
+                ConfigKey = "Captcha:Slider:Width",
+                ConfigValue = "300",
+                ConfigType = 2,
+                OrderNum = 141,
+                Status = HbtStatus.Normal,
+                Remark = "滑块验证码背景图片宽度(像素)",
+                CreateTime = DateTime.Now,
+                CreateBy = "system"
+            },
+            new()
+            {
+                ConfigName = "滑块验证码高度",
+                ConfigKey = "Captcha:Slider:Height",
+                ConfigValue = "150",
+                ConfigType = 2,
+                OrderNum = 142,
+                Status = HbtStatus.Normal,
+                Remark = "滑块验证码背景图片高度(像素)",
+                CreateTime = DateTime.Now,
+                CreateBy = "system"
+            },
+            new()
+            {
+                ConfigName = "滑块宽度",
+                ConfigKey = "Captcha:Slider:SliderWidth",
+                ConfigValue = "50",
+                ConfigType = 2,
+                OrderNum = 143,
+                Status = HbtStatus.Normal,
+                Remark = "滑块宽度(像素)",
+                CreateTime = DateTime.Now,
+                CreateBy = "system"
+            },
+            new()
+            {
+                ConfigName = "滑块验证容差",
+                ConfigKey = "Captcha:Slider:Tolerance",
+                ConfigValue = "5",
+                ConfigType = 2,
+                OrderNum = 144,
+                Status = HbtStatus.Normal,
+                Remark = "滑块验证允许的误差像素",
+                CreateTime = DateTime.Now,
+                CreateBy = "system"
+            },
+            new()
+            {
+                ConfigName = "滑块验证过期时间",
+                ConfigKey = "Captcha:Slider:ExpirationMinutes",
+                ConfigValue = "5",
+                ConfigType = 2,
+                OrderNum = 145,
+                Status = HbtStatus.Normal,
+                Remark = "滑块验证码的过期时间(分钟)",
+                CreateTime = DateTime.Now,
+                CreateBy = "system"
+            },
+            new()
+            {
+                ConfigName = "行为验证分数阈值",
+                ConfigKey = "Captcha:Behavior:ScoreThreshold",
+                ConfigValue = "0.8",
+                ConfigType = 2,
+                OrderNum = 146,
+                Status = HbtStatus.Normal,
+                Remark = "行为验证通过的最低分数",
+                CreateTime = DateTime.Now,
+                CreateBy = "system"
+            },
+            new()
+            {
+                ConfigName = "行为数据过期时间",
+                ConfigKey = "Captcha:Behavior:DataExpirationMinutes",
+                ConfigValue = "30",
+                ConfigType = 2,
+                OrderNum = 147,
+                Status = HbtStatus.Normal,
+                Remark = "行为数据的缓存时间(分钟)",
+                CreateTime = DateTime.Now,
+                CreateBy = "system"
+            },
+            new()
+            {
+                ConfigName = "启用机器学习",
+                ConfigKey = "Captcha:Behavior:EnableMachineLearning",
+                ConfigValue = "false",
+                ConfigType = 3,
+                OrderNum = 148,
+                Status = HbtStatus.Normal,
+                Remark = "是否启用机器学习模型进行行为分析",
+                CreateTime = DateTime.Now,
+                CreateBy = "system"
+            }
+        };
+
+        foreach (var config in captchaConfigs)
+        {
+            var existingConfig = await _repository.FirstOrDefaultAsync(x => x.ConfigKey == config.ConfigKey);
+            if (existingConfig == null)
+            {
+                await _repository.InsertAsync(config);
+                insertCount++;
+            }
+            else
+            {
+                existingConfig.ConfigValue = config.ConfigValue;
+                existingConfig.Remark = config.Remark;
+                existingConfig.UpdateTime = DateTime.Now;
+                existingConfig.UpdateBy = "system";
+                await _repository.UpdateAsync(existingConfig);
+                updateCount++;
             }
         }
 

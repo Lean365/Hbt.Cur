@@ -11,6 +11,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Common.Models;
+using System.Collections.Generic;
 
 namespace Lean.Hbt.Application.Dtos.Identity
 {
@@ -34,8 +35,10 @@ namespace Lean.Hbt.Application.Dtos.Identity
             PhoneNumber = string.Empty;
             Email = string.Empty;
             Avatar = string.Empty;
-            DeptName = string.Empty;
+            TenantName = string.Empty;
             CreateTime = DateTime.Now;
+            Roles = new List<string>();
+            Permissions = new List<string>();
         }
 
         /// <summary>
@@ -84,16 +87,6 @@ namespace Lean.Hbt.Application.Dtos.Identity
         public string Avatar { get; set; }
 
         /// <summary>
-        /// 部门ID
-        /// </summary>
-        public long DeptId { get; set; }
-
-        /// <summary>
-        /// 部门名称
-        /// </summary>
-        public string DeptName { get; set; }
-
-        /// <summary>
         /// 状态(0正常 1停用)
         /// </summary>
         public HbtStatus Status { get; set; }
@@ -109,9 +102,24 @@ namespace Lean.Hbt.Application.Dtos.Identity
         public long TenantId { get; set; }
 
         /// <summary>
+        /// 租户名称
+        /// </summary>
+        public string TenantName { get; set; }
+
+        /// <summary>
         /// 创建时间
         /// </summary>
         public DateTime CreateTime { get; set; }
+
+        /// <summary>
+        /// 角色列表
+        /// </summary>
+        public List<string> Roles { get; set; }
+
+        /// <summary>
+        /// 权限列表
+        /// </summary>
+        public List<string> Permissions { get; set; }
     }
 
     /// <summary>
@@ -150,14 +158,14 @@ namespace Lean.Hbt.Application.Dtos.Identity
         public HbtStatus? Status { get; set; }
 
         /// <summary>
-        /// 部门ID
-        /// </summary>
-        public long? DeptId { get; set; }
-
-        /// <summary>
         /// 用户类型
         /// </summary>
         public HbtUserType? UserType { get; set; }
+
+        /// <summary>
+        /// 部门ID
+        /// </summary>
+        public long? DeptId { get; set; }
     }
 
     /// <summary>

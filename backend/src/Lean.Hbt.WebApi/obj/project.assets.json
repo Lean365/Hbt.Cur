@@ -933,6 +933,52 @@
           }
         }
       },
+      "SixLabors.Fonts/2.0.1": {
+        "type": "package",
+        "compile": {
+          "lib/net6.0/SixLabors.Fonts.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/SixLabors.Fonts.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "SixLabors.ImageSharp/3.1.6": {
+        "type": "package",
+        "compile": {
+          "lib/net6.0/SixLabors.ImageSharp.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/SixLabors.ImageSharp.dll": {
+            "related": ".xml"
+          }
+        },
+        "build": {
+          "build/_._": {}
+        }
+      },
+      "SixLabors.ImageSharp.Drawing/2.1.1": {
+        "type": "package",
+        "dependencies": {
+          "SixLabors.Fonts": "2.0.1",
+          "SixLabors.ImageSharp": "3.1.1"
+        },
+        "compile": {
+          "lib/net6.0/SixLabors.ImageSharp.Drawing.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/SixLabors.ImageSharp.Drawing.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "SQLitePCLRaw.bundle_e_sqlite3/2.1.10": {
         "type": "package",
         "dependencies": {
@@ -1900,7 +1946,8 @@
           "Lean.Hbt.Common": "0.0.1",
           "Lean.Hbt.Domain": "0.0.1",
           "Lean.Hbt.Infrastructure": "0.0.1",
-          "Mapster": "7.4.0"
+          "Mapster": "7.4.0",
+          "Microsoft.Extensions.Logging.Abstractions": "8.0.0"
         },
         "compile": {
           "bin/placeholder/Lean.Hbt.Application.dll": {}
@@ -1949,6 +1996,8 @@
           "Microsoft.AspNetCore.Authentication.JwtBearer": "8.0.1",
           "Microsoft.Extensions.Caching.StackExchangeRedis": "8.0.1",
           "NLog": "5.3.4",
+          "SixLabors.ImageSharp": "3.1.6",
+          "SixLabors.ImageSharp.Drawing": "2.1.1",
           "SqlSugarCore": "5.1.4.172",
           "Swashbuckle.AspNetCore": "6.5.0"
         },
@@ -3525,6 +3574,52 @@
         "lib/netstandard2.1/Pipelines.Sockets.Unofficial.xml",
         "pipelines.sockets.unofficial.2.2.8.nupkg.sha512",
         "pipelines.sockets.unofficial.nuspec"
+      ]
+    },
+    "SixLabors.Fonts/2.0.1": {
+      "sha512": "ubgkOt7Eb5garmLMigeWAAAMyZF6JWuT09RApHouncPZeML2nRJahm2JJUkw3HLB+XbYJfBfOTCMvbsdCO5LDw==",
+      "type": "package",
+      "path": "sixlabors.fonts/2.0.1",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE",
+        "lib/net6.0/SixLabors.Fonts.dll",
+        "lib/net6.0/SixLabors.Fonts.xml",
+        "sixlabors.fonts.128.png",
+        "sixlabors.fonts.2.0.1.nupkg.sha512",
+        "sixlabors.fonts.nuspec"
+      ]
+    },
+    "SixLabors.ImageSharp/3.1.6": {
+      "sha512": "dHQ5jugF9v+5/LCVHCWVzaaIL6WOehqJy6eju/0VFYFPEj2WtqkGPoEV9EVQP83dHsdoqYaTuWpZdwAd37UwfA==",
+      "type": "package",
+      "path": "sixlabors.imagesharp/3.1.6",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE",
+        "build/SixLabors.ImageSharp.props",
+        "lib/net6.0/SixLabors.ImageSharp.dll",
+        "lib/net6.0/SixLabors.ImageSharp.xml",
+        "sixlabors.imagesharp.128.png",
+        "sixlabors.imagesharp.3.1.6.nupkg.sha512",
+        "sixlabors.imagesharp.nuspec"
+      ]
+    },
+    "SixLabors.ImageSharp.Drawing/2.1.1": {
+      "sha512": "BOo/ff26qU2pnA2mSRd7otAx+rnmn9eo9tLbn1ObWTIuMMNMaQK1DxTVWMo6fGb4hBONVl7O7O0aJjdLszUydA==",
+      "type": "package",
+      "path": "sixlabors.imagesharp.drawing/2.1.1",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE",
+        "lib/net6.0/SixLabors.ImageSharp.Drawing.dll",
+        "lib/net6.0/SixLabors.ImageSharp.Drawing.xml",
+        "sixlabors.imagesharp.drawing.128.png",
+        "sixlabors.imagesharp.drawing.2.1.1.nupkg.sha512",
+        "sixlabors.imagesharp.drawing.nuspec"
       ]
     },
     "SQLitePCLRaw.bundle_e_sqlite3/2.1.10": {

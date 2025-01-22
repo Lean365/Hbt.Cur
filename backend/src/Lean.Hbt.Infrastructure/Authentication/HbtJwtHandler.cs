@@ -12,6 +12,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Lean.Hbt.Domain.IServices;
 
 namespace Lean.Hbt.Infrastructure.Authentication
 {
@@ -39,17 +40,13 @@ namespace Lean.Hbt.Infrastructure.Authentication
         }
 
         /// <summary>
-        /// 生成JWT令牌
+        /// 创建访问令牌
         /// </summary>
-        /// <param name="userId">用户ID</param>
-        /// <param name="userName">用户名</param>
-        /// <param name="roles">用户角色列表</param>
-        /// <returns>JWT令牌字符串</returns>
-        public string GenerateToken(string userId, string userName, IEnumerable<string> roles)
+        public string CreateAccessToken(long userId, string userName, IEnumerable<string> roles)
         {
             var claims = new List<Claim>
             {
-                new Claim(JwtRegisteredClaimNames.Sub, userId),
+                new Claim(JwtRegisteredClaimNames.Sub, userId.ToString()),
                 new Claim(JwtRegisteredClaimNames.Name, userName),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
@@ -75,18 +72,73 @@ namespace Lean.Hbt.Infrastructure.Authentication
         }
 
         /// <summary>
-        /// 验证JWT令牌
+        /// 创建刷新令牌
         /// </summary>
-        /// <param name="token">JWT令牌字符串</param>
-        /// <returns>验证通过返回声明主体，否则返回null</returns>
-        public ClaimsPrincipal? ValidateToken(string token)
+        public string CreateRefreshToken(long userId)
         {
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var secretKey = _configuration["HbtJwt:SecretKey"] ?? throw new InvalidOperationException("JWT密钥未配置");
-            var key = Encoding.UTF8.GetBytes(secretKey);
+            var claims = new List<Claim>
+            {
+                new Claim(JwtRegisteredClaimNames.Sub, userId.ToString()),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim("type", "refresh")
+            };
 
+            var secretKey = _configuration["HbtJwt:RefreshSecretKey"] ?? throw new InvalidOperationException("刷新令牌密钥未配置");
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken(
+                issuer: _configuration["HbtJwt:Issuer"] ?? throw new InvalidOperationException("JWT发行者未配置"),
+                audience: _configuration["HbtJwt:Audience"] ?? throw new InvalidOperationException("JWT受众未配置"),
+                claims: claims,
+                expires: DateTime.Now.AddDays(Convert.ToDouble(_configuration["HbtJwt:RefreshExpiryInDays"] ?? "7")),
+                signingCredentials: creds
+            );
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        /// <summary>
+        /// 验证访问令牌
+        /// </summary>
+        public bool ValidateAccessToken(string token)
+        {
             try
             {
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var secretKey = _configuration["HbtJwt:SecretKey"] ?? throw new InvalidOperationException("JWT密钥未配置");
+                var key = Encoding.UTF8.GetBytes(secretKey);
+
+                tokenHandler.ValidateToken(token, new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ValidateIssuer = true,
+                    ValidIssuer = _configuration["HbtJwt:Issuer"] ?? throw new InvalidOperationException("JWT发行者未配置"),
+                    ValidateAudience = true,
+                    ValidAudience = _configuration["HbtJwt:Audience"] ?? throw new InvalidOperationException("JWT受众未配置"),
+                    ClockSkew = TimeSpan.Zero
+                }, out _);
+
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 验证刷新令牌
+        /// </summary>
+        public bool ValidateRefreshToken(string token)
+        {
+            try
+            {
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var secretKey = _configuration["HbtJwt:RefreshSecretKey"] ?? throw new InvalidOperationException("刷新令牌密钥未配置");
+                var key = Encoding.UTF8.GetBytes(secretKey);
+
                 var principal = tokenHandler.ValidateToken(token, new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
@@ -96,14 +148,27 @@ namespace Lean.Hbt.Infrastructure.Authentication
                     ValidateAudience = true,
                     ValidAudience = _configuration["HbtJwt:Audience"] ?? throw new InvalidOperationException("JWT受众未配置"),
                     ClockSkew = TimeSpan.Zero
-                }, out SecurityToken validatedToken);
+                }, out _);
 
-                return principal;
+                // 验证令牌类型
+                var tokenType = principal.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
+                return tokenType == "refresh";
             }
             catch
             {
-                return null;
+                return false;
             }
+        }
+
+        /// <summary>
+        /// 从令牌中获取用户ID
+        /// </summary>
+        public long GetUserIdFromToken(string token)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var jwtToken = tokenHandler.ReadJwtToken(token);
+            var userIdClaim = jwtToken.Claims.First(c => c.Type == JwtRegisteredClaimNames.Sub);
+            return long.Parse(userIdClaim.Value);
         }
     }
 } 

@@ -10,6 +10,7 @@
 using System.Text;
 using Lean.Hbt.Common.Options;
 using Lean.Hbt.Domain.IServices;
+using Lean.Hbt.Domain.IServices.Security;
 using Lean.Hbt.Domain.Repositories;
 using Lean.Hbt.Domain.Entities.Admin;
 using Lean.Hbt.Infrastructure.Authentication;
@@ -54,6 +55,7 @@ namespace Lean.Hbt.Infrastructure.Extensions
             });
             services.Configure<HbtSecurityOptions>(configuration.GetSection("Security"));
             services.Configure<HbtRedisOptions>(configuration.GetSection("Redis"));
+            services.Configure<HbtCaptchaOptions>(configuration.GetSection("Captcha"));
 
             // 添加SqlSugar服务
             services.AddSingleton<ISqlSugarClient>(sp =>
@@ -102,6 +104,10 @@ namespace Lean.Hbt.Infrastructure.Extensions
             // 添加缓存配置管理器
             services.AddSingleton<HbtCacheConfigManager>();
             
+            // 添加验证码服务
+            services.Configure<HbtCaptchaOptions>(configuration.GetSection("Captcha"));
+            services.AddScoped<IHbtCaptchaService, HbtCaptchaService>();
+
             // 添加内存缓存
             services.AddMemoryCache();
             services.AddSingleton<IHbtMemoryCache, HbtMemoryCache>();
