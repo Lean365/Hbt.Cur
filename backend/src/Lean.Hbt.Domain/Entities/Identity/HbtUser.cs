@@ -22,10 +22,10 @@ namespace Lean.Hbt.Domain.Entities.Identity
     /// 创建时间: 2024-01-16
     /// </remarks>
     [SugarTable("hbt_id_user", "用户表")]
-    [SugarIndex("ix_user_name", "user_name", OrderByType.Asc, true)]
-    [SugarIndex("ix_email", "email", OrderByType.Asc, true)]
-    [SugarIndex("ix_phone", "phone_number", OrderByType.Asc, true)]
-    [SugarIndex("ix_tenant_user", "tenant_id", OrderByType.Asc, "user_name", OrderByType.Asc, true)]
+    [SugarIndex("ix_user_name", nameof(UserName), OrderByType.Asc, true)]
+    [SugarIndex("ix_email", nameof(Email), OrderByType.Asc, true)]
+    [SugarIndex("ix_phone", nameof(PhoneNumber), OrderByType.Asc, true)]
+    [SugarIndex("ix_tenant_user", nameof(TenantId), OrderByType.Asc, nameof(UserName), OrderByType.Asc, true)]
     public class HbtUser : HbtBaseEntity
     {
         /// <summary>

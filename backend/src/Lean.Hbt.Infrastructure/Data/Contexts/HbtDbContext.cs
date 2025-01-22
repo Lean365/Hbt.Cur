@@ -86,80 +86,6 @@ namespace Lean.Hbt.Infrastructure.Data.Contexts
                 _logger.Debug(sql);
             };
 
-            // 初始化表结构
-            var entityTypes = new Type[]
-            {
-                typeof(HbtDbDiffLog),  // 确保日志表首先被创建
-                typeof(HbtUser),
-                typeof(HbtRole),
-                typeof(HbtMenu),
-                typeof(HbtDept),
-                typeof(HbtPost),
-                typeof(HbtUserRole),
-                typeof(HbtUserDept),
-                typeof(HbtUserPost),
-                typeof(HbtRoleMenu),
-                typeof(HbtRoleDept),
-                typeof(HbtTenant),
-                typeof(HbtAuditLog),
-                typeof(HbtLoginLog),
-                typeof(HbtExceptionLog),
-                typeof(HbtOperLog),
-                typeof(HbtOnlineMessage),
-                typeof(HbtOnlineUser),
-                typeof(HbtSysConfig),
-                typeof(HbtTranslation),
-                typeof(HbtLanguage),
-                typeof(HbtDictType),
-                typeof(HbtDictData)
-            };
-
-            // 初始化表结构
-            foreach (var entityType in entityTypes)
-            {
-                var tableName = _client.EntityMaintenance.GetTableName(entityType);
-                var entityInfo = _client.EntityMaintenance.GetEntityInfo(entityType);
-
-                // 检查表是否存在
-                var isTableExists = _client.DbMaintenance.IsAnyTable(tableName);
-                if (!isTableExists)
-                {
-                    _logger.Info($"[表结构] 新建表 {tableName}");
-                    _client.CodeFirst.InitTables(entityType);
-                    continue;
-                }
-
-                // 获取数据库中的列信息
-                var dbColumns = _client.DbMaintenance.GetColumnInfosByTableName(tableName);
-                // 获取实体中的列信息
-                var entityColumns = entityInfo.Columns;
-
-                // 比较列差异
-                var shouldUpdate = false;
-                foreach (var entityColumn in entityColumns)
-                {
-                    var dbColumn = dbColumns.FirstOrDefault(x => x.DbColumnName.Equals(entityColumn.DbColumnName, StringComparison.OrdinalIgnoreCase));
-                    if (dbColumn == null)
-                    {
-                        shouldUpdate = true;
-                        break;
-                    }
-
-                    if (entityColumn.IsNullable != dbColumn.IsNullable ||
-                        (entityColumn.Length > 0 && entityColumn.Length != dbColumn.Length))
-                    {
-                        shouldUpdate = true;
-                        break;
-                    }
-                }
-
-                // 更新表结构
-                if (shouldUpdate)
-                {
-                    _client.CodeFirst.InitTables(entityType);
-                }
-            }
-
             // 初始化租户过滤器
             AddTenantFilter();
             SetTenantId();
@@ -255,8 +181,8 @@ namespace Lean.Hbt.Infrastructure.Data.Contexts
                     typeof(HbtLanguage),
                     typeof(HbtDictType),
                     typeof(HbtDictData),
-                    typeof(HbtLoginExtend),
-                    typeof(HbtDeviceExtend)
+                    typeof(HbtDeviceExtend),
+                    typeof(HbtLoginExtend)
                 };
 
                 foreach (var entityType in entityTypes)
