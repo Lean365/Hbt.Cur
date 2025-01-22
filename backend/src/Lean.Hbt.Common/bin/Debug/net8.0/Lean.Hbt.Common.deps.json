@@ -10,6 +10,7 @@
         "dependencies": {
           "EPPlus": "7.0.5",
           "FluentValidation": "11.9.0",
+          "Microsoft.AspNetCore.Authorization": "8.0.1",
           "Microsoft.Extensions.Options": "8.0.1",
           "Newtonsoft.Json": "13.0.3",
           "SqlSugarCore": "5.1.4.127"
@@ -60,6 +61,27 @@
           "lib/net8.0/FluentValidation.dll": {
             "assemblyVersion": "11.0.0.0",
             "fileVersion": "11.9.0.0"
+          }
+        }
+      },
+      "Microsoft.AspNetCore.Authorization/8.0.1": {
+        "dependencies": {
+          "Microsoft.AspNetCore.Metadata": "8.0.1",
+          "Microsoft.Extensions.Logging.Abstractions": "8.0.0",
+          "Microsoft.Extensions.Options": "8.0.1"
+        },
+        "runtime": {
+          "lib/net8.0/Microsoft.AspNetCore.Authorization.dll": {
+            "assemblyVersion": "8.0.0.0",
+            "fileVersion": "8.0.123.58008"
+          }
+        }
+      },
+      "Microsoft.AspNetCore.Metadata/8.0.1": {
+        "runtime": {
+          "lib/net8.0/Microsoft.AspNetCore.Metadata.dll": {
+            "assemblyVersion": "8.0.0.0",
+            "fileVersion": "8.0.123.58008"
           }
         }
       },
@@ -227,6 +249,17 @@
       "Microsoft.Extensions.FileSystemGlobbing/8.0.0": {
         "runtime": {
           "lib/net8.0/Microsoft.Extensions.FileSystemGlobbing.dll": {
+            "assemblyVersion": "8.0.0.0",
+            "fileVersion": "8.0.23.53103"
+          }
+        }
+      },
+      "Microsoft.Extensions.Logging.Abstractions/8.0.0": {
+        "dependencies": {
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "8.0.0"
+        },
+        "runtime": {
+          "lib/net8.0/Microsoft.Extensions.Logging.Abstractions.dll": {
             "assemblyVersion": "8.0.0.0",
             "fileVersion": "8.0.23.53103"
           }
@@ -918,6 +951,20 @@
       "path": "fluentvalidation/11.9.0",
       "hashPath": "fluentvalidation.11.9.0.nupkg.sha512"
     },
+    "Microsoft.AspNetCore.Authorization/8.0.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-RYBk9d+Zb6V2u2hpgSSlCTvV6HvNf8T8OA7coLn+J4sdWLbdVkb8/b2tpRRENTGXK31ayCvtUPhP4wv2ZMn4cQ==",
+      "path": "microsoft.aspnetcore.authorization/8.0.1",
+      "hashPath": "microsoft.aspnetcore.authorization.8.0.1.nupkg.sha512"
+    },
+    "Microsoft.AspNetCore.Metadata/8.0.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-8Uyh4D/9Z9xfL1f6Ap9Y12q/JU717sqWNMxCD7lytyK28YFtLIYG1jSCQOq+TvPDzgIaaGXGtLq+lM8fcAisMg==",
+      "path": "microsoft.aspnetcore.metadata/8.0.1",
+      "hashPath": "microsoft.aspnetcore.metadata.8.0.1.nupkg.sha512"
+    },
     "Microsoft.CSharp/4.5.0": {
       "type": "package",
       "serviceable": true,
@@ -1008,6 +1055,13 @@
       "sha512": "sha512-OK+670i7esqlQrPjdIKRbsyMCe9g5kSLpRRQGSr4Q58AOYEe/hCnfLZprh7viNisSUUQZmMrbbuDaIrP+V1ebQ==",
       "path": "microsoft.extensions.filesystemglobbing/8.0.0",
       "hashPath": "microsoft.extensions.filesystemglobbing.8.0.0.nupkg.sha512"
+    },
+    "Microsoft.Extensions.Logging.Abstractions/8.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-arDBqTgFCyS0EvRV7O3MZturChstm50OJ0y9bDJvAcmEPJm0FFpFyjU/JLYyStNGGey081DvnQYlncNX5SJJGA==",
+      "path": "microsoft.extensions.logging.abstractions/8.0.0",
+      "hashPath": "microsoft.extensions.logging.abstractions.8.0.0.nupkg.sha512"
     },
     "Microsoft.Extensions.Options/8.0.1": {
       "type": "package",

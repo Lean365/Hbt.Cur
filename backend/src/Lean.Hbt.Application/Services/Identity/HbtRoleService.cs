@@ -103,7 +103,7 @@ namespace Lean.Hbt.Application.Services.Identity
         {
             var role = await _roleRepository.GetByIdAsync(roleId);
             if (role == null)
-                throw new HbtBusinessException($"角色不存在: {roleId}");
+                throw new HbtException($"角色不存在: {roleId}");
 
             return role.Adapt<HbtRoleDto>();
         }
@@ -119,10 +119,10 @@ namespace Lean.Hbt.Application.Services.Identity
                 throw new ArgumentNullException(nameof(input));
 
             if (string.IsNullOrEmpty(input.RoleName))
-                throw new HbtBusinessException("角色名称不能为空");
+                throw new HbtException("角色名称不能为空");
 
             if (string.IsNullOrEmpty(input.RoleKey))
-                throw new HbtBusinessException("角色标识不能为空");
+                throw new HbtException("角色标识不能为空");
 
             // 验证角色名称和标识是否已存在
             await HbtValidateUtils.ValidateFieldExistsAsync(_roleRepository, "RoleName", input.RoleName);
@@ -142,7 +142,7 @@ namespace Lean.Hbt.Application.Services.Identity
 
             var result = await _roleRepository.InsertAsync(role);
             if (result <= 0)
-                throw new HbtBusinessException("创建角色失败");
+                throw new HbtException("创建角色失败");
 
             // 关联菜单
             if (input.MenuIds?.Any() == true)
@@ -182,14 +182,14 @@ namespace Lean.Hbt.Application.Services.Identity
                 throw new ArgumentNullException(nameof(input));
 
             if (string.IsNullOrEmpty(input.RoleName))
-                throw new HbtBusinessException("角色名称不能为空");
+                throw new HbtException("角色名称不能为空");
 
             if (string.IsNullOrEmpty(input.RoleKey))
-                throw new HbtBusinessException("角色标识不能为空");
+                throw new HbtException("角色标识不能为空");
 
             var role = await _roleRepository.GetByIdAsync(input.RoleId);
             if (role == null)
-                throw new HbtBusinessException($"角色不存在: {input.RoleId}");
+                throw new HbtException($"角色不存在: {input.RoleId}");
 
             // 验证角色名称和标识是否已存在
             await HbtValidateUtils.ValidateFieldExistsAsync(_roleRepository, "RoleName", input.RoleName, input.RoleId);
@@ -205,7 +205,7 @@ namespace Lean.Hbt.Application.Services.Identity
 
             var result = await _roleRepository.UpdateAsync(role);
             if (result <= 0)
-                throw new HbtBusinessException("更新角色失败");
+                throw new HbtException("更新角色失败");
 
             // 更新菜单关联
             await _roleMenuRepository.DeleteAsync((Expression<Func<HbtRoleMenu, bool>>)(x => x.RoleId == role.Id));
@@ -245,7 +245,7 @@ namespace Lean.Hbt.Application.Services.Identity
         {
             var role = await _roleRepository.GetByIdAsync(roleId);
             if (role == null)
-                throw new HbtBusinessException($"角色不存在: {roleId}");
+                throw new HbtException($"角色不存在: {roleId}");
 
             // 删除角色及其关联数据
             await _roleMenuRepository.DeleteAsync((Expression<Func<HbtRoleMenu, bool>>)(x => x.RoleId == roleId));
@@ -315,7 +315,7 @@ namespace Lean.Hbt.Application.Services.Identity
 
             var role = await _roleRepository.GetByIdAsync(input.RoleId);
             if (role == null)
-                throw new HbtBusinessException($"角色不存在: {input.RoleId}");
+                throw new HbtException($"角色不存在: {input.RoleId}");
 
             role.Status = input.Status;
             var result = await _roleRepository.UpdateAsync(role);
@@ -386,7 +386,7 @@ namespace Lean.Hbt.Application.Services.Identity
         public async Task<string> ImportAsync(Stream fileStream)
         {
             if (fileStream == null)
-                throw new HbtBusinessException("导入文件流不能为空");
+                throw new HbtException("导入文件流不能为空");
 
             // 1.从Excel导入数据
             var roles = await HbtExcelHelper.ImportAsync<HbtRoleImportDto>(fileStream);
@@ -397,7 +397,7 @@ namespace Lean.Hbt.Application.Services.Identity
             foreach (var dto in roles)
             {
                 if (string.IsNullOrEmpty(dto.RoleName) || string.IsNullOrEmpty(dto.RoleKey))
-                    throw new HbtBusinessException($"角色名称或角色标识不能为空");
+                    throw new HbtException($"角色名称或角色标识不能为空");
 
                 await HbtValidateUtils.ValidateFieldExistsAsync(_roleRepository, "RoleName", dto.RoleName);
                 await HbtValidateUtils.ValidateFieldExistsAsync(_roleRepository, "RoleKey", dto.RoleKey);

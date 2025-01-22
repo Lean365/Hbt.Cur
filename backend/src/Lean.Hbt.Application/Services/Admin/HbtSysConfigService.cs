@@ -93,7 +93,7 @@ namespace Lean.Hbt.Application.Services.Admin
         {
             var config = await _configRepository.GetByIdAsync(configId);
             if (config == null)
-                throw new HbtBusinessException($"系统配置不存在: {configId}");
+                throw new HbtException($"系统配置不存在: {configId}");
 
             return config.Adapt<HbtSysConfigDto>();
         }
@@ -109,13 +109,13 @@ namespace Lean.Hbt.Application.Services.Admin
                 throw new ArgumentNullException(nameof(input));
 
             if (string.IsNullOrEmpty(input.ConfigName))
-                throw new HbtBusinessException("配置名称不能为空");
+                throw new HbtException("配置名称不能为空");
 
             if (string.IsNullOrEmpty(input.ConfigKey))
-                throw new HbtBusinessException("配置键名不能为空");
+                throw new HbtException("配置键名不能为空");
 
             if (string.IsNullOrEmpty(input.ConfigValue))
-                throw new HbtBusinessException("配置键值不能为空");
+                throw new HbtException("配置键值不能为空");
 
             // 验证字段是否已存在
             await HbtValidateUtils.ValidateFieldExistsAsync(_configRepository, "ConfigKey", input.ConfigKey);
@@ -133,7 +133,7 @@ namespace Lean.Hbt.Application.Services.Admin
 
             var result = await _configRepository.InsertAsync(config);
             if (result <= 0)
-                throw new HbtBusinessException("创建系统配置失败");
+                throw new HbtException("创建系统配置失败");
 
             return config.Id;
         }
@@ -150,7 +150,7 @@ namespace Lean.Hbt.Application.Services.Admin
 
             var config = await _configRepository.GetByIdAsync(input.ConfigId);
             if (config == null)
-                throw new HbtBusinessException($"系统配置不存在: {input.ConfigId}");
+                throw new HbtException($"系统配置不存在: {input.ConfigId}");
 
             // 验证字段是否已存在
             await HbtValidateUtils.ValidateFieldExistsAsync(_configRepository, "ConfigKey", input.ConfigKey, input.ConfigId);
@@ -176,7 +176,7 @@ namespace Lean.Hbt.Application.Services.Admin
         {
             var config = await _configRepository.GetByIdAsync(configId);
             if (config == null)
-                throw new HbtBusinessException($"系统配置不存在: {configId}");
+                throw new HbtException($"系统配置不存在: {configId}");
 
             var result = await _configRepository.DeleteAsync(configId);
             return result > 0;
@@ -227,7 +227,7 @@ namespace Lean.Hbt.Application.Services.Admin
                     {
                         await HbtValidateUtils.ValidateFieldExistsAsync(_configRepository, "ConfigKey", config.ConfigKey);
                     }
-                    catch (HbtBusinessException ex)
+                    catch (HbtException ex)
                     {
                         _logger.Warn($"导入系统配置失败: {ex.Message}");
                         fail++;
@@ -301,7 +301,7 @@ namespace Lean.Hbt.Application.Services.Admin
         {
             var config = await _configRepository.GetByIdAsync(input.ConfigId);
             if (config == null)
-                throw new HbtBusinessException($"系统配置不存在: {input.ConfigId}");
+                throw new HbtException($"系统配置不存在: {input.ConfigId}");
 
             config.Status = input.Status;
             var result = await _configRepository.UpdateAsync(config);

@@ -153,3 +153,5 @@ G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\obj\Debug\net8.0\Lean.
 G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\obj\Debug\net8.0\Lean.Hbt.WebApi.genruntimeconfig.cache
 G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\obj\Debug\net8.0\ref\Lean.Hbt.WebApi.dll
 G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
+G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\Microsoft.AspNetCore.Authorization.dll
+G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\Microsoft.AspNetCore.Metadata.dll

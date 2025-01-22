@@ -4,7 +4,7 @@
 // 项目名 : Lean.Hbt
 // 文件名 : HbtLanguage.cs
 // 创建者 : Lean365
-// 创建时间: 2024-01-20 16:30
+// 创建时间: 2024-01-22 16:30
 // 版本号 : V0.0.1
 // 描述   : 语言实体
 //===================================================================
@@ -20,15 +20,15 @@ namespace Lean.Hbt.Domain.Entities.Admin
     public class HbtLanguage : HbtBaseEntity
     {
         /// <summary>
-        /// 语言编码
+        /// 语言代码
         /// </summary>
-        [SugarColumn(ColumnName = "lang_code", ColumnDescription = "语言编码", Length = 10, ColumnDataType = "nvarchar", IsNullable = false, DefaultValue = "")]
+        [SugarColumn(ColumnName = "lang_code", ColumnDescription = "语言代码", Length = 50, ColumnDataType = "nvarchar", IsNullable = false, DefaultValue = "")]
         public string LangCode { get; set; } = string.Empty;
 
         /// <summary>
         /// 语言名称
         /// </summary>
-        [SugarColumn(ColumnName = "lang_name", ColumnDescription = "语言名称", Length = 50, ColumnDataType = "nvarchar", IsNullable = false, DefaultValue = "")]
+        [SugarColumn(ColumnName = "lang_name", ColumnDescription = "语言名称", Length = 100, ColumnDataType = "nvarchar", IsNullable = false, DefaultValue = "")]
         public string LangName { get; set; } = string.Empty;
 
         /// <summary>

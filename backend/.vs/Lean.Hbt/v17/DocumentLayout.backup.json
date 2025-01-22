@@ -7,6 +7,14 @@
       "RelativeMoniker": "D:0:0:{70F2D6F7-475F-4A9C-9DA5-229DC155178B}|src\\Lean.Hbt.Infrastructure\\Lean.Hbt.Infrastructure.csproj|solutionrelative:src\\lean.hbt.infrastructure\\data\\contexts\\hbtdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
+      "AbsoluteMoniker": "D:0:0:{28E16BFA-4E05-406B-B57B-E82ADBE6851C}|src\\Lean.Hbt.WebApi\\Lean.Hbt.WebApi.csproj|g:\\appdevelop\\vs2025\\lean.hbt\\backend\\src\\lean.hbt.webapi\\middlewares\\hbtexceptionmiddleware.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{28E16BFA-4E05-406B-B57B-E82ADBE6851C}|src\\Lean.Hbt.WebApi\\Lean.Hbt.WebApi.csproj|solutionrelative:src\\lean.hbt.webapi\\middlewares\\hbtexceptionmiddleware.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{FBC5DE98-B3C2-4201-9AEF-A3FAAF7048E0}|src\\Lean.Hbt.Domain\\Lean.Hbt.Domain.csproj|g:\\appdevelop\\vs2025\\lean.hbt\\backend\\src\\lean.hbt.domain\\utils\\hbtvalidateutils.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{FBC5DE98-B3C2-4201-9AEF-A3FAAF7048E0}|src\\Lean.Hbt.Domain\\Lean.Hbt.Domain.csproj|solutionrelative:src\\lean.hbt.domain\\utils\\hbtvalidateutils.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{70F2D6F7-475F-4A9C-9DA5-229DC155178B}|src\\Lean.Hbt.Infrastructure\\Lean.Hbt.Infrastructure.csproj|g:\\appdevelop\\vs2025\\lean.hbt\\backend\\src\\lean.hbt.infrastructure\\data\\seeds\\hbtdbseed.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{70F2D6F7-475F-4A9C-9DA5-229DC155178B}|src\\Lean.Hbt.Infrastructure\\Lean.Hbt.Infrastructure.csproj|solutionrelative:src\\lean.hbt.infrastructure\\data\\seeds\\hbtdbseed.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
@@ -18,8 +26,34 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 2,
           "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "HbtExceptionMiddleware.cs",
+              "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.WebApi\\Middlewares\\HbtExceptionMiddleware.cs",
+              "RelativeDocumentMoniker": "src\\Lean.Hbt.WebApi\\Middlewares\\HbtExceptionMiddleware.cs",
+              "ToolTip": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.WebApi\\Middlewares\\HbtExceptionMiddleware.cs",
+              "RelativeToolTip": "src\\Lean.Hbt.WebApi\\Middlewares\\HbtExceptionMiddleware.cs",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAEwEYAAAAbAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-22T07:38:43.262Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "HbtValidateUtils.cs",
+              "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Domain\\Utils\\HbtValidateUtils.cs",
+              "RelativeDocumentMoniker": "src\\Lean.Hbt.Domain\\Utils\\HbtValidateUtils.cs",
+              "ToolTip": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Domain\\Utils\\HbtValidateUtils.cs",
+              "RelativeToolTip": "src\\Lean.Hbt.Domain\\Utils\\HbtValidateUtils.cs",
+              "ViewState": "AgIAACkAAAAAAAAAAAAWwDkAAAAmAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-22T07:38:18.577Z",
+              "EditorCaption": ""
+            },
             {
               "$type": "Document",
               "DocumentIndex": 0,
@@ -28,14 +62,14 @@
               "RelativeDocumentMoniker": "src\\Lean.Hbt.Infrastructure\\Data\\Contexts\\HbtDbContext.cs",
               "ToolTip": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Infrastructure\\Data\\Contexts\\HbtDbContext.cs",
               "RelativeToolTip": "src\\Lean.Hbt.Infrastructure\\Data\\Contexts\\HbtDbContext.cs",
-              "ViewState": "AgIAALYAAAAAAAAAAAAewMUAAAAYAAAAAAAAAA==",
+              "ViewState": "AgIAANYAAAAAAAAAAAAewOUAAAAYAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-01-22T06:32:16.14Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 3,
               "Title": "HbtDbSeed.cs",
               "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Infrastructure\\Data\\Seeds\\HbtDbSeed.cs",
               "RelativeDocumentMoniker": "src\\Lean.Hbt.Infrastructure\\Data\\Seeds\\HbtDbSeed.cs",

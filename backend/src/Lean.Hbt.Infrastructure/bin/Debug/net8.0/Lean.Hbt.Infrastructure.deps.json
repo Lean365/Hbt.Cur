@@ -113,6 +113,27 @@
           }
         }
       },
+      "Microsoft.AspNetCore.Authorization/8.0.1": {
+        "dependencies": {
+          "Microsoft.AspNetCore.Metadata": "8.0.1",
+          "Microsoft.Extensions.Logging.Abstractions": "8.0.0",
+          "Microsoft.Extensions.Options": "8.0.1"
+        },
+        "runtime": {
+          "lib/net8.0/Microsoft.AspNetCore.Authorization.dll": {
+            "assemblyVersion": "8.0.0.0",
+            "fileVersion": "8.0.123.58008"
+          }
+        }
+      },
+      "Microsoft.AspNetCore.Metadata/8.0.1": {
+        "runtime": {
+          "lib/net8.0/Microsoft.AspNetCore.Metadata.dll": {
+            "assemblyVersion": "8.0.0.0",
+            "fileVersion": "8.0.123.58008"
+          }
+        }
+      },
       "Microsoft.Bcl.AsyncInterfaces/1.1.1": {
         "runtime": {
           "lib/netstandard2.1/Microsoft.Bcl.AsyncInterfaces.dll": {
@@ -1099,6 +1120,7 @@
         "dependencies": {
           "EPPlus": "7.0.5",
           "FluentValidation": "11.9.0",
+          "Microsoft.AspNetCore.Authorization": "8.0.1",
           "Microsoft.Extensions.Options": "8.0.1",
           "Newtonsoft.Json": "13.0.3",
           "SqlSugarCore": "5.1.4.172"
@@ -1178,6 +1200,20 @@
       "sha512": "sha512-6xI3L6n8ucpUSkVn0Ax0MOtSJKIT6lrIkYGxIRda9LgmAjOFS3wPj2J2Y75dGUFkgTgpxPNq9K0oDCMPS2zBMg==",
       "path": "microsoft.aspnetcore.authentication.jwtbearer/8.0.1",
       "hashPath": "microsoft.aspnetcore.authentication.jwtbearer.8.0.1.nupkg.sha512"
+    },
+    "Microsoft.AspNetCore.Authorization/8.0.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-RYBk9d+Zb6V2u2hpgSSlCTvV6HvNf8T8OA7coLn+J4sdWLbdVkb8/b2tpRRENTGXK31ayCvtUPhP4wv2ZMn4cQ==",
+      "path": "microsoft.aspnetcore.authorization/8.0.1",
+      "hashPath": "microsoft.aspnetcore.authorization.8.0.1.nupkg.sha512"
+    },
+    "Microsoft.AspNetCore.Metadata/8.0.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-8Uyh4D/9Z9xfL1f6Ap9Y12q/JU717sqWNMxCD7lytyK28YFtLIYG1jSCQOq+TvPDzgIaaGXGtLq+lM8fcAisMg==",
+      "path": "microsoft.aspnetcore.metadata/8.0.1",
+      "hashPath": "microsoft.aspnetcore.metadata.8.0.1.nupkg.sha512"
     },
     "Microsoft.Bcl.AsyncInterfaces/1.1.1": {
       "type": "package",

@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "xvvU6Cxw8C4=",
+  "dgSpecHash": "a8a5PI2xYNE=",
   "success": true,
   "projectFilePath": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Infrastructure\\Lean.Hbt.Infrastructure.csproj",
   "expectedPackageFiles": [
@@ -11,6 +11,8 @@
     "C:\\Users\\Davis.Cheng\\.nuget\\packages\\epplus.system.drawing\\6.1.1\\epplus.system.drawing.6.1.1.nupkg.sha512",
     "C:\\Users\\Davis.Cheng\\.nuget\\packages\\fluentvalidation\\11.9.0\\fluentvalidation.11.9.0.nupkg.sha512",
     "C:\\Users\\Davis.Cheng\\.nuget\\packages\\microsoft.aspnetcore.authentication.jwtbearer\\8.0.1\\microsoft.aspnetcore.authentication.jwtbearer.8.0.1.nupkg.sha512",
+    "C:\\Users\\Davis.Cheng\\.nuget\\packages\\microsoft.aspnetcore.authorization\\8.0.1\\microsoft.aspnetcore.authorization.8.0.1.nupkg.sha512",
+    "C:\\Users\\Davis.Cheng\\.nuget\\packages\\microsoft.aspnetcore.metadata\\8.0.1\\microsoft.aspnetcore.metadata.8.0.1.nupkg.sha512",
     "C:\\Users\\Davis.Cheng\\.nuget\\packages\\microsoft.bcl.asyncinterfaces\\1.1.1\\microsoft.bcl.asyncinterfaces.1.1.1.nupkg.sha512",
     "C:\\Users\\Davis.Cheng\\.nuget\\packages\\microsoft.data.sqlclient\\5.2.2\\microsoft.data.sqlclient.5.2.2.nupkg.sha512",
     "C:\\Users\\Davis.Cheng\\.nuget\\packages\\microsoft.data.sqlclient.sni.runtime\\5.2.0\\microsoft.data.sqlclient.sni.runtime.5.2.0.nupkg.sha512",

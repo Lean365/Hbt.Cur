@@ -96,7 +96,7 @@ namespace Lean.Hbt.Application.Services.Identity
         {
             var menu = await _menuRepository.GetByIdAsync(menuId);
             if (menu == null)
-                throw new HbtBusinessException($"菜单不存在: {menuId}");
+                throw new HbtException($"菜单不存在: {menuId}");
 
             return menu.Adapt<HbtMenuDto>();
         }
@@ -143,7 +143,7 @@ namespace Lean.Hbt.Application.Services.Identity
         {
             var menu = await _menuRepository.GetByIdAsync(input.MenuId);
             if (menu == null)
-                throw new HbtBusinessException($"菜单不存在: {input.MenuId}");
+                throw new HbtException($"菜单不存在: {input.MenuId}");
 
             // 验证菜单名称是否已存在
             if (menu.MenuName != input.MenuName)
@@ -151,7 +151,7 @@ namespace Lean.Hbt.Application.Services.Identity
 
             // 检查是否存在循环引用
             if (input.ParentId.HasValue && input.ParentId.Value == input.MenuId)
-                throw new HbtBusinessException("父菜单不能是自己");
+                throw new HbtException("父菜单不能是自己");
 
             // 更新菜单信息
             menu.MenuName = input.MenuName;
@@ -181,12 +181,12 @@ namespace Lean.Hbt.Application.Services.Identity
         {
             var menu = await _menuRepository.GetByIdAsync(menuId);
             if (menu == null)
-                throw new HbtBusinessException($"菜单不存在: {menuId}");
+                throw new HbtException($"菜单不存在: {menuId}");
 
             // 检查是否有子菜单
             var hasChildren = await _menuRepository.AsQueryable().AnyAsync(x => x.ParentId == menuId);
             if (hasChildren)
-                throw new HbtBusinessException("存在子菜单,不允许删除");
+                throw new HbtException("存在子菜单,不允许删除");
 
             // 删除菜单及其关联数据
             await _roleMenuRepository.DeleteAsync((Expression<Func<HbtRoleMenu, bool>>)(x => x.MenuId == menuId));
@@ -203,12 +203,12 @@ namespace Lean.Hbt.Application.Services.Identity
         public async Task<bool> BatchDeleteAsync(List<long> menuIds)
         {
             if (menuIds == null || !menuIds.Any())
-                throw new HbtBusinessException("请选择要删除的菜单");
+                throw new HbtException("请选择要删除的菜单");
 
             // 检查是否有子菜单
             var hasChildren = await _menuRepository.AsQueryable().AnyAsync(x => menuIds.Contains(x.ParentId ?? 0));
             if (hasChildren)
-                throw new HbtBusinessException("选中的菜单中存在子菜单,不允许删除");
+                throw new HbtException("选中的菜单中存在子菜单,不允许删除");
 
             // 删除菜单及其关联数据
             await _roleMenuRepository.DeleteAsync((Expression<Func<HbtRoleMenu, bool>>)(x => menuIds.Contains(x.MenuId)));
@@ -253,7 +253,7 @@ namespace Lean.Hbt.Application.Services.Identity
         {
             var menu = await _menuRepository.GetByIdAsync(input.MenuId);
             if (menu == null)
-                throw new HbtBusinessException($"菜单不存在: {input.MenuId}");
+                throw new HbtException($"菜单不存在: {input.MenuId}");
 
             menu.Status = input.Status;
             var result = await _menuRepository.UpdateAsync(menu);
@@ -327,7 +327,7 @@ namespace Lean.Hbt.Application.Services.Identity
         {
             var menu = await _menuRepository.GetByIdAsync(input.MenuId);
             if (menu == null)
-                throw new HbtBusinessException($"菜单不存在: {input.MenuId}");
+                throw new HbtException($"菜单不存在: {input.MenuId}");
 
             menu.OrderNum = input.OrderNum;
             var result = await _menuRepository.UpdateAsync(menu);

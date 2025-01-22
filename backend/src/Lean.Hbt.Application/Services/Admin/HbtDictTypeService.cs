@@ -16,6 +16,8 @@ using Lean.Hbt.Domain.Repositories;
 using Lean.Hbt.Domain.Utils;
 using Mapster;
 using SqlSugar;
+using Lean.Hbt.Infrastructure.Data.Contexts;
+using Lean.Hbt.Common.Enums;
 
 namespace Lean.Hbt.Application.Services.Admin
 {
@@ -29,18 +31,26 @@ namespace Lean.Hbt.Application.Services.Admin
     public class HbtDictTypeService : IHbtDictTypeService
     {
         private readonly IHbtRepository<HbtDictType> _dictTypeRepository;
+        private readonly IHbtRepository<HbtDictData> _dictDataRepository;
+        private readonly IHbtDbContext _dbContext;
         private readonly IHbtLogger _logger;
 
         /// <summary>
         /// 构造函数
         /// </summary>
         /// <param name="dictTypeRepository">字典类型仓储</param>
+        /// <param name="dictDataRepository">字典数据仓储</param>
+        /// <param name="dbContext">数据库上下文</param>
         /// <param name="logger">日志接口</param>
         public HbtDictTypeService(
             IHbtRepository<HbtDictType> dictTypeRepository,
+            IHbtRepository<HbtDictData> dictDataRepository,
+            IHbtDbContext dbContext,
             IHbtLogger logger)
         {
             _dictTypeRepository = dictTypeRepository;
+            _dictDataRepository = dictDataRepository;
+            _dbContext = dbContext;
             _logger = logger;
         }
 
@@ -80,7 +90,7 @@ namespace Lean.Hbt.Application.Services.Admin
         {
             var dictType = await _dictTypeRepository.GetByIdAsync(dictTypeId);
             if (dictType == null)
-                throw new HbtException("字典类型不存在");
+                throw new HbtException($"字典类型[{dictTypeId}]不存在");
 
             return dictType.Adapt<HbtDictTypeDto>();
         }
@@ -105,7 +115,7 @@ namespace Lean.Hbt.Application.Services.Admin
         {
             var dictType = await _dictTypeRepository.GetByIdAsync(input.DictTypeId);
             if (dictType == null)
-                throw new HbtException("字典类型不存在");
+                throw new HbtException($"字典类型[{input.DictTypeId}]不存在");
 
             if (dictType.DictName != input.DictName)
                 await HbtValidateUtils.ValidateFieldExistsAsync(_dictTypeRepository, "DictName", input.DictName, input.DictTypeId);
@@ -126,25 +136,83 @@ namespace Lean.Hbt.Application.Services.Admin
         /// <summary>
         /// 删除字典类型
         /// </summary>
+        /// <param name="dictTypeId">字典类型ID</param>
+        /// <returns>是否成功</returns>
         public async Task<bool> DeleteAsync(long dictTypeId)
         {
             var dictType = await _dictTypeRepository.GetByIdAsync(dictTypeId);
             if (dictType == null)
-                throw new HbtException("字典类型不存在");
+            {
+                throw new HbtException($"字典类型[{dictTypeId}]不存在");
+            }
 
-            return await _dictTypeRepository.DeleteAsync(dictType) > 0;
+            try
+            {
+                _dbContext.BeginTran();
+
+                // 删除字典类型
+                await _dictTypeRepository.DeleteAsync(dictType);
+
+                // 删除关联的字典数据
+                var dictDataList = await _dictDataRepository.GetListAsync(x => x.DictType == dictType.DictType);
+                if (dictDataList?.Count > 0)
+                {
+                    await _dictDataRepository.DeleteRangeAsync(dictDataList);
+                }
+
+                _dbContext.CommitTran();
+                return true;
+            }
+            catch (Exception)
+            {
+                _dbContext.RollbackTran();
+                throw;
+            }
         }
 
         /// <summary>
         /// 批量删除字典类型
         /// </summary>
+        /// <param name="dictTypeIds">字典类型ID列表</param>
+        /// <returns>是否成功</returns>
         public async Task<bool> BatchDeleteAsync(long[] dictTypeIds)
         {
             if (dictTypeIds == null || dictTypeIds.Length == 0)
-                return false;
+            {
+                throw new HbtException("请选择要删除的字典类型");
+            }
 
-            var entities = await _dictTypeRepository.GetListAsync(x => dictTypeIds.Contains(x.Id));
-            return await _dictTypeRepository.DeleteRangeAsync(entities) > 0;
+            try
+            {
+                _dbContext.BeginTran();
+
+                foreach (var dictTypeId in dictTypeIds)
+                {
+                    var dictType = await _dictTypeRepository.GetByIdAsync(dictTypeId);
+                    if (dictType == null)
+                    {
+                        continue;
+                    }
+
+                    // 删除字典类型
+                    await _dictTypeRepository.DeleteAsync(dictType);
+
+                    // 删除关联的字典数据
+                    var dictDataList = await _dictDataRepository.GetListAsync(x => x.DictType == dictType.DictType);
+                    if (dictDataList?.Count > 0)
+                    {
+                        await _dictDataRepository.DeleteRangeAsync(dictDataList);
+                    }
+                }
+
+                _dbContext.CommitTran();
+                return true;
+            }
+            catch (Exception)
+            {
+                _dbContext.RollbackTran();
+                throw;
+            }
         }
 
         /// <summary>
@@ -202,19 +270,30 @@ namespace Lean.Hbt.Application.Services.Admin
         /// <summary>
         /// 获取导入模板
         /// </summary>
+        /// <returns>模板数据</returns>
         public async Task<HbtDictTypeTemplateDto> GetTemplateAsync()
         {
-            return await Task.FromResult(new HbtDictTypeTemplateDto());
+            return await Task.FromResult(new HbtDictTypeTemplateDto
+            {
+                DictName = "示例字典",
+                DictType = "sys_example",
+                DictCategory = 0,
+                SqlScript = "",
+                OrderNum = 0,
+                Status = HbtStatus.Normal.ToString()
+            });
         }
 
         /// <summary>
         /// 更新字典类型状态
         /// </summary>
+        /// <param name="input">状态更新对象</param>
+        /// <returns>是否成功</returns>
         public async Task<bool> UpdateStatusAsync(HbtDictTypeStatusDto input)
         {
             var dictType = await _dictTypeRepository.GetByIdAsync(input.DictTypeId);
             if (dictType == null)
-                throw new HbtException("字典类型不存在");
+                throw new HbtException($"字典类型[{input.DictTypeId}]不存在");
 
             dictType.Status = input.Status;
             return await _dictTypeRepository.UpdateAsync(dictType) > 0;

@@ -58,6 +58,10 @@
               "target": "Package",
               "version": "[11.9.0, )"
             },
+            "Microsoft.AspNetCore.Authorization": {
+              "target": "Package",
+              "version": "[8.0.1, )"
+            },
             "Microsoft.Extensions.Options": {
               "target": "Package",
               "version": "[8.0.1, )"

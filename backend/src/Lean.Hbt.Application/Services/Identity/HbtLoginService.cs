@@ -65,36 +65,36 @@ public class HbtLoginService : IHbtLoginService
         // 1. 验证租户
         var tenant = await _tenantRepository.FirstOrDefaultAsync(x => x.Id == loginDto.TenantId);
         if (tenant == null)
-            throw new HbtBusinessException($"租户不存在: {loginDto.TenantId}");
+            throw new HbtException($"租户不存在: {loginDto.TenantId}");
         if (tenant.Status != HbtStatus.Normal)
-            throw new HbtBusinessException("租户已被禁用");
+            throw new HbtException("租户已被禁用");
 
         // 2. 验证用户
         var user = await _userRepository.FirstOrDefaultAsync(x => 
             x.TenantId == loginDto.TenantId && 
             x.UserName == loginDto.UserName);
         if (user == null)
-            throw new HbtBusinessException("用户名或密码错误");
+            throw new HbtException("用户名或密码错误");
         if (user.Status != HbtStatus.Normal)
-            throw new HbtBusinessException("用户已被禁用");
+            throw new HbtException("用户已被禁用");
 
         // 3. 验证登录策略
         if (!await _loginPolicy.ValidateLoginAttemptAsync(loginDto.UserName))
-            throw new HbtBusinessException("账号已被锁定,请稍后再试");
+            throw new HbtException("账号已被锁定,请稍后再试");
 
         // 4. 验证验证码
         if (!string.IsNullOrEmpty(loginDto.CaptchaToken))
         {
             var captchaResult = await _captchaService.ValidateSliderAsync(loginDto.CaptchaToken, 0);
             if (!captchaResult)
-                throw new HbtBusinessException("验证码验证失败");
+                throw new HbtException("验证码验证失败");
         }
 
         // 5. 验证密码
         if (!HbtPasswordUtils.VerifyHash(loginDto.Password, user.Password, user.Salt, user.Iterations))
         {
             await _loginPolicy.RecordFailedLoginAsync(loginDto.UserName);
-            throw new HbtBusinessException("用户名或密码错误");
+            throw new HbtException("用户名或密码错误");
         }
 
         // 6. 生成令牌
@@ -131,21 +131,21 @@ public class HbtLoginService : IHbtLoginService
         // 1. 验证刷新令牌
         var userId = _jwtHandler.GetUserIdFromToken(refreshToken);
         if (userId <= 0)
-            throw new HbtBusinessException("无效的刷新令牌");
+            throw new HbtException("无效的刷新令牌");
 
         // 2. 获取用户信息
         var user = await _userRepository.GetByIdAsync(userId);
         if (user == null)
-            throw new HbtBusinessException("用户不存在");
+            throw new HbtException("用户不存在");
         if (user.Status != HbtStatus.Normal)
-            throw new HbtBusinessException("用户已被禁用");
+            throw new HbtException("用户已被禁用");
 
         // 3. 获取租户信息
         var tenant = await _tenantRepository.GetByIdAsync(user.TenantId);
         if (tenant == null)
-            throw new HbtBusinessException("租户不存在");
+            throw new HbtException("租户不存在");
         if (tenant.Status != HbtStatus.Normal)
-            throw new HbtBusinessException("租户已被禁用");
+            throw new HbtException("租户已被禁用");
 
         // 4. 生成新令牌
         var accessToken = _jwtHandler.CreateAccessToken(user.Id, user.UserName, new[] { "User" });

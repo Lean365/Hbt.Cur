@@ -43,11 +43,11 @@ namespace Lean.Hbt.Infrastructure.SignalR
         {
             var httpContext = Context.GetHttpContext();
             if (httpContext == null)
-                throw new HbtBusinessException("无法获取 HTTP 上下文");
+                throw new HbtException("无法获取 HTTP 上下文");
 
             var uidClaim = httpContext.User?.FindFirst("uid");
             if (uidClaim == null)
-                throw new HbtBusinessException("用户未认证");
+                throw new HbtException("用户未认证");
 
             var userId = long.Parse(uidClaim.Value);
             var clientIp = httpContext.Connection?.RemoteIpAddress?.ToString() ?? "Unknown";

@@ -83,7 +83,7 @@ namespace Lean.Hbt.Application.Services.Identity
         {
             var post = await _postRepository.GetByIdAsync(id);
             if (post == null)
-                throw new HbtBusinessException($"岗位不存在: {id}");
+                throw new HbtException($"岗位不存在: {id}");
 
             return post.Adapt<HbtPostDto>();
         }
@@ -103,7 +103,7 @@ namespace Lean.Hbt.Application.Services.Identity
 
             var result = await _postRepository.InsertAsync(post);
             if (result <= 0)
-                throw new HbtBusinessException("创建岗位失败");
+                throw new HbtException("创建岗位失败");
 
             return post.Id;
         }
@@ -115,7 +115,7 @@ namespace Lean.Hbt.Application.Services.Identity
         {
             var post = await _postRepository.GetByIdAsync(input.Id);
             if (post == null)
-                throw new HbtBusinessException($"岗位不存在: {input.Id}");
+                throw new HbtException($"岗位不存在: {input.Id}");
 
             // 验证字段是否已存在
             await HbtValidateUtils.ValidateFieldExistsAsync(_postRepository, "PostCode", input.PostCode, input.Id);
@@ -140,11 +140,11 @@ namespace Lean.Hbt.Application.Services.Identity
         {
             var post = await _postRepository.GetByIdAsync(id);
             if (post == null)
-                throw new HbtBusinessException($"岗位不存在: {id}");
+                throw new HbtException($"岗位不存在: {id}");
 
             // 检查是否有用户关联
             if (await _userPostRepository.AsQueryable().AnyAsync(up => up.PostId == id))
-                throw new HbtBusinessException($"岗位已分配,不能删除");
+                throw new HbtException($"岗位已分配,不能删除");
 
             var result = await _postRepository.DeleteAsync(id);
             return result > 0;
@@ -156,11 +156,11 @@ namespace Lean.Hbt.Application.Services.Identity
         public async Task<bool> BatchDeleteAsync(long[] ids)
         {
             if (ids == null || ids.Length == 0)
-                throw new HbtBusinessException("请选择要删除的岗位");
+                throw new HbtException("请选择要删除的岗位");
 
             // 检查是否有用户关联
             if (await _userPostRepository.AsQueryable().AnyAsync(up => ids.Contains(up.PostId)))
-                throw new HbtBusinessException("选中的岗位中已有岗位分配,不能删除");
+                throw new HbtException("选中的岗位中已有岗位分配,不能删除");
 
             Expression<Func<HbtPost, bool>> condition = p => ids.Contains(p.Id);
             var result = await _postRepository.DeleteAsync(condition);
@@ -174,7 +174,7 @@ namespace Lean.Hbt.Application.Services.Identity
         {
             var posts = await HbtExcelHelper.ImportAsync<HbtPostImportDto>(fileStream);
             if (posts == null || !posts.Any())
-                throw new HbtBusinessException("导入数据为空");
+                throw new HbtException("导入数据为空");
 
             int success = 0, fail = 0;
             foreach (var post in posts)
@@ -194,7 +194,7 @@ namespace Lean.Hbt.Application.Services.Identity
                         await HbtValidateUtils.ValidateFieldExistsAsync(_postRepository, "PostCode", post.PostCode);
                         await HbtValidateUtils.ValidateFieldExistsAsync(_postRepository, "PostName", post.PostName);
                     }
-                    catch (HbtBusinessException ex)
+                    catch (HbtException ex)
                     {
                         _logger.Warn($"导入岗位失败: {ex.Message}");
                         fail++;
@@ -272,7 +272,7 @@ namespace Lean.Hbt.Application.Services.Identity
         {
             var post = await _postRepository.GetByIdAsync(input.PostId);
             if (post == null)
-                throw new HbtBusinessException($"岗位不存在: {input.PostId}");
+                throw new HbtException($"岗位不存在: {input.PostId}");
 
             post.Status = input.Status;
             post.UpdateTime = DateTime.Now;

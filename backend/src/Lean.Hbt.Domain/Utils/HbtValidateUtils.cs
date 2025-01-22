@@ -7,8 +7,6 @@
 // 描述   : 通用验证工具类
 //===================================================================
 
-using System;
-using System.Threading.Tasks;
 using System.Linq.Expressions;
 using Lean.Hbt.Common.Exceptions;
 using Lean.Hbt.Domain.Repositories;
@@ -57,7 +55,7 @@ namespace Lean.Hbt.Domain.Utils
             }
 
             if (await repository.AsQueryable().AnyAsync(exp.ToExpression()))
-                throw new HbtBusinessException($"{fieldName}已存在: {fieldValue}");
+                throw new HbtException($"{fieldName}已存在: {fieldValue}");
         }
     }
-} 
+}

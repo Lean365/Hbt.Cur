@@ -1286,6 +1286,205 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "Lean.Hbt.WebApi.Controllers.Admin.HbtLanguageController",
+    "Method": "GetPagedListAsync",
+    "RelativePath": "api/HbtLanguage",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "LangCode",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "LangName",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Status",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "PageIndex",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "PageSize",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Lean.Hbt.WebApi.Controllers.Admin.HbtLanguageController",
+    "Method": "InsertAsync",
+    "RelativePath": "api/HbtLanguage",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "input",
+        "Type": "Lean.Hbt.Application.Dtos.Admin.HbtLanguageCreateDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Lean.Hbt.WebApi.Controllers.Admin.HbtLanguageController",
+    "Method": "UpdateAsync",
+    "RelativePath": "api/HbtLanguage",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "input",
+        "Type": "Lean.Hbt.Application.Dtos.Admin.HbtLanguageUpdateDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Lean.Hbt.WebApi.Controllers.Admin.HbtLanguageController",
+    "Method": "GetAsync",
+    "RelativePath": "api/HbtLanguage/{languageId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "languageId",
+        "Type": "System.Int64",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Lean.Hbt.WebApi.Controllers.Admin.HbtLanguageController",
+    "Method": "DeleteAsync",
+    "RelativePath": "api/HbtLanguage/{languageId}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "languageId",
+        "Type": "System.Int64",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Lean.Hbt.WebApi.Controllers.Admin.HbtLanguageController",
+    "Method": "UpdateStatusAsync",
+    "RelativePath": "api/HbtLanguage/{languageId}/status",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "languageId",
+        "Type": "System.Int64",
+        "IsRequired": true
+      },
+      {
+        "Name": "status",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Lean.Hbt.WebApi.Controllers.Admin.HbtLanguageController",
+    "Method": "BatchDeleteAsync",
+    "RelativePath": "api/HbtLanguage/batch",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "languageIds",
+        "Type": "System.Int64[]",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Lean.Hbt.WebApi.Controllers.Admin.HbtLanguageController",
+    "Method": "ExportAsync",
+    "RelativePath": "api/HbtLanguage/export",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "LangCode",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "LangName",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Status",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "PageIndex",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "PageSize",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Lean.Hbt.WebApi.Controllers.Admin.HbtLanguageController",
+    "Method": "ImportAsync",
+    "RelativePath": "api/HbtLanguage/import",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "languages",
+        "Type": "System.Collections.Generic.List\u00601[[Lean.Hbt.Application.Dtos.Admin.HbtLanguageImportDto, Lean.Hbt.Application, Version=0.0.1.0, Culture=neutral, PublicKeyToken=null]]",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Lean.Hbt.WebApi.Controllers.Admin.HbtLanguageController",
+    "Method": "GetTemplateAsync",
+    "RelativePath": "api/HbtLanguage/template",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "Lean.Hbt.WebApi.Controllers.Identity.HbtLoginExtendController",
     "Method": "GetPagedListAsync",
     "RelativePath": "api/HbtLoginExtend",
@@ -2888,6 +3087,298 @@
     "IsController": true,
     "Order": 0,
     "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Lean.Hbt.WebApi.Controllers.Admin.HbtTranslationController",
+    "Method": "GetPagedListAsync",
+    "RelativePath": "api/HbtTranslation",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "LangCode",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "TransKey",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "ModuleName",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Status",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "PageIndex",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "PageSize",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Lean.Hbt.WebApi.Controllers.Admin.HbtTranslationController",
+    "Method": "InsertAsync",
+    "RelativePath": "api/HbtTranslation",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "input",
+        "Type": "Lean.Hbt.Application.Dtos.Admin.HbtTranslationCreateDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Lean.Hbt.WebApi.Controllers.Admin.HbtTranslationController",
+    "Method": "UpdateAsync",
+    "RelativePath": "api/HbtTranslation",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "input",
+        "Type": "Lean.Hbt.Application.Dtos.Admin.HbtTranslationUpdateDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Lean.Hbt.WebApi.Controllers.Admin.HbtTranslationController",
+    "Method": "GetAsync",
+    "RelativePath": "api/HbtTranslation/{translationId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "translationId",
+        "Type": "System.Int64",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Lean.Hbt.WebApi.Controllers.Admin.HbtTranslationController",
+    "Method": "DeleteAsync",
+    "RelativePath": "api/HbtTranslation/{translationId}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "translationId",
+        "Type": "System.Int64",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Lean.Hbt.WebApi.Controllers.Admin.HbtTranslationController",
+    "Method": "UpdateStatusAsync",
+    "RelativePath": "api/HbtTranslation/{translationId}/status",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "translationId",
+        "Type": "System.Int64",
+        "IsRequired": true
+      },
+      {
+        "Name": "status",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Lean.Hbt.WebApi.Controllers.Admin.HbtTranslationController",
+    "Method": "BatchDeleteAsync",
+    "RelativePath": "api/HbtTranslation/batch",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "translationIds",
+        "Type": "System.Int64[]",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Lean.Hbt.WebApi.Controllers.Admin.HbtTranslationController",
+    "Method": "ExportAsync",
+    "RelativePath": "api/HbtTranslation/export",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "LangCode",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "TransKey",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "ModuleName",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Status",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "PageIndex",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "PageSize",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Lean.Hbt.WebApi.Controllers.Admin.HbtTranslationController",
+    "Method": "ImportAsync",
+    "RelativePath": "api/HbtTranslation/import",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "translations",
+        "Type": "System.Collections.Generic.List\u00601[[Lean.Hbt.Application.Dtos.Admin.HbtTranslationImportDto, Lean.Hbt.Application, Version=0.0.1.0, Culture=neutral, PublicKeyToken=null]]",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Lean.Hbt.WebApi.Controllers.Admin.HbtTranslationController",
+    "Method": "GetListByModuleAsync",
+    "RelativePath": "api/HbtTranslation/module",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "langCode",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "moduleName",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Lean.Hbt.WebApi.Controllers.Admin.HbtTranslationController",
+    "Method": "GetTemplateAsync",
+    "RelativePath": "api/HbtTranslation/template",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Lean.Hbt.WebApi.Controllers.Admin.HbtTranslationController",
+    "Method": "GetTransposedDataAsync",
+    "RelativePath": "api/HbtTranslation/transposed",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "LangCode",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "TransKey",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "ModuleName",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Status",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "PageIndex",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "PageSize",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Lean.Hbt.WebApi.Controllers.Admin.HbtTranslationController",
+    "Method": "GetTransValueAsync",
+    "RelativePath": "api/HbtTranslation/value",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "langCode",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "transKey",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
     "ReturnTypes": []
   },
   {

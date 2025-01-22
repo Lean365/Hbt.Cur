@@ -94,7 +94,7 @@ namespace Lean.Hbt.Application.Services.Audit
         {
             var log = await _exceptionLogRepository.GetByIdAsync(logId);
             if (log == null)
-                throw new HbtBusinessException($"异常日志不存在: {logId}");
+                throw new HbtException($"异常日志不存在: {logId}");
 
             return log.Adapt<HbtExceptionLogDto>();
         }

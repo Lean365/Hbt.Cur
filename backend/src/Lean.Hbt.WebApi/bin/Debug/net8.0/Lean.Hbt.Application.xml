@@ -731,6 +731,216 @@
             状态（0正常 1停用）
             </summary>
         </member>
+        <member name="T:Lean.Hbt.Application.Dtos.Admin.HbtLanguageDto">
+            <summary>
+            语言数据传输对象
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Admin.HbtLanguageDto.LanguageId">
+            <summary>
+            语言ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Admin.HbtLanguageDto.LangCode">
+            <summary>
+            语言代码
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Admin.HbtLanguageDto.LangName">
+            <summary>
+            语言名称
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Admin.HbtLanguageDto.OrderNum">
+            <summary>
+            排序
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Admin.HbtLanguageDto.Status">
+            <summary>
+            状态（0正常 1停用）
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Admin.HbtLanguageDto.StatusName">
+            <summary>
+            状态名称
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Admin.HbtLanguageDto.CreateTime">
+            <summary>
+            创建时间
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Application.Dtos.Admin.HbtLanguageQueryDto">
+            <summary>
+            语言查询对象
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Admin.HbtLanguageQueryDto.LangCode">
+            <summary>
+            语言代码
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Admin.HbtLanguageQueryDto.LangName">
+            <summary>
+            语言名称
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Admin.HbtLanguageQueryDto.Status">
+            <summary>
+            状态（0正常 1停用）
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Application.Dtos.Admin.HbtLanguageCreateDto">
+            <summary>
+            语言创建对象
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Admin.HbtLanguageCreateDto.LangCode">
+            <summary>
+            语言代码
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Admin.HbtLanguageCreateDto.LangName">
+            <summary>
+            语言名称
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Admin.HbtLanguageCreateDto.OrderNum">
+            <summary>
+            排序
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Admin.HbtLanguageCreateDto.Status">
+            <summary>
+            状态（0正常 1停用）
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Application.Dtos.Admin.HbtLanguageUpdateDto">
+            <summary>
+            语言更新对象
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Admin.HbtLanguageUpdateDto.LanguageId">
+            <summary>
+            语言ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Admin.HbtLanguageUpdateDto.LangCode">
+            <summary>
+            语言代码
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Admin.HbtLanguageUpdateDto.LangName">
+            <summary>
+            语言名称
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Admin.HbtLanguageUpdateDto.OrderNum">
+            <summary>
+            排序
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Admin.HbtLanguageUpdateDto.Status">
+            <summary>
+            状态（0正常 1停用）
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Application.Dtos.Admin.HbtLanguageImportDto">
+            <summary>
+            语言导入对象
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Admin.HbtLanguageImportDto.LangCode">
+            <summary>
+            语言代码
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Admin.HbtLanguageImportDto.LangName">
+            <summary>
+            语言名称
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Admin.HbtLanguageImportDto.OrderNum">
+            <summary>
+            排序
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Admin.HbtLanguageImportDto.Status">
+            <summary>
+            状态（0正常 1停用）
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Application.Dtos.Admin.HbtLanguageExportDto">
+            <summary>
+            语言导出对象
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Admin.HbtLanguageExportDto.LangCode">
+            <summary>
+            语言代码
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Admin.HbtLanguageExportDto.LangName">
+            <summary>
+            语言名称
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Admin.HbtLanguageExportDto.OrderNum">
+            <summary>
+            排序
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Admin.HbtLanguageExportDto.Status">
+            <summary>
+            状态（0正常 1停用）
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Admin.HbtLanguageExportDto.CreateTime">
+            <summary>
+            创建时间
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Application.Dtos.Admin.HbtLanguageTemplateDto">
+            <summary>
+            语言模板对象
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Admin.HbtLanguageTemplateDto.LangCode">
+            <summary>
+            语言代码
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Admin.HbtLanguageTemplateDto.LangName">
+            <summary>
+            语言名称
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Admin.HbtLanguageTemplateDto.OrderNum">
+            <summary>
+            排序
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Admin.HbtLanguageTemplateDto.Status">
+            <summary>
+            状态（0正常 1停用）
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Application.Dtos.Admin.HbtLanguageStatusDto">
+            <summary>
+            语言状态更新对象
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Admin.HbtLanguageStatusDto.LanguageId">
+            <summary>
+            语言ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Admin.HbtLanguageStatusDto.Status">
+            <summary>
+            状态（0正常 1停用）
+            </summary>
+        </member>
         <member name="T:Lean.Hbt.Application.Dtos.Admin.HbtSysConfigDto">
             <summary>
             系统配置基础DTO
@@ -1042,6 +1252,281 @@
             </summary>
         </member>
         <member name="P:Lean.Hbt.Application.Dtos.Admin.HbtSysConfigStatusDto.Status">
+            <summary>
+            状态（0正常 1停用）
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Application.Dtos.Admin.HbtTranslationDto">
+            <summary>
+            翻译数据传输对象
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Admin.HbtTranslationDto.TranslationId">
+            <summary>
+            翻译ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Admin.HbtTranslationDto.LangCode">
+            <summary>
+            语言代码
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Admin.HbtTranslationDto.TransKey">
+            <summary>
+            翻译键
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Admin.HbtTranslationDto.TransValue">
+            <summary>
+            翻译值
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Admin.HbtTranslationDto.ModuleName">
+            <summary>
+            模块名称
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Admin.HbtTranslationDto.Remark">
+            <summary>
+            备注
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Admin.HbtTranslationDto.Status">
+            <summary>
+            状态（0正常 1停用）
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Admin.HbtTranslationDto.StatusName">
+            <summary>
+            状态名称
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Admin.HbtTranslationDto.CreateTime">
+            <summary>
+            创建时间
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Application.Dtos.Admin.HbtTranslationQueryDto">
+            <summary>
+            翻译查询对象
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Admin.HbtTranslationQueryDto.LangCode">
+            <summary>
+            语言代码
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Admin.HbtTranslationQueryDto.TransKey">
+            <summary>
+            翻译键
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Admin.HbtTranslationQueryDto.ModuleName">
+            <summary>
+            模块名称
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Admin.HbtTranslationQueryDto.Status">
+            <summary>
+            状态（0正常 1停用）
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Application.Dtos.Admin.HbtTranslationCreateDto">
+            <summary>
+            翻译创建对象
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Admin.HbtTranslationCreateDto.LangCode">
+            <summary>
+            语言代码
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Admin.HbtTranslationCreateDto.TransKey">
+            <summary>
+            翻译键
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Admin.HbtTranslationCreateDto.TransValue">
+            <summary>
+            翻译值
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Admin.HbtTranslationCreateDto.ModuleName">
+            <summary>
+            模块名称
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Admin.HbtTranslationCreateDto.Remark">
+            <summary>
+            备注
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Admin.HbtTranslationCreateDto.Status">
+            <summary>
+            状态（0正常 1停用）
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Application.Dtos.Admin.HbtTranslationUpdateDto">
+            <summary>
+            翻译更新对象
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Admin.HbtTranslationUpdateDto.TranslationId">
+            <summary>
+            翻译ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Admin.HbtTranslationUpdateDto.LangCode">
+            <summary>
+            语言代码
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Admin.HbtTranslationUpdateDto.TransKey">
+            <summary>
+            翻译键
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Admin.HbtTranslationUpdateDto.TransValue">
+            <summary>
+            翻译值
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Admin.HbtTranslationUpdateDto.ModuleName">
+            <summary>
+            模块名称
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Admin.HbtTranslationUpdateDto.Remark">
+            <summary>
+            备注
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Admin.HbtTranslationUpdateDto.Status">
+            <summary>
+            状态（0正常 1停用）
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Application.Dtos.Admin.HbtTranslationImportDto">
+            <summary>
+            翻译导入对象
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Admin.HbtTranslationImportDto.LangCode">
+            <summary>
+            语言代码
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Admin.HbtTranslationImportDto.TransKey">
+            <summary>
+            翻译键
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Admin.HbtTranslationImportDto.TransValue">
+            <summary>
+            翻译值
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Admin.HbtTranslationImportDto.ModuleName">
+            <summary>
+            模块名称
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Admin.HbtTranslationImportDto.Remark">
+            <summary>
+            备注
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Admin.HbtTranslationImportDto.Status">
+            <summary>
+            状态（0正常 1停用）
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Application.Dtos.Admin.HbtTranslationExportDto">
+            <summary>
+            翻译导出对象
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Admin.HbtTranslationExportDto.LangCode">
+            <summary>
+            语言代码
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Admin.HbtTranslationExportDto.TransKey">
+            <summary>
+            翻译键
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Admin.HbtTranslationExportDto.TransValue">
+            <summary>
+            翻译值
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Admin.HbtTranslationExportDto.ModuleName">
+            <summary>
+            模块名称
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Admin.HbtTranslationExportDto.Remark">
+            <summary>
+            备注
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Admin.HbtTranslationExportDto.Status">
+            <summary>
+            状态（0正常 1停用）
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Admin.HbtTranslationExportDto.CreateTime">
+            <summary>
+            创建时间
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Application.Dtos.Admin.HbtTranslationTemplateDto">
+            <summary>
+            翻译模板对象
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Admin.HbtTranslationTemplateDto.LangCode">
+            <summary>
+            语言代码
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Admin.HbtTranslationTemplateDto.TransKey">
+            <summary>
+            翻译键
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Admin.HbtTranslationTemplateDto.TransValue">
+            <summary>
+            翻译值
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Admin.HbtTranslationTemplateDto.ModuleName">
+            <summary>
+            模块名称
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Admin.HbtTranslationTemplateDto.Remark">
+            <summary>
+            备注
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Admin.HbtTranslationTemplateDto.Status">
+            <summary>
+            状态（0正常 1停用）
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Application.Dtos.Admin.HbtTranslationStatusDto">
+            <summary>
+            翻译状态更新对象
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Admin.HbtTranslationStatusDto.TranslationId">
+            <summary>
+            翻译ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Application.Dtos.Admin.HbtTranslationStatusDto.Status">
             <summary>
             状态（0正常 1停用）
             </summary>
@@ -5300,11 +5785,13 @@
             创建时间: 2024-01-18
             </remarks>
         </member>
-        <member name="M:Lean.Hbt.Application.Services.Admin.HbtDictTypeService.#ctor(Lean.Hbt.Domain.Repositories.IHbtRepository{Lean.Hbt.Domain.Entities.Admin.HbtDictType},Lean.Hbt.Domain.IServices.IHbtLogger)">
+        <member name="M:Lean.Hbt.Application.Services.Admin.HbtDictTypeService.#ctor(Lean.Hbt.Domain.Repositories.IHbtRepository{Lean.Hbt.Domain.Entities.Admin.HbtDictType},Lean.Hbt.Domain.Repositories.IHbtRepository{Lean.Hbt.Domain.Entities.Admin.HbtDictData},Lean.Hbt.Infrastructure.Data.Contexts.IHbtDbContext,Lean.Hbt.Domain.IServices.IHbtLogger)">
             <summary>
             构造函数
             </summary>
             <param name="dictTypeRepository">字典类型仓储</param>
+            <param name="dictDataRepository">字典数据仓储</param>
+            <param name="dbContext">数据库上下文</param>
             <param name="logger">日志接口</param>
         </member>
         <member name="M:Lean.Hbt.Application.Services.Admin.HbtDictTypeService.GetPagedListAsync(Lean.Hbt.Application.Dtos.Admin.HbtDictTypeQueryDto)">
@@ -5331,11 +5818,15 @@
             <summary>
             删除字典类型
             </summary>
+            <param name="dictTypeId">字典类型ID</param>
+            <returns>是否成功</returns>
         </member>
         <member name="M:Lean.Hbt.Application.Services.Admin.HbtDictTypeService.BatchDeleteAsync(System.Int64[])">
             <summary>
             批量删除字典类型
             </summary>
+            <param name="dictTypeIds">字典类型ID列表</param>
+            <returns>是否成功</returns>
         </member>
         <member name="M:Lean.Hbt.Application.Services.Admin.HbtDictTypeService.ImportAsync(System.Collections.Generic.List{Lean.Hbt.Application.Dtos.Admin.HbtDictTypeImportDto})">
             <summary>
@@ -5351,10 +5842,79 @@
             <summary>
             获取导入模板
             </summary>
+            <returns>模板数据</returns>
         </member>
         <member name="M:Lean.Hbt.Application.Services.Admin.HbtDictTypeService.UpdateStatusAsync(Lean.Hbt.Application.Dtos.Admin.HbtDictTypeStatusDto)">
             <summary>
             更新字典类型状态
+            </summary>
+            <param name="input">状态更新对象</param>
+            <returns>是否成功</returns>
+        </member>
+        <member name="T:Lean.Hbt.Application.Services.Admin.HbtLanguageService">
+            <summary>
+            语言服务实现类
+            </summary>
+            <remarks>
+            创建者: Lean365
+            创建时间: 2024-01-22
+            </remarks>
+        </member>
+        <member name="M:Lean.Hbt.Application.Services.Admin.HbtLanguageService.#ctor(Lean.Hbt.Domain.Repositories.IHbtRepository{Lean.Hbt.Domain.Entities.Admin.HbtLanguage},Lean.Hbt.Domain.IServices.IHbtLogger)">
+            <summary>
+            构造函数
+            </summary>
+            <param name="languageRepository">语言仓储</param>
+            <param name="logger">日志接口</param>
+        </member>
+        <member name="M:Lean.Hbt.Application.Services.Admin.HbtLanguageService.GetPagedListAsync(Lean.Hbt.Application.Dtos.Admin.HbtLanguageQueryDto)">
+            <summary>
+            获取语言分页列表
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Application.Services.Admin.HbtLanguageService.GetAsync(System.Int64)">
+            <summary>
+            获取语言详情
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Application.Services.Admin.HbtLanguageService.InsertAsync(Lean.Hbt.Application.Dtos.Admin.HbtLanguageCreateDto)">
+            <summary>
+            创建语言
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Application.Services.Admin.HbtLanguageService.UpdateAsync(Lean.Hbt.Application.Dtos.Admin.HbtLanguageUpdateDto)">
+            <summary>
+            更新语言
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Application.Services.Admin.HbtLanguageService.DeleteAsync(System.Int64)">
+            <summary>
+            删除语言
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Application.Services.Admin.HbtLanguageService.BatchDeleteAsync(System.Int64[])">
+            <summary>
+            批量删除语言
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Application.Services.Admin.HbtLanguageService.ImportAsync(System.Collections.Generic.List{Lean.Hbt.Application.Dtos.Admin.HbtLanguageImportDto})">
+            <summary>
+            导入语言数据
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Application.Services.Admin.HbtLanguageService.ExportAsync(Lean.Hbt.Application.Dtos.Admin.HbtLanguageQueryDto)">
+            <summary>
+            导出语言数据
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Application.Services.Admin.HbtLanguageService.GetTemplateAsync">
+            <summary>
+            获取导入模板
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Application.Services.Admin.HbtLanguageService.UpdateStatusAsync(Lean.Hbt.Application.Dtos.Admin.HbtLanguageStatusDto)">
+            <summary>
+            更新语言状态
             </summary>
         </member>
         <member name="T:Lean.Hbt.Application.Services.Admin.HbtLogArchiveService">
@@ -5498,6 +6058,87 @@
         <member name="M:Lean.Hbt.Application.Services.Admin.HbtSysConfigService.GetAllConfigsAsync">
             <summary>
             获取所有配置
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Application.Services.Admin.HbtTranslationService">
+            <summary>
+            翻译服务实现类
+            </summary>
+            <remarks>
+            创建者: Lean365
+            创建时间: 2024-01-22
+            </remarks>
+        </member>
+        <member name="M:Lean.Hbt.Application.Services.Admin.HbtTranslationService.#ctor(Lean.Hbt.Domain.Repositories.IHbtRepository{Lean.Hbt.Domain.Entities.Admin.HbtTranslation},Lean.Hbt.Domain.IServices.IHbtLogger)">
+            <summary>
+            构造函数
+            </summary>
+            <param name="translationRepository">翻译仓储</param>
+            <param name="logger">日志接口</param>
+        </member>
+        <member name="M:Lean.Hbt.Application.Services.Admin.HbtTranslationService.GetPagedListAsync(Lean.Hbt.Application.Dtos.Admin.HbtTranslationQueryDto)">
+            <summary>
+            获取翻译分页列表
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Application.Services.Admin.HbtTranslationService.GetAsync(System.Int64)">
+            <summary>
+            获取翻译详情
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Application.Services.Admin.HbtTranslationService.InsertAsync(Lean.Hbt.Application.Dtos.Admin.HbtTranslationCreateDto)">
+            <summary>
+            创建翻译
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Application.Services.Admin.HbtTranslationService.UpdateAsync(Lean.Hbt.Application.Dtos.Admin.HbtTranslationUpdateDto)">
+            <summary>
+            更新翻译
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Application.Services.Admin.HbtTranslationService.DeleteAsync(System.Int64)">
+            <summary>
+            删除翻译
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Application.Services.Admin.HbtTranslationService.BatchDeleteAsync(System.Int64[])">
+            <summary>
+            批量删除翻译
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Application.Services.Admin.HbtTranslationService.ImportAsync(System.Collections.Generic.List{Lean.Hbt.Application.Dtos.Admin.HbtTranslationImportDto})">
+            <summary>
+            导入翻译数据
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Application.Services.Admin.HbtTranslationService.ExportAsync(Lean.Hbt.Application.Dtos.Admin.HbtTranslationQueryDto)">
+            <summary>
+            导出翻译数据
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Application.Services.Admin.HbtTranslationService.GetTemplateAsync">
+            <summary>
+            获取导入模板
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Application.Services.Admin.HbtTranslationService.UpdateStatusAsync(Lean.Hbt.Application.Dtos.Admin.HbtTranslationStatusDto)">
+            <summary>
+            更新翻译状态
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Application.Services.Admin.HbtTranslationService.GetTransValueAsync(System.String,System.String)">
+            <summary>
+            获取指定语言的翻译值
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Application.Services.Admin.HbtTranslationService.GetListByModuleAsync(System.String,System.String)">
+            <summary>
+            获取指定模块的翻译列表
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Application.Services.Admin.HbtTranslationService.GetTransposedDataAsync(Lean.Hbt.Application.Dtos.Admin.HbtTranslationQueryDto)">
+            <summary>
+            获取转置后的翻译数据(分页)
             </summary>
         </member>
         <member name="T:Lean.Hbt.Application.Services.Admin.IHbtDictDataService">
@@ -5656,6 +6297,80 @@
             <param name="input">状态更新对象</param>
             <returns>是否成功</returns>
         </member>
+        <member name="T:Lean.Hbt.Application.Services.Admin.IHbtLanguageService">
+            <summary>
+            语言服务接口
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Application.Services.Admin.IHbtLanguageService.GetPagedListAsync(Lean.Hbt.Application.Dtos.Admin.HbtLanguageQueryDto)">
+            <summary>
+            获取语言分页列表
+            </summary>
+            <param name="query">查询条件</param>
+            <returns>语言分页列表</returns>
+        </member>
+        <member name="M:Lean.Hbt.Application.Services.Admin.IHbtLanguageService.GetAsync(System.Int64)">
+            <summary>
+            获取语言详情
+            </summary>
+            <param name="languageId">语言ID</param>
+            <returns>语言详情</returns>
+        </member>
+        <member name="M:Lean.Hbt.Application.Services.Admin.IHbtLanguageService.InsertAsync(Lean.Hbt.Application.Dtos.Admin.HbtLanguageCreateDto)">
+            <summary>
+            创建语言
+            </summary>
+            <param name="input">创建对象</param>
+            <returns>语言ID</returns>
+        </member>
+        <member name="M:Lean.Hbt.Application.Services.Admin.IHbtLanguageService.UpdateAsync(Lean.Hbt.Application.Dtos.Admin.HbtLanguageUpdateDto)">
+            <summary>
+            更新语言
+            </summary>
+            <param name="input">更新对象</param>
+            <returns>是否成功</returns>
+        </member>
+        <member name="M:Lean.Hbt.Application.Services.Admin.IHbtLanguageService.DeleteAsync(System.Int64)">
+            <summary>
+            删除语言
+            </summary>
+            <param name="languageId">语言ID</param>
+            <returns>是否成功</returns>
+        </member>
+        <member name="M:Lean.Hbt.Application.Services.Admin.IHbtLanguageService.BatchDeleteAsync(System.Int64[])">
+            <summary>
+            批量删除语言
+            </summary>
+            <param name="languageIds">语言ID集合</param>
+            <returns>是否成功</returns>
+        </member>
+        <member name="M:Lean.Hbt.Application.Services.Admin.IHbtLanguageService.ImportAsync(System.Collections.Generic.List{Lean.Hbt.Application.Dtos.Admin.HbtLanguageImportDto})">
+            <summary>
+            导入语言数据
+            </summary>
+            <param name="languages">语言数据列表</param>
+            <returns>导入结果</returns>
+        </member>
+        <member name="M:Lean.Hbt.Application.Services.Admin.IHbtLanguageService.ExportAsync(Lean.Hbt.Application.Dtos.Admin.HbtLanguageQueryDto)">
+            <summary>
+            导出语言数据
+            </summary>
+            <param name="query">查询条件</param>
+            <returns>导出数据列表</returns>
+        </member>
+        <member name="M:Lean.Hbt.Application.Services.Admin.IHbtLanguageService.GetTemplateAsync">
+            <summary>
+            获取导入模板
+            </summary>
+            <returns>模板数据</returns>
+        </member>
+        <member name="M:Lean.Hbt.Application.Services.Admin.IHbtLanguageService.UpdateStatusAsync(Lean.Hbt.Application.Dtos.Admin.HbtLanguageStatusDto)">
+            <summary>
+            更新语言状态
+            </summary>
+            <param name="input">状态更新对象</param>
+            <returns>是否成功</returns>
+        </member>
         <member name="T:Lean.Hbt.Application.Services.Admin.IHbtSysConfigService">
             <summary>
             系统配置服务接口
@@ -5733,6 +6448,103 @@
             </summary>
             <param name="input">状态更新对象</param>
             <returns>是否成功</returns>
+        </member>
+        <member name="T:Lean.Hbt.Application.Services.Admin.IHbtTranslationService">
+            <summary>
+            翻译服务接口
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Application.Services.Admin.IHbtTranslationService.GetPagedListAsync(Lean.Hbt.Application.Dtos.Admin.HbtTranslationQueryDto)">
+            <summary>
+            获取翻译分页列表
+            </summary>
+            <param name="query">查询条件</param>
+            <returns>翻译分页列表</returns>
+        </member>
+        <member name="M:Lean.Hbt.Application.Services.Admin.IHbtTranslationService.GetAsync(System.Int64)">
+            <summary>
+            获取翻译详情
+            </summary>
+            <param name="translationId">翻译ID</param>
+            <returns>翻译详情</returns>
+        </member>
+        <member name="M:Lean.Hbt.Application.Services.Admin.IHbtTranslationService.InsertAsync(Lean.Hbt.Application.Dtos.Admin.HbtTranslationCreateDto)">
+            <summary>
+            创建翻译
+            </summary>
+            <param name="input">创建对象</param>
+            <returns>翻译ID</returns>
+        </member>
+        <member name="M:Lean.Hbt.Application.Services.Admin.IHbtTranslationService.UpdateAsync(Lean.Hbt.Application.Dtos.Admin.HbtTranslationUpdateDto)">
+            <summary>
+            更新翻译
+            </summary>
+            <param name="input">更新对象</param>
+            <returns>是否成功</returns>
+        </member>
+        <member name="M:Lean.Hbt.Application.Services.Admin.IHbtTranslationService.DeleteAsync(System.Int64)">
+            <summary>
+            删除翻译
+            </summary>
+            <param name="translationId">翻译ID</param>
+            <returns>是否成功</returns>
+        </member>
+        <member name="M:Lean.Hbt.Application.Services.Admin.IHbtTranslationService.BatchDeleteAsync(System.Int64[])">
+            <summary>
+            批量删除翻译
+            </summary>
+            <param name="translationIds">翻译ID集合</param>
+            <returns>是否成功</returns>
+        </member>
+        <member name="M:Lean.Hbt.Application.Services.Admin.IHbtTranslationService.ImportAsync(System.Collections.Generic.List{Lean.Hbt.Application.Dtos.Admin.HbtTranslationImportDto})">
+            <summary>
+            导入翻译数据
+            </summary>
+            <param name="translations">翻译数据列表</param>
+            <returns>导入结果</returns>
+        </member>
+        <member name="M:Lean.Hbt.Application.Services.Admin.IHbtTranslationService.ExportAsync(Lean.Hbt.Application.Dtos.Admin.HbtTranslationQueryDto)">
+            <summary>
+            导出翻译数据
+            </summary>
+            <param name="query">查询条件</param>
+            <returns>导出数据列表</returns>
+        </member>
+        <member name="M:Lean.Hbt.Application.Services.Admin.IHbtTranslationService.GetTemplateAsync">
+            <summary>
+            获取导入模板
+            </summary>
+            <returns>模板数据</returns>
+        </member>
+        <member name="M:Lean.Hbt.Application.Services.Admin.IHbtTranslationService.UpdateStatusAsync(Lean.Hbt.Application.Dtos.Admin.HbtTranslationStatusDto)">
+            <summary>
+            更新翻译状态
+            </summary>
+            <param name="input">状态更新对象</param>
+            <returns>是否成功</returns>
+        </member>
+        <member name="M:Lean.Hbt.Application.Services.Admin.IHbtTranslationService.GetTransValueAsync(System.String,System.String)">
+            <summary>
+            获取指定语言的翻译值
+            </summary>
+            <param name="langCode">语言代码</param>
+            <param name="transKey">翻译键</param>
+            <returns>翻译值</returns>
+        </member>
+        <member name="M:Lean.Hbt.Application.Services.Admin.IHbtTranslationService.GetListByModuleAsync(System.String,System.String)">
+            <summary>
+            获取指定模块的翻译列表
+            </summary>
+            <param name="langCode">语言代码</param>
+            <param name="moduleName">模块名称</param>
+            <returns>翻译列表</returns>
+        </member>
+        <member name="M:Lean.Hbt.Application.Services.Admin.IHbtTranslationService.GetTransposedDataAsync(Lean.Hbt.Application.Dtos.Admin.HbtTranslationQueryDto)">
+            <summary>
+            获取转置后的翻译数据(分页)
+            </summary>
+            <param name="query">查询条件</param>
+            <returns>转置后的翻译数据,包含分页信息</returns>
         </member>
         <member name="T:Lean.Hbt.Application.Services.Audit.HbtAuditLogService">
             <summary>

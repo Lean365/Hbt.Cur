@@ -113,7 +113,7 @@
         </member>
         <member name="P:Lean.Hbt.Domain.Entities.Admin.HbtLanguage.LangCode">
             <summary>
-            语言编码
+            语言代码
             </summary>
         </member>
         <member name="P:Lean.Hbt.Domain.Entities.Admin.HbtLanguage.LangName">
@@ -178,7 +178,7 @@
         </member>
         <member name="P:Lean.Hbt.Domain.Entities.Admin.HbtTranslation.LangCode">
             <summary>
-            语言编码
+            语言代码
             </summary>
         </member>
         <member name="P:Lean.Hbt.Domain.Entities.Admin.HbtTranslation.TransKey">
@@ -191,9 +191,14 @@
             翻译值
             </summary>
         </member>
-        <member name="P:Lean.Hbt.Domain.Entities.Admin.HbtTranslation.Module">
+        <member name="P:Lean.Hbt.Domain.Entities.Admin.HbtTranslation.ModuleName">
             <summary>
-            模块
+            模块名称
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Admin.HbtTranslation.Remark">
+            <summary>
+            备注
             </summary>
         </member>
         <member name="P:Lean.Hbt.Domain.Entities.Admin.HbtTranslation.Status">

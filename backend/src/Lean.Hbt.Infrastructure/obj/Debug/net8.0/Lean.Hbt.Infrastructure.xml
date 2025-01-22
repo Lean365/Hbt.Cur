@@ -332,6 +332,30 @@
             初始化验证码配置
             </summary>
         </member>
+        <member name="T:Lean.Hbt.Infrastructure.Extensions.HbtPermissionExtensions">
+            <summary>
+            权限中间件扩展方法
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Extensions.HbtPermissionExtensions.UseHbtPermission(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+            <summary>
+            使用权限中间件
+            </summary>
+            <param name="app">应用程序构建器</param>
+            <returns>应用程序构建器</returns>
+        </member>
+        <member name="T:Lean.Hbt.Infrastructure.Extensions.HbtRateLimitExtensions">
+            <summary>
+            限流中间件扩展方法
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Extensions.HbtRateLimitExtensions.UseHbtRateLimit(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+            <summary>
+            使用限流中间件
+            </summary>
+            <param name="app">应用程序构建器</param>
+            <returns>应用程序构建器</returns>
+        </member>
         <member name="T:Lean.Hbt.Infrastructure.Extensions.HbtServiceCollectionExtensions">
             <summary>
             服务集合扩展
@@ -567,6 +591,22 @@
             </summary>
             <param name="entities">实体对象列表</param>
             <returns>返回受影响的行数</returns>
+        </member>
+        <member name="T:Lean.Hbt.Infrastructure.Security.Attributes.HbtPermissionAttribute">
+            <summary>
+            权限特性
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Infrastructure.Security.Attributes.HbtPermissionAttribute.Permission">
+            <summary>
+            权限编码
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Security.Attributes.HbtPermissionAttribute.#ctor(System.String)">
+            <summary>
+            构造函数
+            </summary>
+            <param name="permission">权限编码(格式:模块:实体:操作)</param>
         </member>
         <member name="T:Lean.Hbt.Infrastructure.Security.HbtAuditsLog">
             <summary>
@@ -864,6 +904,47 @@
             </summary>
             <param name="userId"></param>
             <returns></returns>
+        </member>
+        <member name="T:Lean.Hbt.Infrastructure.Security.HbtPermissionMiddleware">
+            <summary>
+            权限中间件,用于验证用户是否拥有访问权限
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Security.HbtPermissionMiddleware.#ctor(Microsoft.AspNetCore.Http.RequestDelegate)">
+            <summary>
+            构造函数
+            </summary>
+            <param name="next">请求委托</param>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Security.HbtPermissionMiddleware.InvokeAsync(Microsoft.AspNetCore.Http.HttpContext)">
+            <summary>
+            处理请求
+            </summary>
+            <param name="context">HTTP上下文</param>
+            <returns>异步任务</returns>
+        </member>
+        <member name="T:Lean.Hbt.Infrastructure.Security.HbtRateLimitMiddleware">
+            <summary>
+            限流中间件,基于令牌桶算法实现
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Security.HbtRateLimitMiddleware.#ctor(Microsoft.AspNetCore.Http.RequestDelegate)">
+            <summary>
+            构造函数
+            </summary>
+            <param name="next">请求委托</param>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Security.HbtRateLimitMiddleware.InvokeAsync(Microsoft.AspNetCore.Http.HttpContext)">
+            <summary>
+            处理请求
+            </summary>
+            <param name="context">HTTP上下文</param>
+            <returns>异步任务</returns>
+        </member>
+        <member name="T:Lean.Hbt.Infrastructure.Security.HbtRateLimitMiddleware.TokenBucket">
+            <summary>
+            令牌桶
+            </summary>
         </member>
         <member name="T:Lean.Hbt.Infrastructure.Security.HbtSessionManager">
             <summary>

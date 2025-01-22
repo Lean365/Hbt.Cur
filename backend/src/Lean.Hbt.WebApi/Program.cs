@@ -10,6 +10,10 @@ using Microsoft.Extensions.Options;
 using Lean.Hbt.Common.Options;
 using Lean.Hbt.Common.Helpers;
 using Newtonsoft.Json;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Microsoft.AspNetCore.Authorization;
 
 var logger = LogManager.Setup()
                       .LoadConfigurationFromFile("nlog.config")
@@ -42,8 +46,33 @@ try
     builder.Services.AddInfrastructure(builder.Configuration);
 
     // 添加认证和授权服务
-    builder.Services.AddAuthentication();
-    builder.Services.AddAuthorization();
+    builder.Services.AddAuthentication(options =>
+    {
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
+    .AddJwtBearer(options =>
+    {
+        // JWT配置
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+        };
+    });
+
+    builder.Services.AddAuthorization(options =>
+    {
+        // 添加默认策略
+        options.DefaultPolicy = new AuthorizationPolicyBuilder()
+            .RequireAuthenticatedUser()
+            .Build();
+    });
 
     // 添加配置
     builder.Services.Configure<HbtExcelOptions>(builder.Configuration.GetSection("Excel"));
@@ -72,8 +101,16 @@ try
     app.UseHbtExceptionHandler();
 
     app.UseHttpsRedirection();
+
+    // 使用限流中间件
+    app.UseHbtRateLimit();
+
+    // 认证授权中间件
     app.UseAuthentication();
     app.UseAuthorization();
+
+    // 使用权限中间件
+    app.UseHbtPermission();
 
     // 使用租户中间件
     app.UseHbtTenant();

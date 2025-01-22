@@ -103,7 +103,7 @@ namespace Lean.Hbt.Application.Services.Identity
         {
             var user = await _userRepository.GetByIdAsync(userId);
             if (user == null)
-                throw new HbtBusinessException($"用户不存在: {userId}");
+                throw new HbtException($"用户不存在: {userId}");
 
             return user.Adapt<HbtUserDto>();
         }
@@ -119,10 +119,10 @@ namespace Lean.Hbt.Application.Services.Identity
                 throw new ArgumentNullException(nameof(input));
 
             if (string.IsNullOrEmpty(input.UserName))
-                throw new HbtBusinessException("用户名不能为空");
+                throw new HbtException("用户名不能为空");
 
             if (string.IsNullOrEmpty(input.Password))
-                throw new HbtBusinessException("密码不能为空");
+                throw new HbtException("密码不能为空");
 
             // 验证字段是否已存在
             await HbtValidateUtils.ValidateFieldExistsAsync(_userRepository, "UserName", input.UserName);
@@ -131,7 +131,7 @@ namespace Lean.Hbt.Application.Services.Identity
 
             // 验证密码复杂度
             if (!_passwordPolicy.ValidatePasswordComplexity(input.Password))
-                throw new HbtBusinessException("密码不符合复杂度要求");
+                throw new HbtException("密码不符合复杂度要求");
 
             // 创建用户
             var (hash, salt, iterations) = HbtPasswordUtils.CreateHash(input.Password);
@@ -154,7 +154,7 @@ namespace Lean.Hbt.Application.Services.Identity
 
             var result = await _userRepository.InsertAsync(user);
             if (result <= 0)
-                throw new HbtBusinessException("创建用户失败");
+                throw new HbtException("创建用户失败");
 
             // 关联角色
             if (input.RoleIds?.Any() == true)
@@ -204,7 +204,7 @@ namespace Lean.Hbt.Application.Services.Identity
 
             var user = await _userRepository.GetByIdAsync(input.UserId);
             if (user == null)
-                throw new HbtBusinessException($"用户不存在: {input.UserId}");
+                throw new HbtException($"用户不存在: {input.UserId}");
 
             // 验证字段是否已存在
             await HbtValidateUtils.ValidateFieldExistsAsync(_userRepository, "PhoneNumber", input.PhoneNumber, input.UserId);
@@ -221,7 +221,7 @@ namespace Lean.Hbt.Application.Services.Identity
 
             var result = await _userRepository.UpdateAsync(user);
             if (result <= 0)
-                throw new HbtBusinessException("更新用户失败");
+                throw new HbtException("更新用户失败");
 
             // 更新角色关联
             await _userRoleRepository.DeleteAsync((Expression<Func<HbtUserRole, bool>>)(x => x.UserId == user.Id));
@@ -271,7 +271,7 @@ namespace Lean.Hbt.Application.Services.Identity
         {
             var user = await _userRepository.GetByIdAsync(userId);
             if (user == null)
-                throw new HbtBusinessException($"用户不存在: {userId}");
+                throw new HbtException($"用户不存在: {userId}");
 
             // 删除用户关联数据
             await _userRoleRepository.DeleteAsync((Expression<Func<HbtUserRole, bool>>)(x => x.UserId == userId));
@@ -336,7 +336,7 @@ namespace Lean.Hbt.Application.Services.Identity
                         await HbtValidateUtils.ValidateFieldExistsAsync(_userRepository, "PhoneNumber", user.PhoneNumber == null ? string.Empty : user.PhoneNumber);
                         await HbtValidateUtils.ValidateFieldExistsAsync(_userRepository, "Email", user.Email == null ? string.Empty : user.Email);
                     }
-                    catch (HbtBusinessException ex)
+                    catch (HbtException ex)
                     {
                         _logger.Warn($"导入用户失败: {ex.Message}");
                         fail++;
@@ -420,7 +420,7 @@ namespace Lean.Hbt.Application.Services.Identity
         {
             var user = await _userRepository.GetByIdAsync(input.UserId);
             if (user == null)
-                throw new HbtBusinessException($"用户不存在: {input.UserId}");
+                throw new HbtException($"用户不存在: {input.UserId}");
 
             user.Status = input.Status;
             var result = await _userRepository.UpdateAsync(user);
@@ -436,11 +436,11 @@ namespace Lean.Hbt.Application.Services.Identity
         {
             var user = await _userRepository.GetByIdAsync(input.UserId);
             if (user == null)
-                throw new HbtBusinessException($"用户不存在: {input.UserId}");
+                throw new HbtException($"用户不存在: {input.UserId}");
 
             // 验证密码复杂度
             if (!_passwordPolicy.ValidatePasswordComplexity(input.Password))
-                throw new HbtBusinessException("密码不符合复杂度要求");
+                throw new HbtException("密码不符合复杂度要求");
 
             // 重置密码
             var (hash, salt, iterations) = HbtPasswordUtils.CreateHash(input.Password);
@@ -460,15 +460,15 @@ namespace Lean.Hbt.Application.Services.Identity
         {
             var user = await _userRepository.GetByIdAsync(input.UserId);
             if (user == null)
-                throw new HbtBusinessException($"用户不存在: {input.UserId}");
+                throw new HbtException($"用户不存在: {input.UserId}");
 
             // 验证旧密码
             if (!HbtPasswordUtils.VerifyHash(input.OldPassword, user.Password, user.Salt, user.Iterations))
-                throw new HbtBusinessException("旧密码不正确");
+                throw new HbtException("旧密码不正确");
 
             // 验证密码复杂度
             if (!_passwordPolicy.ValidatePasswordComplexity(input.NewPassword))
-                throw new HbtBusinessException("新密码不符合复杂度要求");
+                throw new HbtException("新密码不符合复杂度要求");
 
             // 修改密码
             var (hash, salt, iterations) = HbtPasswordUtils.CreateHash(input.NewPassword);

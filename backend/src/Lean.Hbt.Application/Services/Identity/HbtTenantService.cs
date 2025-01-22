@@ -78,7 +78,7 @@ public class HbtTenantService : IHbtTenantService
     {
         var tenant = await _repository.GetByIdAsync(id);
         if (tenant == null)
-            throw new HbtBusinessException($"租户不存在: {id}");
+            throw new HbtException($"租户不存在: {id}");
 
         return tenant.Adapt<HbtTenantDto>();
     }
@@ -111,7 +111,7 @@ public class HbtTenantService : IHbtTenantService
     {
         var tenant = await _repository.GetByIdAsync(input.Id);
         if (tenant == null)
-            throw new HbtBusinessException($"租户不存在: {input.Id}");
+            throw new HbtException($"租户不存在: {input.Id}");
 
         // 验证字段是否已存在
         await HbtValidateUtils.ValidateFieldExistsAsync(_repository, "TenantName", input.TenantName, input.Id);
@@ -189,7 +189,7 @@ public class HbtTenantService : IHbtTenantService
     {
         var tenant = await _repository.GetByIdAsync(id);
         if (tenant == null)
-            throw new HbtBusinessException($"租户不存在: {id}");
+            throw new HbtException($"租户不存在: {id}");
 
         tenant.Status = status;
         var result = await _repository.UpdateAsync(tenant);

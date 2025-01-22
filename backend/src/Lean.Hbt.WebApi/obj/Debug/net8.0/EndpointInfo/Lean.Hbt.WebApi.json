@@ -2171,6 +2171,353 @@
         }
       }
     },
+    "/api/HbtLanguage": {
+      "get": {
+        "tags": [
+          "HbtLanguage"
+        ],
+        "parameters": [
+          {
+            "name": "LangCode",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "maxLength": 50,
+              "type": "string"
+            }
+          },
+          {
+            "name": "LangName",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "maxLength": 100,
+              "type": "string"
+            }
+          },
+          {
+            "name": "Status",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "$ref": "#/components/schemas/HbtStatus"
+            }
+          },
+          {
+            "name": "PageIndex",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "HbtLanguage"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HbtLanguageCreateDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HbtLanguageCreateDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/HbtLanguageCreateDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "HbtLanguage"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HbtLanguageUpdateDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HbtLanguageUpdateDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/HbtLanguageUpdateDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtLanguage/{languageId}": {
+      "get": {
+        "tags": [
+          "HbtLanguage"
+        ],
+        "parameters": [
+          {
+            "name": "languageId",
+            "in": "path",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "HbtLanguage"
+        ],
+        "parameters": [
+          {
+            "name": "languageId",
+            "in": "path",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtLanguage/{languageId}/status": {
+      "put": {
+        "tags": [
+          "HbtLanguage"
+        ],
+        "parameters": [
+          {
+            "name": "languageId",
+            "in": "path",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "$ref": "#/components/schemas/HbtStatus"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtLanguage/batch": {
+      "delete": {
+        "tags": [
+          "HbtLanguage"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int64"
+                }
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int64"
+                }
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int64"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtLanguage/export": {
+      "get": {
+        "tags": [
+          "HbtLanguage"
+        ],
+        "parameters": [
+          {
+            "name": "LangCode",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "maxLength": 50,
+              "type": "string"
+            }
+          },
+          {
+            "name": "LangName",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "maxLength": 100,
+              "type": "string"
+            }
+          },
+          {
+            "name": "Status",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "$ref": "#/components/schemas/HbtStatus"
+            }
+          },
+          {
+            "name": "PageIndex",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtLanguage/import": {
+      "post": {
+        "tags": [
+          "HbtLanguage"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/HbtLanguageImportDto"
+                }
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/HbtLanguageImportDto"
+                }
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/HbtLanguageImportDto"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtLanguage/template": {
+      "get": {
+        "tags": [
+          "HbtLanguage"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
     "/api/HbtLoginExtend": {
       "get": {
         "tags": [
@@ -4826,6 +5173,498 @@
         }
       }
     },
+    "/api/HbtTranslation": {
+      "get": {
+        "tags": [
+          "HbtTranslation"
+        ],
+        "parameters": [
+          {
+            "name": "LangCode",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "maxLength": 50,
+              "type": "string"
+            }
+          },
+          {
+            "name": "TransKey",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "maxLength": 200,
+              "type": "string"
+            }
+          },
+          {
+            "name": "ModuleName",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "maxLength": 100,
+              "type": "string"
+            }
+          },
+          {
+            "name": "Status",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "$ref": "#/components/schemas/HbtStatus"
+            }
+          },
+          {
+            "name": "PageIndex",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "HbtTranslation"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HbtTranslationCreateDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HbtTranslationCreateDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/HbtTranslationCreateDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "HbtTranslation"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HbtTranslationUpdateDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HbtTranslationUpdateDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/HbtTranslationUpdateDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtTranslation/{translationId}": {
+      "get": {
+        "tags": [
+          "HbtTranslation"
+        ],
+        "parameters": [
+          {
+            "name": "translationId",
+            "in": "path",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "HbtTranslation"
+        ],
+        "parameters": [
+          {
+            "name": "translationId",
+            "in": "path",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtTranslation/{translationId}/status": {
+      "put": {
+        "tags": [
+          "HbtTranslation"
+        ],
+        "parameters": [
+          {
+            "name": "translationId",
+            "in": "path",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "$ref": "#/components/schemas/HbtStatus"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtTranslation/batch": {
+      "delete": {
+        "tags": [
+          "HbtTranslation"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int64"
+                }
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int64"
+                }
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int64"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtTranslation/export": {
+      "get": {
+        "tags": [
+          "HbtTranslation"
+        ],
+        "parameters": [
+          {
+            "name": "LangCode",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "maxLength": 50,
+              "type": "string"
+            }
+          },
+          {
+            "name": "TransKey",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "maxLength": 200,
+              "type": "string"
+            }
+          },
+          {
+            "name": "ModuleName",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "maxLength": 100,
+              "type": "string"
+            }
+          },
+          {
+            "name": "Status",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "$ref": "#/components/schemas/HbtStatus"
+            }
+          },
+          {
+            "name": "PageIndex",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtTranslation/import": {
+      "post": {
+        "tags": [
+          "HbtTranslation"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/HbtTranslationImportDto"
+                }
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/HbtTranslationImportDto"
+                }
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/HbtTranslationImportDto"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtTranslation/module": {
+      "get": {
+        "tags": [
+          "HbtTranslation"
+        ],
+        "parameters": [
+          {
+            "name": "langCode",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "moduleName",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtTranslation/template": {
+      "get": {
+        "tags": [
+          "HbtTranslation"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtTranslation/transposed": {
+      "get": {
+        "tags": [
+          "HbtTranslation"
+        ],
+        "parameters": [
+          {
+            "name": "LangCode",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "maxLength": 50,
+              "type": "string"
+            }
+          },
+          {
+            "name": "TransKey",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "maxLength": 200,
+              "type": "string"
+            }
+          },
+          {
+            "name": "ModuleName",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "maxLength": 100,
+              "type": "string"
+            }
+          },
+          {
+            "name": "Status",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "$ref": "#/components/schemas/HbtStatus"
+            }
+          },
+          {
+            "name": "PageIndex",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtTranslation/value": {
+      "get": {
+        "tags": [
+          "HbtTranslation"
+        ],
+        "parameters": [
+          {
+            "name": "langCode",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "transKey",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
     "/api/HbtUser": {
       "get": {
         "tags": [
@@ -6339,6 +7178,93 @@
         "type": "integer",
         "format": "int32"
       },
+      "HbtLanguageCreateDto": {
+        "required": [
+          "langCode",
+          "langName"
+        ],
+        "type": "object",
+        "properties": {
+          "langCode": {
+            "maxLength": 50,
+            "minLength": 1,
+            "type": "string"
+          },
+          "langName": {
+            "maxLength": 100,
+            "minLength": 1,
+            "type": "string"
+          },
+          "orderNum": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "status": {
+            "$ref": "#/components/schemas/HbtStatus"
+          }
+        },
+        "additionalProperties": false
+      },
+      "HbtLanguageImportDto": {
+        "required": [
+          "langCode",
+          "langName"
+        ],
+        "type": "object",
+        "properties": {
+          "langCode": {
+            "maxLength": 50,
+            "minLength": 1,
+            "type": "string"
+          },
+          "langName": {
+            "maxLength": 100,
+            "minLength": 1,
+            "type": "string"
+          },
+          "orderNum": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "status": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "HbtLanguageUpdateDto": {
+        "required": [
+          "langCode",
+          "langName",
+          "languageId"
+        ],
+        "type": "object",
+        "properties": {
+          "languageId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "langCode": {
+            "maxLength": 50,
+            "minLength": 1,
+            "type": "string"
+          },
+          "langName": {
+            "maxLength": 100,
+            "minLength": 1,
+            "type": "string"
+          },
+          "orderNum": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "status": {
+            "$ref": "#/components/schemas/HbtStatus"
+          }
+        },
+        "additionalProperties": false
+      },
       "HbtLoginExtendUpdateRequest": {
         "required": [
           "browserType",
@@ -7259,6 +8185,129 @@
           "id": {
             "type": "integer",
             "format": "int64"
+          }
+        },
+        "additionalProperties": false
+      },
+      "HbtTranslationCreateDto": {
+        "required": [
+          "langCode",
+          "moduleName",
+          "transKey",
+          "transValue"
+        ],
+        "type": "object",
+        "properties": {
+          "langCode": {
+            "maxLength": 50,
+            "minLength": 1,
+            "type": "string"
+          },
+          "transKey": {
+            "maxLength": 200,
+            "minLength": 1,
+            "type": "string"
+          },
+          "transValue": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "moduleName": {
+            "maxLength": 100,
+            "minLength": 1,
+            "type": "string"
+          },
+          "remark": {
+            "maxLength": 500,
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "$ref": "#/components/schemas/HbtStatus"
+          }
+        },
+        "additionalProperties": false
+      },
+      "HbtTranslationImportDto": {
+        "required": [
+          "langCode",
+          "moduleName",
+          "transKey",
+          "transValue"
+        ],
+        "type": "object",
+        "properties": {
+          "langCode": {
+            "maxLength": 50,
+            "minLength": 1,
+            "type": "string"
+          },
+          "transKey": {
+            "maxLength": 200,
+            "minLength": 1,
+            "type": "string"
+          },
+          "transValue": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "moduleName": {
+            "maxLength": 100,
+            "minLength": 1,
+            "type": "string"
+          },
+          "remark": {
+            "maxLength": 500,
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "HbtTranslationUpdateDto": {
+        "required": [
+          "langCode",
+          "moduleName",
+          "transKey",
+          "translationId",
+          "transValue"
+        ],
+        "type": "object",
+        "properties": {
+          "translationId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "langCode": {
+            "maxLength": 50,
+            "minLength": 1,
+            "type": "string"
+          },
+          "transKey": {
+            "maxLength": 200,
+            "minLength": 1,
+            "type": "string"
+          },
+          "transValue": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "moduleName": {
+            "maxLength": 100,
+            "minLength": 1,
+            "type": "string"
+          },
+          "remark": {
+            "maxLength": 500,
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "$ref": "#/components/schemas/HbtStatus"
           }
         },
         "additionalProperties": false
