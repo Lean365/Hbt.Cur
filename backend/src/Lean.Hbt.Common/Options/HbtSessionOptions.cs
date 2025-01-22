@@ -37,12 +37,12 @@ namespace Lean.Hbt.Common.Options
         /// <summary>
         /// 是否允许多设备登录
         /// </summary>
-        public bool AllowMultipleDevices { get; set; } = false;
+        public bool AllowMultipleDevices { get; set; } = true;
 
         /// <summary>
         /// 最大并发会话数
         /// </summary>
-        public int MaxConcurrentSessions { get; set; } = 1;
+        public int MaxConcurrentSessions { get; set; } = 3;
 
         /// <summary>
         /// 会话过期时间(分钟)

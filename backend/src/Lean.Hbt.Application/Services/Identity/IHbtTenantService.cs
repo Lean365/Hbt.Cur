@@ -37,7 +37,7 @@ public interface IHbtTenantService
     /// </summary>
     /// <param name="input">创建对象</param>
     /// <returns>租户ID</returns>
-    Task<long> CreateAsync(HbtTenantCreateDto input);
+    Task<long> InsertAsync(HbtTenantCreateDto input);
 
     /// <summary>
     /// 更新租户

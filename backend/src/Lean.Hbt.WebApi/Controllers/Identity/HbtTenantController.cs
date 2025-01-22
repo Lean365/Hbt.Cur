@@ -61,9 +61,9 @@ public class HbtTenantController : HbtBaseController
     /// <param name="input">创建对象</param>
     /// <returns>租户ID</returns>
     [HttpPost]
-    public async Task<long> CreateAsync([FromBody] HbtTenantCreateDto input)
+    public async Task<long> InsertAsync([FromBody] HbtTenantCreateDto input)
     {
-        return await _tenantService.CreateAsync(input);
+        return await _tenantService.InsertAsync(input);
     }
 
     /// <summary>

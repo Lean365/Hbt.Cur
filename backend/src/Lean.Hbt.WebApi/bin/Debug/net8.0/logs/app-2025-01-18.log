@@ -280,3 +280,59 @@ Error Number:515,State:2,Class:16
    at lambda_method23(Closure, Object, HttpContext, IServiceProvider)
    at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)
 2025-01-18 15:16:00.4922| Info|Diagnostics|Request finished HTTP/2 GET https://localhost:7229/favicon.ico - 500 - text/plain;+charset=utf-8 30.9521ms
+2025-01-18 15:18:56.5122| Info|Program|正在初始化应用程序...
+2025-01-18 15:18:58.3399| Info|HbtNLogger|数据库检查/创建成功
+2025-01-18 15:18:59.6284| Info|HbtNLogger|表 hbt_user 初始化成功
+2025-01-18 15:19:00.5227| Info|HbtNLogger|表 hbt_role 初始化成功
+2025-01-18 15:19:01.6490| Info|HbtNLogger|表 hbt_menu 初始化成功
+2025-01-18 15:19:02.5625| Info|HbtNLogger|表 hbt_dept 初始化成功
+2025-01-18 15:19:03.3513| Info|HbtNLogger|表 hbt_post 初始化成功
+2025-01-18 15:19:04.0654| Info|HbtNLogger|表 hbt_user_role 初始化成功
+2025-01-18 15:19:04.7864| Info|HbtNLogger|表 hbt_user_dept 初始化成功
+2025-01-18 15:19:05.5498| Info|HbtNLogger|表 hbt_user_post 初始化成功
+2025-01-18 15:19:06.2956| Info|HbtNLogger|表 hbt_role_menu 初始化成功
+2025-01-18 15:19:07.0263| Info|HbtNLogger|表 hbt_role_dept 初始化成功
+2025-01-18 15:19:07.9300| Info|HbtNLogger|表 hbt_tenant 初始化成功
+2025-01-18 15:19:08.7396| Info|HbtNLogger|表 hbt_audit_log 初始化成功
+2025-01-18 15:19:09.5813| Info|HbtNLogger|表 hbt_login_log 初始化成功
+2025-01-18 15:19:10.6037| Info|HbtNLogger|表 hbt_exception_log 初始化成功
+2025-01-18 15:19:10.6037| Info|HbtNLogger|数据库初始化完成
+2025-01-18 15:19:10.6073| Info|HbtNLogger|[初始化] 开始初始化种子数据...
+2025-01-18 15:19:11.0632| Info|HbtNLogger|[更新] 租户 '默认租户' 更新成功
+2025-01-18 15:19:11.0632| Info|HbtNLogger|[初始化] 租户数据 - 新增: 0, 更新: 1
+2025-01-18 15:19:11.1228| Info|HbtNLogger|[更新] 角色 '超级管理员' 更新成功
+2025-01-18 15:19:11.1228| Info|HbtNLogger|[初始化] 角色数据 - 新增: 0, 更新: 1
+2025-01-18 15:19:11.1913| Info|HbtNLogger|[更新] 用户 'admin' 更新成功
+2025-01-18 15:19:11.1913| Info|HbtNLogger|[初始化] 用户数据 - 新增: 0, 更新: 1
+2025-01-18 15:19:11.1999| Info|HbtNLogger|[初始化] 部门数据 - 新增: 0, 更新: 0
+2025-01-18 15:19:11.1999| Info|HbtNLogger|[初始化] 岗位数据 - 新增: 0, 更新: 0
+2025-01-18 15:19:11.1999| Info|HbtNLogger|[初始化] 种子数据初始化完成
+2025-01-18 15:19:11.3726| Info|Program|应用程序启动成功
+2025-01-18 15:19:11.3911| Info|XmlKeyManager|User profile is available. Using 'C:\Users\Davis.Cheng\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2025-01-18 15:19:11.7253| Info|Lifetime|Now listening on: https://localhost:7229
+2025-01-18 15:19:11.7253| Info|Lifetime|Now listening on: http://localhost:5249
+2025-01-18 15:19:11.7692| Info|Lifetime|Application started. Press Ctrl+C to shut down.
+2025-01-18 15:19:11.7692| Info|Lifetime|Hosting environment: Development
+2025-01-18 15:19:11.7692| Info|Lifetime|Content root path: G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi
+2025-01-18 15:19:12.4564| Info|Diagnostics|Request starting HTTP/2 GET https://localhost:7229/swagger - - -
+2025-01-18 15:19:12.5909| Info|Diagnostics|Request finished HTTP/2 GET https://localhost:7229/swagger - 301 0 - 157.0361ms
+2025-01-18 15:19:12.6119| Info|Diagnostics|Request starting HTTP/2 GET https://localhost:7229/swagger/index.html - - -
+2025-01-18 15:19:12.6701| Info|Diagnostics|Request finished HTTP/2 GET https://localhost:7229/swagger/index.html - 200 - text/html;charset=utf-8 58.1188ms
+2025-01-18 15:19:12.6701| Info|Diagnostics|Request starting HTTP/2 GET https://localhost:7229/swagger/swagger-ui.css - - -
+2025-01-18 15:19:12.6701| Info|Diagnostics|Request starting HTTP/2 GET https://localhost:7229/swagger/swagger-ui-bundle.js - - -
+2025-01-18 15:19:12.6701| Info|Diagnostics|Request starting HTTP/2 GET https://localhost:7229/swagger/swagger-ui-standalone-preset.js - - -
+2025-01-18 15:19:12.7453| Info|Diagnostics|Request starting HTTP/2 GET https://localhost:7229/_vs/browserLink - - -
+2025-01-18 15:19:12.7382| Info|Diagnostics|Request starting HTTP/2 GET https://localhost:7229/_framework/aspnetcore-browser-refresh.js - - -
+2025-01-18 15:19:12.7778| Info|Diagnostics|Request finished HTTP/2 GET https://localhost:7229/_framework/aspnetcore-browser-refresh.js - 200 13766 application/javascript;+charset=utf-8 40.0702ms
+2025-01-18 15:19:12.7778| Info|StaticFileMiddleware|Sending file. Request path: '/swagger-ui.css'. Physical path: 'N/A'
+2025-01-18 15:19:12.7778| Info|Diagnostics|Request finished HTTP/2 GET https://localhost:7229/swagger/swagger-ui.css - 200 144929 text/css 115.3796ms
+2025-01-18 15:19:12.7929| Info|StaticFileMiddleware|Sending file. Request path: '/swagger-ui-standalone-preset.js'. Physical path: 'N/A'
+2025-01-18 15:19:12.7929| Info|Diagnostics|Request finished HTTP/2 GET https://localhost:7229/swagger/swagger-ui-standalone-preset.js - 200 312163 text/javascript 120.9403ms
+2025-01-18 15:19:12.8238| Info|Diagnostics|Request finished HTTP/2 GET https://localhost:7229/_vs/browserLink - 200 - text/javascript;+charset=UTF-8 79.9811ms
+2025-01-18 15:19:12.8395| Info|StaticFileMiddleware|Sending file. Request path: '/swagger-ui-bundle.js'. Physical path: 'N/A'
+2025-01-18 15:19:12.8395| Info|Diagnostics|Request finished HTTP/2 GET https://localhost:7229/swagger/swagger-ui-bundle.js - 200 1061536 text/javascript 175.0642ms
+2025-01-18 15:19:13.0131| Info|Diagnostics|Request starting HTTP/2 GET https://localhost:7229/swagger/v1/swagger.json - - -
+2025-01-18 15:19:13.0329| Info|Diagnostics|Request finished HTTP/2 GET https://localhost:7229/swagger/v1/swagger.json - 200 - application/json;charset=utf-8 21.9054ms
+2025-01-18 15:19:13.0422| Info|Diagnostics|Request starting HTTP/2 GET https://localhost:7229/swagger/favicon-32x32.png - - -
+2025-01-18 15:19:13.0422| Info|StaticFileMiddleware|Sending file. Request path: '/favicon-32x32.png'. Physical path: 'N/A'
+2025-01-18 15:19:13.0422| Info|Diagnostics|Request finished HTTP/2 GET https://localhost:7229/swagger/favicon-32x32.png - 200 628 image/png 1.8351ms

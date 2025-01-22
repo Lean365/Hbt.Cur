@@ -1,0 +1,191 @@
+//===================================================================
+// 项目名 : Lean.Hbt
+// 文件名 : HbtUserController.cs
+// 创建者 : Lean365
+// 创建时间: 2024-01-18 10:00
+// 版本号 : V0.0.1
+// 描述   : 用户控制器
+//===================================================================
+
+using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+using Lean.Hbt.Common.Models;
+using Lean.Hbt.Common.Enums;
+using Lean.Hbt.Application.Dtos.Identity;
+using Lean.Hbt.Application.Services.Identity;
+
+namespace Lean.Hbt.WebApi.Controllers.Identity
+{
+    /// <summary>
+    /// 用户控制器
+    /// </summary>
+    /// <remarks>
+    /// 创建者: Lean365
+    /// 创建时间: 2024-01-17
+    /// </remarks>
+    [Route("api/[controller]")]
+    [ApiController]
+    public class HbtUserController : HbtBaseController
+    {
+        private readonly IHbtUserService _userService;
+
+        /// <summary>
+        /// 构造函数
+        /// </summary>
+        /// <param name="userService">用户服务</param>
+        public HbtUserController(IHbtUserService userService)
+        {
+            _userService = userService;
+        }
+
+        /// <summary>
+        /// 获取用户分页列表
+        /// </summary>
+        /// <param name="query">查询条件</param>
+        /// <returns>用户分页列表</returns>
+        [HttpGet]
+        public async Task<IActionResult> GetPagedListAsync([FromQuery] HbtUserQueryDto query)
+        {
+            var result = await _userService.GetPagedListAsync(query);
+            return Success(result);
+        }
+
+        /// <summary>
+        /// 获取用户详情
+        /// </summary>
+        /// <param name="userId">用户ID</param>
+        /// <returns>用户详情</returns>
+        [HttpGet("{userId}")]
+        public async Task<IActionResult> GetAsync(long userId)
+        {
+            var result = await _userService.GetAsync(userId);
+            return Success(result);
+        }
+
+        /// <summary>
+        /// 创建用户
+        /// </summary>
+        /// <param name="input">创建对象</param>
+        /// <returns>用户ID</returns>
+        [HttpPost]
+        public async Task<IActionResult> InsertAsync([FromBody] HbtUserCreateDto input)
+        {
+            var result = await _userService.InsertAsync(input);
+            return Success(result);
+        }
+
+        /// <summary>
+        /// 更新用户
+        /// </summary>
+        /// <param name="input">更新对象</param>
+        /// <returns>是否成功</returns>
+        [HttpPut]
+        public async Task<IActionResult> UpdateAsync([FromBody] HbtUserUpdateDto input)
+        {
+            var result = await _userService.UpdateAsync(input);
+            return Success(result);
+        }
+
+        /// <summary>
+        /// 删除用户
+        /// </summary>
+        /// <param name="userId">用户ID</param>
+        /// <returns>是否成功</returns>
+        [HttpDelete("{userId}")]
+        public async Task<IActionResult> DeleteAsync(long userId)
+        {
+            var result = await _userService.DeleteAsync(userId);
+            return Success(result);
+        }
+
+        /// <summary>
+        /// 批量删除用户
+        /// </summary>
+        /// <param name="userIds">用户ID集合</param>
+        /// <returns>是否成功</returns>
+        [HttpDelete("batch")]
+        public async Task<IActionResult> BatchDeleteAsync([FromBody] long[] userIds)
+        {
+            var result = await _userService.BatchDeleteAsync(userIds);
+            return Success(result);
+        }
+
+        /// <summary>
+        /// 导入用户数据
+        /// </summary>
+        /// <param name="users">用户数据列表</param>
+        /// <returns>导入结果</returns>
+        [HttpPost("import")]
+        public async Task<IActionResult> ImportAsync([FromBody] List<HbtUserImportDto> users)
+        {
+            var result = await _userService.ImportAsync(users);
+            return Success(result);
+        }
+
+        /// <summary>
+        /// 导出用户数据
+        /// </summary>
+        /// <param name="query">查询条件</param>
+        /// <returns>导出数据列表</returns>
+        [HttpGet("export")]
+        public async Task<IActionResult> ExportAsync([FromQuery] HbtUserQueryDto query)
+        {
+            var result = await _userService.ExportAsync(query);
+            return Success(result);
+        }
+
+        /// <summary>
+        /// 获取导入模板
+        /// </summary>
+        /// <returns>模板数据</returns>
+        [HttpGet("template")]
+        public async Task<IActionResult> GetTemplateAsync()
+        {
+            var result = await _userService.GetTemplateAsync();
+            return Success(result);
+        }
+
+        /// <summary>
+        /// 更新用户状态
+        /// </summary>
+        /// <param name="userId">用户ID</param>
+        /// <param name="status">状态</param>
+        /// <returns>是否成功</returns>
+        [HttpPut("{userId}/status")]
+        public async Task<IActionResult> UpdateStatusAsync(long userId, [FromQuery] HbtStatus status)
+        {
+            var input = new HbtUserStatusDto
+            {
+                UserId = userId,
+                Status = status
+            };
+            var result = await _userService.UpdateStatusAsync(input);
+            return Success(result);
+        }
+
+        /// <summary>
+        /// 重置用户密码
+        /// </summary>
+        /// <param name="input">重置密码对象</param>
+        /// <returns>是否成功</returns>
+        [HttpPut("reset-password")]
+        public async Task<IActionResult> ResetPasswordAsync([FromBody] HbtUserResetPwdDto input)
+        {
+            var result = await _userService.ResetPasswordAsync(input);
+            return Success(result);
+        }
+
+        /// <summary>
+        /// 修改用户密码
+        /// </summary>
+        /// <param name="input">修改密码对象</param>
+        /// <returns>是否成功</returns>
+        [HttpPut("change-password")]
+        public async Task<IActionResult> ChangePasswordAsync([FromBody] HbtUserChangePwdDto input)
+        {
+            var result = await _userService.ChangePasswordAsync(input);
+            return Success(result);
+        }
+    }
+} 

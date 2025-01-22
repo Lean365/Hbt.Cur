@@ -40,19 +40,22 @@ namespace Lean.Hbt.Domain.Entities.Identity
         [SugarColumn(ColumnName = "tenant_id", ColumnDescription = "租户ID", ColumnDataType = "bigint", IsNullable = false)]
         public long TenantId { get; set; }
 
+        /// <summary>
+        /// 租户导航属性
+        /// </summary>
         [Navigate(NavigateType.OneToOne, nameof(TenantId))]
-        public HbtTenant Tenant { get; set; }
+        public HbtTenant? Tenant { get; set; }
 
         /// <summary>
         /// 角色导航属性
         /// </summary>
         [Navigate(NavigateType.OneToOne, nameof(RoleId))]
-        public HbtRole Role { get; set; }
+        public HbtRole? Role { get; set; }
 
         /// <summary>
         /// 部门导航属性
         /// </summary>
         [Navigate(NavigateType.OneToOne, nameof(DeptId))]
-        public HbtDept Dept { get; set; }
+        public HbtDept? Dept { get; set; }
     }
 }

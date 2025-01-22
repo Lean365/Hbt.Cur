@@ -3,12 +3,128 @@
   "WorkspaceRootPath": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{70F2D6F7-475F-4A9C-9DA5-229DC155178B}|src\\Lean.Hbt.Infrastructure\\Lean.Hbt.Infrastructure.csproj|g:\\appdevelop\\vs2025\\lean.hbt\\backend\\src\\lean.hbt.infrastructure\\persistence\\hbtdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{70F2D6F7-475F-4A9C-9DA5-229DC155178B}|src\\Lean.Hbt.Infrastructure\\Lean.Hbt.Infrastructure.csproj|solutionrelative:src\\lean.hbt.infrastructure\\persistence\\hbtdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{70F2D6F7-475F-4A9C-9DA5-229DC155178B}|src\\Lean.Hbt.Infrastructure\\Lean.Hbt.Infrastructure.csproj|g:\\appdevelop\\vs2025\\lean.hbt\\backend\\src\\lean.hbt.infrastructure\\data\\seeds\\hbtdbseed.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{70F2D6F7-475F-4A9C-9DA5-229DC155178B}|src\\Lean.Hbt.Infrastructure\\Lean.Hbt.Infrastructure.csproj|solutionrelative:src\\lean.hbt.infrastructure\\data\\seeds\\hbtdbseed.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{70F2D6F7-475F-4A9C-9DA5-229DC155178B}|src\\Lean.Hbt.Infrastructure\\Lean.Hbt.Infrastructure.csproj|g:\\appdevelop\\vs2025\\lean.hbt\\backend\\src\\lean.hbt.infrastructure\\persistence\\hbtdbseed.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{70F2D6F7-475F-4A9C-9DA5-229DC155178B}|src\\Lean.Hbt.Infrastructure\\Lean.Hbt.Infrastructure.csproj|solutionrelative:src\\lean.hbt.infrastructure\\persistence\\hbtdbseed.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{28E16BFA-4E05-406B-B57B-E82ADBE6851C}|src\\Lean.Hbt.WebApi\\Lean.Hbt.WebApi.csproj|g:\\appdevelop\\vs2025\\lean.hbt\\backend\\src\\lean.hbt.webapi\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{28E16BFA-4E05-406B-B57B-E82ADBE6851C}|src\\Lean.Hbt.WebApi\\Lean.Hbt.WebApi.csproj|solutionrelative:src\\lean.hbt.webapi\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{70F2D6F7-475F-4A9C-9DA5-229DC155178B}|src\\Lean.Hbt.Infrastructure\\Lean.Hbt.Infrastructure.csproj|g:\\appdevelop\\vs2025\\lean.hbt\\backend\\src\\lean.hbt.infrastructure\\caching\\hbtcacheconfigmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{70F2D6F7-475F-4A9C-9DA5-229DC155178B}|src\\Lean.Hbt.Infrastructure\\Lean.Hbt.Infrastructure.csproj|solutionrelative:src\\lean.hbt.infrastructure\\caching\\hbtcacheconfigmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{70F2D6F7-475F-4A9C-9DA5-229DC155178B}|src\\Lean.Hbt.Infrastructure\\Lean.Hbt.Infrastructure.csproj|g:\\appdevelop\\vs2025\\lean.hbt\\backend\\src\\lean.hbt.infrastructure\\security\\hbtsessionmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{70F2D6F7-475F-4A9C-9DA5-229DC155178B}|src\\Lean.Hbt.Infrastructure\\Lean.Hbt.Infrastructure.csproj|solutionrelative:src\\lean.hbt.infrastructure\\security\\hbtsessionmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{28E16BFA-4E05-406B-B57B-E82ADBE6851C}|src\\Lean.Hbt.WebApi\\Lean.Hbt.WebApi.csproj|g:\\appdevelop\\vs2025\\lean.hbt\\backend\\src\\lean.hbt.webapi\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{28E16BFA-4E05-406B-B57B-E82ADBE6851C}|src\\Lean.Hbt.WebApi\\Lean.Hbt.WebApi.csproj|solutionrelative:src\\lean.hbt.webapi\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5C3DAF7C-CD35-46C1-8FDA-777F06EC4C7B}|src\\Lean.Hbt.Common\\Lean.Hbt.Common.csproj|g:\\appdevelop\\vs2025\\lean.hbt\\backend\\src\\lean.hbt.common\\options\\hbtdboptions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5C3DAF7C-CD35-46C1-8FDA-777F06EC4C7B}|src\\Lean.Hbt.Common\\Lean.Hbt.Common.csproj|solutionrelative:src\\lean.hbt.common\\options\\hbtdboptions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{70F2D6F7-475F-4A9C-9DA5-229DC155178B}|src\\Lean.Hbt.Infrastructure\\Lean.Hbt.Infrastructure.csproj|g:\\appdevelop\\vs2025\\lean.hbt\\backend\\src\\lean.hbt.infrastructure\\repositories\\hbtrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{70F2D6F7-475F-4A9C-9DA5-229DC155178B}|src\\Lean.Hbt.Infrastructure\\Lean.Hbt.Infrastructure.csproj|solutionrelative:src\\lean.hbt.infrastructure\\repositories\\hbtrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{FBC5DE98-B3C2-4201-9AEF-A3FAAF7048E0}|src\\Lean.Hbt.Domain\\Lean.Hbt.Domain.csproj|g:\\appdevelop\\vs2025\\lean.hbt\\backend\\src\\lean.hbt.domain\\repositories\\ihbtrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{FBC5DE98-B3C2-4201-9AEF-A3FAAF7048E0}|src\\Lean.Hbt.Domain\\Lean.Hbt.Domain.csproj|solutionrelative:src\\lean.hbt.domain\\repositories\\ihbtrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{16BD9696-EA41-4CB7-A0F5-ECA5BBD96173}|src\\Lean.Hbt.Application\\Lean.Hbt.Application.csproj|g:\\appdevelop\\vs2025\\lean.hbt\\backend\\src\\lean.hbt.application\\services\\identity\\hbtuserservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{16BD9696-EA41-4CB7-A0F5-ECA5BBD96173}|src\\Lean.Hbt.Application\\Lean.Hbt.Application.csproj|solutionrelative:src\\lean.hbt.application\\services\\identity\\hbtuserservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{16BD9696-EA41-4CB7-A0F5-ECA5BBD96173}|src\\Lean.Hbt.Application\\Lean.Hbt.Application.csproj|g:\\appdevelop\\vs2025\\lean.hbt\\backend\\src\\lean.hbt.application\\services\\admin\\hbtdicttypeservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{16BD9696-EA41-4CB7-A0F5-ECA5BBD96173}|src\\Lean.Hbt.Application\\Lean.Hbt.Application.csproj|solutionrelative:src\\lean.hbt.application\\services\\admin\\hbtdicttypeservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{28E16BFA-4E05-406B-B57B-E82ADBE6851C}|src\\Lean.Hbt.WebApi\\Lean.Hbt.WebApi.csproj|g:\\appdevelop\\vs2025\\lean.hbt\\backend\\src\\lean.hbt.webapi\\controllers\\admin\\hbtdictdatacontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{28E16BFA-4E05-406B-B57B-E82ADBE6851C}|src\\Lean.Hbt.WebApi\\Lean.Hbt.WebApi.csproj|solutionrelative:src\\lean.hbt.webapi\\controllers\\admin\\hbtdictdatacontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{70F2D6F7-475F-4A9C-9DA5-229DC155178B}|src\\Lean.Hbt.Infrastructure\\Lean.Hbt.Infrastructure.csproj|g:\\appdevelop\\vs2025\\lean.hbt\\backend\\src\\lean.hbt.infrastructure\\security\\hbtauditslog.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{70F2D6F7-475F-4A9C-9DA5-229DC155178B}|src\\Lean.Hbt.Infrastructure\\Lean.Hbt.Infrastructure.csproj|solutionrelative:src\\lean.hbt.infrastructure\\security\\hbtauditslog.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{70F2D6F7-475F-4A9C-9DA5-229DC155178B}|src\\Lean.Hbt.Infrastructure\\Lean.Hbt.Infrastructure.csproj|g:\\appdevelop\\vs2025\\lean.hbt\\backend\\src\\lean.hbt.infrastructure\\data\\contexts\\hbtdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{70F2D6F7-475F-4A9C-9DA5-229DC155178B}|src\\Lean.Hbt.Infrastructure\\Lean.Hbt.Infrastructure.csproj|solutionrelative:src\\lean.hbt.infrastructure\\data\\contexts\\hbtdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5C3DAF7C-CD35-46C1-8FDA-777F06EC4C7B}|src\\Lean.Hbt.Common\\Lean.Hbt.Common.csproj|g:\\appdevelop\\vs2025\\lean.hbt\\backend\\src\\lean.hbt.common\\options\\hbtjwtoptions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5C3DAF7C-CD35-46C1-8FDA-777F06EC4C7B}|src\\Lean.Hbt.Common\\Lean.Hbt.Common.csproj|solutionrelative:src\\lean.hbt.common\\options\\hbtjwtoptions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5C3DAF7C-CD35-46C1-8FDA-777F06EC4C7B}|src\\Lean.Hbt.Common\\Lean.Hbt.Common.csproj|g:\\appdevelop\\vs2025\\lean.hbt\\backend\\src\\lean.hbt.common\\helpers\\hbtexcelhelper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5C3DAF7C-CD35-46C1-8FDA-777F06EC4C7B}|src\\Lean.Hbt.Common\\Lean.Hbt.Common.csproj|solutionrelative:src\\lean.hbt.common\\helpers\\hbtexcelhelper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{FBC5DE98-B3C2-4201-9AEF-A3FAAF7048E0}|src\\Lean.Hbt.Domain\\Lean.Hbt.Domain.csproj|g:\\appdevelop\\vs2025\\lean.hbt\\backend\\src\\lean.hbt.domain\\entities\\identity\\hbtroledept.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{FBC5DE98-B3C2-4201-9AEF-A3FAAF7048E0}|src\\Lean.Hbt.Domain\\Lean.Hbt.Domain.csproj|solutionrelative:src\\lean.hbt.domain\\entities\\identity\\hbtroledept.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{FBC5DE98-B3C2-4201-9AEF-A3FAAF7048E0}|src\\Lean.Hbt.Domain\\Lean.Hbt.Domain.csproj|g:\\appdevelop\\vs2025\\lean.hbt\\backend\\src\\lean.hbt.domain\\entities\\identity\\hbtrolemenu.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{FBC5DE98-B3C2-4201-9AEF-A3FAAF7048E0}|src\\Lean.Hbt.Domain\\Lean.Hbt.Domain.csproj|solutionrelative:src\\lean.hbt.domain\\entities\\identity\\hbtrolemenu.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{FBC5DE98-B3C2-4201-9AEF-A3FAAF7048E0}|src\\Lean.Hbt.Domain\\Lean.Hbt.Domain.csproj|g:\\appdevelop\\vs2025\\lean.hbt\\backend\\src\\lean.hbt.domain\\entities\\identity\\hbtuserdept.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{FBC5DE98-B3C2-4201-9AEF-A3FAAF7048E0}|src\\Lean.Hbt.Domain\\Lean.Hbt.Domain.csproj|solutionrelative:src\\lean.hbt.domain\\entities\\identity\\hbtuserdept.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{FBC5DE98-B3C2-4201-9AEF-A3FAAF7048E0}|src\\Lean.Hbt.Domain\\Lean.Hbt.Domain.csproj|g:\\appdevelop\\vs2025\\lean.hbt\\backend\\src\\lean.hbt.domain\\entities\\identity\\hbtuserpost.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{FBC5DE98-B3C2-4201-9AEF-A3FAAF7048E0}|src\\Lean.Hbt.Domain\\Lean.Hbt.Domain.csproj|solutionrelative:src\\lean.hbt.domain\\entities\\identity\\hbtuserpost.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{FBC5DE98-B3C2-4201-9AEF-A3FAAF7048E0}|src\\Lean.Hbt.Domain\\Lean.Hbt.Domain.csproj|g:\\appdevelop\\vs2025\\lean.hbt\\backend\\src\\lean.hbt.domain\\entities\\identity\\hbtuserrole.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{FBC5DE98-B3C2-4201-9AEF-A3FAAF7048E0}|src\\Lean.Hbt.Domain\\Lean.Hbt.Domain.csproj|solutionrelative:src\\lean.hbt.domain\\entities\\identity\\hbtuserrole.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{70F2D6F7-475F-4A9C-9DA5-229DC155178B}|src\\Lean.Hbt.Infrastructure\\Lean.Hbt.Infrastructure.csproj|g:\\appdevelop\\vs2025\\lean.hbt\\backend\\src\\lean.hbt.infrastructure\\signalr\\hbtonlinehub.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{70F2D6F7-475F-4A9C-9DA5-229DC155178B}|src\\Lean.Hbt.Infrastructure\\Lean.Hbt.Infrastructure.csproj|solutionrelative:src\\lean.hbt.infrastructure\\signalr\\hbtonlinehub.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{FBC5DE98-B3C2-4201-9AEF-A3FAAF7048E0}|src\\Lean.Hbt.Domain\\Lean.Hbt.Domain.csproj|g:\\appdevelop\\vs2025\\lean.hbt\\backend\\src\\lean.hbt.domain\\entities\\admin\\hbttranslation.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{FBC5DE98-B3C2-4201-9AEF-A3FAAF7048E0}|src\\Lean.Hbt.Domain\\Lean.Hbt.Domain.csproj|solutionrelative:src\\lean.hbt.domain\\entities\\admin\\hbttranslation.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{FBC5DE98-B3C2-4201-9AEF-A3FAAF7048E0}|src\\Lean.Hbt.Domain\\Lean.Hbt.Domain.csproj|g:\\appdevelop\\vs2025\\lean.hbt\\backend\\src\\lean.hbt.domain\\entities\\identity\\hbtmenu.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{FBC5DE98-B3C2-4201-9AEF-A3FAAF7048E0}|src\\Lean.Hbt.Domain\\Lean.Hbt.Domain.csproj|solutionrelative:src\\lean.hbt.domain\\entities\\identity\\hbtmenu.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{FBC5DE98-B3C2-4201-9AEF-A3FAAF7048E0}|src\\Lean.Hbt.Domain\\Lean.Hbt.Domain.csproj|g:\\appdevelop\\vs2025\\lean.hbt\\backend\\src\\lean.hbt.domain\\entities\\audit\\hbtoperlog.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{FBC5DE98-B3C2-4201-9AEF-A3FAAF7048E0}|src\\Lean.Hbt.Domain\\Lean.Hbt.Domain.csproj|solutionrelative:src\\lean.hbt.domain\\entities\\audit\\hbtoperlog.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{FBC5DE98-B3C2-4201-9AEF-A3FAAF7048E0}|src\\Lean.Hbt.Domain\\Lean.Hbt.Domain.csproj|g:\\appdevelop\\vs2025\\lean.hbt\\backend\\src\\lean.hbt.domain\\entities\\admin\\hbtdicttype.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{FBC5DE98-B3C2-4201-9AEF-A3FAAF7048E0}|src\\Lean.Hbt.Domain\\Lean.Hbt.Domain.csproj|solutionrelative:src\\lean.hbt.domain\\entities\\admin\\hbtdicttype.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{28E16BFA-4E05-406B-B57B-E82ADBE6851C}|src\\Lean.Hbt.WebApi\\Lean.Hbt.WebApi.csproj|g:\\appdevelop\\vs2025\\lean.hbt\\backend\\src\\lean.hbt.webapi\\middlewares\\hbttenantmiddleware.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{28E16BFA-4E05-406B-B57B-E82ADBE6851C}|src\\Lean.Hbt.WebApi\\Lean.Hbt.WebApi.csproj|solutionrelative:src\\lean.hbt.webapi\\middlewares\\hbttenantmiddleware.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{FBC5DE98-B3C2-4201-9AEF-A3FAAF7048E0}|src\\Lean.Hbt.Domain\\Lean.Hbt.Domain.csproj|g:\\appdevelop\\vs2025\\lean.hbt\\backend\\src\\lean.hbt.domain\\entities\\identity\\hbtpost.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{FBC5DE98-B3C2-4201-9AEF-A3FAAF7048E0}|src\\Lean.Hbt.Domain\\Lean.Hbt.Domain.csproj|solutionrelative:src\\lean.hbt.domain\\entities\\identity\\hbtpost.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{70F2D6F7-475F-4A9C-9DA5-229DC155178B}|src\\Lean.Hbt.Infrastructure\\Lean.Hbt.Infrastructure.csproj|g:\\appdevelop\\vs2025\\lean.hbt\\backend\\src\\lean.hbt.infrastructure\\security\\hbtloginpolicy.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{70F2D6F7-475F-4A9C-9DA5-229DC155178B}|src\\Lean.Hbt.Infrastructure\\Lean.Hbt.Infrastructure.csproj|solutionrelative:src\\lean.hbt.infrastructure\\security\\hbtloginpolicy.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{FBC5DE98-B3C2-4201-9AEF-A3FAAF7048E0}|src\\Lean.Hbt.Domain\\Lean.Hbt.Domain.csproj|g:\\appdevelop\\vs2025\\lean.hbt\\backend\\src\\lean.hbt.domain\\iservices\\ihbtauditslog.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{FBC5DE98-B3C2-4201-9AEF-A3FAAF7048E0}|src\\Lean.Hbt.Domain\\Lean.Hbt.Domain.csproj|solutionrelative:src\\lean.hbt.domain\\iservices\\ihbtauditslog.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{FBC5DE98-B3C2-4201-9AEF-A3FAAF7048E0}|src\\Lean.Hbt.Domain\\Lean.Hbt.Domain.csproj|g:\\appdevelop\\vs2025\\lean.hbt\\backend\\src\\lean.hbt.domain\\iservices\\ihbtlogger.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{FBC5DE98-B3C2-4201-9AEF-A3FAAF7048E0}|src\\Lean.Hbt.Domain\\Lean.Hbt.Domain.csproj|solutionrelative:src\\lean.hbt.domain\\iservices\\ihbtlogger.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{70F2D6F7-475F-4A9C-9DA5-229DC155178B}|src\\Lean.Hbt.Infrastructure\\Lean.Hbt.Infrastructure.csproj|g:\\appdevelop\\vs2025\\lean.hbt\\backend\\src\\lean.hbt.infrastructure\\security\\hbtpasswordpolicy.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{70F2D6F7-475F-4A9C-9DA5-229DC155178B}|src\\Lean.Hbt.Infrastructure\\Lean.Hbt.Infrastructure.csproj|solutionrelative:src\\lean.hbt.infrastructure\\security\\hbtpasswordpolicy.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -18,33 +134,392 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 5,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "HbtDbContext.cs",
-              "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Infrastructure\\Persistence\\HbtDbContext.cs",
-              "RelativeDocumentMoniker": "src\\Lean.Hbt.Infrastructure\\Persistence\\HbtDbContext.cs",
-              "ToolTip": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Infrastructure\\Persistence\\HbtDbContext.cs",
-              "RelativeToolTip": "src\\Lean.Hbt.Infrastructure\\Persistence\\HbtDbContext.cs",
-              "ViewState": "AgIAAAYAAAAAAAAAAAAAABcAAAArAAAAAAAAAA==",
+              "DocumentIndex": 2,
+              "Title": "HbtCacheConfigManager.cs",
+              "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Infrastructure\\Caching\\HbtCacheConfigManager.cs",
+              "RelativeDocumentMoniker": "src\\Lean.Hbt.Infrastructure\\Caching\\HbtCacheConfigManager.cs",
+              "ToolTip": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Infrastructure\\Caching\\HbtCacheConfigManager.cs",
+              "RelativeToolTip": "src\\Lean.Hbt.Infrastructure\\Caching\\HbtCacheConfigManager.cs",
+              "ViewState": "AgIAACcAAAAAAAAAAAAUwDsAAAAUAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-01-18T06:59:38.915Z",
+              "WhenOpened": "2025-01-22T03:15:04.138Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "HbtDbOptions.cs",
+              "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Common\\Options\\HbtDbOptions.cs",
+              "RelativeDocumentMoniker": "src\\Lean.Hbt.Common\\Options\\HbtDbOptions.cs",
+              "ToolTip": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Common\\Options\\HbtDbOptions.cs",
+              "RelativeToolTip": "src\\Lean.Hbt.Common\\Options\\HbtDbOptions.cs",
+              "ViewState": "AgIAAAoAAAAAAAAAAAAWwBoAAAASAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-21T08:28:06.59Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "HbtDictDataController.cs",
+              "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.WebApi\\Controllers\\Admin\\HbtDictDataController.cs",
+              "RelativeDocumentMoniker": "src\\Lean.Hbt.WebApi\\Controllers\\Admin\\HbtDictDataController.cs",
+              "ToolTip": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.WebApi\\Controllers\\Admin\\HbtDictDataController.cs",
+              "RelativeToolTip": "src\\Lean.Hbt.WebApi\\Controllers\\Admin\\HbtDictDataController.cs",
+              "ViewState": "AgIAAHAAAAAAAAAAAAAWwIAAAABBAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-21T09:29:08.528Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "IHbtRepository.cs",
+              "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Domain\\Repositories\\IHbtRepository.cs",
+              "RelativeDocumentMoniker": "src\\Lean.Hbt.Domain\\Repositories\\IHbtRepository.cs",
+              "ToolTip": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Domain\\Repositories\\IHbtRepository.cs",
+              "RelativeToolTip": "src\\Lean.Hbt.Domain\\Repositories\\IHbtRepository.cs",
+              "ViewState": "AgIAAE0AAAAAAAAAAAAIwGYAAAAiAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-22T01:53:53.354Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "HbtDictTypeService.cs",
+              "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Application\\Services\\Admin\\HbtDictTypeService.cs",
+              "RelativeDocumentMoniker": "src\\Lean.Hbt.Application\\Services\\Admin\\HbtDictTypeService.cs",
+              "ToolTip": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Application\\Services\\Admin\\HbtDictTypeService.cs",
+              "RelativeToolTip": "src\\Lean.Hbt.Application\\Services\\Admin\\HbtDictTypeService.cs",
+              "ViewState": "AgIAAGAAAAAAAAAAAAASwG0AAAAMAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-21T09:04:15.463Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "HbtDbSeed.cs",
+              "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Infrastructure\\Data\\Seeds\\HbtDbSeed.cs",
+              "RelativeDocumentMoniker": "src\\Lean.Hbt.Infrastructure\\Data\\Seeds\\HbtDbSeed.cs",
+              "ToolTip": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Infrastructure\\Data\\Seeds\\HbtDbSeed.cs",
+              "RelativeToolTip": "src\\Lean.Hbt.Infrastructure\\Data\\Seeds\\HbtDbSeed.cs",
+              "ViewState": "AgIAALYDAAAAAAAAAAAewLwDAAAqAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-21T07:37:14.416Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 1,
-              "Title": "HbtDbSeed.cs",
-              "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Infrastructure\\Persistence\\HbtDbSeed.cs",
-              "RelativeDocumentMoniker": "src\\Lean.Hbt.Infrastructure\\Persistence\\HbtDbSeed.cs",
-              "ToolTip": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Infrastructure\\Persistence\\HbtDbSeed.cs",
-              "RelativeToolTip": "src\\Lean.Hbt.Infrastructure\\Persistence\\HbtDbSeed.cs",
-              "ViewState": "AgIAAL8AAAAAAAAAAAAYwM4AAAAYAAAAAAAAAA==",
+              "Title": "Program.cs",
+              "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.WebApi\\Program.cs",
+              "RelativeDocumentMoniker": "src\\Lean.Hbt.WebApi\\Program.cs",
+              "ToolTip": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.WebApi\\Program.cs",
+              "RelativeToolTip": "src\\Lean.Hbt.WebApi\\Program.cs",
+              "ViewState": "AgIAACwAAAAAAAAAAAAewDIAAAAEAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-01-18T06:51:11.931Z",
+              "WhenOpened": "2025-01-21T07:21:21.897Z",
               "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "HbtSessionManager.cs",
+              "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Infrastructure\\Security\\HbtSessionManager.cs",
+              "RelativeDocumentMoniker": "src\\Lean.Hbt.Infrastructure\\Security\\HbtSessionManager.cs",
+              "ToolTip": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Infrastructure\\Security\\HbtSessionManager.cs",
+              "RelativeToolTip": "src\\Lean.Hbt.Infrastructure\\Security\\HbtSessionManager.cs",
+              "ViewState": "AgIAAD4BAAAAAAAAAAASwE0BAAAkAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-21T07:15:50.477Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "HbtRepository.cs",
+              "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Infrastructure\\Repositories\\HbtRepository.cs",
+              "RelativeDocumentMoniker": "src\\Lean.Hbt.Infrastructure\\Repositories\\HbtRepository.cs",
+              "ToolTip": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Infrastructure\\Repositories\\HbtRepository.cs",
+              "RelativeToolTip": "src\\Lean.Hbt.Infrastructure\\Repositories\\HbtRepository.cs",
+              "ViewState": "AgIAAKwAAAAAAAAAAAAswIkAAAAqAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-22T01:59:43.348Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.WebApi\\appsettings.json",
+              "RelativeDocumentMoniker": "src\\Lean.Hbt.WebApi\\appsettings.json",
+              "ToolTip": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.WebApi\\appsettings.json",
+              "RelativeToolTip": "src\\Lean.Hbt.WebApi\\appsettings.json",
+              "ViewState": "AgIAAFcAAAAAAAAAAADwvwAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2025-01-22T02:44:21.834Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "HbtRoleDept.cs",
+              "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Domain\\Entities\\Identity\\HbtRoleDept.cs",
+              "RelativeDocumentMoniker": "src\\Lean.Hbt.Domain\\Entities\\Identity\\HbtRoleDept.cs",
+              "ToolTip": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Domain\\Entities\\Identity\\HbtRoleDept.cs",
+              "RelativeToolTip": "src\\Lean.Hbt.Domain\\Entities\\Identity\\HbtRoleDept.cs",
+              "ViewState": "AgIAACoAAAAAAAAAAAAEwDoAAAAXAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-21T07:16:52.808Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "HbtDbContext.cs",
+              "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Infrastructure\\Data\\Contexts\\HbtDbContext.cs",
+              "RelativeDocumentMoniker": "src\\Lean.Hbt.Infrastructure\\Data\\Contexts\\HbtDbContext.cs",
+              "ToolTip": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Infrastructure\\Data\\Contexts\\HbtDbContext.cs",
+              "RelativeToolTip": "src\\Lean.Hbt.Infrastructure\\Data\\Contexts\\HbtDbContext.cs",
+              "ViewState": "AgIAAI8AAAAAAAAAAAAewJ4AAAAUAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-21T07:17:47.349Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "HbtUserService.cs",
+              "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Application\\Services\\Identity\\HbtUserService.cs",
+              "RelativeDocumentMoniker": "src\\Lean.Hbt.Application\\Services\\Identity\\HbtUserService.cs",
+              "ToolTip": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Application\\Services\\Identity\\HbtUserService.cs",
+              "RelativeToolTip": "src\\Lean.Hbt.Application\\Services\\Identity\\HbtUserService.cs",
+              "ViewState": "AgIAAE4BAAAAAAAAAAAWwFMBAAAVAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-21T07:21:01.287Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "HbtJwtOptions.cs",
+              "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Common\\Options\\HbtJwtOptions.cs",
+              "RelativeDocumentMoniker": "src\\Lean.Hbt.Common\\Options\\HbtJwtOptions.cs",
+              "ToolTip": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Common\\Options\\HbtJwtOptions.cs",
+              "RelativeToolTip": "src\\Lean.Hbt.Common\\Options\\HbtJwtOptions.cs",
+              "ViewState": "AgIAAA4AAAAAAAAAAAAWwBwAAAAWAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-21T08:28:27.072Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "HbtAuditsLog.cs",
+              "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Infrastructure\\Security\\HbtAuditsLog.cs",
+              "RelativeDocumentMoniker": "src\\Lean.Hbt.Infrastructure\\Security\\HbtAuditsLog.cs",
+              "ToolTip": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Infrastructure\\Security\\HbtAuditsLog.cs",
+              "RelativeToolTip": "src\\Lean.Hbt.Infrastructure\\Security\\HbtAuditsLog.cs",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAAAEIAAAAsAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-21T07:13:52.356Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
+              "Title": "HbtRoleMenu.cs",
+              "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Domain\\Entities\\Identity\\HbtRoleMenu.cs",
+              "RelativeDocumentMoniker": "src\\Lean.Hbt.Domain\\Entities\\Identity\\HbtRoleMenu.cs",
+              "ToolTip": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Domain\\Entities\\Identity\\HbtRoleMenu.cs",
+              "RelativeToolTip": "src\\Lean.Hbt.Domain\\Entities\\Identity\\HbtRoleMenu.cs",
+              "ViewState": "AgIAACgAAAAAAAAAAIAzwDoAAAAXAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-21T07:17:03.34Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 17,
+              "Title": "HbtUserDept.cs",
+              "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Domain\\Entities\\Identity\\HbtUserDept.cs",
+              "RelativeDocumentMoniker": "src\\Lean.Hbt.Domain\\Entities\\Identity\\HbtUserDept.cs",
+              "ToolTip": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Domain\\Entities\\Identity\\HbtUserDept.cs",
+              "RelativeToolTip": "src\\Lean.Hbt.Domain\\Entities\\Identity\\HbtUserDept.cs",
+              "ViewState": "AgIAAC0AAAAAAAAAAAAEwDoAAAAXAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-21T07:17:14.823Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 18,
+              "Title": "HbtUserPost.cs",
+              "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Domain\\Entities\\Identity\\HbtUserPost.cs",
+              "RelativeDocumentMoniker": "src\\Lean.Hbt.Domain\\Entities\\Identity\\HbtUserPost.cs",
+              "ToolTip": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Domain\\Entities\\Identity\\HbtUserPost.cs",
+              "RelativeToolTip": "src\\Lean.Hbt.Domain\\Entities\\Identity\\HbtUserPost.cs",
+              "ViewState": "AgIAACcAAAAAAAAAAAAEwDoAAAAXAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-21T07:17:22.824Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 19,
+              "Title": "HbtUserRole.cs",
+              "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Domain\\Entities\\Identity\\HbtUserRole.cs",
+              "RelativeDocumentMoniker": "src\\Lean.Hbt.Domain\\Entities\\Identity\\HbtUserRole.cs",
+              "ToolTip": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Domain\\Entities\\Identity\\HbtUserRole.cs",
+              "RelativeToolTip": "src\\Lean.Hbt.Domain\\Entities\\Identity\\HbtUserRole.cs",
+              "ViewState": "AgIAACgAAAAAAAAAAIAzwDoAAAAXAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-21T07:17:39.11Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "HbtExcelHelper.cs",
+              "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Common\\Helpers\\HbtExcelHelper.cs",
+              "RelativeDocumentMoniker": "src\\Lean.Hbt.Common\\Helpers\\HbtExcelHelper.cs",
+              "ToolTip": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Common\\Helpers\\HbtExcelHelper.cs",
+              "RelativeToolTip": "src\\Lean.Hbt.Common\\Helpers\\HbtExcelHelper.cs",
+              "ViewState": "AgIAAKIAAAAAAAAAAAAWwLIAAAA/AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-21T07:21:34.878Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 22,
+              "Title": "HbtMenu.cs",
+              "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Domain\\Entities\\Identity\\HbtMenu.cs",
+              "RelativeDocumentMoniker": "src\\Lean.Hbt.Domain\\Entities\\Identity\\HbtMenu.cs",
+              "ToolTip": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Domain\\Entities\\Identity\\HbtMenu.cs",
+              "RelativeToolTip": "src\\Lean.Hbt.Domain\\Entities\\Identity\\HbtMenu.cs",
+              "ViewState": "AgIAAA4AAAAAAAAAAADwvwAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-21T07:22:04.377Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 23,
+              "Title": "HbtOperLog.cs",
+              "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Domain\\Entities\\Audit\\HbtOperLog.cs",
+              "RelativeDocumentMoniker": "src\\Lean.Hbt.Domain\\Entities\\Audit\\HbtOperLog.cs",
+              "ToolTip": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Domain\\Entities\\Audit\\HbtOperLog.cs",
+              "RelativeToolTip": "src\\Lean.Hbt.Domain\\Entities\\Audit\\HbtOperLog.cs",
+              "ViewState": "AgIAAAoAAAAAAAAAAAASwCUAAAAWAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-21T07:21:50.728Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 21,
+              "Title": "HbtTranslation.cs",
+              "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Domain\\Entities\\Admin\\HbtTranslation.cs",
+              "RelativeDocumentMoniker": "src\\Lean.Hbt.Domain\\Entities\\Admin\\HbtTranslation.cs",
+              "ToolTip": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Domain\\Entities\\Admin\\HbtTranslation.cs",
+              "RelativeToolTip": "src\\Lean.Hbt.Domain\\Entities\\Admin\\HbtTranslation.cs",
+              "ViewState": "AgIAAAgAAAAAAAAAAADwvwIAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-21T07:22:09.719Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 20,
+              "Title": "HbtOnlineHub.cs",
+              "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Infrastructure\\SignalR\\HbtOnlineHub.cs",
+              "RelativeDocumentMoniker": "src\\Lean.Hbt.Infrastructure\\SignalR\\HbtOnlineHub.cs",
+              "ToolTip": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Infrastructure\\SignalR\\HbtOnlineHub.cs",
+              "RelativeToolTip": "src\\Lean.Hbt.Infrastructure\\SignalR\\HbtOnlineHub.cs",
+              "ViewState": "AgIAABwAAAAAAAAAAAAWwCsAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-21T08:12:30.109Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 24,
+              "Title": "HbtDictType.cs",
+              "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Domain\\Entities\\Admin\\HbtDictType.cs",
+              "RelativeDocumentMoniker": "src\\Lean.Hbt.Domain\\Entities\\Admin\\HbtDictType.cs",
+              "ToolTip": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Domain\\Entities\\Admin\\HbtDictType.cs",
+              "RelativeToolTip": "src\\Lean.Hbt.Domain\\Entities\\Admin\\HbtDictType.cs",
+              "ViewState": "AgIAABsAAAAAAAAAAAAWwCsAAAAXAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-21T07:21:40.912Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 25,
+              "Title": "HbtTenantMiddleware.cs",
+              "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.WebApi\\Middlewares\\HbtTenantMiddleware.cs",
+              "RelativeDocumentMoniker": "src\\Lean.Hbt.WebApi\\Middlewares\\HbtTenantMiddleware.cs",
+              "ToolTip": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.WebApi\\Middlewares\\HbtTenantMiddleware.cs",
+              "RelativeToolTip": "src\\Lean.Hbt.WebApi\\Middlewares\\HbtTenantMiddleware.cs",
+              "ViewState": "AgIAABUAAAAAAAAAAAAAABUAAAARAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-21T07:20:44.564Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 27,
+              "Title": "HbtLoginPolicy.cs",
+              "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Infrastructure\\Security\\HbtLoginPolicy.cs",
+              "RelativeDocumentMoniker": "src\\Lean.Hbt.Infrastructure\\Security\\HbtLoginPolicy.cs",
+              "ToolTip": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Infrastructure\\Security\\HbtLoginPolicy.cs",
+              "RelativeToolTip": "src\\Lean.Hbt.Infrastructure\\Security\\HbtLoginPolicy.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAADwvwAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-21T07:14:25.438Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 26,
+              "Title": "HbtPost.cs",
+              "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Domain\\Entities\\Identity\\HbtPost.cs",
+              "RelativeDocumentMoniker": "src\\Lean.Hbt.Domain\\Entities\\Identity\\HbtPost.cs",
+              "ToolTip": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Domain\\Entities\\Identity\\HbtPost.cs",
+              "RelativeToolTip": "src\\Lean.Hbt.Domain\\Entities\\Identity\\HbtPost.cs",
+              "ViewState": "AgIAACwAAAAAAAAAAAAEwDoAAAAaAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-21T07:16:24.536Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 28,
+              "Title": "IHbtAuditsLog.cs",
+              "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Domain\\IServices\\IHbtAuditsLog.cs",
+              "RelativeDocumentMoniker": "src\\Lean.Hbt.Domain\\IServices\\IHbtAuditsLog.cs",
+              "ToolTip": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Domain\\IServices\\IHbtAuditsLog.cs",
+              "RelativeToolTip": "src\\Lean.Hbt.Domain\\IServices\\IHbtAuditsLog.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAADwvw4AAAAiAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-21T07:19:21.958Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 29,
+              "Title": "IHbtLogger.cs",
+              "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Domain\\IServices\\IHbtLogger.cs",
+              "RelativeDocumentMoniker": "src\\Lean.Hbt.Domain\\IServices\\IHbtLogger.cs",
+              "ToolTip": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Domain\\IServices\\IHbtLogger.cs",
+              "RelativeToolTip": "src\\Lean.Hbt.Domain\\IServices\\IHbtLogger.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAADwvwAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-21T07:19:19.303Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 30,
+              "Title": "HbtPasswordPolicy.cs",
+              "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Infrastructure\\Security\\HbtPasswordPolicy.cs",
+              "RelativeDocumentMoniker": "src\\Lean.Hbt.Infrastructure\\Security\\HbtPasswordPolicy.cs",
+              "ToolTip": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Infrastructure\\Security\\HbtPasswordPolicy.cs",
+              "RelativeToolTip": "src\\Lean.Hbt.Infrastructure\\Security\\HbtPasswordPolicy.cs",
+              "ViewState": "AgIAAHQAAAAAAAAAAAAYwIcAAAASAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-21T07:14:26.53Z"
             }
           ]
         }

@@ -7,6 +7,8 @@
 // 描述    : 菜单实体类
 //===================================================================
 
+#nullable enable
+
 using Lean.Hbt.Common.Enums;
 using SqlSugar;
 
@@ -26,13 +28,13 @@ namespace Lean.Hbt.Domain.Entities.Identity
         /// 菜单名称
         /// </summary>
         [SugarColumn(ColumnName = "menu_name", ColumnDescription = "菜单名称", Length = 50, ColumnDataType = "nvarchar", IsNullable = false)]
-        public string MenuName { get; set; }
+        public string MenuName { get; set; } = null!;
 
         /// <summary>
         /// 翻译Key
         /// </summary>
         [SugarColumn(ColumnName = "trans_key", ColumnDescription = "翻译Key", Length = 100, ColumnDataType = "nvarchar", IsNullable = true)]
-        public string TransKey { get; set; }
+        public string? TransKey { get; set; }
 
         /// <summary>
         /// 父菜单ID
@@ -50,49 +52,49 @@ namespace Lean.Hbt.Domain.Entities.Identity
         /// 路由地址
         /// </summary>
         [SugarColumn(ColumnName = "path", ColumnDescription = "路由地址", Length = 200, ColumnDataType = "nvarchar", IsNullable = true)]
-        public string Path { get; set; }
+        public string? Path { get; set; }
 
         /// <summary>
         /// 组件路径
         /// </summary>
         [SugarColumn(ColumnName = "component", ColumnDescription = "组件路径", Length = 255, ColumnDataType = "nvarchar", IsNullable = true)]
-        public string Component { get; set; }
+        public string? Component { get; set; }
 
         /// <summary>
         /// 是否为外链（0否 1是）
         /// </summary>
         [SugarColumn(ColumnName = "is_frame", ColumnDescription = "是否为外链（0否 1是）", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
-        public HbtYesNo IsFrame { get; set; }
+        public HbtYesNo IsFrame { get; set; } = HbtYesNo.No;
 
         /// <summary>
         /// 菜单类型（0目录 1菜单 2按钮）
         /// </summary>
         [SugarColumn(ColumnName = "menu_type", ColumnDescription = "菜单类型（0目录 1菜单 2按钮）", ColumnDataType = "int", IsNullable = false)]
-        public HbtMenuType MenuType { get; set; }
+        public HbtMenuType MenuType { get; set; } = HbtMenuType.Directory;
 
         /// <summary>
         /// 显示状态（0显示 1隐藏）
         /// </summary>
         [SugarColumn(ColumnName = "visible", ColumnDescription = "显示状态（0显示 1隐藏）", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
-        public HbtVisible Visible { get; set; }
+        public HbtVisible Visible { get; set; } = HbtVisible.Show;
 
         /// <summary>
         /// 菜单状态（0正常 1停用）
         /// </summary>
         [SugarColumn(ColumnName = "status", ColumnDescription = "菜单状态（0正常 1停用）", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
-        public HbtStatus Status { get; set; }
+        public HbtStatus Status { get; set; } = HbtStatus.Normal;
 
         /// <summary>
         /// 权限标识
         /// </summary>
         [SugarColumn(ColumnName = "perms", ColumnDescription = "权限标识", Length = 100, ColumnDataType = "nvarchar", IsNullable = true)]
-        public string Perms { get; set; }
+        public string? Perms { get; set; }
 
         /// <summary>
         /// 菜单图标
         /// </summary>
         [SugarColumn(ColumnName = "icon", ColumnDescription = "菜单图标", Length = 100, ColumnDataType = "nvarchar", IsNullable = true)]
-        public string Icon { get; set; }
+        public string? Icon { get; set; }
 
         /// <summary>
         /// 租户ID
@@ -100,25 +102,28 @@ namespace Lean.Hbt.Domain.Entities.Identity
         [SugarColumn(ColumnName = "tenant_id", ColumnDescription = "租户ID", ColumnDataType = "bigint", IsNullable = false)]
         public long TenantId { get; set; }
 
+        /// <summary>
+        /// 租户导航属性
+        /// </summary>
         [Navigate(NavigateType.OneToOne, nameof(TenantId))]
-        public HbtTenant Tenant { get; set; }
+        public HbtTenant? Tenant { get; set; }
 
         /// <summary>
         /// 角色菜单关联
         /// </summary>
         [Navigate(NavigateType.OneToMany, nameof(HbtRoleMenu.MenuId))]
-        public List<HbtRoleMenu> RoleMenus { get; set; }
+        public List<HbtRoleMenu>? RoleMenus { get; set; }
 
         /// <summary>
         /// 父菜单导航属性
         /// </summary>
         [Navigate(NavigateType.OneToOne, nameof(ParentId))]
-        public HbtMenu Parent { get; set; }
+        public HbtMenu? Parent { get; set; }
 
         /// <summary>
         /// 子菜单导航属性
         /// </summary>
         [Navigate(NavigateType.OneToMany, nameof(ParentId))]
-        public List<HbtMenu> Children { get; set; }
+        public List<HbtMenu>? Children { get; set; }
     }
 }

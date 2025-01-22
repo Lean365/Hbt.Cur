@@ -10,10 +10,14 @@
 using System.Text;
 using Lean.Hbt.Common.Options;
 using Lean.Hbt.Domain.IServices;
+using Lean.Hbt.Domain.Repositories;
+using Lean.Hbt.Domain.Entities.Admin;
 using Lean.Hbt.Infrastructure.Authentication;
 using Lean.Hbt.Infrastructure.Caching;
 using Lean.Hbt.Infrastructure.Logging;
-using Lean.Hbt.Infrastructure.Persistence;
+using Lean.Hbt.Infrastructure.Data.Contexts;
+using Lean.Hbt.Infrastructure.Data.Seeds;
+using Lean.Hbt.Infrastructure.Repositories;
 using Lean.Hbt.Infrastructure.Security;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
@@ -21,6 +25,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using SqlSugar;
 using Microsoft.Extensions.Caching.StackExchangeRedis;
+using StackExchange.Redis;
 
 namespace Lean.Hbt.Infrastructure.Extensions
 {
@@ -50,6 +55,23 @@ namespace Lean.Hbt.Infrastructure.Extensions
             services.Configure<HbtSecurityOptions>(configuration.GetSection("Security"));
             services.Configure<HbtRedisOptions>(configuration.GetSection("Redis"));
 
+            // 添加SqlSugar服务
+            services.AddSingleton<ISqlSugarClient>(sp =>
+            {
+                var scope = new SqlSugarScope(connectionConfig,
+                    db =>
+                    {
+                        // 打印SQL语句
+                        db.Aop.OnLogExecuting = (sql, parameters) =>
+                        {
+                            Console.WriteLine(sql);
+                        };
+                    });
+
+                return scope;
+            });
+            services.AddSingleton<SqlSugarScope>(sp => sp.GetRequiredService<ISqlSugarClient>() as SqlSugarScope);
+
             // 2.认证服务
             var jwtOptions = configuration.GetSection("Security:Jwt").Get<HbtJwtOptions>();
             services.AddAuthentication(options =>
@@ -74,6 +96,16 @@ namespace Lean.Hbt.Infrastructure.Extensions
             // 3.基础设施服务
             services.AddSingleton<IHbtLogger, HbtNLogger>();
             
+            // 添加仓储服务
+            services.AddSingleton(typeof(IHbtRepository<>), typeof(HbtRepository<>));
+            
+            // 添加缓存配置管理器
+            services.AddSingleton<HbtCacheConfigManager>();
+            
+            // 添加内存缓存
+            services.AddMemoryCache();
+            services.AddSingleton<IHbtMemoryCache, HbtMemoryCache>();
+            
             // 添加Redis分布式缓存
             var redisOptions = configuration.GetSection("Redis").Get<HbtRedisOptions>();
             services.AddStackExchangeRedisCache(options =>
@@ -82,10 +114,20 @@ namespace Lean.Hbt.Infrastructure.Extensions
                 options.InstanceName = redisOptions?.InstanceName;
             });
             
+            // 添加Redis连接管理器
+            services.AddSingleton<ConnectionMultiplexer>(sp => 
+            {
+                return ConnectionMultiplexer.Connect(redisOptions?.ConnectionString ?? "localhost");
+            });
+            
             services.AddSingleton<IHbtRedisCache, HbtRedisCache>();
+            
+            // 添加缓存工厂
+            services.AddSingleton<IHbtCacheFactory, HbtCacheFactory>();
+            
             services.AddScoped<HbtDbContext>();
             services.AddScoped<HbtDbSeed>();
-            services.AddScoped<IHbtAuditLog, HbtAuditLog>();
+            services.AddScoped<IHbtAuditsLog, HbtAuditsLog>();
             services.AddScoped<IHbtLoginPolicy, HbtLoginPolicy>();
             services.AddScoped<IHbtPasswordPolicy, HbtPasswordPolicy>();
             services.AddScoped<IHbtSessionManager, HbtSessionManager>();

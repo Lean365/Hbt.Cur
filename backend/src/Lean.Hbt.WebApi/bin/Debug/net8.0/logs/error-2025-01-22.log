@@ -1,0 +1,504 @@
+2025-01-22 08:30:06.6249|Fatal|Program|应用程序启动失败SqlSugar.SqlSugarException: ALTER TABLE 只允许添加满足下述条件的列: 列可以包含 Null 值；或者列具有指定的 DEFAULT 定义；或者要添加的列是标识列或时间戳列；或者，如果前几个条件均未满足，则表必须为空以允许添加此列。不能将列“order_num”添加到非空表“hbt_role”中，因为它不满足上述条件。
+   at SqlSugar.Check.Exception(Boolean isException, String message, String[] args)
+   at SqlSugar.CodeFirstProvider.InitTables(Type entityType)
+   at Lean.Hbt.Infrastructure.Data.Contexts.HbtDbContext..ctor(IOptions`1 options, IHbtLogger logger) in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Data\Contexts\HbtDbContext.cs:line 153
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeDirectByRefWithFewArgs(Object obj, Span`1 copyOfArgs, BindingFlags invokeAttr)
+   at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+   at System.Reflection.RuntimeConstructorInfo.Invoke(BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitConstructor(ConstructorCallSite constructorCallSite, RuntimeResolverContext context)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSiteMain(ServiceCallSite callSite, TArgument argument)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitCache(ServiceCallSite callSite, RuntimeResolverContext context, ServiceProviderEngineScope serviceProviderEngine, RuntimeResolverLock lockType)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitScopeCache(ServiceCallSite callSite, RuntimeResolverContext context)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSite(ServiceCallSite callSite, TArgument argument)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.Resolve(ServiceCallSite callSite, ServiceProviderEngineScope scope)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.DynamicServiceProviderEngine.<>c__DisplayClass2_0.<RealizeService>b__0(ServiceProviderEngineScope scope)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(ServiceIdentifier serviceIdentifier, ServiceProviderEngineScope serviceProviderEngineScope)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.ServiceProviderEngineScope.GetService(Type serviceType)
+   at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService(IServiceProvider provider, Type serviceType)
+   at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService[T](IServiceProvider provider)
+   at Program.<Main>$(String[] args) in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\Program.cs:line 57
+2025-01-22 09:09:22.3979|Fatal|Program|应用程序启动失败SqlSugar.SqlSugarException: ALTER TABLE 只允许添加满足下述条件的列: 列可以包含 Null 值；或者列具有指定的 DEFAULT 定义；或者要添加的列是标识列或时间戳列；或者，如果前几个条件均未满足，则表必须为空以允许添加此列。不能将列“order_num”添加到非空表“hbt_role”中，因为它不满足上述条件。
+   at SqlSugar.Check.Exception(Boolean isException, String message, String[] args)
+   at SqlSugar.CodeFirstProvider.InitTables(Type entityType)
+   at Lean.Hbt.Infrastructure.Data.Contexts.HbtDbContext..ctor(IOptions`1 options, IHbtLogger logger) in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Data\Contexts\HbtDbContext.cs:line 153
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeDirectByRefWithFewArgs(Object obj, Span`1 copyOfArgs, BindingFlags invokeAttr)
+   at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+   at System.Reflection.RuntimeConstructorInfo.Invoke(BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitConstructor(ConstructorCallSite constructorCallSite, RuntimeResolverContext context)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSiteMain(ServiceCallSite callSite, TArgument argument)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitCache(ServiceCallSite callSite, RuntimeResolverContext context, ServiceProviderEngineScope serviceProviderEngine, RuntimeResolverLock lockType)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitScopeCache(ServiceCallSite callSite, RuntimeResolverContext context)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSite(ServiceCallSite callSite, TArgument argument)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.Resolve(ServiceCallSite callSite, ServiceProviderEngineScope scope)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.DynamicServiceProviderEngine.<>c__DisplayClass2_0.<RealizeService>b__0(ServiceProviderEngineScope scope)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(ServiceIdentifier serviceIdentifier, ServiceProviderEngineScope serviceProviderEngineScope)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.ServiceProviderEngineScope.GetService(Type serviceType)
+   at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService(IServiceProvider provider, Type serviceType)
+   at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService[T](IServiceProvider provider)
+   at Program.<Main>$(String[] args) in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\Program.cs:line 57
+2025-01-22 10:45:51.8996|Fatal|Program|应用程序启动失败System.AggregateException: Some services are not able to be constructed (Error while validating the service descriptor 'ServiceType: Lean.Hbt.Domain.IServices.IHbtRedisCache Lifetime: Singleton ImplementationType: Lean.Hbt.Infrastructure.Caching.HbtRedisCache': Unable to resolve service for type 'StackExchange.Redis.ConnectionMultiplexer' while attempting to activate 'Lean.Hbt.Infrastructure.Caching.HbtRedisCache'.) (Error while validating the service descriptor 'ServiceType: Lean.Hbt.Domain.IServices.IHbtLoginPolicy Lifetime: Scoped ImplementationType: Lean.Hbt.Infrastructure.Security.HbtLoginPolicy': Unable to resolve service for type 'StackExchange.Redis.ConnectionMultiplexer' while attempting to activate 'Lean.Hbt.Infrastructure.Caching.HbtRedisCache'.) (Error while validating the service descriptor 'ServiceType: Lean.Hbt.Domain.IServices.IHbtPasswordPolicy Lifetime: Scoped ImplementationType: Lean.Hbt.Infrastructure.Security.HbtPasswordPolicy': Unable to resolve service for type 'StackExchange.Redis.ConnectionMultiplexer' while attempting to activate 'Lean.Hbt.Infrastructure.Caching.HbtRedisCache'.) (Error while validating the service descriptor 'ServiceType: Lean.Hbt.Domain.IServices.IHbtSessionManager Lifetime: Scoped ImplementationType: Lean.Hbt.Infrastructure.Security.HbtSessionManager': Unable to resolve service for type 'StackExchange.Redis.ConnectionMultiplexer' while attempting to activate 'Lean.Hbt.Infrastructure.Caching.HbtRedisCache'.)
+ ---> System.InvalidOperationException: Error while validating the service descriptor 'ServiceType: Lean.Hbt.Domain.IServices.IHbtRedisCache Lifetime: Singleton ImplementationType: Lean.Hbt.Infrastructure.Caching.HbtRedisCache': Unable to resolve service for type 'StackExchange.Redis.ConnectionMultiplexer' while attempting to activate 'Lean.Hbt.Infrastructure.Caching.HbtRedisCache'.
+ ---> System.InvalidOperationException: Unable to resolve service for type 'StackExchange.Redis.ConnectionMultiplexer' while attempting to activate 'Lean.Hbt.Infrastructure.Caching.HbtRedisCache'.
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceDescriptor serviceDescriptor, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   --- End of inner exception stack trace ---
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider..ctor(ICollection`1 serviceDescriptors, ServiceProviderOptions options)
+   --- End of inner exception stack trace ---
+ ---> (Inner Exception #1) System.InvalidOperationException: Error while validating the service descriptor 'ServiceType: Lean.Hbt.Domain.IServices.IHbtLoginPolicy Lifetime: Scoped ImplementationType: Lean.Hbt.Infrastructure.Security.HbtLoginPolicy': Unable to resolve service for type 'StackExchange.Redis.ConnectionMultiplexer' while attempting to activate 'Lean.Hbt.Infrastructure.Caching.HbtRedisCache'.
+ ---> System.InvalidOperationException: Unable to resolve service for type 'StackExchange.Redis.ConnectionMultiplexer' while attempting to activate 'Lean.Hbt.Infrastructure.Caching.HbtRedisCache'.
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceDescriptor serviceDescriptor, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   --- End of inner exception stack trace ---
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider..ctor(ICollection`1 serviceDescriptors, ServiceProviderOptions options)<---
+
+ ---> (Inner Exception #2) System.InvalidOperationException: Error while validating the service descriptor 'ServiceType: Lean.Hbt.Domain.IServices.IHbtPasswordPolicy Lifetime: Scoped ImplementationType: Lean.Hbt.Infrastructure.Security.HbtPasswordPolicy': Unable to resolve service for type 'StackExchange.Redis.ConnectionMultiplexer' while attempting to activate 'Lean.Hbt.Infrastructure.Caching.HbtRedisCache'.
+ ---> System.InvalidOperationException: Unable to resolve service for type 'StackExchange.Redis.ConnectionMultiplexer' while attempting to activate 'Lean.Hbt.Infrastructure.Caching.HbtRedisCache'.
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceDescriptor serviceDescriptor, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   --- End of inner exception stack trace ---
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider..ctor(ICollection`1 serviceDescriptors, ServiceProviderOptions options)<---
+
+ ---> (Inner Exception #3) System.InvalidOperationException: Error while validating the service descriptor 'ServiceType: Lean.Hbt.Domain.IServices.IHbtSessionManager Lifetime: Scoped ImplementationType: Lean.Hbt.Infrastructure.Security.HbtSessionManager': Unable to resolve service for type 'StackExchange.Redis.ConnectionMultiplexer' while attempting to activate 'Lean.Hbt.Infrastructure.Caching.HbtRedisCache'.
+ ---> System.InvalidOperationException: Unable to resolve service for type 'StackExchange.Redis.ConnectionMultiplexer' while attempting to activate 'Lean.Hbt.Infrastructure.Caching.HbtRedisCache'.
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceDescriptor serviceDescriptor, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   --- End of inner exception stack trace ---
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider..ctor(ICollection`1 serviceDescriptors, ServiceProviderOptions options)<---
+
+2025-01-22 11:16:46.0096|Fatal|Program|应用程序启动失败System.AggregateException: Some services are not able to be constructed (Error while validating the service descriptor 'ServiceType: Lean.Hbt.Domain.IServices.IHbtMemoryCache Lifetime: Singleton ImplementationType: Lean.Hbt.Infrastructure.Caching.HbtMemoryCache': Unable to resolve service for type 'Lean.Hbt.Infrastructure.Caching.HbtCacheConfigManager' while attempting to activate 'Lean.Hbt.Infrastructure.Caching.HbtMemoryCache'.) (Error while validating the service descriptor 'ServiceType: Lean.Hbt.Domain.IServices.IHbtCacheFactory Lifetime: Singleton ImplementationType: Lean.Hbt.Infrastructure.Caching.HbtCacheFactory': Unable to resolve service for type 'Lean.Hbt.Infrastructure.Caching.HbtCacheConfigManager' while attempting to activate 'Lean.Hbt.Infrastructure.Caching.HbtMemoryCache'.) (Error while validating the service descriptor 'ServiceType: Lean.Hbt.Domain.IServices.IHbtLoginPolicy Lifetime: Scoped ImplementationType: Lean.Hbt.Infrastructure.Security.HbtLoginPolicy': Unable to resolve service for type 'Lean.Hbt.Domain.Repositories.IHbtRepository`1[Lean.Hbt.Domain.Entities.Admin.HbtSysConfig]' while attempting to activate 'Lean.Hbt.Infrastructure.Security.HbtLoginPolicy'.) (Error while validating the service descriptor 'ServiceType: Lean.Hbt.Domain.IServices.IHbtSessionManager Lifetime: Scoped ImplementationType: Lean.Hbt.Infrastructure.Security.HbtSessionManager': Unable to resolve service for type 'Lean.Hbt.Domain.Repositories.IHbtRepository`1[Lean.Hbt.Domain.Entities.Admin.HbtSysConfig]' while attempting to activate 'Lean.Hbt.Infrastructure.Security.HbtSessionManager'.)
+ ---> System.InvalidOperationException: Error while validating the service descriptor 'ServiceType: Lean.Hbt.Domain.IServices.IHbtMemoryCache Lifetime: Singleton ImplementationType: Lean.Hbt.Infrastructure.Caching.HbtMemoryCache': Unable to resolve service for type 'Lean.Hbt.Infrastructure.Caching.HbtCacheConfigManager' while attempting to activate 'Lean.Hbt.Infrastructure.Caching.HbtMemoryCache'.
+ ---> System.InvalidOperationException: Unable to resolve service for type 'Lean.Hbt.Infrastructure.Caching.HbtCacheConfigManager' while attempting to activate 'Lean.Hbt.Infrastructure.Caching.HbtMemoryCache'.
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceDescriptor serviceDescriptor, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   --- End of inner exception stack trace ---
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider..ctor(ICollection`1 serviceDescriptors, ServiceProviderOptions options)
+   --- End of inner exception stack trace ---
+ ---> (Inner Exception #1) System.InvalidOperationException: Error while validating the service descriptor 'ServiceType: Lean.Hbt.Domain.IServices.IHbtCacheFactory Lifetime: Singleton ImplementationType: Lean.Hbt.Infrastructure.Caching.HbtCacheFactory': Unable to resolve service for type 'Lean.Hbt.Infrastructure.Caching.HbtCacheConfigManager' while attempting to activate 'Lean.Hbt.Infrastructure.Caching.HbtMemoryCache'.
+ ---> System.InvalidOperationException: Unable to resolve service for type 'Lean.Hbt.Infrastructure.Caching.HbtCacheConfigManager' while attempting to activate 'Lean.Hbt.Infrastructure.Caching.HbtMemoryCache'.
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceDescriptor serviceDescriptor, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   --- End of inner exception stack trace ---
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider..ctor(ICollection`1 serviceDescriptors, ServiceProviderOptions options)<---
+
+ ---> (Inner Exception #2) System.InvalidOperationException: Error while validating the service descriptor 'ServiceType: Lean.Hbt.Domain.IServices.IHbtLoginPolicy Lifetime: Scoped ImplementationType: Lean.Hbt.Infrastructure.Security.HbtLoginPolicy': Unable to resolve service for type 'Lean.Hbt.Domain.Repositories.IHbtRepository`1[Lean.Hbt.Domain.Entities.Admin.HbtSysConfig]' while attempting to activate 'Lean.Hbt.Infrastructure.Security.HbtLoginPolicy'.
+ ---> System.InvalidOperationException: Unable to resolve service for type 'Lean.Hbt.Domain.Repositories.IHbtRepository`1[Lean.Hbt.Domain.Entities.Admin.HbtSysConfig]' while attempting to activate 'Lean.Hbt.Infrastructure.Security.HbtLoginPolicy'.
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceDescriptor serviceDescriptor, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   --- End of inner exception stack trace ---
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider..ctor(ICollection`1 serviceDescriptors, ServiceProviderOptions options)<---
+
+ ---> (Inner Exception #3) System.InvalidOperationException: Error while validating the service descriptor 'ServiceType: Lean.Hbt.Domain.IServices.IHbtSessionManager Lifetime: Scoped ImplementationType: Lean.Hbt.Infrastructure.Security.HbtSessionManager': Unable to resolve service for type 'Lean.Hbt.Domain.Repositories.IHbtRepository`1[Lean.Hbt.Domain.Entities.Admin.HbtSysConfig]' while attempting to activate 'Lean.Hbt.Infrastructure.Security.HbtSessionManager'.
+ ---> System.InvalidOperationException: Unable to resolve service for type 'Lean.Hbt.Domain.Repositories.IHbtRepository`1[Lean.Hbt.Domain.Entities.Admin.HbtSysConfig]' while attempting to activate 'Lean.Hbt.Infrastructure.Security.HbtSessionManager'.
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceDescriptor serviceDescriptor, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   --- End of inner exception stack trace ---
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider..ctor(ICollection`1 serviceDescriptors, ServiceProviderOptions options)<---
+
+2025-01-22 11:18:37.0798|Fatal|Program|应用程序启动失败System.AggregateException: Some services are not able to be constructed (Error while validating the service descriptor 'ServiceType: Lean.Hbt.Infrastructure.Caching.HbtCacheConfigManager Lifetime: Singleton ImplementationType: Lean.Hbt.Infrastructure.Caching.HbtCacheConfigManager': Unable to resolve service for type 'SqlSugar.SqlSugarScope' while attempting to activate 'Lean.Hbt.Infrastructure.Repositories.HbtRepository`1[Lean.Hbt.Domain.Entities.Admin.HbtSysConfig]'.) (Error while validating the service descriptor 'ServiceType: Lean.Hbt.Domain.IServices.IHbtMemoryCache Lifetime: Singleton ImplementationType: Lean.Hbt.Infrastructure.Caching.HbtMemoryCache': Unable to resolve service for type 'SqlSugar.SqlSugarScope' while attempting to activate 'Lean.Hbt.Infrastructure.Repositories.HbtRepository`1[Lean.Hbt.Domain.Entities.Admin.HbtSysConfig]'.) (Error while validating the service descriptor 'ServiceType: Lean.Hbt.Domain.IServices.IHbtCacheFactory Lifetime: Singleton ImplementationType: Lean.Hbt.Infrastructure.Caching.HbtCacheFactory': Unable to resolve service for type 'SqlSugar.SqlSugarScope' while attempting to activate 'Lean.Hbt.Infrastructure.Repositories.HbtRepository`1[Lean.Hbt.Domain.Entities.Admin.HbtSysConfig]'.) (Error while validating the service descriptor 'ServiceType: Lean.Hbt.Domain.IServices.IHbtLoginPolicy Lifetime: Scoped ImplementationType: Lean.Hbt.Infrastructure.Security.HbtLoginPolicy': Unable to resolve service for type 'SqlSugar.SqlSugarScope' while attempting to activate 'Lean.Hbt.Infrastructure.Repositories.HbtRepository`1[Lean.Hbt.Domain.Entities.Admin.HbtSysConfig]'.) (Error while validating the service descriptor 'ServiceType: Lean.Hbt.Domain.IServices.IHbtSessionManager Lifetime: Scoped ImplementationType: Lean.Hbt.Infrastructure.Security.HbtSessionManager': Unable to resolve service for type 'SqlSugar.SqlSugarScope' while attempting to activate 'Lean.Hbt.Infrastructure.Repositories.HbtRepository`1[Lean.Hbt.Domain.Entities.Admin.HbtSysConfig]'.)
+ ---> System.InvalidOperationException: Error while validating the service descriptor 'ServiceType: Lean.Hbt.Infrastructure.Caching.HbtCacheConfigManager Lifetime: Singleton ImplementationType: Lean.Hbt.Infrastructure.Caching.HbtCacheConfigManager': Unable to resolve service for type 'SqlSugar.SqlSugarScope' while attempting to activate 'Lean.Hbt.Infrastructure.Repositories.HbtRepository`1[Lean.Hbt.Domain.Entities.Admin.HbtSysConfig]'.
+ ---> System.InvalidOperationException: Unable to resolve service for type 'SqlSugar.SqlSugarScope' while attempting to activate 'Lean.Hbt.Infrastructure.Repositories.HbtRepository`1[Lean.Hbt.Domain.Entities.Admin.HbtSysConfig]'.
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateOpenGeneric(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot, Boolean throwOnConstraintViolation)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateOpenGeneric(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceDescriptor serviceDescriptor, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   --- End of inner exception stack trace ---
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider..ctor(ICollection`1 serviceDescriptors, ServiceProviderOptions options)
+   --- End of inner exception stack trace ---
+ ---> (Inner Exception #1) System.InvalidOperationException: Error while validating the service descriptor 'ServiceType: Lean.Hbt.Domain.IServices.IHbtMemoryCache Lifetime: Singleton ImplementationType: Lean.Hbt.Infrastructure.Caching.HbtMemoryCache': Unable to resolve service for type 'SqlSugar.SqlSugarScope' while attempting to activate 'Lean.Hbt.Infrastructure.Repositories.HbtRepository`1[Lean.Hbt.Domain.Entities.Admin.HbtSysConfig]'.
+ ---> System.InvalidOperationException: Unable to resolve service for type 'SqlSugar.SqlSugarScope' while attempting to activate 'Lean.Hbt.Infrastructure.Repositories.HbtRepository`1[Lean.Hbt.Domain.Entities.Admin.HbtSysConfig]'.
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateOpenGeneric(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot, Boolean throwOnConstraintViolation)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateOpenGeneric(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceDescriptor serviceDescriptor, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   --- End of inner exception stack trace ---
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider..ctor(ICollection`1 serviceDescriptors, ServiceProviderOptions options)<---
+
+ ---> (Inner Exception #2) System.InvalidOperationException: Error while validating the service descriptor 'ServiceType: Lean.Hbt.Domain.IServices.IHbtCacheFactory Lifetime: Singleton ImplementationType: Lean.Hbt.Infrastructure.Caching.HbtCacheFactory': Unable to resolve service for type 'SqlSugar.SqlSugarScope' while attempting to activate 'Lean.Hbt.Infrastructure.Repositories.HbtRepository`1[Lean.Hbt.Domain.Entities.Admin.HbtSysConfig]'.
+ ---> System.InvalidOperationException: Unable to resolve service for type 'SqlSugar.SqlSugarScope' while attempting to activate 'Lean.Hbt.Infrastructure.Repositories.HbtRepository`1[Lean.Hbt.Domain.Entities.Admin.HbtSysConfig]'.
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateOpenGeneric(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot, Boolean throwOnConstraintViolation)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateOpenGeneric(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceDescriptor serviceDescriptor, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   --- End of inner exception stack trace ---
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider..ctor(ICollection`1 serviceDescriptors, ServiceProviderOptions options)<---
+
+ ---> (Inner Exception #3) System.InvalidOperationException: Error while validating the service descriptor 'ServiceType: Lean.Hbt.Domain.IServices.IHbtLoginPolicy Lifetime: Scoped ImplementationType: Lean.Hbt.Infrastructure.Security.HbtLoginPolicy': Unable to resolve service for type 'SqlSugar.SqlSugarScope' while attempting to activate 'Lean.Hbt.Infrastructure.Repositories.HbtRepository`1[Lean.Hbt.Domain.Entities.Admin.HbtSysConfig]'.
+ ---> System.InvalidOperationException: Unable to resolve service for type 'SqlSugar.SqlSugarScope' while attempting to activate 'Lean.Hbt.Infrastructure.Repositories.HbtRepository`1[Lean.Hbt.Domain.Entities.Admin.HbtSysConfig]'.
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateOpenGeneric(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot, Boolean throwOnConstraintViolation)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateOpenGeneric(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceDescriptor serviceDescriptor, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   --- End of inner exception stack trace ---
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider..ctor(ICollection`1 serviceDescriptors, ServiceProviderOptions options)<---
+
+ ---> (Inner Exception #4) System.InvalidOperationException: Error while validating the service descriptor 'ServiceType: Lean.Hbt.Domain.IServices.IHbtSessionManager Lifetime: Scoped ImplementationType: Lean.Hbt.Infrastructure.Security.HbtSessionManager': Unable to resolve service for type 'SqlSugar.SqlSugarScope' while attempting to activate 'Lean.Hbt.Infrastructure.Repositories.HbtRepository`1[Lean.Hbt.Domain.Entities.Admin.HbtSysConfig]'.
+ ---> System.InvalidOperationException: Unable to resolve service for type 'SqlSugar.SqlSugarScope' while attempting to activate 'Lean.Hbt.Infrastructure.Repositories.HbtRepository`1[Lean.Hbt.Domain.Entities.Admin.HbtSysConfig]'.
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateOpenGeneric(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot, Boolean throwOnConstraintViolation)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateOpenGeneric(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceDescriptor serviceDescriptor, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   --- End of inner exception stack trace ---
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider..ctor(ICollection`1 serviceDescriptors, ServiceProviderOptions options)<---
+
+2025-01-22 11:18:54.2105|Fatal|Program|应用程序启动失败System.AggregateException: Some services are not able to be constructed (Error while validating the service descriptor 'ServiceType: Lean.Hbt.Infrastructure.Caching.HbtCacheConfigManager Lifetime: Singleton ImplementationType: Lean.Hbt.Infrastructure.Caching.HbtCacheConfigManager': Unable to resolve service for type 'SqlSugar.SqlSugarScope' while attempting to activate 'Lean.Hbt.Infrastructure.Repositories.HbtRepository`1[Lean.Hbt.Domain.Entities.Admin.HbtSysConfig]'.) (Error while validating the service descriptor 'ServiceType: Lean.Hbt.Domain.IServices.IHbtMemoryCache Lifetime: Singleton ImplementationType: Lean.Hbt.Infrastructure.Caching.HbtMemoryCache': Unable to resolve service for type 'SqlSugar.SqlSugarScope' while attempting to activate 'Lean.Hbt.Infrastructure.Repositories.HbtRepository`1[Lean.Hbt.Domain.Entities.Admin.HbtSysConfig]'.) (Error while validating the service descriptor 'ServiceType: Lean.Hbt.Domain.IServices.IHbtCacheFactory Lifetime: Singleton ImplementationType: Lean.Hbt.Infrastructure.Caching.HbtCacheFactory': Unable to resolve service for type 'SqlSugar.SqlSugarScope' while attempting to activate 'Lean.Hbt.Infrastructure.Repositories.HbtRepository`1[Lean.Hbt.Domain.Entities.Admin.HbtSysConfig]'.) (Error while validating the service descriptor 'ServiceType: Lean.Hbt.Domain.IServices.IHbtLoginPolicy Lifetime: Scoped ImplementationType: Lean.Hbt.Infrastructure.Security.HbtLoginPolicy': Unable to resolve service for type 'SqlSugar.SqlSugarScope' while attempting to activate 'Lean.Hbt.Infrastructure.Repositories.HbtRepository`1[Lean.Hbt.Domain.Entities.Admin.HbtSysConfig]'.) (Error while validating the service descriptor 'ServiceType: Lean.Hbt.Domain.IServices.IHbtSessionManager Lifetime: Scoped ImplementationType: Lean.Hbt.Infrastructure.Security.HbtSessionManager': Unable to resolve service for type 'SqlSugar.SqlSugarScope' while attempting to activate 'Lean.Hbt.Infrastructure.Repositories.HbtRepository`1[Lean.Hbt.Domain.Entities.Admin.HbtSysConfig]'.)
+ ---> System.InvalidOperationException: Error while validating the service descriptor 'ServiceType: Lean.Hbt.Infrastructure.Caching.HbtCacheConfigManager Lifetime: Singleton ImplementationType: Lean.Hbt.Infrastructure.Caching.HbtCacheConfigManager': Unable to resolve service for type 'SqlSugar.SqlSugarScope' while attempting to activate 'Lean.Hbt.Infrastructure.Repositories.HbtRepository`1[Lean.Hbt.Domain.Entities.Admin.HbtSysConfig]'.
+ ---> System.InvalidOperationException: Unable to resolve service for type 'SqlSugar.SqlSugarScope' while attempting to activate 'Lean.Hbt.Infrastructure.Repositories.HbtRepository`1[Lean.Hbt.Domain.Entities.Admin.HbtSysConfig]'.
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateOpenGeneric(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot, Boolean throwOnConstraintViolation)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateOpenGeneric(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceDescriptor serviceDescriptor, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   --- End of inner exception stack trace ---
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider..ctor(ICollection`1 serviceDescriptors, ServiceProviderOptions options)
+   --- End of inner exception stack trace ---
+ ---> (Inner Exception #1) System.InvalidOperationException: Error while validating the service descriptor 'ServiceType: Lean.Hbt.Domain.IServices.IHbtMemoryCache Lifetime: Singleton ImplementationType: Lean.Hbt.Infrastructure.Caching.HbtMemoryCache': Unable to resolve service for type 'SqlSugar.SqlSugarScope' while attempting to activate 'Lean.Hbt.Infrastructure.Repositories.HbtRepository`1[Lean.Hbt.Domain.Entities.Admin.HbtSysConfig]'.
+ ---> System.InvalidOperationException: Unable to resolve service for type 'SqlSugar.SqlSugarScope' while attempting to activate 'Lean.Hbt.Infrastructure.Repositories.HbtRepository`1[Lean.Hbt.Domain.Entities.Admin.HbtSysConfig]'.
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateOpenGeneric(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot, Boolean throwOnConstraintViolation)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateOpenGeneric(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceDescriptor serviceDescriptor, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   --- End of inner exception stack trace ---
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider..ctor(ICollection`1 serviceDescriptors, ServiceProviderOptions options)<---
+
+ ---> (Inner Exception #2) System.InvalidOperationException: Error while validating the service descriptor 'ServiceType: Lean.Hbt.Domain.IServices.IHbtCacheFactory Lifetime: Singleton ImplementationType: Lean.Hbt.Infrastructure.Caching.HbtCacheFactory': Unable to resolve service for type 'SqlSugar.SqlSugarScope' while attempting to activate 'Lean.Hbt.Infrastructure.Repositories.HbtRepository`1[Lean.Hbt.Domain.Entities.Admin.HbtSysConfig]'.
+ ---> System.InvalidOperationException: Unable to resolve service for type 'SqlSugar.SqlSugarScope' while attempting to activate 'Lean.Hbt.Infrastructure.Repositories.HbtRepository`1[Lean.Hbt.Domain.Entities.Admin.HbtSysConfig]'.
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateOpenGeneric(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot, Boolean throwOnConstraintViolation)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateOpenGeneric(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceDescriptor serviceDescriptor, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   --- End of inner exception stack trace ---
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider..ctor(ICollection`1 serviceDescriptors, ServiceProviderOptions options)<---
+
+ ---> (Inner Exception #3) System.InvalidOperationException: Error while validating the service descriptor 'ServiceType: Lean.Hbt.Domain.IServices.IHbtLoginPolicy Lifetime: Scoped ImplementationType: Lean.Hbt.Infrastructure.Security.HbtLoginPolicy': Unable to resolve service for type 'SqlSugar.SqlSugarScope' while attempting to activate 'Lean.Hbt.Infrastructure.Repositories.HbtRepository`1[Lean.Hbt.Domain.Entities.Admin.HbtSysConfig]'.
+ ---> System.InvalidOperationException: Unable to resolve service for type 'SqlSugar.SqlSugarScope' while attempting to activate 'Lean.Hbt.Infrastructure.Repositories.HbtRepository`1[Lean.Hbt.Domain.Entities.Admin.HbtSysConfig]'.
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateOpenGeneric(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot, Boolean throwOnConstraintViolation)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateOpenGeneric(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceDescriptor serviceDescriptor, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   --- End of inner exception stack trace ---
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider..ctor(ICollection`1 serviceDescriptors, ServiceProviderOptions options)<---
+
+ ---> (Inner Exception #4) System.InvalidOperationException: Error while validating the service descriptor 'ServiceType: Lean.Hbt.Domain.IServices.IHbtSessionManager Lifetime: Scoped ImplementationType: Lean.Hbt.Infrastructure.Security.HbtSessionManager': Unable to resolve service for type 'SqlSugar.SqlSugarScope' while attempting to activate 'Lean.Hbt.Infrastructure.Repositories.HbtRepository`1[Lean.Hbt.Domain.Entities.Admin.HbtSysConfig]'.
+ ---> System.InvalidOperationException: Unable to resolve service for type 'SqlSugar.SqlSugarScope' while attempting to activate 'Lean.Hbt.Infrastructure.Repositories.HbtRepository`1[Lean.Hbt.Domain.Entities.Admin.HbtSysConfig]'.
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateOpenGeneric(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot, Boolean throwOnConstraintViolation)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateOpenGeneric(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceDescriptor serviceDescriptor, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   --- End of inner exception stack trace ---
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider..ctor(ICollection`1 serviceDescriptors, ServiceProviderOptions options)<---
+
+2025-01-22 11:19:57.3043|Fatal|Program|应用程序启动失败System.AggregateException: Some services are not able to be constructed (Error while validating the service descriptor 'ServiceType: Lean.Hbt.Infrastructure.Caching.HbtCacheConfigManager Lifetime: Singleton ImplementationType: Lean.Hbt.Infrastructure.Caching.HbtCacheConfigManager': Cannot consume scoped service 'Lean.Hbt.Domain.Repositories.IHbtRepository`1[Lean.Hbt.Domain.Entities.Admin.HbtSysConfig]' from singleton 'Lean.Hbt.Infrastructure.Caching.HbtCacheConfigManager'.) (Error while validating the service descriptor 'ServiceType: Lean.Hbt.Domain.IServices.IHbtMemoryCache Lifetime: Singleton ImplementationType: Lean.Hbt.Infrastructure.Caching.HbtMemoryCache': Cannot consume scoped service 'Lean.Hbt.Domain.Repositories.IHbtRepository`1[Lean.Hbt.Domain.Entities.Admin.HbtSysConfig]' from singleton 'Lean.Hbt.Infrastructure.Caching.HbtCacheConfigManager'.) (Error while validating the service descriptor 'ServiceType: Lean.Hbt.Domain.IServices.IHbtCacheFactory Lifetime: Singleton ImplementationType: Lean.Hbt.Infrastructure.Caching.HbtCacheFactory': Cannot consume scoped service 'Lean.Hbt.Domain.Repositories.IHbtRepository`1[Lean.Hbt.Domain.Entities.Admin.HbtSysConfig]' from singleton 'Lean.Hbt.Infrastructure.Caching.HbtCacheConfigManager'.)
+ ---> System.InvalidOperationException: Error while validating the service descriptor 'ServiceType: Lean.Hbt.Infrastructure.Caching.HbtCacheConfigManager Lifetime: Singleton ImplementationType: Lean.Hbt.Infrastructure.Caching.HbtCacheConfigManager': Cannot consume scoped service 'Lean.Hbt.Domain.Repositories.IHbtRepository`1[Lean.Hbt.Domain.Entities.Admin.HbtSysConfig]' from singleton 'Lean.Hbt.Infrastructure.Caching.HbtCacheConfigManager'.
+ ---> System.InvalidOperationException: Cannot consume scoped service 'Lean.Hbt.Domain.Repositories.IHbtRepository`1[Lean.Hbt.Domain.Entities.Admin.HbtSysConfig]' from singleton 'Lean.Hbt.Infrastructure.Caching.HbtCacheConfigManager'.
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteValidator.VisitScopeCache(ServiceCallSite scopedCallSite, CallSiteValidatorState state)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSite(ServiceCallSite callSite, TArgument argument)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteValidator.VisitConstructor(ConstructorCallSite constructorCallSite, CallSiteValidatorState state)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSite(ServiceCallSite callSite, TArgument argument)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteValidator.ValidateCallSite(ServiceCallSite callSite)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   --- End of inner exception stack trace ---
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider..ctor(ICollection`1 serviceDescriptors, ServiceProviderOptions options)
+   --- End of inner exception stack trace ---
+ ---> (Inner Exception #1) System.InvalidOperationException: Error while validating the service descriptor 'ServiceType: Lean.Hbt.Domain.IServices.IHbtMemoryCache Lifetime: Singleton ImplementationType: Lean.Hbt.Infrastructure.Caching.HbtMemoryCache': Cannot consume scoped service 'Lean.Hbt.Domain.Repositories.IHbtRepository`1[Lean.Hbt.Domain.Entities.Admin.HbtSysConfig]' from singleton 'Lean.Hbt.Infrastructure.Caching.HbtCacheConfigManager'.
+ ---> System.InvalidOperationException: Cannot consume scoped service 'Lean.Hbt.Domain.Repositories.IHbtRepository`1[Lean.Hbt.Domain.Entities.Admin.HbtSysConfig]' from singleton 'Lean.Hbt.Infrastructure.Caching.HbtCacheConfigManager'.
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteValidator.VisitScopeCache(ServiceCallSite scopedCallSite, CallSiteValidatorState state)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSite(ServiceCallSite callSite, TArgument argument)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteValidator.VisitConstructor(ConstructorCallSite constructorCallSite, CallSiteValidatorState state)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSite(ServiceCallSite callSite, TArgument argument)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteValidator.VisitConstructor(ConstructorCallSite constructorCallSite, CallSiteValidatorState state)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSite(ServiceCallSite callSite, TArgument argument)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteValidator.ValidateCallSite(ServiceCallSite callSite)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   --- End of inner exception stack trace ---
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider..ctor(ICollection`1 serviceDescriptors, ServiceProviderOptions options)<---
+
+ ---> (Inner Exception #2) System.InvalidOperationException: Error while validating the service descriptor 'ServiceType: Lean.Hbt.Domain.IServices.IHbtCacheFactory Lifetime: Singleton ImplementationType: Lean.Hbt.Infrastructure.Caching.HbtCacheFactory': Cannot consume scoped service 'Lean.Hbt.Domain.Repositories.IHbtRepository`1[Lean.Hbt.Domain.Entities.Admin.HbtSysConfig]' from singleton 'Lean.Hbt.Infrastructure.Caching.HbtCacheConfigManager'.
+ ---> System.InvalidOperationException: Cannot consume scoped service 'Lean.Hbt.Domain.Repositories.IHbtRepository`1[Lean.Hbt.Domain.Entities.Admin.HbtSysConfig]' from singleton 'Lean.Hbt.Infrastructure.Caching.HbtCacheConfigManager'.
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteValidator.VisitScopeCache(ServiceCallSite scopedCallSite, CallSiteValidatorState state)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSite(ServiceCallSite callSite, TArgument argument)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteValidator.VisitConstructor(ConstructorCallSite constructorCallSite, CallSiteValidatorState state)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSite(ServiceCallSite callSite, TArgument argument)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteValidator.VisitConstructor(ConstructorCallSite constructorCallSite, CallSiteValidatorState state)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSite(ServiceCallSite callSite, TArgument argument)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteValidator.VisitConstructor(ConstructorCallSite constructorCallSite, CallSiteValidatorState state)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSite(ServiceCallSite callSite, TArgument argument)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteValidator.ValidateCallSite(ServiceCallSite callSite)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   --- End of inner exception stack trace ---
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider..ctor(ICollection`1 serviceDescriptors, ServiceProviderOptions options)<---
+
+2025-01-22 11:20:06.4024|Fatal|Program|应用程序启动失败System.AggregateException: Some services are not able to be constructed (Error while validating the service descriptor 'ServiceType: Lean.Hbt.Infrastructure.Caching.HbtCacheConfigManager Lifetime: Singleton ImplementationType: Lean.Hbt.Infrastructure.Caching.HbtCacheConfigManager': Cannot consume scoped service 'Lean.Hbt.Domain.Repositories.IHbtRepository`1[Lean.Hbt.Domain.Entities.Admin.HbtSysConfig]' from singleton 'Lean.Hbt.Infrastructure.Caching.HbtCacheConfigManager'.) (Error while validating the service descriptor 'ServiceType: Lean.Hbt.Domain.IServices.IHbtMemoryCache Lifetime: Singleton ImplementationType: Lean.Hbt.Infrastructure.Caching.HbtMemoryCache': Cannot consume scoped service 'Lean.Hbt.Domain.Repositories.IHbtRepository`1[Lean.Hbt.Domain.Entities.Admin.HbtSysConfig]' from singleton 'Lean.Hbt.Infrastructure.Caching.HbtCacheConfigManager'.) (Error while validating the service descriptor 'ServiceType: Lean.Hbt.Domain.IServices.IHbtCacheFactory Lifetime: Singleton ImplementationType: Lean.Hbt.Infrastructure.Caching.HbtCacheFactory': Cannot consume scoped service 'Lean.Hbt.Domain.Repositories.IHbtRepository`1[Lean.Hbt.Domain.Entities.Admin.HbtSysConfig]' from singleton 'Lean.Hbt.Infrastructure.Caching.HbtCacheConfigManager'.)
+ ---> System.InvalidOperationException: Error while validating the service descriptor 'ServiceType: Lean.Hbt.Infrastructure.Caching.HbtCacheConfigManager Lifetime: Singleton ImplementationType: Lean.Hbt.Infrastructure.Caching.HbtCacheConfigManager': Cannot consume scoped service 'Lean.Hbt.Domain.Repositories.IHbtRepository`1[Lean.Hbt.Domain.Entities.Admin.HbtSysConfig]' from singleton 'Lean.Hbt.Infrastructure.Caching.HbtCacheConfigManager'.
+ ---> System.InvalidOperationException: Cannot consume scoped service 'Lean.Hbt.Domain.Repositories.IHbtRepository`1[Lean.Hbt.Domain.Entities.Admin.HbtSysConfig]' from singleton 'Lean.Hbt.Infrastructure.Caching.HbtCacheConfigManager'.
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteValidator.VisitScopeCache(ServiceCallSite scopedCallSite, CallSiteValidatorState state)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSite(ServiceCallSite callSite, TArgument argument)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteValidator.VisitConstructor(ConstructorCallSite constructorCallSite, CallSiteValidatorState state)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSite(ServiceCallSite callSite, TArgument argument)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteValidator.ValidateCallSite(ServiceCallSite callSite)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   --- End of inner exception stack trace ---
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider..ctor(ICollection`1 serviceDescriptors, ServiceProviderOptions options)
+   --- End of inner exception stack trace ---
+ ---> (Inner Exception #1) System.InvalidOperationException: Error while validating the service descriptor 'ServiceType: Lean.Hbt.Domain.IServices.IHbtMemoryCache Lifetime: Singleton ImplementationType: Lean.Hbt.Infrastructure.Caching.HbtMemoryCache': Cannot consume scoped service 'Lean.Hbt.Domain.Repositories.IHbtRepository`1[Lean.Hbt.Domain.Entities.Admin.HbtSysConfig]' from singleton 'Lean.Hbt.Infrastructure.Caching.HbtCacheConfigManager'.
+ ---> System.InvalidOperationException: Cannot consume scoped service 'Lean.Hbt.Domain.Repositories.IHbtRepository`1[Lean.Hbt.Domain.Entities.Admin.HbtSysConfig]' from singleton 'Lean.Hbt.Infrastructure.Caching.HbtCacheConfigManager'.
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteValidator.VisitScopeCache(ServiceCallSite scopedCallSite, CallSiteValidatorState state)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSite(ServiceCallSite callSite, TArgument argument)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteValidator.VisitConstructor(ConstructorCallSite constructorCallSite, CallSiteValidatorState state)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSite(ServiceCallSite callSite, TArgument argument)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteValidator.VisitConstructor(ConstructorCallSite constructorCallSite, CallSiteValidatorState state)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSite(ServiceCallSite callSite, TArgument argument)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteValidator.ValidateCallSite(ServiceCallSite callSite)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   --- End of inner exception stack trace ---
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider..ctor(ICollection`1 serviceDescriptors, ServiceProviderOptions options)<---
+
+ ---> (Inner Exception #2) System.InvalidOperationException: Error while validating the service descriptor 'ServiceType: Lean.Hbt.Domain.IServices.IHbtCacheFactory Lifetime: Singleton ImplementationType: Lean.Hbt.Infrastructure.Caching.HbtCacheFactory': Cannot consume scoped service 'Lean.Hbt.Domain.Repositories.IHbtRepository`1[Lean.Hbt.Domain.Entities.Admin.HbtSysConfig]' from singleton 'Lean.Hbt.Infrastructure.Caching.HbtCacheConfigManager'.
+ ---> System.InvalidOperationException: Cannot consume scoped service 'Lean.Hbt.Domain.Repositories.IHbtRepository`1[Lean.Hbt.Domain.Entities.Admin.HbtSysConfig]' from singleton 'Lean.Hbt.Infrastructure.Caching.HbtCacheConfigManager'.
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteValidator.VisitScopeCache(ServiceCallSite scopedCallSite, CallSiteValidatorState state)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSite(ServiceCallSite callSite, TArgument argument)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteValidator.VisitConstructor(ConstructorCallSite constructorCallSite, CallSiteValidatorState state)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSite(ServiceCallSite callSite, TArgument argument)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteValidator.VisitConstructor(ConstructorCallSite constructorCallSite, CallSiteValidatorState state)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSite(ServiceCallSite callSite, TArgument argument)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteValidator.VisitConstructor(ConstructorCallSite constructorCallSite, CallSiteValidatorState state)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSite(ServiceCallSite callSite, TArgument argument)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteValidator.ValidateCallSite(ServiceCallSite callSite)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   --- End of inner exception stack trace ---
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider..ctor(ICollection`1 serviceDescriptors, ServiceProviderOptions options)<---
+
+2025-01-22 11:21:30.7189|Error|HbtNLogger|[初始化] 种子数据初始化失败Microsoft.Data.SqlClient.SqlException (0x80131904): 对象名 'hbt_sys_config' 无效。
+   at Microsoft.Data.SqlClient.SqlCommand.<>c.<ExecuteDbDataReaderAsync>b__195_0(Task`1 result)
+   at System.Threading.Tasks.ContinuationResultTaskFromResultTask`2.InnerInvoke()
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)
+--- End of stack trace from previous location ---
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task& currentTaskSlot, Thread threadPoolThread)
+--- End of stack trace from previous location ---
+   at SqlSugar.AdoProvider.GetDataReaderAsync(String sql, SugarParameter[] parameters)
+   at SqlSugar.QueryableProvider`1.GetDataAsync[TResult](KeyValuePair`2 sqlObj)
+   at SqlSugar.QueryableProvider`1._ToListAsync[TResult]()
+   at SqlSugar.QueryableProvider`1.FirstAsync()
+   at SqlSugar.QueryableProvider`1.FirstAsync(Expression`1 expression)
+   at Lean.Hbt.Infrastructure.Data.Seeds.HbtDbSeed.InitializeSysConfigAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Data\Seeds\HbtDbSeed.cs:line 966
+   at Lean.Hbt.Infrastructure.Data.Seeds.HbtDbSeed.InitializeAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Data\Seeds\HbtDbSeed.cs:line 68
+ClientConnectionId:c120aac6-fe81-409c-82ec-d13cc0abbc73
+Error Number:208,State:1,Class:16
+2025-01-22 11:21:30.8148|Fatal|Program|应用程序启动失败Microsoft.Data.SqlClient.SqlException (0x80131904): 对象名 'hbt_sys_config' 无效。
+   at Microsoft.Data.SqlClient.SqlCommand.<>c.<ExecuteDbDataReaderAsync>b__195_0(Task`1 result)
+   at System.Threading.Tasks.ContinuationResultTaskFromResultTask`2.InnerInvoke()
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)
+--- End of stack trace from previous location ---
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task& currentTaskSlot, Thread threadPoolThread)
+--- End of stack trace from previous location ---
+   at SqlSugar.AdoProvider.GetDataReaderAsync(String sql, SugarParameter[] parameters)
+   at SqlSugar.QueryableProvider`1.GetDataAsync[TResult](KeyValuePair`2 sqlObj)
+   at SqlSugar.QueryableProvider`1._ToListAsync[TResult]()
+   at SqlSugar.QueryableProvider`1.FirstAsync()
+   at SqlSugar.QueryableProvider`1.FirstAsync(Expression`1 expression)
+   at Lean.Hbt.Infrastructure.Data.Seeds.HbtDbSeed.InitializeSysConfigAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Data\Seeds\HbtDbSeed.cs:line 966
+   at Lean.Hbt.Infrastructure.Data.Seeds.HbtDbSeed.InitializeAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Data\Seeds\HbtDbSeed.cs:line 68
+   at Program.<Main>$(String[] args) in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\Program.cs:line 62
+ClientConnectionId:c120aac6-fe81-409c-82ec-d13cc0abbc73
+Error Number:208,State:1,Class:16
+2025-01-22 11:28:08.0856|Error|HbtNLogger|[初始化] 种子数据初始化失败Microsoft.Data.SqlClient.SqlException (0x80131904): 不能将值 NULL 插入列 'config_key'，表 'LeanHbt_Dev.dbo.hbt_sys_config'；列不允许有 Null 值。INSERT 失败。
+语句已终止。
+   at Microsoft.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at Microsoft.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, SqlCommand command, Boolean callerHasConnectionLock, Boolean asyncClose)
+   at Microsoft.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+   at Microsoft.Data.SqlClient.SqlCommand.FinishExecuteReader(SqlDataReader ds, RunBehavior runBehavior, String resetOptionsString, Boolean isInternal, Boolean forDescribeParameterEncryption, Boolean shouldCacheForAlwaysEncrypted)
+   at Microsoft.Data.SqlClient.SqlCommand.CompleteAsyncExecuteReader(Boolean isInternal, Boolean forDescribeParameterEncryption)
+   at Microsoft.Data.SqlClient.SqlCommand.InternalEndExecuteNonQuery(IAsyncResult asyncResult, Boolean isInternal, String endMethod)
+   at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryInternal(IAsyncResult asyncResult)
+   at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryAsync(IAsyncResult asyncResult)
+   at Microsoft.Data.SqlClient.SqlCommand.<>c.<InternalExecuteNonQueryAsync>b__193_1(IAsyncResult asyncResult)
+   at System.Threading.Tasks.TaskFactory`1.FromAsyncCoreLogic(IAsyncResult iar, Func`2 endFunction, Action`1 endAction, Task`1 promise, Boolean requiresSynchronization)
+--- End of stack trace from previous location ---
+   at SqlSugar.AdoProvider.ExecuteCommandAsync(String sql, SugarParameter[] parameters)
+   at SqlSugar.InsertableProvider`1.ExecuteCommandAsync()
+   at Lean.Hbt.Infrastructure.Data.Seeds.HbtDbSeed.InitializeSysConfigAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Data\Seeds\HbtDbSeed.cs:line 983
+   at Lean.Hbt.Infrastructure.Data.Seeds.HbtDbSeed.InitializeAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Data\Seeds\HbtDbSeed.cs:line 68
+ClientConnectionId:5b8cd33a-71fa-49c7-b12a-4556fbee8c41
+Error Number:515,State:2,Class:16
+2025-01-22 11:28:08.1573|Fatal|Program|应用程序启动失败Microsoft.Data.SqlClient.SqlException (0x80131904): 不能将值 NULL 插入列 'config_key'，表 'LeanHbt_Dev.dbo.hbt_sys_config'；列不允许有 Null 值。INSERT 失败。
+语句已终止。
+   at Microsoft.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at Microsoft.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, SqlCommand command, Boolean callerHasConnectionLock, Boolean asyncClose)
+   at Microsoft.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+   at Microsoft.Data.SqlClient.SqlCommand.FinishExecuteReader(SqlDataReader ds, RunBehavior runBehavior, String resetOptionsString, Boolean isInternal, Boolean forDescribeParameterEncryption, Boolean shouldCacheForAlwaysEncrypted)
+   at Microsoft.Data.SqlClient.SqlCommand.CompleteAsyncExecuteReader(Boolean isInternal, Boolean forDescribeParameterEncryption)
+   at Microsoft.Data.SqlClient.SqlCommand.InternalEndExecuteNonQuery(IAsyncResult asyncResult, Boolean isInternal, String endMethod)
+   at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryInternal(IAsyncResult asyncResult)
+   at Microsoft.Data.SqlClient.SqlCommand.EndExecuteNonQueryAsync(IAsyncResult asyncResult)
+   at Microsoft.Data.SqlClient.SqlCommand.<>c.<InternalExecuteNonQueryAsync>b__193_1(IAsyncResult asyncResult)
+   at System.Threading.Tasks.TaskFactory`1.FromAsyncCoreLogic(IAsyncResult iar, Func`2 endFunction, Action`1 endAction, Task`1 promise, Boolean requiresSynchronization)
+--- End of stack trace from previous location ---
+   at SqlSugar.AdoProvider.ExecuteCommandAsync(String sql, SugarParameter[] parameters)
+   at SqlSugar.InsertableProvider`1.ExecuteCommandAsync()
+   at Lean.Hbt.Infrastructure.Data.Seeds.HbtDbSeed.InitializeSysConfigAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Data\Seeds\HbtDbSeed.cs:line 983
+   at Lean.Hbt.Infrastructure.Data.Seeds.HbtDbSeed.InitializeAsync() in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Infrastructure\Data\Seeds\HbtDbSeed.cs:line 68
+   at Program.<Main>$(String[] args) in G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\Program.cs:line 62
+ClientConnectionId:5b8cd33a-71fa-49c7-b12a-4556fbee8c41
+Error Number:515,State:2,Class:16

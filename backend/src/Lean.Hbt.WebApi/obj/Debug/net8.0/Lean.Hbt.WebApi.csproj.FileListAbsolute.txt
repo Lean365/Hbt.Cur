@@ -17,7 +17,6 @@ G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\Lean.
 G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\Lean.Hbt.WebApi.xml
 G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\Azure.Core.dll
 G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\Azure.Identity.dll
-G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\BCrypt.Net-Next.dll
 G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\EPPlus.dll
 G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\EPPlus.Interfaces.dll
 G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\EPPlus.System.Drawing.dll
@@ -150,7 +149,4 @@ G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\obj\Debug\net8.0\Lean.
 G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\obj\Debug\net8.0\Lean.Hbt.WebApi.genruntimeconfig.cache
 G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\obj\Debug\net8.0\ref\Lean.Hbt.WebApi.dll
 G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\obj\Debug\net8.0\Lean.Hbt.WebApi.MvcApplicationPartsAssemblyInfo.cs
-G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\Microsoft.EntityFrameworkCore.dll
-G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\Microsoft.EntityFrameworkCore.Abstractions.dll
-G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\bin\Debug\net8.0\System.Linq.Dynamic.Core.dll
 G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt

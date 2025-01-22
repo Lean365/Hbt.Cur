@@ -59,14 +59,15 @@ namespace Lean.Hbt.Infrastructure.Authentication
                 claims.Add(new Claim(ClaimTypes.Role, role));
             }
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["HbtJwt:SecretKey"]));
+            var secretKey = _configuration["HbtJwt:SecretKey"] ?? throw new InvalidOperationException("JWT密钥未配置");
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(
-                issuer: _configuration["HbtJwt:Issuer"],
-                audience: _configuration["HbtJwt:Audience"],
+                issuer: _configuration["HbtJwt:Issuer"] ?? throw new InvalidOperationException("JWT发行者未配置"),
+                audience: _configuration["HbtJwt:Audience"] ?? throw new InvalidOperationException("JWT受众未配置"),
                 claims: claims,
-                expires: DateTime.Now.AddMinutes(Convert.ToDouble(_configuration["HbtJwt:ExpiryInMinutes"])),
+                expires: DateTime.Now.AddMinutes(Convert.ToDouble(_configuration["HbtJwt:ExpiryInMinutes"] ?? "30")),
                 signingCredentials: creds
             );
 
@@ -81,7 +82,8 @@ namespace Lean.Hbt.Infrastructure.Authentication
         public ClaimsPrincipal? ValidateToken(string token)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.UTF8.GetBytes(_configuration["HbtJwt:SecretKey"]);
+            var secretKey = _configuration["HbtJwt:SecretKey"] ?? throw new InvalidOperationException("JWT密钥未配置");
+            var key = Encoding.UTF8.GetBytes(secretKey);
 
             try
             {
@@ -90,9 +92,9 @@ namespace Lean.Hbt.Infrastructure.Authentication
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(key),
                     ValidateIssuer = true,
-                    ValidIssuer = _configuration["HbtJwt:Issuer"],
+                    ValidIssuer = _configuration["HbtJwt:Issuer"] ?? throw new InvalidOperationException("JWT发行者未配置"),
                     ValidateAudience = true,
-                    ValidAudience = _configuration["HbtJwt:Audience"],
+                    ValidAudience = _configuration["HbtJwt:Audience"] ?? throw new InvalidOperationException("JWT受众未配置"),
                     ClockSkew = TimeSpan.Zero
                 }, out SecurityToken validatedToken);
 

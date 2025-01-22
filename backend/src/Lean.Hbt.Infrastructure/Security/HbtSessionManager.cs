@@ -8,9 +8,10 @@
 //===================================================================
 
 using Lean.Hbt.Common.Options;
-using Lean.Hbt.Domain.Models.Identity;
+using Lean.Hbt.Domain.Entities.Admin;
 using Lean.Hbt.Domain.IServices;
-using Lean.Hbt.Infrastructure.Caching;
+using Lean.Hbt.Domain.Models.Identity;
+using Lean.Hbt.Domain.Repositories;
 using Microsoft.Extensions.Options;
 
 namespace Lean.Hbt.Infrastructure.Security
@@ -24,13 +25,56 @@ namespace Lean.Hbt.Infrastructure.Security
     /// </remarks>
     public class HbtSessionManager : IHbtSessionManager
     {
-        private readonly HbtSessionOptions _options;
+        private readonly HbtSessionOptions _defaultOptions;
         private readonly IHbtRedisCache _cache;
+        private readonly IHbtRepository<HbtSysConfig> _configRepository;
 
-        public HbtSessionManager(IOptions<HbtSessionOptions> options, IHbtRedisCache cache)
+        /// <summary>
+        /// 构造函数
+        /// </summary>
+        /// <param name="options"></param>
+        /// <param name="cache"></param>
+        /// <param name="configRepository"></param>
+        public HbtSessionManager(
+            IOptions<HbtSessionOptions> options, 
+            IHbtRedisCache cache,
+            IHbtRepository<HbtSysConfig> configRepository)
         {
-            _options = options.Value;
+            _defaultOptions = options.Value;
             _cache = cache;
+            _configRepository = configRepository;
+        }
+
+        private async Task<HbtSessionOptions> GetOptionsAsync()
+        {
+            var options = new HbtSessionOptions
+            {
+                AllowMultipleDevices = _defaultOptions.AllowMultipleDevices,
+                MaxConcurrentSessions = _defaultOptions.MaxConcurrentSessions,
+                TimeoutMinutes = _defaultOptions.TimeoutMinutes,
+                EnableSlidingExpiration = _defaultOptions.EnableSlidingExpiration,
+                EnableAbsoluteExpiration = _defaultOptions.EnableAbsoluteExpiration,
+                AbsoluteExpirationHours = _defaultOptions.AbsoluteExpirationHours,
+                SessionExpiryMinutes = _defaultOptions.SessionExpiryMinutes
+            };
+
+            var configs = await _configRepository.GetListAsync();
+            foreach (var config in configs)
+            {
+                switch (config.ConfigKey)
+                {
+                    case "sso.session.allowMultipleDevices":
+                        if (bool.TryParse(config.ConfigValue, out bool allowMultipleDevices))
+                            options.AllowMultipleDevices = allowMultipleDevices;
+                        break;
+                    case "sso.session.maxConcurrentSessions":
+                        if (int.TryParse(config.ConfigValue, out int maxConcurrentSessions))
+                            options.MaxConcurrentSessions = maxConcurrentSessions;
+                        break;
+                }
+            }
+
+            return options;
         }
 
         /// <summary>
@@ -43,14 +87,21 @@ namespace Lean.Hbt.Infrastructure.Security
         /// <returns>会话ID</returns>
         public async Task<string> CreateSessionAsync(string userId, string userName, string ipAddress, string userAgent)
         {
-            if (!_options.AllowMultipleDevices)
+            if (string.IsNullOrEmpty(userId))
+                throw new ArgumentNullException(nameof(userId));
+            if (string.IsNullOrEmpty(userName))
+                throw new ArgumentNullException(nameof(userName));
+
+            var options = await GetOptionsAsync();
+
+            if (!options.AllowMultipleDevices)
             {
                 await RemoveUserSessionsAsync(userId);
             }
             else
             {
                 var sessions = await GetUserSessionsAsync(userId);
-                if (sessions.Count >= _options.MaxConcurrentSessions)
+                if (sessions.Count >= options.MaxConcurrentSessions)
                 {
                     // 移除最早的会话
                     var oldestSession = sessions.OrderBy(s => s.LastAccessTime).First();
@@ -64,8 +115,8 @@ namespace Lean.Hbt.Infrastructure.Security
                 SessionId = sessionId,
                 UserId = userId,
                 UserName = userName,
-                IpAddress = ipAddress,
-                UserAgent = userAgent,
+                IpAddress = ipAddress ?? "Unknown",
+                UserAgent = userAgent ?? "Unknown",
                 LastAccessTime = DateTime.Now,
                 LoginTime = DateTime.Now
             };
@@ -83,8 +134,12 @@ namespace Lean.Hbt.Infrastructure.Security
         /// <returns>会话信息</returns>
         public async Task<HbtSessionInfo> GetSessionInfoAsync(string sessionId)
         {
+            if (string.IsNullOrEmpty(sessionId))
+                return null;
+
             var key = $"session:{sessionId}";
-            return await _cache.GetAsync<HbtSessionInfo>(key);
+            var sessionInfo = await _cache.GetAsync<HbtSessionInfo>(key);
+            return sessionInfo;
         }
 
         /// <summary>
@@ -94,6 +149,9 @@ namespace Lean.Hbt.Infrastructure.Security
         /// <returns>异步任务</returns>
         public async Task UpdateSessionAccessTimeAsync(string sessionId)
         {
+            if (string.IsNullOrEmpty(sessionId))
+                return;
+
             var sessionInfo = await GetSessionInfoAsync(sessionId);
             if (sessionInfo != null)
             {
@@ -109,6 +167,9 @@ namespace Lean.Hbt.Infrastructure.Security
         /// <returns>异步任务</returns>
         public async Task RemoveSessionAsync(string sessionId)
         {
+            if (string.IsNullOrEmpty(sessionId))
+                return;
+
             var sessionInfo = await GetSessionInfoAsync(sessionId);
             if (sessionInfo != null)
             {
@@ -163,9 +224,9 @@ namespace Lean.Hbt.Infrastructure.Security
         private async Task SaveSessionInfoAsync(string userId, string sessionId, HbtSessionInfo sessionInfo)
         {
             var key = $"session:{sessionId}";
-            var expiry = _options.EnableSlidingExpiration
-                ? TimeSpan.FromMinutes(_options.SessionExpiryMinutes)
-                : TimeSpan.FromMinutes(_options.SessionExpiryMinutes * 2);
+            var expiry = _defaultOptions.EnableSlidingExpiration
+                ? TimeSpan.FromMinutes(_defaultOptions.SessionExpiryMinutes)
+                : TimeSpan.FromMinutes(_defaultOptions.SessionExpiryMinutes * 2);
             await _cache.SetAsync(key, sessionInfo, expiry);
         }
 
@@ -206,6 +267,83 @@ namespace Lean.Hbt.Infrastructure.Security
         {
             var key = $"user:sessions:{userId}";
             return await _cache.GetAsync<List<string>>(key) ?? new List<string>();
+        }
+
+        /// <summary>
+        /// 单点登出
+        /// </summary>
+        /// <param name="userId">用户ID</param>
+        /// <param name="excludeSessionId">排除的会话ID</param>
+        /// <returns>异步任务</returns>
+        public async Task SingleSignOutAsync(string userId, string excludeSessionId = null)
+        {
+            var sessions = await GetUserSessionsAsync(userId);
+            foreach (var session in sessions)
+            {
+                if (session.SessionId != excludeSessionId)
+                {
+                    await RemoveSessionAsync(session.SessionId);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 清理过期会话
+        /// </summary>
+        private async Task CleanupExpiredSessionsAsync()
+        {
+            var options = await GetOptionsAsync();
+            var allSessions = await GetAllSessionsAsync();
+            var now = DateTime.Now;
+
+            foreach (var session in allSessions)
+            {
+                var isExpired = false;
+                
+                if (options.EnableSlidingExpiration)
+                {
+                    var idleTime = now - session.LastAccessTime;
+                    if (idleTime.TotalMinutes > options.SessionExpiryMinutes)
+                    {
+                        isExpired = true;
+                    }
+                }
+
+                if (options.EnableAbsoluteExpiration)
+                {
+                    var sessionAge = now - session.LoginTime;
+                    if (sessionAge.TotalHours > options.AbsoluteExpirationHours)
+                    {
+                        isExpired = true;
+                    }
+                }
+
+                if (isExpired)
+                {
+                    await RemoveSessionAsync(session.SessionId);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 获取所有会话
+        /// </summary>
+        private async Task<List<HbtSessionInfo>> GetAllSessionsAsync()
+        {
+            var pattern = "session:*";
+            var keys = await _cache.SearchKeysAsync(pattern);
+            var sessions = new List<HbtSessionInfo>();
+
+            foreach (var key in keys)
+            {
+                var session = await _cache.GetAsync<HbtSessionInfo>(key);
+                if (session != null)
+                {
+                    sessions.Add(session);
+                }
+            }
+
+            return sessions;
         }
     }
 }

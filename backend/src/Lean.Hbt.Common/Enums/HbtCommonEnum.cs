@@ -113,5 +113,10 @@ namespace Lean.Hbt.Common.Enums
         /// 普通用户
         /// </summary>
         User = 1,
+
+        /// <summary>
+        /// OAuth用户
+        /// </summary>
+        OAuth = 2
     }
 }

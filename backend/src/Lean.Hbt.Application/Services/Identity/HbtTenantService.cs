@@ -9,130 +9,115 @@
 
 using Lean.Hbt.Application.Dtos.Identity;
 using Lean.Hbt.Common.Enums;
+using Lean.Hbt.Common.Exceptions;
 using Lean.Hbt.Common.Models;
 using Lean.Hbt.Domain.Entities.Identity;
 using Lean.Hbt.Domain.Repositories;
+using Lean.Hbt.Domain.Utils;
 using SqlSugar;
+using Mapster;
+using SqlSugar.Extensions;
+using System.Linq.Expressions;
 
 namespace Lean.Hbt.Application.Services.Identity;
 
 /// <summary>
 /// 租户服务实现
 /// </summary>
+/// <remarks>
+/// 创建者: Lean365
+/// 创建时间: 2024-01-20
+/// </remarks>
 public class HbtTenantService : IHbtTenantService
 {
-    private readonly IHbtRepository<HbtTenant> _tenantRepository;
+    private readonly IHbtRepository<HbtTenant> _repository;
 
     /// <summary>
     /// 构造函数
     /// </summary>
-    /// <param name="tenantRepository">租户仓储</param>
-    public HbtTenantService(IHbtRepository<HbtTenant> tenantRepository)
+    public HbtTenantService(IHbtRepository<HbtTenant> repository)
     {
-        _tenantRepository = tenantRepository;
+        _repository = repository;
     }
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// 获取租户分页列表
+    /// </summary>
+    /// <param name="query">查询条件</param>
+    /// <returns>返回分页结果</returns>
     public async Task<HbtPagedResult<HbtTenantDto>> GetPagedListAsync(HbtTenantQueryDto query)
     {
         var exp = Expressionable.Create<HbtTenant>();
         
-        if (!string.IsNullOrEmpty(query.TenantName))
-            exp.And(x => x.TenantName.Contains(query.TenantName));
         if (!string.IsNullOrEmpty(query.TenantCode))
             exp.And(x => x.TenantCode.Contains(query.TenantCode));
-        if (!string.IsNullOrEmpty(query.ContactPerson))
-            exp.And(x => x.ContactPerson.Contains(query.ContactPerson));
-        if (!string.IsNullOrEmpty(query.ContactPhone))
-            exp.And(x => x.ContactPhone.Contains(query.ContactPhone));
+            
+        if (!string.IsNullOrEmpty(query.TenantName))
+            exp.And(x => x.TenantName.Contains(query.TenantName));
+            
         if (query.Status.HasValue)
             exp.And(x => x.Status == query.Status);
 
-        RefAsync<int> total = 0;
-        var items = await _tenantRepository.AsQueryable()
-            .Where(exp.ToExpression())
-            .OrderBy("Id")
-            .Select(x => new HbtTenantDto
-            {
-                Id = x.Id,
-                TenantName = x.TenantName,
-                TenantCode = x.TenantCode,
-                ContactPerson = x.ContactPerson,
-                ContactPhone = x.ContactPhone,
-                ContactEmail = x.ContactEmail,
-                Domain = x.Domain,
-                Status = x.Status,
-                Address = x.Address,
-                LogoUrl = x.LogoUrl,
-                Theme = x.Theme,
-                LicenseStartTime = x.LicenseStartTime,
-                LicenseEndTime = x.LicenseEndTime,
-                MaxUserCount = x.MaxUserCount,
-                CreateTime = x.CreateTime
-            })
-            .ToPageListAsync(query.PageIndex, query.PageSize, total);
+        var result = await _repository.GetPagedListAsync(exp.ToExpression(), query.PageIndex, query.PageSize);
 
         return new HbtPagedResult<HbtTenantDto>
         {
-            TotalNum = total,
+            TotalNum = result.total,
             PageIndex = query.PageIndex,
             PageSize = query.PageSize,
-            Rows = items
+            Rows = result.list.Adapt<List<HbtTenantDto>>()
         };
     }
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// 获取租户详情
+    /// </summary>
+    /// <param name="id">租户ID</param>
+    /// <returns>返回租户详情</returns>
     public async Task<HbtTenantDto> GetAsync(long id)
     {
-        var tenant = await _tenantRepository.GetByIdAsync(id);
-        return new HbtTenantDto
-        {
-            Id = tenant.Id,
-            TenantName = tenant.TenantName,
-            TenantCode = tenant.TenantCode,
-            ContactPerson = tenant.ContactPerson,
-            ContactPhone = tenant.ContactPhone,
-            ContactEmail = tenant.ContactEmail,
-            Domain = tenant.Domain,
-            Status = tenant.Status,
-            Address = tenant.Address,
-            LogoUrl = tenant.LogoUrl,
-            Theme = tenant.Theme,
-            LicenseStartTime = tenant.LicenseStartTime,
-            LicenseEndTime = tenant.LicenseEndTime,
-            MaxUserCount = tenant.MaxUserCount,
-            CreateTime = tenant.CreateTime
-        };
+        var tenant = await _repository.GetByIdAsync(id);
+        if (tenant == null)
+            throw new HbtBusinessException($"租户不存在: {id}");
+
+        return tenant.Adapt<HbtTenantDto>();
     }
 
-    /// <inheritdoc/>
-    public async Task<long> CreateAsync(HbtTenantCreateDto input)
+    /// <summary>
+    /// 创建租户
+    /// </summary>
+    /// <param name="input">租户创建信息</param>
+    /// <returns>返回新创建的租户ID</returns>
+    public async Task<long> InsertAsync(HbtTenantCreateDto input)
     {
-        var tenant = new HbtTenant
-        {
-            TenantName = input.TenantName,
-            TenantCode = input.TenantCode,
-            ContactPerson = input.ContactPerson,
-            ContactPhone = input.ContactPhone,
-            ContactEmail = input.ContactEmail,
-            Domain = input.Domain,
-            Status = HbtStatus.Normal,
-            Address = input.Address,
-            LogoUrl = input.LogoUrl,
-            Theme = input.Theme,
-            LicenseStartTime = input.LicenseStartTime,
-            LicenseEndTime = input.LicenseEndTime,
-            MaxUserCount = input.MaxUserCount
-        };
+        // 验证字段是否已存在
+        await HbtValidateUtils.ValidateFieldExistsAsync(_repository, "TenantName", input.TenantName);
+        await HbtValidateUtils.ValidateFieldExistsAsync(_repository, "TenantCode", input.TenantCode);
+        await HbtValidateUtils.ValidateFieldExistsAsync(_repository, "ContactEmail", input.ContactEmail);
 
-        await _tenantRepository.InsertAsync(tenant);
-        return tenant.Id;
+        var tenant = input.Adapt<HbtTenant>();
+        tenant.Status = HbtStatus.Normal;
+
+        var result = await _repository.InsertAsync(tenant);
+        return result > 0 ? tenant.Id : 0;
     }
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// 更新租户
+    /// </summary>
+    /// <param name="input">租户更新信息</param>
+    /// <returns>返回是否更新成功</returns>
     public async Task<bool> UpdateAsync(HbtTenantUpdateDto input)
     {
-        var tenant = await _tenantRepository.GetByIdAsync(input.Id);
+        var tenant = await _repository.GetByIdAsync(input.Id);
+        if (tenant == null)
+            throw new HbtBusinessException($"租户不存在: {input.Id}");
+
+        // 验证字段是否已存在
+        await HbtValidateUtils.ValidateFieldExistsAsync(_repository, "TenantName", input.TenantName, input.Id);
+        await HbtValidateUtils.ValidateFieldExistsAsync(_repository, "TenantCode", input.TenantCode, input.Id);
+        await HbtValidateUtils.ValidateFieldExistsAsync(_repository, "ContactEmail", input.ContactEmail, input.Id);
+
         tenant.TenantName = input.TenantName;
         tenant.TenantCode = input.TenantCode;
         tenant.ContactPerson = input.ContactPerson;
@@ -146,62 +131,68 @@ public class HbtTenantService : IHbtTenantService
         tenant.LicenseEndTime = input.LicenseEndTime;
         tenant.MaxUserCount = input.MaxUserCount;
 
-        return await _tenantRepository.UpdateAsync(tenant);
+        var result = await _repository.UpdateAsync(tenant);
+        return result > 0;
     }
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// 删除租户
+    /// </summary>
+    /// <param name="id">租户ID</param>
+    /// <returns>返回是否删除成功</returns>
     public async Task<bool> DeleteAsync(long id)
     {
-        return await _tenantRepository.DeleteByIdAsync(id);
+        var result = await _repository.DeleteAsync(id);
+        return result > 0;
     }
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// 批量删除租户
+    /// </summary>
+    /// <param name="ids">租户ID数组</param>
+    /// <returns>返回是否删除成功</returns>
     public async Task<bool> BatchDeleteAsync(long[] ids)
     {
-        return await _tenantRepository.DeleteAsync(x => ids.Contains(x.Id));
+        var result = await _repository.DeleteRangeAsync(ids.Cast<object>().ToList());
+        return result > 0;
     }
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// 导出租户数据
+    /// </summary>
+    /// <param name="query">查询条件</param>
+    /// <returns>返回导出的租户数据列表</returns>
     public async Task<List<HbtTenantExportDto>> ExportAsync(HbtTenantQueryDto query)
     {
         var exp = Expressionable.Create<HbtTenant>();
         
-        if (!string.IsNullOrEmpty(query.TenantName))
-            exp.And(x => x.TenantName.Contains(query.TenantName));
         if (!string.IsNullOrEmpty(query.TenantCode))
             exp.And(x => x.TenantCode.Contains(query.TenantCode));
-        if (!string.IsNullOrEmpty(query.ContactPerson))
-            exp.And(x => x.ContactPerson.Contains(query.ContactPerson));
-        if (!string.IsNullOrEmpty(query.ContactPhone))
-            exp.And(x => x.ContactPhone.Contains(query.ContactPhone));
+            
+        if (!string.IsNullOrEmpty(query.TenantName))
+            exp.And(x => x.TenantName.Contains(query.TenantName));
+            
         if (query.Status.HasValue)
             exp.And(x => x.Status == query.Status);
 
-        var items = await _tenantRepository.AsQueryable()
-            .Where(exp.ToExpression())
-            .OrderBy("Id")
-            .Select(x => new HbtTenantExportDto
-            {
-                TenantName = x.TenantName,
-                TenantCode = x.TenantCode,
-                ContactPerson = x.ContactPerson,
-                ContactPhone = x.ContactPhone,
-                ContactEmail = x.ContactEmail,
-                Domain = x.Domain,
-                Address = x.Address,
-                CreateTime = x.CreateTime
-            })
-            .ToListAsync();
-
-        return items;
+        var tenants = await _repository.GetListAsync(exp.ToExpression());
+        return tenants.Adapt<List<HbtTenantExportDto>>();
     }
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// 更新租户状态
+    /// </summary>
+    /// <param name="id">租户ID</param>
+    /// <param name="status">新状态</param>
+    /// <returns>返回是否更新成功</returns>
     public async Task<bool> UpdateStatusAsync(long id, HbtStatus status)
     {
-        var tenant = await _tenantRepository.GetByIdAsync(id);
-        tenant.Status = status;
+        var tenant = await _repository.GetByIdAsync(id);
+        if (tenant == null)
+            throw new HbtBusinessException($"租户不存在: {id}");
 
-        return await _tenantRepository.UpdateAsync(tenant);
+        tenant.Status = status;
+        var result = await _repository.UpdateAsync(tenant);
+        return result > 0;
     }
-} 
+}

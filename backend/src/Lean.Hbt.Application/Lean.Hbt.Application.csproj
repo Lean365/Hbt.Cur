@@ -12,8 +12,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Lean.Hbt.Common\Lean.Hbt.Common.csproj" />
     <ProjectReference Include="..\Lean.Hbt.Domain\Lean.Hbt.Domain.csproj" />
+    <ProjectReference Include="..\Lean.Hbt.Common\Lean.Hbt.Common.csproj" />
+    <ProjectReference Include="..\Lean.Hbt.Infrastructure\Lean.Hbt.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

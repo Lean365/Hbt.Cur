@@ -20,3 +20,6 @@ G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Application\obj\Debug\net8.0\
 G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Application\obj\Debug\net8.0\Lean.Hbt.Application.xml
 G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Application\obj\Debug\net8.0\Lean.Hbt.Application.pdb
 G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Application\obj\Debug\net8.0\ref\Lean.Hbt.Application.dll
+G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Application\bin\Debug\net8.0\Lean.Hbt.Infrastructure.dll
+G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Application\bin\Debug\net8.0\Lean.Hbt.Infrastructure.pdb
+G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.Application\bin\Debug\net8.0\Lean.Hbt.Infrastructure.xml

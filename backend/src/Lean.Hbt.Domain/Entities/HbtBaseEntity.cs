@@ -25,20 +25,20 @@ namespace Lean.Hbt.Domain.Entities
         /// <summary>
         /// 创建者
         /// </summary>
-        [SugarColumn(ColumnName = "create_by", ColumnDescription = "创建者", Length = 50, ColumnDataType = "nvarchar", IsNullable = false)]
-        public string CreateBy { get; set; }
+        [SugarColumn(ColumnName = "create_by", ColumnDescription = "创建者", Length = 50, ColumnDataType = "nvarchar", IsNullable = false, DefaultValue = "")]
+        public string CreateBy { get; set; } = string.Empty;
 
         /// <summary>
         /// 创建时间
         /// </summary>
-        [SugarColumn(ColumnName = "create_time", ColumnDescription = "创建时间", ColumnDataType = "datetime", IsNullable = false)]
-        public DateTime CreateTime { get; set; }
+        [SugarColumn(ColumnName = "create_time", ColumnDescription = "创建时间", ColumnDataType = "datetime", IsNullable = false, DefaultValue = "GETDATE()")]
+        public DateTime CreateTime { get; set; } = DateTime.Now;
 
         /// <summary>
         /// 更新者
         /// </summary>
         [SugarColumn(ColumnName = "update_by", ColumnDescription = "更新者", Length = 50, ColumnDataType = "nvarchar", IsNullable = true)]
-        public string UpdateBy { get; set; }
+        public string? UpdateBy { get; set; }
 
         /// <summary>
         /// 更新时间
@@ -50,7 +50,7 @@ namespace Lean.Hbt.Domain.Entities
         /// 删除者
         /// </summary>
         [SugarColumn(ColumnName = "delete_by", ColumnDescription = "删除者", Length = 50, ColumnDataType = "nvarchar", IsNullable = true)]
-        public string DeleteBy { get; set; }
+        public string? DeleteBy { get; set; }
 
         /// <summary>
         /// 删除时间
@@ -68,6 +68,6 @@ namespace Lean.Hbt.Domain.Entities
         /// 备注
         /// </summary>
         [SugarColumn(ColumnName = "remark", ColumnDescription = "备注", Length = 500, ColumnDataType = "nvarchar", IsNullable = true)]
-        public string Remark { get; set; }
+        public string? Remark { get; set; }
     }
 }

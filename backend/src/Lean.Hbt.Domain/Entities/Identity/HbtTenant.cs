@@ -1,3 +1,5 @@
+#nullable enable
+
 //===================================================================
 // 项目名 : Lean.Hbt
 // 文件名 : HbtTenant.cs
@@ -28,72 +30,72 @@ public class HbtTenant : HbtBaseEntity
     /// <summary>
     /// 租户名称
     /// </summary>
-    [SugarColumn(ColumnDescription = "租户名称", Length = 50, ColumnDataType = "nvarchar", IsNullable = false)]
+    [SugarColumn(ColumnDescription = "租户名称", Length = 50, ColumnDataType = "nvarchar", IsNullable = false, DefaultValue = "")]
     [Description("租户名称")]
-    public string TenantName { get; set; }
+    public string TenantName { get; set; } = string.Empty;
 
     /// <summary>
     /// 租户编码
     /// </summary>
-    [SugarColumn(ColumnDescription = "租户编码", Length = 50, ColumnDataType = "nvarchar", IsNullable = false)]
+    [SugarColumn(ColumnDescription = "租户编码", Length = 50, ColumnDataType = "nvarchar", IsNullable = false, DefaultValue = "")]
     [Description("租户编码")]
-    public string TenantCode { get; set; }
+    public string TenantCode { get; set; } = string.Empty;
 
     /// <summary>
     /// 联系人
     /// </summary>
-    [SugarColumn(ColumnDescription = "联系人", Length = 20, ColumnDataType = "nvarchar", IsNullable = false)]
+    [SugarColumn(ColumnDescription = "联系人", Length = 20, ColumnDataType = "nvarchar", IsNullable = false, DefaultValue = "")]
     [Description("联系人")]
-    public string ContactPerson { get; set; }
+    public string ContactPerson { get; set; } = string.Empty;
 
     /// <summary>
     /// 联系电话
     /// </summary>
-    [SugarColumn(ColumnDescription = "联系电话", Length = 20, ColumnDataType = "nvarchar", IsNullable = false)]
+    [SugarColumn(ColumnDescription = "联系电话", Length = 20, ColumnDataType = "nvarchar", IsNullable = false, DefaultValue = "")]
     [Description("联系电话")]
-    public string ContactPhone { get; set; }
+    public string ContactPhone { get; set; } = string.Empty;
 
     /// <summary>
     /// 联系邮箱
     /// </summary>
-    [SugarColumn(ColumnDescription = "联系邮箱", Length = 50, ColumnDataType = "nvarchar", IsNullable = false)]
+    [SugarColumn(ColumnDescription = "联系邮箱", Length = 50, ColumnDataType = "nvarchar", IsNullable = false, DefaultValue = "")]
     [Description("联系邮箱")]
-    public string ContactEmail { get; set; }
+    public string ContactEmail { get; set; } = string.Empty;
 
     /// <summary>
     /// 租户地址
     /// </summary>
     [SugarColumn(ColumnDescription = "租户地址", Length = 200, ColumnDataType = "nvarchar", IsNullable = true)]
     [Description("租户地址")]
-    public string Address { get; set; }
+    public string? Address { get; set; }
 
     /// <summary>
     /// 数据库连接字符串
     /// </summary>
-    [SugarColumn(ColumnDescription = "数据库连接字符串", Length = 500, ColumnDataType = "nvarchar", IsNullable = false)]
+    [SugarColumn(ColumnDescription = "数据库连接字符串", Length = 500, ColumnDataType = "nvarchar", IsNullable = false, DefaultValue = "")]
     [Description("数据库连接字符串")]
-    public string DbConnection { get; set; }
+    public string DbConnection { get; set; } = string.Empty;
 
     /// <summary>
     /// 租户域名
     /// </summary>
-    [SugarColumn(ColumnDescription = "租户域名", Length = 100, ColumnDataType = "nvarchar", IsNullable = false)]
+    [SugarColumn(ColumnDescription = "租户域名", Length = 100, ColumnDataType = "nvarchar", IsNullable = false, DefaultValue = "")]
     [Description("租户域名")]
-    public string Domain { get; set; }
+    public string Domain { get; set; } = string.Empty;
 
     /// <summary>
     /// 租户Logo
     /// </summary>
     [SugarColumn(ColumnDescription = "租户Logo", Length = 200, ColumnDataType = "nvarchar", IsNullable = true)]
     [Description("租户Logo")]
-    public string LogoUrl { get; set; }
+    public string? LogoUrl { get; set; }
 
     /// <summary>
     /// 租户主题
     /// </summary>
     [SugarColumn(ColumnDescription = "租户主题", Length = 50, ColumnDataType = "nvarchar", IsNullable = true)]
     [Description("租户主题")]
-    public string Theme { get; set; }
+    public string? Theme { get; set; }
 
     /// <summary>
     /// 授权开始时间
@@ -121,5 +123,5 @@ public class HbtTenant : HbtBaseEntity
     /// </summary>
     [SugarColumn(ColumnDescription = "租户状态", ColumnDataType = "int", IsNullable = false)]
     [Description("租户状态")]
-    public HbtStatus Status { get; set; }
+    public HbtStatus Status { get; set; } = HbtStatus.Normal;
 }

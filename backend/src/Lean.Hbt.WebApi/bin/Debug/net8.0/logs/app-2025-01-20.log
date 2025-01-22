@@ -1,0 +1,254 @@
+2025-01-20 15:04:24.3752| Info|Program|正在初始化应用程序...
+2025-01-20 15:37:12.9502| Info|Program|正在初始化应用程序...
+2025-01-20 15:37:18.0408| Info|HbtNLogger|数据库检查/创建成功
+2025-01-20 15:37:20.1880| Info|HbtNLogger|表 hbt_user 初始化成功
+2025-01-20 15:37:21.0790| Info|HbtNLogger|表 hbt_role 初始化成功
+2025-01-20 15:37:22.2583| Info|HbtNLogger|表 hbt_menu 初始化成功
+2025-01-20 15:37:23.2008| Info|HbtNLogger|表 hbt_dept 初始化成功
+2025-01-20 15:37:23.9957| Info|HbtNLogger|表 hbt_post 初始化成功
+2025-01-20 15:37:24.7827| Info|HbtNLogger|表 hbt_user_role 初始化成功
+2025-01-20 15:37:25.5394| Info|HbtNLogger|表 hbt_user_dept 初始化成功
+2025-01-20 15:37:26.2697| Info|HbtNLogger|表 hbt_user_post 初始化成功
+2025-01-20 15:37:27.0170| Info|HbtNLogger|表 hbt_role_menu 初始化成功
+2025-01-20 15:37:27.7369| Info|HbtNLogger|表 hbt_role_dept 初始化成功
+2025-01-20 15:37:28.9489| Info|HbtNLogger|表 hbt_tenant 初始化成功
+2025-01-20 15:37:29.5975| Info|HbtNLogger|表 hbt_audit_log 初始化成功
+2025-01-20 15:37:30.4318| Info|HbtNLogger|表 hbt_login_log 初始化成功
+2025-01-20 15:37:31.4031| Info|HbtNLogger|表 hbt_exception_log 初始化成功
+2025-01-20 15:37:31.4031| Info|HbtNLogger|数据库初始化完成
+2025-01-20 15:37:31.4081| Info|HbtNLogger|[初始化] 开始初始化种子数据...
+2025-01-20 15:37:31.5612| Info|HbtNLogger|[更新] 租户 '默认租户' 更新成功
+2025-01-20 15:37:31.5612| Info|HbtNLogger|[初始化] 租户数据 - 新增: 0, 更新: 1
+2025-01-20 15:37:31.6164| Info|HbtNLogger|[更新] 角色 '超级管理员' 更新成功
+2025-01-20 15:37:31.6164| Info|HbtNLogger|[初始化] 角色数据 - 新增: 0, 更新: 1
+2025-01-20 15:37:31.7192| Info|HbtNLogger|[更新] 用户 'admin' 更新成功
+2025-01-20 15:37:31.7192| Info|HbtNLogger|[初始化] 用户数据 - 新增: 0, 更新: 1
+2025-01-20 15:37:31.7234| Info|HbtNLogger|[初始化] 部门数据 - 新增: 0, 更新: 0
+2025-01-20 15:37:31.7234| Info|HbtNLogger|[初始化] 岗位数据 - 新增: 0, 更新: 0
+2025-01-20 15:37:31.7234| Info|HbtNLogger|[初始化] 种子数据初始化完成
+2025-01-20 15:37:31.9225| Info|Program|应用程序启动成功
+2025-01-20 15:37:31.9401| Info|XmlKeyManager|User profile is available. Using 'C:\Users\Davis.Cheng\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2025-01-20 15:37:32.3929| Info|Lifetime|Now listening on: https://localhost:7229
+2025-01-20 15:37:32.3929| Info|Lifetime|Now listening on: http://localhost:5249
+2025-01-20 15:37:32.4719| Info|Lifetime|Application started. Press Ctrl+C to shut down.
+2025-01-20 15:37:32.4719| Info|Lifetime|Hosting environment: Development
+2025-01-20 15:37:32.4719| Info|Lifetime|Content root path: G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi
+2025-01-20 15:37:35.8968| Info|Diagnostics|Request starting HTTP/2 GET https://localhost:7229/swagger/index.html - - -
+2025-01-20 15:37:36.2123| Info|Diagnostics|Request finished HTTP/2 GET https://localhost:7229/swagger/index.html - 200 - text/html;charset=utf-8 332.8398ms
+2025-01-20 15:37:36.2249| Info|Diagnostics|Request starting HTTP/2 GET https://localhost:7229/_framework/aspnetcore-browser-refresh.js - - -
+2025-01-20 15:37:36.2249| Info|Diagnostics|Request starting HTTP/2 GET https://localhost:7229/_vs/browserLink - - -
+2025-01-20 15:37:36.2373| Info|Diagnostics|Request finished HTTP/2 GET https://localhost:7229/_framework/aspnetcore-browser-refresh.js - 200 13766 application/javascript;+charset=utf-8 10.5643ms
+2025-01-20 15:37:36.3300| Info|Diagnostics|Request finished HTTP/2 GET https://localhost:7229/_vs/browserLink - 200 - text/javascript;+charset=UTF-8 106.0507ms
+2025-01-20 15:37:36.3927| Info|Diagnostics|Request starting HTTP/2 GET https://localhost:7229/swagger/v1/swagger.json - - -
+2025-01-20 15:37:36.4405| Info|Diagnostics|Request finished HTTP/2 GET https://localhost:7229/swagger/v1/swagger.json - 200 - application/json;charset=utf-8 46.6988ms
+2025-01-20 16:02:35.8438| Info|Program|正在初始化应用程序...
+2025-01-20 16:02:57.7137| Info|Program|正在初始化应用程序...
+2025-01-20 16:02:59.1627| Info|HbtNLogger|数据库检查/创建成功
+2025-01-20 16:03:00.5401| Info|HbtNLogger|表 hbt_user 初始化成功
+2025-01-20 16:03:01.4467| Info|HbtNLogger|表 hbt_role 初始化成功
+2025-01-20 16:03:02.6271| Info|HbtNLogger|表 hbt_menu 初始化成功
+2025-01-20 16:03:03.5709| Info|HbtNLogger|表 hbt_dept 初始化成功
+2025-01-20 16:03:04.4051| Info|HbtNLogger|表 hbt_post 初始化成功
+2025-01-20 16:03:05.1360| Info|HbtNLogger|表 hbt_user_role 初始化成功
+2025-01-20 16:03:05.8956| Info|HbtNLogger|表 hbt_user_dept 初始化成功
+2025-01-20 16:03:06.6336| Info|HbtNLogger|表 hbt_user_post 初始化成功
+2025-01-20 16:03:07.3822| Info|HbtNLogger|表 hbt_role_menu 初始化成功
+2025-01-20 16:03:08.1257| Info|HbtNLogger|表 hbt_role_dept 初始化成功
+2025-01-20 16:03:09.4037| Info|HbtNLogger|表 hbt_tenant 初始化成功
+2025-01-20 16:03:10.1370| Info|HbtNLogger|表 hbt_audit_log 初始化成功
+2025-01-20 16:03:10.9543| Info|HbtNLogger|表 hbt_login_log 初始化成功
+2025-01-20 16:03:12.0798| Info|HbtNLogger|表 hbt_exception_log 初始化成功
+2025-01-20 16:03:12.0813| Info|HbtNLogger|数据库初始化完成
+2025-01-20 16:03:12.0813| Info|HbtNLogger|[初始化] 开始初始化种子数据...
+2025-01-20 16:03:12.4429| Info|HbtNLogger|[更新] 租户 '默认租户' 更新成功
+2025-01-20 16:03:12.4429| Info|HbtNLogger|[初始化] 租户数据 - 新增: 0, 更新: 1
+2025-01-20 16:03:12.4898| Info|HbtNLogger|[更新] 角色 '超级管理员' 更新成功
+2025-01-20 16:03:12.4898| Info|HbtNLogger|[初始化] 角色数据 - 新增: 0, 更新: 1
+2025-01-20 16:03:12.5405| Info|HbtNLogger|[更新] 用户 'admin' 更新成功
+2025-01-20 16:03:12.5405| Info|HbtNLogger|[初始化] 用户数据 - 新增: 0, 更新: 1
+2025-01-20 16:03:12.5405| Info|HbtNLogger|[初始化] 部门数据 - 新增: 0, 更新: 0
+2025-01-20 16:03:12.5507| Info|HbtNLogger|[初始化] 岗位数据 - 新增: 0, 更新: 0
+2025-01-20 16:03:12.5507| Info|HbtNLogger|[初始化] 种子数据初始化完成
+2025-01-20 16:03:12.7561| Info|Program|应用程序启动成功
+2025-01-20 16:03:12.7746| Info|XmlKeyManager|User profile is available. Using 'C:\Users\Davis.Cheng\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2025-01-20 16:03:13.1781| Info|Lifetime|Now listening on: https://localhost:7229
+2025-01-20 16:03:13.1781| Info|Lifetime|Now listening on: http://localhost:5249
+2025-01-20 16:03:13.2443| Info|Lifetime|Application started. Press Ctrl+C to shut down.
+2025-01-20 16:03:13.2443| Info|Lifetime|Hosting environment: Development
+2025-01-20 16:03:13.2443| Info|Lifetime|Content root path: G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi
+2025-01-20 16:03:14.2102| Info|Diagnostics|Request starting HTTP/2 GET https://localhost:7229/swagger/index.html - - -
+2025-01-20 16:03:14.4575| Info|Diagnostics|Request starting HTTP/2 GET https://localhost:7229/_framework/aspnetcore-browser-refresh.js - - -
+2025-01-20 16:03:14.4575| Info|Diagnostics|Request finished HTTP/2 GET https://localhost:7229/swagger/index.html - 200 - text/html;charset=utf-8 253.3978ms
+2025-01-20 16:03:14.4575| Info|Diagnostics|Request starting HTTP/2 GET https://localhost:7229/_vs/browserLink - - -
+2025-01-20 16:03:14.4575| Info|Diagnostics|Request finished HTTP/2 GET https://localhost:7229/_framework/aspnetcore-browser-refresh.js - 200 13766 application/javascript;+charset=utf-8 7.0434ms
+2025-01-20 16:03:14.5343| Info|Diagnostics|Request finished HTTP/2 GET https://localhost:7229/_vs/browserLink - 200 - text/javascript;+charset=UTF-8 76.3786ms
+2025-01-20 16:03:14.6134| Info|Diagnostics|Request starting HTTP/2 GET https://localhost:7229/swagger/v1/swagger.json - - -
+2025-01-20 16:03:14.6513| Info|Diagnostics|Request finished HTTP/2 GET https://localhost:7229/swagger/v1/swagger.json - 200 - application/json;charset=utf-8 38.1320ms
+2025-01-20 16:04:06.4890| Info|Program|正在初始化应用程序...
+2025-01-20 16:04:08.1192| Info|HbtNLogger|数据库检查/创建成功
+2025-01-20 16:04:09.4578| Info|HbtNLogger|表 hbt_user 初始化成功
+2025-01-20 16:04:10.3100| Info|HbtNLogger|表 hbt_role 初始化成功
+2025-01-20 16:04:11.4586| Info|HbtNLogger|表 hbt_menu 初始化成功
+2025-01-20 16:04:12.3730| Info|HbtNLogger|表 hbt_dept 初始化成功
+2025-01-20 16:04:13.1728| Info|HbtNLogger|表 hbt_post 初始化成功
+2025-01-20 16:04:13.8950| Info|HbtNLogger|表 hbt_user_role 初始化成功
+2025-01-20 16:04:14.6515| Info|HbtNLogger|表 hbt_user_dept 初始化成功
+2025-01-20 16:04:15.4243| Info|HbtNLogger|表 hbt_user_post 初始化成功
+2025-01-20 16:04:16.1414| Info|HbtNLogger|表 hbt_role_menu 初始化成功
+2025-01-20 16:04:16.8474| Info|HbtNLogger|表 hbt_role_dept 初始化成功
+2025-01-20 16:04:18.0272| Info|HbtNLogger|表 hbt_tenant 初始化成功
+2025-01-20 16:04:19.0245| Info|HbtNLogger|表 hbt_audit_log 初始化成功
+2025-01-20 16:04:19.5620| Info|HbtNLogger|表 hbt_login_log 初始化成功
+2025-01-20 16:04:20.5235| Info|HbtNLogger|表 hbt_exception_log 初始化成功
+2025-01-20 16:04:20.5235| Info|HbtNLogger|数据库初始化完成
+2025-01-20 16:04:20.5235| Info|HbtNLogger|[初始化] 开始初始化种子数据...
+2025-01-20 16:04:20.7827| Info|HbtNLogger|[更新] 租户 '默认租户' 更新成功
+2025-01-20 16:04:20.7852| Info|HbtNLogger|[初始化] 租户数据 - 新增: 0, 更新: 1
+2025-01-20 16:04:20.8249| Info|HbtNLogger|[更新] 角色 '超级管理员' 更新成功
+2025-01-20 16:04:20.8249| Info|HbtNLogger|[初始化] 角色数据 - 新增: 0, 更新: 1
+2025-01-20 16:04:20.8938| Info|HbtNLogger|[更新] 用户 'admin' 更新成功
+2025-01-20 16:04:20.8938| Info|HbtNLogger|[初始化] 用户数据 - 新增: 0, 更新: 1
+2025-01-20 16:04:20.8938| Info|HbtNLogger|[初始化] 部门数据 - 新增: 0, 更新: 0
+2025-01-20 16:04:20.8938| Info|HbtNLogger|[初始化] 岗位数据 - 新增: 0, 更新: 0
+2025-01-20 16:04:20.8938| Info|HbtNLogger|[初始化] 种子数据初始化完成
+2025-01-20 16:04:21.0319| Info|Program|应用程序启动成功
+2025-01-20 16:04:21.0443| Info|XmlKeyManager|User profile is available. Using 'C:\Users\Davis.Cheng\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2025-01-20 16:04:21.3352| Info|Lifetime|Now listening on: https://localhost:7229
+2025-01-20 16:04:21.3352| Info|Lifetime|Now listening on: http://localhost:5249
+2025-01-20 16:04:21.3905| Info|Lifetime|Application started. Press Ctrl+C to shut down.
+2025-01-20 16:04:21.3905| Info|Lifetime|Hosting environment: Development
+2025-01-20 16:04:21.3905| Info|Lifetime|Content root path: G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi
+2025-01-20 16:04:22.2153| Info|Diagnostics|Request starting HTTP/2 GET https://localhost:7229/swagger/index.html - - -
+2025-01-20 16:04:22.3930| Info|Diagnostics|Request finished HTTP/2 GET https://localhost:7229/swagger/index.html - 200 - text/html;charset=utf-8 183.5285ms
+2025-01-20 16:04:22.3930| Info|Diagnostics|Request starting HTTP/2 GET https://localhost:7229/_vs/browserLink - - -
+2025-01-20 16:04:22.3930| Info|Diagnostics|Request starting HTTP/2 GET https://localhost:7229/_framework/aspnetcore-browser-refresh.js - - -
+2025-01-20 16:04:22.3930| Info|Diagnostics|Request finished HTTP/2 GET https://localhost:7229/_framework/aspnetcore-browser-refresh.js - 200 13766 application/javascript;+charset=utf-8 9.3524ms
+2025-01-20 16:04:22.4459| Info|Diagnostics|Request finished HTTP/2 GET https://localhost:7229/_vs/browserLink - 200 - text/javascript;+charset=UTF-8 48.2623ms
+2025-01-20 16:04:22.4834| Info|Diagnostics|Request starting HTTP/2 GET https://localhost:7229/swagger/v1/swagger.json - - -
+2025-01-20 16:04:22.5385| Info|Diagnostics|Request finished HTTP/2 GET https://localhost:7229/swagger/v1/swagger.json - 200 - application/json;charset=utf-8 55.5071ms
+2025-01-20 16:05:54.4545| Info|Program|正在初始化应用程序...
+2025-01-20 16:05:55.8069| Info|HbtNLogger|数据库检查/创建成功
+2025-01-20 16:05:57.2058| Info|HbtNLogger|表 hbt_user 初始化成功
+2025-01-20 16:05:58.0650| Info|HbtNLogger|表 hbt_role 初始化成功
+2025-01-20 16:05:59.2045| Info|HbtNLogger|表 hbt_menu 初始化成功
+2025-01-20 16:06:00.1333| Info|HbtNLogger|表 hbt_dept 初始化成功
+2025-01-20 16:06:00.9691| Info|HbtNLogger|表 hbt_post 初始化成功
+2025-01-20 16:06:01.6988| Info|HbtNLogger|表 hbt_user_role 初始化成功
+2025-01-20 16:06:02.4362| Info|HbtNLogger|表 hbt_user_dept 初始化成功
+2025-01-20 16:06:03.1787| Info|HbtNLogger|表 hbt_user_post 初始化成功
+2025-01-20 16:06:03.9460| Info|HbtNLogger|表 hbt_role_menu 初始化成功
+2025-01-20 16:06:04.6854| Info|HbtNLogger|表 hbt_role_dept 初始化成功
+2025-01-20 16:06:05.9629| Info|HbtNLogger|表 hbt_tenant 初始化成功
+2025-01-20 16:06:07.0611| Info|HbtNLogger|表 hbt_audit_log 初始化成功
+2025-01-20 16:06:07.7127| Info|HbtNLogger|表 hbt_login_log 初始化成功
+2025-01-20 16:06:08.4775| Info|HbtNLogger|表 hbt_exception_log 初始化成功
+2025-01-20 16:06:08.4775| Info|HbtNLogger|数据库初始化完成
+2025-01-20 16:06:08.4775| Info|HbtNLogger|[初始化] 开始初始化种子数据...
+2025-01-20 16:06:08.7086| Info|HbtNLogger|[更新] 租户 '默认租户' 更新成功
+2025-01-20 16:06:08.7086| Info|HbtNLogger|[初始化] 租户数据 - 新增: 0, 更新: 1
+2025-01-20 16:06:08.7440| Info|HbtNLogger|[更新] 角色 '超级管理员' 更新成功
+2025-01-20 16:06:08.7440| Info|HbtNLogger|[初始化] 角色数据 - 新增: 0, 更新: 1
+2025-01-20 16:06:08.7900| Info|HbtNLogger|[更新] 用户 'admin' 更新成功
+2025-01-20 16:06:08.7900| Info|HbtNLogger|[初始化] 用户数据 - 新增: 0, 更新: 1
+2025-01-20 16:06:08.7900| Info|HbtNLogger|[初始化] 部门数据 - 新增: 0, 更新: 0
+2025-01-20 16:06:08.8020| Info|HbtNLogger|[初始化] 岗位数据 - 新增: 0, 更新: 0
+2025-01-20 16:06:08.8020| Info|HbtNLogger|[初始化] 种子数据初始化完成
+2025-01-20 16:06:08.9242| Info|Program|应用程序启动成功
+2025-01-20 16:06:08.9242| Info|XmlKeyManager|User profile is available. Using 'C:\Users\Davis.Cheng\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2025-01-20 16:06:09.1696| Info|Lifetime|Now listening on: https://localhost:7229
+2025-01-20 16:06:09.1696| Info|Lifetime|Now listening on: http://localhost:5249
+2025-01-20 16:06:09.2225| Info|Lifetime|Application started. Press Ctrl+C to shut down.
+2025-01-20 16:06:09.2225| Info|Lifetime|Hosting environment: Development
+2025-01-20 16:06:09.2225| Info|Lifetime|Content root path: G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi
+2025-01-20 16:06:09.7642| Info|Diagnostics|Request starting HTTP/2 GET https://localhost:7229/swagger/index.html - - -
+2025-01-20 16:06:09.9344| Info|Diagnostics|Request finished HTTP/2 GET https://localhost:7229/swagger/index.html - 200 - text/html;charset=utf-8 176.2890ms
+2025-01-20 16:06:09.9429| Info|Diagnostics|Request starting HTTP/2 GET https://localhost:7229/_framework/aspnetcore-browser-refresh.js - - -
+2025-01-20 16:06:09.9429| Info|Diagnostics|Request starting HTTP/2 GET https://localhost:7229/_vs/browserLink - - -
+2025-01-20 16:06:09.9624| Info|Diagnostics|Request finished HTTP/2 GET https://localhost:7229/_framework/aspnetcore-browser-refresh.js - 200 13766 application/javascript;+charset=utf-8 19.7372ms
+2025-01-20 16:06:09.9958| Info|Diagnostics|Request finished HTTP/2 GET https://localhost:7229/_vs/browserLink - 200 - text/javascript;+charset=UTF-8 53.2282ms
+2025-01-20 16:06:10.0210| Info|Diagnostics|Request starting HTTP/2 GET https://localhost:7229/swagger/v1/swagger.json - - -
+2025-01-20 16:06:10.0564| Info|Diagnostics|Request finished HTTP/2 GET https://localhost:7229/swagger/v1/swagger.json - 200 - application/json;charset=utf-8 35.6314ms
+2025-01-20 16:09:08.8365| Info|Program|正在初始化应用程序...
+2025-01-20 16:09:10.2694| Info|HbtNLogger|数据库检查/创建成功
+2025-01-20 16:09:11.6766| Info|HbtNLogger|表 hbt_user 初始化成功
+2025-01-20 16:09:12.5739| Info|HbtNLogger|表 hbt_role 初始化成功
+2025-01-20 16:09:13.7083| Info|HbtNLogger|表 hbt_menu 初始化成功
+2025-01-20 16:09:14.6480| Info|HbtNLogger|表 hbt_dept 初始化成功
+2025-01-20 16:09:15.4510| Info|HbtNLogger|表 hbt_post 初始化成功
+2025-01-20 16:09:16.1684| Info|HbtNLogger|表 hbt_user_role 初始化成功
+2025-01-20 16:09:16.8943| Info|HbtNLogger|表 hbt_user_dept 初始化成功
+2025-01-20 16:09:17.5983| Info|HbtNLogger|表 hbt_user_post 初始化成功
+2025-01-20 16:09:18.3809| Info|HbtNLogger|表 hbt_role_menu 初始化成功
+2025-01-20 16:09:19.1060| Info|HbtNLogger|表 hbt_role_dept 初始化成功
+2025-01-20 16:09:20.3702| Info|HbtNLogger|表 hbt_tenant 初始化成功
+2025-01-20 16:09:21.3857| Info|HbtNLogger|表 hbt_audit_log 初始化成功
+2025-01-20 16:09:22.2489| Info|HbtNLogger|表 hbt_login_log 初始化成功
+2025-01-20 16:09:22.9704| Info|HbtNLogger|表 hbt_exception_log 初始化成功
+2025-01-20 16:09:22.9722| Info|HbtNLogger|数据库初始化完成
+2025-01-20 16:09:22.9722| Info|HbtNLogger|[初始化] 开始初始化种子数据...
+2025-01-20 16:09:23.2116| Info|HbtNLogger|[更新] 租户 '默认租户' 更新成功
+2025-01-20 16:09:23.2116| Info|HbtNLogger|[初始化] 租户数据 - 新增: 0, 更新: 1
+2025-01-20 16:09:23.2537| Info|HbtNLogger|[更新] 角色 '超级管理员' 更新成功
+2025-01-20 16:09:23.2537| Info|HbtNLogger|[初始化] 角色数据 - 新增: 0, 更新: 1
+2025-01-20 16:09:23.2993| Info|HbtNLogger|[更新] 用户 'admin' 更新成功
+2025-01-20 16:09:23.2993| Info|HbtNLogger|[初始化] 用户数据 - 新增: 0, 更新: 1
+2025-01-20 16:09:23.2993| Info|HbtNLogger|[初始化] 部门数据 - 新增: 0, 更新: 0
+2025-01-20 16:09:23.2993| Info|HbtNLogger|[初始化] 岗位数据 - 新增: 0, 更新: 0
+2025-01-20 16:09:23.2993| Info|HbtNLogger|[初始化] 种子数据初始化完成
+2025-01-20 16:09:23.4289| Info|Program|应用程序启动成功
+2025-01-20 16:09:23.4446| Info|XmlKeyManager|User profile is available. Using 'C:\Users\Davis.Cheng\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2025-01-20 16:09:23.6471| Info|Lifetime|Now listening on: https://localhost:7229
+2025-01-20 16:09:23.6471| Info|Lifetime|Now listening on: http://localhost:5249
+2025-01-20 16:09:23.6907| Info|Lifetime|Application started. Press Ctrl+C to shut down.
+2025-01-20 16:09:23.6907| Info|Lifetime|Hosting environment: Development
+2025-01-20 16:09:23.6907| Info|Lifetime|Content root path: G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi
+2025-01-20 16:09:24.2597| Info|Diagnostics|Request starting HTTP/2 GET https://localhost:7229/swagger/index.html - - -
+2025-01-20 16:09:24.4344| Info|Diagnostics|Request finished HTTP/2 GET https://localhost:7229/swagger/index.html - 200 - text/html;charset=utf-8 183.1355ms
+2025-01-20 16:09:24.4402| Info|Diagnostics|Request starting HTTP/2 GET https://localhost:7229/_vs/browserLink - - -
+2025-01-20 16:09:24.4402| Info|Diagnostics|Request starting HTTP/2 GET https://localhost:7229/_framework/aspnetcore-browser-refresh.js - - -
+2025-01-20 16:09:24.4402| Info|Diagnostics|Request finished HTTP/2 GET https://localhost:7229/_framework/aspnetcore-browser-refresh.js - 200 13766 application/javascript;+charset=utf-8 7.1712ms
+2025-01-20 16:09:24.4772| Info|Diagnostics|Request finished HTTP/2 GET https://localhost:7229/_vs/browserLink - 200 - text/javascript;+charset=UTF-8 37.6094ms
+2025-01-20 16:09:24.5075| Info|Diagnostics|Request starting HTTP/2 GET https://localhost:7229/swagger/v1/swagger.json - - -
+2025-01-20 16:09:24.5522| Info|Diagnostics|Request finished HTTP/2 GET https://localhost:7229/swagger/v1/swagger.json - 200 - application/json;charset=utf-8 44.9862ms
+2025-01-20 16:11:20.6238| Info|Program|正在初始化应用程序...
+2025-01-20 16:11:21.9849| Info|HbtNLogger|数据库检查/创建成功
+2025-01-20 16:11:23.3033| Info|HbtNLogger|表 hbt_user 初始化成功
+2025-01-20 16:11:24.1634| Info|HbtNLogger|表 hbt_role 初始化成功
+2025-01-20 16:11:25.2890| Info|HbtNLogger|表 hbt_menu 初始化成功
+2025-01-20 16:11:26.2212| Info|HbtNLogger|表 hbt_dept 初始化成功
+2025-01-20 16:11:27.0481| Info|HbtNLogger|表 hbt_post 初始化成功
+2025-01-20 16:11:27.7844| Info|HbtNLogger|表 hbt_user_role 初始化成功
+2025-01-20 16:11:28.5049| Info|HbtNLogger|表 hbt_user_dept 初始化成功
+2025-01-20 16:11:29.2483| Info|HbtNLogger|表 hbt_user_post 初始化成功
+2025-01-20 16:11:30.0078| Info|HbtNLogger|表 hbt_role_menu 初始化成功
+2025-01-20 16:11:30.7521| Info|HbtNLogger|表 hbt_role_dept 初始化成功
+2025-01-20 16:11:32.0035| Info|HbtNLogger|表 hbt_tenant 初始化成功
+2025-01-20 16:11:33.0826| Info|HbtNLogger|表 hbt_audit_log 初始化成功
+2025-01-20 16:11:33.9368| Info|HbtNLogger|表 hbt_login_log 初始化成功
+2025-01-20 16:11:34.6569| Info|HbtNLogger|表 hbt_exception_log 初始化成功
+2025-01-20 16:11:34.6569| Info|HbtNLogger|数据库初始化完成
+2025-01-20 16:11:34.6595| Info|HbtNLogger|[初始化] 开始初始化种子数据...
+2025-01-20 16:11:34.9031| Info|HbtNLogger|[更新] 租户 '默认租户' 更新成功
+2025-01-20 16:11:34.9031| Info|HbtNLogger|[初始化] 租户数据 - 新增: 0, 更新: 1
+2025-01-20 16:11:34.9422| Info|HbtNLogger|[更新] 角色 '超级管理员' 更新成功
+2025-01-20 16:11:34.9422| Info|HbtNLogger|[初始化] 角色数据 - 新增: 0, 更新: 1
+2025-01-20 16:11:34.9984| Info|HbtNLogger|[更新] 用户 'admin' 更新成功
+2025-01-20 16:11:34.9984| Info|HbtNLogger|[初始化] 用户数据 - 新增: 0, 更新: 1
+2025-01-20 16:11:35.0033| Info|HbtNLogger|[初始化] 部门数据 - 新增: 0, 更新: 0
+2025-01-20 16:11:35.0033| Info|HbtNLogger|[初始化] 岗位数据 - 新增: 0, 更新: 0
+2025-01-20 16:11:35.0033| Info|HbtNLogger|[初始化] 种子数据初始化完成
+2025-01-20 16:11:35.1127| Info|Program|应用程序启动成功
+2025-01-20 16:11:35.1127| Info|XmlKeyManager|User profile is available. Using 'C:\Users\Davis.Cheng\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
+2025-01-20 16:11:35.3479| Info|Lifetime|Now listening on: https://localhost:7229
+2025-01-20 16:11:35.3479| Info|Lifetime|Now listening on: http://localhost:5249
+2025-01-20 16:11:35.3920| Info|Lifetime|Application started. Press Ctrl+C to shut down.
+2025-01-20 16:11:35.3929| Info|Lifetime|Hosting environment: Development
+2025-01-20 16:11:35.3929| Info|Lifetime|Content root path: G:\AppDevelop\VS2025\Lean.Hbt\backend\src\Lean.Hbt.WebApi
+2025-01-20 16:11:35.8499| Info|Diagnostics|Request starting HTTP/2 GET https://localhost:7229/swagger/index.html - - -
+2025-01-20 16:11:36.0044| Info|Diagnostics|Request finished HTTP/2 GET https://localhost:7229/swagger/index.html - 200 - text/html;charset=utf-8 160.0997ms
+2025-01-20 16:11:36.0044| Info|Diagnostics|Request starting HTTP/2 GET https://localhost:7229/_framework/aspnetcore-browser-refresh.js - - -
+2025-01-20 16:11:36.0044| Info|Diagnostics|Request starting HTTP/2 GET https://localhost:7229/_vs/browserLink - - -
+2025-01-20 16:11:36.0044| Info|Diagnostics|Request finished HTTP/2 GET https://localhost:7229/_framework/aspnetcore-browser-refresh.js - 200 13766 application/javascript;+charset=utf-8 6.1221ms
+2025-01-20 16:11:36.0562| Info|Diagnostics|Request finished HTTP/2 GET https://localhost:7229/_vs/browserLink - 200 - text/javascript;+charset=UTF-8 46.0966ms
+2025-01-20 16:11:36.0859| Info|Diagnostics|Request starting HTTP/2 GET https://localhost:7229/swagger/v1/swagger.json - - -
+2025-01-20 16:11:36.1138| Info|Diagnostics|Request finished HTTP/2 GET https://localhost:7229/swagger/v1/swagger.json - 200 - application/json;charset=utf-8 28.1381ms

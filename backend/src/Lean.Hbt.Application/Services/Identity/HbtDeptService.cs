@@ -1,0 +1,347 @@
+//===================================================================
+// 项目名 : Lean.Hbt
+// 文件名 : HbtDeptService.cs
+// 创建者 : Lean365
+// 创建时间: 2024-01-20 16:30
+// 版本号 : V0.0.1
+// 描述   : 部门服务实现
+//===================================================================
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Linq.Expressions;
+using System.IO;
+using Mapster;
+using Microsoft.Extensions.Logging;
+using SqlSugar;
+using Lean.Hbt.Application.Dtos.Identity;
+using Lean.Hbt.Common.Enums;
+using Lean.Hbt.Common.Exceptions;
+using Lean.Hbt.Common.Models;
+using Lean.Hbt.Common.Helpers;
+using Lean.Hbt.Domain.Entities.Identity;
+using Lean.Hbt.Domain.Repositories;
+
+namespace Lean.Hbt.Application.Services.Identity
+{
+    /// <summary>
+    /// 部门服务实现
+    /// </summary>
+    /// <remarks>
+    /// 创建者: Lean365
+    /// 创建时间: 2024-01-20
+    /// </remarks>
+    public class HbtDeptService : IHbtDeptService
+    {
+        private readonly ILogger<HbtDeptService> _logger;
+        private readonly IHbtRepository<HbtDept> _deptRepository;
+
+        /// <summary>
+        /// 构造函数
+        /// </summary>
+        public HbtDeptService(
+            ILogger<HbtDeptService> logger,
+            IHbtRepository<HbtDept> deptRepository)
+        {
+            _logger = logger;
+            _deptRepository = deptRepository;
+        }
+
+        /// <summary>
+        /// 获取部门分页列表
+        /// </summary>
+        public async Task<HbtPagedResult<HbtDeptDto>> GetPagedListAsync(HbtDeptQueryDto query)
+        {
+            // 1.构建查询条件
+            var predicate = Expressionable.Create<HbtDept>();
+            
+            if (!string.IsNullOrEmpty(query.DeptName))
+                predicate.And(d => d.DeptName.Contains(query.DeptName));
+                
+            if (query.Status.HasValue)
+                predicate.And(d => d.Status == query.Status.Value);
+
+            // 2.查询数据
+            var result = await _deptRepository.GetPagedListAsync(
+                predicate.ToExpression(),
+                query.PageIndex,
+                query.PageSize);
+
+            // 3.转换并返回
+            var dtos = result.list.Adapt<List<HbtDeptDto>>();
+            return new HbtPagedResult<HbtDeptDto>
+            {
+                TotalNum = result.total,
+                PageIndex = query.PageIndex,
+                PageSize = query.PageSize,
+                Rows = dtos
+            };
+        }
+
+        /// <summary>
+        /// 获取部门树形结构
+        /// </summary>
+        public async Task<List<HbtDeptDto>> GetTreeAsync(HbtStatus? status = null)
+        {
+            // 1.查询所有部门
+            var predicate = Expressionable.Create<HbtDept>();
+            if (status.HasValue)
+                predicate.And(d => d.Status == status.Value);
+
+            var depts = await _deptRepository.AsQueryable()
+                .Where(predicate.ToExpression())
+                .OrderBy(d => d.OrderNum)
+                .ToListAsync();
+
+            // 2.转换为DTO
+            var dtos = depts.Adapt<List<HbtDeptDto>>();
+
+            // 3.构建树形结构
+            var tree = dtos.Where(d => !d.ParentId.HasValue).ToList();
+            foreach (var node in tree)
+            {
+                BuildDeptTree(node, dtos);
+            }
+
+            return tree;
+        }
+
+        /// <summary>
+        /// 获取部门详情
+        /// </summary>
+        public async Task<HbtDeptDto> GetAsync(long id)
+        {
+            var dept = await _deptRepository.GetByIdAsync(id);
+            if (dept == null)
+                throw new HbtException("部门不存在");
+
+            return dept.Adapt<HbtDeptDto>();
+        }
+
+        /// <summary>
+        /// 创建部门
+        /// </summary>
+        public async Task<long> InsertAsync(HbtDeptCreateDto input)
+        {
+            // 1.检查部门名称是否存在
+            var exists = await _deptRepository.AsQueryable()
+                .AnyAsync(d => d.DeptName == input.DeptName && d.ParentId == input.ParentId);
+            if (exists)
+                throw new HbtException("部门名称已存在");
+
+            // 2.创建部门实体
+            var dept = input.Adapt<HbtDept>();
+
+            // 3.保存部门
+            var result = await _deptRepository.InsertAsync(dept);
+            if (result <= 0)
+                throw new HbtException("创建部门失败");
+
+            return dept.Id;
+        }
+
+        /// <summary>
+        /// 更新部门
+        /// </summary>
+        public async Task<bool> UpdateAsync(HbtDeptUpdateDto input)
+        {
+            // 1.获取部门
+            var dept = await _deptRepository.GetByIdAsync(input.Id);
+            if (dept == null)
+                throw new HbtException("部门不存在");
+
+            // 2.检查部门名称是否存在
+            var exists = await _deptRepository.AsQueryable()
+                .AnyAsync(d => d.Id != input.Id && d.DeptName == input.DeptName && d.ParentId == input.ParentId);
+            if (exists)
+                throw new HbtException("部门名称已存在");
+
+            // 3.检查上级部门是否正确
+            if (input.ParentId.HasValue)
+            {
+                if (input.ParentId.Value == input.Id)
+                    throw new HbtException("上级部门不能是自己");
+
+                var parent = await _deptRepository.GetByIdAsync(input.ParentId.Value);
+                if (parent == null)
+                    throw new HbtException("上级部门不存在");
+
+                // 检查是否会形成循环
+                if (await HasCircularReference(input.Id, input.ParentId.Value))
+                    throw new HbtException("不能选择子部门作为上级部门");
+            }
+
+            // 4.更新部门
+            input.Adapt(dept);
+            var result = await _deptRepository.UpdateAsync(dept);
+            return result > 0;
+        }
+
+        /// <summary>
+        /// 删除部门
+        /// </summary>
+        public async Task<bool> DeleteAsync(long id)
+        {
+            // 1.检查是否存在子部门
+            var hasChildren = await _deptRepository.AsQueryable()
+                .AnyAsync(d => d.ParentId == id);
+            if (hasChildren)
+                throw new HbtException("存在子部门，无法删除");
+
+            // 2.删除部门
+            var result = await _deptRepository.DeleteAsync(id);
+            return result > 0;
+        }
+
+        /// <summary>
+        /// 批量删除部门
+        /// </summary>
+        public async Task<bool> BatchDeleteAsync(List<long> ids)
+        {
+            // 1.检查是否存在子部门
+            var hasChildren = await _deptRepository.AsQueryable()
+                .AnyAsync(d => ids.Contains(d.ParentId ?? 0));
+            if (hasChildren)
+                throw new HbtException("选中的部门中存在子部门，无法删除");
+
+            // 2.批量删除
+            Expression<Func<HbtDept, bool>> condition = d => ids.Contains(d.Id);
+            var result = await _deptRepository.DeleteAsync(condition);
+            return result > 0;
+        }
+
+        /// <summary>
+        /// 导入部门
+        /// </summary>
+        public async Task<string> ImportAsync(Stream fileStream)
+        {
+            // 1.从Excel导入数据
+            var depts = await HbtExcelHelper.ImportAsync<HbtDeptImportDto>(fileStream);
+            if (!depts.Any())
+                return "导入数据为空";
+
+            // 2.获取所有部门
+            var allDepts = await _deptRepository.AsQueryable().ToListAsync();
+            var deptDict = allDepts.ToDictionary(d => d.DeptName);
+
+            // 3.转换为实体
+            var entities = new List<HbtDept>();
+            foreach (var dto in depts)
+            {
+                var dept = dto.Adapt<HbtDept>();
+
+                // 设置父部门ID
+                if (!string.IsNullOrEmpty(dto.ParentDeptName))
+                {
+                    if (deptDict.TryGetValue(dto.ParentDeptName, out var parent))
+                    {
+                        dept.ParentId = parent.Id;
+                    }
+                    else
+                    {
+                        throw new HbtException($"上级部门[{dto.ParentDeptName}]不存在");
+                    }
+                }
+
+                // 设置状态
+                if (dto.Status.Equals("正常", StringComparison.OrdinalIgnoreCase))
+                    dept.Status = HbtStatus.Normal;
+                else if (dto.Status.Equals("停用", StringComparison.OrdinalIgnoreCase))
+                    dept.Status = HbtStatus.Disabled;
+                else
+                    throw new HbtException(string.Format("状态[{0}]不正确，只能是\"正常\"或\"停用\"", dto.Status));
+
+                entities.Add(dept);
+            }
+
+            // 4.批量插入
+            var result = await _deptRepository.InsertRangeAsync(entities);
+            return $"成功导入{depts.Count}条数据";
+        }
+
+        /// <summary>
+        /// 导出部门
+        /// </summary>
+        public async Task<byte[]> ExportAsync(HbtDeptQueryDto query)
+        {
+            // 1.构建查询条件
+            var predicate = Expressionable.Create<HbtDept>();
+            
+            if (!string.IsNullOrEmpty(query.DeptName))
+                predicate.And(d => d.DeptName.Contains(query.DeptName));
+                
+            if (query.Status.HasValue)
+                predicate.And(d => d.Status == query.Status.Value);
+
+            // 2.查询数据
+            var depts = await _deptRepository.AsQueryable()
+                .Where(predicate.ToExpression())
+                .OrderBy(d => d.OrderNum)
+                .ToListAsync();
+
+            // 3.转换并导出
+            var exportDtos = depts.Adapt<List<HbtDeptExportDto>>();
+            return await HbtExcelHelper.ExportAsync(exportDtos, "部门数据");
+        }
+
+        /// <summary>
+        /// 下载导入模板
+        /// </summary>
+        public async Task<byte[]> GetImportTemplateAsync()
+        {
+            return await HbtExcelHelper.GenerateTemplateAsync<HbtDeptTemplateDto>("部门导入模板");
+        }
+
+        /// <summary>
+        /// 更新部门状态
+        /// </summary>
+        public async Task<bool> UpdateStatusAsync(HbtDeptStatusDto input)
+        {
+            var dept = await _deptRepository.GetByIdAsync(input.Id);
+            if (dept == null)
+                throw new HbtException("部门不存在");
+
+            dept.Status = input.Status;
+            var result = await _deptRepository.UpdateAsync(dept);
+            return result > 0;
+        }
+
+        /// <summary>
+        /// 构建部门树
+        /// </summary>
+        private void BuildDeptTree(HbtDeptDto parent, List<HbtDeptDto> depts)
+        {
+            parent.Children = depts
+                .Where(d => d.ParentId == parent.Id)
+                .OrderBy(d => d.OrderNum)
+                .ToList();
+
+            foreach (var child in parent.Children)
+            {
+                BuildDeptTree(child, depts);
+            }
+        }
+
+        /// <summary>
+        /// 检查是否存在循环引用
+        /// </summary>
+        private async Task<bool> HasCircularReference(long deptId, long parentId)
+        {
+            var parent = await _deptRepository.GetByIdAsync(parentId);
+            while (parent != null)
+            {
+                if (parent.Id == deptId)
+                    return true;
+
+                if (!parent.ParentId.HasValue)
+                    break;
+
+                parent = await _deptRepository.GetByIdAsync(parent.ParentId.Value);
+            }
+
+            return false;
+        }
+    }
+} 

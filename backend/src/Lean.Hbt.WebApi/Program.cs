@@ -2,11 +2,14 @@ using NLog;
 using NLog.Web;
 using Lean.Hbt.Infrastructure.Extensions;
 using Lean.Hbt.Infrastructure.Swagger;
-using Lean.Hbt.Infrastructure.Persistence;
+using Lean.Hbt.Infrastructure.Data.Contexts;
+using Lean.Hbt.Infrastructure.Data.Seeds;
 using Lean.Hbt.WebApi.Middlewares;
+using Lean.Hbt.WebApi.Extensions;
 using Microsoft.Extensions.Options;
 using Lean.Hbt.Common.Options;
 using Lean.Hbt.Common.Helpers;
+using Newtonsoft.Json;
 
 var logger = LogManager.Setup()
                       .LoadConfigurationFromFile("nlog.config")
@@ -20,6 +23,14 @@ try
     // 添加NLog支持
     builder.Logging.ClearProviders();
     builder.Host.UseNLog();
+
+    // 配置 JSON 序列化
+    JsonConvert.DefaultSettings = () => new JsonSerializerSettings
+    {
+        ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+        NullValueHandling = NullValueHandling.Ignore,
+        DateFormatString = "yyyy-MM-dd HH:mm:ss"
+    };
 
     // 添加控制器服务
     builder.Services.AddControllers();
@@ -64,10 +75,13 @@ try
     app.UseAuthentication();
     app.UseAuthorization();
 
+    // 使用租户中间件
+    app.UseHbtTenant();
+
     app.MapControllers();
 
     // 配置Excel帮助类
-    var excelOptions = builder.Services.BuildServiceProvider().GetRequiredService<IOptions<HbtExcelOptions>>();
+    var excelOptions = app.Services.GetRequiredService<IOptions<HbtExcelOptions>>();
     HbtExcelHelper.Configure(excelOptions);
 
     logger.Info("应用程序启动成功");

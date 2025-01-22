@@ -24,10 +24,10 @@ public class HbtDbOptions
     /// <summary>
     /// 连接字符串
     /// </summary>
-    public string ConnectionString { get; set; }
+    public string? ConnectionString { get; set; }
 
     /// <summary>
     /// 当前租户ID
     /// </summary>
     public long TenantId { get; set; }
-} 
+}

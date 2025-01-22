@@ -9,10 +9,10 @@
 
 using System.Text.RegularExpressions;
 using Lean.Hbt.Common.Options;
+using Lean.Hbt.Common.Utils;
 using Lean.Hbt.Domain.Entities.Identity;
 using Lean.Hbt.Domain.IServices;
-using Lean.Hbt.Infrastructure.Caching;
-using Lean.Hbt.Infrastructure.Persistence;
+using Lean.Hbt.Infrastructure.Data.Contexts;
 using Microsoft.Extensions.Options;
 
 namespace Lean.Hbt.Infrastructure.Security
@@ -26,6 +26,12 @@ namespace Lean.Hbt.Infrastructure.Security
         private readonly IHbtRedisCache _cache;
         private readonly HbtDbContext _context;
 
+        /// <summary>
+        /// 构造函数
+        /// </summary>
+        /// <param name="options"></param>
+        /// <param name="cache"></param>
+        /// <param name="context"></param>
         public HbtPasswordPolicy(IOptions<HbtPasswordPolicyOptions> options, IHbtRedisCache cache, HbtDbContext context)
         {
             _options = options.Value;
@@ -33,6 +39,11 @@ namespace Lean.Hbt.Infrastructure.Security
             _context = context;
         }
 
+        /// <summary>
+        /// 验证密码复杂度
+        /// </summary>
+        /// <param name="password"></param>
+        /// <returns></returns>
         public bool ValidatePasswordComplexity(string password)
         {
             if (string.IsNullOrEmpty(password))
@@ -56,23 +67,43 @@ namespace Lean.Hbt.Infrastructure.Security
             return true;
         }
 
-        public async Task<bool> ValidatePasswordHistoryAsync(long userId, string newPassword)
+        /// <summary>
+        /// 验证密码历史
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="password"></param>
+        /// <returns></returns>
+        public async Task<bool> ValidatePasswordHistoryAsync(long userId, string password)
         {
             if (!_options.EnablePasswordHistory)
                 return true;
 
             var key = $"password:history:{userId}";
-            var history = await _cache.GetAsync<List<string>>(key) ?? new List<string>();
+            var history = await _cache.GetAsync<List<string>>(key);
+            if (history == null) return true;
 
-            foreach (var oldPassword in history)
+            foreach (var oldPasswordHash in history)
             {
-                if (BCrypt.Net.BCrypt.Verify(newPassword, oldPassword))
+                if (string.IsNullOrEmpty(oldPasswordHash)) continue;
+
+                var parts = oldPasswordHash.Split('|');
+                if (parts.Length != 3) continue;
+
+                if (!int.TryParse(parts[2], out var iterations)) continue;
+
+                if (HbtPasswordUtils.VerifyHash(password, parts[0], parts[1], iterations))
                     return false;
             }
 
             return true;
         }
 
+        /// <summary>
+        /// 记录密码历史
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="password"></param>
+        /// <returns></returns>
         public async Task RecordPasswordHistoryAsync(long userId, string password)
         {
             if (!_options.EnablePasswordHistory)
@@ -81,8 +112,9 @@ namespace Lean.Hbt.Infrastructure.Security
             var key = $"password:history:{userId}";
             var history = await _cache.GetAsync<List<string>>(key) ?? new List<string>();
 
-            var hashedPassword = BCrypt.Net.BCrypt.HashPassword(password);
-            history.Insert(0, hashedPassword);
+            var (hash, salt, iterations) = HbtPasswordUtils.CreateHash(password);
+            var hashString = $"{hash}|{salt}|{iterations}";
+            history.Insert(0, hashString);
 
             if (history.Count > _options.PasswordHistoryCount)
                 history.RemoveAt(history.Count - 1);
@@ -99,6 +131,11 @@ namespace Lean.Hbt.Infrastructure.Security
             }
         }
 
+        /// <summary>
+        /// 验证密码过期
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
         public async Task<bool> ValidatePasswordExpirationAsync(long userId)
         {
             if (!_options.EnablePasswordExpiration)
@@ -113,6 +150,11 @@ namespace Lean.Hbt.Infrastructure.Security
             return daysSinceLastChange > _options.PasswordExpirationDays;
         }
 
+        /// <summary>
+        /// 密码过期天数
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
         public async Task<int> GetPasswordExpirationDaysAsync(long userId)
         {
             if (!_options.EnablePasswordExpiration)

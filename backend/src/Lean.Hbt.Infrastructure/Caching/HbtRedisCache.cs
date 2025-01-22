@@ -9,6 +9,8 @@
 
 using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
+using StackExchange.Redis;
+using Lean.Hbt.Domain.IServices;
 
 namespace Lean.Hbt.Infrastructure.Caching
 {
@@ -27,12 +29,19 @@ namespace Lean.Hbt.Infrastructure.Caching
         private readonly IDistributedCache _cache;
 
         /// <summary>
+        /// 连接到Redis服务器
+        /// </summary>
+        private readonly ConnectionMultiplexer _connection;
+
+        /// <summary>
         /// 构造函数
         /// </summary>
         /// <param name="cache">分布式缓存接口</param>
-        public HbtRedisCache(IDistributedCache cache)
+        /// <param name="connection">连接到Redis服务器</param>
+        public HbtRedisCache(IDistributedCache cache, ConnectionMultiplexer connection)
         {
             _cache = cache;
+            _connection = connection;
         }
 
         /// <summary>
@@ -90,6 +99,18 @@ namespace Lean.Hbt.Infrastructure.Caching
         public async Task<bool> ExistsAsync(string key)
         {
             return await GetAsync<string>(key) != null;
+        }
+
+        /// <summary>
+        /// 根据模式搜索键
+        /// </summary>
+        /// <param name="pattern">搜索模式</param>
+        /// <returns>匹配的键列表</returns>
+        public async Task<List<string>> SearchKeysAsync(string pattern)
+        {
+            var server = _connection.GetServer(_connection.GetEndPoints().First());
+            var keys = server.Keys(pattern: pattern);
+            return keys.Select(k => k.ToString()).ToList();
         }
     }
 } 

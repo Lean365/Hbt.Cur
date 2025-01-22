@@ -27,7 +27,7 @@ namespace Lean.Hbt.Common.Options
         /// <summary>
         /// 是否允许多端登录
         /// </summary>
-        public bool AllowMultipleLogin { get; set; } = false;
+        public bool AllowMultipleLogin { get; set; } = true;
 
         /// <summary>
         /// 是否启用登录限制

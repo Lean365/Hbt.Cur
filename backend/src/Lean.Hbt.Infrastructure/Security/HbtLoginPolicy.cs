@@ -9,8 +9,9 @@
 
 using Lean.Hbt.Common.Options;
 using Lean.Hbt.Domain.IServices;
-using Lean.Hbt.Infrastructure.Caching;
 using Microsoft.Extensions.Options;
+using Lean.Hbt.Domain.Repositories;
+using Lean.Hbt.Domain.Entities.Admin;
 
 namespace Lean.Hbt.Infrastructure.Security
 {
@@ -19,22 +20,64 @@ namespace Lean.Hbt.Infrastructure.Security
     /// </summary>
     public class HbtLoginPolicy : IHbtLoginPolicy
     {
-        private readonly HbtLoginPolicyOptions _options;
+        private readonly HbtLoginPolicyOptions _defaultOptions;
         private readonly IHbtRedisCache _cache;
+        private readonly IHbtRepository<HbtSysConfig> _configRepository;
 
-        public HbtLoginPolicy(IOptions<HbtLoginPolicyOptions> options, IHbtRedisCache cache)
+        /// <summary>
+        /// 构造函数
+        /// </summary>
+        /// <param name="options"></param>
+        /// <param name="cache"></param>
+        /// <param name="configRepository"></param>
+        public HbtLoginPolicy(
+            IOptions<HbtLoginPolicyOptions> options, 
+            IHbtRedisCache cache,
+            IHbtRepository<HbtSysConfig> configRepository)
         {
-            _options = options.Value;
+            _defaultOptions = options.Value;
             _cache = cache;
+            _configRepository = configRepository;
         }
 
+        private async Task<HbtLoginPolicyOptions> GetOptionsAsync()
+        {
+            var options = new HbtLoginPolicyOptions
+            {
+                MaxFailedAttempts = _defaultOptions.MaxFailedAttempts,
+                LockoutMinutes = _defaultOptions.LockoutMinutes,
+                AllowMultipleLogin = _defaultOptions.AllowMultipleLogin,
+                EnableLoginRestriction = _defaultOptions.EnableLoginRestriction
+            };
+
+            var configs = await _configRepository.GetListAsync();
+            foreach (var config in configs)
+            {
+                switch (config.ConfigKey)
+                {
+                    case "sso.login.allowMultipleLogin":
+                        if (bool.TryParse(config.ConfigValue, out bool allowMultipleLogin))
+                            options.AllowMultipleLogin = allowMultipleLogin;
+                        break;
+                }
+            }
+
+            return options;
+        }
+
+        /// <summary>
+        /// 验证登录尝试
+        /// </summary>
+        /// <param name="userName"></param>
+        /// <returns></returns>
         public async Task<bool> ValidateLoginAttemptAsync(string userName)
         {
-            if (!_options.EnableLoginRestriction)
+            var options = await GetOptionsAsync();
+            if (!options.EnableLoginRestriction)
                 return true;
 
             var attempts = await GetFailedAttemptsAsync(userName);
-            if (attempts >= _options.MaxFailedAttempts)
+            if (attempts >= options.MaxFailedAttempts)
             {
                 var remainingMinutes = await GetLockoutRemainingMinutesAsync(userName);
                 return remainingMinutes <= 0;
@@ -43,40 +86,62 @@ namespace Lean.Hbt.Infrastructure.Security
             return true;
         }
 
+        /// <summary>
+        /// 记录登录失败
+        /// </summary>
+        /// <param name="userName"></param>
+        /// <returns></returns>
         public async Task RecordFailedLoginAsync(string userName)
         {
-            if (!_options.EnableLoginRestriction)
+            var options = await GetOptionsAsync();
+            if (!options.EnableLoginRestriction)
                 return;
 
             var key = $"login:failed:{userName}";
             var attempts = await GetFailedAttemptsAsync(userName);
             attempts++;
 
-            if (attempts >= _options.MaxFailedAttempts)
+            if (attempts >= options.MaxFailedAttempts)
             {
                 await LockAccountAsync(userName);
             }
             else
             {
-                await _cache.SetAsync(key, attempts, TimeSpan.FromMinutes(_options.LockoutMinutes));
+                await _cache.SetAsync(key, attempts, TimeSpan.FromMinutes(options.LockoutMinutes));
             }
         }
 
+        /// <summary>
+        /// 记录登录成功
+        /// </summary>
+        /// <param name="userName"></param>
+        /// <returns></returns>
         public async Task RecordSuccessfulLoginAsync(string userName)
         {
             var key = $"login:failed:{userName}";
             await _cache.RemoveAsync(key);
         }
 
+        /// <summary>
+        /// 获取剩余尝试次数
+        /// </summary>
+        /// <param name="userName"></param>
+        /// <returns></returns>
         public async Task<int> GetRemainingAttemptsAsync(string userName)
         {
-            if (!_options.EnableLoginRestriction)
+            var options = await GetOptionsAsync();
+            if (!options.EnableLoginRestriction)
                 return -1;
 
             var attempts = await GetFailedAttemptsAsync(userName);
-            return Math.Max(0, _options.MaxFailedAttempts - attempts);
+            return Math.Max(0, options.MaxFailedAttempts - attempts);
         }
 
+        /// <summary>
+        /// 获取锁定时间
+        /// </summary>
+        /// <param name="userName"></param>
+        /// <returns></returns>
         public async Task<int> GetLockoutRemainingMinutesAsync(string userName)
         {
             var key = $"login:locked:{userName}";
@@ -86,20 +151,31 @@ namespace Lean.Hbt.Infrastructure.Security
                 return 0;
             }
 
-            var remainingMinutes = (int)(lockTime.Value.AddMinutes(_options.LockoutMinutes) - DateTime.Now).TotalMinutes;
+            var options = await GetOptionsAsync();
+            var remainingMinutes = (int)(lockTime.Value.AddMinutes(options.LockoutMinutes) - DateTime.Now).TotalMinutes;
             return remainingMinutes > 0 ? remainingMinutes : 0;
         }
 
+        /// <summary>
+        /// 获取失败尝试次数
+        /// </summary>
+        /// <param name="userName"></param>
+        /// <returns></returns>
         private async Task<int> GetFailedAttemptsAsync(string userName)
         {
             var key = $"login:failed:{userName}";
             return await _cache.GetAsync<int>(key);
         }
 
+        /// <summary>
+        /// 锁定账户
+        /// </summary>
+        /// <param name="userName"></param>
+        /// <returns></returns>
         private async Task LockAccountAsync(string userName)
         {
             var key = $"login:locked:{userName}";
-            await _cache.SetAsync(key, DateTime.Now, TimeSpan.FromMinutes(_options.LockoutMinutes));
+            await _cache.SetAsync(key, DateTime.Now, TimeSpan.FromMinutes(await GetLockoutRemainingMinutesAsync(userName)));
         }
     }
 }

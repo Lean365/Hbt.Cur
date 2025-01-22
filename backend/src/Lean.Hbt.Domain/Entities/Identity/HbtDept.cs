@@ -1,3 +1,5 @@
+#nullable enable
+
 //===================================================================
 // 项目名 : Lean.Hbt
 // 文件名 : HbtDept.cs
@@ -28,7 +30,7 @@ namespace Lean.Hbt.Domain.Entities.Identity
         /// 部门名称
         /// </summary>
         [SugarColumn(ColumnName = "dept_name", ColumnDescription = "部门名称", Length = 50, ColumnDataType = "nvarchar", IsNullable = false)]
-        public string DeptName { get; set; }
+        public string DeptName { get; set; } = null!;
 
         /// <summary>
         /// 父部门ID
@@ -46,25 +48,25 @@ namespace Lean.Hbt.Domain.Entities.Identity
         /// 负责人
         /// </summary>
         [SugarColumn(ColumnName = "leader", ColumnDescription = "负责人", Length = 50, ColumnDataType = "nvarchar", IsNullable = true)]
-        public string Leader { get; set; }
+        public string? Leader { get; set; }
 
         /// <summary>
         /// 联系电话
         /// </summary>
         [SugarColumn(ColumnName = "phone", ColumnDescription = "联系电话", Length = 20, ColumnDataType = "nvarchar", IsNullable = true)]
-        public string Phone { get; set; }
+        public string? Phone { get; set; }
 
         /// <summary>
         /// 邮箱
         /// </summary>
         [SugarColumn(ColumnName = "email", ColumnDescription = "邮箱", Length = 100, ColumnDataType = "nvarchar", IsNullable = true)]
-        public string Email { get; set; }
+        public string? Email { get; set; }
 
         /// <summary>
         /// 状态（0正常 1停用）
         /// </summary>
         [SugarColumn(ColumnName = "status", ColumnDescription = "状态（0正常 1停用）", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
-        public HbtStatus Status { get; set; }
+        public HbtStatus Status { get; set; } = HbtStatus.Normal;
 
         /// <summary>
         /// 租户ID
@@ -76,30 +78,30 @@ namespace Lean.Hbt.Domain.Entities.Identity
         /// 租户导航属性
         /// </summary>
         [Navigate(NavigateType.OneToOne, nameof(TenantId))]
-        public HbtTenant Tenant { get; set; }
+        public HbtTenant? Tenant { get; set; }
 
         /// <summary>
         /// 角色部门关联
         /// </summary>
         [Navigate(NavigateType.OneToMany, nameof(HbtRoleDept.DeptId))]
-        public List<HbtRoleDept> RoleDepts { get; set; }
+        public List<HbtRoleDept>? RoleDepts { get; set; }
 
         /// <summary>
         /// 用户部门关联
         /// </summary>
         [Navigate(NavigateType.OneToMany, nameof(HbtUserDept.DeptId))]
-        public List<HbtUserDept> UserDepts { get; set; }
+        public List<HbtUserDept>? UserDepts { get; set; }
 
         /// <summary>
         /// 父部门导航属性
         /// </summary>
         [Navigate(NavigateType.OneToOne, nameof(ParentId))]
-        public HbtDept Parent { get; set; }
+        public HbtDept? Parent { get; set; }
 
         /// <summary>
         /// 子部门导航属性
         /// </summary>
         [Navigate(NavigateType.OneToMany, nameof(ParentId))]
-        public List<HbtDept> Children { get; set; }
+        public List<HbtDept>? Children { get; set; }
     }
 }

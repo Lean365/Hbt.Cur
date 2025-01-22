@@ -4,6 +4,471 @@
         <name>Lean.Hbt.WebApi</name>
     </assembly>
     <members>
+        <member name="T:Lean.Hbt.WebApi.Controllers.Admin.HbtDictDataController">
+            <summary>
+            字典数据控制器
+            </summary>
+            <remarks>
+            创建者: Lean365
+            创建时间: 2024-01-17
+            </remarks>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Admin.HbtDictDataController.#ctor(Lean.Hbt.Application.Services.Admin.IHbtDictDataService)">
+            <summary>
+            构造函数
+            </summary>
+            <param name="dictDataService">字典数据服务</param>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Admin.HbtDictDataController.GetPagedListAsync(Lean.Hbt.Application.Dtos.Admin.HbtDictDataQueryDto)">
+            <summary>
+            获取字典数据分页列表
+            </summary>
+            <param name="query">查询条件</param>
+            <returns>字典数据分页列表</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Admin.HbtDictDataController.GetAsync(System.Int64)">
+            <summary>
+            获取字典数据详情
+            </summary>
+            <param name="dictDataId">字典数据ID</param>
+            <returns>字典数据详情</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Admin.HbtDictDataController.InsertAsync(Lean.Hbt.Application.Dtos.Admin.HbtDictDataCreateDto)">
+            <summary>
+            创建字典数据
+            </summary>
+            <param name="input">创建对象</param>
+            <returns>字典数据ID</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Admin.HbtDictDataController.UpdateAsync(Lean.Hbt.Application.Dtos.Admin.HbtDictDataUpdateDto)">
+            <summary>
+            更新字典数据
+            </summary>
+            <param name="input">更新对象</param>
+            <returns>是否成功</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Admin.HbtDictDataController.DeleteAsync(System.Int64)">
+            <summary>
+            删除字典数据
+            </summary>
+            <param name="dictDataId">字典数据ID</param>
+            <returns>是否成功</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Admin.HbtDictDataController.BatchDeleteAsync(System.Int64[])">
+            <summary>
+            批量删除字典数据
+            </summary>
+            <param name="dictDataIds">字典数据ID集合</param>
+            <returns>是否成功</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Admin.HbtDictDataController.ImportAsync(System.Collections.Generic.List{Lean.Hbt.Application.Dtos.Admin.HbtDictDataImportDto})">
+            <summary>
+            导入字典数据
+            </summary>
+            <param name="dictDatas">字典数据列表</param>
+            <returns>导入结果</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Admin.HbtDictDataController.ExportAsync(Lean.Hbt.Application.Dtos.Admin.HbtDictDataQueryDto)">
+            <summary>
+            导出字典数据
+            </summary>
+            <param name="query">查询条件</param>
+            <returns>导出数据列表</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Admin.HbtDictDataController.GetTemplateAsync">
+            <summary>
+            获取导入模板
+            </summary>
+            <returns>模板数据</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Admin.HbtDictDataController.UpdateStatusAsync(System.Int64,Lean.Hbt.Common.Enums.HbtStatus)">
+            <summary>
+            更新字典数据状态
+            </summary>
+            <param name="dictDataId">字典数据ID</param>
+            <param name="status">状态</param>
+            <returns>是否成功</returns>
+        </member>
+        <member name="T:Lean.Hbt.WebApi.Controllers.Admin.HbtDictTypeController">
+            <summary>
+            字典类型控制器
+            </summary>
+            <remarks>
+            创建者: Lean365
+            创建时间: 2024-01-17
+            </remarks>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Admin.HbtDictTypeController.#ctor(Lean.Hbt.Application.Services.Admin.IHbtDictTypeService)">
+            <summary>
+            构造函数
+            </summary>
+            <param name="dictTypeService">字典类型服务</param>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Admin.HbtDictTypeController.GetPagedListAsync(Lean.Hbt.Application.Dtos.Admin.HbtDictTypeQueryDto)">
+            <summary>
+            获取字典类型分页列表
+            </summary>
+            <param name="query">查询条件</param>
+            <returns>字典类型分页列表</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Admin.HbtDictTypeController.GetAsync(System.Int64)">
+            <summary>
+            获取字典类型详情
+            </summary>
+            <param name="dictTypeId">字典类型ID</param>
+            <returns>字典类型详情</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Admin.HbtDictTypeController.InsertAsync(Lean.Hbt.Application.Dtos.Admin.HbtDictTypeCreateDto)">
+            <summary>
+            创建字典类型
+            </summary>
+            <param name="input">创建对象</param>
+            <returns>字典类型ID</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Admin.HbtDictTypeController.UpdateAsync(Lean.Hbt.Application.Dtos.Admin.HbtDictTypeUpdateDto)">
+            <summary>
+            更新字典类型
+            </summary>
+            <param name="input">更新对象</param>
+            <returns>是否成功</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Admin.HbtDictTypeController.DeleteAsync(System.Int64)">
+            <summary>
+            删除字典类型
+            </summary>
+            <param name="dictTypeId">字典类型ID</param>
+            <returns>是否成功</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Admin.HbtDictTypeController.BatchDeleteAsync(System.Int64[])">
+            <summary>
+            批量删除字典类型
+            </summary>
+            <param name="dictTypeIds">字典类型ID集合</param>
+            <returns>是否成功</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Admin.HbtDictTypeController.ImportAsync(System.Collections.Generic.List{Lean.Hbt.Application.Dtos.Admin.HbtDictTypeImportDto})">
+            <summary>
+            导入字典类型数据
+            </summary>
+            <param name="dictTypes">字典类型数据列表</param>
+            <returns>导入结果</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Admin.HbtDictTypeController.ExportAsync(Lean.Hbt.Application.Dtos.Admin.HbtDictTypeQueryDto)">
+            <summary>
+            导出字典类型数据
+            </summary>
+            <param name="query">查询条件</param>
+            <returns>导出数据列表</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Admin.HbtDictTypeController.GetTemplateAsync">
+            <summary>
+            获取导入模板
+            </summary>
+            <returns>模板数据</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Admin.HbtDictTypeController.UpdateStatusAsync(System.Int64,Lean.Hbt.Common.Enums.HbtStatus)">
+            <summary>
+            更新字典类型状态
+            </summary>
+            <param name="dictTypeId">字典类型ID</param>
+            <param name="status">状态</param>
+            <returns>是否成功</returns>
+        </member>
+        <member name="T:Lean.Hbt.WebApi.Controllers.Admin.HbtSysConfigController">
+            <summary>
+            系统配置控制器
+            </summary>
+            <remarks>
+            创建者: Lean365
+            创建时间: 2024-01-20
+            </remarks>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Admin.HbtSysConfigController.#ctor(Lean.Hbt.Application.Services.Admin.IHbtSysConfigService)">
+            <summary>
+            构造函数
+            </summary>
+            <param name="configService">系统配置服务</param>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Admin.HbtSysConfigController.GetPagedListAsync(Lean.Hbt.Application.Dtos.Admin.HbtSysConfigQueryDto)">
+            <summary>
+            获取系统配置分页列表
+            </summary>
+            <param name="query">查询条件</param>
+            <returns>系统配置分页列表</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Admin.HbtSysConfigController.GetAsync(System.Int64)">
+            <summary>
+            获取系统配置详情
+            </summary>
+            <param name="configId">配置ID</param>
+            <returns>系统配置详情</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Admin.HbtSysConfigController.InsertAsync(Lean.Hbt.Application.Dtos.Admin.HbtSysConfigCreateDto)">
+            <summary>
+            创建系统配置
+            </summary>
+            <param name="input">创建对象</param>
+            <returns>配置ID</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Admin.HbtSysConfigController.UpdateAsync(Lean.Hbt.Application.Dtos.Admin.HbtSysConfigUpdateDto)">
+            <summary>
+            更新系统配置
+            </summary>
+            <param name="input">更新对象</param>
+            <returns>是否成功</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Admin.HbtSysConfigController.DeleteAsync(System.Int64)">
+            <summary>
+            删除系统配置
+            </summary>
+            <param name="configId">配置ID</param>
+            <returns>是否成功</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Admin.HbtSysConfigController.BatchDeleteAsync(System.Int64[])">
+            <summary>
+            批量删除系统配置
+            </summary>
+            <param name="configIds">配置ID集合</param>
+            <returns>是否成功</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Admin.HbtSysConfigController.ImportAsync(System.Collections.Generic.List{Lean.Hbt.Application.Dtos.Admin.HbtSysConfigImportDto})">
+            <summary>
+            导入系统配置数据
+            </summary>
+            <param name="configs">系统配置数据列表</param>
+            <returns>导入结果</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Admin.HbtSysConfigController.ExportAsync(Lean.Hbt.Application.Dtos.Admin.HbtSysConfigQueryDto)">
+            <summary>
+            导出系统配置数据
+            </summary>
+            <param name="query">查询条件</param>
+            <returns>导出数据列表</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Admin.HbtSysConfigController.GetTemplateAsync">
+            <summary>
+            获取导入模板
+            </summary>
+            <returns>模板数据</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Admin.HbtSysConfigController.UpdateStatusAsync(System.Int64,Lean.Hbt.Common.Enums.HbtStatus)">
+            <summary>
+            更新系统配置状态
+            </summary>
+            <param name="configId">配置ID</param>
+            <param name="status">状态</param>
+            <returns>是否成功</returns>
+        </member>
+        <member name="T:Lean.Hbt.WebApi.Controllers.Audit.HbtAuditLogController">
+            <summary>
+            审计日志控制器
+            </summary>
+            <remarks>
+            创建者: Lean365
+            创建时间: 2024-01-20
+            </remarks>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Audit.HbtAuditLogController.#ctor(Lean.Hbt.Application.Services.Audit.IHbtAuditsLogService)">
+            <summary>
+            构造函数
+            </summary>
+            <param name="auditLogService">审计日志服务</param>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Audit.HbtAuditLogController.GetPagedListAsync(Lean.Hbt.Application.Dtos.Audit.HbtAuditLogQueryDto)">
+            <summary>
+            获取审计日志分页列表
+            </summary>
+            <param name="query">查询条件</param>
+            <returns>审计日志分页列表</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Audit.HbtAuditLogController.GetAsync(System.Int64)">
+            <summary>
+            获取审计日志详情
+            </summary>
+            <param name="logId">日志ID</param>
+            <returns>审计日志详情</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Audit.HbtAuditLogController.ExportAsync(Lean.Hbt.Application.Dtos.Audit.HbtAuditLogQueryDto)">
+            <summary>
+            导出审计日志数据
+            </summary>
+            <param name="query">查询条件</param>
+            <returns>导出的Excel文件</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Audit.HbtAuditLogController.ClearAsync">
+            <summary>
+            清空审计日志
+            </summary>
+            <returns>是否成功</returns>
+        </member>
+        <member name="T:Lean.Hbt.WebApi.Controllers.Audit.HbtDbDiffLogController">
+            <summary>
+            数据库差异日志控制器
+            </summary>
+            <remarks>
+            创建者: Lean365
+            创建时间: 2024-01-20
+            </remarks>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Audit.HbtDbDiffLogController.#ctor(Lean.Hbt.Application.Services.Audit.IHbtDbDiffLogService)">
+            <summary>
+            构造函数
+            </summary>
+            <param name="dbDiffLogService">数据库差异日志服务</param>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Audit.HbtDbDiffLogController.GetPagedListAsync(Lean.Hbt.Application.Dtos.Audit.HbtDbDiffLogQueryDto)">
+            <summary>
+            获取数据库差异日志分页列表
+            </summary>
+            <param name="query">查询条件</param>
+            <returns>数据库差异日志分页列表</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Audit.HbtDbDiffLogController.GetAsync(System.Int64)">
+            <summary>
+            获取数据库差异日志详情
+            </summary>
+            <param name="logId">日志ID</param>
+            <returns>数据库差异日志详情</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Audit.HbtDbDiffLogController.ExportAsync(Lean.Hbt.Application.Dtos.Audit.HbtDbDiffLogQueryDto)">
+            <summary>
+            导出数据库差异日志数据
+            </summary>
+            <param name="query">查询条件</param>
+            <returns>导出的Excel文件</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Audit.HbtDbDiffLogController.ClearAsync">
+            <summary>
+            清空数据库差异日志
+            </summary>
+            <returns>是否成功</returns>
+        </member>
+        <member name="T:Lean.Hbt.WebApi.Controllers.Audit.HbtExceptionLogController">
+            <summary>
+            异常日志控制器
+            </summary>
+            <remarks>
+            创建者: Lean365
+            创建时间: 2024-01-20
+            </remarks>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Audit.HbtExceptionLogController.#ctor(Lean.Hbt.Application.Services.Audit.IHbtExceptionLogService)">
+            <summary>
+            构造函数
+            </summary>
+            <param name="exceptionLogService">异常日志服务</param>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Audit.HbtExceptionLogController.GetPagedListAsync(Lean.Hbt.Application.Dtos.Audit.HbtExceptionLogQueryDto)">
+            <summary>
+            获取异常日志分页列表
+            </summary>
+            <param name="query">查询条件</param>
+            <returns>异常日志分页列表</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Audit.HbtExceptionLogController.GetAsync(System.Int64)">
+            <summary>
+            获取异常日志详情
+            </summary>
+            <param name="logId">日志ID</param>
+            <returns>异常日志详情</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Audit.HbtExceptionLogController.ExportAsync(Lean.Hbt.Application.Dtos.Audit.HbtExceptionLogQueryDto)">
+            <summary>
+            导出异常日志数据
+            </summary>
+            <param name="query">查询条件</param>
+            <returns>导出的Excel文件</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Audit.HbtExceptionLogController.ClearAsync">
+            <summary>
+            清空异常日志
+            </summary>
+            <returns>是否成功</returns>
+        </member>
+        <member name="T:Lean.Hbt.WebApi.Controllers.Audit.HbtLoginLogController">
+            <summary>
+            登录日志控制器
+            </summary>
+            <remarks>
+            创建者: Lean365
+            创建时间: 2024-01-20
+            </remarks>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Audit.HbtLoginLogController.#ctor(Lean.Hbt.Application.Services.Audit.IHbtLoginLogService)">
+            <summary>
+            构造函数
+            </summary>
+            <param name="loginLogService">登录日志服务</param>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Audit.HbtLoginLogController.GetPagedListAsync(Lean.Hbt.Application.Dtos.Audit.HbtLoginLogQueryDto)">
+            <summary>
+            获取登录日志分页列表
+            </summary>
+            <param name="query">查询条件</param>
+            <returns>登录日志分页列表</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Audit.HbtLoginLogController.GetAsync(System.Int64)">
+            <summary>
+            获取登录日志详情
+            </summary>
+            <param name="logId">日志ID</param>
+            <returns>登录日志详情</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Audit.HbtLoginLogController.ExportAsync(Lean.Hbt.Application.Dtos.Audit.HbtLoginLogQueryDto)">
+            <summary>
+            导出登录日志数据
+            </summary>
+            <param name="query">查询条件</param>
+            <returns>导出的Excel文件</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Audit.HbtLoginLogController.ClearAsync">
+            <summary>
+            清空登录日志
+            </summary>
+            <returns>是否成功</returns>
+        </member>
+        <member name="T:Lean.Hbt.WebApi.Controllers.Audit.HbtOperLogController">
+            <summary>
+            操作日志控制器
+            </summary>
+            <remarks>
+            创建者: Lean365
+            创建时间: 2024-01-20
+            </remarks>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Audit.HbtOperLogController.#ctor(Lean.Hbt.Application.Services.Audit.IHbtOperLogService)">
+            <summary>
+            构造函数
+            </summary>
+            <param name="operLogService">操作日志服务</param>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Audit.HbtOperLogController.GetPagedListAsync(Lean.Hbt.Application.Dtos.Audit.HbtOperLogQueryDto)">
+            <summary>
+            获取操作日志分页列表
+            </summary>
+            <param name="query">查询条件</param>
+            <returns>操作日志分页列表</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Audit.HbtOperLogController.GetAsync(System.Int64)">
+            <summary>
+            获取操作日志详情
+            </summary>
+            <param name="logId">日志ID</param>
+            <returns>操作日志详情</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Audit.HbtOperLogController.ExportAsync(Lean.Hbt.Application.Dtos.Audit.HbtOperLogQueryDto)">
+            <summary>
+            导出操作日志数据
+            </summary>
+            <param name="query">查询条件</param>
+            <returns>导出的Excel文件</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Audit.HbtOperLogController.ClearAsync">
+            <summary>
+            清空操作日志
+            </summary>
+            <returns>是否成功</returns>
+        </member>
         <member name="T:Lean.Hbt.WebApi.Controllers.HbtBaseController">
             <summary>
             控制器基类
@@ -24,6 +489,367 @@
             <param name="message">错误消息</param>
             <param name="code">错误代码</param>
             <returns>操作结果</returns>
+        </member>
+        <member name="T:Lean.Hbt.WebApi.Controllers.Identity.HbtDeptController">
+            <summary>
+            部门控制器
+            </summary>
+            <remarks>
+            创建者: Lean365
+            创建时间: 2024-01-20
+            </remarks>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtDeptController.#ctor(Lean.Hbt.Application.Services.Identity.IHbtDeptService)">
+            <summary>
+            构造函数
+            </summary>
+            <param name="deptService">部门服务</param>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtDeptController.GetPagedListAsync(Lean.Hbt.Application.Dtos.Identity.HbtDeptQueryDto)">
+            <summary>
+            获取部门分页列表
+            </summary>
+            <param name="query">查询条件</param>
+            <returns>部门分页列表</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtDeptController.GetAsync(System.Int64)">
+            <summary>
+            获取部门详情
+            </summary>
+            <param name="deptId">部门ID</param>
+            <returns>部门详情</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtDeptController.InsertAsync(Lean.Hbt.Application.Dtos.Identity.HbtDeptCreateDto)">
+            <summary>
+            创建部门
+            </summary>
+            <param name="input">创建对象</param>
+            <returns>部门ID</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtDeptController.UpdateAsync(Lean.Hbt.Application.Dtos.Identity.HbtDeptUpdateDto)">
+            <summary>
+            更新部门
+            </summary>
+            <param name="input">更新对象</param>
+            <returns>是否成功</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtDeptController.DeleteAsync(System.Int64)">
+            <summary>
+            删除部门
+            </summary>
+            <param name="deptId">部门ID</param>
+            <returns>是否成功</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtDeptController.BatchDeleteAsync(System.Collections.Generic.List{System.Int64})">
+            <summary>
+            批量删除部门
+            </summary>
+            <param name="deptIds">部门ID集合</param>
+            <returns>是否成功</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtDeptController.ImportAsync(Microsoft.AspNetCore.Http.IFormFile)">
+            <summary>
+            导入部门数据
+            </summary>
+            <param name="file">Excel文件</param>
+            <returns>导入结果</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtDeptController.ExportAsync(Lean.Hbt.Application.Dtos.Identity.HbtDeptQueryDto)">
+            <summary>
+            导出部门数据
+            </summary>
+            <param name="query">查询条件</param>
+            <returns>导出的Excel文件</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtDeptController.GetImportTemplateAsync">
+            <summary>
+            获取导入模板
+            </summary>
+            <returns>导入模板Excel文件</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtDeptController.UpdateStatusAsync(System.Int64,Lean.Hbt.Common.Enums.HbtStatus)">
+            <summary>
+            更新部门状态
+            </summary>
+            <param name="deptId">部门ID</param>
+            <param name="status">状态</param>
+            <returns>是否成功</returns>
+        </member>
+        <member name="T:Lean.Hbt.WebApi.Controllers.Identity.HbtMenuController">
+            <summary>
+            菜单控制器
+            </summary>
+            <remarks>
+            创建者: Lean365
+            创建时间: 2024-01-20
+            </remarks>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtMenuController.#ctor(Lean.Hbt.Application.Services.Identity.IHbtMenuService)">
+            <summary>
+            构造函数
+            </summary>
+            <param name="menuService">菜单服务</param>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtMenuController.GetPagedListAsync(Lean.Hbt.Application.Dtos.Identity.HbtMenuQueryDto)">
+            <summary>
+            获取菜单分页列表
+            </summary>
+            <param name="query">查询条件</param>
+            <returns>菜单分页列表</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtMenuController.GetAsync(System.Int64)">
+            <summary>
+            获取菜单详情
+            </summary>
+            <param name="menuId">菜单ID</param>
+            <returns>菜单详情</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtMenuController.InsertAsync(Lean.Hbt.Application.Dtos.Identity.HbtMenuCreateDto)">
+            <summary>
+            创建菜单
+            </summary>
+            <param name="input">创建对象</param>
+            <returns>菜单ID</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtMenuController.UpdateAsync(Lean.Hbt.Application.Dtos.Identity.HbtMenuUpdateDto)">
+            <summary>
+            更新菜单
+            </summary>
+            <param name="input">更新对象</param>
+            <returns>是否成功</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtMenuController.DeleteAsync(System.Int64)">
+            <summary>
+            删除菜单
+            </summary>
+            <param name="menuId">菜单ID</param>
+            <returns>是否成功</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtMenuController.BatchDeleteAsync(System.Collections.Generic.List{System.Int64})">
+            <summary>
+            批量删除菜单
+            </summary>
+            <param name="menuIds">菜单ID集合</param>
+            <returns>是否成功</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtMenuController.ImportAsync(Microsoft.AspNetCore.Http.IFormFile)">
+            <summary>
+            导入菜单数据
+            </summary>
+            <param name="file">Excel文件</param>
+            <returns>导入结果</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtMenuController.ExportAsync(Lean.Hbt.Application.Dtos.Identity.HbtMenuQueryDto)">
+            <summary>
+            导出菜单数据
+            </summary>
+            <param name="query">查询条件</param>
+            <returns>导出的Excel文件</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtMenuController.GetImportTemplateAsync">
+            <summary>
+            获取导入模板
+            </summary>
+            <returns>导入模板Excel文件</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtMenuController.UpdateStatusAsync(System.Int64,Lean.Hbt.Common.Enums.HbtStatus)">
+            <summary>
+            更新菜单状态
+            </summary>
+            <param name="menuId">菜单ID</param>
+            <param name="status">状态</param>
+            <returns>是否成功</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtMenuController.UpdateOrderAsync(System.Int64,System.Int32)">
+            <summary>
+            更新菜单排序
+            </summary>
+            <param name="menuId">菜单ID</param>
+            <param name="orderNum">显示顺序</param>
+            <returns>是否成功</returns>
+        </member>
+        <member name="T:Lean.Hbt.WebApi.Controllers.Identity.HbtOAuthController">
+            <summary>
+            OAuth认证控制器
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtOAuthController.#ctor(Lean.Hbt.Domain.Services.IHbtOAuthService,Lean.Hbt.Domain.Services.IHbtSessionManager,Lean.Hbt.Domain.Repositories.IHbtRepository{Lean.Hbt.Domain.Entities.Identity.HbtUser})">
+            <summary>
+            构造函数
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtOAuthController.Authorize(System.String)">
+            <summary>
+            获取OAuth授权地址
+            </summary>
+            <param name="provider">OAuth提供商</param>
+            <returns>授权地址</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtOAuthController.Callback(System.String,System.String,System.String)">
+            <summary>
+            处理OAuth回调
+            </summary>
+            <param name="provider">OAuth提供商</param>
+            <param name="code">授权码</param>
+            <param name="state">状态码</param>
+            <returns>登录结果</returns>
+        </member>
+        <member name="T:Lean.Hbt.WebApi.Controllers.Identity.HbtPostController">
+            <summary>
+            岗位控制器
+            </summary>
+            <remarks>
+            创建者: Lean365
+            创建时间: 2024-01-20
+            </remarks>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtPostController.#ctor(Lean.Hbt.Application.Services.Identity.IHbtPostService)">
+            <summary>
+            构造函数
+            </summary>
+            <param name="postService">岗位服务</param>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtPostController.GetPagedListAsync(Lean.Hbt.Application.Dtos.Identity.HbtPostQueryDto)">
+            <summary>
+            获取岗位分页列表
+            </summary>
+            <param name="query">查询条件</param>
+            <returns>岗位分页列表</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtPostController.GetAsync(System.Int64)">
+            <summary>
+            获取岗位详情
+            </summary>
+            <param name="postId">岗位ID</param>
+            <returns>岗位详情</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtPostController.InsertAsync(Lean.Hbt.Application.Dtos.Identity.HbtPostCreateDto)">
+            <summary>
+            创建岗位
+            </summary>
+            <param name="input">创建对象</param>
+            <returns>岗位ID</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtPostController.UpdateAsync(Lean.Hbt.Application.Dtos.Identity.HbtPostUpdateDto)">
+            <summary>
+            更新岗位
+            </summary>
+            <param name="input">更新对象</param>
+            <returns>是否成功</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtPostController.DeleteAsync(System.Int64)">
+            <summary>
+            删除岗位
+            </summary>
+            <param name="postId">岗位ID</param>
+            <returns>是否成功</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtPostController.BatchDeleteAsync(System.Int64[])">
+            <summary>
+            批量删除岗位
+            </summary>
+            <param name="postIds">岗位ID集合</param>
+            <returns>是否成功</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtPostController.ImportAsync(Microsoft.AspNetCore.Http.IFormFile)">
+            <summary>
+            导入岗位数据
+            </summary>
+            <param name="file">Excel文件</param>
+            <returns>导入结果</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtPostController.ExportAsync(Lean.Hbt.Application.Dtos.Identity.HbtPostQueryDto)">
+            <summary>
+            导出岗位数据
+            </summary>
+            <param name="query">查询条件</param>
+            <returns>导出的Excel文件</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtPostController.GetImportTemplateAsync">
+            <summary>
+            获取导入模板
+            </summary>
+            <returns>导入模板Excel文件</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtPostController.UpdateStatusAsync(System.Int64,Lean.Hbt.Common.Enums.HbtStatus)">
+            <summary>
+            更新岗位状态
+            </summary>
+            <param name="postId">岗位ID</param>
+            <param name="status">状态</param>
+            <returns>是否成功</returns>
+        </member>
+        <member name="T:Lean.Hbt.WebApi.Controllers.Identity.HbtRoleController">
+            <summary>
+            角色控制器
+            </summary>
+            <remarks>
+            创建者: Lean365
+            创建时间: 2024-01-20
+            </remarks>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtRoleController.#ctor(Lean.Hbt.Application.Services.Identity.IHbtRoleService)">
+            <summary>
+            构造函数
+            </summary>
+            <param name="roleService">角色服务</param>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtRoleController.GetPagedListAsync(Lean.Hbt.Application.Dtos.Identity.HbtRoleQueryDto)">
+            <summary>
+            获取角色分页列表
+            </summary>
+            <param name="query">查询条件</param>
+            <returns>角色分页列表</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtRoleController.GetAsync(System.Int64)">
+            <summary>
+            获取角色详情
+            </summary>
+            <param name="roleId">角色ID</param>
+            <returns>角色详情</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtRoleController.InsertAsync(Lean.Hbt.Application.Dtos.Identity.HbtRoleCreateDto)">
+            <summary>
+            创建角色
+            </summary>
+            <param name="input">创建对象</param>
+            <returns>角色ID</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtRoleController.UpdateAsync(Lean.Hbt.Application.Dtos.Identity.HbtRoleUpdateDto)">
+            <summary>
+            更新角色
+            </summary>
+            <param name="input">更新对象</param>
+            <returns>是否成功</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtRoleController.DeleteAsync(System.Int64)">
+            <summary>
+            删除角色
+            </summary>
+            <param name="roleId">角色ID</param>
+            <returns>是否成功</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtRoleController.BatchDeleteAsync(System.Int64[])">
+            <summary>
+            批量删除角色
+            </summary>
+            <param name="roleIds">角色ID集合</param>
+            <returns>是否成功</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtRoleController.ExportAsync(Lean.Hbt.Application.Dtos.Identity.HbtRoleQueryDto)">
+            <summary>
+            导出角色数据
+            </summary>
+            <param name="query">查询条件</param>
+            <returns>导出数据列表</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtRoleController.UpdateStatusAsync(System.Int64,Lean.Hbt.Common.Enums.HbtStatus)">
+            <summary>
+            更新角色状态
+            </summary>
+            <param name="roleId">角色ID</param>
+            <param name="status">状态</param>
+            <returns>是否成功</returns>
         </member>
         <member name="T:Lean.Hbt.WebApi.Controllers.Identity.HbtTenantController">
             <summary>
@@ -50,7 +876,7 @@
             <param name="id">租户ID</param>
             <returns>租户详情</returns>
         </member>
-        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtTenantController.CreateAsync(Lean.Hbt.Application.Dtos.Identity.HbtTenantCreateDto)">
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtTenantController.InsertAsync(Lean.Hbt.Application.Dtos.Identity.HbtTenantCreateDto)">
             <summary>
             创建租户
             </summary>
@@ -93,6 +919,215 @@
             <param name="status">状态</param>
             <returns>是否成功</returns>
         </member>
+        <member name="T:Lean.Hbt.WebApi.Controllers.Identity.HbtUserController">
+            <summary>
+            用户控制器
+            </summary>
+            <remarks>
+            创建者: Lean365
+            创建时间: 2024-01-17
+            </remarks>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtUserController.#ctor(Lean.Hbt.Application.Services.Identity.IHbtUserService)">
+            <summary>
+            构造函数
+            </summary>
+            <param name="userService">用户服务</param>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtUserController.GetPagedListAsync(Lean.Hbt.Application.Dtos.Identity.HbtUserQueryDto)">
+            <summary>
+            获取用户分页列表
+            </summary>
+            <param name="query">查询条件</param>
+            <returns>用户分页列表</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtUserController.GetAsync(System.Int64)">
+            <summary>
+            获取用户详情
+            </summary>
+            <param name="userId">用户ID</param>
+            <returns>用户详情</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtUserController.InsertAsync(Lean.Hbt.Application.Dtos.Identity.HbtUserCreateDto)">
+            <summary>
+            创建用户
+            </summary>
+            <param name="input">创建对象</param>
+            <returns>用户ID</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtUserController.UpdateAsync(Lean.Hbt.Application.Dtos.Identity.HbtUserUpdateDto)">
+            <summary>
+            更新用户
+            </summary>
+            <param name="input">更新对象</param>
+            <returns>是否成功</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtUserController.DeleteAsync(System.Int64)">
+            <summary>
+            删除用户
+            </summary>
+            <param name="userId">用户ID</param>
+            <returns>是否成功</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtUserController.BatchDeleteAsync(System.Int64[])">
+            <summary>
+            批量删除用户
+            </summary>
+            <param name="userIds">用户ID集合</param>
+            <returns>是否成功</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtUserController.ImportAsync(System.Collections.Generic.List{Lean.Hbt.Application.Dtos.Identity.HbtUserImportDto})">
+            <summary>
+            导入用户数据
+            </summary>
+            <param name="users">用户数据列表</param>
+            <returns>导入结果</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtUserController.ExportAsync(Lean.Hbt.Application.Dtos.Identity.HbtUserQueryDto)">
+            <summary>
+            导出用户数据
+            </summary>
+            <param name="query">查询条件</param>
+            <returns>导出数据列表</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtUserController.GetTemplateAsync">
+            <summary>
+            获取导入模板
+            </summary>
+            <returns>模板数据</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtUserController.UpdateStatusAsync(System.Int64,Lean.Hbt.Common.Enums.HbtStatus)">
+            <summary>
+            更新用户状态
+            </summary>
+            <param name="userId">用户ID</param>
+            <param name="status">状态</param>
+            <returns>是否成功</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtUserController.ResetPasswordAsync(Lean.Hbt.Application.Dtos.Identity.HbtUserResetPwdDto)">
+            <summary>
+            重置用户密码
+            </summary>
+            <param name="input">重置密码对象</param>
+            <returns>是否成功</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtUserController.ChangePasswordAsync(Lean.Hbt.Application.Dtos.Identity.HbtUserChangePwdDto)">
+            <summary>
+            修改用户密码
+            </summary>
+            <param name="input">修改密码对象</param>
+            <returns>是否成功</returns>
+        </member>
+        <member name="T:Lean.Hbt.WebApi.Controllers.RealTime.HbtOnlineMessageController">
+            <summary>
+            在线消息控制器
+            </summary>
+            <remarks>
+            创建者: Lean365
+            创建时间: 2024-01-20
+            </remarks>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.RealTime.HbtOnlineMessageController.#ctor(Lean.Hbt.Application.Services.RealTime.IHbtOnlineMessageService)">
+            <summary>
+            构造函数
+            </summary>
+            <param name="onlineMessageService">在线消息服务</param>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.RealTime.HbtOnlineMessageController.GetPagedListAsync(Lean.Hbt.Application.Dtos.RealTime.HbtOnlineMessageQueryDto)">
+            <summary>
+            获取在线消息分页列表
+            </summary>
+            <param name="query">查询条件</param>
+            <returns>在线消息分页列表</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.RealTime.HbtOnlineMessageController.GetAsync(System.Int64)">
+            <summary>
+            获取消息详情
+            </summary>
+            <param name="id">消息ID</param>
+            <returns>消息详情</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.RealTime.HbtOnlineMessageController.ExportAsync(Lean.Hbt.Application.Dtos.RealTime.HbtOnlineMessageQueryDto)">
+            <summary>
+            导出在线消息数据
+            </summary>
+            <param name="query">查询条件</param>
+            <returns>导出数据列表</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.RealTime.HbtOnlineMessageController.SaveAsync(Lean.Hbt.Application.Dtos.RealTime.HbtOnlineMessageDto)">
+            <summary>
+            保存消息
+            </summary>
+            <param name="input">消息信息</param>
+            <returns>消息ID</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.RealTime.HbtOnlineMessageController.DeleteAsync(System.Int64)">
+            <summary>
+            删除消息
+            </summary>
+            <param name="id">消息ID</param>
+            <returns>是否成功</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.RealTime.HbtOnlineMessageController.CleanupExpiredMessagesAsync(System.Int32)">
+            <summary>
+            清理过期消息
+            </summary>
+            <param name="days">保留天数</param>
+            <returns>清理数量</returns>
+        </member>
+        <member name="T:Lean.Hbt.WebApi.Controllers.RealTime.HbtOnlineUserController">
+            <summary>
+            在线用户控制器
+            </summary>
+            <remarks>
+            创建者: Lean365
+            创建时间: 2024-01-20
+            </remarks>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.RealTime.HbtOnlineUserController.#ctor(Lean.Hbt.Application.Services.RealTime.IHbtOnlineUserService)">
+            <summary>
+            构造函数
+            </summary>
+            <param name="onlineUserService">在线用户服务</param>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.RealTime.HbtOnlineUserController.GetPagedListAsync(Lean.Hbt.Application.Dtos.RealTime.HbtOnlineUserQueryDto)">
+            <summary>
+            获取在线用户分页列表
+            </summary>
+            <param name="query">查询条件</param>
+            <returns>在线用户分页列表</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.RealTime.HbtOnlineUserController.ExportAsync(Lean.Hbt.Application.Dtos.RealTime.HbtOnlineUserQueryDto)">
+            <summary>
+            导出在线用户数据
+            </summary>
+            <param name="query">查询条件</param>
+            <returns>导出数据列表</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.RealTime.HbtOnlineUserController.ForceOfflineAsync(System.String)">
+            <summary>
+            强制用户下线
+            </summary>
+            <param name="connectionId">连接ID</param>
+            <returns>是否成功</returns>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.RealTime.HbtOnlineUserController.CleanupExpiredUsersAsync(System.Int32)">
+            <summary>
+            清理过期用户
+            </summary>
+            <param name="minutes">超时时间(分钟)</param>
+            <returns>清理数量</returns>
+        </member>
+        <member name="T:Lean.Hbt.WebApi.Extensions.HbtTenantExtensions">
+            <summary>
+            租户中间件扩展方法
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Extensions.HbtTenantExtensions.UseHbtTenant(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+            <summary>
+            使用租户中间件
+            </summary>
+        </member>
         <member name="T:Lean.Hbt.WebApi.Middlewares.HbtExceptionMiddleware">
             <summary>
             全局异常处理中间件
@@ -127,6 +1162,24 @@
             </summary>
             <param name="app">应用程序构建器</param>
             <returns>应用程序构建器</returns>
+        </member>
+        <member name="T:Lean.Hbt.WebApi.Middlewares.HbtTenantMiddleware">
+            <summary>
+            租户中间件,用于从请求中获取租户信息并设置到租户上下文中
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Middlewares.HbtTenantMiddleware.#ctor(Microsoft.AspNetCore.Http.RequestDelegate)">
+            <summary>
+            构造函数
+            </summary>
+            <param name="next"></param>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Middlewares.HbtTenantMiddleware.InvokeAsync(Microsoft.AspNetCore.Http.HttpContext)">
+            <summary>
+            调用中间件
+            </summary>
+            <param name="context"></param>
+            <returns></returns>
         </member>
     </members>
 </doc>

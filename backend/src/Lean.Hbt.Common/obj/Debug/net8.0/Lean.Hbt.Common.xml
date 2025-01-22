@@ -247,6 +247,11 @@
             普通用户
             </summary>
         </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtUserType.OAuth">
+            <summary>
+            OAuth用户
+            </summary>
+        </member>
         <member name="T:Lean.Hbt.Common.Enums.HbtDataScope">
             <summary>
             数据范围枚举
@@ -275,6 +280,66 @@
         <member name="F:Lean.Hbt.Common.Enums.HbtDataScope.Self">
             <summary>
             仅本人数据权限
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Common.Enums.HbtLogLevel">
+            <summary>
+            日志级别枚举
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtLogLevel.Trace">
+            <summary>
+            跟踪信息
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtLogLevel.Debug">
+            <summary>
+            调试信息
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtLogLevel.Info">
+            <summary>
+            一般信息
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtLogLevel.Warn">
+            <summary>
+            警告信息
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtLogLevel.Error">
+            <summary>
+            错误信息
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtLogLevel.Fatal">
+            <summary>
+            致命错误
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Common.Enums.HbtMessageType">
+            <summary>
+            消息类型枚举
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtMessageType.System">
+            <summary>
+            系统消息
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtMessageType.User">
+            <summary>
+            用户消息
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtMessageType.Group">
+            <summary>
+            群组消息
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtMessageType.Notification">
+            <summary>
+            通知消息
             </summary>
         </member>
         <member name="T:Lean.Hbt.Common.Exceptions.HbtBusinessException">
@@ -334,12 +399,12 @@
             <param name="code">错误码</param>
             <param name="innerException">内部异常</param>
         </member>
-        <member name="T:Lean.Hbt.Common.Extensions.EnumExtensions">
+        <member name="T:Lean.Hbt.Common.Extensions.HbtEnumExtensions">
             <summary>
             枚举扩展方法
             </summary>
         </member>
-        <member name="M:Lean.Hbt.Common.Extensions.EnumExtensions.GetDescription(System.Enum)">
+        <member name="M:Lean.Hbt.Common.Extensions.HbtEnumExtensions.GetDescription(System.Enum)">
             <summary>
             获取枚举的Description特性描述
             </summary>
@@ -637,6 +702,106 @@
             数据列表
             </summary>
         </member>
+        <member name="T:Lean.Hbt.Common.Options.HbtCacheOptions">
+            <summary>
+            缓存配置选项
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtCacheOptions.Provider">
+            <summary>
+            缓存提供程序类型
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtCacheOptions.DefaultExpirationMinutes">
+            <summary>
+            默认过期时间（分钟）
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtCacheOptions.EnableSlidingExpiration">
+            <summary>
+            是否启用滑动过期
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtCacheOptions.EnableMultiLevelCache">
+            <summary>
+            是否启用多级缓存
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtCacheOptions.Memory">
+            <summary>
+            内存缓存配置
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtCacheOptions.Redis">
+            <summary>
+            Redis缓存配置
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Common.Options.HbtMemoryCacheOptions">
+            <summary>
+            内存缓存配置选项
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtMemoryCacheOptions.CompactionThreshold">
+            <summary>
+            压缩阈值（字节）
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtMemoryCacheOptions.ExpirationScanFrequency">
+            <summary>
+            扫描频率（秒）
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtMemoryCacheOptions.SizeLimit">
+            <summary>
+            大小限制（字节）
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Common.Options.HbtRedisCacheOptions">
+            <summary>
+            Redis缓存配置选项
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtRedisCacheOptions.InstanceName">
+            <summary>
+            实例名称
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtRedisCacheOptions.DefaultDatabase">
+            <summary>
+            默认数据库
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtRedisCacheOptions.EnableCompression">
+            <summary>
+            是否启用压缩
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtRedisCacheOptions.CompressionThreshold">
+            <summary>
+            压缩阈值（字节）
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Common.Options.CacheProviderType">
+            <summary>
+            缓存提供程序类型
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Options.CacheProviderType.Memory">
+            <summary>
+            内存缓存
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Options.CacheProviderType.Redis">
+            <summary>
+            Redis缓存
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Options.CacheProviderType.MultiLevel">
+            <summary>
+            多级缓存
+            </summary>
+        </member>
         <member name="T:Lean.Hbt.Common.Options.HbtDbOptions">
             <summary>
             数据库配置选项
@@ -765,6 +930,61 @@
         <member name="P:Lean.Hbt.Common.Options.HbtLoginPolicyOptions.EnableLoginRestriction">
             <summary>
             是否启用登录限制
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Common.Options.HbtOAuthOptions">
+            <summary>
+            OAuth配置选项
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtOAuthOptions.Enabled">
+            <summary>
+            是否启用OAuth认证
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtOAuthOptions.Providers">
+            <summary>
+            OAuth提供商配置
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Common.Options.HbtOAuthProviderOptions">
+            <summary>
+            OAuth提供商配置
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtOAuthProviderOptions.ClientId">
+            <summary>
+            客户端ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtOAuthProviderOptions.ClientSecret">
+            <summary>
+            客户端密钥
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtOAuthProviderOptions.AuthorizationEndpoint">
+            <summary>
+            授权端点
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtOAuthProviderOptions.TokenEndpoint">
+            <summary>
+            令牌端点
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtOAuthProviderOptions.UserInfoEndpoint">
+            <summary>
+            用户信息端点
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtOAuthProviderOptions.RedirectUri">
+            <summary>
+            回调地址
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtOAuthProviderOptions.Scope">
+            <summary>
+            作用域
             </summary>
         </member>
         <member name="T:Lean.Hbt.Common.Options.HbtPasswordPolicyOptions">
@@ -940,6 +1160,150 @@
         <member name="P:Lean.Hbt.Common.Options.HbtSessionOptions.SessionExpiryMinutes">
             <summary>
             会话过期时间(分钟)
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Common.Options.LogArchiveOptions">
+            <summary>
+            日志归档配置选项
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.LogArchiveOptions.Enabled">
+            <summary>
+            是否启用自动归档
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.LogArchiveOptions.ArchivePeriodMonths">
+            <summary>
+            归档周期(月)
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.LogArchiveOptions.ArchivePath">
+            <summary>
+            归档文件保存路径
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.LogArchiveOptions.FileNameFormat">
+            <summary>
+            归档文件命名格式
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.LogArchiveOptions.BatchSize">
+            <summary>
+            每次归档的最大记录数
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.LogArchiveOptions.CronExpression">
+            <summary>
+            归档执行时间(Cron表达式)
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Common.Options.LogCleanupOptions">
+            <summary>
+            日志清理策略配置
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.LogCleanupOptions.Enabled">
+            <summary>
+            是否启用自动清理
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.LogCleanupOptions.Interval">
+            <summary>
+            清理频率(小时)
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.LogCleanupOptions.AuditLogRetentionDays">
+            <summary>
+            审计日志保留天数
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.LogCleanupOptions.OperLogRetentionDays">
+            <summary>
+            操作日志保留天数
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.LogCleanupOptions.LoginLogRetentionDays">
+            <summary>
+            登录日志保留天数
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.LogCleanupOptions.ExceptionLogRetentionDays">
+            <summary>
+            异常日志保留天数
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.LogCleanupOptions.DbDiffLogRetentionDays">
+            <summary>
+            数据库差异日志保留天数
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.LogCleanupOptions.BatchSize">
+            <summary>
+            每次清理的最大记录数
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Common.Utils.HbtEncryptUtils">
+            <summary>
+            加密工具类
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Common.Utils.HbtEncryptUtils.AesEncrypt(System.String)">
+            <summary>
+            AES加密
+            </summary>
+            <param name="plainText">明文</param>
+            <returns>密文(Base64编码)</returns>
+        </member>
+        <member name="M:Lean.Hbt.Common.Utils.HbtEncryptUtils.AesDecrypt(System.String)">
+            <summary>
+            AES解密
+            </summary>
+            <param name="cipherText">密文(Base64编码)</param>
+            <returns>明文</returns>
+        </member>
+        <member name="T:Lean.Hbt.Common.Utils.HbtMaskUtils">
+            <summary>
+            数据脱敏工具类
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Common.Utils.HbtMaskUtils.MaskPhoneNumber(System.String)">
+            <summary>
+            手机号码脱敏
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Common.Utils.HbtMaskUtils.MaskEmail(System.String)">
+            <summary>
+            邮箱地址脱敏
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Common.Utils.HbtMaskUtils.MaskIdCard(System.String)">
+            <summary>
+            身份证号脱敏
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Common.Utils.HbtMaskUtils.MaskBankCard(System.String)">
+            <summary>
+            银行卡号脱敏
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Common.Utils.HbtMaskUtils.MaskPassword(System.String)">
+            <summary>
+            密码脱敏
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Common.Utils.HbtMaskUtils.MaskAddress(System.String)">
+            <summary>
+            地址脱敏
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Common.Utils.HbtMaskUtils.MaskConnectionString(System.String)">
+            <summary>
+            数据库连接字符串脱敏
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Common.Utils.HbtMaskUtils.MaskCustom(System.String,System.Int32,System.Int32)">
+            <summary>
+            自定义脱敏
             </summary>
         </member>
         <member name="T:Lean.Hbt.Common.Utils.HbtPasswordUtils">
