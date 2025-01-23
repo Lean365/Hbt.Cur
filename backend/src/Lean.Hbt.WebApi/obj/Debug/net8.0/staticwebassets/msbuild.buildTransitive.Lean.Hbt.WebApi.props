@@ -1,3 +1,0 @@
-﻿<Project>
-  <Import Project="..\buildMultiTargeting\Lean.Hbt.WebApi.props" />
-</Project>
