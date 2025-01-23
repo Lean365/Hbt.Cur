@@ -14,6 +14,7 @@ using Lean.Hbt.Common.Models;
 using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Application.Dtos.Identity;
 using Lean.Hbt.Application.Services.Identity;
+using Lean.Hbt.Domain.IServices.Admin;
 
 namespace Lean.Hbt.WebApi.Controllers.Identity
 {
@@ -34,7 +35,9 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// 构造函数
         /// </summary>
         /// <param name="userService">用户服务</param>
-        public HbtUserController(IHbtUserService userService)
+        /// <param name="localization">本地化服务</param>
+        public HbtUserController(IHbtUserService userService, IHbtLocalizationService localization)
+            : base(localization)
         {
             _userService = userService;
         }
@@ -48,7 +51,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         public async Task<IActionResult> GetPagedListAsync([FromQuery] HbtUserQueryDto query)
         {
             var result = await _userService.GetPagedListAsync(query);
-            return Success(result);
+            return Success(result, _localization.L("User.List.Success"));
         }
 
         /// <summary>
@@ -60,7 +63,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         public async Task<IActionResult> GetAsync(long userId)
         {
             var result = await _userService.GetAsync(userId);
-            return Success(result);
+            return Success(result, _localization.L("User.Get.Success"));
         }
 
         /// <summary>
@@ -72,7 +75,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         public async Task<IActionResult> InsertAsync([FromBody] HbtUserCreateDto input)
         {
             var result = await _userService.InsertAsync(input);
-            return Success(result);
+            return Success(result, _localization.L("User.Insert.Success"));
         }
 
         /// <summary>
@@ -84,7 +87,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         public async Task<IActionResult> UpdateAsync([FromBody] HbtUserUpdateDto input)
         {
             var result = await _userService.UpdateAsync(input);
-            return Success(result);
+            return Success(result, _localization.L("User.Update.Success"));
         }
 
         /// <summary>
@@ -96,7 +99,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         public async Task<IActionResult> DeleteAsync(long userId)
         {
             var result = await _userService.DeleteAsync(userId);
-            return Success(result);
+            return Success(result, _localization.L("User.Delete.Success"));
         }
 
         /// <summary>
@@ -108,7 +111,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         public async Task<IActionResult> BatchDeleteAsync([FromBody] long[] userIds)
         {
             var result = await _userService.BatchDeleteAsync(userIds);
-            return Success(result);
+            return Success(result, _localization.L("User.BatchDelete.Success"));
         }
 
         /// <summary>
@@ -120,7 +123,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         public async Task<IActionResult> ImportAsync([FromBody] List<HbtUserImportDto> users)
         {
             var result = await _userService.ImportAsync(users);
-            return Success(result);
+            return Success(result, _localization.L("User.Import.Success"));
         }
 
         /// <summary>
@@ -132,7 +135,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         public async Task<IActionResult> ExportAsync([FromQuery] HbtUserQueryDto query)
         {
             var result = await _userService.ExportAsync(query);
-            return Success(result);
+            return Success(result, _localization.L("User.Export.Success"));
         }
 
         /// <summary>
@@ -143,7 +146,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         public async Task<IActionResult> GetTemplateAsync()
         {
             var result = await _userService.GetTemplateAsync();
-            return Success(result);
+            return Success(result, _localization.L("User.Template.Success"));
         }
 
         /// <summary>
@@ -161,7 +164,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
                 Status = status
             };
             var result = await _userService.UpdateStatusAsync(input);
-            return Success(result);
+            return Success(result, _localization.L("User.Status.Success"));
         }
 
         /// <summary>
@@ -173,7 +176,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         public async Task<IActionResult> ResetPasswordAsync([FromBody] HbtUserResetPwdDto input)
         {
             var result = await _userService.ResetPasswordAsync(input);
-            return Success(result);
+            return Success(result, _localization.L("User.ResetPassword.Success"));
         }
 
         /// <summary>
@@ -185,7 +188,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         public async Task<IActionResult> ChangePasswordAsync([FromBody] HbtUserChangePwdDto input)
         {
             var result = await _userService.ChangePasswordAsync(input);
-            return Success(result);
+            return Success(result, _localization.L("User.ChangePassword.Success"));
         }
     }
 } 

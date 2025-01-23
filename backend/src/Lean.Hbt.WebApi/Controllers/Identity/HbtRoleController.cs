@@ -14,6 +14,7 @@ using Lean.Hbt.Common.Models;
 using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Application.Dtos.Identity;
 using Lean.Hbt.Application.Services.Identity;
+using Lean.Hbt.Domain.IServices.Admin;
 
 namespace Lean.Hbt.WebApi.Controllers.Identity
 {
@@ -34,7 +35,8 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// 构造函数
         /// </summary>
         /// <param name="roleService">角色服务</param>
-        public HbtRoleController(IHbtRoleService roleService)
+        /// <param name="localization">本地化服务</param>
+        public HbtRoleController(IHbtRoleService roleService, IHbtLocalizationService localization) : base(localization)
         {
             _roleService = roleService;
         }

@@ -54,6 +54,9 @@ try
     // 添加配置
     builder.Services.Configure<HbtExcelOptions>(builder.Configuration.GetSection("Excel"));
 
+    // 添加本地化服务
+    builder.Services.AddHbtLocalization();
+
     var app = builder.Build();
 
     // 初始化数据库和种子数据
@@ -100,6 +103,9 @@ try
 
     // 使用租户中间件
     app.UseHbtTenant();
+
+    // 在其他中间件之后使用本地化
+    app.UseHbtLocalization();
 
     app.MapControllers();
 

@@ -11,6 +11,7 @@ using Lean.Hbt.Application.Dtos.Admin;
 using Lean.Hbt.Application.Services.Admin;
 using Lean.Hbt.Common.Enums;
 using Microsoft.AspNetCore.Mvc;
+using Lean.Hbt.Domain.IServices.Admin;
 
 namespace Lean.Hbt.WebApi.Controllers.Admin
 {
@@ -31,7 +32,8 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
         /// 构造函数
         /// </summary>
         /// <param name="dictDataService">字典数据服务</param>
-        public HbtDictDataController(IHbtDictDataService dictDataService)
+        /// <param name="localization">本地化服务</param>
+        public HbtDictDataController(IHbtDictDataService dictDataService, IHbtLocalizationService localization) : base(localization)
         {
             _dictDataService = dictDataService;
         }

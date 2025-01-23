@@ -14,6 +14,7 @@ using Lean.Hbt.Common.Models;
 using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Application.Dtos.Admin;
 using Lean.Hbt.Application.Services.Admin;
+using Lean.Hbt.Domain.IServices.Admin;
 
 namespace Lean.Hbt.WebApi.Controllers.Admin
 {
@@ -34,7 +35,8 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
         /// 构造函数
         /// </summary>
         /// <param name="translationService">翻译服务</param>
-        public HbtTranslationController(IHbtTranslationService translationService)
+        /// <param name="localization">本地化服务</param>
+        public HbtTranslationController(IHbtTranslationService translationService, IHbtLocalizationService localization) : base(localization)
         {
             _translationService = translationService;
         }

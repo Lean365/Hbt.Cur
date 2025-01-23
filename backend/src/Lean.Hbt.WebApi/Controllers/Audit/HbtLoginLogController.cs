@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using Lean.Hbt.Common.Models;
 using Lean.Hbt.Application.Dtos.Audit;
 using Lean.Hbt.Application.Services.Audit;
+using Lean.Hbt.Domain.IServices.Admin;
 
 namespace Lean.Hbt.WebApi.Controllers.Audit
 {
@@ -32,7 +33,8 @@ namespace Lean.Hbt.WebApi.Controllers.Audit
         /// 构造函数
         /// </summary>
         /// <param name="loginLogService">登录日志服务</param>
-        public HbtLoginLogController(IHbtLoginLogService loginLogService)
+        /// <param name="localization">本地化服务</param>
+        public HbtLoginLogController(IHbtLoginLogService loginLogService, IHbtLocalizationService localization) : base(localization)
         {
             _loginLogService = loginLogService;
         }

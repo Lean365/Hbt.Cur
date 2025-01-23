@@ -7245,7 +7245,7 @@
             岗位服务实现
             </summary>
         </member>
-        <member name="M:Lean.Hbt.Application.Services.Identity.HbtPostService.#ctor(Lean.Hbt.Domain.Repositories.IHbtRepository{Lean.Hbt.Domain.Entities.Identity.HbtPost},Lean.Hbt.Domain.Repositories.IHbtRepository{Lean.Hbt.Domain.Entities.Identity.HbtUserPost},Lean.Hbt.Domain.IServices.IHbtLogger)">
+        <member name="M:Lean.Hbt.Application.Services.Identity.HbtPostService.#ctor(Lean.Hbt.Domain.Repositories.IHbtRepository{Lean.Hbt.Domain.Entities.Identity.HbtPost},Lean.Hbt.Domain.Repositories.IHbtRepository{Lean.Hbt.Domain.Entities.Identity.HbtUserPost},Lean.Hbt.Domain.IServices.Admin.IHbtLocalizationService,Lean.Hbt.Domain.IServices.IHbtLogger)">
             <summary>
             构造函数
             </summary>
@@ -7477,7 +7477,7 @@
             创建时间: 2024-01-18
             </remarks>
         </member>
-        <member name="M:Lean.Hbt.Application.Services.Identity.HbtUserService.#ctor(Lean.Hbt.Domain.Repositories.IHbtRepository{Lean.Hbt.Domain.Entities.Identity.HbtUser},Lean.Hbt.Domain.Repositories.IHbtRepository{Lean.Hbt.Domain.Entities.Identity.HbtUserRole},Lean.Hbt.Domain.Repositories.IHbtRepository{Lean.Hbt.Domain.Entities.Identity.HbtUserPost},Lean.Hbt.Domain.Repositories.IHbtRepository{Lean.Hbt.Domain.Entities.Identity.HbtUserDept},Lean.Hbt.Domain.IServices.IHbtPasswordPolicy,Lean.Hbt.Domain.IServices.IHbtLogger)">
+        <member name="M:Lean.Hbt.Application.Services.Identity.HbtUserService.#ctor(Lean.Hbt.Domain.Repositories.IHbtRepository{Lean.Hbt.Domain.Entities.Identity.HbtUser},Lean.Hbt.Domain.Repositories.IHbtRepository{Lean.Hbt.Domain.Entities.Identity.HbtUserRole},Lean.Hbt.Domain.Repositories.IHbtRepository{Lean.Hbt.Domain.Entities.Identity.HbtUserPost},Lean.Hbt.Domain.Repositories.IHbtRepository{Lean.Hbt.Domain.Entities.Identity.HbtUserDept},Lean.Hbt.Domain.IServices.IHbtPasswordPolicy,Lean.Hbt.Domain.IServices.IHbtLogger,Lean.Hbt.Domain.IServices.Admin.IHbtLocalizationService)">
             <summary>
             构造函数
             </summary>

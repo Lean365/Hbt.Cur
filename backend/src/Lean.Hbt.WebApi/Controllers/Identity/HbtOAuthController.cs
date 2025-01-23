@@ -8,6 +8,7 @@ using Lean.Hbt.Application.Dtos.Identity;
 using Lean.Hbt.Domain.Entities.Identity;
 using Lean.Hbt.Domain.Repositories;
 using Lean.Hbt.Common.Enums;
+using Lean.Hbt.Domain.IServices.Admin;
 
 namespace Lean.Hbt.WebApi.Controllers.Identity
 {
@@ -16,7 +17,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
     /// </summary>
     [Route("api/[controller]")]
     [ApiController]
-    public class HbtOAuthController : ControllerBase
+    public class HbtOAuthController : HbtBaseController
     {
         private readonly IHbtOAuthService _oauthService;
         private readonly IHbtSessionManager _sessionManager;
@@ -28,7 +29,8 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         public HbtOAuthController(
             IHbtOAuthService oauthService, 
             IHbtSessionManager sessionManager,
-            IHbtRepository<HbtUser> userRepository)
+            IHbtRepository<HbtUser> userRepository,
+            IHbtLocalizationService localization) : base(localization)
         {
             _oauthService = oauthService;
             _sessionManager = sessionManager;

@@ -15,6 +15,7 @@ using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Application.Dtos.Admin;
 using Lean.Hbt.Application.Services.Admin;
 using Lean.Hbt.Infrastructure.Security.Attributes;
+using Lean.Hbt.Domain.IServices.Admin;
 
 namespace Lean.Hbt.WebApi.Controllers.Admin
 {
@@ -35,7 +36,8 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
         /// 构造函数
         /// </summary>
         /// <param name="configService">系统配置服务</param>
-        public HbtSysConfigController(IHbtSysConfigService configService)
+        /// <param name="localization">本地化服务</param>
+        public HbtSysConfigController(IHbtSysConfigService configService, IHbtLocalizationService localization) : base(localization)
         {
             _configService = configService;
         }

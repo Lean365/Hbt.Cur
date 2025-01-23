@@ -13,11 +13,12 @@
             创建时间: 2024-01-17
             </remarks>
         </member>
-        <member name="M:Lean.Hbt.WebApi.Controllers.Admin.HbtDictDataController.#ctor(Lean.Hbt.Application.Services.Admin.IHbtDictDataService)">
+        <member name="M:Lean.Hbt.WebApi.Controllers.Admin.HbtDictDataController.#ctor(Lean.Hbt.Application.Services.Admin.IHbtDictDataService,Lean.Hbt.Domain.IServices.Admin.IHbtLocalizationService)">
             <summary>
             构造函数
             </summary>
             <param name="dictDataService">字典数据服务</param>
+            <param name="localization">本地化服务</param>
         </member>
         <member name="M:Lean.Hbt.WebApi.Controllers.Admin.HbtDictDataController.GetPagedListAsync(Lean.Hbt.Application.Dtos.Admin.HbtDictDataQueryDto)">
             <summary>
@@ -98,11 +99,12 @@
             创建时间: 2024-01-17
             </remarks>
         </member>
-        <member name="M:Lean.Hbt.WebApi.Controllers.Admin.HbtDictTypeController.#ctor(Lean.Hbt.Application.Services.Admin.IHbtDictTypeService)">
+        <member name="M:Lean.Hbt.WebApi.Controllers.Admin.HbtDictTypeController.#ctor(Lean.Hbt.Application.Services.Admin.IHbtDictTypeService,Lean.Hbt.Domain.IServices.Admin.IHbtLocalizationService)">
             <summary>
             构造函数
             </summary>
             <param name="dictTypeService">字典类型服务</param>
+            <param name="localization">本地化服务</param>
         </member>
         <member name="M:Lean.Hbt.WebApi.Controllers.Admin.HbtDictTypeController.GetPagedListAsync(Lean.Hbt.Application.Dtos.Admin.HbtDictTypeQueryDto)">
             <summary>
@@ -183,11 +185,12 @@
             创建时间: 2024-01-22
             </remarks>
         </member>
-        <member name="M:Lean.Hbt.WebApi.Controllers.Admin.HbtLanguageController.#ctor(Lean.Hbt.Application.Services.Admin.IHbtLanguageService)">
+        <member name="M:Lean.Hbt.WebApi.Controllers.Admin.HbtLanguageController.#ctor(Lean.Hbt.Application.Services.Admin.IHbtLanguageService,Lean.Hbt.Domain.IServices.Admin.IHbtLocalizationService)">
             <summary>
             构造函数
             </summary>
             <param name="languageService">语言服务</param>
+            <param name="localization">本地化服务</param>
         </member>
         <member name="M:Lean.Hbt.WebApi.Controllers.Admin.HbtLanguageController.GetPagedListAsync(Lean.Hbt.Application.Dtos.Admin.HbtLanguageQueryDto)">
             <summary>
@@ -268,11 +271,12 @@
             创建时间: 2024-01-20
             </remarks>
         </member>
-        <member name="M:Lean.Hbt.WebApi.Controllers.Admin.HbtSysConfigController.#ctor(Lean.Hbt.Application.Services.Admin.IHbtSysConfigService)">
+        <member name="M:Lean.Hbt.WebApi.Controllers.Admin.HbtSysConfigController.#ctor(Lean.Hbt.Application.Services.Admin.IHbtSysConfigService,Lean.Hbt.Domain.IServices.Admin.IHbtLocalizationService)">
             <summary>
             构造函数
             </summary>
             <param name="configService">系统配置服务</param>
+            <param name="localization">本地化服务</param>
         </member>
         <member name="M:Lean.Hbt.WebApi.Controllers.Admin.HbtSysConfigController.GetPagedListAsync(Lean.Hbt.Application.Dtos.Admin.HbtSysConfigQueryDto)">
             <summary>
@@ -353,11 +357,12 @@
             创建时间: 2024-01-22
             </remarks>
         </member>
-        <member name="M:Lean.Hbt.WebApi.Controllers.Admin.HbtTranslationController.#ctor(Lean.Hbt.Application.Services.Admin.IHbtTranslationService)">
+        <member name="M:Lean.Hbt.WebApi.Controllers.Admin.HbtTranslationController.#ctor(Lean.Hbt.Application.Services.Admin.IHbtTranslationService,Lean.Hbt.Domain.IServices.Admin.IHbtLocalizationService)">
             <summary>
             构造函数
             </summary>
             <param name="translationService">翻译服务</param>
+            <param name="localization">本地化服务</param>
         </member>
         <member name="M:Lean.Hbt.WebApi.Controllers.Admin.HbtTranslationController.GetPagedListAsync(Lean.Hbt.Application.Dtos.Admin.HbtTranslationQueryDto)">
             <summary>
@@ -481,11 +486,12 @@
             创建时间: 2024-01-20
             </remarks>
         </member>
-        <member name="M:Lean.Hbt.WebApi.Controllers.Audit.HbtAuditLogController.#ctor(Lean.Hbt.Application.Services.Audit.IHbtAuditsLogService)">
+        <member name="M:Lean.Hbt.WebApi.Controllers.Audit.HbtAuditLogController.#ctor(Lean.Hbt.Application.Services.Audit.IHbtAuditsLogService,Lean.Hbt.Domain.IServices.Admin.IHbtLocalizationService)">
             <summary>
             构造函数
             </summary>
             <param name="auditLogService">审计日志服务</param>
+            <param name="localization">本地化服务</param>
         </member>
         <member name="M:Lean.Hbt.WebApi.Controllers.Audit.HbtAuditLogController.GetPagedListAsync(Lean.Hbt.Application.Dtos.Audit.HbtAuditLogQueryDto)">
             <summary>
@@ -523,11 +529,12 @@
             创建时间: 2024-01-20
             </remarks>
         </member>
-        <member name="M:Lean.Hbt.WebApi.Controllers.Audit.HbtDbDiffLogController.#ctor(Lean.Hbt.Application.Services.Audit.IHbtDbDiffLogService)">
+        <member name="M:Lean.Hbt.WebApi.Controllers.Audit.HbtDbDiffLogController.#ctor(Lean.Hbt.Application.Services.Audit.IHbtDbDiffLogService,Lean.Hbt.Domain.IServices.Admin.IHbtLocalizationService)">
             <summary>
             构造函数
             </summary>
             <param name="dbDiffLogService">数据库差异日志服务</param>
+            <param name="localization">本地化服务</param>
         </member>
         <member name="M:Lean.Hbt.WebApi.Controllers.Audit.HbtDbDiffLogController.GetPagedListAsync(Lean.Hbt.Application.Dtos.Audit.HbtDbDiffLogQueryDto)">
             <summary>
@@ -565,11 +572,12 @@
             创建时间: 2024-01-20
             </remarks>
         </member>
-        <member name="M:Lean.Hbt.WebApi.Controllers.Audit.HbtExceptionLogController.#ctor(Lean.Hbt.Application.Services.Audit.IHbtExceptionLogService)">
+        <member name="M:Lean.Hbt.WebApi.Controllers.Audit.HbtExceptionLogController.#ctor(Lean.Hbt.Application.Services.Audit.IHbtExceptionLogService,Lean.Hbt.Domain.IServices.Admin.IHbtLocalizationService)">
             <summary>
             构造函数
             </summary>
             <param name="exceptionLogService">异常日志服务</param>
+            <param name="localization">本地化服务</param>
         </member>
         <member name="M:Lean.Hbt.WebApi.Controllers.Audit.HbtExceptionLogController.GetPagedListAsync(Lean.Hbt.Application.Dtos.Audit.HbtExceptionLogQueryDto)">
             <summary>
@@ -607,11 +615,12 @@
             创建时间: 2024-01-20
             </remarks>
         </member>
-        <member name="M:Lean.Hbt.WebApi.Controllers.Audit.HbtLoginLogController.#ctor(Lean.Hbt.Application.Services.Audit.IHbtLoginLogService)">
+        <member name="M:Lean.Hbt.WebApi.Controllers.Audit.HbtLoginLogController.#ctor(Lean.Hbt.Application.Services.Audit.IHbtLoginLogService,Lean.Hbt.Domain.IServices.Admin.IHbtLocalizationService)">
             <summary>
             构造函数
             </summary>
             <param name="loginLogService">登录日志服务</param>
+            <param name="localization">本地化服务</param>
         </member>
         <member name="M:Lean.Hbt.WebApi.Controllers.Audit.HbtLoginLogController.GetPagedListAsync(Lean.Hbt.Application.Dtos.Audit.HbtLoginLogQueryDto)">
             <summary>
@@ -649,11 +658,12 @@
             创建时间: 2024-01-20
             </remarks>
         </member>
-        <member name="M:Lean.Hbt.WebApi.Controllers.Audit.HbtOperLogController.#ctor(Lean.Hbt.Application.Services.Audit.IHbtOperLogService)">
+        <member name="M:Lean.Hbt.WebApi.Controllers.Audit.HbtOperLogController.#ctor(Lean.Hbt.Application.Services.Audit.IHbtOperLogService,Lean.Hbt.Domain.IServices.Admin.IHbtLocalizationService)">
             <summary>
             构造函数
             </summary>
             <param name="operLogService">操作日志服务</param>
+            <param name="localization">本地化服务</param>
         </member>
         <member name="M:Lean.Hbt.WebApi.Controllers.Audit.HbtOperLogController.GetPagedListAsync(Lean.Hbt.Application.Dtos.Audit.HbtOperLogQueryDto)">
             <summary>
@@ -687,6 +697,17 @@
             控制器基类
             </summary>
         </member>
+        <member name="F:Lean.Hbt.WebApi.Controllers.HbtBaseController._localization">
+            <summary>
+            本地化服务
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.WebApi.Controllers.HbtBaseController.#ctor(Lean.Hbt.Domain.IServices.Admin.IHbtLocalizationService)">
+            <summary>
+            构造函数
+            </summary>
+            <param name="localization">本地化服务</param>
+        </member>
         <member name="M:Lean.Hbt.WebApi.Controllers.HbtBaseController.Success(System.Object,System.String)">
             <summary>
             返回成功结果
@@ -712,11 +733,12 @@
             创建时间: 2024-01-20
             </remarks>
         </member>
-        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtDeptController.#ctor(Lean.Hbt.Application.Services.Identity.IHbtDeptService)">
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtDeptController.#ctor(Lean.Hbt.Application.Services.Identity.IHbtDeptService,Lean.Hbt.Domain.IServices.Admin.IHbtLocalizationService)">
             <summary>
             构造函数
             </summary>
             <param name="deptService">部门服务</param>
+            <param name="localization">本地化服务</param>
         </member>
         <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtDeptController.GetPagedListAsync(Lean.Hbt.Application.Dtos.Identity.HbtDeptQueryDto)">
             <summary>
@@ -797,11 +819,12 @@
             创建时间: 2024-01-22
             </remarks>
         </member>
-        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtDeviceExtendController.#ctor(Lean.Hbt.Application.Services.Identity.IHbtDeviceExtendService)">
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtDeviceExtendController.#ctor(Lean.Hbt.Application.Services.Identity.IHbtDeviceExtendService,Lean.Hbt.Domain.IServices.Admin.IHbtLocalizationService)">
             <summary>
             构造函数
             </summary>
             <param name="deviceExtendService">设备扩展信息服务</param>
+            <param name="localization">本地化服务</param>
         </member>
         <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtDeviceExtendController.GetPagedListAsync(Lean.Hbt.Application.Dtos.Identity.HbtDeviceExtendPageRequest)">
             <summary>
@@ -863,11 +886,12 @@
             创建时间: 2024-01-22
             </remarks>
         </member>
-        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtLoginExtendController.#ctor(Lean.Hbt.Application.Services.Identity.IHbtLoginExtendService)">
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtLoginExtendController.#ctor(Lean.Hbt.Application.Services.Identity.IHbtLoginExtendService,Lean.Hbt.Domain.IServices.Admin.IHbtLocalizationService)">
             <summary>
             构造函数
             </summary>
             <param name="loginExtendService">登录扩展信息服务</param>
+            <param name="localization">本地化服务</param>
         </member>
         <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtLoginExtendController.GetPagedListAsync(Lean.Hbt.Application.Dtos.Identity.HbtLoginExtendPageRequest)">
             <summary>
@@ -920,11 +944,12 @@
             创建时间: 2024-01-20
             </remarks>
         </member>
-        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtMenuController.#ctor(Lean.Hbt.Application.Services.Identity.IHbtMenuService)">
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtMenuController.#ctor(Lean.Hbt.Application.Services.Identity.IHbtMenuService,Lean.Hbt.Domain.IServices.Admin.IHbtLocalizationService)">
             <summary>
             构造函数
             </summary>
             <param name="menuService">菜单服务</param>
+            <param name="localization">本地化服务</param>
         </member>
         <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtMenuController.GetPagedListAsync(Lean.Hbt.Application.Dtos.Identity.HbtMenuQueryDto)">
             <summary>
@@ -1009,7 +1034,7 @@
             OAuth认证控制器
             </summary>
         </member>
-        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtOAuthController.#ctor(Lean.Hbt.Domain.Services.IHbtOAuthService,Lean.Hbt.Domain.Services.IHbtSessionManager,Lean.Hbt.Domain.Repositories.IHbtRepository{Lean.Hbt.Domain.Entities.Identity.HbtUser})">
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtOAuthController.#ctor(Lean.Hbt.Domain.Services.IHbtOAuthService,Lean.Hbt.Domain.Services.IHbtSessionManager,Lean.Hbt.Domain.Repositories.IHbtRepository{Lean.Hbt.Domain.Entities.Identity.HbtUser},Lean.Hbt.Domain.IServices.Admin.IHbtLocalizationService)">
             <summary>
             构造函数
             </summary>
@@ -1039,11 +1064,12 @@
             创建时间: 2024-01-20
             </remarks>
         </member>
-        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtPostController.#ctor(Lean.Hbt.Application.Services.Identity.IHbtPostService)">
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtPostController.#ctor(Lean.Hbt.Application.Services.Identity.IHbtPostService,Lean.Hbt.Domain.IServices.Admin.IHbtLocalizationService)">
             <summary>
             构造函数
             </summary>
             <param name="postService">岗位服务</param>
+            <param name="localization">本地化服务</param>
         </member>
         <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtPostController.GetPagedListAsync(Lean.Hbt.Application.Dtos.Identity.HbtPostQueryDto)">
             <summary>
@@ -1124,11 +1150,12 @@
             创建时间: 2024-01-20
             </remarks>
         </member>
-        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtRoleController.#ctor(Lean.Hbt.Application.Services.Identity.IHbtRoleService)">
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtRoleController.#ctor(Lean.Hbt.Application.Services.Identity.IHbtRoleService,Lean.Hbt.Domain.IServices.Admin.IHbtLocalizationService)">
             <summary>
             构造函数
             </summary>
             <param name="roleService">角色服务</param>
+            <param name="localization">本地化服务</param>
         </member>
         <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtRoleController.GetPagedListAsync(Lean.Hbt.Application.Dtos.Identity.HbtRoleQueryDto)">
             <summary>
@@ -1192,11 +1219,12 @@
             租户管理
             </summary>
         </member>
-        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtTenantController.#ctor(Lean.Hbt.Application.Services.Identity.IHbtTenantService)">
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtTenantController.#ctor(Lean.Hbt.Application.Services.Identity.IHbtTenantService,Lean.Hbt.Domain.IServices.Admin.IHbtLocalizationService)">
             <summary>
             构造函数
             </summary>
             <param name="tenantService">租户服务</param>
+            <param name="localization">本地化服务</param>
         </member>
         <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtTenantController.GetPagedListAsync(Lean.Hbt.Application.Dtos.Identity.HbtTenantQueryDto)">
             <summary>
@@ -1264,11 +1292,12 @@
             创建时间: 2024-01-17
             </remarks>
         </member>
-        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtUserController.#ctor(Lean.Hbt.Application.Services.Identity.IHbtUserService)">
+        <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtUserController.#ctor(Lean.Hbt.Application.Services.Identity.IHbtUserService,Lean.Hbt.Domain.IServices.Admin.IHbtLocalizationService)">
             <summary>
             构造函数
             </summary>
             <param name="userService">用户服务</param>
+            <param name="localization">本地化服务</param>
         </member>
         <member name="M:Lean.Hbt.WebApi.Controllers.Identity.HbtUserController.GetPagedListAsync(Lean.Hbt.Application.Dtos.Identity.HbtUserQueryDto)">
             <summary>
@@ -1363,11 +1392,12 @@
             创建时间: 2024-01-20
             </remarks>
         </member>
-        <member name="M:Lean.Hbt.WebApi.Controllers.RealTime.HbtOnlineMessageController.#ctor(Lean.Hbt.Application.Services.RealTime.IHbtOnlineMessageService)">
+        <member name="M:Lean.Hbt.WebApi.Controllers.RealTime.HbtOnlineMessageController.#ctor(Lean.Hbt.Application.Services.RealTime.IHbtOnlineMessageService,Lean.Hbt.Domain.IServices.Admin.IHbtLocalizationService)">
             <summary>
             构造函数
             </summary>
             <param name="onlineMessageService">在线消息服务</param>
+            <param name="localization">本地化服务</param>
         </member>
         <member name="M:Lean.Hbt.WebApi.Controllers.RealTime.HbtOnlineMessageController.GetPagedListAsync(Lean.Hbt.Application.Dtos.RealTime.HbtOnlineMessageQueryDto)">
             <summary>
@@ -1420,11 +1450,12 @@
             创建时间: 2024-01-20
             </remarks>
         </member>
-        <member name="M:Lean.Hbt.WebApi.Controllers.RealTime.HbtOnlineUserController.#ctor(Lean.Hbt.Application.Services.RealTime.IHbtOnlineUserService)">
+        <member name="M:Lean.Hbt.WebApi.Controllers.RealTime.HbtOnlineUserController.#ctor(Lean.Hbt.Application.Services.RealTime.IHbtOnlineUserService,Lean.Hbt.Domain.IServices.Admin.IHbtLocalizationService)">
             <summary>
             构造函数
             </summary>
             <param name="onlineUserService">在线用户服务</param>
+            <param name="localization">本地化服务</param>
         </member>
         <member name="M:Lean.Hbt.WebApi.Controllers.RealTime.HbtOnlineUserController.GetPagedListAsync(Lean.Hbt.Application.Dtos.RealTime.HbtOnlineUserQueryDto)">
             <summary>
@@ -1459,10 +1490,12 @@
             验证码控制器
             </summary>
         </member>
-        <member name="M:Lean.Hbt.WebApi.Controllers.Security.HbtCaptchaController.#ctor(Lean.Hbt.Domain.IServices.Security.IHbtCaptchaService)">
+        <member name="M:Lean.Hbt.WebApi.Controllers.Security.HbtCaptchaController.#ctor(Lean.Hbt.Domain.IServices.Security.IHbtCaptchaService,Lean.Hbt.Domain.IServices.Admin.IHbtLocalizationService)">
             <summary>
             构造函数
             </summary>
+            <param name="captchaService">验证码服务</param>
+            <param name="localization">本地化服务</param>
         </member>
         <member name="M:Lean.Hbt.WebApi.Controllers.Security.HbtCaptchaController.GenerateSliderAsync">
             <summary>

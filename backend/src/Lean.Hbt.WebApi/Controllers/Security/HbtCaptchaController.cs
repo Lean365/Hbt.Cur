@@ -2,6 +2,7 @@ using Lean.Hbt.Application.Dtos.Security;
 using Lean.Hbt.Domain.IServices.Security;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Lean.Hbt.Domain.IServices.Admin;
 
 namespace Lean.Hbt.WebApi.Controllers.Security;
 
@@ -10,14 +11,16 @@ namespace Lean.Hbt.WebApi.Controllers.Security;
 /// </summary>
 [Route("api/[controller]")]
 [ApiController]
-public class HbtCaptchaController : ControllerBase
+public class HbtCaptchaController : HbtBaseController
 {
     private readonly IHbtCaptchaService _captchaService;
 
     /// <summary>
     /// 构造函数
     /// </summary>
-    public HbtCaptchaController(IHbtCaptchaService captchaService)
+    /// <param name="captchaService">验证码服务</param>
+    /// <param name="localization">本地化服务</param>
+    public HbtCaptchaController(IHbtCaptchaService captchaService, IHbtLocalizationService localization) : base(localization)
     {
         _captchaService = captchaService;
     }

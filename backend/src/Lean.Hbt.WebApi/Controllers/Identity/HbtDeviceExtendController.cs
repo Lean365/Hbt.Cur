@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using Lean.Hbt.Application.Dtos.Identity;
 using Lean.Hbt.Application.Services.Identity;
 using Lean.Hbt.Common.Models;
+using Lean.Hbt.Domain.IServices.Admin;
 
 namespace Lean.Hbt.WebApi.Controllers.Identity
 {
@@ -33,7 +34,8 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// 构造函数
         /// </summary>
         /// <param name="deviceExtendService">设备扩展信息服务</param>
-        public HbtDeviceExtendController(IHbtDeviceExtendService deviceExtendService)
+        /// <param name="localization">本地化服务</param>
+        public HbtDeviceExtendController(IHbtDeviceExtendService deviceExtendService, IHbtLocalizationService localization) : base(localization)
         {
             _deviceExtendService = deviceExtendService;
         }

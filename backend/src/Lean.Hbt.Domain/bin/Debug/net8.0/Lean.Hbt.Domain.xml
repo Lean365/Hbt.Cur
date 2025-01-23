@@ -141,6 +141,11 @@
             状态（0正常 1停用）
             </summary>
         </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Admin.HbtLanguage.IsDefault">
+            <summary>
+            是否默认语言
+            </summary>
+        </member>
         <member name="T:Lean.Hbt.Domain.Entities.Admin.HbtSysConfig">
             <summary>
             系统配置实体
@@ -1633,6 +1638,39 @@
             <summary>
             获取租户组的连接ID列表
             </summary>
+        </member>
+        <member name="T:Lean.Hbt.Domain.IServices.Admin.IHbtLocalizationService">
+            <summary>
+            本地化服务接口
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Domain.IServices.Admin.IHbtLocalizationService.L(System.String,System.Object[])">
+            <summary>
+            获取当前语言的翻译值
+            </summary>
+            <param name="key">翻译键</param>
+            <param name="args">格式化参数</param>
+            <returns>翻译后的文本</returns>
+        </member>
+        <member name="M:Lean.Hbt.Domain.IServices.Admin.IHbtLocalizationService.L(System.String,System.String,System.Object[])">
+            <summary>
+            获取指定语言的翻译值
+            </summary>
+            <param name="langCode">语言代码</param>
+            <param name="key">翻译键</param>
+            <param name="args">格式化参数</param>
+            <returns>翻译后的文本</returns>
+        </member>
+        <member name="P:Lean.Hbt.Domain.IServices.Admin.IHbtLocalizationService.CurrentLanguage">
+            <summary>
+            获取当前语言代码
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Domain.IServices.Admin.IHbtLocalizationService.SetLanguage(System.String)">
+            <summary>
+            设置当前语言
+            </summary>
+            <param name="langCode">语言代码</param>
         </member>
         <member name="T:Lean.Hbt.Domain.IServices.IHbtAuditsLog">
             <summary>

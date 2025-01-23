@@ -48,5 +48,11 @@ namespace Lean.Hbt.Domain.Entities.Admin
         /// </summary>
         [SugarColumn(ColumnName = "status", ColumnDescription = "状态（0正常 1停用）", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
         public HbtStatus Status { get; set; } = HbtStatus.Normal;
+
+        /// <summary>
+        /// 是否默认语言
+        /// </summary>
+        [SugarColumn(ColumnName = "is_default", ColumnDescription = "是否默认语言", ColumnDataType = "bit", IsNullable = false, DefaultValue = "0")]
+        public bool IsDefault { get; set; } = false;
     }
 }

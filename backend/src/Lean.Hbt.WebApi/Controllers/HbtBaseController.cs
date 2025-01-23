@@ -9,6 +9,7 @@
 
 using Microsoft.AspNetCore.Mvc;
 using Lean.Hbt.Common.Models;
+using Lean.Hbt.Domain.IServices.Admin;
 
 namespace Lean.Hbt.WebApi.Controllers
 {
@@ -20,14 +21,28 @@ namespace Lean.Hbt.WebApi.Controllers
     public abstract class HbtBaseController : ControllerBase
     {
         /// <summary>
+        /// 本地化服务
+        /// </summary>
+        protected readonly IHbtLocalizationService _localization;
+
+        /// <summary>
+        /// 构造函数
+        /// </summary>
+        /// <param name="localization">本地化服务</param>
+        protected HbtBaseController(IHbtLocalizationService localization)
+        {
+            _localization = localization;
+        }
+
+        /// <summary>
         /// 返回成功结果
         /// </summary>
         /// <param name="data">数据</param>
         /// <param name="message">消息</param>
         /// <returns>操作结果</returns>
-        protected IActionResult Success(object? data = null, string message = "操作成功")
+        protected IActionResult Success(object? data = null, string message = "Common.OperationSuccess")
         {
-            return Ok(HbtApiResult.Success(data, message));
+            return Ok(HbtApiResult.Success(data, _localization.L(message)));
         }
 
         /// <summary>
@@ -36,9 +51,9 @@ namespace Lean.Hbt.WebApi.Controllers
         /// <param name="message">错误消息</param>
         /// <param name="code">错误代码</param>
         /// <returns>操作结果</returns>
-        protected IActionResult Error(string message = "操作失败", int code = 400)
+        protected IActionResult Error(string message = "Common.OperationFailed", int code = 400)
         {
-            return Ok(HbtApiResult.Error(message, code));
+            return Ok(HbtApiResult.Error(_localization.L(message), code));
         }
     }
 } 

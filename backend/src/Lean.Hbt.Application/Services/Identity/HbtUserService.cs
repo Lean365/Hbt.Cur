@@ -17,6 +17,7 @@ using Lean.Hbt.Common.Models;
 using Lean.Hbt.Common.Utils;
 using Lean.Hbt.Domain.Entities.Identity;
 using Lean.Hbt.Domain.IServices;
+using Lean.Hbt.Domain.IServices.Admin;
 using Lean.Hbt.Domain.Repositories;
 using Lean.Hbt.Domain.Utils;
 using Mapster;
@@ -39,6 +40,7 @@ namespace Lean.Hbt.Application.Services.Identity
         private readonly IHbtRepository<HbtUserDept> _userDeptRepository;
         private readonly IHbtPasswordPolicy _passwordPolicy;
         private readonly IHbtLogger _logger;
+        private readonly IHbtLocalizationService _localization;
 
         /// <summary>
         /// 构造函数
@@ -49,7 +51,8 @@ namespace Lean.Hbt.Application.Services.Identity
             IHbtRepository<HbtUserPost> userPostRepository,
             IHbtRepository<HbtUserDept> userDeptRepository,
             IHbtPasswordPolicy passwordPolicy,
-            IHbtLogger logger)
+            IHbtLogger logger,
+            IHbtLocalizationService localization)
         {
             _userRepository = userRepository;
             _userRoleRepository = userRoleRepository;
@@ -57,6 +60,7 @@ namespace Lean.Hbt.Application.Services.Identity
             _userDeptRepository = userDeptRepository;
             _passwordPolicy = passwordPolicy;
             _logger = logger;
+            _localization = localization;
         }
 
         /// <summary>
@@ -103,7 +107,7 @@ namespace Lean.Hbt.Application.Services.Identity
         {
             var user = await _userRepository.GetByIdAsync(userId);
             if (user == null)
-                throw new HbtException($"用户不存在: {userId}");
+                throw new HbtException(_localization.L("User.NotFound"));
 
             return user.Adapt<HbtUserDto>();
         }
@@ -119,10 +123,10 @@ namespace Lean.Hbt.Application.Services.Identity
                 throw new ArgumentNullException(nameof(input));
 
             if (string.IsNullOrEmpty(input.UserName))
-                throw new HbtException("用户名不能为空");
+                throw new HbtException(_localization.L("User.Username.Required"));
 
             if (string.IsNullOrEmpty(input.Password))
-                throw new HbtException("密码不能为空");
+                throw new HbtException(_localization.L("User.Password.Required"));
 
             // 验证字段是否已存在
             await HbtValidateUtils.ValidateFieldExistsAsync(_userRepository, "UserName", input.UserName);
@@ -131,7 +135,7 @@ namespace Lean.Hbt.Application.Services.Identity
 
             // 验证密码复杂度
             if (!_passwordPolicy.ValidatePasswordComplexity(input.Password))
-                throw new HbtException("密码不符合复杂度要求");
+                throw new HbtException(_localization.L("User.Password.Invalid"));
 
             // 创建用户
             var (hash, salt, iterations) = HbtPasswordUtils.CreateHash(input.Password);
@@ -154,7 +158,7 @@ namespace Lean.Hbt.Application.Services.Identity
 
             var result = await _userRepository.InsertAsync(user);
             if (result <= 0)
-                throw new HbtException("创建用户失败");
+                throw new HbtException(_localization.L("User.Create.Failed"));
 
             // 关联角色
             if (input.RoleIds?.Any() == true)
@@ -189,6 +193,7 @@ namespace Lean.Hbt.Application.Services.Identity
             };
             await _userDeptRepository.InsertAsync(userDept);
 
+            _logger.Info(_localization.L("User.Created.Success", input.UserName));
             return user.Id;
         }
 
@@ -204,7 +209,7 @@ namespace Lean.Hbt.Application.Services.Identity
 
             var user = await _userRepository.GetByIdAsync(input.UserId);
             if (user == null)
-                throw new HbtException($"用户不存在: {input.UserId}");
+                throw new HbtException(_localization.L("User.NotFound"));
 
             // 验证字段是否已存在
             await HbtValidateUtils.ValidateFieldExistsAsync(_userRepository, "PhoneNumber", input.PhoneNumber, input.UserId);
@@ -221,7 +226,7 @@ namespace Lean.Hbt.Application.Services.Identity
 
             var result = await _userRepository.UpdateAsync(user);
             if (result <= 0)
-                throw new HbtException("更新用户失败");
+                throw new HbtException(_localization.L("User.Update.Failed"));
 
             // 更新角色关联
             await _userRoleRepository.DeleteAsync((Expression<Func<HbtUserRole, bool>>)(x => x.UserId == user.Id));
@@ -259,7 +264,8 @@ namespace Lean.Hbt.Application.Services.Identity
             };
             await _userDeptRepository.InsertAsync(userDept);
 
-            return true;
+            _logger.Info(_localization.L("User.Updated.Success", user.UserName));
+            return result > 0;
         }
 
         /// <summary>
@@ -271,7 +277,7 @@ namespace Lean.Hbt.Application.Services.Identity
         {
             var user = await _userRepository.GetByIdAsync(userId);
             if (user == null)
-                throw new HbtException($"用户不存在: {userId}");
+                throw new HbtException(_localization.L("User.NotFound"));
 
             // 删除用户关联数据
             await _userRoleRepository.DeleteAsync((Expression<Func<HbtUserRole, bool>>)(x => x.UserId == userId));
@@ -280,6 +286,8 @@ namespace Lean.Hbt.Application.Services.Identity
 
             // 删除用户
             var result = await _userRepository.DeleteAsync(userId);
+
+            _logger.Info(_localization.L("User.Deleted.Success", user.UserName));
             return result > 0;
         }
 
@@ -291,7 +299,7 @@ namespace Lean.Hbt.Application.Services.Identity
         public async Task<bool> BatchDeleteAsync(long[] userIds)
         {
             if (userIds == null || userIds.Length == 0)
-                return false;
+                throw new HbtException(_localization.L("User.BatchDelete.Empty"));
 
             // 删除用户关联数据
             await _userRoleRepository.DeleteAsync((Expression<Func<HbtUserRole, bool>>)(x => userIds.Contains(x.UserId)));
@@ -300,6 +308,8 @@ namespace Lean.Hbt.Application.Services.Identity
 
             // 删除用户
             var result = await _userRepository.DeleteRangeAsync(userIds.Cast<object>().ToList());
+
+            _logger.Info(_localization.L("User.BatchDeleted.Success", string.Join(",", userIds)));
             return result > 0;
         }
 
@@ -324,7 +334,7 @@ namespace Lean.Hbt.Application.Services.Identity
                 {
                     if (string.IsNullOrEmpty(user.UserName) || string.IsNullOrEmpty(user.Password))
                     {
-                        _logger.Warn($"导入用户失败: 用户名或密码不能为空");
+                        _logger.Warn(_localization.L("User.Import.Empty"));
                         fail++;
                         continue;
                     }
@@ -338,7 +348,7 @@ namespace Lean.Hbt.Application.Services.Identity
                     }
                     catch (HbtException ex)
                     {
-                        _logger.Warn($"导入用户失败: {ex.Message}");
+                        _logger.Warn($"{_localization.L("User.Import.Failed")}: {ex.Message}");
                         fail++;
                         continue;
                     }
@@ -366,11 +376,12 @@ namespace Lean.Hbt.Application.Services.Identity
                 }
                 catch (Exception ex)
                 {
-                    _logger.Error($"导入用户失败: {ex.Message}", ex);
+                    _logger.Error($"{_localization.L("User.Import.Failed")}: {ex.Message}", ex);
                     fail++;
                 }
             }
 
+            _logger.Info(_localization.L("User.Imported.Success", success, fail));
             return (success, fail);
         }
 
@@ -420,10 +431,12 @@ namespace Lean.Hbt.Application.Services.Identity
         {
             var user = await _userRepository.GetByIdAsync(input.UserId);
             if (user == null)
-                throw new HbtException($"用户不存在: {input.UserId}");
+                throw new HbtException(_localization.L("User.NotFound"));
 
             user.Status = input.Status;
             var result = await _userRepository.UpdateAsync(user);
+
+            _logger.Info(_localization.L("User.Status.Updated.Success", user.UserName, input.Status));
             return result > 0;
         }
 
@@ -436,11 +449,11 @@ namespace Lean.Hbt.Application.Services.Identity
         {
             var user = await _userRepository.GetByIdAsync(input.UserId);
             if (user == null)
-                throw new HbtException($"用户不存在: {input.UserId}");
+                throw new HbtException(_localization.L("User.NotFound"));
 
             // 验证密码复杂度
             if (!_passwordPolicy.ValidatePasswordComplexity(input.Password))
-                throw new HbtException("密码不符合复杂度要求");
+                throw new HbtException(_localization.L("User.Password.Invalid"));
 
             // 重置密码
             var (hash, salt, iterations) = HbtPasswordUtils.CreateHash(input.Password);
@@ -448,6 +461,8 @@ namespace Lean.Hbt.Application.Services.Identity
             user.Salt = salt;
 
             var result = await _userRepository.UpdateAsync(user);
+
+            _logger.Info(_localization.L("User.Password.Reset.Success", user.UserName));
             return result > 0;
         }
 
@@ -460,15 +475,15 @@ namespace Lean.Hbt.Application.Services.Identity
         {
             var user = await _userRepository.GetByIdAsync(input.UserId);
             if (user == null)
-                throw new HbtException($"用户不存在: {input.UserId}");
+                throw new HbtException(_localization.L("User.NotFound"));
 
             // 验证旧密码
             if (!HbtPasswordUtils.VerifyHash(input.OldPassword, user.Password, user.Salt, user.Iterations))
-                throw new HbtException("旧密码不正确");
+                throw new HbtException(_localization.L("User.Password.Old.Invalid"));
 
             // 验证密码复杂度
             if (!_passwordPolicy.ValidatePasswordComplexity(input.NewPassword))
-                throw new HbtException("新密码不符合复杂度要求");
+                throw new HbtException(_localization.L("User.Password.Invalid"));
 
             // 修改密码
             var (hash, salt, iterations) = HbtPasswordUtils.CreateHash(input.NewPassword);
@@ -476,6 +491,8 @@ namespace Lean.Hbt.Application.Services.Identity
             user.Salt = salt;
 
             var result = await _userRepository.UpdateAsync(user);
+
+            _logger.Info(_localization.L("User.Password.Changed.Success", user.UserName));
             return result > 0;
         }
     }

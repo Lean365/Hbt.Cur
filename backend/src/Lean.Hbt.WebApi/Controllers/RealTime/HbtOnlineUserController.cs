@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using Lean.Hbt.Common.Models;
 using Lean.Hbt.Application.Dtos.RealTime;
 using Lean.Hbt.Application.Services.RealTime;
+using Lean.Hbt.Domain.IServices.Admin;
 
 namespace Lean.Hbt.WebApi.Controllers.RealTime
 {
@@ -33,7 +34,8 @@ namespace Lean.Hbt.WebApi.Controllers.RealTime
         /// 构造函数
         /// </summary>
         /// <param name="onlineUserService">在线用户服务</param>
-        public HbtOnlineUserController(IHbtOnlineUserService onlineUserService)
+        /// <param name="localization">本地化服务</param>
+        public HbtOnlineUserController(IHbtOnlineUserService onlineUserService, IHbtLocalizationService localization) : base(localization)
         {
             _onlineUserService = onlineUserService;
         }

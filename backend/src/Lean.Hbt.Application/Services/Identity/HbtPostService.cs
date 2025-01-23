@@ -25,6 +25,9 @@ using Lean.Hbt.Domain.Utils;
 using Mapster;
 using Microsoft.Extensions.Logging;
 using SqlSugar;
+using Lean.Hbt.Infrastructure.Services;
+using Lean.Hbt.Domain.Services;
+using Lean.Hbt.Domain.IServices.Admin;
 
 namespace Lean.Hbt.Application.Services.Identity
 {
@@ -36,6 +39,7 @@ namespace Lean.Hbt.Application.Services.Identity
         private readonly IHbtRepository<HbtPost> _postRepository;
         private readonly IHbtRepository<HbtUserPost> _userPostRepository;
         private readonly IHbtLogger _logger;
+        private readonly IHbtLocalizationService _localizationService;
 
         /// <summary>
         /// 构造函数
@@ -43,10 +47,12 @@ namespace Lean.Hbt.Application.Services.Identity
         public HbtPostService(
             IHbtRepository<HbtPost> postRepository,
             IHbtRepository<HbtUserPost> userPostRepository,
+            IHbtLocalizationService localizationService,
             IHbtLogger logger)
         {
             _postRepository = postRepository;
             _userPostRepository = userPostRepository;
+            _localizationService = localizationService;
             _logger = logger;
         }
 
@@ -83,7 +89,7 @@ namespace Lean.Hbt.Application.Services.Identity
         {
             var post = await _postRepository.GetByIdAsync(id);
             if (post == null)
-                throw new HbtException($"岗位不存在: {id}");
+                throw new HbtException(_localizationService.L("Common.NotExists"));
 
             return post.Adapt<HbtPostDto>();
         }
@@ -94,16 +100,16 @@ namespace Lean.Hbt.Application.Services.Identity
         public async Task<long> InsertAsync(HbtPostCreateDto input)
         {
             // 验证字段是否已存在
-            await HbtValidateUtils.ValidateFieldExistsAsync(_postRepository, "PostCode", input.PostCode);
-            await HbtValidateUtils.ValidateFieldExistsAsync(_postRepository, "PostName", input.PostName);
+            if (await _postRepository.AsQueryable().AnyAsync(x => x.PostCode == input.PostCode))
+                throw new HbtException(_localizationService.L("Common.CodeExists"));
+            
+            if (await _postRepository.AsQueryable().AnyAsync(x => x.PostName == input.PostName))
+                throw new HbtException(_localizationService.L("Common.NameExists"));
 
             var post = input.Adapt<HbtPost>();
-            post.CreateTime = DateTime.Now;
-            post.CreateBy = "system"; // TODO: 从当前用户上下文获取
-
             var result = await _postRepository.InsertAsync(post);
-            if (result <= 0)
-                throw new HbtException("创建岗位失败");
+            if (result > 0)
+                _logger.Info(_localizationService.L("Common.AddSuccess"));
 
             return post.Id;
         }
@@ -115,21 +121,20 @@ namespace Lean.Hbt.Application.Services.Identity
         {
             var post = await _postRepository.GetByIdAsync(input.Id);
             if (post == null)
-                throw new HbtException($"岗位不存在: {input.Id}");
+                throw new HbtException(_localizationService.L("Common.NotExists"));
 
             // 验证字段是否已存在
-            await HbtValidateUtils.ValidateFieldExistsAsync(_postRepository, "PostCode", input.PostCode, input.Id);
-            await HbtValidateUtils.ValidateFieldExistsAsync(_postRepository, "PostName", input.PostName, input.Id);
+            if (await _postRepository.AsQueryable().AnyAsync(x => x.PostCode == input.PostCode && x.Id != input.Id))
+                throw new HbtException(_localizationService.L("Common.CodeExists"));
+            
+            if (await _postRepository.AsQueryable().AnyAsync(x => x.PostName == input.PostName && x.Id != input.Id))
+                throw new HbtException(_localizationService.L("Common.NameExists"));
 
-            post.PostCode = input.PostCode;
-            post.PostName = input.PostName;
-            post.OrderNum = input.OrderNum;
-            post.Status = input.Status;
-            post.Remark = input.Remark;
-            post.UpdateTime = DateTime.Now;
-            post.UpdateBy = "system"; // TODO: 从当前用户上下文获取
-
+            input.Adapt(post);
             var result = await _postRepository.UpdateAsync(post);
+            if (result > 0)
+                _logger.Info(_localizationService.L("Common.UpdateSuccess"));
+
             return result > 0;
         }
 
@@ -140,13 +145,16 @@ namespace Lean.Hbt.Application.Services.Identity
         {
             var post = await _postRepository.GetByIdAsync(id);
             if (post == null)
-                throw new HbtException($"岗位不存在: {id}");
+                throw new HbtException(_localizationService.L("Common.NotExists"));
 
             // 检查是否有用户关联
-            if (await _userPostRepository.AsQueryable().AnyAsync(up => up.PostId == id))
-                throw new HbtException($"岗位已分配,不能删除");
+            if (await _userPostRepository.AsQueryable().AnyAsync(x => x.PostId == id))
+                throw new HbtException(_localizationService.L("Common.DeleteFailed"));
 
-            var result = await _postRepository.DeleteAsync(id);
+            var result = await _postRepository.DeleteAsync(post);
+            if (result > 0)
+                _logger.Info(_localizationService.L("Common.DeleteSuccess"));
+
             return result > 0;
         }
 
@@ -275,9 +283,6 @@ namespace Lean.Hbt.Application.Services.Identity
                 throw new HbtException($"岗位不存在: {input.PostId}");
 
             post.Status = input.Status;
-            post.UpdateTime = DateTime.Now;
-            post.UpdateBy = "system"; // TODO: 从当前用户上下文获取
-
             var result = await _postRepository.UpdateAsync(post);
             return result > 0;
         }

@@ -284,13 +284,15 @@
             数据库种子数据初始化
             </summary>
         </member>
-        <member name="M:Lean.Hbt.Infrastructure.Data.Seeds.HbtDbSeed.#ctor(Lean.Hbt.Infrastructure.Data.Contexts.HbtDbContext,Lean.Hbt.Domain.IServices.IHbtLogger,Lean.Hbt.Domain.Repositories.IHbtRepository{Lean.Hbt.Domain.Entities.Admin.HbtSysConfig})">
+        <member name="M:Lean.Hbt.Infrastructure.Data.Seeds.HbtDbSeed.#ctor(Lean.Hbt.Infrastructure.Data.Contexts.HbtDbContext,Lean.Hbt.Domain.IServices.IHbtLogger,Lean.Hbt.Domain.Repositories.IHbtRepository{Lean.Hbt.Domain.Entities.Admin.HbtSysConfig},Lean.Hbt.Domain.Repositories.IHbtRepository{Lean.Hbt.Domain.Entities.Admin.HbtTranslation},Lean.Hbt.Domain.Repositories.IHbtRepository{Lean.Hbt.Domain.Entities.Admin.HbtLanguage})">
             <summary>
             构造函数
             </summary>
             <param name="context">数据库上下文</param>
             <param name="logger">日志记录器</param>
             <param name="repository">系统配置仓储</param>
+            <param name="translationRepository">翻译仓储</param>
+            <param name="languageRepository">语言仓储</param>
         </member>
         <member name="M:Lean.Hbt.Infrastructure.Data.Seeds.HbtDbSeed.InitializeAsync">
             <summary>
@@ -332,6 +334,16 @@
             初始化验证码配置
             </summary>
         </member>
+        <member name="M:Lean.Hbt.Infrastructure.Data.Seeds.HbtDbSeed.InitializeLanguageAsync">
+            <summary>
+            初始化语言配置
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Data.Seeds.HbtDbSeed.InitializeTranslationAsync">
+            <summary>
+            初始化翻译数据
+            </summary>
+        </member>
         <member name="T:Lean.Hbt.Infrastructure.Extensions.HbtCsrfExtensions">
             <summary>
             CSRF防护中间件扩展
@@ -340,6 +352,21 @@
         <member name="M:Lean.Hbt.Infrastructure.Extensions.HbtCsrfExtensions.UseHbtCsrf(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
             <summary>
             使用CSRF防护中间件
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Infrastructure.Extensions.HbtLocalizationExtensions">
+            <summary>
+            本地化扩展方法
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Extensions.HbtLocalizationExtensions.AddHbtLocalization(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            添加本地化服务
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Extensions.HbtLocalizationExtensions.UseHbtLocalization(Microsoft.AspNetCore.Builder.IApplicationBuilder)">
+            <summary>
+            使用本地化服务
             </summary>
         </member>
         <member name="T:Lean.Hbt.Infrastructure.Extensions.HbtPermissionExtensions">
@@ -369,6 +396,11 @@
         <member name="T:Lean.Hbt.Infrastructure.Extensions.HbtServiceCollectionExtensions">
             <summary>
             服务集合扩展
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Extensions.HbtServiceCollectionExtensions.GetCurrentUserName">
+            <summary>
+            获取当前用户名
             </summary>
         </member>
         <member name="M:Lean.Hbt.Infrastructure.Extensions.HbtServiceCollectionExtensions.AddInfrastructure(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)">
@@ -489,6 +521,24 @@
             </summary>
             <param name="message">日志消息模板</param>
             <param name="args">参数数组</param>
+        </member>
+        <member name="T:Lean.Hbt.Infrastructure.Middleware.HbtLocalizationMiddleware">
+            <summary>
+            本地化中间件
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Middleware.HbtLocalizationMiddleware.#ctor(Microsoft.AspNetCore.Http.RequestDelegate,Lean.Hbt.Domain.IServices.Admin.IHbtLocalizationService)">
+            <summary>
+            构造函数
+            </summary>
+            <param name="next">请求委托</param>
+            <param name="localizationService">本地化服务</param>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Middleware.HbtLocalizationMiddleware.InvokeAsync(Microsoft.AspNetCore.Http.HttpContext)">
+            <summary>
+            处理请求
+            </summary>
+            <param name="context">HTTP上下文</param>
         </member>
         <member name="T:Lean.Hbt.Infrastructure.Repositories.HbtRepository`1">
             <summary>
@@ -1215,6 +1265,41 @@
         <member name="M:Lean.Hbt.Infrastructure.Security.HbtSqlInjectionMiddleware.ContainsSqlInjection(System.String)">
             <summary>
             检查是否包含SQL注入攻击
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Infrastructure.Services.HbtLocalizationService">
+            <summary>
+            本地化服务实现
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Services.HbtLocalizationService.L(System.String,System.Object[])">
+            <summary>
+            获取当前语言的翻译值
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Services.HbtLocalizationService.L(System.String,System.String,System.Object[])">
+            <summary>
+            获取指定语言的翻译值
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Infrastructure.Services.HbtLocalizationService.CurrentLanguage">
+            <summary>
+            获取当前语言代码
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Services.HbtLocalizationService.SetLanguage(System.String)">
+            <summary>
+            设置当前语言
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Services.HbtLocalizationService.InitializeTranslations">
+            <summary>
+            初始化翻译数据
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Services.HbtLocalizationService.ReloadTranslationsAsync">
+            <summary>
+            重新加载翻译数据
             </summary>
         </member>
         <member name="T:Lean.Hbt.Infrastructure.SignalR.HbtOnlineHub">

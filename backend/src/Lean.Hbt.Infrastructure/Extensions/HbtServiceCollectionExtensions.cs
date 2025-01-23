@@ -19,6 +19,12 @@ using Lean.Hbt.Infrastructure.Logging;
 using Lean.Hbt.Infrastructure.Security;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Extensions.DependencyInjection;
+using SqlSugar;
+using System;
+using Lean.Hbt.Infrastructure.Repositories;
+using Lean.Hbt.Domain.Repositories;
+using Microsoft.AspNetCore.Http;
 
 namespace Lean.Hbt.Infrastructure.Extensions
 {
@@ -27,6 +33,15 @@ namespace Lean.Hbt.Infrastructure.Extensions
     /// </summary>
     public static class HbtServiceCollectionExtensions
     {
+        /// <summary>
+        /// 获取当前用户名
+        /// </summary>
+        private static string? GetCurrentUserName()
+        {
+            var httpContextAccessor = new HttpContextAccessor();
+            return httpContextAccessor.HttpContext?.User?.Identity?.Name;
+        }
+
         /// <summary>
         /// 添加基础设施服务
         /// </summary>
@@ -52,6 +67,7 @@ namespace Lean.Hbt.Infrastructure.Extensions
             // 添加SqlSugar服务
             services.AddSingleton<ISqlSugarClient>(sp =>
             {
+                var httpContextAccessor = sp.GetRequiredService<IHttpContextAccessor>();
                 var scope = new SqlSugarScope(connectionConfig,
                     db =>
                     {
@@ -59,6 +75,51 @@ namespace Lean.Hbt.Infrastructure.Extensions
                         db.Aop.OnLogExecuting = (sql, parameters) =>
                         {
                             Console.WriteLine(sql);
+                        };
+
+                        // 添加插入前的AOP拦截
+                        db.Aop.DataExecuting = (oldValue, entityInfo) =>
+                        {
+                            if (entityInfo.OperationType == DataFilterType.InsertByObject)
+                            {
+                                // 设置创建信息
+                                if (entityInfo.EntityColumnInfo.PropertyName == "CreateTime")
+                                {
+                                    entityInfo.SetValue(DateTime.Now);
+                                }
+                                if (entityInfo.EntityColumnInfo.PropertyName == "CreateBy")
+                                {
+                                    entityInfo.SetValue(httpContextAccessor.HttpContext?.User?.Identity?.Name ?? "system");
+                                }
+                            }
+                            // 设置更新信息
+                            if (entityInfo.OperationType == DataFilterType.UpdateByObject)
+                            {
+                                if (entityInfo.EntityColumnInfo.PropertyName == "UpdateTime")
+                                {
+                                    entityInfo.SetValue(DateTime.Now);
+                                }
+                                if (entityInfo.EntityColumnInfo.PropertyName == "UpdateBy")
+                                {
+                                    entityInfo.SetValue(httpContextAccessor.HttpContext?.User?.Identity?.Name ?? "system");
+                                }
+                            }
+                            // 设置删除信息
+                            if (entityInfo.OperationType == DataFilterType.DeleteByObject)
+                            {
+                                if (entityInfo.EntityColumnInfo.PropertyName == "DeleteTime")
+                                {
+                                    entityInfo.SetValue(DateTime.Now);
+                                }
+                                if (entityInfo.EntityColumnInfo.PropertyName == "DeleteBy")
+                                {
+                                    entityInfo.SetValue(httpContextAccessor.HttpContext?.User?.Identity?.Name ?? "system");
+                                }
+                                if (entityInfo.EntityColumnInfo.PropertyName == "IsDeleted")
+                                {
+                                    entityInfo.SetValue(1);
+                                }
+                            }
                         };
                     });
 

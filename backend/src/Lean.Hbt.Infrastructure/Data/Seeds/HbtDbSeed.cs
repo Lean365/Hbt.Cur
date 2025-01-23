@@ -14,6 +14,7 @@ using Lean.Hbt.Domain.Entities.Identity;
 using Lean.Hbt.Domain.IServices;
 using Lean.Hbt.Infrastructure.Data.Contexts;
 using Lean.Hbt.Domain.Repositories;
+using SqlSugar;
 
 namespace Lean.Hbt.Infrastructure.Data.Seeds;
 
@@ -25,6 +26,8 @@ public class HbtDbSeed
     private readonly HbtDbContext _context;
     private readonly IHbtLogger _logger;
     private readonly IHbtRepository<HbtSysConfig> _repository;
+    private readonly IHbtRepository<HbtTranslation> _translationRepository;
+    private readonly IHbtRepository<HbtLanguage> _languageRepository;
 
     /// <summary>
     /// 构造函数
@@ -32,11 +35,16 @@ public class HbtDbSeed
     /// <param name="context">数据库上下文</param>
     /// <param name="logger">日志记录器</param>
     /// <param name="repository">系统配置仓储</param>
-    public HbtDbSeed(HbtDbContext context, IHbtLogger logger, IHbtRepository<HbtSysConfig> repository)
+    /// <param name="translationRepository">翻译仓储</param>
+    /// <param name="languageRepository">语言仓储</param>
+    public HbtDbSeed(HbtDbContext context, IHbtLogger logger, IHbtRepository<HbtSysConfig> repository, 
+        IHbtRepository<HbtTranslation> translationRepository, IHbtRepository<HbtLanguage> languageRepository)
     {
         _context = context;
         _logger = logger;
         _repository = repository;
+        _translationRepository = translationRepository;
+        _languageRepository = languageRepository;
     }
 
     /// <summary>
@@ -75,6 +83,14 @@ public class HbtDbSeed
             // 7.初始化验证码配置
             var captchaCount = await InitializeCaptchaConfigAsync();
             _logger.Info($"[初始化] 验证码配置数据 - 新增: {captchaCount.Item1}, 更新: {captchaCount.Item2}");
+
+            // 8.初始化语言配置
+            var languageCount = await InitializeLanguageAsync();
+            _logger.Info($"[初始化] 语言配置数据 - 新增: {languageCount.Item1}, 更新: {languageCount.Item2}");
+
+            // 9.初始化翻译数据
+            var translationCount = await InitializeTranslationAsync();
+            _logger.Info($"[初始化] 翻译数据 - 新增: {translationCount.Item1}, 更新: {translationCount.Item2}");
 
             _logger.Info("[初始化] 种子数据初始化完成");
         }
@@ -1141,6 +1157,234 @@ public class HbtDbSeed
                 existingConfig.UpdateBy = "system";
                 await _repository.UpdateAsync(existingConfig);
                 updateCount++;
+            }
+        }
+
+        return (insertCount, updateCount);
+    }
+
+    /// <summary>
+    /// 初始化语言配置
+    /// </summary>
+    private async Task<(int, int)> InitializeLanguageAsync()
+    {
+        var insertCount = 0;
+        var updateCount = 0;
+
+        var languages = new List<HbtLanguage>
+        {
+            new()
+            {
+                LangCode = "zh-CN",
+                LangName = "简体中文",
+                LangIcon = "🇨🇳",
+                OrderNum = 1,
+                Status = HbtStatus.Normal,
+                IsDefault = true,
+                CreateTime = DateTime.Now,
+                CreateBy = "system"
+            },
+            new()
+            {
+                LangCode = "en-US",
+                LangName = "English",
+                LangIcon = "🇺🇸",
+                OrderNum = 2,
+                Status = HbtStatus.Normal,
+                IsDefault = false,
+                CreateTime = DateTime.Now,
+                CreateBy = "system"
+            }
+        };
+
+        foreach (var lang in languages)
+        {
+            var existingLang = await _languageRepository.FirstOrDefaultAsync(x => x.LangCode == lang.LangCode);
+            if (existingLang == null)
+            {
+                await _languageRepository.InsertAsync(lang);
+                insertCount++;
+                _logger.Info($"[创建] 语言 '{lang.LangName}' 创建成功");
+            }
+            else
+            {
+                existingLang.LangName = lang.LangName;
+                existingLang.LangIcon = lang.LangIcon;
+                existingLang.OrderNum = lang.OrderNum;
+                existingLang.Status = lang.Status;
+                existingLang.IsDefault = lang.IsDefault;
+                existingLang.UpdateTime = DateTime.Now;
+                existingLang.UpdateBy = "system";
+                await _languageRepository.UpdateAsync(existingLang);
+                updateCount++;
+                _logger.Info($"[更新] 语言 '{lang.LangName}' 更新成功");
+            }
+        }
+
+        return (insertCount, updateCount);
+    }
+
+    /// <summary>
+    /// 初始化翻译数据
+    /// </summary>
+    private async Task<(int, int)> InitializeTranslationAsync()
+    {
+        var insertCount = 0;
+        var updateCount = 0;
+
+        var translations = new List<HbtTranslation>
+        {
+            // Common模块 - 中文
+            new() { LangCode = "zh-CN", TransKey = "Common.OperationSuccess", TransValue = "操作成功", ModuleName = "Common", Status = HbtStatus.Normal, CreateTime = DateTime.Now, CreateBy = "system" },
+            new() { LangCode = "zh-CN", TransKey = "Common.OperationFailed", TransValue = "操作失败", ModuleName = "Common", Status = HbtStatus.Normal, CreateTime = DateTime.Now, CreateBy = "system" },
+            new() { LangCode = "zh-CN", TransKey = "Common.SaveSuccess", TransValue = "保存成功", ModuleName = "Common", Status = HbtStatus.Normal, CreateTime = DateTime.Now, CreateBy = "system" },
+            new() { LangCode = "zh-CN", TransKey = "Common.SaveFailed", TransValue = "保存失败", ModuleName = "Common", Status = HbtStatus.Normal, CreateTime = DateTime.Now, CreateBy = "system" },
+            new() { LangCode = "zh-CN", TransKey = "Common.DeleteSuccess", TransValue = "删除成功", ModuleName = "Common", Status = HbtStatus.Normal, CreateTime = DateTime.Now, CreateBy = "system" },
+            new() { LangCode = "zh-CN", TransKey = "Common.DeleteFailed", TransValue = "删除失败", ModuleName = "Common", Status = HbtStatus.Normal, CreateTime = DateTime.Now, CreateBy = "system" },
+            new() { LangCode = "zh-CN", TransKey = "Common.UpdateSuccess", TransValue = "更新成功", ModuleName = "Common", Status = HbtStatus.Normal, CreateTime = DateTime.Now, CreateBy = "system" },
+            new() { LangCode = "zh-CN", TransKey = "Common.UpdateFailed", TransValue = "更新失败", ModuleName = "Common", Status = HbtStatus.Normal, CreateTime = DateTime.Now, CreateBy = "system" },
+            new() { LangCode = "zh-CN", TransKey = "Common.QuerySuccess", TransValue = "查询成功", ModuleName = "Common", Status = HbtStatus.Normal, CreateTime = DateTime.Now, CreateBy = "system" },
+            new() { LangCode = "zh-CN", TransKey = "Common.QueryFailed", TransValue = "查询失败", ModuleName = "Common", Status = HbtStatus.Normal, CreateTime = DateTime.Now, CreateBy = "system" },
+            new() { LangCode = "zh-CN", TransKey = "Common.SubmitSuccess", TransValue = "提交成功", ModuleName = "Common", Status = HbtStatus.Normal, CreateTime = DateTime.Now, CreateBy = "system" },
+            new() { LangCode = "zh-CN", TransKey = "Common.SubmitFailed", TransValue = "提交失败", ModuleName = "Common", Status = HbtStatus.Normal, CreateTime = DateTime.Now, CreateBy = "system" },
+            new() { LangCode = "zh-CN", TransKey = "Common.InvalidRequest", TransValue = "无效的请求", ModuleName = "Common", Status = HbtStatus.Normal, CreateTime = DateTime.Now, CreateBy = "system" },
+            new() { LangCode = "zh-CN", TransKey = "Common.DataNotFound", TransValue = "数据不存在", ModuleName = "Common", Status = HbtStatus.Normal, CreateTime = DateTime.Now, CreateBy = "system" },
+            new() { LangCode = "zh-CN", TransKey = "Common.DataExists", TransValue = "数据已存在", ModuleName = "Common", Status = HbtStatus.Normal, CreateTime = DateTime.Now, CreateBy = "system" },
+            new() { LangCode = "zh-CN", TransKey = "Common.ServerError", TransValue = "服务器错误", ModuleName = "Common", Status = HbtStatus.Normal, CreateTime = DateTime.Now, CreateBy = "system" },
+            
+            // Common模块 - 英文
+            new() { LangCode = "en-US", TransKey = "Common.OperationSuccess", TransValue = "Operation successful", ModuleName = "Common", Status = HbtStatus.Normal, CreateTime = DateTime.Now, CreateBy = "system" },
+            new() { LangCode = "en-US", TransKey = "Common.OperationFailed", TransValue = "Operation failed", ModuleName = "Common", Status = HbtStatus.Normal, CreateTime = DateTime.Now, CreateBy = "system" },
+            new() { LangCode = "en-US", TransKey = "Common.SaveSuccess", TransValue = "Save successful", ModuleName = "Common", Status = HbtStatus.Normal, CreateTime = DateTime.Now, CreateBy = "system" },
+            new() { LangCode = "en-US", TransKey = "Common.SaveFailed", TransValue = "Save failed", ModuleName = "Common", Status = HbtStatus.Normal, CreateTime = DateTime.Now, CreateBy = "system" },
+            new() { LangCode = "en-US", TransKey = "Common.DeleteSuccess", TransValue = "Delete successful", ModuleName = "Common", Status = HbtStatus.Normal, CreateTime = DateTime.Now, CreateBy = "system" },
+            new() { LangCode = "en-US", TransKey = "Common.DeleteFailed", TransValue = "Delete failed", ModuleName = "Common", Status = HbtStatus.Normal, CreateTime = DateTime.Now, CreateBy = "system" },
+            new() { LangCode = "en-US", TransKey = "Common.UpdateSuccess", TransValue = "Update successful", ModuleName = "Common", Status = HbtStatus.Normal, CreateTime = DateTime.Now, CreateBy = "system" },
+            new() { LangCode = "en-US", TransKey = "Common.UpdateFailed", TransValue = "Update failed", ModuleName = "Common", Status = HbtStatus.Normal, CreateTime = DateTime.Now, CreateBy = "system" },
+            new() { LangCode = "en-US", TransKey = "Common.QuerySuccess", TransValue = "Query successful", ModuleName = "Common", Status = HbtStatus.Normal, CreateTime = DateTime.Now, CreateBy = "system" },
+            new() { LangCode = "en-US", TransKey = "Common.QueryFailed", TransValue = "Query failed", ModuleName = "Common", Status = HbtStatus.Normal, CreateTime = DateTime.Now, CreateBy = "system" },
+            new() { LangCode = "en-US", TransKey = "Common.SubmitSuccess", TransValue = "Submit successful", ModuleName = "Common", Status = HbtStatus.Normal, CreateTime = DateTime.Now, CreateBy = "system" },
+            new() { LangCode = "en-US", TransKey = "Common.SubmitFailed", TransValue = "Submit failed", ModuleName = "Common", Status = HbtStatus.Normal, CreateTime = DateTime.Now, CreateBy = "system" },
+            new() { LangCode = "en-US", TransKey = "Common.InvalidRequest", TransValue = "Invalid request", ModuleName = "Common", Status = HbtStatus.Normal, CreateTime = DateTime.Now, CreateBy = "system" },
+            new() { LangCode = "en-US", TransKey = "Common.DataNotFound", TransValue = "Data not found", ModuleName = "Common", Status = HbtStatus.Normal, CreateTime = DateTime.Now, CreateBy = "system" },
+            new() { LangCode = "en-US", TransKey = "Common.DataExists", TransValue = "Data already exists", ModuleName = "Common", Status = HbtStatus.Normal, CreateTime = DateTime.Now, CreateBy = "system" },
+            new() { LangCode = "en-US", TransKey = "Common.ServerError", TransValue = "Server error", ModuleName = "Common", Status = HbtStatus.Normal, CreateTime = DateTime.Now, CreateBy = "system" },
+
+            // System模块 - 中文
+            new() { LangCode = "zh-CN", TransKey = "System.Login", TransValue = "登录", ModuleName = "System", Status = HbtStatus.Normal, CreateTime = DateTime.Now, CreateBy = "system" },
+            new() { LangCode = "zh-CN", TransKey = "System.Logout", TransValue = "退出登录", ModuleName = "System", Status = HbtStatus.Normal, CreateTime = DateTime.Now, CreateBy = "system" },
+            new() { LangCode = "zh-CN", TransKey = "System.Username", TransValue = "用户名", ModuleName = "System", Status = HbtStatus.Normal, CreateTime = DateTime.Now, CreateBy = "system" },
+            new() { LangCode = "zh-CN", TransKey = "System.Password", TransValue = "密码", ModuleName = "System", Status = HbtStatus.Normal, CreateTime = DateTime.Now, CreateBy = "system" },
+            new() { LangCode = "zh-CN", TransKey = "System.RememberMe", TransValue = "记住我", ModuleName = "System", Status = HbtStatus.Normal, CreateTime = DateTime.Now, CreateBy = "system" },
+            new() { LangCode = "zh-CN", TransKey = "System.ForgotPassword", TransValue = "忘记密码", ModuleName = "System", Status = HbtStatus.Normal, CreateTime = DateTime.Now, CreateBy = "system" },
+            new() { LangCode = "zh-CN", TransKey = "System.LoginFailed", TransValue = "登录失败", ModuleName = "System", Status = HbtStatus.Normal, CreateTime = DateTime.Now, CreateBy = "system" },
+            new() { LangCode = "zh-CN", TransKey = "System.AccountLocked", TransValue = "账号已锁定", ModuleName = "System", Status = HbtStatus.Normal, CreateTime = DateTime.Now, CreateBy = "system" },
+            new() { LangCode = "zh-CN", TransKey = "System.AccountDisabled", TransValue = "账号已禁用", ModuleName = "System", Status = HbtStatus.Normal, CreateTime = DateTime.Now, CreateBy = "system" },
+            new() { LangCode = "zh-CN", TransKey = "System.PasswordExpired", TransValue = "密码已过期", ModuleName = "System", Status = HbtStatus.Normal, CreateTime = DateTime.Now, CreateBy = "system" },
+            
+            // System模块 - 英文
+            new() { LangCode = "en-US", TransKey = "System.Login", TransValue = "Login", ModuleName = "System", Status = HbtStatus.Normal, CreateTime = DateTime.Now, CreateBy = "system" },
+            new() { LangCode = "en-US", TransKey = "System.Logout", TransValue = "Logout", ModuleName = "System", Status = HbtStatus.Normal, CreateTime = DateTime.Now, CreateBy = "system" },
+            new() { LangCode = "en-US", TransKey = "System.Username", TransValue = "Username", ModuleName = "System", Status = HbtStatus.Normal, CreateTime = DateTime.Now, CreateBy = "system" },
+            new() { LangCode = "en-US", TransKey = "System.Password", TransValue = "Password", ModuleName = "System", Status = HbtStatus.Normal, CreateTime = DateTime.Now, CreateBy = "system" },
+            new() { LangCode = "en-US", TransKey = "System.RememberMe", TransValue = "Remember me", ModuleName = "System", Status = HbtStatus.Normal, CreateTime = DateTime.Now, CreateBy = "system" },
+            new() { LangCode = "en-US", TransKey = "System.ForgotPassword", TransValue = "Forgot password", ModuleName = "System", Status = HbtStatus.Normal, CreateTime = DateTime.Now, CreateBy = "system" },
+            new() { LangCode = "en-US", TransKey = "System.LoginFailed", TransValue = "Login failed", ModuleName = "System", Status = HbtStatus.Normal, CreateTime = DateTime.Now, CreateBy = "system" },
+            new() { LangCode = "en-US", TransKey = "System.AccountLocked", TransValue = "Account locked", ModuleName = "System", Status = HbtStatus.Normal, CreateTime = DateTime.Now, CreateBy = "system" },
+            new() { LangCode = "en-US", TransKey = "System.AccountDisabled", TransValue = "Account disabled", ModuleName = "System", Status = HbtStatus.Normal, CreateTime = DateTime.Now, CreateBy = "system" },
+            new() { LangCode = "en-US", TransKey = "System.PasswordExpired", TransValue = "Password expired", ModuleName = "System", Status = HbtStatus.Normal, CreateTime = DateTime.Now, CreateBy = "system" },
+
+            // User模块 - 中文
+            new() { LangCode = "zh-CN", TransKey = "User.UserManagement", TransValue = "用户管理", ModuleName = "User", Status = HbtStatus.Normal, CreateTime = DateTime.Now, CreateBy = "system" },
+            new() { LangCode = "zh-CN", TransKey = "User.UserList", TransValue = "用户列表", ModuleName = "User", Status = HbtStatus.Normal, CreateTime = DateTime.Now, CreateBy = "system" },
+            new() { LangCode = "zh-CN", TransKey = "User.AddUser", TransValue = "添加用户", ModuleName = "User", Status = HbtStatus.Normal, CreateTime = DateTime.Now, CreateBy = "system" },
+            new() { LangCode = "zh-CN", TransKey = "User.EditUser", TransValue = "编辑用户", ModuleName = "User", Status = HbtStatus.Normal, CreateTime = DateTime.Now, CreateBy = "system" },
+            new() { LangCode = "zh-CN", TransKey = "User.DeleteUser", TransValue = "删除用户", ModuleName = "User", Status = HbtStatus.Normal, CreateTime = DateTime.Now, CreateBy = "system" },
+            new() { LangCode = "zh-CN", TransKey = "User.ResetPassword", TransValue = "重置密码", ModuleName = "User", Status = HbtStatus.Normal, CreateTime = DateTime.Now, CreateBy = "system" },
+            new() { LangCode = "zh-CN", TransKey = "User.AssignRoles", TransValue = "分配角色", ModuleName = "User", Status = HbtStatus.Normal, CreateTime = DateTime.Now, CreateBy = "system" },
+            new() { LangCode = "zh-CN", TransKey = "User.UserProfile", TransValue = "用户资料", ModuleName = "User", Status = HbtStatus.Normal, CreateTime = DateTime.Now, CreateBy = "system" },
+            new() { LangCode = "zh-CN", TransKey = "User.ChangePassword", TransValue = "修改密码", ModuleName = "User", Status = HbtStatus.Normal, CreateTime = DateTime.Now, CreateBy = "system" },
+            
+            // User模块 - 英文
+            new() { LangCode = "en-US", TransKey = "User.UserManagement", TransValue = "User Management", ModuleName = "User", Status = HbtStatus.Normal, CreateTime = DateTime.Now, CreateBy = "system" },
+            new() { LangCode = "en-US", TransKey = "User.UserList", TransValue = "User List", ModuleName = "User", Status = HbtStatus.Normal, CreateTime = DateTime.Now, CreateBy = "system" },
+            new() { LangCode = "en-US", TransKey = "User.AddUser", TransValue = "Add User", ModuleName = "User", Status = HbtStatus.Normal, CreateTime = DateTime.Now, CreateBy = "system" },
+            new() { LangCode = "en-US", TransKey = "User.EditUser", TransValue = "Edit User", ModuleName = "User", Status = HbtStatus.Normal, CreateTime = DateTime.Now, CreateBy = "system" },
+            new() { LangCode = "en-US", TransKey = "User.DeleteUser", TransValue = "Delete User", ModuleName = "User", Status = HbtStatus.Normal, CreateTime = DateTime.Now, CreateBy = "system" },
+            new() { LangCode = "en-US", TransKey = "User.ResetPassword", TransValue = "Reset Password", ModuleName = "User", Status = HbtStatus.Normal, CreateTime = DateTime.Now, CreateBy = "system" },
+            new() { LangCode = "en-US", TransKey = "User.AssignRoles", TransValue = "Assign Roles", ModuleName = "User", Status = HbtStatus.Normal, CreateTime = DateTime.Now, CreateBy = "system" },
+            new() { LangCode = "en-US", TransKey = "User.UserProfile", TransValue = "User Profile", ModuleName = "User", Status = HbtStatus.Normal, CreateTime = DateTime.Now, CreateBy = "system" },
+            new() { LangCode = "en-US", TransKey = "User.ChangePassword", TransValue = "Change Password", ModuleName = "User", Status = HbtStatus.Normal, CreateTime = DateTime.Now, CreateBy = "system" },
+
+            // Role模块 - 中文
+            new() { LangCode = "zh-CN", TransKey = "Role.RoleManagement", TransValue = "角色管理", ModuleName = "Role", Status = HbtStatus.Normal, CreateTime = DateTime.Now, CreateBy = "system" },
+            new() { LangCode = "zh-CN", TransKey = "Role.RoleList", TransValue = "角色列表", ModuleName = "Role", Status = HbtStatus.Normal, CreateTime = DateTime.Now, CreateBy = "system" },
+            new() { LangCode = "zh-CN", TransKey = "Role.AddRole", TransValue = "添加角色", ModuleName = "Role", Status = HbtStatus.Normal, CreateTime = DateTime.Now, CreateBy = "system" },
+            new() { LangCode = "zh-CN", TransKey = "Role.EditRole", TransValue = "编辑角色", ModuleName = "Role", Status = HbtStatus.Normal, CreateTime = DateTime.Now, CreateBy = "system" },
+            new() { LangCode = "zh-CN", TransKey = "Role.DeleteRole", TransValue = "删除角色", ModuleName = "Role", Status = HbtStatus.Normal, CreateTime = DateTime.Now, CreateBy = "system" },
+            new() { LangCode = "zh-CN", TransKey = "Role.AssignPermissions", TransValue = "分配权限", ModuleName = "Role", Status = HbtStatus.Normal, CreateTime = DateTime.Now, CreateBy = "system" },
+            
+            // Role模块 - 英文
+            new() { LangCode = "en-US", TransKey = "Role.RoleManagement", TransValue = "Role Management", ModuleName = "Role", Status = HbtStatus.Normal, CreateTime = DateTime.Now, CreateBy = "system" },
+            new() { LangCode = "en-US", TransKey = "Role.RoleList", TransValue = "Role List", ModuleName = "Role", Status = HbtStatus.Normal, CreateTime = DateTime.Now, CreateBy = "system" },
+            new() { LangCode = "en-US", TransKey = "Role.AddRole", TransValue = "Add Role", ModuleName = "Role", Status = HbtStatus.Normal, CreateTime = DateTime.Now, CreateBy = "system" },
+            new() { LangCode = "en-US", TransKey = "Role.EditRole", TransValue = "Edit Role", ModuleName = "Role", Status = HbtStatus.Normal, CreateTime = DateTime.Now, CreateBy = "system" },
+            new() { LangCode = "en-US", TransKey = "Role.DeleteRole", TransValue = "Delete Role", ModuleName = "Role", Status = HbtStatus.Normal, CreateTime = DateTime.Now, CreateBy = "system" },
+            new() { LangCode = "en-US", TransKey = "Role.AssignPermissions", TransValue = "Assign Permissions", ModuleName = "Role", Status = HbtStatus.Normal, CreateTime = DateTime.Now, CreateBy = "system" },
+
+            // Post模块 - 中文
+            new HbtTranslation { LangCode = "zh-CN", TransKey = "Post.Management", TransValue = "岗位管理", ModuleName = "Post", Status = HbtStatus.Normal },
+            new HbtTranslation { LangCode = "zh-CN", TransKey = "Post.List", TransValue = "岗位列表", ModuleName = "Post", Status = HbtStatus.Normal },
+            new HbtTranslation { LangCode = "zh-CN", TransKey = "Post.Code", TransValue = "岗位编码", ModuleName = "Post", Status = HbtStatus.Normal },
+            new HbtTranslation { LangCode = "zh-CN", TransKey = "Post.Name", TransValue = "岗位名称", ModuleName = "Post", Status = HbtStatus.Normal },
+            new HbtTranslation { LangCode = "zh-CN", TransKey = "Post.OrderNum", TransValue = "显示顺序", ModuleName = "Post", Status = HbtStatus.Normal },
+            new HbtTranslation { LangCode = "zh-CN", TransKey = "Post.Status", TransValue = "状态", ModuleName = "Post", Status = HbtStatus.Normal },
+            new HbtTranslation { LangCode = "zh-CN", TransKey = "Post.Remark", TransValue = "备注", ModuleName = "Post", Status = HbtStatus.Normal },
+            new HbtTranslation { LangCode = "zh-CN", TransKey = "Post.AddSuccess", TransValue = "添加岗位成功", ModuleName = "Post", Status = HbtStatus.Normal },
+            new HbtTranslation { LangCode = "zh-CN", TransKey = "Post.UpdateSuccess", TransValue = "更新岗位成功", ModuleName = "Post", Status = HbtStatus.Normal },
+            new HbtTranslation { LangCode = "zh-CN", TransKey = "Post.DeleteSuccess", TransValue = "删除岗位成功", ModuleName = "Post", Status = HbtStatus.Normal },
+            new HbtTranslation { LangCode = "zh-CN", TransKey = "Post.NotExists", TransValue = "岗位不存在", ModuleName = "Post", Status = HbtStatus.Normal },
+            new HbtTranslation { LangCode = "zh-CN", TransKey = "Post.CodeExists", TransValue = "岗位编码已存在", ModuleName = "Post", Status = HbtStatus.Normal },
+            new HbtTranslation { LangCode = "zh-CN", TransKey = "Post.NameExists", TransValue = "岗位名称已存在", ModuleName = "Post", Status = HbtStatus.Normal },
+
+            // Post模块 - 英文
+            new HbtTranslation { LangCode = "en-US", TransKey = "Post.Management", TransValue = "Post Management", ModuleName = "Post", Status = HbtStatus.Normal },
+            new HbtTranslation { LangCode = "en-US", TransKey = "Post.List", TransValue = "Post List", ModuleName = "Post", Status = HbtStatus.Normal },
+            new HbtTranslation { LangCode = "en-US", TransKey = "Post.Code", TransValue = "Post Code", ModuleName = "Post", Status = HbtStatus.Normal },
+            new HbtTranslation { LangCode = "en-US", TransKey = "Post.Name", TransValue = "Post Name", ModuleName = "Post", Status = HbtStatus.Normal },
+            new HbtTranslation { LangCode = "en-US", TransKey = "Post.OrderNum", TransValue = "Display Order", ModuleName = "Post", Status = HbtStatus.Normal },
+            new HbtTranslation { LangCode = "en-US", TransKey = "Post.Status", TransValue = "Status", ModuleName = "Post", Status = HbtStatus.Normal },
+            new HbtTranslation { LangCode = "en-US", TransKey = "Post.Remark", TransValue = "Remark", ModuleName = "Post", Status = HbtStatus.Normal },
+            new HbtTranslation { LangCode = "en-US", TransKey = "Post.AddSuccess", TransValue = "Add post successfully", ModuleName = "Post", Status = HbtStatus.Normal },
+            new HbtTranslation { LangCode = "en-US", TransKey = "Post.UpdateSuccess", TransValue = "Update post successfully", ModuleName = "Post", Status = HbtStatus.Normal },
+            new HbtTranslation { LangCode = "en-US", TransKey = "Post.DeleteSuccess", TransValue = "Delete post successfully", ModuleName = "Post", Status = HbtStatus.Normal },
+            new HbtTranslation { LangCode = "en-US", TransKey = "Post.NotExists", TransValue = "Post does not exist", ModuleName = "Post", Status = HbtStatus.Normal },
+            new HbtTranslation { LangCode = "en-US", TransKey = "Post.CodeExists", TransValue = "Post code already exists", ModuleName = "Post", Status = HbtStatus.Normal },
+            new HbtTranslation { LangCode = "en-US", TransKey = "Post.NameExists", TransValue = "Post name already exists", ModuleName = "Post", Status = HbtStatus.Normal }
+        };
+
+        foreach (var trans in translations)
+        {
+            var existingTrans = await _translationRepository.FirstOrDefaultAsync(x => 
+                x.LangCode == trans.LangCode && 
+                x.TransKey == trans.TransKey);
+            
+            if (existingTrans == null)
+            {
+                await _translationRepository.InsertAsync(trans);
+                insertCount++;
+                _logger.Info($"[创建] 翻译 '{trans.TransKey}' ({trans.LangCode}) 创建成功");
+            }
+            else
+            {
+                existingTrans.TransValue = trans.TransValue;
+                existingTrans.ModuleName = trans.ModuleName;
+                existingTrans.Status = trans.Status;
+                existingTrans.UpdateTime = DateTime.Now;
+                existingTrans.UpdateBy = "system";
+                await _translationRepository.UpdateAsync(existingTrans);
+                updateCount++;
+                _logger.Info($"[更新] 翻译 '{trans.TransKey}' ({trans.LangCode}) 更新成功");
             }
         }
 
