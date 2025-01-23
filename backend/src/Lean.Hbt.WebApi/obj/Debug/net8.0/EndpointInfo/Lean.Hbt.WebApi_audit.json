@@ -1,0 +1,1153 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "黑冰台代码生成管理系统 - 审计日志",
+    "description": "审计日志、操作日志、异常日志等",
+    "contact": {
+      "name": "Lean365",
+      "url": "https://github.com/Lean365/Lean.Hbt",
+      "email": "support@lean365.com"
+    },
+    "license": {
+      "name": "MIT",
+      "url": "https://github.com/Lean365/Lean.Hbt/blob/master/LICENSE"
+    },
+    "version": "v1"
+  },
+  "paths": {
+    "/api/HbtAuditLog": {
+      "get": {
+        "tags": [
+          "HbtAuditLog"
+        ],
+        "summary": "获取数据",
+        "description": "获取指定条件的数据",
+        "operationId": "HbtAuditLog_GetPagedList",
+        "parameters": [
+          {
+            "name": "UserName",
+            "in": "query",
+            "description": "用户名",
+            "style": "form",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Module",
+            "in": "query",
+            "description": "模块",
+            "style": "form",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Operation",
+            "in": "query",
+            "description": "操作",
+            "style": "form",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "StartTime",
+            "in": "query",
+            "description": "开始时间",
+            "style": "form",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "EndTime",
+            "in": "query",
+            "description": "结束时间",
+            "style": "form",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "PageIndex",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtAuditLog/{logId}": {
+      "get": {
+        "tags": [
+          "HbtAuditLog"
+        ],
+        "summary": "获取数据",
+        "description": "获取指定条件的数据",
+        "operationId": "HbtAuditLog_Get",
+        "parameters": [
+          {
+            "name": "logId",
+            "in": "path",
+            "description": "日志ID",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtAuditLog/clear": {
+      "delete": {
+        "tags": [
+          "HbtAuditLog"
+        ],
+        "summary": "删除数据",
+        "description": "删除指定数据",
+        "operationId": "HbtAuditLog_Clear",
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtAuditLog/export": {
+      "get": {
+        "tags": [
+          "HbtAuditLog"
+        ],
+        "summary": "获取数据",
+        "description": "获取指定条件的数据",
+        "operationId": "HbtAuditLog_Export",
+        "parameters": [
+          {
+            "name": "UserName",
+            "in": "query",
+            "description": "用户名",
+            "style": "form",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Module",
+            "in": "query",
+            "description": "模块",
+            "style": "form",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Operation",
+            "in": "query",
+            "description": "操作",
+            "style": "form",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "StartTime",
+            "in": "query",
+            "description": "开始时间",
+            "style": "form",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "EndTime",
+            "in": "query",
+            "description": "结束时间",
+            "style": "form",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "PageIndex",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtDbDiffLog": {
+      "get": {
+        "tags": [
+          "HbtDbDiffLog"
+        ],
+        "summary": "获取数据",
+        "description": "获取指定条件的数据",
+        "operationId": "HbtDbDiffLog_GetPagedList",
+        "parameters": [
+          {
+            "name": "TableName",
+            "in": "query",
+            "description": "表名",
+            "style": "form",
+            "schema": {
+              "maxLength": 100,
+              "type": "string"
+            }
+          },
+          {
+            "name": "ChangeType",
+            "in": "query",
+            "description": "变更类型",
+            "style": "form",
+            "schema": {
+              "maxLength": 20,
+              "type": "string"
+            }
+          },
+          {
+            "name": "ColumnName",
+            "in": "query",
+            "description": "列名",
+            "style": "form",
+            "schema": {
+              "maxLength": 100,
+              "type": "string"
+            }
+          },
+          {
+            "name": "StartTime",
+            "in": "query",
+            "description": "开始时间",
+            "style": "form",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "EndTime",
+            "in": "query",
+            "description": "结束时间",
+            "style": "form",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "PageIndex",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtDbDiffLog/{logId}": {
+      "get": {
+        "tags": [
+          "HbtDbDiffLog"
+        ],
+        "summary": "获取数据",
+        "description": "获取指定条件的数据",
+        "operationId": "HbtDbDiffLog_Get",
+        "parameters": [
+          {
+            "name": "logId",
+            "in": "path",
+            "description": "日志ID",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtDbDiffLog/clear": {
+      "delete": {
+        "tags": [
+          "HbtDbDiffLog"
+        ],
+        "summary": "删除数据",
+        "description": "删除指定数据",
+        "operationId": "HbtDbDiffLog_Clear",
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtDbDiffLog/export": {
+      "get": {
+        "tags": [
+          "HbtDbDiffLog"
+        ],
+        "summary": "获取数据",
+        "description": "获取指定条件的数据",
+        "operationId": "HbtDbDiffLog_Export",
+        "parameters": [
+          {
+            "name": "TableName",
+            "in": "query",
+            "description": "表名",
+            "style": "form",
+            "schema": {
+              "maxLength": 100,
+              "type": "string"
+            }
+          },
+          {
+            "name": "ChangeType",
+            "in": "query",
+            "description": "变更类型",
+            "style": "form",
+            "schema": {
+              "maxLength": 20,
+              "type": "string"
+            }
+          },
+          {
+            "name": "ColumnName",
+            "in": "query",
+            "description": "列名",
+            "style": "form",
+            "schema": {
+              "maxLength": 100,
+              "type": "string"
+            }
+          },
+          {
+            "name": "StartTime",
+            "in": "query",
+            "description": "开始时间",
+            "style": "form",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "EndTime",
+            "in": "query",
+            "description": "结束时间",
+            "style": "form",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "PageIndex",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtExceptionLog": {
+      "get": {
+        "tags": [
+          "HbtExceptionLog"
+        ],
+        "summary": "获取数据",
+        "description": "获取指定条件的数据",
+        "operationId": "HbtExceptionLog_GetPagedList",
+        "parameters": [
+          {
+            "name": "UserName",
+            "in": "query",
+            "description": "用户名",
+            "style": "form",
+            "schema": {
+              "maxLength": 50,
+              "type": "string"
+            }
+          },
+          {
+            "name": "Method",
+            "in": "query",
+            "description": "方法",
+            "style": "form",
+            "schema": {
+              "maxLength": 100,
+              "type": "string"
+            }
+          },
+          {
+            "name": "ExceptionType",
+            "in": "query",
+            "description": "异常类型",
+            "style": "form",
+            "schema": {
+              "maxLength": 200,
+              "type": "string"
+            }
+          },
+          {
+            "name": "StartTime",
+            "in": "query",
+            "description": "开始时间",
+            "style": "form",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "EndTime",
+            "in": "query",
+            "description": "结束时间",
+            "style": "form",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "PageIndex",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtExceptionLog/{logId}": {
+      "get": {
+        "tags": [
+          "HbtExceptionLog"
+        ],
+        "summary": "获取数据",
+        "description": "获取指定条件的数据",
+        "operationId": "HbtExceptionLog_Get",
+        "parameters": [
+          {
+            "name": "logId",
+            "in": "path",
+            "description": "日志ID",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtExceptionLog/clear": {
+      "delete": {
+        "tags": [
+          "HbtExceptionLog"
+        ],
+        "summary": "删除数据",
+        "description": "删除指定数据",
+        "operationId": "HbtExceptionLog_Clear",
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtExceptionLog/export": {
+      "get": {
+        "tags": [
+          "HbtExceptionLog"
+        ],
+        "summary": "获取数据",
+        "description": "获取指定条件的数据",
+        "operationId": "HbtExceptionLog_Export",
+        "parameters": [
+          {
+            "name": "UserName",
+            "in": "query",
+            "description": "用户名",
+            "style": "form",
+            "schema": {
+              "maxLength": 50,
+              "type": "string"
+            }
+          },
+          {
+            "name": "Method",
+            "in": "query",
+            "description": "方法",
+            "style": "form",
+            "schema": {
+              "maxLength": 100,
+              "type": "string"
+            }
+          },
+          {
+            "name": "ExceptionType",
+            "in": "query",
+            "description": "异常类型",
+            "style": "form",
+            "schema": {
+              "maxLength": 200,
+              "type": "string"
+            }
+          },
+          {
+            "name": "StartTime",
+            "in": "query",
+            "description": "开始时间",
+            "style": "form",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "EndTime",
+            "in": "query",
+            "description": "结束时间",
+            "style": "form",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "PageIndex",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtLoginLog": {
+      "get": {
+        "tags": [
+          "HbtLoginLog"
+        ],
+        "summary": "获取数据",
+        "description": "获取指定条件的数据",
+        "operationId": "HbtLoginLog_GetPagedList",
+        "parameters": [
+          {
+            "name": "UserName",
+            "in": "query",
+            "description": "用户名",
+            "style": "form",
+            "schema": {
+              "maxLength": 50,
+              "type": "string"
+            }
+          },
+          {
+            "name": "IpAddress",
+            "in": "query",
+            "description": "IP地址",
+            "style": "form",
+            "schema": {
+              "maxLength": 50,
+              "type": "string"
+            }
+          },
+          {
+            "name": "Success",
+            "in": "query",
+            "description": "是否成功",
+            "style": "form",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "StartTime",
+            "in": "query",
+            "description": "开始时间",
+            "style": "form",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "EndTime",
+            "in": "query",
+            "description": "结束时间",
+            "style": "form",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "PageIndex",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtLoginLog/{logId}": {
+      "get": {
+        "tags": [
+          "HbtLoginLog"
+        ],
+        "summary": "获取数据",
+        "description": "获取指定条件的数据",
+        "operationId": "HbtLoginLog_Get",
+        "parameters": [
+          {
+            "name": "logId",
+            "in": "path",
+            "description": "日志ID",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtLoginLog/clear": {
+      "delete": {
+        "tags": [
+          "HbtLoginLog"
+        ],
+        "summary": "删除数据",
+        "description": "删除指定数据",
+        "operationId": "HbtLoginLog_Clear",
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtLoginLog/export": {
+      "get": {
+        "tags": [
+          "HbtLoginLog"
+        ],
+        "summary": "获取数据",
+        "description": "获取指定条件的数据",
+        "operationId": "HbtLoginLog_Export",
+        "parameters": [
+          {
+            "name": "UserName",
+            "in": "query",
+            "description": "用户名",
+            "style": "form",
+            "schema": {
+              "maxLength": 50,
+              "type": "string"
+            }
+          },
+          {
+            "name": "IpAddress",
+            "in": "query",
+            "description": "IP地址",
+            "style": "form",
+            "schema": {
+              "maxLength": 50,
+              "type": "string"
+            }
+          },
+          {
+            "name": "Success",
+            "in": "query",
+            "description": "是否成功",
+            "style": "form",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "StartTime",
+            "in": "query",
+            "description": "开始时间",
+            "style": "form",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "EndTime",
+            "in": "query",
+            "description": "结束时间",
+            "style": "form",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "PageIndex",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtOperLog": {
+      "get": {
+        "tags": [
+          "HbtOperLog"
+        ],
+        "summary": "获取数据",
+        "description": "获取指定条件的数据",
+        "operationId": "HbtOperLog_GetPagedList",
+        "parameters": [
+          {
+            "name": "UserName",
+            "in": "query",
+            "description": "用户名",
+            "style": "form",
+            "schema": {
+              "maxLength": 50,
+              "type": "string"
+            }
+          },
+          {
+            "name": "OperationType",
+            "in": "query",
+            "description": "操作类型",
+            "style": "form",
+            "schema": {
+              "maxLength": 20,
+              "type": "string"
+            }
+          },
+          {
+            "name": "TableName",
+            "in": "query",
+            "description": "表名",
+            "style": "form",
+            "schema": {
+              "maxLength": 100,
+              "type": "string"
+            }
+          },
+          {
+            "name": "IpAddress",
+            "in": "query",
+            "description": "IP地址",
+            "style": "form",
+            "schema": {
+              "maxLength": 50,
+              "type": "string"
+            }
+          },
+          {
+            "name": "Status",
+            "in": "query",
+            "description": "操作状态",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "StartTime",
+            "in": "query",
+            "description": "开始时间",
+            "style": "form",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "EndTime",
+            "in": "query",
+            "description": "结束时间",
+            "style": "form",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "PageIndex",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtOperLog/{logId}": {
+      "get": {
+        "tags": [
+          "HbtOperLog"
+        ],
+        "summary": "获取数据",
+        "description": "获取指定条件的数据",
+        "operationId": "HbtOperLog_Get",
+        "parameters": [
+          {
+            "name": "logId",
+            "in": "path",
+            "description": "日志ID",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtOperLog/clear": {
+      "delete": {
+        "tags": [
+          "HbtOperLog"
+        ],
+        "summary": "删除数据",
+        "description": "删除指定数据",
+        "operationId": "HbtOperLog_Clear",
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtOperLog/export": {
+      "get": {
+        "tags": [
+          "HbtOperLog"
+        ],
+        "summary": "获取数据",
+        "description": "获取指定条件的数据",
+        "operationId": "HbtOperLog_Export",
+        "parameters": [
+          {
+            "name": "UserName",
+            "in": "query",
+            "description": "用户名",
+            "style": "form",
+            "schema": {
+              "maxLength": 50,
+              "type": "string"
+            }
+          },
+          {
+            "name": "OperationType",
+            "in": "query",
+            "description": "操作类型",
+            "style": "form",
+            "schema": {
+              "maxLength": 20,
+              "type": "string"
+            }
+          },
+          {
+            "name": "TableName",
+            "in": "query",
+            "description": "表名",
+            "style": "form",
+            "schema": {
+              "maxLength": 100,
+              "type": "string"
+            }
+          },
+          {
+            "name": "IpAddress",
+            "in": "query",
+            "description": "IP地址",
+            "style": "form",
+            "schema": {
+              "maxLength": 50,
+              "type": "string"
+            }
+          },
+          {
+            "name": "Status",
+            "in": "query",
+            "description": "操作状态",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "StartTime",
+            "in": "query",
+            "description": "开始时间",
+            "style": "form",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "EndTime",
+            "in": "query",
+            "description": "结束时间",
+            "style": "form",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "PageIndex",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "Bearer": {
+        "type": "apiKey",
+        "description": "JWT Authorization header using the Bearer scheme.",
+        "name": "Authorization",
+        "in": "header"
+      }
+    }
+  },
+  "security": [
+    {
+      "Bearer": [ ]
+    }
+  ],
+  "tags": [
+    {
+      "name": "HbtAuditLog",
+      "description": "审计日志控制器"
+    },
+    {
+      "name": "HbtDbDiffLog",
+      "description": "数据库差异日志控制器"
+    },
+    {
+      "name": "HbtExceptionLog",
+      "description": "异常日志控制器"
+    },
+    {
+      "name": "HbtLoginLog",
+      "description": "登录日志控制器"
+    },
+    {
+      "name": "HbtOperLog",
+      "description": "操作日志控制器"
+    }
+  ]
+}

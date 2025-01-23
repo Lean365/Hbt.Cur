@@ -7,15 +7,11 @@
 // 描述   : 系统配置控制器
 //===================================================================
 
-using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using Lean.Hbt.Common.Models;
-using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Application.Dtos.Admin;
 using Lean.Hbt.Application.Services.Admin;
-using Lean.Hbt.Infrastructure.Security.Attributes;
+using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Domain.IServices.Admin;
+using Lean.Hbt.Infrastructure.Security.Attributes;
 
 namespace Lean.Hbt.WebApi.Controllers.Admin
 {
@@ -26,8 +22,9 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
     /// 创建者: Lean365
     /// 创建时间: 2024-01-20
     /// </remarks>
-    [Route("api/[controller]")]
+    [Route("api/[controller]", Name = "系统配置")]
     [ApiController]
+    [ApiModule("system", "系统管理")]
     public class HbtSysConfigController : HbtBaseController
     {
         private readonly IHbtSysConfigService _configService;
@@ -177,4 +174,4 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
             return Success(result);
         }
     }
-} 
+}

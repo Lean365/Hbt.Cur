@@ -43,7 +43,8 @@
         "IsRequired": false
       }
     ],
-    "ReturnTypes": []
+    "ReturnTypes": [],
+    "EndpointName": "\u5BA1\u8BA1\u65E5\u5FD7"
   },
   {
     "ContainingType": "Lean.Hbt.WebApi.Controllers.Audit.HbtAuditLogController",
@@ -259,7 +260,8 @@
         "IsRequired": false
       }
     ],
-    "ReturnTypes": []
+    "ReturnTypes": [],
+    "EndpointName": "\u6570\u636E\u5E93\u5DEE\u5F02\u65E5\u5FD7"
   },
   {
     "ContainingType": "Lean.Hbt.WebApi.Controllers.Audit.HbtDbDiffLogController",
@@ -362,7 +364,8 @@
         "IsRequired": false
       }
     ],
-    "ReturnTypes": []
+    "ReturnTypes": [],
+    "EndpointName": "\u90E8\u95E8"
   },
   {
     "ContainingType": "Lean.Hbt.WebApi.Controllers.Identity.HbtDeptController",
@@ -378,7 +381,8 @@
         "IsRequired": true
       }
     ],
-    "ReturnTypes": []
+    "ReturnTypes": [],
+    "EndpointName": "\u90E8\u95E8"
   },
   {
     "ContainingType": "Lean.Hbt.WebApi.Controllers.Identity.HbtDeptController",
@@ -394,7 +398,8 @@
         "IsRequired": true
       }
     ],
-    "ReturnTypes": []
+    "ReturnTypes": [],
+    "EndpointName": "\u90E8\u95E8"
   },
   {
     "ContainingType": "Lean.Hbt.WebApi.Controllers.Identity.HbtDeptController",
@@ -606,7 +611,8 @@
         "IsRequired": false
       }
     ],
-    "ReturnTypes": []
+    "ReturnTypes": [],
+    "EndpointName": "\u8BBE\u5907\u6269\u5C55"
   },
   {
     "ContainingType": "Lean.Hbt.WebApi.Controllers.Identity.HbtDeviceExtendController",
@@ -793,7 +799,8 @@
         "IsRequired": false
       }
     ],
-    "ReturnTypes": []
+    "ReturnTypes": [],
+    "EndpointName": "\u5B57\u5178\u6570\u636E"
   },
   {
     "ContainingType": "Lean.Hbt.WebApi.Controllers.Admin.HbtDictDataController",
@@ -809,7 +816,8 @@
         "IsRequired": true
       }
     ],
-    "ReturnTypes": []
+    "ReturnTypes": [],
+    "EndpointName": "\u5B57\u5178\u6570\u636E"
   },
   {
     "ContainingType": "Lean.Hbt.WebApi.Controllers.Admin.HbtDictDataController",
@@ -825,7 +833,8 @@
         "IsRequired": true
       }
     ],
-    "ReturnTypes": []
+    "ReturnTypes": [],
+    "EndpointName": "\u5B57\u5178\u6570\u636E"
   },
   {
     "ContainingType": "Lean.Hbt.WebApi.Controllers.Admin.HbtDictDataController",
@@ -997,7 +1006,8 @@
         "IsRequired": false
       }
     ],
-    "ReturnTypes": []
+    "ReturnTypes": [],
+    "EndpointName": "\u5B57\u5178\u7C7B\u578B"
   },
   {
     "ContainingType": "Lean.Hbt.WebApi.Controllers.Admin.HbtDictTypeController",
@@ -1013,7 +1023,8 @@
         "IsRequired": true
       }
     ],
-    "ReturnTypes": []
+    "ReturnTypes": [],
+    "EndpointName": "\u5B57\u5178\u7C7B\u578B"
   },
   {
     "ContainingType": "Lean.Hbt.WebApi.Controllers.Admin.HbtDictTypeController",
@@ -1029,7 +1040,8 @@
         "IsRequired": true
       }
     ],
-    "ReturnTypes": []
+    "ReturnTypes": [],
+    "EndpointName": "\u5B57\u5178\u7C7B\u578B"
   },
   {
     "ContainingType": "Lean.Hbt.WebApi.Controllers.Admin.HbtDictTypeController",
@@ -1211,7 +1223,8 @@
         "IsRequired": false
       }
     ],
-    "ReturnTypes": []
+    "ReturnTypes": [],
+    "EndpointName": "\u5F02\u5E38\u65E5\u5FD7"
   },
   {
     "ContainingType": "Lean.Hbt.WebApi.Controllers.Audit.HbtExceptionLogController",
@@ -1319,7 +1332,8 @@
         "IsRequired": false
       }
     ],
-    "ReturnTypes": []
+    "ReturnTypes": [],
+    "EndpointName": "\u8BED\u8A00"
   },
   {
     "ContainingType": "Lean.Hbt.WebApi.Controllers.Admin.HbtLanguageController",
@@ -1335,7 +1349,8 @@
         "IsRequired": true
       }
     ],
-    "ReturnTypes": []
+    "ReturnTypes": [],
+    "EndpointName": "\u8BED\u8A00"
   },
   {
     "ContainingType": "Lean.Hbt.WebApi.Controllers.Admin.HbtLanguageController",
@@ -1351,7 +1366,8 @@
         "IsRequired": true
       }
     ],
-    "ReturnTypes": []
+    "ReturnTypes": [],
+    "EndpointName": "\u8BED\u8A00"
   },
   {
     "ContainingType": "Lean.Hbt.WebApi.Controllers.Admin.HbtLanguageController",
@@ -1538,7 +1554,8 @@
         "IsRequired": false
       }
     ],
-    "ReturnTypes": []
+    "ReturnTypes": [],
+    "EndpointName": "\u767B\u5F55\u6269\u5C55"
   },
   {
     "ContainingType": "Lean.Hbt.WebApi.Controllers.Identity.HbtLoginExtendController",
@@ -1704,7 +1721,8 @@
         "IsRequired": false
       }
     ],
-    "ReturnTypes": []
+    "ReturnTypes": [],
+    "EndpointName": "\u767B\u5F55\u65E5\u5FD7"
   },
   {
     "ContainingType": "Lean.Hbt.WebApi.Controllers.Audit.HbtLoginLogController",
@@ -1807,7 +1825,8 @@
         "IsRequired": false
       }
     ],
-    "ReturnTypes": []
+    "ReturnTypes": [],
+    "EndpointName": "\u83DC\u5355"
   },
   {
     "ContainingType": "Lean.Hbt.WebApi.Controllers.Identity.HbtMenuController",
@@ -1823,7 +1842,8 @@
         "IsRequired": true
       }
     ],
-    "ReturnTypes": []
+    "ReturnTypes": [],
+    "EndpointName": "\u83DC\u5355"
   },
   {
     "ContainingType": "Lean.Hbt.WebApi.Controllers.Identity.HbtMenuController",
@@ -1839,7 +1859,8 @@
         "IsRequired": true
       }
     ],
-    "ReturnTypes": []
+    "ReturnTypes": [],
+    "EndpointName": "\u83DC\u5355"
   },
   {
     "ContainingType": "Lean.Hbt.WebApi.Controllers.Identity.HbtMenuController",
@@ -2104,7 +2125,8 @@
         "IsRequired": false
       }
     ],
-    "ReturnTypes": []
+    "ReturnTypes": [],
+    "EndpointName": "\u5728\u7EBF\u6D88\u606F"
   },
   {
     "ContainingType": "Lean.Hbt.WebApi.Controllers.RealTime.HbtOnlineMessageController",
@@ -2120,7 +2142,8 @@
         "IsRequired": true
       }
     ],
-    "ReturnTypes": []
+    "ReturnTypes": [],
+    "EndpointName": "\u5728\u7EBF\u6D88\u606F"
   },
   {
     "ContainingType": "Lean.Hbt.WebApi.Controllers.RealTime.HbtOnlineMessageController",
@@ -2265,7 +2288,8 @@
         "IsRequired": false
       }
     ],
-    "ReturnTypes": []
+    "ReturnTypes": [],
+    "EndpointName": "\u5728\u7EBF\u7528\u6237"
   },
   {
     "ContainingType": "Lean.Hbt.WebApi.Controllers.RealTime.HbtOnlineUserController",
@@ -2399,7 +2423,8 @@
         "IsRequired": false
       }
     ],
-    "ReturnTypes": []
+    "ReturnTypes": [],
+    "EndpointName": "\u64CD\u4F5C\u65E5\u5FD7"
   },
   {
     "ContainingType": "Lean.Hbt.WebApi.Controllers.Audit.HbtOperLogController",
@@ -2517,7 +2542,8 @@
         "IsRequired": false
       }
     ],
-    "ReturnTypes": []
+    "ReturnTypes": [],
+    "EndpointName": "\u5C97\u4F4D"
   },
   {
     "ContainingType": "Lean.Hbt.WebApi.Controllers.Identity.HbtPostController",
@@ -2533,7 +2559,8 @@
         "IsRequired": true
       }
     ],
-    "ReturnTypes": []
+    "ReturnTypes": [],
+    "EndpointName": "\u5C97\u4F4D"
   },
   {
     "ContainingType": "Lean.Hbt.WebApi.Controllers.Identity.HbtPostController",
@@ -2549,7 +2576,8 @@
         "IsRequired": true
       }
     ],
-    "ReturnTypes": []
+    "ReturnTypes": [],
+    "EndpointName": "\u5C97\u4F4D"
   },
   {
     "ContainingType": "Lean.Hbt.WebApi.Controllers.Identity.HbtPostController",
@@ -2741,7 +2769,8 @@
         "IsRequired": false
       }
     ],
-    "ReturnTypes": []
+    "ReturnTypes": [],
+    "EndpointName": "\u89D2\u8272"
   },
   {
     "ContainingType": "Lean.Hbt.WebApi.Controllers.Identity.HbtRoleController",
@@ -2757,7 +2786,8 @@
         "IsRequired": true
       }
     ],
-    "ReturnTypes": []
+    "ReturnTypes": [],
+    "EndpointName": "\u89D2\u8272"
   },
   {
     "ContainingType": "Lean.Hbt.WebApi.Controllers.Identity.HbtRoleController",
@@ -2773,7 +2803,8 @@
         "IsRequired": true
       }
     ],
-    "ReturnTypes": []
+    "ReturnTypes": [],
+    "EndpointName": "\u89D2\u8272"
   },
   {
     "ContainingType": "Lean.Hbt.WebApi.Controllers.Identity.HbtRoleController",
@@ -2919,7 +2950,8 @@
         "IsRequired": false
       }
     ],
-    "ReturnTypes": []
+    "ReturnTypes": [],
+    "EndpointName": "\u7CFB\u7EDF\u914D\u7F6E"
   },
   {
     "ContainingType": "Lean.Hbt.WebApi.Controllers.Admin.HbtSysConfigController",
@@ -2935,7 +2967,8 @@
         "IsRequired": true
       }
     ],
-    "ReturnTypes": []
+    "ReturnTypes": [],
+    "EndpointName": "\u7CFB\u7EDF\u914D\u7F6E"
   },
   {
     "ContainingType": "Lean.Hbt.WebApi.Controllers.Admin.HbtSysConfigController",
@@ -2951,7 +2984,8 @@
         "IsRequired": true
       }
     ],
-    "ReturnTypes": []
+    "ReturnTypes": [],
+    "EndpointName": "\u7CFB\u7EDF\u914D\u7F6E"
   },
   {
     "ContainingType": "Lean.Hbt.WebApi.Controllers.Admin.HbtSysConfigController",
@@ -3128,7 +3162,8 @@
         "IsRequired": false
       }
     ],
-    "ReturnTypes": []
+    "ReturnTypes": [],
+    "EndpointName": "\u7FFB\u8BD1"
   },
   {
     "ContainingType": "Lean.Hbt.WebApi.Controllers.Admin.HbtTranslationController",
@@ -3144,7 +3179,8 @@
         "IsRequired": true
       }
     ],
-    "ReturnTypes": []
+    "ReturnTypes": [],
+    "EndpointName": "\u7FFB\u8BD1"
   },
   {
     "ContainingType": "Lean.Hbt.WebApi.Controllers.Admin.HbtTranslationController",
@@ -3160,7 +3196,8 @@
         "IsRequired": true
       }
     ],
-    "ReturnTypes": []
+    "ReturnTypes": [],
+    "EndpointName": "\u7FFB\u8BD1"
   },
   {
     "ContainingType": "Lean.Hbt.WebApi.Controllers.Admin.HbtTranslationController",
@@ -3425,7 +3462,8 @@
         "IsRequired": false
       }
     ],
-    "ReturnTypes": []
+    "ReturnTypes": [],
+    "EndpointName": "\u7528\u6237"
   },
   {
     "ContainingType": "Lean.Hbt.WebApi.Controllers.Identity.HbtUserController",
@@ -3441,7 +3479,8 @@
         "IsRequired": true
       }
     ],
-    "ReturnTypes": []
+    "ReturnTypes": [],
+    "EndpointName": "\u7528\u6237"
   },
   {
     "ContainingType": "Lean.Hbt.WebApi.Controllers.Identity.HbtUserController",
@@ -3457,7 +3496,8 @@
         "IsRequired": true
       }
     ],
-    "ReturnTypes": []
+    "ReturnTypes": [],
+    "EndpointName": "\u7528\u6237"
   },
   {
     "ContainingType": "Lean.Hbt.WebApi.Controllers.Identity.HbtUserController",
@@ -3656,7 +3696,8 @@
         ],
         "StatusCode": 200
       }
-    ]
+    ],
+    "EndpointName": "\u79DF\u6237"
   },
   {
     "ContainingType": "Lean.Hbt.WebApi.Controllers.Identity.HbtTenantController",
@@ -3682,7 +3723,8 @@
         ],
         "StatusCode": 200
       }
-    ]
+    ],
+    "EndpointName": "\u79DF\u6237"
   },
   {
     "ContainingType": "Lean.Hbt.WebApi.Controllers.Identity.HbtTenantController",

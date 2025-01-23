@@ -7,13 +7,9 @@
 // 描述   : 翻译控制器
 //===================================================================
 
-using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using Lean.Hbt.Common.Models;
-using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Application.Dtos.Admin;
 using Lean.Hbt.Application.Services.Admin;
+using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Domain.IServices.Admin;
 
 namespace Lean.Hbt.WebApi.Controllers.Admin
@@ -25,8 +21,9 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
     /// 创建者: Lean365
     /// 创建时间: 2024-01-22
     /// </remarks>
-    [Route("api/[controller]")]
+    [Route("api/[controller]", Name = "翻译")]
     [ApiController]
+    [ApiModule("system", "系统管理")]
     public class HbtTranslationController : HbtBaseController
     {
         private readonly IHbtTranslationService _translationService;
@@ -224,4 +221,4 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
             return Success(result);
         }
     }
-} 
+}

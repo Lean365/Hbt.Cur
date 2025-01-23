@@ -1380,6 +1380,28 @@
             通知指定租户的所有用户
             </summary>
         </member>
+        <member name="T:Lean.Hbt.Infrastructure.Swagger.ApiModuleAttribute">
+            <summary>
+            API模块特性
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Infrastructure.Swagger.ApiModuleAttribute.Name">
+            <summary>
+            模块名称
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Infrastructure.Swagger.ApiModuleAttribute.Description">
+            <summary>
+            模块描述
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Swagger.ApiModuleAttribute.#ctor(System.String,System.String)">
+            <summary>
+            初始化API模块特性
+            </summary>
+            <param name="name">模块名称</param>
+            <param name="description">模块描述</param>
+        </member>
         <member name="T:Lean.Hbt.Infrastructure.Swagger.HbtSwaggerSetup">
             <summary>
             Swagger配置
@@ -1400,6 +1422,30 @@
             使用Swagger中间件
             </summary>
             <param name="app">应用程序构建器</param>
+        </member>
+        <member name="T:Lean.Hbt.Infrastructure.Swagger.SwaggerDocumentFilter">
+            <summary>
+            Swagger文档过滤器
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Swagger.SwaggerDocumentFilter.Apply(Microsoft.OpenApi.Models.OpenApiDocument,Swashbuckle.AspNetCore.SwaggerGen.DocumentFilterContext)">
+            <summary>
+            应用文档过滤器
+            </summary>
+            <param name="swaggerDoc">Swagger文档</param>
+            <param name="context">文档过滤器上下文</param>
+        </member>
+        <member name="T:Lean.Hbt.Infrastructure.Swagger.SwaggerOperationFilter">
+            <summary>
+            Swagger操作过滤器
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Swagger.SwaggerOperationFilter.Apply(Microsoft.OpenApi.Models.OpenApiDocument,Swashbuckle.AspNetCore.SwaggerGen.DocumentFilterContext)">
+            <summary>
+            应用操作过滤器
+            </summary>
+            <param name="swaggerDoc">Swagger文档</param>
+            <param name="context">文档过滤器上下文</param>
         </member>
     </members>
 </doc>

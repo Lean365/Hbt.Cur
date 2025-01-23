@@ -7,9 +7,6 @@
 // 描述   : 数据库差异日志控制器
 //===================================================================
 
-using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
-using Lean.Hbt.Common.Models;
 using Lean.Hbt.Application.Dtos.Audit;
 using Lean.Hbt.Application.Services.Audit;
 using Lean.Hbt.Domain.IServices.Admin;
@@ -23,8 +20,9 @@ namespace Lean.Hbt.WebApi.Controllers.Audit
     /// 创建者: Lean365
     /// 创建时间: 2024-01-20
     /// </remarks>
-    [Route("api/[controller]")]
+    [Route("api/[controller]", Name = "数据库差异日志")]
     [ApiController]
+    [ApiModule("audit", "审计日志")]
     public class HbtDbDiffLogController : HbtBaseController
     {
         private readonly IHbtDbDiffLogService _dbDiffLogService;
@@ -86,4 +84,4 @@ namespace Lean.Hbt.WebApi.Controllers.Audit
             return Success(result);
         }
     }
-} 
+}

@@ -1,16 +1,15 @@
 using Lean.Hbt.Application.Dtos.Security;
-using Lean.Hbt.Domain.IServices.Security;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
 using Lean.Hbt.Domain.IServices.Admin;
+using Lean.Hbt.Domain.IServices.Security;
 
 namespace Lean.Hbt.WebApi.Controllers.Security;
 
 /// <summary>
 /// 验证码控制器
 /// </summary>
-[Route("api/[controller]")]
+[Route("api/[controller]", Name = "验证码")]
 [ApiController]
+[ApiModule("identity", "身份认证")]
 public class HbtCaptchaController : HbtBaseController
 {
     private readonly IHbtCaptchaService _captchaService;

@@ -7,11 +7,9 @@
 // 描述   : 租户控制器
 //===================================================================
 
-using Microsoft.AspNetCore.Mvc;
 using Lean.Hbt.Application.Dtos.Identity;
 using Lean.Hbt.Application.Services.Identity;
 using Lean.Hbt.Common.Enums;
-using Lean.Hbt.Common.Models;
 using Lean.Hbt.Domain.IServices.Admin;
 
 namespace Lean.Hbt.WebApi.Controllers.Identity;
@@ -19,8 +17,9 @@ namespace Lean.Hbt.WebApi.Controllers.Identity;
 /// <summary>
 /// 租户管理
 /// </summary>
-[Route("api/identity/[controller]")]
+[Route("api/identity/[controller]", Name = "租户")]
 [ApiController]
+[ApiModule("identity", "身份认证")]
 public class HbtTenantController : HbtBaseController
 {
     private readonly IHbtTenantService _tenantService;
@@ -123,4 +122,4 @@ public class HbtTenantController : HbtBaseController
     {
         return await _tenantService.UpdateStatusAsync(id, status);
     }
-} 
+}

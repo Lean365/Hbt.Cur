@@ -7,11 +7,8 @@
 // 描述    : 登录扩展信息控制器
 //===================================================================
 
-using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
 using Lean.Hbt.Application.Dtos.Identity;
 using Lean.Hbt.Application.Services.Identity;
-using Lean.Hbt.Common.Models;
 using Lean.Hbt.Domain.IServices.Admin;
 
 namespace Lean.Hbt.WebApi.Controllers.Identity
@@ -23,8 +20,9 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
     /// 创建者: Lean365
     /// 创建时间: 2024-01-22
     /// </remarks>
-    [Route("api/[controller]")]
+    [Route("api/[controller]", Name = "登录扩展")]
     [ApiController]
+    [ApiModule("identity", "身份认证")]
     public class HbtLoginExtendController : HbtBaseController
     {
         private readonly IHbtLoginExtendService _loginExtendService;
@@ -113,4 +111,4 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
             return Success(result);
         }
     }
-} 
+}

@@ -1,1 +1,6 @@
-Lean.Hbt.WebApi.json
+Lean.Hbt.WebApi_system.json
+Lean.Hbt.WebApi_identity.json
+Lean.Hbt.WebApi_audit.json
+Lean.Hbt.WebApi_realtime.json
+Lean.Hbt.WebApi_generate.json
+Lean.Hbt.WebApi_workflow.json

@@ -7,15 +7,9 @@
 // 描述   : 岗位控制器
 //===================================================================
 
-using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using System.IO;
-using Microsoft.AspNetCore.Http;
-using Lean.Hbt.Common.Models;
-using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Application.Dtos.Identity;
 using Lean.Hbt.Application.Services.Identity;
+using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Domain.IServices.Admin;
 
 namespace Lean.Hbt.WebApi.Controllers.Identity
@@ -27,8 +21,9 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
     /// 创建者: Lean365
     /// 创建时间: 2024-01-20
     /// </remarks>
-    [Route("api/[controller]")]
+    [Route("api/[controller]", Name = "岗位")]
     [ApiController]
+    [ApiModule("identity", "身份认证")]
     public class HbtPostController : HbtBaseController
     {
         private readonly IHbtPostService _postService;
@@ -169,4 +164,4 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
             return Success(result);
         }
     }
-} 
+}

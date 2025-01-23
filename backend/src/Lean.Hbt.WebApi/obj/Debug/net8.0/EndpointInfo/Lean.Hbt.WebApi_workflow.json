@@ -1,0 +1,33 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "黑冰台代码生成管理系统 - 工作流程",
+    "description": "工作流程、流程设计等",
+    "contact": {
+      "name": "Lean365",
+      "url": "https://github.com/Lean365/Lean.Hbt",
+      "email": "support@lean365.com"
+    },
+    "license": {
+      "name": "MIT",
+      "url": "https://github.com/Lean365/Lean.Hbt/blob/master/LICENSE"
+    },
+    "version": "v1"
+  },
+  "paths": { },
+  "components": {
+    "securitySchemes": {
+      "Bearer": {
+        "type": "apiKey",
+        "description": "JWT Authorization header using the Bearer scheme.",
+        "name": "Authorization",
+        "in": "header"
+      }
+    }
+  },
+  "security": [
+    {
+      "Bearer": [ ]
+    }
+  ]
+}

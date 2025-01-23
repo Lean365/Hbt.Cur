@@ -1,0 +1,5235 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "黑冰台代码生成管理系统 - 身份认证",
+    "description": "用户、角色、权限等",
+    "contact": {
+      "name": "Lean365",
+      "url": "https://github.com/Lean365/Lean.Hbt",
+      "email": "support@lean365.com"
+    },
+    "license": {
+      "name": "MIT",
+      "url": "https://github.com/Lean365/Lean.Hbt/blob/master/LICENSE"
+    },
+    "version": "v1"
+  },
+  "paths": {
+    "/api/HbtCaptcha/behavior/collect": {
+      "post": {
+        "tags": [
+          "HbtCaptcha"
+        ],
+        "summary": "新增数据",
+        "description": "新增一条数据",
+        "operationId": "HbtCaptcha_CollectBehaviorData",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BehaviorDataDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BehaviorDataDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/BehaviorDataDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/HbtCaptcha/behavior/validate": {
+      "post": {
+        "tags": [
+          "HbtCaptcha"
+        ],
+        "summary": "新增数据",
+        "description": "新增一条数据",
+        "operationId": "HbtCaptcha_ValidateBehavior",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "string"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "string"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/CaptchaResultDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CaptchaResultDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CaptchaResultDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/HbtCaptcha/slider": {
+      "get": {
+        "tags": [
+          "HbtCaptcha"
+        ],
+        "summary": "获取数据",
+        "description": "获取指定条件的数据",
+        "operationId": "HbtCaptcha_GenerateSlider",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/SliderCaptchaDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SliderCaptchaDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SliderCaptchaDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/HbtCaptcha/slider/validate": {
+      "post": {
+        "tags": [
+          "HbtCaptcha"
+        ],
+        "summary": "新增数据",
+        "description": "新增一条数据",
+        "operationId": "HbtCaptcha_ValidateSlider",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SliderValidateDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SliderValidateDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/SliderValidateDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/CaptchaResultDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CaptchaResultDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CaptchaResultDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/HbtDept": {
+      "get": {
+        "tags": [
+          "HbtDept"
+        ],
+        "summary": "获取数据",
+        "description": "获取指定条件的数据",
+        "operationId": "HbtDept_GetPagedList",
+        "parameters": [
+          {
+            "name": "DeptName",
+            "in": "query",
+            "description": "部门名称",
+            "style": "form",
+            "schema": {
+              "maxLength": 50,
+              "type": "string"
+            }
+          },
+          {
+            "name": "Status",
+            "in": "query",
+            "description": "状态",
+            "style": "form",
+            "schema": {
+              "$ref": "#/components/schemas/HbtStatus"
+            }
+          },
+          {
+            "name": "PageIndex",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "HbtDept"
+        ],
+        "summary": "新增数据",
+        "description": "新增一条数据",
+        "operationId": "HbtDept_Insert",
+        "requestBody": {
+          "description": "创建对象",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HbtDeptCreateDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HbtDeptCreateDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/HbtDeptCreateDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "HbtDept"
+        ],
+        "summary": "更新数据",
+        "description": "更新指定数据",
+        "operationId": "HbtDept_Update",
+        "requestBody": {
+          "description": "更新对象",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HbtDeptUpdateDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HbtDeptUpdateDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/HbtDeptUpdateDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtDept/{deptId}": {
+      "get": {
+        "tags": [
+          "HbtDept"
+        ],
+        "summary": "获取数据",
+        "description": "获取指定条件的数据",
+        "operationId": "HbtDept_Get",
+        "parameters": [
+          {
+            "name": "deptId",
+            "in": "path",
+            "description": "部门ID",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "HbtDept"
+        ],
+        "summary": "删除数据",
+        "description": "删除指定数据",
+        "operationId": "HbtDept_Delete",
+        "parameters": [
+          {
+            "name": "deptId",
+            "in": "path",
+            "description": "部门ID",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtDept/{deptId}/status": {
+      "put": {
+        "tags": [
+          "HbtDept"
+        ],
+        "summary": "更新数据",
+        "description": "更新指定数据",
+        "operationId": "HbtDept_UpdateStatus",
+        "parameters": [
+          {
+            "name": "deptId",
+            "in": "path",
+            "description": "部门ID",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "description": "状态",
+            "style": "form",
+            "schema": {
+              "$ref": "#/components/schemas/HbtStatus"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtDept/batch": {
+      "delete": {
+        "tags": [
+          "HbtDept"
+        ],
+        "summary": "删除数据",
+        "description": "删除指定数据",
+        "operationId": "HbtDept_BatchDelete",
+        "requestBody": {
+          "description": "部门ID集合",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int64"
+                }
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int64"
+                }
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int64"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtDept/export": {
+      "get": {
+        "tags": [
+          "HbtDept"
+        ],
+        "summary": "获取数据",
+        "description": "获取指定条件的数据",
+        "operationId": "HbtDept_Export",
+        "parameters": [
+          {
+            "name": "DeptName",
+            "in": "query",
+            "description": "部门名称",
+            "style": "form",
+            "schema": {
+              "maxLength": 50,
+              "type": "string"
+            }
+          },
+          {
+            "name": "Status",
+            "in": "query",
+            "description": "状态",
+            "style": "form",
+            "schema": {
+              "$ref": "#/components/schemas/HbtStatus"
+            }
+          },
+          {
+            "name": "PageIndex",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtDept/import": {
+      "post": {
+        "tags": [
+          "HbtDept"
+        ],
+        "summary": "新增数据",
+        "description": "新增一条数据",
+        "operationId": "HbtDept_Import",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "ContentType": {
+                    "type": "string"
+                  },
+                  "ContentDisposition": {
+                    "type": "string"
+                  },
+                  "Headers": {
+                    "type": "object",
+                    "additionalProperties": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "Length": {
+                    "type": "integer",
+                    "format": "int64"
+                  },
+                  "Name": {
+                    "type": "string"
+                  },
+                  "FileName": {
+                    "type": "string"
+                  }
+                }
+              },
+              "encoding": {
+                "ContentType": {
+                  "style": "form"
+                },
+                "ContentDisposition": {
+                  "style": "form"
+                },
+                "Headers": {
+                  "style": "form"
+                },
+                "Length": {
+                  "style": "form"
+                },
+                "Name": {
+                  "style": "form"
+                },
+                "FileName": {
+                  "style": "form"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtDept/template": {
+      "get": {
+        "tags": [
+          "HbtDept"
+        ],
+        "summary": "获取数据",
+        "description": "获取指定条件的数据",
+        "operationId": "HbtDept_GetImportTemplate",
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtDeviceExtend": {
+      "get": {
+        "tags": [
+          "HbtDeviceExtend"
+        ],
+        "summary": "获取数据",
+        "description": "获取指定条件的数据",
+        "operationId": "HbtDeviceExtend_GetPagedList",
+        "parameters": [
+          {
+            "name": "UserId",
+            "in": "query",
+            "description": "用户ID",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "TenantId",
+            "in": "query",
+            "description": "租户ID",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "DeviceType",
+            "in": "query",
+            "description": "设备类型",
+            "style": "form",
+            "schema": {
+              "$ref": "#/components/schemas/HbtDeviceType"
+            }
+          },
+          {
+            "name": "DeviceId",
+            "in": "query",
+            "description": "设备标识",
+            "style": "form",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "DeviceName",
+            "in": "query",
+            "description": "设备名称",
+            "style": "form",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "DeviceStatus",
+            "in": "query",
+            "description": "设备状态",
+            "style": "form",
+            "schema": {
+              "$ref": "#/components/schemas/HbtLoginStatus"
+            }
+          },
+          {
+            "name": "LastOnlineTimeStart",
+            "in": "query",
+            "description": "最后在线时间范围开始",
+            "style": "form",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "LastOnlineTimeEnd",
+            "in": "query",
+            "description": "最后在线时间范围结束",
+            "style": "form",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "PageIndex",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtDeviceExtend/{userId}/{deviceId}": {
+      "get": {
+        "tags": [
+          "HbtDeviceExtend"
+        ],
+        "summary": "获取数据",
+        "description": "获取指定条件的数据",
+        "operationId": "HbtDeviceExtend_GetByUserIdAndDeviceId",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "用户ID",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "deviceId",
+            "in": "path",
+            "description": "设备ID",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtDeviceExtend/{userId}/{deviceId}/offline": {
+      "put": {
+        "tags": [
+          "HbtDeviceExtend"
+        ],
+        "summary": "更新数据",
+        "description": "更新指定数据",
+        "operationId": "HbtDeviceExtend_UpdateOfflineInfo",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "用户ID",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "deviceId",
+            "in": "path",
+            "description": "设备ID",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtDeviceExtend/device": {
+      "put": {
+        "tags": [
+          "HbtDeviceExtend"
+        ],
+        "summary": "更新数据",
+        "description": "更新指定数据",
+        "operationId": "HbtDeviceExtend_UpdateDeviceInfo",
+        "requestBody": {
+          "description": "更新请求",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HbtDeviceExtendUpdateRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HbtDeviceExtendUpdateRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/HbtDeviceExtendUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtDeviceExtend/export": {
+      "get": {
+        "tags": [
+          "HbtDeviceExtend"
+        ],
+        "summary": "获取数据",
+        "description": "获取指定条件的数据",
+        "operationId": "HbtDeviceExtend_Export",
+        "parameters": [
+          {
+            "name": "UserId",
+            "in": "query",
+            "description": "用户ID",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "TenantId",
+            "in": "query",
+            "description": "租户ID",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "DeviceType",
+            "in": "query",
+            "description": "设备类型",
+            "style": "form",
+            "schema": {
+              "$ref": "#/components/schemas/HbtDeviceType"
+            }
+          },
+          {
+            "name": "DeviceId",
+            "in": "query",
+            "description": "设备标识",
+            "style": "form",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "DeviceName",
+            "in": "query",
+            "description": "设备名称",
+            "style": "form",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "DeviceStatus",
+            "in": "query",
+            "description": "设备状态",
+            "style": "form",
+            "schema": {
+              "$ref": "#/components/schemas/HbtLoginStatus"
+            }
+          },
+          {
+            "name": "LastOnlineTimeStart",
+            "in": "query",
+            "description": "最后在线时间范围开始",
+            "style": "form",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "LastOnlineTimeEnd",
+            "in": "query",
+            "description": "最后在线时间范围结束",
+            "style": "form",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "ExportFields",
+            "in": "query",
+            "description": "导出字段列表",
+            "style": "form",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "FileType",
+            "in": "query",
+            "description": "导出文件类型",
+            "required": true,
+            "style": "form",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtDeviceExtend/online-period": {
+      "put": {
+        "tags": [
+          "HbtDeviceExtend"
+        ],
+        "summary": "更新数据",
+        "description": "更新指定数据",
+        "operationId": "HbtDeviceExtend_UpdateOnlinePeriod",
+        "requestBody": {
+          "description": "在线时段更新请求",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HbtDeviceOnlinePeriodUpdateRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HbtDeviceOnlinePeriodUpdateRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/HbtDeviceOnlinePeriodUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtDeviceExtend/user/{userId}": {
+      "get": {
+        "tags": [
+          "HbtDeviceExtend"
+        ],
+        "summary": "获取数据",
+        "description": "获取指定条件的数据",
+        "operationId": "HbtDeviceExtend_GetByUserId",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "用户ID",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtLoginExtend": {
+      "get": {
+        "tags": [
+          "HbtLoginExtend"
+        ],
+        "summary": "获取数据",
+        "description": "获取指定条件的数据",
+        "operationId": "HbtLoginExtend_GetPagedList",
+        "parameters": [
+          {
+            "name": "UserId",
+            "in": "query",
+            "description": "用户ID",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "TenantId",
+            "in": "query",
+            "description": "租户ID",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "LoginType",
+            "in": "query",
+            "description": "登录类型",
+            "style": "form",
+            "schema": {
+              "$ref": "#/components/schemas/HbtLoginType"
+            }
+          },
+          {
+            "name": "LoginSource",
+            "in": "query",
+            "description": "登录来源",
+            "style": "form",
+            "schema": {
+              "$ref": "#/components/schemas/HbtLoginSource"
+            }
+          },
+          {
+            "name": "LoginStatus",
+            "in": "query",
+            "description": "登录状态",
+            "style": "form",
+            "schema": {
+              "$ref": "#/components/schemas/HbtLoginStatus"
+            }
+          },
+          {
+            "name": "LastLoginTimeStart",
+            "in": "query",
+            "description": "最后登录时间范围开始",
+            "style": "form",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "LastLoginTimeEnd",
+            "in": "query",
+            "description": "最后登录时间范围结束",
+            "style": "form",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "PageIndex",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtLoginExtend/{userId}": {
+      "get": {
+        "tags": [
+          "HbtLoginExtend"
+        ],
+        "summary": "获取数据",
+        "description": "获取指定条件的数据",
+        "operationId": "HbtLoginExtend_GetByUserId",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "用户ID",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtLoginExtend/{userId}/offline": {
+      "put": {
+        "tags": [
+          "HbtLoginExtend"
+        ],
+        "summary": "更新数据",
+        "description": "更新指定数据",
+        "operationId": "HbtLoginExtend_UpdateOfflineInfo",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "用户ID",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtLoginExtend/export": {
+      "get": {
+        "tags": [
+          "HbtLoginExtend"
+        ],
+        "summary": "获取数据",
+        "description": "获取指定条件的数据",
+        "operationId": "HbtLoginExtend_Export",
+        "parameters": [
+          {
+            "name": "UserId",
+            "in": "query",
+            "description": "用户ID",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "TenantId",
+            "in": "query",
+            "description": "租户ID",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "LoginType",
+            "in": "query",
+            "description": "登录类型",
+            "style": "form",
+            "schema": {
+              "$ref": "#/components/schemas/HbtLoginType"
+            }
+          },
+          {
+            "name": "LoginSource",
+            "in": "query",
+            "description": "登录来源",
+            "style": "form",
+            "schema": {
+              "$ref": "#/components/schemas/HbtLoginSource"
+            }
+          },
+          {
+            "name": "LoginStatus",
+            "in": "query",
+            "description": "登录状态",
+            "style": "form",
+            "schema": {
+              "$ref": "#/components/schemas/HbtLoginStatus"
+            }
+          },
+          {
+            "name": "LastLoginTimeStart",
+            "in": "query",
+            "description": "最后登录时间范围开始",
+            "style": "form",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "LastLoginTimeEnd",
+            "in": "query",
+            "description": "最后登录时间范围结束",
+            "style": "form",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "ExportFields",
+            "in": "query",
+            "description": "导出字段列表",
+            "style": "form",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "FileType",
+            "in": "query",
+            "description": "导出文件类型",
+            "required": true,
+            "style": "form",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtLoginExtend/login": {
+      "put": {
+        "tags": [
+          "HbtLoginExtend"
+        ],
+        "summary": "更新数据",
+        "description": "更新指定数据",
+        "operationId": "HbtLoginExtend_UpdateLoginInfo",
+        "requestBody": {
+          "description": "更新请求",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HbtLoginExtendUpdateRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HbtLoginExtendUpdateRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/HbtLoginExtendUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtLoginExtend/online-period": {
+      "put": {
+        "tags": [
+          "HbtLoginExtend"
+        ],
+        "summary": "更新数据",
+        "description": "更新指定数据",
+        "operationId": "HbtLoginExtend_UpdateOnlinePeriod",
+        "requestBody": {
+          "description": "在线时段更新请求",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HbtOnlinePeriodUpdateRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HbtOnlinePeriodUpdateRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/HbtOnlinePeriodUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtMenu": {
+      "get": {
+        "tags": [
+          "HbtMenu"
+        ],
+        "summary": "获取数据",
+        "description": "获取指定条件的数据",
+        "operationId": "HbtMenu_GetPagedList",
+        "parameters": [
+          {
+            "name": "MenuName",
+            "in": "query",
+            "description": "菜单名称",
+            "style": "form",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Status",
+            "in": "query",
+            "description": "状态",
+            "style": "form",
+            "schema": {
+              "$ref": "#/components/schemas/HbtStatus"
+            }
+          },
+          {
+            "name": "PageIndex",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "HbtMenu"
+        ],
+        "summary": "新增数据",
+        "description": "新增一条数据",
+        "operationId": "HbtMenu_Insert",
+        "requestBody": {
+          "description": "创建对象",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HbtMenuCreateDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HbtMenuCreateDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/HbtMenuCreateDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "HbtMenu"
+        ],
+        "summary": "更新数据",
+        "description": "更新指定数据",
+        "operationId": "HbtMenu_Update",
+        "requestBody": {
+          "description": "更新对象",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HbtMenuUpdateDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HbtMenuUpdateDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/HbtMenuUpdateDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtMenu/{menuId}": {
+      "get": {
+        "tags": [
+          "HbtMenu"
+        ],
+        "summary": "获取数据",
+        "description": "获取指定条件的数据",
+        "operationId": "HbtMenu_Get",
+        "parameters": [
+          {
+            "name": "menuId",
+            "in": "path",
+            "description": "菜单ID",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "HbtMenu"
+        ],
+        "summary": "删除数据",
+        "description": "删除指定数据",
+        "operationId": "HbtMenu_Delete",
+        "parameters": [
+          {
+            "name": "menuId",
+            "in": "path",
+            "description": "菜单ID",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtMenu/{menuId}/order": {
+      "put": {
+        "tags": [
+          "HbtMenu"
+        ],
+        "summary": "更新数据",
+        "description": "更新指定数据",
+        "operationId": "HbtMenu_UpdateOrder",
+        "parameters": [
+          {
+            "name": "menuId",
+            "in": "path",
+            "description": "菜单ID",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "orderNum",
+            "in": "query",
+            "description": "显示顺序",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtMenu/{menuId}/status": {
+      "put": {
+        "tags": [
+          "HbtMenu"
+        ],
+        "summary": "更新数据",
+        "description": "更新指定数据",
+        "operationId": "HbtMenu_UpdateStatus",
+        "parameters": [
+          {
+            "name": "menuId",
+            "in": "path",
+            "description": "菜单ID",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "description": "状态",
+            "style": "form",
+            "schema": {
+              "$ref": "#/components/schemas/HbtStatus"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtMenu/batch": {
+      "delete": {
+        "tags": [
+          "HbtMenu"
+        ],
+        "summary": "删除数据",
+        "description": "删除指定数据",
+        "operationId": "HbtMenu_BatchDelete",
+        "requestBody": {
+          "description": "菜单ID集合",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int64"
+                }
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int64"
+                }
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int64"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtMenu/export": {
+      "get": {
+        "tags": [
+          "HbtMenu"
+        ],
+        "summary": "获取数据",
+        "description": "获取指定条件的数据",
+        "operationId": "HbtMenu_Export",
+        "parameters": [
+          {
+            "name": "MenuName",
+            "in": "query",
+            "description": "菜单名称",
+            "style": "form",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Status",
+            "in": "query",
+            "description": "状态",
+            "style": "form",
+            "schema": {
+              "$ref": "#/components/schemas/HbtStatus"
+            }
+          },
+          {
+            "name": "PageIndex",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtMenu/import": {
+      "post": {
+        "tags": [
+          "HbtMenu"
+        ],
+        "summary": "新增数据",
+        "description": "新增一条数据",
+        "operationId": "HbtMenu_Import",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "ContentType": {
+                    "type": "string"
+                  },
+                  "ContentDisposition": {
+                    "type": "string"
+                  },
+                  "Headers": {
+                    "type": "object",
+                    "additionalProperties": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "Length": {
+                    "type": "integer",
+                    "format": "int64"
+                  },
+                  "Name": {
+                    "type": "string"
+                  },
+                  "FileName": {
+                    "type": "string"
+                  }
+                }
+              },
+              "encoding": {
+                "ContentType": {
+                  "style": "form"
+                },
+                "ContentDisposition": {
+                  "style": "form"
+                },
+                "Headers": {
+                  "style": "form"
+                },
+                "Length": {
+                  "style": "form"
+                },
+                "Name": {
+                  "style": "form"
+                },
+                "FileName": {
+                  "style": "form"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtMenu/template": {
+      "get": {
+        "tags": [
+          "HbtMenu"
+        ],
+        "summary": "获取数据",
+        "description": "获取指定条件的数据",
+        "operationId": "HbtMenu_GetImportTemplate",
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtOAuth/authorize/{provider}": {
+      "get": {
+        "tags": [
+          "HbtOAuth"
+        ],
+        "summary": "获取数据",
+        "description": "获取指定条件的数据",
+        "operationId": "HbtOAuth_Authorize",
+        "parameters": [
+          {
+            "name": "provider",
+            "in": "path",
+            "description": "OAuth提供商",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtOAuth/callback/{provider}": {
+      "get": {
+        "tags": [
+          "HbtOAuth"
+        ],
+        "summary": "获取数据",
+        "description": "获取指定条件的数据",
+        "operationId": "HbtOAuth_Callback",
+        "parameters": [
+          {
+            "name": "provider",
+            "in": "path",
+            "description": "OAuth提供商",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "code",
+            "in": "query",
+            "description": "授权码",
+            "style": "form",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "state",
+            "in": "query",
+            "description": "状态码",
+            "style": "form",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtPost": {
+      "get": {
+        "tags": [
+          "HbtPost"
+        ],
+        "summary": "获取数据",
+        "description": "获取指定条件的数据",
+        "operationId": "HbtPost_GetPagedList",
+        "parameters": [
+          {
+            "name": "PostCode",
+            "in": "query",
+            "description": "岗位编码",
+            "style": "form",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "PostName",
+            "in": "query",
+            "description": "岗位名称",
+            "style": "form",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Status",
+            "in": "query",
+            "description": "状态（0正常 1停用）",
+            "style": "form",
+            "schema": {
+              "$ref": "#/components/schemas/HbtStatus"
+            }
+          },
+          {
+            "name": "PageIndex",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "HbtPost"
+        ],
+        "summary": "新增数据",
+        "description": "新增一条数据",
+        "operationId": "HbtPost_Insert",
+        "requestBody": {
+          "description": "创建对象",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HbtPostCreateDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HbtPostCreateDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/HbtPostCreateDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "HbtPost"
+        ],
+        "summary": "更新数据",
+        "description": "更新指定数据",
+        "operationId": "HbtPost_Update",
+        "requestBody": {
+          "description": "更新对象",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HbtPostUpdateDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HbtPostUpdateDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/HbtPostUpdateDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtPost/{postId}": {
+      "get": {
+        "tags": [
+          "HbtPost"
+        ],
+        "summary": "获取数据",
+        "description": "获取指定条件的数据",
+        "operationId": "HbtPost_Get",
+        "parameters": [
+          {
+            "name": "postId",
+            "in": "path",
+            "description": "岗位ID",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "HbtPost"
+        ],
+        "summary": "删除数据",
+        "description": "删除指定数据",
+        "operationId": "HbtPost_Delete",
+        "parameters": [
+          {
+            "name": "postId",
+            "in": "path",
+            "description": "岗位ID",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtPost/{postId}/status": {
+      "put": {
+        "tags": [
+          "HbtPost"
+        ],
+        "summary": "更新数据",
+        "description": "更新指定数据",
+        "operationId": "HbtPost_UpdateStatus",
+        "parameters": [
+          {
+            "name": "postId",
+            "in": "path",
+            "description": "岗位ID",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "description": "状态",
+            "style": "form",
+            "schema": {
+              "$ref": "#/components/schemas/HbtStatus"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtPost/batch": {
+      "delete": {
+        "tags": [
+          "HbtPost"
+        ],
+        "summary": "删除数据",
+        "description": "删除指定数据",
+        "operationId": "HbtPost_BatchDelete",
+        "requestBody": {
+          "description": "岗位ID集合",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int64"
+                }
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int64"
+                }
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int64"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtPost/export": {
+      "get": {
+        "tags": [
+          "HbtPost"
+        ],
+        "summary": "获取数据",
+        "description": "获取指定条件的数据",
+        "operationId": "HbtPost_Export",
+        "parameters": [
+          {
+            "name": "PostCode",
+            "in": "query",
+            "description": "岗位编码",
+            "style": "form",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "PostName",
+            "in": "query",
+            "description": "岗位名称",
+            "style": "form",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Status",
+            "in": "query",
+            "description": "状态（0正常 1停用）",
+            "style": "form",
+            "schema": {
+              "$ref": "#/components/schemas/HbtStatus"
+            }
+          },
+          {
+            "name": "PageIndex",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtPost/import": {
+      "post": {
+        "tags": [
+          "HbtPost"
+        ],
+        "summary": "新增数据",
+        "description": "新增一条数据",
+        "operationId": "HbtPost_Import",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "ContentType": {
+                    "type": "string"
+                  },
+                  "ContentDisposition": {
+                    "type": "string"
+                  },
+                  "Headers": {
+                    "type": "object",
+                    "additionalProperties": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "Length": {
+                    "type": "integer",
+                    "format": "int64"
+                  },
+                  "Name": {
+                    "type": "string"
+                  },
+                  "FileName": {
+                    "type": "string"
+                  }
+                }
+              },
+              "encoding": {
+                "ContentType": {
+                  "style": "form"
+                },
+                "ContentDisposition": {
+                  "style": "form"
+                },
+                "Headers": {
+                  "style": "form"
+                },
+                "Length": {
+                  "style": "form"
+                },
+                "Name": {
+                  "style": "form"
+                },
+                "FileName": {
+                  "style": "form"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtPost/template": {
+      "get": {
+        "tags": [
+          "HbtPost"
+        ],
+        "summary": "获取数据",
+        "description": "获取指定条件的数据",
+        "operationId": "HbtPost_GetImportTemplate",
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtRole": {
+      "get": {
+        "tags": [
+          "HbtRole"
+        ],
+        "summary": "获取数据",
+        "description": "获取指定条件的数据",
+        "operationId": "HbtRole_GetPagedList",
+        "parameters": [
+          {
+            "name": "RoleName",
+            "in": "query",
+            "description": "角色名称",
+            "style": "form",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "RoleKey",
+            "in": "query",
+            "description": "角色标识",
+            "style": "form",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Status",
+            "in": "query",
+            "description": "状态",
+            "style": "form",
+            "schema": {
+              "$ref": "#/components/schemas/HbtStatus"
+            }
+          },
+          {
+            "name": "PageIndex",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "HbtRole"
+        ],
+        "summary": "新增数据",
+        "description": "新增一条数据",
+        "operationId": "HbtRole_Insert",
+        "requestBody": {
+          "description": "创建对象",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HbtRoleCreateDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HbtRoleCreateDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/HbtRoleCreateDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "HbtRole"
+        ],
+        "summary": "更新数据",
+        "description": "更新指定数据",
+        "operationId": "HbtRole_Update",
+        "requestBody": {
+          "description": "更新对象",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HbtRoleUpdateDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HbtRoleUpdateDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/HbtRoleUpdateDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtRole/{roleId}": {
+      "get": {
+        "tags": [
+          "HbtRole"
+        ],
+        "summary": "获取数据",
+        "description": "获取指定条件的数据",
+        "operationId": "HbtRole_Get",
+        "parameters": [
+          {
+            "name": "roleId",
+            "in": "path",
+            "description": "角色ID",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "HbtRole"
+        ],
+        "summary": "删除数据",
+        "description": "删除指定数据",
+        "operationId": "HbtRole_Delete",
+        "parameters": [
+          {
+            "name": "roleId",
+            "in": "path",
+            "description": "角色ID",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtRole/{roleId}/status": {
+      "put": {
+        "tags": [
+          "HbtRole"
+        ],
+        "summary": "更新数据",
+        "description": "更新指定数据",
+        "operationId": "HbtRole_UpdateStatus",
+        "parameters": [
+          {
+            "name": "roleId",
+            "in": "path",
+            "description": "角色ID",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "description": "状态",
+            "style": "form",
+            "schema": {
+              "$ref": "#/components/schemas/HbtStatus"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtRole/batch": {
+      "delete": {
+        "tags": [
+          "HbtRole"
+        ],
+        "summary": "删除数据",
+        "description": "删除指定数据",
+        "operationId": "HbtRole_BatchDelete",
+        "requestBody": {
+          "description": "角色ID集合",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int64"
+                }
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int64"
+                }
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int64"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtRole/export": {
+      "get": {
+        "tags": [
+          "HbtRole"
+        ],
+        "summary": "获取数据",
+        "description": "获取指定条件的数据",
+        "operationId": "HbtRole_Export",
+        "parameters": [
+          {
+            "name": "RoleName",
+            "in": "query",
+            "description": "角色名称",
+            "style": "form",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "RoleKey",
+            "in": "query",
+            "description": "角色标识",
+            "style": "form",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Status",
+            "in": "query",
+            "description": "状态",
+            "style": "form",
+            "schema": {
+              "$ref": "#/components/schemas/HbtStatus"
+            }
+          },
+          {
+            "name": "PageIndex",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtUser": {
+      "get": {
+        "tags": [
+          "HbtUser"
+        ],
+        "summary": "获取数据",
+        "description": "获取指定条件的数据",
+        "operationId": "HbtUser_GetPagedList",
+        "parameters": [
+          {
+            "name": "UserName",
+            "in": "query",
+            "description": "用户名",
+            "style": "form",
+            "schema": {
+              "maxLength": 50,
+              "type": "string"
+            }
+          },
+          {
+            "name": "PhoneNumber",
+            "in": "query",
+            "description": "手机号码",
+            "style": "form",
+            "schema": {
+              "maxLength": 20,
+              "type": "string"
+            }
+          },
+          {
+            "name": "Status",
+            "in": "query",
+            "description": "状态(0正常 1停用)",
+            "style": "form",
+            "schema": {
+              "$ref": "#/components/schemas/HbtStatus"
+            }
+          },
+          {
+            "name": "UserType",
+            "in": "query",
+            "description": "用户类型",
+            "style": "form",
+            "schema": {
+              "$ref": "#/components/schemas/HbtUserType"
+            }
+          },
+          {
+            "name": "DeptId",
+            "in": "query",
+            "description": "部门ID",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "PageIndex",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "HbtUser"
+        ],
+        "summary": "新增数据",
+        "description": "新增一条数据",
+        "operationId": "HbtUser_Insert",
+        "requestBody": {
+          "description": "创建对象",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HbtUserCreateDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HbtUserCreateDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/HbtUserCreateDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "HbtUser"
+        ],
+        "summary": "更新数据",
+        "description": "更新指定数据",
+        "operationId": "HbtUser_Update",
+        "requestBody": {
+          "description": "更新对象",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HbtUserUpdateDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HbtUserUpdateDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/HbtUserUpdateDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtUser/{userId}": {
+      "get": {
+        "tags": [
+          "HbtUser"
+        ],
+        "summary": "获取数据",
+        "description": "获取指定条件的数据",
+        "operationId": "HbtUser_Get",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "用户ID",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "HbtUser"
+        ],
+        "summary": "删除数据",
+        "description": "删除指定数据",
+        "operationId": "HbtUser_Delete",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "用户ID",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtUser/{userId}/status": {
+      "put": {
+        "tags": [
+          "HbtUser"
+        ],
+        "summary": "更新数据",
+        "description": "更新指定数据",
+        "operationId": "HbtUser_UpdateStatus",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "用户ID",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "description": "状态",
+            "style": "form",
+            "schema": {
+              "$ref": "#/components/schemas/HbtStatus"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtUser/batch": {
+      "delete": {
+        "tags": [
+          "HbtUser"
+        ],
+        "summary": "删除数据",
+        "description": "删除指定数据",
+        "operationId": "HbtUser_BatchDelete",
+        "requestBody": {
+          "description": "用户ID集合",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int64"
+                }
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int64"
+                }
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int64"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtUser/change-password": {
+      "put": {
+        "tags": [
+          "HbtUser"
+        ],
+        "summary": "更新数据",
+        "description": "更新指定数据",
+        "operationId": "HbtUser_ChangePassword",
+        "requestBody": {
+          "description": "修改密码对象",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HbtUserChangePwdDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HbtUserChangePwdDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/HbtUserChangePwdDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtUser/export": {
+      "get": {
+        "tags": [
+          "HbtUser"
+        ],
+        "summary": "获取数据",
+        "description": "获取指定条件的数据",
+        "operationId": "HbtUser_Export",
+        "parameters": [
+          {
+            "name": "UserName",
+            "in": "query",
+            "description": "用户名",
+            "style": "form",
+            "schema": {
+              "maxLength": 50,
+              "type": "string"
+            }
+          },
+          {
+            "name": "PhoneNumber",
+            "in": "query",
+            "description": "手机号码",
+            "style": "form",
+            "schema": {
+              "maxLength": 20,
+              "type": "string"
+            }
+          },
+          {
+            "name": "Status",
+            "in": "query",
+            "description": "状态(0正常 1停用)",
+            "style": "form",
+            "schema": {
+              "$ref": "#/components/schemas/HbtStatus"
+            }
+          },
+          {
+            "name": "UserType",
+            "in": "query",
+            "description": "用户类型",
+            "style": "form",
+            "schema": {
+              "$ref": "#/components/schemas/HbtUserType"
+            }
+          },
+          {
+            "name": "DeptId",
+            "in": "query",
+            "description": "部门ID",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "PageIndex",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtUser/import": {
+      "post": {
+        "tags": [
+          "HbtUser"
+        ],
+        "summary": "新增数据",
+        "description": "新增一条数据",
+        "operationId": "HbtUser_Import",
+        "requestBody": {
+          "description": "用户数据列表",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/HbtUserImportDto"
+                }
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/HbtUserImportDto"
+                }
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/HbtUserImportDto"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtUser/reset-password": {
+      "put": {
+        "tags": [
+          "HbtUser"
+        ],
+        "summary": "更新数据",
+        "description": "更新指定数据",
+        "operationId": "HbtUser_ResetPassword",
+        "requestBody": {
+          "description": "重置密码对象",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HbtUserResetPwdDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HbtUserResetPwdDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/HbtUserResetPwdDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtUser/template": {
+      "get": {
+        "tags": [
+          "HbtUser"
+        ],
+        "summary": "获取数据",
+        "description": "获取指定条件的数据",
+        "operationId": "HbtUser_GetTemplate",
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/identity/HbtTenant": {
+      "post": {
+        "tags": [
+          "HbtTenant"
+        ],
+        "summary": "新增数据",
+        "description": "新增一条数据",
+        "operationId": "HbtTenant_Insert",
+        "requestBody": {
+          "description": "创建对象",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HbtTenantCreateDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HbtTenantCreateDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/HbtTenantCreateDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "integer",
+                  "format": "int64"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "integer",
+                  "format": "int64"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "integer",
+                  "format": "int64"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "HbtTenant"
+        ],
+        "summary": "更新数据",
+        "description": "更新指定数据",
+        "operationId": "HbtTenant_Update",
+        "requestBody": {
+          "description": "更新对象",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HbtTenantUpdateDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HbtTenantUpdateDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/HbtTenantUpdateDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/identity/HbtTenant/{id}": {
+      "get": {
+        "tags": [
+          "HbtTenant"
+        ],
+        "summary": "获取数据",
+        "description": "获取指定条件的数据",
+        "operationId": "HbtTenant_Get",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "租户ID",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/HbtTenantDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HbtTenantDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HbtTenantDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "HbtTenant"
+        ],
+        "summary": "删除数据",
+        "description": "删除指定数据",
+        "operationId": "HbtTenant_Delete",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "租户ID",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/identity/HbtTenant/{id}/status": {
+      "put": {
+        "tags": [
+          "HbtTenant"
+        ],
+        "summary": "更新数据",
+        "description": "更新指定数据",
+        "operationId": "HbtTenant_UpdateStatus",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "租户ID",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "description": "状态",
+            "style": "form",
+            "schema": {
+              "$ref": "#/components/schemas/HbtStatus"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/identity/HbtTenant/batch": {
+      "delete": {
+        "tags": [
+          "HbtTenant"
+        ],
+        "summary": "删除数据",
+        "description": "删除指定数据",
+        "operationId": "HbtTenant_BatchDelete",
+        "requestBody": {
+          "description": "租户ID集合",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int64"
+                }
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int64"
+                }
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int64"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/identity/HbtTenant/export": {
+      "get": {
+        "tags": [
+          "HbtTenant"
+        ],
+        "summary": "获取数据",
+        "description": "获取指定条件的数据",
+        "operationId": "HbtTenant_Export",
+        "parameters": [
+          {
+            "name": "TenantCode",
+            "in": "query",
+            "description": "租户编码",
+            "style": "form",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "TenantName",
+            "in": "query",
+            "description": "租户名称",
+            "style": "form",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "ContactPerson",
+            "in": "query",
+            "description": "联系人",
+            "style": "form",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "ContactPhone",
+            "in": "query",
+            "description": "联系电话",
+            "style": "form",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Status",
+            "in": "query",
+            "description": "状态",
+            "style": "form",
+            "schema": {
+              "$ref": "#/components/schemas/HbtStatus"
+            }
+          },
+          {
+            "name": "PageIndex",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HbtTenantExportDto"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HbtTenantExportDto"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HbtTenantExportDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/identity/HbtTenant/list": {
+      "get": {
+        "tags": [
+          "HbtTenant"
+        ],
+        "summary": "获取数据",
+        "description": "获取指定条件的数据",
+        "operationId": "HbtTenant_GetPagedList",
+        "parameters": [
+          {
+            "name": "TenantCode",
+            "in": "query",
+            "description": "租户编码",
+            "style": "form",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "TenantName",
+            "in": "query",
+            "description": "租户名称",
+            "style": "form",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "ContactPerson",
+            "in": "query",
+            "description": "联系人",
+            "style": "form",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "ContactPhone",
+            "in": "query",
+            "description": "联系电话",
+            "style": "form",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Status",
+            "in": "query",
+            "description": "状态",
+            "style": "form",
+            "schema": {
+              "$ref": "#/components/schemas/HbtStatus"
+            }
+          },
+          {
+            "name": "PageIndex",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/HbtTenantDtoHbtPagedResult"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HbtTenantDtoHbtPagedResult"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HbtTenantDtoHbtPagedResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "BehaviorDataDto": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "description": "用户ID",
+            "nullable": true
+          },
+          "mouseTrack": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BehaviorPointDto"
+            },
+            "description": "鼠标轨迹",
+            "nullable": true
+          },
+          "keyIntervals": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": "按键间隔(毫秒)",
+            "nullable": true
+          },
+          "duration": {
+            "type": "integer",
+            "description": "操作时长(毫秒)",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false,
+        "description": "行为数据"
+      },
+      "BehaviorPointDto": {
+        "type": "object",
+        "properties": {
+          "x": {
+            "type": "integer",
+            "description": "X坐标",
+            "format": "int32"
+          },
+          "y": {
+            "type": "integer",
+            "description": "Y坐标",
+            "format": "int32"
+          },
+          "timestamp": {
+            "type": "integer",
+            "description": "时间戳",
+            "format": "int64"
+          }
+        },
+        "additionalProperties": false,
+        "description": "行为数据点"
+      },
+      "CaptchaResultDto": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "是否通过验证"
+          },
+          "message": {
+            "type": "string",
+            "description": "错误消息",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "验证结果"
+      },
+      "HbtBrowserType": {
+        "enum": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          99
+        ],
+        "type": "integer",
+        "format": "int32"
+      },
+      "HbtDataScope": {
+        "enum": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "type": "integer",
+        "format": "int32"
+      },
+      "HbtDeptCreateDto": {
+        "required": [
+          "deptName",
+          "tenantId"
+        ],
+        "type": "object",
+        "properties": {
+          "deptName": {
+            "maxLength": 50,
+            "minLength": 1,
+            "type": "string",
+            "description": "部门名称"
+          },
+          "parentId": {
+            "type": "integer",
+            "description": "父部门ID",
+            "format": "int64",
+            "nullable": true
+          },
+          "orderNum": {
+            "maximum": 9999,
+            "minimum": 0,
+            "type": "integer",
+            "description": "显示顺序",
+            "format": "int32"
+          },
+          "leader": {
+            "maxLength": 50,
+            "type": "string",
+            "description": "负责人",
+            "nullable": true
+          },
+          "phone": {
+            "maxLength": 20,
+            "pattern": "^1[3-9]\\d{9}$",
+            "type": "string",
+            "description": "联系电话",
+            "nullable": true
+          },
+          "email": {
+            "maxLength": 100,
+            "type": "string",
+            "description": "邮箱",
+            "format": "email",
+            "nullable": true
+          },
+          "status": {
+            "$ref": "#/components/schemas/HbtStatus"
+          },
+          "tenantId": {
+            "type": "integer",
+            "description": "租户ID",
+            "format": "int64"
+          }
+        },
+        "additionalProperties": false,
+        "description": "部门创建对象"
+      },
+      "HbtDeptUpdateDto": {
+        "required": [
+          "deptName",
+          "id",
+          "tenantId"
+        ],
+        "type": "object",
+        "properties": {
+          "deptName": {
+            "maxLength": 50,
+            "minLength": 1,
+            "type": "string",
+            "description": "部门名称"
+          },
+          "parentId": {
+            "type": "integer",
+            "description": "父部门ID",
+            "format": "int64",
+            "nullable": true
+          },
+          "orderNum": {
+            "maximum": 9999,
+            "minimum": 0,
+            "type": "integer",
+            "description": "显示顺序",
+            "format": "int32"
+          },
+          "leader": {
+            "maxLength": 50,
+            "type": "string",
+            "description": "负责人",
+            "nullable": true
+          },
+          "phone": {
+            "maxLength": 20,
+            "pattern": "^1[3-9]\\d{9}$",
+            "type": "string",
+            "description": "联系电话",
+            "nullable": true
+          },
+          "email": {
+            "maxLength": 100,
+            "type": "string",
+            "description": "邮箱",
+            "format": "email",
+            "nullable": true
+          },
+          "status": {
+            "$ref": "#/components/schemas/HbtStatus"
+          },
+          "tenantId": {
+            "type": "integer",
+            "description": "租户ID",
+            "format": "int64"
+          },
+          "id": {
+            "type": "integer",
+            "description": "部门ID",
+            "format": "int64"
+          }
+        },
+        "additionalProperties": false,
+        "description": "部门更新对象"
+      },
+      "HbtDeviceExtendUpdateRequest": {
+        "required": [
+          "deviceId",
+          "deviceType",
+          "userId"
+        ],
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "integer",
+            "description": "用户ID",
+            "format": "int64"
+          },
+          "tenantId": {
+            "type": "integer",
+            "description": "租户ID",
+            "format": "int64",
+            "nullable": true
+          },
+          "deviceType": {
+            "$ref": "#/components/schemas/HbtDeviceType"
+          },
+          "deviceId": {
+            "maxLength": 100,
+            "minLength": 1,
+            "type": "string",
+            "description": "设备标识"
+          },
+          "deviceName": {
+            "maxLength": 100,
+            "type": "string",
+            "description": "设备名称",
+            "nullable": true
+          },
+          "deviceModel": {
+            "maxLength": 100,
+            "type": "string",
+            "description": "设备型号",
+            "nullable": true
+          },
+          "osType": {
+            "$ref": "#/components/schemas/HbtOsType"
+          },
+          "osVersion": {
+            "maxLength": 50,
+            "type": "string",
+            "description": "系统版本",
+            "nullable": true
+          },
+          "browserType": {
+            "$ref": "#/components/schemas/HbtBrowserType"
+          },
+          "browserVersion": {
+            "maxLength": 50,
+            "type": "string",
+            "description": "浏览器版本",
+            "nullable": true
+          },
+          "resolution": {
+            "maxLength": 50,
+            "type": "string",
+            "description": "分辨率",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "设备扩展信息更新请求"
+      },
+      "HbtDeviceOnlinePeriodUpdateRequest": {
+        "required": [
+          "deviceId",
+          "onlinePeriod",
+          "userId"
+        ],
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "integer",
+            "description": "用户ID",
+            "format": "int64"
+          },
+          "deviceId": {
+            "maxLength": 100,
+            "minLength": 1,
+            "type": "string",
+            "description": "设备ID"
+          },
+          "onlinePeriod": {
+            "minLength": 1,
+            "pattern": "^([0-1][0-9]|2[0-3]):[0-5][0-9]-([0-1][0-9]|2[0-3]):[0-5][0-9]$",
+            "type": "string",
+            "description": "在线时段(格式:\"HH:mm-HH:mm\")"
+          }
+        },
+        "additionalProperties": false,
+        "description": "设备在线时段更新请求"
+      },
+      "HbtDeviceType": {
+        "enum": [
+          0,
+          1,
+          2
+        ],
+        "type": "integer",
+        "format": "int32"
+      },
+      "HbtGender": {
+        "enum": [
+          0,
+          1,
+          2
+        ],
+        "type": "integer",
+        "format": "int32"
+      },
+      "HbtLoginExtendUpdateRequest": {
+        "required": [
+          "browserType",
+          "deviceId",
+          "deviceType",
+          "ipAddress",
+          "loginSource",
+          "loginType",
+          "osType",
+          "userId"
+        ],
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "integer",
+            "description": "用户ID",
+            "format": "int64"
+          },
+          "tenantId": {
+            "type": "integer",
+            "description": "租户ID",
+            "format": "int64",
+            "nullable": true
+          },
+          "roleId": {
+            "type": "integer",
+            "description": "角色ID",
+            "format": "int64",
+            "nullable": true
+          },
+          "deptId": {
+            "type": "integer",
+            "description": "部门ID",
+            "format": "int64",
+            "nullable": true
+          },
+          "postId": {
+            "type": "integer",
+            "description": "岗位ID",
+            "format": "int64",
+            "nullable": true
+          },
+          "loginType": {
+            "$ref": "#/components/schemas/HbtLoginType"
+          },
+          "loginSource": {
+            "$ref": "#/components/schemas/HbtLoginSource"
+          },
+          "ipAddress": {
+            "maxLength": 50,
+            "minLength": 1,
+            "type": "string",
+            "description": "IP地址"
+          },
+          "location": {
+            "maxLength": 100,
+            "type": "string",
+            "description": "地理位置",
+            "nullable": true
+          },
+          "deviceId": {
+            "maxLength": 100,
+            "minLength": 1,
+            "type": "string",
+            "description": "设备ID"
+          },
+          "deviceType": {
+            "$ref": "#/components/schemas/HbtDeviceType"
+          },
+          "browserType": {
+            "$ref": "#/components/schemas/HbtBrowserType"
+          },
+          "osType": {
+            "$ref": "#/components/schemas/HbtOsType"
+          }
+        },
+        "additionalProperties": false,
+        "description": "登录扩展信息更新请求"
+      },
+      "HbtLoginSource": {
+        "enum": [
+          0,
+          1,
+          2
+        ],
+        "type": "integer",
+        "format": "int32"
+      },
+      "HbtLoginStatus": {
+        "enum": [
+          0,
+          1
+        ],
+        "type": "integer",
+        "format": "int32"
+      },
+      "HbtLoginType": {
+        "enum": [
+          0,
+          1
+        ],
+        "type": "integer",
+        "format": "int32"
+      },
+      "HbtMenuCreateDto": {
+        "required": [
+          "menuName"
+        ],
+        "type": "object",
+        "properties": {
+          "menuName": {
+            "minLength": 1,
+            "type": "string",
+            "description": "菜单名称"
+          },
+          "transKey": {
+            "type": "string",
+            "description": "翻译Key",
+            "nullable": true
+          },
+          "parentId": {
+            "type": "integer",
+            "description": "父菜单ID",
+            "format": "int64",
+            "nullable": true
+          },
+          "orderNum": {
+            "type": "integer",
+            "description": "显示顺序",
+            "format": "int32"
+          },
+          "path": {
+            "type": "string",
+            "description": "路由地址",
+            "nullable": true
+          },
+          "component": {
+            "type": "string",
+            "description": "组件路径",
+            "nullable": true
+          },
+          "isFrame": {
+            "$ref": "#/components/schemas/HbtYesNo"
+          },
+          "menuType": {
+            "$ref": "#/components/schemas/HbtMenuType"
+          },
+          "visible": {
+            "$ref": "#/components/schemas/HbtVisible"
+          },
+          "status": {
+            "$ref": "#/components/schemas/HbtStatus"
+          },
+          "perms": {
+            "type": "string",
+            "description": "权限标识",
+            "nullable": true
+          },
+          "icon": {
+            "type": "string",
+            "description": "菜单图标",
+            "nullable": true
+          },
+          "tenantId": {
+            "type": "integer",
+            "description": "租户ID",
+            "format": "int64"
+          },
+          "remark": {
+            "type": "string",
+            "description": "备注",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "菜单创建对象"
+      },
+      "HbtMenuType": {
+        "enum": [
+          0,
+          1,
+          2
+        ],
+        "type": "integer",
+        "format": "int32"
+      },
+      "HbtMenuUpdateDto": {
+        "required": [
+          "menuName"
+        ],
+        "type": "object",
+        "properties": {
+          "menuName": {
+            "minLength": 1,
+            "type": "string",
+            "description": "菜单名称"
+          },
+          "transKey": {
+            "type": "string",
+            "description": "翻译Key",
+            "nullable": true
+          },
+          "parentId": {
+            "type": "integer",
+            "description": "父菜单ID",
+            "format": "int64",
+            "nullable": true
+          },
+          "orderNum": {
+            "type": "integer",
+            "description": "显示顺序",
+            "format": "int32"
+          },
+          "path": {
+            "type": "string",
+            "description": "路由地址",
+            "nullable": true
+          },
+          "component": {
+            "type": "string",
+            "description": "组件路径",
+            "nullable": true
+          },
+          "isFrame": {
+            "$ref": "#/components/schemas/HbtYesNo"
+          },
+          "menuType": {
+            "$ref": "#/components/schemas/HbtMenuType"
+          },
+          "visible": {
+            "$ref": "#/components/schemas/HbtVisible"
+          },
+          "status": {
+            "$ref": "#/components/schemas/HbtStatus"
+          },
+          "perms": {
+            "type": "string",
+            "description": "权限标识",
+            "nullable": true
+          },
+          "icon": {
+            "type": "string",
+            "description": "菜单图标",
+            "nullable": true
+          },
+          "tenantId": {
+            "type": "integer",
+            "description": "租户ID",
+            "format": "int64"
+          },
+          "remark": {
+            "type": "string",
+            "description": "备注",
+            "nullable": true
+          },
+          "menuId": {
+            "type": "integer",
+            "description": "菜单ID",
+            "format": "int64"
+          }
+        },
+        "additionalProperties": false,
+        "description": "菜单更新对象"
+      },
+      "HbtOnlinePeriodUpdateRequest": {
+        "required": [
+          "onlinePeriod",
+          "userId"
+        ],
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "integer",
+            "description": "用户ID",
+            "format": "int64"
+          },
+          "onlinePeriod": {
+            "minLength": 1,
+            "pattern": "^([0-1][0-9]|2[0-3]):[0-5][0-9]-([0-1][0-9]|2[0-3]):[0-5][0-9]$",
+            "type": "string",
+            "description": "在线时段(格式:\"HH:mm-HH:mm\")"
+          }
+        },
+        "additionalProperties": false,
+        "description": "在线时段更新请求"
+      },
+      "HbtOsType": {
+        "enum": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          99
+        ],
+        "type": "integer",
+        "format": "int32"
+      },
+      "HbtPostCreateDto": {
+        "required": [
+          "orderNum",
+          "postCode",
+          "postName",
+          "tenantId"
+        ],
+        "type": "object",
+        "properties": {
+          "postCode": {
+            "maxLength": 50,
+            "minLength": 1,
+            "type": "string",
+            "description": "岗位编码"
+          },
+          "postName": {
+            "maxLength": 50,
+            "minLength": 1,
+            "type": "string",
+            "description": "岗位名称"
+          },
+          "orderNum": {
+            "maximum": 9999,
+            "minimum": 0,
+            "type": "integer",
+            "description": "显示顺序",
+            "format": "int32"
+          },
+          "status": {
+            "$ref": "#/components/schemas/HbtStatus"
+          },
+          "tenantId": {
+            "type": "integer",
+            "description": "租户ID",
+            "format": "int64"
+          },
+          "remark": {
+            "maxLength": 500,
+            "type": "string",
+            "description": "备注",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "岗位创建DTO"
+      },
+      "HbtPostUpdateDto": {
+        "required": [
+          "id",
+          "orderNum",
+          "postCode",
+          "postName",
+          "tenantId"
+        ],
+        "type": "object",
+        "properties": {
+          "postCode": {
+            "maxLength": 50,
+            "minLength": 1,
+            "type": "string",
+            "description": "岗位编码"
+          },
+          "postName": {
+            "maxLength": 50,
+            "minLength": 1,
+            "type": "string",
+            "description": "岗位名称"
+          },
+          "orderNum": {
+            "maximum": 9999,
+            "minimum": 0,
+            "type": "integer",
+            "description": "显示顺序",
+            "format": "int32"
+          },
+          "status": {
+            "$ref": "#/components/schemas/HbtStatus"
+          },
+          "tenantId": {
+            "type": "integer",
+            "description": "租户ID",
+            "format": "int64"
+          },
+          "remark": {
+            "maxLength": 500,
+            "type": "string",
+            "description": "备注",
+            "nullable": true
+          },
+          "id": {
+            "type": "integer",
+            "description": "主键",
+            "format": "int64"
+          }
+        },
+        "additionalProperties": false,
+        "description": "岗位更新DTO"
+      },
+      "HbtRoleCreateDto": {
+        "type": "object",
+        "properties": {
+          "roleName": {
+            "type": "string",
+            "description": "角色名称",
+            "nullable": true
+          },
+          "roleKey": {
+            "type": "string",
+            "description": "角色标识",
+            "nullable": true
+          },
+          "orderNum": {
+            "type": "integer",
+            "description": "排序号",
+            "format": "int32"
+          },
+          "dataScope": {
+            "$ref": "#/components/schemas/HbtDataScope"
+          },
+          "status": {
+            "$ref": "#/components/schemas/HbtStatus"
+          },
+          "tenantId": {
+            "type": "integer",
+            "description": "租户ID",
+            "format": "int64"
+          },
+          "remark": {
+            "type": "string",
+            "description": "备注",
+            "nullable": true
+          },
+          "menuIds": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "description": "菜单ID列表",
+            "nullable": true
+          },
+          "deptIds": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "description": "部门ID列表",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "角色创建对象"
+      },
+      "HbtRoleUpdateDto": {
+        "type": "object",
+        "properties": {
+          "roleName": {
+            "type": "string",
+            "description": "角色名称",
+            "nullable": true
+          },
+          "roleKey": {
+            "type": "string",
+            "description": "角色标识",
+            "nullable": true
+          },
+          "orderNum": {
+            "type": "integer",
+            "description": "排序号",
+            "format": "int32"
+          },
+          "dataScope": {
+            "$ref": "#/components/schemas/HbtDataScope"
+          },
+          "status": {
+            "$ref": "#/components/schemas/HbtStatus"
+          },
+          "tenantId": {
+            "type": "integer",
+            "description": "租户ID",
+            "format": "int64"
+          },
+          "remark": {
+            "type": "string",
+            "description": "备注",
+            "nullable": true
+          },
+          "menuIds": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "description": "菜单ID列表",
+            "nullable": true
+          },
+          "deptIds": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "description": "部门ID列表",
+            "nullable": true
+          },
+          "roleId": {
+            "type": "integer",
+            "description": "角色ID",
+            "format": "int64"
+          }
+        },
+        "additionalProperties": false,
+        "description": "角色更新对象"
+      },
+      "HbtStatus": {
+        "enum": [
+          0,
+          1
+        ],
+        "type": "integer",
+        "format": "int32"
+      },
+      "HbtTenantCreateDto": {
+        "required": [
+          "contactEmail",
+          "contactPerson",
+          "contactPhone",
+          "dbConnection",
+          "tenantCode",
+          "tenantName"
+        ],
+        "type": "object",
+        "properties": {
+          "tenantName": {
+            "maxLength": 50,
+            "minLength": 1,
+            "type": "string",
+            "description": "租户名称"
+          },
+          "tenantCode": {
+            "maxLength": 50,
+            "minLength": 1,
+            "type": "string",
+            "description": "租户编码"
+          },
+          "contactPerson": {
+            "maxLength": 20,
+            "minLength": 1,
+            "type": "string",
+            "description": "联系人"
+          },
+          "contactPhone": {
+            "maxLength": 20,
+            "minLength": 1,
+            "type": "string",
+            "description": "联系电话"
+          },
+          "contactEmail": {
+            "maxLength": 50,
+            "minLength": 1,
+            "type": "string",
+            "description": "联系邮箱",
+            "format": "email"
+          },
+          "address": {
+            "maxLength": 200,
+            "type": "string",
+            "description": "租户地址",
+            "nullable": true
+          },
+          "dbConnection": {
+            "maxLength": 500,
+            "minLength": 1,
+            "type": "string",
+            "description": "数据库连接字符串"
+          },
+          "domain": {
+            "maxLength": 100,
+            "type": "string",
+            "description": "租户域名",
+            "nullable": true
+          },
+          "logoUrl": {
+            "maxLength": 200,
+            "type": "string",
+            "description": "租户Logo",
+            "nullable": true
+          },
+          "theme": {
+            "maxLength": 50,
+            "type": "string",
+            "description": "租户主题",
+            "nullable": true
+          },
+          "licenseStartTime": {
+            "type": "string",
+            "description": "授权开始时间",
+            "format": "date-time",
+            "nullable": true
+          },
+          "licenseEndTime": {
+            "type": "string",
+            "description": "授权结束时间",
+            "format": "date-time",
+            "nullable": true
+          },
+          "maxUserCount": {
+            "maximum": 2147483647,
+            "minimum": 1,
+            "type": "integer",
+            "description": "最大用户数",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false,
+        "description": "租户创建传输对象"
+      },
+      "HbtTenantDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "租户ID",
+            "format": "int64"
+          },
+          "tenantName": {
+            "type": "string",
+            "description": "租户名称",
+            "nullable": true
+          },
+          "tenantCode": {
+            "type": "string",
+            "description": "租户编码",
+            "nullable": true
+          },
+          "contactPerson": {
+            "type": "string",
+            "description": "联系人",
+            "nullable": true
+          },
+          "contactPhone": {
+            "type": "string",
+            "description": "联系电话",
+            "nullable": true
+          },
+          "contactEmail": {
+            "type": "string",
+            "description": "联系邮箱",
+            "nullable": true
+          },
+          "address": {
+            "type": "string",
+            "description": "租户地址",
+            "nullable": true
+          },
+          "domain": {
+            "type": "string",
+            "description": "租户域名",
+            "nullable": true
+          },
+          "logoUrl": {
+            "type": "string",
+            "description": "租户Logo",
+            "nullable": true
+          },
+          "theme": {
+            "type": "string",
+            "description": "租户主题",
+            "nullable": true
+          },
+          "licenseStartTime": {
+            "type": "string",
+            "description": "授权开始时间",
+            "format": "date-time",
+            "nullable": true
+          },
+          "licenseEndTime": {
+            "type": "string",
+            "description": "授权结束时间",
+            "format": "date-time",
+            "nullable": true
+          },
+          "maxUserCount": {
+            "type": "integer",
+            "description": "最大用户数",
+            "format": "int32"
+          },
+          "status": {
+            "$ref": "#/components/schemas/HbtStatus"
+          },
+          "statusName": {
+            "type": "string",
+            "description": "状态名称",
+            "nullable": true,
+            "readOnly": true
+          },
+          "createTime": {
+            "type": "string",
+            "description": "创建时间",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false,
+        "description": "租户基础传输对象"
+      },
+      "HbtTenantDtoHbtPagedResult": {
+        "type": "object",
+        "properties": {
+          "totalNum": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "pageIndex": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pageSize": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalPage": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          },
+          "rows": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HbtTenantDto"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "HbtTenantExportDto": {
+        "type": "object",
+        "properties": {
+          "tenantName": {
+            "type": "string",
+            "description": "租户名称",
+            "nullable": true
+          },
+          "tenantCode": {
+            "type": "string",
+            "description": "租户编码",
+            "nullable": true
+          },
+          "contactPerson": {
+            "type": "string",
+            "description": "联系人",
+            "nullable": true
+          },
+          "contactPhone": {
+            "type": "string",
+            "description": "联系电话",
+            "nullable": true
+          },
+          "contactEmail": {
+            "type": "string",
+            "description": "联系邮箱",
+            "nullable": true
+          },
+          "address": {
+            "type": "string",
+            "description": "租户地址",
+            "nullable": true
+          },
+          "domain": {
+            "type": "string",
+            "description": "租户域名",
+            "nullable": true
+          },
+          "createTime": {
+            "type": "string",
+            "description": "创建时间",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false,
+        "description": "租户导出传输对象"
+      },
+      "HbtTenantUpdateDto": {
+        "required": [
+          "contactEmail",
+          "contactPerson",
+          "contactPhone",
+          "dbConnection",
+          "id",
+          "tenantCode",
+          "tenantName"
+        ],
+        "type": "object",
+        "properties": {
+          "tenantName": {
+            "maxLength": 50,
+            "minLength": 1,
+            "type": "string",
+            "description": "租户名称"
+          },
+          "tenantCode": {
+            "maxLength": 50,
+            "minLength": 1,
+            "type": "string",
+            "description": "租户编码"
+          },
+          "contactPerson": {
+            "maxLength": 20,
+            "minLength": 1,
+            "type": "string",
+            "description": "联系人"
+          },
+          "contactPhone": {
+            "maxLength": 20,
+            "minLength": 1,
+            "type": "string",
+            "description": "联系电话"
+          },
+          "contactEmail": {
+            "maxLength": 50,
+            "minLength": 1,
+            "type": "string",
+            "description": "联系邮箱",
+            "format": "email"
+          },
+          "address": {
+            "maxLength": 200,
+            "type": "string",
+            "description": "租户地址",
+            "nullable": true
+          },
+          "dbConnection": {
+            "maxLength": 500,
+            "minLength": 1,
+            "type": "string",
+            "description": "数据库连接字符串"
+          },
+          "domain": {
+            "maxLength": 100,
+            "type": "string",
+            "description": "租户域名",
+            "nullable": true
+          },
+          "logoUrl": {
+            "maxLength": 200,
+            "type": "string",
+            "description": "租户Logo",
+            "nullable": true
+          },
+          "theme": {
+            "maxLength": 50,
+            "type": "string",
+            "description": "租户主题",
+            "nullable": true
+          },
+          "licenseStartTime": {
+            "type": "string",
+            "description": "授权开始时间",
+            "format": "date-time",
+            "nullable": true
+          },
+          "licenseEndTime": {
+            "type": "string",
+            "description": "授权结束时间",
+            "format": "date-time",
+            "nullable": true
+          },
+          "maxUserCount": {
+            "maximum": 2147483647,
+            "minimum": 1,
+            "type": "integer",
+            "description": "最大用户数",
+            "format": "int32"
+          },
+          "id": {
+            "type": "integer",
+            "description": "租户ID",
+            "format": "int64"
+          }
+        },
+        "additionalProperties": false,
+        "description": "租户更新传输对象"
+      },
+      "HbtUserChangePwdDto": {
+        "required": [
+          "newPassword",
+          "oldPassword",
+          "userId"
+        ],
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "integer",
+            "description": "用户ID",
+            "format": "int64"
+          },
+          "oldPassword": {
+            "minLength": 1,
+            "type": "string",
+            "description": "旧密码"
+          },
+          "newPassword": {
+            "maxLength": 20,
+            "minLength": 6,
+            "type": "string",
+            "description": "新密码"
+          }
+        },
+        "additionalProperties": false,
+        "description": "修改密码DTO"
+      },
+      "HbtUserCreateDto": {
+        "required": [
+          "deptId",
+          "nickName",
+          "password",
+          "userName"
+        ],
+        "type": "object",
+        "properties": {
+          "userName": {
+            "maxLength": 50,
+            "minLength": 1,
+            "type": "string",
+            "description": "用户名"
+          },
+          "nickName": {
+            "maxLength": 50,
+            "minLength": 1,
+            "type": "string",
+            "description": "昵称"
+          },
+          "englishName": {
+            "maxLength": 50,
+            "type": "string",
+            "description": "英文名称",
+            "nullable": true
+          },
+          "userType": {
+            "$ref": "#/components/schemas/HbtUserType"
+          },
+          "password": {
+            "maxLength": 20,
+            "minLength": 6,
+            "type": "string",
+            "description": "密码"
+          },
+          "phoneNumber": {
+            "maxLength": 20,
+            "pattern": "^1[3-9]\\d{9}$",
+            "type": "string",
+            "description": "手机号码",
+            "nullable": true
+          },
+          "email": {
+            "maxLength": 50,
+            "type": "string",
+            "description": "邮箱",
+            "format": "email",
+            "nullable": true
+          },
+          "gender": {
+            "$ref": "#/components/schemas/HbtGender"
+          },
+          "avatar": {
+            "maxLength": 200,
+            "type": "string",
+            "description": "头像",
+            "nullable": true
+          },
+          "deptId": {
+            "type": "integer",
+            "description": "部门ID",
+            "format": "int64"
+          },
+          "roleIds": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "description": "角色ID列表",
+            "nullable": true
+          },
+          "postIds": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "description": "岗位ID列表",
+            "nullable": true
+          },
+          "remark": {
+            "maxLength": 500,
+            "type": "string",
+            "description": "备注",
+            "nullable": true
+          },
+          "tenantId": {
+            "type": "integer",
+            "description": "租户ID",
+            "format": "int64"
+          }
+        },
+        "additionalProperties": false,
+        "description": "用户创建DTO"
+      },
+      "HbtUserImportDto": {
+        "type": "object",
+        "properties": {
+          "userName": {
+            "type": "string",
+            "description": "用户名",
+            "nullable": true
+          },
+          "nickName": {
+            "type": "string",
+            "description": "昵称",
+            "nullable": true
+          },
+          "englishName": {
+            "type": "string",
+            "description": "英文名称",
+            "nullable": true
+          },
+          "userType": {
+            "type": "string",
+            "description": "用户类型（0系统用户 1普通用户）",
+            "nullable": true
+          },
+          "password": {
+            "type": "string",
+            "description": "密码",
+            "nullable": true
+          },
+          "phoneNumber": {
+            "type": "string",
+            "description": "手机号码",
+            "nullable": true
+          },
+          "email": {
+            "type": "string",
+            "description": "邮箱",
+            "nullable": true
+          },
+          "gender": {
+            "type": "string",
+            "description": "性别(0=未知,1=男,2=女)",
+            "nullable": true
+          },
+          "avatar": {
+            "type": "string",
+            "description": "头像",
+            "nullable": true
+          },
+          "deptName": {
+            "type": "string",
+            "description": "部门名称",
+            "nullable": true
+          },
+          "roleNames": {
+            "type": "string",
+            "description": "角色名称列表，逗号分隔",
+            "nullable": true
+          },
+          "postNames": {
+            "type": "string",
+            "description": "岗位名称列表，逗号分隔",
+            "nullable": true
+          },
+          "remark": {
+            "type": "string",
+            "description": "备注",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "用户导入DTO"
+      },
+      "HbtUserResetPwdDto": {
+        "required": [
+          "password",
+          "userId"
+        ],
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "integer",
+            "description": "用户ID",
+            "format": "int64"
+          },
+          "password": {
+            "maxLength": 20,
+            "minLength": 6,
+            "type": "string",
+            "description": "新密码"
+          }
+        },
+        "additionalProperties": false,
+        "description": "重置密码DTO"
+      },
+      "HbtUserType": {
+        "enum": [
+          0,
+          1,
+          2
+        ],
+        "type": "integer",
+        "format": "int32"
+      },
+      "HbtUserUpdateDto": {
+        "required": [
+          "deptId",
+          "nickName",
+          "userId"
+        ],
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "integer",
+            "description": "用户ID",
+            "format": "int64"
+          },
+          "nickName": {
+            "maxLength": 50,
+            "minLength": 1,
+            "type": "string",
+            "description": "昵称"
+          },
+          "englishName": {
+            "maxLength": 50,
+            "type": "string",
+            "description": "英文名称",
+            "nullable": true
+          },
+          "phoneNumber": {
+            "maxLength": 20,
+            "pattern": "^1[3-9]\\d{9}$",
+            "type": "string",
+            "description": "手机号码",
+            "nullable": true
+          },
+          "email": {
+            "maxLength": 50,
+            "type": "string",
+            "description": "邮箱",
+            "format": "email",
+            "nullable": true
+          },
+          "gender": {
+            "$ref": "#/components/schemas/HbtGender"
+          },
+          "avatar": {
+            "maxLength": 200,
+            "type": "string",
+            "description": "头像",
+            "nullable": true
+          },
+          "deptId": {
+            "type": "integer",
+            "description": "部门ID",
+            "format": "int64"
+          },
+          "roleIds": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "description": "角色ID列表",
+            "nullable": true
+          },
+          "postIds": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "description": "岗位ID列表",
+            "nullable": true
+          },
+          "remark": {
+            "maxLength": 500,
+            "type": "string",
+            "description": "备注",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "用户更新DTO"
+      },
+      "HbtVisible": {
+        "enum": [
+          0,
+          1
+        ],
+        "type": "integer",
+        "format": "int32"
+      },
+      "HbtYesNo": {
+        "enum": [
+          0,
+          1
+        ],
+        "type": "integer",
+        "format": "int32"
+      },
+      "SliderCaptchaDto": {
+        "type": "object",
+        "properties": {
+          "backgroundImage": {
+            "type": "string",
+            "description": "背景图片(Base64)",
+            "nullable": true
+          },
+          "sliderImage": {
+            "type": "string",
+            "description": "滑块图片(Base64)",
+            "nullable": true
+          },
+          "token": {
+            "type": "string",
+            "description": "验证令牌",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "滑块验证码生成结果"
+      },
+      "SliderValidateDto": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "验证令牌",
+            "nullable": true
+          },
+          "xOffset": {
+            "type": "integer",
+            "description": "X轴偏移量",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false,
+        "description": "滑块验证请求"
+      }
+    },
+    "securitySchemes": {
+      "Bearer": {
+        "type": "apiKey",
+        "description": "JWT Authorization header using the Bearer scheme.",
+        "name": "Authorization",
+        "in": "header"
+      }
+    }
+  },
+  "security": [
+    {
+      "Bearer": [ ]
+    }
+  ],
+  "tags": [
+    {
+      "name": "HbtCaptcha",
+      "description": "验证码控制器"
+    },
+    {
+      "name": "HbtDept",
+      "description": "部门控制器"
+    },
+    {
+      "name": "HbtDeviceExtend",
+      "description": "设备扩展信息控制器"
+    },
+    {
+      "name": "HbtLoginExtend",
+      "description": "登录扩展信息控制器"
+    },
+    {
+      "name": "HbtMenu",
+      "description": "菜单控制器"
+    },
+    {
+      "name": "HbtOAuth",
+      "description": "OAuth认证控制器"
+    },
+    {
+      "name": "HbtPost",
+      "description": "岗位控制器"
+    },
+    {
+      "name": "HbtRole",
+      "description": "角色控制器"
+    },
+    {
+      "name": "HbtTenant",
+      "description": "租户管理"
+    },
+    {
+      "name": "HbtUser",
+      "description": "用户控制器"
+    }
+  ]
+}

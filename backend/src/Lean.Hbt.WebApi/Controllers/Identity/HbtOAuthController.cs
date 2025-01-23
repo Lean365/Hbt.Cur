@@ -1,22 +1,18 @@
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Threading.Tasks;
-using System.Linq.Expressions;
-using Lean.Hbt.Domain.Services;
 using Lean.Hbt.Application.Dtos.Identity;
-using Lean.Hbt.Domain.Entities.Identity;
-using Lean.Hbt.Domain.Repositories;
 using Lean.Hbt.Common.Enums;
+using Lean.Hbt.Domain.Entities.Identity;
 using Lean.Hbt.Domain.IServices.Admin;
+using Lean.Hbt.Domain.Repositories;
+using Lean.Hbt.Domain.Services;
 
 namespace Lean.Hbt.WebApi.Controllers.Identity
 {
     /// <summary>
     /// OAuth认证控制器
     /// </summary>
-    [Route("api/[controller]")]
+    [Route("api/[controller]", Name = "OAuth认证")]
     [ApiController]
+    [ApiModule("identity", "身份认证")]
     public class HbtOAuthController : HbtBaseController
     {
         private readonly IHbtOAuthService _oauthService;
@@ -27,7 +23,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// 构造函数
         /// </summary>
         public HbtOAuthController(
-            IHbtOAuthService oauthService, 
+            IHbtOAuthService oauthService,
             IHbtSessionManager sessionManager,
             IHbtRepository<HbtUser> userRepository,
             IHbtLocalizationService localization) : base(localization)
@@ -63,7 +59,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         public async Task<IActionResult> Callback(string provider, string code, string state)
         {
             var userInfo = await _oauthService.HandleCallbackAsync(provider, code, state);
-            
+
             // 查找或创建用户
             var user = await _userRepository.FirstOrDefaultAsync(u => u.UserName == userInfo.UserName);
             if (user == null)
@@ -79,10 +75,10 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
                 };
                 await _userRepository.InsertAsync(user);
             }
-            
+
             // 创建会话
             var session = await _sessionManager.CreateSessionAsync(user.Id.ToString());
-            
+
             // 返回登录结果
             var result = new HbtOAuthLoginDto
             {
@@ -94,8 +90,8 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
                 Avatar = user.Avatar,
                 Email = user.Email
             };
-            
+
             return Ok(result);
         }
     }
-} 
+}

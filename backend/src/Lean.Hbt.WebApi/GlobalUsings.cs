@@ -8,16 +8,10 @@
 //===================================================================
 
 // System 命名空间
-global using System;
-global using System.Collections.Generic;
-global using System.Threading.Tasks;
 
 // Microsoft 扩展
-global using Microsoft.AspNetCore.Mvc;
-global using Microsoft.AspNetCore.Authorization;
-global using Microsoft.Extensions.DependencyInjection;
-
 // 项目依赖
 global using Lean.Hbt.Common.Models;
-global using Lean.Hbt.Domain.Entities;
-global using Lean.Hbt.WebApi.Controllers; 
+global using Lean.Hbt.Infrastructure.Swagger;
+global using Microsoft.AspNetCore.Authorization;
+global using Microsoft.AspNetCore.Mvc;

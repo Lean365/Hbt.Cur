@@ -1,0 +1,633 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "黑冰台代码生成管理系统 - 实时通讯",
+    "description": "在线用户、即时消息等",
+    "contact": {
+      "name": "Lean365",
+      "url": "https://github.com/Lean365/Lean.Hbt",
+      "email": "support@lean365.com"
+    },
+    "license": {
+      "name": "MIT",
+      "url": "https://github.com/Lean365/Lean.Hbt/blob/master/LICENSE"
+    },
+    "version": "v1"
+  },
+  "paths": {
+    "/api/HbtOnlineMessage": {
+      "get": {
+        "tags": [
+          "HbtOnlineMessage"
+        ],
+        "summary": "获取数据",
+        "description": "获取指定条件的数据",
+        "operationId": "HbtOnlineMessage_GetPagedList",
+        "parameters": [
+          {
+            "name": "TenantId",
+            "in": "query",
+            "description": "租户ID",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "SenderId",
+            "in": "query",
+            "description": "发送者ID",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "ReceiverId",
+            "in": "query",
+            "description": "接收者ID",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "MessageType",
+            "in": "query",
+            "description": "消息类型",
+            "style": "form",
+            "schema": {
+              "$ref": "#/components/schemas/HbtMessageType"
+            }
+          },
+          {
+            "name": "StartTime",
+            "in": "query",
+            "description": "开始时间",
+            "style": "form",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "EndTime",
+            "in": "query",
+            "description": "结束时间",
+            "style": "form",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "PageIndex",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "HbtOnlineMessage"
+        ],
+        "summary": "新增数据",
+        "description": "新增一条数据",
+        "operationId": "HbtOnlineMessage_Save",
+        "requestBody": {
+          "description": "消息信息",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HbtOnlineMessageDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HbtOnlineMessageDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/HbtOnlineMessageDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtOnlineMessage/{id}": {
+      "get": {
+        "tags": [
+          "HbtOnlineMessage"
+        ],
+        "summary": "获取数据",
+        "description": "获取指定条件的数据",
+        "operationId": "HbtOnlineMessage_Get",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "消息ID",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "HbtOnlineMessage"
+        ],
+        "summary": "删除数据",
+        "description": "删除指定数据",
+        "operationId": "HbtOnlineMessage_Delete",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "消息ID",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtOnlineMessage/cleanup": {
+      "post": {
+        "tags": [
+          "HbtOnlineMessage"
+        ],
+        "summary": "新增数据",
+        "description": "新增一条数据",
+        "operationId": "HbtOnlineMessage_CleanupExpiredMessages",
+        "parameters": [
+          {
+            "name": "days",
+            "in": "query",
+            "description": "保留天数",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 7
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtOnlineMessage/export": {
+      "get": {
+        "tags": [
+          "HbtOnlineMessage"
+        ],
+        "summary": "获取数据",
+        "description": "获取指定条件的数据",
+        "operationId": "HbtOnlineMessage_Export",
+        "parameters": [
+          {
+            "name": "TenantId",
+            "in": "query",
+            "description": "租户ID",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "SenderId",
+            "in": "query",
+            "description": "发送者ID",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "ReceiverId",
+            "in": "query",
+            "description": "接收者ID",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "MessageType",
+            "in": "query",
+            "description": "消息类型",
+            "style": "form",
+            "schema": {
+              "$ref": "#/components/schemas/HbtMessageType"
+            }
+          },
+          {
+            "name": "StartTime",
+            "in": "query",
+            "description": "开始时间",
+            "style": "form",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "EndTime",
+            "in": "query",
+            "description": "结束时间",
+            "style": "form",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "PageIndex",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtOnlineUser": {
+      "get": {
+        "tags": [
+          "HbtOnlineUser"
+        ],
+        "summary": "获取数据",
+        "description": "获取指定条件的数据",
+        "operationId": "HbtOnlineUser_GetPagedList",
+        "parameters": [
+          {
+            "name": "TenantId",
+            "in": "query",
+            "description": "租户ID",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "UserId",
+            "in": "query",
+            "description": "用户ID",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "ClientIp",
+            "in": "query",
+            "description": "客户端IP",
+            "style": "form",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "StartTime",
+            "in": "query",
+            "description": "开始时间",
+            "style": "form",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "EndTime",
+            "in": "query",
+            "description": "结束时间",
+            "style": "form",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "PageIndex",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtOnlineUser/{connectionId}": {
+      "delete": {
+        "tags": [
+          "HbtOnlineUser"
+        ],
+        "summary": "删除数据",
+        "description": "删除指定数据",
+        "operationId": "HbtOnlineUser_ForceOffline",
+        "parameters": [
+          {
+            "name": "connectionId",
+            "in": "path",
+            "description": "连接ID",
+            "required": true,
+            "style": "simple",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtOnlineUser/cleanup": {
+      "post": {
+        "tags": [
+          "HbtOnlineUser"
+        ],
+        "summary": "新增数据",
+        "description": "新增一条数据",
+        "operationId": "HbtOnlineUser_CleanupExpiredUsers",
+        "parameters": [
+          {
+            "name": "minutes",
+            "in": "query",
+            "description": "超时时间(分钟)",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 20
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HbtOnlineUser/export": {
+      "get": {
+        "tags": [
+          "HbtOnlineUser"
+        ],
+        "summary": "获取数据",
+        "description": "获取指定条件的数据",
+        "operationId": "HbtOnlineUser_Export",
+        "parameters": [
+          {
+            "name": "TenantId",
+            "in": "query",
+            "description": "租户ID",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "UserId",
+            "in": "query",
+            "description": "用户ID",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "ClientIp",
+            "in": "query",
+            "description": "客户端IP",
+            "style": "form",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "StartTime",
+            "in": "query",
+            "description": "开始时间",
+            "style": "form",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "EndTime",
+            "in": "query",
+            "description": "结束时间",
+            "style": "form",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "PageIndex",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "style": "form",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "HbtMessageType": {
+        "enum": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "type": "integer",
+        "format": "int32"
+      },
+      "HbtOnlineMessageDto": {
+        "type": "object",
+        "properties": {
+          "tenantId": {
+            "type": "integer",
+            "description": "租户ID",
+            "format": "int64"
+          },
+          "senderId": {
+            "type": "integer",
+            "description": "发送者ID",
+            "format": "int64"
+          },
+          "senderName": {
+            "type": "string",
+            "description": "发送者名称",
+            "nullable": true
+          },
+          "receiverId": {
+            "type": "integer",
+            "description": "接收者ID",
+            "format": "int64",
+            "nullable": true
+          },
+          "receiverName": {
+            "type": "string",
+            "description": "接收者名称",
+            "nullable": true
+          },
+          "groupName": {
+            "type": "string",
+            "description": "群组名称",
+            "nullable": true
+          },
+          "messageType": {
+            "$ref": "#/components/schemas/HbtMessageType"
+          },
+          "content": {
+            "type": "string",
+            "description": "消息内容",
+            "nullable": true
+          },
+          "sendTime": {
+            "type": "string",
+            "description": "发送时间",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false,
+        "description": "在线消息基础传输对象"
+      }
+    },
+    "securitySchemes": {
+      "Bearer": {
+        "type": "apiKey",
+        "description": "JWT Authorization header using the Bearer scheme.",
+        "name": "Authorization",
+        "in": "header"
+      }
+    }
+  },
+  "security": [
+    {
+      "Bearer": [ ]
+    }
+  ],
+  "tags": [
+    {
+      "name": "HbtOnlineMessage",
+      "description": "在线消息控制器"
+    },
+    {
+      "name": "HbtOnlineUser",
+      "description": "在线用户控制器"
+    }
+  ]
+}

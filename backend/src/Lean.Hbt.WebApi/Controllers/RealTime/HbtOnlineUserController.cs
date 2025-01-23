@@ -7,10 +7,6 @@
 // 描述   : 在线用户控制器
 //===================================================================
 
-using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using Lean.Hbt.Common.Models;
 using Lean.Hbt.Application.Dtos.RealTime;
 using Lean.Hbt.Application.Services.RealTime;
 using Lean.Hbt.Domain.IServices.Admin;
@@ -24,8 +20,9 @@ namespace Lean.Hbt.WebApi.Controllers.RealTime
     /// 创建者: Lean365
     /// 创建时间: 2024-01-20
     /// </remarks>
-    [Route("api/[controller]")]
+    [Route("api/[controller]", Name = "在线用户")]
     [ApiController]
+    [ApiModule("realtime", "实时通讯")]
     public class HbtOnlineUserController : HbtBaseController
     {
         private readonly IHbtOnlineUserService _onlineUserService;
@@ -88,4 +85,4 @@ namespace Lean.Hbt.WebApi.Controllers.RealTime
             return Success(result);
         }
     }
-} 
+}

@@ -10,7 +10,6 @@
 using Lean.Hbt.Application.Dtos.Admin;
 using Lean.Hbt.Application.Services.Admin;
 using Lean.Hbt.Common.Enums;
-using Microsoft.AspNetCore.Mvc;
 using Lean.Hbt.Domain.IServices.Admin;
 
 namespace Lean.Hbt.WebApi.Controllers.Admin
@@ -22,8 +21,9 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
     /// 创建者: Lean365
     /// 创建时间: 2024-01-17
     /// </remarks>
-    [Route("api/[controller]")]
+    [Route("api/[controller]", Name = "字典数据")]
     [ApiController]
+    [ApiModule("system", "系统管理")]
     public class HbtDictDataController : HbtBaseController
     {
         private readonly IHbtDictDataService _dictDataService;
