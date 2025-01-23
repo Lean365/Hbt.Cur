@@ -215,83 +215,56 @@ namespace Lean.Hbt.Application.Services.Identity
         /// <summary>
         /// 导入部门
         /// </summary>
-        public async Task<string> ImportAsync(Stream fileStream)
+        public async Task<List<HbtDeptTemplateDto>> ImportAsync(Stream fileStream, string sheetName = "部门数据")
         {
-            // 1.从Excel导入数据
-            var depts = await HbtExcelHelper.ImportAsync<HbtDeptImportDto>(fileStream);
-            if (!depts.Any())
-                return "导入数据为空";
-
-            // 2.获取所有部门
-            var allDepts = await _deptRepository.AsQueryable().ToListAsync();
-            var deptDict = allDepts.ToDictionary(d => d.DeptName);
-
-            // 3.转换为实体
-            var entities = new List<HbtDept>();
-            foreach (var dto in depts)
+            try
             {
-                var dept = dto.Adapt<HbtDept>();
+                var importDtos = await HbtExcelHelper.ImportAsync<HbtDeptTemplateDto>(fileStream, sheetName);
+                if (importDtos == null || !importDtos.Any())
+                    throw new HbtException("导入数据为空");
 
-                // 设置父部门ID
-                if (!string.IsNullOrEmpty(dto.ParentDeptName))
-                {
-                    if (deptDict.TryGetValue(dto.ParentDeptName, out var parent))
-                    {
-                        dept.ParentId = parent.Id;
-                    }
-                    else
-                    {
-                        throw new HbtException($"上级部门[{dto.ParentDeptName}]不存在");
-                    }
-                }
-
-                // 设置状态
-                if (dto.Status.Equals("正常", StringComparison.OrdinalIgnoreCase))
-                    dept.Status = HbtStatus.Normal;
-                else if (dto.Status.Equals("停用", StringComparison.OrdinalIgnoreCase))
-                    dept.Status = HbtStatus.Disabled;
-                else
-                    throw new HbtException(string.Format("状态[{0}]不正确，只能是\"正常\"或\"停用\"", dto.Status));
-
-                entities.Add(dept);
+                return importDtos;
             }
-
-            // 4.批量插入
-            var result = await _deptRepository.InsertRangeAsync(entities);
-            return $"成功导入{depts.Count}条数据";
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "导入部门数据失败");
+                throw;
+            }
         }
 
         /// <summary>
         /// 导出部门
         /// </summary>
-        public async Task<byte[]> ExportAsync(HbtDeptQueryDto query)
+        /// <param name="data">要导出的数据</param>
+        /// <param name="sheetName">工作表名称</param>
+        /// <returns>Excel文件字节数组</returns>
+        public async Task<byte[]> ExportAsync(IEnumerable<HbtDeptExportDto> data, string sheetName = "部门信息")
         {
-            // 1.构建查询条件
-            var predicate = Expressionable.Create<HbtDept>();
-            
-            if (!string.IsNullOrEmpty(query.DeptName))
-                predicate.And(d => d.DeptName.Contains(query.DeptName));
-                
-            if (query.Status.HasValue)
-                predicate.And(d => d.Status == query.Status.Value);
-
-            // 2.查询数据
-            var depts = await _deptRepository.AsQueryable()
-                .Where(predicate.ToExpression())
-                .OrderBy(d => d.OrderNum)
-                .ToListAsync();
-
-            // 3.转换并导出
-            var exportDtos = depts.Adapt<List<HbtDeptExportDto>>();
-            return await HbtExcelHelper.ExportAsync(exportDtos, "部门数据");
+            try
+            {
+                return await HbtExcelHelper.ExportAsync(data, sheetName);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "导出部门数据失败");
+                throw;
+            }
         }
 
         /// <summary>
-        /// 下载导入模板
+        /// 获取导入模板
         /// </summary>
-        public async Task<byte[]> GetImportTemplateAsync()
+        public async Task<byte[]> GenerateTemplateAsync(string sheetName = "部门导入模板")
         {
-            return await HbtExcelHelper.GenerateTemplateAsync<HbtDeptTemplateDto>("部门导入模板");
+            try
+            {
+                return await HbtExcelHelper.GenerateTemplateAsync<HbtDeptTemplateDto>(sheetName);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "获取部门导入模板失败");
+                throw;
+            }
         }
 
         /// <summary>

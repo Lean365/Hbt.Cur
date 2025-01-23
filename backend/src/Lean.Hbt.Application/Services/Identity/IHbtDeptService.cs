@@ -78,21 +78,24 @@ namespace Lean.Hbt.Application.Services.Identity
         /// 导入部门
         /// </summary>
         /// <param name="fileStream">Excel文件流</param>
+        /// <param name="sheetName">工作表名称</param>
         /// <returns>导入结果</returns>
-        Task<string> ImportAsync(Stream fileStream);
+        Task<List<HbtDeptTemplateDto>> ImportAsync(Stream fileStream, string sheetName = "部门数据");
 
         /// <summary>
         /// 导出部门
         /// </summary>
-        /// <param name="query">查询条件</param>
+        /// <param name="data">要导出的数据</param>
+        /// <param name="sheetName">工作表名称</param>
         /// <returns>Excel文件字节数组</returns>
-        Task<byte[]> ExportAsync(HbtDeptQueryDto query);
+        Task<byte[]> ExportAsync(IEnumerable<HbtDeptExportDto> data, string sheetName = "部门信息");
 
         /// <summary>
-        /// 下载导入模板
+        /// 获取导入模板
         /// </summary>
+        /// <param name="sheetName">工作表名称</param>
         /// <returns>Excel模板文件字节数组</returns>
-        Task<byte[]> GetImportTemplateAsync();
+        Task<byte[]> GenerateTemplateAsync(string sheetName = "部门导入模板");
 
         /// <summary>
         /// 更新部门状态

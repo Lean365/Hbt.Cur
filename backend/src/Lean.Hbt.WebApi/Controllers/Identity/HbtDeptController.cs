@@ -114,36 +114,39 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// 导入部门数据
         /// </summary>
         /// <param name="file">Excel文件</param>
+        /// <param name="sheetName">工作表名称</param>
         /// <returns>导入结果</returns>
         [HttpPost("import")]
-        public async Task<IActionResult> ImportAsync([FromForm] IFormFile file)
+        public async Task<IActionResult> ImportAsync([FromForm] IFormFile file, [FromQuery] string sheetName = "部门数据")
         {
             using var stream = file.OpenReadStream();
-            var result = await _deptService.ImportAsync(stream);
+            var result = await _deptService.ImportAsync(stream, sheetName);
             return Success(result);
         }
 
         /// <summary>
         /// 导出部门数据
         /// </summary>
-        /// <param name="query">查询条件</param>
+        /// <param name="data">要导出的数据</param>
+        /// <param name="sheetName">工作表名称</param>
         /// <returns>导出的Excel文件</returns>
-        [HttpGet("export")]
-        public async Task<IActionResult> ExportAsync([FromQuery] HbtDeptQueryDto query)
+        [HttpPost("export")]
+        public async Task<IActionResult> ExportAsync([FromBody] IEnumerable<HbtDeptExportDto> data, [FromQuery] string sheetName = "部门信息")
         {
-            var result = await _deptService.ExportAsync(query);
-            return Success(result);
+            var result = await _deptService.ExportAsync(data, sheetName);
+            return File(result, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"部门信息_{DateTime.Now:yyyyMMddHHmmss}.xlsx");
         }
 
         /// <summary>
         /// 获取导入模板
         /// </summary>
-        /// <returns>导入模板Excel文件</returns>
+        /// <param name="sheetName">工作表名称</param>
+        /// <returns>Excel模板文件</returns>
         [HttpGet("template")]
-        public async Task<IActionResult> GetImportTemplateAsync()
+        public async Task<IActionResult> GenerateTemplateAsync([FromQuery] string sheetName = "部门导入模板")
         {
-            var result = await _deptService.GetImportTemplateAsync();
-            return Success(result);
+            var result = await _deptService.GenerateTemplateAsync(sheetName);
+            return File(result, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"部门导入模板_{DateTime.Now:yyyyMMddHHmmss}.xlsx");
         }
 
         /// <summary>
