@@ -1,18 +1,17 @@
 //===================================================================
-// 项目名 : Lean.Hbt 
-// 文件名 : HbtSwaggerSetup.cs 
+// 项目名 : Lean.Hbt
+// 文件名 : HbtSwaggerSetup.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-16 10:00
 // 版本号 : V0.0.1
 // 描述    : Swagger配置
 //===================================================================
 
+using System.Reflection;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using Swashbuckle.AspNetCore.SwaggerUI;
-using System.Reflection;
 
 namespace Lean.Hbt.Infrastructure.Swagger
 {
@@ -34,9 +33,9 @@ namespace Lean.Hbt.Infrastructure.Swagger
             services.AddSwaggerGen(c =>
             {
                 // 系统管理接口文档
-                c.SwaggerDoc("system", new OpenApiInfo 
-                { 
-                    Title = "黑冰台代码生成管理系统 - 系统管理", 
+                c.SwaggerDoc("system", new OpenApiInfo
+                {
+                    Title = "黑冰台代码生成管理系统 - 系统管理",
                     Version = "v1",
                     Description = "系统配置、字典管理、多语言等",
                     Contact = new OpenApiContact
@@ -53,9 +52,9 @@ namespace Lean.Hbt.Infrastructure.Swagger
                 });
 
                 // 身份认证接口文档
-                c.SwaggerDoc("identity", new OpenApiInfo 
-                { 
-                    Title = "黑冰台代码生成管理系统 - 身份认证", 
+                c.SwaggerDoc("identity", new OpenApiInfo
+                {
+                    Title = "黑冰台代码生成管理系统 - 身份认证",
                     Version = "v1",
                     Description = "用户、角色、权限等",
                     Contact = new OpenApiContact
@@ -72,9 +71,9 @@ namespace Lean.Hbt.Infrastructure.Swagger
                 });
 
                 // 审计日志接口文档
-                c.SwaggerDoc("audit", new OpenApiInfo 
-                { 
-                    Title = "黑冰台代码生成管理系统 - 审计日志", 
+                c.SwaggerDoc("audit", new OpenApiInfo
+                {
+                    Title = "黑冰台代码生成管理系统 - 审计日志",
                     Version = "v1",
                     Description = "审计日志、操作日志、异常日志等",
                     Contact = new OpenApiContact
@@ -91,9 +90,9 @@ namespace Lean.Hbt.Infrastructure.Swagger
                 });
 
                 // 实时通讯接口文档
-                c.SwaggerDoc("realtime", new OpenApiInfo 
-                { 
-                    Title = "黑冰台代码生成管理系统 - 实时通讯", 
+                c.SwaggerDoc("realtime", new OpenApiInfo
+                {
+                    Title = "黑冰台代码生成管理系统 - 实时通讯",
                     Version = "v1",
                     Description = "在线用户、即时消息等",
                     Contact = new OpenApiContact
@@ -110,9 +109,9 @@ namespace Lean.Hbt.Infrastructure.Swagger
                 });
 
                 // 代码生成接口文档
-                c.SwaggerDoc("generate", new OpenApiInfo 
-                { 
-                    Title = "黑冰台代码生成管理系统 - 代码生成", 
+                c.SwaggerDoc("generate", new OpenApiInfo
+                {
+                    Title = "黑冰台代码生成管理系统 - 代码生成",
                     Version = "v1",
                     Description = "代码生成、模板管理等",
                     Contact = new OpenApiContact
@@ -129,9 +128,9 @@ namespace Lean.Hbt.Infrastructure.Swagger
                 });
 
                 // 工作流程接口文档
-                c.SwaggerDoc("workflow", new OpenApiInfo 
-                { 
-                    Title = "黑冰台代码生成管理系统 - 工作流程", 
+                c.SwaggerDoc("workflow", new OpenApiInfo
+                {
+                    Title = "黑冰台代码生成管理系统 - 工作流程",
                     Version = "v1",
                     Description = "工作流程、流程设计等",
                     Contact = new OpenApiContact
@@ -221,10 +220,10 @@ namespace Lean.Hbt.Infrastructure.Swagger
                 c.DocInclusionPredicate((docName, apiDesc) =>
                 {
                     if (!apiDesc.TryGetMethodInfo(out var methodInfo)) return false;
-                    
+
                     var controllerType = methodInfo.DeclaringType;
                     var moduleAttr = controllerType.GetCustomAttribute<ApiModuleAttribute>();
-                    
+
                     // 如果控制器没有标记模块,归入默认模块
                     var moduleName = (moduleAttr?.Name ?? "system").ToLower();
                     return docName == moduleName;
@@ -245,8 +244,8 @@ namespace Lean.Hbt.Infrastructure.Swagger
                 c.SwaggerEndpoint("/swagger/identity/swagger.json", "身份认证");
                 c.SwaggerEndpoint("/swagger/audit/swagger.json", "审计日志");
                 c.SwaggerEndpoint("/swagger/realtime/swagger.json", "实时通讯");
-                 c.SwaggerEndpoint("/swagger/generate/swagger.json", "代码生成");
-                  c.SwaggerEndpoint("/swagger/workflow/swagger.json", "工作流程");
+                c.SwaggerEndpoint("/swagger/generate/swagger.json", "代码生成");
+                c.SwaggerEndpoint("/swagger/workflow/swagger.json", "工作流程");
                 c.RoutePrefix = "swagger";
                 c.DocExpansion(DocExpansion.None);
                 c.DefaultModelsExpandDepth(-1);
@@ -341,4 +340,4 @@ namespace Lean.Hbt.Infrastructure.Swagger
             }
         }
     }
-} 
+}
