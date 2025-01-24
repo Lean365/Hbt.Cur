@@ -7,21 +7,16 @@
 // 描述   : 系统配置服务实现类
 //===================================================================
 
-using System;
-using System.Linq.Expressions;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Lean.Hbt.Application.Dtos.Admin;
 using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Common.Exceptions;
-using Lean.Hbt.Common.Models;
+using Lean.Hbt.Common.Helpers;
 using Lean.Hbt.Common.Utils;
 using Lean.Hbt.Domain.Entities.Admin;
 using Lean.Hbt.Domain.Repositories;
-using Lean.Hbt.Domain.IServices;
+using Lean.Hbt.Domain.Utils;
 using Mapster;
 using SqlSugar;
-using Lean.Hbt.Domain.Utils;
 
 namespace Lean.Hbt.Application.Services.Admin
 {
@@ -36,6 +31,7 @@ namespace Lean.Hbt.Application.Services.Admin
     {
         private readonly IHbtRepository<HbtSysConfig> _configRepository;
         private readonly IHbtLogger _logger;
+
         private static readonly HashSet<string> EncryptedKeys = new()
         {
             "connectionStrings.default"
@@ -199,60 +195,61 @@ namespace Lean.Hbt.Application.Services.Admin
         /// <summary>
         /// 导入系统配置数据
         /// </summary>
-        /// <param name="configs">系统配置数据列表</param>
+        /// <param name="fileStream">Excel文件流</param>
+        /// <param name="sheetName">工作表名称</param>
         /// <returns>导入结果</returns>
-        public async Task<(int success, int fail)> ImportAsync(List<HbtSysConfigImportDto> configs)
+        public async Task<(int success, int fail)> ImportAsync(Stream fileStream, string sheetName = "系统配置信息")
         {
-            if (configs == null)
-            {
-                return (0, 0);
-            }
+            var success = 0;
+            var fail = 0;
 
-            int success = 0;
-            int fail = 0;
-
-            foreach (var config in configs)
+            try
             {
-                try
+                // 1.从Excel导入数据
+                var configs = await HbtExcelHelper.ImportAsync<HbtSysConfigDto>(fileStream, sheetName);
+                if (configs == null || !configs.Any())
+                    return (0, 0);
+
+                // 2.保存数据
+                foreach (var config in configs)
                 {
-                    if (string.IsNullOrEmpty(config.ConfigName) || string.IsNullOrEmpty(config.ConfigKey) || string.IsNullOrEmpty(config.ConfigValue))
-                    {
-                        _logger.Warn($"导入系统配置失败: 配置名称、键名或键值不能为空");
-                        fail++;
-                        continue;
-                    }
-
-                    // 验证字段是否已存在
                     try
                     {
-                        await HbtValidateUtils.ValidateFieldExistsAsync(_configRepository, "ConfigKey", config.ConfigKey);
+                        if (string.IsNullOrEmpty(config.ConfigName) || string.IsNullOrEmpty(config.ConfigKey) || string.IsNullOrEmpty(config.ConfigValue))
+                        {
+                            _logger.Warn($"导入系统配置失败: 配置名称、键名或键值不能为空");
+                            fail++;
+                            continue;
+                        }
+
+                        // 验证字段是否已存在
+                        try
+                        {
+                            await HbtValidateUtils.ValidateFieldExistsAsync(_configRepository, "ConfigKey", config.ConfigKey);
+                        }
+                        catch (HbtException ex)
+                        {
+                            _logger.Warn($"导入系统配置失败: {ex.Message}");
+                            fail++;
+                            continue;
+                        }
+
+                        // 创建配置
+                        var newConfig = config.Adapt<HbtSysConfig>();
+                        await _configRepository.InsertAsync(newConfig);
+                        success++;
                     }
-                    catch (HbtException ex)
+                    catch (Exception ex)
                     {
-                        _logger.Warn($"导入系统配置失败: {ex.Message}");
+                        _logger.Error($"导入系统配置失败：{ex.Message}", ex);
                         fail++;
-                        continue;
                     }
-
-                    // 创建配置
-                    var newConfig = new HbtSysConfig
-                    {
-                        ConfigName = config.ConfigName,
-                        ConfigKey = config.ConfigKey,
-                        ConfigValue = config.ConfigValue,
-                        ConfigType = int.TryParse(config.ConfigType, out var configType) ? configType : 0,
-                        OrderNum = config.OrderNum,
-                        Status = Enum.TryParse<HbtStatus>(config.Status, out var status) ? status : HbtStatus.Normal
-                    };
-
-                    await _configRepository.InsertAsync(newConfig);
-                    success++;
                 }
-                catch (Exception ex)
-                {
-                    _logger.Error($"导入系统配置失败: {ex.Message}", ex);
-                    fail++;
-                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error($"导入系统配置数据失败：{ex.Message}", ex);
+                throw new HbtException("导入系统配置数据失败");
             }
 
             return (success, fail);
@@ -262,8 +259,9 @@ namespace Lean.Hbt.Application.Services.Admin
         /// 导出系统配置数据
         /// </summary>
         /// <param name="query">查询条件</param>
-        /// <returns>导出数据列表</returns>
-        public async Task<List<HbtSysConfigExportDto>> ExportAsync(HbtSysConfigQueryDto query)
+        /// <param name="sheetName">工作表名称</param>
+        /// <returns>Excel文件字节数组</returns>
+        public async Task<byte[]> ExportAsync(HbtSysConfigQueryDto query, string sheetName = "系统配置信息")
         {
             var exp = Expressionable.Create<HbtSysConfig>();
 
@@ -279,17 +277,33 @@ namespace Lean.Hbt.Application.Services.Admin
             if (query?.Status.HasValue == true)
                 exp.And(x => x.Status == query.Status.Value);
 
-            var configs = await _configRepository.GetListAsync(exp.ToExpression());
-            return configs.Adapt<List<HbtSysConfigExportDto>>();
+            var list = await _configRepository.GetListAsync(exp.ToExpression());
+            var dtos = list.Adapt<List<HbtSysConfigDto>>();
+
+            return await HbtExcelHelper.ExportAsync(dtos, sheetName);
         }
 
         /// <summary>
         /// 获取导入模板
         /// </summary>
-        /// <returns>模板数据</returns>
-        public Task<HbtSysConfigTemplateDto> GetTemplateAsync()
+        /// <param name="sheetName">工作表名称</param>
+        /// <returns>Excel文件字节数组</returns>
+        public async Task<byte[]> GetTemplateAsync(string sheetName = "系统配置信息")
         {
-            return Task.FromResult(new HbtSysConfigTemplateDto());
+            var template = new List<HbtSysConfigDto>
+            {
+                new HbtSysConfigDto
+                {
+                    ConfigName = "示例配置",
+                    ConfigKey = "example.key",
+                    ConfigValue = "示例值",
+                    ConfigType = 0,
+                    OrderNum = 1,
+                    Status = HbtStatus.Normal
+                }
+            };
+
+            return await HbtExcelHelper.ExportAsync(template, sheetName);
         }
 
         /// <summary>
@@ -354,4 +368,4 @@ namespace Lean.Hbt.Application.Services.Admin
             return result;
         }
     }
-} 
+}

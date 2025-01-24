@@ -25,21 +25,22 @@ namespace Lean.Hbt.Application.Services.Identity
         /// </summary>
         /// <param name="query">查询条件</param>
         /// <returns>分页列表</returns>
-        Task<HbtPagedResult<HbtLoginExtendDto>> GetPagedListAsync(HbtLoginExtendPageRequest query);
+        Task<HbtPagedResult<HbtLoginExtendDto>> GetPagedListAsync(HbtLoginExtendQueryDto query);
 
         /// <summary>
         /// 导出登录扩展信息
         /// </summary>
-        /// <param name="request">导出请求</param>
-        /// <returns>文件字节数组</returns>
-        Task<byte[]> ExportAsync(HbtLoginExtendExportRequest request);
+        /// <param name="data">要导出的数据</param>
+        /// <param name="sheetName">工作表名称</param>
+        /// <returns>Excel文件字节数组</returns>
+        Task<byte[]> ExportAsync(IEnumerable<HbtLoginExtendDto> data, string sheetName = "登录扩展信息");
 
         /// <summary>
         /// 更新用户登录信息
         /// </summary>
         /// <param name="request">更新请求</param>
         /// <returns>更新后的登录扩展信息</returns>
-        Task<HbtLoginExtendDto> UpdateLoginInfoAsync(HbtLoginExtendUpdateRequest request);
+        Task<HbtLoginExtendDto> UpdateLoginInfoAsync(HbtLoginExtendUpdateDto request);
 
         /// <summary>
         /// 更新用户离线信息
@@ -53,7 +54,7 @@ namespace Lean.Hbt.Application.Services.Identity
         /// </summary>
         /// <param name="request">在线时段更新请求</param>
         /// <returns>更新后的登录扩展信息</returns>
-        Task<HbtLoginExtendDto> UpdateOnlinePeriodAsync(HbtOnlinePeriodUpdateRequest request);
+        Task<HbtLoginExtendDto> UpdateOnlinePeriodAsync(HbtLoginExtendOnlinePeriodUpdateDto request);
 
         /// <summary>
         /// 获取用户登录扩展信息

@@ -101,14 +101,38 @@ public class HbtTenantController : HbtBaseController
     }
 
     /// <summary>
+    /// 导入租户数据
+    /// </summary>
+    /// <param name="file">Excel文件</param>
+    /// <returns>导入结果</returns>
+    [HttpPost("import")]
+    public async Task<(int success, int fail)> ImportAsync([FromForm] IFormFile file)
+    {
+        using var stream = file.OpenReadStream();
+        return await _tenantService.ImportAsync(stream, "Sheet1");
+    }
+
+    /// <summary>
     /// 导出租户数据
     /// </summary>
     /// <param name="query">查询条件</param>
-    /// <returns>导出数据列表</returns>
+    /// <returns>Excel文件</returns>
     [HttpGet("export")]
-    public async Task<List<HbtTenantExportDto>> ExportAsync([FromQuery] HbtTenantQueryDto query)
+    public async Task<IActionResult> ExportAsync([FromQuery] HbtTenantQueryDto query)
     {
-        return await _tenantService.ExportAsync(query);
+        var result = await _tenantService.ExportAsync(query, "Sheet1");
+        return File(result, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "租户数据.xlsx");
+    }
+
+    /// <summary>
+    /// 获取租户导入模板
+    /// </summary>
+    /// <returns>Excel模板文件</returns>
+    [HttpGet("template")]
+    public async Task<IActionResult> GetTemplateAsync()
+    {
+        var result = await _tenantService.GetTemplateAsync("Sheet1");
+        return File(result, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "租户导入模板.xlsx");
     }
 
     /// <summary>
@@ -116,9 +140,9 @@ public class HbtTenantController : HbtBaseController
     /// </summary>
     /// <param name="id">租户ID</param>
     /// <param name="status">状态</param>
-    /// <returns>是否成功</returns>
+    /// <returns>更新后的租户状态信息</returns>
     [HttpPut("{id}/status")]
-    public async Task<bool> UpdateStatusAsync(long id, [FromQuery] HbtStatus status)
+    public async Task<HbtTenantStatusDto> UpdateStatusAsync(long id, [FromQuery] HbtStatus status)
     {
         return await _tenantService.UpdateStatusAsync(id, status);
     }

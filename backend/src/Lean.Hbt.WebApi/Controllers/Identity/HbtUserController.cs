@@ -114,12 +114,13 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <summary>
         /// 导入用户数据
         /// </summary>
-        /// <param name="users">用户数据列表</param>
+        /// <param name="file">Excel文件</param>
         /// <returns>导入结果</returns>
         [HttpPost("import")]
-        public async Task<IActionResult> ImportAsync([FromBody] List<HbtUserImportDto> users)
+        public async Task<IActionResult> ImportAsync([FromForm] IFormFile file)
         {
-            var result = await _userService.ImportAsync(users);
+            using var stream = file.OpenReadStream();
+            var result = await _userService.ImportAsync(stream, "Sheet1");
             return Success(result, _localization.L("User.Import.Success"));
         }
 
@@ -127,23 +128,23 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// 导出用户数据
         /// </summary>
         /// <param name="query">查询条件</param>
-        /// <returns>导出数据列表</returns>
+        /// <returns>Excel文件</returns>
         [HttpGet("export")]
         public async Task<IActionResult> ExportAsync([FromQuery] HbtUserQueryDto query)
         {
-            var result = await _userService.ExportAsync(query);
-            return Success(result, _localization.L("User.Export.Success"));
+            var result = await _userService.ExportAsync(query, "Sheet1");
+            return File(result, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "用户数据.xlsx");
         }
 
         /// <summary>
-        /// 获取导入模板
+        /// 获取用户导入模板
         /// </summary>
-        /// <returns>模板数据</returns>
+        /// <returns>Excel模板文件</returns>
         [HttpGet("template")]
         public async Task<IActionResult> GetTemplateAsync()
         {
-            var result = await _userService.GetTemplateAsync();
-            return Success(result, _localization.L("User.Template.Success"));
+            var result = await _userService.GetTemplateAsync("Sheet1");
+            return File(result, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "用户导入模板.xlsx");
         }
 
         /// <summary>

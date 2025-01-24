@@ -65,12 +65,14 @@ namespace Lean.Hbt.WebApi.Controllers.Audit
         /// 导出数据库差异日志数据
         /// </summary>
         /// <param name="query">查询条件</param>
+        /// <param name="sheetName">工作表名称</param>
         /// <returns>导出的Excel文件</returns>
         [HttpGet("export")]
-        public async Task<IActionResult> ExportAsync([FromQuery] HbtDbDiffLogQueryDto query)
+        [ProducesResponseType(typeof(byte[]), StatusCodes.Status200OK)]
+        public async Task<IActionResult> ExportAsync([FromQuery] HbtDbDiffLogQueryDto query, [FromQuery] string sheetName = "数据库差异日志数据")
         {
-            var result = await _dbDiffLogService.ExportAsync(query);
-            return Success(result);
+            var result = await _dbDiffLogService.ExportAsync(query, sheetName);
+            return File(result, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"数据库差异日志_{DateTime.Now:yyyyMMddHHmmss}.xlsx");
         }
 
         /// <summary>

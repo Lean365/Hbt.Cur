@@ -23,6 +23,7 @@ using Lean.Hbt.Domain.IServices;
 using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Domain.Repositories;
 using Lean.Hbt.Common.Helpers;
+using System.Linq;
 
 namespace Lean.Hbt.Application.Services.Identity
 {
@@ -48,7 +49,7 @@ namespace Lean.Hbt.Application.Services.Identity
         /// <summary>
         /// 获取设备扩展信息分页列表
         /// </summary>
-        public async Task<HbtPagedResult<HbtDeviceExtendDto>> GetPagedListAsync(HbtDeviceExtendPageRequest query)
+        public async Task<HbtPagedResult<HbtDeviceExtendDto>> GetPagedListAsync(HbtDeviceExtendQueryDto query)
         {
             var exp = Expressionable.Create<HbtDeviceExtend>();
 
@@ -93,44 +94,15 @@ namespace Lean.Hbt.Application.Services.Identity
         /// <summary>
         /// 导出设备扩展信息
         /// </summary>
-        public async Task<byte[]> ExportAsync(HbtDeviceExtendExportRequest request)
+        public async Task<byte[]> ExportAsync(IEnumerable<HbtDeviceExtendDto> data, string sheetName = "设备扩展信息")
         {
-            var exp = Expressionable.Create<HbtDeviceExtend>();
-
-            if (request.UserId.HasValue)
-                exp.And(x => x.UserId == request.UserId.Value);
-
-            if (request.TenantId.HasValue)
-                exp.And(x => x.TenantId == request.TenantId.Value);
-
-            if (request.DeviceType.HasValue)
-                exp.And(x => x.DeviceType == request.DeviceType.Value);
-
-            if (!string.IsNullOrEmpty(request.DeviceId))
-                exp.And(x => x.DeviceId.Contains(request.DeviceId));
-
-            if (!string.IsNullOrEmpty(request.DeviceName))
-                exp.And(x => x.DeviceName.Contains(request.DeviceName));
-
-            if (request.DeviceStatus.HasValue)
-                exp.And(x => x.DeviceStatus == request.DeviceStatus.Value);
-
-            if (request.LastOnlineTimeStart.HasValue)
-                exp.And(x => x.LastOnlineTime >= request.LastOnlineTimeStart.Value);
-
-            if (request.LastOnlineTimeEnd.HasValue)
-                exp.And(x => x.LastOnlineTime <= request.LastOnlineTimeEnd.Value);
-
-            var list = await _deviceExtendRepository.GetListAsync(exp.ToExpression());
-            var dtos = list.Adapt<List<HbtDeviceExtendDto>>();
-
-            return await HbtExcelHelper.ExportAsync(dtos);
+            return await HbtExcelHelper.ExportAsync(data, sheetName);
         }
 
         /// <summary>
         /// 更新设备信息
         /// </summary>
-        public async Task<HbtDeviceExtendDto> UpdateDeviceInfoAsync(HbtDeviceExtendUpdateRequest request)
+        public async Task<HbtDeviceExtendDto> UpdateDeviceInfoAsync(HbtDeviceExtendUpdateDto request)
         {
             var deviceExtend = await _deviceExtendRepository.FirstOrDefaultAsync(
                 x => x.UserId == request.UserId && x.DeviceId == request.DeviceId);
@@ -201,7 +173,7 @@ namespace Lean.Hbt.Application.Services.Identity
         /// <summary>
         /// 更新设备在线时段
         /// </summary>
-        public async Task<HbtDeviceExtendDto> UpdateOnlinePeriodAsync(HbtDeviceOnlinePeriodUpdateRequest request)
+        public async Task<HbtDeviceExtendDto> UpdateOnlinePeriodAsync(HbtDeviceOnlinePeriodUpdateDto request)
         {
             var deviceExtend = await _deviceExtendRepository.FirstOrDefaultAsync(
                 x => x.UserId == request.UserId && x.DeviceId == request.DeviceId);
@@ -210,11 +182,9 @@ namespace Lean.Hbt.Application.Services.Identity
                 throw new InvalidOperationException($"用户{request.UserId}的设备{request.DeviceId}扩展信息不存在");
             }
 
-            var periods = deviceExtend.TodayOnlinePeriods.FromJson<List<string>>() ?? new List<string>();
-            periods.Add(request.OnlinePeriod);
-            deviceExtend.TodayOnlinePeriods = periods.ToJson();
-
+            deviceExtend.TodayOnlinePeriods = request.OnlinePeriod;
             await _deviceExtendRepository.UpdateAsync(deviceExtend);
+
             return deviceExtend.Adapt<HbtDeviceExtendDto>();
         }
 

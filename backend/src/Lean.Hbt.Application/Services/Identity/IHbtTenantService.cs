@@ -10,6 +10,7 @@
 using Lean.Hbt.Application.Dtos.Identity;
 using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Common.Models;
+using System.IO;
 
 namespace Lean.Hbt.Application.Services.Identity;
 
@@ -61,17 +62,33 @@ public interface IHbtTenantService
     Task<bool> BatchDeleteAsync(long[] ids);
 
     /// <summary>
+    /// 导入租户数据
+    /// </summary>
+    /// <param name="fileStream">Excel文件流</param>
+    /// <param name="sheetName">工作表名称</param>
+    /// <returns>返回导入结果(success:成功数量,fail:失败数量)</returns>
+    Task<(int success, int fail)> ImportAsync(Stream fileStream, string sheetName = "Sheet1");
+
+    /// <summary>
     /// 导出租户数据
     /// </summary>
     /// <param name="query">查询条件</param>
-    /// <returns>导出数据列表</returns>
-    Task<List<HbtTenantExportDto>> ExportAsync(HbtTenantQueryDto query);
+    /// <param name="sheetName">工作表名称</param>
+    /// <returns>Excel文件字节数组</returns>
+    Task<byte[]> ExportAsync(HbtTenantQueryDto query, string sheetName = "Sheet1");
+
+    /// <summary>
+    /// 获取租户导入模板
+    /// </summary>
+    /// <param name="sheetName">工作表名称</param>
+    /// <returns>Excel模板文件字节数组</returns>
+    Task<byte[]> GetTemplateAsync(string sheetName = "Sheet1");
 
     /// <summary>
     /// 更新租户状态
     /// </summary>
     /// <param name="id">租户ID</param>
     /// <param name="status">状态</param>
-    /// <returns>是否成功</returns>
-    Task<bool> UpdateStatusAsync(long id, HbtStatus status);
+    /// <returns>更新后的租户状态信息</returns>
+    Task<HbtTenantStatusDto> UpdateStatusAsync(long id, HbtStatus status);
 }

@@ -18,6 +18,8 @@ using SqlSugar;
 using Mapster;
 using SqlSugar.Extensions;
 using System.Linq.Expressions;
+using Lean.Hbt.Common.Helpers;
+using System.IO;
 
 namespace Lean.Hbt.Application.Services.Identity;
 
@@ -91,9 +93,14 @@ public class HbtTenantService : IHbtTenantService
     public async Task<long> InsertAsync(HbtTenantCreateDto input)
     {
         // 验证字段是否已存在
-        await HbtValidateUtils.ValidateFieldExistsAsync(_repository, "TenantName", input.TenantName);
-        await HbtValidateUtils.ValidateFieldExistsAsync(_repository, "TenantCode", input.TenantCode);
-        await HbtValidateUtils.ValidateFieldExistsAsync(_repository, "ContactEmail", input.ContactEmail);
+        if (!string.IsNullOrEmpty(input.TenantName))
+            await HbtValidateUtils.ValidateFieldExistsAsync(_repository, "TenantName", input.TenantName);
+        
+        if (!string.IsNullOrEmpty(input.TenantCode))
+            await HbtValidateUtils.ValidateFieldExistsAsync(_repository, "TenantCode", input.TenantCode);
+        
+        if (!string.IsNullOrEmpty(input.ContactEmail))
+            await HbtValidateUtils.ValidateFieldExistsAsync(_repository, "ContactEmail", input.ContactEmail);
 
         var tenant = input.Adapt<HbtTenant>();
         tenant.Status = HbtStatus.Normal;
@@ -158,11 +165,59 @@ public class HbtTenantService : IHbtTenantService
     }
 
     /// <summary>
+    /// 导入租户数据
+    /// </summary>
+    /// <param name="fileStream">Excel文件流</param>
+    /// <param name="sheetName">工作表名称</param>
+    /// <returns>返回导入结果(success:成功数量,fail:失败数量)</returns>
+    public async Task<(int success, int fail)> ImportAsync(Stream fileStream, string sheetName = "Sheet1")
+    {
+        var tenants = await HbtExcelHelper.ImportAsync<HbtTenantImportDto>(fileStream, sheetName);
+        if (tenants == null || !tenants.Any())
+            return (0, 0);
+
+        int success = 0;
+        int fail = 0;
+
+        foreach (var tenant in tenants)
+        {
+            try
+            {
+                // 验证字段是否已存在
+                if (!string.IsNullOrEmpty(tenant.TenantName))
+                    await HbtValidateUtils.ValidateFieldExistsAsync(_repository, "TenantName", tenant.TenantName);
+                
+                if (!string.IsNullOrEmpty(tenant.TenantCode))
+                    await HbtValidateUtils.ValidateFieldExistsAsync(_repository, "TenantCode", tenant.TenantCode);
+                
+                if (!string.IsNullOrEmpty(tenant.ContactEmail))
+                    await HbtValidateUtils.ValidateFieldExistsAsync(_repository, "ContactEmail", tenant.ContactEmail);
+
+                var entity = tenant.Adapt<HbtTenant>();
+                entity.Status = HbtStatus.Normal;
+
+                var result = await _repository.InsertAsync(entity);
+                if (result > 0)
+                    success++;
+                else
+                    fail++;
+            }
+            catch (Exception ex)
+            {
+                fail++;
+            }
+        }
+
+        return (success, fail);
+    }
+
+    /// <summary>
     /// 导出租户数据
     /// </summary>
     /// <param name="query">查询条件</param>
-    /// <returns>返回导出的租户数据列表</returns>
-    public async Task<List<HbtTenantExportDto>> ExportAsync(HbtTenantQueryDto query)
+    /// <param name="sheetName">工作表名称</param>
+    /// <returns>Excel文件字节数组</returns>
+    public async Task<byte[]> ExportAsync(HbtTenantQueryDto query, string sheetName = "Sheet1")
     {
         var exp = Expressionable.Create<HbtTenant>();
         
@@ -176,7 +231,19 @@ public class HbtTenantService : IHbtTenantService
             exp.And(x => x.Status == query.Status);
 
         var tenants = await _repository.GetListAsync(exp.ToExpression());
-        return tenants.Adapt<List<HbtTenantExportDto>>();
+        var exportData = tenants.Adapt<List<HbtTenantExportDto>>();
+
+        return await HbtExcelHelper.ExportAsync(exportData, sheetName);
+    }
+
+    /// <summary>
+    /// 获取租户导入模板
+    /// </summary>
+    /// <param name="sheetName">工作表名称</param>
+    /// <returns>Excel模板文件字节数组</returns>
+    public async Task<byte[]> GetTemplateAsync(string sheetName = "Sheet1")
+    {
+        return await HbtExcelHelper.GenerateTemplateAsync<HbtTenantTemplateDto>(sheetName);
     }
 
     /// <summary>
@@ -184,8 +251,8 @@ public class HbtTenantService : IHbtTenantService
     /// </summary>
     /// <param name="id">租户ID</param>
     /// <param name="status">新状态</param>
-    /// <returns>返回是否更新成功</returns>
-    public async Task<bool> UpdateStatusAsync(long id, HbtStatus status)
+    /// <returns>返回更新后的租户状态信息</returns>
+    public async Task<HbtTenantStatusDto> UpdateStatusAsync(long id, HbtStatus status)
     {
         var tenant = await _repository.GetByIdAsync(id);
         if (tenant == null)
@@ -193,6 +260,43 @@ public class HbtTenantService : IHbtTenantService
 
         tenant.Status = status;
         var result = await _repository.UpdateAsync(tenant);
-        return result > 0;
+        if (result <= 0)
+            throw new HbtException($"更新租户状态失败: {id}");
+
+        var statusDto = new HbtTenantStatusDto
+        {
+            TenantId = tenant.Id,
+            Status = tenant.Status,
+            AvailableOperations = GetAvailableOperations(tenant.Status),
+            StatusDescription = GetStatusDescription(tenant.Status)
+        };
+
+        return statusDto;
+    }
+
+    /// <summary>
+    /// 获取状态可用操作
+    /// </summary>
+    private string[] GetAvailableOperations(HbtStatus status)
+    {
+        return status switch
+        {
+            HbtStatus.Normal => new[] { "禁用" },
+            HbtStatus.Disabled => new[] { "启用" },
+            _ => Array.Empty<string>()
+        };
+    }
+
+    /// <summary>
+    /// 获取状态描述
+    /// </summary>
+    private string GetStatusDescription(HbtStatus status)
+    {
+        return status switch
+        {
+            HbtStatus.Normal => "正常",
+            HbtStatus.Disabled => "已禁用",
+            _ => "未知状态"
+        };
     }
 }

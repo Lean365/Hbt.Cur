@@ -109,42 +109,51 @@ namespace Lean.Hbt.Application.Services.Audit
         /// 导出操作日志数据
         /// </summary>
         /// <param name="query">查询条件</param>
-        /// <returns>返回导出的Excel文件字节数组</returns>
-        public async Task<byte[]> ExportAsync(HbtOperLogQueryDto query)
+        /// <param name="sheetName">工作表名称</param>
+        /// <returns>Excel文件字节数组</returns>
+        public async Task<byte[]> ExportAsync(HbtOperLogQueryDto query, string sheetName)
         {
-            // 1.构建查询条件
-            var predicate = Expressionable.Create<HbtOperLog>();
+            try
+            {
+                // 1.构建查询条件
+                var predicate = Expressionable.Create<HbtOperLog>();
 
-            if (!string.IsNullOrEmpty(query.UserName))
-                predicate.And(x => x.UserName.Contains(query.UserName));
+                if (!string.IsNullOrEmpty(query?.UserName))
+                    predicate.And(x => x.UserName.Contains(query.UserName));
 
-            if (!string.IsNullOrEmpty(query.OperationType))
-                predicate.And(x => x.OperationType.Contains(query.OperationType));
+                if (!string.IsNullOrEmpty(query?.OperationType))
+                    predicate.And(x => x.OperationType.Contains(query.OperationType));
 
-            if (!string.IsNullOrEmpty(query.TableName))
-                predicate.And(x => x.TableName.Contains(query.TableName));
+                if (!string.IsNullOrEmpty(query?.TableName))
+                    predicate.And(x => x.TableName.Contains(query.TableName));
 
-            if (!string.IsNullOrEmpty(query.IpAddress))
-                predicate.And(x => x.IpAddress.Contains(query.IpAddress));
+                if (!string.IsNullOrEmpty(query?.IpAddress))
+                    predicate.And(x => x.IpAddress.Contains(query.IpAddress));
 
-            if (query.Status.HasValue)
-                predicate.And(x => x.Status == query.Status.Value);
+                if (query?.Status.HasValue == true)
+                    predicate.And(x => x.Status == query.Status.Value);
 
-            if (query.StartTime.HasValue)
-                predicate.And(x => x.CreateTime >= query.StartTime.Value);
+                if (query?.StartTime.HasValue == true)
+                    predicate.And(x => x.CreateTime >= query.StartTime.Value);
 
-            if (query.EndTime.HasValue)
-                predicate.And(x => x.CreateTime <= query.EndTime.Value);
+                if (query?.EndTime.HasValue == true)
+                    predicate.And(x => x.CreateTime <= query.EndTime.Value);
 
-            // 2.查询数据
-            var logs = await _operLogRepository.AsQueryable()
-                .Where(predicate.ToExpression())
-                .OrderByDescending(x => x.CreateTime)
-                .ToListAsync();
+                // 2.查询数据
+                var logs = await _operLogRepository.AsQueryable()
+                    .Where(predicate.ToExpression())
+                    .OrderByDescending(x => x.CreateTime)
+                    .ToListAsync();
 
-            // 3.转换并导出
-            var exportDtos = logs.Adapt<List<HbtOperLogExportDto>>();
-            return await HbtExcelHelper.ExportAsync(exportDtos, "操作日志数据");
+                // 3.转换并导出
+                var dtos = logs.Adapt<List<HbtOperLogDto>>();
+                return await HbtExcelHelper.ExportAsync(dtos, sheetName);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "导出操作日志数据失败");
+                return Array.Empty<byte>();
+            }
         }
 
         /// <summary>

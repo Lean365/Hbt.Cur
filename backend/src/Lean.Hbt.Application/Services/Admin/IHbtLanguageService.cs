@@ -9,8 +9,10 @@
 
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.IO;
 using Lean.Hbt.Common.Models;
 using Lean.Hbt.Application.Dtos.Admin;
+using Lean.Hbt.Domain.IServices.Admin;
 
 namespace Lean.Hbt.Application.Services.Admin
 {
@@ -64,22 +66,25 @@ namespace Lean.Hbt.Application.Services.Admin
         /// <summary>
         /// 导入语言数据
         /// </summary>
-        /// <param name="languages">语言数据列表</param>
+        /// <param name="fileStream">Excel文件流</param>
+        /// <param name="sheetName">工作表名称</param>
         /// <returns>导入结果</returns>
-        Task<(int success, int fail)> ImportAsync(List<HbtLanguageImportDto> languages);
+        Task<(int success, int fail)> ImportAsync(Stream fileStream, string sheetName);
 
         /// <summary>
         /// 导出语言数据
         /// </summary>
         /// <param name="query">查询条件</param>
-        /// <returns>导出数据列表</returns>
-        Task<List<HbtLanguageExportDto>> ExportAsync(HbtLanguageQueryDto query);
+        /// <param name="sheetName">工作表名称</param>
+        /// <returns>Excel文件字节数组</returns>
+        Task<byte[]> ExportAsync(HbtLanguageQueryDto query, string sheetName);
 
         /// <summary>
         /// 获取导入模板
         /// </summary>
-        /// <returns>模板数据</returns>
-        Task<HbtLanguageTemplateDto> GetTemplateAsync();
+        /// <param name="sheetName">工作表名称</param>
+        /// <returns>Excel文件字节数组</returns>
+        Task<byte[]> GetTemplateAsync(string sheetName);
 
         /// <summary>
         /// 更新语言状态

@@ -22,6 +22,8 @@ using Lean.Hbt.Domain.Repositories;
 using Lean.Hbt.Domain.Utils;
 using Mapster;
 using SqlSugar;
+using Lean.Hbt.Common.Helpers;
+using System.IO;
 
 namespace Lean.Hbt.Application.Services.Identity
 {
@@ -316,14 +318,14 @@ namespace Lean.Hbt.Application.Services.Identity
         /// <summary>
         /// 导入用户数据
         /// </summary>
-        /// <param name="users">用户导入数据列表</param>
+        /// <param name="fileStream">Excel文件流</param>
+        /// <param name="sheetName">工作表名称</param>
         /// <returns>返回导入结果(success:成功数量,fail:失败数量)</returns>
-        public async Task<(int success, int fail)> ImportAsync(List<HbtUserImportDto> users)
+        public async Task<(int success, int fail)> ImportAsync(Stream fileStream, string sheetName = "Sheet1")
         {
-            if (users == null)
-            {
+            var users = await HbtExcelHelper.ImportAsync<HbtUserImportDto>(fileStream, sheetName);
+            if (users == null || !users.Any())
                 return (0, 0);
-            }
 
             int success = 0;
             int fail = 0;
@@ -389,8 +391,9 @@ namespace Lean.Hbt.Application.Services.Identity
         /// 导出用户数据
         /// </summary>
         /// <param name="query">查询条件</param>
-        /// <returns>返回导出的用户数据列表</returns>
-        public async Task<List<HbtUserExportDto>> ExportAsync(HbtUserQueryDto query)
+        /// <param name="sheetName">工作表名称</param>
+        /// <returns>Excel文件字节数组</returns>
+        public async Task<byte[]> ExportAsync(HbtUserQueryDto query, string sheetName = "Sheet1")
         {
             var exp = Expressionable.Create<HbtUser>();
 
@@ -410,16 +413,19 @@ namespace Lean.Hbt.Application.Services.Identity
                 exp.And(x => x.UserType == query.UserType.Value);
 
             var users = await _userRepository.GetListAsync(exp.ToExpression());
-            return users.Adapt<List<HbtUserExportDto>>();
+            var exportData = users.Adapt<List<HbtUserExportDto>>();
+
+            return await HbtExcelHelper.ExportAsync(exportData, sheetName);
         }
 
         /// <summary>
         /// 获取用户导入模板
         /// </summary>
-        /// <returns>返回用户导入模板</returns>
-        public Task<HbtUserTemplateDto> GetTemplateAsync()
+        /// <param name="sheetName">工作表名称</param>
+        /// <returns>Excel模板文件字节数组</returns>
+        public async Task<byte[]> GetTemplateAsync(string sheetName = "Sheet1")
         {
-            return Task.FromResult(new HbtUserTemplateDto());
+            return await HbtExcelHelper.GenerateTemplateAsync<HbtUserTemplateDto>(sheetName);
         }
 
         /// <summary>

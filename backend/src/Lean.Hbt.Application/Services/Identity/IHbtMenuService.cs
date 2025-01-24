@@ -70,8 +70,9 @@ namespace Lean.Hbt.Application.Services.Identity
         /// 导出菜单数据
         /// </summary>
         /// <param name="query">查询条件</param>
+        /// <param name="sheetName">工作表名称</param>
         /// <returns>导出的Excel文件字节数组</returns>
-        Task<byte[]> ExportAsync(HbtMenuQueryDto query);
+        Task<byte[]> ExportAsync(HbtMenuQueryDto query, string sheetName = "菜单数据");
 
         /// <summary>
         /// 更新菜单状态
@@ -81,17 +82,19 @@ namespace Lean.Hbt.Application.Services.Identity
         Task<bool> UpdateStatusAsync(HbtMenuStatusDto input);
 
         /// <summary>
-        /// 获取导入模板
+        /// 生成菜单导入模板
         /// </summary>
-        /// <returns>导入模板Excel文件字节数组</returns>
-        Task<byte[]> GetImportTemplateAsync();
+        /// <param name="sheetName">工作表名称</param>
+        /// <returns>Excel模板文件字节数组</returns>
+        Task<byte[]> GenerateTemplateAsync(string sheetName = "菜单导入模板");
 
         /// <summary>
         /// 导入菜单数据
         /// </summary>
         /// <param name="fileStream">Excel文件流</param>
-        /// <returns>导入结果</returns>
-        Task<string> ImportAsync(Stream fileStream);
+        /// <param name="sheetName">工作表名称</param>
+        /// <returns>导入的菜单数据集合</returns>
+        Task<List<HbtMenuImportDto>> ImportAsync(Stream fileStream, string sheetName = "菜单数据");
 
         /// <summary>
         /// 更新菜单排序

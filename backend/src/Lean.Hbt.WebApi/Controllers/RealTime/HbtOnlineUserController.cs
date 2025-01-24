@@ -53,11 +53,12 @@ namespace Lean.Hbt.WebApi.Controllers.RealTime
         /// 导出在线用户数据
         /// </summary>
         /// <param name="query">查询条件</param>
-        /// <returns>导出数据列表</returns>
+        /// <param name="sheetName">工作表名称</param>
+        /// <returns>导出的Excel文件</returns>
         [HttpGet("export")]
-        public async Task<IActionResult> ExportAsync([FromQuery] HbtOnlineUserQueryDto query)
+        public async Task<IActionResult> ExportAsync([FromQuery] HbtOnlineUserQueryDto query, [FromQuery] string sheetName = "在线用户信息")
         {
-            var result = await _onlineUserService.GetExportDataAsync(query);
+            var result = await _onlineUserService.ExportAsync(query, sheetName);
             return Success(result);
         }
 

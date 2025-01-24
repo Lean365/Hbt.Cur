@@ -9,11 +9,14 @@
 
 #nullable enable
 
+using System;
+using System.IO;
 using System.Linq.Expressions;
 using Lean.Hbt.Application.Dtos.Admin;
 using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Common.Exceptions;
 using Lean.Hbt.Common.Models;
+using Lean.Hbt.Common.Helpers;
 using Lean.Hbt.Domain.Entities.Admin;
 using Lean.Hbt.Domain.Repositories;
 using Lean.Hbt.Domain.IServices;
@@ -163,29 +166,62 @@ namespace Lean.Hbt.Application.Services.Admin
         /// <summary>
         /// 导入字典数据
         /// </summary>
-        /// <param name="dictDatas">字典数据列表</param>
-        /// <returns>返回导入结果</returns>
-        public async Task<(int success, int fail)> ImportAsync(List<HbtDictDataImportDto> dictDatas)
+        /// <param name="fileStream">Excel文件流</param>
+        /// <param name="sheetName">工作表名称</param>
+        /// <returns>导入结果</returns>
+        public async Task<(int success, int fail)> ImportAsync(Stream fileStream, string sheetName)
         {
-            if (dictDatas == null || !dictDatas.Any())
-                return (0, 0);
-
             var success = 0;
             var fail = 0;
 
-            foreach (var item in dictDatas)
+            try
             {
-                try
+                // 1.从Excel导入数据
+                var dictDatas = await HbtExcelHelper.ImportAsync<HbtDictDataDto>(fileStream, sheetName);
+                if (dictDatas == null || !dictDatas.Any())
+                    return (0, 0);
+
+                // 2.保存数据
+                foreach (var dictData in dictDatas)
                 {
-                    var dictData = item.Adapt<HbtDictData>();
-                    await _dictDataRepository.InsertAsync(dictData);
-                    success++;
+                    try
+                    {
+                        if (string.IsNullOrEmpty(dictData.DictLabel) || string.IsNullOrEmpty(dictData.DictValue))
+                        {
+                            _logger.Warn("导入字典数据失败：标签或值为空");
+                            fail++;
+                            continue;
+                        }
+
+                        // 验证字段是否已存在
+                        try
+                        {
+                            await HbtValidateUtils.ValidateFieldExistsAsync(_dictDataRepository, "DictLabel", dictData.DictLabel);
+                            await HbtValidateUtils.ValidateFieldExistsAsync(_dictDataRepository, "DictValue", dictData.DictValue);
+                        }
+                        catch (HbtException ex)
+                        {
+                            _logger.Warn($"导入字典数据失败：{ex.Message}");
+                            fail++;
+                            continue;
+                        }
+
+                        // 创建字典数据
+                        var newDictData = dictData.Adapt<HbtDictData>();
+                        await _dictDataRepository.InsertAsync(newDictData);
+                        success++;
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.Error($"导入字典数据失败：{ex.Message}", ex);
+                        fail++;
+                    }
                 }
-                catch (Exception ex)
-                {
-                    _logger.Error($"导入字典数据失败：{ex.Message}", ex);
-                    fail++;
-                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error($"导入字典数据失败：{ex.Message}", ex);
+                return (0, 0);
             }
 
             return (success, fail);
@@ -195,31 +231,62 @@ namespace Lean.Hbt.Application.Services.Admin
         /// 导出字典数据
         /// </summary>
         /// <param name="query">查询条件</param>
-        /// <returns>返回导出数据列表</returns>
-        public async Task<List<HbtDictDataExportDto>> ExportAsync(HbtDictDataQueryDto query)
+        /// <param name="sheetName">工作表名称</param>
+        /// <returns>Excel文件字节数组</returns>
+        public async Task<byte[]> ExportAsync(HbtDictDataQueryDto query, string sheetName)
         {
             var exp = Expressionable.Create<HbtDictData>();
 
-            if (!string.IsNullOrEmpty(query.DictType))
+            if (!string.IsNullOrEmpty(query?.DictType))
                 exp.And(x => x.DictType == query.DictType);
 
-            if (!string.IsNullOrEmpty(query.DictLabel))
+            if (!string.IsNullOrEmpty(query?.DictLabel))
                 exp.And(x => x.DictLabel.Contains(query.DictLabel));
 
-            if (query.Status.HasValue)
+            if (query?.Status.HasValue == true)
                 exp.And(x => x.Status == query.Status.Value);
 
             var list = await _dictDataRepository.GetListAsync(exp.ToExpression());
-            return list.Adapt<List<HbtDictDataExportDto>>();
+            var dtos = list.Adapt<List<HbtDictDataDto>>();
+
+            try
+            {
+                return await HbtExcelHelper.ExportAsync(dtos, sheetName);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error($"导出字典数据失败：{ex.Message}", ex);
+                return Array.Empty<byte>();
+            }
         }
 
         /// <summary>
         /// 获取导入模板
         /// </summary>
-        /// <returns>返回模板数据</returns>
-        public async Task<HbtDictDataTemplateDto> GetTemplateAsync()
+        /// <param name="sheetName">工作表名称</param>
+        /// <returns>Excel文件字节数组</returns>
+        public async Task<byte[]> GetTemplateAsync(string sheetName)
         {
-            return await Task.FromResult(new HbtDictDataTemplateDto());
+            var template = new List<HbtDictDataDto>
+            {
+                new HbtDictDataDto
+                {
+                    DictType = "sys_user_sex",
+                    DictLabel = "男",
+                    DictValue = "1",
+                    Status = HbtStatus.Normal
+                }
+            };
+
+            try
+            {
+                return await HbtExcelHelper.ExportAsync(template, sheetName);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error($"获取字典数据导入模板失败：{ex.Message}", ex);
+                return Array.Empty<byte>();
+            }
         }
 
         /// <summary>

@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using Lean.Hbt.Common.Models;
 using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Application.Dtos.Admin;
+using System.IO;
 
 namespace Lean.Hbt.Application.Services.Admin
 {
@@ -69,22 +70,25 @@ namespace Lean.Hbt.Application.Services.Admin
         /// <summary>
         /// 导入字典数据
         /// </summary>
-        /// <param name="dictDatas">字典数据列表</param>
+        /// <param name="fileStream">Excel文件流</param>
+        /// <param name="sheetName">工作表名称</param>
         /// <returns>导入结果</returns>
-        Task<(int success, int fail)> ImportAsync(List<HbtDictDataImportDto> dictDatas);
+        Task<(int success, int fail)> ImportAsync(Stream fileStream, string sheetName);
 
         /// <summary>
         /// 导出字典数据
         /// </summary>
         /// <param name="query">查询条件</param>
-        /// <returns>导出数据列表</returns>
-        Task<List<HbtDictDataExportDto>> ExportAsync(HbtDictDataQueryDto query);
+        /// <param name="sheetName">工作表名称</param>
+        /// <returns>Excel文件字节数组</returns>
+        Task<byte[]> ExportAsync(HbtDictDataQueryDto query, string sheetName);
 
         /// <summary>
         /// 获取导入模板
         /// </summary>
-        /// <returns>模板数据</returns>
-        Task<HbtDictDataTemplateDto> GetTemplateAsync();
+        /// <param name="sheetName">工作表名称</param>
+        /// <returns>Excel文件字节数组</returns>
+        Task<byte[]> GetTemplateAsync(string sheetName);
 
         /// <summary>
         /// 更新字典数据状态

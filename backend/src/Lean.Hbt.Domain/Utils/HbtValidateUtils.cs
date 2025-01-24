@@ -10,6 +10,7 @@
 using System.Linq.Expressions;
 using Lean.Hbt.Common.Exceptions;
 using Lean.Hbt.Domain.Repositories;
+using Lean.Hbt.Domain.IServices.Admin;
 using SqlSugar;
 
 namespace Lean.Hbt.Domain.Utils
@@ -55,7 +56,7 @@ namespace Lean.Hbt.Domain.Utils
             }
 
             if (await repository.AsQueryable().AnyAsync(exp.ToExpression()))
-                throw new HbtException($"{fieldName}已存在: {fieldValue}");
+                throw HbtException.ValidationError($"Common.FieldExists:{fieldName}={fieldValue}");
         }
     }
 }

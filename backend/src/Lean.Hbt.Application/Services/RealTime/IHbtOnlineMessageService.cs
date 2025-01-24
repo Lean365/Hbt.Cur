@@ -29,11 +29,12 @@ public interface IHbtOnlineMessageService
     Task<HbtPagedResult<HbtOnlineMessageDto>> GetPagedListAsync(HbtOnlineMessageQueryDto query);
 
     /// <summary>
-    /// 获取在线消息导出数据
+    /// 导出在线消息数据
     /// </summary>
     /// <param name="query">查询条件</param>
-    /// <returns>导出数据</returns>
-    Task<List<HbtOnlineMessageExportDto>> GetExportDataAsync(HbtOnlineMessageQueryDto query);
+    /// <param name="sheetName">工作表名称</param>
+    /// <returns>Excel文件字节数组</returns>
+    Task<byte[]> ExportAsync(HbtOnlineMessageQueryDto query, string sheetName = "在线消息信息");
 
     /// <summary>
     /// 获取消息详情

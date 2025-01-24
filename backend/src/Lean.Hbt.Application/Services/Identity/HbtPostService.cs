@@ -178,69 +178,60 @@ namespace Lean.Hbt.Application.Services.Identity
         /// <summary>
         /// 导入岗位数据
         /// </summary>
-        public async Task<string> ImportAsync(Stream fileStream)
+        /// <param name="fileStream">Excel文件流</param>
+        /// <param name="sheetName">工作表名称</param>
+        /// <returns>返回导入的岗位数据集合</returns>
+        public async Task<List<HbtPostImportDto>> ImportAsync(Stream fileStream, string sheetName = "Sheet1")
         {
-            var posts = await HbtExcelHelper.ImportAsync<HbtPostImportDto>(fileStream);
-            if (posts == null || !posts.Any())
-                throw new HbtException("导入数据为空");
+            // 1.从Excel导入数据
+            var posts = await HbtExcelHelper.ImportAsync<HbtPostImportDto>(fileStream, sheetName);
+            if (!posts.Any())
+                return new List<HbtPostImportDto>();
 
-            int success = 0, fail = 0;
+            // 2.检查字段是否已存在
             foreach (var post in posts)
             {
                 try
                 {
-                    // 验证字段是否已存在
-                    try
+                    if (string.IsNullOrEmpty(post.PostCode) || string.IsNullOrEmpty(post.PostName))
                     {
-                        if (string.IsNullOrEmpty(post.PostCode) || string.IsNullOrEmpty(post.PostName))
-                        {
-                            _logger.Warn("导入岗位失败: 岗位编码或岗位名称不能为空");
-                            fail++;
-                            continue;
-                        }
-
-                        await HbtValidateUtils.ValidateFieldExistsAsync(_postRepository, "PostCode", post.PostCode);
-                        await HbtValidateUtils.ValidateFieldExistsAsync(_postRepository, "PostName", post.PostName);
-                    }
-                    catch (HbtException ex)
-                    {
-                        _logger.Warn($"导入岗位失败: {ex.Message}");
-                        fail++;
+                        _logger.Warn("导入岗位失败: 岗位编码或岗位名称不能为空");
                         continue;
                     }
 
-                    // 创建岗位
-                    var newPost = new HbtPost
-                    {
-                        PostCode = post.PostCode,
-                        PostName = post.PostName,
-                        OrderNum = post.OrderNum,
-                        Status = post.Status == "正常" ? HbtStatus.Normal : HbtStatus.Disabled,
-                        Remark = post.Remark ?? string.Empty,
-                        CreateTime = DateTime.Now,
-                        CreateBy = "system" // TODO: 从当前用户上下文获取
-                    };
-
-                    var result = await _postRepository.InsertAsync(newPost);
-                    if (result > 0)
-                        success++;
-                    else
-                        fail++;
+                    await HbtValidateUtils.ValidateFieldExistsAsync(_postRepository, "PostCode", post.PostCode);
+                    await HbtValidateUtils.ValidateFieldExistsAsync(_postRepository, "PostName", post.PostName);
                 }
-                catch (Exception ex)
+                catch (HbtException ex)
                 {
-                    _logger.Error($"导入岗位失败: {post.PostCode}", ex);
-                    fail++;
+                    _logger.Warn($"导入岗位失败: {ex.Message}");
+                    continue;
                 }
             }
 
-            return $"导入成功 {success} 条，失败 {fail} 条";
+            // 3.转换为实体并批量插入
+            var entities = posts.Select(post => new HbtPost
+            {
+                PostCode = post.PostCode,
+                PostName = post.PostName,
+                OrderNum = post.OrderNum,
+                Status = post.Status == "正常" ? HbtStatus.Normal : HbtStatus.Disabled,
+                Remark = post.Remark ?? string.Empty,
+                CreateTime = DateTime.Now,
+                CreateBy = "system" // TODO: 从当前用户上下文获取
+            }).ToList();
+
+            await _postRepository.InsertRangeAsync(entities);
+            return posts;
         }
 
         /// <summary>
         /// 导出岗位数据
         /// </summary>
-        public async Task<byte[]> ExportAsync(HbtPostQueryDto query)
+        /// <param name="query">查询条件</param>
+        /// <param name="sheetName">工作表名称</param>
+        /// <returns>返回导出的Excel文件字节数组</returns>
+        public async Task<byte[]> ExportAsync(HbtPostQueryDto query, string sheetName = "Sheet1")
         {
             var predicate = Expressionable.Create<HbtPost>();
 
@@ -262,15 +253,17 @@ namespace Lean.Hbt.Application.Services.Identity
             var exportData = posts.Adapt<List<HbtPostExportDto>>();
 
             // 导出Excel
-            return await HbtExcelHelper.ExportAsync(exportData);
+            return await HbtExcelHelper.ExportAsync(exportData, sheetName);
         }
 
         /// <summary>
-        /// 获取岗位导入模板
+        /// 生成岗位导入模板
         /// </summary>
-        public async Task<byte[]> GetImportTemplateAsync()
+        /// <param name="sheetName">工作表名称</param>
+        /// <returns>返回导入模板Excel文件字节数组</returns>
+        public async Task<byte[]> GenerateTemplateAsync(string sheetName = "Sheet1")
         {
-            return await HbtExcelHelper.GenerateTemplateAsync<HbtPostTemplateDto>();
+            return await HbtExcelHelper.GenerateTemplateAsync<HbtPostTemplateDto>(sheetName);
         }
 
         /// <summary>

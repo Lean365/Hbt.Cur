@@ -18,11 +18,12 @@
             配置接口
             </summary>
         </member>
-        <member name="M:Lean.Hbt.Infrastructure.Authentication.HbtJwtHandler.#ctor(Microsoft.Extensions.Configuration.IConfiguration)">
+        <member name="M:Lean.Hbt.Infrastructure.Authentication.HbtJwtHandler.#ctor(Microsoft.Extensions.Configuration.IConfiguration,Lean.Hbt.Domain.IServices.Admin.IHbtLocalizationService)">
             <summary>
             构造函数
             </summary>
             <param name="configuration">配置接口</param>
+            <param name="localizationService">本地化服务</param>
         </member>
         <member name="M:Lean.Hbt.Infrastructure.Authentication.HbtJwtHandler.CreateAccessToken(System.Int64,System.String,System.Collections.Generic.IEnumerable{System.String})">
             <summary>
@@ -229,6 +230,20 @@
             初始化数据库
             </summary>
         </member>
+        <member name="M:Lean.Hbt.Infrastructure.Data.Contexts.HbtDbContext.GetTableNameFromSql(System.String)">
+            <summary>
+            获取数据库中的列信息
+            </summary>
+            <param name="sql"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Data.Contexts.HbtDbContext.GetChangeTypeFromSql(System.String)">
+             <summary>
+            
+             </summary>
+             <param name="sql"></param>
+             <returns></returns>
+        </member>
         <member name="M:Lean.Hbt.Infrastructure.Data.Contexts.HbtDbContext.SetTenantId">
             <summary>
             设置租户ID
@@ -284,7 +299,7 @@
             数据库种子数据初始化
             </summary>
         </member>
-        <member name="M:Lean.Hbt.Infrastructure.Data.Seeds.HbtDbSeed.#ctor(Lean.Hbt.Infrastructure.Data.Contexts.HbtDbContext,Lean.Hbt.Domain.IServices.IHbtLogger,Lean.Hbt.Domain.Repositories.IHbtRepository{Lean.Hbt.Domain.Entities.Admin.HbtSysConfig},Lean.Hbt.Domain.Repositories.IHbtRepository{Lean.Hbt.Domain.Entities.Admin.HbtTranslation},Lean.Hbt.Domain.Repositories.IHbtRepository{Lean.Hbt.Domain.Entities.Admin.HbtLanguage})">
+        <member name="M:Lean.Hbt.Infrastructure.Data.Seeds.HbtDbSeed.#ctor(Lean.Hbt.Infrastructure.Data.Contexts.HbtDbContext,Lean.Hbt.Domain.IServices.IHbtLogger,Lean.Hbt.Domain.Repositories.IHbtRepository{Lean.Hbt.Domain.Entities.Admin.HbtSysConfig},Lean.Hbt.Domain.Repositories.IHbtRepository{Lean.Hbt.Domain.Entities.Admin.HbtTranslation},Lean.Hbt.Domain.Repositories.IHbtRepository{Lean.Hbt.Domain.Entities.Admin.HbtLanguage},Lean.Hbt.Domain.Repositories.IHbtRepository{Lean.Hbt.Domain.Entities.Identity.HbtMenu})">
             <summary>
             构造函数
             </summary>
@@ -293,6 +308,7 @@
             <param name="repository">系统配置仓储</param>
             <param name="translationRepository">翻译仓储</param>
             <param name="languageRepository">语言仓储</param>
+            <param name="menuRepository">菜单仓储</param>
         </member>
         <member name="M:Lean.Hbt.Infrastructure.Data.Seeds.HbtDbSeed.InitializeAsync">
             <summary>
@@ -342,6 +358,11 @@
         <member name="M:Lean.Hbt.Infrastructure.Data.Seeds.HbtDbSeed.InitializeTranslationAsync">
             <summary>
             初始化翻译数据
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Data.Seeds.HbtDbSeed.InitializeMenuAsync">
+            <summary>
+            初始化菜单数据
             </summary>
         </member>
         <member name="T:Lean.Hbt.Infrastructure.Extensions.HbtCsrfExtensions">
@@ -1272,6 +1293,13 @@
             本地化服务实现
             </summary>
         </member>
+        <member name="M:Lean.Hbt.Infrastructure.Services.HbtLocalizationService.#ctor(Microsoft.AspNetCore.Http.IHttpContextAccessor,Lean.Hbt.Domain.Repositories.IHbtRepository{Lean.Hbt.Domain.Entities.Admin.HbtTranslation})">
+            <summary>
+            构造函数
+            </summary>
+            <param name="httpContextAccessor"></param>
+            <param name="translationRepository"></param>
+        </member>
         <member name="M:Lean.Hbt.Infrastructure.Services.HbtLocalizationService.L(System.String,System.Object[])">
             <summary>
             获取当前语言的翻译值
@@ -1300,6 +1328,26 @@
         <member name="M:Lean.Hbt.Infrastructure.Services.HbtLocalizationService.ReloadTranslationsAsync">
             <summary>
             重新加载翻译数据
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Services.HbtLocalizationService.GetLocalizedStringAsync(System.String,System.Object[])">
+            <summary>
+            获取本地化字符串的异步方法
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Services.HbtLocalizationService.GetCurrentCulture">
+            <summary>
+            获取当前文化信息
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Services.HbtLocalizationService.SetCurrentCulture(System.Globalization.CultureInfo)">
+            <summary>
+            设置当前文化信息
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Services.HbtLocalizationService.RefreshLocalizationCacheAsync">
+            <summary>
+            刷新本地化缓存
             </summary>
         </member>
         <member name="T:Lean.Hbt.Infrastructure.SignalR.HbtOnlineHub">
@@ -1384,6 +1432,10 @@
             <summary>
             API模块特性
             </summary>
+            <remarks>
+            创建者: Lean365
+            创建时间: 2024-01-16
+            </remarks>
         </member>
         <member name="P:Lean.Hbt.Infrastructure.Swagger.ApiModuleAttribute.Name">
             <summary>
@@ -1397,7 +1449,7 @@
         </member>
         <member name="M:Lean.Hbt.Infrastructure.Swagger.ApiModuleAttribute.#ctor(System.String,System.String)">
             <summary>
-            初始化API模块特性
+            构造函数
             </summary>
             <param name="name">模块名称</param>
             <param name="description">模块描述</param>

@@ -11,6 +11,7 @@ using Lean.Hbt.Domain.Entities.RealTime;
 using Lean.Hbt.Domain.Repositories;
 using Lean.Hbt.Application.Dtos.RealTime;
 using Lean.Hbt.Common.Models;
+using Lean.Hbt.Common.Helpers;
 using Mapster;
 using SqlSugar;
 using SqlSugar.Extensions;
@@ -25,7 +26,7 @@ namespace Lean.Hbt.Application.Services.RealTime;
 /// 创建者: Lean365
 /// 创建时间: 2024-01-20
 /// </remarks>
-public class HbtOnlineUserService : IHbtOnlineUserAppService
+public class HbtOnlineUserService : IHbtOnlineUserService
 {
     private readonly IHbtRepository<HbtOnlineUser> _repository;
 
@@ -68,9 +69,12 @@ public class HbtOnlineUserService : IHbtOnlineUserAppService
     }
 
     /// <summary>
-    /// 获取在线用户导出数据
+    /// 导出在线用户数据
     /// </summary>
-    public async Task<List<HbtOnlineUserExportDto>> GetExportDataAsync(HbtOnlineUserQueryDto query)
+    /// <param name="query">查询条件</param>
+    /// <param name="sheetName">工作表名称</param>
+    /// <returns>Excel文件字节数组</returns>
+    public async Task<byte[]> ExportAsync(HbtOnlineUserQueryDto query, string sheetName = "在线用户信息")
     {
         // 1.构建查询条件
         var exp = Expressionable.Create<HbtOnlineUser>();
@@ -84,8 +88,11 @@ public class HbtOnlineUserService : IHbtOnlineUserAppService
         // 2.查询数据
         var users = await _repository.GetListAsync(exp.ToExpression());
 
-        // 3.转换并返回
-        return users.Adapt<List<HbtOnlineUserExportDto>>();
+        // 3.转换数据
+        var dtos = users.Adapt<List<HbtOnlineUserDto>>();
+
+        // 4.导出Excel
+        return await HbtExcelHelper.ExportAsync(dtos, sheetName);
     }
 
     /// <summary>

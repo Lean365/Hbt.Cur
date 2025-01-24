@@ -108,9 +108,9 @@ namespace Lean.Hbt.Application.Dtos.Identity
     }
 
     /// <summary>
-    /// 设备扩展信息更新请求
+    /// 设备扩展信息更新传输对象
     /// </summary>
-    public class HbtDeviceExtendUpdateRequest
+    public class HbtDeviceExtendUpdateDto
     {
         /// <summary>
         /// 用户ID
@@ -178,9 +178,9 @@ namespace Lean.Hbt.Application.Dtos.Identity
     }
 
     /// <summary>
-    /// 设备在线时段更新请求
+    /// 设备在线时段更新传输对象
     /// </summary>
-    public class HbtDeviceOnlinePeriodUpdateRequest
+    public class HbtDeviceOnlinePeriodUpdateDto
     {
         /// <summary>
         /// 用户ID
@@ -204,9 +204,9 @@ namespace Lean.Hbt.Application.Dtos.Identity
     }
 
     /// <summary>
-    /// 设备扩展信息分页查询请求
+    /// 设备扩展信息查询传输对象
     /// </summary>
-    public class HbtDeviceExtendPageRequest : HbtPagedQuery
+    public class HbtDeviceExtendQueryDto : HbtPagedQuery
     {
         /// <summary>
         /// 用户ID
@@ -250,9 +250,9 @@ namespace Lean.Hbt.Application.Dtos.Identity
     }
 
     /// <summary>
-    /// 设备扩展信息导出请求
+    /// 设备扩展信息导出传输对象
     /// </summary>
-    public class HbtDeviceExtendExportRequest
+    public class HbtDeviceExtendExportDto
     {
         /// <summary>
         /// 用户ID

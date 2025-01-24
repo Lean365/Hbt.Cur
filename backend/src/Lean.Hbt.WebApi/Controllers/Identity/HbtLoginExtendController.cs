@@ -43,7 +43,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <param name="query">查询条件</param>
         /// <returns>分页列表</returns>
         [HttpGet]
-        public async Task<IActionResult> GetPagedListAsync([FromQuery] HbtLoginExtendPageRequest query)
+        public async Task<IActionResult> GetPagedListAsync([FromQuery] HbtLoginExtendQueryDto query)
         {
             var result = await _loginExtendService.GetPagedListAsync(query);
             return Success(result);
@@ -52,12 +52,13 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <summary>
         /// 导出登录扩展信息
         /// </summary>
-        /// <param name="query">查询条件</param>
+        /// <param name="data">要导出的数据</param>
+        /// <param name="sheetName">工作表名称</param>
         /// <returns>导出数据列表</returns>
-        [HttpGet("export")]
-        public async Task<IActionResult> ExportAsync([FromQuery] HbtLoginExtendExportRequest query)
+        [HttpPost("export")]
+        public async Task<IActionResult> ExportAsync([FromBody] IEnumerable<HbtLoginExtendDto> data, [FromQuery] string sheetName = "登录扩展信息")
         {
-            var result = await _loginExtendService.ExportAsync(query);
+            var result = await _loginExtendService.ExportAsync(data, sheetName);
             return Success(result);
         }
 
@@ -67,7 +68,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <param name="request">更新请求</param>
         /// <returns>更新后的信息</returns>
         [HttpPut("login")]
-        public async Task<IActionResult> UpdateLoginInfoAsync([FromBody] HbtLoginExtendUpdateRequest request)
+        public async Task<IActionResult> UpdateLoginInfoAsync([FromBody] HbtLoginExtendUpdateDto request)
         {
             var result = await _loginExtendService.UpdateLoginInfoAsync(request);
             return Success(result);
@@ -91,7 +92,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <param name="request">在线时段更新请求</param>
         /// <returns>更新后的信息</returns>
         [HttpPut("online-period")]
-        public async Task<IActionResult> UpdateOnlinePeriodAsync([FromBody] HbtOnlinePeriodUpdateRequest request)
+        public async Task<IActionResult> UpdateOnlinePeriodAsync([FromBody] HbtLoginExtendOnlinePeriodUpdateDto request)
         {
             var result = await _loginExtendService.UpdateOnlinePeriodAsync(request);
             return Success(result);

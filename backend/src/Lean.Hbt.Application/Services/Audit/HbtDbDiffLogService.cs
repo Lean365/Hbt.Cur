@@ -103,8 +103,9 @@ namespace Lean.Hbt.Application.Services.Audit
         /// 导出数据库差异日志数据
         /// </summary>
         /// <param name="query">查询条件</param>
+        /// <param name="sheetName">工作表名称</param>
         /// <returns>返回导出的Excel文件字节数组</returns>
-        public async Task<byte[]> ExportAsync(HbtDbDiffLogQueryDto query)
+        public async Task<byte[]> ExportAsync(HbtDbDiffLogQueryDto query, string sheetName)
         {
             // 1.构建查询条件
             var predicate = Expressionable.Create<HbtDbDiffLog>();
@@ -132,7 +133,7 @@ namespace Lean.Hbt.Application.Services.Audit
 
             // 3.转换并导出
             var exportDtos = logs.Adapt<List<HbtDbDiffLogExportDto>>();
-            return await HbtExcelHelper.ExportAsync(exportDtos, "数据库差异日志数据");
+            return await HbtExcelHelper.ExportAsync(exportDtos, sheetName);
         }
 
         /// <summary>

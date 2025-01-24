@@ -103,36 +103,45 @@ namespace Lean.Hbt.Application.Services.Audit
         /// 导出登录日志数据
         /// </summary>
         /// <param name="query">查询条件</param>
-        /// <returns>返回导出的Excel文件字节数组</returns>
-        public async Task<byte[]> ExportAsync(HbtLoginLogQueryDto query)
+        /// <param name="sheetName">工作表名称</param>
+        /// <returns>Excel文件字节数组</returns>
+        public async Task<byte[]> ExportAsync(HbtLoginLogQueryDto query, string sheetName)
         {
-            // 1.构建查询条件
-            var predicate = Expressionable.Create<HbtLoginLog>();
+            try
+            {
+                // 1.构建查询条件
+                var predicate = Expressionable.Create<HbtLoginLog>();
 
-            if (!string.IsNullOrEmpty(query.UserName))
-                predicate.And(x => x.UserName.Contains(query.UserName));
+                if (!string.IsNullOrEmpty(query?.UserName))
+                    predicate.And(x => x.UserName.Contains(query.UserName));
 
-            if (!string.IsNullOrEmpty(query.IpAddress))
-                predicate.And(x => x.IpAddress.Contains(query.IpAddress));
+                if (!string.IsNullOrEmpty(query?.IpAddress))
+                    predicate.And(x => x.IpAddress.Contains(query.IpAddress));
 
-            if (query.Success.HasValue)
-                predicate.And(x => x.Success == (query.Success.Value ? 1 : 0));
+                if (query?.Success.HasValue == true)
+                    predicate.And(x => x.Success == (query.Success.Value ? 1 : 0));
 
-            if (query.StartTime.HasValue)
-                predicate.And(x => x.CreateTime >= query.StartTime.Value);
+                if (query?.StartTime.HasValue == true)
+                    predicate.And(x => x.CreateTime >= query.StartTime.Value);
 
-            if (query.EndTime.HasValue)
-                predicate.And(x => x.CreateTime <= query.EndTime.Value);
+                if (query?.EndTime.HasValue == true)
+                    predicate.And(x => x.CreateTime <= query.EndTime.Value);
 
-            // 2.查询数据
-            var logs = await _loginLogRepository.AsQueryable()
-                .Where(predicate.ToExpression())
-                .OrderByDescending(x => x.CreateTime)
-                .ToListAsync();
+                // 2.查询数据
+                var logs = await _loginLogRepository.AsQueryable()
+                    .Where(predicate.ToExpression())
+                    .OrderByDescending(x => x.CreateTime)
+                    .ToListAsync();
 
-            // 3.转换并导出
-            var exportDtos = logs.Adapt<List<HbtLoginLogExportDto>>();
-            return await HbtExcelHelper.ExportAsync(exportDtos, "登录日志数据");
+                // 3.转换并导出
+                var dtos = logs.Adapt<List<HbtLoginLogDto>>();
+                return await HbtExcelHelper.ExportAsync(dtos, sheetName);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "导出登录日志数据失败");
+                return Array.Empty<byte>();
+            }
         }
 
         /// <summary>

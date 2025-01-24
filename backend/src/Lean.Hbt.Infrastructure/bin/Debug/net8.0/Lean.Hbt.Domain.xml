@@ -949,9 +949,19 @@
             组件路径
             </summary>
         </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtMenu.QueryParams">
+            <summary>
+            路由参数
+            </summary>
+        </member>
         <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtMenu.IsFrame">
             <summary>
             是否为外链（0否 1是）
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtMenu.IsCache">
+            <summary>
+            是否缓存（0否 1是）
             </summary>
         </member>
         <member name="P:Lean.Hbt.Domain.Entities.Identity.HbtMenu.MenuType">
@@ -1557,6 +1567,329 @@
             最后活动时间
             </summary>
         </member>
+        <member name="T:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowDefinition">
+            <summary>
+            工作流定义实体类
+            </summary>
+            <remarks>
+            创建者: Lean365
+            创建时间: 2024-01-22
+            </remarks>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowDefinition.WorkflowName">
+            <summary>
+            流程名称
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowDefinition.WorkflowCategory">
+            <summary>
+            流程分类(字典)
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowDefinition.WorkflowVersion">
+            <summary>
+            流程版本
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowDefinition.FormConfig">
+            <summary>
+            表单配置(JSON格式)
+            包含：表单字段、验证规则、UI配置等
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowDefinition.WorkflowConfig">
+            <summary>
+            流程配置(JSON格式)
+            包含：节点布局、连线、条件等
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowDefinition.Status">
+            <summary>
+            状态
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowDefinition.WorkflowNodes">
+            <summary>
+            流程节点列表
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowHistory">
+            <summary>
+            工作流历史记录实体类
+            </summary>
+            <remarks>
+            创建者: Lean365
+            创建时间: 2024-01-22
+            </remarks>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowHistory.WorkflowInstanceId">
+            <summary>
+            工作流实例ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowHistory.NodeId">
+            <summary>
+            节点ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowHistory.OperationType">
+            <summary>
+            操作类型(1:提交 2:审批 3:转交 4:退回 5:终止 6:挂起 7:恢复)
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowHistory.OperatorId">
+            <summary>
+            操作人ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowHistory.OperatorName">
+            <summary>
+            操作人名称
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowHistory.OperationResult">
+            <summary>
+            操作结果(1:同意 2:拒绝 3:转交 4:退回)
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowHistory.OperationComment">
+            <summary>
+            操作意见
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowHistory.OperationTime">
+            <summary>
+            操作时间
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowHistory.WorkflowInstance">
+            <summary>
+            工作流实例
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowHistory.Node">
+            <summary>
+            节点
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowInstance">
+            <summary>
+            工作流实例实体类
+            </summary>
+            <remarks>
+            创建者: Lean365
+            创建时间: 2024-01-22
+            </remarks>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowInstance.WorkflowDefinitionId">
+            <summary>
+            工作流定义ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowInstance.WorkflowTitle">
+            <summary>
+            流程标题
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowInstance.CurrentNodeId">
+            <summary>
+            当前节点ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowInstance.InitiatorId">
+            <summary>
+            发起人ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowInstance.FormData">
+            <summary>
+            表单数据(JSON格式)
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowInstance.Status">
+            <summary>
+            流程状态
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowInstance.StartTime">
+            <summary>
+            开始时间
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowInstance.EndTime">
+            <summary>
+            结束时间
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowInstance.WorkflowDefinition">
+            <summary>
+            工作流定义
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowInstance.CurrentNode">
+            <summary>
+            当前节点
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowNode">
+            <summary>
+            工作流节点实体类
+            </summary>
+            <remarks>
+            创建者: Lean365
+            创建时间: 2024-01-22
+            </remarks>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowNode.NodeName">
+            <summary>
+            节点名称
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowNode.NodeType">
+            <summary>
+            节点类型
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowNode.WorkflowDefinitionId">
+            <summary>
+            工作流定义ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowNode.ParentNodeId">
+            <summary>
+            父节点ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowNode.NodeConfig">
+            <summary>
+            节点配置(JSON格式)
+            包含：审批人配置、条件配置、预警配置等
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowNode.OrderNum">
+            <summary>
+            排序号
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowNode.WorkflowDefinition">
+            <summary>
+            工作流定义
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowNode.ChildNodes">
+            <summary>
+            子节点列表
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowTask">
+            <summary>
+            工作流任务实体类
+            </summary>
+            <remarks>
+            创建者: Lean365
+            创建时间: 2024-01-22
+            </remarks>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowTask.WorkflowInstanceId">
+            <summary>
+            工作流实例ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowTask.NodeId">
+            <summary>
+            节点ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowTask.HandlerId">
+            <summary>
+            处理人ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowTask.TaskType">
+            <summary>
+            任务类型
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowTask.Status">
+            <summary>
+            任务状态
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowTask.TaskResult">
+            <summary>
+            处理结果
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowTask.TaskComment">
+            <summary>
+            处理意见
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowTask.StartTime">
+            <summary>
+            开始时间
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowTask.CompleteTime">
+            <summary>
+            完成时间
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowTask.WorkflowInstance">
+            <summary>
+            工作流实例
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowTask.Node">
+            <summary>
+            节点
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowVariable">
+            <summary>
+            工作流变量实体类
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowVariable.WorkflowInstanceId">
+            <summary>
+            工作流实例ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowVariable.VariableName">
+            <summary>
+            变量名称
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowVariable.VariableType">
+            <summary>
+            变量类型(string/int/decimal/datetime/bool)
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowVariable.VariableValue">
+            <summary>
+            变量值(JSON格式)
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowVariable.Scope">
+            <summary>
+            变量作用域
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowVariable.NodeId">
+            <summary>
+            节点ID(作用域为节点时必填)
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowVariable.WorkflowInstance">
+            <summary>
+            工作流实例
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowVariable.Node">
+            <summary>
+            节点
+            </summary>
+        </member>
         <member name="T:Lean.Hbt.Domain.Interfaces.SignalR.IHbtMessageNotifier">
             <summary>
             消息通知服务接口
@@ -1643,34 +1976,51 @@
             <summary>
             本地化服务接口
             </summary>
+            <remarks>
+            创建者: Lean365
+            创建时间: 2024-01-20
+            </remarks>
         </member>
-        <member name="M:Lean.Hbt.Domain.IServices.Admin.IHbtLocalizationService.L(System.String,System.Object[])">
+        <member name="M:Lean.Hbt.Domain.IServices.Admin.IHbtLocalizationService.GetLocalizedStringAsync(System.String,System.Object[])">
             <summary>
-            获取当前语言的翻译值
+            获取本地化文本
             </summary>
-            <param name="key">翻译键</param>
+            <param name="key">本地化键</param>
             <param name="args">格式化参数</param>
-            <returns>翻译后的文本</returns>
+            <returns>本地化文本</returns>
         </member>
-        <member name="M:Lean.Hbt.Domain.IServices.Admin.IHbtLocalizationService.L(System.String,System.String,System.Object[])">
+        <member name="M:Lean.Hbt.Domain.IServices.Admin.IHbtLocalizationService.GetCurrentCulture">
             <summary>
-            获取指定语言的翻译值
+            获取当前语言文化
             </summary>
-            <param name="langCode">语言代码</param>
-            <param name="key">翻译键</param>
-            <param name="args">格式化参数</param>
-            <returns>翻译后的文本</returns>
+            <returns>当前语言文化</returns>
         </member>
-        <member name="P:Lean.Hbt.Domain.IServices.Admin.IHbtLocalizationService.CurrentLanguage">
+        <member name="M:Lean.Hbt.Domain.IServices.Admin.IHbtLocalizationService.SetCurrentCulture(System.Globalization.CultureInfo)">
             <summary>
-            获取当前语言代码
+            设置当前语言文化
             </summary>
+            <param name="culture">语言文化</param>
         </member>
         <member name="M:Lean.Hbt.Domain.IServices.Admin.IHbtLocalizationService.SetLanguage(System.String)">
             <summary>
             设置当前语言
             </summary>
             <param name="langCode">语言代码</param>
+        </member>
+        <member name="M:Lean.Hbt.Domain.IServices.Admin.IHbtLocalizationService.RefreshLocalizationCacheAsync">
+            <summary>
+            从数据库刷新本地化缓存
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Domain.IServices.Admin.IHbtLocalizationService.L(System.String,System.Object[])">
+            <summary>
+            获取当前语言的翻译值
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Domain.IServices.Admin.IHbtLocalizationService.L(System.String,System.String,System.Object[])">
+            <summary>
+            获取指定语言的翻译值
+            </summary>
         </member>
         <member name="T:Lean.Hbt.Domain.IServices.IHbtAuditsLog">
             <summary>
@@ -1731,8 +2081,12 @@
         </member>
         <member name="T:Lean.Hbt.Domain.IServices.IHbtJwtHandler">
             <summary>
-            JWT处理接口
+            JWT令牌处理器接口
             </summary>
+            <remarks>
+            创建者: Lean365
+            创建时间: 2024-01-16
+            </remarks>
         </member>
         <member name="M:Lean.Hbt.Domain.IServices.IHbtJwtHandler.CreateAccessToken(System.Int64,System.String,System.Collections.Generic.IEnumerable{System.String})">
             <summary>
@@ -1754,14 +2108,14 @@
             <summary>
             验证访问令牌
             </summary>
-            <param name="token">访问令牌</param>
+            <param name="token">令牌</param>
             <returns>是否有效</returns>
         </member>
         <member name="M:Lean.Hbt.Domain.IServices.IHbtJwtHandler.ValidateRefreshToken(System.String)">
             <summary>
             验证刷新令牌
             </summary>
-            <param name="token">刷新令牌</param>
+            <param name="token">令牌</param>
             <returns>是否有效</returns>
         </member>
         <member name="M:Lean.Hbt.Domain.IServices.IHbtJwtHandler.GetUserIdFromToken(System.String)">
@@ -2167,6 +2521,55 @@
         <member name="P:Lean.Hbt.Domain.IServices.Security.Point.Timestamp">
             <summary>
             时间戳
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Domain.Models.Admin.HbtTranslation">
+            <summary>
+            翻译实体
+            </summary>
+            <remarks>
+            创建者: Lean365
+            创建时间: 2024-01-20
+            </remarks>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Models.Admin.HbtTranslation.Id">
+            <summary>
+            主键
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Models.Admin.HbtTranslation.LangCode">
+            <summary>
+            语言代码
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Models.Admin.HbtTranslation.LangKey">
+            <summary>
+            翻译键
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Models.Admin.HbtTranslation.LangValue">
+            <summary>
+            翻译值
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Models.Admin.HbtTranslation.Status">
+            <summary>
+            状态（0停用 1正常）
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Models.Admin.HbtTranslation.Remark">
+            <summary>
+            备注
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Models.Admin.HbtTranslation.CreateTime">
+            <summary>
+            创建时间
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Models.Admin.HbtTranslation.UpdateTime">
+            <summary>
+            更新时间
             </summary>
         </member>
         <member name="T:Lean.Hbt.Domain.Models.Identity.HbtSessionInfo">

@@ -120,13 +120,18 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
         /// <summary>
         /// 导入系统配置数据
         /// </summary>
-        /// <param name="configs">系统配置数据列表</param>
+        /// <param name="file">Excel文件</param>
+        /// <param name="sheetName">工作表名称</param>
         /// <returns>导入结果</returns>
         [HttpPost("import")]
         [HbtPermission("system:config:import")]
-        public async Task<IActionResult> ImportAsync([FromBody] List<HbtSysConfigImportDto> configs)
+        public async Task<IActionResult> ImportAsync(IFormFile file, [FromQuery] string sheetName = "系统配置信息")
         {
-            var result = await _configService.ImportAsync(configs);
+            if (file == null || file.Length == 0)
+                return Error("请选择要导入的文件");
+
+            using var stream = file.OpenReadStream();
+            var result = await _configService.ImportAsync(stream, sheetName);
             return Success(result);
         }
 
@@ -134,25 +139,27 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
         /// 导出系统配置数据
         /// </summary>
         /// <param name="query">查询条件</param>
-        /// <returns>导出数据列表</returns>
+        /// <param name="sheetName">工作表名称</param>
+        /// <returns>Excel文件</returns>
         [HttpGet("export")]
         [HbtPermission("system:config:export")]
-        public async Task<IActionResult> ExportAsync([FromQuery] HbtSysConfigQueryDto query)
+        public async Task<IActionResult> ExportAsync([FromQuery] HbtSysConfigQueryDto query, [FromQuery] string sheetName = "系统配置信息")
         {
-            var result = await _configService.ExportAsync(query);
-            return Success(result);
+            var result = await _configService.ExportAsync(query, sheetName);
+            return File(result, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"系统配置数据_{DateTime.Now:yyyyMMddHHmmss}.xlsx");
         }
 
         /// <summary>
         /// 获取导入模板
         /// </summary>
-        /// <returns>模板数据</returns>
+        /// <param name="sheetName">工作表名称</param>
+        /// <returns>Excel模板文件</returns>
         [HttpGet("template")]
         [HbtPermission("system:config:query")]
-        public async Task<IActionResult> GetTemplateAsync()
+        public async Task<IActionResult> GetTemplateAsync([FromQuery] string sheetName = "系统配置信息")
         {
-            var result = await _configService.GetTemplateAsync();
-            return Success(result);
+            var result = await _configService.GetTemplateAsync(sheetName);
+            return File(result, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"系统配置导入模板_{DateTime.Now:yyyyMMddHHmmss}.xlsx");
         }
 
         /// <summary>

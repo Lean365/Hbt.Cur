@@ -7,6 +7,9 @@
 // 描述    : 设备扩展信息控制器
 //===================================================================
 
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using Lean.Hbt.Application.Dtos.Identity;
 using Lean.Hbt.Application.Services.Identity;
 using Lean.Hbt.Domain.IServices.Admin;
@@ -43,7 +46,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <param name="query">查询条件</param>
         /// <returns>分页列表</returns>
         [HttpGet]
-        public async Task<IActionResult> GetPagedListAsync([FromQuery] HbtDeviceExtendPageRequest query)
+        public async Task<IActionResult> GetPagedListAsync([FromQuery] HbtDeviceExtendQueryDto query)
         {
             var result = await _deviceExtendService.GetPagedListAsync(query);
             return Success(result);
@@ -52,12 +55,13 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <summary>
         /// 导出设备扩展信息
         /// </summary>
-        /// <param name="query">查询条件</param>
+        /// <param name="data">要导出的数据</param>
+        /// <param name="sheetName">工作表名称</param>
         /// <returns>导出数据列表</returns>
-        [HttpGet("export")]
-        public async Task<IActionResult> ExportAsync([FromQuery] HbtDeviceExtendExportRequest query)
+        [HttpPost("export")]
+        public async Task<IActionResult> ExportAsync([FromBody] IEnumerable<HbtDeviceExtendDto> data, [FromQuery] string sheetName = "设备扩展信息")
         {
-            var result = await _deviceExtendService.ExportAsync(query);
+            var result = await _deviceExtendService.ExportAsync(data, sheetName);
             return Success(result);
         }
 
@@ -67,7 +71,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <param name="request">更新请求</param>
         /// <returns>更新后的信息</returns>
         [HttpPut("device")]
-        public async Task<IActionResult> UpdateDeviceInfoAsync([FromBody] HbtDeviceExtendUpdateRequest request)
+        public async Task<IActionResult> UpdateDeviceInfoAsync([FromBody] HbtDeviceExtendUpdateDto request)
         {
             var result = await _deviceExtendService.UpdateDeviceInfoAsync(request);
             return Success(result);
@@ -92,7 +96,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <param name="request">在线时段更新请求</param>
         /// <returns>更新后的信息</returns>
         [HttpPut("online-period")]
-        public async Task<IActionResult> UpdateOnlinePeriodAsync([FromBody] HbtDeviceOnlinePeriodUpdateRequest request)
+        public async Task<IActionResult> UpdateOnlinePeriodAsync([FromBody] HbtDeviceOnlinePeriodUpdateDto request)
         {
             var result = await _deviceExtendService.UpdateOnlinePeriodAsync(request);
             return Success(result);

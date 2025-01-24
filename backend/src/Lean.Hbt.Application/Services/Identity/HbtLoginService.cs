@@ -98,8 +98,8 @@ public class HbtLoginService : IHbtLoginService
         }
 
         // 6. 生成令牌
-        var accessToken = _jwtHandler.CreateAccessToken(user.Id, user.UserName, new[] { "User" });
-        var refreshToken = _jwtHandler.CreateRefreshToken(user.Id);
+        var accessToken = await _jwtHandler.CreateAccessToken(user.Id, user.UserName, new[] { "User" });
+        var refreshToken = await _jwtHandler.CreateRefreshToken(user.Id);
 
         // 7. 记录登录成功
         await _loginPolicy.RecordSuccessfulLoginAsync(loginDto.UserName);
@@ -148,8 +148,8 @@ public class HbtLoginService : IHbtLoginService
             throw new HbtException("租户已被禁用");
 
         // 4. 生成新令牌
-        var accessToken = _jwtHandler.CreateAccessToken(user.Id, user.UserName, new[] { "User" });
-        var newRefreshToken = _jwtHandler.CreateRefreshToken(user.Id);
+        var accessToken = await _jwtHandler.CreateAccessToken(user.Id, user.UserName, new[] { "User" });
+        var newRefreshToken = await _jwtHandler.CreateRefreshToken(user.Id);
 
         // 5. 返回登录结果
         return new HbtLoginResultDto

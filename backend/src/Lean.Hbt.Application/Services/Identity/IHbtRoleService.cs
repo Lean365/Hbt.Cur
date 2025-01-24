@@ -70,8 +70,9 @@ namespace Lean.Hbt.Application.Services.Identity
         /// 导出角色数据
         /// </summary>
         /// <param name="query">查询条件</param>
-        /// <returns>导出的Excel文件字节数组</returns>
-        Task<byte[]> ExportAsync(HbtRoleQueryDto query);
+        /// <param name="sheetName">工作表名称</param>
+        /// <returns>Excel文件字节数组</returns>
+        Task<byte[]> ExportAsync(HbtRoleQueryDto query, string sheetName = "Sheet1");
 
         /// <summary>
         /// 更新角色状态
@@ -81,16 +82,18 @@ namespace Lean.Hbt.Application.Services.Identity
         Task<bool> UpdateStatusAsync(HbtRoleStatusDto input);
 
         /// <summary>
-        /// 获取导入模板
+        /// 获取角色导入模板
         /// </summary>
-        /// <returns>导入模板Excel文件字节数组</returns>
-        Task<byte[]> GetImportTemplateAsync();
+        /// <param name="sheetName">工作表名称</param>
+        /// <returns>Excel模板文件字节数组</returns>
+        Task<byte[]> GetTemplateAsync(string sheetName = "Sheet1");
 
         /// <summary>
         /// 导入角色数据
         /// </summary>
         /// <param name="fileStream">Excel文件流</param>
-        /// <returns>导入结果</returns>
-        Task<string> ImportAsync(Stream fileStream);
+        /// <param name="sheetName">工作表名称</param>
+        /// <returns>返回导入结果(success:成功数量,fail:失败数量)</returns>
+        Task<(int success, int fail)> ImportAsync(Stream fileStream, string sheetName = "Sheet1");
     }
 } 

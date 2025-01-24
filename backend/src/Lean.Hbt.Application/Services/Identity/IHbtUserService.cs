@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using Lean.Hbt.Common.Models;
 using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Application.Dtos.Identity;
+using System.IO;
 
 namespace Lean.Hbt.Application.Services.Identity
 {
@@ -69,22 +70,25 @@ namespace Lean.Hbt.Application.Services.Identity
         /// <summary>
         /// 导入用户数据
         /// </summary>
-        /// <param name="users">用户数据列表</param>
-        /// <returns>导入结果</returns>
-        Task<(int success, int fail)> ImportAsync(List<HbtUserImportDto> users);
+        /// <param name="fileStream">Excel文件流</param>
+        /// <param name="sheetName">工作表名称</param>
+        /// <returns>返回导入结果(success:成功数量,fail:失败数量)</returns>
+        Task<(int success, int fail)> ImportAsync(Stream fileStream, string sheetName = "Sheet1");
 
         /// <summary>
         /// 导出用户数据
         /// </summary>
         /// <param name="query">查询条件</param>
-        /// <returns>导出数据列表</returns>
-        Task<List<HbtUserExportDto>> ExportAsync(HbtUserQueryDto query);
+        /// <param name="sheetName">工作表名称</param>
+        /// <returns>Excel文件字节数组</returns>
+        Task<byte[]> ExportAsync(HbtUserQueryDto query, string sheetName = "Sheet1");
 
         /// <summary>
-        /// 获取导入模板
+        /// 获取用户导入模板
         /// </summary>
-        /// <returns>模板数据</returns>
-        Task<HbtUserTemplateDto> GetTemplateAsync();
+        /// <param name="sheetName">工作表名称</param>
+        /// <returns>Excel模板文件字节数组</returns>
+        Task<byte[]> GetTemplateAsync(string sheetName = "Sheet1");
 
         /// <summary>
         /// 更新用户状态

@@ -40,8 +40,9 @@ namespace Lean.Hbt.Application.Services.Audit
         /// 导出异常日志数据
         /// </summary>
         /// <param name="query">查询条件</param>
+        /// <param name="sheetName">工作表名称</param>
         /// <returns>导出的Excel文件字节数组</returns>
-        Task<byte[]> ExportAsync(HbtExceptionLogQueryDto query);
+        Task<byte[]> ExportAsync(HbtExceptionLogQueryDto query, string sheetName);
 
         /// <summary>
         /// 清空异常日志

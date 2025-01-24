@@ -11,13 +11,16 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
+using System.IO;
 using Lean.Hbt.Application.Dtos.Admin;
 using Lean.Hbt.Common.Exceptions;
 using Lean.Hbt.Common.Models;
+using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Domain.Entities.Admin;
 using Lean.Hbt.Domain.IServices;
 using Lean.Hbt.Domain.Repositories;
 using Lean.Hbt.Domain.Utils;
+using Lean.Hbt.Common.Helpers;
 using Mapster;
 using SqlSugar;
 
@@ -150,27 +153,41 @@ namespace Lean.Hbt.Application.Services.Admin
         /// <summary>
         /// 导入翻译数据
         /// </summary>
-        public async Task<(int success, int fail)> ImportAsync(List<HbtTranslationImportDto> translations)
+        /// <param name="fileStream">Excel文件流</param>
+        /// <param name="sheetName">工作表名称</param>
+        /// <returns>导入结果</returns>
+        public async Task<(int success, int fail)> ImportAsync(Stream fileStream, string sheetName = "翻译信息")
         {
-            if (translations == null || !translations.Any())
-                return (0, 0);
-
             var success = 0;
             var fail = 0;
 
-            foreach (var item in translations)
+            try
             {
-                try
+                // 1.从Excel导入数据
+                var translations = await HbtExcelHelper.ImportAsync<HbtTranslationDto>(fileStream, sheetName);
+                if (translations == null || !translations.Any())
+                    return (0, 0);
+
+                // 2.保存数据
+                foreach (var item in translations)
                 {
-                    var translation = item.Adapt<HbtTranslation>();
-                    await _translationRepository.InsertAsync(translation);
-                    success++;
+                    try
+                    {
+                        var translation = item.Adapt<HbtTranslation>();
+                        await _translationRepository.InsertAsync(translation);
+                        success++;
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.Error($"导入翻译失败：{ex.Message}", ex);
+                        fail++;
+                    }
                 }
-                catch (Exception ex)
-                {
-                    _logger.Error($"导入翻译失败：{ex.Message}", ex);
-                    fail++;
-                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error($"导入翻译数据失败：{ex.Message}", ex);
+                throw new HbtException("导入翻译数据失败");
             }
 
             return (success, fail);
@@ -179,7 +196,10 @@ namespace Lean.Hbt.Application.Services.Admin
         /// <summary>
         /// 导出翻译数据
         /// </summary>
-        public async Task<List<HbtTranslationExportDto>> ExportAsync(HbtTranslationQueryDto query)
+        /// <param name="query">查询条件</param>
+        /// <param name="sheetName">工作表名称</param>
+        /// <returns>Excel文件字节数组</returns>
+        public async Task<byte[]> ExportAsync(HbtTranslationQueryDto query, string sheetName = "翻译信息")
         {
             var exp = Expressionable.Create<HbtTranslation>();
 
@@ -196,15 +216,32 @@ namespace Lean.Hbt.Application.Services.Admin
                 exp.And(x => x.Status == query.Status.Value);
 
             var list = await _translationRepository.GetListAsync(exp.ToExpression());
-            return list.Adapt<List<HbtTranslationExportDto>>();
+            var dtos = list.Adapt<List<HbtTranslationDto>>();
+            
+            return await HbtExcelHelper.ExportAsync(dtos, sheetName);
         }
 
         /// <summary>
         /// 获取导入模板
         /// </summary>
-        public async Task<HbtTranslationTemplateDto> GetTemplateAsync()
+        /// <param name="sheetName">工作表名称</param>
+        /// <returns>Excel文件字节数组</returns>
+        public async Task<byte[]> GetTemplateAsync(string sheetName = "翻译信息")
         {
-            return await Task.FromResult(new HbtTranslationTemplateDto());
+            var template = new List<HbtTranslationDto>
+            {
+                new HbtTranslationDto
+                {
+                    LangCode = "zh-CN",
+                    TransKey = "example.key",
+                    TransValue = "示例文本",
+                    ModuleName = "common",
+                    Status = HbtStatus.Normal,
+                    Remark = "示例备注"
+                }
+            };
+
+            return await HbtExcelHelper.ExportAsync(template, sheetName);
         }
 
         /// <summary>

@@ -113,36 +113,46 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
         /// <summary>
         /// 导入字典数据
         /// </summary>
-        /// <param name="dictDatas">字典数据列表</param>
+        /// <param name="file">Excel文件</param>
+        /// <param name="sheetName">工作表名称</param>
         /// <returns>导入结果</returns>
         [HttpPost("import")]
-        public async Task<IActionResult> ImportAsync([FromBody] List<HbtDictDataImportDto> dictDatas)
+        [ProducesResponseType(typeof((int Success, int Fail)), StatusCodes.Status200OK)]
+        public async Task<IActionResult> ImportAsync([FromForm] IFormFile file, [FromQuery] string sheetName = "字典数据")
         {
-            var result = await _dictDataService.ImportAsync(dictDatas);
-            return Success(result);
+            if (file == null || file.Length == 0)
+                return BadRequest("请选择要导入的文件");
+
+            using var stream = file.OpenReadStream();
+            var result = await _dictDataService.ImportAsync(stream, sheetName);
+            return Ok(result);
         }
 
         /// <summary>
         /// 导出字典数据
         /// </summary>
         /// <param name="query">查询条件</param>
-        /// <returns>导出数据列表</returns>
+        /// <param name="sheetName">工作表名称</param>
+        /// <returns>Excel文件</returns>
         [HttpGet("export")]
-        public async Task<IActionResult> ExportAsync([FromQuery] HbtDictDataQueryDto query)
+        [ProducesResponseType(typeof(byte[]), StatusCodes.Status200OK)]
+        public async Task<IActionResult> ExportAsync([FromQuery] HbtDictDataQueryDto query, [FromQuery] string sheetName = "字典数据")
         {
-            var result = await _dictDataService.ExportAsync(query);
-            return Success(result);
+            var result = await _dictDataService.ExportAsync(query, sheetName);
+            return File(result, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"字典数据_{DateTime.Now:yyyyMMddHHmmss}.xlsx");
         }
 
         /// <summary>
         /// 获取导入模板
         /// </summary>
-        /// <returns>模板数据</returns>
+        /// <param name="sheetName">工作表名称</param>
+        /// <returns>Excel模板文件</returns>
         [HttpGet("template")]
-        public async Task<IActionResult> GetTemplateAsync()
+        [ProducesResponseType(typeof(byte[]), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetTemplateAsync([FromQuery] string sheetName = "字典数据")
         {
-            var result = await _dictDataService.GetTemplateAsync();
-            return Success(result);
+            var result = await _dictDataService.GetTemplateAsync(sheetName);
+            return File(result, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"字典数据导入模板_{DateTime.Now:yyyyMMddHHmmss}.xlsx");
         }
 
         /// <summary>

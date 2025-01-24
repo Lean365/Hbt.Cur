@@ -113,36 +113,46 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
         /// <summary>
         /// 导入语言数据
         /// </summary>
-        /// <param name="languages">语言数据列表</param>
+        /// <param name="file">Excel文件</param>
+        /// <param name="sheetName">工作表名称</param>
         /// <returns>导入结果</returns>
         [HttpPost("import")]
-        public async Task<IActionResult> ImportAsync([FromBody] List<HbtLanguageImportDto> languages)
+        [ProducesResponseType(typeof((int Success, int Fail)), StatusCodes.Status200OK)]
+        public async Task<IActionResult> ImportAsync([FromForm] IFormFile file, [FromQuery] string sheetName = "语言信息")
         {
-            var result = await _languageService.ImportAsync(languages);
-            return Success(result);
+            if (file == null || file.Length == 0)
+                return BadRequest("请选择要导入的文件");
+
+            using var stream = file.OpenReadStream();
+            var result = await _languageService.ImportAsync(stream, sheetName);
+            return Ok(result);
         }
 
         /// <summary>
         /// 导出语言数据
         /// </summary>
         /// <param name="query">查询条件</param>
-        /// <returns>导出数据列表</returns>
+        /// <param name="sheetName">工作表名称</param>
+        /// <returns>Excel文件</returns>
         [HttpGet("export")]
-        public async Task<IActionResult> ExportAsync([FromQuery] HbtLanguageQueryDto query)
+        [ProducesResponseType(typeof(byte[]), StatusCodes.Status200OK)]
+        public async Task<IActionResult> ExportAsync([FromQuery] HbtLanguageQueryDto query, [FromQuery] string sheetName = "语言信息")
         {
-            var result = await _languageService.ExportAsync(query);
-            return Success(result);
+            var result = await _languageService.ExportAsync(query, sheetName);
+            return File(result, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"语言信息_{DateTime.Now:yyyyMMddHHmmss}.xlsx");
         }
 
         /// <summary>
         /// 获取导入模板
         /// </summary>
-        /// <returns>模板数据</returns>
+        /// <param name="sheetName">工作表名称</param>
+        /// <returns>Excel模板文件</returns>
         [HttpGet("template")]
-        public async Task<IActionResult> GetTemplateAsync()
+        [ProducesResponseType(typeof(byte[]), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetTemplateAsync([FromQuery] string sheetName = "语言信息")
         {
-            var result = await _languageService.GetTemplateAsync();
-            return Success(result);
+            var result = await _languageService.GetTemplateAsync(sheetName);
+            return File(result, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"语言信息导入模板_{DateTime.Now:yyyyMMddHHmmss}.xlsx");
         }
 
         /// <summary>

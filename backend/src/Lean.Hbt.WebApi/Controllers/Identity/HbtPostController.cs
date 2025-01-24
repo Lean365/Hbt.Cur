@@ -114,12 +114,13 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// 导入岗位数据
         /// </summary>
         /// <param name="file">Excel文件</param>
+        /// <param name="sheetName">工作表名称</param>
         /// <returns>导入结果</returns>
         [HttpPost("import")]
-        public async Task<IActionResult> ImportAsync([FromForm] IFormFile file)
+        public async Task<IActionResult> ImportAsync([FromForm] IFormFile file, [FromQuery] string sheetName = "Sheet1")
         {
             using var stream = file.OpenReadStream();
-            var result = await _postService.ImportAsync(stream);
+            var result = await _postService.ImportAsync(stream, sheetName);
             return Success(result);
         }
 
@@ -127,23 +128,25 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// 导出岗位数据
         /// </summary>
         /// <param name="query">查询条件</param>
+        /// <param name="sheetName">工作表名称</param>
         /// <returns>导出的Excel文件</returns>
         [HttpGet("export")]
-        public async Task<IActionResult> ExportAsync([FromQuery] HbtPostQueryDto query)
+        public async Task<IActionResult> ExportAsync([FromQuery] HbtPostQueryDto query, [FromQuery] string sheetName = "岗位数据")
         {
-            var result = await _postService.ExportAsync(query);
-            return Success(result);
+            var result = await _postService.ExportAsync(query, sheetName);
+            return File(result, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "岗位数据.xlsx");
         }
 
         /// <summary>
         /// 获取导入模板
         /// </summary>
+        /// <param name="sheetName">工作表名称</param>
         /// <returns>导入模板Excel文件</returns>
         [HttpGet("template")]
-        public async Task<IActionResult> GetImportTemplateAsync()
+        public async Task<IActionResult> GetImportTemplateAsync([FromQuery] string sheetName = "岗位导入模板")
         {
-            var result = await _postService.GetImportTemplateAsync();
-            return Success(result);
+            var result = await _postService.GenerateTemplateAsync(sheetName);
+            return File(result, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "岗位导入模板.xlsx");
         }
 
         /// <summary>

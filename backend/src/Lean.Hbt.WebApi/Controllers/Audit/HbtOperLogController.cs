@@ -65,12 +65,14 @@ namespace Lean.Hbt.WebApi.Controllers.Audit
         /// 导出操作日志数据
         /// </summary>
         /// <param name="query">查询条件</param>
-        /// <returns>导出的Excel文件</returns>
+        /// <param name="sheetName">工作表名称</param>
+        /// <returns>Excel文件</returns>
         [HttpGet("export")]
-        public async Task<IActionResult> ExportAsync([FromQuery] HbtOperLogQueryDto query)
+        [ProducesResponseType(typeof(byte[]), StatusCodes.Status200OK)]
+        public async Task<IActionResult> ExportAsync([FromQuery] HbtOperLogQueryDto query, [FromQuery] string sheetName = "操作日志")
         {
-            var result = await _operLogService.ExportAsync(query);
-            return Success(result);
+            var result = await _operLogService.ExportAsync(query, sheetName);
+            return File(result, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"操作日志_{DateTime.Now:yyyyMMddHHmmss}.xlsx");
         }
 
         /// <summary>

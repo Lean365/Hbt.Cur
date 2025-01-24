@@ -157,9 +157,9 @@ namespace Lean.Hbt.Application.Dtos.Identity
     }
 
     /// <summary>
-    /// 登录扩展信息更新请求
+    /// 登录扩展信息更新传输对象
     /// </summary>
-    public class HbtLoginExtendUpdateRequest
+    public class HbtLoginExtendUpdateDto
     {
         /// <summary>
         /// 用户ID
@@ -239,9 +239,9 @@ namespace Lean.Hbt.Application.Dtos.Identity
     }
 
     /// <summary>
-    /// 在线时段更新请求
+    /// 登录扩展信息在线时段更新传输对象
     /// </summary>
-    public class HbtOnlinePeriodUpdateRequest
+    public class HbtLoginExtendOnlinePeriodUpdateDto
     {
         /// <summary>
         /// 用户ID
@@ -258,9 +258,9 @@ namespace Lean.Hbt.Application.Dtos.Identity
     }
 
     /// <summary>
-    /// 登录扩展信息分页查询请求
+    /// 登录扩展信息查询传输对象
     /// </summary>
-    public class HbtLoginExtendPageRequest : HbtPagedQuery
+    public class HbtLoginExtendQueryDto : HbtPagedQuery
     {
         /// <summary>
         /// 用户ID
@@ -299,9 +299,9 @@ namespace Lean.Hbt.Application.Dtos.Identity
     }
 
     /// <summary>
-    /// 登录扩展信息导出请求
+    /// 登录扩展信息导出传输对象
     /// </summary>
-    public class HbtLoginExtendExportRequest
+    public class HbtLoginExtendExportDto
     {
         /// <summary>
         /// 用户ID

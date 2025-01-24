@@ -61,10 +61,22 @@ namespace Lean.Hbt.Domain.Entities.Identity
         public string? Component { get; set; }
 
         /// <summary>
+        /// 路由参数
+        /// </summary>
+        [SugarColumn(ColumnName = "query_params", ColumnDescription = "路由参数", Length = 255, ColumnDataType = "nvarchar", IsNullable = true)]
+        public string? QueryParams { get; set; }
+
+        /// <summary>
         /// 是否为外链（0否 1是）
         /// </summary>
         [SugarColumn(ColumnName = "is_frame", ColumnDescription = "是否为外链（0否 1是）", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
         public HbtYesNo IsFrame { get; set; } = HbtYesNo.No;
+
+        /// <summary>
+        /// 是否缓存（0否 1是）
+        /// </summary>
+        [SugarColumn(ColumnName = "is_cache", ColumnDescription = "是否缓存（0否 1是）", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
+        public HbtYesNo IsCache { get; set; } = HbtYesNo.No;
 
         /// <summary>
         /// 菜单类型（0目录 1菜单 2按钮）

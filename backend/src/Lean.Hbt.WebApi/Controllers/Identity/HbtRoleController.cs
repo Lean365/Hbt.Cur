@@ -111,15 +111,39 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         }
 
         /// <summary>
+        /// 导入角色数据
+        /// </summary>
+        /// <param name="file">Excel文件</param>
+        /// <returns>导入结果</returns>
+        [HttpPost("import")]
+        public async Task<IActionResult> ImportAsync([FromForm] IFormFile file)
+        {
+            using var stream = file.OpenReadStream();
+            var result = await _roleService.ImportAsync(stream, "Sheet1");
+            return Success(result, _localization.L("Role.Import.Success"));
+        }
+
+        /// <summary>
         /// 导出角色数据
         /// </summary>
         /// <param name="query">查询条件</param>
-        /// <returns>导出数据列表</returns>
+        /// <returns>Excel文件</returns>
         [HttpGet("export")]
         public async Task<IActionResult> ExportAsync([FromQuery] HbtRoleQueryDto query)
         {
-            var result = await _roleService.ExportAsync(query);
-            return Success(result);
+            var result = await _roleService.ExportAsync(query, "Sheet1");
+            return File(result, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "角色数据.xlsx");
+        }
+
+        /// <summary>
+        /// 获取角色导入模板
+        /// </summary>
+        /// <returns>Excel模板文件</returns>
+        [HttpGet("template")]
+        public async Task<IActionResult> GetTemplateAsync()
+        {
+            var result = await _roleService.GetTemplateAsync("Sheet1");
+            return File(result, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "角色导入模板.xlsx");
         }
 
         /// <summary>

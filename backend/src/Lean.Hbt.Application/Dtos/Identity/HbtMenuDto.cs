@@ -33,6 +33,7 @@ namespace Lean.Hbt.Application.Dtos.Identity
             TransKey = string.Empty;
             Path = string.Empty;
             Component = string.Empty;
+            QueryParams = string.Empty;
             Perms = string.Empty;
             Icon = string.Empty;
             Children = new List<HbtMenuDto>();
@@ -73,6 +74,11 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// 组件路径
         /// </summary>
         public string Component { get; set; }
+
+        /// <summary>
+        /// 路由参数
+        /// </summary>
+        public string QueryParams { get; set; }
 
         /// <summary>
         /// 是否为外链
@@ -168,6 +174,11 @@ namespace Lean.Hbt.Application.Dtos.Identity
         public string? Component { get; set; }
 
         /// <summary>
+        /// 路由参数
+        /// </summary>
+        public string? QueryParams { get; set; }
+
+        /// <summary>
         /// 是否为外链
         /// </summary>
         public HbtYesNo IsFrame { get; set; }
@@ -206,6 +217,11 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// 备注
         /// </summary>
         public string? Remark { get; set; }
+
+        /// <summary>
+        /// 是否缓存
+        /// </summary>
+        public HbtYesNo IsCache { get; set; }
     }
 
     /// <summary>
@@ -237,6 +253,7 @@ namespace Lean.Hbt.Application.Dtos.Identity
             TransKey = string.Empty;
             Path = string.Empty;
             Component = string.Empty;
+            QueryParams = string.Empty;
             Perms = string.Empty;
             Icon = string.Empty;
             CreateTime = DateTime.Now;
@@ -271,6 +288,11 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// 组件路径
         /// </summary>
         public string Component { get; set; }
+
+        /// <summary>
+        /// 路由参数
+        /// </summary>
+        public string QueryParams { get; set; }
 
         /// <summary>
         /// 是否为外链
@@ -362,6 +384,7 @@ namespace Lean.Hbt.Application.Dtos.Identity
             TransKey = string.Empty;
             Path = string.Empty;
             Component = string.Empty;
+            QueryParams = string.Empty;
             IsFrame = string.Empty;
             MenuType = string.Empty;
             Visible = string.Empty;
@@ -402,6 +425,12 @@ namespace Lean.Hbt.Application.Dtos.Identity
         public string Component { get; set; }
 
         /// <summary>
+        /// 路由参数
+        /// </summary>
+        [Required(ErrorMessage = "路由参数不能为空")]
+        public string QueryParams { get; set; }
+
+        /// <summary>
         /// 是否为外链（0否 1是）
         /// </summary>
         [Required(ErrorMessage = "是否为外链不能为空")]
@@ -434,6 +463,12 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// 菜单图标
         /// </summary>
         public string Icon { get; set; }
+
+        /// <summary>
+        /// 是否缓存
+        /// </summary>
+        [Required(ErrorMessage = "是否缓存不能为空")]
+        public string IsCache { get; set; }
     }
 
     /// <summary>
@@ -454,6 +489,7 @@ namespace Lean.Hbt.Application.Dtos.Identity
             TransKey = "system";
             Path = "/system";
             Component = "Layout";
+            QueryParams = string.Empty;
             IsFrame = "否";
             MenuType = "目录";
             Visible = "显示";
@@ -494,6 +530,12 @@ namespace Lean.Hbt.Application.Dtos.Identity
         public string Component { get; set; }
 
         /// <summary>
+        /// 路由参数
+        /// </summary>
+        [Required(ErrorMessage = "路由参数不能为空")]
+        public string QueryParams { get; set; }
+
+        /// <summary>
         /// 是否为外链（0否 1是）
         /// </summary>
         [Required(ErrorMessage = "是否为外链不能为空")]
@@ -526,5 +568,11 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// 菜单图标
         /// </summary>
         public string Icon { get; set; }
+
+        /// <summary>
+        /// 是否缓存
+        /// </summary>
+        [Required(ErrorMessage = "是否缓存不能为空")]
+        public string IsCache { get; set; }
     }
 } 

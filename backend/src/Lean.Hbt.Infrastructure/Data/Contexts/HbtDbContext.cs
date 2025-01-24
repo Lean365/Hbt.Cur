@@ -9,13 +9,12 @@
 // 描述    : 数据库上下文
 //===================================================================
 
+using Lean.Hbt.Domain.Entities.Admin;
 using Lean.Hbt.Domain.Entities.Audit;
 using Lean.Hbt.Domain.Entities.Identity;
 using Lean.Hbt.Domain.Entities.RealTime;
-using Lean.Hbt.Domain.Entities.Admin;
 using Lean.Hbt.Domain.IServices;
 using Microsoft.Extensions.Options;
-using SqlSugar;
 
 namespace Lean.Hbt.Infrastructure.Data.Contexts
 {
@@ -241,6 +240,11 @@ namespace Lean.Hbt.Infrastructure.Data.Contexts
             }
         }
 
+        /// <summary>
+        /// 获取数据库中的列信息
+        /// </summary>
+        /// <param name="sql"></param>
+        /// <returns></returns>
         private string GetTableNameFromSql(string sql)
         {
             // 简单的SQL解析，获取表名
@@ -248,6 +252,11 @@ namespace Lean.Hbt.Infrastructure.Data.Contexts
             return match.Success ? match.Groups[1].Value.Trim('[', ']', '`') : "Unknown";
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="sql"></param>
+        /// <returns></returns>
         private string GetChangeTypeFromSql(string sql)
         {
             if (sql.StartsWith("INSERT", StringComparison.OrdinalIgnoreCase))

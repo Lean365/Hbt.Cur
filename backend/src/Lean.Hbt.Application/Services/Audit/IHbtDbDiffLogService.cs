@@ -40,8 +40,9 @@ namespace Lean.Hbt.Application.Services.Audit
         /// 导出数据库差异日志数据
         /// </summary>
         /// <param name="query">查询条件</param>
+        /// <param name="sheetName">工作表名称</param>
         /// <returns>导出的Excel文件字节数组</returns>
-        Task<byte[]> ExportAsync(HbtDbDiffLogQueryDto query);
+        Task<byte[]> ExportAsync(HbtDbDiffLogQueryDto query, string sheetName);
 
         /// <summary>
         /// 清空数据库差异日志

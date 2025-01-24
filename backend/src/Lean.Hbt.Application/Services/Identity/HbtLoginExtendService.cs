@@ -50,7 +50,7 @@ namespace Lean.Hbt.Application.Services.Identity
         /// <summary>
         /// 获取登录扩展信息分页列表
         /// </summary>
-        public async Task<HbtPagedResult<HbtLoginExtendDto>> GetPagedListAsync(HbtLoginExtendPageRequest query)
+        public async Task<HbtPagedResult<HbtLoginExtendDto>> GetPagedListAsync(HbtLoginExtendQueryDto query)
         {
             var exp = Expressionable.Create<HbtLoginExtend>();
 
@@ -92,40 +92,15 @@ namespace Lean.Hbt.Application.Services.Identity
         /// <summary>
         /// 导出登录扩展信息
         /// </summary>
-        public async Task<byte[]> ExportAsync(HbtLoginExtendExportRequest request)
+        public async Task<byte[]> ExportAsync(IEnumerable<HbtLoginExtendDto> data, string sheetName = "登录扩展信息")
         {
-            var exp = Expressionable.Create<HbtLoginExtend>();
-
-            if (request.UserId.HasValue)
-                exp.And(x => x.UserId == request.UserId.Value);
-
-            if (request.TenantId.HasValue)
-                exp.And(x => x.TenantId == request.TenantId.Value);
-
-            if (request.LoginType.HasValue)
-                exp.And(x => x.LoginType == request.LoginType.Value);
-
-            if (request.LoginSource.HasValue)
-                exp.And(x => x.LoginSource == request.LoginSource.Value);
-
-            if (request.LoginStatus.HasValue)
-                exp.And(x => x.LoginStatus == request.LoginStatus.Value);
-
-            if (request.LastLoginTimeStart.HasValue)
-                exp.And(x => x.LastLoginTime >= request.LastLoginTimeStart.Value);
-
-            if (request.LastLoginTimeEnd.HasValue)
-                exp.And(x => x.LastLoginTime <= request.LastLoginTimeEnd.Value);
-
-            var list = await _loginExtendRepository.GetListAsync(exp.ToExpression());
-            var dtos = list.Adapt<List<HbtLoginExtendDto>>();
-            return await ExportAsync(request);
+            return await HbtExcelHelper.ExportAsync(data, sheetName);
         }
 
         /// <summary>
         /// 更新用户登录信息
         /// </summary>
-        public async Task<HbtLoginExtendDto> UpdateLoginInfoAsync(HbtLoginExtendUpdateRequest request)
+        public async Task<HbtLoginExtendDto> UpdateLoginInfoAsync(HbtLoginExtendUpdateDto request)
         {
             var loginExtend = await _loginExtendRepository.FirstOrDefaultAsync(x => x.UserId == request.UserId);
             var now = DateTime.Now;
@@ -208,7 +183,7 @@ namespace Lean.Hbt.Application.Services.Identity
         /// <summary>
         /// 更新用户在线时段
         /// </summary>
-        public async Task<HbtLoginExtendDto> UpdateOnlinePeriodAsync(HbtOnlinePeriodUpdateRequest request)
+        public async Task<HbtLoginExtendDto> UpdateOnlinePeriodAsync(HbtLoginExtendOnlinePeriodUpdateDto request)
         {
             var loginExtend = await _loginExtendRepository.FirstOrDefaultAsync(x => x.UserId == request.UserId);
             if (loginExtend == null)

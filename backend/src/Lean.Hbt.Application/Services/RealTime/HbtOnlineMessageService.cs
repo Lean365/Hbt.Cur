@@ -11,6 +11,7 @@ using Lean.Hbt.Domain.Entities.RealTime;
 using Lean.Hbt.Domain.Repositories;
 using Lean.Hbt.Application.Dtos.RealTime;
 using Lean.Hbt.Common.Models;
+using Lean.Hbt.Common.Helpers;
 using Mapster;
 using SqlSugar;
 using SqlSugar.Extensions;
@@ -110,6 +111,45 @@ public class HbtOnlineMessageService : IHbtOnlineMessageService
 
         // 3.转换并返回
         return messages.Adapt<List<HbtOnlineMessageExportDto>>();
+    }
+
+    /// <summary>
+    /// 导出在线消息数据
+    /// </summary>
+    /// <param name="query">查询条件</param>
+    /// <param name="sheetName">工作表名称</param>
+    /// <returns>Excel文件字节数组</returns>
+    public async Task<byte[]> ExportAsync(HbtOnlineMessageQueryDto query, string sheetName = "在线消息信息")
+    {
+        // 1.构建查询条件
+        var exp = Expressionable.Create<HbtOnlineMessage>();
+        
+        if (query.TenantId.HasValue)
+            exp = exp.And(m => m.TenantId == query.TenantId.Value);
+            
+        if (query.SenderId.HasValue)
+            exp = exp.And(m => m.SenderId == query.SenderId.Value);
+            
+        if (query.ReceiverId.HasValue)
+            exp = exp.And(m => m.ReceiverId == query.ReceiverId.Value);
+            
+        if (query.MessageType.HasValue)
+            exp = exp.And(m => m.MessageType == query.MessageType.Value);
+            
+        if (query.StartTime.HasValue)
+            exp = exp.And(m => m.CreateTime >= query.StartTime.Value);
+            
+        if (query.EndTime.HasValue)
+            exp = exp.And(m => m.CreateTime <= query.EndTime.Value);
+
+        // 2.查询数据
+        var messages = await _repository.GetListAsync(exp.ToExpression());
+
+        // 3.转换数据
+        var dtos = messages.Adapt<List<HbtOnlineMessageDto>>();
+
+        // 4.导出Excel
+        return await HbtExcelHelper.ExportAsync(dtos, sheetName);
     }
 
     /// <summary>

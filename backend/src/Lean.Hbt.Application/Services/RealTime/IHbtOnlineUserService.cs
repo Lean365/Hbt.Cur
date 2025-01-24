@@ -29,11 +29,12 @@ public interface IHbtOnlineUserService
     Task<HbtPagedResult<HbtOnlineUserDto>> GetPagedListAsync(HbtOnlineUserQueryDto query);
 
     /// <summary>
-    /// 获取在线用户导出数据
+    /// 导出在线用户数据
     /// </summary>
     /// <param name="query">查询条件</param>
-    /// <returns>导出数据</returns>
-    Task<List<HbtOnlineUserExportDto>> GetExportDataAsync(HbtOnlineUserQueryDto query);
+    /// <param name="sheetName">工作表名称</param>
+    /// <returns>Excel文件字节数组</returns>
+    Task<byte[]> ExportAsync(HbtOnlineUserQueryDto query, string sheetName = "在线用户信息");
 
     /// <summary>
     /// 获取用户连接ID列表

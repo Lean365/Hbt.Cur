@@ -11,8 +11,8 @@ using System.Collections.Concurrent;
 using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Domain.Entities.Admin;
 using Lean.Hbt.Domain.IServices.Admin;
-using Lean.Hbt.Domain.Repositories;
 using Microsoft.AspNetCore.Http;
+using System.Globalization;
 
 namespace Lean.Hbt.Infrastructure.Services;
 
@@ -27,6 +27,11 @@ public class HbtLocalizationService : IHbtLocalizationService
     private const string DefaultLanguage = "zh-CN";
     private const string LanguageHeader = "Accept-Language";
 
+    /// <summary>
+    /// 构造函数
+    /// </summary>
+    /// <param name="httpContextAccessor"></param>
+    /// <param name="translationRepository"></param>
     public HbtLocalizationService(
         IHttpContextAccessor httpContextAccessor,
         IHbtRepository<HbtTranslation> translationRepository)
@@ -135,5 +140,37 @@ public class HbtLocalizationService : IHbtLocalizationService
     {
         _translations.Clear();
         await InitializeTranslations();
+    }
+
+    /// <summary>
+    /// 获取本地化字符串的异步方法
+    /// </summary>
+    public Task<string> GetLocalizedStringAsync(string key, params object[] args)
+    {
+        return Task.FromResult(L(key, args));
+    }
+
+    /// <summary>
+    /// 获取当前文化信息
+    /// </summary>
+    public CultureInfo GetCurrentCulture()
+    {
+        return CultureInfo.GetCultureInfo(CurrentLanguage);
+    }
+
+    /// <summary>
+    /// 设置当前文化信息
+    /// </summary>
+    public void SetCurrentCulture(CultureInfo culture)
+    {
+        SetLanguage(culture.Name);
+    }
+
+    /// <summary>
+    /// 刷新本地化缓存
+    /// </summary>
+    public async Task RefreshLocalizationCacheAsync()
+    {
+        await ReloadTranslationsAsync();
     }
 }

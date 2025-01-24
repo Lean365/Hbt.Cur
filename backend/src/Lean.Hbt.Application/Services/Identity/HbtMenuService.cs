@@ -120,7 +120,9 @@ namespace Lean.Hbt.Application.Services.Identity
                 OrderNum = input.OrderNum,
                 Path = input.Path,
                 Component = input.Component,
+                QueryParams = input.QueryParams,
                 IsFrame = input.IsFrame,
+                IsCache = input.IsCache,
                 MenuType = input.MenuType,
                 Visible = input.Visible,
                 Status = input.Status,
@@ -160,7 +162,9 @@ namespace Lean.Hbt.Application.Services.Identity
             menu.OrderNum = input.OrderNum;
             menu.Path = input.Path;
             menu.Component = input.Component;
+            menu.QueryParams = input.QueryParams;
             menu.IsFrame = input.IsFrame;
+            menu.IsCache = input.IsCache;
             menu.MenuType = input.MenuType;
             menu.Visible = input.Visible;
             menu.Status = input.Status;
@@ -221,8 +225,9 @@ namespace Lean.Hbt.Application.Services.Identity
         /// 导出菜单数据
         /// </summary>
         /// <param name="query">查询条件</param>
+        /// <param name="sheetName">工作表名称</param>
         /// <returns>返回导出的Excel文件字节数组</returns>
-        public async Task<byte[]> ExportAsync(HbtMenuQueryDto query)
+        public async Task<byte[]> ExportAsync(HbtMenuQueryDto query, string sheetName = "菜单数据")
         {
             // 1.构建查询条件
             var predicate = Expressionable.Create<HbtMenu>();
@@ -241,7 +246,61 @@ namespace Lean.Hbt.Application.Services.Identity
 
             // 3.转换并导出
             var exportDtos = menus.Adapt<List<HbtMenuExportDto>>();
-            return await HbtExcelHelper.ExportAsync(exportDtos, "菜单数据");
+            return await HbtExcelHelper.ExportAsync(exportDtos, sheetName);
+        }
+
+        /// <summary>
+        /// 生成菜单导入模板
+        /// </summary>
+        /// <param name="sheetName">工作表名称</param>
+        /// <returns>返回导入模板Excel文件字节数组</returns>
+        public async Task<byte[]> GenerateTemplateAsync(string sheetName = "菜单导入模板")
+        {
+            return await HbtExcelHelper.GenerateTemplateAsync<HbtMenuTemplateDto>(sheetName);
+        }
+
+        /// <summary>
+        /// 导入菜单数据
+        /// </summary>
+        /// <param name="fileStream">Excel文件流</param>
+        /// <param name="sheetName">工作表名称</param>
+        /// <returns>返回导入的菜单数据集合</returns>
+        public async Task<List<HbtMenuImportDto>> ImportAsync(Stream fileStream, string sheetName = "菜单数据")
+        {
+            // 1.从Excel导入数据
+            var menus = await HbtExcelHelper.ImportAsync<HbtMenuImportDto>(fileStream, sheetName);
+            if (!menus.Any())
+                return new List<HbtMenuImportDto>();
+
+            // 2.检查菜单名称是否存在
+            foreach (var dto in menus)
+            {
+                await HbtValidateUtils.ValidateFieldExistsAsync(_menuRepository, "MenuName", dto.MenuName);
+            }
+
+            // 3.转换为实体并批量插入
+            var entities = menus.Select(dto => new HbtMenu
+            {
+                MenuName = dto.MenuName,
+                TransKey = dto.TransKey,
+                ParentId = dto.ParentId,
+                OrderNum = dto.OrderNum,
+                Path = dto.Path,
+                Component = dto.Component,
+                QueryParams = dto.QueryParams,
+                IsFrame = dto.IsFrame == "是" ? HbtYesNo.Yes : HbtYesNo.No,
+                IsCache = dto.IsCache == "是" ? HbtYesNo.Yes : HbtYesNo.No,
+                MenuType = dto.MenuType == "目录" ? HbtMenuType.Directory :
+                          dto.MenuType == "菜单" ? HbtMenuType.Menu :
+                          HbtMenuType.Button,
+                Visible = dto.Visible == "显示" ? HbtVisible.Show : HbtVisible.Hide,
+                Status = dto.Status == "正常" ? HbtStatus.Normal : HbtStatus.Disabled,
+                Perms = dto.Perms,
+                Icon = dto.Icon
+            }).ToList();
+
+            await _menuRepository.InsertRangeAsync(entities);
+            return menus;
         }
 
         /// <summary>
@@ -259,63 +318,6 @@ namespace Lean.Hbt.Application.Services.Identity
             var result = await _menuRepository.UpdateAsync(menu);
 
             return result > 0;
-        }
-
-        /// <summary>
-        /// 获取导入模板
-        /// </summary>
-        /// <returns>返回导入模板Excel文件字节数组</returns>
-        public async Task<byte[]> GetImportTemplateAsync()
-        {
-            return await HbtExcelHelper.GenerateTemplateAsync<HbtMenuTemplateDto>("菜单导入模板");
-        }
-
-        /// <summary>
-        /// 导入菜单数据
-        /// </summary>
-        /// <param name="fileStream">Excel文件流</param>
-        /// <returns>返回导入结果</returns>
-        public async Task<string> ImportAsync(Stream fileStream)
-        {
-            // 1.从Excel导入数据
-            var menus = await HbtExcelHelper.ImportAsync<HbtMenuImportDto>(fileStream);
-            if (!menus.Any())
-                return "导入数据为空";
-
-            // 2.检查菜单名称是否存在
-            foreach (var dto in menus)
-            {
-                await HbtValidateUtils.ValidateFieldExistsAsync(_menuRepository, "MenuName", dto.MenuName);
-            }
-
-            // 3.转换为实体
-            var entities = new List<HbtMenu>();
-            foreach (var dto in menus)
-            {
-                var menu = new HbtMenu
-                {
-                    MenuName = dto.MenuName,
-                    TransKey = dto.TransKey,
-                    ParentId = dto.ParentId,
-                    OrderNum = dto.OrderNum,
-                    Path = dto.Path,
-                    Component = dto.Component,
-                    IsFrame = dto.IsFrame == "是" ? HbtYesNo.Yes : HbtYesNo.No,
-                    MenuType = dto.MenuType == "目录" ? HbtMenuType.Directory :
-                              dto.MenuType == "菜单" ? HbtMenuType.Menu :
-                              HbtMenuType.Button,
-                    Visible = dto.Visible == "显示" ? HbtVisible.Show : HbtVisible.Hide,
-                    Status = dto.Status == "正常" ? HbtStatus.Normal : HbtStatus.Disabled,
-                    Perms = dto.Perms,
-                    Icon = dto.Icon
-                };
-
-                entities.Add(menu);
-            }
-
-            // 4.批量插入
-            var result = await _menuRepository.InsertRangeAsync(entities);
-            return $"成功导入{menus.Count}条数据";
         }
 
         /// <summary>

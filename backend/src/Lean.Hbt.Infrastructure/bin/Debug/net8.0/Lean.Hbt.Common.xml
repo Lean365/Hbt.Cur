@@ -487,6 +487,303 @@
             通知消息
             </summary>
         </member>
+        <member name="T:Lean.Hbt.Common.Enums.HbtWorkflowInstanceStatus">
+            <summary>
+            工作流实例状态枚举
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowInstanceStatus.Draft">
+            <summary>
+            草稿
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowInstanceStatus.Running">
+            <summary>
+            运行中
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowInstanceStatus.Suspended">
+            <summary>
+            已暂停
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowInstanceStatus.Completed">
+            <summary>
+            已完成
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowInstanceStatus.Terminated">
+            <summary>
+            已终止
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowInstanceStatus.Deleted">
+            <summary>
+            已删除
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Common.Enums.HbtWorkflowNodeType">
+            <summary>
+            工作流节点类型枚举
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowNodeType.Start">
+            <summary>
+            开始节点
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowNodeType.Approval">
+            <summary>
+            审批节点
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowNodeType.Branch">
+            <summary>
+            分支节点
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowNodeType.Parallel">
+            <summary>
+            并行节点
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowNodeType.Join">
+            <summary>
+            汇聚节点
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowNodeType.End">
+            <summary>
+            结束节点
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Common.Enums.HbtWorkflowOperationType">
+            <summary>
+            工作流操作类型枚举
+            </summary>
+            <remarks>
+            创建者: Lean365
+            创建时间: 2024-01-23
+            </remarks>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowOperationType.Create">
+            <summary>
+            创建
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowOperationType.Submit">
+            <summary>
+            提交
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowOperationType.Approve">
+            <summary>
+            审批
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowOperationType.Reject">
+            <summary>
+            驳回
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowOperationType.Transfer">
+            <summary>
+            转办
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowOperationType.Return">
+            <summary>
+            退回
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowOperationType.Cancel">
+            <summary>
+            撤销
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowOperationType.Terminate">
+            <summary>
+            终止
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowOperationType.Delete">
+            <summary>
+            删除
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Common.Enums.HbtWorkflowStatus">
+            <summary>
+            工作流状态枚举
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowStatus.Draft">
+            <summary>
+            草稿
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowStatus.Published">
+            <summary>
+            已发布
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowStatus.Disabled">
+            <summary>
+            已禁用
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowStatus.Deleted">
+            <summary>
+            已删除
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Common.Enums.HbtWorkflowTaskResult">
+            <summary>
+            工作流任务处理结果枚举
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowTaskResult.Approved">
+            <summary>
+            同意
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowTaskResult.Rejected">
+            <summary>
+            拒绝
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowTaskResult.Transferred">
+            <summary>
+            转交
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowTaskResult.Returned">
+            <summary>
+            退回
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Common.Enums.HbtWorkflowTaskStatus">
+            <summary>
+            工作流任务状态枚举
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowTaskStatus.Pending">
+            <summary>
+            待处理
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowTaskStatus.Processing">
+            <summary>
+            处理中
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowTaskStatus.Completed">
+            <summary>
+            已完成
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowTaskStatus.Cancelled">
+            <summary>
+            已取消
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowTaskStatus.Transferred">
+            <summary>
+            已转交
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowTaskStatus.Returned">
+            <summary>
+            已退回
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Common.Enums.HbtWorkflowTaskType">
+            <summary>
+            工作流任务类型枚举
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowTaskType.Approval">
+            <summary>
+            审批任务
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowTaskType.Countersign">
+            <summary>
+            会签任务
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowTaskType.Circulate">
+            <summary>
+            传阅任务
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowTaskType.Copy">
+            <summary>
+            抄送任务
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Common.Enums.HbtWorkflowVariableScope">
+            <summary>
+            工作流变量作用域枚举
+            </summary>
+            <remarks>
+            创建者: Lean365
+            创建时间: 2024-01-23
+            </remarks>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowVariableScope.Global">
+            <summary>
+            全局变量
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowVariableScope.Node">
+            <summary>
+            节点变量
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Common.Enums.HbtWorkflowVariableType">
+            <summary>
+            工作流变量类型枚举
+            </summary>
+            <remarks>
+            创建者: Lean365
+            创建时间: 2024-01-23
+            </remarks>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowVariableType.String">
+            <summary>
+            字符串
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowVariableType.Integer">
+            <summary>
+            整数
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowVariableType.Decimal">
+            <summary>
+            小数
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowVariableType.Boolean">
+            <summary>
+            布尔值
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowVariableType.DateTime">
+            <summary>
+            日期时间
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowVariableType.JsonObject">
+            <summary>
+            JSON对象
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowVariableType.JsonArray">
+            <summary>
+            JSON数组
+            </summary>
+        </member>
         <member name="T:Lean.Hbt.Common.Exceptions.HbtException">
             <summary>
             自定义异常类

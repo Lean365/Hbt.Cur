@@ -19,6 +19,9 @@ using Lean.Hbt.Domain.IServices.Admin;
 using Lean.Hbt.Domain.Repositories;
 using Mapster;
 using SqlSugar;
+using Lean.Hbt.Domain.Utils;
+using Lean.Hbt.Common.Helpers;
+using System.IO;
 
 namespace Lean.Hbt.Application.Services.Workflow
 {
@@ -149,12 +152,7 @@ namespace Lean.Hbt.Application.Services.Workflow
                 throw new ArgumentNullException(nameof(input));
 
             // 检查变量名称是否已存在
-            var exists = await _variableRepository.SqlSugarClient.Queryable<HbtWorkflowVariable>()
-                .AnyAsync(x => x.WorkflowInstanceId == input.WorkflowInstanceId && 
-                             x.VariableName == input.VariableName);
-
-            if (exists)
-                throw new HbtException(_localization.L("WorkflowVariable.NameExists"));
+            await HbtValidateUtils.ValidateFieldExistsAsync(_variableRepository, "VariableName", input.VariableName);
 
             var variable = input.Adapt<HbtWorkflowVariable>();
 
@@ -237,43 +235,34 @@ namespace Lean.Hbt.Application.Services.Workflow
         /// <summary>
         /// 导入工作流变量数据
         /// </summary>
-        /// <param name="variables">要导入的工作流变量列表</param>
+        /// <param name="fileStream">Excel文件流</param>
         /// <returns>返回成功和失败的记录数</returns>
         /// <remarks>
         /// 导入过程中的异常会被记录但不会中断导入流程
         /// </remarks>
-        public async Task<(int success, int fail)> ImportAsync(List<HbtWorkflowVariableImportDto> variables)
+        public async Task<(int success, int fail)> ImportAsync(Stream fileStream)
         {
+            var variables = await HbtExcelHelper.ImportAsync<HbtWorkflowVariableImportDto>(fileStream);
             if (variables == null || !variables.Any())
                 return (0, 0);
 
             var success = 0;
             var fail = 0;
 
-            foreach (var item in variables)
+            foreach (var variable in variables)
             {
                 try
                 {
-                    var variable = new HbtWorkflowVariable
-                    {
-                        WorkflowInstanceId = item.WorkflowInstanceId,
-                        NodeId = item.WorkflowNodeId,
-                        VariableName = item.VariableName,
-                        VariableValue = item.VariableValue,
-                        VariableType = item.VariableType,
-                        Scope = Enum.Parse<Common.Enums.HbtWorkflowVariableScope>(item.VariableScope),
-                        Remark = item.Remark
-                    };
+                    // 验证字段是否已存在
+                    await HbtValidateUtils.ValidateFieldExistsAsync(_variableRepository, "VariableName", variable.VariableName);
 
-                    var result = await _variableRepository.InsertAsync(variable);
-                    if (result > 0)
-                        success++;
-                    else
-                        fail++;
+                    var entity = variable.Adapt<HbtWorkflowVariable>();
+                    await _variableRepository.InsertAsync(entity);
+                    success++;
                 }
                 catch (Exception ex)
                 {
-                    _logger.Error(_localization.L("WorkflowVariable.Import.Failed", item.VariableName), ex);
+                    _logger.Error($"导入工作流变量失败: {ex.Message}");
                     fail++;
                 }
             }
@@ -284,9 +273,9 @@ namespace Lean.Hbt.Application.Services.Workflow
         /// <summary>
         /// 导出工作流变量数据
         /// </summary>
-        /// <param name="query">导出查询条件</param>
-        /// <returns>符合条件的工作流变量导出列表</returns>
-        public async Task<List<HbtWorkflowVariableExportDto>> ExportAsync(HbtWorkflowVariableQueryDto query)
+        /// <param name="query">查询条件</param>
+        /// <returns>Excel文件字节数组</returns>
+        public async Task<byte[]> ExportAsync(HbtWorkflowVariableQueryDto query)
         {
             var exp = Expressionable.Create<HbtWorkflowVariable>();
 
@@ -306,22 +295,18 @@ namespace Lean.Hbt.Application.Services.Workflow
                 exp = exp.And(x => x.Scope == query.VariableScope.Value);
 
             var list = await _variableRepository.GetListAsync(exp.ToExpression());
-            return list.Adapt<List<HbtWorkflowVariableExportDto>>();
+            var exportData = list.Adapt<List<HbtWorkflowVariableExportDto>>();
+
+            return await HbtExcelHelper.ExportAsync(exportData);
         }
 
         /// <summary>
         /// 获取工作流变量导入模板
         /// </summary>
-        /// <returns>模板数据</returns>
-        public Task<HbtWorkflowVariableTemplateDto> GetTemplateAsync()
+        /// <returns>Excel模板文件字节数组</returns>
+        public async Task<byte[]> GetTemplateAsync()
         {
-            return Task.FromResult(new HbtWorkflowVariableTemplateDto
-            {
-                VariableName = "示例变量名称",
-                VariableType = "String",
-                VariableScope = "Global",
-                Remark = "请填写变量说明"
-            });
+            return await HbtExcelHelper.GenerateTemplateAsync<HbtWorkflowVariableTemplateDto>();
         }
 
         /// <summary>

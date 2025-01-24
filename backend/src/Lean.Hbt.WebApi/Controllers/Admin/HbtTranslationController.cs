@@ -113,12 +113,17 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
         /// <summary>
         /// 导入翻译数据
         /// </summary>
-        /// <param name="translations">翻译数据列表</param>
+        /// <param name="file">Excel文件</param>
+        /// <param name="sheetName">工作表名称</param>
         /// <returns>导入结果</returns>
         [HttpPost("import")]
-        public async Task<IActionResult> ImportAsync([FromBody] List<HbtTranslationImportDto> translations)
+        public async Task<IActionResult> ImportAsync(IFormFile file, [FromQuery] string sheetName = "翻译信息")
         {
-            var result = await _translationService.ImportAsync(translations);
+            if (file == null || file.Length == 0)
+                return Error("请选择要导入的文件");
+
+            using var stream = file.OpenReadStream();
+            var result = await _translationService.ImportAsync(stream, sheetName);
             return Success(result);
         }
 
@@ -126,23 +131,25 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
         /// 导出翻译数据
         /// </summary>
         /// <param name="query">查询条件</param>
-        /// <returns>导出数据列表</returns>
+        /// <param name="sheetName">工作表名称</param>
+        /// <returns>Excel文件</returns>
         [HttpGet("export")]
-        public async Task<IActionResult> ExportAsync([FromQuery] HbtTranslationQueryDto query)
+        public async Task<IActionResult> ExportAsync([FromQuery] HbtTranslationQueryDto query, [FromQuery] string sheetName = "翻译信息")
         {
-            var result = await _translationService.ExportAsync(query);
-            return Success(result);
+            var result = await _translationService.ExportAsync(query, sheetName);
+            return File(result, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"翻译数据_{DateTime.Now:yyyyMMddHHmmss}.xlsx");
         }
 
         /// <summary>
         /// 获取导入模板
         /// </summary>
-        /// <returns>模板数据</returns>
+        /// <param name="sheetName">工作表名称</param>
+        /// <returns>Excel模板文件</returns>
         [HttpGet("template")]
-        public async Task<IActionResult> GetTemplateAsync()
+        public async Task<IActionResult> GetTemplateAsync([FromQuery] string sheetName = "翻译信息")
         {
-            var result = await _translationService.GetTemplateAsync();
-            return Success(result);
+            var result = await _translationService.GetTemplateAsync(sheetName);
+            return File(result, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"翻译导入模板_{DateTime.Now:yyyyMMddHHmmss}.xlsx");
         }
 
         /// <summary>

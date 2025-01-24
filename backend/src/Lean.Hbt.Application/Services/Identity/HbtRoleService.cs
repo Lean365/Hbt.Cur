@@ -277,30 +277,25 @@ namespace Lean.Hbt.Application.Services.Identity
         /// 导出角色数据
         /// </summary>
         /// <param name="query">查询条件</param>
-        /// <returns>导出的Excel文件字节数组</returns>
-        public async Task<byte[]> ExportAsync(HbtRoleQueryDto query)
+        /// <param name="sheetName">工作表名称</param>
+        /// <returns>Excel文件字节数组</returns>
+        public async Task<byte[]> ExportAsync(HbtRoleQueryDto query, string sheetName = "Sheet1")
         {
-            // 1.构建查询条件
-            var predicate = Expressionable.Create<HbtRole>();
-            
+            var exp = Expressionable.Create<HbtRole>();
+
             if (!string.IsNullOrEmpty(query?.RoleName))
-                predicate.And(r => r.RoleName.Contains(query.RoleName));
-                
+                exp.And(x => x.RoleName.Contains(query.RoleName));
+
             if (!string.IsNullOrEmpty(query?.RoleKey))
-                predicate.And(r => r.RoleKey.Contains(query.RoleKey));
-                
+                exp.And(x => x.RoleKey.Contains(query.RoleKey));
+
             if (query?.Status.HasValue == true)
-                predicate.And(r => r.Status == query.Status.Value);
+                exp.And(x => x.Status == query.Status.Value);
 
-            // 2.查询数据
-            var roles = await _roleRepository.AsQueryable()
-                .Where(predicate.ToExpression())
-                .OrderBy(r => r.OrderNum)
-                .ToListAsync();
+            var roles = await _roleRepository.GetListAsync(exp.ToExpression());
+            var exportData = roles.Adapt<List<HbtRoleExportDto>>();
 
-            // 3.转换并导出
-            var exportDtos = roles.Adapt<List<HbtRoleExportDto>>();
-            return await HbtExcelHelper.ExportAsync(exportDtos, "角色数据");
+            return await HbtExcelHelper.ExportAsync(exportData, sheetName);
         }
 
         /// <summary>
@@ -335,17 +330,21 @@ namespace Lean.Hbt.Application.Services.Identity
         /// <summary>
         /// 导入角色数据
         /// </summary>
-        /// <param name="roles">角色数据列表</param>
-        /// <returns>导入结果</returns>
-        public async Task<(int success, int fail)> ImportAsync(List<HbtRoleImportDto> roles)
+        /// <param name="fileStream">Excel文件流</param>
+        /// <param name="sheetName">工作表名称</param>
+        /// <returns>返回导入结果(success:成功数量,fail:失败数量)</returns>
+        public async Task<(int success, int fail)> ImportAsync(Stream fileStream, string sheetName = "Sheet1")
         {
-            if (roles == null)
-            {
-                return (0, 0);
-            }
+            if (fileStream == null)
+                throw new HbtException("导入文件流不能为空");
 
-            var success = 0;
-            var fail = 0;
+            // 1.从Excel导入数据
+            var roles = await HbtExcelHelper.ImportAsync<HbtRoleImportDto>(fileStream, sheetName);
+            if (roles?.Any() != true)
+                return (0, 0);
+
+            int success = 0;
+            int fail = 0;
 
             foreach (var role in roles)
             {
@@ -354,6 +353,19 @@ namespace Lean.Hbt.Application.Services.Identity
                     if (string.IsNullOrEmpty(role.RoleName) || string.IsNullOrEmpty(role.RoleKey))
                     {
                         _logger.LogWarning($"导入角色失败: 角色名称或角色标识不能为空");
+                        fail++;
+                        continue;
+                    }
+
+                    // 验证字段是否已存在
+                    try
+                    {
+                        await HbtValidateUtils.ValidateFieldExistsAsync(_roleRepository, "RoleName", role.RoleName);
+                        await HbtValidateUtils.ValidateFieldExistsAsync(_roleRepository, "RoleKey", role.RoleKey);
+                    }
+                    catch (HbtException ex)
+                    {
+                        _logger.LogWarning($"导入角色失败: {ex.Message}");
                         fail++;
                         continue;
                     }
@@ -372,7 +384,7 @@ namespace Lean.Hbt.Application.Services.Identity
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, $"导入角色失败: {role.RoleName}");
+                    _logger.LogError($"导入角色失败: {ex.Message}", ex);
                     fail++;
                 }
             }
@@ -381,54 +393,13 @@ namespace Lean.Hbt.Application.Services.Identity
         }
 
         /// <summary>
-        /// 导入角色
+        /// 获取角色导入模板
         /// </summary>
-        public async Task<string> ImportAsync(Stream fileStream)
+        /// <param name="sheetName">工作表名称</param>
+        /// <returns>Excel模板文件字节数组</returns>
+        public async Task<byte[]> GetTemplateAsync(string sheetName = "Sheet1")
         {
-            if (fileStream == null)
-                throw new HbtException("导入文件流不能为空");
-
-            // 1.从Excel导入数据
-            var roles = await HbtExcelHelper.ImportAsync<HbtRoleImportDto>(fileStream);
-            if (roles?.Any() != true)
-                return "导入数据为空";
-
-            // 2.检查角色名称和角色标识是否存在
-            foreach (var dto in roles)
-            {
-                if (string.IsNullOrEmpty(dto.RoleName) || string.IsNullOrEmpty(dto.RoleKey))
-                    throw new HbtException($"角色名称或角色标识不能为空");
-
-                await HbtValidateUtils.ValidateFieldExistsAsync(_roleRepository, "RoleName", dto.RoleName);
-                await HbtValidateUtils.ValidateFieldExistsAsync(_roleRepository, "RoleKey", dto.RoleKey);
-            }
-
-            // 3.转换为实体
-            var entities = new List<HbtRole>();
-            foreach (var dto in roles)
-            {
-                var role = new HbtRole
-                {
-                    RoleName = dto.RoleName,
-                    RoleKey = dto.RoleKey,
-                    OrderNum = dto.OrderNum,
-                    DataScope = Enum.TryParse<HbtDataScope>(dto.DataScope ?? "All", out var dataScope) ? dataScope : HbtDataScope.All,
-                    Status = Enum.TryParse<HbtStatus>(dto.Status ?? "Normal", out var status) ? status : HbtStatus.Normal
-                };
-                entities.Add(role);
-            }
-
-            // 4.批量插入
-            var result = await _roleRepository.InsertRangeAsync(entities);
-            return $"成功导入{roles.Count}条数据";
-        }
-
-        /// <summary>
-        /// 下载导入模板
-        /// </summary>
-        public async Task<byte[]> GetImportTemplateAsync()
-        {
-            return await HbtExcelHelper.GenerateTemplateAsync<HbtRoleTemplateDto>("角色导入模板");
+            return await HbtExcelHelper.GenerateTemplateAsync<HbtRoleTemplateDto>(sheetName);
         }
     }
 } 

@@ -10,8 +10,40 @@
 using System.ComponentModel.DataAnnotations;
 using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Common.Models;
+using System.ComponentModel;
 
 namespace Lean.Hbt.Application.Dtos.Identity;
+
+/// <summary>
+/// 租户状态传输对象
+/// </summary>
+public class HbtTenantStatusDto
+{
+    /// <summary>
+    /// 租户ID
+    /// </summary>
+    public long TenantId { get; set; }
+
+    /// <summary>
+    /// 当前状态
+    /// </summary>
+    public HbtStatus Status { get; set; }
+
+    /// <summary>
+    /// 状态名称
+    /// </summary>
+    public string StatusName => Status.ToString();
+
+    /// <summary>
+    /// 可用操作
+    /// </summary>
+    public string[] AvailableOperations { get; set; } = Array.Empty<string>();
+
+    /// <summary>
+    /// 状态描述
+    /// </summary>
+    public string StatusDescription { get; set; } = string.Empty;
+}
 
 /// <summary>
 /// 租户基础传输对象
@@ -383,4 +415,88 @@ public class HbtTenantTemplateDto
     /// 最大用户数
     /// </summary>
     public string MaxUserCount { get; set; }
+}
+
+/// <summary>
+/// 租户导入传输对象
+/// </summary>
+public class HbtTenantImportDto
+{
+    /// <summary>
+    /// 租户名称
+    /// </summary>
+    [Description("租户名称")]
+    public string TenantName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 租户编码
+    /// </summary>
+    [Description("租户编码")]
+    public string TenantCode { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 联系人
+    /// </summary>
+    [Description("联系人")]
+    public string? ContactPerson { get; set; }
+
+    /// <summary>
+    /// 联系电话
+    /// </summary>
+    [Description("联系电话")]
+    public string? ContactPhone { get; set; }
+
+    /// <summary>
+    /// 联系邮箱
+    /// </summary>
+    [Description("联系邮箱")]
+    public string? ContactEmail { get; set; }
+
+    /// <summary>
+    /// 域名
+    /// </summary>
+    [Description("域名")]
+    public string? Domain { get; set; }
+
+    /// <summary>
+    /// 地址
+    /// </summary>
+    [Description("地址")]
+    public string? Address { get; set; }
+
+    /// <summary>
+    /// Logo地址
+    /// </summary>
+    [Description("Logo地址")]
+    public string? LogoUrl { get; set; }
+
+    /// <summary>
+    /// 主题
+    /// </summary>
+    [Description("主题")]
+    public string? Theme { get; set; }
+
+    /// <summary>
+    /// 许可证开始时间
+    /// </summary>
+    [Description("许可证开始时间")]
+    public DateTime? LicenseStartTime { get; set; }
+
+    /// <summary>
+    /// 许可证结束时间
+    /// </summary>
+    [Description("许可证结束时间")]
+    public DateTime? LicenseEndTime { get; set; }
+
+    /// <summary>
+    /// 最大用户数
+    /// </summary>
+    [Description("最大用户数")]
+    public int? MaxUserCount { get; set; }
+
+    /// <summary>
+    /// 备注
+    /// </summary>
+    [Description("备注")]
+    public string? Remark { get; set; }
 } 

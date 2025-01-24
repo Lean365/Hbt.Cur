@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using Lean.Hbt.Common.Models;
 using Lean.Hbt.Application.Dtos.Admin;
+using System.IO;
 
 namespace Lean.Hbt.Application.Services.Admin
 {
@@ -68,22 +69,25 @@ namespace Lean.Hbt.Application.Services.Admin
         /// <summary>
         /// 导入系统配置数据
         /// </summary>
-        /// <param name="configs">系统配置数据列表</param>
+        /// <param name="fileStream">Excel文件流</param>
+        /// <param name="sheetName">工作表名称</param>
         /// <returns>导入结果</returns>
-        Task<(int success, int fail)> ImportAsync(List<HbtSysConfigImportDto> configs);
+        Task<(int success, int fail)> ImportAsync(Stream fileStream, string sheetName = "系统配置信息");
 
         /// <summary>
         /// 导出系统配置数据
         /// </summary>
         /// <param name="query">查询条件</param>
-        /// <returns>导出数据列表</returns>
-        Task<List<HbtSysConfigExportDto>> ExportAsync(HbtSysConfigQueryDto query);
+        /// <param name="sheetName">工作表名称</param>
+        /// <returns>Excel文件字节数组</returns>
+        Task<byte[]> ExportAsync(HbtSysConfigQueryDto query, string sheetName = "系统配置信息");
 
         /// <summary>
         /// 获取导入模板
         /// </summary>
-        /// <returns>模板数据</returns>
-        Task<HbtSysConfigTemplateDto> GetTemplateAsync();
+        /// <param name="sheetName">工作表名称</param>
+        /// <returns>Excel文件字节数组</returns>
+        Task<byte[]> GetTemplateAsync(string sheetName = "系统配置信息");
 
         /// <summary>
         /// 更新系统配置状态

@@ -10,12 +10,17 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.IO;
+using System.Linq;
 using Lean.Hbt.Application.Dtos.Admin;
+using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Common.Exceptions;
 using Lean.Hbt.Common.Models;
+using Lean.Hbt.Common.Helpers;
 using Lean.Hbt.Domain.Entities.Admin;
 using Lean.Hbt.Domain.IServices;
 using Lean.Hbt.Domain.Repositories;
+using Lean.Hbt.Domain.IServices.Admin;
 using Lean.Hbt.Domain.Utils;
 using Mapster;
 using SqlSugar;
@@ -33,18 +38,22 @@ namespace Lean.Hbt.Application.Services.Admin
     {
         private readonly IHbtRepository<HbtLanguage> _languageRepository;
         private readonly IHbtLogger _logger;
+        private readonly IHbtLocalizationService _localization;
 
         /// <summary>
         /// 构造函数
         /// </summary>
         /// <param name="languageRepository">语言仓储</param>
         /// <param name="logger">日志接口</param>
+        /// <param name="localization">本地化服务</param>
         public HbtLanguageService(
             IHbtRepository<HbtLanguage> languageRepository,
-            IHbtLogger logger)
+            IHbtLogger logger,
+            IHbtLocalizationService localization)
         {
             _languageRepository = languageRepository;
             _logger = logger;
+            _localization = localization;
         }
 
         /// <summary>
@@ -148,27 +157,61 @@ namespace Lean.Hbt.Application.Services.Admin
         /// <summary>
         /// 导入语言数据
         /// </summary>
-        public async Task<(int success, int fail)> ImportAsync(List<HbtLanguageImportDto> languages)
+        /// <param name="fileStream">Excel文件流</param>
+        /// <param name="sheetName">工作表名称</param>
+        /// <returns>导入结果</returns>
+        public async Task<(int success, int fail)> ImportAsync(Stream fileStream, string sheetName)
         {
-            if (languages == null || !languages.Any())
-                return (0, 0);
-
             var success = 0;
             var fail = 0;
 
-            foreach (var item in languages)
+            try
             {
-                try
+                // 1.从Excel导入数据
+                var languages = await HbtExcelHelper.ImportAsync<HbtLanguageDto>(fileStream, sheetName);
+                if (languages == null || !languages.Any())
+                    return (0, 0);
+
+                // 2.保存数据
+                foreach (var language in languages)
                 {
-                    var language = item.Adapt<HbtLanguage>();
-                    await _languageRepository.InsertAsync(language);
-                    success++;
+                    try
+                    {
+                        if (string.IsNullOrEmpty(language.LangCode) || string.IsNullOrEmpty(language.LangName))
+                        {
+                            _logger.Warn(await _localization.GetLocalizedStringAsync("Language:ImportFailedEmptyFields"));
+                            fail++;
+                            continue;
+                        }
+
+                        // 验证字段是否已存在
+                        try
+                        {
+                            await HbtValidateUtils.ValidateFieldExistsAsync(_languageRepository, "LangCode", language.LangCode);
+                        }
+                        catch (HbtException ex)
+                        {
+                            _logger.Warn($"{await _localization.GetLocalizedStringAsync("Language:ImportFailed")}: {ex.Message}");
+                            fail++;
+                            continue;
+                        }
+
+                        // 创建语言
+                        var newLanguage = language.Adapt<HbtLanguage>();
+                        await _languageRepository.InsertAsync(newLanguage);
+                        success++;
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.Error($"{await _localization.GetLocalizedStringAsync("Language:ImportFailed")}: {ex.Message}", ex);
+                        fail++;
+                    }
                 }
-                catch (Exception ex)
-                {
-                    _logger.Error($"导入语言失败：{ex.Message}", ex);
-                    fail++;
-                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(await _localization.GetLocalizedStringAsync("Language.Import.Failed"), ex);
+                return (0, 0);
             }
 
             return (success, fail);
@@ -177,29 +220,62 @@ namespace Lean.Hbt.Application.Services.Admin
         /// <summary>
         /// 导出语言数据
         /// </summary>
-        public async Task<List<HbtLanguageExportDto>> ExportAsync(HbtLanguageQueryDto query)
+        /// <param name="query">查询条件</param>
+        /// <param name="sheetName">工作表名称</param>
+        /// <returns>Excel文件字节数组</returns>
+        public async Task<byte[]> ExportAsync(HbtLanguageQueryDto query, string sheetName)
         {
             var exp = Expressionable.Create<HbtLanguage>();
 
-            if (!string.IsNullOrEmpty(query.LangCode))
+            if (!string.IsNullOrEmpty(query?.LangCode))
                 exp.And(x => x.LangCode.Contains(query.LangCode));
 
-            if (!string.IsNullOrEmpty(query.LangName))
+            if (!string.IsNullOrEmpty(query?.LangName))
                 exp.And(x => x.LangName.Contains(query.LangName));
 
-            if (query.Status.HasValue)
+            if (query?.Status.HasValue == true)
                 exp.And(x => x.Status == query.Status.Value);
 
             var list = await _languageRepository.GetListAsync(exp.ToExpression());
-            return list.Adapt<List<HbtLanguageExportDto>>();
+            var dtos = list.Adapt<List<HbtLanguageDto>>();
+
+            try
+            {
+                return await HbtExcelHelper.ExportAsync(dtos, sheetName);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(await _localization.GetLocalizedStringAsync("Language.Export.Failed"), ex);
+                return Array.Empty<byte>();
+            }
         }
 
         /// <summary>
         /// 获取导入模板
         /// </summary>
-        public async Task<HbtLanguageTemplateDto> GetTemplateAsync()
+        /// <param name="sheetName">工作表名称</param>
+        /// <returns>Excel文件字节数组</returns>
+        public async Task<byte[]> GetTemplateAsync(string sheetName)
         {
-            return await Task.FromResult(new HbtLanguageTemplateDto());
+            var template = new List<HbtLanguageDto>
+            {
+                new HbtLanguageDto
+                {
+                    LangCode = "zh-CN",
+                    LangName = await _localization.GetLocalizedStringAsync("Language.Template.Chinese"),
+                    Status = HbtStatus.Normal
+                }
+            };
+
+            try
+            {
+                return await HbtExcelHelper.ExportAsync(template, sheetName);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(await _localization.GetLocalizedStringAsync("Language.Template.Failed"), ex);
+                return Array.Empty<byte>();
+            }
         }
 
         /// <summary>
