@@ -7,6 +7,10 @@
 // 描述   : 工作流历史服务接口
 //===================================================================
 
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Threading.Tasks;
 using Lean.Hbt.Application.Dtos.Workflow;
 using Lean.Hbt.Common.Models;
 
@@ -66,22 +70,25 @@ namespace Lean.Hbt.Application.Services.Workflow
         /// <summary>
         /// 导入工作流历史
         /// </summary>
-        /// <param name="histories">工作流历史导入列表</param>
-        /// <returns>导入结果</returns>
-        Task<(int success, int fail)> ImportAsync(List<HbtWorkflowHistoryImportDto> histories);
+        /// <param name="fileStream">Excel文件流</param>
+        /// <param name="sheetName">工作表名称</param>
+        /// <returns>导入的历史记录列表</returns>
+        Task<List<HbtWorkflowHistoryDto>> ImportAsync(Stream fileStream, string sheetName = "Sheet1");
 
         /// <summary>
         /// 导出工作流历史
         /// </summary>
-        /// <param name="query">查询条件</param>
-        /// <returns>导出数据列表</returns>
-        Task<List<HbtWorkflowHistoryExportDto>> ExportAsync(HbtWorkflowHistoryQueryDto query);
+        /// <param name="data">要导出的数据集合</param>
+        /// <param name="sheetName">工作表名称</param>
+        /// <returns>Excel文件字节数组</returns>
+        Task<byte[]> ExportAsync(IEnumerable<HbtWorkflowHistoryDto> data, string sheetName = "Sheet1");
 
         /// <summary>
         /// 获取工作流历史导入模板
         /// </summary>
-        /// <returns>模板数据</returns>
-        Task<HbtWorkflowHistoryTemplateDto> GetTemplateAsync();
+        /// <param name="sheetName">工作表名称</param>
+        /// <returns>Excel模板文件字节数组</returns>
+        Task<byte[]> GetTemplateAsync(string sheetName = "Sheet1");
 
         /// <summary>
         /// 获取工作流实例的历史记录

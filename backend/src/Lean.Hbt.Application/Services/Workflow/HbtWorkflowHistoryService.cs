@@ -19,6 +19,7 @@ using Lean.Hbt.Domain.IServices;
 using Lean.Hbt.Domain.IServices.Admin;
 using Lean.Hbt.Domain.Repositories;
 using Lean.Hbt.Domain.Services;
+using Lean.Hbt.Common.Helpers;
 using Mapster;
 using SqlSugar;
 
@@ -190,83 +191,78 @@ namespace Lean.Hbt.Application.Services.Workflow
         /// <summary>
         /// 导入工作流历史
         /// </summary>
-        /// <param name="histories">工作流历史导入列表</param>
+        /// <param name="fileStream">文件流</param>
+        /// <param name="sheetName">工作表名称</param>
         /// <returns>导入结果</returns>
-        public async Task<(int success, int fail)> ImportAsync(List<HbtWorkflowHistoryImportDto> histories)
+        public async Task<List<HbtWorkflowHistoryDto>> ImportAsync(Stream fileStream, string sheetName = "Sheet1")
         {
-            if (histories == null || !histories.Any())
-                return (0, 0);
-
-            var success = 0;
-            var fail = 0;
-
-            foreach (var item in histories)
+            try
             {
-                try
+                // 使用 HbtExcelHelper 导入数据
+                var importHistories = await HbtExcelHelper.ImportAsync<HbtWorkflowHistoryImportDto>(fileStream, sheetName);
+                var result = new List<HbtWorkflowHistoryDto>();
+
+                foreach (var item in importHistories)
                 {
-                    var history = new HbtWorkflowHistory
+                    try
                     {
-                        WorkflowInstanceId = item.WorkflowInstanceId,
-                        NodeId = item.WorkflowNodeId,
-                        OperatorId = item.OperatorId,
-                        OperationType = (int)Enum.Parse<HbtWorkflowOperationType>(item.OperationType),
-                        OperationTime = DateTime.Now,
-                        OperationResult = item.OperationResult != null ? (int?)Enum.Parse<HbtWorkflowTaskResult>(item.OperationResult) : null,
-                        OperationComment = item.OperationComment ?? string.Empty,
-                        Remark = item.Remark ?? string.Empty
-                    };
+                        var history = item.Adapt<HbtWorkflowHistory>();
+                        var insertResult = await _historyRepository.InsertAsync(history);
+                        if (insertResult > 0)
+                        {
+                            result.Add(history.Adapt<HbtWorkflowHistoryDto>());
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.Error(_localization.L("WorkflowHistory.Import.Failed"), ex);
+                    }
+                }
 
-                    var result = await _historyRepository.InsertAsync(history);
-                    if (result > 0)
-                        success++;
-                    else
-                        fail++;
-                }
-                catch (Exception ex)
-                {
-                    _logger.Error(_localization.L("WorkflowHistory.Import.Failed", item.WorkflowInstanceId), ex);
-                    fail++;
-                }
+                return result;
             }
-
-            return (success, fail);
+            catch (Exception ex)
+            {
+                _logger.Error(_localization.L("WorkflowHistory.Import.Failed"), ex);
+                throw new HbtException(_localization.L("WorkflowHistory.Import.Failed"), ex);
+            }
         }
 
         /// <summary>
         /// 导出工作流历史
         /// </summary>
-        /// <param name="query">查询条件</param>
-        /// <returns>导出数据列表</returns>
-        public async Task<List<HbtWorkflowHistoryExportDto>> ExportAsync(HbtWorkflowHistoryQueryDto query)
+        /// <param name="data">数据列表</param>
+        /// <param name="sheetName">工作表名称</param>
+        /// <returns>导出数据</returns>
+        public async Task<byte[]> ExportAsync(IEnumerable<HbtWorkflowHistoryDto> data, string sheetName = "Sheet1")
         {
-            var exp = Expressionable.Create<HbtWorkflowHistory>();
-
-            if (query?.WorkflowInstanceId.HasValue == true)
-                exp.And(x => x.WorkflowInstanceId == query.WorkflowInstanceId.Value);
-
-            if (query?.WorkflowNodeId.HasValue == true)
-                exp.And(x => x.NodeId == query.WorkflowNodeId.Value);
-
-            if (query?.OperatorId.HasValue == true)
-                exp.And(x => x.OperatorId == query.OperatorId.Value);
-
-            var list = await _historyRepository.GetListAsync(exp.ToExpression());
-            return list.Adapt<List<HbtWorkflowHistoryExportDto>>();
+            try
+            {
+                return await HbtExcelHelper.ExportAsync(data, sheetName);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(_localization.L("WorkflowHistory.Export.Failed"), ex);
+                throw new HbtException(_localization.L("WorkflowHistory.Export.Failed"), ex);
+            }
         }
 
         /// <summary>
         /// 获取工作流历史导入模板
         /// </summary>
+        /// <param name="sheetName">工作表名称</param>
         /// <returns>模板数据</returns>
-        public Task<HbtWorkflowHistoryTemplateDto> GetTemplateAsync()
+        public async Task<byte[]> GetTemplateAsync(string sheetName = "Sheet1")
         {
-            var template = new HbtWorkflowHistoryTemplateDto
+            try
             {
-                OperationType = HbtWorkflowOperationType.Submit.ToString(),
-                Remark = string.Empty
-            };
-
-            return Task.FromResult(template);
+                return await HbtExcelHelper.GenerateTemplateAsync<HbtWorkflowHistoryImportDto>(sheetName);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(_localization.L("WorkflowHistory.Template.Failed"), ex);
+                throw new HbtException(_localization.L("WorkflowHistory.Template.Failed"), ex);
+            }
         }
 
         /// <summary>

@@ -3,6 +3,14 @@
   "WorkspaceRootPath": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{28E16BFA-4E05-406B-B57B-E82ADBE6851C}|src\\Lean.Hbt.WebApi\\Lean.Hbt.WebApi.csproj|g:\\appdevelop\\vs2025\\lean.hbt\\backend\\src\\lean.hbt.webapi\\controllers\\workflow\\hbtworkflowvariablecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{28E16BFA-4E05-406B-B57B-E82ADBE6851C}|src\\Lean.Hbt.WebApi\\Lean.Hbt.WebApi.csproj|solutionrelative:src\\lean.hbt.webapi\\controllers\\workflow\\hbtworkflowvariablecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{16BD9696-EA41-4CB7-A0F5-ECA5BBD96173}|src\\Lean.Hbt.Application\\Lean.Hbt.Application.csproj|g:\\appdevelop\\vs2025\\lean.hbt\\backend\\src\\lean.hbt.application\\services\\identity\\hbtloginservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{16BD9696-EA41-4CB7-A0F5-ECA5BBD96173}|src\\Lean.Hbt.Application\\Lean.Hbt.Application.csproj|solutionrelative:src\\lean.hbt.application\\services\\identity\\hbtloginservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{70F2D6F7-475F-4A9C-9DA5-229DC155178B}|src\\Lean.Hbt.Infrastructure\\Lean.Hbt.Infrastructure.csproj|g:\\appdevelop\\vs2025\\lean.hbt\\backend\\src\\lean.hbt.infrastructure\\middleware\\hbtlocalizationmiddleware.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{70F2D6F7-475F-4A9C-9DA5-229DC155178B}|src\\Lean.Hbt.Infrastructure\\Lean.Hbt.Infrastructure.csproj|solutionrelative:src\\lean.hbt.infrastructure\\middleware\\hbtlocalizationmiddleware.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -275,6 +283,32 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
+              "Title": "HbtWorkflowVariableController.cs",
+              "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.WebApi\\Controllers\\Workflow\\HbtWorkflowVariableController.cs",
+              "RelativeDocumentMoniker": "src\\Lean.Hbt.WebApi\\Controllers\\Workflow\\HbtWorkflowVariableController.cs",
+              "ToolTip": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.WebApi\\Controllers\\Workflow\\HbtWorkflowVariableController.cs",
+              "RelativeToolTip": "src\\Lean.Hbt.WebApi\\Controllers\\Workflow\\HbtWorkflowVariableController.cs",
+              "ViewState": "AgIAAJIAAAAAAAAAAAAWwN0AAAB/AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-24T01:24:30.926Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "HbtLoginService.cs",
+              "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Application\\Services\\Identity\\HbtLoginService.cs",
+              "RelativeDocumentMoniker": "src\\Lean.Hbt.Application\\Services\\Identity\\HbtLoginService.cs",
+              "ToolTip": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Application\\Services\\Identity\\HbtLoginService.cs",
+              "RelativeToolTip": "src\\Lean.Hbt.Application\\Services\\Identity\\HbtLoginService.cs",
+              "ViewState": "AgIAAF0AAAAAAAAAAAAWwG0AAAAaAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-24T00:36:31.219Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
               "Title": "HbtLocalizationMiddleware.cs",
               "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Infrastructure\\Middleware\\HbtLocalizationMiddleware.cs",
               "RelativeDocumentMoniker": "src\\Lean.Hbt.Infrastructure\\Middleware\\HbtLocalizationMiddleware.cs",
@@ -287,7 +321,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 4,
               "Title": "HbtPostService.cs",
               "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Application\\Services\\Identity\\HbtPostService.cs",
               "RelativeDocumentMoniker": "src\\Lean.Hbt.Application\\Services\\Identity\\HbtPostService.cs",
@@ -300,7 +334,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 5,
               "Title": "HbtTenantService.cs",
               "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Application\\Services\\Identity\\HbtTenantService.cs",
               "RelativeDocumentMoniker": "src\\Lean.Hbt.Application\\Services\\Identity\\HbtTenantService.cs",
@@ -313,7 +347,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 7,
               "Title": "HbtSysConfigService.cs",
               "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Application\\Services\\Admin\\HbtSysConfigService.cs",
               "RelativeDocumentMoniker": "src\\Lean.Hbt.Application\\Services\\Admin\\HbtSysConfigService.cs",
@@ -326,7 +360,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 3,
               "Title": "HbtLocalizationService.cs",
               "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Infrastructure\\Services\\HbtLocalizationService.cs",
               "RelativeDocumentMoniker": "src\\Lean.Hbt.Infrastructure\\Services\\HbtLocalizationService.cs",
@@ -339,7 +373,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 6,
               "Title": "HbtDeviceExtendService.cs",
               "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Application\\Services\\Identity\\HbtDeviceExtendService.cs",
               "RelativeDocumentMoniker": "src\\Lean.Hbt.Application\\Services\\Identity\\HbtDeviceExtendService.cs",
@@ -352,7 +386,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 11,
+              "DocumentIndex": 13,
               "Title": "HbtWorkflowDefinition.cs",
               "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Domain\\Entities\\Workflow\\HbtWorkflowDefinition.cs",
               "RelativeDocumentMoniker": "src\\Lean.Hbt.Domain\\Entities\\Workflow\\HbtWorkflowDefinition.cs",
@@ -364,7 +398,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 11,
               "Title": "HbtWorkflowHistory.cs",
               "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Domain\\Entities\\Workflow\\HbtWorkflowHistory.cs",
               "RelativeDocumentMoniker": "src\\Lean.Hbt.Domain\\Entities\\Workflow\\HbtWorkflowHistory.cs",
@@ -376,7 +410,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 12,
+              "DocumentIndex": 14,
               "Title": "HbtWorkflowVariable.cs",
               "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Domain\\Entities\\Workflow\\HbtWorkflowVariable.cs",
               "RelativeDocumentMoniker": "src\\Lean.Hbt.Domain\\Entities\\Workflow\\HbtWorkflowVariable.cs",
@@ -388,7 +422,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 10,
+              "DocumentIndex": 12,
               "Title": "HbtWorkflowInstance.cs",
               "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Domain\\Entities\\Workflow\\HbtWorkflowInstance.cs",
               "RelativeDocumentMoniker": "src\\Lean.Hbt.Domain\\Entities\\Workflow\\HbtWorkflowInstance.cs",
@@ -400,7 +434,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 9,
               "Title": "HbtSwaggerSetup.cs",
               "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Infrastructure\\Swagger\\HbtSwaggerSetup.cs",
               "RelativeDocumentMoniker": "src\\Lean.Hbt.Infrastructure\\Swagger\\HbtSwaggerSetup.cs",
@@ -412,7 +446,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 8,
               "Title": "HbtDbContext.cs",
               "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Infrastructure\\Data\\Contexts\\HbtDbContext.cs",
               "RelativeDocumentMoniker": "src\\Lean.Hbt.Infrastructure\\Data\\Contexts\\HbtDbContext.cs",
@@ -424,7 +458,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 10,
               "Title": "HbtWorkflowNode.cs",
               "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Domain\\Entities\\Workflow\\HbtWorkflowNode.cs",
               "RelativeDocumentMoniker": "src\\Lean.Hbt.Domain\\Entities\\Workflow\\HbtWorkflowNode.cs",
@@ -436,7 +470,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 13,
+              "DocumentIndex": 15,
               "Title": "HbtWorkflowTask.cs",
               "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Domain\\Entities\\Workflow\\HbtWorkflowTask.cs",
               "RelativeDocumentMoniker": "src\\Lean.Hbt.Domain\\Entities\\Workflow\\HbtWorkflowTask.cs",
@@ -448,7 +482,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 14,
+              "DocumentIndex": 16,
               "Title": "ApiModuleAttribute.cs",
               "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Infrastructure\\Swagger\\ApiModuleAttribute.cs",
               "RelativeDocumentMoniker": "src\\Lean.Hbt.Infrastructure\\Swagger\\ApiModuleAttribute.cs",
@@ -460,7 +494,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 15,
+              "DocumentIndex": 17,
               "Title": "HbtCaptchaController.cs",
               "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.WebApi\\Controllers\\Security\\HbtCaptchaController.cs",
               "RelativeDocumentMoniker": "src\\Lean.Hbt.WebApi\\Controllers\\Security\\HbtCaptchaController.cs",
@@ -472,7 +506,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 20,
+              "DocumentIndex": 22,
               "Title": "HbtDictTypeController.cs",
               "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.WebApi\\Controllers\\Admin\\HbtDictTypeController.cs",
               "RelativeDocumentMoniker": "src\\Lean.Hbt.WebApi\\Controllers\\Admin\\HbtDictTypeController.cs",
@@ -484,7 +518,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 19,
+              "DocumentIndex": 21,
               "Title": "HbtTranslationController.cs",
               "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.WebApi\\Controllers\\Admin\\HbtTranslationController.cs",
               "RelativeDocumentMoniker": "src\\Lean.Hbt.WebApi\\Controllers\\Admin\\HbtTranslationController.cs",
@@ -496,7 +530,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 18,
+              "DocumentIndex": 20,
               "Title": "HbtLanguageController.cs",
               "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.WebApi\\Controllers\\Admin\\HbtLanguageController.cs",
               "RelativeDocumentMoniker": "src\\Lean.Hbt.WebApi\\Controllers\\Admin\\HbtLanguageController.cs",
@@ -508,7 +542,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 17,
+              "DocumentIndex": 19,
               "Title": "HbtRoleController.cs",
               "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.WebApi\\Controllers\\Identity\\HbtRoleController.cs",
               "RelativeDocumentMoniker": "src\\Lean.Hbt.WebApi\\Controllers\\Identity\\HbtRoleController.cs",
@@ -520,7 +554,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 16,
+              "DocumentIndex": 18,
               "Title": "HbtDictDataController.cs",
               "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.WebApi\\Controllers\\Admin\\HbtDictDataController.cs",
               "RelativeDocumentMoniker": "src\\Lean.Hbt.WebApi\\Controllers\\Admin\\HbtDictDataController.cs",
@@ -532,7 +566,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 21,
+              "DocumentIndex": 23,
               "Title": "HbtSysConfigController.cs",
               "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.WebApi\\Controllers\\Admin\\HbtSysConfigController.cs",
               "RelativeDocumentMoniker": "src\\Lean.Hbt.WebApi\\Controllers\\Admin\\HbtSysConfigController.cs",
@@ -544,7 +578,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 22,
+              "DocumentIndex": 24,
               "Title": "HbtAuditLogController.cs",
               "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.WebApi\\Controllers\\Audit\\HbtAuditLogController.cs",
               "RelativeDocumentMoniker": "src\\Lean.Hbt.WebApi\\Controllers\\Audit\\HbtAuditLogController.cs",
@@ -556,7 +590,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 23,
+              "DocumentIndex": 25,
               "Title": "HbtDbDiffLogController.cs",
               "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.WebApi\\Controllers\\Audit\\HbtDbDiffLogController.cs",
               "RelativeDocumentMoniker": "src\\Lean.Hbt.WebApi\\Controllers\\Audit\\HbtDbDiffLogController.cs",
@@ -568,7 +602,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 24,
+              "DocumentIndex": 26,
               "Title": "HbtExceptionLogController.cs",
               "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.WebApi\\Controllers\\Audit\\HbtExceptionLogController.cs",
               "RelativeDocumentMoniker": "src\\Lean.Hbt.WebApi\\Controllers\\Audit\\HbtExceptionLogController.cs",
@@ -580,7 +614,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 25,
+              "DocumentIndex": 27,
               "Title": "HbtLoginLogController.cs",
               "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.WebApi\\Controllers\\Audit\\HbtLoginLogController.cs",
               "RelativeDocumentMoniker": "src\\Lean.Hbt.WebApi\\Controllers\\Audit\\HbtLoginLogController.cs",
@@ -592,7 +626,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 26,
+              "DocumentIndex": 28,
               "Title": "HbtOperLogController.cs",
               "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.WebApi\\Controllers\\Audit\\HbtOperLogController.cs",
               "RelativeDocumentMoniker": "src\\Lean.Hbt.WebApi\\Controllers\\Audit\\HbtOperLogController.cs",
@@ -604,7 +638,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 27,
+              "DocumentIndex": 29,
               "Title": "HbtDeptController.cs",
               "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.WebApi\\Controllers\\Identity\\HbtDeptController.cs",
               "RelativeDocumentMoniker": "src\\Lean.Hbt.WebApi\\Controllers\\Identity\\HbtDeptController.cs",
@@ -616,7 +650,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 28,
+              "DocumentIndex": 30,
               "Title": "HbtDeviceExtendController.cs",
               "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.WebApi\\Controllers\\Identity\\HbtDeviceExtendController.cs",
               "RelativeDocumentMoniker": "src\\Lean.Hbt.WebApi\\Controllers\\Identity\\HbtDeviceExtendController.cs",
@@ -628,7 +662,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 29,
+              "DocumentIndex": 31,
               "Title": "HbtLoginExtendController.cs",
               "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.WebApi\\Controllers\\Identity\\HbtLoginExtendController.cs",
               "RelativeDocumentMoniker": "src\\Lean.Hbt.WebApi\\Controllers\\Identity\\HbtLoginExtendController.cs",
@@ -640,7 +674,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 30,
+              "DocumentIndex": 32,
               "Title": "HbtMenuController.cs",
               "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.WebApi\\Controllers\\Identity\\HbtMenuController.cs",
               "RelativeDocumentMoniker": "src\\Lean.Hbt.WebApi\\Controllers\\Identity\\HbtMenuController.cs",
@@ -652,7 +686,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 31,
+              "DocumentIndex": 33,
               "Title": "HbtOAuthController.cs",
               "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.WebApi\\Controllers\\Identity\\HbtOAuthController.cs",
               "RelativeDocumentMoniker": "src\\Lean.Hbt.WebApi\\Controllers\\Identity\\HbtOAuthController.cs",
@@ -664,7 +698,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 32,
+              "DocumentIndex": 34,
               "Title": "HbtPostController.cs",
               "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.WebApi\\Controllers\\Identity\\HbtPostController.cs",
               "RelativeDocumentMoniker": "src\\Lean.Hbt.WebApi\\Controllers\\Identity\\HbtPostController.cs",
@@ -676,7 +710,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 33,
+              "DocumentIndex": 35,
               "Title": "HbtTenantController.cs",
               "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.WebApi\\Controllers\\Identity\\HbtTenantController.cs",
               "RelativeDocumentMoniker": "src\\Lean.Hbt.WebApi\\Controllers\\Identity\\HbtTenantController.cs",
@@ -688,7 +722,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 34,
+              "DocumentIndex": 36,
               "Title": "HbtUserController.cs",
               "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.WebApi\\Controllers\\Identity\\HbtUserController.cs",
               "RelativeDocumentMoniker": "src\\Lean.Hbt.WebApi\\Controllers\\Identity\\HbtUserController.cs",
@@ -700,7 +734,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 35,
+              "DocumentIndex": 37,
               "Title": "HbtOnlineMessageController.cs",
               "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.WebApi\\Controllers\\RealTime\\HbtOnlineMessageController.cs",
               "RelativeDocumentMoniker": "src\\Lean.Hbt.WebApi\\Controllers\\RealTime\\HbtOnlineMessageController.cs",
@@ -712,7 +746,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 36,
+              "DocumentIndex": 38,
               "Title": "HbtOnlineUserController.cs",
               "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.WebApi\\Controllers\\RealTime\\HbtOnlineUserController.cs",
               "RelativeDocumentMoniker": "src\\Lean.Hbt.WebApi\\Controllers\\RealTime\\HbtOnlineUserController.cs",
@@ -724,7 +758,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 37,
+              "DocumentIndex": 39,
               "Title": "GlobalUsings.cs",
               "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.WebApi\\GlobalUsings.cs",
               "RelativeDocumentMoniker": "src\\Lean.Hbt.WebApi\\GlobalUsings.cs",
@@ -736,7 +770,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 40,
+              "DocumentIndex": 42,
               "Title": "HbtDictTypeService.cs",
               "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Application\\Services\\Admin\\HbtDictTypeService.cs",
               "RelativeDocumentMoniker": "src\\Lean.Hbt.Application\\Services\\Admin\\HbtDictTypeService.cs",
@@ -748,7 +782,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 39,
+              "DocumentIndex": 41,
               "Title": "HbtLanguageService.cs",
               "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Application\\Services\\Admin\\HbtLanguageService.cs",
               "RelativeDocumentMoniker": "src\\Lean.Hbt.Application\\Services\\Admin\\HbtLanguageService.cs",
@@ -760,7 +794,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 41,
+              "DocumentIndex": 43,
               "Title": "HbtDictDataService.cs",
               "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Application\\Services\\Admin\\HbtDictDataService.cs",
               "RelativeDocumentMoniker": "src\\Lean.Hbt.Application\\Services\\Admin\\HbtDictDataService.cs",
@@ -772,7 +806,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 38,
+              "DocumentIndex": 40,
               "Title": "HbtBaseController.cs",
               "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.WebApi\\Controllers\\HbtBaseController.cs",
               "RelativeDocumentMoniker": "src\\Lean.Hbt.WebApi\\Controllers\\HbtBaseController.cs",
@@ -784,7 +818,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 42,
+              "DocumentIndex": 44,
               "Title": "HbtLogArchiveService.cs",
               "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Application\\Services\\Admin\\HbtLogArchiveService.cs",
               "RelativeDocumentMoniker": "src\\Lean.Hbt.Application\\Services\\Admin\\HbtLogArchiveService.cs",
@@ -796,7 +830,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 43,
+              "DocumentIndex": 45,
               "Title": "HbtLocalizationExtensions.cs",
               "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Infrastructure\\Extensions\\HbtLocalizationExtensions.cs",
               "RelativeDocumentMoniker": "src\\Lean.Hbt.Infrastructure\\Extensions\\HbtLocalizationExtensions.cs",
@@ -808,7 +842,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 44,
+              "DocumentIndex": 46,
               "Title": "HbtRedisCache.cs",
               "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Infrastructure\\Caching\\HbtRedisCache.cs",
               "RelativeDocumentMoniker": "src\\Lean.Hbt.Infrastructure\\Caching\\HbtRedisCache.cs",
@@ -820,7 +854,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 45,
+              "DocumentIndex": 47,
               "Title": "HbtSqlInjectionMiddleware.cs",
               "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Infrastructure\\Security\\HbtSqlInjectionMiddleware.cs",
               "RelativeDocumentMoniker": "src\\Lean.Hbt.Infrastructure\\Security\\HbtSqlInjectionMiddleware.cs",
@@ -832,7 +866,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 46,
+              "DocumentIndex": 48,
               "Title": "IHbtCaptchaService.cs",
               "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Domain\\IServices\\Security\\IHbtCaptchaService.cs",
               "RelativeDocumentMoniker": "src\\Lean.Hbt.Domain\\IServices\\Security\\IHbtCaptchaService.cs",
@@ -844,7 +878,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 49,
+              "DocumentIndex": 51,
               "Title": "HbtTranslation.cs",
               "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Domain\\Entities\\Admin\\HbtTranslation.cs",
               "RelativeDocumentMoniker": "src\\Lean.Hbt.Domain\\Entities\\Admin\\HbtTranslation.cs",
@@ -856,7 +890,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 48,
+              "DocumentIndex": 50,
               "Title": "HbtAuditLog.cs",
               "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Domain\\Entities\\Audit\\HbtAuditLog.cs",
               "RelativeDocumentMoniker": "src\\Lean.Hbt.Domain\\Entities\\Audit\\HbtAuditLog.cs",
@@ -868,7 +902,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 47,
+              "DocumentIndex": 49,
               "Title": "HbtDictData.cs",
               "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Domain\\Entities\\Admin\\HbtDictData.cs",
               "RelativeDocumentMoniker": "src\\Lean.Hbt.Domain\\Entities\\Admin\\HbtDictData.cs",
@@ -880,7 +914,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 50,
+              "DocumentIndex": 52,
               "Title": "HbtSessionSecurityMiddleware.cs",
               "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Infrastructure\\Security\\HbtSessionSecurityMiddleware.cs",
               "RelativeDocumentMoniker": "src\\Lean.Hbt.Infrastructure\\Security\\HbtSessionSecurityMiddleware.cs",
@@ -892,7 +926,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 53,
+              "DocumentIndex": 55,
               "Title": "HbtRateLimitMiddleware.cs",
               "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Infrastructure\\Security\\HbtRateLimitMiddleware.cs",
               "RelativeDocumentMoniker": "src\\Lean.Hbt.Infrastructure\\Security\\HbtRateLimitMiddleware.cs",
@@ -904,7 +938,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 54,
+              "DocumentIndex": 56,
               "Title": "HbtPermissionMiddleware.cs",
               "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Infrastructure\\Security\\HbtPermissionMiddleware.cs",
               "RelativeDocumentMoniker": "src\\Lean.Hbt.Infrastructure\\Security\\HbtPermissionMiddleware.cs",
@@ -916,7 +950,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 55,
+              "DocumentIndex": 57,
               "Title": "HbtPasswordPolicy.cs",
               "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Infrastructure\\Security\\HbtPasswordPolicy.cs",
               "RelativeDocumentMoniker": "src\\Lean.Hbt.Infrastructure\\Security\\HbtPasswordPolicy.cs",
@@ -928,7 +962,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 52,
+              "DocumentIndex": 54,
               "Title": "HbtOAuthService.cs",
               "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Infrastructure\\Security\\HbtOAuthService.cs",
               "RelativeDocumentMoniker": "src\\Lean.Hbt.Infrastructure\\Security\\HbtOAuthService.cs",
@@ -940,7 +974,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 51,
+              "DocumentIndex": 53,
               "Title": "HbtLoginPolicy.cs",
               "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Infrastructure\\Security\\HbtLoginPolicy.cs",
               "RelativeDocumentMoniker": "src\\Lean.Hbt.Infrastructure\\Security\\HbtLoginPolicy.cs",
@@ -952,7 +986,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 60,
+              "DocumentIndex": 62,
               "Title": "HbtPermAttributes.cs",
               "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Infrastructure\\Security\\Attributes\\HbtPermAttributes.cs",
               "RelativeDocumentMoniker": "src\\Lean.Hbt.Infrastructure\\Security\\Attributes\\HbtPermAttributes.cs",
@@ -964,7 +998,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 59,
+              "DocumentIndex": 61,
               "Title": "HbtAuditsLog.cs",
               "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Infrastructure\\Security\\HbtAuditsLog.cs",
               "RelativeDocumentMoniker": "src\\Lean.Hbt.Infrastructure\\Security\\HbtAuditsLog.cs",
@@ -976,7 +1010,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 58,
+              "DocumentIndex": 60,
               "Title": "HbtCaptchaService.cs",
               "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Infrastructure\\Security\\HbtCaptchaService.cs",
               "RelativeDocumentMoniker": "src\\Lean.Hbt.Infrastructure\\Security\\HbtCaptchaService.cs",
@@ -988,7 +1022,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 57,
+              "DocumentIndex": 59,
               "Title": "HbtCaptchaMiddleware.cs",
               "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Infrastructure\\Security\\HbtCaptchaMiddleware.cs",
               "RelativeDocumentMoniker": "src\\Lean.Hbt.Infrastructure\\Security\\HbtCaptchaMiddleware.cs",
@@ -1000,7 +1034,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 56,
+              "DocumentIndex": 58,
               "Title": "HbtCsrfMiddleware.cs",
               "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Infrastructure\\Security\\HbtCsrfMiddleware.cs",
               "RelativeDocumentMoniker": "src\\Lean.Hbt.Infrastructure\\Security\\HbtCsrfMiddleware.cs",
@@ -1012,7 +1046,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 61,
+              "DocumentIndex": 63,
               "Title": "HbtServiceCollectionExtensions.cs",
               "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Infrastructure\\Extensions\\HbtServiceCollectionExtensions.cs",
               "RelativeDocumentMoniker": "src\\Lean.Hbt.Infrastructure\\Extensions\\HbtServiceCollectionExtensions.cs",
@@ -1024,7 +1058,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 62,
+              "DocumentIndex": 64,
               "Title": "HbtExceptionMiddleware.cs",
               "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.WebApi\\Middlewares\\HbtExceptionMiddleware.cs",
               "RelativeDocumentMoniker": "src\\Lean.Hbt.WebApi\\Middlewares\\HbtExceptionMiddleware.cs",
@@ -1036,7 +1070,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 63,
+              "DocumentIndex": 65,
               "Title": "HbtValidateUtils.cs",
               "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Domain\\Utils\\HbtValidateUtils.cs",
               "RelativeDocumentMoniker": "src\\Lean.Hbt.Domain\\Utils\\HbtValidateUtils.cs",
@@ -1048,7 +1082,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 64,
+              "DocumentIndex": 66,
               "Title": "HbtDbSeed.cs",
               "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Infrastructure\\Data\\Seeds\\HbtDbSeed.cs",
               "RelativeDocumentMoniker": "src\\Lean.Hbt.Infrastructure\\Data\\Seeds\\HbtDbSeed.cs",

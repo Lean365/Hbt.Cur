@@ -65,24 +65,41 @@ namespace Lean.Hbt.Application.Services.Workflow
         Task<bool> BatchDeleteAsync(long[] ids);
 
         /// <summary>
-        /// 导入工作流变量
+        /// 导出工作流变量(单个Sheet)
+        /// </summary>
+        /// <param name="data">数据集合</param>
+        /// <param name="sheetName">工作表名称</param>
+        /// <returns>Excel文件字节数组</returns>
+        Task<byte[]> ExportAsync(IEnumerable<HbtWorkflowVariableDto> data, string sheetName = "Sheet1");
+
+        /// <summary>
+        /// 导入工作流变量(单个Sheet)
         /// </summary>
         /// <param name="fileStream">Excel文件流</param>
-        /// <returns>导入结果</returns>
-        Task<(int success, int fail)> ImportAsync(Stream fileStream);
+        /// <param name="sheetName">工作表名称</param>
+        /// <returns>数据集合</returns>
+        Task<List<HbtWorkflowVariableDto>> ImportAsync(Stream fileStream, string sheetName = "Sheet1");
 
         /// <summary>
-        /// 导出工作流变量
+        /// 导出工作流变量(多个Sheet)
         /// </summary>
-        /// <param name="query">查询条件</param>
+        /// <param name="sheets">Sheet数据字典，key为sheet名称，value为数据集合</param>
         /// <returns>Excel文件字节数组</returns>
-        Task<byte[]> ExportAsync(HbtWorkflowVariableQueryDto query);
+        Task<byte[]> ExportMultiSheetAsync(Dictionary<string, IEnumerable<HbtWorkflowVariableDto>> sheets);
 
         /// <summary>
-        /// 获取工作流变量导入模板
+        /// 导入工作流变量(多个Sheet)
         /// </summary>
+        /// <param name="fileStream">Excel文件流</param>
+        /// <returns>数据字典，key为sheet名称，value为数据集合</returns>
+        Task<Dictionary<string, List<HbtWorkflowVariableDto>>> ImportMultiSheetAsync(Stream fileStream);
+
+        /// <summary>
+        /// 生成工作流变量导入模板
+        /// </summary>
+        /// <param name="sheetName">工作表名称</param>
         /// <returns>Excel模板文件字节数组</returns>
-        Task<byte[]> GetTemplateAsync();
+        Task<byte[]> GetTemplateAsync(string sheetName = "Sheet1");
 
         /// <summary>
         /// 获取工作流实例的所有变量

@@ -233,80 +233,86 @@ namespace Lean.Hbt.Application.Services.Workflow
         }
 
         /// <summary>
-        /// 导入工作流变量数据
+        /// 导出工作流变量(单个Sheet)
         /// </summary>
-        /// <param name="fileStream">Excel文件流</param>
-        /// <returns>返回成功和失败的记录数</returns>
-        /// <remarks>
-        /// 导入过程中的异常会被记录但不会中断导入流程
-        /// </remarks>
-        public async Task<(int success, int fail)> ImportAsync(Stream fileStream)
+        public async Task<byte[]> ExportAsync(IEnumerable<HbtWorkflowVariableDto> data, string sheetName = "Sheet1")
         {
-            var variables = await HbtExcelHelper.ImportAsync<HbtWorkflowVariableImportDto>(fileStream);
-            if (variables == null || !variables.Any())
-                return (0, 0);
+            if (data == null)
+                throw new ArgumentNullException(nameof(data));
 
-            var success = 0;
-            var fail = 0;
-
-            foreach (var variable in variables)
-            {
-                try
-                {
-                    // 验证字段是否已存在
-                    await HbtValidateUtils.ValidateFieldExistsAsync(_variableRepository, "VariableName", variable.VariableName);
-
-                    var entity = variable.Adapt<HbtWorkflowVariable>();
-                    await _variableRepository.InsertAsync(entity);
-                    success++;
-                }
-                catch (Exception ex)
-                {
-                    _logger.Error($"导入工作流变量失败: {ex.Message}");
-                    fail++;
-                }
-            }
-
-            return (success, fail);
+            var exportData = data.Adapt<List<HbtWorkflowVariableExportDto>>();
+            return await HbtExcelHelper.ExportAsync(exportData, sheetName);
         }
 
         /// <summary>
-        /// 导出工作流变量数据
+        /// 导入工作流变量(单个Sheet)
         /// </summary>
-        /// <param name="query">查询条件</param>
-        /// <returns>Excel文件字节数组</returns>
-        public async Task<byte[]> ExportAsync(HbtWorkflowVariableQueryDto query)
+        public async Task<List<HbtWorkflowVariableDto>> ImportAsync(Stream fileStream, string sheetName = "Sheet1")
         {
-            var exp = Expressionable.Create<HbtWorkflowVariable>();
+            if (fileStream == null)
+                throw new ArgumentNullException(nameof(fileStream));
 
-            if (query?.WorkflowInstanceId.HasValue == true)
-                exp = exp.And(x => x.WorkflowInstanceId == query.WorkflowInstanceId.Value);
+            var importData = await HbtExcelHelper.ImportAsync<HbtWorkflowVariableImportDto>(fileStream, sheetName);
+            var variables = importData.Adapt<List<HbtWorkflowVariable>>();
 
-            if (query?.WorkflowNodeId.HasValue == true)
-                exp = exp.And(x => x.NodeId == query.WorkflowNodeId.Value);
+            foreach (var variable in variables)
+            {
+                await _variableRepository.InsertAsync(variable);
+            }
 
-            if (!string.IsNullOrEmpty(query?.VariableName))
-                exp = exp.And(x => x.VariableName.Contains(query.VariableName));
+            return variables.Adapt<List<HbtWorkflowVariableDto>>();
+        }
 
-            if (query?.VariableType.HasValue == true)
-                exp = exp.And(x => x.VariableType == query.VariableType.Value.ToString());
+        /// <summary>
+        /// 导出工作流变量(多个Sheet)
+        /// </summary>
+        public async Task<byte[]> ExportMultiSheetAsync(Dictionary<string, IEnumerable<HbtWorkflowVariableDto>> sheets)
+        {
+            if (sheets == null)
+                throw new ArgumentNullException(nameof(sheets));
 
-            if (query?.VariableScope.HasValue == true)
-                exp = exp.And(x => x.Scope == query.VariableScope.Value);
+            var exportSheets = new Dictionary<string, IEnumerable<HbtWorkflowVariableExportDto>>();
+            foreach (var sheet in sheets)
+            {
+                exportSheets[sheet.Key] = sheet.Value.Adapt<List<HbtWorkflowVariableExportDto>>();
+            }
 
-            var list = await _variableRepository.GetListAsync(exp.ToExpression());
-            var exportData = list.Adapt<List<HbtWorkflowVariableExportDto>>();
+            return await HbtExcelHelper.ExportMultiSheetAsync(exportSheets);
+        }
 
-            return await HbtExcelHelper.ExportAsync(exportData);
+        /// <summary>
+        /// 导入工作流变量(多个Sheet)
+        /// </summary>
+        public async Task<Dictionary<string, List<HbtWorkflowVariableDto>>> ImportMultiSheetAsync(Stream fileStream)
+        {
+            if (fileStream == null)
+                throw new ArgumentNullException(nameof(fileStream));
+
+            var importData = await HbtExcelHelper.ImportMultiSheetAsync<HbtWorkflowVariableImportDto>(fileStream);
+            var result = new Dictionary<string, List<HbtWorkflowVariableDto>>();
+
+            foreach (var sheet in importData)
+            {
+                var variables = sheet.Value.Adapt<List<HbtWorkflowVariable>>();
+                foreach (var variable in variables)
+                {
+                    await _variableRepository.InsertAsync(variable);
+                }
+                result[sheet.Key] = variables.Adapt<List<HbtWorkflowVariableDto>>();
+            }
+
+            return result;
         }
 
         /// <summary>
         /// 获取工作流变量导入模板
         /// </summary>
+        /// <param name="sheetName">工作表名称</param>
         /// <returns>Excel模板文件字节数组</returns>
-        public async Task<byte[]> GetTemplateAsync()
+        public async Task<byte[]> GetTemplateAsync(string sheetName = "Sheet1")
         {
-            return await HbtExcelHelper.GenerateTemplateAsync<HbtWorkflowVariableTemplateDto>();
+            var template = new List<HbtWorkflowVariableExportDto>();
+            return await HbtExcelHelper.ExportAsync(template, sheetName);
         }
 
         /// <summary>

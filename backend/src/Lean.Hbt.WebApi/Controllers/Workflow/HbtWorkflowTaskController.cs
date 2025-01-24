@@ -1,0 +1,196 @@
+//===================================================================
+// 项目名 : Lean.Hbt 
+// 文件名 : HbtWorkflowTaskController.cs
+// 创建者 : Lean365
+// 创建时间: 2024-01-23 12:00
+// 版本号 : V1.0.0
+// 描述   : 工作流任务控制器
+//===================================================================
+
+using System;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
+using Lean.Hbt.Application.Dtos.Workflow;
+using Lean.Hbt.Application.Services.Workflow;
+using Lean.Hbt.Domain.IServices.Admin;
+using Lean.Hbt.Infrastructure.Security.Attributes;
+using Lean.Hbt.Infrastructure.Swagger;
+
+namespace Lean.Hbt.WebApi.Controllers.Workflow
+{
+    /// <summary>
+    /// 工作流任务控制器
+    /// </summary>
+    [Route("api/[controller]", Name = "工作流任务")]
+    [ApiController]
+    [ApiModule("workflow", "工作流")]
+    public class HbtWorkflowTaskController : HbtBaseController
+    {
+        private readonly IHbtWorkflowTaskService _workflowTaskService;
+
+        /// <summary>
+        /// 构造函数
+        /// </summary>
+        public HbtWorkflowTaskController(
+            IHbtWorkflowTaskService workflowTaskService,
+            IHbtLocalizationService localization) : base(localization)
+        {
+            _workflowTaskService = workflowTaskService;
+        }
+
+        /// <summary>
+        /// 获取工作流任务分页列表
+        /// </summary>
+        [HttpGet]
+        [HbtPermission("workflow:task:list")]
+        public async Task<IActionResult> GetPagedListAsync([FromQuery] HbtWorkflowTaskQueryDto query)
+        {
+            var result = await _workflowTaskService.GetPagedListAsync(query);
+            return Success(result);
+        }
+
+        /// <summary>
+        /// 获取工作流任务详情
+        /// </summary>
+        [HttpGet("{id}")]
+        [HbtPermission("workflow:task:query")]
+        public async Task<IActionResult> GetAsync(long id)
+        {
+            var result = await _workflowTaskService.GetAsync(id);
+            return Success(result);
+        }
+
+        /// <summary>
+        /// 创建工作流任务
+        /// </summary>
+        [HttpPost]
+        [HbtPermission("workflow:task:insert")]
+        public async Task<IActionResult> InsertAsync([FromBody] HbtWorkflowTaskCreateDto input)
+        {
+            var result = await _workflowTaskService.InsertAsync(input);
+            return Success(result);
+        }
+
+        /// <summary>
+        /// 更新工作流任务
+        /// </summary>
+        [HttpPut]
+        [HbtPermission("workflow:task:update")]
+        public async Task<IActionResult> UpdateAsync([FromBody] HbtWorkflowTaskUpdateDto input)
+        {
+            var result = await _workflowTaskService.UpdateAsync(input);
+            return Success(result);
+        }
+
+        /// <summary>
+        /// 删除工作流任务
+        /// </summary>
+        [HttpDelete("{id}")]
+        [HbtPermission("workflow:task:delete")]
+        public async Task<IActionResult> DeleteAsync(long id)
+        {
+            var result = await _workflowTaskService.DeleteAsync(id);
+            return Success(result);
+        }
+
+        /// <summary>
+        /// 批量删除工作流任务
+        /// </summary>
+        [HttpDelete("batch")]
+        [HbtPermission("workflow:task:delete")]
+        public async Task<IActionResult> BatchDeleteAsync([FromBody] long[] ids)
+        {
+            var result = await _workflowTaskService.BatchDeleteAsync(ids);
+            return Success(result);
+        }
+
+        /// <summary>
+        /// 导入工作流任务数据
+        /// </summary>
+        [HttpPost("import")]
+        [HbtPermission("workflow:task:import")]
+        public async Task<IActionResult> ImportAsync([FromBody] List<HbtWorkflowTaskImportDto> tasks)
+        {
+            var result = await _workflowTaskService.ImportAsync(tasks);
+            return Success(result);
+        }
+
+        /// <summary>
+        /// 导出工作流任务数据
+        /// </summary>
+        [HttpGet("export")]
+        [HbtPermission("workflow:task:export")]
+        public async Task<IActionResult> ExportAsync([FromQuery] HbtWorkflowTaskQueryDto query)
+        {
+            var result = await _workflowTaskService.ExportAsync(query);
+            return Success(result);
+        }
+
+        /// <summary>
+        /// 获取导入模板
+        /// </summary>
+        [HttpGet("template")]
+        [HbtPermission("workflow:task:query")]
+        public async Task<IActionResult> GetTemplateAsync()
+        {
+            var result = await _workflowTaskService.GetTemplateAsync();
+            return Success(result);
+        }
+
+        /// <summary>
+        /// 更新工作流任务状态
+        /// </summary>
+        [HttpPut("{id}/status")]
+        [HbtPermission("workflow:task:update")]
+        public async Task<IActionResult> UpdateStatusAsync(long id, [FromBody] HbtWorkflowTaskStatusDto input)
+        {
+            var result = await _workflowTaskService.UpdateStatusAsync(input);
+            return Success(result);
+        }
+
+        /// <summary>
+        /// 完成工作流任务
+        /// </summary>
+        [HttpPost("{id}/complete")]
+        [HbtPermission("workflow:task:update")]
+        public async Task<IActionResult> CompleteAsync(long id, [FromQuery] string result, [FromQuery] string comment)
+        {
+            var success = await _workflowTaskService.CompleteAsync(id, result, comment);
+            return Success(success);
+        }
+
+        /// <summary>
+        /// 转办工作流任务
+        /// </summary>
+        [HttpPost("{id}/transfer")]
+        [HbtPermission("workflow:task:update")]
+        public async Task<IActionResult> TransferAsync(long id, [FromQuery] long assigneeId, [FromQuery] string comment)
+        {
+            var success = await _workflowTaskService.TransferAsync(id, assigneeId, comment);
+            return Success(success);
+        }
+
+        /// <summary>
+        /// 退回工作流任务
+        /// </summary>
+        [HttpPost("{id}/reject")]
+        [HbtPermission("workflow:task:update")]
+        public async Task<IActionResult> RejectAsync(long id, [FromQuery] string comment)
+        {
+            var success = await _workflowTaskService.RejectAsync(id, comment);
+            return Success(success);
+        }
+
+        /// <summary>
+        /// 撤销工作流任务
+        /// </summary>
+        [HttpPost("{id}/cancel")]
+        [HbtPermission("workflow:task:update")]
+        public async Task<IActionResult> CancelAsync(long id, [FromQuery] string comment)
+        {
+            var success = await _workflowTaskService.CancelAsync(id, comment);
+            return Success(success);
+        }
+    }
+} 

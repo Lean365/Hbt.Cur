@@ -7,6 +7,9 @@
 // 描述   : 工作流定义服务接口
 //===================================================================
 
+using System.Collections.Generic;
+using System.IO;
+using System.Threading.Tasks;
 using Lean.Hbt.Application.Dtos.Workflow;
 using Lean.Hbt.Common.Models;
 
@@ -66,22 +69,25 @@ namespace Lean.Hbt.Application.Services.Workflow
         /// <summary>
         /// 导入工作流定义
         /// </summary>
-        /// <param name="definitions">工作流定义导入列表</param>
-        /// <returns>导入结果</returns>
-        Task<(int success, int fail)> ImportAsync(List<HbtWorkflowDefinitionImportDto> definitions);
+        /// <param name="fileStream">Excel文件流</param>
+        /// <param name="sheetName">工作表名称</param>
+        /// <returns>导入的工作流定义列表</returns>
+        Task<List<HbtWorkflowDefinitionDto>> ImportAsync(Stream fileStream, string sheetName = "Sheet1");
 
         /// <summary>
         /// 导出工作流定义
         /// </summary>
-        /// <param name="query">查询条件</param>
-        /// <returns>导出数据列表</returns>
-        Task<List<HbtWorkflowDefinitionExportDto>> ExportAsync(HbtWorkflowDefinitionQueryDto query);
+        /// <param name="data">要导出的数据集合</param>
+        /// <param name="sheetName">工作表名称</param>
+        /// <returns>Excel文件字节数组</returns>
+        Task<byte[]> ExportAsync(IEnumerable<HbtWorkflowDefinitionDto> data, string sheetName = "Sheet1");
 
         /// <summary>
         /// 获取工作流定义导入模板
         /// </summary>
-        /// <returns>模板数据</returns>
-        Task<HbtWorkflowDefinitionTemplateDto> GetTemplateAsync();
+        /// <param name="sheetName">工作表名称</param>
+        /// <returns>Excel模板文件字节数组</returns>
+        Task<byte[]> GetTemplateAsync(string sheetName = "Sheet1");
 
         /// <summary>
         /// 更新工作流定义状态

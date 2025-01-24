@@ -19,6 +19,10 @@ using Lean.Hbt.Domain.IServices.Admin;
 using Lean.Hbt.Domain.Repositories;
 using Mapster;
 using SqlSugar;
+using System.IO;
+using System.Collections.Generic;
+using System;
+using Lean.Hbt.Common.Helpers;
 
 namespace Lean.Hbt.Application.Services.Workflow
 {
@@ -217,88 +221,71 @@ namespace Lean.Hbt.Application.Services.Workflow
         }
 
         /// <summary>
-        /// 导入工作流定义数据
+        /// 导入工作流定义
         /// </summary>
-        /// <param name="definitions">要导入的工作流定义列表</param>
-        /// <returns>返回成功和失败的记录数</returns>
-        /// <remarks>
-        /// 导入过程中的异常会被记录但不会中断导入流程
-        /// </remarks>
-        public async Task<(int success, int fail)> ImportAsync(List<HbtWorkflowDefinitionImportDto> definitions)
+        public async Task<List<HbtWorkflowDefinitionDto>> ImportAsync(Stream fileStream, string sheetName = "Sheet1")
         {
-            if (definitions == null || !definitions.Any())
-                return (0, 0);
-
-            var success = 0;
-            var fail = 0;
-
-            foreach (var item in definitions)
+            try
             {
-                try
+                var importDefinitions = await HbtExcelHelper.ImportAsync<HbtWorkflowDefinitionImportDto>(fileStream, sheetName);
+                var result = new List<HbtWorkflowDefinitionDto>();
+
+                foreach (var item in importDefinitions)
                 {
-                    // 检查名称是否已存在
-                    var exists = await _definitionRepository.FirstOrDefaultAsync(x => x.WorkflowName == item.WorkflowName);
-                    if (exists != null)
+                    try
                     {
-                        _logger.Warn(_localization.L("WorkflowDefinition.Import.NameExists", item.WorkflowName));
-                        fail++;
-                        continue;
+                        var definition = item.Adapt<HbtWorkflowDefinition>();
+                        var insertResult = await _definitionRepository.InsertAsync(definition);
+                        if (insertResult > 0)
+                        {
+                            result.Add(definition.Adapt<HbtWorkflowDefinitionDto>());
+                        }
                     }
-
-                    var definition = item.Adapt<HbtWorkflowDefinition>();
-                    definition.WorkflowVersion = 1; // 导入时默认版本为1
-                    definition.Status = Common.Enums.HbtWorkflowStatus.Draft; // 导入时默认为草稿状态
-
-                    var result = await _definitionRepository.InsertAsync(definition);
-                    if (result > 0)
-                        success++;
-                    else
-                        fail++;
+                    catch (Exception ex)
+                    {
+                        _logger.Error(_localization.L("WorkflowDefinition.Import.Failed"), ex);
+                    }
                 }
-                catch (Exception ex)
-                {
-                    _logger.Error(_localization.L("WorkflowDefinition.Import.Failed", item.WorkflowName), ex);
-                    fail++;
-                }
+
+                return result;
             }
-
-            return (success, fail);
+            catch (Exception ex)
+            {
+                _logger.Error(_localization.L("WorkflowDefinition.Import.Failed"), ex);
+                throw new HbtException(_localization.L("WorkflowDefinition.Import.Failed"), ex);
+            }
         }
 
         /// <summary>
-        /// 导出工作流定义数据
+        /// 导出工作流定义
         /// </summary>
-        /// <param name="query">导出查询条件</param>
-        /// <returns>符合条件的工作流定义导出列表</returns>
-        public async Task<List<HbtWorkflowDefinitionExportDto>> ExportAsync(HbtWorkflowDefinitionQueryDto query)
+        public async Task<byte[]> ExportAsync(IEnumerable<HbtWorkflowDefinitionDto> data, string sheetName = "Sheet1")
         {
-            var exp = Expressionable.Create<HbtWorkflowDefinition>();
-
-            if (!string.IsNullOrEmpty(query?.WorkflowName))
-                exp = exp.And(x => x.WorkflowName.Contains(query.WorkflowName));
-
-            if (!string.IsNullOrEmpty(query?.WorkflowCategory))
-                exp = exp.And(x => x.WorkflowCategory == query.WorkflowCategory);
-
-            if (query?.WorkflowStatus.HasValue == true)
-                exp = exp.And(x => x.Status == query.WorkflowStatus.Value);
-
-            var list = await _definitionRepository.GetListAsync(exp.ToExpression());
-            return list.Adapt<List<HbtWorkflowDefinitionExportDto>>();
+            try
+            {
+                return await HbtExcelHelper.ExportAsync(data, sheetName);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(_localization.L("WorkflowDefinition.Export.Failed"), ex);
+                throw new HbtException(_localization.L("WorkflowDefinition.Export.Failed"), ex);
+            }
         }
 
         /// <summary>
         /// 获取工作流定义导入模板
         /// </summary>
-        /// <returns>模板数据</returns>
-        public Task<HbtWorkflowDefinitionTemplateDto> GetTemplateAsync()
+        public async Task<byte[]> GetTemplateAsync(string sheetName = "Sheet1")
         {
-            return Task.FromResult(new HbtWorkflowDefinitionTemplateDto
+            try
             {
-                WorkflowName = "示例工作流",
-                WorkflowCategory = "默认分类",
-                Remark = "请填写备注信息"
-            });
+                return await HbtExcelHelper.GenerateTemplateAsync<HbtWorkflowDefinitionImportDto>(sheetName);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(_localization.L("WorkflowDefinition.Template.Failed"), ex);
+                throw new HbtException(_localization.L("WorkflowDefinition.Template.Failed"), ex);
+            }
         }
 
         /// <summary>

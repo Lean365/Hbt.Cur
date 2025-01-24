@@ -18,8 +18,11 @@ using Lean.Hbt.Domain.Entities.Workflow;
 using Lean.Hbt.Domain.IServices;
 using Lean.Hbt.Domain.IServices.Admin;
 using Lean.Hbt.Domain.Repositories;
+using Lean.Hbt.Common.Helpers;
 using Mapster;
 using SqlSugar;
+using Microsoft.Extensions.Options;
+using Lean.Hbt.Common.Options;
 
 namespace Lean.Hbt.Application.Services.Workflow
 {
@@ -196,78 +199,72 @@ namespace Lean.Hbt.Application.Services.Workflow
         }
 
         /// <summary>
-        /// 导入工作流节点数据
+        /// 导入工作流节点
         /// </summary>
-        /// <param name="nodes">要导入的节点列表</param>
-        /// <returns>返回成功和失败的记录数</returns>
-        /// <remarks>
-        /// 导入过程中的异常会被记录但不会中断导入流程
-        /// </remarks>
-        public async Task<(int success, int fail)> ImportAsync(List<HbtWorkflowNodeImportDto> nodes)
+        public async Task<List<HbtWorkflowNodeDto>> ImportAsync(Stream fileStream, string sheetName = "Sheet1")
         {
-            if (nodes == null || !nodes.Any())
-                return (0, 0);
-
-            var success = 0;
-            var fail = 0;
-
-            foreach (var item in nodes)
+            try
             {
-                try
+                // 使用 HbtExcelHelper 导入数据
+                var importNodes = await HbtExcelHelper.ImportAsync<HbtWorkflowNodeImportDto>(fileStream, sheetName);
+                var result = new List<HbtWorkflowNodeDto>();
+
+                foreach (var item in importNodes)
                 {
-                    var node = item.Adapt<HbtWorkflowNode>();
-                    var result = await _nodeRepository.InsertAsync(node);
-                    if (result > 0)
-                        success++;
-                    else
-                        fail++;
+                    try
+                    {
+                        var node = item.Adapt<HbtWorkflowNode>();
+                        var insertResult = await _nodeRepository.InsertAsync(node);
+                        if (insertResult > 0)
+                        {
+                            result.Add(node.Adapt<HbtWorkflowNodeDto>());
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.Error(_localization.L("WorkflowNode.Import.Failed", item.NodeName), ex);
+                    }
                 }
-                catch (Exception ex)
-                {
-                    _logger.Error(_localization.L("WorkflowNode.Import.Failed", item.NodeName), ex);
-                    fail++;
-                }
+
+                return result;
             }
-
-            return (success, fail);
-        }
-
-        /// <summary>
-        /// 导出工作流节点数据
-        /// </summary>
-        /// <param name="query">导出查询条件</param>
-        /// <returns>符合条件的节点导出列表</returns>
-        public async Task<List<HbtWorkflowNodeExportDto>> ExportAsync(HbtWorkflowNodeQueryDto query)
-        {
-            var exp = Expressionable.Create<HbtWorkflowNode>();
-
-            if (!string.IsNullOrEmpty(query?.NodeName))
-                exp = exp.And(x => x.NodeName.Contains(query.NodeName));
-
-            if (query?.NodeType.HasValue == true)
-                exp = exp.And(x => x.NodeType == query.NodeType.Value);
-
-            if (query?.WorkflowDefinitionId.HasValue == true)
-                exp = exp.And(x => x.WorkflowDefinitionId == query.WorkflowDefinitionId.Value);
-
-            var list = await _nodeRepository.GetListAsync(exp.ToExpression());
-            return list.Adapt<List<HbtWorkflowNodeExportDto>>();
-        }
-
-        /// <summary>
-        /// 获取工作流节点模板
-        /// </summary>
-        /// <returns>节点模板数据</returns>
-        /// <remarks>
-        /// 用于前端新建节点时的默认值填充
-        /// </remarks>
-        public Task<HbtWorkflowNodeTemplateDto> GetTemplateAsync()
-        {
-            return Task.FromResult(new HbtWorkflowNodeTemplateDto
+            catch (Exception ex)
             {
-                NodeName = "示例节点",
-                NodeType = HbtWorkflowNodeType.Approval.ToString()
-            });
+                _logger.Error(_localization.L("WorkflowNode.Import.Failed"), ex);
+                throw new HbtException(_localization.L("WorkflowNode.Import.Failed"), ex);
+            }
+        }
+
+        /// <summary>
+        /// 导出工作流节点
+        /// </summary>
+        public async Task<byte[]> ExportAsync(IEnumerable<HbtWorkflowNodeDto> data, string sheetName = "Sheet1")
+        {
+            try
+            {
+                return await HbtExcelHelper.ExportAsync(data, sheetName);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(_localization.L("WorkflowNode.Export.Failed"), ex);
+                throw new HbtException(_localization.L("WorkflowNode.Export.Failed"), ex);
+            }
+        }
+
+        /// <summary>
+        /// 获取工作流节点导入模板
+        /// </summary>
+        public async Task<byte[]> GetTemplateAsync(string sheetName = "Sheet1")
+        {
+            try
+            {
+                return await HbtExcelHelper.GenerateTemplateAsync<HbtWorkflowNodeImportDto>(sheetName);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(_localization.L("WorkflowNode.Template.Failed"), ex);
+                throw new HbtException(_localization.L("WorkflowNode.Template.Failed"), ex);
+            }
         }
 
         /// <summary>
