@@ -1,0 +1,235 @@
+#nullable enable
+
+//===================================================================
+// 项目名 : Lean.Hbt
+// 文件名 : HbtWorkflowScheduler.cs
+// 创建者 : Lean365
+// 创建时间: 2024-01-23 12:00
+// 版本号 : V1.0.0
+// 描述    : 工作流任务调度器
+//===================================================================
+
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Text.Json;
+using Lean.Hbt.Domain.IServices;
+using Lean.Hbt.Common.Enums;
+using Lean.Hbt.Domain.Data;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Quartz;
+using Quartz.Impl;
+using Quartz.Spi;
+using Lean.Hbt.Application.Services.Workflow.Jobs;
+
+namespace Lean.Hbt.Application.Services.Workflow
+{
+    /// <summary>
+    /// 工作流调度器
+    /// </summary>
+    public class HbtWorkflowScheduler : IHostedService
+    {
+        private readonly IServiceProvider _serviceProvider;
+        private readonly IHbtLogger _logger;
+        private IScheduler _scheduler;
+
+        public HbtWorkflowScheduler(
+            IServiceProvider serviceProvider,
+            IHbtLogger logger)
+        {
+            _serviceProvider = serviceProvider;
+            _logger = logger;
+        }
+
+        public async Task StartAsync(CancellationToken cancellationToken)
+        {
+            try
+            {
+                // 创建调度器工厂
+                var factory = new StdSchedulerFactory();
+                _scheduler = await factory.GetScheduler(cancellationToken);
+
+                // 设置Job工厂
+                _scheduler.JobFactory = new HbtWorkflowJobFactory(_serviceProvider);
+
+                // 启动调度器
+                await _scheduler.Start(cancellationToken);
+                _logger.Info("工作流调度器已启动");
+            }
+            catch (Exception ex)
+            {
+                _logger.Error("启动工作流调度器失败", ex);
+                throw;
+            }
+        }
+
+        public async Task StopAsync(CancellationToken cancellationToken)
+        {
+            try
+            {
+                if (_scheduler != null)
+                {
+                    await _scheduler.Shutdown(cancellationToken);
+                    _logger.Info("工作流调度器已停止");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error("停止工作流调度器失败", ex);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// 调度任务
+        /// </summary>
+        public async Task ScheduleJobAsync(long taskId, HbtWorkflowScheduledTaskType taskType, DateTime scheduledTime)
+        {
+            try
+            {
+                // 创建Job详情
+                var jobType = GetJobType(taskType);
+                var jobDetail = JobBuilder.Create(jobType)
+                    .WithIdentity($"job_{taskId}", "workflow")
+                    .UsingJobData("taskId", taskId)
+                    .Build();
+
+                // 创建触发器
+                var trigger = TriggerBuilder.Create()
+                    .WithIdentity($"trigger_{taskId}", "workflow")
+                    .StartAt(scheduledTime)
+                    .Build();
+
+                // 调度任务
+                await _scheduler.ScheduleJob(jobDetail, trigger);
+                _logger.Info($"已调度任务[{taskId}],类型:{taskType},计划执行时间:{scheduledTime:yyyy-MM-dd HH:mm:ss}");
+            }
+            catch (Exception ex)
+            {
+                _logger.Error($"调度任务[{taskId}]失败", ex);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// 取消任务
+        /// </summary>
+        public async Task UnscheduleJobAsync(long taskId)
+        {
+            try
+            {
+                var triggerKey = new TriggerKey($"trigger_{taskId}", "workflow");
+                await _scheduler.UnscheduleJob(triggerKey);
+                _logger.Info($"已取消任务[{taskId}]的调度");
+            }
+            catch (Exception ex)
+            {
+                _logger.Error($"取消任务[{taskId}]的调度失败", ex);
+                throw;
+            }
+        }
+
+        private Type GetJobType(HbtWorkflowScheduledTaskType taskType)
+        {
+            return taskType switch
+            {
+                HbtWorkflowScheduledTaskType.TimeoutReminder => typeof(HbtWorkflowTimeoutReminderJob),
+                HbtWorkflowScheduledTaskType.TimedTrigger => typeof(HbtWorkflowTimedTriggerJob),
+                HbtWorkflowScheduledTaskType.DelayedExecution => typeof(HbtWorkflowDelayedExecutionJob),
+                HbtWorkflowScheduledTaskType.PeriodicExecution => typeof(HbtWorkflowPeriodicExecutionJob),
+                _ => throw new ArgumentException($"不支持的任务类型:{taskType}")
+            };
+        }
+    }
+
+    /// <summary>
+    /// 工作流Job工厂
+    /// </summary>
+    public class HbtWorkflowJobFactory : IJobFactory
+    {
+        private readonly IServiceProvider _serviceProvider;
+
+        public HbtWorkflowJobFactory(IServiceProvider serviceProvider)
+        {
+            _serviceProvider = serviceProvider;
+        }
+
+        public IJob NewJob(TriggerFiredBundle bundle, IScheduler scheduler)
+        {
+            try
+            {
+                // 从服务容器中获取Job实例
+                var jobType = bundle.JobDetail.JobType;
+                var job = (IJob)ActivatorUtilities.CreateInstance(_serviceProvider, jobType);
+                return job;
+            }
+            catch (Exception ex)
+            {
+                throw new SchedulerException($"创建Job实例失败: {ex.Message}", ex);
+            }
+        }
+
+        public void ReturnJob(IJob job)
+        {
+            var disposable = job as IDisposable;
+            disposable?.Dispose();
+        }
+    }
+
+    /// <summary>
+    /// 工作流任务扫描Job
+    /// </summary>
+    public class HbtWorkflowTaskScannerJob : IJob
+    {
+        private readonly IServiceProvider _serviceProvider;
+        private readonly IHbtLogger _logger;
+
+        public HbtWorkflowTaskScannerJob(IServiceProvider serviceProvider, IHbtLogger logger)
+        {
+            _serviceProvider = serviceProvider;
+            _logger = logger;
+        }
+
+        public async Task Execute(IJobExecutionContext context)
+        {
+            try
+            {
+                using var scope = _serviceProvider.CreateScope();
+                var taskService = scope.ServiceProvider.GetRequiredService<IHbtWorkflowScheduledTaskService>();
+                var scheduler = scope.ServiceProvider.GetRequiredService<HbtWorkflowScheduler>();
+
+                // 获取待执行的任务
+                var tasks = await taskService.GetPendingTasksAsync();
+
+                foreach (var task in tasks)
+                {
+                    try
+                    {
+                        // 调度任务
+                        var taskEntity = new Domain.Entities.Workflow.HbtWorkflowScheduledTask
+                        {
+                            Id = task.Id,
+                            WorkflowInstanceId = task.WorkflowInstanceId,
+                            NodeId = task.NodeId,
+                            TaskType = task.TaskType,
+                            ScheduledTime = task.ScheduledTime,
+                            TaskParameters = task.TaskParameters
+                        };
+
+                        await scheduler.ScheduleJobAsync(task.Id, task.TaskType, task.ScheduledTime);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.Error($"调度任务{task.Id}失败", ex);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error("扫描待执行任务失败", ex);
+                throw;
+            }
+        }
+    }
+} 

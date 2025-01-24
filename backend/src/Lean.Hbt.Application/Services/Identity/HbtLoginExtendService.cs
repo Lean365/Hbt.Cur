@@ -17,7 +17,7 @@ using SqlSugar;
 using Lean.Hbt.Application.Dtos.Identity;
 using Lean.Hbt.Common.Models;
 using Lean.Hbt.Domain.Entities.Identity;
-using Lean.Hbt.Infrastructure.Repositories;
+
 using Lean.Hbt.Common.Extensions;
 using Lean.Hbt.Domain.IServices;
 using Lean.Hbt.Domain.Repositories;

@@ -25,7 +25,6 @@ using Lean.Hbt.Domain.Utils;
 using Mapster;
 using Microsoft.Extensions.Logging;
 using SqlSugar;
-using Lean.Hbt.Infrastructure.Services;
 using Lean.Hbt.Domain.Services;
 using Lean.Hbt.Domain.IServices.Admin;
 

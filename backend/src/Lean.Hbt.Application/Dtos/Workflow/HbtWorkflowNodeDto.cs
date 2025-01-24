@@ -158,7 +158,7 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 节点排序
         /// </summary>
-        public int NodeSort { get; set; }
+        public int OrderNum { get; set; }
 
         /// <summary>
         /// 备注
@@ -203,7 +203,7 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 节点排序
         /// </summary>
-        public int NodeSort { get; set; }
+        public int OrderNum { get; set; }
 
         /// <summary>
         /// 备注
@@ -248,7 +248,7 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 节点排序
         /// </summary>
-        public int NodeSort { get; set; }
+        public int OrderNum { get; set; }
 
         /// <summary>
         /// 备注
@@ -288,7 +288,7 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 节点排序
         /// </summary>
-        public int NodeSort { get; set; }
+        public int OrderNum { get; set; }
 
         /// <summary>
         /// 备注

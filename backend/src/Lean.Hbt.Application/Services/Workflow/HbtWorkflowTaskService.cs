@@ -19,6 +19,7 @@ using Lean.Hbt.Domain.IServices.Admin;
 using Lean.Hbt.Domain.Repositories;
 using Mapster;
 using SqlSugar;
+using Lean.Hbt.Common.Enums;
 
 namespace Lean.Hbt.Application.Services.Workflow
 {
@@ -45,24 +46,24 @@ namespace Lean.Hbt.Application.Services.Workflow
             // 配置Mapster映射规则
             TypeAdapterConfig<HbtWorkflowTask, HbtWorkflowTaskDto>.NewConfig()
                 .Map(dest => dest.AssigneeName, src => src.Node != null ? src.Node.NodeName : null)
-                .Map(dest => dest.AssigneeId, src => src.HandlerId)
-                .Map(dest => dest.Result, src => src.TaskResult.ToString())
-                .Map(dest => dest.Comment, src => src.TaskComment);
+                .Map(dest => dest.AssigneeId, src => src.AssigneeId)
+                .Map(dest => dest.Result, src => src.Result)
+                .Map(dest => dest.Comment, src => src.Comment);
 
             TypeAdapterConfig<HbtWorkflowTask, HbtWorkflowTaskExportDto>.NewConfig()
                 .Map(dest => dest.AssigneeName, src => src.Node != null ? src.Node.NodeName : null)
                 .Map(dest => dest.TaskTypeName, src => src.TaskType.ToString())
                 .Map(dest => dest.StatusName, src => src.Status.ToString())
-                .Map(dest => dest.Result, src => src.TaskResult.ToString())
-                .Map(dest => dest.Comment, src => src.TaskComment);
+                .Map(dest => dest.Result, src => src.Result)
+                .Map(dest => dest.Comment, src => src.Comment);
 
             TypeAdapterConfig<HbtWorkflowTaskCreateDto, HbtWorkflowTask>.NewConfig()
-                .Map(dest => dest.HandlerId, src => src.AssigneeId)
+                .Map(dest => dest.AssigneeId, src => src.AssigneeId)
                 .Map(dest => dest.NodeId, src => src.WorkflowNodeId);
 
             TypeAdapterConfig<HbtWorkflowTaskUpdateDto, HbtWorkflowTask>.NewConfig()
-                .Map(dest => dest.TaskResult, src => src.Result)
-                .Map(dest => dest.TaskComment, src => src.Comment);
+                .Map(dest => dest.Result, src => src.Result)
+                .Map(dest => dest.Comment, src => src.Comment);
         }
 
         /// <summary>
@@ -108,7 +109,7 @@ namespace Lean.Hbt.Application.Services.Workflow
                 exp = exp.And(x => x.TaskType == query.TaskType.Value);
 
             if (query?.AssigneeId.HasValue == true)
-                exp = exp.And(x => x.HandlerId == query.AssigneeId.Value);
+                exp = exp.And(x => x.AssigneeId == query.AssigneeId.Value);
 
             if (query?.Status.HasValue == true)
                 exp = exp.And(x => x.Status == query.Status.Value);
@@ -159,7 +160,7 @@ namespace Lean.Hbt.Application.Services.Workflow
 
             var task = input.Adapt<HbtWorkflowTask>();
             task.Status = Common.Enums.HbtWorkflowTaskStatus.Pending; // 新建任务默认为待处理状态
-            task.StartTime = DateTime.Now;
+            task.CreateTime = DateTime.Now;
 
             var result = await _taskRepository.InsertAsync(task);
             if (result <= 0)
@@ -275,7 +276,7 @@ namespace Lean.Hbt.Application.Services.Workflow
                 {
                     var task = item.Adapt<HbtWorkflowTask>();
                     task.Status = Common.Enums.HbtWorkflowTaskStatus.Pending; // 导入时默认为待处理状态
-                    task.StartTime = DateTime.Now;
+                    task.CreateTime = DateTime.Now;
 
                     var result = await _taskRepository.InsertAsync(task);
                     if (result > 0)
@@ -312,7 +313,7 @@ namespace Lean.Hbt.Application.Services.Workflow
                 exp = exp.And(x => x.TaskType == query.TaskType.Value);
 
             if (query?.AssigneeId.HasValue == true)
-                exp = exp.And(x => x.HandlerId == query.AssigneeId.Value);
+                exp = exp.And(x => x.AssigneeId == query.AssigneeId.Value);
 
             if (query?.Status.HasValue == true)
                 exp = exp.And(x => x.Status == query.Status.Value);
@@ -347,7 +348,7 @@ namespace Lean.Hbt.Application.Services.Workflow
                 throw new HbtException(_localization.L("WorkflowTask.NotFound"));
 
             task.Status = input.Status;
-            task.HandlerId = input.AssigneeId;
+            task.AssigneeId = input.AssigneeId;
             
             var result = await _taskRepository.UpdateAsync(task);
             if (result <= 0)
@@ -376,8 +377,8 @@ namespace Lean.Hbt.Application.Services.Workflow
                 throw new HbtException(_localization.L("WorkflowTask.CannotCompleteNonProcessing"));
 
             task.Status = Common.Enums.HbtWorkflowTaskStatus.Completed;
-            task.TaskResult = Common.Enums.HbtWorkflowTaskResult.Approved; // 默认为同意
-            task.TaskComment = comment;
+            task.Result = result.ToString();
+            task.Comment = comment;
             task.CompleteTime = DateTime.Now;
             
             var updateResult = await _taskRepository.UpdateAsync(task);
@@ -407,8 +408,8 @@ namespace Lean.Hbt.Application.Services.Workflow
                 throw new HbtException(_localization.L("WorkflowTask.CannotTransferNonProcessing"));
 
             task.Status = Common.Enums.HbtWorkflowTaskStatus.Transferred;
-            task.HandlerId = assigneeId;
-            task.TaskComment = comment;
+            task.AssigneeId = assigneeId;
+            task.Comment = comment;
             
             var result = await _taskRepository.UpdateAsync(task);
             if (result <= 0)
@@ -431,13 +432,12 @@ namespace Lean.Hbt.Application.Services.Workflow
             if (task == null)
                 throw new HbtException(_localization.L("WorkflowTask.NotFound"));
 
-            // 检查任务状态是否允许退回
             if (task.Status != Common.Enums.HbtWorkflowTaskStatus.Processing)
                 throw new HbtException(_localization.L("WorkflowTask.CannotRejectNonProcessing"));
 
-            task.Status = Common.Enums.HbtWorkflowTaskStatus.Returned;
-            task.TaskResult = Common.Enums.HbtWorkflowTaskResult.Rejected;
-            task.TaskComment = comment;
+            task.Status = Common.Enums.HbtWorkflowTaskStatus.Completed;
+            task.Result = Common.Enums.HbtWorkflowTaskResult.Rejected.ToString();
+            task.Comment = comment;
             task.CompleteTime = DateTime.Now;
             
             var result = await _taskRepository.UpdateAsync(task);
@@ -466,8 +466,8 @@ namespace Lean.Hbt.Application.Services.Workflow
                 throw new HbtException(_localization.L("WorkflowTask.CannotCancelNonProcessing"));
 
             task.Status = Common.Enums.HbtWorkflowTaskStatus.Cancelled;
-            task.TaskResult = null; // 撤销时不设置处理结果
-            task.TaskComment = comment;
+            task.Result = null; // 撤销时不设置处理结果
+            task.Comment = comment;
             task.CompleteTime = DateTime.Now;
             
             var result = await _taskRepository.UpdateAsync(task);
@@ -476,6 +476,105 @@ namespace Lean.Hbt.Application.Services.Workflow
 
             _logger.Info(_localization.L("WorkflowTask.Cancelled.Success", id));
             return true;
+        }
+
+        /// <summary>
+        /// 审批通过工作流任务
+        /// </summary>
+        /// <param name="taskId">工作流任务ID</param>
+        /// <param name="comment">审批意见</param>
+        /// <returns>审批是否成功</returns>
+        /// <exception cref="HbtException">当工作流任务不存在或审批失败时抛出异常</exception>
+        public async Task<bool> ApproveTaskAsync(long taskId, string comment)
+        {
+            var task = await _taskRepository.GetByIdAsync(taskId);
+            if (task == null)
+                throw new HbtException(_localization.L("WorkflowTask.NotFound"));
+
+            if (task.Status != HbtWorkflowTaskStatus.Processing)
+                throw new HbtException(_localization.L("WorkflowTask.CannotApproveNonProcessing"));
+
+            task.Status = HbtWorkflowTaskStatus.Completed;
+            task.Result = HbtWorkflowTaskResult.Approved.ToString();
+            task.Comment = comment;
+            task.CompleteTime = DateTime.Now;
+
+            var result = await _taskRepository.UpdateAsync(task);
+            if (result <= 0)
+                throw new HbtException(_localization.L("WorkflowTask.Approve.Failed"));
+
+            _logger.Info(_localization.L("WorkflowTask.Approved.Success", taskId));
+            return true;
+        }
+
+        /// <summary>
+        /// 驳回工作流任务
+        /// </summary>
+        /// <param name="taskId">工作流任务ID</param>
+        /// <param name="comment">驳回意见</param>
+        /// <returns>驳回是否成功</returns>
+        /// <exception cref="HbtException">当工作流任务不存在或驳回失败时抛出异常</exception>
+        public async Task<bool> RejectTaskAsync(long taskId, string comment)
+        {
+            var task = await _taskRepository.GetByIdAsync(taskId);
+            if (task == null)
+                throw new HbtException(_localization.L("WorkflowTask.NotFound"));
+
+            if (task.Status != HbtWorkflowTaskStatus.Processing)
+                throw new HbtException(_localization.L("WorkflowTask.CannotRejectNonProcessing"));
+
+            task.Status = HbtWorkflowTaskStatus.Completed;
+            task.Result = HbtWorkflowTaskResult.Rejected.ToString();
+            task.Comment = comment;
+            task.CompleteTime = DateTime.Now;
+
+            var result = await _taskRepository.UpdateAsync(task);
+            if (result <= 0)
+                throw new HbtException(_localization.L("WorkflowTask.Reject.Failed"));
+
+            _logger.Info(_localization.L("WorkflowTask.Rejected.Success", taskId));
+            return true;
+        }
+
+        /// <summary>
+        /// 转办工作流任务
+        /// </summary>
+        /// <param name="taskId">工作流任务ID</param>
+        /// <param name="assigneeId">新处理人ID</param>
+        /// <param name="comment">转办说明</param>
+        /// <returns>转办是否成功</returns>
+        /// <exception cref="HbtException">当工作流任务不存在或转办失败时抛出异常</exception>
+        public async Task<bool> TransferTaskAsync(long taskId, long assigneeId, string comment)
+        {
+            var task = await _taskRepository.GetByIdAsync(taskId);
+            if (task == null)
+                throw new HbtException(_localization.L("WorkflowTask.NotFound"));
+
+            if (task.Status != HbtWorkflowTaskStatus.Processing)
+                throw new HbtException(_localization.L("WorkflowTask.CannotTransferNonProcessing"));
+
+            task.Status = HbtWorkflowTaskStatus.Transferred;
+            task.Result = HbtWorkflowTaskResult.Transferred.ToString();
+            task.AssigneeId = assigneeId;
+            task.Comment = comment;
+
+            var result = await _taskRepository.UpdateAsync(task);
+            if (result <= 0)
+                throw new HbtException(_localization.L("WorkflowTask.Transfer.Failed"));
+
+            _logger.Info(_localization.L("WorkflowTask.Transferred.Success", taskId));
+            return true;
+        }
+
+        /// <summary>
+        /// 获取指定处理人的工作流任务列表
+        /// </summary>
+        /// <param name="assigneeId">处理人ID</param>
+        /// <returns>工作流任务列表</returns>
+        public async Task<List<HbtWorkflowTaskDto>> GetTasksByAssigneeAsync(long assigneeId)
+        {
+            var tasks = await _taskRepository.GetListAsync(x => x.AssigneeId == assigneeId);
+            return tasks.Adapt<List<HbtWorkflowTaskDto>>();
         }
     }
 } 

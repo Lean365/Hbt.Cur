@@ -1,0 +1,112 @@
+#nullable enable
+
+//===================================================================
+// 项目名 : Lean.Hbt
+// 文件名 : BranchNodeExecutor.cs
+// 创建者 : Lean365
+// 创建时间: 2024-01-23 12:00
+// 版本号 : V1.0.0
+// 描述    : 分支节点执行器
+//===================================================================
+
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using System.Linq;
+using Lean.Hbt.Common.Enums;
+using Lean.Hbt.Domain.Entities.Workflow;
+using Lean.Hbt.Domain.Repositories;
+using Lean.Hbt.Domain.Models.Workflow;
+using Lean.Hbt.Application.Services.Workflow.Engine.Expressions;
+using Lean.Hbt.Domain.IServices;
+using System.Text.Json;
+using Lean.Hbt.Domain.IServices;
+
+namespace Lean.Hbt.Application.Services.Workflow.Engine.Executors
+{
+    /// <summary>
+    /// 分支节点执行器
+    /// </summary>
+    public class BranchNodeExecutor : WorkflowNodeExecutorBase
+    {
+        private readonly IHbtRepository<HbtWorkflowTransition> _transitionRepository;
+        private readonly IWorkflowExpressionEngine _expressionEngine;
+
+        /// <summary>
+        /// 构造函数
+        /// </summary>
+        public BranchNodeExecutor(
+            IHbtRepository<HbtWorkflowTransition> transitionRepository,
+            IWorkflowExpressionEngine expressionEngine,
+            IHbtLogger logger) : base(logger)
+        {
+            _transitionRepository = transitionRepository;
+            _expressionEngine = expressionEngine;
+        }
+
+        /// <summary>
+        /// 节点类型
+        /// </summary>
+        protected override HbtWorkflowNodeType NodeType => HbtWorkflowNodeType.Branch;
+
+        /// <summary>
+        /// 执行节点
+        /// </summary>
+        protected override async Task<HbtWorkflowNodeResult> ExecuteInternalAsync(
+            HbtWorkflowInstance instance,
+            HbtWorkflowNode node,
+            Dictionary<string, object>? variables = null)
+        {
+            // 获取所有可用的转换
+            var transitions = await _transitionRepository.GetListAsync(x => x.SourceNodeId == node.Id);
+            if (!transitions.Any())
+            {
+                return CreateFailureResult("分支节点没有配置转换");
+            }
+
+            // 解析节点配置
+            var config = JsonSerializer.Deserialize<HbtWorkflowNodeConfig>(node.NodeConfig);
+            if (config == null)
+            {
+                return CreateFailureResult("分支节点配置无效");
+            }
+
+            // 获取满足条件的转换
+            var availableTransitions = new List<long>();
+            foreach (var transition in transitions)
+            {
+                if (string.IsNullOrEmpty(transition.Condition))
+                {
+                    // 如果没有条件,作为默认分支
+                    availableTransitions.Add(transition.Id);
+                    continue;
+                }
+
+                // 执行条件表达式
+                var conditionMet = await _expressionEngine.EvaluateAsync(transition.Condition, variables);
+                if (conditionMet)
+                {
+                    availableTransitions.Add(transition.Id);
+                    
+                    // 如果不是多分支模式,找到第一个满足条件的分支后就退出
+                    if (!config.AllowMultipleBranches)
+                    {
+                        break;
+                    }
+                }
+            }
+
+            if (!availableTransitions.Any())
+            {
+                return CreateFailureResult("没有满足条件的分支");
+            }
+
+            // 返回成功结果,包含所有可用的转换ID
+            var outputVariables = new Dictionary<string, object>
+            {
+                { "AvailableTransitions", availableTransitions }
+            };
+
+            return CreateSuccessResult(outputVariables);
+        }
+    }
+} 

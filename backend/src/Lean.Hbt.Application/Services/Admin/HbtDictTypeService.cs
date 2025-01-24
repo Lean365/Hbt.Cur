@@ -16,7 +16,7 @@ using Lean.Hbt.Domain.Repositories;
 using Lean.Hbt.Domain.Utils;
 using Mapster;
 using SqlSugar;
-using Lean.Hbt.Infrastructure.Data.Contexts;
+using Lean.Hbt.Domain.Data;
 using Lean.Hbt.Common.Enums;
 
 namespace Lean.Hbt.Application.Services.Admin

@@ -15,7 +15,6 @@ using System.Linq.Expressions;
 using Lean.Hbt.Common.Models;
 using Lean.Hbt.Domain.Entities.Audit;
 using Lean.Hbt.Application.Dtos.Audit;
-using Lean.Hbt.Infrastructure.Data;
 using Lean.Hbt.Common.Exceptions;
 using Lean.Hbt.Common.Helpers;
 using Lean.Hbt.Domain.Repositories;

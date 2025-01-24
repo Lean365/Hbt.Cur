@@ -9,13 +9,17 @@
   <ItemGroup>
     <PackageReference Include="Mapster" Version="7.4.0" />
     <PackageReference Include="FluentValidation" Version="11.9.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.1" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="4.8.0" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="9.0.1" />
+    <PackageReference Include="Quartz" Version="3.13.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Lean.Hbt.Domain\Lean.Hbt.Domain.csproj" />
     <ProjectReference Include="..\Lean.Hbt.Common\Lean.Hbt.Common.csproj" />
-    <ProjectReference Include="..\Lean.Hbt.Infrastructure\Lean.Hbt.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>
