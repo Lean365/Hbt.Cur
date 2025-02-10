@@ -16,6 +16,31 @@
             <param name="pattern">搜索模式</param>
             <returns>匹配的键列表</returns>
         </member>
+        <member name="T:Lean.Hbt.Domain.Data.IHbtDbContext">
+            <summary>
+            数据库上下文接口
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Data.IHbtDbContext.Client">
+            <summary>
+            获取SqlSugar客户端
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Domain.Data.IHbtDbContext.BeginTran">
+            <summary>
+            开启事务
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Domain.Data.IHbtDbContext.CommitTran">
+            <summary>
+            提交事务
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Domain.Data.IHbtDbContext.RollbackTran">
+            <summary>
+            回滚事务
+            </summary>
+        </member>
         <member name="T:Lean.Hbt.Domain.Entities.Admin.HbtDictData">
             <summary>
             字典数据实体
@@ -1567,6 +1592,40 @@
             最后活动时间
             </summary>
         </member>
+        <member name="T:Lean.Hbt.Domain.Entities.Workflow.Engine.HbtWorkflowActivity">
+            <summary>
+            工作流活动实体
+            </summary>
+            <remarks>
+            创建者: Lean365
+            创建时间: 2024-01-23
+            </remarks>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.Engine.HbtWorkflowActivity.Name">
+            <summary>
+            活动名称
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.Engine.HbtWorkflowActivity.Type">
+            <summary>
+            活动类型
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.Engine.HbtWorkflowActivity.Configuration">
+            <summary>
+            活动配置(JSON)
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.Engine.HbtWorkflowActivity.WorkflowDefinitionId">
+            <summary>
+            工作流定义ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.Engine.HbtWorkflowActivity.WorkflowDefinition">
+            <summary>
+            工作流定义
+            </summary>
+        </member>
         <member name="T:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowDefinition">
             <summary>
             工作流定义实体类
@@ -1781,13 +1840,123 @@
             子节点列表
             </summary>
         </member>
+        <member name="T:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowParallelBranch">
+            <summary>
+            工作流并行分支状态实体
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowParallelBranch.WorkflowInstanceId">
+            <summary>
+            工作流实例ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowParallelBranch.ParallelNodeId">
+            <summary>
+            并行节点ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowParallelBranch.BranchTransitionId">
+            <summary>
+            分支转换ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowParallelBranch.IsCompleted">
+            <summary>
+            是否完成
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowParallelBranch.CompleteTime">
+            <summary>
+            完成时间
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowParallelBranch.WorkflowInstance">
+            <summary>
+            工作流实例
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowParallelBranch.ParallelNode">
+            <summary>
+            并行节点
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowParallelBranch.BranchTransition">
+            <summary>
+            分支转换
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowScheduledTask">
+            <summary>
+            工作流定时任务实体
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowScheduledTask.WorkflowInstanceId">
+            <summary>
+            工作流实例ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowScheduledTask.NodeId">
+            <summary>
+            节点ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowScheduledTask.TaskType">
+            <summary>
+            任务类型
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowScheduledTask.ScheduledTime">
+            <summary>
+            计划执行时间
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowScheduledTask.ExecutedTime">
+            <summary>
+            实际执行时间
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowScheduledTask.Status">
+            <summary>
+            执行状态
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowScheduledTask.RetryCount">
+            <summary>
+            重试次数
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowScheduledTask.MaxRetryCount">
+            <summary>
+            最大重试次数
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowScheduledTask.ErrorMessage">
+            <summary>
+            错误信息
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowScheduledTask.TaskParameters">
+            <summary>
+            任务参数(JSON格式)
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowScheduledTask.WorkflowInstance">
+            <summary>
+            工作流实例
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowScheduledTask.Node">
+            <summary>
+            节点
+            </summary>
+        </member>
         <member name="T:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowTask">
             <summary>
-            工作流任务实体类
+            工作流任务实体
             </summary>
             <remarks>
             创建者: Lean365
-            创建时间: 2024-01-22
+            创建时间: 2024-01-23
             </remarks>
         </member>
         <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowTask.WorkflowInstanceId">
@@ -1800,9 +1969,9 @@
             节点ID
             </summary>
         </member>
-        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowTask.HandlerId">
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowTask.TaskTitle">
             <summary>
-            处理人ID
+            任务标题
             </summary>
         </member>
         <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowTask.TaskType">
@@ -1815,17 +1984,22 @@
             任务状态
             </summary>
         </member>
-        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowTask.TaskResult">
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowTask.AssigneeId">
             <summary>
-            处理结果
+            处理人ID
             </summary>
         </member>
-        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowTask.TaskComment">
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowTask.Comment">
             <summary>
             处理意见
             </summary>
         </member>
-        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowTask.StartTime">
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowTask.Result">
+            <summary>
+            处理结果
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowTask.CreateTime">
             <summary>
             开始时间
             </summary>
@@ -1833,6 +2007,26 @@
         <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowTask.CompleteTime">
             <summary>
             完成时间
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowTask.DueTime">
+            <summary>
+            到期时间
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowTask.ReminderTime">
+            <summary>
+            提醒时间
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowTask.Priority">
+            <summary>
+            优先级
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowTask.Remark">
+            <summary>
+            备注
             </summary>
         </member>
         <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowTask.WorkflowInstance">
@@ -1843,6 +2037,46 @@
         <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowTask.Node">
             <summary>
             节点
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowTransition">
+            <summary>
+            工作流转换实体
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowTransition.SourceNodeId">
+            <summary>
+            源节点ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowTransition.TargetNodeId">
+            <summary>
+            目标节点ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowTransition.Condition">
+            <summary>
+            转换条件(JSON格式)
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowTransition.WorkflowDefinitionId">
+            <summary>
+            工作流定义ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowTransition.SourceNode">
+            <summary>
+            源节点
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowTransition.TargetNode">
+            <summary>
+            目标节点
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowTransition.WorkflowDefinition">
+            <summary>
+            工作流定义
             </summary>
         </member>
         <member name="T:Lean.Hbt.Domain.Entities.Workflow.HbtWorkflowVariable">
@@ -2523,55 +2757,6 @@
             时间戳
             </summary>
         </member>
-        <member name="T:Lean.Hbt.Domain.Models.Admin.HbtTranslation">
-            <summary>
-            翻译实体
-            </summary>
-            <remarks>
-            创建者: Lean365
-            创建时间: 2024-01-20
-            </remarks>
-        </member>
-        <member name="P:Lean.Hbt.Domain.Models.Admin.HbtTranslation.Id">
-            <summary>
-            主键
-            </summary>
-        </member>
-        <member name="P:Lean.Hbt.Domain.Models.Admin.HbtTranslation.LangCode">
-            <summary>
-            语言代码
-            </summary>
-        </member>
-        <member name="P:Lean.Hbt.Domain.Models.Admin.HbtTranslation.LangKey">
-            <summary>
-            翻译键
-            </summary>
-        </member>
-        <member name="P:Lean.Hbt.Domain.Models.Admin.HbtTranslation.LangValue">
-            <summary>
-            翻译值
-            </summary>
-        </member>
-        <member name="P:Lean.Hbt.Domain.Models.Admin.HbtTranslation.Status">
-            <summary>
-            状态（0停用 1正常）
-            </summary>
-        </member>
-        <member name="P:Lean.Hbt.Domain.Models.Admin.HbtTranslation.Remark">
-            <summary>
-            备注
-            </summary>
-        </member>
-        <member name="P:Lean.Hbt.Domain.Models.Admin.HbtTranslation.CreateTime">
-            <summary>
-            创建时间
-            </summary>
-        </member>
-        <member name="P:Lean.Hbt.Domain.Models.Admin.HbtTranslation.UpdateTime">
-            <summary>
-            更新时间
-            </summary>
-        </member>
         <member name="T:Lean.Hbt.Domain.Models.Identity.HbtSessionInfo">
             <summary>
             会话信息模型
@@ -2648,6 +2833,86 @@
         <member name="P:Lean.Hbt.Domain.Models.SignalR.HbtOnlineUser.LastActiveTime">
             <summary>
             最后活动时间
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Domain.Models.Workflow.HbtWorkflowNodeConfig">
+            <summary>
+            工作流节点配置
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Models.Workflow.HbtWorkflowNodeConfig.ApproverType">
+            <summary>
+            审批人类型
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Models.Workflow.HbtWorkflowNodeConfig.ApproverIds">
+            <summary>
+            指定审批人ID列表
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Models.Workflow.HbtWorkflowNodeConfig.RoleIds">
+            <summary>
+            指定角色ID列表
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Models.Workflow.HbtWorkflowNodeConfig.DepartmentIds">
+            <summary>
+            指定部门ID列表
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Models.Workflow.HbtWorkflowNodeConfig.ApprovalRule">
+            <summary>
+            审批规则
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Models.Workflow.HbtWorkflowNodeConfig.ApprovalCount">
+            <summary>
+            审批数量(当ApprovalRule为Count时有效)
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Models.Workflow.HbtWorkflowNodeConfig.CustomCondition">
+            <summary>
+            自定义审批条件表达式
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Models.Workflow.HbtWorkflowNodeConfig.AllowMultipleBranches">
+            <summary>
+            允许多分支(仅对分支节点有效)
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Models.Workflow.HbtWorkflowNodeConfig.ParallelBranchCount">
+            <summary>
+            并行分支数量(仅对并行节点有效)
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Models.Workflow.HbtWorkflowNodeConfig.JoinType">
+            <summary>
+            汇聚类型(仅对汇聚节点有效)
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Models.Workflow.HbtWorkflowNodeConfig.JoinCondition">
+            <summary>
+            汇聚条件(当JoinType为Custom时有效)
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Models.Workflow.HbtWorkflowNodeConfig.TimeoutHours">
+            <summary>
+            超时时间(小时)
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Models.Workflow.HbtWorkflowNodeConfig.TimeoutNotify">
+            <summary>
+            超时通知
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Models.Workflow.HbtWorkflowNodeConfig.TimeoutAction">
+            <summary>
+            超时动作
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Domain.Models.Workflow.HbtWorkflowNodeConfig.CustomProperties">
+            <summary>
+            自定义属性
             </summary>
         </member>
         <member name="T:Lean.Hbt.Domain.Repositories.IHbtRepository`1">

@@ -1,3 +1,14 @@
+#nullable enable
+
+//===================================================================
+// 项目名 : Lean.Hbt
+// 文件名 : HbtWorkflowTaskType.cs
+// 创建者 : Lean365
+// 创建时间: 2024-01-23 12:00
+// 版本号 : V1.0.0
+// 描述    : 工作流任务类型枚举
+//===================================================================
+
 namespace Lean.Hbt.Common.Enums
 {
     /// <summary>
@@ -6,23 +17,23 @@ namespace Lean.Hbt.Common.Enums
     public enum HbtWorkflowTaskType
     {
         /// <summary>
-        /// 审批任务
+        /// 审批
         /// </summary>
-        Approval = 0,
+        Approval = 1,
 
         /// <summary>
-        /// 会签任务
+        /// 会签
         /// </summary>
-        Countersign = 1,
+        Countersign = 2,
 
         /// <summary>
-        /// 传阅任务
+        /// 传阅
         /// </summary>
-        Circulate = 2,
+        Circulation = 3,
 
         /// <summary>
-        /// 抄送任务
+        /// 处理
         /// </summary>
-        Copy = 3
+        Handle = 4
     }
 } 

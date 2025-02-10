@@ -1,10 +1,12 @@
+#nullable enable
+
 //===================================================================
 // 项目名 : Lean.Hbt 
 // 文件名 : HbtWorkflowTask.cs 
 // 创建者 : Lean365
-// 创建时间: 2024-01-22 11:50
-// 版本号 : V.0.0.1
-// 描述    : 工作流任务实体类
+// 创建时间: 2024-01-23 12:00
+// 版本号 : V1.0.0
+// 描述    : 工作流任务实体
 //===================================================================
 
 using System;
@@ -14,11 +16,11 @@ using Lean.Hbt.Common.Enums;
 namespace Lean.Hbt.Domain.Entities.Workflow
 {
     /// <summary>
-    /// 工作流任务实体类
+    /// 工作流任务实体
     /// </summary>
     /// <remarks>
     /// 创建者: Lean365
-    /// 创建时间: 2024-01-22
+    /// 创建时间: 2024-01-23
     /// </remarks>
     [SugarTable("hbt_workflow_task", "工作流任务表")]
     public class HbtWorkflowTask : HbtBaseEntity
@@ -36,10 +38,10 @@ namespace Lean.Hbt.Domain.Entities.Workflow
         public long NodeId { get; set; }
 
         /// <summary>
-        /// 处理人ID
+        /// 任务标题
         /// </summary>
-        [SugarColumn(ColumnName = "handler_id", ColumnDescription = "处理人ID", ColumnDataType = "bigint", IsNullable = false)]
-        public long HandlerId { get; set; }
+        [SugarColumn(ColumnName = "task_title", ColumnDescription = "任务标题", Length = 255, ColumnDataType = "nvarchar", IsNullable = false)]
+        public string TaskTitle { get; set; } = string.Empty;
 
         /// <summary>
         /// 任务类型
@@ -54,28 +56,58 @@ namespace Lean.Hbt.Domain.Entities.Workflow
         public HbtWorkflowTaskStatus Status { get; set; }
 
         /// <summary>
-        /// 处理结果
+        /// 处理人ID
         /// </summary>
-        [SugarColumn(ColumnName = "task_result", ColumnDescription = "处理结果", ColumnDataType = "tinyint", IsNullable = true)]
-        public HbtWorkflowTaskResult? TaskResult { get; set; }
+        [SugarColumn(ColumnName = "handler_id", ColumnDescription = "处理人ID", ColumnDataType = "bigint", IsNullable = true)]
+        public long? AssigneeId { get; set; }
 
         /// <summary>
         /// 处理意见
         /// </summary>
         [SugarColumn(ColumnName = "task_comment", ColumnDescription = "处理意见", Length = 500, ColumnDataType = "nvarchar", IsNullable = true)]
-        public string TaskComment { get; set; }
+        public string? Comment { get; set; }
+
+        /// <summary>
+        /// 处理结果
+        /// </summary>
+        [SugarColumn(ColumnName = "task_result", ColumnDescription = "处理结果", ColumnDataType = "tinyint", IsNullable = true)]
+        public string? Result { get; set; }
 
         /// <summary>
         /// 开始时间
         /// </summary>
         [SugarColumn(ColumnName = "start_time", ColumnDescription = "开始时间", ColumnDataType = "datetime", IsNullable = false)]
-        public DateTime StartTime { get; set; }
+        public DateTime CreateTime { get; set; }
 
         /// <summary>
         /// 完成时间
         /// </summary>
         [SugarColumn(ColumnName = "complete_time", ColumnDescription = "完成时间", ColumnDataType = "datetime", IsNullable = true)]
         public DateTime? CompleteTime { get; set; }
+
+        /// <summary>
+        /// 到期时间
+        /// </summary>
+        [SugarColumn(ColumnName = "due_time", ColumnDescription = "到期时间", ColumnDataType = "datetime", IsNullable = true)]
+        public DateTime? DueTime { get; set; }
+
+        /// <summary>
+        /// 提醒时间
+        /// </summary>
+        [SugarColumn(ColumnName = "reminder_time", ColumnDescription = "提醒时间", ColumnDataType = "datetime", IsNullable = true)]
+        public DateTime? ReminderTime { get; set; }
+
+        /// <summary>
+        /// 优先级
+        /// </summary>
+        [SugarColumn(ColumnName = "priority", ColumnDescription = "优先级", ColumnDataType = "int", IsNullable = false)]
+        public int Priority { get; set; }
+
+        /// <summary>
+        /// 备注
+        /// </summary>
+        [SugarColumn(ColumnName = "remark", ColumnDescription = "备注", Length = 500, ColumnDataType = "nvarchar", IsNullable = true)]
+        public string? Remark { get; set; }
 
         /// <summary>
         /// 工作流实例

@@ -269,31 +269,6 @@
             清除当前租户信息
             </summary>
         </member>
-        <member name="T:Lean.Hbt.Infrastructure.Data.Contexts.IHbtDbContext">
-            <summary>
-            数据库上下文接口
-            </summary>
-        </member>
-        <member name="P:Lean.Hbt.Infrastructure.Data.Contexts.IHbtDbContext.Client">
-            <summary>
-            获取SqlSugar客户端
-            </summary>
-        </member>
-        <member name="M:Lean.Hbt.Infrastructure.Data.Contexts.IHbtDbContext.BeginTran">
-            <summary>
-            开启事务
-            </summary>
-        </member>
-        <member name="M:Lean.Hbt.Infrastructure.Data.Contexts.IHbtDbContext.CommitTran">
-            <summary>
-            提交事务
-            </summary>
-        </member>
-        <member name="M:Lean.Hbt.Infrastructure.Data.Contexts.IHbtDbContext.RollbackTran">
-            <summary>
-            回滚事务
-            </summary>
-        </member>
         <member name="T:Lean.Hbt.Infrastructure.Data.Seeds.HbtDbSeed">
             <summary>
             数据库种子数据初始化
@@ -427,6 +402,11 @@
         <member name="M:Lean.Hbt.Infrastructure.Extensions.HbtServiceCollectionExtensions.AddInfrastructure(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)">
             <summary>
             添加基础设施服务
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Infrastructure.Extensions.HbtServiceCollectionExtensions.AddWorkflowServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            添加工作流服务
             </summary>
         </member>
         <member name="T:Lean.Hbt.Infrastructure.Extensions.HbtSessionSecurityExtensions">

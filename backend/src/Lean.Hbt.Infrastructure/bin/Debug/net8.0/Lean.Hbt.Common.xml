@@ -487,6 +487,96 @@
             通知消息
             </summary>
         </member>
+        <member name="T:Lean.Hbt.Common.Enums.HbtWorkflowActivityType">
+            <summary>
+            工作流活动类型
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowActivityType.Start">
+            <summary>
+            开始
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowActivityType.End">
+            <summary>
+            结束
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowActivityType.Task">
+            <summary>
+            任务
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowActivityType.Gateway">
+            <summary>
+            网关
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowActivityType.SubProcess">
+            <summary>
+            子流程
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Common.Enums.HbtWorkflowApprovalRule">
+            <summary>
+            工作流审批规则枚举
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowApprovalRule.All">
+            <summary>
+            所有审批人必须同意
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowApprovalRule.Any">
+            <summary>
+            任意一个审批人同意即可
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowApprovalRule.Count">
+            <summary>
+            按指定数量审批人同意
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowApprovalRule.Custom">
+            <summary>
+            按自定义条件审批
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Common.Enums.HbtWorkflowApproverType">
+            <summary>
+            工作流审批人类型枚举
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowApproverType.Specified">
+            <summary>
+            指定人员
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowApproverType.Role">
+            <summary>
+            指定角色
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowApproverType.Department">
+            <summary>
+            指定部门
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowApproverType.Initiator">
+            <summary>
+            发起人
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowApproverType.InitiatorSuperior">
+            <summary>
+            发起人上级
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowApproverType.InitiatorDeptManager">
+            <summary>
+            发起人部门负责人
+            </summary>
+        </member>
         <member name="T:Lean.Hbt.Common.Enums.HbtWorkflowInstanceStatus">
             <summary>
             工作流实例状态枚举
@@ -520,6 +610,35 @@
         <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowInstanceStatus.Deleted">
             <summary>
             已删除
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Common.Enums.HbtWorkflowJoinType">
+            <summary>
+            工作流汇聚类型枚举
+            </summary>
+            <remarks>
+            创建者: Lean365
+            创建时间: 2024-01-23
+            </remarks>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowJoinType.All">
+            <summary>
+            全部分支完成
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowJoinType.Any">
+            <summary>
+            任意分支完成
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowJoinType.Count">
+            <summary>
+            满足条件数量
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowJoinType.Condition">
+            <summary>
+            满足自定义条件
             </summary>
         </member>
         <member name="T:Lean.Hbt.Common.Enums.HbtWorkflowNodeType">
@@ -611,6 +730,71 @@
             删除
             </summary>
         </member>
+        <member name="T:Lean.Hbt.Common.Enums.HbtWorkflowScheduledTaskStatus">
+            <summary>
+            工作流定时任务状态枚举
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowScheduledTaskStatus.Pending">
+            <summary>
+            等待执行
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowScheduledTaskStatus.Running">
+            <summary>
+            执行中
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowScheduledTaskStatus.Completed">
+            <summary>
+            执行成功
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowScheduledTaskStatus.Failed">
+            <summary>
+            执行失败
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowScheduledTaskStatus.Cancelled">
+            <summary>
+            已取消
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowScheduledTaskStatus.Expired">
+            <summary>
+            已过期
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Common.Enums.HbtWorkflowScheduledTaskType">
+            <summary>
+            工作流定时任务类型枚举
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowScheduledTaskType.TimeoutReminder">
+            <summary>
+            超时提醒
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowScheduledTaskType.AutoExecution">
+            <summary>
+            自动执行
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowScheduledTaskType.TimedTrigger">
+            <summary>
+            定时触发
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowScheduledTaskType.DelayedExecution">
+            <summary>
+            延迟执行
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowScheduledTaskType.PeriodicExecution">
+            <summary>
+            周期执行
+            </summary>
+        </member>
         <member name="T:Lean.Hbt.Common.Enums.HbtWorkflowStatus">
             <summary>
             工作流状态枚举
@@ -686,14 +870,14 @@
             已取消
             </summary>
         </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowTaskStatus.Timeout">
+            <summary>
+            已超时
+            </summary>
+        </member>
         <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowTaskStatus.Transferred">
             <summary>
             已转交
-            </summary>
-        </member>
-        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowTaskStatus.Returned">
-            <summary>
-            已退回
             </summary>
         </member>
         <member name="T:Lean.Hbt.Common.Enums.HbtWorkflowTaskType">
@@ -703,22 +887,56 @@
         </member>
         <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowTaskType.Approval">
             <summary>
-            审批任务
+            审批
             </summary>
         </member>
         <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowTaskType.Countersign">
             <summary>
-            会签任务
+            会签
             </summary>
         </member>
-        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowTaskType.Circulate">
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowTaskType.Circulation">
             <summary>
-            传阅任务
+            传阅
             </summary>
         </member>
-        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowTaskType.Copy">
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowTaskType.Handle">
             <summary>
-            抄送任务
+            处理
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Common.Enums.HbtWorkflowTimeoutAction">
+            <summary>
+            工作流超时处理方式枚举
+            </summary>
+            <remarks>
+            创建者: Lean365
+            创建时间: 2024-01-23
+            </remarks>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowTimeoutAction.Notify">
+            <summary>
+            仅提醒
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowTimeoutAction.AutoApprove">
+            <summary>
+            自动通过
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowTimeoutAction.AutoReject">
+            <summary>
+            自动拒绝
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowTimeoutAction.EscalateToSuperior">
+            <summary>
+            转交上级
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtWorkflowTimeoutAction.EscalateToAdmin">
+            <summary>
+            转交管理员
             </summary>
         </member>
         <member name="T:Lean.Hbt.Common.Enums.HbtWorkflowVariableScope">

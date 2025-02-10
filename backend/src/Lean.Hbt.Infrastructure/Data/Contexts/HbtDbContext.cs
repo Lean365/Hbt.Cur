@@ -13,9 +13,10 @@ using Lean.Hbt.Domain.Entities.Admin;
 using Lean.Hbt.Domain.Entities.Audit;
 using Lean.Hbt.Domain.Entities.Identity;
 using Lean.Hbt.Domain.Entities.RealTime;
+using Lean.Hbt.Domain.Entities.Workflow;
 using Lean.Hbt.Domain.IServices;
 using Microsoft.Extensions.Options;
-
+using Lean.Hbt.Domain.Data;
 namespace Lean.Hbt.Infrastructure.Data.Contexts
 {
     /// <summary>
@@ -181,7 +182,18 @@ namespace Lean.Hbt.Infrastructure.Data.Contexts
                     typeof(HbtDictType),
                     typeof(HbtDictData),
                     typeof(HbtDeviceExtend),
-                    typeof(HbtLoginExtend)
+                    typeof(HbtLoginExtend),
+                    
+                    // 工作流相关表
+                    typeof(HbtWorkflowDefinition),      // 工作流定义
+                    typeof(HbtWorkflowInstance),        // 工作流实例
+                    typeof(HbtWorkflowNode),            // 工作流节点
+                    typeof(HbtWorkflowTransition),      // 工作流转换
+                    typeof(HbtWorkflowTask),            // 工作流任务
+                    typeof(HbtWorkflowHistory),         // 工作流历史
+                    typeof(HbtWorkflowVariable),        // 工作流变量
+                    typeof(HbtWorkflowScheduledTask),   // 工作流定时任务
+                    typeof(HbtWorkflowParallelBranch)   // 工作流并行分支
                 };
 
                 foreach (var entityType in entityTypes)

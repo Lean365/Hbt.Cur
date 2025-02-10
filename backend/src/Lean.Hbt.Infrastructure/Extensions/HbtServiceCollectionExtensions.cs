@@ -11,6 +11,7 @@ using System.Text;
 using Lean.Hbt.Common.Options;
 using Lean.Hbt.Domain.IServices;
 using Lean.Hbt.Domain.IServices.Security;
+using Lean.Hbt.Domain.Data;
 using Lean.Hbt.Infrastructure.Authentication;
 using Lean.Hbt.Infrastructure.Caching;
 using Lean.Hbt.Infrastructure.Data.Contexts;
@@ -25,6 +26,11 @@ using System;
 using Lean.Hbt.Infrastructure.Repositories;
 using Lean.Hbt.Domain.Repositories;
 using Microsoft.AspNetCore.Http;
+using Lean.Hbt.Application.Services.Workflow;
+using Lean.Hbt.Application.Services.Workflow.Engine;
+using Lean.Hbt.Application.Services.Workflow.Engine.Executors;
+using Lean.Hbt.Application.Services.Workflow.Engine.Expressions;
+using Lean.Hbt.Application.Services.Workflow.Engine.Resolvers;
 
 namespace Lean.Hbt.Infrastructure.Extensions
 {
@@ -185,12 +191,50 @@ namespace Lean.Hbt.Infrastructure.Extensions
             services.AddSingleton<IHbtCacheFactory, HbtCacheFactory>();
 
             services.AddScoped<HbtDbContext>();
+            services.AddScoped<IHbtDbContext, HbtDbContext>();
             services.AddScoped<HbtDbSeed>();
             services.AddScoped<IHbtAuditsLog, HbtAuditsLog>();
             services.AddScoped<IHbtLoginPolicy, HbtLoginPolicy>();
             services.AddScoped<IHbtPasswordPolicy, HbtPasswordPolicy>();
             services.AddScoped<IHbtSessionManager, HbtSessionManager>();
             services.AddScoped<HbtJwtHandler>();
+
+            // 添加工作流服务
+            services.AddWorkflowServices();
+
+            return services;
+        }
+
+        /// <summary>
+        /// 添加工作流服务
+        /// </summary>
+        public static IServiceCollection AddWorkflowServices(this IServiceCollection services)
+        {
+            // 注册工作流引擎
+            services.AddScoped<IHbtWorkflowEngine, HbtWorkflowEngine>();
+
+            // 注册工作流服务
+            services.AddScoped<IHbtWorkflowDefinitionService, HbtWorkflowDefinitionService>();
+            services.AddScoped<IHbtWorkflowInstanceService, HbtWorkflowInstanceService>();
+            services.AddScoped<IHbtWorkflowNodeService, HbtWorkflowNodeService>();
+            services.AddScoped<IHbtWorkflowTransitionService, HbtWorkflowTransitionService>();
+            services.AddScoped<IHbtWorkflowTaskService, HbtWorkflowTaskService>();
+            services.AddScoped<IHbtWorkflowHistoryService, HbtWorkflowHistoryService>();
+            services.AddScoped<IHbtWorkflowActivityService, HbtWorkflowActivityService>();
+
+            // 注册工作流节点执行器
+            services.AddScoped<IWorkflowNodeExecutor, StartNodeExecutor>();
+            services.AddScoped<IWorkflowNodeExecutor, EndNodeExecutor>();
+            services.AddScoped<IWorkflowNodeExecutor, ApprovalNodeExecutor>();
+            services.AddScoped<IWorkflowNodeExecutor, BranchNodeExecutor>();
+            services.AddScoped<IWorkflowNodeExecutor, ParallelNodeExecutor>();
+            services.AddScoped<IWorkflowNodeExecutor, JoinNodeExecutor>();
+
+            // 注册工作流表达式引擎
+            services.AddScoped<IWorkflowExpressionEngine, WorkflowExpressionEngine>();
+
+            // 注册工作流审批人解析器
+            services.AddScoped<IWorkflowApproverResolver, WorkflowApproverResolver>();
 
             return services;
         }
