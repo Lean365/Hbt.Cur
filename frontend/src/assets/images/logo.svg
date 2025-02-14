@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="128" height="32" viewBox="0 0 128 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    .logo-text { fill: var(--ant-color-text); }
+    .logo-icon { fill: var(--ant-color-primary); }
+  </style>
+  <!-- Logo 图标部分 -->
+  <path class="logo-icon" d="M6 4h4v20h16v4H6z"/>
+  <!-- Logo 文字部分 -->
+  <path class="logo-text" d="M38 8h4v16h-4zM44 8h12v4h-8v4h6v4h-6v4h8v4h-12zM58 8h4v16h-4zM64 8h12v4h-8v4h6v4h-6v4h8v4h-12zM78 8h12v4h-4v12h-4v-12h-4z"/>
+</svg> 
