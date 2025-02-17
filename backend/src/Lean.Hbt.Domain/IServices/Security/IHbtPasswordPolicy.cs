@@ -7,7 +7,7 @@
 // 描述    : 密码策略接口
 //===================================================================
 
-namespace Lean.Hbt.Domain.IServices
+namespace Lean.Hbt.Domain.IServices.Security
 {
     /// <summary>
     /// 密码策略接口
@@ -51,4 +51,4 @@ namespace Lean.Hbt.Domain.IServices
         /// <returns>剩余天数</returns>
         Task<int> GetPasswordExpirationDaysAsync(long userId);
     }
-} 
+}

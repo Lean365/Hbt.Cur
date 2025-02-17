@@ -7,26 +7,17 @@
 // 描述   : 岗位服务实现
 //===================================================================
 
-using System;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Collections.Generic;
 using System.Linq.Expressions;
 using Lean.Hbt.Application.Dtos.Identity;
 using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Common.Exceptions;
 using Lean.Hbt.Common.Helpers;
-using Lean.Hbt.Common.Models;
 using Lean.Hbt.Domain.Entities.Identity;
-using Lean.Hbt.Domain.IServices;
+using Lean.Hbt.Domain.IServices.Admin;
 using Lean.Hbt.Domain.Repositories;
 using Lean.Hbt.Domain.Utils;
 using Mapster;
-using Microsoft.Extensions.Logging;
 using SqlSugar;
-using Lean.Hbt.Domain.Services;
-using Lean.Hbt.Domain.IServices.Admin;
 
 namespace Lean.Hbt.Application.Services.Identity
 {
@@ -101,7 +92,7 @@ namespace Lean.Hbt.Application.Services.Identity
             // 验证字段是否已存在
             if (await _postRepository.AsQueryable().AnyAsync(x => x.PostCode == input.PostCode))
                 throw new HbtException(_localizationService.L("Common.CodeExists"));
-            
+
             if (await _postRepository.AsQueryable().AnyAsync(x => x.PostName == input.PostName))
                 throw new HbtException(_localizationService.L("Common.NameExists"));
 
@@ -125,7 +116,7 @@ namespace Lean.Hbt.Application.Services.Identity
             // 验证字段是否已存在
             if (await _postRepository.AsQueryable().AnyAsync(x => x.PostCode == input.PostCode && x.Id != input.Id))
                 throw new HbtException(_localizationService.L("Common.CodeExists"));
-            
+
             if (await _postRepository.AsQueryable().AnyAsync(x => x.PostName == input.PostName && x.Id != input.Id))
                 throw new HbtException(_localizationService.L("Common.NameExists"));
 
@@ -279,4 +270,4 @@ namespace Lean.Hbt.Application.Services.Identity
             return result > 0;
         }
     }
-} 
+}

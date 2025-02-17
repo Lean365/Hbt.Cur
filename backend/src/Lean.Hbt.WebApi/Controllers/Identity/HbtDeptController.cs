@@ -11,6 +11,8 @@ using Lean.Hbt.Application.Dtos.Identity;
 using Lean.Hbt.Application.Services.Identity;
 using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Domain.IServices.Admin;
+using Lean.Hbt.Common.Models;
+using Microsoft.AspNetCore.Http;
 
 namespace Lean.Hbt.WebApi.Controllers.Identity
 {
@@ -147,6 +149,18 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         {
             var result = await _deptService.GenerateTemplateAsync(sheetName);
             return File(result, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"部门导入模板_{DateTime.Now:yyyyMMddHHmmss}.xlsx");
+        }
+
+        /// <summary>
+        /// 获取部门树形结构
+        /// </summary>
+        /// <returns>返回树形部门列表</returns>
+        [HttpGet("tree")]
+        [ProducesResponseType(typeof(HbtApiResult<List<HbtDeptDto>>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetTreeAsync()
+        {
+            var depts = await _deptService.GetTreeAsync();
+            return Success(depts);
         }
 
         /// <summary>

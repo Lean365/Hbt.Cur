@@ -72,6 +72,16 @@ namespace Lean.Hbt.Common.Options
     public class HbtRedisCacheOptions
     {
         /// <summary>
+        /// 是否启用Redis缓存
+        /// </summary>
+        public bool Enabled { get; set; } = true;
+
+        /// <summary>
+        /// 连接字符串
+        /// </summary>
+        public string? ConnectionString { get; set; }
+
+        /// <summary>
         /// 实例名称
         /// </summary>
         public string InstanceName { get; set; } = "Lean.Hbt";
@@ -80,6 +90,31 @@ namespace Lean.Hbt.Common.Options
         /// 默认数据库
         /// </summary>
         public int DefaultDatabase { get; set; } = 0;
+
+        /// <summary>
+        /// 连接超时时间(毫秒)
+        /// </summary>
+        public int ConnectTimeout { get; set; } = 5000;
+
+        /// <summary>
+        /// 同步超时时间(毫秒)
+        /// </summary>
+        public int SyncTimeout { get; set; } = 5000;
+
+        /// <summary>
+        /// 是否允许管理员操作
+        /// </summary>
+        public bool AllowAdmin { get; set; }
+
+        /// <summary>
+        /// 是否使用SSL
+        /// </summary>
+        public bool Ssl { get; set; }
+
+        /// <summary>
+        /// 密码
+        /// </summary>
+        public string? Password { get; set; }
 
         /// <summary>
         /// 是否启用压缩

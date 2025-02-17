@@ -49,5 +49,12 @@ namespace Lean.Hbt.Application.Services.Audit
         /// </summary>
         /// <returns>是否成功</returns>
         Task<bool> ClearAsync();
+
+        /// <summary>
+        /// 解锁用户
+        /// </summary>
+        /// <param name="userId">用户ID</param>
+        /// <returns>任务</returns>
+        Task UnlockUserAsync(long userId);
     }
 } 

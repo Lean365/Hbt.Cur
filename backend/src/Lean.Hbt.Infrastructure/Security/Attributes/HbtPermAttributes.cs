@@ -15,8 +15,13 @@ namespace Lean.Hbt.Infrastructure.Security.Attributes
     /// 权限特性
     /// </summary>
     [AttributeUsage(AttributeTargets.Method)]
-    public class HbtPermissionAttribute : Attribute
+    public class HbtPermAttribute : Attribute
     {
+        /// <summary>
+        /// 权限编码
+        /// </summary>
+        public string? Title { get; set; }
+
         /// <summary>
         /// 权限编码
         /// </summary>
@@ -26,9 +31,29 @@ namespace Lean.Hbt.Infrastructure.Security.Attributes
         /// 构造函数
         /// </summary>
         /// <param name="permission">权限编码(格式:模块:实体:操作)</param>
-        public HbtPermissionAttribute(string permission)
+        public HbtPermAttribute(string permission)
         {
             Permission = permission;
         }
+    }
+
+    /// <summary>
+    /// 日志特性
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Method)]
+    public class HbtLogAttribute : Attribute
+    {
+        /// <summary>
+        /// 日志标题
+        /// </summary>
+        public string? Title { get; set; }
+    }
+
+    /// <summary>
+    /// 认证特性
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Method)]
+    public class HbtAuthAttribute : Attribute
+    {
     }
 } 

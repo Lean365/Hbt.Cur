@@ -1,13 +1,13 @@
 //===================================================================
-// 项目名 : Lean.Hbt 
-// 文件名 : IHbtCacheFactory.cs 
+// 项目名 : Lean.Hbt
+// 文件名 : IHbtCacheFactory.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-17 16:30
 // 版本号 : V0.0.1
 // 描述    : 缓存工厂接口
 //===================================================================
 
-namespace Lean.Hbt.Domain.IServices
+namespace Lean.Hbt.Domain.IServices.Caching
 {
     /// <summary>
     /// 缓存工厂接口

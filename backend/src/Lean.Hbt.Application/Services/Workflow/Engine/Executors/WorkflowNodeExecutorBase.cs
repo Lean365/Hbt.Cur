@@ -9,12 +9,8 @@
 // 描述    : 工作流节点执行器基类
 //===================================================================
 
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Domain.Entities.Workflow;
-using Lean.Hbt.Domain.IServices;
 
 namespace Lean.Hbt.Application.Services.Workflow.Engine.Executors
 {
@@ -23,8 +19,15 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine.Executors
     /// </summary>
     public abstract class WorkflowNodeExecutorBase : IWorkflowNodeExecutor
     {
+        /// <summary>
+        /// 日志服务
+        /// </summary>
         protected readonly IHbtLogger _logger;
 
+        /// <summary>
+        /// 构造函数
+        /// </summary>
+        /// <param name="logger"></param>
         protected WorkflowNodeExecutorBase(IHbtLogger logger)
         {
             _logger = logger;
@@ -54,7 +57,7 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine.Executors
             try
             {
                 _logger.Info($"开始执行节点: 实例ID={instance.Id}, 节点ID={node.Id}, 节点类型={node.NodeType}");
-                
+
                 // 验证节点类型
                 if (!CanHandle(node.NodeType))
                 {
@@ -65,7 +68,7 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine.Executors
 
                 // 执行具体节点逻辑
                 var result = await ExecuteInternalAsync(instance, node, variables);
-                
+
                 // 记录执行结果
                 if (result.Success)
                 {
@@ -118,4 +121,4 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine.Executors
             };
         }
     }
-} 
+}

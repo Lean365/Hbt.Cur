@@ -28,9 +28,8 @@ public static class HbtLocalizationExtensions
         // 注册HttpContext访问器
         services.AddHttpContextAccessor();
 
-        // 注册本地化服务（单例模式）
-        services.AddSingleton<IHbtLocalizationService, HbtLocalizationService>();
-
+        // 本地化服务已在 HbtServiceCollectionExtensions.AddLocalizationServices 中注册
+        
         return services;
     }
 

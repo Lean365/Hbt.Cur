@@ -152,5 +152,18 @@ namespace Lean.Hbt.Application.Services.Audit
             var result = await _loginLogRepository.DeleteAsync((Expression<Func<HbtLoginLog, bool>>)(x => true));
             return result > 0;
         }
+
+        /// <summary>
+        /// 解锁用户
+        /// </summary>
+        /// <param name="userId">用户ID</param>
+        /// <returns>任务</returns>
+        public async Task UnlockUserAsync(long userId)
+        {
+            var exp = Expressionable.Create<HbtLoginLog>();
+            exp.And(x => x.UserId == userId);
+            
+            await _loginLogRepository.DeleteAsync(exp.ToExpression());
+        }
     }
 } 

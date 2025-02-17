@@ -1442,6 +1442,16 @@
             Redis缓存配置选项
             </summary>
         </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtRedisCacheOptions.Enabled">
+            <summary>
+            是否启用Redis缓存
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtRedisCacheOptions.ConnectionString">
+            <summary>
+            连接字符串
+            </summary>
+        </member>
         <member name="P:Lean.Hbt.Common.Options.HbtRedisCacheOptions.InstanceName">
             <summary>
             实例名称
@@ -1450,6 +1460,31 @@
         <member name="P:Lean.Hbt.Common.Options.HbtRedisCacheOptions.DefaultDatabase">
             <summary>
             默认数据库
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtRedisCacheOptions.ConnectTimeout">
+            <summary>
+            连接超时时间(毫秒)
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtRedisCacheOptions.SyncTimeout">
+            <summary>
+            同步超时时间(毫秒)
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtRedisCacheOptions.AllowAdmin">
+            <summary>
+            是否允许管理员操作
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtRedisCacheOptions.Ssl">
+            <summary>
+            是否使用SSL
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtRedisCacheOptions.Password">
+            <summary>
+            密码
             </summary>
         </member>
         <member name="P:Lean.Hbt.Common.Options.HbtRedisCacheOptions.EnableCompression">
@@ -1822,51 +1857,6 @@
             密码过期天数
             </summary>
         </member>
-        <member name="T:Lean.Hbt.Common.Options.HbtRedisOptions">
-            <summary>
-            Redis配置选项
-            </summary>
-        </member>
-        <member name="P:Lean.Hbt.Common.Options.HbtRedisOptions.ConnectionString">
-            <summary>
-            连接字符串
-            </summary>
-        </member>
-        <member name="P:Lean.Hbt.Common.Options.HbtRedisOptions.InstanceName">
-            <summary>
-            实例名称
-            </summary>
-        </member>
-        <member name="P:Lean.Hbt.Common.Options.HbtRedisOptions.DefaultDb">
-            <summary>
-            默认数据库
-            </summary>
-        </member>
-        <member name="P:Lean.Hbt.Common.Options.HbtRedisOptions.ConnectTimeout">
-            <summary>
-            连接超时时间(毫秒)
-            </summary>
-        </member>
-        <member name="P:Lean.Hbt.Common.Options.HbtRedisOptions.SyncTimeout">
-            <summary>
-            同步超时时间(毫秒)
-            </summary>
-        </member>
-        <member name="P:Lean.Hbt.Common.Options.HbtRedisOptions.AllowAdmin">
-            <summary>
-            是否允许管理员操作
-            </summary>
-        </member>
-        <member name="P:Lean.Hbt.Common.Options.HbtRedisOptions.Ssl">
-            <summary>
-            是否使用SSL
-            </summary>
-        </member>
-        <member name="P:Lean.Hbt.Common.Options.HbtRedisOptions.Password">
-            <summary>
-            密码
-            </summary>
-        </member>
         <member name="T:Lean.Hbt.Common.Options.HbtSecurityOptions">
             <summary>
             安全配置选项
@@ -1895,6 +1885,56 @@
         <member name="P:Lean.Hbt.Common.Options.HbtSecurityOptions.SessionExpirationMinutes">
             <summary>
             会话过期时间(分钟)
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Common.Options.HbtServerConfig">
+            <summary>
+            服务器配置
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtServerConfig.UseHttps">
+            <summary>
+            是否启用HTTPS
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtServerConfig.HttpPort">
+            <summary>
+            HTTP端口
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtServerConfig.HttpsPort">
+            <summary>
+            HTTPS端口
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtServerConfig.Init">
+            <summary>
+            初始化选项
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Common.Options.HbtInitOptions">
+            <summary>
+            初始化选项
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtInitOptions.InitDatabase">
+            <summary>
+            是否初始化数据库
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtInitOptions.InitSeedData">
+            <summary>
+            是否初始化种子数据
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtInitOptions.EnableSwagger">
+            <summary>
+            是否启用Swagger
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtInitOptions.EnableCors">
+            <summary>
+            是否启用CORS
             </summary>
         </member>
         <member name="T:Lean.Hbt.Common.Options.HbtSessionOptions">

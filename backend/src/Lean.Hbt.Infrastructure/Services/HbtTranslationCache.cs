@@ -1,0 +1,168 @@
+//===================================================================
+// 项目名 : Lean.Hbt
+// 文件名 : HbtTranslationCache.cs
+// 创建者 : Lean365
+// 创建时间: 2024-01-22 16:30
+// 版本号 : V0.0.1
+// 描述   : 翻译缓存服务实现
+//===================================================================
+
+using System.Collections.Concurrent;
+using Lean.Hbt.Common.Enums;
+using Lean.Hbt.Domain.Entities.Admin;
+using Lean.Hbt.Domain.IServices.Admin;
+using Lean.Hbt.Domain.Repositories;
+using Microsoft.Extensions.Logging;
+
+namespace Lean.Hbt.Infrastructure.Services
+{
+    /// <summary>
+    /// 翻译缓存服务实现
+    /// </summary>
+    public class HbtTranslationCache : IHbtTranslationCache
+    {
+        private readonly IHbtRepository<HbtTranslation> _translationRepository;
+        private readonly ILogger<HbtTranslationCache> _logger;
+        private readonly ConcurrentDictionary<string, ConcurrentDictionary<string, string>> _translations;
+        private readonly ConcurrentHashSet<string> _supportedLanguages;
+
+        /// <summary>
+        /// 构造函数
+        /// </summary>
+        /// <param name="translationRepository">翻译仓储</param>
+        /// <param name="logger">日志服务</param>
+        public HbtTranslationCache(
+            IHbtRepository<HbtTranslation> translationRepository,
+            ILogger<HbtTranslationCache> logger)
+        {
+            _translationRepository = translationRepository;
+            _logger = logger;
+            _translations = new ConcurrentDictionary<string, ConcurrentDictionary<string, string>>();
+            _supportedLanguages = new ConcurrentHashSet<string>();
+            InitializeTranslations().GetAwaiter().GetResult();
+        }
+
+        /// <summary>
+        /// 获取指定语言和键的翻译
+        /// </summary>
+        public string? GetTranslation(string langCode, string key)
+        {
+            try
+            {
+                if (_translations.TryGetValue(langCode, out var langTranslations) &&
+                    langTranslations.TryGetValue(key, out var translation))
+                {
+                    return translation;
+                }
+                return null;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "获取翻译失败: {LangCode}, {Key}", langCode, key);
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// 初始化翻译数据
+        /// </summary>
+        private async Task InitializeTranslations()
+        {
+            try
+            {
+                var translations = await _translationRepository.GetListAsync(t => t.Status == HbtStatus.Normal);
+                foreach (var translation in translations)
+                {
+                    var langDict = _translations.GetOrAdd(translation.LangCode,
+                        new ConcurrentDictionary<string, string>());
+                    langDict.TryAdd(translation.TransKey, translation.TransValue);
+                    _supportedLanguages.Add(translation.LangCode);
+                }
+                _logger.LogInformation("翻译数据初始化成功，共加载 {Count} 条记录", translations.Count);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "初始化翻译数据失败");
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// 重新加载翻译数据
+        /// </summary>
+        public async Task ReloadAsync()
+        {
+            try
+            {
+                _translations.Clear();
+                _supportedLanguages.Clear();
+                await InitializeTranslations();
+                _logger.LogInformation("翻译数据重新加载成功");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "重新加载翻译数据失败");
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// 获取支持的语言列表
+        /// </summary>
+        public Task<IEnumerable<string>> GetSupportedLanguagesAsync()
+        {
+            try
+            {
+                return Task.FromResult<IEnumerable<string>>(_supportedLanguages.ToArray());
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "获取支持的语言列表失败");
+                throw;
+            }
+        }
+    }
+
+    /// <summary>
+    /// 线程安全的HashSet实现
+    /// </summary>
+    public class ConcurrentHashSet<T> : IEnumerable<T>
+    {
+        private readonly ConcurrentDictionary<T, byte> _dictionary;
+
+        public ConcurrentHashSet()
+        {
+            _dictionary = new ConcurrentDictionary<T, byte>();
+        }
+
+        public bool Add(T item)
+        {
+            return _dictionary.TryAdd(item, 0);
+        }
+
+        public void Clear()
+        {
+            _dictionary.Clear();
+        }
+
+        public bool Contains(T item)
+        {
+            return _dictionary.ContainsKey(item);
+        }
+
+        public bool Remove(T item)
+        {
+            return _dictionary.TryRemove(item, out _);
+        }
+
+        public IEnumerator<T> GetEnumerator()
+        {
+            return _dictionary.Keys.GetEnumerator();
+        }
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+    }
+} 

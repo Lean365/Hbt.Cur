@@ -9,10 +9,12 @@
 
 using Lean.Hbt.Common.Options;
 using Lean.Hbt.Domain.Entities.Admin;
-using Lean.Hbt.Domain.IServices;
 using Lean.Hbt.Domain.Models.Identity;
 using Lean.Hbt.Domain.Repositories;
 using Microsoft.Extensions.Options;
+using Lean.Hbt.Domain.IServices.Identity;
+using Lean.Hbt.Domain.IServices.SignalR;
+using Lean.Hbt.Domain.IServices.Caching;
 
 namespace Lean.Hbt.Infrastructure.Security
 {
@@ -23,7 +25,9 @@ namespace Lean.Hbt.Infrastructure.Security
     /// 创建者: Lean365
     /// 创建时间: 2024-01-16
     /// </remarks>
-    public class HbtSessionManager : IHbtSessionManager
+    public class HbtSessionManager : 
+        IHbtIdentitySessionManager,
+        IHbtSignalRSessionManager
     {
         private readonly HbtSessionOptions _defaultOptions;
         private readonly IHbtRedisCache _cache;
@@ -78,14 +82,9 @@ namespace Lean.Hbt.Infrastructure.Security
         }
 
         /// <summary>
-        /// 创建会话
+        /// 创建会话 (私有实现)
         /// </summary>
-        /// <param name="userId">用户ID</param>
-        /// <param name="userName">用户名</param>
-        /// <param name="ipAddress">IP地址</param>
-        /// <param name="userAgent">用户代理</param>
-        /// <returns>会话ID</returns>
-        public async Task<string> CreateSessionAsync(string userId, string userName, string ipAddress, string userAgent)
+        private async Task<string> CreateIdentitySessionAsync(string userId, string userName, string ipAddress, string userAgent)
         {
             if (string.IsNullOrEmpty(userId))
                 throw new ArgumentNullException(nameof(userId));
@@ -96,21 +95,21 @@ namespace Lean.Hbt.Infrastructure.Security
 
             if (!options.AllowMultipleDevices)
             {
-                await RemoveUserSessionsAsync(userId);
+                await ((IHbtIdentitySessionManager)this).RemoveUserSessionsAsync(userId);
             }
             else
             {
-                var sessions = await GetUserSessionsAsync(userId);
+                var sessions = await GetUserIdentitySessionsAsync(userId);
                 if (sessions.Count >= options.MaxConcurrentSessions)
                 {
                     // 移除最早的会话
                     var oldestSession = sessions.OrderBy(s => s.LastAccessTime).First();
-                    await RemoveSessionAsync(oldestSession.SessionId);
+                    await ((IHbtIdentitySessionManager)this).RemoveSessionAsync(oldestSession.SessionId);
                 }
             }
 
             var sessionId = Guid.NewGuid().ToString("N");
-            var sessionInfo = new HbtSessionInfo
+            var sessionInfo = new HbtIdentitySessionInfo
             {
                 SessionId = sessionId,
                 UserId = userId,
@@ -128,69 +127,52 @@ namespace Lean.Hbt.Infrastructure.Security
         }
 
         /// <summary>
-        /// 获取会话信息
+        /// 创建会话 (私有实现)
         /// </summary>
-        /// <param name="sessionId">会话ID</param>
-        /// <returns>会话信息</returns>
-        public async Task<HbtSessionInfo> GetSessionInfoAsync(string sessionId)
+        private async Task<HbtSignalRSessionInfo> CreateServiceSessionAsync(string userId)
+        {
+            if (string.IsNullOrEmpty(userId))
+                throw new ArgumentNullException(nameof(userId));
+
+            var sessionId = Guid.NewGuid().ToString("N");
+            var refreshToken = Guid.NewGuid().ToString("N");
+            var sessionInfo = new HbtSignalRSessionInfo
+            {
+                SessionId = sessionId,
+                RefreshToken = refreshToken,
+                ExpiresIn = _defaultOptions.SessionExpiryMinutes
+            };
+
+            await SaveServiceSessionInfoAsync(userId, sessionId, sessionInfo);
+            await AddToUserSessionsAsync(userId, sessionId);
+
+            return sessionInfo;
+        }
+
+        /// <summary>
+        /// 获取会话信息 (私有实现)
+        /// </summary>
+        private async Task<HbtIdentitySessionInfo> GetIdentitySessionInfoAsync(string sessionId)
         {
             if (string.IsNullOrEmpty(sessionId))
                 return null;
 
             var key = $"session:{sessionId}";
-            var sessionInfo = await _cache.GetAsync<HbtSessionInfo>(key);
+            var sessionInfo = await _cache.GetAsync<HbtIdentitySessionInfo>(key);
             return sessionInfo;
         }
 
         /// <summary>
-        /// 更新会话访问时间
+        /// 获取用户所有会话 (私有实现)
         /// </summary>
-        /// <param name="sessionId">会话ID</param>
-        /// <returns>异步任务</returns>
-        public async Task UpdateSessionAccessTimeAsync(string sessionId)
-        {
-            if (string.IsNullOrEmpty(sessionId))
-                return;
-
-            var sessionInfo = await GetSessionInfoAsync(sessionId);
-            if (sessionInfo != null)
-            {
-                sessionInfo.LastAccessTime = DateTime.Now;
-                await SaveSessionInfoAsync(sessionInfo.UserId, sessionId, sessionInfo);
-            }
-        }
-
-        /// <summary>
-        /// 移除会话
-        /// </summary>
-        /// <param name="sessionId">会话ID</param>
-        /// <returns>异步任务</returns>
-        public async Task RemoveSessionAsync(string sessionId)
-        {
-            if (string.IsNullOrEmpty(sessionId))
-                return;
-
-            var sessionInfo = await GetSessionInfoAsync(sessionId);
-            if (sessionInfo != null)
-            {
-                await _cache.RemoveAsync($"session:{sessionId}");
-                await RemoveFromUserSessionsAsync(sessionInfo.UserId, sessionId);
-            }
-        }
-
-        /// <summary>
-        /// 获取用户所有会话
-        /// </summary>
-        /// <param name="userId">用户ID</param>
-        /// <returns>会话列表</returns>
-        public async Task<List<HbtSessionInfo>> GetUserSessionsAsync(string userId)
+        private async Task<List<HbtIdentitySessionInfo>> GetUserIdentitySessionsAsync(string userId)
         {
             var sessionIds = await GetUserSessionIdsAsync(userId);
-            var sessions = new List<HbtSessionInfo>();
+            var sessions = new List<HbtIdentitySessionInfo>();
 
             foreach (var sessionId in sessionIds)
             {
-                var sessionInfo = await GetSessionInfoAsync(sessionId);
+                var sessionInfo = await GetIdentitySessionInfoAsync(sessionId);
                 if (sessionInfo != null)
                 {
                     sessions.Add(sessionInfo);
@@ -201,27 +183,100 @@ namespace Lean.Hbt.Infrastructure.Security
         }
 
         /// <summary>
+        /// 创建会话 (Domain.IServices.Identity.IHbtIdentitySessionManager)
+        /// </summary>
+        async Task<string> IHbtIdentitySessionManager.CreateSessionAsync(string userId, string userName, string ipAddress, string userAgent)
+        {
+            return await CreateIdentitySessionAsync(userId, userName, ipAddress, userAgent);
+        }
+
+        /// <summary>
+        /// 获取会话信息 (Domain.IServices.Identity.IHbtIdentitySessionManager)
+        /// </summary>
+        async Task<HbtIdentitySessionInfo> IHbtIdentitySessionManager.GetSessionInfoAsync(string sessionId)
+        {
+            return await GetIdentitySessionInfoAsync(sessionId);
+        }
+
+        /// <summary>
+        /// 获取用户所有会话 (Domain.IServices.Identity.IHbtIdentitySessionManager)
+        /// </summary>
+        async Task<List<HbtIdentitySessionInfo>> IHbtIdentitySessionManager.GetUserSessionsAsync(string userId)
+        {
+            return await GetUserIdentitySessionsAsync(userId);
+        }
+
+        /// <summary>
+        /// 创建会话 (Domain.IServices.SignalR.IHbtSignalRSessionManager)
+        /// </summary>
+        async Task<HbtSignalRSessionInfo> IHbtSignalRSessionManager.CreateSessionAsync(string userId)
+        {
+            return await CreateServiceSessionAsync(userId);
+        }
+
+        /// <summary>
+        /// 单点登出 (Domain.IServices.SignalR.IHbtSignalRSessionManager)
+        /// </summary>
+        async Task IHbtSignalRSessionManager.SingleSignOutAsync(string userId, string excludeSessionId)
+        {
+            var sessions = await GetUserIdentitySessionsAsync(userId);
+            foreach (var session in sessions)
+            {
+                if (session.SessionId != excludeSessionId)
+                {
+                    await ((IHbtIdentitySessionManager)this).RemoveSessionAsync(session.SessionId);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 更新会话访问时间
+        /// </summary>
+        async Task IHbtIdentitySessionManager.UpdateSessionAccessTimeAsync(string sessionId)
+        {
+            if (string.IsNullOrEmpty(sessionId))
+                return;
+
+            var sessionInfo = await GetIdentitySessionInfoAsync(sessionId);
+            if (sessionInfo != null)
+            {
+                sessionInfo.LastAccessTime = DateTime.Now;
+                await SaveSessionInfoAsync(sessionInfo.UserId, sessionId, sessionInfo);
+            }
+        }
+
+        /// <summary>
+        /// 移除会话
+        /// </summary>
+        async Task IHbtIdentitySessionManager.RemoveSessionAsync(string sessionId)
+        {
+            if (string.IsNullOrEmpty(sessionId))
+                return;
+
+            var sessionInfo = await GetIdentitySessionInfoAsync(sessionId);
+            if (sessionInfo != null)
+            {
+                await _cache.RemoveAsync($"session:{sessionId}");
+                await RemoveFromUserSessionsAsync(sessionInfo.UserId, sessionId);
+            }
+        }
+
+        /// <summary>
         /// 移除用户所有会话
         /// </summary>
-        /// <param name="userId">用户ID</param>
-        /// <returns>异步任务</returns>
-        public async Task RemoveUserSessionsAsync(string userId)
+        async Task IHbtIdentitySessionManager.RemoveUserSessionsAsync(string userId)
         {
             var sessionIds = await GetUserSessionIdsAsync(userId);
             foreach (var sessionId in sessionIds)
             {
-                await RemoveSessionAsync(sessionId);
+                await ((IHbtIdentitySessionManager)this).RemoveSessionAsync(sessionId);
             }
         }
 
         /// <summary>
         /// 保存会话信息
         /// </summary>
-        /// <param name="userId">用户ID</param>
-        /// <param name="sessionId">会话ID</param>
-        /// <param name="sessionInfo">会话信息</param>
-        /// <returns>异步任务</returns>
-        private async Task SaveSessionInfoAsync(string userId, string sessionId, HbtSessionInfo sessionInfo)
+        private async Task SaveSessionInfoAsync(string userId, string sessionId, HbtIdentitySessionInfo sessionInfo)
         {
             var key = $"session:{sessionId}";
             var expiry = _defaultOptions.EnableSlidingExpiration
@@ -231,11 +286,18 @@ namespace Lean.Hbt.Infrastructure.Security
         }
 
         /// <summary>
+        /// 保存服务会话信息
+        /// </summary>
+        private async Task SaveServiceSessionInfoAsync(string userId, string sessionId, HbtSignalRSessionInfo sessionInfo)
+        {
+            var key = $"service:session:{sessionId}";
+            var expiry = TimeSpan.FromMinutes(_defaultOptions.SessionExpiryMinutes);
+            await _cache.SetAsync(key, sessionInfo, expiry);
+        }
+
+        /// <summary>
         /// 添加到用户会话列表
         /// </summary>
-        /// <param name="userId">用户ID</param>
-        /// <param name="sessionId">会话ID</param>
-        /// <returns>异步任务</returns>
         private async Task AddToUserSessionsAsync(string userId, string sessionId)
         {
             var key = $"user:sessions:{userId}";
@@ -247,9 +309,6 @@ namespace Lean.Hbt.Infrastructure.Security
         /// <summary>
         /// 从用户会话列表移除
         /// </summary>
-        /// <param name="userId">用户ID</param>
-        /// <param name="sessionId">会话ID</param>
-        /// <returns>异步任务</returns>
         private async Task RemoveFromUserSessionsAsync(string userId, string sessionId)
         {
             var key = $"user:sessions:{userId}";
@@ -261,30 +320,10 @@ namespace Lean.Hbt.Infrastructure.Security
         /// <summary>
         /// 获取用户会话ID列表
         /// </summary>
-        /// <param name="userId">用户ID</param>
-        /// <returns>会话ID列表</returns>
         private async Task<List<string>> GetUserSessionIdsAsync(string userId)
         {
             var key = $"user:sessions:{userId}";
             return await _cache.GetAsync<List<string>>(key) ?? new List<string>();
-        }
-
-        /// <summary>
-        /// 单点登出
-        /// </summary>
-        /// <param name="userId">用户ID</param>
-        /// <param name="excludeSessionId">排除的会话ID</param>
-        /// <returns>异步任务</returns>
-        public async Task SingleSignOutAsync(string userId, string excludeSessionId = null)
-        {
-            var sessions = await GetUserSessionsAsync(userId);
-            foreach (var session in sessions)
-            {
-                if (session.SessionId != excludeSessionId)
-                {
-                    await RemoveSessionAsync(session.SessionId);
-                }
-            }
         }
 
         /// <summary>
@@ -320,7 +359,7 @@ namespace Lean.Hbt.Infrastructure.Security
 
                 if (isExpired)
                 {
-                    await RemoveSessionAsync(session.SessionId);
+                    await ((IHbtIdentitySessionManager)this).RemoveSessionAsync(session.SessionId);
                 }
             }
         }
@@ -328,15 +367,15 @@ namespace Lean.Hbt.Infrastructure.Security
         /// <summary>
         /// 获取所有会话
         /// </summary>
-        private async Task<List<HbtSessionInfo>> GetAllSessionsAsync()
+        private async Task<List<HbtIdentitySessionInfo>> GetAllSessionsAsync()
         {
             var pattern = "session:*";
             var keys = await _cache.SearchKeysAsync(pattern);
-            var sessions = new List<HbtSessionInfo>();
+            var sessions = new List<HbtIdentitySessionInfo>();
 
             foreach (var key in keys)
             {
-                var session = await _cache.GetAsync<HbtSessionInfo>(key);
+                var session = await _cache.GetAsync<HbtIdentitySessionInfo>(key);
                 if (session != null)
                 {
                     sessions.Add(session);

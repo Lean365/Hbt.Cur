@@ -7,9 +7,15 @@
 // 描述    : SqlSugar仓储实现
 //===================================================================
 
+using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
+using Lean.Hbt.Domain.Entities;
+using Lean.Hbt.Domain.Entities.Identity;
 using Lean.Hbt.Domain.Repositories;
 using SqlSugar;
+using SqlSugar.Extensions;
 
 namespace Lean.Hbt.Infrastructure.Repositories
 {
@@ -219,5 +225,35 @@ namespace Lean.Hbt.Infrastructure.Repositories
         }
 
         #endregion 删除操作
+
+        #region 用户角色和权限
+
+        /// <summary>
+        /// 获取用户角色列表
+        /// </summary>
+        public virtual async Task<List<string>> GetUserRolesAsync(long userId)
+        {
+            return await _db.Queryable<HbtUserRole>()
+                .LeftJoin<HbtRole>((ur, r) => ur.RoleId == r.Id)
+                .Where(ur => ur.UserId == userId)
+                .Select((ur, r) => r.RoleKey)
+                .ToListAsync() ?? new List<string>();
+        }
+
+        /// <summary>
+        /// 获取用户权限列表
+        /// </summary>
+        public virtual async Task<List<string>> GetUserPermissionsAsync(long userId)
+        {
+            return await _db.Queryable<HbtUserRole>()
+                .LeftJoin<HbtRole>((ur, r) => ur.RoleId == r.Id)
+                .LeftJoin<HbtRoleMenu>((ur, r, rm) => r.Id == rm.RoleId)
+                .LeftJoin<HbtMenu>((ur, r, rm, m) => rm.MenuId == m.Id)
+                .Where(ur => ur.UserId == userId)
+                .Select((ur, r, rm, m) => m.Perms)
+                .ToListAsync() ?? new List<string>();
+        }
+
+        #endregion
     }
 }

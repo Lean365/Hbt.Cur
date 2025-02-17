@@ -2,14 +2,14 @@
 // 项目名 : Lean.Hbt 
 // 文件名 : HbtSignalRMessageNotifier.cs 
 // 创建者 : Lean365
-// 创建时间: 2024-01-20 16:30
+// 创建时间: 2024-01-24 10:00
 // 版本号 : V1.0.0
 // 描述    : SignalR消息通知服务
 //===================================================================
 
 using Microsoft.AspNetCore.SignalR;
 using Lean.Hbt.Common.Enums;
-using Lean.Hbt.Domain.Interfaces.SignalR;
+using Lean.Hbt.Domain.IServices.SignalR;
 
 namespace Lean.Hbt.Infrastructure.SignalR
 {
@@ -18,22 +18,22 @@ namespace Lean.Hbt.Infrastructure.SignalR
     /// </summary>
     /// <remarks>
     /// 创建者: Lean365
-    /// 创建时间: 2024-01-20
+    /// 创建时间: 2024-01-24
     /// </remarks>
-    public class HbtSignalRMessageNotifier : IHbtMessageNotifier
+    public class HbtSignalRMessageNotifier : IHbtSignalRMessageNotifier
     {
-        private readonly IHubContext<HbtOnlineHub, IHbtOnlineClient> _hubContext;
-        private readonly IHbtOnlineUserService _onlineUserService;
+        private readonly IHubContext<HbtSignalRHub, IHbtSignalRClient> _hubContext;
+        private readonly IHbtSignalRUserService _signalRUserService;
 
         /// <summary>
         /// 构造函数
         /// </summary>
         public HbtSignalRMessageNotifier(
-            IHubContext<HbtOnlineHub, IHbtOnlineClient> hubContext,
-            IHbtOnlineUserService onlineUserService)
+            IHubContext<HbtSignalRHub, IHbtSignalRClient> hubContext,
+            IHbtSignalRUserService signalRUserService)
         {
             _hubContext = hubContext;
-            _onlineUserService = onlineUserService;
+            _signalRUserService = signalRUserService;
         }
 
         /// <summary>
@@ -43,7 +43,7 @@ namespace Lean.Hbt.Infrastructure.SignalR
         {
             try
             {
-                var connections = await _onlineUserService.GetConnectionIdsAsync(userId);
+                var connections = await _signalRUserService.GetConnectionIdsAsync(userId);
                 if (connections?.Any() != true)
                     return false;
 
@@ -95,7 +95,7 @@ namespace Lean.Hbt.Infrastructure.SignalR
         {
             try
             {
-                var connections = await _onlineUserService.GetGroupConnectionIdsAsync(tenantId);
+                var connections = await _signalRUserService.GetGroupConnectionIdsAsync(tenantId);
                 if (connections?.Any() != true)
                     return false;
 

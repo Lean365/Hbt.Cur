@@ -102,5 +102,11 @@ namespace Lean.Hbt.Application.Services.Identity
         /// <param name="input">排序对象</param>
         /// <returns>是否成功</returns>
         Task<bool> UpdateOrderAsync(HbtMenuOrderDto input);
+
+        /// <summary>
+        /// 获取菜单树形结构
+        /// </summary>
+        /// <returns>返回树形菜单列表</returns>
+        Task<List<HbtMenuDto>> GetTreeAsync();
     }
 } 

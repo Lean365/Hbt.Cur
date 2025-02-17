@@ -9,14 +9,9 @@
 // 描述    : 工作流表达式引擎实现
 //===================================================================
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
-using Lean.Hbt.Domain.IServices;
 
 namespace Lean.Hbt.Application.Services.Workflow.Engine.Expressions
 {
@@ -99,14 +94,14 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine.Expressions
             try
             {
                 _logger.Info($"开始验证表达式: {expression}");
-                
+
                 // 编译表达式（不执行）
                 var script = CSharpScript.Create<bool>(
                     expression,
                     _scriptOptions);
-                
+
                 script.Compile();
-                
+
                 _logger.Info($"表达式验证通过: {expression}");
                 return true;
             }
@@ -124,7 +119,7 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine.Expressions
         {
             var variablePattern = @"\b[a-zA-Z_][a-zA-Z0-9_]*\b";
             var matches = Regex.Matches(expression, variablePattern);
-            
+
             // 排除C#关键字和自定义函数名
             var keywords = new HashSet<string> { "true", "false", "null", "var", "new" };
             return matches
@@ -136,17 +131,17 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine.Expressions
         private void RegisterBuiltInFunctions()
         {
             // 数学函数
-            RegisterFunction("Sum", async args => 
+            RegisterFunction("Sum", async args =>
                 args.Select(a => Convert.ToDouble(a)).Sum());
-            
-            RegisterFunction("Average", async args => 
+
+            RegisterFunction("Average", async args =>
                 args.Select(a => Convert.ToDouble(a)).Average());
 
             // 字符串函数
-            RegisterFunction("Concat", async args => 
+            RegisterFunction("Concat", async args =>
                 string.Concat(args.Select(a => a?.ToString())));
-            
-            RegisterFunction("Contains", async args => 
+
+            RegisterFunction("Contains", async args =>
                 args[0]?.ToString()?.Contains(args[1]?.ToString() ?? "") ?? false);
 
             // 日期函数
@@ -167,23 +162,23 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine.Expressions
             });
 
             // 类型转换函数
-            RegisterFunction("ToNumber", async args => 
+            RegisterFunction("ToNumber", async args =>
                 Convert.ToDouble(args[0]));
-            
-            RegisterFunction("ToString", async args => 
+
+            RegisterFunction("ToString", async args =>
                 args[0]?.ToString() ?? "");
-            
-            RegisterFunction("ToDate", async args => 
+
+            RegisterFunction("ToDate", async args =>
                 Convert.ToDateTime(args[0]));
 
             // 条件函数
-            RegisterFunction("If", async args => 
+            RegisterFunction("If", async args =>
                 Convert.ToBoolean(args[0]) ? args[1] : args[2]);
-            
-            RegisterFunction("IsNull", async args => 
+
+            RegisterFunction("IsNull", async args =>
                 args[0] == null);
-            
-            RegisterFunction("IsEmpty", async args => 
+
+            RegisterFunction("IsEmpty", async args =>
                 string.IsNullOrEmpty(args[0]?.ToString()));
         }
 
@@ -252,14 +247,14 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine.Expressions
             var regex = new Regex(pattern);
             var matches = regex.Matches(input);
             var result = input;
-            
+
             for (int i = matches.Count - 1; i >= 0; i--)
             {
                 var match = matches[i];
                 var replacement = await replacementFunc(match);
                 result = result.Substring(0, match.Index) + replacement + result.Substring(match.Index + match.Length);
             }
-            
+
             return result;
         }
     }
@@ -269,7 +264,17 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine.Expressions
     /// </summary>
     public class WorkflowExpressionException : Exception
     {
+        /// <summary>
+        /// 构造函数
+        /// </summary>
+        /// <param name="message"></param>
         public WorkflowExpressionException(string message) : base(message) { }
+
+        /// <summary>
+        /// 构造函数
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="innerException"></param>
         public WorkflowExpressionException(string message, Exception innerException) : base(message, innerException) { }
     }
-} 
+}

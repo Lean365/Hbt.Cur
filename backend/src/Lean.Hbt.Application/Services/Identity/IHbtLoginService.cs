@@ -29,16 +29,23 @@ public interface IHbtLoginService
     Task<HbtLoginResultDto> LoginAsync(HbtLoginDto loginDto);
 
     /// <summary>
-    /// 刷新令牌
-    /// </summary>
-    /// <param name="refreshToken">刷新令牌</param>
-    /// <returns>登录结果</returns>
-    Task<HbtLoginResultDto> RefreshTokenAsync(string refreshToken);
-
-    /// <summary>
     /// 用户登出
     /// </summary>
     /// <param name="userId">用户ID</param>
     /// <returns>是否成功</returns>
     Task<bool> LogoutAsync(long userId);
+
+    /// <summary>
+    /// 刷新访问令牌
+    /// </summary>
+    /// <param name="refreshToken">刷新令牌</param>
+    /// <returns>新的访问令牌</returns>
+    Task<HbtLoginResultDto> RefreshTokenAsync(string refreshToken);
+
+    /// <summary>
+    /// 获取用户盐值
+    /// </summary>
+    /// <param name="username">用户名</param>
+    /// <returns>用户盐值信息</returns>
+    Task<(string Salt, int Iterations)?> GetUserSaltAsync(string username);
 } 

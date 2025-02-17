@@ -12,9 +12,10 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using Lean.Hbt.Domain.IServices;
+using Lean.Hbt.Domain.IServices.Security;
 using Lean.Hbt.Common.Exceptions;
 using Lean.Hbt.Domain.IServices.Admin;
+using Lean.Hbt.Domain.Entities.Identity;
 
 namespace Lean.Hbt.Infrastructure.Authentication
 {
@@ -45,31 +46,26 @@ namespace Lean.Hbt.Infrastructure.Authentication
         }
 
         /// <summary>
-        /// 创建访问令牌
+        /// 生成访问令牌
         /// </summary>
-        public async Task<string> CreateAccessToken(long userId, string userName, IEnumerable<string> roles)
+        public async Task<string> GenerateAccessTokenAsync(HbtUser user)
         {
             var claims = new List<Claim>
             {
-                new Claim(JwtRegisteredClaimNames.Sub, userId.ToString()),
-                new Claim(JwtRegisteredClaimNames.Name, userName),
+                new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+                new Claim(JwtRegisteredClaimNames.Name, user.UserName),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
 
-            foreach (var role in roles)
-            {
-                claims.Add(new Claim(ClaimTypes.Role, role));
-            }
-
-            var secretKey = _configuration["HbtJwt:SecretKey"] ?? throw HbtException.ValidationError(await _localizationService.GetLocalizedStringAsync("Jwt.SecretKeyNotConfigured"));
+            var secretKey = _configuration["Security:Jwt:SecretKey"] ?? throw HbtException.ValidationError(await _localizationService.GetLocalizedStringAsync("Jwt.SecretKeyNotConfigured"));
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(
-                issuer: _configuration["HbtJwt:Issuer"] ?? throw HbtException.ValidationError(await _localizationService.GetLocalizedStringAsync("Jwt.IssuerNotConfigured")),
-                audience: _configuration["HbtJwt:Audience"] ?? throw HbtException.ValidationError(await _localizationService.GetLocalizedStringAsync("Jwt.AudienceNotConfigured")),
+                issuer: _configuration["Security:Jwt:Issuer"] ?? throw HbtException.ValidationError(await _localizationService.GetLocalizedStringAsync("Jwt.IssuerNotConfigured")),
+                audience: _configuration["Security:Jwt:Audience"] ?? throw HbtException.ValidationError(await _localizationService.GetLocalizedStringAsync("Jwt.AudienceNotConfigured")),
                 claims: claims,
-                expires: DateTime.Now.AddMinutes(Convert.ToDouble(_configuration["HbtJwt:ExpiryInMinutes"] ?? "30")),
+                expires: DateTime.Now.AddMinutes(Convert.ToDouble(_configuration["Security:Jwt:ExpirationMinutes"] ?? "30")),
                 signingCredentials: creds
             );
 
@@ -77,30 +73,11 @@ namespace Lean.Hbt.Infrastructure.Authentication
         }
 
         /// <summary>
-        /// 创建刷新令牌
+        /// 生成刷新令牌
         /// </summary>
-        public async Task<string> CreateRefreshToken(long userId)
+        public async Task<string> GenerateRefreshTokenAsync()
         {
-            var claims = new List<Claim>
-            {
-                new Claim(JwtRegisteredClaimNames.Sub, userId.ToString()),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim("type", "refresh")
-            };
-
-            var secretKey = _configuration["HbtJwt:RefreshSecretKey"] ?? throw HbtException.ValidationError(await _localizationService.GetLocalizedStringAsync("Jwt.RefreshSecretKeyNotConfigured"));
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-            var token = new JwtSecurityToken(
-                issuer: _configuration["HbtJwt:Issuer"] ?? throw HbtException.ValidationError(await _localizationService.GetLocalizedStringAsync("Jwt.IssuerNotConfigured")),
-                audience: _configuration["HbtJwt:Audience"] ?? throw HbtException.ValidationError(await _localizationService.GetLocalizedStringAsync("Jwt.AudienceNotConfigured")),
-                claims: claims,
-                expires: DateTime.Now.AddDays(Convert.ToDouble(_configuration["HbtJwt:RefreshExpiryInDays"] ?? "7")),
-                signingCredentials: creds
-            );
-
-            return new JwtSecurityTokenHandler().WriteToken(token);
+            return await Task.FromResult(Guid.NewGuid().ToString("N"));
         }
 
         /// <summary>
@@ -111,7 +88,7 @@ namespace Lean.Hbt.Infrastructure.Authentication
             try
             {
                 var tokenHandler = new JwtSecurityTokenHandler();
-                var secretKey = _configuration["HbtJwt:SecretKey"] ?? throw HbtException.ValidationError(await _localizationService.GetLocalizedStringAsync("Jwt.SecretKeyNotConfigured"));
+                var secretKey = _configuration["Security:Jwt:SecretKey"] ?? throw HbtException.ValidationError(await _localizationService.GetLocalizedStringAsync("Jwt.SecretKeyNotConfigured"));
                 var key = Encoding.UTF8.GetBytes(secretKey);
 
                 tokenHandler.ValidateToken(token, new TokenValidationParameters
@@ -119,9 +96,9 @@ namespace Lean.Hbt.Infrastructure.Authentication
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(key),
                     ValidateIssuer = true,
-                    ValidIssuer = _configuration["HbtJwt:Issuer"] ?? throw HbtException.ValidationError(await _localizationService.GetLocalizedStringAsync("Jwt.IssuerNotConfigured")),
+                    ValidIssuer = _configuration["Security:Jwt:Issuer"] ?? throw HbtException.ValidationError(await _localizationService.GetLocalizedStringAsync("Jwt.IssuerNotConfigured")),
                     ValidateAudience = true,
-                    ValidAudience = _configuration["HbtJwt:Audience"] ?? throw HbtException.ValidationError(await _localizationService.GetLocalizedStringAsync("Jwt.AudienceNotConfigured")),
+                    ValidAudience = _configuration["Security:Jwt:Audience"] ?? throw HbtException.ValidationError(await _localizationService.GetLocalizedStringAsync("Jwt.AudienceNotConfigured")),
                     ClockSkew = TimeSpan.Zero
                 }, out _);
 
@@ -141,7 +118,7 @@ namespace Lean.Hbt.Infrastructure.Authentication
             try
             {
                 var tokenHandler = new JwtSecurityTokenHandler();
-                var secretKey = _configuration["HbtJwt:RefreshSecretKey"] ?? throw HbtException.ValidationError(await _localizationService.GetLocalizedStringAsync("Jwt.RefreshSecretKeyNotConfigured"));
+                var secretKey = _configuration["Security:Jwt:RefreshSecretKey"] ?? throw HbtException.ValidationError(await _localizationService.GetLocalizedStringAsync("Jwt.RefreshSecretKeyNotConfigured"));
                 var key = Encoding.UTF8.GetBytes(secretKey);
 
                 var principal = tokenHandler.ValidateToken(token, new TokenValidationParameters
@@ -149,9 +126,9 @@ namespace Lean.Hbt.Infrastructure.Authentication
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(key),
                     ValidateIssuer = true,
-                    ValidIssuer = _configuration["HbtJwt:Issuer"] ?? throw HbtException.ValidationError(await _localizationService.GetLocalizedStringAsync("Jwt.IssuerNotConfigured")),
+                    ValidIssuer = _configuration["Security:Jwt:Issuer"] ?? throw HbtException.ValidationError(await _localizationService.GetLocalizedStringAsync("Jwt.IssuerNotConfigured")),
                     ValidateAudience = true,
-                    ValidAudience = _configuration["HbtJwt:Audience"] ?? throw HbtException.ValidationError(await _localizationService.GetLocalizedStringAsync("Jwt.AudienceNotConfigured")),
+                    ValidAudience = _configuration["Security:Jwt:Audience"] ?? throw HbtException.ValidationError(await _localizationService.GetLocalizedStringAsync("Jwt.AudienceNotConfigured")),
                     ClockSkew = TimeSpan.Zero
                 }, out _);
 

@@ -11,8 +11,8 @@ using System.Collections.Concurrent;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
-using Lean.Hbt.Domain.IServices;
 using Lean.Hbt.Common.Options;
+using Lean.Hbt.Domain.IServices.Caching;
 
 namespace Lean.Hbt.Infrastructure.Caching
 {

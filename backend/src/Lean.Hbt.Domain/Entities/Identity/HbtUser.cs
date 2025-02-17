@@ -80,7 +80,7 @@ namespace Lean.Hbt.Domain.Entities.Identity
         /// 密码迭代次数
         /// </summary>
         [SugarColumn(ColumnName = "iterations", ColumnDescription = "密码迭代次数", ColumnDataType = "int", IsNullable = false, DefaultValue = "10000")]
-        public int Iterations { get; set; } = 10000;
+        public int Iterations { get; set; } = 100000;
 
         /// <summary>
         /// 邮箱

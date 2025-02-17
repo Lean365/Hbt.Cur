@@ -11,8 +11,13 @@ using System.Collections.Concurrent;
 using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Domain.Entities.Admin;
 using Lean.Hbt.Domain.IServices.Admin;
+using Lean.Hbt.Domain.IServices.Caching;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Caching.Distributed;
 using System.Globalization;
+using System.Text.Json;
+using System.Threading;
 
 namespace Lean.Hbt.Infrastructure.Services;
 
@@ -22,24 +27,38 @@ namespace Lean.Hbt.Infrastructure.Services;
 public class HbtLocalizationService : IHbtLocalizationService
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly IHbtRepository<HbtTranslation> _translationRepository;
-    private readonly ConcurrentDictionary<string, ConcurrentDictionary<string, string>> _translations;
+    private readonly IHbtTranslationCache _translationCache;
+    private readonly ILogger<HbtLocalizationService> _logger;
+    private readonly IDistributedCache _distributedCache;
+    
     private const string DefaultLanguage = "zh-CN";
     private const string LanguageHeader = "Accept-Language";
+    private const string LanguageContextKey = "CurrentLanguage";
+    private const string SupportedLanguagesCacheKey = "SupportedLanguages";
+    private const int CacheExpirationMinutes = 30;
+
+    private static readonly ConcurrentDictionary<string, CultureInfo> _cultureCache 
+        = new ConcurrentDictionary<string, CultureInfo>();
+
+    private static readonly string[] _defaultSupportedLanguages = new[] 
+    { 
+        "zh-CN", // 简体中文
+        "en-US"  // 英语（美国）
+    };
 
     /// <summary>
     /// 构造函数
     /// </summary>
-    /// <param name="httpContextAccessor"></param>
-    /// <param name="translationRepository"></param>
     public HbtLocalizationService(
         IHttpContextAccessor httpContextAccessor,
-        IHbtRepository<HbtTranslation> translationRepository)
+        IHbtTranslationCache translationCache,
+        ILogger<HbtLocalizationService> logger,
+        IDistributedCache distributedCache)
     {
         _httpContextAccessor = httpContextAccessor;
-        _translationRepository = translationRepository;
-        _translations = new ConcurrentDictionary<string, ConcurrentDictionary<string, string>>();
-        InitializeTranslations().GetAwaiter().GetResult();
+        _translationCache = translationCache;
+        _logger = logger;
+        _distributedCache = distributedCache;
     }
 
     /// <summary>
@@ -47,7 +66,15 @@ public class HbtLocalizationService : IHbtLocalizationService
     /// </summary>
     public string L(string key, params object[] args)
     {
-        return L(CurrentLanguage, key, args);
+        try
+        {
+            return L(CurrentLanguage, key, args);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "获取翻译失败: {Key}", key);
+            return key;
+        }
     }
 
     /// <summary>
@@ -58,23 +85,63 @@ public class HbtLocalizationService : IHbtLocalizationService
         if (string.IsNullOrEmpty(key))
             return string.Empty;
 
-        // 1. 尝试获取指定语言的翻译
-        if (_translations.TryGetValue(langCode, out var langTranslations) &&
-            langTranslations.TryGetValue(key, out var translation))
+        try
         {
-            return args.Length > 0 ? string.Format(translation, args) : translation;
-        }
+            // 1. 尝试从分布式缓存获取(根据配置可能是Redis或Memory)
+            try
+            {
+                var cacheKey = $"Trans:{langCode}:{key}";
+                var cachedBytes = _distributedCache.Get(cacheKey);
+                if (cachedBytes != null)
+                {
+                    var cachedTranslation = System.Text.Encoding.UTF8.GetString(cachedBytes);
+                    return args.Length > 0 ? string.Format(cachedTranslation, args) : cachedTranslation;
+                }
+            }
+            catch (Exception ex)
+            {
+                // Redis连接失败时记录警告并继续
+                _logger.LogWarning(ex, "从分布式缓存获取翻译失败，将从翻译服务获取: {LangCode}, {Key}", langCode, key);
+            }
 
-        // 2. 如果找不到，尝试使用默认语言
-        if (langCode != DefaultLanguage &&
-            _translations.TryGetValue(DefaultLanguage, out var defaultTranslations) &&
-            defaultTranslations.TryGetValue(key, out var defaultTranslation))
+            // 2. 从翻译服务获取
+            var translation = _translationCache.GetTranslation(langCode, key);
+            if (translation != null)
+            {
+                try
+                {
+                    // 尝试保存到分布式缓存
+                    var options = new DistributedCacheEntryOptions
+                    {
+                        AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(CacheExpirationMinutes)
+                    };
+                    _distributedCache.Set(
+                        $"Trans:{langCode}:{key}",
+                        System.Text.Encoding.UTF8.GetBytes(translation),
+                        options);
+                }
+                catch (Exception ex)
+                {
+                    // Redis连接失败时只记录警告
+                    _logger.LogWarning(ex, "保存翻译到分布式缓存失败: {LangCode}, {Key}", langCode, key);
+                }
+                return args.Length > 0 ? string.Format(translation, args) : translation;
+            }
+
+            // 3. 如果找不到,尝试使用默认语言
+            if (langCode != DefaultLanguage)
+            {
+                return L(DefaultLanguage, key, args);
+            }
+
+            // 4. 如果还是找不到,返回键名
+            return key;
+        }
+        catch (Exception ex)
         {
-            return args.Length > 0 ? string.Format(defaultTranslation, args) : defaultTranslation;
+            _logger.LogError(ex, "获取翻译失败: {LangCode}, {Key}", langCode, key);
+            return key;
         }
-
-        // 3. 如果还是找不到，返回键名
-        return key;
     }
 
     /// <summary>
@@ -88,16 +155,105 @@ public class HbtLocalizationService : IHbtLocalizationService
             if (context == null)
                 return DefaultLanguage;
 
-            // 1. 从请求头获取
+            // 1. 从HttpContext.Items中获取（由中间件设置）
+            if (context.Items.TryGetValue(LanguageContextKey, out var cachedLang))
+            {
+                return cachedLang?.ToString() ?? DefaultLanguage;
+            }
+
+            // 2. 从请求头获取
             var langHeader = context.Request.Headers[LanguageHeader].ToString();
             if (!string.IsNullOrEmpty(langHeader))
-                return langHeader.Split(',')[0];
+            {
+                var lang = langHeader.Split(',')[0];
+                context.Items[LanguageContextKey] = lang;
+                return lang;
+            }
 
-            // 2. 从Cookie获取
+            // 3. 从Cookie获取
             if (context.Request.Cookies.TryGetValue("lang", out var langCookie))
+            {
+                context.Items[LanguageContextKey] = langCookie;
                 return langCookie;
+            }
 
+            // 4. 使用默认语言
+            context.Items[LanguageContextKey] = DefaultLanguage;
             return DefaultLanguage;
+        }
+    }
+
+    /// <summary>
+    /// 获取支持的语言列表
+    /// </summary>
+    public async Task<IEnumerable<string>> GetSupportedLanguagesAsync()
+    {
+        try
+        {
+            // 1. 尝试从分布式缓存获取
+            try 
+            {
+                var cts = new CancellationTokenSource(TimeSpan.FromSeconds(3));
+                var cachedBytes = await _distributedCache.GetAsync(SupportedLanguagesCacheKey, cts.Token);
+                if (cachedBytes != null)
+                {
+                    var cachedLanguages = JsonSerializer.Deserialize<string[]>(cachedBytes);
+                    if (cachedLanguages != null && cachedLanguages.Length > 0)
+                    {
+                        return cachedLanguages;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Redis连接失败时记录警告并继续
+                _logger.LogWarning(ex, "从分布式缓存获取语言列表失败，将从翻译服务获取");
+            }
+
+            // 2. 从翻译服务获取
+            try
+            {
+                var cts = new CancellationTokenSource(TimeSpan.FromSeconds(8));
+                var languages = await _translationCache.GetSupportedLanguagesAsync();
+                if (languages != null && languages.Any())
+                {
+                    var languagesArray = languages.ToArray();
+
+                    // 尝试异步保存到分布式缓存
+                    _ = Task.Run(async () =>
+                    {
+                        try
+                        {
+                            var options = new DistributedCacheEntryOptions
+                            {
+                                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(CacheExpirationMinutes)
+                            };
+                            await _distributedCache.SetAsync(
+                                SupportedLanguagesCacheKey,
+                                JsonSerializer.SerializeToUtf8Bytes(languagesArray),
+                                options);
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.LogWarning(ex, "异步保存语言列表到缓存失败");
+                        }
+                    });
+
+                    return languagesArray;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "从翻译服务获取语言列表失败，使用默认语言列表");
+            }
+
+            // 3. 使用默认支持的语言列表
+            return _defaultSupportedLanguages;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "获取支持的语言列表失败");
+            return _defaultSupportedLanguages;
         }
     }
 
@@ -106,44 +262,51 @@ public class HbtLocalizationService : IHbtLocalizationService
     /// </summary>
     public void SetLanguage(string langCode)
     {
+        if (string.IsNullOrEmpty(langCode))
+            throw new ArgumentNullException(nameof(langCode));
+
         var context = _httpContextAccessor.HttpContext;
         if (context == null)
             return;
 
-        context.Response.Cookies.Append("lang", langCode, new CookieOptions
+        try
         {
-            HttpOnly = true,
-            Secure = true,
-            SameSite = SameSiteMode.Strict,
-            Expires = DateTimeOffset.UtcNow.AddYears(1)
-        });
-    }
+            // 1. 更新HttpContext.Items
+            context.Items[LanguageContextKey] = langCode;
 
-    /// <summary>
-    /// 初始化翻译数据
-    /// </summary>
-    private async Task InitializeTranslations()
-    {
-        var translations = await _translationRepository.GetListAsync(t => t.Status == HbtStatus.Normal);
-        foreach (var translation in translations)
+            // 2. 设置当前线程的文化信息
+            var culture = _cultureCache.GetOrAdd(langCode, code => new CultureInfo(code));
+            CultureInfo.CurrentCulture = culture;
+            CultureInfo.CurrentUICulture = culture;
+
+            _logger.LogInformation("语言设置成功: {LangCode}", langCode);
+        }
+        catch (Exception ex)
         {
-            var langDict = _translations.GetOrAdd(translation.LangCode,
-                new ConcurrentDictionary<string, string>());
-            langDict.TryAdd(translation.TransKey, translation.TransValue);
+            _logger.LogError(ex, "设置语言失败: {LangCode}", langCode);
+            throw;
         }
     }
 
     /// <summary>
-    /// 重新加载翻译数据
+    /// 重新加载翻译
     /// </summary>
     public async Task ReloadTranslationsAsync()
     {
-        _translations.Clear();
-        await InitializeTranslations();
+        try
+        {
+            await _translationCache.ReloadAsync();
+            _logger.LogInformation("翻译缓存重新加载成功");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "重新加载翻译失败");
+            throw;
+        }
     }
 
     /// <summary>
-    /// 获取本地化字符串的异步方法
+    /// 获取本地化字符串
     /// </summary>
     public Task<string> GetLocalizedStringAsync(string key, params object[] args)
     {
@@ -155,7 +318,7 @@ public class HbtLocalizationService : IHbtLocalizationService
     /// </summary>
     public CultureInfo GetCurrentCulture()
     {
-        return CultureInfo.GetCultureInfo(CurrentLanguage);
+        return _cultureCache.GetOrAdd(CurrentLanguage, code => new CultureInfo(code));
     }
 
     /// <summary>
@@ -163,6 +326,9 @@ public class HbtLocalizationService : IHbtLocalizationService
     /// </summary>
     public void SetCurrentCulture(CultureInfo culture)
     {
+        if (culture == null)
+            throw new ArgumentNullException(nameof(culture));
+
         SetLanguage(culture.Name);
     }
 
@@ -171,6 +337,16 @@ public class HbtLocalizationService : IHbtLocalizationService
     /// </summary>
     public async Task RefreshLocalizationCacheAsync()
     {
-        await ReloadTranslationsAsync();
+        try
+        {
+            await _translationCache.ReloadAsync();
+            _cultureCache.Clear();
+            _logger.LogInformation("本地化缓存刷新成功");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "刷新本地化缓存失败");
+            throw;
+        }
     }
 }

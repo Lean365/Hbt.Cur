@@ -2574,13 +2574,13 @@
           }
         }
       },
-      "Lean.Hbt.Application/0.0.1": {
+      "Lean.Hbt.Application/0.1.2": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v8.0",
         "dependencies": {
           "FluentValidation": "11.9.0",
-          "Lean.Hbt.Common": "0.0.1",
-          "Lean.Hbt.Domain": "0.0.1",
+          "Lean.Hbt.Common": "0.1.2",
+          "Lean.Hbt.Domain": "0.1.2",
           "Mapster": "7.4.0",
           "Microsoft.CodeAnalysis.CSharp.Scripting": "4.8.0",
           "Microsoft.Extensions.Caching.Memory": "9.0.1",
@@ -2596,7 +2596,7 @@
           "bin/placeholder/Lean.Hbt.Application.dll": {}
         }
       },
-      "Lean.Hbt.Common/0.0.1": {
+      "Lean.Hbt.Common/0.1.2": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v8.0",
         "dependencies": {
@@ -2614,11 +2614,11 @@
           "bin/placeholder/Lean.Hbt.Common.dll": {}
         }
       },
-      "Lean.Hbt.Domain/0.0.1": {
+      "Lean.Hbt.Domain/0.1.2": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v8.0",
         "dependencies": {
-          "Lean.Hbt.Common": "0.0.1",
+          "Lean.Hbt.Common": "0.1.2",
           "SqlSugarCore": "5.1.4.172"
         },
         "compile": {
@@ -7724,17 +7724,17 @@
         "useSharedDesignerContext.txt"
       ]
     },
-    "Lean.Hbt.Application/0.0.1": {
+    "Lean.Hbt.Application/0.1.2": {
       "type": "project",
       "path": "../Lean.Hbt.Application/Lean.Hbt.Application.csproj",
       "msbuildProject": "../Lean.Hbt.Application/Lean.Hbt.Application.csproj"
     },
-    "Lean.Hbt.Common/0.0.1": {
+    "Lean.Hbt.Common/0.1.2": {
       "type": "project",
       "path": "../Lean.Hbt.Common/Lean.Hbt.Common.csproj",
       "msbuildProject": "../Lean.Hbt.Common/Lean.Hbt.Common.csproj"
     },
-    "Lean.Hbt.Domain/0.0.1": {
+    "Lean.Hbt.Domain/0.1.2": {
       "type": "project",
       "path": "../Lean.Hbt.Domain/Lean.Hbt.Domain.csproj",
       "msbuildProject": "../Lean.Hbt.Domain/Lean.Hbt.Domain.csproj"
@@ -7742,9 +7742,9 @@
   },
   "projectFileDependencyGroups": {
     "net8.0": [
-      "Lean.Hbt.Application >= 0.0.1",
-      "Lean.Hbt.Common >= 0.0.1",
-      "Lean.Hbt.Domain >= 0.0.1",
+      "Lean.Hbt.Application >= 0.1.2",
+      "Lean.Hbt.Common >= 0.1.2",
+      "Lean.Hbt.Domain >= 0.1.2",
       "Microsoft.AspNetCore.Authentication.JwtBearer >= 8.0.1",
       "Microsoft.Extensions.Caching.StackExchangeRedis >= 8.0.1",
       "NLog >= 5.3.4",
@@ -7759,7 +7759,7 @@
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
-    "version": "0.0.1",
+    "version": "0.1.2",
     "restore": {
       "projectUniqueName": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Infrastructure\\Lean.Hbt.Infrastructure.csproj",
       "projectName": "Lean.Hbt.Infrastructure",

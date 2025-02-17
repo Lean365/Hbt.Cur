@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 
-namespace Lean.Hbt.Domain.Services
+namespace Lean.Hbt.Domain.IServices.Identity
 {
     /// <summary>
     /// OAuth服务接口
@@ -60,4 +60,4 @@ namespace Lean.Hbt.Domain.Services
         /// </summary>
         public string Avatar { get; set; }
     }
-} 
+}

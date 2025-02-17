@@ -11,6 +11,14 @@ using Lean.Hbt.Application.Dtos.Admin;
 using Lean.Hbt.Application.Services.Admin;
 using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Domain.IServices.Admin;
+using Lean.Hbt.Domain.Entities.Admin;
+using Lean.Hbt.Domain.Repositories;
+using SqlSugar;
+using Mapster;
+using System.Linq.Expressions;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Caching.Distributed;
+using System.Text.Json;
 
 namespace Lean.Hbt.WebApi.Controllers.Admin
 {
@@ -27,15 +35,25 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
     public class HbtLanguageController : HbtBaseController
     {
         private readonly IHbtLanguageService _languageService;
+        private readonly IHbtRepository<HbtLanguage> _languageRepository;
+        private readonly ILogger<HbtLanguageController> _logger;
 
         /// <summary>
         /// 构造函数
         /// </summary>
         /// <param name="languageService">语言服务</param>
         /// <param name="localization">本地化服务</param>
-        public HbtLanguageController(IHbtLanguageService languageService, IHbtLocalizationService localization) : base(localization)
+        /// <param name="languageRepository">语言仓库</param>
+        /// <param name="logger">日志服务</param>
+        public HbtLanguageController(
+            IHbtLanguageService languageService, 
+            IHbtLocalizationService localization,
+            IHbtRepository<HbtLanguage> languageRepository,
+            ILogger<HbtLanguageController> logger) : base(localization)
         {
             _languageService = languageService;
+            _languageRepository = languageRepository;
+            _logger = logger;
         }
 
         /// <summary>
@@ -171,6 +189,63 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
             };
             var result = await _languageService.UpdateStatusAsync(input);
             return Success(result);
+        }
+
+        /// <summary>
+        /// 获取支持的语言列表
+        /// </summary>
+        /// <returns>语言列表</returns>
+        [HttpGet("supported")]
+        public async Task<IActionResult> GetSupportedLanguagesAsync()
+        {
+            try
+            {
+                var exp = Expressionable.Create<HbtLanguage>();
+                exp.And(x => x.Status == HbtStatus.Normal);
+                exp.And(x => x.IsDeleted == 0);
+                
+                var list = await _languageRepository.GetListAsync(exp.ToExpression());
+                
+                if (list == null || !list.Any())
+                {
+                    // 如果没有数据，返回默认语言列表
+                    list = new List<HbtLanguage>
+                    {
+                        new HbtLanguage
+                        {
+                            Id = 1,
+                            LangCode = "zh-CN",
+                            LangName = "简体中文",
+                            OrderNum = 1,
+                            Status = HbtStatus.Normal,
+                            IsDefault = true,
+                            CreateBy = "system",
+                            CreateTime = DateTime.Now,
+                            IsDeleted = 0
+                        },
+                        new HbtLanguage
+                        {
+                            Id = 2,
+                            LangCode = "en-US",
+                            LangName = "English",
+                            OrderNum = 2,
+                            Status = HbtStatus.Normal,
+                            IsDefault = false,
+                            CreateBy = "system",
+                            CreateTime = DateTime.Now,
+                            IsDeleted = 0
+                        }
+                    };
+                }
+
+                var result = list.OrderBy(x => x.OrderNum).Adapt<List<HbtLanguageDto>>();
+                return Ok(new { code = 200, msg = "操作成功", data = result });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "获取支持的语言列表时发生错误");
+                return Ok(new { code = 500, msg = "获取语言列表失败：" + ex.Message });
+            }
         }
     }
 }

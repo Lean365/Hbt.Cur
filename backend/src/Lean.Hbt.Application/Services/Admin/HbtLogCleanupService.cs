@@ -12,8 +12,8 @@
 using Lean.Hbt.Common.Options;
 using Lean.Hbt.Domain.Entities.Admin;
 using Lean.Hbt.Domain.Entities.Audit;
+using Lean.Hbt.Domain.IServices.Admin;
 using Lean.Hbt.Domain.Repositories;
-using Lean.Hbt.Domain.Services.Admin;
 using Microsoft.Extensions.Options;
 using System.Linq.Expressions;
 

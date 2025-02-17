@@ -45,7 +45,7 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
         /// <param name="query">查询条件</param>
         /// <returns>系统配置分页列表</returns>
         [HttpGet]
-        [HbtPermission("system:config:list")]
+        [HbtPerm("system:config:list")]
         public async Task<IActionResult> GetPagedListAsync([FromQuery] HbtSysConfigQueryDto query)
         {
             var result = await _configService.GetPagedListAsync(query);
@@ -58,7 +58,7 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
         /// <param name="configId">配置ID</param>
         /// <returns>系统配置详情</returns>
         [HttpGet("{configId}")]
-        [HbtPermission("system:config:query")]
+        [HbtPerm("system:config:query")]
         public async Task<IActionResult> GetAsync(long configId)
         {
             var result = await _configService.GetAsync(configId);
@@ -71,7 +71,7 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
         /// <param name="input">创建对象</param>
         /// <returns>配置ID</returns>
         [HttpPost]
-        [HbtPermission("system:config:insert")]
+        [HbtPerm("system:config:insert")]
         public async Task<IActionResult> InsertAsync([FromBody] HbtSysConfigCreateDto input)
         {
             var result = await _configService.InsertAsync(input);
@@ -84,7 +84,7 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
         /// <param name="input">更新对象</param>
         /// <returns>是否成功</returns>
         [HttpPut]
-        [HbtPermission("system:config:update")]
+        [HbtPerm("system:config:update")]
         public async Task<IActionResult> UpdateAsync([FromBody] HbtSysConfigUpdateDto input)
         {
             var result = await _configService.UpdateAsync(input);
@@ -97,7 +97,7 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
         /// <param name="configId">配置ID</param>
         /// <returns>是否成功</returns>
         [HttpDelete("{configId}")]
-        [HbtPermission("system:config:delete")]
+        [HbtPerm("system:config:delete")]
         public async Task<IActionResult> DeleteAsync(long configId)
         {
             var result = await _configService.DeleteAsync(configId);
@@ -110,7 +110,7 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
         /// <param name="configIds">配置ID集合</param>
         /// <returns>是否成功</returns>
         [HttpDelete("batch")]
-        [HbtPermission("system:config:delete")]
+        [HbtPerm("system:config:delete")]
         public async Task<IActionResult> BatchDeleteAsync([FromBody] long[] configIds)
         {
             var result = await _configService.BatchDeleteAsync(configIds);
@@ -124,7 +124,7 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
         /// <param name="sheetName">工作表名称</param>
         /// <returns>导入结果</returns>
         [HttpPost("import")]
-        [HbtPermission("system:config:import")]
+        [HbtPerm("system:config:import")]
         public async Task<IActionResult> ImportAsync(IFormFile file, [FromQuery] string sheetName = "系统配置信息")
         {
             if (file == null || file.Length == 0)
@@ -142,7 +142,7 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
         /// <param name="sheetName">工作表名称</param>
         /// <returns>Excel文件</returns>
         [HttpGet("export")]
-        [HbtPermission("system:config:export")]
+        [HbtPerm("system:config:export")]
         public async Task<IActionResult> ExportAsync([FromQuery] HbtSysConfigQueryDto query, [FromQuery] string sheetName = "系统配置信息")
         {
             var result = await _configService.ExportAsync(query, sheetName);
@@ -155,7 +155,7 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
         /// <param name="sheetName">工作表名称</param>
         /// <returns>Excel模板文件</returns>
         [HttpGet("template")]
-        [HbtPermission("system:config:query")]
+        [HbtPerm("system:config:query")]
         public async Task<IActionResult> GetTemplateAsync([FromQuery] string sheetName = "系统配置信息")
         {
             var result = await _configService.GetTemplateAsync(sheetName);
@@ -169,7 +169,7 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
         /// <param name="status">状态</param>
         /// <returns>是否成功</returns>
         [HttpPut("{configId}/status")]
-        [HbtPermission("system:config:update")]
+        [HbtPerm("system:config:update")]
         public async Task<IActionResult> UpdateStatusAsync(long configId, [FromQuery] HbtStatus status)
         {
             var input = new HbtSysConfigStatusDto

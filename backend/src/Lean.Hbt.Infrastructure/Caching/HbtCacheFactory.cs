@@ -7,7 +7,7 @@
 // 描述    : 缓存工厂实现
 //===================================================================
 
-using Lean.Hbt.Domain.IServices;
+using Lean.Hbt.Domain.IServices.Caching;
 
 namespace Lean.Hbt.Infrastructure.Caching
 {

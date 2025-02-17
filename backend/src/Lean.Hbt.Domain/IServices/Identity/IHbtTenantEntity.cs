@@ -1,4 +1,4 @@
-namespace Lean.Hbt.Domain.IServices
+namespace Lean.Hbt.Domain.IServices.Identity
 {
     /// <summary>
     /// 租户实体接口
@@ -10,4 +10,4 @@ namespace Lean.Hbt.Domain.IServices
         /// </summary>
         long TenantId { get; set; }
     }
-} 
+}

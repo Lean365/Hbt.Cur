@@ -1,5 +1,5 @@
 //===================================================================
-// 项目名 : Lean.Hbt 
+// 项目名 : Lean.Hbt
 // 文件名 : HbtWorkflowDefinitionController.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-23 12:00
@@ -7,15 +7,10 @@
 // 描述   : 工作流定义控制器
 //===================================================================
 
-using System;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http;
 using Lean.Hbt.Application.Dtos.Workflow;
 using Lean.Hbt.Application.Services.Workflow;
 using Lean.Hbt.Domain.IServices.Admin;
 using Lean.Hbt.Infrastructure.Security.Attributes;
-using Lean.Hbt.Infrastructure.Swagger;
 
 namespace Lean.Hbt.WebApi.Controllers.Workflow
 {
@@ -43,7 +38,7 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// 获取工作流定义分页列表
         /// </summary>
         [HttpGet]
-        [HbtPermission("workflow:definition:list")]
+        [HbtPerm("workflow:definition:list")]
         public async Task<IActionResult> GetPagedListAsync([FromQuery] HbtWorkflowDefinitionQueryDto query)
         {
             var result = await _workflowDefinitionService.GetPagedListAsync(query);
@@ -54,7 +49,7 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// 获取工作流定义详情
         /// </summary>
         [HttpGet("{id}")]
-        [HbtPermission("workflow:definition:query")]
+        [HbtPerm("workflow:definition:query")]
         public async Task<IActionResult> GetAsync(long id)
         {
             var result = await _workflowDefinitionService.GetAsync(id);
@@ -65,7 +60,7 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// 创建工作流定义
         /// </summary>
         [HttpPost]
-        [HbtPermission("workflow:definition:insert")]
+        [HbtPerm("workflow:definition:insert")]
         public async Task<IActionResult> InsertAsync([FromBody] HbtWorkflowDefinitionCreateDto input)
         {
             var result = await _workflowDefinitionService.InsertAsync(input);
@@ -76,7 +71,7 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// 更新工作流定义
         /// </summary>
         [HttpPut]
-        [HbtPermission("workflow:definition:update")]
+        [HbtPerm("workflow:definition:update")]
         public async Task<IActionResult> UpdateAsync([FromBody] HbtWorkflowDefinitionUpdateDto input)
         {
             var result = await _workflowDefinitionService.UpdateAsync(input);
@@ -87,7 +82,7 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// 删除工作流定义
         /// </summary>
         [HttpDelete("{id}")]
-        [HbtPermission("workflow:definition:delete")]
+        [HbtPerm("workflow:definition:delete")]
         public async Task<IActionResult> DeleteAsync(long id)
         {
             var result = await _workflowDefinitionService.DeleteAsync(id);
@@ -98,7 +93,7 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// 批量删除工作流定义
         /// </summary>
         [HttpDelete("batch")]
-        [HbtPermission("workflow:definition:delete")]
+        [HbtPerm("workflow:definition:delete")]
         public async Task<IActionResult> BatchDeleteAsync([FromBody] long[] ids)
         {
             var result = await _workflowDefinitionService.BatchDeleteAsync(ids);
@@ -109,7 +104,7 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// 导入工作流定义数据
         /// </summary>
         [HttpPost("import")]
-        [HbtPermission("workflow:definition:import")]
+        [HbtPerm("workflow:definition:import")]
         public async Task<IActionResult> ImportAsync(IFormFile file, [FromQuery] string sheetName = "Sheet1")
         {
             if (file == null || file.Length == 0)
@@ -124,7 +119,7 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// 导出工作流定义数据
         /// </summary>
         [HttpGet("export")]
-        [HbtPermission("workflow:definition:export")]
+        [HbtPerm("workflow:definition:export")]
         public async Task<IActionResult> ExportAsync([FromQuery] HbtWorkflowDefinitionQueryDto query, [FromQuery] string sheetName = "Sheet1")
         {
             var data = await _workflowDefinitionService.GetPagedListAsync(query);
@@ -136,7 +131,7 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// 获取导入模板
         /// </summary>
         [HttpGet("template")]
-        [HbtPermission("workflow:definition:query")]
+        [HbtPerm("workflow:definition:query")]
         public async Task<IActionResult> GetTemplateAsync([FromQuery] string sheetName = "Sheet1")
         {
             var result = await _workflowDefinitionService.GetTemplateAsync(sheetName);
@@ -147,7 +142,7 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// 更新工作流定义状态
         /// </summary>
         [HttpPut("{id}/status")]
-        [HbtPermission("workflow:definition:update")]
+        [HbtPerm("workflow:definition:update")]
         public async Task<IActionResult> UpdateStatusAsync(long id, [FromBody] HbtWorkflowDefinitionStatusDto input)
         {
             input.WorkflowDefinitionId = id;
@@ -155,4 +150,4 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
             return Success(result);
         }
     }
-} 
+}

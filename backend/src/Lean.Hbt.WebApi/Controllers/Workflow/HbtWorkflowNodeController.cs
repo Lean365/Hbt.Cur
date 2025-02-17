@@ -43,7 +43,7 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// 获取工作流节点分页列表
         /// </summary>
         [HttpGet]
-        [HbtPermission("workflow:node:list")]
+        [HbtPerm("workflow:node:list")]
         public async Task<IActionResult> GetPagedListAsync([FromQuery] HbtWorkflowNodeQueryDto query)
         {
             var result = await _workflowNodeService.GetPagedListAsync(query);
@@ -54,7 +54,7 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// 获取工作流节点详情
         /// </summary>
         [HttpGet("{id}")]
-        [HbtPermission("workflow:node:query")]
+        [HbtPerm("workflow:node:query")]
         public async Task<IActionResult> GetAsync(long id)
         {
             var result = await _workflowNodeService.GetAsync(id);
@@ -65,7 +65,7 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// 创建工作流节点
         /// </summary>
         [HttpPost]
-        [HbtPermission("workflow:node:insert")]
+        [HbtPerm("workflow:node:insert")]
         public async Task<IActionResult> InsertAsync([FromBody] HbtWorkflowNodeCreateDto input)
         {
             var result = await _workflowNodeService.InsertAsync(input);
@@ -76,7 +76,7 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// 更新工作流节点
         /// </summary>
         [HttpPut]
-        [HbtPermission("workflow:node:update")]
+        [HbtPerm("workflow:node:update")]
         public async Task<IActionResult> UpdateAsync([FromBody] HbtWorkflowNodeUpdateDto input)
         {
             var result = await _workflowNodeService.UpdateAsync(input);
@@ -87,7 +87,7 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// 删除工作流节点
         /// </summary>
         [HttpDelete("{id}")]
-        [HbtPermission("workflow:node:delete")]
+        [HbtPerm("workflow:node:delete")]
         public async Task<IActionResult> DeleteAsync(long id)
         {
             var result = await _workflowNodeService.DeleteAsync(id);
@@ -98,7 +98,7 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// 批量删除工作流节点
         /// </summary>
         [HttpDelete("batch")]
-        [HbtPermission("workflow:node:delete")]
+        [HbtPerm("workflow:node:delete")]
         public async Task<IActionResult> BatchDeleteAsync([FromBody] long[] ids)
         {
             var result = await _workflowNodeService.BatchDeleteAsync(ids);
@@ -109,7 +109,7 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// 导入工作流节点数据
         /// </summary>
         [HttpPost("import")]
-        [HbtPermission("workflow:node:import")]
+        [HbtPerm("workflow:node:import")]
         public async Task<IActionResult> ImportAsync(IFormFile file, [FromQuery] string sheetName = "Sheet1")
         {
             if (file == null || file.Length == 0)
@@ -124,7 +124,7 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// 导出工作流节点数据
         /// </summary>
         [HttpGet("export")]
-        [HbtPermission("workflow:node:export")]
+        [HbtPerm("workflow:node:export")]
         public async Task<IActionResult> ExportAsync([FromQuery] HbtWorkflowNodeQueryDto query, [FromQuery] string sheetName = "Sheet1")
         {
             var data = await _workflowNodeService.GetPagedListAsync(query);
@@ -136,7 +136,7 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// 获取导入模板
         /// </summary>
         [HttpGet("template")]
-        [HbtPermission("workflow:node:query")]
+        [HbtPerm("workflow:node:query")]
         public async Task<IActionResult> GetTemplateAsync([FromQuery] string sheetName = "Sheet1")
         {
             var result = await _workflowNodeService.GetTemplateAsync(sheetName);
@@ -147,7 +147,7 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// 获取工作流定义的所有节点
         /// </summary>
         [HttpGet("definition/{workflowDefinitionId}")]
-        [HbtPermission("workflow:node:query")]
+        [HbtPerm("workflow:node:query")]
         public async Task<IActionResult> GetNodesByWorkflowDefinitionAsync(long workflowDefinitionId)
         {
             var result = await _workflowNodeService.GetNodesByWorkflowDefinitionAsync(workflowDefinitionId);
@@ -158,7 +158,7 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// 获取指定节点的子节点列表
         /// </summary>
         [HttpGet("{nodeId}/children")]
-        [HbtPermission("workflow:node:query")]
+        [HbtPerm("workflow:node:query")]
         public async Task<IActionResult> GetChildNodesAsync(long nodeId)
         {
             var result = await _workflowNodeService.GetChildNodesAsync(nodeId);
@@ -169,7 +169,7 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// 更新节点排序号
         /// </summary>
         [HttpPut("{id}/sort")]
-        [HbtPermission("workflow:node:update")]
+        [HbtPerm("workflow:node:update")]
         public async Task<IActionResult> UpdateSortAsync(long id, [FromQuery] int sort)
         {
             var result = await _workflowNodeService.UpdateSortAsync(id, sort);

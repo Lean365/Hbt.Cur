@@ -1,6 +1,6 @@
 //===================================================================
 // 项目名 : Lean.Hbt
-// 文件名 : HbtPermissionMiddleware.cs
+// 文件名 : HbtPermMiddleware.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-22 16:00
 // 版本号 : V1.0.0
@@ -9,13 +9,16 @@
 
 using Microsoft.AspNetCore.Http;
 using Lean.Hbt.Infrastructure.Security.Attributes;
+using System.Linq;
+using System;
+using System.Threading.Tasks;
 
 namespace Lean.Hbt.Infrastructure.Security
 {
     /// <summary>
     /// 权限中间件,用于验证用户是否拥有访问权限
     /// </summary>
-    public class HbtPermissionMiddleware
+    public class HbtPermMiddleware
     {
         private readonly RequestDelegate _next;
 
@@ -23,7 +26,7 @@ namespace Lean.Hbt.Infrastructure.Security
         /// 构造函数
         /// </summary>
         /// <param name="next">请求委托</param>
-        public HbtPermissionMiddleware(RequestDelegate next)
+        public HbtPermMiddleware(RequestDelegate next)
         {
             _next = next;
         }
@@ -44,7 +47,7 @@ namespace Lean.Hbt.Infrastructure.Security
             }
 
             // 获取权限特性
-            var permAttribute = endpoint.Metadata.GetMetadata<HbtPermissionAttribute>();
+            var permAttribute = endpoint.Metadata.GetMetadata<HbtPermAttribute>();
             if (permAttribute == null)
             {
                 await _next(context);
@@ -68,4 +71,4 @@ namespace Lean.Hbt.Infrastructure.Security
             await _next(context);
         }
     }
-} 
+}

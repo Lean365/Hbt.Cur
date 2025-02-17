@@ -16,7 +16,6 @@ using Lean.Hbt.Common.Exceptions;
 using Lean.Hbt.Common.Models;
 using Lean.Hbt.Common.Utils;
 using Lean.Hbt.Domain.Entities.Identity;
-using Lean.Hbt.Domain.IServices;
 using Lean.Hbt.Domain.IServices.Admin;
 using Lean.Hbt.Domain.Repositories;
 using Lean.Hbt.Domain.Utils;
@@ -24,6 +23,7 @@ using Mapster;
 using SqlSugar;
 using Lean.Hbt.Common.Helpers;
 using System.IO;
+using Lean.Hbt.Domain.IServices.Security;
 
 namespace Lean.Hbt.Application.Services.Identity
 {

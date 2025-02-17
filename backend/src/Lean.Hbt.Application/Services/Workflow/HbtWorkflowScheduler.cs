@@ -9,19 +9,13 @@
 // 描述    : 工作流任务调度器
 //===================================================================
 
-using System;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Text.Json;
-using Lean.Hbt.Domain.IServices;
+using Lean.Hbt.Application.Services.Workflow.Jobs;
 using Lean.Hbt.Common.Enums;
-using Lean.Hbt.Domain.Data;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Quartz;
 using Quartz.Impl;
 using Quartz.Spi;
-using Lean.Hbt.Application.Services.Workflow.Jobs;
 
 namespace Lean.Hbt.Application.Services.Workflow
 {
@@ -34,6 +28,11 @@ namespace Lean.Hbt.Application.Services.Workflow
         private readonly IHbtLogger _logger;
         private IScheduler _scheduler;
 
+        /// <summary>
+        /// 构造函数
+        /// </summary>
+        /// <param name="serviceProvider"></param>
+        /// <param name="logger"></param>
         public HbtWorkflowScheduler(
             IServiceProvider serviceProvider,
             IHbtLogger logger)
@@ -42,6 +41,11 @@ namespace Lean.Hbt.Application.Services.Workflow
             _logger = logger;
         }
 
+        /// <summary>
+        /// 启动工作流调度器
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         public async Task StartAsync(CancellationToken cancellationToken)
         {
             try
@@ -64,6 +68,11 @@ namespace Lean.Hbt.Application.Services.Workflow
             }
         }
 
+        /// <summary>
+        /// 停止工作流调度器
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         public async Task StopAsync(CancellationToken cancellationToken)
         {
             try
@@ -130,6 +139,12 @@ namespace Lean.Hbt.Application.Services.Workflow
             }
         }
 
+        /// <summary>
+        /// 获取任务类型对应的Job类型
+        /// </summary>
+        /// <param name="taskType"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
         private Type GetJobType(HbtWorkflowScheduledTaskType taskType)
         {
             return taskType switch
@@ -150,11 +165,22 @@ namespace Lean.Hbt.Application.Services.Workflow
     {
         private readonly IServiceProvider _serviceProvider;
 
+        /// <summary>
+        /// 构造函数
+        /// </summary>
+        /// <param name="serviceProvider"></param>
         public HbtWorkflowJobFactory(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
         }
 
+        /// <summary>
+        /// 创建Job实例
+        /// </summary>
+        /// <param name="bundle"></param>
+        /// <param name="scheduler"></param>
+        /// <returns></returns>
+        /// <exception cref="SchedulerException"></exception>
         public IJob NewJob(TriggerFiredBundle bundle, IScheduler scheduler)
         {
             try
@@ -170,6 +196,10 @@ namespace Lean.Hbt.Application.Services.Workflow
             }
         }
 
+        /// <summary>
+        /// 任务完成
+        /// </summary>
+        /// <param name="job"></param>
         public void ReturnJob(IJob job)
         {
             var disposable = job as IDisposable;
@@ -185,12 +215,22 @@ namespace Lean.Hbt.Application.Services.Workflow
         private readonly IServiceProvider _serviceProvider;
         private readonly IHbtLogger _logger;
 
+        /// <summary>
+        /// 构造函数
+        /// </summary>
+        /// <param name="serviceProvider"></param>
+        /// <param name="logger"></param>
         public HbtWorkflowTaskScannerJob(IServiceProvider serviceProvider, IHbtLogger logger)
         {
             _serviceProvider = serviceProvider;
             _logger = logger;
         }
 
+        /// <summary>
+        /// 执行任务
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
         public async Task Execute(IJobExecutionContext context)
         {
             try
@@ -232,4 +272,4 @@ namespace Lean.Hbt.Application.Services.Workflow
             }
         }
     }
-} 
+}

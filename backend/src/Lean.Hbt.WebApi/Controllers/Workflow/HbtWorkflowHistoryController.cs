@@ -43,7 +43,7 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// 获取工作流历史分页列表
         /// </summary>
         [HttpGet]
-        [HbtPermission("workflow:history:list")]
+        [HbtPerm("workflow:history:list")]
         public async Task<IActionResult> GetPagedListAsync([FromQuery] HbtWorkflowHistoryQueryDto query)
         {
             var result = await _workflowHistoryService.GetPagedListAsync(query);
@@ -54,7 +54,7 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// 获取工作流历史详情
         /// </summary>
         [HttpGet("{id}")]
-        [HbtPermission("workflow:history:query")]
+        [HbtPerm("workflow:history:query")]
         public async Task<IActionResult> GetAsync(long id)
         {
             var result = await _workflowHistoryService.GetAsync(id);
@@ -65,7 +65,7 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// 创建工作流历史
         /// </summary>
         [HttpPost]
-        [HbtPermission("workflow:history:insert")]
+        [HbtPerm("workflow:history:insert")]
         public async Task<IActionResult> InsertAsync([FromBody] HbtWorkflowHistoryCreateDto input)
         {
             var result = await _workflowHistoryService.InsertAsync(input);
@@ -76,7 +76,7 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// 更新工作流历史
         /// </summary>
         [HttpPut]
-        [HbtPermission("workflow:history:update")]
+        [HbtPerm("workflow:history:update")]
         public async Task<IActionResult> UpdateAsync([FromBody] HbtWorkflowHistoryUpdateDto input)
         {
             var result = await _workflowHistoryService.UpdateAsync(input);
@@ -87,7 +87,7 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// 删除工作流历史
         /// </summary>
         [HttpDelete("{id}")]
-        [HbtPermission("workflow:history:delete")]
+        [HbtPerm("workflow:history:delete")]
         public async Task<IActionResult> DeleteAsync(long id)
         {
             var result = await _workflowHistoryService.DeleteAsync(id);
@@ -98,7 +98,7 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// 批量删除工作流历史
         /// </summary>
         [HttpDelete("batch")]
-        [HbtPermission("workflow:history:delete")]
+        [HbtPerm("workflow:history:delete")]
         public async Task<IActionResult> BatchDeleteAsync([FromBody] long[] ids)
         {
             var result = await _workflowHistoryService.BatchDeleteAsync(ids);
@@ -109,7 +109,7 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// 导入工作流历史数据
         /// </summary>
         [HttpPost("import")]
-        [HbtPermission("workflow:history:import")]
+        [HbtPerm("workflow:history:import")]
         public async Task<IActionResult> ImportAsync(IFormFile file, [FromQuery] string sheetName = "Sheet1")
         {
             if (file == null || file.Length == 0)
@@ -124,7 +124,7 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// 导出工作流历史数据
         /// </summary>
         [HttpGet("export")]
-        [HbtPermission("workflow:history:export")]
+        [HbtPerm("workflow:history:export")]
         public async Task<IActionResult> ExportAsync([FromQuery] HbtWorkflowHistoryQueryDto query, [FromQuery] string sheetName = "Sheet1")
         {
             var data = await _workflowHistoryService.GetPagedListAsync(query);
@@ -136,7 +136,7 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// 获取导入模板
         /// </summary>
         [HttpGet("template")]
-        [HbtPermission("workflow:history:query")]
+        [HbtPerm("workflow:history:query")]
         public async Task<IActionResult> GetTemplateAsync([FromQuery] string sheetName = "Sheet1")
         {
             var result = await _workflowHistoryService.GetTemplateAsync(sheetName);
@@ -147,7 +147,7 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// 获取工作流实例的历史记录
         /// </summary>
         [HttpGet("instance/{workflowInstanceId}")]
-        [HbtPermission("workflow:history:query")]
+        [HbtPerm("workflow:history:query")]
         public async Task<IActionResult> GetHistoriesByWorkflowInstanceAsync(long workflowInstanceId)
         {
             var result = await _workflowHistoryService.GetHistoriesByWorkflowInstanceAsync(workflowInstanceId);
@@ -158,7 +158,7 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// 获取工作流节点的历史记录
         /// </summary>
         [HttpGet("node/{workflowNodeId}")]
-        [HbtPermission("workflow:history:query")]
+        [HbtPerm("workflow:history:query")]
         public async Task<IActionResult> GetHistoriesByWorkflowNodeAsync(long workflowNodeId)
         {
             var result = await _workflowHistoryService.GetHistoriesByWorkflowNodeAsync(workflowNodeId);
@@ -169,7 +169,7 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// 获取用户的操作历史记录
         /// </summary>
         [HttpGet("operator/{operatorId}")]
-        [HbtPermission("workflow:history:query")]
+        [HbtPerm("workflow:history:query")]
         public async Task<IActionResult> GetHistoriesByOperatorAsync(long operatorId)
         {
             var result = await _workflowHistoryService.GetHistoriesByOperatorAsync(operatorId);
@@ -180,7 +180,7 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// 清理历史记录
         /// </summary>
         [HttpPost("cleanup")]
-        [HbtPermission("workflow:history:delete")]
+        [HbtPerm("workflow:history:delete")]
         public async Task<IActionResult> CleanupHistoriesAsync([FromQuery] int days)
         {
             var result = await _workflowHistoryService.CleanupHistoriesAsync(days);

@@ -49,26 +49,43 @@ namespace Lean.Hbt.Infrastructure.Security
         /// <returns>处理结果</returns>
         public async Task InvokeAsync(HttpContext context)
         {
-            // 1. 处理GET请求
+            Console.WriteLine($"Processing request: {context.Request.Method} {context.Request.Path}");
+            Console.WriteLine($"Request headers: {string.Join(", ", context.Request.Headers.Select(h => $"{h.Key}={h.Value}"))}");
+            
+            // 1. 检查是否需要跳过CSRF验证
+            if (ShouldSkipCsrfCheck(context))
+            {
+                Console.WriteLine("Skipping CSRF check");
+                await _next(context);
+                return;
+            }
+
+            // 2. 处理GET请求
             if (context.Request.Method == "GET")
             {
                 // 生成新的CSRF Token
                 var token = GenerateCsrfToken();
-
+                
+                Console.WriteLine($"Setting CSRF token cookie: {token}");
+                
                 // 设置Cookie
                 context.Response.Cookies.Append(CsrfTokenCookie, token, new CookieOptions
                 {
                     HttpOnly = false,
-                    Secure = true,
-                    SameSite = SameSiteMode.Strict
+                    Secure = context.Request.IsHttps,
+                    SameSite = SameSiteMode.Lax,
+                    Path = "/"
                 });
 
                 // 缓存Token
                 await CacheTokenAsync(token);
+                
+                Console.WriteLine($"Generated new CSRF token: {token}");
             }
-            // 2. 处理非GET请求
+            // 3. 处理非GET请求
             else if (!await ValidateCsrfTokenAsync(context))
             {
+                Console.WriteLine("CSRF validation failed");
                 context.Response.StatusCode = StatusCodes.Status403Forbidden;
                 await context.Response.WriteAsJsonAsync(new { message = "CSRF Token验证失败" });
                 return;
@@ -110,21 +127,73 @@ namespace Lean.Hbt.Infrastructure.Security
         {
             // 1. 获取请求中的Token
             var requestToken = context.Request.Headers[CsrfTokenHeader].ToString();
-            if (string.IsNullOrEmpty(requestToken))
-                return false;
+            Console.WriteLine($"Request token: {requestToken}");
 
             // 2. 获取Cookie中的Token
             var cookieToken = context.Request.Cookies[CsrfTokenCookie];
-            if (string.IsNullOrEmpty(cookieToken))
+            Console.WriteLine($"Cookie token: {cookieToken}");
+
+            if (string.IsNullOrEmpty(requestToken) || string.IsNullOrEmpty(cookieToken))
+            {
+                Console.WriteLine("Missing CSRF token in request or cookie");
                 return false;
+            }
 
             // 3. 验证Token是否匹配
             if (requestToken != cookieToken)
+            {
+                Console.WriteLine("CSRF token mismatch");
                 return false;
+            }
 
             // 4. 验证Token是否有效
             var cachedToken = await _cache.GetStringAsync($"csrf:token:{requestToken}");
+            Console.WriteLine($"Cached token: {cachedToken}");
+            
             return !string.IsNullOrEmpty(cachedToken);
+        }
+
+        private bool ShouldSkipCsrfCheck(HttpContext context)
+        {
+            var path = context.Request.Path.Value?.ToLower();
+            Console.WriteLine($"Checking if should skip CSRF for path: {path}");
+            
+            // 跳过OPTIONS请求
+            if (context.Request.Method == "OPTIONS")
+            {
+                Console.WriteLine("Skipping CSRF check for OPTIONS request");
+                return true;
+            }
+            
+            // 跳过认证相关的路径
+            if (path != null && (
+                path.Contains("/login") ||
+                path.Contains("/auth") ||
+                path.Contains("/token") ||
+                path.Contains("/oauth") ||
+                path.Contains("/captcha")))
+            {
+                Console.WriteLine($"Skipping CSRF check for auth path: {path}");
+                return true;
+            }
+
+            // 跳过静态文件
+            if (path != null && (
+                path.EndsWith(".js") ||
+                path.EndsWith(".css") ||
+                path.EndsWith(".html") ||
+                path.EndsWith(".jpg") ||
+                path.EndsWith(".png") ||
+                path.EndsWith(".gif") ||
+                path.EndsWith(".ico") ||
+                path.EndsWith(".woff") ||
+                path.EndsWith(".woff2")))
+            {
+                Console.WriteLine($"Skipping CSRF check for static file: {path}");
+                return true;
+            }
+
+            return false;
         }
     }
 }

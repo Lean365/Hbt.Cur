@@ -1,17 +1,15 @@
 #nullable enable
 
 //===================================================================
-// 项目名 : Lean.Hbt 
-// 文件名 : HbtWorkflowTask.cs 
+// 项目名 : Lean.Hbt
+// 文件名 : HbtWorkflowTask.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-23 12:00
 // 版本号 : V1.0.0
 // 描述    : 工作流任务实体
 //===================================================================
 
-using System;
 using SqlSugar;
-using Lean.Hbt.Common.Enums;
 
 namespace Lean.Hbt.Domain.Entities.Workflow
 {
@@ -74,12 +72,6 @@ namespace Lean.Hbt.Domain.Entities.Workflow
         public string? Result { get; set; }
 
         /// <summary>
-        /// 开始时间
-        /// </summary>
-        [SugarColumn(ColumnName = "start_time", ColumnDescription = "开始时间", ColumnDataType = "datetime", IsNullable = false)]
-        public DateTime CreateTime { get; set; }
-
-        /// <summary>
         /// 完成时间
         /// </summary>
         [SugarColumn(ColumnName = "complete_time", ColumnDescription = "完成时间", ColumnDataType = "datetime", IsNullable = true)]
@@ -104,12 +96,6 @@ namespace Lean.Hbt.Domain.Entities.Workflow
         public int Priority { get; set; }
 
         /// <summary>
-        /// 备注
-        /// </summary>
-        [SugarColumn(ColumnName = "remark", ColumnDescription = "备注", Length = 500, ColumnDataType = "nvarchar", IsNullable = true)]
-        public string? Remark { get; set; }
-
-        /// <summary>
         /// 工作流实例
         /// </summary>
         [Navigate(NavigateType.OneToOne, nameof(WorkflowInstanceId))]
@@ -121,4 +107,4 @@ namespace Lean.Hbt.Domain.Entities.Workflow
         [Navigate(NavigateType.OneToOne, nameof(NodeId))]
         public HbtWorkflowNode Node { get; set; }
     }
-} 
+}

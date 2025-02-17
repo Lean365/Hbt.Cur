@@ -11,6 +11,7 @@ using Lean.Hbt.Application.Dtos.Identity;
 using Lean.Hbt.Application.Services.Identity;
 using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Domain.IServices.Admin;
+using Lean.Hbt.Common.Models;
 
 namespace Lean.Hbt.WebApi.Controllers.Identity
 {
@@ -160,7 +161,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         {
             var input = new HbtMenuStatusDto
             {
-                MenuId = menuId,
+                Id = menuId,
                 Status = status
             };
             var result = await _menuService.UpdateStatusAsync(input);
@@ -178,11 +179,23 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         {
             var input = new HbtMenuOrderDto
             {
-                MenuId = menuId,
+                Id = menuId,
                 OrderNum = orderNum
             };
             var result = await _menuService.UpdateOrderAsync(input);
             return Success(result);
+        }
+
+        /// <summary>
+        /// 获取菜单树形结构
+        /// </summary>
+        /// <returns>返回树形菜单列表</returns>
+        [HttpGet("tree")]
+        [ProducesResponseType(typeof(HbtApiResult<List<HbtMenuDto>>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetTreeAsync()
+        {
+            var menus = await _menuService.GetTreeAsync();
+            return Success(menus);
         }
     }
 }

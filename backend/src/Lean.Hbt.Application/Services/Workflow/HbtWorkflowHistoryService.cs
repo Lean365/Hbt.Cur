@@ -18,7 +18,7 @@ using Lean.Hbt.Domain.Entities.Workflow;
 using Lean.Hbt.Domain.IServices;
 using Lean.Hbt.Domain.IServices.Admin;
 using Lean.Hbt.Domain.Repositories;
-using Lean.Hbt.Domain.Services;
+using Lean.Hbt.Domain.IServices;
 using Lean.Hbt.Common.Helpers;
 using Mapster;
 using SqlSugar;

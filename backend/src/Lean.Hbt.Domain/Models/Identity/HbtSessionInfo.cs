@@ -10,13 +10,13 @@
 namespace Lean.Hbt.Domain.Models.Identity
 {
     /// <summary>
-    /// 会话信息模型
+    /// 身份认证会话信息模型
     /// </summary>
     /// <remarks>
     /// 创建者: Lean365
     /// 创建时间: 2024-01-17
     /// </remarks>
-    public class HbtSessionInfo
+    public class HbtIdentitySessionInfo
     {
         /// <summary>
         /// 会话ID

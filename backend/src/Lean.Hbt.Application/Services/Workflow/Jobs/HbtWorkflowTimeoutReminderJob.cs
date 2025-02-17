@@ -9,13 +9,10 @@
 // 描述    : 工作流超时提醒任务Job
 //===================================================================
 
-using System;
-using System.Threading.Tasks;
 using Lean.Hbt.Application.Services.Workflow.Engine;
 using Lean.Hbt.Common.Enums;
-using Lean.Hbt.Domain.IServices;
-using Lean.Hbt.Domain.Entities.Workflow;
 using Lean.Hbt.Domain.Data;
+using Lean.Hbt.Domain.Entities.Workflow;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Lean.Hbt.Application.Services.Workflow.Jobs
@@ -25,6 +22,13 @@ namespace Lean.Hbt.Application.Services.Workflow.Jobs
     /// </summary>
     public class HbtWorkflowTimeoutReminderJob : HbtWorkflowScheduledTaskJob
     {
+        /// <summary>
+        /// 构造函数
+        /// </summary>
+        /// <param name="serviceProvider"></param>
+        /// <param name="logger"></param>
+        /// <param name="scheduledTaskService"></param>
+        /// <param name="workflowEngine"></param>
         public HbtWorkflowTimeoutReminderJob(
             IServiceProvider serviceProvider,
             IHbtLogger logger,
@@ -34,6 +38,11 @@ namespace Lean.Hbt.Application.Services.Workflow.Jobs
         {
         }
 
+        /// <summary>
+        /// 执行任务
+        /// </summary>
+        /// <param name="task"></param>
+        /// <returns></returns>
         protected override async Task ExecuteTaskAsync(HbtWorkflowScheduledTask task)
         {
             using var scope = _serviceProvider.CreateScope();
@@ -93,4 +102,4 @@ namespace Lean.Hbt.Application.Services.Workflow.Jobs
             }
         }
     }
-} 
+}

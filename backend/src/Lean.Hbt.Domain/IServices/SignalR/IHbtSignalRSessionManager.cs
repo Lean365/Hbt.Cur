@@ -1,18 +1,27 @@
+//===================================================================
+// 项目名 : Lean.Hbt
+// 文件名 : IHbtSignalRSessionManager.cs
+// 创建者 : Lean365
+// 创建时间: 2024-01-24 10:00
+// 版本号 : V1.0.0
+// 描述    : SignalR实时通信会话管理接口
+//===================================================================
+
 using System.Threading.Tasks;
 
-namespace Lean.Hbt.Domain.Services
+namespace Lean.Hbt.Domain.IServices.SignalR
 {
     /// <summary>
-    /// 会话管理接口
+    /// SignalR实时通信会话管理接口
     /// </summary>
-    public interface IHbtSessionManager
+    public interface IHbtSignalRSessionManager
     {
         /// <summary>
         /// 创建会话
         /// </summary>
         /// <param name="userId">用户ID</param>
         /// <returns>会话信息</returns>
-        Task<HbtSessionInfo> CreateSessionAsync(string userId);
+        Task<HbtSignalRSessionInfo> CreateSessionAsync(string userId);
 
         /// <summary>
         /// 单点登出
@@ -24,9 +33,9 @@ namespace Lean.Hbt.Domain.Services
     }
 
     /// <summary>
-    /// 会话信息
+    /// SignalR实时通信会话信息
     /// </summary>
-    public class HbtSessionInfo
+    public class HbtSignalRSessionInfo
     {
         /// <summary>
         /// 会话ID

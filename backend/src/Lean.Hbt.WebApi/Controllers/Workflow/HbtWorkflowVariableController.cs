@@ -51,7 +51,7 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// <param name="query">查询条件</param>
         /// <returns>工作流变量分页列表</returns>
         [HttpGet]
-        [HbtPermission("workflow:variable:list")]
+        [HbtPerm("workflow:variable:list")]
         public async Task<IActionResult> GetPagedListAsync([FromQuery] HbtWorkflowVariableQueryDto query)
         {
             var result = await _workflowVariableService.GetPagedListAsync(query);
@@ -64,7 +64,7 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// <param name="id">工作流变量ID</param>
         /// <returns>工作流变量详情</returns>
         [HttpGet("{id}")]
-        [HbtPermission("workflow:variable:query")]
+        [HbtPerm("workflow:variable:query")]
         public async Task<IActionResult> GetAsync(long id)
         {
             var result = await _workflowVariableService.GetAsync(id);
@@ -77,7 +77,7 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// <param name="input">创建对象</param>
         /// <returns>工作流变量ID</returns>
         [HttpPost]
-        [HbtPermission("workflow:variable:insert")]
+        [HbtPerm("workflow:variable:insert")]
         public async Task<IActionResult> InsertAsync([FromBody] HbtWorkflowVariableCreateDto input)
         {
             var result = await _workflowVariableService.InsertAsync(input);
@@ -90,7 +90,7 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// <param name="input">更新对象</param>
         /// <returns>是否成功</returns>
         [HttpPut]
-        [HbtPermission("workflow:variable:update")]
+        [HbtPerm("workflow:variable:update")]
         public async Task<IActionResult> UpdateAsync([FromBody] HbtWorkflowVariableUpdateDto input)
         {
             var result = await _workflowVariableService.UpdateAsync(input);
@@ -103,7 +103,7 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// <param name="id">工作流变量ID</param>
         /// <returns>是否成功</returns>
         [HttpDelete("{id}")]
-        [HbtPermission("workflow:variable:delete")]
+        [HbtPerm("workflow:variable:delete")]
         public async Task<IActionResult> DeleteAsync(long id)
         {
             var result = await _workflowVariableService.DeleteAsync(id);
@@ -116,7 +116,7 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// <param name="ids">工作流变量ID集合</param>
         /// <returns>是否成功</returns>
         [HttpDelete("batch")]
-        [HbtPermission("workflow:variable:delete")]
+        [HbtPerm("workflow:variable:delete")]
         public async Task<IActionResult> BatchDeleteAsync([FromBody] long[] ids)
         {
             var result = await _workflowVariableService.BatchDeleteAsync(ids);
@@ -130,7 +130,7 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// <param name="sheetName">工作表名称</param>
         /// <returns>导入结果</returns>
         [HttpPost("import")]
-        [HbtPermission("workflow:variable:import")]
+        [HbtPerm("workflow:variable:import")]
         public async Task<IActionResult> ImportAsync(IFormFile file, [FromQuery] string sheetName = "Sheet1")
         {
             if (file == null || file.Length == 0)
@@ -148,7 +148,7 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// <param name="sheetName">工作表名称</param>
         /// <returns>Excel文件</returns>
         [HttpGet("export")]
-        [HbtPermission("workflow:variable:export")]
+        [HbtPerm("workflow:variable:export")]
         public async Task<IActionResult> ExportAsync([FromQuery] IEnumerable<HbtWorkflowVariableDto> data, [FromQuery] string sheetName = "Sheet1")
         {
             var result = await _workflowVariableService.ExportAsync(data, sheetName);
@@ -161,7 +161,7 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// <param name="sheetName">工作表名称</param>
         /// <returns>Excel模板文件</returns>
         [HttpGet("template")]
-        [HbtPermission("workflow:variable:query")]
+        [HbtPerm("workflow:variable:query")]
         public async Task<IActionResult> GetTemplateAsync([FromQuery] string sheetName = "Sheet1")
         {
             var result = await _workflowVariableService.GetTemplateAsync(sheetName);
@@ -174,7 +174,7 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// <param name="workflowInstanceId">工作流实例ID</param>
         /// <returns>变量列表</returns>
         [HttpGet("instance/{workflowInstanceId}")]
-        [HbtPermission("workflow:variable:query")]
+        [HbtPerm("workflow:variable:query")]
         public async Task<IActionResult> GetVariablesByWorkflowInstanceAsync(long workflowInstanceId)
         {
             var result = await _workflowVariableService.GetVariablesByWorkflowInstanceAsync(workflowInstanceId);
@@ -187,7 +187,7 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// <param name="workflowNodeId">工作流节点ID</param>
         /// <returns>变量列表</returns>
         [HttpGet("node/{workflowNodeId}")]
-        [HbtPermission("workflow:variable:query")]
+        [HbtPerm("workflow:variable:query")]
         public async Task<IActionResult> GetVariablesByWorkflowNodeAsync(long workflowNodeId)
         {
             var result = await _workflowVariableService.GetVariablesByWorkflowNodeAsync(workflowNodeId);
@@ -201,7 +201,7 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// <param name="variableName">变量名称</param>
         /// <returns>变量值</returns>
         [HttpGet("value")]
-        [HbtPermission("workflow:variable:query")]
+        [HbtPerm("workflow:variable:query")]
         public async Task<IActionResult> GetVariableValueAsync([FromQuery] long workflowInstanceId, [FromQuery] string variableName)
         {
             var result = await _workflowVariableService.GetVariableValueAsync(workflowInstanceId, variableName);
@@ -216,7 +216,7 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// <param name="variableValue">变量值</param>
         /// <returns>是否成功</returns>
         [HttpPut("value")]
-        [HbtPermission("workflow:variable:update")]
+        [HbtPerm("workflow:variable:update")]
         public async Task<IActionResult> SetVariableValueAsync([FromQuery] long workflowInstanceId, [FromQuery] string variableName, [FromBody] string variableValue)
         {
             var result = await _workflowVariableService.SetVariableValueAsync(workflowInstanceId, variableName, variableValue);

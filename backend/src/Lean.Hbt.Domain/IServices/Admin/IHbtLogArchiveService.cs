@@ -1,6 +1,6 @@
 using Lean.Hbt.Common.Options;
 
-namespace Lean.Hbt.Domain.Services.Admin
+namespace Lean.Hbt.Domain.IServices.Admin
 {
     /// <summary>
     /// 日志归档服务接口
@@ -27,4 +27,4 @@ namespace Lean.Hbt.Domain.Services.Admin
         /// </summary>
         Task DeleteArchiveFileAsync(string fileName);
     }
-} 
+}

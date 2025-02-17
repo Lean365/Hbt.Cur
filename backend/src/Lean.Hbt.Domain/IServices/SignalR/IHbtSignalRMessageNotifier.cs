@@ -1,16 +1,25 @@
+//===================================================================
+// 项目名 : Lean.Hbt
+// 文件名 : IHbtSignalRMessageNotifier.cs
+// 创建者 : Lean365
+// 创建时间: 2024-01-24 10:00
+// 版本号 : V1.0.0
+// 描述    : SignalR消息通知接口
+//===================================================================
+
 using System.Threading.Tasks;
 using Lean.Hbt.Common.Enums;
 
-namespace Lean.Hbt.Domain.Interfaces.SignalR
+namespace Lean.Hbt.Domain.IServices.SignalR
 {
     /// <summary>
-    /// 消息通知服务接口
+    /// SignalR消息通知接口
     /// </summary>
     /// <remarks>
     /// 创建者: Lean365
-    /// 创建时间: 2024-01-20
+    /// 创建时间: 2024-01-24
     /// </remarks>
-    public interface IHbtMessageNotifier
+    public interface IHbtSignalRMessageNotifier
     {
         /// <summary>
         /// 通知指定用户

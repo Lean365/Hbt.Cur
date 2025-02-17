@@ -9,13 +9,10 @@
 // 描述    : 工作流定时任务Job基类
 //===================================================================
 
-using System;
-using System.Threading.Tasks;
 using Lean.Hbt.Application.Services.Workflow.Engine;
 using Lean.Hbt.Common.Enums;
-using Lean.Hbt.Domain.IServices;
-using Lean.Hbt.Domain.Entities.Workflow;
 using Lean.Hbt.Domain.Data;
+using Lean.Hbt.Domain.Entities.Workflow;
 using Microsoft.Extensions.DependencyInjection;
 using Quartz;
 
@@ -26,11 +23,33 @@ namespace Lean.Hbt.Application.Services.Workflow.Jobs
     /// </summary>
     public abstract class HbtWorkflowScheduledTaskJob : IJob
     {
+        /// <summary>
+        /// 服务提供器
+        /// </summary>
         protected readonly IServiceProvider _serviceProvider;
+
+        /// <summary>
+        /// 日志
+        /// </summary>
         protected readonly IHbtLogger _logger;
+
+        /// <summary>
+        /// 调度任务服务
+        /// </summary>
         protected readonly IHbtWorkflowScheduledTaskService _scheduledTaskService;
+
+        /// <summary>
+        /// 工作流引擎
+        /// </summary>
         protected readonly IHbtWorkflowEngine _workflowEngine;
 
+        /// <summary>
+        /// 构造函数
+        /// </summary>
+        /// <param name="serviceProvider"></param>
+        /// <param name="logger"></param>
+        /// <param name="scheduledTaskService"></param>
+        /// <param name="workflowEngine"></param>
         protected HbtWorkflowScheduledTaskJob(
             IServiceProvider serviceProvider,
             IHbtLogger logger,
@@ -43,6 +62,11 @@ namespace Lean.Hbt.Application.Services.Workflow.Jobs
             _workflowEngine = workflowEngine;
         }
 
+        /// <summary>
+        /// 调度任务执行
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
         public async Task Execute(IJobExecutionContext context)
         {
             var taskId = context.JobDetail.JobDataMap.GetLong("TaskId");
@@ -82,11 +106,11 @@ namespace Lean.Hbt.Application.Services.Workflow.Jobs
                 catch (Exception ex)
                 {
                     _logger.Error($"执行调度任务[{taskId}]失败: {ex.Message}", ex);
-                    
+
                     if (task.RetryCount < task.MaxRetryCount)
                     {
                         await _scheduledTaskService.UpdateStatusAsync(taskId, HbtWorkflowScheduledTaskStatus.Pending);
-                        
+
                         // 更新重试次数
                         await dbContext.Client.Updateable<HbtWorkflowScheduledTask>()
                             .SetColumns(t => new HbtWorkflowScheduledTask
@@ -96,15 +120,15 @@ namespace Lean.Hbt.Application.Services.Workflow.Jobs
                             })
                             .Where(t => t.Id == taskId)
                             .ExecuteCommandAsync();
-                        
+
                         var jobKey = new JobKey(taskId.ToString());
                         var triggerKey = new TriggerKey($"{taskId}_retry_{task.RetryCount + 1}");
-                        
+
                         var trigger = TriggerBuilder.Create()
                             .WithIdentity(triggerKey)
                             .StartAt(DateTimeOffset.Now.AddMinutes(5)) // 5分钟后重试
                             .Build();
-                            
+
                         await context.Scheduler.RescheduleJob(triggerKey, trigger);
                     }
                     else
@@ -125,4 +149,4 @@ namespace Lean.Hbt.Application.Services.Workflow.Jobs
         /// </summary>
         protected abstract Task ExecuteTaskAsync(HbtWorkflowScheduledTask task);
     }
-} 
+}

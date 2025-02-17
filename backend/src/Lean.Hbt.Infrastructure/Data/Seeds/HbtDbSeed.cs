@@ -1181,23 +1181,117 @@ public class HbtDbSeed
 
         var languages = new List<HbtLanguage>
         {
+            // 阿拉伯语 (联合国官方语言)
             new()
             {
-                LangCode = "zh-CN",
-                LangName = "简体中文",
-                LangIcon = "🇨🇳",
+                LangCode = "ar-SA",
+                LangName = "العربية",
+                LangIcon = "🇸🇦",
                 OrderNum = 1,
                 Status = HbtStatus.Normal,
-                IsDefault = true,
+                IsDefault = false,
                 CreateTime = DateTime.Now,
                 CreateBy = "system"
             },
+            
+            // 英语 (联合国官方语言)
             new()
             {
                 LangCode = "en-US",
                 LangName = "English",
                 LangIcon = "🇺🇸",
                 OrderNum = 2,
+                Status = HbtStatus.Normal,
+                IsDefault = false,
+                CreateTime = DateTime.Now,
+                CreateBy = "system"
+            },
+            
+            // 法语 (联合国官方语言)
+            new()
+            {
+                LangCode = "fr-FR",
+                LangName = "Français",
+                LangIcon = "🇫🇷",
+                OrderNum = 3,
+                Status = HbtStatus.Normal,
+                IsDefault = false,
+                CreateTime = DateTime.Now,
+                CreateBy = "system"
+            },
+
+            // 日语 (东亚语系)
+            new()
+            {
+                LangCode = "ja-JP",
+                LangName = "日本語",
+                LangIcon = "🇯🇵",
+                OrderNum = 4,
+                Status = HbtStatus.Normal,
+                IsDefault = false,
+                CreateTime = DateTime.Now,
+                CreateBy = "system"
+            },
+
+            // 韩语 (东亚语系)
+            new()
+            {
+                LangCode = "ko-KR",
+                LangName = "한국어",
+                LangIcon = "🇰🇷",
+                OrderNum = 5,
+                Status = HbtStatus.Normal,
+                IsDefault = false,
+                CreateTime = DateTime.Now,
+                CreateBy = "system"
+            },
+
+            // 俄语 (联合国官方语言)
+            new()
+            {
+                LangCode = "ru-RU",
+                LangName = "Русский",
+                LangIcon = "🇷🇺",
+                OrderNum = 6,
+                Status = HbtStatus.Normal,
+                IsDefault = false,
+                CreateTime = DateTime.Now,
+                CreateBy = "system"
+            },
+
+            // 西班牙语 (联合国官方语言)
+            new()
+            {
+                LangCode = "es-ES",
+                LangName = "Español",
+                LangIcon = "🇪🇸",
+                OrderNum = 7,
+                Status = HbtStatus.Normal,
+                IsDefault = false,
+                CreateTime = DateTime.Now,
+                CreateBy = "system"
+            },
+
+            // 简体中文 (默认语言，联合国官方语言)
+            new()
+            {
+                LangCode = "zh-CN",
+                LangName = "简体中文",
+                LangIcon = "🇨🇳",
+                OrderNum = 8,
+                Status = HbtStatus.Normal,
+                IsDefault = true,
+                CreateTime = DateTime.Now,
+                CreateBy = "system"
+            },
+
+            // 繁体中文 (东亚语系)
+            new()
+            {
+                LangCode = "zh-TW",
+                LangName = "繁體中文",
+                LangIcon = "🇹🇼",
+                OrderNum = 9,
                 Status = HbtStatus.Normal,
                 IsDefault = false,
                 CreateTime = DateTime.Now,
@@ -1836,140 +1930,7 @@ public class HbtDbSeed
             }
         };
 
-        // 为每个菜单添加按钮
-        var menuButtons = new List<HbtMenu>();
-        foreach (var menu in menus.Where(m => m.MenuType == HbtMenuType.Menu))
-        {
-            // 查询按钮
-            menuButtons.Add(new HbtMenu
-            {
-                MenuName = $"{menu.MenuName}查询",
-                ParentId = menu.Id,
-                OrderNum = 1,
-                Path = null,
-                Component = null,
-                QueryParams = null,
-                IsFrame = HbtYesNo.No,
-                IsCache = HbtYesNo.No, // 按钮不需要缓存
-                MenuType = HbtMenuType.Button,
-                Visible = HbtVisible.Show,
-                Status = HbtStatus.Normal,
-                Perms = $"{menu.Perms}:query",
-                Icon = null,
-                CreateTime = DateTime.Now,
-                CreateBy = "system"
-            });
-
-            // 新增按钮
-            menuButtons.Add(new HbtMenu
-            {
-                MenuName = $"{menu.MenuName}新增",
-                ParentId = menu.Id,
-                OrderNum = 2,
-                Path = null,
-                Component = null,
-                QueryParams = null,
-                IsFrame = HbtYesNo.No,
-                IsCache = HbtYesNo.No, // 按钮不需要缓存
-                MenuType = HbtMenuType.Button,
-                Visible = HbtVisible.Show,
-                Status = HbtStatus.Normal,
-                Perms = $"{menu.Perms}:add",
-                Icon = null,
-                CreateTime = DateTime.Now,
-                CreateBy = "system"
-            });
-
-            // 修改按钮
-            menuButtons.Add(new HbtMenu
-            {
-                MenuName = $"{menu.MenuName}修改",
-                ParentId = menu.Id,
-                OrderNum = 3,
-                Path = null,
-                Component = null,
-                QueryParams = null,
-                IsFrame = HbtYesNo.No,
-                IsCache = HbtYesNo.No, // 按钮不需要缓存
-                MenuType = HbtMenuType.Button,
-                Visible = HbtVisible.Show,
-                Status = HbtStatus.Normal,
-                Perms = $"{menu.Perms}:edit",
-                Icon = null,
-                CreateTime = DateTime.Now,
-                CreateBy = "system"
-            });
-
-            // 删除按钮
-            menuButtons.Add(new HbtMenu
-            {
-                MenuName = $"{menu.MenuName}删除",
-                ParentId = menu.Id,
-                OrderNum = 4,
-                Path = null,
-                Component = null,
-                QueryParams = null,
-                IsFrame = HbtYesNo.No,
-                IsCache = HbtYesNo.No, // 按钮不需要缓存
-                MenuType = HbtMenuType.Button,
-                Visible = HbtVisible.Show,
-                Status = HbtStatus.Normal,
-                Perms = $"{menu.Perms}:remove",
-                Icon = null,
-                CreateTime = DateTime.Now,
-                CreateBy = "system"
-            });
-
-            // 导出按钮 (排除服务监控和在线消息)
-            if (menu.MenuName != "服务监控" && menu.MenuName != "在线消息")
-            {
-                menuButtons.Add(new HbtMenu
-                {
-                    MenuName = $"{menu.MenuName}导出",
-                    ParentId = menu.Id,
-                    OrderNum = 5,
-                    Path = null,
-                    Component = null,
-                    QueryParams = null,
-                    IsFrame = HbtYesNo.No,
-                    IsCache = HbtYesNo.No, // 按钮不需要缓存
-                    MenuType = HbtMenuType.Button,
-                    Visible = HbtVisible.Show,
-                    Status = HbtStatus.Normal,
-                    Perms = $"{menu.Perms}:export",
-                    Icon = null,
-                    CreateTime = DateTime.Now,
-                    CreateBy = "system"
-                });
-            }
-
-            // 导入按钮 (仅适用于部分菜单)
-            if (new[] { "租户管理", "用户管理", "部门管理", "岗位管理", "字典类型", "数据字典" }.Contains(menu.MenuName))
-            {
-                menuButtons.Add(new HbtMenu
-                {
-                    MenuName = $"{menu.MenuName}导入",
-                    ParentId = menu.Id,
-                    OrderNum = 6,
-                    Path = null,
-                    Component = null,
-                    QueryParams = null,
-                    IsFrame = HbtYesNo.No,
-                    IsCache = HbtYesNo.No, // 按钮不需要缓存
-                    MenuType = HbtMenuType.Button,
-                    Visible = HbtVisible.Show,
-                    Status = HbtStatus.Normal,
-                    Perms = $"{menu.Perms}:import",
-                    Icon = null,
-                    CreateTime = DateTime.Now,
-                    CreateBy = "system"
-                });
-            }
-        }
-
-        // 合并所有菜单
-        menus.AddRange(menuButtons);
-
+        // 先插入目录和菜单
         foreach (var menu in menus)
         {
             var existingMenu = await _menuRepository.FirstOrDefaultAsync(x => 
@@ -2000,6 +1961,174 @@ public class HbtDbSeed
                 await _menuRepository.UpdateAsync(existingMenu);
                 updateCount++;
                 _logger.Info($"[更新] 菜单 '{menu.MenuName}' 更新成功");
+            }
+        }
+
+        // 为每个菜单添加按钮
+        foreach (var menu in menus.Where(m => m.MenuType == HbtMenuType.Menu))
+        {
+            // 获取实际的菜单ID
+            var parentMenu = await _menuRepository.FirstOrDefaultAsync(x => 
+                x.MenuName == menu.MenuName && 
+                x.MenuType == HbtMenuType.Menu);
+            
+            if (parentMenu == null)
+            {
+                _logger.Error($"未找到菜单 '{menu.MenuName}'，无法创建按钮");
+                continue;
+            }
+
+            var menuButtons = new List<HbtMenu>();
+
+            // 查询按钮
+            menuButtons.Add(new HbtMenu
+            {
+                MenuName = $"{menu.MenuName}查询",
+                ParentId = parentMenu.Id,
+                OrderNum = 1,
+                Path = null,
+                Component = null,
+                QueryParams = null,
+                IsFrame = HbtYesNo.No,
+                IsCache = HbtYesNo.No,
+                MenuType = HbtMenuType.Button,
+                Visible = HbtVisible.Show,
+                Status = HbtStatus.Normal,
+                Perms = $"{menu.Perms}:query",
+                Icon = null,
+                CreateTime = DateTime.Now,
+                CreateBy = "system"
+            });
+
+            // 新增按钮
+            menuButtons.Add(new HbtMenu
+            {
+                MenuName = $"{menu.MenuName}新增",
+                ParentId = parentMenu.Id,
+                OrderNum = 2,
+                Path = null,
+                Component = null,
+                QueryParams = null,
+                IsFrame = HbtYesNo.No,
+                IsCache = HbtYesNo.No,
+                MenuType = HbtMenuType.Button,
+                Visible = HbtVisible.Show,
+                Status = HbtStatus.Normal,
+                Perms = $"{menu.Perms}:add",
+                Icon = null,
+                CreateTime = DateTime.Now,
+                CreateBy = "system"
+            });
+
+            // 修改按钮
+            menuButtons.Add(new HbtMenu
+            {
+                MenuName = $"{menu.MenuName}修改",
+                ParentId = parentMenu.Id,
+                OrderNum = 3,
+                Path = null,
+                Component = null,
+                QueryParams = null,
+                IsFrame = HbtYesNo.No,
+                IsCache = HbtYesNo.No,
+                MenuType = HbtMenuType.Button,
+                Visible = HbtVisible.Show,
+                Status = HbtStatus.Normal,
+                Perms = $"{menu.Perms}:edit",
+                Icon = null,
+                CreateTime = DateTime.Now,
+                CreateBy = "system"
+            });
+
+            // 删除按钮
+            menuButtons.Add(new HbtMenu
+            {
+                MenuName = $"{menu.MenuName}删除",
+                ParentId = parentMenu.Id,
+                OrderNum = 4,
+                Path = null,
+                Component = null,
+                QueryParams = null,
+                IsFrame = HbtYesNo.No,
+                IsCache = HbtYesNo.No,
+                MenuType = HbtMenuType.Button,
+                Visible = HbtVisible.Show,
+                Status = HbtStatus.Normal,
+                Perms = $"{menu.Perms}:remove",
+                Icon = null,
+                CreateTime = DateTime.Now,
+                CreateBy = "system"
+            });
+
+            // 导出按钮 (排除服务监控和在线消息)
+            if (menu.MenuName != "服务监控" && menu.MenuName != "在线消息")
+            {
+                menuButtons.Add(new HbtMenu
+                {
+                    MenuName = $"{menu.MenuName}导出",
+                    ParentId = parentMenu.Id,
+                    OrderNum = 5,
+                    Path = null,
+                    Component = null,
+                    QueryParams = null,
+                    IsFrame = HbtYesNo.No,
+                    IsCache = HbtYesNo.No,
+                    MenuType = HbtMenuType.Button,
+                    Visible = HbtVisible.Show,
+                    Status = HbtStatus.Normal,
+                    Perms = $"{menu.Perms}:export",
+                    Icon = null,
+                    CreateTime = DateTime.Now,
+                    CreateBy = "system"
+                });
+            }
+
+            // 导入按钮 (仅适用于部分菜单)
+            if (new[] { "租户管理", "用户管理", "部门管理", "岗位管理", "字典类型", "数据字典" }.Contains(menu.MenuName))
+            {
+                menuButtons.Add(new HbtMenu
+                {
+                    MenuName = $"{menu.MenuName}导入",
+                    ParentId = parentMenu.Id,
+                    OrderNum = 6,
+                    Path = null,
+                    Component = null,
+                    QueryParams = null,
+                    IsFrame = HbtYesNo.No,
+                    IsCache = HbtYesNo.No,
+                    MenuType = HbtMenuType.Button,
+                    Visible = HbtVisible.Show,
+                    Status = HbtStatus.Normal,
+                    Perms = $"{menu.Perms}:import",
+                    Icon = null,
+                    CreateTime = DateTime.Now,
+                    CreateBy = "system"
+                });
+            }
+
+            // 插入按钮
+            foreach (var button in menuButtons)
+            {
+                var existingButton = await _menuRepository.FirstOrDefaultAsync(x => 
+                    x.MenuName == button.MenuName && 
+                    x.ParentId == button.ParentId);
+                
+                if (existingButton == null)
+                {
+                    await _menuRepository.InsertAsync(button);
+                    insertCount++;
+                    _logger.Info($"[创建] 按钮 '{button.MenuName}' 创建成功");
+                }
+                else
+                {
+                    existingButton.Perms = button.Perms;
+                    existingButton.OrderNum = button.OrderNum;
+                    existingButton.UpdateTime = DateTime.Now;
+                    existingButton.UpdateBy = "system";
+                    await _menuRepository.UpdateAsync(existingButton);
+                    updateCount++;
+                    _logger.Info($"[更新] 按钮 '{button.MenuName}' 更新成功");
+                }
             }
         }
 

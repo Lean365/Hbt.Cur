@@ -9,9 +9,23 @@
 // 描述    : 日志清理服务接口
 //===================================================================
 
+using Lean;
+
+
+#nullable enable
+
+//===================================================================
+// 项目名 : Lean.Hbt
+// 文件名 : IHbtLogCleanupService.cs
+// 创建者 : Lean365
+// 创建时间: 2024-01-19 11:00
+// 版本号 : V.0.0.1
+// 描述    : 日志清理服务接口
+//===================================================================
+
 using Lean.Hbt.Common.Options;
 
-namespace Lean.Hbt.Domain.Services.Admin
+namespace Lean.Hbt.Domain.IServices.Admin
 {
     /// <summary>
     /// 日志清理服务接口
@@ -28,4 +42,4 @@ namespace Lean.Hbt.Domain.Services.Admin
         /// </summary>
         Task CleanupAsync();
     }
-} 
+}

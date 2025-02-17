@@ -10,7 +10,7 @@
 using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
 using StackExchange.Redis;
-using Lean.Hbt.Domain.IServices;
+using Lean.Hbt.Domain.IServices.Caching;
 
 namespace Lean.Hbt.Infrastructure.Caching
 {

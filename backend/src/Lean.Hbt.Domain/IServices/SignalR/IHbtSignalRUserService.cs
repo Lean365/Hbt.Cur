@@ -1,17 +1,26 @@
+//===================================================================
+// 项目名 : Lean.Hbt
+// 文件名 : IHbtSignalRUserService.cs
+// 创建者 : Lean365
+// 创建时间: 2024-01-24 10:00
+// 版本号 : V1.0.0
+// 描述    : SignalR用户服务接口
+//===================================================================
+
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Lean.Hbt.Domain.Models.SignalR;
 
-namespace Lean.Hbt.Domain.Interfaces.SignalR
+namespace Lean.Hbt.Domain.IServices.SignalR
 {
     /// <summary>
-    /// 在线用户服务接口
+    /// SignalR用户服务接口
     /// </summary>
     /// <remarks>
     /// 创建者: Lean365
-    /// 创建时间: 2024-01-20
+    /// 创建时间: 2024-01-24
     /// </remarks>
-    public interface IHbtOnlineUserService
+    public interface IHbtSignalRUserService
     {
         /// <summary>
         /// 保存在线用户

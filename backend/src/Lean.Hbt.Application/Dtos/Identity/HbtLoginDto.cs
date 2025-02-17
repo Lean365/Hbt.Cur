@@ -45,6 +45,11 @@ public class HbtLoginDto
     /// 验证码令牌
     /// </summary>
     public string? CaptchaToken { get; set; }
+
+    /// <summary>
+    /// 验证码偏移量
+    /// </summary>
+    public int CaptchaOffset { get; set; }
 }
 
 /// <summary>

@@ -43,7 +43,7 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// 获取工作流实例分页列表
         /// </summary>
         [HttpGet]
-        [HbtPermission("workflow:instance:list")]
+        [HbtPerm("workflow:instance:list")]
         public async Task<IActionResult> GetPagedListAsync([FromQuery] HbtWorkflowInstanceQueryDto query)
         {
             var result = await _workflowInstanceService.GetPagedListAsync(query);
@@ -54,7 +54,7 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// 获取工作流实例详情
         /// </summary>
         [HttpGet("{id}")]
-        [HbtPermission("workflow:instance:query")]
+        [HbtPerm("workflow:instance:query")]
         public async Task<IActionResult> GetAsync(long id)
         {
             var result = await _workflowInstanceService.GetAsync(id);
@@ -65,7 +65,7 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// 创建工作流实例
         /// </summary>
         [HttpPost]
-        [HbtPermission("workflow:instance:insert")]
+        [HbtPerm("workflow:instance:insert")]
         public async Task<IActionResult> InsertAsync([FromBody] HbtWorkflowInstanceCreateDto input)
         {
             var result = await _workflowInstanceService.InsertAsync(input);
@@ -76,7 +76,7 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// 更新工作流实例
         /// </summary>
         [HttpPut]
-        [HbtPermission("workflow:instance:update")]
+        [HbtPerm("workflow:instance:update")]
         public async Task<IActionResult> UpdateAsync([FromBody] HbtWorkflowInstanceUpdateDto input)
         {
             var result = await _workflowInstanceService.UpdateAsync(input);
@@ -87,7 +87,7 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// 删除工作流实例
         /// </summary>
         [HttpDelete("{id}")]
-        [HbtPermission("workflow:instance:delete")]
+        [HbtPerm("workflow:instance:delete")]
         public async Task<IActionResult> DeleteAsync(long id)
         {
             var result = await _workflowInstanceService.DeleteAsync(id);
@@ -98,7 +98,7 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// 批量删除工作流实例
         /// </summary>
         [HttpDelete("batch")]
-        [HbtPermission("workflow:instance:delete")]
+        [HbtPerm("workflow:instance:delete")]
         public async Task<IActionResult> BatchDeleteAsync([FromBody] long[] ids)
         {
             var result = await _workflowInstanceService.BatchDeleteAsync(ids);
@@ -109,7 +109,7 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// 导入工作流实例数据
         /// </summary>
         [HttpPost("import")]
-        [HbtPermission("workflow:instance:import")]
+        [HbtPerm("workflow:instance:import")]
         public async Task<IActionResult> ImportAsync([FromBody] List<HbtWorkflowInstanceImportDto> instances)
         {
             var result = await _workflowInstanceService.ImportAsync(instances);
@@ -120,7 +120,7 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// 导出工作流实例数据
         /// </summary>
         [HttpGet("export")]
-        [HbtPermission("workflow:instance:export")]
+        [HbtPerm("workflow:instance:export")]
         public async Task<IActionResult> ExportAsync([FromQuery] HbtWorkflowInstanceQueryDto query)
         {
             var result = await _workflowInstanceService.ExportAsync(query);
@@ -131,7 +131,7 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// 获取导入模板
         /// </summary>
         [HttpGet("template")]
-        [HbtPermission("workflow:instance:query")]
+        [HbtPerm("workflow:instance:query")]
         public async Task<IActionResult> GetTemplateAsync()
         {
             var result = await _workflowInstanceService.GetTemplateAsync();
@@ -142,7 +142,7 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// 更新工作流实例状态
         /// </summary>
         [HttpPut("{id}/status")]
-        [HbtPermission("workflow:instance:update")]
+        [HbtPerm("workflow:instance:update")]
         public async Task<IActionResult> UpdateStatusAsync(long id, [FromBody] HbtWorkflowInstanceStatusDto input)
         {
             input.WorkflowInstanceId = id;
@@ -154,7 +154,7 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// 提交工作流实例
         /// </summary>
         [HttpPost("{id}/submit")]
-        [HbtPermission("workflow:instance:submit")]
+        [HbtPerm("workflow:instance:submit")]
         public async Task<IActionResult> SubmitAsync(long id)
         {
             var result = await _workflowInstanceService.SubmitAsync(id);
@@ -165,7 +165,7 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// 撤回工作流实例
         /// </summary>
         [HttpPost("{id}/withdraw")]
-        [HbtPermission("workflow:instance:withdraw")]
+        [HbtPerm("workflow:instance:withdraw")]
         public async Task<IActionResult> WithdrawAsync(long id)
         {
             var result = await _workflowInstanceService.WithdrawAsync(id);
@@ -176,7 +176,7 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// 终止工作流实例
         /// </summary>
         [HttpPost("{id}/terminate")]
-        [HbtPermission("workflow:instance:terminate")]
+        [HbtPerm("workflow:instance:terminate")]
         public async Task<IActionResult> TerminateAsync(long id, [FromQuery] string reason)
         {
             var result = await _workflowInstanceService.TerminateAsync(id, reason);

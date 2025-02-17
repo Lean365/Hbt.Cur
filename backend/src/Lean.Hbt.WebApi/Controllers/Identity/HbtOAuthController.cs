@@ -2,8 +2,11 @@ using Lean.Hbt.Application.Dtos.Identity;
 using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Domain.Entities.Identity;
 using Lean.Hbt.Domain.IServices.Admin;
+using Lean.Hbt.Domain.IServices.Identity;
+using Lean.Hbt.Domain.IServices.SignalR;
 using Lean.Hbt.Domain.Repositories;
-using Lean.Hbt.Domain.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Lean.Hbt.WebApi.Controllers.Identity
 {
@@ -16,7 +19,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
     public class HbtOAuthController : HbtBaseController
     {
         private readonly IHbtOAuthService _oauthService;
-        private readonly IHbtSessionManager _sessionManager;
+        private readonly IHbtIdentitySessionManager _sessionManager;
         private readonly IHbtRepository<HbtUser> _userRepository;
 
         /// <summary>
@@ -24,7 +27,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// </summary>
         public HbtOAuthController(
             IHbtOAuthService oauthService,
-            IHbtSessionManager sessionManager,
+            IHbtIdentitySessionManager sessionManager,
             IHbtRepository<HbtUser> userRepository,
             IHbtLocalizationService localization) : base(localization)
         {
@@ -77,14 +80,19 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
             }
 
             // 创建会话
-            var session = await _sessionManager.CreateSessionAsync(user.Id.ToString());
+            var sessionId = await _sessionManager.CreateSessionAsync(
+                user.Id.ToString(),
+                user.UserName,
+                HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown",
+                HttpContext.Request.Headers["User-Agent"].ToString()
+            );
 
             // 返回登录结果
             var result = new HbtOAuthLoginDto
             {
-                AccessToken = session.SessionId,
-                RefreshToken = session.RefreshToken,
-                ExpiresIn = session.ExpiresIn,
+                AccessToken = sessionId,
+                RefreshToken = Guid.NewGuid().ToString("N"), // 为 OAuth 登录生成新的刷新令牌
+                ExpiresIn = 3600, // 设置令牌过期时间为1小时
                 UserName = user.UserName,
                 NickName = user.NickName,
                 Avatar = user.Avatar,

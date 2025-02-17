@@ -43,7 +43,7 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// <summary>
         /// 菜单ID
         /// </summary>
-        public long MenuId { get; set; }
+        public long Id { get; set; }
 
         /// <summary>
         /// 菜单名称
@@ -99,6 +99,11 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// 菜单状态
         /// </summary>
         public HbtStatus Status { get; set; }
+
+        /// <summary>
+        /// 是否缓存
+        /// </summary>
+        public HbtYesNo IsCache { get; set; }
 
         /// <summary>
         /// 权限标识
@@ -232,7 +237,7 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// <summary>
         /// 菜单ID
         /// </summary>
-        public required long MenuId { get; set; }
+        public required long Id { get; set; }
     }
 
     /// <summary>
@@ -338,7 +343,7 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// <summary>
         /// 菜单ID
         /// </summary>
-        public required long MenuId { get; set; }
+        public required long Id { get; set; }
 
         /// <summary>
         /// 状态
@@ -358,7 +363,7 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// <summary>
         /// 菜单ID
         /// </summary>
-        public required long MenuId { get; set; }
+        public required long Id { get; set; }
 
         /// <summary>
         /// 显示顺序

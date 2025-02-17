@@ -10,6 +10,7 @@
 using Lean.Hbt.Application.Dtos.Audit;
 using Lean.Hbt.Application.Services.Audit;
 using Lean.Hbt.Domain.IServices.Admin;
+using System.ComponentModel;
 
 namespace Lean.Hbt.WebApi.Controllers.Audit
 {
@@ -84,6 +85,14 @@ namespace Lean.Hbt.WebApi.Controllers.Audit
         {
             var result = await _loginLogService.ClearAsync();
             return Success(result);
+        }
+
+        [HttpPost("unlock/{userId}")]
+        [Description("解锁用户")]
+        public async Task<HbtApiResult> UnlockUserAsync([FromRoute] long userId)
+        {
+            await _loginLogService.UnlockUserAsync(userId);
+            return HbtApiResult.Success();
         }
     }
 }

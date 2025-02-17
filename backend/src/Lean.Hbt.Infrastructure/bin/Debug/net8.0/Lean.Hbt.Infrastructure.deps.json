@@ -6,11 +6,11 @@
   "compilationOptions": {},
   "targets": {
     ".NETCoreApp,Version=v8.0": {
-      "Lean.Hbt.Infrastructure/0.0.1": {
+      "Lean.Hbt.Infrastructure/0.1.2": {
         "dependencies": {
-          "Lean.Hbt.Application": "0.0.1",
-          "Lean.Hbt.Common": "0.0.1",
-          "Lean.Hbt.Domain": "0.0.1",
+          "Lean.Hbt.Application": "0.1.2",
+          "Lean.Hbt.Common": "0.1.2",
+          "Lean.Hbt.Domain": "0.1.2",
           "Microsoft.AspNetCore.Authentication.JwtBearer": "8.0.1",
           "Microsoft.Extensions.Caching.StackExchangeRedis": "8.0.1",
           "NLog": "5.3.4",
@@ -1746,11 +1746,11 @@
           }
         }
       },
-      "Lean.Hbt.Application/0.0.1": {
+      "Lean.Hbt.Application/0.1.2": {
         "dependencies": {
           "FluentValidation": "11.9.0",
-          "Lean.Hbt.Common": "0.0.1",
-          "Lean.Hbt.Domain": "0.0.1",
+          "Lean.Hbt.Common": "0.1.2",
+          "Lean.Hbt.Domain": "0.1.2",
           "Mapster": "7.4.0",
           "Microsoft.CodeAnalysis.CSharp.Scripting": "4.8.0",
           "Microsoft.Extensions.Caching.Memory": "9.0.1",
@@ -1761,12 +1761,12 @@
         },
         "runtime": {
           "Lean.Hbt.Application.dll": {
-            "assemblyVersion": "0.0.1",
-            "fileVersion": "0.0.1"
+            "assemblyVersion": "0.1.2",
+            "fileVersion": "0.1.2"
           }
         }
       },
-      "Lean.Hbt.Common/0.0.1": {
+      "Lean.Hbt.Common/0.1.2": {
         "dependencies": {
           "EPPlus": "7.0.5",
           "FluentValidation": "11.9.0",
@@ -1777,27 +1777,27 @@
         },
         "runtime": {
           "Lean.Hbt.Common.dll": {
-            "assemblyVersion": "0.0.1",
-            "fileVersion": "0.0.1"
+            "assemblyVersion": "0.1.2",
+            "fileVersion": "0.1.2"
           }
         }
       },
-      "Lean.Hbt.Domain/0.0.1": {
+      "Lean.Hbt.Domain/0.1.2": {
         "dependencies": {
-          "Lean.Hbt.Common": "0.0.1",
+          "Lean.Hbt.Common": "0.1.2",
           "SqlSugarCore": "5.1.4.172"
         },
         "runtime": {
           "Lean.Hbt.Domain.dll": {
-            "assemblyVersion": "0.0.1",
-            "fileVersion": "0.0.1"
+            "assemblyVersion": "0.1.2",
+            "fileVersion": "0.1.2"
           }
         }
       }
     }
   },
   "libraries": {
-    "Lean.Hbt.Infrastructure/0.0.1": {
+    "Lean.Hbt.Infrastructure/0.1.2": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
@@ -2726,17 +2726,17 @@
       "path": "system.windows.extensions/6.0.0",
       "hashPath": "system.windows.extensions.6.0.0.nupkg.sha512"
     },
-    "Lean.Hbt.Application/0.0.1": {
+    "Lean.Hbt.Application/0.1.2": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
     },
-    "Lean.Hbt.Common/0.0.1": {
+    "Lean.Hbt.Common/0.1.2": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
     },
-    "Lean.Hbt.Domain/0.0.1": {
+    "Lean.Hbt.Domain/0.1.2": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

@@ -70,18 +70,30 @@ namespace Lean.Hbt.Common.Utils
 
             try
             {
+                Console.WriteLine($"[密码验证] 开始验证密码");
+                Console.WriteLine($"[密码验证] 输入参数: 密码长度={password.Length}, 哈希={hash}, 盐值={salt}, 迭代次数={iterations}");
+
                 byte[] saltBytes = Convert.FromBase64String(salt);
+                Console.WriteLine($"[密码验证] 盐值解码: 长度={saltBytes.Length}字节");
+
                 using var pbkdf2 = new Rfc2898DeriveBytes(password, saltBytes, iterations, HashAlgorithmName.SHA256);
                 byte[] newHash = pbkdf2.GetBytes(DEFAULT_HASH_SIZE);
                 string newHashString = Convert.ToBase64String(newHash);
 
-                return CryptographicOperations.FixedTimeEquals(
+                Console.WriteLine($"[密码验证] 计算结果: 新哈希={newHashString}");
+                Console.WriteLine($"[密码验证] 期望结果: 原哈希={hash}");
+
+                var result = CryptographicOperations.FixedTimeEquals(
                     Convert.FromBase64String(hash),
                     Convert.FromBase64String(newHashString)
                 );
+
+                Console.WriteLine($"[密码验证] 验证结果: {result}");
+                return result;
             }
-            catch
+            catch (Exception ex)
             {
+                Console.WriteLine($"[密码验证] 发生错误: {ex.Message}");
                 return false;
             }
         }

@@ -153,5 +153,15 @@ namespace Lean.Hbt.Domain.Repositories
         Task<int> DeleteRangeAsync(List<TEntity> entities);
 
         #endregion 删除操作
+
+        /// <summary>
+        /// 获取用户角色列表
+        /// </summary>
+        Task<List<string>> GetUserRolesAsync(long userId);
+
+        /// <summary>
+        /// 获取用户权限列表
+        /// </summary>
+        Task<List<string>> GetUserPermissionsAsync(long userId);
     }
 }
