@@ -499,7 +499,7 @@ namespace Lean.Hbt.Application.Dtos.Identity
             MenuType = "目录";
             Visible = "显示";
             Status = "正常";
-            Perms = "system:*:*";
+            Perms = "identity:*:*";
             Icon = "system";
         }
 

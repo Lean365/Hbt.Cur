@@ -24,28 +24,40 @@ export class PasswordEncryptor {
    * 注意：此实现需要与后端的Rfc2898DeriveBytes完全匹配
    */
   static hashPassword(password: string, salt: string, iterations: number = this.DEFAULT_ITERATIONS): string {
-    // 强制使用100000次迭代，因为后端固定使用这个值
-    iterations = 100000
+    try {
+      console.log('[PBKDF2] 开始加密')
+      console.log('[PBKDF2] 输入密码:', password)
+      console.log('[PBKDF2] 输入盐值:', salt)
+      console.log('[PBKDF2] 迭代次数:', iterations)
 
-    // 1. 解析Base64盐值
-    const saltBytes = CryptoJS.enc.Base64.parse(salt)
-    
-    // 2. 确保密码是UTF8编码
-    const passwordUtf8 = CryptoJS.enc.Utf8.parse(password)
-    
-    // 3. 使用PBKDF2加密
-    const key = CryptoJS.PBKDF2(
-      passwordUtf8,  // 使用UTF8编码后的密码
-      saltBytes,
-      {
-        keySize: this.HASH_SIZE / 4,  // CryptoJS的keySize以字(4字节)为单位
-        iterations: iterations,
-        hasher: CryptoJS.algo.SHA256
-      }
-    )
-    
-    // 4. 转换为Base64
-    return CryptoJS.enc.Base64.stringify(key)
+      // 1. 将密码转换为UTF8字节数组
+      const passwordUtf8 = CryptoJS.enc.Utf8.parse(password)
+      console.log('[PBKDF2] 密码UTF8编码:', passwordUtf8.toString())
+
+      // 2. 解析Base64盐值
+      const saltBytes = CryptoJS.enc.Base64.parse(salt)
+      console.log('[PBKDF2] 盐值解码:', saltBytes.toString())
+      
+      // 3. 使用PBKDF2加密
+      const key = CryptoJS.PBKDF2(
+        passwordUtf8,  // 使用UTF8编码的密码
+        saltBytes,     // 使用解码后的盐值
+        {
+          keySize: this.HASH_SIZE / 4,  // 256位密钥
+          iterations: iterations,        // 迭代次数
+          hasher: CryptoJS.algo.SHA256  // 使用SHA256
+        }
+      )
+      
+      // 4. 转换为Base64
+      const result = CryptoJS.enc.Base64.stringify(key)
+      console.log('[PBKDF2] 加密结果:', result)
+      
+      return result
+    } catch (error) {
+      console.error('[PBKDF2] 加密失败:', error)
+      throw error
+    }
   }
 
   /**

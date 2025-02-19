@@ -16,7 +16,7 @@ namespace Lean.Hbt.Domain.Entities.Workflow
     /// <summary>
     /// 工作流变量实体类
     /// </summary>
-    [SugarTable("hbt_workflow_variable", "工作流变量表")]
+    [SugarTable("hbt_wf_variable", "工作流变量表")]
     public class HbtWorkflowVariable : HbtBaseEntity
     {
         /// <summary>

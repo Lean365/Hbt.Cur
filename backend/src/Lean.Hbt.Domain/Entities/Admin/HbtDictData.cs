@@ -9,13 +9,15 @@
 // 描述   : 字典数据实体
 //===================================================================
 using SqlSugar;
+using Lean.Hbt.Common.Enums;
 
 namespace Lean.Hbt.Domain.Entities.Admin
 {
     /// <summary>
     /// 字典数据实体
     /// </summary>
-    [SugarTable("hbt_sys_dict_data", "字典数据表")]
+    [SugarTable("hbt_adm_dict_data", "字典数据表")]
+    [SugarIndex("ix_tenant_dict_data", nameof(TenantId), OrderByType.Asc)]
     public class HbtDictData : HbtBaseEntity
     {
         /// <summary>
@@ -77,6 +79,12 @@ namespace Lean.Hbt.Domain.Entities.Admin
         /// </summary>
         [SugarColumn(ColumnName = "status", ColumnDescription = "状态（0正常 1停用）", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
         public HbtStatus Status { get; set; } = HbtStatus.Normal;
+
+        /// <summary>
+        /// 租户ID
+        /// </summary>
+        [SugarColumn(ColumnName = "tenant_id", ColumnDescription = "租户ID", ColumnDataType = "bigint", IsNullable = false)]
+        public long TenantId { get; set; }= 0;
 
         /// <summary>
         /// 构造函数

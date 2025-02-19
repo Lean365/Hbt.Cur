@@ -23,7 +23,7 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
     /// </remarks>
     [Route("api/[controller]", Name = "翻译")]
     [ApiController]
-    [ApiModule("system", "系统管理")]
+    [ApiModule("admin", "系统管理")]
     public class HbtTranslationController : HbtBaseController
     {
         private readonly IHbtTranslationService _translationService;

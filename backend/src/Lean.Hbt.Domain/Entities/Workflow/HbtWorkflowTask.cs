@@ -20,7 +20,7 @@ namespace Lean.Hbt.Domain.Entities.Workflow
     /// 创建者: Lean365
     /// 创建时间: 2024-01-23
     /// </remarks>
-    [SugarTable("hbt_workflow_task", "工作流任务表")]
+    [SugarTable("hbt_wf_task", "工作流任务表")]
     public class HbtWorkflowTask : HbtBaseEntity
     {
         /// <summary>

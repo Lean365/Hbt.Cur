@@ -30,9 +30,9 @@ namespace Lean.Hbt.Common.Exceptions
         /// 构造函数 - 默认为服务器错误
         /// </summary>
         /// <param name="message">错误消息</param>
-        public HbtException(string message) : base(message)
+        public HbtException(string message) 
+            : this(message, HbtConstants.ErrorCodes.ServerError)
         {
-            Code = int.Parse(HbtConstants.ErrorCodes.ServerError);
         }
 
         /// <summary>
@@ -113,7 +113,7 @@ namespace Lean.Hbt.Common.Exceptions
         /// <returns>异常实例</returns>
         public static HbtException BusinessError(string message)
         {
-            return new HbtException(message, HbtConstants.ErrorCodes.BusinessError);
+            return new HbtException(message, HbtConstants.ErrorCodes.ServerError);
         }
     }
 }

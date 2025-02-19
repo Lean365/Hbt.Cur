@@ -22,17 +22,17 @@ namespace Lean.Hbt.Common.Options
         /// <summary>
         /// HTTP端口
         /// </summary>
-        public int HttpPort { get; set; }
+        public int HttpPort { get; set; } = 5249;
 
         /// <summary>
         /// HTTPS端口
         /// </summary>
-        public int HttpsPort { get; set; }
+        public int HttpsPort { get; set; } = 7249;
 
         /// <summary>
         /// 初始化选项
         /// </summary>
-        public HbtInitOptions Init { get; set; } = new();
+        public required HbtInitOptions Init { get; set; } = new();
     }
 
     /// <summary>

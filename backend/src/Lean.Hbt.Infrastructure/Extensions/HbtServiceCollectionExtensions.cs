@@ -96,6 +96,9 @@ namespace Lean.Hbt.Infrastructure.Extensions
             services.AddLogServices();          // 日志服务
             services.AddLocalizationServices(); // 本地化服务
             
+            // 添加服务器监控服务
+            services.AddScoped<IHbtServerMonitorService, HbtServerMonitorService>();
+            
             return services;
         }
 
@@ -219,7 +222,7 @@ namespace Lean.Hbt.Infrastructure.Extensions
         private static IServiceCollection AddAdminServices(this IServiceCollection services)
         {
             // 系统服务
-            services.AddScoped<IHbtSysConfigService, HbtSysConfigService>();     // 系统配置
+            services.AddScoped<IHbtConfigService, HbtConfigService>();     // 系统配置
             
             // 字典和类型服务
             services.AddScoped<IHbtDictDataService, HbtDictDataService>();       // 字典数据服务
@@ -333,10 +336,25 @@ namespace Lean.Hbt.Infrastructure.Extensions
 
             services.AddScoped<HbtDbContext>();
             services.AddScoped<IHbtDbContext, HbtDbContext>();
+
+            // 注册所有种子数据服务
+            services.AddScoped<HbtDbSeedTenant>();
+            services.AddScoped<HbtDbSeedRole>();
+            services.AddScoped<HbtDbSeedUser>();
+            services.AddScoped<HbtDbSeedMenu>();
+            services.AddScoped<HbtDbSeedLanguage>();
+            services.AddScoped<HbtDbSeedDept>();
+            services.AddScoped<HbtDbSeedPost>();
+            services.AddScoped<HbtDbSeedRelation>();
+            services.AddScoped<HbtDbSeedConfig>();
+            services.AddScoped<HbtDbSeedDictType>();
+            services.AddScoped<HbtDbSeedDictData>();
+            services.AddScoped<HbtDbSeedTranslation>();
             services.AddScoped<HbtDbSeed>();
 
             // 配置 JWT 认证
             var jwtSettings = configuration.GetSection("Jwt").Get<HbtJwtOptions>();
+            services.Configure<HbtJwtOptions>(configuration.GetSection("Jwt"));
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {

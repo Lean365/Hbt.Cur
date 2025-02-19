@@ -20,7 +20,7 @@ namespace Lean.Hbt.Domain.Entities.Workflow
     /// 创建者: Lean365
     /// 创建时间: 2024-01-22
     /// </remarks>
-    [SugarTable("hbt_workflow_node", "工作流节点表")]
+    [SugarTable("hbt_wf_node", "工作流节点表")]
     public class HbtWorkflowNode : HbtBaseEntity
     {
         /// <summary>

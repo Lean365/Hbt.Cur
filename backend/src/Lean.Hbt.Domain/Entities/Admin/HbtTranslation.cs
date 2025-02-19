@@ -9,13 +9,15 @@
 // 描述   : 翻译实体
 //===================================================================
 using SqlSugar;
+using Lean.Hbt.Domain.Entities.Identity;
 
 namespace Lean.Hbt.Domain.Entities.Admin
 {
     /// <summary>
     /// 翻译实体
     /// </summary>
-    [SugarTable("hbt_sys_translation", "翻译表")]
+    [SugarTable("hbt_adm_translation", "翻译表")]
+    [SugarIndex("ix_tenant_translation", nameof(TenantId), OrderByType.Asc)]
     public class HbtTranslation : HbtBaseEntity
     {
         /// <summary>
@@ -47,5 +49,23 @@ namespace Lean.Hbt.Domain.Entities.Admin
         /// </summary>
         [SugarColumn(ColumnName = "status", ColumnDescription = "状态（0正常 1停用）", ColumnDataType = "int", IsNullable = false)]
         public HbtStatus Status { get; set; } = HbtStatus.Normal;
+
+        /// <summary>
+        /// 租户ID
+        /// </summary>
+        [SugarColumn(ColumnName = "tenant_id", ColumnDescription = "租户ID", ColumnDataType = "bigint", IsNullable = false)]
+        public long TenantId { get; set; }= 0;
+
+        /// <summary>
+        /// 租户导航属性
+        /// </summary>
+        [Navigate(NavigateType.OneToOne, nameof(TenantId))]
+        public HbtTenant? Tenant { get; set; }
+
+        /// <summary>
+        /// 翻译内置（0否 1是）
+        /// </summary>
+        [SugarColumn(ColumnName = "trans_builtin", ColumnDescription = "翻译内置（0否 1是）", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
+        public int TransBuiltin { get; set; } = 0;
     }
 }

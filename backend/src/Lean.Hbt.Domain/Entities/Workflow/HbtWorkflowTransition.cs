@@ -16,7 +16,7 @@ namespace Lean.Hbt.Domain.Entities.Workflow
     /// <summary>
     /// 工作流转换实体
     /// </summary>
-    [SugarTable("hbt_workflow_transition", "工作流转换表")]
+    [SugarTable("hbt_wf_transition", "工作流转换表")]
     public class HbtWorkflowTransition : HbtBaseEntity
     {
         /// <summary>

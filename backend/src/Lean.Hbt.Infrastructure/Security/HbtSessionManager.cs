@@ -31,7 +31,7 @@ namespace Lean.Hbt.Infrastructure.Security
     {
         private readonly HbtSessionOptions _defaultOptions;
         private readonly IHbtRedisCache _cache;
-        private readonly IHbtRepository<HbtSysConfig> _configRepository;
+        private readonly IHbtRepository<HbtConfig> _configRepository;
 
         /// <summary>
         /// 构造函数
@@ -42,7 +42,7 @@ namespace Lean.Hbt.Infrastructure.Security
         public HbtSessionManager(
             IOptions<HbtSessionOptions> options, 
             IHbtRedisCache cache,
-            IHbtRepository<HbtSysConfig> configRepository)
+            IHbtRepository<HbtConfig> configRepository)
         {
             _defaultOptions = options.Value;
             _cache = cache;

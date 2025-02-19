@@ -160,6 +160,24 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         }
 
         /// <summary>
+        /// 获取当前用户信息
+        /// </summary>
+        /// <returns>用户信息</returns>
+        [HttpGet("info")]
+        [Authorize]
+        public async Task<IActionResult> GetUserInfo()
+        {
+            var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized(new { code = HbtConstants.ErrorCodes.Unauthorized, msg = "未登录" });
+            }
+
+            var result = await _loginService.GetUserInfoAsync(long.Parse(userId));
+            return Success(result);
+        }
+
+        /// <summary>
         /// 用户登出
         /// </summary>
         /// <returns>操作结果</returns>

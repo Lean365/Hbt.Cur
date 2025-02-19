@@ -5,6 +5,7 @@ import 'ant-design-vue/dist/reset.css'
 import App from './App.vue'
 import router from './router'
 import i18n from './locales'
+import { useSettingStore } from '@/stores/settings'
 
 import './assets/styles/index.less'
 
@@ -15,5 +16,8 @@ app.use(createPinia())
 app.use(router)
 app.use(i18n)
 app.use(Antd)
+
+const settingStore = useSettingStore()
+settingStore.loadFromStorage() // 从本地存储加载设置
 
 app.mount('#app') 

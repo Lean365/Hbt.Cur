@@ -108,5 +108,12 @@ namespace Lean.Hbt.Application.Services.Identity
         /// </summary>
         /// <returns>返回树形菜单列表</returns>
         Task<List<HbtMenuDto>> GetTreeAsync();
+
+        /// <summary>
+        /// 获取当前用户的菜单树
+        /// </summary>
+        /// <param name="userId">用户ID</param>
+        /// <returns>返回当前用户的菜单树</returns>
+        Task<List<HbtMenuDto>> GetCurrentUserMenusAsync(long userId);
     }
 } 

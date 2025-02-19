@@ -23,6 +23,7 @@ export default {
     tenantDisabled: 'Tenant is disabled',
     tenantNotFound: 'Tenant not found',
     serverError: 'Internal server error',
+    saltError: 'Failed to get encryption parameters, please try again',
     // Other login methods
     github: 'GitHub Login',
     google: 'Google Login',

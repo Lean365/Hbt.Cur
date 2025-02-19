@@ -9,6 +9,8 @@
 
 using System.ComponentModel.DataAnnotations;
 using System.Collections.Generic;
+using Lean.Hbt.Common.Enums;
+using Lean.Hbt.Common.Models;
 
 namespace Lean.Hbt.Application.Dtos.Identity;
 
@@ -50,6 +52,18 @@ public class HbtLoginDto
     /// 验证码偏移量
     /// </summary>
     public int CaptchaOffset { get; set; }
+
+    /// <summary>
+    /// 登录来源
+    /// </summary>
+    [Required(ErrorMessage = "登录来源不能为空")]
+    public HbtLoginSource LoginSource { get; set; } = HbtLoginSource.Web;
+
+    /// <summary>
+    /// 设备信息
+    /// </summary>
+    [Required(ErrorMessage = "设备信息不能为空")]
+    public HbtDeviceInfo DeviceInfo { get; set; } = new HbtDeviceInfo();
 }
 
 /// <summary>

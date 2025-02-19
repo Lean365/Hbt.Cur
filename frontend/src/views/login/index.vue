@@ -1,89 +1,104 @@
 <template>
   <div class="login-container">
-    <a-card class="login-card" :bordered="false">
-      <h2 class="login-title">{{ t('login.title') }}</h2>
-      <a-form
-        :model="loginForm"
-        :rules="loginRules"
-        ref="loginFormRef"
-        @finish="handleLogin"
-      >
-        <a-form-item name="TenantId">
-          <a-input-number
-            v-model:value="loginForm.TenantId"
-            :placeholder="t('login.tenantId')"
-            class="login-input"
-          >
-            <template #prefix>
-              <apartment-outlined />
-            </template>
-          </a-input-number>
-        </a-form-item>
-        <a-form-item name="UserName">
-          <a-input
-            v-model:value="loginForm.UserName"
-            :placeholder="t('login.username')"
-            class="login-input"
-            autocomplete="username"
-            @change="handleUserNameChange"
-          >
-            <template #prefix>
-              <user-outlined />
-            </template>
-          </a-input>
-        </a-form-item>
-        <a-form-item name="Password">
-          <a-input-password
-            v-model:value="loginForm.Password"
-            :placeholder="t('login.password')"
-            class="login-input"
-            autocomplete="current-password"
-          >
-            <template #prefix>
-              <lock-outlined />
-            </template>
-          </a-input-password>
-        </a-form-item>
-        <a-form-item>
-          <a-button
-            type="primary"
-            html-type="submit"
-            :loading="loading"
-            :disabled="waitingSeconds > 0"
-            class="login-button"
-          >
-            {{ waitingSeconds > 0 ? `${waitingSeconds}秒后重试` : t('login.submit') }}
-          </a-button>
-        </a-form-item>
-      </a-form>
-      <div class="login-options">
-        <a-checkbox
-          v-model:checked="rememberMe"
-          class="remember-me"
+    <!-- 添加登录页头部导航栏 -->
+    <header-login-bar />
+    
+    <div class="login-content">
+      <!-- 左侧品牌展示卡片 -->
+      <a-card class="brand-card" :bordered="false">
+        <div class="brand-content">
+          <img src="@/assets/images/logo.svg" alt="Logo" class="brand-logo" />
+          <h1 class="brand-title">Lean.Hbt</h1>
+          <p class="brand-slogan">{{ t('common.system.slogan') }}</p>
+        </div>
+      </a-card>
+
+      <!-- 右侧登录卡片 -->
+      <a-card class="login-card" :bordered="false">
+        <h2 class="login-title">{{ t('login.title') }}</h2>
+        <a-form
+          :model="loginForm"
+          :rules="loginRules"
+          ref="loginFormRef"
+          @finish="handleLogin"
         >
-          {{ t('login.rememberMe') }}
-        </a-checkbox>
-        <a class="forgot-password" @click="handleForgotPassword">
-          {{ t('login.forgotPassword') }}
-        </a>
-      </div>
-      <div class="other-login">
-        <div class="divider">
-          <span>{{ t('login.otherLogin') }}</span>
-        </div>
-        <div class="oauth-buttons">
-          <a-button
-            type="link"
-            @click="handleOAuthLogin('github')"
+          <a-form-item name="tenantId">
+            <a-input-number
+              v-model:value="loginForm.tenantId"
+              :placeholder="t('login.tenantId')"
+              class="login-input"
+            >
+              <template #prefix>
+                <apartment-outlined />
+              </template>
+            </a-input-number>
+          </a-form-item>
+          <a-form-item name="userName">
+            <a-input
+              v-model:value="loginForm.userName"
+              :placeholder="t('login.username')"
+              class="login-input"
+              autocomplete="username"
+              @change="handleUserNameChange"
+            >
+              <template #prefix>
+                <user-outlined />
+              </template>
+            </a-input>
+          </a-form-item>
+          <a-form-item name="password">
+            <a-input-password
+              v-model:value="loginForm.password"
+              :placeholder="t('login.password')"
+              class="login-input"
+              autocomplete="current-password"
+            >
+              <template #prefix>
+                <lock-outlined />
+              </template>
+            </a-input-password>
+          </a-form-item>
+          <a-form-item>
+            <a-button
+              type="primary"
+              html-type="submit"
+              class="login-button"
+              :loading="loading"
+              block
+            >
+              {{ t('login.submit') }}
+            </a-button>
+          </a-form-item>
+        </a-form>
+        <div class="login-options">
+          <a-checkbox
+            v-model:checked="rememberMe"
+            class="remember-me"
           >
-            <template #icon>
-              <GithubOutlined />
-            </template>
-            GitHub
-          </a-button>
+            {{ t('login.rememberMe') }}
+          </a-checkbox>
+          <a class="forgot-password" @click="handleForgotPassword">
+            {{ t('login.forgotPassword') }}
+          </a>
         </div>
-      </div>
-    </a-card>
+        <div class="other-login">
+          <div class="divider">
+            <span>{{ t('login.otherLogin') }}</span>
+          </div>
+          <div class="oauth-buttons">
+            <a-button
+              type="link"
+              @click="handleOAuthLogin('github')"
+            >
+              <template #icon>
+                <GithubOutlined />
+              </template>
+              GitHub
+            </a-button>
+          </div>
+        </div>
+      </a-card>
+    </div>
     
     <!-- 验证码弹窗 -->
     <a-modal
@@ -103,55 +118,70 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive, onMounted, nextTick, onUnmounted } from 'vue'
-import { useI18n } from 'vue-i18n'
-import { useRouter } from 'vue-router'
-import { message } from 'ant-design-vue'
-import {
-  UserOutlined,
-  LockOutlined,
-  SafetyOutlined,
-  ApartmentOutlined,
-  GithubOutlined
-} from '@ant-design/icons-vue'
+// 类型导入
 import type { FormInstance } from 'ant-design-vue'
 import type { RuleObject } from 'ant-design-vue/es/form'
-import type { LoginParams, SaltResponse } from '@/types/auth'
-import type { SliderValidateDto } from '@/api/captcha'
-import { useUserStore } from '@/stores/user'
+import type { LoginParams, SaltResponse } from '@/types/identity/auth'
+import type { SliderValidateDto } from '@/api/security/captcha'
+import type { DeviceInfo } from '@/types/identity/deviceExtend'
+import { DEVICE_INFO_LENGTH, HbtDeviceType, HbtOsType, HbtBrowserType } from '@/types/identity/deviceExtend'
+
+// API和组件导入
+import { getSalt } from '@/api/identity/auth'
+import { getCaptcha, verifyCaptcha } from '@/api/security/captcha'
 import SliderCaptcha from '@/components/base/SliderCaptcha.vue'
+import HeaderLoginBar from '@/components/navigation/HeaderLoginBar.vue'
 import { PasswordEncryptor } from '@/utils/crypto'
-import { getSalt } from '@/api/auth'
-import CryptoJS from 'crypto-js'
-import { getCaptcha, verifyCaptcha } from '@/api/captcha'
+import { useUserStore } from '@/stores/user'
+import { useMenuStore } from '@/stores/menu'
+import { useI18n } from 'vue-i18n'
+import { message } from 'ant-design-vue'
+import { ref, reactive, onMounted, onUnmounted, nextTick, watch } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 
 const { t } = useI18n()
 const router = useRouter()
+const route = useRoute()
 const userStore = useUserStore()
+const menuStore = useMenuStore()
 
 // 表单引用
 const loginFormRef = ref<FormInstance>()
 const captchaRef = ref()
 
 // 登录表单数据
-const loginForm = reactive({
-  TenantId: 0, // 默认为管理员租户ID
-  UserName: '',
-  Password: '',
-  CaptchaToken: '',
-  CaptchaOffset: 0
+const loginForm = reactive<LoginParams>({
+  tenantId: 0, // 默认为管理员租户ID
+  userName: '',
+  password: '',
+  captchaToken: '',
+  captchaOffset: 0,
+  loginSource: 0, // Web端
+  deviceInfo: {
+    deviceId: crypto.randomUUID(),
+    deviceType: 0, // PC
+    deviceName: navigator.platform || 'Unknown',
+    deviceModel: navigator.userAgent || 'Unknown',
+    osType: 0, // Windows
+    osVersion: navigator.platform || 'Unknown',
+    browserType: 0, // Chrome
+    browserVersion: navigator.appVersion || 'Unknown',
+    resolution: `${window.screen.width}x${window.screen.height}`,
+    ipAddress: '',
+    location: ''
+  }
 })
 
 // 表单验证规则
 const loginRules: Record<string, RuleObject[]> = {
-  TenantId: [
+  tenantId: [
     { required: true, type: 'number', message: t('login.tenantIdRequired'), trigger: 'blur' }
   ],
-  UserName: [
+  userName: [
     { required: true, type: 'string', message: t('login.usernameRequired'), trigger: 'blur' },
     { type: 'string', min: 3, max: 50, message: t('login.usernameLength'), trigger: 'blur' }
   ],
-  Password: [
+  password: [
     { required: true, type: 'string', message: t('login.passwordRequired'), trigger: 'blur' },
     { type: 'string', min: 6, max: 100, message: t('login.passwordLength'), trigger: 'blur' }
   ]
@@ -169,7 +199,7 @@ const lastLoginParams = ref<LoginParams | null>(null)
 
 // 倒计时相关
 const waitingSeconds = ref(0)
-const waitingTimer = ref<number | null>(null)
+const waitingTimer = ref<NodeJS.Timeout | null>(null)
 const failedAttempts = ref(0)
 const remainingAttempts = ref(0)
 
@@ -210,12 +240,12 @@ const handleUserNameChange = (e: Event) => {
   const value = (e.target as HTMLInputElement).value;
   // 如果是admin用户，自动设置租户ID为0
   if (value.toLowerCase() === 'admin') {
-    loginForm.TenantId = 0;
+    loginForm.tenantId = 0;
   }
 }
 
 // 处理登录
-const handleLogin = async (values: any) => {
+const handleLogin = async () => {
   // 如果正在等待中，不允许登录
   if (waitingSeconds.value > 0) {
     message.warning(`请等待 ${waitingSeconds.value} 秒后再试`)
@@ -226,104 +256,234 @@ const handleLogin = async (values: any) => {
     loading.value = true
     
     // 获取盐值
-    const saltData = await getSalt(values.UserName) as unknown as SaltResponse
-    if (!saltData || typeof saltData.salt !== 'string' || typeof saltData.iterations !== 'number') {
-      throw new Error(t('login.saltError'))
-    }
-
-    // 构造登录参数
-    const loginParams: LoginParams = {
-      TenantId: Number(values.TenantId),
-      UserName: values.UserName,
-      Password: values.Password,  // 直接使用原始密码，让后端处理加密
-      CaptchaToken: loginForm.CaptchaToken || '',
-      CaptchaOffset: loginForm.CaptchaOffset || 0  // 提供默认值
-    }
-
-    // 保存登录参数，用于验证码验证成功后重试
-    lastLoginParams.value = loginParams
-
     try {
-      // 尝试登录
-      await userStore.login(loginParams)
-      // 登录成功，重置所有状态
-      failedAttempts.value = 0
-      remainingAttempts.value = LOGIN_POLICY.USER.MAX_ATTEMPTS
-      showCaptcha.value = false
-      loginForm.CaptchaToken = ''
-      loginForm.CaptchaOffset = 0
-      
-      // 跳转到首页
-      router.push({ path: '/' })
-    } catch (error: any) {
-      // 处理登录失败
-      if (error.response) {
-        const { status, data } = error.response
-        
-        if (status === 429) {
-          // 需要等待
-          const waitTime = data.remainingSeconds || 1800 // 默认30分钟
-          startWaiting(waitTime)
-          message.error(`登录失败，请等待 ${Math.ceil(waitTime / 60)} 分钟后重试`)
-        } else if (status === 400 && data.needCaptcha) {
-          // 需要验证码
-          showCaptcha.value = true
-          userStore.setNeedCaptcha(true)
-          // 确保验证码组件已加载
-          await nextTick()
-          if (captchaRef.value) {
-            captchaRef.value.refresh()
-          }
-          message.warning('请完成验证码验证后重试')
-        } else {
-          // 其他错误
-          failedAttempts.value++
-          remainingAttempts.value = values.UserName.toLowerCase() === 'admin' 
-            ? LOGIN_POLICY.ADMIN.MAX_ATTEMPTS - failedAttempts.value
-            : LOGIN_POLICY.USER.MAX_ATTEMPTS - failedAttempts.value
-            
-          message.error(`登录失败，剩余尝试次数: ${remainingAttempts.value}次`)
-          
-          if (remainingAttempts.value <= 0) {
-            const lockoutMinutes = values.UserName.toLowerCase() === 'admin'
-              ? LOGIN_POLICY.ADMIN.LOCKOUT_MINUTES
-              : LOGIN_POLICY.USER.LOCKOUT_MINUTES
-            message.error(`连续失败次数过多，账号已被锁定${lockoutMinutes}分钟`)
-          }
-        }
-      } else {
-        message.error(error.message || '登录失败，请稍后重试')
+      const response = await getSalt(loginForm.userName)
+      if (!response || !response.data) {
+        throw new Error(t('login.saltError'))
       }
+      
+      const saltData = response.data
+      if (!saltData || typeof saltData.salt !== 'string' || typeof saltData.iterations !== 'number') {
+        throw new Error(t('login.saltError'))
+      }
+
+      console.log('[密码加密] 开始加密密码')
+      
+      // 使用PBKDF2加密原始密码
+      const hashedPassword = PasswordEncryptor.hashPassword(
+        loginForm.password,
+        saltData.salt,
+        saltData.iterations
+      )
+      
+      console.log('[登录参数] 开始构造登录参数:', {
+        userName: loginForm.userName,
+        tenantId: loginForm.tenantId,
+        hasPasswordLength: hashedPassword.length,
+        deviceInfo: loginForm.deviceInfo
+      })
+
+      // 构造登录参数
+      const loginParams: LoginParams = {
+        ...loginForm,
+        password: hashedPassword,
+        deviceInfo: {
+          deviceId: crypto.randomUUID().slice(0, DEVICE_INFO_LENGTH.DEVICE_ID),
+          deviceType: 0, // PC
+          deviceName: (navigator.platform || 'Unknown').slice(0, DEVICE_INFO_LENGTH.DEVICE_NAME),
+          deviceModel: (navigator.userAgent || 'Unknown').slice(0, DEVICE_INFO_LENGTH.DEVICE_MODEL),
+          osType: 0, // Windows
+          osVersion: (navigator.platform || 'Unknown').slice(0, DEVICE_INFO_LENGTH.OS_VERSION),
+          browserType: 3, // Edge
+          browserVersion: (navigator.appVersion || 'Unknown').slice(0, DEVICE_INFO_LENGTH.BROWSER_VERSION),
+          resolution: `${window.screen.width}x${window.screen.height}`.slice(0, DEVICE_INFO_LENGTH.RESOLUTION),
+          ipAddress: '',
+          location: ''
+        },
+        loginSource: 0
+      }
+
+      console.log('[登录请求] 发送的数据:', {
+        tenantId: loginParams.tenantId,
+        userName: loginParams.userName,
+        passwordLength: loginParams.password.length,
+        deviceInfo: loginParams.deviceInfo,
+        loginSource: loginParams.loginSource,
+        captchaToken: loginParams.captchaToken,
+        captchaOffset: loginParams.captchaOffset
+      })
+
+      // 保存登录参数，用于验证码验证成功后重试
+      lastLoginParams.value = loginParams
+
+      // 如果需要验证码
+      if (failedAttempts.value >= LOGIN_POLICY.CAPTCHA_REQUIRED_ATTEMPTS) {
+        showCaptcha.value = true
+        return
+      }
+
+      // 执行登录
+      console.log('[登录请求] 开始调用登录接口')
+      const result = await userStore.login(loginParams)
+      console.log('[登录请求] 登录接口返回:', result)
+      if (result) {
+        handleLoginSuccess()
+      }
+    } catch (error: any) {
+      handleLoginError(error)
     }
-  } catch (error: any) {
-    message.error(error.message || '登录失败，请稍后重试')
   } finally {
     loading.value = false
   }
 }
 
+// 处理登录成功
+const handleLoginSuccess = async () => {
+  try {
+    // 登录成功，重置所有状态
+    failedAttempts.value = 0
+    remainingAttempts.value = LOGIN_POLICY.USER.MAX_ATTEMPTS
+    showCaptcha.value = false
+    loginForm.captchaToken = ''
+    loginForm.captchaOffset = 0
+    
+    // 如果记住我选项被勾选，保存用户名
+    if (rememberMe.value) {
+      localStorage.setItem('lastUsername', loginForm.userName)
+    } else {
+      localStorage.removeItem('lastUsername')
+    }
+
+    // 获取用户信息
+    await userStore.getUserInfo()
+
+    // 加载用户菜单和动态路由
+    const menuSuccess = await menuStore.loadUserMenus()
+    if (!menuSuccess) {
+      throw new Error('加载菜单失败')
+    }
+
+    message.success(t('login.success'))
+    
+    // 等待一下确保路由已经准备好
+    await nextTick()
+    
+    // 登录成功后跳转到首页或重定向地址
+    const redirect = route.query.redirect?.toString()
+    if (redirect && redirect !== '/login') {
+      await router.push(redirect)
+    } else {
+      await router.push('/dashboard/workplace')
+    }
+  } catch (error) {
+    console.error('登录后处理失败:', error)
+    message.error(t('login.failed'))
+  }
+}
+
+// 处理登录错误
+const handleLoginError = (error: any) => {
+  if (error.response) {
+    const { status, data } = error.response
+    
+    if (status === 429) {
+      // 需要等待
+      const waitTime = data.remainingSeconds || 1800 // 默认30分钟
+      startWaiting(waitTime)
+      const minutes = Math.ceil(waitTime / 60)
+      message.error(`登录失败，请等待 ${minutes} 分钟后重试`)
+    } else {
+      // 其他错误
+      failedAttempts.value++
+      remainingAttempts.value = loginForm.userName.toLowerCase() === 'admin' 
+        ? LOGIN_POLICY.ADMIN.MAX_ATTEMPTS - failedAttempts.value
+        : LOGIN_POLICY.USER.MAX_ATTEMPTS - failedAttempts.value
+      
+      message.error(`登录失败，剩余尝试次数: ${remainingAttempts.value}次`)
+      
+      // 如果失败次数达到阈值，显示验证码
+      if (failedAttempts.value >= LOGIN_POLICY.CAPTCHA_REQUIRED_ATTEMPTS) {
+        showCaptcha.value = true
+        // 确保验证码组件已加载
+        nextTick(() => {
+          if (captchaRef.value) {
+            captchaRef.value.initCaptcha()
+          }
+        })
+        message.warning('请完成验证码验证后重试')
+      }
+      
+      if (remainingAttempts.value <= 0) {
+        const lockoutMinutes = loginForm.userName.toLowerCase() === 'admin'
+          ? LOGIN_POLICY.ADMIN.LOCKOUT_MINUTES
+          : LOGIN_POLICY.USER.LOCKOUT_MINUTES
+        message.error(`连续失败次数过多，账号已被锁定${lockoutMinutes}分钟`)
+      }
+    }
+  } else {
+    message.error(error.message || '登录失败，请稍后重试')
+  }
+}
+
 // 处理验证码成功
 const handleCaptchaSuccess = async (result: SliderValidateDto) => {
-  loginForm.CaptchaToken = result.token
-  loginForm.CaptchaOffset = result.xOffset
-  showCaptcha.value = false
-  
-  // 如果有上一次的登录参数，自动重试登录
   if (lastLoginParams.value) {
-    const params = {
+    // 更新登录参数
+    const updatedParams: LoginParams = {
       ...lastLoginParams.value,
-      CaptchaToken: result.token,
-      CaptchaOffset: result.xOffset
+      captchaToken: result.token,
+      captchaOffset: result.xOffset,
+      deviceInfo: {
+        deviceId: crypto.randomUUID().slice(0, DEVICE_INFO_LENGTH.DEVICE_ID),
+        deviceType: 0, // PC
+        deviceName: (navigator.platform || 'Unknown').slice(0, DEVICE_INFO_LENGTH.DEVICE_NAME),
+        deviceModel: (navigator.userAgent || 'Unknown').slice(0, DEVICE_INFO_LENGTH.DEVICE_MODEL),
+        osType: 0, // Windows
+        osVersion: (navigator.platform || 'Unknown').slice(0, DEVICE_INFO_LENGTH.OS_VERSION),
+        browserType: 3, // Edge
+        browserVersion: (navigator.appVersion || 'Unknown').slice(0, DEVICE_INFO_LENGTH.BROWSER_VERSION),
+        resolution: `${window.screen.width}x${window.screen.height}`.slice(0, DEVICE_INFO_LENGTH.RESOLUTION),
+        ipAddress: '',
+        location: ''
+      },
+      loginSource: 0
     }
-    await handleLogin(params)
+    
+    // 更新表单数据
+    loginForm.captchaToken = result.token
+    loginForm.captchaOffset = result.xOffset
+    showCaptcha.value = false
+
+    // 执行登录
+    const loginResult = await userStore.login(updatedParams)
+    if (loginResult) {
+      handleLoginSuccess()
+    }
   }
 }
 
 // 处理验证码错误
-const handleCaptchaError = () => {
-  message.error('验证码验证失败，请重试')
-  if (captchaRef.value) {
-    captchaRef.value.refresh()
+const handleCaptchaError = (errorMsg: string) => {
+  if (errorMsg.includes('请等待')) {
+    const match = errorMsg.match(/(\d+)秒/)
+    if (match) {
+      const seconds = parseInt(match[1])
+      startWaiting(seconds)
+      // 关闭验证码对话框
+      showCaptcha.value = false
+      message.warning(errorMsg)
+      // 等待时间到后再显示验证码
+      setTimeout(() => {
+        if (captchaRef.value) {
+          captchaRef.value.refresh()
+        }
+        showCaptcha.value = true
+      }, seconds * 1000)
+    }
+  } else {
+    message.error(errorMsg || '验证码验证失败')
+    // 关闭验证码对话框
+    showCaptcha.value = false
   }
 }
 
@@ -359,19 +519,28 @@ onMounted(() => {
     waitingTimer.value = null
   }
   showCaptcha.value = false
-  loginForm.CaptchaToken = ''
-  loginForm.CaptchaOffset = 0
+  loginForm.captchaToken = ''
+  loginForm.captchaOffset = 0
   userStore.setNeedCaptcha(false)
 
   // 如果之前记住了用户名，自动填充
   const lastUsername = localStorage.getItem('lastUsername')
   if (lastUsername) {
-    loginForm.UserName = lastUsername
+    loginForm.userName = lastUsername
     rememberMe.value = true
     // 如果是admin用户，自动设置租户ID为0
     if (lastUsername.toLowerCase() === 'admin') {
-      loginForm.TenantId = 0
+      loginForm.tenantId = 0
     }
+  }
+})
+
+// 监听验证码弹窗显示状态
+watch(showCaptcha, (newValue) => {
+  if (newValue && captchaRef.value) {
+    nextTick(() => {
+      captchaRef.value.initCaptcha()
+    })
   }
 })
 
@@ -393,22 +562,114 @@ onUnmounted(() => {
   align-items: center;
   min-height: 100vh;
   padding: 24px;
-  background-color: var(--ant-color-bg-layout);
+  background: var(--ant-color-bg-layout);
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: color-mix(in srgb, var(--ant-color-primary) 4%, transparent);
+  }
+
+  :global(.dark) & {
+    background: color-mix(in srgb, var(--ant-color-bg-layout) 90%, black);
+  }
 }
 
-.login-card {
+.login-content {
+  display: flex;
+  align-items: stretch;
+  max-width: 900px;
   width: 100%;
-  max-width: 400px;
+  position: relative;
+  z-index: 1;
+  background: var(--ant-color-bg-container);
+  border-radius: var(--ant-border-radius-lg);
+  box-shadow: 0 6px 16px -8px rgba(0, 0, 0, 0.08),
+              0 9px 28px 0 rgba(0, 0, 0, 0.05),
+              0 12px 48px 16px rgba(0, 0, 0, 0.03);
 
+  :global(.dark) & {
+    background:  #e6e3e3;
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 0 30px rgba(255, 255, 255, 0.3),    /* 近层：30px 柔和白光 */
+                0 0 80px rgba(255, 255, 255, 0.2),    /* 中层：80px 扩散白光 */
+                0 0 150px rgba(255, 255, 255, 0.1);   /* 远层：150px 环境白光 */
+  }
+}
+
+.brand-card {
+  flex: 1;
+  margin: 0;
+  border-right: 1px solid var(--ant-color-split);
+  display: flex;
+  
   :deep(.ant-card) {
-    background-color: var(--ant-color-bg-container);
-    box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
-    border-radius: 8px;
+    background: transparent;
     border: none;
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
   }
 
   :deep(.ant-card-body) {
-    padding: 32px;
+    padding: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+  }
+}
+
+.brand-content {
+  text-align: center;
+}
+
+.brand-logo {
+  width: 120px;
+  height: auto;
+  margin-bottom: 24px;
+}
+
+.brand-title {
+  font-size: 36px;
+  font-weight: 600;
+  color: var(--ant-color-text);
+  margin-bottom: 16px;
+}
+
+.brand-slogan {
+  font-size: 16px;
+  color: var(--ant-color-text-secondary);
+  line-height: 1.6;
+}
+
+.divider-line {
+  display: none;
+}
+
+.login-card {
+  flex: 1;
+  margin: 0;
+  display: flex;
+
+  :deep(.ant-card) {
+    background: transparent;
+    border: none;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    box-shadow: none;
+  }
+
+  :deep(.ant-card-body) {
+    padding: 32px 48px;
+    width: 100%;
   }
 }
 
@@ -423,22 +684,6 @@ onUnmounted(() => {
 .login-input {
   width: 100%;
 
-  :deep(.ant-input-number),
-  :deep(.ant-input),
-  :deep(.ant-input-password) {
-    background-color: var(--ant-color-bg-container);
-    border-color: var(--ant-color-border);
-    color: var(--ant-color-text);
-
-    input {
-      background-color: transparent;
-      color: var(--ant-color-text);
-    }
-
-    .ant-input-password-icon {
-      color: var(--ant-color-text-quaternary);
-    }
-  }
 }
 
 .login-button {
@@ -460,6 +705,10 @@ onUnmounted(() => {
 
   .forgot-password {
     color: var(--ant-color-primary);
+
+    &:hover {
+      color: var(--ant-color-primary-hover);
+    }
   }
 }
 
@@ -476,7 +725,7 @@ onUnmounted(() => {
       top: 50%;
       width: 45%;
       height: 1px;
-      background-color: var(--ant-color-split);
+      background: var(--ant-color-border-split);
     }
     
     &::before {
@@ -490,8 +739,8 @@ onUnmounted(() => {
     span {
       display: inline-block;
       padding: 0 12px;
-      color: var(--ant-color-text-quaternary);
-      background-color: var(--ant-color-bg-container);
+      color: var(--ant-color-text-secondary);
+      background: var(--ant-color-bg-container);
     }
   }
 
@@ -502,6 +751,10 @@ onUnmounted(() => {
 
     :deep(.ant-btn) {
       color: var(--ant-color-text);
+
+      &:hover {
+        color: var(--ant-color-primary-hover);
+      }
     }
 
     :deep(.anticon) {
@@ -525,5 +778,6 @@ onUnmounted(() => {
 
 :deep(.ant-modal-body) {
   padding: 24px;
+  background: var(--ant-color-bg-container);
 }
 </style> 

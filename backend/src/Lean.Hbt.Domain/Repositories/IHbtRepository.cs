@@ -157,11 +157,31 @@ namespace Lean.Hbt.Domain.Repositories
         /// <summary>
         /// 获取用户角色列表
         /// </summary>
+        /// <param name="userId">用户ID</param>
+        /// <returns>角色列表</returns>
         Task<List<string>> GetUserRolesAsync(long userId);
+
+        /// <summary>
+        /// 获取用户角色列表(带租户过滤)
+        /// </summary>
+        /// <param name="userId">用户ID</param>
+        /// <param name="tenantId">租户ID</param>
+        /// <returns>角色列表</returns>
+        Task<List<string>> GetUserRolesAsync(long userId, long tenantId);
 
         /// <summary>
         /// 获取用户权限列表
         /// </summary>
+        /// <param name="userId">用户ID</param>
+        /// <returns>权限列表</returns>
         Task<List<string>> GetUserPermissionsAsync(long userId);
+
+        /// <summary>
+        /// 获取用户权限列表(带租户过滤)
+        /// </summary>
+        /// <param name="userId">用户ID</param>
+        /// <param name="tenantId">租户ID</param>
+        /// <returns>权限列表</returns>
+        Task<List<string>> GetUserPermissionsAsync(long userId, long tenantId);
     }
 }

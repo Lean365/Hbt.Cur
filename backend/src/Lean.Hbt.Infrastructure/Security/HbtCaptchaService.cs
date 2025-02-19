@@ -23,7 +23,7 @@ public class HbtCaptchaService : IHbtCaptchaService
 {
     private readonly IDistributedCache _cache;
     private readonly HbtCaptchaOptions _options;
-    private readonly IHbtRepository<HbtSysConfig> _repository;
+    private readonly IHbtRepository<HbtConfig> _repository;
     private readonly string _sliderCachePrefix = "slider:";
     private readonly string _behaviorCachePrefix = "behavior:";
 
@@ -36,7 +36,7 @@ public class HbtCaptchaService : IHbtCaptchaService
     public HbtCaptchaService(
         IDistributedCache cache,
         IOptions<HbtCaptchaOptions> options,
-        IHbtRepository<HbtSysConfig> repository)
+        IHbtRepository<HbtConfig> repository)
     {
         _cache = cache;
         _options = options.Value;

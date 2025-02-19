@@ -141,5 +141,52 @@ namespace Lean.Hbt.Infrastructure.Caching
                 _keys.TryRemove(strKey, out _);
             }
         }
+
+        public async Task<T?> GetAsync<T>(string key)
+        {
+            return await Task.FromResult(Get<T>(key));
+        }
+
+        public async Task<bool> SetAsync<T>(string key, T value, TimeSpan expiration)
+        {
+            try
+            {
+                _cache.Set(key, value, expiration);
+                return await Task.FromResult(true);
+            }
+            catch
+            {
+                return await Task.FromResult(false);
+            }
+        }
+
+        public async Task<bool> RemoveAsync(string key)
+        {
+            try
+            {
+                _cache.Remove(key);
+                return await Task.FromResult(true);
+            }
+            catch
+            {
+                return await Task.FromResult(false);
+            }
+        }
+
+        public async Task<bool> ClearAsync()
+        {
+            try
+            {
+                if (_cache is MemoryCache memoryCache)
+                {
+                    memoryCache.Compact(1.0);
+                }
+                return await Task.FromResult(true);
+            }
+            catch
+            {
+                return await Task.FromResult(false);
+            }
+        }
     }
 } 

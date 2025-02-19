@@ -18,6 +18,21 @@
             错误代码
             </summary>
         </member>
+        <member name="F:Lean.Hbt.Common.Constants.HbtConstants.ErrorCodes.Success">
+            <summary>
+            成功
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Constants.HbtConstants.ErrorCodes.ServerError">
+            <summary>
+            服务器错误
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Constants.HbtConstants.ErrorCodes.NotFound">
+            <summary>
+            未找到
+            </summary>
+        </member>
         <member name="F:Lean.Hbt.Common.Constants.HbtConstants.ErrorCodes.Unauthorized">
             <summary>
             未授权
@@ -28,24 +43,14 @@
             禁止访问
             </summary>
         </member>
-        <member name="F:Lean.Hbt.Common.Constants.HbtConstants.ErrorCodes.NotFound">
-            <summary>
-            资源未找到
-            </summary>
-        </member>
         <member name="F:Lean.Hbt.Common.Constants.HbtConstants.ErrorCodes.ValidationFailed">
             <summary>
-            数据验证失败
+            验证失败
             </summary>
         </member>
-        <member name="F:Lean.Hbt.Common.Constants.HbtConstants.ErrorCodes.BusinessError">
+        <member name="F:Lean.Hbt.Common.Constants.HbtConstants.ErrorCodes.InvalidCaptcha">
             <summary>
-            业务错误
-            </summary>
-        </member>
-        <member name="F:Lean.Hbt.Common.Constants.HbtConstants.ErrorCodes.ServerError">
-            <summary>
-            服务器错误
+            验证码错误
             </summary>
         </member>
         <member name="T:Lean.Hbt.Common.Constants.HbtConstants.DateTimeFormats">
@@ -330,6 +335,26 @@
         <member name="F:Lean.Hbt.Common.Enums.HbtLoginStatus.Online">
             <summary>
             在线
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtLoginStatus.Failed">
+            <summary>
+            登录失败
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtLoginStatus.Locked">
+            <summary>
+            账号锁定
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtLoginStatus.Disabled">
+            <summary>
+            账号禁用
+            </summary>
+        </member>
+        <member name="F:Lean.Hbt.Common.Enums.HbtLoginStatus.Expired">
+            <summary>
+            会话过期
             </summary>
         </member>
         <member name="T:Lean.Hbt.Common.Enums.HbtDeviceType">
@@ -1328,6 +1353,66 @@
             <param name="code">错误码</param>
             <returns>失败的响应结果</returns>
         </member>
+        <member name="T:Lean.Hbt.Common.Models.HbtDeviceInfo">
+            <summary>
+            设备信息类
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Models.HbtDeviceInfo.DeviceId">
+            <summary>
+            设备ID
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Models.HbtDeviceInfo.DeviceType">
+            <summary>
+            设备类型
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Models.HbtDeviceInfo.DeviceName">
+            <summary>
+            设备名称
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Models.HbtDeviceInfo.DeviceModel">
+            <summary>
+            设备型号
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Models.HbtDeviceInfo.OsType">
+            <summary>
+            操作系统类型
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Models.HbtDeviceInfo.OsVersion">
+            <summary>
+            系统版本
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Models.HbtDeviceInfo.BrowserType">
+            <summary>
+            浏览器类型
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Models.HbtDeviceInfo.BrowserVersion">
+            <summary>
+            浏览器版本
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Models.HbtDeviceInfo.Resolution">
+            <summary>
+            分辨率
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Models.HbtDeviceInfo.IpAddress">
+            <summary>
+            IP地址
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Models.HbtDeviceInfo.Location">
+            <summary>
+            地理位置
+            </summary>
+        </member>
         <member name="T:Lean.Hbt.Common.Models.HbtPagedQuery">
             <summary>
             分页查询基类
@@ -1732,6 +1817,111 @@
             是否启用登录限制
             </summary>
         </member>
+        <member name="T:Lean.Hbt.Common.Options.HbtMonitoringOptions">
+            <summary>
+            监控配置选项
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtMonitoringOptions.Enabled">
+            <summary>
+            是否启用监控
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtMonitoringOptions.RefreshInterval">
+            <summary>
+            刷新间隔(秒)
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtMonitoringOptions.ProcessFilter">
+            <summary>
+            进程过滤器
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtMonitoringOptions.NetworkFilter">
+            <summary>
+            网络过滤器
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtMonitoringOptions.ServiceFilter">
+            <summary>
+            服务过滤器
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.HbtMonitoringOptions.Alerts">
+            <summary>
+            告警阈值
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Common.Options.ProcessFilterOptions">
+            <summary>
+            进程过滤器选项
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.ProcessFilterOptions.ExcludeSystemProcesses">
+            <summary>
+            是否排除系统进程
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.ProcessFilterOptions.MinMemoryUsageMB">
+            <summary>
+            最小内存使用量(MB)
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.ProcessFilterOptions.MaxProcessCount">
+            <summary>
+            最大进程数量
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Common.Options.NetworkFilterOptions">
+            <summary>
+            网络过滤器选项
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.NetworkFilterOptions.ExcludeLoopback">
+            <summary>
+            是否排除回环接口
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.NetworkFilterOptions.ExcludeDisabled">
+            <summary>
+            是否排除禁用的接口
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Common.Options.ServiceFilterOptions">
+            <summary>
+            服务过滤器选项
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.ServiceFilterOptions.ExcludeDisabled">
+            <summary>
+            是否排除禁用的服务
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.ServiceFilterOptions.ExcludeSystemServices">
+            <summary>
+            是否排除系统服务
+            </summary>
+        </member>
+        <member name="T:Lean.Hbt.Common.Options.AlertThresholdOptions">
+            <summary>
+            告警阈值选项
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.AlertThresholdOptions.CpuThreshold">
+            <summary>
+            CPU使用率阈值(%)
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.AlertThresholdOptions.MemoryThreshold">
+            <summary>
+            内存使用率阈值(%)
+            </summary>
+        </member>
+        <member name="P:Lean.Hbt.Common.Options.AlertThresholdOptions.DiskThreshold">
+            <summary>
+            磁盘使用率阈值(%)
+            </summary>
+        </member>
         <member name="T:Lean.Hbt.Common.Options.HbtOAuthOptions">
             <summary>
             OAuth配置选项
@@ -2076,6 +2266,44 @@
             <param name="cipherText">密文(Base64编码)</param>
             <returns>明文</returns>
         </member>
+        <member name="T:Lean.Hbt.Common.Utils.HbtIpLocationUtils">
+            <summary>
+            IP位置查询工具类
+            </summary>
+            <remarks>
+            提供IP地址位置查询功能：
+            1. 支持IPv4地址查询
+            2. 支持内网IP识别
+            3. 使用IP2Region数据库
+            </remarks>
+        </member>
+        <member name="M:Lean.Hbt.Common.Utils.HbtIpLocationUtils.#cctor">
+            <summary>
+            静态构造函数，初始化IP2Region搜索器
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Common.Utils.HbtIpLocationUtils.SetWebHostEnvironment(Microsoft.AspNetCore.Hosting.IWebHostEnvironment)">
+            <summary>
+            设置Web环境
+            </summary>
+            <param name="webHostEnvironment">Web主机环境</param>
+        </member>
+        <member name="M:Lean.Hbt.Common.Utils.HbtIpLocationUtils.GetIpLocation(System.String)">
+            <summary>
+            获取IP地址的位置信息
+            </summary>
+            <param name="ipAddress">IP地址</param>
+            <returns>位置信息，格式：国家|区域|省份|城市|ISP</returns>
+            <remarks>
+            使用IP2Region库查询IP地址的地理位置信息
+            如果是内网IP或查询失败则返回特定说明
+            </remarks>
+        </member>
+        <member name="M:Lean.Hbt.Common.Utils.HbtIpLocationUtils.IsInternalIp(System.Net.IPAddress)">
+            <summary>
+            判断是否是内网IP
+            </summary>
+        </member>
         <member name="T:Lean.Hbt.Common.Utils.HbtMaskUtils">
             <summary>
             数据脱敏工具类
@@ -2150,6 +2378,168 @@
             <param name="length">长度</param>
             <param name="allowedChars">允许的字符集</param>
             <returns>随机字符串</returns>
+        </member>
+        <member name="T:Lean.Hbt.Common.Utils.HbtServerMonitorUtils">
+            <summary>
+            服务器监控工具类
+            </summary>
+            <remarks>
+            提供以下功能：
+            1. 系统资源监控：CPU、内存、磁盘使用情况
+            2. 进程管理：获取进程列表、CPU使用率等
+            3. 网络监控：网络接口信息、流量统计
+            4. 系统服务管理：服务状态、启动类型等
+            </remarks>
+        </member>
+        <member name="T:Lean.Hbt.Common.Utils.HbtServerMonitorUtils.MEMORYSTATUSEX">
+            <summary>
+            Windows内存状态结构体
+            </summary>
+            <remarks>
+            用于与Windows API交互，获取系统内存信息
+            参考：https://learn.microsoft.com/windows/win32/api/sysinfoapi/ns-sysinfoapi-memorystatusex
+            </remarks>
+        </member>
+        <member name="M:Lean.Hbt.Common.Utils.HbtServerMonitorUtils.GlobalMemoryStatusEx(Lean.Hbt.Common.Utils.HbtServerMonitorUtils.MEMORYSTATUSEX@)">
+            <summary>
+            Windows API：获取系统内存状态
+            </summary>
+            <param name="lpBuffer">内存状态结构体引用</param>
+            <returns>操作是否成功</returns>
+        </member>
+        <member name="M:Lean.Hbt.Common.Utils.HbtServerMonitorUtils.GetTotalPhysicalMemory">
+            <summary>
+            获取物理内存总量(字节)
+            </summary>
+            <returns>物理内存总量，单位：字节</returns>
+            <remarks>
+            支持Windows和Linux系统
+            - Windows：通过GlobalMemoryStatusEx API获取
+            - Linux：通过读取/proc/meminfo文件获取
+            </remarks>
+        </member>
+        <member name="M:Lean.Hbt.Common.Utils.HbtServerMonitorUtils.GetWindowsMemoryInfo">
+            <summary>
+            获取Windows系统内存信息
+            </summary>
+            <returns>物理内存总量，单位：字节</returns>
+        </member>
+        <member name="M:Lean.Hbt.Common.Utils.HbtServerMonitorUtils.GetUnixMemoryInfo">
+            <summary>
+            获取Unix/Linux系统内存信息
+            </summary>
+            <returns>物理内存总量，单位：字节</returns>
+        </member>
+        <member name="M:Lean.Hbt.Common.Utils.HbtServerMonitorUtils.GetProcessorName">
+            <summary>
+            获取处理器名称
+            </summary>
+            <returns>处理器名称</returns>
+            <remarks>
+            在Windows系统下，从注册表读取处理器信息
+            在其他系统下返回"Unknown"
+            </remarks>
+        </member>
+        <member name="M:Lean.Hbt.Common.Utils.HbtServerMonitorUtils.GetSystemStartTime">
+            <summary>
+            获取系统启动时间
+            </summary>
+            <returns>系统启动的时间点</returns>
+            <remarks>
+            通过Environment.TickCount64获取系统运行时间（毫秒）
+            然后用当前时间减去运行时间得到启动时间
+            </remarks>
+        </member>
+        <member name="M:Lean.Hbt.Common.Utils.HbtServerMonitorUtils.GetProcessDescription(System.Diagnostics.Process)">
+            <summary>
+            获取进程描述信息
+            </summary>
+            <param name="process">进程对象</param>
+            <returns>进程的描述信息</returns>
+            <remarks>
+            从进程的主模块文件版本信息中获取描述
+            如果无法获取则返回空字符串
+            </remarks>
+        </member>
+        <member name="M:Lean.Hbt.Common.Utils.HbtServerMonitorUtils.GetProcessCpuUsage(System.Diagnostics.Process)">
+            <summary>
+            获取进程的CPU使用率
+            </summary>
+            <param name="process">进程对象</param>
+            <returns>CPU使用率百分比</returns>
+            <remarks>
+            计算方法：
+            1. 获取进程当前的处理器时间
+            2. 等待100ms
+            3. 再次获取处理器时间
+            4. 计算时间差除以(处理器核心数 * 采样时间)得到使用率
+            </remarks>
+        </member>
+        <member name="M:Lean.Hbt.Common.Utils.HbtServerMonitorUtils.GetNetworkInterfaceIpAddress(System.Net.NetworkInformation.NetworkInterface)">
+            <summary>
+            获取网络接口的IPv4地址
+            </summary>
+            <param name="ni">网络接口对象</param>
+            <returns>IPv4地址字符串</returns>
+            <remarks>
+            从网络接口的单播地址列表中
+            查找第一个IPv4地址并返回
+            </remarks>
+        </member>
+        <member name="M:Lean.Hbt.Common.Utils.HbtServerMonitorUtils.GetServiceStartType(System.ServiceProcess.ServiceController)">
+            <summary>
+            获取Windows服务的启动类型
+            </summary>
+            <param name="sc">服务控制器对象</param>
+            <returns>服务启动类型：Automatic(自动)、Manual(手动)、Disabled(禁用)</returns>
+            <remarks>
+            从注册表中读取服务的Start值：
+            2 = 自动
+            3 = 手动
+            4 = 禁用
+            </remarks>
+        </member>
+        <member name="M:Lean.Hbt.Common.Utils.HbtServerMonitorUtils.GetServiceAccount(System.ServiceProcess.ServiceController)">
+            <summary>
+            获取Windows服务的运行账户
+            </summary>
+            <param name="sc">服务控制器对象</param>
+            <returns>服务运行账户名称</returns>
+            <remarks>
+            从注册表中读取服务的ObjectName值
+            该值表示服务运行时使用的账户
+            </remarks>
+        </member>
+        <member name="F:Lean.Hbt.Common.Utils.HbtServerMonitorUtils._networkStatsCache">
+            <summary>
+            网络接口流量信息缓存
+            </summary>
+        </member>
+        <member name="M:Lean.Hbt.Common.Utils.HbtServerMonitorUtils.GetNetworkInterfaceRates(System.Net.NetworkInformation.NetworkInterface)">
+            <summary>
+            获取网络接口的实时流量信息
+            </summary>
+            <param name="ni">网络接口对象</param>
+            <returns>发送和接收速率（KB/s）</returns>
+            <remarks>
+            计算方法：
+            1. 获取当前流量数据
+            2. 与上次数据比较计算差值
+            3. 除以时间间隔得到速率
+            首次调用时返回0
+            </remarks>
+        </member>
+        <member name="M:Lean.Hbt.Common.Utils.HbtServerMonitorUtils.GetDotNetRuntimeInfo">
+            <summary>
+            获取.NET运行时版本信息
+            </summary>
+            <returns>.NET运行时版本信息</returns>
+            <remarks>
+            获取当前服务器运行的.NET版本信息，包括：
+            1. .NET运行时版本
+            2. CLR版本
+            3. 运行时目录
+            </remarks>
         </member>
         <member name="T:Lean.Hbt.Common.Utils.HbtUtils">
             <summary>

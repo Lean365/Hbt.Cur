@@ -435,5 +435,74 @@ namespace Lean.Hbt.Application.Services.Identity
                 }
             }
         }
+
+        /// <summary>
+        /// 获取当前用户的菜单树
+        /// </summary>
+        /// <param name="userId">用户ID</param>
+        /// <returns>返回当前用户的菜单树</returns>
+        public async Task<List<HbtMenuDto>> GetCurrentUserMenusAsync(long userId)
+        {
+            try
+            {
+                // 获取用户的角色菜单
+                var roleMenus = await _roleMenuRepository.GetListAsync(x => x.Role.UserRoles.Any(ur => ur.UserId == userId));
+                var menuIds = roleMenus.Select(x => x.MenuId).Distinct().ToList();
+
+                // 获取菜单,过滤掉按钮类型的菜单
+                var menus = await _menuRepository.GetListAsync(x => 
+                    menuIds.Contains(x.Id) && 
+                    x.Status == HbtStatus.Normal && 
+                    x.Visible == HbtVisible.Show &&
+                    x.MenuType != HbtMenuType.Button);
+
+                // 转换为DTO并构建树形结构
+                var menuDtos = menus.Select(m => new HbtMenuDto
+                {
+                    Id = m.Id,
+                    MenuName = m.MenuName,
+                    TransKey = m.TransKey,
+                    ParentId = m.ParentId,
+                    OrderNum = m.OrderNum,
+                    Path = m.Path,
+                    Component = m.Component,
+                    QueryParams = m.QueryParams,
+                    IsFrame = m.IsFrame,
+                    IsCache = m.IsCache,
+                    MenuType = m.MenuType,
+                    Visible = m.Visible,
+                    Status = m.Status,
+                    Perms = m.Perms,
+                    Icon = m.Icon,
+                    CreateTime = m.CreateTime,
+                    Children = new List<HbtMenuDto>()
+                }).ToList();
+
+                // 构建树形结构
+                var rootMenus = new List<HbtMenuDto>();
+                var menuDict = menuDtos.ToDictionary(m => m.Id);
+
+                foreach (var menu in menuDtos)
+                {
+                    if (!menu.ParentId.HasValue || menu.ParentId == 0)
+                    {
+                        rootMenus.Add(menu);
+                    }
+                    else if (menuDict.TryGetValue(menu.ParentId.Value, out var parentMenu))
+                    {
+                        parentMenu.Children.Add(menu);
+                    }
+                }
+
+                // 递归排序
+                SortMenus(rootMenus);
+                return rootMenus;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "获取当前用户菜单树时发生错误");
+                throw;
+            }
+        }
     }
 } 

@@ -311,6 +311,12 @@ namespace Lean.Hbt.Application.Dtos.Identity
         public long UserId { get; set; }
 
         /// <summary>
+        /// 租户ID
+        /// </summary>
+        [Required(ErrorMessage = "租户ID不能为空")]
+        public long TenantId { get; set; }
+
+        /// <summary>
         /// 昵称
         /// </summary>
         [Required(ErrorMessage = "昵称不能为空")]

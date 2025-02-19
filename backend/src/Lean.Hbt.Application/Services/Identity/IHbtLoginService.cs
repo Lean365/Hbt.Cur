@@ -48,4 +48,11 @@ public interface IHbtLoginService
     /// <param name="username">用户名</param>
     /// <returns>用户盐值信息</returns>
     Task<(string Salt, int Iterations)?> GetUserSaltAsync(string username);
+
+    /// <summary>
+    /// 获取用户信息
+    /// </summary>
+    /// <param name="userId">用户ID</param>
+    /// <returns>用户信息</returns>
+    Task<HbtUserInfoDto> GetUserInfoAsync(long userId);
 } 

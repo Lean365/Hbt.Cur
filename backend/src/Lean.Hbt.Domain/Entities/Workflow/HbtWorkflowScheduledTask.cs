@@ -18,7 +18,7 @@ namespace Lean.Hbt.Domain.Entities.Workflow
     /// <summary>
     /// 工作流定时任务实体
     /// </summary>
-    [SugarTable("hbt_workflow_scheduled_task", "工作流定时任务表")]
+    [SugarTable("hbt_wf_scheduled_task", "工作流定时任务表")]
     public class HbtWorkflowScheduledTask : HbtBaseEntity
     {
         /// <summary>

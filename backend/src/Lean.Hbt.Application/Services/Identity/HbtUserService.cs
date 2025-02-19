@@ -24,6 +24,8 @@ using SqlSugar;
 using Lean.Hbt.Common.Helpers;
 using System.IO;
 using Lean.Hbt.Domain.IServices.Security;
+using Lean.Hbt.Domain.IServices.Caching;
+using Lean.Hbt.Domain.IServices.Tenant;
 
 namespace Lean.Hbt.Application.Services.Identity
 {
@@ -43,6 +45,11 @@ namespace Lean.Hbt.Application.Services.Identity
         private readonly IHbtPasswordPolicy _passwordPolicy;
         private readonly IHbtLogger _logger;
         private readonly IHbtLocalizationService _localization;
+        private readonly IHbtRepository<HbtTenant> _tenantRepository;
+        private readonly IHbtRepository<HbtRole> _roleRepository;
+        private readonly IHbtRepository<HbtPost> _postRepository;
+        private readonly IHbtRepository<HbtDept> _deptRepository;
+        private readonly ITenantContext _tenantContext;
 
         /// <summary>
         /// 构造函数
@@ -54,7 +61,12 @@ namespace Lean.Hbt.Application.Services.Identity
             IHbtRepository<HbtUserDept> userDeptRepository,
             IHbtPasswordPolicy passwordPolicy,
             IHbtLogger logger,
-            IHbtLocalizationService localization)
+            IHbtLocalizationService localization,
+            IHbtRepository<HbtTenant> tenantRepository,
+            IHbtRepository<HbtRole> roleRepository,
+            IHbtRepository<HbtPost> postRepository,
+            IHbtRepository<HbtDept> deptRepository,
+            ITenantContext tenantContext)
         {
             _userRepository = userRepository;
             _userRoleRepository = userRoleRepository;
@@ -63,6 +75,11 @@ namespace Lean.Hbt.Application.Services.Identity
             _passwordPolicy = passwordPolicy;
             _logger = logger;
             _localization = localization;
+            _tenantRepository = tenantRepository;
+            _roleRepository = roleRepository;
+            _postRepository = postRepository;
+            _deptRepository = deptRepository;
+            _tenantContext = tenantContext;
         }
 
         /// <summary>
@@ -130,6 +147,14 @@ namespace Lean.Hbt.Application.Services.Identity
             if (string.IsNullOrEmpty(input.Password))
                 throw new HbtException(_localization.L("User.Password.Required"));
 
+            // 验证租户是否存在且有效
+            var tenant = await _tenantRepository.GetByIdAsync(input.TenantId);
+            if (tenant == null)
+                throw new HbtException(_localization.L("Tenant.NotFound"));
+
+            if (tenant.Status != HbtStatus.Normal)
+                throw new HbtException(_localization.L("Tenant.Disabled"));
+
             // 验证字段是否已存在
             await HbtValidateUtils.ValidateFieldExistsAsync(_userRepository, "UserName", input.UserName);
             await HbtValidateUtils.ValidateFieldExistsAsync(_userRepository, "PhoneNumber", input.PhoneNumber);
@@ -149,6 +174,7 @@ namespace Lean.Hbt.Application.Services.Identity
                 UserType = input.UserType,
                 Password = hash,
                 Salt = salt,
+                Iterations = iterations,
                 PhoneNumber = input.PhoneNumber ?? string.Empty,
                 Email = input.Email ?? string.Empty,
                 Gender = input.Gender,
@@ -165,6 +191,11 @@ namespace Lean.Hbt.Application.Services.Identity
             // 关联角色
             if (input.RoleIds?.Any() == true)
             {
+                // 验证角色是否属于当前租户
+                var roles = await _roleRepository.GetListAsync(r => input.RoleIds.Contains(r.Id) && r.TenantId == input.TenantId);
+                if (roles.Count != input.RoleIds.Count)
+                    throw new HbtException(_localization.L("User.Role.Invalid"));
+
                 var userRoles = input.RoleIds.Select(roleId => new HbtUserRole
                 {
                     UserId = user.Id,
@@ -177,6 +208,11 @@ namespace Lean.Hbt.Application.Services.Identity
             // 关联岗位
             if (input.PostIds?.Any() == true)
             {
+                // 验证岗位是否属于当前租户
+                var posts = await _postRepository.GetListAsync(p => input.PostIds.Contains(p.Id) && p.TenantId == input.TenantId);
+                if (posts.Count != input.PostIds.Count)
+                    throw new HbtException(_localization.L("User.Post.Invalid"));
+
                 var userPosts = input.PostIds.Select(postId => new HbtUserPost
                 {
                     UserId = user.Id,
@@ -187,6 +223,11 @@ namespace Lean.Hbt.Application.Services.Identity
             }
 
             // 关联部门
+            // 验证部门是否属于当前租户
+            var dept = await _deptRepository.GetByIdAsync(input.DeptId);
+            if (dept == null || dept.TenantId != input.TenantId)
+                throw new HbtException(_localization.L("User.Dept.Invalid"));
+
             var userDept = new HbtUserDept
             {
                 UserId = user.Id,
@@ -213,6 +254,10 @@ namespace Lean.Hbt.Application.Services.Identity
             if (user == null)
                 throw new HbtException(_localization.L("User.NotFound"));
 
+            // 验证租户权限
+            if (user.TenantId != input.TenantId)
+                throw new HbtException(_localization.L("User.Tenant.Invalid"));
+
             // 验证字段是否已存在
             await HbtValidateUtils.ValidateFieldExistsAsync(_userRepository, "PhoneNumber", input.PhoneNumber, input.UserId);
             await HbtValidateUtils.ValidateFieldExistsAsync(_userRepository, "Email", input.Email, input.UserId);
@@ -234,6 +279,11 @@ namespace Lean.Hbt.Application.Services.Identity
             await _userRoleRepository.DeleteAsync((Expression<Func<HbtUserRole, bool>>)(x => x.UserId == user.Id));
             if (input.RoleIds?.Any() == true)
             {
+                // 验证角色是否属于当前租户
+                var roles = await _roleRepository.GetListAsync((Expression<Func<HbtRole, bool>>)(r => input.RoleIds.Contains(r.Id) && r.TenantId == user.TenantId));
+                if (roles.Count != input.RoleIds.Count)
+                    throw new HbtException(_localization.L("User.Role.Invalid"));
+
                 var userRoles = input.RoleIds.Select(roleId => new HbtUserRole
                 {
                     UserId = user.Id,
@@ -247,6 +297,11 @@ namespace Lean.Hbt.Application.Services.Identity
             await _userPostRepository.DeleteAsync((Expression<Func<HbtUserPost, bool>>)(x => x.UserId == user.Id));
             if (input.PostIds?.Any() == true)
             {
+                // 验证岗位是否属于当前租户
+                var posts = await _postRepository.GetListAsync((Expression<Func<HbtPost, bool>>)(p => input.PostIds.Contains(p.Id) && p.TenantId == user.TenantId));
+                if (posts.Count != input.PostIds.Count)
+                    throw new HbtException(_localization.L("User.Post.Invalid"));
+
                 var userPosts = input.PostIds.Select(postId => new HbtUserPost
                 {
                     UserId = user.Id,
@@ -258,6 +313,11 @@ namespace Lean.Hbt.Application.Services.Identity
 
             // 更新部门关联
             await _userDeptRepository.DeleteAsync((Expression<Func<HbtUserDept, bool>>)(x => x.UserId == user.Id));
+            // 验证部门是否属于当前租户
+            var dept = await _deptRepository.GetByIdAsync(input.DeptId);
+            if (dept == null || dept.TenantId != user.TenantId)
+                throw new HbtException(_localization.L("User.Dept.Invalid"));
+
             var userDept = new HbtUserDept
             {
                 UserId = user.Id,
@@ -281,6 +341,10 @@ namespace Lean.Hbt.Application.Services.Identity
             if (user == null)
                 throw new HbtException(_localization.L("User.NotFound"));
 
+            // 验证租户权限
+            if (user.TenantId != _tenantContext.TenantId)
+                throw new HbtException(_localization.L("User.Tenant.Invalid"));
+
             // 删除用户关联数据
             await _userRoleRepository.DeleteAsync((Expression<Func<HbtUserRole, bool>>)(x => x.UserId == userId));
             await _userPostRepository.DeleteAsync((Expression<Func<HbtUserPost, bool>>)(x => x.UserId == userId));
@@ -302,6 +366,11 @@ namespace Lean.Hbt.Application.Services.Identity
         {
             if (userIds == null || userIds.Length == 0)
                 throw new HbtException(_localization.L("User.BatchDelete.Empty"));
+
+            // 验证租户权限
+            var users = await _userRepository.GetListAsync(u => userIds.Contains(u.Id));
+            if (users.Any(u => u.TenantId != _tenantContext.TenantId))
+                throw new HbtException(_localization.L("User.Tenant.Invalid"));
 
             // 删除用户关联数据
             await _userRoleRepository.DeleteAsync((Expression<Func<HbtUserRole, bool>>)(x => userIds.Contains(x.UserId)));

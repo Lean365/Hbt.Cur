@@ -2,8 +2,8 @@
 // 项目名 : Lean.Hbt 
 // 文件名 : HbtConstants.cs 
 // 创建者 : Lean365
-// 创建时间: 2024-01-17 16:30
-// 版本号 : V.0.0.1
+// 创建时间: 2024-02-18 02:30
+// 版本号 : V1.0.0
 // 描述    : 常量定义
 //===================================================================
 
@@ -24,6 +24,21 @@ namespace Lean.Hbt.Common.Constants
         public static class ErrorCodes
         {
             /// <summary>
+            /// 成功
+            /// </summary>
+            public const string Success = "0";
+
+            /// <summary>
+            /// 服务器错误
+            /// </summary>
+            public const string ServerError = "500";
+
+            /// <summary>
+            /// 未找到
+            /// </summary>
+            public const string NotFound = "404";
+
+            /// <summary>
             /// 未授权
             /// </summary>
             public const string Unauthorized = "401";
@@ -34,24 +49,14 @@ namespace Lean.Hbt.Common.Constants
             public const string Forbidden = "403";
 
             /// <summary>
-            /// 资源未找到
-            /// </summary>
-            public const string NotFound = "404";
-
-            /// <summary>
-            /// 数据验证失败
+            /// 验证失败
             /// </summary>
             public const string ValidationFailed = "400";
 
             /// <summary>
-            /// 业务错误
+            /// 验证码错误
             /// </summary>
-            public const string BusinessError = "500";
-
-            /// <summary>
-            /// 服务器错误
-            /// </summary>
-            public const string ServerError = "500";
+            public const string InvalidCaptcha = "40001";
         }
 
         /// <summary>

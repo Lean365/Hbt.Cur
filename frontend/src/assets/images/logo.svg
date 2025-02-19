@@ -1,11 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg width="128" height="32" viewBox="0 0 128 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
   <style>
-    .logo-text { fill: var(--ant-color-text); }
-    .logo-icon { fill: var(--ant-color-primary); }
+    .primary { stroke: var(--ant-color-primary, #1890FF); }
+    .secondary { stroke: var(--ant-color-success, #52C41A); }
+    .accent { stroke: var(--ant-color-warning, #FAAD14); }
+    
+    @media (prefers-color-scheme: dark) {
+      .primary { stroke: #1890FF; }
+      .secondary { stroke: #52C41A; }
+      .accent { stroke: #FAAD14; }
+    }
+
+    .glow {
+      animation: glowEffect 3s infinite;
+    }
+
+    @keyframes glowEffect {
+      0% { filter: drop-shadow(0 0 3px rgba(24, 144, 255, 0.3)); }
+      33% { filter: drop-shadow(0 0 3px rgba(82, 196, 26, 0.3)); }
+      66% { filter: drop-shadow(0 0 3px rgba(250, 173, 20, 0.3)); }
+      100% { filter: drop-shadow(0 0 3px rgba(24, 144, 255, 0.3)); }
+    }
   </style>
-  <!-- Logo 图标部分 -->
-  <path class="logo-icon" d="M6 4h4v20h16v4H6z"/>
-  <!-- Logo 文字部分 -->
-  <path class="logo-text" d="M38 8h4v16h-4zM44 8h12v4h-8v4h6v4h-6v4h8v4h-12zM58 8h4v16h-4zM64 8h12v4h-8v4h6v4h-6v4h8v4h-12zM78 8h12v4h-4v12h-4v-12h-4z"/>
+
+  <!-- 背景圆环 -->
+  <circle class="primary glow" cx="100" cy="100" r="90" stroke-width="6" fill="none" />
+  
+  <!-- H字母 -->
+  <path class="primary" d="M60 60v80M60 100h30M90 60v80" stroke-width="8" fill="none" />
+  
+  <!-- B字母 -->
+  <path class="secondary" d="M100 60v80h10c20 0 30-10 30-25v-5c0-10-5-15-15-17.5 10-2.5 15-7.5 15-17.5v-5c0-15-10-25-30-25h-10" stroke-width="8" fill="none" />
+  
+  <!-- T字母 -->
+  <path class="accent" d="M150 60h40M170 60v80" stroke-width="8" fill="none" />
 </svg> 

@@ -1,4 +1,6 @@
-using Lean.Hbt.Infrastructure.Data.Contexts;
+using Lean.Hbt.Infrastructure.Services;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 
 namespace Lean.Hbt.WebApi.Middlewares
 {
@@ -8,14 +10,17 @@ namespace Lean.Hbt.WebApi.Middlewares
     public class HbtTenantMiddleware
     {
         private readonly RequestDelegate _next;
+        private readonly ILogger<HbtTenantMiddleware> _logger;
 
         /// <summary>
         /// 构造函数
         /// </summary>
         /// <param name="next"></param>
-        public HbtTenantMiddleware(RequestDelegate next)
+        /// <param name="logger"></param>
+        public HbtTenantMiddleware(RequestDelegate next, ILogger<HbtTenantMiddleware> logger)
         {
             _next = next;
+            _logger = logger;
         }
 
         /// <summary>
@@ -27,12 +32,15 @@ namespace Lean.Hbt.WebApi.Middlewares
         {
             try
             {
+                _logger.LogDebug("[租户中间件] 开始处理请求: {Path}", context.Request.Path);
+
                 // 1. 从请求头中获取租户ID
                 if (context.Request.Headers.TryGetValue("X-Tenant-Id", out var tenantId))
                 {
                     if (long.TryParse(tenantId, out var tid))
                     {
                         HbtTenantContext.CurrentTenantId = tid;
+                        _logger.LogDebug("[租户中间件] 从请求头获取租户ID: {TenantId}", tid);
                     }
                 }
 
@@ -43,15 +51,24 @@ namespace Lean.Hbt.WebApi.Middlewares
                     if (tenantClaim != null && long.TryParse(tenantClaim.Value, out var tid))
                     {
                         HbtTenantContext.CurrentTenantId = tid;
+                        _logger.LogDebug("[租户中间件] 从JWT获取租户ID: {TenantId}", tid);
                     }
                 }
 
+                _logger.LogDebug("[租户中间件] 当前租户ID: {TenantId}", HbtTenantContext.CurrentTenantId);
+
                 await _next(context);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "[租户中间件] 处理请求时发生错误");
+                throw;
             }
             finally
             {
                 // 请求结束时清除租户上下文
                 HbtTenantContext.Clear();
+                _logger.LogDebug("[租户中间件] 清除租户上下文");
             }
         }
     }

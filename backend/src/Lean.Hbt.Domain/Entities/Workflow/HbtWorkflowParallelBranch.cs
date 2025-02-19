@@ -17,7 +17,7 @@ namespace Lean.Hbt.Domain.Entities.Workflow
     /// <summary>
     /// 工作流并行分支状态实体
     /// </summary>
-    [SugarTable("hbt_workflow_parallel_branch", "工作流并行分支状态表")]
+    [SugarTable("hbt_wf_parallel_branch", "工作流并行分支状态表")]
     public class HbtWorkflowParallelBranch : HbtBaseEntity
     {
         /// <summary>

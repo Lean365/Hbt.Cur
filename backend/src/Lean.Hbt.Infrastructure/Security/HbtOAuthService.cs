@@ -13,7 +13,7 @@ namespace Lean.Hbt.Infrastructure.Security
     public class HbtOAuthService : IHbtOAuthService
     {
         private readonly HbtOAuthOptions _defaultOptions;
-        private readonly IHbtRepository<HbtSysConfig> _configRepository;
+        private readonly IHbtRepository<HbtConfig> _configRepository;
         private readonly HttpClient _httpClient;
 
         /// <summary>
@@ -24,7 +24,7 @@ namespace Lean.Hbt.Infrastructure.Security
         /// <param name="httpClient"></param>
         public HbtOAuthService(
             IOptions<HbtOAuthOptions> options,
-            IHbtRepository<HbtSysConfig> configRepository,
+            IHbtRepository<HbtConfig> configRepository,
             HttpClient httpClient)
         {
             _defaultOptions = options.Value;

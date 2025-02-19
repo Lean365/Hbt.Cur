@@ -12,6 +12,10 @@ using Lean.Hbt.Application.Services.Identity;
 using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Domain.IServices.Admin;
 using Lean.Hbt.Common.Models;
+using Lean.Hbt.Common.Extensions;
+using Lean.Hbt.Domain.IServices.Tenant;
+using Lean.Hbt.Infrastructure.Security.Attributes;
+using Microsoft.Extensions.Logging;
 
 namespace Lean.Hbt.WebApi.Controllers.Identity
 {
@@ -28,15 +32,25 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
     public class HbtMenuController : HbtBaseController
     {
         private readonly IHbtMenuService _menuService;
+        private readonly ITenantContext _tenantContext;
+        private readonly ILogger<HbtMenuController> _logger;
 
         /// <summary>
         /// 构造函数
         /// </summary>
         /// <param name="menuService">菜单服务</param>
         /// <param name="localization">本地化服务</param>
-        public HbtMenuController(IHbtMenuService menuService, IHbtLocalizationService localization) : base(localization)
+        /// <param name="tenantContext">租户上下文</param>
+        /// <param name="logger">日志服务</param>
+        public HbtMenuController(
+            IHbtMenuService menuService,
+            IHbtLocalizationService localization,
+            ITenantContext tenantContext,
+            ILogger<HbtMenuController> logger) : base(localization)
         {
             _menuService = menuService;
+            _tenantContext = tenantContext;
+            _logger = logger;
         }
 
         /// <summary>
@@ -196,6 +210,35 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         {
             var menus = await _menuService.GetTreeAsync();
             return Success(menus);
+        }
+
+        /// <summary>
+        /// 获取当前用户菜单
+        /// </summary>
+        /// <returns>当前用户的菜单树</returns>
+        [HttpGet("current")]
+        public async Task<IActionResult> GetCurrentUserMenusAsync()
+        {
+            var userId = HttpContext.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            _logger.LogInformation("[菜单服务] 开始获取用户菜单: UserId={UserId}", userId);
+
+            if (string.IsNullOrEmpty(userId) || !long.TryParse(userId, out var uid))
+            {
+                _logger.LogWarning("[菜单服务] 未能获取用户ID");
+                return Success(new List<HbtMenuDto>());
+            }
+
+            try 
+            {
+                var menus = await _menuService.GetCurrentUserMenusAsync(uid);
+                _logger.LogInformation("[菜单服务] 获取菜单成功: Count={Count}", menus?.Count ?? 0);
+                return Success(menus ?? new List<HbtMenuDto>());
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "[菜单服务] 获取菜单失败: {Message}", ex.Message);
+                return Success(new List<HbtMenuDto>());
+            }
         }
     }
 }

@@ -20,7 +20,7 @@ namespace Lean.Hbt.Infrastructure.Caching
     public class HbtCacheConfigManager
     {
         private readonly IOptions<HbtCacheOptions> _options;
-        private readonly IHbtRepository<HbtSysConfig> _configRepository;
+        private readonly IHbtRepository<HbtConfig> _configRepository;
         private HbtCacheOptions _currentOptions;
         private readonly object _lock = new object();
         private DateTime _lastUpdateTime;
@@ -30,7 +30,7 @@ namespace Lean.Hbt.Infrastructure.Caching
         /// </summary>
         public HbtCacheConfigManager(
             IOptions<HbtCacheOptions> options,
-            IHbtRepository<HbtSysConfig> configRepository)
+            IHbtRepository<HbtConfig> configRepository)
         {
             _options = options;
             _configRepository = configRepository;
@@ -112,7 +112,7 @@ namespace Lean.Hbt.Infrastructure.Caching
             }
         }
 
-        private T GetConfigValue<T>(IEnumerable<HbtSysConfig> configs, string key, T defaultValue)
+        private T GetConfigValue<T>(IEnumerable<HbtConfig> configs, string key, T defaultValue)
         {
             var config = configs.FirstOrDefault(x => x.ConfigKey == key);
             if (config == null)

@@ -18,6 +18,7 @@ using Lean.Hbt.Domain.IServices;
 using Microsoft.Extensions.Options;
 using Lean.Hbt.Domain.Data;
 using Lean.Hbt.Domain.IServices.Identity;
+using Lean.Hbt.Infrastructure.Services;
 namespace Lean.Hbt.Infrastructure.Data.Contexts
 {
     /// <summary>
@@ -177,7 +178,7 @@ namespace Lean.Hbt.Infrastructure.Data.Contexts
                     typeof(HbtOperLog),
                     typeof(HbtOnlineMessage),
                     typeof(HbtOnlineUser),
-                    typeof(HbtSysConfig),
+                    typeof(HbtConfig),
                     typeof(HbtTranslation),
                     typeof(HbtLanguage),
                     typeof(HbtDictType),

@@ -30,15 +30,33 @@ const toggleMemorialMode = () => {
 }
 </script>
 
-<style scoped>
-.memorial-theme {
-  display: inline-flex;
+<style lang="less" scoped>
+.memorial-dropdown {
+  display: flex;
   align-items: center;
-  padding: 0 4px;
-  color: inherit;
+  justify-content: center;
 }
 
-.memorial-theme :deep(.anticon) {
+:deep(.ant-dropdown-trigger) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+:deep(.ant-btn) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
+  width: 32px;
+  padding: 0;
+}
+
+:deep(.anticon) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-size: 16px;
+  line-height: 1;
 }
 </style> 

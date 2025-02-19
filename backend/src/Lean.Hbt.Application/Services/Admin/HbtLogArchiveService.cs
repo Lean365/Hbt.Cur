@@ -15,7 +15,7 @@ namespace Lean.Hbt.Application.Services.Admin
     public class HbtLogArchiveService : IHbtLogArchiveService
     {
         private readonly IOptions<LogArchiveOptions> _defaultOptions;
-        private readonly IHbtRepository<HbtSysConfig> _configRepository;
+        private readonly IHbtRepository<HbtConfig> _configRepository;
         private readonly IHbtRepository<HbtAuditLog> _auditLogRepository;
         private readonly IHbtRepository<HbtOperLog> _operLogRepository;
         private readonly IHbtRepository<HbtLoginLog> _loginLogRepository;
@@ -36,7 +36,7 @@ namespace Lean.Hbt.Application.Services.Admin
         /// <param name="logger"></param>
         public HbtLogArchiveService(
             IOptions<LogArchiveOptions> defaultOptions,
-            IHbtRepository<HbtSysConfig> configRepository,
+            IHbtRepository<HbtConfig> configRepository,
             IHbtRepository<HbtAuditLog> auditLogRepository,
             IHbtRepository<HbtOperLog> operLogRepository,
             IHbtRepository<HbtLoginLog> loginLogRepository,
@@ -167,7 +167,7 @@ namespace Lean.Hbt.Application.Services.Admin
             _logger.Info($"已归档 {typeof(T).Name}: {totalCount} 条记录");
         }
 
-        private T GetConfigValue<T>(List<HbtSysConfig> configs, string key, T defaultValue)
+        private T GetConfigValue<T>(List<HbtConfig> configs, string key, T defaultValue)
         {
             var config = configs.FirstOrDefault(c => c.ConfigKey == key);
             if (config == null)

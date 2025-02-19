@@ -1,6 +1,8 @@
 <template>
-  <ConfigProvider>
-    <router-view></router-view>
+  <ConfigProvider :theme="themeConfig">
+    <a-config-provider :locale="antdLocale">
+      <router-view></router-view>
+    </a-config-provider>
   </ConfigProvider>
 </template>
 
@@ -11,13 +13,72 @@ import { onMounted, computed, watch } from 'vue'
 import { theme } from 'ant-design-vue'
 import { useThemeStore } from '@/stores/theme'
 import { useHolidayStore } from '@/stores/holiday'
-import GlobalSettings from '@/components/layout/GlobalSettings.vue'
+import { useAppStore } from '@/stores/app'
+import zhCN from 'ant-design-vue/es/locale/zh_CN'
+import enUS from 'ant-design-vue/es/locale/en_US'
 
 const themeStore = useThemeStore()
 const holidayStore = useHolidayStore()
+const appStore = useAppStore()
 const isDark = computed(() => themeStore.isDarkMode)
 const currentTheme = computed(() => holidayStore.holidayTheme)
 const isMemorialMode = computed(() => currentTheme.value?.id === 'memorial')
+
+// 根据当前语言获取 Ant Design Vue 的语言包
+const antdLocale = computed(() => {
+  switch (appStore.language) {
+    case 'en-US':
+      return enUS
+    case 'zh-CN':
+    default:
+      return zhCN
+  }
+})
+
+// 监听语言变化，刷新页面以应用新的语言
+watch(() => appStore.language, () => {
+  window.location.reload()
+})
+
+// 计算主题配置
+const themeConfig = computed(() => {
+  const baseConfig = {
+    algorithm: isDark.value ? theme.darkAlgorithm : theme.defaultAlgorithm,
+  }
+
+  // 如果是纪念模式，应用纪念模式的主题配置
+  if (isMemorialMode.value && currentTheme.value?.theme) {
+    return {
+      ...baseConfig,
+      token: {
+        colorPrimary: currentTheme.value.theme.colorPrimary,
+        colorBgContainer: currentTheme.value.theme.colorBgContainer,
+        colorBgLayout: currentTheme.value.theme.colorBgLayout,
+        colorText: currentTheme.value.theme.colorText,
+        colorTextSecondary: currentTheme.value.theme.colorTextSecondary,
+        colorBorder: currentTheme.value.theme.colorBorder,
+        colorSplit: currentTheme.value.theme.colorSplit,
+      }
+    }
+  }
+  // 如果是其他节日主题
+  else if (currentTheme.value?.theme) {
+    return {
+      ...baseConfig,
+      token: {
+        colorPrimary: currentTheme.value.theme.colorPrimary,
+        colorBgContainer: currentTheme.value.theme.colorBgContainer,
+        colorBgLayout: currentTheme.value.theme.colorBgLayout,
+        colorText: currentTheme.value.theme.colorText,
+        colorTextSecondary: currentTheme.value.theme.colorTextSecondary,
+        colorBorder: currentTheme.value.theme.colorBorder,
+        colorSplit: currentTheme.value.theme.colorSplit,
+      }
+    }
+  }
+
+  return baseConfig
+})
 
 onMounted(() => {
   themeStore.initTheme()

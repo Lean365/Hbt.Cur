@@ -4,6 +4,7 @@ using Lean.Hbt.Infrastructure.Data.Contexts;
 using Lean.Hbt.Infrastructure.Data.Seeds;
 using Lean.Hbt.Infrastructure.Extensions;
 using Lean.Hbt.Infrastructure.Services;
+using Lean.Hbt.Infrastructure.Swagger;
 using Lean.Hbt.WebApi.Extensions;
 using Lean.Hbt.WebApi.Middlewares;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
@@ -11,6 +12,7 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using NLog;
 using NLog.Web;
+using Lean.Hbt.Domain.IServices.Tenant;
 
 var logger = LogManager.Setup()
                       .LoadConfigurationFromFile("nlog.config")
@@ -26,7 +28,13 @@ try
     builder.Host.UseNLog();
 
     // 配置 Kestrel 服务器
-    var serverConfig = builder.Configuration.GetSection("Server").Get<HbtServerConfig>();
+    var serverConfig = builder.Configuration.GetSection("Server").Get<HbtServerConfig>() ?? new HbtServerConfig 
+    { 
+        UseHttps = false,
+        HttpPort = 5249,
+        HttpsPort = 7249,
+        Init = new HbtInitOptions()
+    };
     
     builder.Services.Configure<IISServerOptions>(options =>
     {
@@ -71,7 +79,7 @@ try
         {
             policy.WithOrigins(builder.Configuration.GetSection("Cors:Origins").Get<string[]>() ?? Array.Empty<string>())
                   .WithMethods(builder.Configuration.GetSection("Cors:Methods").Get<string[]>() ?? Array.Empty<string>())
-                  .WithHeaders("Content-Type", "Authorization", "Accept", "X-Requested-With")
+                  .WithHeaders("Content-Type", "Authorization", "Accept", "X-Requested-With", "X-Tenant-Id", "Cache-Control", "Pragma")
                   .AllowCredentials()
                   .SetIsOriginAllowed(origin => true);
         });
@@ -98,26 +106,27 @@ try
     // 添加后台服务
     builder.Services.AddHostedService<HbtLoginPolicyInitializer>();
 
+    builder.Services.AddScoped<ITenantContext, Lean.Hbt.Infrastructure.Services.HbtTenantContext>();
+
     var app = builder.Build();
 
     // 根据配置初始化数据库和种子数据
     if (serverConfig.Init.InitDatabase || serverConfig.Init.InitSeedData)
     {
-        using (var scope = app.Services.CreateScope())
+        using var scope = app.Services.CreateScope();
+        
+        if (serverConfig.Init.InitDatabase)
         {
-            if (serverConfig.Init.InitDatabase)
-            {
-                var dbContext = scope.ServiceProvider.GetRequiredService<HbtDbContext>();
-                await dbContext.InitializeAsync();
-                logger.Info("数据库初始化完成");
-            }
+            var dbContext = scope.ServiceProvider.GetRequiredService<HbtDbContext>();
+            await dbContext.InitializeAsync();
+            logger.Info("数据库初始化完成");
+        }
 
-            if (serverConfig.Init.InitSeedData)
-            {
-                var dbSeed = scope.ServiceProvider.GetRequiredService<HbtDbSeed>();
-                await dbSeed.InitializeAsync();
-                logger.Info("种子数据初始化完成");
-            }
+        if (serverConfig.Init.InitSeedData)
+        {
+            var dbSeed = scope.ServiceProvider.GetRequiredService<HbtDbSeed>();
+            await dbSeed.InitializeAsync();
+            logger.Info("种子数据初始化完成");
         }
     }
 

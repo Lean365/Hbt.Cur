@@ -23,6 +23,7 @@ export default {
     tenantDisabled: '租户已被禁用',
     tenantNotFound: '租户不存在',
     serverError: '服务器内部错误',
+    saltError: '获取加密参数失败，请重试',
     // 其他登录方式
     github: 'GitHub登录',
     google: 'Google登录',

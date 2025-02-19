@@ -1,15 +1,13 @@
 //===================================================================
-// 项目名 : Lean.Hbt 
-// 文件名 : HbtWorkflowDefinition.cs 
+// 项目名 : Lean.Hbt
+// 文件名 : HbtWorkflowDefinition.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-22 11:50
 // 版本号 : V.0.0.1
 // 描述    : 工作流定义实体类
 //===================================================================
 
-using System.Collections.Generic;
 using SqlSugar;
-using Lean.Hbt.Common.Enums;
 
 namespace Lean.Hbt.Domain.Entities.Workflow
 {
@@ -20,7 +18,7 @@ namespace Lean.Hbt.Domain.Entities.Workflow
     /// 创建者: Lean365
     /// 创建时间: 2024-01-22
     /// </remarks>
-    [SugarTable("hbt_workflow_definition", "工作流定义表")]
+    [SugarTable("hbt_wf_definition", "工作流定义表")]
     public class HbtWorkflowDefinition : HbtBaseEntity
     {
         /// <summary>
@@ -67,4 +65,4 @@ namespace Lean.Hbt.Domain.Entities.Workflow
         [Navigate(NavigateType.OneToMany, nameof(HbtWorkflowNode.WorkflowDefinitionId))]
         public List<HbtWorkflowNode> WorkflowNodes { get; set; }
     }
-} 
+}

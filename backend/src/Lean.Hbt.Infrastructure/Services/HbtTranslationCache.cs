@@ -11,7 +11,6 @@ using System.Collections.Concurrent;
 using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Domain.Entities.Admin;
 using Lean.Hbt.Domain.IServices.Admin;
-using Lean.Hbt.Domain.Repositories;
 using Microsoft.Extensions.Logging;
 
 namespace Lean.Hbt.Infrastructure.Services
@@ -130,39 +129,68 @@ namespace Lean.Hbt.Infrastructure.Services
     {
         private readonly ConcurrentDictionary<T, byte> _dictionary;
 
+        /// <summary>
+        /// 构造函数
+        /// </summary>
         public ConcurrentHashSet()
         {
             _dictionary = new ConcurrentDictionary<T, byte>();
         }
 
+        /// <summary>
+        /// 添加元素
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
         public bool Add(T item)
         {
             return _dictionary.TryAdd(item, 0);
         }
 
+        /// <summary>
+        /// 清空集合
+        /// </summary>
         public void Clear()
         {
             _dictionary.Clear();
         }
 
+        /// <summary>
+        /// 判断是否包含元素
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
         public bool Contains(T item)
         {
             return _dictionary.ContainsKey(item);
         }
 
+        /// <summary>
+        /// 获取集合的枚举器
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
         public bool Remove(T item)
         {
             return _dictionary.TryRemove(item, out _);
         }
 
+        /// <summary>
+        /// 获取集合的枚举器
+        /// </summary>
+        /// <returns></returns>
         public IEnumerator<T> GetEnumerator()
         {
             return _dictionary.Keys.GetEnumerator();
         }
 
+        /// <summary>
+        /// 获取集合的枚举器
+        /// </summary>
+        /// <returns></returns>
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
         }
     }
-} 
+}

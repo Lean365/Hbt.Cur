@@ -1,63 +1,107 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import type { LoginParams, UserInfo } from '@/types/auth'
-import { login as userLogin } from '@/api/auth'
+import type { MenuProps } from 'ant-design-vue'
+import type { ApiResult } from '@/types/base'
+import type { LoginParams, UserInfo as AuthUserInfo, LoginResult as AuthLoginResult } from '@/types/identity/auth'
+import { login as userLogin, logout as userLogout, getInfo } from '@/api/identity/auth'
+import { getToken, setToken, removeToken } from '@/utils/auth'
+import { useMenuStore } from './menu'
+
+export interface UserInfo extends AuthUserInfo {
+  displayName: string
+  email: string
+}
+
+export interface LoginResult extends AuthLoginResult {
+  userInfo: UserInfo
+}
+
+export interface UserInfoResponse {
+  user: UserInfo
+  roles: string[]
+  permissions: string[]
+  menus: MenuProps['items']
+}
 
 export const useUserStore = defineStore('user', () => {
-  const token = ref('')
-  const userInfo = ref<UserInfo | null>(null)
+  // 状态
+  const user = ref<UserInfo | null>(null)
+  const roles = ref<string[]>([])
+  const permissions = ref<string[]>([])
   const needCaptcha = ref(false)
-
-  // 登录
-  const login = async (loginParams: LoginParams) => {
-    try {
-      const loginData = await userLogin(loginParams)
-
-      if (!loginData?.accessToken) {
-        throw new Error('登录失败：未获取到访问令牌')
-      }
-
-      token.value = loginData.accessToken
-      userInfo.value = loginData.userInfo
-      // 登录成功后重置验证码状态
-      needCaptcha.value = false
-      // 存储token
-      localStorage.setItem('token', loginData.accessToken)
-      return true
-    } catch (error: any) {
-      // 如果服务器返回需要验证码
-      if (error.response?.data?.code === 'NEED_CAPTCHA') {
-        needCaptcha.value = true
-      }
-      throw error
-    }
-  }
-
-  // 登出
-  const logout = () => {
-    token.value = ''
-    userInfo.value = null
-    needCaptcha.value = false
-    localStorage.removeItem('token')
-  }
-
-  // 获取用户信息
-  const getUserInfo = () => {
-    return userInfo.value
-  }
 
   // 设置是否需要验证码
   const setNeedCaptcha = (value: boolean) => {
     needCaptcha.value = value
   }
 
+  // 登录
+  const login = async (loginParams: LoginParams): Promise<ApiResult<LoginResult>> => {
+    try {
+      const response = await userLogin(loginParams)
+      const { accessToken } = response.data
+      if (accessToken) {
+        setToken(accessToken)
+      }
+      return response as ApiResult<LoginResult>
+    } catch (error) {
+      console.error('登录失败:', error)
+      throw error
+    }
+  }
+
+  // 获取用户信息
+  const getUserInfo = async () => {
+    try {
+      const response = await getInfo()
+      if (!response || !response.data) {
+        throw new Error('获取用户信息失败')
+      }
+      
+      const data = response.data as unknown as UserInfoResponse
+      
+      // 设置用户信息
+      user.value = data.user
+      roles.value = data.roles
+      permissions.value = data.permissions
+      
+      // 加载菜单和权限
+      const menuStore = useMenuStore()
+      await menuStore.loadUserMenus()
+      
+      return data
+    } catch (error: any) {
+      console.error('获取用户信息失败:', error)
+      throw error
+    }
+  }
+
+  // 登出
+  const logout = async () => {
+    try {
+      await userLogout()
+      user.value = null
+      roles.value = []
+      permissions.value = []
+      removeToken()
+      
+      // 重置菜单状态
+      const menuStore = useMenuStore()
+      menuStore.resetState()
+    } catch (error) {
+      console.error('登出失败:', error)
+      throw error
+    }
+  }
+
   return {
-    token,
-    userInfo,
+    user,
+    roles,
+    permissions,
     needCaptcha,
+    setNeedCaptcha,
     login,
-    logout,
     getUserInfo,
-    setNeedCaptcha
+    logout
   }
 }) 

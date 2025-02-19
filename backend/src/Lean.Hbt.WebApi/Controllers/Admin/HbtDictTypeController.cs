@@ -23,7 +23,7 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
     /// </remarks>
     [Route("api/[controller]", Name = "字典类型")]
     [ApiController]
-    [ApiModule("system", "系统管理")]
+    [ApiModule("admin", "系统管理")]
     public class HbtDictTypeController : HbtBaseController
     {
         private readonly IHbtDictTypeService _dictTypeService;

@@ -29,7 +29,7 @@ namespace Lean.Hbt.Application.Services.Admin
         private readonly IHbtRepository<HbtLoginLog> _loginLogRepository;
         private readonly IHbtRepository<HbtExceptionLog> _exceptionLogRepository;
         private readonly IHbtRepository<HbtDbDiffLog> _dbDiffLogRepository;
-        private readonly IHbtRepository<HbtSysConfig> _sysConfigRepository;
+        private readonly IHbtRepository<HbtConfig> _sysConfigRepository;
         private readonly LogCleanupOptions _defaultOptions;
 
         /// <summary>
@@ -41,7 +41,7 @@ namespace Lean.Hbt.Application.Services.Admin
             IHbtRepository<HbtLoginLog> loginLogRepository,
             IHbtRepository<HbtExceptionLog> exceptionLogRepository,
             IHbtRepository<HbtDbDiffLog> dbDiffLogRepository,
-            IHbtRepository<HbtSysConfig> sysConfigRepository,
+            IHbtRepository<HbtConfig> sysConfigRepository,
             IOptions<LogCleanupOptions> options)
         {
             _auditLogRepository = auditLogRepository;
@@ -101,7 +101,7 @@ namespace Lean.Hbt.Application.Services.Admin
             await CleanupDbDiffLogs(now.AddDays(-options.DbDiffLogRetentionDays), batchSize);
         }
 
-        private T GetConfigValue<T>(List<HbtSysConfig> configs, string key, T defaultValue)
+        private T GetConfigValue<T>(List<HbtConfig> configs, string key, T defaultValue)
         {
             var config = configs.FirstOrDefault(c => c.ConfigKey == key);
             if (config == null) return defaultValue;

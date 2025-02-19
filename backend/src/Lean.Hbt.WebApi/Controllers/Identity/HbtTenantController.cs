@@ -17,7 +17,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity;
 /// <summary>
 /// 租户管理
 /// </summary>
-[Route("api/identity/[controller]", Name = "租户")]
+[Route("api/admin/[controller]", Name = "租户")]
 [ApiController]
 [ApiModule("identity", "身份认证")]
 public class HbtTenantController : HbtBaseController

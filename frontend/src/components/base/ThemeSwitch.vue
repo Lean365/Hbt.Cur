@@ -30,15 +30,27 @@ const toggleTheme = () => {
 }
 </script>
 
-<style scoped>
+<style lang="less" scoped>
 .theme-switch {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  padding: 0 4px;
-  color: inherit;
+  justify-content: center;
 }
 
-.theme-switch :deep(.anticon) {
-  font-size: 16px;
+:deep(.ant-btn) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
+  width: 32px;
+  padding: 0;
+}
+
+:deep(.anticon) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  line-height: 1;
 }
 </style> 

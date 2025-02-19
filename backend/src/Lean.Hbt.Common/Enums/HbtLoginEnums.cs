@@ -61,7 +61,27 @@ namespace Lean.Hbt.Common.Enums
         /// <summary>
         /// 在线
         /// </summary>
-        Online = 1
+        Online = 1,
+
+        /// <summary>
+        /// 登录失败
+        /// </summary>
+        Failed = 2,
+
+        /// <summary>
+        /// 账号锁定
+        /// </summary>
+        Locked = 3,
+
+        /// <summary>
+        /// 账号禁用
+        /// </summary>
+        Disabled = 4,
+
+        /// <summary>
+        /// 会话过期
+        /// </summary>
+        Expired = 5
     }
 
     /// <summary>

@@ -3,12 +3,8 @@
   "WorkspaceRootPath": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{16BD9696-EA41-4CB7-A0F5-ECA5BBD96173}|src\\Lean.Hbt.Application\\Lean.Hbt.Application.csproj|g:\\appdevelop\\vs2025\\lean.hbt\\backend\\src\\lean.hbt.application\\services\\identity\\hbtloginservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{16BD9696-EA41-4CB7-A0F5-ECA5BBD96173}|src\\Lean.Hbt.Application\\Lean.Hbt.Application.csproj|solutionrelative:src\\lean.hbt.application\\services\\identity\\hbtloginservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{28E16BFA-4E05-406B-B57B-E82ADBE6851C}|src\\Lean.Hbt.WebApi\\Lean.Hbt.WebApi.csproj|g:\\appdevelop\\vs2025\\lean.hbt\\backend\\src\\lean.hbt.webapi\\controllers\\identity\\hbtauthcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{28E16BFA-4E05-406B-B57B-E82ADBE6851C}|src\\Lean.Hbt.WebApi\\Lean.Hbt.WebApi.csproj|solutionrelative:src\\lean.hbt.webapi\\controllers\\identity\\hbtauthcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{FBC5DE98-B3C2-4201-9AEF-A3FAAF7048E0}|src\\Lean.Hbt.Domain\\Lean.Hbt.Domain.csproj|g:\\appdevelop\\vs2025\\lean.hbt\\backend\\src\\lean.hbt.domain\\entities\\workflow\\hbtworkflowdefinition.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{FBC5DE98-B3C2-4201-9AEF-A3FAAF7048E0}|src\\Lean.Hbt.Domain\\Lean.Hbt.Domain.csproj|solutionrelative:src\\lean.hbt.domain\\entities\\workflow\\hbtworkflowdefinition.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -23,27 +19,14 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "HbtLoginService.cs",
-              "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Application\\Services\\Identity\\HbtLoginService.cs",
-              "RelativeDocumentMoniker": "src\\Lean.Hbt.Application\\Services\\Identity\\HbtLoginService.cs",
-              "ToolTip": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Application\\Services\\Identity\\HbtLoginService.cs",
-              "RelativeToolTip": "src\\Lean.Hbt.Application\\Services\\Identity\\HbtLoginService.cs",
-              "ViewState": "AgIAAHIAAAAAAAAAAAAQwIQAAAAMAAAAAAAAAA==",
+              "Title": "HbtWorkflowDefinition.cs",
+              "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Domain\\Entities\\Workflow\\HbtWorkflowDefinition.cs",
+              "RelativeDocumentMoniker": "src\\Lean.Hbt.Domain\\Entities\\Workflow\\HbtWorkflowDefinition.cs",
+              "ToolTip": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.Domain\\Entities\\Workflow\\HbtWorkflowDefinition.cs",
+              "RelativeToolTip": "src\\Lean.Hbt.Domain\\Entities\\Workflow\\HbtWorkflowDefinition.cs",
+              "ViewState": "AgIAAAwAAAAAAAAAAADwvxQAAAAXAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-02-17T08:57:42.184Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "HbtAuthController.cs",
-              "DocumentMoniker": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.WebApi\\Controllers\\Identity\\HbtAuthController.cs",
-              "RelativeDocumentMoniker": "src\\Lean.Hbt.WebApi\\Controllers\\Identity\\HbtAuthController.cs",
-              "ToolTip": "G:\\AppDevelop\\VS2025\\Lean.Hbt\\backend\\src\\Lean.Hbt.WebApi\\Controllers\\Identity\\HbtAuthController.cs",
-              "RelativeToolTip": "src\\Lean.Hbt.WebApi\\Controllers\\Identity\\HbtAuthController.cs",
-              "ViewState": "AgIAAEgAAAAAAAAAAAAQwFMAAAAQAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-02-17T08:55:33.405Z",
+              "WhenOpened": "2025-02-19T07:29:39.858Z",
               "EditorCaption": ""
             }
           ]

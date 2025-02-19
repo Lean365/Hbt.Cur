@@ -16,7 +16,8 @@ namespace Lean.Hbt.Domain.Entities.Admin
     /// <summary>
     /// 语言实体
     /// </summary>
-    [SugarTable("hbt_sys_language", "语言表")]
+    [SugarTable("hbt_adm_language", "语言表")]
+    [SugarIndex("ix_tenant_language", nameof(TenantId), OrderByType.Asc)]
     public class HbtLanguage : HbtBaseEntity
     {
         /// <summary>
@@ -54,5 +55,17 @@ namespace Lean.Hbt.Domain.Entities.Admin
         /// </summary>
         [SugarColumn(ColumnName = "is_default", ColumnDescription = "是否默认语言", ColumnDataType = "bit", IsNullable = false, DefaultValue = "0")]
         public bool IsDefault { get; set; } = false;
+
+        /// <summary>
+        /// 租户ID
+        /// </summary>
+        [SugarColumn(ColumnName = "tenant_id", ColumnDescription = "租户ID", ColumnDataType = "bigint", IsNullable = false)]
+        public long TenantId { get; set; }= 0;
+
+        /// <summary>
+        /// 语言内置（0否 1是）
+        /// </summary>
+        [SugarColumn(ColumnName = "lang_builtin", ColumnDescription = "语言内置（0否 1是）", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
+        public int LangBuiltin { get; set; } = 0;
     }
 }

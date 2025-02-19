@@ -34,3 +34,141 @@
 
     ## 第三步
     在完成用户要求的任务后,你应该对改成任务完成的步骤进行反思,思考项目可能存在的问题和改进方式,并更新在readme.md文件中
+
+{
+    "version": 1,
+    "rules": {
+        "naming": {
+            "classes": {
+                "pattern": "^Hbt[A-Z][a-zA-Z0-9]*$",
+                "description": "类名必须以Hbt开头，后跟大写字母开头的PascalCase"
+            },
+            "interfaces": {
+                "pattern": "^IHbt[A-Z][a-zA-Z0-9]*$",
+                "description": "接口必须以IHbt开头，后跟大写字母开头的PascalCase"
+            },
+            "methods": {
+                "pattern": "^[A-Z][a-zA-Z0-9]*Async$|^[A-Z][a-zA-Z0-9]*$",
+                "description": "方法名必须使用PascalCase，异步方法必须以Async结尾"
+            },
+            "properties": {
+                "pattern": "^[A-Z][a-zA-Z0-9]*$",
+                "description": "属性名必须使用PascalCase"
+            },
+            "variables": {
+                "pattern": "^[a-z][a-zA-Z0-9]*$",
+                "description": "变量名必须使用camelCase"
+            },
+            "constants": {
+                "pattern": "^[A-Z][A-Z0-9_]*$",
+                "description": "常量必须全部大写，单词间用下划线分隔"
+            }
+        },
+        "documentation": {
+            "required": {
+                "classes": true,
+                "interfaces": true,
+                "methods": true,
+                "properties": true
+            },
+            "format": {
+                "header": {
+                    "template": [
+                        "//===================================================================",
+                        "// 项目名 : Lean.Hbt",
+                        "// 文件名 : {filename}",
+                        "// 创建者 : {author}",
+                        "// 创建时间: {date}",
+                        "// 版本号 : {version}",
+                        "// 描述    : {description}",
+                        "//==================================================================="
+                    ]
+                },
+                "xmldoc": {
+                    "required": ["summary", "remarks", "param", "returns"]
+                }
+            }
+        },
+        "organization": {
+            "namespaces": {
+                "root": "Lean.Hbt",
+                "structure": {
+                    "Domain": "领域层",
+                    "Application": "应用层",
+                    "Infrastructure": "基础设施层",
+                    "WebApi": "接口层"
+                }
+            },
+            "folders": {
+                "structure": {
+                    "src": {
+                        "Domain": ["Entities", "IServices", "Models", "Repositories"],
+                        "Application": ["Services", "Dtos", "Mappers"],
+                        "Infrastructure": ["Data", "Security", "Logging", "Caching"],
+                        "WebApi": ["Controllers", "Filters", "Middlewares"]
+                    },
+                    "tests": {
+                        "UnitTests": ["Domain", "Application", "Infrastructure"],
+                        "IntegrationTests": ["Api", "Data"]
+                    }
+                }
+            }
+        },
+        "coding": {
+            "async": {
+                "naming": {
+                    "suffix": "Async",
+                    "required": true
+                },
+                "patterns": {
+                    "required": ["await", "Task"]
+                }
+            },
+            "nullability": {
+                "required": true,
+                "annotations": {
+                    "classes": true,
+                    "methods": true,
+                    "properties": true
+                }
+            },
+            "exceptions": {
+                "custom": {
+                    "base": "HbtException",
+                    "required": true
+                },
+                "handling": {
+                    "required": true,
+                    "patterns": ["try", "catch", "finally"]
+                }
+            }
+        },
+        "testing": {
+            "naming": {
+                "pattern": "^[A-Z][a-zA-Z0-9]*Tests$",
+                "description": "测试类名必须以Tests结尾"
+            },
+            "methods": {
+                "pattern": "^(Should|When|Given)[A-Z][a-zA-Z0-9]*$",
+                "description": "测试方法名必须以Should、When或Given开头"
+            },
+            "required": {
+                "assertions": true,
+                "arrangements": true,
+                "cleanup": true
+            }
+        },
+        "git": {
+            "commit": {
+                "message": {
+                    "pattern": "^(feat|fix|docs|style|refactor|test|chore)\\([a-z-]+\\): .+$",
+                    "description": "提交信息必须符合约定式提交规范"
+                }
+            },
+            "branch": {
+                "pattern": "^(feature|bugfix|hotfix|release)\\/[a-z0-9-]+$",
+                "description": "分支名必须符合GitFlow规范"
+            }
+        }
+    }
+}

@@ -10,15 +10,11 @@
 using Lean.Hbt.Application.Dtos.Admin;
 using Lean.Hbt.Application.Services.Admin;
 using Lean.Hbt.Common.Enums;
-using Lean.Hbt.Domain.IServices.Admin;
 using Lean.Hbt.Domain.Entities.Admin;
+using Lean.Hbt.Domain.IServices.Admin;
 using Lean.Hbt.Domain.Repositories;
-using SqlSugar;
 using Mapster;
-using System.Linq.Expressions;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Caching.Distributed;
-using System.Text.Json;
+using SqlSugar;
 
 namespace Lean.Hbt.WebApi.Controllers.Admin
 {
@@ -31,7 +27,7 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
     /// </remarks>
     [Route("api/[controller]", Name = "语言")]
     [ApiController]
-    [ApiModule("system", "系统管理")]
+    [ApiModule("admin", "系统管理")]
     public class HbtLanguageController : HbtBaseController
     {
         private readonly IHbtLanguageService _languageService;
@@ -46,7 +42,7 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
         /// <param name="languageRepository">语言仓库</param>
         /// <param name="logger">日志服务</param>
         public HbtLanguageController(
-            IHbtLanguageService languageService, 
+            IHbtLanguageService languageService,
             IHbtLocalizationService localization,
             IHbtRepository<HbtLanguage> languageRepository,
             ILogger<HbtLanguageController> logger) : base(localization)
@@ -203,9 +199,9 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
                 var exp = Expressionable.Create<HbtLanguage>();
                 exp.And(x => x.Status == HbtStatus.Normal);
                 exp.And(x => x.IsDeleted == 0);
-                
+
                 var list = await _languageRepository.GetListAsync(exp.ToExpression());
-                
+
                 if (list == null || !list.Any())
                 {
                     // 如果没有数据，返回默认语言列表

@@ -9,7 +9,7 @@
       <div class="slider-track">
         <div class="slider-bar" :style="{ width: `${sliderLeft}px` }"></div>
         <div class="slider-button" ref="sliderRef" :class="{ 'is-moving': isMoving }"
-          @mousedown="handleMouseDown" @touchstart="handleTouchStart">
+          @mousedown="handleMouseDown" @touchstart.passive="handleTouchStart">
           <right-outlined v-if="verified" style="color: #52c41a" />
           <holder-outlined v-else />
         </div>
@@ -24,8 +24,8 @@ import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { message } from 'ant-design-vue'
 import { RightOutlined, HolderOutlined } from '@ant-design/icons-vue'
-import { getCaptcha, verifyCaptcha } from '@/api/captcha'
-import type { SliderCaptchaDto } from '@/api/captcha'
+import { getCaptcha, verifyCaptcha } from '@/api/security/captcha'
+import type { SliderCaptchaDto } from '@/api/security/captcha'
 
 const { t } = useI18n()
 const emit = defineEmits(['success', 'error'])
@@ -37,6 +37,8 @@ const sliderLeft = ref(0)
 const startX = ref(0)
 const isMoving = ref(false)
 const verified = ref(false)
+const retryCount = ref(0)
+const MAX_RETRY = 3
 
 const sliderText = computed(() => {
   if (verified.value) return t('captcha.success')
@@ -47,29 +49,54 @@ const sliderText = computed(() => {
 // 初始化验证码
 const initCaptcha = async () => {
   try {
+    if (captchaData.value) {
+      console.log('[验证码] 已有验证码数据，跳过初始化')
+      return
+    }
+
+    console.log('[验证码] 开始获取验证码')
     const response = await getCaptcha()
+    console.log('[验证码] 获取响应:', response)
     
-    if (!response.data?.data) {
-      throw new Error(t('captcha.invalidData'))
+    // 检查响应数据结构
+    if (!response?.data?.data) {
+      console.error('[验证码] 响应数据为空')
+      emit('error', '获取验证码失败')
+      return
     }
 
-    const { backgroundImage, sliderImage, token } = response.data.data
-    if (!backgroundImage || !sliderImage || !token) {
-      throw new Error(t('captcha.incompleteData'))
+    const data = response.data.data
+    console.log('[验证码] 解析数据:', data)
+
+    // 检查数据完整性
+    if (!data.backgroundImage || !data.sliderImage || !data.token) {
+      console.error('[验证码] 数据不完整:', data)
+      emit('error', '验证码数据不完整')
+      return
     }
 
-    // 更新组件状态
-    captchaData.value = {
-      backgroundImage,
-      sliderImage,
-      token
-    }
+    // 设置验证码数据
+    captchaData.value = data
     sliderLeft.value = 0
     verified.value = false
+    retryCount.value = 0
+    console.log('[验证码] 设置数据成功:', captchaData.value)
+    
   } catch (error: any) {
-    message.error(t('captcha.loadError'))
-    emit('error', t('captcha.loadError'))
+    console.error('[验证码] 获取失败:', error)
+    if (error.response?.status === 429) {
+      const waitSeconds = error.response.data?.remainingSeconds || 60
+      emit('error', `请求过于频繁，请等待 ${waitSeconds} 秒后重试`)
+    } else {
+      emit('error', error.message || '获取验证码失败')
+    }
   }
+}
+
+// 刷新验证码
+const refresh = async () => {
+  captchaData.value = null
+  await initCaptcha()
 }
 
 // 处理鼠标按下
@@ -137,10 +164,15 @@ const handleTouchEnd = async () => {
 const verifyPosition = async () => {
   if (!captchaData.value?.token) {
     message.error(t('captcha.verifyError'))
-    emit('error', t('captcha.verifyError'))
     return
   }
   
+  if (retryCount.value >= MAX_RETRY) {
+    message.error(t('captcha.maxRetryReached'))
+    emit('error', 'MAX_RETRY_REACHED')
+    return
+  }
+
   try {
     const params = {
       token: captchaData.value.token,
@@ -148,32 +180,42 @@ const verifyPosition = async () => {
     }
     
     const response = await verifyCaptcha(params)
+    const result = response.data.data
     
-    if (response.data?.data?.success) {
+    if (result.success) {
       verified.value = true
-      // 发送验证成功事件，包含token和偏移量
+      retryCount.value = 0
       emit('success', {
         token: captchaData.value.token,
         xOffset: Math.round(sliderLeft.value)
       })
     } else {
       verified.value = false
-      message.error(response.data?.data?.message || t('captcha.failed'))
-      emit('error', response.data?.data?.message || t('captcha.failed'))
-      await initCaptcha()
+      retryCount.value++
+      sliderLeft.value = 0
+      message.error(result.message || t('captcha.failed'))
+      if (retryCount.value >= MAX_RETRY) {
+        message.error(t('captcha.maxRetryReached'))
+        emit('error', 'MAX_RETRY_REACHED')
+      }
     }
   } catch (error: any) {
     verified.value = false
-    const errorMsg = error.response?.data?.message || error.message || t('captcha.verifyError')
-    message.error(errorMsg)
-    emit('error', errorMsg)
-    await initCaptcha()
+    retryCount.value++
+    sliderLeft.value = 0
+    message.error(t('captcha.verifyError'))
+    if (retryCount.value >= MAX_RETRY) {
+      message.error(t('captcha.maxRetryReached'))
+      emit('error', 'MAX_RETRY_REACHED')
+    }
   }
 }
 
 // 暴露方法
 defineExpose({
-  initCaptcha
+  initCaptcha,
+  refresh,
+  captchaData
 })
 </script>
 
