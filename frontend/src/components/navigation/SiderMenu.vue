@@ -15,9 +15,11 @@ import { ref, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 import type { MenuProps } from 'ant-design-vue'
-import type { MenuInfo } from 'ant-design-vue/lib/menu/src/interface'
+import type { MenuInfo, ItemType } from 'ant-design-vue/lib/menu/src/interface'
 import { useThemeStore } from '@/stores/theme'
 import { useMenuStore } from '@/stores/menu'
+import type { Menu } from '@/types/identity/menu'
+import { HbtMenuType } from '@/types/base'
 
 const { t } = useI18n()
 const route = useRoute()
@@ -30,47 +32,63 @@ const selectedKeys = ref<string[]>([])
 const openKeys = ref<string[]>([])
 const theme = computed(() => themeStore.isDarkMode ? 'dark' : 'light')
 
+// 查找指定路径的菜单项
+const findMenuByPath = (menus: Menu[] | undefined, path: string): Menu | undefined => {
+  if (!menus) return undefined
+  
+  for (const menu of menus) {
+    if (menu.path === path) {
+      return menu
+    }
+    if (menu.children?.length) {
+      const found = findMenuByPath(menu.children, path)
+      if (found) return found
+    }
+  }
+  return undefined
+}
+
 // 菜单配置
 const menuItems = computed<Required<MenuProps>['items']>(() => {
-  // 如果正在加载，返回空数组
   if (menuStore.isLoading) {
-    console.log('[菜单组件] 菜单正在加载中')
+    console.log('[菜单组件] 菜单加载中')
     return []
   }
   
-  // 如果有后端返回的菜单数据，使用后端数据
   if (menuStore.menuList && menuStore.menuList.length > 0) {
-    console.log('[菜单组件] 渲染菜单数据:', menuStore.menuList)
+    console.log('[菜单组件] 构建菜单项:', JSON.stringify(menuStore.menuList, null, 2))
     return menuStore.menuList
   }
 
-  console.log('[菜单组件] 没有菜单数据')
+  console.log('[菜单组件] 无菜单数据')
   return []
 })
 
 // 监听路由变化，更新选中状态
 watch(() => route.path, (path) => {
-  console.log('[菜单组件] 路由变化:', path)
-  
-  // 确保路径格式一致
   const normalizedPath = path.startsWith('/') ? path : `/${path}`
+  console.log('[菜单组件] 路由变化:', {
+    path: normalizedPath,
+    selectedKeys: selectedKeys.value,
+    openKeys: openKeys.value
+  })
+  
+  // 设置选中的菜单项
   selectedKeys.value = [normalizedPath]
   
-  // 更新展开的菜单
+  // 展开当前路径的父级菜单
   const pathParts = normalizedPath.split('/').filter(Boolean)
   if (pathParts.length > 1) {
-    // 如果是多级路径，展开所有父级
-    const parentKeys = pathParts.reduce((acc: string[], curr: string, index: number) => {
-      if (index === 0) {
-        acc.push(`/${curr}`)
-      } else {
-        const parentPath = acc[index - 1]
-        acc.push(`${parentPath}/${curr}`)
+    const parentKeys = []
+    let currentPath = ''
+    for (const part of pathParts.slice(0, -1)) {
+      currentPath += `/${part}`
+      // 查找对应的目录菜单
+      const menuItem = findMenuByPath(menuStore.rawMenuList, currentPath)
+      if (menuItem && menuItem.type === HbtMenuType.Directory) {
+        parentKeys.push(`dir_${menuItem.menuId}`)
       }
-      return acc
-    }, [])
-    
-    console.log('[菜单组件] 展开的菜单:', parentKeys)
+    }
     openKeys.value = parentKeys
   }
 }, { immediate: true })
@@ -79,21 +97,40 @@ watch(() => route.path, (path) => {
 watch(() => menuStore.menuList, (newMenuList) => {
   console.log('[菜单组件] 菜单数据变化:', {
     hasData: !!newMenuList,
-    length: newMenuList?.length,
-    isLoading: menuStore.isLoading
+    length: newMenuList?.length
   })
 }, { immediate: true })
 
 // 处理菜单点击
 const handleMenuClick = (info: MenuInfo) => {
-  console.log('[菜单组件] 菜单点击:', info)
+  console.log('[菜单点击] 点击信息:', {
+    key: info.key,
+    keyPath: info.keyPath,
+    item: info.item,
+    domEvent: info.domEvent
+  })
+
   if (typeof info.key === 'string') {
-    const path = info.key.startsWith('/') ? info.key : `/${info.key}`
-    // 如果点击的是已选中的菜单项，不进行路由跳转
-    if (selectedKeys.value.includes(path)) {
+    // 如果是目录菜单（以 dir_ 开头），只处理展开/折叠
+    if (info.key.startsWith('dir_')) {
+      const isOpen = openKeys.value.includes(info.key)
+      if (isOpen) {
+        // 如果已展开，则折叠
+        openKeys.value = openKeys.value.filter(key => key !== info.key)
+      } else {
+        // 如果已折叠，则展开
+        openKeys.value = [...openKeys.value, info.key]
+      }
       return
     }
-    router.push(path)
+
+    // 如果点击的是已选中的菜单项，不进行导航
+    if (selectedKeys.value.includes(info.key)) {
+      return
+    }
+
+    // 如果是普通菜单项，进行导航
+    router.push(info.key)
   }
 }
 </script>
@@ -103,56 +140,10 @@ const handleMenuClick = (info: MenuInfo) => {
   height: 100%;
   border-right: 0;
 
-  :deep(.ant-menu-item) {
-    margin: 4px 0;
-    
-    &:hover {
-      color: var(--ant-color-primary);
-      background-color: var(--ant-color-primary-bg);
-    }
-    
-    &.ant-menu-item-selected {
-      color: var(--ant-color-primary);
-      background-color: var(--ant-color-primary-bg);
-      
-      &:hover {
-        color: var(--ant-color-primary-hover);
-        background-color: var(--ant-color-primary-bg-hover);
-      }
-    }
-  }
-
-  :deep(.ant-menu-submenu) {
-    &-title {
-      &:hover {
-        color: var(--ant-color-primary);
-        background-color: var(--ant-color-primary-bg);
-      }
-    }
-  }
-
-  :deep(.ant-menu-title-content) {
-    transition: color 0.3s;
-  }
-
   :deep(.anticon) {
     min-width: 14px;
     margin-right: 10px;
     font-size: 16px;
-  }
-}
-
-// 暗色主题
-:deep(.ant-menu.ant-menu-dark) {
-  .ant-menu-item,
-  .ant-menu-submenu-title {
-    &:hover {
-      background-color: var(--ant-menu-dark-item-active-bg);
-    }
-
-    &.ant-menu-item-selected {
-      background-color: var(--ant-menu-dark-item-selected-bg);
-    }
   }
 }
 </style> 

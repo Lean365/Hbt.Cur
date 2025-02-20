@@ -3,6 +3,14 @@ import type { RouteRecordRaw } from 'vue-router'
 import { getToken } from '@/utils/auth'
 import { useUserStore } from '@/stores/user'
 import { useMenuStore } from '@/stores/menu'
+import Layout from '@/layouts/BasicLayout.vue'
+import type { Menu } from '@/types/identity/menu'
+import { HbtMenuType } from '@/types/base'
+import { message } from 'ant-design-vue'
+import i18n from '@/locales'
+
+// 基础路由名称
+const BASIC_ROUTES = ['Login', 'Home']
 
 // 基础路由
 export const constantRoutes: RouteRecordRaw[] = [
@@ -71,6 +79,32 @@ export const constantRoutes: RouteRecordRaw[] = [
             }
           }
         ]
+      },
+      {
+        path: '/about',
+        component: Layout,
+        redirect: '/about/index',
+        meta: { title: '关于', icon: 'info-circle-outlined' },
+        children: [
+          {
+            path: 'index',
+            name: 'About',
+            component: () => import('@/views/about/about.vue'),
+            meta: { title: '关于系统', icon: 'info-circle-outlined' }
+          },
+          {
+            path: 'terms',
+            name: 'Terms',
+            component: () => import('@/views/about/terms.vue'),
+            meta: { title: '使用条款', icon: 'file-text-outlined' }
+          },
+          {
+            path: 'privacy',
+            name: 'Privacy',
+            component: () => import('@/views/about/privacy.vue'),
+            meta: { title: '隐私政策', icon: 'safety-outlined' }
+          }
+        ]
       }
     ]
   }
@@ -81,6 +115,107 @@ const router = createRouter({
   history: createWebHistory(),
   routes: constantRoutes
 })
+
+// 将菜单转换为路由配置
+const menuToRoute = (menu: Menu, parentPath: string = ''): RouteRecordRaw | null => {
+  // 如果是目录类型，直接返回null，不生成路由
+  if (menu.type === HbtMenuType.Directory) {
+    return null
+  }
+
+  // 处理路径，确保以/开头
+  const routePath = menu.path?.startsWith('/') ? menu.path : `/${menu.path || ''}`
+  // 组合完整路径（仅用于组件导入）
+  const fullPath = parentPath ? `${parentPath}${routePath}` : routePath
+
+  console.log('[路由] 处理菜单:', {
+    menuName: menu.name,
+    type: menu.type,
+    path: menu.path,
+    component: menu.component,
+    fullPath,
+    parentPath
+  })
+
+  // 基础路由配置
+  const route: Partial<RouteRecordRaw> = {
+    path: parentPath ? (menu.path || '') : routePath,
+    name: menu.name,
+    meta: {
+      title: menu.transKey ? i18n.global.t(menu.transKey) : menu.name,
+      icon: menu.icon,
+      requiresAuth: true,
+      perms: menu.permission
+    }
+  }
+
+  // 处理菜单类型的路由
+  if (menu.component) {
+    try {
+      route.component = () => import(`@/views${menu.component}.vue`)
+      console.log('[路由] 加载组件:', menu.component)
+    } catch (error) {
+      console.error(`[路由] 组件加载失败: ${menu.component}`, error)
+      route.component = () => import('@/views/error/404.vue')
+    }
+  } else {
+    console.warn('[路由] 菜单缺少组件路径:', menu.name)
+    route.component = () => import('@/views/error/404.vue')
+  }
+
+  // 如果有子菜单，递归处理
+  if (menu.children?.length) {
+    route.children = menu.children
+      .map(child => menuToRoute(child, fullPath))
+      .filter((route): route is RouteRecordRaw => route !== null)
+  }
+
+  return route as RouteRecordRaw
+}
+
+// 注册动态路由
+export const registerDynamicRoutes = async (menus: Menu[]): Promise<boolean> => {
+  try {
+    console.log('[路由] 开始注册动态路由:', menus)
+
+    // 移除所有非基础路由
+    router.getRoutes().forEach(route => {
+      if (route.name && !BASIC_ROUTES.includes(route.name.toString())) {
+        router.removeRoute(route.name)
+      }
+    })
+
+    // 递归处理菜单
+    const processMenus = async (items: Menu[]) => {
+      for (const menu of items) {
+        // 只处理非目录类型的菜单
+        const route = menuToRoute(menu, '')
+        if (route) {
+          router.addRoute(route)
+          console.log('[路由] 注册路由:', {
+            path: route.path,
+            name: route.name
+          })
+        }
+
+        // 如果有子菜单，递归处理
+        if (menu.children?.length) {
+          await processMenus(menu.children)
+        }
+      }
+    }
+
+    // 处理所有菜单
+    await processMenus(menus)
+
+    // 打印最终路由
+    console.log('[路由] 动态路由注册完成:', router.getRoutes())
+    return true
+  } catch (error) {
+    console.error('[路由] 注册动态路由失败:', error)
+    return false
+  }
+}
 
 // 路由守卫
 router.beforeEach(async (to, from, next) => {
@@ -115,9 +250,8 @@ router.beforeEach(async (to, from, next) => {
       await userStore.getUserInfo()
     }
 
-    // 如果没有菜单，加载菜单
-    if (!menuStore.menuList?.length) {
-      // 设置加载状态，防止重复加载
+    // 如果没有菜单，加载菜单并注册动态路由
+    if (!menuStore.rawMenuList?.length) {
       if (menuStore.isLoading) {
         next()
         return
@@ -126,6 +260,28 @@ router.beforeEach(async (to, from, next) => {
       try {
         menuStore.isLoading = true
         const success = await menuStore.loadUserMenus()
+        
+        if (success) {
+          // 注册动态路由
+          const registered = await registerDynamicRoutes(menuStore.rawMenuList)
+          
+          if (registered) {
+            // 如果当前路由不存在，重定向到目标路由
+            if (to.name === undefined) {
+              // 等待路由注册完成
+              await router.isReady()
+              // 重新导航到目标路由
+              next({ ...to, replace: true })
+              return
+            }
+          } else {
+            console.error('[路由守卫] 动态路由注册失败')
+            message.error('加载菜单失败，请重试')
+            next(false)
+            return
+          }
+        }
+        
         menuStore.isLoading = false
         
         if (!success) {
@@ -145,32 +301,17 @@ router.beforeEach(async (to, from, next) => {
         }
       } catch (error) {
         menuStore.isLoading = false
-        console.error('加载菜单失败:', error)
-        // 如果用户已登录，仍然允许访问
-        if (userStore.user) {
-          next()
-          return
-        }
-        
-        // 如果没有用户信息，则跳转到登录页
-        userStore.logout()
-        next({
-          name: 'Login',
-          query: { redirect: to.fullPath }
-        })
+        console.error('[路由守卫] 加载菜单失败:', error)
+        message.error('加载菜单失败，请重试')
+        next(false)
         return
       }
     }
 
     next()
   } catch (error) {
-    console.error('路由守卫错误:', error)
-    // 发生错误时，清除token并跳转到登录页
-    userStore.logout()
-    next({
-      name: 'Login',
-      query: { redirect: to.fullPath }
-    })
+    console.error('[路由守卫] 错误:', error)
+    next(false)
   }
 })
 

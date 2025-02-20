@@ -5,7 +5,7 @@
       <a-layout-sider 
         class="sider"
         :width="240"
-        theme="dark"
+        :theme="theme"
         :collapsed-width="48"
         :breakpoint="'lg'"
         v-model:collapsed="collapsed"
@@ -61,12 +61,12 @@ const themeStore = useThemeStore()
 
 // 响应式状态
 const collapsed = ref(false)
+const theme = computed(() => themeStore.isDarkMode ? 'dark' : 'light')
 
 // 计算属性
 const antdLocale = computed(() => {
-  const currentLocale = locale.value
-  const currentMessages = i18n.global.messages.value[currentLocale] || i18n.global.messages.value['zh-CN']
-  return (currentMessages as any).antd || {}
+  const currentMessages = i18n.global.messages.value[locale.value as keyof typeof i18n.global.messages.value] || i18n.global.messages.value['zh-CN']
+  return (currentMessages as { antd: any }).antd || {}
 })
 </script>
 
@@ -81,7 +81,7 @@ const antdLocale = computed(() => {
     height: 100vh;
     overflow: auto;
     z-index: 10;
-    background: #001529;
+    background: var(--ant-layout-sider-background);
 
     &::-webkit-scrollbar {
       width: 6px;
@@ -89,7 +89,7 @@ const antdLocale = computed(() => {
     }
 
     &::-webkit-scrollbar-thumb {
-      background: rgba(0, 0, 0, 0.2);
+      background: var(--ant-color-text-quaternary);
       border-radius: 3px;
     }
 
@@ -99,7 +99,7 @@ const antdLocale = computed(() => {
       display: flex;
       align-items: center;
       justify-content: center;
-      background: #002140;
+      background: var(--ant-layout-header-background);
       cursor: pointer;
       transition: all 0.3s;
 
@@ -111,7 +111,7 @@ const antdLocale = computed(() => {
       h1 {
         height: 32px;
         margin: 0 0 0 12px;
-        color: white;
+        color: var(--ant-color-text-inverse);
         font-weight: 600;
         font-size: 18px;
         line-height: 32px;

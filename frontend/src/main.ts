@@ -9,15 +9,31 @@ import { useSettingStore } from '@/stores/settings'
 
 import './assets/styles/index.less'
 
-const app = createApp(App)
+async function bootstrap() {
+  const app = createApp(App)
 
-// 按照正确的顺序注册插件
-app.use(createPinia())
-app.use(router)
-app.use(i18n)
-app.use(Antd)
+  // 1. 首先注册 Pinia
+  const pinia = createPinia()
+  app.use(pinia)
 
-const settingStore = useSettingStore()
-settingStore.loadFromStorage() // 从本地存储加载设置
+  // 2. 注册 Antd
+  app.use(Antd)
 
-app.mount('#app') 
+  // 3. 注册 i18n
+  app.use(i18n)
+
+  // 4. 注册路由 - 只注册基础路由
+  app.use(router)
+
+  // 5. 初始化设置
+  const settingStore = useSettingStore()
+  await settingStore.loadFromStorage()
+
+  // 6. 挂载应用
+  app.mount('#app')
+}
+
+// 启动应用
+bootstrap().catch(err => {
+  console.error('[启动] 应用初始化失败:', err)
+}) 

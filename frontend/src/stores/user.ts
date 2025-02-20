@@ -87,7 +87,7 @@ export const useUserStore = defineStore('user', () => {
       
       // 重置菜单状态
       const menuStore = useMenuStore()
-      menuStore.resetState()
+      menuStore.clearMenus()
     } catch (error) {
       console.error('登出失败:', error)
       throw error

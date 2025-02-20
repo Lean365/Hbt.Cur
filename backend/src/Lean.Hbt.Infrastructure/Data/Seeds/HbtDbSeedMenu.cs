@@ -73,7 +73,7 @@ public class HbtDbSeedMenu
             new HbtMenu
             {
                 MenuName = "系统管理",
-                TransKey = "menu.admin",
+                TransKey = "menu.admin._self",
                 ParentId = 0,
                 OrderNum = 1,
                 Path = "/admin",
@@ -96,7 +96,7 @@ public class HbtDbSeedMenu
             new HbtMenu
             {
                 MenuName = "身份认证",
-                TransKey = "menu.identity",
+                TransKey = "menu.identity._self",
                 ParentId = 0,
                 OrderNum = 2,
                 Path = "/identity",
@@ -119,7 +119,7 @@ public class HbtDbSeedMenu
             new HbtMenu
             {
                 MenuName = "审计日志",
-                TransKey = "menu.audit",
+                TransKey = "menu.audit._self",
                 ParentId = 0,
                 OrderNum = 3,
                 Path = "/audit",
@@ -142,7 +142,7 @@ public class HbtDbSeedMenu
             new HbtMenu
             {
                 MenuName = "工作流程",
-                TransKey = "menu.workflow",
+                TransKey = "menu.workflow._self",
                 ParentId = 0,
                 OrderNum = 4,
                 Path = "/workflow",
@@ -165,7 +165,7 @@ public class HbtDbSeedMenu
             new HbtMenu
             {
                 MenuName = "实时监控",
-                TransKey = "menu.realtime",
+                TransKey = "menu.realtime._self",
                 ParentId = 0,
                 OrderNum = 5,
                 Path = "/realtime",
@@ -188,7 +188,7 @@ public class HbtDbSeedMenu
             new HbtMenu
             {
                 MenuName = "安全管理",
-                TransKey = "menu.security",
+                TransKey = "menu.security._self",
                 ParentId = 0,
                 OrderNum = 6,
                 Path = "/security",
@@ -625,7 +625,7 @@ public class HbtDbSeedMenu
                 Component = "audit/operlog/index",
                 MenuType = HbtMenuType.Menu,
                 Perms = "audit:operlog:list",
-                Icon = "operlog",
+                Icon = "HistoryOutlined",
                 CreateBy = "admin",
                 CreateTime = DateTime.Now
             },
@@ -639,7 +639,7 @@ public class HbtDbSeedMenu
                 Component = "audit/loginlog/index",
                 MenuType = HbtMenuType.Menu,
                 Perms = "audit:loginlog:list",
-                Icon = "loginlog",
+                Icon = "LoginOutlined",
                 CreateBy = "admin",
                 CreateTime = DateTime.Now
             },
@@ -653,7 +653,7 @@ public class HbtDbSeedMenu
                 Component = "audit/dbdifflog/index",
                 MenuType = HbtMenuType.Menu,
                 Perms = "audit:dbdifflog:list",
-                Icon = "dbdifflog",
+                Icon = "DiffOutlined",
                 CreateBy = "admin",
                 CreateTime = DateTime.Now
             },
@@ -667,7 +667,7 @@ public class HbtDbSeedMenu
                 Component = "audit/exceptionlog/index",
                 MenuType = HbtMenuType.Menu,
                 Perms = "audit:exceptionlog:list",
-                Icon = "exceptionlog",
+                Icon = "ExceptionOutlined",
                 CreateBy = "admin",
                 CreateTime = DateTime.Now
             }

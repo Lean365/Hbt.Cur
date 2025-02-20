@@ -128,27 +128,72 @@ service.interceptors.response.use(
       return response.data
     }
 
-    // 如果没有code字段，说明是非标准响应，直接返回
-    if (typeof res.code === 'undefined') {
-      return res
+    // 检查响应数据结构
+    if (!res || typeof res !== 'object') {
+      console.error('[Response Interceptor] 响应数据格式错误:', res)
+      return Promise.reject(new Error('响应数据格式错误'))
     }
 
-    // 业务成功
-    if (res.code === 200) {
-      return res
+    // 标准API响应处理
+    if ('code' in res) {
+      if (res.code === 200) {
+        return res
+      }
+      // 业务失败
+      const errorMessage = res.msg || '系统错误'
+      message.error(errorMessage)
+      return Promise.reject(new Error(errorMessage))
     }
 
-    // 业务失败
-    message.error(res.msg || '系统错误')
-    return Promise.reject(res)
+    // 非标准响应，尝试规范化
+    return {
+      code: response.status,
+      msg: response.statusText,
+      data: res
+    }
   },
   (error) => {
+    console.error('[Response Interceptor] Error:', error)
+    
     if (error.code === 'ERR_NETWORK' || error.code === 'ECONNABORTED') {
       // 在控制台显示错误
-      console.log('\n\x1b[31m%s\x1b[0m', '  ❌ 后端服务未启动，请先启动后端服务\n');
+      console.log('\n\x1b[31m%s\x1b[0m', '  ❌ 后端服务未启动，请先启动后端服务\n')
+      message.error('后端服务未启动，请先启动后端服务')
+      return Promise.reject(error)
+    }
+
+    if (error.response) {
+      const { status, data } = error.response
+      let errorMessage = '服务器错误'
+
+      switch (status) {
+        case 400:
+          errorMessage = data.msg || '请求参数错误'
+          break
+        case 401:
+          errorMessage = '未授权，请重新登录'
+          // 清除token并跳转到登录页
+          const userStore = useUserStore()
+          userStore.logout()
+          break
+        case 403:
+          errorMessage = '拒绝访问'
+          break
+        case 404:
+          errorMessage = '请求的资源不存在'
+          break
+        case 500:
+          errorMessage = data.msg || '服务器内部错误'
+          break
+        default:
+          errorMessage = `服务器错误 (${status})`
+      }
+
+      message.error(errorMessage)
+      return Promise.reject(new Error(errorMessage))
     }
     
-    message.error('服务器连接失败，请检查网络连接')
+    message.error('网络连接失败，请检查网络')
     return Promise.reject(error)
   }
 )

@@ -1,17 +1,28 @@
 <template>
   <a-layout-footer class="footer">
     <div class="footer-content">
+      <!-- 左侧版权信息 -->
       <div class="footer-left">
-        <div class="copyright">
-          Copyright © {{ new Date().getFullYear() }} Lean.Hbt. All rights reserved.
-        </div>
-        <div class="beian">
-          <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer">
-            粤ICP备88889999号
-          </a>
-        </div>
+        <span class="copyright">
+          {{ t('footer.copyright', { year: new Date().getFullYear() }) }}
+        </span>
       </div>
-      <div class="links">
+
+      <!-- 中间链接 -->
+      <div class="footer-center">
+        <a-space>
+          <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer" class="beian">
+            {{ t('footer.icp') }}
+          </a>
+          <a-divider type="vertical" />
+          <a href="/terms" class="terms">{{ t('footer.terms') }}</a>
+          <a-divider type="vertical" />
+          <a href="/privacy" class="privacy">{{ t('footer.privacy') }}</a>
+        </a-space>
+      </div>
+
+      <!-- 右侧图标链接 -->
+      <div class="footer-right">
         <a-space>
           <a href="https://github.com/Lean365/Lean.Hbt" target="_blank">
             <github-outlined />
@@ -20,12 +31,12 @@
           <a-divider type="vertical" />
           <a href="https://lean365.cn" target="_blank">
             <global-outlined />
-            <span>官网</span>
+            <span>{{ t('footer.website') }}</span>
           </a>
           <a-divider type="vertical" />
           <a href="https://lean365.cn/docs" target="_blank">
             <book-outlined />
-            <span>文档</span>
+            <span>{{ t('footer.docs') }}</span>
           </a>
         </a-space>
       </div>
@@ -34,11 +45,14 @@
 </template>
 
 <script lang="ts" setup>
+import { useI18n } from 'vue-i18n'
 import {
   GithubOutlined,
   GlobalOutlined,
   BookOutlined
 } from '@ant-design/icons-vue'
+
+const { t } = useI18n()
 </script>
 
 <style lang="less" scoped>
@@ -52,37 +66,40 @@ import {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 16px;
   }
 
   .footer-left {
-    .beian {
-      margin-top: 4px;
-      
-      a {
-        color: var(--ant-text-color-secondary);
-        transition: color 0.3s;
-
-        &:hover {
-          color: var(--ant-primary-color);
-        }
-      }
-    }
+    min-width: 280px;
+    text-align: left;
   }
 
-  .links {
-    a {
-      display: inline-flex;
-      align-items: center;
-      color: var(--ant-text-color-secondary);
-      transition: color 0.3s;
+  .footer-center {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+  }
 
-      .anticon {
-        margin-right: 4px;
-      }
+  .footer-right {
+    min-width: 280px;
+    text-align: right;
+  }
 
-      &:hover {
-        color: var(--ant-primary-color);
-      }
+  a, span {
+    color: var(--ant-text-color-secondary);
+    transition: color 0.3s;
+  }
+
+  a {
+    display: inline-flex;
+    align-items: center;
+
+    .anticon {
+      margin-right: 4px;
+    }
+
+    &:hover {
+      color: var(--ant-primary-color);
     }
   }
 
@@ -99,13 +116,25 @@ import {
     .footer-content {
       flex-direction: column;
       gap: 8px;
+    }
+
+    .footer-left,
+    .footer-center,
+    .footer-right {
+      width: 100%;
+      min-width: unset;
       text-align: center;
     }
 
-    .footer-left {
-      .beian {
-        margin-top: 2px;
-      }
+    :deep(.ant-space) {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      width: 100%;
+    }
+
+    :deep(.ant-divider) {
+      display: none;
     }
   }
 }

@@ -1,4 +1,46 @@
 /**
+ * 通用状态枚举
+ */
+export enum HbtStatus {
+  /** 正常 */
+  Normal = 0,
+  /** 停用 */
+  Disabled = 1
+}
+
+/**
+ * 是否枚举
+ */
+export enum HbtYesNo {
+  /** 否 */
+  No = 0,
+  /** 是 */
+  Yes = 1
+}
+
+/**
+ * 菜单类型枚举
+ */
+export enum HbtMenuType {
+  /** 目录 */
+  Directory = 0,
+  /** 菜单 */
+  Menu = 1,
+  /** 按钮 */
+  Button = 2
+}
+
+/**
+ * 显示状态枚举
+ */
+export enum HbtVisible {
+  /** 显示 */
+  Show = 0,
+  /** 隐藏 */
+  Hide = 1
+}
+
+/**
  * 基础实体类型
  */
 export interface BaseEntity {

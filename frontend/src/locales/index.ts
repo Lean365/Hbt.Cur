@@ -24,6 +24,10 @@ import zhCNAdminLang from './admin/language/zh-CN';
 import enUSAdminLang from './admin/language/en-US';
 import zhCNAdminTrans from './admin/translation/zh-CN';
 import enUSAdminTrans from './admin/translation/en-US';
+import zhCNFooter from './footer/zh-CN';
+import enUSFooter from './footer/en-US';
+import zhCNMenu from './menu/zh-CN';
+import enUSMenu from './menu/en-US';
 
 // 检查原始翻译文件
 console.log('Menu translation file:', zhCNIdentityMenu);
@@ -41,6 +45,8 @@ const messages = {
     ...zhCNDashboard,
     ...zhCNAdminLang,
     ...zhCNAdminTrans,
+    ...zhCNFooter,
+    ...zhCNMenu,
     identity: {
       ...zhCNIdentityMenu.identity,
       ...zhCNIdentityUser.identity
@@ -57,6 +63,8 @@ const messages = {
     ...enUSDashboard,
     ...enUSAdminLang,
     ...enUSAdminTrans,
+    ...enUSFooter,
+    ...enUSMenu,
     identity: {
       ...enUSIdentityMenu.identity,
       ...enUSIdentityUser.identity

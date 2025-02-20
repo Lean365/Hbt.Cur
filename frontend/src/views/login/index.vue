@@ -354,27 +354,16 @@ const handleLoginSuccess = async () => {
       localStorage.removeItem('lastUsername')
     }
 
-    // 获取用户信息
+    // 获取用户信息（这里会自动加载菜单）
     await userStore.getUserInfo()
-
-    // 加载用户菜单和动态路由
-    const menuSuccess = await menuStore.loadUserMenus()
-    if (!menuSuccess) {
-      throw new Error('加载菜单失败')
-    }
 
     message.success(t('login.success'))
     
     // 等待一下确保路由已经准备好
     await nextTick()
     
-    // 登录成功后跳转到首页或重定向地址
-    const redirect = route.query.redirect?.toString()
-    if (redirect && redirect !== '/login') {
-      await router.push(redirect)
-    } else {
-      await router.push('/dashboard/workplace')
-    }
+    // 登录成功后跳转到工作台
+    await router.push('/dashboard/workplace')
   } catch (error) {
     console.error('登录后处理失败:', error)
     message.error(t('login.failed'))

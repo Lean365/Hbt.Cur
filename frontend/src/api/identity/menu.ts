@@ -1,5 +1,6 @@
 import request from '@/utils/request'
 import type { ApiResult, PageResult } from '@/types/base'
+import { HbtStatus } from '@/types/base'
 import type { 
   MenuQuery, 
   Menu, 
@@ -8,7 +9,6 @@ import type {
   MenuStatus,
   MenuOrder
 } from '@/types/identity/menu'
-import { HbtStatus } from '@/types/enums'
 
 // 获取菜单分页列表
 export function getMenuList(params: MenuQuery) {
@@ -131,12 +131,6 @@ export function getCurrentUserMenus() {
       'Cache-Control': 'no-cache',
       'Pragma': 'no-cache'
     }
-  }).then(response => {
-    console.log('[菜单API] 请求成功:', response)
-    return response
-  }).catch(error => {
-    console.error('[菜单API] 请求失败:', error)
-    throw error
   })
 }
 

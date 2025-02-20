@@ -177,14 +177,14 @@ watch(
 )
 
 // 标签切换
-const onChange = (key: string) => {
-  router.push(key)
+const onChange = (key: string | number) => {
+  router.push(String(key))
 }
 
 // 关闭标签
-const onEdit = (targetKey: string | MouseEvent, action: 'add' | 'remove') => {
-  if (action === 'remove' && typeof targetKey === 'string') {
-    closeTab(targetKey)
+const onEdit = (targetKey: string | number | MouseEvent | KeyboardEvent, action: 'add' | 'remove') => {
+  if (action === 'remove' && (typeof targetKey === 'string' || typeof targetKey === 'number')) {
+    closeTab(String(targetKey))
   }
 }
 
@@ -203,10 +203,11 @@ const closeTab = (targetKey: string) => {
 }
 
 // 处理标签操作
-const handleTabAction = ({ key }: { key: string }) => {
+const handleTabAction = (info: { key: string | number }) => {
+  const actionKey = String(info.key)
   const currentIndex = panes.value.findIndex(pane => pane.key === activeKey.value)
   
-  switch (key) {
+  switch (actionKey) {
     case 'closeOthers':
       panes.value = panes.value.filter(
         pane => !pane.closable || pane.key === activeKey.value
