@@ -26,7 +26,7 @@
         <!-- 内容区域 -->
         <div class="content-wrapper">
           <!-- 面包屑导航 -->
-          <breadcrumb />
+          <breadcrumb v-if="!$route.meta.hideLayout" />
 
           <!-- 主内容区 -->
           <a-layout-content class="content">
@@ -38,7 +38,7 @@
           </a-layout-content>
 
           <!-- 页脚 -->
-          <footer-bar />
+          <footer-bar v-if="!$route.meta.hideLayout" />
         </div>
       </a-layout>
     </a-layout>

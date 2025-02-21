@@ -3,7 +3,7 @@
     <a-breadcrumb>
       <!-- 首页 -->
       <a-breadcrumb-item>
-        <router-link to="/">
+        <router-link to="/" class="breadcrumb-link">
           <home-outlined />
           <span>{{ t('home.title') }}</span>
         </router-link>
@@ -15,13 +15,16 @@
           <router-link 
             v-if="item.path !== route.path" 
             :to="item.path"
+            class="breadcrumb-link"
           >
             <component :is="getIcon(item.icon)" v-if="item.icon" />
             <span>{{ t(item.title) }}</span>
           </router-link>
           <template v-else>
-            <component :is="getIcon(item.icon)" v-if="item.icon" />
-            <span>{{ t(item.title) }}</span>
+            <div class="breadcrumb-link">
+              <component :is="getIcon(item.icon)" v-if="item.icon" />
+              <span>{{ t(item.title) }}</span>
+            </div>
           </template>
         </a-breadcrumb-item>
       </template>
@@ -69,7 +72,7 @@ const getIcon = (iconName?: string) => {
 
 // 面包屑项接口定义
 interface BreadcrumbItem {
-  title: string | undefined
+  title: string
   icon?: string
   path: string
 }
@@ -85,16 +88,12 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => {
   )
   
   // 构建面包屑路径
-  let fullPath = ''
-  matched.forEach((item) => {
-    // 构建累积路径
-    const pathSegment = item.path.replace(/^\/+/, '') // 移除开头的斜杠
-    fullPath = fullPath ? `${fullPath}/${pathSegment}` : `/${pathSegment}`
-    
+  matched.forEach((item, index) => {
+    // 使用当前路由的完整路径，而不是累积构建
     items.push({
-      title: item.meta?.title as string | undefined,
+      title: item.meta?.title as string || '',
       icon: item.meta?.icon as string | undefined,
-      path: fullPath
+      path: item.path || ''
     })
   })
   
@@ -107,33 +106,33 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => {
   margin: 16px 24px;
   
   :deep(.ant-breadcrumb) {
-    line-height: 1;
-    
-    .anticon {
-      margin-right: 4px;
-      font-size: 14px;
-      vertical-align: -0.125em;
-    }
-    
-    a {
+    .breadcrumb-link {
       display: inline-flex;
       align-items: center;
+      gap: 4px;
+      height: 22px;
+      line-height: 22px;
       color: var(--ant-text-color-secondary);
       transition: color 0.3s;
       
       &:hover {
         color: var(--ant-primary-color);
       }
+
+      .anticon {
+        font-size: 14px;
+      }
+
+      span {
+        display: inline-block;
+      }
     }
 
-    .ant-breadcrumb-link {
+    .ant-breadcrumb-separator {
+      margin: 0 8px;
       display: inline-flex;
       align-items: center;
-      line-height: 1;
-    }
-
-    span {
-      line-height: 1;
+      height: 22px;
     }
   }
 }

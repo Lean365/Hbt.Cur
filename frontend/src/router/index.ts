@@ -41,7 +41,7 @@ export const constantRoutes: RouteRecordRaw[] = [
       {
         path: 'dashboard',
         name: 'Dashboard',
-        redirect: 'workplace',
+        redirect: '/dashboard/workplace',
         meta: { 
           title: 'dashboard.title', 
           icon: 'DashboardOutlined', 
@@ -82,27 +82,26 @@ export const constantRoutes: RouteRecordRaw[] = [
       },
       {
         path: '/about',
-        component: Layout,
         redirect: '/about/index',
-        meta: { title: '关于', icon: 'info-circle-outlined' },
+        meta: { title: '关于', icon: 'InfoCircleOutlined' },
         children: [
           {
             path: 'index',
             name: 'About',
-            component: () => import('@/views/about/about.vue'),
-            meta: { title: '关于系统', icon: 'info-circle-outlined' }
+            component: () => import('@/views/about/index.vue'),
+            meta: { title: '关于系统', icon: 'InfoCircleOutlined' }
           },
           {
             path: 'terms',
             name: 'Terms',
             component: () => import('@/views/about/terms.vue'),
-            meta: { title: '使用条款', icon: 'file-text-outlined' }
+            meta: { title: '使用条款', icon: 'FileTextOutlined' }
           },
           {
             path: 'privacy',
             name: 'Privacy',
             component: () => import('@/views/about/privacy.vue'),
-            meta: { title: '隐私政策', icon: 'safety-outlined' }
+            meta: { title: '隐私政策', icon: 'SafetyOutlined' }
           }
         ]
       }
@@ -118,28 +117,31 @@ const router = createRouter({
 
 // 将菜单转换为路由配置
 const menuToRoute = (menu: Menu, parentPath: string = ''): RouteRecordRaw | null => {
-  // 如果是目录类型，直接返回null，不生成路由
-  if (menu.type === HbtMenuType.Directory) {
+  // 跳过按钮类型的菜单
+  if (menu.type === HbtMenuType.Button) {
     return null
   }
 
-  // 处理路径，确保以/开头
-  const routePath = menu.path?.startsWith('/') ? menu.path : `/${menu.path || ''}`
-  // 组合完整路径（仅用于组件导入）
-  const fullPath = parentPath ? `${parentPath}${routePath}` : routePath
+  // 处理路径
+  const path = menu.path || ''
+  // 如果是根级菜单，确保以/开头
+  const routePath = parentPath ? path : (path.startsWith('/') ? path : `/${path}`)
+  // 组合完整路径（用于组件导入和子菜单）
+  const fullPath = parentPath ? `${parentPath}/${path}` : routePath
 
   console.log('[路由] 处理菜单:', {
     menuName: menu.name,
     type: menu.type,
-    path: menu.path,
+    path: path,
+    routePath: routePath,
+    fullPath: fullPath,
     component: menu.component,
-    fullPath,
-    parentPath
+    parentPath: parentPath
   })
 
   // 基础路由配置
   const route: Partial<RouteRecordRaw> = {
-    path: parentPath ? (menu.path || '') : routePath,
+    path: routePath,
     name: menu.name,
     meta: {
       title: menu.transKey ? i18n.global.t(menu.transKey) : menu.name,
@@ -149,10 +151,19 @@ const menuToRoute = (menu: Menu, parentPath: string = ''): RouteRecordRaw | null
     }
   }
 
-  // 处理菜单类型的路由
-  if (menu.component) {
+  // 处理组件
+  if (menu.type === HbtMenuType.Directory) {
+    // 目录类型使用Layout组件
+    route.component = Layout
+    // 目录类型添加重定向到第一个子菜单
+    if (menu.children?.length) {
+      const firstChild = menu.children[0]
+      route.redirect = `${fullPath}/${firstChild.path}`
+    }
+  } else if (menu.component) {
+    // 菜单类型使用指定的组件
     try {
-      route.component = () => import(`@/views${menu.component}.vue`)
+      route.component = () => import(`@/views/${menu.component}.vue`)
       console.log('[路由] 加载组件:', menu.component)
     } catch (error) {
       console.error(`[路由] 组件加载失败: ${menu.component}`, error)
@@ -188,19 +199,15 @@ export const registerDynamicRoutes = async (menus: Menu[]): Promise<boolean> => 
     // 递归处理菜单
     const processMenus = async (items: Menu[]) => {
       for (const menu of items) {
-        // 只处理非目录类型的菜单
         const route = menuToRoute(menu, '')
         if (route) {
-          router.addRoute(route)
+          // 将路由添加到根路由下
+          router.addRoute('/', route)
           console.log('[路由] 注册路由:', {
             path: route.path,
-            name: route.name
+            name: route.name,
+            children: route.children?.length
           })
-        }
-
-        // 如果有子菜单，递归处理
-        if (menu.children?.length) {
-          await processMenus(menu.children)
         }
       }
     }
