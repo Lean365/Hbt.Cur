@@ -1,5 +1,21 @@
 export default {
   menu: {
+    // 基础路由
+    login: '登录',
+    home: '首页',
+    dashboard: {
+      title: '仪表盘',
+      workplace: '工作台',
+      analysis: '分析页',
+      monitor: '监控页'
+    },
+    about: {
+      title: '关于',
+      index: '关于系统',
+      terms: '使用条款',
+      privacy: '隐私政策'
+    },
+
     /**
      * 系统管理
      */
@@ -59,8 +75,8 @@ export default {
      */
     realtime: {
       _self: '实时监控',
-      'online-user': '在线用户',
-      'online-message': '在线消息'
+      'onlineuser': '在线用户',
+      'onlinemessage': '在线消息'
     },
 
     /**

@@ -43,14 +43,14 @@ function getIcon(iconName: string | undefined) {
 export function transformMenu(menus: Menu[]): MenuProps['items'] {
   return menus.map(menu => {
     // 跳过按钮类型的菜单
-    if (menu.type === HbtMenuType.Button) {
+    if (menu.menuType === HbtMenuType.Button) {
       return null
     }
 
     console.log('[菜单转换] 处理菜单项:', {
       路径: menu.path,
-      名称: menu.name,
-      类型: menu.type,
+      名称: menu.menuName,
+      类型: menu.menuType,
       图标: menu.icon,
       子菜单数量: menu.children?.length,
       原始数据: menu
@@ -61,11 +61,11 @@ export function transformMenu(menus: Menu[]): MenuProps['items'] {
     
     // 创建菜单项
     const menuItem: any = {
-      key: menu.type === HbtMenuType.Directory ? `dir_${menu.menuId}` : path,
-      label: menu.transKey ? i18n.global.t(menu.transKey) : menu.name,
+      key: menu.menuType === HbtMenuType.Directory ? `dir_${menu.menuId}` : path,
+      label: menu.transKey ? i18n.global.t(menu.transKey) : menu.menuName,
       icon: getIcon(menu.icon),
       disabled: menu.disabled || false,
-      selectable: menu.type !== HbtMenuType.Directory
+      selectable: menu.menuType !== HbtMenuType.Directory
     }
 
     // 如果有子菜单，递归处理
@@ -87,8 +87,8 @@ export function extractPermissions(menus: Menu[]): string[] {
   
   const extract = (items: Menu[]) => {
     items.forEach(item => {
-      if (item.permission) {
-        perms.push(...item.permission.split(',').map(p => p.trim()))
+      if (item.perms) {
+        perms.push(...item.perms.split(',').map((p: string) => p.trim()))
       }
       if (item.children?.length) {
         extract(item.children)

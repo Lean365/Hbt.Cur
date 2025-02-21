@@ -16,7 +16,7 @@ export interface Menu {
   /** 父菜单ID */
   parentId: string | null
   /** 菜单名称 */
-  name: string
+  menuName: string
   /** 翻译键 */
   transKey?: string
   /** 菜单图标 */
@@ -26,17 +26,29 @@ export interface Menu {
   /** 菜单组件路径 */
   component?: string
   /** 菜单类型 */
-  type: HbtMenuType
+  menuType: HbtMenuType
   /** 菜单排序 */
-  sort: number
+  orderNum: number
   /** 是否禁用 */
   disabled?: boolean
   /** 是否隐藏 */
   hidden?: boolean
   /** 权限标识 */
-  permission?: string
+  perms?: string
   /** 子菜单 */
   children?: Menu[]
+  /** 是否缓存 */
+  isCache?: number
+  /** 是否外链 */
+  isFrame?: number
+  /** 查询参数 */
+  queryParams?: string
+  /** 状态 */
+  status?: number
+  /** 是否可见 */
+  visible?: number
+  /** 创建时间 */
+  createTime?: string
 }
 
 /**

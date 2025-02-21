@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import type { RouteRecordRaw } from 'vue-router'
+import type { RouteRecordRaw, RouteRecordSingleViewWithChildren } from 'vue-router'
 import { getToken } from '@/utils/auth'
 import { useUserStore } from '@/stores/user'
 import { useMenuStore } from '@/stores/menu'
@@ -19,8 +19,9 @@ export const constantRoutes: RouteRecordRaw[] = [
     name: 'Login',
     component: () => import('@/views/login/index.vue'),
     meta: {
-      title: '登录',
-      requiresAuth: false
+      title: 'menu.login',
+      requiresAuth: false,
+      transKey: 'menu.login'
     }
   },
   {
@@ -33,9 +34,10 @@ export const constantRoutes: RouteRecordRaw[] = [
         name: 'Home',
         component: () => import('@/views/home/index.vue'),
         meta: {
-          title: '首页',
+          title: 'menu.home',
           icon: 'HomeOutlined',
-          requiresAuth: true
+          requiresAuth: true,
+          transKey: 'menu.home'
         }
       },
       {
@@ -43,9 +45,10 @@ export const constantRoutes: RouteRecordRaw[] = [
         name: 'Dashboard',
         redirect: '/dashboard/workplace',
         meta: { 
-          title: 'dashboard.title', 
+          title: 'menu.dashboard.title', 
           icon: 'DashboardOutlined', 
-          requiresAuth: true 
+          requiresAuth: true,
+          transKey: 'menu.dashboard.title'
         },
         children: [
           {
@@ -53,9 +56,10 @@ export const constantRoutes: RouteRecordRaw[] = [
             name: 'Workplace',
             component: () => import('@/views/dashboard/workplace/index.vue'),
             meta: { 
-              title: 'dashboard.workplace', 
+              title: 'menu.dashboard.workplace', 
               icon: 'DesktopOutlined', 
-              requiresAuth: true 
+              requiresAuth: true,
+              transKey: 'menu.dashboard.workplace'
             }
           },
           {
@@ -63,9 +67,10 @@ export const constantRoutes: RouteRecordRaw[] = [
             name: 'Analysis',
             component: () => import('@/views/dashboard/analysis/index.vue'),
             meta: { 
-              title: 'dashboard.analysis', 
+              title: 'menu.dashboard.analysis', 
               icon: 'BarChartOutlined', 
-              requiresAuth: true 
+              requiresAuth: true,
+              transKey: 'menu.dashboard.analysis'
             }
           },
           {
@@ -73,9 +78,10 @@ export const constantRoutes: RouteRecordRaw[] = [
             name: 'Monitor',
             component: () => import('@/views/dashboard/monitor/index.vue'),
             meta: { 
-              title: 'dashboard.monitor', 
+              title: 'menu.dashboard.monitor', 
               icon: 'MonitorOutlined', 
-              requiresAuth: true 
+              requiresAuth: true,
+              transKey: 'menu.dashboard.monitor'
             }
           }
         ]
@@ -83,25 +89,41 @@ export const constantRoutes: RouteRecordRaw[] = [
       {
         path: '/about',
         redirect: '/about/index',
-        meta: { title: '关于', icon: 'InfoCircleOutlined' },
+        meta: { 
+          title: 'menu.about.title', 
+          icon: 'InfoCircleOutlined',
+          transKey: 'menu.about.title'
+        },
         children: [
           {
             path: 'index',
             name: 'About',
             component: () => import('@/views/about/index.vue'),
-            meta: { title: '关于系统', icon: 'InfoCircleOutlined' }
+            meta: { 
+              title: 'menu.about.index', 
+              icon: 'InfoCircleOutlined',
+              transKey: 'menu.about.index'
+            }
           },
           {
             path: 'terms',
             name: 'Terms',
             component: () => import('@/views/about/terms.vue'),
-            meta: { title: '使用条款', icon: 'FileTextOutlined' }
+            meta: { 
+              title: 'menu.about.terms', 
+              icon: 'FileTextOutlined',
+              transKey: 'menu.about.terms'
+            }
           },
           {
             path: 'privacy',
             name: 'Privacy',
             component: () => import('@/views/about/privacy.vue'),
-            meta: { title: '隐私政策', icon: 'SafetyOutlined' }
+            meta: { 
+              title: 'menu.about.privacy', 
+              icon: 'SafetyOutlined',
+              transKey: 'menu.about.privacy'
+            }
           }
         ]
       }
@@ -115,84 +137,126 @@ const router = createRouter({
   routes: constantRoutes
 })
 
-// 将菜单转换为路由配置
-const menuToRoute = (menu: Menu, parentPath: string = ''): RouteRecordRaw | null => {
-  // 跳过按钮类型的菜单
-  if (menu.type === HbtMenuType.Button) {
+// 菜单转换为路由
+const menuToRoute = (menu: Menu, parentPath: string): RouteRecordRaw | null => {
+  try {
+    // 处理路径
+    let routePath = menu.path || ''
+    if (routePath.startsWith('/')) {
+      routePath = routePath.slice(1)
+    }
+
+    // 构建完整路径
+    const fullPath = parentPath
+      ? `${parentPath}/${routePath}`.replace(/\/+/g, '/')
+      : `/${routePath}`.replace(/\/+/g, '/')
+
+    console.log('[路由] 处理菜单:', {
+      菜单ID: menu.menuId,
+      菜单名称: menu.menuName,
+      菜单类型: menu.menuType,
+      原始路径: menu.path,
+      处理后路径: routePath,
+      父级路径: parentPath,
+      完整路径: fullPath,
+      组件: menu.component
+    })
+
+    // 基础路由配置
+    const route: RouteRecordRaw = {
+      path: routePath,
+      name: `menu_${menu.menuId}`,
+      redirect: undefined,
+      component: undefined,
+      children: [],
+      meta: {
+        title: menu.transKey ? i18n.global.t(menu.transKey) : menu.menuName,
+        icon: menu.icon,
+        perms: menu.perms,
+        isCache: menu.isCache,
+        transKey: menu.transKey // 保存翻译键，以便后续切换语言时使用
+      }
+    }
+
+    // 处理目录类型菜单
+    if (menu.menuType === HbtMenuType.Directory) {
+      route.component = Layout
+      
+      // 如果有子菜单，设置重定向到第一个子菜单
+      if (menu.children?.length) {
+        const firstChild = menu.children[0]
+        const childPath = firstChild.path.startsWith('/') ? firstChild.path.slice(1) : firstChild.path
+        route.redirect = `${fullPath}/${childPath}`.replace(/\/+/g, '/')
+        console.log('[路由] 设置重定向:', {
+          从: fullPath,
+          到: route.redirect
+        })
+      }
+    } else {
+      // 处理菜单类型
+      if (menu.component) {
+        try {
+          const componentPath = `@/views/${menu.component}.vue`
+          console.log('[路由] 加载组件:', {
+            菜单路径: menu.path,
+            组件路径: menu.component,
+            完整路径: componentPath
+          })
+          route.component = () => import(componentPath)
+        } catch (error) {
+          console.error('[路由] 加载组件失败:', error)
+          route.component = () => import('@/views/error/404.vue')
+        }
+      }
+    }
+
+    // 处理子菜单
+    if (menu.children?.length) {
+      route.children = []
+      for (const child of menu.children) {
+        const childRoute = menuToRoute(child, fullPath)
+        if (childRoute) {
+          route.children.push(childRoute)
+        }
+      }
+    }
+
+    return route
+  } catch (error) {
+    console.error('[路由] 转换菜单失败:', error)
     return null
   }
-
-  // 处理路径
-  const path = menu.path || ''
-  // 如果是根级菜单，确保以/开头
-  const routePath = parentPath ? path : (path.startsWith('/') ? path : `/${path}`)
-  // 组合完整路径（用于组件导入和子菜单）
-  const fullPath = parentPath ? `${parentPath}/${path}` : routePath
-
-  console.log('[路由] 处理菜单:', {
-    menuName: menu.name,
-    type: menu.type,
-    path: path,
-    routePath: routePath,
-    fullPath: fullPath,
-    component: menu.component,
-    parentPath: parentPath
-  })
-
-  // 基础路由配置
-  const route: Partial<RouteRecordRaw> = {
-    path: routePath,
-    name: menu.name,
-    meta: {
-      title: menu.transKey ? i18n.global.t(menu.transKey) : menu.name,
-      icon: menu.icon,
-      requiresAuth: true,
-      perms: menu.permission
-    }
-  }
-
-  // 处理组件
-  if (menu.type === HbtMenuType.Directory) {
-    // 目录类型使用Layout组件
-    route.component = Layout
-    // 目录类型添加重定向到第一个子菜单
-    if (menu.children?.length) {
-      const firstChild = menu.children[0]
-      route.redirect = `${fullPath}/${firstChild.path}`
-    }
-  } else if (menu.component) {
-    // 菜单类型使用指定的组件
-    try {
-      route.component = () => import(`@/views/${menu.component}.vue`)
-      console.log('[路由] 加载组件:', menu.component)
-    } catch (error) {
-      console.error(`[路由] 组件加载失败: ${menu.component}`, error)
-      route.component = () => import('@/views/error/404.vue')
-    }
-  } else {
-    console.warn('[路由] 菜单缺少组件路径:', menu.name)
-    route.component = () => import('@/views/error/404.vue')
-  }
-
-  // 如果有子菜单，递归处理
-  if (menu.children?.length) {
-    route.children = menu.children
-      .map(child => menuToRoute(child, fullPath))
-      .filter((route): route is RouteRecordRaw => route !== null)
-  }
-
-  return route as RouteRecordRaw
 }
 
 // 注册动态路由
 export const registerDynamicRoutes = async (menus: Menu[]): Promise<boolean> => {
   try {
-    console.log('[路由] 开始注册动态路由:', menus)
+    console.log('[路由] 开始注册动态路由:', {
+      菜单数量: menus.length,
+      菜单列表: menus.map(m => ({
+        ID: m.menuId,
+        名称: m.menuName,
+        路径: m.path,
+        类型: m.menuType,
+        组件: m.component
+      }))
+    })
 
     // 移除所有非基础路由
-    router.getRoutes().forEach(route => {
+    const existingRoutes = router.getRoutes()
+    console.log('[路由] 现有路由:', existingRoutes.map(r => ({
+      路径: r.path,
+      名称: r.name,
+      完整路径: r.path
+    })))
+
+    existingRoutes.forEach(route => {
       if (route.name && !BASIC_ROUTES.includes(route.name.toString())) {
         router.removeRoute(route.name)
+        console.log('[路由] 移除路由:', {
+          路径: route.path,
+          名称: route.name
+        })
       }
     })
 
@@ -201,12 +265,15 @@ export const registerDynamicRoutes = async (menus: Menu[]): Promise<boolean> => 
       for (const menu of items) {
         const route = menuToRoute(menu, '')
         if (route) {
-          // 将路由添加到根路由下
+          // 将路由添加为根路由的子路由
           router.addRoute('/', route)
           console.log('[路由] 注册路由:', {
-            path: route.path,
-            name: route.name,
-            children: route.children?.length
+            路径: route.path,
+            名称: route.name,
+            组件: route.component ? '已设置' : '未设置',
+            重定向: route.redirect,
+            子路由数量: route.children?.length || 0,
+            完整路由: route
           })
         }
       }
@@ -215,8 +282,18 @@ export const registerDynamicRoutes = async (menus: Menu[]): Promise<boolean> => 
     // 处理所有菜单
     await processMenus(menus)
 
-    // 打印最终路由
-    console.log('[路由] 动态路由注册完成:', router.getRoutes())
+    // 打印最终路由配置
+    console.log('[路由] 最终路由配置:', router.getRoutes().map(r => ({
+      路径: r.path,
+      名称: r.name,
+      组件: r.components?.default ? '已设置' : '未设置',
+      子路由: r.children?.map(c => ({
+        路径: c.path,
+        名称: c.name,
+        组件: c.components?.default ? '已设置' : '未设置'
+      }))
+    })))
+
     return true
   } catch (error) {
     console.error('[路由] 注册动态路由失败:', error)
@@ -227,9 +304,9 @@ export const registerDynamicRoutes = async (menus: Menu[]): Promise<boolean> => 
 // 路由守卫
 router.beforeEach(async (to, from, next) => {
   // 设置页面标题
-  const title = to.meta.title
+  const title = to.meta.transKey ? i18n.global.t(to.meta.transKey as string) : to.meta.title
   if (typeof title === 'string') {
-    document.title = `${title} - Lean.Hbt`
+    document.title = `${title} - ${i18n.global.t('app.name')}`
   }
 
   const token = getToken()
@@ -278,7 +355,7 @@ router.beforeEach(async (to, from, next) => {
               // 等待路由注册完成
               await router.isReady()
               // 重新导航到目标路由
-              next({ ...to, replace: true })
+              next({ path: to.fullPath, replace: true })
               return
             }
           } else {

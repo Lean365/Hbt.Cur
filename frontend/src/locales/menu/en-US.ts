@@ -1,5 +1,21 @@
 export default {
   menu: {
+    // Basic Routes
+    login: 'Login',
+    home: 'Home',
+    dashboard: {
+      title: 'Dashboard',
+      workplace: 'Workplace',
+      analysis: 'Analysis',
+      monitor: 'Monitor'
+    },
+    about: {
+      title: 'About',
+      index: 'About System',
+      terms: 'Terms of Service',
+      privacy: 'Privacy Policy'
+    },
+
     /**
      * System Management
      */
@@ -59,8 +75,8 @@ export default {
      */
     realtime: {
       _self: 'Real-time',
-      'online-user': 'Online Users',
-      'online-message': 'Online Messages'
+      'onlineuser': 'Online Users',
+      'onlinemessage': 'Online Messages'
     },
 
     /**
