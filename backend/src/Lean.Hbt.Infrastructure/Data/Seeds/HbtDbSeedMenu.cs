@@ -7,10 +7,10 @@
 // 描述   : 菜单数据初始化类
 //===================================================================
 
+using System.Linq.Expressions;
 using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Domain.Entities.Identity;
 using Lean.Hbt.Domain.IServices;
-using System.Linq.Expressions;
 
 namespace Lean.Hbt.Infrastructure.Data.Seeds;
 
@@ -214,7 +214,7 @@ public class HbtDbSeedMenu
         {
             var (isNew, savedMenu) = await CreateOrUpdateMenuAsync(menu, true);
             menuNameToId[menu.MenuName] = savedMenu.Id;
-            
+
             if (isNew) insertCount++;
             else updateCount++;
         }
@@ -288,7 +288,7 @@ public class HbtDbSeedMenu
         {
             var (isNew, savedMenu) = await CreateOrUpdateMenuAsync(menu, false);
             menuNameToId[menu.MenuName] = savedMenu.Id;
-            
+
             if (isNew) insertCount++;
             else updateCount++;
 
@@ -308,7 +308,7 @@ public class HbtDbSeedMenu
 
         // 获取所有菜单类型的菜单
         var menus = await _menuRepository.GetListAsync(m => m.MenuType == HbtMenuType.Menu);
-        
+
         foreach (var menu in menus)
         {
             if (!string.IsNullOrEmpty(menu.Perms))
@@ -320,7 +320,7 @@ public class HbtDbSeedMenu
                 {
                     button.ParentId = menu.Id; // 使用数据库中的菜单ID
                     var (isNew, savedButton) = await CreateOrUpdateMenuAsync(button, false);
-                    
+
                     if (isNew) insertCount++;
                     else updateCount++;
 

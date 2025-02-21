@@ -519,7 +519,7 @@ INSERT INTO hbt_id_menu (
     delete_by, delete_time, is_deleted
 ) VALUES 
 -- 系统管理
-('系统管理', 'menu.admin', NULL, 1,
+('系统管理', 'menu.admin._self', NULL, 1,
  '/admin', '', NULL, 0,
  0, 0, 0, 0,
  '', 'SettingOutlined', 0, '系统管理目录',

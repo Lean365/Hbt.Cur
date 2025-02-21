@@ -23,7 +23,7 @@ INSERT INTO hbt_id_menu (
     delete_by, delete_time, is_deleted
 ) VALUES 
 -- 系统管理
-('系统管理', 'menu.admin', NULL, 1,
+('系统管理', 'menu.admin._self', NULL, 1,
  '/admin', '', NULL, 0,
  0, 0, 0, 0,
  '', 'SettingOutlined', 0, '系统管理目录',
@@ -31,7 +31,7 @@ INSERT INTO hbt_id_menu (
  NULL, NULL, 0),
 
 -- 身份认证 
-('身份认证', 'menu.identity', NULL, 2,
+('身份认证', 'menu.identity._self', NULL, 2,
  '/identity', '', NULL, 0,
  0, 0, 0, 0,
  '', 'UserOutlined', 0, '身份认证目录',
@@ -39,7 +39,7 @@ INSERT INTO hbt_id_menu (
  NULL, NULL, 0),
 
 -- 审计日志
-('审计日志', 'menu.audit', NULL, 3,
+('审计日志', 'menu.audit._self', NULL, 3,
  '/audit', '', NULL, 0,
  0, 0, 0, 0,
  '', 'AuditOutlined', 0, '审计日志目录',
@@ -47,7 +47,7 @@ INSERT INTO hbt_id_menu (
  NULL, NULL, 0),
 
 -- 工作流程
-('工作流程', 'menu.workflow', NULL, 4,
+('工作流程', 'menu.workflow._self', NULL, 4,
  '/workflow', '', NULL, 0,
  0, 0, 0, 0,
  '', 'DeploymentUnitOutlined', 0, '工作流程目录',
@@ -55,7 +55,7 @@ INSERT INTO hbt_id_menu (
  NULL, NULL, 0),
 
 -- 实时监控
-('实时监控', 'menu.realtime', NULL, 5,
+('实时监控', 'menu.realtime._self', NULL, 5,
  '/realtime', '', NULL, 0,
  0, 0, 0, 0,
  '', 'DashboardOutlined', 0, '实时监控目录',
@@ -63,7 +63,7 @@ INSERT INTO hbt_id_menu (
  NULL, NULL, 0),
 
 -- 安全管理
-('安全管理', 'menu.security', NULL, 6,
+('安全管理', 'menu.security._self', NULL, 6,
  '/security', '', NULL, 0,
  0, 0, 0, 0,
  '', 'SafetyCertificateOutlined', 0, '安全管理目录',
@@ -392,7 +392,6 @@ INSERT INTO hbt_id_menu (
  'identity:role:delete', NULL, 0, '角色管理删除按钮',
  'admin', GETDATE(), 'admin', GETDATE(),
  NULL, NULL, 0),
- GETDATE(), GETDATE()),
 ('导出', 'menu.identity.role.export', @IdentityMenuId, 5,
  '', NULL, NULL, 0,
  0, 2, 0, 0,
