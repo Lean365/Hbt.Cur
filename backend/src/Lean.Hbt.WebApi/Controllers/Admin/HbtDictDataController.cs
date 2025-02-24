@@ -11,6 +11,7 @@ using Lean.Hbt.Application.Dtos.Admin;
 using Lean.Hbt.Application.Services.Admin;
 using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Domain.IServices.Admin;
+using Lean.Hbt.Infrastructure.Security.Attributes;
 
 namespace Lean.Hbt.WebApi.Controllers.Admin
 {
@@ -44,6 +45,7 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
         /// <param name="query">查询条件</param>
         /// <returns>字典数据分页列表</returns>
         [HttpGet]
+        [HbtPerm("admin:dict:list")]
         public async Task<IActionResult> GetPagedListAsync([FromQuery] HbtDictDataQueryDto query)
         {
             var result = await _dictDataService.GetPagedListAsync(query);
@@ -56,6 +58,7 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
         /// <param name="dictDataId">字典数据ID</param>
         /// <returns>字典数据详情</returns>
         [HttpGet("{dictDataId}")]
+        [HbtPerm("admin:dict:query")]
         public async Task<IActionResult> GetAsync(long dictDataId)
         {
             var result = await _dictDataService.GetAsync(dictDataId);
@@ -68,6 +71,7 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
         /// <param name="input">创建对象</param>
         /// <returns>字典数据ID</returns>
         [HttpPost]
+        [HbtPerm("admin:dict:create")]
         public async Task<IActionResult> InsertAsync([FromBody] HbtDictDataCreateDto input)
         {
             var result = await _dictDataService.InsertAsync(input);
@@ -80,6 +84,7 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
         /// <param name="input">更新对象</param>
         /// <returns>是否成功</returns>
         [HttpPut]
+        [HbtPerm("admin:dict:update")]
         public async Task<IActionResult> UpdateAsync([FromBody] HbtDictDataUpdateDto input)
         {
             var result = await _dictDataService.UpdateAsync(input);
@@ -92,6 +97,7 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
         /// <param name="dictDataId">字典数据ID</param>
         /// <returns>是否成功</returns>
         [HttpDelete("{dictDataId}")]
+        [HbtPerm("admin:dict:delete")]
         public async Task<IActionResult> DeleteAsync(long dictDataId)
         {
             var result = await _dictDataService.DeleteAsync(dictDataId);
@@ -104,6 +110,7 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
         /// <param name="dictDataIds">字典数据ID集合</param>
         /// <returns>是否成功</returns>
         [HttpDelete("batch")]
+        [HbtPerm("admin:dict:delete")]
         public async Task<IActionResult> BatchDeleteAsync([FromBody] long[] dictDataIds)
         {
             var result = await _dictDataService.BatchDeleteAsync(dictDataIds);
@@ -117,6 +124,7 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
         /// <param name="sheetName">工作表名称</param>
         /// <returns>导入结果</returns>
         [HttpPost("import")]
+        [HbtPerm("admin:dict:import")]
         [ProducesResponseType(typeof((int Success, int Fail)), StatusCodes.Status200OK)]
         public async Task<IActionResult> ImportAsync([FromForm] IFormFile file, [FromQuery] string sheetName = "字典数据")
         {
@@ -135,6 +143,7 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
         /// <param name="sheetName">工作表名称</param>
         /// <returns>Excel文件</returns>
         [HttpGet("export")]
+        [HbtPerm("admin:dict:export")]
         [ProducesResponseType(typeof(byte[]), StatusCodes.Status200OK)]
         public async Task<IActionResult> ExportAsync([FromQuery] HbtDictDataQueryDto query, [FromQuery] string sheetName = "字典数据")
         {
@@ -148,8 +157,9 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
         /// <param name="sheetName">工作表名称</param>
         /// <returns>Excel模板文件</returns>
         [HttpGet("template")]
+        [HbtPerm("admin:dict:query")]
         [ProducesResponseType(typeof(byte[]), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetTemplateAsync([FromQuery] string sheetName = "字典数据")
+        public async Task<IActionResult> GetTemplateAsync([FromQuery] string sheetName = "字典数据导入模板")
         {
             var result = await _dictDataService.GetTemplateAsync(sheetName);
             return File(result, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"字典数据导入模板_{DateTime.Now:yyyyMMddHHmmss}.xlsx");

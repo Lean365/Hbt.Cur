@@ -1,68 +1,47 @@
+//===================================================================
+// 项目名 : Lean.Hbt
+// 文件名 : LanguageForm.vue
+// 创建者 : Claude
+// 创建时间: 2024-03-20
+// 版本号 : v1.0.0
+// 描述    : 语言表单组件
+//===================================================================
+
 <template>
   <a-modal
-    :title="formData ? t('common.edit') : t('common.add')"
     :visible="visible"
+    :title="title"
     :confirm-loading="loading"
-    @ok="handleSubmit"
+    @ok="handleOk"
     @cancel="handleCancel"
   >
     <a-form
       ref="formRef"
-      :model="form"
+      :model="formData"
       :rules="rules"
-      :label-col="{ span: 4 }"
-      :wrapper-col="{ span: 19 }"
+      :label-col="{ span: 6 }"
+      :wrapper-col="{ span: 16 }"
     >
-      <a-form-item :label="t('admin.language.code.label')" name="langCode">
-        <a-input
-          v-model:value="form.langCode"
-          :placeholder="t('admin.language.code.placeholder')"
-          :disabled="!!formData"
-        />
+      <a-form-item label="语言代码" name="langCode">
+        <a-input v-model:value="formData.langCode" placeholder="请输入语言代码" />
       </a-form-item>
-      <a-form-item :label="t('admin.language.name.label')" name="langName">
-        <a-input
-          v-model:value="form.langName"
-          :placeholder="t('admin.language.name.placeholder')"
-        />
+      <a-form-item label="语言名称" name="langName">
+        <a-input v-model:value="formData.langName" placeholder="请输入语言名称" />
       </a-form-item>
-      <a-form-item :label="t('admin.language.icon.label')" name="langIcon">
-        <a-upload
-          name="file"
-          list-type="picture-card"
-          :show-upload-list="false"
-          :action="uploadUrl"
-          :headers="headers"
-          :before-upload="beforeIconUpload"
-          @change="handleIconChange"
-        >
-          <img v-if="form.langIcon" :src="form.langIcon" style="width: 100%" />
-          <div v-else>
-            <plus-outlined />
-            <div class="ant-upload-text">{{ t('common.upload.icon') }}</div>
-          </div>
-        </a-upload>
+      <a-form-item label="排序号" name="orderNum">
+        <a-input-number v-model:value="formData.orderNum" :min="0" style="width: 100%" />
       </a-form-item>
-      <a-form-item :label="t('common.orderNum')" name="orderNum">
-        <a-input-number
-          v-model:value="form.orderNum"
-          :min="0"
-          :max="999"
-          style="width: 100%"
-        />
+      <a-form-item label="是否默认" name="isDefault">
+        <a-switch v-model:checked="formData.isDefault" />
       </a-form-item>
-      <a-form-item :label="t('common.status')" name="status">
-        <a-radio-group v-model:value="form.status">
-          <a-radio value="0">{{ t('common.status.normal') }}</a-radio>
-          <a-radio value="1">{{ t('common.status.disabled') }}</a-radio>
-        </a-radio-group>
+      <a-form-item label="状态" name="status">
+        <a-select v-model:value="formData.status" placeholder="请选择">
+          <a-select-option :value="0">正常</a-select-option>
+          <a-select-option :value="1">停用</a-select-option>
+        </a-select>
       </a-form-item>
-      <a-form-item :label="t('common.remark')" name="remark">
-        <a-textarea
-          v-model:value="form.remark"
-          :placeholder="t('common.remark.placeholder')"
-          :rows="4"
-        />
+      <a-form-item label="备注" name="remark">
+        <a-textarea v-model:value="formData.remark" placeholder="请输入备注" :rows="4" />
       </a-form-item>
     </a-form>
   </a-modal>
@@ -70,139 +49,108 @@
 
 <script setup lang="ts">
 import { ref, reactive, watch } from 'vue'
-import { useI18n } from 'vue-i18n'
-import { message } from 'ant-design-vue'
-import { PlusOutlined } from '@ant-design/icons-vue'
-import type { FormInstance } from 'ant-design-vue'
-import type { LanguageCreate, LanguageUpdate } from '@/types/admin/language'
-import { createLanguage, updateLanguage } from '@/api/admin/language'
+import type { FormInstance, Rule } from 'ant-design-vue/es/form'
+import type { HbtLanguage, HbtLanguageCreate, HbtLanguageUpdate } from '@/types/admin/hbtLanguage'
 
 const props = defineProps<{
   visible: boolean
-  formData?: LanguageCreate | LanguageUpdate
+  title: string
+  record?: HbtLanguage
 }>()
 
 const emit = defineEmits<{
-  (e: 'update:visible', value: boolean): void
-  (e: 'success'): void
+  (e: 'update:visible', visible: boolean): void
+  (e: 'submit', data: HbtLanguageCreate | HbtLanguageUpdate): void
 }>()
 
-const { t } = useI18n()
-
-// 表单引用
-const formRef = ref<FormInstance>()
+// 表单状态
 const loading = ref(false)
-
-// 表单数据
-const form = reactive<LanguageCreate>({
+const formRef = ref<FormInstance>()
+const formData = reactive<HbtLanguageCreate>({
   langCode: '',
   langName: '',
-  langIcon: '',
   orderNum: 0,
-  status: '0',
+  isDefault: false,
+  status: 0,
   remark: ''
 })
 
 // 表单校验规则
-const rules = {
+const rules: Record<string, Rule[]> = {
   langCode: [
-    { required: true, message: t('admin.language.code.validation.required') },
-    { min: 2, max: 20, message: t('admin.language.code.validation.length') }
+    { required: true, message: '请输入语言代码', trigger: 'blur', type: 'string' },
+    { max: 10, message: '语言代码长度不能超过10个字符', trigger: 'blur', type: 'string' }
   ],
   langName: [
-    { required: true, message: t('admin.language.name.validation.required') },
-    { min: 2, max: 30, message: t('admin.language.name.validation.length') }
+    { required: true, message: '请输入语言名称', trigger: 'blur', type: 'string' },
+    { max: 50, message: '语言名称长度不能超过50个字符', trigger: 'blur', type: 'string' }
   ],
   orderNum: [
-    { required: true, message: t('common.orderNum.required') }
+    { required: true, message: '请输入排序号', trigger: 'blur', type: 'number' }
+  ],
+  isDefault: [
+    { required: true, message: '请选择是否默认', trigger: 'change', type: 'boolean' }
+  ],
+  status: [
+    { required: true, message: '请选择状态', trigger: 'change', type: 'number' }
   ]
 }
 
-// 上传相关配置
-const uploadUrl = import.meta.env.VITE_UPLOAD_URL
-const headers = {
-  Authorization: 'Bearer ' + localStorage.getItem('token')
-}
-
-// 上传前校验
-const beforeIconUpload = (file: File) => {
-  const isImage = file.type.startsWith('image/')
-  if (!isImage) {
-    message.error(t('common.upload.image.type'))
-    return false
-  }
-  const isLt2M = file.size / 1024 / 1024 < 2
-  if (!isLt2M) {
-    message.error(t('common.upload.image.size'))
-    return false
-  }
-  return true
-}
-
-// 图标上传变化
-const handleIconChange = (info: any) => {
-  if (info.file.status === 'done') {
-    form.langIcon = info.file.response.data
-  }
-}
-
-// 监听表单数据变化
+// 监听record变化
 watch(
-  () => props.formData,
-  (val) => {
-    if (val) {
-      Object.assign(form, val)
+  () => props.record,
+  (record) => {
+    if (record) {
+      Object.assign(formData, record)
     } else {
-      formRef.value?.resetFields()
-      Object.assign(form, {
+      Object.assign(formData, {
         langCode: '',
         langName: '',
-        langIcon: '',
         orderNum: 0,
-        status: '0',
+        isDefault: false,
+        status: 0,
         remark: ''
       })
     }
-  },
-  { immediate: true }
+  }
 )
 
-// 提交表单
-const handleSubmit = async () => {
+// 确定处理
+const handleOk = async () => {
   try {
-    await formRef.value?.validate()
     loading.value = true
+    await formRef.value?.validate()
     
-    if (props.formData && 'langId' in props.formData) {
-      await updateLanguage({
-        ...form,
-        langId: props.formData.langId
-      })
-      message.success(t('common.success.update'))
-    } else {
-      await createLanguage(form)
-      message.success(t('common.success.create'))
-    }
-    
-    emit('success')
-    emit('update:visible', false)
+    const submitData = props.record
+      ? { ...formData, id: props.record.id }
+      : formData
+      
+    emit('submit', submitData)
   } catch (error) {
-    console.error(error)
+    // 校验失败
+    console.error('表单验证失败:', error)
   } finally {
     loading.value = false
   }
 }
 
-// 取消
+// 取消处理
 const handleCancel = () => {
   formRef.value?.resetFields()
   emit('update:visible', false)
 }
 </script>
 
-<style lang="less" scoped>
-.ant-upload-text {
-  margin-top: 8px;
-  color: #666;
+<style scoped>
+.ant-form {
+  padding: 24px 0;
+}
+
+.ant-form-item {
+  margin-bottom: 24px;
+}
+
+.ant-input-number {
+  width: 100%;
 }
 </style> 

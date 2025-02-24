@@ -13,6 +13,7 @@ using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Domain.Entities.Admin;
 using Lean.Hbt.Domain.IServices.Admin;
 using Lean.Hbt.Domain.Repositories;
+using Lean.Hbt.Infrastructure.Security.Attributes;
 using Mapster;
 using SqlSugar;
 
@@ -58,6 +59,7 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
         /// <param name="query">查询条件</param>
         /// <returns>语言分页列表</returns>
         [HttpGet]
+        [HbtPerm("admin:lang:list")]
         public async Task<IActionResult> GetPagedListAsync([FromQuery] HbtLanguageQueryDto query)
         {
             var result = await _languageService.GetPagedListAsync(query);
@@ -67,12 +69,13 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
         /// <summary>
         /// 获取语言详情
         /// </summary>
-        /// <param name="languageId">语言ID</param>
+        /// <param name="langId">语言ID</param>
         /// <returns>语言详情</returns>
-        [HttpGet("{languageId}")]
-        public async Task<IActionResult> GetAsync(long languageId)
+        [HttpGet("{langId}")]
+        [HbtPerm("admin:lang:query")]
+        public async Task<IActionResult> GetAsync(long langId)
         {
-            var result = await _languageService.GetAsync(languageId);
+            var result = await _languageService.GetAsync(langId);
             return Success(result);
         }
 
@@ -82,6 +85,7 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
         /// <param name="input">创建对象</param>
         /// <returns>语言ID</returns>
         [HttpPost]
+        [HbtPerm("admin:lang:create")]
         public async Task<IActionResult> InsertAsync([FromBody] HbtLanguageCreateDto input)
         {
             var result = await _languageService.InsertAsync(input);
@@ -94,6 +98,7 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
         /// <param name="input">更新对象</param>
         /// <returns>是否成功</returns>
         [HttpPut]
+        [HbtPerm("admin:lang:update")]
         public async Task<IActionResult> UpdateAsync([FromBody] HbtLanguageUpdateDto input)
         {
             var result = await _languageService.UpdateAsync(input);
@@ -103,24 +108,26 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
         /// <summary>
         /// 删除语言
         /// </summary>
-        /// <param name="languageId">语言ID</param>
+        /// <param name="langId">语言ID</param>
         /// <returns>是否成功</returns>
-        [HttpDelete("{languageId}")]
-        public async Task<IActionResult> DeleteAsync(long languageId)
+        [HttpDelete("{langId}")]
+        [HbtPerm("admin:lang:delete")]
+        public async Task<IActionResult> DeleteAsync(long langId)
         {
-            var result = await _languageService.DeleteAsync(languageId);
+            var result = await _languageService.DeleteAsync(langId);
             return Success(result);
         }
 
         /// <summary>
         /// 批量删除语言
         /// </summary>
-        /// <param name="languageIds">语言ID集合</param>
+        /// <param name="langIds">语言ID集合</param>
         /// <returns>是否成功</returns>
         [HttpDelete("batch")]
-        public async Task<IActionResult> BatchDeleteAsync([FromBody] long[] languageIds)
+        [HbtPerm("admin:lang:delete")]
+        public async Task<IActionResult> BatchDeleteAsync([FromBody] long[] langIds)
         {
-            var result = await _languageService.BatchDeleteAsync(languageIds);
+            var result = await _languageService.BatchDeleteAsync(langIds);
             return Success(result);
         }
 
@@ -131,15 +138,12 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
         /// <param name="sheetName">工作表名称</param>
         /// <returns>导入结果</returns>
         [HttpPost("import")]
-        [ProducesResponseType(typeof((int Success, int Fail)), StatusCodes.Status200OK)]
-        public async Task<IActionResult> ImportAsync([FromForm] IFormFile file, [FromQuery] string sheetName = "语言信息")
+        [HbtPerm("admin:lang:import")]
+        public async Task<IActionResult> ImportAsync(IFormFile file, [FromQuery] string sheetName = "语言数据")
         {
-            if (file == null || file.Length == 0)
-                return BadRequest("请选择要导入的文件");
-
             using var stream = file.OpenReadStream();
             var result = await _languageService.ImportAsync(stream, sheetName);
-            return Ok(result);
+            return Success(result);
         }
 
         /// <summary>
@@ -149,11 +153,11 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
         /// <param name="sheetName">工作表名称</param>
         /// <returns>Excel文件</returns>
         [HttpGet("export")]
-        [ProducesResponseType(typeof(byte[]), StatusCodes.Status200OK)]
-        public async Task<IActionResult> ExportAsync([FromQuery] HbtLanguageQueryDto query, [FromQuery] string sheetName = "语言信息")
+        [HbtPerm("admin:lang:export")]
+        public async Task<IActionResult> ExportAsync([FromQuery] HbtLanguageQueryDto query, [FromQuery] string sheetName = "语言数据")
         {
             var result = await _languageService.ExportAsync(query, sheetName);
-            return File(result, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"语言信息_{DateTime.Now:yyyyMMddHHmmss}.xlsx");
+            return File(result, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"语言数据_{DateTime.Now:yyyyMMddHHmmss}.xlsx");
         }
 
         /// <summary>
@@ -162,11 +166,11 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
         /// <param name="sheetName">工作表名称</param>
         /// <returns>Excel模板文件</returns>
         [HttpGet("template")]
-        [ProducesResponseType(typeof(byte[]), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetTemplateAsync([FromQuery] string sheetName = "语言信息")
+        [HbtPerm("admin:lang:query")]
+        public async Task<IActionResult> GetTemplateAsync([FromQuery] string sheetName = "语言数据导入模板")
         {
             var result = await _languageService.GetTemplateAsync(sheetName);
-            return File(result, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"语言信息导入模板_{DateTime.Now:yyyyMMddHHmmss}.xlsx");
+            return File(result, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"语言数据导入模板_{DateTime.Now:yyyyMMddHHmmss}.xlsx");
         }
 
         /// <summary>

@@ -8,6 +8,9 @@ export default {
     totalVisits: '总访问量',
     totalUsers: '总用户数',
     totalOrders: '总订单数',
-    totalSales: '总销售额'
+    totalSales: '总销售额',
+    overview: '概览',
+    noData: '无数据',
+    realtime:'实时'
   }
 } 

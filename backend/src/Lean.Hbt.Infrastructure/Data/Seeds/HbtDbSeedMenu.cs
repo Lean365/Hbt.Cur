@@ -828,7 +828,10 @@ public class HbtDbSeedMenu
     {
         var buttons = new List<HbtMenu>();
         var buttonNames = new[] { "查询", "新增", "修改", "删除", "预览", "导入", "导出" };
-        var buttonPerms = new[] { "query", "add", "edit", "delete", "preview", "import", "export" };
+        var buttonPerms = new[] { "query", "create", "update", "delete", "preview", "import", "export" };
+
+        // 从菜单的权限标识中获取菜单标识
+        var menuPerm = menu.Perms.Split(':')[1];
 
         for (int i = 0; i < buttonNames.Length; i++)
         {
@@ -841,7 +844,7 @@ public class HbtDbSeedMenu
                 Path = string.Empty,
                 Component = string.Empty,
                 MenuType = HbtMenuType.Button,
-                Perms = $"{modulePrefix}:{buttonPerms[i]}",
+                Perms = $"{modulePrefix}:{menuPerm}:{buttonPerms[i]}", // 使用三级结构
                 Icon = string.Empty,
                 TenantId = 0,
                 CreateBy = "admin",

@@ -66,12 +66,16 @@ export interface PageQuery {
 }
 
 /**
- * 分页响应结果
+ * 分页结果接口
  */
 export interface PageResult<T> {
+  /** 数据列表 */
+  list: T[]
+  /** 总记录数 */
   total: number
-  rows: T[]
+  /** 当前页码 */
   pageNum: number
+  /** 每页记录数 */
   pageSize: number
 }
 

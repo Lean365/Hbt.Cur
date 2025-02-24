@@ -1,124 +1,166 @@
+//===================================================================
+// 项目名 : Lean.Hbt
+// 文件名 : TranslationForm.vue
+// 创建者 : Claude
+// 创建时间: 2024-03-20
+// 版本号 : v1.0.0
+// 描述    : 翻译表单组件
+//===================================================================
+
 <template>
-  <a-form
-    ref="formRef"
-    :model="form"
-    :rules="rules"
-    :label-col="{ span: 4 }"
-    :wrapper-col="{ span: 19 }"
+  <a-modal
+    :visible="visible"
+    :title="title"
+    :confirm-loading="loading"
+    @ok="handleOk"
+    @cancel="handleCancel"
   >
-    <a-form-item :label="t('admin.translation.langCode.label')" name="langCode">
-      <a-select
-        v-model:value="form.langCode"
-        :placeholder="t('admin.translation.langCode.placeholder')"
-        :loading="languageLoading"
-      >
-        <a-select-option v-for="lang in languageList" :key="lang.langCode" :value="lang.langCode">
-          {{ lang.langName }}
-        </a-select-option>
-      </a-select>
-    </a-form-item>
-    <a-form-item :label="t('admin.translation.module.label')" name="module">
-      <a-input v-model:value="form.module" :placeholder="t('admin.translation.module.placeholder')" />
-    </a-form-item>
-    <a-form-item :label="t('admin.translation.key.label')" name="key">
-      <a-input v-model:value="form.key" :placeholder="t('admin.translation.key.placeholder')" />
-    </a-form-item>
-    <a-form-item :label="t('admin.translation.value.label')" name="value">
-      <a-textarea v-model:value="form.value" :placeholder="t('admin.translation.value.placeholder')" :rows="4" />
-    </a-form-item>
-    <a-form-item :label="t('admin.translation.remark.label')" name="remark">
-      <a-textarea v-model:value="form.remark" :placeholder="t('admin.translation.remark.placeholder')" />
-    </a-form-item>
-  </a-form>
+    <a-form
+      ref="formRef"
+      :model="formData"
+      :rules="rules"
+      :label-col="{ span: 6 }"
+      :wrapper-col="{ span: 16 }"
+    >
+      <a-form-item label="语言代码" name="langCode">
+        <a-input v-model:value="formData.langCode" placeholder="请输入语言代码" />
+      </a-form-item>
+      <a-form-item label="模块名称" name="moduleName">
+        <a-input v-model:value="formData.moduleName" placeholder="请输入模块名称" />
+      </a-form-item>
+      <a-form-item label="翻译键" name="transKey">
+        <a-input v-model:value="formData.transKey" placeholder="请输入翻译键" />
+      </a-form-item>
+      <a-form-item label="翻译值" name="transValue">
+        <a-textarea v-model:value="formData.transValue" placeholder="请输入翻译值" :rows="4" />
+      </a-form-item>
+      <a-form-item label="排序号" name="orderNum">
+        <a-input-number v-model:value="formData.orderNum" :min="0" style="width: 100%" />
+      </a-form-item>
+      <a-form-item label="状态" name="status">
+        <a-select v-model:value="formData.status" placeholder="请选择">
+          <a-select-option :value="0">正常</a-select-option>
+          <a-select-option :value="1">停用</a-select-option>
+        </a-select>
+      </a-form-item>
+      <a-form-item label="备注" name="remark">
+        <a-textarea v-model:value="formData.remark" placeholder="请输入备注" :rows="4" />
+      </a-form-item>
+    </a-form>
+  </a-modal>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
-import { useI18n } from 'vue-i18n'
-import type { FormInstance } from 'ant-design-vue'
-import type { TranslationCreate, TranslationUpdate } from '@/types/admin/translation'
-import type { Language } from '@/types/admin/language'
-import { getSupportedLanguages } from '@/api/admin/language'
-
-const { t } = useI18n()
+import { ref, reactive, watch } from 'vue'
+import type { FormInstance, Rule } from 'ant-design-vue/es/form'
+import type { HbtTranslation, HbtTranslationCreate, HbtTranslationUpdate } from '@/types/admin/hbtTranslation'
 
 const props = defineProps<{
-  formData?: TranslationCreate | TranslationUpdate
+  visible: boolean
+  title: string
+  record?: HbtTranslation
 }>()
 
 const emit = defineEmits<{
-  (e: 'update:formData', value: TranslationCreate | TranslationUpdate): void
+  (e: 'update:visible', visible: boolean): void
+  (e: 'submit', data: HbtTranslationCreate | HbtTranslationUpdate): void
 }>()
 
-// 表单引用
+// 表单状态
+const loading = ref(false)
 const formRef = ref<FormInstance>()
-
-// 表单数据
-const form = reactive<TranslationCreate | TranslationUpdate>({
+const formData = reactive<HbtTranslationCreate>({
   langCode: '',
-  module: '',
-  key: '',
-  value: '',
-  remark: '',
-  ...props.formData
+  moduleName: '',
+  transKey: '',
+  transValue: '',
+  orderNum: 0,
+  status: 0,
+  remark: ''
 })
 
 // 表单校验规则
-const rules = {
+const rules: Record<string, Rule[]> = {
   langCode: [
-    { required: true, message: t('admin.translation.langCode.validation.required') }
+    { required: true, message: '请输入语言代码', trigger: 'blur', type: 'string' },
+    { max: 10, message: '语言代码长度不能超过10个字符', trigger: 'blur', type: 'string' }
   ],
-  module: [
-    { required: true, message: t('admin.translation.module.validation.required') }
+  moduleName: [
+    { required: true, message: '请输入模块名称', trigger: 'blur', type: 'string' },
+    { max: 50, message: '模块名称长度不能超过50个字符', trigger: 'blur', type: 'string' }
   ],
-  key: [
-    { required: true, message: t('admin.translation.key.validation.required') }
+  transKey: [
+    { required: true, message: '请输入翻译键', trigger: 'blur', type: 'string' },
+    { max: 200, message: '翻译键长度不能超过200个字符', trigger: 'blur', type: 'string' }
   ],
-  value: [
-    { required: true, message: t('admin.translation.value.validation.required') }
+  transValue: [
+    { required: true, message: '请输入翻译值', trigger: 'blur', type: 'string' },
+    { max: 500, message: '翻译值长度不能超过500个字符', trigger: 'blur', type: 'string' }
+  ],
+  orderNum: [
+    { required: true, message: '请输入排序号', trigger: 'blur', type: 'number' }
+  ],
+  status: [
+    { required: true, message: '请选择状态', trigger: 'change', type: 'number' }
   ]
 }
 
-// 语言列表
-const languageList = ref<Language[]>([])
-const languageLoading = ref(false)
-
-// 获取语言列表
-const getLanguageList = async () => {
-  languageLoading.value = true
-  try {
-    const response = await getSupportedLanguages()
-    languageList.value = response.data.data
-  } catch (error) {
-    console.error(error)
+// 监听record变化
+watch(
+  () => props.record,
+  (record) => {
+    if (record) {
+      Object.assign(formData, record)
+    } else {
+      Object.assign(formData, {
+        langCode: '',
+        moduleName: '',
+        transKey: '',
+        transValue: '',
+        orderNum: 0,
+        status: 0,
+        remark: ''
+      })
+    }
   }
-  languageLoading.value = false
+)
+
+// 确定处理
+const handleOk = async () => {
+  try {
+    loading.value = true
+    await formRef.value?.validate()
+    
+    const submitData = props.record
+      ? { ...formData, id: props.record.id }
+      : formData
+      
+    emit('submit', submitData)
+  } catch (error) {
+    // 校验失败
+    console.error('表单验证失败:', error)
+  } finally {
+    loading.value = false
+  }
 }
 
-// 表单验证方法
-const validate = async () => {
-  return await formRef.value?.validate()
-}
-
-// 重置表单
-const resetFields = () => {
+// 取消处理
+const handleCancel = () => {
   formRef.value?.resetFields()
+  emit('update:visible', false)
+}
+</script>
+
+<style scoped>
+.ant-form {
+  padding: 24px 0;
 }
 
-// 监听表单数据变化
-watch(form, (newValue) => {
-  emit('update:formData', newValue)
-}, { deep: true })
+.ant-form-item {
+  margin-bottom: 24px;
+}
 
-// 组件挂载时获取语言列表
-onMounted(() => {
-  getLanguageList()
-})
-
-// 暴露方法给父组件
-defineExpose({
-  form,
-  validate,
-  resetFields
-})
-</script> 
+.ant-input-number {
+  width: 100%;
+}
+</style> 

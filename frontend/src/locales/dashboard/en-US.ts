@@ -8,6 +8,9 @@ export default {
     totalVisits: 'Total Visits',
     totalUsers: 'Total Users',
     totalOrders: 'Total Orders',
-    totalSales: 'Total Sales'
+    totalSales: 'Total Sales',
+    overview: 'Overview',
+    noData: 'NoData',
+    realtime:'Realtime'
   }
 } 

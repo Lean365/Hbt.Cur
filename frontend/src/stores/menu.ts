@@ -89,12 +89,19 @@ export const useMenuStore = defineStore('menu', () => {
     isLoading.value = false
   }
 
+  // 重新加载菜单
+  const reloadMenus = async () => {
+    clearMenus()
+    return await loadUserMenus()
+  }
+
   return {
     isLoading,
     rawMenuList,
     menuList,
     isMenuLoaded,
     loadUserMenus,
-    clearMenus
+    clearMenus,
+    reloadMenus
   }
 }) 

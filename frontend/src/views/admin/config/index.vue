@@ -2,100 +2,461 @@
 // 项目名 : Lean.Hbt
 // 文件名 : index.vue
 // 创建者 : Claude
-// 创建时间: 2024-02-21
+// 创建时间: 2024-03-20
 // 版本号 : v1.0.0
-// 描述    : 系统配置管理组件
+// 描述    : 系统配置管理页面
 //===================================================================
 
 <template>
-  <div class="config-container">
-    <a-card title="系统配置" :bordered="false">
-      <a-form :model="formState" :rules="rules" ref="formRef">
-        <!-- 系统名称 -->
-        <a-form-item label="系统名称" name="systemName">
-          <a-input v-model:value="formState.systemName" placeholder="请输入系统名称" />
+  <div class="p-6">
+    <a-card>
+      <!-- 搜索表单 -->
+      <a-form layout="inline" :model="queryParams">
+        <a-form-item label="配置名称">
+          <a-input v-model:value="queryParams.configName" placeholder="请输入配置名称" allowClear />
         </a-form-item>
-
-        <!-- 系统版本 -->
-        <a-form-item label="系统版本" name="version">
-          <a-input v-model:value="formState.version" placeholder="请输入系统版本" />
+        <a-form-item label="配置键名">
+          <a-input v-model:value="queryParams.configKey" placeholder="请输入配置键名" allowClear />
         </a-form-item>
-
-        <!-- 系统描述 -->
-        <a-form-item label="系统描述" name="description">
-          <a-textarea v-model:value="formState.description" placeholder="请输入系统描述" :rows="4" />
+        <a-form-item label="系统内置">
+          <a-select v-model:value="queryParams.configBuiltin" placeholder="请选择" allowClear>
+            <a-select-option :value="0">否</a-select-option>
+            <a-select-option :value="1">是</a-select-option>
+          </a-select>
         </a-form-item>
-
-        <!-- 按钮组 -->
+        <a-form-item label="状态">
+          <a-select v-model:value="queryParams.status" placeholder="请选择" allowClear>
+            <a-select-option :value="0">正常</a-select-option>
+            <a-select-option :value="1">停用</a-select-option>
+          </a-select>
+        </a-form-item>
         <a-form-item>
           <a-space>
-            <a-button type="primary" @click="handleSubmit">保存</a-button>
+            <a-button type="primary" @click="handleSearch" v-hasPermi="['admin:config:list']">查询</a-button>
             <a-button @click="handleReset">重置</a-button>
           </a-space>
         </a-form-item>
       </a-form>
+
+      <!-- 工具栏 -->
+      <div class="mb-4 flex justify-between">
+        <div>
+          <a-space>
+            <a-button type="primary" @click="handleAdd" v-hasPermi="['admin:config:insert']">
+              <plus-outlined />新增
+            </a-button>
+            <a-button 
+              :disabled="!selectedRowKeys.length"
+              @click="handleBatchDelete"
+              v-hasPermi="['admin:config:delete']"
+            >
+              <delete-outlined />批量删除
+            </a-button>
+            <a-upload
+              name="file"
+              :show-upload-list="false"
+              :before-upload="handleImport"
+              v-hasPermi="['admin:config:import']"
+            >
+              <a-button>
+                <upload-outlined />导入
+              </a-button>
+            </a-upload>
+            <a-button @click="handleExport" v-hasPermi="['admin:config:export']">
+              <download-outlined />导出
+            </a-button>
+            <a-button @click="handleTemplate" v-hasPermi="['admin:config:query']">
+              <file-outlined />模板
+            </a-button>
+          </a-space>
+        </div>
+        <div>
+          <a-button @click="handleRefresh">
+            <reload-outlined />刷新
+          </a-button>
+        </div>
+      </div>
+
+      <!-- 配置表格 -->
+      <a-table
+        :loading="loading"
+        :columns="columns"
+        :data-source="configList"
+        :pagination="false"
+        :row-selection="{
+          selectedRowKeys: selectedRowKeys,
+          onChange: (selectedKeys: (string | number)[], selectedRows: HbtConfig[]) => onSelectChange(selectedKeys)
+        }"
+        row-key="configId"
+      >
+        <template #bodyCell="{ column, record }">
+          <template v-if="column.key === 'configBuiltin'">
+            {{ record.configBuiltin === 1 ? '是' : '否' }}
+          </template>
+          <template v-else-if="column.key === 'status'">
+            <a-switch
+              :checked="(record as HbtConfig).status === 0"
+              :loading="(record as HbtConfig).statusLoading"
+              @change="(checked: any) => handleStatusChange(record as HbtConfig, Boolean(checked))"
+              v-hasPermi="['admin:config:update']"
+            />
+          </template>
+          <template v-else-if="column.key === 'action'">
+            <a-space>
+              <a @click="handleEdit(record as HbtConfig)" v-hasPermi="['admin:config:update']">编辑</a>
+              <a-popconfirm
+                title="确定要删除吗？"
+                @confirm="handleDelete(record as HbtConfig)"
+                v-hasPermi="['admin:config:delete']"
+              >
+                <a>删除</a>
+              </a-popconfirm>
+            </a-space>
+          </template>
+        </template>
+      </a-table>
+
+      <!-- 分页组件 -->
+      <hbt-pagination
+        v-model:current="queryParams.pageNum"
+        v-model:pageSize="queryParams.pageSize"
+        :total="total"
+        @change="handlePageChange"
+      />
+
+      <!-- 配置表单 -->
+      <config-form
+        v-model:visible="modalVisible"
+        :title="modalTitle"
+        :record="currentRecord"
+        @submit="handleSubmit"
+      />
     </a-card>
   </div>
 </template>
 
-<script lang="ts" setup>
-import { ref, reactive } from 'vue'
+<script setup lang="ts">
+import { ref, reactive, onMounted } from 'vue'
 import { message } from 'ant-design-vue'
-import type { FormInstance, Rule } from 'ant-design-vue/es/form'
+import type { ColumnType } from 'ant-design-vue/es/table'
+import type { Switch } from 'ant-design-vue'
+import { 
+  PlusOutlined, 
+  DeleteOutlined,
+  UploadOutlined,
+  DownloadOutlined,
+  FileOutlined,
+  ReloadOutlined 
+} from '@ant-design/icons-vue'
+import {
+  getHbtConfigList,
+  getHbtConfig,
+  createHbtConfig,
+  updateHbtConfig,
+  deleteHbtConfig,
+  batchDeleteHbtConfig,
+  importHbtConfig,
+  exportHbtConfig,
+  getHbtConfigTemplate,
+  updateHbtConfigStatus
+} from '@/api/admin/hbtConfig'
+import type {
+  HbtConfig,
+  HbtConfigQuery,
+  HbtConfigCreate,
+  HbtConfigUpdate
+} from '@/types/admin/hbtConfig'
+import ConfigForm from './components/ConfigForm.vue'
+import HbtPagination from '@/components/pagination/index.vue'
 
-interface FormState {
-  systemName: string
-  version: string
-  description: string
-}
-
-// 表单状态
-const formState = reactive<FormState>({
-  systemName: '',
-  version: '',
-  description: ''
+// 查询参数
+const queryParams = reactive<HbtConfigQuery>({
+  pageNum: 1,
+  pageSize: 10,
+  configName: '',
+  configKey: '',
+  configBuiltin: undefined,
+  status: undefined
 })
 
-// 表单规则
-const rules: Partial<Record<keyof FormState, Rule[]>> = {
-  systemName: [{ required: true, message: '请输入系统名称', trigger: 'blur' }],
-  version: [{ required: true, message: '请输入系统版本', trigger: 'blur' }],
-  description: [{ required: true, message: '请输入系统描述', trigger: 'blur' }]
-}
+// 状态定义
+const loading = ref(false)
+const configList = ref<HbtConfig[]>([])
+const selectedRowKeys = ref<(string | number)[]>([])
+const modalVisible = ref(false)
+const modalTitle = ref('新增配置')
+const currentRecord = ref<HbtConfig>()
+const total = ref(0)
 
-// 表单引用
-const formRef = ref<FormInstance>()
+// 表格列定义
+const columns: ColumnType<HbtConfig>[] = [
+  {
+    title: '配置名称',
+    dataIndex: 'configName',
+    key: 'configName',
+    width: 200
+  },
+  {
+    title: '配置键名',
+    dataIndex: 'configKey',
+    key: 'configKey',
+    width: 200
+  },
+  {
+    title: '配置键值',
+    dataIndex: 'configValue',
+    key: 'configValue',
+    width: 200,
+    ellipsis: true
+  },
+  {
+    title: '系统内置',
+    dataIndex: 'configBuiltin',
+    key: 'configBuiltin',
+    width: 100
+  },
+  {
+    title: '状态',
+    dataIndex: 'status',
+    key: 'status',
+    width: 100
+  },
+  {
+    title: '备注',
+    dataIndex: 'remark',
+    key: 'remark',
+    ellipsis: true
+  },
+  {
+    title: '创建时间',
+    dataIndex: 'createTime',
+    key: 'createTime',
+    width: 180
+  },
+  {
+    title: '操作',
+    key: 'action',
+    width: 150,
+    fixed: 'right' as const
+  }
+]
 
-// 提交表单
-const handleSubmit = async () => {
+// 加载配置列表
+const loadConfigList = async () => {
+  loading.value = true
   try {
-    const values = await formRef.value?.validate()
-    console.log('表单数据:', values)
-    message.success('保存成功')
+    console.log('加载配置列表，参数:', queryParams)
+    const { data } = await getHbtConfigList(queryParams)
+    console.log('配置列表响应:', data)
+    
+    if (data?.code === 200) {
+      configList.value = data.data.items
+      total.value = data.data.total
+    } else {
+      message.error(data?.msg || '加载配置列表失败')
+      configList.value = []
+      total.value = 0
+    }
   } catch (error) {
-    console.error('表单验证失败:', error)
+    console.error('加载配置列表失败:', error)
+    message.error('加载配置列表失败')
+    configList.value = []
+    total.value = 0
+  } finally {
+    loading.value = false
   }
 }
 
-// 重置表单
-const handleReset = () => {
-  formRef.value?.resetFields()
+// 页码变化处理
+const handlePageChange = (page: number, size: number) => {
+  queryParams.pageNum = page
+  queryParams.pageSize = size
+  loadConfigList()
 }
+
+// 选择变化处理
+const onSelectChange = (keys: (string | number)[]) => {
+  selectedRowKeys.value = keys
+}
+
+// 搜索处理
+const handleSearch = () => {
+  queryParams.pageNum = 1
+  loadConfigList()
+}
+
+// 重置处理
+const handleReset = () => {
+  queryParams.configName = ''
+  queryParams.configKey = ''
+  queryParams.configBuiltin = undefined
+  queryParams.status = undefined
+  queryParams.pageNum = 1
+  loadConfigList()
+}
+
+// 刷新处理
+const handleRefresh = () => {
+  loadConfigList()
+}
+
+// 新增处理
+const handleAdd = () => {
+  modalTitle.value = '新增配置'
+  currentRecord.value = undefined
+  modalVisible.value = true
+}
+
+// 编辑处理
+const handleEdit = async (record: HbtConfig) => {
+  try {
+    const { data } = await getHbtConfig(record.configId)
+    if (data?.code === 200) {
+      modalTitle.value = '编辑配置'
+      currentRecord.value = data.data
+      modalVisible.value = true
+    } else {
+      message.error(data?.msg || '获取配置详情失败')
+    }
+  } catch (error) {
+    console.error('获取配置详情失败:', error)
+    message.error('获取配置详情失败')
+  }
+}
+
+// 删除处理
+const handleDelete = async (record: HbtConfig) => {
+  try {
+    const { data } = await deleteHbtConfig(record.configId)
+    if (data?.code === 200) {
+      message.success('删除成功')
+      loadConfigList()
+    } else {
+      message.error(data?.msg || '删除失败')
+    }
+  } catch (error) {
+    console.error('删除失败:', error)
+    message.error('删除失败')
+  }
+}
+
+// 批量删除处理
+const handleBatchDelete = async () => {
+  try {
+    const { data } = await batchDeleteHbtConfig(selectedRowKeys.value.map(Number))
+    if (data?.code === 200) {
+      message.success('批量删除成功')
+      selectedRowKeys.value = []
+      loadConfigList()
+    } else {
+      message.error(data?.msg || '批量删除失败')
+    }
+  } catch (error) {
+    console.error('批量删除失败:', error)
+    message.error('批量删除失败')
+  }
+}
+
+// 导入处理
+const handleImport = async (file: File) => {
+  try {
+    const { data } = await importHbtConfig(file)
+    if (data?.code === 200) {
+      message.success('导入成功')
+      loadConfigList()
+    } else {
+      message.error(data?.msg || '导入失败')
+    }
+  } catch (error) {
+    console.error('导入失败:', error)
+    message.error('导入失败')
+  }
+  return false
+}
+
+// 导出处理
+const handleExport = async () => {
+  try {
+    const { data } = await exportHbtConfig(queryParams)
+    const url = window.URL.createObjectURL(new Blob([data]))
+    const link = document.createElement('a')
+    link.href = url
+    link.download = '系统配置.xlsx'
+    link.click()
+    window.URL.revokeObjectURL(url)
+  } catch (error) {
+    console.error('导出失败:', error)
+    message.error('导出失败')
+  }
+}
+
+// 下载模板
+const handleTemplate = async () => {
+  try {
+    const { data } = await getHbtConfigTemplate()
+    const url = window.URL.createObjectURL(new Blob([data]))
+    const link = document.createElement('a')
+    link.href = url
+    link.download = '系统配置导入模板.xlsx'
+    link.click()
+    window.URL.revokeObjectURL(url)
+  } catch (error) {
+    console.error('下载模板失败:', error)
+    message.error('下载模板失败')
+  }
+}
+
+// 状态变更处理
+const handleStatusChange = async (record: HbtConfig, checked: boolean) => {
+  try {
+    record.statusLoading = true
+    const { data } = await updateHbtConfigStatus(record.configId, checked ? 0 : 1)
+    if (data?.code === 200) {
+      message.success('状态更新成功')
+      record.status = checked ? 0 : 1
+    } else {
+      message.error(data?.msg || '状态更新失败')
+    }
+  } catch (error) {
+    console.error('状态更新失败:', error)
+    message.error('状态更新失败')
+  } finally {
+    record.statusLoading = false
+  }
+}
+
+// 表单提交处理
+const handleSubmit = async (formData: HbtConfigCreate | HbtConfigUpdate) => {
+  try {
+    const { data } = await (currentRecord.value
+      ? updateHbtConfig(formData as HbtConfigUpdate)
+      : createHbtConfig(formData as HbtConfigCreate))
+      
+    if (data?.code === 200) {
+      message.success(`${currentRecord.value ? '更新' : '创建'}成功`)
+      modalVisible.value = false
+      loadConfigList()
+    } else {
+      message.error(data?.msg || `${currentRecord.value ? '更新' : '创建'}失败`)
+    }
+  } catch (error) {
+    console.error(`${currentRecord.value ? '更新' : '创建'}失败:`, error)
+    message.error(`${currentRecord.value ? '更新' : '创建'}失败`)
+  }
+}
+
+// 组件挂载时加载数据
+onMounted(() => {
+  loadConfigList()
+})
 </script>
 
-<style lang="less" scoped>
-.config-container {
-  padding: 24px;
-  background: #f0f2f5;
-  min-height: 100%;
-
-  :deep(.ant-card-head) {
-    border-bottom: 1px solid #f0f0f0;
-  }
-
-  :deep(.ant-form) {
-    max-width: 600px;
-    margin: 0 auto;
-  }
+<style scoped>
+.ant-form {
+  margin-bottom: 24px;
 }
-</style> 
+
+.ant-table {
+  margin-top: 24px;
+}
+</style>

@@ -28,6 +28,8 @@ import zhCNFooter from './footer/zh-CN';
 import enUSFooter from './footer/en-US';
 import zhCNMenu from './menu/zh-CN';
 import enUSMenu from './menu/en-US';
+import zhCNPagination from './pagination/zh-CN';
+import enUSPagination from './pagination/en-US';
 
 // 检查原始翻译文件
 console.log('Menu translation file:', zhCNIdentityMenu);
@@ -47,6 +49,7 @@ const messages = {
     ...zhCNAdminTrans,
     ...zhCNFooter,
     ...zhCNMenu,
+    ...zhCNPagination,
     identity: {
       ...zhCNIdentityMenu.identity,
       ...zhCNIdentityUser.identity
@@ -65,6 +68,7 @@ const messages = {
     ...enUSAdminTrans,
     ...enUSFooter,
     ...enUSMenu,
+    ...enUSPagination,
     identity: {
       ...enUSIdentityMenu.identity,
       ...enUSIdentityUser.identity

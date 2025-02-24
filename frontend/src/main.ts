@@ -6,6 +6,7 @@ import App from './App.vue'
 import router from './router'
 import i18n from './locales'
 import { useSettingStore } from '@/stores/settings'
+import { setupPermission } from './directives/permission'
 
 import './assets/styles/index.less'
 
@@ -29,7 +30,10 @@ async function bootstrap() {
   const settingStore = useSettingStore()
   await settingStore.loadFromStorage()
 
-  // 6. 挂载应用
+  // 6. 注册权限指令
+  setupPermission(app)
+
+  // 7. 挂载应用
   app.mount('#app')
 }
 

@@ -11,6 +11,7 @@ using Lean.Hbt.Application.Dtos.Admin;
 using Lean.Hbt.Application.Services.Admin;
 using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Domain.IServices.Admin;
+using Lean.Hbt.Infrastructure.Security.Attributes;
 
 namespace Lean.Hbt.WebApi.Controllers.Admin
 {
@@ -44,6 +45,7 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
         /// <param name="query">查询条件</param>
         /// <returns>翻译分页列表</returns>
         [HttpGet]
+        [HbtPerm("admin:trans:list")]
         public async Task<IActionResult> GetPagedListAsync([FromQuery] HbtTranslationQueryDto query)
         {
             var result = await _translationService.GetPagedListAsync(query);
@@ -53,12 +55,13 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
         /// <summary>
         /// 获取翻译详情
         /// </summary>
-        /// <param name="translationId">翻译ID</param>
+        /// <param name="transId">翻译ID</param>
         /// <returns>翻译详情</returns>
-        [HttpGet("{translationId}")]
-        public async Task<IActionResult> GetAsync(long translationId)
+        [HttpGet("{transId}")]
+        [HbtPerm("admin:trans:query")]
+        public async Task<IActionResult> GetAsync(long transId)
         {
-            var result = await _translationService.GetAsync(translationId);
+            var result = await _translationService.GetAsync(transId);
             return Success(result);
         }
 
@@ -68,6 +71,7 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
         /// <param name="input">创建对象</param>
         /// <returns>翻译ID</returns>
         [HttpPost]
+        [HbtPerm("admin:trans:create")]
         public async Task<IActionResult> InsertAsync([FromBody] HbtTranslationCreateDto input)
         {
             var result = await _translationService.InsertAsync(input);
@@ -80,6 +84,7 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
         /// <param name="input">更新对象</param>
         /// <returns>是否成功</returns>
         [HttpPut]
+        [HbtPerm("admin:trans:update")]
         public async Task<IActionResult> UpdateAsync([FromBody] HbtTranslationUpdateDto input)
         {
             var result = await _translationService.UpdateAsync(input);
@@ -89,24 +94,26 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
         /// <summary>
         /// 删除翻译
         /// </summary>
-        /// <param name="translationId">翻译ID</param>
+        /// <param name="transId">翻译ID</param>
         /// <returns>是否成功</returns>
-        [HttpDelete("{translationId}")]
-        public async Task<IActionResult> DeleteAsync(long translationId)
+        [HttpDelete("{transId}")]
+        [HbtPerm("admin:trans:delete")]
+        public async Task<IActionResult> DeleteAsync(long transId)
         {
-            var result = await _translationService.DeleteAsync(translationId);
+            var result = await _translationService.DeleteAsync(transId);
             return Success(result);
         }
 
         /// <summary>
         /// 批量删除翻译
         /// </summary>
-        /// <param name="translationIds">翻译ID集合</param>
+        /// <param name="transIds">翻译ID集合</param>
         /// <returns>是否成功</returns>
         [HttpDelete("batch")]
-        public async Task<IActionResult> BatchDeleteAsync([FromBody] long[] translationIds)
+        [HbtPerm("admin:trans:delete")]
+        public async Task<IActionResult> BatchDeleteAsync([FromBody] long[] transIds)
         {
-            var result = await _translationService.BatchDeleteAsync(translationIds);
+            var result = await _translationService.BatchDeleteAsync(transIds);
             return Success(result);
         }
 
@@ -117,7 +124,8 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
         /// <param name="sheetName">工作表名称</param>
         /// <returns>导入结果</returns>
         [HttpPost("import")]
-        public async Task<IActionResult> ImportAsync(IFormFile file, [FromQuery] string sheetName = "翻译信息")
+        [HbtPerm("admin:trans:import")]
+        public async Task<IActionResult> ImportAsync(IFormFile file, [FromQuery] string sheetName = "翻译数据")
         {
             if (file == null || file.Length == 0)
                 return Error("请选择要导入的文件");
@@ -134,7 +142,8 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
         /// <param name="sheetName">工作表名称</param>
         /// <returns>Excel文件</returns>
         [HttpGet("export")]
-        public async Task<IActionResult> ExportAsync([FromQuery] HbtTranslationQueryDto query, [FromQuery] string sheetName = "翻译信息")
+        [HbtPerm("admin:trans:export")]
+        public async Task<IActionResult> ExportAsync([FromQuery] HbtTranslationQueryDto query, [FromQuery] string sheetName = "翻译数据")
         {
             var result = await _translationService.ExportAsync(query, sheetName);
             return File(result, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"翻译数据_{DateTime.Now:yyyyMMddHHmmss}.xlsx");
@@ -146,10 +155,11 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
         /// <param name="sheetName">工作表名称</param>
         /// <returns>Excel模板文件</returns>
         [HttpGet("template")]
-        public async Task<IActionResult> GetTemplateAsync([FromQuery] string sheetName = "翻译信息")
+        [HbtPerm("admin:trans:query")]
+        public async Task<IActionResult> GetTemplateAsync([FromQuery] string sheetName = "翻译数据导入模板")
         {
             var result = await _translationService.GetTemplateAsync(sheetName);
-            return File(result, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"翻译导入模板_{DateTime.Now:yyyyMMddHHmmss}.xlsx");
+            return File(result, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"翻译数据导入模板_{DateTime.Now:yyyyMMddHHmmss}.xlsx");
         }
 
         /// <summary>

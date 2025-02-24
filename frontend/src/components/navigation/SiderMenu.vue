@@ -22,6 +22,7 @@ import { useMenuStore } from '@/stores/menu'
 import type { Menu } from '@/types/identity/menu'
 import { HbtMenuType } from '@/types/base'
 import * as Icons from '@ant-design/icons-vue'
+import { findRouteByPath, handleRouteNavigation } from '@/router'
 
 const { t } = useI18n()
 const route = useRoute()
@@ -97,18 +98,6 @@ const processSubMenus = (child: RouteRecordRaw) => {
 
 // 处理动态菜单项
 const processMenuItem = (menu: Menu, parentPath: string = ''): MenuItemType => {
-  // 调试日志
-  console.log('[菜单组件] 处理菜单项:', {
-    菜单对象: menu,
-    父路径: parentPath,
-    菜单名称: menu?.menuName,
-    翻译键: menu?.transKey,
-    菜单路径: menu?.path,
-    菜单类型: menu?.menuType,
-    图标: menu?.icon,
-    子菜单数量: menu?.children?.length
-  })
-
   // 确保menu对象存在
   if (!menu) {
     console.warn('[菜单组件] 无效的菜单项')
@@ -121,40 +110,31 @@ const processMenuItem = (menu: Menu, parentPath: string = ''): MenuItemType => {
   // 处理路径
   const menuPath = menu.path || ''
   let fullPath = ''
-  
+
   if (menu.menuType === HbtMenuType.Directory) {
-    // 目录类型：确保以/开头
+    // 目录类型使用原始路径
     fullPath = menuPath.startsWith('/') ? menuPath : `/${menuPath}`
+  } else if (parentPath) {
+    // 子菜单使用相对路径，需要和父路径组合
+    const relativePath = menuPath.startsWith('/') ? menuPath.slice(1) : menuPath
+    fullPath = `${parentPath}/${relativePath}`.replace(/\/+/g, '/')
   } else {
-    // 菜单类型：组合父路径
-    if (parentPath) {
-      // 确保父路径以/开头，并且不以/结尾
-      const normalizedParentPath = parentPath.startsWith('/') ? parentPath : `/${parentPath}`
-      const cleanParentPath = normalizedParentPath.endsWith('/') ? normalizedParentPath.slice(0, -1) : normalizedParentPath
-      // 确保子路径不以/开头
-      const cleanMenuPath = menuPath.startsWith('/') ? menuPath.slice(1) : menuPath
-      fullPath = `${cleanParentPath}/${cleanMenuPath}`
-    } else {
-      fullPath = menuPath.startsWith('/') ? menuPath : `/${menuPath}`
-    }
+    // 顶层菜单使用完整路径
+    fullPath = menuPath.startsWith('/') ? menuPath : `/${menuPath}`
   }
 
-  // 处理图标
-  let icon
-  if (menu.icon) {
-    // 确保图标名称以 Outlined 结尾
-    const iconName = menu.icon.endsWith('Outlined') ? menu.icon : `${menu.icon}Outlined`
-    if (iconMap[iconName as keyof typeof iconMap]) {
-      icon = () => h(iconMap[iconName as keyof typeof iconMap])
-    } else {
-      console.warn(`[菜单组件] 未找到图标: ${iconName}，原始图标名: ${menu.icon}`)
-    }
-  }
+  console.log('[菜单组件] 处理菜单项:', {
+    菜单名称: menu.menuName,
+    菜单类型: menu.menuType,
+    原始路径: menuPath,
+    父级路径: parentPath,
+    完整路径: fullPath
+  })
 
   // 构建菜单项
   const result: MenuItemType = {
-    key: menu.menuType === HbtMenuType.Directory ? `dir_${menu.menuId}` : fullPath,
-    icon,
+    key: fullPath,
+    icon: menu.icon ? () => h(iconMap[menu.icon as keyof typeof iconMap]) : undefined,
     label: menu.transKey ? t(menu.transKey) : menu.menuName
   }
 
@@ -164,13 +144,6 @@ const processMenuItem = (menu: Menu, parentPath: string = ''): MenuItemType => {
       .map(child => processMenuItem(child, fullPath))
       .filter(Boolean)
   }
-
-  console.log('[菜单组件] 生成菜单项:', {
-    原始路径: menuPath,
-    父路径: parentPath,
-    完整路径: fullPath,
-    菜单项: result
-  })
 
   return result
 }
@@ -262,48 +235,114 @@ watch(() => menuStore.menuList, (newMenuList) => {
   })
 }, { immediate: true })
 
-// 处理菜单点击
-const handleMenuClick = (info: MenuInfo) => {
-  console.log('[菜单点击] 点击信息:', {
-    key: info.key,
-    keyPath: info.keyPath,
-    item: info.item,
-    domEvent: info.domEvent
+// 查找菜单项
+const findMenuItem = (menus: Menu[] | undefined, key: string): Menu | undefined => {
+  if (!menus) {
+    console.log('[菜单查找] 菜单列表为空')
+    return undefined
+  }
+
+  // 标准化查找的key
+  const normalizedKey = key.replace(/\/+/g, '/')
+
+  console.log('[菜单查找] 开始查找菜单项:', {
+    查找的Key: normalizedKey,
+    菜单列表长度: menus.length,
+    菜单列表: menus.map(m => ({
+      ID: m.menuId,
+      名称: m.menuName,
+      路径: m.path,
+      类型: m.menuType
+    }))
   })
 
-  if (typeof info.key === 'string') {
-    // 如果是目录菜单（以 dir_ 开头），查找对应的菜单项并导航到其路径
-    if (info.key.startsWith('dir_')) {
-      const menuId = info.key.replace('dir_', '')
-      const findMenuById = (menus: Menu[] | undefined): Menu | undefined => {
-        if (!menus) return undefined
-        for (const menu of menus) {
-          if (menu.menuId === menuId) return menu
-          if (menu.children?.length) {
-            const found = findMenuById(menu.children)
-            if (found) return found
-          }
-        }
-        return undefined
-      }
-      
-      const menuItem = findMenuById(menuStore.rawMenuList)
-      if (menuItem?.path) {
-        const path = menuItem.path.startsWith('/') ? menuItem.path : `/${menuItem.path}`
-        if (path !== route.path) {
-          router.push(path)
-        }
-      }
-      return
+  // 递归查找菜单项
+  const findMenuWithKey = (menu: Menu, parentPath: string = ''): Menu | undefined => {
+    // 处理路径
+    const menuPath = menu.path || ''
+    let fullPath = ''
+
+    if (menu.menuType === HbtMenuType.Directory) {
+      // 目录类型使用完整路径
+      fullPath = menuPath.startsWith('/') ? menuPath : `/${menuPath}`
+    } else {
+      // 子菜单使用相对路径,需要考虑父路径
+      const relativePath = menuPath.startsWith('/') ? menuPath.slice(1) : menuPath
+      fullPath = parentPath
+        ? `${parentPath}/${relativePath}`.replace(/\/+/g, '/')
+        : `/${relativePath}`
     }
 
-    // 如果点击的是已选中的菜单项，不进行导航
-    if (selectedKeys.value.includes(info.key)) {
-      return
+    // 规范化路径
+    fullPath = fullPath.replace(/\/+/g, '/')
+
+    console.log('[菜单查找] 检查菜单项:', {
+      菜单ID: menu.menuId,
+      菜单名称: menu.menuName,
+      菜单类型: menu.menuType,
+      原始路径: menuPath,
+      父级路径: parentPath,
+      完整路径: fullPath,
+      查找的Key: normalizedKey,
+      匹配结果: fullPath === normalizedKey
+    })
+
+    if (fullPath === normalizedKey) {
+      console.log('[菜单查找] 找到匹配的菜单项:', menu)
+      return menu
     }
 
-    // 如果是普通菜单项，进行导航
-    router.push(info.key)
+    // 递归查找子菜单
+    if (menu.children?.length) {
+      for (const child of menu.children) {
+        const found = findMenuWithKey(child, fullPath)
+        if (found) {
+          console.log('[菜单查找] 在子菜单中找到匹配项:', {
+            父菜单: menu.menuName,
+            子菜单: found.menuName,
+            菜单路径: fullPath
+          })
+          return found
+        }
+      }
+    }
+
+    return undefined
+  }
+
+  // 遍历顶层菜单
+  for (const menu of menus) {
+    const found = findMenuWithKey(menu, '')
+    if (found) return found
+  }
+
+  console.log('[菜单查找] 未找到匹配的菜单项:', normalizedKey)
+  return undefined
+}
+
+// 处理菜单点击
+const handleMenuClick = async (info: MenuInfo) => {
+  if (!info.key || typeof info.key !== 'string') return
+
+  console.log('[菜单点击] 原始信息:', {
+    点击的Key: info.key,
+    菜单项: info,
+    父级路径: info.keyPath?.slice(1) || []
+  })
+
+  // 确保路径以斜杠开头
+  const routePath = info.key.startsWith('/') ? info.key : `/${info.key}`
+
+  console.log('[菜单点击] 处理后的路径:', {
+    原始路径: info.key,
+    处理后路径: routePath
+  })
+
+  // 使用路由工具函数处理导航
+  const success = await handleRouteNavigation(routePath)
+  if (!success) {
+    // 如果导航失败，重置选中状态
+    selectedKeys.value = [route.path]
   }
 }
 </script>
