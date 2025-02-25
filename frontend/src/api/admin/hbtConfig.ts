@@ -4,138 +4,147 @@
 // 创建者 : Claude
 // 创建时间: 2024-03-20
 // 版本号 : v1.0.0
-// 描述    : 系统配置API接口
+// 描述    : 系统配置API
 //===================================================================
 
 import request from '@/utils/request'
-import type { ApiResult } from '@/types/base'
-import type { 
-  HbtConfigQuery, 
-  HbtConfig, 
-  HbtConfigCreate, 
+import type {
+  HbtConfig,
+  HbtConfigQuery,
+  HbtConfigCreate,
   HbtConfigUpdate,
-  HbtConfigBatchDelete,
-  HbtConfigStatusUpdate,
-  HbtConfigImport,
-  HbtConfigExport,
+  ApiResponse,
   HbtPageResponse
 } from '@/types/admin/hbtConfig'
 
-// 获取系统配置列表
+/**
+ * 获取配置列表
+ * @param query 查询参数
+ * @returns 配置列表
+ */
 export function getHbtConfigList(query: HbtConfigQuery) {
-  // 构建查询参数，过滤掉空值和undefined
-  const params = Object.entries({
-    pageIndex: query.pageIndex,
-    pageSize: query.pageSize,
-    configName: query.configName?.trim(),
-    configKey: query.configKey?.trim(),
-    configBuiltin: query.configBuiltin,
-    status: query.status,
-    beginTime: query.beginTime?.trim(),
-    endTime: query.endTime?.trim()
-  }).reduce((acc, [key, value]) => {
-    // 只添加有效值
-    if (value !== undefined && value !== null && value !== '') {
-      acc[key] = value;
-    }
-    return acc;
-  }, {} as Record<string, any>);
-
-  console.log('[API] 发送系统配置查询请求:', {
-    原始参数: query,
-    处理后参数: params
-  });
-  
   return request<HbtPageResponse<HbtConfig>>({
     url: '/api/HbtConfig',
     method: 'get',
-    params
+    params: query
   })
 }
 
-// 获取系统配置详情
+/**
+ * 获取配置详情
+ * @param configId 配置ID
+ * @returns 配置详情
+ */
 export function getHbtConfig(configId: number) {
-  return request<ApiResult<HbtConfig>>({
+  return request<ApiResponse<HbtConfig>>({
     url: `/api/HbtConfig/${configId}`,
     method: 'get'
   })
 }
 
-// 创建系统配置
+/**
+ * 创建配置
+ * @param data 创建参数
+ * @returns 创建结果
+ */
 export function createHbtConfig(data: HbtConfigCreate) {
-  return request<ApiResult<any>>({
+  return request<ApiResponse<null>>({
     url: '/api/HbtConfig',
     method: 'post',
     data
   })
 }
 
-// 更新系统配置
+/**
+ * 更新配置
+ * @param data 更新参数
+ * @returns 更新结果
+ */
 export function updateHbtConfig(data: HbtConfigUpdate) {
-  return request<ApiResult<any>>({
+  return request<ApiResponse<null>>({
     url: '/api/HbtConfig',
     method: 'put',
     data
   })
 }
 
-// 删除系统配置
+/**
+ * 删除配置
+ * @param configId 配置ID
+ * @returns 删除结果
+ */
 export function deleteHbtConfig(configId: number) {
-  return request<ApiResult<any>>({
+  return request<ApiResponse<null>>({
     url: `/api/HbtConfig/${configId}`,
     method: 'delete'
   })
 }
 
-// 批量删除系统配置
+/**
+ * 批量删除配置
+ * @param configIds 配置ID列表
+ * @returns 删除结果
+ */
 export function batchDeleteHbtConfig(configIds: number[]) {
-  return request<ApiResult<any>>({
+  return request<ApiResponse<null>>({
     url: '/api/HbtConfig/batch',
     method: 'delete',
     data: configIds
   })
 }
 
-// 导入系统配置
-export function importHbtConfig(file: File, sheetName: string = '系统配置信息') {
-  const formData = new FormData()
-  formData.append('file', file)
-  return request<ApiResult<any>>({
+/**
+ * 导入配置
+ * @param file 文件
+ * @returns 导入结果
+ */
+export function importHbtConfig(file: FormData) {
+  return request<ApiResponse<null>>({
     url: '/api/HbtConfig/import',
     method: 'post',
-    data: formData,
-    params: { sheetName },
+    data: file,
     headers: {
       'Content-Type': 'multipart/form-data'
     }
   })
 }
 
-// 导出系统配置
-export function exportHbtConfig(params: HbtConfigQuery, sheetName: string = '系统配置信息') {
+/**
+ * 导出配置
+ * @param query 查询参数
+ * @returns 文件流
+ */
+export function exportHbtConfig(query: HbtConfigQuery) {
   return request<Blob>({
     url: '/api/HbtConfig/export',
     method: 'get',
-    params: { ...params, sheetName },
+    params: query,
     responseType: 'blob'
   })
 }
 
-// 获取导入模板
-export function getHbtConfigTemplate(sheetName: string = '系统配置信息') {
+/**
+ * 获取导入模板
+ * @returns 文件流
+ */
+export function getHbtConfigTemplate() {
   return request<Blob>({
     url: '/api/HbtConfig/template',
     method: 'get',
-    params: { sheetName },
     responseType: 'blob'
   })
 }
 
-// 更新系统配置状态
+/**
+ * 更新配置状态
+ * @param configId 配置ID
+ * @param status 状态
+ * @returns 更新结果
+ */
 export function updateHbtConfigStatus(configId: number, status: number) {
-  return request<ApiResult<any>>({
+  return request<ApiResponse<null>>({
     url: `/api/HbtConfig/${configId}/status`,
     method: 'put',
-    params: { status }
+    data: { status }
   })
 } 

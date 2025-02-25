@@ -24,26 +24,26 @@ export const useMenuStore = defineStore('menu', () => {
   const loadUserMenus = async () => {
     // 如果菜单已加载且存在，直接返回true
     if (isMenuLoaded.value && rawMenuList.value?.length > 0) {
-      console.log('[菜单加载] ' + t('menu.loading.alreadyLoaded'))
+      //console.log('[菜单加载] ' + t('menu.loading.alreadyLoaded'))
       return true
     }
 
     // 如果正在加载中，等待加载完成
     if (isLoading.value) {
-      console.log('[菜单加载] ' + t('menu.loading.inProgress'))
+      //console.log('[菜单加载] ' + t('menu.loading.inProgress'))
       return false
     }
 
-    console.log('[菜单加载] ' + t('menu.loading.start'))
+    //console.log('[菜单加载] ' + t('menu.loading.start'))
     isLoading.value = true
 
     try {
       const response = await getCurrentUserMenus()
-      console.log('[菜单加载] ' + t('menu.loading.apiResponse'), response)
+      //console.log('[菜单加载] ' + t('menu.loading.apiResponse'), response)
 
       // 检查响应数据
       if (!response || !response.data) {
-        console.error('[菜单加载] ' + t('menu.loading.invalidResponse'), response)
+        //console.error('[菜单加载] ' + t('menu.loading.invalidResponse'), response)
         message.error(t('menu.error.loadFailed.invalidResponse'))
         return false
       }
@@ -52,15 +52,17 @@ export const useMenuStore = defineStore('menu', () => {
 
       // 检查业务状态码
       if (apiResult.code !== 200) {
-        console.warn('[菜单加载] ' + t('menu.loading.businessError'), { code: apiResult.code, msg: apiResult.msg })
-        message.error(apiResult.msg || t('menu.error.loadFailed.businessError', { code: apiResult.code }))
+        //console.warn('[菜单加载] ' + t('menu.loading.businessError'), { code: apiResult.code, msg: apiResult.msg })
+        message.error(
+          apiResult.msg || t('menu.error.loadFailed.businessError', { code: apiResult.code })
+        )
         return false
       }
 
       // 检查菜单数据
       const menus = apiResult.data
       if (!Array.isArray(menus)) {
-        console.error('[菜单加载] ' + t('menu.loading.invalidFormat'), menus)
+        //console.error('[菜单加载] ' + t('menu.loading.invalidFormat'), menus)
         message.error(t('menu.error.loadFailed.invalidFormat'))
         return false
       }
@@ -70,13 +72,13 @@ export const useMenuStore = defineStore('menu', () => {
       menuList.value = transformMenu(menus)
       isMenuLoaded.value = true
 
-      console.log('[菜单加载] ' + t('menu.loading.complete'), {
-        rawMenuList: menus,
-        menuList: menuList.value
-      })
+      // console.log('[菜单加载] ' + t('menu.loading.complete'), {
+      //   rawMenuList: menus,
+      //   menuList: menuList.value
+      // })
       return true
     } catch (error) {
-      console.error('[菜单加载] ' + t('menu.loading.error'), error)
+      //console.error('[菜单加载] ' + t('menu.loading.error'), error)
       message.error(t('menu.error.loadFailed.retry'))
       return false
     } finally {
@@ -107,4 +109,4 @@ export const useMenuStore = defineStore('menu', () => {
     clearMenus,
     reloadMenus
   }
-}) 
+})

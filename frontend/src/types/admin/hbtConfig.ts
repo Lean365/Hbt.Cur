@@ -10,31 +10,7 @@
 import type { HbtStatus } from '@/types/base'
 
 /**
- * 系统配置查询参数
- */
-export interface HbtConfigQuery {
-  /** 页码 */
-  pageNum?: number
-  /** 每页条数 */
-  pageSize?: number
-  /** 页码(后端参数) */
-  pageIndex?: number
-  /** 配置名称 */
-  configName?: string
-  /** 配置键名 */
-  configKey?: string
-  /** 系统内置（0否 1是） */
-  configBuiltin?: number
-  /** 状态（0正常 1停用） */
-  status?: HbtStatus
-  /** 开始时间 */
-  beginTime?: string
-  /** 结束时间 */
-  endTime?: string
-}
-
-/**
- * 系统配置对象
+ * 系统配置实体
  */
 export interface HbtConfig {
   /** 配置ID */
@@ -45,28 +21,38 @@ export interface HbtConfig {
   configKey: string
   /** 配置键值 */
   configValue: string
-  /** 系统内置（0否 1是） */
+  /** 系统内置 */
   configBuiltin: number
-  /** 排序号 */
-  orderNum: number
-  /** 状态（0正常 1停用） */
-  status: HbtStatus
   /** 备注 */
-  remark?: string
-  /** 创建者 */
-  createBy?: string
+  remark: string
+  /** 状态 */
+  status: number
   /** 创建时间 */
-  createTime?: string
-  /** 更新者 */
-  updateBy?: string
-  /** 更新时间 */
-  updateTime?: string
+  createTime: string
   /** 状态加载中 */
   statusLoading?: boolean
 }
 
 /**
- * 创建系统配置参数
+ * 系统配置查询参数
+ */
+export interface HbtConfigQuery {
+  /** 页码 */
+  pageIndex: number
+  /** 每页条数 */
+  pageSize: number
+  /** 配置名称 */
+  configName?: string
+  /** 配置键名 */
+  configKey?: string
+  /** 系统内置 */
+  configBuiltin?: number
+  /** 状态 */
+  status?: number
+}
+
+/**
+ * 系统配置创建参数
  */
 export interface HbtConfigCreate {
   /** 配置名称 */
@@ -75,22 +61,44 @@ export interface HbtConfigCreate {
   configKey: string
   /** 配置键值 */
   configValue: string
-  /** 系统内置（0否 1是） */
+  /** 系统内置 */
   configBuiltin: number
   /** 排序号 */
   orderNum: number
-  /** 状态（0正常 1停用） */
-  status: HbtStatus
   /** 备注 */
   remark?: string
+  /** 状态 */
+  status: number
 }
 
 /**
- * 更新系统配置参数
+ * 系统配置更新参数
  */
 export interface HbtConfigUpdate extends HbtConfigCreate {
   /** 配置ID */
   configId: number
+}
+
+/**
+ * 接口响应
+ */
+export interface ApiResponse<T> {
+  /** 状态码 */
+  code: number
+  /** 提示信息 */
+  msg: string
+  /** 响应数据 */
+  data: T
+}
+
+/**
+ * 分页响应
+ */
+export interface PageResponse<T> {
+  /** 数据列表 */
+  list: T[]
+  /** 总数 */
+  total: number
 }
 
 /**

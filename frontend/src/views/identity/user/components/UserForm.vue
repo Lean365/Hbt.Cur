@@ -1,7 +1,7 @@
 <template>
   <a-modal
     :title="title"
-    :visible="visible"
+    :open="visible"
     :confirm-loading="loading"
     @update:visible="handleVisibleChange"
     @ok="handleSubmit"

@@ -33,22 +33,22 @@ const menuStore = useMenuStore()
 // 响应式状态
 const selectedKeys = ref<string[]>([])
 const openKeys = ref<string[]>([])
-const theme = computed(() => themeStore.isDarkMode ? 'dark' : 'light')
+const theme = computed(() => (themeStore.isDarkMode ? 'dark' : 'light'))
 
 // 图标映射
 const iconMap = Icons
 
 interface MenuItemType {
-  key: string;
-  icon?: () => VNode;
-  label: string;
-  children?: MenuItemType[];
+  key: string
+  icon?: () => VNode
+  label: string
+  children?: MenuItemType[]
 }
 
 // 查找指定路径的菜单项
 const findMenuByPath = (menus: Menu[] | undefined, path: string): Menu | undefined => {
   if (!menus) return undefined
-  
+
   for (const menu of menus) {
     if (menu.path === path) {
       return menu
@@ -65,7 +65,7 @@ const findMenuByPath = (menus: Menu[] | undefined, path: string): Menu | undefin
 const processBaseMenu = (child: RouteRecordRaw) => {
   const meta = child.meta
   if (!meta?.title || meta.requiresAuth === false) return null
-  
+
   return {
     key: child.path.startsWith('/') ? child.path : `/${child.path}`,
     icon: meta.icon ? () => h(iconMap[meta.icon as keyof typeof iconMap]) : undefined,
@@ -86,11 +86,13 @@ const processSubMenus = (child: RouteRecordRaw) => {
     label: t(meta.title as string),
     children: child.children.map((subChild: RouteRecordRaw) => {
       const subMeta = subChild.meta
-      const childPath = subChild.path.startsWith('/') ? subChild.path : `${parentPath}/${subChild.path}`
+      const childPath = subChild.path.startsWith('/')
+        ? subChild.path
+        : `${parentPath}/${subChild.path}`
       return {
         key: childPath,
         icon: subMeta?.icon ? () => h(iconMap[subMeta.icon as keyof typeof iconMap]) : undefined,
-        label: t(subMeta?.title as string || '')
+        label: t((subMeta?.title as string) || '')
       }
     })
   }
@@ -123,13 +125,13 @@ const processMenuItem = (menu: Menu, parentPath: string = ''): MenuItemType => {
     fullPath = menuPath.startsWith('/') ? menuPath : `/${menuPath}`
   }
 
-  console.log('[菜单组件] 处理菜单项:', {
-    菜单名称: menu.menuName,
-    菜单类型: menu.menuType,
-    原始路径: menuPath,
-    父级路径: parentPath,
-    完整路径: fullPath
-  })
+  // console.log('[菜单组件] 处理菜单项:', {
+  //   菜单名称: menu.menuName,
+  //   菜单类型: menu.menuType,
+  //   原始路径: menuPath,
+  //   父级路径: parentPath,
+  //   完整路径: fullPath
+  // })
 
   // 构建菜单项
   const result: MenuItemType = {
@@ -140,9 +142,7 @@ const processMenuItem = (menu: Menu, parentPath: string = ''): MenuItemType => {
 
   // 处理子菜单
   if (menu.children?.length) {
-    result.children = menu.children
-      .map(child => processMenuItem(child, fullPath))
-      .filter(Boolean)
+    result.children = menu.children.map(child => processMenuItem(child, fullPath)).filter(Boolean)
   }
 
   return result
@@ -156,11 +156,11 @@ const menuItems = computed<MenuProps['items']>(() => {
   }
 
   // 调试日志：检查菜单数据
-  console.log('[菜单组件] 菜单数据:', {
-    原始菜单列表: menuStore.rawMenuList,
-    处理后菜单列表: menuStore.menuList,
-    加载状态: menuStore.isLoading
-  })
+  // console.log('[菜单组件] 菜单数据:', {
+  //   原始菜单列表: menuStore.rawMenuList,
+  //   处理后菜单列表: menuStore.menuList,
+  //   加载状态: menuStore.isLoading
+  // })
 
   // 获取根路由
   const rootRoute = router.getRoutes().find(route => route.path === '/')
@@ -169,7 +169,7 @@ const menuItems = computed<MenuProps['items']>(() => {
   // 主页和仪表盘菜单
   const baseMenus = rootRoute.children
     .filter(child => ['home', 'dashboard'].includes(child.path))
-    .map(child => child.children ? processSubMenus(child) : processBaseMenu(child))
+    .map(child => (child.children ? processSubMenus(child) : processBaseMenu(child)))
     .filter(Boolean)
 
   // 动态菜单（从后端获取）
@@ -182,58 +182,62 @@ const menuItems = computed<MenuProps['items']>(() => {
     .filter(Boolean)
 
   // 合并所有菜单：主页/仪表盘 + 动态菜单 + About菜单
-  const allMenus = [
-    ...baseMenus,
-    ...dynamicMenus,
-    ...aboutMenu
-  ]
+  const allMenus = [...baseMenus, ...dynamicMenus, ...aboutMenu]
 
-  console.log('[菜单组件] 构建菜单项:', {
-    基础菜单: baseMenus,
-    动态菜单: dynamicMenus,
-    关于菜单: aboutMenu,
-    所有菜单: allMenus
-  })
+  // console.log('[菜单组件] 构建菜单项:', {
+  //   基础菜单: baseMenus,
+  //   动态菜单: dynamicMenus,
+  //   关于菜单: aboutMenu,
+  //   所有菜单: allMenus
+  // })
 
   return allMenus
 })
 
 // 监听路由变化，更新选中状态
-watch(() => route.path, (path) => {
-  const normalizedPath = path.startsWith('/') ? path : `/${path}`
-  console.log('[菜单组件] 路由变化:', {
-    path: normalizedPath,
-    selectedKeys: selectedKeys.value,
-    openKeys: openKeys.value
-  })
-  
-  // 设置选中的菜单项
-  selectedKeys.value = [normalizedPath]
-  
-  // 展开当前路径的父级菜单
-  const pathParts = normalizedPath.split('/').filter(Boolean)
-  if (pathParts.length > 1) {
-    const parentKeys = []
-    let currentPath = ''
-    for (const part of pathParts.slice(0, -1)) {
-      currentPath += `/${part}`
-      // 查找对应的目录菜单
-      const menuItem = findMenuByPath(menuStore.rawMenuList, currentPath)
-      if (menuItem && menuItem.menuType === HbtMenuType.Directory) {
-        parentKeys.push(`dir_${menuItem.menuId}`)
+watch(
+  () => route.path,
+  path => {
+    const normalizedPath = path.startsWith('/') ? path : `/${path}`
+    // console.log('[菜单组件] 路由变化:', {
+    //   path: normalizedPath,
+    //   selectedKeys: selectedKeys.value,
+    //   openKeys: openKeys.value
+    // })
+
+    // 设置选中的菜单项
+    selectedKeys.value = [normalizedPath]
+
+    // 展开当前路径的父级菜单
+    const pathParts = normalizedPath.split('/').filter(Boolean)
+    if (pathParts.length > 1) {
+      const parentKeys = []
+      let currentPath = ''
+      for (const part of pathParts.slice(0, -1)) {
+        currentPath += `/${part}`
+        // 查找对应的目录菜单
+        const menuItem = findMenuByPath(menuStore.rawMenuList, currentPath)
+        if (menuItem && menuItem.menuType === HbtMenuType.Directory) {
+          parentKeys.push(`dir_${menuItem.menuId}`)
+        }
       }
+      openKeys.value = parentKeys
     }
-    openKeys.value = parentKeys
-  }
-}, { immediate: true })
+  },
+  { immediate: true }
+)
 
 // 监听菜单数据变化
-watch(() => menuStore.menuList, (newMenuList) => {
-  console.log('[菜单组件] 菜单数据变化:', {
-    hasData: !!newMenuList,
-    length: newMenuList?.length
-  })
-}, { immediate: true })
+watch(
+  () => menuStore.menuList,
+  newMenuList => {
+    console.log('[菜单组件] 菜单数据变化:', {
+      hasData: !!newMenuList,
+      length: newMenuList?.length
+    })
+  },
+  { immediate: true }
+)
 
 // 查找菜单项
 const findMenuItem = (menus: Menu[] | undefined, key: string): Menu | undefined => {
@@ -245,16 +249,16 @@ const findMenuItem = (menus: Menu[] | undefined, key: string): Menu | undefined 
   // 标准化查找的key
   const normalizedKey = key.replace(/\/+/g, '/')
 
-  console.log('[菜单查找] 开始查找菜单项:', {
-    查找的Key: normalizedKey,
-    菜单列表长度: menus.length,
-    菜单列表: menus.map(m => ({
-      ID: m.menuId,
-      名称: m.menuName,
-      路径: m.path,
-      类型: m.menuType
-    }))
-  })
+  // console.log('[菜单查找] 开始查找菜单项:', {
+  //   查找的Key: normalizedKey,
+  //   菜单列表长度: menus.length,
+  //   菜单列表: menus.map(m => ({
+  //     ID: m.menuId,
+  //     名称: m.menuName,
+  //     路径: m.path,
+  //     类型: m.menuType
+  //   }))
+  // })
 
   // 递归查找菜单项
   const findMenuWithKey = (menu: Menu, parentPath: string = ''): Menu | undefined => {
@@ -276,16 +280,16 @@ const findMenuItem = (menus: Menu[] | undefined, key: string): Menu | undefined 
     // 规范化路径
     fullPath = fullPath.replace(/\/+/g, '/')
 
-    console.log('[菜单查找] 检查菜单项:', {
-      菜单ID: menu.menuId,
-      菜单名称: menu.menuName,
-      菜单类型: menu.menuType,
-      原始路径: menuPath,
-      父级路径: parentPath,
-      完整路径: fullPath,
-      查找的Key: normalizedKey,
-      匹配结果: fullPath === normalizedKey
-    })
+    // console.log('[菜单查找] 检查菜单项:', {
+    //   菜单ID: menu.menuId,
+    //   菜单名称: menu.menuName,
+    //   菜单类型: menu.menuType,
+    //   原始路径: menuPath,
+    //   父级路径: parentPath,
+    //   完整路径: fullPath,
+    //   查找的Key: normalizedKey,
+    //   匹配结果: fullPath === normalizedKey
+    // })
 
     if (fullPath === normalizedKey) {
       console.log('[菜单查找] 找到匹配的菜单项:', menu)
@@ -358,4 +362,4 @@ const handleMenuClick = async (info: MenuInfo) => {
     font-size: 16px;
   }
 }
-</style> 
+</style>

@@ -9,7 +9,7 @@
 
 <template>
   <a-modal
-    :visible="visible"
+    :open="visible"
     :title="title"
     :confirm-loading="loading"
     @ok="handleOk"

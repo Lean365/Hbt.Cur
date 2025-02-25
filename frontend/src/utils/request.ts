@@ -19,7 +19,7 @@ service.interceptors.request.use(
   (config) => {
     // 每次请求都重新获取token
     const token = getToken()
-    console.log('[Request Interceptor] Current Token:', token)
+    //console.log('[Request Interceptor] Current Token:', token)
     
     // 确保headers对象存在
     config.headers = config.headers || {}
@@ -33,7 +33,7 @@ service.interceptors.request.use(
       const loginData = typeof config.data === 'string' ? JSON.parse(config.data) : config.data;
       if (loginData?.tenantId !== undefined) {
         config.headers['X-Tenant-Id'] = loginData.tenantId.toString();
-        console.log('[Request Interceptor] 设置租户ID:', loginData.tenantId);
+        //console.log('[Request Interceptor] 设置租户ID:', loginData.tenantId);
       }
 
       // 如果没有设备信息，添加默认的设备信息
@@ -61,10 +61,10 @@ service.interceptors.request.use(
         const payload = JSON.parse(atob(tokenParts[1]));
         if (payload.tenant_id) {
           config.headers['X-Tenant-Id'] = payload.tenant_id;
-          console.log('[Request Interceptor] 从JWT设置租户ID:', payload.tenant_id);
+          //console.log('[Request Interceptor] 从JWT设置租户ID:', payload.tenant_id);
         }
       } catch (error) {
-        console.error('[Request Interceptor] JWT解析失败:', error);
+        //console.error('[Request Interceptor] JWT解析失败:', error);
       }
     }
     
@@ -162,7 +162,7 @@ service.interceptors.response.use(
     
     if (error.code === 'ERR_NETWORK' || error.code === 'ECONNABORTED') {
       // 在控制台显示错误
-      console.log('\n\x1b[31m%s\x1b[0m', '  ❌ ' + t('common.message.backendNotStarted') + '\n')
+      //console.log('\n\x1b[31m%s\x1b[0m', '  ❌ ' + t('common.message.backendNotStarted') + '\n')
       message.error(t('common.message.backendNotStarted'))
       return Promise.reject(error)
     }

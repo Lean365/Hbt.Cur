@@ -4,7 +4,9 @@
 *.user
 *.userosscache
 *.sln.docstates
-*.userprefs
+*.futdcache.v2
+DocumentLayout.json
+DocumentLayout.backup.json
 
 # Build results
 [Dd]ebug/
@@ -17,36 +19,39 @@ build/
 bld/
 [Bb]in/
 [Oo]bj/
+[Oo]ut/
 msbuild.log
 msbuild.err
 msbuild.wrn
 
 # Node.js
 node_modules/
-npm-debug.log
-yarn-debug.log
-yarn-error.log
-
-# Vue.js / Vite
 .vite/
-dist/
-dist-ssr/
-*.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.env.local
+.env.*.local
 
 # IDE
 .idea/
 *.swp
 *.swo
-
-# OS generated files
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
+.vscode/
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
 
 # Logs
-logs/
+logs
 *.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# System Files
+.DS_Store
+Thumbs.db

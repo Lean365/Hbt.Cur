@@ -12,7 +12,7 @@
   <a-drawer
     :title="t('header.settings.title')"
     placement="right"
-    :visible="visible"
+    :open="visible"
     @close="onClose"
   >
     <div class="settings-content">

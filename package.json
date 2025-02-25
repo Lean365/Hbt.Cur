@@ -2,5 +2,8 @@
   "dependencies": {
     "@types/nprogress": "^0.2.3",
     "nprogress": "^0.2.0"
+  },
+  "devDependencies": {
+    "@types/lodash-es": "^4.17.12"
   }
 }
