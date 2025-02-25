@@ -85,6 +85,27 @@ export default {
     security: {
       _self: 'Security',
       captcha: 'CAPTCHA'
+    },
+
+    loading: {
+      alreadyLoaded: 'Menu already loaded, skipping',
+      inProgress: 'Loading in progress, please wait',
+      start: 'Start loading user menu',
+      apiResponse: 'API Response:',
+      invalidResponse: 'Invalid Response:',
+      businessError: 'Business Status Error:',
+      invalidFormat: 'Invalid Menu Data Format:',
+      complete: 'Loading Complete, Menu Data:',
+      error: 'Error Occurred:'
+    },
+
+    error: {
+      loadFailed: {
+        invalidResponse: 'Failed to get menu data: Invalid response',
+        businessError: 'Failed to get menu data: Error code {code}',
+        invalidFormat: 'Failed to get menu data: Invalid data format',
+        retry: 'Failed to load menu, please try again'
+      }
     }
   }
 } 

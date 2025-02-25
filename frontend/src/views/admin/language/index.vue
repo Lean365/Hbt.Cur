@@ -79,23 +79,31 @@
             {{ record.isDefault ? '是' : '否' }}
           </template>
           <template v-else-if="column.key === 'status'">
-            <a-switch
-              :checked="(record as HbtLanguage).status === 0"
-              :loading="(record as HbtLanguage).statusLoading"
-              @change="(checked: string | number | boolean) => handleStatusChange(record as HbtLanguage, Boolean(checked))"
-              v-hasPermi="['admin:lang:update']"
-            />
+            <span v-hasPermi="['admin:lang:update']">
+              <a-switch
+                :checked="(record as HbtLanguage).status === 0"
+                :loading="(record as HbtLanguage).statusLoading"
+                @change="(checked: string | number | boolean) => handleStatusChange(record as HbtLanguage, Boolean(checked))"
+              />
+            </span>
           </template>
           <template v-else-if="column.key === 'action'">
             <a-space>
-              <a @click="handleEdit(record as HbtLanguage)" v-hasPermi="['admin:lang:update']">编辑</a>
-              <a-popconfirm
-                title="确定要删除吗？"
-                @confirm="handleDelete(record as HbtLanguage)"
+              <a-button type="link" @click="handleEdit(record as HbtLanguage)" v-hasPermi="['admin:lang:update']">编辑</a-button>
+              <a-button 
+                type="link" 
+                danger
                 v-hasPermi="['admin:lang:delete']"
               >
-                <a>删除</a>
-              </a-popconfirm>
+                <a-popconfirm
+                  title="确定要删除吗？"
+                  @confirm="handleDelete(record as HbtLanguage)"
+                >
+                  <template #default>
+                    <span>删除</span>
+                  </template>
+                </a-popconfirm>
+              </a-button>
             </a-space>
           </template>
         </template>
@@ -227,10 +235,14 @@ const columns: ColumnType<HbtLanguage>[] = [
 const loadLanguageList = async () => {
   loading.value = true
   try {
-    const { data } = await getHbtLanguageList(queryParams)
+    const { data } = await getHbtLanguageList({
+      ...queryParams,
+      pageIndex: queryParams.pageNum,
+      pageSize: queryParams.pageSize
+    })
     if (data?.code === 200) {
-      languageList.value = data.data.list
-      total.value = data.data.total
+      languageList.value = data.data.rows
+      total.value = data.data.totalNum
     } else {
       message.error(data?.msg || '加载语言列表失败')
       languageList.value = []

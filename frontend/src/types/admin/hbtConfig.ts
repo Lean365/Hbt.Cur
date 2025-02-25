@@ -14,9 +14,11 @@ import type { HbtStatus } from '@/types/base'
  */
 export interface HbtConfigQuery {
   /** 页码 */
-  pageNum: number
+  pageNum?: number
   /** 每页条数 */
-  pageSize: number
+  pageSize?: number
+  /** 页码(后端参数) */
+  pageIndex?: number
   /** 配置名称 */
   configName?: string
   /** 配置键名 */
@@ -155,15 +157,14 @@ export interface HbtConfigItem {
  * 分页响应数据
  */
 export interface HbtPageResponse<T> {
-  /** 业务状态码 */
-  code: number
-  /** 提示信息 */
-  msg: string
-  /** 响应数据 */
-  data: {
-    /** 数据列表 */
-    items: T[]
-    /** 总数 */
-    total: number
-  }
+  /** 总记录数 */
+  totalNum: number
+  /** 当前页码 */
+  pageIndex: number
+  /** 每页大小 */
+  pageSize: number
+  /** 总页数 */
+  totalPage: number
+  /** 数据列表 */
+  rows: T[]
 } 

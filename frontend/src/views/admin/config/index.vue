@@ -42,7 +42,7 @@
       <div class="mb-4 flex justify-between">
         <div>
           <a-space>
-            <a-button type="primary" @click="handleAdd" v-hasPermi="['admin:config:insert']">
+            <a-button type="primary" @click="handleAdd" v-hasPermi="['admin:config:create']">
               <plus-outlined />新增
             </a-button>
             <a-button 
@@ -94,23 +94,31 @@
             {{ record.configBuiltin === 1 ? '是' : '否' }}
           </template>
           <template v-else-if="column.key === 'status'">
-            <a-switch
-              :checked="(record as HbtConfig).status === 0"
-              :loading="(record as HbtConfig).statusLoading"
-              @change="(checked: any) => handleStatusChange(record as HbtConfig, Boolean(checked))"
-              v-hasPermi="['admin:config:update']"
-            />
+            <span v-hasPermi="['admin:config:update']">
+              <a-switch
+                :checked="(record as HbtConfig).status === 0"
+                :loading="(record as HbtConfig).statusLoading"
+                @change="(checked: any) => handleStatusChange(record as HbtConfig, Boolean(checked))"
+              />
+            </span>
           </template>
           <template v-else-if="column.key === 'action'">
             <a-space>
               <a @click="handleEdit(record as HbtConfig)" v-hasPermi="['admin:config:update']">编辑</a>
-              <a-popconfirm
-                title="确定要删除吗？"
-                @confirm="handleDelete(record as HbtConfig)"
+              <a-button 
+                type="link" 
+                danger
                 v-hasPermi="['admin:config:delete']"
               >
-                <a>删除</a>
-              </a-popconfirm>
+                <a-popconfirm
+                  title="确定要删除吗？"
+                  @confirm="handleDelete(record as HbtConfig)"
+                >
+                  <template #default>
+                    <span>删除</span>
+                  </template>
+                </a-popconfirm>
+              </a-button>
             </a-space>
           </template>
         </template>
@@ -118,9 +126,12 @@
 
       <!-- 分页组件 -->
       <hbt-pagination
-        v-model:current="queryParams.pageNum"
-        v-model:pageSize="queryParams.pageSize"
-        :total="total"
+        v-model:Current="queryParams.pageIndex"
+        v-model:PageSize="queryParams.pageSize"
+        :Total="total"
+        :ShowTotal="showTotal"
+        ShowQuickJumper
+        ShowSizeChanger
         @change="handlePageChange"
       />
 
@@ -136,8 +147,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, h } from 'vue'
 import { message } from 'ant-design-vue'
+import { useI18n } from 'vue-i18n'
 import type { ColumnType } from 'ant-design-vue/es/table'
 import type { Switch } from 'ant-design-vue'
 import { 
@@ -169,14 +181,19 @@ import type {
 import ConfigForm from './components/ConfigForm.vue'
 import HbtPagination from '@/components/pagination/index.vue'
 
+// 使用i18n
+const { t } = useI18n()
+
 // 查询参数
 const queryParams = reactive<HbtConfigQuery>({
-  pageNum: 1,
+  pageIndex: 1,
   pageSize: 10,
   configName: '',
   configKey: '',
   configBuiltin: undefined,
-  status: undefined
+  status: undefined,
+  beginTime: '',
+  endTime: ''
 })
 
 // 状态定义
@@ -245,18 +262,25 @@ const columns: ColumnType<HbtConfig>[] = [
 const loadConfigList = async () => {
   loading.value = true
   try {
-    console.log('加载配置列表，参数:', queryParams)
-    const { data } = await getHbtConfigList(queryParams)
-    console.log('配置列表响应:', data)
-    
-    if (data?.code === 200) {
-      configList.value = data.data.items
-      total.value = data.data.total
-    } else {
-      message.error(data?.msg || '加载配置列表失败')
-      configList.value = []
-      total.value = 0
+    const params = {
+      ...queryParams
     }
+    console.log('发送请求参数:', {
+      pageIndex: params.pageIndex,
+      pageSize: params.pageSize,
+      其他参数: params
+    })
+    
+    const { data } = await getHbtConfigList(params)
+    console.log('配置列表响应:', {
+      总数: data.totalNum,
+      当前页: params.pageIndex,
+      每页条数: params.pageSize,
+      数据条数: data.rows?.length
+    })
+    
+    configList.value = data.rows
+    total.value = data.totalNum
   } catch (error) {
     console.error('加载配置列表失败:', error)
     message.error('加载配置列表失败')
@@ -269,7 +293,13 @@ const loadConfigList = async () => {
 
 // 页码变化处理
 const handlePageChange = (page: number, size: number) => {
-  queryParams.pageNum = page
+  console.log('页码变化:', { 
+    原页码: queryParams.pageIndex,
+    新页码: page,
+    原每页条数: queryParams.pageSize,
+    新每页条数: size
+  })
+  queryParams.pageIndex = page
   queryParams.pageSize = size
   loadConfigList()
 }
@@ -281,7 +311,7 @@ const onSelectChange = (keys: (string | number)[]) => {
 
 // 搜索处理
 const handleSearch = () => {
-  queryParams.pageNum = 1
+  queryParams.pageIndex = 1
   loadConfigList()
 }
 
@@ -291,7 +321,9 @@ const handleReset = () => {
   queryParams.configKey = ''
   queryParams.configBuiltin = undefined
   queryParams.status = undefined
-  queryParams.pageNum = 1
+  queryParams.beginTime = ''
+  queryParams.endTime = ''
+  queryParams.pageIndex = 1
   loadConfigList()
 }
 
@@ -310,7 +342,23 @@ const handleAdd = () => {
 // 编辑处理
 const handleEdit = async (record: HbtConfig) => {
   try {
+    console.log('[编辑配置] 开始编辑配置:', record)
+    
+    // 参数验证
+    if (!record) {
+      message.error('配置记录不能为空')
+      return
+    }
+    
+    if (typeof record.configId !== 'number' || record.configId <= 0) {
+      message.error('无效的配置ID')
+      return
+    }
+
+    // 调用API
     const { data } = await getHbtConfig(record.configId)
+    console.log('[编辑配置] API响应:', data)
+    
     if (data?.code === 200) {
       modalTitle.value = '编辑配置'
       currentRecord.value = data.data
@@ -318,9 +366,9 @@ const handleEdit = async (record: HbtConfig) => {
     } else {
       message.error(data?.msg || '获取配置详情失败')
     }
-  } catch (error) {
-    console.error('获取配置详情失败:', error)
-    message.error('获取配置详情失败')
+  } catch (error: any) {
+    console.error('[编辑配置] 获取配置详情失败:', error)
+    message.error(error?.response?.data?.msg || error?.message || '获取配置详情失败')
   }
 }
 
@@ -443,6 +491,11 @@ const handleSubmit = async (formData: HbtConfigCreate | HbtConfigUpdate) => {
     console.error(`${currentRecord.value ? '更新' : '创建'}失败:`, error)
     message.error(`${currentRecord.value ? '更新' : '创建'}失败`)
   }
+}
+
+// 显示总数
+const showTotal = (total: number, range: [number, number]) => {
+  return h('span', `第 ${range[0]}-${range[1]} 条，共 ${total} 条`)
 }
 
 // 组件挂载时加载数据

@@ -85,6 +85,27 @@ export default {
     security: {
       _self: '安全管理',
       captcha: '验证码管理'
+    },
+
+    loading: {
+      alreadyLoaded: '菜单已加载，跳过加载',
+      inProgress: '正在加载中，等待加载完成',
+      start: '开始加载用户菜单',
+      apiResponse: 'API响应:',
+      invalidResponse: '响应无效:',
+      businessError: '业务状态码错误:',
+      invalidFormat: '菜单数据格式错误:',
+      complete: '加载完成，菜单数据:',
+      error: '发生错误:'
+    },
+
+    error: {
+      loadFailed: {
+        invalidResponse: '获取菜单数据失败：响应无效',
+        businessError: '获取菜单数据失败：错误码 {code}',
+        invalidFormat: '获取菜单数据失败：数据格式错误',
+        retry: '加载菜单失败，请重试'
+      }
     }
   }
 } 

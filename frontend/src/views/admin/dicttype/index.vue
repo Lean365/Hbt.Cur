@@ -103,14 +103,27 @@
           </template>
           <template v-else-if="column.key === 'action'">
             <a-space>
-              <a @click="handleEdit(record as HbtDictType)" v-hasPermi="['admin:dict:update']">编辑</a>
-              <a-popconfirm
-                title="确定要删除吗？"
-                @confirm="handleDelete(record as HbtDictType)"
+              <a-button 
+                type="link" 
+                @click="handleEdit(record as HbtDictType)" 
+                v-hasPermi="['admin:dict:update']"
+              >
+                编辑
+              </a-button>
+              <a-button 
+                type="link" 
+                danger
                 v-hasPermi="['admin:dict:delete']"
               >
-                <a>删除</a>
-              </a-popconfirm>
+                <a-popconfirm
+                  title="确定要删除吗？"
+                  @confirm="handleDelete(record as HbtDictType)"
+                >
+                  <template #default>
+                    <span>删除</span>
+                  </template>
+                </a-popconfirm>
+              </a-button>
             </a-space>
           </template>
         </template>

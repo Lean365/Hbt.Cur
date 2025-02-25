@@ -3,6 +3,10 @@ import type { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'
 import { message } from 'ant-design-vue'
 import { getToken, removeToken } from '@/utils/auth'
 import { useUserStore } from '@/stores/user'
+import { useI18n } from 'vue-i18n'
+import i18n from '@/locales'
+
+const { t } = i18n.global
 
 // 创建axios实例
 const service: AxiosInstance & { download?: Function } = axios.create({
@@ -131,7 +135,7 @@ service.interceptors.response.use(
     // 检查响应数据结构
     if (!res || typeof res !== 'object') {
       console.error('[Response Interceptor] 响应数据格式错误:', res)
-      return Promise.reject(new Error('响应数据格式错误'))
+      return Promise.reject(new Error(t('common.message.invalidResponse')))
     }
 
     // 标准API响应处理
@@ -140,7 +144,8 @@ service.interceptors.response.use(
         return res
       }
       // 业务失败
-      const errorMessage = res.msg || '系统错误'
+      const errorKey = res.msg || 'common.message.systemError'
+      const errorMessage = t(errorKey, errorKey) // 如果找不到翻译，使用原始key
       message.error(errorMessage)
       return Promise.reject(new Error(errorMessage))
     }
@@ -157,43 +162,44 @@ service.interceptors.response.use(
     
     if (error.code === 'ERR_NETWORK' || error.code === 'ECONNABORTED') {
       // 在控制台显示错误
-      console.log('\n\x1b[31m%s\x1b[0m', '  ❌ 后端服务未启动，请先启动后端服务\n')
-      message.error('后端服务未启动，请先启动后端服务')
+      console.log('\n\x1b[31m%s\x1b[0m', '  ❌ ' + t('common.message.backendNotStarted') + '\n')
+      message.error(t('common.message.backendNotStarted'))
       return Promise.reject(error)
     }
 
     if (error.response) {
       const { status, data } = error.response
-      let errorMessage = '服务器错误'
+      let errorKey = 'common.message.serverError'
 
       switch (status) {
         case 400:
-          errorMessage = data.msg || '请求参数错误'
+          errorKey = data.msg || 'common.message.invalidRequest'
           break
         case 401:
-          errorMessage = '未授权，请重新登录'
+          errorKey = data.msg || 'common.message.unauthorized'
           // 清除token并跳转到登录页
           const userStore = useUserStore()
           userStore.logout()
           break
         case 403:
-          errorMessage = '拒绝访问'
+          errorKey = 'common.message.forbidden'
           break
         case 404:
-          errorMessage = '请求的资源不存在'
+          errorKey = 'common.message.notFound'
           break
         case 500:
-          errorMessage = data.msg || '服务器内部错误'
+          errorKey = data.msg || 'common.message.serverError'
           break
         default:
-          errorMessage = `服务器错误 (${status})`
+          errorKey = `common.message.httpError.${status}`
       }
 
+      const errorMessage = t(errorKey, errorKey) // 如果找不到翻译，使用原始key
       message.error(errorMessage)
       return Promise.reject(new Error(errorMessage))
     }
     
-    message.error('网络连接失败，请检查网络')
+    message.error(t('common.message.networkError'))
     return Promise.reject(error)
   }
 )

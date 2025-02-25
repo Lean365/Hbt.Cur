@@ -70,13 +70,15 @@ export interface PageQuery {
  */
 export interface PageResult<T> {
   /** 数据列表 */
-  list: T[]
+  rows: T[]
   /** 总记录数 */
-  total: number
+  totalNum: number
   /** 当前页码 */
-  pageNum: number
+  pageIndex: number
   /** 每页记录数 */
   pageSize: number
+  /** 总页数 */
+  totalPage: number
 }
 
 /**

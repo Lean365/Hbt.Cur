@@ -58,17 +58,19 @@
           </template>
           <template v-else-if="column.key === 'action'">
             <a-space>
-              <a-button type="link" @click="handleEdit(record)">
+              <a-button type="link" @click="handleEdit(record as Dept)">
                 {{ t('common.edit') }}
               </a-button>
-              <a-popconfirm
-                :title="t('identity.dept.delete.confirm')"
-                @confirm="handleDelete(record)"
-              >
-                <a-button type="link" danger>
-                  {{ t('common.delete') }}
-                </a-button>
-              </a-popconfirm>
+              <a-button type="link" danger>
+                <a-popconfirm
+                  :title="t('identity.dept.delete.confirm')"
+                  @confirm="handleDelete(record as Dept)"
+                >
+                  <template #default>
+                    <span>{{ t('common.delete') }}</span>
+                  </template>
+                </a-popconfirm>
+              </a-button>
             </a-space>
           </template>
         </template>

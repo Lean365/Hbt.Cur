@@ -49,16 +49,18 @@
           <!-- 操作列 -->
           <template v-if="column.key === 'action'">
             <a-space>
-              <a @click="handleAdd((record as unknown as MenuInfo).id)">新增</a>
-              <a-divider type="vertical" />
-              <a @click="handleEdit(record as unknown as MenuInfo)">编辑</a>
-              <a-divider type="vertical" />
-              <a-popconfirm
-                title="确定要删除此菜单吗？"
-                @confirm="handleDelete(record as unknown as MenuInfo)"
-              >
-                <a class="text-danger">删除</a>
-              </a-popconfirm>
+              <a-button type="link" @click="handleAdd">新增</a-button>
+              <a-button type="link" @click="handleEdit(record as unknown as MenuInfo)">编辑</a-button>
+              <a-button type="link" danger>
+                <a-popconfirm
+                  title="确定要删除此菜单吗？"
+                  @confirm="handleDelete(record as unknown as MenuInfo)"
+                >
+                  <template #default>
+                    <span>删除</span>
+                  </template>
+                </a-popconfirm>
+              </a-button>
             </a-space>
           </template>
         </template>
@@ -162,7 +164,7 @@ interface MenuInfo {
   id: number
   parentId: number | null
   name: string
-  type: 'directory' | 'menu'
+  type: 'menu' | 'directory'
   path: string
   component?: string
   icon?: string
@@ -271,17 +273,20 @@ const formRules = {
 const menuTree = ref<DataNode[]>([])
 
 // 处理新增
-const handleAdd = (parentId?: number) => {
+const handleAdd = (e: MouseEvent | number) => {
+  const parentId = typeof e === 'number' ? e : null
   modalTitle.value = '新增菜单'
-  formData.id = 0
-  formData.parentId = parentId || null
-  formData.name = ''
-  formData.type = 'menu'
-  formData.path = ''
-  formData.component = ''
-  formData.icon = ''
-  formData.orderNum = 0
-  formData.status = 'normal'
+  Object.assign(formData, {
+    id: 0,
+    parentId,
+    name: '',
+    type: 'menu',
+    path: '',
+    component: '',
+    icon: '',
+    orderNum: 0,
+    status: 'normal'
+  })
   modalVisible.value = true
 }
 

@@ -88,23 +88,31 @@
             {{ record.isDefault === 1 ? '是' : '否' }}
           </template>
           <template v-else-if="column.key === 'status'">
-            <a-switch
-              :checked="(record as HbtDictData).status === 0"
-              :loading="(record as HbtDictData).statusLoading"
-              @change="(checked: string | number | boolean) => handleStatusChange(record as HbtDictData, Boolean(checked))"
-              v-hasPermi="['admin:dict:update']"
-            />
+            <span v-hasPermi="['admin:dict:update']">
+              <a-switch
+                :checked="(record as HbtDictData).status === 0"
+                :loading="(record as HbtDictData).statusLoading"
+                @change="(checked: string | number | boolean) => handleStatusChange(record as HbtDictData, Boolean(checked))"
+              />
+            </span>
           </template>
           <template v-else-if="column.key === 'action'">
             <a-space>
-              <a @click="handleEdit(record as HbtDictData)" v-hasPermi="['admin:dict:update']">编辑</a>
-              <a-popconfirm
-                title="确定要删除吗？"
-                @confirm="handleDelete(record as HbtDictData)"
+              <a-button type="link" @click="handleEdit(record as HbtDictData)" v-hasPermi="['admin:dict:update']">编辑</a-button>
+              <a-button 
+                type="link" 
+                danger
                 v-hasPermi="['admin:dict:delete']"
               >
-                <a>删除</a>
-              </a-popconfirm>
+                <a-popconfirm
+                  title="确定要删除吗？"
+                  @confirm="handleDelete(record as HbtDictData)"
+                >
+                  <template #default>
+                    <span>删除</span>
+                  </template>
+                </a-popconfirm>
+              </a-button>
             </a-space>
           </template>
         </template>

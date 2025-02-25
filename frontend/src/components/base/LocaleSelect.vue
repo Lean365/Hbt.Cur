@@ -6,7 +6,7 @@
       </template>
     </a-button>
     <template #overlay>
-      <a-menu @click="({ key }) => handleLocaleChange(key)">
+      <a-menu @click="({ key }) => handleLocaleChange(String(key))">
         <a-menu-item v-for="lang in languageList" :key="lang.langCode">
           <template #icon>
             <check-outlined v-if="currentLocale === lang.langCode" />
@@ -31,15 +31,34 @@ import { useI18n } from 'vue-i18n'
 import type { MenuProps } from 'ant-design-vue'
 import { TranslationOutlined, CheckOutlined } from '@ant-design/icons-vue'
 import { getSupportedLanguages } from '@/api/admin/language'
-import type { Language } from '@/types/admin/language'
 import { message } from 'ant-design-vue'
 import { useAppStore } from '@/stores/app'
+
+interface Language {
+  id: number
+  langCode: string
+  langName: string
+  status: number
+  orderNum: number
+  icon?: string
+}
+
+interface ApiResult<T> {
+  code: number
+  msg: string
+  data: T
+}
 
 const { t } = useI18n()
 const appStore = useAppStore()
 const currentLocale = ref(appStore.language)
 const loading = ref(false)
 const languageList = ref<Language[]>([])
+
+const DEFAULT_LANGUAGES: Language[] = [
+  { id: 1, langCode: 'zh-CN', langName: '简体中文', status: 0, orderNum: 1 },
+  { id: 2, langCode: 'en-US', langName: 'English', status: 0, orderNum: 2 }
+]
 
 // 处理语言切换
 const handleLocaleChange = async (langCode: string) => {
@@ -62,7 +81,7 @@ const handleLocaleChange = async (langCode: string) => {
 const fetchLanguages = async () => {
   loading.value = true
   try {
-    const { code, msg, data } = await getSupportedLanguages()
+    const { code, msg, data } = await getSupportedLanguages() as unknown as ApiResult<Language[]>
     if (code === 200 && data) {
       languageList.value = data.sort((a, b) => {
         // 将当前语言置顶
@@ -74,20 +93,12 @@ const fetchLanguages = async () => {
     } else {
       console.error('Failed to fetch languages:', msg)
       message.error(msg || t('common.message.fetchFailure'))
-      // 如果 API 调用失败,使用默认语言列表作为备选
-      languageList.value = [
-        { id: 1, langCode: 'zh-CN', langName: '简体中文', status: 0, orderNum: 1 },
-        { id: 2, langCode: 'en-US', langName: 'English', status: 0, orderNum: 2 }
-      ]
+      languageList.value = DEFAULT_LANGUAGES
     }
   } catch (error: any) {
     console.error('Error fetching languages:', error)
     message.error(error.message || t('common.message.fetchFailure'))
-    // 使用默认语言列表
-    languageList.value = [
-      { id: 1, langCode: 'zh-CN', langName: '简体中文', status: 0, orderNum: 1 },
-      { id: 2, langCode: 'en-US', langName: 'English', status: 0, orderNum: 2 }
-    ]
+    languageList.value = DEFAULT_LANGUAGES
   } finally {
     loading.value = false
   }

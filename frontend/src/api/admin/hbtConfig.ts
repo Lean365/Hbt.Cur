@@ -22,7 +22,30 @@ import type {
 } from '@/types/admin/hbtConfig'
 
 // 获取系统配置列表
-export function getHbtConfigList(params: HbtConfigQuery) {
+export function getHbtConfigList(query: HbtConfigQuery) {
+  // 构建查询参数，过滤掉空值和undefined
+  const params = Object.entries({
+    pageIndex: query.pageIndex,
+    pageSize: query.pageSize,
+    configName: query.configName?.trim(),
+    configKey: query.configKey?.trim(),
+    configBuiltin: query.configBuiltin,
+    status: query.status,
+    beginTime: query.beginTime?.trim(),
+    endTime: query.endTime?.trim()
+  }).reduce((acc, [key, value]) => {
+    // 只添加有效值
+    if (value !== undefined && value !== null && value !== '') {
+      acc[key] = value;
+    }
+    return acc;
+  }, {} as Record<string, any>);
+
+  console.log('[API] 发送系统配置查询请求:', {
+    原始参数: query,
+    处理后参数: params
+  });
+  
   return request<HbtPageResponse<HbtConfig>>({
     url: '/api/HbtConfig',
     method: 'get',

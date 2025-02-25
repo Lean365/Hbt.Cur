@@ -84,16 +84,18 @@
           <!-- 操作列 -->
           <template v-if="column.key === 'action'">
             <a-space>
-              <a @click="handleEdit(record as unknown as RoleInfo)">编辑</a>
-              <a-divider type="vertical" />
-              <a @click="handlePermission(record as unknown as RoleInfo)">权限</a>
-              <a-divider type="vertical" />
-              <a-popconfirm
-                title="确定要删除此角色吗？"
-                @confirm="handleDelete(record as unknown as RoleInfo)"
-              >
-                <a class="text-danger">删除</a>
-              </a-popconfirm>
+              <a-button type="link" @click="handleEdit(record as unknown as RoleInfo)">编辑</a-button>
+              <a-button type="link" @click="handlePermission(record as unknown as RoleInfo)">权限</a-button>
+              <a-button type="link" danger>
+                <a-popconfirm
+                  title="确定要删除此角色吗？"
+                  @confirm="handleDelete(record as unknown as RoleInfo)"
+                >
+                  <template #default>
+                    <span>删除</span>
+                  </template>
+                </a-popconfirm>
+              </a-button>
             </a-space>
           </template>
         </template>

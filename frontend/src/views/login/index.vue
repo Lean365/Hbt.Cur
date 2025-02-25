@@ -15,7 +15,7 @@
 
       <!-- 右侧登录卡片 -->
       <a-card class="login-card" :bordered="false">
-        <h2 class="login-title">{{ t('login.title') }}</h2>
+        <h2 class="login-title">{{ t('identity.auth.login.title') }}</h2>
         <a-form
           :model="loginForm"
           :rules="loginRules"
@@ -25,7 +25,7 @@
           <a-form-item name="tenantId">
             <a-input-number
               v-model:value="loginForm.tenantId"
-              :placeholder="t('login.tenantId')"
+              :placeholder="t('identity.auth.login.tenantId')"
               class="login-input"
             >
               <template #prefix>
@@ -36,7 +36,7 @@
           <a-form-item name="userName">
             <a-input
               v-model:value="loginForm.userName"
-              :placeholder="t('login.username')"
+              :placeholder="t('identity.auth.login.username')"
               class="login-input"
               autocomplete="username"
               @change="handleUserNameChange"
@@ -49,7 +49,7 @@
           <a-form-item name="password">
             <a-input-password
               v-model:value="loginForm.password"
-              :placeholder="t('login.password')"
+              :placeholder="t('identity.auth.login.password')"
               class="login-input"
               autocomplete="current-password"
             >
@@ -66,7 +66,7 @@
               :loading="loading"
               block
             >
-              {{ t('login.submit') }}
+              {{ t('identity.auth.login.submit') }}
             </a-button>
           </a-form-item>
         </a-form>
@@ -75,15 +75,15 @@
             v-model:checked="rememberMe"
             class="remember-me"
           >
-            {{ t('login.rememberMe') }}
+            {{ t('identity.auth.login.rememberMe') }}
           </a-checkbox>
           <a class="forgot-password" @click="handleForgotPassword">
-            {{ t('login.forgotPassword') }}
+            {{ t('identity.auth.login.forgotPassword') }}
           </a>
         </div>
         <div class="other-login">
           <div class="divider">
-            <span>{{ t('login.otherLogin') }}</span>
+            <span>{{ t('identity.auth.login.otherLogin') }}</span>
           </div>
           <div class="oauth-buttons">
             <a-button
@@ -103,7 +103,7 @@
     <!-- 验证码弹窗 -->
     <a-modal
       v-model:open="showCaptcha"
-      :title="t('captcha.title')"
+      :title="t('identity.auth.captcha.title')"
       :footer="null"
       :maskClosable="false"
       :closable="false"
@@ -175,15 +175,15 @@ const loginForm = reactive<LoginParams>({
 // 表单验证规则
 const loginRules: Record<string, RuleObject[]> = {
   tenantId: [
-    { required: true, type: 'number', message: t('login.tenantIdRequired'), trigger: 'blur' }
+    { required: true, type: 'number', message: t('identity.auth.login.form.tenantIdRequired'), trigger: 'blur' }
   ],
   userName: [
-    { required: true, type: 'string', message: t('login.usernameRequired'), trigger: 'blur' },
-    { type: 'string', min: 3, max: 50, message: t('login.usernameLength'), trigger: 'blur' }
+    { required: true, type: 'string', message: t('identity.auth.login.form.usernameRequired'), trigger: 'blur' },
+    { type: 'string', min: 3, max: 50, message: t('identity.auth.login.form.usernameLength'), trigger: 'blur' }
   ],
   password: [
-    { required: true, type: 'string', message: t('login.passwordRequired'), trigger: 'blur' },
-    { type: 'string', min: 6, max: 100, message: t('login.passwordLength'), trigger: 'blur' }
+    { required: true, type: 'string', message: t('identity.auth.login.form.passwordRequired'), trigger: 'blur' },
+    { type: 'string', min: 6, max: 100, message: t('identity.auth.login.form.passwordLength'), trigger: 'blur' }
   ]
 }
 
@@ -248,7 +248,7 @@ const handleUserNameChange = (e: Event) => {
 const handleLogin = async () => {
   // 如果正在等待中，不允许登录
   if (waitingSeconds.value > 0) {
-    message.warning(`请等待 ${waitingSeconds.value} 秒后再试`)
+    message.warning(t('identity.auth.login.error.waitingRetry', { seconds: waitingSeconds.value }))
     return
   }
 
@@ -259,12 +259,12 @@ const handleLogin = async () => {
     try {
       const response = await getSalt(loginForm.userName)
       if (!response || !response.data) {
-        throw new Error(t('login.saltError'))
+        throw new Error(t('identity.auth.login.error.saltError'))
       }
       
       const saltData = response.data
       if (!saltData || typeof saltData.salt !== 'string' || typeof saltData.iterations !== 'number') {
-        throw new Error(t('login.saltError'))
+        throw new Error(t('identity.auth.login.error.saltError'))
       }
 
       console.log('[密码加密] 开始加密密码')
@@ -303,22 +303,13 @@ const handleLogin = async () => {
         loginSource: 0
       }
 
-      console.log('[登录请求] 发送的数据:', {
-        tenantId: loginParams.tenantId,
-        userName: loginParams.userName,
-        passwordLength: loginParams.password.length,
-        deviceInfo: loginParams.deviceInfo,
-        loginSource: loginParams.loginSource,
-        captchaToken: loginParams.captchaToken,
-        captchaOffset: loginParams.captchaOffset
-      })
-
       // 保存登录参数，用于验证码验证成功后重试
       lastLoginParams.value = loginParams
 
       // 如果需要验证码
       if (failedAttempts.value >= LOGIN_POLICY.CAPTCHA_REQUIRED_ATTEMPTS) {
         showCaptcha.value = true
+        message.warning(t('identity.auth.captcha.required'))
         return
       }
 
@@ -357,7 +348,7 @@ const handleLoginSuccess = async () => {
     // 获取用户信息（这里会自动加载菜单）
     await userStore.getUserInfo()
 
-    message.success(t('login.success'))
+    message.success(t('identity.auth.login.success'))
     
     // 等待一下确保路由已经准备好
     await nextTick()
@@ -366,7 +357,7 @@ const handleLoginSuccess = async () => {
     await router.push('/dashboard/workplace')
   } catch (error) {
     console.error('登录后处理失败:', error)
-    message.error(t('login.failed'))
+    message.error(t('identity.auth.login.failed'))
   }
 }
 
@@ -380,7 +371,7 @@ const handleLoginError = (error: any) => {
       const waitTime = data.remainingSeconds || 1800 // 默认30分钟
       startWaiting(waitTime)
       const minutes = Math.ceil(waitTime / 60)
-      message.error(`登录失败，请等待 ${minutes} 分钟后重试`)
+      message.error(t('identity.auth.login.error.accountLocked', { minutes }))
     } else {
       // 其他错误
       failedAttempts.value++
@@ -388,7 +379,7 @@ const handleLoginError = (error: any) => {
         ? LOGIN_POLICY.ADMIN.MAX_ATTEMPTS - failedAttempts.value
         : LOGIN_POLICY.USER.MAX_ATTEMPTS - failedAttempts.value
       
-      message.error(`登录失败，剩余尝试次数: ${remainingAttempts.value}次`)
+      message.error(t('identity.auth.login.error.remainingAttempts', { count: remainingAttempts.value }))
       
       // 如果失败次数达到阈值，显示验证码
       if (failedAttempts.value >= LOGIN_POLICY.CAPTCHA_REQUIRED_ATTEMPTS) {
@@ -399,18 +390,18 @@ const handleLoginError = (error: any) => {
             captchaRef.value.initCaptcha()
           }
         })
-        message.warning('请完成验证码验证后重试')
+        message.warning(t('identity.auth.captcha.required'))
       }
       
       if (remainingAttempts.value <= 0) {
         const lockoutMinutes = loginForm.userName.toLowerCase() === 'admin'
           ? LOGIN_POLICY.ADMIN.LOCKOUT_MINUTES
           : LOGIN_POLICY.USER.LOCKOUT_MINUTES
-        message.error(`连续失败次数过多，账号已被锁定${lockoutMinutes}分钟`)
+        message.error(t('identity.auth.login.error.accountLocked', { minutes: lockoutMinutes }))
       }
     }
   } else {
-    message.error(error.message || '登录失败，请稍后重试')
+    message.error(error.message || t('identity.auth.login.error.serverError'))
   }
 }
 
@@ -460,7 +451,7 @@ const handleCaptchaError = (errorMsg: string) => {
       startWaiting(seconds)
       // 关闭验证码对话框
       showCaptcha.value = false
-      message.warning(errorMsg)
+      message.warning(t('identity.auth.captcha.waitingRetry', { seconds }))
       // 等待时间到后再显示验证码
       setTimeout(() => {
         if (captchaRef.value) {
@@ -470,7 +461,7 @@ const handleCaptchaError = (errorMsg: string) => {
       }, seconds * 1000)
     }
   } else {
-    message.error(errorMsg || '验证码验证失败')
+    message.error(t('identity.auth.captcha.verifyFailed'))
     // 关闭验证码对话框
     showCaptcha.value = false
   }
@@ -478,12 +469,12 @@ const handleCaptchaError = (errorMsg: string) => {
 
 // 处理忘记密码
 const handleForgotPassword = () => {
-  message.info('忘记密码功能暂未开放')
+  message.info(t('identity.auth.login.notAvailable', { feature: t('identity.auth.login.form.forgot') }))
 }
 
 // 处理OAuth登录
 const handleOAuthLogin = (provider: string) => {
-  message.info(`${provider}登录功能暂未开放`)
+  message.info(t('identity.auth.login.notAvailable', { feature: `${provider}${t('identity.auth.login.form.submit')}` }))
 }
 
 // 添加测试方法

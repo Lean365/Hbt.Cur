@@ -46,9 +46,11 @@ export interface HbtTranslation {
  */
 export interface HbtTranslationQuery {
   /** 页码 */
-  pageNum: number
+  pageNum?: number
   /** 每页条数 */
-  pageSize: number
+  pageSize?: number
+  /** 页码(后端参数) */
+  pageIndex?: number
   /** 语言代码 */
   langCode?: string
   /** 模块名称 */

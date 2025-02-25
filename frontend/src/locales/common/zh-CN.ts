@@ -167,9 +167,26 @@ export default {
       createFailed: '新增失败',
       updateSuccess: '更新成功',
       updateFailed: '更新失败',
-      networkError: '网络错误',
+      networkError: '网络连接失败，请检查网络',
       systemError: '系统错误',
-      timeout: '请求超时'
+      timeout: '请求超时',
+      invalidResponse: '响应数据格式错误',
+      backendNotStarted: '后端服务未启动，请先启动后端服务',
+      invalidRequest: '请求参数错误',
+      unauthorized: '未授权，请重新登录',
+      forbidden: '拒绝访问',
+      notFound: '请求的资源不存在',
+      serverError: '服务器内部错误',
+      httpError: {
+        400: '请求参数错误',
+        401: '未授权，请重新登录',
+        403: '拒绝访问',
+        404: '请求的资源不存在',
+        500: '服务器内部错误',
+        502: '网关错误',
+        503: '服务不可用',
+        504: '网关超时'
+      }
     }
   }
 } 

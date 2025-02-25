@@ -1,8 +1,8 @@
 <template>
   <div class="slider-captcha">
     <div class="captcha-image" ref="imageRef">
-      <img v-if="captchaData" :src="captchaData.backgroundImage" :alt="t('captcha.bgImage')" class="bg-image" />
-      <img v-if="captchaData" :src="captchaData.sliderImage" :alt="t('captcha.sliderImage')" class="slider-image"
+      <img v-if="captchaData" :src="captchaData.backgroundImage" :alt="t('identity.auth.captcha.bgImage')" class="bg-image" />
+      <img v-if="captchaData" :src="captchaData.sliderImage" :alt="t('identity.auth.captcha.sliderImage')" class="slider-image"
         :style="{ left: `${sliderLeft}px` }" />
     </div>
     <div class="slider-container">
@@ -41,9 +41,9 @@ const retryCount = ref(0)
 const MAX_RETRY = 3
 
 const sliderText = computed(() => {
-  if (verified.value) return t('captcha.success')
-  if (isMoving.value) return t('captcha.moving')
-  return t('captcha.default')
+  if (verified.value) return t('identity.auth.captcha.success')
+  if (isMoving.value) return t('identity.auth.captcha.moving')
+  return t('identity.auth.captcha.default')
 })
 
 // 初始化验证码
@@ -61,7 +61,7 @@ const initCaptcha = async () => {
     // 检查响应数据结构
     if (!response?.data?.data) {
       console.error('[验证码] 响应数据为空')
-      emit('error', '获取验证码失败')
+      emit('error', t('identity.auth.captcha.error.dataEmpty'))
       return
     }
 
@@ -71,7 +71,7 @@ const initCaptcha = async () => {
     // 检查数据完整性
     if (!data.backgroundImage || !data.sliderImage || !data.token) {
       console.error('[验证码] 数据不完整:', data)
-      emit('error', '验证码数据不完整')
+      emit('error', t('identity.auth.captcha.error.dataIncomplete'))
       return
     }
 
@@ -86,9 +86,9 @@ const initCaptcha = async () => {
     console.error('[验证码] 获取失败:', error)
     if (error.response?.status === 429) {
       const waitSeconds = error.response.data?.remainingSeconds || 60
-      emit('error', `请求过于频繁，请等待 ${waitSeconds} 秒后重试`)
+      emit('error', t('identity.auth.captcha.error.tooManyRequests', { seconds: waitSeconds }))
     } else {
-      emit('error', error.message || '获取验证码失败')
+      emit('error', t('identity.auth.captcha.error.getFailed'))
     }
   }
 }
@@ -148,7 +148,7 @@ const handleMouseUp = async () => {
   isMoving.value = false
   document.removeEventListener('mousemove', handleMouseMove)
   document.removeEventListener('mouseup', handleMouseUp)
-  await verifyPosition()
+  await verifySlider()
 }
 
 // 处理触摸结束
@@ -157,22 +157,13 @@ const handleTouchEnd = async () => {
   isMoving.value = false
   document.removeEventListener('touchmove', handleTouchMove)
   document.removeEventListener('touchend', handleTouchEnd)
-  await verifyPosition()
+  await verifySlider()
 }
 
-// 验证位置
-const verifyPosition = async () => {
-  if (!captchaData.value?.token) {
-    message.error(t('captcha.verifyError'))
-    return
-  }
+// 验证滑块位置
+const verifySlider = async () => {
+  if (!captchaData.value) return
   
-  if (retryCount.value >= MAX_RETRY) {
-    message.error(t('captcha.maxRetryReached'))
-    emit('error', 'MAX_RETRY_REACHED')
-    return
-  }
-
   try {
     const params = {
       token: captchaData.value.token,
@@ -193,9 +184,9 @@ const verifyPosition = async () => {
       verified.value = false
       retryCount.value++
       sliderLeft.value = 0
-      message.error(result.message || t('captcha.failed'))
+      message.error(result.message || t('identity.auth.captcha.failed'))
       if (retryCount.value >= MAX_RETRY) {
-        message.error(t('captcha.maxRetryReached'))
+        message.error(t('identity.auth.captcha.maxRetryReached'))
         emit('error', 'MAX_RETRY_REACHED')
       }
     }
@@ -203,9 +194,9 @@ const verifyPosition = async () => {
     verified.value = false
     retryCount.value++
     sliderLeft.value = 0
-    message.error(t('captcha.verifyError'))
+    message.error(t('identity.auth.captcha.verifyError'))
     if (retryCount.value >= MAX_RETRY) {
-      message.error(t('captcha.maxRetryReached'))
+      message.error(t('identity.auth.captcha.maxRetryReached'))
       emit('error', 'MAX_RETRY_REACHED')
     }
   }

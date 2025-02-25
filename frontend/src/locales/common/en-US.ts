@@ -167,9 +167,27 @@ export default {
       createFailed: 'Create failed',
       updateSuccess: 'Update successful',
       updateFailed: 'Update failed',
-      networkError: 'Network error',
+      networkError: 'Network connection failed, please check your network',
       systemError: 'System error',
-      timeout: 'Request timeout'
+      timeout: 'Request timeout',
+      // New error messages
+      invalidResponse: 'Invalid response data format',
+      backendNotStarted: 'Backend service not started, please start the backend service first',
+      invalidRequest: 'Invalid request parameters',
+      unauthorized: 'Unauthorized, please login again',
+      forbidden: 'Access denied',
+      notFound: 'Requested resource not found',
+      serverError: 'Internal server error',
+      httpError: {
+        400: 'Invalid request parameters',
+        401: 'Unauthorized, please login again',
+        403: 'Access denied',
+        404: 'Requested resource not found',
+        500: 'Internal server error',
+        502: 'Gateway error',
+        503: 'Service unavailable',
+        504: 'Gateway timeout'
+      }
     }
   }
 } 

@@ -6,6 +6,9 @@ import type { LoginParams, UserInfo as AuthUserInfo, LoginResult as AuthLoginRes
 import { login as userLogin, logout as userLogout, getInfo } from '@/api/identity/auth'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import { useMenuStore } from './menu'
+import i18n from '@/locales'
+
+const { t } = i18n.global
 
 export interface UserInfo extends AuthUserInfo {
   displayName: string
@@ -38,14 +41,20 @@ export const useUserStore = defineStore('user', () => {
   // 登录
   const login = async (loginParams: LoginParams): Promise<ApiResult<LoginResult>> => {
     try {
+      console.log('[用户登录] ' + t('identity.auth.login.start'), loginParams)
       const response = await userLogin(loginParams)
       const { accessToken } = response.data
+      
       if (accessToken) {
+        console.log('[用户登录] ' + t('identity.auth.login.success'))
         setToken(accessToken)
+      } else {
+        console.warn('[用户登录] ' + t('identity.auth.login.noToken'))
       }
+      
       return response as ApiResult<LoginResult>
     } catch (error) {
-      console.error('登录失败:', error)
+      console.error('[用户登录] ' + t('identity.auth.login.error'), error)
       throw error
     }
   }
@@ -53,9 +62,12 @@ export const useUserStore = defineStore('user', () => {
   // 获取用户信息
   const getUserInfo = async () => {
     try {
+      console.log('[用户信息] ' + t('identity.auth.info.loading'))
       const response = await getInfo()
+      
       if (!response || !response.data) {
-        throw new Error('获取用户信息失败')
+        console.error('[用户信息] ' + t('identity.auth.info.invalidResponse'))
+        throw new Error(t('identity.auth.info.error.invalidResponse'))
       }
       
       const data = response.data as unknown as UserInfoResponse
@@ -65,13 +77,19 @@ export const useUserStore = defineStore('user', () => {
       roles.value = data.roles
       permissions.value = data.permissions
       
+      console.log('[用户信息] ' + t('identity.auth.info.success'), {
+        user: data.user,
+        roles: data.roles,
+        permissions: data.permissions
+      })
+      
       // 加载菜单和权限
       const menuStore = useMenuStore()
       await menuStore.loadUserMenus()
       
       return data
     } catch (error: any) {
-      console.error('获取用户信息失败:', error)
+      console.error('[用户信息] ' + t('identity.auth.info.error.failed'), error)
       throw error
     }
   }
@@ -79,7 +97,10 @@ export const useUserStore = defineStore('user', () => {
   // 登出
   const logout = async () => {
     try {
+      console.log('[用户登出] ' + t('identity.auth.logout.start'))
       await userLogout()
+      
+      // 清除用户状态
       user.value = null
       roles.value = []
       permissions.value = []
@@ -88,8 +109,10 @@ export const useUserStore = defineStore('user', () => {
       // 重置菜单状态
       const menuStore = useMenuStore()
       menuStore.clearMenus()
+      
+      console.log('[用户登出] ' + t('identity.auth.logout.success'))
     } catch (error) {
-      console.error('登出失败:', error)
+      console.error('[用户登出] ' + t('identity.auth.logout.error'), error)
       throw error
     }
   }

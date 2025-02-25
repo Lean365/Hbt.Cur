@@ -20,12 +20,12 @@ export const hasPermi: Directive = {
     const permissions = useUserStore().permissions
     
     if (value && value instanceof Array && value.length > 0) {
-      const hasPermission = permissions.some(permission => {
-        return value.includes(permission)
+      const hasPermission = value.some(permission => {
+        return permissions.includes(permission)
       })
       
       if (!hasPermission) {
-        el.parentNode?.removeChild(el)
+        el.style.display = 'none'
       }
     } else {
       throw new Error('请设置操作权限标签值')
@@ -48,7 +48,7 @@ export const hasRole: Directive = {
       })
       
       if (!hasRole) {
-        el.parentNode?.removeChild(el)
+        el.style.display = 'none'
       }
     } else {
       throw new Error('请设置角色标签值')

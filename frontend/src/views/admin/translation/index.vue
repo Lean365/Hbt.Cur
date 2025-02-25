@@ -91,23 +91,31 @@
       >
         <template #bodyCell="{ column, record }">
           <template v-if="column.key === 'status'">
-            <a-switch
-              :checked="(record as HbtTranslation).status === 0"
-              :loading="(record as HbtTranslation).statusLoading"
-              @change="(checked: string | number | boolean) => handleStatusChange(record as HbtTranslation, Boolean(checked))"
-              v-hasPermi="['admin:trans:update']"
-            />
+            <span v-hasPermi="['admin:trans:update']">
+              <a-switch
+                :checked="(record as HbtTranslation).status === 0"
+                :loading="(record as HbtTranslation).statusLoading"
+                @change="(checked: string | number | boolean) => handleStatusChange(record as HbtTranslation, Boolean(checked))"
+              />
+            </span>
           </template>
           <template v-else-if="column.key === 'action'">
             <a-space>
-              <a @click="handleEdit(record as HbtTranslation)" v-hasPermi="['admin:trans:update']">编辑</a>
-              <a-popconfirm
-                title="确定要删除吗？"
-                @confirm="handleDelete(record as HbtTranslation)"
+              <a-button type="link" @click="handleEdit(record as HbtTranslation)" v-hasPermi="['admin:trans:update']">编辑</a-button>
+              <a-button 
+                type="link" 
+                danger
                 v-hasPermi="['admin:trans:delete']"
               >
-                <a>删除</a>
-              </a-popconfirm>
+                <a-popconfirm
+                  title="确定要删除吗？"
+                  @confirm="handleDelete(record as HbtTranslation)"
+                >
+                  <template #default>
+                    <span>删除</span>
+                  </template>
+                </a-popconfirm>
+              </a-button>
             </a-space>
           </template>
         </template>
