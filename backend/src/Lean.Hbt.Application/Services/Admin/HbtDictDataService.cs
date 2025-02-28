@@ -113,15 +113,15 @@ namespace Lean.Hbt.Application.Services.Admin
         /// <returns>返回是否更新成功</returns>
         public async Task<bool> UpdateAsync(HbtDictDataUpdateDto input)
         {
-            var dictData = await _dictDataRepository.GetByIdAsync(input.Id);
+            var dictData = await _dictDataRepository.GetByIdAsync(input.DictDataId);
             if (dictData == null)
                 throw new HbtException("字典数据不存在");
 
             if (dictData.DictLabel != input.DictLabel)
-                await HbtValidateUtils.ValidateFieldExistsAsync(_dictDataRepository, "DictLabel", input.DictLabel, input.Id);
+                await HbtValidateUtils.ValidateFieldExistsAsync(_dictDataRepository, "DictLabel", input.DictLabel, input.DictDataId);
 
             if (dictData.DictValue != input.DictValue)
-                await HbtValidateUtils.ValidateFieldExistsAsync(_dictDataRepository, "DictValue", input.DictValue, input.Id);
+                await HbtValidateUtils.ValidateFieldExistsAsync(_dictDataRepository, "DictValue", input.DictValue, input.DictDataId);
 
             dictData.DictLabel = input.DictLabel;
             dictData.DictValue = input.DictValue;
@@ -296,7 +296,7 @@ namespace Lean.Hbt.Application.Services.Admin
         /// <returns>返回是否更新成功</returns>
         public async Task<bool> UpdateStatusAsync(HbtDictDataStatusDto input)
         {
-            var dictData = await _dictDataRepository.GetByIdAsync(input.Id);
+            var dictData = await _dictDataRepository.GetByIdAsync(input.DictDataId);
             if (dictData == null)
                 throw new HbtException("字典数据不存在");
 
@@ -304,4 +304,4 @@ namespace Lean.Hbt.Application.Services.Admin
             return await _dictDataRepository.UpdateAsync(dictData) > 0;
         }
     }
-}
+} 

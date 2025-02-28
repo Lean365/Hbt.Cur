@@ -328,34 +328,12 @@ public class HbtLoginService : IHbtLoginService
                 throw new HbtException("JWT配置错误：SecretKey未配置", HbtConstants.ErrorCodes.ServerError);
             }
 
-            // 获取用户权限和角色
-            var permissions = _userRepository.GetUserPermissionsAsync(user.Id, user.TenantId).Result;
-            var roles = _userRepository.GetUserRolesAsync(user.Id, user.TenantId).Result;
-
-            var claims = new List<Claim>
+            var claims = new[]
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Name, user.UserName),
                 new Claim("tenant_id", user.TenantId.ToString())
             };
-
-            // 添加角色claims
-            if (roles != null && roles.Any())
-            {
-                foreach (var role in roles)
-                {
-                    claims.Add(new Claim(ClaimTypes.Role, role));
-                }
-            }
-
-            // 添加权限claims
-            if (permissions != null && permissions.Any())
-            {
-                foreach (var permission in permissions)
-                {
-                    claims.Add(new Claim("permissions", permission));
-                }
-            }
 
             _logger.LogInformation("生成令牌Claims: {@Claims}", claims);
 
@@ -376,7 +354,7 @@ public class HbtLoginService : IHbtLoginService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "生成访问令牌失败: {Message}", ex.Message);
+            _logger.LogError(ex, "生成访问令牌时发生错误: {Message}", ex.Message);
             throw new HbtException("生成访问令牌失败", HbtConstants.ErrorCodes.ServerError, ex);
         }
     }

@@ -13,16 +13,19 @@ using System.Linq.Expressions;
 using Lean.Hbt.Application.Dtos.Identity;
 using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Common.Exceptions;
-using Lean.Hbt.Common.Helpers;
+using Lean.Hbt.Common.Models;
 using Lean.Hbt.Common.Utils;
 using Lean.Hbt.Domain.Entities.Identity;
 using Lean.Hbt.Domain.IServices.Admin;
-using Lean.Hbt.Domain.IServices.Security;
-using Lean.Hbt.Domain.IServices.Tenant;
 using Lean.Hbt.Domain.Repositories;
 using Lean.Hbt.Domain.Utils;
 using Mapster;
 using SqlSugar;
+using Lean.Hbt.Common.Helpers;
+using System.IO;
+using Lean.Hbt.Domain.IServices.Security;
+using Lean.Hbt.Domain.IServices.Caching;
+using Lean.Hbt.Domain.IServices.Tenant;
 
 namespace Lean.Hbt.Application.Services.Identity
 {
@@ -247,7 +250,7 @@ namespace Lean.Hbt.Application.Services.Identity
             if (input == null)
                 throw new ArgumentNullException(nameof(input));
 
-            var user = await _userRepository.GetByIdAsync(input.Id);
+            var user = await _userRepository.GetByIdAsync(input.UserId);
             if (user == null)
                 throw new HbtException(_localization.L("User.NotFound"));
 
@@ -256,8 +259,8 @@ namespace Lean.Hbt.Application.Services.Identity
                 throw new HbtException(_localization.L("User.Tenant.Invalid"));
 
             // 验证字段是否已存在
-            await HbtValidateUtils.ValidateFieldExistsAsync(_userRepository, "PhoneNumber", input.PhoneNumber, input.Id);
-            await HbtValidateUtils.ValidateFieldExistsAsync(_userRepository, "Email", input.Email, input.Id);
+            await HbtValidateUtils.ValidateFieldExistsAsync(_userRepository, "PhoneNumber", input.PhoneNumber, input.UserId);
+            await HbtValidateUtils.ValidateFieldExistsAsync(_userRepository, "Email", input.Email, input.UserId);
 
             // 更新用户基本信息
             user.NickName = input.NickName ?? string.Empty;
@@ -501,7 +504,7 @@ namespace Lean.Hbt.Application.Services.Identity
         /// <returns>返回是否更新成功</returns>
         public async Task<bool> UpdateStatusAsync(HbtUserStatusDto input)
         {
-            var user = await _userRepository.GetByIdAsync(input.Id);
+            var user = await _userRepository.GetByIdAsync(input.UserId);
             if (user == null)
                 throw new HbtException(_localization.L("User.NotFound"));
 
@@ -519,7 +522,7 @@ namespace Lean.Hbt.Application.Services.Identity
         /// <returns>返回是否重置成功</returns>
         public async Task<bool> ResetPasswordAsync(HbtUserResetPwdDto input)
         {
-            var user = await _userRepository.GetByIdAsync(input.Id);
+            var user = await _userRepository.GetByIdAsync(input.UserId);
             if (user == null)
                 throw new HbtException(_localization.L("User.NotFound"));
 
@@ -545,7 +548,7 @@ namespace Lean.Hbt.Application.Services.Identity
         /// <returns>返回是否修改成功</returns>
         public async Task<bool> ChangePasswordAsync(HbtUserChangePwdDto input)
         {
-            var user = await _userRepository.GetByIdAsync(input.Id);
+            var user = await _userRepository.GetByIdAsync(input.UserId);
             if (user == null)
                 throw new HbtException(_localization.L("User.NotFound"));
 

@@ -1,5 +1,5 @@
 //===================================================================
-// 项目名 : Lean.Hbt
+// 项目名 : Lean.Hbt 
 // 文件名 : HbtWorkflowTaskService.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-23 12:00
@@ -9,14 +9,17 @@
 
 #nullable enable
 
+using System.Linq.Expressions;
 using Lean.Hbt.Application.Dtos.Workflow;
-using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Common.Exceptions;
+using Lean.Hbt.Common.Models;
 using Lean.Hbt.Domain.Entities.Workflow;
+using Lean.Hbt.Domain.IServices;
 using Lean.Hbt.Domain.IServices.Admin;
 using Lean.Hbt.Domain.Repositories;
 using Mapster;
 using SqlSugar;
+using Lean.Hbt.Common.Enums;
 
 namespace Lean.Hbt.Application.Services.Workflow
 {
@@ -233,8 +236,8 @@ namespace Lean.Hbt.Application.Services.Workflow
                 throw new ArgumentNullException(nameof(ids));
 
             // 检查是否有非待处理状态的任务
-            var activeTasks = await _taskRepository.GetListAsync(x =>
-                ids.Contains(x.Id) &&
+            var activeTasks = await _taskRepository.GetListAsync(x => 
+                ids.Contains(x.Id) && 
                 x.Status != Common.Enums.HbtWorkflowTaskStatus.Pending);
 
             if (activeTasks.Any())
@@ -340,13 +343,13 @@ namespace Lean.Hbt.Application.Services.Workflow
         /// <exception cref="HbtException">当工作流任务不存在或更新失败时抛出异常</exception>
         public async Task<bool> UpdateStatusAsync(HbtWorkflowTaskStatusDto input)
         {
-            var task = await _taskRepository.GetByIdAsync(input.Id);
+            var task = await _taskRepository.GetByIdAsync(input.TaskId);
             if (task == null)
                 throw new HbtException(_localization.L("WorkflowTask.NotFound"));
 
             task.Status = input.Status;
             task.AssigneeId = input.AssigneeId;
-
+            
             var result = await _taskRepository.UpdateAsync(task);
             if (result <= 0)
                 throw new HbtException(_localization.L("WorkflowTask.UpdateStatus.Failed"));
@@ -377,7 +380,7 @@ namespace Lean.Hbt.Application.Services.Workflow
             task.Result = result.ToString();
             task.Comment = comment;
             task.CompleteTime = DateTime.Now;
-
+            
             var updateResult = await _taskRepository.UpdateAsync(task);
             if (updateResult <= 0)
                 throw new HbtException(_localization.L("WorkflowTask.Complete.Failed"));
@@ -407,7 +410,7 @@ namespace Lean.Hbt.Application.Services.Workflow
             task.Status = Common.Enums.HbtWorkflowTaskStatus.Transferred;
             task.AssigneeId = assigneeId;
             task.Comment = comment;
-
+            
             var result = await _taskRepository.UpdateAsync(task);
             if (result <= 0)
                 throw new HbtException(_localization.L("WorkflowTask.Transfer.Failed"));
@@ -436,7 +439,7 @@ namespace Lean.Hbt.Application.Services.Workflow
             task.Result = Common.Enums.HbtWorkflowTaskResult.Rejected.ToString();
             task.Comment = comment;
             task.CompleteTime = DateTime.Now;
-
+            
             var result = await _taskRepository.UpdateAsync(task);
             if (result <= 0)
                 throw new HbtException(_localization.L("WorkflowTask.Reject.Failed"));
@@ -466,7 +469,7 @@ namespace Lean.Hbt.Application.Services.Workflow
             task.Result = null; // 撤销时不设置处理结果
             task.Comment = comment;
             task.CompleteTime = DateTime.Now;
-
+            
             var result = await _taskRepository.UpdateAsync(task);
             if (result <= 0)
                 throw new HbtException(_localization.L("WorkflowTask.Cancel.Failed"));
@@ -574,4 +577,4 @@ namespace Lean.Hbt.Application.Services.Workflow
             return tasks.Adapt<List<HbtWorkflowTaskDto>>();
         }
     }
-}
+} 

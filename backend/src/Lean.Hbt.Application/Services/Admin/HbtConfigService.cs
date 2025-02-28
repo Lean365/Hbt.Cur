@@ -144,12 +144,12 @@ namespace Lean.Hbt.Application.Services.Admin
             if (input == null)
                 throw new ArgumentNullException(nameof(input));
 
-            var config = await _configRepository.GetByIdAsync(input.Id);
+            var config = await _configRepository.GetByIdAsync(input.ConfigId);
             if (config == null)
-                throw new HbtException($"系统配置不存在: {input.Id}");
+                throw new HbtException($"系统配置不存在: {input.ConfigId}");
 
             // 验证字段是否已存在
-            await HbtValidateUtils.ValidateFieldExistsAsync(_configRepository, "ConfigKey", input.ConfigKey, input.Id);
+            await HbtValidateUtils.ValidateFieldExistsAsync(_configRepository, "ConfigKey", input.ConfigKey, input.ConfigId);
 
             // 更新配置
             config.ConfigName = input.ConfigName;
@@ -313,9 +313,9 @@ namespace Lean.Hbt.Application.Services.Admin
         /// <returns>是否成功</returns>
         public async Task<bool> UpdateStatusAsync(HbtConfigStatusDto input)
         {
-            var config = await _configRepository.GetByIdAsync(input.Id);
+            var config = await _configRepository.GetByIdAsync(input.ConfigId);
             if (config == null)
-                throw new HbtException($"系统配置不存在: {input.Id}");
+                throw new HbtException($"系统配置不存在: {input.ConfigId}");
 
             config.Status = input.Status;
             var result = await _configRepository.UpdateAsync(config);

@@ -165,16 +165,16 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
         /// <summary>
         /// 更新系统配置状态
         /// </summary>
-        /// <param name="Id">配置ID</param>
+        /// <param name="configId">配置ID</param>
         /// <param name="status">状态</param>
         /// <returns>是否成功</returns>
         [HttpPut("{configId}/status")]
         [HbtPerm("admin:config:update")]
-        public async Task<IActionResult> UpdateStatusAsync(long Id, [FromQuery] HbtStatus status)
+        public async Task<IActionResult> UpdateStatusAsync(long configId, [FromQuery] HbtStatus status)
         {
             var input = new HbtConfigStatusDto
             {
-                Id = Id,
+                ConfigId = configId,
                 Status = status
             };
             var result = await _configService.UpdateStatusAsync(input);

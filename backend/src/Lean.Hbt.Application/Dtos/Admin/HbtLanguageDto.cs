@@ -6,8 +6,10 @@
 // 版本号 : V0.0.1
 // 描述   : 语言数据传输对象
 //===================================================================
+using System;
 using System.ComponentModel.DataAnnotations;
 using Lean.Hbt.Common.Enums;
+using Lean.Hbt.Common.Models;
 
 namespace Lean.Hbt.Application.Dtos.Admin
 {
@@ -19,7 +21,7 @@ namespace Lean.Hbt.Application.Dtos.Admin
         /// <summary>
         /// 语言ID
         /// </summary>
-        public long Id { get; set; }
+        public long LanguageId { get; set; }
 
         /// <summary>
         /// 语言代码
@@ -114,7 +116,7 @@ namespace Lean.Hbt.Application.Dtos.Admin
         /// 语言ID
         /// </summary>
         [Required(ErrorMessage = "语言ID不能为空")]
-        public long Id { get; set; }
+        public long LanguageId { get; set; }
 
         /// <summary>
         /// 语言代码
@@ -237,7 +239,7 @@ namespace Lean.Hbt.Application.Dtos.Admin
         /// 语言ID
         /// </summary>
         [Required(ErrorMessage = "语言ID不能为空")]
-        public long Id { get; set; }
+        public long LanguageId { get; set; }
 
         /// <summary>
         /// 状态（0正常 1停用）
@@ -245,4 +247,4 @@ namespace Lean.Hbt.Application.Dtos.Admin
         [Required(ErrorMessage = "状态不能为空")]
         public HbtStatus Status { get; set; }
     }
-}
+} 

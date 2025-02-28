@@ -1,6 +1,6 @@
 //===================================================================
-// 项目名 : Lean.Hbt
-// 文件名 : HbtWorkflowTaskDto.cs
+// 项目名 : Lean.Hbt 
+// 文件名 : HbtWorkflowTaskDto.cs 
 // 创建者 : Lean365
 // 创建时间: 2024-01-23 12:00
 // 版本号 : V1.0.0
@@ -23,7 +23,7 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 任务ID
         /// </summary>
-        public long Id { get; set; }
+        public long TaskId { get; set; }
 
         /// <summary>
         /// 当前状态
@@ -365,4 +365,4 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// </summary>
         public string Remark { get; set; }
     }
-}
+} 

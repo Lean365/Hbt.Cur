@@ -1,5 +1,5 @@
 //===================================================================
-// 项目名 : Lean.Hbt
+// 项目名 : Lean.Hbt 
 // 文件名 : HbtWorkflowInstanceService.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-23 12:00
@@ -9,9 +9,12 @@
 
 #nullable enable
 
+using System.Linq.Expressions;
 using Lean.Hbt.Application.Dtos.Workflow;
 using Lean.Hbt.Common.Exceptions;
+using Lean.Hbt.Common.Models;
 using Lean.Hbt.Domain.Entities.Workflow;
+using Lean.Hbt.Domain.IServices;
 using Lean.Hbt.Domain.IServices.Admin;
 using Lean.Hbt.Domain.Repositories;
 using Mapster;
@@ -225,8 +228,8 @@ namespace Lean.Hbt.Application.Services.Workflow
                 throw new ArgumentNullException(nameof(ids));
 
             // 检查是否有活动状态的实例
-            var activeInstances = await _instanceRepository.GetListAsync(x =>
-                ids.Contains(x.Id) &&
+            var activeInstances = await _instanceRepository.GetListAsync(x => 
+                ids.Contains(x.Id) && 
                 x.Status != Common.Enums.HbtWorkflowInstanceStatus.Draft &&
                 x.Status != Common.Enums.HbtWorkflowInstanceStatus.Terminated);
 
@@ -329,13 +332,13 @@ namespace Lean.Hbt.Application.Services.Workflow
         /// <exception cref="HbtException">当工作流实例不存在或更新失败时抛出异常</exception>
         public async Task<bool> UpdateStatusAsync(HbtWorkflowInstanceStatusDto input)
         {
-            var instance = await _instanceRepository.GetByIdAsync(input.Id);
+            var instance = await _instanceRepository.GetByIdAsync(input.WorkflowInstanceId);
             if (instance == null)
                 throw new HbtException(_localization.L("WorkflowInstance.NotFound"));
 
             instance.Status = input.Status;
             instance.CurrentNodeId = input.CurrentNodeId;
-
+            
             var result = await _instanceRepository.UpdateAsync(instance);
             if (result <= 0)
                 throw new HbtException(_localization.L("WorkflowInstance.UpdateStatus.Failed"));
@@ -414,7 +417,7 @@ namespace Lean.Hbt.Application.Services.Workflow
 
             instance.Status = Common.Enums.HbtWorkflowInstanceStatus.Terminated;
             instance.Remark = reason;
-
+            
             var result = await _instanceRepository.UpdateAsync(instance);
             if (result <= 0)
                 throw new HbtException(_localization.L("WorkflowInstance.Terminate.Failed"));
@@ -423,4 +426,4 @@ namespace Lean.Hbt.Application.Services.Workflow
             return true;
         }
     }
-}
+} 

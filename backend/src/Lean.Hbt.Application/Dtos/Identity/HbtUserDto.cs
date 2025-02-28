@@ -7,8 +7,11 @@
 // 描述: 用户数据传输对象
 //===================================================================
 
+using System;
 using System.ComponentModel.DataAnnotations;
 using Lean.Hbt.Common.Enums;
+using Lean.Hbt.Common.Models;
+using System.Collections.Generic;
 
 namespace Lean.Hbt.Application.Dtos.Identity
 {
@@ -41,7 +44,7 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// <summary>
         /// 用户ID
         /// </summary>
-        public long Id { get; set; }
+        public long UserId { get; set; }
 
         /// <summary>
         /// 用户名
@@ -305,7 +308,7 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// 用户ID
         /// </summary>
         [Required(ErrorMessage = "用户ID不能为空")]
-        public long Id { get; set; }
+        public long UserId { get; set; }
 
         /// <summary>
         /// 租户ID
@@ -679,7 +682,7 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// 用户ID
         /// </summary>
         [Required(ErrorMessage = "用户ID不能为空")]
-        public long Id { get; set; }
+        public long UserId { get; set; }
 
         /// <summary>
         /// 状态(0正常 1停用)
@@ -708,7 +711,7 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// 用户ID
         /// </summary>
         [Required(ErrorMessage = "用户ID不能为空")]
-        public long Id { get; set; }
+        public long UserId { get; set; }
 
         /// <summary>
         /// 新密码
@@ -741,7 +744,7 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// 用户ID
         /// </summary>
         [Required(ErrorMessage = "用户ID不能为空")]
-        public long Id { get; set; }
+        public long UserId { get; set; }
 
         /// <summary>
         /// 旧密码
@@ -757,4 +760,4 @@ namespace Lean.Hbt.Application.Dtos.Identity
         [MaxLength(20, ErrorMessage = "新密码长度不能超过20个字符")]
         public string NewPassword { get; set; }
     }
-}
+} 

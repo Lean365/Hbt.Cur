@@ -7,16 +7,26 @@
 // 描述   : 角色服务实现
 //===================================================================
 
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Collections.Generic;
 using System.Linq.Expressions;
-using Lean.Hbt.Application.Dtos.Identity;
+using Lean.Hbt.Common.Models;
 using Lean.Hbt.Common.Enums;
-using Lean.Hbt.Common.Exceptions;
-using Lean.Hbt.Common.Helpers;
 using Lean.Hbt.Domain.Entities.Identity;
+using Lean.Hbt.Application.Dtos.Identity;
+using Lean.Hbt.Common.Exceptions;
+using Lean.Hbt.Common.Utils;
+using Lean.Hbt.Domain.IServices;
 using Lean.Hbt.Domain.Repositories;
 using Lean.Hbt.Domain.Utils;
-using Mapster;
 using SqlSugar;
+using Mapster;
+using SqlSugar.Extensions;
+using System.IO;
+using Microsoft.Extensions.Logging;
+using Lean.Hbt.Common.Helpers;
 
 namespace Lean.Hbt.Application.Services.Identity
 {
@@ -175,13 +185,13 @@ namespace Lean.Hbt.Application.Services.Identity
             if (string.IsNullOrEmpty(input.RoleKey))
                 throw new HbtException("角色标识不能为空");
 
-            var role = await _roleRepository.GetByIdAsync(input.Id);
+            var role = await _roleRepository.GetByIdAsync(input.RoleId);
             if (role == null)
-                throw new HbtException($"角色不存在: {input.Id}");
+                throw new HbtException($"角色不存在: {input.RoleId}");
 
             // 验证角色名称和标识是否已存在
-            await HbtValidateUtils.ValidateFieldExistsAsync(_roleRepository, "RoleName", input.RoleName, input.Id);
-            await HbtValidateUtils.ValidateFieldExistsAsync(_roleRepository, "RoleKey", input.RoleKey, input.Id);
+            await HbtValidateUtils.ValidateFieldExistsAsync(_roleRepository, "RoleName", input.RoleName, input.RoleId);
+            await HbtValidateUtils.ValidateFieldExistsAsync(_roleRepository, "RoleKey", input.RoleKey, input.RoleId);
 
             // 更新角色基本信息
             role.RoleName = input.RoleName;
@@ -296,9 +306,9 @@ namespace Lean.Hbt.Application.Services.Identity
             if (input == null)
                 throw new ArgumentNullException(nameof(input));
 
-            var role = await _roleRepository.GetByIdAsync(input.Id);
+            var role = await _roleRepository.GetByIdAsync(input.RoleId);
             if (role == null)
-                throw new HbtException($"角色不存在: {input.Id}");
+                throw new HbtException($"角色不存在: {input.RoleId}");
 
             role.Status = input.Status;
             var result = await _roleRepository.UpdateAsync(role);
@@ -390,4 +400,4 @@ namespace Lean.Hbt.Application.Services.Identity
             return await HbtExcelHelper.GenerateTemplateAsync<HbtRoleTemplateDto>(sheetName);
         }
     }
-}
+} 

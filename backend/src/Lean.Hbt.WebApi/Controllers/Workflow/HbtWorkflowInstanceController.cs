@@ -1,5 +1,5 @@
 //===================================================================
-// 项目名 : Lean.Hbt
+// 项目名 : Lean.Hbt 
 // 文件名 : HbtWorkflowInstanceController.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-23 12:00
@@ -7,10 +7,15 @@
 // 描述   : 工作流实例控制器
 //===================================================================
 
+using System;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 using Lean.Hbt.Application.Dtos.Workflow;
 using Lean.Hbt.Application.Services.Workflow;
 using Lean.Hbt.Domain.IServices.Admin;
 using Lean.Hbt.Infrastructure.Security.Attributes;
+using Lean.Hbt.Infrastructure.Swagger;
 
 namespace Lean.Hbt.WebApi.Controllers.Workflow
 {
@@ -140,7 +145,7 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         [HbtPerm("workflow:instance:update")]
         public async Task<IActionResult> UpdateStatusAsync(long id, [FromBody] HbtWorkflowInstanceStatusDto input)
         {
-            input.Id = id;
+            input.WorkflowInstanceId = id;
             var result = await _workflowInstanceService.UpdateStatusAsync(input);
             return Success(result);
         }
@@ -178,4 +183,4 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
             return Success(result);
         }
     }
-}
+} 

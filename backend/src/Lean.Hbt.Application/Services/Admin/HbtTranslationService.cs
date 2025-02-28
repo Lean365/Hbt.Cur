@@ -7,13 +7,20 @@
 // 描述   : 翻译服务实现类
 //===================================================================
 
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using System.Linq;
+using System.IO;
 using Lean.Hbt.Application.Dtos.Admin;
-using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Common.Exceptions;
-using Lean.Hbt.Common.Helpers;
+using Lean.Hbt.Common.Models;
+using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Domain.Entities.Admin;
+using Lean.Hbt.Domain.IServices;
 using Lean.Hbt.Domain.Repositories;
 using Lean.Hbt.Domain.Utils;
+using Lean.Hbt.Common.Helpers;
 using Mapster;
 using SqlSugar;
 
@@ -102,12 +109,12 @@ namespace Lean.Hbt.Application.Services.Admin
         /// </summary>
         public async Task<bool> UpdateAsync(HbtTranslationUpdateDto input)
         {
-            var translation = await _translationRepository.GetByIdAsync(input.Id);
+            var translation = await _translationRepository.GetByIdAsync(input.TranslationId);
             if (translation == null)
                 throw new HbtException("翻译不存在");
 
             if (translation.TransKey != input.TransKey)
-                await HbtValidateUtils.ValidateFieldExistsAsync(_translationRepository, "TransKey", input.TransKey, input.Id);
+                await HbtValidateUtils.ValidateFieldExistsAsync(_translationRepository, "TransKey", input.TransKey, input.TranslationId);
 
             translation.LangCode = input.LangCode;
             translation.TransKey = input.TransKey;
@@ -210,7 +217,7 @@ namespace Lean.Hbt.Application.Services.Admin
 
             var list = await _translationRepository.GetListAsync(exp.ToExpression());
             var dtos = list.Adapt<List<HbtTranslationDto>>();
-
+            
             return await HbtExcelHelper.ExportAsync(dtos, sheetName);
         }
 
@@ -242,7 +249,7 @@ namespace Lean.Hbt.Application.Services.Admin
         /// </summary>
         public async Task<bool> UpdateStatusAsync(HbtTranslationStatusDto input)
         {
-            var translation = await _translationRepository.GetByIdAsync(input.Id);
+            var translation = await _translationRepository.GetByIdAsync(input.TranslationId);
             if (translation == null)
                 throw new HbtException("翻译不存在");
 
@@ -276,13 +283,13 @@ namespace Lean.Hbt.Application.Services.Admin
         {
             // 1. 构建查询条件
             var exp = Expressionable.Create<HbtTranslation>();
-
+            
             if (!string.IsNullOrEmpty(query.ModuleName))
                 exp.And(x => x.ModuleName == query.ModuleName);
-
+                
             if (!string.IsNullOrEmpty(query.TransKey))
                 exp.And(x => x.TransKey.Contains(query.TransKey));
-
+                
             if (query.Status.HasValue)
                 exp.And(x => x.Status == query.Status.Value);
 
@@ -334,4 +341,4 @@ namespace Lean.Hbt.Application.Services.Admin
             };
         }
     }
-}
+} 

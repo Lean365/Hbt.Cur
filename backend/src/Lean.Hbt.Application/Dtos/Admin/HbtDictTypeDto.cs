@@ -25,7 +25,7 @@ namespace Lean.Hbt.Application.Dtos.Admin
         /// <summary>
         /// 字典类型ID
         /// </summary>
-        public long Id { get; set; }
+        public long DictTypeId { get; set; }
 
         /// <summary>
         /// 字典名称
@@ -158,7 +158,7 @@ namespace Lean.Hbt.Application.Dtos.Admin
         /// 字典类型ID
         /// </summary>
         [Required(ErrorMessage = "字典类型ID不能为空")]
-        public long Id { get; set; }
+        public long DictTypeId { get; set; }
 
         /// <summary>
         /// 字典名称
@@ -339,7 +339,7 @@ namespace Lean.Hbt.Application.Dtos.Admin
         /// 字典类型ID
         /// </summary>
         [Required(ErrorMessage = "字典类型ID不能为空")]
-        public long Id { get; set; }
+        public long DictTypeId { get; set; }
 
         /// <summary>
         /// 状态（0正常 1停用）
@@ -347,4 +347,4 @@ namespace Lean.Hbt.Application.Dtos.Admin
         [Required(ErrorMessage = "状态不能为空")]
         public HbtStatus Status { get; set; }
     }
-}
+} 
