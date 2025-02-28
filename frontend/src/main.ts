@@ -17,20 +17,25 @@ import i18n from './locales'
 import { useSettingStore } from '@/stores/settings'
 import { setupPermission } from './directives/permission'
 
-// 导入 dayjs 及其插件
-import dayjs from 'dayjs'
-import relativeTime from 'dayjs/plugin/relativeTime'
-import customParseFormat from 'dayjs/plugin/customParseFormat'
-import weekOfYear from 'dayjs/plugin/weekOfYear'
-import isSameOrBefore from 'dayjs/plugin/isSameOrBefore'
-import isSameOrAfter from 'dayjs/plugin/isSameOrAfter'
+// 导入 date-fns 及其语言包
+import { format, formatDistance, formatRelative, isDate } from 'date-fns'
+import { zhCN, zhTW, ja, ko, enUS, fr, es, ru, arSA } from 'date-fns/locale'
 
-// 配置 dayjs 插件
-dayjs.extend(relativeTime)
-dayjs.extend(customParseFormat)
-dayjs.extend(weekOfYear)
-dayjs.extend(isSameOrBefore)
-dayjs.extend(isSameOrAfter)
+// 语言包映射
+const LOCALE_MAP: Record<string, any> = {
+  // 东亚语言
+  'zh-cn': zhCN,     // 简体中文
+  'zh-tw': zhTW,     // 繁体中文
+  'ja': ja,          // 日语
+  'ko': ko,          // 韩语
+  
+  // 联合国官方语言
+  'en': enUS,        // 英语
+  'fr': fr,          // 法语
+  'es': es,          // 西班牙语
+  'ru': ru,          // 俄语
+  'ar': arSA,        // 阿拉伯语
+}
 
 async function bootstrap() {
   const app = createApp(App)
@@ -52,16 +57,20 @@ async function bootstrap() {
   const settingStore = useSettingStore()
   await settingStore.loadFromStorage()
 
-  // 6. 监听语言变化，动态加载 dayjs 语言包
+  // 6. 监听语言变化，设置 date-fns 语言包
   watch(
     () => i18n.global.locale.value,
-    async (newLang) => {
+    (newLang) => {
       try {
-        await import(`dayjs/locale/${newLang}.js`)
-        dayjs.locale(newLang)
+        const lang = newLang.toLowerCase()
+        const locale = LOCALE_MAP[lang] || enUS
+        
+        // 将语言设置到全局配置中
+        app.config.globalProperties.$dateLocale = locale
+        console.log('[date-fns] 设置语言成功:', newLang)
       } catch (err) {
-        console.warn(`[dayjs] 语言包 ${newLang} 加载失败，将使用默认语言 en`)
-        dayjs.locale('en')
+        console.warn('[date-fns] 设置语言失败，将使用默认语言 en-US:', err)
+        app.config.globalProperties.$dateLocale = enUS
       }
     },
     { immediate: true }

@@ -1,5 +1,5 @@
 //===================================================================
-// 项目名 : Lean.Hbt 
+// 项目名 : Lean.Hbt
 // 文件名 : HbtWorkflowDefinitionService.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-23 12:00
@@ -9,20 +9,14 @@
 
 #nullable enable
 
-using System.Linq.Expressions;
 using Lean.Hbt.Application.Dtos.Workflow;
 using Lean.Hbt.Common.Exceptions;
-using Lean.Hbt.Common.Models;
+using Lean.Hbt.Common.Helpers;
 using Lean.Hbt.Domain.Entities.Workflow;
-using Lean.Hbt.Domain.IServices;
 using Lean.Hbt.Domain.IServices.Admin;
 using Lean.Hbt.Domain.Repositories;
 using Mapster;
 using SqlSugar;
-using System.IO;
-using System.Collections.Generic;
-using System;
-using Lean.Hbt.Common.Helpers;
 
 namespace Lean.Hbt.Application.Services.Workflow
 {
@@ -296,7 +290,7 @@ namespace Lean.Hbt.Application.Services.Workflow
         /// <exception cref="HbtException">当工作流定义不存在或更新失败时抛出异常</exception>
         public async Task<bool> UpdateStatusAsync(HbtWorkflowDefinitionStatusDto input)
         {
-            var definition = await _definitionRepository.GetByIdAsync(input.WorkflowDefinitionId);
+            var definition = await _definitionRepository.GetByIdAsync(input.Id);
             if (definition == null)
                 throw new HbtException(_localization.L("WorkflowDefinition.NotFound"));
 
@@ -309,4 +303,4 @@ namespace Lean.Hbt.Application.Services.Workflow
             return true;
         }
     }
-} 
+}

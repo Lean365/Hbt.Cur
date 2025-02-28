@@ -1,0 +1,250 @@
+// ===================================================================
+// 项目名 : Lean.Hbt
+// 文件名 : table-button.less
+// 创建者 : Claude
+// 创建时间: 2024-03-20
+// 版本号 : v1.0.0
+// 描述    : 表格组件按钮布局样式定义
+// ===================================================================
+
+@import '../variables.less';
+@import './button.less';  // 需要引入button.less来使用其中的变量
+
+// === 表格按钮基础样式 ===
+.table-button-base() {
+  height: @table-btn-height;
+  line-height: @table-btn-line-height;
+  font-size: @table-btn-font-size;
+  padding: @table-btn-padding;
+  border-radius: @btn-border-radius-md;  // 使用button.less中定义的中等按钮圆角
+}
+
+// === 表格工具栏布局 ===
+.table-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  width: 100%;
+  white-space: nowrap;
+
+  // 左侧按钮组
+  .toolbar-left {
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+
+    .button-group {
+      display: inline-flex;
+      align-items: stretch;
+      font-size: 0; // 消除inline-flex的间隙
+      
+      .hbt-btn {
+        margin: 0;
+        border-radius: 0;
+        position: relative;
+        font-size: @table-btn-font-size; // 恢复按钮字体大小
+        
+        &:not(:first-child) {
+          margin-left: -1px; // 让边框重叠
+          border-left: none; // 移除左边框
+        }
+
+        &:first-child {
+          border-top-left-radius: @btn-border-radius-md;
+          border-bottom-left-radius: @btn-border-radius-md;
+        }
+        
+        &:last-child {
+          border-top-right-radius: @btn-border-radius-md;
+          border-bottom-right-radius: @btn-border-radius-md;
+        }
+        
+        &:hover {
+          z-index: 2;
+          position: relative;
+          border-left: 1px solid; // hover时显示边框
+        }
+      }
+    }
+  }
+
+  // 右侧按钮组
+  .toolbar-right {
+    display: inline-flex;
+    align-items: center;
+    margin-left: auto;
+    flex-shrink: 0;
+
+    .button-group {
+      display: inline-flex;
+      align-items: stretch;
+      font-size: 0;
+      
+      .hbt-btn {
+        margin: 0;
+        border-radius: 0;
+        position: relative;
+        font-size: @table-btn-font-size;
+        
+        &:not(:first-child) {
+          margin-left: -1px;
+          border-left: none;
+        }
+
+        &:first-child {
+          border-top-left-radius: @btn-border-radius-md;
+          border-bottom-left-radius: @btn-border-radius-md;
+        }
+        
+        &:last-child {
+          border-top-right-radius: @btn-border-radius-md;
+          border-bottom-right-radius: @btn-border-radius-md;
+        }
+        
+        &:hover {
+          z-index: 2;
+          position: relative;
+          border-left: 1px solid;
+        }
+      }
+    }
+  }
+}
+
+// === 表格按钮组样式 ===
+.button-group {
+  .hbt-btn {
+    .table-button-base();
+    margin: 0;
+    border-radius: 0;
+
+    &:first-child {
+      border-top-left-radius: @btn-border-radius-md;    // 使用统一的圆角变量
+      border-bottom-left-radius: @btn-border-radius-md;
+    }
+    
+    &:last-child {
+      border-top-right-radius: @btn-border-radius-md;   // 使用统一的圆角变量
+      border-bottom-right-radius: @btn-border-radius-md;
+    }
+    
+    &:hover {
+      position: relative;
+      z-index: 1;
+    }
+
+    &:not(:first-child) {
+      margin-left: -1px;
+    }
+  }
+}
+
+// === 表格下拉菜单样式 ===
+.hbt-dropdown-menu {
+  padding: 4px 0;
+  background: @component-background;
+  border-radius: @border-radius-base;
+  box-shadow: @box-shadow-base;
+
+  .ant-dropdown-menu-item {
+    margin: 0;
+    padding: 5px 12px;
+    line-height: 22px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    color: @text-color;
+    transition: all 0.3s;
+
+    .anticon {
+      margin-right: 8px;
+    }
+
+    &:hover {
+      color: @text-color-inverse;
+      background-color: @primary-color;
+
+      .anticon {
+        color: @text-color-inverse;
+      }
+    }
+
+    &-selected {
+      color: @primary-color;
+      background-color: fade(@primary-color, 10%);
+
+      &:hover {
+        color: @text-color-inverse;
+        background-color: @primary-color;
+      }
+    }
+  }
+}
+
+// === 表格按钮类 ===
+.hbt-btn-table {
+  .button-base();  // 继承通用基础样式
+  .table-button-base();  // 应用表格特有样式
+  
+  // 左侧按钮
+  &-left {
+    padding: 0 12px;
+    
+    .anticon {
+      margin-right: 2px;
+    }
+  }
+  
+  // 右侧按钮
+  &-right {
+    padding: 0;
+    width: @table-btn-width;
+    height: @table-btn-height;
+    
+    .anticon {
+      margin: 0;
+    }
+  }
+}
+
+// === 表格操作按钮 ===
+.hbt-table-action-button {
+  .button-base();  // 继承通用基础样式
+  .table-button-base();  // 应用表格特有样式
+}
+
+// === 表格特定功能按钮 ===
+.hbt-table-btn {  // 改用独立的类名
+  &-row-expand { .button-variant(@btn-row-expand-color); }
+  &-row-collapse { .button-variant(@btn-row-collapse-color); }
+  
+  &-column-drag { .button-variant(@btn-column-drag-color); }
+  &-column-filter { .button-variant(@btn-column-filter-color); }
+  &-column-sort { .button-variant(@btn-column-sort-color); }
+}
+
+// === 表格工具栏按钮 ===
+.hbt-table-toolbar-btn {  // 改用独立的类名
+  &-density { .button-variant(@btn-density-color); }
+  &-column-setting { .button-variant(@btn-column-setting-color); }
+  &-fullscreen { .button-variant(@btn-fullscreen-color); }
+}
+
+// === 覆盖 ant-design-vue 按钮样式 ===
+.ant-btn.hbt-btn {
+  &.hbt-btn-add { .button-variant(@btn-add-color); }
+  &.hbt-btn-edit { .button-variant(@btn-edit-color); }
+  &.hbt-btn-delete { .button-variant(@btn-delete-color); }
+  &.hbt-btn-view { .button-variant(@btn-view-color); }
+  &.hbt-btn-import { .button-variant(@btn-import-color); }
+  &.hbt-btn-export { .button-variant(@btn-export-color); }
+  &.hbt-btn-download { .button-variant(@btn-download-color); }
+  &.hbt-btn-upload { .button-variant(@btn-upload-color); }
+  &.hbt-btn-audit { .button-variant(@btn-audit-color); }
+  &.hbt-btn-revoke { .button-variant(@btn-revoke-color); }
+  &.hbt-btn-refresh { .button-variant(@btn-refresh-color); }
+  &.hbt-btn-config { .button-variant(@btn-config-color); }
+  &.hbt-btn-search { .button-variant(@btn-search-color); }
+  &.hbt-btn-expand { .button-variant(@btn-expand-color); }
+} 

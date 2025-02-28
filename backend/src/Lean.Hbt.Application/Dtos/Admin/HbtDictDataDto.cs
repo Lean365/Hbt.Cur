@@ -9,7 +9,6 @@
 
 using System.ComponentModel.DataAnnotations;
 using Lean.Hbt.Common.Enums;
-using Lean.Hbt.Common.Models;
 
 namespace Lean.Hbt.Application.Dtos.Admin
 {
@@ -21,7 +20,7 @@ namespace Lean.Hbt.Application.Dtos.Admin
         /// <summary>
         /// 字典数据ID
         /// </summary>
-        public long DictDataId { get; set; }
+        public long Id { get; set; }
 
         /// <summary>
         /// 字典类型
@@ -209,7 +208,7 @@ namespace Lean.Hbt.Application.Dtos.Admin
         /// 字典数据ID
         /// </summary>
         [Required(ErrorMessage = "字典数据ID不能为空")]
-        public long DictDataId { get; set; }
+        public long Id { get; set; }
 
         /// <summary>
         /// 字典类型
@@ -538,7 +537,7 @@ namespace Lean.Hbt.Application.Dtos.Admin
         /// 字典数据ID
         /// </summary>
         [Required(ErrorMessage = "字典数据ID不能为空")]
-        public long DictDataId { get; set; }
+        public long Id { get; set; }
 
         /// <summary>
         /// 状态
@@ -546,4 +545,4 @@ namespace Lean.Hbt.Application.Dtos.Admin
         [Required(ErrorMessage = "状态不能为空")]
         public HbtStatus Status { get; set; }
     }
-} 
+}

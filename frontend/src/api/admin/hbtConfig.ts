@@ -147,4 +147,18 @@ export function updateHbtConfigStatus(configId: number, status: number) {
     method: 'put',
     data: { status }
   })
+}
+
+/**
+ * 批量更新配置状态
+ * @param configIds 配置ID列表
+ * @param status 状态
+ * @returns 更新结果
+ */
+export function batchUpdateHbtConfigStatus(configIds: number[], status: number) {
+  return request<ApiResponse<null>>({
+    url: '/api/HbtConfig/batch/status',
+    method: 'put',
+    data: { configIds, status }
+  })
 } 

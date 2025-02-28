@@ -9,18 +9,14 @@
 // 描述    : 工作流引擎实现
 //===================================================================
 
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Linq;
 using Lean.Hbt.Application.Dtos.Workflow;
+using Lean.Hbt.Application.Services.Workflow.Engine.Executors;
+using Lean.Hbt.Application.Services.Workflow.Engine.Expressions;
 using Lean.Hbt.Common.Enums;
+using Lean.Hbt.Domain.Data;
 using Lean.Hbt.Domain.Entities.Workflow;
 using Lean.Hbt.Domain.Repositories;
 using Mapster;
-using Lean.Hbt.Application.Services.Workflow.Engine.Executors;
-using Lean.Hbt.Application.Services.Workflow.Engine.Expressions;
-using Lean.Hbt.Domain.Data;
 
 namespace Lean.Hbt.Application.Services.Workflow.Engine
 {
@@ -79,8 +75,8 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine
                 }
 
                 // 获取开始节点
-                var startNode = await _nodeRepository.FirstOrDefaultAsync(x => 
-                    x.WorkflowDefinitionId == definitionId && 
+                var startNode = await _nodeRepository.FirstOrDefaultAsync(x =>
+                    x.WorkflowDefinitionId == definitionId &&
                     x.NodeType == HbtWorkflowNodeType.Start);
 
                 if (startNode == null)
@@ -307,7 +303,7 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine
 
             return new HbtWorkflowInstanceStatusDto
             {
-                WorkflowInstanceId = instance.Id,
+                Id = instance.Id,
                 Status = instance.Status,
                 CurrentNodeId = instance.CurrentNodeId,
                 CurrentNodeName = currentNode?.NodeName ?? string.Empty,
@@ -440,4 +436,4 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine
             };
         }
     }
-} 
+}

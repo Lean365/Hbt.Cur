@@ -7,10 +7,8 @@
 // 描述   : 系统配置数据传输对象
 //===================================================================
 
-using System;
 using System.ComponentModel.DataAnnotations;
 using Lean.Hbt.Common.Enums;
-using Lean.Hbt.Common.Models;
 
 namespace Lean.Hbt.Application.Dtos.Admin
 {
@@ -33,7 +31,7 @@ namespace Lean.Hbt.Application.Dtos.Admin
         /// <summary>
         /// 配置ID
         /// </summary>
-        public long ConfigId { get; set; }
+        public long Id { get; set; }
 
         /// <summary>
         /// 配置名称
@@ -184,7 +182,7 @@ namespace Lean.Hbt.Application.Dtos.Admin
         /// 配置ID
         /// </summary>
         [Required(ErrorMessage = "配置ID不能为空")]
-        public long ConfigId { get; set; }
+        public long Id { get; set; }
 
         /// <summary>
         /// 配置名称
@@ -386,11 +384,11 @@ namespace Lean.Hbt.Application.Dtos.Admin
         /// 配置ID
         /// </summary>
         [Required(ErrorMessage = "配置ID不能为空")]
-        public long ConfigId { get; set; }
+        public long Id { get; set; }
 
         /// <summary>
         /// 状态（0正常 1停用）
         /// </summary>
         public HbtStatus Status { get; set; }
     }
-} 
+}

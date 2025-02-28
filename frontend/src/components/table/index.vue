@@ -9,6 +9,113 @@
 
 <template>
   <div class="hbt-table">
+    <!-- 工具栏 -->
+    <div class="table-toolbar" v-if="showToolbar">
+      <!-- 左侧按钮组 -->
+      <div class="toolbar-left">
+        <a-space class="button-group">
+          <!-- 新增按钮 -->
+          <a-tooltip title="新增数据">
+            <a-button class="hbt-btn hbt-btn-add" @click="handleToolbarAction('add')">
+              <template #icon><plus-outlined /></template>
+              新增
+            </a-button>
+          </a-tooltip>
+          
+          <!-- 编辑按钮 -->
+          <a-tooltip title="编辑选中数据">
+            <a-button class="hbt-btn hbt-btn-edit" :disabled="!hasSelected" @click="handleToolbarAction('edit')">
+              <template #icon><edit-outlined /></template>
+              编辑
+            </a-button>
+          </a-tooltip>
+          
+          <!-- 删除按钮 -->
+          <a-tooltip title="删除选中数据">
+            <a-button class="hbt-btn hbt-btn-delete" :disabled="!hasSelected" @click="handleToolbarAction('delete')">
+              <template #icon><delete-outlined /></template>
+              删除
+            </a-button>
+          </a-tooltip>
+          
+          <!-- 导入按钮 -->
+          <a-dropdown>
+            <a-tooltip title="导入数据">
+              <a-button class="hbt-btn hbt-btn-import">
+                <template #icon><import-outlined /></template>
+                导入
+              </a-button>
+            </a-tooltip>
+            <template #overlay>
+              <a-menu class="hbt-dropdown-menu">
+                <a-menu-item key="template" class="hbt-btn hbt-btn-download" @click="handleToolbarAction('download-template')">
+                  <download-outlined />
+                  下载模板
+                </a-menu-item>
+                <a-menu-item key="import" class="hbt-btn hbt-btn-import" @click="handleToolbarAction('import-data')">
+                  <upload-outlined />
+                  导入数据
+                </a-menu-item>
+              </a-menu>
+            </template>
+          </a-dropdown>
+          
+          <!-- 导出按钮 -->
+          <a-tooltip title="导出数据">
+            <a-button class="hbt-btn hbt-btn-export" @click="handleToolbarAction('export')">
+              <template #icon><export-outlined /></template>
+              导出
+            </a-button>
+          </a-tooltip>
+          
+          <!-- 审核按钮 -->
+          <a-tooltip title="审核选中数据">
+            <a-button class="hbt-btn hbt-btn-audit" :disabled="!hasSelected" @click="handleToolbarAction('audit')">
+              <template #icon><audit-outlined /></template>
+              审核
+            </a-button>
+          </a-tooltip>
+          
+          <!-- 撤销按钮 -->
+          <a-tooltip title="撤销审核">
+            <a-button class="hbt-btn hbt-btn-revoke" :disabled="!hasSelected" @click="handleToolbarAction('revoke')">
+              <template #icon><rollback-outlined /></template>
+              撤销
+            </a-button>
+          </a-tooltip>
+          
+          <slot name="toolbar-left" />
+        </a-space>
+      </div>
+      
+      <!-- 右侧按钮组 -->
+      <div class="toolbar-right">
+        <a-space class="button-group">
+          <a-tooltip title="刷新数据">
+            <a-button class="hbt-btn hbt-btn-refresh hbt-table-right-button" @click="handleRefresh">
+              <template #icon><reload-outlined /></template>
+            </a-button>
+          </a-tooltip>
+          <a-tooltip title="显示/隐藏列">
+            <a-button class="hbt-btn hbt-btn-config hbt-table-right-button" @click="handleColumnDisplay">
+              <template #icon><setting-outlined /></template>
+            </a-button>
+          </a-tooltip>
+          <a-tooltip title="显示/隐藏查询">
+            <a-button class="hbt-btn hbt-btn-search hbt-table-right-button" @click="handleSearchDisplay">
+              <template #icon><search-outlined /></template>
+            </a-button>
+          </a-tooltip>
+          <a-tooltip title="全屏显示">
+            <a-button class="hbt-btn hbt-btn-expand hbt-table-right-button" @click="handleFullScreen">
+              <template #icon><fullscreen-outlined /></template>
+            </a-button>
+          </a-tooltip>
+        </a-space>
+        <slot name="toolbar-right" />
+      </div>
+    </div>
+
     <a-table
       ref="tableRef"
       v-bind="$attrs"
@@ -20,6 +127,7 @@
       :scroll="scrollConfig"
       :size="size"
       :bordered="bordered"
+      :row-key="rowKey"
       @change="handleChange"
       @scroll="handleScroll"
     >
@@ -45,7 +153,14 @@
 <script setup lang="ts">
 import { ref, computed, h, onMounted, watch } from 'vue'
 import { usePermission } from '@/hooks/usePermission'
-import { Space, Button, Popconfirm } from 'ant-design-vue'
+import { 
+  Space, 
+  Button, 
+  Popconfirm, 
+  Tooltip, 
+  Dropdown,
+  Menu
+} from 'ant-design-vue'
 import type { ButtonProps } from 'ant-design-vue'
 import type {
   HbtTableProps,
@@ -55,6 +170,21 @@ import type {
 } from '@/types/components/table'
 import { formatDate } from '@/utils/datetime'
 import { formatNumber, formatPercent, formatMoney } from '@/utils/numberformat'
+import { 
+  PlusOutlined,
+  EditOutlined,
+  DeleteOutlined,
+  ImportOutlined,
+  ExportOutlined,
+  DownloadOutlined,
+  UploadOutlined,
+  AuditOutlined,
+  RollbackOutlined,
+  ReloadOutlined, 
+  SettingOutlined, 
+  SearchOutlined, 
+  FullscreenOutlined 
+} from '@ant-design/icons-vue'
 
 // 格式化单元格值
 const formatCellValue = (value: any, column: HbtTableColumn) => {
@@ -62,9 +192,9 @@ const formatCellValue = (value: any, column: HbtTableColumn) => {
   
   switch (column.valueType) {
     case 'date':
-      return formatDate(value, column.dateFormat || 'YYYY-MM-DD')
+      return formatDate(value, column.dateFormat || 'yyyy-MM-dd')
     case 'datetime':
-      return formatDate(value, column.dateFormat || 'YYYY-MM-DD HH:mm:ss')
+      return formatDate(value, column.dateFormat || 'yyyy-MM-dd HH:mm:ss')
     case 'number':
       return formatNumber(value, column.numberFormat)
     case 'percent':
@@ -81,10 +211,13 @@ const props = withDefaults(defineProps<HbtTableProps>(), {
   loading: false,
   showIndex: false,
   showSelection: false,
+  showToolbar: false,
+  toolbarButtons: () => [],
   size: 'middle',
   bordered: false,
   virtual: false,
-  lazyLoad: false
+  lazyLoad: false,
+  rowKey: 'id'
 })
 
 // 定义组件事件
@@ -92,6 +225,7 @@ const emit = defineEmits<{
   (e: 'change', pagination: any, filters: any, sorter: any): void
   (e: 'select', selectedRowKeys: any[], selectedRows: any[]): void
   (e: 'action', action: string, record: any): void
+  (e: 'toolbar-action', action: string): void
   (e: 'load-more'): void
 }>()
 
@@ -217,12 +351,39 @@ const paginationConfig = computed(() => {
   }
 })
 
+// 计算行键
+const rowKey = computed(() => {
+  return (record: any) => {
+    if (typeof props.rowKey === 'function') {
+      return props.rowKey(record)
+    }
+    const keyName = props.rowKey as string
+    const key = keyName ? record[keyName] : undefined
+    if (key !== undefined) return key
+    // 如果指定的 rowKey 不存在,尝试使用其他可能的键
+    return record.id || record.configId || record.userId || record.key
+  }
+})
+
+// 选中行状态
+const hasSelected = computed(() => {
+  return (props.rowSelection?.selectedRowKeys?.length || 0) > 0
+})
+
 // 计算选择列配置
 const selectionConfig = computed(() => {
   if (!props.showSelection) return undefined
 
   return {
+    type: 'checkbox' as const,
+    selectedRowKeys: props.rowSelection?.selectedRowKeys,
+    hideSelectAll: false,
+    preserveSelectedRowKeys: true,
     onChange: (selectedRowKeys: any[], selectedRows: any[]) => {
+      console.log('表格选择变化:', {
+        selectedRowKeys,
+        selectedRows: selectedRows.length
+      })
       emit('select', selectedRowKeys, selectedRows)
     },
     ...props.rowSelection
@@ -316,6 +477,31 @@ const renderActionButton = (action: HbtTableAction, record: any) => {
   return button
 }
 
+// 处理工具栏按钮点击
+const handleToolbarAction = (action: string) => {
+  emit('toolbar-action', action)
+}
+
+// 添加工具栏按钮处理方法
+const handleRefresh = () => {
+  tableRef.value?.refresh()
+}
+
+const handleColumnDisplay = () => {
+  // TODO: 实现列显示/隐藏功能
+  emit('toolbar-action', 'column-display')
+}
+
+const handleSearchDisplay = () => {
+  // TODO: 实现查询显示/隐藏功能
+  emit('toolbar-action', 'search-display')
+}
+
+const handleFullScreen = () => {
+  // TODO: 实现全屏显示功能
+  emit('toolbar-action', 'full-screen')
+}
+
 // 暴露组件实例方法
 defineExpose<HbtTableInstance>({
   refresh: () => {
@@ -339,65 +525,24 @@ defineExpose<HbtTableInstance>({
   clearSelection: () => {
     // 清空选中行
     tableRef.value?.clearSelection()
-  },
-  exportData: (options?: { filename?: string; columns?: HbtTableColumn[] }) => {
-    // 导出数据
-    const { filename = 'export.xlsx', columns = props.columns } = options || {}
-    const data = props.dataSource.map(record => {
-      const row: Record<string, any> = {}
-      columns.forEach(col => {
-        if (col.exportable !== false) {
-          row[col.exportTitle || col.title] = record[col.dataIndex]
-        }
-      })
-      return row
-    })
-    // TODO: 实现导出逻辑
   }
 })
 </script>
 
-<style lang="less" scoped>
+<style lang="less">
+@import '@/assets/styles/components/table-button.less';
+
 .hbt-table {
-  .load-more {
-    text-align: center;
-    margin: 12px 0;
+  // 表格容器样式
+  &-container {
+    position: relative;
+    width: 100%;
   }
 
-  :deep(.primary-border) {
-    color: #1890ff;
-    border-color: #1890ff;
-    background: transparent;
-
-    &:hover {
-      color: #fff;
-      border-color: #1890ff;
-      background: #1890ff;
-    }
-
-    &:focus {
-      color: #1890ff;
-      border-color: #1890ff;
-      background: transparent;
-    }
-  }
-
-  :deep(.danger-border) {
-    color: #ff4d4f;
-    border-color: #ff4d4f;
-    background: transparent;
-
-    &:hover {
-      color: #fff;
-      border-color: #ff4d4f;
-      background: #ff4d4f;
-    }
-
-    &:focus {
-      color: #ff4d4f;
-      border-color: #ff4d4f;
-      background: transparent;
-    }
+  // 表格内容样式
+  &-content {
+    width: 100%;
+    overflow: auto;
   }
 }
 </style> 

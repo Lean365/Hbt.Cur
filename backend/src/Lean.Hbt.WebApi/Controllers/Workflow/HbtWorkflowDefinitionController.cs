@@ -145,7 +145,7 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         [HbtPerm("workflow:definition:update")]
         public async Task<IActionResult> UpdateStatusAsync(long id, [FromBody] HbtWorkflowDefinitionStatusDto input)
         {
-            input.WorkflowDefinitionId = id;
+            input.Id = id;
             var result = await _workflowDefinitionService.UpdateStatusAsync(input);
             return Success(result);
         }

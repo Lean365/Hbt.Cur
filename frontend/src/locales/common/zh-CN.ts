@@ -73,7 +73,11 @@ export default {
       startTime: '开始时间',
       endTime: '结束时间',
       createTime: '创建时间',
-      updateTime: '更新时间'
+      updateTime: '更新时间',
+      formatError: '格式化时间失败',
+      relativeTimeFormatError: '格式化相对时间失败',
+      parseError: '解析日期失败',
+      rangeSeparator: ' 至 '
     },
 
     // 表单

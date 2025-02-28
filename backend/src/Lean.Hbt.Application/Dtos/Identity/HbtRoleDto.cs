@@ -7,11 +7,8 @@
 // 描述   : 角色数据传输对象
 //===================================================================
 
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Lean.Hbt.Common.Enums;
-using Lean.Hbt.Common.Models;
 
 namespace Lean.Hbt.Application.Dtos.Identity
 {
@@ -39,7 +36,7 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// <summary>
         /// 角色ID
         /// </summary>
-        public long RoleId { get; set; }
+        public long Id { get; set; }
 
         /// <summary>
         /// 角色名称
@@ -111,12 +108,12 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// <summary>
         /// 角色名称
         /// </summary>
-        public required string RoleName { get; set; }
+        public string RoleName { get; set; }
 
         /// <summary>
         /// 角色标识
         /// </summary>
-        public required string RoleKey { get; set; }
+        public string RoleKey { get; set; }
 
         /// <summary>
         /// 排序号
@@ -162,7 +159,7 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// <summary>
         /// 角色ID
         /// </summary>
-        public required long RoleId { get; set; }
+        public long Id { get; set; }
     }
 
     /// <summary>
@@ -223,12 +220,12 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// <summary>
         /// 角色ID
         /// </summary>
-        public required long RoleId { get; set; }
+        public long Id { get; set; }
 
         /// <summary>
         /// 状态
         /// </summary>
-        public required HbtStatus Status { get; set; }
+        public HbtStatus Status { get; set; }
     }
 
     /// <summary>
@@ -331,4 +328,4 @@ namespace Lean.Hbt.Application.Dtos.Identity
         [Required(ErrorMessage = "状态不能为空")]
         public string Status { get; set; } = "正常";
     }
-} 
+}

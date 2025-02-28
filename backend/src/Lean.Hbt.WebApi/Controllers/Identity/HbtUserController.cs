@@ -158,7 +158,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         {
             var input = new HbtUserStatusDto
             {
-                UserId = userId,
+                Id = userId,
                 Status = status
             };
             var result = await _userService.UpdateStatusAsync(input);

@@ -8,16 +8,14 @@
 //===================================================================
 
 using Lean.Hbt.Application.Dtos.Admin;
+using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Common.Exceptions;
-using Lean.Hbt.Common.Models;
+using Lean.Hbt.Domain.Data;
 using Lean.Hbt.Domain.Entities.Admin;
-using Lean.Hbt.Domain.IServices;
 using Lean.Hbt.Domain.Repositories;
 using Lean.Hbt.Domain.Utils;
 using Mapster;
 using SqlSugar;
-using Lean.Hbt.Domain.Data;
-using Lean.Hbt.Common.Enums;
 
 namespace Lean.Hbt.Application.Services.Admin
 {
@@ -113,15 +111,15 @@ namespace Lean.Hbt.Application.Services.Admin
         /// </summary>
         public async Task<bool> UpdateAsync(HbtDictTypeUpdateDto input)
         {
-            var dictType = await _dictTypeRepository.GetByIdAsync(input.DictTypeId);
+            var dictType = await _dictTypeRepository.GetByIdAsync(input.Id);
             if (dictType == null)
-                throw new HbtException($"字典类型[{input.DictTypeId}]不存在");
+                throw new HbtException($"字典类型[{input.Id}]不存在");
 
             if (dictType.DictName != input.DictName)
-                await HbtValidateUtils.ValidateFieldExistsAsync(_dictTypeRepository, "DictName", input.DictName, input.DictTypeId);
+                await HbtValidateUtils.ValidateFieldExistsAsync(_dictTypeRepository, "DictName", input.DictName, input.Id);
 
             if (dictType.DictType != input.DictType)
-                await HbtValidateUtils.ValidateFieldExistsAsync(_dictTypeRepository, "DictType", input.DictType, input.DictTypeId);
+                await HbtValidateUtils.ValidateFieldExistsAsync(_dictTypeRepository, "DictType", input.DictType, input.Id);
 
             dictType.DictName = input.DictName;
             dictType.DictType = input.DictType;
@@ -291,9 +289,9 @@ namespace Lean.Hbt.Application.Services.Admin
         /// <returns>是否成功</returns>
         public async Task<bool> UpdateStatusAsync(HbtDictTypeStatusDto input)
         {
-            var dictType = await _dictTypeRepository.GetByIdAsync(input.DictTypeId);
+            var dictType = await _dictTypeRepository.GetByIdAsync(input.Id);
             if (dictType == null)
-                throw new HbtException($"字典类型[{input.DictTypeId}]不存在");
+                throw new HbtException($"字典类型[{input.Id}]不存在");
 
             dictType.Status = input.Status;
             return await _dictTypeRepository.UpdateAsync(dictType) > 0;

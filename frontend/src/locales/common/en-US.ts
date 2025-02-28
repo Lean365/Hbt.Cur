@@ -73,7 +73,11 @@ export default {
       startTime: 'Start Time',
       endTime: 'End Time',
       createTime: 'Create Time',
-      updateTime: 'Update Time'
+      updateTime: 'Update Time',
+      formatError: 'Failed to format time',
+      relativeTimeFormatError: 'Failed to format relative time',
+      parseError: 'Failed to parse date',
+      rangeSeparator: ' to '
     },
 
     // Form

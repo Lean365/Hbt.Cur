@@ -7,20 +7,13 @@
 // 描述   : 语言服务实现类
 //===================================================================
 
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.IO;
-using System.Linq;
 using Lean.Hbt.Application.Dtos.Admin;
 using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Common.Exceptions;
-using Lean.Hbt.Common.Models;
 using Lean.Hbt.Common.Helpers;
 using Lean.Hbt.Domain.Entities.Admin;
-using Lean.Hbt.Domain.IServices;
-using Lean.Hbt.Domain.Repositories;
 using Lean.Hbt.Domain.IServices.Admin;
+using Lean.Hbt.Domain.Repositories;
 using Lean.Hbt.Domain.Utils;
 using Mapster;
 using SqlSugar;
@@ -112,15 +105,15 @@ namespace Lean.Hbt.Application.Services.Admin
         /// </summary>
         public async Task<bool> UpdateAsync(HbtLanguageUpdateDto input)
         {
-            var language = await _languageRepository.GetByIdAsync(input.LanguageId);
+            var language = await _languageRepository.GetByIdAsync(input.Id);
             if (language == null)
                 throw new HbtException("语言不存在");
 
             if (language.LangCode != input.LangCode)
-                await HbtValidateUtils.ValidateFieldExistsAsync(_languageRepository, "LangCode", input.LangCode, input.LanguageId);
+                await HbtValidateUtils.ValidateFieldExistsAsync(_languageRepository, "LangCode", input.LangCode, input.Id);
 
             if (language.LangName != input.LangName)
-                await HbtValidateUtils.ValidateFieldExistsAsync(_languageRepository, "LangName", input.LangName, input.LanguageId);
+                await HbtValidateUtils.ValidateFieldExistsAsync(_languageRepository, "LangName", input.LangName, input.Id);
 
             language.LangCode = input.LangCode;
             language.LangName = input.LangName;
@@ -283,7 +276,7 @@ namespace Lean.Hbt.Application.Services.Admin
         /// </summary>
         public async Task<bool> UpdateStatusAsync(HbtLanguageStatusDto input)
         {
-            var language = await _languageRepository.GetByIdAsync(input.LanguageId);
+            var language = await _languageRepository.GetByIdAsync(input.Id);
             if (language == null)
                 throw new HbtException("语言不存在");
 
@@ -291,4 +284,4 @@ namespace Lean.Hbt.Application.Services.Admin
             return await _languageRepository.UpdateAsync(language) > 0;
         }
     }
-} 
+}

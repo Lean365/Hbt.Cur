@@ -173,7 +173,7 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
         {
             var input = new HbtTranslationStatusDto
             {
-                TranslationId = translationId,
+                Id = translationId,
                 Status = status
             };
             var result = await _translationService.UpdateStatusAsync(input);

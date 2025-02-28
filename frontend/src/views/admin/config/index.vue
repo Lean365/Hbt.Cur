@@ -18,76 +18,25 @@
         @reset="handleReset"
       />
 
-      <!-- 操作按钮 -->
-      <div class="table-operations">
-        <a-space>
-          <a-button type="primary" @click="handleAdd" v-hasPermi="['admin:config:create']">
-            <template #icon><plus-outlined /></template>
-            新增
-          </a-button>
-          <a-button 
-            :disabled="!selectedRowKeys.length"
-            @click="handleBatchDelete"
-            v-hasPermi="['admin:config:delete']"
-          >
-            <template #icon><delete-outlined /></template>
-            批量删除
-          </a-button>
-          <a-upload
-            name="file"
-            :show-upload-list="false"
-            :before-upload="handleImport"
-            v-hasPermi="['admin:config:import']"
-          >
-            <a-button>
-              <template #icon><upload-outlined /></template>
-              导入
-            </a-button>
-          </a-upload>
-          <a-button @click="handleExport" v-hasPermi="['admin:config:export']">
-            <template #icon><download-outlined /></template>
-            导出
-          </a-button>
-          <a-button @click="handleTemplate" v-hasPermi="['admin:config:query']">
-            <template #icon><file-outlined /></template>
-            模板
-          </a-button>
-        </a-space>
-      </div>
-
       <!-- 配置表格 -->
       <hbt-table
         ref="tableRef"
         :loading="loading"
         :columns="columns"
         :data-source="configList"
+        :pagination="pagination"
         show-selection
-        :action-column="{
-          width: 150,
-          fixed: 'right',
-          actions: [
-            {
-              key: 'edit',
-              label: '',
-              type: 'link',
-              icon: EditOutlined,
-              tooltip: '编辑配置',
-              permission: 'admin:config:update'
-            },
-            {
-              key: 'delete',
-              label: '',
-              type: 'danger',
-              icon: DeleteOutlined,
-              tooltip: '删除配置',
-              permission: 'admin:config:delete',
-              confirm: '确定要删除该配置吗？'
-            }
-          ]
+        show-toolbar
+        :row-selection="{
+          selectedRowKeys: selectedRowKeys,
+          onChange: onSelectChange
         }"
+        :toolbar-buttons="toolbarButtons"
+        :action-column="actionColumn"
         @select="onSelectChange"
         @action="handleAction"
-        @change="handleTableSort"
+        @toolbar-action="handleToolbarAction"
+        @change="handleTableChange"
       >
         <!-- 自定义列渲染 -->
         <template #configBuiltin="{ text }">
@@ -103,17 +52,6 @@
         </template>
       </hbt-table>
 
-      <!-- 分页组件 -->
-      <hbt-pagination
-        v-model:Current="pagination.Current"
-        v-model:PageSize="pagination.PageSize"
-        :Total="pagination.Total"
-        :ShowSizeChanger="pagination.ShowSizeChanger"
-        :ShowQuickJumper="pagination.ShowQuickJumper"
-        :ShowTotal="(total: number, range: [number, number]) => h('span', {}, `共 ${total} 条`)"
-        @change="handleTableChange"
-      />
-
       <!-- 配置表单 -->
       <config-form
         v-model:visible="modalVisible"
@@ -126,7 +64,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import { message } from 'ant-design-vue'
 import { useI18n } from 'vue-i18n'
 import type { HbtTableColumn } from '@/types/components/table'
@@ -134,14 +72,16 @@ import type { IHbtQueryItem } from '@/types/components/query'
 import {
   PlusOutlined,
   DeleteOutlined,
-  UploadOutlined,
-  DownloadOutlined,
+  ImportOutlined,
+  ExportOutlined,
   FileOutlined,
-  EditOutlined
+  EditOutlined,
+  CheckOutlined,
+  UndoOutlined
 } from '@ant-design/icons-vue'
 import HbtQuery from '@/components/query/index.vue'
 import HbtTable from '@/components/table/index.vue'
-import HbtPagination from '@/components/pagination/index.vue'
+
 import {
   getHbtConfigList,
   getHbtConfig,
@@ -152,7 +92,8 @@ import {
   importHbtConfig,
   exportHbtConfig,
   getHbtConfigTemplate,
-  updateHbtConfigStatus
+  updateHbtConfigStatus,
+  batchUpdateHbtConfigStatus
 } from '@/api/admin/hbtConfig'
 import type {
   HbtConfig,
@@ -180,12 +121,12 @@ const loading = ref(false)
 const configList = ref<HbtConfig[]>([])
 const selectedRowKeys = ref<(string | number)[]>([])
 const pagination = reactive({
-  Current: 1,
-  PageSize: 10,
-  Total: 0,
-  ShowSizeChanger: true,
-  ShowQuickJumper: true,
-  ShowTotal: (total: number) => `共 ${total} 条`
+  pageNum: 1,
+  pageSize: 10,
+  totalNum: 0,
+  showSizeChanger: true,
+  showQuickJumper: true,
+  showTotal: (total: number) => `共 ${total} 条`
 })
 
 // 表单状态
@@ -193,6 +134,34 @@ const modalVisible = ref(false)
 const modalTitle = ref('新增配置')
 const currentRecord = ref<HbtConfig>()
 const tableRef = ref()
+
+// 工具栏按钮配置
+const toolbarButtons = computed(() => [])
+
+// 操作列配置
+const actionColumn = computed(() => ({
+  width: 150,
+  fixed: 'right' as const,
+  actions: [
+    {
+      key: 'edit',
+      label: '',
+      type: 'link' as const,
+      icon: EditOutlined,
+      tooltip: '编辑配置',
+      permission: 'admin:config:update'
+    },
+    {
+      key: 'delete',
+      label: '',
+      type: 'danger' as const,
+      icon: DeleteOutlined,
+      tooltip: '删除配置',
+      permission: 'admin:config:delete',
+      confirm: '确定要删除该配置吗？'
+    }
+  ]
+}))
 
 // 表格列定义
 const columns: HbtTableColumn[] = [
@@ -239,7 +208,7 @@ const columns: HbtTableColumn[] = [
     width: 180,
     align: 'center',
     valueType: 'date',
-    dateFormat:'YYYY-MM-DD',
+    dateFormat:'yyyy-MM-dd',
     sorter: true
   }
 ]
@@ -285,8 +254,8 @@ const loadConfigList = async () => {
   loading.value = true
   try {
     const params = {
-      pageIndex: pagination.Current,
-      pageSize: pagination.PageSize,
+      pageIndex: pagination.pageNum,
+      pageSize: pagination.pageSize,
       configName: queryParams.configName || undefined,
       configKey: queryParams.configKey || undefined,
       configBuiltin: queryParams.configBuiltin,
@@ -296,17 +265,17 @@ const loadConfigList = async () => {
     console.log('API Response:', pageData)
     if (pageData && pageData.rows) {
       configList.value = pageData.rows
-      pagination.Total = pageData.totalNum
+      pagination.totalNum = pageData.totalNum
     } else {
       message.error('加载配置列表失败')
       configList.value = []
-      pagination.Total = 0
+      pagination.totalNum = 0
     }
   } catch (error) {
     console.error('加载配置列表失败:', error)
     message.error('加载配置列表失败')
     configList.value = []
-    pagination.Total = 0
+    pagination.totalNum = 0
   } finally {
     loading.value = false
   }
@@ -315,7 +284,7 @@ const loadConfigList = async () => {
 // 查询处理
 const handleSearch = (values: Record<string, any>) => {
   Object.assign(queryParams, values)
-  pagination.Current = 1
+  pagination.pageNum = 1
   loadConfigList()
 }
 
@@ -334,22 +303,10 @@ const onSelectChange = (keys: (string | number)[]) => {
 }
 
 // 表格变化处理
-const handleTableChange = (page: number, pageSize: number) => {
-  pagination.Current = page
-  pagination.PageSize = pageSize
+const handleTableChange = (pag: any, filters: any, sorter: any) => {
+  pagination.pageNum = pag.pageNum
+  pagination.pageSize = pag.pageSize
   loadConfigList()
-}
-
-// 表格排序和筛选处理
-const handleTableSort = (pagination: any, filters: any, sorter: any) => {
-  loadConfigList()
-}
-
-// 新增处理
-const handleAdd = () => {
-  modalTitle.value = '新增配置'
-  currentRecord.value = undefined
-  modalVisible.value = true
 }
 
 // 编辑处理
@@ -490,6 +447,85 @@ const handleAction = async (action: string, record: HbtConfig) => {
   }
 }
 
+// 处理工具栏按钮点击
+const handleToolbarAction = async (action: string) => {
+  switch (action) {
+    case 'add':
+      modalTitle.value = '新增配置'
+      currentRecord.value = undefined
+      modalVisible.value = true
+      break
+    case 'delete':
+      await handleBatchDelete()
+      break
+    case 'import':
+      // 触发文件选择
+      const input = document.createElement('input')
+      input.type = 'file'
+      input.accept = '.xlsx,.xls'
+      input.onchange = async (e: Event) => {
+        const file = (e.target as HTMLInputElement).files?.[0]
+        if (file) {
+          await handleImport(file)
+        }
+      }
+      input.click()
+      break
+    case 'export':
+      await handleExport()
+      break
+    case 'template':
+      await handleTemplate()
+      break
+    case 'approve':
+      await handleBatchApprove()
+      break
+    case 'revoke':
+      await handleBatchRevoke()
+      break
+  }
+}
+
+// 批量审核处理
+const handleBatchApprove = async () => {
+  try {
+    const { data } = await batchUpdateHbtConfigStatus(
+      selectedRowKeys.value.map(Number),
+      0
+    )
+    if (data?.code === 200) {
+      message.success('批量审核成功')
+      selectedRowKeys.value = []
+      loadConfigList()
+    } else {
+      message.error(data?.msg || '批量审核失败')
+    }
+  } catch (error) {
+    console.error('批量审核失败:', error)
+    message.error('批量审核失败')
+  }
+}
+
+// 批量撤销处理
+const handleBatchRevoke = async () => {
+  try {
+    const { data } = await batchUpdateHbtConfigStatus(
+      selectedRowKeys.value.map(Number),
+      1
+    )
+    if (data?.code === 200) {
+      message.success('批量撤销成功')
+      selectedRowKeys.value = []
+      loadConfigList()
+    } else {
+      message.error(data?.msg || '批量撤销失败')
+    }
+  } catch (error) {
+    console.error('批量撤销失败:', error)
+    message.error('批量撤销失败')
+  }
+}
+
 // 表单提交处理
 const handleSubmit = async (formData: HbtConfigCreate | HbtConfigUpdate) => {
   try {
@@ -518,14 +554,6 @@ onMounted(() => {
 
 <style lang="less" scoped>
 .config-container {
-  .search-form {
-    margin-bottom: 24px;
-  }
-
-  .table-operations {
-    margin-bottom: 16px;
-  }
-
   :deep(.success-text) {
     color: #52c41a;
   }

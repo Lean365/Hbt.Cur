@@ -209,7 +209,7 @@ const toggleCollapse = () => {
 }
 
 // 日期格式
-const dateFormat = 'YYYY-MM-DD'
+const dateFormat = 'yyyy-MM-dd'
 
 // 处理日期选择变更
 const handleDateChange = (name: string, dateString: string | null) => {

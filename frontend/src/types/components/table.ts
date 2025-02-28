@@ -117,6 +117,32 @@ export interface HbtTablePagination {
 }
 
 /**
+ * 工具栏按钮配置
+ */
+export interface HbtTableToolbarButton {
+  /** 按钮键名 */
+  key: string
+  /** 按钮文本 */
+  label: string
+  /** 按钮类型 */
+  type?: 'link' | 'primary' | 'default' | 'dashed' | 'text'
+  /** 是否危险按钮 */
+  danger?: boolean
+  /** 图标组件 */
+  icon?: any
+  /** 权限标识 */
+  permission?: string
+  /** 是否禁用 */
+  disabled?: boolean
+  /** 加载状态 */
+  loading?: boolean
+  /** 是否显示 */
+  visible?: boolean
+  /** 悬停提示 */
+  tooltip?: string
+}
+
+/**
  * 表格属性
  */
 export interface HbtTableProps extends Omit<TableProps, 'columns' | 'pagination'> {
@@ -147,6 +173,10 @@ export interface HbtTableProps extends Omit<TableProps, 'columns' | 'pagination'
     x?: number | string
     y?: number | string
   }
+  /** 是否显示工具栏 */
+  showToolbar?: boolean
+  /** 工具栏按钮配置 */
+  toolbarButtons?: HbtTableToolbarButton[]
   /** 是否开启虚拟滚动 */
   virtual?: boolean
   /** 虚拟滚动配置 */
@@ -197,6 +227,4 @@ export interface HbtTableInstance {
   getSelectedRows: () => any[]
   /** 清空选中行 */
   clearSelection: () => void
-  /** 导出数据 */
-  exportData: (options?: { filename?: string; columns?: HbtTableColumn[] }) => void
 } 

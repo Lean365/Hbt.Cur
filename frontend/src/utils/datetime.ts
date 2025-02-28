@@ -7,67 +7,234 @@
 // 描述    : 日期时间工具函数
 //===================================================================
 
-import dayjs, { Dayjs } from 'dayjs'
-import 'dayjs/locale/zh-cn'
-import quarterOfYear from 'dayjs/plugin/quarterOfYear'
+import {
+  format,
+  formatDistance,
+  formatRelative,
+  isValid,
+  parse,
+  parseISO,
+  isDate,
+  startOfDay,
+  endOfDay,
+  startOfWeek,
+  endOfWeek,
+  startOfMonth,
+  endOfMonth,
+  differenceInDays,
+  isWeekend as dateFnsIsWeekend,
+  isSameDay as dateFnsIsSameDay,
+  isWithinInterval,
+  addDays,
+  eachDayOfInterval,
+  getDay,
+  addBusinessDays
+} from 'date-fns'
+import { zhCN, enUS, zhTW, ja, ko, fr, es, ru, arSA } from 'date-fns/locale'
+import { useAppStore } from '@/stores/app'
+import { getCurrentInstance } from 'vue'
+import { useI18n } from 'vue-i18n'
 
-// 设置语言为中文
-dayjs.locale('zh-cn')
-// 注册季度插件
-dayjs.extend(quarterOfYear)
+// 支持的语言类型
+type SupportedLocale = 'zh-cn' | 'zh-tw' | 'ja' | 'ko' | 'en' | 'fr' | 'es' | 'ru' | 'ar'
+
+// 语言包映射
+const LOCALE_MAP: Record<SupportedLocale, any> = {
+  'zh-cn': zhCN,     // 简体中文
+  'zh-tw': zhTW,     // 繁体中文
+  'ja': ja,          // 日语
+  'ko': ko,          // 韩语
+  'en': enUS,        // 英语
+  'fr': fr,          // 法语
+  'es': es,          // 西班牙语
+  'ru': ru,          // 俄语
+  'ar': arSA,        // 阿拉伯语
+}
+
+// 月份名称本地化配置
+const MONTH_NAMES: Record<SupportedLocale, string[]> = {
+  'zh-cn': ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
+  'zh-tw': ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
+  'ja': ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
+  'ko': ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
+  'en': ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+  'fr': ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'],
+  'es': ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+  'ru': ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'],
+  'ar': ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر']
+}
+
+// 星期名称本地化配置
+const WEEKDAY_NAMES: Record<SupportedLocale, string[]> = {
+  'zh-cn': ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'],
+  'zh-tw': ['週日', '週一', '週二', '週三', '週四', '週五', '週六'],
+  'ja': ['日曜日', '月曜日', '火曜日', '水曜日', '木曜日', '金曜日', '土曜日'],
+  'ko': ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'],
+  'en': ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+  'fr': ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'],
+  'es': ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
+  'ru': ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'],
+  'ar': ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت']
+}
+
+// 获取当前语言的 locale 配置
+const getLocale = () => {
+  const app = getCurrentInstance()
+  return app?.appContext.config.globalProperties.$dateLocale || enUS
+}
+
+// 获取当前语言的月份名称
+const getLocalizedMonthNames = () => {
+  const appStore = useAppStore()
+  return MONTH_NAMES[appStore.language as SupportedLocale] || MONTH_NAMES['en']
+}
+
+// 获取当前语言的星期名称
+const getLocalizedWeekdayNames = () => {
+  const appStore = useAppStore()
+  return WEEKDAY_NAMES[appStore.language as SupportedLocale] || WEEKDAY_NAMES['en']
+}
+
+/**
+ * 格式化日期
+ * @param date - 日期
+ * @param formatStr - 格式化字符串
+ * @returns 格式化后的日期字符串
+ */
+export const formatDate = (date: Date | string | number, formatStr: string = 'yyyy-MM-dd'): string => {
+  if (!date) return ''
+  const dateObj = new Date(date)
+  if (!isValid(dateObj)) return ''
+  return format(dateObj, formatStr, { locale: getLocale() })
+}
+
+/**
+ * 格式化相对时间
+ * @param date 日期对象或字符串
+ * @param baseDate 基准日期，默认为当前时间
+ * @returns 相对时间字符串
+ */
+export function formatRelativeTime(date: Date | string | number, baseDate = new Date()): string {
+  if (!date) return ''
+  
+  try {
+    const dateObj = typeof date === 'string' ? parseISO(date) : new Date(date)
+    if (!isValid(dateObj)) return ''
+    
+    return formatDistance(dateObj, baseDate, { 
+      locale: getLocale(),
+      addSuffix: true 
+    })
+  } catch (err) {
+    const { t } = useI18n()
+    console.error(`[${t('common.datetime.relativeTimeFormatError')}]:`, err)
+    return ''
+  }
+}
+
+/**
+ * 解析日期字符串
+ * @param dateStr 日期字符串
+ * @param pattern 格式模式
+ * @returns 日期对象
+ */
+export function parseDate(dateStr: string, pattern = 'yyyy-MM-dd'): Date | null {
+  if (!dateStr) return null
+  
+  try {
+    const date = parse(dateStr, pattern, new Date())
+    return isValid(date) ? date : null
+  } catch (err) {
+    const { t } = useI18n()
+    console.error(`[${t('common.datetime.parseError')}]:`, err)
+    return null
+  }
+}
+
+/**
+ * 格式化日期范围
+ * @param start 开始日期
+ * @param end 结束日期
+ * @param pattern 格式模式
+ * @returns 格式化后的日期范围字符串
+ */
+export function formatDateRange(
+  start: Date | string | null,
+  end: Date | string | null,
+  pattern = 'yyyy-MM-dd'
+): string {
+  if (!start || !end) return ''
+  
+  const startStr = formatDate(start, pattern)
+  const endStr = formatDate(end, pattern)
+  
+  if (!startStr || !endStr) return ''
+  const { t } = useI18n()
+  const separator = t('common.datetime.rangeSeparator')
+  return `${startStr}${separator}${endStr}`
+}
+
+/**
+ * 检查是否为有效日期
+ * @param date 要检查的日期
+ * @returns 是否为有效日期
+ */
+export function isValidDate(date: any): boolean {
+  return isDate(date) && isValid(date)
+}
 
 /**
  * 获取日期的开始时间
  * @param date - 日期
- * @returns Dayjs 对象
+ * @returns Date 对象
  */
-export const getStartOfDay = (date?: Date | string | number): Dayjs => {
-  return dayjs(date).startOf('day')
+export const getStartOfDay = (date?: Date | string | number): Date => {
+  return startOfDay(date ? new Date(date) : new Date())
 }
 
 /**
  * 获取日期的结束时间
  * @param date - 日期
- * @returns Dayjs 对象
+ * @returns Date 对象
  */
-export const getEndOfDay = (date?: Date | string | number): Dayjs => {
-  return dayjs(date).endOf('day')
+export const getEndOfDay = (date?: Date | string | number): Date => {
+  return endOfDay(date ? new Date(date) : new Date())
 }
 
 /**
  * 获取本周的开始时间
  * @param date - 日期
- * @returns Dayjs 对象
+ * @returns Date 对象
  */
-export const getStartOfWeek = (date?: Date | string | number): Dayjs => {
-  return dayjs(date).startOf('week')
+export const getStartOfWeek = (date?: Date | string | number): Date => {
+  return startOfWeek(date ? new Date(date) : new Date(), { locale: getLocale() })
 }
 
 /**
  * 获取本周的结束时间
  * @param date - 日期
- * @returns Dayjs 对象
+ * @returns Date 对象
  */
-export const getEndOfWeek = (date?: Date | string | number): Dayjs => {
-  return dayjs(date).endOf('week')
+export const getEndOfWeek = (date?: Date | string | number): Date => {
+  return endOfWeek(date ? new Date(date) : new Date(), { locale: getLocale() })
 }
 
 /**
  * 获取本月的开始时间
  * @param date - 日期
- * @returns Dayjs 对象
+ * @returns Date 对象
  */
-export const getStartOfMonth = (date?: Date | string | number): Dayjs => {
-  return dayjs(date).startOf('month')
+export const getStartOfMonth = (date?: Date | string | number): Date => {
+  return startOfMonth(date ? new Date(date) : new Date())
 }
 
 /**
  * 获取本月的结束时间
  * @param date - 日期
- * @returns Dayjs 对象
+ * @returns Date 对象
  */
-export const getEndOfMonth = (date?: Date | string | number): Dayjs => {
-  return dayjs(date).endOf('month')
+export const getEndOfMonth = (date?: Date | string | number): Date => {
+  return endOfMonth(date ? new Date(date) : new Date())
 }
 
 /**
@@ -77,7 +244,7 @@ export const getEndOfMonth = (date?: Date | string | number): Dayjs => {
  * @returns 天数
  */
 export const getDaysBetween = (start: Date | string | number, end: Date | string | number): number => {
-  return dayjs(end).diff(dayjs(start), 'day')
+  return differenceInDays(new Date(end), new Date(start))
 }
 
 /**
@@ -85,9 +252,9 @@ export const getDaysBetween = (start: Date | string | number, end: Date | string
  * @param date - 日期
  * @returns 是否为工作日
  */
-export const isWorkday = (date?: Date | string | number | Dayjs): boolean => {
-  const day = dayjs(date).day()
-  return day !== 0 && day !== 6
+export const isWorkday = (date?: Date | string | number): boolean => {
+  const dateObj = date ? new Date(date) : new Date()
+  return !dateFnsIsWeekend(dateObj)
 }
 
 /**
@@ -97,7 +264,7 @@ export const isWorkday = (date?: Date | string | number | Dayjs): boolean => {
  * @returns 是否为同一天
  */
 export const isSameDay = (date1: Date | string | number, date2: Date | string | number): boolean => {
-  return dayjs(date1).isSame(dayjs(date2), 'day')
+  return dateFnsIsSameDay(new Date(date1), new Date(date2))
 }
 
 /**
@@ -112,72 +279,52 @@ export const isDateInRange = (
   start: Date | string | number,
   end: Date | string | number
 ): boolean => {
-  const d = dayjs(date)
-  return d.isSameOrAfter(start) && d.isSameOrBefore(end)
+  return isWithinInterval(new Date(date), {
+    start: new Date(start),
+    end: new Date(end)
+  })
 }
 
 /**
  * 添加工作日
  * @param date - 起始日期
  * @param days - 要添加的工作日天数
- * @returns Dayjs 对象
+ * @returns Date 对象
  */
-export const addWorkdays = (date: Date | string | number, days: number): Dayjs => {
-  let result = dayjs(date)
-  let remainingDays = days
-  
-  while (remainingDays > 0) {
-    result = result.add(1, 'day')
-    if (isWorkday(result)) {
-      remainingDays--
-    }
-  }
-  
-  return result
+export const addWorkdays = (date: Date | string | number, days: number): Date => {
+  return addBusinessDays(new Date(date), days)
 }
 
 /**
  * 获取日期范围内的所有日期
  * @param start - 开始日期
  * @param end - 结束日期
- * @returns Dayjs 对象数组
+ * @returns Date 对象数组
  */
-export const getDatesBetween = (start: Dayjs, end: Dayjs): Dayjs[] => {
-  const dates: Dayjs[] = []
-  let current = start
-
-  while (current.isBefore(end) || current.isSame(end, 'day')) {
-    dates.push(current)
-    current = current.add(1, 'day')
-  }
-  
-  return dates
+export const getDatesBetween = (start: Date | string | number, end: Date | string | number): Date[] => {
+  return eachDayOfInterval({
+    start: new Date(start),
+    end: new Date(end)
+  })
 }
 
 /**
  * 格式化日期时间
  * @param time 日期时间
- * @param pattern 格式化模式，默认为 YYYY-MM-DD HH:mm:ss
+ * @param pattern 格式化模式，默认为 yyyy-MM-dd HH:mm:ss
  * @returns 格式化后的日期时间字符串
  */
-export function formatDateTime(time?: string | number | Date, pattern = 'YYYY-MM-DD HH:mm:ss'): string {
+export function formatDateTime(time?: string | number | Date, pattern = 'yyyy-MM-dd HH:mm:ss'): string {
   if (!time) {
     return ''
   }
-  return dayjs(time).format(pattern)
-}
-
-/**
- * 格式化日期
- * @param date 日期
- * @param pattern 格式化模式，默认为 YYYY-MM-DD
- * @returns 格式化后的日期字符串
- */
-export function formatDate(date?: string | number | Date, pattern = 'YYYY-MM-DD'): string {
-  if (!date) {
+  try {
+    return format(new Date(time), pattern, { locale: getLocale() })
+  } catch (err) {
+    const { t } = useI18n()
+    console.error(`[${t('common.datetime.formatError')}]:`, err)
     return ''
   }
-  return dayjs(date).format(pattern)
 }
 
 /**
@@ -190,215 +337,220 @@ export function formatTime(time?: string | number | Date, pattern = 'HH:mm:ss'):
   if (!time) {
     return ''
   }
-  return dayjs(time).format(pattern)
+  return format(new Date(time), pattern, { locale: getLocale() })
 }
 
 /**
  * 获取今天的开始时间
- * @returns Dayjs 对象
+ * @returns Date 对象
  */
-export const getTodayStart = (): Dayjs => {
-  return dayjs().startOf('day')
+export const getTodayStart = (): Date => {
+  return startOfDay(new Date())
 }
 
 /**
  * 获取今天的结束时间
- * @returns Dayjs 对象
+ * @returns Date 对象
  */
-export const getTodayEnd = (): Dayjs => {
-  return dayjs().endOf('day')
+export const getTodayEnd = (): Date => {
+  return endOfDay(new Date())
 }
 
 /**
  * 获取昨天的开始时间
- * @returns Dayjs 对象
+ * @returns Date 对象
  */
-export const getYesterdayStart = (): Dayjs => {
-  return dayjs().subtract(1, 'day').startOf('day')
+export const getYesterdayStart = (): Date => {
+  return startOfDay(new Date().setDate(new Date().getDate() - 1))
 }
 
 /**
  * 获取昨天的结束时间
- * @returns Dayjs 对象
+ * @returns Date 对象
  */
-export const getYesterdayEnd = (): Dayjs => {
-  return dayjs().subtract(1, 'day').endOf('day')
+export const getYesterdayEnd = (): Date => {
+  return endOfDay(new Date().setDate(new Date().getDate() - 1))
 }
 
 /**
  * 获取本周的开始时间
- * @returns Dayjs 对象
+ * @returns Date 对象
  */
-export const getThisWeekStart = (): Dayjs => {
-  return dayjs().startOf('week')
+export const getThisWeekStart = (): Date => {
+  return startOfWeek(new Date(), { locale: getLocale() })
 }
 
 /**
  * 获取本周的结束时间
- * @returns Dayjs 对象
+ * @returns Date 对象
  */
-export const getThisWeekEnd = (): Dayjs => {
-  return dayjs().endOf('week')
+export const getThisWeekEnd = (): Date => {
+  return endOfWeek(new Date(), { locale: getLocale() })
 }
 
 /**
  * 获取上周的开始时间
- * @returns Dayjs 对象
+ * @returns Date 对象
  */
-export const getLastWeekStart = (): Dayjs => {
-  return dayjs().subtract(1, 'week').startOf('week')
+export const getLastWeekStart = (): Date => {
+  return startOfWeek(new Date().setDate(new Date().getDate() - 7), { locale: getLocale() })
 }
 
 /**
  * 获取上周的结束时间
- * @returns Dayjs 对象
+ * @returns Date 对象
  */
-export const getLastWeekEnd = (): Dayjs => {
-  return dayjs().subtract(1, 'week').endOf('week')
+export const getLastWeekEnd = (): Date => {
+  return endOfWeek(new Date().setDate(new Date().getDate() - 7), { locale: getLocale() })
 }
 
 /**
  * 获取本月的开始时间
- * @returns Dayjs 对象
+ * @returns Date 对象
  */
-export const getThisMonthStart = (): Dayjs => {
-  return dayjs().startOf('month')
+export const getThisMonthStart = (): Date => {
+  return startOfMonth(new Date())
 }
 
 /**
  * 获取本月的结束时间
- * @returns Dayjs 对象
+ * @returns Date 对象
  */
-export const getThisMonthEnd = (): Dayjs => {
-  return dayjs().endOf('month')
+export const getThisMonthEnd = (): Date => {
+  return endOfMonth(new Date())
 }
 
 /**
  * 获取上月的开始时间
- * @returns Dayjs 对象
+ * @returns Date 对象
  */
-export const getLastMonthStart = (): Dayjs => {
-  return dayjs().subtract(1, 'month').startOf('month')
+export const getLastMonthStart = (): Date => {
+  return startOfMonth(new Date().setMonth(new Date().getMonth() - 1))
 }
 
 /**
  * 获取上月的结束时间
- * @returns Dayjs 对象
+ * @returns Date 对象
  */
-export const getLastMonthEnd = (): Dayjs => {
-  return dayjs().subtract(1, 'month').endOf('month')
+export const getLastMonthEnd = (): Date => {
+  return endOfMonth(new Date().setMonth(new Date().getMonth() - 1))
 }
 
 /**
  * 获取最近一周的开始时间
- * @returns Dayjs 对象
+ * @returns Date 对象
  */
-export const getLastWeekRangeStart = (): Dayjs => {
-  return dayjs().subtract(7, 'day').startOf('day')
+export const getLastWeekRangeStart = (): Date => {
+  return startOfDay(new Date().setDate(new Date().getDate() - 7))
 }
 
 /**
  * 获取最近一周的结束时间
- * @returns Dayjs 对象
+ * @returns Date 对象
  */
-export const getLastWeekRangeEnd = (): Dayjs => {
-  return dayjs().endOf('day')
+export const getLastWeekRangeEnd = (): Date => {
+  return endOfDay(new Date())
 }
 
 /**
  * 获取最近一月的开始时间
- * @returns Dayjs 对象
+ * @returns Date 对象
  */
-export const getLastMonthRangeStart = (): Dayjs => {
-  return dayjs().subtract(30, 'day').startOf('day')
+export const getLastMonthRangeStart = (): Date => {
+  const now = new Date()
+  const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1)
+  return startOfDay(lastMonth)
 }
 
 /**
  * 获取最近一月的结束时间
- * @returns Dayjs 对象
+ * @returns Date 对象
  */
-export const getLastMonthRangeEnd = (): Dayjs => {
-  return dayjs().endOf('day')
+export const getLastMonthRangeEnd = (): Date => {
+  const now = new Date()
+  const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, getDaysInMonth(now))
+  return endOfDay(lastMonth)
 }
 
 /**
  * 获取最近三月的开始时间
- * @returns Dayjs 对象
+ * @returns Date 对象
  */
-export const getLastThreeMonthsStart = (): Dayjs => {
-  return dayjs().subtract(90, 'day').startOf('day')
+export const getLastThreeMonthsStart = (): Date => {
+  const now = new Date()
+  return startOfDay(new Date(now.getFullYear(), now.getMonth() - 3, 1))
 }
 
 /**
  * 获取最近三月的结束时间
- * @returns Dayjs 对象
+ * @returns Date 对象
  */
-export const getLastThreeMonthsEnd = (): Dayjs => {
-  return dayjs().endOf('day')
+export const getLastThreeMonthsEnd = (): Date => {
+  return endOfDay(new Date(new Date().getFullYear(), new Date().getMonth(), 0))
 }
 
 /**
  * 获取本季度的开始时间
- * @returns Dayjs 对象
+ * @returns Date 对象
  */
-export const getThisQuarterStart = (): Dayjs => {
-  return dayjs().startOf('quarter')
+export const getThisQuarterStart = (): Date => {
+  return startOfDay(new Date(new Date().getFullYear(), Math.floor(new Date().getMonth() / 3) * 3, 1))
 }
 
 /**
  * 获取本季度的结束时间
- * @returns Dayjs 对象
+ * @returns Date 对象
  */
-export const getThisQuarterEnd = (): Dayjs => {
-  return dayjs().endOf('quarter')
+export const getThisQuarterEnd = (): Date => {
+  return endOfDay(new Date(new Date().getFullYear(), Math.floor(new Date().getMonth() / 3) * 3 + 2, 31))
 }
 
 /**
  * 获取上季度的开始时间
- * @returns Dayjs 对象
+ * @returns Date 对象
  */
-export const getLastQuarterStart = (): Dayjs => {
-  return dayjs().subtract(1, 'quarter').startOf('quarter')
+export const getLastQuarterStart = (): Date => {
+  return startOfDay(new Date(new Date().getFullYear(), Math.floor(new Date().getMonth() / 3) * 3 - 3, 1))
 }
 
 /**
  * 获取上季度的结束时间
- * @returns Dayjs 对象
+ * @returns Date 对象
  */
-export const getLastQuarterEnd = (): Dayjs => {
-  return dayjs().subtract(1, 'quarter').endOf('quarter')
+export const getLastQuarterEnd = (): Date => {
+  return endOfDay(new Date(new Date().getFullYear(), Math.floor(new Date().getMonth() / 3) * 3 + 2, 31))
 }
 
 /**
  * 获取本年的开始时间
- * @returns Dayjs 对象
+ * @returns Date 对象
  */
-export const getThisYearStart = (): Dayjs => {
-  return dayjs().startOf('year')
+export const getThisYearStart = (): Date => {
+  return startOfDay(new Date(new Date().getFullYear(), 0, 1))
 }
 
 /**
  * 获取本年的结束时间
- * @returns Dayjs 对象
+ * @returns Date 对象
  */
-export const getThisYearEnd = (): Dayjs => {
-  return dayjs().endOf('year')
+export const getThisYearEnd = (): Date => {
+  return endOfDay(new Date(new Date().getFullYear(), 11, 31))
 }
 
 /**
  * 获取上年的开始时间
- * @returns Dayjs 对象
+ * @returns Date 对象
  */
-export const getLastYearStart = (): Dayjs => {
-  return dayjs().subtract(1, 'year').startOf('year')
+export const getLastYearStart = (): Date => {
+  return startOfDay(new Date(new Date().getFullYear() - 1, 0, 1))
 }
 
 /**
  * 获取上年的结束时间
- * @returns Dayjs 对象
+ * @returns Date 对象
  */
-export const getLastYearEnd = (): Dayjs => {
-  return dayjs().subtract(1, 'year').endOf('year')
+export const getLastYearEnd = (): Date => {
+  return endOfDay(new Date(new Date().getFullYear() - 1, 11, 31))
 }
 
 /**
@@ -407,8 +559,8 @@ export const getLastYearEnd = (): Dayjs => {
  * @param end - 结束时间
  * @returns [开始时间, 结束时间]
  */
-export const getDateRange = (start: Dayjs, end: Dayjs): [Dayjs, Dayjs] => {
-  return [start, end]
+export const getDateRange = (start: Date | string | number, end: Date | string | number): [Date, Date] => {
+  return [new Date(start), new Date(end)]
 }
 
 /**
@@ -417,8 +569,10 @@ export const getDateRange = (start: Dayjs, end: Dayjs): [Dayjs, Dayjs] => {
  * @param end - 结束时间
  * @returns 月数
  */
-export const getMonthsBetween = (start: Dayjs, end: Dayjs): number => {
-  return end.diff(start, 'month')
+export const getMonthsBetween = (start: Date | string | number, end: Date | string | number): number => {
+  const startDate = new Date(start)
+  const endDate = new Date(end)
+  return (endDate.getFullYear() - startDate.getFullYear()) * 12 + (endDate.getMonth() - startDate.getMonth())
 }
 
 /**
@@ -427,8 +581,10 @@ export const getMonthsBetween = (start: Dayjs, end: Dayjs): number => {
  * @param end - 结束时间
  * @returns 年数
  */
-export const getYearsBetween = (start: Dayjs, end: Dayjs): number => {
-  return end.diff(start, 'year')
+export const getYearsBetween = (start: Date | string | number, end: Date | string | number): number => {
+  const startDate = new Date(start)
+  const endDate = new Date(end)
+  return endDate.getFullYear() - startDate.getFullYear()
 }
 
 /**
@@ -437,8 +593,10 @@ export const getYearsBetween = (start: Dayjs, end: Dayjs): number => {
  * @param date2 - 日期2
  * @returns 是否为同一月
  */
-export const isSameMonth = (date1: Dayjs, date2: Dayjs): boolean => {
-  return date1.isSame(date2, 'month')
+export const isSameMonth = (date1: Date | string | number, date2: Date | string | number): boolean => {
+  const startDate = new Date(date1)
+  const endDate = new Date(date2)
+  return startDate.getFullYear() === endDate.getFullYear() && startDate.getMonth() === endDate.getMonth()
 }
 
 /**
@@ -447,108 +605,110 @@ export const isSameMonth = (date1: Dayjs, date2: Dayjs): boolean => {
  * @param date2 - 日期2
  * @returns 是否为同一年
  */
-export const isSameYear = (date1: Dayjs, date2: Dayjs): boolean => {
-  return date1.isSame(date2, 'year')
+export const isSameYear = (date1: Date | string | number, date2: Date | string | number): boolean => {
+  const startDate = new Date(date1)
+  const endDate = new Date(date2)
+  return startDate.getFullYear() === endDate.getFullYear()
 }
 
 /**
- * 判断是否为周末（周六日）
+ * 判断是否为周末
  * @param date - 日期
  * @returns 是否为周末
  */
-export const isWeekend = (date: Dayjs): boolean => {
-  return date.day() === 0 || date.day() === 6
+export const isWeekend = (date: Date | string | number): boolean => {
+  const dateObj = new Date(date)
+  return dateFnsIsWeekend(dateObj)
 }
 
 /**
- * 获取日期所在月份的天数
+ * 获取月份中的天数
  * @param date - 日期
  * @returns 天数
  */
-export const getDaysInMonth = (date: Dayjs): number => {
-  return date.daysInMonth()
+export const getDaysInMonth = (date: Date | string | number): number => {
+  const dateObj = new Date(date)
+  return new Date(dateObj.getFullYear(), dateObj.getMonth() + 1, 0).getDate()
 }
 
 /**
  * 获取日期所在季度的第一天
  * @param date - 日期
- * @returns Dayjs 对象
+ * @returns Date 对象
  */
-export const getQuarterStart = (date: Dayjs): Dayjs => {
-  return date.startOf('quarter')
+export const getQuarterStart = (date: Date | string | number): Date => {
+  const dateObj = new Date(date)
+  return startOfDay(new Date(dateObj.getFullYear(), Math.floor(dateObj.getMonth() / 3) * 3, 1))
 }
 
 /**
  * 获取日期所在季度的最后一天
  * @param date - 日期
- * @returns Dayjs 对象
+ * @returns Date 对象
  */
-export const getQuarterEnd = (date: Dayjs): Dayjs => {
-  return date.endOf('quarter')
+export const getQuarterEnd = (date: Date | string | number): Date => {
+  const dateObj = new Date(date)
+  return endOfDay(new Date(dateObj.getFullYear(), Math.floor(dateObj.getMonth() / 3) * 3 + 2, 31))
 }
 
 /**
  * 获取日期所在周的第一天
  * @param date - 日期
- * @returns Dayjs 对象
+ * @returns Date 对象
  */
-export const getWeekStart = (date: Dayjs): Dayjs => {
-  return date.startOf('week')
+export const getWeekStart = (date: Date | string | number): Date => {
+  const dateObj = new Date(date)
+  return startOfDay(dateObj.setDate(dateObj.getDate() - dateObj.getDay()))
 }
 
 /**
  * 获取日期所在周的最后一天
  * @param date - 日期
- * @returns Dayjs 对象
+ * @returns Date 对象
  */
-export const getWeekEnd = (date: Dayjs): Dayjs => {
-  return date.endOf('week')
+export const getWeekEnd = (date: Date | string | number): Date => {
+ const dateObj = new Date(date)
+  return endOfDay(dateObj.setDate(dateObj.getDate() + (6 - dateObj.getDay())))
 }
 
 /**
  * 获取日期所在月的第一天
  * @param date - 日期
- * @returns Dayjs 对象
+ * @returns Date 对象
  */
-export const getMonthStart = (date: Dayjs): Dayjs => {
-  return date.startOf('month')
+export const getMonthStart = (date: Date | string | number): Date => {
+  const dateObj = new Date(date)
+  return startOfDay(new Date(dateObj.getFullYear(), dateObj.getMonth(), 1))
 }
 
 /**
  * 获取日期所在月的最后一天
  * @param date - 日期
- * @returns Dayjs 对象
+ * @returns Date 对象
  */
-export const getMonthEnd = (date: Dayjs): Dayjs => {
-  return date.endOf('month')
+export const getMonthEnd = (date: Date | string | number): Date => {
+ const dateObj = new Date(date)
+  return endOfDay(new Date(dateObj.getFullYear(), dateObj.getMonth() + 1, 0))
 }
 
 /**
  * 获取日期所在年的第一天
  * @param date - 日期
- * @returns Dayjs 对象
+ * @returns Date 对象
  */
-export const getYearStart = (date: Dayjs): Dayjs => {
-  return date.startOf('year')
+export const getYearStart = (date: Date | string | number): Date => {
+  const dateObj = new Date(date)
+  return startOfDay(new Date(dateObj.getFullYear(), 0, 1))
 }
 
 /**
  * 获取日期所在年的最后一天
  * @param date - 日期
- * @returns Dayjs 对象
+ * @returns Date 对象
  */
-export const getYearEnd = (date: Dayjs): Dayjs => {
-  return date.endOf('year')
-}
-
-/**
- * 解析日期字符串
- * @param dateStr - 日期字符串
- * @param format - 日期格式，可选
- * @returns Dayjs 对象
- */
-export const parseDate = (dateStr: string, format?: string): Dayjs => {
-  return format ? dayjs(dateStr, format) : dayjs(dateStr)
+export const getYearEnd = (date: Date | string | number): Date => {
+ const dateObj = new Date(date)
+  return endOfDay(new Date(dateObj.getFullYear(), 11, 31))
 }
 
 /**
@@ -556,8 +716,9 @@ export const parseDate = (dateStr: string, format?: string): Dayjs => {
  * @param date - 日期
  * @returns 相对时间描述
  */
-export const getRelativeTime = (date: Dayjs | Date | string | number): string => {
-  return dayjs(date).fromNow()
+export const getRelativeTime = (date: Date | string | number): string => {
+  const dateObj = typeof date === 'string' ? new Date(date) : date
+  return formatDistance(dateObj, new Date(), { locale: getLocale(), addSuffix: true })
 }
 
 /**
@@ -566,9 +727,9 @@ export const getRelativeTime = (date: Dayjs | Date | string | number): string =>
  * @param month - 月份（1-12）
  * @returns 日期数组
  */
-export const getDatesInMonth = (year: number, month: number): Dayjs[] => {
-  const start = dayjs().year(year).month(month - 1).startOf('month')
-  const end = start.endOf('month')
+export const getDatesInMonth = (year: number, month: number): Date[] => {
+  const start = new Date(year, month - 1, 1)
+  const end = new Date(year, month, 0)
   return getDatesBetween(start, end)
 }
 
@@ -577,10 +738,10 @@ export const getDatesInMonth = (year: number, month: number): Dayjs[] => {
  * @param year - 年份
  * @returns 日期数组
  */
-export const getMonthsInYear = (year: number): Dayjs[] => {
-  const months: Dayjs[] = []
+export const getMonthsInYear = (year: number): Date[] => {
+  const months: Date[] = []
   for (let i = 0; i < 12; i++) {
-    months.push(dayjs().year(year).month(i).startOf('month'))
+    months.push(new Date(year, i, 1))
   }
   return months
 }
@@ -591,7 +752,7 @@ export const getMonthsInYear = (year: number): Dayjs[] => {
  * @param date - 日期
  * @returns 农历日期字符串
  */
-export const getLunarDate = (date: Dayjs): string => {
+export const getLunarDate = (date: Date | string | number): string => {
   // TODO: 实现农历转换
   return ''
 }
@@ -601,8 +762,12 @@ export const getLunarDate = (date: Dayjs): string => {
  * @param date - 日期
  * @returns 周数
  */
-export const getWeekOfYear = (date: Dayjs): number => {
-  return date.week()
+export const getWeekOfYear = (date: Date | string | number): number => {
+  const dateObj = new Date(date)
+  const startOfYear = new Date(dateObj.getFullYear(), 0, 1)
+  const dayOfYear = Math.floor((dateObj.getTime() - startOfYear.getTime()) / (24 * 60 * 60 * 1000))
+  const weekOfYear = Math.ceil((dayOfYear + ((startOfYear.getDay() + 1) % 7)) / 7)
+  return weekOfYear
 }
 
 /**
@@ -610,8 +775,12 @@ export const getWeekOfYear = (date: Dayjs): number => {
  * @param date - 日期
  * @returns 周数
  */
-export const getWeekOfMonth = (date: Dayjs): number => {
-  return date.week() - date.startOf('month').week() + 1
+export const getWeekOfMonth = (date: Date | string | number): number => {
+  const dateObj = new Date(date)
+  const startOfMonth = new Date(dateObj.getFullYear(), dateObj.getMonth(), 1)
+  const dayOfMonth = Math.floor((dateObj.getTime() - startOfMonth.getTime()) / (24 * 60 * 60 * 1000))
+  const weekOfMonth = Math.ceil((dayOfMonth + ((startOfMonth.getDay() + 1) % 7)) / 7)
+  return weekOfMonth
 }
 
 /**
@@ -619,8 +788,9 @@ export const getWeekOfMonth = (date: Dayjs): number => {
  * @param date - 日期
  * @returns 星期名称
  */
-export const getWeekdayName = (date: Dayjs): string => {
-  return date.format('dddd')
+export const getWeekdayName = (date: Date | string | number): string => {
+ const dateObj = new Date(date)
+  return getLocalizedWeekdayNames()[dateObj.getDay()]
 }
 
 /**
@@ -628,8 +798,69 @@ export const getWeekdayName = (date: Dayjs): string => {
  * @param date - 日期
  * @returns 月份名称
  */
-export const getMonthName = (date: Dayjs): string => {
-  return date.format('MMMM')
+export const getMonthName = (date: Date | string | number): string => {
+  const dateObj = new Date(date)
+  return getLocalizedMonthNames()[dateObj.getMonth()]
+}
+
+/**
+ * 获取指定日期的下一个工作日
+ * @param date - 日期
+ * @returns Date 对象
+ */
+export const getNextWorkday = (date: Date | string | number): Date => {
+  const dateObj = new Date(date)
+  return addBusinessDays(dateObj, 1)
+}
+
+/**
+ * 获取指定日期的上一个工作日
+ * @param date - 日期
+ * @returns Date 对象
+ */
+export const getPreviousWorkday = (date: Date | string | number): Date => {
+  const dateObj = new Date(date)
+  return addBusinessDays(dateObj, -1)
+}
+
+/**
+ * 获取指定日期所在月份的第一天
+ * @param date - 日期
+ * @returns Date 对象
+ */
+export const getFirstDayOfMonth = (date: Date | string | number): Date => {
+  const dateObj = new Date(date)
+  return new Date(dateObj.getFullYear(), dateObj.getMonth(), 1)
+}
+
+/**
+ * 获取指定日期所在月份的最后一天
+ * @param date - 日期
+ * @returns Date 对象
+ */
+export const getLastDayOfMonth = (date: Date | string | number): Date => {
+  const dateObj = new Date(date)
+  return new Date(dateObj.getFullYear(), dateObj.getMonth() + 1, 0)
+}
+
+/**
+ * 获取指定日期的下一天
+ * @param date - 日期
+ * @returns Date 对象
+ */
+export const getNextDay = (date: Date | string | number): Date => {
+  const dateObj = new Date(date)
+  return addDays(dateObj, 1)
+}
+
+/**
+ * 获取指定日期的前一天
+ * @param date - 日期
+ * @returns Date 对象
+ */
+export const getPreviousDay = (date: Date | string | number): Date => {
+  const dateObj = new Date(date)
+  return addDays(dateObj, -1)
 }
 
 export default {
@@ -678,8 +909,8 @@ export default {
   getYearStart,
   getYearEnd,
   formatDateTime,
-  formatDate,
   formatTime,
+  formatDate,
   parseDate,
   getRelativeTime,
   isDateInRange,
@@ -690,5 +921,14 @@ export default {
   getWeekOfYear,
   getWeekOfMonth,
   getWeekdayName,
-  getMonthName
+  getMonthName,
+  formatRelativeTime,
+  formatDateRange,
+  isValidDate,
+  getNextWorkday,
+  getPreviousWorkday,
+  getFirstDayOfMonth,
+  getLastDayOfMonth,
+  getNextDay,
+  getPreviousDay
 } 

@@ -157,7 +157,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         {
             var input = new HbtRoleStatusDto
             {
-                RoleId = roleId,
+                Id = roleId,
                 Status = status
             };
             var result = await _roleService.UpdateStatusAsync(input);

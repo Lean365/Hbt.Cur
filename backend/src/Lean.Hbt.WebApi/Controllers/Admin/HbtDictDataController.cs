@@ -176,7 +176,7 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
         {
             var input = new HbtDictDataStatusDto
             {
-                DictDataId = dictDataId,
+                Id = dictDataId,
                 Status = status
             };
             var result = await _dictDataService.UpdateStatusAsync(input);

@@ -184,7 +184,7 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
         {
             var input = new HbtLanguageStatusDto
             {
-                LanguageId = languageId,
+                Id = languageId,
                 Status = status
             };
             var result = await _languageService.UpdateStatusAsync(input);
