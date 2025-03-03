@@ -17,24 +17,13 @@ export default {
           required: 'Module name cannot be empty'
         }
       },
-      key: {
-        label: 'Translation Key',
-        placeholder: 'Please enter translation key',
-        validation: {
-          required: 'Translation key cannot be empty'
-        }
-      },
-      value: {
-        label: 'Translation Value',
-        placeholder: 'Please enter translation value',
-        validation: {
-          required: 'Translation value cannot be empty'
-        }
-      },
+      key: 'Translation Key',
+      value: 'Translation Value',
       remark: {
         label: 'Remark',
         placeholder: 'Please enter remark'
       },
+      language: 'Language',
       actions: {
         import: 'Import',
         export: 'Export',

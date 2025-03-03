@@ -19,23 +19,136 @@ export default {
 
     // 操作按钮
     actions: {
-      add: '新增',
-      edit: '编辑',
-      delete: '删除',
-      view: '查看',
-      search: '搜索',
-      reset: '重置',
-      refresh: '刷新',
-      confirm: '确定',
-      cancel: '取消',
-      save: '保存',
-      back: '返回',
-      export: '导出',
-      import: '导入',
-      download: '下载',
-      upload: '上传',
-      preview: '预览',
-      print: '打印'
+      // === 基础操作按钮 ===
+      add: '新增',           // @btn-add-color
+      edit: '编辑',          // @btn-edit-color
+      delete: '删除',        // @btn-delete-color
+      batchDelete: '批量删除', // @btn-batch-delete-color
+      view: '查看',          // @btn-view-color
+      clear: '清空',         // @btn-clear-color
+
+      // === 数据操作按钮 ===
+      import: '导入',        // @btn-import-color
+      export: '导出',        // @btn-export-color
+      template: '模板',      // @btn-template-color
+      preview: '预览',       // @btn-preview-color
+      download: '下载',      // @btn-download-color
+      batchImport: '批量导入', // @btn-batch-import-color
+      batchExport: '批量导出', // @btn-batch-export-color
+      batchPrint: '批量打印', // @btn-batch-print-color
+      batchEdit: '批量编辑',  // @btn-batch-edit-color
+      batchUpdate: '批量更新', // @btn-batch-update-color
+
+      // === 状态操作按钮 ===
+      audit: '审核',         // @btn-audit-color
+      revoke: '撤销',        // @btn-revoke-color
+      stop: '停止',          // @btn-stop-color
+      run: '运行',           // @btn-run-color
+      force: '强制',         // @btn-forced-color
+
+      // === 系统功能按钮 ===
+      generate: '生成',      // @btn-generate-color
+      refresh: '刷新',       // @btn-refresh-color
+      info: '信息',          // @btn-info-color
+      log: '日志',           // @btn-log-color
+      chat: '消息',          // @btn-chat-color
+      copy: '复制',          // @btn-copy-color
+      execute: '执行',       // @btn-execute-color
+      resetPwd: '重置密码',   // @btn-reset-pwd-color
+      open: '打开',          // @btn-open-color
+      close: '关闭',         // @btn-close-color
+      more: '更多',          // @btn-more-color
+      density: '密度',       // @btn-density-color
+      columnSetting: '列设置', // @btn-column-setting-color
+
+      // === 扩展功能按钮 ===
+      search: '搜索',        // @btn-search-color
+      filter: '筛选',        // @btn-filter-color
+      sort: '排序',          // @btn-sort-color
+      config: '配置',        // @btn-config-color
+      save: '保存',          // @btn-save-color
+      cancel: '取消',        // @btn-cancel-color
+      upload: '上传',        // @btn-upload-color
+      print: '打印',         // @btn-print-color
+      help: '帮助',          // @btn-help-color
+      share: '分享',         // @btn-share-color
+      lock: '锁定',          // @btn-lock-color
+      sync: '同步',          // @btn-sync-color
+      expand: '展开',        // @btn-expand-color
+      collapse: '收起',      // @btn-collapse-color
+      approve: '同意',       // @btn-approve-color
+      reject: '拒绝',        // @btn-reject-color
+      comment: '评论',       // @btn-comment-color
+      attach: '附件',        // @btn-attach-color
+
+      // === 语言支持按钮 ===
+      translate: '翻译',     // @btn-translate-color
+      langSwitch: '切换语言', // @btn-lang-switch-color
+      dict: '字典',          // @btn-dict-color
+
+      // === 数据分析按钮 ===
+      analyze: '分析',       // @btn-analyze-color
+      chart: '图表',         // @btn-chart-color
+      report: '报表',        // @btn-report-color
+      dashboard: '仪表盘',    // @btn-dashboard-color
+      statistics: '统计',    // @btn-statistics-color
+      forecast: '预测',      // @btn-forecast-color
+      compare: '对比',       // @btn-compare-color
+
+      // === 工作流按钮 ===
+      startFlow: '启动流程',  // @btn-start-flow-color
+      endFlow: '结束流程',    // @btn-end-flow-color
+      suspendFlow: '暂停流程', // @btn-suspend-flow-color
+      resumeFlow: '恢复流程',  // @btn-resume-flow-color
+      transfer: '转办',       // @btn-transfer-color
+      delegate: '委托',       // @btn-delegate-color
+      notify: '通知',        // @btn-notify-color
+      urge: '催办',          // @btn-urge-color
+      sign: '签名',          // @btn-sign-color
+      countersign: '会签',    // @btn-countersign-color
+
+      // === 移动端专用按钮 ===
+      scan: '扫描',          // @btn-scan-color
+      location: '定位',      // @btn-location-color
+      call: '呼叫',          // @btn-call-color
+      photo: '拍照',         // @btn-photo-color
+      voice: '语音',         // @btn-voice-color
+      faceId: '人脸识别',     // @btn-face-id-color
+      fingerPrint: '指纹',    // @btn-finger-print-color
+
+      // === 社交协作按钮 ===
+      follow: '关注',        // @btn-follow-color
+      collect: '收藏',       // @btn-collect-color
+      like: '点赞',          // @btn-like-color
+      forward: '转发',       // @btn-forward-color
+      at: '@',              // @btn-at-color
+      group: '群组',         // @btn-group-color
+      team: '团队',          // @btn-team-color
+
+      // === 安全认证按钮 ===
+      verifyCode: '验证码',   // @btn-verify-code-color
+      bind: '绑定',          // @btn-bind-color
+      unbind: '解绑',        // @btn-unbind-color
+      authorize: '授权',      // @btn-authorize-color
+      deauthorize: '取消授权', // @btn-deauthorize-color
+
+      // === 高级功能按钮 ===
+      version: '版本',       // @btn-version-color
+      history: '历史',       // @btn-history-color
+      restore: '还原',       // @btn-restore-color
+      archive: '归档',       // @btn-archive-color
+      unarchive: '取消归档',  // @btn-unarchive-color
+      merge: '合并',         // @btn-merge-color
+      split: '拆分',         // @btn-split-color
+
+      // === 系统管理按钮 ===
+      backup: '备份',        // @btn-backup-color
+      restoreSys: '系统还原', // @btn-restore-sys-color
+      clean: '清理',         // @btn-clean-color
+      optimize: '优化',      // @btn-optimize-color
+      monitor: '监控',       // @btn-monitor-color
+      diagnose: '诊断',      // @btn-diagnose-color
+      maintain: '维护'       // @btn-maintain-color
     },
 
     // 状态
@@ -191,6 +304,16 @@ export default {
         503: '服务不可用',
         504: '网关超时'
       }
-    }
+    },
+
+    add: '新增',
+    edit: '编辑',
+    delete: '删除',
+    save: '保存',
+    cancel: '取消',
+    search: '搜索',
+    reset: '重置',
+    confirm: '确认',
+    back: '返回'
   }
 } 

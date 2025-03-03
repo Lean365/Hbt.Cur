@@ -1,5 +1,11 @@
-// Ant Design Vue 主题变量
+// 主题变量
 @theme-prefix: ant;
+
+// 链接颜色
+@link-color: #1890ff;                           // 链接颜色
+@link-hover-color: lighten(@link-color, 10%);    // 链接悬停颜色
+@link-active-color: darken(@link-color, 10%);    // 链接激活颜色
+@link-hover-decoration: none;                    // 链接悬停装饰（下划线等）
 
 // 基础颜色
 @white: #fff;                                  // 白色
@@ -69,14 +75,14 @@
 
 // 背景
 @body-background: #fff;                         // 主体背景
-@component-background: #fff;                    // 组件背景
-@background-color-light: hsv(0, 0, 98%);       // 浅色背景
-@background-color-base: hsv(0, 0, 96%);        // 基础背景
+@component-background: #ffffff;                  // 组件背景色
+@background-color-light: #fafafa;               // 浅色背景色
+@background-color-base: #f5f5f5;                // 基础背景色
 @disabled-bg: @background-color-base;           // 禁用背景
 
 // 边框
-@border-color-base: #d9d9d9;                   // 边框色
-@border-color-split: hsv(0, 0, 94%);           // 分割线色
+@border-color-base: #d9d9d9;                    // 基础边框色
+@border-color-split: #f0f0f0;                   // 分割线颜色
 @border-width-base: 1px;                       // 边框宽度
 @border-style-base: solid;                     // 边框样式
 @border-radius-base: 2px;                      // 圆角
@@ -102,11 +108,25 @@
 @btn-padding-lg: 6px 15px;                     // 大按钮内边距
 @btn-padding-md: @btn-padding-base;            // 中按钮内边距
 @btn-padding-sm: 0 7px;                        // 小按钮内边距
-@btn-border-radius: @border-radius-base;        // 按钮圆角
-@btn-border-radius-base: @border-radius-base;   // 基础圆角
-@btn-border-radius-lg: 4px;                    // 大按钮圆角
-@btn-border-radius-md: @btn-border-radius-base; // 中按钮圆角
+@btn-circle-size: @btn-height-base;            // 圆形按钮尺寸
+@btn-circle-size-lg: @btn-height-lg;           // 大号圆形按钮尺寸
+@btn-circle-size-sm: @btn-height-sm;           // 小号圆形按钮尺寸
+@btn-square-size: @btn-height-base;            // 方形按钮尺寸
+@btn-square-size-lg: @btn-height-lg;           // 大号方形按钮尺寸
+@btn-square-size-sm: @btn-height-sm;           // 小号方形按钮尺寸
+@btn-border-style: @border-style-base;         // 按钮边框样式
+@btn-border-width: @border-width-base;         // 按钮边框宽度
+@btn-border-radius-base: 4px;                  // 基础按钮圆角
+@btn-border-radius-lg: 6px;                    // 大按钮圆角
 @btn-border-radius-sm: 2px;                    // 小按钮圆角
+@btn-default-color: @text-color;               // 默认按钮文字颜色
+@btn-default-bg: @component-background;         // 默认按钮背景色
+@btn-default-border: @border-color-base;        // 默认按钮边框色
+@btn-ghost-color: @component-background;        // 幽灵按钮文字颜色
+@btn-ghost-bg: transparent;                    // 幽灵按钮背景色
+@btn-ghost-border: @component-background;       // 幽灵按钮边框色
+@btn-link-hover-bg: transparent;               // 链接按钮悬停背景色
+@btn-text-hover-bg: rgba(0, 0, 0, 0.018);      // 文本按钮悬停背景色
 
 // 表格按钮变量
 @table-btn-padding: 0 8px;           // 表格按钮内边距
@@ -155,9 +175,9 @@
 // 基础操作类按钮颜色
 @btn-add-color:#00e3e3;//青色-用于新增/创建记录，如新建用户、新增配置等
 @btn-edit-color:#008000;//绿色-用于编辑/修改现有记录
-@btn-delete-color:#ff0000;//红色-用于删除单条记录
-@btn-batch-delete-color:#f03752;//淡蕊香红-用于批量删除多条记录
-@btn-view-color:#006ebb;//胆矾蓝-用于查看详情，只读模式
+@btn-delete-color:#c02c38;//高粱红色-用于删除单条记录
+@btn-batch-delete-color:#a61b29;//苋菜红-用于批量删除多条记录
+@btn-view-color:#3b818c;//蜻蜓蓝-用于查看详情，只读模式
 @btn-clear-color:#c91f37;//陶瓷红-用于清空/重置表单或搜索条件
 
 // 数据操作类按钮颜色
@@ -169,8 +189,8 @@
 
 
 // 状态操作类按钮颜色
-@btn-audit-color: #e60000;     // 中国红 - 用于审核/审批操作
-@btn-revoke-color: #fbd26a;    // 申布伦黄 - 用于撤销/回退操作
+@btn-audit-color: #f09c5a;     // 鲑鱼红 - 用于审核/审批操作
+@btn-revoke-color: #64483d;    // 珠母灰 - 用于撤销/回退操作
 @btn-stop-color: #c21f30;     // 松叶牡丹红 - 用于停止/中断进程
 @btn-run-color: #e16c96;      // 初荷红 - 用于启动/运行任务
 @btn-forced-color: #cc163a;    // 尖晶玉红 - 用于强制退出/强制操作
@@ -296,25 +316,6 @@
 @btn-maintain-color: #2f2f35;   // 乌黑 - 用于系统维护
 
 
-// Ant Design Vue 基础变量
-@component-background: #fff;
-@primary-color: #1890ff;
-@success-color: #52c41a;
-@warning-color: #faad14;
-@error-color: #ff4d4f;
-@heading-color: rgba(0, 0, 0, 0.85);
-@text-color: rgba(0, 0, 0, 0.65);
-@text-color-secondary: rgba(0, 0, 0, 0.45);
-@disabled-color: rgba(0, 0, 0, 0.25);
-@disabled-text-color: #d9d9d9;
-@border-color-base: #d9d9d9;
-@background-color-light: #fafafa;
-@background-color-base: #f5f5f5;
-@loading-opacity: 0.6;
-@animation-duration-base: 0.2s;
-@ease-in-out: cubic-bezier(0.645, 0.045, 0.355, 1);
-@text-color-inverse: #fff;
-
 // 视图控制类按钮颜色
 @btn-fullscreen-color: #1890ff;      // 全屏 - 蓝色
 @btn-exit-fullscreen-color: #1890ff; // 退出全屏 - 蓝色
@@ -322,6 +323,26 @@
 @btn-view-grid-color: #1890ff;       // 网格视图 - 蓝色
 @btn-view-list-color: #1890ff;       // 列表视图 - 蓝色
 @btn-view-card-color: #1890ff;       // 卡片视图 - 蓝色
+
+// 表格相关变量
+@table-header-bg: @background-color-light;                // 表头背景色
+@table-header-color: @heading-color;                     // 表头文字颜色
+@table-header-sort-bg: @background-color-base;           // 表头排序背景色
+@table-body-sort-bg: #fafafa;                           // 表体排序背景色
+@table-row-hover-bg: @background-color-light;           // 行悬停背景色
+@table-selected-row-bg: #e6f7ff;                        // 选中行背景色
+@table-selected-row-hover-bg: #dcf4ff;                  // 选中行悬停背景色
+@table-expanded-row-bg: #fbfbfb;                        // 展开行背景色
+@table-padding-vertical: 16px;                          // 垂直内边距
+@table-padding-horizontal: 16px;                        // 水平内边距
+@table-border-color: @border-color-split;               // 表格边框颜色
+@table-border-radius-base: @border-radius-base;         // 表格圆角
+@table-footer-bg: @background-color-light;              // 表格底部背景色
+@table-footer-color: @heading-color;                    // 表格底部文字颜色
+@table-header-bg-sm: @table-header-bg;                  // 小号表格表头背景色
+@table-font-size: @font-size-base;                      // 表格字体大小
+@table-font-size-sm: @font-size-sm;                     // 小号表格字体大小
+@table-font-size-md: @font-size-base;                   // 中号表格字体大小
 
 // 表格特定功能按钮颜色
 @btn-row-expand-color: #1890ff;      // 行展开 - 蓝色
@@ -359,4 +380,91 @@
 @shadow-2: 0 3px 6px -4px rgba(0, 0, 0, 0.12),
   0 6px 16px 0 rgba(0, 0, 0, 0.08),
   0 9px 28px 8px rgba(0, 0, 0, 0.05);               // 中等阴影
-@box-shadow-base: 0 2px 8px rgba(0, 0, 0, 0.15);    // 基础阴影 
+@box-shadow-base: 0 2px 8px rgba(0, 0, 0, 0.15);    // 基础阴影
+
+// 标签相关变量
+@label-color: @heading-color;                    // 标签文字颜色
+@label-required-color: @error-color;             // 必填标签星号颜色
+@label-bg: @component-background;                // 标签背景色
+@label-font-size: @font-size-base;              // 标签字体大小
+@label-font-weight: 400;                        // 标签字重
+@label-line-height: @line-height-base;          // 标签行高
+@label-disabled-color: @disabled-color;          // 禁用状态标签颜色
+
+// 表单标签相关变量
+@form-item-label-height: 32px;                  // 表单项标签高度
+@form-item-label-colon-margin-right: 8px;       // 表单项标签冒号右边距
+@form-item-label-colon-margin-left: 2px;        // 表单项标签冒号左边距
+
+// 响应式断点
+@screen-xs: 480px;              // 超小屏幕
+@screen-sm: 576px;              // 小屏幕
+@screen-md: 768px;              // 中等屏幕
+@screen-lg: 992px;              // 大屏幕
+@screen-xl: 1200px;             // 超大屏幕
+@screen-xxl: 1600px;            // 巨大屏幕
+
+// 分割线
+@border-color-split: hsv(0, 0, 94%);           // 分割线颜色
+@border-color-inverse: @white;                 // 反色分割线颜色
+
+// 基础间距变量
+@margin-xxs: 4px;
+@margin-xs: 8px;
+@margin-sm: 12px;
+@margin-md: 16px;
+@margin-lg: 24px;
+@margin-xl: 32px;
+@margin-xxl: 48px;
+
+@padding-xxs: 4px;
+@padding-xs: 8px;
+@padding-sm: 12px;
+@padding-md: 16px;
+@padding-lg: 24px;
+@padding-xl: 32px;
+@padding-xxl: 48px;
+
+// 表单项间距
+@form-item-margin-bottom: 24px;
+@form-item-margin-bottom-sm: 16px;
+
+// 表格相关变量
+@table-header-bg: @background-color-light;                // 表头背景色
+@table-header-color: @heading-color;                     // 表头文字颜色
+@table-header-sort-bg: @background-color-base;           // 表头排序背景色
+@table-body-sort-bg: #fafafa;                           // 表体排序背景色
+@table-row-hover-bg: @background-color-light;           // 行悬停背景色
+@table-selected-row-bg: #e6f7ff;                        // 选中行背景色
+@table-selected-row-hover-bg: #dcf4ff;                  // 选中行悬停背景色
+@table-expanded-row-bg: #fbfbfb;                        // 展开行背景色
+@table-padding-vertical: 16px;                          // 垂直内边距
+@table-padding-horizontal: 16px;                        // 水平内边距
+@table-border-color: @border-color-split;               // 表格边框颜色
+@table-border-radius-base: @border-radius-base;         // 表格圆角
+@table-footer-bg: @background-color-light;              // 表格底部背景色
+@table-footer-color: @heading-color;                    // 表格底部文字颜色
+@table-header-bg-sm: @table-header-bg;                  // 小号表格表头背景色
+@table-font-size: @font-size-base;                      // 表格字体大小
+@table-font-size-sm: @font-size-sm;                     // 小号表格字体大小
+@table-font-size-md: @font-size-base;                   // 中号表格字体大小
+@table-font-size-md: @font-size-base;                   // 中号表格字体大小 
+@table-font-size-md: @font-size-base;                   // 中号表格字体大小 
+
+// 功能按钮变量
+@btn-paste-color: #4a4266;     // 粘贴 - 暗蓝紫
+@btn-enable-color: #45b97c;    // 启用 - 青矾绿
+@btn-disable-color: #d71345;   // 禁用 - 银红
+@btn-unlock-color: #45b97c;    // 解锁 - 青矾绿
+@btn-submit-color: #2b73af;    // 提交 - 海青
+@btn-review-color: #4c8dae;    // 审阅 - 潮蓝
+@btn-auth-color: #2f2f35;      // 认证 - 乌黑
+@btn-reset-color: #666666;     // 重置 - 灰色
+
+// 权限管理类按钮颜色
+@btn-role-color: #4b5cc4;      // 角色管理 - 靛青色
+@btn-user-color: #2775b6;      // 用户管理 - 景泰蓝
+@btn-group-manage-color: #1661ab; // 组管理 - 藏青色
+@btn-dept-color: #144a74;      // 部门管理 - 青黛色
+@btn-menu-color: #2b4490;      // 菜单管理 - 宝石蓝
+@btn-permission-color: #384883; // 权限管理 - 绀青色

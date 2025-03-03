@@ -17,24 +17,13 @@ export default {
           required: '模块名称不能为空'
         }
       },
-      key: {
-        label: '翻译键名',
-        placeholder: '请输入翻译键名',
-        validation: {
-          required: '翻译键名不能为空'
-        }
-      },
-      value: {
-        label: '翻译内容',
-        placeholder: '请输入翻译内容',
-        validation: {
-          required: '翻译内容不能为空'
-        }
-      },
+      key: '翻译键',
+      value: '翻译值',
       remark: {
         label: '备注',
         placeholder: '请输入备注'
       },
+      language: '语言',
       actions: {
         import: '导入',
         export: '导出',
