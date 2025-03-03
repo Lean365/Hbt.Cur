@@ -1,0 +1,183 @@
+// ===================================================================
+// 项目名称: Lean.Hbt
+// 文件名称: button.less 
+// 创建日期: 2024-03-20
+// 描述: 按钮颜色样式定义，继承Ant Design Vue 4.x的其他样式
+// ===================================================================
+
+// 引入主题变量
+@import '../variables.less';
+
+// === 按钮颜色混入 ===
+// 定义按钮基础颜色样式，其他样式继承自Ant Design Vue
+.button-color(@color) {
+  &.ant-btn {
+    color: @color;
+    border-color: @color;
+    background-color: transparent;
+    
+    &:not(:disabled):hover {
+      color: @white;
+      background: @color;
+      border-color: @color;
+    }
+    
+    &:not(:disabled):active {
+      color: @white;
+      background: darken(@color, 10%);
+      border-color: darken(@color, 10%);
+    }
+  }
+}
+
+// === 基础操作类按钮 ===
+// 包含新增、编辑、删除等基础操作按钮
+.hbt-btn-add { .button-color(@btn-add-color); }            // 新增按钮
+.hbt-btn-edit { .button-color(@btn-edit-color); }          // 编辑按钮
+.hbt-btn-delete { .button-color(@btn-delete-color); }      // 删除按钮
+.hbt-btn-batch-delete { .button-color(@btn-batch-delete-color); } // 批量删除按钮
+.hbt-btn-view { .button-color(@btn-view-color); }          // 查看按钮
+.hbt-btn-clear { .button-color(@btn-clear-color); }        // 清空按钮
+.hbt-btn-save { .button-color(@btn-save-color); }          // 保存按钮
+.hbt-btn-cancel { .button-color(@btn-cancel-color); }      // 取消按钮
+.hbt-btn-reset { .button-color(@btn-reset-color); }        // 重置按钮
+
+// === 数据操作类按钮 ===
+// 包含导入、导出、预览等数据操作按钮
+.hbt-btn-import { .button-color(@btn-import-color); }      // 导入按钮
+.hbt-btn-export { .button-color(@btn-export-color); }      // 导出按钮
+.hbt-btn-template { .button-color(@btn-template-color); }  // 模板按钮
+.hbt-btn-preview { .button-color(@btn-preview-color); }    // 预览按钮
+.hbt-btn-download { .button-color(@btn-download-color); }  // 下载按钮
+.hbt-btn-upload { .button-color(@btn-upload-color); }      // 上传按钮
+.hbt-btn-print { .button-color(@btn-print-color); }        // 打印按钮
+.hbt-btn-share { .button-color(@btn-share-color); }        // 分享按钮
+.hbt-btn-copy { .button-color(@btn-copy-color); }          // 复制按钮
+.hbt-btn-paste { .button-color(@btn-paste-color); }        // 粘贴按钮
+
+// === 状态操作类按钮 ===
+// 包含启用、禁用、锁定等状态操作按钮
+.hbt-btn-enable { .button-color(@btn-enable-color); }      // 启用按钮
+.hbt-btn-disable { .button-color(@btn-disable-color); }    // 禁用按钮
+.hbt-btn-lock { .button-color(@btn-lock-color); }          // 锁定按钮
+.hbt-btn-unlock { .button-color(@btn-unlock-color); }      // 解锁按钮
+.hbt-btn-approve { .button-color(@btn-approve-color); }    // 批准按钮
+.hbt-btn-reject { .button-color(@btn-reject-color); }      // 拒绝按钮
+.hbt-btn-submit { .button-color(@btn-submit-color); }      // 提交按钮
+.hbt-btn-review { .button-color(@btn-review-color); }      // 审核按钮
+.hbt-btn-audit { .button-color(@btn-audit-color); }        // 审计按钮
+.hbt-btn-revoke { .button-color(@btn-revoke-color); }      // 撤销按钮
+.hbt-btn-stop { .button-color(@btn-stop-color); }          // 停止按钮
+.hbt-btn-run { .button-color(@btn-run-color); }            // 运行按钮
+.hbt-btn-forced { .button-color(@btn-forced-color); }      // 强制按钮
+
+// === 系统功能类按钮 ===
+// 包含生成、刷新、日志等系统功能按钮
+.hbt-btn-generate { .button-color(@btn-generate-color); }  // 生成按钮
+.hbt-btn-refresh { .button-color(@btn-refresh-color); }    // 刷新按钮
+.hbt-btn-info { .button-color(@btn-info-color); }          // 信息按钮
+.hbt-btn-log { .button-color(@btn-log-color); }            // 日志按钮
+.hbt-btn-chat { .button-color(@btn-chat-color); }          // 聊天按钮
+.hbt-btn-search { .button-color(@btn-search-color); }      // 搜索按钮
+.hbt-btn-filter { .button-color(@btn-filter-color); }      // 筛选按钮
+.hbt-btn-sort { .button-color(@btn-sort-color); }          // 排序按钮
+.hbt-btn-config { .button-color(@btn-config-color); }      // 配置按钮
+.hbt-btn-column-setting { .button-color(@btn-column-setting-color); } // 列设置按钮
+
+// === 系统管理类按钮 ===
+// 包含备份、还原、清理等系统管理按钮
+.hbt-btn-backup { .button-color(@btn-backup-color); }      // 备份按钮
+.hbt-btn-restore-sys { .button-color(@btn-restore-sys-color); } // 系统还原按钮
+.hbt-btn-clean { .button-color(@btn-clean-color); }        // 清理按钮
+.hbt-btn-optimize { .button-color(@btn-optimize-color); }  // 优化按钮
+.hbt-btn-monitor { .button-color(@btn-monitor-color); }    // 监控按钮
+.hbt-btn-diagnose { .button-color(@btn-diagnose-color); }  // 诊断按钮
+.hbt-btn-maintain { .button-color(@btn-maintain-color); }  // 维护按钮
+
+// === 视图控制类按钮 ===
+// 包含全屏、视图切换等视图控制按钮
+.hbt-btn-fullscreen { .button-color(@btn-fullscreen-color); }        // 全屏按钮
+.hbt-btn-exit-fullscreen { .button-color(@btn-exit-fullscreen-color); } // 退出全屏按钮
+.hbt-btn-view-switch { .button-color(@btn-view-switch-color); }      // 视图切换按钮
+.hbt-btn-view-grid { .button-color(@btn-view-grid-color); }          // 网格视图按钮
+.hbt-btn-view-list { .button-color(@btn-view-list-color); }          // 列表视图按钮
+.hbt-btn-view-card { .button-color(@btn-view-card-color); }          // 卡片视图按钮
+
+// === 权限管理类按钮 ===
+// 包含权限、角色、用户等权限管理按钮
+.hbt-btn-auth { .button-color(@btn-auth-color); }          // 权限按钮
+.hbt-btn-role { .button-color(@btn-role-color); }          // 角色按钮
+.hbt-btn-user { .button-color(@btn-user-color); }          // 用户按钮
+.hbt-btn-group-manage { .button-color(@btn-group-manage-color); } // 群组管理按钮
+.hbt-btn-dept { .button-color(@btn-dept-color); }          // 部门按钮
+.hbt-btn-menu { .button-color(@btn-menu-color); }          // 菜单按钮
+.hbt-btn-permission { .button-color(@btn-permission-color); } // 权限按钮
+
+// === 工作流程类按钮 ===
+// 包含流程启动、结束、暂停等工作流按钮
+.hbt-btn-start-flow { .button-color(@btn-start-flow-color); }    // 启动流程按钮
+.hbt-btn-end-flow { .button-color(@btn-end-flow-color); }        // 结束流程按钮
+.hbt-btn-suspend-flow { .button-color(@btn-suspend-flow-color); } // 暂停流程按钮
+.hbt-btn-resume-flow { .button-color(@btn-resume-flow-color); }   // 恢复流程按钮
+.hbt-btn-transfer { .button-color(@btn-transfer-color); }         // 转办按钮
+.hbt-btn-delegate { .button-color(@btn-delegate-color); }         // 委托按钮
+.hbt-btn-notify { .button-color(@btn-notify-color); }            // 通知按钮
+.hbt-btn-urge { .button-color(@btn-urge-color); }               // 催办按钮
+.hbt-btn-sign { .button-color(@btn-sign-color); }               // 签名按钮
+.hbt-btn-countersign { .button-color(@btn-countersign-color); }  // 会签按钮
+
+// === 移动端专用按钮 ===
+// 包含扫描、定位、拍照等移动端功能按钮
+.hbt-btn-scan { .button-color(@btn-scan-color); }          // 扫描按钮
+.hbt-btn-location { .button-color(@btn-location-color); }  // 定位按钮
+.hbt-btn-call { .button-color(@btn-call-color); }         // 呼叫按钮
+.hbt-btn-photo { .button-color(@btn-photo-color); }       // 拍照按钮
+.hbt-btn-voice { .button-color(@btn-voice-color); }       // 语音按钮
+.hbt-btn-face-id { .button-color(@btn-face-id-color); }   // 人脸识别按钮
+.hbt-btn-finger-print { .button-color(@btn-finger-print-color); } // 指纹按钮
+
+// === 社交协作类按钮 ===
+// 包含关注、收藏、点赞等社交功能按钮
+.hbt-btn-follow { .button-color(@btn-follow-color); }      // 关注按钮
+.hbt-btn-collect { .button-color(@btn-collect-color); }    // 收藏按钮
+.hbt-btn-like { .button-color(@btn-like-color); }         // 点赞按钮
+.hbt-btn-forward { .button-color(@btn-forward-color); }    // 转发按钮
+.hbt-btn-at { .button-color(@btn-at-color); }             // @按钮
+.hbt-btn-group { .button-color(@btn-group-color); }       // 群组按钮
+.hbt-btn-team { .button-color(@btn-team-color); }         // 团队按钮
+
+// === 安全认证类按钮 ===
+// 包含验证码、绑定、授权等安全功能按钮
+.hbt-btn-verify-code { .button-color(@btn-verify-code-color); }   // 验证码按钮
+.hbt-btn-bind { .button-color(@btn-bind-color); }                 // 绑定按钮
+.hbt-btn-unbind { .button-color(@btn-unbind-color); }            // 解绑按钮
+.hbt-btn-authorize { .button-color(@btn-authorize-color); }       // 授权按钮
+.hbt-btn-deauthorize { .button-color(@btn-deauthorize-color); }  // 取消授权按钮
+
+// === 高级功能类按钮 ===
+// 包含版本、历史、归档等高级功能按钮
+.hbt-btn-version { .button-color(@btn-version-color); }    // 版本按钮
+.hbt-btn-history { .button-color(@btn-history-color); }    // 历史按钮
+.hbt-btn-restore { .button-color(@btn-restore-color); }    // 还原按钮
+.hbt-btn-archive { .button-color(@btn-archive-color); }    // 归档按钮
+.hbt-btn-unarchive { .button-color(@btn-unarchive-color); } // 取消归档按钮
+.hbt-btn-merge { .button-color(@btn-merge-color); }        // 合并按钮
+.hbt-btn-split { .button-color(@btn-split-color); }        // 拆分按钮
+
+// === 批量操作类按钮 ===
+// 包含批量编辑、更新、导入等批量操作按钮
+.hbt-btn-batch-edit { .button-color(@btn-batch-edit-color); }     // 批量编辑按钮
+.hbt-btn-batch-update { .button-color(@btn-batch-update-color); } // 批量更新按钮
+.hbt-btn-batch-import { .button-color(@btn-batch-import-color); } // 批量导入按钮
+.hbt-btn-batch-export { .button-color(@btn-batch-export-color); } // 批量导出按钮
+.hbt-btn-batch-print { .button-color(@btn-batch-print-color); }   // 批量打印按钮
+
+// === 数据分析类按钮 ===
+// 包含分析、图表、报表等数据分析按钮
+.hbt-btn-analyze { .button-color(@btn-analyze-color); }    // 分析按钮
+.hbt-btn-chart { .button-color(@btn-chart-color); }       // 图表按钮
+.hbt-btn-report { .button-color(@btn-report-color); }     // 报表按钮
+.hbt-btn-dashboard { .button-color(@btn-dashboard-color); } // 仪表盘按钮
+.hbt-btn-statistics { .button-color(@btn-statistics-color); } // 统计按钮
+.hbt-btn-forecast { .button-color(@btn-forecast-color); }  // 预测按钮
+.hbt-btn-compare { .button-color(@btn-compare-color); }    // 对比按钮 

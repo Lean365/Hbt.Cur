@@ -1,16 +1,20 @@
 export default {
   dashboard: {
     title: 'Dashboard',
+    welcome: 'Welcome',
+    totalUsers: 'Total Users',
+    activeUsers: 'Active Users',
+    todayVisits: "Today's Visits",
+    systemStatus: 'System Status',
     analysis: 'Analysis',
     monitor: 'Monitor',
     workplace: 'Workplace',
     // Workplace statistics
     totalVisits: 'Total Visits',
-    totalUsers: 'Total Users',
     totalOrders: 'Total Orders',
     totalSales: 'Total Sales',
     overview: 'Overview',
-    noData: 'NoData',
-    realtime:'Realtime'
+    noData: 'No Data',
+    realtime: 'Realtime'
   }
 } 

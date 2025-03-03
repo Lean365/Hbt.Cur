@@ -103,7 +103,20 @@ export default {
           success: '删除成功',
           failed: '删除失败'
         }
-      }
+      },
+      dashboard: '仪表盘',
+      system: '系统管理',
+      user: '用户管理',
+      role: '角色管理',
+      permission: '权限管理',
+      dept: '部门管理',
+      post: '岗位管理',
+      dict: '字典管理',
+      config: '参数设置',
+      notice: '通知公告',
+      log: '日志管理',
+      profile: '个人中心',
+      setting: '个人设置'
     }
   }
 } 
