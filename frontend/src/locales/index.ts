@@ -14,6 +14,10 @@ import commonEnUS from './common/en-US'
 import dashboardZhCN from './dashboard/zh-CN'
 import dashboardEnUS from './dashboard/en-US'
 
+// 导入错误页面翻译
+import errorZhCN from './error/zh-CN'
+import errorEnUS from './error/en-US'
+
 // 导入页脚翻译
 import footerZhCN from './components/footer/zh-CN'
 import footerEnUS from './components/footer/en-US'
@@ -75,6 +79,7 @@ const messages = {
     },
     ...commonZhCN,
     ...dashboardZhCN,
+    ...errorZhCN,
     ...footerZhCN,
     ...headerZhCN,
     ...holidayZhCN,
@@ -98,6 +103,7 @@ const messages = {
     },
     ...commonEnUS,
     ...dashboardEnUS,
+    ...errorEnUS,
     ...footerEnUS,
     ...headerEnUS,
     ...holidayEnUS,
@@ -125,7 +131,15 @@ const i18n = createI18n({
   globalInjection: true, // 全局注入 $t 函数
   silentTranslationWarn: true, // 关闭翻译警告
   missingWarn: false, // 关闭缺少翻译警告
-  silentFallbackWarn: true // 关闭回退翻译警告
+  silentFallbackWarn: true, // 关闭回退翻译警告
+  // 添加语言环境映射
+  availableLocales: ['zh-CN', 'en-US'],
+  fallbackLocaleChain: {
+    'zh': ['zh-CN', 'en-US'],
+    'zh-CN': ['zh-CN', 'en-US'],
+    'en': ['en-US', 'zh-CN'],
+    'en-US': ['en-US', 'zh-CN']
+  }
 })
 
 export default i18n

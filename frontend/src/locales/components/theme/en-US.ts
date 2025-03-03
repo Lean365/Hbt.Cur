@@ -1,10 +1,11 @@
 export default {
   theme: {
     title: 'Theme Settings',
+    dark: 'Dark Mode',
     mode: {
       light: 'Light Mode',
       dark: 'Dark Mode',
-      system: 'System Mode'
+      system: 'Follow System'
     },
     color: {
       primary: 'Primary Color',
@@ -17,5 +18,8 @@ export default {
       borderRadius: 'Border Radius',
       animation: 'Animation'
     }
+  },
+  memorial: {
+    enable: 'Enable Memorial Mode'
   }
 } 

@@ -2,11 +2,16 @@ export default {
   menu: {
     home: '首页',
     dashboard: {
-      title: '仪表盘'
+      title: '仪表盘',
+      workplace: '工作台',
+      analysis: '分析台',
+      monitor:'监控台'
     },
     about: {
       title: '关于我们',
-      index: '关于'
+      privacy: '隐私政策',
+      terms: '服务条款',
+      index: '关于Hbt'
     },
     admin: {
       _self: '系统管理',

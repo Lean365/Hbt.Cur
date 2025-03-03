@@ -50,10 +50,10 @@ import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import i18n from '../locales'
 import { useThemeStore } from '@/stores/theme'
-import SiderMenu from '@/components/navigation/SiderMenu.vue'
-import HeaderBar from '@/components/navigation/HeaderBar.vue'
-import Breadcrumb from '@/components/navigation/Breadcrumb.vue'
-import FooterBar from '@/components/navigation/FooterBar.vue'
+import SiderMenu from '@/components/Navigation/SiderMenu.vue'
+import HeaderBar from '@/components/Navigation/HeaderBar.vue'
+import Breadcrumb from '@/components/Navigation/Breadcrumb.vue'
+import FooterBar from '@/components/Navigation/FooterBar.vue'
 
 // 组合式API和工具函数
 const { locale } = useI18n()

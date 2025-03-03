@@ -2,40 +2,46 @@ export default {
   menu: {
     home: 'Home',
     dashboard: {
-      title: 'Dashboard'
+      title: 'Dashboard',
+      workplace: 'Workplace',
+      analysis: 'Analysis',
+      monitor:'Monitor'
     },
     about: {
       title: 'About Us',
-      index: 'About'
+      index: 'About',
+      privacy: 'Privacy',
+      terms: 'Terms',
+
     },
     admin: {
       _self: 'System Management',
-      config: 'System Configuration',
-      language: 'Language Management',
-      dicttype: 'Dictionary Type',
-      dictdata: 'Dictionary Data',
-      translation: 'Translation Management'
+      config: 'Config',
+      language: 'Language',
+      dicttype: 'DictType',
+      dictdata: 'DictData',
+      translation: 'Translation'
     },
     identity: {
-      _self: 'Identity Authentication',
-      user: 'User Management',
-      role: 'Role Management',
-      dept: 'Department Management',
-      post: 'Position Management',
-      menu: 'Menu Management',
-      tenant: 'Tenant Management',
-      auth: 'Authentication Management',
-      oauth: 'OAuth Management',
-      loginpolicy: 'Login Policy',
-      loginextend: 'Login Extension',
-      deviceextend: 'Device Extension'
+      _self: 'Identity Auth',
+      user: 'User',
+      role: 'Role',
+      dept: 'Department',
+      post: 'Position',
+      menu: 'Menu',
+      tenant: 'Tenant',
+      auth: 'Authentication',
+      oauth: 'OAuth',
+      loginpolicy: 'Login',
+      loginextend: 'Login',
+      deviceextend: 'Device'
     },
     audit: {
       _self: 'Audit Log',
-      operlog: 'Operation Log',
-      loginlog: 'Login Log',
-      dbdifflog: 'Data Change Log',
-      exceptionlog: 'Exception Log'
+      operlog: 'Operation',
+      loginlog: 'Login',
+      dbdifflog: 'Data Diff',
+      exceptionlog: 'Exception'
     },
     workflow: {
       _self: 'Workflow',
@@ -47,13 +53,13 @@ export default {
       history: 'Process History'
     },
     realtime: {
-      _self: 'Real-time Monitoring',
-      onlineuser: 'Online Users',
-      onlinemessage: 'Online Messages'
+      _self: 'Signalr',
+      onlineuser: 'Users',
+      onlinemessage: 'Messages'
     },
     security: {
       _self: 'Security Management',
-      captcha: 'Verification Code'
+      captcha: 'Captcha'
     }
   }
 } 

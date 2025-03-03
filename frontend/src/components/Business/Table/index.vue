@@ -119,7 +119,7 @@
 import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type { TableProps } from 'ant-design-vue'
-import HbtPagination from '@/components/pagination/index.vue'
+import HbtPagination from '@/components/Business/Pagination/index.vue'
 import {
   PlusOutlined,
   EditOutlined,

@@ -19,21 +19,18 @@ service.interceptors.request.use(
   (config) => {
     // 每次请求都重新获取token
     const token = getToken()
-    //console.log('[Request Interceptor] Current Token:', token)
-    
-    // 确保headers对象存在
-    config.headers = config.headers || {}
-    
-    // 设置通用headers
-    config.headers['Accept'] = 'application/json'
-    config.headers['Content-Type'] = 'application/json'
+    console.log('[请求拦截器] 开始处理请求:', config.url)
     
     // 如果是登录请求，从请求体中获取租户ID
     if (config.url?.includes('/auth/login')) {
       const loginData = typeof config.data === 'string' ? JSON.parse(config.data) : config.data;
+      console.log('[请求拦截器] 登录数据:', {
+        ...loginData,
+        password: loginData.password ? '******' : undefined
+      })
       if (loginData?.tenantId !== undefined) {
         config.headers['X-Tenant-Id'] = loginData.tenantId.toString();
-        //console.log('[Request Interceptor] 设置租户ID:', loginData.tenantId);
+        console.log('[请求拦截器] 从登录数据设置租户ID:', loginData.tenantId)
       }
 
       // 如果没有设备信息，添加默认的设备信息
@@ -55,76 +52,73 @@ service.interceptors.request.use(
         config.data = JSON.stringify(loginData);
       }
     } else if (token) {
+      // 添加Bearer前缀
+      config.headers['Authorization'] = `Bearer ${token}`
+      console.log('[请求拦截器] Token:', typeof token === 'string' ? token.substring(0, 10) + '...' : token)
+      
       // 从JWT令牌中获取租户ID
       try {
         const tokenParts = token.split('.');
-        const payload = JSON.parse(atob(tokenParts[1]));
-        if (payload.tenant_id) {
-          config.headers['X-Tenant-Id'] = payload.tenant_id;
-          //console.log('[Request Interceptor] 从JWT设置租户ID:', payload.tenant_id);
+        if (tokenParts.length === 3) {
+          const payload = JSON.parse(atob(tokenParts[1]));
+          console.log('[请求拦截器] JWT Payload:', {
+            ...payload,
+            sub: payload.sub ? '******' : undefined,
+            jti: payload.jti ? '******' : undefined
+          })
+          if (payload.tenant_id !== undefined) {
+            config.headers['X-Tenant-Id'] = payload.tenant_id.toString();
+            console.log('[请求拦截器] 从JWT设置租户ID:', payload.tenant_id)
+          } else {
+            console.warn('[请求拦截器] JWT中未找到租户ID')
+          }
         }
       } catch (error) {
-        //console.error('[Request Interceptor] JWT解析失败:', error);
+        console.error('[请求拦截器] JWT解析失败:', error);
       }
     }
     
-    if (token) {
-      // 添加Bearer前缀
-      config.headers['Authorization'] = `Bearer ${token}`
-      // 详细记录请求信息
-      console.log('[Request Interceptor] 详细请求信息:', {
-        url: config.url,
-        method: config.method,
-        headers: {
-          ...config.headers,
-          Authorization: config.headers.Authorization
-        },
-        baseURL: config.baseURL,
-        data: config.data
-      })
-
-      // 解析JWT令牌
-      try {
-        const tokenParts = token.split('.');
-        const payload = JSON.parse(atob(tokenParts[1]));
-        console.log('[Request Interceptor] JWT解析结果:', {
-          exp: new Date(payload.exp * 1000).toLocaleString(),
-          nbf: new Date(payload.nbf * 1000).toLocaleString(),
-          sub: payload.sub,
-          name: payload.name,
-          tenant_id: payload.tenant_id
-        });
-      } catch (error) {
-        console.error('[Request Interceptor] JWT解析失败:', error);
+    // 确保headers对象存在
+    config.headers = config.headers || {}
+    
+    // 设置通用headers
+    config.headers['Accept'] = 'application/json'
+    config.headers['Content-Type'] = 'application/json'
+    
+    // 详细记录请求信息
+    console.log('[请求拦截器] 最终请求配置:', {
+      url: config.url,
+      method: config.method,
+      params: config.params,
+      data: typeof config.data === 'string' ? '(字符串数据)' : config.data,
+      headers: {
+        ...config.headers,
+        Authorization: config.headers.Authorization ? '(已设置)' : '(未设置)',
+        'X-Tenant-Id': config.headers['X-Tenant-Id'] || '(未设置)'
       }
-    } else {
-      console.log('[Request Interceptor] No token found for request:', {
-        url: config.url,
-        method: config.method
-      })
-    }
+    })
     
     return config
   },
   (error) => {
-    if (error.code === 'ERR_NETWORK' || error.code === 'ECONNABORTED') {
-      console.warn('net::ERR_CONNECTION_REFUSED')
-    }
-    console.warn('[Request Interceptor] Error:', error)
+    console.error('[请求拦截器] 请求错误:', error)
     return Promise.reject(error)
   }
 )
 
 // 响应拦截器
 service.interceptors.response.use(
-  (response: AxiosResponse) => {
+  (response) => {
     const res = response.data
-    console.log('[Response Interceptor] Response:', {
+    
+    // 详细记录响应信息
+    console.log('[Response Interceptor] 收到响应:', {
       url: response.config.url,
       method: response.config.method,
       status: response.status,
-      headers: response.headers,
-      data: res
+      statusText: response.statusText,
+      data: res,
+      headers: response.headers
     })
 
     // 二进制数据直接返回
@@ -145,7 +139,12 @@ service.interceptors.response.use(
       }
       // 业务失败
       const errorKey = res.msg || 'common.message.systemError'
-      const errorMessage = t(errorKey, errorKey) // 如果找不到翻译，使用原始key
+      const errorMessage = t(errorKey, errorKey)
+      console.error('[Response Interceptor] 业务错误:', {
+        code: res.code,
+        message: errorMessage,
+        data: res.data
+      })
       message.error(errorMessage)
       return Promise.reject(new Error(errorMessage))
     }
@@ -158,11 +157,14 @@ service.interceptors.response.use(
     }
   },
   (error) => {
-    console.error('[Response Interceptor] Error:', error)
+    console.error('[Response Interceptor] 响应错误:', {
+      config: error.config,
+      code: error.code,
+      message: error.message,
+      response: error.response
+    })
     
     if (error.code === 'ERR_NETWORK' || error.code === 'ECONNABORTED') {
-      // 在控制台显示错误
-      //console.log('\n\x1b[31m%s\x1b[0m', '  ❌ ' + t('common.message.backendNotStarted') + '\n')
       message.error(t('common.message.backendNotStarted'))
       return Promise.reject(error)
     }
@@ -194,7 +196,7 @@ service.interceptors.response.use(
           errorKey = `common.message.httpError.${status}`
       }
 
-      const errorMessage = t(errorKey, errorKey) // 如果找不到翻译，使用原始key
+      const errorMessage = t(errorKey, errorKey)
       message.error(errorMessage)
       return Promise.reject(new Error(errorMessage))
     }

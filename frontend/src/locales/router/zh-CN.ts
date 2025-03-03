@@ -27,6 +27,8 @@ export default {
       '403': '403',
       '404': '404',
       '500': '500'
-    }
+    },
+    'System Management': '系统管理',
+    'Config': '系统配置'
   }
 } 

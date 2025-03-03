@@ -13,6 +13,7 @@
       <!-- 搜索表单 -->
       <HbtQuery
         :items="queryItems"
+        :query-fields="queryItems"
         :loading="loading"
         @search="handleSearch"
         @reset="handleReset"
@@ -79,9 +80,9 @@ import {
   CheckOutlined,
   UndoOutlined
 } from '@ant-design/icons-vue'
-import HbtQuery from '@/components/query/index.vue'
-import HbtTable from '@/components/table/index.vue'
-
+import HbtQuery from '@/components/Business/Query/index.vue'
+import HbtTable from '@/components/Business/Table/index.vue'
+import { useUserStore } from '@/stores/user'
 import {
   getHbtConfigList,
   getHbtConfig,
@@ -105,6 +106,7 @@ import ConfigForm from './components/ConfigForm.vue'
 
 // 使用i18n
 const { t } = useI18n()
+const userStore = useUserStore()
 
 // 查询参数
 const queryParams = reactive<HbtConfigQuery>({
@@ -121,9 +123,9 @@ const loading = ref(false)
 const configList = ref<HbtConfig[]>([])
 const selectedRowKeys = ref<(string | number)[]>([])
 const pagination = reactive({
-  pageNum: 1,
+  pageIndex: 1,
   pageSize: 10,
-  totalNum: 0,
+  total: 0,
   showSizeChanger: true,
   showQuickJumper: true,
   showTotal: (total: number) => `共 ${total} 条`
@@ -251,31 +253,47 @@ const queryItems: IHbtQueryItem[] = [
 
 // 加载配置列表
 const loadConfigList = async () => {
-  loading.value = true
   try {
-    const params = {
-      pageIndex: pagination.pageNum,
-      pageSize: pagination.pageSize,
-      configName: queryParams.configName || undefined,
-      configKey: queryParams.configKey || undefined,
-      configBuiltin: queryParams.configBuiltin,
-      status: queryParams.status
-    }
-    const { data: pageData } = await getHbtConfigList(params)
-    console.log('API Response:', pageData)
-    if (pageData && pageData.rows) {
-      configList.value = pageData.rows
-      pagination.totalNum = pageData.totalNum
+    loading.value = true
+    
+    console.log('[HbtConfig] 原始查询参数:', queryParams)
+    
+    // 构建请求参数，过滤掉 undefined、null 和空字符串值
+    const params = Object.entries(queryParams).reduce((acc, [key, value]) => {
+      console.log(`[HbtConfig] 处理参数 ${key}:`, value)
+      if (value !== undefined && value !== null && value !== '') {
+        acc[key] = value
+      }
+      return acc
+    }, {} as Record<string, any>)
+    
+    console.log('[HbtConfig] 处理后的请求参数:', params)
+    
+    // 只显示配置管理相关的权限
+    const configPermissions = userStore.permissions.filter(p => p.startsWith('admin:config:'))
+    console.log('[HbtConfig] 配置管理权限:', configPermissions)
+
+    const response = await getHbtConfigList(params)
+    console.log('[HbtConfig] 获取配置列表响应:', response)
+    
+    if (response.code === 200) {
+      configList.value = response.data.rows
+      pagination.total = response.data.totalNum
+      pagination.pageIndex = response.data.pageIndex
+      pagination.pageSize = response.data.pageSize
+      console.log('[HbtConfig] 更新列表数据成功:', {
+        总数: response.data.totalNum,
+        当前页: response.data.pageIndex,
+        每页条数: response.data.pageSize,
+        数据条数: response.data.rows.length
+      })
     } else {
-      message.error('加载配置列表失败')
-      configList.value = []
-      pagination.totalNum = 0
+      message.error(response.msg || t('common.message.loadError'))
+      console.error('[HbtConfig] 获取列表失败:', response.msg)
     }
-  } catch (error) {
-    console.error('加载配置列表失败:', error)
-    message.error('加载配置列表失败')
-    configList.value = []
-    pagination.totalNum = 0
+  } catch (error: any) {
+    console.error('[HbtConfig] 加载配置列表出错:', error)
+    message.error(error.message || t('common.message.loadError'))
   } finally {
     loading.value = false
   }
@@ -284,7 +302,7 @@ const loadConfigList = async () => {
 // 查询处理
 const handleSearch = (values: Record<string, any>) => {
   Object.assign(queryParams, values)
-  pagination.pageNum = 1
+  pagination.pageIndex = 1
   loadConfigList()
 }
 
@@ -304,40 +322,48 @@ const onSelectChange = (keys: (string | number)[]) => {
 
 // 表格变化处理
 const handleTableChange = (pag: any, filters: any, sorter: any) => {
-  pagination.pageNum = pag.pageNum
+  pagination.pageIndex = pag.pageIndex
   pagination.pageSize = pag.pageSize
   loadConfigList()
 }
 
 // 编辑处理
 const handleEdit = async (record: HbtConfig) => {
+  console.log('[HbtConfig] 开始编辑配置:', record)
   try {
     const { data } = await getHbtConfig(record.configId)
+    console.log('[HbtConfig] 获取配置详情响应:', data)
     if (data?.code === 200) {
       modalTitle.value = '编辑配置'
       currentRecord.value = data.data
       modalVisible.value = true
+      console.log('[HbtConfig] 打开编辑模态框')
     } else {
       message.error(data?.msg || '获取配置详情失败')
+      console.error('[HbtConfig] 获取配置详情失败:', data?.msg)
     }
   } catch (error) {
-    console.error('获取配置详情失败:', error)
+    console.error('[HbtConfig] 编辑配置失败:', error)
     message.error('获取配置详情失败')
   }
 }
 
 // 删除处理
 const handleDelete = async (record: HbtConfig) => {
+  console.log('[HbtConfig] 开始删除配置:', record)
   try {
     const { data } = await deleteHbtConfig(record.configId)
+    console.log('[HbtConfig] 删除配置响应:', data)
     if (data?.code === 200) {
       message.success('删除成功')
+      console.log('[HbtConfig] 删除成功')
       loadConfigList()
     } else {
       message.error(data?.msg || '删除失败')
+      console.error('[HbtConfig] 删除失败:', data?.msg)
     }
   } catch (error) {
-    console.error('删除失败:', error)
+    console.error('[HbtConfig] 删除配置失败:', error)
     message.error('删除失败')
   }
 }
@@ -418,17 +444,21 @@ const handleTemplate = async () => {
 
 // 状态变更处理
 const handleStatusChange = async (record: HbtConfig, checked: boolean) => {
+  console.log('[HbtConfig] 开始更新状态:', record, '新状态:', checked)
   try {
     record.statusLoading = true
     const { data } = await updateHbtConfigStatus(record.configId, checked ? 0 : 1)
+    console.log('[HbtConfig] 更新状态响应:', data)
     if (data?.code === 200) {
       message.success('状态更新成功')
       record.status = checked ? 0 : 1
+      console.log('[HbtConfig] 状态更新成功')
     } else {
       message.error(data?.msg || '状态更新失败')
+      console.error('[HbtConfig] 状态更新失败:', data?.msg)
     }
   } catch (error) {
-    console.error('状态更新失败:', error)
+    console.error('[HbtConfig] 更新状态失败:', error)
     message.error('状态更新失败')
   } finally {
     record.statusLoading = false
@@ -528,20 +558,23 @@ const handleBatchRevoke = async () => {
 
 // 表单提交处理
 const handleSubmit = async (formData: HbtConfigCreate | HbtConfigUpdate) => {
+  console.log('[HbtConfig] 开始提交表单:', formData)
   try {
     const { data } = await (currentRecord.value
       ? updateHbtConfig(formData as HbtConfigUpdate)
       : createHbtConfig(formData as HbtConfigCreate))
-      
+    console.log('[HbtConfig] 提交表单响应:', data)
     if (data?.code === 200) {
       message.success(`${currentRecord.value ? '更新' : '创建'}成功`)
       modalVisible.value = false
+      console.log('[HbtConfig] 表单提交成功')
       loadConfigList()
     } else {
       message.error(data?.msg || `${currentRecord.value ? '更新' : '创建'}失败`)
+      console.error('[HbtConfig] 表单提交失败:', data?.msg)
     }
   } catch (error) {
-    console.error(`${currentRecord.value ? '更新' : '创建'}失败:`, error)
+    console.error('[HbtConfig] 提交表单失败:', error)
     message.error(`${currentRecord.value ? '更新' : '创建'}失败`)
   }
 }

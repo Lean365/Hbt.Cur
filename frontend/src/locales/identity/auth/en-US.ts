@@ -11,7 +11,11 @@ export default {
         register: 'Register',
         success: 'Login successful',
         error: 'Login failed',
-        otherLogin: 'Other login methods'
+        otherLogin: 'Other login methods',
+        form: {
+          usernameRequired: 'Please enter your username',
+          passwordRequired: 'Please enter your password'
+        }
       },
       register: {
         title: 'Register',
@@ -32,6 +36,10 @@ export default {
         back: 'Back to login',
         success: 'Password reset email sent',
         error: 'Password reset failed'
+      },
+      info: {
+        loading: 'Loading user information',
+        success: 'User information loaded successfully'
       }
     }
   }

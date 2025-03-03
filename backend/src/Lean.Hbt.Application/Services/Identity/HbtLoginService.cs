@@ -328,12 +328,22 @@ public class HbtLoginService : IHbtLoginService
                 throw new HbtException("JWT配置错误：SecretKey未配置", HbtConstants.ErrorCodes.ServerError);
             }
 
-            var claims = new[]
+            // 获取用户权限
+            var permissions = _userRepository.GetUserPermissionsAsync(user.Id).Result;
+            _logger.LogInformation("用户权限列表: {@Permissions}", permissions);
+
+            var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Name, user.UserName),
                 new Claim("tenant_id", user.TenantId.ToString())
             };
+
+            // 添加权限claims
+            foreach (var permission in permissions)
+            {
+                claims.Add(new Claim("permissions", permission));
+            }
 
             _logger.LogInformation("生成令牌Claims: {@Claims}", claims);
 

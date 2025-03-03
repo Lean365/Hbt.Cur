@@ -11,7 +11,11 @@ export default {
         register: '注册账号',
         success: '登录成功',
         error: '登录失败',
-        otherLogin: '其他登录方式'
+        otherLogin: '其他登录方式',
+        form: {
+          usernameRequired: '请输入用户名',
+          passwordRequired: '请输入密码'
+        }
       },
       register: {
         title: '注册',
@@ -32,6 +36,10 @@ export default {
         back: '返回登录',
         success: '重置密码邮件已发送',
         error: '重置密码失败'
+      },
+      info: {
+        loading: '正在加载用户信息',
+        success: '获取用户信息成功'
       }
     }
   }

@@ -23,7 +23,7 @@ import type {
  * @returns 配置列表
  */
 export function getHbtConfigList(query: HbtConfigQuery) {
-  return request<HbtPageResponse<HbtConfig>>({
+  return request<ApiResponse<HbtPageResponse<HbtConfig>>>({
     url: '/api/HbtConfig',
     method: 'get',
     params: query

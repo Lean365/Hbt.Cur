@@ -32,7 +32,7 @@ namespace Lean.Hbt.WebApi.Middlewares
         {
             try
             {
-                _logger.LogDebug("[租户中间件] 开始处理请求: {Path}", context.Request.Path);
+                _logger.LogInformation("[租户中间件] 开始处理请求: {Path}", context.Request.Path);
 
                 // 1. 从请求头中获取租户ID
                 if (context.Request.Headers.TryGetValue("X-Tenant-Id", out var tenantId))
@@ -40,7 +40,7 @@ namespace Lean.Hbt.WebApi.Middlewares
                     if (long.TryParse(tenantId, out var tid))
                     {
                         HbtTenantContext.CurrentTenantId = tid;
-                        _logger.LogDebug("[租户中间件] 从请求头获取租户ID: {TenantId}", tid);
+                        _logger.LogInformation("[租户中间件] 从请求头获取租户ID: {TenantId}", tid);
                     }
                 }
 
@@ -51,11 +51,11 @@ namespace Lean.Hbt.WebApi.Middlewares
                     if (tenantClaim != null && long.TryParse(tenantClaim.Value, out var tid))
                     {
                         HbtTenantContext.CurrentTenantId = tid;
-                        _logger.LogDebug("[租户中间件] 从JWT获取租户ID: {TenantId}", tid);
+                        _logger.LogInformation("[租户中间件] 从JWT获取租户ID: {TenantId}", tid);
                     }
                 }
 
-                _logger.LogDebug("[租户中间件] 当前租户ID: {TenantId}", HbtTenantContext.CurrentTenantId);
+                _logger.LogInformation("[租户中间件] 当前租户ID: {TenantId}", HbtTenantContext.CurrentTenantId);
 
                 await _next(context);
             }
@@ -68,7 +68,7 @@ namespace Lean.Hbt.WebApi.Middlewares
             {
                 // 请求结束时清除租户上下文
                 HbtTenantContext.Clear();
-                _logger.LogDebug("[租户中间件] 清除租户上下文");
+                _logger.LogInformation("[租户中间件] 清除租户上下文");
             }
         }
     }

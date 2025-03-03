@@ -129,8 +129,8 @@ import { DEVICE_INFO_LENGTH, HbtDeviceType, HbtOsType, HbtBrowserType } from '@/
 // API和组件导入
 import { getSalt } from '@/api/identity/auth'
 import { getCaptcha, verifyCaptcha } from '@/api/security/captcha'
-import SliderCaptcha from '@/components/base/SliderCaptcha.vue'
-import HeaderLoginBar from '@/components/navigation/HeaderLoginBar.vue'
+import SliderCaptcha from '@/components/Base/SliderCaptcha.vue'
+import HeaderLoginBar from '@/components/Navigation/HeaderLoginBar.vue'
 import { PasswordEncryptor } from '@/utils/crypto'
 import { useUserStore } from '@/stores/user'
 import { useMenuStore } from '@/stores/menu'
