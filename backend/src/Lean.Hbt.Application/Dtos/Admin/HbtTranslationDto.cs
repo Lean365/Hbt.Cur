@@ -10,6 +10,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Common.Models;
+using Mapster;
 
 namespace Lean.Hbt.Application.Dtos.Admin
 {
@@ -21,6 +22,7 @@ namespace Lean.Hbt.Application.Dtos.Admin
         /// <summary>
         /// 翻译ID
         /// </summary>
+        [AdaptMember("Id")]
         public long TranslationId { get; set; }
 
         /// <summary>
@@ -146,6 +148,7 @@ namespace Lean.Hbt.Application.Dtos.Admin
         /// 翻译ID
         /// </summary>
         [Required(ErrorMessage = "翻译ID不能为空")]
+        [AdaptMember("Id")]
         public long TranslationId { get; set; }
 
         /// <summary>
@@ -317,6 +320,7 @@ namespace Lean.Hbt.Application.Dtos.Admin
         /// 翻译ID
         /// </summary>
         [Required(ErrorMessage = "翻译ID不能为空")]
+        [AdaptMember("Id")]
         public long TranslationId { get; set; }
 
         /// <summary>

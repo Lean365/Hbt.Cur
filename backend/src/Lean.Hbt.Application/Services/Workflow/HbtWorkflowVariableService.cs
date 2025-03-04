@@ -1,5 +1,5 @@
 //===================================================================
-// 项目名 : Lean.Hbt 
+// 项目名 : Lean.Hbt
 // 文件名 : HbtWorkflowVariableService.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-23 12:00
@@ -9,19 +9,14 @@
 
 #nullable enable
 
-using System.Linq.Expressions;
 using Lean.Hbt.Application.Dtos.Workflow;
 using Lean.Hbt.Common.Exceptions;
-using Lean.Hbt.Common.Models;
+using Lean.Hbt.Common.Helpers;
 using Lean.Hbt.Domain.Entities.Workflow;
-using Lean.Hbt.Domain.IServices;
 using Lean.Hbt.Domain.IServices.Admin;
 using Lean.Hbt.Domain.Repositories;
-using Mapster;
-using SqlSugar;
 using Lean.Hbt.Domain.Utils;
-using Lean.Hbt.Common.Helpers;
-using System.IO;
+using SqlSugar;
 
 namespace Lean.Hbt.Application.Services.Workflow
 {
@@ -176,7 +171,7 @@ namespace Lean.Hbt.Application.Services.Workflow
             if (input == null)
                 throw new ArgumentNullException(nameof(input));
 
-            var variable = await _variableRepository.GetByIdAsync(input.Id);
+            var variable = await _variableRepository.GetByIdAsync(input.WorkflowVariableId);
             if (variable == null)
                 throw new HbtException(_localization.L("WorkflowVariable.NotFound"));
 
@@ -347,7 +342,7 @@ namespace Lean.Hbt.Application.Services.Workflow
         public async Task<string> GetVariableValueAsync(long workflowInstanceId, string variableName)
         {
             var variable = await _variableRepository.SqlSugarClient.Queryable<HbtWorkflowVariable>()
-                .FirstAsync(x => x.WorkflowInstanceId == workflowInstanceId && 
+                .FirstAsync(x => x.WorkflowInstanceId == workflowInstanceId &&
                                x.VariableName == variableName);
 
             if (variable == null)
@@ -367,14 +362,14 @@ namespace Lean.Hbt.Application.Services.Workflow
         public async Task<bool> SetVariableValueAsync(long workflowInstanceId, string variableName, string variableValue)
         {
             var variable = await _variableRepository.SqlSugarClient.Queryable<HbtWorkflowVariable>()
-                .FirstAsync(x => x.WorkflowInstanceId == workflowInstanceId && 
+                .FirstAsync(x => x.WorkflowInstanceId == workflowInstanceId &&
                                x.VariableName == variableName);
 
             if (variable == null)
                 throw new HbtException(_localization.L("WorkflowVariable.NotFound"));
 
             variable.VariableValue = variableValue;
-            
+
             var result = await _variableRepository.UpdateAsync(variable);
             if (result <= 0)
                 throw new HbtException(_localization.L("WorkflowVariable.UpdateValue.Failed"));
@@ -383,4 +378,4 @@ namespace Lean.Hbt.Application.Services.Workflow
             return true;
         }
     }
-} 
+}

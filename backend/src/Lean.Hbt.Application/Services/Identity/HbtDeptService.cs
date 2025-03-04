@@ -7,22 +7,14 @@
 // 描述   : 部门服务实现
 //===================================================================
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Linq.Expressions;
-using System.IO;
-using Mapster;
-using Microsoft.Extensions.Logging;
-using SqlSugar;
 using Lean.Hbt.Application.Dtos.Identity;
 using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Common.Exceptions;
-using Lean.Hbt.Common.Models;
 using Lean.Hbt.Common.Helpers;
 using Lean.Hbt.Domain.Entities.Identity;
 using Lean.Hbt.Domain.Repositories;
+using SqlSugar;
 
 namespace Lean.Hbt.Application.Services.Identity
 {
@@ -56,10 +48,10 @@ namespace Lean.Hbt.Application.Services.Identity
         {
             // 1.构建查询条件
             var predicate = Expressionable.Create<HbtDept>();
-            
+
             if (!string.IsNullOrEmpty(query.DeptName))
                 predicate.And(d => d.DeptName.Contains(query.DeptName));
-                
+
             if (query.Status.HasValue)
                 predicate.And(d => d.Status == query.Status.Value);
 
@@ -148,20 +140,20 @@ namespace Lean.Hbt.Application.Services.Identity
         public async Task<bool> UpdateAsync(HbtDeptUpdateDto input)
         {
             // 1.获取部门
-            var dept = await _deptRepository.GetByIdAsync(input.Id);
+            var dept = await _deptRepository.GetByIdAsync(input.DeptId);
             if (dept == null)
                 throw new HbtException("部门不存在");
 
             // 2.检查部门名称是否存在
             var exists = await _deptRepository.AsQueryable()
-                .AnyAsync(d => d.Id != input.Id && d.DeptName == input.DeptName && d.ParentId == input.ParentId);
+                .AnyAsync(d => d.Id != input.DeptId && d.DeptName == input.DeptName && d.ParentId == input.ParentId);
             if (exists)
                 throw new HbtException("部门名称已存在");
 
             // 3.检查上级部门是否正确
             if (input.ParentId.HasValue)
             {
-                if (input.ParentId.Value == input.Id)
+                if (input.ParentId.Value == input.DeptId)
                     throw new HbtException("上级部门不能是自己");
 
                 var parent = await _deptRepository.GetByIdAsync(input.ParentId.Value);
@@ -169,7 +161,7 @@ namespace Lean.Hbt.Application.Services.Identity
                     throw new HbtException("上级部门不存在");
 
                 // 检查是否会形成循环
-                if (await HasCircularReference(input.Id, input.ParentId.Value))
+                if (await HasCircularReference(input.DeptId, input.ParentId.Value))
                     throw new HbtException("不能选择子部门作为上级部门");
             }
 
@@ -272,7 +264,7 @@ namespace Lean.Hbt.Application.Services.Identity
         /// </summary>
         public async Task<bool> UpdateStatusAsync(HbtDeptStatusDto input)
         {
-            var dept = await _deptRepository.GetByIdAsync(input.Id);
+            var dept = await _deptRepository.GetByIdAsync(input.DeptId);
             if (dept == null)
                 throw new HbtException("部门不存在");
 
@@ -287,7 +279,7 @@ namespace Lean.Hbt.Application.Services.Identity
         private void BuildDeptTree(HbtDeptDto parent, List<HbtDeptDto> depts)
         {
             parent.Children = depts
-                .Where(d => d.ParentId == parent.Id)
+                .Where(d => d.ParentId == parent.DeptId)
                 .OrderBy(d => d.OrderNum)
                 .ToList();
 
@@ -317,4 +309,4 @@ namespace Lean.Hbt.Application.Services.Identity
             return false;
         }
     }
-} 
+}

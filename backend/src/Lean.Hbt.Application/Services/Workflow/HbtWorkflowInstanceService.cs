@@ -1,5 +1,5 @@
 //===================================================================
-// 项目名 : Lean.Hbt 
+// 项目名 : Lean.Hbt
 // 文件名 : HbtWorkflowInstanceService.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-23 12:00
@@ -173,7 +173,7 @@ namespace Lean.Hbt.Application.Services.Workflow
             if (input == null)
                 throw new ArgumentNullException(nameof(input));
 
-            var instance = await _instanceRepository.GetByIdAsync(input.Id);
+            var instance = await _instanceRepository.GetByIdAsync(input.WorkflowInstanceId);
             if (instance == null)
                 throw new HbtException(_localization.L("WorkflowInstance.NotFound"));
 
@@ -228,8 +228,8 @@ namespace Lean.Hbt.Application.Services.Workflow
                 throw new ArgumentNullException(nameof(ids));
 
             // 检查是否有活动状态的实例
-            var activeInstances = await _instanceRepository.GetListAsync(x => 
-                ids.Contains(x.Id) && 
+            var activeInstances = await _instanceRepository.GetListAsync(x =>
+                ids.Contains(x.Id) &&
                 x.Status != Common.Enums.HbtWorkflowInstanceStatus.Draft &&
                 x.Status != Common.Enums.HbtWorkflowInstanceStatus.Terminated);
 
@@ -338,7 +338,7 @@ namespace Lean.Hbt.Application.Services.Workflow
 
             instance.Status = input.Status;
             instance.CurrentNodeId = input.CurrentNodeId;
-            
+
             var result = await _instanceRepository.UpdateAsync(instance);
             if (result <= 0)
                 throw new HbtException(_localization.L("WorkflowInstance.UpdateStatus.Failed"));
@@ -417,7 +417,7 @@ namespace Lean.Hbt.Application.Services.Workflow
 
             instance.Status = Common.Enums.HbtWorkflowInstanceStatus.Terminated;
             instance.Remark = reason;
-            
+
             var result = await _instanceRepository.UpdateAsync(instance);
             if (result <= 0)
                 throw new HbtException(_localization.L("WorkflowInstance.Terminate.Failed"));
@@ -426,4 +426,4 @@ namespace Lean.Hbt.Application.Services.Workflow
             return true;
         }
     }
-} 
+}

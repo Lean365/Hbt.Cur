@@ -10,6 +10,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using Lean.Hbt.Common.Models;
+using Mapster;
 
 namespace Lean.Hbt.Application.Dtos.Audit
 {
@@ -38,6 +39,12 @@ namespace Lean.Hbt.Application.Dtos.Audit
             ErrorMsg = string.Empty;
             CreateTime = DateTime.Now;
         }
+
+        /// <summary>
+        /// ID
+        /// </summary>
+        [AdaptMember("Id")]
+        public long OperLogId { get; set; }
 
         /// <summary>
         /// 用户ID

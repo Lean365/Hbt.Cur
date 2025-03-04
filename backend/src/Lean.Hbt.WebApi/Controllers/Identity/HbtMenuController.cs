@@ -11,11 +11,8 @@ using Lean.Hbt.Application.Dtos.Identity;
 using Lean.Hbt.Application.Services.Identity;
 using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Domain.IServices.Admin;
-using Lean.Hbt.Common.Models;
-using Lean.Hbt.Common.Extensions;
 using Lean.Hbt.Domain.IServices.Tenant;
 using Lean.Hbt.Infrastructure.Security.Attributes;
-using Microsoft.Extensions.Logging;
 
 namespace Lean.Hbt.WebApi.Controllers.Identity
 {
@@ -185,7 +182,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         {
             var input = new HbtMenuStatusDto
             {
-                Id = menuId,
+                MenuId = menuId,
                 Status = status
             };
             var result = await _menuService.UpdateStatusAsync(input);
@@ -204,7 +201,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         {
             var input = new HbtMenuOrderDto
             {
-                Id = menuId,
+                MenuId = menuId,
                 OrderNum = orderNum
             };
             var result = await _menuService.UpdateOrderAsync(input);
@@ -240,7 +237,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
                 return Success(new List<HbtMenuDto>());
             }
 
-            try 
+            try
             {
                 var menus = await _menuService.GetCurrentUserMenusAsync(uid);
                 _logger.LogInformation("[菜单服务] 获取菜单成功: Count={Count}", menus?.Count ?? 0);

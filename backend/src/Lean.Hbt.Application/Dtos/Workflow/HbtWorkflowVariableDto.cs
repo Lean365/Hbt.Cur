@@ -1,6 +1,6 @@
 //===================================================================
-// 项目名 : Lean.Hbt 
-// 文件名 : HbtWorkflowVariableDto.cs 
+// 项目名 : Lean.Hbt
+// 文件名 : HbtWorkflowVariableDto.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-23 12:00
 // 版本号 : V1.0.0
@@ -23,7 +23,8 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 变量ID
         /// </summary>
-        public long Id { get; set; }
+        [AdaptMember("Id")]
+        public long WorkflowVariableId { get; set; }
 
         /// <summary>
         /// 工作流实例ID
@@ -173,7 +174,8 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 变量ID
         /// </summary>
-        public long Id { get; set; }
+        [AdaptMember("Id")]
+        public long WorkflowVariableId { get; set; }
 
         /// <summary>
         /// 变量值
@@ -305,4 +307,4 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// </summary>
         public string Remark { get; set; }
     }
-} 
+}

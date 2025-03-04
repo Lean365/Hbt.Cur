@@ -109,14 +109,21 @@ INSERT INTO hbt_id_menu (
  'admin', GETDATE(), 'admin', GETDATE(),
  NULL, NULL, 0),
 
-('字典管理', 'menu.admin.dict', @AdminMenuId, 3,
- 'dict', 'admin/dict/index', NULL, 0,
+('字典类型', 'menu.admin.dicttype', @AdminMenuId, 3,
+ 'dicttype', 'admin/dicttype/index', NULL, 0,
  0, 1, 0, 0,
- 'admin:dict:list', 'OrderedListOutlined', 0, '字典管理菜单',
+ 'admin:dicttype:list', 'BookOutlined', 0, '字典类型菜单',
  'admin', GETDATE(), 'admin', GETDATE(),
  NULL, NULL, 0),
 
-('翻译管理', 'menu.admin.translation', @AdminMenuId, 4,
+('字典数据', 'menu.admin.dictdata', @AdminMenuId, 4,
+ 'dictdata', 'admin/dictdata/index', NULL, 0,
+ 0, 1, 0, 0,
+ 'admin:dictdata:list', 'DatabaseOutlined', 0, '字典数据菜单',
+ 'admin', GETDATE(), 'admin', GETDATE(),
+ NULL, NULL, 0),
+
+('翻译管理', 'menu.admin.translation', @AdminMenuId, 5,
  'translation', 'admin/translation/index', NULL, 0,
  0, 1, 0, 0,
  'admin:translation:list', 'GlobalOutlined', 0, '翻译管理菜单',
@@ -396,7 +403,8 @@ INSERT INTO hbt_id_menu (
  '', NULL, NULL, 0,
  0, 2, 0, 0,
  'identity:role:export', NULL, 0, '角色管理导出按钮',
- GETDATE(), GETDATE());
+ 'admin', GETDATE(), 'admin', GETDATE(),
+ NULL, NULL, 0);
 
 -- 插入菜单管理按钮
 INSERT INTO hbt_id_menu (

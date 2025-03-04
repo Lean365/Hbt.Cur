@@ -1,34 +1,36 @@
+<!-- 
 //===================================================================
 // 项目名 : Lean.Hbt
 // 文件名 : index.vue  
 // 创建者 : Claude
 // 创建时间: 2024-03-20
 // 版本号 : v1.0.0
-// 描述    : 通用分页组件
+// 描述    : 统一封装的通用分页组件
 //===================================================================
+-->
 
 <template>
-  <div class="hbt-pagination" :class="[Align, { 'hbt-pagination-mini': Small }]">
+  <div class="hbt-pagination" :class="[align, { 'hbt-pagination-mini': small }]">
     <a-pagination
       v-model:current="currentPage"
       v-model:pageSize="pageSize"
-      :total="Total"
-      :show-total="ShowTotal"
-      :show-size-changer="ShowSizeChanger"
-      :show-quick-jumper="ShowQuickJumper"
-      :disabled="Disabled"
-      :page-size-options="PageSizeOptions"
-      :size="Size"
-      :simple="Simple"
-      :responsive="Responsive"
-      :hide-on-single-page="HideOnSinglePage"
-      :show-less-items="ShowLessItems"
-      :item-render="ItemRender"
-      :default-current="DefaultCurrent"
-      :default-page-size="DefaultPageSize"
-      @change="HandleChange"
-      @showSizeChange="HandleSizeChange"
-      @jumpTo="HandleJumpTo"
+      :total="total"
+      :show-total="showTotal"
+      :show-size-changer="showSizeChanger"
+      :show-quick-jumper="showQuickJumper"
+      :disabled="disabled"
+      :page-size-options="pageSizeOptions"
+      :size="size"
+      :simple="simple"
+      :responsive="responsive"
+      :hide-on-single-page="hideOnSinglePage"
+      :show-less-items="showLessItems"
+      :item-render="itemRender"
+      :default-current="defaultCurrent"
+      :default-page-size="defaultPageSize"
+      @change="handleChange"
+      @showSizeChange="handleSizeChange"
+      @jumpTo="handleJumpTo"
       role="navigation"
       aria-label="分页导航"
     >
@@ -53,66 +55,66 @@ import type { VNode } from 'vue'
 /**
  * 分页组件属性接口
  */
-interface IHbtPaginationProps {
+interface HbtPaginationProps {
   /** 当前页码 */
-  Current?: number;
+  current?: number;
   /** 每页条数 */
-  PageSize?: number;
+  pageSize?: number;
   /** 数据总数 */
-  Total: number;
+  total: number;
   /** 是否显示快速跳转 */
-  ShowQuickJumper?: boolean;
+  showQuickJumper?: boolean;
   /** 是否显示每页条数选择器 */
-  ShowSizeChanger?: boolean;
+  showSizeChanger?: boolean;
   /** 是否显示总数 */
-  ShowTotal?: (total: number, range: [number, number]) => VNode;
+  showTotal?: (total: number, range: [number, number]) => VNode;
   /** 是否禁用 */
-  Disabled?: boolean;
+  disabled?: boolean;
   /** 每页条数选项 */
-  PageSizeOptions?: string[];
+  pageSizeOptions?: string[];
   /** 组件大小 */
-  Size?: 'small' | 'default';
+  size?: 'small' | 'default';
   /** 是否使用简单模式 */
-  Simple?: boolean;
+  simple?: boolean;
   /** 对齐方式 */
-  Align?: 'left' | 'center' | 'right';
+  align?: 'left' | 'center' | 'right';
   /** 是否显示较少页面内容 */
-  Small?: boolean;
+  small?: boolean;
   /** 用于自定义页码的结构 */
-  ItemRender?: (opt: { page: number; type: 'page' | 'prev' | 'next' | 'jump-prev' | 'jump-next'; originalElement: any }) => any;
+  itemRender?: (opt: { page: number; type: 'page' | 'prev' | 'next' | 'jump-prev' | 'jump-next'; originalElement: any }) => any;
   /** 当添加该属性时，显示为简单分页 */
-  Responsive?: boolean;
+  responsive?: boolean;
   /** 指定每页可以显示多少条 */
-  DefaultPageSize?: number;
+  defaultPageSize?: number;
   /** 指定默认的当前页数 */
-  DefaultCurrent?: number;
+  defaultCurrent?: number;
   /** 只有一页时是否隐藏分页器 */
-  HideOnSinglePage?: boolean;
+  hideOnSinglePage?: boolean;
   /** 当为「small」时，是否显示较少页面内容 */
-  ShowLessItems?: boolean;
+  showLessItems?: boolean;
   /** 主题模式 */
-  Theme?: 'light' | 'dark';
+  theme?: 'light' | 'dark';
 }
 
-const props = withDefaults(defineProps<IHbtPaginationProps>(), {
-  Current: 1,
-  PageSize: 10,
-  ShowQuickJumper: true,
-  ShowSizeChanger: true,
-  ShowTotal: undefined,
-  Disabled: false,
-  PageSizeOptions: () => ['10', '20', '50', '100'],
-  Size: 'default',
-  Simple: false,
-  Align: 'right',
-  Small: false,
-  ItemRender: undefined,
-  Responsive: false,
-  DefaultPageSize: 10,
-  DefaultCurrent: 1,
-  HideOnSinglePage: false,
-  ShowLessItems: false,
-  Theme: 'light'
+const props = withDefaults(defineProps<HbtPaginationProps>(), {
+  current: 1,
+  pageSize: 10,
+  showQuickJumper: true,
+  showSizeChanger: true,
+  showTotal: undefined,
+  disabled: false,
+  pageSizeOptions: () => ['10', '20', '50', '100'],
+  size: 'default',
+  simple: false,
+  align: 'right',
+  small: false,
+  itemRender: undefined,
+  responsive: false,
+  defaultPageSize: 10,
+  defaultCurrent: 1,
+  hideOnSinglePage: false,
+  showLessItems: false,
+  theme: 'light'
 })
 
 /**
@@ -123,12 +125,12 @@ const emit = defineEmits<{
    * 更新当前页码事件
    * @param page 新的页码
    */
-  (e: 'update:Current', page: number): void;
+  (e: 'update:current', page: number): void;
   /**
    * 更新每页条数事件
    * @param size 新的每页条数
    */
-  (e: 'update:PageSize', size: number): void;
+  (e: 'update:pageSize', size: number): void;
   /**
    * 分页变更事件
    * @param page 新的页码
@@ -140,36 +142,36 @@ const emit = defineEmits<{
    * @param page 改变后的页码
    * @param pageSize 每页条数
    */
-  (e: 'PageChange', page: number, pageSize: number): void;
+  (e: 'pageChange', page: number, pageSize: number): void;
   /**
    * 每页条数改变的回调
    * @param size 改变后的每页条数
    * @param current 当前页码
    */
-  (e: 'SizeChange', size: number, current: number): void;
+  (e: 'sizeChange', size: number, current: number): void;
   /**
    * 快速跳转时的回调
    * @param page 跳转的页码
    */
-  (e: 'JumpTo', page: number): void;
+  (e: 'jumpTo', page: number): void;
 }>()
 
 // 使用vue-i18n
 const { t } = useI18n()
 
 // 当前页码
-const currentPage = ref(props.Current)
-const pageSize = ref(props.PageSize)
+const currentPage = ref(props.current)
+const pageSize = ref(props.pageSize)
 
 // 计算主题类名
-const themeClass = computed(() => props.Theme === 'dark' ? 'dark' : '')
+const themeClass = computed(() => props.theme === 'dark' ? 'dark' : '')
 
 // 监听props变化
-watch(() => props.Current, (val) => {
+watch(() => props.current, (val) => {
   currentPage.value = val
 })
 
-watch(() => props.PageSize, (val) => {
+watch(() => props.pageSize, (val) => {
   pageSize.value = val
 })
 
@@ -178,11 +180,11 @@ watch(() => props.PageSize, (val) => {
  * @param page 新的页码
  * @param size 新的每页条数
  */
-const HandleChange = (page: number, size: number) => {
-  emit('update:Current', page)
-  emit('update:PageSize', size)
+const handleChange = (page: number, size: number) => {
+  emit('update:current', page)
+  emit('update:pageSize', size)
   emit('change', page, size)
-  emit('PageChange', page, size)
+  emit('pageChange', page, size)
 }
 
 /**
@@ -190,20 +192,43 @@ const HandleChange = (page: number, size: number) => {
  * @param current 当前页码
  * @param size 新的每页条数
  */
-const HandleSizeChange = (current: number, size: number) => {
-  emit('update:PageSize', size)
+const handleSizeChange = (current: number, size: number) => {
+  emit('update:pageSize', size)
   emit('change', current, size)
-  emit('SizeChange', size, current)
+  emit('sizeChange', size, current)
 }
 
 /**
  * 快速跳转事件处理
  * @param page 跳转的页码
  */
-const HandleJumpTo = (page: number) => {
-  emit('JumpTo', page)
+const handleJumpTo = (page: number) => {
+  emit('jumpTo', page)
 }
 </script>
 
 <style lang="less" scoped>
+.hbt-pagination {
+  margin: 16px 0;
+  padding: 0;
+  display: flex;
+
+  &.left {
+    justify-content: flex-start;
+  }
+
+  &.center {
+    justify-content: center;
+  }
+
+  &.right {
+    justify-content: flex-end;
+  }
+
+  &.hbt-pagination-mini {
+    :deep(.ant-pagination-options) {
+      margin-left: 8px;
+    }
+  }
+}
 </style> 

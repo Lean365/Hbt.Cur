@@ -288,7 +288,7 @@ export default {
       systemError: '系统错误',
       timeout: '请求超时',
       invalidResponse: '响应数据格式错误',
-      backendNotStarted: '后端服务未启动，请先启动后端服务',
+      backendNotStarted: '后端服务未启动，请检查服务状态',
       invalidRequest: '请求参数错误',
       unauthorized: '未授权，请重新登录',
       forbidden: '拒绝访问',
@@ -316,5 +316,23 @@ export default {
     reset: '重置',
     confirm: '确认',
     back: '返回'
+  },
+
+  select: {
+    placeholder: '请选择',
+    loadMore: '加载更多',
+    loading: '加载中...',
+    notFound: '暂无数据',
+    selected: '已选择 {count} 项',
+    selectedTotal: '共 {total} 项',
+    clear: '清空',
+    search: '搜索',
+    all: '全部',
+    // 错误消息
+    loadError: '加载数据失败',
+    searchError: '搜索失败',
+    networkError: '网络连接失败',
+    serverError: '服务器错误',
+    unknownError: '未知错误'
   }
 } 

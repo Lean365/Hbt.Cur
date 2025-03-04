@@ -7,26 +7,15 @@
 // 描述   : 菜单服务实现
 //===================================================================
 
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Collections.Generic;
 using System.Linq.Expressions;
-using Lean.Hbt.Common.Models;
-using Lean.Hbt.Common.Enums;
-using Lean.Hbt.Domain.Entities.Identity;
 using Lean.Hbt.Application.Dtos.Identity;
+using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Common.Exceptions;
-using Lean.Hbt.Common.Utils;
-using Lean.Hbt.Domain.IServices;
+using Lean.Hbt.Common.Helpers;
+using Lean.Hbt.Domain.Entities.Identity;
 using Lean.Hbt.Domain.Repositories;
 using Lean.Hbt.Domain.Utils;
 using SqlSugar;
-using Mapster;
-using SqlSugar.Extensions;
-using System.IO;
-using Microsoft.Extensions.Logging;
-using Lean.Hbt.Common.Helpers;
 
 namespace Lean.Hbt.Application.Services.Identity
 {
@@ -108,7 +97,7 @@ namespace Lean.Hbt.Application.Services.Identity
         {
             // 验证菜单名称是否已存在
             await HbtValidateUtils.ValidateFieldExistsAsync(_menuRepository, "MenuName", input.MenuName);
-            
+
             // 验证翻译键是否已存在
             if (!string.IsNullOrEmpty(input.TransKey))
                 await HbtValidateUtils.ValidateFieldExistsAsync(_menuRepository, "TransKey", input.TransKey);
@@ -145,9 +134,9 @@ namespace Lean.Hbt.Application.Services.Identity
         /// <returns>返回是否更新成功</returns>
         public async Task<bool> UpdateAsync(HbtMenuUpdateDto input)
         {
-            var menu = await _menuRepository.GetByIdAsync(input.Id);
+            var menu = await _menuRepository.GetByIdAsync(input.MenuId);
             if (menu == null)
-                throw new HbtException($"菜单不存在: {input.Id}");
+                throw new HbtException($"菜单不存在: {input.MenuId}");
 
             // 验证菜单名称是否已存在
             if (menu.MenuName != input.MenuName)
@@ -158,7 +147,7 @@ namespace Lean.Hbt.Application.Services.Identity
                 await HbtValidateUtils.ValidateFieldExistsAsync(_menuRepository, "TransKey", input.TransKey);
 
             // 检查是否存在循环引用
-            if (input.ParentId.HasValue && input.ParentId.Value == input.Id)
+            if (input.ParentId.HasValue && input.ParentId.Value == input.MenuId)
                 throw new HbtException("父菜单不能是自己");
 
             // 更新菜单信息
@@ -316,9 +305,9 @@ namespace Lean.Hbt.Application.Services.Identity
         /// <returns>返回是否更新成功</returns>
         public async Task<bool> UpdateStatusAsync(HbtMenuStatusDto input)
         {
-            var menu = await _menuRepository.GetByIdAsync(input.Id);
+            var menu = await _menuRepository.GetByIdAsync(input.MenuId);
             if (menu == null)
-                throw new HbtException($"菜单不存在: {input.Id}");
+                throw new HbtException($"菜单不存在: {input.MenuId}");
 
             menu.Status = input.Status;
             var result = await _menuRepository.UpdateAsync(menu);
@@ -333,9 +322,9 @@ namespace Lean.Hbt.Application.Services.Identity
         /// <returns>返回是否更新成功</returns>
         public async Task<bool> UpdateOrderAsync(HbtMenuOrderDto input)
         {
-            var menu = await _menuRepository.GetByIdAsync(input.Id);
+            var menu = await _menuRepository.GetByIdAsync(input.MenuId);
             if (menu == null)
-                throw new HbtException($"菜单不存在: {input.Id}");
+                throw new HbtException($"菜单不存在: {input.MenuId}");
 
             menu.OrderNum = input.OrderNum;
             var result = await _menuRepository.UpdateAsync(menu);
@@ -364,7 +353,7 @@ namespace Lean.Hbt.Application.Services.Identity
                 // 转换为DTO
                 var menuDtos = allMenus.Select(m => new HbtMenuDto
                 {
-                    Id = m.Id,
+                    MenuId = m.Id,
                     MenuName = m.MenuName,
                     TransKey = m.TransKey,
                     ParentId = m.ParentId,
@@ -385,7 +374,7 @@ namespace Lean.Hbt.Application.Services.Identity
 
                 // 构建树形结构
                 var rootMenus = new List<HbtMenuDto>();
-                var menuDict = menuDtos.ToDictionary(m => m.Id);
+                var menuDict = menuDtos.ToDictionary(m => m.MenuId);
 
                 foreach (var menu in menuDtos)
                 {
@@ -450,16 +439,16 @@ namespace Lean.Hbt.Application.Services.Identity
                 var menuIds = roleMenus.Select(x => x.MenuId).Distinct().ToList();
 
                 // 获取菜单,过滤掉按钮类型的菜单
-                var menus = await _menuRepository.GetListAsync(x => 
-                    menuIds.Contains(x.Id) && 
-                    x.Status == HbtStatus.Normal && 
+                var menus = await _menuRepository.GetListAsync(x =>
+                    menuIds.Contains(x.Id) &&
+                    x.Status == HbtStatus.Normal &&
                     x.Visible == HbtVisible.Show &&
                     x.MenuType != HbtMenuType.Button);
 
                 // 转换为DTO并构建树形结构
                 var menuDtos = menus.Select(m => new HbtMenuDto
                 {
-                    Id = m.Id,
+                    MenuId = m.Id,
                     MenuName = m.MenuName,
                     TransKey = m.TransKey,
                     ParentId = m.ParentId,
@@ -480,7 +469,7 @@ namespace Lean.Hbt.Application.Services.Identity
 
                 // 构建树形结构
                 var rootMenus = new List<HbtMenuDto>();
-                var menuDict = menuDtos.ToDictionary(m => m.Id);
+                var menuDict = menuDtos.ToDictionary(m => m.MenuId);
 
                 foreach (var menu in menuDtos)
                 {
@@ -505,4 +494,4 @@ namespace Lean.Hbt.Application.Services.Identity
             }
         }
     }
-} 
+}

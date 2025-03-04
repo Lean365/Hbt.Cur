@@ -1,5 +1,5 @@
 //===================================================================
-// 项目名 : Lean.Hbt 
+// 项目名 : Lean.Hbt
 // 文件名 : HbtWorkflowNodeService.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-23 12:00
@@ -9,20 +9,13 @@
 
 #nullable enable
 
-using System.Linq.Expressions;
 using Lean.Hbt.Application.Dtos.Workflow;
-using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Common.Exceptions;
-using Lean.Hbt.Common.Models;
+using Lean.Hbt.Common.Helpers;
 using Lean.Hbt.Domain.Entities.Workflow;
-using Lean.Hbt.Domain.IServices;
 using Lean.Hbt.Domain.IServices.Admin;
 using Lean.Hbt.Domain.Repositories;
-using Lean.Hbt.Common.Helpers;
-using Mapster;
 using SqlSugar;
-using Microsoft.Extensions.Options;
-using Lean.Hbt.Common.Options;
 
 namespace Lean.Hbt.Application.Services.Workflow
 {
@@ -142,7 +135,7 @@ namespace Lean.Hbt.Application.Services.Workflow
             if (input == null)
                 throw new ArgumentNullException(nameof(input));
 
-            var node = await _nodeRepository.GetByIdAsync(input.Id);
+            var node = await _nodeRepository.GetByIdAsync(input.WorkflowNodeId);
             if (node == null)
                 throw new HbtException(_localization.L("WorkflowNode.NotFound"));
 
@@ -317,4 +310,4 @@ namespace Lean.Hbt.Application.Services.Workflow
             return true;
         }
     }
-} 
+}

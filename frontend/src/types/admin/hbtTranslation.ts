@@ -14,7 +14,7 @@ import type { HbtStatus } from '@/types/base'
  */
 export interface HbtTranslation {
   /** 翻译ID */
-  id: number
+  translationId: number
   /** 语言代码 */
   langCode: string
   /** 模块名称 */

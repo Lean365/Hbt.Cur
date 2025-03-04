@@ -12,6 +12,7 @@ using System.ComponentModel.DataAnnotations;
 using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Common.Models;
 using System.Collections.Generic;
+using Mapster;
 
 namespace Lean.Hbt.Application.Dtos.Identity
 {
@@ -44,6 +45,7 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// <summary>
         /// 用户ID
         /// </summary>
+        [AdaptMember("Id")]
         public long UserId { get; set; }
 
         /// <summary>

@@ -10,6 +10,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using Lean.Hbt.Common.Models;
+using Mapster;
 
 namespace Lean.Hbt.Application.Dtos.Audit
 {
@@ -39,6 +40,12 @@ namespace Lean.Hbt.Application.Dtos.Audit
             AfterData = string.Empty;
             CreateTime = DateTime.Now;
         }
+
+        /// <summary>
+        /// ID
+        /// </summary>
+        [AdaptMember("Id")]
+        public long DbDiffLogId { get; set; }
 
         /// <summary>
         /// 表名

@@ -35,9 +35,9 @@ namespace Lean.Hbt.Application.Services.Admin
         /// <summary>
         /// 获取字典数据详情
         /// </summary>
-        /// <param name="dictDataId">字典数据ID</param>
+        /// <param name="id">字典数据ID</param>
         /// <returns>字典数据详情</returns>
-        Task<HbtDictDataDto> GetAsync(long dictDataId);
+        Task<HbtDictDataDto> GetAsync(long id);
 
         /// <summary>
         /// 创建字典数据

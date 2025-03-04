@@ -1,5 +1,5 @@
 //===================================================================
-// 项目名 : Lean.Hbt 
+// 项目名 : Lean.Hbt
 // 文件名 : HbtWorkflowHistoryService.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-23 12:00
@@ -13,14 +13,10 @@ using System.Linq.Expressions;
 using Lean.Hbt.Application.Dtos.Workflow;
 using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Common.Exceptions;
-using Lean.Hbt.Common.Models;
+using Lean.Hbt.Common.Helpers;
 using Lean.Hbt.Domain.Entities.Workflow;
-using Lean.Hbt.Domain.IServices;
 using Lean.Hbt.Domain.IServices.Admin;
 using Lean.Hbt.Domain.Repositories;
-using Lean.Hbt.Domain.IServices;
-using Lean.Hbt.Common.Helpers;
-using Mapster;
 using SqlSugar;
 
 namespace Lean.Hbt.Application.Services.Workflow
@@ -134,7 +130,7 @@ namespace Lean.Hbt.Application.Services.Workflow
             if (input == null)
                 throw new ArgumentNullException(nameof(input));
 
-            var history = await _historyRepository.GetByIdAsync(input.Id);
+            var history = await _historyRepository.GetByIdAsync(input.WorkflowHistoryId);
             if (history == null)
                 throw new HbtException(_localization.L("WorkflowHistory.NotFound"));
 
@@ -316,4 +312,4 @@ namespace Lean.Hbt.Application.Services.Workflow
             return result;
         }
     }
-} 
+}

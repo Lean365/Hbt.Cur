@@ -111,6 +111,22 @@ const loadView = (view: string) => {
 // 基础路由
 export const constantRoutes: RouteRecordRaw[] = [
   {
+    path: '/redirect',
+    component: () => import('@/layouts/BasicLayout.vue'),
+    children: [
+      {
+        path: ':path(.*)*',
+        name: 'Redirect',
+        component: () => import('@/components/Navigation/PageRedirect.vue'),
+        meta: {
+          title: 'redirect',
+          requiresAuth: true,
+          hidden: true
+        }
+      }
+    ]
+  },
+  {
     path: '/login',
     name: 'Login',
     component: () => import('@/views/login/index.vue'),

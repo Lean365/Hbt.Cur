@@ -3,7 +3,7 @@
 项目名称: Lean.Hbt
 文件名称: query/index.vue
 创建日期: 2024-03-20
-描述: 查询组件，提供表单查询、重置、展开收起等功能
+描述: 统一封装的查询组件，提供表单查询、重置、展开收起等功能
 =================================================================== 
 -->
 
@@ -47,19 +47,17 @@
                   :allowClear="true"
                   :maxLength="field.maxLength"
                   :disabled="field.disabled"
-                  :size="size"
                 />
 
                 <!-- 选择框 -->
-                <a-select
+                <hbt-select
                   v-else-if="field.type === 'select'"
                   v-model:value="formState[field.name]"
                   :placeholder="field.placeholder || t('common.form.placeholder.select')"
                   :options="field.options"
-                  :allowClear="true"
+                  :allow-clear="true"
                   :mode="field.mode"
                   :disabled="field.disabled"
-                  :size="size"
                 />
 
                 <!-- 日期选择器 -->
@@ -70,7 +68,6 @@
                   :format="field.format || 'YYYY-MM-DD'"
                   :allowClear="true"
                   :disabled="field.disabled"
-                  :size="size"
                 />
 
                 <!-- 日期范围选择器 -->
@@ -84,7 +81,6 @@
                   :format="field.format || 'YYYY-MM-DD'"
                   :allowClear="true"
                   :disabled="field.disabled"
-                  :size="size"
                 />
 
                 <!-- 数字输入框 -->
@@ -97,7 +93,6 @@
                   :step="field.step"
                   :precision="field.precision"
                   :disabled="field.disabled"
-                  :size="size"
                 />
 
                 <!-- 单选框组 -->
@@ -106,7 +101,6 @@
                   v-model:value="formState[field.name]"
                   :options="field.options"
                   :disabled="field.disabled"
-                  :size="size"
                 />
 
                 <!-- 复选框组 -->
@@ -125,7 +119,6 @@
                   :placeholder="field.placeholder || t('common.form.placeholder.select')"
                   :allowClear="true"
                   :disabled="field.disabled"
-                  :size="size"
                 />
               </slot>
             </a-form-item>
@@ -146,14 +139,13 @@
               type="primary"
               html-type="submit"
               :loading="loading"
-              :size="size"
             >
               <template #icon><search-outlined /></template>
               {{ t('query.search') }}
             </a-button>
             
             <!-- 重置按钮 -->
-            <a-button @click="handleReset" :size="size">
+            <a-button @click="handleReset">
               <template #icon><redo-outlined /></template>
               {{ t('query.reset') }}
             </a-button>
@@ -163,7 +155,6 @@
               v-if="showCollapse && queryFields.length > visibleFields"
               type="link"
               @click="toggleCollapse"
-              :size="size"
             >
               {{ collapsed ? t('query.expand') : t('query.collapse') }}
               <template #icon>
@@ -184,11 +175,13 @@
 import { ref, reactive, watch, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type { FormInstance } from 'ant-design-vue'
+import type { SizeType } from 'ant-design-vue/es/config-provider'
 import {
   SearchOutlined,
   RedoOutlined,
   DownOutlined
 } from '@ant-design/icons-vue'
+import HbtSelect from '@/components/Business/Select/index.vue'
 
 const { t } = useI18n()
 
@@ -200,7 +193,7 @@ interface QueryField {
   label: string // 字段标签
   type: FieldType // 字段类型
   span?: number // 栅格宽度
-  placeholder?: string | string[] // 占位文本
+  placeholder?: string // 占位文本
   rules?: any[] // 验证规则
   options?: { label: string; value: any }[] // 选择项
   format?: string // 日期格式
@@ -220,7 +213,6 @@ interface Props {
   visibleFields?: number // 默认显示字段数
   showCollapse?: boolean // 是否显示展开/收起按钮
   loading?: boolean // 加载状态
-  size?: 'small' | 'middle' | 'large' // 组件大小
   layout?: 'horizontal' | 'vertical' | 'inline' // 表单布局
   labelCol?: object // 标签布局
   wrapperCol?: object // 输入框布局
@@ -234,7 +226,6 @@ const props = withDefaults(defineProps<Props>(), {
   visibleFields: 3,
   showCollapse: true,
   loading: false,
-  size: 'middle',
   layout: 'horizontal',
   labelCol: () => ({ span: 8 }),
   wrapperCol: () => ({ span: 16 }),
@@ -248,6 +239,8 @@ const emit = defineEmits(['search', 'reset'])
 const formRef = ref<FormInstance>()
 const formState = reactive<Record<string, any>>({})
 const collapsed = ref(true)
+
+// === 计算属性 ===
 
 // === 监听器 ===
 watch(

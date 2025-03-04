@@ -37,7 +37,8 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// <summary>
         /// 主键
         /// </summary>
-        public long Id { get; set; }
+        [AdaptMember("Id")]
+        public long PostId { get; set; }
 
         /// <summary>
         /// 岗位编码

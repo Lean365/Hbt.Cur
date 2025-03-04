@@ -1,6 +1,6 @@
 //===================================================================
-// 项目名 : Lean.Hbt 
-// 文件名 : HbtWorkflowNodeDto.cs 
+// 项目名 : Lean.Hbt
+// 文件名 : HbtWorkflowNodeDto.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-23 12:00
 // 版本号 : V1.0.0
@@ -23,7 +23,8 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 节点ID
         /// </summary>
-        public long Id { get; set; }
+        [AdaptMember("Id")]
+        public long WorkflowNodeId { get; set; }
 
         /// <summary>
         /// 工作流定义ID
@@ -178,7 +179,8 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 节点ID
         /// </summary>
-        public long Id { get; set; }
+        [AdaptMember("Id")]
+        public long WorkflowNodeId { get; set; }
 
         /// <summary>
         /// 节点名称
@@ -330,4 +332,4 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// </summary>
         public string Remark { get; set; }
     }
-} 
+}

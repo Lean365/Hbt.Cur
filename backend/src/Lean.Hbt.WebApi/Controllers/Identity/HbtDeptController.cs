@@ -11,8 +11,6 @@ using Lean.Hbt.Application.Dtos.Identity;
 using Lean.Hbt.Application.Services.Identity;
 using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Domain.IServices.Admin;
-using Lean.Hbt.Common.Models;
-using Microsoft.AspNetCore.Http;
 
 namespace Lean.Hbt.WebApi.Controllers.Identity
 {
@@ -174,7 +172,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         {
             var input = new HbtDeptStatusDto
             {
-                Id = deptId,
+                DeptId = deptId,
                 Status = status
             };
             var result = await _deptService.UpdateStatusAsync(input);

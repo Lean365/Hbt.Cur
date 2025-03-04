@@ -1,162 +1,223 @@
-//===================================================================
-// 项目名 : Lean.Hbt
-// 文件名 : DictTypeForm.vue
-// 创建者 : Claude
-// 创建时间: 2024-03-20
-// 版本号 : v1.0.0
-// 描述    : 字典类型表单组件
-//===================================================================
+<!-- 
+===================================================================
+项目名称: Lean.Hbt
+文件名称: DictTypeForm.vue
+创建日期: 2024-03-20
+描述: 字典类型表单对话框组件
+=================================================================== 
+-->
 
 <template>
-  <a-modal
-    :visible="visible"
+  <hbt-modal
+    :open="open"
     :title="title"
-    :confirm-loading="loading"
+    :loading="loading"
+    :width="800"
+    @update:open="(val) => emit('update:open', val)"
     @ok="handleOk"
     @cancel="handleCancel"
   >
     <a-form
       ref="formRef"
-      :model="formData"
+      :model="formState"
       :rules="rules"
-      :label-col="{ span: 6 }"
-      :wrapper-col="{ span: 16 }"
+      :label-col="{ span: 8 }"
+      :wrapper-col="{ span: 14 }"
     >
-      <a-form-item label="字典名称" name="dictName">
-        <a-input v-model:value="formData.dictName" placeholder="请输入字典名称" />
-      </a-form-item>
-      <a-form-item label="字典类型" name="dictType">
-        <a-input v-model:value="formData.dictType" placeholder="请输入字典类型" />
-      </a-form-item>
-      <a-form-item label="字典类别" name="dictCategory">
-        <a-select v-model:value="formData.dictCategory" placeholder="请选择">
-          <a-select-option :value="0">系统</a-select-option>
-          <a-select-option :value="1">SQL</a-select-option>
-        </a-select>
-      </a-form-item>
-      <a-form-item label="SQL脚本" name="sqlScript" v-if="formData.dictCategory === 1">
-        <a-textarea v-model:value="formData.sqlScript" placeholder="请输入SQL脚本" :rows="4" />
-      </a-form-item>
-      <a-form-item label="排序号" name="orderNum">
-        <a-input-number v-model:value="formData.orderNum" :min="0" style="width: 100%" />
-      </a-form-item>
-      <a-form-item label="状态" name="status">
-        <a-select v-model:value="formData.status" placeholder="请选择">
-          <a-select-option :value="0">正常</a-select-option>
-          <a-select-option :value="1">停用</a-select-option>
-        </a-select>
-      </a-form-item>
+      <a-tabs v-model:activeKey="activeTab">
+        <a-tab-pane key="basic" :tab="t('common.tab.basicInfo')">
+          <a-row :gutter="24">
+            <a-col :span="12">
+              <a-form-item :label="t('dictType.form.name')" name="dictName">
+                <a-input
+                  v-model:value="formState.dictName"
+                  :placeholder="t('dictType.form.namePlaceholder')"
+                  :maxlength="100"
+                  allow-clear
+                />
+              </a-form-item>
+            </a-col>
+            <a-col :span="12">
+              <a-form-item :label="t('dictType.form.type')" name="dictType">
+                <a-input
+                  v-model:value="formState.dictType"
+                  :placeholder="t('dictType.form.typePlaceholder')"
+                  :maxlength="100"
+                  allow-clear
+                />
+              </a-form-item>
+            </a-col>
+            <a-col :span="12">
+              <a-form-item :label="t('dictType.form.category')" name="dictCategory">
+                <hbt-select
+                  v-model:value="formState.dictCategory"
+                  :options="categoryOptions"
+                  :placeholder="t('dictType.form.categoryPlaceholder')"
+                  show-search
+                  :filter-option="(input: string, option: any) => {
+                    return option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                  }"
+                />
+              </a-form-item>
+            </a-col>
+            <a-col :span="12">
+              <a-form-item :label="t('dictType.form.status')" name="status">
+                <hbt-select
+                  v-model:value="formState.status"
+                  :options="statusOptions"
+                  :placeholder="t('dictType.form.statusPlaceholder')"
+                  show-search
+                  :filter-option="(input: string, option: any) => {
+                    return option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                  }"
+                />
+              </a-form-item>
+            </a-col>
+          </a-row>
+        </a-tab-pane>
+        <a-tab-pane key="other" :tab="t('common.tab.otherInfo')">
+          <a-row :gutter="24">
+            <a-col :span="12">
+              <a-form-item :label="t('dictType.form.orderNum')" name="orderNum">
+                <a-input-number
+                  v-model:value="formState.orderNum"
+                  :min="0"
+                  :max="9999"
+                  style="width: 100%"
+                />
+              </a-form-item>
+            </a-col>
+            <a-col :span="24">
+              <a-form-item :label="t('dictType.form.remark')" name="remark" :label-col="{ span: 4 }" :wrapper-col="{ span: 19 }">
+                <a-textarea
+                  v-model:value="formState.remark"
+                  :placeholder="t('dictType.form.remarkPlaceholder')"
+                  :maxlength="500"
+                  :auto-size="{ minRows: 3, maxRows: 5 }"
+                  allow-clear
+                />
+              </a-form-item>
+            </a-col>
+          </a-row>
+        </a-tab-pane>
+      </a-tabs>
     </a-form>
-  </a-modal>
+  </hbt-modal>
 </template>
 
-<script setup lang="ts">
-import { ref, reactive, watch } from 'vue'
-import type { FormInstance, Rule } from 'ant-design-vue/es/form'
-import type { HbtDictType, HbtDictTypeCreate, HbtDictTypeUpdate } from '@/types/admin/hbtDictType'
+<script lang="ts" setup>
+import { ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { message } from 'ant-design-vue'
+import type { FormInstance } from 'ant-design-vue'
+import type { RuleObject } from 'ant-design-vue/es/form'
+import type { HbtDictType } from '@/types/admin/hbtDictType'
+import type { HbtStatus } from '@/types/base'
+import HbtModal from '@/components/Business/Modal/index.vue'
+import HbtSelect from '@/components/Business/Select/index.vue'
 
-const props = defineProps<{
-  visible: boolean
-  title: string
-  record?: HbtDictType
-}>()
+const { t } = useI18n()
 
+// === Props 定义 ===
+interface Props {
+  open: boolean
+  title?: string
+  loading?: boolean
+  model?: Partial<HbtDictType>
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  open: false,
+  title: '',
+  loading: false,
+  model: () => ({})
+})
+
+// === Emits 定义 ===
 const emit = defineEmits<{
-  (e: 'update:visible', visible: boolean): void
-  (e: 'submit', data: HbtDictTypeCreate | HbtDictTypeUpdate): void
+  (e: 'update:open', value: boolean): void
+  (e: 'ok', values: Partial<HbtDictType>): void
+  (e: 'cancel'): void
 }>()
 
-// 表单状态
-const loading = ref(false)
+// === 状态定义 ===
 const formRef = ref<FormInstance>()
-const formData = reactive<HbtDictTypeCreate>({
+const activeTab = ref('basic')
+const formState = ref<Partial<HbtDictType>>({
   dictName: '',
   dictType: '',
   dictCategory: 0,
-  sqlScript: '',
+  dictBuiltin: 0,
   orderNum: 0,
-  status: 0
+  status: 0 as HbtStatus,
+  remark: ''
 })
 
-// 表单校验规则
-const rules: Record<string, Rule[]> = {
-  dictName: [
-    { required: true, message: '请输入字典名称', trigger: 'blur', type: 'string' },
-    { max: 100, message: '字典名称长度不能超过100个字符', trigger: 'blur', type: 'string' }
-  ],
-  dictType: [
-    { required: true, message: '请输入字典类型', trigger: 'blur', type: 'string' },
-    { max: 100, message: '字典类型长度不能超过100个字符', trigger: 'blur', type: 'string' }
-  ],
-  dictCategory: [
-    { required: true, message: '请选择字典类别', trigger: 'change', type: 'number' }
-  ],
-  sqlScript: [
-    { max: 500, message: 'SQL脚本长度不能超过500个字符', trigger: 'blur', type: 'string' }
-  ],
-  orderNum: [
-    { required: true, message: '请输入排序号', trigger: 'blur', type: 'number' }
-  ],
-  status: [
-    { required: true, message: '请选择状态', trigger: 'change', type: 'number' }
-  ]
+// === 选项定义 ===
+const statusOptions = [
+  { label: t('common.status.normal'), value: 0 },
+  { label: t('common.status.disabled'), value: 1 }
+]
+
+const categoryOptions = [
+  { label: t('dictType.category.system'), value: 0 },
+  { label: t('dictType.category.sql'), value: 1 }
+]
+
+// === 表单校验规则 ===
+const rules: Record<string, RuleObject[]> = {
+  dictName: [{ required: true, message: t('dictType.rules.nameRequired'), trigger: 'blur' }],
+  dictType: [{ required: true, message: t('dictType.rules.typeRequired'), trigger: 'blur' }],
+  dictCategory: [{ required: true, message: t('dictType.rules.categoryRequired'), trigger: 'change' }],
+  orderNum: [{ required: true, message: t('dictType.rules.orderNumRequired'), trigger: 'blur' }],
+  status: [{ required: true, message: t('dictType.rules.statusRequired'), trigger: 'change' }]
 }
 
-// 监听record变化
+// === 监听数据变化 ===
 watch(
-  () => props.record,
-  (record) => {
-    if (record) {
-      Object.assign(formData, record)
-    } else {
-      Object.assign(formData, {
-        dictName: '',
-        dictType: '',
-        dictCategory: 0,
-        sqlScript: '',
-        orderNum: 0,
-        status: 0
-      })
+  () => props.model,
+  (val) => {
+    if (val) {
+      formState.value = {
+        dictName: val.dictName || '',
+        dictType: val.dictType || '',
+        dictCategory: val.dictCategory ?? 0,
+        dictBuiltin: val.dictBuiltin ?? 0,
+        orderNum: val.orderNum ?? 0,
+        status: val.status ?? 0,
+        remark: val.remark || ''
+      }
     }
-  }
+  },
+  { immediate: true }
 )
 
-// 确定处理
+// === 方法定义 ===
 const handleOk = async () => {
   try {
-    loading.value = true
     await formRef.value?.validate()
-    
-    const submitData = props.record
-      ? { ...formData, dictTypeId: props.record.dictTypeId }
-      : formData
-      
-    emit('submit', submitData)
-  } catch (error) {
-    // 校验失败
+    emit('ok', formState.value)
+  } catch (error: any) {
     console.error('表单验证失败:', error)
-  } finally {
-    loading.value = false
+    if (error.response?.status === 403) {
+      message.error('您没有操作权限')
+    } else if (error.message) {
+      message.error(error.message)
+    } else {
+      message.error('表单提交失败，请稍后重试')
+    }
   }
 }
 
-// 取消处理
 const handleCancel = () => {
   formRef.value?.resetFields()
-  emit('update:visible', false)
+  emit('update:open', false)
+  emit('cancel')
 }
 </script>
 
-<style scoped>
-.ant-form {
-  padding: 24px 0;
-}
-
+<style lang="less" scoped>
 .ant-form-item {
   margin-bottom: 24px;
-}
-
-.ant-input-number {
-  width: 100%;
 }
 </style> 

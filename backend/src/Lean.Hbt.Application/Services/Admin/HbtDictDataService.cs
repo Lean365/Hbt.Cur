@@ -80,11 +80,11 @@ namespace Lean.Hbt.Application.Services.Admin
         /// <summary>
         /// 获取字典数据详情
         /// </summary>
-        /// <param name="dictDataId">字典数据ID</param>
+        /// <param name="id">字典数据ID</param>
         /// <returns>返回字典数据详情</returns>
-        public async Task<HbtDictDataDto> GetAsync(long dictDataId)
+        public async Task<HbtDictDataDto> GetAsync(long id)
         {
-            var dictData = await _dictDataRepository.GetByIdAsync(dictDataId);
+            var dictData = await _dictDataRepository.GetByIdAsync(id);
             if (dictData == null)
                 throw new HbtException("字典数据不存在");
 

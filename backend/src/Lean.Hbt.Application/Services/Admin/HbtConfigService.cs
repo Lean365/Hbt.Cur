@@ -15,7 +15,6 @@ using Lean.Hbt.Common.Utils;
 using Lean.Hbt.Domain.Entities.Admin;
 using Lean.Hbt.Domain.Repositories;
 using Lean.Hbt.Domain.Utils;
-using Mapster;
 using SqlSugar;
 
 namespace Lean.Hbt.Application.Services.Admin

@@ -34,9 +34,9 @@ namespace Lean.Hbt.Application.Services.Admin
         /// <summary>
         /// 获取系统配置详情
         /// </summary>
-        /// <param name="configId">配置ID</param>
+        /// <param name="id">配置ID</param>
         /// <returns>系统配置详情</returns>
-        Task<HbtConfigDto> GetAsync(long configId);
+        Task<HbtConfigDto> GetAsync(long id);
 
         /// <summary>
         /// 创建系统配置
@@ -55,9 +55,9 @@ namespace Lean.Hbt.Application.Services.Admin
         /// <summary>
         /// 删除系统配置
         /// </summary>
-        /// <param name="configId">配置ID</param>
+        /// <param name="id">配置ID</param>
         /// <returns>是否成功</returns>
-        Task<bool> DeleteAsync(long configId);
+        Task<bool> DeleteAsync(long id);
 
         /// <summary>
         /// 批量删除系统配置

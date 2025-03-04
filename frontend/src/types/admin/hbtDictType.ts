@@ -13,7 +13,7 @@ import type { HbtStatus } from '@/types/base'
  * 字典类型对象
  */
 export interface HbtDictType {
-  /** 字典类型ID */
+  /** ID */
   dictTypeId: number
   /** 字典名称 */
   dictName: string
@@ -21,18 +21,20 @@ export interface HbtDictType {
   dictType: string
   /** 字典类别（0系统 1SQL） */
   dictCategory: number
+  /** 字典内置（0否 1是） */
+  dictBuiltin: number
   /** SQL脚本 */
   sqlScript?: string
   /** 排序号 */
   orderNum: number
   /** 状态（0正常 1停用） */
   status: HbtStatus
-  /** 状态名称 */
-  statusName: string
+  /** 租户ID */
+  tenantId: number
   /** 创建时间 */
   createTime: string
-  /** 状态加载中 */
-  statusLoading?: boolean
+  /** 备注 */
+  remark?: string
 }
 
 /**
@@ -63,19 +65,25 @@ export interface HbtDictTypeCreate {
   dictType: string
   /** 字典类别（0系统 1SQL） */
   dictCategory: number
+  /** 字典内置（0否 1是） */
+  dictBuiltin: number
   /** SQL脚本 */
   sqlScript?: string
   /** 排序号 */
   orderNum: number
   /** 状态（0正常 1停用） */
   status: HbtStatus
+  /** 租户ID */
+  tenantId: number
+  /** 备注 */
+  remark?: string
 }
 
 /**
  * 字典类型更新参数
  */
 export interface HbtDictTypeUpdate extends HbtDictTypeCreate {
-  /** 字典类型ID */
+  /** ID */
   dictTypeId: number
 }
 
@@ -101,8 +109,16 @@ export interface HbtDictTypeImport {
  * 字典类型状态更新参数
  */
 export interface HbtDictTypeStatus {
-  /** 字典类型ID */
+  /** ID */
   dictTypeId: number
   /** 状态（0正常 1停用） */
   status: HbtStatus
+}
+
+/**
+ * 字典类型分页结果
+ */
+export interface DictTypePageResult {
+  rows: HbtDictType[]
+  totalNum: number
 } 

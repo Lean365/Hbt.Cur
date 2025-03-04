@@ -11,10 +11,8 @@
 
 using Lean.Hbt.Application.Dtos.Workflow;
 using Lean.Hbt.Common.Enums;
-using Lean.Hbt.Domain.Entities.Workflow;
-using Lean.Hbt.Domain.IServices;
 using Lean.Hbt.Domain.Data;
-using SqlSugar;
+using Lean.Hbt.Domain.Entities.Workflow;
 
 namespace Lean.Hbt.Application.Services.Workflow
 {
@@ -139,18 +137,23 @@ namespace Lean.Hbt.Application.Services.Workflow
                         case HbtWorkflowScheduledTaskType.TimeoutReminder:
                             // 执行超时提醒任务
                             break;
+
                         case HbtWorkflowScheduledTaskType.AutoExecution:
                             // 执行自动执行任务
                             break;
+
                         case HbtWorkflowScheduledTaskType.TimedTrigger:
                             // 执行定时触发任务
                             break;
+
                         case HbtWorkflowScheduledTaskType.DelayedExecution:
                             // 执行延迟执行任务
                             break;
+
                         case HbtWorkflowScheduledTaskType.PeriodicExecution:
                             // 执行周期执行任务
                             break;
+
                         default:
                             throw new NotSupportedException($"不支持的任务类型: {task.TaskType}");
                     }
@@ -162,7 +165,7 @@ namespace Lean.Hbt.Application.Services.Workflow
                 catch (Exception ex)
                 {
                     _logger.Error($"执行定时任务{taskId}失败: {ex.Message}", ex);
-                    
+
                     // 更新重试次数和状态
                     if (task.RetryCount >= task.MaxRetryCount)
                     {
@@ -204,7 +207,7 @@ namespace Lean.Hbt.Application.Services.Workflow
                     .Take(batchSize)
                     .Select((t, i, n) => new HbtWorkflowScheduledTaskDto
                     {
-                        Id = t.Id,
+                        WorkflowScheduledTaskId = t.Id,
                         WorkflowInstanceId = t.WorkflowInstanceId,
                         NodeId = t.NodeId,
                         TaskType = t.TaskType,
@@ -272,4 +275,4 @@ namespace Lean.Hbt.Application.Services.Workflow
             }
         }
     }
-} 
+}

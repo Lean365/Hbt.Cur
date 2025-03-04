@@ -12,12 +12,10 @@ global using System;
 global using System.Collections.Generic;
 global using System.ComponentModel;
 global using System.Threading.Tasks;
-
-// Microsoft 扩展
-global using Microsoft.Extensions.Logging;
-
 // 项目依赖
 global using Lean.Hbt.Common.Models;
 global using Lean.Hbt.Domain.Entities;
 global using Lean.Hbt.Domain.IServices;
-global using Lean.Hbt.Application.Services; 
+global using Mapster;
+// Microsoft 扩展
+global using Microsoft.Extensions.Logging;

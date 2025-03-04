@@ -22,7 +22,8 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 主键
         /// </summary>
-        public long Id { get; set; }
+        [AdaptMember("Id")]
+        public long WorkflowActivityId { get; set; }
 
         /// <summary>
         /// 活动名称
@@ -46,4 +47,4 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// </summary>
         public long WorkflowDefinitionId { get; set; }
     }
-} 
+}

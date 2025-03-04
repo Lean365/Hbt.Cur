@@ -9,8 +9,6 @@
 
 using System.ComponentModel.DataAnnotations;
 using Lean.Hbt.Common.Enums;
-using Lean.Hbt.Common.Models;
-using System.ComponentModel;
 
 namespace Lean.Hbt.Application.Dtos.Identity;
 
@@ -22,6 +20,7 @@ public class HbtTenantStatusDto
     /// <summary>
     /// 租户ID
     /// </summary>
+    [AdaptMember("Id")]
     public long TenantId { get; set; }
 
     /// <summary>
@@ -69,7 +68,8 @@ public class HbtTenantDto
     /// <summary>
     /// 租户ID
     /// </summary>
-    public long Id { get; set; }
+    [AdaptMember("Id")]
+    public long TenantId { get; set; }
 
     /// <summary>
     /// 租户名称
@@ -293,7 +293,8 @@ public class HbtTenantUpdateDto : HbtTenantCreateDto
     /// 租户ID
     /// </summary>
     [Required(ErrorMessage = "租户ID不能为空")]
-    public long Id { get; set; }
+    [AdaptMember("Id")]
+    public long TenantId { get; set; }
 }
 
 /// <summary>
@@ -499,4 +500,4 @@ public class HbtTenantImportDto
     /// </summary>
     [Description("备注")]
     public string? Remark { get; set; }
-} 
+}

@@ -8,9 +8,7 @@
 //===================================================================
 
 using System.ComponentModel.DataAnnotations;
-using System.Collections.Generic;
 using Lean.Hbt.Common.Enums;
-using Lean.Hbt.Common.Models;
 
 namespace Lean.Hbt.Application.Dtos.Identity;
 
@@ -40,7 +38,7 @@ public class HbtLoginDto
     /// 密码
     /// </summary>
     [Required(ErrorMessage = "密码不能为空")]
-    [MaxLength(100, ErrorMessage = "密码长度不能超过100个字符")] 
+    [MaxLength(100, ErrorMessage = "密码长度不能超过100个字符")]
     public string Password { get; set; } = string.Empty;
 
     /// <summary>
@@ -130,6 +128,7 @@ public class HbtUserInfoDto
     /// <summary>
     /// 用户ID
     /// </summary>
+    [AdaptMember("Id")]
     public long UserId { get; set; }
 
     /// <summary>
@@ -161,4 +160,4 @@ public class HbtUserInfoDto
     /// 权限列表
     /// </summary>
     public List<string> Permissions { get; set; }
-} 
+}

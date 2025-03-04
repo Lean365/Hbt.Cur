@@ -30,7 +30,7 @@ import { ref, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type { MenuProps } from 'ant-design-vue'
 import { TranslationOutlined, CheckOutlined } from '@ant-design/icons-vue'
-import { getSupportedLanguages } from '@/api/admin/language'
+import { getSupportedLanguages } from '@/api/admin/hbtLanguage'
 import { message } from 'ant-design-vue'
 import { useAppStore } from '@/stores/app'
 
@@ -54,11 +54,6 @@ const appStore = useAppStore()
 const currentLocale = ref(appStore.language)
 const loading = ref(false)
 const languageList = ref<Language[]>([])
-
-const DEFAULT_LANGUAGES: Language[] = [
-  { id: 1, langCode: 'zh-CN', langName: '简体中文', status: 0, orderNum: 1 },
-  { id: 2, langCode: 'en-US', langName: 'English', status: 0, orderNum: 2 }
-]
 
 // 处理语言切换
 const handleLocaleChange = async (langCode: string) => {
@@ -92,13 +87,13 @@ const fetchLanguages = async () => {
       })
     } else {
       console.error('Failed to fetch languages:', msg)
-      message.error(msg || t('common.message.fetchFailure'))
-      languageList.value = DEFAULT_LANGUAGES
+      message.error(t('common.message.backendNotStarted'))
+      languageList.value = []
     }
   } catch (error: any) {
     console.error('Error fetching languages:', error)
-    message.error(error.message || t('common.message.fetchFailure'))
-    languageList.value = DEFAULT_LANGUAGES
+    message.error(t('common.message.backendNotStarted'))
+    languageList.value = []
   } finally {
     loading.value = false
   }

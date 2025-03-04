@@ -13,6 +13,10 @@ export default {
     },
     settings: {
       title: 'System Settings'
+    },
+    refresh: {
+      success: 'Refresh successful',
+      failed: 'Refresh failed'
     }
   }
 } 

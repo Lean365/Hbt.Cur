@@ -7,11 +7,8 @@
 // 描述   : 菜单数据传输对象
 //===================================================================
 
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Lean.Hbt.Common.Enums;
-using Lean.Hbt.Common.Models;
 
 namespace Lean.Hbt.Application.Dtos.Identity
 {
@@ -43,7 +40,8 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// <summary>
         /// 菜单ID
         /// </summary>
-        public long Id { get; set; }
+        [AdaptMember("Id")]
+        public long MenuId { get; set; }
 
         /// <summary>
         /// 菜单名称
@@ -151,7 +149,7 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// 菜单名称
         /// </summary>
         [Required(ErrorMessage = "菜单名称不能为空")]
-        public required string MenuName { get; set; }
+        public string MenuName { get; set; }
 
         /// <summary>
         /// 翻译Key
@@ -237,7 +235,8 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// <summary>
         /// 菜单ID
         /// </summary>
-        public required long Id { get; set; }
+        [AdaptMember("Id")]
+        public long MenuId { get; set; }
     }
 
     /// <summary>
@@ -343,12 +342,13 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// <summary>
         /// 菜单ID
         /// </summary>
-        public required long Id { get; set; }
+        [AdaptMember("Id")]
+        public long MenuId { get; set; }
 
         /// <summary>
         /// 状态
         /// </summary>
-        public required HbtStatus Status { get; set; }
+        public HbtStatus Status { get; set; }
     }
 
     /// <summary>
@@ -363,12 +363,13 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// <summary>
         /// 菜单ID
         /// </summary>
-        public required long Id { get; set; }
+        [AdaptMember("Id")]
+        public long MenuId { get; set; }
 
         /// <summary>
         /// 显示顺序
         /// </summary>
-        public required int OrderNum { get; set; }
+        public int OrderNum { get; set; }
     }
 
     /// <summary>
@@ -580,4 +581,4 @@ namespace Lean.Hbt.Application.Dtos.Identity
         [Required(ErrorMessage = "是否缓存不能为空")]
         public string IsCache { get; set; }
     }
-} 
+}

@@ -64,13 +64,13 @@
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
-import LocaleSelect from '../base/LocaleSelect.vue'
-import ThemeSwitch from '../base/ThemeSwitch.vue'
-import MemorialTheme from '../base/MemorialTheme.vue'
-import FontSizeControl from '../base/FontSizeControl.vue'
-import FullscreenToggle from '../base/FullscreenToggle.vue'
-import NotificationCenter from '../base/NotificationCenter.vue'
-import SystemSettings from '../base/SystemSettings.vue'
+import LocaleSelect from '../Base/LocaleSelect.vue'
+import ThemeSwitch from '../Base/ThemeSwitch.vue'
+import MemorialTheme from '../Base/MemorialTheme.vue'
+import FontSizeControl from '../Base/FontSizeControl.vue'
+import FullscreenToggle from '../Base/FullscreenToggle.vue'
+import NotificationCenter from '../Base/NotificationCenter.vue'
+import SystemSettings from '../Base/SystemSettings.vue'
 import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
@@ -117,13 +117,16 @@ const handleRefresh = async () => {
       // 清除组件缓存
       const el = document.querySelector(`[data-key="${fullPath}"]`)
       if (el) {
-        // @ts-ignore 这里访问Vue内部属性，用于处理组件缓存
-        const vnode = el.__vueParentComponent
-        if (vnode?.ctx?.deactivated) {
-          vnode.ctx.deactivated()
-        }
-        if (vnode?.ctx?.activated) {
-          vnode.ctx.activated()
+        // 使用类型断言来访问Vue内部属性
+        const vueEl = el as unknown as { __vueParentComponent: any }
+        if (vueEl.__vueParentComponent) {
+          const vnode = vueEl.__vueParentComponent
+          if (vnode?.ctx?.deactivated) {
+            vnode.ctx.deactivated()
+          }
+          if (vnode?.ctx?.activated) {
+            vnode.ctx.activated()
+          }
         }
       }
     }

@@ -9,8 +9,6 @@
 // 描述    : 工作流转换DTO
 //===================================================================
 
-using System.ComponentModel.DataAnnotations;
-
 namespace Lean.Hbt.Application.Dtos.Workflow
 {
     /// <summary>
@@ -21,7 +19,8 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 主键
         /// </summary>
-        public long Id { get; set; }
+        [AdaptMember("Id")]
+        public long WorkflowTransitionId { get; set; }
 
         /// <summary>
         /// 源节点ID
@@ -43,4 +42,4 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// </summary>
         public long WorkflowDefinitionId { get; set; }
     }
-} 
+}

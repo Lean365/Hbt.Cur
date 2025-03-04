@@ -9,7 +9,6 @@
 // 描述    : 工作流定时任务DTO
 //===================================================================
 
-using System;
 using Lean.Hbt.Common.Enums;
 
 namespace Lean.Hbt.Application.Dtos.Workflow
@@ -22,7 +21,8 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 任务ID
         /// </summary>
-        public long Id { get; set; }
+        [AdaptMember("Id")]
+        public long WorkflowScheduledTaskId { get; set; }
 
         /// <summary>
         /// 工作流实例ID
@@ -84,4 +84,4 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// </summary>
         public string? NodeName { get; set; }
     }
-} 
+}

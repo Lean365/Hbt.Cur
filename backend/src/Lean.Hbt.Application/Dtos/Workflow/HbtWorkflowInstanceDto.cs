@@ -1,6 +1,6 @@
 //===================================================================
-// 项目名 : Lean.Hbt 
-// 文件名 : HbtWorkflowInstanceDto.cs 
+// 项目名 : Lean.Hbt
+// 文件名 : HbtWorkflowInstanceDto.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-23 12:00
 // 版本号 : V1.0.0
@@ -68,7 +68,8 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 实例ID
         /// </summary>
-        public long Id { get; set; }
+        [AdaptMember("Id")]
+        public long WorkflowInstanceId { get; set; }
 
         /// <summary>
         /// 工作流定义ID
@@ -148,6 +149,7 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 工作流定义ID
         /// </summary>
+
         public long? WorkflowDefinitionId { get; set; }
 
         /// <summary>
@@ -188,6 +190,7 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 工作流定义ID
         /// </summary>
+
         public long WorkflowDefinitionId { get; set; }
 
         /// <summary>
@@ -223,7 +226,8 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 实例ID
         /// </summary>
-        public long Id { get; set; }
+        [AdaptMember("Id")]
+        public long WorkflowInstanceId { get; set; }
 
         /// <summary>
         /// 工作流标题
@@ -263,6 +267,7 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 工作流定义ID
         /// </summary>
+
         public long WorkflowDefinitionId { get; set; }
 
         /// <summary>
@@ -350,4 +355,4 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// </summary>
         public string Remark { get; set; }
     }
-} 
+}

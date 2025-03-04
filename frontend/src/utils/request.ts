@@ -21,6 +21,23 @@ service.interceptors.request.use(
     const token = getToken()
     console.log('[请求拦截器] 开始处理请求:', config.url)
     
+    // 过滤请求参数中的空值
+    if (config.params) {
+      config.params = Object.fromEntries(
+        Object.entries(config.params).filter(([_, value]) => {
+          return value !== '' && value !== null && value !== undefined
+        })
+      )
+    }
+    
+    if (config.data && typeof config.data === 'object' && !(config.data instanceof FormData)) {
+      config.data = Object.fromEntries(
+        Object.entries(config.data).filter(([_, value]) => {
+          return value !== '' && value !== null && value !== undefined
+        })
+      )
+    }
+    
     // 如果是登录请求，从请求体中获取租户ID
     if (config.url?.includes('/auth/login')) {
       const loginData = typeof config.data === 'string' ? JSON.parse(config.data) : config.data;

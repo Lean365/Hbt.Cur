@@ -24,7 +24,7 @@ import type {
  * @returns 字典类型分页列表
  */
 export function getHbtDictTypeList(query: HbtDictTypeQuery) {
-  return request<ApiResult<PageResult<HbtDictType>>>({
+  return request<PageResult<HbtDictType>>({
     url: '/api/HbtDictType',
     method: 'get',
     params: query

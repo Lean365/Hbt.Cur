@@ -34,9 +34,9 @@ namespace Lean.Hbt.Application.Services.Admin
         /// <summary>
         /// 获取字典类型详情
         /// </summary>
-        /// <param name="dictTypeId">字典类型ID</param>
+        /// <param name="id">字典类型ID</param>
         /// <returns>字典类型详情</returns>
-        Task<HbtDictTypeDto> GetAsync(long dictTypeId);
+        Task<HbtDictTypeDto> GetAsync(long id);
 
         /// <summary>
         /// 创建字典类型
@@ -55,9 +55,9 @@ namespace Lean.Hbt.Application.Services.Admin
         /// <summary>
         /// 删除字典类型
         /// </summary>
-        /// <param name="dictTypeId">字典类型ID</param>
+        /// <param name="id">字典类型ID</param>
         /// <returns>是否成功</returns>
-        Task<bool> DeleteAsync(long dictTypeId);
+        Task<bool> DeleteAsync(long id);
 
         /// <summary>
         /// 批量删除字典类型

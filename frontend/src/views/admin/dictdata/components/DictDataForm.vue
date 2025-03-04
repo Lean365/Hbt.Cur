@@ -1,178 +1,202 @@
-//===================================================================
-// 项目名 : Lean.Hbt
-// 文件名 : DictDataForm.vue
-// 创建者 : Claude
-// 创建时间: 2024-03-20
-// 版本号 : v1.0.0
-// 描述    : 字典数据表单组件
-//===================================================================
+<!-- 
+===================================================================
+项目名称: Lean.Hbt
+文件名称: DictDataForm.vue
+创建日期: 2024-03-20
+描述: 字典数据表单组件
+=================================================================== 
+-->
 
 <template>
-  <a-modal
-    :open="visible"
+  <hbt-modal
     :title="title"
-    :confirm-loading="loading"
+    :visible="visible"
+    :loading="loading"
+    :width="500"
     @ok="handleOk"
     @cancel="handleCancel"
   >
     <a-form
       ref="formRef"
-      :model="formData"
+      :model="formState"
       :rules="rules"
       :label-col="{ span: 6 }"
       :wrapper-col="{ span: 16 }"
     >
+      <a-form-item label="字典类型" name="dictType">
+        <a-input
+          v-model:value="formState.dictType"
+          :disabled="true"
+        />
+      </a-form-item>
+
       <a-form-item label="字典标签" name="dictLabel">
-        <a-input v-model:value="formData.dictLabel" placeholder="请输入字典标签" />
+        <a-input
+          v-model:value="formState.dictLabel"
+          placeholder="请输入字典标签"
+          :maxlength="100"
+          allow-clear
+        />
       </a-form-item>
+
       <a-form-item label="字典键值" name="dictValue">
-        <a-input v-model:value="formData.dictValue" placeholder="请输入字典键值" />
+        <a-input
+          v-model:value="formState.dictValue"
+          placeholder="请输入字典键值"
+          :maxlength="100"
+          allow-clear
+        />
       </a-form-item>
-      <a-form-item label="字典排序" name="orderNum">
-        <a-input-number v-model:value="formData.orderNum" :min="0" style="width: 100%" />
+
+      <a-form-item label="字典排序" name="dictSort">
+        <a-input-number
+          v-model:value="formState.dictSort"
+          placeholder="请输入字典排序"
+          :min="0"
+          :max="999"
+          style="width: 100%"
+        />
       </a-form-item>
-      <a-form-item label="样式属性" name="cssClass">
-        <a-input v-model:value="formData.cssClass" placeholder="请输入样式属性" />
-      </a-form-item>
-      <a-form-item label="表格样式" name="listClass">
-        <a-input v-model:value="formData.listClass" placeholder="请输入表格回显样式" />
-      </a-form-item>
-      <a-form-item label="是否默认" name="isDefault">
-        <a-select v-model:value="formData.isDefault" placeholder="请选择">
-          <a-select-option :value="0">否</a-select-option>
-          <a-select-option :value="1">是</a-select-option>
-        </a-select>
-      </a-form-item>
+
       <a-form-item label="状态" name="status">
-        <a-select v-model:value="formData.status" placeholder="请选择">
-          <a-select-option :value="0">正常</a-select-option>
-          <a-select-option :value="1">停用</a-select-option>
-        </a-select>
+        <hbt-select
+          v-model:value="formState.status"
+          :options="statusOptions"
+          placeholder="请选择状态"
+        />
       </a-form-item>
+
+      <a-form-item label="样式属性" name="cssClass">
+        <a-input
+          v-model:value="formState.cssClass"
+          placeholder="请输入样式属性"
+          :maxlength="100"
+          allow-clear
+        />
+      </a-form-item>
+
+      <a-form-item label="回显样式" name="listClass">
+        <a-input
+          v-model:value="formState.listClass"
+          placeholder="请输入回显样式"
+          :maxlength="100"
+          allow-clear
+        />
+      </a-form-item>
+
+      <a-form-item label="是否默认" name="isDefault">
+        <a-radio-group v-model:value="formState.isDefault">
+          <a-radio :value="'Y'">是</a-radio>
+          <a-radio :value="'N'">否</a-radio>
+        </a-radio-group>
+      </a-form-item>
+
       <a-form-item label="备注" name="remark">
-        <a-textarea v-model:value="formData.remark" placeholder="请输入备注" :rows="4" />
+        <a-textarea
+          v-model:value="formState.remark"
+          placeholder="请输入备注"
+          :maxlength="500"
+          :auto-size="{ minRows: 3, maxRows: 5 }"
+          allow-clear
+        />
       </a-form-item>
     </a-form>
-  </a-modal>
+  </hbt-modal>
 </template>
 
-<script setup lang="ts">
-import { ref, reactive, watch } from 'vue'
-import type { FormInstance, Rule } from 'ant-design-vue/es/form'
-import type { HbtDictData, HbtDictDataCreate, HbtDictDataUpdate } from '@/types/admin/hbtDictData'
+<script lang="ts" setup>
+import { ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
+import type { FormInstance } from 'ant-design-vue'
+import type { HbtDictData } from '@/types/admin/hbtDictData'
 
-const props = defineProps<{
+const { t } = useI18n()
+
+// === Props 定义 ===
+interface Props {
   visible: boolean
   title: string
-  dictTypeId: number
-  record?: HbtDictData
-}>()
+  loading?: boolean
+  model?: Partial<HbtDictData>
+  dictType: string
+}
 
+const props = withDefaults(defineProps<Props>(), {
+  visible: false,
+  title: '',
+  loading: false,
+  model: () => ({})
+})
+
+// === Emits 定义 ===
 const emit = defineEmits<{
-  (e: 'update:visible', visible: boolean): void
-  (e: 'submit', data: HbtDictDataCreate | HbtDictDataUpdate): void
+  'update:visible': [value: boolean]
+  'ok': [values: HbtDictData]
+  'cancel': []
 }>()
 
-// 表单状态
-const loading = ref(false)
+// === 状态定义 ===
 const formRef = ref<FormInstance>()
-const formData = reactive<HbtDictDataCreate>({
-  dictTypeId: props.dictTypeId,
+const formState = ref<Partial<HbtDictData>>({
+  dictType: props.dictType,
   dictLabel: '',
   dictValue: '',
-  orderNum: 0,
+  dictSort: 0,
+  status: 1,
   cssClass: '',
   listClass: '',
-  isDefault: 0,
-  status: 0,
+  isDefault: 'N',
   remark: ''
 })
 
-// 表单校验规则
-const rules: Record<string, Rule[]> = {
+// === 状态选项 ===
+const statusOptions = [
+  { label: t('common.status.normal'), value: 1 },
+  { label: t('common.status.disabled'), value: 0 }
+]
+
+// === 表单校验规则 ===
+const rules = {
   dictLabel: [
-    { required: true, message: '请输入字典标签', trigger: 'blur', type: 'string' },
-    { max: 100, message: '字典标签长度不能超过100个字符', trigger: 'blur', type: 'string' }
+    { required: true, message: '请输入字典标签', trigger: 'blur' },
+    { min: 2, max: 100, message: '字典标签长度必须在2-100个字符之间', trigger: 'blur' }
   ],
   dictValue: [
-    { required: true, message: '请输入字典键值', trigger: 'blur', type: 'string' },
-    { max: 100, message: '字典键值长度不能超过100个字符', trigger: 'blur', type: 'string' }
+    { required: true, message: '请输入字典键值', trigger: 'blur' },
+    { min: 1, max: 100, message: '字典键值长度必须在1-100个字符之间', trigger: 'blur' }
   ],
-  orderNum: [
-    { required: true, message: '请输入字典排序', trigger: 'blur', type: 'number' }
-  ],
-  cssClass: [
-    { max: 100, message: '样式属性长度不能超过100个字符', trigger: 'blur', type: 'string' }
-  ],
-  listClass: [
-    { max: 100, message: '表格回显样式长度不能超过100个字符', trigger: 'blur', type: 'string' }
-  ],
-  isDefault: [
-    { required: true, message: '请选择是否默认', trigger: 'change', type: 'number' }
+  dictSort: [
+    { required: true, message: '请输入字典排序', trigger: 'blur' }
   ],
   status: [
-    { required: true, message: '请选择状态', trigger: 'change', type: 'number' }
+    { required: true, message: '请选择状态', trigger: 'change' }
   ]
 }
 
-// 监听record变化
+// === 监听数据变化 ===
 watch(
-  () => props.record,
-  (record) => {
-    if (record) {
-      Object.assign(formData, record)
-    } else {
-      Object.assign(formData, {
-        dictTypeId: props.dictTypeId,
-        dictLabel: '',
-        dictValue: '',
-        orderNum: 0,
-        cssClass: '',
-        listClass: '',
-        isDefault: 0,
-        status: 0,
-        remark: ''
-      })
-    }
-  }
+  () => props.model,
+  (val) => {
+    formState.value = { ...val }
+  },
+  { deep: true, immediate: true }
 )
 
-// 确定处理
+// === 方法定义 ===
+// 确认
 const handleOk = async () => {
   try {
-    loading.value = true
     await formRef.value?.validate()
-    
-    const submitData = props.record
-      ? { ...formData, dictDataId: props.record.dictDataId }
-      : formData
-      
-    emit('submit', submitData)
+    emit('ok', formState.value as HbtDictData)
   } catch (error) {
-    // 校验失败
-    console.error('表单验证失败:', error)
-  } finally {
-    loading.value = false
+    // 表单验证失败
   }
 }
 
-// 取消处理
+// 取消
 const handleCancel = () => {
   formRef.value?.resetFields()
   emit('update:visible', false)
+  emit('cancel')
 }
-</script>
-
-<style scoped>
-.ant-form {
-  padding: 24px 0;
-}
-
-.ant-form-item {
-  margin-bottom: 24px;
-}
-
-.ant-input-number {
-  width: 100%;
-}
-</style> 
+</script> 

@@ -8,81 +8,161 @@
 //===================================================================
 
 <template>
-  <div class="config-container">
-    <a-card :bordered="false">
-      <!-- 搜索表单 -->
-      <HbtQuery
-        :items="queryItems"
-        :query-fields="queryItems"
-        :loading="loading"
-        @search="handleSearch"
-        @reset="handleReset"
-      />
+  <div class="hbt-config">
+    <!-- 查询区域 -->
+    <hbt-query
+      :model="queryParams"
+      :query-fields="queryFields"
+      @search="handleQuery"
+      @reset="resetQuery"
+    >
+      <template #queryForm>
+        <a-form-item label="配置名称">
+          <a-input
+            v-model:value="queryParams.configName"
+            placeholder="请输入配置名称"
+            allow-clear
+            @keyup.enter="handleQuery"
+          />
+        </a-form-item>
+        <a-form-item label="配置键名">
+          <a-input
+            v-model:value="queryParams.configKey"
+            placeholder="请输入配置键名"
+            allow-clear
+            @keyup.enter="handleQuery"
+          />
+        </a-form-item>
+        <a-form-item label="配置类型">
+          <hbt-select
+            v-model:value="queryParams.configType"
+            :options="configTypeOptions"
+            placeholder="请选择配置类型"
+            allow-clear
+          />
+        </a-form-item>
+        <a-form-item label="状态">
+          <hbt-select
+            v-model:value="queryParams.status"
+            :options="statusOptions"
+            placeholder="请选择状态"
+            allow-clear
+          />
+        </a-form-item>
+      </template>
+    </hbt-query>
 
-      <!-- 配置表格 -->
-      <hbt-table
-        ref="tableRef"
-        :loading="loading"
-        :columns="columns"
-        :data-source="configList"
-        :pagination="pagination"
-        show-selection
-        show-toolbar
-        :row-selection="{
-          selectedRowKeys: selectedRowKeys,
-          onChange: onSelectChange
-        }"
-        :toolbar-buttons="toolbarButtons"
-        :action-column="actionColumn"
-        @select="onSelectChange"
-        @action="handleAction"
-        @toolbar-action="handleToolbarAction"
-        @change="handleTableChange"
-      >
-        <!-- 自定义列渲染 -->
-        <template #configBuiltin="{ text }">
-          {{ text === 1 ? '是' : '否' }}
+    <!-- 工具栏 -->
+    <hbt-toolbar
+      :show-add="true"
+      :show-edit="true"
+      :show-delete="true"
+      :show-import="true"
+      :show-export="true"
+      v-hasPermi="['admin:config:add', 'admin:config:edit', 'admin:config:delete', 'admin:config:import', 'admin:config:export']"
+      @add="handleAdd"
+      @edit="handleBatchEdit"
+      @delete="handleBatchDelete"
+      @import="handleImport"
+      @template="handleTemplate"
+      @export="handleExport"
+      @refresh="loadConfigList"
+      @column-setting="handleColumnSetting"
+    />
+
+    <!-- 数据表格 -->
+    <hbt-table
+      :columns="columns"
+      :data-source="configList"
+      :loading="loading"
+      :row-selection="{ selectedRowKeys, onChange: onSelectChange }"
+      :scroll="{ x: 1200 }"
+      @change="handleTableChange"
+    >
+      <!-- 配置类型列 -->
+      <template #bodyCell="{ column, record }">
+        <template v-if="column.dataIndex === 'configType'">
+          <a-tag :color="record.configType === 0 ? 'blue' : 'green'">
+            {{ configTypeOptions.find(item => item.value === record.configType)?.label || record.configType }}
+          </a-tag>
         </template>
-        <template #status="{ record }">
-          <a-switch
-            :checked="record.status === 0"
-            :loading="record.statusLoading"
-            @change="(checked: string | number | boolean) => handleStatusChange(record, Boolean(checked))"
-            v-hasPermi="['admin:config:update']"
+
+        <!-- 状态列 -->
+        <template v-else-if="column.dataIndex === 'status'">
+          <a-tag :color="record.status ? 'success' : 'error'">
+            {{ statusOptions.find(item => item.value === record.status)?.label || (record.status ? t('common.status.normal') : t('common.status.disabled')) }}
+          </a-tag>
+        </template>
+
+        <!-- 操作列 -->
+        <template v-else-if="column.dataIndex === 'operation'">
+          <hbt-operation
+            :record="record"
+            :show-view="true"
+            :show-edit="true"
+            :show-delete="true"
+            v-hasPermi="['admin:config:query', 'admin:config:edit', 'admin:config:delete']"
+            button-type="link"
+            size="small"
+            @view="handleView"
+            @edit="handleEdit"
+            @delete="handleDelete"
           />
         </template>
-      </hbt-table>
+      </template>
+    </hbt-table>
 
-      <!-- 配置表单 -->
-      <config-form
-        v-model:visible="modalVisible"
-        :title="modalTitle"
-        :record="currentRecord"
-        @submit="handleSubmit"
-      />
-    </a-card>
+    <!-- 分页 -->
+    <hbt-pagination
+      v-model:current="queryParams.pageIndex"
+      v-model:pageSize="queryParams.pageSize"
+      :Total="pagination.total"
+      @change="handleTableChange"
+    />
+
+    <!-- 表单弹窗 -->
+    <config-form
+      v-model:visible="formVisible"
+      :title="formTitle"
+      :loading="formLoading"
+      :model="formData"
+      :config-type-options="configTypeOptions"
+      :status-options="statusOptions"
+      @ok="handleFormOk"
+      @cancel="handleFormCancel"
+    />
+
+    <!-- 详情弹窗 -->
+    <config-detail
+      v-model:visible="detailVisible"
+      :loading="detailLoading"
+      :model="detailData"
+      @close="handleDetailClose"
+    />
   </div>
 </template>
 
-<script setup lang="ts">
-import { ref, reactive, computed, onMounted } from 'vue'
-import { message } from 'ant-design-vue'
+<script lang="ts" setup>
+import { ref, onMounted, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
-import type { HbtTableColumn } from '@/types/components/table'
-import type { IHbtQueryItem } from '@/types/components/query'
-import {
-  PlusOutlined,
-  DeleteOutlined,
-  ImportOutlined,
-  ExportOutlined,
-  FileOutlined,
-  EditOutlined,
-  CheckOutlined,
-  UndoOutlined
-} from '@ant-design/icons-vue'
+import { message } from 'ant-design-vue'
+import type { TablePaginationConfig } from 'ant-design-vue'
+import { hasPermi } from '@/directives/permission'
+import { useDictData } from '@/hooks/useDictData'
+
+// 引入标准组件
 import HbtQuery from '@/components/Business/Query/index.vue'
+import HbtToolbar from '@/components/Business/Toolbar/index.vue'
 import HbtTable from '@/components/Business/Table/index.vue'
-import { useUserStore } from '@/stores/user'
+import HbtOperation from '@/components/Business/Operation/index.vue'
+import HbtPagination from '@/components/Business/Pagination/index.vue'
+import HbtSelect from '@/components/Business/Select/index.vue'
+
+// 引入业务组件
+import ConfigForm from './components/ConfigForm.vue'
+import ConfigDetail from './components/ConfigDetail.vue'
+
+// 引入API和类型
 import {
   getHbtConfigList,
   getHbtConfig,
@@ -96,503 +176,320 @@ import {
   updateHbtConfigStatus,
   batchUpdateHbtConfigStatus
 } from '@/api/admin/hbtConfig'
-import type {
-  HbtConfig,
-  HbtConfigQuery,
-  HbtConfigCreate,
-  HbtConfigUpdate
-} from '@/types/admin/hbtConfig'
-import ConfigForm from './components/ConfigForm.vue'
+import type { HbtConfig, HbtConfigQuery } from '@/types/admin/hbtConfig'
+import { getDictDataList } from '@/api/admin/dictData'
+import type { DictData } from '@/types/admin/dictData'
 
-// 使用i18n
 const { t } = useI18n()
-const userStore = useUserStore()
 
-// 查询参数
-const queryParams = reactive<HbtConfigQuery>({
+// === 状态定义 ===
+const loading = ref(false)
+const configList = ref<HbtConfig[]>([])
+const selectedRowKeys = ref<number[]>([])
+const formVisible = ref(false)
+const formTitle = ref('')
+const formLoading = ref(false)
+const formData = ref<Partial<HbtConfig>>({})
+const detailVisible = ref(false)
+const detailLoading = ref(false)
+const detailData = ref<HbtConfig>()
+
+// === 字典数据 ===
+const { dictDataMap, loading: dictLoading } = useDictData([
+  'sys_config_type',
+  'sys_normal_disable'
+])
+
+// 计算属性：配置类型选项
+const configTypeOptions = computed(() => {
+  return dictDataMap.value['sys_config_type'] || []
+})
+
+// 计算属性：状态选项
+const statusOptions = computed(() => {
+  return dictDataMap.value['sys_normal_disable'] || []
+})
+
+// === 查询参数 ===
+const queryParams = ref<HbtConfigQuery>({
   pageIndex: 1,
   pageSize: 10,
   configName: '',
   configKey: '',
+  configType: undefined,
   configBuiltin: undefined,
   status: undefined
 })
 
-// 表格状态
-const loading = ref(false)
-const configList = ref<HbtConfig[]>([])
-const selectedRowKeys = ref<(string | number)[]>([])
-const pagination = reactive({
-  pageIndex: 1,
-  pageSize: 10,
+// === 分页配置 ===
+const pagination = ref<TablePaginationConfig>({
   total: 0,
+  current: 1,
+  pageSize: 10,
   showSizeChanger: true,
-  showQuickJumper: true,
-  showTotal: (total: number) => `共 ${total} 条`
+  showQuickJumper: true
 })
 
-// 表单状态
-const modalVisible = ref(false)
-const modalTitle = ref('新增配置')
-const currentRecord = ref<HbtConfig>()
-const tableRef = ref()
-
-// 工具栏按钮配置
-const toolbarButtons = computed(() => [])
-
-// 操作列配置
-const actionColumn = computed(() => ({
-  width: 150,
-  fixed: 'right' as const,
-  actions: [
-    {
-      key: 'edit',
-      label: '',
-      type: 'link' as const,
-      icon: EditOutlined,
-      tooltip: '编辑配置',
-      permission: 'admin:config:update'
-    },
-    {
-      key: 'delete',
-      label: '',
-      type: 'danger' as const,
-      icon: DeleteOutlined,
-      tooltip: '删除配置',
-      permission: 'admin:config:delete',
-      confirm: '确定要删除该配置吗？'
-    }
-  ]
-}))
-
-// 表格列定义
-const columns: HbtTableColumn[] = [
+// === 表格列定义 ===
+const columns = [
   {
     title: '配置名称',
     dataIndex: 'configName',
     width: 200,
-    align: 'left'
+    ellipsis: true
   },
   {
     title: '配置键名',
     dataIndex: 'configKey',
     width: 200,
-    align: 'left'
+    ellipsis: true
   },
   {
     title: '配置值',
     dataIndex: 'configValue',
     width: 300,
-    ellipsis: true,
-    align: 'left'
+    ellipsis: true
   },
   {
-    title: '系统内置',
-    dataIndex: 'configBuiltin',
-    width: 100,
-    align: 'center'
-  },
-  {
-    title: '备注',
-    dataIndex: 'remark',
-    ellipsis: true,
-    align: 'left'
+    title: '配置类型',
+    dataIndex: 'configType',
+    width: 100
   },
   {
     title: '状态',
     dataIndex: 'status',
-    width: 100,
-    align: 'center'
+    width: 100
+  },
+  {
+    title: '备注',
+    dataIndex: 'remark',
+    width: 200,
+    ellipsis: true
   },
   {
     title: '创建时间',
     dataIndex: 'createTime',
     width: 180,
-    align: 'center',
-    valueType: 'date',
-    dateFormat:'yyyy-MM-dd',
     sorter: true
+  },
+  {
+    title: t('common.table.header.operation'),
+    dataIndex: 'operation',
+    width: 180,
+    fixed: 'right'
   }
 ]
 
-// 查询条件配置
-const queryItems: IHbtQueryItem[] = [
+// === 查询字段定义 ===
+const queryFields = [
   {
-    type: 'input',
     name: 'configName',
     label: '配置名称',
-    placeholder: '请输入配置名称'
+    type: 'input'
   },
   {
-    type: 'input',
     name: 'configKey',
     label: '配置键名',
-    placeholder: '请输入配置键名'
+    type: 'input'
   },
   {
+    name: 'configType',
+    label: '配置类型',
     type: 'select',
-    name: 'configBuiltin',
-    label: '系统内置',
-    placeholder: '请选择',
-    options: [
-      { label: '是', value: 1 },
-      { label: '否', value: 0 }
-    ]
+    options: configTypeOptions
   },
   {
-    type: 'select',
     name: 'status',
     label: '状态',
-    placeholder: '请选择',
-    options: [
-      { label: '正常', value: 0 },
-      { label: '停用', value: 1 }
-    ]
+    type: 'select',
+    options: statusOptions
   }
 ]
 
+// === 方法定义 ===
 // 加载配置列表
 const loadConfigList = async () => {
   try {
     loading.value = true
-    
-    console.log('[HbtConfig] 原始查询参数:', queryParams)
-    
-    // 构建请求参数，过滤掉 undefined、null 和空字符串值
-    const params = Object.entries(queryParams).reduce((acc, [key, value]) => {
-      console.log(`[HbtConfig] 处理参数 ${key}:`, value)
-      if (value !== undefined && value !== null && value !== '') {
-        acc[key] = value
-      }
-      return acc
-    }, {} as Record<string, any>)
-    
-    console.log('[HbtConfig] 处理后的请求参数:', params)
-    
-    // 只显示配置管理相关的权限
-    const configPermissions = userStore.permissions.filter(p => p.startsWith('admin:config:'))
-    console.log('[HbtConfig] 配置管理权限:', configPermissions)
-
-    const response = await getHbtConfigList(params)
-    console.log('[HbtConfig] 获取配置列表响应:', response)
-    
-    if (response.code === 200) {
-      configList.value = response.data.rows
-      pagination.total = response.data.totalNum
-      pagination.pageIndex = response.data.pageIndex
-      pagination.pageSize = response.data.pageSize
-      console.log('[HbtConfig] 更新列表数据成功:', {
-        总数: response.data.totalNum,
-        当前页: response.data.pageIndex,
-        每页条数: response.data.pageSize,
-        数据条数: response.data.rows.length
-      })
-    } else {
-      message.error(response.msg || t('common.message.loadError'))
-      console.error('[HbtConfig] 获取列表失败:', response.msg)
-    }
-  } catch (error: any) {
-    console.error('[HbtConfig] 加载配置列表出错:', error)
-    message.error(error.message || t('common.message.loadError'))
+    const res = await getHbtConfigList(queryParams.value)
+    configList.value = res.data.rows
+    pagination.value.total = res.data.total
+  } catch (error) {
+    console.error('加载配置列表失败:', error)
   } finally {
     loading.value = false
   }
 }
 
-// 查询处理
-const handleSearch = (values: Record<string, any>) => {
-  Object.assign(queryParams, values)
-  pagination.pageIndex = 1
+// 查询
+const handleQuery = () => {
+  queryParams.value.pageIndex = 1
   loadConfigList()
 }
 
-// 重置处理
-const handleReset = () => {
-  queryParams.configName = ''
-  queryParams.configKey = ''
-  queryParams.configBuiltin = undefined
-  queryParams.status = undefined
-  handleSearch(queryParams)
+// 重置查询
+const resetQuery = () => {
+  queryParams.value = {
+    pageIndex: 1,
+    pageSize: 10,
+    configName: '',
+    configKey: '',
+    configType: undefined,
+    configBuiltin: undefined,
+    status: undefined
+  }
+  handleQuery()
 }
 
-// 选择变化处理
-const onSelectChange = (keys: (string | number)[]) => {
+// 表格变化
+const handleTableChange = (pag: any, filters: any, sorter: any) => {
+  queryParams.value.pageIndex = pag.current
+  queryParams.value.pageSize = pag.pageSize
+  if (sorter.field) {
+    queryParams.value.orderByColumn = sorter.field
+    queryParams.value.isAsc = sorter.order === 'ascend' ? 'asc' : 'desc'
+  }
+  loadConfigList()
+}
+
+// 选择行变化
+const onSelectChange = (keys: number[]) => {
   selectedRowKeys.value = keys
 }
 
-// 表格变化处理
-const handleTableChange = (pag: any, filters: any, sorter: any) => {
-  pagination.pageIndex = pag.pageIndex
-  pagination.pageSize = pag.pageSize
-  loadConfigList()
+// 列设置
+const handleColumnSetting = () => {
+  // TODO: 实现列设置功能
 }
 
-// 编辑处理
+// 新增
+const handleAdd = () => {
+  formTitle.value = t('common.title.create')
+  formData.value = {}
+  formVisible.value = true
+}
+
+// 编辑
 const handleEdit = async (record: HbtConfig) => {
-  console.log('[HbtConfig] 开始编辑配置:', record)
   try {
-    const { data } = await getHbtConfig(record.configId)
-    console.log('[HbtConfig] 获取配置详情响应:', data)
-    if (data?.code === 200) {
-      modalTitle.value = '编辑配置'
-      currentRecord.value = data.data
-      modalVisible.value = true
-      console.log('[HbtConfig] 打开编辑模态框')
-    } else {
-      message.error(data?.msg || '获取配置详情失败')
-      console.error('[HbtConfig] 获取配置详情失败:', data?.msg)
-    }
+    formTitle.value = t('common.title.edit')
+    formLoading.value = true
+    const res = await getHbtConfig(record.configId)
+    formData.value = res.data
+    formVisible.value = true
   } catch (error) {
-    console.error('[HbtConfig] 编辑配置失败:', error)
-    message.error('获取配置详情失败')
+    message.error(t('common.message.loadFailed'))
+  } finally {
+    formLoading.value = false
   }
 }
 
-// 删除处理
+// 查看
+const handleView = async (record: HbtConfig) => {
+  try {
+    detailLoading.value = true
+    const res = await getHbtConfig(record.configId)
+    detailData.value = res.data
+    detailVisible.value = true
+  } catch (error) {
+    message.error(t('common.message.loadFailed'))
+  } finally {
+    detailLoading.value = false
+  }
+}
+
+// 删除
 const handleDelete = async (record: HbtConfig) => {
-  console.log('[HbtConfig] 开始删除配置:', record)
   try {
-    const { data } = await deleteHbtConfig(record.configId)
-    console.log('[HbtConfig] 删除配置响应:', data)
-    if (data?.code === 200) {
-      message.success('删除成功')
-      console.log('[HbtConfig] 删除成功')
-      loadConfigList()
-    } else {
-      message.error(data?.msg || '删除失败')
-      console.error('[HbtConfig] 删除失败:', data?.msg)
-    }
+    await deleteHbtConfig(record.configId)
+    message.success(t('common.message.deleteSuccess'))
+    loadConfigList()
   } catch (error) {
-    console.error('[HbtConfig] 删除配置失败:', error)
-    message.error('删除失败')
+    message.error(t('common.message.deleteFailed'))
   }
 }
 
-// 批量删除处理
+// 批量编辑
+const handleBatchEdit = () => {
+  if (!selectedRowKeys.value.length) {
+    message.warning('请选择要编辑的记录')
+    return
+  }
+  // TODO: 实现批量编辑功能
+}
+
+// 批量删除
 const handleBatchDelete = async () => {
+  if (!selectedRowKeys.value.length) {
+    message.warning('请选择要删除的记录')
+    return
+  }
   try {
-    const { data } = await batchDeleteHbtConfig(selectedRowKeys.value.map(Number))
-    if (data?.code === 200) {
-      message.success('批量删除成功')
-      selectedRowKeys.value = []
-      loadConfigList()
-    } else {
-      message.error(data?.msg || '批量删除失败')
-    }
+    await batchDeleteHbtConfig(selectedRowKeys.value)
+    message.success(t('common.message.deleteSuccess'))
+    selectedRowKeys.value = []
+    loadConfigList()
   } catch (error) {
-    console.error('批量删除失败:', error)
-    message.error('批量删除失败')
+    message.error(t('common.message.deleteFailed'))
   }
 }
 
-// 导入处理
-const handleImport = async (file: File) => {
-  const formData = new FormData()
-  formData.append('file', file)
-  try {
-    const { data } = await importHbtConfig(formData)
-    if (data?.code === 200) {
-      message.success('导入成功')
-      loadConfigList()
-    } else {
-      message.error(data?.msg || '导入失败')
-    }
-  } catch (error) {
-    console.error('导入失败:', error)
-    message.error('导入失败')
-  }
-  return false
-}
-
-// 导出处理
-const handleExport = async () => {
-  try {
-    const { data } = await exportHbtConfig(queryParams)
-    if (data) {
-      const blob = new Blob([data], { type: 'application/vnd.ms-excel' })
-      const url = window.URL.createObjectURL(blob)
-      const link = document.createElement('a')
-      link.href = url
-      link.download = '系统配置.xlsx'
-      link.click()
-      window.URL.revokeObjectURL(url)
-    }
-  } catch (error) {
-    console.error('导出失败:', error)
-    message.error('导出失败')
-  }
+// 导入
+const handleImport = () => {
+  // TODO: 实现导入功能
 }
 
 // 下载模板
-const handleTemplate = async () => {
-  try {
-    const { data } = await getHbtConfigTemplate()
-    if (data) {
-      const blob = new Blob([data], { type: 'application/vnd.ms-excel' })
-      const url = window.URL.createObjectURL(blob)
-      const link = document.createElement('a')
-      link.href = url
-      link.download = '系统配置导入模板.xlsx'
-      link.click()
-      window.URL.revokeObjectURL(url)
-    }
-  } catch (error) {
-    console.error('下载模板失败:', error)
-    message.error('下载模板失败')
-  }
+const handleTemplate = () => {
+  // TODO: 实现下载模板功能
 }
 
-// 状态变更处理
-const handleStatusChange = async (record: HbtConfig, checked: boolean) => {
-  console.log('[HbtConfig] 开始更新状态:', record, '新状态:', checked)
+// 导出
+const handleExport = () => {
+  // TODO: 实现导出功能
+}
+
+// 表单确认
+const handleFormOk = async () => {
   try {
-    record.statusLoading = true
-    const { data } = await updateHbtConfigStatus(record.configId, checked ? 0 : 1)
-    console.log('[HbtConfig] 更新状态响应:', data)
-    if (data?.code === 200) {
-      message.success('状态更新成功')
-      record.status = checked ? 0 : 1
-      console.log('[HbtConfig] 状态更新成功')
+    formLoading.value = true
+    if (formData.value.configId) {
+      await updateHbtConfig(formData.value as HbtConfig)
+      message.success(t('common.message.updateSuccess'))
     } else {
-      message.error(data?.msg || '状态更新失败')
-      console.error('[HbtConfig] 状态更新失败:', data?.msg)
+      await createHbtConfig(formData.value as HbtConfig)
+      message.success(t('common.message.createSuccess'))
     }
+    formVisible.value = false
+    loadConfigList()
   } catch (error) {
-    console.error('[HbtConfig] 更新状态失败:', error)
-    message.error('状态更新失败')
+    message.error(formData.value.configId ? t('common.message.updateFailed') : t('common.message.createFailed'))
   } finally {
-    record.statusLoading = false
+    formLoading.value = false
   }
 }
 
-// 处理操作按钮点击
-const handleAction = async (action: string, record: HbtConfig) => {
-  switch (action) {
-    case 'edit':
-      await handleEdit(record)
-      break
-    case 'delete':
-      await handleDelete(record)
-      break
-  }
+// 表单取消
+const handleFormCancel = () => {
+  formVisible.value = false
+  formData.value = {}
 }
 
-// 处理工具栏按钮点击
-const handleToolbarAction = async (action: string) => {
-  switch (action) {
-    case 'add':
-      modalTitle.value = '新增配置'
-      currentRecord.value = undefined
-      modalVisible.value = true
-      break
-    case 'delete':
-      await handleBatchDelete()
-      break
-    case 'import':
-      // 触发文件选择
-      const input = document.createElement('input')
-      input.type = 'file'
-      input.accept = '.xlsx,.xls'
-      input.onchange = async (e: Event) => {
-        const file = (e.target as HTMLInputElement).files?.[0]
-        if (file) {
-          await handleImport(file)
-        }
-      }
-      input.click()
-      break
-    case 'export':
-      await handleExport()
-      break
-    case 'template':
-      await handleTemplate()
-      break
-    case 'approve':
-      await handleBatchApprove()
-      break
-    case 'revoke':
-      await handleBatchRevoke()
-      break
-  }
+// 详情关闭
+const handleDetailClose = () => {
+  detailVisible.value = false
+  detailData.value = undefined
 }
 
-// 批量审核处理
-const handleBatchApprove = async () => {
-  try {
-    const { data } = await batchUpdateHbtConfigStatus(
-      selectedRowKeys.value.map(Number),
-      0
-    )
-    if (data?.code === 200) {
-      message.success('批量审核成功')
-      selectedRowKeys.value = []
-      loadConfigList()
-    } else {
-      message.error(data?.msg || '批量审核失败')
-    }
-  } catch (error) {
-    console.error('批量审核失败:', error)
-    message.error('批量审核失败')
-  }
-}
-
-// 批量撤销处理
-const handleBatchRevoke = async () => {
-  try {
-    const { data } = await batchUpdateHbtConfigStatus(
-      selectedRowKeys.value.map(Number),
-      1
-    )
-    if (data?.code === 200) {
-      message.success('批量撤销成功')
-      selectedRowKeys.value = []
-      loadConfigList()
-    } else {
-      message.error(data?.msg || '批量撤销失败')
-    }
-  } catch (error) {
-    console.error('批量撤销失败:', error)
-    message.error('批量撤销失败')
-  }
-}
-
-// 表单提交处理
-const handleSubmit = async (formData: HbtConfigCreate | HbtConfigUpdate) => {
-  console.log('[HbtConfig] 开始提交表单:', formData)
-  try {
-    const { data } = await (currentRecord.value
-      ? updateHbtConfig(formData as HbtConfigUpdate)
-      : createHbtConfig(formData as HbtConfigCreate))
-    console.log('[HbtConfig] 提交表单响应:', data)
-    if (data?.code === 200) {
-      message.success(`${currentRecord.value ? '更新' : '创建'}成功`)
-      modalVisible.value = false
-      console.log('[HbtConfig] 表单提交成功')
-      loadConfigList()
-    } else {
-      message.error(data?.msg || `${currentRecord.value ? '更新' : '创建'}失败`)
-      console.error('[HbtConfig] 表单提交失败:', data?.msg)
-    }
-  } catch (error) {
-    console.error('[HbtConfig] 提交表单失败:', error)
-    message.error(`${currentRecord.value ? '更新' : '创建'}失败`)
-  }
-}
-
-// 组件挂载时加载数据
+// === 生命周期 ===
 onMounted(() => {
   loadConfigList()
 })
 </script>
 
 <style lang="less" scoped>
-.config-container {
-  :deep(.success-text) {
-    color: #52c41a;
-  }
-
-  :deep(.danger-text) {
-    color: #ff4d4f;
-  }
+.hbt-config {
+  padding: 24px;
+  //background-color: #fff;
 }
 </style>

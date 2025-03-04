@@ -7,11 +7,8 @@
 // 描述   : 部门数据传输对象
 //===================================================================
 
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Lean.Hbt.Common.Enums;
-using Lean.Hbt.Common.Models;
 
 namespace Lean.Hbt.Application.Dtos.Identity
 {
@@ -40,7 +37,8 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// <summary>
         /// 部门ID
         /// </summary>
-        public long Id { get; set; }
+        [AdaptMember("Id")]
+        public long DeptId { get; set; }
 
         /// <summary>
         /// 部门名称
@@ -83,11 +81,6 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// 状态（0正常 1停用）
         /// </summary>
         public HbtStatus Status { get; set; }
-
-        /// <summary>
-        /// 状态名称
-        /// </summary>
-        public string StatusName => Status.ToString();
 
         /// <summary>
         /// 创建时间
@@ -193,7 +186,8 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// 部门ID
         /// </summary>
         [Required(ErrorMessage = "部门ID不能为空")]
-        public long Id { get; set; }
+        [AdaptMember("Id")]
+        public long DeptId { get; set; }
     }
 
     /// <summary>
@@ -214,7 +208,6 @@ namespace Lean.Hbt.Application.Dtos.Identity
             Leader = string.Empty;
             Phone = string.Empty;
             Email = string.Empty;
-            StatusName = string.Empty;
             CreateTime = DateTime.Now;
         }
 
@@ -249,11 +242,6 @@ namespace Lean.Hbt.Application.Dtos.Identity
         public string Email { get; set; }
 
         /// <summary>
-        /// 状态名称
-        /// </summary>
-        public string StatusName { get; set; }
-
-        /// <summary>
         /// 创建时间
         /// </summary>
         public DateTime CreateTime { get; set; }
@@ -272,7 +260,7 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// 部门ID
         /// </summary>
         [Required(ErrorMessage = "部门ID不能为空")]
-        public long Id { get; set; }
+        public long DeptId { get; set; }
 
         /// <summary>
         /// 状态（0正常 1停用）
@@ -415,4 +403,4 @@ namespace Lean.Hbt.Application.Dtos.Identity
         [Required(ErrorMessage = "状态不能为空")]
         public string Status { get; set; }
     }
-} 
+}

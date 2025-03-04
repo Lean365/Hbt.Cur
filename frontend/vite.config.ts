@@ -204,6 +204,17 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
         '@': fileURLToPath(new URL('./src', import.meta.url))
       }
     },
+    optimizeDeps: {
+      include: [
+        'vue',
+        'vue-router',
+        'pinia',
+        '@vueuse/core',
+        'ant-design-vue',
+        '@ant-design/icons-vue'
+      ],
+      exclude: []
+    },
     server: {
       host: '0.0.0.0',
       port: Number(env.VITE_PORT) || 5349,
@@ -226,6 +237,10 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
             })
           }
         }
+      },
+      fs: {
+        strict: true,
+        allow: ['..']
       }
     },
     build: {
@@ -234,10 +249,11 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
       sourcemap: false,
       chunkSizeWarningLimit: 1500,
       rollupOptions: {
-        output: { 
-          manualChunks: { 
-            vue: ['vue', 'vue-router', 'pinia', '@vueuse/core'] 
-          } 
+        output: {
+          manualChunks: {
+            vue: ['vue', 'vue-router', 'pinia', '@vueuse/core'],
+            antd: ['ant-design-vue', '@ant-design/icons-vue']
+          }
         }
       }
     }

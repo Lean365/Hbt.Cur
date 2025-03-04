@@ -305,6 +305,24 @@ export default {
         504: 'Gateway timeout'
       },
       loadFailed: 'Load failed'
+    },
+
+    select: {
+      placeholder: 'Please select',
+      loadMore: 'Load more',
+      loading: 'Loading...',
+      notFound: 'No data found',
+      selected: '{count} items selected',
+      selectedTotal: 'Total {total} items',
+      clear: 'Clear',
+      search: 'Search',
+      all: 'All',
+      // Error messages
+      loadError: 'Failed to load data',
+      searchError: 'Search failed',
+      networkError: 'Network connection failed',
+      serverError: 'Server error',
+      unknownError: 'Unknown error'
     }
   }
 } 

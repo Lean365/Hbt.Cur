@@ -10,16 +10,11 @@
 using Lean.Hbt.Application.Dtos.Identity;
 using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Common.Exceptions;
-using Lean.Hbt.Common.Models;
+using Lean.Hbt.Common.Helpers;
 using Lean.Hbt.Domain.Entities.Identity;
 using Lean.Hbt.Domain.Repositories;
 using Lean.Hbt.Domain.Utils;
 using SqlSugar;
-using Mapster;
-using SqlSugar.Extensions;
-using System.Linq.Expressions;
-using Lean.Hbt.Common.Helpers;
-using System.IO;
 
 namespace Lean.Hbt.Application.Services.Identity;
 
@@ -50,13 +45,13 @@ public class HbtTenantService : IHbtTenantService
     public async Task<HbtPagedResult<HbtTenantDto>> GetPagedListAsync(HbtTenantQueryDto query)
     {
         var exp = Expressionable.Create<HbtTenant>();
-        
+
         if (!string.IsNullOrEmpty(query.TenantCode))
             exp.And(x => x.TenantCode.Contains(query.TenantCode));
-            
+
         if (!string.IsNullOrEmpty(query.TenantName))
             exp.And(x => x.TenantName.Contains(query.TenantName));
-            
+
         if (query.Status.HasValue)
             exp.And(x => x.Status == query.Status);
 
@@ -95,10 +90,10 @@ public class HbtTenantService : IHbtTenantService
         // 验证字段是否已存在
         if (!string.IsNullOrEmpty(input.TenantName))
             await HbtValidateUtils.ValidateFieldExistsAsync(_repository, "TenantName", input.TenantName);
-        
+
         if (!string.IsNullOrEmpty(input.TenantCode))
             await HbtValidateUtils.ValidateFieldExistsAsync(_repository, "TenantCode", input.TenantCode);
-        
+
         if (!string.IsNullOrEmpty(input.ContactEmail))
             await HbtValidateUtils.ValidateFieldExistsAsync(_repository, "ContactEmail", input.ContactEmail);
 
@@ -116,14 +111,14 @@ public class HbtTenantService : IHbtTenantService
     /// <returns>返回是否更新成功</returns>
     public async Task<bool> UpdateAsync(HbtTenantUpdateDto input)
     {
-        var tenant = await _repository.GetByIdAsync(input.Id);
+        var tenant = await _repository.GetByIdAsync(input.TenantId);
         if (tenant == null)
-            throw new HbtException($"租户不存在: {input.Id}");
+            throw new HbtException($"租户不存在: {input.TenantId}");
 
         // 验证字段是否已存在
-        await HbtValidateUtils.ValidateFieldExistsAsync(_repository, "TenantName", input.TenantName, input.Id);
-        await HbtValidateUtils.ValidateFieldExistsAsync(_repository, "TenantCode", input.TenantCode, input.Id);
-        await HbtValidateUtils.ValidateFieldExistsAsync(_repository, "ContactEmail", input.ContactEmail, input.Id);
+        await HbtValidateUtils.ValidateFieldExistsAsync(_repository, "TenantName", input.TenantName, input.TenantId);
+        await HbtValidateUtils.ValidateFieldExistsAsync(_repository, "TenantCode", input.TenantCode, input.TenantId);
+        await HbtValidateUtils.ValidateFieldExistsAsync(_repository, "ContactEmail", input.ContactEmail, input.TenantId);
 
         tenant.TenantName = input.TenantName;
         tenant.TenantCode = input.TenantCode;
@@ -186,10 +181,10 @@ public class HbtTenantService : IHbtTenantService
                 // 验证字段是否已存在
                 if (!string.IsNullOrEmpty(tenant.TenantName))
                     await HbtValidateUtils.ValidateFieldExistsAsync(_repository, "TenantName", tenant.TenantName);
-                
+
                 if (!string.IsNullOrEmpty(tenant.TenantCode))
                     await HbtValidateUtils.ValidateFieldExistsAsync(_repository, "TenantCode", tenant.TenantCode);
-                
+
                 if (!string.IsNullOrEmpty(tenant.ContactEmail))
                     await HbtValidateUtils.ValidateFieldExistsAsync(_repository, "ContactEmail", tenant.ContactEmail);
 
@@ -220,13 +215,13 @@ public class HbtTenantService : IHbtTenantService
     public async Task<byte[]> ExportAsync(HbtTenantQueryDto query, string sheetName = "Sheet1")
     {
         var exp = Expressionable.Create<HbtTenant>();
-        
+
         if (!string.IsNullOrEmpty(query.TenantCode))
             exp.And(x => x.TenantCode.Contains(query.TenantCode));
-            
+
         if (!string.IsNullOrEmpty(query.TenantName))
             exp.And(x => x.TenantName.Contains(query.TenantName));
-            
+
         if (query.Status.HasValue)
             exp.And(x => x.Status == query.Status);
 

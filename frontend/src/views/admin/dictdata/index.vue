@@ -1,155 +1,149 @@
-//===================================================================
-// 项目名 : Lean.Hbt
-// 文件名 : index.vue
-// 创建者 : Claude
-// 创建时间: 2024-03-20
-// 版本号 : v1.0.0
-// 描述    : 字典数据管理页面
-//===================================================================
+<!-- 
+===================================================================
+项目名称: Lean.Hbt
+文件名称: data/index.vue
+创建日期: 2024-03-20
+描述: 字典数据管理页面
+=================================================================== 
+-->
 
 <template>
-  <div class="p-6">
-    <a-card>
-      <!-- 搜索表单 -->
-      <a-form layout="inline" :model="queryParams">
+  <div class="hbt-dict-data">
+    <!-- 查询区域 -->
+    <hbt-query
+      :model="queryParams"
+      :query-fields="queryFields"
+      @search="handleQuery"
+      @reset="resetQuery"
+    >
+      <template #queryForm>
         <a-form-item label="字典标签">
-          <a-input v-model:value="queryParams.dictLabel" placeholder="请输入字典标签" allowClear />
+          <a-input
+            v-model:value="queryParams.dictLabel"
+            placeholder="请输入字典标签"
+            allow-clear
+            @keyup.enter="handleQuery"
+          />
         </a-form-item>
         <a-form-item label="字典键值">
-          <a-input v-model:value="queryParams.dictValue" placeholder="请输入字典键值" allowClear />
+          <a-input
+            v-model:value="queryParams.dictValue"
+            placeholder="请输入字典键值"
+            allow-clear
+            @keyup.enter="handleQuery"
+          />
         </a-form-item>
         <a-form-item label="状态">
-          <a-select v-model:value="queryParams.status" placeholder="请选择" allowClear>
-            <a-select-option :value="0">正常</a-select-option>
-            <a-select-option :value="1">停用</a-select-option>
-          </a-select>
+          <hbt-select
+            v-model:value="queryParams.status"
+            :options="statusOptions"
+            placeholder="请选择状态"
+            allow-clear
+          />
         </a-form-item>
-        <a-form-item>
-          <a-space>
-            <a-button type="primary" @click="handleSearch" v-hasPermi="['admin:dict:list']">查询</a-button>
-            <a-button @click="handleReset">重置</a-button>
-          </a-space>
-        </a-form-item>
-      </a-form>
+      </template>
+    </hbt-query>
 
-      <!-- 工具栏 -->
-      <div class="mb-4 flex justify-between">
-        <div>
-          <a-space>
-            <a-button type="primary" @click="handleAdd" v-hasPermi="['admin:dict:create']">
-              <plus-outlined />新增
-            </a-button>
-            <a-button 
-              :disabled="!selectedRowKeys.length"
-              @click="handleBatchDelete"
-              v-hasPermi="['admin:dict:delete']"
-            >
-              <delete-outlined />批量删除
-            </a-button>
-            <a-upload
-              name="file"
-              :show-upload-list="false"
-              :before-upload="handleImport"
-              v-hasPermi="['admin:dict:import']"
-            >
-              <a-button>
-                <upload-outlined />导入
-              </a-button>
-            </a-upload>
-            <a-button @click="handleExport" v-hasPermi="['admin:dict:export']">
-              <download-outlined />导出
-            </a-button>
-            <a-button @click="handleTemplate" v-hasPermi="['admin:dict:query']">
-              <file-outlined />模板
-            </a-button>
-          </a-space>
-        </div>
-        <div>
-          <a-button @click="handleRefresh">
-            <reload-outlined />刷新
-          </a-button>
-        </div>
-      </div>
+    <!-- 工具栏 -->
+    <hbt-toolbar
+      :show-add="true"
+      :show-edit="true"
+      :show-delete="true"
+      :show-export="true"
+      v-hasPermi="['admin:dict:data:add', 'admin:dict:data:edit', 'admin:dict:data:delete', 'admin:dict:data:export']"
+      @add="handleAdd"
+      @edit="handleBatchEdit"
+      @delete="handleBatchDelete"
+      @export="handleExport"
+      @refresh="loadDictDataList"
+      @column-setting="handleColumnSetting"
+    />
 
-      <!-- 字典数据表格 -->
-      <a-table
-        :loading="loading"
-        :columns="columns"
-        :data-source="dictDataList"
-        :pagination="false"
-        :row-selection="{
-          selectedRowKeys: selectedRowKeys,
-          onChange: onSelectChange
-        }"
-        row-key="dictDataId"
-      >
-        <template #bodyCell="{ column, record }">
-          <template v-if="column.key === 'isDefault'">
-            {{ record.isDefault === 1 ? '是' : '否' }}
-          </template>
-          <template v-else-if="column.key === 'status'">
-            <span v-hasPermi="['admin:dict:update']">
-              <a-switch
-                :checked="(record as HbtDictData).status === 0"
-                :loading="(record as HbtDictData).statusLoading"
-                @change="(checked: string | number | boolean) => handleStatusChange(record as HbtDictData, Boolean(checked))"
-              />
-            </span>
-          </template>
-          <template v-else-if="column.key === 'action'">
-            <a-space>
-              <a-button type="link" @click="handleEdit(record as HbtDictData)" v-hasPermi="['admin:dict:update']">编辑</a-button>
-              <a-button 
-                type="link" 
-                danger
-                v-hasPermi="['admin:dict:delete']"
-              >
-                <a-popconfirm
-                  title="确定要删除吗？"
-                  @confirm="handleDelete(record as HbtDictData)"
-                >
-                  <template #default>
-                    <span>删除</span>
-                  </template>
-                </a-popconfirm>
-              </a-button>
-            </a-space>
-          </template>
+    <!-- 数据表格 -->
+    <hbt-table
+      :columns="columns"
+      :data-source="dictDataList"
+      :loading="loading"
+      :row-selection="{ selectedRowKeys, onChange: onSelectChange }"
+      :scroll="{ x: 1200 }"
+      @change="handleTableChange"
+    >
+      <!-- 状态列 -->
+      <template #bodyCell="{ column, record }">
+        <template v-if="column.dataIndex === 'status'">
+          <a-tag :color="record.status ? 'success' : 'error'">
+            {{ record.status ? t('common.status.normal') : t('common.status.disabled') }}
+          </a-tag>
         </template>
-      </a-table>
 
-      <!-- 分页组件 -->
-      <hbt-pagination
-        v-model:current="queryParams.pageNum"
-        v-model:pageSize="queryParams.pageSize"
-        :total="total"
-        @change="handlePageChange"
-      />
+        <!-- 操作列 -->
+        <template v-else-if="column.dataIndex === 'operation'">
+          <hbt-operation
+            :record="record"
+            :show-view="true"
+            :show-edit="true"
+            :show-delete="true"
+            v-hasPermi="['admin:dict:data:query', 'admin:dict:data:edit', 'admin:dict:data:delete']"
+            button-type="link"
+            size="small"
+            @view="handleView"
+            @edit="handleEdit"
+            @delete="handleDelete"
+          />
+        </template>
+      </template>
+    </hbt-table>
 
-      <!-- 字典数据表单 -->
-      <dict-data-form
-        v-model:visible="modalVisible"
-        :title="modalTitle"
-        :dict-type-id="dictTypeId"
-        :record="currentRecord"
-        @submit="handleSubmit"
-      />
-    </a-card>
+    <!-- 分页 -->
+    <hbt-pagination
+      v-model:current="queryParams.pageIndex"
+      v-model:pageSize="queryParams.pageSize"
+      :total="pagination.total"
+      @change="handleTableChange"
+    />
+
+    <!-- 表单弹窗 -->
+    <dict-data-form
+      v-model:visible="formVisible"
+      :title="formTitle"
+      :loading="formLoading"
+      :model="formData"
+      :dict-type="dictType"
+      @ok="handleFormOk"
+      @cancel="handleFormCancel"
+    />
+
+    <!-- 详情弹窗 -->
+    <dict-data-detail
+      v-model:visible="detailVisible"
+      :loading="detailLoading"
+      :model="detailData"
+      @close="handleDetailClose"
+    />
   </div>
 </template>
 
-<script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
+<script lang="ts" setup>
+import { ref, onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { message } from 'ant-design-vue'
-import type { ColumnType } from 'ant-design-vue/es/table'
-import { 
-  PlusOutlined, 
-  DeleteOutlined,
-  UploadOutlined,
-  DownloadOutlined,
-  FileOutlined,
-  ReloadOutlined 
-} from '@ant-design/icons-vue'
+import type { TablePaginationConfig } from 'ant-design-vue'
+import { hasPermi } from '@/directives/permission'
+import { useRoute } from 'vue-router'
+
+// 引入标准组件
+import HbtQuery from '@/components/Business/Query/index.vue'
+import HbtToolbar from '@/components/Business/Toolbar/index.vue'
+import HbtTable from '@/components/Business/Table/index.vue'
+import HbtOperation from '@/components/Business/Operation/index.vue'
+import HbtPagination from '@/components/Business/Pagination/index.vue'
+import HbtSelect from '@/components/Business/Select/index.vue'
+
+// 引入业务组件
+import DictDataForm from './components/DictDataForm.vue'
+import DictDataDetail from './components/DictDataDetail.vue'
+
+// 引入API和类型
 import {
   getHbtDictDataList,
   getHbtDictData,
@@ -157,316 +151,303 @@ import {
   updateHbtDictData,
   deleteHbtDictData,
   batchDeleteHbtDictData,
-  importHbtDictData,
-  exportHbtDictData,
-  getHbtDictDataTemplate,
-  updateHbtDictDataStatus
+  exportHbtDictData
 } from '@/api/admin/hbtDictData'
-import type {
-  HbtDictData,
-  HbtDictDataQuery,
-  HbtDictDataCreate,
-  HbtDictDataUpdate
-} from '@/types/admin/hbtDictData'
-import DictDataForm from './components/DictDataForm.vue'
-import HbtPagination from '@/components/pagination/index.vue'
+import type { HbtDictData, HbtDictDataQuery } from '@/types/admin/hbtDictData'
 
-// 查询参数
-const queryParams = reactive<HbtDictDataQuery>({
-  pageNum: 1,
+const { t } = useI18n()
+const route = useRoute()
+
+// === 状态定义 ===
+const loading = ref(false)
+const dictDataList = ref<HbtDictData[]>([])
+const selectedRowKeys = ref<number[]>([])
+const formVisible = ref(false)
+const formTitle = ref('')
+const formLoading = ref(false)
+const formData = ref<Partial<HbtDictData>>({})
+const detailVisible = ref(false)
+const detailLoading = ref(false)
+const detailData = ref<HbtDictData>()
+const dictType = ref(route.query.dictType as string)
+
+// === 查询参数 ===
+const queryParams = ref<HbtDictDataQuery>({
+  pageIndex: 1,
   pageSize: 10,
-  dictTypeId: undefined,
+  dictType: dictType.value,
   dictLabel: '',
   dictValue: '',
   status: undefined
 })
 
-// 状态定义
-const loading = ref(false)
-const dictDataList = ref<HbtDictData[]>([])
-const selectedRowKeys = ref<(string | number)[]>([])
-const modalVisible = ref(false)
-const modalTitle = ref('新增字典数据')
-const currentRecord = ref<HbtDictData>()
-const total = ref(0)
-const dictTypeId = ref<number>()
+// === 分页配置 ===
+const pagination = ref<TablePaginationConfig>({
+  total: 0,
+  current: 1,
+  pageSize: 10,
+  showSizeChanger: true,
+  showQuickJumper: true
+})
 
-// 表格列定义
-const columns: ColumnType<HbtDictData>[] = [
+// === 状态选项 ===
+const statusOptions = [
+  { label: t('common.status.normal'), value: 1 },
+  { label: t('common.status.disabled'), value: 0 }
+]
+
+// === 表格列定义 ===
+const columns = [
   {
     title: '字典标签',
     dataIndex: 'dictLabel',
-    key: 'dictLabel',
-    width: 200
+    width: 200,
+    ellipsis: true
   },
   {
     title: '字典键值',
     dataIndex: 'dictValue',
-    key: 'dictValue',
-    width: 200
+    width: 200,
+    ellipsis: true
   },
   {
     title: '字典排序',
-    dataIndex: 'orderNum',
-    key: 'orderNum',
+    dataIndex: 'dictSort',
+    width: 100,
+    sorter: true
+  },
+  {
+    title: '状态',
+    dataIndex: 'status',
     width: 100
   },
   {
     title: '样式属性',
     dataIndex: 'cssClass',
-    key: 'cssClass',
-    width: 150
-  },
-  {
-    title: '表格样式',
-    dataIndex: 'listClass',
-    key: 'listClass',
-    width: 150
-  },
-  {
-    title: '是否默认',
-    dataIndex: 'isDefault',
-    key: 'isDefault',
-    width: 100
-  },
-  {
-    title: '状态',
-    dataIndex: 'status',
-    key: 'status',
-    width: 100
+    width: 150,
+    ellipsis: true
   },
   {
     title: '备注',
     dataIndex: 'remark',
-    key: 'remark',
+    width: 200,
     ellipsis: true
   },
   {
     title: '创建时间',
     dataIndex: 'createTime',
-    key: 'createTime',
-    width: 180
+    width: 180,
+    sorter: true
   },
   {
-    title: '操作',
-    key: 'action',
-    width: 150,
-    fixed: 'right' as const
+    title: t('common.table.header.operation'),
+    dataIndex: 'operation',
+    width: 180,
+    fixed: 'right'
   }
 ]
 
+// === 查询字段定义 ===
+const queryFields = [
+  {
+    name: 'dictLabel',
+    label: '字典标签',
+    type: 'input'
+  },
+  {
+    name: 'dictValue',
+    label: '字典键值',
+    type: 'input'
+  },
+  {
+    name: 'status',
+    label: '状态',
+    type: 'select',
+    options: statusOptions
+  }
+]
+
+// === 方法定义 ===
 // 加载字典数据列表
 const loadDictDataList = async () => {
-  loading.value = true
   try {
-    const { data } = await getHbtDictDataList(queryParams)
-    if (data?.code === 200) {
-      dictDataList.value = data.data.list
-      total.value = data.data.total
-    } else {
-      message.error(data?.msg || '加载字典数据列表失败')
-      dictDataList.value = []
-      total.value = 0
-    }
+    loading.value = true
+    const res = await getHbtDictDataList(queryParams.value)
+    dictDataList.value = res.data.rows
+    pagination.value.total = res.data.total
   } catch (error) {
     console.error('加载字典数据列表失败:', error)
-    message.error('加载字典数据列表失败')
-    dictDataList.value = []
-    total.value = 0
+    message.error(t('common.message.loadFailed'))
   } finally {
     loading.value = false
   }
 }
 
-// 页码变化处理
-const handlePageChange = (page: number, size: number) => {
-  queryParams.pageNum = page
-  queryParams.pageSize = size
+// 查询
+const handleQuery = () => {
+  queryParams.value.pageIndex = 1
   loadDictDataList()
 }
 
-// 选择变化处理
-const onSelectChange = (keys: (string | number)[]) => {
+// 重置查询
+const resetQuery = () => {
+  queryParams.value = {
+    pageIndex: 1,
+    pageSize: 10,
+    dictType: dictType.value,
+    dictLabel: '',
+    dictValue: '',
+    status: undefined
+  }
+  handleQuery()
+}
+
+// 表格变化
+const handleTableChange = (pag: any, filters: any, sorter: any) => {
+  queryParams.value.pageIndex = pag.current
+  queryParams.value.pageSize = pag.pageSize
+  if (sorter.field) {
+    queryParams.value.orderByColumn = sorter.field
+    queryParams.value.isAsc = sorter.order === 'ascend' ? 'asc' : 'desc'
+  }
+  loadDictDataList()
+}
+
+// 选择行变化
+const onSelectChange = (keys: number[]) => {
   selectedRowKeys.value = keys
 }
 
-// 搜索处理
-const handleSearch = () => {
-  queryParams.pageNum = 1
-  loadDictDataList()
+// 列设置
+const handleColumnSetting = () => {
+  // TODO: 实现列设置功能
 }
 
-// 重置处理
-const handleReset = () => {
-  queryParams.dictLabel = ''
-  queryParams.dictValue = ''
-  queryParams.status = undefined
-  queryParams.pageNum = 1
-  loadDictDataList()
-}
-
-// 刷新处理
-const handleRefresh = () => {
-  loadDictDataList()
-}
-
-// 新增处理
+// 新增
 const handleAdd = () => {
-  modalTitle.value = '新增字典数据'
-  currentRecord.value = undefined
-  modalVisible.value = true
+  formTitle.value = t('common.title.create')
+  formData.value = {
+    dictType: dictType.value,
+    status: 1
+  }
+  formVisible.value = true
 }
 
-// 编辑处理
+// 编辑
 const handleEdit = async (record: HbtDictData) => {
   try {
-    const { data } = await getHbtDictData(record.dictDataId)
-    if (data?.code === 200) {
-      modalTitle.value = '编辑字典数据'
-      currentRecord.value = data.data
-      modalVisible.value = true
-    } else {
-      message.error(data?.msg || '获取字典数据详情失败')
-    }
+    formTitle.value = t('common.title.edit')
+    formLoading.value = true
+    const res = await getHbtDictData(record.dictId)
+    formData.value = res.data
+    formVisible.value = true
   } catch (error) {
-    console.error('获取字典数据详情失败:', error)
-    message.error('获取字典数据详情失败')
+    message.error(t('common.message.loadFailed'))
+  } finally {
+    formLoading.value = false
   }
 }
 
-// 删除处理
+// 查看
+const handleView = async (record: HbtDictData) => {
+  try {
+    detailLoading.value = true
+    const res = await getHbtDictData(record.dictId)
+    detailData.value = res.data
+    detailVisible.value = true
+  } catch (error) {
+    message.error(t('common.message.loadFailed'))
+  } finally {
+    detailLoading.value = false
+  }
+}
+
+// 删除
 const handleDelete = async (record: HbtDictData) => {
   try {
-    const { data } = await deleteHbtDictData(record.dictDataId)
-    if (data?.code === 200) {
-      message.success('删除成功')
-      loadDictDataList()
-    } else {
-      message.error(data?.msg || '删除失败')
-    }
+    await deleteHbtDictData(record.dictId)
+    message.success(t('common.message.deleteSuccess'))
+    loadDictDataList()
   } catch (error) {
-    console.error('删除失败:', error)
-    message.error('删除失败')
+    message.error(t('common.message.deleteFailed'))
   }
 }
 
-// 批量删除处理
+// 批量编辑
+const handleBatchEdit = () => {
+  if (!selectedRowKeys.value.length) {
+    message.warning('请选择要编辑的记录')
+    return
+  }
+  // TODO: 实现批量编辑功能
+}
+
+// 批量删除
 const handleBatchDelete = async () => {
+  if (!selectedRowKeys.value.length) {
+    message.warning('请选择要删除的记录')
+    return
+  }
   try {
-    const { data } = await batchDeleteHbtDictData(selectedRowKeys.value.map(Number))
-    if (data?.code === 200) {
-      message.success('批量删除成功')
-      selectedRowKeys.value = []
-      loadDictDataList()
-    } else {
-      message.error(data?.msg || '批量删除失败')
-    }
+    await batchDeleteHbtDictData(selectedRowKeys.value)
+    message.success(t('common.message.deleteSuccess'))
+    selectedRowKeys.value = []
+    loadDictDataList()
   } catch (error) {
-    console.error('批量删除失败:', error)
-    message.error('批量删除失败')
+    message.error(t('common.message.deleteFailed'))
   }
 }
 
-// 导入处理
-const handleImport = async (file: File) => {
-  try {
-    const { data } = await importHbtDictData(file)
-    if (data?.code === 200) {
-      message.success('导入成功')
-      loadDictDataList()
-    } else {
-      message.error(data?.msg || '导入失败')
-    }
-  } catch (error) {
-    console.error('导入失败:', error)
-    message.error('导入失败')
-  }
-  return false
-}
-
-// 导出处理
+// 导出
 const handleExport = async () => {
   try {
-    const { data } = await exportHbtDictData(queryParams)
-    const url = window.URL.createObjectURL(new Blob([data]))
-    const link = document.createElement('a')
-    link.href = url
-    link.download = '字典数据.xlsx'
-    link.click()
-    window.URL.revokeObjectURL(url)
+    await exportHbtDictData(queryParams.value)
+    message.success('导出成功')
   } catch (error) {
-    console.error('导出失败:', error)
     message.error('导出失败')
   }
 }
 
-// 下载模板
-const handleTemplate = async () => {
+// 表单确认
+const handleFormOk = async () => {
   try {
-    const { data } = await getHbtDictDataTemplate()
-    const url = window.URL.createObjectURL(new Blob([data]))
-    const link = document.createElement('a')
-    link.href = url
-    link.download = '字典数据导入模板.xlsx'
-    link.click()
-    window.URL.revokeObjectURL(url)
-  } catch (error) {
-    console.error('下载模板失败:', error)
-    message.error('下载模板失败')
-  }
-}
-
-// 状态变更处理
-const handleStatusChange = async (record: HbtDictData, checked: boolean) => {
-  try {
-    record.statusLoading = true
-    const { data } = await updateHbtDictDataStatus(record.dictDataId, checked ? 0 : 1)
-    if (data?.code === 200) {
-      message.success('状态更新成功')
-      record.status = checked ? 0 : 1
+    formLoading.value = true
+    if (formData.value.dictId) {
+      await updateHbtDictData(formData.value as HbtDictData)
+      message.success(t('common.message.updateSuccess'))
     } else {
-      message.error(data?.msg || '状态更新失败')
+      await createHbtDictData(formData.value as HbtDictData)
+      message.success(t('common.message.createSuccess'))
     }
+    formVisible.value = false
+    loadDictDataList()
   } catch (error) {
-    console.error('状态更新失败:', error)
-    message.error('状态更新失败')
+    message.error(formData.value.dictId ? t('common.message.updateFailed') : t('common.message.createFailed'))
   } finally {
-    record.statusLoading = false
+    formLoading.value = false
   }
 }
 
-// 表单提交处理
-const handleSubmit = async (formData: HbtDictDataCreate | HbtDictDataUpdate) => {
-  try {
-    const { data } = await (currentRecord.value
-      ? updateHbtDictData(formData as HbtDictDataUpdate)
-      : createHbtDictData(formData as HbtDictDataCreate))
-      
-    if (data?.code === 200) {
-      message.success(`${currentRecord.value ? '更新' : '创建'}成功`)
-      modalVisible.value = false
-      loadDictDataList()
-    } else {
-      message.error(data?.msg || `${currentRecord.value ? '更新' : '创建'}失败`)
-    }
-  } catch (error) {
-    console.error(`${currentRecord.value ? '更新' : '创建'}失败:`, error)
-    message.error(`${currentRecord.value ? '更新' : '创建'}失败`)
-  }
+// 表单取消
+const handleFormCancel = () => {
+  formVisible.value = false
+  formData.value = {}
 }
 
-// 组件挂载时加载数据
+// 详情关闭
+const handleDetailClose = () => {
+  detailVisible.value = false
+  detailData.value = undefined
+}
+
+// === 生命周期 ===
 onMounted(() => {
   loadDictDataList()
 })
 </script>
 
-<style scoped>
-.ant-form {
-  margin-bottom: 24px;
-}
-
-.ant-table {
-  margin-top: 24px;
+<style lang="less" scoped>
+.hbt-dict-data {
+  padding: 24px;
 }
 </style> 

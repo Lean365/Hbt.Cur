@@ -8,16 +8,13 @@
 //===================================================================
 
 using Lean.Hbt.Application.Dtos.Admin;
+using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Common.Exceptions;
-using Lean.Hbt.Common.Models;
+using Lean.Hbt.Domain.Data;
 using Lean.Hbt.Domain.Entities.Admin;
-using Lean.Hbt.Domain.IServices;
 using Lean.Hbt.Domain.Repositories;
 using Lean.Hbt.Domain.Utils;
-using Mapster;
 using SqlSugar;
-using Lean.Hbt.Domain.Data;
-using Lean.Hbt.Common.Enums;
 
 namespace Lean.Hbt.Application.Services.Admin
 {
@@ -86,11 +83,13 @@ namespace Lean.Hbt.Application.Services.Admin
         /// <summary>
         /// 获取字典类型详情
         /// </summary>
-        public async Task<HbtDictTypeDto> GetAsync(long dictTypeId)
+        /// <param name="id">字典类型ID</param>
+        /// <returns>字典类型详情</returns>
+        public async Task<HbtDictTypeDto> GetAsync(long id)
         {
-            var dictType = await _dictTypeRepository.GetByIdAsync(dictTypeId);
+            var dictType = await _dictTypeRepository.GetByIdAsync(id);
             if (dictType == null)
-                throw new HbtException($"字典类型[{dictTypeId}]不存在");
+                throw new HbtException($"字典类型[{id}]不存在");
 
             return dictType.Adapt<HbtDictTypeDto>();
         }
@@ -136,14 +135,14 @@ namespace Lean.Hbt.Application.Services.Admin
         /// <summary>
         /// 删除字典类型
         /// </summary>
-        /// <param name="dictTypeId">字典类型ID</param>
+        /// <param name="id">字典类型ID</param>
         /// <returns>是否成功</returns>
-        public async Task<bool> DeleteAsync(long dictTypeId)
+        public async Task<bool> DeleteAsync(long id)
         {
-            var dictType = await _dictTypeRepository.GetByIdAsync(dictTypeId);
+            var dictType = await _dictTypeRepository.GetByIdAsync(id);
             if (dictType == null)
             {
-                throw new HbtException($"字典类型[{dictTypeId}]不存在");
+                throw new HbtException($"字典类型[{id}]不存在");
             }
 
             try

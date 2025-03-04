@@ -13,6 +13,10 @@ export default {
     },
     settings: {
       title: '系统设置'
+    },
+    refresh: {
+      success: '刷新成功',
+      failed: '刷新失败'
     }
   }
 } 

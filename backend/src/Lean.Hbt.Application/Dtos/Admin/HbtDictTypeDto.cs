@@ -10,6 +10,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Common.Models;
+using Mapster;
 
 namespace Lean.Hbt.Application.Dtos.Admin
 {
@@ -25,6 +26,7 @@ namespace Lean.Hbt.Application.Dtos.Admin
         /// <summary>
         /// 字典类型ID
         /// </summary>
+        [AdaptMember("Id")]
         public long DictTypeId { get; set; }
 
         /// <summary>
@@ -158,6 +160,7 @@ namespace Lean.Hbt.Application.Dtos.Admin
         /// 字典类型ID
         /// </summary>
         [Required(ErrorMessage = "字典类型ID不能为空")]
+        [AdaptMember("Id")]
         public long DictTypeId { get; set; }
 
         /// <summary>
@@ -339,6 +342,7 @@ namespace Lean.Hbt.Application.Dtos.Admin
         /// 字典类型ID
         /// </summary>
         [Required(ErrorMessage = "字典类型ID不能为空")]
+        [AdaptMember("Id")]
         public long DictTypeId { get; set; }
 
         /// <summary>

@@ -249,7 +249,7 @@ namespace Lean.Hbt.Application.Services.Workflow
                         // 调度任务
                         var taskEntity = new Domain.Entities.Workflow.HbtWorkflowScheduledTask
                         {
-                            Id = task.Id,
+                            Id = task.WorkflowScheduledTaskId,
                             WorkflowInstanceId = task.WorkflowInstanceId,
                             NodeId = task.NodeId,
                             TaskType = task.TaskType,
@@ -257,11 +257,11 @@ namespace Lean.Hbt.Application.Services.Workflow
                             TaskParameters = task.TaskParameters
                         };
 
-                        await scheduler.ScheduleJobAsync(task.Id, task.TaskType, task.ScheduledTime);
+                        await scheduler.ScheduleJobAsync(task.WorkflowScheduledTaskId, task.TaskType, task.ScheduledTime);
                     }
                     catch (Exception ex)
                     {
-                        _logger.Error($"调度任务{task.Id}失败", ex);
+                        _logger.Error($"调度任务{task.WorkflowScheduledTaskId}失败", ex);
                     }
                 }
             }

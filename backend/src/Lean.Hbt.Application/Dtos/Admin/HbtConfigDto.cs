@@ -11,6 +11,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Common.Models;
+using Mapster;
 
 namespace Lean.Hbt.Application.Dtos.Admin
 {
@@ -27,12 +28,14 @@ namespace Lean.Hbt.Application.Dtos.Admin
             ConfigName = string.Empty;
             ConfigKey = string.Empty;
             ConfigValue = string.Empty;
+            Remark = string.Empty;
             CreateTime = DateTime.Now;
         }
 
         /// <summary>
         /// 配置ID
         /// </summary>
+        [AdaptMember("Id")]
         public long ConfigId { get; set; }
 
         /// <summary>
@@ -61,6 +64,11 @@ namespace Lean.Hbt.Application.Dtos.Admin
         public int OrderNum { get; set; }
 
         /// <summary>
+        /// 备注
+        /// </summary>
+        public string Remark { get; set; }
+
+        /// <summary>
         /// 状态（0正常 1停用）
         /// </summary>
         public HbtStatus Status { get; set; }
@@ -74,6 +82,21 @@ namespace Lean.Hbt.Application.Dtos.Admin
         /// 创建时间
         /// </summary>
         public DateTime CreateTime { get; set; }
+
+        /// <summary>
+        /// 更新时间
+        /// </summary>
+        public DateTime? UpdateTime { get; set; }
+
+        /// <summary>
+        /// 创建者
+        /// </summary>
+        public string? CreateBy { get; set; }
+
+        /// <summary>
+        /// 更新者
+        /// </summary>
+        public string? UpdateBy { get; set; }
     }
 
     /// <summary>
@@ -88,6 +111,7 @@ namespace Lean.Hbt.Application.Dtos.Admin
         {
             ConfigName = string.Empty;
             ConfigKey = string.Empty;
+            Remark = string.Empty;
         }
 
         /// <summary>
@@ -108,6 +132,12 @@ namespace Lean.Hbt.Application.Dtos.Admin
         public int? ConfigBuiltin { get; set; }
 
         /// <summary>
+        /// 备注
+        /// </summary>
+        [MaxLength(500, ErrorMessage = "备注长度不能超过500个字符")]
+        public string Remark { get; set; }
+
+        /// <summary>
         /// 状态（0正常 1停用）
         /// </summary>
         public HbtStatus? Status { get; set; }
@@ -126,6 +156,7 @@ namespace Lean.Hbt.Application.Dtos.Admin
             ConfigName = string.Empty;
             ConfigKey = string.Empty;
             ConfigValue = string.Empty;
+            Remark = string.Empty;
         }
 
         /// <summary>
@@ -140,6 +171,7 @@ namespace Lean.Hbt.Application.Dtos.Admin
         /// </summary>
         [Required(ErrorMessage = "配置键名不能为空")]
         [MaxLength(100, ErrorMessage = "配置键名长度不能超过100个字符")]
+        [RegularExpression(@"^[a-zA-Z][a-zA-Z0-9_.]*$", ErrorMessage = "配置键名只能包含字母、数字、下划线和点号,且必须以字母开头")]
         public string ConfigKey { get; set; }
 
         /// <summary>
@@ -157,7 +189,14 @@ namespace Lean.Hbt.Application.Dtos.Admin
         /// <summary>
         /// 排序
         /// </summary>
+        [Range(0, 9999, ErrorMessage = "排序号必须在0-9999之间")]
         public int OrderNum { get; set; }
+
+        /// <summary>
+        /// 备注
+        /// </summary>
+        [MaxLength(500, ErrorMessage = "备注长度不能超过500个字符")]
+        public string Remark { get; set; }
 
         /// <summary>
         /// 状态（0正常 1停用）
@@ -178,12 +217,14 @@ namespace Lean.Hbt.Application.Dtos.Admin
             ConfigName = string.Empty;
             ConfigKey = string.Empty;
             ConfigValue = string.Empty;
+            Remark = string.Empty;
         }
 
         /// <summary>
         /// 配置ID
         /// </summary>
         [Required(ErrorMessage = "配置ID不能为空")]
+        [AdaptMember("Id")]
         public long ConfigId { get; set; }
 
         /// <summary>
@@ -198,6 +239,7 @@ namespace Lean.Hbt.Application.Dtos.Admin
         /// </summary>
         [Required(ErrorMessage = "配置键名不能为空")]
         [MaxLength(100, ErrorMessage = "配置键名长度不能超过100个字符")]
+        [RegularExpression(@"^[a-zA-Z][a-zA-Z0-9_.]*$", ErrorMessage = "配置键名只能包含字母、数字、下划线和点号,且必须以字母开头")]
         public string ConfigKey { get; set; }
 
         /// <summary>
@@ -215,7 +257,14 @@ namespace Lean.Hbt.Application.Dtos.Admin
         /// <summary>
         /// 排序
         /// </summary>
+        [Range(0, 9999, ErrorMessage = "排序号必须在0-9999之间")]
         public int OrderNum { get; set; }
+
+        /// <summary>
+        /// 备注
+        /// </summary>
+        [MaxLength(500, ErrorMessage = "备注长度不能超过500个字符")]
+        public string Remark { get; set; }
 
         /// <summary>
         /// 状态（0正常 1停用）
@@ -386,6 +435,7 @@ namespace Lean.Hbt.Application.Dtos.Admin
         /// 配置ID
         /// </summary>
         [Required(ErrorMessage = "配置ID不能为空")]
+        [AdaptMember("Id")]
         public long ConfigId { get; set; }
 
         /// <summary>
