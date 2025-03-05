@@ -35,7 +35,7 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 活动类型
         /// </summary>
-        public HbtWorkflowActivityType Type { get; set; }
+        public int ActivityType { get; set; }
 
         /// <summary>
         /// 活动配置(JSON)

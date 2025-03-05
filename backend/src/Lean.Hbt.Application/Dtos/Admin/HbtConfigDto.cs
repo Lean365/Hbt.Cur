@@ -7,11 +7,7 @@
 // 描述   : 系统配置数据传输对象
 //===================================================================
 
-using System;
 using System.ComponentModel.DataAnnotations;
-using Lean.Hbt.Common.Enums;
-using Lean.Hbt.Common.Models;
-using Mapster;
 
 namespace Lean.Hbt.Application.Dtos.Admin
 {
@@ -71,12 +67,7 @@ namespace Lean.Hbt.Application.Dtos.Admin
         /// <summary>
         /// 状态（0正常 1停用）
         /// </summary>
-        public HbtStatus Status { get; set; }
-
-        /// <summary>
-        /// 状态名称
-        /// </summary>
-        public string StatusName => Status.ToString();
+        public int Status { get; set; }
 
         /// <summary>
         /// 创建时间
@@ -140,7 +131,7 @@ namespace Lean.Hbt.Application.Dtos.Admin
         /// <summary>
         /// 状态（0正常 1停用）
         /// </summary>
-        public HbtStatus? Status { get; set; }
+        public int? Status { get; set; }
     }
 
     /// <summary>
@@ -184,7 +175,7 @@ namespace Lean.Hbt.Application.Dtos.Admin
         /// <summary>
         /// 系统内置（0否 1是）
         /// </summary>
-        public int ConfigBuiltin { get; set; }
+        public int ConfigBuiltin { get; set; } = 0;
 
         /// <summary>
         /// 排序
@@ -201,7 +192,7 @@ namespace Lean.Hbt.Application.Dtos.Admin
         /// <summary>
         /// 状态（0正常 1停用）
         /// </summary>
-        public HbtStatus Status { get; set; }
+        public int Status { get; set; }
     }
 
     /// <summary>
@@ -269,7 +260,7 @@ namespace Lean.Hbt.Application.Dtos.Admin
         /// <summary>
         /// 状态（0正常 1停用）
         /// </summary>
-        public HbtStatus Status { get; set; }
+        public int Status { get; set; }
     }
 
     /// <summary>
@@ -305,7 +296,7 @@ namespace Lean.Hbt.Application.Dtos.Admin
         /// <summary>
         /// 系统内置（0否 1是）
         /// </summary>
-        public string ConfigBuiltin { get; set; }
+        public int ConfigBuiltin { get; set; }
 
         /// <summary>
         /// 排序
@@ -315,7 +306,7 @@ namespace Lean.Hbt.Application.Dtos.Admin
         /// <summary>
         /// 状态（0正常 1停用）
         /// </summary>
-        public string Status { get; set; }
+        public int Status { get; set; }
     }
 
     /// <summary>
@@ -331,8 +322,8 @@ namespace Lean.Hbt.Application.Dtos.Admin
             ConfigName = string.Empty;
             ConfigKey = string.Empty;
             ConfigValue = string.Empty;
-            ConfigBuiltin = string.Empty;
-            Status = string.Empty;
+            ConfigBuiltin = 0;
+            Status = 0;
         }
 
         /// <summary>
@@ -353,7 +344,7 @@ namespace Lean.Hbt.Application.Dtos.Admin
         /// <summary>
         /// 系统内置（0否 1是）
         /// </summary>
-        public string ConfigBuiltin { get; set; }
+        public int ConfigBuiltin { get; set; }
 
         /// <summary>
         /// 排序
@@ -363,7 +354,7 @@ namespace Lean.Hbt.Application.Dtos.Admin
         /// <summary>
         /// 状态（0正常 1停用）
         /// </summary>
-        public string Status { get; set; }
+        public int Status { get; set; }
 
         /// <summary>
         /// 创建时间
@@ -384,8 +375,8 @@ namespace Lean.Hbt.Application.Dtos.Admin
             ConfigName = string.Empty;
             ConfigKey = string.Empty;
             ConfigValue = string.Empty;
-            ConfigBuiltin = string.Empty;
-            Status = string.Empty;
+            ConfigBuiltin = 0;
+            Status = 0;
         }
 
         /// <summary>
@@ -406,7 +397,7 @@ namespace Lean.Hbt.Application.Dtos.Admin
         /// <summary>
         /// 系统内置（0否 1是）
         /// </summary>
-        public string ConfigBuiltin { get; set; }
+        public int ConfigBuiltin { get; set; }
 
         /// <summary>
         /// 排序
@@ -416,7 +407,7 @@ namespace Lean.Hbt.Application.Dtos.Admin
         /// <summary>
         /// 状态（0正常 1停用）
         /// </summary>
-        public string Status { get; set; }
+        public int Status { get; set; }
     }
 
     /// <summary>
@@ -441,6 +432,6 @@ namespace Lean.Hbt.Application.Dtos.Admin
         /// <summary>
         /// 状态（0正常 1停用）
         /// </summary>
-        public HbtStatus Status { get; set; }
+        public int Status { get; set; }
     }
-} 
+}

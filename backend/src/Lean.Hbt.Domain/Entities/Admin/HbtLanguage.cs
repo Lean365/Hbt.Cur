@@ -8,7 +8,6 @@
 // 版本号 : V0.0.1
 // 描述   : 语言实体
 //===================================================================
-using Lean.Hbt.Common.Enums;
 using SqlSugar;
 
 namespace Lean.Hbt.Domain.Entities.Admin
@@ -48,19 +47,19 @@ namespace Lean.Hbt.Domain.Entities.Admin
         /// 状态（0正常 1停用）
         /// </summary>
         [SugarColumn(ColumnName = "status", ColumnDescription = "状态（0正常 1停用）", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
-        public HbtStatus Status { get; set; } = HbtStatus.Normal;
+        public int Status { get; set; } = 0;
 
         /// <summary>
-        /// 是否默认语言
+        /// 是否默认语言（0否 1是）
         /// </summary>
-        [SugarColumn(ColumnName = "is_default", ColumnDescription = "是否默认语言", ColumnDataType = "bit", IsNullable = false, DefaultValue = "0")]
-        public bool IsDefault { get; set; } = false;
+        [SugarColumn(ColumnName = "is_default", ColumnDescription = "是否默认语言（0否 1是）", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
+        public int IsDefault { get; set; } = 0;
 
         /// <summary>
         /// 租户ID
         /// </summary>
         [SugarColumn(ColumnName = "tenant_id", ColumnDescription = "租户ID", ColumnDataType = "bigint", IsNullable = false)]
-        public long TenantId { get; set; }= 0;
+        public long TenantId { get; set; } = 0;
 
         /// <summary>
         /// 语言内置（0否 1是）

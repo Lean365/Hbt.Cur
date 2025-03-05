@@ -37,7 +37,7 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 任务类型
         /// </summary>
-        public HbtWorkflowScheduledTaskType TaskType { get; set; }
+        public int TaskType { get; set; }
 
         /// <summary>
         /// 计划执行时间
@@ -52,7 +52,7 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 执行状态
         /// </summary>
-        public HbtWorkflowScheduledTaskStatus Status { get; set; }
+        public int Status { get; set; }
 
         /// <summary>
         /// 重试次数

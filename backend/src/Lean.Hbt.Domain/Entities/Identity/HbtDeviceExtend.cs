@@ -18,7 +18,7 @@ namespace Lean.Hbt.Domain.Entities.Identity
     /// 设备扩展信息实体
     /// </summary>
     [SugarTable("hbt_id_device_extend", "设备扩展信息表")]
-    [SugarIndex("ix_device_extend_user", nameof(UserId), OrderByType.Asc)]
+    [SugarIndex("ix_device_tenant_user", nameof(TenantId), OrderByType.Asc, nameof(UserId), OrderByType.Asc, true)]
     public class HbtDeviceExtend : HbtBaseEntity
     {
         /// <summary>
@@ -37,7 +37,7 @@ namespace Lean.Hbt.Domain.Entities.Identity
         /// 设备类型
         /// </summary>
         [SugarColumn(ColumnName = "device_type", ColumnDescription = "设备类型", ColumnDataType = "int", IsNullable = false)]
-        public HbtDeviceType DeviceType { get; set; } = HbtDeviceType.PC;
+        public int DeviceType { get; set; }
 
         /// <summary>
         /// 设备标识
@@ -61,7 +61,7 @@ namespace Lean.Hbt.Domain.Entities.Identity
         /// 操作系统类型
         /// </summary>
         [SugarColumn(ColumnName = "os_type", ColumnDescription = "操作系统类型", ColumnDataType = "int", IsNullable = true)]
-        public HbtOsType? OsType { get; set; }
+        public int? OsType { get; set; }
 
         /// <summary>
         /// 系统版本
@@ -73,7 +73,7 @@ namespace Lean.Hbt.Domain.Entities.Identity
         /// 浏览器类型
         /// </summary>
         [SugarColumn(ColumnName = "browser_type", ColumnDescription = "浏览器类型", ColumnDataType = "int", IsNullable = true)]
-        public HbtBrowserType? BrowserType { get; set; }
+        public int? BrowserType { get; set; }
 
         /// <summary>
         /// 浏览器版本
@@ -91,7 +91,7 @@ namespace Lean.Hbt.Domain.Entities.Identity
         /// 设备状态
         /// </summary>
         [SugarColumn(ColumnName = "device_status", ColumnDescription = "设备状态", ColumnDataType = "int", IsNullable = false)]
-        public HbtLoginStatus DeviceStatus { get; set; } = HbtLoginStatus.Offline;
+        public int DeviceStatus { get; set; }
 
         /// <summary>
         /// 最后在线时间

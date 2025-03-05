@@ -5,6 +5,8 @@ import adminTranslationZhCN from './admin/translation/zh-CN'
 import adminTranslationEnUS from './admin/translation/en-US'
 import adminLanguageZhCN from './admin/language/zh-CN'
 import adminLanguageEnUS from './admin/language/en-US'
+import adminDictTypeZhCN from './admin/dicttype/zh-CN'
+import adminDictTypeEnUS from './admin/dicttype/en-US'
 
 // 导入公共翻译
 import commonZhCN from './common/zh-CN'
@@ -75,7 +77,8 @@ const messages = {
   'zh-CN': {
     admin: {
       ...adminTranslationZhCN.admin,
-      ...adminLanguageZhCN.admin
+      ...adminLanguageZhCN.admin,
+      ...adminDictTypeZhCN.admin
     },
     ...commonZhCN,
     ...dashboardZhCN,
@@ -99,7 +102,8 @@ const messages = {
   'en-US': {
     admin: {
       ...adminTranslationEnUS.admin,
-      ...adminLanguageEnUS.admin
+      ...adminLanguageEnUS.admin,
+      ...adminDictTypeEnUS.admin
     },
     ...commonEnUS,
     ...dashboardEnUS,

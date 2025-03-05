@@ -7,10 +7,7 @@
 // 描述    : 岗位数据传输对象
 //===================================================================
 
-using System;
 using System.ComponentModel.DataAnnotations;
-using Lean.Hbt.Common.Enums;
-using Lean.Hbt.Common.Models;
 
 namespace Lean.Hbt.Application.Dtos.Identity
 {
@@ -58,7 +55,7 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// <summary>
         /// 状态（0正常 1停用）
         /// </summary>
-        public HbtStatus Status { get; set; }
+        public int Status { get; set; }
 
         /// <summary>
         /// 租户ID
@@ -73,7 +70,7 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// <summary>
         /// 备注
         /// </summary>
-        public string Remark { get; set; }
+        public string? Remark { get; set; }
     }
 
     /// <summary>
@@ -88,17 +85,19 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// <summary>
         /// 岗位编码
         /// </summary>
+        [MaxLength(50, ErrorMessage = "岗位编码长度不能超过50个字符")]
         public string? PostCode { get; set; }
 
         /// <summary>
         /// 岗位名称
         /// </summary>
+        [MaxLength(50, ErrorMessage = "岗位名称长度不能超过50个字符")]
         public string? PostName { get; set; }
 
         /// <summary>
         /// 状态（0正常 1停用）
         /// </summary>
-        public HbtStatus? Status { get; set; }
+        public int? Status { get; set; }
     }
 
     /// <summary>
@@ -115,14 +114,14 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// </summary>
         [Required(ErrorMessage = "岗位编码不能为空")]
         [MaxLength(50, ErrorMessage = "岗位编码长度不能超过50个字符")]
-        public required string PostCode { get; set; }
+        public string PostCode { get; set; }
 
         /// <summary>
         /// 岗位名称
         /// </summary>
         [Required(ErrorMessage = "岗位名称不能为空")]
         [MaxLength(50, ErrorMessage = "岗位名称长度不能超过50个字符")]
-        public required string PostName { get; set; }
+        public string PostName { get; set; }
 
         /// <summary>
         /// 显示顺序
@@ -134,13 +133,14 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// <summary>
         /// 状态（0正常 1停用）
         /// </summary>
-        public HbtStatus Status { get; set; }
+        public int Status { get; set; }
 
         /// <summary>
         /// 租户ID
         /// </summary>
         [Required(ErrorMessage = "租户ID不能为空")]
-        public required long TenantId { get; set; }
+        [Range(0, 9999, ErrorMessage = "租户ID必须在0-9999之间")]
+        public long TenantId { get; set; }
 
         /// <summary>
         /// 备注
@@ -162,7 +162,7 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// 主键
         /// </summary>
         [Required(ErrorMessage = "岗位ID不能为空")]
-        public long Id { get; set; }
+        public long PostId { get; set; }
     }
 
     /// <summary>
@@ -181,7 +181,7 @@ namespace Lean.Hbt.Application.Dtos.Identity
         {
             PostCode = string.Empty;
             PostName = string.Empty;
-            Status = string.Empty;
+            Status = 0;
             Remark = string.Empty;
         }
 
@@ -203,10 +203,10 @@ namespace Lean.Hbt.Application.Dtos.Identity
         public int OrderNum { get; set; }
 
         /// <summary>
-        /// 状态（0=正常,1=停用）
+        /// 状态（0正常 1停用）
         /// </summary>
         [Required(ErrorMessage = "状态不能为空")]
-        public string Status { get; set; }
+        public int Status { get; set; }
 
         /// <summary>
         /// 备注
@@ -230,7 +230,7 @@ namespace Lean.Hbt.Application.Dtos.Identity
         {
             PostCode = string.Empty;
             PostName = string.Empty;
-            StatusName = string.Empty;
+            Status = 0;
             Remark = string.Empty;
             CreateTime = DateTime.Now;
         }
@@ -253,7 +253,7 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// <summary>
         /// 状态
         /// </summary>
-        public string StatusName { get; set; }
+        public int Status { get; set; }
 
         /// <summary>
         /// 创建时间
@@ -283,7 +283,7 @@ namespace Lean.Hbt.Application.Dtos.Identity
             PostCode = "admin";
             PostName = "系统管理员";
             OrderNum = 1;
-            Status = "正常";
+            Status = 0;
             Remark = "系统内置岗位";
         }
 
@@ -303,9 +303,9 @@ namespace Lean.Hbt.Application.Dtos.Identity
         public int OrderNum { get; set; }
 
         /// <summary>
-        /// 状态（0=正常,1=停用）
+        /// 状态（0正常 1停用）
         /// </summary>
-        public string Status { get; set; }
+        public int Status { get; set; }
 
         /// <summary>
         /// 备注
@@ -331,6 +331,7 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// <summary>
         /// 状态(0正常 1停用)
         /// </summary>
-        public HbtStatus Status { get; set; }
+        [Required(ErrorMessage = "状态不能为空")]
+        public int Status { get; set; }
     }
-} 
+}

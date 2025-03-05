@@ -7,12 +7,9 @@
 // 描述   : 用户数据初始化类
 //===================================================================
 
-using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Common.Utils;
-using Lean.Hbt.Domain.Entities.Admin;
 using Lean.Hbt.Domain.Entities.Identity;
 using Lean.Hbt.Domain.IServices;
-using Lean.Hbt.Infrastructure.Data.Contexts;
 
 namespace Lean.Hbt.Infrastructure.Data.Seeds;
 
@@ -51,14 +48,14 @@ public class HbtDbSeedUser
             UserName = "admin",
             NickName = "超级管理员",
             EnglishName = "Administrator",
-            UserType = HbtUserType.Admin,
+            UserType = 0, // 0 表示系统用户
             Password = hash,        // 使用哈希后的密码
             Salt = salt,           // 使用生成的盐值
             Email = "admin@lean365.com",
             PhoneNumber = "13800138000",
-            Gender = HbtGender.Unknown,
+            Gender = 0,
             Avatar = "/avatar/default.png",
-            Status = HbtStatus.Normal,
+            Status = 0, // 0 表示正常状态
             TenantId = 0,
             LastPasswordChangeTime = DateTime.Now,
             CreateBy = "system",
@@ -100,4 +97,4 @@ public class HbtDbSeedUser
 
         return (insertCount, updateCount);
     }
-} 
+}

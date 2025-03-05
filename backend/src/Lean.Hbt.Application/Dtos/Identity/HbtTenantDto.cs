@@ -7,8 +7,10 @@
 // 描述   : 租户数据传输对象
 //===================================================================
 
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using Lean.Hbt.Common.Enums;
+using Mapster;
 
 namespace Lean.Hbt.Application.Dtos.Identity;
 
@@ -24,24 +26,9 @@ public class HbtTenantStatusDto
     public long TenantId { get; set; }
 
     /// <summary>
-    /// 当前状态
+    /// 状态
     /// </summary>
-    public HbtStatus Status { get; set; }
-
-    /// <summary>
-    /// 状态名称
-    /// </summary>
-    public string StatusName => Status.ToString();
-
-    /// <summary>
-    /// 可用操作
-    /// </summary>
-    public string[] AvailableOperations { get; set; } = Array.Empty<string>();
-
-    /// <summary>
-    /// 状态描述
-    /// </summary>
-    public string StatusDescription { get; set; } = string.Empty;
+    public int Status { get; set; }
 }
 
 /// <summary>
@@ -74,47 +61,56 @@ public class HbtTenantDto
     /// <summary>
     /// 租户名称
     /// </summary>
-    public string TenantName { get; set; }
+    [Required]
+    public required string TenantName { get; set; }
 
     /// <summary>
     /// 租户编码
     /// </summary>
-    public string TenantCode { get; set; }
+    [Required]
+    public required string TenantCode { get; set; }
 
     /// <summary>
     /// 联系人
     /// </summary>
-    public string ContactPerson { get; set; }
+    [Required]
+    public required string ContactPerson { get; set; }
 
     /// <summary>
     /// 联系电话
     /// </summary>
-    public string ContactPhone { get; set; }
+    [Required]
+    public required string ContactPhone { get; set; }
 
     /// <summary>
     /// 联系邮箱
     /// </summary>
-    public string ContactEmail { get; set; }
+    [Required]
+    public required string ContactEmail { get; set; }
 
     /// <summary>
     /// 租户地址
     /// </summary>
-    public string Address { get; set; }
+    [Required]
+    public required string Address { get; set; }
 
     /// <summary>
     /// 租户域名
     /// </summary>
-    public string Domain { get; set; }
+    [Required]
+    public required string Domain { get; set; }
 
     /// <summary>
     /// 租户Logo
     /// </summary>
-    public string LogoUrl { get; set; }
+    [Required]
+    public required string LogoUrl { get; set; }
 
     /// <summary>
     /// 租户主题
     /// </summary>
-    public string Theme { get; set; }
+    [Required]
+    public required string Theme { get; set; }
 
     /// <summary>
     /// 授权开始时间
@@ -134,12 +130,8 @@ public class HbtTenantDto
     /// <summary>
     /// 状态
     /// </summary>
-    public HbtStatus Status { get; set; }
+    public int Status { get; set; }
 
-    /// <summary>
-    /// 状态名称
-    /// </summary>
-    public string StatusName => Status.ToString();
 
     /// <summary>
     /// 创建时间
@@ -175,7 +167,7 @@ public class HbtTenantQueryDto : HbtPagedQuery
     /// <summary>
     /// 状态
     /// </summary>
-    public HbtStatus? Status { get; set; }
+    public int? Status { get; set; }
 }
 
 /// <summary>
@@ -190,7 +182,7 @@ public class HbtTenantCreateDto
     {
         TenantName = string.Empty;
         TenantCode = string.Empty;
-        ContactPerson = string.Empty;
+        ContactUser = string.Empty;
         ContactPhone = string.Empty;
         ContactEmail = string.Empty;
         Address = string.Empty;
@@ -219,7 +211,7 @@ public class HbtTenantCreateDto
     /// </summary>
     [Required(ErrorMessage = "联系人不能为空")]
     [MaxLength(20, ErrorMessage = "联系人长度不能超过20个字符")]
-    public string ContactPerson { get; set; }
+    public string ContactUser { get; set; }
 
     /// <summary>
     /// 联系电话

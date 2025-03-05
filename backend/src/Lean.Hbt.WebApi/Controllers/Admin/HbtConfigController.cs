@@ -169,8 +169,11 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
         /// <param name="status">状态</param>
         /// <returns>是否成功</returns>
         [HttpPut("{configId}/status")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HbtPerm("admin:config:update")]
-        public async Task<IActionResult> UpdateStatusAsync(long configId, [FromQuery] HbtStatus status)
+        public async Task<IActionResult> UpdateStatusAsync(long configId, [FromQuery] int status)
         {
             var input = new HbtConfigStatusDto
             {

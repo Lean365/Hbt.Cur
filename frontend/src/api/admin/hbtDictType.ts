@@ -145,4 +145,16 @@ export function updateHbtDictTypeStatus(dictTypeId: number, status: HbtStatus) {
     method: 'put',
     params: { status }
   })
+}
+
+/**
+ * 执行字典SQL脚本
+ * @param dictTypeId 字典类型ID
+ * @returns 返回SQL执行结果
+ */
+export function executeDictSql(dictTypeId: number) {
+  return request<ApiResult<any[]>>({
+    url: `/api/HbtDictType/${dictTypeId}/execute-sql`,
+    method: 'get'
+  })
 } 

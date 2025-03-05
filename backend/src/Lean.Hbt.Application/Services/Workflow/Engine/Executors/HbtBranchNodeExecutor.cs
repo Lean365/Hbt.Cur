@@ -9,34 +9,28 @@
 // 描述    : 分支节点执行器
 //===================================================================
 
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Linq;
-using Lean.Hbt.Common.Enums;
-using Lean.Hbt.Domain.Entities.Workflow;
-using Lean.Hbt.Domain.Repositories;
-using Lean.Hbt.Domain.Models.Workflow;
-using Lean.Hbt.Application.Services.Workflow.Engine.Expressions;
-using Lean.Hbt.Domain.IServices;
 using System.Text.Json;
-using Lean.Hbt.Domain.IServices;
+using Lean.Hbt.Application.Services.Workflow.Engine.Expressions;
+using Lean.Hbt.Domain.Entities.Workflow;
+using Lean.Hbt.Domain.Models.Workflow;
+using Lean.Hbt.Domain.Repositories;
 
 namespace Lean.Hbt.Application.Services.Workflow.Engine.Executors
 {
     /// <summary>
     /// 分支节点执行器
     /// </summary>
-    public class BranchNodeExecutor : WorkflowNodeExecutorBase
+    public class HbtBranchNodeExecutor : HbtWorkflowNodeExecutorBase
     {
         private readonly IHbtRepository<HbtWorkflowTransition> _transitionRepository;
-        private readonly IWorkflowExpressionEngine _expressionEngine;
+        private readonly IHbtWorkflowExpressionEngine _expressionEngine;
 
         /// <summary>
         /// 构造函数
         /// </summary>
-        public BranchNodeExecutor(
+        public HbtBranchNodeExecutor(
             IHbtRepository<HbtWorkflowTransition> transitionRepository,
-            IWorkflowExpressionEngine expressionEngine,
+            IHbtWorkflowExpressionEngine expressionEngine,
             IHbtLogger logger) : base(logger)
         {
             _transitionRepository = transitionRepository;
@@ -46,7 +40,7 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine.Executors
         /// <summary>
         /// 节点类型
         /// </summary>
-        protected override HbtWorkflowNodeType NodeType => HbtWorkflowNodeType.Branch;
+        protected override int NodeType => 3; // 3 表示分支节点
 
         /// <summary>
         /// 执行节点
@@ -86,7 +80,7 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine.Executors
                 if (conditionMet)
                 {
                     availableTransitions.Add(transition.Id);
-                    
+
                     // 如果不是多分支模式,找到第一个满足条件的分支后就退出
                     if (!config.AllowMultipleBranches)
                     {
@@ -109,4 +103,4 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine.Executors
             return CreateSuccessResult(outputVariables);
         }
     }
-} 
+}

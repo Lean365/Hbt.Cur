@@ -10,7 +10,6 @@
 //===================================================================
 
 using Lean.Hbt.Application.Services.Workflow.Engine;
-using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Domain.Data;
 using Lean.Hbt.Domain.Entities.Workflow;
 using Microsoft.Extensions.DependencyInjection;
@@ -59,46 +58,47 @@ namespace Lean.Hbt.Application.Services.Workflow.Jobs
                 return;
             }
 
-            if (workflowTask.Status != HbtWorkflowTaskStatus.Pending)
+            if (workflowTask.Status != 0) // 待处理
             {
-                _logger.Info($"工作流任务[{workflowTask.Id}]状态为{workflowTask.Status},不需要发送超时提醒");
+                _logger.Info($"工作流任务[{workflowTask.Id}]状态为{workflowTask.Status},不需要超时提醒");
                 return;
             }
 
-            // 检查是否已超时
-            if (workflowTask.DueTime.HasValue && DateTime.Now >= workflowTask.DueTime.Value)
+            try
             {
-                // 更新任务状态为超时
-                await dbContext.Client.Updateable<HbtWorkflowTask>()
-                    .SetColumns(t => new HbtWorkflowTask
-                    {
-                        Status = HbtWorkflowTaskStatus.Timeout,
-                        UpdateTime = DateTime.Now
-                    })
-                    .Where(t => t.Id == workflowTask.Id)
-                    .ExecuteCommandAsync();
+                // 记录操作历史
+                var history = new HbtWorkflowHistory
+                {
+                    WorkflowInstanceId = task.WorkflowInstanceId,
+                    NodeId = task.NodeId,
+                    OperationType = 1, // 超时提醒
+                    OperationResult = 1, // 成功
+                    OperationComment = "已发送超时提醒",
+                    OperationTime = DateTime.Now
+                };
+
+                await dbContext.Client.Insertable(history).ExecuteCommandAsync();
+
+                _logger.Info($"工作流任务[{workflowTask.Id}]已发送超时提醒");
+            }
+            catch (Exception ex)
+            {
+                _logger.Error($"工作流任务[{workflowTask.Id}]发送超时提醒失败: {ex.Message}", ex);
 
                 // 记录操作历史
                 var history = new HbtWorkflowHistory
                 {
                     WorkflowInstanceId = task.WorkflowInstanceId,
                     NodeId = task.NodeId,
-                    OperationType = (int)HbtWorkflowOperationType.Cancel, // 使用Cancel作为超时操作类型
-                    OperationResult = (int)HbtWorkflowTaskResult.Rejected, // 使用Rejected作为超时结果
-                    OperationComment = "任务已超时",
+                    OperationType = 1, // 超时提醒
+                    OperationResult = 2, // 失败
+                    OperationComment = $"发送超时提醒失败: {ex.Message}",
                     OperationTime = DateTime.Now
                 };
 
                 await dbContext.Client.Insertable(history).ExecuteCommandAsync();
 
-                // TODO: 发送超时通知
-                _logger.Info($"工作流任务[{workflowTask.Id}]已超时,已发送通知");
-            }
-            else
-            {
-                // 发送即将超时提醒
-                // TODO: 发送提醒通知
-                _logger.Info($"工作流任务[{workflowTask.Id}]即将超时,已发送提醒");
+                throw;
             }
         }
     }

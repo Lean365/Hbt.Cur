@@ -41,7 +41,7 @@ namespace Lean.Hbt.Domain.Entities.RealTime
         /// 消息类型
         /// </summary>
         [SugarColumn(ColumnName = "message_type", ColumnDescription = "消息类型", ColumnDataType = "int", IsNullable = false)]
-        public HbtMessageType MessageType { get; set; }
+        public int MessageType { get; set; }
 
         /// <summary>
         /// 消息内容
@@ -52,8 +52,8 @@ namespace Lean.Hbt.Domain.Entities.RealTime
         /// <summary>
         /// 是否已读
         /// </summary>
-        [SugarColumn(ColumnName = "is_read", ColumnDescription = "是否已读", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
-        public HbtYesNo IsRead { get; set; }
+        [SugarColumn(ColumnName = "is_read", ColumnDescription = "是否已读", ColumnDataType = "int", IsNullable = false)]
+        public int IsRead { get; set; }
 
         /// <summary>
         /// 读取时间

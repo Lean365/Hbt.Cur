@@ -44,14 +44,14 @@ namespace Lean.Hbt.Domain.Entities.Workflow
         /// <summary>
         /// 任务类型
         /// </summary>
-        [SugarColumn(ColumnName = "task_type", ColumnDescription = "任务类型", ColumnDataType = "tinyint", IsNullable = false)]
-        public HbtWorkflowTaskType TaskType { get; set; }
+        [SugarColumn(ColumnName = "task_type", ColumnDescription = "任务类型", ColumnDataType = "int", IsNullable = false)]
+        public int TaskType { get; set; }
 
         /// <summary>
         /// 任务状态
         /// </summary>
-        [SugarColumn(ColumnName = "task_status", ColumnDescription = "任务状态", ColumnDataType = "tinyint", IsNullable = false)]
-        public HbtWorkflowTaskStatus Status { get; set; }
+        [SugarColumn(ColumnName = "status", ColumnDescription = "任务状态", ColumnDataType = "int", IsNullable = false)]
+        public int Status { get; set; }
 
         /// <summary>
         /// 处理人ID

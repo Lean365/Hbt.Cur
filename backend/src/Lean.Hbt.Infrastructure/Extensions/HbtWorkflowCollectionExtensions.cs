@@ -38,7 +38,7 @@ namespace Lean.Hbt.Infrastructure.Extensions
             services.AddMemoryCache();
 
             // 注册工作流缓存服务
-            services.AddScoped<IWorkflowCache, WorkflowMemoryCache>();
+            services.AddScoped<IHbtWorkflowCache, HbtWorkflowMemoryCache>();
 
             return services;
         }
@@ -79,18 +79,18 @@ namespace Lean.Hbt.Infrastructure.Extensions
             services.AddScoped<IHbtWorkflowActivityService, HbtWorkflowActivityService>();     // 工作流活动管理
 
             // 注册工作流节点执行器,处理不同类型节点的具体执行逻辑
-            services.AddScoped<IWorkflowNodeExecutor, StartNodeExecutor>();      // 开始节点执行器
-            services.AddScoped<IWorkflowNodeExecutor, EndNodeExecutor>();        // 结束节点执行器
-            services.AddScoped<IWorkflowNodeExecutor, ApprovalNodeExecutor>();   // 审批节点执行器
-            services.AddScoped<IWorkflowNodeExecutor, BranchNodeExecutor>();     // 分支节点执行器
-            services.AddScoped<IWorkflowNodeExecutor, ParallelNodeExecutor>();   // 并行节点执行器
-            services.AddScoped<IWorkflowNodeExecutor, JoinNodeExecutor>();       // 合并节点执行器
+            services.AddScoped<IHbtWorkflowNodeExecutor, HbtStartNodeExecutor>();      // 开始节点执行器
+            services.AddScoped<IHbtWorkflowNodeExecutor, HbtEndNodeExecutor>();        // 结束节点执行器
+            services.AddScoped<IHbtWorkflowNodeExecutor, HbtApprovalNodeExecutor>();   // 审批节点执行器
+            services.AddScoped<IHbtWorkflowNodeExecutor, HbtBranchNodeExecutor>();     // 分支节点执行器
+            services.AddScoped<IHbtWorkflowNodeExecutor, HbtParallelNodeExecutor>();   // 并行节点执行器
+            services.AddScoped<IHbtWorkflowNodeExecutor, HbtJoinNodeExecutor>();       // 合并节点执行器
 
             // 注册工作流表达式引擎,用于解析和执行条件表达式
-            services.AddScoped<IWorkflowExpressionEngine, WorkflowExpressionEngine>();
+            services.AddScoped<IHbtWorkflowExpressionEngine, HbtWorkflowExpressionEngine>();
 
             // 注册工作流审批人解析器,用于动态解析审批人
-            services.AddScoped<IWorkflowApproverResolver, WorkflowApproverResolver>();
+            services.AddScoped<IHbtWorkflowApproverResolver, HbtWorkflowApproverResolver>();
 
             return services;
         }

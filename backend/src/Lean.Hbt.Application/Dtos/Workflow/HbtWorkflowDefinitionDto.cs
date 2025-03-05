@@ -7,8 +7,6 @@
 // 描述    : 工作流定义数据传输对象
 //===================================================================
 
-using Lean.Hbt.Common.Enums;
-
 namespace Lean.Hbt.Application.Dtos.Workflow
 {
     /// <summary>
@@ -29,7 +27,7 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 当前状态
         /// </summary>
-        public HbtWorkflowStatus Status { get; set; }
+        public int Status { get; set; }
 
         /// <summary>
         /// 可用操作列表
@@ -39,7 +37,7 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 状态描述
         /// </summary>
-        public string StatusDescription { get; set; }
+        public int StatusDescription { get; set; }
     }
 
     /// <summary>
@@ -85,7 +83,7 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 工作流状态
         /// </summary>
-        public HbtWorkflowStatus WorkflowStatus { get; set; }
+        public int Status { get; set; }
 
         /// <summary>
         /// 工作流节点列表
@@ -140,7 +138,7 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 工作流状态
         /// </summary>
-        public HbtWorkflowStatus? WorkflowStatus { get; set; }
+        public int? WorkflowStatus { get; set; }
 
         /// <summary>
         /// 开始时间
@@ -230,7 +228,7 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 工作流状态
         /// </summary>
-        public HbtWorkflowStatus WorkflowStatus { get; set; }
+        public int WorkflowStatus { get; set; }
 
         /// <summary>
         /// 工作流节点列表
@@ -310,7 +308,7 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 工作流状态
         /// </summary>
-        public string WorkflowStatusName { get; set; }
+        public string WorkflowStatus { get; set; }
 
         /// <summary>
         /// 备注

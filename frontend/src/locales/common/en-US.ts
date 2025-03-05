@@ -206,6 +206,12 @@ export default {
       }
     },
 
+    // Tabs
+    tab: {
+      basicInfo: 'Basic Information',
+      otherInfo: 'Other Information'
+    },
+
     // Table
     table: {
       header: {
@@ -323,6 +329,13 @@ export default {
       networkError: 'Network connection failed',
       serverError: 'Server error',
       unknownError: 'Unknown error'
+    },
+
+    // Button Text
+    button: {
+      submit: 'Submit',
+      cancel: 'Cancel',
+      ok: 'OK'
     }
   }
 } 

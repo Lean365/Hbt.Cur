@@ -35,9 +35,9 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine
         private readonly IHbtRepository<HbtWorkflowTransition> _transitionRepository;
         private readonly IHbtRepository<HbtWorkflowVariable> _variableRepository;
         private readonly IHbtRepository<HbtWorkflowDefinition> _definitionRepository;
-        private readonly IEnumerable<IWorkflowNodeExecutor> _nodeExecutors;
+        private readonly IEnumerable<IHbtWorkflowNodeExecutor> _nodeExecutors;
         private readonly IHbtRepository<HbtWorkflowParallelBranch> _parallelBranchRepository;
-        private readonly IWorkflowExpressionEngine _expressionEngine;
+        private readonly IHbtWorkflowExpressionEngine _expressionEngine;
 
         /// <summary>
         /// 构造函数
@@ -49,9 +49,9 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine
             IHbtRepository<HbtWorkflowTransition> transitionRepository,
             IHbtRepository<HbtWorkflowVariable> variableRepository,
             IHbtRepository<HbtWorkflowDefinition> definitionRepository,
-            IEnumerable<IWorkflowNodeExecutor> nodeExecutors,
+            IEnumerable<IHbtWorkflowNodeExecutor> nodeExecutors,
             IHbtRepository<HbtWorkflowParallelBranch> parallelBranchRepository,
-            IWorkflowExpressionEngine expressionEngine)
+            IHbtWorkflowExpressionEngine expressionEngine)
         {
             _dbContext = dbContext;
             _instanceRepository = instanceRepository;
@@ -81,7 +81,7 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine
                 // 获取开始节点
                 var startNode = await _nodeRepository.FirstOrDefaultAsync(x => 
                     x.WorkflowDefinitionId == definitionId && 
-                    x.NodeType == HbtWorkflowNodeType.Start);
+                    x.NodeType == 1); // 1 表示开始节点
 
                 if (startNode == null)
                 {
@@ -96,7 +96,7 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine
                     InitiatorId = initiatorId,
                     CurrentNodeId = startNode.Id,
                     FormData = formData,
-                    Status = HbtWorkflowInstanceStatus.Running,
+                    Status = 1, // 1 表示运行中
                     StartTime = DateTime.Now
                 };
 
@@ -134,12 +134,12 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine
                 throw new InvalidOperationException("工作流实例不存在");
             }
 
-            if (instance.Status != HbtWorkflowInstanceStatus.Running)
+            if (instance.Status != 1) // 1 表示运行中
             {
                 throw new InvalidOperationException("只有运行中的工作流实例才能暂停");
             }
 
-            instance.Status = HbtWorkflowInstanceStatus.Suspended;
+            instance.Status = 3; // 3 表示已挂起
             await _instanceRepository.UpdateAsync(instance);
         }
 
@@ -152,12 +152,12 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine
                 throw new InvalidOperationException("工作流实例不存在");
             }
 
-            if (instance.Status != HbtWorkflowInstanceStatus.Suspended)
+            if (instance.Status != 3) // 3 表示已挂起
             {
                 throw new InvalidOperationException("只有已暂停的工作流实例才能恢复");
             }
 
-            instance.Status = HbtWorkflowInstanceStatus.Running;
+            instance.Status = 1; // 1 表示运行中
             await _instanceRepository.UpdateAsync(instance);
         }
 
@@ -170,12 +170,12 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine
                 throw new InvalidOperationException("工作流实例不存在");
             }
 
-            if (instance.Status != HbtWorkflowInstanceStatus.Running && instance.Status != HbtWorkflowInstanceStatus.Suspended)
+            if (instance.Status != 1 && instance.Status != 3) // 1 表示运行中, 3 表示已挂起
             {
                 throw new InvalidOperationException("只有运行中或已暂停的工作流实例才能终止");
             }
 
-            instance.Status = HbtWorkflowInstanceStatus.Terminated;
+            instance.Status = 4; // 4 表示已终止
             instance.EndTime = DateTime.Now;
             instance.Remark = reason;
             await _instanceRepository.UpdateAsync(instance);
@@ -192,7 +192,7 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine
             }
 
             // 检查实例状态
-            if (instance.Status != HbtWorkflowInstanceStatus.Running)
+            if (instance.Status != 1) // 1 表示运行中
             {
                 throw new InvalidOperationException("工作流实例状态不正确");
             }
@@ -244,7 +244,7 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine
                 }
 
                 // 检查实例状态
-                if (instance.Status != HbtWorkflowInstanceStatus.Running)
+                if (instance.Status != 1) // 1 表示运行中
                 {
                     throw new InvalidOperationException("工作流实例状态不正确");
                 }
@@ -312,7 +312,7 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine
                 CurrentNodeId = instance.CurrentNodeId,
                 CurrentNodeName = currentNode?.NodeName ?? string.Empty,
                 AvailableOperations = GetAvailableOperations(instance),
-                StatusDescription = GetStatusDescription(instance.Status)
+                StatusDescription = instance.Status
             };
         }
 
@@ -325,7 +325,7 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine
                 throw new InvalidOperationException("工作流实例不存在");
             }
 
-            if (instance.Status != HbtWorkflowInstanceStatus.Running)
+            if (instance.Status != 1)
             {
                 return new List<HbtWorkflowTransitionDto>();
             }
@@ -342,7 +342,7 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine
             // 获取实例级变量
             var instanceVariables = await _variableRepository.GetListAsync(x =>
                 x.WorkflowInstanceId == instanceId &&
-                x.Scope == HbtWorkflowVariableScope.Global);
+                x.Scope == 1); // 1 表示全局范围
 
             foreach (var variable in instanceVariables)
             {
@@ -355,7 +355,7 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine
                 var nodeVariables = await _variableRepository.GetListAsync(x =>
                     x.WorkflowInstanceId == instanceId &&
                     x.NodeId == nodeId &&
-                    x.Scope == HbtWorkflowVariableScope.Node);
+                    x.Scope == 2); // 2 表示节点范围
 
                 foreach (var variable in nodeVariables)
                 {
@@ -377,7 +377,7 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine
                     NodeId = nodeId,
                     VariableName = kvp.Key,
                     VariableValue = kvp.Value.ToString() ?? string.Empty,
-                    Scope = nodeId.HasValue ? HbtWorkflowVariableScope.Node : HbtWorkflowVariableScope.Global
+                    Scope = nodeId.HasValue ? 2 : 1
                 };
 
                 await _variableRepository.InsertAsync(variable);
@@ -394,7 +394,7 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine
                     NodeId = nodeId,
                     VariableName = kvp.Key,
                     VariableValue = kvp.Value.ToString() ?? string.Empty,
-                    Scope = nodeId.HasValue ? HbtWorkflowVariableScope.Node : HbtWorkflowVariableScope.Global
+                    Scope = nodeId.HasValue ? 2 : 1
                 };
 
                 await _variableRepository.InsertAsync(variable);
@@ -407,17 +407,17 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine
 
             switch (instance.Status)
             {
-                case HbtWorkflowInstanceStatus.Running:
+                case 1: // 1 表示运行中
                     operations.Add("suspend");
                     operations.Add("terminate");
                     break;
 
-                case HbtWorkflowInstanceStatus.Suspended:
+                case 3: // 3 表示已挂起
                     operations.Add("resume");
                     operations.Add("terminate");
                     break;
 
-                case HbtWorkflowInstanceStatus.Draft:
+                case 0: // 0 表示草稿
                     operations.Add("submit");
                     operations.Add("delete");
                     break;
@@ -426,18 +426,17 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine
             return operations;
         }
 
-        private string GetStatusDescription(HbtWorkflowInstanceStatus status)
+        /// <summary>
+        /// 更新工作流实例状态
+        /// </summary>
+        private async Task UpdateInstanceStatusAsync(long instanceId, int status)
         {
-            return status switch
+            var instance = await _instanceRepository.GetByIdAsync(instanceId);
+            if (instance != null)
             {
-                HbtWorkflowInstanceStatus.Draft => "草稿",
-                HbtWorkflowInstanceStatus.Running => "运行中",
-                HbtWorkflowInstanceStatus.Completed => "已完成",
-                HbtWorkflowInstanceStatus.Suspended => "已暂停",
-                HbtWorkflowInstanceStatus.Terminated => "已终止",
-                HbtWorkflowInstanceStatus.Deleted => "已删除",
-                _ => "未知状态"
-            };
+                instance.Status = status;
+                await _instanceRepository.UpdateAsync(instance);
+            }
         }
     }
-} 
+}

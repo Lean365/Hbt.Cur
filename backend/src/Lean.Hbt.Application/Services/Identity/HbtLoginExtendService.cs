@@ -110,14 +110,14 @@ namespace Lean.Hbt.Application.Services.Identity
                 // 首次登录,创建记录
                 loginExtend = new HbtLoginExtend
                 {
-                    UserId = request.UserId,
-                    TenantId = request.TenantId,
+                    UserId = (long)request.UserId!,
+                    TenantId = request.TenantId ?? 0,
                     RoleId = request.RoleId,
                     DeptId = request.DeptId,
                     PostId = request.PostId,
                     LoginType = request.LoginType,
                     LoginSource = request.LoginSource,
-                    LoginStatus = HbtLoginStatus.Online,
+                    LoginStatus = 1, // 1 表示在线状态
                     FirstLoginTime = now,
                     FirstLoginIp = request.IpAddress,
                     FirstLoginLocation = request.Location,
@@ -140,13 +140,13 @@ namespace Lean.Hbt.Application.Services.Identity
             else
             {
                 // 更新最后登录信息
-                loginExtend.TenantId = request.TenantId;
+                loginExtend.TenantId = request.TenantId ?? 0;
                 loginExtend.RoleId = request.RoleId;
                 loginExtend.DeptId = request.DeptId;
                 loginExtend.PostId = request.PostId;
                 loginExtend.LoginType = request.LoginType;
                 loginExtend.LoginSource = request.LoginSource;
-                loginExtend.LoginStatus = HbtLoginStatus.Online;
+                loginExtend.LoginStatus = 1; // 1 表示在线状态
                 loginExtend.LastLoginTime = now;
                 loginExtend.LastLoginIp = request.IpAddress;
                 loginExtend.LastLoginLocation = request.Location;
@@ -173,7 +173,7 @@ namespace Lean.Hbt.Application.Services.Identity
                 throw new InvalidOperationException($"用户{userId}的登录扩展信息不存在");
             }
 
-            loginExtend.LoginStatus = HbtLoginStatus.Offline;
+            loginExtend.LoginStatus = 0; // 0 表示离线状态
             loginExtend.LastOfflineTime = DateTime.Now;
 
             await _loginExtendRepository.UpdateAsync(loginExtend);

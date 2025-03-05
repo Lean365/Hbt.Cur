@@ -1,56 +1,57 @@
 //===================================================================
 // 项目名 : Lean.Hbt 
-// 文件名 : HbtWorkflowVariableType.cs 
+// 文件名 : HbtOsType.cs
 // 创建者 : Lean365
-// 创建时间: 2024-01-23 12:00
+// 创建时间: 2024-01-22 14:30
 // 版本号 : V1.0.0
-// 描述    : 工作流变量类型枚举
+// 描述    : 操作系统类型枚举
 //===================================================================
 
 namespace Lean.Hbt.Common.Enums
 {
     /// <summary>
-    /// 工作流变量类型枚举
+    /// 操作系统类型枚举
     /// </summary>
-    /// <remarks>
-    /// 创建者: Lean365
-    /// 创建时间: 2024-01-23
-    /// </remarks>
-    public enum HbtWorkflowVariableType
+    public enum HbtOsType
     {
         /// <summary>
-        /// 字符串
+        /// 其他
         /// </summary>
-        String = 0,
+        Other = 0,
 
         /// <summary>
-        /// 整数
+        /// Windows
         /// </summary>
-        Integer = 1,
+        Windows = 1,
 
         /// <summary>
-        /// 小数
+        /// Linux
         /// </summary>
-        Decimal = 2,
+        Linux = 2,
 
         /// <summary>
-        /// 布尔值
+        /// MacOS
         /// </summary>
-        Boolean = 3,
+        MacOS = 3,
 
         /// <summary>
-        /// 日期时间
+        /// iOS
         /// </summary>
-        DateTime = 4,
+        iOS = 4,
 
         /// <summary>
-        /// JSON对象
+        /// Android
         /// </summary>
-        JsonObject = 5,
+        Android = 5,
 
         /// <summary>
-        /// JSON数组
+        /// Chrome OS
         /// </summary>
-        JsonArray = 6
+        ChromeOS = 6,
+
+        /// <summary>
+        /// Unix
+        /// </summary>
+        Unix = 7
     }
 } 

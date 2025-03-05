@@ -1,49 +1,47 @@
-#nullable enable
-
 //===================================================================
-// 项目名 : Lean.Hbt
-// 文件名 : HbtLogLevel.cs
+// 项目名 : Lean.Hbt 
+// 文件名 : HbtDeviceType.cs
 // 创建者 : Lean365
-// 创建时间: 2024-01-19 10:00
-// 版本号 : V.0.0.1
-// 描述    : 日志级别枚举
+// 创建时间: 2024-01-22 14:30
+// 版本号 : V1.0.0
+// 描述    : 设备类型枚举
 //===================================================================
 
 namespace Lean.Hbt.Common.Enums
 {
     /// <summary>
-    /// 日志级别枚举
+    /// 设备类型枚举
     /// </summary>
-    public enum HbtLogLevel
+    public enum HbtDeviceType
     {
         /// <summary>
-        /// 跟踪信息
+        /// 其他
         /// </summary>
-        Trace = 0,
+        Other = 0,
 
         /// <summary>
-        /// 调试信息
+        /// PC电脑
         /// </summary>
-        Debug = 1,
+        PC = 1,
 
         /// <summary>
-        /// 一般信息
+        /// 手机
         /// </summary>
-        Info = 2,
+        Mobile = 2,
 
         /// <summary>
-        /// 警告信息
+        /// 平板
         /// </summary>
-        Warn = 3,
+        Tablet = 3,
 
         /// <summary>
-        /// 错误信息
+        /// 智能电视
         /// </summary>
-        Error = 4,
+        TV = 4,
 
         /// <summary>
-        /// 致命错误
+        /// 可穿戴设备
         /// </summary>
-        Fatal = 5
+        Wearable = 5
     }
 } 

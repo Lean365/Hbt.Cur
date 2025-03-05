@@ -177,8 +177,11 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <param name="status">状态</param>
         /// <returns>是否成功</returns>
         [HttpPut("{menuId}/status")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HbtPerm("identity:menu:update")]
-        public async Task<IActionResult> UpdateStatusAsync(long menuId, [FromQuery] HbtStatus status)
+        public async Task<IActionResult> UpdateStatusAsync(long menuId, [FromQuery] int status)
         {
             var input = new HbtMenuStatusDto
             {

@@ -40,5 +40,25 @@ namespace Lean.Hbt.Domain.IServices.SignalR
         /// 通知指定租户的所有用户
         /// </summary>
         Task<bool> NotifyTenantAsync(long tenantId, string message, HbtMessageType messageType = HbtMessageType.System);
+
+        /// <summary>
+        /// 发送消息给指定用户
+        /// </summary>
+        Task SendMessageToUserAsync(long userId, string message, HbtMessageType messageType);
+
+        /// <summary>
+        /// 发送消息给指定用户组
+        /// </summary>
+        Task SendMessageToGroupAsync(string groupName, string message, HbtMessageType messageType);
+
+        /// <summary>
+        /// 发送消息给所有用户
+        /// </summary>
+        Task SendMessageToAllAsync(string message, HbtMessageType messageType);
+
+        /// <summary>
+        /// 发送消息给除指定用户外的所有用户
+        /// </summary>
+        Task SendMessageToOthersAsync(long userId, string message, HbtMessageType messageType);
     }
 } 

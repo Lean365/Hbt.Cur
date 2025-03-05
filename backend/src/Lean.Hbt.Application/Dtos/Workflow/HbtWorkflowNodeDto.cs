@@ -7,8 +7,6 @@
 // 描述    : 工作流节点数据传输对象
 //===================================================================
 
-using Lean.Hbt.Common.Enums;
-
 namespace Lean.Hbt.Application.Dtos.Workflow
 {
     /// <summary>
@@ -39,7 +37,7 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 节点类型
         /// </summary>
-        public HbtWorkflowNodeType NodeType { get; set; }
+        public int NodeType { get; set; }
 
         /// <summary>
         /// 父节点ID
@@ -104,7 +102,7 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 节点类型
         /// </summary>
-        public HbtWorkflowNodeType? NodeType { get; set; }
+        public int? NodeType { get; set; }
 
         /// <summary>
         /// 父节点ID
@@ -144,7 +142,7 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 节点类型
         /// </summary>
-        public HbtWorkflowNodeType NodeType { get; set; }
+        public int NodeType { get; set; }
 
         /// <summary>
         /// 父节点ID
@@ -190,7 +188,7 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 节点类型
         /// </summary>
-        public HbtWorkflowNodeType NodeType { get; set; }
+        public int NodeType { get; set; }
 
         /// <summary>
         /// 父节点ID

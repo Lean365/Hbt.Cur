@@ -165,15 +165,18 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
         /// <summary>
         /// 更新翻译状态
         /// </summary>
-        /// <param name="translationId">翻译ID</param>
+        /// <param name="transId">翻译ID</param>
         /// <param name="status">状态</param>
         /// <returns>是否成功</returns>
-        [HttpPut("{translationId}/status")]
-        public async Task<IActionResult> UpdateStatusAsync(long translationId, [FromQuery] HbtStatus status)
+        [HttpPut("{transId}/status")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> UpdateStatusAsync(long transId, [FromQuery] int status)
         {
             var input = new HbtTranslationStatusDto
             {
-                TranslationId = translationId,
+                TransId = transId,
                 Status = status
             };
             var result = await _translationService.UpdateStatusAsync(input);

@@ -9,18 +9,15 @@
 // 描述    : 工作流内存缓存实现
 //===================================================================
 
-using System;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Caching.Memory;
 using Lean.Hbt.Domain.Entities.Workflow;
-using Lean.Hbt.Domain.IServices;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace Lean.Hbt.Application.Services.Workflow.Engine.Cache
 {
     /// <summary>
     /// 工作流内存缓存实现
     /// </summary>
-    public class WorkflowMemoryCache : IWorkflowCache
+    public class HbtWorkflowMemoryCache : IHbtWorkflowCache
     {
         private readonly IMemoryCache _cache;
         private readonly IHbtLogger _logger;
@@ -29,7 +26,7 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine.Cache
         /// <summary>
         /// 构造函数
         /// </summary>
-        public WorkflowMemoryCache(IMemoryCache cache, IHbtLogger logger)
+        public HbtWorkflowMemoryCache(IMemoryCache cache, IHbtLogger logger)
         {
             _cache = cache;
             _logger = logger;
@@ -39,7 +36,9 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine.Cache
         /// 获取缓存键
         /// </summary>
         private static string GetNodeKey(long nodeId) => $"workflow:node:{nodeId}";
+
         private static string GetDefinitionKey(long definitionId) => $"workflow:definition:{definitionId}";
+
         private static string GetInstanceKey(long instanceId) => $"workflow:instance:{instanceId}";
 
         /// <summary>
@@ -219,4 +218,4 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine.Cache
             }
         }
     }
-} 
+}

@@ -4,9 +4,9 @@
 // 项目名 : Lean.Hbt
 // 文件名 : HbtTenant.cs
 // 创建者 : Lean365
-// 创建时间: 2024-01-17 17:30
-// 版本号 : V0.0.1
-// 描述   : 租户实体
+// 创建时间: 2024-01-16 11:30
+// 版本号 : V.0.0.1
+// 描述    : 租户实体类
 //===================================================================
 
 using System.ComponentModel;
@@ -19,6 +19,7 @@ namespace Lean.Hbt.Domain.Entities.Identity;
 /// 租户实体
 /// </summary>
 [SugarTable("hbt_id_tenant", TableDescription = "租户表")]
+[SugarIndex("ix_tenant_name", nameof(TenantName), OrderByType.Asc, true)]
 public class HbtTenant : HbtBaseEntity
 {
     /// <summary>
@@ -30,30 +31,30 @@ public class HbtTenant : HbtBaseEntity
     /// <summary>
     /// 租户名称
     /// </summary>
-    [SugarColumn(ColumnDescription = "租户名称", Length = 50, ColumnDataType = "nvarchar", IsNullable = false, DefaultValue = "")]
+    [SugarColumn(ColumnName = "tenant_name", ColumnDescription = "租户名称", Length = 50, ColumnDataType = "nvarchar", IsNullable = false, DefaultValue = "")]
     [Description("租户名称")]
     public string TenantName { get; set; } = string.Empty;
 
     /// <summary>
     /// 租户编码
     /// </summary>
-    [SugarColumn(ColumnDescription = "租户编码", Length = 50, ColumnDataType = "nvarchar", IsNullable = false, DefaultValue = "")]
+    [SugarColumn(ColumnName = "tenant_code", ColumnDescription = "租户编码", Length = 50, ColumnDataType = "nvarchar", IsNullable = false, DefaultValue = "")]
     [Description("租户编码")]
     public string TenantCode { get; set; } = string.Empty;
 
     /// <summary>
     /// 联系人
     /// </summary>
-    [SugarColumn(ColumnDescription = "联系人", Length = 20, ColumnDataType = "nvarchar", IsNullable = false, DefaultValue = "")]
+    [SugarColumn(ColumnName = "contact_user", ColumnDescription = "联系人", Length = 20, ColumnDataType = "nvarchar", IsNullable = true)]
     [Description("联系人")]
-    public string ContactPerson { get; set; } = string.Empty;
+    public string? ContactUser { get; set; }
 
     /// <summary>
     /// 联系电话
     /// </summary>
-    [SugarColumn(ColumnDescription = "联系电话", Length = 20, ColumnDataType = "nvarchar", IsNullable = false, DefaultValue = "")]
+    [SugarColumn(ColumnName = "contact_phone", ColumnDescription = "联系电话", Length = 11, ColumnDataType = "nvarchar", IsNullable = true)]
     [Description("联系电话")]
-    public string ContactPhone { get; set; } = string.Empty;
+    public string? ContactPhone { get; set; }
 
     /// <summary>
     /// 联系邮箱
@@ -65,9 +66,37 @@ public class HbtTenant : HbtBaseEntity
     /// <summary>
     /// 租户地址
     /// </summary>
-    [SugarColumn(ColumnDescription = "租户地址", Length = 200, ColumnDataType = "nvarchar", IsNullable = true)]
+    [SugarColumn(ColumnName = "address", ColumnDescription = "联系地址", Length = 200, ColumnDataType = "nvarchar", IsNullable = true)]
     [Description("租户地址")]
     public string? Address { get; set; }
+
+    /// <summary>
+    /// 许可证
+    /// </summary>
+    [SugarColumn(ColumnName = "license", ColumnDescription = "许可证", Length = 100, ColumnDataType = "nvarchar", IsNullable = true)]
+    [Description("许可证")]
+    public string? License { get; set; }
+
+    /// <summary>
+    /// 过期时间
+    /// </summary>
+    [SugarColumn(ColumnName = "expire_time", ColumnDescription = "过期时间", ColumnDataType = "datetime", IsNullable = true)]
+    [Description("过期时间")]
+    public DateTime? ExpireTime { get; set; }
+
+    /// <summary>
+    /// 状态（0正常 1停用）
+    /// </summary>
+    [SugarColumn(ColumnName = "status", ColumnDescription = "状态（0正常 1停用）", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
+    [Description("状态（0正常 1停用）")]
+    public int Status { get; set; } = 0;
+
+    /// <summary>
+    /// 是否默认（0否 1是）
+    /// </summary>
+    [SugarColumn(ColumnName = "is_default", ColumnDescription = "是否默认（0否 1是）", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
+    [Description("是否默认（0否 1是）")]
+    public int IsDefault { get; set; } = 0;
 
     /// <summary>
     /// 数据库连接字符串
@@ -119,9 +148,32 @@ public class HbtTenant : HbtBaseEntity
     public int MaxUserCount { get; set; }
 
     /// <summary>
-    /// 租户状态
+    /// 用户导航属性
     /// </summary>
-    [SugarColumn(ColumnDescription = "租户状态", ColumnDataType = "int", IsNullable = false)]
-    [Description("租户状态")]
-    public HbtStatus Status { get; set; } = HbtStatus.Normal;
+    [Navigate(NavigateType.OneToMany, nameof(HbtUser.TenantId))]
+    public List<HbtUser>? Users { get; set; }
+
+    /// <summary>
+    /// 部门导航属性
+    /// </summary>
+    [Navigate(NavigateType.OneToMany, nameof(HbtDept.TenantId))]
+    public List<HbtDept>? Depts { get; set; }
+
+    /// <summary>
+    /// 岗位导航属性
+    /// </summary>
+    [Navigate(NavigateType.OneToMany, nameof(HbtPost.TenantId))]
+    public List<HbtPost>? Posts { get; set; }
+
+    /// <summary>
+    /// 角色导航属性
+    /// </summary>
+    [Navigate(NavigateType.OneToMany, nameof(HbtRole.TenantId))]
+    public List<HbtRole>? Roles { get; set; }
+
+    /// <summary>
+    /// 菜单导航属性
+    /// </summary>
+    [Navigate(NavigateType.OneToMany, nameof(HbtMenu.TenantId))]
+    public List<HbtMenu>? Menus { get; set; }
 }

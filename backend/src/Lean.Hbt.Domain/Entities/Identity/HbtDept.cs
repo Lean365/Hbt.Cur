@@ -9,7 +9,6 @@
 // 描述    : 部门实体类
 //===================================================================
 
-using Lean.Hbt.Common.Enums;
 using SqlSugar;
 
 namespace Lean.Hbt.Domain.Entities.Identity
@@ -22,60 +21,60 @@ namespace Lean.Hbt.Domain.Entities.Identity
     /// 创建时间: 2024-01-16
     /// </remarks>
     [SugarTable("hbt_id_dept", "部门表")]
-    [SugarIndex("ix_dept_name", nameof(DeptName), OrderByType.Asc, true)]
-    [SugarIndex("ix_tenant_dept", nameof(TenantId), OrderByType.Asc, nameof(DeptName), OrderByType.Asc, true)]
+    [SugarIndex("ix_dept_name", nameof(DeptName), OrderByType.Asc)]
+    [SugarIndex("ix_tenant_dept", nameof(TenantId), OrderByType.Asc)]
     public class HbtDept : HbtBaseEntity
     {
         /// <summary>
         /// 部门名称
         /// </summary>
-        [SugarColumn(ColumnName = "dept_name", ColumnDescription = "部门名称", Length = 50, ColumnDataType = "nvarchar", IsNullable = false)]
-        public string DeptName { get; set; } = null!;
+        [SugarColumn(ColumnName = "dept_name", ColumnDescription = "部门名称", Length = 50, ColumnDataType = "nvarchar", IsNullable = false, DefaultValue = "")]
+        public string DeptName { get; set; } = string.Empty;
 
         /// <summary>
         /// 父部门ID
         /// </summary>
-        [SugarColumn(ColumnName = "parent_id", ColumnDescription = "父部门ID", ColumnDataType = "bigint", IsNullable = true)]
-        public long? ParentId { get; set; }
+        [SugarColumn(ColumnName = "parent_id", ColumnDescription = "父部门ID", ColumnDataType = "bigint", IsNullable = false, DefaultValue = "0")]
+        public long ParentId { get; set; } = 0;
 
         /// <summary>
         /// 显示顺序
         /// </summary>
-        [SugarColumn(ColumnName = "order_num", ColumnDescription = "显示顺序", ColumnDataType = "int", IsNullable = false)]
-        public int OrderNum { get; set; }
+        [SugarColumn(ColumnName = "order_num", ColumnDescription = "显示顺序", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
+        public int OrderNum { get; set; } = 0;
 
         /// <summary>
         /// 负责人
         /// </summary>
-        [SugarColumn(ColumnName = "leader", ColumnDescription = "负责人", Length = 50, ColumnDataType = "nvarchar", IsNullable = true)]
+        [SugarColumn(ColumnName = "leader", ColumnDescription = "负责人", Length = 20, ColumnDataType = "nvarchar", IsNullable = true)]
         public string? Leader { get; set; }
 
         /// <summary>
         /// 联系电话
         /// </summary>
-        [SugarColumn(ColumnName = "phone", ColumnDescription = "联系电话", Length = 20, ColumnDataType = "nvarchar", IsNullable = true)]
+        [SugarColumn(ColumnName = "phone", ColumnDescription = "联系电话", Length = 11, ColumnDataType = "nvarchar", IsNullable = true)]
         public string? Phone { get; set; }
 
         /// <summary>
         /// 邮箱
         /// </summary>
-        [SugarColumn(ColumnName = "email", ColumnDescription = "邮箱", Length = 100, ColumnDataType = "nvarchar", IsNullable = true)]
+        [SugarColumn(ColumnName = "email", ColumnDescription = "邮箱", Length = 50, ColumnDataType = "nvarchar", IsNullable = true)]
         public string? Email { get; set; }
 
         /// <summary>
-        /// 状态（0正常 1停用）
+        /// 部门状态（0正常 1停用）
         /// </summary>
-        [SugarColumn(ColumnName = "status", ColumnDescription = "状态（0正常 1停用）", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
-        public HbtStatus Status { get; set; } = HbtStatus.Normal;
+        [SugarColumn(ColumnName = "status", ColumnDescription = "部门状态（0正常 1停用）", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
+        public int Status { get; set; } = 0;
 
         /// <summary>
         /// 租户ID
         /// </summary>
-        [SugarColumn(ColumnName = "tenant_id", ColumnDescription = "租户ID", ColumnDataType = "bigint", IsNullable = false)]
-        public long TenantId { get; set; }
+        [SugarColumn(ColumnName = "tenant_id", ColumnDescription = "租户ID", ColumnDataType = "bigint", IsNullable = false, DefaultValue = "0")]
+        public long TenantId { get; set; } = 0;
 
         /// <summary>
-        /// 租户导航属性
+        /// 租户
         /// </summary>
         [Navigate(NavigateType.OneToOne, nameof(TenantId))]
         public HbtTenant? Tenant { get; set; }

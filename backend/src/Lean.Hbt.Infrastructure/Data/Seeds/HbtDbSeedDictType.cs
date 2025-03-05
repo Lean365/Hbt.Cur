@@ -7,7 +7,6 @@
 // 描述   : 字典类型种子数据初始化类
 //===================================================================
 
-using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Domain.Entities.Admin;
 using Lean.Hbt.Domain.IServices;
 
@@ -47,7 +46,7 @@ public class HbtDbSeedDictType
                 DictName = "系统状态",
                 DictType = "sys_status",
                 OrderNum = 1,
-                Status = HbtStatus.Normal,
+                Status = 0,
                 TenantId = 0,
                 Remark = "系统状态字典",
                 CreateBy = "system",
@@ -60,7 +59,7 @@ public class HbtDbSeedDictType
                 DictName = "是否选项",
                 DictType = "sys_yes_no",
                 OrderNum = 2,
-                Status = HbtStatus.Normal,
+                Status = 0,
                 TenantId = 0,
                 Remark = "是否选项字典",
                 CreateBy = "system",
@@ -73,7 +72,7 @@ public class HbtDbSeedDictType
                 DictName = "性别类型",
                 DictType = "sys_gender",
                 OrderNum = 3,
-                Status = HbtStatus.Normal,
+                Status = 0,
                 TenantId = 0,
                 Remark = "性别类型字典",
                 CreateBy = "system",
@@ -86,7 +85,7 @@ public class HbtDbSeedDictType
                 DictName = "通知类型",
                 DictType = "sys_notice_type",
                 OrderNum = 4,
-                Status = HbtStatus.Normal,
+                Status = 0,
                 TenantId = 0,
                 Remark = "通知类型字典",
                 CreateBy = "system",
@@ -99,7 +98,7 @@ public class HbtDbSeedDictType
                 DictName = "通知状态",
                 DictType = "sys_notice_status",
                 OrderNum = 5,
-                Status = HbtStatus.Normal,
+                Status = 0,
                 TenantId = 0,
                 Remark = "通知状态字典",
                 CreateBy = "system",
@@ -112,7 +111,7 @@ public class HbtDbSeedDictType
                 DictName = "操作类型",
                 DictType = "sys_oper_type",
                 OrderNum = 6,
-                Status = HbtStatus.Normal,
+                Status = 0,
                 TenantId = 0,
                 Remark = "操作类型字典",
                 CreateBy = "system",
@@ -122,17 +121,420 @@ public class HbtDbSeedDictType
             },
             new HbtDictType
             {
+                DictName = "用户类型",
+                DictType = "sys_user_type",
+                OrderNum = 7,
+                Status = 0,
+                TenantId = 0,
+                Remark = "用户类型字典",
+                CreateBy = "system",
+                CreateTime = DateTime.Now,
+                UpdateBy = "system",
+                UpdateTime = DateTime.Now
+            },
+            new HbtDictType
+            {
+                DictName = "是否默认",
+                DictType = "sys_is_default",
+                OrderNum = 8,
+                Status = 0,
+                TenantId = 0,
+                Remark = "是否默认字典",
+                CreateBy = "system",
+                CreateTime = DateTime.Now,
+                UpdateBy = "system",
+                UpdateTime = DateTime.Now
+            },
+            new HbtDictType
+            {
+                DictName = "数据范围",
+                DictType = "sys_data_scope",
+                OrderNum = 9,
+                Status = 0,
+                TenantId = 0,
+                Remark = "数据范围字典",
+                CreateBy = "system",
+                CreateTime = DateTime.Now,
+                UpdateBy = "system",
+                UpdateTime = DateTime.Now
+            },
+            new HbtDictType
+            {
+                DictName = "是否为外链",
+                DictType = "sys_IsExternal",
+                OrderNum = 10,
+                Status = 0,
+                TenantId = 0,
+                Remark = "是否为外链字典",
+                CreateBy = "system",
+                CreateTime = DateTime.Now,
+                UpdateBy = "system",
+                UpdateTime = DateTime.Now
+            },
+            new HbtDictType
+            {
+                DictName = "是否缓存",
+                DictType = "sys_is_cache",
+                OrderNum = 11,
+                Status = 0,
+                TenantId = 0,
+                Remark = "是否缓存字典",
+                CreateBy = "system",
+                CreateTime = DateTime.Now,
+                UpdateBy = "system",
+                UpdateTime = DateTime.Now
+            },
+            new HbtDictType
+            {
+                DictName = "菜单类型",
+                DictType = "sys_menu_type",
+                OrderNum = 12,
+                Status = 0,
+                TenantId = 0,
+                Remark = "菜单类型字典",
+                CreateBy = "system",
+                CreateTime = DateTime.Now,
+                UpdateBy = "system",
+                UpdateTime = DateTime.Now
+            },
+            new HbtDictType
+            {
+                DictName = "显示状态",
+                DictType = "sys_is_visible",
+                OrderNum = 13,
+                Status = 0,
+                TenantId = 0,
+                Remark = "显示状态字典",
+                CreateBy = "system",
+                CreateTime = DateTime.Now,
+                UpdateBy = "system",
+                UpdateTime = DateTime.Now
+            },
+            new HbtDictType
+            {
+                DictName = "登录类型",
+                DictType = "sys_login_type",
+                OrderNum = 14,
+                Status = 0,
+                TenantId = 0,
+                Remark = "登录类型字典",
+                CreateBy = "system",
+                CreateTime = DateTime.Now,
+                UpdateBy = "system",
+                UpdateTime = DateTime.Now
+            },
+            new HbtDictType
+            {
+                DictName = "登录来源",
+                DictType = "sys_login_source",
+                OrderNum = 15,
+                Status = 0,
+                TenantId = 0,
+                Remark = "登录来源字典",
+                CreateBy = "system",
+                CreateTime = DateTime.Now,
+                UpdateBy = "system",
+                UpdateTime = DateTime.Now
+            },
+            new HbtDictType
+            {
+                DictName = "登录状态",
+                DictType = "sys_login_status",
+                OrderNum = 16,
+                Status = 0,
+                TenantId = 0,
+                Remark = "登录状态字典",
+                CreateBy = "system",
+                CreateTime = DateTime.Now,
+                UpdateBy = "system",
+                UpdateTime = DateTime.Now
+            },
+            new HbtDictType
+            {
+                DictName = "登录提供者",
+                DictType = "sys_login_provider",
+                OrderNum = 17,
+                Status = 0,
+                TenantId = 0,
+                Remark = "登录提供者字典",
+                CreateBy = "system",
+                CreateTime = DateTime.Now,
+                UpdateBy = "system",
+                UpdateTime = DateTime.Now
+            },
+            new HbtDictType
+            {
+                DictName = "设备类型",
+                DictType = "sys_device_type",
+                OrderNum = 18,
+                Status = 0,
+                TenantId = 0,
+                Remark = "设备类型字典",
+                CreateBy = "system",
+                CreateTime = DateTime.Now,
+                UpdateBy = "system",
+                UpdateTime = DateTime.Now
+            },
+            new HbtDictType
+            {
+                DictName = "浏览器类型",
+                DictType = "sys_browser_typpe",
+                OrderNum = 19,
+                Status = 0,
+                TenantId = 0,
+                Remark = "浏览器类型字典",
+                CreateBy = "system",
+                CreateTime = DateTime.Now,
+                UpdateBy = "system",
+                UpdateTime = DateTime.Now
+            },
+            new HbtDictType
+            {
+                DictName = "操作系统类型",
+                DictType = "sys_Os_type",
+                OrderNum = 20,
+                Status = 0,
+                TenantId = 0,
+                Remark = "操作系统类型字典",
+                CreateBy = "system",
+                CreateTime = DateTime.Now,
+                UpdateBy = "system",
+                UpdateTime = DateTime.Now
+            },
+            new HbtDictType
+            {
+                DictName = "设备状态",
+                DictType = "sys_device_status",
+                OrderNum = 21,
+                Status = 0,
+                TenantId = 0,
+                Remark = "设备状态字典",
+                CreateBy = "system",
+                CreateTime = DateTime.Now,
+                UpdateBy = "system",
+                UpdateTime = DateTime.Now
+            },
+            new HbtDictType
+            {
                 DictName = "日志级别",
                 DictType = "sys_log_level",
-                OrderNum = 7,
-                Status = HbtStatus.Normal,
+                OrderNum = 22,
+                Status = 0,
                 TenantId = 0,
                 Remark = "日志级别字典",
                 CreateBy = "system",
                 CreateTime = DateTime.Now,
                 UpdateBy = "system",
                 UpdateTime = DateTime.Now
-            }
+            },
+            new HbtDictType
+            {
+                DictName = "系统内置",
+                DictType = "sys_is_Builtin",
+                OrderNum = 23,
+                Status = 0,
+                TenantId = 0,
+                Remark = "系统内置字典",
+                CreateBy = "system",
+                CreateTime = DateTime.Now,
+                UpdateBy = "system",
+                UpdateTime = DateTime.Now
+            },
+            new HbtDictType
+            {
+                DictName = "样式类别",
+                DictType = "sys_css_type",
+                OrderNum = 24,
+                Status = 0,
+                TenantId = 0,
+                Remark = "样式类别字典",
+                CreateBy = "system",
+                CreateTime = DateTime.Now,
+                UpdateBy = "system",
+                UpdateTime = DateTime.Now
+            },
+            new HbtDictType
+            {
+                DictName = "字典类别",
+                DictType = "sys_dict_category",
+                OrderNum = 25,
+                Status = 0,
+                TenantId = 0,
+                Remark = "字典类别字典",
+                CreateBy = "system",
+                CreateTime = DateTime.Now,
+                UpdateBy = "system",
+                UpdateTime = DateTime.Now
+            },
+            new HbtDictType
+            {
+                DictName = "是否已读",
+                DictType = "sys_is_read",
+                OrderNum = 26,
+                Status = 0,
+                TenantId = 0,
+                Remark = "是否已读字典",
+                CreateBy = "system",
+                CreateTime = DateTime.Now,
+                UpdateBy = "system",
+                UpdateTime = DateTime.Now
+            },
+            new HbtDictType
+            {
+                DictName = "消息类型",
+                DictType = "sys_message_type",
+                OrderNum = 27,
+                Status = 0,
+                TenantId = 0,
+                Remark = "消息类型字典",
+                CreateBy = "system",
+                CreateTime = DateTime.Now,
+                UpdateBy = "system",
+                UpdateTime = DateTime.Now
+            },
+            new HbtDictType
+            {
+                DictName = "工作流活动类型",
+                DictType = "wfs_activity_type",
+                OrderNum = 28,
+                Status = 0,
+                TenantId = 0,
+                Remark = "工作流活动类型字典",
+                CreateBy = "system",
+                CreateTime = DateTime.Now,
+                UpdateBy = "system",
+                UpdateTime = DateTime.Now
+            },
+            new HbtDictType
+            {
+                DictName = "工作流程分类",
+                DictType = "wfs_workflow_category",
+                OrderNum = 29,
+                Status = 0,
+                TenantId = 0,
+                Remark = "工作流程分类字典",
+                CreateBy = "system",
+                CreateTime = DateTime.Now,
+                UpdateBy = "system",
+                UpdateTime = DateTime.Now
+            },
+            new HbtDictType
+            {
+                DictName = "工作流操作结果",
+                DictType = "wfs_oper_result",
+                OrderNum = 30,
+                Status = 0,
+                TenantId = 0,
+                Remark = "工作流操作结果字典",
+                CreateBy = "system",
+                CreateTime = DateTime.Now,
+                UpdateBy = "system",
+                UpdateTime = DateTime.Now
+            },
+            new HbtDictType
+            {
+                DictName = "工作流操作类型",
+                DictType = "wfs_oper_type",
+                OrderNum = 31,
+                Status = 0,
+                TenantId = 0,
+                Remark = "工作流操作类型字典",
+                CreateBy = "system",
+                CreateTime = DateTime.Now,
+                UpdateBy = "system",
+                UpdateTime = DateTime.Now
+            },
+            new HbtDictType
+            {
+                DictName = "工作流节点类型",
+                DictType = "wfs_node_type",
+                OrderNum = 32,
+                Status = 0,
+                TenantId = 0,
+                Remark = "工作流节点类型字典",
+                CreateBy = "system",
+                CreateTime = DateTime.Now,
+                UpdateBy = "system",
+                UpdateTime = DateTime.Now
+            },
+            new HbtDictType
+            {
+                DictName = "工作流是否完成",
+                DictType = "wfs_is_completed",
+                OrderNum = 33,
+                Status = 0,
+                TenantId = 0,
+                Remark = "工作流是否完成字典",
+                CreateBy = "system",
+                CreateTime = DateTime.Now,
+                UpdateBy = "system",
+                UpdateTime = DateTime.Now
+            },
+            new HbtDictType
+            {
+                DictName = "工作流计划任务类型",
+                DictType = "wfs_task_type",
+                OrderNum = 34,
+                Status = 0,
+                TenantId = 0,
+                Remark = "工作流计划任务类型字典",
+                CreateBy = "system",
+                CreateTime = DateTime.Now,
+                UpdateBy = "system",
+                UpdateTime = DateTime.Now
+            },
+            new HbtDictType
+            {
+                DictName = "工作流处理结果",
+                DictType = "wfs_is_result",
+                OrderNum = 35,
+                Status = 0,
+                TenantId = 0,
+                Remark = "工作流处理结果字典",
+                CreateBy = "system",
+                CreateTime = DateTime.Now,
+                UpdateBy = "system",
+                UpdateTime = DateTime.Now
+            },
+            new HbtDictType
+            {
+                DictName = "工作流优先级",
+                DictType = "wfs_priority_type",
+                OrderNum = 36,
+                Status = 0,
+                TenantId = 0,
+                Remark = "工作流优先级字典",
+                CreateBy = "system",
+                CreateTime = DateTime.Now,
+                UpdateBy = "system",
+                UpdateTime = DateTime.Now
+            },
+            new HbtDictType
+            {
+                DictName = "工作流变量类型",
+                DictType = "wfs_variable_type",
+                OrderNum = 37,
+                Status = 0,
+                TenantId = 0,
+                Remark = "工作流变量类型字典",
+                CreateBy = "system",
+                CreateTime = DateTime.Now,
+                UpdateBy = "system",
+                UpdateTime = DateTime.Now
+            },
+            new HbtDictType
+            {
+                DictName = "工作流计划任务状态",
+                DictType = "wfs_task_status",
+                OrderNum = 38,
+                Status = 0,
+                TenantId = 0,
+                Remark = "工作流计划任务状态字典",
+                CreateBy = "system",
+                CreateTime = DateTime.Now,
+                UpdateBy = "system",
+                UpdateTime = DateTime.Now
+            },
         };
 
         foreach (var dictType in defaultDictTypes)
@@ -166,4 +568,4 @@ public class HbtDbSeedDictType
 
         return (insertCount, updateCount);
     }
-} 
+}

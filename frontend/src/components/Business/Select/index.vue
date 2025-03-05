@@ -3,7 +3,7 @@
 项目名称: Lean.Hbt
 文件名称: Select/index.vue
 创建日期: 2024-03-20
-描述: Select组件封装
+描述: 统一封装的选择组件
 功能特点:
 1. 处理数值类型的自动转换
 2. 保持与ant-design-vue的API一致性

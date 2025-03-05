@@ -92,5 +92,12 @@ namespace Lean.Hbt.Application.Services.Admin
         /// <param name="input">状态更新对象</param>
         /// <returns>是否成功</returns>
         Task<bool> UpdateStatusAsync(HbtDictTypeStatusDto input);
+
+        /// <summary>
+        /// 执行字典SQL脚本
+        /// </summary>
+        /// <param name="sqlScript">SQL脚本</param>
+        /// <returns>字典数据列表</returns>
+        Task<List<HbtDictDataDto>> ExecuteDictSqlAsync(string sqlScript);
     }
 } 

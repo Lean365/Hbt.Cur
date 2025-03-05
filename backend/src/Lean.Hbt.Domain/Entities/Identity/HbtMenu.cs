@@ -9,7 +9,6 @@
 
 #nullable enable
 
-using Lean.Hbt.Common.Enums;
 using SqlSugar;
 
 namespace Lean.Hbt.Domain.Entities.Identity
@@ -22,13 +21,15 @@ namespace Lean.Hbt.Domain.Entities.Identity
     /// 创建时间: 2024-01-16
     /// </remarks>
     [SugarTable("hbt_id_menu", "菜单表")]
+    [SugarIndex("ix_menu_name", nameof(MenuName), OrderByType.Asc)]
+    [SugarIndex("ix_tenant_menu", nameof(TenantId), OrderByType.Asc)]
     public class HbtMenu : HbtBaseEntity
     {
         /// <summary>
         /// 菜单名称
         /// </summary>
-        [SugarColumn(ColumnName = "menu_name", ColumnDescription = "菜单名称", Length = 50, ColumnDataType = "nvarchar", IsNullable = false)]
-        public string MenuName { get; set; } = null!;
+        [SugarColumn(ColumnName = "menu_name", ColumnDescription = "菜单名称", Length = 50, ColumnDataType = "nvarchar", IsNullable = false, DefaultValue = "")]
+        public string MenuName { get; set; } = string.Empty;
 
         /// <summary>
         /// 翻译Key
@@ -39,14 +40,14 @@ namespace Lean.Hbt.Domain.Entities.Identity
         /// <summary>
         /// 父菜单ID
         /// </summary>
-        [SugarColumn(ColumnName = "parent_id", ColumnDescription = "父菜单ID", ColumnDataType = "bigint", IsNullable = true)]
-        public long? ParentId { get; set; }
+        [SugarColumn(ColumnName = "parent_id", ColumnDescription = "父菜单ID", ColumnDataType = "bigint", IsNullable = false, DefaultValue = "0")]
+        public long ParentId { get; set; } = 0;
 
         /// <summary>
         /// 显示顺序
         /// </summary>
-        [SugarColumn(ColumnName = "order_num", ColumnDescription = "显示顺序", ColumnDataType = "int", IsNullable = false)]
-        public int OrderNum { get; set; }
+        [SugarColumn(ColumnName = "order_num", ColumnDescription = "显示顺序", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
+        public int OrderNum { get; set; } = 0;
 
         /// <summary>
         /// 路由地址
@@ -63,38 +64,38 @@ namespace Lean.Hbt.Domain.Entities.Identity
         /// <summary>
         /// 路由参数
         /// </summary>
-        [SugarColumn(ColumnName = "query_params", ColumnDescription = "路由参数", Length = 255, ColumnDataType = "nvarchar", IsNullable = true)]
+        [SugarColumn(ColumnName = "query", ColumnDescription = "路由参数", Length = 255, ColumnDataType = "nvarchar", IsNullable = true)]
         public string? QueryParams { get; set; }
 
         /// <summary>
         /// 是否为外链（0否 1是）
         /// </summary>
         [SugarColumn(ColumnName = "is_frame", ColumnDescription = "是否为外链（0否 1是）", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
-        public HbtYesNo IsFrame { get; set; } = HbtYesNo.No;
+        public int IsExternal { get; set; } = 0;
 
         /// <summary>
         /// 是否缓存（0否 1是）
         /// </summary>
         [SugarColumn(ColumnName = "is_cache", ColumnDescription = "是否缓存（0否 1是）", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
-        public HbtYesNo IsCache { get; set; } = HbtYesNo.No;
+        public int IsCache { get; set; } = 0;
 
         /// <summary>
         /// 菜单类型（0目录 1菜单 2按钮）
         /// </summary>
-        [SugarColumn(ColumnName = "menu_type", ColumnDescription = "菜单类型（0目录 1菜单 2按钮）", ColumnDataType = "int", IsNullable = false)]
-        public HbtMenuType MenuType { get; set; } = HbtMenuType.Directory;
+        [SugarColumn(ColumnName = "menu_type", ColumnDescription = "菜单类型（0目录 1菜单 2按钮）", ColumnDataType = "int", IsNullable = false, DefaultValue = "1")]
+        public int MenuType { get; set; } = 1;
 
         /// <summary>
         /// 显示状态（0显示 1隐藏）
         /// </summary>
         [SugarColumn(ColumnName = "visible", ColumnDescription = "显示状态（0显示 1隐藏）", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
-        public HbtVisible Visible { get; set; } = HbtVisible.Show;
+        public int Visible { get; set; } = 0;
 
         /// <summary>
         /// 菜单状态（0正常 1停用）
         /// </summary>
         [SugarColumn(ColumnName = "status", ColumnDescription = "菜单状态（0正常 1停用）", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
-        public HbtStatus Status { get; set; } = HbtStatus.Normal;
+        public int Status { get; set; } = 0;
 
         /// <summary>
         /// 权限标识
@@ -111,8 +112,8 @@ namespace Lean.Hbt.Domain.Entities.Identity
         /// <summary>
         /// 租户ID
         /// </summary>
-        [SugarColumn(ColumnName = "tenant_id", ColumnDescription = "租户ID", ColumnDataType = "bigint", IsNullable = false)]
-        public long TenantId { get; set; }
+        [SugarColumn(ColumnName = "tenant_id", ColumnDescription = "租户ID", ColumnDataType = "bigint", IsNullable = false, DefaultValue = "0")]
+        public long TenantId { get; set; } = 0;
 
         /// <summary>
         /// 租户导航属性

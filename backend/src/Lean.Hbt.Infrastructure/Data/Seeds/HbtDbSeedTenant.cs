@@ -7,12 +7,8 @@
 // 描述   : 租户数据初始化类
 //===================================================================
 
-using Lean.Hbt.Common.Enums;
-using Lean.Hbt.Common.Utils;
-using Lean.Hbt.Domain.Entities.Admin;
 using Lean.Hbt.Domain.Entities.Identity;
 using Lean.Hbt.Domain.IServices;
-using Lean.Hbt.Infrastructure.Data.Contexts;
 
 namespace Lean.Hbt.Infrastructure.Data.Seeds;
 
@@ -47,7 +43,7 @@ public class HbtDbSeedTenant
         {
             TenantName = "默认租户",
             TenantCode = "default",
-            ContactPerson = "管理员",
+            ContactUser = "管理员",
             ContactPhone = "13800138000",
             ContactEmail = "admin@lean365.com",
             Address = "默认地址",
@@ -58,7 +54,7 @@ public class HbtDbSeedTenant
             LicenseStartTime = DateTime.Now,
             LicenseEndTime = DateTime.Now.AddYears(1),
             MaxUserCount = 100,
-            Status = HbtStatus.Normal,
+            Status = 0,
             CreateBy = "system",
             CreateTime = DateTime.Now,
             UpdateBy = "system",
@@ -75,7 +71,7 @@ public class HbtDbSeedTenant
         else
         {
             existingTenant.TenantName = defaultTenant.TenantName;
-            existingTenant.ContactPerson = defaultTenant.ContactPerson;
+            existingTenant.ContactUser = defaultTenant.ContactUser;
             existingTenant.ContactPhone = defaultTenant.ContactPhone;
             existingTenant.ContactEmail = defaultTenant.ContactEmail;
             existingTenant.Address = defaultTenant.Address;
@@ -100,4 +96,4 @@ public class HbtDbSeedTenant
 
         return (insertCount, updateCount);
     }
-} 
+}

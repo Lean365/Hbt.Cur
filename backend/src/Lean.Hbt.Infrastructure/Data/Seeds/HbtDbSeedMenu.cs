@@ -8,7 +8,6 @@
 //===================================================================
 
 using System.Linq.Expressions;
-using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Domain.Entities.Identity;
 using Lean.Hbt.Domain.IServices;
 
@@ -79,11 +78,11 @@ public class HbtDbSeedMenu
                 Path = "admin",
                 Component = "",
                 QueryParams = null,
-                IsFrame = HbtYesNo.No,
-                IsCache = HbtYesNo.No,
-                MenuType = HbtMenuType.Directory,
-                Visible = HbtVisible.Show,
-                Status = HbtStatus.Normal,
+                IsExternal = 0,
+                IsCache = 0,
+                MenuType = 0,
+                Visible = 0,
+                Status = 0,
                 Perms = "",
                 Icon = "SettingOutlined",
                 TenantId = 0,
@@ -102,11 +101,11 @@ public class HbtDbSeedMenu
                 Path = "identity",
                 Component = "",
                 QueryParams = null,
-                IsFrame = HbtYesNo.No,
-                IsCache = HbtYesNo.No,
-                MenuType = HbtMenuType.Directory,
-                Visible = HbtVisible.Show,
-                Status = HbtStatus.Normal,
+                IsExternal = 0,
+                IsCache = 0,
+                MenuType = 0,
+                Visible = 0,
+                Status = 0,
                 Perms = "",
                 Icon = "UserOutlined",
                 TenantId = 0,
@@ -125,11 +124,11 @@ public class HbtDbSeedMenu
                 Path = "audit",
                 Component = "",
                 QueryParams = null,
-                IsFrame = HbtYesNo.No,
-                IsCache = HbtYesNo.No,
-                MenuType = HbtMenuType.Directory,
-                Visible = HbtVisible.Show,
-                Status = HbtStatus.Normal,
+                IsExternal = 0,
+                IsCache = 0,
+                MenuType = 0,
+                Visible = 0,
+                Status = 0,
                 Perms = "",
                 Icon = "AuditOutlined",
                 TenantId = 0,
@@ -148,11 +147,11 @@ public class HbtDbSeedMenu
                 Path = "workflow",
                 Component = "",
                 QueryParams = null,
-                IsFrame = HbtYesNo.No,
-                IsCache = HbtYesNo.No,
-                MenuType = HbtMenuType.Directory,
-                Visible = HbtVisible.Show,
-                Status = HbtStatus.Normal,
+                IsExternal = 0,
+                IsCache = 0,
+                MenuType = 0,
+                Visible = 0,
+                Status = 0,
                 Perms = "",
                 Icon = "DeploymentUnitOutlined",
                 TenantId = 0,
@@ -171,11 +170,11 @@ public class HbtDbSeedMenu
                 Path = "realtime",
                 Component = "",
                 QueryParams = null,
-                IsFrame = HbtYesNo.No,
-                IsCache = HbtYesNo.No,
-                MenuType = HbtMenuType.Directory,
-                Visible = HbtVisible.Show,
-                Status = HbtStatus.Normal,
+                IsExternal = 0,
+                IsCache = 0,
+                MenuType = 0,
+                Visible = 0,
+                Status = 0,
                 Perms = "",
                 Icon = "DashboardOutlined",
                 TenantId = 0,
@@ -194,11 +193,11 @@ public class HbtDbSeedMenu
                 Path = "security",
                 Component = "",
                 QueryParams = null,
-                IsFrame = HbtYesNo.No,
-                IsCache = HbtYesNo.No,
-                MenuType = HbtMenuType.Directory,
-                Visible = HbtVisible.Show,
-                Status = HbtStatus.Normal,
+                IsExternal = 0,
+                IsCache = 0,
+                MenuType = 0,
+                Visible = 0,
+                Status = 0,
                 Perms = "",
                 Icon = "SafetyCertificateOutlined",
                 TenantId = 0,
@@ -307,7 +306,7 @@ public class HbtDbSeedMenu
         int updateCount = 0;
 
         // 获取所有菜单类型的菜单
-        var menus = await _menuRepository.GetListAsync(m => m.MenuType == HbtMenuType.Menu);
+        var menus = await _menuRepository.GetListAsync(m => m.MenuType == 1);
 
         foreach (var menu in menus)
         {
@@ -363,7 +362,7 @@ public class HbtDbSeedMenu
         existingMenu.Path = menu.Path;
         existingMenu.Component = menu.Component;
         existingMenu.QueryParams = menu.QueryParams;
-        existingMenu.IsFrame = menu.IsFrame;
+        existingMenu.IsExternal = menu.IsExternal;
         existingMenu.IsCache = menu.IsCache;
         existingMenu.MenuType = menu.MenuType;
         existingMenu.Visible = menu.Visible;
@@ -395,7 +394,7 @@ public class HbtDbSeedMenu
                 OrderNum = 1,
                 Path = "config",
                 Component = "admin/config/index",
-                MenuType = HbtMenuType.Menu,
+                MenuType = 1,
                 Perms = "admin:config:list",
                 Icon = "ToolOutlined",
                 Remark = "系统配置菜单"
@@ -408,7 +407,7 @@ public class HbtDbSeedMenu
                 OrderNum = 2,
                 Path = "language",
                 Component = "admin/language/index",
-                MenuType = HbtMenuType.Menu,
+                MenuType = 1,
                 Perms = "admin:language:list",
                 Icon = "TranslationOutlined",
                 Remark = "语言管理菜单"
@@ -421,7 +420,7 @@ public class HbtDbSeedMenu
                 OrderNum = 3,
                 Path = "dicttype",
                 Component = "admin/dicttype/index",
-                MenuType = HbtMenuType.Menu,
+                MenuType = 1,
                 Perms = "admin:dicttype:list",
                 Icon = "BookOutlined",
                 Remark = "字典类型菜单"
@@ -434,7 +433,7 @@ public class HbtDbSeedMenu
                 OrderNum = 4,
                 Path = "dictdata",
                 Component = "admin/dictdata/index",
-                MenuType = HbtMenuType.Menu,
+                MenuType = 1,
                 Perms = "admin:dictdata:list",
                 Icon = "DatabaseOutlined",
                 Remark = "字典数据菜单"
@@ -447,7 +446,7 @@ public class HbtDbSeedMenu
                 OrderNum = 5,
                 Path = "translation",
                 Component = "admin/translation/index",
-                MenuType = HbtMenuType.Menu,
+                MenuType = 1,
                 Perms = "admin:translation:list",
                 Icon = "GlobalOutlined",
                 Remark = "翻译管理菜单"
@@ -470,7 +469,7 @@ public class HbtDbSeedMenu
                 OrderNum = 1,
                 Path = "user",
                 Component = "identity/user/index",
-                MenuType = HbtMenuType.Menu,
+                MenuType = 1,
                 Perms = "identity:user:list",
                 Icon = "UserOutlined",
                 Remark = "用户管理菜单"
@@ -483,7 +482,7 @@ public class HbtDbSeedMenu
                 OrderNum = 2,
                 Path = "role",
                 Component = "identity/role/index",
-                MenuType = HbtMenuType.Menu,
+                MenuType = 1,
                 Perms = "identity:role:list",
                 Icon = "TeamOutlined",
                 Remark = "角色管理菜单"
@@ -496,7 +495,7 @@ public class HbtDbSeedMenu
                 OrderNum = 3,
                 Path = "dept",
                 Component = "identity/dept/index",
-                MenuType = HbtMenuType.Menu,
+                MenuType = 1,
                 Perms = "identity:dept:list",
                 Icon = "ApartmentOutlined",
                 Remark = "部门管理菜单"
@@ -509,7 +508,7 @@ public class HbtDbSeedMenu
                 OrderNum = 4,
                 Path = "post",
                 Component = "identity/post/index",
-                MenuType = HbtMenuType.Menu,
+                MenuType = 1,
                 Perms = "identity:post:list",
                 Icon = "IdcardOutlined",
                 Remark = "岗位管理菜单"
@@ -522,7 +521,7 @@ public class HbtDbSeedMenu
                 OrderNum = 5,
                 Path = "menu",
                 Component = "identity/menu/index",
-                MenuType = HbtMenuType.Menu,
+                MenuType = 1,
                 Perms = "identity:menu:list",
                 Icon = "MenuOutlined",
                 Remark = "菜单管理菜单"
@@ -535,7 +534,7 @@ public class HbtDbSeedMenu
                 OrderNum = 6,
                 Path = "tenant",
                 Component = "identity/tenant/index",
-                MenuType = HbtMenuType.Menu,
+                MenuType = 1,
                 Perms = "identity:tenant:list",
                 Icon = "ClusterOutlined",
                 Remark = "租户管理菜单"
@@ -548,7 +547,7 @@ public class HbtDbSeedMenu
                 OrderNum = 7,
                 Path = "auth",
                 Component = "identity/auth/index",
-                MenuType = HbtMenuType.Menu,
+                MenuType = 1,
                 Perms = "identity:auth:list",
                 Icon = "KeyOutlined",
                 Remark = "认证管理菜单"
@@ -561,7 +560,7 @@ public class HbtDbSeedMenu
                 OrderNum = 8,
                 Path = "oauth",
                 Component = "identity/oauth/index",
-                MenuType = HbtMenuType.Menu,
+                MenuType = 1,
                 Perms = "identity:oauth:list",
                 Icon = "LinkOutlined",
                 Remark = "OAuth管理菜单"
@@ -574,7 +573,7 @@ public class HbtDbSeedMenu
                 OrderNum = 9,
                 Path = "loginpolicy",
                 Component = "identity/loginpolicy/index",
-                MenuType = HbtMenuType.Menu,
+                MenuType = 1,
                 Perms = "identity:loginpolicy:list",
                 Icon = "SecurityScanOutlined",
                 Remark = "登录策略菜单"
@@ -587,7 +586,7 @@ public class HbtDbSeedMenu
                 OrderNum = 10,
                 Path = "loginextend",
                 Component = "identity/loginextend/index",
-                MenuType = HbtMenuType.Menu,
+                MenuType = 1,
                 Perms = "identity:loginextend:list",
                 Icon = "LoginOutlined",
                 Remark = "登录扩展菜单"
@@ -600,7 +599,7 @@ public class HbtDbSeedMenu
                 OrderNum = 11,
                 Path = "deviceextend",
                 Component = "identity/deviceextend/index",
-                MenuType = HbtMenuType.Menu,
+                MenuType = 1,
                 Perms = "identity:deviceextend:list",
                 Icon = "MobileOutlined",
                 Remark = "设备扩展菜单"
@@ -623,7 +622,7 @@ public class HbtDbSeedMenu
                 OrderNum = 1,
                 Path = "operlog",
                 Component = "audit/operlog/index",
-                MenuType = HbtMenuType.Menu,
+                MenuType = 1,
                 Perms = "audit:operlog:list",
                 Icon = "HistoryOutlined",
                 CreateBy = "admin",
@@ -637,7 +636,7 @@ public class HbtDbSeedMenu
                 OrderNum = 2,
                 Path = "loginlog",
                 Component = "audit/loginlog/index",
-                MenuType = HbtMenuType.Menu,
+                MenuType = 1,
                 Perms = "audit:loginlog:list",
                 Icon = "LoginOutlined",
                 CreateBy = "admin",
@@ -651,7 +650,7 @@ public class HbtDbSeedMenu
                 OrderNum = 3,
                 Path = "dbdifflog",
                 Component = "audit/dbdifflog/index",
-                MenuType = HbtMenuType.Menu,
+                MenuType = 1,
                 Perms = "audit:dbdifflog:list",
                 Icon = "DiffOutlined",
                 CreateBy = "admin",
@@ -665,7 +664,7 @@ public class HbtDbSeedMenu
                 OrderNum = 4,
                 Path = "exceptionlog",
                 Component = "audit/exceptionlog/index",
-                MenuType = HbtMenuType.Menu,
+                MenuType = 1,
                 Perms = "audit:exceptionlog:list",
                 Icon = "ExceptionOutlined",
                 CreateBy = "admin",
@@ -689,7 +688,7 @@ public class HbtDbSeedMenu
                 OrderNum = 1,
                 Path = "definition",
                 Component = "workflow/definition/index",
-                MenuType = HbtMenuType.Menu,
+                MenuType = 1,
                 Perms = "workflow:definition:list",
                 Icon = "DeploymentUnitOutlined",
                 Remark = "流程定义菜单"
@@ -702,7 +701,7 @@ public class HbtDbSeedMenu
                 OrderNum = 2,
                 Path = "instance",
                 Component = "workflow/instance/index",
-                MenuType = HbtMenuType.Menu,
+                MenuType = 1,
                 Perms = "workflow:instance:list",
                 Icon = "ApartmentOutlined",
                 Remark = "流程实例菜单"
@@ -715,7 +714,7 @@ public class HbtDbSeedMenu
                 OrderNum = 3,
                 Path = "task",
                 Component = "workflow/task/index",
-                MenuType = HbtMenuType.Menu,
+                MenuType = 1,
                 Perms = "workflow:task:list",
                 Icon = "CheckSquareOutlined",
                 Remark = "工作任务菜单"
@@ -728,7 +727,7 @@ public class HbtDbSeedMenu
                 OrderNum = 4,
                 Path = "node",
                 Component = "workflow/node/index",
-                MenuType = HbtMenuType.Menu,
+                MenuType = 1,
                 Perms = "workflow:node:list",
                 Icon = "NodeIndexOutlined",
                 Remark = "流程节点菜单"
@@ -741,7 +740,7 @@ public class HbtDbSeedMenu
                 OrderNum = 5,
                 Path = "variable",
                 Component = "workflow/variable/index",
-                MenuType = HbtMenuType.Menu,
+                MenuType = 1,
                 Perms = "workflow:variable:list",
                 Icon = "FieldBinaryOutlined",
                 Remark = "流程变量菜单"
@@ -754,7 +753,7 @@ public class HbtDbSeedMenu
                 OrderNum = 6,
                 Path = "history",
                 Component = "workflow/history/index",
-                MenuType = HbtMenuType.Menu,
+                MenuType = 1,
                 Perms = "workflow:history:list",
                 Icon = "HistoryOutlined",
                 Remark = "流程历史菜单"
@@ -777,7 +776,7 @@ public class HbtDbSeedMenu
                 OrderNum = 1,
                 Path = "onlineuser",
                 Component = "realtime/onlineuser/index",
-                MenuType = HbtMenuType.Menu,
+                MenuType = 1,
                 Perms = "realtime:onlineuser:list",
                 Icon = "TeamOutlined",
                 Remark = "在线用户菜单"
@@ -790,7 +789,7 @@ public class HbtDbSeedMenu
                 OrderNum = 2,
                 Path = "onlinemessage",
                 Component = "realtime/onlinemessage/index",
-                MenuType = HbtMenuType.Menu,
+                MenuType = 1,
                 Perms = "realtime:onlinemessage:list",
                 Icon = "MessageOutlined",
                 Remark = "在线消息菜单"
@@ -813,7 +812,7 @@ public class HbtDbSeedMenu
                 OrderNum = 1,
                 Path = "captcha",
                 Component = "security/captcha/index",
-                MenuType = HbtMenuType.Menu,
+                MenuType = 1,
                 Perms = "security:captcha:list",
                 Icon = "SafetyCertificateOutlined",
                 Remark = "验证码菜单"
@@ -831,7 +830,7 @@ public class HbtDbSeedMenu
         var buttonPerms = new[] { "query", "create", "update", "delete", "preview", "import", "export" };
 
         // 从菜单的权限标识中获取菜单标识
-        var menuPerm = menu.Perms.Split(':')[1];
+        var menuPerm = menu.QueryParams.Split(':')[1];
 
         for (int i = 0; i < buttonNames.Length; i++)
         {
@@ -843,7 +842,7 @@ public class HbtDbSeedMenu
                 OrderNum = i + 1,
                 Path = string.Empty,
                 Component = string.Empty,
-                MenuType = HbtMenuType.Button,
+                MenuType = 3,
                 Perms = $"{modulePrefix}:{menuPerm}:{buttonPerms[i]}", // 使用三级结构
                 Icon = string.Empty,
                 TenantId = 0,

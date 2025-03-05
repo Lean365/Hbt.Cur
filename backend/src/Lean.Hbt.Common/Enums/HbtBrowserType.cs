@@ -1,49 +1,52 @@
-#nullable enable
-
 //===================================================================
-// 项目名 : Lean.Hbt
-// 文件名 : HbtWorkflowTaskStatus.cs
+// 项目名 : Lean.Hbt 
+// 文件名 : HbtBrowserType.cs
 // 创建者 : Lean365
-// 创建时间: 2024-01-23 12:00
+// 创建时间: 2024-01-22 14:30
 // 版本号 : V1.0.0
-// 描述    : 工作流任务状态枚举
+// 描述    : 浏览器类型枚举
 //===================================================================
 
 namespace Lean.Hbt.Common.Enums
 {
     /// <summary>
-    /// 工作流任务状态枚举
+    /// 浏览器类型枚举
     /// </summary>
-    public enum HbtWorkflowTaskStatus
+    public enum HbtBrowserType
     {
         /// <summary>
-        /// 待处理
+        /// 其他
         /// </summary>
-        Pending = 1,
+        Other = 0,
 
         /// <summary>
-        /// 处理中
+        /// Chrome
         /// </summary>
-        Processing = 2,
+        Chrome = 1,
 
         /// <summary>
-        /// 已完成
+        /// Firefox
         /// </summary>
-        Completed = 3,
+        Firefox = 2,
 
         /// <summary>
-        /// 已取消
+        /// Safari
         /// </summary>
-        Cancelled = 4,
+        Safari = 3,
 
         /// <summary>
-        /// 已超时
+        /// Edge
         /// </summary>
-        Timeout = 5,
+        Edge = 4,
 
         /// <summary>
-        /// 已转交
+        /// Internet Explorer
         /// </summary>
-        Transferred = 6
+        IE = 5,
+
+        /// <summary>
+        /// Opera
+        /// </summary>
+        Opera = 6
     }
 } 

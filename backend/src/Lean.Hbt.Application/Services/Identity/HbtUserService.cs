@@ -152,7 +152,7 @@ namespace Lean.Hbt.Application.Services.Identity
             if (tenant == null)
                 throw new HbtException(_localization.L("Tenant.NotFound"));
 
-            if (tenant.Status != HbtStatus.Normal)
+            if (tenant.Status != 0)
                 throw new HbtException(_localization.L("Tenant.Disabled"));
 
             // 验证字段是否已存在
@@ -171,16 +171,16 @@ namespace Lean.Hbt.Application.Services.Identity
                 UserName = input.UserName,
                 NickName = input.NickName ?? string.Empty,
                 EnglishName = input.EnglishName ?? string.Empty,
-                UserType = input.UserType,
+                UserType = 0,
                 Password = hash,
                 Salt = salt,
                 Iterations = iterations,
                 PhoneNumber = input.PhoneNumber ?? string.Empty,
                 Email = input.Email ?? string.Empty,
-                Gender = input.Gender,
+                Gender = 0,
                 Avatar = input.Avatar ?? string.Empty,
-                Status = HbtStatus.Normal,
-                TenantId = input.TenantId,
+                Status = 0,
+                TenantId = _tenantContext.TenantId,
                 Remark = input.Remark ?? string.Empty
             };
 
@@ -267,7 +267,7 @@ namespace Lean.Hbt.Application.Services.Identity
             user.EnglishName = input.EnglishName ?? string.Empty;
             user.PhoneNumber = input.PhoneNumber ?? string.Empty;
             user.Email = input.Email ?? string.Empty;
-            user.Gender = input.Gender;
+            user.Gender = 0;
             user.Avatar = input.Avatar ?? string.Empty;
             user.Remark = input.Remark ?? string.Empty;
 
@@ -431,14 +431,16 @@ namespace Lean.Hbt.Application.Services.Identity
                         UserName = user.UserName,
                         NickName = user.NickName ?? string.Empty,
                         EnglishName = user.EnglishName ?? string.Empty,
-                        UserType = Enum.TryParse<HbtUserType>(user.UserType ?? "User", out var userType) ? userType : HbtUserType.User,
+                        UserType = int.Parse(user.UserType),
                         Password = hash,
                         Salt = salt,
+                        Iterations = iterations,
                         PhoneNumber = user.PhoneNumber ?? string.Empty,
                         Email = user.Email ?? string.Empty,
-                        Gender = Enum.TryParse<HbtGender>(user.Gender ?? "Unknown", out var gender) ? gender : HbtGender.Unknown,
+                        Gender = 0,
                         Avatar = user.Avatar ?? string.Empty,
-                        Status = HbtStatus.Normal,
+                        Status = 0,
+                        TenantId = _tenantContext.TenantId,
                         Remark = user.Remark ?? string.Empty
                     };
 

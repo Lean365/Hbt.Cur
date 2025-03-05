@@ -38,7 +38,6 @@ namespace Lean.Hbt.Domain.Entities.Admin
         [SugarColumn(ColumnName = "config_value", ColumnDescription = "配置键值", Length = 500, ColumnDataType = "nvarchar", IsNullable = false)]
         public string ConfigValue { get; set; } = null!;
 
-
         /// <summary>
         /// 系统内置（0否 1是）
         /// </summary>
@@ -55,12 +54,12 @@ namespace Lean.Hbt.Domain.Entities.Admin
         /// 状态（0正常 1停用）
         /// </summary>
         [SugarColumn(ColumnName = "status", ColumnDescription = "状态（0正常 1停用）", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
-        public HbtStatus Status { get; set; } = HbtStatus.Normal;
+        public int Status { get; set; } = 0;
 
         /// <summary>
         /// 租户ID
         /// </summary>
         [SugarColumn(ColumnName = "tenant_id", ColumnDescription = "租户ID", ColumnDataType = "bigint", IsNullable = false)]
-        public long TenantId { get; set; }= 0;
+        public long TenantId { get; set; } = 0;
     }
 }

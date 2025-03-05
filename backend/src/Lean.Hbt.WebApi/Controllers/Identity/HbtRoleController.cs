@@ -153,7 +153,10 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <param name="status">状态</param>
         /// <returns>是否成功</returns>
         [HttpPut("{roleId}/status")]
-        public async Task<IActionResult> UpdateStatusAsync(long roleId, [FromQuery] HbtStatus status)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> UpdateStatusAsync(long roleId, [FromQuery] int status)
         {
             var input = new HbtRoleStatusDto
             {

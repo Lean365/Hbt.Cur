@@ -7,6 +7,8 @@
 // 描述   : 服务器信息DTO
 //===================================================================
 
+using System.ComponentModel.DataAnnotations;
+
 namespace Lean.Hbt.Application.Dtos.Audit;
 
 /// <summary>
@@ -26,6 +28,9 @@ public class HbtServerMonitorDto
         ProcessorCount = 0;
         SystemStartTime = DateTime.Now;
         SystemUptime = 0;
+        DotNetRuntimeVersion = string.Empty;
+        ClrVersion = string.Empty;
+        DotNetRuntimeDirectory = string.Empty;
     }
 
     /// <summary>
@@ -66,22 +71,26 @@ public class HbtServerMonitorDto
     /// <summary>
     /// 操作系统
     /// </summary>
-    public string OsName { get; set; }
+    [Required]
+    public required string OsName { get; set; }
 
     /// <summary>
     /// 系统架构
     /// </summary>
-    public string OsArchitecture { get; set; }
+    [Required]
+    public required string OsArchitecture { get; set; }
 
     /// <summary>
     /// 系统版本
     /// </summary>
-    public string OsVersion { get; set; }
+    [Required]
+    public required string OsVersion { get; set; }
 
     /// <summary>
     /// 处理器信息
     /// </summary>
-    public string ProcessorName { get; set; }
+    [Required]
+    public required string ProcessorName { get; set; }
 
     /// <summary>
     /// 处理器核心数
@@ -101,17 +110,20 @@ public class HbtServerMonitorDto
     /// <summary>
     /// .NET运行时版本
     /// </summary>
-    public string DotNetRuntimeVersion { get; set; }
+    [Required]
+    public required string DotNetRuntimeVersion { get; set; }
 
     /// <summary>
     /// CLR版本
     /// </summary>
-    public string ClrVersion { get; set; }
+    [Required]
+    public required string ClrVersion { get; set; }
 
     /// <summary>
     /// .NET运行时目录
     /// </summary>
-    public string DotNetRuntimeDirectory { get; set; }
+    [Required]
+    public required string DotNetRuntimeDirectory { get; set; }
 }
 
 /// <summary>
@@ -140,12 +152,14 @@ public class HbtProcessDto
     /// <summary>
     /// 进程名称
     /// </summary>
-    public string ProcessName { get; set; }
+    [Required]
+    public required string ProcessName { get; set; }
 
     /// <summary>
     /// 进程描述
     /// </summary>
-    public string Description { get; set; }
+    [Required]
+    public required string Description { get; set; }
 
     /// <summary>
     /// CPU使用率
@@ -191,22 +205,26 @@ public class HbtNetworkDto
     /// <summary>
     /// 网卡名称
     /// </summary>
-    public string AdapterName { get; set; }
+    [Required]
+    public required string AdapterName { get; set; }
 
     /// <summary>
     /// MAC地址
     /// </summary>
-    public string MacAddress { get; set; }
+    [Required]
+    public required string MacAddress { get; set; }
 
     /// <summary>
     /// IP地址
     /// </summary>
-    public string IpAddress { get; set; }
+    [Required]
+    public required string IpAddress { get; set; }
 
     /// <summary>
     /// IP地址位置信息
     /// </summary>
-    public string IpLocation { get; set; }
+    [Required]
+    public required string IpLocation { get; set; }
 
     /// <summary>
     /// 发送字节数
@@ -241,39 +259,44 @@ public class HbtServiceDto
     {
         ServiceName = string.Empty;
         DisplayName = string.Empty;
-        ServiceType = "Unknown";
-        Status = "Unknown";
-        StartType = "Unknown";
-        Account = "Unknown";
+        ServiceType = string.Empty;
+        Status = 0;
+        StartType = string.Empty;
+        Account = string.Empty;
     }
 
     /// <summary>
     /// 服务名称
     /// </summary>
-    public string ServiceName { get; set; }
+    [Required]
+    public required string ServiceName { get; set; }
 
     /// <summary>
     /// 显示名称
     /// </summary>
-    public string DisplayName { get; set; }
+    [Required]
+    public required string DisplayName { get; set; }
 
     /// <summary>
     /// 服务类型
     /// </summary>
-    public string ServiceType { get; set; }
+    [Required]
+    public required string ServiceType { get; set; }
 
     /// <summary>
-    /// 运行状态
+    /// 服务状态
     /// </summary>
-    public string Status { get; set; }
+    public int Status { get; set; }
 
     /// <summary>
     /// 启动类型
     /// </summary>
-    public string StartType { get; set; }
+    [Required]
+    public required string StartType { get; set; }
 
     /// <summary>
-    /// 登录账户
+    /// 运行账户
     /// </summary>
-    public string Account { get; set; }
+    [Required]
+    public required string Account { get; set; }
 } 

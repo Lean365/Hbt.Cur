@@ -2,16 +2,13 @@
 
 //===================================================================
 // 项目名 : Lean.Hbt
-// 文件名 : IWorkflowNodeExecutor.cs
+// 文件名 : IHbtWorkflowNodeExecutor.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-23 12:00
 // 版本号 : V1.0.0
 // 描述    : 工作流节点执行器接口
 //===================================================================
 
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Domain.Entities.Workflow;
 
 namespace Lean.Hbt.Application.Services.Workflow.Engine.Executors
@@ -19,7 +16,7 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine.Executors
     /// <summary>
     /// 工作流节点执行器接口
     /// </summary>
-    public interface IWorkflowNodeExecutor
+    public interface IHbtWorkflowNodeExecutor
     {
         /// <summary>
         /// 执行节点
@@ -38,6 +35,6 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine.Executors
         /// </summary>
         /// <param name="nodeType">节点类型</param>
         /// <returns>是否可以处理</returns>
-        bool CanHandle(HbtWorkflowNodeType nodeType);
+        bool CanHandle(int nodeType);
     }
-} 
+}

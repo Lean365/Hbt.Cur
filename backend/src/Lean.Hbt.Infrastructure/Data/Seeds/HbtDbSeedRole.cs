@@ -47,7 +47,7 @@ public class HbtDbSeedRole
         {
             RoleName = "超级管理员",
             RoleKey = "admin",
-            Status = HbtStatus.Normal,
+            Status = 0,
             TenantId = 0,
             CreateBy = "system",
             CreateTime = DateTime.Now,

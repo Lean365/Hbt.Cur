@@ -7,8 +7,6 @@
 // 描述    : 工作流任务数据传输对象
 //===================================================================
 
-using Lean.Hbt.Common.Enums;
-
 namespace Lean.Hbt.Application.Dtos.Workflow
 {
     /// <summary>
@@ -18,7 +16,7 @@ namespace Lean.Hbt.Application.Dtos.Workflow
     /// 创建者: Lean365
     /// 创建时间: 2024-01-23
     /// </remarks>
-    public class HbtWorkflowTaskStatusDto
+    public class HbtWorkflowTaskTypeDto
     {
         /// <summary>
         /// 任务ID
@@ -29,12 +27,12 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 当前状态
         /// </summary>
-        public HbtWorkflowTaskStatus Status { get; set; }
+        public int Status { get; set; }
 
         /// <summary>
         /// 任务类型
         /// </summary>
-        public HbtWorkflowTaskType TaskType { get; set; }
+        public int TaskType { get; set; }
 
         /// <summary>
         /// 处理人ID
@@ -54,7 +52,7 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 状态描述
         /// </summary>
-        public string StatusDescription { get; set; }
+        public int StatusDescription { get; set; }
 
         /// <summary>
         /// 任务截止时间
@@ -95,7 +93,7 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 任务类型
         /// </summary>
-        public HbtWorkflowTaskType TaskType { get; set; }
+        public int TaskType { get; set; }
 
         /// <summary>
         /// 处理人ID
@@ -110,12 +108,12 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 任务状态
         /// </summary>
-        public HbtWorkflowTaskStatus Status { get; set; }
+        public int Status { get; set; }
 
         /// <summary>
-        /// 处理结果
+        /// 任务结果
         /// </summary>
-        public string Result { get; set; }
+        public int TaskResult { get; set; }
 
         /// <summary>
         /// 处理意见
@@ -170,7 +168,7 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 任务类型
         /// </summary>
-        public HbtWorkflowTaskType? TaskType { get; set; }
+        public int? TaskType { get; set; }
 
         /// <summary>
         /// 处理人ID
@@ -180,7 +178,7 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 任务状态
         /// </summary>
-        public HbtWorkflowTaskStatus? Status { get; set; }
+        public int? Status { get; set; }
 
         /// <summary>
         /// 开始时间
@@ -215,7 +213,7 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 任务类型
         /// </summary>
-        public HbtWorkflowTaskType TaskType { get; set; }
+        public int TaskType { get; set; }
 
         /// <summary>
         /// 处理人ID
@@ -246,12 +244,12 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 任务状态
         /// </summary>
-        public HbtWorkflowTaskStatus Status { get; set; }
+        public int Status { get; set; }
 
         /// <summary>
         /// 处理结果
         /// </summary>
-        public HbtWorkflowTaskResult? Result { get; set; }
+        public int? Result { get; set; }
 
         /// <summary>
         /// 处理意见
@@ -321,7 +319,7 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 任务状态
         /// </summary>
-        public string StatusName { get; set; }
+        public int Status { get; set; }
 
         /// <summary>
         /// 处理结果
@@ -367,5 +365,31 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// 备注
         /// </summary>
         public string Remark { get; set; }
+    }
+
+    /// <summary>
+    /// 工作流任务状态DTO
+    /// </summary>
+    public class HbtWorkflowTaskStatusDto
+    {
+        /// <summary>
+        /// 任务ID
+        /// </summary>
+        public long WorkflowTaskId { get; set; }
+
+        /// <summary>
+        /// 任务状态
+        /// </summary>
+        public int Status { get; set; }
+
+        /// <summary>
+        /// 处理结果
+        /// </summary>
+        public string Result { get; set; }
+
+        /// <summary>
+        /// 处理意见
+        /// </summary>
+        public string Comment { get; set; }
     }
 }

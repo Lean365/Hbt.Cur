@@ -7,7 +7,7 @@
 // 描述    : 工作流变量数据传输对象
 //===================================================================
 
-using Lean.Hbt.Common.Enums;
+using System;
 
 namespace Lean.Hbt.Application.Dtos.Workflow
 {
@@ -39,32 +39,32 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 变量名称
         /// </summary>
-        public string VariableName { get; set; }
+        public required string VariableName { get; set; }
 
         /// <summary>
         /// 变量值
         /// </summary>
-        public string VariableValue { get; set; }
+        public required string VariableValue { get; set; }
 
         /// <summary>
         /// 变量类型
         /// </summary>
-        public HbtWorkflowVariableType VariableType { get; set; }
+        public required string VariableType { get; set; }
 
         /// <summary>
         /// 变量作用域
         /// </summary>
-        public HbtWorkflowVariableScope VariableScope { get; set; }
+        public required string VariableScope { get; set; }
 
         /// <summary>
         /// 备注
         /// </summary>
-        public string Remark { get; set; }
+        public required string Remark { get; set; }
 
         /// <summary>
         /// 创建者
         /// </summary>
-        public string Creator { get; set; }
+        public required string Creator { get; set; }
 
         /// <summary>
         /// 创建时间
@@ -74,7 +74,7 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 修改者
         /// </summary>
-        public string Modifier { get; set; }
+        public required string Modifier { get; set; }
 
         /// <summary>
         /// 修改时间
@@ -104,17 +104,17 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 变量名称
         /// </summary>
-        public string VariableName { get; set; }
+        public required string VariableName { get; set; }
 
         /// <summary>
         /// 变量类型
         /// </summary>
-        public HbtWorkflowVariableType? VariableType { get; set; }
+        public int? VariableType { get; set; }
 
         /// <summary>
         /// 变量作用域
         /// </summary>
-        public HbtWorkflowVariableScope? VariableScope { get; set; }
+        public int? VariableScope { get; set; }
     }
 
     /// <summary>
@@ -139,27 +139,27 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 变量名称
         /// </summary>
-        public string VariableName { get; set; }
+        public required string VariableName { get; set; }
 
         /// <summary>
         /// 变量值
         /// </summary>
-        public string VariableValue { get; set; }
+        public required string VariableValue { get; set; }
 
         /// <summary>
         /// 变量类型
         /// </summary>
-        public HbtWorkflowVariableType VariableType { get; set; }
+        public required string VariableType { get; set; }
 
         /// <summary>
         /// 变量作用域
         /// </summary>
-        public HbtWorkflowVariableScope VariableScope { get; set; }
+        public required string VariableScope { get; set; }
 
         /// <summary>
         /// 备注
         /// </summary>
-        public string Remark { get; set; }
+        public required string Remark { get; set; }
     }
 
     /// <summary>
@@ -180,12 +180,12 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 变量值
         /// </summary>
-        public string VariableValue { get; set; }
+        public required string VariableValue { get; set; }
 
         /// <summary>
         /// 备注
         /// </summary>
-        public string Remark { get; set; }
+        public required string Remark { get; set; }
     }
 
     /// <summary>

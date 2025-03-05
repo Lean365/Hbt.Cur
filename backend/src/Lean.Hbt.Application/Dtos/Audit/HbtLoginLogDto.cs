@@ -10,6 +10,8 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using Lean.Hbt.Common.Models;
+using Lean.Hbt.Common.Enums;
+using Lean.Hbt.Application.Dtos.Identity;
 using Mapster;
 
 namespace Lean.Hbt.Application.Dtos.Audit
@@ -67,6 +69,21 @@ namespace Lean.Hbt.Application.Dtos.Audit
         public string UserAgent { get; set; }
 
         /// <summary>
+        /// 登录类型
+        /// </summary>
+        public HbtLoginType LoginType { get; set; }
+
+        /// <summary>
+        /// 登录状态
+        /// </summary>
+        public HbtLoginStatus LoginStatus { get; set; }
+
+        /// <summary>
+        /// 登录来源
+        /// </summary>
+        public int LoginSource { get; set; }
+
+        /// <summary>
         /// 是否成功
         /// </summary>
         public bool Success { get; set; }
@@ -80,6 +97,31 @@ namespace Lean.Hbt.Application.Dtos.Audit
         /// 创建时间
         /// </summary>
         public DateTime CreateTime { get; set; }
+
+        /// <summary>
+        /// 设备信息
+        /// </summary>
+        public HbtDeviceInfo? DeviceInfo { get; set; }
+
+        /// <summary>
+        /// 设备扩展ID
+        /// </summary>
+        public long? DeviceExtendId { get; set; }
+
+        /// <summary>
+        /// 设备扩展信息
+        /// </summary>
+        public HbtDeviceExtendDto? DeviceExtend { get; set; }
+
+        /// <summary>
+        /// 登录扩展ID
+        /// </summary>
+        public long? LoginExtendId { get; set; }
+
+        /// <summary>
+        /// 登录扩展信息
+        /// </summary>
+        public HbtLoginExtendDto? LoginExtend { get; set; }
     }
 
     /// <summary>
@@ -118,6 +160,31 @@ namespace Lean.Hbt.Application.Dtos.Audit
         public bool? Success { get; set; }
 
         /// <summary>
+        /// 登录类型
+        /// </summary>
+        public HbtLoginType? LoginType { get; set; }
+
+        /// <summary>
+        /// 登录状态
+        /// </summary>
+        public HbtLoginStatus? LoginStatus { get; set; }
+
+        /// <summary>
+        /// 设备类型
+        /// </summary>
+        public HbtDeviceType? DeviceType { get; set; }
+
+        /// <summary>
+        /// 操作系统类型
+        /// </summary>
+        public HbtOsType? OsType { get; set; }
+
+        /// <summary>
+        /// 浏览器类型
+        /// </summary>
+        public HbtBrowserType? BrowserType { get; set; }
+
+        /// <summary>
         /// 开始时间
         /// </summary>
         public DateTime? StartTime { get; set; }
@@ -147,6 +214,15 @@ namespace Lean.Hbt.Application.Dtos.Audit
             UserAgent = string.Empty;
             Message = string.Empty;
             CreateTime = DateTime.Now;
+            DeviceName = string.Empty;
+            OsVersion = string.Empty;
+            BrowserVersion = string.Empty;
+            Location = string.Empty;
+            LoginType = string.Empty;
+            LoginStatus = string.Empty;
+            DeviceType = string.Empty;
+            OsType = string.Empty;
+            BrowserType = string.Empty;
         }
 
         /// <summary>
@@ -163,6 +239,51 @@ namespace Lean.Hbt.Application.Dtos.Audit
         /// 用户代理
         /// </summary>
         public string UserAgent { get; set; }
+
+        /// <summary>
+        /// 登录类型
+        /// </summary>
+        public string LoginType { get; set; }
+
+        /// <summary>
+        /// 登录状态
+        /// </summary>
+        public string LoginStatus { get; set; }
+
+        /// <summary>
+        /// 设备类型
+        /// </summary>
+        public string DeviceType { get; set; }
+
+        /// <summary>
+        /// 设备名称
+        /// </summary>
+        public string DeviceName { get; set; }
+
+        /// <summary>
+        /// 操作系统类型
+        /// </summary>
+        public string OsType { get; set; }
+
+        /// <summary>
+        /// 操作系统版本
+        /// </summary>
+        public string OsVersion { get; set; }
+
+        /// <summary>
+        /// 浏览器类型
+        /// </summary>
+        public string BrowserType { get; set; }
+
+        /// <summary>
+        /// 浏览器版本
+        /// </summary>
+        public string BrowserVersion { get; set; }
+
+        /// <summary>
+        /// 地理位置
+        /// </summary>
+        public string Location { get; set; }
 
         /// <summary>
         /// 是否成功

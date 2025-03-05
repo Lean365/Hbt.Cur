@@ -10,7 +10,6 @@
 //===================================================================
 
 using Lean.Hbt.Application.Services.Workflow.Engine;
-using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Domain.Data;
 using Lean.Hbt.Domain.Entities.Workflow;
 using Microsoft.Extensions.DependencyInjection;
@@ -90,18 +89,18 @@ namespace Lean.Hbt.Application.Services.Workflow.Jobs
                     return;
                 }
 
-                if (task.Status != HbtWorkflowScheduledTaskStatus.Pending)
+                if (task.Status != 0) // 待处理
                 {
                     _logger.Warn($"调度任务[{taskId}]状态为{task.Status},跳过执行");
                     return;
                 }
 
-                await _scheduledTaskService.UpdateStatusAsync(taskId, HbtWorkflowScheduledTaskStatus.Running);
+                await _scheduledTaskService.UpdateStatusAsync(taskId, 1); // 执行中
 
                 try
                 {
                     await ExecuteTaskAsync(task);
-                    await _scheduledTaskService.UpdateStatusAsync(taskId, HbtWorkflowScheduledTaskStatus.Completed);
+                    await _scheduledTaskService.UpdateStatusAsync(taskId, 3); // 已完成
                 }
                 catch (Exception ex)
                 {
@@ -109,7 +108,7 @@ namespace Lean.Hbt.Application.Services.Workflow.Jobs
 
                     if (task.RetryCount < task.MaxRetryCount)
                     {
-                        await _scheduledTaskService.UpdateStatusAsync(taskId, HbtWorkflowScheduledTaskStatus.Pending);
+                        await _scheduledTaskService.UpdateStatusAsync(taskId, 0); // 待处理
 
                         // 更新重试次数
                         await dbContext.Client.Updateable<HbtWorkflowScheduledTask>()
@@ -133,7 +132,7 @@ namespace Lean.Hbt.Application.Services.Workflow.Jobs
                     }
                     else
                     {
-                        await _scheduledTaskService.UpdateStatusAsync(taskId, HbtWorkflowScheduledTaskStatus.Failed, ex.Message);
+                        await _scheduledTaskService.UpdateStatusAsync(taskId, 4, ex.Message); // 已失败
                     }
                 }
             }

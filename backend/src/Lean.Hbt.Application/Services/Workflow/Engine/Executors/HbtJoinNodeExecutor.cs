@@ -2,11 +2,11 @@
 
 //===================================================================
 // 项目名 : Lean.Hbt
-// 文件名 : ParallelNodeExecutor.cs
+// 文件名 : JoinNodeExecutor.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-23 12:00
 // 版本号 : V1.0.0
-// 描述    : 并行节点执行器
+// 描述    : 汇聚节点执行器
 //===================================================================
 
 using System;
@@ -21,9 +21,9 @@ using Lean.Hbt.Domain.IServices;
 namespace Lean.Hbt.Application.Services.Workflow.Engine.Executors
 {
     /// <summary>
-    /// 并行节点执行器
+    /// 汇聚节点执行器
     /// </summary>
-    public class ParallelNodeExecutor : WorkflowNodeExecutorBase
+    public class HbtJoinNodeExecutor : HbtWorkflowNodeExecutorBase
     {
         private readonly IHbtRepository<HbtWorkflowTransition> _transitionRepository;
         private readonly IHbtRepository<HbtWorkflowParallelBranch> _parallelBranchRepository;
@@ -31,7 +31,7 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine.Executors
         /// <summary>
         /// 构造函数
         /// </summary>
-        public ParallelNodeExecutor(
+        public HbtJoinNodeExecutor(
             IHbtRepository<HbtWorkflowTransition> transitionRepository,
             IHbtRepository<HbtWorkflowParallelBranch> parallelBranchRepository,
             IHbtLogger logger) : base(logger)
@@ -43,7 +43,7 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine.Executors
         /// <summary>
         /// 节点类型
         /// </summary>
-        protected override HbtWorkflowNodeType NodeType => HbtWorkflowNodeType.Parallel;
+        protected override int NodeType => 4; // 4 表示汇合节点
 
         /// <summary>
         /// 执行节点
@@ -53,34 +53,29 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine.Executors
             HbtWorkflowNode node,
             Dictionary<string, object>? variables = null)
         {
-            // 获取所有并行分支
-            var transitions = await _transitionRepository.GetListAsync(x => x.SourceNodeId == node.Id);
-            if (!transitions.Any())
+            // 获取所有进入该节点的转换
+            var incomingTransitions = await _transitionRepository.GetListAsync(x => x.TargetNodeId == node.Id);
+            if (!incomingTransitions.Any())
             {
-                return CreateFailureResult("并行节点没有配置分支转换");
+                return CreateFailureResult("汇聚节点没有配置进入转换");
             }
 
-            // 创建并行分支状态记录
-            foreach (var transition in transitions)
-            {
-                var branch = new HbtWorkflowParallelBranch
-                {
-                    WorkflowInstanceId = instance.Id,
-                    ParallelNodeId = node.Id,
-                    BranchTransitionId = transition.Id,
-                    IsCompleted = false
-                };
+            // 获取对应的并行节点
+            var parallelNodeId = incomingTransitions.First().SourceNodeId;
 
-                await _parallelBranchRepository.InsertAsync(branch);
+            // 获取并行分支状态
+            var branches = await _parallelBranchRepository.GetListAsync(x =>
+                x.WorkflowInstanceId == instance.Id &&
+                x.ParallelNodeId == parallelNodeId);
+
+            // 检查所有分支是否都已完成
+            if (branches.Any(x => !x.IsCompleted))
+            {
+                return CreateFailureResult("存在未完成的并行分支");
             }
 
-            // 返回成功结果，包含所有并行分支的转换ID
-            var outputVariables = new Dictionary<string, object>
-            {
-                { "ParallelTransitions", transitions.Select(x => x.Id).ToList() }
-            };
-
-            return CreateSuccessResult(outputVariables);
+            // 所有分支都已完成，可以继续执行
+            return CreateSuccessResult();
         }
     }
-}
+} 

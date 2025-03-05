@@ -142,10 +142,10 @@ public class HbtServerMonitorService : IHbtServerMonitorService
                 ServiceName = s.ServiceName,
                 DisplayName = s.DisplayName,
                 ServiceType = s.ServiceType.ToString(),
-                Status = s.Status.ToString(),
+                Status = 0,
                 StartType = HbtServerMonitorUtils.GetServiceStartType(s),
                 Account = HbtServerMonitorUtils.GetServiceAccount(s)
             }).ToList();
         });
     }
-} 
+}

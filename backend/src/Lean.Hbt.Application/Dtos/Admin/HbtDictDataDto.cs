@@ -1,5 +1,5 @@
 //===================================================================
-// 项目名 : Lean.Hbt
+// 项目名 : Lean.Hbt.Application
 // 文件名 : HbtDictDataDto.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-18 10:00
@@ -8,37 +8,61 @@
 //===================================================================
 
 using System.ComponentModel.DataAnnotations;
-using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Common.Models;
 using Mapster;
 
 namespace Lean.Hbt.Application.Dtos.Admin
 {
     /// <summary>
-    /// 字典数据传输对象
+    /// 字典数据DTO
     /// </summary>
     public class HbtDictDataDto
     {
-        /// <summary>
-        /// 字典数据ID
-        /// </summary>
-        [AdaptMember("Id")]
-        public long DictDataId { get; set; }
+    /// <summary>
+    /// ID
+    /// </summary>
+ [AdaptMember("Id")]
+    public long DictDataId { get; set; }
 
         /// <summary>
         /// 字典类型
         /// </summary>
-        public string DictType { get; set; }
+        public string DictType { get; set; } = string.Empty;
 
         /// <summary>
         /// 字典标签
         /// </summary>
-        public string DictLabel { get; set; }
+        public string DictLabel { get; set; } = string.Empty;
 
         /// <summary>
         /// 字典键值
         /// </summary>
-        public string DictValue { get; set; }
+        public string DictValue { get; set; } = string.Empty;
+
+        /// <summary>
+        /// 显示标签
+        /// </summary>
+        public string Label { get; set; } = string.Empty;
+
+        /// <summary>
+        /// 键值
+        /// </summary>
+        public string Value { get; set; } = string.Empty;
+
+        /// <summary>
+        /// CSS类名
+        /// </summary>
+        public int? CssClass { get; set; }
+
+        /// <summary>
+        /// 列表类名
+        /// </summary>
+        public int? ListClass { get; set; }
+
+        /// <summary>
+        /// 状态（0正常 1停用）
+        /// </summary>
+        public int Status { get; set; } = 0;
 
         /// <summary>
         /// 扩展标签
@@ -56,49 +80,18 @@ namespace Lean.Hbt.Application.Dtos.Admin
         public string? TransKey { get; set; }
 
         /// <summary>
-        /// 字典排序
+        /// 排序号
         /// </summary>
         public int OrderNum { get; set; }
-
-        /// <summary>
-        /// 样式属性
-        /// </summary>
-        public string? CssClass { get; set; }
-
-        /// <summary>
-        /// 表格回显样式
-        /// </summary>
-        public string? ListClass { get; set; }
-
-        /// <summary>
-        /// 状态
-        /// </summary>
-        public HbtStatus Status { get; set; }
 
         /// <summary>
         /// 备注
         /// </summary>
         public string? Remark { get; set; }
-
-        /// <summary>
-        /// 构造函数
-        /// </summary>
-        public HbtDictDataDto()
-        {
-            DictType = string.Empty;
-            DictLabel = string.Empty;
-            DictValue = string.Empty;
-            ExtLabel = string.Empty;
-            ExtValue = string.Empty;
-            TransKey = string.Empty;
-            CssClass = string.Empty;
-            ListClass = string.Empty;
-            Remark = string.Empty;
-        }
     }
 
     /// <summary>
-    /// 字典数据查询对象
+    /// 字典数据查询DTO
     /// </summary>
     public class HbtDictDataQueryDto : HbtPagedQuery
     {
@@ -113,13 +106,13 @@ namespace Lean.Hbt.Application.Dtos.Admin
         public string? DictLabel { get; set; }
 
         /// <summary>
-        /// 状态
+        /// 状态（0正常 1停用）
         /// </summary>
-        public HbtStatus? Status { get; set; }
+        public int? Status { get; set; }
     }
 
     /// <summary>
-    /// 字典数据创建对象
+    /// 字典数据创建DTO
     /// </summary>
     public class HbtDictDataCreateDto
     {
@@ -128,21 +121,21 @@ namespace Lean.Hbt.Application.Dtos.Admin
         /// </summary>
         [Required(ErrorMessage = "字典类型不能为空")]
         [MaxLength(100, ErrorMessage = "字典类型长度不能超过100个字符")]
-        public string DictType { get; set; }
+        public string DictType { get; set; } = string.Empty;
 
         /// <summary>
         /// 字典标签
         /// </summary>
         [Required(ErrorMessage = "字典标签不能为空")]
         [MaxLength(100, ErrorMessage = "字典标签长度不能超过100个字符")]
-        public string DictLabel { get; set; }
+        public string DictLabel { get; set; } = string.Empty;
 
         /// <summary>
         /// 字典键值
         /// </summary>
         [Required(ErrorMessage = "字典键值不能为空")]
         [MaxLength(100, ErrorMessage = "字典键值长度不能超过100个字符")]
-        public string DictValue { get; set; }
+        public string DictValue { get; set; } = string.Empty;
 
         /// <summary>
         /// 扩展标签
@@ -163,21 +156,19 @@ namespace Lean.Hbt.Application.Dtos.Admin
         public string? TransKey { get; set; }
 
         /// <summary>
-        /// 字典排序
+        /// 排序号
         /// </summary>
         public int OrderNum { get; set; }
 
         /// <summary>
-        /// 样式属性
+        /// CSS类名
         /// </summary>
-        [MaxLength(100, ErrorMessage = "样式属性长度不能超过100个字符")]
-        public string? CssClass { get; set; }
+        public int? CssClass { get; set; }
 
         /// <summary>
-        /// 表格回显样式
+        /// 列表类名
         /// </summary>
-        [MaxLength(100, ErrorMessage = "表格回显样式长度不能超过100个字符")]
-        public string? ListClass { get; set; }
+        public int? ListClass { get; set; }
 
         /// <summary>
         /// 备注
@@ -186,32 +177,22 @@ namespace Lean.Hbt.Application.Dtos.Admin
         public string? Remark { get; set; }
 
         /// <summary>
-        /// 构造函数
+        /// 状态（0正常 1停用）
         /// </summary>
-        public HbtDictDataCreateDto()
-        {
-            DictType = string.Empty;
-            DictLabel = string.Empty;
-            DictValue = string.Empty;
-            ExtLabel = string.Empty;
-            ExtValue = string.Empty;
-            TransKey = string.Empty;
-            CssClass = string.Empty;
-            ListClass = string.Empty;
-            Remark = string.Empty;
-        }
+        public int Status { get; set; } = 0;
     }
 
     /// <summary>
-    /// 字典数据更新对象
+    /// 字典数据更新DTO
     /// </summary>
     public class HbtDictDataUpdateDto
     {
-        /// <summary>
-        /// 字典数据ID
-        /// </summary>
-        [Required(ErrorMessage = "字典数据ID不能为空")]
-        [AdaptMember("Id")]
+    /// <summary>
+    /// ID
+    /// </summary>
+    /// 
+    [Required(ErrorMessage = "字典数据ID不能为空")]
+         [AdaptMember("Id")]
         public long DictDataId { get; set; }
 
         /// <summary>
@@ -219,21 +200,21 @@ namespace Lean.Hbt.Application.Dtos.Admin
         /// </summary>
         [Required(ErrorMessage = "字典类型不能为空")]
         [MaxLength(100, ErrorMessage = "字典类型长度不能超过100个字符")]
-        public string DictType { get; set; }
+        public string DictType { get; set; } = string.Empty;
 
         /// <summary>
         /// 字典标签
         /// </summary>
         [Required(ErrorMessage = "字典标签不能为空")]
         [MaxLength(100, ErrorMessage = "字典标签长度不能超过100个字符")]
-        public string DictLabel { get; set; }
+        public string DictLabel { get; set; } = string.Empty;
 
         /// <summary>
         /// 字典键值
         /// </summary>
         [Required(ErrorMessage = "字典键值不能为空")]
         [MaxLength(100, ErrorMessage = "字典键值长度不能超过100个字符")]
-        public string DictValue { get; set; }
+        public string DictValue { get; set; } = string.Empty;
 
         /// <summary>
         /// 扩展标签
@@ -254,53 +235,35 @@ namespace Lean.Hbt.Application.Dtos.Admin
         public string? TransKey { get; set; }
 
         /// <summary>
-        /// 字典排序
+        /// 排序号
         /// </summary>
         public int OrderNum { get; set; }
 
         /// <summary>
-        /// 样式属性
+        /// CSS类名
         /// </summary>
-        [MaxLength(100, ErrorMessage = "样式属性长度不能超过100个字符")]
-        public string? CssClass { get; set; }
+        public int? CssClass { get; set; }
 
         /// <summary>
-        /// 表格回显样式
+        /// 列表类名
         /// </summary>
-        [MaxLength(100, ErrorMessage = "表格回显样式长度不能超过100个字符")]
-        public string? ListClass { get; set; }
+        public int? ListClass { get; set; }
 
         /// <summary>
-        /// 状态
+        /// 状态（0正常 1停用）
         /// </summary>
         [Required(ErrorMessage = "状态不能为空")]
-        public HbtStatus Status { get; set; }
+        public int Status { get; set; }
 
         /// <summary>
         /// 备注
         /// </summary>
         [MaxLength(500, ErrorMessage = "备注长度不能超过500个字符")]
         public string? Remark { get; set; }
-
-        /// <summary>
-        /// 构造函数
-        /// </summary>
-        public HbtDictDataUpdateDto()
-        {
-            DictType = string.Empty;
-            DictLabel = string.Empty;
-            DictValue = string.Empty;
-            ExtLabel = string.Empty;
-            ExtValue = string.Empty;
-            TransKey = string.Empty;
-            CssClass = string.Empty;
-            ListClass = string.Empty;
-            Remark = string.Empty;
-        }
     }
 
     /// <summary>
-    /// 字典数据导入对象
+    /// 字典数据导入DTO
     /// </summary>
     public class HbtDictDataImportDto
     {
@@ -309,21 +272,21 @@ namespace Lean.Hbt.Application.Dtos.Admin
         /// </summary>
         [Required(ErrorMessage = "字典类型不能为空")]
         [MaxLength(100, ErrorMessage = "字典类型长度不能超过100个字符")]
-        public string DictType { get; set; }
+        public string DictType { get; set; } = string.Empty;
 
         /// <summary>
         /// 字典标签
         /// </summary>
         [Required(ErrorMessage = "字典标签不能为空")]
         [MaxLength(100, ErrorMessage = "字典标签长度不能超过100个字符")]
-        public string DictLabel { get; set; }
+        public string DictLabel { get; set; } = string.Empty;
 
         /// <summary>
         /// 字典键值
         /// </summary>
         [Required(ErrorMessage = "字典键值不能为空")]
         [MaxLength(100, ErrorMessage = "字典键值长度不能超过100个字符")]
-        public string DictValue { get; set; }
+        public string DictValue { get; set; } = string.Empty;
 
         /// <summary>
         /// 扩展标签
@@ -344,47 +307,29 @@ namespace Lean.Hbt.Application.Dtos.Admin
         public string? TransKey { get; set; }
 
         /// <summary>
-        /// 字典排序
+        /// 排序号
         /// </summary>
         public int OrderNum { get; set; }
 
         /// <summary>
-        /// 样式属性
+        /// CSS类名
         /// </summary>
-        [MaxLength(100, ErrorMessage = "样式属性长度不能超过100个字符")]
-        public string? CssClass { get; set; }
+        public int? CssClass { get; set; }
 
         /// <summary>
-        /// 表格回显样式
+        /// 列表类名
         /// </summary>
-        [MaxLength(100, ErrorMessage = "表格回显样式长度不能超过100个字符")]
-        public string? ListClass { get; set; }
+        public int? ListClass { get; set; }
 
         /// <summary>
         /// 备注
         /// </summary>
         [MaxLength(500, ErrorMessage = "备注长度不能超过500个字符")]
         public string? Remark { get; set; }
-
-        /// <summary>
-        /// 构造函数
-        /// </summary>
-        public HbtDictDataImportDto()
-        {
-            DictType = string.Empty;
-            DictLabel = string.Empty;
-            DictValue = string.Empty;
-            ExtLabel = string.Empty;
-            ExtValue = string.Empty;
-            TransKey = string.Empty;
-            CssClass = string.Empty;
-            ListClass = string.Empty;
-            Remark = string.Empty;
-        }
     }
 
     /// <summary>
-    /// 字典数据导出对象
+    /// 字典数据导出DTO
     /// </summary>
     public class HbtDictDataExportDto
     {
@@ -419,49 +364,33 @@ namespace Lean.Hbt.Application.Dtos.Admin
         public string? TransKey { get; set; }
 
         /// <summary>
-        /// 字典排序
+        /// 排序号
         /// </summary>
         public int OrderNum { get; set; }
 
         /// <summary>
-        /// 样式属性
+        /// CSS类名
         /// </summary>
-        public string? CssClass { get; set; }
+        public int? CssClass { get; set; }
 
         /// <summary>
-        /// 表格回显样式
+        /// 列表类名
         /// </summary>
-        public string? ListClass { get; set; }
+        public int? ListClass { get; set; }
 
         /// <summary>
-        /// 状态
+        /// 状态（0正常 1停用）
         /// </summary>
-        public HbtStatus Status { get; set; }
+        public int Status { get; set; }
 
         /// <summary>
         /// 备注
         /// </summary>
         public string? Remark { get; set; }
-
-        /// <summary>
-        /// 构造函数
-        /// </summary>
-        public HbtDictDataExportDto()
-        {
-            DictType = string.Empty;
-            DictLabel = string.Empty;
-            DictValue = string.Empty;
-            ExtLabel = string.Empty;
-            ExtValue = string.Empty;
-            TransKey = string.Empty;
-            CssClass = string.Empty;
-            ListClass = string.Empty;
-            Remark = string.Empty;
-        }
     }
 
     /// <summary>
-    /// 字典数据导入模板对象
+    /// 字典数据模板DTO
     /// </summary>
     public class HbtDictDataTemplateDto
     {
@@ -496,58 +425,40 @@ namespace Lean.Hbt.Application.Dtos.Admin
         public string? TransKey { get; set; }
 
         /// <summary>
-        /// 字典排序
+        /// 排序号
         /// </summary>
         public int OrderNum { get; set; }
 
         /// <summary>
-        /// 样式属性
+        /// CSS类名
         /// </summary>
-        public string? CssClass { get; set; }
+        public int? CssClass { get; set; }
 
         /// <summary>
-        /// 表格回显样式
+        /// 列表类名
         /// </summary>
-        public string? ListClass { get; set; }
+        public int? ListClass { get; set; }
 
         /// <summary>
         /// 备注
         /// </summary>
         public string? Remark { get; set; }
-
-        /// <summary>
-        /// 构造函数
-        /// </summary>
-        public HbtDictDataTemplateDto()
-        {
-            DictType = string.Empty;
-            DictLabel = string.Empty;
-            DictValue = string.Empty;
-            ExtLabel = string.Empty;
-            ExtValue = string.Empty;
-            TransKey = string.Empty;
-            CssClass = string.Empty;
-            ListClass = string.Empty;
-            Remark = string.Empty;
-        }
     }
 
     /// <summary>
-    /// 字典数据状态更新对象
+    /// 字典数据状态DTO
     /// </summary>
     public class HbtDictDataStatusDto
     {
-        /// <summary>
-        /// 字典数据ID
-        /// </summary>
-        [Required(ErrorMessage = "字典数据ID不能为空")]
-        [AdaptMember("Id")]
-        public long DictDataId { get; set; }
+    /// <summary>
+    /// 字典数据ID
+    /// </summary>
+[AdaptMember("Id")]
+    public long DictDataId { get; set; }
 
         /// <summary>
         /// 状态
         /// </summary>
-        [Required(ErrorMessage = "状态不能为空")]
-        public HbtStatus Status { get; set; }
+        public int Status { get; set; }
     }
-} 
+}

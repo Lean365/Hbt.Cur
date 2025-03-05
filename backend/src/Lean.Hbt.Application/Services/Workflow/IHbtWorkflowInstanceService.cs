@@ -87,7 +87,7 @@ namespace Lean.Hbt.Application.Services.Workflow
         /// 更新工作流实例状态
         /// </summary>
         /// <param name="input">状态更新信息</param>
-        /// <returns>是否成功</returns>
+        /// <returns>更新是否成功</returns>
         Task<bool> UpdateStatusAsync(HbtWorkflowInstanceStatusDto input);
 
         /// <summary>

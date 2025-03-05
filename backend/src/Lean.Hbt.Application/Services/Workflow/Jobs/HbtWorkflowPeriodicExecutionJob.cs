@@ -11,7 +11,6 @@
 
 using System.Text.Json;
 using Lean.Hbt.Application.Services.Workflow.Engine;
-using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Domain.Data;
 using Lean.Hbt.Domain.Entities.Workflow;
 using Microsoft.Extensions.DependencyInjection;
@@ -50,87 +49,114 @@ namespace Lean.Hbt.Application.Services.Workflow.Jobs
             using var scope = _serviceProvider.CreateScope();
             var dbContext = scope.ServiceProvider.GetRequiredService<IHbtDbContext>();
 
-            // 解析任务参数
-            if (string.IsNullOrEmpty(task.TaskParameters))
+            // 获取工作流任务信息
+            var workflowTask = await dbContext.Client.Queryable<HbtWorkflowTask>()
+                .Where(t => t.WorkflowInstanceId == task.WorkflowInstanceId && t.NodeId == task.NodeId)
+                .FirstAsync();
+
+            if (workflowTask == null)
             {
-                _logger.Error($"周期执行任务参数为空,任务ID:{task.Id}");
+                _logger.Warn($"未找到工作流任务,实例ID:{task.WorkflowInstanceId},节点ID:{task.NodeId}");
+                return;
+            }
+
+            if (workflowTask.Status != 0) // 0 表示待处理状态
+            {
+                _logger.Info($"工作流任务[{workflowTask.Id}]状态为{workflowTask.Status},不需要周期执行");
                 return;
             }
 
             try
             {
-                var parameters = JsonSerializer.Deserialize<Dictionary<string, object>>(task.TaskParameters);
-                if (parameters == null || !parameters.ContainsKey("transitionId") || !parameters.ContainsKey("cronExpression"))
-                {
-                    _logger.Error($"周期执行任务参数缺少必要字段,任务ID:{task.Id}");
-                    return;
-                }
+                // 解析任务参数
+                var parameters = string.IsNullOrEmpty(task.TaskParameters)
+                    ? new Dictionary<string, object>()
+                    : JsonSerializer.Deserialize<Dictionary<string, object>>(task.TaskParameters);
 
-                // 获取转换ID和Cron表达式
-                var transitionId = Convert.ToInt64(parameters["transitionId"]);
-                var cronExpression = parameters["cronExpression"].ToString();
+                // 执行工作流引擎
+                await _workflowEngine.ExecuteNodeAsync(task.WorkflowInstanceId, task.NodeId, parameters);
 
-                // 提取工作流变量
-                var variables = new Dictionary<string, object>();
-                foreach (var param in parameters)
-                {
-                    if (!new[] { "transitionId", "cronExpression" }.Contains(param.Key))
+                // 更新任务状态为已完成
+                await dbContext.Client.Updateable<HbtWorkflowTask>()
+                    .SetColumns(t => new HbtWorkflowTask
                     {
-                        variables[param.Key] = param.Value;
-                    }
-                }
-
-                // 执行工作流转换
-                var result = await _workflowEngine.ExecuteTransitionAsync(task.WorkflowInstanceId, transitionId, variables);
-                if (!result.Success)
-                {
-                    _logger.Error($"执行工作流转换失败,任务ID:{task.Id},错误:{result.ErrorMessage}");
-                    throw new InvalidOperationException(result.ErrorMessage);
-                }
+                        Status = 3, // 3 表示已完成状态
+                        Result = "周期执行成功",
+                        UpdateTime = DateTime.Now
+                    })
+                    .Where(t => t.Id == workflowTask.Id)
+                    .ExecuteCommandAsync();
 
                 // 记录操作历史
                 var history = new HbtWorkflowHistory
                 {
                     WorkflowInstanceId = task.WorkflowInstanceId,
                     NodeId = task.NodeId,
-                    OperationType = (int)HbtWorkflowOperationType.Submit,
-                    OperatorId = 0,
-                    OperatorName = "System",
-                    OperationComment = "周期执行工作流转换",
+                    OperationType = 5, // 周期执行
+                    OperationResult = 1, // 成功
+                    OperationComment = "周期执行成功",
                     OperationTime = DateTime.Now
                 };
 
                 await dbContext.Client.Insertable(history).ExecuteCommandAsync();
 
-                _logger.Info($"周期执行任务[{task.Id}]已执行工作流转换[{transitionId}]");
+                _logger.Info($"工作流任务[{workflowTask.Id}]周期执行成功");
 
-                // 创建下一次执行的任务
-                var cronTrigger = new CronExpression(cronExpression);
-                var nextFireTime = cronTrigger.GetNextValidTimeAfter(DateTimeOffset.Now);
-                if (nextFireTime.HasValue)
+                // 如果有Cron表达式,创建下一次执行的任务
+                if (parameters.ContainsKey("cronExpression"))
                 {
-                    var nextTask = new HbtWorkflowScheduledTask
+                    var cronExpression = parameters["cronExpression"].ToString();
+                    if (!string.IsNullOrEmpty(cronExpression))
                     {
-                        WorkflowInstanceId = task.WorkflowInstanceId,
-                        NodeId = task.NodeId,
-                        TaskType = HbtWorkflowScheduledTaskType.PeriodicExecution,
-                        ScheduledTime = nextFireTime.Value.DateTime,
-                        Status = HbtWorkflowScheduledTaskStatus.Pending,
-                        TaskParameters = task.TaskParameters // 使用相同的参数
-                    };
+                        var cronTrigger = new CronExpression(cronExpression);
+                        var nextFireTime = cronTrigger.GetNextValidTimeAfter(DateTime.Now);
 
-                    await dbContext.Client.Insertable(nextTask).ExecuteCommandAsync();
-                    _logger.Info($"已创建下一次周期执行任务,计划执行时间:{nextFireTime.Value:yyyy-MM-dd HH:mm:ss}");
+                        if (nextFireTime.HasValue)
+                        {
+                            var nextTask = new HbtWorkflowScheduledTask
+                            {
+                                WorkflowInstanceId = task.WorkflowInstanceId,
+                                NodeId = task.NodeId,
+                                TaskType = 5, // 周期执行
+                                ScheduledTime = nextFireTime.Value.DateTime,
+                                Status = 0, // 待处理
+                                TaskParameters = task.TaskParameters
+                            };
+
+                            await dbContext.Client.Insertable(nextTask).ExecuteCommandAsync();
+                            _logger.Info($"已创建下一次周期执行任务,计划执行时间:{nextFireTime.Value:yyyy-MM-dd HH:mm:ss}");
+                        }
+                    }
                 }
-            }
-            catch (JsonException ex)
-            {
-                _logger.Error($"解析周期执行任务参数失败,任务ID:{task.Id},错误:{ex.Message}", ex);
-                throw;
             }
             catch (Exception ex)
             {
-                _logger.Error($"执行周期执行任务失败,任务ID:{task.Id},错误:{ex.Message}", ex);
+                _logger.Error($"工作流任务[{workflowTask.Id}]周期执行失败: {ex.Message}", ex);
+
+                // 更新任务状态为失败
+                await dbContext.Client.Updateable<HbtWorkflowTask>()
+                    .SetColumns(t => new HbtWorkflowTask
+                    {
+                        Status = 4, // 4 表示失败状态
+                        Result = $"周期执行失败: {ex.Message}",
+                        UpdateTime = DateTime.Now
+                    })
+                    .Where(t => t.Id == workflowTask.Id)
+                    .ExecuteCommandAsync();
+
+                // 记录操作历史
+                var history = new HbtWorkflowHistory
+                {
+                    WorkflowInstanceId = task.WorkflowInstanceId,
+                    NodeId = task.NodeId,
+                    OperationType = 5, // 周期执行
+                    OperationResult = 2, // 失败
+                    OperationComment = $"周期执行失败: {ex.Message}",
+                    OperationTime = DateTime.Now
+                };
+
+                await dbContext.Client.Insertable(history).ExecuteCommandAsync();
+
                 throw;
             }
         }

@@ -17,7 +17,7 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine.Executors
     /// <summary>
     /// 工作流节点执行器基类
     /// </summary>
-    public abstract class WorkflowNodeExecutorBase : IWorkflowNodeExecutor
+    public abstract class HbtWorkflowNodeExecutorBase : IHbtWorkflowNodeExecutor
     {
         /// <summary>
         /// 日志服务
@@ -28,7 +28,7 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine.Executors
         /// 构造函数
         /// </summary>
         /// <param name="logger"></param>
-        protected WorkflowNodeExecutorBase(IHbtLogger logger)
+        protected HbtWorkflowNodeExecutorBase(IHbtLogger logger)
         {
             _logger = logger;
         }
@@ -36,7 +36,7 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine.Executors
         /// <summary>
         /// 节点类型
         /// </summary>
-        protected abstract HbtWorkflowNodeType NodeType { get; }
+        protected abstract int NodeType { get; }
 
         /// <summary>
         /// 执行节点内部逻辑
@@ -92,7 +92,7 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine.Executors
         /// <summary>
         /// 是否可以处理该类型节点
         /// </summary>
-        public bool CanHandle(HbtWorkflowNodeType nodeType)
+        public bool CanHandle(int nodeType)
         {
             return nodeType == NodeType;
         }

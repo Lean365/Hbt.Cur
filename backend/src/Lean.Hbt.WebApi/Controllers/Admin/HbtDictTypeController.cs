@@ -162,7 +162,10 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
         /// <param name="status">状态</param>
         /// <returns>是否成功</returns>
         [HttpPut("{dictTypeId}/status")]
-        public async Task<IActionResult> UpdateStatusAsync(long dictTypeId, [FromQuery] HbtStatus status)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> UpdateStatusAsync(long dictTypeId, [FromQuery] int status)
         {
             var input = new HbtDictTypeStatusDto
             {
@@ -170,6 +173,37 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
                 Status = status
             };
             var result = await _dictTypeService.UpdateStatusAsync(input);
+            return Success(result);
+        }
+
+        /// <summary>
+        /// 执行字典SQL脚本
+        /// </summary>
+        /// <param name="dictTypeId">字典类型ID</param>
+        /// <returns>字典数据列表</returns>
+        [HttpGet("executeSql/{dictTypeId}")]
+        [HbtPerm("admin:dicttype:list")]
+        public async Task<IActionResult> ExecuteDictSqlAsync(long dictTypeId)
+        {
+            var dictType = await _dictTypeService.GetAsync(dictTypeId);
+            if (dictType == null)
+            {
+                throw new HbtException("字典类型不存在");
+            }
+
+            if (string.IsNullOrEmpty(dictType.SqlScript))
+            {
+                throw new HbtException("SQL脚本为空");
+            }
+
+            var result = await _dictTypeService.ExecuteDictSqlAsync(dictType.SqlScript);
+
+            // 填充字典类型信息
+            foreach (var item in result)
+            {
+                item.DictType = dictType.DictType;
+           }
+
             return Success(result);
         }
     }

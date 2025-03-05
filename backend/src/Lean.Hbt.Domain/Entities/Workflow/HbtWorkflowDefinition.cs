@@ -54,10 +54,10 @@ namespace Lean.Hbt.Domain.Entities.Workflow
         public string WorkflowConfig { get; set; }
 
         /// <summary>
-        /// 状态
+        /// 工作流状态
         /// </summary>
-        [SugarColumn(ColumnName = "workflow_status", ColumnDescription = "状态", ColumnDataType = "tinyint", IsNullable = false)]
-        public HbtWorkflowStatus Status { get; set; }
+        [SugarColumn(ColumnName = "status", ColumnDescription = "工作流状态", ColumnDataType = "int", IsNullable = false)]
+        public int Status { get; set; }
 
         /// <summary>
         /// 流程节点列表

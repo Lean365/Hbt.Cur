@@ -28,7 +28,7 @@ namespace Lean.Hbt.Application.Services.Workflow
         /// <param name="scheduledTime">计划执行时间</param>
         /// <param name="parameters">任务参数(JSON格式)</param>
         /// <returns>任务ID</returns>
-        Task<long> CreateAsync(long workflowInstanceId, long nodeId, HbtWorkflowScheduledTaskType taskType, DateTime scheduledTime, string? parameters = null);
+        Task<long> CreateAsync(long workflowInstanceId, long nodeId, int taskType, DateTime scheduledTime, string? parameters = null);
 
         /// <summary>
         /// 取消定时任务
@@ -58,7 +58,7 @@ namespace Lean.Hbt.Application.Services.Workflow
         /// <param name="status">新状态</param>
         /// <param name="errorMessage">错误信息(可选)</param>
         /// <returns>是否成功</returns>
-        Task<bool> UpdateStatusAsync(long taskId, HbtWorkflowScheduledTaskStatus status, string? errorMessage = null);
+        Task<bool> UpdateStatusAsync(long taskId, int status, string? errorMessage = null);
 
         /// <summary>
         /// 清理过期任务

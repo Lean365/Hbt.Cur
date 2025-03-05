@@ -37,7 +37,7 @@ namespace Lean.Hbt.Domain.Entities.Workflow
         /// 任务类型
         /// </summary>
         [SugarColumn(ColumnName = "task_type", ColumnDescription = "任务类型", ColumnDataType = "int", IsNullable = false)]
-        public HbtWorkflowScheduledTaskType TaskType { get; set; }
+        public int TaskType { get; set; }
 
         /// <summary>
         /// 计划执行时间
@@ -55,7 +55,7 @@ namespace Lean.Hbt.Domain.Entities.Workflow
         /// 执行状态
         /// </summary>
         [SugarColumn(ColumnName = "status", ColumnDescription = "执行状态", ColumnDataType = "int", IsNullable = false)]
-        public HbtWorkflowScheduledTaskStatus Status { get; set; }
+        public int Status { get; set; }
 
         /// <summary>
         /// 重试次数

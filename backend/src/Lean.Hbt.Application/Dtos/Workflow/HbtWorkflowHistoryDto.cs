@@ -7,8 +7,6 @@
 // 描述    : 工作流历史数据传输对象
 //===================================================================
 
-using Lean.Hbt.Common.Enums;
-
 namespace Lean.Hbt.Application.Dtos.Workflow
 {
     /// <summary>
@@ -39,7 +37,7 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 操作类型
         /// </summary>
-        public HbtWorkflowOperationType OperationType { get; set; }
+        public int OperationType { get; set; }
 
         /// <summary>
         /// 操作人ID
@@ -54,7 +52,7 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 操作结果
         /// </summary>
-        public HbtWorkflowTaskResult? OperationResult { get; set; }
+        public int OperationResult { get; set; }
 
         /// <summary>
         /// 操作意见
@@ -109,7 +107,7 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 操作类型
         /// </summary>
-        public HbtWorkflowOperationType? OperationType { get; set; }
+        public int? OperationType { get; set; }
 
         /// <summary>
         /// 操作人ID
@@ -149,7 +147,7 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 操作类型
         /// </summary>
-        public HbtWorkflowOperationType OperationType { get; set; }
+        public int OperationType { get; set; }
 
         /// <summary>
         /// 操作人ID

@@ -73,8 +73,8 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
                     NickName = userInfo.NickName,
                     Email = userInfo.Email,
                     Avatar = userInfo.Avatar,
-                    UserType = HbtUserType.OAuth,
-                    Status = HbtStatus.Normal
+                    UserType = 2, // OAuth 用户类型
+                    Status = 0 // 0 表示正常状态
                 };
                 await _userRepository.InsertAsync(user);
             }
@@ -90,13 +90,56 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
             // 返回登录结果
             var result = new HbtOAuthLoginDto
             {
-                AccessToken = sessionId,
-                RefreshToken = Guid.NewGuid().ToString("N"), // 为 OAuth 登录生成新的刷新令牌
-                ExpiresIn = 3600, // 设置令牌过期时间为1小时
+                AccessToken = null, // 需要选择租户后才生成token
+                NeedSelectTenant = true, // 标识需要选择租户
                 UserName = user.UserName,
                 NickName = user.NickName,
                 Avatar = user.Avatar,
                 Email = user.Email
+            };
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// OAuth用户选择租户
+        /// </summary>
+        /// <param name="userName">用户名</param>
+        /// <param name="tenantId">选择的租户ID</param>
+        /// <returns>登录结果</returns>
+        [HttpPost("select-tenant")]
+        [AllowAnonymous]
+        public async Task<IActionResult> SelectTenantAsync(string userName, long tenantId)
+        {
+            var user = await _userRepository.FirstOrDefaultAsync(u => u.UserName == userName);
+            if (user == null)
+            {
+                return NotFound("用户不存在");
+            }
+
+            // 更新用户的租户ID
+            user.TenantId = tenantId;
+            await _userRepository.UpdateAsync(user);
+
+            // 创建会话
+            var sessionId = await _sessionManager.CreateSessionAsync(
+                user.Id.ToString(),
+                user.UserName,
+                HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown",
+                HttpContext.Request.Headers["User-Agent"].ToString()
+            );
+
+            // 返回登录结果
+            var result = new HbtOAuthLoginDto
+            {
+                AccessToken = sessionId,
+                RefreshToken = Guid.NewGuid().ToString("N"),
+                ExpiresIn = 3600,
+                UserName = user.UserName,
+                NickName = user.NickName,
+                Avatar = user.Avatar,
+                Email = user.Email,
+                NeedSelectTenant = false
             };
 
             return Ok(result);

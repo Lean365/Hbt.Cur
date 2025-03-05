@@ -8,6 +8,7 @@
 //===================================================================
 
 using SqlSugar;
+using System.Data;
 
 namespace Lean.Hbt.Domain.Data;
 
@@ -35,4 +36,10 @@ public interface IHbtDbContext
     /// 回滚事务
     /// </summary>
     void RollbackTran();
+
+    /// <summary>
+    /// 获取数据库连接
+    /// </summary>
+    /// <returns>数据库连接</returns>
+    IDbConnection GetConnection();
 } 

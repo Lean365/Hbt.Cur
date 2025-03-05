@@ -1,18 +1,17 @@
 #nullable enable
 
 //===================================================================
-// 项目名 : Lean.Hbt 
-// 文件名 : IWorkflowApproverResolver.cs 
+// 项目名 : Lean.Hbt
+// 文件名 : IWorkflowApproverResolver.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-23 12:00
 // 版本号 : V1.0.0
 // 描述    : 工作流审批人解析器接口
 //===================================================================
 
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Lean.Hbt.Domain.Entities.Workflow;
 using Lean.Hbt.Domain.Models.Workflow;
+
 namespace Lean.Hbt.Application.Services.Workflow.Engine.Resolvers
 {
     /// <summary>
@@ -22,7 +21,7 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine.Resolvers
     /// 创建者: Lean365
     /// 创建时间: 2024-01-23
     /// </remarks>
-    public interface IWorkflowApproverResolver
+    public interface IHbtWorkflowApproverResolver
     {
         /// <summary>
         /// 解析审批人
@@ -36,4 +35,4 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine.Resolvers
             HbtWorkflowNode node,
             HbtWorkflowNodeConfig nodeConfig);
     }
-} 
+}

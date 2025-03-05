@@ -9,15 +9,11 @@
 
 #nullable enable
 
-using System.Linq.Expressions;
 using Lean.Hbt.Application.Dtos.Workflow;
 using Lean.Hbt.Common.Exceptions;
-using Lean.Hbt.Common.Models;
 using Lean.Hbt.Domain.Entities.Workflow;
-using Lean.Hbt.Domain.IServices;
 using Lean.Hbt.Domain.IServices.Admin;
 using Lean.Hbt.Domain.Repositories;
-using Mapster;
 using SqlSugar;
 
 namespace Lean.Hbt.Application.Services.Workflow
@@ -59,7 +55,7 @@ namespace Lean.Hbt.Application.Services.Workflow
             TypeAdapterConfig<HbtWorkflowInstance, HbtWorkflowInstanceExportDto>.NewConfig()
                 .Map(dest => dest.Title, src => src.WorkflowTitle)
                 .Map(dest => dest.CurrentNodeName, src => src.CurrentNode != null ? src.CurrentNode.NodeName : null)
-                .Map(dest => dest.StatusName, src => src.Status.ToString());
+                .Map(dest => dest.Status, src => src.Status.ToString());
         }
 
         /// <summary>
@@ -151,7 +147,7 @@ namespace Lean.Hbt.Application.Services.Workflow
                 throw new ArgumentNullException(nameof(input));
 
             var instance = input.Adapt<HbtWorkflowInstance>();
-            instance.Status = Common.Enums.HbtWorkflowInstanceStatus.Draft; // 新建实例默认为草稿状态
+            instance.Status = 0; // 0 表示草稿状态
 
             var result = await _instanceRepository.InsertAsync(instance);
             if (result <= 0)
@@ -178,7 +174,7 @@ namespace Lean.Hbt.Application.Services.Workflow
                 throw new HbtException(_localization.L("WorkflowInstance.NotFound"));
 
             // 检查实例状态是否允许更新
-            if (instance.Status != Common.Enums.HbtWorkflowInstanceStatus.Draft)
+            if (instance.Status != 0) // 0 表示草稿状态
                 throw new HbtException(_localization.L("WorkflowInstance.CannotUpdateNonDraft"));
 
             input.Adapt(instance);
@@ -203,8 +199,8 @@ namespace Lean.Hbt.Application.Services.Workflow
                 throw new HbtException(_localization.L("WorkflowInstance.NotFound"));
 
             // 检查实例状态是否允许删除
-            if (instance.Status != Common.Enums.HbtWorkflowInstanceStatus.Draft &&
-                instance.Status != Common.Enums.HbtWorkflowInstanceStatus.Terminated)
+            if (instance.Status != 0 && // 0 表示草稿状态
+                instance.Status != 4) // 4 表示已终止状态
                 throw new HbtException(_localization.L("WorkflowInstance.CannotDeleteActive"));
 
             var result = await _instanceRepository.DeleteAsync(instance);
@@ -230,8 +226,8 @@ namespace Lean.Hbt.Application.Services.Workflow
             // 检查是否有活动状态的实例
             var activeInstances = await _instanceRepository.GetListAsync(x =>
                 ids.Contains(x.Id) &&
-                x.Status != Common.Enums.HbtWorkflowInstanceStatus.Draft &&
-                x.Status != Common.Enums.HbtWorkflowInstanceStatus.Terminated);
+                x.Status != 0 && // 0 表示草稿状态
+                x.Status != 4); // 4 表示已终止状态
 
             if (activeInstances.Any())
                 throw new HbtException(_localization.L("WorkflowInstance.CannotDeleteActive"));
@@ -268,7 +264,7 @@ namespace Lean.Hbt.Application.Services.Workflow
                 try
                 {
                     var instance = item.Adapt<HbtWorkflowInstance>();
-                    instance.Status = Common.Enums.HbtWorkflowInstanceStatus.Draft; // 导入时默认为草稿状态
+                    instance.Status = 0; // 0 表示草稿状态,导入时默认为草稿状态
 
                     var result = await _instanceRepository.InsertAsync(instance);
                     if (result > 0)
@@ -332,19 +328,17 @@ namespace Lean.Hbt.Application.Services.Workflow
         /// <exception cref="HbtException">当工作流实例不存在或更新失败时抛出异常</exception>
         public async Task<bool> UpdateStatusAsync(HbtWorkflowInstanceStatusDto input)
         {
+            if (input == null)
+                throw new ArgumentNullException(nameof(input));
+
             var instance = await _instanceRepository.GetByIdAsync(input.WorkflowInstanceId);
             if (instance == null)
-                throw new HbtException(_localization.L("WorkflowInstance.NotFound"));
+                throw new HbtException(_localization.L("WorkflowInstance.NotFound", input.WorkflowInstanceId));
 
             instance.Status = input.Status;
-            instance.CurrentNodeId = input.CurrentNodeId;
-
             var result = await _instanceRepository.UpdateAsync(instance);
-            if (result <= 0)
-                throw new HbtException(_localization.L("WorkflowInstance.UpdateStatus.Failed"));
 
-            _logger.Info(_localization.L("WorkflowInstance.UpdatedStatus.Success", instance.Id));
-            return true;
+            return result > 0;
         }
 
         /// <summary>
@@ -360,10 +354,10 @@ namespace Lean.Hbt.Application.Services.Workflow
                 throw new HbtException(_localization.L("WorkflowInstance.NotFound"));
 
             // 检查实例状态是否允许提交
-            if (instance.Status != Common.Enums.HbtWorkflowInstanceStatus.Draft)
+            if (instance.Status != 0) // 0 表示草稿状态
                 throw new HbtException(_localization.L("WorkflowInstance.CannotSubmitNonDraft"));
 
-            instance.Status = Common.Enums.HbtWorkflowInstanceStatus.Running;
+            instance.Status = 1; // 1 表示运行中状态
             var result = await _instanceRepository.UpdateAsync(instance);
             if (result <= 0)
                 throw new HbtException(_localization.L("WorkflowInstance.Submit.Failed"));
@@ -385,10 +379,10 @@ namespace Lean.Hbt.Application.Services.Workflow
                 throw new HbtException(_localization.L("WorkflowInstance.NotFound"));
 
             // 检查实例状态是否允许撤回
-            if (instance.Status != Common.Enums.HbtWorkflowInstanceStatus.Running)
+            if (instance.Status != 1) // 1 表示运行中状态
                 throw new HbtException(_localization.L("WorkflowInstance.CannotWithdrawNonRunning"));
 
-            instance.Status = Common.Enums.HbtWorkflowInstanceStatus.Draft;
+            instance.Status = 0; // 0 表示草稿状态
             var result = await _instanceRepository.UpdateAsync(instance);
             if (result <= 0)
                 throw new HbtException(_localization.L("WorkflowInstance.Withdraw.Failed"));
@@ -411,11 +405,11 @@ namespace Lean.Hbt.Application.Services.Workflow
                 throw new HbtException(_localization.L("WorkflowInstance.NotFound"));
 
             // 检查实例状态是否允许终止
-            if (instance.Status != Common.Enums.HbtWorkflowInstanceStatus.Running &&
-                instance.Status != Common.Enums.HbtWorkflowInstanceStatus.Suspended)
+            if (instance.Status != 1 && // 1 表示运行中状态
+                instance.Status != 2) // 2 表示已暂停状态
                 throw new HbtException(_localization.L("WorkflowInstance.CannotTerminate"));
 
-            instance.Status = Common.Enums.HbtWorkflowInstanceStatus.Terminated;
+            instance.Status = 4; // 4 表示已终止状态
             instance.Remark = reason;
 
             var result = await _instanceRepository.UpdateAsync(instance);

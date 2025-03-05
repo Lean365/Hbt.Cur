@@ -4,12 +4,11 @@
 // 项目名 : Lean.Hbt
 // 文件名 : HbtPost.cs
 // 创建者 : Lean365
-// 创建时间: 2024-01-16 11:45
+// 创建时间: 2024-01-16 11:30
 // 版本号 : V.0.0.1
 // 描述    : 岗位实体类
 //===================================================================
 
-using Lean.Hbt.Common.Enums;
 using SqlSugar;
 
 namespace Lean.Hbt.Domain.Entities.Identity
@@ -18,8 +17,8 @@ namespace Lean.Hbt.Domain.Entities.Identity
     /// 岗位实体
     /// </summary>
     [SugarTable("hbt_id_post", "岗位表")]
-    [SugarIndex("ix_post_code", nameof(PostCode), OrderByType.Asc, true)]
-    [SugarIndex("ix_tenant_post", nameof(TenantId), OrderByType.Asc, nameof(PostCode), OrderByType.Asc, true)]
+    [SugarIndex("ix_post_code", nameof(PostCode), OrderByType.Asc)]
+    [SugarIndex("ix_tenant_post", nameof(TenantId), OrderByType.Asc)]
     public class HbtPost : HbtBaseEntity
     {
         /// <summary>
@@ -44,13 +43,13 @@ namespace Lean.Hbt.Domain.Entities.Identity
         /// 状态（0正常 1停用）
         /// </summary>
         [SugarColumn(ColumnName = "status", ColumnDescription = "状态（0正常 1停用）", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
-        public HbtStatus Status { get; set; } = HbtStatus.Normal;
+        public int Status { get; set; } = 0;
 
         /// <summary>
         /// 租户ID
         /// </summary>
-        [SugarColumn(ColumnName = "tenant_id", ColumnDescription = "租户ID", ColumnDataType = "bigint", IsNullable = false)]
-        public long TenantId { get; set; }
+        [SugarColumn(ColumnName = "tenant_id", ColumnDescription = "租户ID", ColumnDataType = "bigint", IsNullable = false, DefaultValue = "0")]
+        public long TenantId { get; set; } = 0;
 
         /// <summary>
         /// 租户

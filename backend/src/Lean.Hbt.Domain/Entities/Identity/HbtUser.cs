@@ -6,11 +6,10 @@
 // 创建者 : Lean365
 // 创建时间: 2024-01-16 11:30
 // 版本号 : V.0.0.1
-// 描述    : 用户实体
+// 描述    : 用户实体类
 //===================================================================
-
-using Lean.Hbt.Common.Enums;
 using SqlSugar;
+using System.Collections.Generic;
 
 namespace Lean.Hbt.Domain.Entities.Identity
 {
@@ -59,10 +58,10 @@ namespace Lean.Hbt.Domain.Entities.Identity
         public string? EnglishName { get; set; }
 
         /// <summary>
-        /// 用户类型（0系统用户 1普通用户）
+        /// 用户类型（0系统用户 1普通用户 2管理员 3OAuth用户）
         /// </summary>
-        [SugarColumn(ColumnName = "user_type", ColumnDescription = "用户类型（0系统用户 1普通用户）", ColumnDataType = "int", IsNullable = false, DefaultValue = "1")]
-        public HbtUserType UserType { get; set; } = HbtUserType.User;
+        [SugarColumn(ColumnName = "user_type", ColumnDescription = "用户类型（0系统用户 1普通用户 2管理员 3OAuth用户）", ColumnDataType = "int", IsNullable = false, DefaultValue = "1")]
+        public int UserType { get; set; } = 1;
 
         /// <summary>
         /// 密码
@@ -98,7 +97,7 @@ namespace Lean.Hbt.Domain.Entities.Identity
         /// 性别（0未知 1男 2女）
         /// </summary>
         [SugarColumn(ColumnName = "gender", ColumnDescription = "性别（0未知 1男 2女）", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
-        public HbtGender Gender { get; set; } = HbtGender.Unknown;
+        public int Gender { get; set; } = 0;
 
         /// <summary>
         /// 头像
@@ -110,7 +109,7 @@ namespace Lean.Hbt.Domain.Entities.Identity
         /// 状态（0正常 1停用）
         /// </summary>
         [SugarColumn(ColumnName = "status", ColumnDescription = "状态（0正常 1停用）", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
-        public HbtStatus Status { get; set; } = HbtStatus.Normal;
+        public int Status { get; set; } = 0;
 
         /// <summary>
         /// 最后修改密码时间

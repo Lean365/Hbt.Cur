@@ -90,5 +90,5 @@ public interface IHbtTenantService
     /// <param name="id">租户ID</param>
     /// <param name="status">状态</param>
     /// <returns>更新后的租户状态信息</returns>
-    Task<HbtTenantStatusDto> UpdateStatusAsync(long id, HbtStatus status);
+    Task<HbtTenantStatusDto> UpdateStatusAsync(long id, int status);
 }

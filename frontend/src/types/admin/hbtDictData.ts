@@ -31,6 +31,12 @@ export interface HbtDictData {
   isDefault: number
   /** 状态（0正常 1停用） */
   status: HbtStatus
+  /** 扩展标签 */
+  extLabel?: string
+  /** 扩展值 */
+  extValue?: string
+  /** 国际化翻译键值 */
+  transKey?: string
   /** 创建者 */
   createBy?: string
   /** 创建时间 */
@@ -81,6 +87,12 @@ export interface HbtDictDataCreate {
   isDefault: number
   /** 状态（0正常 1停用） */
   status: HbtStatus
+  /** 扩展标签 */
+  extLabel?: string
+  /** 扩展值 */
+  extValue?: string
+  /** 国际化翻译键值 */
+  transKey?: string
   /** 备注 */
   remark?: string
 }

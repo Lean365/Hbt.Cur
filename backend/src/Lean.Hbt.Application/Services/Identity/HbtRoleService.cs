@@ -373,8 +373,8 @@ namespace Lean.Hbt.Application.Services.Identity
                         RoleName = role.RoleName,
                         RoleKey = role.RoleKey,
                         OrderNum = role.OrderNum,
-                        DataScope = Enum.TryParse<HbtDataScope>(role.DataScope ?? "All", out var dataScope) ? dataScope : HbtDataScope.All,
-                        Status = Enum.TryParse<HbtStatus>(role.Status ?? "Normal", out var status) ? status : HbtStatus.Normal
+                        DataScope = 1, // 默认值 1
+                        Status = 0, // 默认值 0 表示正常
                     };
 
                     await _roleRepository.InsertAsync(entity);

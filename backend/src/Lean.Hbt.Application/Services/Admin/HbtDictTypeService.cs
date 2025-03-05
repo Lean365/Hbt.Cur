@@ -1,3 +1,5 @@
+#nullable enable
+
 //===================================================================
 // 项目名 : Lean.Hbt
 // 文件名 : HbtDictTypeService.cs
@@ -7,6 +9,7 @@
 // 描述   : 字典类型服务实现
 //===================================================================
 
+using System.Data;
 using Lean.Hbt.Application.Dtos.Admin;
 using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Common.Exceptions;
@@ -279,7 +282,7 @@ namespace Lean.Hbt.Application.Services.Admin
                 DictCategory = 0,
                 SqlScript = "",
                 OrderNum = 0,
-                Status = HbtStatus.Normal.ToString()
+                Status = 0
             });
         }
 
@@ -296,6 +299,87 @@ namespace Lean.Hbt.Application.Services.Admin
 
             dictType.Status = input.Status;
             return await _dictTypeRepository.UpdateAsync(dictType) > 0;
+        }
+
+        /// <summary>
+        /// 执行字典SQL脚本
+        /// </summary>
+        /// <param name="sqlScript">SQL脚本</param>
+        /// <returns>字典数据列表</returns>
+        public async Task<List<HbtDictDataDto>> ExecuteDictSqlAsync(string sqlScript)
+        {
+            try
+            {
+                // 检查SQL脚本安全性
+                if (!IsSafeSqlScript(sqlScript))
+                {
+                    throw new HbtException("SQL脚本包含不安全的操作");
+                }
+
+                // 使用SqlSugar执行SQL查询
+                var result = await _dbContext.Client.Ado.SqlQueryAsync<dynamic>(sqlScript);
+                if (result == null)
+                {
+                    return new List<HbtDictDataDto>();
+                }
+
+                // 转换为标准字典数据格式
+                var dtoList = new List<HbtDictDataDto>();
+                foreach (var row in result)
+                {
+                    dtoList.Add(ConvertToDto(row));
+                }
+                return dtoList;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error($"执行SQL脚本失败：{ex.Message}", ex);
+                throw new HbtException($"执行SQL脚本失败：{ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// 检查SQL脚本安全性
+        /// </summary>
+        /// <param name="sqlScript">SQL脚本</param>
+        /// <returns>是否安全</returns>
+        private bool IsSafeSqlScript(string sqlScript)
+        {
+            if (string.IsNullOrEmpty(sqlScript))
+                return false;
+
+            // 转换为大写进行检查
+            var upperSql = sqlScript.ToUpper();
+
+            // 禁止的关键字列表
+            var forbiddenKeywords = new[]
+            {
+                "DROP ", "DELETE ", "TRUNCATE ", "UPDATE ", "INSERT ", "ALTER ", "CREATE ", "EXEC ",
+                "SP_", "XP_", "SYSTEM_USER", "IS_SRVROLEMEMBER"
+            };
+
+            // 检查是否包含禁止的关键字
+            return !forbiddenKeywords.Any(keyword => upperSql.Contains(keyword));
+        }
+
+        /// <summary>
+        /// 转换SQL查询结果为字典数据DTO
+        /// </summary>
+        private HbtDictDataDto ConvertToDto(dynamic row)
+        {
+            return new HbtDictDataDto
+            {
+                Label = row.label,
+                Value = row.value,
+                Status = row.status,
+                OrderNum = row.order_num,
+                CssClass = row.css_class,
+                ListClass = row.list_class,
+                ExtLabel = row.ext_label,
+                ExtValue = row.ext_value,
+                TransKey = row.trans_key,
+                Remark = row.remark
+            };
         }
     }
 }

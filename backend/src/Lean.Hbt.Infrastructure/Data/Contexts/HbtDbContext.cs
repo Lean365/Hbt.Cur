@@ -135,15 +135,16 @@ namespace Lean.Hbt.Infrastructure.Data.Contexts
         /// </summary>
         public void RollbackTran()
         {
-            try
-            {
-                _client.Ado.RollbackTran();
-            }
-            catch (Exception ex)
-            {
-                _logger.Error("回滚事务失败", ex);
-                throw;
-            }
+            Client.RollbackTran();
+        }
+
+        /// <summary>
+        /// 获取数据库连接
+        /// </summary>
+        /// <returns>数据库连接</returns>
+        public IDbConnection GetConnection()
+        {
+            return Client.Ado.Connection;
         }
 
         /// <summary>

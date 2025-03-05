@@ -18,7 +18,7 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine.Cache
     /// <summary>
     /// 工作流缓存接口
     /// </summary>
-    public interface IWorkflowCache
+    public interface IHbtWorkflowCache
     {
         /// <summary>
         /// 获取工作流节点

@@ -10,7 +10,6 @@
 //===================================================================
 
 using Lean.Hbt.Application.Services.Workflow.Jobs;
-using Lean.Hbt.Common.Enums;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Quartz;
@@ -93,20 +92,23 @@ namespace Lean.Hbt.Application.Services.Workflow
         /// <summary>
         /// 调度任务
         /// </summary>
-        public async Task ScheduleJobAsync(long taskId, HbtWorkflowScheduledTaskType taskType, DateTime scheduledTime)
+        public async Task ScheduleJobAsync(long taskId, int taskType, DateTime scheduledTime)
         {
             try
             {
-                // 创建Job详情
                 var jobType = GetJobType(taskType);
+                var jobKey = new JobKey($"job_{taskId}", "workflow");
+                var triggerKey = new TriggerKey($"trigger_{taskId}", "workflow");
+
+                // 创建Job
                 var jobDetail = JobBuilder.Create(jobType)
-                    .WithIdentity($"job_{taskId}", "workflow")
-                    .UsingJobData("taskId", taskId)
+                    .WithIdentity(jobKey)
+                    .UsingJobData("TaskId", taskId)
                     .Build();
 
-                // 创建触发器
+                // 创建Trigger
                 var trigger = TriggerBuilder.Create()
-                    .WithIdentity($"trigger_{taskId}", "workflow")
+                    .WithIdentity(triggerKey)
                     .StartAt(scheduledTime)
                     .Build();
 
@@ -145,14 +147,15 @@ namespace Lean.Hbt.Application.Services.Workflow
         /// <param name="taskType"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentException"></exception>
-        private Type GetJobType(HbtWorkflowScheduledTaskType taskType)
+        private Type GetJobType(int taskType)
         {
             return taskType switch
             {
-                HbtWorkflowScheduledTaskType.TimeoutReminder => typeof(HbtWorkflowTimeoutReminderJob),
-                HbtWorkflowScheduledTaskType.TimedTrigger => typeof(HbtWorkflowTimedTriggerJob),
-                HbtWorkflowScheduledTaskType.DelayedExecution => typeof(HbtWorkflowDelayedExecutionJob),
-                HbtWorkflowScheduledTaskType.PeriodicExecution => typeof(HbtWorkflowPeriodicExecutionJob),
+                1 => typeof(HbtWorkflowTimeoutReminderJob), // 超时提醒
+                2 => typeof(HbtWorkflowAutoExecutionJob), // 自动执行
+                3 => typeof(HbtWorkflowTimedTriggerJob), // 定时触发
+                4 => typeof(HbtWorkflowDelayedExecutionJob), // 延迟执行
+                5 => typeof(HbtWorkflowPeriodicExecutionJob), // 周期执行
                 _ => throw new ArgumentException($"不支持的任务类型:{taskType}")
             };
         }

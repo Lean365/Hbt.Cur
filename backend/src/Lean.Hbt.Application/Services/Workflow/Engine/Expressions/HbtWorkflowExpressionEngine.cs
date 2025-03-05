@@ -18,7 +18,7 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine.Expressions
     /// <summary>
     /// 工作流表达式引擎实现
     /// </summary>
-    public class WorkflowExpressionEngine : IWorkflowExpressionEngine
+    public class HbtWorkflowExpressionEngine : IHbtWorkflowExpressionEngine
     {
         private readonly IHbtLogger _logger;
         private readonly Dictionary<string, Func<object[], Task<object>>> _customFunctions;
@@ -27,7 +27,7 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine.Expressions
         /// <summary>
         /// 构造函数
         /// </summary>
-        public WorkflowExpressionEngine(IHbtLogger logger)
+        public HbtWorkflowExpressionEngine(IHbtLogger logger)
         {
             _logger = logger;
             _customFunctions = new Dictionary<string, Func<object[], Task<object>>>();

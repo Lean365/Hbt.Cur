@@ -43,7 +43,7 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// 设备类型
         /// </summary>
         [Required(ErrorMessage = "设备类型不能为空")]
-        public HbtDeviceType DeviceType { get; set; } = HbtDeviceType.PC;
+        public int DeviceType { get; set; }
 
         /// <summary>
         /// 设备标识
@@ -67,7 +67,7 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// <summary>
         /// 操作系统类型
         /// </summary>
-        public HbtOsType? OsType { get; set; }
+        public int? OsType { get; set; }
 
         /// <summary>
         /// 系统版本
@@ -78,7 +78,7 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// <summary>
         /// 浏览器类型
         /// </summary>
-        public HbtBrowserType? BrowserType { get; set; }
+        public int? BrowserType { get; set; }
 
         /// <summary>
         /// 浏览器版本
@@ -96,7 +96,7 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// 设备状态
         /// </summary>
         [Required(ErrorMessage = "设备状态不能为空")]
-        public HbtLoginStatus DeviceStatus { get; set; } = HbtLoginStatus.Offline;
+        public int LoginStatus { get; set; }
 
         /// <summary>
         /// 最后在线时间
@@ -134,7 +134,7 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// 设备类型
         /// </summary>
         [Required(ErrorMessage = "设备类型不能为空")]
-        public HbtDeviceType DeviceType { get; set; }
+        public int DeviceType { get; set; }
 
         /// <summary>
         /// 设备标识
@@ -158,7 +158,7 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// <summary>
         /// 操作系统类型
         /// </summary>
-        public HbtOsType? OsType { get; set; }
+        public int? OsType { get; set; }
 
         /// <summary>
         /// 系统版本
@@ -169,7 +169,7 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// <summary>
         /// 浏览器类型
         /// </summary>
-        public HbtBrowserType? BrowserType { get; set; }
+        public int? BrowserType { get; set; }
 
         /// <summary>
         /// 浏览器版本
@@ -228,7 +228,7 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// <summary>
         /// 设备类型
         /// </summary>
-        public HbtDeviceType? DeviceType { get; set; }
+        public int? DeviceType { get; set; }
 
         /// <summary>
         /// 设备标识
@@ -243,7 +243,7 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// <summary>
         /// 设备状态
         /// </summary>
-        public HbtLoginStatus? DeviceStatus { get; set; }
+        public int? LoginStatus { get; set; }
 
         /// <summary>
         /// 最后在线时间范围开始
@@ -274,7 +274,7 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// <summary>
         /// 设备类型
         /// </summary>
-        public HbtDeviceType? DeviceType { get; set; }
+        public int? DeviceType { get; set; }
 
         /// <summary>
         /// 设备标识
@@ -289,7 +289,7 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// <summary>
         /// 设备状态
         /// </summary>
-        public HbtLoginStatus? DeviceStatus { get; set; }
+        public int? LoginStatus { get; set; }
 
         /// <summary>
         /// 最后在线时间范围开始

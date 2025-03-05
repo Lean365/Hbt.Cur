@@ -69,7 +69,7 @@ namespace Lean.Hbt.Infrastructure.Services
         {
             try
             {
-                var translations = await _translationRepository.GetListAsync(t => t.Status == HbtStatus.Normal);
+                var translations = await _translationRepository.GetListAsync(t => t.Status == 0);
                 foreach (var translation in translations)
                 {
                     var langDict = _translations.GetOrAdd(translation.LangCode,

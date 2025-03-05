@@ -58,10 +58,10 @@
       :delete-permission="['admin:dicttype:delete']"
       :show-export="true"
       :export-permission="['admin:dicttype:export']"
-      :disabled-edit="selectedRowKeys.length === 0"
+      :disabled-edit="selectedRowKeys.length !== 1"
       :disabled-delete="selectedRowKeys.length === 0"
       @add="handleAdd"
-      @edit="handleBatchEdit"
+      @edit="handleEditSelected"
       @delete="handleBatchDelete"
       @export="handleExport"
       @refresh="loadDictTypeList"
@@ -268,6 +268,28 @@ const columns = [
     customRender: ({ text }: { text: number }) => text === 0 ? '系统' : 'SQL'
   },
   {
+    title: '租户ID',
+    dataIndex: 'tenantId',
+    key: 'tenantId',
+    width: 100,
+    align: 'center'
+  },
+  {
+    title: 'SQL脚本',
+    dataIndex: 'sqlScript',
+    key: 'sqlScript',
+    width: 200,
+    ellipsis: true,
+    customRender: ({ text, record }: { text: string, record: HbtDictType }) => {
+      if (record.dictCategory === 1 && text) {
+        return h('a-tooltip', { title: text }, () => [
+          h('span', text)
+        ])
+      }
+      return '-'
+    }
+  },
+  {
     title: '状态',
     dataIndex: 'status',
     key: 'status',
@@ -386,9 +408,11 @@ const handleAdd = () => {
     dictType: '',
     dictCategory: 0,
     dictBuiltin: 0,
+    sqlScript: '',
     orderNum: 0,
     status: 0,
-    remark: ''
+    remark: '',
+    tenantId: 0  // 添加租户ID字段
   }
   formVisible.value = true
 }
@@ -453,13 +477,17 @@ const handleDelete = async (record: HbtDictType) => {
   }
 }
 
-// 批量编辑
-const handleBatchEdit = () => {
-  if (!selectedRowKeys.value.length) {
-    message.warning('请选择要编辑的记录')
+// 编辑选中记录
+const handleEditSelected = () => {
+  if (selectedRowKeys.value.length !== 1) {
+    message.warning('请选择一条记录进行编辑')
     return
   }
-  // TODO: 实现批量编辑功能
+  
+  const record = dictTypeList.value.find(item => String(item.dictTypeId) === String(selectedRowKeys.value[0]))
+  if (record) {
+    handleEdit(record)
+  }
 }
 
 // 批量删除
@@ -510,7 +538,10 @@ const handleFormOk = async (values: Partial<HbtDictType>) => {
       message.success(t('common.message.updateSuccess'))
     } else {
       console.log('执行新增操作')
-      const result = await createHbtDictType(values as HbtDictTypeCreate)
+      const result = await createHbtDictType({
+        ...values,
+        tenantId: 0  // 确保新增时设置租户ID
+      } as HbtDictTypeCreate)
       console.log('新增结果:', result)
       message.success(t('common.message.createSuccess'))
     }

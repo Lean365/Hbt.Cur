@@ -26,18 +26,18 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine.Executors
     /// <summary>
     /// 审批节点执行器
     /// </summary>
-    public class ApprovalNodeExecutor : WorkflowNodeExecutorBase
+    public class HbtApprovalNodeExecutor : HbtWorkflowNodeExecutorBase
     {
         private readonly IHbtRepository<HbtWorkflowTask> _taskRepository;
-        private readonly IWorkflowApproverResolver _approverResolver;
+        private readonly IHbtWorkflowApproverResolver _approverResolver;
 
         /// <summary>
         /// 构造函数
         /// </summary>
-        public ApprovalNodeExecutor(
+        public HbtApprovalNodeExecutor(
             IHbtLogger logger,
             IHbtRepository<HbtWorkflowTask> taskRepository,
-            IWorkflowApproverResolver approverResolver) 
+            IHbtWorkflowApproverResolver approverResolver) 
             : base(logger)
         {
             _taskRepository = taskRepository;
@@ -47,7 +47,7 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine.Executors
         /// <summary>
         /// 节点类型
         /// </summary>
-        protected override HbtWorkflowNodeType NodeType => HbtWorkflowNodeType.Approval;
+        protected override int NodeType => 2; // 2 表示审批节点
 
         /// <summary>
         /// 执行审批节点
@@ -89,8 +89,8 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine.Executors
                         WorkflowInstanceId = instance.Id,
                         NodeId = node.Id,
                         AssigneeId = approverId,
-                        TaskType = HbtWorkflowTaskType.Approval,
-                        Status = HbtWorkflowTaskStatus.Pending,
+                        TaskType = 2, // 2 表示审批任务
+                        Status = 0, // 0 表示待处理状态
                         CreateTime = DateTime.Now
                     };
 

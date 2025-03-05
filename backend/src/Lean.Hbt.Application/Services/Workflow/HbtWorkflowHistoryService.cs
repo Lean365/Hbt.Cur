@@ -107,7 +107,7 @@ namespace Lean.Hbt.Application.Services.Workflow
                 OperatorId = input.OperatorId,
                 OperationType = (int)input.OperationType,
                 OperationTime = DateTime.Now,
-                OperationResult = input.OperationResult != null ? (int?)Enum.Parse<HbtWorkflowTaskResult>(input.OperationResult) : null,
+                OperationResult = input.OperationResult != null ? (int?)Enum.Parse<int>(input.OperationResult) : null,
                 OperationComment = input.OperationComment ?? string.Empty,
                 Remark = input.Remark ?? string.Empty
             };
@@ -134,7 +134,7 @@ namespace Lean.Hbt.Application.Services.Workflow
             if (history == null)
                 throw new HbtException(_localization.L("WorkflowHistory.NotFound"));
 
-            history.OperationResult = input.OperationResult != null ? (int?)Enum.Parse<HbtWorkflowTaskResult>(input.OperationResult) : null;
+            history.OperationResult = input.OperationResult != null ? (int?)Enum.Parse<int>(input.OperationResult) : null;
             history.OperationComment = input.OperationComment ?? string.Empty;
             history.Remark = input.Remark ?? string.Empty;
 

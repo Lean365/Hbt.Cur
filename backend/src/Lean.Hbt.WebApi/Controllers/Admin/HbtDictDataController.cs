@@ -172,7 +172,10 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
         /// <param name="status">状态</param>
         /// <returns>是否成功</returns>
         [HttpPut("{dictDataId}/status")]
-        public async Task<IActionResult> UpdateStatusAsync(long dictDataId, [FromQuery] HbtStatus status)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> UpdateStatusAsync(long dictDataId, [FromQuery] int status)
         {
             var input = new HbtDictDataStatusDto
             {

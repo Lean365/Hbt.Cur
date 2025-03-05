@@ -9,20 +9,13 @@
 
 #nullable enable
 
-using System;
-using System.IO;
-using System.Linq.Expressions;
 using Lean.Hbt.Application.Dtos.Admin;
-using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Common.Exceptions;
-using Lean.Hbt.Common.Models;
 using Lean.Hbt.Common.Helpers;
 using Lean.Hbt.Domain.Entities.Admin;
 using Lean.Hbt.Domain.Repositories;
-using Lean.Hbt.Domain.IServices;
-using Mapster;
-using SqlSugar;
 using Lean.Hbt.Domain.Utils;
+using SqlSugar;
 
 namespace Lean.Hbt.Application.Services.Admin
 {
@@ -31,21 +24,27 @@ namespace Lean.Hbt.Application.Services.Admin
     /// </summary>
     /// <remarks>
     /// 创建者: Lean365
-    /// 创建时间: 2024-01-18
+    /// 创建时间: 2024-01-22
     /// </remarks>
     public class HbtDictDataService : IHbtDictDataService
     {
         private readonly IHbtRepository<HbtDictData> _dictDataRepository;
+        private readonly IHbtRepository<HbtDictType> _dictTypeRepository;
         private readonly IHbtLogger _logger;
 
         /// <summary>
         /// 构造函数
         /// </summary>
+        /// <param name="dictDataRepository">字典数据仓储</param>
+        /// <param name="dictTypeRepository">字典类型仓储</param>
+        /// <param name="logger">日志接口</param>
         public HbtDictDataService(
             IHbtRepository<HbtDictData> dictDataRepository,
+            IHbtRepository<HbtDictType> dictTypeRepository,
             IHbtLogger logger)
         {
             _dictDataRepository = dictDataRepository;
+            _dictTypeRepository = dictTypeRepository;
             _logger = logger;
         }
 
@@ -80,11 +79,11 @@ namespace Lean.Hbt.Application.Services.Admin
         /// <summary>
         /// 获取字典数据详情
         /// </summary>
-        /// <param name="id">字典数据ID</param>
+        /// <param name="dictDataId">字典数据ID</param>
         /// <returns>返回字典数据详情</returns>
-        public async Task<HbtDictDataDto> GetAsync(long id)
+        public async Task<HbtDictDataDto> GetAsync(long dictDataId)
         {
-            var dictData = await _dictDataRepository.GetByIdAsync(id);
+            var dictData = await _dictDataRepository.GetByIdAsync(dictDataId);
             if (dictData == null)
                 throw new HbtException("字典数据不存在");
 
@@ -98,10 +97,9 @@ namespace Lean.Hbt.Application.Services.Admin
         /// <returns>返回新创建的字典数据ID</returns>
         public async Task<long> InsertAsync(HbtDictDataCreateDto input)
         {
-            await HbtValidateUtils.ValidateFieldExistsAsync(_dictDataRepository, "DictLabel", input.DictLabel);
-            await HbtValidateUtils.ValidateFieldExistsAsync(_dictDataRepository, "DictValue", input.DictValue);
-
             var dictData = input.Adapt<HbtDictData>();
+            dictData.Status = 0; // 0表示正常状态
+
             var result = await _dictDataRepository.InsertAsync(dictData);
             return result > 0 ? dictData.Id : 0;
         }
@@ -117,18 +115,15 @@ namespace Lean.Hbt.Application.Services.Admin
             if (dictData == null)
                 throw new HbtException("字典数据不存在");
 
-            if (dictData.DictLabel != input.DictLabel)
-                await HbtValidateUtils.ValidateFieldExistsAsync(_dictDataRepository, "DictLabel", input.DictLabel, input.DictDataId);
+            if (dictData.DictType != input.DictType)
+                await HbtValidateUtils.ValidateFieldExistsAsync(_dictDataRepository, "DictType", input.DictType, input.DictDataId);
 
-            if (dictData.DictValue != input.DictValue)
-                await HbtValidateUtils.ValidateFieldExistsAsync(_dictDataRepository, "DictValue", input.DictValue, input.DictDataId);
-
+            dictData.DictType = input.DictType;
             dictData.DictLabel = input.DictLabel;
             dictData.DictValue = input.DictValue;
-            dictData.DictType = input.DictType;
+            dictData.OrderNum = input.OrderNum;
             dictData.CssClass = input.CssClass;
             dictData.ListClass = input.ListClass;
-            dictData.OrderNum = input.OrderNum;
             dictData.Status = input.Status;
             dictData.Remark = input.Remark;
 
@@ -169,7 +164,7 @@ namespace Lean.Hbt.Application.Services.Admin
         /// <param name="fileStream">Excel文件流</param>
         /// <param name="sheetName">工作表名称</param>
         /// <returns>导入结果</returns>
-        public async Task<(int success, int fail)> ImportAsync(Stream fileStream, string sheetName)
+        public async Task<(int success, int fail)> ImportAsync(Stream fileStream, string sheetName = "字典数据")
         {
             var success = 0;
             var fail = 0;
@@ -177,38 +172,17 @@ namespace Lean.Hbt.Application.Services.Admin
             try
             {
                 // 1.从Excel导入数据
-                var dictDatas = await HbtExcelHelper.ImportAsync<HbtDictDataDto>(fileStream, sheetName);
-                if (dictDatas == null || !dictDatas.Any())
+                var dictDataList = await HbtExcelHelper.ImportAsync<HbtDictDataDto>(fileStream, sheetName);
+                if (dictDataList == null || !dictDataList.Any())
                     return (0, 0);
 
                 // 2.保存数据
-                foreach (var dictData in dictDatas)
+                foreach (var item in dictDataList)
                 {
                     try
                     {
-                        if (string.IsNullOrEmpty(dictData.DictLabel) || string.IsNullOrEmpty(dictData.DictValue))
-                        {
-                            _logger.Warn("导入字典数据失败：标签或值为空");
-                            fail++;
-                            continue;
-                        }
-
-                        // 验证字段是否已存在
-                        try
-                        {
-                            await HbtValidateUtils.ValidateFieldExistsAsync(_dictDataRepository, "DictLabel", dictData.DictLabel);
-                            await HbtValidateUtils.ValidateFieldExistsAsync(_dictDataRepository, "DictValue", dictData.DictValue);
-                        }
-                        catch (HbtException ex)
-                        {
-                            _logger.Warn($"导入字典数据失败：{ex.Message}");
-                            fail++;
-                            continue;
-                        }
-
-                        // 创建字典数据
-                        var newDictData = dictData.Adapt<HbtDictData>();
-                        await _dictDataRepository.InsertAsync(newDictData);
+                        var dictData = item.Adapt<HbtDictData>();
+                        await _dictDataRepository.InsertAsync(dictData);
                         success++;
                     }
                     catch (Exception ex)
@@ -221,7 +195,7 @@ namespace Lean.Hbt.Application.Services.Admin
             catch (Exception ex)
             {
                 _logger.Error($"导入字典数据失败：{ex.Message}", ex);
-                return (0, 0);
+                throw new HbtException("导入字典数据失败");
             }
 
             return (success, fail);
@@ -233,31 +207,23 @@ namespace Lean.Hbt.Application.Services.Admin
         /// <param name="query">查询条件</param>
         /// <param name="sheetName">工作表名称</param>
         /// <returns>Excel文件字节数组</returns>
-        public async Task<byte[]> ExportAsync(HbtDictDataQueryDto query, string sheetName)
+        public async Task<byte[]> ExportAsync(HbtDictDataQueryDto query, string sheetName = "字典数据")
         {
             var exp = Expressionable.Create<HbtDictData>();
 
-            if (!string.IsNullOrEmpty(query?.DictType))
+            if (!string.IsNullOrEmpty(query.DictType))
                 exp.And(x => x.DictType == query.DictType);
 
-            if (!string.IsNullOrEmpty(query?.DictLabel))
+            if (!string.IsNullOrEmpty(query.DictLabel))
                 exp.And(x => x.DictLabel.Contains(query.DictLabel));
 
-            if (query?.Status.HasValue == true)
+            if (query.Status.HasValue)
                 exp.And(x => x.Status == query.Status.Value);
 
             var list = await _dictDataRepository.GetListAsync(exp.ToExpression());
             var dtos = list.Adapt<List<HbtDictDataDto>>();
 
-            try
-            {
-                return await HbtExcelHelper.ExportAsync(dtos, sheetName);
-            }
-            catch (Exception ex)
-            {
-                _logger.Error($"导出字典数据失败：{ex.Message}", ex);
-                return Array.Empty<byte>();
-            }
+            return await HbtExcelHelper.ExportAsync(dtos, sheetName);
         }
 
         /// <summary>
@@ -265,7 +231,7 @@ namespace Lean.Hbt.Application.Services.Admin
         /// </summary>
         /// <param name="sheetName">工作表名称</param>
         /// <returns>Excel文件字节数组</returns>
-        public async Task<byte[]> GetTemplateAsync(string sheetName)
+        public async Task<byte[]> GetTemplateAsync(string sheetName = "字典数据")
         {
             var template = new List<HbtDictDataDto>
             {
@@ -274,19 +240,13 @@ namespace Lean.Hbt.Application.Services.Admin
                     DictType = "sys_user_sex",
                     DictLabel = "男",
                     DictValue = "1",
-                    Status = HbtStatus.Normal
+                    OrderNum = 1,
+                    Status = 0, // 0表示正常状态
+                    Remark = "性别男"
                 }
             };
 
-            try
-            {
-                return await HbtExcelHelper.ExportAsync(template, sheetName);
-            }
-            catch (Exception ex)
-            {
-                _logger.Error($"获取字典数据导入模板失败：{ex.Message}", ex);
-                return Array.Empty<byte>();
-            }
+            return await HbtExcelHelper.ExportAsync(template, sheetName);
         }
 
         /// <summary>
@@ -303,5 +263,80 @@ namespace Lean.Hbt.Application.Services.Admin
             dictData.Status = input.Status;
             return await _dictDataRepository.UpdateAsync(dictData) > 0;
         }
+
+        /// <summary>
+        /// 获取字典数据选项列表
+        /// </summary>
+        /// <param name="dictType">字典类型</param>
+        /// <returns>返回字典数据选项列表</returns>
+        public async Task<List<HbtDictDataDto>> GetOptionsAsync(string dictType)
+        {
+            var list = await _dictDataRepository.GetListAsync(x => x.DictType == dictType && x.Status == 0); // 0表示正常状态
+            return list.OrderBy(x => x.OrderNum).Adapt<List<HbtDictDataDto>>();
+        }
+
+        public async Task<bool> CheckDictDataExists(string dictType, string dictValue)
+        {
+            var query = from d in _dictDataRepository.GetListAsync().Result
+                        where d.DictType == dictType
+                        && d.DictValue == dictValue
+                        && d.Status == 0 // 0表示正常状态
+                        select d;
+            return await Task.FromResult(query.Any());
+        }
+
+        public async Task<bool> CheckBuiltinData(long id)
+        {
+            var dictData = await _dictDataRepository.GetByIdAsync(id);
+            if (dictData == null) return false;
+
+            var dictType = await _dictTypeRepository.FirstOrDefaultAsync(x => x.DictType == dictData.DictType);
+            return dictType != null && dictType.DictBuiltin == 1; // 1表示内置
+        }
+
+        private List<HbtDictDataDto> ConvertToDtoList(List<dynamic> dynamicList)
+        {
+            var dtoList = new List<HbtDictDataDto>();
+            foreach (var item in dynamicList)
+            {
+                var dto = ConvertToDto(item);
+                dtoList.Add(dto);
+            }
+            return dtoList;
+        }
+
+        private HbtDictDataDto ConvertToDto(dynamic item)
+        {
+            return new HbtDictDataDto
+            {
+                DictDataId = Convert.ToInt64(item.id),
+                DictType = Convert.ToString(item.dict_type) ?? string.Empty,
+                DictLabel = Convert.ToString(item.dict_label) ?? string.Empty,
+                DictValue = Convert.ToString(item.dict_value) ?? string.Empty,
+                Status = Convert.ToInt32(item.status),
+                OrderNum = Convert.ToInt32(item.order_num),
+                CssClass = item.css_class != null ? Convert.ToInt32(item.css_class) : null,
+                ListClass = item.list_class != null ? Convert.ToInt32(item.list_class) : null,
+                ExtLabel = Convert.ToString(item.ext_label),
+                ExtValue = Convert.ToString(item.ext_value),
+                TransKey = Convert.ToString(item.trans_key),
+                Remark = Convert.ToString(item.remark)
+            };
+        }
+
+        public async Task<List<HbtDictDataDto>> GetListAsync()
+        {
+            var list = await _dictDataRepository.GetListAsync();
+            return list.Select(x => new HbtDictDataDto
+            {
+                DictDataId = x.Id,
+                DictType = x.DictType,
+                DictLabel = x.DictLabel,
+                DictValue = x.DictValue,
+                OrderNum = x.OrderNum,
+                Status = x.Status,
+                Remark = x.Remark
+            }).ToList();
+        }
     }
-} 
+}

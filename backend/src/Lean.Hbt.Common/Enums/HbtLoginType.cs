@@ -1,47 +1,52 @@
 //===================================================================
-// 项目名 : Lean.Hbt
-// 文件名 : HbtWorkflowScheduledTaskStatus.cs
+// 项目名 : Lean.Hbt 
+// 文件名 : HbtLoginType.cs
 // 创建者 : Lean365
-// 创建时间: 2024-01-23 12:00
+// 创建时间: 2024-01-22 14:30
 // 版本号 : V1.0.0
-// 描述    : 工作流定时任务状态枚举
+// 描述    : 登录类型枚举
 //===================================================================
 
 namespace Lean.Hbt.Common.Enums
 {
     /// <summary>
-    /// 工作流定时任务状态枚举
+    /// 登录类型枚举
     /// </summary>
-    public enum HbtWorkflowScheduledTaskStatus
+    public enum HbtLoginType
     {
         /// <summary>
-        /// 等待执行
+        /// 其他
         /// </summary>
-        Pending = 0,
+        Other = 0,
 
         /// <summary>
-        /// 执行中
+        /// 用户名密码
         /// </summary>
-        Running = 1,
+        Password = 1,
 
         /// <summary>
-        /// 执行成功
+        /// 短信验证码
         /// </summary>
-        Completed = 2,
+        Sms = 2,
 
         /// <summary>
-        /// 执行失败
+        /// 邮箱验证码
         /// </summary>
-        Failed = 3,
+        Email = 3,
 
         /// <summary>
-        /// 已取消
+        /// 微信登录
         /// </summary>
-        Cancelled = 4,
+        WeChat = 4,
 
         /// <summary>
-        /// 已过期
+        /// QQ登录
         /// </summary>
-        Expired = 5
+        QQ = 5,
+
+        /// <summary>
+        /// 钉钉登录
+        /// </summary>
+        DingTalk = 6
     }
 } 

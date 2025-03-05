@@ -11,8 +11,8 @@
 
 using System;
 using System.ComponentModel.DataAnnotations;
-using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Common.Models;
+using Mapster;
 
 namespace Lean.Hbt.Application.Dtos.Identity
 {
@@ -21,6 +21,12 @@ namespace Lean.Hbt.Application.Dtos.Identity
     /// </summary>
     public class HbtLoginExtendDto
     {
+        /// <summary>
+        /// ID
+        /// </summary>
+        [AdaptMember("Id")]
+        public long LoginExtendId { get; set; }
+
         /// <summary>
         /// 用户ID
         /// </summary>
@@ -48,22 +54,42 @@ namespace Lean.Hbt.Application.Dtos.Identity
         public long? PostId { get; set; }
 
         /// <summary>
-        /// 登录类型
+        /// 登录类型（0普通 1短信 2邮箱 3微信 4QQ 5GitHub）
         /// </summary>
         [Required(ErrorMessage = "登录类型不能为空")]
-        public HbtLoginType LoginType { get; set; } = HbtLoginType.Normal;
+        public int LoginType { get; set; } = 0;
 
         /// <summary>
-        /// 登录来源
+        /// 登录来源（0Web 1App 2小程序 3其他）
         /// </summary>
         [Required(ErrorMessage = "登录来源不能为空")]
-        public HbtLoginSource LoginSource { get; set; } = HbtLoginSource.Web;
+        public int LoginSource { get; set; } = 0;
 
         /// <summary>
-        /// 登录状态
+        /// 登录状态（0离线 1在线）
         /// </summary>
         [Required(ErrorMessage = "登录状态不能为空")]
-        public HbtLoginStatus LoginStatus { get; set; } = HbtLoginStatus.Offline;
+        public int LoginStatus { get; set; } = 0;
+
+        /// <summary>
+        /// 登录提供者（0系统 1微信 2钉钉 3企业微信）
+        /// </summary>
+        public int LoginProvider { get; set; } = 0;
+
+        /// <summary>
+        /// 提供者Key
+        /// </summary>
+        public string ProviderKey { get; set; } = string.Empty;
+
+        /// <summary>
+        /// 提供者显示名称
+        /// </summary>
+        public string ProviderDisplayName { get; set; } = string.Empty;
+
+        /// <summary>
+        /// 状态（0正常 1停用）
+        /// </summary>
+        public int Status { get; set; } = 0;
 
         /// <summary>
         /// 首次登录时间
@@ -86,19 +112,19 @@ namespace Lean.Hbt.Application.Dtos.Identity
         public string? FirstLoginDeviceId { get; set; }
 
         /// <summary>
-        /// 首次登录设备类型
+        /// 首次登录设备类型（0PC 1Android 2iOS 3MacOS 4Linux 5其他）
         /// </summary>
-        public HbtDeviceType? FirstLoginDeviceType { get; set; }
+        public int? FirstLoginDeviceType { get; set; }
 
         /// <summary>
-        /// 首次登录浏览器类型
+        /// 首次登录浏览器类型（0Chrome 1Firefox 2Edge 3Safari 4IE 5其他）
         /// </summary>
-        public HbtBrowserType? FirstLoginBrowser { get; set; }
+        public int? FirstLoginBrowser { get; set; }
 
         /// <summary>
-        /// 首次登录操作系统类型
+        /// 首次登录操作系统类型（0Windows 1Android 2iOS 3MacOS 4Linux 5其他）
         /// </summary>
-        public HbtOsType? FirstLoginOs { get; set; }
+        public int? FirstLoginOs { get; set; }
 
         /// <summary>
         /// 最后登录时间
@@ -121,19 +147,19 @@ namespace Lean.Hbt.Application.Dtos.Identity
         public string? LastLoginDeviceId { get; set; }
 
         /// <summary>
-        /// 最后登录设备类型
+        /// 最后登录设备类型（0PC 1Android 2iOS 3MacOS 4Linux 5其他）
         /// </summary>
-        public HbtDeviceType? LastLoginDeviceType { get; set; }
+        public int? LastLoginDeviceType { get; set; }
 
         /// <summary>
-        /// 最后登录浏览器类型
+        /// 最后登录浏览器类型（0Chrome 1Firefox 2Edge 3Safari 4IE 5其他）
         /// </summary>
-        public HbtBrowserType? LastLoginBrowser { get; set; }
+        public int? LastLoginBrowser { get; set; }
 
         /// <summary>
-        /// 最后登录操作系统类型
+        /// 最后登录操作系统类型（0Windows 1Android 2iOS 3MacOS 4Linux 5其他）
         /// </summary>
-        public HbtOsType? LastLoginOs { get; set; }
+        public int? LastLoginOs { get; set; }
 
         /// <summary>
         /// 最后离线时间
@@ -154,6 +180,16 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// 连续登录天数
         /// </summary>
         public int ContinuousLoginDays { get; set; }
+
+        /// <summary>
+        /// 创建时间
+        /// </summary>
+        public DateTime CreateTime { get; set; }
+
+        /// <summary>
+        /// 备注
+        /// </summary>
+        public string? Remark { get; set; }
     }
 
     /// <summary>
@@ -188,16 +224,38 @@ namespace Lean.Hbt.Application.Dtos.Identity
         public long? PostId { get; set; }
 
         /// <summary>
-        /// 登录类型
+        /// 登录类型（0普通 1短信 2邮箱 3微信 4QQ 5GitHub）
         /// </summary>
         [Required(ErrorMessage = "登录类型不能为空")]
-        public HbtLoginType LoginType { get; set; }
+        public int LoginType { get; set; }
 
         /// <summary>
-        /// 登录来源
+        /// 登录来源（0Web 1App 2小程序 3其他）
         /// </summary>
         [Required(ErrorMessage = "登录来源不能为空")]
-        public HbtLoginSource LoginSource { get; set; }
+        public int LoginSource { get; set; }
+
+        /// <summary>
+        /// 登录提供者（0系统 1微信 2钉钉 3企业微信）
+        /// </summary>
+        public int LoginProvider { get; set; }
+
+        /// <summary>
+        /// 提供者Key
+        /// </summary>
+        [MaxLength(100, ErrorMessage = "提供者Key长度不能超过100个字符")]
+        public string ProviderKey { get; set; } = string.Empty;
+
+        /// <summary>
+        /// 提供者显示名称
+        /// </summary>
+        [MaxLength(50, ErrorMessage = "提供者显示名称长度不能超过50个字符")]
+        public string ProviderDisplayName { get; set; } = string.Empty;
+
+        /// <summary>
+        /// 状态（0正常 1停用）
+        /// </summary>
+        public int Status { get; set; }
 
         /// <summary>
         /// IP地址
@@ -220,22 +278,22 @@ namespace Lean.Hbt.Application.Dtos.Identity
         public string DeviceId { get; set; } = string.Empty;
 
         /// <summary>
-        /// 设备类型
+        /// 设备类型（0PC 1Android 2iOS 3MacOS 4Linux 5其他）
         /// </summary>
         [Required(ErrorMessage = "设备类型不能为空")]
-        public HbtDeviceType DeviceType { get; set; }
+        public int DeviceType { get; set; }
 
         /// <summary>
-        /// 浏览器类型
+        /// 浏览器类型（0Chrome 1Firefox 2Edge 3Safari 4IE 5其他）
         /// </summary>
         [Required(ErrorMessage = "浏览器类型不能为空")]
-        public HbtBrowserType BrowserType { get; set; }
+        public int BrowserType { get; set; }
 
         /// <summary>
-        /// 操作系统类型
+        /// 操作系统类型（0Windows 1Android 2iOS 3MacOS 4Linux 5其他）
         /// </summary>
         [Required(ErrorMessage = "操作系统类型不能为空")]
-        public HbtOsType OsType { get; set; }
+        public int OsType { get; set; }
     }
 
     /// <summary>
@@ -273,19 +331,35 @@ namespace Lean.Hbt.Application.Dtos.Identity
         public long? TenantId { get; set; }
 
         /// <summary>
-        /// 登录类型
+        /// 登录类型（0普通 1短信 2邮箱 3微信 4QQ 5GitHub）
         /// </summary>
-        public HbtLoginType? LoginType { get; set; }
+        public int? LoginType { get; set; }
 
         /// <summary>
-        /// 登录来源
+        /// 登录来源（0Web 1App 2小程序 3其他）
         /// </summary>
-        public HbtLoginSource? LoginSource { get; set; }
+        public int? LoginSource { get; set; }
 
         /// <summary>
-        /// 登录状态
+        /// 登录状态（0离线 1在线）
         /// </summary>
-        public HbtLoginStatus? LoginStatus { get; set; }
+        public int? LoginStatus { get; set; }
+
+        /// <summary>
+        /// 登录提供者（0系统 1微信 2钉钉 3企业微信）
+        /// </summary>
+        public int? LoginProvider { get; set; }
+
+        /// <summary>
+        /// 提供者Key
+        /// </summary>
+        [MaxLength(100, ErrorMessage = "提供者Key长度不能超过100个字符")]
+        public string? ProviderKey { get; set; }
+
+        /// <summary>
+        /// 状态（0正常 1停用）
+        /// </summary>
+        public int? Status { get; set; }
 
         /// <summary>
         /// 最后登录时间范围开始
@@ -314,19 +388,39 @@ namespace Lean.Hbt.Application.Dtos.Identity
         public long? TenantId { get; set; }
 
         /// <summary>
-        /// 登录类型
+        /// 登录类型（0普通 1短信 2邮箱 3微信 4QQ 5GitHub）
         /// </summary>
-        public HbtLoginType? LoginType { get; set; }
+        public int? LoginType { get; set; }
 
         /// <summary>
-        /// 登录来源
+        /// 登录来源（0Web 1App 2小程序 3其他）
         /// </summary>
-        public HbtLoginSource? LoginSource { get; set; }
+        public int? LoginSource { get; set; }
 
         /// <summary>
-        /// 登录状态
+        /// 登录状态（0离线 1在线）
         /// </summary>
-        public HbtLoginStatus? LoginStatus { get; set; }
+        public int? LoginStatus { get; set; }
+
+        /// <summary>
+        /// 登录提供者（0系统 1微信 2钉钉 3企业微信）
+        /// </summary>
+        public int? LoginProvider { get; set; }
+
+        /// <summary>
+        /// 提供者Key
+        /// </summary>
+        public string? ProviderKey { get; set; }
+
+        /// <summary>
+        /// 提供者显示名称
+        /// </summary>
+        public string? ProviderDisplayName { get; set; }
+
+        /// <summary>
+        /// 状态（0正常 1停用）
+        /// </summary>
+        public int? Status { get; set; }
 
         /// <summary>
         /// 最后登录时间范围开始
@@ -348,5 +442,23 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// </summary>
         [Required(ErrorMessage = "导出文件类型不能为空")]
         public string FileType { get; set; } = "xlsx";
+    }
+
+    /// <summary>
+    /// 登录扩展状态更新传输对象
+    /// </summary>
+    public class HbtLoginExtendStatusDto
+    {
+        /// <summary>
+        /// ID
+        /// </summary>
+        [Required(ErrorMessage = "登录扩展ID不能为空")]
+        public long LoginExtendId { get; set; }
+
+        /// <summary>
+        /// 状态（0正常 1停用）
+        /// </summary>
+        [Required(ErrorMessage = "状态不能为空")]
+        public int Status { get; set; }
     }
 } 

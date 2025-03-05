@@ -46,8 +46,8 @@ namespace Lean.Hbt.Domain.Entities.Workflow
         /// <summary>
         /// 变量作用域
         /// </summary>
-        [SugarColumn(ColumnName = "variable_scope", ColumnDescription = "变量作用域", ColumnDataType = "tinyint", IsNullable = false)]
-        public HbtWorkflowVariableScope Scope { get; set; }
+        [SugarColumn(ColumnName = "scope", ColumnDescription = "变量作用域", ColumnDataType = "int", IsNullable = false)]
+        public int Scope { get; set; }
 
         /// <summary>
         /// 节点ID(作用域为节点时必填)

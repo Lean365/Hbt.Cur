@@ -7,12 +7,8 @@
 // 描述   : 语言数据初始化类
 //===================================================================
 
-using Lean.Hbt.Common.Enums;
-using Lean.Hbt.Common.Utils;
 using Lean.Hbt.Domain.Entities.Admin;
-using Lean.Hbt.Domain.Entities.Identity;
 using Lean.Hbt.Domain.IServices;
-using Lean.Hbt.Infrastructure.Data.Contexts;
 
 namespace Lean.Hbt.Infrastructure.Data.Seeds;
 
@@ -51,8 +47,8 @@ public class HbtDbSeedLanguage
                 LangName = "العربية",
                 LangIcon = "🇸🇦",
                 OrderNum = 1,
-                Status = HbtStatus.Normal,
-                IsDefault = false,
+                Status = 0,
+                IsDefault = 0,
                 LangBuiltin = 1,
                 TenantId = 0,
                 CreateBy = "system",
@@ -66,8 +62,8 @@ public class HbtDbSeedLanguage
                 LangName = "English",
                 LangIcon = "🇺🇸",
                 OrderNum = 2,
-                Status = HbtStatus.Normal,
-                IsDefault = false,
+                Status = 0,
+                IsDefault = 0,
                 LangBuiltin = 1,
                 TenantId = 0,
                 CreateBy = "system",
@@ -81,8 +77,8 @@ public class HbtDbSeedLanguage
                 LangName = "Français",
                 LangIcon = "🇫🇷",
                 OrderNum = 3,
-                Status = HbtStatus.Normal,
-                IsDefault = false,
+                Status = 0,
+                IsDefault = 0,
                 LangBuiltin = 1,
                 TenantId = 0,
                 CreateBy = "system",
@@ -96,8 +92,8 @@ public class HbtDbSeedLanguage
                 LangName = "日本語",
                 LangIcon = "🇯🇵",
                 OrderNum = 4,
-                Status = HbtStatus.Normal,
-                IsDefault = false,
+                Status = 0,
+                IsDefault = 0,
                 LangBuiltin = 1,
                 TenantId = 0,
                 CreateBy = "system",
@@ -111,8 +107,8 @@ public class HbtDbSeedLanguage
                 LangName = "한국어",
                 LangIcon = "🇰🇷",
                 OrderNum = 5,
-                Status = HbtStatus.Normal,
-                IsDefault = false,
+                Status = 0,
+                IsDefault = 0,
                 LangBuiltin = 1,
                 TenantId = 0,
                 CreateBy = "system",
@@ -126,8 +122,8 @@ public class HbtDbSeedLanguage
                 LangName = "Русский",
                 LangIcon = "🇷🇺",
                 OrderNum = 6,
-                Status = HbtStatus.Normal,
-                IsDefault = false,
+                Status = 0,
+                IsDefault = 0,
                 LangBuiltin = 1,
                 TenantId = 0,
                 CreateBy = "system",
@@ -141,8 +137,8 @@ public class HbtDbSeedLanguage
                 LangName = "Español",
                 LangIcon = "🇪🇸",
                 OrderNum = 7,
-                Status = HbtStatus.Normal,
-                IsDefault = false,
+                Status = 0,
+                IsDefault = 0,
                 LangBuiltin = 1,
                 TenantId = 0,
                 CreateBy = "system",
@@ -156,8 +152,8 @@ public class HbtDbSeedLanguage
                 LangName = "简体中文",
                 LangIcon = "🇨🇳",
                 OrderNum = 8,
-                Status = HbtStatus.Normal,
-                IsDefault = true,
+                Status = 0,
+                IsDefault = 0,
                 LangBuiltin = 1,
                 TenantId = 0,
                 CreateBy = "system",
@@ -171,8 +167,8 @@ public class HbtDbSeedLanguage
                 LangName = "繁體中文",
                 LangIcon = "🇹🇼",
                 OrderNum = 9,
-                Status = HbtStatus.Normal,
-                IsDefault = false,
+                Status = 0,
+                IsDefault = 0,
                 LangBuiltin = 1,
                 TenantId = 0,
                 CreateBy = "system",
@@ -213,4 +209,4 @@ public class HbtDbSeedLanguage
 
         return (insertCount, updateCount);
     }
-} 
+}

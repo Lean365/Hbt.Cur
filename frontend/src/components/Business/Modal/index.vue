@@ -18,14 +18,14 @@
     v-model:open="modalOpen"
     :title="title"
     :width="width"
-    :loading="loading"
+    :confirm-loading="loading"
     :footer="footer"
     :mask-closable="maskClosable"
     :keyboard="keyboard"
     :centered="centered"
     :destroy-on-close="destroyOnClose"
     :class="modalClass"
-    @ok="handleOk"
+    @ok="handleSubmit"
     @cancel="handleCancel"
   >
     <template v-if="loading">
@@ -40,12 +40,12 @@
       <slot name="footer">
         <a-button key="cancel" @click="handleCancel">{{ finalCancelText }}</a-button>
         <a-button
-          key="ok"
+          key="submit"
           type="primary"
           :loading="confirmLoading"
-          @click="handleOk"
+          @click="handleSubmit"
         >
-          {{ finalOkText }}
+          {{ finalSubmitText }}
         </a-button>
       </slot>
     </template>
@@ -69,7 +69,7 @@ interface Props {
   destroyOnClose?: boolean
   modalClass?: string
   confirmLoading?: boolean
-  okText?: string
+  submitText?: string
   cancelText?: string
 }
 
@@ -85,7 +85,7 @@ const props = withDefaults(defineProps<Props>(), {
   destroyOnClose: false,
   modalClass: '',
   confirmLoading: false,
-  okText: '',
+  submitText: '',
   cancelText: ''
 })
 
@@ -93,7 +93,7 @@ const props = withDefaults(defineProps<Props>(), {
 const { t } = useI18n()
 
 // === 计算属性 ===
-const finalOkText = computed(() => props.okText || t('common.button.ok'))
+const finalSubmitText = computed(() => props.submitText || t('common.button.submit'))
 const finalCancelText = computed(() => props.cancelText || t('common.button.cancel'))
 
 const modalOpen = computed({
@@ -111,7 +111,7 @@ const emit = defineEmits<{
 }>()
 
 // === 方法定义 ===
-const handleOk = () => {
+const handleSubmit = () => {
   emit('ok')
 }
 

@@ -208,7 +208,7 @@ public class HbtDbSeedTranslation
                 existingTranslation.TransKey = translation.TransKey;
                 existingTranslation.TransValue = translation.TransValue;
                 existingTranslation.ModuleName = translation.ModuleName;
-                existingTranslation.Status = translation.Status;
+                existingTranslation.Status = 0;
                 existingTranslation.TransBuiltin = translation.TransBuiltin;
                 existingTranslation.TenantId = translation.TenantId;
                 existingTranslation.Remark = translation.Remark;
@@ -234,7 +234,7 @@ public class HbtDbSeedTranslation
             TransKey = transKey,
             TransValue = transValue,
             ModuleName = moduleName,
-            Status = HbtStatus.Normal,
+            Status = 0,
             TransBuiltin = 1,
             TenantId = 0,
             CreateBy = "system",

@@ -1,6 +1,6 @@
 //===================================================================
 // 项目名 : Lean.Hbt
-// 文件名 : EnumExtensions.cs
+// 文件名 : HbtEnumExtensions.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-17 18:55
 // 版本号 : V0.0.1
@@ -9,6 +9,7 @@
 
 using System.ComponentModel;
 using System.Reflection;
+
 
 namespace Lean.Hbt.Common.Extensions;
 
@@ -37,5 +38,28 @@ public static class HbtEnumExtensions
 
         var attribute = field.GetCustomAttribute<DescriptionAttribute>();
         return attribute?.Description ?? value.ToString();
+    }
+
+    /// <summary>
+    /// 比较枚举值是否等于指定的整数值
+    /// </summary>
+    /// <typeparam name="TEnum">枚举类型</typeparam>
+    /// <param name="enumValue">枚举值</param>
+    /// <param name="value">要比较的整数值</param>
+    /// <returns>是否相等</returns>
+    public static bool EqualsInt<TEnum>(this TEnum enumValue, int value) where TEnum : Enum
+    {
+        return Convert.ToInt32(enumValue) == value;
+    }
+
+    /// <summary>
+    /// 将整数值转换为指定的枚举类型
+    /// </summary>
+    /// <typeparam name="TEnum">枚举类型</typeparam>
+    /// <param name="value">整数值</param>
+    /// <returns>枚举值</returns>
+    public static TEnum ToEnum<TEnum>(this int value) where TEnum : Enum
+    {
+        return (TEnum)Enum.ToObject(typeof(TEnum), value);
     }
 } 

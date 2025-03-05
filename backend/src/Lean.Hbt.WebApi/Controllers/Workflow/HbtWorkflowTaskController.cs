@@ -143,9 +143,9 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// </summary>
         [HttpPut("{id}/status")]
         [HbtPerm("workflow:task:update")]
-        public async Task<IActionResult> UpdateStatusAsync(long id, [FromBody] HbtWorkflowTaskStatusDto input)
+        public async Task<IActionResult> UpdateStatusAsync(long id, [FromQuery] int status)
         {
-            var result = await _workflowTaskService.UpdateStatusAsync(input);
+            var result = await _workflowTaskService.UpdateStatusAsync(id, status);
             return Success(result);
         }
 

@@ -53,7 +53,7 @@ public class HbtTenantService : IHbtTenantService
             exp.And(x => x.TenantName.Contains(query.TenantName));
 
         if (query.Status.HasValue)
-            exp.And(x => x.Status == query.Status);
+            exp.And(x => x.Status == query.Status.Value);
 
         var result = await _repository.GetPagedListAsync(exp.ToExpression(), query.PageIndex, query.PageSize);
 
@@ -98,7 +98,7 @@ public class HbtTenantService : IHbtTenantService
             await HbtValidateUtils.ValidateFieldExistsAsync(_repository, "ContactEmail", input.ContactEmail);
 
         var tenant = input.Adapt<HbtTenant>();
-        tenant.Status = HbtStatus.Normal;
+        tenant.Status = 0; // 0 表示正常状态
 
         var result = await _repository.InsertAsync(tenant);
         return result > 0 ? tenant.Id : 0;
@@ -122,7 +122,7 @@ public class HbtTenantService : IHbtTenantService
 
         tenant.TenantName = input.TenantName;
         tenant.TenantCode = input.TenantCode;
-        tenant.ContactPerson = input.ContactPerson;
+        tenant.ContactUser = input.ContactUser;
         tenant.ContactPhone = input.ContactPhone;
         tenant.ContactEmail = input.ContactEmail;
         tenant.Domain = input.Domain;
@@ -189,7 +189,7 @@ public class HbtTenantService : IHbtTenantService
                     await HbtValidateUtils.ValidateFieldExistsAsync(_repository, "ContactEmail", tenant.ContactEmail);
 
                 var entity = tenant.Adapt<HbtTenant>();
-                entity.Status = HbtStatus.Normal;
+                entity.Status = 0; // 0 表示正常状态
 
                 var result = await _repository.InsertAsync(entity);
                 if (result > 0)
@@ -223,7 +223,7 @@ public class HbtTenantService : IHbtTenantService
             exp.And(x => x.TenantName.Contains(query.TenantName));
 
         if (query.Status.HasValue)
-            exp.And(x => x.Status == query.Status);
+            exp.And(x => x.Status == query.Status.Value);
 
         var tenants = await _repository.GetListAsync(exp.ToExpression());
         var exportData = tenants.Adapt<List<HbtTenantExportDto>>();
@@ -245,9 +245,9 @@ public class HbtTenantService : IHbtTenantService
     /// 更新租户状态
     /// </summary>
     /// <param name="id">租户ID</param>
-    /// <param name="status">新状态</param>
+    /// <param name="status">新状态(0:正常,1:禁用)</param>
     /// <returns>返回更新后的租户状态信息</returns>
-    public async Task<HbtTenantStatusDto> UpdateStatusAsync(long id, HbtStatus status)
+    public async Task<HbtTenantStatusDto> UpdateStatusAsync(long id, int status)
     {
         var tenant = await _repository.GetByIdAsync(id);
         if (tenant == null)
@@ -261,37 +261,9 @@ public class HbtTenantService : IHbtTenantService
         var statusDto = new HbtTenantStatusDto
         {
             TenantId = tenant.Id,
-            Status = tenant.Status,
-            AvailableOperations = GetAvailableOperations(tenant.Status),
-            StatusDescription = GetStatusDescription(tenant.Status)
+            Status = tenant.Status
         };
 
         return statusDto;
-    }
-
-    /// <summary>
-    /// 获取状态可用操作
-    /// </summary>
-    private string[] GetAvailableOperations(HbtStatus status)
-    {
-        return status switch
-        {
-            HbtStatus.Normal => new[] { "禁用" },
-            HbtStatus.Disabled => new[] { "启用" },
-            _ => Array.Empty<string>()
-        };
-    }
-
-    /// <summary>
-    /// 获取状态描述
-    /// </summary>
-    private string GetStatusDescription(HbtStatus status)
-    {
-        return status switch
-        {
-            HbtStatus.Normal => "正常",
-            HbtStatus.Disabled => "已禁用",
-            _ => "未知状态"
-        };
     }
 }

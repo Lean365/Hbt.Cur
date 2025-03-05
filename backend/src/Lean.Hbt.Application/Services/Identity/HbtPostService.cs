@@ -109,18 +109,18 @@ namespace Lean.Hbt.Application.Services.Identity
         /// </summary>
         public async Task<bool> UpdateAsync(HbtPostUpdateDto input)
         {
-            var post = await _postRepository.GetByIdAsync(input.Id);
+            var post = await _postRepository.GetByIdAsync(input.PostId);
             if (post == null)
-                throw new HbtException(_localizationService.L("Common.NotExists"));
+            {
+                throw new HbtException("岗位不存在");
+            }
 
-            // 验证字段是否已存在
-            if (await _postRepository.AsQueryable().AnyAsync(x => x.PostCode == input.PostCode && x.Id != input.Id))
-                throw new HbtException(_localizationService.L("Common.CodeExists"));
+            post.PostCode = input.PostCode;
+            post.PostName = input.PostName;
+            post.OrderNum = input.OrderNum;
+            post.Status = input.Status;
+            post.Remark = input.Remark;
 
-            if (await _postRepository.AsQueryable().AnyAsync(x => x.PostName == input.PostName && x.Id != input.Id))
-                throw new HbtException(_localizationService.L("Common.NameExists"));
-
-            input.Adapt(post);
             var result = await _postRepository.UpdateAsync(post);
             if (result > 0)
                 _logger.Info(_localizationService.L("Common.UpdateSuccess"));
@@ -205,7 +205,7 @@ namespace Lean.Hbt.Application.Services.Identity
                 PostCode = post.PostCode,
                 PostName = post.PostName,
                 OrderNum = post.OrderNum,
-                Status = post.Status == "正常" ? HbtStatus.Normal : HbtStatus.Disabled,
+                Status = post.Status == 0 ? 0 : 1,
                 Remark = post.Remark ?? string.Empty,
                 CreateTime = DateTime.Now,
                 CreateBy = "system" // TODO: 从当前用户上下文获取

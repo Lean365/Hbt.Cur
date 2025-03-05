@@ -17,13 +17,13 @@ using SqlSugar;
 using Lean.Hbt.Application.Dtos.Identity;
 using Lean.Hbt.Common.Models;
 using Lean.Hbt.Domain.Entities.Identity;
-
 using Lean.Hbt.Common.Extensions;
 using Lean.Hbt.Domain.IServices;
 using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Domain.Repositories;
 using Lean.Hbt.Common.Helpers;
 using System.Linq;
+using Microsoft.Extensions.Logging;
 
 namespace Lean.Hbt.Application.Services.Identity
 {
@@ -33,14 +33,14 @@ namespace Lean.Hbt.Application.Services.Identity
     public class HbtDeviceExtendService : IHbtDeviceExtendService
     {
         private readonly IHbtRepository<HbtDeviceExtend> _deviceExtendRepository;
-        private readonly IHbtLogger _logger;
+        private readonly ILogger<HbtDeviceExtendService> _logger;
 
         /// <summary>
         /// 构造函数
         /// </summary>
         public HbtDeviceExtendService(
             IHbtRepository<HbtDeviceExtend> deviceExtendRepository,
-            IHbtLogger logger)
+            ILogger<HbtDeviceExtendService> logger)
         {
             _deviceExtendRepository = deviceExtendRepository;
             _logger = logger;
@@ -68,8 +68,8 @@ namespace Lean.Hbt.Application.Services.Identity
             if (!string.IsNullOrEmpty(query.DeviceName))
                 exp.And(x => x.DeviceName.Contains(query.DeviceName));
 
-            if (query.DeviceStatus.HasValue)
-                exp.And(x => x.DeviceStatus == query.DeviceStatus.Value);
+            if (query.LoginStatus.HasValue)
+                exp.And(x => x.DeviceStatus == query.LoginStatus.Value);
 
             if (query.LastOnlineTimeStart.HasValue)
                 exp.And(x => x.LastOnlineTime >= query.LastOnlineTimeStart.Value);
@@ -104,27 +104,24 @@ namespace Lean.Hbt.Application.Services.Identity
         /// </summary>
         public async Task<HbtDeviceExtendDto> UpdateDeviceInfoAsync(HbtDeviceExtendUpdateDto request)
         {
-            var deviceExtend = await _deviceExtendRepository.FirstOrDefaultAsync(
-                x => x.UserId == request.UserId && x.DeviceId == request.DeviceId);
             var now = DateTime.Now;
+            var deviceExtend = await _deviceExtendRepository.FirstOrDefaultAsync(x =>
+                x.UserId == request.UserId &&
+                x.DeviceId == request.DeviceId);
 
             if (deviceExtend == null)
             {
-                // 首次登录,创建记录
                 deviceExtend = new HbtDeviceExtend
                 {
                     UserId = request.UserId,
                     TenantId = request.TenantId,
-                    DeviceType = request.DeviceType,
                     DeviceId = request.DeviceId,
                     DeviceName = request.DeviceName,
-                    DeviceModel = request.DeviceModel,
-                    OsType = request.OsType,
-                    OsVersion = request.OsVersion,
+                    DeviceType = request.DeviceType,
                     BrowserType = request.BrowserType,
                     BrowserVersion = request.BrowserVersion,
                     Resolution = request.Resolution,
-                    DeviceStatus = HbtLoginStatus.Online,
+                    DeviceStatus = (int)HbtDeviceStatus.Online,
                     LastOnlineTime = now
                 };
 
@@ -132,17 +129,12 @@ namespace Lean.Hbt.Application.Services.Identity
             }
             else
             {
-                // 更新设备信息
-                deviceExtend.TenantId = request.TenantId;
-                deviceExtend.DeviceType = request.DeviceType;
                 deviceExtend.DeviceName = request.DeviceName;
-                deviceExtend.DeviceModel = request.DeviceModel;
-                deviceExtend.OsType = request.OsType;
-                deviceExtend.OsVersion = request.OsVersion;
+                deviceExtend.DeviceType = request.DeviceType;
                 deviceExtend.BrowserType = request.BrowserType;
                 deviceExtend.BrowserVersion = request.BrowserVersion;
                 deviceExtend.Resolution = request.Resolution;
-                deviceExtend.DeviceStatus = HbtLoginStatus.Online;
+                deviceExtend.DeviceStatus = (int)HbtDeviceStatus.Online;
                 deviceExtend.LastOnlineTime = now;
 
                 await _deviceExtendRepository.UpdateAsync(deviceExtend);
@@ -156,14 +148,17 @@ namespace Lean.Hbt.Application.Services.Identity
         /// </summary>
         public async Task<HbtDeviceExtendDto> UpdateOfflineInfoAsync(long userId, string deviceId)
         {
-            var deviceExtend = await _deviceExtendRepository.FirstOrDefaultAsync(
-                x => x.UserId == userId && x.DeviceId == deviceId);
+            var deviceExtend = await _deviceExtendRepository.FirstOrDefaultAsync(x =>
+                x.UserId == userId &&
+                x.DeviceId == deviceId);
+
             if (deviceExtend == null)
             {
-                throw new InvalidOperationException($"用户{userId}的设备{deviceId}扩展信息不存在");
+                _logger.LogWarning("设备扩展信息不存在: userId={UserId}, deviceId={DeviceId}", userId, deviceId);
+                throw new InvalidOperationException($"设备扩展信息不存在: userId={userId}, deviceId={deviceId}");
             }
 
-            deviceExtend.DeviceStatus = HbtLoginStatus.Offline;
+            deviceExtend.DeviceStatus = (int)HbtDeviceStatus.Offline;
             deviceExtend.LastOfflineTime = DateTime.Now;
 
             await _deviceExtendRepository.UpdateAsync(deviceExtend);

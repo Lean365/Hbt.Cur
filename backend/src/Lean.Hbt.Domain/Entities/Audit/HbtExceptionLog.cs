@@ -24,8 +24,8 @@ namespace Lean.Hbt.Domain.Entities.Audit
         /// <summary>
         /// 日志级别
         /// </summary>
-        [SugarColumn(ColumnName = "log_level", ColumnDescription = "日志级别", ColumnDataType = "int", IsNullable = false, DefaultValue = "4")]
-        public HbtLogLevel LogLevel { get; set; } = HbtLogLevel.Error;
+        [SugarColumn(ColumnName = "log_level", ColumnDescription = "日志级别", ColumnDataType = "int", IsNullable = false)]
+        public int LogLevel { get; set; }
 
         /// <summary>
         /// 用户ID

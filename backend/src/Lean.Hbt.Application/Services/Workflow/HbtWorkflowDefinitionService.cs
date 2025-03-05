@@ -121,7 +121,7 @@ namespace Lean.Hbt.Application.Services.Workflow
 
             var definition = input.Adapt<HbtWorkflowDefinition>();
             definition.WorkflowVersion = 1; // 新建定义默认版本为1
-            definition.Status = Common.Enums.HbtWorkflowStatus.Draft; // 新建定义默认为草稿状态
+            definition.Status = 0; // 0 表示草稿状态
 
             var result = await _definitionRepository.InsertAsync(definition);
             if (result <= 0)
@@ -174,7 +174,7 @@ namespace Lean.Hbt.Application.Services.Workflow
                 throw new HbtException(_localization.L("WorkflowDefinition.NotFound"));
 
             // 检查工作流定义是否处于活动状态
-            if (definition.Status == Common.Enums.HbtWorkflowStatus.Published)
+            if (definition.Status == 1) // 1 表示已发布状态
                 throw new HbtException(_localization.L("WorkflowDefinition.CannotDeleteActive"));
 
             var result = await _definitionRepository.DeleteAsync(definition);
@@ -198,7 +198,7 @@ namespace Lean.Hbt.Application.Services.Workflow
                 throw new ArgumentNullException(nameof(ids));
 
             // 检查是否有活动状态的定义
-            var activeDefinitions = await _definitionRepository.GetListAsync(x => ids.Contains(x.Id) && x.Status == Common.Enums.HbtWorkflowStatus.Published);
+            var activeDefinitions = await _definitionRepository.GetListAsync(x => ids.Contains(x.Id) && x.Status == 1); // 1 表示已发布状态
             if (activeDefinitions.Any())
                 throw new HbtException(_localization.L("WorkflowDefinition.CannotDeleteActive"));
 

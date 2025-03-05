@@ -51,7 +51,7 @@ public class HbtDbSeedDept
             Leader = "管理员",
             Phone = "13800138000",
             Email = "admin@lean365.com",
-            Status = HbtStatus.Normal,
+            Status = 0,
             TenantId = 0,
             CreateBy = "system",
             CreateTime = DateTime.Now,

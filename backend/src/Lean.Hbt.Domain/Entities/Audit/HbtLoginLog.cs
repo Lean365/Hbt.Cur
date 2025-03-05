@@ -10,6 +10,8 @@
 //===================================================================
 
 using Lean.Hbt.Common.Enums;
+using Lean.Hbt.Common.Models;
+using Lean.Hbt.Domain.Entities.Identity;
 using SqlSugar;
 
 namespace Lean.Hbt.Domain.Entities.Audit
@@ -24,8 +26,8 @@ namespace Lean.Hbt.Domain.Entities.Audit
         /// <summary>
         /// 日志级别
         /// </summary>
-        [SugarColumn(ColumnName = "log_level", ColumnDescription = "日志级别", ColumnDataType = "int", IsNullable = false, DefaultValue = "2")]
-        public HbtLogLevel LogLevel { get; set; } = HbtLogLevel.Info;
+        [SugarColumn(ColumnName = "log_level", ColumnDescription = "日志级别", ColumnDataType = "int", IsNullable = false)]
+        public int LogLevel { get; set; }
 
         /// <summary>
         /// 用户ID
@@ -58,6 +60,24 @@ namespace Lean.Hbt.Domain.Entities.Audit
         public string UserAgent { get; set; } = string.Empty;
 
         /// <summary>
+        /// 登录类型
+        /// </summary>
+        [SugarColumn(ColumnName = "login_type", ColumnDescription = "登录类型", ColumnDataType = "int", IsNullable = false)]
+        public HbtLoginType LoginType { get; set; }
+
+        /// <summary>
+        /// 登录状态
+        /// </summary>
+        [SugarColumn(ColumnName = "login_status", ColumnDescription = "登录状态", ColumnDataType = "int", IsNullable = false)]
+        public HbtLoginStatus LoginStatus { get; set; }
+
+        /// <summary>
+        /// 登录来源
+        /// </summary>
+        [SugarColumn(ColumnName = "login_source", ColumnDescription = "登录来源", ColumnDataType = "int", IsNullable = false)]
+        public int LoginSource { get; set; }
+
+        /// <summary>
         /// 是否成功（0失败 1成功）
         /// </summary>
         [SugarColumn(ColumnName = "success", ColumnDescription = "是否成功（0失败 1成功）", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
@@ -68,5 +88,41 @@ namespace Lean.Hbt.Domain.Entities.Audit
         /// </summary>
         [SugarColumn(ColumnName = "message", ColumnDescription = "消息", Length = 500, ColumnDataType = "nvarchar", IsNullable = true)]
         public string? Message { get; set; }
+
+        /// <summary>
+        /// 登录时间
+        /// </summary>
+        [SugarColumn(ColumnName = "login_time", ColumnDescription = "登录时间", ColumnDataType = "datetime", IsNullable = false)]
+        public DateTime LoginTime { get; set; } = DateTime.Now;
+
+        /// <summary>
+        /// 设备信息
+        /// </summary>
+        [SugarColumn(ColumnName = "device_info", ColumnDescription = "设备信息", ColumnDataType = "nvarchar(max)", IsJson = true)]
+        public HbtDeviceInfo? DeviceInfo { get; set; }
+
+        /// <summary>
+        /// 设备扩展ID
+        /// </summary>
+        [SugarColumn(ColumnName = "device_extend_id", ColumnDescription = "设备扩展ID", ColumnDataType = "bigint", IsNullable = true)]
+        public long? DeviceExtendId { get; set; }
+
+        /// <summary>
+        /// 设备扩展信息
+        /// </summary>
+        [Navigate(NavigateType.OneToOne, nameof(DeviceExtendId))]
+        public virtual HbtDeviceExtend? DeviceExtend { get; set; }
+
+        /// <summary>
+        /// 登录扩展ID
+        /// </summary>
+        [SugarColumn(ColumnName = "login_extend_id", ColumnDescription = "登录扩展ID", ColumnDataType = "bigint", IsNullable = true)]
+        public long? LoginExtendId { get; set; }
+
+        /// <summary>
+        /// 登录扩展信息
+        /// </summary>
+        [Navigate(NavigateType.OneToOne, nameof(LoginExtendId))]
+        public virtual HbtLoginExtend? LoginExtend { get; set; }
     }
 }

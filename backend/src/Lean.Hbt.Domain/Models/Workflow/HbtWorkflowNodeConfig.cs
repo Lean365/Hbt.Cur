@@ -10,7 +10,6 @@
 //===================================================================
 
 using System.Collections.Generic;
-using Lean.Hbt.Common.Enums;
 
 namespace Lean.Hbt.Domain.Models.Workflow
 {
@@ -21,8 +20,15 @@ namespace Lean.Hbt.Domain.Models.Workflow
     {
         /// <summary>
         /// 审批人类型
+        /// 0: 未指定
+        /// 1: 指定人员
+        /// 2: 指定角色
+        /// 3: 指定部门
+        /// 4: 发起人自选
+        /// 5: 发起人上级
+        /// 6: 部门主管
         /// </summary>
-        public HbtWorkflowApproverType ApproverType { get; set; }
+        public int ApproverType { get; set; }
 
         /// <summary>
         /// 指定审批人ID列表
@@ -41,8 +47,12 @@ namespace Lean.Hbt.Domain.Models.Workflow
 
         /// <summary>
         /// 审批规则
+        /// 0: 所有人
+        /// 1: 任意人
+        /// 2: 指定数量
+        /// 3: 自定义条件
         /// </summary>
-        public HbtWorkflowApprovalRule ApprovalRule { get; set; }
+        public int ApprovalRule { get; set; }
 
         /// <summary>
         /// 审批数量(当ApprovalRule为Count时有效)
@@ -66,8 +76,11 @@ namespace Lean.Hbt.Domain.Models.Workflow
 
         /// <summary>
         /// 汇聚类型(仅对汇聚节点有效)
+        /// 0: 所有分支
+        /// 1: 任意分支
+        /// 2: 自定义条件
         /// </summary>
-        public HbtWorkflowJoinType? JoinType { get; set; }
+        public int? JoinType { get; set; }
 
         /// <summary>
         /// 汇聚条件(当JoinType为Custom时有效)
@@ -86,8 +99,12 @@ namespace Lean.Hbt.Domain.Models.Workflow
 
         /// <summary>
         /// 超时动作
+        /// 0: 无动作
+        /// 1: 自动通过
+        /// 2: 自动拒绝
+        /// 3: 自动转交
         /// </summary>
-        public HbtWorkflowTimeoutAction? TimeoutAction { get; set; }
+        public int? TimeoutAction { get; set; }
 
         /// <summary>
         /// 自定义属性

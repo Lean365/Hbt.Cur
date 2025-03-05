@@ -9,7 +9,6 @@
 // 描述    : 角色实体类
 //===================================================================
 
-using Lean.Hbt.Common.Enums;
 using SqlSugar;
 
 namespace Lean.Hbt.Domain.Entities.Identity
@@ -44,13 +43,13 @@ namespace Lean.Hbt.Domain.Entities.Identity
         /// 数据范围（1：全部数据权限 2：自定数据权限 3：本部门数据权限 4：本部门及以下数据权限 5：仅本人数据权限）
         /// </summary>
         [SugarColumn(ColumnName = "data_scope", ColumnDescription = "数据范围", ColumnDataType = "int", IsNullable = false, DefaultValue = "1")]
-        public HbtDataScope DataScope { get; set; } = HbtDataScope.All;
+        public int DataScope { get; set; } = 1;
 
         /// <summary>
         /// 状态（0正常 1停用）
         /// </summary>
         [SugarColumn(ColumnName = "status", ColumnDescription = "状态（0正常 1停用）", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
-        public HbtStatus Status { get; set; } = HbtStatus.Normal;
+        public int Status { get; set; } = 0;
 
         /// <summary>
         /// 租户ID

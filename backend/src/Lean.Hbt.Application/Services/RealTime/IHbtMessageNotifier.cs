@@ -27,7 +27,7 @@ namespace Lean.Hbt.Application.Services.RealTime
         /// <param name="message">消息内容</param>
         /// <param name="messageType">消息类型</param>
         /// <returns>是否发送成功</returns>
-        Task<bool> NotifyUserAsync(long userId, string message, HbtMessageType messageType = HbtMessageType.System);
+        Task<bool> NotifyUserAsync(long userId, string message, int messageType = 0);
 
         /// <summary>
         /// 通知指定群组
@@ -36,7 +36,7 @@ namespace Lean.Hbt.Application.Services.RealTime
         /// <param name="message">消息内容</param>
         /// <param name="messageType">消息类型</param>
         /// <returns>是否发送成功</returns>
-        Task<bool> NotifyGroupAsync(string groupName, string message, HbtMessageType messageType = HbtMessageType.System);
+        Task<bool> NotifyGroupAsync(string groupName, string message, int messageType = 0);
 
         /// <summary>
         /// 通知所有用户
@@ -44,7 +44,7 @@ namespace Lean.Hbt.Application.Services.RealTime
         /// <param name="message">消息内容</param>
         /// <param name="messageType">消息类型</param>
         /// <returns>是否发送成功</returns>
-        Task<bool> NotifyAllAsync(string message, HbtMessageType messageType = HbtMessageType.System);
+        Task<bool> NotifyAllAsync(string message, int messageType = 0);
 
         /// <summary>
         /// 通知指定租户的所有用户
@@ -53,6 +53,16 @@ namespace Lean.Hbt.Application.Services.RealTime
         /// <param name="message">消息内容</param>
         /// <param name="messageType">消息类型</param>
         /// <returns>是否发送成功</returns>
-        Task<bool> NotifyTenantAsync(long tenantId, string message, HbtMessageType messageType = HbtMessageType.System);
+        Task<bool> NotifyTenantAsync(long tenantId, string message, int messageType = 0);
+
+        /// <summary>
+        /// 通知角色
+        /// </summary>
+        Task<bool> NotifyRoleAsync(long roleId, string message, int messageType = 0);
+
+        /// <summary>
+        /// 通知部门
+        /// </summary>
+        Task<bool> NotifyDeptAsync(long deptId, string message, int messageType = 0);
     }
 } 

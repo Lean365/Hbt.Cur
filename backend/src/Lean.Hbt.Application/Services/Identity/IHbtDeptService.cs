@@ -37,7 +37,7 @@ namespace Lean.Hbt.Application.Services.Identity
         /// </summary>
         /// <param name="status">状态</param>
         /// <returns>部门树形结构</returns>
-        Task<List<HbtDeptDto>> GetTreeAsync(HbtStatus? status = null);
+        Task<List<HbtDeptDto>> GetTreeAsync(int  status);
 
         /// <summary>
         /// 获取部门详情
@@ -98,10 +98,8 @@ namespace Lean.Hbt.Application.Services.Identity
         Task<byte[]> GenerateTemplateAsync(string sheetName = "部门导入模板");
 
         /// <summary>
-        /// 更新部门状态
+        /// 修改部门状态
         /// </summary>
-        /// <param name="input">状态信息</param>
-        /// <returns>是否成功</returns>
-        Task<bool> UpdateStatusAsync(HbtDeptStatusDto input);
+        Task<bool> UpdateStatusAsync(long deptId, int status);
     }
 } 

@@ -10,7 +10,6 @@
 //===================================================================
 
 using Lean.Hbt.Application.Dtos.Workflow;
-using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Domain.Data;
 using Lean.Hbt.Domain.Entities.Workflow;
 
@@ -34,7 +33,7 @@ namespace Lean.Hbt.Application.Services.Workflow
         }
 
         /// <inheritdoc/>
-        public async Task<long> CreateAsync(long workflowInstanceId, long nodeId, HbtWorkflowScheduledTaskType taskType, DateTime scheduledTime, string? parameters = null)
+        public async Task<long> CreateAsync(long workflowInstanceId, long nodeId, int taskType, DateTime scheduledTime, string? parameters = null)
         {
             try
             {
@@ -44,7 +43,7 @@ namespace Lean.Hbt.Application.Services.Workflow
                     NodeId = nodeId,
                     TaskType = taskType,
                     ScheduledTime = scheduledTime,
-                    Status = HbtWorkflowScheduledTaskStatus.Pending,
+                    Status = 0, // 待处理
                     RetryCount = 0,
                     MaxRetryCount = 3, // 默认最大重试次数为3
                     TaskParameters = parameters
@@ -74,7 +73,7 @@ namespace Lean.Hbt.Application.Services.Workflow
                     return false;
                 }
 
-                if (task.Status != HbtWorkflowScheduledTaskStatus.Pending)
+                if (task.Status != 0) // 待处理
                 {
                     _logger.Warn($"定时任务{taskId}状态为{task.Status},无法取消");
                     return false;
@@ -83,10 +82,10 @@ namespace Lean.Hbt.Application.Services.Workflow
                 var result = await _dbContext.Client.Updateable<HbtWorkflowScheduledTask>()
                     .SetColumns(t => new HbtWorkflowScheduledTask
                     {
-                        Status = HbtWorkflowScheduledTaskStatus.Cancelled,
+                        Status = 2, // 已取消
                         UpdateTime = DateTime.Now
                     })
-                    .Where(t => t.Id == taskId && t.Status == HbtWorkflowScheduledTaskStatus.Pending)
+                    .Where(t => t.Id == taskId && t.Status == 0) // 待处理
                     .ExecuteCommandAsync() > 0;
 
                 return result;
@@ -112,7 +111,7 @@ namespace Lean.Hbt.Application.Services.Workflow
                     return false;
                 }
 
-                if (task.Status != HbtWorkflowScheduledTaskStatus.Pending)
+                if (task.Status != 0) // 待处理
                 {
                     _logger.Warn($"定时任务{taskId}状态为{task.Status},无法执行");
                     return false;
@@ -122,35 +121,35 @@ namespace Lean.Hbt.Application.Services.Workflow
                 await _dbContext.Client.Updateable<HbtWorkflowScheduledTask>()
                     .SetColumns(t => new HbtWorkflowScheduledTask
                     {
-                        Status = HbtWorkflowScheduledTaskStatus.Running,
+                        Status = 1, // 执行中
                         ExecutedTime = DateTime.Now,
                         UpdateTime = DateTime.Now
                     })
-                    .Where(t => t.Id == taskId && t.Status == HbtWorkflowScheduledTaskStatus.Pending)
+                    .Where(t => t.Id == taskId && t.Status == 0) // 待处理
                     .ExecuteCommandAsync();
 
                 try
                 {
-                    // TODO: 根据任务类型执行相应的业务逻辑
+                    // 根据任务类型执行相应的业务逻辑
                     switch (task.TaskType)
                     {
-                        case HbtWorkflowScheduledTaskType.TimeoutReminder:
+                        case 1: // 超时提醒
                             // 执行超时提醒任务
                             break;
 
-                        case HbtWorkflowScheduledTaskType.AutoExecution:
+                        case 2: // 自动执行
                             // 执行自动执行任务
                             break;
 
-                        case HbtWorkflowScheduledTaskType.TimedTrigger:
+                        case 3: // 定时触发
                             // 执行定时触发任务
                             break;
 
-                        case HbtWorkflowScheduledTaskType.DelayedExecution:
+                        case 4: // 延迟执行
                             // 执行延迟执行任务
                             break;
 
-                        case HbtWorkflowScheduledTaskType.PeriodicExecution:
+                        case 5: // 周期执行
                             // 执行周期执行任务
                             break;
 
@@ -159,7 +158,7 @@ namespace Lean.Hbt.Application.Services.Workflow
                     }
 
                     // 更新任务状态为已完成
-                    await UpdateStatusAsync(taskId, HbtWorkflowScheduledTaskStatus.Completed);
+                    await UpdateStatusAsync(taskId, 3); // 已完成
                     return true;
                 }
                 catch (Exception ex)
@@ -169,14 +168,14 @@ namespace Lean.Hbt.Application.Services.Workflow
                     // 更新重试次数和状态
                     if (task.RetryCount >= task.MaxRetryCount)
                     {
-                        await UpdateStatusAsync(taskId, HbtWorkflowScheduledTaskStatus.Failed, ex.Message);
+                        await UpdateStatusAsync(taskId, 4, ex.Message); // 已失败
                     }
                     else
                     {
                         await _dbContext.Client.Updateable<HbtWorkflowScheduledTask>()
                             .SetColumns(t => new HbtWorkflowScheduledTask
                             {
-                                Status = HbtWorkflowScheduledTaskStatus.Pending,
+                                Status = 0, // 待处理
                                 RetryCount = t.RetryCount + 1,
                                 ErrorMessage = ex.Message,
                                 UpdateTime = DateTime.Now
@@ -202,7 +201,7 @@ namespace Lean.Hbt.Application.Services.Workflow
                 var tasks = await _dbContext.Client.Queryable<HbtWorkflowScheduledTask>()
                     .LeftJoin<HbtWorkflowInstance>((t, i) => t.WorkflowInstanceId == i.Id)
                     .LeftJoin<HbtWorkflowNode>((t, i, n) => t.NodeId == n.Id)
-                    .Where(t => t.Status == HbtWorkflowScheduledTaskStatus.Pending && t.ScheduledTime <= DateTime.Now)
+                    .Where(t => t.Status == 0 && t.ScheduledTime <= DateTime.Now) // 待处理
                     .OrderBy(t => t.ScheduledTime)
                     .Take(batchSize)
                     .Select((t, i, n) => new HbtWorkflowScheduledTaskDto
@@ -233,7 +232,7 @@ namespace Lean.Hbt.Application.Services.Workflow
         }
 
         /// <inheritdoc/>
-        public async Task<bool> UpdateStatusAsync(long taskId, HbtWorkflowScheduledTaskStatus status, string? errorMessage = null)
+        public async Task<bool> UpdateStatusAsync(long taskId, int status, string? errorMessage = null)
         {
             try
             {
@@ -261,9 +260,10 @@ namespace Lean.Hbt.Application.Services.Workflow
         {
             try
             {
-                var cutoffDate = DateTime.Now.AddDays(-days);
+                var expireTime = DateTime.Now.AddDays(-days);
                 var result = await _dbContext.Client.Deleteable<HbtWorkflowScheduledTask>()
-                    .Where(t => t.Status != HbtWorkflowScheduledTaskStatus.Pending && t.CreateTime < cutoffDate)
+                    .Where(t => t.Status == 3 || t.Status == 4 || t.Status == 2) // 已完成、已失败、已取消
+                    .Where(t => t.UpdateTime <= expireTime)
                     .ExecuteCommandAsync();
 
                 return result;

@@ -11,6 +11,7 @@
 
 // Microsoft 扩展
 // 项目依赖
+global using Lean.Hbt.Common.Exceptions;
 global using Lean.Hbt.Common.Models;
 global using Lean.Hbt.Infrastructure.Swagger;
 global using Microsoft.AspNetCore.Authorization;

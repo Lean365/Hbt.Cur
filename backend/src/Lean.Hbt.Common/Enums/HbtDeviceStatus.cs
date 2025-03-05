@@ -1,31 +1,27 @@
 //===================================================================
 // 项目名 : Lean.Hbt 
-// 文件名 : HbtWorkflowVariableScope.cs 
+// 文件名 : HbtDeviceStatus.cs
 // 创建者 : Lean365
-// 创建时间: 2024-01-23 12:00
+// 创建时间: 2024-01-22 14:30
 // 版本号 : V1.0.0
-// 描述    : 工作流变量作用域枚举
+// 描述    : 设备状态枚举
 //===================================================================
 
 namespace Lean.Hbt.Common.Enums
 {
     /// <summary>
-    /// 工作流变量作用域枚举
+    /// 设备状态枚举
     /// </summary>
-    /// <remarks>
-    /// 创建者: Lean365
-    /// 创建时间: 2024-01-23
-    /// </remarks>
-    public enum HbtWorkflowVariableScope
+    public enum HbtDeviceStatus
     {
         /// <summary>
-        /// 全局变量
+        /// 离线
         /// </summary>
-        Global = 0,
+        Offline = 0,
 
         /// <summary>
-        /// 节点变量
+        /// 在线
         /// </summary>
-        Node = 1
+        Online = 1
     }
 } 

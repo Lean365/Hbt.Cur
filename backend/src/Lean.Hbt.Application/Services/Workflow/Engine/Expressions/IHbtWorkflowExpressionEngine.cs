@@ -2,22 +2,19 @@
 
 //===================================================================
 // 项目名 : Lean.Hbt
-// 文件名 : IWorkflowExpressionEngine.cs
+// 文件名 : IHbtWorkflowExpressionEngine.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-23 12:00
 // 版本号 : V1.0.0
 // 描述    : 工作流表达式引擎接口
 //===================================================================
 
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
 namespace Lean.Hbt.Application.Services.Workflow.Engine.Expressions
 {
     /// <summary>
     /// 工作流表达式引擎接口
     /// </summary>
-    public interface IWorkflowExpressionEngine
+    public interface IHbtWorkflowExpressionEngine
     {
         /// <summary>
         /// 解析并执行表达式
@@ -41,4 +38,4 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine.Expressions
         /// <returns>变量名列表</returns>
         IEnumerable<string> GetVariableNames(string expression);
     }
-} 
+}

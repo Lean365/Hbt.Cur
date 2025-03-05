@@ -38,8 +38,8 @@ namespace Lean.Hbt.Domain.Entities.Workflow.Engine
         /// <summary>
         /// 活动类型
         /// </summary>
-        [SugarColumn(ColumnName = "type", ColumnDescription = "活动类型", ColumnDataType = "int", IsNullable = false)]
-        public HbtWorkflowActivityType Type { get; set; }
+        [SugarColumn(ColumnName = "activity_type", ColumnDescription = "活动类型", ColumnDataType = "int", IsNullable = false)]
+        public int ActivityType { get; set; }
 
         /// <summary>
         /// 活动配置(JSON)

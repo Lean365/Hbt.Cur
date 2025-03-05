@@ -8,7 +8,6 @@
 //===================================================================
 
 using System.ComponentModel.DataAnnotations;
-using Lean.Hbt.Common.Enums;
 
 namespace Lean.Hbt.Application.Dtos.Identity
 {
@@ -79,29 +78,29 @@ namespace Lean.Hbt.Application.Dtos.Identity
         public string QueryParams { get; set; }
 
         /// <summary>
-        /// 是否为外链
+        /// 状态（0正常 1停用）
         /// </summary>
-        public HbtYesNo IsFrame { get; set; }
+        public int Status { get; set; }
 
         /// <summary>
-        /// 菜单类型
+        /// 是否显示（0显示 1隐藏）
         /// </summary>
-        public HbtMenuType MenuType { get; set; }
+        public int Visible { get; set; }
 
         /// <summary>
-        /// 显示状态
+        /// 菜单类型（0目录 1菜单 2按钮）
         /// </summary>
-        public HbtVisible Visible { get; set; }
+        public int MenuType { get; set; }
 
         /// <summary>
-        /// 菜单状态
+        /// 是否为外链（0否 1是）
         /// </summary>
-        public HbtStatus Status { get; set; }
+        public int IsExternal { get; set; }
 
         /// <summary>
         /// 是否缓存
         /// </summary>
-        public HbtYesNo IsCache { get; set; }
+        public int IsCache { get; set; }
 
         /// <summary>
         /// 权限标识
@@ -137,7 +136,7 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// <summary>
         /// 状态
         /// </summary>
-        public HbtStatus? Status { get; set; }
+        public int? Status { get; set; }
     }
 
     /// <summary>
@@ -184,22 +183,22 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// <summary>
         /// 是否为外链
         /// </summary>
-        public HbtYesNo IsFrame { get; set; }
+        public int IsExternal { get; set; }
 
         /// <summary>
         /// 菜单类型
         /// </summary>
-        public HbtMenuType MenuType { get; set; }
+        public int MenuType { get; set; }
 
         /// <summary>
         /// 显示状态
         /// </summary>
-        public HbtVisible Visible { get; set; }
+        public int Visible { get; set; }
 
         /// <summary>
         /// 菜单状态
         /// </summary>
-        public HbtStatus Status { get; set; }
+        public int Status { get; set; }
 
         /// <summary>
         /// 权限标识
@@ -224,7 +223,7 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// <summary>
         /// 是否缓存
         /// </summary>
-        public HbtYesNo IsCache { get; set; }
+        public int IsCache { get; set; }
     }
 
     /// <summary>
@@ -301,22 +300,22 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// <summary>
         /// 是否为外链
         /// </summary>
-        public HbtYesNo IsFrame { get; set; }
+        public int IsExternal { get; set; }
 
         /// <summary>
         /// 菜单类型
         /// </summary>
-        public HbtMenuType MenuType { get; set; }
+        public int MenuType { get; set; }
 
         /// <summary>
         /// 显示状态
         /// </summary>
-        public HbtVisible Visible { get; set; }
+        public int Visible { get; set; }
 
         /// <summary>
         /// 菜单状态
         /// </summary>
-        public HbtStatus Status { get; set; }
+        public int Status { get; set; }
 
         /// <summary>
         /// 权限标识
@@ -348,7 +347,7 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// <summary>
         /// 状态
         /// </summary>
-        public HbtStatus Status { get; set; }
+        public int Status { get; set; }
     }
 
     /// <summary>
@@ -391,10 +390,10 @@ namespace Lean.Hbt.Application.Dtos.Identity
             Path = string.Empty;
             Component = string.Empty;
             QueryParams = string.Empty;
-            IsFrame = string.Empty;
-            MenuType = string.Empty;
-            Visible = string.Empty;
-            Status = string.Empty;
+            IsExternal = 0;
+            MenuType = 0;
+            Visible = 0;
+            Status = 0;
             Perms = string.Empty;
             Icon = string.Empty;
         }
@@ -440,25 +439,25 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// 是否为外链（0否 1是）
         /// </summary>
         [Required(ErrorMessage = "是否为外链不能为空")]
-        public string IsFrame { get; set; }
+        public int IsExternal { get; set; }
 
         /// <summary>
         /// 菜单类型（0目录 1菜单 2按钮）
         /// </summary>
         [Required(ErrorMessage = "菜单类型不能为空")]
-        public string MenuType { get; set; }
+        public int MenuType { get; set; }
 
         /// <summary>
         /// 显示状态（0显示 1隐藏）
         /// </summary>
         [Required(ErrorMessage = "显示状态不能为空")]
-        public string Visible { get; set; }
+        public int Visible { get; set; }
 
         /// <summary>
         /// 菜单状态（0正常 1停用）
         /// </summary>
         [Required(ErrorMessage = "菜单状态不能为空")]
-        public string Status { get; set; }
+        public int Status { get; set; }
 
         /// <summary>
         /// 权限标识
@@ -474,7 +473,7 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// 是否缓存
         /// </summary>
         [Required(ErrorMessage = "是否缓存不能为空")]
-        public string IsCache { get; set; }
+        public int IsCache { get; set; }
     }
 
     /// <summary>
@@ -496,10 +495,10 @@ namespace Lean.Hbt.Application.Dtos.Identity
             Path = "/system";
             Component = "Layout";
             QueryParams = string.Empty;
-            IsFrame = "否";
-            MenuType = "目录";
-            Visible = "显示";
-            Status = "正常";
+            IsExternal = 0;
+            MenuType = 0;
+            Visible = 0;
+            Status = 0;
             Perms = "identity:*:*";
             Icon = "system";
         }
@@ -545,25 +544,25 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// 是否为外链（0否 1是）
         /// </summary>
         [Required(ErrorMessage = "是否为外链不能为空")]
-        public string IsFrame { get; set; }
+        public int IsExternal { get; set; }
 
         /// <summary>
         /// 菜单类型（0目录 1菜单 2按钮）
         /// </summary>
         [Required(ErrorMessage = "菜单类型不能为空")]
-        public string MenuType { get; set; }
+        public int MenuType { get; set; }
 
         /// <summary>
         /// 显示状态（0显示 1隐藏）
         /// </summary>
         [Required(ErrorMessage = "显示状态不能为空")]
-        public string Visible { get; set; }
+        public int Visible { get; set; }
 
         /// <summary>
         /// 菜单状态（0正常 1停用）
         /// </summary>
         [Required(ErrorMessage = "菜单状态不能为空")]
-        public string Status { get; set; }
+        public int Status { get; set; }
 
         /// <summary>
         /// 权限标识
@@ -579,6 +578,6 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// 是否缓存
         /// </summary>
         [Required(ErrorMessage = "是否缓存不能为空")]
-        public string IsCache { get; set; }
+        public int IsCache { get; set; }
     }
 }

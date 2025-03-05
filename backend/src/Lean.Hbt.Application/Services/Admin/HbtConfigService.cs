@@ -10,6 +10,7 @@
 using Lean.Hbt.Application.Dtos.Admin;
 using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Common.Exceptions;
+using Lean.Hbt.Common.Extensions;
 using Lean.Hbt.Common.Helpers;
 using Lean.Hbt.Common.Utils;
 using Lean.Hbt.Domain.Entities.Admin;
@@ -173,6 +174,9 @@ namespace Lean.Hbt.Application.Services.Admin
             if (config == null)
                 throw new HbtException($"系统配置不存在: {configId}");
 
+            if (config.ConfigBuiltin == 1) // 1 表示内置参数
+                throw new HbtException("系统内置参数不能删除");
+
             var result = await _configRepository.DeleteAsync(configId);
             return result > 0;
         }
@@ -296,9 +300,9 @@ namespace Lean.Hbt.Application.Services.Admin
                     ConfigName = "示例配置",
                     ConfigKey = "example.key",
                     ConfigValue = "示例值",
-                    ConfigBuiltin = 0,
+                    ConfigBuiltin = 1,
                     OrderNum = 1,
-                    Status = HbtStatus.Normal
+                    Status = 0
                 }
             };
 

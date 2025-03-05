@@ -206,6 +206,12 @@ export default {
       }
     },
 
+    // 标签页
+    tab: {
+      basicInfo: '基本信息',
+      otherInfo: '其他信息'
+    },
+
     // 表格
     table: {
       header: {
@@ -315,7 +321,14 @@ export default {
     search: '搜索',
     reset: '重置',
     confirm: '确认',
-    back: '返回'
+    back: '返回',
+
+    // 按钮文本
+    button: {
+      submit: '提交',
+      cancel: '取消',
+      ok: '确定'
+    }
   },
 
   select: {

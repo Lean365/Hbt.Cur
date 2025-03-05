@@ -52,14 +52,14 @@ namespace Lean.Hbt.Application.Services.Workflow
         /// <summary>
         /// 删除工作流任务
         /// </summary>
-        /// <param name="id">工作流任务ID</param>
+        /// <param name="id">任务ID</param>
         /// <returns>是否成功</returns>
         Task<bool> DeleteAsync(long id);
 
         /// <summary>
         /// 批量删除工作流任务
         /// </summary>
-        /// <param name="ids">工作流任务ID数组</param>
+        /// <param name="ids">任务ID数组</param>
         /// <returns>是否成功</returns>
         Task<bool> BatchDeleteAsync(long[] ids);
 
@@ -86,14 +86,15 @@ namespace Lean.Hbt.Application.Services.Workflow
         /// <summary>
         /// 更新工作流任务状态
         /// </summary>
-        /// <param name="input">状态更新信息</param>
+        /// <param name="taskId">任务ID</param>
+        /// <param name="status">新状态</param>
         /// <returns>是否成功</returns>
-        Task<bool> UpdateStatusAsync(HbtWorkflowTaskStatusDto input);
+        Task<bool> UpdateStatusAsync(long taskId, int status);
 
         /// <summary>
         /// 完成工作流任务
         /// </summary>
-        /// <param name="id">工作流任务ID</param>
+        /// <param name="id">任务ID</param>
         /// <param name="result">处理结果</param>
         /// <param name="comment">处理意见</param>
         /// <returns>是否成功</returns>

@@ -32,8 +32,8 @@ namespace Lean.Hbt.Domain.Entities.Workflow
         /// <summary>
         /// 节点类型
         /// </summary>
-        [SugarColumn(ColumnName = "node_type", ColumnDescription = "节点类型", ColumnDataType = "tinyint", IsNullable = false)]
-        public HbtWorkflowNodeType NodeType { get; set; }
+        [SugarColumn(ColumnName = "node_type", ColumnDescription = "节点类型", ColumnDataType = "int", IsNullable = false)]
+        public int NodeType { get; set; }
 
         /// <summary>
         /// 工作流定义ID

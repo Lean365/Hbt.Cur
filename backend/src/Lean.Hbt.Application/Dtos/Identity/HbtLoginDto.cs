@@ -7,13 +7,16 @@
 // 描述    : 登录数据传输对象
 //===================================================================
 
+#nullable enable
+
 using System.ComponentModel.DataAnnotations;
 using Lean.Hbt.Common.Enums;
+using Lean.Hbt.Common.Models;
 
 namespace Lean.Hbt.Application.Dtos.Identity;
 
 /// <summary>
-/// 登录请求传输对象
+/// 登录请求DTO
 /// </summary>
 /// <remarks>
 /// 创建者: Lean365
@@ -42,7 +45,7 @@ public class HbtLoginDto
     public string Password { get; set; } = string.Empty;
 
     /// <summary>
-    /// 验证码令牌
+    /// 验证码Token
     /// </summary>
     public string? CaptchaToken { get; set; }
 
@@ -52,16 +55,30 @@ public class HbtLoginDto
     public int CaptchaOffset { get; set; }
 
     /// <summary>
+    /// IP地址
+    /// </summary>
+    public string IpAddress { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 用户代理
+    /// </summary>
+    public string UserAgent { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 登录类型
+    /// </summary>
+    public HbtLoginType LoginType { get; set; } = HbtLoginType.Password;
+
+    /// <summary>
     /// 登录来源
     /// </summary>
     [Required(ErrorMessage = "登录来源不能为空")]
-    public HbtLoginSource LoginSource { get; set; } = HbtLoginSource.Web;
+    public int LoginSource { get; set; }
 
     /// <summary>
     /// 设备信息
     /// </summary>
-    [Required(ErrorMessage = "设备信息不能为空")]
-    public HbtDeviceInfo DeviceInfo { get; set; } = new HbtDeviceInfo();
+    public HbtDeviceInfo? DeviceInfo { get; set; }
 }
 
 /// <summary>

@@ -9,7 +9,6 @@
 // 描述   : 字典数据实体
 //===================================================================
 using SqlSugar;
-using Lean.Hbt.Common.Enums;
 
 namespace Lean.Hbt.Domain.Entities.Admin
 {
@@ -17,7 +16,7 @@ namespace Lean.Hbt.Domain.Entities.Admin
     /// 字典数据实体
     /// </summary>
     [SugarTable("hbt_adm_dict_data", "字典数据表")]
-    [SugarIndex("ix_tenant_dict_data", nameof(TenantId), OrderByType.Asc)]
+    [SugarIndex("ix_tenant_dict_type", nameof(TenantId), OrderByType.Asc)]
     public class HbtDictData : HbtBaseEntity
     {
         /// <summary>
@@ -57,34 +56,34 @@ namespace Lean.Hbt.Domain.Entities.Admin
         public string? TransKey { get; set; }
 
         /// <summary>
-        /// 字典排序
+        /// 排序号
         /// </summary>
-        [SugarColumn(ColumnName = "order_num", ColumnDescription = "字典排序", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
+        [SugarColumn(ColumnName = "order_num", ColumnDescription = "排序号", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
         public int OrderNum { get; set; } = 0;
 
         /// <summary>
-        /// 样式属性（其他样式扩展）
+        /// CSS类名
         /// </summary>
-        [SugarColumn(ColumnName = "css_class", ColumnDescription = "样式属性", Length = 100, ColumnDataType = "nvarchar", IsNullable = true)]
-        public string? CssClass { get; set; }
+        [SugarColumn(ColumnName = "css_class", ColumnDescription = "CSS类名", ColumnDataType = "int", IsNullable = true)]
+        public int? CssClass { get; set; }
 
         /// <summary>
-        /// 表格回显样式
+        /// 列表类名
         /// </summary>
-        [SugarColumn(ColumnName = "list_class", ColumnDescription = "表格回显样式", Length = 100, ColumnDataType = "nvarchar", IsNullable = true)]
-        public string? ListClass { get; set; }
+        [SugarColumn(ColumnName = "list_class", ColumnDescription = "列表类名", ColumnDataType = "int", IsNullable = true)]
+        public int? ListClass { get; set; }
 
         /// <summary>
         /// 状态（0正常 1停用）
         /// </summary>
         [SugarColumn(ColumnName = "status", ColumnDescription = "状态（0正常 1停用）", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
-        public HbtStatus Status { get; set; } = HbtStatus.Normal;
+        public int Status { get; set; } = 0;
 
         /// <summary>
         /// 租户ID
         /// </summary>
         [SugarColumn(ColumnName = "tenant_id", ColumnDescription = "租户ID", ColumnDataType = "bigint", IsNullable = false)]
-        public long TenantId { get; set; }= 0;
+        public long TenantId { get; set; } = 0;
 
         /// <summary>
         /// 构造函数
@@ -95,7 +94,7 @@ namespace Lean.Hbt.Domain.Entities.Admin
             DictLabel = string.Empty;
             DictValue = string.Empty;
             OrderNum = 0;
-            Status = HbtStatus.Normal;
+            Status = 0;
         }
     }
 }

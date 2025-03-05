@@ -1,14 +1,11 @@
 //===================================================================
-// 项目名 : Lean.Hbt 
+// 项目名 : Lean.Hbt
 // 文件名 : HbtOnlineMessageDto.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-20 16:30
 // 版本号 : V1.0.0
 // 描述    : 在线消息数据传输对象
 //===================================================================
-
-using Lean.Hbt.Common.Models;
-using Lean.Hbt.Common.Enums;
 
 namespace Lean.Hbt.Application.Dtos.RealTime;
 
@@ -39,7 +36,7 @@ public class HbtOnlineMessageQueryDto : HbtPagedQuery
     /// <summary>
     /// 消息类型
     /// </summary>
-    public HbtMessageType? MessageType { get; set; }
+    public int? MessageType { get; set; }
 
     /// <summary>
     /// 开始时间
@@ -94,7 +91,7 @@ public class HbtOnlineMessageDto
     /// <summary>
     /// 消息类型
     /// </summary>
-    public HbtMessageType MessageType { get; set; }
+    public int MessageType { get; set; }
 
     /// <summary>
     /// 消息内容
@@ -150,4 +147,4 @@ public class HbtOnlineMessageExportDto
     /// 发送时间
     /// </summary>
     public DateTime SendTime { get; set; }
-} 
+}
