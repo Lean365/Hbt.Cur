@@ -69,14 +69,14 @@ export interface PageQuery {
  * 分页结果接口
  */
 export interface PageResult<T> {
-  /** 数据列表 */
-  rows: T[]
-  /** 总记录数 */
-  totalNum: number
   /** 当前页码 */
   pageIndex: number
-  /** 每页记录数 */
+  /** 每页条数 */
   pageSize: number
+  /** 数据行 */
+  rows: T[]
+  /** 总条数 */
+  totalNum: number
   /** 总页数 */
   totalPage: number
 }

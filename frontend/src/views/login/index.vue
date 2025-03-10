@@ -138,6 +138,7 @@ import { useI18n } from 'vue-i18n'
 import { message } from 'ant-design-vue'
 import { ref, reactive, onMounted, onUnmounted, nextTick, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import { getDeviceInfo } from '@/utils/device'
 
 const { t } = useI18n()
 const router = useRouter()
@@ -157,19 +158,7 @@ const loginForm = reactive<LoginParams>({
   captchaToken: '',
   captchaOffset: 0,
   loginSource: 0, // Web端
-  deviceInfo: {
-    deviceId: crypto.randomUUID(),
-    deviceType: 0, // PC
-    deviceName: navigator.platform || 'Unknown',
-    deviceModel: navigator.userAgent || 'Unknown',
-    osType: 0, // Windows
-    osVersion: navigator.platform || 'Unknown',
-    browserType: 0, // Chrome
-    browserVersion: navigator.appVersion || 'Unknown',
-    resolution: `${window.screen.width}x${window.screen.height}`,
-    ipAddress: '',
-    location: ''
-  }
+  deviceInfo: getDeviceInfo() // 使用工具函数获取设备信息
 })
 
 // 表单验证规则
@@ -287,20 +276,7 @@ const handleLogin = async () => {
       const loginParams: LoginParams = {
         ...loginForm,
         password: hashedPassword,
-        deviceInfo: {
-          deviceId: crypto.randomUUID().slice(0, DEVICE_INFO_LENGTH.DEVICE_ID),
-          deviceType: 0, // PC
-          deviceName: (navigator.platform || 'Unknown').slice(0, DEVICE_INFO_LENGTH.DEVICE_NAME),
-          deviceModel: (navigator.userAgent || 'Unknown').slice(0, DEVICE_INFO_LENGTH.DEVICE_MODEL),
-          osType: 0, // Windows
-          osVersion: (navigator.platform || 'Unknown').slice(0, DEVICE_INFO_LENGTH.OS_VERSION),
-          browserType: 3, // Edge
-          browserVersion: (navigator.appVersion || 'Unknown').slice(0, DEVICE_INFO_LENGTH.BROWSER_VERSION),
-          resolution: `${window.screen.width}x${window.screen.height}`.slice(0, DEVICE_INFO_LENGTH.RESOLUTION),
-          ipAddress: '',
-          location: ''
-        },
-        loginSource: 0
+        deviceInfo: loginForm.deviceInfo // 直接使用表单中的设备信息
       }
 
       // 保存登录参数，用于验证码验证成功后重试
@@ -413,20 +389,7 @@ const handleCaptchaSuccess = async (result: SliderValidateDto) => {
       ...lastLoginParams.value,
       captchaToken: result.token,
       captchaOffset: result.xOffset,
-      deviceInfo: {
-        deviceId: crypto.randomUUID().slice(0, DEVICE_INFO_LENGTH.DEVICE_ID),
-        deviceType: 0, // PC
-        deviceName: (navigator.platform || 'Unknown').slice(0, DEVICE_INFO_LENGTH.DEVICE_NAME),
-        deviceModel: (navigator.userAgent || 'Unknown').slice(0, DEVICE_INFO_LENGTH.DEVICE_MODEL),
-        osType: 0, // Windows
-        osVersion: (navigator.platform || 'Unknown').slice(0, DEVICE_INFO_LENGTH.OS_VERSION),
-        browserType: 3, // Edge
-        browserVersion: (navigator.appVersion || 'Unknown').slice(0, DEVICE_INFO_LENGTH.BROWSER_VERSION),
-        resolution: `${window.screen.width}x${window.screen.height}`.slice(0, DEVICE_INFO_LENGTH.RESOLUTION),
-        ipAddress: '',
-        location: ''
-      },
-      loginSource: 0
+      deviceInfo: lastLoginParams.value.deviceInfo // 使用之前保存的设备信息
     }
     
     // 更新表单数据

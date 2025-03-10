@@ -16,6 +16,7 @@ using Lean.Hbt.Domain.IServices.Admin;
 using Lean.Hbt.Domain.IServices.Identity;
 using Lean.Hbt.Domain.IServices.SignalR;
 using Lean.Hbt.Domain.IServices.Caching;
+using Lean.Hbt.Domain.IServices.Audit;
 using Lean.Hbt.Domain.Data;
 using Lean.Hbt.Infrastructure.Authentication;
 using Lean.Hbt.Infrastructure.Caching;
@@ -46,6 +47,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Authorization;
 using DbType = SqlSugar.DbType;
 using StackExchange.Redis;
+using Lean.Hbt.Infrastructure.Services.Identity;
+using Lean.Hbt.Infrastructure.Services.Local;
+using Lean.Hbt.Application.Services.Routine;
+using Lean.Hbt.Infrastructure.Extensions;
 
 namespace Lean.Hbt.Infrastructure.Extensions
 {
@@ -122,6 +127,7 @@ namespace Lean.Hbt.Infrastructure.Extensions
             services.AddAuditServices();       // 审计服务
             services.AddRealTimeServices();    // 实时服务
             services.AddWorkflowServices();    // 工作流服务
+            services.AddRoutineServices();     // 常规业务服务
             
             return services;
         }
@@ -155,10 +161,9 @@ namespace Lean.Hbt.Infrastructure.Extensions
             services.AddMemoryCache();
             services.AddDistributedMemoryCache();
             
-            // 缓存服务 - 所有缓存相关服务使用 Scoped 生命周期
+            // 缓存服务
             services.AddScoped<IHbtMemoryCache, HbtMemoryCache>();
             services.AddScoped<HbtCacheConfigManager>();
-            // Redis缓存服务在 AddInfrastructure 中根据配置注册
             
             return services;
         }
@@ -168,12 +173,10 @@ namespace Lean.Hbt.Infrastructure.Extensions
         /// </summary>
         private static IServiceCollection AddLogServices(this IServiceCollection services)
         {
-            // 添加日志记录器
+            // 添加日志记录器 - 只在这里注册一次
             services.AddScoped<IHbtLogger, HbtNLogger>();
-
-            // 添加日志服务
-            services.AddScoped<IHbtLogCleanupService, HbtLogCleanupService>();   // 日志清理服务
-            services.AddScoped<IHbtLogArchiveService, HbtLogArchiveService>();   // 日志归档服务
+            services.AddScoped<IHbtLogCleanupService, HbtLogCleanupService>();
+            services.AddScoped<IHbtLogArchiveService, HbtLogArchiveService>();
             
             return services;
         }
@@ -237,7 +240,11 @@ namespace Lean.Hbt.Infrastructure.Extensions
         public static IServiceCollection AddAuditServices(this IServiceCollection services)
         {
             // 审计日志记录器
-            services.AddScoped<IHbtAuditsLog, HbtAuditsLog>();                  // 审计日志记录器
+            services.AddScoped<IHbtLogManager, HbtLogManager>();                  // 基础日志管理器
+            services.AddScoped<IHbtAuditLogManager, HbtLogManager>();            // 审计日志管理器
+            services.AddScoped<IHbtDbDiffLogManager, HbtLogManager>();           // 数据库差异日志管理器
+            services.AddScoped<IHbtOperLogManager, HbtLogManager>();             // 操作日志管理器
+            services.AddScoped<IHbtExceptionLogManager, HbtLogManager>();        // 异常日志管理器
             
             // 审计日志服务
             services.AddScoped<IHbtAuditsLogService, HbtAuditLogService>();     // 审计日志服务
@@ -255,6 +262,37 @@ namespace Lean.Hbt.Infrastructure.Extensions
         public static IServiceCollection AddRealTimeServices(this IServiceCollection services)
         {
             services.AddScoped<IHbtOnlineUserService, HbtOnlineUserService>();   // 在线用户服务
+            return services;
+        }
+
+        /// <summary>
+        /// 添加常规业务服务
+        /// </summary>
+        /// <remarks>
+        /// 注册常规业务相关的所有服务，包括：
+        /// 1. 任务服务 - 定时任务和日志
+        /// 2. 邮件服务 - 邮件发送和模板
+        /// 3. 文件服务 - 文件上传和管理
+        /// 4. 通知服务 - 系统通知管理
+        /// </remarks>
+        /// <param name="services">服务集合</param>
+        /// <returns>服务集合</returns>
+        private static IServiceCollection AddRoutineServices(this IServiceCollection services)
+        {
+            // 任务相关服务
+            services.AddScoped<IHbtQuartzTaskService, HbtQuartzTaskService>();  // 定时任务服务
+            services.AddScoped<IHbtQuartzLogService, HbtQuartzLogService>();    // 任务日志服务
+
+            // 邮件相关服务
+            services.AddScoped<IHbtMailService, HbtMailService>();              // 邮件服务
+            services.AddScoped<IHbtMailTmplService, HbtMailTmplService>();      // 邮件模板服务
+
+            // 文件服务
+            services.AddScoped<IHbtFileService, HbtFileService>();              // 文件服务
+
+            // 通知服务
+            services.AddScoped<IHbtNoticeService, HbtNoticeService>();          // 通知服务
+
             return services;
         }
 
@@ -277,55 +315,21 @@ namespace Lean.Hbt.Infrastructure.Extensions
             // 添加 HttpClient 工厂
             services.AddHttpClient();
             
-            // 配置数据库
+            // 配置数据库 - 只在这里注册一次
             var connectionString = configuration.GetConnectionString("Default")
-                ?? throw new ArgumentException("数据库连接字符串不能为空，请检查配置文件中的 ConnectionStrings:Default");
+                ?? throw new ArgumentException("数据库连接字符串不能为空");
 
             var connectionConfig = new ConnectionConfig
             {
                 ConnectionString = connectionString,
-                DbType = DbType.SqlServer,  // 根据连接字符串判断是SQL Server
+                DbType = DbType.SqlServer,
                 IsAutoCloseConnection = true,
                 InitKeyType = InitKeyType.Attribute
             };
 
-            // 配置 SqlSugar
-            services.AddSingleton<SqlSugarScope>(sp =>
-            {
-                var sqlSugar = new SqlSugarScope(connectionConfig);
-                
-                // 配置Aop
-                sqlSugar.Aop.OnLogExecuting = (sql, parameters) =>
-                {
-                    using (var scope = sp.CreateScope())
-                    {
-                        var logger = scope.ServiceProvider.GetService<IHbtLogger>();
-                        if (logger != null)
-                        {
-                            logger.Debug($"SQL: {sql}");
-                            if (parameters?.Any() == true)
-                            {
-                                logger.Debug($"Parameters: {string.Join(", ", parameters.Select(p => $"{p.ParameterName}={p.Value}"))}");
-                            }
-                        }
-                    }
-                };
-
-                sqlSugar.Aop.OnError = (ex) =>
-                {
-                    using (var scope = sp.CreateScope())
-                    {
-                        var logger = scope.ServiceProvider.GetService<IHbtLogger>();
-                        logger?.Error($"SQL执行错误: {ex.Message}", ex);
-                    }
-                };
-
-                return sqlSugar;
-            });
-
-            // 同时注册 ISqlSugarClient 接口
+            // 配置 SqlSugar - 只注册一次
+            services.AddSingleton<SqlSugarScope>(sp => new SqlSugarScope(connectionConfig));
             services.AddSingleton<ISqlSugarClient>(sp => sp.GetRequiredService<SqlSugarScope>());
-
             services.Configure<ConnectionConfig>(options => 
             {
                 options.ConnectionString = connectionConfig.ConnectionString;
@@ -334,79 +338,14 @@ namespace Lean.Hbt.Infrastructure.Extensions
                 options.InitKeyType = connectionConfig.InitKeyType;
             });
 
+            // 数据库上下文 - 只注册一次
             services.AddScoped<HbtDbContext>();
             services.AddScoped<IHbtDbContext, HbtDbContext>();
 
-            // 注册所有种子数据服务
-            services.AddScoped<HbtDbSeedTenant>();
-            services.AddScoped<HbtDbSeedRole>();
-            services.AddScoped<HbtDbSeedUser>();
-            services.AddScoped<HbtDbSeedMenu>();
-            services.AddScoped<HbtDbSeedLanguage>();
-            services.AddScoped<HbtDbSeedDept>();
-            services.AddScoped<HbtDbSeedPost>();
-            services.AddScoped<HbtDbSeedRelation>();
-            services.AddScoped<HbtDbSeedConfig>();
-            services.AddScoped<HbtDbSeedDictType>();
-            services.AddScoped<HbtDbSeedDictData>();
-            services.AddScoped<HbtDbSeedTranslation>();
-            services.AddScoped<HbtDbSeed>();
-
-            // 配置 JWT 认证
-            var jwtSettings = configuration.GetSection("Jwt").Get<HbtJwtOptions>();
-            services.Configure<HbtJwtOptions>(configuration.GetSection("Jwt"));
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(options =>
-                {
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuer = true,
-                        ValidateAudience = true,
-                        ValidateLifetime = true,
-                        ValidateIssuerSigningKey = true,
-                        ValidIssuer = jwtSettings.Issuer,
-                        ValidAudience = jwtSettings.Audience,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.SecretKey))
-                    };
-                });
-
-            // 配置 SignalR
-            services.AddSignalR();
-            services.AddScoped<IHbtSignalRUserService, HbtSignalRUserService>();
-            services.AddScoped<IHbtSignalRMessageNotifier, HbtSignalRMessageNotifier>();
-
-            // 配置缓存
-            var cacheSettings = configuration.GetSection("Cache").Get<HbtCacheOptions>();
-            if (cacheSettings?.Provider == CacheProviderType.Redis && 
-                cacheSettings?.Redis?.Enabled == true && 
-                !string.IsNullOrEmpty(cacheSettings.Redis.ConnectionString))
-            {
-                services.AddStackExchangeRedisCache(options =>
-                {
-                    options.Configuration = cacheSettings.Redis.ConnectionString;
-                    options.InstanceName = cacheSettings.Redis.InstanceName;
-                });
-
-                // 注册 ConnectionMultiplexer
-                services.AddSingleton<ConnectionMultiplexer>(sp =>
-                {
-                    return ConnectionMultiplexer.Connect(cacheSettings.Redis.ConnectionString);
-                });
-
-                services.Configure<HbtCacheOptions>(configuration.GetSection("Cache"));
-
-                // 注册 Redis 缓存服务
-                services.AddScoped<IHbtRedisCache, HbtRedisCache>();
-            }
-            else
-            {
-                // 如果未配置Redis或使用内存缓存，使用内存缓存作为备选
-                services.AddDistributedMemoryCache();
-                
-                // 注册空的Redis实现
-                services.AddScoped<IHbtRedisCache, HbtNullRedisCache>();
-            }
-
+            // 其他基础设施服务
+            services.AddScoped<IHbtUserContext, HbtUserContext>();
+            services.AddScoped<IHbtTenantContext, HbtTenantContext>();
+            
             return services;
         }
     }

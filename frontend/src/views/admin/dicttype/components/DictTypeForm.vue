@@ -13,7 +13,7 @@
     :title="title"
     :loading="loading"
     :width="800"
-    @update:open="(val) => emit('update:open', val)"
+    @update:open="(val: boolean) => emit('update:open', val)"
     @ok="handleOk"
     @cancel="handleCancel"
   >
@@ -35,19 +35,6 @@
                   :max="9999"
                   :precision="0"
                   style="width: 100%"
-                />
-              </a-form-item>
-            </a-col>
-            <a-col :span="12">
-              <a-form-item :label="t('admin.dicttype.form.category')" name="dictCategory">
-                <hbt-select
-                  v-model:value="formState.dictCategory"
-                  :options="categoryOptions"
-                  :placeholder="t('admin.dicttype.form.categoryPlaceholder')"
-                  show-search
-                  :filter-option="(input: string, option: any) => {
-                    return option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                  }"
                 />
               </a-form-item>
             </a-col>
@@ -74,15 +61,22 @@
               </a-form-item>
             </a-col>
             <a-col :span="12">
-              <a-form-item :label="t('admin.dicttype.form.status')" name="status">
-                <hbt-select
-                  v-model:value="formState.status"
-                  :options="statusOptions"
-                  :placeholder="t('admin.dicttype.form.statusPlaceholder')"
-                  show-search
-                  :filter-option="(input: string, option: any) => {
-                    return option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                  }"
+              <a-form-item :label="t('admin.dicttype.form.category')" name="dictCategory">
+                <hbt-dict-select
+                  v-model:value="formState.dictCategory"
+                  dict-type="sys_dict_category"
+                  :placeholder="t('admin.dicttype.form.categoryPlaceholder')"
+                  allow-clear
+                />
+              </a-form-item>
+            </a-col>
+            <a-col :span="12">
+              <a-form-item :label="t('admin.dicttype.form.builtin')" name="dictBuiltin">
+                <hbt-dict-select
+                  v-model:value="formState.dictBuiltin"
+                  dict-type="sys_yes_no"
+                  :placeholder="t('admin.dicttype.form.builtinPlaceholder')"
+                  allow-clear
                 />
               </a-form-item>
             </a-col>
@@ -96,10 +90,16 @@
                 />
               </a-form-item>
             </a-col>
-          </a-row>
-        </a-tab-pane>
-        <a-tab-pane key="other" :tab="t('common.tab.otherInfo')">
-          <a-row :gutter="24">
+            <a-col :span="12">
+              <a-form-item :label="t('admin.dicttype.form.status')" name="status">
+                <hbt-dict-select
+                  v-model:value="formState.status"
+                  dict-type="sys_normal_disable"
+                  :placeholder="t('admin.dicttype.form.statusPlaceholder')"
+                  allow-clear
+                />
+              </a-form-item>
+            </a-col>
             <a-col :span="24">
               <a-form-item :label="t('admin.dicttype.form.sqlScript')" name="sqlScript" :label-col="{ span: 4 }" :wrapper-col="{ span: 19 }">
                 <div class="textarea-wrapper">
@@ -159,7 +159,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, watch } from 'vue'
+import { ref, watch, onMounted, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { message } from 'ant-design-vue'
 import { InfoCircleOutlined } from '@ant-design/icons-vue'
@@ -167,12 +167,11 @@ import type { FormInstance } from 'ant-design-vue'
 import type { RuleObject } from 'ant-design-vue/es/form'
 import type { HbtDictType } from '@/types/admin/hbtDictType'
 import type { HbtStatus } from '@/types/base'
-import HbtModal from '@/components/Business/Modal/index.vue'
-import HbtSelect from '@/components/Business/Select/index.vue'
+import { useDictData } from '@/hooks/useDictData'
 
 const { t } = useI18n()
 
-// === Props 定义 ===
+// === 属性定义 ===
 interface Props {
   open: boolean
   title?: string
@@ -197,28 +196,40 @@ const emit = defineEmits<{
 // === 状态定义 ===
 const formRef = ref<FormInstance>()
 const activeTab = ref('basic')
+
+// === 字典数据 ===
+const { dictDataMap, reloadDictData } = useDictData([
+  'sys_dict_category',
+  'sys_yes_no',
+  'sys_normal_disable'
+])
+
+// 计算属性：字典类别选项
+const dictCategoryOptions = computed(() => {
+  return dictDataMap.value['sys_dict_category'] || []
+})
+
+// 计算属性：是否内置选项
+const yesNoOptions = computed(() => {
+  return dictDataMap.value['sys_yes_no'] || []
+})
+
+// 计算属性：状态选项
+const normalDisableOptions = computed(() => {
+  return dictDataMap.value['sys_normal_disable'] || []
+})
+
 const formState = ref<Partial<HbtDictType>>({
   dictName: '',
   dictType: '',
-  dictCategory: 0,
-  dictBuiltin: 0,
+  dictCategory: undefined,
+  dictBuiltin: undefined,
   orderNum: 0,
-  status: 0 as HbtStatus,
+  status: 0,
   remark: '',
   tenantId: 0,
   sqlScript: ''
 })
-
-// === 选项定义 ===
-const statusOptions = [
-  { label: t('common.status.normal'), value: 0 },
-  { label: t('common.status.disabled'), value: 1 }
-]
-
-const categoryOptions = [
-  { label: t('admin.dicttype.category.system'), value: 0 },
-  { label: t('admin.dicttype.category.sql'), value: 1 }
-]
 
 // === 表单校验规则 ===
 const rules: Record<string, RuleObject[]> = {
@@ -228,7 +239,7 @@ const rules: Record<string, RuleObject[]> = {
   ],
   dictName: [
     { required: true, message: t('admin.dicttype.rules.nameRequired'), trigger: 'blur' },
-    { pattern: /^[a-zA-Z0-9\u4e00-\u9fa5_-]{2,100}$/, message: t('admin.dicttype.rules.namePattern'), trigger: 'blur' }
+    { min: 2, max: 100, message: t('admin.dicttype.rules.namePattern'), trigger: 'blur' }
   ],
   dictType: [
     { required: true, message: t('admin.dicttype.rules.typeRequired'), trigger: 'blur' },
@@ -236,6 +247,9 @@ const rules: Record<string, RuleObject[]> = {
   ],
   dictCategory: [
     { required: true, message: t('admin.dicttype.rules.categoryRequired'), trigger: 'change' }
+  ],
+  dictBuiltin: [
+    { required: true, message: t('admin.dicttype.rules.builtinRequired'), trigger: 'change' }
   ],
   orderNum: [
     { required: true, message: t('admin.dicttype.rules.orderNumRequired'), trigger: 'blur' },
@@ -257,8 +271,8 @@ watch(
       formState.value = {
         dictName: val.dictName || '',
         dictType: val.dictType || '',
-        dictCategory: val.dictCategory ?? 0,
-        dictBuiltin: val.dictBuiltin ?? 0,
+        dictCategory: val.dictCategory,
+        dictBuiltin: val.dictBuiltin,
         orderNum: val.orderNum ?? 0,
         status: val.status ?? 0,
         remark: val.remark || '',
@@ -306,6 +320,11 @@ const sqlHelpFields = [
   'orderNum',
   'remark'
 ]
+
+// === 生命周期钩子 ===
+onMounted(() => {
+  // useDictData hook 会自动加载字典数据，不需要手动加载
+})
 </script>
 
 <style lang="less" scoped>

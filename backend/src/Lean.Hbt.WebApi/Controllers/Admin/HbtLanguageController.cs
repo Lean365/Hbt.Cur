@@ -156,24 +156,25 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
             return Success(result);
         }
 
-        /// <summary>
-        /// 导入语言数据
-        /// </summary>
-        /// <remarks>
-        /// 从Excel文件导入语言配置数据
-        /// 支持批量导入多条语言记录
-        /// </remarks>
-        /// <param name="file">Excel文件</param>
-        /// <param name="sheetName">工作表名称</param>
-        /// <returns>导入结果，包含成功和失败数量</returns>
-        [HttpPost("import")]
-        [HbtPerm("admin:lang:import")]
+    /// <summary>
+    /// 导入语言数据
+    /// </summary>
+    /// <remarks>
+    /// 从Excel文件导入语言配置数据
+    /// 支持批量导入多条语言记录
+    /// </remarks>
+    /// <param name="file">Excel文件</param>
+    /// <param name="sheetName">工作表名称</param>
+    /// <returns>导入结果，包含成功和失败数量</returns>
+    [HttpPost("import")]
+    [HbtPerm("admin:lang:import")]
+                
         public async Task<IActionResult> ImportAsync(IFormFile file, [FromQuery] string sheetName = "语言数据")
-        {
-            using var stream = file.OpenReadStream();
-            var result = await _languageService.ImportAsync(stream, sheetName);
-            return Success(result);
-        }
+    {
+      using var stream = file.OpenReadStream();
+      var result = await _languageService.ImportAsync(stream, sheetName);
+      return Success(result);
+    }
 
         /// <summary>
         /// 导出语言数据

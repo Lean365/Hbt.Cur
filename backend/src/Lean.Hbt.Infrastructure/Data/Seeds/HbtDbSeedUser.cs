@@ -7,9 +7,10 @@
 // 描述   : 用户数据初始化类
 //===================================================================
 
-using Lean.Hbt.Common.Utils;
+using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Domain.Entities.Identity;
 using Lean.Hbt.Domain.IServices;
+using Lean.Hbt.Common.Utils;
 
 namespace Lean.Hbt.Infrastructure.Data.Seeds;
 
@@ -39,60 +40,162 @@ public class HbtDbSeedUser
     {
         int insertCount = 0;
         int updateCount = 0;
+        long nextId = 1;
 
         // 使用现有的 HbtPasswordUtils 创建密码哈希
         var (hash, salt, iterations) = HbtPasswordUtils.CreateHash("123456");
 
-        var adminUser = new HbtUser
+        var defaultUsers = new List<HbtUser>
         {
-            UserName = "admin",
-            NickName = "超级管理员",
-            EnglishName = "Administrator",
-            UserType = 0, // 0 表示系统用户
-            Password = hash,        // 使用哈希后的密码
-            Salt = salt,           // 使用生成的盐值
-            Email = "admin@lean365.com",
-            PhoneNumber = "13800138000",
-            Gender = 0,
-            Avatar = "/avatar/default.png",
-            Status = 0, // 0 表示正常状态
-            TenantId = 0,
-            LastPasswordChangeTime = DateTime.Now,
-            CreateBy = "system",
-            CreateTime = DateTime.Now,
-            UpdateBy = "system",
-            UpdateTime = DateTime.Now
+            // 系统管理员
+            new HbtUser
+            {
+                Id = nextId++,
+                UserName = "admin",
+                NickName = "系统管理员",
+                EnglishName = "System Administrator",
+                UserType = 0, // 系统用户
+                Password = hash,
+                Salt = salt,
+                Iterations = iterations,
+                Email = "admin@lean.com",
+                PhoneNumber = "13800000001",
+                Gender = 0,
+                Avatar = "/avatar/default.png",
+                Status = 0,
+                TenantId = 0,
+                LastPasswordChangeTime = DateTime.Now,
+                CreateBy = "system",
+                CreateTime = DateTime.Now,
+                UpdateBy = "system",
+                UpdateTime = DateTime.Now
+            },
+
+            // 开发管理员
+            new HbtUser
+            {
+                Id = nextId++,
+                UserName = "dev_admin",
+                NickName = "开发管理员",
+                EnglishName = "Development Administrator",
+                UserType = 2, // 管理员
+                Password = hash,
+                Salt = salt,
+                Iterations = iterations,
+                Email = "dev_admin@lean.com",
+                PhoneNumber = "13800000002",
+                Gender = 0,
+                Avatar = "/avatar/default.png",
+                Status = 0,
+                TenantId = 0,
+                LastPasswordChangeTime = DateTime.Now,
+                CreateBy = "system",
+                CreateTime = DateTime.Now,
+                UpdateBy = "system",
+                UpdateTime = DateTime.Now
+            },
+
+            // 开发工程师
+            new HbtUser
+            {
+                Id = nextId++,
+                UserName = "developer",
+                NickName = "开发工程师",
+                EnglishName = "Developer",
+                UserType = 1, // 普通用户
+                Password = hash,
+                Salt = salt,
+                Iterations = iterations,
+                Email = "developer@lean.com",
+                PhoneNumber = "13800000003",
+                Gender = 0,
+                Avatar = "/avatar/default.png",
+                Status = 0,
+                TenantId = 0,
+                LastPasswordChangeTime = DateTime.Now,
+                CreateBy = "system",
+                CreateTime = DateTime.Now,
+                UpdateBy = "system",
+                UpdateTime = DateTime.Now
+            },
+
+            // 测试工程师
+            new HbtUser
+            {
+                Id = nextId++,
+                UserName = "tester",
+                NickName = "测试工程师",
+                EnglishName = "Test Engineer",
+                UserType = 1, // 普通用户
+                Password = hash,
+                Salt = salt,
+                Iterations = iterations,
+                Email = "tester@lean.com",
+                PhoneNumber = "13800000004",
+                Gender = 0,
+                Avatar = "/avatar/default.png",
+                Status = 0,
+                TenantId = 0,
+                LastPasswordChangeTime = DateTime.Now,
+                CreateBy = "system",
+                CreateTime = DateTime.Now,
+                UpdateBy = "system",
+                UpdateTime = DateTime.Now
+            },
+
+            // 普通用户
+            new HbtUser
+            {
+                Id = nextId++,
+                UserName = "user",
+                NickName = "普通用户",
+                EnglishName = "Normal User",
+                UserType = 1, // 普通用户
+                Password = hash,
+                Salt = salt,
+                Iterations = iterations,
+                Email = "user@lean.com",
+                PhoneNumber = "13800000005",
+                Gender = 0,
+                Avatar = "/avatar/default.png",
+                Status = 0,
+                TenantId = 0,
+                LastPasswordChangeTime = DateTime.Now,
+                CreateBy = "system",
+                CreateTime = DateTime.Now,
+                UpdateBy = "system",
+                UpdateTime = DateTime.Now
+            }
         };
 
-        var existingUser = await _userRepository.FirstOrDefaultAsync(u => u.UserName == adminUser.UserName);
-        if (existingUser == null)
+        foreach (var user in defaultUsers)
         {
-            await _userRepository.InsertAsync(adminUser);
-            insertCount++;
-            _logger.Info($"[创建] 用户 '{adminUser.UserName}' 创建成功");
-        }
-        else
-        {
-            // 更新所有非敏感字段，保持密码和盐值不变
-            existingUser.NickName = adminUser.NickName;
-            existingUser.EnglishName = adminUser.EnglishName;
-            existingUser.UserType = adminUser.UserType;
-            existingUser.Email = adminUser.Email;
-            existingUser.PhoneNumber = adminUser.PhoneNumber;
-            existingUser.Gender = adminUser.Gender;
-            existingUser.Avatar = adminUser.Avatar;
-            existingUser.Status = adminUser.Status;
-            existingUser.TenantId = adminUser.TenantId;
-            existingUser.LastPasswordChangeTime = existingUser.LastPasswordChangeTime; // 保持原有值
-            existingUser.Remark = adminUser.Remark;
-            existingUser.CreateBy = adminUser.CreateBy;
-            existingUser.CreateTime = adminUser.CreateTime;
-            existingUser.UpdateBy = "system";
-            existingUser.UpdateTime = DateTime.Now;
+            var existingUser = await _userRepository.FirstOrDefaultAsync(u => u.UserName == user.UserName);
+            if (existingUser == null)
+            {
+                await _userRepository.InsertAsync(user);
+                insertCount++;
+                _logger.Info($"[创建] 用户 '{user.NickName}' 创建成功");
+            }
+            else
+            {
+                existingUser.NickName = user.NickName;
+                existingUser.EnglishName = user.EnglishName;
+                existingUser.UserType = user.UserType;
+                existingUser.Email = user.Email;
+                existingUser.PhoneNumber = user.PhoneNumber;
+                existingUser.Gender = user.Gender;
+                existingUser.Avatar = user.Avatar;
+                existingUser.Status = user.Status;
+                existingUser.TenantId = user.TenantId;
+                existingUser.LastPasswordChangeTime = user.LastPasswordChangeTime;
+                existingUser.UpdateBy = "system";
+                existingUser.UpdateTime = DateTime.Now;
 
-            await _userRepository.UpdateAsync(existingUser);
-            updateCount++;
-            _logger.Info($"[更新] 用户 '{existingUser.UserName}' 更新成功");
+                await _userRepository.UpdateAsync(existingUser);
+                updateCount++;
+                _logger.Info($"[更新] 用户 '{existingUser.NickName}' 更新成功");
+            }
         }
 
         return (insertCount, updateCount);

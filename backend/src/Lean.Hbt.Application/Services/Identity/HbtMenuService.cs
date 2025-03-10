@@ -33,6 +33,8 @@ namespace Lean.Hbt.Application.Services.Identity
         private readonly IHbtRepository<HbtMenu> _menuRepository;
         // 角色菜单仓储接口
         private readonly IHbtRepository<HbtRoleMenu> _roleMenuRepository;
+        // 用户角色仓储接口
+        private readonly IHbtRepository<HbtUserRole> _userRoleRepository;
 
         /// <summary>
         /// 构造函数，注入依赖服务
@@ -40,14 +42,17 @@ namespace Lean.Hbt.Application.Services.Identity
         /// <param name="logger">日志记录器</param>
         /// <param name="menuRepository">菜单仓库</param>
         /// <param name="roleMenuRepository">角色菜单仓库</param>
+        /// <param name="userRoleRepository">用户角色仓库</param>
         public HbtMenuService(
             ILogger<HbtMenuService> logger,
             IHbtRepository<HbtMenu> menuRepository,
-            IHbtRepository<HbtRoleMenu> roleMenuRepository)
+            IHbtRepository<HbtRoleMenu> roleMenuRepository,
+            IHbtRepository<HbtUserRole> userRoleRepository)
         {
             _logger = logger;
             _menuRepository = menuRepository;
             _roleMenuRepository = roleMenuRepository;
+            _userRoleRepository = userRoleRepository;
         }
 
         /// <summary>
@@ -373,42 +378,87 @@ namespace Lean.Hbt.Application.Services.Identity
         /// <returns>返回用户有权限访问的菜单树形结构</returns>
         public async Task<List<HbtMenuDto>> GetCurrentUserMenusAsync(long userId)
         {
-            // 获取用户的角色ID列表
-            var roleIds = await _roleMenuRepository.AsQueryable()
-                .Where(rm => rm.MenuId == userId)
-                .Select(rm => rm.RoleId)
-                .ToListAsync();
-
-            if (roleIds == null || !roleIds.Any())
-                return new List<HbtMenuDto>();
-
-            // 获取角色的菜单ID列表
-            var menuIds = await _roleMenuRepository.AsQueryable()
-                .Where(rm => roleIds.Contains(rm.RoleId))
-                .Select(rm => rm.MenuId)
-                .Distinct()
-                .ToListAsync();
-
-            if (menuIds == null || !menuIds.Any())
-                return new List<HbtMenuDto>();
-
-            // 获取菜单列表
-            var menus = await _menuRepository.AsQueryable()
-                .Where(m => menuIds.Contains(m.Id) && m.Status == 0) // 0表示正常状态
-                .OrderBy(m => m.OrderNum)
-                .ToListAsync();
-
-            // 转换为DTO
-            var menuDtos = menus.Adapt<List<HbtMenuDto>>();
-
-            // 构建树形结构
-            var tree = menuDtos.Where(m => m.ParentId == null).ToList();
-            foreach (var node in tree)
+            try 
             {
-                BuildMenuTree(node, menuDtos);
-            }
+                _logger.LogInformation("[菜单服务] 开始获取用户菜单: UserId={UserId}", userId);
 
-            return tree;
+                // 获取用户的角色ID列表
+                var roleIdsQuery = _userRoleRepository.AsQueryable()
+                    .Where(ur => ur.UserId == userId)
+                    .Select(ur => ur.RoleId);
+                    
+                _logger.LogInformation("[菜单服务] 用户角色查询SQL: {Sql}", 
+                    roleIdsQuery.ToSql());
+                    
+                var roleIds = await roleIdsQuery.ToListAsync();
+
+                _logger.LogInformation("[菜单服务] 用户角色: Count={Count}, RoleIds={RoleIds}", 
+                    roleIds?.Count ?? 0, 
+                    string.Join(",", roleIds ?? new List<long>()));
+
+                if (roleIds == null || !roleIds.Any())
+                {
+                    _logger.LogWarning("[菜单服务] 用户没有角色");
+                    return new List<HbtMenuDto>();
+                }
+
+                // 获取角色的菜单ID列表
+                var menuIdsQuery = _roleMenuRepository.AsQueryable()
+                    .Where(rm => roleIds.Contains(rm.RoleId))
+                    .Select(rm => rm.MenuId)
+                    .Distinct();
+                    
+                _logger.LogInformation("[菜单服务] 角色菜单查询SQL: {Sql}", 
+                    menuIdsQuery.ToSql());
+                    
+                var menuIds = await menuIdsQuery.ToListAsync();
+
+                _logger.LogInformation("[菜单服务] 角色菜单: Count={Count}, MenuIds={MenuIds}",
+                    menuIds?.Count ?? 0,
+                    string.Join(",", menuIds ?? new List<long>()));
+
+                if (menuIds == null || !menuIds.Any())
+                {
+                    _logger.LogWarning("[菜单服务] 角色没有关联菜单");
+                    return new List<HbtMenuDto>();
+                }
+
+                // 获取菜单列表 - 过滤掉按钮类型(MenuType=2)的菜单
+                var menusQuery = _menuRepository.AsQueryable()
+                    .Where(m => menuIds.Contains(m.Id) && m.Status == 0 && m.MenuType != 2)
+                    .OrderBy(m => m.OrderNum);
+                    
+                _logger.LogInformation("[菜单服务] 菜单查询SQL: {Sql}", 
+                    menusQuery.ToSql());
+                    
+                var menus = await menusQuery.ToListAsync();
+
+                _logger.LogInformation("[菜单服务] 获取到的菜单: Count={Count}, MenuNames={MenuNames}, MenuTypes={MenuTypes}",
+                    menus?.Count ?? 0,
+                    string.Join(",", menus?.Select(m => m.MenuName) ?? new List<string>()),
+                    string.Join(",", menus?.Select(m => m.MenuType) ?? new List<int>()));
+
+                // 转换为DTO
+                var menuDtos = menus.Adapt<List<HbtMenuDto>>();
+
+                // 构建树形结构
+                var tree = menuDtos.Where(m => m.ParentId == 0).ToList();
+                foreach (var node in tree)
+                {
+                    BuildMenuTree(node, menuDtos);
+                }
+
+                _logger.LogInformation("[菜单服务] 构建的菜单树: Count={Count}, RootMenus={RootMenus}", 
+                    tree?.Count ?? 0,
+                    string.Join(",", tree?.Select(m => m.MenuName) ?? new List<string>()));
+
+                return tree;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "[菜单服务] 获取用户菜单失败: {Message}", ex.Message);
+                throw;
+            }
         }
 
         /// <summary>
@@ -427,36 +477,6 @@ namespace Lean.Hbt.Application.Services.Identity
                     BuildMenuTree(child, menuDtos);
                 }
             }
-        }
-
-        /// <summary>
-        /// 获取菜单可用操作列表
-        /// </summary>
-        /// <param name="status">菜单状态</param>
-        /// <returns>返回可用的操作列表</returns>
-        private string[] GetAvailableOperations(int status)
-        {
-            return status switch
-            {
-                0 => new[] { "禁用" }, // 正常状态可以执行禁用操作
-                1 => new[] { "启用" }, // 禁用状态可以执行启用操作
-                _ => Array.Empty<string>() // 其他状态没有可用操作
-            };
-        }
-
-        /// <summary>
-        /// 获取菜单状态的中文描述
-        /// </summary>
-        /// <param name="status">菜单状态码</param>
-        /// <returns>返回状态的中文描述</returns>
-        private string GetStatusDescription(int status)
-        {
-            return status switch
-            {
-                0 => "正常", // 正常状态
-                1 => "已禁用", // 禁用状态
-                _ => "未知状态" // 其他未知状态
-            };
         }
     }
 }

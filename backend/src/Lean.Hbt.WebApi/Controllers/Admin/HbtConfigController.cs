@@ -117,23 +117,24 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
             return Success(result);
         }
 
-        /// <summary>
-        /// 导入系统配置数据
-        /// </summary>
-        /// <param name="file">Excel文件</param>
-        /// <param name="sheetName">工作表名称</param>
-        /// <returns>导入结果</returns>
-        [HttpPost("import")]
-        [HbtPerm("admin:config:import")]
+    /// <summary>
+    /// 导入系统配置数据
+    /// </summary>
+    /// <param name="file">Excel文件</param>
+    /// <param name="sheetName">工作表名称</param>
+    /// <returns>导入结果</returns>
+    [HttpPost("import")]
+    [HbtPerm("admin:config:import")]
+                
         public async Task<IActionResult> ImportAsync(IFormFile file, [FromQuery] string sheetName = "系统配置信息")
-        {
-            if (file == null || file.Length == 0)
-                return Error("请选择要导入的文件");
+    {
+      if (file == null || file.Length == 0)
+        return Error("请选择要导入的文件");
 
-            using var stream = file.OpenReadStream();
-            var result = await _configService.ImportAsync(stream, sheetName);
-            return Success(result);
-        }
+      using var stream = file.OpenReadStream();
+      var result = await _configService.ImportAsync(stream, sheetName);
+      return Success(result);
+    }
 
         /// <summary>
         /// 导出系统配置数据

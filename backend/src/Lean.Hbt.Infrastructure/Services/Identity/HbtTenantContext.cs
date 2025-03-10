@@ -9,14 +9,14 @@
 
 using System.Threading;
 using Microsoft.AspNetCore.Http;
-using Lean.Hbt.Domain.IServices.Tenant;
+using Lean.Hbt.Domain.IServices.Identity;
 
-namespace Lean.Hbt.Infrastructure.Services
+namespace Lean.Hbt.Infrastructure.Services.Identity
 {
     /// <summary>
     /// 租户上下文实现
     /// </summary>
-    public class HbtTenantContext : ITenantContext
+    public class HbtTenantContext : IHbtTenantContext
     {
         private static AsyncLocal<long?> _currentTenantId = new AsyncLocal<long?>();
         private readonly IHttpContextAccessor _httpContextAccessor;
@@ -39,19 +39,19 @@ namespace Lean.Hbt.Infrastructure.Services
                 // 1. 首先尝试从请求头中获取租户ID
                 if (_httpContextAccessor.HttpContext?.Request.Headers.TryGetValue("X-Tenant-Id", out var headerTenantId) == true)
                 {
-                    if (long.TryParse(headerTenantId, out var tid))
+                    if (long.TryParse(headerTenantId, out var id))
                     {
-                        CurrentTenantId = tid;
-                        return tid;
+                        CurrentTenantId = id;
+                        return id;
                     }
                 }
 
                 // 2. 如果请求头中没有，尝试从JWT令牌中获取
                 var tenantId = _httpContextAccessor.HttpContext?.User.FindFirst("tenant_id")?.Value;
-                if (!string.IsNullOrEmpty(tenantId) && long.TryParse(tenantId, out var tid2))
+                if (!string.IsNullOrEmpty(tenantId) && long.TryParse(tenantId, out var tid))
                 {
-                    CurrentTenantId = tid2;
-                    return tid2;
+                    CurrentTenantId = tid;
+                    return tid;
                 }
 
                 // 3. 如果都没有，返回当前存储的租户ID或默认值0
@@ -87,4 +87,4 @@ namespace Lean.Hbt.Infrastructure.Services
             CurrentTenantId = null;
         }
     }
-} 
+}

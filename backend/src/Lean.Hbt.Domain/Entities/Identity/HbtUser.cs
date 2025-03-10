@@ -9,7 +9,6 @@
 // 描述    : 用户实体类
 //===================================================================
 using SqlSugar;
-using System.Collections.Generic;
 
 namespace Lean.Hbt.Domain.Entities.Identity
 {

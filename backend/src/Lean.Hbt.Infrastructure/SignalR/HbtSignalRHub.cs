@@ -1,66 +1,36 @@
 //===================================================================
-// 项目名 : Lean.Hbt
+// 项目名 : Lean.Hbt.Infrastructure
 // 文件名 : HbtSignalRHub.cs
 // 创建者 : Lean365
-// 创建时间: 2024-01-24 10:00
+// 创建时间: 2024-03-07 16:30
 // 版本号 : V1.0.0
-// 描述    : SignalR实时通信Hub
+// 描述   : SignalR集线器
 //===================================================================
 
+using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.AspNetCore.Authorization;
+using Lean.Hbt.Common.Models;
 using Lean.Hbt.Common.Enums;
-using Lean.Hbt.Domain.Models.SignalR;
-using Lean.Hbt.Common.Exceptions;
 using Lean.Hbt.Domain.IServices.SignalR;
 
 namespace Lean.Hbt.Infrastructure.SignalR
 {
     /// <summary>
-    /// SignalR实时通信Hub
+    /// SignalR集线器
     /// </summary>
-    /// <remarks>
-    /// 创建者: Lean365
-    /// 创建时间: 2024-01-24
-    /// </remarks>
-    [Authorize]
     public class HbtSignalRHub : Hub<IHbtSignalRClient>
     {
-        private readonly IHbtSignalRUserService _signalRUserService;
-
-        /// <summary>
-        /// 构造函数
-        /// </summary>
-        public HbtSignalRHub(IHbtSignalRUserService signalRUserService)
-        {
-            _signalRUserService = signalRUserService;
-        }
-
         /// <summary>
         /// 连接建立时
         /// </summary>
         public override async Task OnConnectedAsync()
         {
-            var httpContext = Context.GetHttpContext();
-            if (httpContext == null)
-                throw new HbtException("无法获取 HTTP 上下文");
-
-            var uidClaim = httpContext.User?.FindFirst("uid");
-            if (uidClaim == null)
-                throw new HbtException("用户未认证");
-
-            var userId = long.Parse(uidClaim.Value);
-            var clientIp = httpContext.Connection?.RemoteIpAddress?.ToString() ?? "Unknown";
-            var userAgent = httpContext.Request.Headers["User-Agent"].ToString() ?? "Unknown";
-
-            await _signalRUserService.SaveOnlineUserAsync(new HbtOnlineUser
+            var userId = Context.UserIdentifier;
+            if (!string.IsNullOrEmpty(userId))
             {
-                UserId = userId,
-                ConnectionId = Context.ConnectionId,
-                ClientIp = clientIp,
-                UserAgent = userAgent,
-                LastActiveTime = DateTime.Now
-            });
+                await Groups.AddToGroupAsync(Context.ConnectionId, $"User_{userId}");
+            }
             await base.OnConnectedAsync();
         }
 
@@ -69,60 +39,87 @@ namespace Lean.Hbt.Infrastructure.SignalR
         /// </summary>
         public override async Task OnDisconnectedAsync(Exception? exception)
         {
-            await _signalRUserService.DeleteOnlineUserAsync(Context.ConnectionId);
+            var userId = Context.UserIdentifier;
+            if (!string.IsNullOrEmpty(userId))
+            {
+                await Groups.RemoveFromGroupAsync(Context.ConnectionId, $"User_{userId}");
+            }
             await base.OnDisconnectedAsync(exception);
         }
 
         /// <summary>
-        /// 加入群组
+        /// 发送邮件状态更新
         /// </summary>
-        public async Task JoinGroup(string groupName)
+        public async Task SendMailStatus(long mailId, string status, string message)
         {
-            if (string.IsNullOrEmpty(groupName))
-                throw new ArgumentNullException(nameof(groupName));
-
-            await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
-            await Clients.Group(groupName).JoinedGroup(Context.ConnectionId, groupName);
-        }
-
-        /// <summary>
-        /// 离开群组
-        /// </summary>
-        public async Task LeaveGroup(string groupName)
-        {
-            if (string.IsNullOrEmpty(groupName))
-                throw new ArgumentNullException(nameof(groupName));
-
-            await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupName);
-            await Clients.Group(groupName).LeftGroup(Context.ConnectionId, groupName);
-        }
-
-        /// <summary>
-        /// 发送消息给指定用户
-        /// </summary>
-        public async Task SendToUser(long userId, string message)
-        {
-            if (string.IsNullOrEmpty(message))
-                throw new ArgumentNullException(nameof(message));
-
-            var connections = await _signalRUserService.GetConnectionIdsAsync(userId);
-            if (connections?.Any() == true)
+            var notification = new HbtRealTimeNotification
             {
-                await Clients.Clients(connections).ReceiveMessage(message);
-            }
+                Type = HbtMessageType.System,
+                Title = "邮件状态更新",
+                Content = $"邮件 {mailId} {status}: {message}",
+                Timestamp = DateTime.Now
+            };
+            await Clients.All.ReceiveMailStatus(notification);
         }
 
         /// <summary>
-        /// 发送消息给指定群组
+        /// 发送通知状态更新
         /// </summary>
-        public async Task SendToGroup(string groupName, string message)
+        public async Task SendNoticeStatus(long noticeId, string status, string message)
         {
-            if (string.IsNullOrEmpty(groupName))
-                throw new ArgumentNullException(nameof(groupName));
-            if (string.IsNullOrEmpty(message))
-                throw new ArgumentNullException(nameof(message));
+            var notification = new HbtRealTimeNotification
+            {
+                Type = HbtMessageType.Notification,
+                Title = "通知状态更新",
+                Content = $"通知 {noticeId} {status}: {message}",
+                Timestamp = DateTime.Now
+            };
+            await Clients.All.ReceiveNoticeStatus(notification);
+        }
 
-            await Clients.Group(groupName).ReceiveMessage(message);
+        /// <summary>
+        /// 发送定时任务状态更新
+        /// </summary>
+        public async Task SendTaskStatus(long taskId, string status, string message)
+        {
+            var notification = new HbtRealTimeNotification
+            {
+                Type = HbtMessageType.System,
+                Title = "定时任务状态更新",
+                Content = $"任务 {taskId} {status}: {message}",
+                Timestamp = DateTime.Now
+            };
+            await Clients.All.ReceiveTaskStatus(notification);
+        }
+
+        /// <summary>
+        /// 发送个人通知
+        /// </summary>
+        public async Task SendPersonalNotice(string userId, string title, string content)
+        {
+            var notification = new HbtRealTimeNotification
+            {
+                Type = HbtMessageType.User,
+                Title = title,
+                Content = content,
+                Timestamp = DateTime.Now
+            };
+            await Clients.Group($"User_{userId}").ReceivePersonalNotice(notification);
+        }
+
+        /// <summary>
+        /// 发送系统广播
+        /// </summary>
+        public async Task SendBroadcast(string title, string content)
+        {
+            var notification = new HbtRealTimeNotification
+            {
+                Type = HbtMessageType.System,
+                Title = title,
+                Content = content,
+                Timestamp = DateTime.Now
+            };
+            await Clients.All.ReceiveBroadcast(notification);
         }
     }
 } 

@@ -11,21 +11,16 @@
 
 using System.Linq.Expressions;
 using Lean.Hbt.Application.Dtos.Identity;
-using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Common.Exceptions;
-using Lean.Hbt.Common.Models;
+using Lean.Hbt.Common.Helpers;
 using Lean.Hbt.Common.Utils;
 using Lean.Hbt.Domain.Entities.Identity;
 using Lean.Hbt.Domain.IServices.Admin;
+using Lean.Hbt.Domain.IServices.Identity;
+using Lean.Hbt.Domain.IServices.Security;
 using Lean.Hbt.Domain.Repositories;
 using Lean.Hbt.Domain.Utils;
-using Mapster;
 using SqlSugar;
-using Lean.Hbt.Common.Helpers;
-using System.IO;
-using Lean.Hbt.Domain.IServices.Security;
-using Lean.Hbt.Domain.IServices.Caching;
-using Lean.Hbt.Domain.IServices.Tenant;
 
 namespace Lean.Hbt.Application.Services.Identity
 {
@@ -49,7 +44,7 @@ namespace Lean.Hbt.Application.Services.Identity
         private readonly IHbtRepository<HbtRole> _roleRepository;
         private readonly IHbtRepository<HbtPost> _postRepository;
         private readonly IHbtRepository<HbtDept> _deptRepository;
-        private readonly ITenantContext _tenantContext;
+        private readonly IHbtTenantContext _tenantContext;
 
         /// <summary>
         /// 构造函数
@@ -66,7 +61,7 @@ namespace Lean.Hbt.Application.Services.Identity
             IHbtRepository<HbtRole> roleRepository,
             IHbtRepository<HbtPost> postRepository,
             IHbtRepository<HbtDept> deptRepository,
-            ITenantContext tenantContext)
+            IHbtTenantContext tenantContext)
         {
             _userRepository = userRepository;
             _userRoleRepository = userRoleRepository;

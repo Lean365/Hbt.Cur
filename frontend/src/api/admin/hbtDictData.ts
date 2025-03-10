@@ -35,7 +35,7 @@ export function getHbtDictDataList(query: HbtDictDataQuery) {
  * @param dictDataId 字典数据ID
  * @returns 字典数据详情
  */
-export function getHbtDictData(dictDataId: number) {
+export function getHbtDictDataById(dictDataId: number) {
   return request<ApiResult<HbtDictData>>({
     url: `/api/HbtDictData/${dictDataId}`,
     method: 'get'
@@ -150,5 +150,17 @@ export function updateHbtDictDataStatus(dictDataId: number, status: number) {
     url: `/api/HbtDictData/${dictDataId}/status`,
     method: 'put',
     params: { status }
+  })
+}
+
+/**
+ * 根据字典类型获取字典数据列表
+ * @param dictType 字典类型
+ * @returns 字典数据列表
+ */
+export function getHbtDictDataByType(dictType: string) {
+  return request<ApiResult<HbtDictData[]>>({
+    url: `/api/HbtDictData/type/${dictType}`,
+    method: 'get'
   })
 } 

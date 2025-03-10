@@ -15,6 +15,15 @@ export interface DeviceInfo {
   resolution?: string
   ipAddress?: string
   location?: string
+  processorCores?: string
+  platformVendor?: string
+  hardwareConcurrency?: string
+  systemLanguage?: string
+  timeZone?: string
+  screenColorDepth?: string
+  deviceMemory?: string
+  webGLRenderer?: string
+  deviceFingerprint?: string
 }
 
 /**

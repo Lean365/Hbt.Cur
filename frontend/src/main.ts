@@ -37,6 +37,16 @@ const LOCALE_MAP: Record<string, any> = {
   'ar': arSA,        // 阿拉伯语
 }
 
+// 导入通用业务组件
+import HbtQuery from '@/components/Business/Query/index.vue'
+import HbtToolbar from '@/components/Business/Toolbar/index.vue'
+import HbtTable from '@/components/Business/Table/index.vue'
+import HbtOperation from '@/components/Business/Operation/index.vue'
+import HbtPagination from '@/components/Business/Pagination/index.vue'
+import HbtSelect from '@/components/Business/Select/index.vue'
+import HbtDictTag from '@/components/Business/DictTag/index.vue'
+import HbtModal from '@/components/Business/Modal/index.vue'
+
 async function bootstrap() {
   const app = createApp(App)
 
@@ -53,11 +63,21 @@ async function bootstrap() {
   // 4. 注册路由 - 只注册基础路由
   app.use(router)
 
-  // 5. 初始化设置
+  // 5. 注册全局组件
+  app.component('HbtQuery', HbtQuery)
+  app.component('HbtToolbar', HbtToolbar)
+  app.component('HbtTable', HbtTable)
+  app.component('HbtOperation', HbtOperation)
+  app.component('HbtPagination', HbtPagination)
+  app.component('HbtSelect', HbtSelect)
+  app.component('HbtDictTag', HbtDictTag)
+  app.component('HbtModal', HbtModal)
+
+  // 6. 初始化设置
   const settingStore = useSettingStore()
   await settingStore.loadFromStorage()
 
-  // 6. 监听语言变化，设置 date-fns 语言包
+  // 7. 监听语言变化，设置 date-fns 语言包
   watch(
     () => i18n.global.locale.value,
     (newLang) => {
@@ -76,10 +96,10 @@ async function bootstrap() {
     { immediate: true }
   )
 
-  // 7. 注册权限指令
+  // 8. 注册权限指令
   setupPermission(app)
 
-  // 8. 挂载应用
+  // 9. 挂载应用
   app.mount('#app')
 }
 

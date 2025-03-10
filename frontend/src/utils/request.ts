@@ -5,6 +5,7 @@ import { getToken, removeToken } from '@/utils/auth'
 import { useUserStore } from '@/stores/user'
 import { useI18n } from 'vue-i18n'
 import i18n from '@/locales'
+import { getDeviceInfo } from '@/utils/device'
 
 const { t } = i18n.global
 
@@ -19,7 +20,7 @@ service.interceptors.request.use(
   (config) => {
     // 每次请求都重新获取token
     const token = getToken()
-    console.log('[请求拦截器] 开始处理请求:', config.url)
+    //console.log('[请求拦截器] 开始处理请求:', config.url)
     
     // 过滤请求参数中的空值
     if (config.params) {
@@ -41,57 +42,45 @@ service.interceptors.request.use(
     // 如果是登录请求，从请求体中获取租户ID
     if (config.url?.includes('/auth/login')) {
       const loginData = typeof config.data === 'string' ? JSON.parse(config.data) : config.data;
-      console.log('[请求拦截器] 登录数据:', {
-        ...loginData,
-        password: loginData.password ? '******' : undefined
-      })
+      //console.log('[请求拦截器] 登录数据:', {
+      //  ...loginData,
+      //  password: loginData.password ? '******' : undefined
+      //})
       if (loginData?.tenantId !== undefined) {
         config.headers['X-Tenant-Id'] = loginData.tenantId.toString();
-        console.log('[请求拦截器] 从登录数据设置租户ID:', loginData.tenantId)
+        //console.log('[请求拦截器] 从登录数据设置租户ID:', loginData.tenantId)
       }
 
       // 如果没有设备信息，添加默认的设备信息
       if (!loginData.deviceInfo) {
-        loginData.deviceInfo = {
-          deviceId: crypto.randomUUID(),
-          deviceType: 0, // PC
-          deviceName: navigator.platform,
-          deviceModel: navigator.userAgent,
-          osType: 0, // Windows
-          osVersion: navigator.platform,
-          browserType: 0, // Chrome
-          browserVersion: navigator.appVersion,
-          resolution: `${window.screen.width}x${window.screen.height}`,
-          ipAddress: '',
-          location: ''
-        }
+        loginData.deviceInfo = getDeviceInfo();
         loginData.loginSource = 0; // Web端
         config.data = JSON.stringify(loginData);
       }
     } else if (token) {
       // 添加Bearer前缀
       config.headers['Authorization'] = `Bearer ${token}`
-      console.log('[请求拦截器] Token:', typeof token === 'string' ? token.substring(0, 10) + '...' : token)
+      //console.log('[请求拦截器] Token:', typeof token === 'string' ? token.substring(0, 10) + '...' : token)
       
       // 从JWT令牌中获取租户ID
       try {
         const tokenParts = token.split('.');
         if (tokenParts.length === 3) {
           const payload = JSON.parse(atob(tokenParts[1]));
-          console.log('[请求拦截器] JWT Payload:', {
-            ...payload,
-            sub: payload.sub ? '******' : undefined,
-            jti: payload.jti ? '******' : undefined
-          })
+          //console.log('[请求拦截器] JWT Payload:', {
+          //  ...payload,
+          //  sub: payload.sub ? '******' : undefined,
+          //  jti: payload.jti ? '******' : undefined
+          //})
           if (payload.tenant_id !== undefined) {
             config.headers['X-Tenant-Id'] = payload.tenant_id.toString();
-            console.log('[请求拦截器] 从JWT设置租户ID:', payload.tenant_id)
+            //console.log('[请求拦截器] 从JWT设置租户ID:', payload.tenant_id)
           } else {
-            console.warn('[请求拦截器] JWT中未找到租户ID')
+            //console.warn('[请求拦截器] JWT中未找到租户ID')
           }
         }
       } catch (error) {
-        console.error('[请求拦截器] JWT解析失败:', error);
+        //console.error('[请求拦截器] JWT解析失败:', error);
       }
     }
     
@@ -103,22 +92,22 @@ service.interceptors.request.use(
     config.headers['Content-Type'] = 'application/json'
     
     // 详细记录请求信息
-    console.log('[请求拦截器] 最终请求配置:', {
-      url: config.url,
-      method: config.method,
-      params: config.params,
-      data: typeof config.data === 'string' ? '(字符串数据)' : config.data,
-      headers: {
-        ...config.headers,
-        Authorization: config.headers.Authorization ? '(已设置)' : '(未设置)',
-        'X-Tenant-Id': config.headers['X-Tenant-Id'] || '(未设置)'
-      }
-    })
+    //console.log('[请求拦截器] 最终请求配置:', {
+    //  url: config.url,
+    //  method: config.method,
+    //  params: config.params,
+    //  data: typeof config.data === 'string' ? '(字符串数据)' : config.data,
+    //  headers: {
+    //    ...config.headers,
+    //    Authorization: config.headers.Authorization ? '(已设置)' : '(未设置)',
+    //    'X-Tenant-Id': config.headers['X-Tenant-Id'] || '(未设置)'
+    //  }
+    //})
     
     return config
   },
   (error) => {
-    console.error('[请求拦截器] 请求错误:', error)
+    //console.error('[请求拦截器] 请求错误:', error)
     return Promise.reject(error)
   }
 )
@@ -153,6 +142,7 @@ service.interceptors.response.use(
     if ('code' in res) {
       if (res.code === 200) {
         return res
+
       }
       // 业务失败
       const errorKey = res.msg || 'common.message.systemError'
@@ -202,6 +192,7 @@ service.interceptors.response.use(
           break
         case 403:
           errorKey = 'common.message.forbidden'
+          // 不再自动重定向到 403 页面，只显示错误消息
           break
         case 404:
           errorKey = 'common.message.notFound'

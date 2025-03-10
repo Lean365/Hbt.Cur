@@ -36,9 +36,21 @@ export function getHbtDictTypeList(query: HbtDictTypeQuery) {
  * @param dictTypeId 字典类型ID
  * @returns 字典类型详情
  */
-export function getHbtDictType(dictTypeId: number) {
+export function getHbtDictTypeById(dictTypeId: number) {
   return request<ApiResult<HbtDictType>>({
     url: `/api/HbtDictType/${dictTypeId}`,
+    method: 'get'
+  })
+}
+
+/**
+ * 根据字典类型获取详情
+ * @param type 字典类型
+ * @returns 字典类型详情
+ */
+export function getHbtDictTypeByType(type: string) {
+  return request<ApiResult<HbtDictType>>({
+    url: `/api/HbtDictType/type/${type}`,
     method: 'get'
   })
 }
@@ -154,7 +166,7 @@ export function updateHbtDictTypeStatus(dictTypeId: number, status: HbtStatus) {
  */
 export function executeDictSql(dictTypeId: number) {
   return request<ApiResult<any[]>>({
-    url: `/api/HbtDictType/${dictTypeId}/execute-sql`,
+    url: `/api/HbtDictType/executeSql/${dictTypeId}`,
     method: 'get'
   })
 } 

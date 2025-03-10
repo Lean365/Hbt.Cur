@@ -39,6 +39,13 @@ namespace Lean.Hbt.Application.Services.Admin
         Task<HbtDictTypeDto> GetAsync(long id);
 
         /// <summary>
+        /// 根据字典类型获取详情
+        /// </summary>
+        /// <param name="type">字典类型</param>
+        /// <returns>字典类型详情</returns>
+        Task<HbtDictTypeDto> GetByTypeAsync(string type);
+
+        /// <summary>
         /// 创建字典类型
         /// </summary>
         /// <param name="input">创建对象</param>

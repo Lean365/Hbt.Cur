@@ -44,7 +44,7 @@ public class HbtDbSeedDictData
             // 系统状态
             new HbtDictData
             {
-                DictType = "sys_status",
+                DictType = "sys_normal_disable",
                 DictLabel = "正常",
                 DictValue = "0",
                 OrderNum = 1,
@@ -60,7 +60,7 @@ public class HbtDbSeedDictData
             },
             new HbtDictData
             {
-                DictType = "sys_status",
+                DictType = "sys_normal_disable",
                 DictLabel = "停用",
                 DictValue = "1",
                 OrderNum = 2,

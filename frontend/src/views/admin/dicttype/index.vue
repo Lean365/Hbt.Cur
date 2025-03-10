@@ -33,15 +33,30 @@
             @keyup.enter="handleQuery"
           />
         </a-form-item>
+        <a-form-item label="字典类别">
+          <hbt-select
+            v-model:value="queryParams.dictCategory"
+            dict-type="sys_dict_category"
+            type="radio"
+            placeholder="请选择字典类别"
+            allow-clear
+          />
+        </a-form-item>
         <a-form-item label="状态">
           <hbt-select
             v-model:value="queryParams.status"
-            :options="statusOptions"
+            dict-type="sys_normal_disable"
+            type="radio"
             placeholder="请选择状态"
-            show-search
-            :filter-option="(input: string, option: any) => {
-              return option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
-            }"
+            allow-clear
+          />
+        </a-form-item>
+        <a-form-item label="是否内置">
+          <hbt-select
+            v-model:value="queryParams.dictBuiltin"
+            dict-type="sys_yes_no"
+            type="select"
+            placeholder="请选择是否内置"
             allow-clear
           />
         </a-form-item>
@@ -91,12 +106,20 @@
       @change="handleTableChange"
       @row-click="handleRowClick"
     >
-      <!-- 状态列 -->
+      <!-- 字典类别列 -->
       <template #bodyCell="{ column, record }">
+        <template v-if="column.dataIndex === 'dictCategory'">
+          <hbt-dict-tag type="sys_dict_category" :value="record.dictCategory" />
+        </template>
+        
+        <!-- 状态列 -->
         <template v-if="column.dataIndex === 'status'">
-          <a-tag :color="record.status === 0 ? 'success' : 'error'">
-            {{ record.status === 0 ? t('common.status.normal') : t('common.status.disabled') }}
-          </a-tag>
+          <hbt-dict-tag dict-type="sys_normal_disable" :value="record.status" />
+        </template>
+
+        <!-- 是否内置列 -->
+        <template v-if="column.dataIndex === 'dictBuiltin'">
+          <hbt-dict-tag dict-type="sys_yes_no" :value="record.dictBuiltin" />
         </template>
 
         <!-- 操作列 -->
@@ -117,7 +140,6 @@
                 type="link" 
                 size="small" 
                 @click="handleDictData(record)"
-                v-hasPermi="['admin:dictdata:list']"
               >
                 字典数据
               </a-button>
@@ -125,7 +147,6 @@
                 type="link" 
                 size="small" 
                 @click="handleEdit(record)"
-                v-hasPermi="['admin:dicttype:edit']"
               >
                 编辑
               </a-button>
@@ -133,7 +154,6 @@
                 type="link" 
                 size="small" 
                 @click="handleDelete(record)"
-                v-hasPermi="['admin:dicttype:delete']"
               >
                 删除
               </a-button>
@@ -164,21 +184,10 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, nextTick } from 'vue'
-import { useI18n } from 'vue-i18n'
 import { message } from 'ant-design-vue'
-import { h } from 'vue'
 import type { TablePaginationConfig } from 'ant-design-vue'
-import { hasPermi } from '@/directives/permission'
 import { useRouter, useRoute } from 'vue-router'
-
-// 引入标准组件
-import HbtQuery from '@/components/Business/Query/index.vue'
-import HbtToolbar from '@/components/Business/Toolbar/index.vue'
-import HbtTable from '@/components/Business/Table/index.vue'
-import HbtOperation from '@/components/Business/Operation/index.vue'
-import HbtPagination from '@/components/Business/Pagination/index.vue'
-import HbtSelect from '@/components/Business/Select/index.vue'
+import { useDictData } from '@/hooks/useDictData'
 
 // 引入业务组件
 import DictTypeForm from './components/DictTypeForm.vue'
@@ -187,20 +196,21 @@ import DictTypeDetail from './components/DictTypeDetail.vue'
 // 引入API和类型
 import {
   getHbtDictTypeList,
-  getHbtDictType,
+  getHbtDictTypeById,
   createHbtDictType,
   updateHbtDictType,
   deleteHbtDictType,
   batchDeleteHbtDictType,
-  exportHbtDictType
+  exportHbtDictType,
+  getHbtDictTypeByType
 } from '@/api/admin/hbtDictType'
 import type { HbtDictType, HbtDictTypeQuery, DictTypePageResult, HbtDictTypeCreate, HbtDictTypeUpdate } from '@/types/admin/hbtDictType'
 import type { ApiResult, HbtStatus } from '@/types/base'
+import type { HbtDictData } from '@/types/admin/hbtDictData'
 
 // 引入类型
 import type { QueryField } from '@/types/components/query'
 
-const { t } = useI18n()
 const router = useRouter()
 const route = useRoute()
 
@@ -223,7 +233,9 @@ const queryParams = ref<HbtDictTypeQuery>({
   pageSize: 10,
   dictName: '',
   dictType: '',
-  status: undefined
+  dictCategory: undefined,
+  status: undefined,
+  dictBuiltin: undefined
 })
 
 // === 分页配置 ===
@@ -235,11 +247,27 @@ const pagination = ref<TablePaginationConfig>({
   showQuickJumper: true
 })
 
-// === 状态选项 ===
-const statusOptions = [
-  { label: t('common.status.normal'), value: 0 },
-  { label: t('common.status.disabled'), value: 1 }
-]
+// === 字典数据 ===
+const { dictDataMap, loading: dictLoading } = useDictData([
+  'sys_dict_category',
+  'sys_yes_no',
+  'sys_normal_disable'
+])
+
+// 计算属性：字典类别选项
+const dictCategoryOptions = computed(() => {
+  return dictDataMap.value['sys_dict_category'] || []
+})
+
+// 计算属性：是否内置选项
+const yesNoOptions = computed(() => {
+  return dictDataMap.value['sys_yes_no'] || []
+})
+
+// 计算属性：状态选项
+const normalDisableOptions = computed(() => {
+  return dictDataMap.value['sys_normal_disable'] || []
+})
 
 // === 表格列定义 ===
 const columns = [
@@ -264,8 +292,7 @@ const columns = [
     dataIndex: 'dictCategory',
     key: 'dictCategory',
     width: 100,
-    align: 'center',
-    customRender: ({ text }: { text: number }) => text === 0 ? '系统' : 'SQL'
+    align: 'center'
   },
   {
     title: '租户ID',
@@ -290,9 +317,24 @@ const columns = [
     }
   },
   {
+    title: '排序号',
+    dataIndex: 'orderNum',
+    key: 'orderNum',
+    width: 100,
+    align: 'center',
+    sorter: true
+  },
+  {
     title: '状态',
     dataIndex: 'status',
     key: 'status',
+    width: 100,
+    align: 'center'
+  },
+  {
+    title: '是否内置',
+    dataIndex: 'dictBuiltin',
+    key: 'dictBuiltin',
     width: 100,
     align: 'center'
   },
@@ -311,7 +353,7 @@ const columns = [
     sorter: true
   },
   {
-    title: t('common.table.header.operation'),
+    title: '操作',
     dataIndex: 'operation',
     key: 'operation',
     width: 220,
@@ -333,10 +375,31 @@ const queryFields: QueryField[] = [
     type: 'input' as const
   },
   {
+    name: 'dictCategory',
+    label: '字典类别',
+    type: 'select' as const,
+    props: {
+      dictType: 'sys_dict_category',
+      type: 'radio'
+    }
+  },
+  {
     name: 'status',
     label: '状态',
     type: 'select' as const,
-    options: statusOptions
+    props: {
+      dictType: 'sys_normal_disable',
+      type: 'radio'
+    }
+  },
+  {
+    name: 'dictBuiltin',
+    label: '是否内置',
+    type: 'select' as const,
+    props: {
+      dictType: 'sys_yes_no',
+      type: 'select'
+    }
   }
 ]
 
@@ -390,7 +453,9 @@ const resetQuery = () => {
     pageSize: 10,
     dictName: '',
     dictType: '',
-    status: undefined
+    dictCategory: undefined,
+    status: undefined,
+    dictBuiltin: undefined
   }
   handleQuery()
 }
@@ -402,7 +467,7 @@ const handleTableSort = (sorter: any) => {
 
 // 新增
 const handleAdd = () => {
-  formTitle.value = t('common.title.create')
+  formTitle.value = '新增字典类型'
   formData.value = {
     dictName: '',
     dictType: '',
@@ -421,15 +486,16 @@ const handleAdd = () => {
 const handleEdit = async (record: HbtDictType) => {
   try {
     console.log('=== 开始处理编辑操作 ===')
+    if (!record || !record.dictTypeId) {
+      message.error('无效的字典类型ID')
+      return
+    }
     formLoading.value = true
-    const { data: response } = await getHbtDictType(record.dictTypeId)
+    const { data: response } = await getHbtDictTypeById(record.dictTypeId)
     if (response.code === 200 && response.data) {
-      formData.value = response.data
+      formData.value = { ...response.data }  // 使用解构赋值创建新对象
       formTitle.value = '编辑字典类型'
-      console.log('编辑数据:', formData.value)
-      console.log('当前 formVisible 状态:', formVisible.value)
       formVisible.value = true
-      console.log('设置后 formVisible 状态:', formVisible.value)
     } else {
       message.error(response.msg || '获取详情失败')
     }
@@ -438,7 +504,6 @@ const handleEdit = async (record: HbtDictType) => {
     message.error('获取详情失败')
   } finally {
     formLoading.value = false
-    console.log('=== 编辑操作处理完成 ===')
   }
 }
 
@@ -446,7 +511,7 @@ const handleEdit = async (record: HbtDictType) => {
 const handleView = async (record: HbtDictType) => {
   try {
     detailLoading.value = true
-    const { data: response } = await getHbtDictType(record.dictTypeId)
+    const { data: response } = await getHbtDictTypeById(record.dictTypeId)
     if (response.code === 200 && response.data) {
       detailData.value = response.data
       detailVisible.value = true
@@ -484,9 +549,14 @@ const handleEditSelected = () => {
     return
   }
   
-  const record = dictTypeList.value.find(item => String(item.dictTypeId) === String(selectedRowKeys.value[0]))
+  const record = dictTypeList.value.find(item => {
+    return item && String(item.dictTypeId) === String(selectedRowKeys.value[0])
+  })
+  
   if (record) {
     handleEdit(record)
+  } else {
+    message.error('未找到选中的记录')
   }
 }
 
@@ -498,11 +568,11 @@ const handleBatchDelete = async () => {
   }
   try {
     await batchDeleteHbtDictType(selectedRowKeys.value.map(key => Number(key)))
-    message.success(t('common.message.deleteSuccess'))
+    message.success('批量删除成功')
     selectedRowKeys.value = []
     loadDictTypeList()
   } catch (error) {
-    message.error(t('common.message.deleteFailed'))
+    message.error('批量删除失败')
   }
 }
 
@@ -535,7 +605,7 @@ const handleFormOk = async (values: Partial<HbtDictType>) => {
       console.log('执行更新操作')
       const result = await updateHbtDictType(values as HbtDictTypeUpdate)
       console.log('更新结果:', result)
-      message.success(t('common.message.updateSuccess'))
+      message.success('更新成功')
     } else {
       console.log('执行新增操作')
       const result = await createHbtDictType({
@@ -543,13 +613,13 @@ const handleFormOk = async (values: Partial<HbtDictType>) => {
         tenantId: 0  // 确保新增时设置租户ID
       } as HbtDictTypeCreate)
       console.log('新增结果:', result)
-      message.success(t('common.message.createSuccess'))
+      message.success('新增成功')
     }
     formVisible.value = false
     loadDictTypeList()
   } catch (error) {
     console.error('表单提交失败:', error)
-    message.error(values.dictTypeId ? t('common.message.updateFailed') : t('common.message.createFailed'))
+    message.error(values.dictTypeId ? '更新失败' : '新增失败')
   } finally {
     formLoading.value = false
   }
@@ -585,13 +655,25 @@ const handleSelectionChange = (selectedKeys: (string | number)[], selectedRows: 
 }
 
 // === 生命周期钩子 ===
-onMounted(() => {
-  // 从路由中获取字典类型
-  const dictType = route.query.dictType as string
-  if (dictType) {
-    queryParams.value.dictType = dictType
+onMounted(async () => {
+  try {
+    console.log('[页面初始化] 开始加载页面')
+    
+    // 从路由中获取字典类型
+    const dictType = route.query.dictType
+    if (dictType && typeof dictType === 'string') {
+      queryParams.value.dictType = dictType
+      console.log('[页面初始化] 从路由获取到字典类型:', dictType)
+    }
+    
+    // 加载字典类型列表
+    console.log('[页面初始化] 开始加载字典类型列表')
+    await loadDictTypeList()
+    console.log('[页面初始化] 字典类型列表加载完成')
+  } catch (error) {
+    console.error('[页面错误] 页面初始化失败:', error)
+    message.error('页面加载失败，请刷新重试')
   }
-  loadDictTypeList()
 })
 </script>
 

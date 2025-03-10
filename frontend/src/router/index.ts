@@ -137,6 +137,100 @@ export const constantRoutes: RouteRecordRaw[] = [
     }
   },
   {
+    path: '/404',
+    component: () => import('@/layouts/BasicLayout.vue'),
+    children: [
+      {
+        path: '',
+        name: '404',
+        component: () => import('@/views/error/404.vue'),
+        meta: {
+          title: 'error.404.title',
+          requiresAuth: true,
+          hidden: true,
+          ignoreError: true,
+          transKey: 'error.404.title'
+        }
+      }
+    ]
+  },
+  {
+    path: '/403',
+    component: () => import('@/layouts/BasicLayout.vue'),
+    children: [
+      {
+        path: '',
+        name: '403',
+        component: () => import('@/views/error/403.vue'),
+        meta: {
+          title: 'error.403.title',
+          requiresAuth: false,
+          hidden: true,
+          ignoreError: true,
+          transKey: 'error.403.title'
+        }
+      }
+    ]
+  },
+  {
+    path: '/500',
+    component: () => import('@/layouts/BasicLayout.vue'),
+    children: [
+      {
+        path: '',
+        name: '500',
+        component: () => import('@/views/error/500.vue'),
+        meta: {
+          title: 'error.500.title',
+          requiresAuth: true,
+          hidden: true,
+          ignoreError: true,
+          transKey: 'error.500.title'
+        }
+      }
+    ]
+  },
+  {
+    path: '/401',
+    component: () => import('@/layouts/BasicLayout.vue'),
+    children: [
+      {
+        path: '',
+        name: '401',
+        component: () => import('@/views/error/401.vue'),
+        meta: {
+          title: 'error.401.title',
+          requiresAuth: false,
+          hidden: true,
+          ignoreError: true,
+          transKey: 'error.401.title'
+        }
+      }
+    ]
+  },
+  {
+    path: '/503',
+    component: () => import('@/layouts/BasicLayout.vue'),
+    children: [
+      {
+        path: '',
+        name: '503',
+        component: () => import('@/views/error/503.vue'),
+        meta: {
+          title: 'error.503.title',
+          requiresAuth: false,
+          hidden: true,
+          ignoreError: true,
+          transKey: 'error.503.title'
+        }
+      }
+    ]
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    redirect: '/404'
+  },
+  {
     path: '/',
     component: () => import('@/layouts/BasicLayout.vue'),
     redirect: '/home',
@@ -420,28 +514,16 @@ router.beforeEach(async (to, from, next) => {
   //   }
   // })
 
-  // 不需要登录的页面直接放行
-  if (to.meta.requiresAuth === false) {
-    //console.log('[路由守卫] 无需认证的页面，直接放行:', to.path)
+  // 登录页面直接放行
+  if (to.path === '/login') {
     next()
     return
   }
 
-  // 未登录时跳转到登录页
+  // 未登录时统一跳转到登录页（包括错误页面）
   if (!token) {
-    if (to.path !== '/login') {
-      //console.log('[路由守卫] 未登录，跳转到登录页')
-      next({ path: '/login', query: { redirect: to.fullPath } })
-    } else {
-      next()
-    }
-    return
-  }
-
-  // 已登录时访问登录页，跳转到首页
-  if (to.path === '/login') {
-    //console.log('[路由守卫] 已登录，从登录页跳转到首页')
-    next({ path: '/' })
+    console.log('[路由守卫] 未登录，跳转到登录页')
+    next({ path: '/login', query: { redirect: to.fullPath } })
     return
   }
 
@@ -449,8 +531,16 @@ router.beforeEach(async (to, from, next) => {
     // 初始化用户信息
     if (!userStore.user) {
       console.log('[路由守卫] 开始获取用户信息')
-      await userStore.getUserInfo()
-      console.log('[路由守卫] 用户信息获取完成')
+      try {
+        await userStore.getUserInfo()
+        console.log('[路由守卫] 用户信息获取完成')
+      } catch (error) {
+        console.error('[路由守卫] 获取用户信息失败:', error)
+        // 清除token并跳转到登录页
+        userStore.logout()
+        next({ path: '/login' })
+        return
+      }
     }
 
     // 检查是否需要初始化菜单和动态路由
@@ -459,31 +549,26 @@ router.beforeEach(async (to, from, next) => {
       router.getRoutes().filter(r => r.name?.toString().startsWith('HbtMenu_')).length === 0
 
     if (needInitRoutes) {
-      //console.log('[路由守卫] 开始加载菜单和注册动态路由')
-
       // 如果菜单未加载，先加载菜单
       if (!menuStore.rawMenuList?.length) {
-        //console.log('[路由守卫] 加载菜单数据')
-        await menuStore.reloadMenus()
+        try {
+          await menuStore.reloadMenus()
+        } catch (error) {
+          console.error('[路由守卫] 加载菜单失败:', error)
+          // 清除token并跳转到登录页
+          userStore.logout()
+          next({ path: '/login' })
+          return
+        }
       }
 
-      // console.log('[路由守卫] 菜单加载完成，开始注册动态路由:', {
-      //   菜单数量: menuStore.rawMenuList?.length || 0,
-      //   顶级菜单: menuStore.rawMenuList?.filter(m => !m.parentId).map(m => m.menuName) || []
-      // })
-
-      const success = await registerDynamicRoutes(menuStore.rawMenuList)
-      console.log('[路由守卫] 动态路由注册结果:', {
-        成功: success,
-        当前路由表: router.getRoutes().map(r => ({
-          路径: r.path,
-          名称: r.name,
-          类型: r.name?.toString().startsWith('HbtMenu_') ? '动态路由' : '静态路由'
-        }))
-      })
-
+      const success = await registerDynamicRoutes(menuStore.rawMenuList || [])
       if (!success) {
-        throw new Error('动态路由注册失败')
+        console.error('[路由守卫] 动态路由注册失败')
+        // 清除token并跳转到登录页
+        userStore.logout()
+        next({ path: '/login' })
+        return
       }
 
       // 重新导航到目标路由,触发新路由配置生效
@@ -493,31 +578,25 @@ router.beforeEach(async (to, from, next) => {
     // 检查路由是否存在
     const matchedRoute = router.resolve(to.path)
     if (!matchedRoute.matched.length) {
-      console.log('[路由守卫] 路由未匹配，尝试重新注册动态路由:', {
+      console.log('[路由守卫] 路由未匹配:', {
         目标路径: to.path,
         当前路由表: router.getRoutes().map(r => r.path)
       })
 
-      // 重新注册动态路由
-      const success = await registerDynamicRoutes(menuStore.rawMenuList)
-      console.log('[路由守卫] 重新注册动态路由结果:', {
-        成功: success,
-        当前路由表: router.getRoutes().map(r => r.path)
-      })
-
-      if (!success) {
-        throw new Error('动态路由重新注册失败')
+      // 如果是从登录页重定向来的，检查重定向目标是否存在
+      if (from.path === '/login' && from.query.redirect) {
+        const redirectPath = from.query.redirect.toString()
+        const redirectRoute = router.resolve(redirectPath)
+        if (!redirectRoute.matched.length) {
+          console.log('[路由守卫] 重定向目标不存在，跳转到404:', redirectPath)
+          next('/404')
+          return
+        }
       }
 
-      // 再次检查路由并强制刷新
-      const newMatchedRoute = router.resolve(to.path)
-      if (!newMatchedRoute.matched.length) {
-        console.warn('[路由守卫] 路由不存在:', to.path)
-        return next({ name: '404' })
-      }
-
-      // 强制刷新当前路由
-      return next({ path: to.path, replace: true })
+      // 重定向到404
+      next('/404')
+      return
     }
 
     console.log('[路由守卫] 路由处理完成，放行:', to.path)

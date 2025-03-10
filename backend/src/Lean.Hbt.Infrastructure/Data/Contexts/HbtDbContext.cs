@@ -9,16 +9,18 @@
 // 描述    : 数据库上下文
 //===================================================================
 
+using Lean.Hbt.Domain.Data;
 using Lean.Hbt.Domain.Entities.Admin;
 using Lean.Hbt.Domain.Entities.Audit;
 using Lean.Hbt.Domain.Entities.Identity;
 using Lean.Hbt.Domain.Entities.RealTime;
+using Lean.Hbt.Domain.Entities.Routine;
 using Lean.Hbt.Domain.Entities.Workflow;
 using Lean.Hbt.Domain.IServices;
-using Microsoft.Extensions.Options;
-using Lean.Hbt.Domain.Data;
 using Lean.Hbt.Domain.IServices.Identity;
-using Lean.Hbt.Infrastructure.Services;
+using Lean.Hbt.Infrastructure.Services.Identity;
+using Microsoft.Extensions.Options;
+
 namespace Lean.Hbt.Infrastructure.Data.Contexts
 {
     /// <summary>
@@ -76,7 +78,7 @@ namespace Lean.Hbt.Infrastructure.Data.Contexts
         /// <summary>
         /// 构造函数
         /// </summary>
-        public HbtDbContext(IOptions<ConnectionConfig> options, IHbtLogger logger)
+        public HbtDbContext(IOptions<ConnectionConfig> options, IHbtLogger logger, IHbtUserContext userContext)
         {
             _logger = logger;
 
@@ -87,6 +89,42 @@ namespace Lean.Hbt.Infrastructure.Data.Contexts
             {
                 _logger.Debug(sql);
             };
+
+            // 添加实体插入Aop
+            _client.Aop.DataExecuting = (oldValue, entityInfo) =>
+            {
+                if (entityInfo.EntityColumnInfo.IsPrimarykey) return;
+                
+                var entity = entityInfo.EntityValue as HbtBaseEntity;
+                if (entity != null)
+                {
+                    if (entityInfo.OperationType == DataFilterType.InsertByObject)
+                    {
+                        entity.CreateBy = userContext.UserName;
+                        entity.CreateTime = DateTime.Now;
+                        entity.UpdateBy = userContext.UserName;
+                        entity.UpdateTime = DateTime.Now;
+                        entity.IsDeleted = 0;
+                    }
+                    else if (entityInfo.OperationType == DataFilterType.UpdateByObject)
+                    {
+                        entity.UpdateBy = userContext.UserName;
+                        entity.UpdateTime = DateTime.Now;
+                    }
+                    else if (entityInfo.OperationType == DataFilterType.DeleteByObject)
+                    {
+                        // 软删除处理
+                        entity.IsDeleted = 1;
+                        entity.DeleteBy = userContext.UserName;
+                        entity.DeleteTime = DateTime.Now;
+                        // 将删除操作转换为更新操作
+                        entityInfo.OperationType = DataFilterType.UpdateByObject;
+                    }
+                }
+            };
+
+            // 添加全局过滤器，过滤已删除数据
+            _client.QueryFilter.AddTableFilter<HbtBaseEntity>(it => it.IsDeleted == 0);
 
             // 初始化租户过滤器
             AddTenantFilter();
@@ -186,7 +224,7 @@ namespace Lean.Hbt.Infrastructure.Data.Contexts
                     typeof(HbtDictData),
                     typeof(HbtDeviceExtend),
                     typeof(HbtLoginExtend),
-                    
+
                     // 工作流相关表
                     typeof(HbtWorkflowDefinition),      // 工作流定义
                     typeof(HbtWorkflowInstance),        // 工作流实例
@@ -196,7 +234,21 @@ namespace Lean.Hbt.Infrastructure.Data.Contexts
                     typeof(HbtWorkflowHistory),         // 工作流历史
                     typeof(HbtWorkflowVariable),        // 工作流变量
                     typeof(HbtWorkflowScheduledTask),   // 工作流定时任务
-                    typeof(HbtWorkflowParallelBranch)   // 工作流并行分支
+                    typeof(HbtWorkflowParallelBranch),  // 工作流并行分支
+
+                    // 任务和日志相关表
+                    typeof(HbtQuartzTask),             // 定时任务
+                    typeof(HbtQuartzLog),              // 任务日志
+
+                    // 邮件相关表
+                    typeof(HbtMail),                   // 邮件
+                    typeof(HbtMailTmpl),               // 邮件模板
+
+                    // 文件相关表
+                    typeof(HbtFile),                   // 文件
+
+                    // 通知相关表
+                    typeof(HbtNotice),                 // 通知
                 };
 
                 foreach (var entityType in entityTypes)

@@ -40,7 +40,8 @@ export default {
       info: {
         loading: 'Loading user information',
         success: 'User information loaded successfully'
-      }
+      },
+      autoLogout: 'You have been automatically logged out due to inactivity'
     }
   }
 } 

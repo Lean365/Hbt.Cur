@@ -40,7 +40,8 @@ export default {
       info: {
         loading: '正在加载用户信息',
         success: '获取用户信息成功'
-      }
+      },
+      autoLogout: '由于长时间未操作，您已被自动登出'
     }
   }
 } 

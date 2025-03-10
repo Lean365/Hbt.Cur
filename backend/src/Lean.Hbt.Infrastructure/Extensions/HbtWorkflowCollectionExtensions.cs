@@ -34,12 +34,8 @@ namespace Lean.Hbt.Infrastructure.Extensions
         /// <returns>服务集合</returns>
         private static IServiceCollection AddWorkflowCacheServices(this IServiceCollection services)
         {
-            // 注册内存缓存
-            services.AddMemoryCache();
-
             // 注册工作流缓存服务
             services.AddScoped<IHbtWorkflowCache, HbtWorkflowMemoryCache>();
-
             return services;
         }
 

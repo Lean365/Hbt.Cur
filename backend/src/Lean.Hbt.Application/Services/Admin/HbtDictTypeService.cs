@@ -98,6 +98,23 @@ namespace Lean.Hbt.Application.Services.Admin
         }
 
         /// <summary>
+        /// 根据字典类型获取详情
+        /// </summary>
+        /// <param name="type">字典类型</param>
+        /// <returns>字典类型详情</returns>
+        public async Task<HbtDictTypeDto> GetByTypeAsync(string type)
+        {
+            if (string.IsNullOrEmpty(type))
+                throw new HbtException("字典类型不能为空");
+
+            var dictType = await _dictTypeRepository.FirstOrDefaultAsync(x => x.DictType == type);
+            if (dictType == null)
+                throw new HbtException($"字典类型[{type}]不存在");
+
+            return dictType.Adapt<HbtDictTypeDto>();
+        }
+
+        /// <summary>
         /// 创建字典类型
         /// </summary>
         public async Task<long> InsertAsync(HbtDictTypeCreateDto input)

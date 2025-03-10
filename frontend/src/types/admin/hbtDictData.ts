@@ -60,7 +60,9 @@ export interface HbtDictDataQuery {
   /** 每页条数 */
   pageSize: number
   /** 字典类型ID */
-  dictTypeId: number
+  dictTypeId?: number
+  /** 字典类型 */
+  dictType?: string
   /** 状态（0正常 1停用） */
   status?: number
   /** 关键词 */

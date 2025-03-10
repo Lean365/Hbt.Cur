@@ -275,6 +275,12 @@ namespace Lean.Hbt.Application.Services.Admin
             return list.OrderBy(x => x.OrderNum).Adapt<List<HbtDictDataDto>>();
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="dictType"></param>
+        /// <param name="dictValue"></param>
+        /// <returns></returns>
         public async Task<bool> CheckDictDataExists(string dictType, string dictValue)
         {
             var query = from d in _dictDataRepository.GetListAsync().Result
@@ -285,6 +291,11 @@ namespace Lean.Hbt.Application.Services.Admin
             return await Task.FromResult(query.Any());
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public async Task<bool> CheckBuiltinData(long id)
         {
             var dictData = await _dictDataRepository.GetByIdAsync(id);
@@ -324,6 +335,10 @@ namespace Lean.Hbt.Application.Services.Admin
             };
         }
 
+        /// <summary>
+        /// 获取字典数据列表
+        /// </summary>
+        /// <returns></returns>
         public async Task<List<HbtDictDataDto>> GetListAsync()
         {
             var list = await _dictDataRepository.GetListAsync();
@@ -337,6 +352,36 @@ namespace Lean.Hbt.Application.Services.Admin
                 Status = x.Status,
                 Remark = x.Remark
             }).ToList();
+        }
+
+        /// <summary>
+        /// 根据字典类型获取字典数据列表
+        /// </summary>
+        /// <param name="dictType">字典类型</param>
+        /// <returns>字典数据列表</returns>
+        public async Task<List<HbtDictDataDto>> GetListByDictTypeAsync(string dictType)
+        {
+            if (string.IsNullOrEmpty(dictType))
+                throw new HbtException("字典类型不能为空");
+
+            var list = await _dictDataRepository.GetListAsync(x => x.DictType == dictType && x.Status == 0);
+            return list.Select(x => new HbtDictDataDto
+            {
+                DictDataId = x.Id,
+                DictType = x.DictType,
+                DictLabel = x.DictLabel,
+                DictValue = x.DictValue,
+                Label = x.DictLabel,
+                Value = x.DictValue,
+                CssClass = x.CssClass,
+                ListClass = x.ListClass,
+                Status = x.Status,
+                ExtLabel = x.ExtLabel,
+                ExtValue = x.ExtValue,
+                TransKey = x.TransKey,
+                OrderNum = x.OrderNum,
+                Remark = x.Remark
+            }).OrderBy(x => x.OrderNum).ToList();
         }
     }
 }

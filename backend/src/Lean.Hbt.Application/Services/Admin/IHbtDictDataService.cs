@@ -96,5 +96,18 @@ namespace Lean.Hbt.Application.Services.Admin
         /// <param name="input">状态更新对象</param>
         /// <returns>是否成功</returns>
         Task<bool> UpdateStatusAsync(HbtDictDataStatusDto input);
+
+        /// <summary>
+        /// 获取字典数据列表
+        /// </summary>
+        /// <returns>字典数据列表</returns>
+        Task<List<HbtDictDataDto>> GetListAsync();
+
+        /// <summary>
+        /// 根据字典类型获取字典数据列表
+        /// </summary>
+        /// <param name="dictType">字典类型</param>
+        /// <returns>字典数据列表</returns>
+        Task<List<HbtDictDataDto>> GetListByDictTypeAsync(string dictType);
     }
 } 

@@ -9,7 +9,6 @@
 
 using Lean.Hbt.Application.Dtos.Admin;
 using Lean.Hbt.Application.Services.Admin;
-using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Domain.IServices.Admin;
 using Lean.Hbt.Infrastructure.Security.Attributes;
 
@@ -126,7 +125,7 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
         [HttpPost("import")]
         [HbtPerm("admin:dictdata:import")]
         [ProducesResponseType(typeof((int Success, int Fail)), StatusCodes.Status200OK)]
-        public async Task<IActionResult> ImportAsync([FromForm] IFormFile file, [FromQuery] string sheetName = "字典数据")
+        public async Task<IActionResult> ImportAsync(IFormFile file, [FromQuery] string sheetName = "字典数据")
         {
             if (file == null || file.Length == 0)
                 return BadRequest("请选择要导入的文件");
@@ -163,6 +162,24 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
         {
             var result = await _dictDataService.GetTemplateAsync(sheetName);
             return File(result, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"字典数据导入模板_{DateTime.Now:yyyyMMddHHmmss}.xlsx");
+        }
+
+        /// <summary>
+        /// 根据字典类型查询字典数据列表
+        /// </summary>
+        /// <param name="dictType">字典类型</param>
+        /// <returns>字典数据列表</returns>
+        [HttpGet("type/{dictType}")]
+        [HbtPerm("admin:dictdata:query")]
+        public async Task<IActionResult> GetDictDataByTypeAsync([FromRoute] string dictType)
+        {
+            if (string.IsNullOrEmpty(dictType))
+            {
+                return BadRequest("字典类型不能为空");
+            }
+
+            var result = await _dictDataService.GetListByDictTypeAsync(dictType);
+            return Success(result);
         }
 
         /// <summary>

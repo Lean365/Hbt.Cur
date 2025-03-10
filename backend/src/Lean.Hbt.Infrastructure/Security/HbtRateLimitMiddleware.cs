@@ -48,8 +48,6 @@ namespace Lean.Hbt.Infrastructure.Security
             // 验证码接口使用单独的限流规则，不区分大小写
             var isCaptchaRequest = path.Contains("/HbtCaptcha/", StringComparison.OrdinalIgnoreCase);
 
-            Console.WriteLine($"[限流中间件] 请求路径: {path}, 是否验证码请求: {isCaptchaRequest}");
-
             var bucket = isCaptchaRequest
                 ? _captchaBuckets.GetOrAdd(ip, _ => new TokenBucket(CAPTCHA_CAPACITY, CAPTCHA_REFILL_RATE))
                 : _buckets.GetOrAdd(ip, _ => new TokenBucket(DEFAULT_CAPACITY, DEFAULT_REFILL_RATE));
@@ -58,7 +56,6 @@ namespace Lean.Hbt.Infrastructure.Security
             {
                 context.Response.StatusCode = 429;
                 var remainingSeconds = bucket.GetRefillTime();
-                Console.WriteLine($"[限流中间件] IP: {ip}, 路径: {path}, 被限流, 剩余等待时间: {remainingSeconds}秒");
                 await context.Response.WriteAsJsonAsync(new { 
                     message = "请求过于频繁,请稍后再试",
                     remainingSeconds = remainingSeconds
@@ -66,7 +63,6 @@ namespace Lean.Hbt.Infrastructure.Security
                 return;
             }
 
-            Console.WriteLine($"[限流中间件] IP: {ip}, 路径: {path}, 通过限流检查");
             await _next(context);
         }
 

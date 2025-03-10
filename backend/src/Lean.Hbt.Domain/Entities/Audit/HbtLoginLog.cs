@@ -9,7 +9,6 @@
 // 描述    : 登录日志实体
 //===================================================================
 
-using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Common.Models;
 using Lean.Hbt.Domain.Entities.Identity;
 using SqlSugar;
@@ -56,7 +55,7 @@ namespace Lean.Hbt.Domain.Entities.Audit
         /// <summary>
         /// 用户代理
         /// </summary>
-        [SugarColumn(ColumnName = "user_agent", ColumnDescription = "用户代理", Length = 500, ColumnDataType = "nvarchar", IsNullable = false, DefaultValue = "")]
+        [SugarColumn(ColumnName = "user_agent", ColumnDescription = "用户代理", Length = -1, ColumnDataType = "nvarchar", IsNullable = false, DefaultValue = "")]
         public string UserAgent { get; set; } = string.Empty;
 
         /// <summary>

@@ -9,12 +9,22 @@
 <template>
   <div class="error-page">
     <div class="error-content">
-      <h1>404</h1>
-      <h2>{{ t('error.404.title') }}</h2>
-      <p>{{ t('error.404.description') }}</p>
-      <a-button type="primary" @click="goHome">
-        {{ t('error.404.backHome') }}
-      </a-button>
+      <a-result status="404">
+        <template #icon>
+          <ErrorAnimation type="404" />
+        </template>
+        <template #title>
+          <h2>{{ t('error.404.title') }}</h2>
+        </template>
+        <template #subTitle>
+          <p>{{ t('error.404.description') }}</p>
+        </template>
+        <template #extra>
+          <a-button type="primary" @click="goHome">
+            {{ t('error.actions.home') }}
+          </a-button>
+        </template>
+      </a-result>
     </div>
   </div>
 </template>
@@ -22,6 +32,7 @@
 <script lang="ts" setup>
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
+import ErrorAnimation from '@/components/Error/ErrorAnimation.vue'
 
 const { t } = useI18n()
 const router = useRouter()
@@ -36,31 +47,22 @@ const goHome = () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 100%;
-  min-height: 500px;
-  background: var(--ant-bg-base);
+  min-height: 100%;
+  padding: 24px;
 
   .error-content {
+    max-width: 600px;
+    padding: 32px;
     text-align: center;
-
-    h1 {
-      font-size: 120px;
-      font-weight: bold;
-      color: var(--ant-primary-color);
-      margin-bottom: 16px;
-      line-height: 1.2;
-    }
 
     h2 {
       font-size: 24px;
-      color: var(--ant-text-color);
-      margin-bottom: 16px;
+      margin: 8px 0;
     }
 
     p {
       font-size: 16px;
-      color: var(--ant-text-color-secondary);
-      margin-bottom: 24px;
+      margin: 8px 0 16px;
     }
   }
 }

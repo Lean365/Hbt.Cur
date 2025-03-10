@@ -53,6 +53,8 @@ export interface HbtDictTypeQuery {
   dictCategory?: number
   /** 状态（0正常 1停用） */
   status?: HbtStatus
+  /** 是否内置（0否 1是） */
+  dictBuiltin?: number
 }
 
 /**

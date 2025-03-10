@@ -183,29 +183,6 @@ public class HbtDbSeedMenu
                 CreateTime = DateTime.Now,
                 UpdateBy = "admin",
                 UpdateTime = DateTime.Now
-            },
-            new HbtMenu
-            {
-                MenuName = "安全管理",
-                TransKey = "menu.security._self",
-                ParentId = 0,
-                OrderNum = 6,
-                Path = "security",
-                Component = "",
-                QueryParams = null,
-                IsExternal = 0,
-                IsCache = 0,
-                MenuType = 0,
-                Visible = 0,
-                Status = 0,
-                Perms = "",
-                Icon = "SafetyCertificateOutlined",
-                TenantId = 0,
-                Remark = "安全管理目录",
-                CreateBy = "admin",
-                CreateTime = DateTime.Now,
-                UpdateBy = "admin",
-                UpdateTime = DateTime.Now
             }
         };
 
@@ -274,15 +251,6 @@ public class HbtDbSeedMenu
             subMenus.AddRange(realtimeSubMenus);
         }
 
-        // 安全管理子菜单
-        var securityMenu = await _menuRepository.FirstOrDefaultAsync(m => m.MenuName == "安全管理" && m.ParentId == 0);
-        if (securityMenu != null)
-        {
-            var securitySubMenus = GetSecuritySubMenus(securityMenu.Id);
-            subMenus.AddRange(securitySubMenus);
-        }
-
-        // 保存所有子菜单
         foreach (var menu in subMenus)
         {
             var (isNew, savedMenu) = await CreateOrUpdateMenuAsync(menu, false);
@@ -290,8 +258,6 @@ public class HbtDbSeedMenu
 
             if (isNew) insertCount++;
             else updateCount++;
-
-            _logger.Info($"[{(isNew ? "创建" : "更新")}] 子菜单 '{menu.MenuName}' (ParentId: {menu.ParentId}) {(isNew ? "创建" : "更新")}成功");
         }
 
         return (insertCount, updateCount);
@@ -455,7 +421,7 @@ public class HbtDbSeedMenu
     }
 
     /// <summary>
-    /// 获取身份认证子菜单列表
+    /// 获取身份认证子菜单
     /// </summary>
     private List<HbtMenu> GetIdentitySubMenus(long parentId)
     {
@@ -468,11 +434,21 @@ public class HbtDbSeedMenu
                 ParentId = parentId,
                 OrderNum = 1,
                 Path = "user",
-                Component = "identity/user/index",
+                Component = "/identity/user/index",
+                QueryParams = null,
+                IsExternal = 0,
+                IsCache = 0,
                 MenuType = 1,
+                Visible = 0,
+                Status = 0,
                 Perms = "identity:user:list",
                 Icon = "UserOutlined",
-                Remark = "用户管理菜单"
+                TenantId = 0,
+                Remark = "用户管理菜单",
+                CreateBy = "admin",
+                CreateTime = DateTime.Now,
+                UpdateBy = "admin",
+                UpdateTime = DateTime.Now
             },
             new HbtMenu
             {
@@ -481,128 +457,90 @@ public class HbtDbSeedMenu
                 ParentId = parentId,
                 OrderNum = 2,
                 Path = "role",
-                Component = "identity/role/index",
+                Component = "/identity/role/index",
+                QueryParams = null,
+                IsExternal = 0,
+                IsCache = 0,
                 MenuType = 1,
+                Visible = 0,
+                Status = 0,
                 Perms = "identity:role:list",
                 Icon = "TeamOutlined",
-                Remark = "角色管理菜单"
-            },
-            new HbtMenu
-            {
-                MenuName = "部门管理",
-                TransKey = "menu.identity.dept",
-                ParentId = parentId,
-                OrderNum = 3,
-                Path = "dept",
-                Component = "identity/dept/index",
-                MenuType = 1,
-                Perms = "identity:dept:list",
-                Icon = "ApartmentOutlined",
-                Remark = "部门管理菜单"
-            },
-            new HbtMenu
-            {
-                MenuName = "岗位管理",
-                TransKey = "menu.identity.post",
-                ParentId = parentId,
-                OrderNum = 4,
-                Path = "post",
-                Component = "identity/post/index",
-                MenuType = 1,
-                Perms = "identity:post:list",
-                Icon = "IdcardOutlined",
-                Remark = "岗位管理菜单"
+                TenantId = 0,
+                Remark = "角色管理菜单",
+                CreateBy = "admin",
+                CreateTime = DateTime.Now,
+                UpdateBy = "admin",
+                UpdateTime = DateTime.Now
             },
             new HbtMenu
             {
                 MenuName = "菜单管理",
                 TransKey = "menu.identity.menu",
                 ParentId = parentId,
-                OrderNum = 5,
+                OrderNum = 3,
                 Path = "menu",
-                Component = "identity/menu/index",
+                Component = "/identity/menu/index",
+                QueryParams = null,
+                IsExternal = 0,
+                IsCache = 0,
                 MenuType = 1,
+                Visible = 0,
+                Status = 0,
                 Perms = "identity:menu:list",
                 Icon = "MenuOutlined",
-                Remark = "菜单管理菜单"
+                TenantId = 0,
+                Remark = "菜单管理菜单",
+                CreateBy = "admin",
+                CreateTime = DateTime.Now,
+                UpdateBy = "admin",
+                UpdateTime = DateTime.Now
             },
             new HbtMenu
             {
-                MenuName = "租户管理",
-                TransKey = "menu.identity.tenant",
+                MenuName = "部门管理",
+                TransKey = "menu.identity.dept",
                 ParentId = parentId,
-                OrderNum = 6,
-                Path = "tenant",
-                Component = "identity/tenant/index",
+                OrderNum = 4,
+                Path = "dept",
+                Component = "/identity/dept/index",
+                QueryParams = null,
+                IsExternal = 0,
+                IsCache = 0,
                 MenuType = 1,
-                Perms = "identity:tenant:list",
-                Icon = "ClusterOutlined",
-                Remark = "租户管理菜单"
+                Visible = 0,
+                Status = 0,
+                Perms = "identity:dept:list",
+                Icon = "ApartmentOutlined",
+                TenantId = 0,
+                Remark = "部门管理菜单",
+                CreateBy = "admin",
+                CreateTime = DateTime.Now,
+                UpdateBy = "admin",
+                UpdateTime = DateTime.Now
             },
             new HbtMenu
             {
-                MenuName = "认证管理",
-                TransKey = "menu.identity.auth",
+                MenuName = "岗位管理",
+                TransKey = "menu.identity.post",
                 ParentId = parentId,
-                OrderNum = 7,
-                Path = "auth",
-                Component = "identity/auth/index",
+                OrderNum = 5,
+                Path = "post",
+                Component = "/identity/post/index",
+                QueryParams = null,
+                IsExternal = 0,
+                IsCache = 0,
                 MenuType = 1,
-                Perms = "identity:auth:list",
-                Icon = "KeyOutlined",
-                Remark = "认证管理菜单"
-            },
-            new HbtMenu
-            {
-                MenuName = "OAuth管理",
-                TransKey = "menu.identity.oauth",
-                ParentId = parentId,
-                OrderNum = 8,
-                Path = "oauth",
-                Component = "identity/oauth/index",
-                MenuType = 1,
-                Perms = "identity:oauth:list",
-                Icon = "LinkOutlined",
-                Remark = "OAuth管理菜单"
-            },
-            new HbtMenu
-            {
-                MenuName = "登录策略",
-                TransKey = "menu.identity.loginpolicy",
-                ParentId = parentId,
-                OrderNum = 9,
-                Path = "loginpolicy",
-                Component = "identity/loginpolicy/index",
-                MenuType = 1,
-                Perms = "identity:loginpolicy:list",
-                Icon = "SecurityScanOutlined",
-                Remark = "登录策略菜单"
-            },
-            new HbtMenu
-            {
-                MenuName = "登录扩展",
-                TransKey = "menu.identity.loginextend",
-                ParentId = parentId,
-                OrderNum = 10,
-                Path = "loginextend",
-                Component = "identity/loginextend/index",
-                MenuType = 1,
-                Perms = "identity:loginextend:list",
-                Icon = "LoginOutlined",
-                Remark = "登录扩展菜单"
-            },
-            new HbtMenu
-            {
-                MenuName = "设备扩展",
-                TransKey = "menu.identity.deviceextend",
-                ParentId = parentId,
-                OrderNum = 11,
-                Path = "deviceextend",
-                Component = "identity/deviceextend/index",
-                MenuType = 1,
-                Perms = "identity:deviceextend:list",
-                Icon = "MobileOutlined",
-                Remark = "设备扩展菜单"
+                Visible = 0,
+                Status = 0,
+                Perms = "identity:post:list",
+                Icon = "IdcardOutlined",
+                TenantId = 0,
+                Remark = "岗位管理菜单",
+                CreateBy = "admin",
+                CreateTime = DateTime.Now,
+                UpdateBy = "admin",
+                UpdateTime = DateTime.Now
             }
         };
     }
@@ -762,7 +700,7 @@ public class HbtDbSeedMenu
     }
 
     /// <summary>
-    /// 获取实时监控子菜单列表
+    /// 获取实时监控子菜单
     /// </summary>
     private List<HbtMenu> GetRealtimeSubMenus(long parentId)
     {
@@ -770,52 +708,72 @@ public class HbtDbSeedMenu
         {
             new HbtMenu
             {
-                MenuName = "在线用户",
-                TransKey = "menu.realtime.onlineuser",
+                MenuName = "服务器监控",
+                TransKey = "menu.realtime.server",
                 ParentId = parentId,
                 OrderNum = 1,
-                Path = "onlineuser",
-                Component = "realtime/onlineuser/index",
+                Path = "server",
+                Component = "/realtime/server/index",
+                QueryParams = null,
+                IsExternal = 0,
+                IsCache = 0,
                 MenuType = 1,
-                Perms = "realtime:onlineuser:list",
+                Visible = 0,
+                Status = 0,
+                Perms = "realtime:server:list",
+                Icon = "DashboardOutlined",
+                TenantId = 0,
+                Remark = "服务器监控菜单",
+                CreateBy = "admin",
+                CreateTime = DateTime.Now,
+                UpdateBy = "admin",
+                UpdateTime = DateTime.Now
+            },
+            new HbtMenu
+            {
+                MenuName = "在线用户",
+                TransKey = "menu.realtime.online",
+                ParentId = parentId,
+                OrderNum = 2,
+                Path = "online",
+                Component = "/realtime/online/index",
+                QueryParams = null,
+                IsExternal = 0,
+                IsCache = 0,
+                MenuType = 1,
+                Visible = 0,
+                Status = 0,
+                Perms = "realtime:online:list",
                 Icon = "TeamOutlined",
-                Remark = "在线用户菜单"
+                TenantId = 0,
+                Remark = "在线用户菜单",
+                CreateBy = "admin",
+                CreateTime = DateTime.Now,
+                UpdateBy = "admin",
+                UpdateTime = DateTime.Now
             },
             new HbtMenu
             {
                 MenuName = "在线消息",
-                TransKey = "menu.realtime.onlinemessage",
+                TransKey = "menu.realtime.message",
                 ParentId = parentId,
-                OrderNum = 2,
-                Path = "onlinemessage",
-                Component = "realtime/onlinemessage/index",
+                OrderNum = 3,
+                Path = "message",
+                Component = "/realtime/message/index",
+                QueryParams = null,
+                IsExternal = 0,
+                IsCache = 0,
                 MenuType = 1,
-                Perms = "realtime:onlinemessage:list",
+                Visible = 0,
+                Status = 0,
+                Perms = "realtime:message:list",
                 Icon = "MessageOutlined",
-                Remark = "在线消息菜单"
-            }
-        };
-    }
-
-    /// <summary>
-    /// 获取安全管理子菜单列表
-    /// </summary>
-    private List<HbtMenu> GetSecuritySubMenus(long parentId)
-    {
-        return new List<HbtMenu>
-        {
-            new HbtMenu
-            {
-                MenuName = "验证码",
-                TransKey = "menu.security.captcha",
-                ParentId = parentId,
-                OrderNum = 1,
-                Path = "captcha",
-                Component = "security/captcha/index",
-                MenuType = 1,
-                Perms = "security:captcha:list",
-                Icon = "SafetyCertificateOutlined",
-                Remark = "验证码菜单"
+                TenantId = 0,
+                Remark = "在线消息菜单",
+                CreateBy = "admin",
+                CreateTime = DateTime.Now,
+                UpdateBy = "admin",
+                UpdateTime = DateTime.Now
             }
         };
     }
@@ -830,7 +788,7 @@ public class HbtDbSeedMenu
         var buttonPerms = new[] { "query", "create", "update", "delete", "preview", "import", "export" };
 
         // 从菜单的权限标识中获取菜单标识
-        var menuPerm = menu.QueryParams.Split(':')[1];
+        var menuPerm = menu.Perms.Split(':')[1];
 
         for (int i = 0; i < buttonNames.Length; i++)
         {
@@ -842,7 +800,7 @@ public class HbtDbSeedMenu
                 OrderNum = i + 1,
                 Path = string.Empty,
                 Component = string.Empty,
-                MenuType = 3,
+                MenuType = 2,
                 Perms = $"{modulePrefix}:{menuPerm}:{buttonPerms[i]}", // 使用三级结构
                 Icon = string.Empty,
                 TenantId = 0,

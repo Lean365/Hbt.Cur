@@ -9,13 +9,15 @@
 <script lang="ts" setup>
 import 'ant-design-vue/dist/reset.css'
 import { ConfigProvider } from 'ant-design-vue'
-import { onMounted, computed, watch } from 'vue'
+import { onMounted, computed, watch, onUnmounted } from 'vue'
 import { theme } from 'ant-design-vue'
 import { useThemeStore } from '@/stores/theme'
 import { useHolidayStore } from '@/stores/holiday'
 import { useAppStore } from '@/stores/app'
 import zhCN from 'ant-design-vue/es/locale/zh_CN'
 import enUS from 'ant-design-vue/es/locale/en_US'
+import { initAutoLogout, clearAutoLogout } from '@/utils/autoLogout'
+import { clearDictCache } from '@/hooks/useDictData'
 
 const themeStore = useThemeStore()
 const holidayStore = useHolidayStore()
@@ -80,10 +82,18 @@ const themeConfig = computed(() => {
   return baseConfig
 })
 
+// 监听浏览器关闭/刷新
 onMounted(() => {
+  window.addEventListener('beforeunload', clearDictCache)
   themeStore.initTheme()
   holidayStore.initHolidayTheme()
   document.documentElement.style.colorScheme = isDark.value ? 'dark' : 'light'
+  initAutoLogout()
+})
+
+onUnmounted(() => {
+  window.removeEventListener('beforeunload', clearDictCache)
+  clearAutoLogout()
 })
 
 watch(isDark, (newValue) => {

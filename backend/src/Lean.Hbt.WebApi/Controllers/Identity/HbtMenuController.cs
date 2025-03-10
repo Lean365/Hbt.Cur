@@ -9,9 +9,8 @@
 
 using Lean.Hbt.Application.Dtos.Identity;
 using Lean.Hbt.Application.Services.Identity;
-using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Domain.IServices.Admin;
-using Lean.Hbt.Domain.IServices.Tenant;
+using Lean.Hbt.Domain.IServices.Identity;
 using Lean.Hbt.Infrastructure.Security.Attributes;
 
 namespace Lean.Hbt.WebApi.Controllers.Identity
@@ -29,7 +28,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
     public class HbtMenuController : HbtBaseController
     {
         private readonly IHbtMenuService _menuService;
-        private readonly ITenantContext _tenantContext;
+        private readonly IHbtTenantContext _tenantContext;
         private readonly ILogger<HbtMenuController> _logger;
 
         /// <summary>
@@ -42,7 +41,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         public HbtMenuController(
             IHbtMenuService menuService,
             IHbtLocalizationService localization,
-            ITenantContext tenantContext,
+            IHbtTenantContext tenantContext,
             ILogger<HbtMenuController> logger) : base(localization)
         {
             _menuService = menuService;
@@ -136,7 +135,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <returns>导入结果</returns>
         [HttpPost("import")]
         [HbtPerm("identity:menu:import")]
-        public async Task<IActionResult> ImportAsync([FromForm] IFormFile file, [FromQuery] string sheetName = "Sheet1")
+        public async Task<IActionResult> ImportAsync(IFormFile file, [FromQuery] string sheetName = "Sheet1")
         {
             using var stream = file.OpenReadStream();
             var result = await _menuService.ImportAsync(stream, sheetName);

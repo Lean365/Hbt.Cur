@@ -7,6 +7,8 @@
 // 描述    : API模块特性
 //===================================================================
 
+using System;
+
 namespace Lean.Hbt.Infrastructure.Swagger
 {
     /// <summary>
@@ -34,6 +36,15 @@ namespace Lean.Hbt.Infrastructure.Swagger
         {
             Code = code;
             Name = name;
+        }
+
+        /// <summary>
+        /// 构造函数
+        /// </summary>
+        /// <param name="code">模块代码</param>
+        public ApiModuleAttribute(string code)
+        {
+            Code = code;
         }
     }
 } 

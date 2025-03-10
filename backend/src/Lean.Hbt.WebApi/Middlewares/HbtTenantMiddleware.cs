@@ -1,4 +1,4 @@
-using Lean.Hbt.Infrastructure.Services;
+using Lean.Hbt.Infrastructure.Services.Identity;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 

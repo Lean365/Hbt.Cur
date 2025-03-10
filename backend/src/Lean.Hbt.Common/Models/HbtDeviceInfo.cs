@@ -17,6 +17,11 @@ namespace Lean.Hbt.Common.Models
     public class HbtDeviceInfo
     {
         /// <summary>
+        /// 租户ID
+        /// </summary>
+        public long? TenantId { get; set; }
+
+        /// <summary>
         /// 设备ID
         /// </summary>
         public string? DeviceId { get; set; }
@@ -70,5 +75,50 @@ namespace Lean.Hbt.Common.Models
         /// 地理位置
         /// </summary>
         public string? Location { get; set; }
+
+        /// <summary>
+        /// 处理器核心数
+        /// </summary>
+        public string? ProcessorCores { get; set; }
+
+        /// <summary>
+        /// 平台供应商
+        /// </summary>
+        public string? PlatformVendor { get; set; }
+
+        /// <summary>
+        /// 硬件并发数
+        /// </summary>
+        public string? HardwareConcurrency { get; set; }
+
+        /// <summary>
+        /// 系统语言
+        /// </summary>
+        public string? SystemLanguage { get; set; }
+
+        /// <summary>
+        /// 时区
+        /// </summary>
+        public string? TimeZone { get; set; }
+
+        /// <summary>
+        /// 屏幕色深
+        /// </summary>
+        public string? ScreenColorDepth { get; set; }
+
+        /// <summary>
+        /// 设备内存
+        /// </summary>
+        public string? DeviceMemory { get; set; }
+
+        /// <summary>
+        /// WebGL渲染器信息
+        /// </summary>
+        public string? WebGLRenderer { get; set; }
+
+        /// <summary>
+        /// 设备指纹
+        /// </summary>
+        public string? DeviceFingerprint { get; set; }
     }
 } 

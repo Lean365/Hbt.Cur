@@ -66,6 +66,23 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
         }
 
         /// <summary>
+        /// 根据字典类型获取详情
+        /// </summary>
+        /// <param name="type">字典类型</param>
+        /// <returns>字典类型详情</returns>
+        [HttpGet("type/{type}")]
+        [HbtPerm("admin:dicttype:query")]
+        public async Task<IActionResult> GetByTypeAsync(string type)
+        {
+            if (string.IsNullOrEmpty(type))
+            {
+                return Error("字典类型不能为空");
+            }
+            var result = await _dictTypeService.GetByTypeAsync(type);
+            return Success(result);
+        }
+
+        /// <summary>
         /// 创建字典类型
         /// </summary>
         /// <param name="input">创建对象</param>
@@ -117,18 +134,19 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
             return Success(result);
         }
 
-        /// <summary>
-        /// 导入字典类型
-        /// </summary>
-        /// <param name="dictTypes">字典类型数据列表</param>
-        /// <returns>导入结果</returns>
-        [HttpPost("import")]
-        [HbtPerm("admin:dicttype:import")]
+    /// <summary>
+    /// 导入字典类型
+    /// </summary>
+    /// <param name="dictTypes">字典类型数据列表</param>
+    /// <returns>导入结果</returns>
+    [HttpPost("import")]
+    [HbtPerm("admin:dicttype:import")]
+                
         public async Task<IActionResult> ImportAsync([FromBody] List<HbtDictTypeImportDto> dictTypes)
-        {
-            var result = await _dictTypeService.ImportAsync(dictTypes);
-            return Success(result);
-        }
+    {
+      var result = await _dictTypeService.ImportAsync(dictTypes);
+      return Success(result);
+    }
 
         /// <summary>
         /// 导出字典类型

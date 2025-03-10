@@ -7,8 +7,8 @@
 // 描述    : Swagger配置类
 //===================================================================
 
+
 using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
 
@@ -47,12 +47,23 @@ namespace Lean.Hbt.Infrastructure.Swagger
                     {
                         Title = $"Lean.Hbt {module.Value} API",
                         Version = "v1",
-                        Description = $"黑冰台 {module.Value} API文档",
+                        Description = $"黑冰台 {module.Value} API文档\n\n" +
+                                    "## API 使用说明\n" +
+                                    "1. 所有请求需要在 Header 中携带 Authorization Token\n" +
+                                    "2. 返回格式统一为 ApiResult<T>\n" +
+                                    "3. 支持多语言,请在 Header 中设置 Accept-Language\n" +
+                                    "4. 分页查询统一使用 PageRequest 对象\n" +
+                                    "5. 文件上传请使用 multipart/form-data",
                         Contact = new OpenApiContact
                         {
                             Name = "Lean365",
                             Email = "support@lean365.com",
                             Url = new Uri("https://www.lean365.com")
+                        },
+                        License = new OpenApiLicense
+                        {
+                            Name = "MIT License",
+                            Url = new Uri("https://opensource.org/licenses/MIT")
                         }
                     });
                 }
@@ -60,7 +71,9 @@ namespace Lean.Hbt.Infrastructure.Swagger
                 // 添加JWT认证
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
-                    Description = "JWT Authorization header using the Bearer scheme.",
+                    Description = "JWT Authorization header using the Bearer scheme.\n\n" +
+                                "Enter 'Bearer' [space] and then your token in the text input below.\n\n" +
+                                "Example: 'Bearer 12345abcdef'",
                     Name = "Authorization",
                     In = ParameterLocation.Header,
                     Type = SecuritySchemeType.ApiKey,
@@ -82,7 +95,7 @@ namespace Lean.Hbt.Infrastructure.Swagger
                     }
                 });
 
-                // 根据API模块特性对API进行分组
+                // 对所有API进行分组
                 c.DocInclusionPredicate((docName, apiDesc) =>
                 {
                     if (apiDesc.ActionDescriptor is Microsoft.AspNetCore.Mvc.Controllers.ControllerActionDescriptor actionDescriptor)
@@ -93,21 +106,35 @@ namespace Lean.Hbt.Infrastructure.Swagger
                     return false;
                 });
 
+                // 添加操作过滤器
+                c.OperationFilter<SwaggerOperationFilter>();
+
+                // 自定义架构ID
+                c.CustomSchemaIds(type => type.FullName);
+
                 // 添加XML注释
-                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-                if (File.Exists(xmlPath))
+                var xmlFiles = new[] 
                 {
-                    c.IncludeXmlComments(xmlPath);
+                    "Lean.Hbt.Infrastructure.xml",
+                    "Lean.Hbt.WebApi.xml",
+                    "Lean.Hbt.Application.xml",
+                    "Lean.Hbt.Domain.xml"
+                };
+
+                foreach (var xmlFile in xmlFiles)
+                {
+                    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                    if (File.Exists(xmlPath))
+                    {
+                        c.IncludeXmlComments(xmlPath, true);
+                    }
                 }
 
-                // 添加WebApi层的XML注释
-                var webApiXmlFile = "Lean.Hbt.WebApi.xml";
-                var webApiXmlPath = Path.Combine(AppContext.BaseDirectory, webApiXmlFile);
-                if (File.Exists(webApiXmlPath))
-                {
-                    c.IncludeXmlComments(webApiXmlPath);
-                }
+                // 使用完整的类型名称
+                c.CustomSchemaIds(type => type.FullName?.Replace("+", "."));
+
+                // 配置枚举处理
+                c.SchemaFilter<EnumSchemaFilter>();
             });
 
             return services;
@@ -120,7 +147,12 @@ namespace Lean.Hbt.Infrastructure.Swagger
         /// <returns>应用程序构建器</returns>
         public static IApplicationBuilder UseHbtSwagger(this IApplicationBuilder app)
         {
-            app.UseSwagger();
+            app.UseSwagger(c =>
+            {
+                c.SerializeAsV2 = false;
+                c.RouteTemplate = "swagger/{documentName}/swagger.json";
+            });
+            
             app.UseSwaggerUI(c =>
             {
                 // 为每个API模块添加一个SwaggerEndpoint
@@ -129,9 +161,22 @@ namespace Lean.Hbt.Infrastructure.Swagger
                     c.SwaggerEndpoint($"/swagger/{module.Key}/swagger.json", $"Lean.Hbt {module.Value} API");
                 }
 
+                // 自定义样式 - 暂时注释掉，因为文件不存在
+                // c.InjectStylesheet("/swagger-ui/custom.css");
+                // c.InjectJavascript("/swagger-ui/custom.js");
+                
+                // 配置选项
                 c.RoutePrefix = "swagger";
-                c.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.None);
-                c.DefaultModelsExpandDepth(-1);
+                c.DocumentTitle = "Lean.Hbt API Documentation";
+                c.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.List);
+                c.DefaultModelsExpandDepth(2);
+                c.DefaultModelExpandDepth(2);
+                c.DefaultModelRendering(Swashbuckle.AspNetCore.SwaggerUI.ModelRendering.Model);
+                c.DisplayRequestDuration();
+                c.EnableDeepLinking();
+                c.EnableFilter();
+                c.ShowExtensions();
+                c.EnableValidator();
             });
 
             return app;

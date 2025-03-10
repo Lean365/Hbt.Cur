@@ -6,6 +6,7 @@ import type { LoginParams, UserInfo as AuthUserInfo, LoginResult as AuthLoginRes
 import { login as userLogin, logout as userLogout, getInfo } from '@/api/identity/auth'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import { useMenuStore } from './menu'
+import { clearDictCache } from '@/hooks/useDictData'
 import i18n from '@/locales'
 
 const { t } = i18n.global
@@ -105,6 +106,9 @@ export const useUserStore = defineStore('user', () => {
       roles.value = []
       permissions.value = []
       removeToken()
+      
+      // 清除字典缓存
+      clearDictCache()
       
       // 重置菜单状态
       const menuStore = useMenuStore()

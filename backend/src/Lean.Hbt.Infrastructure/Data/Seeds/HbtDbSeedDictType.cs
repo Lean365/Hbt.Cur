@@ -44,7 +44,7 @@ public class HbtDbSeedDictType
             new HbtDictType
             {
                 DictName = "系统状态",
-                DictType = "sys_status",
+                DictType = "sys_normal_disable",
                 OrderNum = 1,
                 Status = 0,
                 TenantId = 0,

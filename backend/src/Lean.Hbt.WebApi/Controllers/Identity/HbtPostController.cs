@@ -9,7 +9,6 @@
 
 using Lean.Hbt.Application.Dtos.Identity;
 using Lean.Hbt.Application.Services.Identity;
-using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Domain.IServices.Admin;
 
 namespace Lean.Hbt.WebApi.Controllers.Identity
@@ -117,7 +116,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <param name="sheetName">工作表名称</param>
         /// <returns>导入结果</returns>
         [HttpPost("import")]
-        public async Task<IActionResult> ImportAsync([FromForm] IFormFile file, [FromQuery] string sheetName = "Sheet1")
+        public async Task<IActionResult> ImportAsync(IFormFile file, [FromQuery] string sheetName = "Sheet1")
         {
             using var stream = file.OpenReadStream();
             var result = await _postService.ImportAsync(stream, sheetName);

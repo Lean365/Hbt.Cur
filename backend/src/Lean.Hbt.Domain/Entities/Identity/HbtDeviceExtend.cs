@@ -10,7 +10,6 @@
 //===================================================================
 
 using SqlSugar;
-using Lean.Hbt.Common.Enums;
 
 namespace Lean.Hbt.Domain.Entities.Identity
 {
@@ -18,7 +17,7 @@ namespace Lean.Hbt.Domain.Entities.Identity
     /// 设备扩展信息实体
     /// </summary>
     [SugarTable("hbt_id_device_extend", "设备扩展信息表")]
-    [SugarIndex("ix_device_tenant_user", nameof(TenantId), OrderByType.Asc, nameof(UserId), OrderByType.Asc, true)]
+    [SugarIndex("ix_device_tenant_user", nameof(TenantId), OrderByType.Asc, nameof(UserId), OrderByType.Asc, nameof(DeviceId), OrderByType.Asc, true)]
     public class HbtDeviceExtend : HbtBaseEntity
     {
         /// <summary>
@@ -42,19 +41,19 @@ namespace Lean.Hbt.Domain.Entities.Identity
         /// <summary>
         /// 设备标识
         /// </summary>
-        [SugarColumn(ColumnName = "device_id", ColumnDescription = "设备标识", Length = 100, ColumnDataType = "nvarchar", IsNullable = false)]
+        [SugarColumn(ColumnName = "device_id", ColumnDescription = "设备标识", Length = 200, ColumnDataType = "nvarchar", IsNullable = false)]
         public string DeviceId { get; set; } = string.Empty;
 
         /// <summary>
         /// 设备名称
         /// </summary>
-        [SugarColumn(ColumnName = "device_name", ColumnDescription = "设备名称", Length = 100, ColumnDataType = "nvarchar", IsNullable = true)]
+        [SugarColumn(ColumnName = "device_name", ColumnDescription = "设备名称", Length = 200, ColumnDataType = "nvarchar", IsNullable = true)]
         public string? DeviceName { get; set; }
 
         /// <summary>
         /// 设备型号
         /// </summary>
-        [SugarColumn(ColumnName = "device_model", ColumnDescription = "设备型号", Length = 100, ColumnDataType = "nvarchar", IsNullable = true)]
+        [SugarColumn(ColumnName = "device_model", ColumnDescription = "设备型号", Length = -1, ColumnDataType = "nvarchar", IsNullable = true)]
         public string? DeviceModel { get; set; }
 
         /// <summary>
@@ -66,7 +65,7 @@ namespace Lean.Hbt.Domain.Entities.Identity
         /// <summary>
         /// 系统版本
         /// </summary>
-        [SugarColumn(ColumnName = "os_version", ColumnDescription = "系统版本", Length = 50, ColumnDataType = "nvarchar", IsNullable = true)]
+        [SugarColumn(ColumnName = "os_version", ColumnDescription = "系统版本", Length = 200, ColumnDataType = "nvarchar", IsNullable = true)]
         public string? OsVersion { get; set; }
 
         /// <summary>
@@ -78,7 +77,7 @@ namespace Lean.Hbt.Domain.Entities.Identity
         /// <summary>
         /// 浏览器版本
         /// </summary>
-        [SugarColumn(ColumnName = "browser_version", ColumnDescription = "浏览器版本", Length = 50, ColumnDataType = "nvarchar", IsNullable = true)]
+        [SugarColumn(ColumnName = "browser_version", ColumnDescription = "浏览器版本", Length = 200, ColumnDataType = "nvarchar", IsNullable = true)]
         public string? BrowserVersion { get; set; }
 
         /// <summary>
@@ -111,4 +110,4 @@ namespace Lean.Hbt.Domain.Entities.Identity
         [SugarColumn(ColumnName = "today_online_periods", ColumnDescription = "今日在线时段", Length = 500, ColumnDataType = "nvarchar", IsNullable = true)]
         public string? TodayOnlinePeriods { get; set; }
     }
-} 
+}

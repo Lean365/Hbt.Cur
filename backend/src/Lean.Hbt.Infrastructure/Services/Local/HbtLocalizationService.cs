@@ -19,7 +19,7 @@ using System.Globalization;
 using System.Text.Json;
 using System.Threading;
 
-namespace Lean.Hbt.Infrastructure.Services;
+namespace Lean.Hbt.Infrastructure.Services.Local;
 
 /// <summary>
 /// 本地化服务实现
@@ -30,18 +30,18 @@ public class HbtLocalizationService : IHbtLocalizationService
     private readonly IHbtTranslationCache _translationCache;
     private readonly ILogger<HbtLocalizationService> _logger;
     private readonly IDistributedCache _distributedCache;
-    
+
     private const string DefaultLanguage = "zh-CN";
     private const string LanguageHeader = "Accept-Language";
     private const string LanguageContextKey = "CurrentLanguage";
     private const string SupportedLanguagesCacheKey = "SupportedLanguages";
     private const int CacheExpirationMinutes = 30;
 
-    private static readonly ConcurrentDictionary<string, CultureInfo> _cultureCache 
+    private static readonly ConcurrentDictionary<string, CultureInfo> _cultureCache
         = new ConcurrentDictionary<string, CultureInfo>();
 
-    private static readonly string[] _defaultSupportedLanguages = new[] 
-    { 
+    private static readonly string[] _defaultSupportedLanguages = new[]
+    {
         "zh-CN", // 简体中文
         "en-US"  // 英语（美国）
     };
@@ -191,7 +191,7 @@ public class HbtLocalizationService : IHbtLocalizationService
         try
         {
             // 1. 尝试从分布式缓存获取
-            try 
+            try
             {
                 var cts = new CancellationTokenSource(TimeSpan.FromSeconds(3));
                 var cachedBytes = await _distributedCache.GetAsync(SupportedLanguagesCacheKey, cts.Token);

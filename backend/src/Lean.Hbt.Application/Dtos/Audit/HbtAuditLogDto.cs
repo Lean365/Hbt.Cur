@@ -36,6 +36,8 @@ namespace Lean.Hbt.Application.Dtos.Audit
             Result = string.Empty;
             IpAddress = string.Empty;
             UserAgent = string.Empty;
+            RequestUrl = string.Empty;
+            RequestMethod = string.Empty;
             CreateTime = DateTime.Now;
         }
 
@@ -44,6 +46,11 @@ namespace Lean.Hbt.Application.Dtos.Audit
         /// </summary>
         [AdaptMember("Id")]
         public long AuditLogId { get; set; }
+
+        /// <summary>
+        /// 日志级别
+        /// </summary>
+        public int LogLevel { get; set; }
 
         /// <summary>
         /// 用户ID
@@ -101,6 +108,16 @@ namespace Lean.Hbt.Application.Dtos.Audit
         public string UserAgent { get; set; }
 
         /// <summary>
+        /// 请求URL
+        /// </summary>
+        public string RequestUrl { get; set; }
+
+        /// <summary>
+        /// 请求方法
+        /// </summary>
+        public string RequestMethod { get; set; }
+
+        /// <summary>
         /// 创建时间
         /// </summary>
         public DateTime CreateTime { get; set; }
@@ -125,6 +142,11 @@ namespace Lean.Hbt.Application.Dtos.Audit
         /// 操作
         /// </summary>
         public string? Operation { get; set; }
+
+        /// <summary>
+        /// 日志级别
+        /// </summary>
+        public int? LogLevel { get; set; }
 
         /// <summary>
         /// 开始时间
@@ -159,8 +181,15 @@ namespace Lean.Hbt.Application.Dtos.Audit
             Result = string.Empty;
             IpAddress = string.Empty;
             UserAgent = string.Empty;
+            RequestUrl = string.Empty;
+            RequestMethod = string.Empty;
             CreateTime = DateTime.Now;
         }
+
+        /// <summary>
+        /// 日志级别
+        /// </summary>
+        public int LogLevel { get; set; }
 
         /// <summary>
         /// 用户名
@@ -206,6 +235,16 @@ namespace Lean.Hbt.Application.Dtos.Audit
         /// 用户代理
         /// </summary>
         public string UserAgent { get; set; }
+
+        /// <summary>
+        /// 请求URL
+        /// </summary>
+        public string RequestUrl { get; set; }
+
+        /// <summary>
+        /// 请求方法
+        /// </summary>
+        public string RequestMethod { get; set; }
 
         /// <summary>
         /// 创建时间
