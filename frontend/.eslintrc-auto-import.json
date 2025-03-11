@@ -325,6 +325,8 @@
     "LoginResult": true,
     "UserInfo": true,
     "UserInfoResponse": true,
-    "useMenuStore": true
+    "useMenuStore": true,
+    "DictOption": true,
+    "useDictStore": true
   }
 }

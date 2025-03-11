@@ -6,7 +6,7 @@ import type { LoginParams, UserInfo as AuthUserInfo, LoginResult as AuthLoginRes
 import { login as userLogin, logout as userLogout, getInfo } from '@/api/identity/auth'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import { useMenuStore } from './menu'
-import { clearDictCache } from '@/hooks/useDictData'
+import { useDictStore } from './dict'
 import i18n from '@/locales'
 
 const { t } = i18n.global
@@ -63,34 +63,45 @@ export const useUserStore = defineStore('user', () => {
   // 获取用户信息
   const getUserInfo = async () => {
     try {
-      console.log('[用户信息] ' + t('identity.auth.info.loading'))
+      console.log('[用户信息] 正在加载用户信息')
       const response = await getInfo()
+      console.log('[用户信息] 获取用户信息成功', response)
       
-      if (!response || !response.data) {
-        console.error('[用户信息] ' + t('identity.auth.info.invalidResponse'))
-        throw new Error(t('identity.auth.info.error.invalidResponse'))
+      if (!response?.data) {
+        console.error('[用户信息] 响应数据为空')
+        throw new Error('用户信息响应数据为空')
       }
+
+      const info = response.data as unknown as UserInfoResponse
       
-      const data = response.data as unknown as UserInfoResponse
-      
-      // 设置用户信息
-      user.value = data.user
-      roles.value = data.roles
-      permissions.value = data.permissions
-      
-      console.log('[用户信息] ' + t('identity.auth.info.success'), {
-        user: data.user,
-        roles: data.roles,
-        permissions: data.permissions
+      // 打印详细信息
+      console.log('[用户信息] 详细数据:', {
+        用户信息: info.user,
+        角色列表: info.roles,
+        权限列表: info.permissions?.length ? `共${info.permissions.length}个权限` : '无权限'
       })
+
+      // 更新状态
+      user.value = info.user
+      roles.value = info.roles
+      permissions.value = info.permissions
       
       // 加载菜单和权限
       const menuStore = useMenuStore()
       await menuStore.loadUserMenus()
       
-      return data
+      return info
     } catch (error: any) {
-      console.error('[用户信息] ' + t('identity.auth.info.error.failed'), error)
+      console.error('[用户信息] 获取失败:', {
+        错误消息: error.message,
+        响应状态: error.response?.status,
+        响应数据: error.response?.data,
+        请求配置: {
+          url: error.config?.url,
+          方法: error.config?.method,
+          请求头: error.config?.headers
+        }
+      })
       throw error
     }
   }
@@ -108,7 +119,8 @@ export const useUserStore = defineStore('user', () => {
       removeToken()
       
       // 清除字典缓存
-      clearDictCache()
+      const dictStore = useDictStore()
+      dictStore.clearCache()
       
       // 重置菜单状态
       const menuStore = useMenuStore()

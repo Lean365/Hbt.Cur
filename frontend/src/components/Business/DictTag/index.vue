@@ -4,9 +4,9 @@
 </template>
 
 <script lang="ts" setup>
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useDictData } from '@/hooks/useDictData'
+import { useDictStore } from '@/stores/dict'
 import '@/assets/styles/dict-tag.less'
 
 const { t } = useI18n()
@@ -25,13 +25,13 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 // 使用字典Hook
-const { getDictLabel, getDictClass, getDictTransKey } = useDictData([props.dictType])
+const dictStore = useDictStore()
 
 // 计算最终显示的标签
 const finalLabel = computed(() => {
-  const label = getDictLabel(props.dictType, Number(props.value))
+  const label = dictStore.getDictLabel(props.dictType, Number(props.value))
   if (props.useI18n) {
-    const transKey = getDictTransKey(props.dictType, Number(props.value))
+    const transKey = dictStore.getDictTransKey(props.dictType, Number(props.value))
     return transKey ? t(transKey) : label
   }
   return label
@@ -39,7 +39,16 @@ const finalLabel = computed(() => {
 
 // 计算标签样式类
 const tagClass = computed(() => {
-  const baseClass = getDictClass(props.dictType, Number(props.value))
+  const baseClass = dictStore.getDictClass(props.dictType, Number(props.value))
   return baseClass ? `hbt-dict-tag-${baseClass}` : ''
 })
+
+onMounted(() => {
+  if (props.dictType) {
+    dictStore.loadDict(props.dictType)
+  }
+})
+
+const dictClass = computed(() => props.dictType ? dictStore.getDictClass(props.dictType, props.value) : '')
+const dictLabel = computed(() => props.dictType ? dictStore.getDictLabel(props.dictType, props.value) : props.value)
 </script> 

@@ -227,10 +227,6 @@ export const constantRoutes: RouteRecordRaw[] = [
     ]
   },
   {
-    path: '/:pathMatch(.*)*',
-    redirect: '/404'
-  },
-  {
     path: '/',
     component: () => import('@/layouts/BasicLayout.vue'),
     redirect: '/home',
@@ -378,10 +374,11 @@ export const registerDynamicRoutes = async (menus: Menu[]): Promise<boolean> => 
     //   }))
     // })
 
-    // 移除现有的动态路由
+    // 移除现有的动态路由和通配符路由
     router.getRoutes().forEach(route => {
-      if (route.name?.toString().startsWith('HbtMenu_')) {
-        router.removeRoute(route.name.toString())
+      const routeName = route.name?.toString()
+      if (routeName && (routeName.startsWith('HbtMenu_') || routeName === 'NotFound')) {
+        router.removeRoute(routeName)
       }
     })
 
@@ -489,6 +486,13 @@ export const registerDynamicRoutes = async (menus: Menu[]): Promise<boolean> => 
       }))
     })
 
+    // 最后添加通配符路由
+    router.addRoute({
+      path: '/:pathMatch(.*)*',
+      name: 'NotFound',
+      redirect: '/404'
+    })
+
     return true
   } catch (error) {
     console.error('[路由] 注册动态路由失败:', error)
@@ -502,17 +506,17 @@ router.beforeEach(async (to, from, next) => {
   const userStore = useUserStore()
   const menuStore = useMenuStore()
 
-  // console.log('[路由守卫] 开始处理路由:', {
-  //   目标路由: to.path,
-  //   来源路由: from.path,
-  //   认证状态: {
-  //     token: !!token,
-  //     用户信息: !!userStore.user,
-  //     菜单: !!menuStore.rawMenuList?.length,
-  //     菜单数量: menuStore.rawMenuList?.length || 0,
-  //     动态路由数量: router.getRoutes().filter(r => r.name?.toString().startsWith('HbtMenu_')).length
-  //   }
-  // })
+  console.log('[路由守卫] 开始处理路由:', {
+    目标路由: to.path,
+    来源路由: from.path,
+    认证状态: {
+      token: !!token,
+      用户信息: !!userStore.user,
+      菜单: !!menuStore.rawMenuList?.length,
+      菜单数量: menuStore.rawMenuList?.length || 0,
+      动态路由数量: router.getRoutes().filter(r => r.name?.toString().startsWith('HbtMenu_')).length
+    }
+  })
 
   // 登录页面直接放行
   if (to.path === '/login') {
@@ -520,9 +524,8 @@ router.beforeEach(async (to, from, next) => {
     return
   }
 
-  // 未登录时统一跳转到登录页（包括错误页面）
+  // 未登录时统一跳转到登录页
   if (!token) {
-    console.log('[路由守卫] 未登录，跳转到登录页')
     next({ path: '/login', query: { redirect: to.fullPath } })
     return
   }
@@ -530,17 +533,7 @@ router.beforeEach(async (to, from, next) => {
   try {
     // 初始化用户信息
     if (!userStore.user) {
-      console.log('[路由守卫] 开始获取用户信息')
-      try {
-        await userStore.getUserInfo()
-        console.log('[路由守卫] 用户信息获取完成')
-      } catch (error) {
-        console.error('[路由守卫] 获取用户信息失败:', error)
-        // 清除token并跳转到登录页
-        userStore.logout()
-        next({ path: '/login' })
-        return
-      }
+      await userStore.getUserInfo()
     }
 
     // 检查是否需要初始化菜单和动态路由
@@ -549,57 +542,30 @@ router.beforeEach(async (to, from, next) => {
       router.getRoutes().filter(r => r.name?.toString().startsWith('HbtMenu_')).length === 0
 
     if (needInitRoutes) {
-      // 如果菜单未加载，先加载菜单
-      if (!menuStore.rawMenuList?.length) {
-        try {
-          await menuStore.reloadMenus()
-        } catch (error) {
-          console.error('[路由守卫] 加载菜单失败:', error)
-          // 清除token并跳转到登录页
-          userStore.logout()
-          next({ path: '/login' })
-          return
+      console.log('[路由守卫] 开始初始化动态路由')
+      try {
+        // 重新加载菜单
+        await menuStore.reloadMenus()
+        
+        // 注册动态路由
+        const success = await registerDynamicRoutes(menuStore.rawMenuList || [])
+        if (!success) {
+          throw new Error('动态路由注册失败')
         }
-      }
 
-      const success = await registerDynamicRoutes(menuStore.rawMenuList || [])
-      if (!success) {
-        console.error('[路由守卫] 动态路由注册失败')
-        // 清除token并跳转到登录页
+        console.log('[路由守卫] 动态路由注册完成，重新导航:', to.fullPath)
+        // 使用 replace 模式重新导航，保留完整的路由信息
+        next({ path: to.fullPath, replace: true })
+        return
+      } catch (error) {
+        console.error('[路由守卫] 初始化动态路由失败:', error)
         userStore.logout()
         next({ path: '/login' })
         return
       }
-
-      // 重新导航到目标路由,触发新路由配置生效
-      return next({ path: to.path, replace: true })
     }
 
-    // 检查路由是否存在
-    const matchedRoute = router.resolve(to.path)
-    if (!matchedRoute.matched.length) {
-      console.log('[路由守卫] 路由未匹配:', {
-        目标路径: to.path,
-        当前路由表: router.getRoutes().map(r => r.path)
-      })
-
-      // 如果是从登录页重定向来的，检查重定向目标是否存在
-      if (from.path === '/login' && from.query.redirect) {
-        const redirectPath = from.query.redirect.toString()
-        const redirectRoute = router.resolve(redirectPath)
-        if (!redirectRoute.matched.length) {
-          console.log('[路由守卫] 重定向目标不存在，跳转到404:', redirectPath)
-          next('/404')
-          return
-        }
-      }
-
-      // 重定向到404
-      next('/404')
-      return
-    }
-
-    console.log('[路由守卫] 路由处理完成，放行:', to.path)
+    // 路由存在，直接放行
     next()
   } catch (error) {
     console.error('[路由守卫] 错误:', error)

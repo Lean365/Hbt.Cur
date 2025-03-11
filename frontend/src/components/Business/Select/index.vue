@@ -47,9 +47,8 @@
 <script lang="ts" setup>
 import type { SelectProps } from 'ant-design-vue'
 import { SelectValue, DefaultOptionType } from 'ant-design-vue/es/select'
-import { useDictData } from '@/hooks/useDictData'
-import type { HbtDictData } from '@/types/admin/hbtDictData'
-import type { DictOption } from '@/hooks/useDictData'
+import { useDictStore } from '@/stores/dict'
+import type { DictOption } from '@/stores/dict'
 import { debounce } from 'lodash-es'
 import { useI18n } from 'vue-i18n'
 const { t } = useI18n()
@@ -102,9 +101,8 @@ const emit = defineEmits<{
 }>()
 
 // 加载字典数据
-const { dictDataMap, getDictOptions } = props.dictType 
-  ? useDictData([props.dictType])
-  : { dictDataMap: ref<Map<string, DictOption[]>>(new Map()), getDictOptions: () => [] }
+const dictStore = useDictStore()
+const options = computed(() => props.dictType ? dictStore.getDictOptions(props.dictType) : [])
 
 // 显示选项
 const displayOptions = computed(() => {
@@ -112,7 +110,7 @@ const displayOptions = computed(() => {
     return props.options
   }
   if (props.dictType) {
-    return getDictOptions(props.dictType)
+    return options.value
   }
   return []
 })
@@ -256,8 +254,8 @@ const innerValue = computed({
 
 // 合并选项
 const mergedOptions = computed(() => {
-  if (props.dictType && dictDataMap.value) {
-    return dictDataMap.value.get(props.dictType) || []
+  if (props.dictType) {
+    return options.value
   }
   return props.options || []
 })
@@ -318,8 +316,9 @@ watch(() => props.dictType, async (newType) => {
 }, { immediate: true })
 
 // 组件挂载时加载字典数据
-onMounted(async () => {
+onMounted(() => {
   if (props.dictType) {
+    dictStore.loadDict(props.dictType)
   }
 })
 </script>

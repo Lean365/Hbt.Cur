@@ -17,7 +17,7 @@ import { useAppStore } from '@/stores/app'
 import zhCN from 'ant-design-vue/es/locale/zh_CN'
 import enUS from 'ant-design-vue/es/locale/en_US'
 import { initAutoLogout, clearAutoLogout } from '@/utils/autoLogout'
-import { clearDictCache } from '@/hooks/useDictData'
+import { useDictStore } from '@/stores/dict'
 
 const themeStore = useThemeStore()
 const holidayStore = useHolidayStore()
@@ -84,7 +84,8 @@ const themeConfig = computed(() => {
 
 // 监听浏览器关闭/刷新
 onMounted(() => {
-  window.addEventListener('beforeunload', clearDictCache)
+  const dictStore = useDictStore()
+  dictStore.clearCache()
   themeStore.initTheme()
   holidayStore.initHolidayTheme()
   document.documentElement.style.colorScheme = isDark.value ? 'dark' : 'light'
@@ -92,7 +93,6 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
-  window.removeEventListener('beforeunload', clearDictCache)
   clearAutoLogout()
 })
 

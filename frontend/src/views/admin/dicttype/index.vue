@@ -55,7 +55,7 @@
           <hbt-select
             v-model:value="queryParams.dictBuiltin"
             dict-type="sys_yes_no"
-            type="select"
+            type="radio"
             placeholder="请选择是否内置"
             allow-clear
           />
@@ -176,7 +176,7 @@
 import { message } from 'ant-design-vue'
 import type { TablePaginationConfig } from 'ant-design-vue'
 import { useRouter, useRoute } from 'vue-router'
-import { useDictData } from '@/hooks/useDictData'
+import { useDictStore } from '@/stores/dict'
 import { useUserStore } from '@/stores/user'
 
 // 引入业务组件
@@ -238,25 +238,21 @@ const pagination = ref<TablePaginationConfig>({
 })
 
 // === 字典数据 ===
-const { dictDataMap, getDictOptions, loadAllDictData } = useDictData([
-  'sys_dict_category',
-  'sys_yes_no',
-  'sys_normal_disable'
-])
+const dictStore = useDictStore()
 
 // 计算属性：字典类别选项
 const dictCategoryOptions = computed(() => {
-  return getDictOptions('sys_dict_category') || []
+  return dictStore.getDictOptions('sys_dict_category') || []
 })
 
 // 计算属性：是否内置选项
 const yesNoOptions = computed(() => {
-  return getDictOptions('sys_yes_no') || []
+  return dictStore.getDictOptions('sys_yes_no') || []
 })
 
 // 计算属性：状态选项
 const normalDisableOptions = computed(() => {
-  return getDictOptions('sys_normal_disable') || []
+  return dictStore.getDictOptions('sys_normal_disable') || []
 })
 
 // === 表格列定义 ===
@@ -388,7 +384,7 @@ const queryFields: QueryField[] = [
     type: 'select' as const,
     props: {
       dictType: 'sys_yes_no',
-      type: 'select'
+      type: 'radio'
     }
   }
 ]
@@ -413,7 +409,11 @@ const loadDictTypeList = async () => {
     console.log('[加载字典类型] 开始加载，参数:', queryParams.value)
     
     // 确保字典数据已加载
-    await loadAllDictData()
+    await dictStore.loadDicts([
+      'sys_dict_category',
+      'sys_yes_no',
+      'sys_normal_disable'
+    ])
     console.log('[加载字典类型] 字典数据加载完成')
     
     // 加载列表数据
@@ -708,8 +708,8 @@ onMounted(async () => {
       }),
       
       // 加载字典数据
-      useDictData(['sys_dict_category', 'sys_yes_no', 'sys_normal_disable']).loadAllDictData().catch(error => {
-        console.error('[页面初始化] 加载字典数据失败:', error)
+      dictStore.loadDicts(['sys_dict_category', 'sys_yes_no', 'sys_normal_disable']).catch(error => {
+        console.error('加载字典数据失败:', error)
         message.error('加载字典数据失败')
       })
     ])

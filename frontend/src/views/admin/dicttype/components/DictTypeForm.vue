@@ -170,7 +170,7 @@ import type { FormInstance } from 'ant-design-vue'
 import type { RuleObject } from 'ant-design-vue/es/form'
 import type { HbtDictType } from '@/types/admin/hbtDictType'
 import type { HbtStatus } from '@/types/base'
-import { useDictData } from '@/hooks/useDictData'
+import { useDictStore } from '@/stores/dict'
 import { useUserStore } from '@/stores/user'
 
 const { t } = useI18n()
@@ -203,25 +203,21 @@ const formRef = ref<FormInstance>()
 const activeTab = ref('basic')
 
 // === 字典数据 ===
-const { dictDataMap, getDictOptions, reloadDictData } = useDictData([
-  'sys_dict_category',
-  'sys_yes_no',
-  'sys_normal_disable'
-])
+const dictStore = useDictStore()
 
 // 计算属性：字典类别选项
 const dictCategoryOptions = computed(() => {
-  return getDictOptions('sys_dict_category')
+  return dictStore.getDictOptions('sys_dict_category')
 })
 
 // 计算属性：是否内置选项
 const yesNoOptions = computed(() => {
-  return getDictOptions('sys_yes_no')
+  return dictStore.getDictOptions('sys_yes_no')
 })
 
 // 计算属性：状态选项
 const normalDisableOptions = computed(() => {
-  return getDictOptions('sys_normal_disable')
+  return dictStore.getDictOptions('sys_normal_disable')
 })
 
 const formState = ref<Partial<HbtDictType>>({
@@ -406,7 +402,11 @@ const sqlHelpFields = [
 
 // === 生命周期钩子 ===
 onMounted(() => {
-  // useDictData hook 会自动加载字典数据，不需要手动加载
+  dictStore.loadDicts([
+    'sys_dict_category',
+    'sys_yes_no',
+    'sys_normal_disable'
+  ])
 })
 </script>
 
