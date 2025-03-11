@@ -54,7 +54,7 @@
                   v-else-if="field.type === 'select'"
                   v-model:value="formState[field.name]"
                   :placeholder="field.placeholder || t('common.form.placeholder.select')"
-                  :options="field.options"
+                  v-bind="field.props"
                   :allow-clear="true"
                   :mode="field.mode"
                   :disabled="field.disabled"
@@ -205,6 +205,7 @@ interface QueryField {
   disabled?: boolean // 是否禁用
   colon?: boolean // 是否显示冒号
   mode?: 'multiple' | 'tags' // 选择模式
+  props?: any // Additional props for hbt-select
 }
 
 interface Props {

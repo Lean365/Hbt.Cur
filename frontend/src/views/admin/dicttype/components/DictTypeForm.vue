@@ -62,9 +62,10 @@
             </a-col>
             <a-col :span="12">
               <a-form-item :label="t('admin.dicttype.form.category')" name="dictCategory">
-                <hbt-dict-select
+                <hbt-select
                   v-model:value="formState.dictCategory"
                   dict-type="sys_dict_category"
+                  type="radio"
                   :placeholder="t('admin.dicttype.form.categoryPlaceholder')"
                   allow-clear
                 />
@@ -72,9 +73,10 @@
             </a-col>
             <a-col :span="12">
               <a-form-item :label="t('admin.dicttype.form.builtin')" name="dictBuiltin">
-                <hbt-dict-select
+                <hbt-select
                   v-model:value="formState.dictBuiltin"
                   dict-type="sys_yes_no"
+                  type="radio"
                   :placeholder="t('admin.dicttype.form.builtinPlaceholder')"
                   allow-clear
                 />
@@ -92,9 +94,10 @@
             </a-col>
             <a-col :span="12">
               <a-form-item :label="t('admin.dicttype.form.status')" name="status">
-                <hbt-dict-select
+                <hbt-select
                   v-model:value="formState.status"
                   dict-type="sys_normal_disable"
+                  type="radio"
                   :placeholder="t('admin.dicttype.form.statusPlaceholder')"
                   allow-clear
                 />
@@ -168,6 +171,7 @@ import type { RuleObject } from 'ant-design-vue/es/form'
 import type { HbtDictType } from '@/types/admin/hbtDictType'
 import type { HbtStatus } from '@/types/base'
 import { useDictData } from '@/hooks/useDictData'
+import { useUserStore } from '@/stores/user'
 
 const { t } = useI18n()
 
@@ -191,6 +195,7 @@ const emit = defineEmits<{
   (e: 'update:open', value: boolean): void
   (e: 'ok', values: Partial<HbtDictType>): void
   (e: 'cancel'): void
+  (e: 'auth-error'): void
 }>()
 
 // === 状态定义 ===
@@ -198,7 +203,7 @@ const formRef = ref<FormInstance>()
 const activeTab = ref('basic')
 
 // === 字典数据 ===
-const { dictDataMap, reloadDictData } = useDictData([
+const { dictDataMap, getDictOptions, reloadDictData } = useDictData([
   'sys_dict_category',
   'sys_yes_no',
   'sys_normal_disable'
@@ -206,17 +211,17 @@ const { dictDataMap, reloadDictData } = useDictData([
 
 // 计算属性：字典类别选项
 const dictCategoryOptions = computed(() => {
-  return dictDataMap.value['sys_dict_category'] || []
+  return getDictOptions('sys_dict_category')
 })
 
 // 计算属性：是否内置选项
 const yesNoOptions = computed(() => {
-  return dictDataMap.value['sys_yes_no'] || []
+  return getDictOptions('sys_yes_no')
 })
 
 // 计算属性：状态选项
 const normalDisableOptions = computed(() => {
-  return dictDataMap.value['sys_normal_disable'] || []
+  return getDictOptions('sys_normal_disable')
 })
 
 const formState = ref<Partial<HbtDictType>>({
@@ -243,7 +248,15 @@ const rules: Record<string, RuleObject[]> = {
   ],
   dictType: [
     { required: true, message: t('admin.dicttype.rules.typeRequired'), trigger: 'blur' },
-    { pattern: /^[a-zA-Z][a-zA-Z0-9_]{2,100}$/, message: t('admin.dicttype.rules.typePattern'), trigger: 'blur' }
+    { pattern: /^[a-zA-Z][a-zA-Z0-9_]{2,100}$/, message: t('admin.dicttype.rules.typePattern'), trigger: 'blur' },
+    {
+      validator: async (_rule: RuleObject, value: string) => {
+        if (formState.value.dictCategory === 1 && !value.startsWith('sql_')) {
+          throw new Error(t('admin.dicttype.rules.typeSqlPrefix'))
+        }
+      },
+      trigger: 'change'
+    }
   ],
   dictCategory: [
     { required: true, message: t('admin.dicttype.rules.categoryRequired'), trigger: 'change' }
@@ -284,21 +297,91 @@ watch(
   { immediate: true }
 )
 
+// 监听字典类别变化
+watch(
+  () => formState.value.dictCategory,
+  (newCategory) => {
+    // 如果是新建（即没有dictBuiltin值）时，根据类别设置默认值
+    if (formState.value.dictBuiltin === undefined) {
+      // 系统类型(0)默认为内置(1)，业务类型(1)默认为非内置(0)
+      formState.value.dictBuiltin = newCategory === 0 ? 1 : 0
+    }
+  }
+)
+
+// 监听dictName和dictType变化，自动生成备注
+watch(
+  () => formState.value.dictName,
+  (newName) => {
+    if (newName && formState.value.dictType) {
+      formState.value.remark = `${newName}字典(${formState.value.dictType})`
+    }
+  }
+)
+
+watch(
+  () => formState.value.dictType,
+  (newType) => {
+    if (formState.value.dictName && newType) {
+      formState.value.remark = `${formState.value.dictName}字典(${newType})`
+    }
+  }
+)
+
 // === 方法定义 ===
 const handleOk = async () => {
   try {
+    // 表单验证
     await formRef.value?.validate()
-    emit('ok', formState.value)
+    
+    // 权限检查
+    if (!hasPermission('admin:dicttype:create')) {
+      message.error(t('common.auth.noPermission', { action: t('common.action.create'), resource: t('admin.dicttype.name') }))
+      emit('auth-error')
+      return
+    }
+
+    // 构建提交数据
+    const submitData = {
+      ...formState.value,
+      dictCategory: formState.value.dictCategory ?? 0,
+      dictBuiltin: formState.value.dictBuiltin ?? 0,
+      status: formState.value.status ?? 0,
+      remark: formState.value.remark || `${formState.value.dictName}字典(${formState.value.dictType})`
+    }
+
+    // 发送数据
+    emit('ok', submitData)
   } catch (error: any) {
-    console.error('表单验证失败:', error)
-    if (error.response?.status === 403) {
-      message.error('您没有操作权限')
-    } else if (error.message) {
-      message.error(error.message)
+    console.error('[DictTypeForm] 表单提交失败:', error)
+    
+    if (error.response) {
+      const { status, data } = error.response
+      switch (status) {
+        case 403:
+          message.error(data?.msg || t('common.auth.accessDenied'))
+          emit('auth-error')
+          break
+        case 401:
+          message.error(t('common.auth.sessionExpired'))
+          emit('auth-error')
+          break
+        default:
+          message.error(data?.msg || t('common.error.submitFailed'))
+      }
+    } else if (error.message?.includes('validation')) {
+      // 表单验证错误
+      message.error(t('common.error.validationFailed'))
     } else {
-      message.error('表单提交失败，请稍后重试')
+      message.error(t('common.error.submitFailed'))
     }
   }
+}
+
+// 权限检查函数
+const hasPermission = (permission: string): boolean => {
+  const userStore = useUserStore()
+  return userStore.permissions?.includes(permission) ?? false
 }
 
 const handleCancel = () => {

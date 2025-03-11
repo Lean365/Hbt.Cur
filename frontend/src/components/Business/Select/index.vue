@@ -102,12 +102,24 @@ const emit = defineEmits<{
 }>()
 
 // 加载字典数据
-const { dictDataMap } = props.dictType 
+const { dictDataMap, getDictOptions } = props.dictType 
   ? useDictData([props.dictType])
-  : { dictDataMap: ref<Record<string, DictOption[]>>({}) }
+  : { dictDataMap: ref<Map<string, DictOption[]>>(new Map()), getDictOptions: () => [] }
+
+// 显示选项
+const displayOptions = computed(() => {
+  if (props.options && props.options.length > 0) {
+    return props.options
+  }
+  if (props.dictType) {
+    return getDictOptions(props.dictType)
+  }
+  return []
+})
 
 // 根据type确定使用哪个组件
 const controlComponent = computed(() => {
+  //console.log('[HbtSelect] type:', props.type)
   switch (props.type) {
     case 'radio':
       return 'a-radio-group'
@@ -134,6 +146,7 @@ const localizedPlaceholder = computed(() => {
 // 根据控件类型设置不同的属性
 const controlProps = computed(() => {
   const baseProps = { ...attrs }
+  //console.log('[HbtSelect] controlProps type:', props.type)
   
   switch (props.type) {
     case 'select':
@@ -153,11 +166,19 @@ const controlProps = computed(() => {
       }
     case 'radio':
     case 'radio-button':
+      return {
+        ...baseProps,
+        optionType: props.type === 'radio-button' ? 'button' : 'default',
+        options: displayOptions.value,
+        placeholder: localizedPlaceholder.value,
+        buttonStyle: props.type === 'radio-button' ? 'solid' : undefined,
+        direction: 'horizontal'
+      }
     case 'checkbox':
     case 'checkbox-group':
       return {
         ...baseProps,
-        options: mergedOptions.value,
+        options: displayOptions.value,
         placeholder: localizedPlaceholder.value
       }
     case 'switch':
@@ -181,44 +202,54 @@ const controlProps = computed(() => {
 // 将数值类型转换为字符串用于内部显示
 const innerValue = computed({
   get: () => {
-    if (props.value === undefined || props.value === null) return props.value
+    const originalValue = props.value
+    //console.log('[HbtSelect] get value 开始:', originalValue, 'type:', props.type)
     
+    if (originalValue === undefined || originalValue === null) {
+      //console.log('[HbtSelect] get value 返回 undefined/null')
+      return originalValue
+    }
+    
+    let result
     switch (props.type) {
-      case 'switch':
-        return props.value === props.checkedValue
-      case 'checkbox':
-      case 'checkbox-group':
-        return Array.isArray(props.value) 
-          ? props.value.map(String)
-          : [String(props.value)]
+      case 'select':
+      case 'radio':
+      case 'radio-button':
+        result = Number(originalValue)
+        //console.log('[HbtSelect] select/radio 转换结果:', result)
+        return result
       default:
-        return Array.isArray(props.value)
-          ? props.value.map(String)
-          : String(props.value)
+        result = Array.isArray(originalValue)
+          ? originalValue.map(String)
+          : String(originalValue)
+        //console.log('[HbtSelect] 默认转换结果:', result)
+        return result
     }
   },
   set: (val) => {
+    //console.log('[HbtSelect] set value 开始:', val, 'type:', props.type)
+    
     if (val === undefined || val === null) {
+      //console.log('[HbtSelect] set value 发送 undefined/null')
       emit('update:value', val)
       return
     }
     
     let newVal
     switch (props.type) {
-      case 'switch':
-        newVal = val ? props.checkedValue : props.uncheckedValue
-        break
-      case 'checkbox':
-      case 'checkbox-group':
-        newVal = Array.isArray(val)
-          ? val.map(v => Number(v))
-          : [Number(val)]
+      case 'select':
+      case 'radio':
+      case 'radio-button':
+        newVal = Number(val)
+        //console.log('[HbtSelect] select/radio 转换结果:', newVal)
         break
       default:
         newVal = Array.isArray(val)
           ? val.map(v => Number(v))
           : Number(val)
+        //console.log('[HbtSelect] 默认转换结果:', newVal)
     }
+    //console.log('[HbtSelect] 最终发送值:', newVal)
     emit('update:value', newVal)
   }
 })
@@ -226,25 +257,9 @@ const innerValue = computed({
 // 合并选项
 const mergedOptions = computed(() => {
   if (props.dictType && dictDataMap.value) {
-    return dictDataMap.value[props.dictType] || []
+    return dictDataMap.value.get(props.dictType) || []
   }
   return props.options || []
-})
-
-// 显示的选项
-const displayOptions = computed(() => {
-  const options = mergedOptions.value
-  if (!options.length) return []
-  
-  if (props.remote && keyword.value) {
-    return options.filter((option: DefaultOptionType) => 
-      String(option.label)
-        .toLowerCase()
-        .includes(keyword.value.toLowerCase())
-    )
-  }
-  
-  return options
 })
 
 // 处理change事件

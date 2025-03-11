@@ -11,6 +11,8 @@ export default {
         categoryPlaceholder: 'Please select dictionary category',
         status: 'Status',
         statusPlaceholder: 'Please select status',
+        builtin:'Builtin',
+        builtinPlaceholder:'Please select builtin',
         tenantId: 'Tenant ID',
         orderNum: 'Order Number',
         sqlScript: 'SQL Script',

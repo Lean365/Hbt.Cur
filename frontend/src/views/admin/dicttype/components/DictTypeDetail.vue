@@ -10,34 +10,47 @@
 <template>
   <hbt-modal
     :open="open"
-    :title="t('dictType.detail.title')"
+    :title="t('common.title.detail')"
     :width="500"
     :footer="null"
     @update:open="(val) => emit('update:open', val)"
     @cancel="handleClose"
   >
     <a-descriptions :column="1" bordered>
-      <a-descriptions-item :label="t('dictType.form.name')">
+      <a-descriptions-item :label="t('admin.dicttype.form.name')">
         {{ model?.dictName }}
       </a-descriptions-item>
-      <a-descriptions-item :label="t('dictType.form.type')">
+      <a-descriptions-item :label="t('admin.dicttype.form.type')">
         {{ model?.dictType }}
       </a-descriptions-item>
-      <a-descriptions-item :label="t('dictType.form.category')">
-        {{ model?.dictCategory === 0 ? t('dictType.category.system') : t('dictType.category.sql') }}
+      <a-descriptions-item :label="t('admin.dicttype.form.category')">
+        <hbt-dict-tag dict-type="sys_dict_category" :value="model?.dictCategory ?? ''" />
       </a-descriptions-item>
-      <a-descriptions-item :label="t('dictType.form.orderNum')">
+      <a-descriptions-item :label="t('admin.dicttype.form.builtin')">
+        <hbt-dict-tag dict-type="sys_yes_no" :value="model?.dictBuiltin ?? ''" />
+      </a-descriptions-item>
+      <a-descriptions-item :label="t('admin.dicttype.form.sqlScript')" v-if="model?.dictCategory === 1">
+        {{ model?.sqlScript || '-' }}
+      </a-descriptions-item>
+      <a-descriptions-item :label="t('admin.dicttype.form.orderNum')">
         {{ model?.orderNum }}
       </a-descriptions-item>
-      <a-descriptions-item :label="t('dictType.form.status')">
-        <a-tag :color="model?.status === 0 ? 'success' : 'error'">
-          {{ model?.status === 0 ? t('common.status.normal') : t('common.status.disabled') }}
-        </a-tag>
+      <a-descriptions-item :label="t('admin.dicttype.form.status')">
+        <hbt-dict-tag dict-type="sys_normal_disable" :value="model?.status ?? ''" />
       </a-descriptions-item>
-      <a-descriptions-item :label="t('dictType.form.remark')">
-        {{ model?.remark }}
+      <a-descriptions-item :label="t('admin.dicttype.form.tenantId')">
+        {{ model?.tenantId }}
+      </a-descriptions-item>
+      <a-descriptions-item :label="t('common.datetime.createTime')">
+        {{ model?.createTime }}
+      </a-descriptions-item>
+      <a-descriptions-item :label="t('admin.dicttype.form.remark')">
+        {{ model?.remark || '-' }}
       </a-descriptions-item>
     </a-descriptions>
+    <div class="detail-footer">
+      <a-button @click="handleClose">{{ t('common.actions.close') }}</a-button>
+    </div>
   </hbt-modal>
 </template>
 
@@ -71,4 +84,11 @@ const handleClose = () => {
   emit('update:open', false)
   emit('close')
 }
-</script> 
+</script>
+
+<style lang="less" scoped>
+.detail-footer {
+  margin-top: 24px;
+  text-align: right;
+}
+</style> 

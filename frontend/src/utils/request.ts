@@ -9,11 +9,23 @@ import { getDeviceInfo } from '@/utils/device'
 
 const { t } = i18n.global
 
+interface CustomAxiosRequestConfig extends AxiosRequestConfig {
+  retries?: number
+  retryDelay?: number
+  retryCount?: number
+}
+
 // 创建axios实例
 const service: AxiosInstance & { download?: Function } = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
-  timeout: 10000
-})
+  timeout: 100000000000000
+}) as AxiosInstance & { download?: Function }
+
+// 设置默认重试配置
+const defaultRetryConfig = {
+  retries: 3,
+  retryDelay: 1000
+}
 
 // 请求拦截器
 service.interceptors.request.use(
@@ -116,100 +128,23 @@ service.interceptors.request.use(
 service.interceptors.response.use(
   (response) => {
     const res = response.data
-    
-    // 详细记录响应信息
     console.log('[Response Interceptor] 收到响应:', {
       url: response.config.url,
-      method: response.config.method,
       status: response.status,
-      statusText: response.statusText,
-      data: res,
-      headers: response.headers
+      data: res
     })
 
-    // 二进制数据直接返回
+    // 如果是二进制数据，直接返回
     if (response.request.responseType === 'blob' || response.request.responseType === 'arraybuffer') {
       return response.data
     }
 
-    // 检查响应数据结构
-    if (!res || typeof res !== 'object') {
-      console.error('[Response Interceptor] 响应数据格式错误:', res)
-      return Promise.reject(new Error(t('common.message.invalidResponse')))
-    }
-
-    // 标准API响应处理
-    if ('code' in res) {
-      if (res.code === 200) {
-        return res
-
-      }
-      // 业务失败
-      const errorKey = res.msg || 'common.message.systemError'
-      const errorMessage = t(errorKey, errorKey)
-      console.error('[Response Interceptor] 业务错误:', {
-        code: res.code,
-        message: errorMessage,
-        data: res.data
-      })
-      message.error(errorMessage)
-      return Promise.reject(new Error(errorMessage))
-    }
-
-    // 非标准响应，尝试规范化
-    return {
-      code: response.status,
-      msg: response.statusText,
-      data: res
-    }
+    // 直接返回响应数据
+    return res
   },
   (error) => {
-    console.error('[Response Interceptor] 响应错误:', {
-      config: error.config,
-      code: error.code,
-      message: error.message,
-      response: error.response
-    })
-    
-    if (error.code === 'ERR_NETWORK' || error.code === 'ECONNABORTED') {
-      message.error(t('common.message.backendNotStarted'))
-      return Promise.reject(error)
-    }
-
-    if (error.response) {
-      const { status, data } = error.response
-      let errorKey = 'common.message.serverError'
-
-      switch (status) {
-        case 400:
-          errorKey = data.msg || 'common.message.invalidRequest'
-          break
-        case 401:
-          errorKey = data.msg || 'common.message.unauthorized'
-          // 清除token并跳转到登录页
-          const userStore = useUserStore()
-          userStore.logout()
-          break
-        case 403:
-          errorKey = 'common.message.forbidden'
-          // 不再自动重定向到 403 页面，只显示错误消息
-          break
-        case 404:
-          errorKey = 'common.message.notFound'
-          break
-        case 500:
-          errorKey = data.msg || 'common.message.serverError'
-          break
-        default:
-          errorKey = `common.message.httpError.${status}`
-      }
-
-      const errorMessage = t(errorKey, errorKey)
-      message.error(errorMessage)
-      return Promise.reject(new Error(errorMessage))
-    }
-    
-    message.error(t('common.message.networkError'))
+    console.error('[Response Interceptor] 响应错误:', error.message)
+    message.error(error.message || '请求失败')
     return Promise.reject(error)
   }
 )

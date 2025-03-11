@@ -59,26 +59,32 @@ export interface BaseEntity {
  * 分页查询参数
  */
 export interface PageQuery {
-  pageNum: number
+  /** 当前页索引 */
+  pageIndex: number
+  
+  /** 每页大小 */
   pageSize: number
-  beginTime?: string
-  endTime?: string
 }
 
 /**
  * 分页结果接口
+ * @template T 数据类型
  */
 export interface PageResult<T> {
-  /** 当前页码 */
-  pageIndex: number
-  /** 每页条数 */
-  pageSize: number
-  /** 数据行 */
-  rows: T[]
-  /** 总条数 */
+  /** 总记录数 */
   totalNum: number
+  
+  /** 当前页索引 */
+  pageIndex: number
+  
+  /** 每页大小 */
+  pageSize: number
+  
   /** 总页数 */
   totalPage: number
+  
+  /** 数据列表 */
+  rows: T[]
 }
 
 /**

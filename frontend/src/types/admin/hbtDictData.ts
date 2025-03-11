@@ -8,6 +8,7 @@
 //===================================================================
 
 import type { HbtStatus } from '@/types/base'
+import type { BaseQuery } from '@/types/base'
 
 /**
  * 字典数据对象
@@ -54,11 +55,7 @@ export interface HbtDictData {
 /**
  * 字典数据查询参数
  */
-export interface HbtDictDataQuery {
-  /** 页码 */
-  pageNum: number
-  /** 每页条数 */
-  pageSize: number
+export interface HbtDictDataQuery extends BaseQuery {
   /** 字典类型ID */
   dictTypeId?: number
   /** 字典类型 */
@@ -115,4 +112,24 @@ export interface HbtDictDataStatus {
   dictDataId: number
   /** 状态（0正常 1停用） */
   status: HbtStatus
+}
+
+/**
+ * 字典数据选项
+ */
+export interface DictOption {
+  /** 标签 */
+  label: string
+  /** 值 */
+  value: number
+  /** CSS类名 */
+  cssClass?: number
+  /** 列表类名 */
+  listClass?: number
+  /** 扩展标签 */
+  extLabel?: string
+  /** 扩展值 */
+  extValue?: string
+  /** 翻译键 */
+  transKey?: string
 } 

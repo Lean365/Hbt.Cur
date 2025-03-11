@@ -8,6 +8,7 @@
 //===================================================================
 
 import type { HbtStatus } from '@/types/base'
+import type { BaseQuery } from '@/types/base'
 
 /**
  * 字典类型对象
@@ -40,11 +41,7 @@ export interface HbtDictType {
 /**
  * 字典类型查询参数
  */
-export interface HbtDictTypeQuery {
-  /** 页码 */
-  pageNum: number
-  /** 每页条数 */
-  pageSize: number
+export interface HbtDictTypeQuery extends BaseQuery {
   /** 字典名称 */
   dictName?: string
   /** 字典类型 */

@@ -8,6 +8,7 @@
 //===================================================================
 
 import type { HbtStatus } from '@/types/base'
+import type { BaseQuery } from '@/types/base'
 
 /**
  * 翻译对象
@@ -44,13 +45,7 @@ export interface HbtTranslation {
 /**
  * 翻译查询参数
  */
-export interface HbtTranslationQuery {
-  /** 页码 */
-  pageNum?: number
-  /** 每页条数 */
-  pageSize?: number
-  /** 页码(后端参数) */
-  pageIndex?: number
+export interface HbtTranslationQuery extends BaseQuery {
   /** 语言代码 */
   langCode?: string
   /** 模块名称 */

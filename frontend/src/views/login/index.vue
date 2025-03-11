@@ -256,7 +256,7 @@ const handleLogin = async () => {
         throw new Error(t('identity.auth.login.error.saltError'))
       }
 
-      console.log('[密码加密] 开始加密密码')
+      //console.log('[密码加密] 开始加密密码')
       
       // 使用PBKDF2加密原始密码
       const hashedPassword = PasswordEncryptor.hashPassword(
@@ -265,12 +265,12 @@ const handleLogin = async () => {
         saltData.iterations
       )
       
-      console.log('[登录参数] 开始构造登录参数:', {
-        userName: loginForm.userName,
-        tenantId: loginForm.tenantId,
-        hasPasswordLength: hashedPassword.length,
-        deviceInfo: loginForm.deviceInfo
-      })
+      //console.log('[登录参数] 开始构造登录参数:', {
+        //userName: loginForm.userName,
+        //tenantId: loginForm.tenantId,
+        //hasPasswordLength: hashedPassword.length,
+        //deviceInfo: loginForm.deviceInfo
+      //})
 
       // 构造登录参数
       const loginParams: LoginParams = {
@@ -290,9 +290,9 @@ const handleLogin = async () => {
       }
 
       // 执行登录
-      console.log('[登录请求] 开始调用登录接口')
+      //console.log('[登录请求] 开始调用登录接口')
       const result = await userStore.login(loginParams)
-      console.log('[登录请求] 登录接口返回:', result)
+      //console.log('[登录请求] 登录接口返回:', result)
       if (result) {
         handleLoginSuccess()
       }
@@ -332,7 +332,7 @@ const handleLoginSuccess = async () => {
     // 登录成功后跳转到工作台
     await router.push('/dashboard/workplace')
   } catch (error) {
-    console.error('登录后处理失败:', error)
+    //console.error('登录后处理失败:', error)
     message.error(t('identity.auth.login.failed'))
   }
 }

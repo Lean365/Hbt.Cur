@@ -110,23 +110,24 @@ const handleRefresh = async () => {
 
   try {
     // 获取当前路由信息
-    const { fullPath, meta } = router.currentRoute.value
+    const currentRoute = router.currentRoute.value
+    if (!currentRoute) {
+      throw new Error('当前路由信息不存在')
+    }
+    
+    const { fullPath, meta } = currentRoute
     
     // 如果是 PageTabs 组件的页面，需要保持 tab 状态
-    if (meta.keepAlive) {
+    if (meta?.keepAlive) {
       // 清除组件缓存
       const el = document.querySelector(`[data-key="${fullPath}"]`)
       if (el) {
         // 使用类型断言来访问Vue内部属性
         const vueEl = el as unknown as { __vueParentComponent: any }
-        if (vueEl.__vueParentComponent) {
+        if (vueEl?.__vueParentComponent?.ctx) {
           const vnode = vueEl.__vueParentComponent
-          if (vnode?.ctx?.deactivated) {
-            vnode.ctx.deactivated()
-          }
-          if (vnode?.ctx?.activated) {
-            vnode.ctx.activated()
-          }
+          vnode.ctx?.deactivated?.()
+          vnode.ctx?.activated?.()
         }
       }
     }
@@ -137,10 +138,10 @@ const handleRefresh = async () => {
     })
     
     // 显示刷新成功提示
-    message.success(t('refresh.success'))
+    message.success(t('header.refresh.success'))
   } catch (error) {
-    console.error('Refresh failed:', error)
-    message.error(t('refresh.failed'))
+    console.error('刷新失败:', error)
+    message.error(t('header.refresh.failed'))
   } finally {
     // 延迟关闭加载状态，让动画效果更流畅
     setTimeout(() => {

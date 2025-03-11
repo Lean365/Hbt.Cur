@@ -535,6 +535,136 @@ public class HbtDbSeedDictType
                 UpdateBy = "system",
                 UpdateTime = DateTime.Now
             },
+            new HbtDictType
+            {
+                DictName = "邮件状态",
+                DictType = "sys_mail_status",
+                OrderNum = 39,
+                Status = 0,
+                TenantId = 0,
+                Remark = "邮件状态字典",
+                CreateBy = "system",
+                CreateTime = DateTime.Now,
+                UpdateBy = "system",
+                UpdateTime = DateTime.Now
+            },
+            new HbtDictType
+            {
+                DictName = "邮件类型",
+                DictType = "sys_mail_type",
+                OrderNum = 40,
+                Status = 0,
+                TenantId = 0,
+                Remark = "邮件类型字典",
+                CreateBy = "system",
+                CreateTime = DateTime.Now,
+                UpdateBy = "system",
+                UpdateTime = DateTime.Now
+            },
+            new HbtDictType
+            {
+                DictName = "邮件优先级",
+                DictType = "sys_mail_priority",
+                OrderNum = 41,
+                Status = 0,
+                TenantId = 0,
+                Remark = "邮件优先级字典",
+                CreateBy = "system",
+                CreateTime = DateTime.Now,
+                UpdateBy = "system",
+                UpdateTime = DateTime.Now
+            },
+            new HbtDictType
+            {
+                DictName = "通知状态",
+                DictType = "sys_notify_status",
+                OrderNum = 42,
+                Status = 0,
+                TenantId = 0,
+                Remark = "通知状态字典",
+                CreateBy = "system",
+                CreateTime = DateTime.Now,
+                UpdateBy = "system",
+                UpdateTime = DateTime.Now
+            },
+            new HbtDictType
+            {
+                DictName = "通知类型",
+                DictType = "sys_notify_type",
+                OrderNum = 43,
+                Status = 0,
+                TenantId = 0,
+                Remark = "通知类型字典",
+                CreateBy = "system",
+                CreateTime = DateTime.Now,
+                UpdateBy = "system",
+                UpdateTime = DateTime.Now
+            },
+            new HbtDictType
+            {
+                DictName = "通知级别",
+                DictType = "sys_notify_level",
+                OrderNum = 44,
+                Status = 0,
+                TenantId = 0,
+                Remark = "通知级别字典",
+                CreateBy = "system",
+                CreateTime = DateTime.Now,
+                UpdateBy = "system",
+                UpdateTime = DateTime.Now
+            },
+            new HbtDictType
+            {
+                DictName = "任务状态",
+                DictType = "sys_task_status",
+                OrderNum = 45,
+                Status = 0,
+                TenantId = 0,
+                Remark = "任务状态字典",
+                CreateBy = "system",
+                CreateTime = DateTime.Now,
+                UpdateBy = "system",
+                UpdateTime = DateTime.Now
+            },
+            new HbtDictType
+            {
+                DictName = "任务类型",
+                DictType = "sys_task_type",
+                OrderNum = 46,
+                Status = 0,
+                TenantId = 0,
+                Remark = "任务类型字典",
+                CreateBy = "system",
+                CreateTime = DateTime.Now,
+                UpdateBy = "system",
+                UpdateTime = DateTime.Now
+            },
+            new HbtDictType
+            {
+                DictName = "任务执行策略",
+                DictType = "sys_task_policy",
+                OrderNum = 47,
+                Status = 0,
+                TenantId = 0,
+                Remark = "任务执行策略字典",
+                CreateBy = "system",
+                CreateTime = DateTime.Now,
+                UpdateBy = "system",
+                UpdateTime = DateTime.Now
+            },
+            new HbtDictType
+            {
+                DictName = "任务并发策略",
+                DictType = "sys_task_concurrent",
+                OrderNum = 48,
+                Status = 0,
+                TenantId = 0,
+                Remark = "任务并发策略字典",
+                CreateBy = "system",
+                CreateTime = DateTime.Now,
+                UpdateBy = "system",
+                UpdateTime = DateTime.Now
+            }
         };
 
         foreach (var dictType in defaultDictTypes)
