@@ -66,7 +66,7 @@ const theme = computed(() => themeStore.isDarkMode ? 'dark' : 'light')
 // 计算属性
 const antdLocale = computed(() => {
   const currentMessages = i18n.global.messages.value[locale.value as keyof typeof i18n.global.messages.value] || i18n.global.messages.value['zh-CN']
-  return (currentMessages as { antd: any }).antd || {}
+  return ((currentMessages as unknown) as { antd: any }).antd || {}
 })
 </script>
 

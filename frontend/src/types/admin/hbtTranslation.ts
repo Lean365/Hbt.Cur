@@ -7,13 +7,12 @@
 // 描述    : 翻译相关类型定义
 //===================================================================
 
-import type { HbtStatus } from '@/types/base'
-import type { BaseQuery } from '@/types/base'
+import type { HbtBaseEntity, HbtPageQuery } from '@/types/common'
 
 /**
  * 翻译对象
  */
-export interface HbtTranslation {
+export interface HbtTranslation extends HbtBaseEntity {
   /** 翻译ID */
   translationId: number
   /** 语言代码 */
@@ -27,25 +26,15 @@ export interface HbtTranslation {
   /** 排序号 */
   orderNum: number
   /** 状态（0正常 1停用） */
-  status: HbtStatus
-  /** 创建者 */
-  createBy?: string
-  /** 创建时间 */
-  createTime?: string
-  /** 更新者 */
-  updateBy?: string
-  /** 更新时间 */
-  updateTime?: string
+  status: number
   /** 备注 */
   remark?: string
-  /** 状态加载中 */
-  statusLoading?: boolean
 }
 
 /**
  * 翻译查询参数
  */
-export interface HbtTranslationQuery extends BaseQuery {
+export interface HbtTranslationQuery extends HbtPageQuery {
   /** 语言代码 */
   langCode?: string
   /** 模块名称 */
@@ -55,7 +44,7 @@ export interface HbtTranslationQuery extends BaseQuery {
   /** 翻译值 */
   transValue?: string
   /** 状态（0正常 1停用） */
-  status?: HbtStatus
+  status?: number
 }
 
 /**
@@ -73,7 +62,7 @@ export interface HbtTranslationCreate {
   /** 排序号 */
   orderNum: number
   /** 状态（0正常 1停用） */
-  status: HbtStatus
+  status: number
   /** 备注 */
   remark?: string
 }
@@ -93,7 +82,7 @@ export interface HbtTranslationStatus {
   /** 翻译ID */
   translationId: number
   /** 状态（0正常 1停用） */
-  status: HbtStatus
+  status: number
 }
 
 /**

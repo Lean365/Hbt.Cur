@@ -49,6 +49,7 @@ import type { SelectProps } from 'ant-design-vue'
 import { SelectValue, DefaultOptionType } from 'ant-design-vue/es/select'
 import { useDictStore } from '@/stores/dict'
 import type { DictOption } from '@/stores/dict'
+import type { HbtSelectOption } from '@/types/common'
 import { debounce } from 'lodash-es'
 import { useI18n } from 'vue-i18n'
 const { t } = useI18n()
@@ -200,54 +201,49 @@ const controlProps = computed(() => {
 // 将数值类型转换为字符串用于内部显示
 const innerValue = computed({
   get: () => {
-    const originalValue = props.value
-    //console.log('[HbtSelect] get value 开始:', originalValue, 'type:', props.type)
-    
+    const originalValue = props.value as string | number | undefined | null
     if (originalValue === undefined || originalValue === null) {
-      //console.log('[HbtSelect] get value 返回 undefined/null')
       return originalValue
     }
     
-    let result
-    switch (props.type) {
-      case 'select':
-      case 'radio':
-      case 'radio-button':
-        result = Number(originalValue)
-        //console.log('[HbtSelect] select/radio 转换结果:', result)
-        return result
-      default:
-        result = Array.isArray(originalValue)
-          ? originalValue.map(String)
-          : String(originalValue)
-        //console.log('[HbtSelect] 默认转换结果:', result)
-        return result
-    }
-  },
-  set: (val) => {
-    //console.log('[HbtSelect] set value 开始:', val, 'type:', props.type)
+    // 获取选中选项
+    const selectedOption = displayOptions.value.find(
+      opt => (opt as HbtSelectOption).value === originalValue
+    ) as HbtSelectOption | undefined
     
+    const valueType = selectedOption?.valueType || 'string'
+    
+    let result: SelectValue
+    switch (valueType) {
+      case 'number':
+        result = Number(originalValue)
+        break
+      default:
+        result = String(originalValue)
+    }
+    return result
+  },
+  set: (val: SelectValue) => {
     if (val === undefined || val === null) {
-      //console.log('[HbtSelect] set value 发送 undefined/null')
       emit('update:value', val)
       return
     }
     
-    let newVal
-    switch (props.type) {
-      case 'select':
-      case 'radio':
-      case 'radio-button':
+    // 获取选中选项
+    const selectedOption = displayOptions.value.find(
+      opt => (opt as HbtSelectOption).value === val
+    ) as HbtSelectOption | undefined
+    
+    const valueType = selectedOption?.valueType || 'string'
+    
+    let newVal: SelectValue
+    switch (valueType) {
+      case 'number':
         newVal = Number(val)
-        //console.log('[HbtSelect] select/radio 转换结果:', newVal)
         break
       default:
-        newVal = Array.isArray(val)
-          ? val.map(v => Number(v))
-          : Number(val)
-        //console.log('[HbtSelect] 默认转换结果:', newVal)
+        newVal = String(val)
     }
-    //console.log('[HbtSelect] 最终发送值:', newVal)
     emit('update:value', newVal)
   }
 })

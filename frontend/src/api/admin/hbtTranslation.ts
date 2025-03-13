@@ -8,7 +8,7 @@
 //===================================================================
 
 import request from '@/utils/request'
-import type { ApiResult, PageResult } from '@/types/base'
+import type { HbtApiResult, HbtPagedResult } from '@/types/common'
 import type { 
   HbtTranslation,
   HbtTranslationQuery,
@@ -24,7 +24,7 @@ import type {
  * @returns 翻译分页列表
  */
 export function getHbtTranslationList(query: HbtTranslationQuery) {
-  return request<ApiResult<PageResult<HbtTranslation>>>({
+  return request<HbtApiResult<HbtPagedResult<HbtTranslation>>>({
     url: '/api/HbtTranslation',
     method: 'get',
     params: query
@@ -37,7 +37,7 @@ export function getHbtTranslationList(query: HbtTranslationQuery) {
  * @returns 翻译详情
  */
 export function getHbtTranslation(transId: number) {
-  return request<ApiResult<HbtTranslation>>({
+  return request<HbtApiResult<HbtTranslation>>({
     url: `/api/HbtTranslation/${transId}`,
     method: 'get'
   })
@@ -49,7 +49,7 @@ export function getHbtTranslation(transId: number) {
  * @returns 翻译ID
  */
 export function createHbtTranslation(data: HbtTranslationCreate) {
-  return request<ApiResult<number>>({
+  return request<HbtApiResult<number>>({
     url: '/api/HbtTranslation',
     method: 'post',
     data
@@ -62,7 +62,7 @@ export function createHbtTranslation(data: HbtTranslationCreate) {
  * @returns 是否成功
  */
 export function updateHbtTranslation(data: HbtTranslationUpdate) {
-  return request<ApiResult<boolean>>({
+  return request<HbtApiResult<boolean>>({
     url: '/api/HbtTranslation',
     method: 'put',
     data
@@ -75,7 +75,7 @@ export function updateHbtTranslation(data: HbtTranslationUpdate) {
  * @returns 是否成功
  */
 export function deleteHbtTranslation(transId: number) {
-  return request<ApiResult<boolean>>({
+  return request<HbtApiResult<boolean>>({
     url: `/api/HbtTranslation/${transId}`,
     method: 'delete'
   })
@@ -87,7 +87,7 @@ export function deleteHbtTranslation(transId: number) {
  * @returns 是否成功
  */
 export function batchDeleteHbtTranslation(transIds: number[]) {
-  return request<ApiResult<boolean>>({
+  return request<HbtApiResult<boolean>>({
     url: '/api/HbtTranslation/batch',
     method: 'delete',
     data: transIds
@@ -103,7 +103,7 @@ export function batchDeleteHbtTranslation(transIds: number[]) {
 export function importHbtTranslation(file: File, sheetName: string = '翻译数据') {
   const formData = new FormData()
   formData.append('file', file)
-  return request<ApiResult<boolean>>({
+  return request<HbtApiResult<boolean>>({
     url: '/api/HbtTranslation/import',
     method: 'post',
     params: { sheetName },
@@ -147,7 +147,7 @@ export function getHbtTranslationTemplate() {
  * @returns 是否成功
  */
 export function updateHbtTranslationStatus(translationId: number, status: number) {
-  return request<ApiResult<boolean>>({
+  return request<HbtApiResult<boolean>>({
     url: `/api/HbtTranslation/${translationId}/status`,
     method: 'put',
     params: { status }
@@ -161,7 +161,7 @@ export function updateHbtTranslationStatus(translationId: number, status: number
  * @returns 翻译值
  */
 export function getHbtTranslationValue(langCode: string, transKey: string) {
-  return request<ApiResult<string>>({
+  return request<HbtApiResult<string>>({
     url: '/api/HbtTranslation/value',
     method: 'get',
     params: { langCode, transKey }
@@ -175,7 +175,7 @@ export function getHbtTranslationValue(langCode: string, transKey: string) {
  * @returns 翻译列表
  */
 export function getHbtTranslationsByModule(langCode: string, moduleName: string) {
-  return request<ApiResult<HbtTranslation[]>>({
+  return request<HbtApiResult<HbtTranslation[]>>({
     url: '/api/HbtTranslation/module',
     method: 'get',
     params: { langCode, moduleName }
@@ -188,7 +188,7 @@ export function getHbtTranslationsByModule(langCode: string, moduleName: string)
  * @returns 转置后的翻译数据
  */
 export function getHbtTransposedData(query: HbtTranslationQuery) {
-  return request<ApiResult<HbtTransposedData>>({
+  return request<HbtApiResult<HbtTransposedData>>({
     url: '/api/HbtTranslation/transposed',
     method: 'get',
     params: query

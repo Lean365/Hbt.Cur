@@ -11,6 +11,7 @@
   <div class="hbt-dict-type">
     <!-- 查询区域 -->
     <hbt-query
+      v-show="showSearch"
       :model="queryParams"
       :query-fields="queryFields"
       @search="handleQuery"
@@ -81,6 +82,8 @@
       @export="handleExport"
       @refresh="loadDictTypeList"
       @column-setting="handleColumnSetting"
+      @toggle-search="toggleSearch"
+      @toggle-fullscreen="toggleFullscreen"
     />
 
     <!-- 数据表格 -->
@@ -169,6 +172,25 @@
       :model="detailData"
       @close="handleDetailClose"
     />
+
+    <!-- 列设置抽屉 -->
+    <a-drawer
+      :visible="columnSettingVisible"
+      title="列设置"
+      placement="right"
+      width="300"
+      @close="columnSettingVisible = false"
+    >
+      <a-checkbox-group
+        :value="Object.keys(columnSettings).filter(key => columnSettings[key])"
+        @change="handleColumnSettingChange"
+        class="column-setting-group"
+      >
+        <div v-for="col in defaultColumns" :key="col.key" class="column-setting-item">
+          <a-checkbox :value="col.key">{{ col.title }}</a-checkbox>
+        </div>
+      </a-checkbox-group>
+    </a-drawer>
   </div>
 </template>
 
@@ -195,7 +217,7 @@ import {
   getHbtDictTypeByType
 } from '@/api/admin/hbtDictType'
 import type { HbtDictType, HbtDictTypeQuery, DictTypePageResult, HbtDictTypeCreate, HbtDictTypeUpdate } from '@/types/admin/hbtDictType'
-import type { ApiResult, HbtStatus } from '@/types/base'
+import type { HbtApiResult, HbtStatus } from '@/types/common'
 import type { HbtDictData } from '@/types/admin/hbtDictData'
 
 // 引入类型
@@ -216,6 +238,9 @@ const formData = ref<Partial<HbtDictTypeUpdate>>({})
 const detailVisible = ref(false)
 const detailLoading = ref(false)
 const detailData = ref<HbtDictType>()
+const showSearch = ref(true)
+const columnSettingVisible = ref(false)
+const columnSettings = ref<Record<string, boolean>>({})
 
 // === 查询参数 ===
 const queryParams = ref<HbtDictTypeQuery>({
@@ -256,7 +281,7 @@ const normalDisableOptions = computed(() => {
 })
 
 // === 表格列定义 ===
-const columns = [
+const defaultColumns = [
   {
     title: '字典名称',
     dataIndex: 'dictName',
@@ -347,6 +372,14 @@ const columns = [
     align: 'center'
   }
 ]
+
+// 计算属性：当前显示的列
+const columns = computed(() => {
+  if (!Object.keys(columnSettings.value).length) {
+    return defaultColumns
+  }
+  return defaultColumns.filter(col => columnSettings.value[col.key] !== false)
+})
 
 // === 查询字段定义 ===
 const queryFields: QueryField[] = [
@@ -672,7 +705,35 @@ const handleDetailClose = () => {
 
 // 列设置
 const handleColumnSetting = () => {
-  // TODO: 实现列设置功能
+  columnSettingVisible.value = true
+}
+
+// 处理列设置变更
+const handleColumnSettingChange = (checkedValue: Array<string | number | boolean>) => {
+  const settings: Record<string, boolean> = {}
+  defaultColumns.forEach(col => {
+    settings[col.key] = checkedValue.includes(col.key)
+  })
+  columnSettings.value = settings
+  // 保存到本地存储
+  localStorage.setItem('dictTypeColumnSettings', JSON.stringify(settings))
+}
+
+// 初始化列设置
+const initColumnSettings = () => {
+  const savedSettings = localStorage.getItem('dictTypeColumnSettings')
+  if (savedSettings) {
+    columnSettings.value = JSON.parse(savedSettings)
+  } else {
+    // 默认全选
+    const settings: Record<string, boolean> = {}
+    defaultColumns.forEach(col => {
+      settings[col.key] = true
+    })
+    columnSettings.value = settings
+    // 保存到本地存储
+    localStorage.setItem('dictTypeColumnSettings', JSON.stringify(settings))
+  }
 }
 
 // === 事件处理函数 ===
@@ -686,10 +747,22 @@ const handleSelectionChange = (selectedKeys: (string | number)[], selectedRows: 
   // 不需要在这里处理，因为使用了 v-model
 }
 
+// === 事件处理 ===
+const toggleSearch = (visible: boolean) => {
+  showSearch.value = visible
+}
+
+const toggleFullscreen = (isFullscreen: boolean) => {
+  console.log('切换全屏状态:', isFullscreen)
+}
+
 // === 生命周期钩子 ===
 onMounted(async () => {
   try {
     console.log('[页面初始化] 开始加载页面')
+    
+    // 初始化列设置
+    initColumnSettings()
     
     // 从路由中获取字典类型
     const dictType = route.query.dictType
@@ -725,5 +798,20 @@ onMounted(async () => {
 <style lang="less" scoped>
 .hbt-dict-type {
   padding: 24px;
+}
+
+.column-setting-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.column-setting-item {
+  padding: 8px;
+  border-bottom: 1px solid var(--ant-color-split);
+  
+  &:last-child {
+    border-bottom: none;
+  }
 }
 </style> 

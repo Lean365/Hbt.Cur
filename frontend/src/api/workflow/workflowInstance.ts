@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-import type { HbtApiResult } from '@/types/api'
+import type { HbtApiResult } from '@/types/common'
 import type { 
   WorkflowInstanceQuery, 
   WorkflowInstance,

@@ -8,8 +8,8 @@
 //===================================================================
 
 import request from '@/utils/request'
-import type { HbtStatus, ApiResult, PageResult } from '@/types/base'
-import type { 
+import type { HbtApiResult, HbtPagedResult } from '@/types/common'
+import type {
   HbtDictType,
   HbtDictTypeQuery,
   HbtDictTypeCreate,
@@ -24,7 +24,7 @@ import type {
  * @returns 字典类型分页列表
  */
 export function getHbtDictTypeList(query: HbtDictTypeQuery) {
-  return request<PageResult<HbtDictType>>({
+  return request<HbtApiResult<HbtPagedResult<HbtDictType>>>({
     url: '/api/HbtDictType',
     method: 'get',
     params: query
@@ -36,8 +36,8 @@ export function getHbtDictTypeList(query: HbtDictTypeQuery) {
  * @param dictTypeId 字典类型ID
  * @returns 字典类型详情
  */
-export function getHbtDictTypeById(dictTypeId: number) {
-  return request<ApiResult<HbtDictType>>({
+export function getHbtDictType(dictTypeId: number) {
+  return request<HbtApiResult<HbtDictType>>({
     url: `/api/HbtDictType/${dictTypeId}`,
     method: 'get'
   })
@@ -49,7 +49,7 @@ export function getHbtDictTypeById(dictTypeId: number) {
  * @returns 字典类型详情
  */
 export function getHbtDictTypeByType(type: string) {
-  return request<ApiResult<HbtDictType>>({
+  return request<HbtApiResult<HbtDictType>>({
     url: `/api/HbtDictType/type/${type}`,
     method: 'get'
   })
@@ -61,7 +61,7 @@ export function getHbtDictTypeByType(type: string) {
  * @returns 字典类型ID
  */
 export function createHbtDictType(data: HbtDictTypeCreate) {
-  return request<ApiResult<number>>({
+  return request<HbtApiResult<number>>({
     url: '/api/HbtDictType',
     method: 'post',
     data
@@ -74,7 +74,7 @@ export function createHbtDictType(data: HbtDictTypeCreate) {
  * @returns 是否成功
  */
 export function updateHbtDictType(data: HbtDictTypeUpdate) {
-  return request<ApiResult<boolean>>({
+  return request<HbtApiResult<boolean>>({
     url: '/api/HbtDictType',
     method: 'put',
     data
@@ -87,7 +87,7 @@ export function updateHbtDictType(data: HbtDictTypeUpdate) {
  * @returns 是否成功
  */
 export function deleteHbtDictType(dictTypeId: number) {
-  return request<ApiResult<boolean>>({
+  return request<HbtApiResult<boolean>>({
     url: `/api/HbtDictType/${dictTypeId}`,
     method: 'delete'
   })
@@ -99,7 +99,7 @@ export function deleteHbtDictType(dictTypeId: number) {
  * @returns 是否成功
  */
 export function batchDeleteHbtDictType(dictTypeIds: number[]) {
-  return request<ApiResult<boolean>>({
+  return request<HbtApiResult<boolean>>({
     url: '/api/HbtDictType/batch',
     method: 'delete',
     data: dictTypeIds
@@ -108,21 +108,28 @@ export function batchDeleteHbtDictType(dictTypeIds: number[]) {
 
 /**
  * 导入字典类型
- * @param data 导入数据
+ * @param file 文件对象
+ * @param sheetName 工作表名称
  * @returns 是否成功
  */
-export function importHbtDictType(data: HbtDictTypeImport[]) {
-  return request<ApiResult<boolean>>({
+export function importHbtDictType(file: File, sheetName: string = '字典类型') {
+  const formData = new FormData()
+  formData.append('file', file)
+  return request<HbtApiResult<boolean>>({
     url: '/api/HbtDictType/import',
     method: 'post',
-    data
+    params: { sheetName },
+    data: formData,
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
   })
 }
 
 /**
  * 导出字典类型
  * @param query 查询参数
- * @returns 导出数据
+ * @returns 文件流
  */
 export function exportHbtDictType(query: HbtDictTypeQuery) {
   return request<Blob>({
@@ -135,7 +142,7 @@ export function exportHbtDictType(query: HbtDictTypeQuery) {
 
 /**
  * 获取导入模板
- * @returns 模板数据
+ * @returns 文件流
  */
 export function getHbtDictTypeTemplate() {
   return request<Blob>({
@@ -151,8 +158,8 @@ export function getHbtDictTypeTemplate() {
  * @param status 状态
  * @returns 是否成功
  */
-export function updateHbtDictTypeStatus(dictTypeId: number, status: HbtStatus) {
-  return request<ApiResult<boolean>>({
+export function updateHbtDictTypeStatus(dictTypeId: number, status: number) {
+  return request<HbtApiResult<boolean>>({
     url: `/api/HbtDictType/${dictTypeId}/status`,
     method: 'put',
     params: { status }
@@ -165,7 +172,7 @@ export function updateHbtDictTypeStatus(dictTypeId: number, status: HbtStatus) {
  * @returns 返回SQL执行结果
  */
 export function executeDictSql(dictTypeId: number) {
-  return request<ApiResult<any[]>>({
+  return request<HbtApiResult<any[]>>({
     url: `/api/HbtDictType/executeSql/${dictTypeId}`,
     method: 'get'
   })

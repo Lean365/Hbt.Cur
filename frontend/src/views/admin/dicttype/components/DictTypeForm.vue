@@ -169,7 +169,7 @@ import { InfoCircleOutlined } from '@ant-design/icons-vue'
 import type { FormInstance } from 'ant-design-vue'
 import type { RuleObject } from 'ant-design-vue/es/form'
 import type { HbtDictType } from '@/types/admin/hbtDictType'
-import type { HbtStatus } from '@/types/base'
+import type { HbtStatus } from '@/types/common'
 import { useDictStore } from '@/stores/dict'
 import { useUserStore } from '@/stores/user'
 

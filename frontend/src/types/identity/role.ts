@@ -1,42 +1,39 @@
+import type { HbtBaseEntity, HbtPageQuery } from '@/types/common'
+
 // 角色查询参数
-export interface RoleQuery {
-  pageNum?: number;
-  pageSize?: number;
+export interface RoleQuery extends HbtPageQuery {
   roleName?: string;
   roleKey?: string;
-  status?: string;
+  status?: number;
   beginTime?: string;
   endTime?: string;
 }
 
 // 角色对象
-export interface Role {
+export interface Role extends HbtBaseEntity {
   roleId: number;
   roleName: string;
   roleKey: string;
-  roleSort: number;
-  dataScope: string;
-  menuCheckStrictly: boolean;
-  deptCheckStrictly: boolean;
-  status: string;
-  delFlag: string;
-  createBy: string;
-  createTime: string;
-  updateBy: string;
-  updateTime: string;
+  orderNum: number;
+  dataScope: number;
+  status: number;
+  tenantId: number;
   remark: string;
+  menuIds?: number[];
+  deptIds?: number[];
 }
 
 // 创建角色参数
 export interface RoleCreate {
   roleName: string;
   roleKey: string;
-  roleSort: number;
-  dataScope: string;
-  menuCheckStrictly: boolean;
-  deptCheckStrictly: boolean;
-  status: string;
+  orderNum: number;
+  dataScope: number;
+  status: number;
+  tenantId: number;
   remark?: string;
+  menuIds?: number[];
+  deptIds?: number[];
 }
 
 // 更新角色参数
@@ -47,5 +44,5 @@ export interface RoleUpdate extends RoleCreate {
 // 角色状态更新参数
 export interface RoleStatus {
   roleId: number;
-  status: string;
+  status: number;
 } 

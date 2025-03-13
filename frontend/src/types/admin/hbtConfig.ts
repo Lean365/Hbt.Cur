@@ -7,12 +7,12 @@
 // 描述    : 系统配置类型定义
 //===================================================================
 
-import type { HbtStatus } from '@/types/base'
+import type { HbtBaseEntity, HbtPageQuery } from '@/types/common'
 
 /**
  * 系统配置实体
  */
-export interface HbtConfig {
+export interface HbtConfig extends HbtBaseEntity {
   /** 配置ID */
   configId: number
   /** 配置名称 */
@@ -25,29 +25,21 @@ export interface HbtConfig {
   configBuiltin: number
   /** 备注 */
   remark: string
-  /** 状态 */
+  /** 状态（0正常 1停用） */
   status: number
-  /** 创建时间 */
-  createTime: string
-  /** 状态加载中 */
-  statusLoading?: boolean
 }
 
 /**
  * 系统配置查询参数
  */
-export interface HbtConfigQuery {
-  /** 页码 */
-  pageIndex: number
-  /** 每页条数 */
-  pageSize: number
+export interface HbtConfigQuery extends HbtPageQuery {
   /** 配置名称 */
   configName?: string
   /** 配置键名 */
   configKey?: string
   /** 系统内置 */
   configBuiltin?: number
-  /** 状态 */
+  /** 状态（0正常 1停用） */
   status?: number
 }
 
@@ -67,7 +59,7 @@ export interface HbtConfigCreate {
   orderNum: number
   /** 备注 */
   remark?: string
-  /** 状态 */
+  /** 状态（0正常 1停用） */
   status: number
 }
 
@@ -116,7 +108,7 @@ export interface HbtConfigStatusUpdate {
   /** 配置ID */
   configId: number
   /** 状态（0正常 1停用） */
-  status: HbtStatus
+  status: number
 }
 
 /**
@@ -142,7 +134,7 @@ export interface HbtConfigExport extends HbtConfigQuery {
  */
 export interface HbtConfigItem {
   /** 配置ID */
-  id: string
+  id: number
   /** 配置名称 */
   configName: string
   /** 配置键 */
@@ -151,8 +143,8 @@ export interface HbtConfigItem {
   configValue: string
   /** 是否系统配置 */
   isSystem: boolean
-  /** 状态 */
-  status: boolean
+  /** 状态（0正常 1停用） */
+  status: number
   /** 备注 */
   remark?: string
   /** 创建时间 */

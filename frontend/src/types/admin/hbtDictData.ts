@@ -7,13 +7,12 @@
 // 描述    : 字典数据相关类型定义
 //===================================================================
 
-import type { HbtStatus } from '@/types/base'
-import type { BaseQuery } from '@/types/base'
+import type { HbtBaseEntity, HbtPageQuery } from '@/types/common'
 
 /**
  * 字典数据对象
  */
-export interface HbtDictData {
+export interface HbtDictData extends HbtBaseEntity {
   /** 字典数据ID */
   dictDataId: number
   /** 字典类型ID */
@@ -31,31 +30,21 @@ export interface HbtDictData {
   /** 是否默认（0否 1是） */
   isDefault: number
   /** 状态（0正常 1停用） */
-  status: HbtStatus
+  status: number
   /** 扩展标签 */
   extLabel?: string
   /** 扩展值 */
   extValue?: string
   /** 国际化翻译键值 */
   transKey?: string
-  /** 创建者 */
-  createBy?: string
-  /** 创建时间 */
-  createTime?: string
-  /** 更新者 */
-  updateBy?: string
-  /** 更新时间 */
-  updateTime?: string
   /** 备注 */
   remark?: string
-  /** 状态加载中 */
-  statusLoading?: boolean
 }
 
 /**
  * 字典数据查询参数
  */
-export interface HbtDictDataQuery extends BaseQuery {
+export interface HbtDictDataQuery extends HbtPageQuery {
   /** 字典类型ID */
   dictTypeId?: number
   /** 字典类型 */
@@ -85,7 +74,7 @@ export interface HbtDictDataCreate {
   /** 是否默认（0否 1是） */
   isDefault: number
   /** 状态（0正常 1停用） */
-  status: HbtStatus
+  status: number
   /** 扩展标签 */
   extLabel?: string
   /** 扩展值 */
@@ -111,7 +100,7 @@ export interface HbtDictDataStatus {
   /** 字典数据ID */
   dictDataId: number
   /** 状态（0正常 1停用） */
-  status: HbtStatus
+  status: number
 }
 
 /**

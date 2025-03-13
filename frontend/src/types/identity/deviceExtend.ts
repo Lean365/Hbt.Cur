@@ -1,69 +1,116 @@
-// 设备扩展查询参数
-export interface DeviceExtendQuery {
-  pageNum?: number;
-  pageSize?: number;
+import type { HbtBaseEntity, HbtPageQuery } from '@/types/common'
+
+/**
+ * 设备扩展查询参数
+ */
+export interface DeviceExtendQuery extends HbtPageQuery {
+  /** 用户ID */
   userId?: number;
+  /** 设备ID */
   deviceId?: string;
-  deviceType?: string;
-  status?: string;
+  /** 设备类型（0=PC 1=移动设备 2=平板 3=其他） */
+  deviceType?: number;
+  /** 状态（0=正常 1=停用） */
+  status?: number;
+  /** 开始时间 */
   beginTime?: string;
+  /** 结束时间 */
   endTime?: string;
 }
 
-// 设备扩展对象
-export interface DeviceExtend {
+/**
+ * 设备扩展对象
+ */
+export interface DeviceExtend extends HbtBaseEntity {
+  /** ID */
   id: number;
+  /** 用户ID */
   userId: number;
+  /** 设备ID */
   deviceId: string;
-  deviceType: string;
+  /** 设备类型（0=PC 1=移动设备 2=平板 3=其他） */
+  deviceType: number;
+  /** 设备名称 */
   deviceName: string;
+  /** 设备型号 */
   deviceModel: string;
+  /** 操作系统版本 */
   osVersion: string;
-  browserType: string;
+  /** 浏览器类型（0=Chrome 1=Firefox 2=Safari 3=Edge 4=IE 5=Opera 6=其他） */
+  browserType: number;
+  /** 浏览器版本 */
   browserVersion: string;
+  /** IP地址 */
   ipAddress: string;
+  /** 地理位置 */
   location: string;
+  /** 最后登录时间 */
   lastLoginTime: string;
-  status: string;
-  createBy: string;
-  createTime: string;
-  updateBy: string;
-  updateTime: string;
-  remark: string;
-}
-
-// 创建设备扩展参数
-export interface DeviceExtendCreate {
-  userId: number;
-  deviceId: string;
-  deviceType: string;
-  deviceName: string;
-  deviceModel: string;
-  osVersion: string;
-  browserType: string;
-  browserVersion: string;
-  ipAddress: string;
-  location: string;
-  status: string;
+  /** 状态（0=正常 1=停用） */
+  status: number;
+  /** 备注 */
   remark?: string;
 }
 
-// 更新设备扩展参数
-export interface DeviceExtendUpdate extends DeviceExtendCreate {
-  id: number;
-}
-
-// 设备扩展状态更新参数
-export interface DeviceExtendStatus {
-  id: number;
-  status: string;
-}
-
-// 设备扩展在线时段更新参数
-export interface DeviceExtendOnlinePeriodUpdate {
+/**
+ * 创建设备扩展参数
+ */
+export interface DeviceExtendCreate {
+  /** 用户ID */
   userId: number;
+  /** 设备ID */
   deviceId: string;
+  /** 设备类型（0=PC 1=移动设备 2=平板 3=其他） */
+  deviceType: number;
+  /** 设备名称 */
+  deviceName: string;
+  /** 设备型号 */
+  deviceModel: string;
+  /** 操作系统版本 */
+  osVersion: string;
+  /** 浏览器类型（0=Chrome 1=Firefox 2=Safari 3=Edge 4=IE 5=Opera 6=其他） */
+  browserType: number;
+  /** 浏览器版本 */
+  browserVersion: string;
+  /** IP地址 */
+  ipAddress: string;
+  /** 地理位置 */
+  location: string;
+  /** 状态（0=正常 1=停用） */
+  status: number;
+  /** 备注 */
+  remark?: string;
+}
+
+/**
+ * 更新设备扩展参数
+ */
+export interface DeviceExtendUpdate extends DeviceExtendCreate {
+  /** ID */
+  id: number;
+}
+
+/**
+ * 设备扩展状态更新参数
+ */
+export interface DeviceExtendStatus {
+  /** ID */
+  id: number;
+  /** 状态（0=正常 1=停用） */
+  status: number;
+}
+
+/**
+ * 设备扩展在线时段更新参数
+ */
+export interface DeviceExtendOnlinePeriodUpdate {
+  /** 用户ID */
+  userId: number;
+  /** 设备ID */
+  deviceId: string;
+  /** 开始时间 */
   startTime: string;
+  /** 结束时间 */
   endTime: string;
 }
 

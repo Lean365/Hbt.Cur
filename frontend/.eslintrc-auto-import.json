@@ -327,6 +327,7 @@
     "UserInfoResponse": true,
     "useMenuStore": true,
     "DictOption": true,
-    "useDictStore": true
+    "useDictStore": true,
+    "useLanguageStore": true
   }
 }

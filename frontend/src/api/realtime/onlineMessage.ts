@@ -1,9 +1,9 @@
 import request from '@/utils/request'
-import type { HbtApiResult } from '@/types/api'
+import type { HbtApiResult } from '@/types/common'
 import type { 
   OnlineMessageQuery, 
   OnlineMessage,
-  OnlineMessageDto
+  OnlineMessageCreate
 } from '@/types/realtime/onlineMessage'
 
 // 获取在线消息列表
@@ -25,7 +25,7 @@ export function getOnlineMessage(id: number) {
 
 // 导出在线消息
 export function exportOnlineMessage(params: OnlineMessageQuery, sheetName: string = '在线消息信息') {
-  return request({
+  return request<Blob>({
     url: '/api/HbtOnlineMessage/export',
     method: 'get',
     params: { ...params, sheetName },
@@ -34,8 +34,8 @@ export function exportOnlineMessage(params: OnlineMessageQuery, sheetName: strin
 }
 
 // 保存消息
-export function saveOnlineMessage(data: OnlineMessageDto) {
-  return request<HbtApiResult<any>>({
+export function saveOnlineMessage(data: OnlineMessageCreate) {
+  return request<HbtApiResult<number>>({
     url: '/api/HbtOnlineMessage',
     method: 'post',
     data
@@ -44,7 +44,7 @@ export function saveOnlineMessage(data: OnlineMessageDto) {
 
 // 删除消息
 export function deleteOnlineMessage(id: number) {
-  return request<HbtApiResult<any>>({
+  return request<HbtApiResult<boolean>>({
     url: `/api/HbtOnlineMessage/${id}`,
     method: 'delete'
   })
@@ -52,7 +52,7 @@ export function deleteOnlineMessage(id: number) {
 
 // 清理过期消息
 export function cleanupExpiredMessages(days: number = 7) {
-  return request<HbtApiResult<any>>({
+  return request<HbtApiResult<number>>({
     url: '/api/HbtOnlineMessage/cleanup',
     method: 'post',
     params: { days }

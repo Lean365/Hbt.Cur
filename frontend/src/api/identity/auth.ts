@@ -7,14 +7,18 @@ import type {
   CaptchaResponse, 
   CaptchaResult 
 } from '@/types/identity/auth'
-import type { ApiResult } from '@/types/base'
+import type { HbtApiResult } from '@/types/common'
 
 /**
  * 登录
  * @param data 登录参数
  */
 export function login(data: LoginParams) {
-  return request.post<ApiResult<LoginResult>>('/api/auth/login', data)
+  return request<HbtApiResult<LoginResult>>({
+    url: '/api/auth/login',
+    method: 'post',
+    data
+  })
 }
 
 /**
@@ -22,7 +26,9 @@ export function login(data: LoginParams) {
  * @param username 用户名
  */
 export function getSalt(username: string) {
-  return request.get<ApiResult<SaltResponse>>('/api/auth/salt', {
+  return request<HbtApiResult<SaltResponse>>({
+    url: '/api/auth/salt',
+    method: 'get',
     params: { username }
   })
 }
@@ -31,7 +37,10 @@ export function getSalt(username: string) {
  * 登出
  */
 export function logout() {
-  return request.post<ApiResult<void>>('/api/auth/logout')
+  return request<HbtApiResult<void>>({
+    url: '/api/auth/logout',
+    method: 'post'
+  })
 }
 
 /**
@@ -39,8 +48,10 @@ export function logout() {
  * @param refreshToken 刷新令牌
  */
 export function refreshToken(refreshToken: string) {
-  return request.post<ApiResult<LoginResult>>('/api/auth/refresh-token', {
-    refreshToken
+  return request<HbtApiResult<LoginResult>>({
+    url: '/api/auth/refresh-token',
+    method: 'post',
+    data: { refreshToken }
   })
 }
 
@@ -48,14 +59,20 @@ export function refreshToken(refreshToken: string) {
  * 获取用户信息
  */
 export function getInfo() {
-  return request.get<ApiResult<UserInfo>>('/api/auth/info')
+  return request<HbtApiResult<UserInfo>>({
+    url: '/api/auth/info',
+    method: 'get'
+  })
 }
 
 /**
  * 获取验证码
  */
 export function getCaptcha() {
-  return request.get<ApiResult<CaptchaResponse>>('/api/auth/captcha')
+  return request<HbtApiResult<CaptchaResponse>>({
+    url: '/api/auth/captcha',
+    method: 'get'
+  })
 }
 
 /**
@@ -63,5 +80,9 @@ export function getCaptcha() {
  * @param data 验证参数
  */
 export function verifyCaptcha(data: { token: string; offset: number }) {
-  return request.post<ApiResult<CaptchaResult>>('/api/auth/verify-captcha', data)
+  return request<HbtApiResult<CaptchaResult>>({
+    url: '/api/auth/verify-captcha',
+    method: 'post',
+    data
+  })
 } 

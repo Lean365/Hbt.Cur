@@ -16,7 +16,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCopyrightAttribute("Copyright © 2024 Lean365")]
 [assembly: System.Reflection.AssemblyDescriptionAttribute("黑冰台业务系统")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("0.1.2")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("0.1.2+87d0f3eace83001449a6cfb1c7e5348dce316a23")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("0.1.2+86d6000eb1615405bb5537a39ee3e6eaa18c26b3")]
 [assembly: System.Reflection.AssemblyProductAttribute("黑冰台")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Lean.Hbt.Infrastructure")]
 [assembly: System.Reflection.AssemblyVersionAttribute("0.1.2")]

@@ -7,13 +7,12 @@
 // 描述    : 字典类型相关类型定义
 //===================================================================
 
-import type { HbtStatus } from '@/types/base'
-import type { BaseQuery } from '@/types/base'
+import type { HbtBaseEntity, HbtPageQuery } from '@/types/common'
 
 /**
  * 字典类型对象
  */
-export interface HbtDictType {
+export interface HbtDictType extends HbtBaseEntity {
   /** ID */
   dictTypeId: number
   /** 字典名称 */
@@ -29,11 +28,9 @@ export interface HbtDictType {
   /** 排序号 */
   orderNum: number
   /** 状态（0正常 1停用） */
-  status: HbtStatus
+  status: number
   /** 租户ID */
   tenantId: number
-  /** 创建时间 */
-  createTime: string
   /** 备注 */
   remark?: string
 }
@@ -41,7 +38,7 @@ export interface HbtDictType {
 /**
  * 字典类型查询参数
  */
-export interface HbtDictTypeQuery extends BaseQuery {
+export interface HbtDictTypeQuery extends HbtPageQuery {
   /** 字典名称 */
   dictName?: string
   /** 字典类型 */
@@ -49,7 +46,7 @@ export interface HbtDictTypeQuery extends BaseQuery {
   /** 字典类别（0系统 1SQL） */
   dictCategory?: number
   /** 状态（0正常 1停用） */
-  status?: HbtStatus
+  status?: number
   /** 是否内置（0否 1是） */
   dictBuiltin?: number
 }
@@ -71,7 +68,7 @@ export interface HbtDictTypeCreate {
   /** 排序号 */
   orderNum: number
   /** 状态（0正常 1停用） */
-  status: HbtStatus
+  status: number
   /** 租户ID */
   tenantId: number
   /** 备注 */
@@ -101,7 +98,7 @@ export interface HbtDictTypeImport {
   /** 排序号 */
   orderNum: number
   /** 状态（0正常 1停用） */
-  status: string
+  status: number
 }
 
 /**
@@ -111,13 +108,15 @@ export interface HbtDictTypeStatus {
   /** ID */
   dictTypeId: number
   /** 状态（0正常 1停用） */
-  status: HbtStatus
+  status: number
 }
 
 /**
  * 字典类型分页结果
  */
 export interface DictTypePageResult {
+  /** 数据列表 */
   rows: HbtDictType[]
+  /** 总数 */
   totalNum: number
 } 

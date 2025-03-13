@@ -101,7 +101,8 @@ try
                       "X-XSRF-TOKEN"     // XSRF Token头
                   )
                   .AllowCredentials()
-                  .SetIsOriginAllowed(origin => true);
+                  .SetIsOriginAllowed(_ => true) // 允许所有来源
+                  .WithExposedHeaders("Set-Cookie"); // 允许前端访问 Set-Cookie 头
         });
     });
 
@@ -110,6 +111,9 @@ try
 
     // 添加 Swagger 服务
     builder.Services.AddHbtSwagger();
+
+    // 配置安全选项
+    builder.Services.Configure<HbtSecurityOptions>(builder.Configuration.GetSection("Security"));
 
     // 添加基础设施服务
     builder.Services.AddInfrastructure(builder.Configuration);
@@ -281,15 +285,16 @@ try
         logger.Info("Swagger已启用");
     }
 
+    app.UseHbtExceptionHandler();
+    app.UseHbtSessionSecurity();
+    app.UseHbtSqlInjection();
+
     if (serverConfig.Init.EnableCors)
     {
         app.UseCors("HbtPolicy");
         logger.Info("CORS已启用");
     }
 
-    app.UseHbtExceptionHandler();
-    app.UseHbtSessionSecurity();
-    app.UseHbtSqlInjection();
     app.UseHbtCsrf();
 
     if (serverConfig.UseHttps)

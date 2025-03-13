@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import type { MenuProps } from 'ant-design-vue'
 import type { Menu } from '@/types/identity/menu'
-import type { ApiResult } from '@/types/base'
+import type { HbtApiResult } from '@/types/common'
 import { getCurrentUserMenus } from '@/api/identity/menu'
 import { message } from 'ant-design-vue'
 import { transformMenu } from '@/utils/menu'
@@ -48,7 +48,7 @@ export const useMenuStore = defineStore('menu', () => {
         return false
       }
 
-      const apiResult = response as unknown as ApiResult<Menu[]>
+      const apiResult = response as unknown as HbtApiResult<Menu[]>
 
       // 检查业务状态码
       if (apiResult.code !== 200) {

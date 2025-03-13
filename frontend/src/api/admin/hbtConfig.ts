@@ -8,22 +8,21 @@
 //===================================================================
 
 import request from '@/utils/request'
+import type { HbtApiResult, HbtPagedResult } from '@/types/common'
 import type {
   HbtConfig,
   HbtConfigQuery,
   HbtConfigCreate,
-  HbtConfigUpdate,
-  ApiResponse,
-  HbtPageResponse
+  HbtConfigUpdate
 } from '@/types/admin/hbtConfig'
 
 /**
- * 获取配置列表
+ * 获取配置分页列表
  * @param query 查询参数
- * @returns 配置列表
+ * @returns 配置分页列表
  */
 export function getHbtConfigList(query: HbtConfigQuery) {
-  return request<ApiResponse<HbtPageResponse<HbtConfig>>>({
+  return request<HbtApiResult<HbtPagedResult<HbtConfig>>>({
     url: '/api/HbtConfig',
     method: 'get',
     params: query
@@ -36,7 +35,7 @@ export function getHbtConfigList(query: HbtConfigQuery) {
  * @returns 配置详情
  */
 export function getHbtConfig(configId: number) {
-  return request<ApiResponse<HbtConfig>>({
+  return request<HbtApiResult<HbtConfig>>({
     url: `/api/HbtConfig/${configId}`,
     method: 'get'
   })
@@ -45,10 +44,10 @@ export function getHbtConfig(configId: number) {
 /**
  * 创建配置
  * @param data 创建参数
- * @returns 创建结果
+ * @returns 配置ID
  */
 export function createHbtConfig(data: HbtConfigCreate) {
-  return request<ApiResponse<null>>({
+  return request<HbtApiResult<number>>({
     url: '/api/HbtConfig',
     method: 'post',
     data
@@ -58,10 +57,10 @@ export function createHbtConfig(data: HbtConfigCreate) {
 /**
  * 更新配置
  * @param data 更新参数
- * @returns 更新结果
+ * @returns 是否成功
  */
 export function updateHbtConfig(data: HbtConfigUpdate) {
-  return request<ApiResponse<null>>({
+  return request<HbtApiResult<boolean>>({
     url: '/api/HbtConfig',
     method: 'put',
     data
@@ -71,10 +70,10 @@ export function updateHbtConfig(data: HbtConfigUpdate) {
 /**
  * 删除配置
  * @param configId 配置ID
- * @returns 删除结果
+ * @returns 是否成功
  */
 export function deleteHbtConfig(configId: number) {
-  return request<ApiResponse<null>>({
+  return request<HbtApiResult<boolean>>({
     url: `/api/HbtConfig/${configId}`,
     method: 'delete'
   })
@@ -83,10 +82,10 @@ export function deleteHbtConfig(configId: number) {
 /**
  * 批量删除配置
  * @param configIds 配置ID列表
- * @returns 删除结果
+ * @returns 是否成功
  */
 export function batchDeleteHbtConfig(configIds: number[]) {
-  return request<ApiResponse<null>>({
+  return request<HbtApiResult<boolean>>({
     url: '/api/HbtConfig/batch',
     method: 'delete',
     data: configIds
@@ -94,18 +93,16 @@ export function batchDeleteHbtConfig(configIds: number[]) {
 }
 
 /**
- * 导入配置
- * @param file 文件
- * @returns 导入结果
+ * 更新配置状态
+ * @param configId 配置ID
+ * @param status 状态
+ * @returns 是否成功
  */
-export function importHbtConfig(file: FormData) {
-  return request<ApiResponse<null>>({
-    url: '/api/HbtConfig/import',
-    method: 'post',
-    data: file,
-    headers: {
-      'Content-Type': 'multipart/form-data'
-    }
+export function updateHbtConfigStatus(configId: number, status: number) {
+  return request<HbtApiResult<boolean>>({
+    url: `/api/HbtConfig/${configId}/status`,
+    method: 'put',
+    params: { status }
   })
 }
 
@@ -136,29 +133,33 @@ export function getHbtConfigTemplate() {
 }
 
 /**
- * 更新配置状态
- * @param configId 配置ID
- * @param status 状态
- * @returns 更新结果
+ * 导入配置
+ * @param file 文件对象
+ * @param sheetName 工作表名称
+ * @returns 是否成功
  */
-export function updateHbtConfigStatus(configId: number, status: number) {
-  return request<ApiResponse<null>>({
-    url: `/api/HbtConfig/${configId}/status`,
-    method: 'put',
-    data: { status }
+export function importHbtConfig(file: File, sheetName: string = '配置') {
+  const formData = new FormData()
+  formData.append('file', file)
+  return request<HbtApiResult<boolean>>({
+    url: '/api/HbtConfig/import',
+    method: 'post',
+    params: { sheetName },
+    data: formData,
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
   })
 }
 
 /**
- * 批量更新配置状态
- * @param configIds 配置ID列表
- * @param status 状态
- * @returns 更新结果
+ * 获取配置值
+ * @param configKey 配置键
+ * @returns 配置值
  */
-export function batchUpdateHbtConfigStatus(configIds: number[], status: number) {
-  return request<ApiResponse<null>>({
-    url: '/api/HbtConfig/batch/status',
-    method: 'put',
-    data: { configIds, status }
+export function getHbtConfigValue(configKey: string) {
+  return request<HbtApiResult<string>>({
+    url: `/api/HbtConfig/value/${configKey}`,
+    method: 'get'
   })
 } 

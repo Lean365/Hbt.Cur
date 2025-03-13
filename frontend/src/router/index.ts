@@ -4,7 +4,7 @@ import { getToken } from '@/utils/auth'
 import { useUserStore } from '@/stores/user'
 import { useMenuStore } from '@/stores/menu'
 import type { Menu } from '@/types/identity/menu'
-import { HbtMenuType } from '@/types/base'
+import { MenuType } from '@/types/identity/menu'
 import { message } from 'ant-design-vue'
 import i18n from '@/locales'
 
@@ -412,7 +412,7 @@ export const registerDynamicRoutes = async (menus: Menu[]): Promise<boolean> => 
           path: routePath,
           name: routeName,
           component:
-            menu.menuType === HbtMenuType.Directory
+            menu.menuType === MenuType.DIRECTORY
               ? () => import('@/layouts/BasicLayout.vue')
               : menu.component
                 ? loadView(menu.component)
@@ -431,7 +431,7 @@ export const registerDynamicRoutes = async (menus: Menu[]): Promise<boolean> => 
         // 处理子菜单
         if (menu.children?.length) {
           const childRoutes = menu.children
-            .filter(child => child.menuType !== HbtMenuType.Button)
+            .filter(child => child.menuType !== MenuType.BUTTON)
             .map(child => buildRouteConfig(child))
           route.children = childRoutes
         }

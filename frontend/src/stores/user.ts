@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import type { MenuProps } from 'ant-design-vue'
-import type { ApiResult } from '@/types/base'
+import type { HbtApiResult } from '@/types/common'
 import type { LoginParams, UserInfo as AuthUserInfo, LoginResult as AuthLoginResult } from '@/types/identity/auth'
 import { login as userLogin, logout as userLogout, getInfo } from '@/api/identity/auth'
 import { getToken, setToken, removeToken } from '@/utils/auth'
@@ -12,7 +12,7 @@ import i18n from '@/locales'
 const { t } = i18n.global
 
 export interface UserInfo extends AuthUserInfo {
-  displayName: string
+  userName: string
   email: string
 }
 
@@ -40,7 +40,7 @@ export const useUserStore = defineStore('user', () => {
   }
 
   // 登录
-  const login = async (loginParams: LoginParams): Promise<ApiResult<LoginResult>> => {
+  const login = async (loginParams: LoginParams): Promise<HbtApiResult<LoginResult>> => {
     try {
       console.log('[用户登录] ' + t('identity.auth.login.start'), loginParams)
       const response = await userLogin(loginParams)
@@ -53,7 +53,7 @@ export const useUserStore = defineStore('user', () => {
         console.warn('[用户登录] ' + t('identity.auth.login.noToken'))
       }
       
-      return response as ApiResult<LoginResult>
+      return response as HbtApiResult<LoginResult>
     } catch (error) {
       console.error('[用户登录] ' + t('identity.auth.login.error'), error)
       throw error

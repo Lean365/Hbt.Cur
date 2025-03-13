@@ -129,7 +129,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import {
   PlusOutlined,
@@ -168,6 +168,7 @@ interface Props {
   revokePermission?: string[] // 撤销按钮权限
   disabledEdit?: boolean // 是否禁用编辑按钮
   disabledDelete?: boolean // 是否禁用删除按钮
+  showSearch?: boolean // 是否显示搜索栏
 }
 
 // === 属性定义 ===
@@ -187,7 +188,8 @@ const props = withDefaults(defineProps<Props>(), {
   showRevoke: false,
   revokePermission: () => [],
   disabledEdit: false,
-  disabledDelete: false
+  disabledDelete: false,
+  showSearch: true
 })
 
 // === 事件定义 ===
@@ -209,6 +211,43 @@ const emit = defineEmits([
 // === 状态管理 ===
 const isFullscreen = ref(false)
 
+// === 全屏相关 ===
+const toggleFullscreen = async () => {
+  try {
+    if (!document.fullscreenElement) {
+      await document.documentElement.requestFullscreen()
+      isFullscreen.value = true
+    } else {
+      await document.exitFullscreen()
+      isFullscreen.value = false
+    }
+    emit('toggle-fullscreen', isFullscreen.value)
+  } catch (err) {
+    console.error('全屏切换失败:', err)
+  }
+}
+
+// 监听全屏变化
+onMounted(() => {
+  document.addEventListener('fullscreenchange', handleFullscreenChange)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('fullscreenchange', handleFullscreenChange)
+})
+
+const handleFullscreenChange = () => {
+  isFullscreen.value = !!document.fullscreenElement
+}
+
+// === 搜索栏显示状态 ===
+const searchVisible = ref(true)
+
+const toggleSearch = () => {
+  searchVisible.value = !searchVisible.value
+  emit('toggle-search', searchVisible.value)
+}
+
 // === 事件处理 ===
 const handleAdd = () => emit('add')
 const handleEdit = () => emit('edit')
@@ -220,15 +259,6 @@ const handleAudit = () => emit('audit')
 const handleRevoke = () => emit('revoke')
 const handleRefresh = () => emit('refresh')
 const handleColumnSetting = () => emit('column-setting')
-
-const toggleSearch = () => {
-  emit('toggle-search')
-}
-
-const toggleFullscreen = () => {
-  isFullscreen.value = !isFullscreen.value
-  emit('toggle-fullscreen', isFullscreen.value)
-}
 </script>
 
 <style lang="less">

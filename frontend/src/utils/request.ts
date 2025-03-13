@@ -30,10 +30,40 @@ const defaultRetryConfig = {
 
 // 从cookie中获取指定名称的值
 function getCookie(name: string): string | null {
+  console.log('开始获取Cookie:', name)
+  console.log('当前所有Cookie:', document.cookie)
+  
   const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'))
+  console.log('Cookie匹配结果:', match)
+  
   if (match) {
-    return decodeURIComponent(match[2])
+    const value = decodeURIComponent(match[2])
+    console.log('获取到的Cookie值:', value)
+    return value
   }
+  console.log('未找到Cookie:', name)
+  return null
+}
+
+// 获取CSRF Token的函数
+function getCsrfToken(): string | null {
+  // 1. 首先尝试从 localStorage 获取
+  const storedToken = localStorage.getItem('csrf_token')
+  if (storedToken) {
+    console.log('从localStorage获取到CSRF Token:', storedToken)
+    return storedToken
+  }
+  
+  // 2. 如果localStorage中没有，尝试从cookie获取
+  const cookieToken = getCookie('XSRF-TOKEN')
+  if (cookieToken) {
+    // 找到后保存到localStorage
+    localStorage.setItem('csrf_token', cookieToken)
+    console.log('从Cookie获取到CSRF Token并保存到localStorage:', cookieToken)
+    return cookieToken
+  }
+  
+  console.log('未找到CSRF Token')
   return null
 }
 
@@ -41,14 +71,17 @@ function getCookie(name: string): string | null {
 service.interceptors.request.use(
   (config) => {
     // 获取CSRF token
-    const xsrfToken = getCookie('XSRF-TOKEN')
-    if (xsrfToken) {
-      config.headers['X-XSRF-TOKEN'] = xsrfToken
+    console.log('开始获取CSRF token...')
+    const csrfToken = getCsrfToken()
+    if (csrfToken) {
+      config.headers['X-CSRF-Token'] = csrfToken
+      console.log('设置CSRF Token:', csrfToken)
+    } else {
+      console.log('未找到CSRF Token')
     }
-    console.log('Cookie中的XSRF-TOKEN:', xsrfToken)
-    console.log('完整Cookie:', document.cookie)
+
     // 每次请求都重新获取token
-    const token = getToken()
+    const token = getToken();
     //console.log('[请求拦截器] 开始处理请求:', config.url)
     
     // 过滤请求参数中的空值
@@ -136,7 +169,7 @@ service.interceptors.request.use(
     return config
   },
   (error) => {
-    //console.error('[请求拦截器] 请求错误:', error)
+    console.error('[请求拦截器] 请求错误:', error)
     return Promise.reject(error)
   }
 )
@@ -144,11 +177,16 @@ service.interceptors.request.use(
 // 响应拦截器
 service.interceptors.response.use(
   (response) => {
+    // 从响应头中获取新的CSRF token
+    const newCsrfToken = response.headers['x-csrf-token']
+    if (newCsrfToken) {
+      console.log('从响应头获取到新的CSRF Token:', newCsrfToken)
+      localStorage.setItem('csrf_token', newCsrfToken)
+    }
     
     const res = response.data
     const { code, msg } = response.data
     console.log('[Response Interceptor] 收到响应:', {
-      //后端原始返回:res,
       url: response.config.url,
       status: response.status,
       res: res,
@@ -165,6 +203,12 @@ service.interceptors.response.use(
     return res
   },
   (error) => {
+    // 如果是CSRF错误，清除本地存储的token
+    if (error.response?.status === 403 && error.response?.data?.message?.includes('CSRF')) {
+      console.log('CSRF验证失败，清除本地存储的token')
+      localStorage.removeItem('csrf_token')
+    }
+    
     console.error('[Response Interceptor] 响应错误:', error.message)
     message.error(error.message || '请求失败')
     return Promise.reject(error)

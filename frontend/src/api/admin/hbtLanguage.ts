@@ -8,8 +8,8 @@
 //===================================================================
 
 import request from '@/utils/request'
-import type { ApiResult, PageResult } from '@/types/base'
-import type { 
+import type { HbtApiResult, HbtPagedResult } from '@/types/common'
+import type {
   HbtLanguage,
   HbtLanguageQuery,
   HbtLanguageCreate,
@@ -23,7 +23,7 @@ import type {
  * @returns 语言分页列表
  */
 export function getHbtLanguageList(query: HbtLanguageQuery) {
-  return request<ApiResult<PageResult<HbtLanguage>>>({
+  return request<HbtApiResult<HbtPagedResult<HbtLanguage>>>({
     url: '/api/HbtLanguage',
     method: 'get',
     params: query
@@ -32,12 +32,12 @@ export function getHbtLanguageList(query: HbtLanguageQuery) {
 
 /**
  * 获取语言详情
- * @param langId 语言ID
+ * @param languageId 语言ID
  * @returns 语言详情
  */
-export function getHbtLanguage(langId: number) {
-  return request<ApiResult<HbtLanguage>>({
-    url: `/api/HbtLanguage/${langId}`,
+export function getHbtLanguage(languageId: number) {
+  return request<HbtApiResult<HbtLanguage>>({
+    url: `/api/HbtLanguage/${languageId}`,
     method: 'get'
   })
 }
@@ -48,7 +48,7 @@ export function getHbtLanguage(langId: number) {
  * @returns 语言ID
  */
 export function createHbtLanguage(data: HbtLanguageCreate) {
-  return request<ApiResult<number>>({
+  return request<HbtApiResult<number>>({
     url: '/api/HbtLanguage',
     method: 'post',
     data
@@ -61,7 +61,7 @@ export function createHbtLanguage(data: HbtLanguageCreate) {
  * @returns 是否成功
  */
 export function updateHbtLanguage(data: HbtLanguageUpdate) {
-  return request<ApiResult<boolean>>({
+  return request<HbtApiResult<boolean>>({
     url: '/api/HbtLanguage',
     method: 'put',
     data
@@ -70,39 +70,39 @@ export function updateHbtLanguage(data: HbtLanguageUpdate) {
 
 /**
  * 删除语言
- * @param langId 语言ID
+ * @param languageId 语言ID
  * @returns 是否成功
  */
-export function deleteHbtLanguage(langId: number) {
-  return request<ApiResult<boolean>>({
-    url: `/api/HbtLanguage/${langId}`,
+export function deleteHbtLanguage(languageId: number) {
+  return request<HbtApiResult<boolean>>({
+    url: `/api/HbtLanguage/${languageId}`,
     method: 'delete'
   })
 }
 
 /**
  * 批量删除语言
- * @param langIds 语言ID列表
+ * @param languageIds 语言ID列表
  * @returns 是否成功
  */
-export function batchDeleteHbtLanguage(langIds: number[]) {
-  return request<ApiResult<boolean>>({
+export function batchDeleteHbtLanguage(languageIds: number[]) {
+  return request<HbtApiResult<boolean>>({
     url: '/api/HbtLanguage/batch',
     method: 'delete',
-    data: langIds
+    data: languageIds
   })
 }
 
 /**
- * 导入语言数据
+ * 导入语言
  * @param file 文件对象
  * @param sheetName 工作表名称
  * @returns 是否成功
  */
-export function importHbtLanguage(file: File, sheetName: string = '语言数据') {
+export function importHbtLanguage(file: File, sheetName: string = '语言') {
   const formData = new FormData()
   formData.append('file', file)
-  return request<ApiResult<boolean>>({
+  return request<HbtApiResult<boolean>>({
     url: '/api/HbtLanguage/import',
     method: 'post',
     params: { sheetName },
@@ -114,7 +114,7 @@ export function importHbtLanguage(file: File, sheetName: string = '语言数据'
 }
 
 /**
- * 导出语言数据
+ * 导出语言
  * @param query 查询参数
  * @returns 文件流
  */
@@ -146,7 +146,7 @@ export function getHbtLanguageTemplate() {
  * @returns 是否成功
  */
 export function updateHbtLanguageStatus(languageId: number, status: number) {
-  return request<ApiResult<boolean>>({
+  return request<HbtApiResult<boolean>>({
     url: `/api/HbtLanguage/${languageId}/status`,
     method: 'put',
     params: { status }
@@ -158,7 +158,7 @@ export function updateHbtLanguageStatus(languageId: number, status: number) {
  * @returns 语言列表
  */
 export function getSupportedLanguages() {
-  return request<ApiResult<HbtLanguage[]>>({
+  return request<HbtApiResult<HbtLanguage[]>>({
     url: '/api/HbtLanguage/supported',
     method: 'get'
   })

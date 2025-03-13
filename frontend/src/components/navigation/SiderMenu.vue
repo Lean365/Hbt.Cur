@@ -20,7 +20,7 @@ import type { ItemType } from 'ant-design-vue/es/menu/src/hooks/useItems'
 import { useThemeStore } from '@/stores/theme'
 import { useMenuStore } from '@/stores/menu'
 import type { Menu } from '@/types/identity/menu'
-import { HbtMenuType } from '@/types/base'
+import { MenuType } from '@/types/identity/menu'
 import * as Icons from '@ant-design/icons-vue'
 import { findRouteByPath, handleRouteNavigation } from '@/router'
 
@@ -113,7 +113,7 @@ const processMenuItem = (menu: Menu, parentPath: string = ''): MenuItemType => {
   const menuPath = menu.path || ''
   let fullPath = ''
 
-  if (menu.menuType === HbtMenuType.Directory) {
+  if (menu.menuType === MenuType.DIRECTORY) {
     // 目录类型使用原始路径
     fullPath = menuPath.startsWith('/') ? menuPath : `/${menuPath}`
   } else if (parentPath) {
@@ -217,7 +217,7 @@ watch(
         currentPath += `/${part}`
         // 查找对应的目录菜单
         const menuItem = findMenuByPath(menuStore.rawMenuList, currentPath)
-        if (menuItem && menuItem.menuType === HbtMenuType.Directory) {
+        if (menuItem && menuItem.menuType === MenuType.DIRECTORY) {
           parentKeys.push(`dir_${menuItem.menuId}`)
         }
       }
@@ -266,7 +266,7 @@ const findMenuItem = (menus: Menu[] | undefined, key: string): Menu | undefined 
     const menuPath = menu.path || ''
     let fullPath = ''
 
-    if (menu.menuType === HbtMenuType.Directory) {
+    if (menu.menuType === MenuType.DIRECTORY) {
       // 目录类型使用完整路径
       fullPath = menuPath.startsWith('/') ? menuPath : `/${menuPath}`
     } else {

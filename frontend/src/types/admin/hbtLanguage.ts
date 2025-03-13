@@ -7,13 +7,12 @@
 // 描述    : 语言相关类型定义
 //===================================================================
 
-import type { HbtStatus } from '@/types/base'
-import type { BaseQuery } from '@/types/base'
+import type { HbtBaseEntity, HbtPageQuery } from '@/types/common'
 
 /**
  * 语言对象
  */
-export interface HbtLanguage {
+export interface HbtLanguage extends HbtBaseEntity {
   /** 语言ID */
   languageId: number
   /** 语言代码 */
@@ -27,31 +26,21 @@ export interface HbtLanguage {
   /** 是否默认 */
   isDefault: boolean
   /** 状态（0正常 1停用） */
-  status: HbtStatus
-  /** 创建者 */
-  createBy?: string
-  /** 创建时间 */
-  createTime?: string
-  /** 更新者 */
-  updateBy?: string
-  /** 更新时间 */
-  updateTime?: string
+  status: number
   /** 备注 */
   remark?: string
-  /** 状态加载中 */
-  statusLoading?: boolean
 }
 
 /**
  * 语言查询参数
  */
-export interface HbtLanguageQuery extends BaseQuery {
+export interface HbtLanguageQuery extends HbtPageQuery {
   /** 语言代码 */
   langCode?: string
   /** 语言名称 */
   langName?: string
   /** 状态（0正常 1停用） */
-  status?: HbtStatus
+  status?: number
 }
 
 /**
@@ -67,7 +56,7 @@ export interface HbtLanguageCreate {
   /** 是否默认 */
   isDefault: boolean
   /** 状态（0正常 1停用） */
-  status: HbtStatus
+  status: number
   /** 备注 */
   remark?: string
 }
@@ -87,5 +76,5 @@ export interface HbtLanguageStatus {
   /** 语言ID */
   languageId: number
   /** 状态（0正常 1停用） */
-  status: HbtStatus
+  status: number
 } 
