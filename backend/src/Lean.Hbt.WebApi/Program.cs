@@ -89,7 +89,17 @@ try
         {
             policy.WithOrigins(builder.Configuration.GetSection("Cors:Origins").Get<string[]>() ?? Array.Empty<string>())
                   .WithMethods(builder.Configuration.GetSection("Cors:Methods").Get<string[]>() ?? Array.Empty<string>())
-                  .WithHeaders("Content-Type", "Authorization", "Accept", "X-Requested-With", "X-Tenant-Id", "Cache-Control", "Pragma")
+                  .WithHeaders(
+                      "Content-Type", 
+                      "Authorization", 
+                      "Accept", 
+                      "X-Requested-With", 
+                      "X-Tenant-Id", 
+                      "Cache-Control", 
+                      "Pragma",
+                      "X-CSRF-Token",    // CSRF Token头
+                      "X-XSRF-TOKEN"     // XSRF Token头
+                  )
                   .AllowCredentials()
                   .SetIsOriginAllowed(origin => true);
         });

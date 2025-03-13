@@ -37,7 +37,12 @@ const SUPPORTED_LOCALES = {
   }
 }
 
-// 创建后端状态检测插件
+/**
+ * 创建检测后端服务状态的 Vite 插件
+ * @param proxyTarget - 后端服务地址
+ * @param locale - 语言设置，默认中文
+ * @returns Vite 插件对象
+ */
 function backendStatusPlugin(proxyTarget: string, locale: string = 'zh-CN'): Plugin {
   // 获取当前语言的消息
   const messages = SUPPORTED_LOCALES[locale] || SUPPORTED_LOCALES['zh-CN']
@@ -123,8 +128,9 @@ function backendStatusPlugin(proxyTarget: string, locale: string = 'zh-CN'): Plu
       // 初始检查
       checkBackendStatus(server)
 
-      // 定期检查后端状态
-      checkInterval = setInterval(checkBackendStatus, 30000) // 每30秒检查一次
+      // 定期检查后端状态（每2分钟检查一次）
+      // 避免过于频繁的网络请求，同时保持对后端状态的及时感知
+      checkInterval = setInterval(checkBackendStatus, 120000)
 
       // 服务关闭时清除定时器
       server.httpServer?.on('close', () => {
@@ -151,7 +157,7 @@ function backendStatusPlugin(proxyTarget: string, locale: string = 'zh-CN'): Plu
 export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
   const env = loadEnv(mode, process.cwd())
   
-  // 从环境变量或系统设置获取语言设置
+  // 获取系统语言设置或使用环境变量中的语言设置
   const locale = process.env.LOCALE || Intl.DateTimeFormat().resolvedOptions().locale
   
   return {

@@ -18,7 +18,8 @@ interface CustomAxiosRequestConfig extends AxiosRequestConfig {
 // 创建axios实例
 const service: AxiosInstance & { download?: Function } = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
-  timeout: 100000000000000
+  timeout: 100000000000000,
+  withCredentials: true  // 允许跨域请求时携带cookie
 }) as AxiosInstance & { download?: Function }
 
 // 设置默认重试配置
@@ -27,9 +28,25 @@ const defaultRetryConfig = {
   retryDelay: 1000
 }
 
+// 从cookie中获取指定名称的值
+function getCookie(name: string): string | null {
+  const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'))
+  if (match) {
+    return decodeURIComponent(match[2])
+  }
+  return null
+}
+
 // 请求拦截器
 service.interceptors.request.use(
   (config) => {
+    // 获取CSRF token
+    const xsrfToken = getCookie('XSRF-TOKEN')
+    if (xsrfToken) {
+      config.headers['X-XSRF-TOKEN'] = xsrfToken
+    }
+    console.log('Cookie中的XSRF-TOKEN:', xsrfToken)
+    console.log('完整Cookie:', document.cookie)
     // 每次请求都重新获取token
     const token = getToken()
     //console.log('[请求拦截器] 开始处理请求:', config.url)
@@ -127,11 +144,16 @@ service.interceptors.request.use(
 // 响应拦截器
 service.interceptors.response.use(
   (response) => {
+    
     const res = response.data
+    const { code, msg } = response.data
     console.log('[Response Interceptor] 收到响应:', {
+      //后端原始返回:res,
       url: response.config.url,
       status: response.status,
-      data: res
+      res: res,
+      code: code,
+      message: msg
     })
 
     // 如果是二进制数据，直接返回

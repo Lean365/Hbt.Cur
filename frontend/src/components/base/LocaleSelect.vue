@@ -7,17 +7,16 @@
     </a-button>
     <template #overlay>
       <a-menu @click="({ key }) => handleLocaleChange(String(key))">
-        <a-menu-item v-for="lang in languageList" :key="lang.langCode">
+        <a-menu-item v-for="lang in languageStore.languageList" :key="lang.langCode">
           <template #icon>
             <check-outlined v-if="currentLocale === lang.langCode" />
           </template>
           <span :class="{ 'current-lang': currentLocale === lang.langCode }">
-            {{ lang.langName }}
-            <img v-if="lang.icon" :src="lang.icon" :alt="lang.langName" class="lang-icon" />
+            {{ lang.langIcon }} {{ lang.langName }}
           </span>
         </a-menu-item>
-        <a-menu-divider v-if="languageList.length === 0" />
-        <a-menu-item v-if="languageList.length === 0" disabled>
+        <a-menu-divider v-if="languageStore.languageList.length === 0" />
+        <a-menu-item v-if="languageStore.languageList.length === 0" disabled>
           {{ loading ? t('common.loading') : t('common.noData') }}
         </a-menu-item>
       </a-menu>
@@ -30,30 +29,15 @@ import { ref, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type { MenuProps } from 'ant-design-vue'
 import { TranslationOutlined, CheckOutlined } from '@ant-design/icons-vue'
-import { getSupportedLanguages } from '@/api/admin/hbtLanguage'
 import { message } from 'ant-design-vue'
 import { useAppStore } from '@/stores/app'
-
-interface Language {
-  id: number
-  langCode: string
-  langName: string
-  status: number
-  orderNum: number
-  icon?: string
-}
-
-interface ApiResult<T> {
-  code: number
-  msg: string
-  data: T
-}
+import { useLanguageStore } from '@/stores/language'
 
 const { t } = useI18n()
 const appStore = useAppStore()
+const languageStore = useLanguageStore()
 const currentLocale = ref(appStore.language)
 const loading = ref(false)
-const languageList = ref<Language[]>([])
 
 // 处理语言切换
 const handleLocaleChange = async (langCode: string) => {
@@ -65,43 +49,16 @@ const handleLocaleChange = async (langCode: string) => {
     currentLocale.value = langCode
     message.success(t('common.message.operationSuccess'))
   } catch (error) {
-    console.error('Failed to change language:', error)
+    //console.error('切换语言失败:', error)
     message.error(t('common.message.operationFailure'))
   } finally {
     loading.value = false
   }
 }
 
-// 获取支持的语言列表
-const fetchLanguages = async () => {
-  loading.value = true
-  try {
-    const { code, msg, data } = await getSupportedLanguages() as unknown as ApiResult<Language[]>
-    if (code === 200 && data) {
-      languageList.value = data.sort((a, b) => {
-        // 将当前语言置顶
-        if (a.langCode === currentLocale.value) return -1
-        if (b.langCode === currentLocale.value) return 1
-        // 按照 orderNum 排序
-        return (a.orderNum || 0) - (b.orderNum || 0)
-      })
-    } else {
-      console.error('Failed to fetch languages:', msg)
-      message.error(t('common.message.backendNotStarted'))
-      languageList.value = []
-    }
-  } catch (error: any) {
-    console.error('Error fetching languages:', error)
-    message.error(t('common.message.backendNotStarted'))
-    languageList.value = []
-  } finally {
-    loading.value = false
-  }
-}
-
-// 组件挂载时获取语言列表
-onMounted(() => {
-  fetchLanguages()
+// 组件挂载时初始化语言列表
+onMounted(async () => {
+  await languageStore.initializeStore()
 })
 </script>
 
@@ -138,16 +95,5 @@ onMounted(() => {
 .current-lang {
   font-weight: 500;
   color: #1890ff;
-}
-
-.lang-icon {
-  width: 16px;
-  height: 16px;
-  margin-left: 8px;
-  vertical-align: middle;
-}
-
-:deep(.ant-menu-item) {
-  min-width: 160px;
 }
 </style> 

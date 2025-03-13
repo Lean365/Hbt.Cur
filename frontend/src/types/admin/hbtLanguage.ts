@@ -20,6 +20,8 @@ export interface HbtLanguage {
   langCode: string
   /** 语言名称 */
   langName: string
+  /** 语言图标 */
+  langIcon?: string
   /** 排序号 */
   orderNum: number
   /** 是否默认 */
