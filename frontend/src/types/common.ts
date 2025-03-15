@@ -129,3 +129,15 @@ export interface HbtDictType {
   /** 创建时间 */
   createTime: string;
 } 
+
+/**
+ * 菜单类型枚举
+ */
+export enum HbtMenuType {
+  /** 目录 */
+  Directory = 0,
+  /** 菜单 */
+  Menu = 1,
+  /** 按钮 */
+  Button = 2
+}

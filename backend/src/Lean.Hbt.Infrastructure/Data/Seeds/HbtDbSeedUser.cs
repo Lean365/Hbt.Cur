@@ -11,6 +11,7 @@ using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Domain.Entities.Identity;
 using Lean.Hbt.Domain.IServices;
 using Lean.Hbt.Common.Utils;
+using Microsoft.Extensions.Configuration;
 
 namespace Lean.Hbt.Infrastructure.Data.Seeds;
 
@@ -21,16 +22,22 @@ public class HbtDbSeedUser
 {
     private readonly IHbtRepository<HbtUser> _userRepository;
     private readonly IHbtLogger _logger;
+    private readonly IConfiguration _configuration;
 
     /// <summary>
     /// 构造函数
     /// </summary>
     /// <param name="userRepository">用户仓储</param>
     /// <param name="logger">日志记录器</param>
-    public HbtDbSeedUser(IHbtRepository<HbtUser> userRepository, IHbtLogger logger)
+    /// <param name="configuration">配置</param>
+    public HbtDbSeedUser(
+        IHbtRepository<HbtUser> userRepository, 
+        IHbtLogger logger,
+        IConfiguration configuration)
     {
         _userRepository = userRepository;
         _logger = logger;
+        _configuration = configuration;
     }
 
     /// <summary>
@@ -42,8 +49,9 @@ public class HbtDbSeedUser
         int updateCount = 0;
         long nextId = 1;
 
-        // 使用现有的 HbtPasswordUtils 创建密码哈希
-        var (hash, salt, iterations) = HbtPasswordUtils.CreateHash("123456");
+        // 从配置中获取默认密码和错误限制
+        var defaultPassword = _configuration.GetValue<string>("Security:PasswordPolicy:DefaultPassword")!;
+        var defaultErrorLimit = _configuration.GetValue<int>("Security:PasswordPolicy:DefaultErrorLimit");
 
         var defaultUsers = new List<HbtUser>
         {
@@ -55,9 +63,6 @@ public class HbtDbSeedUser
                 NickName = "系统管理员",
                 EnglishName = "System Administrator",
                 UserType = 0, // 系统用户
-                Password = hash,
-                Salt = salt,
-                Iterations = iterations,
                 Email = "admin@lean.com",
                 PhoneNumber = "13800000001",
                 Gender = 0,
@@ -65,6 +70,9 @@ public class HbtDbSeedUser
                 Status = 0,
                 TenantId = 0,
                 LastPasswordChangeTime = DateTime.Now,
+                IsLock = 0,
+                ErrorLimit = 0,
+                LoginCount = 0,
                 CreateBy = "system",
                 CreateTime = DateTime.Now,
                 UpdateBy = "system",
@@ -79,9 +87,6 @@ public class HbtDbSeedUser
                 NickName = "开发管理员",
                 EnglishName = "Development Administrator",
                 UserType = 2, // 管理员
-                Password = hash,
-                Salt = salt,
-                Iterations = iterations,
                 Email = "dev_admin@lean.com",
                 PhoneNumber = "13800000002",
                 Gender = 0,
@@ -89,6 +94,9 @@ public class HbtDbSeedUser
                 Status = 0,
                 TenantId = 0,
                 LastPasswordChangeTime = DateTime.Now,
+                IsLock = 0,
+                ErrorLimit = 0,
+                LoginCount = 0,
                 CreateBy = "system",
                 CreateTime = DateTime.Now,
                 UpdateBy = "system",
@@ -103,9 +111,6 @@ public class HbtDbSeedUser
                 NickName = "开发工程师",
                 EnglishName = "Developer",
                 UserType = 1, // 普通用户
-                Password = hash,
-                Salt = salt,
-                Iterations = iterations,
                 Email = "developer@lean.com",
                 PhoneNumber = "13800000003",
                 Gender = 0,
@@ -113,6 +118,9 @@ public class HbtDbSeedUser
                 Status = 0,
                 TenantId = 0,
                 LastPasswordChangeTime = DateTime.Now,
+                IsLock = 0,
+                ErrorLimit = 0,
+                LoginCount = 0,
                 CreateBy = "system",
                 CreateTime = DateTime.Now,
                 UpdateBy = "system",
@@ -127,9 +135,6 @@ public class HbtDbSeedUser
                 NickName = "测试工程师",
                 EnglishName = "Test Engineer",
                 UserType = 1, // 普通用户
-                Password = hash,
-                Salt = salt,
-                Iterations = iterations,
                 Email = "tester@lean.com",
                 PhoneNumber = "13800000004",
                 Gender = 0,
@@ -137,6 +142,9 @@ public class HbtDbSeedUser
                 Status = 0,
                 TenantId = 0,
                 LastPasswordChangeTime = DateTime.Now,
+                IsLock = 0,
+                ErrorLimit = 0,
+                LoginCount = 0,
                 CreateBy = "system",
                 CreateTime = DateTime.Now,
                 UpdateBy = "system",
@@ -151,9 +159,6 @@ public class HbtDbSeedUser
                 NickName = "普通用户",
                 EnglishName = "Normal User",
                 UserType = 1, // 普通用户
-                Password = hash,
-                Salt = salt,
-                Iterations = iterations,
                 Email = "user@lean.com",
                 PhoneNumber = "13800000005",
                 Gender = 0,
@@ -161,6 +166,9 @@ public class HbtDbSeedUser
                 Status = 0,
                 TenantId = 0,
                 LastPasswordChangeTime = DateTime.Now,
+                IsLock = 0,
+                ErrorLimit = 0,
+                LoginCount = 0,
                 CreateBy = "system",
                 CreateTime = DateTime.Now,
                 UpdateBy = "system",
@@ -173,6 +181,12 @@ public class HbtDbSeedUser
             var existingUser = await _userRepository.FirstOrDefaultAsync(u => u.UserName == user.UserName);
             if (existingUser == null)
             {
+                // 为每个新用户生成独特的密码哈希和盐值
+                var (hash, salt, iterations) = HbtPasswordUtils.CreateHash(defaultPassword);
+                user.Password = hash;
+                user.Salt = salt;
+                user.Iterations = iterations;
+                
                 await _userRepository.InsertAsync(user);
                 insertCount++;
                 _logger.Info($"[创建] 用户 '{user.NickName}' 创建成功");

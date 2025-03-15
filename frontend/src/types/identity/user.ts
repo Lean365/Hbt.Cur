@@ -3,121 +3,153 @@ import type { Role } from '@/types/identity/role'
 import type { Post } from '@/types/identity/post'
 
 /**
+ * 用户基础类型
+ */
+export interface User extends HbtBaseEntity {
+  userId: number;
+  tenantId: number;
+  userName: string;
+  nickName: string;
+  englishName: string;
+  userType: number;
+  email: string;
+  phoneNumber: string;
+  gender: number;
+  avatar: string;
+  status: number;
+  lastPasswordChangeTime: string;
+  remark: string;
+}
+
+/**
  * 用户查询参数
  */
 export interface UserQuery extends HbtPageQuery {
   userName?: string;
+  nickName?: string;
   phoneNumber?: string;
+  email?: string;
+  gender?: number;
   status?: number;
-  deptId?: number;
   userType?: number;
+  deptId?: number;
 }
 
 /**
- * 用户信息
+ * 用户创建参数
  */
-export interface User extends HbtBaseEntity {
-  userId: number;
-  deptId: number;
+export interface UserCreate {
   userName: string;
   nickName: string;
   englishName?: string;
-  userType: number;
-  password?: string;
-  phoneNumber?: string;
+  password: string;
   email?: string;
-  sex: number;
+  phoneNumber?: string;
+  gender: number;
   avatar?: string;
   status: number;
-  tenantId: number;
-  tenantName?: string;
+  roleIds: number[];
+  postIds: number[];
   remark?: string;
-  roleIds?: number[];
-  postIds?: number[];
+}
+
+/**
+ * 用户更新参数
+ */
+export interface UserUpdate {
+  userId: number;
+  nickName: string;
+  englishName?: string;
+  email?: string;
+  phoneNumber?: string;
+  gender: number;
+  avatar?: string;
+  status: number;
+  roleIds: number[];
+  postIds: number[];
+  remark?: string;
+}
+
+/**
+ * 用户导入参数
+ */
+export interface UserImport {
+  userName: string;
+  nickName: string;
+  englishName: string;
+  userType: string;
+  password: string;
+  email: string;
+  phoneNumber: string;
+  gender: string;
+  avatar: string;
+  deptName: string;
+  roleNames: string;
+  postNames: string;
+  remark: string;
+}
+
+/**
+ * 用户导出参数
+ */
+export interface UserExport {
+  userName: string;
+  nickName: string;
+  englishName: string;
+  userType: string;
+  phoneNumber: string;
+  email: string;
+  gender: string;
+  avatar: string;
+  deptName: string;
+  roleNames: string;
+  postNames: string;
+  status: number;
+  createTime: string;
 }
 
 /**
  * 用户表单数据
  */
 export interface UserForm {
-  userId?: number;
-  deptId?: number;
-  userName: string;
-  nickName: string;
-  englishName?: string;
-  password?: string;
-  phoneNumber?: string;
-  email?: string;
-  sex: number;
-  avatar?: string;
-  status: number;
-  remark?: string;
-  roleIds?: number[];
-  postIds?: number[];
-}
-
-/**
- * 重置密码表单
- */
-export interface ResetPwdForm {
-  userId: number;
-  password: string;
-}
-
-/**
- * 创建用户参数
- */
-export interface UserCreate {
-  deptId: number;
-  userName: string;
-  nickName: string;
-  password: string;
-  phoneNumber?: string;
-  email?: string;
-  sex?: number;
-  status: number;
-  remark?: string;
-  roleIds?: number[];
-  postIds?: number[];
-}
-
-/**
- * 更新用户参数
- */
-export interface UserUpdate extends Omit<UserCreate, 'password'> {
-  userId: number;
+  userId?: number
+  tenantId: number
+  userName: string
+  nickName: string
+  englishName?: string
+  userType: number
+  password?: string
+  email?: string
+  phoneNumber?: string
+  gender: number
+  avatar?: string
+  status: number
+  remark?: string
+  roleIds?: number[]
+  postIds?: number[]
 }
 
 /**
  * 重置密码参数
  */
 export interface ResetPassword {
-  userId: number;
-  password: string;
+  userId: number
+  password: string
 }
 
 /**
  * 修改密码参数
  */
 export interface ChangePassword {
-  oldPassword: string;
-  newPassword: string;
+  userId: number
+  oldPassword: string
+  newPassword: string
 }
 
 /**
  * 用户状态更新参数
  */
 export interface UserStatus {
-  userId: number;
-  status: number;
+  userId: number
+  status: number
 }
-
-/**
- * 导入用户结果
- */
-export interface ImportResult {
-  total: number;
-  success: number;
-  failed: number;
-  message: string;
-} 

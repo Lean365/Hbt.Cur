@@ -20,6 +20,11 @@ public interface IHbtCaptchaService
     Task<bool> ValidateSliderAsync(string token, int xOffset);
 
     /// <summary>
+    /// 标记验证码为已使用
+    /// </summary>
+    Task MarkAsUsedAsync(string token);
+
+    /// <summary>
     /// 收集行为数据
     /// </summary>
     /// <param name="userId">用户ID</param>

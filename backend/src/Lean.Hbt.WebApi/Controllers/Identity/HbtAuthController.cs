@@ -22,6 +22,8 @@ using Lean.Hbt.Domain.IServices.Admin;
 using System.Security.Cryptography;
 using System;
 using Lean.Hbt.Common.Constants;
+using System.ComponentModel;
+using Lean.Hbt.Domain.IServices.Security;
 
 namespace Lean.Hbt.WebApi.Controllers.Identity
 {
@@ -35,12 +37,13 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
     /// 3. 刷新访问令牌
     /// </remarks>
     [ApiController]
-    [Route("api/auth")]
+    [Route("api/[controller]")]
     [ApiModule("identity", "身份认证")]
     public class HbtAuthController : HbtBaseController
     {
         private readonly IHbtLoginService _loginService;
         private readonly ILogger<HbtAuthController> _logger;
+        private readonly IHbtLoginPolicy _loginPolicy;
 
         /// <summary>
         /// 构造函数
@@ -48,10 +51,12 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         public HbtAuthController(
             IHbtLoginService loginService,
             IHbtLocalizationService localization,
+            IHbtLoginPolicy loginPolicy,
             ILogger<HbtAuthController> logger) : base(localization)
         {
             _loginService = loginService;
             _logger = logger;
+            _loginPolicy = loginPolicy;
         }
 
         /// <summary>
@@ -246,6 +251,50 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
                     iterations = iterations 
                 }
             });
+        }
+
+        /// <summary>
+        /// 解锁用户
+        /// </summary>
+        /// <param name="username">用户名</param>
+        /// <returns>解锁结果</returns>
+        [HttpPost("unlock/{username}")]
+        [Description("解锁用户")]
+        public async Task<HbtApiResult<bool>> UnlockUserAsync(string username)
+        {
+            _logger.LogInformation("正在解锁用户: {Username}", username);
+            await _loginPolicy.RecordSuccessfulLoginAsync(username);
+            return HbtApiResult<bool>.Success(true);
+        }
+
+        /// <summary>
+        /// 获取用户登录尝试剩余次数
+        /// </summary>
+        /// <param name="username">用户名</param>
+        /// <returns>剩余尝试次数</returns>
+        [HttpGet("attempts/{username}")]
+        [Description("获取用户登录尝试剩余次数")]
+        [AllowAnonymous]
+        public async Task<HbtApiResult<int>> GetRemainingAttemptsAsync(string username)
+        {
+            _logger.LogInformation("正在获取用户登录尝试剩余次数: {Username}", username);
+            var remainingAttempts = await _loginPolicy.GetRemainingAttemptsAsync(username);
+            return HbtApiResult<int>.Success(remainingAttempts);
+        }
+
+        /// <summary>
+        /// 获取账户锁定剩余时间(秒)
+        /// </summary>
+        /// <param name="username">用户名</param>
+        /// <returns>剩余锁定时间(秒)</returns>
+        [HttpGet("lockout/{username}")]
+        [Description("获取账户锁定剩余时间")]
+        [AllowAnonymous]
+        public async Task<HbtApiResult<int>> GetLockoutRemainingSecondsAsync(string username)
+        {
+            _logger.LogInformation("正在获取用户账户锁定剩余时间: {Username}", username);
+            var remainingSeconds = await _loginPolicy.GetLockoutRemainingSecondsAsync(username);
+            return HbtApiResult<int>.Success(remainingSeconds);
         }
     }
 } 

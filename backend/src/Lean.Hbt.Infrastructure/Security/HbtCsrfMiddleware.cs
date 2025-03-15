@@ -179,7 +179,7 @@ namespace Lean.Hbt.Infrastructure.Security
                 path.Contains("/auth") ||
                 path.Contains("/token") ||
                 path.Contains("/oauth") ||
-                path.Contains("/captcha")))
+                path.Contains("/hbtcaptcha")))
             {
                 _logger.LogInformation("[CSRF] Skipping CSRF check for auth path: {Path}", path);
                 return true;
@@ -208,9 +208,9 @@ namespace Lean.Hbt.Infrastructure.Security
         {
             return new CookieOptions
             {
-                HttpOnly = false,
-                Secure = true, // 始终使用 Secure
-                SameSite = SameSiteMode.Lax, // 默认使用 Lax
+                HttpOnly = false,  // 允许 JavaScript 访问
+                Secure = context.Request.IsHttps,  // 根据请求协议设置
+                SameSite = SameSiteMode.None,  // 允许跨站点请求
                 Path = "/",
                 MaxAge = TimeSpan.FromMinutes(_options.CsrfTokenExpirationMinutes)
             };

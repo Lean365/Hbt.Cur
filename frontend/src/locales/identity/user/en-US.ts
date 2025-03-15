@@ -2,6 +2,43 @@ export default {
   identity: {
     user: {
       title: 'User Management',
+      toolbar: {
+        add: 'Add User',
+        edit: 'Edit User',
+        delete: 'Delete User',
+        import: 'Import Users',
+        export: 'Export Users',
+        resetPassword: 'Reset Password',
+        downloadTemplate: 'Download Template'
+      },
+      table: {
+        columns: {
+          userName: 'Username',
+          nickName: 'Nickname',
+          deptName: 'Department',
+          role: 'Role',
+          email: 'Email',
+          phoneNumber: 'Phone Number',
+          gender: 'Gender',
+          status: 'Status',
+          createTime: 'Create Time',
+          lastLoginTime: 'Last Login Time',
+          operation: 'Operation'
+        },
+        operation: {
+          edit: 'Edit',
+          delete: 'Delete',
+          resetPassword: 'Reset Password'
+        },
+        status: {
+          enabled: 'Enabled',
+          disabled: 'Disabled',
+          toggle: {
+            enable: 'Enable',
+            disable: 'Disable'
+          }
+        }
+      },
       userId: 'User ID',
       userName: {
         label: 'Username',
@@ -97,7 +134,91 @@ export default {
         title: 'Export Users',
         success: 'Export successful',
         failed: 'Export failed'
+      },
+      messages: {
+        confirmDelete: 'Are you sure you want to delete the selected user(s)?',
+        confirmResetPassword: 'Are you sure you want to reset the password for selected user(s)?',
+        confirmToggleStatus: 'Are you sure you want to {action} this user?',
+        deleteSuccess: 'User deleted successfully',
+        deleteFailed: 'Failed to delete user',
+        saveSuccess: 'User information saved successfully',
+        saveFailed: 'Failed to save user information',
+        resetPasswordSuccess: 'Password reset successfully',
+        resetPasswordFailed: 'Failed to reset password',
+        importSuccess: 'Users imported successfully',
+        importFailed: 'Failed to import users',
+        exportSuccess: 'Users exported successfully',
+        exportFailed: 'Failed to export users',
+        toggleStatusSuccess: 'Status updated successfully',
+        toggleStatusFailed: 'Failed to update status'
+      },
+      // Tabs
+      tab: {
+        basic: 'Basic Info',
+        profile: 'Profile',
+        role: 'Roles & Permissions',
+        dept: 'Department & Post',
+        other: 'Other Info'
       }
     }
+  },
+  title: 'User Management',
+  fields: {
+    userName: {
+      label: 'Username',
+      placeholder: 'Please enter username'
+    },
+    nickName: {
+      label: 'Nickname',
+      placeholder: 'Please enter nickname'
+    },
+    phoneNumber: {
+      label: 'Phone Number',
+      placeholder: 'Please enter phone number'
+    },
+    email: {
+      label: 'Email',
+      placeholder: 'Please enter email'
+    },
+    gender: {
+      label: 'Gender',
+      placeholder: 'Please select gender',
+      options: {
+        male: 'Male',
+        female: 'Female',
+        unknown: 'Unknown'
+      }
+    },
+    userType: {
+      label: 'User Type',
+      placeholder: 'Please select user type',
+      options: {
+        admin: 'Administrator',
+        user: 'Regular User'
+      }
+    },
+    status: {
+      label: 'Status',
+      placeholder: 'Please select status',
+      options: {
+        enabled: 'Enabled',
+        disabled: 'Disabled'
+      }
+    },
+    createTime: 'Create Time',
+    lastLoginTime: 'Last Login Time'
+  },
+  actions: {
+    add: 'Add User',
+    edit: 'Edit User',
+    delete: 'Delete User',
+    resetPassword: 'Reset Password',
+    export: 'Export Users'
+  },
+  rules: {
+    userName: 'Username is required',
+    nickName: 'Nickname is required',
+    phoneNumber: 'Please enter a valid phone number',
+    email: 'Please enter a valid email address'
   }
 } 

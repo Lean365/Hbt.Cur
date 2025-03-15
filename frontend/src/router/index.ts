@@ -3,8 +3,8 @@ import type { RouteRecordRaw } from 'vue-router'
 import { getToken } from '@/utils/auth'
 import { useUserStore } from '@/stores/user'
 import { useMenuStore } from '@/stores/menu'
-import type { Menu } from '@/types/identity/menu'
-import { MenuType } from '@/types/identity/menu'
+import type { Menu} from '@/types/identity/menu'
+import { HbtMenuType} from '@/types/common'
 import { message } from 'ant-design-vue'
 import i18n from '@/locales'
 
@@ -137,96 +137,6 @@ export const constantRoutes: RouteRecordRaw[] = [
     }
   },
   {
-    path: '/404',
-    component: () => import('@/layouts/BasicLayout.vue'),
-    children: [
-      {
-        path: '',
-        name: '404',
-        component: () => import('@/views/error/404.vue'),
-        meta: {
-          title: 'error.404.title',
-          requiresAuth: true,
-          hidden: true,
-          ignoreError: true,
-          transKey: 'error.404.title'
-        }
-      }
-    ]
-  },
-  {
-    path: '/403',
-    component: () => import('@/layouts/BasicLayout.vue'),
-    children: [
-      {
-        path: '',
-        name: '403',
-        component: () => import('@/views/error/403.vue'),
-        meta: {
-          title: 'error.403.title',
-          requiresAuth: false,
-          hidden: true,
-          ignoreError: true,
-          transKey: 'error.403.title'
-        }
-      }
-    ]
-  },
-  {
-    path: '/500',
-    component: () => import('@/layouts/BasicLayout.vue'),
-    children: [
-      {
-        path: '',
-        name: '500',
-        component: () => import('@/views/error/500.vue'),
-        meta: {
-          title: 'error.500.title',
-          requiresAuth: true,
-          hidden: true,
-          ignoreError: true,
-          transKey: 'error.500.title'
-        }
-      }
-    ]
-  },
-  {
-    path: '/401',
-    component: () => import('@/layouts/BasicLayout.vue'),
-    children: [
-      {
-        path: '',
-        name: '401',
-        component: () => import('@/views/error/401.vue'),
-        meta: {
-          title: 'error.401.title',
-          requiresAuth: false,
-          hidden: true,
-          ignoreError: true,
-          transKey: 'error.401.title'
-        }
-      }
-    ]
-  },
-  {
-    path: '/503',
-    component: () => import('@/layouts/BasicLayout.vue'),
-    children: [
-      {
-        path: '',
-        name: '503',
-        component: () => import('@/views/error/503.vue'),
-        meta: {
-          title: 'error.503.title',
-          requiresAuth: false,
-          hidden: true,
-          ignoreError: true,
-          transKey: 'error.503.title'
-        }
-      }
-    ]
-  },
-  {
     path: '/',
     component: () => import('@/layouts/BasicLayout.vue'),
     redirect: '/home',
@@ -241,6 +151,30 @@ export const constantRoutes: RouteRecordRaw[] = [
           requiresAuth: true,
           transKey: 'menu.home'
         }
+      },
+      {
+        path: 'components',
+        name: 'Components',
+        redirect: '/components/icons',
+        meta: {
+          title: 'menu.components.title',
+          icon: 'AppstoreOutlined',
+          requiresAuth: true,
+          transKey: 'menu.components.title'
+        },
+        children: [
+          {
+            path: 'icons',
+            name: 'Icons',
+            component: () => import('@/components/Icon/index.vue'),
+            meta: {
+              title: 'menu.components.icons',
+              icon: 'StarOutlined',
+              requiresAuth: true,
+              transKey: 'menu.components.icons'
+            }
+          }
+        ]
       },
       {
         path: 'dashboard',
@@ -374,11 +308,10 @@ export const registerDynamicRoutes = async (menus: Menu[]): Promise<boolean> => 
     //   }))
     // })
 
-    // 移除现有的动态路由和通配符路由
+    // 移除现有的动态路由
     router.getRoutes().forEach(route => {
-      const routeName = route.name?.toString()
-      if (routeName && (routeName.startsWith('HbtMenu_') || routeName === 'NotFound')) {
-        router.removeRoute(routeName)
+      if (route.name?.toString().startsWith('HbtMenu_')) {
+        router.removeRoute(route.name.toString())
       }
     })
 
@@ -412,7 +345,7 @@ export const registerDynamicRoutes = async (menus: Menu[]): Promise<boolean> => 
           path: routePath,
           name: routeName,
           component:
-            menu.menuType === MenuType.DIRECTORY
+            menu.menuType === HbtMenuType.Directory
               ? () => import('@/layouts/BasicLayout.vue')
               : menu.component
                 ? loadView(menu.component)
@@ -431,7 +364,7 @@ export const registerDynamicRoutes = async (menus: Menu[]): Promise<boolean> => 
         // 处理子菜单
         if (menu.children?.length) {
           const childRoutes = menu.children
-            .filter(child => child.menuType !== MenuType.BUTTON)
+            .filter(child => child.menuType !== HbtMenuType.Button)
             .map(child => buildRouteConfig(child))
           route.children = childRoutes
         }
@@ -486,13 +419,6 @@ export const registerDynamicRoutes = async (menus: Menu[]): Promise<boolean> => 
       }))
     })
 
-    // 最后添加通配符路由
-    router.addRoute({
-      path: '/:pathMatch(.*)*',
-      name: 'NotFound',
-      redirect: '/404'
-    })
-
     return true
   } catch (error) {
     console.error('[路由] 注册动态路由失败:', error)
@@ -506,34 +432,49 @@ router.beforeEach(async (to, from, next) => {
   const userStore = useUserStore()
   const menuStore = useMenuStore()
 
-  console.log('[路由守卫] 开始处理路由:', {
-    目标路由: to.path,
-    来源路由: from.path,
-    认证状态: {
-      token: !!token,
-      用户信息: !!userStore.user,
-      菜单: !!menuStore.rawMenuList?.length,
-      菜单数量: menuStore.rawMenuList?.length || 0,
-      动态路由数量: router.getRoutes().filter(r => r.name?.toString().startsWith('HbtMenu_')).length
-    }
-  })
+  // console.log('[路由守卫] 开始处理路由:', {
+  //   目标路由: to.path,
+  //   来源路由: from.path,
+  //   认证状态: {
+  //     token: !!token,
+  //     用户信息: !!userStore.user,
+  //     菜单: !!menuStore.rawMenuList?.length,
+  //     菜单数量: menuStore.rawMenuList?.length || 0,
+  //     动态路由数量: router.getRoutes().filter(r => r.name?.toString().startsWith('HbtMenu_')).length
+  //   }
+  // })
 
-  // 登录页面直接放行
-  if (to.path === '/login') {
+  // 不需要登录的页面直接放行
+  if (to.meta.requiresAuth === false) {
+    //console.log('[路由守卫] 无需认证的页面，直接放行:', to.path)
     next()
     return
   }
 
-  // 未登录时统一跳转到登录页
+  // 未登录时跳转到登录页
   if (!token) {
-    next({ path: '/login', query: { redirect: to.fullPath } })
+    if (to.path !== '/login') {
+      //console.log('[路由守卫] 未登录，跳转到登录页')
+      next({ path: '/login', query: { redirect: to.fullPath } })
+    } else {
+      next()
+    }
+    return
+  }
+
+  // 已登录时访问登录页，跳转到首页
+  if (to.path === '/login') {
+    //console.log('[路由守卫] 已登录，从登录页跳转到首页')
+    next({ path: '/' })
     return
   }
 
   try {
     // 初始化用户信息
     if (!userStore.user) {
+      console.log('[路由守卫] 开始获取用户信息')
       await userStore.getUserInfo()
+      console.log('[路由守卫] 用户信息获取完成')
     }
 
     // 检查是否需要初始化菜单和动态路由
@@ -542,30 +483,68 @@ router.beforeEach(async (to, from, next) => {
       router.getRoutes().filter(r => r.name?.toString().startsWith('HbtMenu_')).length === 0
 
     if (needInitRoutes) {
-      console.log('[路由守卫] 开始初始化动态路由')
-      try {
-        // 重新加载菜单
-        await menuStore.reloadMenus()
-        
-        // 注册动态路由
-        const success = await registerDynamicRoutes(menuStore.rawMenuList || [])
-        if (!success) {
-          throw new Error('动态路由注册失败')
-        }
+      //console.log('[路由守卫] 开始加载菜单和注册动态路由')
 
-        console.log('[路由守卫] 动态路由注册完成，重新导航:', to.fullPath)
-        // 使用 replace 模式重新导航，保留完整的路由信息
-        next({ path: to.fullPath, replace: true })
-        return
-      } catch (error) {
-        console.error('[路由守卫] 初始化动态路由失败:', error)
-        userStore.logout()
-        next({ path: '/login' })
-        return
+      // 如果菜单未加载，先加载菜单
+      if (!menuStore.rawMenuList?.length) {
+        //console.log('[路由守卫] 加载菜单数据')
+        await menuStore.reloadMenus()
       }
+
+      // console.log('[路由守卫] 菜单加载完成，开始注册动态路由:', {
+      //   菜单数量: menuStore.rawMenuList?.length || 0,
+      //   顶级菜单: menuStore.rawMenuList?.filter(m => !m.parentId).map(m => m.menuName) || []
+      // })
+
+      const success = await registerDynamicRoutes(menuStore.rawMenuList)
+      console.log('[路由守卫] 动态路由注册结果:', {
+        成功: success,
+        当前路由表: router.getRoutes().map(r => ({
+          路径: r.path,
+          名称: r.name,
+          类型: r.name?.toString().startsWith('HbtMenu_') ? '动态路由' : '静态路由'
+        }))
+      })
+
+      if (!success) {
+        throw new Error('动态路由注册失败')
+      }
+
+      // 重新导航到目标路由,触发新路由配置生效
+      return next({ path: to.path, replace: true })
     }
 
-    // 路由存在，直接放行
+    // 检查路由是否存在
+    const matchedRoute = router.resolve(to.path)
+    if (!matchedRoute.matched.length) {
+      console.log('[路由守卫] 路由未匹配，尝试重新注册动态路由:', {
+        目标路径: to.path,
+        当前路由表: router.getRoutes().map(r => r.path)
+      })
+
+      // 重新注册动态路由
+      const success = await registerDynamicRoutes(menuStore.rawMenuList)
+      console.log('[路由守卫] 重新注册动态路由结果:', {
+        成功: success,
+        当前路由表: router.getRoutes().map(r => r.path)
+      })
+
+      if (!success) {
+        throw new Error('动态路由重新注册失败')
+      }
+
+      // 再次检查路由并强制刷新
+      const newMatchedRoute = router.resolve(to.path)
+      if (!newMatchedRoute.matched.length) {
+        console.warn('[路由守卫] 路由不存在:', to.path)
+        return next({ name: '404' })
+      }
+
+      // 强制刷新当前路由
+      return next({ path: to.path, replace: true })
+    }
+
+    console.log('[路由守卫] 路由处理完成，放行:', to.path)
     next()
   } catch (error) {
     console.error('[路由守卫] 错误:', error)

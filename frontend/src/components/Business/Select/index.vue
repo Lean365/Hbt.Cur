@@ -76,6 +76,7 @@ interface Props {
   allowClear?: boolean
   loading?: boolean
   filterOption?: boolean | ((input: string, option: DefaultOptionType) => boolean)
+  showAll?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -91,6 +92,7 @@ const props = withDefaults(defineProps<Props>(), {
   placeholder: 'common.form.placeholder.select',
   allowClear: true,
   loading: false,
+  showAll: true,
   filterOption: (input: string, option: DefaultOptionType) => {
     return (option?.label as string)?.toLowerCase().includes(input.toLowerCase())
   }
@@ -107,13 +109,30 @@ const options = computed(() => props.dictType ? dictStore.getDictOptions(props.d
 
 // 显示选项
 const displayOptions = computed(() => {
+  let opts = []
+  
+  // 如果是 radio 类型且 showAll 为 true，添加"全部"选项
+  if (props.type === 'radio' && props.showAll) {
+    opts.push({
+      label: t('select.all'),
+      value: undefined,
+      disabled: false,
+      cssClass: '',
+      listClass: '',
+      extLabel: '',
+      extValue: '',
+      transKey: ''
+    })
+  }
+  
+  // 添加其他选项
   if (props.options && props.options.length > 0) {
-    return props.options
+    opts = [...opts, ...props.options]
+  } else if (props.dictType) {
+    opts = [...opts, ...options.value]
   }
-  if (props.dictType) {
-    return options.value
-  }
-  return []
+  
+  return opts
 })
 
 // 根据type确定使用哪个组件
@@ -198,64 +217,6 @@ const controlProps = computed(() => {
   }
 })
 
-// 将数值类型转换为字符串用于内部显示
-const innerValue = computed({
-  get: () => {
-    const originalValue = props.value as string | number | undefined | null
-    if (originalValue === undefined || originalValue === null) {
-      return originalValue
-    }
-    
-    // 获取选中选项
-    const selectedOption = displayOptions.value.find(
-      opt => (opt as HbtSelectOption).value === originalValue
-    ) as HbtSelectOption | undefined
-    
-    const valueType = selectedOption?.valueType || 'string'
-    
-    let result: SelectValue
-    switch (valueType) {
-      case 'number':
-        result = Number(originalValue)
-        break
-      default:
-        result = String(originalValue)
-    }
-    return result
-  },
-  set: (val: SelectValue) => {
-    if (val === undefined || val === null) {
-      emit('update:value', val)
-      return
-    }
-    
-    // 获取选中选项
-    const selectedOption = displayOptions.value.find(
-      opt => (opt as HbtSelectOption).value === val
-    ) as HbtSelectOption | undefined
-    
-    const valueType = selectedOption?.valueType || 'string'
-    
-    let newVal: SelectValue
-    switch (valueType) {
-      case 'number':
-        newVal = Number(val)
-        break
-      default:
-        newVal = String(val)
-    }
-    emit('update:value', newVal)
-  }
-})
-
-// 合并选项
-const mergedOptions = computed(() => {
-  if (props.dictType) {
-    return options.value
-  }
-  return props.options || []
-})
-
 // 处理change事件
 const handleChange = (value: SelectValue, option: DefaultOptionType | DefaultOptionType[]) => {
   if (value === undefined || value === null) {
@@ -275,9 +236,14 @@ const handleChange = (value: SelectValue, option: DefaultOptionType | DefaultOpt
         : [Number(value)]
       break
     default:
-      convertedValue = Array.isArray(value)
-        ? value.map(v => Number(v))
-        : Number(value)
+      // 如果是字典类型，直接返回原始值
+      if (props.dictType) {
+        convertedValue = value
+      } else {
+        convertedValue = Array.isArray(value)
+          ? value.map(v => Number(v))
+          : Number(value)
+      }
   }
   emit('change', convertedValue, option)
 }
@@ -315,6 +281,14 @@ watch(() => props.dictType, async (newType) => {
 onMounted(() => {
   if (props.dictType) {
     dictStore.loadDict(props.dictType)
+  }
+})
+
+// 将数值类型转换为字符串用于内部显示
+const innerValue = computed({
+  get: () => props.value,
+  set: (val: SelectValue) => {
+    emit('update:value', val)
   }
 })
 </script>

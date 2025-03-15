@@ -41,7 +41,17 @@ export default {
         loading: '正在加载用户信息',
         success: '获取用户信息成功'
       },
-      autoLogout: '由于长时间未操作，您已被自动登出'
+      autoLogout: '由于长时间未操作，您已被自动登出',
+      error: {
+        noResponse: '服务器无响应',
+        noSaltData: '获取加密参数失败',
+        invalidSalt: '加密参数格式无效',
+        invalidIterations: '加密迭代次数无效',
+        permanentlyLocked: '账号已被永久锁定，请联系管理员解锁',
+        temporarilyLocked: '账号已被临时锁定，请等待{minutes}分钟后再试',
+        tooManyAttempts: '登录失败次数过多，账号已被锁定',
+        invalidCredentials: '用户名或密码错误'
+      }
     }
   }
 } 

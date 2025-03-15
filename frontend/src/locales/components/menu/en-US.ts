@@ -7,6 +7,11 @@ export default {
       analysis: 'Analysis',
       monitor:'Monitor'
     },
+    components: {
+      title: 'Components',
+      icons: 'Icon',
+
+    },
     about: {
       title: 'About Us',
       index: 'About',

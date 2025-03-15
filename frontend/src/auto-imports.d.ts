@@ -327,7 +327,7 @@ declare global {
   export type { DictOption } from './stores/dict'
   import('./stores/dict')
   // @ts-ignore
-  export type { UserInfo, LoginResult, UserInfoResponse } from './stores/user'
+  export type { UserInfoResponse } from './stores/user'
   import('./stores/user')
 }
 

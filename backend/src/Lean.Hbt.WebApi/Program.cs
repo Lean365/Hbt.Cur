@@ -4,6 +4,7 @@ using Lean.Hbt.Infrastructure.Data.Contexts;
 using Lean.Hbt.Infrastructure.Data.Seeds;
 using Lean.Hbt.Infrastructure.Extensions;
 using Lean.Hbt.Infrastructure.Services;
+using Lean.Hbt.Infrastructure.Security;
 using Lean.Hbt.Infrastructure.Swagger;
 using Lean.Hbt.WebApi.Extensions;
 using Lean.Hbt.WebApi.Middlewares;
@@ -23,6 +24,7 @@ using Lean.Hbt.Infrastructure.Caching;
 using Quartz;
 using Quartz.Impl;
 using Quartz.Spi;
+using Microsoft.AspNetCore.Routing;
 
 var logger = LogManager.Setup()
                       .LoadConfigurationFromFile("nlog.config")
@@ -109,11 +111,17 @@ try
     // 添加控制器服务
     builder.Services.AddControllers();
 
+    // 添加 HttpClient 服务
+    builder.Services.AddHttpClient();
+
     // 添加 Swagger 服务
     builder.Services.AddHbtSwagger();
 
     // 配置安全选项
     builder.Services.Configure<HbtSecurityOptions>(builder.Configuration.GetSection("Security"));
+    
+    // 配置验证码选项
+    builder.Services.Configure<HbtCaptchaOptions>(builder.Configuration.GetSection("Captcha"));
 
     // 添加基础设施服务
     builder.Services.AddInfrastructure(builder.Configuration);
@@ -202,6 +210,8 @@ try
 
     // 添加后台服务
     builder.Services.AddHostedService<HbtLoginPolicyInitializer>();
+    // 添加验证码初始化服务
+    builder.Services.AddHostedService<HbtCaptchaInitializer>();
 
     // 注册邮件配置
     builder.Services.Configure<HbtMailOption>(builder.Configuration.GetSection(HbtMailOption.Position));

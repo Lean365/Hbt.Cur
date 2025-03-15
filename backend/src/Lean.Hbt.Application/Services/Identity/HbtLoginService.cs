@@ -250,6 +250,13 @@ public class HbtLoginService : IHbtLoginService
             var deptId = userDepts?.FirstOrDefault()?.DeptId ?? 0;
             var postId = userPosts?.FirstOrDefault()?.PostId ?? 0;
 
+            // 标记验证码为已使用
+            if (!string.IsNullOrEmpty(loginDto.CaptchaToken))
+            {
+                _logger.LogInformation("标记验证码为已使用: Token={Token}", loginDto.CaptchaToken);
+                await _captchaService.MarkAsUsedAsync(loginDto.CaptchaToken);
+            }
+
             // 生成令牌
             _logger.LogInformation("开始生成访问令牌");
             var accessToken = GenerateAccessToken(user);

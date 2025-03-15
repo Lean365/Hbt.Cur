@@ -208,7 +208,7 @@ import DictTypeDetail from './components/DictTypeDetail.vue'
 // 引入API和类型
 import {
   getHbtDictTypeList,
-  getHbtDictTypeById,
+  getHbtDictType,
   createHbtDictType,
   updateHbtDictType,
   deleteHbtDictType,
@@ -217,7 +217,7 @@ import {
   getHbtDictTypeByType
 } from '@/api/admin/hbtDictType'
 import type { HbtDictType, HbtDictTypeQuery, DictTypePageResult, HbtDictTypeCreate, HbtDictTypeUpdate } from '@/types/admin/hbtDictType'
-import type { HbtApiResult, HbtStatus } from '@/types/common'
+import type { HbtApiResult } from '@/types/common'
 import type { HbtDictData } from '@/types/admin/hbtDictData'
 
 // 引入类型
@@ -439,7 +439,7 @@ const handleTableChange = (pagination: TablePaginationConfig) => {
 const loadDictTypeList = async () => {
   try {
     loading.value = true
-    console.log('[加载字典类型] 开始加载，参数:', queryParams.value)
+    //console.log('[加载字典类型] 开始加载，参数:', queryParams.value)
     
     // 确保字典数据已加载
     await dictStore.loadDicts([
@@ -447,15 +447,32 @@ const loadDictTypeList = async () => {
       'sys_yes_no',
       'sys_normal_disable'
     ])
-    console.log('[加载字典类型] 字典数据加载完成')
+    //console.log('[加载字典类型] 字典数据加载完成')
     
     // 加载列表数据
-    const { data: pageResult } = await getHbtDictTypeList(queryParams.value)
-    console.log('[加载字典类型] 列表数据加载完成:', pageResult)
+    //console.log('[加载字典类型] 发起请求:', {
+    //  接口: '/api/HbtDictType',
+    //  方法: 'GET',
+    //  参数: queryParams.value
+    //})
     
-    // 更新数据和分页信息
-    dictTypeList.value = pageResult.rows
-    total.value = pageResult.totalNum
+    const { data: pageResult } = await getHbtDictTypeList(queryParams.value)
+    //console.log('[加载字典类型] API响应:', pageResult)
+    
+    if (!pageResult) {
+      throw new Error('API响应数据为空')
+    }
+    
+    // 使用类型断言
+    const result = pageResult as unknown as DictTypePageResult
+    
+    if (!Array.isArray(result.rows)) {
+      throw new Error('返回的rows不是数组')
+    }
+    
+    // 直接使用分页数据
+    dictTypeList.value = result.rows
+    total.value = result.totalNum
     
     // 如果当前页没有数据且不是第一页，则加载上一页
     if (dictTypeList.value.length === 0 && queryParams.value.pageIndex > 1) {
@@ -463,7 +480,7 @@ const loadDictTypeList = async () => {
       await loadDictTypeList()
     }
   } catch (error) {
-    console.error('[加载字典类型] 加载失败:', error)
+    //console.error('[加载字典类型] 加载失败:', error)
     message.error('加载字典类型列表失败')
   } finally {
     loading.value = false
@@ -513,30 +530,30 @@ const handleAdd = () => {
 // 编辑
 const handleEdit = async (record: HbtDictType) => {
   try {
-    console.log('[编辑] 开始处理编辑操作:', record)
+    //console.log('[编辑] 开始处理编辑操作:', record)
     if (!record || !record.dictTypeId) {
-      console.error('[编辑] 无效的字典类型ID')
+      //console.error('[编辑] 无效的字典类型ID')
       message.error('无效的字典类型ID')
       return
     }
     formLoading.value = true
-    console.log('[编辑] 开始获取数据, ID:', record.dictTypeId)
+    //console.log('[编辑] 开始获取数据, ID:', record.dictTypeId)
     
-    const response = await getHbtDictTypeById(record.dictTypeId)
-    console.log('[编辑] API响应:', response)
+    const response = await getHbtDictType(record.dictTypeId)
+    //console.log('[编辑] API响应:', response)
     
     if (response.data) {
       const dictType = response.data as unknown as HbtDictType
       formData.value = { ...dictType }
       formTitle.value = '编辑字典类型'
       formVisible.value = true
-      console.log('[编辑] 表单数据设置完成:', formData.value)
+      //console.log('[编辑] 表单数据设置完成:', formData.value)
     }
   } catch (error) {
-    console.error('[编辑] 发生异常:', error)
+    //console.error('[编辑] 发生异常:', error)
     message.error('获取数据失败')
   } finally {
-    console.log('[编辑] 处理完成')
+    //console.log('[编辑] 处理完成')
     formLoading.value = false
   }
 }
@@ -544,30 +561,30 @@ const handleEdit = async (record: HbtDictType) => {
 // 查看
 const handleView = async (record: HbtDictType) => {
   try {
-    console.log('[查看详情] 开始处理查看操作:', record)
+    //console.log('[查看详情] 开始处理查看操作:', record)
     if (!record || !record.dictTypeId) {
-      console.error('[查看详情] 无效的字典类型ID')
+      //console.error('[查看详情] 无效的字典类型ID')
       message.error('无效的字典类型ID')
       return
     }
 
     detailLoading.value = true
-    console.log('[查看详情] 开始获取详情数据, ID:', record.dictTypeId)
+    //console.log('[查看详情] 开始获取详情数据, ID:', record.dictTypeId)
     
-    const response = await getHbtDictTypeById(record.dictTypeId)
-    console.log('[查看详情] API响应:', response)
+    const response = await getHbtDictType(record.dictTypeId)
+    //console.log('[查看详情] API响应:', response)
     
     if (response.data) {
       const dictType = response.data as unknown as HbtDictType
       detailData.value = dictType
       detailVisible.value = true
-      console.log('[查看详情] 详情数据设置完成:', detailData.value)
+      //console.log('[查看详情] 详情数据设置完成:', detailData.value)
     }
   } catch (error) {
-    console.error('[查看详情] 发生异常:', error)
+    //console.error('[查看详情] 发生异常:', error)
     message.error('获取详情失败')
   } finally {
-    console.log('[查看详情] 处理完成')
+    //console.log('[查看详情] 处理完成')
     detailLoading.value = false
   }
 }
@@ -644,46 +661,46 @@ const handleDictData = (record: HbtDictType) => {
 
 // 表单确认
 const handleFormOk = async (values: Partial<HbtDictType>) => {
-  console.log('[表单提交] 开始权限检查')
+  //console.log('[表单提交] 开始权限检查')
   const userStore = useUserStore()
   const hasCreatePermission = userStore.permissions.includes('admin:dicttype:create')
   const hasUpdatePermission = userStore.permissions.includes('admin:dicttype:update')
   
   // 打印完整的权限列表
-  console.log('[表单提交] 用户完整权限列表:', userStore.permissions)
+  //console.log('[表单提交] 用户完整权限列表:', userStore.permissions)
   
-  console.log('[表单提交] 权限检查结果:', {
-    所需权限: values.dictTypeId ? 'admin:dicttype:update' : 'admin:dicttype:create',
-    用户权限列表: userStore.permissions,
-    是否有创建权限: hasCreatePermission,
-    是否有更新权限: hasUpdatePermission,
-    当前用户角色: userStore.roles
-  })
+  //console.log('[表单提交] 权限检查结果:', {
+  //  所需权限: values.dictTypeId ? 'admin:dicttype:update' : 'admin:dicttype:create',
+  //  用户权限列表: userStore.permissions,
+  //  是否有创建权限: hasCreatePermission,
+  //  是否有更新权限: hasUpdatePermission,
+  //  当前用户角色: userStore.roles
+  //})
   
-  console.log('[表单提交] 表单数据:', {
-    ...values,
-    操作类型: values.dictTypeId ? '更新' : '新增',
-    请求方法: values.dictTypeId ? 'PUT' : 'POST',
-    请求地址: '/api/HbtDictType'
-  })
+  //console.log('[表单提交] 表单数据:', {
+  //  ...values,
+  //  操作类型: values.dictTypeId ? '更新' : '新增',
+  //  请求方法: values.dictTypeId ? 'PUT' : 'POST',
+  //  请求地址: '/api/HbtDictType'
+  //})
   
   try {
     if (values.dictTypeId) {
-      console.log('[表单提交] 执行更新操作')
+      //console.log('[表单提交] 执行更新操作')
       await updateHbtDictType(values as HbtDictTypeUpdate)
     } else {
-      console.log('[表单提交] 执行新增操作')
+      //console.log('[表单提交] 执行新增操作')
       const submitData = {
         ...values,
         tenantId: 0
       }
-      console.log('[表单提交] 最终提交数据:', submitData)
+      //console.log('[表单提交] 最终提交数据:', submitData)
       await createHbtDictType(submitData as HbtDictTypeCreate)
     }
     formVisible.value = false
     loadDictTypeList()
   } catch (error) {
-    console.error('表单提交失败:', error)
+    //console.error('表单提交失败:', error)
     message.error(values.dictTypeId ? '更新失败' : '新增失败')
   } finally {
     formLoading.value = false
@@ -692,7 +709,7 @@ const handleFormOk = async (values: Partial<HbtDictType>) => {
 
 // 表单取消
 const handleFormCancel = () => {
-  console.log('=== 处理表单取消 ===')
+  //console.log('=== 处理表单取消 ===')
   formVisible.value = false
   formData.value = {}
 }
@@ -759,7 +776,7 @@ const toggleFullscreen = (isFullscreen: boolean) => {
 // === 生命周期钩子 ===
 onMounted(async () => {
   try {
-    console.log('[页面初始化] 开始加载页面')
+    //console.log('[页面初始化] 开始加载页面')
     
     // 初始化列设置
     initColumnSettings()
@@ -768,28 +785,28 @@ onMounted(async () => {
     const dictType = route.query.dictType
     if (dictType && typeof dictType === 'string') {
       queryParams.value.dictType = dictType
-      console.log('[页面初始化] 从路由获取到字典类型:', dictType)
+      //console.log('[页面初始化] 从路由获取到字典类型:', dictType)
     }
     
     // 并行加载所有数据
-    console.log('[页面初始化] 开始并行加载数据')
+    //console.log('[页面初始化] 开始并行加载数据')
     await Promise.all([
-      // 加载字典类型列表
-      loadDictTypeList().catch(error => {
-        console.error('[页面初始化] 加载字典类型列表失败:', error)
-        message.error('加载字典类型列表失败')
-      }),
-      
       // 加载字典数据
       dictStore.loadDicts(['sys_dict_category', 'sys_yes_no', 'sys_normal_disable']).catch(error => {
-        console.error('加载字典数据失败:', error)
+        //console.error('[页面初始化] 加载字典数据失败:', error)
         message.error('加载字典数据失败')
+      }),
+      
+      // 加载字典类型列表
+      loadDictTypeList().catch(error => {
+        //console.error('[页面初始化] 加载字典类型列表失败:', error)
+        message.error('加载字典类型列表失败')
       })
     ])
     
-    console.log('[页面初始化] 所有数据加载完成')
+    //console.log('[页面初始化] 所有数据加载完成')
   } catch (error) {
-    console.error('[页面错误] 页面初始化失败:', error)
+    //console.error('[页面错误] 页面初始化失败:', error)
     message.error('页面加载失败，请刷新重试')
   }
 })

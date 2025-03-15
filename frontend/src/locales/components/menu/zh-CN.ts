@@ -7,6 +7,11 @@ export default {
       analysis: '分析台',
       monitor:'监控台'
     },
+    components: {
+      title: '组件',
+      icons: '图标',
+
+    },
     about: {
       title: '关于我们',
       privacy: '隐私政策',

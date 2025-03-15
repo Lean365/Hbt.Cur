@@ -16,6 +16,7 @@ import router from './router'
 import i18n from './locales'
 import { useSettingStore } from '@/stores/settings'
 import { setupPermission } from './directives/permission'
+import setupIcons from '@/utils/icons'
 
 // 导入 date-fns 及其语言包
 import { format, formatDistance, formatRelative, isDate } from 'date-fns'
@@ -24,17 +25,17 @@ import { zhCN, zhTW, ja, ko, enUS, fr, es, ru, arSA } from 'date-fns/locale'
 // 语言包映射
 const LOCALE_MAP: Record<string, any> = {
   // 东亚语言
-  'zh-cn': zhCN,     // 简体中文
-  'zh-tw': zhTW,     // 繁体中文
-  'ja': ja,          // 日语
-  'ko': ko,          // 韩语
-  
+  'zh-cn': zhCN, // 简体中文
+  'zh-tw': zhTW, // 繁体中文
+  ja: ja, // 日语
+  ko: ko, // 韩语
+
   // 联合国官方语言
-  'en': enUS,        // 英语
-  'fr': fr,          // 法语
-  'es': es,          // 西班牙语
-  'ru': ru,          // 俄语
-  'ar': arSA,        // 阿拉伯语
+  en: enUS, // 英语
+  fr: fr, // 法语
+  es: es, // 西班牙语
+  ru: ru, // 俄语
+  ar: arSA // 阿拉伯语
 }
 
 // 导入通用业务组件
@@ -73,21 +74,24 @@ async function bootstrap() {
   app.component('HbtDictTag', HbtDictTag)
   app.component('HbtModal', HbtModal)
 
-  // 6. 初始化设置
+  // 6. 注册图标组件
+  setupIcons(app)
+
+  // 7. 初始化设置
   const settingStore = useSettingStore()
   await settingStore.loadFromStorage()
 
-  // 7. 监听语言变化，设置 date-fns 语言包
+  // 8. 监听语言变化，设置 date-fns 语言包
   watch(
     () => i18n.global.locale.value,
-    (newLang) => {
+    newLang => {
       try {
         const lang = newLang.toLowerCase()
         const locale = LOCALE_MAP[lang] || enUS
-        
+
         // 将语言设置到全局配置中
         app.config.globalProperties.$dateLocale = locale
-        console.log('[date-fns] 设置语言成功:', newLang)
+        //console.log('[date-fns] 设置语言成功:', newLang)
       } catch (err) {
         console.warn('[date-fns] 设置语言失败，将使用默认语言 en-US:', err)
         app.config.globalProperties.$dateLocale = enUS
@@ -96,14 +100,14 @@ async function bootstrap() {
     { immediate: true }
   )
 
-  // 8. 注册权限指令
+  // 9. 注册权限指令
   setupPermission(app)
 
-  // 9. 挂载应用
+  // 10. 挂载应用
   app.mount('#app')
 }
 
 // 启动应用
 bootstrap().catch(err => {
   console.error('[启动] 应用初始化失败:', err)
-}) 
+})

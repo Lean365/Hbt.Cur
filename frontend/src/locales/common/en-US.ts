@@ -1,5 +1,14 @@
 export default {
   common: {
+    // ==================== System Information ====================
+    system: {
+      title: 'Black Ice Platform',
+      slogan: 'Professional, Efficient, and Secure Enterprise Management System',
+      description: 'Modern Enterprise Management System Based on .NET 8 and Vue 3',
+      copyright: '© 2024 Lean365. All rights reserved.'
+    },
+
+    // ==================== Basic Operations ====================
     // Basic Titles
     title: {
       list: 'List',
@@ -9,15 +18,173 @@ export default {
       preview: 'Preview'
     },
 
-    // System Information
-    system: {
-      title: 'Black Ice Platform',
-      slogan: 'Professional, Efficient, and Secure Enterprise Management System',
-      description: 'Modern Enterprise Management System Based on .NET 8 and Vue 3',
-      copyright: '© 2024 Lean365. All rights reserved.'
+    // ==================== Status Definitions ====================
+    status: {
+      // Basic Status
+      base: {
+        label: 'Status',
+        normal: 'Normal',
+        disabled: 'Disabled',
+        placeholder: 'Please select status'
+      },
+
+      // Yes/No Status
+      yesNo: {
+        yes: 'Yes',
+        no: 'No'
+      },
+
+      // Visibility Status
+      visible: {
+        show: 'Show',
+        hide: 'Hide'
+      },
+
+      // Cache Status
+      cache: {
+        enabled: 'Enabled',
+        disabled: 'Disabled'
+      },
+
+      // Online Status
+      online: {
+        online: 'Online',
+        offline: 'Offline'
+      },
+
+      // Process Status
+      process: {
+        pending: 'Pending',
+        processing: 'Processing',
+        completed: 'Completed',
+        failed: 'Failed'
+      },
+
+      // Verification Status
+      verify: {
+        unverified: 'Unverified',
+        verified: 'Verified',
+        failed: 'Verification Failed'
+      },
+
+      // Lock Status
+      lock: {
+        locked: 'Locked',
+        unlocked: 'Unlocked'
+      },
+
+      // Publish Status
+      publish: {
+        draft: 'Draft',
+        published: 'Published',
+        unpublished: 'Unpublished'
+      },
+
+      // Sync Status
+      sync: {
+        synced: 'Synced',
+        unsynced: 'Unsynced',
+        syncing: 'Syncing'
+      }
     },
 
-    // Action Buttons
+    // ==================== Form Operations ====================
+    form: {
+      required: 'Required',
+      optional: 'Optional',
+      invalid: 'Invalid',
+      // Form Placeholders
+      placeholder: {
+        select: 'Please select',
+        input: 'Please input',
+        date: 'Please select date',
+        time: 'Please select time'
+      },
+      // Remark Information
+      remark: {
+        label: 'Remark',
+        placeholder: 'Please input remark'
+      }
+    },
+
+    // ==================== Table Operations ====================
+    table: {
+      header: {
+        operation: 'Operation'
+      },
+      config: {
+        density: {
+          default: 'Default',
+          middle: 'Middle',
+          small: 'Compact'
+        },
+        columnSetting: 'Column Settings'
+      },
+      pagination: {
+        total: 'Total {total} items',
+        current: 'Page {current}',
+        pageSize: '{pageSize} items/page',
+        jump: 'Go to'
+      },
+      empty: 'No Data',
+      loading: 'Loading...',
+      selectAll: 'Select All',
+      selected: '{total} items selected'
+    },
+
+    // ==================== Time Operations ====================
+    datetime: {
+      date: 'Date',
+      time: 'Time',
+      year: 'Year',
+      month: 'Month',
+      day: 'Day',
+      hour: 'Hour',
+      minute: 'Minute',
+      second: 'Second',
+      startDate: 'Start Date',
+      endDate: 'End Date',
+      startTime: 'Start Time',
+      endTime: 'End Time',
+      createTime: 'Create Time',
+      updateTime: 'Update Time',
+      formatError: 'Failed to format time',
+      relativeTimeFormatError: 'Failed to format relative time',
+      parseError: 'Failed to parse date',
+      rangeSeparator: ' to '
+    },
+
+    // ==================== File Operations ====================
+    // Import & Export
+    import: {
+      title: 'Import Data',
+      file: 'Select File',
+      select: 'Select File',
+      template: 'Download Template',
+      download: 'Download Template',
+      note: 'Import Notes',
+      tips: 'Please strictly follow the format of the import template, otherwise the import may fail',
+      format: 'Only Excel files are supported!',
+      size: 'File size cannot exceed 2MB!',
+      total: 'Total Records',
+      success: 'Success Count',
+      failed: 'Failed Count',
+      message: 'Failure Reason'
+    },
+
+    // Upload
+    upload: {
+      text: 'Drag file here or click to upload',
+      picture: 'Click to upload picture',
+      file: 'Click to upload file',
+      icon: 'Click to upload icon',
+      limit: {
+        size: 'File size cannot exceed {size}',
+        type: 'Only {type} format is supported'
+      }
+    },
+
+    // ==================== Function Buttons ====================
     actions: {
       // === Basic Operation Buttons ===
       add: 'Add',           // @btn-add-color
@@ -151,122 +318,8 @@ export default {
       maintain: 'Maintain'  // @btn-maintain-color
     },
 
-    // Status
-    status: {
-      label: 'Status',
-      normal: 'Normal',
-      disabled: 'Disabled',
-      placeholder: 'Please select status'
-    },
-
-    // Yes/No
-    yesNo: {
-      yes: 'Yes',
-      no: 'No'
-    },
-
-    // Visibility
-    visible: {
-      show: 'Show',
-      hide: 'Hide'
-    },
-
-    // Date & Time
-    datetime: {
-      date: 'Date',
-      time: 'Time',
-      year: 'Year',
-      month: 'Month',
-      day: 'Day',
-      hour: 'Hour',
-      minute: 'Minute',
-      second: 'Second',
-      startDate: 'Start Date',
-      endDate: 'End Date',
-      startTime: 'Start Time',
-      endTime: 'End Time',
-      createTime: 'Create Time',
-      updateTime: 'Update Time',
-      formatError: 'Failed to format time',
-      relativeTimeFormatError: 'Failed to format relative time',
-      parseError: 'Failed to parse date',
-      rangeSeparator: ' to '
-    },
-
-    // Form
-    form: {
-      required: 'Required',
-      optional: 'Optional',
-      invalid: 'Invalid',
-      placeholder: {
-        select: 'Please select',
-        input: 'Please enter',
-        date: 'Please select date',
-        time: 'Please select time'
-      }
-    },
-
-    // Tabs
-    tab: {
-      basicInfo: 'Basic Information',
-      otherInfo: 'Other Information'
-    },
-
-    // Table
-    table: {
-      header: {
-        operation: 'Operation'
-      },
-      config: {
-        density: {
-          default: 'Default',
-          middle: 'Middle',
-          small: 'Compact'
-        },
-        columnSetting: 'Column Settings'
-      },
-      pagination: {
-        total: 'Total {total} items',
-        current: 'Page {current}',
-        pageSize: '{pageSize} items/page',
-        jump: 'Go to'
-      },
-      empty: 'No Data',
-      loading: 'Loading...',
-      selectAll: 'Select All',
-      selected: '{total} items selected'
-    },
-
-    // Import & Export
-    import: {
-      title: 'Import Data',
-      file: 'Select File',
-      select: 'Select File',
-      template: 'Download Template',
-      download: 'Download Template',
-      note: 'Import Notes',
-      tips: 'Please strictly follow the format of the import template, otherwise the import may fail',
-      format: 'Only Excel files are supported!',
-      size: 'File size cannot exceed 2MB!',
-      total: 'Total Records',
-      success: 'Success Count',
-      failed: 'Failed Count',
-      message: 'Failure Reason'
-    },
-
-    // Upload
-    upload: {
-      text: 'Drag file here or click to upload',
-      picture: 'Click to upload picture',
-      file: 'Click to upload file',
-      icon: 'Click to upload icon',
-      limit: {
-        size: 'File size cannot exceed {size}',
-        type: 'Only {type} format is supported'
-      }
-    },
-
-    // Result
+    // ==================== Results & Messages ====================
+    // Result Status
     result: {
       success: 'Success',
       failed: 'Failed',
@@ -275,7 +328,7 @@ export default {
       error: 'Error'
     },
 
-    // Messages
+    // Message Tips
     message: {
       loading: 'Processing...',
       saving: 'Saving...',
@@ -313,29 +366,65 @@ export default {
       loadFailed: 'Load failed'
     },
 
-    select: {
-      placeholder: 'Please select',
-      loadMore: 'Load more',
-      loading: 'Loading...',
-      notFound: 'No data found',
-      selected: '{count} items selected',
-      selectedTotal: 'Total {total} items',
-      clear: 'Clear',
-      search: 'Search',
-      all: 'All',
-      // Error messages
-      loadError: 'Failed to load data',
-      searchError: 'Search failed',
-      networkError: 'Network connection failed',
-      serverError: 'Server error',
-      unknownError: 'Unknown error'
+    // ==================== Component Text ====================
+    // Tabs
+    tab: {
+      // === Basic Information ===
+      basic: 'Basic Info',
+      profile: 'Profile',
+      avatar: 'Avatar Settings',
+      password: 'Password Settings',
+      security: 'Security Settings',
+
+      // === Code Generation ===
+      codegen: 'Code Generation',
+      codegenBasic: 'Generation Settings',
+      codegenField: 'Field Settings',
+      codegenPreview: 'Generation Preview',
+      codegenTemplate: 'Template Settings',
+      codegenImport: 'Import Settings',
+      
+      // === Workflow ===
+      workflow: 'Workflow',
+      flowDesign: 'Process Design',
+      flowDeploy: 'Process Deployment',
+      flowInstance: 'Process Instances',
+      flowTask: 'Task Management',
+      flowForm: 'Form Settings',
+      flowNotify: 'Notifications',
+      
+      // === System Management ===
+      permission: 'Data Permission',
+      log: 'Operation Log',
+      dept: 'Department & Post',
+      role: 'Role & Permission',
+      config: 'Parameters',
+      task: 'Scheduled Tasks',
+      monitor: 'System Monitor'
     },
 
     // Button Text
     button: {
       submit: 'Submit',
-      cancel: 'Cancel',
       ok: 'OK'
     }
+  },
+
+  // ==================== Selector Component ====================
+  select: {
+    loadMore: 'Load more',
+    loading: 'Loading...',
+    notFound: 'No data found',
+    selected: '{count} items selected',
+    selectedTotal: 'Total {total} items',
+    clear: 'Clear',
+    search: 'Search',
+    all: 'All',
+    // Error messages
+    loadError: 'Failed to load data',
+    searchError: 'Search failed',
+    networkError: 'Network connection failed',
+    serverError: 'Server error',
+    unknownError: 'Unknown error'
   }
 } 

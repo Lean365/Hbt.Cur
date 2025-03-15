@@ -2,7 +2,7 @@ import type { Menu } from '@/types/identity/menu'
 import type { MenuProps } from 'ant-design-vue'
 import * as Icons from '@ant-design/icons-vue'
 import { h } from 'vue'
-import { MenuType } from '@/types/identity/menu'
+import { HbtMenuType} from '@/types/common'
 import i18n from '@/locales'
 
 /**
@@ -44,7 +44,7 @@ export function transformMenu(menus: Menu[]): MenuProps['items'] {
   return menus
     .map(menu => {
       // 跳过按钮类型的菜单
-      if (menu.menuType === MenuType.BUTTON) {
+      if (menu.menuType === HbtMenuType.Button) {
         return null
       }
 
@@ -62,11 +62,11 @@ export function transformMenu(menus: Menu[]): MenuProps['items'] {
 
       // 创建菜单项
       const menuItem: any = {
-        key: menu.menuType === MenuType.DIRECTORY ? `dir_${menu.menuId}` : path,
+        key: menu.menuType === HbtMenuType.Directory ? `dir_${menu.menuId}` : path,
         label: menu.transKey ? i18n.global.t(menu.transKey) : menu.menuName,
         icon: getIcon(menu.icon),
         disabled: menu.disabled || false,
-        selectable: menu.menuType !== MenuType.DIRECTORY
+        selectable: menu.menuType !== HbtMenuType.Directory
       }
 
       // 如果有子菜单，递归处理

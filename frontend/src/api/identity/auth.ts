@@ -5,7 +5,8 @@ import type {
   UserInfo, 
   SaltResponse, 
   CaptchaResponse, 
-  CaptchaResult 
+  CaptchaResult,
+  LockoutStatus
 } from '@/types/identity/auth'
 import type { HbtApiResult } from '@/types/common'
 
@@ -15,7 +16,7 @@ import type { HbtApiResult } from '@/types/common'
  */
 export function login(data: LoginParams) {
   return request<HbtApiResult<LoginResult>>({
-    url: '/api/auth/login',
+    url: '/api/HbtAuth/login',
     method: 'post',
     data
   })
@@ -27,7 +28,7 @@ export function login(data: LoginParams) {
  */
 export function getSalt(username: string) {
   return request<HbtApiResult<SaltResponse>>({
-    url: '/api/auth/salt',
+    url: '/api/HbtAuth/salt',
     method: 'get',
     params: { username }
   })
@@ -38,7 +39,7 @@ export function getSalt(username: string) {
  */
 export function logout() {
   return request<HbtApiResult<void>>({
-    url: '/api/auth/logout',
+    url: '/api/HbtAuth/logout',
     method: 'post'
   })
 }
@@ -49,7 +50,7 @@ export function logout() {
  */
 export function refreshToken(refreshToken: string) {
   return request<HbtApiResult<LoginResult>>({
-    url: '/api/auth/refresh-token',
+    url: '/api/HbtAuth/refresh-token',
     method: 'post',
     data: { refreshToken }
   })
@@ -60,7 +61,7 @@ export function refreshToken(refreshToken: string) {
  */
 export function getInfo() {
   return request<HbtApiResult<UserInfo>>({
-    url: '/api/auth/info',
+    url: '/api/HbtAuth/info',
     method: 'get'
   })
 }
@@ -70,7 +71,7 @@ export function getInfo() {
  */
 export function getCaptcha() {
   return request<HbtApiResult<CaptchaResponse>>({
-    url: '/api/auth/captcha',
+    url: '/api/HbtAuth/captcha',
     method: 'get'
   })
 }
@@ -81,8 +82,41 @@ export function getCaptcha() {
  */
 export function verifyCaptcha(data: { token: string; offset: number }) {
   return request<HbtApiResult<CaptchaResult>>({
-    url: '/api/auth/verify-captcha',
+    url: '/api/HbtAuth/verify-captcha',
     method: 'post',
     data
+  })
+}
+
+/**
+ * 检查账号锁定状态
+ * @param username 用户名
+ */
+export function checkAccountLockout(username: string) {
+  return request<HbtApiResult<LockoutStatus>>({
+    url: `/api/HbtAuth/lockout/${username}`,
+    method: 'get'
+  })
+}
+
+/**
+ * 获取剩余尝试次数
+ * @param username 用户名
+ */
+export function getRemainingAttempts(username: string) {
+  return request<HbtApiResult<number>>({
+    url: `/api/HbtAuth/attempts/${username}`,
+    method: 'get'
+  })
+}
+
+/**
+ * 解锁用户
+ * @param username 用户名
+ */
+export function unlockUser(username: string) {
+  return request<HbtApiResult<boolean>>({
+    url: `/api/HbtAuth/unlock/${username}`,
+    method: 'post'
   })
 } 

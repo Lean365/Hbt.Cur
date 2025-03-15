@@ -30,32 +30,49 @@ namespace Lean.Hbt.Common.Utils
         public static (string Hash, string Salt, int Iterations) CreateHash(string password)
         {
             if (string.IsNullOrEmpty(password))
-                throw new ArgumentNullException(nameof(password));
+                throw new ArgumentNullException(nameof(password), "密码不能为空");
+            
+            if (password.Length < 6)
+                throw new ArgumentException("密码长度必须至少为6个字符", nameof(password));
 
-            byte[] salt = new byte[DEFAULT_SALT_SIZE];
-            using (var rng = RandomNumberGenerator.Create())
+            try
             {
-                rng.GetBytes(salt);
-            }
+                // 每次都生成新的随机盐值
+                byte[] salt = new byte[DEFAULT_SALT_SIZE];
+                using (var rng = RandomNumberGenerator.Create())
+                {
+                    rng.GetBytes(salt);
+                }
 
-            byte[] hash = new byte[DEFAULT_HASH_SIZE];
-            using (var pbkdf2 = new Rfc2898DeriveBytes(password, salt, DEFAULT_ITERATIONS, HashAlgorithmName.SHA256))
+                // 使用 PBKDF2 进行密码哈希
+                byte[] hash = new byte[DEFAULT_HASH_SIZE];
+                using (var pbkdf2 = new Rfc2898DeriveBytes(
+                    password, 
+                    salt, 
+                    DEFAULT_ITERATIONS, 
+                    HashAlgorithmName.SHA256))
+                {
+                    hash = pbkdf2.GetBytes(DEFAULT_HASH_SIZE);
+                }
+
+                return (
+                    Convert.ToBase64String(hash),
+                    Convert.ToBase64String(salt),
+                    DEFAULT_ITERATIONS
+                );
+            }
+            catch (Exception ex)
             {
-                hash = pbkdf2.GetBytes(DEFAULT_HASH_SIZE);
+                Console.WriteLine($"[密码哈希] 创建密码哈希时发生错误: {ex.Message}");
+                throw new InvalidOperationException("创建密码哈希时发生错误", ex);
             }
-
-            return (
-                Convert.ToBase64String(hash),
-                Convert.ToBase64String(salt),
-                DEFAULT_ITERATIONS
-            );
         }
 
         /// <summary>
         /// 验证密码
         /// </summary>
-        /// <param name="password">待验证的密码</param>
-        /// <param name="hash">已存储的哈希值</param>
+        /// <param name="password">前端传来的已加密密码哈希值</param>
+        /// <param name="hash">数据库中存储的密码哈希值</param>
         /// <param name="salt">盐值</param>
         /// <param name="iterations">迭代次数</param>
         /// <returns>是否验证通过</returns>
@@ -65,22 +82,15 @@ namespace Lean.Hbt.Common.Utils
                 throw new ArgumentNullException(nameof(password));
             if (string.IsNullOrEmpty(hash))
                 throw new ArgumentNullException(nameof(hash));
-            if (string.IsNullOrEmpty(salt))
-                throw new ArgumentNullException(nameof(salt));
 
             try
             {
-                Console.WriteLine($"[密码验证] 开始验证密码");
-                Console.WriteLine($"[密码验证] 输入参数: 密码长度={password.Length}, 哈希={hash}");
+                // 将两个Base64字符串转换为字节数组
+                byte[] passwordBytes = Convert.FromBase64String(password);
+                byte[] hashBytes = Convert.FromBase64String(hash);
 
-                // 前端已经进行了PBKDF2加密，这里直接比较
-                var result = CryptographicOperations.FixedTimeEquals(
-                    Convert.FromBase64String(hash),
-                    Convert.FromBase64String(password)
-                );
-
-                Console.WriteLine($"[密码验证] 验证结果: {result}");
-                return result;
+                // 使用固定时间比较防止计时攻击
+                return CryptographicOperations.FixedTimeEquals(passwordBytes, hashBytes);
             }
             catch (Exception ex)
             {

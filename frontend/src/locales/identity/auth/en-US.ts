@@ -41,7 +41,13 @@ export default {
         loading: 'Loading user information',
         success: 'User information loaded successfully'
       },
-      autoLogout: 'You have been automatically logged out due to inactivity'
+      autoLogout: 'You have been automatically logged out due to inactivity',
+      error: {
+        noResponse: 'Server not responding',
+        noSaltData: 'Failed to get encryption parameters',
+        invalidSalt: 'Invalid encryption parameter format',
+        invalidIterations: 'Invalid encryption iteration count'
+      }
     }
   }
 } 

@@ -30,54 +30,90 @@ const defaultRetryConfig = {
 
 // 从cookie中获取指定名称的值
 function getCookie(name: string): string | null {
-  console.log('开始获取Cookie:', name)
-  console.log('当前所有Cookie:', document.cookie)
+  console.log('[Cookie] 开始获取Cookie:', name)
+  console.log('[Cookie] 原始cookie字符串:', document.cookie)
   
-  const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'))
-  console.log('Cookie匹配结果:', match)
-  
-  if (match) {
-    const value = decodeURIComponent(match[2])
-    console.log('获取到的Cookie值:', value)
-    return value
+  try {
+    if (!document.cookie) {
+      console.log('[Cookie] cookie字符串为空')
+      return null
+    }
+
+    const cookies = document.cookie.split(';')
+    console.log('[Cookie] 分割后的部分:', JSON.stringify(cookies))
+
+    for (const cookie of cookies) {
+      const [key, value] = cookie.trim().split('=')
+      if (key === name) {
+        console.log('[Cookie] 找到Cookie:', name, '=', value)
+        // 解码cookie值
+        const decodedValue = decodeURIComponent(value)
+        console.log('[Cookie] 解码后的值:', decodedValue)
+        return decodedValue
+      }
+    }
+    
+    console.log('[Cookie] 未找到Cookie:', name)
+    return null
+  } catch (error) {
+    console.error('[Cookie] 获取Cookie出错:', error)
+    return null
   }
-  console.log('未找到Cookie:', name)
-  return null
 }
 
 // 获取CSRF Token的函数
-function getCsrfToken(): string | null {
-  // 1. 首先尝试从 localStorage 获取
-  const storedToken = localStorage.getItem('csrf_token')
-  if (storedToken) {
-    console.log('从localStorage获取到CSRF Token:', storedToken)
-    return storedToken
-  }
+async function getCsrfToken(): Promise<string | null> {
+  console.log('[CSRF] 开始获取CSRF Token')
   
-  // 2. 如果localStorage中没有，尝试从cookie获取
-  const cookieToken = getCookie('XSRF-TOKEN')
-  if (cookieToken) {
-    // 找到后保存到localStorage
-    localStorage.setItem('csrf_token', cookieToken)
-    console.log('从Cookie获取到CSRF Token并保存到localStorage:', cookieToken)
-    return cookieToken
+  try {
+    // 1. 首先从 cookie 获取（优先）
+    const cookieToken = getCookie('XSRF-TOKEN')
+    if (cookieToken) {
+      console.log('[CSRF] 从Cookie获取到Token:', cookieToken)
+      return cookieToken
+    }
+    
+    // 2. 如果cookie中没有，尝试通过GET请求获取新token
+    console.log('[CSRF] 未找到Token，尝试获取新Token')
+    try {
+      await axios.get('/api/csrf-token', { withCredentials: true })
+      // 再次尝试从cookie获取
+      const newToken = getCookie('XSRF-TOKEN')
+      if (newToken) {
+        console.log('[CSRF] 成功获取新Token:', newToken)
+        return newToken
+      }
+    } catch (error) {
+      console.error('[CSRF] 获取新Token失败:', error)
+    }
+    
+    console.log('[CSRF] 未找到Token，跳过设置')
+    return null
+  } catch (error) {
+    console.error('[CSRF] 获取Token时出错:', error)
+    return null
   }
-  
-  console.log('未找到CSRF Token')
-  return null
 }
 
 // 请求拦截器
 service.interceptors.request.use(
-  (config) => {
+  async (config) => {
+    console.log('[请求拦截器] 处理请求:', config.url)
+    
     // 获取CSRF token
-    console.log('开始获取CSRF token...')
-    const csrfToken = getCsrfToken()
+    const csrfToken = await getCsrfToken()
     if (csrfToken) {
-      config.headers['X-CSRF-Token'] = csrfToken
-      console.log('设置CSRF Token:', csrfToken)
+      // 解码CSRF token
+      const decodedToken = decodeURIComponent(csrfToken)
+      config.headers['X-CSRF-Token'] = decodedToken
+      console.log('[CSRF] Token已设置到请求头:', decodedToken)
     } else {
-      console.log('未找到CSRF Token')
+      console.log('[CSRF] 未找到Token，跳过设置')
+      
+      // 如果是GET请求，可能需要先获取Token
+      if (config.method?.toLowerCase() === 'get') {
+        console.log('[CSRF] GET请求，尝试从服务器获取新Token')
+      }
     }
 
     // 每次请求都重新获取token
@@ -102,15 +138,10 @@ service.interceptors.request.use(
     }
     
     // 如果是登录请求，从请求体中获取租户ID
-    if (config.url?.includes('/auth/login')) {
+    if (config.url?.toLowerCase().includes('/auth/login')) {
       const loginData = typeof config.data === 'string' ? JSON.parse(config.data) : config.data;
-      //console.log('[请求拦截器] 登录数据:', {
-      //  ...loginData,
-      //  password: loginData.password ? '******' : undefined
-      //})
       if (loginData?.tenantId !== undefined) {
         config.headers['X-Tenant-Id'] = loginData.tenantId.toString();
-        //console.log('[请求拦截器] 从登录数据设置租户ID:', loginData.tenantId)
       }
 
       // 如果没有设备信息，添加默认的设备信息
@@ -154,17 +185,17 @@ service.interceptors.request.use(
     config.headers['Content-Type'] = 'application/json'
     
     // 详细记录请求信息
-    //console.log('[请求拦截器] 最终请求配置:', {
-    //  url: config.url,
-    //  method: config.method,
-    //  params: config.params,
-    //  data: typeof config.data === 'string' ? '(字符串数据)' : config.data,
-    //  headers: {
-    //    ...config.headers,
-    //    Authorization: config.headers.Authorization ? '(已设置)' : '(未设置)',
-    //    'X-Tenant-Id': config.headers['X-Tenant-Id'] || '(未设置)'
-    //  }
-    //})
+    console.log('[请求拦截器] 最终请求配置:', {
+      url: config.url,
+      method: config.method,
+      params: config.params,
+      data: typeof config.data === 'string' ? '(字符串数据)' : config.data,
+      headers: {
+        ...config.headers,
+        Authorization: config.headers.Authorization ? '(已设置)' : '(未设置)',
+        'X-Tenant-Id': config.headers['X-Tenant-Id'] || '(未设置)'
+      }
+    })
     
     return config
   },

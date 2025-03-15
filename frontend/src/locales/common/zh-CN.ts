@@ -1,5 +1,14 @@
 export default {
   common: {
+    // ==================== 系统信息 ====================
+    system: {
+      title: '黑冰台',
+      slogan: '专业、高效、安全的企业级管理系统',
+      description: '基于.NET 8和Vue 3的现代化企业管理系统',
+      copyright: '© 2024 Lean365. 保留所有权利。'
+    },
+
+    // ==================== 基础操作 ====================
     // 基础标题
     title: {
       list: '列表',
@@ -9,15 +18,284 @@ export default {
       preview: '预览'
     },
 
-    // 系统信息
-    system: {
-      title: '黑冰台',
-      slogan: '专业、高效、安全的企业级管理系统',
-      description: '基于.NET 8和Vue 3的现代化企业管理系统',
-      copyright: '© 2024 Lean365. 保留所有权利。'
+    // ==================== 状态定义 ====================
+    status: {
+      // 基础状态
+      base: {
+        label: '状态',
+        normal: '正常',
+        disabled: '停用',
+        placeholder: '请选择状态'
+      },
+
+      // 是否状态
+      yesNo: {
+        yes: '是',
+        no: '否'
+      },
+
+      // 显示状态
+      visible: {
+        show: '显示',
+        hide: '隐藏'
+      },
+
+      // 缓存状态
+      cache: {
+        enabled: '已启用',
+        disabled: '已禁用'
+      },
+
+      // 在线状态
+      online: {
+        online: '在线',
+        offline: '离线'
+      },
+
+      // 处理状态
+      process: {
+        pending: '待处理',
+        processing: '处理中',
+        completed: '已完成',
+        failed: '处理失败'
+      },
+
+      // 验证状态
+      verify: {
+        unverified: '未验证',
+        verified: '已验证',
+        failed: '验证失败'
+      },
+
+      // 锁定状态
+      lock: {
+        locked: '已锁定',
+        unlocked: '未锁定'
+      },
+
+      // 发布状态
+      publish: {
+        draft: '草稿',
+        published: '已发布',
+        unpublished: '未发布'
+      },
+
+      // 同步状态
+      sync: {
+        synced: '已同步',
+        unsynced: '未同步',
+        syncing: '同步中'
+      }
     },
 
-    // 操作按钮
+    // ==================== 表单操作 ====================
+    form: {
+      required: '必填',
+      optional: '选填',
+      invalid: '无效',
+      // 表单占位符
+      placeholder: {
+        select: '请选择',
+        input: '请输入',
+        date: '请选择日期',
+        time: '请选择时间'
+      },
+      // 用户表单
+      user: {
+        // 基本信息
+        userId: {
+          label: '用户ID',
+          placeholder: '请输入用户ID'
+        },
+        userName: {
+          label: '用户名',
+          placeholder: '请输入用户名'
+        },
+        nickName: {
+          label: '昵称',
+          placeholder: '请输入昵称'
+        },
+        realName: {
+          label: '真实姓名',
+          placeholder: '请输入真实姓名'
+        },
+        englishName: {
+          label: '英文名',
+          placeholder: '请输入英文名'
+        },
+        password: {
+          label: '密码',
+          placeholder: '请输入密码'
+        },
+        confirmPassword: {
+          label: '确认密码',
+          placeholder: '请再次输入密码'
+        },
+        
+        // 个人信息
+        avatar: {
+          label: '头像',
+          placeholder: '请上传头像'
+        },
+        gender: {
+          label: '性别',
+          placeholder: '请选择性别',
+          options: {
+            male: '男',
+            female: '女',
+            other: '其他'
+          }
+        },
+        birthday: {
+          label: '生日',
+          placeholder: '请选择生日'
+        },
+        
+        // 联系方式
+        email: {
+          label: '邮箱',
+          placeholder: '请输入邮箱'
+        },
+        phoneNumber: {
+          label: '手机号',
+          placeholder: '请输入手机号'
+        },
+        telephone: {
+          label: '固定电话',
+          placeholder: '请输入固定电话'
+        },
+        
+        // 组织信息
+        deptId: {
+          label: '部门',
+          placeholder: '请选择部门'
+        },
+        roleId: {
+          label: '角色',
+          placeholder: '请选择角色'
+        },
+        postId: {
+          label: '岗位',
+          placeholder: '请选择岗位'
+        },
+        
+        // 账号信息
+        userType: {
+          label: '用户类型',
+          placeholder: '请选择用户类型',
+          options: {
+            system: '系统用户',
+            normal: '普通用户'
+          }
+        },
+        status: {
+          label: '状态',
+          placeholder: '请选择状态'
+        },
+        loginIp: {
+          label: '最后登录IP',
+          placeholder: '最后登录IP'
+        },
+        loginDate: {
+          label: '最后登录时间',
+          placeholder: '最后登录时间'
+        },
+        
+        // 其他信息
+        remark: {
+          label: '备注',
+          placeholder: '请输入备注'
+        },
+        sort: {
+          label: '排序',
+          placeholder: '请输入排序号'
+        }
+      },
+      // 备注信息
+      remark: {
+        label: '备注',
+        placeholder: '请输入备注'
+      }
+    },
+
+    // ==================== 表格操作 ====================
+    table: {
+      header: {
+        operation: '操作'
+      },
+      config: {
+        density: {
+          default: '默认',
+          middle: '中等',
+          small: '紧凑'
+        },
+        columnSetting: '列设置'
+      },
+      pagination: {
+        total: '共 {total} 条',
+        current: '第 {current} 页',
+        pageSize: '每页 {pageSize} 条',
+        jump: '跳至'
+      },
+      empty: '暂无数据',
+      loading: '加载中...',
+      selectAll: '全选',
+      selected: '已选择 {total} 项'
+    },
+
+    // ==================== 时间操作 ====================
+    datetime: {
+      date: '日期',
+      time: '时间',
+      year: '年',
+      month: '月',
+      day: '日',
+      hour: '时',
+      minute: '分',
+      second: '秒',
+      startDate: '开始日期',
+      endDate: '结束日期',
+      startTime: '开始时间',
+      endTime: '结束时间',
+      createTime: '创建时间',
+      updateTime: '更新时间',
+      formatError: '格式化时间失败',
+      relativeTimeFormatError: '格式化相对时间失败',
+      parseError: '解析日期失败',
+      rangeSeparator: ' 至 '
+    },
+
+    // ==================== 文件操作 ====================
+    // 导入导出
+    import: {
+      title: '导入数据',
+      file: '选择文件',
+      select: '选择文件',
+      template: '下载模板',
+      download: '下载模板',
+      note: '导入说明',
+      tips: '请严格按照导入模板的格式填写数据，否则可能导致导入失败',
+      format: '仅支持导入Excel文件！',
+      size: '文件大小不能超过2MB！',
+      total: '总记录数',
+      success: '成功数',
+      failed: '失败数',
+      message: '失败原因'
+    },
+
+    // 上传
+    upload: {
+      text: '将文件拖到此处，或点击上传',
+      picture: '点击上传图片',
+      file: '点击上传文件',
+      icon: '点击上传图标',
+      limit: {
+        size: '文件大小不能超过 {size}',
+        type: '仅支持 {type} 格式'
+      }
+    },
+
+    // ==================== 功能按钮 ====================
     actions: {
       // === 基础操作按钮 ===
       add: '新增',           // @btn-add-color
@@ -151,122 +429,8 @@ export default {
       maintain: '维护'       // @btn-maintain-color
     },
 
-    // 状态
-    status: {
-      label: '状态',
-      normal: '正常',
-      disabled: '停用',
-      placeholder: '请选择状态'
-    },
-
-    // 是否
-    yesNo: {
-      yes: '是',
-      no: '否'
-    },
-
-    // 显示
-    visible: {
-      show: '显示',
-      hide: '隐藏'
-    },
-
-    // 时间
-    datetime: {
-      date: '日期',
-      time: '时间',
-      year: '年',
-      month: '月',
-      day: '日',
-      hour: '时',
-      minute: '分',
-      second: '秒',
-      startDate: '开始日期',
-      endDate: '结束日期',
-      startTime: '开始时间',
-      endTime: '结束时间',
-      createTime: '创建时间',
-      updateTime: '更新时间',
-      formatError: '格式化时间失败',
-      relativeTimeFormatError: '格式化相对时间失败',
-      parseError: '解析日期失败',
-      rangeSeparator: ' 至 '
-    },
-
-    // 表单
-    form: {
-      required: '必填',
-      optional: '选填',
-      invalid: '无效',
-      placeholder: {
-        select: '请选择',
-        input: '请输入',
-        date: '请选择日期',
-        time: '请选择时间'
-      }
-    },
-
-    // 标签页
-    tab: {
-      basicInfo: '基本信息',
-      otherInfo: '其他信息'
-    },
-
-    // 表格
-    table: {
-      header: {
-        operation: '操作'
-      },
-      config: {
-        density: {
-          default: '默认',
-          middle: '中等',
-          small: '紧凑'
-        },
-        columnSetting: '列设置'
-      },
-      pagination: {
-        total: '共 {total} 条',
-        current: '第 {current} 页',
-        pageSize: '每页 {pageSize} 条',
-        jump: '跳至'
-      },
-      empty: '暂无数据',
-      loading: '加载中...',
-      selectAll: '全选',
-      selected: '已选择 {total} 项'
-    },
-
-    // 导入导出
-    import: {
-      title: '导入数据',
-      file: '选择文件',
-      select: '选择文件',
-      template: '下载模板',
-      download: '下载模板',
-      note: '导入说明',
-      tips: '请严格按照导入模板的格式填写数据，否则可能导致导入失败',
-      format: '仅支持导入Excel文件！',
-      size: '文件大小不能超过2MB！',
-      total: '总记录数',
-      success: '成功数',
-      failed: '失败数',
-      message: '失败原因'
-    },
-
-    // 上传
-    upload: {
-      text: '将文件拖到此处，或点击上传',
-      picture: '点击上传图片',
-      file: '点击上传文件',
-      icon: '点击上传图标',
-      limit: {
-        size: '文件大小不能超过 {size}',
-        type: '仅支持 {type} 格式'
-      }
-    },
-
-    // 结果
+    // ==================== 结果与消息 ====================
+    // 结果状态
     result: {
       success: '操作成功',
       failed: '操作失败',
@@ -275,7 +439,7 @@ export default {
       error: '错误'
     },
 
-    // 消息
+    // 消息提示
     message: {
       loading: '处理中...',
       saving: '保存中...',
@@ -313,26 +477,52 @@ export default {
       loadFailed: '加载失败'
     },
 
-    add: '新增',
-    edit: '编辑',
-    delete: '删除',
-    save: '保存',
-    cancel: '取消',
-    search: '搜索',
-    reset: '重置',
-    confirm: '确认',
-    back: '返回',
+    // ==================== 组件文本 ====================
+    // 标签页
+    tab: {
+      // === 基础信息 ===
+      basic: '基本信息',
+      profile: '个人资料',
+      avatar: '头像设置',
+      password: '密码设置',
+      security: '安全设置',
+
+      // === 代码生成 ===
+      codegen: '代码生成',
+      codegenBasic: '生成配置',
+      codegenField: '字段配置',
+      codegenPreview: '生成预览',
+      codegenTemplate: '模板配置',
+      codegenImport: '导入配置',
+      
+      // === 工作流程 ===
+      workflow: '工作流程',
+      flowDesign: '流程设计',
+      flowDeploy: '流程部署',
+      flowInstance: '流程实例',
+      flowTask: '任务管理',
+      flowForm: '表单配置',
+      flowNotify: '消息通知',
+      
+      // === 系统管理 ===
+      permission: '数据权限',
+      log: '操作日志',
+      dept: '部门岗位',
+      role: '角色权限',
+      config: '参数配置',
+      task: '定时任务',
+      monitor: '系统监控'
+    },
 
     // 按钮文本
     button: {
       submit: '提交',
-      cancel: '取消',
       ok: '确定'
     }
   },
 
+  // ==================== 选择器组件 ====================
   select: {
-    placeholder: '请选择',
     loadMore: '加载更多',
     loading: '加载中...',
     notFound: '暂无数据',

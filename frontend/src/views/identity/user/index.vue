@@ -1,124 +1,170 @@
 <template>
   <div class="user-container">
-    <a-card :bordered="false">
-      <!-- 搜索表单 -->
-      <a-form
-        layout="inline"
-        :model="searchForm"
-        @finish="handleSearch"
-        class="search-form"
-      >
-        <a-form-item :label="t('identity.user.userName.label')" name="userName">
+    <!-- 查询区域 -->
+    <hbt-query
+      v-show="showSearch"
+      :model="queryParams"
+      :query-fields="queryFields"
+      @search="handleQuery"
+      @reset="resetQuery"
+    >
+      <template #queryForm>
+        <a-form-item :label="t('identity.user.userName.label')">
           <a-input
-            v-model:value="searchForm.userName"
+            v-model:value="queryParams.userName"
             :placeholder="t('identity.user.userName.placeholder')"
             allow-clear
+            @keyup.enter="handleQuery"
           />
         </a-form-item>
-        <a-form-item :label="t('identity.user.phoneNumber.label')" name="phoneNumber">
+        <a-form-item :label="t('identity.user.nickName.label')">
           <a-input
-            v-model:value="searchForm.phoneNumber"
+            v-model:value="queryParams.nickName"
+            :placeholder="t('identity.user.nickName.placeholder')"
+            allow-clear
+            @keyup.enter="handleQuery"
+          />
+        </a-form-item>
+        <a-form-item :label="t('identity.user.phoneNumber.label')">
+          <a-input
+            v-model:value="queryParams.phoneNumber"
             :placeholder="t('identity.user.phoneNumber.placeholder')"
             allow-clear
+            @keyup.enter="handleQuery"
           />
         </a-form-item>
-        <a-form-item :label="t('identity.user.status.label')" name="status">
-          <a-select
-            v-model:value="searchForm.status"
-            :placeholder="t('common.status.placeholder')"
-            style="width: 120px"
+        <a-form-item :label="t('identity.user.email.label')">
+          <a-input
+            v-model:value="queryParams.email"
+            :placeholder="t('identity.user.email.placeholder')"
             allow-clear
-          >
-            <a-select-option
-              v-for="dict in dictStore.getDictDataByType('sys_normal_disable')"
-              :key="dict.dictValue"
-              :value="dict.dictValue"
-            >
-              {{ dict.dictLabel }}
-            </a-select-option>
-          </a-select>
+            @keyup.enter="handleQuery"
+          />
         </a-form-item>
-        <a-form-item>
-          <a-space>
-            <a-button type="primary" html-type="submit">
-              <template #icon><search-outlined /></template>
-              {{ t('common.search') }}
-            </a-button>
-            <a-button @click="handleReset">
-              <template #icon><redo-outlined /></template>
-              {{ t('common.reset') }}
-            </a-button>
-          </a-space>
+        <a-form-item :label="t('identity.user.userType.label')">
+          <hbt-select
+            v-model:value="queryParams.userType"
+            dict-type="sys_user_type"
+            type="radio"
+            :placeholder="t('identity.user.userType.placeholder')"
+            allow-clear
+          />
         </a-form-item>
-      </a-form>
+        <a-form-item :label="t('identity.user.gender.label')">
+          <hbt-select
+            v-model:value="queryParams.gender"
+            dict-type="sys_gender"
+            type="radio"
+            :placeholder="t('identity.user.gender.placeholder')"
+            allow-clear
+          />
+        </a-form-item>
+        <a-form-item :label="t('identity.user.status.label')">
+          <hbt-select
+            v-model:value="queryParams.status"
+            dict-type="sys_normal_disable"
+            type="radio"
+            :placeholder="t('common.status.placeholder')"
+            allow-clear
+          />
+        </a-form-item>
+      </template>
+    </hbt-query>
 
-      <!-- 工具栏 -->
-      <div class="table-toolbar">
-        <a-space>
-          <a-button type="primary" @click="handleAdd" v-hasPermi="['identity:user:add']">
-            <template #icon><plus-outlined /></template>
-            {{ t('common.add') }}
-          </a-button>
-          <a-button @click="handleExport" v-hasPermi="['identity:user:export']">
-            <template #icon><export-outlined /></template>
-            {{ t('common.export') }}
-          </a-button>
-        </a-space>
-      </div>
+    <!-- 工具栏 -->
+    <hbt-toolbar
+      :show-add="true"
+      :add-permission="['identity:user:create']"
+      :show-edit="true"
+      :edit-permission="['identity:user:update']"
+      :show-delete="true"
+      :delete-permission="['identity:user:delete']"
+      :show-import="true"
+      :import-permission="['identity:user:import']"
+      :show-export="true"
+      :export-permission="['identity:user:export']"
+      :disabled-edit="selectedRowKeys.length !== 1"
+      :disabled-delete="selectedRowKeys.length === 0"
+      @add="handleAdd"
+      @edit="handleEditSelected"
+      @delete="handleBatchDelete"
+      @import="handleImport"
+      @template="handleTemplate"
+      @export="handleExport"
+      @refresh="fetchData"
+      @column-setting="handleColumnSetting"
+      @toggle-search="toggleSearch"
+      @toggle-fullscreen="toggleFullscreen"
+    />
 
-      <!-- 数据表格 -->
-      <a-table
-        :columns="columns"
-        :data-source="tableData"
-        :loading="loading"
-        :pagination="pagination"
-        @change="handleTableChange"
-        row-key="userId"
-      >
-        <template #bodyCell="{ column, record }">
-          <!-- 用户类型列 -->
-          <template v-if="column.key === 'userType'">
-            <dict-tag
-              :options="dictStore.getDictDataByType('sys_user_type')"
-              :value="record.userType"
-            />
-          </template>
-          
-          <!-- 性别列 -->
-          <template v-if="column.key === 'sex'">
-            <dict-tag
-              :options="dictStore.getDictDataByType('sys_gender')"
-              :value="record.sex"
-            />
-          </template>
-          
-          <!-- 状态列 -->
-          <template v-if="column.key === 'status'">
-            <dict-tag
-              :options="dictStore.getDictDataByType('sys_normal_disable')"
-              :value="record.status"
-            />
-          </template>
-          
-          <!-- 操作列 -->
-          <template v-if="column.key === 'action'">
-            <a-space>
-              <a @click="handleEdit(record)" v-hasPermi="['identity:user:edit']">
-                {{ t('common.edit') }}
-              </a>
-              <a-divider type="vertical" />
-              <a-popconfirm
-                :title="t('common.delete.confirm')"
-                @confirm="handleDelete(record)"
-                v-hasPermi="['identity:user:delete']"
-              >
-                <a class="text-danger">{{ t('common.delete') }}</a>
-              </a-popconfirm>
-            </a-space>
-          </template>
+    <!-- 数据表格 -->
+    <hbt-table
+      :loading="loading"
+      :data-source="tableData"
+      :columns="columns.filter(col => columnSettings[col.key])"
+      :pagination="{
+        total: total,
+        current: queryParams.pageIndex,
+        pageSize: queryParams.pageSize,
+        showSizeChanger: true,
+        showQuickJumper: true,
+        showTotal: (total: number) => `共 ${total} 条`
+      }"
+      :row-key="(record: User) => String(record.userId)"
+      v-model:selectedRowKeys="selectedRowKeys"
+      :row-selection="{
+        type: 'checkbox',
+        columnWidth: 60
+      }"
+      :scroll="{ x: 1200 }"     
+      @change="handleTableChange"
+      @row-click="handleRowClick"
+    >
+      <!-- 用户类型列 -->
+      <template #bodyCell="{ column, record }">
+        <template v-if="column.dataIndex === 'userType'">
+          <hbt-dict-tag dict-type="sys_user_type" :value="record.userType" />
         </template>
-      </a-table>
-    </a-card>
+        
+        <!-- 性别列 -->
+        <template v-if="column.dataIndex === 'gender'">
+          <hbt-dict-tag dict-type="sys_gender" :value="record.gender" />
+        </template>
+        
+        <!-- 状态列 -->
+        <template v-if="column.dataIndex === 'status'">
+          <hbt-dict-tag dict-type="sys_normal_disable" :value="record.status" />
+        </template>
+
+        <!-- 操作列 -->
+        <template v-if="column.key === 'action'">
+          <hbt-operation
+            :record="record"
+            :show-edit="true"
+            :edit-permission="['identity:user:update']"
+            :show-delete="true"
+            :delete-permission="['identity:user:delete']"
+            size="small"
+            @edit="handleEdit"
+            @delete="handleDelete"
+          >
+            <!-- 重置密码按钮 -->
+            <template #extra>
+              <a-tooltip :title="t('identity.user.resetPwd')">
+                <a-button
+                  v-hasPermi="['identity:user:resetPwd']"
+                  type="link"
+                  size="small"
+                  @click.stop="handleResetPassword(record)"
+                >
+                  <template #icon><key-outlined /></template>
+                </a-button>
+              </a-tooltip>
+            </template>
+          </hbt-operation>
+        </template>
+      </template>
+    </hbt-table>
 
     <!-- 用户表单对话框 -->
     <user-form
@@ -127,28 +173,51 @@
       :user-id="selectedUserId"
       @success="handleSuccess"
     />
+
+    <!-- 重置密码表单对话框 -->
+    <reset-pwd-form
+      v-model:visible="resetPwdVisible"
+      :user-id="selectedUserId"
+      @success="handleResetPwdSuccess"
+    />
+
+    <!-- 列设置抽屉 -->
+    <a-drawer
+      :visible="columnSettingVisible"
+      title="列设置"
+      placement="right"
+      width="300"
+      @close="columnSettingVisible = false"
+    >
+      <a-checkbox-group
+        :value="Object.keys(columnSettings).filter(key => columnSettings[key])"
+        @change="handleColumnSettingChange"
+        class="column-setting-group"
+      >
+        <div v-for="col in defaultColumns" :key="col.key" class="column-setting-item">
+          <a-checkbox :value="col.key">{{ col.title }}</a-checkbox>
+        </div>
+      </a-checkbox-group>
+    </a-drawer>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { message } from 'ant-design-vue'
 import type { TablePaginationConfig } from 'ant-design-vue'
-import {
-  SearchOutlined,
-  RedoOutlined,
-  PlusOutlined,
-  ExportOutlined
-} from '@ant-design/icons-vue'
 import { useDictStore } from '@/stores/dict'
 import type { User, UserQuery } from '@/types/identity/user'
+import type { QueryField } from '@/types/components/query'
 import { getPagedList, deleteUser } from '@/api/identity/user'
 import UserForm from './components/UserForm.vue'
-import DictTag from '@/components/DictTag/index.vue'
+import ResetPwdForm from './components/ResetPwdForm.vue'
 
 const { t } = useI18n()
 const dictStore = useDictStore()
+
+// 查询字段类型定义
+type FieldType = 'input' | 'select' | 'date' | 'dateRange' | 'number' | 'radio' | 'checkbox' | 'cascader'
 
 // 表格列定义
 const columns = [
@@ -156,13 +225,22 @@ const columns = [
     title: t('identity.user.userName.label'),
     dataIndex: 'userName',
     key: 'userName',
-    width: 120
+    width: 120,
+    ellipsis: true
   },
   {
     title: t('identity.user.nickName.label'),
     dataIndex: 'nickName',
     key: 'nickName',
-    width: 120
+    width: 120,
+    ellipsis: true
+  },
+  {
+    title: t('identity.user.englishName.label'),
+    dataIndex: 'englishName',
+    key: 'englishName',
+    width: 120,
+    ellipsis: true
   },
   {
     title: t('identity.user.userType.label'),
@@ -171,22 +249,31 @@ const columns = [
     width: 100
   },
   {
-    title: t('identity.user.phoneNumber.label'),
-    dataIndex: 'phoneNumber',
-    key: 'phoneNumber',
-    width: 120
-  },
-  {
     title: t('identity.user.email.label'),
     dataIndex: 'email',
     key: 'email',
-    width: 180
+    width: 180,
+    ellipsis: true
+  },
+  {
+    title: t('identity.user.phoneNumber.label'),
+    dataIndex: 'phoneNumber',
+    key: 'phoneNumber',
+    width: 120,
+    ellipsis: true
   },
   {
     title: t('identity.user.gender.label'),
-    dataIndex: 'sex',
-    key: 'sex',
+    dataIndex: 'gender',
+    key: 'gender',
     width: 80
+  },
+  {
+    title: t('identity.user.avatar.label'),
+    dataIndex: 'avatar',
+    key: 'avatar',
+    width: 100,
+    ellipsis: true
   },
   {
     title: t('identity.user.status.label'),
@@ -195,51 +282,129 @@ const columns = [
     width: 100
   },
   {
-    title: t('common.createTime'),
-    dataIndex: 'createTime',
-    key: 'createTime',
-    width: 180
+    title: t('identity.user.lastPasswordChangeTime.label'),
+    dataIndex: 'lastPasswordChangeTime',
+    key: 'lastPasswordChangeTime',
+    width: 180,
+    ellipsis: true
   },
   {
-    title: t('common.action'),
+    title: t('common.datetime.createTime'),
+    dataIndex: 'createTime',
+    key: 'createTime',
+    width: 180,
+    ellipsis: true
+  },
+  {
+    title: t('common.table.header.operation'),
     key: 'action',
     width: 150,
     fixed: 'right'
   }
 ]
 
-// 搜索表单数据
-const searchForm = reactive<UserQuery>({
-  pageNum: 1,
+// 查询参数
+const queryParams = ref<UserQuery>({
+  pageIndex: 1,
   pageSize: 10,
   userName: '',
+  nickName: '',
   phoneNumber: '',
-  status: undefined
+  email: '',
+  gender: undefined,
+  status: undefined,
+  userType: undefined,
+  deptId: undefined
 })
 
-// 表格数据
+// 查询字段定义
+const queryFields: QueryField[] = [
+  {
+    name: 'userName',
+    label: t('identity.user.userName.label'),
+    type: 'input' as const
+  },
+  {
+    name: 'nickName',
+    label: t('identity.user.nickName.label'),
+    type: 'input' as const
+  },
+  {
+    name: 'phoneNumber',
+    label: t('identity.user.phoneNumber.label'),
+    type: 'input' as const
+  },
+  {
+    name: 'email',
+    label: t('identity.user.email.label'),
+    type: 'input' as const
+  },
+  {
+    name: 'userType',
+    label: t('identity.user.userType.label'),
+    type: 'select' as const,
+    props: {
+      dictType: 'sys_user_type',
+      type: 'radio'
+    }
+  },
+  {
+    name: 'gender',
+    label: t('identity.user.gender.label'),
+    type: 'select' as const,
+    props: {
+      dictType: 'sys_gender',
+      type: 'radio'
+    }
+  },
+  {
+    name: 'status',
+    label: t('identity.user.status.label'),
+    type: 'select' as const,
+    props: {
+      dictType: 'sys_normal_disable',
+      type: 'radio'
+    }
+  }
+]
+
+// 表格相关
 const loading = ref(false)
+const total = ref(0)
 const tableData = ref<User[]>([])
-const pagination = reactive<TablePaginationConfig>({
-  current: 1,
-  pageSize: 10,
-  total: 0,
-  showSizeChanger: true,
-  showQuickJumper: true
-})
+const selectedRowKeys = ref<(string | number)[]>([])
+const showSearch = ref(true)
 
 // 表单对话框
 const formVisible = ref(false)
 const formTitle = ref('')
 const selectedUserId = ref<number>()
 
+// 重置密码表单
+const resetPwdVisible = ref(false)
+
+// 列设置相关
+const columnSettingVisible = ref(false)
+const defaultColumns = columns
+
+// 初始化列设置
+const initColumnSettings = () => {
+  const savedSettings = localStorage.getItem('userColumnSettings')
+  if (savedSettings) {
+    columnSettings.value = JSON.parse(savedSettings)
+  } else {
+    columnSettings.value = Object.fromEntries(defaultColumns.map(col => [col.key, true]))
+  }
+}
+const columnSettings = ref<Record<string, boolean>>({})
+
 // 获取表格数据
 const fetchData = async () => {
   loading.value = true
   try {
-    const res = await getPagedList(searchForm)
+    const res = await getPagedList(queryParams.value)
     tableData.value = res.data.rows
-    pagination.total = res.data.total
+    total.value = res.data.totalNum
   } catch (error) {
     console.error(error)
     message.error(t('common.failed'))
@@ -247,24 +412,33 @@ const fetchData = async () => {
   loading.value = false
 }
 
-// 处理搜索
-const handleSearch = () => {
-  searchForm.pageNum = 1
+// 查询方法
+const handleQuery = () => {
+  queryParams.value.pageIndex = 1
   fetchData()
 }
 
-// 处理重置
-const handleReset = () => {
-  searchForm.userName = ''
-  searchForm.phoneNumber = ''
-  searchForm.status = undefined
-  handleSearch()
+// 重置查询
+const resetQuery = () => {
+  queryParams.value = {
+    pageIndex: 1,
+    pageSize: 10,
+    userName: '',
+    nickName: '',
+    phoneNumber: '',
+    email: '',
+    gender: undefined,
+    status: undefined,
+    userType: undefined,
+    deptId: undefined
+  }
+  fetchData()
 }
 
-// 处理表格变化
-const handleTableChange = (pag: TablePaginationConfig) => {
-  searchForm.pageNum = pag.current as number
-  searchForm.pageSize = pag.pageSize as number
+// 表格变化
+const handleTableChange = (pagination: TablePaginationConfig) => {
+  queryParams.value.pageIndex = pagination.current ?? 1
+  queryParams.value.pageSize = pagination.pageSize ?? 10
   fetchData()
 }
 
@@ -305,10 +479,94 @@ const handleSuccess = () => {
   fetchData()
 }
 
-// 组件挂载时加载数据
+// 切换搜索显示
+const toggleSearch = (visible: boolean) => {
+  showSearch.value = visible
+}
+
+// 切换全屏
+const toggleFullscreen = (isFullscreen: boolean) => {
+  console.log('切换全屏状态:', isFullscreen)
+}
+
+// 编辑选中记录
+const handleEditSelected = () => {
+  if (selectedRowKeys.value.length !== 1) {
+    message.warning(t('common.selectOne'))
+    return
+  }
+  
+  const record = tableData.value.find(item => String(item.userId) === String(selectedRowKeys.value[0]))
+  if (record) {
+    handleEdit(record)
+  }
+}
+
+// 批量删除
+const handleBatchDelete = async () => {
+  if (!selectedRowKeys.value.length) {
+    message.warning(t('common.selectAtLeastOne'))
+    return
+  }
+  
+  try {
+    await Promise.all(selectedRowKeys.value.map(id => deleteUser(Number(id))))
+    message.success(t('common.delete.success'))
+    selectedRowKeys.value = []
+    fetchData()
+  } catch (error) {
+    console.error(error)
+    message.error(t('common.delete.failed'))
+  }
+}
+
+// 列设置
+const handleColumnSetting = () => {
+  columnSettingVisible.value = true
+}
+
+// 处理列设置变更
+const handleColumnSettingChange = (checkedValue: Array<string | number | boolean>) => {
+  const settings: Record<string, boolean> = {}
+  defaultColumns.forEach(col => {
+    settings[col.key] = checkedValue.includes(col.key)
+  })
+  columnSettings.value = settings
+  localStorage.setItem('userColumnSettings', JSON.stringify(settings))
+}
+
+// 处理行点击
+const handleRowClick = (record: User) => {
+  console.log('行点击:', record)
+}
+
+// 处理重置密码
+const handleResetPassword = (record: User) => {
+  selectedUserId.value = record.userId
+  resetPwdVisible.value = true
+}
+
+// 处理重置密码成功
+const handleResetPwdSuccess = () => {
+  resetPwdVisible.value = false
+  message.success(t('identity.user.messages.resetPasswordSuccess'))
+}
+
+// 处理导入
+const handleImport = () => {
+  message.info(t('common.developing'))
+}
+
+// 处理下载模板
+const handleTemplate = () => {
+  message.info(t('common.developing'))
+}
+
 onMounted(() => {
   // 加载字典数据
-  dictStore.loadDictData(['sys_normal_disable', 'sys_gender', 'sys_user_type'])
+  dictStore.loadDicts(['sys_normal_disable', 'sys_gender', 'sys_user_type'])
+  // 初始化列设置
+  initColumnSettings()
   // 加载表格数据
   fetchData()
 })
@@ -316,16 +574,21 @@ onMounted(() => {
 
 <style lang="less" scoped>
 .user-container {
-  .search-form {
-    margin-bottom: 16px;
-  }
+  padding: 24px;
+}
 
-  .table-toolbar {
-    margin-bottom: 16px;
-  }
+.column-setting-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
 
-  .text-danger {
-    color: #ff4d4f;
+.column-setting-item {
+  padding: 8px;
+  border-bottom: 1px solid var(--ant-color-split);
+  
+  &:last-child {
+    border-bottom: none;
   }
 }
 </style>

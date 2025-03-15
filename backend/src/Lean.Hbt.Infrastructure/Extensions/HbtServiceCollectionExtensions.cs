@@ -146,7 +146,7 @@ namespace Lean.Hbt.Infrastructure.Extensions
             services.AddScoped<IHbtSignalRSessionManager, HbtSessionManager>();
             
             // 验证服务
-            services.AddScoped<IHbtCaptchaService, HbtCaptchaService>();
+            services.AddSingleton<IHbtCaptchaService, HbtCaptchaService>();
             services.AddScoped<IHbtOAuthService, HbtOAuthService>();
             
             return services;

@@ -190,5 +190,20 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
             var result = await _userService.ChangePasswordAsync(input);
             return Success(result, _localization.L("User.ChangePassword.Success"));
         }
+
+        /// <summary>
+        /// 解锁用户
+        /// </summary>
+        /// <param name="input">解锁用户信息</param>
+        /// <returns>是否成功</returns>
+        [HttpPut("unlock")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> UnlockUserAsync([FromBody] HbtUserUnlockDto input)
+        {
+            var result = await _userService.UnlockUserAsync(input);
+            return Success(result, _localization.L("User.Unlock.Success"));
+        }
     }
 }

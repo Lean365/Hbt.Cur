@@ -59,6 +59,8 @@ import paginationEnUS from './components/pagination/en-US'
 // 导入表格翻译
 import tableZhCN from './components/table/zh-CN'
 import tableEnUS from './components/table/en-US'
+import columnSettingsZhCN from './components/table/column-settings/zh-CN'
+import columnSettingsEnUS from './components/table/column-settings/en-US'
 
 // 导入查询翻译
 import queryZhCN from './components/query/zh-CN'
@@ -71,6 +73,22 @@ import routerEnUS from './router/en-US'
 // 导入主题翻译
 import themeZhCN from './components/theme/zh-CN'
 import themeEnUS from './components/theme/en-US'
+
+// 导入身份认证相关翻译
+import identityUserZhCN from './identity/user/zh-CN'
+import identityUserEnUS from './identity/user/en-US'
+import identityRoleZhCN from './identity/role/zh-CN'
+import identityRoleEnUS from './identity/role/en-US'
+import identityDeptZhCN from './identity/dept/zh-CN'
+import identityDeptEnUS from './identity/dept/en-US'
+import identityPostZhCN from './identity/post/zh-CN'
+import identityPostEnUS from './identity/post/en-US'
+import identityTenantZhCN from './identity/tenant/zh-CN'
+import identityTenantEnUS from './identity/tenant/en-US'
+
+// 导入组件翻译
+import iconZhCN from './components/icon/zh-CN'
+import iconEnUS from './components/icon/en-US'
 
 // 合并所有翻译
 const messages = {
@@ -89,12 +107,21 @@ const messages = {
     ...homeZhCN,
     identity: {
       ...identityAuthZhCN.identity,
-      ...identityMenuZhCN.identity
+      ...identityMenuZhCN.identity,
+      ...identityUserZhCN.identity,
+      ...identityRoleZhCN.identity,
+      ...identityDeptZhCN.identity,
+      ...identityPostZhCN.identity,
+      ...identityTenantZhCN.identity
     },
+    ...iconZhCN,
     ...localeZhCN,
     ...menuZhCN,
     ...paginationZhCN,
-    ...tableZhCN,
+    table: {
+      ...tableZhCN.table,
+      ...columnSettingsZhCN.table
+    },
     ...queryZhCN,
     ...routerZhCN,
     ...themeZhCN
@@ -114,12 +141,21 @@ const messages = {
     ...homeEnUS,
     identity: {
       ...identityAuthEnUS.identity,
-      ...identityMenuEnUS.identity
+      ...identityMenuEnUS.identity,
+      ...identityUserEnUS.identity,
+      ...identityRoleEnUS.identity,
+      ...identityDeptEnUS.identity,
+      ...identityPostEnUS.identity,
+      ...identityTenantEnUS.identity
     },
+    ...iconEnUS,
     ...localeEnUS,
     ...menuEnUS,
     ...paginationEnUS,
-    ...tableEnUS,
+    table: {
+      ...tableEnUS.table,
+      ...columnSettingsEnUS.table
+    },
     ...queryEnUS,
     ...routerEnUS,
     ...themeEnUS

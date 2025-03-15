@@ -121,13 +121,13 @@
 // 类型导入
 import type { FormInstance } from 'ant-design-vue'
 import type { RuleObject } from 'ant-design-vue/es/form'
-import type { LoginParams, SaltResponse } from '@/types/identity/auth'
+import type { LoginParams, SaltResponse, LockoutStatus } from '@/types/identity/auth'
 import type { SliderValidateDto } from '@/api/security/captcha'
 import type { DeviceInfo } from '@/types/identity/deviceExtend'
 import { DEVICE_INFO_LENGTH, HbtDeviceType, HbtOsType, HbtBrowserType } from '@/types/identity/deviceExtend'
 
 // API和组件导入
-import { getSalt } from '@/api/identity/auth'
+import { getSalt, login, checkAccountLockout } from '@/api/identity/auth'
 import { getCaptcha, verifyCaptcha } from '@/api/security/captcha'
 import SliderCaptcha from '@/components/Base/SliderCaptcha.vue'
 import HeaderLoginBar from '@/components/Navigation/HeaderLoginBar.vue'
@@ -136,9 +136,10 @@ import { useUserStore } from '@/stores/user'
 import { useMenuStore } from '@/stores/menu'
 import { useI18n } from 'vue-i18n'
 import { message } from 'ant-design-vue'
-import { ref, reactive, onMounted, onUnmounted, nextTick, watch } from 'vue'
+import { ref, reactive, onMounted, onUnmounted, nextTick, watch, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { getDeviceInfo } from '@/utils/device'
+import { LOGIN_POLICY, LOGIN_STORAGE_KEYS, SPECIAL_USERS } from '@/types/identity/auth'
 
 const { t } = useI18n()
 const router = useRouter()
@@ -151,14 +152,14 @@ const loginFormRef = ref<FormInstance>()
 const captchaRef = ref()
 
 // 登录表单数据
-const loginForm = reactive<LoginParams>({
-  tenantId: 0, // 默认为管理员租户ID
-  userName: '',
-  password: '',
+const loginForm = ref<LoginParams>({
+  tenantId: 0,
+  userName: 'admin',
+  password: '123456',
   captchaToken: '',
   captchaOffset: 0,
-  loginSource: 0, // Web端
-  deviceInfo: getDeviceInfo() // 使用工具函数获取设备信息
+  loginSource: 0,
+  deviceInfo: getDeviceInfo()
 })
 
 // 表单验证规则
@@ -183,45 +184,53 @@ const rememberMe = ref(false)
 // 加载状态
 const loading = ref(false)
 
-// 保存上一次的登录参数，用于验证码验证成功后重试
-const lastLoginParams = ref<LoginParams | null>(null)
+// 验证码状态
+const captchaVerified = ref(false)
+const captchaParams = ref<{ token: string; xOffset: number } | null>(null)
 
-// 倒计时相关
-const waitingSeconds = ref(0)
-const waitingTimer = ref<NodeJS.Timeout | null>(null)
-const failedAttempts = ref(0)
-const remainingAttempts = ref(0)
-
-// 登录策略常量
-const LOGIN_POLICY = {
-  ADMIN: {
-    MAX_ATTEMPTS: 3,
-    LOCKOUT_MINUTES: 30
-  },
-  USER: {
-    MAX_ATTEMPTS: 5,
-    LOCKOUT_MINUTES: 10
-  },
-  CAPTCHA_REQUIRED_ATTEMPTS: 1,
-  CAPTCHA_REQUIRED_MINUTES: 5
+// 检查是否需要验证码（5分钟内重复登录）
+const checkNeedCaptcha = () => {
+  const lastLoginTime = localStorage.getItem(LOGIN_STORAGE_KEYS.LAST_LOGIN_TIME)
+  if (lastLoginTime) {
+    const currentTime = Date.now()
+    const timeDiff = currentTime - parseInt(lastLoginTime)
+    const minutesDiff = timeDiff / (1000 * 60)
+    
+    console.log('[验证码策略] 时间检查:', {
+      lastLoginTime: new Date(parseInt(lastLoginTime)).toLocaleString(),
+      currentTime: new Date(currentTime).toLocaleString(),
+      timeDiff: `${timeDiff}ms`,
+      minutesDiff: `${minutesDiff.toFixed(2)}分钟`,
+      requireCaptcha: minutesDiff <= LOGIN_POLICY.CAPTCHA.REQUIRED_MINUTES
+    })
+    
+    return minutesDiff <= LOGIN_POLICY.CAPTCHA.REQUIRED_MINUTES
+  }
+  console.log('[验证码策略] 未找到上次登录时间记录')
+  return false
 }
 
-// 开始倒计时
-const startWaiting = (seconds: number) => {
-  waitingSeconds.value = seconds
-  if (waitingTimer.value) {
-    clearInterval(waitingTimer.value)
-  }
-  waitingTimer.value = setInterval(() => {
-    if (waitingSeconds.value > 0) {
-      waitingSeconds.value--
-    } else {
-      if (waitingTimer.value) {
-        clearInterval(waitingTimer.value)
-        waitingTimer.value = null
-      }
-    }
-  }, 1000)
+// 获取失败次数
+const getFailedAttempts = (username: string) => {
+  const storedAttempts = localStorage.getItem(LOGIN_STORAGE_KEYS.FAILED_ATTEMPTS)
+  if (!storedAttempts) return 0
+  
+  const attempts = JSON.parse(storedAttempts)
+  return attempts[username] || 0
+}
+
+// 设置失败次数
+const setFailedAttempts = (username: string, count: number) => {
+  const attempts = JSON.parse(localStorage.getItem(LOGIN_STORAGE_KEYS.FAILED_ATTEMPTS) || '{}')
+  attempts[username] = count
+  localStorage.setItem(LOGIN_STORAGE_KEYS.FAILED_ATTEMPTS, JSON.stringify(attempts))
+}
+
+// 重置失败次数
+const resetFailedAttempts = (username: string) => {
+  const attempts = JSON.parse(localStorage.getItem(LOGIN_STORAGE_KEYS.FAILED_ATTEMPTS) || '{}')
+  delete attempts[username]
+  localStorage.setItem(LOGIN_STORAGE_KEYS.FAILED_ATTEMPTS, JSON.stringify(attempts))
 }
 
 // 监听用户名变化
@@ -229,205 +238,170 @@ const handleUserNameChange = (e: Event) => {
   const value = (e.target as HTMLInputElement).value;
   // 如果是admin用户，自动设置租户ID为0
   if (value.toLowerCase() === 'admin') {
-    loginForm.tenantId = 0;
+    loginForm.value.tenantId = 0;
   }
 }
 
+// 在文件顶部添加 isAdmin 变量定义
+const isAdmin = computed(() => loginForm.value.userName.toLowerCase() === SPECIAL_USERS.ADMIN)
+
 // 处理登录
 const handleLogin = async () => {
-  // 如果正在等待中，不允许登录
-  if (waitingSeconds.value > 0) {
-    message.warning(t('identity.auth.login.error.waitingRetry', { seconds: waitingSeconds.value }))
-    return
-  }
-
   try {
     loading.value = true
     
-    // 获取盐值
-    try {
-      const response = await getSalt(loginForm.userName)
-      if (!response || !response.data) {
-        throw new Error(t('identity.auth.login.error.saltError'))
-      }
-      
-      const saltData = response.data
-      if (!saltData || typeof saltData.salt !== 'string' || typeof saltData.iterations !== 'number') {
-        throw new Error(t('identity.auth.login.error.saltError'))
-      }
+    // 表单验证
+    await loginFormRef.value?.validate()
+    
+    // 验证用户名密码
+    const credentialsValid = await validateCredentials()
+    if (!credentialsValid) {
+      return
+    }
 
-      //console.log('[密码加密] 开始加密密码')
-      
-      // 使用PBKDF2加密原始密码
-      const hashedPassword = PasswordEncryptor.hashPassword(
-        loginForm.password,
+    // 获取失败次数
+    const failedAttempts = getFailedAttempts(loginForm.value.userName)
+    
+    // 检查是否需要验证码
+    const needCaptcha = checkNeedCaptcha() || 
+      (!captchaVerified.value && failedAttempts >= LOGIN_POLICY.CAPTCHA.REQUIRED_ATTEMPTS)
+    
+    if (needCaptcha && !captchaVerified.value) {
+      showCaptcha.value = true
+      await nextTick()
+      await captchaRef.value?.initCaptcha()
+      return
+    }
+    
+    // 获取盐值并加密密码
+    const saltResponse = await getSalt(loginForm.value.userName)
+    const saltData = (saltResponse as any).data as SaltResponse
+    if (saltData) {
+      loginForm.value.password = PasswordEncryptor.hashPassword(
+        loginForm.value.password,
         saltData.salt,
         saltData.iterations
       )
-      
-      //console.log('[登录参数] 开始构造登录参数:', {
-        //userName: loginForm.userName,
-        //tenantId: loginForm.tenantId,
-        //hasPasswordLength: hashedPassword.length,
-        //deviceInfo: loginForm.deviceInfo
-      //})
-
-      // 构造登录参数
-      const loginParams: LoginParams = {
-        ...loginForm,
-        password: hashedPassword,
-        deviceInfo: loginForm.deviceInfo // 直接使用表单中的设备信息
-      }
-
-      // 保存登录参数，用于验证码验证成功后重试
-      lastLoginParams.value = loginParams
-
-      // 如果需要验证码
-      if (failedAttempts.value >= LOGIN_POLICY.CAPTCHA_REQUIRED_ATTEMPTS) {
-        showCaptcha.value = true
-        message.warning(t('identity.auth.captcha.required'))
-        return
-      }
-
-      // 执行登录
-      //console.log('[登录请求] 开始调用登录接口')
-      const result = await userStore.login(loginParams)
-      //console.log('[登录请求] 登录接口返回:', result)
-      if (result) {
-        handleLoginSuccess()
-      }
-    } catch (error: any) {
-      handleLoginError(error)
     }
+    
+    // 添加验证码参数
+    if (captchaParams.value) {
+      loginForm.value.captchaToken = captchaParams.value.token
+      loginForm.value.captchaOffset = captchaParams.value.xOffset
+    }
+    
+    // 执行登录
+    const result = await userStore.login(loginForm.value)
+    if (result) {
+      handleLoginSuccess()
+    }
+  } catch (error: any) {
+    handleLoginError(error)
   } finally {
     loading.value = false
   }
 }
 
 // 处理登录成功
-const handleLoginSuccess = async () => {
+const handleLoginSuccess = () => {
   try {
-    // 登录成功，重置所有状态
-    failedAttempts.value = 0
-    remainingAttempts.value = LOGIN_POLICY.USER.MAX_ATTEMPTS
-    showCaptcha.value = false
-    loginForm.captchaToken = ''
-    loginForm.captchaOffset = 0
+    // 记录登录时间
+    const loginTime = Date.now()
+    localStorage.setItem(LOGIN_STORAGE_KEYS.LAST_LOGIN_TIME, loginTime.toString())
+    console.log('[登录成功] 记录登录时间:', {
+      timestamp: loginTime,
+      datetime: new Date(loginTime).toLocaleString()
+    })
     
-    // 如果记住我选项被勾选，保存用户名
-    if (rememberMe.value) {
-      localStorage.setItem('lastUsername', loginForm.userName)
-    } else {
-      localStorage.removeItem('lastUsername')
-    }
-
-    // 获取用户信息（这里会自动加载菜单）
-    await userStore.getUserInfo()
-
-    message.success(t('identity.auth.login.success'))
-    
-    // 等待一下确保路由已经准备好
-    await nextTick()
-    
-    // 登录成功后跳转到工作台
-    await router.push('/dashboard/workplace')
+    // 重置失败次数
+    resetFailedAttempts(loginForm.value.userName)
+    // 跳转到首页
+    router.push('/')
   } catch (error) {
-    //console.error('登录后处理失败:', error)
     message.error(t('identity.auth.login.failed'))
   }
 }
 
 // 处理登录错误
 const handleLoginError = (error: any) => {
-  if (error.response) {
-    const { status, data } = error.response
-    
-    if (status === 429) {
-      // 需要等待
-      const waitTime = data.remainingSeconds || 1800 // 默认30分钟
-      startWaiting(waitTime)
-      const minutes = Math.ceil(waitTime / 60)
-      message.error(t('identity.auth.login.error.accountLocked', { minutes }))
+  const username = loginForm.value.userName
+  const failedAttempts = getFailedAttempts(username) + 1
+  setFailedAttempts(username, failedAttempts)
+  
+  const isAdminUser = username.toLowerCase() === SPECIAL_USERS.ADMIN
+  const maxAttempts = isAdminUser ? LOGIN_POLICY.ADMIN.MAX_ATTEMPTS : LOGIN_POLICY.USER.MAX_ATTEMPTS
+  
+  // 检查是否达到最大尝试次数
+  if (failedAttempts > maxAttempts) {
+    // 锁定账号
+    if (isAdminUser) {
+      message.error(t('identity.auth.error.adminLocked', { minutes: LOGIN_POLICY.ADMIN.LOCKOUT_MINUTES }))
     } else {
-      // 其他错误
-      failedAttempts.value++
-      remainingAttempts.value = loginForm.userName.toLowerCase() === 'admin' 
-        ? LOGIN_POLICY.ADMIN.MAX_ATTEMPTS - failedAttempts.value
-        : LOGIN_POLICY.USER.MAX_ATTEMPTS - failedAttempts.value
-      
-      message.error(t('identity.auth.login.error.remainingAttempts', { count: remainingAttempts.value }))
-      
-      // 如果失败次数达到阈值，显示验证码
-      if (failedAttempts.value >= LOGIN_POLICY.CAPTCHA_REQUIRED_ATTEMPTS) {
-        showCaptcha.value = true
-        // 确保验证码组件已加载
-        nextTick(() => {
-          if (captchaRef.value) {
-            captchaRef.value.initCaptcha()
-          }
-        })
-        message.warning(t('identity.auth.captcha.required'))
-      }
-      
-      if (remainingAttempts.value <= 0) {
-        const lockoutMinutes = loginForm.userName.toLowerCase() === 'admin'
-          ? LOGIN_POLICY.ADMIN.LOCKOUT_MINUTES
-          : LOGIN_POLICY.USER.LOCKOUT_MINUTES
-        message.error(t('identity.auth.login.error.accountLocked', { minutes: lockoutMinutes }))
-      }
+      message.error(t('identity.auth.error.userDisabled', { days: LOGIN_POLICY.USER.LOCKOUT_DAYS }))
     }
-  } else {
-    message.error(error.message || t('identity.auth.login.error.serverError'))
+    return
+  }
+  
+  // 检查是否需要验证码
+  if (failedAttempts >= LOGIN_POLICY.CAPTCHA.REQUIRED_ATTEMPTS) {
+    showCaptcha.value = true
+  }
+  
+  // 显示剩余尝试次数
+  const remainingAttempts = maxAttempts - failedAttempts
+  message.error(t('identity.auth.error.remainingAttempts', { count: remainingAttempts }))
+}
+
+// 验证用户名密码
+const validateCredentials = async () => {
+  try {
+    const username = loginForm.value.userName
+    
+    // 检查账号是否被锁定
+    const response = await checkAccountLockout(username)
+    const lockStatus = response.data as unknown as number
+    
+    if (lockStatus === 2) {
+      // 永久锁定
+      message.error(t('identity.auth.error.permanentlyLocked'))
+      return false
+    } else if (lockStatus === 1) {
+      // 临时锁定30分钟
+      const isAdmin = username.toLowerCase() === SPECIAL_USERS.ADMIN
+      const minutes = isAdmin ? LOGIN_POLICY.ADMIN.LOCKOUT_MINUTES : 30
+      message.error(t('identity.auth.error.temporarilyLocked', { minutes }))
+      return false
+    }
+    
+    // 检查失败次数
+    const failedAttempts = getFailedAttempts(username)
+    const isAdminUser = username.toLowerCase() === SPECIAL_USERS.ADMIN
+    const maxAttempts = isAdminUser ? LOGIN_POLICY.ADMIN.MAX_ATTEMPTS : LOGIN_POLICY.USER.MAX_ATTEMPTS
+    
+    if (failedAttempts >= maxAttempts) {
+      message.error(t('identity.auth.error.tooManyAttempts'))
+      return false
+    }
+    
+    return true
+  } catch (error) {
+    handleLoginError(error)
+    return false
   }
 }
 
 // 处理验证码成功
-const handleCaptchaSuccess = async (result: SliderValidateDto) => {
-  if (lastLoginParams.value) {
-    // 更新登录参数
-    const updatedParams: LoginParams = {
-      ...lastLoginParams.value,
-      captchaToken: result.token,
-      captchaOffset: result.xOffset,
-      deviceInfo: lastLoginParams.value.deviceInfo // 使用之前保存的设备信息
-    }
-    
-    // 更新表单数据
-    loginForm.captchaToken = result.token
-    loginForm.captchaOffset = result.xOffset
-    showCaptcha.value = false
-
-    // 执行登录
-    const loginResult = await userStore.login(updatedParams)
-    if (loginResult) {
-      handleLoginSuccess()
-    }
-  }
+const handleCaptchaSuccess = (params: { token: string; xOffset: number }) => {
+  captchaVerified.value = true
+  captchaParams.value = params
+  handleLogin()
 }
 
 // 处理验证码错误
-const handleCaptchaError = (errorMsg: string) => {
-  if (errorMsg.includes('请等待')) {
-    const match = errorMsg.match(/(\d+)秒/)
-    if (match) {
-      const seconds = parseInt(match[1])
-      startWaiting(seconds)
-      // 关闭验证码对话框
-      showCaptcha.value = false
-      message.warning(t('identity.auth.captcha.waitingRetry', { seconds }))
-      // 等待时间到后再显示验证码
-      setTimeout(() => {
-        if (captchaRef.value) {
-          captchaRef.value.refresh()
-        }
-        showCaptcha.value = true
-      }, seconds * 1000)
-    }
-  } else {
-    message.error(t('identity.auth.captcha.verifyFailed'))
-    // 关闭验证码对话框
-    showCaptcha.value = false
-  }
+const handleCaptchaError = (error: string) => {
+  captchaVerified.value = false
+  captchaParams.value = null
+  message.error(t('identity.auth.captcha.error'))
 }
 
 // 处理忘记密码
@@ -453,49 +427,61 @@ const runEncryptionTest = async () => {
 
 // 组件挂载时
 onMounted(() => {
-  // 清理所有登录状态
-  failedAttempts.value = 0
-  remainingAttempts.value = 0
-  waitingSeconds.value = 0
-  if (waitingTimer.value) {
-    clearInterval(waitingTimer.value)
-    waitingTimer.value = null
-  }
+  // 清理登录状态
+  resetFailedAttempts(loginForm.value.userName)
   showCaptcha.value = false
-  loginForm.captchaToken = ''
-  loginForm.captchaOffset = 0
   userStore.setNeedCaptcha(false)
 
   // 如果之前记住了用户名，自动填充
   const lastUsername = localStorage.getItem('lastUsername')
   if (lastUsername) {
-    loginForm.userName = lastUsername
+    loginForm.value.userName = lastUsername
     rememberMe.value = true
     // 如果是admin用户，自动设置租户ID为0
     if (lastUsername.toLowerCase() === 'admin') {
-      loginForm.tenantId = 0
+      loginForm.value.tenantId = 0
     }
   }
 })
 
 // 监听验证码弹窗显示状态
-watch(showCaptcha, (newValue) => {
+watch(showCaptcha, async (newValue) => {
   if (newValue && captchaRef.value) {
-    nextTick(() => {
-      captchaRef.value.initCaptcha()
-    })
+    await nextTick()
+    console.log('[验证码] 监听到显示状态变化，开始初始化')
+    try {
+      await captchaRef.value.initCaptcha()
+    } catch (error) {
+      console.error('[验证码] 初始化失败:', error)
+      message.error(t('identity.auth.captcha.error.initFailed'))
+    }
   }
 })
 
 // 组件卸载时清理定时器和状态
 onUnmounted(() => {
-  if (waitingTimer.value) {
-    clearInterval(waitingTimer.value)
-    waitingTimer.value = null
-  }
-  failedAttempts.value = 0
-  remainingAttempts.value = 0
+  // 移除这些变量的引用，因为它们不存在
 })
+
+const handleLockoutCheck = async (username: string) => {
+  try {
+    const response = await checkAccountLockout(username)
+    const lockStatus = response.data as unknown as number
+    if (lockStatus === 2) {
+      message.error(t('identity.auth.error.permanentlyLocked'))
+      return false
+    } else if (lockStatus === 1) {
+      const isAdmin = username.toLowerCase() === SPECIAL_USERS.ADMIN
+      const minutes = isAdmin ? LOGIN_POLICY.ADMIN.LOCKOUT_MINUTES : 30
+      message.error(t('identity.auth.error.accountLocked', { minutes }))
+      return false
+    }
+    return true
+  } catch (error) {
+    console.error('检查账号锁定状态失败:', error)
+    return true // 如果检查失败，默认允许继续
+  }
+}
 </script>
 
 <style lang="less" scoped>

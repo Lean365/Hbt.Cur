@@ -141,3 +141,42 @@ export interface CaptchaResult {
   /** 消息 */
   message?: string;
 }
+
+/**
+ * 账号锁定状态
+ */
+export type LockoutStatus = number
+
+/**
+ * 登录策略配置
+ */
+export const LOGIN_POLICY = {
+  ADMIN: {
+    MAX_ATTEMPTS: 3,              // 管理员最大尝试次数（3次后第4次如果还错误就锁定）
+    LOCKOUT_MINUTES: 30          // 管理员锁定时间（分钟）
+  },
+  USER: {
+    MAX_ATTEMPTS: 4,             // 普通用户最大尝试次数（4次后第5次如果还错误就禁用）
+    LOCKOUT_DAYS: 999           // 普通用户禁用时间（天）
+  },
+  CAPTCHA: {
+    REQUIRED_ATTEMPTS: 3,        // 错误3次后需要验证码
+    REQUIRED_MINUTES: 5          // 5分钟内重复登录需要验证码
+  }
+} as const
+
+/**
+ * 登录相关的本地存储键
+ */
+export const LOGIN_STORAGE_KEYS = {
+  LAST_LOGIN_TIME: 'lastLoginTime',
+  FAILED_ATTEMPTS: 'failedAttempts',
+  USERNAME: 'lastUsername'
+} as const
+
+/**
+ * 特殊用户名
+ */
+export const SPECIAL_USERS = {
+  ADMIN: 'admin'
+} as const

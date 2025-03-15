@@ -6,39 +6,50 @@
         :style="{ left: `${sliderLeft}px` }" />
     </div>
     <div class="slider-container">
-      <div class="slider-track">
-        <div class="slider-bar" :style="{ width: `${sliderLeft}px` }"></div>
-        <div class="slider-button" ref="sliderRef" :class="{ 'is-moving': isMoving }"
-          @mousedown="handleMouseDown" @touchstart.passive="handleTouchStart">
-          <right-outlined v-if="verified" style="color: #52c41a" />
-          <holder-outlined v-else />
-        </div>
-      </div>
+      <a-slider
+        v-model:value="sliderValue"
+        :max="maxSliderValue"
+        :disabled="verified"
+        :range="false"
+        :tooltip-open="false"
+        @change="handleSliderChange"
+        @after-change="handleSliderAfterChange"
+      />
       <div class="slider-text">{{ sliderText }}</div>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { message } from 'ant-design-vue'
-import { RightOutlined, HolderOutlined } from '@ant-design/icons-vue'
 import { getCaptcha, verifyCaptcha } from '@/api/security/captcha'
-import type { SliderCaptchaDto } from '@/api/security/captcha'
+import type { SliderCaptchaDto, HbtApiResult, CaptchaResultDto, SliderValidateDto } from '@/api/security/captcha'
 
 const { t } = useI18n()
 const emit = defineEmits(['success', 'error'])
 
 const imageRef = ref<HTMLElement>()
-const sliderRef = ref<HTMLElement>()
 const captchaData = ref<SliderCaptchaDto | null>(null)
+const sliderValue = ref(0)
+const maxSliderValue = ref(200)
 const sliderLeft = ref(0)
-const startX = ref(0)
 const isMoving = ref(false)
 const verified = ref(false)
 const retryCount = ref(0)
 const MAX_RETRY = 3
+
+// 监听 sliderValue 变化，更新滑块位置
+watch(sliderValue, (newValue) => {
+  if (imageRef.value) {
+    const containerWidth = imageRef.value.clientWidth
+    const sliderWidth = 48 // 滑块宽度
+    const maxOffset = containerWidth - sliderWidth
+    // 使用更精确的计算方式
+    sliderLeft.value = Math.round((newValue / maxSliderValue.value) * maxOffset * 100) / 100
+  }
+})
 
 const sliderText = computed(() => {
   if (verified.value) return t('identity.auth.captcha.success')
@@ -46,134 +57,56 @@ const sliderText = computed(() => {
   return t('identity.auth.captcha.default')
 })
 
-// 初始化验证码
-const initCaptcha = async () => {
-  try {
-    if (captchaData.value) {
-      console.log('[验证码] 已有验证码数据，跳过初始化')
-      return
-    }
-
-    console.log('[验证码] 开始获取验证码')
-    const response = await getCaptcha()
-    console.log('[验证码] 获取响应:', response)
-    
-    // 检查响应数据结构
-    if (!response?.data?.data) {
-      console.error('[验证码] 响应数据为空')
-      emit('error', t('identity.auth.captcha.error.dataEmpty'))
-      return
-    }
-
-    const data = response.data.data
-    console.log('[验证码] 解析数据:', data)
-
-    // 检查数据完整性
-    if (!data.backgroundImage || !data.sliderImage || !data.token) {
-      console.error('[验证码] 数据不完整:', data)
-      emit('error', t('identity.auth.captcha.error.dataIncomplete'))
-      return
-    }
-
-    // 设置验证码数据
-    captchaData.value = data
-    sliderLeft.value = 0
-    verified.value = false
-    retryCount.value = 0
-    console.log('[验证码] 设置数据成功:', captchaData.value)
-    
-  } catch (error: any) {
-    console.error('[验证码] 获取失败:', error)
-    if (error.response?.status === 429) {
-      const waitSeconds = error.response.data?.remainingSeconds || 60
-      emit('error', t('identity.auth.captcha.error.tooManyRequests', { seconds: waitSeconds }))
-    } else {
-      emit('error', t('identity.auth.captcha.error.getFailed'))
-    }
+// 处理滑块变化
+const handleSliderChange = (value: number | [number, number]) => {
+  if (typeof value === 'number' && value > 0) {
+    isMoving.value = true
   }
 }
 
-// 刷新验证码
-const refresh = async () => {
-  captchaData.value = null
-  await initCaptcha()
-}
+// 处理滑块释放
+const handleSliderAfterChange = async (value: number | [number, number]) => {
+  // 如果没有移动过或者无效值，直接返回
+  if (!isMoving.value || typeof value !== 'number' || value === 0) {
+    return
+  }
 
-// 处理鼠标按下
-const handleMouseDown = (e: MouseEvent) => {
-  if (verified.value) return
-  isMoving.value = true
-  startX.value = e.clientX
-  document.addEventListener('mousemove', handleMouseMove)
-  document.addEventListener('mouseup', handleMouseUp)
-}
-
-// 处理触摸开始
-const handleTouchStart = (e: TouchEvent) => {
-  if (verified.value) return
-  isMoving.value = true
-  startX.value = e.touches[0].clientX
-  document.addEventListener('touchmove', handleTouchMove)
-  document.addEventListener('touchend', handleTouchEnd)
-}
-
-// 处理鼠标移动
-const handleMouseMove = (e: MouseEvent) => {
-  if (!isMoving.value) return
-  e.preventDefault()
-  const moveX = e.clientX - startX.value
-  updateSliderPosition(moveX)
-}
-
-// 处理触摸移动
-const handleTouchMove = (e: TouchEvent) => {
-  if (!isMoving.value) return
-  e.preventDefault()
-  const moveX = e.touches[0].clientX - startX.value
-  updateSliderPosition(moveX)
-}
-
-// 更新滑块位置
-const updateSliderPosition = (moveX: number) => {
-  const maxWidth = imageRef.value!.clientWidth - sliderRef.value!.clientWidth
-  let newLeft = moveX
-  if (newLeft < 0) newLeft = 0
-  if (newLeft > maxWidth) newLeft = maxWidth
-  sliderLeft.value = newLeft
-}
-
-// 处理鼠标松开
-const handleMouseUp = async () => {
-  if (!isMoving.value) return
-  isMoving.value = false
-  document.removeEventListener('mousemove', handleMouseMove)
-  document.removeEventListener('mouseup', handleMouseUp)
-  await verifySlider()
-}
-
-// 处理触摸结束
-const handleTouchEnd = async () => {
-  if (!isMoving.value) return
-  isMoving.value = false
-  document.removeEventListener('touchmove', handleTouchMove)
-  document.removeEventListener('touchend', handleTouchEnd)
-  await verifySlider()
-}
-
-// 验证滑块位置
-const verifySlider = async () => {
-  if (!captchaData.value) return
-  
   try {
-    const params = {
+    ////console.log('[验证码] 滑块释放，开始验证，值:', value)
+    //console.log('[验证码] 当前滑块位置:', {
+     // sliderValue: value,
+     // sliderLeft: sliderLeft.value,
+     // roundedOffset: Math.round(sliderLeft.value),
+      //containerWidth: imageRef.value?.clientWidth,
+      //imageWidth: imageRef.value?.querySelector('.bg-image')?.clientWidth
+    //})
+    isMoving.value = false
+    
+    if (!captchaData.value) {
+      console.warn('[验证码] 无验证码数据')
+      return
+    }
+
+    if (verified.value) {
+      //console.log('[验证码] 已验证成功，跳过重复验证')
+      return
+    }
+
+    const params: SliderValidateDto = {
       token: captchaData.value.token,
       xOffset: Math.round(sliderLeft.value)
     }
+    //console.log('[验证码] 发送验证请求，Token详情:', {
+      //当前使用的Token: params.token,
+      //验证码数据中的Token: captchaData.value.token,
+      //时间戳: new Date().toISOString()
+    //})
     
-    const response = await verifyCaptcha(params)
-    const result = response.data.data
+    const response = await verifyCaptcha(params) as unknown as CaptchaResultDto
+    //console.log('[验证码] 验证响应:', response)
     
-    if (result.success) {
+    if (response.success) {
+      //console.log('[验证码] 验证成功')
       verified.value = true
       retryCount.value = 0
       emit('success', {
@@ -181,25 +114,108 @@ const verifySlider = async () => {
         xOffset: Math.round(sliderLeft.value)
       })
     } else {
+      //console.log('[验证码] 验证失败:', response.message)
       verified.value = false
       retryCount.value++
-      sliderLeft.value = 0
-      message.error(result.message || t('identity.auth.captcha.failed'))
+      sliderValue.value = 0
+      message.error(response.message || t('identity.auth.captcha.failed'))
       if (retryCount.value >= MAX_RETRY) {
         message.error(t('identity.auth.captcha.maxRetryReached'))
         emit('error', 'MAX_RETRY_REACHED')
       }
     }
   } catch (error: any) {
+    console.error('[验证码] 验证请求出错:', error)
     verified.value = false
     retryCount.value++
-    sliderLeft.value = 0
+    sliderValue.value = 0
     message.error(t('identity.auth.captcha.verifyError'))
     if (retryCount.value >= MAX_RETRY) {
       message.error(t('identity.auth.captcha.maxRetryReached'))
       emit('error', 'MAX_RETRY_REACHED')
     }
   }
+}
+
+// 初始化验证码
+const initCaptcha = async () => {
+  try {
+    if (captchaData.value) {
+      //console.log('[验证码] 已有验证码数据，跳过初始化')
+      return
+    }
+
+    //console.log('[验证码] 开始获取验证码')
+    const result = await getCaptcha() as any
+    //console.log('[验证码] 原始响应:', result)
+    
+    // 检查响应是否存在
+    if (!result) {
+      console.error('[验证码] 响应为空')
+      emit('error', t('identity.auth.captcha.error.noResponse'))
+      return
+    }
+
+    const response = {
+      backgroundImage: result.backgroundImage,
+      sliderImage: result.sliderImage,
+      token: result.token
+    }
+    
+    // 检查数据完整性
+    if (!response.backgroundImage) {
+      console.error('[验证码] 背景图片URL为空')
+      emit('error', t('identity.auth.captcha.error.noBackgroundImage'))
+      return
+    }
+
+    if (!response.sliderImage) {
+      console.error('[验证码] 滑块图片URL为空')
+      emit('error', t('identity.auth.captcha.error.noSliderImage'))
+      return
+    }
+
+    if (!response.token) {
+      console.error('[验证码] 验证码token为空')
+      emit('error', t('identity.auth.captcha.error.noToken'))
+      return
+    }
+
+    // 设置验证码数据
+    captchaData.value = response
+    sliderValue.value = 0
+    verified.value = false
+    retryCount.value = 0
+    //console.log('[验证码] 设置数据成功:', {
+    //  token: response.token,
+    //  hasBackgroundImage: !!response.backgroundImage,
+    //  hasSliderImage: !!response.sliderImage
+    //})
+    
+  } catch (error: any) {
+    console.error('[验证码] 获取失败:', error)
+    console.error('[验证码] 错误详情:', {
+      message: error.message,
+      response: error.response,
+      request: error.request,
+      config: error.config
+    })
+    
+    if (error.response?.status === 429) {
+      const waitSeconds = error.response.data?.remainingSeconds || 60
+      emit('error', t('identity.auth.captcha.error.tooManyRequests', { seconds: waitSeconds }))
+    } else {
+      emit('error', t('identity.auth.captcha.error.getFailed'))
+    }
+    throw error // 重新抛出错误，让调用者知道初始化失败
+  }
+}
+
+// 刷新验证码
+const refresh = async () => {
+  captchaData.value = null
+  sliderValue.value = 0
+  await initCaptcha()
 }
 
 // 暴露方法
@@ -229,64 +245,34 @@ defineExpose({
     display: block;
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
   }
 
   .slider-image {
     position: absolute;
-    top: 0;
+    top: 50%;
     left: 0;
-    height: 100%;
-    transition: left 0.1s;
+    width: 48px;
+    height: 48px;
+    transform: translateY(-50%);
+    transition: all 0.05s linear;
+    will-change: left;
+    pointer-events: none;
   }
 }
 
 .slider-container {
   padding: 16px;
-}
-
-.slider-track {
-  position: relative;
-  height: 40px;
-  background: var(--ant-color-bg-container-hover);
-  border-radius: 20px;
   
-  .slider-bar {
-    position: absolute;
-    left: 0;
-    top: 0;
-    height: 100%;
-    background: var(--ant-color-primary-bg);
-    border-radius: 20px;
-    transition: width 0.1s;
-  }
-  
-  .slider-button {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 40px;
-    height: 40px;
-    background: var(--ant-color-bg-container);
-    border: 1px solid var(--ant-color-border);
-    border-radius: 50%;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: transform 0.2s;
+  :deep(.ant-slider) {
+    margin: 10px 0;
     
-    &:hover {
-      transform: scale(1.05);
+    .ant-slider-handle {
+      transition: all 0.05s linear;
     }
     
-    &.is-moving {
-      transform: scale(1.1);
-    }
-    
-    .anticon {
-      font-size: 16px;
-      color: var(--ant-color-text-quaternary);
+    .ant-slider-track {
+      transition: all 0.05s linear;
     }
   }
 }

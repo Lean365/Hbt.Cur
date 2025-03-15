@@ -36,38 +36,15 @@
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import {
-  HomeOutlined,
-  DashboardOutlined,
-  BarChartOutlined,
-  MonitorOutlined,
-  DesktopOutlined,
-  TeamOutlined,
-  UserOutlined,
-  SafetyOutlined,
-  MenuOutlined
-} from '@ant-design/icons-vue'
+import * as Icons from '@ant-design/icons-vue'
 
 const { t } = useI18n()
 const route = useRoute()
 
-// 图标映射
-const iconMap = {
-  HomeOutlined,
-  DashboardOutlined,
-  BarChartOutlined,
-  MonitorOutlined,
-  DesktopOutlined,
-  TeamOutlined,
-  UserOutlined,
-  SafetyOutlined,
-  MenuOutlined
-}
-
 // 获取图标组件
 const getIcon = (iconName?: string) => {
   if (!iconName) return null
-  return iconMap[iconName as keyof typeof iconMap]
+  return (Icons as any)[iconName]
 }
 
 // 面包屑项接口定义

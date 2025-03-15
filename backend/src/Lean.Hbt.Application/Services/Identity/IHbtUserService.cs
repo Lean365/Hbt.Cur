@@ -110,5 +110,12 @@ namespace Lean.Hbt.Application.Services.Identity
         /// <param name="input">修改密码对象</param>
         /// <returns>是否成功</returns>
         Task<bool> ChangePasswordAsync(HbtUserChangePwdDto input);
+
+        /// <summary>
+        /// 解锁用户
+        /// </summary>
+        /// <param name="input">解锁用户信息</param>
+        /// <returns>是否成功</returns>
+        Task<bool> UnlockUserAsync(HbtUserUnlockDto input);
     }
 }

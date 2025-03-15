@@ -1,18 +1,22 @@
 using System;
 using System.IO;
+using System.Net.Http;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Lean.Hbt.Common.Options;
 using Lean.Hbt.Domain.IServices.Security;
-using Lean.Hbt.Domain.Repositories;
-using Lean.Hbt.Domain.Entities.Admin;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Logging;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using SixLabors.ImageSharp.Drawing.Processing;
 using System.Text.Json;
+using System.Linq;
+using Lean.Hbt.Common.Helpers;
+using Point = SixLabors.ImageSharp.Point;
 
 namespace Lean.Hbt.Infrastructure.Security;
 
@@ -23,24 +27,34 @@ public class HbtCaptchaService : IHbtCaptchaService
 {
     private readonly IDistributedCache _cache;
     private readonly HbtCaptchaOptions _options;
-    private readonly IHbtRepository<HbtConfig> _repository;
     private readonly string _sliderCachePrefix = "slider:";
     private readonly string _behaviorCachePrefix = "behavior:";
+    private readonly IWebHostEnvironment _webHostEnvironment;
+    private readonly string _backgroundImagesPath;
+    private readonly string _templatePath;
+    private readonly ILogger<HbtCaptchaService> _logger;
+    private bool _templatesValid = false;
 
     /// <summary>
     /// 初始化验证码服务
     /// </summary>
-    /// <param name="cache">分布式缓存</param>
-    /// <param name="options">验证码配置选项</param>
-    /// <param name="repository">系统配置仓储</param>
     public HbtCaptchaService(
         IDistributedCache cache,
         IOptions<HbtCaptchaOptions> options,
-        IHbtRepository<HbtConfig> repository)
+        IWebHostEnvironment webHostEnvironment,
+        ILogger<HbtCaptchaService> logger)
     {
-        _cache = cache;
-        _options = options.Value;
-        _repository = repository;
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _logger.LogInformation("开始构造验证码服务...");
+            
+        _cache = cache ?? throw new ArgumentNullException(nameof(cache));
+        _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
+        _webHostEnvironment = webHostEnvironment ?? throw new ArgumentNullException(nameof(webHostEnvironment));
+
+        _templatePath = Path.Combine(_webHostEnvironment.WebRootPath, _options.Slider.BackgroundImages.Template.TemplatePath);
+        _backgroundImagesPath = Path.Combine(_webHostEnvironment.WebRootPath, _options.Slider.BackgroundImages.StoragePath);
+        
+        _logger.LogInformation("验证码服务构造完成");
     }
 
     /// <summary>
@@ -48,57 +62,74 @@ public class HbtCaptchaService : IHbtCaptchaService
     /// </summary>
     public async Task<(string bgImage, string sliderImage, string token)> GenerateSliderAsync()
     {
-        // 1. 生成随机背景图
-        using var bgImage = new Image<Rgba32>(_options.Slider.Width, _options.Slider.Height);
+        // 随机选择一组模板
         var random = new Random();
-        for (int x = 0; x < bgImage.Width; x++)
+        var groupIndex = random.Next(1, _options.Slider.BackgroundImages.Template.GroupCount + 1);
+        var groupPath = Path.Combine(_templatePath, groupIndex.ToString());
+
+        // 构建模板文件路径
+        var holePath = Path.Combine(groupPath, "hole.png");
+        var sliderPath = Path.Combine(groupPath, "slider.png");
+
+        if (!File.Exists(holePath) || !File.Exists(sliderPath))
         {
-            for (int y = 0; y < bgImage.Height; y++)
-            {
-                bgImage[x, y] = new Rgba32(
-                    (byte)random.Next(256),
-                    (byte)random.Next(256),
-                    (byte)random.Next(256)
-                );
-            }
+            throw new InvalidOperationException("验证码模板文件不存在");
         }
 
-        // 2. 生成滑块
-        var sliderX = random.Next(_options.Slider.SliderWidth, bgImage.Width - _options.Slider.SliderWidth * 2);
-        var sliderY = random.Next(_options.Slider.SliderWidth, bgImage.Height - _options.Slider.SliderWidth);
-        
-        using var sliderImage = new Image<Rgba32>(_options.Slider.SliderWidth, _options.Slider.SliderWidth);
-        var cropRect = new SixLabors.ImageSharp.Rectangle(sliderX, sliderY, _options.Slider.SliderWidth, _options.Slider.SliderWidth);
-        using var croppedImage = bgImage.Clone(x => x.Crop(cropRect));
-        croppedImage.Mutate(x => x.Resize(_options.Slider.SliderWidth, _options.Slider.SliderWidth));
-        croppedImage.ProcessPixelRows(accessor =>
+        // 加载模板图片
+        using var holeImage = await Image.LoadAsync<Rgba32>(holePath);
+        using var sliderImage = await Image.LoadAsync<Rgba32>(sliderPath);
+
+        // 随机选择一张背景图片
+        var backgroundFiles = Directory.GetFiles(_backgroundImagesPath, $"*{_options.Slider.BackgroundImages.FileExtension}");
+        if (backgroundFiles.Length == 0)
         {
-            for (int y = 0; y < accessor.Height; y++)
-            {
-                var row = accessor.GetRowSpan(y);
-                for (int x = 0; x < accessor.Width; x++)
-                {
-                    sliderImage[x, y] = row[x];
-                }
-            }
+            throw new Exception("没有可用的背景图片");
+        }
+
+        var selectedBackground = backgroundFiles[random.Next(backgroundFiles.Length)];
+        using var bgImage = await Image.LoadAsync<Rgba32>(selectedBackground);
+
+        // 调整背景图片大小
+        var targetWidth = _options.Slider.Width;  // 350px
+        var targetHeight = _options.Slider.Height; // 150px
+        bgImage.Mutate(x => x.Resize(targetWidth, targetHeight));
+
+        // 使用模板图片的原始尺寸
+        var sliderSize = 48; // 滑块的实际尺寸
+
+        // 计算有效的X坐标范围（确保滑块不会超出背景图片）
+        var minX = sliderSize * 2; // 留出左边距，避免太靠左
+        var maxX = targetWidth - sliderSize * 3; // 留出右边距
+        
+        // 生成随机的X坐标，Y坐标固定在中间位置
+        var xPos = random.Next(minX, maxX);
+        var yPos = (targetHeight - sliderSize) / 2;
+
+        // 创建一个新的背景图副本，用于应用挖空效果
+        using var processedBgImage = bgImage.Clone();
+        
+        // 在背景图上应用挖空效果
+        processedBgImage.Mutate(x => x.DrawImage(holeImage, new Point(xPos, yPos), 0.8f));
+
+        // 创建滑块图片（保持原始大小）
+        using var finalSliderImage = new Image<Rgba32>(sliderSize, sliderSize);
+        finalSliderImage.Mutate(x => 
+        {
+            x.Clear(Color.Transparent);
+            x.DrawImage(sliderImage, new Point(0, 0), 1f);
         });
 
-        // 3. 在背景图上绘制滑块区域
-        bgImage.Mutate(ctx => ctx.Draw(
-            SixLabors.ImageSharp.Drawing.Processing.Pens.Solid(SixLabors.ImageSharp.Color.White, 2),
-            new SixLabors.ImageSharp.RectangleF(sliderX, sliderY, _options.Slider.SliderWidth, _options.Slider.SliderWidth)
-        ));
-
-        // 4. 生成验证token
+        // 生成验证token和缓存数据
         var token = GenerateToken();
         var cacheData = new SliderCacheData
         {
-            X = sliderX,
-            Y = sliderY,
+            X = xPos,
+            Y = yPos,
             CreatedAt = DateTime.UtcNow
         };
 
-        // 5. 缓存验证数据
+        // 缓存验证数据
         await _cache.SetStringAsync(
             $"{_sliderCachePrefix}{token}",
             JsonSerializer.Serialize(cacheData),
@@ -108,10 +139,9 @@ public class HbtCaptchaService : IHbtCaptchaService
             }
         );
 
-        // 6. 转换图片为Base64
         return (
-            ImageToBase64(bgImage),
-            ImageToBase64(sliderImage),
+            ImageToBase64(processedBgImage),
+            ImageToBase64(finalSliderImage),
             token
         );
     }
@@ -121,33 +151,83 @@ public class HbtCaptchaService : IHbtCaptchaService
     /// </summary>
     public async Task<bool> ValidateSliderAsync(string token, int xOffset)
     {
+        _logger.LogInformation("验证Token详情 - 接收到的Token: {Token}, 时间: {Time}", token, DateTime.Now);
+        
         var cacheKey = $"{_sliderCachePrefix}{token}";
         var cacheValue = await _cache.GetStringAsync(cacheKey);
         if (string.IsNullOrEmpty(cacheValue))
         {
+            _logger.LogWarning("验证失败：Token无效或已过期 - Token: {Token}, 缓存Key: {CacheKey}", token, cacheKey);
             return false;
         }
 
         var cacheData = JsonSerializer.Deserialize<SliderCacheData>(cacheValue);
         if (cacheData == null)
         {
+            _logger.LogWarning("验证失败：缓存数据无效 - Token: {Token}", token);
             return false;
         }
 
         // 验证是否过期
-        if ((DateTime.UtcNow - cacheData.CreatedAt).TotalMinutes > _options.Slider.ExpirationMinutes)
+        var timeSinceCreation = DateTime.UtcNow - cacheData.CreatedAt;
+        if (timeSinceCreation.TotalMinutes > _options.Slider.ExpirationMinutes)
         {
+            _logger.LogWarning("验证失败：验证码已过期 - Token: {Token}, 创建时间: {CreatedAt}, 当前时间: {Now}, 已过时间: {TimeSinceCreation:g}", 
+                token, 
+                cacheData.CreatedAt, 
+                DateTime.UtcNow,
+                timeSinceCreation);
             await _cache.RemoveAsync(cacheKey);
             return false;
         }
 
+        // 验证是否已被使用
+        if (cacheData.IsVerified)
+        {
+            _logger.LogWarning("验证失败：验证码已被使用 - Token: {Token}", token);
+            return false;
+        }
+
         // 验证偏移量是否在容差范围内
-        var isValid = Math.Abs(xOffset - cacheData.X) <= _options.Slider.Tolerance;
+        var difference = Math.Abs(xOffset - cacheData.X);
+        var isValid = difference <= _options.Slider.Tolerance;
         
-        // 验证完成后删除缓存
-        await _cache.RemoveAsync(cacheKey);
+        _logger.LogInformation(
+            "验证详情 - 期望位置: {ExpectedX}, 实际位置: {ActualX}, 差值: {Difference}, 容差: {Tolerance}, 结果: {Result}",
+            cacheData.X,
+            xOffset,
+            difference,
+            _options.Slider.Tolerance,
+            isValid ? "验证通过" : "验证失败"
+        );
         
         return isValid;
+    }
+
+    /// <summary>
+    /// 标记验证码已使用
+    /// </summary>
+    public async Task MarkAsUsedAsync(string token)
+    {
+        var cacheKey = $"{_sliderCachePrefix}{token}";
+        var cacheValue = await _cache.GetStringAsync(cacheKey);
+        if (!string.IsNullOrEmpty(cacheValue))
+        {
+            var cacheData = JsonSerializer.Deserialize<SliderCacheData>(cacheValue);
+            if (cacheData != null)
+            {
+                cacheData.IsVerified = true;
+                await _cache.SetStringAsync(
+                    cacheKey,
+                    JsonSerializer.Serialize(cacheData),
+                    new DistributedCacheEntryOptions
+                    {
+                        AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(_options.Slider.ExpirationMinutes)
+                    }
+                );
+                _logger.LogInformation("验证码已标记为已使用 - Token: {Token}", token);
+            }
+        }
     }
 
     /// <summary>
@@ -213,24 +293,17 @@ public class HbtCaptchaService : IHbtCaptchaService
     #region 私有方法
 
     /// <summary>
-    /// 生成随机token
+    /// 生成验证token
     /// </summary>
-    private string GenerateToken()
+    private static string GenerateToken()
     {
         var bytes = new byte[32];
         using var rng = RandomNumberGenerator.Create();
         rng.GetBytes(bytes);
-        return Convert.ToBase64String(bytes);
-    }
-
-    /// <summary>
-    /// 图片转Base64
-    /// </summary>
-    private string ImageToBase64<T>(Image<T> image) where T : unmanaged, IPixel<T>
-    {
-        using var ms = new MemoryStream();
-        image.SaveAsJpeg(ms);
-        return $"data:image/jpeg;base64,{Convert.ToBase64String(ms.ToArray())}";
+        return Convert.ToBase64String(bytes)
+            .Replace("+", "-")
+            .Replace("/", "_")
+            .Replace("=", "");
     }
 
     /// <summary>
@@ -307,6 +380,16 @@ public class HbtCaptchaService : IHbtCaptchaService
         return (double)smoothCount / (track.Count - 2);
     }
 
+    /// <summary>
+    /// 将图片转换为Base64字符串
+    /// </summary>
+    private static string ImageToBase64<TPixel>(Image<TPixel> image) where TPixel : unmanaged, IPixel<TPixel>
+    {
+        using var ms = new MemoryStream();
+        image.SaveAsPng(ms);
+        return $"data:image/png;base64,{Convert.ToBase64String(ms.ToArray())}";
+    }
+
     #endregion
 
     #region 私有类
@@ -316,6 +399,7 @@ public class HbtCaptchaService : IHbtCaptchaService
         public int X { get; set; }
         public int Y { get; set; }
         public DateTime CreatedAt { get; set; }
+        public bool IsVerified { get; set; }
     }
 
     private class BehaviorCacheData

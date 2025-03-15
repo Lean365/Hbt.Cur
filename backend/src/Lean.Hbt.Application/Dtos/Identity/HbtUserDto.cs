@@ -118,6 +118,20 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// </summary>
         public List<string> Permissions { get; set; }
 
+        /// <summary>
+        /// 锁定状态（0正常 1临时锁定30分钟 2永久锁定需要人工干预）
+        /// </summary>
+        public int IsLock { get; set; } = 0;
+
+        /// <summary>
+        /// 错误次数限制（0是3次 1是5次）
+        /// </summary>
+        public int ErrorLimit { get; set; } = 0;
+
+        /// <summary>
+        /// 登录次数
+        /// </summary>
+        public int LoginCount { get; set; } = 0;
 
         /// <summary>
         /// 备注
@@ -694,5 +708,47 @@ namespace Lean.Hbt.Application.Dtos.Identity
         [MinLength(6, ErrorMessage = "新密码长度不能少于6个字符")]
         [MaxLength(20, ErrorMessage = "新密码长度不能超过20个字符")]
         public string NewPassword { get; set; } = string.Empty;
+    }
+
+    /// <summary>
+    /// 用户解锁DTO
+    /// </summary>
+    /// <remarks>
+    /// 创建者: Lean365
+    /// 创建时间: 2024-03-22
+    /// </remarks>
+    public class HbtUserUnlockDto
+    {
+        /// <summary>
+        /// 构造函数
+        /// </summary>
+        public HbtUserUnlockDto()
+        {
+        }
+
+        /// <summary>
+        /// 用户ID
+        /// </summary>
+        [Required(ErrorMessage = "用户ID不能为空")]
+        public long UserId { get; set; }
+
+        /// <summary>
+        /// 锁定状态（0正常 1临时锁定30分钟 2永久锁定需要人工干预）
+        /// </summary>
+        [Required(ErrorMessage = "锁定状态不能为空")]
+        public int IsLock { get; set; }
+
+        /// <summary>
+        /// 错误次数限制（0是3次 1是5次）
+        /// </summary>
+        [Required(ErrorMessage = "错误次数限制不能为空")]
+        public int ErrorLimit { get; set; }
+
+        /// <summary>
+        /// 备注
+        /// </summary>
+        [Required(ErrorMessage = "备注不能为空")]
+        [MaxLength(500, ErrorMessage = "备注长度不能超过500个字符")]
+        public string Remark { get; set; } = string.Empty;
     }
 } 

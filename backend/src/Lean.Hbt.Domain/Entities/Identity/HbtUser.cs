@@ -133,5 +133,23 @@ namespace Lean.Hbt.Domain.Entities.Identity
         /// </summary>
         [Navigate(NavigateType.OneToMany, nameof(HbtUserPost.UserId))]
         public List<HbtUserPost>? UserPosts { get; set; }
+
+        /// <summary>
+        /// 锁定状态（0正常 1临时锁定30分钟 2永久锁定需要人工干预）
+        /// </summary>
+        [SugarColumn(ColumnName = "is_lock", ColumnDescription = "锁定状态（0正常 1临时锁定30分钟 2永久锁定需要人工干预）", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
+        public int IsLock { get; set; } = 0;
+
+        /// <summary>
+        /// 错误次数限制（0是3次 1是5次）
+        /// </summary>
+        [SugarColumn(ColumnName = "error_limit", ColumnDescription = "错误次数限制（0是3次 1是5次）", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
+        public int ErrorLimit { get; set; } = 0;
+
+        /// <summary>
+        /// 登录次数
+        /// </summary>
+        [SugarColumn(ColumnName = "login_count", ColumnDescription = "登录次数", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
+        public int LoginCount { get; set; } = 0;
     }
 }

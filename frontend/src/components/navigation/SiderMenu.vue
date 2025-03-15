@@ -20,7 +20,7 @@ import type { ItemType } from 'ant-design-vue/es/menu/src/hooks/useItems'
 import { useThemeStore } from '@/stores/theme'
 import { useMenuStore } from '@/stores/menu'
 import type { Menu } from '@/types/identity/menu'
-import { MenuType } from '@/types/identity/menu'
+import { HbtMenuType } from '@/types/common'
 import * as Icons from '@ant-design/icons-vue'
 import { findRouteByPath, handleRouteNavigation } from '@/router'
 
@@ -113,7 +113,7 @@ const processMenuItem = (menu: Menu, parentPath: string = ''): MenuItemType => {
   const menuPath = menu.path || ''
   let fullPath = ''
 
-  if (menu.menuType === MenuType.DIRECTORY) {
+  if (menu.menuType === HbtMenuType.Directory) {
     // 目录类型使用原始路径
     fullPath = menuPath.startsWith('/') ? menuPath : `/${menuPath}`
   } else if (parentPath) {
@@ -166,9 +166,9 @@ const menuItems = computed<MenuProps['items']>(() => {
   const rootRoute = router.getRoutes().find(route => route.path === '/')
   if (!rootRoute?.children) return []
 
-  // 主页和仪表盘菜单
+  // 主页、仪表盘和组件菜单
   const baseMenus = rootRoute.children
-    .filter(child => ['home', 'dashboard'].includes(child.path))
+    .filter(child => ['home', 'dashboard', 'components'].includes(child.path))
     .map(child => (child.children ? processSubMenus(child) : processBaseMenu(child)))
     .filter(Boolean)
 
@@ -181,7 +181,7 @@ const menuItems = computed<MenuProps['items']>(() => {
     .map(child => processSubMenus(child))
     .filter(Boolean)
 
-  // 合并所有菜单：主页/仪表盘 + 动态菜单 + About菜单
+  // 合并所有菜单：主页/仪表盘/组件 + 动态菜单 + About菜单
   const allMenus = [...baseMenus, ...dynamicMenus, ...aboutMenu]
 
   // console.log('[菜单组件] 构建菜单项:', {
@@ -217,7 +217,7 @@ watch(
         currentPath += `/${part}`
         // 查找对应的目录菜单
         const menuItem = findMenuByPath(menuStore.rawMenuList, currentPath)
-        if (menuItem && menuItem.menuType === MenuType.DIRECTORY) {
+        if (menuItem && menuItem.menuType === HbtMenuType.Directory) {
           parentKeys.push(`dir_${menuItem.menuId}`)
         }
       }
@@ -266,7 +266,7 @@ const findMenuItem = (menus: Menu[] | undefined, key: string): Menu | undefined 
     const menuPath = menu.path || ''
     let fullPath = ''
 
-    if (menu.menuType === MenuType.DIRECTORY) {
+    if (menu.menuType === HbtMenuType.Directory) {
       // 目录类型使用完整路径
       fullPath = menuPath.startsWith('/') ? menuPath : `/${menuPath}`
     } else {

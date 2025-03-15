@@ -567,5 +567,32 @@ namespace Lean.Hbt.Application.Services.Identity
             _logger.Info(_localization.L("User.Password.Changed.Success", user.UserName));
             return result > 0;
         }
+
+        /// <summary>
+        /// 解锁用户
+        /// </summary>
+        /// <param name="input">解锁用户信息</param>
+        /// <returns>返回是否解锁成功</returns>
+        public async Task<bool> UnlockUserAsync(HbtUserUnlockDto input)
+        {
+            var user = await _userRepository.GetByIdAsync(input.UserId);
+            if (user == null)
+                throw new HbtException(_localization.L("User.NotFound"));
+
+            // 验证租户权限
+            if (user.TenantId != _tenantContext.TenantId)
+                throw new HbtException(_localization.L("User.Tenant.Invalid"));
+
+            // 更新用户锁定状态
+            user.IsLock = input.IsLock;
+            user.ErrorLimit = input.ErrorLimit;
+            user.LoginCount = 0; // 重置登录错误次数
+            user.Remark = input.Remark;
+
+            var result = await _userRepository.UpdateAsync(user);
+
+            _logger.Info(_localization.L("User.Unlocked.Success", user.UserName));
+            return result > 0;
+        }
     }
 }

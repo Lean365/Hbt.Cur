@@ -1,15 +1,8 @@
 import type { HbtBaseEntity, HbtPageQuery } from '@/types/common'
 import type { MenuProps } from 'ant-design-vue'
 
-// 菜单类型常量
-export const MenuType = {
-  /** 目录 */
-  DIRECTORY: 1,
-  /** 菜单 */
-  MENU: 2,
-  /** 按钮 */
-  BUTTON: 3
-} as const
+
+
 
 /**
  * 菜单查询参数
@@ -27,6 +20,8 @@ export interface Menu extends HbtBaseEntity {
   menuId: string;
   /** 父菜单ID */
   parentId: string | null;
+  /** 父菜单路径 */
+  parentPath?: string;
   /** 菜单名称 */
   menuName: string;
   /** 翻译键 */

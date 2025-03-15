@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import type { MenuProps } from 'ant-design-vue'
 import type { HbtApiResult } from '@/types/common'
-import type { LoginParams, UserInfo as AuthUserInfo, LoginResult as AuthLoginResult } from '@/types/identity/auth'
+import type { LoginParams, UserInfo, LoginResult } from '@/types/identity/auth'
 import { login as userLogin, logout as userLogout, getInfo } from '@/api/identity/auth'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import { useMenuStore } from './menu'
@@ -10,15 +10,6 @@ import { useDictStore } from './dict'
 import i18n from '@/locales'
 
 const { t } = i18n.global
-
-export interface UserInfo extends AuthUserInfo {
-  userName: string
-  email: string
-}
-
-export interface LoginResult extends AuthLoginResult {
-  userInfo: UserInfo
-}
 
 export interface UserInfoResponse {
   user: UserInfo
@@ -34,6 +25,23 @@ export const useUserStore = defineStore('user', () => {
   const permissions = ref<string[]>([])
   const needCaptcha = ref(false)
 
+  // 重置状态
+  const $reset = () => {
+    user.value = null
+    roles.value = []
+    permissions.value = []
+    needCaptcha.value = false
+    removeToken()
+    
+    // 清除字典缓存
+    const dictStore = useDictStore()
+    dictStore.clearCache()
+    
+    // 重置菜单状态
+    const menuStore = useMenuStore()
+    menuStore.clearMenus()
+  }
+
   // 设置是否需要验证码
   const setNeedCaptcha = (value: boolean) => {
     needCaptcha.value = value
@@ -43,17 +51,19 @@ export const useUserStore = defineStore('user', () => {
   const login = async (loginParams: LoginParams): Promise<HbtApiResult<LoginResult>> => {
     try {
       console.log('[用户登录] ' + t('identity.auth.login.start'), loginParams)
+      console.log('[用户登录] 开始调用 userLogin')
       const response = await userLogin(loginParams)
-      const { accessToken } = response.data
+      console.log('[用户登录] userLogin 返回结果:', response)
       
-      if (accessToken) {
+      const loginResult = response as unknown as HbtApiResult<LoginResult>
+      if (loginResult.data?.accessToken) {
         console.log('[用户登录] ' + t('identity.auth.login.success'))
-        setToken(accessToken)
+        setToken(loginResult.data.accessToken)
       } else {
         console.warn('[用户登录] ' + t('identity.auth.login.noToken'))
       }
       
-      return response as HbtApiResult<LoginResult>
+      return loginResult
     } catch (error) {
       console.error('[用户登录] ' + t('identity.auth.login.error'), error)
       throw error
@@ -72,7 +82,8 @@ export const useUserStore = defineStore('user', () => {
         throw new Error('用户信息响应数据为空')
       }
 
-      const info = response.data as unknown as UserInfoResponse
+      const userResponse = response as unknown as HbtApiResult<UserInfoResponse>
+      const info = userResponse.data
       
       // 打印详细信息
       console.log('[用户信息] 详细数据:', {
@@ -141,6 +152,7 @@ export const useUserStore = defineStore('user', () => {
     setNeedCaptcha,
     login,
     getUserInfo,
-    logout
+    logout,
+    $reset
   }
 }) 

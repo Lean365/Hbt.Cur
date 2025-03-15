@@ -1,39 +1,38 @@
 <template>
-  <div class="user-change-password">
-    <a-card :bordered="false">
-      <a-form
-        ref="formRef"
-        :model="form"
-        :rules="rules"
-        :label-col="{ span: 4 }"
-        :wrapper-col="{ span: 18 }"
-      >
-        <a-form-item :label="t('identity.user.password.old')" name="oldPassword">
-          <a-input-password
-            v-model:value="form.oldPassword"
-            :placeholder="t('identity.user.password.old.placeholder')"
-          />
-        </a-form-item>
-        <a-form-item :label="t('identity.user.password.new')" name="newPassword">
-          <a-input-password
-            v-model:value="form.newPassword"
-            :placeholder="t('identity.user.password.new.placeholder')"
-          />
-        </a-form-item>
-        <a-form-item :label="t('identity.user.password.confirm')" name="confirmPassword">
-          <a-input-password
-            v-model:value="form.confirmPassword"
-            :placeholder="t('identity.user.password.confirm.placeholder')"
-          />
-        </a-form-item>
-        <a-form-item :wrapper-col="{ span: 18, offset: 4 }">
-          <a-button type="primary" :loading="submitting" @click="handleSubmit">
-            {{ t('common.save') }}
-          </a-button>
-        </a-form-item>
-      </a-form>
-    </a-card>
-  </div>
+  <hbt-modal
+    :title="t('identity.user.password.change')"
+    :open="visible"
+    :loading="submitting"
+    @update:open="handleCancel"
+    @ok="handleSubmit"
+  >
+    <a-form
+      ref="formRef"
+      :model="form"
+      :rules="rules"
+      :label-col="{ span: 6 }"
+      :wrapper-col="{ span: 16 }"
+    >
+      <a-form-item :label="t('identity.user.password.old')" name="oldPassword">
+        <a-input-password
+          v-model:value="form.oldPassword"
+          :placeholder="t('identity.user.password.old.placeholder')"
+        />
+      </a-form-item>
+      <a-form-item :label="t('identity.user.password.new')" name="newPassword">
+        <a-input-password
+          v-model:value="form.newPassword"
+          :placeholder="t('identity.user.password.new.placeholder')"
+        />
+      </a-form-item>
+      <a-form-item :label="t('identity.user.password.confirm')" name="confirmPassword">
+        <a-input-password
+          v-model:value="form.confirmPassword"
+          :placeholder="t('identity.user.password.confirm.placeholder')"
+        />
+      </a-form-item>
+    </a-form>
+  </hbt-modal>
 </template>
 
 <script lang="ts" setup>
@@ -41,8 +40,19 @@ import { ref, reactive } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { message } from 'ant-design-vue'
 import type { FormInstance } from 'ant-design-vue'
+import type { Rule } from 'ant-design-vue/es/form'
 import { useUserStore } from '@/stores/user'
-import { changePassword } from '@/api/identity/auth'
+import { changePassword } from '@/api/identity/user'
+import HbtModal from '@/components/Business/Modal/index.vue'
+
+const props = defineProps<{
+  visible: boolean
+}>()
+
+const emit = defineEmits<{
+  (e: 'update:visible', visible: boolean): void
+  (e: 'success'): void
+}>()
 
 const { t } = useI18n()
 const userStore = useUserStore()
@@ -58,7 +68,7 @@ const form = reactive({
 })
 
 // 表单校验规则
-const validateConfirmPassword = async (_rule: any, value: string) => {
+const validateConfirmPassword = async (_rule: Rule, value: string) => {
   if (value === '') {
     return Promise.reject(t('identity.user.password.confirm.validation.required'))
   }
@@ -68,7 +78,7 @@ const validateConfirmPassword = async (_rule: any, value: string) => {
   return Promise.resolve()
 }
 
-const rules = {
+const rules: Record<string, Rule[]> = {
   oldPassword: [
     { required: true, message: t('identity.user.password.old.validation.required') }
   ],
@@ -93,6 +103,8 @@ const handleSubmit = () => {
         newPassword: form.newPassword
       })
       message.success(t('identity.user.password.success'))
+      emit('success')
+      emit('update:visible', false)
       formRef.value?.resetFields()
     } catch (error) {
       console.error(error)
@@ -100,6 +112,12 @@ const handleSubmit = () => {
     }
     submitting.value = false
   })
+}
+
+// 处理取消
+const handleCancel = () => {
+  emit('update:visible', false)
+  formRef.value?.resetFields()
 }
 </script>
 
