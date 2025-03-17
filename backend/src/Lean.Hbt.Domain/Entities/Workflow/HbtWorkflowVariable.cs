@@ -29,19 +29,19 @@ namespace Lean.Hbt.Domain.Entities.Workflow
         /// 变量名称
         /// </summary>
         [SugarColumn(ColumnName = "variable_name", ColumnDescription = "变量名称", Length = 100, ColumnDataType = "nvarchar", IsNullable = false)]
-        public string VariableName { get; set; }
+        public string VariableName { get; set; } = string.Empty;
 
         /// <summary>
         /// 变量类型(string/int/decimal/datetime/bool)
         /// </summary>
         [SugarColumn(ColumnName = "variable_type", ColumnDescription = "变量类型", Length = 50, ColumnDataType = "nvarchar", IsNullable = false)]
-        public string VariableType { get; set; }
+        public string VariableType { get; set; } = string.Empty;
 
         /// <summary>
         /// 变量值(JSON格式)
         /// </summary>
         [SugarColumn(ColumnName = "variable_value", ColumnDescription = "变量值(JSON格式)", ColumnDataType = "text", IsNullable = false)]
-        public string VariableValue { get; set; }
+        public string VariableValue { get; set; } = string.Empty;
 
         /// <summary>
         /// 变量作用域
@@ -59,12 +59,12 @@ namespace Lean.Hbt.Domain.Entities.Workflow
         /// 工作流实例
         /// </summary>
         [Navigate(NavigateType.OneToOne, nameof(WorkflowInstanceId))]
-        public HbtWorkflowInstance WorkflowInstance { get; set; }
+        public HbtWorkflowInstance? WorkflowInstance { get; set; }
 
         /// <summary>
         /// 节点
         /// </summary>
         [Navigate(NavigateType.OneToOne, nameof(NodeId))]
-        public HbtWorkflowNode Node { get; set; }
+        public HbtWorkflowNode? Node { get; set; }
     }
 } 

@@ -127,6 +127,7 @@ export interface UserForm {
   remark?: string
   roleIds?: number[]
   postIds?: number[]
+  deptIds?: number[]
 }
 
 /**

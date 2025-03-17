@@ -1,83 +1,63 @@
 <template>
   <a-tree-select
-    v-model:value="value"
+    :value="modelValue"
     :tree-data="treeData"
-    :placeholder="t('identity.menu.parentMenu.placeholder')"
-    :loading="loading"
-    :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
     :field-names="{
       children: 'children',
       label: 'menuName',
       value: 'menuId'
     }"
+    :placeholder="t('identity.menu.fields.parentMenu.placeholder')"
+    :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
     allow-clear
-    show-search
     tree-default-expand-all
+    @update:value="(value: number | undefined) => emit('update:modelValue', value)"
   />
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { message } from 'ant-design-vue'
 import type { Menu } from '@/types/identity/menu'
+import type { HbtApiResponse } from '@/types/common'
 import { getMenuTree } from '@/api/identity/menu'
 
 const props = defineProps<{
-  value?: number
+  modelValue?: number
 }>()
 
-const emit = defineEmits(['update:value'])
+const emit = defineEmits<{
+  (e: 'update:modelValue', value?: number): void
+}>()
 
 const { t } = useI18n()
-
-// 加载状态
-const loading = ref(false)
 
 // 树形数据
 const treeData = ref<Menu[]>([])
 
-// 加载菜单树形数据
+// 加载菜单树数据
 const loadTreeData = async () => {
-  loading.value = true
   try {
+    console.log('[菜单树选择] 开始加载菜单树数据')
     const res = await getMenuTree()
-    if (res.code === 200 && res.data) {
-      // 添加根节点
-      treeData.value = [{
-        menuId: 0,
-        menuName: t('identity.menu.form.base.parentMenu.root'),
-        children: res.data
-      }]
+    console.log('[菜单树选择] API返回数据:', res)
+    
+    if (res.code === 200) {
+      treeData.value = res.data
+      console.log('[菜单树选择] 设置树形数据:', treeData.value)
     } else {
-      console.error('加载菜单树失败:', res.msg)
-      message.error(res.msg || t('common.message.loadFailed'))
+      console.error('[菜单树选择] 加载失败:', res.msg)
+      message.error(res.msg || t('common.failed'))
     }
   } catch (error) {
-    console.error('加载菜单树发生错误:', error)
-    message.error(t('common.message.loadFailed'))
-  } finally {
-    loading.value = false
+    console.error('[菜单树选择] 加载出错:', error)
+    message.error(t('common.failed'))
   }
 }
 
-// 组件挂载时加载数据
+// 初始化
 onMounted(() => {
   loadTreeData()
 })
-
-// 处理值变化
-const value = ref<number | undefined>(props.value)
-watch(
-  () => props.value,
-  (val) => {
-    value.value = val
-  }
-)
-watch(
-  () => value.value,
-  (val) => {
-    emit('update:value', val)
-  }
-)
 </script>

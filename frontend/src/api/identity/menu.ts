@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-import type { HbtApiResult, HbtPagedResult } from '@/types/common'
+import type { HbtApiResponse, HbtPagedResult } from '@/types/common'
 import type { 
   MenuQuery, 
   Menu, 
@@ -11,7 +11,7 @@ import type {
 
 // 获取菜单分页列表
 export function getMenuList(params: MenuQuery) {
-  return request<HbtApiResult<HbtPagedResult<Menu>>>({
+  return request<HbtApiResponse<HbtPagedResult<Menu>>>({
     url: '/api/HbtMenu',
     method: 'get',
     params
@@ -20,7 +20,7 @@ export function getMenuList(params: MenuQuery) {
 
 // 获取菜单树形结构
 export function getMenuTree() {
-  return request<HbtApiResult<Menu[]>>({
+  return request<HbtApiResponse<Menu[]>>({
     url: '/api/HbtMenu/tree',
     method: 'get'
   })
@@ -28,7 +28,7 @@ export function getMenuTree() {
 
 // 获取菜单详情
 export function getMenu(menuId: number) {
-  return request<HbtApiResult<Menu>>({
+  return request<HbtApiResponse<Menu>>({
     url: `/api/HbtMenu/${menuId}`,
     method: 'get'
   })
@@ -36,7 +36,7 @@ export function getMenu(menuId: number) {
 
 // 创建菜单
 export function createMenu(data: MenuCreate) {
-  return request<HbtApiResult<number>>({
+  return request<HbtApiResponse<number>>({
     url: '/api/HbtMenu',
     method: 'post',
     data
@@ -45,7 +45,7 @@ export function createMenu(data: MenuCreate) {
 
 // 更新菜单
 export function updateMenu(data: MenuUpdate) {
-  return request<HbtApiResult<boolean>>({
+  return request<HbtApiResponse<boolean>>({
     url: '/api/HbtMenu',
     method: 'put',
     data
@@ -54,7 +54,7 @@ export function updateMenu(data: MenuUpdate) {
 
 // 删除菜单
 export function deleteMenu(menuId: number) {
-  return request<HbtApiResult<boolean>>({
+  return request<HbtApiResponse<boolean>>({
     url: `/api/HbtMenu/${menuId}`,
     method: 'delete'
   })
@@ -62,7 +62,7 @@ export function deleteMenu(menuId: number) {
 
 // 批量删除菜单
 export function batchDeleteMenu(menuIds: number[]) {
-  return request<HbtApiResult<boolean>>({
+  return request<HbtApiResponse<boolean>>({
     url: '/api/HbtMenu/batch',
     method: 'delete',
     data: menuIds
@@ -73,7 +73,7 @@ export function batchDeleteMenu(menuIds: number[]) {
 export function importMenu(file: File, sheetName: string = 'Sheet1') {
   const formData = new FormData()
   formData.append('file', file)
-  return request<HbtApiResult<any>>({
+  return request<HbtApiResponse<any>>({
     url: `/api/HbtMenu/import?sheetName=${sheetName}`,
     method: 'post',
     data: formData,
@@ -104,7 +104,7 @@ export function getImportTemplate(sheetName: string = '菜单导入模板') {
 
 // 更新菜单状态
 export function updateMenuStatus(data: MenuStatus) {
-  return request<HbtApiResult<boolean>>({
+  return request<HbtApiResponse<boolean>>({
     url: `/api/HbtMenu/${data.menuId}/status`,
     method: 'put',
     params: { status: data.status }
@@ -113,7 +113,7 @@ export function updateMenuStatus(data: MenuStatus) {
 
 // 更新菜单排序
 export function updateMenuOrder(data: MenuOrder) {
-  return request<HbtApiResult<boolean>>({
+  return request<HbtApiResponse<boolean>>({
     url: `/api/HbtMenu/${data.menuId}/order`,
     method: 'put',
     params: { orderNum: data.orderNum }
@@ -122,7 +122,7 @@ export function updateMenuOrder(data: MenuOrder) {
 
 // 获取当前用户菜单权限
 export function getCurrentUserMenus() {
-  return request<HbtApiResult<Menu[]>>({
+  return request<HbtApiResponse<Menu[]>>({
     url: '/api/HbtMenu/current',
     method: 'get',
     headers: {

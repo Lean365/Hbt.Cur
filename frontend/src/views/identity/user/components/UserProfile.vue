@@ -53,6 +53,7 @@ import { ref, reactive, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { message } from 'ant-design-vue'
 import type { FormInstance } from 'ant-design-vue'
+import type { Rule } from 'ant-design-vue/es/form'
 import { useUserStore } from '@/stores/user'
 import { PlusOutlined, LoadingOutlined } from '@ant-design/icons-vue'
 import { getInfo } from '@/api/identity/auth'
@@ -65,25 +66,33 @@ const userStore = useUserStore()
 const formRef = ref<FormInstance>()
 
 // 表单数据
-const form = reactive<UserInfo>({
+interface ProfileForm {
+  userId: number
+  userName: string
+  nickName: string
+  phoneNumber: string
+  email: string
+  avatar?: string
+}
+
+const form = reactive<ProfileForm>({
   userId: 0,
   userName: '',
   nickName: '',
-  tenantId: 0,
-  tenantName: '',
-  roles: [],
-  permissions: []
+  phoneNumber: '',
+  email: '',
+  avatar: undefined
 })
 
 // 表单校验规则
-const rules = {
+const rules: Record<string, Rule[]> = {
   nickName: [
     { required: true, message: t('identity.user.nickName.validation.required') },
     { min: 2, max: 30, message: t('identity.user.nickName.validation.length') }
   ],
   email: [
     { required: true, message: t('identity.user.email.validation.required') },
-    { type: 'email', message: t('identity.user.email.validation.invalid') }
+    { type: 'email' as const, message: t('identity.user.email.validation.invalid') }
   ],
   phoneNumber: [
     { required: true, message: t('identity.user.phoneNumber.validation.required') },
@@ -99,7 +108,11 @@ const submitting = ref(false)
 const getUserInfo = async () => {
   try {
     const res = await getInfo()
-    Object.assign(form, res.data)
+    if (res.code === 200) {
+      Object.assign(form, res.data)
+    } else {
+      message.error(res.msg || t('common.failed'))
+    }
   } catch (error) {
     console.error(error)
     message.error(t('common.failed'))
@@ -138,10 +151,10 @@ const handleSubmit = () => {
   formRef.value?.validate().then(async () => {
     submitting.value = true
     try {
-      // TODO: 调用更新个人信息API
+      // TODO: 实现更新个人资料的 API
       message.success(t('common.success'))
-      // 更新用户信息
-      await userStore.getInfo()
+      // 重新获取用户信息
+      await getUserInfo()
     } catch (error) {
       console.error(error)
       message.error(t('common.failed'))

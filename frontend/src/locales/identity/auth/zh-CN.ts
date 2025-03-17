@@ -10,7 +10,19 @@ export default {
         submit: '登录',
         register: '注册账号',
         success: '登录成功',
-        error: '登录失败',
+        error: {
+          invalidCredentials: '用户名或密码错误',
+          accountLocked: '账号已被锁定',
+          accountDisabled: '账号已被禁用',
+          accountExpired: '账号已过期',
+          credentialsExpired: '密码已过期',
+          invalidCaptcha: '验证码错误',
+          invalidTenant: '无效的租户',
+          invalidDevice: '设备信息无效',
+          invalidGrant: '授权信息无效',
+          tooManyAttempts: '登录尝试次数过多，请稍后再试'
+        },
+        noToken: '登录响应中没有访问令牌',
         otherLogin: '其他登录方式',
         form: {
           usernameRequired: '请输入用户名',

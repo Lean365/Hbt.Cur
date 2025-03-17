@@ -172,13 +172,16 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         [Authorize]
         public async Task<IActionResult> GetUserInfo()
         {
-            var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userId = HttpContext.User.FindFirst("user_id")?.Value;
             if (string.IsNullOrEmpty(userId))
             {
+                _logger.LogWarning("[用户信息] 未找到用户ID");
                 return Unauthorized(new { code = HbtConstants.ErrorCodes.Unauthorized, msg = "未登录" });
             }
 
+            _logger.LogInformation("[用户信息] 开始获取用户信息: UserId={UserId}", userId);
             var result = await _loginService.GetUserInfoAsync(long.Parse(userId));
+            _logger.LogInformation("[用户信息] 获取成功: UserId={UserId}", userId);
             return Success(result);
         }
 
@@ -187,9 +190,10 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// </summary>
         /// <returns>操作结果</returns>
         [HttpPost("logout")]
+        [Authorize]
         public async Task<IActionResult> Logout()
         {
-            var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userId = HttpContext.User.FindFirst("user_id")?.Value;
             if (string.IsNullOrEmpty(userId))
             {
                 return Error(_localization.L("User.NotLoggedIn"));

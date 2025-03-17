@@ -1,6 +1,6 @@
 //===================================================================
-// 项目名 : Lean.Hbt 
-// 文件名 : HbtSecurityOptions.cs 
+// 项目名 : Lean.Hbt
+// 文件名 : HbtSecurityOptions.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-17 18:00
 // 版本号 : V1.0.0
@@ -17,17 +17,17 @@ public class HbtSecurityOptions
     /// <summary>
     /// 密码策略选项
     /// </summary>
-    public HbtPasswordPolicyOptions PasswordPolicy { get; set; }
+    public HbtPasswordPolicyOptions? PasswordPolicy { get; set; }
 
     /// <summary>
     /// 登录策略选项
     /// </summary>
-    public HbtLoginPolicyOptions LoginPolicy { get; set; }
+    public HbtLoginPolicyOptions? LoginPolicy { get; set; }
 
     /// <summary>
     /// 会话选项
     /// </summary>
-    public HbtSessionOptions Session { get; set; }
+    public HbtSessionOptions? Session { get; set; }
 
     /// <summary>
     /// CSRF Token过期时间(分钟)
@@ -38,4 +38,4 @@ public class HbtSecurityOptions
     /// 会话过期时间(分钟)
     /// </summary>
     public int SessionExpirationMinutes { get; set; } = 30;
-} 
+}

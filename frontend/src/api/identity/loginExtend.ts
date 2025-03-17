@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-import type { HbtApiResult } from '@/types/common'
+import type { HbtApiResponse } from '@/types/common'
 import type { 
   LoginExtendQuery, 
   LoginExtend,
@@ -10,7 +10,7 @@ import type {
 
 // 获取登录扩展列表
 export function getLoginExtendList(params: LoginExtendQuery) {
-  return request<HbtApiResult<LoginExtend[]>>({
+  return request<HbtApiResponse<LoginExtend[]>>({
     url: '/api/login-extend',
     method: 'get',
     params
@@ -19,7 +19,7 @@ export function getLoginExtendList(params: LoginExtendQuery) {
 
 // 获取登录扩展详情
 export function getLoginExtend(userId: number) {
-  return request<HbtApiResult<LoginExtend>>({
+  return request<HbtApiResponse<LoginExtend>>({
     url: `/api/login-extend/${userId}`,
     method: 'get'
   })
@@ -27,7 +27,7 @@ export function getLoginExtend(userId: number) {
 
 // 删除登录扩展记录
 export function deleteLoginExtend(id: number) {
-  return request<HbtApiResult<any>>({
+  return request<HbtApiResponse<any>>({
     url: `/api/login-extend/${id}`,
     method: 'delete'
   })
@@ -35,7 +35,7 @@ export function deleteLoginExtend(id: number) {
 
 // 批量删除登录扩展记录
 export function batchDeleteLoginExtend(ids: number[]) {
-  return request<HbtApiResult<any>>({
+  return request<HbtApiResponse<any>>({
     url: '/api/login-extend/batch',
     method: 'delete',
     data: ids
@@ -44,7 +44,7 @@ export function batchDeleteLoginExtend(ids: number[]) {
 
 // 清空登录扩展记录
 export function clearLoginExtend() {
-  return request<HbtApiResult<any>>({
+  return request<HbtApiResponse<any>>({
     url: '/api/login-extend/clear',
     method: 'delete'
   })
@@ -65,7 +65,7 @@ export function exportLoginExtend(data: LoginExtendExport[]) {
 
 // 更新用户登录信息
 export function updateLoginInfo(data: LoginExtendUpdate) {
-  return request<HbtApiResult<any>>({
+  return request<HbtApiResponse<any>>({
     url: '/api/login-extend/login',
     method: 'put',
     data
@@ -74,7 +74,7 @@ export function updateLoginInfo(data: LoginExtendUpdate) {
 
 // 更新用户离线信息
 export function updateOfflineInfo(userId: number) {
-  return request<HbtApiResult<any>>({
+  return request<HbtApiResponse<any>>({
     url: `/api/login-extend/${userId}/offline`,
     method: 'put'
   })
@@ -82,7 +82,7 @@ export function updateOfflineInfo(userId: number) {
 
 // 更新用户在线时段
 export function updateOnlinePeriod(data: LoginExtendOnlinePeriodUpdate) {
-  return request<HbtApiResult<any>>({
+  return request<HbtApiResponse<any>>({
     url: '/api/login-extend/online-period',
     method: 'put',
     data

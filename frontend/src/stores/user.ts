@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import type { MenuProps } from 'ant-design-vue'
-import type { HbtApiResult } from '@/types/common'
+import type { HbtApiResponse } from '@/types/common'
 import type { LoginParams, UserInfo, LoginResult } from '@/types/identity/auth'
 import { login as userLogin, logout as userLogout, getInfo } from '@/api/identity/auth'
 import { getToken, setToken, removeToken } from '@/utils/auth'
@@ -24,6 +24,8 @@ export const useUserStore = defineStore('user', () => {
   const roles = ref<string[]>([])
   const permissions = ref<string[]>([])
   const needCaptcha = ref(false)
+  const token = ref<string | null>(null)
+  const refreshTokenValue = ref<string | null>(null)
 
   // 重置状态
   const $reset = () => {
@@ -48,24 +50,75 @@ export const useUserStore = defineStore('user', () => {
   }
 
   // 登录
-  const login = async (loginParams: LoginParams): Promise<HbtApiResult<LoginResult>> => {
+  const login = async (loginParams: LoginParams): Promise<HbtApiResponse<LoginResult>> => {
+    console.log('[用户登录] identity.auth.login.start', {
+      ...loginParams,
+      password: '******'
+    })
+
     try {
-      console.log('[用户登录] ' + t('identity.auth.login.start'), loginParams)
       console.log('[用户登录] 开始调用 userLogin')
       const response = await userLogin(loginParams)
-      console.log('[用户登录] userLogin 返回结果:', response)
-      
-      const loginResult = response as unknown as HbtApiResult<LoginResult>
-      if (loginResult.data?.accessToken) {
-        console.log('[用户登录] ' + t('identity.auth.login.success'))
-        setToken(loginResult.data.accessToken)
-      } else {
-        console.warn('[用户登录] ' + t('identity.auth.login.noToken'))
+      console.log('[用户登录] 登录响应:', response)
+
+      if (!response || response.code !== 200 || !response.data) {
+        console.error('[用户登录] 登录响应中没有数据')
+        throw new Error(t('identity.auth.login.noToken'))
       }
-      
-      return loginResult
+
+      const loginResult = response.data
+      if (!loginResult.accessToken) {
+        console.error('[用户登录] 登录响应中没有访问令牌', {
+          hasData: !!loginResult,
+          dataStructure: Object.keys(loginResult)
+        })
+        throw new Error(t('identity.auth.login.noToken'))
+      }
+
+      // 先保存 token 到本地存储，确保后续请求可以使用
+      setToken(loginResult.accessToken)
+      console.log('[用户登录] Token已保存')
+
+      // 保存到 store
+      token.value = loginResult.accessToken
+      refreshTokenValue.value = loginResult.refreshToken
+
+      // 验证token是否被正确设置
+      const currentToken = getToken()
+      if (!currentToken) {
+        console.error('[用户登录] Token未被正确设置')
+        throw new Error(t('identity.auth.login.tokenNotSet'))
+      }
+
+      // 添加一个小延迟，确保token已经被正确保存
+      await new Promise(resolve => setTimeout(resolve, 100))
+
+      // 获取完整的用户信息（包括权限和角色）
+      try {
+        console.log('[用户登录] 开始获取用户信息')
+        const userInfo = await getUserInfo()
+        console.log('[用户登录] 用户信息获取成功:', {
+          用户: userInfo.user,
+          角色: userInfo.roles,
+          权限: userInfo.permissions
+        })
+        
+        // 设置用户信息
+        user.value = userInfo.user
+        roles.value = userInfo.roles
+        permissions.value = userInfo.permissions
+
+        return response
+      } catch (error) {
+        console.error('[用户登录] 获取用户信息失败:', error)
+        // 清理token
+        removeToken()
+        token.value = null
+        refreshTokenValue.value = null
+        throw new Error(t('identity.auth.login.getUserInfoFailed'))
+      }
     } catch (error) {
-      console.error('[用户登录] ' + t('identity.auth.login.error'), error)
+      console.error('[用户登录] 登录失败:', error)
       throw error
     }
   }
@@ -73,47 +126,24 @@ export const useUserStore = defineStore('user', () => {
   // 获取用户信息
   const getUserInfo = async () => {
     try {
-      console.log('[用户信息] 正在加载用户信息')
-      const response = await getInfo()
-      console.log('[用户信息] 获取用户信息成功', response)
-      
-      if (!response?.data) {
-        console.error('[用户信息] 响应数据为空')
-        throw new Error('用户信息响应数据为空')
-      }
-
-      const userResponse = response as unknown as HbtApiResult<UserInfoResponse>
-      const info = userResponse.data
-      
-      // 打印详细信息
-      console.log('[用户信息] 详细数据:', {
-        用户信息: info.user,
-        角色列表: info.roles,
-        权限列表: info.permissions?.length ? `共${info.permissions.length}个权限` : '无权限'
-      })
-
-      // 更新状态
-      user.value = info.user
-      roles.value = info.roles
-      permissions.value = info.permissions
-      
-      // 加载菜单和权限
-      const menuStore = useMenuStore()
-      await menuStore.loadUserMenus()
-      
-      return info
-    } catch (error: any) {
-      console.error('[用户信息] 获取失败:', {
-        错误消息: error.message,
-        响应状态: error.response?.status,
-        响应数据: error.response?.data,
-        请求配置: {
-          url: error.config?.url,
-          方法: error.config?.method,
-          请求头: error.config?.headers
+      console.log('[用户信息] 开始获取用户信息')
+      const res = await getInfo()
+      if (res.code === 200) {
+        const userInfo = res.data
+        console.log('[用户信息] 获取成功:', userInfo)
+        
+        return {
+          user: userInfo.user,
+          roles: userInfo.roles || [],
+          permissions: userInfo.permissions || []
         }
-      })
-      throw error
+      } else {
+        console.error('[用户信息] 获取失败:', res)
+        return Promise.reject(new Error(res.msg))
+      }
+    } catch (error) {
+      console.error('[用户信息] 获取出错:', error)
+      return Promise.reject(error)
     }
   }
 
@@ -121,12 +151,16 @@ export const useUserStore = defineStore('user', () => {
   const logout = async () => {
     try {
       console.log('[用户登出] ' + t('identity.auth.logout.start'))
+      
+      // 先调用登出接口
       await userLogout()
       
-      // 清除用户状态
+      // 登出成功后再清除状态
       user.value = null
       roles.value = []
       permissions.value = []
+      
+      // 清除token
       removeToken()
       
       // 清除字典缓存
@@ -140,7 +174,7 @@ export const useUserStore = defineStore('user', () => {
       console.log('[用户登出] ' + t('identity.auth.logout.success'))
     } catch (error) {
       console.error('[用户登出] ' + t('identity.auth.logout.error'), error)
-      throw error
+      throw error // 抛出错误，让上层处理
     }
   }
 

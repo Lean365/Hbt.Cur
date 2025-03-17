@@ -97,6 +97,7 @@ import { message } from 'ant-design-vue'
 import type { FormInstance, Rule } from 'ant-design-vue/es/form'
 import type { TreeDataItem, DataNode } from 'ant-design-vue/es/tree'
 import type { Role } from '@/types/identity/role'
+import type { HbtApiResponse } from '@/types/common'
 import { getRole, createRole, updateRole } from '@/api/identity/role'
 import { getCurrentUserMenus } from '@/api/identity/menu'
 import type { Menu } from '@/types/identity/menu'
@@ -166,7 +167,11 @@ const getInfo = async (roleId: number) => {
   try {
     loading.value = true
     const res = await getRole(roleId)
-    Object.assign(form, res.data)
+    if (res.code === 200) {
+      Object.assign(form, res.data)
+    } else {
+      message.error(res.msg || t('common.failed'))
+    }
   } catch (error) {
     console.error(error)
     message.error(t('common.failed'))
@@ -187,11 +192,11 @@ const transformMenuToTreeData = (menus: Menu[]): DataNode[] => {
 const getMenuTree = async () => {
   try {
     const res = await getCurrentUserMenus()
-    if (res?.data?.code === 200 && Array.isArray(res.data.data)) {
-      menuTree.value = transformMenuToTreeData(res.data.data)
+    if (res.code === 200) {
+      menuTree.value = transformMenuToTreeData(res.data)
     } else {
       console.error('获取菜单树失败:', res)
-      message.error('获取菜单树失败')
+      message.error(res.msg || '获取菜单树失败')
     }
   } catch (error) {
     console.error('获取菜单树出错:', error)
@@ -245,13 +250,19 @@ const handleSubmit = () => {
   formRef.value?.validate().then(async () => {
     try {
       loading.value = true
+      let res
       if (props.roleId) {
-        await updateRole(form)
+        res = await updateRole(form)
       } else {
-        await createRole(form)
+        res = await createRole(form)
       }
-      message.success(t('common.save.success'))
-      emit('success')
+      if (res.code === 200) {
+        message.success(t('common.save.success'))
+        emit('success')
+        handleVisibleChange(false)
+      } else {
+        message.error(res.msg || t('common.save.failed'))
+      }
     } catch (error) {
       console.error(error)
       message.error(t('common.save.failed'))

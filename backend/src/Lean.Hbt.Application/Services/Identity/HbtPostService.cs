@@ -151,18 +151,37 @@ namespace Lean.Hbt.Application.Services.Identity
         /// <summary>
         /// 批量删除岗位
         /// </summary>
-        public async Task<bool> BatchDeleteAsync(long[] ids)
+        public async Task<bool> BatchDeleteAsync(long[] postIds)
         {
-            if (ids == null || ids.Length == 0)
+            if (postIds == null || postIds.Length == 0)
                 throw new HbtException("请选择要删除的岗位");
 
             // 检查是否有用户关联
-            if (await _userPostRepository.AsQueryable().AnyAsync(up => ids.Contains(up.PostId)))
+            if (await _userPostRepository.AsQueryable().AnyAsync(up => postIds.Contains(up.PostId)))
                 throw new HbtException("选中的岗位中已有岗位分配,不能删除");
 
-            Expression<Func<HbtPost, bool>> condition = p => ids.Contains(p.Id);
+            Expression<Func<HbtPost, bool>> condition = p => postIds.Contains(p.Id);
             var result = await _postRepository.DeleteAsync(condition);
             return result > 0;
+        }
+
+        /// <summary>
+        /// 获取岗位选项列表
+        /// </summary>
+        /// <returns>岗位选项列表</returns>
+        public async Task<List<HbtSelectOption>> GetOptionsAsync()
+        {
+            var posts = await _postRepository.AsQueryable()
+                .Where(p => p.Status == 0)  // 只获取正常状态的岗位
+                .OrderBy(p => p.OrderNum)
+                .Select(p => new HbtSelectOption
+                {
+                    Label = p.PostName,
+                    Value = p.Id,
+                    Disabled = false
+                })
+                .ToListAsync();
+            return posts;
         }
 
         /// <summary>

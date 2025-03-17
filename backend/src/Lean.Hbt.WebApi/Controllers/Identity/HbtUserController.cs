@@ -10,7 +10,7 @@
 using Lean.Hbt.Application.Dtos.Identity;
 using Lean.Hbt.Application.Services.Identity;
 using Lean.Hbt.Domain.IServices.Admin;
-
+using Lean.Hbt.Infrastructure.Security.Attributes;
 namespace Lean.Hbt.WebApi.Controllers.Identity
 {
     /// <summary>
@@ -44,6 +44,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <param name="query">查询条件</param>
         /// <returns>用户分页列表</returns>
         [HttpGet]
+        [HbtPerm("identity:user:list")]
         public async Task<IActionResult> GetPagedListAsync([FromQuery] HbtUserQueryDto query)
         {
             var result = await _userService.GetPagedListAsync(query);
@@ -56,6 +57,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <param name="userId">用户ID</param>
         /// <returns>用户详情</returns>
         [HttpGet("{userId}")]
+        [HbtPerm("identity:user:query")]
         public async Task<IActionResult> GetAsync(long userId)
         {
             var result = await _userService.GetAsync(userId);
@@ -68,6 +70,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <param name="input">创建对象</param>
         /// <returns>用户ID</returns>
         [HttpPost]
+        [HbtPerm("identity:user:create")]
         public async Task<IActionResult> InsertAsync([FromBody] HbtUserCreateDto input)
         {
             var result = await _userService.InsertAsync(input);
@@ -80,6 +83,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <param name="input">更新对象</param>
         /// <returns>是否成功</returns>
         [HttpPut]
+        [HbtPerm("identity:user:update")]
         public async Task<IActionResult> UpdateAsync([FromBody] HbtUserUpdateDto input)
         {
             var result = await _userService.UpdateAsync(input);
@@ -92,6 +96,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <param name="userId">用户ID</param>
         /// <returns>是否成功</returns>
         [HttpDelete("{userId}")]
+        [HbtPerm("identity:user:delete")]
         public async Task<IActionResult> DeleteAsync(long userId)
         {
             var result = await _userService.DeleteAsync(userId);
@@ -104,6 +109,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <param name="userIds">用户ID集合</param>
         /// <returns>是否成功</returns>
         [HttpDelete("batch")]
+        [HbtPerm("identity:user:delete")]
         public async Task<IActionResult> BatchDeleteAsync([FromBody] long[] userIds)
         {
             var result = await _userService.BatchDeleteAsync(userIds);
@@ -153,6 +159,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <param name="status">状态</param>
         /// <returns>是否成功</returns>
         [HttpPut("{userId}/status")]
+        [HbtPerm("identity:user:update")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -173,6 +180,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <param name="input">重置密码对象</param>
         /// <returns>是否成功</returns>
         [HttpPut("reset-password")]
+        [HbtPerm("identity:user:update")]
         public async Task<IActionResult> ResetPasswordAsync([FromBody] HbtUserResetPwdDto input)
         {
             var result = await _userService.ResetPasswordAsync(input);
@@ -185,6 +193,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <param name="input">修改密码对象</param>
         /// <returns>是否成功</returns>
         [HttpPut("change-password")]
+        [HbtPerm("identity:user:update")]
         public async Task<IActionResult> ChangePasswordAsync([FromBody] HbtUserChangePwdDto input)
         {
             var result = await _userService.ChangePasswordAsync(input);
@@ -194,16 +203,27 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <summary>
         /// 解锁用户
         /// </summary>
-        /// <param name="input">解锁用户信息</param>
+        /// <param name="userId">用户ID</param>
         /// <returns>是否成功</returns>
-        [HttpPut("unlock")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> UnlockUserAsync([FromBody] HbtUserUnlockDto input)
+        [HttpPut("{userId}/unlock")]
+        [HbtPerm("identity:user:update")]
+        public async Task<IActionResult> UnlockUserAsync(long userId)
         {
+            var input = new HbtUserUnlockDto { UserId = userId };
             var result = await _userService.UnlockUserAsync(input);
-            return Success(result, _localization.L("User.Unlock.Success"));
+            return Success(result);
+        }
+
+        /// <summary>
+        /// 获取用户选项列表
+        /// </summary>
+        /// <returns>用户选项列表</returns>
+        [HttpGet("options")]
+        [HbtPerm("identity:user:list")]
+        public async Task<IActionResult> GetOptionsAsync()
+        {
+            var result = await _userService.GetOptionsAsync();
+            return Success(result);
         }
     }
 }

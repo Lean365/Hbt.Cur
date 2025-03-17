@@ -17,17 +17,17 @@ namespace Lean.Hbt.Common.Options
         /// <summary>
         /// 密钥
         /// </summary>
-        public string SecretKey { get; set; }
+        public required string SecretKey { get; set; }
 
         /// <summary>
         /// 发行者
         /// </summary>
-        public string Issuer { get; set; }
+        public required string Issuer { get; set; }
 
         /// <summary>
         /// 接收者
         /// </summary>
-        public string Audience { get; set; }
+        public required string Audience { get; set; }
 
         /// <summary>
         /// 过期时间(分钟)

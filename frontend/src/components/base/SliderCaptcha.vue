@@ -25,7 +25,7 @@ import { ref, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { message } from 'ant-design-vue'
 import { getCaptcha, verifyCaptcha } from '@/api/security/captcha'
-import type { SliderCaptchaDto, HbtApiResult, CaptchaResultDto, SliderValidateDto } from '@/api/security/captcha'
+import type { SliderCaptchaDto, SliderValidateDto, CaptchaResultDto } from '@/api/security/captcha'
 
 const { t } = useI18n()
 const emit = defineEmits(['success', 'error'])
@@ -72,14 +72,6 @@ const handleSliderAfterChange = async (value: number | [number, number]) => {
   }
 
   try {
-    ////console.log('[验证码] 滑块释放，开始验证，值:', value)
-    //console.log('[验证码] 当前滑块位置:', {
-     // sliderValue: value,
-     // sliderLeft: sliderLeft.value,
-     // roundedOffset: Math.round(sliderLeft.value),
-      //containerWidth: imageRef.value?.clientWidth,
-      //imageWidth: imageRef.value?.querySelector('.bg-image')?.clientWidth
-    //})
     isMoving.value = false
     
     if (!captchaData.value) {
@@ -88,7 +80,6 @@ const handleSliderAfterChange = async (value: number | [number, number]) => {
     }
 
     if (verified.value) {
-      //console.log('[验证码] 已验证成功，跳过重复验证')
       return
     }
 
@@ -96,17 +87,11 @@ const handleSliderAfterChange = async (value: number | [number, number]) => {
       token: captchaData.value.token,
       xOffset: Math.round(sliderLeft.value)
     }
-    //console.log('[验证码] 发送验证请求，Token详情:', {
-      //当前使用的Token: params.token,
-      //验证码数据中的Token: captchaData.value.token,
-      //时间戳: new Date().toISOString()
-    //})
     
-    const response = await verifyCaptcha(params) as unknown as CaptchaResultDto
-    //console.log('[验证码] 验证响应:', response)
+    const response = await verifyCaptcha(params)
+    console.log('[验证码] 验证响应:', response)
     
     if (response.success) {
-      //console.log('[验证码] 验证成功')
       verified.value = true
       retryCount.value = 0
       emit('success', {
@@ -114,7 +99,6 @@ const handleSliderAfterChange = async (value: number | [number, number]) => {
         xOffset: Math.round(sliderLeft.value)
       })
     } else {
-      //console.log('[验证码] 验证失败:', response.message)
       verified.value = false
       retryCount.value++
       sliderValue.value = 0
@@ -124,7 +108,7 @@ const handleSliderAfterChange = async (value: number | [number, number]) => {
         emit('error', 'MAX_RETRY_REACHED')
       }
     }
-  } catch (error: any) {
+  } catch (error) {
     console.error('[验证码] 验证请求出错:', error)
     verified.value = false
     retryCount.value++
@@ -139,75 +123,42 @@ const handleSliderAfterChange = async (value: number | [number, number]) => {
 
 // 初始化验证码
 const initCaptcha = async () => {
+  console.log('[验证码] 开始获取验证码')
   try {
-    if (captchaData.value) {
-      //console.log('[验证码] 已有验证码数据，跳过初始化')
-      return
-    }
+    const response = await getCaptcha()
+    console.log('[验证码] 原始响应:', response)
 
-    //console.log('[验证码] 开始获取验证码')
-    const result = await getCaptcha() as any
-    //console.log('[验证码] 原始响应:', result)
-    
-    // 检查响应是否存在
-    if (!result) {
-      console.error('[验证码] 响应为空')
-      emit('error', t('identity.auth.captcha.error.noResponse'))
-      return
-    }
-
-    const response = {
-      backgroundImage: result.backgroundImage,
-      sliderImage: result.sliderImage,
-      token: result.token
-    }
-    
-    // 检查数据完整性
-    if (!response.backgroundImage) {
-      console.error('[验证码] 背景图片URL为空')
-      emit('error', t('identity.auth.captcha.error.noBackgroundImage'))
-      return
-    }
-
-    if (!response.sliderImage) {
-      console.error('[验证码] 滑块图片URL为空')
-      emit('error', t('identity.auth.captcha.error.noSliderImage'))
-      return
-    }
-
-    if (!response.token) {
-      console.error('[验证码] 验证码token为空')
-      emit('error', t('identity.auth.captcha.error.noToken'))
+    const { backgroundImage, sliderImage, token } = response
+    if (!backgroundImage || !sliderImage || !token) {
+      console.error('[验证码] 验证码数据不完整:', {
+        hasBackgroundImage: !!backgroundImage,
+        hasSliderImage: !!sliderImage,
+        hasToken: !!token
+      })
+      emit('error', t('identity.auth.captcha.error.invalidResponse'))
       return
     }
 
     // 设置验证码数据
-    captchaData.value = response
+    captchaData.value = {
+      backgroundImage,
+      sliderImage,
+      token
+    }
+
+    // 重置状态
     sliderValue.value = 0
     verified.value = false
     retryCount.value = 0
-    //console.log('[验证码] 设置数据成功:', {
-    //  token: response.token,
-    //  hasBackgroundImage: !!response.backgroundImage,
-    //  hasSliderImage: !!response.sliderImage
-    //})
-    
-  } catch (error: any) {
-    console.error('[验证码] 获取失败:', error)
-    console.error('[验证码] 错误详情:', {
-      message: error.message,
-      response: error.response,
-      request: error.request,
-      config: error.config
+
+    console.log('[验证码] 验证码数据已设置:', {
+      hasBackgroundImage: !!captchaData.value.backgroundImage,
+      hasSliderImage: !!captchaData.value.sliderImage,
+      tokenLength: captchaData.value.token.length
     })
-    
-    if (error.response?.status === 429) {
-      const waitSeconds = error.response.data?.remainingSeconds || 60
-      emit('error', t('identity.auth.captcha.error.tooManyRequests', { seconds: waitSeconds }))
-    } else {
-      emit('error', t('identity.auth.captcha.error.getFailed'))
-    }
-    throw error // 重新抛出错误，让调用者知道初始化失败
+  } catch (error) {
+    console.error('[验证码] 获取验证码失败:', error)
+    emit('error', t('identity.auth.captcha.error.loadFailed'))
   }
 }
 
@@ -238,7 +189,7 @@ defineExpose({
   position: relative;
   width: 100%;
   height: 150px;
-  background: #f5f5f5;
+  //background: #f5f5f5;
   overflow: hidden;
 
   img {

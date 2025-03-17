@@ -89,7 +89,7 @@ namespace Lean.Hbt.Application.Services.Identity
             var dtos = depts.Adapt<List<HbtDeptDto>>();
 
             // 3.构建树形结构
-            var tree = dtos.Where(d => d.ParentId == null).ToList();
+            var tree = dtos.Where(d => d.ParentId == 0).ToList();
             foreach (var node in tree)
             {
                 BuildDeptTree(node, dtos);
@@ -188,16 +188,16 @@ namespace Lean.Hbt.Application.Services.Identity
         /// <summary>
         /// 批量删除部门
         /// </summary>
-        public async Task<bool> BatchDeleteAsync(List<long> ids)
+        public async Task<bool> BatchDeleteAsync(long[] deptIds)
         {
             // 1.检查是否存在子部门
             var hasChildren = await _deptRepository.AsQueryable()
-                .AnyAsync(d => ids.Contains(d.ParentId == 0 ? 0 : d.ParentId));
+                .AnyAsync(d => deptIds.Contains(d.ParentId == 0 ? 0 : d.ParentId));
             if (hasChildren)
                 throw new HbtException("选中的部门中存在子部门，无法删除");
 
             // 2.批量删除
-            Expression<Func<HbtDept, bool>> condition = d => ids.Contains(d.Id);
+            Expression<Func<HbtDept, bool>> condition = d => deptIds.Contains(d.Id);
             var result = await _deptRepository.DeleteAsync(condition);
             return result > 0;
         }
@@ -271,6 +271,25 @@ namespace Lean.Hbt.Application.Services.Identity
             entity.Status = status;
             await _deptRepository.UpdateAsync(entity);
             return true;
+        }
+
+        /// <summary>
+        /// 获取部门选项列表
+        /// </summary>
+        /// <returns>部门选项列表</returns>
+        public async Task<List<HbtSelectOption>> GetOptionsAsync()
+        {
+            var depts = await _deptRepository.AsQueryable()
+                .Where(d => d.Status == 0)  // 只获取正常状态的部门
+                .OrderBy(d => d.OrderNum)
+                .Select(d => new HbtSelectOption
+                {
+                    Label = d.DeptName,
+                    Value = d.Id,
+                    Disabled = false
+                })
+                .ToListAsync();
+            return depts;
         }
 
         /// <summary>

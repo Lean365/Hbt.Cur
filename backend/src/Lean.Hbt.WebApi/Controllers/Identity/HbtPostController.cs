@@ -168,5 +168,16 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
             var result = await _postService.UpdateStatusAsync(input);
             return Success(result);
         }
+
+        /// <summary>
+        /// 获取岗位选项列表
+        /// </summary>
+        /// <returns>岗位选项列表</returns>
+        [HttpGet("options")]
+        public async Task<IActionResult> GetOptionsAsync()
+        {
+            var posts = await _postService.GetOptionsAsync();
+            return Success(posts);
+        }
     }
 }

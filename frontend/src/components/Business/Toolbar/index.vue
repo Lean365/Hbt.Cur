@@ -147,8 +147,11 @@ import {
   UploadOutlined,
   FileOutlined
 } from '@ant-design/icons-vue'
+import { useUserStore } from '@/stores/user'
 
 const { t } = useI18n()
+
+const userStore = useUserStore()
 
 // === 类型定义 ===
 interface Props {
@@ -230,6 +233,12 @@ const toggleFullscreen = async () => {
 // 监听全屏变化
 onMounted(() => {
   document.addEventListener('fullscreenchange', handleFullscreenChange)
+  console.log('[工具栏] 组件挂载:', {
+    用户权限: userStore.permissions,
+    新增权限: props.addPermission,
+    编辑权限: props.editPermission,
+    删除权限: props.deletePermission
+  })
 })
 
 onUnmounted(() => {

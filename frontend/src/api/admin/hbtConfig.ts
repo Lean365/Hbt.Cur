@@ -8,7 +8,7 @@
 //===================================================================
 
 import request from '@/utils/request'
-import type { HbtApiResult, HbtPagedResult } from '@/types/common'
+import type { HbtApiResponse, HbtPagedResult } from '@/types/common'
 import type {
   HbtConfig,
   HbtConfigQuery,
@@ -22,7 +22,7 @@ import type {
  * @returns 配置分页列表
  */
 export function getHbtConfigList(query: HbtConfigQuery) {
-  return request<HbtApiResult<HbtPagedResult<HbtConfig>>>({
+  return request<HbtApiResponse<HbtPagedResult<HbtConfig>>>({
     url: '/api/HbtConfig',
     method: 'get',
     params: query
@@ -35,7 +35,7 @@ export function getHbtConfigList(query: HbtConfigQuery) {
  * @returns 配置详情
  */
 export function getHbtConfig(configId: number) {
-  return request<HbtApiResult<HbtConfig>>({
+  return request<HbtApiResponse<HbtConfig>>({
     url: `/api/HbtConfig/${configId}`,
     method: 'get'
   })
@@ -47,7 +47,7 @@ export function getHbtConfig(configId: number) {
  * @returns 配置ID
  */
 export function createHbtConfig(data: HbtConfigCreate) {
-  return request<HbtApiResult<number>>({
+  return request<HbtApiResponse<number>>({
     url: '/api/HbtConfig',
     method: 'post',
     data
@@ -60,7 +60,7 @@ export function createHbtConfig(data: HbtConfigCreate) {
  * @returns 是否成功
  */
 export function updateHbtConfig(data: HbtConfigUpdate) {
-  return request<HbtApiResult<boolean>>({
+  return request<HbtApiResponse<boolean>>({
     url: '/api/HbtConfig',
     method: 'put',
     data
@@ -73,7 +73,7 @@ export function updateHbtConfig(data: HbtConfigUpdate) {
  * @returns 是否成功
  */
 export function deleteHbtConfig(configId: number) {
-  return request<HbtApiResult<boolean>>({
+  return request<HbtApiResponse<boolean>>({
     url: `/api/HbtConfig/${configId}`,
     method: 'delete'
   })
@@ -85,7 +85,7 @@ export function deleteHbtConfig(configId: number) {
  * @returns 是否成功
  */
 export function batchDeleteHbtConfig(configIds: number[]) {
-  return request<HbtApiResult<boolean>>({
+  return request<HbtApiResponse<boolean>>({
     url: '/api/HbtConfig/batch',
     method: 'delete',
     data: configIds
@@ -99,7 +99,7 @@ export function batchDeleteHbtConfig(configIds: number[]) {
  * @returns 是否成功
  */
 export function updateHbtConfigStatus(configId: number, status: number) {
-  return request<HbtApiResult<boolean>>({
+  return request<HbtApiResponse<boolean>>({
     url: `/api/HbtConfig/${configId}/status`,
     method: 'put',
     params: { status }
@@ -141,7 +141,7 @@ export function getHbtConfigTemplate() {
 export function importHbtConfig(file: File, sheetName: string = '配置') {
   const formData = new FormData()
   formData.append('file', file)
-  return request<HbtApiResult<boolean>>({
+  return request<HbtApiResponse<boolean>>({
     url: '/api/HbtConfig/import',
     method: 'post',
     params: { sheetName },
@@ -158,7 +158,7 @@ export function importHbtConfig(file: File, sheetName: string = '配置') {
  * @returns 配置值
  */
 export function getHbtConfigValue(configKey: string) {
-  return request<HbtApiResult<string>>({
+  return request<HbtApiResponse<string>>({
     url: `/api/HbtConfig/value/${configKey}`,
     method: 'get'
   })

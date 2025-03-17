@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-import type { HbtApiResult } from '@/types/common'
+import type { HbtApiResponse } from '@/types/common'
 import type { 
   OnlineUserQuery, 
   OnlineUser,
@@ -9,7 +9,7 @@ import type {
 
 // 获取在线用户列表
 export function getOnlineUserList(params: OnlineUserQuery) {
-  return request<HbtApiResult<OnlineUser[]>>({
+  return request<HbtApiResponse<OnlineUser[]>>({
     url: '/api/HbtOnlineUser',
     method: 'get',
     params
@@ -18,7 +18,7 @@ export function getOnlineUserList(params: OnlineUserQuery) {
 
 // 获取在线用户详情
 export function getOnlineUser(sessionId: string) {
-  return request<HbtApiResult<OnlineUser>>({
+  return request<HbtApiResponse<OnlineUser>>({
     url: `/api/online-user/${sessionId}`,
     method: 'get'
   })
@@ -26,7 +26,7 @@ export function getOnlineUser(sessionId: string) {
 
 // 强制用户下线
 export function forceOffline(data: ForceOffline) {
-  return request<HbtApiResult<any>>({
+  return request<HbtApiResponse<any>>({
     url: `/api/online-user/${data.sessionId}/offline`,
     method: 'post',
     data: { reason: data.reason }
@@ -35,7 +35,7 @@ export function forceOffline(data: ForceOffline) {
 
 // 批量强制用户下线
 export function batchForceOffline(sessionIds: string[], reason: string) {
-  return request<HbtApiResult<any>>({
+  return request<HbtApiResponse<any>>({
     url: '/api/online-user/batch/offline',
     method: 'post',
     data: { sessionIds, reason }
@@ -44,7 +44,7 @@ export function batchForceOffline(sessionIds: string[], reason: string) {
 
 // 获取在线用户统计信息
 export function getOnlineUserStats() {
-  return request<HbtApiResult<{
+  return request<HbtApiResponse<{
     total: number;
     activeCount: number;
     idleCount: number;
@@ -66,7 +66,7 @@ export function exportOnlineUser(params: OnlineUserQuery, sheetName: string = '�
 
 // 获取当前用户的在线状态
 export function getCurrentUserStatus() {
-  return request<HbtApiResult<OnlineUser>>({
+  return request<HbtApiResponse<OnlineUser>>({
     url: '/api/online-user/current',
     method: 'get'
   })
@@ -74,7 +74,7 @@ export function getCurrentUserStatus() {
 
 // 强制用户下线
 export function forceOfflineUser(connectionId: string) {
-  return request<HbtApiResult<any>>({
+  return request<HbtApiResponse<any>>({
     url: `/api/HbtOnlineUser/${connectionId}`,
     method: 'delete'
   })
@@ -82,7 +82,7 @@ export function forceOfflineUser(connectionId: string) {
 
 // 清理过期用户
 export function cleanupExpiredUsers(minutes: number = 20) {
-  return request<HbtApiResult<any>>({
+  return request<HbtApiResponse<any>>({
     url: '/api/HbtOnlineUser/cleanup',
     method: 'post',
     params: { minutes }

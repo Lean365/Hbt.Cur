@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-import type { HbtApiResult } from '@/types/common'
+import type { HbtApiResponse } from '@/types/common'
 import type { 
   OperLogQuery, 
   OperLog,
@@ -8,7 +8,7 @@ import type {
 
 // 获取操作日志列表
 export function getOperLogList(params: OperLogQuery) {
-  return request<HbtApiResult<OperLog[]>>({
+  return request<HbtApiResponse<OperLog[]>>({
     url: '/api/HbtOperLog',
     method: 'get',
     params
@@ -17,7 +17,7 @@ export function getOperLogList(params: OperLogQuery) {
 
 // 获取操作日志详情
 export function getOperLog(id: number) {
-  return request<HbtApiResult<OperLog>>({
+  return request<HbtApiResponse<OperLog>>({
     url: `/api/HbtOperLog/${id}`,
     method: 'get'
   })
@@ -25,7 +25,7 @@ export function getOperLog(id: number) {
 
 // 清空操作日志
 export function clearOperLog() {
-  return request<HbtApiResult<any>>({
+  return request<HbtApiResponse<any>>({
     url: '/api/HbtOperLog/clear',
     method: 'delete'
   })

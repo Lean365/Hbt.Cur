@@ -14,5 +14,7 @@
 global using Lean.Hbt.Common.Exceptions;
 global using Lean.Hbt.Common.Models;
 global using Lean.Hbt.Infrastructure.Swagger;
+global using Lean.Hbt.Infrastructure.Security.Attributes;
 global using Microsoft.AspNetCore.Authorization;
 global using Microsoft.AspNetCore.Mvc;
+

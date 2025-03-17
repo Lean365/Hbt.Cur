@@ -62,9 +62,9 @@ namespace Lean.Hbt.Application.Services.Identity
         /// <summary>
         /// 批量删除角色
         /// </summary>
-        /// <param name="roleIds">角色ID集合</param>
+        /// <param name="ids">角色ID列表</param>
         /// <returns>是否成功</returns>
-        Task<bool> BatchDeleteAsync(long[] roleIds);
+        Task<bool> BatchDeleteAsync(long[] ids);
 
         /// <summary>
         /// 导出角色数据
@@ -95,5 +95,11 @@ namespace Lean.Hbt.Application.Services.Identity
         /// <param name="sheetName">工作表名称</param>
         /// <returns>返回导入结果(success:成功数量,fail:失败数量)</returns>
         Task<(int success, int fail)> ImportAsync(Stream fileStream, string sheetName = "Sheet1");
+
+        /// <summary>
+        /// 获取角色选项列表
+        /// </summary>
+        /// <returns>角色选项列表</returns>
+        Task<List<HbtSelectOption>> GetOptionsAsync();
     }
 } 

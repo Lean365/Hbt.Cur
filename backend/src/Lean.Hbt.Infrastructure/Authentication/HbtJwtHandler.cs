@@ -17,6 +17,7 @@ using Lean.Hbt.Common.Exceptions;
 using Lean.Hbt.Domain.IServices.Admin;
 using Lean.Hbt.Domain.Entities.Identity;
 using Lean.Hbt.Domain.Repositories;
+using Microsoft.Extensions.Logging;
 
 namespace Lean.Hbt.Infrastructure.Authentication
 {
@@ -35,6 +36,7 @@ namespace Lean.Hbt.Infrastructure.Authentication
         private readonly IConfiguration _configuration;
         private readonly IHbtLocalizationService _localizationService;
         private readonly IHbtRepository<HbtUser> _userRepository;
+        private readonly ILogger<HbtJwtHandler> _logger;
 
         /// <summary>
         /// 构造函数
@@ -42,14 +44,17 @@ namespace Lean.Hbt.Infrastructure.Authentication
         /// <param name="configuration">配置接口</param>
         /// <param name="localizationService">本地化服务</param>
         /// <param name="userRepository">用户仓储</param>
+        /// <param name="logger">日志接口</param>
         public HbtJwtHandler(
             IConfiguration configuration, 
             IHbtLocalizationService localizationService,
-            IHbtRepository<HbtUser> userRepository)
+            IHbtRepository<HbtUser> userRepository,
+            ILogger<HbtJwtHandler> logger)
         {
             _configuration = configuration;
             _localizationService = localizationService;
             _userRepository = userRepository;
+            _logger = logger;
         }
 
         /// <summary>
@@ -65,7 +70,7 @@ namespace Lean.Hbt.Infrastructure.Authentication
                 
                 var claims = new List<Claim>
                 {
-                    new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+                    new Claim("user_id", user.Id.ToString()),
                     new Claim(JwtRegisteredClaimNames.Name, user.UserName),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                     new Claim("tenant_id", user.TenantId.ToString())
@@ -101,8 +106,8 @@ namespace Lean.Hbt.Infrastructure.Authentication
                     audience: _configuration["Jwt:Audience"] ?? 
                         throw HbtException.ValidationError(await _localizationService.GetLocalizedStringAsync("Jwt.AudienceNotConfigured")),
                     claims: claims,
-                    notBefore: DateTime.Now,
-                    expires: DateTime.Now.AddMinutes(Convert.ToDouble(_configuration["Jwt:ExpirationMinutes"] ?? "30")),
+                    notBefore: DateTime.UtcNow,
+                    expires: DateTime.UtcNow.AddMinutes(Convert.ToDouble(_configuration["Jwt:ExpirationMinutes"] ?? "30")),
                     signingCredentials: creds
                 );
 
@@ -125,30 +130,98 @@ namespace Lean.Hbt.Infrastructure.Authentication
         /// <summary>
         /// 验证访问令牌
         /// </summary>
-        public async Task<bool> ValidateAccessToken(string token)
+        public async Task<bool> ValidateAccessTokenAsync(string token)
         {
             try
             {
-                var tokenHandler = new JwtSecurityTokenHandler();
-                var secretKey = _configuration["Jwt:SecretKey"] ?? throw HbtException.ValidationError(await _localizationService.GetLocalizedStringAsync("Jwt.SecretKeyNotConfigured"));
-                var key = Encoding.UTF8.GetBytes(secretKey);
+                _logger.LogInformation("[Token验证] 开始验证Token: {TokenLength}字符", token?.Length ?? 0);
 
-                tokenHandler.ValidateToken(token, new TokenValidationParameters
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var secretKey = _configuration["Jwt:SecretKey"] ?? 
+                    throw HbtException.ValidationError(await _localizationService.GetLocalizedStringAsync("Jwt.SecretKeyNotConfigured"));
+
+                var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
+                var validationParameters = new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    IssuerSigningKey = key,
                     ValidateIssuer = true,
-                    ValidIssuer = _configuration["Jwt:Issuer"] ?? throw HbtException.ValidationError(await _localizationService.GetLocalizedStringAsync("Jwt.IssuerNotConfigured")),
+                    ValidIssuer = _configuration["Jwt:Issuer"],
                     ValidateAudience = true,
-                    ValidAudience = _configuration["Jwt:Audience"] ?? throw HbtException.ValidationError(await _localizationService.GetLocalizedStringAsync("Jwt.AudienceNotConfigured")),
+                    ValidAudience = _configuration["Jwt:Audience"],
+                    ValidateLifetime = true,
                     ClockSkew = TimeSpan.Zero
-                }, out _);
+                };
 
+                _logger.LogInformation("[Token验证] 验证参数: {@Parameters}", new 
+                { 
+                    Issuer = validationParameters.ValidIssuer,
+                    Audience = validationParameters.ValidAudience,
+                    ValidateLifetime = validationParameters.ValidateLifetime,
+                    ClockSkew = validationParameters.ClockSkew
+                });
+
+                var principal = tokenHandler.ValidateToken(token, validationParameters, out var validatedToken);
+                _logger.LogInformation("[Token验证] Token验证成功，开始检查Claims");
+
+                // 检查必要的Claims
+                var userId = principal.FindFirst("user_id")?.Value;
+                if (string.IsNullOrEmpty(userId))
+                {
+                    _logger.LogWarning("[Token验证] Token缺少必要的Claim: user_id");
+                    throw new SecurityTokenException("Token missing required claim: user_id");
+                }
+
+                var userName = principal.FindFirst(ClaimTypes.Name)?.Value;
+                if (string.IsNullOrEmpty(userName))
+                {
+                    _logger.LogWarning("[Token验证] Token缺少必要的Claim: name");
+                    throw new SecurityTokenException("Token missing required claim: name");
+                }
+
+                var tenantId = principal.FindFirst("tenant_id")?.Value;
+                if (string.IsNullOrEmpty(tenantId))
+                {
+                    _logger.LogWarning("[Token验证] Token缺少必要的Claim: tenant_id");
+                    throw new SecurityTokenException("Token missing required claim: tenant_id");
+                }
+
+                // 检查权限声明
+                var permissions = principal.FindAll("permissions").Select(c => c.Value).ToList();
+                _logger.LogInformation("[Token验证] 用户权限列表: {@Permissions}", permissions);
+                if (!permissions.Any())
+                {
+                    _logger.LogWarning("[Token验证] Token缺少必要的Claim: permissions");
+                    throw new SecurityTokenException("Token missing required claim: permissions");
+                }
+
+                _logger.LogInformation("[Token验证] Token验证完成，所有检查通过");
                 return true;
             }
-            catch
+            catch (SecurityTokenExpiredException)
             {
-                return false;
+                _logger.LogWarning("[Token验证] Token已过期");
+                throw HbtException.ValidationError("Token已过期");
+            }
+            catch (SecurityTokenNotYetValidException)
+            {
+                _logger.LogWarning("[Token验证] Token尚未生效");
+                throw HbtException.ValidationError("Token尚未生效");
+            }
+            catch (SecurityTokenInvalidSignatureException)
+            {
+                _logger.LogWarning("[Token验证] Token签名无效");
+                throw HbtException.ValidationError("Token签名无效");
+            }
+            catch (SecurityTokenException ex)
+            {
+                _logger.LogWarning("[Token验证] Token验证失败: {Message}", ex.Message);
+                throw HbtException.ValidationError($"Token验证失败: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "[Token验证] 发生未预期的错误");
+                throw HbtException.ValidationError($"Token验证失败: {ex.Message}");
             }
         }
 

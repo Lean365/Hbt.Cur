@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-import type { HbtApiResult } from '@/types/common'
+import type { HbtApiResponse } from '@/types/common'
 import type { 
   DbDiffLogQuery, 
   DbDiffLog,
@@ -8,7 +8,7 @@ import type {
 
 // 获取数据库差异日志列表
 export function getDbDiffLogList(params: DbDiffLogQuery) {
-  return request<HbtApiResult<DbDiffLog[]>>({
+  return request<HbtApiResponse<DbDiffLog[]>>({
     url: '/api/HbtDbDiffLog',
     method: 'get',
     params
@@ -17,7 +17,7 @@ export function getDbDiffLogList(params: DbDiffLogQuery) {
 
 // 获取数据库差异日志详情
 export function getDbDiffLog(id: number) {
-  return request<HbtApiResult<DbDiffLog>>({
+  return request<HbtApiResponse<DbDiffLog>>({
     url: `/api/HbtDbDiffLog/${id}`,
     method: 'get'
   })
@@ -25,7 +25,7 @@ export function getDbDiffLog(id: number) {
 
 // 清空数据库差异日志
 export function clearDbDiffLog() {
-  return request<HbtApiResult<any>>({
+  return request<HbtApiResponse<any>>({
     url: '/api/HbtDbDiffLog/clear',
     method: 'delete'
   })

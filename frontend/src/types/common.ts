@@ -49,7 +49,7 @@ export interface HbtPagedResult<T> {
 /**
  * API响应结果
  */
-export interface HbtApiResult<T> {
+export interface HbtApiResponse<T> {
   /** 状态码 */
   code: number;
   /** 消息 */

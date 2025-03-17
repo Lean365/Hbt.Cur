@@ -1,8 +1,8 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { getSupportedLanguages } from '@/api/admin/hbtLanguage'
-import type { HbtApiResult } from '@/types/common'
 import type { HbtLanguage } from '@/types/admin/hbtLanguage'
+import type { HbtApiResponse } from '@/types/common'
 
 interface Language {
   langCode: string
@@ -18,16 +18,15 @@ export const useLanguageStore = defineStore('language', () => {
   async function fetchLanguages() {
     loading.value = true
     try {
-      const response = await getSupportedLanguages()
-      //console.log('API原始响应:', response)
+      const response: HbtApiResponse<HbtLanguage[]> = await getSupportedLanguages()
 
       // 验证响应结构
-      if (!response?.data || typeof response.data !== 'object') {
-        //console.error('API响应格式错误:', response)
+      if (!response || response.code !== 200 || !response.data) {
+        console.error('API响应格式错误:', response)
         return
       }
 
-      // 直接使用后端返回的数据数组
+      // 使用response.data作为语言数组
       const languages = response.data
       //console.log('语言列表:', languages)
 

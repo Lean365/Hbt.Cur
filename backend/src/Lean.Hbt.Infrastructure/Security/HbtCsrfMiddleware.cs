@@ -179,7 +179,8 @@ namespace Lean.Hbt.Infrastructure.Security
                 path.Contains("/auth") ||
                 path.Contains("/token") ||
                 path.Contains("/oauth") ||
-                path.Contains("/hbtcaptcha")))
+                path.Contains("/HbtCaptcha") ||
+                path.Contains("/logout")))
             {
                 _logger.LogInformation("[CSRF] Skipping CSRF check for auth path: {Path}", path);
                 return true;

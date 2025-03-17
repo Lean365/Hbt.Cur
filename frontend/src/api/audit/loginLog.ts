@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-import type { HbtApiResult } from '@/types/common'
+import type { HbtApiResponse } from '@/types/common'
 import type { 
   LoginLogQuery, 
   LoginLog,
@@ -8,7 +8,7 @@ import type {
 
 // 获取登录日志列表
 export function getLoginLogList(params: LoginLogQuery) {
-  return request<HbtApiResult<LoginLog[]>>({
+  return request<HbtApiResponse<LoginLog[]>>({
     url: '/api/HbtLoginLog',
     method: 'get',
     params
@@ -17,7 +17,7 @@ export function getLoginLogList(params: LoginLogQuery) {
 
 // 获取登录日志详情
 export function getLoginLog(id: number) {
-  return request<HbtApiResult<LoginLog>>({
+  return request<HbtApiResponse<LoginLog>>({
     url: `/api/HbtLoginLog/${id}`,
     method: 'get'
   })
@@ -25,7 +25,7 @@ export function getLoginLog(id: number) {
 
 // 清空登录日志
 export function clearLoginLog() {
-  return request<HbtApiResult<any>>({
+  return request<HbtApiResponse<any>>({
     url: '/api/HbtLoginLog/clear',
     method: 'delete'
   })
@@ -43,7 +43,7 @@ export function exportLoginLog(params: LoginLogExport, sheetName: string = '登�
 
 // 解锁用户
 export function unlockUser(userId: number) {
-  return request<HbtApiResult<any>>({
+  return request<HbtApiResponse<any>>({
     url: `/api/HbtLoginLog/unlock/${userId}`,
     method: 'post'
   })

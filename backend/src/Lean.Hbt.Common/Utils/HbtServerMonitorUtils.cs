@@ -224,6 +224,9 @@ public static class HbtServerMonitorUtils
     /// </remarks>
     public static string GetServiceStartType(ServiceController sc)
     {
+        if (!OperatingSystem.IsWindows())
+            return "Unknown";
+
         try
         {
             using var key = Registry.LocalMachine.OpenSubKey($@"SYSTEM\CurrentControlSet\Services\{sc.ServiceName}");
@@ -253,6 +256,9 @@ public static class HbtServerMonitorUtils
     /// </remarks>
     public static string GetServiceAccount(ServiceController sc)
     {
+        if (!OperatingSystem.IsWindows())
+            return "Unknown";
+
         try
         {
             using var key = Registry.LocalMachine.OpenSubKey($@"SYSTEM\CurrentControlSet\Services\{sc.ServiceName}");

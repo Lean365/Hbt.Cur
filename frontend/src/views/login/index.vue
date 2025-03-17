@@ -140,6 +140,7 @@ import { ref, reactive, onMounted, onUnmounted, nextTick, watch, computed } from
 import { useRouter, useRoute } from 'vue-router'
 import { getDeviceInfo } from '@/utils/device'
 import { LOGIN_POLICY, LOGIN_STORAGE_KEYS, SPECIAL_USERS } from '@/types/identity/auth'
+import { registerDynamicRoutes } from '@/router'
 
 const { t } = useI18n()
 const router = useRouter()
@@ -250,60 +251,44 @@ const handleLogin = async () => {
   try {
     loading.value = true
     
-    // 表单验证
-    await loginFormRef.value?.validate()
-    
-    // 验证用户名密码
-    const credentialsValid = await validateCredentials()
-    if (!credentialsValid) {
+    // 1. 获取盐值
+    const saltResponse = await getSalt(loginForm.value.userName)
+    if (!saltResponse || !saltResponse.salt) {
+      message.error(t('identity.auth.login.error.getSalt'))
       return
     }
 
-    // 获取失败次数
-    const failedAttempts = getFailedAttempts(loginForm.value.userName)
-    
-    // 检查是否需要验证码
-    const needCaptcha = checkNeedCaptcha() || 
-      (!captchaVerified.value && failedAttempts >= LOGIN_POLICY.CAPTCHA.REQUIRED_ATTEMPTS)
-    
-    if (needCaptcha && !captchaVerified.value) {
-      showCaptcha.value = true
-      await nextTick()
-      await captchaRef.value?.initCaptcha()
-      return
+    // 2. 使用盐值加密密码
+    const hashedPassword = PasswordEncryptor.hashPassword(
+      loginForm.value.password,
+      saltResponse.salt,
+      saltResponse.iterations || 100000
+    )
+
+    // 3. 构建登录参数
+    const loginParams: LoginParams = {
+      ...loginForm.value,
+      password: hashedPassword
     }
+
+    // 4. 发起登录请求
+    const response = await userStore.login(loginParams)
     
-    // 获取盐值并加密密码
-    const saltResponse = await getSalt(loginForm.value.userName)
-    const saltData = (saltResponse as any).data as SaltResponse
-    if (saltData) {
-      loginForm.value.password = PasswordEncryptor.hashPassword(
-        loginForm.value.password,
-        saltData.salt,
-        saltData.iterations
-      )
-    }
-    
-    // 添加验证码参数
-    if (captchaParams.value) {
-      loginForm.value.captchaToken = captchaParams.value.token
-      loginForm.value.captchaOffset = captchaParams.value.xOffset
-    }
-    
-    // 执行登录
-    const result = await userStore.login(loginForm.value)
-    if (result) {
-      handleLoginSuccess()
+    if (response.code === 200) {
+      message.success(t('identity.auth.login.success'))
+      // 登录成功后的处理
+      await handleLoginSuccess()
     }
   } catch (error: any) {
-    handleLoginError(error)
+    console.error('[登录] 失败:', error)
+    message.error(error.message || t('identity.auth.login.error.unknown'))
   } finally {
     loading.value = false
   }
 }
 
 // 处理登录成功
-const handleLoginSuccess = () => {
+const handleLoginSuccess = async () => {
   try {
     // 记录登录时间
     const loginTime = Date.now()
@@ -315,10 +300,37 @@ const handleLoginSuccess = () => {
     
     // 重置失败次数
     resetFailedAttempts(loginForm.value.userName)
-    // 跳转到首页
-    router.push('/')
-  } catch (error) {
-    message.error(t('identity.auth.login.failed'))
+
+    // 先获取用户信息
+    console.log('[登录成功] 开始获取用户信息')
+    await userStore.getUserInfo()
+    console.log('[登录成功] 用户信息获取成功:', {
+      用户: userStore.user,
+      角色: userStore.roles,
+      权限: userStore.permissions
+    })
+
+    // 加载菜单
+    const menuLoadSuccess = await menuStore.loadUserMenus()
+    if (!menuLoadSuccess) {
+      throw new Error(t('menu.error.loadFailed'))
+    }
+
+    // 注册动态路由
+    const routeRegisterSuccess = await registerDynamicRoutes(menuStore.rawMenuList)
+    if (!routeRegisterSuccess) {
+      throw new Error(t('router.error.registerFailed'))
+    }
+
+    // 获取重定向地址
+    const redirect = route.query.redirect as string
+    const path = redirect || '/'
+
+    // 跳转到目标页面
+    await router.push(path)
+  } catch (error: any) {
+    console.error('[登录成功处理] 失败:', error)
+    message.error(error.message || t('identity.auth.login.failed'))
   }
 }
 

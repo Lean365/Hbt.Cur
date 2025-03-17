@@ -153,6 +153,19 @@
 
           <a-row :gutter="16">
             <a-col :span="24">
+              <a-form-item :label="t('identity.user.depts.label')" name="deptIds">
+                <hbt-select
+                  v-model:value="form.deptIds"
+                  :options="deptOptions"
+                  mode="multiple"
+                  :placeholder="t('identity.user.depts.placeholder')"
+                />
+              </a-form-item>
+            </a-col>
+          </a-row>
+
+          <a-row :gutter="16">
+            <a-col :span="24">
               <a-form-item :label="t('identity.user.remark.label')" name="remark">
                 <a-textarea
                   v-model:value="form.remark"
@@ -207,6 +220,7 @@ import type { UserForm } from '@/types/identity/user'
 import { getUser, createUser, updateUser } from '@/api/identity/user'
 import { getRoleOptions } from '@/api/identity/role'
 import { getPostOptions } from '@/api/identity/post'
+import { getDeptOptions } from '@/api/identity/dept'
 import HbtModal from '@/components/Business/Modal/index.vue'
 import HbtImageUpload from '@/components/Upload/imageUpload.vue'
 
@@ -243,13 +257,16 @@ const form = reactive<UserForm>({
   status: 0,
   remark: '',
   roleIds: [],
-  postIds: []
+  postIds: [],
+  deptIds: []
 })
 
 // 角色选项
 const roleOptions = ref<{ label: string; value: number }[]>([])
 // 岗位选项
 const postOptions = ref<{ label: string; value: number }[]>([])
+// 部门选项
+const deptOptions = ref<{ label: string; value: number }[]>([])
 
 // 表单校验规则
 const rules: Record<string, Rule[]> = {
@@ -300,32 +317,30 @@ const loading = ref(false)
 const getInfo = async (userId: number) => {
   try {
     const res = await getUser(userId)
-    Object.assign(form, res.data)
+    if (res.code === 200) {
+      Object.assign(form, res.data)
+    } else {
+      message.error(res.msg || t('common.failed'))
+    }
   } catch (error) {
     console.error(error)
     message.error(t('common.failed'))
   }
 }
 
-// 获取角色选项
-const loadRoleOptions = async () => {
+// 获取选项数据
+const fetchOptions = async () => {
   try {
-    const res = await getRoleOptions()
-    roleOptions.value = res.data.data
+    const [roles, posts, depts] = await Promise.all([
+      getRoleOptions(),
+      getPostOptions(),
+      getDeptOptions()
+    ])
+    roleOptions.value = roles.data
+    postOptions.value = posts.data
+    deptOptions.value = depts.data
   } catch (error) {
-    console.error(error)
-    message.error(t('common.failed'))
-  }
-}
-
-// 获取岗位选项
-const loadPostOptions = async () => {
-  try {
-    const res = await getPostOptions()
-    postOptions.value = res.data.data
-  } catch (error) {
-    console.error(error)
-    message.error(t('common.failed'))
+    console.error('获取选项数据失败:', error)
   }
 }
 
@@ -346,14 +361,19 @@ const handleSubmit = () => {
   formRef.value?.validate().then(async () => {
     loading.value = true
     try {
+      let res
       if (props.userId) {
-        await updateUser({ ...form, userId: props.userId })
+        res = await updateUser({ ...form, userId: props.userId })
       } else {
-        await createUser(form)
+        res = await createUser(form)
       }
-      message.success(t('common.success'))
-      emit('success')
-      handleVisibleChange(false)
+      if (res.code === 200) {
+        message.success(t('common.success'))
+        emit('success')
+        handleVisibleChange(false)
+      } else {
+        message.error(res.msg || t('common.failed'))
+      }
     } catch (error) {
       console.error(error)
       message.error(t('common.failed'))
@@ -386,9 +406,8 @@ watch(
 onMounted(() => {
   // 加载字典数据
   dictStore.loadDicts(['sys_normal_disable', 'sys_gender', 'sys_user_type'])
-  // 加载角色和岗位选项
-  loadRoleOptions()
-  loadPostOptions()
+  // 加载选项数据
+  fetchOptions()
 })
 </script>
 

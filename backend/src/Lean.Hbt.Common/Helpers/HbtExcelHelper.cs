@@ -34,6 +34,7 @@ namespace Lean.Hbt.Common.Helpers
         /// <param name="options">Excel配置选项</param>
         public static void Configure(IOptions<HbtExcelOptions> options)
         {
+            ArgumentNullException.ThrowIfNull(options);
             _options = options.Value;
         }
 
@@ -42,6 +43,7 @@ namespace Lean.Hbt.Common.Helpers
         /// </summary>
         private static void SetWorkbookProperties(ExcelWorkbook workbook)
         {
+            ArgumentNullException.ThrowIfNull(workbook);
             if (_options == null) return;
 
             var props = workbook.Properties;
@@ -71,6 +73,9 @@ namespace Lean.Hbt.Common.Helpers
         /// <returns>Excel文件字节数组</returns>
         public static Task<byte[]> ExportAsync<T>(IEnumerable<T> data, string sheetName = "Sheet1") where T : class
         {
+            ArgumentNullException.ThrowIfNull(data);
+            ArgumentException.ThrowIfNullOrEmpty(sheetName);
+
             ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
 
             using var package = new ExcelPackage();
@@ -88,6 +93,9 @@ namespace Lean.Hbt.Common.Helpers
         /// <returns>数据集合</returns>
         public static Task<List<T>> ImportAsync<T>(Stream fileStream, string sheetName = "Sheet1") where T : class, new()
         {
+            ArgumentNullException.ThrowIfNull(fileStream);
+            ArgumentException.ThrowIfNullOrEmpty(sheetName);
+
             ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
 
             using var package = new ExcelPackage(fileStream);
@@ -105,6 +113,9 @@ namespace Lean.Hbt.Common.Helpers
         /// <returns>Excel文件字节数组</returns>
         public static Task<byte[]> ExportMultiSheetAsync<T>(Dictionary<string, IEnumerable<T>> sheets) where T : class
         {
+            ArgumentNullException.ThrowIfNull(sheets);
+            if (!sheets.Any()) throw new ArgumentException("至少需要一个Sheet", nameof(sheets));
+
             ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
 
             using var package = new ExcelPackage();
@@ -112,6 +123,11 @@ namespace Lean.Hbt.Common.Helpers
 
             foreach (var sheet in sheets)
             {
+                if (string.IsNullOrEmpty(sheet.Key))
+                    throw new ArgumentException("Sheet名称不能为空", nameof(sheets));
+                if (sheet.Value == null)
+                    throw new ArgumentException($"Sheet '{sheet.Key}' 的数据不能为null", nameof(sheets));
+
                 ExportToSheetAsync(package, sheet.Value, sheet.Key);
             }
 
@@ -126,6 +142,8 @@ namespace Lean.Hbt.Common.Helpers
         /// <returns>数据字典，key为sheet名称，value为数据集合</returns>
         public static Task<Dictionary<string, List<T>>> ImportMultiSheetAsync<T>(Stream fileStream) where T : class, new()
         {
+            ArgumentNullException.ThrowIfNull(fileStream);
+
             ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
 
             using var package = new ExcelPackage(fileStream);
@@ -133,6 +151,7 @@ namespace Lean.Hbt.Common.Helpers
 
             foreach (var worksheet in package.Workbook.Worksheets)
             {
+                if (worksheet?.Name == null) continue;
                 result[worksheet.Name] = ImportFromSheetAsync<T>(package, worksheet.Name).Result;
             }
 
@@ -151,6 +170,8 @@ namespace Lean.Hbt.Common.Helpers
         /// <returns>Excel模板文件字节数组</returns>
         public static Task<byte[]> GenerateTemplateAsync<T>(string sheetName = "Sheet1") where T : class, new()
         {
+            ArgumentException.ThrowIfNullOrEmpty(sheetName);
+
             ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
 
             using var package = new ExcelPackage();
@@ -176,8 +197,11 @@ namespace Lean.Hbt.Common.Helpers
                 // 添加注释说明
                 if (!string.IsNullOrEmpty(description))
                 {
-                    var comment = cell.AddComment(description, _options.Author);
-                    comment.AutoFit = true;
+                    var comment = cell.AddComment(description, _options?.Author ?? "System");
+                    if (comment != null)
+                    {
+                        comment.AutoFit = true;
+                    }
                 }
 
                 // 设置数据验证和格式
@@ -189,24 +213,33 @@ namespace Lean.Hbt.Common.Helpers
                     // 枚举类型添加下拉列表
                     var enumValues = Enum.GetNames(propertyType);
                     var validation = worksheet.DataValidations.AddListValidation(column);
-                    foreach (var value in enumValues)
+                    if (validation?.Formula.Values != null)
                     {
-                        validation.Formula.Values.Add(value);
+                        foreach (var value in enumValues)
+                        {
+                            validation.Formula.Values.Add(value);
+                        }
                     }
                 }
                 else if (propertyType == typeof(bool) || propertyType == typeof(bool?))
                 {
                     // 布尔类型添加是/否下拉列表
                     var validation = worksheet.DataValidations.AddListValidation(column);
-                    validation.Formula.Values.Add("是");
-                    validation.Formula.Values.Add("否");
+                    if (validation?.Formula.Values != null)
+                    {
+                        validation.Formula.Values.Add("是");
+                        validation.Formula.Values.Add("否");
+                    }
                 }
                 else if (propertyType == typeof(DateTime) || propertyType == typeof(DateTime?))
                 {
                     // 日期类型添加日期格式验证
                     var validation = worksheet.DataValidations.AddDateTimeValidation(column);
-                    validation.ShowErrorMessage = true;
-                    validation.Error = "请输入有效的日期格式";
+                    if (validation != null)
+                    {
+                        validation.ShowErrorMessage = true;
+                        validation.Error = "请输入有效的日期格式";
+                    }
                     worksheet.Column(i + 1).Style.Numberformat.Format = "yyyy-MM-dd HH:mm:ss";
                 }
                 else if (propertyType == typeof(decimal) || propertyType == typeof(decimal?) ||
@@ -215,8 +248,11 @@ namespace Lean.Hbt.Common.Helpers
                 {
                     // 数值类型添加数值验证
                     var validation = worksheet.DataValidations.AddDecimalValidation(column);
-                    validation.ShowErrorMessage = true;
-                    validation.Error = "请输入有效的数值";
+                    if (validation != null)
+                    {
+                        validation.ShowErrorMessage = true;
+                        validation.Error = "请输入有效的数值";
+                    }
                     worksheet.Column(i + 1).Style.Numberformat.Format = "#,##0.00";
                 }
                 else if (propertyType == typeof(int) || propertyType == typeof(int?) ||
@@ -224,14 +260,20 @@ namespace Lean.Hbt.Common.Helpers
                 {
                     // 整数类型添加整数验证
                     var validation = worksheet.DataValidations.AddIntegerValidation(column);
-                    validation.ShowErrorMessage = true;
-                    validation.Error = "请输入有效的整数";
+                    if (validation != null)
+                    {
+                        validation.ShowErrorMessage = true;
+                        validation.Error = "请输入有效的整数";
+                    }
                     worksheet.Column(i + 1).Style.Numberformat.Format = "#,##0";
                 }
             }
 
             // 自动调整列宽
-            worksheet.Cells[worksheet.Dimension.Address].AutoFitColumns();
+            if (worksheet.Dimension != null)
+            {
+                worksheet.Cells[worksheet.Dimension.Address].AutoFitColumns();
+            }
 
             return package.GetAsByteArrayAsync();
         }
@@ -245,6 +287,10 @@ namespace Lean.Hbt.Common.Helpers
         /// </summary>
         private static void ExportToSheetAsync<T>(ExcelPackage package, IEnumerable<T> data, string sheetName) where T : class
         {
+            ArgumentNullException.ThrowIfNull(package);
+            ArgumentNullException.ThrowIfNull(data);
+            ArgumentException.ThrowIfNullOrEmpty(sheetName);
+
             var worksheet = package.Workbook.Worksheets.Add(sheetName);
 
             // 获取属性信息
@@ -296,6 +342,9 @@ namespace Lean.Hbt.Common.Helpers
         /// </summary>
         private static Task<List<T>> ImportFromSheetAsync<T>(ExcelPackage package, string sheetName) where T : class, new()
         {
+            ArgumentNullException.ThrowIfNull(package);
+            ArgumentException.ThrowIfNullOrEmpty(sheetName);
+
             var worksheet = package.Workbook.Worksheets[sheetName];
             if (worksheet == null || worksheet.Dimension == null)
                 throw new Exception($"找不到名为 {sheetName} 的工作表或工作表为空");

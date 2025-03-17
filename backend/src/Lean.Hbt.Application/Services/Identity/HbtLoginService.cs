@@ -428,7 +428,7 @@ public class HbtLoginService : IHbtLoginService
 
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim("user_id", user.Id.ToString()),
                 new Claim(ClaimTypes.Name, user.UserName),
                 new Claim("tenant_id", user.TenantId.ToString())
             };

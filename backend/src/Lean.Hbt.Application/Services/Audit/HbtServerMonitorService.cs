@@ -14,6 +14,7 @@ using System.Runtime.InteropServices;
 using System.ServiceProcess;
 using Lean.Hbt.Application.Dtos.Audit;
 using Lean.Hbt.Common.Utils;
+using System.Runtime.Versioning;
 
 namespace Lean.Hbt.Application.Services.Audit;
 
@@ -37,7 +38,7 @@ public class HbtServerMonitorService : IHbtServerMonitorService, IDisposable
 #if WINDOWS
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
-            try 
+            try
             {
                 _cpuCounter = new PerformanceCounter("Processor", "% Processor Time", "_Total");
                 _memCounter = new PerformanceCounter("Memory", "% Committed Bytes In Use");
@@ -64,7 +65,7 @@ public class HbtServerMonitorService : IHbtServerMonitorService, IDisposable
         {
             double cpuUsage = 0;
             double memoryUsage = 0;
-            
+
 #if WINDOWS
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && _cpuCounter != null && _memCounter != null)
             {
@@ -160,7 +161,7 @@ public class HbtServerMonitorService : IHbtServerMonitorService, IDisposable
                         CreateNoWindow = true
                     }
                 };
-                
+
                 process.Start();
                 var output = process.StandardOutput.ReadToEnd();
                 process.WaitForExit();
@@ -168,7 +169,7 @@ public class HbtServerMonitorService : IHbtServerMonitorService, IDisposable
                 // 解析top命令输出，查找CPU usage行
                 var cpuLine = output.Split('\n')
                     .FirstOrDefault(l => l.Contains("CPU usage:"));
-                
+
                 if (cpuLine != null)
                 {
                     var parts = cpuLine.Split(':')[1].Trim().Split(',');
@@ -177,9 +178,9 @@ public class HbtServerMonitorService : IHbtServerMonitorService, IDisposable
                     return Math.Round(user + sys, 2);
                 }
             }
-            
+
             // 其他平台或读取失败时返回进程CPU时间作为估算值
-            return Math.Round(_process.TotalProcessorTime.TotalMilliseconds / 
+            return Math.Round(_process.TotalProcessorTime.TotalMilliseconds /
                 (Environment.ProcessorCount * DateTime.Now.Subtract(_process.StartTime).TotalMilliseconds) * 100, 2);
         }
         catch
@@ -204,7 +205,7 @@ public class HbtServerMonitorService : IHbtServerMonitorService, IDisposable
                 var memInfo = File.ReadAllText("/proc/meminfo");
                 var memTotal = GetMemInfoValue(memInfo, "MemTotal:");
                 var memAvailable = GetMemInfoValue(memInfo, "MemAvailable:");
-                
+
                 if (memTotal > 0)
                 {
                     return Math.Round(((double)(memTotal - memAvailable) / memTotal) * 100, 2);
@@ -223,14 +224,13 @@ public class HbtServerMonitorService : IHbtServerMonitorService, IDisposable
                         CreateNoWindow = true
                     }
                 };
-                
+
                 process.Start();
                 var output = process.StandardOutput.ReadToEnd();
                 process.WaitForExit();
 
                 // 解析vm_stat输出
                 var lines = output.Split('\n');
-                var pageSize = 4096; // 默认页大小
                 long freePages = 0, activePages = 0, inactivePages = 0, wiredPages = 0;
 
                 foreach (var line in lines)
@@ -358,88 +358,15 @@ public class HbtServerMonitorService : IHbtServerMonitorService, IDisposable
             {
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                 {
-                    var services = ServiceController.GetServices();
-                    return services.Select(s => new HbtServiceDto
-                    {
-                        ServiceName = s.ServiceName,
-                        DisplayName = s.DisplayName,
-                        ServiceType = s.ServiceType.ToString(),
-                        Status = 0,
-                        StartType = HbtServerMonitorUtils.GetServiceStartType(s),
-                        Account = HbtServerMonitorUtils.GetServiceAccount(s)
-                    }).ToList();
+                    return GetWindowsServices();
                 }
                 else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
                 {
-                    // Linux下使用systemctl命令获取服务列表
-                    using var process = new Process
-                    {
-                        StartInfo = new ProcessStartInfo
-                        {
-                            FileName = "systemctl",
-                            Arguments = "list-units --type=service --all",
-                            UseShellExecute = false,
-                            RedirectStandardOutput = true,
-                            CreateNoWindow = true
-                        }
-                    };
-
-                    process.Start();
-                    var output = process.StandardOutput.ReadToEnd();
-                    process.WaitForExit();
-
-                    return output.Split('\n')
-                        .Skip(1) // 跳过标题行
-                        .Where(line => !string.IsNullOrWhiteSpace(line) && line.Contains(".service"))
-                        .Select(line =>
-                        {
-                            var parts = line.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                            return new HbtServiceDto
-                            {
-                                ServiceName = parts[0].Replace(".service", ""),
-                                DisplayName = parts[0],
-                                ServiceType = "systemd",
-                                Status = parts.Length > 3 ? (parts[3] == "active" ? 0 : 1) : 1,
-                                StartType = "undefined",
-                                Account = "system"
-                            };
-                        }).ToList();
+                    return GetLinuxServices();
                 }
                 else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
                 {
-                    // macOS下使用launchctl命令获取服务列表
-                    using var process = new Process
-                    {
-                        StartInfo = new ProcessStartInfo
-                        {
-                            FileName = "launchctl",
-                            Arguments = "list",
-                            UseShellExecute = false,
-                            RedirectStandardOutput = true,
-                            CreateNoWindow = true
-                        }
-                    };
-
-                    process.Start();
-                    var output = process.StandardOutput.ReadToEnd();
-                    process.WaitForExit();
-
-                    return output.Split('\n')
-                        .Skip(1) // 跳过标题行
-                        .Where(line => !string.IsNullOrWhiteSpace(line))
-                        .Select(line =>
-                        {
-                            var parts = line.Split(new[] { '\t' }, StringSplitOptions.RemoveEmptyEntries);
-                            return new HbtServiceDto
-                            {
-                                ServiceName = parts.Length > 2 ? parts[2] : "unknown",
-                                DisplayName = parts.Length > 2 ? parts[2] : "unknown",
-                                ServiceType = "launchd",
-                                Status = parts.Length > 0 && !string.IsNullOrEmpty(parts[0]) ? 0 : 1,
-                                StartType = "undefined",
-                                Account = "system"
-                            };
-                        }).ToList();
+                    return GetMacServices();
                 }
 
                 return new List<HbtServiceDto>();
@@ -451,6 +378,96 @@ public class HbtServerMonitorService : IHbtServerMonitorService, IDisposable
         });
     }
 
+    [SupportedOSPlatform("windows")]
+    private List<HbtServiceDto> GetWindowsServices()
+    {
+        var services = ServiceController.GetServices();
+        return services.Select(s => new HbtServiceDto
+        {
+            ServiceName = s.ServiceName,
+            DisplayName = s.DisplayName,
+            ServiceType = s.ServiceType.ToString(),
+            Status = 0,
+            StartType = HbtServerMonitorUtils.GetServiceStartType(s),
+            Account = HbtServerMonitorUtils.GetServiceAccount(s)
+        }).ToList();
+    }
+
+    private List<HbtServiceDto> GetLinuxServices()
+    {
+        using var process = new Process
+        {
+            StartInfo = new ProcessStartInfo
+            {
+                FileName = "systemctl",
+                Arguments = "list-units --type=service --all",
+                UseShellExecute = false,
+                RedirectStandardOutput = true,
+                CreateNoWindow = true
+            }
+        };
+
+        process.Start();
+        var output = process.StandardOutput.ReadToEnd();
+        process.WaitForExit();
+
+        return output.Split('\n')
+            .Skip(1) // 跳过标题行
+            .Where(line => !string.IsNullOrWhiteSpace(line) && line.Contains(".service"))
+            .Select(line =>
+            {
+                var parts = line.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                return new HbtServiceDto
+                {
+                    ServiceName = parts[0].Replace(".service", ""),
+                    DisplayName = parts[0],
+                    ServiceType = "systemd",
+                    Status = parts.Length > 3 ? (parts[3] == "active" ? 0 : 1) : 1,
+                    StartType = "undefined",
+                    Account = "system"
+                };
+            }).ToList();
+    }
+
+    private List<HbtServiceDto> GetMacServices()
+    {
+        using var process = new Process
+        {
+            StartInfo = new ProcessStartInfo
+            {
+                FileName = "launchctl",
+                Arguments = "list",
+                UseShellExecute = false,
+                RedirectStandardOutput = true,
+                CreateNoWindow = true
+            }
+        };
+
+        process.Start();
+        var output = process.StandardOutput.ReadToEnd();
+        process.WaitForExit();
+
+        return output.Split('\n')
+            .Skip(1) // 跳过标题行
+            .Where(line => !string.IsNullOrWhiteSpace(line))
+            .Select(line =>
+            {
+                var parts = line.Split(new[] { '\t' }, StringSplitOptions.RemoveEmptyEntries);
+                return new HbtServiceDto
+                {
+                    ServiceName = parts.Length > 2 ? parts[2] : "unknown",
+                    DisplayName = parts.Length > 2 ? parts[2] : "unknown",
+                    ServiceType = "launchd",
+                    Status = parts.Length > 0 && !string.IsNullOrEmpty(parts[0]) ? 0 : 1,
+                    StartType = "undefined",
+                    Account = "system"
+                };
+            }).ToList();
+    }
+
+    /// <summary>
+    /// 释放资源
+    /// </summary>
     public void Dispose()
     {
 #if WINDOWS

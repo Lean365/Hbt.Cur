@@ -19,9 +19,26 @@ export const hasPermi: Directive = {
     const { value } = binding
     const permissions = useUserStore().permissions
     
+    console.log('[权限指令] 开始权限检查:', {
+      需要的权限: value,
+      用户拥有的权限: permissions,
+      元素: el.outerHTML
+    })
+    
     if (value && value instanceof Array && value.length > 0) {
       const hasPermission = value.some(permission => {
-        return permissions.includes(permission)
+        const has = permissions.includes(permission)
+        console.log('[权限指令] 检查权限:', {
+          权限: permission,
+          是否拥有: has
+        })
+        return has
+      })
+      
+      console.log('[权限指令] 权限检查结果:', {
+        需要的权限: value,
+        检查结果: hasPermission,
+        操作: hasPermission ? '显示' : '隐藏'
       })
       
       if (!hasPermission) {

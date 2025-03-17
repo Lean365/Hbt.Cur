@@ -109,7 +109,9 @@ try
     });
 
     // 添加控制器服务
-    builder.Services.AddControllers();
+    builder.Services.AddControllers(options => {
+        options.EnableEndpointRouting = true;
+    });
 
     // 添加 HttpClient 服务
     builder.Services.AddHttpClient();
@@ -170,13 +172,11 @@ try
             options.InstanceName = cacheSettings.Redis.InstanceName;
         });
 
-        // 注册 ConnectionMultiplexer
+        // 注册 Redis 连接复用器（单例模式）
         builder.Services.AddSingleton<ConnectionMultiplexer>(sp =>
         {
             return ConnectionMultiplexer.Connect(cacheSettings.Redis.ConnectionString);
         });
-
-        builder.Services.Configure<HbtCacheOptions>(builder.Configuration.GetSection("Cache"));
 
         // 注册 Redis 缓存服务
         builder.Services.AddScoped<IHbtRedisCache, HbtRedisCache>();
@@ -295,34 +295,57 @@ try
         logger.Info("Swagger已启用");
     }
 
+    // 1. 异常处理中间件（必须放在最前面，以捕获后续中间件中的所有异常）
     app.UseHbtExceptionHandler();
+    
+    // 2. 会话安全中间件（处理会话相关的安全机制）
     app.UseHbtSessionSecurity();
+    
+    // 3. SQL注入防护中间件（防止SQL注入攻击）
     app.UseHbtSqlInjection();
 
+    // 4. 跨域资源共享中间件（如果启用）
     if (serverConfig.Init.EnableCors)
     {
         app.UseCors("HbtPolicy");
         logger.Info("CORS已启用");
     }
 
+    // 5. CSRF防护中间件（防止跨站请求伪造攻击）
     app.UseHbtCsrf();
 
+    // 6. HTTPS重定向中间件（如果启用HTTPS）
     if (serverConfig.UseHttps)
     {
         app.UseHttpsRedirection();
         logger.Info("已启用HTTPS重定向");
     }
 
+    // 7. 速率限制中间件（控制请求频率，防止DoS攻击）
     app.UseHbtRateLimit();
+    
+    // 8. 区分大小写路由中间件（确保路由匹配时区分大小写）
+    app.UseHbtCaseSensitiveRoute();
+    
+    // 9. 身份认证中间件（处理用户认证）
     app.UseAuthentication();
+    
+    // 10. 授权中间件（处理用户授权）
     app.UseAuthorization();
+    
+    // 11. 租户中间件（处理多租户隔离）
     app.UseHbtTenant();
+    
+    // 12. 权限验证中间件（处理细粒度的权限控制）
     app.UseHbtPerm();
+    
+    // 13. 本地化中间件（处理多语言支持）
     app.UseHbtLocalization();
 
+    // 14. 注册所有控制器路由
     app.MapControllers();
 
-    // 配置Excel帮助类
+    // 配置Excel帮助类（用于处理Excel导入导出功能）
     var excelOptions = app.Services.GetRequiredService<IOptions<HbtExcelOptions>>();
     HbtExcelHelper.Configure(excelOptions);
 

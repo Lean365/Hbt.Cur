@@ -123,7 +123,24 @@ namespace Lean.Hbt.Application.Services.Identity
             if (user == null)
                 throw new HbtException(_localization.L("User.NotFound"));
 
-            return user.Adapt<HbtUserDto>();
+            // 获取用户角色
+            var userRoles = await _userRoleRepository.GetListAsync(ur => ur.UserId == userId);
+            var roleIds = userRoles.Select(ur => ur.RoleId).ToList();
+
+            // 获取用户岗位
+            var userPosts = await _userPostRepository.GetListAsync(up => up.UserId == userId);
+            var postIds = userPosts.Select(up => up.PostId).ToList();
+
+            // 获取用户部门
+            var userDepts = await _userDeptRepository.GetListAsync(ud => ud.UserId == userId);
+            var deptIds = userDepts.Select(ud => ud.DeptId).ToList();
+
+            var userDto = user.Adapt<HbtUserDto>();
+            userDto.RoleIds = roleIds;
+            userDto.PostIds = postIds;
+            userDto.DeptIds = deptIds;
+
+            return userDto;
         }
 
         /// <summary>
@@ -380,11 +397,30 @@ namespace Lean.Hbt.Application.Services.Identity
         }
 
         /// <summary>
+        /// 获取用户选项列表
+        /// </summary>
+        /// <returns>用户选项列表</returns>
+        public async Task<List<HbtSelectOption>> GetOptionsAsync()
+        {
+            var users = await _userRepository.AsQueryable()
+                .Where(u => u.Status == 0)  // 只获取正常状态的用户
+                .OrderBy(u => u.UserName)
+                .Select(u => new HbtSelectOption
+                {
+                    Label = u.UserName,
+                    Value = u.Id,
+                    Disabled = false
+                })
+                .ToListAsync();
+            return users;
+        }
+
+        /// <summary>
         /// 导入用户数据
         /// </summary>
         /// <param name="fileStream">Excel文件流</param>
         /// <param name="sheetName">工作表名称</param>
-        /// <returns>返回导入结果(success:成功数量,fail:失败数量)</returns>
+        /// <returns>返回导入成功和失败的数量</returns>
         public async Task<(int success, int fail)> ImportAsync(Stream fileStream, string sheetName = "Sheet1")
         {
             var users = await HbtExcelHelper.ImportAsync<HbtUserImportDto>(fileStream, sheetName);

@@ -165,5 +165,16 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
             var result = await _roleService.UpdateStatusAsync(input);
             return Success(result);
         }
+
+        /// <summary>
+        /// 获取角色选项列表
+        /// </summary>
+        /// <returns>角色选项列表</returns>
+        [HttpGet("options")]
+        public async Task<IActionResult> GetOptionsAsync()
+        {
+            var result = await _roleService.GetOptionsAsync();
+            return Success(result);
+        }
     }
 }

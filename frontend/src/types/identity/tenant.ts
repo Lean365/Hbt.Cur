@@ -4,14 +4,16 @@ import type { HbtBaseEntity, HbtPageQuery } from '@/types/common'
  * 租户查询参数
  */
 export interface TenantQuery extends HbtPageQuery {
+  /** 租户编码 */
+  tenantCode?: string
   /** 租户名称 */
-  tenantName?: string;
+  tenantName?: string
+  /** 联系人 */
+  contactPerson?: string
+  /** 联系电话 */
+  contactPhone?: string
   /** 状态（0=正常 1=停用） */
-  status?: number;
-  /** 开始时间 */
-  beginTime?: string;
-  /** 结束时间 */
-  endTime?: string;
+  status?: number
 }
 
 /**
@@ -19,65 +21,85 @@ export interface TenantQuery extends HbtPageQuery {
  */
 export interface Tenant extends HbtBaseEntity {
   /** 租户ID */
-  tenantId: number;
+  tenantId: number
+  /** 租户编码 */
+  tenantCode: string
   /** 租户名称 */
-  tenantName: string;
-  /** 域名 */
-  domain: string;
+  tenantName: string
   /** 联系人 */
-  linkman: string;
+  contactPerson: string
   /** 联系电话 */
-  contactNumber: string;
-  /** 地址 */
-  address: string;
-  /** 营业执照号 */
-  licenseNumber: string;
-  /** 营业执照日期 */
-  licenseDate: string;
+  contactPhone: string
+  /** 联系邮箱 */
+  contactEmail: string
+  /** 租户地址 */
+  address: string
+  /** 租户域名 */
+  domain: string
+  /** 租户Logo */
+  logoUrl: string
+  /** 租户主题 */
+  theme: string
+  /** 授权开始时间 */
+  licenseStartTime?: string
+  /** 授权结束时间 */
+  licenseEndTime?: string
+  /** 最大用户数 */
+  maxUserCount: number
   /** 状态（0=正常 1=停用） */
-  status: number;
+  status: number
   /** 备注 */
-  remark?: string;
+  remark?: string
 }
 
 /**
- * 创建租户参数
+ * 租户创建参数
  */
 export interface TenantCreate {
+  /** 租户编码 */
+  tenantCode: string
   /** 租户名称 */
-  tenantName: string;
-  /** 域名 */
-  domain: string;
+  tenantName: string
   /** 联系人 */
-  linkman: string;
+  contactPerson: string
   /** 联系电话 */
-  contactNumber: string;
-  /** 地址 */
-  address?: string;
-  /** 营业执照号 */
-  licenseNumber?: string;
-  /** 营业执照日期 */
-  licenseDate?: string;
+  contactPhone: string
+  /** 联系邮箱 */
+  contactEmail: string
+  /** 租户地址 */
+  address: string
+  /** 租户域名 */
+  domain: string
+  /** 租户Logo */
+  logoUrl: string
+  /** 租户主题 */
+  theme: string
+  /** 授权开始时间 */
+  licenseStartTime?: string
+  /** 授权结束时间 */
+  licenseEndTime?: string
+  /** 最大用户数 */
+  maxUserCount: number
   /** 状态（0=正常 1=停用） */
-  status: number;
+  status: number
   /** 备注 */
-  remark?: string;
+  remark?: string
 }
 
 /**
- * 更新租户参数
+ * 租户更新参数
  */
 export interface TenantUpdate extends TenantCreate {
   /** 租户ID */
-  tenantId: number;
+  tenantId: number
 }
 
 /**
- * 租户状态更新参数
+ * 租户状态参数
  */
 export interface TenantStatus {
   /** 租户ID */
-  tenantId: number;
+  tenantId: number
   /** 状态（0=正常 1=停用） */
-  status: number;
+  status: number
 } 

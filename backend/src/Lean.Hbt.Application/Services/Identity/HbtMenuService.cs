@@ -232,21 +232,14 @@ namespace Lean.Hbt.Application.Services.Identity
         /// </summary>
         /// <param name="menuIds">要删除的菜单ID列表</param>
         /// <returns>返回是否删除成功</returns>
-        /// <exception cref="HbtException">当菜单列表为空或存在子菜单时抛出异常</exception>
-        public async Task<bool> BatchDeleteAsync(List<long> menuIds)
+        /// <exception cref="HbtException">当菜单列表为空时抛出异常</exception>
+        public async Task<bool> BatchDeleteAsync(long[] menuIds)
         {
-            if (menuIds == null || !menuIds.Any())
+            if (menuIds == null || menuIds.Length == 0)
                 throw new HbtException("请选择要删除的菜单");
 
-            // 检查是否有子菜单
-            var hasChildren = await _menuRepository.AsQueryable().AnyAsync(x => menuIds.Contains(x.ParentId));
-            if (hasChildren)
-                throw new HbtException("选中的菜单中存在子菜单,不允许删除");
-
-            // 删除菜单及其关联数据
-            await _roleMenuRepository.DeleteAsync((Expression<Func<HbtRoleMenu, bool>>)(x => menuIds.Contains(x.MenuId)));
-            var result = await _menuRepository.DeleteAsync((Expression<Func<HbtMenu, bool>>)(x => menuIds.Contains(x.Id)));
-
+            Expression<Func<HbtMenu, bool>> condition = m => menuIds.Contains(m.Id);
+            var result = await _menuRepository.DeleteAsync(condition);
             return result > 0;
         }
 
@@ -290,13 +283,31 @@ namespace Lean.Hbt.Application.Services.Identity
         }
 
         /// <summary>
-        /// 从Excel导入菜单数据
+        /// 获取菜单选项列表
+        /// </summary>
+        /// <returns>菜单选项列表</returns>
+        public async Task<List<HbtSelectOption>> GetOptionsAsync()
+        {
+            var menus = await _menuRepository.AsQueryable()
+                .Where(m => m.Status == 0)  // 只获取正常状态的菜单
+                .OrderBy(m => m.OrderNum)
+                .Select(m => new HbtSelectOption
+                {
+                    Label = m.MenuName,
+                    Value = m.Id,
+                    Disabled = false
+                })
+                .ToListAsync();
+            return menus;
+        }
+
+        /// <summary>
+        /// 导入菜单数据
         /// </summary>
         /// <param name="fileStream">Excel文件流</param>
         /// <param name="sheetName">工作表名称</param>
-        /// <returns>返回导入的菜单数据列表</returns>
-        /// <exception cref="HbtException">当导入数据为空时抛出异常</exception>
-        public async Task<List<HbtMenuImportDto>> ImportAsync(Stream fileStream, string sheetName = "菜单数据")
+        /// <returns>返回导入的菜单数据集合</returns>
+        public async Task<List<HbtMenuImportDto>> ImportAsync(Stream fileStream, string sheetName = "Sheet1")
         {
             try
             {
@@ -353,22 +364,72 @@ namespace Lean.Hbt.Application.Services.Identity
         /// <returns>返回菜单树形结构列表</returns>
         public async Task<List<HbtMenuDto>> GetTreeAsync()
         {
-            // 获取所有菜单
-            var menus = await _menuRepository.AsQueryable()
-                .OrderBy(m => m.OrderNum)
-                .ToListAsync();
-
-            // 转换为DTO
-            var menuDtos = menus.Adapt<List<HbtMenuDto>>();
-
-            // 构建树形结构
-            var tree = menuDtos.Where(m => m.ParentId == null).ToList();
-            foreach (var node in tree)
+            try
             {
-                BuildMenuTree(node, menuDtos);
-            }
+                _logger.LogInformation("[菜单服务] 开始获取菜单树");
+                
+                // 获取所有菜单
+                var menus = await _menuRepository.AsQueryable()
+                    .OrderBy(m => m.OrderNum)
+                    .ToListAsync();
+                    
+                _logger.LogInformation("[菜单服务] 从数据库获取菜单数: {Count}", menus?.Count ?? 0);
 
-            return tree;
+                // 转换为DTO
+                var menuDtos = menus.Adapt<List<HbtMenuDto>>();
+                
+                _logger.LogInformation("[菜单服务] 转换后的菜单DTO数: {Count}", menuDtos?.Count ?? 0);
+
+                // 构建树形结构 - 使用ParentId == 0作为根节点判断条件
+                var tree = menuDtos.Where(m => m.ParentId == 0).ToList();
+                
+                _logger.LogInformation("[菜单服务] 找到根节点数: {Count}, 根节点: {RootNodes}", 
+                    tree?.Count ?? 0,
+                    string.Join(", ", tree?.Select(n => $"{n.MenuName}({n.MenuId})") ?? new List<string>()));
+
+                foreach (var node in tree)
+                {
+                    BuildMenuTree(node, menuDtos);
+                }
+
+                _logger.LogInformation("[菜单服务] 菜单树构建完成");
+                return tree;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "[菜单服务] 获取菜单树时发生错误: {Message}", ex.Message);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// 递归构建菜单树
+        /// </summary>
+        /// <param name="node">当前节点</param>
+        /// <param name="allMenus">所有菜单列表</param>
+        private void BuildMenuTree(HbtMenuDto node, List<HbtMenuDto> allMenus)
+        {
+            try
+            {
+                var children = allMenus.Where(m => m.ParentId == node.MenuId).ToList();
+                if (children.Any())
+                {
+                    _logger.LogInformation("[菜单服务] 节点 {NodeName}({NodeId}) 找到 {Count} 个子节点", 
+                        node.MenuName, node.MenuId, children.Count);
+                        
+                    node.Children = children;
+                    foreach (var child in children)
+                    {
+                        BuildMenuTree(child, allMenus);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "[菜单服务] 构建节点 {NodeName}({NodeId}) 的子树时发生错误: {Message}", 
+                    node.MenuName, node.MenuId, ex.Message);
+                throw;
+            }
         }
 
         /// <summary>
@@ -458,24 +519,6 @@ namespace Lean.Hbt.Application.Services.Identity
             {
                 _logger.LogError(ex, "[菜单服务] 获取用户菜单失败: {Message}", ex.Message);
                 throw;
-            }
-        }
-
-        /// <summary>
-        /// 递归构建菜单树
-        /// </summary>
-        /// <param name="node">当前节点</param>
-        /// <param name="menuDtos">所有菜单列表</param>
-        private void BuildMenuTree(HbtMenuDto node, List<HbtMenuDto> menuDtos)
-        {
-            var children = menuDtos.Where(m => m.ParentId == node.MenuId).ToList();
-            if (children.Any())
-            {
-                node.Children = children;
-                foreach (var child in children)
-                {
-                    BuildMenuTree(child, menuDtos);
-                }
             }
         }
     }

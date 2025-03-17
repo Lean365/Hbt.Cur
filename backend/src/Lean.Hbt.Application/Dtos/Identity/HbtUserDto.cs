@@ -40,6 +40,9 @@ namespace Lean.Hbt.Application.Dtos.Identity
             CreateTime = DateTime.Now;
             Roles = new List<string>();
             Permissions = new List<string>();
+            RoleIds = new List<long>();
+            PostIds = new List<long>();
+            DeptIds = new List<long>();
         }
 
         /// <summary>
@@ -137,6 +140,21 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// 备注
         /// </summary>
         public string? Remark { get; set; }
+
+        /// <summary>
+        /// 角色ID列表
+        /// </summary>
+        public List<long> RoleIds { get; set; }
+
+        /// <summary>
+        /// 岗位ID列表
+        /// </summary>
+        public List<long> PostIds { get; set; }
+
+        /// <summary>
+        /// 部门ID列表
+        /// </summary>
+        public List<long> DeptIds { get; set; }
     }
 
     /// <summary>

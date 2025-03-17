@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-import type { HbtApiResult } from '@/types/common'
+import type { HbtApiResponse } from '@/types/common'
 import type { 
   ExceptionLogQuery, 
   ExceptionLog,
@@ -8,7 +8,7 @@ import type {
 
 // 获取异常日志列表
 export function getExceptionLogList(params: ExceptionLogQuery) {
-  return request<HbtApiResult<ExceptionLog[]>>({
+  return request<HbtApiResponse<ExceptionLog[]>>({
     url: '/api/HbtExceptionLog',
     method: 'get',
     params
@@ -17,7 +17,7 @@ export function getExceptionLogList(params: ExceptionLogQuery) {
 
 // 获取异常日志详情
 export function getExceptionLog(id: number) {
-  return request<HbtApiResult<ExceptionLog>>({
+  return request<HbtApiResponse<ExceptionLog>>({
     url: `/api/HbtExceptionLog/${id}`,
     method: 'get'
   })
@@ -25,7 +25,7 @@ export function getExceptionLog(id: number) {
 
 // 清空异常日志
 export function clearExceptionLog() {
-  return request<HbtApiResult<any>>({
+  return request<HbtApiResponse<any>>({
     url: '/api/HbtExceptionLog/clear',
     method: 'delete'
   })

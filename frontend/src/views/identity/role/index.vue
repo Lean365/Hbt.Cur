@@ -87,9 +87,12 @@
             :edit-permission="['identity:role:update']"
             :show-delete="true"
             :delete-permission="['identity:role:delete']"
+            :show-authorize="true"
+            :authorize-permission="['identity:role:allocate']"
             size="small"
             @edit="handleEdit"
             @delete="handleDelete"
+            @authorize="handleAuthorize"
           />
         </template>
       </template>
@@ -99,6 +102,13 @@
     <role-form
       v-model:visible="formVisible"
       :title="formTitle"
+      :role-id="selectedRoleId"
+      @success="handleSuccess"
+    />
+
+    <!-- 菜单分配对话框 -->
+    <menu-allocate
+      v-model:visible="menuAllocateVisible"
       :role-id="selectedRoleId"
       @success="handleSuccess"
     />
@@ -112,8 +122,10 @@ import { message } from 'ant-design-vue'
 import type { TablePaginationConfig } from 'ant-design-vue'
 import type { QueryField } from '@/types/components/query'
 import type { Role, RoleQuery } from '@/types/identity/role'
+import type { HbtApiResponse, HbtPagedResult } from '@/types/common'
 import { getPagedList, deleteRole } from '@/api/identity/role'
 import RoleForm from './components/RoleForm.vue'
+import MenuAllocate from './components/MenuAllocate.vue'
 
 const { t } = useI18n()
 
@@ -217,13 +229,20 @@ const formVisible = ref(false)
 const formTitle = ref('')
 const selectedRoleId = ref<number>()
 
+// 菜单分配弹窗
+const menuAllocateVisible = ref(false)
+
 // 获取表格数据
 const fetchData = async () => {
   loading.value = true
   try {
     const res = await getPagedList(queryParams.value)
-    tableData.value = res.data.rows
-    total.value = res.data.totalNum
+    if (res.code === 200) {
+      tableData.value = res.data.rows
+      total.value = res.data.totalNum
+    } else {
+      message.error(res.msg || t('common.failed'))
+    }
   } catch (error) {
     console.error(error)
     message.error(t('common.failed'))
@@ -273,9 +292,13 @@ const handleEdit = (record: Role) => {
 // 处理删除
 const handleDelete = async (record: Role) => {
   try {
-    await deleteRole(record.roleId)
-    message.success(t('common.delete.success'))
-    fetchData()
+    const res = await deleteRole(record.roleId)
+    if (res.code === 200) {
+      message.success(t('common.delete.success'))
+      fetchData()
+    } else {
+      message.error(res.msg || t('common.delete.failed'))
+    }
   } catch (error) {
     console.error(error)
     message.error(t('common.delete.failed'))
@@ -314,14 +337,26 @@ const handleBatchDelete = async () => {
   }
   
   try {
-    await Promise.all(selectedRowKeys.value.map(id => deleteRole(Number(id))))
-    message.success(t('common.delete.success'))
-    selectedRowKeys.value = []
-    fetchData()
+    const results = await Promise.all(selectedRowKeys.value.map(id => deleteRole(Number(id))))
+    const hasError = results.some(res => res.code !== 200)
+    if (!hasError) {
+      message.success(t('common.delete.success'))
+      selectedRowKeys.value = []
+      fetchData()
+    } else {
+      message.error(t('common.delete.failed'))
+    }
   } catch (error) {
     console.error(error)
     message.error(t('common.delete.failed'))
   }
+}
+
+// 处理授权
+const handleAuthorize = (record: Role) => {
+  formTitle.value = t('identity.role.actions.authorize')
+  selectedRoleId.value = record.roleId
+  menuAllocateVisible.value = true
 }
 
 // 初始化

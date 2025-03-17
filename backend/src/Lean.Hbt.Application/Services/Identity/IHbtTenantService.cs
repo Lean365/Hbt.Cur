@@ -57,9 +57,15 @@ public interface IHbtTenantService
     /// <summary>
     /// 批量删除租户
     /// </summary>
-    /// <param name="ids">租户ID集合</param>
+    /// <param name="tenantIds">租户ID集合</param>
     /// <returns>是否成功</returns>
-    Task<bool> BatchDeleteAsync(long[] ids);
+    Task<bool> BatchDeleteAsync(long[] tenantIds);
+
+    /// <summary>
+    /// 获取租户选项列表
+    /// </summary>
+    /// <returns>租户选项列表</returns>
+    Task<List<HbtSelectOption>> GetOptionsAsync();
 
     /// <summary>
     /// 导入租户数据

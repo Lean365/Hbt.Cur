@@ -105,7 +105,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <param name="deptIds">部门ID集合</param>
         /// <returns>是否成功</returns>
         [HttpDelete("batch")]
-        public async Task<IActionResult> BatchDeleteAsync([FromBody] List<long> deptIds)
+        public async Task<IActionResult> BatchDeleteAsync([FromBody] long[] deptIds)
         {
             var result = await _deptService.BatchDeleteAsync(deptIds);
             return Success(result);
@@ -179,6 +179,17 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         public async Task<IActionResult> UpdateStatusAsync(long deptId, [FromQuery] int status)
         {
             var result = await _deptService.UpdateStatusAsync(deptId, status);
+            return Success(result);
+        }
+
+        /// <summary>
+        /// 获取部门选项列表
+        /// </summary>
+        /// <returns>部门选项列表</returns>
+        [HttpGet("options")]
+        public async Task<IActionResult> GetOptionsAsync()
+        {
+            var result = await _deptService.GetOptionsAsync();
             return Success(result);
         }
     }

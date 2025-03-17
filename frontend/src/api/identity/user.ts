@@ -1,11 +1,12 @@
 import request from '@/utils/request'
 import type { UserQuery, User, UserForm, UserStatus, ResetPassword, ChangePassword } from '@/types/identity/user'
 import type { HbtPagedResult } from '@/types/common'
+import type { HbtApiResponse } from '@/types/common'
 
 // 获取用户分页列表
 export function getPagedList(query: UserQuery) {
-  return request<HbtPagedResult<User>>({
-    url: '/api/hbtuser',
+  return request<HbtApiResponse<HbtPagedResult<User>>>({
+    url: '/api/HbtUser',
     method: 'get',
     params: query
   })
@@ -13,16 +14,16 @@ export function getPagedList(query: UserQuery) {
 
 // 获取用户详情
 export function getUser(userId: number) {
-  return request<User>({
-    url: `/api/hbtuser/${userId}`,
+  return request<HbtApiResponse<User>>({
+    url: `/api/HbtUser/${userId}`,
     method: 'get'
   })
 }
 
 // 创建用户
 export function createUser(data: UserForm) {
-  return request<number>({
-    url: '/api/hbtuser',
+  return request<HbtApiResponse<number>>({
+    url: '/api/HbtUser',
     method: 'post',
     data
   })
@@ -30,8 +31,8 @@ export function createUser(data: UserForm) {
 
 // 更新用户
 export function updateUser(data: UserForm) {
-  return request<boolean>({
-    url: '/api/hbtuser',
+  return request<HbtApiResponse<boolean>>({
+    url: '/api/HbtUser',
     method: 'put',
     data
   })
@@ -39,16 +40,16 @@ export function updateUser(data: UserForm) {
 
 // 删除用户
 export function deleteUser(userId: number) {
-  return request<boolean>({
-    url: `/api/hbtuser/${userId}`,
+  return request<HbtApiResponse<boolean>>({
+    url: `/api/HbtUser/${userId}`,
     method: 'delete'
   })
 }
 
 // 批量删除用户
 export function batchDeleteUser(userIds: number[]) {
-  return request<boolean>({
-    url: '/api/hbtuser/batch',
+  return request<HbtApiResponse<boolean>>({
+    url: '/api/HbtUser/batch',
     method: 'delete',
     data: userIds
   })
@@ -59,7 +60,7 @@ export function importUser(file: File) {
   const formData = new FormData()
   formData.append('file', file)
   return request<{ success: number; fail: number }>({
-    url: '/api/hbtuser/import',
+    url: '/api/HbtUser/import',
     method: 'post',
     data: formData,
     headers: {
@@ -71,7 +72,7 @@ export function importUser(file: File) {
 // 导出用户
 export function exportUser(query: UserQuery) {
   return request<Blob>({
-    url: '/api/hbtuser/export',
+    url: '/api/HbtUser/export',
     method: 'get',
     params: query,
     responseType: 'blob'
@@ -81,7 +82,7 @@ export function exportUser(query: UserQuery) {
 // 获取导入模板
 export function getTemplate() {
   return request<Blob>({
-    url: '/api/hbtuser/template',
+    url: '/api/HbtUser/template',
     method: 'get',
     responseType: 'blob'
   })
@@ -89,8 +90,8 @@ export function getTemplate() {
 
 // 更新用户状态
 export function updateUserStatus(data: UserStatus) {
-  return request<boolean>({
-    url: `/api/hbtuser/${data.userId}/status`,
+  return request<HbtApiResponse<boolean>>({
+    url: `/api/HbtUser/${data.userId}/status`,
     method: 'put',
     params: {
       status: data.status
@@ -101,7 +102,7 @@ export function updateUserStatus(data: UserStatus) {
 // 重置密码
 export function resetPassword(data: ResetPassword) {
   return request<boolean>({
-    url: '/api/hbtuser/reset-password',
+    url: '/api/HbtUser/reset-password',
     method: 'put',
     data
   })
@@ -110,7 +111,7 @@ export function resetPassword(data: ResetPassword) {
 // 修改密码
 export function changePassword(data: ChangePassword) {
   return request<boolean>({
-    url: '/api/hbtuser/change-password',
+    url: '/api/HbtUser/change-password',
     method: 'put',
     data
   })

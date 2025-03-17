@@ -326,6 +326,25 @@ namespace Lean.Hbt.Application.Services.Identity
         }
 
         /// <summary>
+        /// 获取角色选项列表
+        /// </summary>
+        /// <returns>角色选项列表</returns>
+        public async Task<List<HbtSelectOption>> GetOptionsAsync()
+        {
+            var roles = await _roleRepository.AsQueryable()
+                .Where(r => r.Status == 0)  // 只获取正常状态的角色
+                .OrderBy(r => r.OrderNum)
+                .Select(r => new HbtSelectOption
+                {
+                    Label = r.RoleName,
+                    Value = r.Id,
+                    Disabled = false
+                })
+                .ToListAsync();
+            return roles;
+        }
+
+        /// <summary>
         /// 导入角色数据
         /// </summary>
         /// <param name="fileStream">Excel文件流</param>
@@ -336,53 +355,46 @@ namespace Lean.Hbt.Application.Services.Identity
             if (fileStream == null)
                 throw new HbtException("导入文件流不能为空");
 
+            int success = 0, fail = 0;
+
             // 1.从Excel导入数据
             var roles = await HbtExcelHelper.ImportAsync<HbtRoleImportDto>(fileStream, sheetName);
             if (roles?.Any() != true)
                 return (0, 0);
 
-            int success = 0;
-            int fail = 0;
-
+            // 2.逐个处理导入数据
             foreach (var role in roles)
             {
                 try
                 {
                     if (string.IsNullOrEmpty(role.RoleName) || string.IsNullOrEmpty(role.RoleKey))
                     {
-                        _logger.LogWarning($"导入角色失败: 角色名称或角色标识不能为空");
                         fail++;
                         continue;
                     }
 
                     // 验证字段是否已存在
-                    try
-                    {
-                        await HbtValidateUtils.ValidateFieldExistsAsync(_roleRepository, "RoleName", role.RoleName);
-                        await HbtValidateUtils.ValidateFieldExistsAsync(_roleRepository, "RoleKey", role.RoleKey);
-                    }
-                    catch (HbtException ex)
-                    {
-                        _logger.LogWarning($"导入角色失败: {ex.Message}");
-                        fail++;
-                        continue;
-                    }
+                    await HbtValidateUtils.ValidateFieldExistsAsync(_roleRepository, "RoleName", role.RoleName);
+                    await HbtValidateUtils.ValidateFieldExistsAsync(_roleRepository, "RoleKey", role.RoleKey);
 
+                    // 创建角色实体
                     var entity = new HbtRole
                     {
                         RoleName = role.RoleName,
                         RoleKey = role.RoleKey,
                         OrderNum = role.OrderNum,
-                        DataScope = 1, // 默认值 1
-                        Status = 0, // 默认值 0 表示正常
+                        Status = role.Status
                     };
 
-                    await _roleRepository.InsertAsync(entity);
-                    success++;
+                    // 保存到数据库
+                    var result = await _roleRepository.InsertAsync(entity);
+                    if (result > 0)
+                        success++;
+                    else
+                        fail++;
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
-                    _logger.LogError($"导入角色失败: {ex.Message}", ex);
                     fail++;
                 }
             }

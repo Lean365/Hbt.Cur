@@ -1,80 +1,108 @@
 import request from '@/utils/request'
-import type { HbtApiResult } from '@/types/common'
+import type { HbtApiResponse, HbtPagedResult } from '@/types/common'
 import type { 
   TenantQuery, 
-  Tenant, 
-  TenantCreate, 
+  Tenant,
+  TenantCreate,
   TenantUpdate,
   TenantStatus
 } from '@/types/identity/tenant'
 
-// 获取租户列表
-export function getTenantList(params: TenantQuery) {
-  return request<HbtApiResult<Tenant[]>>({
-    url: '/api/identity/tenant/list',
+/**
+ * 获取租户分页列表
+ */
+export function getPagedList(params: TenantQuery) {
+  return request<HbtApiResponse<HbtPagedResult<Tenant>>>({
+    url: '/api/HbtTenant',
     method: 'get',
     params
   })
 }
 
-// 获取租户详情
+/**
+ * 获取租户详情
+ */
 export function getTenant(tenantId: number) {
-  return request<HbtApiResult<Tenant>>({
-    url: `/api/identity/tenant/${tenantId}`,
+  return request<HbtApiResponse<Tenant>>({
+    url: `/api/HbtTenant/${tenantId}`,
     method: 'get'
   })
 }
 
-// 创建租户
+/**
+ * 创建租户
+ */
 export function createTenant(data: TenantCreate) {
-  return request<HbtApiResult<any>>({
-    url: '/api/identity/tenant',
+  return request<HbtApiResponse<number>>({
+    url: '/api/HbtTenant',
     method: 'post',
     data
   })
 }
 
-// 更新租户
+/**
+ * 更新租户
+ */
 export function updateTenant(data: TenantUpdate) {
-  return request<HbtApiResult<any>>({
-    url: '/api/identity/tenant',
+  return request<HbtApiResponse<boolean>>({
+    url: '/api/HbtTenant',
     method: 'put',
     data
   })
 }
 
-// 删除租户
+/**
+ * 删除租户
+ */
 export function deleteTenant(tenantId: number) {
-  return request<HbtApiResult<any>>({
-    url: `/api/identity/tenant/${tenantId}`,
+  return request<HbtApiResponse<boolean>>({
+    url: `/api/HbtTenant/${tenantId}`,
     method: 'delete'
   })
 }
 
-// 批量删除租户
+/**
+ * 批量删除租户
+ */
 export function batchDeleteTenant(tenantIds: number[]) {
-  return request<HbtApiResult<any>>({
-    url: '/api/identity/tenant/batch',
+  return request<HbtApiResponse<boolean>>({
+    url: '/api/HbtTenant/batch',
     method: 'delete',
     data: tenantIds
   })
 }
 
-// 更新租户状态
+/**
+ * 更新租户状态
+ */
 export function updateTenantStatus(data: TenantStatus) {
-  return request<HbtApiResult<any>>({
-    url: `/api/identity/tenant/${data.tenantId}/status`,
+  return request<HbtApiResponse<boolean>>({
+    url: `/api/HbtTenant/${data.tenantId}/status`,
     method: 'put',
     params: { status: data.status }
   })
 }
 
-// 导入租户
+/**
+ * 导出租户数据
+ */
+export function exportTenant(params?: TenantQuery) {
+  return request({
+    url: '/api/HbtTenant/export',
+    method: 'get',
+    params,
+    responseType: 'blob'
+  })
+}
+
+/**
+ * 导入租户数据
+ */
 export function importTenant(file: File) {
   const formData = new FormData()
   formData.append('file', file)
-  return request<HbtApiResult<any>>({
-    url: '/api/identity/tenant/import',
+  return request<HbtApiResponse<{ success: number; fail: number }>>({
+    url: '/api/HbtTenant/import',
     method: 'post',
     data: formData,
     headers: {
@@ -83,29 +111,23 @@ export function importTenant(file: File) {
   })
 }
 
-// 导出租户
-export function exportTenant(params: TenantQuery) {
+/**
+ * 下载租户导入模板
+ */
+export function downloadTemplate() {
   return request({
-    url: '/api/identity/tenant/export',
-    method: 'get',
-    params,
-    responseType: 'blob'
-  })
-}
-
-// 获取租户导入模板
-export function getTenantTemplate() {
-  return request({
-    url: '/api/identity/tenant/template',
+    url: '/api/HbtTenant/template',
     method: 'get',
     responseType: 'blob'
   })
 }
 
-// 获取当前租户信息
+/**
+ * 获取当前租户信息
+ */
 export function getCurrentTenant() {
-  return request<HbtApiResult<Tenant>>({
-    url: '/api/identity/tenant/current',
+  return request<HbtApiResponse<Tenant>>({
+    url: '/api/HbtTenant/current',
     method: 'get'
   })
-} 
+}

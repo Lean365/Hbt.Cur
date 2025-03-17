@@ -62,9 +62,9 @@ namespace Lean.Hbt.Application.Services.Identity
         /// <summary>
         /// 批量删除菜单
         /// </summary>
-        /// <param name="menuIds">菜单ID集合</param>
+        /// <param name="menuIds">菜单ID列表</param>
         /// <returns>是否成功</returns>
-        Task<bool> BatchDeleteAsync(List<long> menuIds);
+        Task<bool> BatchDeleteAsync(long[] menuIds);
 
         /// <summary>
         /// 导出菜单数据
@@ -115,5 +115,11 @@ namespace Lean.Hbt.Application.Services.Identity
         /// <param name="userId">用户ID</param>
         /// <returns>返回当前用户的菜单树</returns>
         Task<List<HbtMenuDto>> GetCurrentUserMenusAsync(long userId);
+
+        /// <summary>
+        /// 获取菜单选项列表
+        /// </summary>
+        /// <returns>菜单选项列表</returns>
+        Task<List<HbtSelectOption>> GetOptionsAsync();
     }
 } 

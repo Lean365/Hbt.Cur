@@ -43,6 +43,19 @@ public class HbtMonitoringOptions
     /// 告警阈值
     /// </summary>
     public AlertThresholdOptions Alerts { get; set; }
+
+    /// <summary>
+    /// 初始化监控配置选项，设置默认值
+    /// </summary>
+    public HbtMonitoringOptions()
+    {
+        ProcessFilter = new ProcessFilterOptions();
+        NetworkFilter = new NetworkFilterOptions();
+        ServiceFilter = new ServiceFilterOptions();
+        Alerts = new AlertThresholdOptions();
+        Enabled = true;
+        RefreshInterval = 30;
+    }
 }
 
 /// <summary>

@@ -63,9 +63,9 @@ namespace Lean.Hbt.Application.Services.Identity
         /// <summary>
         /// 批量删除用户
         /// </summary>
-        /// <param name="userIds">用户ID集合</param>
+        /// <param name="ids">用户ID列表</param>
         /// <returns>是否成功</returns>
-        Task<bool> BatchDeleteAsync(long[] userIds);
+        Task<bool> BatchDeleteAsync(long[] ids);
 
         /// <summary>
         /// 导入用户数据
@@ -117,5 +117,11 @@ namespace Lean.Hbt.Application.Services.Identity
         /// <param name="input">解锁用户信息</param>
         /// <returns>是否成功</returns>
         Task<bool> UnlockUserAsync(HbtUserUnlockDto input);
+
+        /// <summary>
+        /// 获取用户选项列表
+        /// </summary>
+        /// <returns>用户选项列表</returns>
+        Task<List<HbtSelectOption>> GetOptionsAsync();
     }
 }

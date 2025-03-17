@@ -61,7 +61,7 @@ public class HbtUserContext : IHbtUserContext
     /// <summary>
     /// 获取用户权限列表
     /// </summary>
-    public string[] Permissions => _httpContextAccessor.HttpContext?.User.FindAll("permission").Select(c => c.Value).ToArray() ?? Array.Empty<string>();
+    public string[] Permissions => _httpContextAccessor.HttpContext?.User.FindAll("permissions").Select(c => c.Value).ToArray() ?? Array.Empty<string>();
 
     /// <summary>
     /// 判断用户是否已认证

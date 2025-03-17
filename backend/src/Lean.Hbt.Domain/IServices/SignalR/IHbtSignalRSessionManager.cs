@@ -29,7 +29,7 @@ namespace Lean.Hbt.Domain.IServices.SignalR
         /// <param name="userId">用户ID</param>
         /// <param name="excludeSessionId">排除的会话ID</param>
         /// <returns>异步任务</returns>
-        Task SingleSignOutAsync(string userId, string excludeSessionId = null);
+        Task SingleSignOutAsync(string userId, string? excludeSessionId = null);
     }
 
     /// <summary>

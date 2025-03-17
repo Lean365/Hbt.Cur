@@ -44,19 +44,19 @@ namespace Lean.Hbt.Domain.Entities.RealTime
         /// 连接ID
         /// </summary>
         [SugarColumn(ColumnName = "connection_id", ColumnDescription = "SignalR连接ID", Length = 50, ColumnDataType = "nvarchar", IsNullable = false, IsPrimaryKey = true)]
-        public string ConnectionId { get; set; }
+        public string? ConnectionId { get; set; }
 
         /// <summary>
         /// 客户端IP
         /// </summary>
         [SugarColumn(ColumnName = "client_ip", ColumnDescription = "客户端IP", Length = 50, ColumnDataType = "nvarchar", IsNullable = false)]
-        public string ClientIp { get; set; }
+        public string? ClientIp { get; set; }
 
         /// <summary>
         /// 浏览器信息
         /// </summary>
         [SugarColumn(ColumnName = "user_agent", ColumnDescription = "浏览器信息", Length = 500, ColumnDataType = "nvarchar", IsNullable = true)]
-        public string UserAgent { get; set; }
+        public string? UserAgent { get; set; }
 
         /// <summary>
         /// 最后活动时间
@@ -64,4 +64,4 @@ namespace Lean.Hbt.Domain.Entities.RealTime
         [SugarColumn(ColumnName = "last_activity", ColumnDescription = "最后活动时间", ColumnDataType = "datetime", IsNullable = false)]
         public DateTime LastActivity { get; set; }
     }
-} 
+}

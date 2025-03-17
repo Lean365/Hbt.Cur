@@ -12,23 +12,23 @@ export interface DeptQuery extends HbtPageQuery {
  * 部门信息
  */
 export interface Dept extends HbtBaseEntity {
-  deptId: number;
+  deptId?: number;
   deptName: string;
-  parentId?: number;
+  parentId: number;
   orderNum: number;
-  leader?: string;
-  phone?: string;
-  email?: string;
+  leader: string;
+  phone: string;
+  email: string;
   status: number;
   children?: Dept[];
 }
 
 /**
- * 创建部门参数
+ * 部门创建参数
  */
 export interface DeptCreate {
   deptName: string;
-  parentId?: number;
+  parentId: number;
   orderNum: number;
   leader?: string;
   phone?: string;
@@ -37,7 +37,7 @@ export interface DeptCreate {
 }
 
 /**
- * 更新部门参数
+ * 部门更新参数
  */
 export interface DeptUpdate extends DeptCreate {
   deptId: number;

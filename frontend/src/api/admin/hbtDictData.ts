@@ -8,7 +8,7 @@
 //===================================================================
 
 import request from '@/utils/request'
-import type { HbtApiResult, HbtPagedResult } from '@/types/common'
+import type { HbtApiResponse, HbtPagedResult } from '@/types/common'
 import type {
   HbtDictData,
   HbtDictDataQuery,
@@ -24,7 +24,7 @@ import type {
  * @returns 字典数据分页列表
  */
 export function getHbtDictDataList(query: HbtDictDataQuery) {
-  return request<HbtApiResult<HbtPagedResult<HbtDictData>>>({
+  return request<HbtApiResponse<HbtPagedResult<HbtDictData>>>({
     url: '/api/HbtDictData',
     method: 'get',
     params: query
@@ -37,7 +37,7 @@ export function getHbtDictDataList(query: HbtDictDataQuery) {
  * @returns 字典数据详情
  */
 export function getHbtDictData(dictDataId: number) {
-  return request<HbtApiResult<HbtDictData>>({
+  return request<HbtApiResponse<HbtDictData>>({
     url: `/api/HbtDictData/${dictDataId}`,
     method: 'get'
   })
@@ -49,7 +49,7 @@ export function getHbtDictData(dictDataId: number) {
  * @returns 字典数据ID
  */
 export function createHbtDictData(data: HbtDictDataCreate) {
-  return request<HbtApiResult<number>>({
+  return request<HbtApiResponse<number>>({
     url: '/api/HbtDictData',
     method: 'post',
     data
@@ -62,7 +62,7 @@ export function createHbtDictData(data: HbtDictDataCreate) {
  * @returns 是否成功
  */
 export function updateHbtDictData(data: HbtDictDataUpdate) {
-  return request<HbtApiResult<boolean>>({
+  return request<HbtApiResponse<boolean>>({
     url: '/api/HbtDictData',
     method: 'put',
     data
@@ -75,7 +75,7 @@ export function updateHbtDictData(data: HbtDictDataUpdate) {
  * @returns 是否成功
  */
 export function deleteHbtDictData(dictDataId: number) {
-  return request<HbtApiResult<boolean>>({
+  return request<HbtApiResponse<boolean>>({
     url: `/api/HbtDictData/${dictDataId}`,
     method: 'delete'
   })
@@ -87,7 +87,7 @@ export function deleteHbtDictData(dictDataId: number) {
  * @returns 是否成功
  */
 export function batchDeleteHbtDictData(dictDataIds: number[]) {
-  return request<HbtApiResult<boolean>>({
+  return request<HbtApiResponse<boolean>>({
     url: '/api/HbtDictData/batch',
     method: 'delete',
     data: dictDataIds
@@ -101,7 +101,7 @@ export function batchDeleteHbtDictData(dictDataIds: number[]) {
  * @returns 是否成功
  */
 export function updateHbtDictDataStatus(dictDataId: number, status: number) {
-  return request<HbtApiResult<boolean>>({
+  return request<HbtApiResponse<boolean>>({
     url: `/api/HbtDictData/${dictDataId}/status`,
     method: 'put',
     params: { status }
@@ -114,7 +114,7 @@ export function updateHbtDictDataStatus(dictDataId: number, status: number) {
  * @returns 字典数据选项列表
  */
 export function getHbtDictDataOptions(dictTypeId: number) {
-  return request<HbtApiResult<DictOption[]>>({
+  return request<HbtApiResponse<DictOption[]>>({
     url: '/api/HbtDictData/options',
     method: 'get',
     params: { dictTypeId }
@@ -156,7 +156,7 @@ export function getHbtDictDataTemplate() {
 export function importHbtDictData(file: File, sheetName: string = '字典数据') {
   const formData = new FormData()
   formData.append('file', file)
-  return request<HbtApiResult<boolean>>({
+  return request<HbtApiResponse<boolean>>({
     url: '/api/HbtDictData/import',
     method: 'post',
     params: { sheetName },
@@ -173,7 +173,7 @@ export function importHbtDictData(file: File, sheetName: string = '字典数据'
  * @returns 字典数据列表
  */
 export function getHbtDictDataByType(dictType: string) {
-  return request<HbtApiResult<HbtDictData[]>>({
+  return request<HbtApiResponse<HbtDictData[]>>({
     url: `/api/HbtDictData/type/${dictType}`,
     method: 'get'
   })

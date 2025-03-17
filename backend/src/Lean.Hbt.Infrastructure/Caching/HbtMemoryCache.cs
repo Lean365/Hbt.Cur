@@ -1,6 +1,6 @@
 //===================================================================
-// 项目名 : Lean.Hbt 
-// 文件名 : HbtMemoryCache.cs 
+// 项目名 : Lean.Hbt
+// 文件名 : HbtMemoryCache.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-17 16:30
 // 版本号 : V0.0.1
@@ -9,10 +9,8 @@
 
 using System.Collections.Concurrent;
 using System.Text.RegularExpressions;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Options;
-using Lean.Hbt.Common.Options;
 using Lean.Hbt.Domain.IServices.Caching;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace Lean.Hbt.Infrastructure.Caching
 {
@@ -30,7 +28,7 @@ namespace Lean.Hbt.Infrastructure.Caching
         /// 构造函数
         /// </summary>
         public HbtMemoryCache(
-            IMemoryCache cache, 
+            IMemoryCache cache,
             HbtCacheConfigManager configManager)
         {
             _cache = cache;
@@ -43,7 +41,7 @@ namespace Lean.Hbt.Infrastructure.Caching
         private async void InitializeDefaultOptions()
         {
             var options = await _configManager.GetCurrentOptionsAsync();
-            _defaultOptions.SlidingExpiration = options.EnableSlidingExpiration 
+            _defaultOptions.SlidingExpiration = options.EnableSlidingExpiration
                 ? TimeSpan.FromMinutes(options.DefaultExpirationMinutes)
                 : null;
             _defaultOptions.Size = options.Memory.SizeLimit;
@@ -134,6 +132,13 @@ namespace Lean.Hbt.Infrastructure.Caching
             return result;
         }
 
+        /// <summary>
+        /// 缓存过期回调
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <param name="reason"></param>
+        /// <param name="state"></param>
         private void OnPostEviction(object key, object? value, EvictionReason reason, object? state)
         {
             if (key is string strKey)
@@ -142,11 +147,25 @@ namespace Lean.Hbt.Infrastructure.Caching
             }
         }
 
+        /// <summary>
+        /// 获取缓存
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key"></param>
+        /// <returns></returns>
         public async Task<T?> GetAsync<T>(string key)
         {
             return await Task.FromResult(Get<T>(key));
         }
 
+        /// <summary>
+        /// 设置缓存
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <param name="expiration"></param>
+        /// <returns></returns>
         public async Task<bool> SetAsync<T>(string key, T value, TimeSpan expiration)
         {
             try
@@ -160,6 +179,11 @@ namespace Lean.Hbt.Infrastructure.Caching
             }
         }
 
+        /// <summary>
+        /// 判断缓存是否存在
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
         public async Task<bool> RemoveAsync(string key)
         {
             try
@@ -173,6 +197,10 @@ namespace Lean.Hbt.Infrastructure.Caching
             }
         }
 
+        /// <summary>
+        /// 清除缓存
+        /// </summary>
+        /// <returns></returns>
         public async Task<bool> ClearAsync()
         {
             try
@@ -189,4 +217,4 @@ namespace Lean.Hbt.Infrastructure.Caching
             }
         }
     }
-} 
+}

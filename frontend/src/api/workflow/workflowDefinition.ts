@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-import type { HbtApiResult } from '@/types/common'
+import type { HbtApiResponse } from '@/types/common'
 import type { 
   WorkflowDefinitionQuery, 
   WorkflowDefinition,
@@ -10,7 +10,7 @@ import type {
 
 // 获取工作流定义列表
 export function getWorkflowDefinitionList(params: WorkflowDefinitionQuery) {
-  return request<HbtApiResult<WorkflowDefinition[]>>({
+  return request<HbtApiResponse<WorkflowDefinition[]>>({
     url: '/api/HbtWorkflowDefinition',
     method: 'get',
     params
@@ -19,7 +19,7 @@ export function getWorkflowDefinitionList(params: WorkflowDefinitionQuery) {
 
 // 获取工作流定义详情
 export function getWorkflowDefinition(id: number) {
-  return request<HbtApiResult<WorkflowDefinition>>({
+  return request<HbtApiResponse<WorkflowDefinition>>({
     url: `/api/HbtWorkflowDefinition/${id}`,
     method: 'get'
   })
@@ -27,7 +27,7 @@ export function getWorkflowDefinition(id: number) {
 
 // 创建工作流定义
 export function createWorkflowDefinition(data: WorkflowDefinitionCreate) {
-  return request<HbtApiResult<any>>({
+  return request<HbtApiResponse<any>>({
     url: '/api/HbtWorkflowDefinition',
     method: 'post',
     data
@@ -36,7 +36,7 @@ export function createWorkflowDefinition(data: WorkflowDefinitionCreate) {
 
 // 更新工作流定义
 export function updateWorkflowDefinition(data: WorkflowDefinitionUpdate) {
-  return request<HbtApiResult<any>>({
+  return request<HbtApiResponse<any>>({
     url: '/api/HbtWorkflowDefinition',
     method: 'put',
     data
@@ -45,7 +45,7 @@ export function updateWorkflowDefinition(data: WorkflowDefinitionUpdate) {
 
 // 删除工作流定义
 export function deleteWorkflowDefinition(id: number) {
-  return request<HbtApiResult<any>>({
+  return request<HbtApiResponse<any>>({
     url: `/api/HbtWorkflowDefinition/${id}`,
     method: 'delete'
   })
@@ -53,7 +53,7 @@ export function deleteWorkflowDefinition(id: number) {
 
 // 批量删除工作流定义
 export function batchDeleteWorkflowDefinition(ids: number[]) {
-  return request<HbtApiResult<any>>({
+  return request<HbtApiResponse<any>>({
     url: '/api/HbtWorkflowDefinition/batch',
     method: 'delete',
     data: ids
@@ -64,7 +64,7 @@ export function batchDeleteWorkflowDefinition(ids: number[]) {
 export function importWorkflowDefinition(file: File, sheetName: string = 'Sheet1') {
   const formData = new FormData()
   formData.append('file', file)
-  return request<HbtApiResult<any>>({
+  return request<HbtApiResponse<any>>({
     url: '/api/HbtWorkflowDefinition/import',
     method: 'post',
     data: formData,
@@ -97,7 +97,7 @@ export function getWorkflowDefinitionTemplate(sheetName: string = 'Sheet1') {
 
 // 更新工作流定义状态
 export function updateWorkflowDefinitionStatus(id: number, data: WorkflowDefinitionStatus) {
-  return request<HbtApiResult<any>>({
+  return request<HbtApiResponse<any>>({
     url: `/api/HbtWorkflowDefinition/${id}/status`,
     method: 'put',
     data

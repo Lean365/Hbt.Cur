@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-import type { HbtApiResult } from '@/types/api'
+import type { HbtApiResponse } from '@/types/common'
 import type { 
   WorkflowVariableQuery, 
   WorkflowVariable,
@@ -9,7 +9,7 @@ import type {
 
 // 获取工作流变量列表
 export function getWorkflowVariableList(params: WorkflowVariableQuery) {
-  return request<HbtApiResult<WorkflowVariable[]>>({
+  return request<HbtApiResponse<WorkflowVariable[]>>({
     url: '/api/HbtWorkflowVariable',
     method: 'get',
     params
@@ -18,7 +18,7 @@ export function getWorkflowVariableList(params: WorkflowVariableQuery) {
 
 // 获取工作流变量详情
 export function getWorkflowVariable(id: number) {
-  return request<HbtApiResult<WorkflowVariable>>({
+  return request<HbtApiResponse<WorkflowVariable>>({
     url: `/api/HbtWorkflowVariable/${id}`,
     method: 'get'
   })
@@ -26,7 +26,7 @@ export function getWorkflowVariable(id: number) {
 
 // 创建工作流变量
 export function createWorkflowVariable(data: WorkflowVariableCreate) {
-  return request<HbtApiResult<any>>({
+  return request<HbtApiResponse<any>>({
     url: '/api/HbtWorkflowVariable',
     method: 'post',
     data
@@ -35,7 +35,7 @@ export function createWorkflowVariable(data: WorkflowVariableCreate) {
 
 // 更新工作流变量
 export function updateWorkflowVariable(data: WorkflowVariableUpdate) {
-  return request<HbtApiResult<any>>({
+  return request<HbtApiResponse<any>>({
     url: '/api/HbtWorkflowVariable',
     method: 'put',
     data
@@ -44,7 +44,7 @@ export function updateWorkflowVariable(data: WorkflowVariableUpdate) {
 
 // 删除工作流变量
 export function deleteWorkflowVariable(id: number) {
-  return request<HbtApiResult<any>>({
+  return request<HbtApiResponse<any>>({
     url: `/api/HbtWorkflowVariable/${id}`,
     method: 'delete'
   })
@@ -52,7 +52,7 @@ export function deleteWorkflowVariable(id: number) {
 
 // 批量删除工作流变量
 export function batchDeleteWorkflowVariable(ids: number[]) {
-  return request<HbtApiResult<any>>({
+  return request<HbtApiResponse<any>>({
     url: '/api/HbtWorkflowVariable/batch',
     method: 'delete',
     data: ids
@@ -63,7 +63,7 @@ export function batchDeleteWorkflowVariable(ids: number[]) {
 export function importWorkflowVariable(file: File, sheetName: string = 'Sheet1') {
   const formData = new FormData()
   formData.append('file', file)
-  return request<HbtApiResult<any>>({
+  return request<HbtApiResponse<any>>({
     url: '/api/HbtWorkflowVariable/import',
     method: 'post',
     data: formData,
@@ -96,7 +96,7 @@ export function getWorkflowVariableTemplate(sheetName: string = 'Sheet1') {
 
 // 获取工作流实例的所有变量
 export function getVariablesByWorkflowInstance(workflowInstanceId: number) {
-  return request<HbtApiResult<WorkflowVariable[]>>({
+  return request<HbtApiResponse<WorkflowVariable[]>>({
     url: `/api/HbtWorkflowVariable/instance/${workflowInstanceId}`,
     method: 'get'
   })
@@ -104,7 +104,7 @@ export function getVariablesByWorkflowInstance(workflowInstanceId: number) {
 
 // 获取工作流节点的所有变量
 export function getVariablesByWorkflowNode(workflowNodeId: number) {
-  return request<HbtApiResult<WorkflowVariable[]>>({
+  return request<HbtApiResponse<WorkflowVariable[]>>({
     url: `/api/HbtWorkflowVariable/node/${workflowNodeId}`,
     method: 'get'
   })
@@ -112,7 +112,7 @@ export function getVariablesByWorkflowNode(workflowNodeId: number) {
 
 // 获取工作流变量值
 export function getVariableValue(workflowInstanceId: number, variableName: string) {
-  return request<HbtApiResult<string>>({
+  return request<HbtApiResponse<string>>({
     url: '/api/HbtWorkflowVariable/value',
     method: 'get',
     params: { workflowInstanceId, variableName }
@@ -121,7 +121,7 @@ export function getVariableValue(workflowInstanceId: number, variableName: strin
 
 // 设置工作流变量值
 export function setVariableValue(workflowInstanceId: number, variableName: string, variableValue: string) {
-  return request<HbtApiResult<any>>({
+  return request<HbtApiResponse<any>>({
     url: '/api/HbtWorkflowVariable/value',
     method: 'put',
     params: { workflowInstanceId, variableName },

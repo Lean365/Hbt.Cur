@@ -1,12 +1,4 @@
 import request from '@/utils/request'
-import type { InternalAxiosRequestConfig } from 'axios'
-
-// API响应包装
-export interface HbtApiResult<T> {
-  code: number;
-  msg: string;
-  data: T;
-}
 
 // 滑块验证码DTO
 export interface SliderCaptchaDto {
@@ -28,16 +20,16 @@ export interface CaptchaResultDto {
 }
 
 // 获取滑块验证码
-export function getCaptcha() {
-  return request<HbtApiResult<SliderCaptchaDto>>({
+export function getCaptcha(): Promise<SliderCaptchaDto> {
+  return request({
     url: '/api/HbtCaptcha/slider',
     method: 'get'
   })
 }
 
 // 验证滑块验证码
-export function verifyCaptcha(data: SliderValidateDto) {
-  return request<HbtApiResult<CaptchaResultDto>>({
+export function verifyCaptcha(data: SliderValidateDto): Promise<CaptchaResultDto> {
+  return request({
     url: '/api/HbtCaptcha/slider/validate',
     method: 'post',
     data

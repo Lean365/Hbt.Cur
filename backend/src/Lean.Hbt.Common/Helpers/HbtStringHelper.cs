@@ -40,10 +40,10 @@ namespace Lean.Hbt.Common.Helpers
         /// <typeparam name="T">实体类型</typeparam>
         /// <param name="entity">实体对象</param>
         /// <returns>处理后的实体对象</returns>
-        public static T EnsureEntityStringLength<T>(T entity) where T : class
+        public static T? EnsureEntityStringLength<T>(T? entity) where T : class
         {
             if (entity == null)
-                return entity;
+                return null;
 
             var properties = typeof(T).GetProperties();
             foreach (var prop in properties)
@@ -76,10 +76,10 @@ namespace Lean.Hbt.Common.Helpers
         /// <param name="obj">对象实例</param>
         /// <param name="entityType">实体类型（用于获取长度限制）</param>
         /// <returns>处理后的对象</returns>
-        public static T EnsureObjectStringLength<T>(T obj, Type entityType) where T : class
+        public static T? EnsureObjectStringLength<T>(T? obj, Type entityType) where T : class
         {
             if (obj == null)
-                return obj;
+                return null;
 
             var objProperties = typeof(T).GetProperties();
             var entityProperties = entityType.GetProperties();

@@ -15,6 +15,7 @@ using Lean.Hbt.Domain.Entities.Identity;
 using Lean.Hbt.Domain.Repositories;
 using Lean.Hbt.Domain.Utils;
 using SqlSugar;
+using System.Linq.Expressions;
 
 namespace Lean.Hbt.Application.Services.Identity;
 
@@ -151,12 +152,35 @@ public class HbtTenantService : IHbtTenantService
     /// <summary>
     /// 批量删除租户
     /// </summary>
-    /// <param name="ids">租户ID数组</param>
+    /// <param name="tenantIds">租户ID数组</param>
     /// <returns>返回是否删除成功</returns>
-    public async Task<bool> BatchDeleteAsync(long[] ids)
+    public async Task<bool> BatchDeleteAsync(long[] tenantIds)
     {
-        var result = await _repository.DeleteRangeAsync(ids.Cast<object>().ToList());
+        if (tenantIds == null || tenantIds.Length == 0)
+            throw new HbtException("请选择要删除的租户");
+
+        Expression<Func<HbtTenant, bool>> condition = t => tenantIds.Contains(t.Id);
+        var result = await _repository.DeleteAsync(condition);
         return result > 0;
+    }
+
+    /// <summary>
+    /// 获取租户选项列表
+    /// </summary>
+    /// <returns>租户选项列表</returns>
+    public async Task<List<HbtSelectOption>> GetOptionsAsync()
+    {
+        var tenants = await _repository.AsQueryable()
+            .Where(t => t.Status == 0)  // 只获取正常状态的租户
+            .OrderBy(t => t.TenantName)
+            .Select(t => new HbtSelectOption
+            {
+                Label = t.TenantName,
+                Value = t.Id,
+                Disabled = false
+            })
+            .ToListAsync();
+        return tenants;
     }
 
     /// <summary>
@@ -164,7 +188,7 @@ public class HbtTenantService : IHbtTenantService
     /// </summary>
     /// <param name="fileStream">Excel文件流</param>
     /// <param name="sheetName">工作表名称</param>
-    /// <returns>返回导入结果(success:成功数量,fail:失败数量)</returns>
+    /// <returns>返回导入成功和失败的数量</returns>
     public async Task<(int success, int fail)> ImportAsync(Stream fileStream, string sheetName = "Sheet1")
     {
         var tenants = await HbtExcelHelper.ImportAsync<HbtTenantImportDto>(fileStream, sheetName);
@@ -179,25 +203,20 @@ public class HbtTenantService : IHbtTenantService
             try
             {
                 // 验证字段是否已存在
-                if (!string.IsNullOrEmpty(tenant.TenantName))
-                    await HbtValidateUtils.ValidateFieldExistsAsync(_repository, "TenantName", tenant.TenantName);
+                await HbtValidateUtils.ValidateFieldExistsAsync(_repository, "TenantName", tenant.TenantName);
+                await HbtValidateUtils.ValidateFieldExistsAsync(_repository, "TenantCode", tenant.TenantCode);
+                await HbtValidateUtils.ValidateFieldExistsAsync(_repository, "ContactEmail", tenant.ContactEmail);
 
-                if (!string.IsNullOrEmpty(tenant.TenantCode))
-                    await HbtValidateUtils.ValidateFieldExistsAsync(_repository, "TenantCode", tenant.TenantCode);
+                var newTenant = tenant.Adapt<HbtTenant>();
+                newTenant.Status = 0;
 
-                if (!string.IsNullOrEmpty(tenant.ContactEmail))
-                    await HbtValidateUtils.ValidateFieldExistsAsync(_repository, "ContactEmail", tenant.ContactEmail);
-
-                var entity = tenant.Adapt<HbtTenant>();
-                entity.Status = 0; // 0 表示正常状态
-
-                var result = await _repository.InsertAsync(entity);
+                var result = await _repository.InsertAsync(newTenant);
                 if (result > 0)
                     success++;
                 else
                     fail++;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 fail++;
             }

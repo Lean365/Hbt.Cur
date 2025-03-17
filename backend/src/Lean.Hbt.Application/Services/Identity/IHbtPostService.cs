@@ -62,6 +62,12 @@ namespace Lean.Hbt.Application.Services.Identity
         Task<bool> BatchDeleteAsync(long[] ids);
 
         /// <summary>
+        /// 获取岗位选项列表
+        /// </summary>
+        /// <returns>岗位选项列表</returns>
+        Task<List<HbtSelectOption>> GetOptionsAsync();
+
+        /// <summary>
         /// 导入岗位数据
         /// </summary>
         /// <param name="fileStream">Excel文件流</param>

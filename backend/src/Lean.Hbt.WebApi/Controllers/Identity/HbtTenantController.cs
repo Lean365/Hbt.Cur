@@ -137,15 +137,24 @@ public class HbtTenantController : HbtBaseController
     /// <summary>
     /// 更新租户状态
     /// </summary>
-    /// <param name="id">租户ID</param>
+    /// <param name="tenantId">租户ID</param>
     /// <param name="status">状态</param>
-    /// <returns>更新后的租户状态信息</returns>
-    [HttpPut("{id}/status")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<HbtTenantStatusDto> UpdateStatusAsync(long id, [FromQuery] int status)
+    /// <returns>是否成功</returns>
+    [HttpPut("{tenantId}/status")]
+    public async Task<IActionResult> UpdateStatusAsync(long tenantId, [FromQuery] int status)
     {
-        return await _tenantService.UpdateStatusAsync(id, status);
+        var result = await _tenantService.UpdateStatusAsync(tenantId, status);
+        return Success(result);
+    }
+
+    /// <summary>
+    /// 获取租户选项列表
+    /// </summary>
+    /// <returns>租户选项列表</returns>
+    [HttpGet("options")]
+    public async Task<IActionResult> GetOptionsAsync()
+    {
+        var result = await _tenantService.GetOptionsAsync();
+        return Success(result);
     }
 }

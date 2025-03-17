@@ -10,7 +10,19 @@ export default {
         submit: 'Login',
         register: 'Register',
         success: 'Login successful',
-        error: 'Login failed',
+        error: {
+          invalidCredentials: 'Invalid username or password',
+          accountLocked: 'Account is locked',
+          accountDisabled: 'Account is disabled',
+          accountExpired: 'Account has expired',
+          credentialsExpired: 'Password has expired',
+          invalidCaptcha: 'Invalid captcha',
+          invalidTenant: 'Invalid tenant',
+          invalidDevice: 'Invalid device info',
+          invalidGrant: 'Invalid grant',
+          tooManyAttempts: 'Too many login attempts, please try again later'
+        },
+        noToken: 'No access token in login response',
         otherLogin: 'Other login methods',
         form: {
           usernameRequired: 'Please enter your username',

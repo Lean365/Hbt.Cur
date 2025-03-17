@@ -144,9 +144,12 @@
             :edit-permission="['identity:user:update']"
             :show-delete="true"
             :delete-permission="['identity:user:delete']"
+            :show-authorize="true"
+            :authorize-permission="['identity:user:allocate']"
             size="small"
             @edit="handleEdit"
             @delete="handleDelete"
+            @authorize="handleAuthorize"
           >
             <!-- 重置密码按钮 -->
             <template #extra>
@@ -181,6 +184,13 @@
       @success="handleResetPwdSuccess"
     />
 
+    <!-- 角色分配对话框 -->
+    <role-allocate
+      v-model:visible="roleAllocateVisible"
+      :user-id="selectedUserId"
+      @success="handleSuccess"
+    />
+
     <!-- 列设置抽屉 -->
     <a-drawer
       :visible="columnSettingVisible"
@@ -212,6 +222,7 @@ import type { QueryField } from '@/types/components/query'
 import { getPagedList, deleteUser } from '@/api/identity/user'
 import UserForm from './components/UserForm.vue'
 import ResetPwdForm from './components/ResetPwdForm.vue'
+import RoleAllocate from './components/RoleAllocate.vue'
 
 const { t } = useI18n()
 const dictStore = useDictStore()
@@ -383,6 +394,9 @@ const selectedUserId = ref<number>()
 // 重置密码表单
 const resetPwdVisible = ref(false)
 
+// 角色分配弹窗
+const roleAllocateVisible = ref(false)
+
 // 列设置相关
 const columnSettingVisible = ref(false)
 const defaultColumns = columns
@@ -403,8 +417,12 @@ const fetchData = async () => {
   loading.value = true
   try {
     const res = await getPagedList(queryParams.value)
-    tableData.value = res.data.rows
-    total.value = res.data.totalNum
+    if (res.code === 200) {
+      tableData.value = res.data.rows
+      total.value = res.data.totalNum
+    } else {
+      message.error(res.msg || t('common.failed'))
+    }
   } catch (error) {
     console.error(error)
     message.error(t('common.failed'))
@@ -459,9 +477,13 @@ const handleEdit = (record: User) => {
 // 处理删除
 const handleDelete = async (record: User) => {
   try {
-    await deleteUser(record.userId)
-    message.success(t('common.delete.success'))
-    fetchData()
+    const res = await deleteUser(record.userId)
+    if (res.code === 200) {
+      message.success(t('common.delete.success'))
+      fetchData()
+    } else {
+      message.error(res.msg || t('common.delete.failed'))
+    }
   } catch (error) {
     console.error(error)
     message.error(t('common.delete.failed'))
@@ -510,10 +532,15 @@ const handleBatchDelete = async () => {
   }
   
   try {
-    await Promise.all(selectedRowKeys.value.map(id => deleteUser(Number(id))))
-    message.success(t('common.delete.success'))
-    selectedRowKeys.value = []
-    fetchData()
+    const results = await Promise.all(selectedRowKeys.value.map(id => deleteUser(Number(id))))
+    const hasError = results.some(res => res.code !== 200)
+    if (!hasError) {
+      message.success(t('common.delete.success'))
+      selectedRowKeys.value = []
+      fetchData()
+    } else {
+      message.error(t('common.delete.failed'))
+    }
   } catch (error) {
     console.error(error)
     message.error(t('common.delete.failed'))
@@ -560,6 +587,12 @@ const handleImport = () => {
 // 处理下载模板
 const handleTemplate = () => {
   message.info(t('common.developing'))
+}
+
+// 处理授权
+const handleAuthorize = (record: User) => {
+  selectedUserId.value = record.userId
+  roleAllocateVisible.value = true
 }
 
 onMounted(() => {

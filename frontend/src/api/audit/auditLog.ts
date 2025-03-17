@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-import type { HbtApiResult } from '@/types/common'
+import type { HbtApiResponse } from '@/types/common'
 import type { 
   AuditLogQuery, 
   AuditLog,
@@ -8,7 +8,7 @@ import type {
 
 // 获取审计日志列表
 export function getAuditLogList(params: AuditLogQuery) {
-  return request<HbtApiResult<AuditLog[]>>({
+  return request<HbtApiResponse<AuditLog[]>>({
     url: '/api/HbtAuditLog',
     method: 'get',
     params
@@ -17,7 +17,7 @@ export function getAuditLogList(params: AuditLogQuery) {
 
 // 获取审计日志详情
 export function getAuditLog(id: number) {
-  return request<HbtApiResult<AuditLog>>({
+  return request<HbtApiResponse<AuditLog>>({
     url: `/api/HbtAuditLog/${id}`,
     method: 'get'
   })
@@ -25,7 +25,7 @@ export function getAuditLog(id: number) {
 
 // 清空审计日志
 export function clearAuditLog() {
-  return request<HbtApiResult<any>>({
+  return request<HbtApiResponse<any>>({
     url: '/api/HbtAuditLog/clear',
     method: 'delete'
   })

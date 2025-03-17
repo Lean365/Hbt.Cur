@@ -1,13 +1,13 @@
 import request from '@/utils/request'
-import type { HbtApiResult, HbtPagedResult } from '@/types/common'
+import type { HbtApiResponse, HbtPagedResult } from '@/types/common'
 import type { Role, RoleQuery } from '@/types/identity/role'
 
 /**
  * 获取角色选项列表
  */
 export function getRoleOptions() {
-  return request<HbtApiResult<{ label: string; value: number }[]>>({
-    url: '/api/role/options',
+  return request<HbtApiResponse<{ label: string; value: number }[]>>({
+    url: '/api/HbtRole/options',
     method: 'get'
   })
 }
@@ -16,8 +16,8 @@ export function getRoleOptions() {
  * 获取角色列表
  */
 export function getRoleList() {
-  return request<HbtApiResult<Role[]>>({
-    url: '/api/role/list',
+  return request<HbtApiResponse<Role[]>>({
+    url: '/api/HbtRole/list',
     method: 'get'
   })
 }
@@ -27,8 +27,8 @@ export function getRoleList() {
  * @param roleId 角色ID
  */
 export function getRole(roleId: number) {
-  return request<HbtApiResult<Role>>({
-    url: `/api/role/${roleId}`,
+  return request<HbtApiResponse<Role>>({
+    url: `/api/HbtRole/${roleId}`,
     method: 'get'
   })
 }
@@ -38,8 +38,8 @@ export function getRole(roleId: number) {
  * @param data 角色信息
  */
 export function createRole(data: Omit<Role, 'roleId'>) {
-  return request<HbtApiResult<void>>({
-    url: '/api/role',
+  return request<HbtApiResponse<void>>({
+    url: '/api/HbtRole',
     method: 'post',
     data
   })
@@ -50,8 +50,8 @@ export function createRole(data: Omit<Role, 'roleId'>) {
  * @param data 角色信息
  */
 export function updateRole(data: Role) {
-  return request<HbtApiResult<void>>({
-    url: '/api/role',
+  return request<HbtApiResponse<void>>({
+    url: '/api/HbtRole',
     method: 'put',
     data
   })
@@ -62,22 +62,20 @@ export function updateRole(data: Role) {
  * @param roleId 角色ID
  */
 export function deleteRole(roleId: number) {
-  return request<HbtApiResult<void>>({
-    url: `/api/role/${roleId}`,
+  return request<HbtApiResponse<void>>({
+    url: `/api/HbtRole/${roleId}`,
     method: 'delete'
   })
 }
 
 /**
  * 更新角色状态
- * @param roleId 角色ID
- * @param status 状态（0正常 1停用）
  */
-export function updateRoleStatus(roleId: number, status: number) {
-  return request<HbtApiResult<void>>({
-    url: `/api/role/${roleId}/status`,
+export function updateRoleStatus(data: { roleId: number; status: number }) {
+  return request<HbtApiResponse<boolean>>({
+    url: `/api/HbtRole/${data.roleId}/status`,
     method: 'put',
-    params: { status }
+    params: { status: data.status }
   })
 }
 
@@ -86,9 +84,48 @@ export function updateRoleStatus(roleId: number, status: number) {
  * @param query 查询参数
  */
 export function getPagedList(query: RoleQuery) {
-  return request<HbtPagedResult<Role>>({
-    url: '/api/role',
+  return request<HbtApiResponse<HbtPagedResult<Role>>>({
+    url: '/api/HbtRole',
     method: 'get',
     params: query
+  })
+}
+
+/**
+ * 导出角色数据
+ */
+export function exportRole(params?: RoleQuery) {
+  return request({
+    url: '/api/HbtRole/export',
+    method: 'get',
+    params,
+    responseType: 'blob'
+  })
+}
+
+/**
+ * 导入角色数据
+ */
+export function importRole(file: File) {
+  const formData = new FormData()
+  formData.append('file', file)
+  return request<HbtApiResponse<{ success: number; fail: number }>>({
+    url: '/api/HbtRole/import',
+    method: 'post',
+    data: formData,
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  })
+}
+
+/**
+ * 下载角色导入模板
+ */
+export function downloadTemplate() {
+  return request({
+    url: '/api/HbtRole/template',
+    method: 'get',
+    responseType: 'blob'
   })
 }

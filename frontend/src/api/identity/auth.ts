@@ -8,14 +8,16 @@ import type {
   CaptchaResult,
   LockoutStatus
 } from '@/types/identity/auth'
-import type { HbtApiResult } from '@/types/common'
+import type { HbtApiResponse } from '@/types/common'
+import type { UserInfoResponse } from '@/stores/user'
+import { getToken } from '@/utils/auth'
 
 /**
  * 登录
  * @param data 登录参数
  */
 export function login(data: LoginParams) {
-  return request<HbtApiResult<LoginResult>>({
+  return request<HbtApiResponse<LoginResult>>({
     url: '/api/HbtAuth/login',
     method: 'post',
     data
@@ -27,10 +29,15 @@ export function login(data: LoginParams) {
  * @param username 用户名
  */
 export function getSalt(username: string) {
-  return request<HbtApiResult<SaltResponse>>({
+  return request<HbtApiResponse<SaltResponse>>({
     url: '/api/HbtAuth/salt',
     method: 'get',
     params: { username }
+  }).then(response => {
+    if (response.code === 200 && response.data) {
+      return response.data
+    }
+    throw new Error('获取盐值失败')
   })
 }
 
@@ -38,9 +45,14 @@ export function getSalt(username: string) {
  * 登出
  */
 export function logout() {
-  return request<HbtApiResult<void>>({
+  return request<HbtApiResponse<void>>({
     url: '/api/HbtAuth/logout',
-    method: 'post'
+    method: 'post',
+    data: null,
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Requested-With': 'XMLHttpRequest'
+    }
   })
 }
 
@@ -49,7 +61,7 @@ export function logout() {
  * @param refreshToken 刷新令牌
  */
 export function refreshToken(refreshToken: string) {
-  return request<HbtApiResult<LoginResult>>({
+  return request<HbtApiResponse<LoginResult>>({
     url: '/api/HbtAuth/refresh-token',
     method: 'post',
     data: { refreshToken }
@@ -60,7 +72,7 @@ export function refreshToken(refreshToken: string) {
  * 获取用户信息
  */
 export function getInfo() {
-  return request<HbtApiResult<UserInfo>>({
+  return request<HbtApiResponse<UserInfoResponse>>({
     url: '/api/HbtAuth/info',
     method: 'get'
   })
@@ -70,7 +82,7 @@ export function getInfo() {
  * 获取验证码
  */
 export function getCaptcha() {
-  return request<HbtApiResult<CaptchaResponse>>({
+  return request<HbtApiResponse<CaptchaResponse>>({
     url: '/api/HbtAuth/captcha',
     method: 'get'
   })
@@ -81,7 +93,7 @@ export function getCaptcha() {
  * @param data 验证参数
  */
 export function verifyCaptcha(data: { token: string; offset: number }) {
-  return request<HbtApiResult<CaptchaResult>>({
+  return request<HbtApiResponse<CaptchaResult>>({
     url: '/api/HbtAuth/verify-captcha',
     method: 'post',
     data
@@ -93,7 +105,7 @@ export function verifyCaptcha(data: { token: string; offset: number }) {
  * @param username 用户名
  */
 export function checkAccountLockout(username: string) {
-  return request<HbtApiResult<LockoutStatus>>({
+  return request<HbtApiResponse<LockoutStatus>>({
     url: `/api/HbtAuth/lockout/${username}`,
     method: 'get'
   })
@@ -104,7 +116,7 @@ export function checkAccountLockout(username: string) {
  * @param username 用户名
  */
 export function getRemainingAttempts(username: string) {
-  return request<HbtApiResult<number>>({
+  return request<HbtApiResponse<number>>({
     url: `/api/HbtAuth/attempts/${username}`,
     method: 'get'
   })
@@ -115,7 +127,7 @@ export function getRemainingAttempts(username: string) {
  * @param username 用户名
  */
 export function unlockUser(username: string) {
-  return request<HbtApiResult<boolean>>({
+  return request<HbtApiResponse<boolean>>({
     url: `/api/HbtAuth/unlock/${username}`,
     method: 'post'
   })

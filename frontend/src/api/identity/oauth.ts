@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-import type { HbtApiResult } from '@/types/common'
+import type { HbtApiResponse } from '@/types/common'
 import type { 
   OAuthParams,
   OAuthResult
@@ -7,7 +7,7 @@ import type {
 
 // 获取OAuth授权地址
 export function getOAuthUrl(provider: string) {
-  return request<HbtApiResult<string>>({
+  return request<HbtApiResponse<string>>({
     url: `/api/oauth/authorize/${provider}`,
     method: 'get'
   })
@@ -15,7 +15,7 @@ export function getOAuthUrl(provider: string) {
 
 // OAuth回调
 export function oauthCallback(provider: string, code: string, state: string) {
-  return request<HbtApiResult<OAuthResult>>({
+  return request<HbtApiResponse<OAuthResult>>({
     url: `/api/oauth/callback/${provider}`,
     method: 'get',
     params: { code, state }

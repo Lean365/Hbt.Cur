@@ -70,9 +70,9 @@ namespace Lean.Hbt.Application.Services.Identity
         /// <summary>
         /// 批量删除部门
         /// </summary>
-        /// <param name="ids">部门ID列表</param>
+        /// <param name="deptIds">部门ID列表</param>
         /// <returns>是否成功</returns>
-        Task<bool> BatchDeleteAsync(List<long> ids);
+        Task<bool> BatchDeleteAsync(long[] deptIds);
 
         /// <summary>
         /// 导入部门
@@ -101,5 +101,11 @@ namespace Lean.Hbt.Application.Services.Identity
         /// 修改部门状态
         /// </summary>
         Task<bool> UpdateStatusAsync(long deptId, int status);
+
+        /// <summary>
+        /// 获取部门选项列表
+        /// </summary>
+        /// <returns>部门选项列表</returns>
+        Task<List<HbtSelectOption>> GetOptionsAsync();
     }
 } 

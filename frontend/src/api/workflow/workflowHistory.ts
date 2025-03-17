@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-import type { HbtApiResult } from '@/types/common'
+import type { HbtApiResponse } from '@/types/common'
 import type { 
   WorkflowHistoryQuery, 
   WorkflowHistory,
@@ -9,7 +9,7 @@ import type {
 
 // 获取工作流历史列表
 export function getWorkflowHistoryList(params: WorkflowHistoryQuery) {
-  return request<HbtApiResult<WorkflowHistory[]>>({
+  return request<HbtApiResponse<WorkflowHistory[]>>({
     url: '/api/HbtWorkflowHistory',
     method: 'get',
     params
@@ -18,7 +18,7 @@ export function getWorkflowHistoryList(params: WorkflowHistoryQuery) {
 
 // 获取工作流历史详情
 export function getWorkflowHistory(id: number) {
-  return request<HbtApiResult<WorkflowHistory>>({
+  return request<HbtApiResponse<WorkflowHistory>>({
     url: `/api/HbtWorkflowHistory/${id}`,
     method: 'get'
   })
@@ -26,7 +26,7 @@ export function getWorkflowHistory(id: number) {
 
 // 创建工作流历史
 export function createWorkflowHistory(data: WorkflowHistoryCreate) {
-  return request<HbtApiResult<any>>({
+  return request<HbtApiResponse<any>>({
     url: '/api/HbtWorkflowHistory',
     method: 'post',
     data
@@ -35,7 +35,7 @@ export function createWorkflowHistory(data: WorkflowHistoryCreate) {
 
 // 更新工作流历史
 export function updateWorkflowHistory(data: WorkflowHistoryUpdate) {
-  return request<HbtApiResult<any>>({
+  return request<HbtApiResponse<any>>({
     url: '/api/HbtWorkflowHistory',
     method: 'put',
     data
@@ -44,7 +44,7 @@ export function updateWorkflowHistory(data: WorkflowHistoryUpdate) {
 
 // 删除工作流历史
 export function deleteWorkflowHistory(id: number) {
-  return request<HbtApiResult<any>>({
+  return request<HbtApiResponse<any>>({
     url: `/api/HbtWorkflowHistory/${id}`,
     method: 'delete'
   })
@@ -52,7 +52,7 @@ export function deleteWorkflowHistory(id: number) {
 
 // 批量删除工作流历史
 export function batchDeleteWorkflowHistory(ids: number[]) {
-  return request<HbtApiResult<any>>({
+  return request<HbtApiResponse<any>>({
     url: '/api/HbtWorkflowHistory/batch',
     method: 'delete',
     data: ids
@@ -63,7 +63,7 @@ export function batchDeleteWorkflowHistory(ids: number[]) {
 export function importWorkflowHistory(file: File, sheetName: string = 'Sheet1') {
   const formData = new FormData()
   formData.append('file', file)
-  return request<HbtApiResult<any>>({
+  return request<HbtApiResponse<any>>({
     url: '/api/HbtWorkflowHistory/import',
     method: 'post',
     data: formData,
@@ -96,7 +96,7 @@ export function getWorkflowHistoryTemplate(sheetName: string = 'Sheet1') {
 
 // 获取工作流实例的历史记录
 export function getHistoriesByWorkflowInstance(workflowInstanceId: number) {
-  return request<HbtApiResult<WorkflowHistory[]>>({
+  return request<HbtApiResponse<WorkflowHistory[]>>({
     url: `/api/HbtWorkflowHistory/instance/${workflowInstanceId}`,
     method: 'get'
   })
@@ -104,7 +104,7 @@ export function getHistoriesByWorkflowInstance(workflowInstanceId: number) {
 
 // 获取工作流节点的历史记录
 export function getHistoriesByWorkflowNode(workflowNodeId: number) {
-  return request<HbtApiResult<WorkflowHistory[]>>({
+  return request<HbtApiResponse<WorkflowHistory[]>>({
     url: `/api/HbtWorkflowHistory/node/${workflowNodeId}`,
     method: 'get'
   })
@@ -112,7 +112,7 @@ export function getHistoriesByWorkflowNode(workflowNodeId: number) {
 
 // 获取用户的操作历史记录
 export function getHistoriesByOperator(operatorId: number) {
-  return request<HbtApiResult<WorkflowHistory[]>>({
+  return request<HbtApiResponse<WorkflowHistory[]>>({
     url: `/api/HbtWorkflowHistory/operator/${operatorId}`,
     method: 'get'
   })
@@ -120,7 +120,7 @@ export function getHistoriesByOperator(operatorId: number) {
 
 // 清理历史记录
 export function cleanupHistories(days: number) {
-  return request<HbtApiResult<any>>({
+  return request<HbtApiResponse<any>>({
     url: '/api/HbtWorkflowHistory/cleanup',
     method: 'post',
     params: { days }
