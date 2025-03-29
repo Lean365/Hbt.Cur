@@ -10,7 +10,7 @@ namespace Lean.Hbt.Domain.IServices.Admin
         /// <summary>
         /// 获取日志归档配置
         /// </summary>
-        Task<LogArchiveOptions> GetConfigAsync();
+        Task<HbtLogArchiveOptions> GetConfigAsync();
 
         /// <summary>
         /// 执行日志归档

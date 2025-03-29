@@ -14,6 +14,7 @@ using Lean.Hbt.Domain.IServices.Identity;
 using Lean.Hbt.Infrastructure.Data.Contexts;
 using Microsoft.AspNetCore.Http;
 using System.Text.Json;
+using SqlSugar;
 
 namespace Lean.Hbt.Infrastructure.Security;
 
@@ -45,6 +46,34 @@ public class HbtLogManager :
         _context = context;
         _httpContextAccessor = httpContextAccessor;
         _userContext = userContext;
+
+        // 配置SqlSugar差异日志
+        StaticConfig.CompleteInsertableFunc = it =>
+        {
+            var method = it.GetType().GetMethod("EnableDiffLogEvent");
+            if (method != null)
+            {
+                method.Invoke(it, new object[] { null });
+            }
+        };
+
+        StaticConfig.CompleteUpdateableFunc = it =>
+        {
+            var method = it.GetType().GetMethod("EnableDiffLogEvent");
+            if (method != null)
+            {
+                method.Invoke(it, new object[] { null });
+            }
+        };
+
+        StaticConfig.CompleteDeleteableFunc = it =>
+        {
+            var method = it.GetType().GetMethod("EnableDiffLogEvent");
+            if (method != null)
+            {
+                method.Invoke(it, new object[] { null });
+            }
+        };
     }
 
     /// <summary>
@@ -110,8 +139,7 @@ public class HbtLogManager :
 
         try
         {
-            var repo = _context.Client.GetSimpleClient<HbtDbDiffLog>();
-            await repo.InsertAsync(log);
+            await _context.Client.Insertable(log).ExecuteCommandAsync();
             _logger.Info($"记录数据变更日志成功: {_userContext.UserName} 对表 {tableName} 执行了 {changeType} 操作");
         }
         catch (Exception ex)
@@ -154,8 +182,7 @@ public class HbtLogManager :
 
         try
         {
-            var repo = _context.Client.GetSimpleClient<HbtOperLog>();
-            await repo.InsertAsync(log);
+            await _context.Client.Insertable(log).ExecuteCommandAsync();
             _logger.Info($"记录操作日志成功: {_userContext.UserName} 在 {tableName} 执行了 {operationType} 操作");
         }
         catch (Exception ex)
@@ -192,8 +219,7 @@ public class HbtLogManager :
 
         try
         {
-            var repo = _context.Client.GetSimpleClient<HbtExceptionLog>();
-            await repo.InsertAsync(log);
+            await _context.Client.Insertable(log).ExecuteCommandAsync();
             _logger.Error($"记录异常日志成功: {_userContext.UserName} 在执行 {method ?? "Unknown"} 时发生异常", ex);
         }
         catch (Exception innerEx)
@@ -280,8 +306,7 @@ public class HbtLogManager :
 
         try
         {
-            var repo = _context.Client.GetSimpleClient<HbtAuditLog>();
-            await repo.InsertAsync(log);
+            await _context.Client.Insertable(log).ExecuteCommandAsync();
             _logger.Info($"记录审计日志成功: {_userContext.UserName} 在 {module} 模块执行了 {operation} 操作");
         }
         catch (Exception ex)

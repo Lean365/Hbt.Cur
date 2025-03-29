@@ -8,6 +8,21 @@ export default {
       copyright: '© 2024 Lean365. All rights reserved.'
     },
 
+    // ==================== Error Messages ====================
+    error: {
+      systemRestart: 'System is under maintenance, please login again later',
+      network: 'Network connection failed, please check your network settings',
+      unauthorized: 'Unauthorized access, please login again',
+      forbidden: 'Access forbidden',
+      notFound: 'Requested resource not found',
+      badRequest: 'Invalid request parameters',
+      serverError: 'Internal server error',
+      serviceUnavailable: 'Service temporarily unavailable',
+      badGateway: 'Bad gateway',
+      gatewayTimeout: 'Gateway timeout',
+      unknown: 'Unknown error'
+    },
+
     // ==================== Basic Operations ====================
     // Basic Titles
     title: {

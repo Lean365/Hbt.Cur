@@ -23,7 +23,7 @@ namespace Lean.Hbt.WebApi.Controllers.Routine
     /// </remarks>
     [Route("api/[controller]", Name = "文件管理")]
     [ApiController]
-    [ApiModule("routine", "常规功能")]
+    [ApiModule("routine", "日常办公")]
     public class HbtFileController : HbtBaseController
     {
         private readonly IHbtFileService _fileService;
@@ -44,9 +44,10 @@ namespace Lean.Hbt.WebApi.Controllers.Routine
         /// <param name="query">查询条件</param>
         /// <returns>文件分页列表</returns>
         [HttpGet]
-        public async Task<IActionResult> GetPagedListAsync([FromQuery] HbtFileQueryDto query)
+        [HbtPerm("routine:file:list")]
+        public async Task<IActionResult> GetListAsync([FromQuery] HbtFileQueryDto query)
         {
-            var result = await _fileService.GetPagedListAsync(query);
+            var result = await _fileService.GetListAsync(query);
             return Success(result);
         }
 
@@ -56,9 +57,9 @@ namespace Lean.Hbt.WebApi.Controllers.Routine
         /// <param name="fileId">文件ID</param>
         /// <returns>文件详情</returns>
         [HttpGet("{fileId}")]
-        public async Task<IActionResult> GetAsync(long fileId)
+        public async Task<IActionResult> GetByIdAsync(long fileId)
         {
-            var result = await _fileService.GetAsync(fileId);
+            var result = await _fileService.GetByIdAsync(fileId);
             return Success(result);
         }
 
@@ -68,9 +69,9 @@ namespace Lean.Hbt.WebApi.Controllers.Routine
         /// <param name="input">创建对象</param>
         /// <returns>文件ID</returns>
         [HttpPost]
-        public async Task<IActionResult> InsertAsync([FromBody] HbtFileCreateDto input)
+        public async Task<IActionResult> CreateAsync([FromBody] HbtFileCreateDto input)
         {
-            var result = await _fileService.InsertAsync(input);
+            var result = await _fileService.CreateAsync(input);
             return Success(result);
         }
 

@@ -30,21 +30,21 @@ namespace Lean.Hbt.Application.Services.Identity
         /// </summary>
         /// <param name="query">查询条件</param>
         /// <returns>用户分页列表</returns>
-        Task<HbtPagedResult<HbtUserDto>> GetPagedListAsync(HbtUserQueryDto query);
+        Task<HbtPagedResult<HbtUserDto>> GetListAsync(HbtUserQueryDto query);
 
         /// <summary>
         /// 获取用户详情
         /// </summary>
         /// <param name="userId">用户ID</param>
         /// <returns>用户详情</returns>
-        Task<HbtUserDto> GetAsync(long userId);
+        Task<HbtUserDto> GetByIdAsync(long userId);
 
         /// <summary>
         /// 创建用户
         /// </summary>
         /// <param name="input">创建对象</param>
         /// <returns>用户ID</returns>
-        Task<long> InsertAsync(HbtUserCreateDto input);
+        Task<long> CreateAsync(HbtUserCreateDto input);
 
         /// <summary>
         /// 更新用户

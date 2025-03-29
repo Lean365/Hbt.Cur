@@ -14,7 +14,7 @@ import type {
   HbtConfigQuery,
   HbtConfigCreate,
   HbtConfigUpdate
-} from '@/types/admin/hbtConfig'
+} from '@/types/admin/config'
 
 /**
  * 获取配置分页列表

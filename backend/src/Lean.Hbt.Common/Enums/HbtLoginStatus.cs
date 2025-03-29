@@ -9,44 +9,49 @@
 
 namespace Lean.Hbt.Common.Enums
 {
+  /// <summary>
+  /// 登录状态枚举
+  /// </summary>
+  public enum HbtLoginStatus
+  {
     /// <summary>
-    /// 登录状态枚举
+    /// 成功
     /// </summary>
-    public enum HbtLoginStatus
-    {
-        /// <summary>
-        /// 成功
-        /// </summary>
-        Success = 0,
+    Success = 0,
 
-        /// <summary>
-        /// 失败
-        /// </summary>
-        Failed = 1,
+    /// <summary>
+    /// 失败
+    /// </summary>
+    Failed = 1,
 
-        /// <summary>
-        /// 账号被锁定
-        /// </summary>
-        Locked = 2,
+    /// <summary>
+    /// 账号被锁定
+    /// </summary>
+    Locked = 2,
 
-        /// <summary>
-        /// 账号被禁用
-        /// </summary>
-        Disabled = 3,
+    /// <summary>
+    /// 账号被禁用
+    /// </summary>
+    Disabled = 3,
 
-        /// <summary>
-        /// 验证码错误
-        /// </summary>
-        InvalidCode = 4,
+    /// <summary>
+    /// 验证码错误
+    /// </summary>
+    InvalidCode = 4,
 
-        /// <summary>
-        /// 密码错误
-        /// </summary>
-        InvalidPassword = 5,
+    /// <summary>
+    /// 密码错误
+    /// </summary>
+    InvalidPassword = 5,
 
-        /// <summary>
-        /// 用户不存在
-        /// </summary>
-        UserNotFound = 6
+    /// <summary>
+    /// 用户不存在
+    /// </summary>
+    UserNotFound = 6,
+
+    /// <summary>
+    /// 离线
+    /// </summary>
+    Offline = 7
     }
 } 

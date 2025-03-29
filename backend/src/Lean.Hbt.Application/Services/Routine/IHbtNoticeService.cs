@@ -23,14 +23,14 @@ namespace Lean.Hbt.Application.Services.Routine
         /// </summary>
         /// <param name="query">查询条件</param>
         /// <returns>通知分页列表</returns>
-        Task<HbtPagedResult<HbtNoticeDto>> GetPagedListAsync(HbtNoticeQueryDto query);
+        Task<HbtPagedResult<HbtNoticeDto>> GetListAsync(HbtNoticeQueryDto query);
 
         /// <summary>
         /// 获取通知详情
         /// </summary>
         /// <param name="noticeId">通知ID</param>
         /// <returns>通知详情</returns>
-        Task<HbtNoticeDto> GetAsync(long noticeId);
+        Task<HbtNoticeDto> GetByIdAsync(long noticeId);
 
         /// <summary>
         /// 创建通知
@@ -84,17 +84,33 @@ namespace Lean.Hbt.Application.Services.Routine
         Task<bool> CloseAsync(long noticeId);
 
         /// <summary>
-        /// 标记通知已读
+        /// 标记通知为已读
         /// </summary>
-        /// <param name="noticeId">通知ID</param>
-        /// <returns>是否成功</returns>
-        Task<bool> MarkAsReadAsync(long noticeId);
+        /// <param name="id">通知ID</param>
+        Task<bool> MarkAsReadAsync(long id);
+
+        /// <summary>
+        /// 标记所有通知为已读
+        /// </summary>
+        /// <param name="userId">用户ID</param>
+        Task<int> MarkAllAsReadAsync(long userId);
+
+        /// <summary>
+        /// 标记通知为未读
+        /// </summary>
+        /// <param name="id">通知ID</param>
+        Task<bool> MarkAsUnreadAsync(long id);
+
+        /// <summary>
+        /// 标记所有通知为未读
+        /// </summary>
+        /// <param name="userId">用户ID</param>
+        Task<int> MarkAllAsUnreadAsync(long userId);
 
         /// <summary>
         /// 确认通知
         /// </summary>
         /// <param name="noticeId">通知ID</param>
-        /// <returns>是否成功</returns>
         Task<bool> ConfirmAsync(long noticeId);
     }
 } 

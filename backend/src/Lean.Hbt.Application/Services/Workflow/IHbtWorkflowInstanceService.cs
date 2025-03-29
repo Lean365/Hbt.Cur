@@ -26,21 +26,21 @@ namespace Lean.Hbt.Application.Services.Workflow
         /// </summary>
         /// <param name="query">查询条件</param>
         /// <returns>分页结果</returns>
-        Task<HbtPagedResult<HbtWorkflowInstanceDto>> GetPagedListAsync(HbtWorkflowInstanceQueryDto query);
+        Task<HbtPagedResult<HbtWorkflowInstanceDto>> GetListAsync(HbtWorkflowInstanceQueryDto query);
 
         /// <summary>
         /// 获取工作流实例详情
         /// </summary>
         /// <param name="id">工作流实例ID</param>
         /// <returns>工作流实例详情</returns>
-        Task<HbtWorkflowInstanceDto> GetAsync(long id);
+        Task<HbtWorkflowInstanceDto> GetByIdAsync(long id);
 
         /// <summary>
         /// 创建工作流实例
         /// </summary>
         /// <param name="input">创建信息</param>
         /// <returns>新创建的工作流实例ID</returns>
-        Task<long> InsertAsync(HbtWorkflowInstanceCreateDto input);
+        Task<long> CreateAsync(HbtWorkflowInstanceCreateDto input);
 
         /// <summary>
         /// 更新工作流实例

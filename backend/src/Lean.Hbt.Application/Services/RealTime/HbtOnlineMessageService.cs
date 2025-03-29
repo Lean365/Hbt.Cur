@@ -1,5 +1,5 @@
 //===================================================================
-// 项目名 : Lean.Hbt 
+// 项目名 : Lean.Hbt
 // 文件名 : HbtOnlineMessageService.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-20 16:30
@@ -7,15 +7,8 @@
 // 描述    : 在线消息服务实现
 //===================================================================
 
-using Lean.Hbt.Domain.Entities.RealTime;
-using Lean.Hbt.Domain.Repositories;
 using Lean.Hbt.Application.Dtos.RealTime;
-using Lean.Hbt.Common.Models;
-using Lean.Hbt.Common.Helpers;
-using Mapster;
-using SqlSugar;
-using SqlSugar.Extensions;
-using System.Linq.Expressions;
+using Lean.Hbt.Domain.Entities.RealTime;
 
 namespace Lean.Hbt.Application.Services.RealTime;
 
@@ -41,42 +34,47 @@ public class HbtOnlineMessageService : IHbtOnlineMessageService
     /// <summary>
     /// 获取在线消息分页列表
     /// </summary>
-    public async Task<HbtPagedResult<HbtOnlineMessageDto>> GetPagedListAsync(HbtOnlineMessageQueryDto query)
+    public async Task<HbtPagedResult<HbtOnlineMessageDto>> GetListAsync(HbtOnlineMessageQueryDto query)
     {
         // 1.构建查询条件
         var exp = Expressionable.Create<HbtOnlineMessage>();
-        
+
         if (query.TenantId.HasValue)
             exp = exp.And(m => m.TenantId == query.TenantId.Value);
-            
+
         if (query.SenderId.HasValue)
             exp = exp.And(m => m.SenderId == query.SenderId.Value);
-            
+
         if (query.ReceiverId.HasValue)
             exp = exp.And(m => m.ReceiverId == query.ReceiverId.Value);
-            
+
         if (query.MessageType.HasValue)
             exp = exp.And(m => m.MessageType == query.MessageType.Value);
-            
+
         if (query.StartTime.HasValue)
             exp = exp.And(m => m.CreateTime >= query.StartTime.Value);
-            
+
         if (query.EndTime.HasValue)
             exp = exp.And(m => m.CreateTime <= query.EndTime.Value);
+
+        if (query.IsRead.HasValue)
+            exp = exp.And(m => m.IsRead == query.IsRead.Value);
 
         // 2.查询数据
         var result = await _repository.GetPagedListAsync(
             exp.ToExpression(),
             query.PageIndex,
-            query.PageSize);
+            query.PageSize,
+            x => x.CreateTime,
+            OrderByType.Desc);
 
         // 3.转换并返回
         return new HbtPagedResult<HbtOnlineMessageDto>
         {
-            TotalNum = result.total,
+            TotalNum = result.TotalNum,
             PageIndex = query.PageIndex,
             PageSize = query.PageSize,
-            Rows = result.list.Adapt<List<HbtOnlineMessageDto>>()
+            Rows = result.Rows.Adapt<List<HbtOnlineMessageDto>>()
         };
     }
 
@@ -87,22 +85,22 @@ public class HbtOnlineMessageService : IHbtOnlineMessageService
     {
         // 1.构建查询条件
         var exp = Expressionable.Create<HbtOnlineMessage>();
-        
+
         if (query.TenantId.HasValue)
             exp = exp.And(m => m.TenantId == query.TenantId.Value);
-            
+
         if (query.SenderId.HasValue)
             exp = exp.And(m => m.SenderId == query.SenderId.Value);
-            
+
         if (query.ReceiverId.HasValue)
             exp = exp.And(m => m.ReceiverId == query.ReceiverId.Value);
-            
+
         if (query.MessageType.HasValue)
             exp = exp.And(m => m.MessageType == query.MessageType.Value);
-            
+
         if (query.StartTime.HasValue)
             exp = exp.And(m => m.CreateTime >= query.StartTime.Value);
-            
+
         if (query.EndTime.HasValue)
             exp = exp.And(m => m.CreateTime <= query.EndTime.Value);
 
@@ -123,22 +121,22 @@ public class HbtOnlineMessageService : IHbtOnlineMessageService
     {
         // 1.构建查询条件
         var exp = Expressionable.Create<HbtOnlineMessage>();
-        
+
         if (query.TenantId.HasValue)
             exp = exp.And(m => m.TenantId == query.TenantId.Value);
-            
+
         if (query.SenderId.HasValue)
             exp = exp.And(m => m.SenderId == query.SenderId.Value);
-            
+
         if (query.ReceiverId.HasValue)
             exp = exp.And(m => m.ReceiverId == query.ReceiverId.Value);
-            
+
         if (query.MessageType.HasValue)
             exp = exp.And(m => m.MessageType == query.MessageType.Value);
-            
+
         if (query.StartTime.HasValue)
             exp = exp.And(m => m.CreateTime >= query.StartTime.Value);
-            
+
         if (query.EndTime.HasValue)
             exp = exp.And(m => m.CreateTime <= query.EndTime.Value);
 
@@ -168,7 +166,7 @@ public class HbtOnlineMessageService : IHbtOnlineMessageService
     {
         var message = input.Adapt<HbtOnlineMessage>();
         message.CreateTime = DateTime.Now;
-        var result = await _repository.InsertAsync(message);
+        var result = await _repository.CreateAsync(message);
         return result > 0 ? message.Id : 0;
     }
 
@@ -192,4 +190,76 @@ public class HbtOnlineMessageService : IHbtOnlineMessageService
 
         return await _repository.DeleteAsync(exp.ToExpression());
     }
-} 
+
+    /// <summary>
+    /// 标记消息为已读
+    /// </summary>
+    public async Task<bool> MarkAsReadAsync(long id)
+    {
+        var message = await _repository.GetByIdAsync(id);
+        if (message == null)
+            return false;
+
+        message.IsRead = 1;
+        message.ReadTime = DateTime.Now;
+        var result = await _repository.UpdateAsync(message);
+        return result > 0;
+    }
+
+    /// <summary>
+    /// 标记所有消息为已读
+    /// </summary>
+    public async Task<int> MarkAllAsReadAsync(long userId)
+    {
+        var exp = Expressionable.Create<HbtOnlineMessage>();
+        exp.And(m => m.ReceiverId == userId && m.IsRead == 0);
+
+        var messages = await _repository.GetListAsync(exp.ToExpression());
+        if (!messages.Any())
+            return 0;
+
+        foreach (var message in messages)
+        {
+            message.IsRead = 1;
+            message.ReadTime = DateTime.Now;
+        }
+
+        return await _repository.UpdateRangeAsync(messages);
+    }
+
+    /// <summary>
+    /// 标记消息为未读
+    /// </summary>
+    public async Task<bool> MarkAsUnreadAsync(long id)
+    {
+        var message = await _repository.GetByIdAsync(id);
+        if (message == null)
+            return false;
+
+        message.IsRead = 0;
+        message.ReadTime = null;
+        var result = await _repository.UpdateAsync(message);
+        return result > 0;
+    }
+
+    /// <summary>
+    /// 标记所有消息为未读
+    /// </summary>
+    public async Task<int> MarkAllAsUnreadAsync(long userId)
+    {
+        var exp = Expressionable.Create<HbtOnlineMessage>();
+        exp.And(m => m.ReceiverId == userId && m.IsRead == 1);
+
+        var messages = await _repository.GetListAsync(exp.ToExpression());
+        if (!messages.Any())
+            return 0;
+
+        foreach (var message in messages)
+        {
+            message.IsRead = 0;
+            message.ReadTime = null;
+        }
+
+        return await _repository.UpdateRangeAsync(messages);
+    }
+}

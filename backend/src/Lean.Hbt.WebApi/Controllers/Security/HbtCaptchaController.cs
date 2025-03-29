@@ -11,6 +11,7 @@ namespace Lean.Hbt.WebApi.Controllers.Security;
 [Route("api/[controller]", Name = "验证码")]
 [ApiController]
 [ApiModule("identity", "身份认证")]
+
 public class HbtCaptchaController : HbtBaseController
 {
     private readonly IHbtCaptchaService _captchaService;

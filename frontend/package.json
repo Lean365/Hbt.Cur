@@ -4,9 +4,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "dev:en": "cross-env LOCALE=en-US vite",
-    "dev:zh": "cross-env LOCALE=zh-CN vite",
+    "dev": "vite --force",
+    "dev:en": "cross-env LOCALE=en-US vite --force",
+    "dev:zh": "cross-env LOCALE=zh-CN vite --force",
+    "dev:debug": "vite --debug --force",
     "build": "vue-tsc --noEmit && vite build",
     "preview": "vite preview",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
@@ -15,6 +16,7 @@
   "dependencies": {
     "@ant-design/icons-vue": "^7.0.1",
     "@ckpack/vue-color": "^1.6.0",
+    "@microsoft/signalr": "^8.0.7",
     "@types/crypto-js": "^4.2.2",
     "@types/jwt-decode": "^3.1.0",
     "@types/spark-md5": "^3.0.5",

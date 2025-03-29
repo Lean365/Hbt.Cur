@@ -70,12 +70,12 @@ public class HbtDbSeedUserRelation
                 UpdateTime = DateTime.Now
             };
 
-            var existingUserDept = await _userDeptRepository.FirstOrDefaultAsync(ud =>
+            var existingUserDept = await _userDeptRepository.GetInfoAsync(ud =>
                 ud.UserId == userDept.UserId && ud.DeptId == userDept.DeptId);
 
             if (existingUserDept == null)
             {
-                await _userDeptRepository.InsertAsync(userDept);
+                await _userDeptRepository.CreateAsync(userDept);
                 insertCount++;
                 _logger.Info($"[创建] 用户部门关联 'UserId:{userDept.UserId}, DeptId:{userDept.DeptId}' 创建成功");
             }
@@ -103,12 +103,12 @@ public class HbtDbSeedUserRelation
                 UpdateTime = DateTime.Now
             };
 
-            var existingUserPost = await _userPostRepository.FirstOrDefaultAsync(up =>
+            var existingUserPost = await _userPostRepository.GetInfoAsync(up =>
                 up.UserId == userPost.UserId && up.PostId == userPost.PostId);
 
             if (existingUserPost == null)
             {
-                await _userPostRepository.InsertAsync(userPost);
+                await _userPostRepository.CreateAsync(userPost);
                 insertCount++;
                 _logger.Info($"[创建] 用户岗位关联 'UserId:{userPost.UserId}, PostId:{userPost.PostId}' 创建成功");
             }
@@ -138,12 +138,12 @@ public class HbtDbSeedUserRelation
                     UpdateTime = DateTime.Now
                 };
 
-                var existingUserRole = await _userRoleRepository.FirstOrDefaultAsync(ur =>
+                var existingUserRole = await _userRoleRepository.GetInfoAsync(ur =>
                     ur.UserId == userRole.UserId && ur.RoleId == userRole.RoleId);
 
                 if (existingUserRole == null)
                 {
-                    await _userRoleRepository.InsertAsync(userRole);
+                    await _userRoleRepository.CreateAsync(userRole);
                     insertCount++;
                     _logger.Info($"[创建] 用户角色关联 'UserId:{userRole.UserId}, RoleId:{userRole.RoleId}' 创建成功");
                 }

@@ -8,15 +8,8 @@
 //===================================================================
 
 using Lean.Hbt.Application.Dtos.Admin;
-using Lean.Hbt.Common.Enums;
-using Lean.Hbt.Common.Exceptions;
-using Lean.Hbt.Common.Extensions;
-using Lean.Hbt.Common.Helpers;
 using Lean.Hbt.Common.Utils;
 using Lean.Hbt.Domain.Entities.Admin;
-using Lean.Hbt.Domain.Repositories;
-using Lean.Hbt.Domain.Utils;
-using SqlSugar;
 
 namespace Lean.Hbt.Application.Services.Admin
 {
@@ -53,7 +46,7 @@ namespace Lean.Hbt.Application.Services.Admin
         /// </summary>
         /// <param name="query">查询条件</param>
         /// <returns>系统配置分页列表</returns>
-        public async Task<HbtPagedResult<HbtConfigDto>> GetPagedListAsync(HbtConfigQueryDto query)
+        public async Task<HbtPagedResult<HbtConfigDto>> GetListAsync(HbtConfigQueryDto query)
         {
             var exp = Expressionable.Create<HbtConfig>();
 
@@ -69,14 +62,19 @@ namespace Lean.Hbt.Application.Services.Admin
             if (query?.Status.HasValue == true)
                 exp.And(x => x.Status == query.Status.Value);
 
-            var result = await _configRepository.GetPagedListAsync(exp.ToExpression(), query?.PageIndex ?? 1, query?.PageSize ?? 10);
+            var result = await _configRepository.GetPagedListAsync(
+                exp.ToExpression(),
+                query?.PageIndex ?? 1,
+                query?.PageSize ?? 10,
+                x => x.OrderNum,
+                OrderByType.Asc);
 
             return new HbtPagedResult<HbtConfigDto>
             {
-                TotalNum = result.total,
+                TotalNum = result.TotalNum,
                 PageIndex = query?.PageIndex ?? 1,
                 PageSize = query?.PageSize ?? 10,
-                Rows = result.list.Adapt<List<HbtConfigDto>>()
+                Rows = result.Rows.Adapt<List<HbtConfigDto>>()
             };
         }
 
@@ -85,7 +83,7 @@ namespace Lean.Hbt.Application.Services.Admin
         /// </summary>
         /// <param name="configId">配置ID</param>
         /// <returns>系统配置详情</returns>
-        public async Task<HbtConfigDto> GetAsync(long configId)
+        public async Task<HbtConfigDto> GetByIdAsync(long configId)
         {
             var config = await _configRepository.GetByIdAsync(configId);
             if (config == null)
@@ -99,7 +97,7 @@ namespace Lean.Hbt.Application.Services.Admin
         /// </summary>
         /// <param name="input">创建对象</param>
         /// <returns>配置ID</returns>
-        public async Task<long> InsertAsync(HbtConfigCreateDto input)
+        public async Task<long> CreateAsync(HbtConfigCreateDto input)
         {
             if (input == null)
                 throw new ArgumentNullException(nameof(input));
@@ -127,7 +125,7 @@ namespace Lean.Hbt.Application.Services.Admin
                 Status = input.Status
             };
 
-            var result = await _configRepository.InsertAsync(config);
+            var result = await _configRepository.CreateAsync(config);
             if (result <= 0)
                 throw new HbtException("创建系统配置失败");
 
@@ -239,7 +237,7 @@ namespace Lean.Hbt.Application.Services.Admin
 
                         // 创建配置
                         var newConfig = config.Adapt<HbtConfig>();
-                        await _configRepository.InsertAsync(newConfig);
+                        await _configRepository.CreateAsync(newConfig);
                         success++;
                     }
                     catch (Exception ex)
@@ -330,8 +328,8 @@ namespace Lean.Hbt.Application.Services.Admin
         /// </summary>
         public async Task<string> GetConfigValueAsync(string configKey)
         {
-            var configs = await _configRepository.GetListAsync(x => x.ConfigKey == configKey);
-            var config = configs.FirstOrDefault();
+            var list = await _configRepository.GetListAsync(x => x.ConfigKey == configKey);
+            var config = list.FirstOrDefault();
             return config?.ConfigValue;
         }
 
@@ -340,8 +338,8 @@ namespace Lean.Hbt.Application.Services.Admin
         /// </summary>
         public async Task SetConfigValueAsync(string configKey, string configValue)
         {
-            var configs = await _configRepository.GetListAsync(x => x.ConfigKey == configKey);
-            var config = configs.FirstOrDefault();
+            var list = await _configRepository.GetListAsync(x => x.ConfigKey == configKey);
+            var config = list.FirstOrDefault();
             if (config == null)
                 throw new HbtException($"未找到配置项: {configKey}");
 
@@ -357,12 +355,11 @@ namespace Lean.Hbt.Application.Services.Admin
         /// </summary>
         public async Task<Dictionary<string, string>> GetAllConfigsAsync()
         {
-            var configs = await _configRepository.GetListAsync();
+            var list = await _configRepository.GetListAsync();
             var result = new Dictionary<string, string>();
 
-            foreach (var config in configs)
+            foreach (var config in list)
             {
-                // 如果是加密配置,则解密后返回
                 result[config.ConfigKey] = EncryptedKeys.Contains(config.ConfigKey)
                     ? HbtEncryptUtils.AesDecrypt(config.ConfigValue)
                     : config.ConfigValue;

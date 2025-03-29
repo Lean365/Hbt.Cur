@@ -30,7 +30,7 @@ namespace Lean.Hbt.Application.Services.Workflow
         /// </summary>
         /// <param name="id">活动ID</param>
         /// <returns>工作流活动详情</returns>
-        Task<HbtWorkflowActivityDto> GetAsync(long id);
+        Task<HbtWorkflowActivityDto> GetByIdAsync(long id);
 
         /// <summary>
         /// 创建工作流活动

@@ -207,10 +207,10 @@ public class HbtDbSeedTenant
 
         foreach (var tenant in defaultTenants)
         {
-            var existingTenant = await _tenantRepository.FirstOrDefaultAsync(t => t.TenantCode == tenant.TenantCode);
+            var existingTenant = await _tenantRepository.GetInfoAsync(t => t.TenantCode == tenant.TenantCode);
             if (existingTenant == null)
             {
-                await _tenantRepository.InsertAsync(tenant);
+                await _tenantRepository.CreateAsync(tenant);
                 insertCount++;
                 _logger.Info($"[创建] 租户 '{tenant.TenantName}' 创建成功");
             }

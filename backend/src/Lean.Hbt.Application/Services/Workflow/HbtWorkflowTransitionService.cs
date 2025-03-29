@@ -42,7 +42,7 @@ namespace Lean.Hbt.Application.Services.Workflow
         }
 
         /// <inheritdoc/>
-        public async Task<HbtWorkflowTransitionDto> GetAsync(long id)
+        public async Task<HbtWorkflowTransitionDto> GetByIdAsync(long id)
         {
             var transition = await _transitionRepository.GetByIdAsync(id);
             return transition.Adapt<HbtWorkflowTransitionDto>();
@@ -52,7 +52,7 @@ namespace Lean.Hbt.Application.Services.Workflow
         public async Task<long> CreateAsync(HbtWorkflowTransitionDto input)
         {
             var transition = input.Adapt<HbtWorkflowTransition>();
-            await _transitionRepository.InsertAsync(transition);
+            await _transitionRepository.CreateAsync(transition);
             return transition.Id;
         }
 

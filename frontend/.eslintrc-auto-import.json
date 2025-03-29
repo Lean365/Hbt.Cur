@@ -329,6 +329,7 @@
     "DictOption": true,
     "useDictStore": true,
     "useLanguageStore": true,
-    "useConfigStore": true
+    "useConfigStore": true,
+    "useWebSocketStore": true
   }
 }

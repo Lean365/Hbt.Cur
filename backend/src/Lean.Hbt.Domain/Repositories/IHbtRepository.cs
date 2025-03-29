@@ -9,6 +9,8 @@
 
 using System.Linq.Expressions;
 using SqlSugar;
+using Lean.Hbt.Common.Models;
+using Lean.Hbt.Domain.Entities.Identity;
 
 namespace Lean.Hbt.Domain.Repositories
 {
@@ -41,50 +43,57 @@ namespace Lean.Hbt.Domain.Repositories
         #region 查询操作
 
         /// <summary>
-        /// 根据主键获取实体
+        /// 根据ID获取实体
         /// </summary>
         /// <param name="id">主键值</param>
         /// <returns>实体</returns>
-        Task<TEntity> GetByIdAsync(object id);
+        Task<TEntity?> GetByIdAsync(object id);
 
         /// <summary>
-        /// 获取所有实体
-        /// </summary>
-        /// <returns>实体列表</returns>
-        Task<List<TEntity>> GetListAsync();
-
-        /// <summary>
-        /// 根据条件获取实体列表
-        /// </summary>
-        /// <param name="condition">查询条件</param>
-        /// <returns>实体列表</returns>
-        Task<List<TEntity>> GetListAsync(Expression<Func<TEntity, bool>> condition);
-
-        /// <summary>
-        /// 分页查询
-        /// </summary>
-        /// <param name="pageIndex">页码</param>
-        /// <param name="pageSize">每页记录数</param>
-        /// <returns>分页结果</returns>
-        Task<(List<TEntity> list, long total)> GetPagedListAsync(int pageIndex, int pageSize);
-
-        /// <summary>
-        /// 条件分页查询
-        /// </summary>
-        /// <param name="condition">查询条件</param>
-        /// <param name="pageIndex">页码</param>
-        /// <param name="pageSize">每页记录数</param>
-        /// <returns>分页结果</returns>
-        Task<(List<TEntity> list, long total)> GetPagedListAsync(Expression<Func<TEntity, bool>> condition, int pageIndex, int pageSize);
-
-        /// <summary>
-        /// 根据条件获取第一个实体
+        /// 获取实体详情
         /// </summary>
         /// <param name="condition">查询条件</param>
         /// <returns>实体</returns>
-        Task<TEntity> FirstOrDefaultAsync(Expression<Func<TEntity, bool>> condition);
+        Task<TEntity?> GetInfoAsync(Expression<Func<TEntity, bool>> condition);
 
-        #endregion 查询操作
+        /// <summary>
+        /// 获取实体列表
+        /// </summary>
+        /// <param name="condition">查询条件</param>
+        /// <returns>实体列表</returns>
+        Task<List<TEntity>> GetListAsync(Expression<Func<TEntity, bool>>? condition = null);
+
+        /// <summary>
+        /// 获取分页列表
+        /// </summary>
+        /// <param name="condition">查询条件</param>
+        /// <param name="pageIndex">页码</param>
+        /// <param name="pageSize">每页记录数</param>
+        /// <param name="orderByExpression">排序表达式</param>
+        /// <param name="orderByType">排序类型</param>
+        /// <returns>分页结果</returns>
+        Task<HbtPagedResult<TEntity>> GetPagedListAsync(
+            Expression<Func<TEntity, bool>>? condition = null,
+            int pageIndex = 1,
+            int pageSize = 20,
+            Expression<Func<TEntity, object>>? orderByExpression = null,
+            OrderByType orderByType = OrderByType.Desc);
+
+        /// <summary>
+        /// 获取分页列表(支持多个排序条件)
+        /// </summary>
+        /// <param name="condition">查询条件</param>
+        /// <param name="pageIndex">页码</param>
+        /// <param name="pageSize">每页记录数</param>
+        /// <param name="orderByExpressions">排序表达式列表</param>
+        /// <returns>分页结果</returns>
+        Task<HbtPagedResult<TEntity>> GetPagedListAsync(
+            Expression<Func<TEntity, bool>>? condition = null,
+            int pageIndex = 1,
+            int pageSize = 20,
+            List<(Expression<Func<TEntity, object>> Expression, OrderByType Type)>? orderByExpressions = null);
+
+        #endregion
 
         #region 新增操作
 
@@ -93,14 +102,14 @@ namespace Lean.Hbt.Domain.Repositories
         /// </summary>
         /// <param name="entity">实体对象</param>
         /// <returns>影响行数</returns>
-        Task<int> InsertAsync(TEntity entity);
+        Task<int> CreateAsync(TEntity entity);
 
         /// <summary>
         /// 批量新增
         /// </summary>
         /// <param name="entities">实体列表</param>
         /// <returns>影响行数</returns>
-        Task<int> InsertRangeAsync(List<TEntity> entities);
+        Task<int> CreateRangeAsync(List<TEntity> entities);
 
         #endregion 新增操作
 

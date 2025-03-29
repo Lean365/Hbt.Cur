@@ -29,21 +29,21 @@ namespace Lean.Hbt.Application.Services.Identity
         /// </summary>
         /// <param name="query">查询条件</param>
         /// <returns>分页结果</returns>
-        Task<HbtPagedResult<HbtMenuDto>> GetPagedListAsync(HbtMenuQueryDto query);
+        Task<HbtPagedResult<HbtMenuDto>> GetListAsync(HbtMenuQueryDto query);
 
         /// <summary>
         /// 获取菜单详情
         /// </summary>
         /// <param name="menuId">菜单ID</param>
         /// <returns>菜单详情</returns>
-        Task<HbtMenuDto> GetAsync(long menuId);
+        Task<HbtMenuDto> GetByIdAsync(long menuId);
 
         /// <summary>
         /// 创建菜单
         /// </summary>
         /// <param name="input">创建对象</param>
         /// <returns>菜单ID</returns>
-        Task<long> InsertAsync(HbtMenuCreateDto input);
+        Task<long> CreateAsync(HbtMenuCreateDto input);
 
         /// <summary>
         /// 更新菜单

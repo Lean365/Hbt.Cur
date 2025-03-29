@@ -50,7 +50,7 @@ namespace Lean.Hbt.Application.Services.Identity
         /// <summary>
         /// 获取登录扩展信息分页列表
         /// </summary>
-        public async Task<HbtPagedResult<HbtLoginExtendDto>> GetPagedListAsync(HbtLoginExtendQueryDto query)
+        public async Task<HbtPagedResult<HbtLoginExtendDto>> GetListAsync(HbtLoginExtendQueryDto query)
         {
             var exp = Expressionable.Create<HbtLoginExtend>();
 
@@ -75,15 +75,17 @@ namespace Lean.Hbt.Application.Services.Identity
             if (query.LastLoginTimeEnd.HasValue)
                 exp.And(x => x.LastLoginTime <= query.LastLoginTimeEnd.Value);
 
-            var (list, total) = await _loginExtendRepository.GetPagedListAsync(
+            var result = await _loginExtendRepository.GetPagedListAsync(
                 exp.ToExpression(),
                 query.PageIndex,
-                query.PageSize);
+                query.PageSize,
+                x => x.LastLoginTime,
+                OrderByType.Desc);
 
             return new HbtPagedResult<HbtLoginExtendDto>
             {
-                Rows = list.Adapt<List<HbtLoginExtendDto>>(),
-                TotalNum = total,
+                Rows = result.Rows.Adapt<List<HbtLoginExtendDto>>(),
+                TotalNum = result.TotalNum,
                 PageIndex = query.PageIndex,
                 PageSize = query.PageSize
             };
@@ -102,7 +104,7 @@ namespace Lean.Hbt.Application.Services.Identity
         /// </summary>
         public async Task<HbtLoginExtendDto> UpdateLoginInfoAsync(HbtLoginExtendUpdateDto request)
         {
-            var loginExtend = await _loginExtendRepository.FirstOrDefaultAsync(x => x.UserId == request.UserId);
+            var loginExtend = await _loginExtendRepository.GetInfoAsync(x => x.UserId == request.UserId);
             var now = DateTime.Now;
 
             if (loginExtend == null)
@@ -135,7 +137,7 @@ namespace Lean.Hbt.Application.Services.Identity
                     LoginCount = 1
                 };
 
-                await _loginExtendRepository.InsertAsync(loginExtend);
+                await _loginExtendRepository.CreateAsync(loginExtend);
             }
             else
             {
@@ -167,7 +169,7 @@ namespace Lean.Hbt.Application.Services.Identity
         /// </summary>
         public async Task<HbtLoginExtendDto> UpdateOfflineInfoAsync(long userId)
         {
-            var loginExtend = await _loginExtendRepository.FirstOrDefaultAsync(x => x.UserId == userId);
+            var loginExtend = await _loginExtendRepository.GetInfoAsync(x => x.UserId == userId);
             if (loginExtend == null)
             {
                 throw new InvalidOperationException($"用户{userId}的登录扩展信息不存在");
@@ -185,7 +187,7 @@ namespace Lean.Hbt.Application.Services.Identity
         /// </summary>
         public async Task<HbtLoginExtendDto> UpdateOnlinePeriodAsync(HbtLoginExtendOnlinePeriodUpdateDto request)
         {
-            var loginExtend = await _loginExtendRepository.FirstOrDefaultAsync(x => x.UserId == request.UserId);
+            var loginExtend = await _loginExtendRepository.GetInfoAsync(x => x.UserId == request.UserId);
             if (loginExtend == null)
             {
                 throw new InvalidOperationException($"用户{request.UserId}的登录扩展信息不存在");
@@ -204,8 +206,39 @@ namespace Lean.Hbt.Application.Services.Identity
         /// </summary>
         public async Task<HbtLoginExtendDto?> GetByUserIdAsync(long userId)
         {
-            var loginExtend = await _loginExtendRepository.FirstOrDefaultAsync(x => x.UserId == userId);
+            var loginExtend = await _loginExtendRepository.GetInfoAsync(x => x.UserId == userId);
             return loginExtend?.Adapt<HbtLoginExtendDto>();
+        }
+
+        /// <summary>
+        /// 清除所有用户的会话信息
+        /// </summary>
+        public async Task<bool> ClearAllUserSessionsAsync()
+        {
+            try
+            {
+                var now = DateTime.Now;
+                var onlineUsers = await _loginExtendRepository.GetListAsync(x => x.LoginStatus == 1);
+                
+                foreach (var user in onlineUsers)
+                {
+                    user.LoginStatus = 0; // 设置为离线状态
+                    user.LastOfflineTime = now;
+                }
+
+                if (onlineUsers.Any())
+                {
+                    await _loginExtendRepository.UpdateRangeAsync(onlineUsers);
+                    _logger.Info($"已清除 {onlineUsers.Count} 个用户的在线状态");
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error("清除用户会话信息时发生错误", ex);
+                return false;
+            }
         }
     }
 } 

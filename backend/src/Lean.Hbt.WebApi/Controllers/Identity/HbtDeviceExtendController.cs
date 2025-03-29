@@ -46,9 +46,9 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <param name="query">查询条件</param>
         /// <returns>分页列表</returns>
         [HttpGet]
-        public async Task<IActionResult> GetPagedListAsync([FromQuery] HbtDeviceExtendQueryDto query)
+        public async Task<IActionResult> GetListAsync([FromQuery] HbtDeviceExtendQueryDto query)
         {
-            var result = await _deviceExtendService.GetPagedListAsync(query);
+            var result = await _deviceExtendService.GetListAsync(query);
             return Success(result);
         }
 

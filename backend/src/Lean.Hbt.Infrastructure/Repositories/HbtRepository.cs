@@ -14,8 +14,10 @@ using System.Threading.Tasks;
 using Lean.Hbt.Domain.Entities;
 using Lean.Hbt.Domain.Entities.Identity;
 using Lean.Hbt.Domain.Repositories;
+using Lean.Hbt.Domain.Identity;
 using SqlSugar;
 using SqlSugar.Extensions;
+using Lean.Hbt.Common.Models;
 
 namespace Lean.Hbt.Infrastructure.Repositories
 {
@@ -31,15 +33,18 @@ namespace Lean.Hbt.Infrastructure.Repositories
     {
         private readonly SqlSugarScope _db;
         private readonly SimpleClient<TEntity> _entities;
+        private readonly IHbtCurrentUser _currentUser;
 
         /// <summary>
         /// 构造函数
         /// </summary>
         /// <param name="db">SqlSugar客户端</param>
-        public HbtRepository(SqlSugarScope db)
+        /// <param name="currentUser">当前用户服务</param>
+        public HbtRepository(SqlSugarScope db, IHbtCurrentUser currentUser)
         {
             _db = db;
             _entities = _db.GetSimpleClient<TEntity>();
+            _currentUser = currentUser;
         }
 
         /// <summary>
@@ -64,75 +69,178 @@ namespace Lean.Hbt.Infrastructure.Repositories
         #region 查询操作
 
         /// <summary>
-        /// 根据主键获取实体
+        /// 根据ID获取实体
         /// </summary>
         /// <param name="id">主键值</param>
         /// <returns>返回实体对象,如果未找到返回null</returns>
-        public async Task<TEntity> GetByIdAsync(object id)
+        public async Task<TEntity?> GetByIdAsync(object id)
         {
-            return await _entities.GetByIdAsync(id);
+            var query = _db.Queryable<TEntity>();
+            
+            // 非管理员需要过滤已删除记录
+            if (_currentUser.UserType != 2 && typeof(TEntity).IsSubclassOf(typeof(HbtBaseEntity)))
+            {
+                query = query.Where("is_deleted = 0");
+            }
+            
+            return await query.InSingleAsync(id);
         }
 
         /// <summary>
-        /// 获取所有实体列表
-        /// </summary>
-        /// <returns>返回实体列表</returns>
-        public async Task<List<TEntity>> GetListAsync()
-        {
-            return await _entities.GetListAsync();
-        }
-
-        /// <summary>
-        /// 根据条件获取实体列表
-        /// </summary>
-        /// <param name="condition">查询条件表达式</param>
-        /// <returns>返回符合条件的实体列表</returns>
-        public async Task<List<TEntity>> GetListAsync(Expression<Func<TEntity, bool>> condition)
-        {
-            return await _entities.GetListAsync(condition);
-        }
-
-        /// <summary>
-        /// 分页查询所有数据
-        /// </summary>
-        /// <param name="pageIndex">页码(从1开始)</param>
-        /// <param name="pageSize">每页记录数</param>
-        /// <returns>返回分页结果(list:当前页数据,total:总记录数)</returns>
-        public async Task<(List<TEntity> list, long total)> GetPagedListAsync(int pageIndex, int pageSize)
-        {
-            RefAsync<int> totalCount = 0;
-            var list = await _db.Queryable<TEntity>()
-                .ToPageListAsync(pageIndex, pageSize, totalCount);
-            return (list, totalCount);
-        }
-
-        /// <summary>
-        /// 根据条件分页查询
-        /// </summary>
-        /// <param name="condition">查询条件表达式</param>
-        /// <param name="pageIndex">页码(从1开始)</param>
-        /// <param name="pageSize">每页记录数</param>
-        /// <returns>返回分页结果(list:当前页数据,total:总记录数)</returns>
-        public async Task<(List<TEntity> list, long total)> GetPagedListAsync(Expression<Func<TEntity, bool>> condition, int pageIndex, int pageSize)
-        {
-            RefAsync<int> totalCount = 0;
-            var list = await _db.Queryable<TEntity>()
-                .Where(condition)
-                .ToPageListAsync(pageIndex, pageSize, totalCount);
-            return (list, totalCount);
-        }
-
-        /// <summary>
-        /// 根据条件获取第一个实体
+        /// 获取实体详情
         /// </summary>
         /// <param name="condition">查询条件</param>
-        /// <returns>实体</returns>
-        public async Task<TEntity> FirstOrDefaultAsync(Expression<Func<TEntity, bool>> condition)
+        /// <returns>返回实体对象,如果未找到返回null</returns>
+        public async Task<TEntity?> GetInfoAsync(Expression<Func<TEntity, bool>> condition)
         {
-            return await SimpleClient.AsQueryable().FirstAsync(condition);
+            var query = _db.Queryable<TEntity>();
+            
+            // 非管理员需要过滤已删除记录
+            if (_currentUser.UserType != 2 && typeof(TEntity).IsSubclassOf(typeof(HbtBaseEntity)))
+            {
+                query = query.Where("is_deleted = 0");
+            }
+            
+            return await query.Where(condition).FirstAsync();
         }
 
-        #endregion 查询操作
+        /// <summary>
+        /// 获取实体列表
+        /// </summary>
+        /// <param name="condition">查询条件</param>
+        /// <returns>实体列表</returns>
+        public async Task<List<TEntity>> GetListAsync(Expression<Func<TEntity, bool>>? condition = null)
+        {
+            var query = _db.Queryable<TEntity>();
+            
+            // 非管理员需要过滤已删除记录
+            if (_currentUser.UserType != 2 && typeof(TEntity).IsSubclassOf(typeof(HbtBaseEntity)))
+            {
+                query = query.Where("is_deleted = 0");
+            }
+            
+            if (condition != null)
+            {
+                query = query.Where(condition);
+            }
+
+            return await query.ToListAsync();
+        }
+
+        /// <summary>
+        /// 获取分页列表
+        /// </summary>
+        /// <param name="condition">查询条件</param>
+        /// <param name="pageIndex">页码</param>
+        /// <param name="pageSize">每页记录数</param>
+        /// <param name="orderByExpression">排序表达式</param>
+        /// <param name="orderByType">排序类型</param>
+        /// <returns>分页结果</returns>
+        public async Task<HbtPagedResult<TEntity>> GetPagedListAsync(
+            Expression<Func<TEntity, bool>>? condition = null,
+            int pageIndex = 1,
+            int pageSize = 20,
+            Expression<Func<TEntity, object>>? orderByExpression = null,
+            OrderByType orderByType = OrderByType.Desc)
+        {
+            var query = _db.Queryable<TEntity>();
+            
+            // 非管理员需要过滤已删除记录
+            if (_currentUser.UserType != 2 && typeof(TEntity).IsSubclassOf(typeof(HbtBaseEntity)))
+            {
+                query = query.Where("is_deleted = 0");
+            }
+
+            if (condition != null)
+            {
+                query = query.Where(condition);
+            }
+
+            if (orderByExpression != null)
+            {
+                query = orderByType == OrderByType.Asc
+                    ? query.OrderBy(orderByExpression)
+                    : query.OrderBy(orderByExpression, OrderByType.Desc);
+            }
+
+            var total = await query.CountAsync();
+            var list = await query
+                .Skip((pageIndex - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return new HbtPagedResult<TEntity>
+            {
+                Rows = list,
+                TotalNum = total,
+                PageIndex = pageIndex,
+                PageSize = pageSize
+            };
+        }
+
+        /// <summary>
+        /// 获取分页列表(支持多个排序条件)
+        /// </summary>
+        /// <param name="condition">查询条件</param>
+        /// <param name="pageIndex">页码</param>
+        /// <param name="pageSize">每页记录数</param>
+        /// <param name="orderByExpressions">排序表达式列表</param>
+        /// <returns>实体列表和总记录数</returns>
+        public async Task<HbtPagedResult<TEntity>> GetPagedListAsync(
+            Expression<Func<TEntity, bool>>? condition = null,
+            int pageIndex = 1,
+            int pageSize = 20,
+            List<(Expression<Func<TEntity, object>> Expression, OrderByType Type)>? orderByExpressions = null)
+        {
+            var query = _db.Queryable<TEntity>();
+
+            // 添加查询条件
+            if (condition != null)
+            {
+                query = query.Where(condition);
+            }
+
+            // 添加排序条件
+            if (orderByExpressions != null && orderByExpressions.Count > 0)
+            {
+                var isFirst = true;
+                foreach (var (expression, type) in orderByExpressions)
+                {
+                    if (isFirst)
+                    {
+                        query = type == OrderByType.Asc
+                            ? query.OrderBy(expression)
+                            : query.OrderBy(expression, OrderByType.Desc);
+                        isFirst = false;
+                    }
+                    else
+                    {
+                        query = type == OrderByType.Asc
+                            ? query.OrderByIF(true, expression, OrderByType.Asc)
+                            : query.OrderByIF(true, expression, OrderByType.Desc);
+                    }
+                }
+            }
+
+            // 获取总数
+            var total = await query.CountAsync();
+
+            // 分页查询
+            var list = await query
+                .Skip((pageIndex - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return new HbtPagedResult<TEntity>
+            {
+                Rows = list,
+                TotalNum = total,
+                PageIndex = pageIndex,
+                PageSize = pageSize
+            };
+        }
+
+        #endregion
 
         #region 新增操作
 
@@ -141,8 +249,13 @@ namespace Lean.Hbt.Infrastructure.Repositories
         /// </summary>
         /// <param name="entity">实体对象</param>
         /// <returns>返回受影响的行数</returns>
-        public async Task<int> InsertAsync(TEntity entity)
+        public async Task<int> CreateAsync(TEntity entity)
         {
+            if (entity is HbtBaseEntity baseEntity)
+            {
+                baseEntity.CreateTime = DateTime.Now;
+                baseEntity.CreateBy = _currentUser.UserName ?? "Hbt365";
+            }
             return await _db.Insertable(entity).ExecuteCommandAsync();
         }
 
@@ -151,8 +264,19 @@ namespace Lean.Hbt.Infrastructure.Repositories
         /// </summary>
         /// <param name="entities">实体对象列表</param>
         /// <returns>返回受影响的行数</returns>
-        public async Task<int> InsertRangeAsync(List<TEntity> entities)
+        public async Task<int> CreateRangeAsync(List<TEntity> entities)
         {
+            var now = DateTime.Now;
+            var userName = _currentUser.UserName ?? "Hbt365";
+            
+            foreach (var entity in entities)
+            {
+                if (entity is HbtBaseEntity baseEntity)
+                {
+                    baseEntity.CreateTime = now;
+                    baseEntity.CreateBy = userName;
+                }
+            }
             return await _db.Insertable(entities).ExecuteCommandAsync();
         }
 
@@ -167,6 +291,11 @@ namespace Lean.Hbt.Infrastructure.Repositories
         /// <returns>返回受影响的行数</returns>
         public async Task<int> UpdateAsync(TEntity entity)
         {
+            if (entity is HbtBaseEntity baseEntity)
+            {
+                baseEntity.UpdateTime = DateTime.Now;
+                baseEntity.UpdateBy = _currentUser.UserName ?? "Hbt365";
+            }
             return await _db.Updateable(entity).ExecuteCommandAsync();
         }
 
@@ -177,6 +306,17 @@ namespace Lean.Hbt.Infrastructure.Repositories
         /// <returns>返回受影响的行数</returns>
         public async Task<int> UpdateRangeAsync(List<TEntity> entities)
         {
+            var now = DateTime.Now;
+            var userName = _currentUser.UserName ?? "Hbt365";
+            
+            foreach (var entity in entities)
+            {
+                if (entity is HbtBaseEntity baseEntity)
+                {
+                    baseEntity.UpdateTime = now;
+                    baseEntity.UpdateBy = userName;
+                }
+            }
             return await _db.Updateable(entities).ExecuteCommandAsync();
         }
 
@@ -191,7 +331,9 @@ namespace Lean.Hbt.Infrastructure.Repositories
         /// <returns>返回受影响的行数</returns>
         public async Task<int> DeleteAsync(object id)
         {
-            return await _db.Deleteable<TEntity>().In(id).ExecuteCommandAsync();
+            var entity = await GetByIdAsync(id);
+            if (entity == null) return 0;
+            return await DeleteAsync(entity);
         }
 
         /// <summary>
@@ -201,7 +343,13 @@ namespace Lean.Hbt.Infrastructure.Repositories
         /// <returns>返回受影响的行数</returns>
         public async Task<int> DeleteAsync(TEntity entity)
         {
-            return await _db.Deleteable(entity).ExecuteCommandAsync();
+            if (entity is HbtBaseEntity baseEntity)
+            {
+                baseEntity.IsDeleted = 1;
+                baseEntity.DeleteTime = DateTime.Now;
+                baseEntity.DeleteBy = _currentUser.UserName ?? "Hbt365";
+            }
+            return await _db.Updateable(entity).ExecuteCommandAsync();
         }
 
         /// <summary>
@@ -211,7 +359,18 @@ namespace Lean.Hbt.Infrastructure.Repositories
         /// <returns>返回受影响的行数</returns>
         public async Task<int> DeleteRangeAsync(List<object> ids)
         {
-            return await _db.Deleteable<TEntity>().In(ids).ExecuteCommandAsync();
+            var entities = new List<TEntity>();
+            foreach (var id in ids)
+            {
+                var entity = await GetByIdAsync(id);
+                if (entity != null)
+                {
+                    entities.Add(entity);
+                }
+            }
+            
+            if (!entities.Any()) return 0;
+            return await DeleteRangeAsync(entities);
         }
 
         /// <summary>
@@ -221,7 +380,19 @@ namespace Lean.Hbt.Infrastructure.Repositories
         /// <returns>返回受影响的行数</returns>
         public async Task<int> DeleteRangeAsync(List<TEntity> entities)
         {
-            return await _db.Deleteable(entities).ExecuteCommandAsync();
+            var now = DateTime.Now;
+            var userName = _currentUser.UserName ?? "Hbt365";
+            
+            foreach (var entity in entities)
+            {
+                if (entity is HbtBaseEntity baseEntity)
+                {
+                    baseEntity.IsDeleted = 1;
+                    baseEntity.DeleteTime = now;
+                    baseEntity.DeleteBy = userName;
+                }
+            }
+            return await _db.Updateable(entities).ExecuteCommandAsync();
         }
 
         #endregion 删除操作

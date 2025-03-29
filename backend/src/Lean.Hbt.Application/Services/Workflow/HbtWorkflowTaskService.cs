@@ -17,6 +17,7 @@ using Lean.Hbt.Domain.IServices.Admin;
 using Lean.Hbt.Domain.Repositories;
 using SqlSugar;
 using Mapster;
+using Lean.Hbt.Domain.Repositories;
 
 namespace Lean.Hbt.Application.Services.Workflow
 {
@@ -92,7 +93,7 @@ namespace Lean.Hbt.Application.Services.Workflow
         /// 7. PageIndex - 页码
         /// 8. PageSize - 每页记录数</param>
         /// <returns>返回分页后的工作流任务列表</returns>
-        public async Task<HbtPagedResult<HbtWorkflowTaskDto>> GetPagedListAsync(HbtWorkflowTaskQueryDto query)
+        public async Task<HbtPagedResult<HbtWorkflowTaskDto>> GetListAsync(HbtWorkflowTaskQueryDto query)
         {
             var exp = Expressionable.Create<HbtWorkflowTask>();
 
@@ -120,14 +121,19 @@ namespace Lean.Hbt.Application.Services.Workflow
             var pageIndex = query?.PageIndex ?? 1;
             var pageSize = query?.PageSize ?? 10;
 
-            var result = await _taskRepository.GetPagedListAsync(exp.ToExpression(), pageIndex, pageSize);
+            var result = await _taskRepository.GetPagedListAsync(
+                exp.ToExpression(),
+                query?.PageIndex ?? 1,
+                query?.PageSize ?? 10,
+                x => x.Id,
+                OrderByType.Asc);
 
             return new HbtPagedResult<HbtWorkflowTaskDto>
             {
-                TotalNum = result.total,
-                PageIndex = pageIndex,
-                PageSize = pageSize,
-                Rows = result.list.Adapt<List<HbtWorkflowTaskDto>>()
+                TotalNum = result.TotalNum,
+                PageIndex = query?.PageIndex ?? 1,
+                PageSize = query?.PageSize ?? 10,
+                Rows = result.Rows.Adapt<List<HbtWorkflowTaskDto>>()
             };
         }
 
@@ -137,7 +143,7 @@ namespace Lean.Hbt.Application.Services.Workflow
         /// <param name="id">工作流任务ID</param>
         /// <returns>工作流任务详情DTO</returns>
         /// <exception cref="HbtException">当工作流任务不存在时抛出异常</exception>
-        public async Task<HbtWorkflowTaskDto> GetAsync(long id)
+        public async Task<HbtWorkflowTaskDto> GetByIdAsync(long id)
         {
             var task = await _taskRepository.GetByIdAsync(id);
             if (task == null)
@@ -153,7 +159,7 @@ namespace Lean.Hbt.Application.Services.Workflow
         /// <returns>新创建的工作流任务ID</returns>
         /// <exception cref="ArgumentNullException">当输入参数为空时抛出异常</exception>
         /// <exception cref="HbtException">当工作流任务创建失败时抛出异常</exception>
-        public async Task<long> InsertAsync(HbtWorkflowTaskCreateDto input)
+        public async Task<long> CreateAsync(HbtWorkflowTaskCreateDto input)
         {
             if (input == null)
                 throw new ArgumentNullException(nameof(input));
@@ -162,7 +168,7 @@ namespace Lean.Hbt.Application.Services.Workflow
             task.Status = 0; // 0 表示待处理状态
             task.CreateTime = DateTime.Now;
 
-            var result = await _taskRepository.InsertAsync(task);
+            var result = await _taskRepository.CreateAsync(task);
             if (result <= 0)
                 throw new HbtException(_localization.L("WorkflowTask.Create.Failed"));
 
@@ -278,7 +284,7 @@ namespace Lean.Hbt.Application.Services.Workflow
                     task.Status = 0; // 0 表示待处理状态,导入时默认为待处理状态
                     task.CreateTime = DateTime.Now;
 
-                    var result = await _taskRepository.InsertAsync(task);
+                    var result = await _taskRepository.CreateAsync(task);
                     if (result > 0)
                         success++;
                     else

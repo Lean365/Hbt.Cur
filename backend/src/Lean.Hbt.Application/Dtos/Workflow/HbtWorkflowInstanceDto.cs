@@ -64,6 +64,27 @@ namespace Lean.Hbt.Application.Dtos.Workflow
     public class HbtWorkflowInstanceDto
     {
         /// <summary>
+        /// 构造函数
+        /// </summary>
+        public HbtWorkflowInstanceDto()
+        {
+            WorkflowInstanceId = 0;
+            WorkflowDefinitionId = 0;
+            Title = string.Empty;
+            InitiatorId = 0;
+            InitiatorName = string.Empty;
+            CurrentNodeId = 0;
+            CurrentNodeName = string.Empty;
+            FormData = string.Empty;
+            Status = 0;
+            Remark = string.Empty;
+            Creator = string.Empty;
+            CreateTime = DateTime.Now;
+            Modifier = string.Empty;
+            ModifyTime = null;
+        }
+
+        /// <summary>
         /// 实例ID
         /// </summary>
         [AdaptMember("Id")]

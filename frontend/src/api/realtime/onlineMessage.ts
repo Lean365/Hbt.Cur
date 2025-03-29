@@ -1,60 +1,70 @@
 import request from '@/utils/request'
-import type { HbtApiResponse } from '@/types/common'
-import type { 
-  OnlineMessageQuery, 
-  OnlineMessage,
-  OnlineMessageCreate
-} from '@/types/realtime/onlineMessage'
+import type { HbtOnlineMessageQueryParams, HbtOnlineMessagePageResult, HbtOnlineMessageDto } from '@/types/realtime/onlineMessage'
 
-// 获取在线消息列表
-export function getOnlineMessageList(params: OnlineMessageQuery) {
-  return request<HbtApiResponse<OnlineMessage[]>>({
+/** 获取在线消息列表 */
+export function getOnlineMessageList(params: HbtOnlineMessageQueryParams) {
+  return request<HbtOnlineMessagePageResult>({
     url: '/api/HbtOnlineMessage',
     method: 'get',
     params
   })
 }
 
-// 获取消息详情
-export function getOnlineMessage(id: number) {
-  return request<HbtApiResponse<OnlineMessage>>({
+/** 获取消息详情 */
+export function getOnlineMessage(id: number | bigint) {
+  return request<HbtOnlineMessageDto>({
     url: `/api/HbtOnlineMessage/${id}`,
     method: 'get'
   })
 }
 
-// 导出在线消息
-export function exportOnlineMessage(params: OnlineMessageQuery, sheetName: string = '在线消息信息') {
-  return request<Blob>({
-    url: '/api/HbtOnlineMessage/export',
-    method: 'get',
-    params: { ...params, sheetName },
-    responseType: 'blob'
-  })
-}
-
-// 保存消息
-export function saveOnlineMessage(data: OnlineMessageCreate) {
-  return request<HbtApiResponse<number>>({
+/** 保存消息 */
+export function saveOnlineMessage(data: HbtOnlineMessageDto) {
+  return request<number | bigint>({
     url: '/api/HbtOnlineMessage',
     method: 'post',
     data
   })
 }
 
-// 删除消息
-export function deleteOnlineMessage(id: number) {
-  return request<HbtApiResponse<boolean>>({
+/** 删除在线消息 */
+export function deleteOnlineMessage(id: number | bigint) {
+  return request({
     url: `/api/HbtOnlineMessage/${id}`,
     method: 'delete'
   })
 }
 
-// 清理过期消息
+/** 导出在线消息数据 */
+export function exportOnlineMessage(params: HbtOnlineMessageQueryParams, sheetName: string = '在线消息信息') {
+  return request({
+    url: '/api/HbtOnlineMessage/export',
+    method: 'get',
+    params: { ...params, sheetName }
+  })
+}
+
+/** 清理过期消息 */
 export function cleanupExpiredMessages(days: number = 7) {
-  return request<HbtApiResponse<number>>({
+  return request({
     url: '/api/HbtOnlineMessage/cleanup',
     method: 'post',
     params: { days }
+  })
+}
+
+/** 标记消息为已读 */
+export function markMessageAsRead(id: number | bigint) {
+  return request({
+    url: `/api/HbtOnlineMessage/${id}/read`,
+    method: 'put'
+  })
+}
+
+/** 标记所有消息为已读 */
+export function markAllMessagesAsRead() {
+  return request({
+    url: '/api/HbtOnlineMessage/read-all',
+    method: 'put'
   })
 } 

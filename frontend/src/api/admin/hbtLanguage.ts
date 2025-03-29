@@ -15,7 +15,7 @@ import type {
   HbtLanguageCreate,
   HbtLanguageUpdate,
   HbtLanguageStatus
-} from '@/types/admin/hbtLanguage'
+} from '@/types/admin/language'
 
 
 /**

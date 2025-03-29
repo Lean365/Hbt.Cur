@@ -8,6 +8,10 @@ import adminLanguageEnUS from './admin/language/en-US'
 import adminDictTypeZhCN from './admin/dicttype/zh-CN'
 import adminDictTypeEnUS from './admin/dicttype/en-US'
 
+// 导入代码生成器翻译
+import generatorZhCN from './generator/zh-CN'
+import generatorEnUS from './generator/en-US'
+
 // 导入公共翻译
 import commonZhCN from './common/zh-CN'
 import commonEnUS from './common/en-US'
@@ -49,8 +53,15 @@ import localeZhCN from './components/locale/zh-CN'
 import localeEnUS from './components/locale/en-US'
 
 // 导入菜单翻译
-import menuZhCN from './components/menu/zh-CN'
+import menuArSA from './components/menu/ar-SA'
 import menuEnUS from './components/menu/en-US'
+import menuEsES from './components/menu/es-ES'
+import menuFrFR from './components/menu/fr-FR'
+import menuJaJP from './components/menu/ja-JP'
+import menuKoKR from './components/menu/ko-KR'
+import menuRuRU from './components/menu/ru-RU'
+import menuZhCN from './components/menu/zh-CN'
+import menuZhTw from './components/menu/zh-TW'
 
 // 导入分页翻译
 import paginationZhCN from './components/pagination/zh-CN'
@@ -92,12 +103,67 @@ import iconEnUS from './components/icon/en-US'
 
 // 合并所有翻译
 const messages = {
+  'ar-SA': {
+    ...menuArSA // 菜单翻译
+  },
+  'en-US': {
+    admin: {
+      ...adminTranslationEnUS.admin,
+      ...adminLanguageEnUS.admin,
+      ...adminDictTypeEnUS.admin
+    },
+    ...generatorEnUS,
+    ...commonEnUS,
+    ...dashboardEnUS,
+    ...errorEnUS,
+    ...footerEnUS,
+    ...headerEnUS,
+    ...holidayEnUS,
+    ...homeEnUS,
+    identity: {
+      ...identityAuthEnUS.identity,
+      ...identityMenuEnUS.identity,
+      ...identityUserEnUS.identity,
+      ...identityRoleEnUS.identity,
+      ...identityDeptEnUS.identity,
+      ...identityPostEnUS.identity,
+      ...identityTenantEnUS.identity
+    },
+    ...iconEnUS,
+    ...localeEnUS,
+    ...menuEnUS,
+    ...paginationEnUS,
+    table: {
+      ...tableEnUS.table,
+      ...columnSettingsEnUS.table
+    },
+    ...queryEnUS,
+    ...routerEnUS,
+    ...themeEnUS
+  },
+  'es-ES': {
+    ...menuEsES // 菜单翻译
+  },
+  'fr-FR': {
+    ...menuFrFR // 菜单翻译
+  },
+  'ja-JP': {
+    ...menuJaJP // 菜单翻译
+  },
+  'ko-KR': {
+    ...menuKoKR // 菜单翻译
+  },
+  'ru-RU': {
+    ...menuRuRU // 菜单翻译
+  },
+
   'zh-CN': {
     admin: {
       ...adminTranslationZhCN.admin,
       ...adminLanguageZhCN.admin,
       ...adminDictTypeZhCN.admin
     },
+    ...generatorZhCN,
     ...commonZhCN,
     ...dashboardZhCN,
     ...errorZhCN,
@@ -126,39 +192,8 @@ const messages = {
     ...routerZhCN,
     ...themeZhCN
   },
-  'en-US': {
-    admin: {
-      ...adminTranslationEnUS.admin,
-      ...adminLanguageEnUS.admin,
-      ...adminDictTypeEnUS.admin
-    },
-    ...commonEnUS,
-    ...dashboardEnUS,
-    ...errorEnUS,
-    ...footerEnUS,
-    ...headerEnUS,
-    ...holidayEnUS,
-    ...homeEnUS,
-    identity: {
-      ...identityAuthEnUS.identity,
-      ...identityMenuEnUS.identity,
-      ...identityUserEnUS.identity,
-      ...identityRoleEnUS.identity,
-      ...identityDeptEnUS.identity,
-      ...identityPostEnUS.identity,
-      ...identityTenantEnUS.identity
-    },
-    ...iconEnUS,
-    ...localeEnUS,
-    ...menuEnUS,
-    ...paginationEnUS,
-    table: {
-      ...tableEnUS.table,
-      ...columnSettingsEnUS.table
-    },
-    ...queryEnUS,
-    ...routerEnUS,
-    ...themeEnUS
+  'zh-TW': {
+    ...menuZhTw // 菜单翻译
   }
 }
 
@@ -175,9 +210,9 @@ const i18n = createI18n({
   // 添加语言环境映射
   availableLocales: ['zh-CN', 'en-US'],
   fallbackLocaleChain: {
-    'zh': ['zh-CN', 'en-US'],
+    zh: ['zh-CN', 'en-US'],
     'zh-CN': ['zh-CN', 'en-US'],
-    'en': ['en-US', 'zh-CN'],
+    en: ['en-US', 'zh-CN'],
     'en-US': ['en-US', 'zh-CN']
   }
 })

@@ -43,9 +43,10 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <param name="query">查询条件</param>
         /// <returns>角色分页列表</returns>
         [HttpGet]
-        public async Task<IActionResult> GetPagedListAsync([FromQuery] HbtRoleQueryDto query)
+        [HbtPerm("identity:role:query")]
+        public async Task<IActionResult> GetListAsync([FromQuery] HbtRoleQueryDto query)
         {
-            var result = await _roleService.GetPagedListAsync(query);
+            var result = await _roleService.GetListAsync(query);
             return Success(result);
         }
 
@@ -55,9 +56,10 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <param name="roleId">角色ID</param>
         /// <returns>角色详情</returns>
         [HttpGet("{roleId}")]
-        public async Task<IActionResult> GetAsync(long roleId)
+        [HbtPerm("identity:role:query")]
+        public async Task<IActionResult> GetByIdAsync(long roleId)
         {
-            var result = await _roleService.GetAsync(roleId);
+            var result = await _roleService.GetByIdAsync(roleId);
             return Success(result);
         }
 
@@ -67,9 +69,10 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <param name="input">创建对象</param>
         /// <returns>角色ID</returns>
         [HttpPost]
-        public async Task<IActionResult> InsertAsync([FromBody] HbtRoleCreateDto input)
+        [HbtPerm("identity:role:create")]
+        public async Task<IActionResult> CreateAsync([FromBody] HbtRoleCreateDto input)
         {
-            var result = await _roleService.InsertAsync(input);
+            var result = await _roleService.CreateAsync(input);
             return Success(result);
         }
 
@@ -79,6 +82,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <param name="input">更新对象</param>
         /// <returns>是否成功</returns>
         [HttpPut]
+        [HbtPerm("identity:role:update")]
         public async Task<IActionResult> UpdateAsync([FromBody] HbtRoleUpdateDto input)
         {
             var result = await _roleService.UpdateAsync(input);
@@ -91,6 +95,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <param name="roleId">角色ID</param>
         /// <returns>是否成功</returns>
         [HttpDelete("{roleId}")]
+        [HbtPerm("identity:role:delete")]
         public async Task<IActionResult> DeleteAsync(long roleId)
         {
             var result = await _roleService.DeleteAsync(roleId);
@@ -171,6 +176,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// </summary>
         /// <returns>角色选项列表</returns>
         [HttpGet("options")]
+        [HbtPerm("identity:role:query")]
         public async Task<IActionResult> GetOptionsAsync()
         {
             var result = await _roleService.GetOptionsAsync();

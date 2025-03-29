@@ -27,6 +27,31 @@ namespace Lean.Hbt.Common.Models
         public string? DeviceId { get; set; }
 
         /// <summary>
+        /// 设备令牌（后端生成的唯一标识）
+        /// </summary>
+        public string? DeviceToken { get; set; }
+
+        /// <summary>
+        /// 设备指纹（前端生成的特征值）
+        /// </summary>
+        public string? DeviceFingerprint { get; set; }
+
+        /// <summary>
+        /// 登录令牌
+        /// </summary>
+        public string? AccessToken { get; set; }
+
+        /// <summary>
+        /// 首次登录时间
+        /// </summary>
+        public DateTime? FirstLoginTime { get; set; }
+
+        /// <summary>
+        /// 最后登录时间
+        /// </summary>
+        public DateTime? LastLoginTime { get; set; }
+
+        /// <summary>
         /// 设备类型
         /// </summary>
         public HbtDeviceType DeviceType { get; set; }
@@ -115,10 +140,5 @@ namespace Lean.Hbt.Common.Models
         /// WebGL渲染器信息
         /// </summary>
         public string? WebGLRenderer { get; set; }
-
-        /// <summary>
-        /// 设备指纹
-        /// </summary>
-        public string? DeviceFingerprint { get; set; }
     }
 } 

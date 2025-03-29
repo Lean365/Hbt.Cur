@@ -119,7 +119,7 @@ namespace Lean.Hbt.Application.Services.Routine.Jobs
                 LogErrorInfo = message
             };
 
-            await _logRepository.InsertAsync(log);
+            await _logRepository.CreateAsync(log);
         }
 
         /// <summary>

@@ -23,6 +23,7 @@ namespace Lean.Hbt.WebApi.Controllers.Audit
     [Route("api/[controller]", Name = "数据库差异日志")]
     [ApiController]
     [ApiModule("audit", "审计日志")]
+
     public class HbtDbDiffLogController : HbtBaseController
     {
         private readonly IHbtDbDiffLogService _dbDiffLogService;
@@ -43,9 +44,10 @@ namespace Lean.Hbt.WebApi.Controllers.Audit
         /// <param name="query">查询条件</param>
         /// <returns>数据库差异日志分页列表</returns>
         [HttpGet]
-        public async Task<IActionResult> GetPagedListAsync([FromQuery] HbtDbDiffLogQueryDto query)
+        [HbtPerm("audit:difflog:list")]
+        public async Task<IActionResult> GetListAsync([FromQuery] HbtDbDiffLogQueryDto query)
         {
-            var result = await _dbDiffLogService.GetPagedListAsync(query);
+            var result = await _dbDiffLogService.GetListAsync(query);
             return Success(result);
         }
 
@@ -55,9 +57,10 @@ namespace Lean.Hbt.WebApi.Controllers.Audit
         /// <param name="logId">日志ID</param>
         /// <returns>数据库差异日志详情</returns>
         [HttpGet("{logId}")]
-        public async Task<IActionResult> GetAsync(long logId)
+        [HbtPerm("audit:difflog:query")]
+        public async Task<IActionResult> GetByIdAsync(long logId)
         {
-            var result = await _dbDiffLogService.GetAsync(logId);
+            var result = await _dbDiffLogService.GetByIdAsync(logId);
             return Success(result);
         }
 
@@ -68,6 +71,7 @@ namespace Lean.Hbt.WebApi.Controllers.Audit
         /// <param name="sheetName">工作表名称</param>
         /// <returns>导出的Excel文件</returns>
         [HttpGet("export")]
+        [HbtPerm("audit:difflog:export")]
         [ProducesResponseType(typeof(byte[]), StatusCodes.Status200OK)]
         public async Task<IActionResult> ExportAsync([FromQuery] HbtDbDiffLogQueryDto query, [FromQuery] string sheetName = "数据库差异日志数据")
         {
@@ -80,6 +84,7 @@ namespace Lean.Hbt.WebApi.Controllers.Audit
         /// </summary>
         /// <returns>是否成功</returns>
         [HttpDelete("clear")]
+        [HbtPerm("audit:difflog:clear")]
         public async Task<IActionResult> ClearAsync()
         {
             var result = await _dbDiffLogService.ClearAsync();

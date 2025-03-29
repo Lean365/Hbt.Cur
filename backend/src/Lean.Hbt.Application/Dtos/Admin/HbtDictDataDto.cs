@@ -106,6 +106,11 @@ namespace Lean.Hbt.Application.Dtos.Admin
         public string? DictLabel { get; set; }
 
         /// <summary>
+        /// 字典键值
+        /// </summary>
+        public string? DictValue { get; set; }
+
+        /// <summary>
         /// 状态（0正常 1停用）
         /// </summary>
         public int? Status { get; set; }

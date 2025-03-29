@@ -216,9 +216,9 @@ import {
   exportHbtDictType,
   getHbtDictTypeByType
 } from '@/api/admin/hbtDictType'
-import type { HbtDictType, HbtDictTypeQuery, DictTypePageResult, HbtDictTypeCreate, HbtDictTypeUpdate } from '@/types/admin/hbtDictType'
+import type { HbtDictType, HbtDictTypeQuery, DictTypePageResult, HbtDictTypeCreate, HbtDictTypeUpdate } from '@/types/admin/dictType'
 import type { HbtApiResult } from '@/types/common'
-import type { HbtDictData } from '@/types/admin/hbtDictData'
+import type { HbtDictData } from '@/types/admin/dictData'
 
 // 引入类型
 import type { QueryField } from '@/types/components/query'

@@ -8,7 +8,7 @@ export default {
       },
       usage: {
         title: 'Icon Usage Guide',
-        description: 'Click on an icon to copy component usage',
+        description: 'Click icon to copy component usage',
         methods: {
           title: 'Usage Methods',
           component: 'Component Usage',
@@ -19,10 +19,10 @@ export default {
         title: 'Icon Categories',
         direction: 'Directional Icons',
         suggestion: 'Suggestive Icons',
-        edit: 'Editor Icons',
+        edit: 'Editing Icons',
         data: 'Data Icons',
         other: 'Common Website Icons',
-        brand: 'Brand and Logo'
+        brand: 'Brand & Logo Icons'
       }
     }
   }

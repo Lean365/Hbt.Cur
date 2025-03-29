@@ -12,6 +12,9 @@ using System.Net;
 using IP2Region.Net.XDB;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Hosting;
+using System.Text.RegularExpressions;
+using System.Diagnostics;
+using System.IO;
 
 namespace Lean.Hbt.Common.Utils;
 
@@ -26,27 +29,9 @@ namespace Lean.Hbt.Common.Utils;
 /// </remarks>
 public static class HbtIpLocationUtils
 {
-    private static readonly Searcher? _ip2RegionSearcher;
+    private static Searcher? _searcher;
+    private static readonly Regex _ipRegex = new(@"^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$", RegexOptions.Compiled);
     private static IWebHostEnvironment? _webHostEnvironment;
-
-    /// <summary>
-    /// 静态构造函数，初始化IP2Region搜索器
-    /// </summary>
-    static HbtIpLocationUtils()
-    {
-        try
-        {
-            var dbPath = Path.Combine(_webHostEnvironment?.WebRootPath ?? AppDomain.CurrentDomain.BaseDirectory, 
-                                    "IpRegion", "ip2region.xdb");
-            _ip2RegionSearcher = new Searcher(CachePolicy.File, dbPath);
-        }
-        catch (Exception ex)
-        {
-            // 记录日志
-            Console.WriteLine($"初始化IP2Region失败: {ex.Message}");
-            _ip2RegionSearcher = null;
-        }
-    }
 
     /// <summary>
     /// 设置Web环境
@@ -54,7 +39,27 @@ public static class HbtIpLocationUtils
     /// <param name="webHostEnvironment">Web主机环境</param>
     public static void SetWebHostEnvironment(IWebHostEnvironment webHostEnvironment)
     {
-        _webHostEnvironment = webHostEnvironment;
+        try
+        {
+            _webHostEnvironment = webHostEnvironment;
+            var dbPath = Path.Combine(_webHostEnvironment.WebRootPath, "IpRegion", "ip2region.xdb");
+            Debug.WriteLine($"数据库文件路径: {dbPath}");
+            
+            if (!File.Exists(dbPath))
+            {
+                var error = $"IP2Region数据库文件不存在: {dbPath}";
+                Debug.WriteLine(error);
+                throw new FileNotFoundException(error);
+            }
+            
+            _searcher = new Searcher(CachePolicy.File, dbPath);
+        }
+        catch (Exception ex)
+        {
+            var error = $"初始化IP2Region失败: {ex.GetType().Name} - {ex.Message}\n{ex.StackTrace}";
+            Debug.WriteLine(error);
+            throw new InvalidOperationException(error, ex);
+        }
     }
 
     /// <summary>
@@ -66,33 +71,30 @@ public static class HbtIpLocationUtils
     /// 使用IP2Region库查询IP地址的地理位置信息
     /// 如果是内网IP或查询失败则返回特定说明
     /// </remarks>
-    public static string GetIpLocation(string ipAddress)
+    public static async Task<string> GetLocationAsync(string ipAddress)
     {
+        if (_searcher == null)
+        {
+            throw new InvalidOperationException("IP2Region未初始化，请先调用SetWebHostEnvironment方法");
+        }
+
+        if (string.IsNullOrEmpty(ipAddress))
+            return "Unknown Location";
+
+        // 检查是否是本地回环地址
+        if (ipAddress == "::1" || ipAddress == "127.0.0.1")
+            return "本地";
+
+        if (!_ipRegex.IsMatch(ipAddress))
+            return "Unknown Location";
+
         try
         {
-            if (string.IsNullOrEmpty(ipAddress))
-                return "未知IP";
-
-            // 检查是否是合法的IP地址
-            if (!IPAddress.TryParse(ipAddress, out var ip))
-                return "无效IP";
-
-            // 检查是否是内网IP
-            if (IsInternalIp(ip))
-                return "内网IP";
-
-            // 使用IP2Region查询
-            if (_ip2RegionSearcher != null)
-            {
-                var location = _ip2RegionSearcher.Search(ipAddress);
-                return string.IsNullOrEmpty(location) ? "未知位置" : location;
-            }
-
-            return "查询服务未初始化";
+            return await Task.Run(() => _searcher.Search(ipAddress));
         }
         catch
         {
-            return "查询失败";
+            return "Unknown Location";
         }
     }
 

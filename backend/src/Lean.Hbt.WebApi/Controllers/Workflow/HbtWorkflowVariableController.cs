@@ -31,6 +31,7 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
     [Route("api/[controller]", Name = "工作流变量")]
     [ApiController]
     [ApiModule("workflow", "工作流")]
+   
     public class HbtWorkflowVariableController : HbtBaseController
     {
         private readonly IHbtWorkflowVariableService _workflowVariableService;
@@ -52,9 +53,9 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// <returns>工作流变量分页列表</returns>
         [HttpGet]
         [HbtPerm("workflow:variable:list")]
-        public async Task<IActionResult> GetPagedListAsync([FromQuery] HbtWorkflowVariableQueryDto query)
+        public async Task<IActionResult> GetListAsync([FromQuery] HbtWorkflowVariableQueryDto query)
         {
-            var result = await _workflowVariableService.GetPagedListAsync(query);
+            var result = await _workflowVariableService.GetListAsync(query);
             return Success(result);
         }
 
@@ -65,9 +66,9 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// <returns>工作流变量详情</returns>
         [HttpGet("{id}")]
         [HbtPerm("workflow:variable:query")]
-        public async Task<IActionResult> GetAsync(long id)
+        public async Task<IActionResult> GetByIdAsync(long id)
         {
-            var result = await _workflowVariableService.GetAsync(id);
+            var result = await _workflowVariableService.GetByIdAsync(id);
             return Success(result);
         }
 
@@ -77,10 +78,10 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// <param name="input">创建对象</param>
         /// <returns>工作流变量ID</returns>
         [HttpPost]
-        [HbtPerm("workflow:variable:insert")]
-        public async Task<IActionResult> InsertAsync([FromBody] HbtWorkflowVariableCreateDto input)
+        [HbtPerm("workflow:variable:create")]
+        public async Task<IActionResult> CreateAsync([FromBody] HbtWorkflowVariableCreateDto input)
         {
-            var result = await _workflowVariableService.InsertAsync(input);
+            var result = await _workflowVariableService.CreateAsync(input);
             return Success(result);
         }
 

@@ -27,14 +27,14 @@ namespace Lean.Hbt.Application.Services.Audit
         /// </summary>
         /// <param name="query">查询条件</param>
         /// <returns>分页结果</returns>
-        Task<HbtPagedResult<HbtExceptionLogDto>> GetPagedListAsync(HbtExceptionLogQueryDto query);
+        Task<HbtPagedResult<HbtExceptionLogDto>> GetListAsync(HbtExceptionLogQueryDto query);
 
         /// <summary>
         /// 获取异常日志详情
         /// </summary>
         /// <param name="logId">日志ID</param>
         /// <returns>异常日志详情</returns>
-        Task<HbtExceptionLogDto> GetAsync(long logId);
+        Task<HbtExceptionLogDto> GetByIdAsync(long logId);
 
         /// <summary>
         /// 导出异常日志数据

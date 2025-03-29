@@ -3494,10 +3494,10 @@ public class HbtDbSeedDictData
 
         foreach (var dictData in defaultDictData)
         {
-            var existingDictData = await _dictDataRepository.FirstOrDefaultAsync(d => d.DictType == dictData.DictType && d.DictValue == dictData.DictValue);
+            var existingDictData = await _dictDataRepository.GetInfoAsync(d => d.DictType == dictData.DictType && d.DictValue == dictData.DictValue);
             if (existingDictData == null)
             {
-                await _dictDataRepository.InsertAsync(dictData);
+                await _dictDataRepository.CreateAsync(dictData);
                 insertCount++;
                 _logger.Info($"[创建] 字典数据 '{dictData.DictLabel}' 创建成功");
             }

@@ -16,7 +16,7 @@ import type {
   HbtDictTypeUpdate,
   HbtDictTypeStatus,
   HbtDictTypeImport
-} from '@/types/admin/hbtDictType'
+} from '@/types/admin/dictType'
 
 /**
  * 获取字典类型分页列表

@@ -157,13 +157,13 @@ import type {
   HbtLanguageQuery,
   HbtLanguageCreate,
   HbtLanguageUpdate
-} from '@/types/admin/hbtLanguage'
+} from '@/types/admin/language'
 import LanguageForm from './components/LanguageForm.vue'
-import HbtPagination from '@/components/pagination/index.vue'
+
 
 // 查询参数
 const queryParams = reactive<HbtLanguageQuery>({
-  pageNum: 1,
+  pageIndex: 1,
   pageSize: 10,
   langCode: '',
   langName: '',

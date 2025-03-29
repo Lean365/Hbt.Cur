@@ -16,16 +16,22 @@ namespace Lean.Hbt.Domain.Entities.Routine
     /// 邮件实体
     /// </summary>
     [SugarTable("hbt_rou_mail", "邮件")]
-    [SugarIndex("index_mail_to_email", nameof(MailToEmail), OrderByType.Asc)]
+    [SugarIndex("index_mail_to", nameof(MailTo), OrderByType.Asc)]
     [SugarIndex("index_mail_status", nameof(MailStatus), OrderByType.Asc)]
     [SugarIndex("index_mail_send_time", nameof(MailSendTime), OrderByType.Desc)]
     public class HbtMail : HbtBaseEntity
     {
         /// <summary>
+        /// 发件人
+        /// </summary>
+        [SugarColumn(ColumnName = "mail_from", ColumnDescription = "发件人", Length = 255, IsNullable = false, DefaultValue = "", ColumnDataType = "nvarchar")]
+        public string MailFrom { get; set; } = string.Empty;
+
+        /// <summary>
         /// 收件人
         /// </summary>
-        [SugarColumn(ColumnName = "mail_to_email", ColumnDescription = "收件人", Length = 255, IsNullable = false, DefaultValue = "", ColumnDataType = "nvarchar")]
-        public string MailToEmail { get; set; } = string.Empty;
+        [SugarColumn(ColumnName = "mail_to", ColumnDescription = "收件人", Length = 255, IsNullable = false, DefaultValue = "", ColumnDataType = "nvarchar")]
+        public string MailTo { get; set; } = string.Empty;
 
         /// <summary>
         /// 主题
@@ -74,5 +80,35 @@ namespace Lean.Hbt.Domain.Entities.Routine
         /// </summary>
         [SugarColumn(ColumnName = "mail_error_info", ColumnDescription = "错误信息", Length = 1000, IsNullable = true, DefaultValue = "", ColumnDataType = "nvarchar")]
         public string? MailErrorInfo { get; set; }
+
+        /// <summary>
+        /// 收件人ID列表（逗号分隔）
+        /// </summary>
+        [SugarColumn(ColumnName = "mail_to_ids", ColumnDescription = "收件人ID列表", Length = 1000, IsNullable = true, DefaultValue = "", ColumnDataType = "nvarchar")]
+        public string? MailToIds { get; set; }
+
+        /// <summary>
+        /// 抄送人ID列表（逗号分隔）
+        /// </summary>
+        [SugarColumn(ColumnName = "mail_cc_ids", ColumnDescription = "抄送人ID列表", Length = 1000, IsNullable = true, DefaultValue = "", ColumnDataType = "nvarchar")]
+        public string? MailCcIds { get; set; }
+
+        /// <summary>
+        /// 已读用户ID列表（逗号分隔）
+        /// </summary>
+        [SugarColumn(ColumnName = "mail_read_ids", ColumnDescription = "已读用户ID列表", Length = 1000, IsNullable = true, DefaultValue = "", ColumnDataType = "nvarchar")]
+        public string? MailReadIds { get; set; }
+
+        /// <summary>
+        /// 已读数量
+        /// </summary>
+        [SugarColumn(ColumnName = "mail_read_count", ColumnDescription = "已读数量", IsNullable = false, DefaultValue = "0", ColumnDataType = "int")]
+        public int MailReadCount { get; set; }
+
+        /// <summary>
+        /// 最后阅读时间
+        /// </summary>
+        [SugarColumn(ColumnName = "mail_last_read_time", ColumnDescription = "最后阅读时间", IsNullable = true, ColumnDataType = "datetime")]
+        public DateTime? MailLastReadTime { get; set; }
     }
 } 

@@ -669,10 +669,10 @@ public class HbtDbSeedDictType
 
         foreach (var dictType in defaultDictTypes)
         {
-            var existingDictType = await _dictTypeRepository.FirstOrDefaultAsync(d => d.DictType == dictType.DictType);
+            var existingDictType = await _dictTypeRepository.GetInfoAsync(d => d.DictType == dictType.DictType);
             if (existingDictType == null)
             {
-                await _dictTypeRepository.InsertAsync(dictType);
+                await _dictTypeRepository.CreateAsync(dictType);
                 insertCount++;
                 _logger.Info($"[创建] 字典类型 '{dictType.DictName}' 创建成功");
             }

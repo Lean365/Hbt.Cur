@@ -29,14 +29,14 @@ namespace Lean.Hbt.Application.Services.Admin
         /// </summary>
         /// <param name="query">查询条件</param>
         /// <returns>字典类型分页列表</returns>
-        Task<HbtPagedResult<HbtDictTypeDto>> GetPagedListAsync(HbtDictTypeQueryDto query);
+        Task<HbtPagedResult<HbtDictTypeDto>> GetListAsync(HbtDictTypeQueryDto query);
 
         /// <summary>
         /// 获取字典类型详情
         /// </summary>
         /// <param name="id">字典类型ID</param>
         /// <returns>字典类型详情</returns>
-        Task<HbtDictTypeDto> GetAsync(long id);
+        Task<HbtDictTypeDto> GetByIdAsync(long id);
 
         /// <summary>
         /// 根据字典类型获取详情
@@ -50,7 +50,7 @@ namespace Lean.Hbt.Application.Services.Admin
         /// </summary>
         /// <param name="input">创建对象</param>
         /// <returns>字典类型ID</returns>
-        Task<long> InsertAsync(HbtDictTypeCreateDto input);
+        Task<long> CreateAsync(HbtDictTypeCreateDto input);
 
         /// <summary>
         /// 更新字典类型

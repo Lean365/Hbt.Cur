@@ -7,12 +7,7 @@
 // 描述   : 字典数据服务接口
 //===================================================================
 
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using Lean.Hbt.Common.Models;
-using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Application.Dtos.Admin;
-using System.IO;
 
 namespace Lean.Hbt.Application.Services.Admin
 {
@@ -30,21 +25,21 @@ namespace Lean.Hbt.Application.Services.Admin
         /// </summary>
         /// <param name="query">查询条件</param>
         /// <returns>字典数据分页列表</returns>
-        Task<HbtPagedResult<HbtDictDataDto>> GetPagedListAsync(HbtDictDataQueryDto query);
+        Task<HbtPagedResult<HbtDictDataDto>> GetListAsync(HbtDictDataQueryDto query);
 
         /// <summary>
         /// 获取字典数据详情
         /// </summary>
         /// <param name="id">字典数据ID</param>
         /// <returns>字典数据详情</returns>
-        Task<HbtDictDataDto> GetAsync(long id);
+        Task<HbtDictDataDto> GetByIdAsync(long id);
 
         /// <summary>
         /// 创建字典数据
         /// </summary>
         /// <param name="input">创建对象</param>
         /// <returns>字典数据ID</returns>
-        Task<long> InsertAsync(HbtDictDataCreateDto input);
+        Task<long> CreateAsync(HbtDictDataCreateDto input);
 
         /// <summary>
         /// 更新字典数据
@@ -110,4 +105,4 @@ namespace Lean.Hbt.Application.Services.Admin
         /// <returns>字典数据列表</returns>
         Task<List<HbtDictDataDto>> GetListByDictTypeAsync(string dictType);
     }
-} 
+}

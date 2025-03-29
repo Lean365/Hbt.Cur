@@ -53,6 +53,12 @@ namespace Lean.Hbt.Domain.Entities.Audit
         public string IpAddress { get; set; } = string.Empty;
 
         /// <summary>
+        /// IP地理位置
+        /// </summary>
+        [SugarColumn(ColumnName = "location", ColumnDescription = "IP地理位置", Length = 150, ColumnDataType = "nvarchar", IsNullable = false, DefaultValue = "")]
+        public string Location { get; set; } = string.Empty;
+
+        /// <summary>
         /// 用户代理
         /// </summary>
         [SugarColumn(ColumnName = "user_agent", ColumnDescription = "用户代理", Length = -1, ColumnDataType = "nvarchar", IsNullable = false, DefaultValue = "")]

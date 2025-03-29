@@ -134,9 +134,29 @@ namespace Lean.Hbt.Application.Dtos.Identity
         public string? MenuName { get; set; }
 
         /// <summary>
-        /// 状态
+        /// 状态（0正常 1停用）
         /// </summary>
         public int? Status { get; set; }
+
+        /// <summary>
+        /// 是否显示（0显示 1隐藏）
+        /// </summary>
+        public int? Visible { get; set; }
+
+        /// <summary>
+        /// 菜单类型（0目录 1菜单 2按钮）
+        /// </summary>
+        public int? MenuType { get; set; }
+
+        /// <summary>
+        /// 是否为外链（0否 1是）
+        /// </summary>
+        public int? IsExternal { get; set; }
+
+        /// <summary>
+        /// 是否缓存
+        /// </summary>
+        public int? IsCache { get; set; }
     }
 
     /// <summary>

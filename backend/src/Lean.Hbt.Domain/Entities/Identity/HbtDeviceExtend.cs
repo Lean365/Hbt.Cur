@@ -45,6 +45,12 @@ namespace Lean.Hbt.Domain.Entities.Identity
         public string DeviceId { get; set; } = string.Empty;
 
         /// <summary>
+        /// 设备令牌
+        /// </summary>
+        [SugarColumn(ColumnName = "device_token", ColumnDescription = "设备令牌", Length = 200, ColumnDataType = "nvarchar", IsNullable = true)]
+        public string? DeviceToken { get; set; }
+
+        /// <summary>
         /// 设备名称
         /// </summary>
         [SugarColumn(ColumnName = "device_name", ColumnDescription = "设备名称", Length = 200, ColumnDataType = "nvarchar", IsNullable = true)]
@@ -91,6 +97,12 @@ namespace Lean.Hbt.Domain.Entities.Identity
         /// </summary>
         [SugarColumn(ColumnName = "device_status", ColumnDescription = "设备状态", ColumnDataType = "int", IsNullable = false)]
         public int DeviceStatus { get; set; }
+
+        /// <summary>
+        /// 排序号
+        /// </summary>
+        [SugarColumn(ColumnName = "order_num", ColumnDescription = "排序号", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
+        public int OrderNum { get; set; } = 0;
 
         /// <summary>
         /// 最后在线时间

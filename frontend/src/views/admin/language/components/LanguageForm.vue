@@ -50,7 +50,7 @@
 <script setup lang="ts">
 import { ref, reactive, watch } from 'vue'
 import type { FormInstance, Rule } from 'ant-design-vue/es/form'
-import type { HbtLanguage, HbtLanguageCreate, HbtLanguageUpdate } from '@/types/admin/hbtLanguage'
+import type { HbtLanguage, HbtLanguageCreate, HbtLanguageUpdate } from '@/types/admin/language'
 
 const props = defineProps<{
   visible: boolean

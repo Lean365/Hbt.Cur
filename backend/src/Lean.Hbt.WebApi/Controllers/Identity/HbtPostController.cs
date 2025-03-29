@@ -43,9 +43,10 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <param name="query">查询条件</param>
         /// <returns>岗位分页列表</returns>
         [HttpGet]
-        public async Task<IActionResult> GetPagedListAsync([FromQuery] HbtPostQueryDto query)
+        [HbtPerm("identity:post:query")]
+        public async Task<IActionResult> GetListAsync([FromQuery] HbtPostQueryDto query)
         {
-            var result = await _postService.GetPagedListAsync(query);
+            var result = await _postService.GetListAsync(query);
             return Success(result);
         }
 
@@ -55,9 +56,10 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <param name="postId">岗位ID</param>
         /// <returns>岗位详情</returns>
         [HttpGet("{postId}")]
-        public async Task<IActionResult> GetAsync(long postId)
+        [HbtPerm("identity:post:query")]
+        public async Task<IActionResult> GetByIdAsync(long postId)
         {
-            var result = await _postService.GetAsync(postId);
+            var result = await _postService.GetByIdAsync(postId);
             return Success(result);
         }
 
@@ -67,9 +69,10 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <param name="input">创建对象</param>
         /// <returns>岗位ID</returns>
         [HttpPost]
-        public async Task<IActionResult> InsertAsync([FromBody] HbtPostCreateDto input)
+        [HbtPerm("identity:post:create")]
+        public async Task<IActionResult> CreateAsync([FromBody] HbtPostCreateDto input)
         {
-            var result = await _postService.InsertAsync(input);
+            var result = await _postService.CreateAsync(input);
             return Success(result);
         }
 
@@ -79,6 +82,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <param name="input">更新对象</param>
         /// <returns>是否成功</returns>
         [HttpPut]
+        [HbtPerm("identity:post:update")]
         public async Task<IActionResult> UpdateAsync([FromBody] HbtPostUpdateDto input)
         {
             var result = await _postService.UpdateAsync(input);
@@ -91,6 +95,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <param name="postId">岗位ID</param>
         /// <returns>是否成功</returns>
         [HttpDelete("{postId}")]
+        [HbtPerm("identity:post:delete")]
         public async Task<IActionResult> DeleteAsync(long postId)
         {
             var result = await _postService.DeleteAsync(postId);
@@ -103,6 +108,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <param name="postIds">岗位ID集合</param>
         /// <returns>是否成功</returns>
         [HttpDelete("batch")]
+        [HbtPerm("identity:post:delete")]
         public async Task<IActionResult> BatchDeleteAsync([FromBody] long[] postIds)
         {
             var result = await _postService.BatchDeleteAsync(postIds);
@@ -116,6 +122,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <param name="sheetName">工作表名称</param>
         /// <returns>导入结果</returns>
         [HttpPost("import")]
+        [HbtPerm("identity:post:import")]
         public async Task<IActionResult> ImportAsync(IFormFile file, [FromQuery] string sheetName = "Sheet1")
         {
             using var stream = file.OpenReadStream();
@@ -130,6 +137,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <param name="sheetName">工作表名称</param>
         /// <returns>导出的Excel文件</returns>
         [HttpGet("export")]
+        [HbtPerm("identity:post:export")]
         public async Task<IActionResult> ExportAsync([FromQuery] HbtPostQueryDto query, [FromQuery] string sheetName = "岗位数据")
         {
             var result = await _postService.ExportAsync(query, sheetName);
@@ -142,6 +150,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <param name="sheetName">工作表名称</param>
         /// <returns>导入模板Excel文件</returns>
         [HttpGet("template")]
+        [HbtPerm("identity:post:import")]
         public async Task<IActionResult> GetImportTemplateAsync([FromQuery] string sheetName = "岗位导入模板")
         {
             var result = await _postService.GenerateTemplateAsync(sheetName);
@@ -155,6 +164,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <param name="status">状态</param>
         /// <returns>是否成功</returns>
         [HttpPut("{postId}/status")]
+        [HbtPerm("identity:post:update")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -174,6 +184,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// </summary>
         /// <returns>岗位选项列表</returns>
         [HttpGet("options")]
+        [HbtPerm("identity:post:query")]
         public async Task<IActionResult> GetOptionsAsync()
         {
             var posts = await _postService.GetOptionsAsync();

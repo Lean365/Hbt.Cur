@@ -509,10 +509,10 @@ public class HbtDbSeedDept
 
         foreach (var dept in defaultDepts)
         {
-            var existingDept = await _deptRepository.FirstOrDefaultAsync(d => d.Id == dept.Id);
+            var existingDept = await _deptRepository.GetInfoAsync(d => d.Id == dept.Id);
             if (existingDept == null)
             {
-                await _deptRepository.InsertAsync(dept);
+                await _deptRepository.CreateAsync(dept);
                 insertCount++;
                 _logger.Info($"[创建] 部门 '{dept.DeptName}' 创建成功");
             }

@@ -1,9 +1,9 @@
 <template>
   <a-modal
-    :visible="visible"
+    :open="visible"
     title="分配角色"
     :confirm-loading="confirmLoading"
-    @update:visible="(val) => $emit('update:visible', val)"
+    @update:open="(val) => $emit('update:visible', val)"
     @ok="handleSubmit"
   >
     <a-transfer

@@ -9,6 +9,7 @@
 
 using Lean.Hbt.Application.Dtos.RealTime;
 using Lean.Hbt.Common.Models;
+using System.Linq.Expressions;
 
 namespace Lean.Hbt.Application.Services.RealTime;
 
@@ -26,7 +27,7 @@ public interface IHbtOnlineUserService
     /// </summary>
     /// <param name="query">查询条件</param>
     /// <returns>分页结果</returns>
-    Task<HbtPagedResult<HbtOnlineUserDto>> GetPagedListAsync(HbtOnlineUserQueryDto query);
+    Task<HbtPagedResult<HbtOnlineUserDto>> GetListAsync(HbtOnlineUserQueryDto query);
 
     /// <summary>
     /// 导出在线用户数据
@@ -61,8 +62,9 @@ public interface IHbtOnlineUserService
     /// 删除在线用户
     /// </summary>
     /// <param name="connectionId">连接ID</param>
+    /// <param name="deleteBy">删除人</param>
     /// <returns>是否成功</returns>
-    Task<bool> DeleteOnlineUserAsync(string connectionId);
+    Task<bool> DeleteOnlineUserAsync(string connectionId, string deleteBy);
 
     /// <summary>
     /// 清理过期用户
@@ -70,4 +72,37 @@ public interface IHbtOnlineUserService
     /// <param name="minutes">超时时间(分钟)</param>
     /// <returns>清理数量</returns>
     Task<int> CleanupExpiredUsersAsync(int minutes = 20);
+
+    /// <summary>
+    /// 根据连接ID获取在线用户信息
+    /// </summary>
+    /// <param name="connectionId">连接ID</param>
+    /// <returns>在线用户信息</returns>
+    Task<HbtOnlineUserDto> GetUserByConnectionIdAsync(string connectionId);
+
+    /// <summary>
+    /// 根据条件获取在线用户信息
+    /// </summary>
+    /// <param name="predicate">查询条件</param>
+    /// <returns>在线用户信息</returns>
+    Task<HbtOnlineUserDto> GetInfoAsync(Expression<Func<HbtOnlineUserDto, bool>> predicate);
+
+    /// <summary>
+    /// 更新在线用户信息
+    /// </summary>
+    /// <param name="entity">在线用户信息</param>
+    /// <returns>是否成功</returns>
+    Task<bool> UpdateAsync(HbtOnlineUserDto entity);
+
+    /// <summary>
+    /// 获取所有在线用户
+    /// </summary>
+    /// <returns>在线用户列表</returns>
+    Task<List<HbtOnlineUserDto>> GetAllAsync();
+
+    /// <summary>
+    /// 更新所有在线用户的心跳时间
+    /// </summary>
+    /// <returns>更新的记录数</returns>
+    Task<int> UpdateHeartbeatAsync();
 } 

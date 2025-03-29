@@ -54,33 +54,37 @@ namespace Lean.Hbt.Application.Services.Audit
         /// </summary>
         /// <param name="query">查询条件</param>
         /// <returns>返回分页结果</returns>
-        public async Task<HbtPagedResult<HbtAuditLogDto>> GetPagedListAsync(HbtAuditLogQueryDto query)
+        public async Task<HbtPagedResult<HbtAuditLogDto>> GetListAsync(HbtAuditLogQueryDto query)
         {
             var exp = Expressionable.Create<HbtAuditLog>();
 
+            // 构建查询条件
             if (!string.IsNullOrEmpty(query.UserName))
                 exp.And(x => x.UserName.Contains(query.UserName));
-
             if (!string.IsNullOrEmpty(query.Module))
                 exp.And(x => x.Module.Contains(query.Module));
-
             if (!string.IsNullOrEmpty(query.Operation))
                 exp.And(x => x.Operation.Contains(query.Operation));
-
             if (query.StartTime.HasValue)
                 exp.And(x => x.CreateTime >= query.StartTime.Value);
-
             if (query.EndTime.HasValue)
                 exp.And(x => x.CreateTime <= query.EndTime.Value);
 
-            var result = await _auditLogRepository.GetPagedListAsync(exp.ToExpression(), query.PageIndex, query.PageSize);
+            // 执行分页查询
+            var result = await _auditLogRepository.GetPagedListAsync(
+                exp.ToExpression(),
+                query.PageIndex,
+                query.PageSize,
+                x => x.CreateTime,
+                OrderByType.Desc);
 
+            // 返回分页结果
             return new HbtPagedResult<HbtAuditLogDto>
             {
-                TotalNum = result.total,
-                PageIndex = query.PageIndex,
-                PageSize = query.PageSize,
-                Rows = result.list.Adapt<List<HbtAuditLogDto>>()
+                Rows = result.Rows.Adapt<List<HbtAuditLogDto>>(),
+                TotalNum = result.TotalNum,
+                PageIndex = result.PageIndex,
+                PageSize = result.PageSize
             };
         }
 
@@ -89,7 +93,7 @@ namespace Lean.Hbt.Application.Services.Audit
         /// </summary>
         /// <param name="logId">日志ID</param>
         /// <returns>返回审计日志详情</returns>
-        public async Task<HbtAuditLogDto> GetAsync(long logId)
+        public async Task<HbtAuditLogDto> GetByIdAsync(long logId)
         {
             var log = await _auditLogRepository.GetByIdAsync(logId);
             if (log == null)

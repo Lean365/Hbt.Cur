@@ -19,6 +19,23 @@ namespace Lean.Hbt.Application.Dtos.Workflow
     public class HbtWorkflowHistoryDto
     {
         /// <summary>
+        /// 构造函数
+        /// </summary>
+        public HbtWorkflowHistoryDto()
+        {
+            WorkflowHistoryId = 0;
+            WorkflowInstanceId = 0;
+            WorkflowNodeId = 0;
+            OperationType = 0;
+            OperatorId = 0;
+            OperatorName = string.Empty;
+            OperationResult = 0;
+            OperationComment = string.Empty;
+            Remark = string.Empty;
+            Creator = string.Empty;
+        }
+
+        /// <summary>
         /// 历史ID
         /// </summary>
         [AdaptMember("Id")]

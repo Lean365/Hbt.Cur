@@ -28,21 +28,21 @@ namespace Lean.Hbt.Application.Services.Routine
         /// </summary>
         /// <param name="query">查询条件</param>
         /// <returns>邮件分页列表</returns>
-        Task<HbtPagedResult<HbtMailDto>> GetPagedListAsync(HbtMailQueryDto query);
+        Task<HbtPagedResult<HbtMailDto>> GetListAsync(HbtMailQueryDto query);
 
         /// <summary>
         /// 获取邮件详情
         /// </summary>
         /// <param name="mailId">邮件ID</param>
         /// <returns>邮件详情</returns>
-        Task<HbtMailDto> GetAsync(long mailId);
+        Task<HbtMailDto> GetByIdAsync(long mailId);
 
         /// <summary>
         /// 创建邮件
         /// </summary>
         /// <param name="input">创建对象</param>
         /// <returns>邮件ID</returns>
-        Task<long> InsertAsync(HbtMailCreateDto input);
+        Task<long> CreateAsync(HbtMailCreateDto input);
 
         /// <summary>
         /// 更新邮件
@@ -78,6 +78,30 @@ namespace Lean.Hbt.Application.Services.Routine
         /// <param name="inputs">发送邮件参数集合</param>
         /// <returns>发送结果</returns>
         Task<(int success, int fail)> BatchSendAsync(List<HbtMailSendDto> inputs);
+
+        /// <summary>
+        /// 标记邮件为已读
+        /// </summary>
+        /// <param name="id">邮件ID</param>
+        Task<bool> MarkAsReadAsync(long id);
+
+        /// <summary>
+        /// 标记所有邮件为已读
+        /// </summary>
+        /// <param name="userId">用户ID</param>
+        Task<int> MarkAllAsReadAsync(long userId);
+
+        /// <summary>
+        /// 标记邮件为未读
+        /// </summary>
+        /// <param name="id">邮件ID</param>
+        Task<bool> MarkAsUnreadAsync(long id);
+
+        /// <summary>
+        /// 标记所有邮件为未读
+        /// </summary>
+        /// <param name="userId">用户ID</param>
+        Task<int> MarkAllAsUnreadAsync(long userId);
 
         /// <summary>
         /// 导出邮件数据

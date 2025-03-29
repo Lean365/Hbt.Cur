@@ -21,6 +21,24 @@ namespace Lean.Hbt.Application.Dtos.Workflow
     public class HbtWorkflowVariableDto
     {
         /// <summary>
+        /// 构造函数
+        /// </summary>
+        public HbtWorkflowVariableDto()
+        {
+            WorkflowVariableId = 0;
+            WorkflowInstanceId = 0;
+            VariableName = string.Empty;
+            VariableValue = string.Empty;
+            VariableType = string.Empty;
+            VariableScope = string.Empty;
+            Remark = string.Empty;
+            Creator = string.Empty;
+            CreateTime = DateTime.Now;
+            UpdateBy = string.Empty;
+            UpdateTime = null;
+        }
+
+        /// <summary>
         /// 变量ID
         /// </summary>
         [AdaptMember("Id")]
@@ -74,12 +92,12 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 修改者
         /// </summary>
-        public required string Modifier { get; set; }
+        public required string UpdateBy { get; set; }
 
         /// <summary>
         /// 修改时间
         /// </summary>
-        public DateTime? ModifyTime { get; set; }
+        public DateTime? UpdateTime { get; set; }
     }
 
     /// <summary>

@@ -23,6 +23,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
     [Route("api/[controller]", Name = "登录扩展")]
     [ApiController]
     [ApiModule("identity", "身份认证")]
+
     public class HbtLoginExtendController : HbtBaseController
     {
         private readonly IHbtLoginExtendService _loginExtendService;
@@ -43,9 +44,9 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <param name="query">查询条件</param>
         /// <returns>分页列表</returns>
         [HttpGet]
-        public async Task<IActionResult> GetPagedListAsync([FromQuery] HbtLoginExtendQueryDto query)
+        public async Task<IActionResult> GetListAsync([FromQuery] HbtLoginExtendQueryDto query)
         {
-            var result = await _loginExtendService.GetPagedListAsync(query);
+            var result = await _loginExtendService.GetListAsync(query);
             return Success(result);
         }
 

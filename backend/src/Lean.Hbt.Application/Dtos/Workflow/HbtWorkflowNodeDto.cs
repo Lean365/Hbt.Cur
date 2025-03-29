@@ -19,6 +19,24 @@ namespace Lean.Hbt.Application.Dtos.Workflow
     public class HbtWorkflowNodeDto
     {
         /// <summary>
+        /// 构造函数
+        /// </summary>
+        public HbtWorkflowNodeDto()
+        {
+            WorkflowNodeId = 0;
+            WorkflowDefinitionId = 0;
+            NodeName = string.Empty;
+            NodeType = 0;
+            ParentNodeId = null;
+            NodeConfig = string.Empty;
+            OrderNum = 0;
+            Remark = string.Empty;
+            Creator = string.Empty;
+            CreateTime = DateTime.Now;
+            UpdateBy = string.Empty;
+        }
+
+        /// <summary>
         /// 节点ID
         /// </summary>
         [AdaptMember("Id")]

@@ -16,7 +16,7 @@ import type {
   HbtTranslationUpdate,
   HbtTranslationStatus,
   HbtTransposedData
-} from '@/types/admin/hbtTranslation'
+} from '@/types/admin/translation'
 
 /**
  * 获取翻译分页列表

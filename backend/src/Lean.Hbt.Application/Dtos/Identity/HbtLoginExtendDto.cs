@@ -9,10 +9,7 @@
 // 描述    : 登录扩展信息传输对象
 //===================================================================
 
-using System;
 using System.ComponentModel.DataAnnotations;
-using Lean.Hbt.Common.Models;
-using Mapster;
 
 namespace Lean.Hbt.Application.Dtos.Identity
 {
@@ -461,4 +458,4 @@ namespace Lean.Hbt.Application.Dtos.Identity
         [Required(ErrorMessage = "状态不能为空")]
         public int Status { get; set; }
     }
-} 
+}

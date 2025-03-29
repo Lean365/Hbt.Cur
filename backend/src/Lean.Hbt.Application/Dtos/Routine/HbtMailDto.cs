@@ -24,7 +24,8 @@ namespace Lean.Hbt.Application.Dtos.Routine
         /// </summary>
         public HbtMailDto()
         {
-            MailToEmail = string.Empty;
+            MailFrom = string.Empty;
+            MailTo = string.Empty;
             MailSubject = string.Empty;
             MailBody = string.Empty;
             CreateTime = DateTime.Now;
@@ -37,9 +38,14 @@ namespace Lean.Hbt.Application.Dtos.Routine
         public long MailId { get; set; }
 
         /// <summary>
+        /// 发件人
+        /// </summary>
+        public string MailFrom { get; set; }
+
+        /// <summary>
         /// 收件人
         /// </summary>
-        public string MailToEmail { get; set; }
+        public string MailTo { get; set; }
 
         /// <summary>
         /// 主题
@@ -97,7 +103,7 @@ namespace Lean.Hbt.Application.Dtos.Routine
         /// </summary>
         public HbtMailQueryDto()
         {
-            MailToEmail = string.Empty;
+            MailTo = string.Empty;
             MailSubject = string.Empty;
         }
 
@@ -105,7 +111,7 @@ namespace Lean.Hbt.Application.Dtos.Routine
         /// 收件人
         /// </summary>
         [MaxLength(255, ErrorMessage = "收件人长度不能超过255个字符")]
-        public string? MailToEmail { get; set; }
+        public string? MailTo { get; set; }
 
         /// <summary>
         /// 主题
@@ -139,10 +145,19 @@ namespace Lean.Hbt.Application.Dtos.Routine
         /// </summary>
         public HbtMailCreateDto()
         {
-            MailToEmail = string.Empty;
+            MailFrom = string.Empty;
+            MailTo = string.Empty;
             MailSubject = string.Empty;
             MailBody = string.Empty;
         }
+
+        /// <summary>
+        /// 发件人
+        /// </summary>
+        [Required(ErrorMessage = "发件人不能为空")]
+        [MaxLength(255, ErrorMessage = "发件人长度不能超过255个字符")]
+        [EmailAddress(ErrorMessage = "发件人邮箱格式不正确")]
+        public string MailFrom { get; set; }
 
         /// <summary>
         /// 收件人
@@ -150,7 +165,7 @@ namespace Lean.Hbt.Application.Dtos.Routine
         [Required(ErrorMessage = "收件人不能为空")]
         [MaxLength(255, ErrorMessage = "收件人长度不能超过255个字符")]
         [EmailAddress(ErrorMessage = "收件人邮箱格式不正确")]
-        public string MailToEmail { get; set; }
+        public string MailTo { get; set; }
 
         /// <summary>
         /// 主题
@@ -205,10 +220,19 @@ namespace Lean.Hbt.Application.Dtos.Routine
         /// </summary>
         public HbtMailSendDto()
         {
-            MailToEmail = string.Empty;
+            MailFrom = string.Empty;
+            MailTo = string.Empty;
             MailSubject = string.Empty;
             MailBody = string.Empty;
         }
+
+        /// <summary>
+        /// 发件人
+        /// </summary>
+        [Required(ErrorMessage = "发件人不能为空")]
+        [MaxLength(255, ErrorMessage = "发件人长度不能超过255个字符")]
+        [EmailAddress(ErrorMessage = "发件人邮箱格式不正确")]
+        public string MailFrom { get; set; }
 
         /// <summary>
         /// 收件人
@@ -216,7 +240,7 @@ namespace Lean.Hbt.Application.Dtos.Routine
         [Required(ErrorMessage = "收件人不能为空")]
         [MaxLength(255, ErrorMessage = "收件人长度不能超过255个字符")]
         [EmailAddress(ErrorMessage = "收件人邮箱格式不正确")]
-        public string MailToEmail { get; set; }
+        public string MailTo { get; set; }
 
         /// <summary>
         /// 主题
@@ -259,16 +283,22 @@ namespace Lean.Hbt.Application.Dtos.Routine
         /// </summary>
         public HbtMailExportDto()
         {
-            MailToEmail = string.Empty;
+            MailFrom = string.Empty;
+            MailTo = string.Empty;
             MailSubject = string.Empty;
             MailBody = string.Empty;
             CreateTime = DateTime.Now;
         }
 
         /// <summary>
+        /// 发件人
+        /// </summary>
+        public string MailFrom { get; set; }
+
+        /// <summary>
         /// 收件人
         /// </summary>
-        public string MailToEmail { get; set; }
+        public string MailTo { get; set; }
 
         /// <summary>
         /// 主题

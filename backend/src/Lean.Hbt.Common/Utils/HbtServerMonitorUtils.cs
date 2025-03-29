@@ -9,11 +9,9 @@
 //===================================================================
 
 using System.Diagnostics;
-using System.Net.NetworkInformation;
 using System.Runtime.InteropServices;
-using System.ServiceProcess;
-using Microsoft.Win32;
-using System.Net;
+using System.Diagnostics.Metrics;
+using LibreHardwareMonitor.Hardware;
 
 namespace Lean.Hbt.Common.Utils;
 
@@ -25,89 +23,68 @@ namespace Lean.Hbt.Common.Utils;
 /// 1. 系统资源监控：CPU、内存、磁盘使用情况
 /// 2. 进程管理：获取进程列表、CPU使用率等
 /// 3. 网络监控：网络接口信息、流量统计
-/// 4. 系统服务管理：服务状态、启动类型等
 /// </remarks>
 public static class HbtServerMonitorUtils
 {
+    // LibreHardwareMonitor的主要对象，用于访问硬件信息
+    private static readonly Computer _computer;
+    
+    // 性能指标收集器
+    private static readonly Meter _meter = new("Lean.Hbt.ServerMonitor", "1.0.0");
+    
+    // CPU使用率计数器
+    private static readonly Counter<long> _cpuCounter = _meter.CreateCounter<long>("cpu_usage", "CPU使用率");
+    
+    // 内存使用率计数器
+    private static readonly Counter<long> _memoryCounter = _meter.CreateCounter<long>("memory_usage", "内存使用率");
+    
+    // 磁盘使用率计数器
+    private static readonly Counter<long> _diskCounter = _meter.CreateCounter<long>("disk_usage", "磁盘使用率");
+    
+    // 网络使用率计数器
+    private static readonly Counter<long> _networkCounter = _meter.CreateCounter<long>("network_usage", "网络使用率");
+
     /// <summary>
-    /// Windows内存状态结构体
+    /// 静态构造函数，初始化硬件监控
     /// </summary>
-    /// <remarks>
-    /// 用于与Windows API交互，获取系统内存信息
-    /// 参考：https://learn.microsoft.com/windows/win32/api/sysinfoapi/ns-sysinfoapi-memorystatusex
-    /// </remarks>
-    [StructLayout(LayoutKind.Sequential)]
-    private struct MEMORYSTATUSEX
+    static HbtServerMonitorUtils()
     {
-        public uint dwLength;                    // 结构体大小
-        public uint dwMemoryLoad;               // 内存使用百分比
-        public ulong ullTotalPhys;              // 物理内存总量
-        public ulong ullAvailPhys;              // 可用物理内存
-        public ulong ullTotalPageFile;          // 页面文件总量
-        public ulong ullAvailPageFile;          // 可用页面文件
-        public ulong ullTotalVirtual;           // 虚拟内存总量
-        public ulong ullAvailVirtual;           // 可用虚拟内存
-        public ulong ullAvailExtendedVirtual;   // 保留，始终为0
+        // 初始化硬件监控对象，启用所有监控项
+        _computer = new Computer
+        {
+            IsCpuEnabled = true,      // 启用CPU监控
+            IsMemoryEnabled = true,   // 启用内存监控
+            IsStorageEnabled = true,  // 启用存储监控
+            IsNetworkEnabled = true   // 启用网络监控
+        };
+        _computer.Open(); // 打开硬件监控
     }
 
     /// <summary>
-    /// Windows API：获取系统内存状态
-    /// </summary>
-    /// <param name="lpBuffer">内存状态结构体引用</param>
-    /// <returns>操作是否成功</returns>
-    [DllImport("kernel32.dll", SetLastError = true)]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    private static extern bool GlobalMemoryStatusEx(ref MEMORYSTATUSEX lpBuffer);
-
-    /// <summary>
-    /// 获取物理内存总量(字节)
+    /// 获取物理内存总量
     /// </summary>
     /// <returns>物理内存总量，单位：字节</returns>
     /// <remarks>
-    /// 支持Windows和Linux系统
-    /// - Windows：通过GlobalMemoryStatusEx API获取
-    /// - Linux：通过读取/proc/meminfo文件获取
+    /// 使用LibreHardwareMonitor获取内存信息
+    /// 返回值单位为字节，如需其他单位请自行转换
     /// </remarks>
     public static ulong GetTotalPhysicalMemory()
     {
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-        {
-            return GetWindowsMemoryInfo();
-        }
-        return GetUnixMemoryInfo();
-    }
-
-    /// <summary>
-    /// 获取Windows系统内存信息
-    /// </summary>
-    /// <returns>物理内存总量，单位：字节</returns>
-    private static ulong GetWindowsMemoryInfo()
-    {
-        var memStatus = new MEMORYSTATUSEX { dwLength = (uint)Marshal.SizeOf(typeof(MEMORYSTATUSEX)) };
-        if (!GlobalMemoryStatusEx(ref memStatus))
-        {
-            return 0;
-        }
-        return memStatus.ullTotalPhys;
-    }
-
-    /// <summary>
-    /// 获取Unix/Linux系统内存信息
-    /// </summary>
-    /// <returns>物理内存总量，单位：字节</returns>
-    private static ulong GetUnixMemoryInfo()
-    {
         try
         {
-            var info = File.ReadAllText("/proc/meminfo");
-            var lines = info.Split('\n');
-            var totalLine = lines.FirstOrDefault(l => l.StartsWith("MemTotal:"));
-            if (totalLine != null)
+            // 更新硬件信息
+            _computer.Accept(new UpdateVisitor());
+            
+            // 获取内存硬件信息
+            var memory = _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Memory);
+            if (memory != null)
             {
-                var parts = totalLine.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                if (ulong.TryParse(parts[1], out ulong totalKb))
+                // 获取总内存传感器数据
+                var totalMemory = memory.Sensors.FirstOrDefault(s => s.SensorType == SensorType.Data);
+                if (totalMemory != null)
                 {
-                    return totalKb * 1024; // 将KB转换为字节
+                    // 转换为字节（传感器值单位为GB）
+                    return (ulong)(totalMemory.Value * 1024 * 1024 * 1024);
                 }
             }
         }
@@ -118,18 +95,22 @@ public static class HbtServerMonitorUtils
     /// <summary>
     /// 获取处理器名称
     /// </summary>
-    /// <returns>处理器名称</returns>
+    /// <returns>处理器名称，如获取失败则返回"Unknown"</returns>
     /// <remarks>
-    /// 在Windows系统下，从注册表读取处理器信息
-    /// 在其他系统下返回"Unknown"
+    /// 返回完整的处理器名称，包含制造商、型号等信息
     /// </remarks>
     public static string GetProcessorName()
     {
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        try
         {
-            using var key = Registry.LocalMachine.OpenSubKey(@"HARDWARE\DESCRIPTION\System\CentralProcessor\0");
-            return key?.GetValue("ProcessorNameString")?.ToString() ?? "Unknown";
+            // 更新硬件信息
+            _computer.Accept(new UpdateVisitor());
+            
+            // 获取CPU硬件信息
+            var cpu = _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Cpu);
+            return cpu?.Name ?? "Unknown";
         }
+        catch { }
         return "Unknown";
     }
 
@@ -138,8 +119,8 @@ public static class HbtServerMonitorUtils
     /// </summary>
     /// <returns>系统启动的时间点</returns>
     /// <remarks>
-    /// 通过Environment.TickCount64获取系统运行时间（毫秒）
-    /// 然后用当前时间减去运行时间得到启动时间
+    /// 通过Environment.TickCount64计算系统启动时间
+    /// 精确到毫秒级别
     /// </remarks>
     public static DateTime GetSystemStartTime()
     {
@@ -147,188 +128,180 @@ public static class HbtServerMonitorUtils
     }
 
     /// <summary>
-    /// 获取进程描述信息
+    /// 获取网络接口信息
     /// </summary>
-    /// <param name="process">进程对象</param>
-    /// <returns>进程的描述信息</returns>
+    /// <returns>网络接口信息列表，每项包含接口名称、IP地址和MAC地址</returns>
     /// <remarks>
-    /// 从进程的主模块文件版本信息中获取描述
-    /// 如果无法获取则返回空字符串
+    /// 返回所有可用的网络接口信息
+    /// IP地址格式为IPv4地址
+    /// MAC地址格式为12位十六进制数
     /// </remarks>
-    public static string GetProcessDescription(Process process)
+    public static List<(string Name, string IpAddress, string MacAddress)> GetNetworkInterfaces()
     {
+        var interfaces = new List<(string Name, string IpAddress, string MacAddress)>();
         try
         {
-            return process.MainModule?.FileVersionInfo.FileDescription ?? string.Empty;
-        }
-        catch
-        {
-            return string.Empty;
-        }
-    }
-
-    /// <summary>
-    /// 获取进程的CPU使用率
-    /// </summary>
-    /// <param name="process">进程对象</param>
-    /// <returns>CPU使用率百分比</returns>
-    /// <remarks>
-    /// 计算方法：
-    /// 1. 获取进程当前的处理器时间
-    /// 2. 等待100ms
-    /// 3. 再次获取处理器时间
-    /// 4. 计算时间差除以(处理器核心数 * 采样时间)得到使用率
-    /// </remarks>
-    public static double GetProcessCpuUsage(Process process)
-    {
-        try
-        {
-            TimeSpan totalProcessorTime = process.TotalProcessorTime;
-            Thread.Sleep(100); // 等待100ms以计算使用率
-            double cpuUsage = (process.TotalProcessorTime - totalProcessorTime).TotalMilliseconds / (Environment.ProcessorCount * 100.0);
-            return Math.Round(cpuUsage, 2);
-        }
-        catch
-        {
-            return 0;
-        }
-    }
-
-    /// <summary>
-    /// 获取网络接口的IPv4地址
-    /// </summary>
-    /// <param name="ni">网络接口对象</param>
-    /// <returns>IPv4地址字符串</returns>
-    /// <remarks>
-    /// 从网络接口的单播地址列表中
-    /// 查找第一个IPv4地址并返回
-    /// </remarks>
-    public static string GetNetworkInterfaceIpAddress(NetworkInterface ni)
-    {
-        var ipProps = ni.GetIPProperties();
-        var ipv4Address = ipProps.UnicastAddresses
-            .FirstOrDefault(addr => addr.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork);
-        return ipv4Address?.Address.ToString() ?? string.Empty;
-    }
-
-    /// <summary>
-    /// 获取Windows服务的启动类型
-    /// </summary>
-    /// <param name="sc">服务控制器对象</param>
-    /// <returns>服务启动类型：Automatic(自动)、Manual(手动)、Disabled(禁用)</returns>
-    /// <remarks>
-    /// 从注册表中读取服务的Start值：
-    /// 2 = 自动
-    /// 3 = 手动
-    /// 4 = 禁用
-    /// </remarks>
-    public static string GetServiceStartType(ServiceController sc)
-    {
-        if (!OperatingSystem.IsWindows())
-            return "Unknown";
-
-        try
-        {
-            using var key = Registry.LocalMachine.OpenSubKey($@"SYSTEM\CurrentControlSet\Services\{sc.ServiceName}");
-            var startType = key?.GetValue("Start");
-            return startType switch
+            // 更新硬件信息
+            _computer.Accept(new UpdateVisitor());
+            
+            // 获取所有网络接口
+            var networkInterfaces = _computer.Hardware.Where(h => h.HardwareType == HardwareType.Network);
+            
+            foreach (var ni in networkInterfaces)
             {
-                2 => "Automatic",
-                3 => "Manual", 
-                4 => "Disabled",
-                _ => "Unknown"
-            };
+                // 获取IP地址和MAC地址信息
+                var ipAddress = ni.Sensors.FirstOrDefault(s => s.SensorType == SensorType.Data)?.Value.ToString() ?? string.Empty;
+                var macAddress = ni.Sensors.FirstOrDefault(s => s.SensorType == SensorType.SmallData)?.Value.ToString() ?? string.Empty;
+                
+                interfaces.Add((ni.Name, ipAddress, macAddress));
+            }
         }
-        catch
-        {
-            return "Unknown";
-        }
+        catch { }
+        return interfaces;
     }
 
     /// <summary>
-    /// 获取Windows服务的运行账户
+    /// 获取网络接口的流量信息
     /// </summary>
-    /// <param name="sc">服务控制器对象</param>
-    /// <returns>服务运行账户名称</returns>
+    /// <param name="interfaceName">网络接口名称</param>
+    /// <returns>发送和接收速率（KB/s）的元组</returns>
     /// <remarks>
-    /// 从注册表中读取服务的ObjectName值
-    /// 该值表示服务运行时使用的账户
+    /// 返回值中：
+    /// SendRate: 发送速率，单位KB/s
+    /// ReceiveRate: 接收速率，单位KB/s
     /// </remarks>
-    public static string GetServiceAccount(ServiceController sc)
+    public static (double SendRate, double ReceiveRate) GetNetworkInterfaceRates(string interfaceName)
     {
-        if (!OperatingSystem.IsWindows())
-            return "Unknown";
-
         try
         {
-            using var key = Registry.LocalMachine.OpenSubKey($@"SYSTEM\CurrentControlSet\Services\{sc.ServiceName}");
-            return key?.GetValue("ObjectName")?.ToString() ?? "Unknown";
+            // 更新硬件信息
+            _computer.Accept(new UpdateVisitor());
+            
+            // 查找指定名称的网络接口
+            var networkInterface = _computer.Hardware.FirstOrDefault(h => 
+                h.HardwareType == HardwareType.Network && h.Name == interfaceName);
+            
+            if (networkInterface != null)
+            {
+                // 获取发送和接收速率
+                var sendRate = networkInterface.Sensors.FirstOrDefault(s => 
+                    s.SensorType == SensorType.Throughput && s.Name.Contains("Send"))?.Value ?? 0;
+                var receiveRate = networkInterface.Sensors.FirstOrDefault(s => 
+                    s.SensorType == SensorType.Throughput && s.Name.Contains("Receive"))?.Value ?? 0;
+                
+                // 转换为KB/s
+                return (sendRate / 1024.0, receiveRate / 1024.0);
+            }
         }
-        catch
-        {
-            return "Unknown";
-        }
+        catch { }
+        return (0, 0);
     }
 
     /// <summary>
-    /// 网络接口流量信息缓存
+    /// 获取系统CPU使用率
     /// </summary>
-    private static readonly Dictionary<string, (long BytesSent, long BytesReceived, DateTime Timestamp)> _networkStatsCache = new();
-
-    /// <summary>
-    /// 获取网络接口的实时流量信息
-    /// </summary>
-    /// <param name="ni">网络接口对象</param>
-    /// <returns>发送和接收速率（KB/s）</returns>
+    /// <returns>CPU使用率百分比（0-100）</returns>
     /// <remarks>
-    /// 计算方法：
-    /// 1. 获取当前流量数据
-    /// 2. 与上次数据比较计算差值
-    /// 3. 除以时间间隔得到速率
-    /// 首次调用时返回0
+    /// 返回所有CPU核心的平均使用率
+    /// 值范围：0-100
+    /// 精确到小数点后2位
     /// </remarks>
-    public static (double SendRate, double ReceiveRate) GetNetworkInterfaceRates(NetworkInterface ni)
+    public static double GetSystemCpuUsage()
     {
-        var stats = ni.GetIPv4Statistics();
-        var now = DateTime.Now;
-
-        // 如果是首次获取该接口的数据
-        if (!_networkStatsCache.TryGetValue(ni.Id, out var lastStats))
+        try
         {
-            _networkStatsCache[ni.Id] = (stats.BytesSent, stats.BytesReceived, now);
-            return (0, 0);
+            // 更新硬件信息
+            _computer.Accept(new UpdateVisitor());
+            
+            // 获取CPU信息
+            var cpu = _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Cpu);
+            if (cpu != null)
+            {
+                // 获取CPU负载传感器数据
+                var load = cpu.Sensors.FirstOrDefault(s => s.SensorType == SensorType.Load);
+                return load?.Value ?? 0;
+            }
         }
-
-        // 计算时间间隔（秒）
-        var interval = (now - lastStats.Timestamp).TotalSeconds;
-        if (interval <= 0) return (0, 0);
-
-        // 计算速率（KB/s）
-        var sendRate = (stats.BytesSent - lastStats.BytesSent) / interval / 1024.0;
-        var receiveRate = (stats.BytesReceived - lastStats.BytesReceived) / interval / 1024.0;
-
-        // 更新缓存
-        _networkStatsCache[ni.Id] = (stats.BytesSent, stats.BytesReceived, now);
-
-        return (Math.Round(sendRate, 2), Math.Round(receiveRate, 2));
+        catch { }
+        return 0;
     }
 
     /// <summary>
-    /// 获取.NET运行时版本信息
+    /// 获取系统内存使用率
     /// </summary>
-    /// <returns>.NET运行时版本信息</returns>
+    /// <returns>内存使用率百分比（0-100）</returns>
     /// <remarks>
-    /// 获取当前服务器运行的.NET版本信息，包括：
-    /// 1. .NET运行时版本
-    /// 2. CLR版本
-    /// 3. 运行时目录
+    /// 计算方式：已用内存/总内存 * 100
+    /// 值范围：0-100
+    /// 精确到小数点后2位
     /// </remarks>
-    public static (string RuntimeVersion, string ClrVersion, string RuntimeDirectory) GetDotNetRuntimeInfo()
+    public static double GetSystemMemoryUsage()
     {
-        var runtimeVersion = System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription;
-        var clrVersion = Environment.Version.ToString();
-        var runtimeDirectory = System.Runtime.InteropServices.RuntimeEnvironment.GetRuntimeDirectory();
-        
-        return (runtimeVersion, clrVersion, runtimeDirectory);
+        try
+        {
+            // 更新硬件信息
+            _computer.Accept(new UpdateVisitor());
+            
+            // 获取内存信息
+            var memory = _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Memory);
+            if (memory != null)
+            {
+                // 获取已用内存和总内存
+                var used = memory.Sensors.FirstOrDefault(s => s.SensorType == SensorType.Data);
+                var total = memory.Sensors.FirstOrDefault(s => s.SensorType == SensorType.SmallData);
+                
+                // 计算使用率
+                if (used != null && total != null && total.Value > 0)
+                {
+                    return (double)Math.Round((decimal)(used.Value / total.Value * 100), 2);
+                }
+            }
+        }
+        catch { }
+        return 0;
+    }
+
+    /// <summary>
+    /// 硬件信息更新访问器
+    /// </summary>
+    /// <remarks>
+    /// 实现IVisitor接口，用于更新硬件信息
+    /// 包含对计算机、硬件、传感器和参数的访问方法
+    /// </remarks>
+    private class UpdateVisitor : IVisitor
+    {
+        /// <summary>
+        /// 访问计算机对象
+        /// </summary>
+        /// <param name="computer">计算机对象</param>
+        public void VisitComputer(IComputer computer)
+        {
+            computer.Traverse(this);
+        }
+
+        /// <summary>
+        /// 访问硬件对象
+        /// </summary>
+        /// <param name="hardware">硬件对象</param>
+        public void VisitHardware(IHardware hardware)
+        {
+            hardware.Update();
+            foreach (IHardware subHardware in hardware.SubHardware)
+            {
+                subHardware.Accept(this);
+            }
+        }
+
+        /// <summary>
+        /// 访问传感器对象（空实现）
+        /// </summary>
+        /// <param name="sensor">传感器对象</param>
+        public void VisitSensor(ISensor sensor) { }
+
+        /// <summary>
+        /// 访问参数对象（空实现）
+        /// </summary>
+        /// <param name="parameter">参数对象</param>
+        public void VisitParameter(IParameter parameter) { }
     }
 } 

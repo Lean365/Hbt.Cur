@@ -7,6 +7,7 @@ import { useI18n } from 'vue-i18n'
 import i18n from '@/locales'
 import { getDeviceInfo } from '@/utils/device'
 import type { HbtApiResponse } from '@/types/common'
+import { logout } from '@/api/identity/auth'
 
 const { t } = i18n.global
 
@@ -25,9 +26,11 @@ interface ExtendedAxiosInstance extends AxiosInstance {
 
 // 创建axios实例
 const service = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL,
-  timeout: 100000000000000,
-  withCredentials: true  // 允许跨域请求时携带cookie
+  baseURL: import.meta.env.VITE_API_URL,
+  timeout: 30000, // 设置更合理的超时时间
+  withCredentials: true,
+  xsrfCookieName: 'XSRF-TOKEN',
+  xsrfHeaderName: 'X-CSRF-Token'  // 修改为与后端一致的header名称
 }) as ExtendedAxiosInstance
 
 // 设置默认重试配置
@@ -35,6 +38,53 @@ const defaultRetryConfig = {
   retries: 3,
   retryDelay: 1000
 }
+
+// 设置自动登出定时器
+let autoLogoutTimer: NodeJS.Timeout | null = null
+let lastActivityTime = Date.now()
+
+// 添加防循环标记
+let isRedirecting = false
+
+// 重置自动登出定时器
+function resetAutoLogoutTimer() {
+  if (autoLogoutTimer) {
+    clearTimeout(autoLogoutTimer)
+  }
+  lastActivityTime = Date.now()
+  // 设置30分钟无响应自动登出
+  autoLogoutTimer = setTimeout(() => {
+    const currentTime = Date.now()
+    const inactiveTime = currentTime - lastActivityTime
+    // 如果超过30分钟无响应，则自动登出
+    if (inactiveTime >= 30 * 60 * 1000) {
+      const userStore = useUserStore()
+      userStore.logout()
+      message.warning(t('common.error.autoLogout'))
+      window.location.href = '/login'
+    }
+  }, 30 * 60 * 1000)
+}
+
+// 清除自动登出定时器
+function clearAutoLogoutTimer() {
+  if (autoLogoutTimer) {
+    clearTimeout(autoLogoutTimer)
+    autoLogoutTimer = null
+  }
+}
+
+// 更新最后活动时间
+function updateLastActivityTime() {
+  lastActivityTime = Date.now()
+  resetAutoLogoutTimer()
+}
+
+// 添加用户活动监听
+document.addEventListener('mousemove', updateLastActivityTime)
+document.addEventListener('keydown', updateLastActivityTime)
+document.addEventListener('click', updateLastActivityTime)
+document.addEventListener('scroll', updateLastActivityTime)
 
 // 从cookie中获取指定名称的值
 function getCookie(name: string): string | null {
@@ -74,22 +124,29 @@ async function getCsrfToken(): Promise<string | null> {
   console.log('[CSRF] 开始获取CSRF Token')
   
   try {
-    // 1. 首先从 cookie 获取（优先）
-    const cookieToken = getCookie('XSRF-TOKEN')
+    // 1. 从 cookie 获取（使用现代 API）
+    const cookieToken = document.cookie
+      .split('; ')
+      .find(row => row.startsWith('XSRF-TOKEN='))
+      ?.split('=')[1]
+
     if (cookieToken) {
       console.log('[CSRF] 从Cookie获取到Token:', cookieToken)
-      return cookieToken
+      return decodeURIComponent(cookieToken)
     }
     
-    // 2. 如果cookie中没有，尝试从localStorage获取
-    const localToken = localStorage.getItem('csrf_token')
-    if (localToken) {
-      console.log('[CSRF] 从localStorage获取到Token:', localToken)
-      return localToken
+    // 2. 如果没有token，发起请求获取新token
+    const response = await fetch('/api/csrf-token', {
+      method: 'GET',
+      credentials: 'same-origin'
+    })
+    
+    if (response.ok) {
+      // token 会通过 Set-Cookie 自动设置
+      return await response.text()
     }
     
-    // 3. 如果都没有，返回null
-    console.log('[CSRF] 未找到Token，跳过设置')
+    console.log('[CSRF] 无法获取Token')
     return null
   } catch (error) {
     console.error('[CSRF] 获取Token时出错:', error)
@@ -100,15 +157,28 @@ async function getCsrfToken(): Promise<string | null> {
 // 请求拦截器
 service.interceptors.request.use(
   async (config) => {
+    // 如果已经在重定向中，直接拒绝所有新请求
+    if (isRedirecting) {
+      return Promise.reject(new Error('页面重定向中，请求已取消'))
+    }
+
     console.log('[请求拦截器] 处理请求:', config.url)
     
-    // 获取CSRF token
-    const csrfToken = await getCsrfToken()
-    if (csrfToken) {
-      // 解码CSRF token
-      const decodedToken = decodeURIComponent(csrfToken)
-      config.headers['X-XSRF-TOKEN'] = decodedToken
-      console.log('[CSRF] Token已设置到请求头:', decodedToken)
+    // 从Cookie中获取CSRF Token
+    const token = document.cookie
+      .split('; ')
+      .find(row => row.startsWith('XSRF-TOKEN='))
+      ?.split('=')[1];
+
+    if (token) {
+      config.headers['X-CSRF-Token'] = decodeURIComponent(token);
+      console.log('[请求拦截器] 设置CSRF Token:', token);
+    }
+
+    // 获取访问令牌
+    const accessToken = getToken();
+    if (accessToken && config.headers) {
+      config.headers['Authorization'] = `Bearer ${accessToken}`;
     }
 
     // 确保headers对象存在
@@ -157,31 +227,7 @@ service.interceptors.request.use(
         try {
           const tokenParts = token.split('.')
           if (tokenParts.length === 3) {
-            // 记录完整的token结构
-            console.log('[请求拦截器] Token结构验证:', {
-              header: tokenParts[0].length,
-              payload: tokenParts[1].length,
-              signature: tokenParts[2].length
-            })
-            
             const payload = JSON.parse(atob(tokenParts[1]))
-            
-            // 安全地转换时间戳
-            const formatTimestamp = (timestamp: number | undefined) => {
-              if (!timestamp) return 'N/A'
-              try {
-                const date = new Date(timestamp * 1000)
-                return date.toISOString()
-              } catch (error) {
-                return `Invalid timestamp: ${timestamp}`
-              }
-            }
-            
-            console.log('[请求拦截器] Token payload:', {
-              ...payload,
-              exp: formatTimestamp(payload.exp),
-              iat: formatTimestamp(payload.iat)
-            })
             
             if (payload.tenant_id !== undefined) {
               config.headers['X-Tenant-Id'] = payload.tenant_id.toString()
@@ -196,15 +242,22 @@ service.interceptors.request.use(
                   当前时间: new Date(now * 1000).toISOString(),
                   过期时间: new Date(payload.exp * 1000).toISOString()
                 })
-              } else {
-                console.log('[请求拦截器] Token有效期检查通过，将在以下时间过期:', 
-                  new Date(payload.exp * 1000).toISOString())
+                
+                if (!isRedirecting) {
+                  isRedirecting = true
+                  // 立即清除token
+                  removeToken()
+                  // 清除所有相关存储
+                  localStorage.removeItem('token')
+                  localStorage.removeItem('refreshToken')
+                  localStorage.removeItem('userInfo')
+                  localStorage.removeItem('csrf_token')
+                  // 强制重定向到登录页
+                  window.location.replace('/login')
+                }
+                return Promise.reject(new Error('Token已过期，请重新登录'))
               }
-            } else {
-              console.warn('[请求拦截器] Token中未找到有效的过期时间')
             }
-          } else {
-            console.error('[请求拦截器] Token格式错误: 不是标准的JWT格式')
           }
         } catch (error) {
           console.error('[请求拦截器] JWT解析失败:', error)
@@ -212,25 +265,6 @@ service.interceptors.request.use(
       } else if (!isPublicApi) {
         console.warn('[请求拦截器] 非公共接口请求未找到token，请求可能会失败')
       }
-    }
-    
-    // 详细记录请求信息
-    console.log('[请求拦截器] 最终请求配置:', {
-      url: config.url,
-      method: config.method,
-      params: config.params || '(无参数)',
-      data: config.data ? (typeof config.data === 'string' ? '(JSON字符串)' : config.data) : '(无数据)',
-      headers: {
-        ...config.headers,
-        Authorization: config.headers.Authorization ? '(已设置)' : '(未设置)',
-        'X-Tenant-Id': config.headers['X-Tenant-Id'] || '(未设置)',
-        'X-XSRF-TOKEN': config.headers['X-XSRF-TOKEN'] ? '(已设置)' : '(未设置)'
-      }
-    })
-    
-    // 额外记录实际的请求数据
-    if (config.data) {
-      console.log('[请求拦截器] 实际请求数据:', typeof config.data === 'string' ? JSON.parse(config.data) : config.data)
     }
     
     return config
@@ -244,6 +278,9 @@ service.interceptors.request.use(
 // 响应拦截器
 service.interceptors.response.use(
   (response: AxiosResponse<any>) => {
+    // 更新最后活动时间
+    updateLastActivityTime()
+
     // 从响应头中获取新的CSRF token
     const newCsrfToken = response.headers['x-csrf-token']
     if (newCsrfToken) {
@@ -261,8 +298,9 @@ service.interceptors.response.use(
 
     // 首先检查 HTTP 状态码
     if (response.status !== 200) {
-      message.error(t('common.error.network'))
-      return Promise.reject(new Error('HTTP 状态码错误: ' + response.status))
+      const errorMsg = t('common.error.network')
+      message.error(errorMsg)
+      return Promise.reject(new Error(errorMsg))
     }
     
     // 如果是二进制数据，直接返回
@@ -272,8 +310,9 @@ service.interceptors.response.use(
 
     // 检查响应数据
     if (!response.data) {
-      message.error(t('common.error.noData'))
-      return Promise.reject(new Error('响应数据为空'))
+      const errorMsg = t('common.error.noData')
+      message.error(errorMsg)
+      return Promise.reject(new Error(errorMsg))
     }
 
     // 未设置状态码则默认成功状态
@@ -281,25 +320,70 @@ service.interceptors.response.use(
 
     // 统一错误处理函数
     const handleError = (errorMsg: string, defaultMsg: string, needLogout = false) => {
+      // 显示错误消息
+      message.error(errorMsg || defaultMsg)
+      
       if (needLogout) {
+        // 检查是否已经在处理登出
+        const isLoggingOut = localStorage.getItem('isLoggingOut')
+        if (!isLoggingOut) {
+          localStorage.setItem('isLoggingOut', 'true')
+          // 调用登出接口，带上isSystemRestart参数
+          logout({ isSystemRestart: true }).finally(() => {
+            localStorage.removeItem('isLoggingOut')
+            const userStore = useUserStore()
+            userStore.logout()
+            message.error(t('common.error.systemRestart'))
+            // 使用 replace 而不是 href 来避免浏览器历史记录
+            window.location.replace('/login')
+          })
+        }
+      } else if (code === 401 || code === 403) {
+        // 对于未授权或禁止访问的情况，直接跳转到登录页
         const userStore = useUserStore()
         userStore.logout()
+        message.error(t('common.error.unauthorized'))
+        window.location.replace('/login')
       }
-      message.error(msg || t(errorMsg))
-      return Promise.reject(new Error(msg || defaultMsg))
+      
+      return Promise.reject(new Error(errorMsg || defaultMsg))
     }
 
     // 处理业务状态码
     switch (code) {
       // 成功状态
       case 200:
+        // 如果是登录成功，重置自动登出定时器
+        if (response.config.url?.includes('HbtAuth/login')) {
+          resetAutoLogoutTimer()
+        }
         return response.data
       // 未登录或token过期
       case 401:
-        return handleError('common.error.unauthorized', 'Unauthorized', true)
+        // 检查是否是后端重启导致的401
+        const isSystemRestart = response.data?.isSystemRestart
+        if (isSystemRestart) {
+          return handleError('common.error.systemRestart', 'System Restart', true)
+        }
+        
+        if (!isRedirecting) {
+          isRedirecting = true
+          // 立即清除token和所有存储
+          removeToken()
+          localStorage.removeItem('token')
+          localStorage.removeItem('refreshToken')
+          localStorage.removeItem('userInfo')
+          localStorage.removeItem('csrf_token')
+          // 强制重定向到登录页
+          window.location.replace('/login')
+        }
+        return Promise.reject(new Error('Unauthorized'))
       // 权限不足
       case 403:
-        return handleError('common.error.forbidden', 'Forbidden')
+        message.error(t('common.error.forbidden'))
+        // 直接跳转到登录页
+        window.location.replace('/login')
+        return Promise.reject(new Error('Forbidden'))
       // 资源不存在
       case 404:
         return handleError('common.error.notFound', 'Not Found')
@@ -344,21 +428,58 @@ service.interceptors.response.use(
     }
   },
   (error) => {
+    // 更新最后活动时间
+    updateLastActivityTime()
+
     console.error('[响应拦截器] 请求错误:', error)
     
     // 处理网络错误
     if (!error.response) {
-      message.error(t('common.error.network'))
+      const errorMsg = t('common.error.network')
+      message.error(errorMsg)
+      // 如果是登出请求，即使后端不可用也执行本地登出
+      if (error.config?.url?.includes('HbtAuth/logout')) {
+        const userStore = useUserStore()
+        userStore.logout()
+        message.error(t('common.error.serverUnavailable'))
+        window.location.replace('/login')
+      }
       return Promise.reject(error)
     }
 
     // 统一错误处理函数
     const handleError = (errorMsg: string, defaultMsg: string, needLogout = false) => {
+      // 显示错误消息
+      message.error(error.response?.data?.msg || t(errorMsg))
+      
       if (needLogout) {
+        // 检查是否已经在处理登出
+        const isLoggingOut = localStorage.getItem('isLoggingOut')
+        if (!isLoggingOut) {
+          localStorage.setItem('isLoggingOut', 'true')
+          // 调用登出接口，带上isSystemRestart参数
+          logout({ isSystemRestart: true }).finally(() => {
+            localStorage.removeItem('isLoggingOut')
+            const userStore = useUserStore()
+            userStore.logout()
+            message.error(t('common.error.systemRestart'))
+            window.location.replace('/login')
+          })
+        }
+      } else if (error.response.status === 401 || error.response.status === 403) {
+        // 对于未授权或禁止访问的情况，直接跳转到登录页
         const userStore = useUserStore()
         userStore.logout()
+        message.error(t('common.error.unauthorized'))
+        window.location.replace('/login')
+      } else if (error.response.status === 500 && error.config?.url?.includes('HbtAuth/logout')) {
+        // 如果是登出请求返回500，执行本地登出
+        const userStore = useUserStore()
+        userStore.logout()
+        message.error(t('common.error.serverUnavailable'))
+        window.location.replace('/login')
       }
-      message.error(error.response?.data?.msg || t(errorMsg))
+      
       return Promise.reject(new Error(error.response?.data?.msg || defaultMsg))
     }
 
@@ -366,9 +487,24 @@ service.interceptors.response.use(
     switch (error.response.status) {
       // 客户端错误 4xx
       case 400: return handleError('common.error.badRequest', 'Bad Request')
-      case 401: return handleError('common.error.unauthorized', 'Unauthorized', true)
+      case 401: 
+        // 检查是否是后端重启导致的401
+        const isSystemRestart = error.response.data?.isSystemRestart
+        if (isSystemRestart) {
+          return handleError('common.error.systemRestart', 'System Restart', true)
+        }
+        // 普通token过期，执行登出操作
+        const userStore = useUserStore()
+        userStore.logout()
+        message.error(t('common.error.unauthorized'))
+        window.location.replace('/login')
+        return Promise.reject(new Error('Unauthorized'))
       case 402: return handleError('common.error.paymentRequired', 'Payment Required')
-      case 403: return handleError('common.error.forbidden', 'Forbidden')
+      case 403: 
+        message.error(t('common.error.forbidden'))
+        // 直接跳转到登录页
+        window.location.replace('/login')
+        return Promise.reject(new Error('Forbidden'))
       case 404: return handleError('common.error.notFound', 'Not Found')
       case 405: return handleError('common.error.methodNotAllowed', 'Method Not Allowed')
       case 406: return handleError('common.error.notAcceptable', 'Not Acceptable')
@@ -385,7 +521,16 @@ service.interceptors.response.use(
       case 417: return handleError('common.error.expectationFailed', 'Expectation Failed')
       case 429: return handleError('common.error.tooManyRequests', 'Too Many Requests')
       // 服务器错误 5xx
-      case 500: return handleError('common.error.serverError', 'Internal Server Error')
+      case 500: 
+        // 如果是登出请求返回500，执行本地登出
+        if (error.config?.url?.includes('HbtAuth/logout')) {
+          const userStore = useUserStore()
+          userStore.logout()
+          message.error(t('common.error.serverUnavailable'))
+          window.location.replace('/login')
+          return Promise.reject(new Error('Server Unavailable'))
+        }
+        return handleError('common.error.serverError', 'Internal Server Error')
       case 501: return handleError('common.error.notImplemented', 'Not Implemented')
       case 502: return handleError('common.error.badGateway', 'Bad Gateway')
       case 503: return handleError('common.error.serviceUnavailable', 'Service Unavailable')

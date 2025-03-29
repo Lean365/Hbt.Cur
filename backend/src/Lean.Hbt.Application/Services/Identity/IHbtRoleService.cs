@@ -29,21 +29,21 @@ namespace Lean.Hbt.Application.Services.Identity
         /// </summary>
         /// <param name="query">查询条件</param>
         /// <returns>分页结果</returns>
-        Task<HbtPagedResult<HbtRoleDto>> GetPagedListAsync(HbtRoleQueryDto query);
+        Task<HbtPagedResult<HbtRoleDto>> GetListAsync(HbtRoleQueryDto query);
 
         /// <summary>
         /// 获取角色详情
         /// </summary>
         /// <param name="roleId">角色ID</param>
         /// <returns>角色详情</returns>
-        Task<HbtRoleDto> GetAsync(long roleId);
+        Task<HbtRoleDto> GetByIdAsync(long roleId);
 
         /// <summary>
         /// 创建角色
         /// </summary>
         /// <param name="input">创建对象</param>
         /// <returns>角色ID</returns>
-        Task<long> InsertAsync(HbtRoleCreateDto input);
+        Task<long> CreateAsync(HbtRoleCreateDto input);
 
         /// <summary>
         /// 更新角色

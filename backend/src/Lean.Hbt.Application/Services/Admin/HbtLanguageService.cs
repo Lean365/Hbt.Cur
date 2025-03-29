@@ -50,7 +50,7 @@ namespace Lean.Hbt.Application.Services.Admin
         /// <summary>
         /// 获取语言分页列表
         /// </summary>
-        public async Task<HbtPagedResult<HbtLanguageDto>> GetPagedListAsync(HbtLanguageQueryDto query)
+        public async Task<HbtPagedResult<HbtLanguageDto>> GetListAsync(HbtLanguageQueryDto query)
         {
             var exp = Expressionable.Create<HbtLanguage>();
 
@@ -63,20 +63,26 @@ namespace Lean.Hbt.Application.Services.Admin
             if (query.Status.HasValue)
                 exp.And(x => x.Status == query.Status.Value);
 
-            var (list, total) = await _languageRepository.GetPagedListAsync(exp.ToExpression(), query.PageIndex, query.PageSize);
+            var result = await _languageRepository.GetPagedListAsync(
+                exp.ToExpression(),
+                query?.PageIndex ?? 1,
+                query?.PageSize ?? 10,
+                x => x.OrderNum,
+                OrderByType.Asc);
+
             return new HbtPagedResult<HbtLanguageDto>
             {
-                Rows = list.Adapt<List<HbtLanguageDto>>(),
-                TotalNum = total,
-                PageIndex = query.PageIndex,
-                PageSize = query.PageSize
+                Rows = result.Rows.Adapt<List<HbtLanguageDto>>(),
+                TotalNum = result.TotalNum,
+                PageIndex = query?.PageIndex ?? 1,
+                PageSize = query?.PageSize ?? 10
             };
         }
 
         /// <summary>
         /// 获取语言详情
         /// </summary>
-        public async Task<HbtLanguageDto> GetAsync(long LangId)
+        public async Task<HbtLanguageDto> GetByIdAsync(long LangId)
         {
             var language = await _languageRepository.GetByIdAsync(LangId);
             if (language == null)
@@ -88,13 +94,13 @@ namespace Lean.Hbt.Application.Services.Admin
         /// <summary>
         /// 创建语言
         /// </summary>
-        public async Task<long> InsertAsync(HbtLanguageCreateDto input)
+        public async Task<long> CreateAsync(HbtLanguageCreateDto input)
         {
             await HbtValidateUtils.ValidateFieldExistsAsync(_languageRepository, "LangCode", input.LangCode);
             await HbtValidateUtils.ValidateFieldExistsAsync(_languageRepository, "LangName", input.LangName);
 
             var language = input.Adapt<HbtLanguage>();
-            var result = await _languageRepository.InsertAsync(language);
+            var result = await _languageRepository.CreateAsync(language);
             return result > 0 ? language.Id : 0;
         }
 
@@ -189,7 +195,7 @@ namespace Lean.Hbt.Application.Services.Admin
 
                         // 创建语言
                         var newLanguage = language.Adapt<HbtLanguage>();
-                        await _languageRepository.InsertAsync(newLanguage);
+                        await _languageRepository.CreateAsync(newLanguage);
                         success++;
                     }
                     catch (Exception ex)

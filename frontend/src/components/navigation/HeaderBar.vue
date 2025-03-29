@@ -23,12 +23,12 @@
       <!-- 右侧工具栏 -->
       <div class="header-right">
         <a-space :size="4">
-          <font-size-control />
-          <fullscreen-toggle />
+          <font-size />
+          <full-screen />
           <notification-center />
           <locale-select />
           <memorial-theme />
-          <theme-switch />
+          <theme-select />
           <a-dropdown :trigger="['click']" placement="bottom" class="user-dropdown">
             <div class="user-info">
               <a-avatar :size="32" :src="userStore.user?.avatar">
@@ -42,20 +42,20 @@
               <a-menu class="user-menu">
                 <a-menu-item key="profile" @click="handleProfile">
                   <template #icon><user-outlined /></template>
-                  <span>{{ t('header.profile') }}</span>
+                  <span>{{ t('header.user.profile') }}</span>
                 </a-menu-item>
                 <a-menu-item key="change-password" @click="handleChangePassword">
                   <template #icon><key-outlined /></template>
-                  <span>{{ t('header.changePassword') }}</span>
+                  <span>{{ t('header.user.changePassword') }}</span>
                 </a-menu-item>
                 <a-menu-item key="clear-cache" @click="handleClearCache">
                   <template #icon><clear-outlined /></template>
-                  <span>{{ t('header.clearCache') }}</span>
+                  <span>{{ t('header.user.clearCache') }}</span>
                 </a-menu-item>
                 <a-menu-divider />
                 <a-menu-item key="logout" @click="handleLogout">
                   <template #icon><logout-outlined /></template>
-                  <span>{{ t('header.logout') }}</span>
+                  <span>{{ t('header.user.logout') }}</span>
                 </a-menu-item>
               </a-menu>
             </template>
@@ -73,13 +73,7 @@ import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import { Modal } from 'ant-design-vue'
-import LocaleSelect from '@/components/Base/LocaleSelect.vue'
-import ThemeSwitch from '@/components/Base/ThemeSwitch.vue'
-import MemorialTheme from '@/components/Base/MemorialTheme.vue'
-import FontSizeControl from '@/components/Base/FontSizeControl.vue'
-import FullscreenToggle from '@/components/Base/FullscreenToggle.vue'
-import NotificationCenter from '@/components/Base/NotificationCenter.vue'
-import SystemSettings from '@/components/Base/SystemSettings.vue'
+
 import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
@@ -162,16 +156,17 @@ const handleRefresh = async () => {
 
 // 处理个人信息
 const handleProfile = () => {
-  router.push('/profile')
+  router.push('/identity/user/profile')
 }
 
 // 处理登出
 const handleLogout = () => {
   Modal.confirm({
-    title: t('header.logout.confirm'),
-    content: t('header.logout.message'),
-    okText: t('common.confirm'),
-    cancelText: t('common.cancel'),
+    title: t('header.logout.title'),
+    content: t('header.logout.confirm'),
+    okText: t('common.button.confirm'),
+    cancelText: t('common.actions.cancel'),
+    centered: true,
     async onOk() {
       try {
         // 1. 调用登出接口
@@ -238,7 +233,7 @@ const handleClearCache = async () => {
 
 // 添加修改密码方法
 const handleChangePassword = () => {
-  router.push('/change-password')
+  router.push('/identity/user/change-password')
 }
 </script>
 

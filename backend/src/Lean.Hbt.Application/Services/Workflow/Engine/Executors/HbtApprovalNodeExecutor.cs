@@ -94,7 +94,7 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine.Executors
                         CreateTime = DateTime.Now
                     };
 
-                    await _taskRepository.InsertAsync(task);
+                    await _taskRepository.CreateAsync(task);
                     _logger.Info($"已创建审批任务: 任务ID={task.Id}, 审批人ID={approverId}");
                 }
 

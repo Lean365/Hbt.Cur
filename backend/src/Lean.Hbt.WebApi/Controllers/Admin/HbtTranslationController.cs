@@ -46,9 +46,9 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
         /// <returns>翻译分页列表</returns>
         [HttpGet]
         [HbtPerm("admin:trans:list")]
-        public async Task<IActionResult> GetPagedListAsync([FromQuery] HbtTranslationQueryDto query)
+        public async Task<IActionResult> GetListAsync([FromQuery] HbtTranslationQueryDto query)
         {
-            var result = await _translationService.GetPagedListAsync(query);
+            var result = await _translationService.GetListAsync(query);
             return Success(result);
         }
 
@@ -59,9 +59,9 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
         /// <returns>翻译详情</returns>
         [HttpGet("{transId}")]
         [HbtPerm("admin:trans:query")]
-        public async Task<IActionResult> GetAsync(long transId)
+        public async Task<IActionResult> GetByIdAsync(long transId)
         {
-            var result = await _translationService.GetAsync(transId);
+            var result = await _translationService.GetByIdAsync(transId);
             return Success(result);
         }
 
@@ -72,9 +72,9 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
         /// <returns>翻译ID</returns>
         [HttpPost]
         [HbtPerm("admin:trans:create")]
-        public async Task<IActionResult> InsertAsync([FromBody] HbtTranslationCreateDto input)
+        public async Task<IActionResult> CreateAsync([FromBody] HbtTranslationCreateDto input)
         {
-            var result = await _translationService.InsertAsync(input);
+            var result = await _translationService.CreateAsync(input);
             return Success(result);
         }
 

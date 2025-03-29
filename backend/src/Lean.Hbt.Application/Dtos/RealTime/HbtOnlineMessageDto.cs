@@ -47,6 +47,11 @@ public class HbtOnlineMessageQueryDto : HbtPagedQuery
     /// 结束时间
     /// </summary>
     public DateTime? EndTime { get; set; }
+
+    /// <summary>
+    /// 是否已读（0-未读，1-已读）
+    /// </summary>
+    public int? IsRead { get; set; }
 }
 
 /// <summary>

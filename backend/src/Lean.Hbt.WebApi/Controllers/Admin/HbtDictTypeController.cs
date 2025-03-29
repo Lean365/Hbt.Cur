@@ -46,9 +46,9 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
         /// <returns>字典类型分页列表</returns>
         [HttpGet]
         [HbtPerm("admin:dicttype:list")]
-        public async Task<IActionResult> GetPagedListAsync([FromQuery] HbtDictTypeQueryDto query)
+        public async Task<IActionResult> GetListAsync([FromQuery] HbtDictTypeQueryDto query)
         {
-            var result = await _dictTypeService.GetPagedListAsync(query);
+            var result = await _dictTypeService.GetListAsync(query);
             return Success(result);
         }
 
@@ -59,9 +59,9 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
         /// <returns>字典类型详情</returns>
         [HttpGet("{dictTypeId}")]
         [HbtPerm("admin:dicttype:query")]
-        public async Task<IActionResult> GetAsync(long dictTypeId)
+        public async Task<IActionResult> GetByIdAsync(long dictTypeId)
         {
-            var result = await _dictTypeService.GetAsync(dictTypeId);
+            var result = await _dictTypeService.GetByIdAsync(dictTypeId);
             return Success(result);
         }
 
@@ -89,9 +89,9 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
         /// <returns>字典类型ID</returns>
         [HttpPost]
         [HbtPerm("admin:dicttype:create")]
-        public async Task<IActionResult> InsertAsync([FromBody] HbtDictTypeCreateDto input)
+        public async Task<IActionResult> CreateAsync([FromBody] HbtDictTypeCreateDto input)
         {
-            var result = await _dictTypeService.InsertAsync(input);
+            var result = await _dictTypeService.CreateAsync(input);
             return Success(result);
         }
 
@@ -203,7 +203,7 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
         [HbtPerm("admin:dicttype:list")]
         public async Task<IActionResult> ExecuteDictSqlAsync(long dictTypeId)
         {
-            var dictType = await _dictTypeService.GetAsync(dictTypeId);
+            var dictType = await _dictTypeService.GetByIdAsync(dictTypeId);
             if (dictType == null)
             {
                 throw new HbtException("字典类型不存在");

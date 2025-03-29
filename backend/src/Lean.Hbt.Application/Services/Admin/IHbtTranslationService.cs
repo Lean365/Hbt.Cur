@@ -25,21 +25,21 @@ namespace Lean.Hbt.Application.Services.Admin
         /// </summary>
         /// <param name="query">查询条件</param>
         /// <returns>翻译分页列表</returns>
-        Task<HbtPagedResult<HbtTranslationDto>> GetPagedListAsync(HbtTranslationQueryDto query);
+        Task<HbtPagedResult<HbtTranslationDto>> GetListAsync(HbtTranslationQueryDto query);
 
         /// <summary>
         /// 获取翻译详情
         /// </summary>
         /// <param name="TransId">翻译ID</param>
         /// <returns>翻译详情</returns>
-        Task<HbtTranslationDto> GetAsync(long TransId);
+        Task<HbtTranslationDto> GetByIdAsync(long TransId);
 
         /// <summary>
         /// 创建翻译
         /// </summary>
         /// <param name="input">创建对象</param>
         /// <returns>翻译ID</returns>
-        Task<long> InsertAsync(HbtTranslationCreateDto input);
+        Task<long> CreateAsync(HbtTranslationCreateDto input);
 
         /// <summary>
         /// 更新翻译

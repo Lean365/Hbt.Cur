@@ -9,9 +9,7 @@
 
 using Lean.Hbt.Application.Dtos.Admin;
 using Lean.Hbt.Application.Services.Admin;
-using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Domain.IServices.Admin;
-using Lean.Hbt.Infrastructure.Security.Attributes;
 
 namespace Lean.Hbt.WebApi.Controllers.Admin
 {
@@ -48,7 +46,7 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
         [HbtPerm("admin:config:list")]
         public async Task<IActionResult> GetPagedListAsync([FromQuery] HbtConfigQueryDto query)
         {
-            var result = await _configService.GetPagedListAsync(query);
+            var result = await _configService.GetListAsync(query);
             return Success(result);
         }
 
@@ -59,9 +57,9 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
         /// <returns>系统配置详情</returns>
         [HttpGet("{configId}")]
         [HbtPerm("admin:config:query")]
-        public async Task<IActionResult> GetAsync(long configId)
+        public async Task<IActionResult> GetByIdAsync(long configId)
         {
-            var result = await _configService.GetAsync(configId);
+            var result = await _configService.GetByIdAsync(configId);
             return Success(result);
         }
 
@@ -72,9 +70,9 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
         /// <returns>配置ID</returns>
         [HttpPost]
         [HbtPerm("admin:config:create")]
-        public async Task<IActionResult> InsertAsync([FromBody] HbtConfigCreateDto input)
+        public async Task<IActionResult> CreateAsync([FromBody] HbtConfigCreateDto input)
         {
-            var result = await _configService.InsertAsync(input);
+            var result = await _configService.CreateAsync(input);
             return Success(result);
         }
 
@@ -117,24 +115,23 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
             return Success(result);
         }
 
-    /// <summary>
-    /// 导入系统配置数据
-    /// </summary>
-    /// <param name="file">Excel文件</param>
-    /// <param name="sheetName">工作表名称</param>
-    /// <returns>导入结果</returns>
-    [HttpPost("import")]
-    [HbtPerm("admin:config:import")]
-                
+        /// <summary>
+        /// 导入系统配置数据
+        /// </summary>
+        /// <param name="file">Excel文件</param>
+        /// <param name="sheetName">工作表名称</param>
+        /// <returns>导入结果</returns>
+        [HttpPost("import")]
+        [HbtPerm("admin:config:import")]
         public async Task<IActionResult> ImportAsync(IFormFile file, [FromQuery] string sheetName = "系统配置信息")
-    {
-      if (file == null || file.Length == 0)
-        return Error("请选择要导入的文件");
+        {
+            if (file == null || file.Length == 0)
+                return Error("请选择要导入的文件");
 
-      using var stream = file.OpenReadStream();
-      var result = await _configService.ImportAsync(stream, sheetName);
-      return Success(result);
-    }
+            using var stream = file.OpenReadStream();
+            var result = await _configService.ImportAsync(stream, sheetName);
+            return Success(result);
+        }
 
         /// <summary>
         /// 导出系统配置数据

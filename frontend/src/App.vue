@@ -1,7 +1,18 @@
 <template>
   <ConfigProvider :theme="themeConfig">
     <a-config-provider :locale="antdLocale">
-      <router-view></router-view>
+      <div id="app">
+        <hbt-error-alert
+          v-model:visible="showError"
+          :type="errorType"
+          :message="errorMessage"
+          :description="errorDescription"
+          :show-retry="true"
+          @retry="handleRetry"
+          @close="handleErrorClose"
+        />
+        <router-view></router-view>
+      </div>
     </a-config-provider>
   </ConfigProvider>
 </template>
@@ -18,10 +29,13 @@ import zhCN from 'ant-design-vue/es/locale/zh_CN'
 import enUS from 'ant-design-vue/es/locale/en_US'
 import { initAutoLogout, clearAutoLogout } from '@/utils/autoLogout'
 import { useDictStore } from '@/stores/dict'
+import { useWebSocketStore } from '@/stores/websocket'
+import HbtErrorAlert from '@/components/Business/ErrorAlert/index.vue'
 
 const themeStore = useThemeStore()
 const holidayStore = useHolidayStore()
 const appStore = useAppStore()
+const wsStore = useWebSocketStore()
 const isDark = computed(() => themeStore.isDarkMode)
 const currentTheme = computed(() => holidayStore.holidayTheme)
 const isMemorialMode = computed(() => currentTheme.value?.id === 'memorial')
@@ -82,7 +96,45 @@ const themeConfig = computed(() => {
   return baseConfig
 })
 
-// 监听浏览器关闭/刷新
+// 错误提示相关
+const showError = ref(false)
+const errorType = ref<'warning' | 'error'>('warning')
+const errorMessage = ref('')
+const errorDescription = ref('')
+
+// 监听 WebSocket 错误
+const handleWebSocketError = () => {
+  if (wsStore.error) {
+    errorType.value = 'error'
+    errorMessage.value = '连接错误'
+    errorDescription.value = wsStore.error
+    showError.value = true
+  }
+}
+
+// 监听 WebSocket 连接状态
+const handleWebSocketConnection = () => {
+  if (!wsStore.connected) {
+    errorType.value = 'warning'
+    errorMessage.value = '连接断开'
+    errorDescription.value = '正在尝试重新连接...'
+    showError.value = true
+  } else {
+    showError.value = false
+  }
+}
+
+// 处理重试
+const handleRetry = () => {
+  wsStore.connect()
+}
+
+// 处理关闭错误提示
+const handleErrorClose = () => {
+  showError.value = false
+}
+
+// 组件挂载时连接 WebSocket
 onMounted(() => {
   const dictStore = useDictStore()
   dictStore.clearCache()
@@ -90,10 +142,12 @@ onMounted(() => {
   holidayStore.initHolidayTheme()
   document.documentElement.style.colorScheme = isDark.value ? 'dark' : 'light'
   initAutoLogout()
+  wsStore.connect()
 })
 
 onUnmounted(() => {
   clearAutoLogout()
+  wsStore.disconnect()
 })
 
 watch(isDark, (newValue) => {
@@ -110,6 +164,10 @@ watch(isMemorialMode, (newValue) => {
     document.body.classList.remove('memorial-mode')
   }
 })
+
+// 监听 WebSocket 状态变化
+watch(() => wsStore.error, handleWebSocketError)
+watch(() => wsStore.connected, handleWebSocketConnection)
 </script>
 
 <style>

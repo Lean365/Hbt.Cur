@@ -39,9 +39,9 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// </summary>
         [HttpGet]
         [HbtPerm("workflow:definition:list")]
-        public async Task<IActionResult> GetPagedListAsync([FromQuery] HbtWorkflowDefinitionQueryDto query)
+        public async Task<IActionResult> GetListAsync([FromQuery] HbtWorkflowDefinitionQueryDto query)
         {
-            var result = await _workflowDefinitionService.GetPagedListAsync(query);
+            var result = await _workflowDefinitionService.GetListAsync(query);
             return Success(result);
         }
 
@@ -50,9 +50,9 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// </summary>
         [HttpGet("{id}")]
         [HbtPerm("workflow:definition:query")]
-        public async Task<IActionResult> GetAsync(long id)
+        public async Task<IActionResult> GetByIdAsync(long id)
         {
-            var result = await _workflowDefinitionService.GetAsync(id);
+            var result = await _workflowDefinitionService.GetByIdAsync(id);
             return Success(result);
         }
 
@@ -61,9 +61,9 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// </summary>
         [HttpPost]
         [HbtPerm("workflow:definition:insert")]
-        public async Task<IActionResult> InsertAsync([FromBody] HbtWorkflowDefinitionCreateDto input)
+        public async Task<IActionResult> CreateAsync([FromBody] HbtWorkflowDefinitionCreateDto input)
         {
-            var result = await _workflowDefinitionService.InsertAsync(input);
+            var result = await _workflowDefinitionService.CreateAsync(input);
             return Success(result);
         }
 
@@ -122,7 +122,7 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         [HbtPerm("workflow:definition:export")]
         public async Task<IActionResult> ExportAsync([FromQuery] HbtWorkflowDefinitionQueryDto query, [FromQuery] string sheetName = "Sheet1")
         {
-            var data = await _workflowDefinitionService.GetPagedListAsync(query);
+            var data = await _workflowDefinitionService.GetListAsync(query);
             var result = await _workflowDefinitionService.ExportAsync(data.Rows, sheetName);
             return File(result, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"工作流定义数据_{DateTime.Now:yyyyMMddHHmmss}.xlsx");
         }

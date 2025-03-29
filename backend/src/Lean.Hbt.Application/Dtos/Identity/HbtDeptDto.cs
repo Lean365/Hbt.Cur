@@ -8,9 +8,6 @@
 //===================================================================
 
 using System.ComponentModel.DataAnnotations;
-using Lean.Hbt.Common.Models;
-using Mapster;
-using Lean.Hbt.Common.Enums;
 
 namespace Lean.Hbt.Application.Dtos.Identity
 {

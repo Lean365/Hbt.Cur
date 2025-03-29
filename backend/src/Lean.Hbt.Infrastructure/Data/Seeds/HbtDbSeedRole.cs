@@ -283,10 +283,10 @@ public class HbtDbSeedRole
 
         foreach (var role in defaultRoles)
         {
-            var existingRole = await _roleRepository.FirstOrDefaultAsync(r => r.RoleKey == role.RoleKey);
+            var existingRole = await _roleRepository.GetInfoAsync(r => r.RoleKey == role.RoleKey);
             if (existingRole == null)
             {
-                await _roleRepository.InsertAsync(role);
+                await _roleRepository.CreateAsync(role);
                 insertCount++;
                 _logger.Info($"[创建] 角色 '{role.RoleName}' 创建成功");
             }

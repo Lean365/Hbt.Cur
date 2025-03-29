@@ -7,97 +7,201 @@
 // 描述    : SignalR用户服务实现
 //===================================================================
 
+using Lean.Hbt.Domain.Entities.RealTime;
 using Lean.Hbt.Domain.IServices.SignalR;
-using Lean.Hbt.Domain.Models.SignalR;
-using Lean.Hbt.Domain.IServices.Caching;
+using Lean.Hbt.Domain.Repositories;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Logging;
+using SqlSugar;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Lean.Hbt.Infrastructure.SignalR
 {
     /// <summary>
-    /// SignalR用户服务实现
+    /// SignalR 用户服务实现
     /// </summary>
-    /// <remarks>
-    /// 创建者: Lean365
-    /// 创建时间: 2024-01-24
-    /// </remarks>
     public class HbtSignalRUserService : IHbtSignalRUserService
     {
-        private readonly IHbtRedisCache _cache;
+        private readonly IHubContext<HbtSignalRHub> _hubContext;
+        private readonly ILogger<HbtSignalRUserService> _logger;
+        private readonly IHbtRepository<HbtOnlineUser> _repository;
 
-        /// <summary>
-        /// 构造函数
-        /// </summary>
-        public HbtSignalRUserService(IHbtRedisCache cache)
+        public HbtSignalRUserService(
+            IHubContext<HbtSignalRHub> hubContext,
+            ILogger<HbtSignalRUserService> logger,
+            IHbtRepository<HbtOnlineUser> repository)
         {
-            _cache = cache;
+            _hubContext = hubContext;
+            _logger = logger;
+            _repository = repository;
         }
 
-        /// <summary>
-        /// 保存在线用户
-        /// </summary>
         public async Task SaveOnlineUserAsync(HbtOnlineUser user)
         {
-            var key = $"signalr:user:{user.ConnectionId}";
-            await _cache.SetAsync(key, user, TimeSpan.FromMinutes(30));
-
-            var userConnectionsKey = $"signalr:user:connections:{user.UserId}";
-            var connections = await _cache.GetAsync<List<string>>(userConnectionsKey) ?? new List<string>();
-            if (!connections.Contains(user.ConnectionId))
+            try
             {
-                connections.Add(user.ConnectionId);
-                await _cache.SetAsync(userConnectionsKey, connections);
-            }
-        }
-
-        /// <summary>
-        /// 删除在线用户
-        /// </summary>
-        public async Task DeleteOnlineUserAsync(string connectionId)
-        {
-            var key = $"signalr:user:{connectionId}";
-            var user = await _cache.GetAsync<HbtOnlineUser>(key);
-            if (user != null)
-            {
-                await _cache.RemoveAsync(key);
-
-                var userConnectionsKey = $"signalr:user:connections:{user.UserId}";
-                var connections = await _cache.GetAsync<List<string>>(userConnectionsKey) ?? new List<string>();
-                connections.Remove(connectionId);
-                if (connections.Any())
-                    await _cache.SetAsync(userConnectionsKey, connections);
-                else
-                    await _cache.RemoveAsync(userConnectionsKey);
-            }
-        }
-
-        /// <summary>
-        /// 获取用户的连接ID列表
-        /// </summary>
-        public async Task<List<string>> GetConnectionIdsAsync(long userId)
-        {
-            var key = $"signalr:user:connections:{userId}";
-            return await _cache.GetAsync<List<string>>(key) ?? new List<string>();
-        }
-
-        /// <summary>
-        /// 获取租户组的连接ID列表
-        /// </summary>
-        public async Task<List<string>> GetGroupConnectionIdsAsync(long tenantId)
-        {
-            var pattern = $"signalr:user:*";
-            var keys = await _cache.SearchKeysAsync(pattern);
-            var connections = new List<string>();
-
-            foreach (var key in keys)
-            {
-                var user = await _cache.GetAsync<HbtOnlineUser>(key);
-                if (user != null)
+                var exp = Expressionable.Create<HbtOnlineUser>();
+                exp.And(u => u.ConnectionId == user.ConnectionId);
+                
+                var existingUser = await _repository.GetInfoAsync(exp.ToExpression());
+                if (existingUser != null)
                 {
-                    connections.Add(user.ConnectionId);
+                    await _repository.UpdateAsync(user);
+                }
+                else
+                {
+                    await _repository.CreateAsync(user);
                 }
             }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "保存在线用户时发生错误: ConnectionId={ConnectionId}, UserId={UserId}", user.ConnectionId, user.UserId);
+                throw;
+            }
+        }
 
-            return connections;
+        public async Task<bool> DeleteOnlineUserAsync(string connectionId, string deleteBy)
+        {
+            try
+            {
+                var exp = Expressionable.Create<HbtOnlineUser>();
+                exp.And(u => u.ConnectionId == connectionId);
+                
+                var user = await _repository.GetInfoAsync(exp.ToExpression());
+                if (user != null)
+                {
+                    user.DeleteBy = deleteBy;
+                    user.DeleteTime = DateTime.Now;
+                    user.OnlineStatus = 1; // 设置为离线状态
+                    await _repository.UpdateAsync(user);
+                    return true;
+                }
+                return false;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "删除在线用户时发生错误: ConnectionId={ConnectionId}", connectionId);
+                throw;
+            }
+        }
+
+        public async Task<List<string>> GetConnectionIdsAsync(long userId)
+        {
+            try
+            {
+                var exp = Expressionable.Create<HbtOnlineUser>();
+                exp.And(u => u.UserId == userId && u.OnlineStatus == 0);
+                
+                var users = await _repository.GetListAsync(exp.ToExpression());
+                return users.Select(u => u.ConnectionId).ToList();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "获取用户连接ID列表时发生错误: UserId={UserId}", userId);
+                throw;
+            }
+        }
+
+        public async Task<List<string>> GetGroupConnectionIdsAsync(long tenantId)
+        {
+            try
+            {
+                var exp = Expressionable.Create<HbtOnlineUser>();
+                exp.And(u => u.TenantId == tenantId && u.OnlineStatus == 0);
+                
+                var users = await _repository.GetListAsync(exp.ToExpression());
+                return users.Select(u => u.ConnectionId).ToList();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "获取租户组连接ID列表时发生错误: TenantId={TenantId}", tenantId);
+                throw;
+            }
+        }
+
+        public async Task UpdateUserLastActiveTimeAsync(string connectionId)
+        {
+            try
+            {
+                var exp = Expressionable.Create<HbtOnlineUser>();
+                exp.And(u => u.ConnectionId == connectionId);
+                
+                var user = await _repository.GetInfoAsync(exp.ToExpression());
+                if (user != null)
+                {
+                    user.LastActivity = DateTime.Now;
+                    await _repository.UpdateAsync(user);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "更新用户最后活动时间时发生错误: ConnectionId={ConnectionId}", connectionId);
+                throw;
+            }
+        }
+
+        public async Task<List<long>> GetMailReceivers(long mailId)
+        {
+            try
+            {
+                var exp = Expressionable.Create<HbtOnlineUser>();
+                exp.And(u => u.OnlineStatus == 0);
+                
+                var users = await _repository.GetListAsync(exp.ToExpression());
+                return users.Select(u => u.UserId).ToList();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "获取邮件接收者列表时发生错误: MailId={MailId}", mailId);
+                throw;
+            }
+        }
+
+        public async Task<List<long>> GetNoticeReceivers(long noticeId)
+        {
+            try
+            {
+                var exp = Expressionable.Create<HbtOnlineUser>();
+                exp.And(u => u.OnlineStatus == 0);
+                
+                var users = await _repository.GetListAsync(exp.ToExpression());
+                return users.Select(u => u.UserId).ToList();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "获取通知接收者列表时发生错误: NoticeId={NoticeId}", noticeId);
+                throw;
+            }
+        }
+
+        public async Task DisconnectUserAsync(string connectionId)
+        {
+            try
+            {
+                _logger.LogInformation("断开用户连接: ConnectionId={ConnectionId}", connectionId);
+                await _hubContext.Clients.Client(connectionId).SendAsync("ForceOffline", "您已被管理员强制下线");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "断开用户连接时发生错误: ConnectionId={ConnectionId}", connectionId);
+                throw;
+            }
+        }
+
+        public async Task SendMessageAsync(string connectionId, string method, object[] args)
+        {
+            try
+            {
+                await _hubContext.Clients.Client(connectionId).SendAsync(method, args);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "发送消息时发生错误: ConnectionId={ConnectionId}, Method={Method}", connectionId, method);
+                throw;
+            }
         }
     }
 } 

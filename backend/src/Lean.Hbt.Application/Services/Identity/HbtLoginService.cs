@@ -9,21 +9,20 @@
 
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json;
 using Lean.Hbt.Application.Dtos.Identity;
+using Lean.Hbt.Application.Services.RealTime;
 using Lean.Hbt.Common.Constants;
 using Lean.Hbt.Common.Enums;
-using Lean.Hbt.Common.Exceptions;
-using Lean.Hbt.Common.Helpers;
 using Lean.Hbt.Common.Options;
 using Lean.Hbt.Common.Utils;
 using Lean.Hbt.Domain.Entities.Audit;
 using Lean.Hbt.Domain.Entities.Identity;
-using Lean.Hbt.Domain.IServices.Admin;
+using Lean.Hbt.Domain.Entities.RealTime;
 using Lean.Hbt.Domain.IServices.Caching;
+using Lean.Hbt.Domain.IServices.Identity;
 using Lean.Hbt.Domain.IServices.Security;
-using Lean.Hbt.Domain.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -55,13 +54,9 @@ public class HbtLoginService : IHbtLoginService
     private readonly IHbtRepository<HbtUserRole> _userRoleRepository;
     private readonly IHbtRepository<HbtUserDept> _userDeptRepository;
     private readonly IHbtRepository<HbtUserPost> _userPostRepository;
-
-    // 登录策略常量
-    private const int ADMIN_MAX_FAILED_ATTEMPTS = 3;  // 管理员最大失败次数
-
-    private const int MAX_FAILED_ATTEMPTS = 5;        // 普通用户最大失败次数
-    private const int ADMIN_LOCKOUT_MINUTES = 30;     // 管理员锁定时间(分钟)
-    private const int USER_LOCKOUT_MINUTES = 10;      // 普通用户锁定时间(分钟)
+    private readonly IHbtOnlineUserService _onlineUserService;
+    private readonly IHbtRepository<HbtOnlineUser> _onlineUserRepository;
+    private readonly IHbtDeviceIdGenerator _deviceIdGenerator;
 
     /// <summary>
     /// 构造函数
@@ -82,7 +77,10 @@ public class HbtLoginService : IHbtLoginService
         IHttpContextAccessor httpContextAccessor,
         IHbtRepository<HbtUserRole> userRoleRepository,
         IHbtRepository<HbtUserDept> userDeptRepository,
-        IHbtRepository<HbtUserPost> userPostRepository)
+        IHbtRepository<HbtUserPost> userPostRepository,
+        IHbtOnlineUserService onlineUserService,
+        IHbtRepository<HbtOnlineUser> onlineUserRepository,
+        IHbtDeviceIdGenerator deviceIdGenerator)
     {
         _logger = logger;
         _userRepository = userRepository;
@@ -100,6 +98,9 @@ public class HbtLoginService : IHbtLoginService
         _userRoleRepository = userRoleRepository;
         _userDeptRepository = userDeptRepository;
         _userPostRepository = userPostRepository;
+        _onlineUserService = onlineUserService;
+        _onlineUserRepository = onlineUserRepository;
+        _deviceIdGenerator = deviceIdGenerator;
     }
 
     /// <summary>
@@ -110,29 +111,29 @@ public class HbtLoginService : IHbtLoginService
     public async Task<HbtLoginResultDto> LoginAsync(HbtLoginDto loginDto)
     {
         _logger.LogInformation("开始处理登录请求: {UserName}", loginDto.UserName);
-        _logger.LogInformation("登录参数详情: {@LoginParams}", new
-        {
-            TenantId = loginDto.TenantId,
-            UserName = loginDto.UserName,
-            PasswordLength = loginDto.Password?.Length ?? 0,
-            CaptchaToken = !string.IsNullOrEmpty(loginDto.CaptchaToken),
-            CaptchaOffset = loginDto.CaptchaOffset,
-            LoginSource = loginDto.LoginSource,
-            DeviceInfo = loginDto.DeviceInfo != null ? new
-            {
-                DeviceId = loginDto.DeviceInfo.DeviceId,
-                DeviceType = loginDto.DeviceInfo.DeviceType,
-                DeviceName = loginDto.DeviceInfo.DeviceName,
-                DeviceModel = loginDto.DeviceInfo.DeviceModel,
-                OsType = loginDto.DeviceInfo.OsType,
-                OsVersion = loginDto.DeviceInfo.OsVersion,
-                BrowserType = loginDto.DeviceInfo.BrowserType,
-                BrowserVersion = loginDto.DeviceInfo.BrowserVersion,
-                Resolution = loginDto.DeviceInfo.Resolution,
-                Location = loginDto.DeviceInfo.Location,
-                IpAddress = loginDto.DeviceInfo.IpAddress
-            } : null
-        });
+        // _logger.LogInformation("登录参数详情: {@LoginParams}", new
+        // {
+        //     TenantId = loginDto.TenantId,
+        //     UserName = loginDto.UserName,
+        //     PasswordLength = loginDto.Password?.Length ?? 0,
+        //     CaptchaToken = !string.IsNullOrEmpty(loginDto.CaptchaToken),
+        //     CaptchaOffset = loginDto.CaptchaOffset,
+        //     LoginSource = loginDto.LoginSource,
+        //     DeviceInfo = loginDto.DeviceInfo != null ? new
+        //     {
+        //         DeviceId = loginDto.DeviceInfo.DeviceId,
+        //         DeviceType = loginDto.DeviceInfo.DeviceType,
+        //         DeviceName = loginDto.DeviceInfo.DeviceName,
+        //         DeviceModel = loginDto.DeviceInfo.DeviceModel,
+        //         OsType = loginDto.DeviceInfo.OsType,
+        //         OsVersion = loginDto.DeviceInfo.OsVersion,
+        //         BrowserType = loginDto.DeviceInfo.BrowserType,
+        //         BrowserVersion = loginDto.DeviceInfo.BrowserVersion,
+        //         Resolution = loginDto.DeviceInfo.Resolution,
+        //         Location = loginDto.DeviceInfo.Location,
+        //         IpAddress = loginDto.DeviceInfo.IpAddress
+        //     } : null
+        // });
 
         try
         {
@@ -143,7 +144,7 @@ public class HbtLoginService : IHbtLoginService
             }
 
             // 验证租户
-            var tenant = await _tenantRepository.FirstOrDefaultAsync(x => x.TenantId == loginDto.TenantId);
+            var tenant = await GetTenantAsync(loginDto.TenantId);
             _logger.LogInformation("租户验证结果: {TenantResult}", tenant != null ? "找到租户" : "租户不存在");
 
             if (tenant == null)
@@ -155,7 +156,7 @@ public class HbtLoginService : IHbtLoginService
             }
 
             // 验证用户
-            var user = await _userRepository.FirstOrDefaultAsync(x => x.UserName == loginDto.UserName && x.TenantId == loginDto.TenantId);
+            var user = await GetUserAsync(loginDto.UserName);
             _logger.LogInformation("用户验证结果: {UserResult}", user != null ? "找到用户" : "用户不存在");
 
             if (user == null)
@@ -193,7 +194,7 @@ public class HbtLoginService : IHbtLoginService
                     UpdateTime = DateTime.Now
                 };
                 loginLog = HbtStringHelper.EnsureEntityStringLength(loginLog);
-                await _loginLogRepository.InsertAsync(loginLog);
+                await _loginLogRepository.CreateAsync(loginLog);
 
                 throw new HbtException(_localization.L("User.InvalidPassword"), HbtConstants.ErrorCodes.Unauthorized);
             }
@@ -228,7 +229,7 @@ public class HbtLoginService : IHbtLoginService
                         UpdateTime = DateTime.Now
                     };
                     loginLog = HbtStringHelper.EnsureEntityStringLength(loginLog);
-                    await _loginLogRepository.InsertAsync(loginLog);
+                    await _loginLogRepository.CreateAsync(loginLog);
 
                     throw new HbtException(_localization.L("User.InvalidCaptcha"), HbtConstants.ErrorCodes.InvalidCaptcha);
                 }
@@ -270,40 +271,106 @@ public class HbtLoginService : IHbtLoginService
             await _cache.SetAsync(cacheKey, user.Id, TimeSpan.FromDays(7));
             _logger.LogInformation("刷新令牌缓存完成");
 
-            // 更新登录信息
+            var now = DateTime.Now;
+
+            // 处理设备信息
             var deviceInfo = loginDto.DeviceInfo ?? new HbtDeviceInfo
             {
                 DeviceId = "default",
-                DeviceType = HbtDeviceType.PC, // PC
+                DeviceType = HbtDeviceType.PC,
                 DeviceName = "未知设备",
                 DeviceModel = "未知型号",
-                OsType = HbtOsType.Other, // Other
+                OsType = HbtOsType.Other,
                 OsVersion = "未知版本",
-                BrowserType = HbtBrowserType.Other, // Other
+                BrowserType = HbtBrowserType.Other,
                 BrowserVersion = "未知版本",
                 IpAddress = "0.0.0.0"
             };
 
-            // 补充 IP 和位置信息
-            deviceInfo.IpAddress = _httpContextAccessor.HttpContext?.Connection.RemoteIpAddress?.ToString() ?? "0.0.0.0";
-            if (string.IsNullOrEmpty(deviceInfo.Location) && !string.IsNullOrEmpty(deviceInfo.IpAddress))
+            // 获取IP地址
+            var ipAddress = GetClientIpAddress();
+            deviceInfo.IpAddress = ipAddress;
+
+            // 获取IP地理位置
+            var ipLocation = await HbtIpLocationUtils.GetLocationAsync(ipAddress);
+
+            // 补充位置信息
+            if (string.IsNullOrEmpty(deviceInfo.Location))
             {
-                deviceInfo.Location = HbtIpLocationUtils.GetIpLocation(deviceInfo.IpAddress);
+                deviceInfo.Location = ipLocation;
             }
 
-            _logger.LogInformation("准备更新登录信息: UserId={UserId}, DeviceInfo={@DeviceInfo}",
-                user.Id, new
-                {
-                    DeviceId = deviceInfo.DeviceId,
-                    DeviceType = deviceInfo.DeviceType,
-                    DeviceName = deviceInfo.DeviceName,
-                    IpAddress = deviceInfo.IpAddress,
-                    Location = deviceInfo.Location,
-                    LoginSource = loginDto.LoginSource
-                });
+            // 生成设备ID和连接ID
+            var deviceInfoJson = JsonSerializer.Serialize(deviceInfo);
+            var (deviceId, connectionId) = _deviceIdGenerator.GenerateIds(deviceInfoJson, user.Id.ToString());
+            deviceInfo.DeviceId = deviceId;
+            deviceInfo.DeviceToken = connectionId;
 
-            await UpdateLoginSuccessAsync(user.Id, user.UserName, loginDto.LoginSource, deviceInfo);
-            _logger.LogInformation("登录信息更新完成");
+            // 处理设备扩展信息
+            _logger.LogInformation("准备处理设备扩展信息");
+            var deviceExtend = await DeviceExtendAsync(user.Id, user.TenantId, deviceInfo, now);
+            _logger.LogInformation("设备扩展信息处理完成");
+
+            // 获取用户角色、部门和岗位信息，并处理登录扩展信息
+            _logger.LogInformation("准备处理登录扩展信息");
+            var userRoleInfo = await _userRoleRepository.GetListAsync(x => x.UserId == user.Id && x.TenantId == user.TenantId);
+            var userDeptInfo = await _userDeptRepository.GetListAsync(x => x.UserId == user.Id && x.TenantId == user.TenantId);
+            var userPostInfo = await _userPostRepository.GetListAsync(x => x.UserId == user.Id && x.TenantId == user.TenantId);
+
+            var currentRoleId = userRoleInfo?.FirstOrDefault()?.RoleId ?? 0;
+            var currentDeptId = userDeptInfo?.FirstOrDefault()?.DeptId ?? 0;
+            var currentPostId = userPostInfo?.FirstOrDefault()?.PostId ?? 0;
+
+            var loginExtend = await LoginExtendAsync(user.Id, user.TenantId, currentRoleId, currentDeptId, currentPostId,
+                loginDto.LoginSource, deviceInfo.IpAddress, deviceInfo.Location, deviceInfo, now);
+            _logger.LogInformation("登录扩展信息处理完成");
+
+            // 处理登录日志
+            _logger.LogInformation("准备处理登录日志");
+            await LoginLogAsync(user.Id, user.TenantId, user.UserName, deviceInfo, deviceExtend.Id, loginExtend.Id, now);
+            _logger.LogInformation("登录日志处理完成");
+
+            // 更新或创建在线用户记录
+            var existingOnlineUser = await _onlineUserRepository.GetInfoAsync(u => u.DeviceId == deviceId && u.IsDeleted == 0);
+            if (existingOnlineUser != null)
+            {
+                existingOnlineUser.ConnectionId = deviceExtend.DeviceToken;
+                existingOnlineUser.ClientIp = deviceInfo.IpAddress;
+                existingOnlineUser.UserAgent = _httpContextAccessor.HttpContext?.Request.Headers["User-Agent"].ToString();
+                existingOnlineUser.LastActivity = now;
+                existingOnlineUser.LastHeartbeat = now;
+                existingOnlineUser.OnlineStatus = 0; // 在线
+                existingOnlineUser.UpdateTime = now;
+                existingOnlineUser.UpdateBy = "Hbt365";
+
+                _logger.LogInformation("准备更新在线用户记录: {@OnlineUser}", existingOnlineUser);
+                var updateResult = await _onlineUserRepository.UpdateAsync(existingOnlineUser);
+                _logger.LogInformation("更新在线用户记录完成: UserId={UserId}, DeviceId={DeviceId}, ConnectionId={ConnectionId}, UpdateBy={UpdateBy}, Result={Result}",
+                    user.Id, deviceId, deviceExtend.DeviceToken, existingOnlineUser.UpdateBy, updateResult);
+            }
+            else
+            {
+                var onlineUser = new HbtOnlineUser
+                {
+                    TenantId = user.TenantId,
+                    UserId = user.Id,
+                    GroupId = currentDeptId,
+                    ConnectionId = deviceExtend.DeviceToken,
+                    ClientIp = deviceInfo.IpAddress,
+                    UserAgent = _httpContextAccessor.HttpContext?.Request.Headers["User-Agent"].ToString(),
+                    LastActivity = now,
+                    DeviceId = deviceId,
+                    LastHeartbeat = now,
+                    OnlineStatus = 0, // 在线
+                    CreateTime = now,
+                    CreateBy = "Hbt365",
+                };
+
+                _logger.LogInformation("准备创建在线用户记录: {@OnlineUser}", onlineUser);
+                await _onlineUserRepository.CreateAsync(onlineUser);
+                _logger.LogInformation("创建在线用户记录完成: UserId={UserId}, ConnectionId={ConnectionId}, CreateBy={CreateBy}",
+                    user.Id, deviceExtend.DeviceToken, onlineUser.CreateBy);
+            }
 
             _logger.LogInformation("登录成功: UserId={UserId}, UserName={UserName}", user.Id, user.UserName);
 
@@ -354,7 +421,7 @@ public class HbtLoginService : IHbtLoginService
             throw new HbtException("用户已被禁用");
 
         // 3. 获取租户信息
-        var tenant = await _tenantRepository.GetByIdAsync(user.TenantId);
+        var tenant = await _tenantRepository.GetInfoAsync(x => x.TenantId == user.TenantId);
         if (tenant == null)
             throw new HbtException("租户不存在");
         if (tenant.Status != 0)
@@ -393,12 +460,64 @@ public class HbtLoginService : IHbtLoginService
     }
 
     /// <summary>
-    /// 登出
+    /// 用户登出
     /// </summary>
     public async Task<bool> LogoutAsync(long userId)
     {
-        // 由于使用内存缓存,登出时不需要特别处理缓存
-        return await Task.FromResult(true);
+        try
+        {
+            _logger.LogInformation("开始处理用户登出: UserId={UserId}", userId);
+            var now = DateTime.Now;
+
+            // 获取用户信息
+            var user = await _userRepository.GetByIdAsync(userId);
+            if (user == null)
+            {
+                throw new InvalidOperationException($"用户不存在: userId={userId}");
+            }
+
+            // 获取当前用户的设备信息
+            var deviceExtend = await _deviceExtendRepository.GetInfoAsync(x => x.UserId == userId);
+            if (deviceExtend != null)
+            {
+                // 更新设备状态为离线
+                deviceExtend.DeviceStatus = (int)HbtDeviceStatus.Offline;
+                deviceExtend.LastOfflineTime = now;
+                await _deviceExtendRepository.UpdateAsync(deviceExtend);
+                _logger.LogInformation("已更新设备状态为离线: UserId={UserId}, DeviceId={DeviceId}", userId, deviceExtend.DeviceId);
+
+                // 创建离线设备信息用于记录日志
+                var deviceInfo = new HbtDeviceInfo
+                {
+                    DeviceId = deviceExtend.DeviceId,
+                    DeviceToken = deviceExtend.DeviceToken,
+                    DeviceType = (HbtDeviceType)deviceExtend.DeviceType,
+                    DeviceName = deviceExtend.DeviceName ?? "离线设备",
+                    IpAddress = _httpContextAccessor.HttpContext?.Connection.RemoteIpAddress?.ToString() ?? "0.0.0.0"
+                };
+
+                // 记录登出日志
+                await LoginLogAsync(userId, user.TenantId, user.UserName, deviceInfo, deviceExtend.Id, null, now);
+            }
+
+            // 删除在线用户记录
+            var onlineUser = await _onlineUserRepository.GetInfoAsync(u => u.UserId == userId);
+            if (onlineUser != null)
+            {
+                onlineUser.OnlineStatus = 1; // 离线
+                onlineUser.LastActivity = now;
+                onlineUser.UpdateTime = now;
+                await _onlineUserRepository.UpdateAsync(onlineUser);
+                _logger.LogInformation("已更新用户状态为离线: UserId={UserId}, ConnectionId={ConnectionId}", userId, onlineUser.ConnectionId);
+            }
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "处理用户登出时发生错误: UserId={UserId}", userId);
+            return false;
+        }
     }
 
     /// <summary>
@@ -422,21 +541,25 @@ public class HbtLoginService : IHbtLoginService
                 throw new HbtException("JWT配置错误：SecretKey未配置", HbtConstants.ErrorCodes.ServerError);
             }
 
-            // 获取用户权限
-            var permissions = _userRepository.GetUserPermissionsAsync(user.Id).Result;
-            //_logger.LogInformation("用户权限列表: {@Permissions}", permissions);
-
             var claims = new List<Claim>
             {
                 new Claim("user_id", user.Id.ToString()),
                 new Claim(ClaimTypes.Name, user.UserName),
-                new Claim("tenant_id", user.TenantId.ToString())
+                new Claim("tenant_id", user.TenantId.ToString()),
+                new Claim("user_type", user.UserType.ToString())
             };
 
-            // 添加权限claims
-            foreach (var permission in permissions)
+            // 只添加角色信息
+            var roles = _userRepository.GetUserRolesAsync(user.Id).Result;
+            foreach (var role in roles)
             {
-                claims.Add(new Claim("permissions", permission));
+                claims.Add(new Claim(ClaimTypes.Role, role));
+            }
+
+            // 添加管理员标记
+            if (roles.Contains("admin"))
+            {
+                claims.Add(new Claim("is_admin", "true"));
             }
 
             //_logger.LogInformation("生成令牌Claims: {@Claims}", claims);
@@ -472,19 +595,6 @@ public class HbtLoginService : IHbtLoginService
     }
 
     /// <summary>
-    /// 生成随机盐值
-    /// </summary>
-    private string GenerateRandomSalt()
-    {
-        var saltBytes = new byte[32]; // 32字节的盐值
-        using (var rng = RandomNumberGenerator.Create())
-        {
-            rng.GetBytes(saltBytes);
-        }
-        return Convert.ToBase64String(saltBytes);
-    }
-
-    /// <summary>
     /// 获取用户信息
     /// </summary>
     public async Task<HbtUserInfoDto> GetUserInfoAsync(long userId)
@@ -492,7 +602,7 @@ public class HbtLoginService : IHbtLoginService
         var user = await _userRepository.GetByIdAsync(userId)
             ?? throw new HbtException(_localization.L("User.NotFound"), HbtConstants.ErrorCodes.NotFound);
 
-        var tenant = await _tenantRepository.FirstOrDefaultAsync(x => x.TenantId == user.TenantId);
+        var tenant = await _tenantRepository.GetInfoAsync(x => x.TenantId == user.TenantId);
         if (tenant == null)
             throw new HbtException(_localization.L("Tenant.NotFound"), HbtConstants.ErrorCodes.NotFound);
 
@@ -525,7 +635,7 @@ public class HbtLoginService : IHbtLoginService
         if (string.IsNullOrEmpty(username))
             return null;
 
-        var user = await _userRepository.FirstOrDefaultAsync(x => x.UserName == username);
+        var user = await _userRepository.GetInfoAsync(x => x.UserName == username);
         if (user == null)
             return null;
 
@@ -545,10 +655,10 @@ public class HbtLoginService : IHbtLoginService
         }
 
         // 获取当前IP地址
-        var ipAddress = _httpContextAccessor.HttpContext?.Connection.RemoteIpAddress?.ToString() ?? "0.0.0.0";
-        var location = HbtIpLocationUtils.GetIpLocation(ipAddress);
+        var ipAddress = GetClientIpAddress();
+        var location = await HbtIpLocationUtils.GetLocationAsync(ipAddress);
 
-        var loginExtend = await _loginExtendRepository.FirstOrDefaultAsync(x => x.UserId == userId);
+        var loginExtend = await _loginExtendRepository.GetInfoAsync(x => x.UserId == userId);
         if (loginExtend == null)
         {
             loginExtend = new HbtLoginExtend
@@ -568,7 +678,7 @@ public class HbtLoginService : IHbtLoginService
                 UpdateBy = userId.ToString(),
                 UpdateTime = now
             };
-            await _loginExtendRepository.InsertAsync(loginExtend);
+            await _loginExtendRepository.CreateAsync(loginExtend);
         }
         else
         {
@@ -584,156 +694,32 @@ public class HbtLoginService : IHbtLoginService
     }
 
     /// <summary>
-    /// 更新登录成功信息
+    /// 处理登录日志（新增或更新）
     /// </summary>
-    private async Task UpdateLoginSuccessAsync(long userId, string userName, int loginSource, HbtDeviceInfo deviceInfo)
+    private async Task<HbtLoginLog> LoginLogAsync(long userId, long tenantId, string userName, HbtDeviceInfo deviceInfo, long? deviceExtendId, long? loginExtendId, DateTime now)
     {
-        _logger.LogInformation("开始更新登录成功信息: userId={UserId}, loginSource={LoginSource}", userId, loginSource);
-        try
+        // 查询当前用户最近的登录日志
+        var loginLog = await _loginLogRepository.GetInfoAsync(x =>
+            x.UserId == userId &&
+            x.LoginTime.Date == now.Date);
+
+        if (loginLog == null)
         {
-            var loginExtend = await _loginExtendRepository.FirstOrDefaultAsync(x => x.UserId == userId);
-            var now = DateTime.Now;
-
-            // 获取用户信息
-            var user = await _userRepository.GetByIdAsync(userId);
-            if (user == null)
-            {
-                throw new InvalidOperationException($"用户不存在: userId={userId}");
-            }
-
-            // 获取用户角色、部门和岗位信息
-            var userRoles = await _userRoleRepository.GetListAsync(x => x.UserId == userId && x.TenantId == user.TenantId);
-            var userDepts = await _userDeptRepository.GetListAsync(x => x.UserId == userId && x.TenantId == user.TenantId);
-            var userPosts = await _userPostRepository.GetListAsync(x => x.UserId == userId && x.TenantId == user.TenantId);
-
-            var roleId = userRoles?.FirstOrDefault()?.RoleId ?? 0;
-            var deptId = userDepts?.FirstOrDefault()?.DeptId ?? 0;
-            var postId = userPosts?.FirstOrDefault()?.PostId ?? 0;
-
-            // 获取当前IP地址
-            var ipAddress = _httpContextAccessor.HttpContext?.Connection.RemoteIpAddress?.ToString() ?? "0.0.0.0";
-            var location = HbtIpLocationUtils.GetIpLocation(ipAddress);
-
-            // 更新设备信息的IP和位置
-            deviceInfo.IpAddress = ipAddress;
-            deviceInfo.Location = location;
-
-            if (loginExtend == null)
-            {
-                _logger.LogInformation("创建新的登录扩展信息");
-                loginExtend = new HbtLoginExtend
-                {
-                    UserId = userId,
-                    TenantId = user.TenantId,
-                    RoleId = roleId,
-                    DeptId = deptId,
-                    PostId = postId,
-                    LoginCount = 1,
-                    LoginStatus = (int)HbtLoginStatus.Success,
-                    LoginSource = loginSource,
-                    LoginType = (int)HbtLoginType.Password,
-                    FirstLoginTime = now,
-                    FirstLoginIp = ipAddress,
-                    FirstLoginLocation = location,
-                    FirstLoginDeviceId = deviceInfo.DeviceId ?? "default",
-                    FirstLoginDeviceType = (int)deviceInfo.DeviceType,
-                    FirstLoginBrowser = (int)deviceInfo.BrowserType,
-                    FirstLoginOs = (int)deviceInfo.OsType,
-                    LastLoginTime = now,
-                    LastLoginIp = ipAddress,
-                    LastLoginLocation = location,
-                    LastLoginDeviceId = deviceInfo.DeviceId ?? "default",
-                    LastLoginDeviceType = (int)deviceInfo.DeviceType,
-                    LastLoginBrowser = (int)deviceInfo.BrowserType,
-                    LastLoginOs = (int)deviceInfo.OsType,
-                    ContinuousLoginDays = 1,
-                    CreateBy = userId.ToString(),
-                    CreateTime = now,
-                    UpdateBy = userId.ToString(),
-                    UpdateTime = now
-                };
-
-                // 处理登录扩展信息字段长度
-                loginExtend = HbtStringHelper.EnsureEntityStringLength(loginExtend);
-
-                _logger.LogInformation("准备插入登录扩展信息");
-                await _loginExtendRepository.InsertAsync(loginExtend);
-                _logger.LogInformation("登录扩展信息插入完成");
-            }
-            else
-            {
-                _logger.LogInformation("更新现有登录扩展信息");
-                loginExtend.LoginCount++;
-                loginExtend.LoginStatus = (int)HbtLoginStatus.Success;
-                loginExtend.LoginSource = loginSource;
-                loginExtend.LoginType = (int)HbtLoginType.Password;
-                loginExtend.RoleId = roleId;
-                loginExtend.DeptId = deptId;
-                loginExtend.PostId = postId;
-                loginExtend.LastLoginTime = now;
-                loginExtend.LastLoginIp = ipAddress;
-                loginExtend.LastLoginLocation = location;
-                loginExtend.LastLoginDeviceId = deviceInfo.DeviceId ?? "default";
-                loginExtend.LastLoginDeviceType = (int)deviceInfo.DeviceType;
-                loginExtend.LastLoginBrowser = (int)deviceInfo.BrowserType;
-                loginExtend.LastLoginOs = (int)deviceInfo.OsType;
-                loginExtend.UpdateBy = userId.ToString();
-                loginExtend.UpdateTime = now;
-
-                // 如果是第一次登录，更新首次登录信息
-                if (loginExtend.FirstLoginTime == null)
-                {
-                    loginExtend.FirstLoginTime = now;
-                    loginExtend.FirstLoginIp = ipAddress;
-                    loginExtend.FirstLoginLocation = location;
-                    loginExtend.FirstLoginDeviceId = deviceInfo.DeviceId ?? "default";
-                    loginExtend.FirstLoginDeviceType = (int)deviceInfo.DeviceType;
-                    loginExtend.FirstLoginBrowser = (int)deviceInfo.BrowserType;
-                    loginExtend.FirstLoginOs = (int)deviceInfo.OsType;
-                }
-
-                // 更新连续登录天数
-                if (loginExtend.LastLoginTime.HasValue)
-                {
-                    var lastLoginDate = loginExtend.LastLoginTime.Value.Date;
-                    var today = now.Date;
-                    if (lastLoginDate.AddDays(1) == today)
-                    {
-                        loginExtend.ContinuousLoginDays++;
-                    }
-                    else if (lastLoginDate != today)
-                    {
-                        loginExtend.ContinuousLoginDays = 1;
-                    }
-                }
-
-                // 处理登录扩展信息字段长度
-                loginExtend = HbtStringHelper.EnsureEntityStringLength(loginExtend);
-
-                _logger.LogInformation("准备更新登录扩展信息");
-                await _loginExtendRepository.UpdateAsync(loginExtend);
-                _logger.LogInformation("登录扩展信息更新完成");
-            }
-
-            // 更新设备信息
-            _logger.LogInformation("准备更新设备信息");
-            var deviceExtend = await UpdateDeviceInfoAsync(userId, deviceInfo);
-            _logger.LogInformation("设备信息更新完成");
-
-            // 记录登录日志
-            var loginLog = new HbtLoginLog
+            _logger.LogInformation("创建新的登录日志: UserId={UserId}", userId);
+            loginLog = new HbtLoginLog
             {
                 UserId = userId,
-                TenantId = user.TenantId,
+                TenantId = tenantId,
                 UserName = userName ?? "未知",
                 LoginType = HbtLoginType.Password,
                 LoginStatus = HbtLoginStatus.Success,
-                LoginTime = DateTime.Now,
+                LoginTime = now,
                 IpAddress = deviceInfo.IpAddress ?? "未知",
+                Location = deviceInfo.Location ?? "未知",
                 UserAgent = _httpContextAccessor.HttpContext?.Request.Headers["User-Agent"].ToString(),
                 DeviceInfo = deviceInfo,
-                DeviceExtendId = deviceExtend?.Id,
-                LoginExtendId = loginExtend.Id,
+                DeviceExtendId = deviceExtendId,
+                LoginExtendId = loginExtendId,
                 Message = $"用户 {userName} 登录成功",
                 CreateBy = userId.ToString(),
                 CreateTime = now,
@@ -741,131 +727,240 @@ public class HbtLoginService : IHbtLoginService
                 UpdateTime = now
             };
 
-            // 处理登录日志字段长度
             loginLog = HbtStringHelper.EnsureEntityStringLength(loginLog);
-
-            await _loginLogRepository.InsertAsync(loginLog);
+            await _loginLogRepository.CreateAsync(loginLog);
+            _logger.LogInformation("登录日志创建完成");
         }
-        catch (Exception ex)
+        else
         {
-            _logger.LogError(ex, "更新登录信息时发生错误: {Message}", ex.Message);
-            throw;
+            _logger.LogInformation("更新现有登录日志: UserId={UserId}", userId);
+            loginLog.LoginTime = now;
+            loginLog.IpAddress = deviceInfo.IpAddress ?? loginLog.IpAddress;
+            loginLog.Location = deviceInfo.Location ?? loginLog.Location;
+            loginLog.UserAgent = _httpContextAccessor.HttpContext?.Request.Headers["User-Agent"].ToString() ?? loginLog.UserAgent;
+            loginLog.DeviceInfo = deviceInfo;
+            loginLog.DeviceExtendId = deviceExtendId ?? loginLog.DeviceExtendId;
+            loginLog.LoginExtendId = loginExtendId ?? loginLog.LoginExtendId;
+            loginLog.Message = $"用户 {userName} 登录成功";
+            loginLog.UpdateTime = now;
+            loginLog.UpdateBy = userId.ToString();
+
+            loginLog = HbtStringHelper.EnsureEntityStringLength(loginLog);
+            await _loginLogRepository.UpdateAsync(loginLog);
+            _logger.LogInformation("登录日志更新完成");
         }
+
+        return loginLog;
     }
 
     /// <summary>
-    /// 更新设备信息
+    /// 处理登录扩展信息（新增或更新）
     /// </summary>
-    private async Task<HbtDeviceExtend> UpdateDeviceInfoAsync(long userId, HbtDeviceInfo deviceInfo)
+    private async Task<HbtLoginExtend> LoginExtendAsync(long userId, long tenantId, long roleId, long deptId, long postId, int loginSource, string ipAddress, string location, HbtDeviceInfo deviceInfo, DateTime now)
     {
-        _logger.LogInformation("开始更新设备信息: userId={UserId}, deviceId={DeviceId}, tenantId={TenantId}",
-            userId, deviceInfo.DeviceId, deviceInfo.TenantId);
-        try
+        // 查询现有登录扩展信息
+        var loginExtend = await _loginExtendRepository.GetInfoAsync(x => x.UserId == userId);
+
+        if (loginExtend == null)
         {
-            var now = DateTime.Now;
-            // 获取用户信息以获取正确的租户ID
-            var user = await _userRepository.GetByIdAsync(userId);
-            if (user == null)
+            _logger.LogInformation("创建新的登录扩展信息: UserId={UserId}", userId);
+            loginExtend = new HbtLoginExtend
             {
-                throw new InvalidOperationException($"用户不存在: userId={userId}");
-            }
+                UserId = userId,
+                TenantId = tenantId,
+                RoleId = roleId,
+                DeptId = deptId,
+                PostId = postId,
+                LoginCount = 1,
+                LoginStatus = (int)HbtLoginStatus.Success,
+                LoginSource = loginSource,
+                LoginType = (int)HbtLoginType.Password,
+                FirstLoginTime = now,
+                FirstLoginIp = ipAddress,
+                FirstLoginLocation = location,
+                FirstLoginDeviceId = deviceInfo.DeviceId,
+                FirstLoginDeviceType = (int)deviceInfo.DeviceType,
+                FirstLoginBrowser = (int)deviceInfo.BrowserType,
+                FirstLoginOs = (int)deviceInfo.OsType,
+                LastLoginTime = now,
+                LastLoginIp = ipAddress,
+                LastLoginLocation = location,
+                LastLoginDeviceId = deviceInfo.DeviceId,
+                LastLoginDeviceType = (int)deviceInfo.DeviceType,
+                LastLoginBrowser = (int)deviceInfo.BrowserType,
+                LastLoginOs = (int)deviceInfo.OsType,
+                ContinuousLoginDays = 1,
+                CreateBy = userId.ToString(),
+                CreateTime = now,
+                UpdateBy = userId.ToString(),
+                UpdateTime = now
+            };
 
-            // 查找现有设备记录，使用设备指纹进行匹配
-            var existingDevice = await _deviceExtendRepository.FirstOrDefaultAsync(x =>
-                x.UserId == userId &&
-                x.TenantId == user.TenantId);
+            loginExtend = HbtStringHelper.EnsureEntityStringLength(loginExtend);
+            await _loginExtendRepository.CreateAsync(loginExtend);
+            _logger.LogInformation("登录扩展信息创建完成");
+        }
+        else
+        {
+            _logger.LogInformation("更新现有登录扩展信息: UserId={UserId}", userId);
+            loginExtend.LoginCount++;
+            loginExtend.LoginStatus = (int)HbtLoginStatus.Success;
+            loginExtend.LoginSource = loginSource;
+            loginExtend.LoginType = (int)HbtLoginType.Password;
+            loginExtend.RoleId = roleId;
+            loginExtend.DeptId = deptId;
+            loginExtend.PostId = postId;
+            loginExtend.LastLoginTime = now;
+            loginExtend.LastLoginIp = ipAddress;
+            loginExtend.LastLoginLocation = location;
+            loginExtend.LastLoginDeviceId = deviceInfo.DeviceId;
+            loginExtend.LastLoginDeviceType = (int)deviceInfo.DeviceType;
+            loginExtend.LastLoginBrowser = (int)deviceInfo.BrowserType;
+            loginExtend.LastLoginOs = (int)deviceInfo.OsType;
+            loginExtend.UpdateTime = now;
+            loginExtend.UpdateBy = userId.ToString();
 
-            if (existingDevice != null)
+            // 更新连续登录天数
+            if (loginExtend.LastLoginTime.HasValue)
             {
-                _logger.LogInformation("更新现有设备信息");
-                // 更新可能变化的信息
-                existingDevice.DeviceName = deviceInfo.DeviceName ?? existingDevice.DeviceName;
-                existingDevice.DeviceType = (int)deviceInfo.DeviceType;
-                existingDevice.BrowserType = (int)deviceInfo.BrowserType;
-                existingDevice.BrowserVersion = deviceInfo.BrowserVersion;
-                existingDevice.Resolution = deviceInfo.Resolution;
-                existingDevice.DeviceStatus = (int)HbtDeviceStatus.Online;
-                existingDevice.LastOnlineTime = now;
-                existingDevice.UpdateBy = userId.ToString();
-                existingDevice.UpdateTime = now;
-
-                await _deviceExtendRepository.UpdateAsync(existingDevice);
-                _logger.LogInformation("设备信息更新完成");
-                return existingDevice;
-            }
-            else
-            {
-                _logger.LogInformation("创建新的设备信息");
-                var newDevice = new HbtDeviceExtend
+                var lastLoginDate = loginExtend.LastLoginTime.Value.Date;
+                var today = now.Date;
+                if (lastLoginDate.AddDays(1) == today)
                 {
-                    UserId = userId,
-                    TenantId = user.TenantId,
-                    DeviceId = Guid.NewGuid().ToString("N"),  // 生成新的设备ID
-                    DeviceType = (int)deviceInfo.DeviceType,
-                    DeviceName = deviceInfo.DeviceName ?? "未知设备",
-                    DeviceModel = deviceInfo.DeviceModel ?? "未知型号",
-                    OsType = (int)deviceInfo.OsType,
-                    OsVersion = deviceInfo.OsVersion ?? "未知版本",
-                    BrowserType = (int)deviceInfo.BrowserType,
-                    BrowserVersion = deviceInfo.BrowserVersion ?? "未知版本",
-                    Resolution = deviceInfo.Resolution ?? "未知分辨率",
-                    DeviceStatus = (int)HbtDeviceStatus.Online,
-                    LastOnlineTime = now,
-                    CreateBy = userId.ToString(),
-                    CreateTime = now,
-                    UpdateBy = userId.ToString(),
-                    UpdateTime = now
-                };
-
-                await _deviceExtendRepository.InsertAsync(newDevice);
-                _logger.LogInformation("设备信息创建完成");
-                return newDevice;
+                    loginExtend.ContinuousLoginDays++;
+                }
+                else if (lastLoginDate != today)
+                {
+                    loginExtend.ContinuousLoginDays = 1;
+                }
             }
+
+            loginExtend = HbtStringHelper.EnsureEntityStringLength(loginExtend);
+            await _loginExtendRepository.UpdateAsync(loginExtend);
+            _logger.LogInformation("登录扩展信息更新完成");
         }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "更新设备信息时发生错误: {Message}", ex.Message);
-            throw;
-        }
+
+        return loginExtend;
     }
 
     /// <summary>
-    /// 记录登录日志
+    /// 处理设备扩展信息（新增或更新）
     /// </summary>
-    private async Task LogLoginAsync(long userId, string userName, string ipAddress, string userAgent, int loginSource, bool success, string? message = null)
+    private async Task<HbtDeviceExtend> DeviceExtendAsync(long userId, long tenantId, HbtDeviceInfo deviceInfo, DateTime now)
     {
-        var log = new HbtLoginLog
-        {
-            UserId = userId,
-            UserName = userName,
-            IpAddress = ipAddress,
-            UserAgent = userAgent,
-            LoginSource = loginSource,
-            Success = success ? 1 : 0,
-            Message = message
-        };
+        // 使用已生成的设备ID和连接ID
+        var deviceId = deviceInfo.DeviceId;
+        var connectionId = deviceInfo.DeviceToken;
 
-        await _loginLogRepository.InsertAsync(log);
+        if (string.IsNullOrEmpty(deviceId) || string.IsNullOrEmpty(connectionId))
+        {
+            throw new InvalidOperationException("设备ID和连接ID不能为空");
+        }
+
+        // 查询现有设备记录
+        var deviceExtend = await _deviceExtendRepository.GetInfoAsync(x =>
+            x.UserId == userId &&
+            x.DeviceId == deviceId);
+
+        if (deviceExtend == null)
+        {
+            _logger.LogInformation("创建新的设备扩展信息: UserId={UserId}, DeviceId={DeviceId}", userId, deviceId);
+            deviceExtend = new HbtDeviceExtend
+            {
+                UserId = userId,
+                TenantId = tenantId,
+                DeviceId = deviceId,
+                DeviceToken = connectionId,
+                DeviceType = (int)deviceInfo.DeviceType,
+                DeviceName = deviceInfo.DeviceName ?? "未知设备",
+                DeviceModel = deviceInfo.DeviceModel ?? "未知型号",
+                OsType = (int)deviceInfo.OsType,
+                OsVersion = deviceInfo.OsVersion ?? "未知版本",
+                BrowserType = (int)deviceInfo.BrowserType,
+                BrowserVersion = deviceInfo.BrowserVersion ?? "未知版本",
+                Resolution = deviceInfo.Resolution ?? "未知分辨率",
+                DeviceStatus = (int)HbtDeviceStatus.Online,
+                LastOnlineTime = now,
+                CreateBy = userId.ToString(),
+                CreateTime = now,
+                UpdateBy = userId.ToString(),
+                UpdateTime = now
+            };
+
+            await _deviceExtendRepository.CreateAsync(deviceExtend);
+            _logger.LogInformation("设备扩展信息创建完成");
+        }
+        else
+        {
+            _logger.LogInformation("更新现有设备扩展信息: DeviceId={DeviceId}", deviceId);
+            deviceExtend.DeviceToken = connectionId;
+            deviceExtend.DeviceName = deviceInfo.DeviceName ?? deviceExtend.DeviceName;
+            deviceExtend.DeviceType = (int)deviceInfo.DeviceType;
+            deviceExtend.BrowserType = (int)deviceInfo.BrowserType;
+            deviceExtend.BrowserVersion = deviceInfo.BrowserVersion ?? deviceExtend.BrowserVersion;
+            deviceExtend.Resolution = deviceInfo.Resolution ?? deviceExtend.Resolution;
+            deviceExtend.DeviceStatus = (int)HbtDeviceStatus.Online;
+            deviceExtend.LastOnlineTime = now;
+            deviceExtend.UpdateTime = now;
+            deviceExtend.UpdateBy = userId.ToString();
+
+            await _deviceExtendRepository.UpdateAsync(deviceExtend);
+            _logger.LogInformation("设备扩展信息更新完成");
+        }
+
+        return deviceExtend;
     }
 
-    private async Task<HbtLoginLog> CreateLoginLogAsync(HbtLoginDto loginDto, long userId, int loginStatus, string message = null)
+    private async Task<HbtTenant?> GetTenantAsync(long tenantId)
     {
-        var log = new HbtLoginLog
-        {
-            UserId = userId,
-            UserName = loginDto.UserName,
-            IpAddress = loginDto.IpAddress,
-            UserAgent = loginDto.UserAgent,
-            LoginType = loginDto.LoginType,
-            LoginStatus = (HbtLoginStatus)loginStatus,
-            LoginSource = loginDto.LoginSource,
-            Success = loginStatus == (int)HbtLoginStatus.Success ? 1 : 0,
-            Message = message,
-            LoginTime = DateTime.Now,
-            DeviceInfo = loginDto.DeviceInfo
-        };
+        if (tenantId < 0)
+            return null;
 
-        await _loginLogRepository.InsertAsync(log);
-        return log;
+        var tenant = await _tenantRepository.GetInfoAsync(x => x.TenantId == tenantId);
+        if (tenant == null)
+            return null;
+
+        return tenant;
+    }
+
+    private async Task<HbtUser?> GetUserAsync(string username)
+    {
+        if (string.IsNullOrEmpty(username))
+            return null;
+
+        var user = await _userRepository.GetInfoAsync(x => x.UserName == username);
+        if (user == null)
+            return null;
+
+        return user;
+    }
+
+    private string GetClientIpAddress()
+    {
+        var httpContext = _httpContextAccessor.HttpContext;
+        if (httpContext == null)
+            return "0.0.0.0";
+
+        // 优先从X-Forwarded-For获取
+        var forwardedFor = httpContext.Request.Headers["X-Forwarded-For"].ToString();
+        if (!string.IsNullOrEmpty(forwardedFor))
+        {
+            // 取第一个IP（最原始的客户端IP）
+            var ips = forwardedFor.Split(',', StringSplitOptions.RemoveEmptyEntries);
+            if (ips.Length > 0)
+                return ips[0].Trim();
+        }
+
+        // 其次从X-Real-IP获取
+        var realIp = httpContext.Request.Headers["X-Real-IP"].ToString();
+        if (!string.IsNullOrEmpty(realIp))
+            return realIp;
+
+        // 最后从RemoteIpAddress获取
+        var remoteIp = httpContext.Connection.RemoteIpAddress?.ToString();
+        if (!string.IsNullOrEmpty(remoteIp))
+            return remoteIp;
+
+        return "0.0.0.0";
     }
 }

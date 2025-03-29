@@ -1,0 +1,47 @@
+#nullable enable
+
+//===================================================================
+// 项目名 : Lean.Hbt
+// 文件名 : {{ pascal_case table.table_name }}.cs
+// 创建者 : Lean365
+// 创建时间: {{ date }}
+// 版本号 : V0.0.1
+// 描述    : {{ table.comment }}实体
+//===================================================================
+
+using SqlSugar;
+
+namespace Lean.Hbt.Domain.Entities.{{ table.module_name }};
+
+/// <summary>
+/// {{ table.comment }}实体
+/// </summary>
+[SugarTable("{{ table.table_name }}", TableDescription = "{{ table.comment }}")]
+public class {{ pascal_case table.table_name }}
+{
+    {{~ for column in table.columns ~}}
+    /// <summary>
+    /// {{ column.comment }}
+    /// </summary>
+    {{~ if column.is_primary_key ~}}
+    [SugarColumn(IsPrimaryKey = true, IsIdentity = true, ColumnDescription = "{{ column.comment }}", SqlParameterDbType = System.Data.DbType.Int64)]
+    {{~ else ~}}
+    [SugarColumn(ColumnName = "{{ column.name }}", 
+                 ColumnDescription = "{{ column.comment }}",
+                 IsNullable = {{~ if column.is_nullable ~}}true{{~ else ~}}false{{~ end ~}},
+                 {{~ if column.max_length > 0 ~}}Length = {{ column.max_length }},{{~ end ~}}
+                 {{~ if column.default_value != null ~}}DefaultValue = "{{ column.default_value }}",{{~ end ~}}
+                 IsOnlyIgnoreInsert = false,
+                 IsOnlyIgnoreUpdate = false,
+                 SqlParameterDbType = System.Data.DbType.{{ column.db_type }})]
+    {{~ end ~}}
+    public {{ column.csharp_type }}{{~ if column.is_nullable && column.csharp_type != "string" ~}}?{{~ end ~}} {{ pascal_case column.name }} { get; set; }{{~ if column.csharp_type == "string" ~}} = string.Empty;{{~ end ~}}
+
+    {{~ end ~}}
+
+    /// <summary>
+    /// 子节点列表
+    /// </summary>
+    [SugarColumn(IsIgnore = true)]
+    public List<{{ pascal_case table.table_name }}> Children { get; set; } = new();
+} 

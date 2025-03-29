@@ -9,11 +9,7 @@
 // 描述    : 设备扩展信息传输对象
 //===================================================================
 
-using System;
 using System.ComponentModel.DataAnnotations;
-using Lean.Hbt.Common.Enums;
-using Lean.Hbt.Common.Models;
-using Mapster;
 
 namespace Lean.Hbt.Application.Dtos.Identity
 {
@@ -312,4 +308,4 @@ namespace Lean.Hbt.Application.Dtos.Identity
         [Required(ErrorMessage = "导出文件类型不能为空")]
         public string FileType { get; set; } = "xlsx";
     }
-} 
+}

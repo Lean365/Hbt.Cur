@@ -50,5 +50,10 @@ namespace Lean.Hbt.Domain.IServices.Security
         /// <param name="userId">用户ID</param>
         /// <returns>剩余天数</returns>
         Task<int> GetPasswordExpirationDaysAsync(long userId);
+
+        /// <summary>
+        /// 获取默认密码
+        /// </summary>
+        string DefaultPassword { get; }
     }
 }

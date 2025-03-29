@@ -108,7 +108,7 @@
 import { ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type { FormInstance } from 'ant-design-vue'
-import type { HbtDictData } from '@/types/admin/hbtDictData'
+import type { HbtDictData } from '@/types/admin/dictData'
 
 const { t } = useI18n()
 

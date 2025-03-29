@@ -52,7 +52,7 @@
 
 <script lang="ts" setup>
 import { useI18n } from 'vue-i18n'
-import type { HbtConfig } from '@/types/admin/hbtConfig'
+import type { HbtConfig } from '@/types/admin/config'
 
 const { t } = useI18n()
 

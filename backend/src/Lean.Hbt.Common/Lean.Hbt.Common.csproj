@@ -7,10 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="EPPlus" Version="7.6.1" />
+    <PackageReference Include="EPPlus" Version="7.7.0" />
+    <PackageReference Include="LibreHardwareMonitorLib" Version="0.9.4" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="FluentValidation" Version="11.11.0" />
-    <PackageReference Include="SqlSugarCore" Version="5.1.4.182" />
+    <PackageReference Include="SqlSugarCore" Version="5.1.4.185" />
     <PackageReference Include="IP2Region.Net" Version="2.0.2" />
     <PackageReference Include="System.ServiceProcess.ServiceController" Version="8.0.0" />
     <PackageReference Include="MailKit" Version="4.11.0" />
@@ -27,7 +28,6 @@
   <ItemGroup>
     <Folder Include="Attributes\" />
     <Folder Include="Models\" />
-    <Folder Include="Options\" />
     <Folder Include="Utils\" />
   </ItemGroup>
 

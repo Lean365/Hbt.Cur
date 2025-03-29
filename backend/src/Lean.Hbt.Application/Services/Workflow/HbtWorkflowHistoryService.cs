@@ -52,7 +52,7 @@ namespace Lean.Hbt.Application.Services.Workflow
         /// </summary>
         /// <param name="query">查询条件</param>
         /// <returns>分页结果</returns>
-        public async Task<HbtPagedResult<HbtWorkflowHistoryDto>> GetPagedListAsync(HbtWorkflowHistoryQueryDto query)
+        public async Task<HbtPagedResult<HbtWorkflowHistoryDto>> GetListAsync(HbtWorkflowHistoryQueryDto query)
         {
             var exp = Expressionable.Create<HbtWorkflowHistory>();
 
@@ -65,14 +65,14 @@ namespace Lean.Hbt.Application.Services.Workflow
             if (query?.OperatorId.HasValue == true)
                 exp.And(x => x.OperatorId == query.OperatorId.Value);
 
-            var result = await _historyRepository.GetPagedListAsync(exp.ToExpression(), query?.PageIndex ?? 1, query?.PageSize ?? 10);
+            var result = await _historyRepository.GetPagedListAsync(exp.ToExpression(), query?.PageIndex ?? 1, query?.PageSize ?? 10, x => x.Id, OrderByType.Asc);
 
             return new HbtPagedResult<HbtWorkflowHistoryDto>
             {
-                TotalNum = result.total,
+                TotalNum = result.TotalNum,
                 PageIndex = query?.PageIndex ?? 1,
                 PageSize = query?.PageSize ?? 10,
-                Rows = result.list.Adapt<List<HbtWorkflowHistoryDto>>()
+                Rows = result.Rows.Adapt<List<HbtWorkflowHistoryDto>>()
             };
         }
 
@@ -81,7 +81,7 @@ namespace Lean.Hbt.Application.Services.Workflow
         /// </summary>
         /// <param name="id">工作流历史ID</param>
         /// <returns>工作流历史详情</returns>
-        public async Task<HbtWorkflowHistoryDto> GetAsync(long id)
+        public async Task<HbtWorkflowHistoryDto> GetByIdAsync(long id)
         {
             var history = await _historyRepository.GetByIdAsync(id);
             if (history == null)
@@ -95,7 +95,7 @@ namespace Lean.Hbt.Application.Services.Workflow
         /// </summary>
         /// <param name="input">创建信息</param>
         /// <returns>新创建的工作流历史ID</returns>
-        public async Task<long> InsertAsync(HbtWorkflowHistoryCreateDto input)
+        public async Task<long> CreateAsync(HbtWorkflowHistoryCreateDto input)
         {
             if (input == null)
                 throw new ArgumentNullException(nameof(input));
@@ -112,7 +112,7 @@ namespace Lean.Hbt.Application.Services.Workflow
                 Remark = input.Remark ?? string.Empty
             };
 
-            var result = await _historyRepository.InsertAsync(history);
+            var result = await _historyRepository.CreateAsync(history);
             if (result <= 0)
                 throw new HbtException(_localization.L("WorkflowHistory.Create.Failed"));
 
@@ -203,7 +203,7 @@ namespace Lean.Hbt.Application.Services.Workflow
                     try
                     {
                         var history = item.Adapt<HbtWorkflowHistory>();
-                        var insertResult = await _historyRepository.InsertAsync(history);
+                        var insertResult = await _historyRepository.CreateAsync(history);
                         if (insertResult > 0)
                         {
                             result.Add(history.Adapt<HbtWorkflowHistoryDto>());

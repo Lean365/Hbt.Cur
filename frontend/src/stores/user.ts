@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import type { MenuProps } from 'ant-design-vue'
+import { message } from 'ant-design-vue'
 import type { HbtApiResponse } from '@/types/common'
 import type { LoginParams, UserInfo, LoginResult } from '@/types/identity/auth'
 import { login as userLogin, logout as userLogout, getInfo } from '@/api/identity/auth'
@@ -8,6 +9,9 @@ import { getToken, setToken, removeToken } from '@/utils/auth'
 import { useMenuStore } from './menu'
 import { useDictStore } from './dict'
 import i18n from '@/locales'
+import request from '@/utils/request'
+import { signalRService } from '@/utils/SignalR/service'
+import router from '@/router'
 
 const { t } = i18n.global
 
@@ -26,6 +30,7 @@ export const useUserStore = defineStore('user', () => {
   const needCaptcha = ref(false)
   const token = ref<string | null>(null)
   const refreshTokenValue = ref<string | null>(null)
+  const isSignalRConnected = ref(false)  // 添加SignalR连接状态
 
   // 重置状态
   const $reset = () => {
@@ -33,6 +38,7 @@ export const useUserStore = defineStore('user', () => {
     roles.value = []
     permissions.value = []
     needCaptcha.value = false
+    isSignalRConnected.value = false
     removeToken()
     
     // 清除字典缓存
@@ -47,6 +53,60 @@ export const useUserStore = defineStore('user', () => {
   // 设置是否需要验证码
   const setNeedCaptcha = (value: boolean) => {
     needCaptcha.value = value
+  }
+
+  // 初始化SignalR连接
+  const initSignalR = async () => {
+    try {
+      if (!isSignalRConnected.value) {
+        await signalRService.start()
+        isSignalRConnected.value = true
+        console.log('[SignalR] 连接已建立')
+
+        // 注册单点登录踢出处理
+        if (signalRService['connection']) {
+          signalRService['connection'].on('Kickout', (msg: string) => {
+            console.log('[SignalR] 收到踢出通知:', msg)
+            handleKickout(msg)
+          })
+        }
+      }
+    } catch (error) {
+      console.error('[SignalR] 连接失败:', error)
+      throw error
+    }
+  }
+
+  // 处理被踢出的情况
+  const handleKickout = async (msg: string) => {
+    try {
+      console.log('[UserStore] 开始处理踢出')
+      
+      // 执行登出操作
+      await logout(true)  // true表示是被踢出
+      console.log('[UserStore] 登出完成')
+      
+      // 停止SignalR连接
+      if (isSignalRConnected.value) {
+        await signalRService.stop()
+        isSignalRConnected.value = false
+        console.log('[UserStore] SignalR连接已停止')
+      }
+
+      // 显示提示消息
+      message.warning(msg || '您的账号已在其他设备上登录')
+      console.log('[UserStore] 提示消息已显示')
+      
+      // 跳转到登录页
+      console.log('[UserStore] 准备跳转到登录页')
+      await router.replace('/login')
+      console.log('[UserStore] 路由跳转完成')
+      
+      // 强制刷新页面
+      window.location.reload()
+    } catch (error) {
+      console.error('[UserStore] 处理踢出失败:', error)
+    }
   }
 
   // 登录
@@ -108,6 +168,9 @@ export const useUserStore = defineStore('user', () => {
         roles.value = userInfo.roles
         permissions.value = userInfo.permissions
 
+        // 初始化SignalR连接
+        await initSignalR()
+
         return response
       } catch (error) {
         console.error('[用户登录] 获取用户信息失败:', error)
@@ -132,6 +195,11 @@ export const useUserStore = defineStore('user', () => {
         const userInfo = res.data
         console.log('[用户信息] 获取成功:', userInfo)
         
+        // 更新store状态
+        user.value = userInfo.user
+        roles.value = userInfo.roles || []
+        permissions.value = userInfo.permissions || []
+        
         return {
           user: userInfo.user,
           roles: userInfo.roles || [],
@@ -148,12 +216,20 @@ export const useUserStore = defineStore('user', () => {
   }
 
   // 登出
-  const logout = async () => {
+  const logout = async (isKickout = false) => {
     try {
       console.log('[用户登出] ' + t('identity.auth.logout.start'))
       
-      // 先调用登出接口
-      await userLogout()
+      // 如果不是被踢出，才调用登出接口
+      if (!isKickout) {
+        await userLogout()
+      }
+      
+      // 停止SignalR连接
+      if (isSignalRConnected.value) {
+        await signalRService.stop()
+        isSignalRConnected.value = false
+      }
       
       // 登出成功后再清除状态
       user.value = null
@@ -174,7 +250,7 @@ export const useUserStore = defineStore('user', () => {
       console.log('[用户登出] ' + t('identity.auth.logout.success'))
     } catch (error) {
       console.error('[用户登出] ' + t('identity.auth.logout.error'), error)
-      throw error // 抛出错误，让上层处理
+      throw error
     }
   }
 
@@ -183,10 +259,12 @@ export const useUserStore = defineStore('user', () => {
     roles,
     permissions,
     needCaptcha,
+    isSignalRConnected,
     setNeedCaptcha,
     login,
     getUserInfo,
     logout,
+    handleKickout,
     $reset
   }
 }) 

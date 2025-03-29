@@ -24,21 +24,21 @@ namespace Lean.Hbt.Application.Services.Identity
         /// </summary>
         /// <param name="query">查询条件</param>
         /// <returns>岗位列表</returns>
-        Task<HbtPagedResult<HbtPostDto>> GetPagedListAsync(HbtPostQueryDto query);
+        Task<HbtPagedResult<HbtPostDto>> GetListAsync(HbtPostQueryDto query);
 
         /// <summary>
         /// 获取岗位详情
         /// </summary>
         /// <param name="id">岗位ID</param>
         /// <returns>岗位详情</returns>
-        Task<HbtPostDto> GetAsync(long id);
+        Task<HbtPostDto> GetByIdAsync(long id);
 
         /// <summary>
         /// 创建岗位
         /// </summary>
         /// <param name="input">创建信息</param>
         /// <returns>岗位ID</returns>
-        Task<long> InsertAsync(HbtPostCreateDto input);
+        Task<long> CreateAsync(HbtPostCreateDto input);
 
         /// <summary>
         /// 更新岗位

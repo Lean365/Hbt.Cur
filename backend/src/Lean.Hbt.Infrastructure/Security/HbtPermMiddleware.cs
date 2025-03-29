@@ -13,6 +13,10 @@ using System.Linq;
 using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Authorization;
+using Lean.Hbt.Domain.Repositories;
+using Lean.Hbt.Domain.Entities.Identity;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Lean.Hbt.Infrastructure.Security
 {
@@ -53,6 +57,15 @@ namespace Lean.Hbt.Infrastructure.Security
                 return;
             }
 
+            // 检查是否有AllowAnonymous特性
+            var allowAnonymous = endpoint.Metadata.GetMetadata<AllowAnonymousAttribute>();
+            if (allowAnonymous != null)
+            {
+                _logger.LogInformation("[权限中间件] 发现AllowAnonymous特性,完全跳过权限验证");
+                await _next(context);
+                return;
+            }
+
             // 获取权限特性
             var permAttribute = endpoint.Metadata.GetMetadata<HbtPermAttribute>();
             if (permAttribute == null)
@@ -62,29 +75,48 @@ namespace Lean.Hbt.Infrastructure.Security
                 return;
             }
 
+            // 检查用户是否已认证
+            if (!context.User.Identity?.IsAuthenticated ?? true)
+            {
+                _logger.LogInformation("[权限中间件] 用户未认证,返回401");
+                context.Response.StatusCode = 401;
+                await context.Response.WriteAsJsonAsync(new { message = "未认证" });
+                return;
+            }
+
             _logger.LogInformation("[权限中间件] 需要的权限: {Permission}", permAttribute.Permission);
 
-            // 从Claims中获取用户权限列表
-            var claims = context.User.Claims.ToList();
-            _logger.LogInformation("[权限中间件] 用户Claims: {@Claims}", claims.Select(c => new { c.Type, c.Value }));
+            // 仅从Claims中获取用户ID
+            var userId = long.Parse(context.User.Claims.First(c => c.Type == "user_id").Value);
+            var isAdmin = context.User.Claims.Any(c => c.Type == "is_admin" && c.Value == "true");
 
-            var userPerms = claims
-                .Where(c => c.Type == "permissions")
-                .Select(c => c.Value)
-                .ToList();
-
-            _logger.LogInformation("[权限中间件] 用户权限列表: {@Permissions}", userPerms);
-
-            // 验证用户是否拥有所需权限
-            if (!userPerms.Contains(permAttribute.Permission))
+            if (isAdmin)
             {
-                _logger.LogWarning("[权限中间件] 权限验证失败: 用户没有所需权限 {Permission}", permAttribute.Permission);
+                _logger.LogInformation("[权限中间件] 用户是管理员，自动通过权限验证");
+                await _next(context);
+                return;
+            }
+
+            // 从请求作用域获取仓储实例
+            var userRepository = context.RequestServices.GetRequiredService<IHbtRepository<HbtUser>>();
+            
+            // 直接获取用户权限列表
+            var permissions = await userRepository.GetUserPermissionsAsync(userId);
+            
+            // 检查具体权限
+            var hasPermission = permissions.Contains(permAttribute.Permission);
+            _logger.LogInformation("[权限中间件] 权限验证结果: {Result}, 所需权限: {Permission}", 
+                hasPermission ? "通过" : "未通过", 
+                permAttribute.Permission);
+
+            if (!hasPermission)
+            {
+                _logger.LogWarning("[权限中间件] 用户 {UserId} 没有所需权限 {Permission}", userId, permAttribute.Permission);
                 context.Response.StatusCode = 403;
                 await context.Response.WriteAsJsonAsync(new { message = "无访问权限" });
                 return;
             }
 
-            _logger.LogInformation("[权限中间件] 权限验证通过");
             await _next(context);
         }
     }

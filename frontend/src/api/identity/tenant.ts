@@ -131,3 +131,13 @@ export function getCurrentTenant() {
     method: 'get'
   })
 }
+
+/**
+ * 获取租户选项列表
+ */
+export const getTenantOptions = () => {
+  return request({
+    url: '/api/HbtTenant/options',
+    method: 'get'
+  })
+}

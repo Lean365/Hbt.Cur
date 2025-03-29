@@ -63,7 +63,7 @@ namespace Lean.Hbt.Application.Services.Workflow
         /// 4. PageIndex - 页码
         /// 5. PageSize - 每页记录数</param>
         /// <returns>返回分页后的工作流定义列表</returns>
-        public async Task<HbtPagedResult<HbtWorkflowDefinitionDto>> GetPagedListAsync(HbtWorkflowDefinitionQueryDto query)
+        public async Task<HbtPagedResult<HbtWorkflowDefinitionDto>> GetListAsync(HbtWorkflowDefinitionQueryDto query)
         {
             var exp = Expressionable.Create<HbtWorkflowDefinition>();
 
@@ -76,14 +76,19 @@ namespace Lean.Hbt.Application.Services.Workflow
             if (query?.WorkflowStatus.HasValue == true)
                 exp = exp.And(x => x.Status == query.WorkflowStatus.Value);
 
-            var result = await _definitionRepository.GetPagedListAsync(exp.ToExpression(), query?.PageIndex ?? 1, query?.PageSize ?? 10);
+            var result = await _definitionRepository.GetPagedListAsync(
+                exp.ToExpression(),
+                query?.PageIndex ?? 1,
+                query?.PageSize ?? 10,
+                x => x.Id,
+                OrderByType.Asc);
 
             return new HbtPagedResult<HbtWorkflowDefinitionDto>
             {
-                TotalNum = result.total,
+                TotalNum = result.TotalNum,
                 PageIndex = query?.PageIndex ?? 1,
                 PageSize = query?.PageSize ?? 10,
-                Rows = result.list.Adapt<List<HbtWorkflowDefinitionDto>>()
+                Rows = result.Rows.Adapt<List<HbtWorkflowDefinitionDto>>()
             };
         }
 
@@ -93,7 +98,7 @@ namespace Lean.Hbt.Application.Services.Workflow
         /// <param name="id">工作流定义ID</param>
         /// <returns>工作流定义详情DTO</returns>
         /// <exception cref="HbtException">当工作流定义不存在时抛出异常</exception>
-        public async Task<HbtWorkflowDefinitionDto> GetAsync(long id)
+        public async Task<HbtWorkflowDefinitionDto> GetByIdAsync(long id)
         {
             var definition = await _definitionRepository.GetByIdAsync(id);
             if (definition == null)
@@ -109,13 +114,13 @@ namespace Lean.Hbt.Application.Services.Workflow
         /// <returns>新创建的工作流定义ID</returns>
         /// <exception cref="ArgumentNullException">当输入参数为空时抛出异常</exception>
         /// <exception cref="HbtException">当工作流定义创建失败时抛出异常</exception>
-        public async Task<long> InsertAsync(HbtWorkflowDefinitionCreateDto input)
+        public async Task<long> CreateAsync(HbtWorkflowDefinitionCreateDto input)
         {
             if (input == null)
                 throw new ArgumentNullException(nameof(input));
 
             // 检查名称是否已存在
-            var exists = await _definitionRepository.FirstOrDefaultAsync(x => x.WorkflowName == input.WorkflowName);
+            var exists = await _definitionRepository.GetInfoAsync(x => x.WorkflowName == input.WorkflowName);
             if (exists != null)
                 throw new HbtException(_localization.L("WorkflowDefinition.NameExists"));
 
@@ -123,7 +128,7 @@ namespace Lean.Hbt.Application.Services.Workflow
             definition.WorkflowVersion = 1; // 新建定义默认版本为1
             definition.Status = 0; // 0 表示草稿状态
 
-            var result = await _definitionRepository.InsertAsync(definition);
+            var result = await _definitionRepository.CreateAsync(definition);
             if (result <= 0)
                 throw new HbtException(_localization.L("WorkflowDefinition.Create.Failed"));
 
@@ -148,7 +153,7 @@ namespace Lean.Hbt.Application.Services.Workflow
                 throw new HbtException(_localization.L("WorkflowDefinition.NotFound"));
 
             // 检查名称是否已被其他定义使用
-            var exists = await _definitionRepository.FirstOrDefaultAsync(x => x.WorkflowName == input.WorkflowName && x.Id != input.WorkflowActivityId);
+            var exists = await _definitionRepository.GetInfoAsync(x => x.WorkflowName == input.WorkflowName && x.Id != input.WorkflowActivityId);
             if (exists != null)
                 throw new HbtException(_localization.L("WorkflowDefinition.NameExists"));
 
@@ -228,7 +233,7 @@ namespace Lean.Hbt.Application.Services.Workflow
                     try
                     {
                         var definition = item.Adapt<HbtWorkflowDefinition>();
-                        var insertResult = await _definitionRepository.InsertAsync(definition);
+                        var insertResult = await _definitionRepository.CreateAsync(definition);
                         if (insertResult > 0)
                         {
                             result.Add(definition.Adapt<HbtWorkflowDefinitionDto>());

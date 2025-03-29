@@ -7,6 +7,7 @@
 // 描述   : SignalR客户端接口
 //===================================================================
 
+using System;
 using System.Threading.Tasks;
 using Lean.Hbt.Common.Models;
 
@@ -70,5 +71,16 @@ namespace Lean.Hbt.Domain.IServices.SignalR
         /// 离开群组通知
         /// </summary>
         Task LeftGroup(string connectionId, string groupName);
+
+        /// <summary>
+        /// 接收心跳
+        /// </summary>
+        Task ReceiveHeartbeat(DateTime timestamp);
+
+        /// <summary>
+        /// 强制下线通知
+        /// </summary>
+        /// <param name="message">通知消息</param>
+        Task ForceOffline(string message);
     }
 } 

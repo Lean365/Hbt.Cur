@@ -54,7 +54,7 @@ namespace Lean.Hbt.Application.Services.Audit
         /// </summary>
         /// <param name="query">查询条件</param>
         /// <returns>返回分页结果</returns>
-        public async Task<HbtPagedResult<HbtExceptionLogDto>> GetPagedListAsync(HbtExceptionLogQueryDto query)
+        public async Task<HbtPagedResult<HbtExceptionLogDto>> GetListAsync(HbtExceptionLogQueryDto query)
         {
             var exp = Expressionable.Create<HbtExceptionLog>();
 
@@ -73,23 +73,31 @@ namespace Lean.Hbt.Application.Services.Audit
             if (query.EndTime.HasValue)
                 exp.And(x => x.CreateTime <= query.EndTime.Value);
 
-            var result = await _exceptionLogRepository.GetPagedListAsync(exp.ToExpression(), query.PageIndex, query.PageSize);
+            // 执行分页查询
+            var result = await _exceptionLogRepository.GetPagedListAsync(
+                exp.ToExpression(),
+                query.PageIndex,
+                query.PageSize,
+                x => x.CreateTime,
+                OrderByType.Desc);
 
+            // 返回分页结果
             return new HbtPagedResult<HbtExceptionLogDto>
             {
-                TotalNum = result.total,
-                PageIndex = query.PageIndex,
-                PageSize = query.PageSize,
-                Rows = result.list.Adapt<List<HbtExceptionLogDto>>()
+                Rows = result.Rows.Adapt<List<HbtExceptionLogDto>>(),
+                TotalNum = result.TotalNum,
+                PageIndex = result.PageIndex,
+                PageSize = result.PageSize
             };
         }
+
 
         /// <summary>
         /// 获取异常日志详情
         /// </summary>
         /// <param name="logId">日志ID</param>
         /// <returns>返回异常日志详情</returns>
-        public async Task<HbtExceptionLogDto> GetAsync(long logId)
+        public async Task<HbtExceptionLogDto> GetByIdAsync(long logId)
         {
             var log = await _exceptionLogRepository.GetByIdAsync(logId);
             if (log == null)

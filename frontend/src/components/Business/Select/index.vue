@@ -107,13 +107,44 @@ const emit = defineEmits<{
 const dictStore = useDictStore()
 const options = computed(() => props.dictType ? dictStore.getDictOptions(props.dictType) : [])
 
+// 统一处理值的类型转换
+const normalizeValue = (value: any): any => {
+  if (value === undefined || value === null) {
+    return value;
+  }
+  // 如果是字符串且可以转换为数字，则转换为数字
+  if (typeof value === 'string' && !isNaN(Number(value))) {
+    return Number(value);
+  }
+  return value;
+}
+
+// 根据值查找对应的选项
+const findOptionByValue = (value: any, options: DefaultOptionType[]): DefaultOptionType | undefined => {
+  const normalizedSearchValue = normalizeValue(value);
+  return options.find(opt => normalizeValue(opt.value) === normalizedSearchValue);
+}
+
 // 显示选项
 const displayOptions = computed(() => {
-  let opts = []
+  let opts: DefaultOptionType[] = []
+  
+  // 添加其他选项
+  if (props.options && props.options.length > 0) {
+    opts = [...opts, ...props.options.map(opt => ({
+      ...opt,
+      value: normalizeValue(opt.value)
+    }))]
+  } else if (props.dictType) {
+    opts = [...opts, ...options.value.map(opt => ({
+      ...opt,
+      value: normalizeValue(opt.value)
+    }))]
+  }
   
   // 如果是 radio 类型且 showAll 为 true，添加"全部"选项
   if (props.type === 'radio' && props.showAll) {
-    opts.push({
+    opts.unshift({
       label: t('select.all'),
       value: undefined,
       disabled: false,
@@ -123,13 +154,6 @@ const displayOptions = computed(() => {
       extValue: '',
       transKey: ''
     })
-  }
-  
-  // 添加其他选项
-  if (props.options && props.options.length > 0) {
-    opts = [...opts, ...props.options]
-  } else if (props.dictType) {
-    opts = [...opts, ...options.value]
   }
   
   return opts
@@ -217,35 +241,59 @@ const controlProps = computed(() => {
   }
 })
 
+// 将数值类型统一处理用于内部显示
+const innerValue = computed({
+  get: () => {
+    const opts = displayOptions.value;
+    const normalizedValue = normalizeValue(props.value);
+    
+    // 如果选项还没有加载完成，先返回原始值
+    if (opts.length === 0 && (props.options || props.dictType)) {
+      return normalizedValue;
+    }
+    
+    // 对于所有类型，都尝试查找匹配的选项
+    const matchingOption = findOptionByValue(normalizedValue, opts);
+    
+    // 如果找到匹配的选项，返回其值（保持原始类型）
+    if (matchingOption) {
+      return matchingOption.value;
+    }
+    
+    // 如果没有找到匹配的选项，返回原始值
+    return normalizedValue;
+  },
+  set: (val: SelectValue) => {
+    // 发出更新事件时，确保值的类型正确
+    emit('update:value', normalizeValue(val));
+  }
+})
+
 // 处理change事件
 const handleChange = (value: SelectValue, option: DefaultOptionType | DefaultOptionType[]) => {
   if (value === undefined || value === null) {
-    emit('change', value, option)
-    return
+    emit('change', value, option);
+    return;
   }
   
-  let convertedValue
+  let convertedValue;
   switch (props.type) {
     case 'switch':
-      convertedValue = value ? props.checkedValue : props.uncheckedValue
-      break
+      convertedValue = value ? props.checkedValue : props.uncheckedValue;
+      break;
     case 'checkbox':
     case 'checkbox-group':
       convertedValue = Array.isArray(value)
-        ? value.map(v => Number(v))
-        : [Number(value)]
-      break
+        ? value.map(normalizeValue)
+        : [normalizeValue(value)];
+      break;
     default:
-      // 如果是字典类型，直接返回原始值
-      if (props.dictType) {
-        convertedValue = value
-      } else {
-        convertedValue = Array.isArray(value)
-          ? value.map(v => Number(v))
-          : Number(value)
-      }
+      convertedValue = Array.isArray(value)
+        ? value.map(normalizeValue)
+        : normalizeValue(value);
   }
-  emit('change', convertedValue, option)
+  
+  emit('change', convertedValue, option);
 }
 
 // 处理远程搜索
@@ -281,14 +329,6 @@ watch(() => props.dictType, async (newType) => {
 onMounted(() => {
   if (props.dictType) {
     dictStore.loadDict(props.dictType)
-  }
-})
-
-// 将数值类型转换为字符串用于内部显示
-const innerValue = computed({
-  get: () => props.value,
-  set: (val: SelectValue) => {
-    emit('update:value', val)
   }
 })
 </script>

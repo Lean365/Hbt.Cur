@@ -7,10 +7,7 @@
 // 描述   : 租户数据传输对象
 //===================================================================
 
-using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using Lean.Hbt.Common.Enums;
-using Mapster;
 
 namespace Lean.Hbt.Application.Dtos.Identity;
 
@@ -62,55 +59,55 @@ public class HbtTenantDto
     /// 租户名称
     /// </summary>
     [Required]
-    public required string TenantName { get; set; }
+    public string TenantName { get; set; }
 
     /// <summary>
     /// 租户编码
     /// </summary>
     [Required]
-    public required string TenantCode { get; set; }
+    public string TenantCode { get; set; }
 
     /// <summary>
     /// 联系人
     /// </summary>
     [Required]
-    public required string ContactPerson { get; set; }
+    public string ContactPerson { get; set; }
 
     /// <summary>
     /// 联系电话
     /// </summary>
     [Required]
-    public required string ContactPhone { get; set; }
+    public string ContactPhone { get; set; }
 
     /// <summary>
     /// 联系邮箱
     /// </summary>
     [Required]
-    public required string ContactEmail { get; set; }
+    public string ContactEmail { get; set; }
 
     /// <summary>
     /// 租户地址
     /// </summary>
     [Required]
-    public required string Address { get; set; }
+    public string Address { get; set; }
 
     /// <summary>
     /// 租户域名
     /// </summary>
     [Required]
-    public required string Domain { get; set; }
+    public string Domain { get; set; }
 
     /// <summary>
     /// 租户Logo
     /// </summary>
     [Required]
-    public required string LogoUrl { get; set; }
+    public string LogoUrl { get; set; }
 
     /// <summary>
     /// 租户主题
     /// </summary>
     [Required]
-    public required string Theme { get; set; }
+    public string Theme { get; set; }
 
     /// <summary>
     /// 授权开始时间
@@ -131,7 +128,6 @@ public class HbtTenantDto
     /// 状态
     /// </summary>
     public int Status { get; set; }
-
 
     /// <summary>
     /// 创建时间

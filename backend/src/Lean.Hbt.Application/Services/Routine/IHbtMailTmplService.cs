@@ -23,14 +23,14 @@ namespace Lean.Hbt.Application.Services.Routine
         /// </summary>
         /// <param name="query">查询条件</param>
         /// <returns>邮件模板分页列表</returns>
-        Task<HbtPagedResult<HbtMailTmplDto>> GetPagedListAsync(HbtMailTmplQueryDto query);
+        Task<HbtPagedResult<HbtMailTmplDto>> GetListAsync(HbtMailTmplQueryDto query);
 
         /// <summary>
         /// 获取邮件模板详情
         /// </summary>
         /// <param name="tmplId">模板ID</param>
         /// <returns>邮件模板详情</returns>
-        Task<HbtMailTmplDto> GetAsync(long tmplId);
+        Task<HbtMailTmplDto> GetByIdAsync(long tmplId);
 
         /// <summary>
         /// 创建邮件模板

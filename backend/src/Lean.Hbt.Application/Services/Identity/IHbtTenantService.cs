@@ -24,21 +24,21 @@ public interface IHbtTenantService
     /// </summary>
     /// <param name="query">查询条件</param>
     /// <returns>租户列表</returns>
-    Task<HbtPagedResult<HbtTenantDto>> GetPagedListAsync(HbtTenantQueryDto query);
+    Task<HbtPagedResult<HbtTenantDto>> GetListAsync(HbtTenantQueryDto query);
 
     /// <summary>
     /// 获取租户详情
     /// </summary>
     /// <param name="id">租户ID</param>
     /// <returns>租户详情</returns>
-    Task<HbtTenantDto> GetAsync(long id);
+    Task<HbtTenantDto> GetByIdAsync(long id);
 
     /// <summary>
     /// 创建租户
     /// </summary>
     /// <param name="input">创建对象</param>
     /// <returns>租户ID</returns>
-    Task<long> InsertAsync(HbtTenantCreateDto input);
+    Task<long> CreateAsync(HbtTenantCreateDto input);
 
     /// <summary>
     /// 更新租户

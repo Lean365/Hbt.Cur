@@ -57,29 +57,37 @@ namespace Lean.Hbt.Application.Services.Admin
         /// <summary>
         /// 获取字典类型分页列表
         /// </summary>
-        public async Task<HbtPagedResult<HbtDictTypeDto>> GetPagedListAsync(HbtDictTypeQueryDto query)
+        /// <param name="query">查询条件</param>
+        /// <returns>字典类型分页列表</returns>
+        public async Task<HbtPagedResult<HbtDictTypeDto>> GetListAsync(HbtDictTypeQueryDto query)
         {
             var exp = Expressionable.Create<HbtDictType>();
 
+            // 构建查询条件
             if (!string.IsNullOrEmpty(query.DictName))
                 exp.And(x => x.DictName.Contains(query.DictName));
-
             if (!string.IsNullOrEmpty(query.DictType))
                 exp.And(x => x.DictType.Contains(query.DictType));
-
             if (query.DictCategory.HasValue)
                 exp.And(x => x.DictCategory == query.DictCategory.Value);
-
             if (query.Status.HasValue)
                 exp.And(x => x.Status == query.Status.Value);
 
-            var (list, total) = await _dictTypeRepository.GetPagedListAsync(exp.ToExpression(), query.PageIndex, query.PageSize);
+            // 执行分页查询
+            var result = await _dictTypeRepository.GetPagedListAsync(
+                exp.ToExpression(),
+                query.PageIndex,
+                query.PageSize,
+                x => x.OrderNum,
+                OrderByType.Asc);
+
+            // 返回分页结果
             return new HbtPagedResult<HbtDictTypeDto>
             {
-                Rows = list.Adapt<List<HbtDictTypeDto>>(),
-                TotalNum = total,
-                PageIndex = query.PageIndex,
-                PageSize = query.PageSize
+                Rows = result.Rows.Adapt<List<HbtDictTypeDto>>(),
+                TotalNum = result.TotalNum,
+                PageIndex = result.PageIndex,
+                PageSize = result.PageSize
             };
         }
 
@@ -88,7 +96,7 @@ namespace Lean.Hbt.Application.Services.Admin
         /// </summary>
         /// <param name="id">字典类型ID</param>
         /// <returns>字典类型详情</returns>
-        public async Task<HbtDictTypeDto> GetAsync(long id)
+        public async Task<HbtDictTypeDto> GetByIdAsync(long id)
         {
             var dictType = await _dictTypeRepository.GetByIdAsync(id);
             if (dictType == null)
@@ -107,7 +115,7 @@ namespace Lean.Hbt.Application.Services.Admin
             if (string.IsNullOrEmpty(type))
                 throw new HbtException("字典类型不能为空");
 
-            var dictType = await _dictTypeRepository.FirstOrDefaultAsync(x => x.DictType == type);
+            var dictType = await _dictTypeRepository.GetInfoAsync(x => x.DictType == type);
             if (dictType == null)
                 throw new HbtException($"字典类型[{type}]不存在");
 
@@ -117,13 +125,13 @@ namespace Lean.Hbt.Application.Services.Admin
         /// <summary>
         /// 创建字典类型
         /// </summary>
-        public async Task<long> InsertAsync(HbtDictTypeCreateDto input)
+        public async Task<long> CreateAsync(HbtDictTypeCreateDto input)
         {
             await HbtValidateUtils.ValidateFieldExistsAsync(_dictTypeRepository, "DictName", input.DictName);
             await HbtValidateUtils.ValidateFieldExistsAsync(_dictTypeRepository, "DictType", input.DictType);
 
             var dictType = input.Adapt<HbtDictType>();
-            var result = await _dictTypeRepository.InsertAsync(dictType);
+            var result = await _dictTypeRepository.CreateAsync(dictType);
             return result > 0 ? dictType.Id : 0;
         }
 
@@ -250,7 +258,7 @@ namespace Lean.Hbt.Application.Services.Admin
                 try
                 {
                     var dictType = item.Adapt<HbtDictType>();
-                    await _dictTypeRepository.InsertAsync(dictType);
+                    await _dictTypeRepository.CreateAsync(dictType);
                     success++;
                 }
                 catch (Exception ex)

@@ -29,5 +29,15 @@ namespace Lean.Hbt.Common.Models
         /// 每页大小
         /// </summary>
         public int PageSize { get; set; } = 10;
+
+        /// <summary>
+        /// 排序列
+        /// </summary>
+        public string? OrderByColumn { get; set; }
+
+        /// <summary>
+        /// 排序方向(desc/asc)
+        /// </summary>
+        public string? OrderType { get; set; }
     }
 } 

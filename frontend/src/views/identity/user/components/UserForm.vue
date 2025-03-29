@@ -8,7 +8,7 @@
     @ok="handleSubmit"
   >
     <a-tabs>
-      <a-tab-pane :key="'basic'" :tab="t('identity.user.tabs.basic')">
+      <a-tab-pane :key="'basic'" :tab="t('common.tab.basic')">
         <a-form
           ref="formRef"
           :model="form"
@@ -19,11 +19,21 @@
           <a-row :gutter="16">
             <a-col :span="12">
               <a-form-item :label="t('identity.user.tenantId.label')" name="tenantId">
-                <a-input-number
-                  v-model:value="form.tenantId"
-                  :placeholder="t('identity.user.tenantId.placeholder')"
-                  style="width: 100%"
-                />
+                <template v-if="!userId">
+                  <hbt-select
+                    v-model:value="form.tenantId"
+                    :options="tenantOptions"
+                    :placeholder="t('identity.user.tenantId.placeholder')"
+                  />
+                </template>
+                <template v-else>
+                  <a-input-number
+                    v-model:value="form.tenantId"
+                    :placeholder="t('identity.user.tenantId.placeholder')"
+                    style="width: 100%"
+                    :disabled="true"
+                  />
+                </template>
               </a-form-item>
             </a-col>
             <a-col :span="12">
@@ -43,6 +53,7 @@
                 <a-input-password
                   v-model:value="form.password"
                   :placeholder="t('identity.user.password.placeholder')"
+                  :disabled="true"
                 />
               </a-form-item>
             </a-col>
@@ -73,7 +84,7 @@
                 <hbt-select
                   v-model:value="form.userType"
                   dict-type="sys_user_type"
-                  type="radio"
+                  
                   :placeholder="t('identity.user.userType.placeholder')"
                   :show-all="false"
                 />
@@ -127,6 +138,19 @@
 
           <a-row :gutter="16">
             <a-col :span="24">
+              <a-form-item :label="t('identity.user.depts.label')" name="deptIds">
+                <hbt-select
+                  v-model:value="form.deptIds"
+                  :options="deptOptions"
+                  mode="multiple"
+                  :placeholder="t('identity.user.depts.placeholder')"
+                />
+              </a-form-item>
+            </a-col>
+          </a-row>
+
+          <a-row :gutter="16">
+            <a-col :span="24">
               <a-form-item :label="t('identity.user.roles.label')" name="roleIds">
                 <hbt-select
                   v-model:value="form.roleIds"
@@ -153,19 +177,6 @@
 
           <a-row :gutter="16">
             <a-col :span="24">
-              <a-form-item :label="t('identity.user.depts.label')" name="deptIds">
-                <hbt-select
-                  v-model:value="form.deptIds"
-                  :options="deptOptions"
-                  mode="multiple"
-                  :placeholder="t('identity.user.depts.placeholder')"
-                />
-              </a-form-item>
-            </a-col>
-          </a-row>
-
-          <a-row :gutter="16">
-            <a-col :span="24">
               <a-form-item :label="t('identity.user.remark.label')" name="remark">
                 <a-textarea
                   v-model:value="form.remark"
@@ -178,7 +189,7 @@
         </a-form>
       </a-tab-pane>
 
-      <a-tab-pane :key="'avatar'" :tab="t('identity.user.tabs.avatar')">
+      <a-tab-pane :key="'avatar'" :tab="t('common.tab.avatar')">
         <div class="avatar-container">
           <a-form-item :label="t('identity.user.avatar.label')" name="avatar">
             <hbt-image-upload
@@ -210,19 +221,23 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive, watch, onMounted } from 'vue'
+import { ref, reactive, watch, onMounted, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { message } from 'ant-design-vue'
 import type { FormInstance, Rule } from 'ant-design-vue/es/form'
 import { PlusOutlined } from '@ant-design/icons-vue'
 import { useDictStore } from '@/stores/dict'
-import type { UserForm } from '@/types/identity/user'
+import type { UserForm, UserCreate, UserUpdate } from '@/types/identity/user'
 import { getUser, createUser, updateUser } from '@/api/identity/user'
 import { getRoleOptions } from '@/api/identity/role'
 import { getPostOptions } from '@/api/identity/post'
 import { getDeptOptions } from '@/api/identity/dept'
+import { getTenantOptions } from '@/api/identity/tenant'
+import { getSalt } from '@/api/identity/auth'
 import HbtModal from '@/components/Business/Modal/index.vue'
 import HbtImageUpload from '@/components/Upload/imageUpload.vue'
+import { PasswordEncryptor } from '@/utils/crypto'
+import { RegexUtils } from '@/utils/regex'
 
 const props = defineProps<{
   visible: boolean
@@ -244,12 +259,12 @@ const formRef = ref<FormInstance>()
 // 表单数据
 const form = reactive<UserForm>({
   userId: undefined,
-  tenantId: 0,
+  tenantId: 0,  // 类型要求必须是 number，所以保持为 0
   userName: '',
   nickName: '',
   englishName: '',
   userType: 0,
-  password: '',
+  password: '123456',  // 设置默认密码为123456
   email: '',
   phoneNumber: '',
   gender: 0,
@@ -261,12 +276,17 @@ const form = reactive<UserForm>({
   deptIds: []
 })
 
+// 标记是否已经初始化过
+const isInitialized = ref(false)
+
 // 角色选项
 const roleOptions = ref<{ label: string; value: number }[]>([])
 // 岗位选项
 const postOptions = ref<{ label: string; value: number }[]>([])
 // 部门选项
 const deptOptions = ref<{ label: string; value: number }[]>([])
+// 租户选项
+const tenantOptions = ref<{ label: string; value: number }[]>([])
 
 // 表单校验规则
 const rules: Record<string, Rule[]> = {
@@ -275,29 +295,71 @@ const rules: Record<string, Rule[]> = {
   ],
   userName: [
     { required: true, message: t('identity.user.userName.validation.required') },
-    { min: 2, max: 20, message: t('identity.user.userName.validation.length') }
+    { 
+      validator: (_, value) => {
+        if (value && !RegexUtils.isValidUsername(value)) {
+          return Promise.reject(t('identity.user.userName.validation.format'))
+        }
+        return Promise.resolve()
+      }
+    }
   ],
   password: [
     { required: true, message: t('identity.user.password.validation.required') },
-    { min: 6, max: 20, message: t('identity.user.password.validation.length') }
+    { 
+      validator: (_, value) => {
+        if (value && !RegexUtils.isValidPassword(value)) {
+          return Promise.reject(t('identity.user.password.validation.length'))
+        }
+        return Promise.resolve()
+      }
+    }
   ],
   nickName: [
     { required: true, message: t('identity.user.nickName.validation.required') },
-    { min: 2, max: 30, message: t('identity.user.nickName.validation.length') }
+    { 
+      validator: (_, value) => {
+        if (value && !RegexUtils.isValidNickname(value)) {
+          return Promise.reject(t('identity.user.nickName.validation.format'))
+        }
+        return Promise.resolve()
+      }
+    }
   ],
   englishName: [
-    { min: 2, max: 30, message: t('identity.user.englishName.validation.length') }
+    { 
+      validator: (_, value) => {
+        if (value && !RegexUtils.isValidEnglishName(value)) {
+          return Promise.reject(t('identity.user.englishName.validation.format'))
+        }
+        return Promise.resolve()
+      }
+    }
   ],
   userType: [
     { required: true, message: t('identity.user.userType.validation.required') }
   ],
   email: [
     { required: true, message: t('identity.user.email.validation.required') },
-    { pattern: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, message: t('identity.user.email.validation.invalid') }
+    { 
+      validator: (_, value) => {
+        if (value && !RegexUtils.isValidEmail(value)) {
+          return Promise.reject(t('identity.user.email.validation.invalid'))
+        }
+        return Promise.resolve()
+      }
+    }
   ],
   phoneNumber: [
     { required: true, message: t('identity.user.phoneNumber.validation.required') },
-    { pattern: /^1[3-9]\d{9}$/, message: t('identity.user.phoneNumber.validation.invalid') }
+    { 
+      validator: (_, value) => {
+        if (value && !RegexUtils.isValidTelephone(value)) {
+          return Promise.reject(t('identity.user.phoneNumber.validation.invalid'))
+        }
+        return Promise.resolve()
+      }
+    }
   ],
   gender: [
     { required: true, message: t('identity.user.gender.validation.required') }
@@ -307,6 +369,12 @@ const rules: Record<string, Rule[]> = {
   ],
   roleIds: [
     { required: true, type: 'array', message: t('identity.user.roles.validation.required') }
+  ],
+  postIds: [
+    { required: true, type: 'array', message: t('identity.user.posts.validation.required') }
+  ],
+  deptIds: [
+    { required: true, type: 'array', message: t('identity.user.depts.validation.required') }
   ]
 }
 
@@ -331,14 +399,22 @@ const getInfo = async (userId: number) => {
 // 获取选项数据
 const fetchOptions = async () => {
   try {
-    const [roles, posts, depts] = await Promise.all([
+    const [roles, posts, depts, tenants] = await Promise.all([
       getRoleOptions(),
       getPostOptions(),
-      getDeptOptions()
+      getDeptOptions(),
+      getTenantOptions()
     ])
     roleOptions.value = roles.data
     postOptions.value = posts.data
     deptOptions.value = depts.data
+    tenantOptions.value = tenants.data
+    
+    // 只在第一次初始化时设置默认值
+    if (!isInitialized.value && !props.userId) {
+      form.tenantId = 0
+      isInitialized.value = true
+    }
   } catch (error) {
     console.error('获取选项数据失败:', error)
   }
@@ -359,26 +435,101 @@ const handleUploadError = (error: any) => {
 // 提交表单
 const handleSubmit = () => {
   formRef.value?.validate().then(async () => {
-    loading.value = true
     try {
       let res
       if (props.userId) {
-        res = await updateUser({ ...form, userId: props.userId })
+        // 更新用户时，只发送必要的字段
+        const updateData: UserUpdate = {
+          userId: props.userId,
+          nickName: form.nickName,
+          englishName: form.englishName,
+          email: form.email,
+          phoneNumber: form.phoneNumber,
+          gender: form.gender,
+          avatar: form.avatar,
+          status: form.status,
+          roleIds: form.roleIds.map(id => Number(id)),
+          postIds: form.postIds.map(id => Number(id)),
+          deptIds: form.deptIds.map(id => Number(id)),
+          remark: form.remark
+        }
+        console.log('更新用户数据:', updateData)
+        try {
+          // 设置 loading 状态
+          loading.value = true
+          
+          res = await updateUser(updateData)
+          if (res.code === 200) {
+            message.success(t('common.success'))
+            emit('success')
+            handleVisibleChange(false)
+          } else {
+            // 处理特定的错误码
+            switch (res.code) {
+              case 401:
+                // Token过期，不需要处理，request.ts会处理重定向
+                break
+              case 403:
+                message.error(t('common.error.forbidden'))
+                break
+              case 500:
+                message.error(t('common.error.serverError'))
+                break
+              default:
+                message.error(res.msg || t('common.failed'))
+            }
+          }
+        } catch (error: any) {
+          console.error('更新用户失败:', error)
+          // 如果是取消的请求（重定向中），不显示错误信息
+          if (error.message !== '页面重定向中，请求已取消') {
+            if (error.response?.data?.msg) {
+              message.error(error.response.data.msg)
+            } else {
+              message.error(t('common.failed'))
+            }
+          }
+        } finally {
+          loading.value = false
+        }
       } else {
-        res = await createUser(form)
-      }
-      if (res.code === 200) {
-        message.success(t('common.success'))
-        emit('success')
-        handleVisibleChange(false)
-      } else {
-        message.error(res.msg || t('common.failed'))
+        // 创建用户时，对密码进行加密
+        const saltResponse = await getSalt(form.userName)
+        if (!saltResponse || !saltResponse.salt || !form.password) {
+          message.error(t('identity.auth.login.error.getSalt'))
+          return
+        }
+
+        const hashedPassword = PasswordEncryptor.hashPassword(
+          form.password,
+          saltResponse.salt,
+          saltResponse.iterations || 100000
+        )
+
+        const createData = { ...form, password: hashedPassword } as UserCreate
+        console.log('创建用户数据:', createData)
+        try {
+          res = await createUser(createData)
+          if (res.code === 200) {
+            message.success(t('common.success'))
+            emit('success')
+            handleVisibleChange(false)
+          } else {
+            message.error(res.msg || t('common.failed'))
+          }
+        } catch (error: any) {
+          console.error('创建用户失败:', error)
+          if (error.response?.data?.msg) {
+            message.error(error.response.data.msg)
+          } else {
+            message.error(t('common.failed'))
+          }
+        }
       }
     } catch (error) {
       console.error(error)
       message.error(t('common.failed'))
     }
-    loading.value = false
   })
 }
 
@@ -402,12 +553,9 @@ watch(
   }
 )
 
-// 组件挂载时加载选项数据
-onMounted(() => {
-  // 加载字典数据
-  dictStore.loadDicts(['sys_normal_disable', 'sys_gender', 'sys_user_type'])
-  // 加载选项数据
-  fetchOptions()
+// 组件挂载时加载数据
+onMounted(async () => {
+  await fetchOptions()
 })
 </script>
 

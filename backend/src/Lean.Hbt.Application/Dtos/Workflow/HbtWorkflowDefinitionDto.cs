@@ -50,6 +50,17 @@ namespace Lean.Hbt.Application.Dtos.Workflow
     public class HbtWorkflowDefinitionDto
     {
         /// <summary>
+        /// 构造函数
+        /// </summary>
+        public HbtWorkflowDefinitionDto()
+        {
+            WorkflowDefinitionId = 0;
+            WorkflowName = string.Empty;
+            WorkflowCategory = string.Empty;
+            WorkflowVersion = 1;
+        }
+
+        /// <summary>
         /// 工作流ID
         /// </summary>
         [AdaptMember("Id")]

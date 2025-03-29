@@ -169,7 +169,7 @@ import type {
   HbtTranslationQuery,
   HbtTranslationCreate,
   HbtTranslationUpdate
-} from '@/types/admin/hbtTranslation'
+} from '@/types/admin/translation'
 import TranslationForm from './components/TranslationForm.vue'
 import HbtPagination from '@/components/pagination/index.vue'
 

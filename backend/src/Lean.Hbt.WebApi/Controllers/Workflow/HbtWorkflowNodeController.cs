@@ -44,9 +44,9 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// </summary>
         [HttpGet]
         [HbtPerm("workflow:node:list")]
-        public async Task<IActionResult> GetPagedListAsync([FromQuery] HbtWorkflowNodeQueryDto query)
+        public async Task<IActionResult> GetListAsync([FromQuery] HbtWorkflowNodeQueryDto query)
         {
-            var result = await _workflowNodeService.GetPagedListAsync(query);
+            var result = await _workflowNodeService.GetListAsync(query);
             return Success(result);
         }
 
@@ -55,9 +55,9 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// </summary>
         [HttpGet("{id}")]
         [HbtPerm("workflow:node:query")]
-        public async Task<IActionResult> GetAsync(long id)
+        public async Task<IActionResult> GetByIdAsync(long id)
         {
-            var result = await _workflowNodeService.GetAsync(id);
+            var result = await _workflowNodeService.GetByIdAsync(id);
             return Success(result);
         }
 
@@ -66,9 +66,9 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// </summary>
         [HttpPost]
         [HbtPerm("workflow:node:insert")]
-        public async Task<IActionResult> InsertAsync([FromBody] HbtWorkflowNodeCreateDto input)
+        public async Task<IActionResult> CreateAsync([FromBody] HbtWorkflowNodeCreateDto input)
         {
-            var result = await _workflowNodeService.InsertAsync(input);
+            var result = await _workflowNodeService.CreateAsync(input);
             return Success(result);
         }
 
@@ -127,7 +127,7 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         [HbtPerm("workflow:node:export")]
         public async Task<IActionResult> ExportAsync([FromQuery] HbtWorkflowNodeQueryDto query, [FromQuery] string sheetName = "Sheet1")
         {
-            var data = await _workflowNodeService.GetPagedListAsync(query);
+            var data = await _workflowNodeService.GetListAsync(query);
             var result = await _workflowNodeService.ExportAsync(data.Rows, sheetName);
             return File(result, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"工作流节点数据_{DateTime.Now:yyyyMMddHHmmss}.xlsx");
         }

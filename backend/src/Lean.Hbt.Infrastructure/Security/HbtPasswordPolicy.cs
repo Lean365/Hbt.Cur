@@ -171,5 +171,10 @@ namespace Lean.Hbt.Infrastructure.Security
 
             return remainingDays > 0 ? remainingDays : 0;
         }
+
+        /// <summary>
+        /// 获取默认密码
+        /// </summary>
+        public string DefaultPassword => _options.DefaultPassword;
     }
 }

@@ -153,7 +153,7 @@ import {
   batchDeleteHbtDictData,
   exportHbtDictData
 } from '@/api/admin/hbtDictData'
-import type { HbtDictData, HbtDictDataQuery } from '@/types/admin/hbtDictData'
+import type { HbtDictData, HbtDictDataQuery } from '@/types/admin/dictData'
 
 const { t } = useI18n()
 const route = useRoute()

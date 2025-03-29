@@ -64,7 +64,7 @@
 
 <script lang="ts" setup>
 import { useI18n } from 'vue-i18n'
-import type { HbtDictData } from '@/types/admin/hbtDictData'
+import type { HbtDictData } from '@/types/admin/dictData'
 
 const { t } = useI18n()
 

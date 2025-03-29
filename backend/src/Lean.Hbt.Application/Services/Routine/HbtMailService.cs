@@ -12,15 +12,18 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using Microsoft.Extensions.Logging;
 using Lean.Hbt.Common.Models;
 using Lean.Hbt.Domain.Entities.Routine;
 using Lean.Hbt.Application.Dtos.Routine;
 using Lean.Hbt.Common.Exceptions;
 using Lean.Hbt.Common.Helpers;
 using Lean.Hbt.Domain.Repositories;
+using Lean.Hbt.Domain.Identity;
+using Lean.Hbt.Common.Enums;
+using Lean.Hbt.Domain.IServices.SignalR;
 using SqlSugar;
 using Mapster;
-using Microsoft.Extensions.Logging;
 
 namespace Lean.Hbt.Application.Services.Routine
 {
@@ -35,18 +38,26 @@ namespace Lean.Hbt.Application.Services.Routine
     {
         private readonly ILogger<HbtMailService> _logger;
         private readonly IHbtRepository<HbtMail> _mailRepository;
+        private readonly IHbtCurrentUser _currentUser;
+        private readonly IHbtSignalRClient _signalRClient;
 
         /// <summary>
         /// 构造函数
         /// </summary>
         /// <param name="logger">日志记录器</param>
         /// <param name="mailRepository">邮件仓储</param>
+        /// <param name="currentUser">当前用户</param>
+        /// <param name="signalRClient">SignalR客户端</param>
         public HbtMailService(
             ILogger<HbtMailService> logger,
-            IHbtRepository<HbtMail> mailRepository)
+            IHbtRepository<HbtMail> mailRepository,
+            IHbtCurrentUser currentUser,
+            IHbtSignalRClient signalRClient)
         {
             _logger = logger;
             _mailRepository = mailRepository;
+            _currentUser = currentUser;
+            _signalRClient = signalRClient;
         }
 
         /// <summary>
@@ -54,15 +65,15 @@ namespace Lean.Hbt.Application.Services.Routine
         /// </summary>
         /// <param name="query">查询条件</param>
         /// <returns>返回分页结果</returns>
-        public async Task<HbtPagedResult<HbtMailDto>> GetPagedListAsync(HbtMailQueryDto query)
+        public async Task<HbtPagedResult<HbtMailDto>> GetListAsync(HbtMailQueryDto query)
         {
             var exp = Expressionable.Create<HbtMail>();
 
             if (!string.IsNullOrEmpty(query?.MailSubject))
                 exp.And(x => x.MailSubject.Contains(query.MailSubject));
 
-            if (!string.IsNullOrEmpty(query?.MailToEmail))
-                exp.And(x => x.MailToEmail.Contains(query.MailToEmail));
+            if (!string.IsNullOrEmpty(query?.MailTo))
+                exp.And(x => x.MailTo.Contains(query.MailTo));
 
             if (query?.MailStatus.HasValue == true)
                 exp.And(x => x.MailStatus == query.MailStatus.Value);
@@ -73,14 +84,19 @@ namespace Lean.Hbt.Application.Services.Routine
             if (query?.EndTime.HasValue == true)
                 exp.And(x => x.CreateTime <= query.EndTime.Value);
 
-            var result = await _mailRepository.GetPagedListAsync(exp.ToExpression(), query?.PageIndex ?? 1, query?.PageSize ?? 10);
+            var result = await _mailRepository.GetPagedListAsync(
+                exp.ToExpression(),
+                query?.PageIndex ?? 1,
+                query?.PageSize ?? 10,
+                x => x.Id,
+                OrderByType.Asc);
 
             return new HbtPagedResult<HbtMailDto>
             {
-                TotalNum = result.total,
+                TotalNum = result.TotalNum,
                 PageIndex = query?.PageIndex ?? 1,
                 PageSize = query?.PageSize ?? 10,
-                Rows = result.list.Adapt<List<HbtMailDto>>()
+                Rows = result.Rows.Adapt<List<HbtMailDto>>()
             };
         }
 
@@ -89,7 +105,7 @@ namespace Lean.Hbt.Application.Services.Routine
         /// </summary>
         /// <param name="mailId">邮件ID</param>
         /// <returns>返回邮件详情</returns>
-        public async Task<HbtMailDto> GetAsync(long mailId)
+        public async Task<HbtMailDto> GetByIdAsync(long mailId)
         {
             var mail = await _mailRepository.GetByIdAsync(mailId);
             if (mail == null)
@@ -103,10 +119,10 @@ namespace Lean.Hbt.Application.Services.Routine
         /// </summary>
         /// <param name="input">创建对象</param>
         /// <returns>返回邮件ID</returns>
-        public async Task<long> InsertAsync(HbtMailCreateDto input)
+        public async Task<long> CreateAsync(HbtMailCreateDto input)
         {
             var mail = input.Adapt<HbtMail>();
-            var result = await _mailRepository.InsertAsync(mail);
+            var result = await _mailRepository.CreateAsync(mail);
             return result;
         }
 
@@ -170,7 +186,7 @@ namespace Lean.Hbt.Application.Services.Routine
                 mail.MailStatus = 1; // 发送成功
                 mail.MailSendTime = DateTime.Now;
                 
-                var result = await _mailRepository.InsertAsync(mail);
+                var result = await _mailRepository.CreateAsync(mail);
                 return result > 0;
             }
             catch (Exception ex)
@@ -217,8 +233,8 @@ namespace Lean.Hbt.Application.Services.Routine
             if (!string.IsNullOrEmpty(query?.MailSubject))
                 exp.And(x => x.MailSubject.Contains(query.MailSubject));
 
-            if (!string.IsNullOrEmpty(query?.MailToEmail))
-                exp.And(x => x.MailToEmail.Contains(query.MailToEmail));
+            if (!string.IsNullOrEmpty(query?.MailTo))
+                exp.And(x => x.MailTo.Contains(query.MailTo));
 
             if (query?.MailStatus.HasValue == true)
                 exp.And(x => x.MailStatus == query.MailStatus.Value);
@@ -236,6 +252,146 @@ namespace Lean.Hbt.Application.Services.Routine
 
             var exportDtos = mails.Adapt<List<HbtMailExportDto>>();
             return await HbtExcelHelper.ExportAsync(exportDtos, sheetName);
+        }
+
+        /// <summary>
+        /// 标记邮件已读
+        /// </summary>
+        public async Task<bool> MarkAsReadAsync(long id)
+        {
+            var mail = await _mailRepository.GetByIdAsync(id);
+            if (mail == null) return false;
+
+            // 更新已读状态
+            var readIds = (mail.MailReadIds?.Split(',', StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>()).ToList();
+            var userId = _currentUser.UserId.ToString();
+            if (!readIds.Contains(userId))
+            {
+                readIds.Add(userId);
+                mail.MailReadIds = string.Join(",", readIds);
+                mail.MailReadCount = readIds.Count;
+                mail.MailLastReadTime = DateTime.Now;
+
+                await _mailRepository.UpdateAsync(mail);
+                
+                // 发送已读通知
+                var notification = new HbtRealTimeNotification
+                {
+                    Type = HbtMessageType.MailRead,
+                    Title = "邮件已读",
+                    Content = $"邮件 {mail.MailSubject} 已标记为已读",
+                    Timestamp = DateTime.Now,
+                    Data = mail
+                };
+                await _signalRClient.ReceiveMailStatus(notification);
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// 标记所有邮件为已读
+        /// </summary>
+        public async Task<int> MarkAllAsReadAsync(long userId)
+        {
+            // 查找所有未读邮件（MailReadIds为空或不包含当前用户ID的邮件）
+            var unreadMails = await _mailRepository.GetListAsync(m => 
+                string.IsNullOrEmpty(m.MailReadIds) || 
+                !m.MailReadIds.Split(',', StringSplitOptions.None).Select(id => long.Parse(id)).Contains(userId));
+
+            if (!unreadMails.Any())
+                return 0;
+
+            // 遍历每个未读邮件
+            foreach (var mail in unreadMails)
+            {
+                // 获取已读用户列表
+                var readIds = string.IsNullOrEmpty(mail.MailReadIds)
+                    ? new List<long>()
+                    : mail.MailReadIds.Split(',', StringSplitOptions.None).Select(id => long.Parse(id)).ToList();
+
+                // 如果用户不在已读列表中，添加用户ID
+                if (!readIds.Contains(userId))
+                {
+                    readIds.Add(userId);
+                    mail.MailReadIds = string.Join(",", readIds);
+                    mail.MailReadCount = readIds.Count;
+                    mail.MailLastReadTime = DateTime.Now;
+                }
+            }
+
+            // 批量更新邮件
+            var result = await _mailRepository.UpdateRangeAsync(unreadMails);
+            return result;
+        }
+
+        /// <summary>
+        /// 标记邮件未读
+        /// </summary>
+        public async Task<bool> MarkAsUnreadAsync(long id)
+        {
+            var mail = await _mailRepository.GetByIdAsync(id);
+            if (mail == null)
+                return false;
+
+            // 获取当前已读人ID列表
+            var readIds = string.IsNullOrEmpty(mail.MailReadIds)
+                ? new List<long>()
+                : mail.MailReadIds.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(long.Parse).ToList();
+
+            // 如果当前用户不在已读列表中，则返回true
+            if (!readIds.Contains(_currentUser.UserId))
+                return true;
+
+            // 从已读列表中移除当前用户
+            readIds.Remove(_currentUser.UserId);
+            mail.MailReadIds = string.Join(",", readIds);
+            mail.MailReadCount = readIds.Count;
+
+            var result = await _mailRepository.UpdateAsync(mail);
+            if (result > 0)
+            {
+                await _signalRClient.ReceiveMailStatus(new HbtRealTimeNotification
+                {
+                    Type = HbtMessageType.MailUnread,
+                    Title = "邮件未读",
+                    Content = $"邮件 {mail.MailSubject} 已标记为未读",
+                    Timestamp = DateTime.Now,
+                    Data = mail
+                });
+            }
+
+            return result > 0;
+        }
+
+        /// <summary>
+        /// 标记所有邮件为未读
+        /// </summary>
+        public async Task<int> MarkAllAsUnreadAsync(long userId)
+        {
+            // 查找所有已读邮件（MailReadIds包含当前用户ID的邮件）
+            var readMails = await _mailRepository.GetListAsync(m => 
+                !string.IsNullOrEmpty(m.MailReadIds) && 
+                m.MailReadIds.Split(',', StringSplitOptions.None).Select(id => long.Parse(id)).Contains(userId));
+
+            if (!readMails.Any())
+                return 0;
+
+            // 遍历每个已读邮件
+            foreach (var mail in readMails)
+            {
+                // 获取已读用户列表并移除当前用户
+                var readIds = mail.MailReadIds.Split(',', StringSplitOptions.None)
+                    .Select(id => long.Parse(id))
+                    .ToList();
+                readIds.Remove(userId);
+                mail.MailReadIds = string.Join(",", readIds);
+                mail.MailReadCount = readIds.Count;
+            }
+
+            // 批量更新邮件
+            var result = await _mailRepository.UpdateRangeAsync(readMails);
+            return result;
         }
     }
 } 

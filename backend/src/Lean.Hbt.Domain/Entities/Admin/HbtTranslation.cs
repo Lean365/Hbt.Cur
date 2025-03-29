@@ -45,6 +45,12 @@ namespace Lean.Hbt.Domain.Entities.Admin
         public string ModuleName { get; set; } = string.Empty;
 
         /// <summary>
+        /// 排序号
+        /// </summary>
+        [SugarColumn(ColumnName = "order_num", ColumnDescription = "排序号", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
+        public int OrderNum { get; set; } = 0;
+
+        /// <summary>
         /// 状态（0正常 1停用）
         /// </summary>
         [SugarColumn(ColumnName = "status", ColumnDescription = "状态（0正常 1停用）", ColumnDataType = "int", IsNullable = false)]

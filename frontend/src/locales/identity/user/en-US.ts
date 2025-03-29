@@ -45,7 +45,7 @@ export default {
         placeholder: 'Please enter username',
         validation: {
           required: 'Username cannot be empty',
-          length: 'Username length must be between 2-20 characters'
+          format: 'Username must start with a lowercase letter, be 6-20 characters long, and can only contain lowercase letters, numbers, and underscores'
         }
       },
       nickName: {
@@ -53,14 +53,14 @@ export default {
         placeholder: 'Please enter nickname',
         validation: {
           required: 'Nickname cannot be empty',
-          length: 'Nickname length must be between 2-30 characters'
+          format: 'Nickname must be 2-20 characters long and can only contain Chinese characters, English letters, numbers, and underscores'
         }
       },
       englishName: {
         label: 'English Name',
         placeholder: 'Please enter English name',
         validation: {
-          length: 'English name length cannot exceed 50 characters'
+          format: 'English name must be 2-50 characters long and can only contain English letters, spaces, and hyphens'
         }
       },
       password: {
@@ -84,7 +84,7 @@ export default {
         placeholder: 'Please enter email',
         validation: {
           required: 'Email cannot be empty',
-          invalid: 'Please enter a valid email format'
+          invalid: 'Email must be 6-100 characters long and in valid format'
         }
       },
       phoneNumber: {
@@ -92,7 +92,7 @@ export default {
         placeholder: 'Please enter phone number',
         validation: {
           required: 'Phone number cannot be empty',
-          invalid: 'Please enter a valid phone number format'
+          invalid: 'Please enter a valid phone number or landline number format'
         }
       },
       gender: {
@@ -159,6 +159,38 @@ export default {
         role: 'Roles & Permissions',
         dept: 'Department & Post',
         other: 'Other Info'
+      },
+      tenantId: {
+        label: 'Tenant',
+        placeholder: 'Please select tenant',
+        validation: {
+          required: 'Tenant cannot be empty'
+        }
+      },
+      roles: {
+        label: 'Roles',
+        placeholder: 'Please select roles',
+        validation: {
+          required: 'Please select at least one role'
+        }
+      },
+      posts: {
+        label: 'Posts',
+        placeholder: 'Please select posts',
+        validation: {
+          required: 'Please select at least one post'
+        }
+      },
+      depts: {
+        label: 'Departments',
+        placeholder: 'Please select departments',
+        validation: {
+          required: 'Please select at least one department'
+        }
+      },
+      remark: {
+        label: 'Remark',
+        placeholder: 'Please enter remark information'
       }
     }
   },

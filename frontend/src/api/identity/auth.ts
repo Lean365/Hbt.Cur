@@ -43,16 +43,24 @@ export function getSalt(username: string) {
 
 /**
  * 登出
+ * @param params 登出参数
  */
-export function logout() {
+export function logout(params?: { isSystemRestart?: boolean }) {
   return request<HbtApiResponse<void>>({
     url: '/api/HbtAuth/logout',
     method: 'post',
+    params,
     data: null,
     headers: {
       'Content-Type': 'application/json',
       'X-Requested-With': 'XMLHttpRequest'
     }
+  }).finally(() => {
+    // 清理本地存储
+    localStorage.removeItem('token')
+    localStorage.removeItem('refreshToken')
+    localStorage.removeItem('userInfo')
+    localStorage.removeItem('isLoggingOut')
   })
 }
 

@@ -7,26 +7,9 @@
 // 描述   : 角色服务实现
 //===================================================================
 
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Collections.Generic;
 using System.Linq.Expressions;
-using Lean.Hbt.Common.Models;
-using Lean.Hbt.Common.Enums;
-using Lean.Hbt.Domain.Entities.Identity;
 using Lean.Hbt.Application.Dtos.Identity;
-using Lean.Hbt.Common.Exceptions;
-using Lean.Hbt.Common.Utils;
-using Lean.Hbt.Domain.IServices;
-using Lean.Hbt.Domain.Repositories;
-using Lean.Hbt.Domain.Utils;
-using SqlSugar;
-using Mapster;
-using SqlSugar.Extensions;
-using System.IO;
-using Microsoft.Extensions.Logging;
-using Lean.Hbt.Common.Helpers;
+using Lean.Hbt.Domain.Entities.Identity;
 
 namespace Lean.Hbt.Application.Services.Identity
 {
@@ -68,7 +51,7 @@ namespace Lean.Hbt.Application.Services.Identity
         /// </summary>
         /// <param name="query">查询条件</param>
         /// <returns>返回分页结果</returns>
-        public async Task<HbtPagedResult<HbtRoleDto>> GetPagedListAsync(HbtRoleQueryDto query)
+        public async Task<HbtPagedResult<HbtRoleDto>> GetListAsync(HbtRoleQueryDto query)
         {
             var exp = Expressionable.Create<HbtRole>();
 
@@ -81,14 +64,19 @@ namespace Lean.Hbt.Application.Services.Identity
             if (query?.Status.HasValue == true)
                 exp.And(x => x.Status == query.Status.Value);
 
-            var result = await _roleRepository.GetPagedListAsync(exp.ToExpression(), query?.PageIndex ?? 1, query?.PageSize ?? 10);
+            var result = await _roleRepository.GetPagedListAsync(
+                exp.ToExpression(),
+                query?.PageIndex ?? 1,
+                query?.PageSize ?? 10,
+                x => x.OrderNum,
+                OrderByType.Asc);
 
             return new HbtPagedResult<HbtRoleDto>
             {
-                TotalNum = result.total,
+                TotalNum = result.TotalNum,
                 PageIndex = query?.PageIndex ?? 1,
                 PageSize = query?.PageSize ?? 10,
-                Rows = result.list.Adapt<List<HbtRoleDto>>()
+                Rows = result.Rows.Adapt<List<HbtRoleDto>>()
             };
         }
 
@@ -97,7 +85,7 @@ namespace Lean.Hbt.Application.Services.Identity
         /// </summary>
         /// <param name="roleId">角色ID</param>
         /// <returns>返回角色详情</returns>
-        public async Task<HbtRoleDto> GetAsync(long roleId)
+        public async Task<HbtRoleDto> GetByIdAsync(long roleId)
         {
             var role = await _roleRepository.GetByIdAsync(roleId);
             if (role == null)
@@ -111,7 +99,7 @@ namespace Lean.Hbt.Application.Services.Identity
         /// </summary>
         /// <param name="input">角色创建信息</param>
         /// <returns>返回新创建的角色ID</returns>
-        public async Task<long> InsertAsync(HbtRoleCreateDto input)
+        public async Task<long> CreateAsync(HbtRoleCreateDto input)
         {
             if (input == null)
                 throw new ArgumentNullException(nameof(input));
@@ -138,7 +126,7 @@ namespace Lean.Hbt.Application.Services.Identity
                 Remark = input.Remark ?? string.Empty
             };
 
-            var result = await _roleRepository.InsertAsync(role);
+            var result = await _roleRepository.CreateAsync(role);
             if (result <= 0)
                 throw new HbtException("创建角色失败");
 
@@ -151,7 +139,7 @@ namespace Lean.Hbt.Application.Services.Identity
                     MenuId = menuId,
                     TenantId = input.TenantId
                 }).ToList();
-                await _roleMenuRepository.InsertRangeAsync(roleMenus);
+                await _roleMenuRepository.CreateRangeAsync(roleMenus);
             }
 
             // 关联部门
@@ -163,7 +151,7 @@ namespace Lean.Hbt.Application.Services.Identity
                     DeptId = deptId,
                     TenantId = input.TenantId
                 }).ToList();
-                await _roleDeptRepository.InsertRangeAsync(roleDepts);
+                await _roleDeptRepository.CreateRangeAsync(roleDepts);
             }
 
             return role.Id;
@@ -215,7 +203,7 @@ namespace Lean.Hbt.Application.Services.Identity
                     MenuId = menuId,
                     TenantId = role.TenantId
                 }).ToList();
-                await _roleMenuRepository.InsertRangeAsync(roleMenus);
+                await _roleMenuRepository.CreateRangeAsync(roleMenus);
             }
 
             // 更新部门关联
@@ -228,7 +216,7 @@ namespace Lean.Hbt.Application.Services.Identity
                     DeptId = deptId,
                     TenantId = role.TenantId
                 }).ToList();
-                await _roleDeptRepository.InsertRangeAsync(roleDepts);
+                await _roleDeptRepository.CreateRangeAsync(roleDepts);
             }
 
             return true;
@@ -387,7 +375,7 @@ namespace Lean.Hbt.Application.Services.Identity
                     };
 
                     // 保存到数据库
-                    var result = await _roleRepository.InsertAsync(entity);
+                    var result = await _roleRepository.CreateAsync(entity);
                     if (result > 0)
                         success++;
                     else
@@ -412,4 +400,4 @@ namespace Lean.Hbt.Application.Services.Identity
             return await HbtExcelHelper.GenerateTemplateAsync<HbtRoleTemplateDto>(sheetName);
         }
     }
-} 
+}

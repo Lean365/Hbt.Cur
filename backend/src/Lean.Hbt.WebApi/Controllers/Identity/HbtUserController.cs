@@ -45,9 +45,9 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <returns>用户分页列表</returns>
         [HttpGet]
         [HbtPerm("identity:user:list")]
-        public async Task<IActionResult> GetPagedListAsync([FromQuery] HbtUserQueryDto query)
+        public async Task<IActionResult> GetListAsync([FromQuery] HbtUserQueryDto query)
         {
-            var result = await _userService.GetPagedListAsync(query);
+            var result = await _userService.GetListAsync(query);
             return Success(result, _localization.L("User.List.Success"));
         }
 
@@ -58,9 +58,9 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <returns>用户详情</returns>
         [HttpGet("{userId}")]
         [HbtPerm("identity:user:query")]
-        public async Task<IActionResult> GetAsync(long userId)
+        public async Task<IActionResult> GetByIdAsync(long userId)
         {
-            var result = await _userService.GetAsync(userId);
+            var result = await _userService.GetByIdAsync(userId);
             return Success(result, _localization.L("User.Get.Success"));
         }
 
@@ -71,9 +71,9 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <returns>用户ID</returns>
         [HttpPost]
         [HbtPerm("identity:user:create")]
-        public async Task<IActionResult> InsertAsync([FromBody] HbtUserCreateDto input)
+        public async Task<IActionResult> CreateAsync([FromBody] HbtUserCreateDto input)
         {
-            var result = await _userService.InsertAsync(input);
+            var result = await _userService.CreateAsync(input);
             return Success(result, _localization.L("User.Insert.Success"));
         }
 
@@ -219,7 +219,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// </summary>
         /// <returns>用户选项列表</returns>
         [HttpGet("options")]
-        [HbtPerm("identity:user:list")]
+        [HbtPerm("identity:user:query")]
         public async Task<IActionResult> GetOptionsAsync()
         {
             var result = await _userService.GetOptionsAsync();

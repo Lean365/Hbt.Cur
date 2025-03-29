@@ -1,10 +1,10 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
-import { getToken } from '@/utils/auth'
+import { getToken, removeToken } from '@/utils/auth'
 import { useUserStore } from '@/stores/user'
 import { useMenuStore } from '@/stores/menu'
-import type { Menu} from '@/types/identity/menu'
-import { HbtMenuType} from '@/types/common'
+import type { Menu } from '@/types/identity/menu'
+import { HbtMenuType } from '@/types/identity/menu'
 import { message } from 'ant-design-vue'
 import i18n from '@/locales'
 
@@ -71,22 +71,22 @@ const loadView = (view: string) => {
                 import('@/views/error/404.vue').then(resolve)
               })
           } else {
-            console.error('[路由] 组件不存在:', {
-              查找路径: modulePath,
-              可用组件: Object.keys(modules)
-            })
+            // console.error('[路由] 组件不存在:', {
+            //   查找路径: modulePath,
+            //   可用组件: Object.keys(modules)
+            // })
             message.error(`组件 ${view} 不存在`)
             import('@/views/error/404.vue').then(resolve)
           }
         } catch (error) {
           const err = error as Error
-          console.error('[路由] 组件导入错误:', {
-            路径: view,
-            错误: err,
-            错误堆栈: err.stack,
-            错误类型: err.name,
-            错误消息: err.message
-          })
+          // console.error('[路由] 组件导入错误:', {
+          //   路径: view,
+          //   错误: err,
+          //   错误堆栈: err.stack,
+          //   错误类型: err.name,
+          //   错误消息: err.message
+          // })
           message.error(`组件导入错误: ${err.message}`)
           import('@/views/error/404.vue').then(resolve)
         }
@@ -96,13 +96,13 @@ const loadView = (view: string) => {
     return component
   } catch (error: unknown) {
     const err = error as Error
-    console.error('[路由] 组件加载配置失败:', {
-      组件路径: view,
-      错误信息: err,
-      错误堆栈: err.stack,
-      错误类型: err.name,
-      错误消息: err.message
-    })
+    // console.error('[路由] 组件加载配置失败:', {
+    //   组件路径: view,
+    //   错误信息: err,
+    //   错误堆栈: err.stack,
+    //   错误类型: err.name,
+    //   错误消息: err.message
+    // })
     message.error(`组件配置失败: ${err.message}`)
     return () => import('@/views/error/404.vue')
   }
@@ -262,6 +262,40 @@ export const constantRoutes: RouteRecordRaw[] = [
             }
           }
         ]
+      },
+      {
+        path: 'identity/user',
+        name: 'UserSettings',
+        meta: {
+          title: 'menu.user.settings',
+          icon: 'UserOutlined',
+          requiresAuth: true,
+          hidden: true
+        },
+        children: [
+          {
+            path: 'profile',
+            name: 'UserProfile',
+            component: () => import('@/views/identity/user/components/UserProfile.vue'),
+            meta: {
+              title: 'menu.user.profile',
+              icon: 'UserOutlined',
+              requiresAuth: true,
+              hidden: true
+            }
+          },
+          {
+            path: 'change-password',
+            name: 'UserChangePassword',
+            component: () => import('@/views/identity/user/components/ChangePwdForm.vue'),
+            meta: {
+              title: 'menu.user.changePassword',
+              icon: 'KeyOutlined',
+              requiresAuth: true,
+              hidden: true
+            }
+          }
+        ]
       }
     ]
   }
@@ -406,18 +440,28 @@ export const registerDynamicRoutes = async (menus: Menu[]): Promise<boolean> => 
     }
 
     // 打印路由表
-    console.log('[路由] 动态路由注册完成:', {
-      注册数量: registeredRoutes.length,
-      路由表: router.getRoutes().map(r => ({
-        路径: r.path,
-        名称: r.name,
-        类型: r.name?.toString().startsWith('HbtMenu_') ? '动态路由' : '静态路由',
-        子路由: r.children?.map(c => ({
-          路径: c.path,
-          名称: c.name
-        }))
-      }))
-    })
+    // console.log('[路由] 动态路由注册完成:', {
+    //   注册数量: registeredRoutes.length,
+    //   路由表: router.getRoutes().map(r => ({
+    //     路径: r.path,
+    //     名称: r.name,
+    //     类型: r.name?.toString().startsWith('HbtMenu_') ? '动态路由' : '静态路由',
+    //     子路由: r.children?.map(c => ({
+    //       路径: c.path,
+    //       名称: c.name
+    //     }))
+    //   }))
+    // })
+
+    // 重新触发路由匹配
+    const currentRoute = router.currentRoute.value
+    if (currentRoute.path !== '/') {
+      // console.log('[路由] 重新触发路由匹配:', {
+      //   当前路径: currentRoute.path,
+      //   目标路径: currentRoute.path
+      // })
+      await router.replace(currentRoute.path)
+    }
 
     return true
   } catch (error) {
@@ -446,7 +490,7 @@ router.beforeEach(async (to, from, next) => {
 
   // 不需要登录的页面直接放行
   if (to.meta.requiresAuth === false) {
-    //console.log('[路由守卫] 无需认证的页面，直接放行:', to.path)
+    console.log('[路由守卫] 无需认证的页面，直接放行:', to.path)
     next()
     return
   }
@@ -454,7 +498,7 @@ router.beforeEach(async (to, from, next) => {
   // 未登录时跳转到登录页
   if (!token) {
     if (to.path !== '/login') {
-      //console.log('[路由守卫] 未登录，跳转到登录页')
+      console.log('[路由守卫] 未登录，跳转到登录页')
       next({ path: '/login', query: { redirect: to.fullPath } })
     } else {
       next()
@@ -464,7 +508,7 @@ router.beforeEach(async (to, from, next) => {
 
   // 已登录时访问登录页，跳转到首页
   if (to.path === '/login') {
-    //console.log('[路由守卫] 已登录，从登录页跳转到首页')
+    console.log('[路由守卫] 已登录，从登录页跳转到首页')
     next({ path: '/' })
     return
   }
@@ -474,7 +518,11 @@ router.beforeEach(async (to, from, next) => {
     if (!userStore.user) {
       console.log('[路由守卫] 开始获取用户信息')
       await userStore.getUserInfo()
-      console.log('[路由守卫] 用户信息获取完成')
+      // console.log('[路由守卫] 用户信息获取完成:', {
+      //   用户: userStore.user,
+      //   角色: userStore.roles,
+      //   权限: userStore.permissions
+      // })
     }
 
     // 检查是否需要初始化菜单和动态路由
@@ -483,44 +531,45 @@ router.beforeEach(async (to, from, next) => {
       router.getRoutes().filter(r => r.name?.toString().startsWith('HbtMenu_')).length === 0
 
     if (needInitRoutes) {
-      //console.log('[路由守卫] 开始加载菜单和注册动态路由')
+      console.log('[路由守卫] 开始加载菜单和注册动态路由')
 
       // 如果菜单未加载，先加载菜单
       if (!menuStore.rawMenuList?.length) {
-        //console.log('[路由守卫] 加载菜单数据')
+        console.log('[路由守卫] 加载菜单数据')
         await menuStore.reloadMenus()
       }
 
-      // console.log('[路由守卫] 菜单加载完成，开始注册动态路由:', {
-      //   菜单数量: menuStore.rawMenuList?.length || 0,
-      //   顶级菜单: menuStore.rawMenuList?.filter(m => !m.parentId).map(m => m.menuName) || []
-      // })
+      console.log('[路由守卫] 菜单加载完成，开始注册动态路由:', {
+        菜单数量: menuStore.rawMenuList?.length || 0,
+        顶级菜单: menuStore.rawMenuList?.filter(m => !m.parentId).map(m => m.menuName) || []
+      })
 
       const success = await registerDynamicRoutes(menuStore.rawMenuList)
-      console.log('[路由守卫] 动态路由注册结果:', {
-        成功: success,
-        当前路由表: router.getRoutes().map(r => ({
-          路径: r.path,
-          名称: r.name,
-          类型: r.name?.toString().startsWith('HbtMenu_') ? '动态路由' : '静态路由'
-        }))
-      })
+      // console.log('[路由守卫] 动态路由注册结果:', {
+      //   成功: success,
+      //   当前路由表: router.getRoutes().map(r => ({
+      //     路径: r.path,
+      //     名称: r.name,
+      //     类型: r.name?.toString().startsWith('HbtMenu_') ? '动态路由' : '静态路由'
+      //   }))
+      // })
 
       if (!success) {
         throw new Error('动态路由注册失败')
       }
 
       // 重新导航到目标路由,触发新路由配置生效
+      console.log('[路由守卫] 动态路由注册完成，重新导航到:', to.path)
       return next({ path: to.path, replace: true })
     }
 
     // 检查路由是否存在
     const matchedRoute = router.resolve(to.path)
     if (!matchedRoute.matched.length) {
-      console.log('[路由守卫] 路由未匹配，尝试重新注册动态路由:', {
-        目标路径: to.path,
-        当前路由表: router.getRoutes().map(r => r.path)
-      })
+      // console.log('[路由守卫] 路由未匹配，尝试重新注册动态路由:', {
+      //   目标路径: to.path,
+      //   当前路由表: router.getRoutes().map(r => r.path)
+      // })
 
       // 重新注册动态路由
       const success = await registerDynamicRoutes(menuStore.rawMenuList)
@@ -541,6 +590,7 @@ router.beforeEach(async (to, from, next) => {
       }
 
       // 强制刷新当前路由
+      console.log('[路由守卫] 路由重新匹配成功，强制刷新到:', to.path)
       return next({ path: to.path, replace: true })
     }
 
@@ -548,8 +598,9 @@ router.beforeEach(async (to, from, next) => {
     next()
   } catch (error) {
     console.error('[路由守卫] 错误:', error)
-    userStore.logout()
-    next({ path: '/login' })
+    // 发生错误时，清除token并跳转到登录页
+    removeToken()
+    next({ path: '/login', query: { redirect: to.fullPath } })
   }
 })
 
@@ -605,26 +656,26 @@ export const handleRouteNavigation = async (path: string): Promise<boolean> => {
     const matchedRoute = router.resolve(normalizedPath)
 
     // 打印匹配过程
-    console.log('[路由] 匹配过程:', {
-      待匹配路径: normalizedPath,
-      父级匹配: matchedRoute.matched.map(m => ({
-        路径: m.path,
-        名称: m.name,
-        完整路径: m.path + (m.children?.length ? '/' + m.children.map(c => c.path).join('/') : '')
-      })),
-      路由参数: matchedRoute.params,
-      查询参数: matchedRoute.query,
-      完整路径: matchedRoute.fullPath
-    })
+    // console.log('[路由] 匹配过程:', {
+    //   待匹配路径: normalizedPath,
+    //   父级匹配: matchedRoute.matched.map(m => ({
+    //     路径: m.path,
+    //     名称: m.name,
+    //     完整路径: m.path + (m.children?.length ? '/' + m.children.map(c => c.path).join('/') : '')
+    //   })),
+    //   路由参数: matchedRoute.params,
+    //   查询参数: matchedRoute.query,
+    //   完整路径: matchedRoute.fullPath
+    // })
 
-    console.log('[路由] 路由匹配结果:', {
-      路径: normalizedPath,
-      匹配结果: matchedRoute.matched.map(m => ({
-        路径: m.path,
-        名称: m.name,
-        完整路径: m.path + (m.children?.length ? '/' + m.children.map(c => c.path).join('/') : '')
-      }))
-    })
+    // console.log('[路由] 路由匹配结果:', {
+    //   路径: normalizedPath,
+    //   匹配结果: matchedRoute.matched.map(m => ({
+    //     路径: m.path,
+    //     名称: m.name,
+    //     完整路径: m.path + (m.children?.length ? '/' + m.children.map(c => c.path).join('/') : '')
+    //   }))
+    // })
 
     if (!matchedRoute.matched.length) {
       console.error('[路由] 路由不存在:', normalizedPath)

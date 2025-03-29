@@ -79,7 +79,7 @@ namespace Lean.Hbt.Infrastructure.Security
             bool needCaptcha = false;
             
             // 1. 检查用户是否存在且是否被永久锁定
-            var user = await _userRepository.FirstOrDefaultAsync(u => u.UserName == username);
+            var user = await _userRepository.GetInfoAsync(u => u.UserName == username);
             if (user != null && user.IsLock == 2) // IsLock=2表示永久锁定
             {
                 _logger.LogWarning("[登录策略] 用户 {Username} 已被永久锁定，需要管理员解锁", username);
@@ -185,7 +185,7 @@ namespace Lean.Hbt.Infrastructure.Security
             else
             {
                 // 普通用户：更新数据库中的失败记录
-                var user = await _userRepository.FirstOrDefaultAsync(u => u.UserName == username);
+                var user = await _userRepository.GetInfoAsync(u => u.UserName == username);
                 if (user != null)
                 {
                     if (currentAttempts >= maxAttempts)
@@ -233,7 +233,7 @@ namespace Lean.Hbt.Infrastructure.Security
             _cache.Set(lastLoginKey, DateTime.UtcNow, TimeSpan.FromMinutes(REPEAT_LOGIN_MINUTES));
 
             // 更新用户状态
-            var user = await _userRepository.FirstOrDefaultAsync(u => u.UserName == username);
+            var user = await _userRepository.GetInfoAsync(u => u.UserName == username);
             if (user != null)
             {
                 user.LoginCount = 0; // 重置登录失败次数
@@ -293,7 +293,7 @@ namespace Lean.Hbt.Infrastructure.Security
             }
             else
             {
-                var user = await _userRepository.FirstOrDefaultAsync(u => u.UserName == userName);
+                var user = await _userRepository.GetInfoAsync(u => u.UserName == userName);
                 if (user?.IsLock == 2) // 永久锁定
                 {
                     return -1; // 返回-1表示永久锁定

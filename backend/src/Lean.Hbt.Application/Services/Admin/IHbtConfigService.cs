@@ -7,11 +7,7 @@
 // 描述   : 系统配置服务接口
 //===================================================================
 
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using Lean.Hbt.Common.Models;
 using Lean.Hbt.Application.Dtos.Admin;
-using System.IO;
 
 namespace Lean.Hbt.Application.Services.Admin
 {
@@ -29,21 +25,21 @@ namespace Lean.Hbt.Application.Services.Admin
         /// </summary>
         /// <param name="query">查询条件</param>
         /// <returns>系统配置分页列表</returns>
-        Task<HbtPagedResult<HbtConfigDto>> GetPagedListAsync(HbtConfigQueryDto query);
+        Task<HbtPagedResult<HbtConfigDto>> GetListAsync(HbtConfigQueryDto query);
 
         /// <summary>
         /// 获取系统配置详情
         /// </summary>
         /// <param name="id">配置ID</param>
         /// <returns>系统配置详情</returns>
-        Task<HbtConfigDto> GetAsync(long id);
+        Task<HbtConfigDto> GetByIdAsync(long id);
 
         /// <summary>
         /// 创建系统配置
         /// </summary>
         /// <param name="input">创建对象</param>
         /// <returns>配置ID</returns>
-        Task<long> InsertAsync(HbtConfigCreateDto input);
+        Task<long> CreateAsync(HbtConfigCreateDto input);
 
         /// <summary>
         /// 更新系统配置
@@ -96,4 +92,4 @@ namespace Lean.Hbt.Application.Services.Admin
         /// <returns>是否成功</returns>
         Task<bool> UpdateStatusAsync(HbtConfigStatusDto input);
     }
-} 
+}

@@ -28,6 +28,16 @@ namespace Lean.Hbt.Common.Enums
         /// <summary>
         /// 错误消息
         /// </summary>
-        Error = 4
+        Error = 4,
+
+        /// <summary>
+        /// 邮件已读
+        /// </summary>
+        MailRead = 5,
+
+        /// <summary>
+        /// 邮件未读
+        /// </summary>
+        MailUnread = 6
     }
 }

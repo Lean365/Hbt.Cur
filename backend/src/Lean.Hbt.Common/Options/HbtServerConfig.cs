@@ -15,49 +15,28 @@ namespace Lean.Hbt.Common.Options
     public class HbtServerConfig
     {
         /// <summary>
-        /// 是否启用HTTPS
+        /// 是否使用HTTPS
         /// </summary>
         public bool UseHttps { get; set; }
 
         /// <summary>
         /// HTTP端口
         /// </summary>
-        public int HttpPort { get; set; } = 5249;
+        public int HttpPort { get; set; }
 
         /// <summary>
         /// HTTPS端口
         /// </summary>
-        public int HttpsPort { get; set; } = 7249;
-
-        /// <summary>
-        /// 初始化选项
-        /// </summary>
-        public required HbtInitOptions Init { get; set; } = new();
-    }
-
-    /// <summary>
-    /// 初始化选项
-    /// </summary>
-    public class HbtInitOptions
-    {
-        /// <summary>
-        /// 是否初始化数据库
-        /// </summary>
-        public bool InitDatabase { get; set; } = true;
-
-        /// <summary>
-        /// 是否初始化种子数据
-        /// </summary>
-        public bool InitSeedData { get; set; } = true;
+        public int HttpsPort { get; set; }
 
         /// <summary>
         /// 是否启用Swagger
         /// </summary>
-        public bool EnableSwagger { get; set; } = true;
+        public bool EnableSwagger { get; set; }
 
         /// <summary>
-        /// 是否启用CORS
+        /// 是否启用跨域
         /// </summary>
-        public bool EnableCors { get; set; } = true;
+        public bool EnableCors { get; set; }
     }
 } 

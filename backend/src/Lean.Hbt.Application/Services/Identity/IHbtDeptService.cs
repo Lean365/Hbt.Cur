@@ -30,7 +30,7 @@ namespace Lean.Hbt.Application.Services.Identity
         /// </summary>
         /// <param name="query">查询条件</param>
         /// <returns>部门分页列表</returns>
-        Task<HbtPagedResult<HbtDeptDto>> GetPagedListAsync(HbtDeptQueryDto query);
+        Task<HbtPagedResult<HbtDeptDto>> GetListAsync(HbtDeptQueryDto query);
 
         /// <summary>
         /// 获取部门树形结构
@@ -44,14 +44,14 @@ namespace Lean.Hbt.Application.Services.Identity
         /// </summary>
         /// <param name="id">部门ID</param>
         /// <returns>部门详情</returns>
-        Task<HbtDeptDto> GetAsync(long id);
+        Task<HbtDeptDto> GetByIdAsync(long id);
 
         /// <summary>
         /// 创建部门
         /// </summary>
         /// <param name="input">创建信息</param>
         /// <returns>部门ID</returns>
-        Task<long> InsertAsync(HbtDeptCreateDto input);
+        Task<long> CreateAsync(HbtDeptCreateDto input);
 
         /// <summary>
         /// 更新部门

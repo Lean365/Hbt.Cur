@@ -1,0 +1,111 @@
+#nullable enable
+
+//===================================================================
+// 项目名 : Lean.Hbt.Application
+// 文件名 : I{{ table.name }}Service.cs
+// 创建者 : Lean365
+// 创建时间: {{ date }}
+// 版本号 : V0.0.1
+// 描述    : {{ table.comment }}服务接口
+//===================================================================
+
+using System.Threading.Tasks;
+using Lean.Hbt.Common.Models;
+using Lean.Hbt.Domain.Entities.{{ table.module_name }};
+using Lean.Hbt.Application.Dtos.{{ table.module_name }};
+
+namespace Lean.Hbt.Application.Services.{{ table.module_name }};
+
+/// <summary>
+/// {{ table.comment }}服务接口
+/// </summary>
+/// <remarks>
+/// 创建者: Lean365
+/// 创建时间: {{ date }}
+/// </remarks>
+public interface I{{ pascal_case table.table_name }}Service
+{
+    #region 基础操作
+
+    /// <summary>
+    /// 获取{{ table.comment }}详情
+    /// </summary>
+    /// <param name="id">主键</param>
+    /// <returns>{{ table.comment }}详情</returns>
+    Task<{{ pascal_case table.table_name }}Dto> GetByIdAsync(long id);
+
+    /// <summary>
+    /// 分页查询{{ table.comment }}
+    /// </summary>
+    /// <param name="queryDto">查询参数</param>
+    /// <returns>分页结果</returns>
+    Task<HbtPagedResult<{{ pascal_case table.table_name }}Dto>> GetListAsync({{ pascal_case table.table_name }}QueryDto queryDto);
+
+    /// <summary>
+    /// 新增{{ table.comment }}
+    /// </summary>
+    /// <param name="createDto">新增参数</param>
+    /// <returns>结果</returns>
+    Task<HbtResult> CreateAsync({{ pascal_case table.table_name }}CreateDto createDto);
+
+    /// <summary>
+    /// 更新{{ table.comment }}
+    /// </summary>
+    /// <param name="updateDto">更新参数</param>
+    /// <returns>结果</returns>
+    Task<HbtResult> UpdateAsync({{ pascal_case table.table_name }}UpdateDto updateDto);
+
+    /// <summary>
+    /// 删除{{ table.comment }}
+    /// </summary>
+    /// <param name="ids">主键数组</param>
+    /// <returns>结果</returns>
+    Task<HbtResult> DeleteAsync(long[] ids);
+
+    #endregion
+
+    #region 扩展操作
+
+    /// <summary>
+    /// 导入{{ table.comment }}
+    /// </summary>
+    /// <param name="file">导入文件</param>
+    /// <returns>结果</returns>
+    Task<HbtResult> ImportAsync(IFormFile file);
+
+    /// <summary>
+    /// 导出{{ table.comment }}
+    /// </summary>
+    /// <param name="queryDto">查询参数</param>
+    /// <returns>文件流</returns>
+    Task<byte[]> ExportAsync({{ pascal_case table.table_name }}QueryDto queryDto);
+
+    /// <summary>
+    /// 获取导入模板
+    /// </summary>
+    /// <returns>模板文件流</returns>
+    Task<byte[]> GetImportTemplateAsync();
+
+    /// <summary>
+    /// 更新{{ table.comment }}状态
+    /// </summary>
+    /// <param name="statusDto">状态参数</param>
+    /// <returns>结果</returns>
+    Task<HbtResult> UpdateStatusAsync({{ pascal_case table.table_name }}StatusDto statusDto);
+
+    /// <summary>
+    /// 审核{{ table.comment }}
+    /// </summary>
+    /// <param name="auditDto">审核参数</param>
+    /// <returns>结果</returns>
+    Task<HbtResult> AuditAsync({{ pascal_case table.table_name }}AuditDto auditDto);
+
+    /// <summary>
+    /// 撤销{{ table.comment }}
+    /// </summary>
+    /// <param name="cancelDto">撤销参数</param>
+    /// <returns>结果</returns>
+    Task<HbtResult> CancelAsync({{ pascal_case table.table_name }}CancelDto cancelDto);
+
+    #endregion
+} 

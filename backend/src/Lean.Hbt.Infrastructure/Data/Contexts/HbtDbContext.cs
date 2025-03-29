@@ -82,7 +82,13 @@ namespace Lean.Hbt.Infrastructure.Data.Contexts
         {
             _logger = logger;
 
-            _client = new SqlSugarScope(options.Value);
+            var config = options.Value;
+            if (string.IsNullOrEmpty(config.ConnectionString))
+            {
+                throw new InvalidOperationException("数据库连接字符串不能为空");
+            }
+
+            _client = new SqlSugarScope(config);
 
             // SQL日志记录
             _client.Aop.OnLogExecuting = (sql, parameters) =>
@@ -188,69 +194,31 @@ namespace Lean.Hbt.Infrastructure.Data.Contexts
         /// <summary>
         /// 初始化数据库
         /// </summary>
-        public Task InitializeAsync()
+        public async Task InitializeAsync()
         {
             try
             {
                 // 1.创建数据库(如果不存在)
+                if (string.IsNullOrEmpty(_client.Ado.Connection.ConnectionString))
+                {
+                    throw new InvalidOperationException("数据库连接字符串不能为空");
+                }
+                
                 _client.DbMaintenance.CreateDatabase();
                 _logger.Info("数据库检查/创建成功");
 
-                // 2.创建/更新表
-                var entityTypes = new Type[]
-                {
-                    typeof(HbtDbDiffLog),  // 确保日志表首先被创建
-                    typeof(HbtUser),
-                    typeof(HbtRole),
-                    typeof(HbtMenu),
-                    typeof(HbtDept),
-                    typeof(HbtPost),
-                    typeof(HbtUserRole),
-                    typeof(HbtUserDept),
-                    typeof(HbtUserPost),
-                    typeof(HbtRoleMenu),
-                    typeof(HbtRoleDept),
-                    typeof(HbtTenant),
-                    typeof(HbtAuditLog),
-                    typeof(HbtLoginLog),
-                    typeof(HbtExceptionLog),
-                    typeof(HbtOperLog),
-                    typeof(HbtOnlineMessage),
-                    typeof(HbtOnlineUser),
-                    typeof(HbtConfig),
-                    typeof(HbtTranslation),
-                    typeof(HbtLanguage),
-                    typeof(HbtDictType),
-                    typeof(HbtDictData),
-                    typeof(HbtDeviceExtend),
-                    typeof(HbtLoginExtend),
+                // 2.获取所有实体类型
+                var entityTypes = AppDomain.CurrentDomain.GetAssemblies()
+                    .Where(a => a.FullName != null && a.FullName.StartsWith("Lean.Hbt"))
+                    .SelectMany(a => a.GetTypes())
+                    .Where(t => t.IsClass && !t.IsAbstract && t.IsPublic && 
+                               t.Namespace != null && 
+                               t.Namespace.StartsWith("Lean.Hbt.Domain.Entities") &&
+                               t.BaseType == typeof(HbtBaseEntity))
+                    .OrderBy(t => t == typeof(HbtDbDiffLog) ? 0 : 1) // 确保日志表首先被创建
+                    .ToArray();
 
-                    // 工作流相关表
-                    typeof(HbtWorkflowDefinition),      // 工作流定义
-                    typeof(HbtWorkflowInstance),        // 工作流实例
-                    typeof(HbtWorkflowNode),            // 工作流节点
-                    typeof(HbtWorkflowTransition),      // 工作流转换
-                    typeof(HbtWorkflowTask),            // 工作流任务
-                    typeof(HbtWorkflowHistory),         // 工作流历史
-                    typeof(HbtWorkflowVariable),        // 工作流变量
-                    typeof(HbtWorkflowScheduledTask),   // 工作流定时任务
-                    typeof(HbtWorkflowParallelBranch),  // 工作流并行分支
-
-                    // 任务和日志相关表
-                    typeof(HbtQuartzTask),             // 定时任务
-                    typeof(HbtQuartzLog),              // 任务日志
-
-                    // 邮件相关表
-                    typeof(HbtMail),                   // 邮件
-                    typeof(HbtMailTmpl),               // 邮件模板
-
-                    // 文件相关表
-                    typeof(HbtFile),                   // 文件
-
-                    // 通知相关表
-                    typeof(HbtNotice),                 // 通知
-                };
-
+                // 3.创建/更新表
                 foreach (var entityType in entityTypes)
                 {
                     var tableName = _client.EntityMaintenance.GetTableName(entityType);
@@ -298,7 +266,6 @@ namespace Lean.Hbt.Infrastructure.Data.Contexts
                 }
 
                 _logger.Info("数据库初始化完成");
-                return Task.CompletedTask;
             }
             catch (Exception ex)
             {

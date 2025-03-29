@@ -79,7 +79,7 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine
                 }
 
                 // 获取开始节点
-                var startNode = await _nodeRepository.FirstOrDefaultAsync(x => 
+                var startNode = await _nodeRepository.GetInfoAsync(x => 
                     x.WorkflowDefinitionId == definitionId && 
                     x.NodeType == 1); // 1 表示开始节点
 
@@ -100,7 +100,7 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine
                     StartTime = DateTime.Now
                 };
 
-                await _instanceRepository.InsertAsync(instance);
+                await _instanceRepository.CreateAsync(instance);
 
                 // 保存变量
                 if (variables != null)
@@ -380,7 +380,7 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine
                     Scope = nodeId.HasValue ? 2 : 1
                 };
 
-                await _variableRepository.InsertAsync(variable);
+                await _variableRepository.CreateAsync(variable);
             }
         }
 
@@ -397,7 +397,7 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine
                     Scope = nodeId.HasValue ? 2 : 1
                 };
 
-                await _variableRepository.InsertAsync(variable);
+                await _variableRepository.CreateAsync(variable);
             }
         }
 

@@ -176,7 +176,7 @@ import {
   updateHbtConfigStatus,
   batchUpdateHbtConfigStatus
 } from '@/api/admin/hbtConfig'
-import type { HbtConfig, HbtConfigQuery } from '@/types/admin/hbtConfig'
+import type { HbtConfig, HbtConfigQuery } from '@/types/admin/config'
 import { getDictDataList } from '@/api/admin/dictData'
 import type { DictData } from '@/types/admin/dictData'
 

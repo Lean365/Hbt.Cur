@@ -462,14 +462,14 @@ const handleTableChange = (pagination: TablePaginationConfig) => {
 
 // 处理新增
 const handleAdd = () => {
-  formTitle.value = t('common.add')
+  formTitle.value = t('common.actions.add')
   selectedUserId.value = undefined
   formVisible.value = true
 }
 
 // 处理编辑
 const handleEdit = (record: User) => {
-  formTitle.value = t('common.edit')
+  formTitle.value = t('common.actions.edit')
   selectedUserId.value = record.userId
   formVisible.value = true
 }

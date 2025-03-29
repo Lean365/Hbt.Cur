@@ -9,11 +9,7 @@
 
 using System.Linq.Expressions;
 using Lean.Hbt.Application.Dtos.Identity;
-using Lean.Hbt.Common.Exceptions;
-using Lean.Hbt.Common.Helpers;
 using Lean.Hbt.Domain.Entities.Identity;
-using Lean.Hbt.Domain.Repositories;
-using SqlSugar;
 
 namespace Lean.Hbt.Application.Services.Identity
 {
@@ -43,31 +39,29 @@ namespace Lean.Hbt.Application.Services.Identity
         /// <summary>
         /// 获取部门分页列表
         /// </summary>
-        public async Task<HbtPagedResult<HbtDeptDto>> GetPagedListAsync(HbtDeptQueryDto query)
+        public async Task<HbtPagedResult<HbtDeptDto>> GetListAsync(HbtDeptQueryDto query)
         {
-            // 1.构建查询条件
-            var predicate = Expressionable.Create<HbtDept>();
+            var exp = Expressionable.Create<HbtDept>();
 
-            if (!string.IsNullOrEmpty(query.DeptName))
-                predicate.And(d => d.DeptName.Contains(query.DeptName));
+            if (!string.IsNullOrEmpty(query?.DeptName))
+                exp.And(x => x.DeptName.Contains(query.DeptName));
 
-            if (query.Status.HasValue)
-                predicate.And(d => d.Status == query.Status.Value);
+            if (query?.Status.HasValue == true&& query.Status!.Value != -1)
+                exp.And(x => x.Status == query.Status.Value);
 
-            // 2.查询数据
             var result = await _deptRepository.GetPagedListAsync(
-                predicate.ToExpression(),
-                query.PageIndex,
-                query.PageSize);
+                exp.ToExpression(),
+                query?.PageIndex ?? 1,
+                query?.PageSize ?? 10,
+                x => x.OrderNum,
+                OrderByType.Asc);
 
-            // 3.转换并返回
-            var dtos = result.list.Adapt<List<HbtDeptDto>>();
             return new HbtPagedResult<HbtDeptDto>
             {
-                TotalNum = result.total,
-                PageIndex = query.PageIndex,
-                PageSize = query.PageSize,
-                Rows = dtos
+                TotalNum = result.TotalNum,
+                PageIndex = query?.PageIndex ?? 1,
+                PageSize = query?.PageSize ?? 10,
+                Rows = result.Rows.Adapt<List<HbtDeptDto>>()
             };
         }
 
@@ -101,7 +95,7 @@ namespace Lean.Hbt.Application.Services.Identity
         /// <summary>
         /// 获取部门详情
         /// </summary>
-        public async Task<HbtDeptDto> GetAsync(long id)
+        public async Task<HbtDeptDto> GetByIdAsync(long id)
         {
             var dept = await _deptRepository.GetByIdAsync(id);
             if (dept == null)
@@ -113,7 +107,7 @@ namespace Lean.Hbt.Application.Services.Identity
         /// <summary>
         /// 创建部门
         /// </summary>
-        public async Task<long> InsertAsync(HbtDeptCreateDto input)
+        public async Task<long> CreateAsync(HbtDeptCreateDto input)
         {
             // 1.检查部门名称是否存在
             var exists = await _deptRepository.AsQueryable()
@@ -125,7 +119,7 @@ namespace Lean.Hbt.Application.Services.Identity
             var dept = input.Adapt<HbtDept>();
 
             // 3.保存部门
-            var result = await _deptRepository.InsertAsync(dept);
+            var result = await _deptRepository.CreateAsync(dept);
             if (result <= 0)
                 throw new HbtException("创建部门失败");
 

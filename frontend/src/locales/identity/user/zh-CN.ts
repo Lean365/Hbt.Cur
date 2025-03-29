@@ -45,7 +45,7 @@ export default {
         placeholder: '请输入用户名',
         validation: {
           required: '用户名不能为空',
-          length: '用户名长度必须在2-20个字符之间'
+          format: '用户名必须以小写字母开头，长度在6-20位之间，只能包含小写字母、数字和下划线'
         }
       },
       nickName: {
@@ -53,14 +53,14 @@ export default {
         placeholder: '请输入昵称',
         validation: {
           required: '昵称不能为空',
-          length: '昵称长度必须在2-30个字符之间'
+          format: '昵称长度必须在2-20位之间，只能包含中文、英文、数字和下划线'
         }
       },
       englishName: {
         label: '英文名',
         placeholder: '请输入英文名',
         validation: {
-          length: '英文名长度不能超过50个字符'
+          format: '英文名长度必须在2-50位之间，只能包含英文字母、空格和连字符'
         }
       },
       password: {
@@ -84,7 +84,7 @@ export default {
         placeholder: '请输入邮箱',
         validation: {
           required: '邮箱不能为空',
-          invalid: '请输入正确的邮箱格式'
+          invalid: '邮箱长度必须在6-100位之间，且格式正确'
         }
       },
       phoneNumber: {
@@ -92,7 +92,7 @@ export default {
         placeholder: '请输入手机号码',
         validation: {
           required: '手机号码不能为空',
-          invalid: '请输入正确的手机号码格式'
+          invalid: '请输入正确的手机号码或座机号码格式'
         }
       },
       gender: {
@@ -106,7 +106,9 @@ export default {
       },
       avatar: {
         label: '头像',
-        upload: '上传头像'
+        upload: '上传头像',
+        uploadSuccess: '头像上传成功',
+        uploadError: '头像上传失败'
       },
       deptName: {
         label: '所属部门',
@@ -172,7 +174,45 @@ export default {
         profile: '个人资料',
         role: '角色权限',
         dept: '部门岗位',
-        other: '其他信息'
+        other: '其他信息',
+        avatar: '头像设置'
+      },
+      update: {
+        validation: {
+          required: '用户ID和租户ID不能为空'
+        }
+      },
+      tenantId: {
+        label: '租户',
+        placeholder: '请选择租户',
+        validation: {
+          required: '租户不能为空'
+        }
+      },
+      roles: {
+        label: '角色',
+        placeholder: '请选择角色',
+        validation: {
+          required: '请至少选择一个角色'
+        }
+      },
+      posts: {
+        label: '岗位',
+        placeholder: '请选择岗位',
+        validation: {
+          required: '请至少选择一个岗位'
+        }
+      },
+      depts: {
+        label: '部门',
+        placeholder: '请选择部门',
+        validation: {
+          required: '请至少选择一个部门'
+        }
+      },
+      remark: {
+        label: '备注',
+        placeholder: '请输入备注信息'
       }
     }
   },

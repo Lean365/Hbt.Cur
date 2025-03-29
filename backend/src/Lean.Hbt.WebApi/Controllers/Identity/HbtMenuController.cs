@@ -11,7 +11,6 @@ using Lean.Hbt.Application.Dtos.Identity;
 using Lean.Hbt.Application.Services.Identity;
 using Lean.Hbt.Domain.IServices.Admin;
 using Lean.Hbt.Domain.IServices.Identity;
-using Lean.Hbt.Infrastructure.Security.Attributes;
 
 namespace Lean.Hbt.WebApi.Controllers.Identity
 {
@@ -59,10 +58,10 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <param name="query">查询条件</param>
         /// <returns>菜单分页列表</returns>
         [HttpGet]
-        [HbtPerm("identity:menu:list")]
-        public async Task<IActionResult> GetPagedListAsync([FromQuery] HbtMenuQueryDto query)
+        [HbtPerm("identity:menu:query")]
+        public async Task<IActionResult> GetListAsync([FromQuery] HbtMenuQueryDto query)
         {
-            var result = await _menuService.GetPagedListAsync(query);
+            var result = await _menuService.GetListAsync(query);
             return Success(result);
         }
 
@@ -73,9 +72,9 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <returns>菜单详情</returns>
         [HttpGet("{menuId}")]
         [HbtPerm("identity:menu:query")]
-        public async Task<IActionResult> GetAsync(long menuId)
+        public async Task<IActionResult> GetByIdAsync(long menuId)
         {
-            var result = await _menuService.GetAsync(menuId);
+            var result = await _menuService.GetByIdAsync(menuId);
             return Success(result);
         }
 
@@ -86,9 +85,9 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <returns>菜单ID</returns>
         [HttpPost]
         [HbtPerm("identity:menu:create")]
-        public async Task<IActionResult> InsertAsync([FromBody] HbtMenuCreateDto input)
+        public async Task<IActionResult> CreateAsync([FromBody] HbtMenuCreateDto input)
         {
-            var result = await _menuService.InsertAsync(input);
+            var result = await _menuService.CreateAsync(input);
             return Success(result);
         }
 
@@ -219,7 +218,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// </summary>
         /// <returns>返回树形菜单列表</returns>
         [HttpGet("tree")]
-        [HbtPerm("identity:menu:list")]
+        [HbtPerm("identity:menu:query")]
         [ProducesResponseType(typeof(HbtApiResult<List<HbtMenuDto>>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetTreeAsync()
         {
@@ -244,6 +243,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// </summary>
         /// <returns>菜单选项列表</returns>
         [HttpGet("options")]
+        [HbtPerm("identity:menu:query")]
         public async Task<IActionResult> GetOptionsAsync()
         {
             var result = await _menuService.GetOptionsAsync();

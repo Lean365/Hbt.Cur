@@ -25,7 +25,7 @@ namespace Lean.Hbt.Application.Services.Identity
         /// </summary>
         /// <param name="query">查询条件</param>
         /// <returns>分页列表</returns>
-        Task<HbtPagedResult<HbtLoginExtendDto>> GetPagedListAsync(HbtLoginExtendQueryDto query);
+        Task<HbtPagedResult<HbtLoginExtendDto>> GetListAsync(HbtLoginExtendQueryDto query);
 
         /// <summary>
         /// 导出登录扩展信息
@@ -62,5 +62,11 @@ namespace Lean.Hbt.Application.Services.Identity
         /// <param name="userId">用户ID</param>
         /// <returns>登录扩展信息</returns>
         Task<HbtLoginExtendDto?> GetByUserIdAsync(long userId);
+
+        /// <summary>
+        /// 清除所有用户的会话信息
+        /// </summary>
+        /// <returns>是否成功</returns>
+        Task<bool> ClearAllUserSessionsAsync();
     }
 } 

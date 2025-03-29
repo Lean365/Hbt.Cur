@@ -51,6 +51,9 @@ using Lean.Hbt.Infrastructure.Services.Identity;
 using Lean.Hbt.Infrastructure.Services.Local;
 using Lean.Hbt.Application.Services.Routine;
 using Lean.Hbt.Infrastructure.Extensions;
+using Lean.Hbt.Infrastructure.Identity;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Lean.Hbt.Infrastructure.Extensions
 {
@@ -141,9 +144,9 @@ namespace Lean.Hbt.Infrastructure.Extensions
             services.AddScoped<IHbtLoginPolicy, HbtLoginPolicy>();
             services.AddScoped<IHbtPasswordPolicy, HbtPasswordPolicy>();
             
-            // 会话管理服务
+            // 注册会话管理
             services.AddScoped<IHbtIdentitySessionManager, HbtSessionManager>();
-            services.AddScoped<IHbtSignalRSessionManager, HbtSessionManager>();
+            services.AddScoped<IHbtSingleSignOnService, HbtSingleSignOnService>();
             
             // 验证服务
             services.AddSingleton<IHbtCaptchaService, HbtCaptchaService>();
@@ -205,6 +208,7 @@ namespace Lean.Hbt.Infrastructure.Extensions
             services.AddScoped<IHbtLoginExtendService, HbtLoginExtendService>(); // 登录扩展服务
             services.AddScoped<IHbtDeviceExtendService, HbtDeviceExtendService>(); // 设备扩展服务
             services.AddScoped<IHbtJwtHandler, HbtJwtHandler>();            // JWT令牌处理
+            services.AddScoped<IHbtDeviceIdGenerator, HbtDeviceIdGenerator>(); // 设备ID生成器
             
             // 用户和权限管理
             services.AddScoped<IHbtUserService, HbtUserService>();          // 用户管理
@@ -262,6 +266,7 @@ namespace Lean.Hbt.Infrastructure.Extensions
         public static IServiceCollection AddRealTimeServices(this IServiceCollection services)
         {
             services.AddScoped<IHbtOnlineUserService, HbtOnlineUserService>();   // 在线用户服务
+            services.AddScoped<IHbtOnlineMessageService, HbtOnlineMessageService>();   // 在线消息服务
             return services;
         }
 
@@ -319,24 +324,48 @@ namespace Lean.Hbt.Infrastructure.Extensions
             var connectionString = configuration.GetConnectionString("Default")
                 ?? throw new ArgumentException("数据库连接字符串不能为空");
 
-            var connectionConfig = new ConnectionConfig
-            {
-                ConnectionString = connectionString,
-                DbType = DbType.SqlServer,
-                IsAutoCloseConnection = true,
-                InitKeyType = InitKeyType.Attribute
-            };
+            var dbConfig = configuration.GetSection("Database").Get<HbtDbOptions>()
+                ?? throw new ArgumentException("数据库配置节点不能为空");
 
-            // 配置 SqlSugar - 只注册一次
-            services.AddSingleton<SqlSugarScope>(sp => new SqlSugarScope(connectionConfig));
-            services.AddSingleton<ISqlSugarClient>(sp => sp.GetRequiredService<SqlSugarScope>());
-            services.Configure<ConnectionConfig>(options => 
+            // 注册数据库配置
+            services.Configure<ConnectionConfig>(options =>
             {
-                options.ConnectionString = connectionConfig.ConnectionString;
-                options.DbType = connectionConfig.DbType;
-                options.IsAutoCloseConnection = connectionConfig.IsAutoCloseConnection;
-                options.InitKeyType = connectionConfig.InitKeyType;
+                options.ConnectionString = connectionString;
+                options.DbType = dbConfig.DbType;
+                options.IsAutoCloseConnection = true;
+                options.InitKeyType = InitKeyType.Attribute;
             });
+
+            // 配置 SqlSugar
+            services.AddSingleton<SqlSugarScope>(sp =>
+            {
+                var options = sp.GetRequiredService<IOptions<ConnectionConfig>>();
+                var scope = new SqlSugarScope(options.Value);
+                
+                // 添加 SQL 执行日志
+                var logger = sp.GetRequiredService<ILogger<SqlSugarScope>>();
+                scope.Aop.OnLogExecuting = (sql, parameters) =>
+                {
+                    logger.LogInformation("SQL执行: {SQL}", sql);
+                    if (parameters?.Any() == true)
+                    {
+                        logger.LogInformation("参数: {@Parameters}", parameters.ToDictionary(p => p.ParameterName, p => p.Value));
+                    }
+                };
+
+                // 添加 SQL 执行结果日志
+                scope.Aop.OnLogExecuted = (sql, parameters) =>
+                {
+                    logger.LogInformation("SQL执行完成: {SQL}", sql);
+                    if (parameters?.Any() == true)
+                    {
+                        logger.LogInformation("参数: {@Parameters}", parameters.ToDictionary(p => p.ParameterName, p => p.Value));
+                    }
+                };
+                
+                return scope;
+            });
+            services.AddSingleton<ISqlSugarClient>(sp => sp.GetRequiredService<SqlSugarScope>());
 
             // 数据库上下文 - 只注册一次
             services.AddScoped<HbtDbContext>();

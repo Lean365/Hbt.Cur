@@ -43,9 +43,10 @@ namespace Lean.Hbt.WebApi.Controllers.Audit
         /// <param name="query">查询条件</param>
         /// <returns>异常日志分页列表</returns>
         [HttpGet]
-        public async Task<IActionResult> GetPagedListAsync([FromQuery] HbtExceptionLogQueryDto query)
+        [HbtPerm("audit:exceptionlog:list")]
+        public async Task<IActionResult> GetListAsync([FromQuery] HbtExceptionLogQueryDto query)
         {
-            var result = await _exceptionLogService.GetPagedListAsync(query);
+            var result = await _exceptionLogService.GetListAsync(query);
             return Success(result);
         }
 
@@ -55,9 +56,10 @@ namespace Lean.Hbt.WebApi.Controllers.Audit
         /// <param name="logId">日志ID</param>
         /// <returns>异常日志详情</returns>
         [HttpGet("{logId}")]
-        public async Task<IActionResult> GetAsync(long logId)
+        [HbtPerm("audit:exceptionlog:query")]
+        public async Task<IActionResult> GetByIdAsync(long logId)
         {
-            var result = await _exceptionLogService.GetAsync(logId);
+            var result = await _exceptionLogService.GetByIdAsync(logId);
             return Success(result);
         }
 
@@ -68,6 +70,7 @@ namespace Lean.Hbt.WebApi.Controllers.Audit
         /// <param name="sheetName">工作表名称</param>
         /// <returns>导出的Excel文件</returns>
         [HttpGet("export")]
+        [HbtPerm("audit:exceptionlog:export")]
         [ProducesResponseType(typeof(byte[]), StatusCodes.Status200OK)]
         public async Task<IActionResult> ExportAsync([FromQuery] HbtExceptionLogQueryDto query, [FromQuery] string sheetName = "异常日志数据")
         {
@@ -80,6 +83,7 @@ namespace Lean.Hbt.WebApi.Controllers.Audit
         /// </summary>
         /// <returns>是否成功</returns>
         [HttpDelete("clear")]
+        [HbtPerm("audit:exceptionlog:clear")]
         public async Task<IActionResult> ClearAsync()
         {
             var result = await _exceptionLogService.ClearAsync();

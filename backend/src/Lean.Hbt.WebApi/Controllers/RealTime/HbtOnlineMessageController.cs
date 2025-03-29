@@ -7,9 +7,13 @@
 // 描述   : 在线消息控制器
 //===================================================================
 
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using Lean.Hbt.Application.Dtos.RealTime;
 using Lean.Hbt.Application.Services.RealTime;
 using Lean.Hbt.Domain.IServices.Admin;
+using Lean.Hbt.Infrastructure.Security.Attributes;
 
 namespace Lean.Hbt.WebApi.Controllers.RealTime
 {
@@ -22,7 +26,7 @@ namespace Lean.Hbt.WebApi.Controllers.RealTime
     /// </remarks>
     [Route("api/[controller]", Name = "在线消息")]
     [ApiController]
-    [ApiModule("realtime", "实时通讯")]
+    [ApiModule("realtime", "在线消息")]
     public class HbtOnlineMessageController : HbtBaseController
     {
         private readonly IHbtOnlineMessageService _onlineMessageService;
@@ -43,9 +47,10 @@ namespace Lean.Hbt.WebApi.Controllers.RealTime
         /// <param name="query">查询条件</param>
         /// <returns>在线消息分页列表</returns>
         [HttpGet]
-        public async Task<IActionResult> GetPagedListAsync([FromQuery] HbtOnlineMessageQueryDto query)
+        [HbtPerm("realtime:message:list")]
+        public async Task<IActionResult> GetListAsync([FromQuery] HbtOnlineMessageQueryDto query)
         {
-            var result = await _onlineMessageService.GetPagedListAsync(query);
+            var result = await _onlineMessageService.GetListAsync(query);
             return Success(result);
         }
 
@@ -55,7 +60,8 @@ namespace Lean.Hbt.WebApi.Controllers.RealTime
         /// <param name="id">消息ID</param>
         /// <returns>消息详情</returns>
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetAsync(long id)
+        [HbtPerm("realtime:message:query")]
+        public async Task<IActionResult> GetByIdAsync(long id)
         {
             var result = await _onlineMessageService.GetMessageAsync(id);
             return Success(result);
@@ -68,6 +74,7 @@ namespace Lean.Hbt.WebApi.Controllers.RealTime
         /// <param name="sheetName">工作表名称</param>
         /// <returns>导出的Excel文件</returns>
         [HttpGet("export")]
+        [HbtPerm("realtime:message:export")]
         public async Task<IActionResult> ExportAsync([FromQuery] HbtOnlineMessageQueryDto query, [FromQuery] string sheetName = "在线消息信息")
         {
             var result = await _onlineMessageService.ExportAsync(query, sheetName);
@@ -80,6 +87,7 @@ namespace Lean.Hbt.WebApi.Controllers.RealTime
         /// <param name="input">消息信息</param>
         /// <returns>消息ID</returns>
         [HttpPost]
+        [HbtPerm("realtime:message:create")]
         public async Task<IActionResult> SaveAsync([FromBody] HbtOnlineMessageDto input)
         {
             var result = await _onlineMessageService.SaveMessageAsync(input);
@@ -92,6 +100,7 @@ namespace Lean.Hbt.WebApi.Controllers.RealTime
         /// <param name="id">消息ID</param>
         /// <returns>是否成功</returns>
         [HttpDelete("{id}")]
+        [HbtPerm("realtime:message:delete")]
         public async Task<IActionResult> DeleteAsync(long id)
         {
             var result = await _onlineMessageService.DeleteMessageAsync(id);
@@ -104,9 +113,68 @@ namespace Lean.Hbt.WebApi.Controllers.RealTime
         /// <param name="days">保留天数</param>
         /// <returns>清理数量</returns>
         [HttpPost("cleanup")]
+        [HbtPerm("realtime:message:cleanup")]
         public async Task<IActionResult> CleanupExpiredMessagesAsync([FromQuery] int days = 7)
         {
             var result = await _onlineMessageService.CleanupExpiredMessagesAsync(days);
+            return Success(result);
+        }
+
+        /// <summary>
+        /// 标记消息为已读
+        /// </summary>
+        /// <param name="id">消息ID</param>
+        /// <returns>是否成功</returns>
+        [HttpPut("{id}/read")]
+        [HbtPerm("realtime:message:read")]
+        public async Task<IActionResult> MarkAsReadAsync(long id)
+        {
+            var result = await _onlineMessageService.MarkAsReadAsync(id);
+            return Success(result);
+        }
+
+        /// <summary>
+        /// 标记所有消息为已读
+        /// </summary>
+        /// <returns>标记的消息数量</returns>
+        [HttpPut("read-all")]
+        [HbtPerm("realtime:message:read")]
+        public async Task<IActionResult> MarkAllAsReadAsync()
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim == null || !long.TryParse(userIdClaim.Value, out var userId))
+                return Error("无效的用户ID");
+
+            var result = await _onlineMessageService.MarkAllAsReadAsync(userId);
+            return Success(result);
+        }
+
+        /// <summary>
+        /// 标记消息为未读
+        /// </summary>
+        /// <param name="id">消息ID</param>
+        /// <returns>是否成功</returns>
+        [HttpPut("{id}/unread")]
+        [HbtPerm("realtime:message:read")]
+        public async Task<IActionResult> MarkAsUnreadAsync(long id)
+        {
+            var result = await _onlineMessageService.MarkAsUnreadAsync(id);
+            return Success(result);
+        }
+
+        /// <summary>
+        /// 标记所有消息为未读
+        /// </summary>
+        /// <returns>标记的消息数量</returns>
+        [HttpPut("unread-all")]
+        [HbtPerm("realtime:message:read")]
+        public async Task<IActionResult> MarkAllAsUnreadAsync()
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim == null || !long.TryParse(userIdClaim.Value, out var userId))
+                return Error("无效的用户ID");
+
+            var result = await _onlineMessageService.MarkAllAsUnreadAsync(userId);
             return Success(result);
         }
     }

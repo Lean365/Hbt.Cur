@@ -44,9 +44,9 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// </summary>
         [HttpGet]
         [HbtPerm("workflow:history:list")]
-        public async Task<IActionResult> GetPagedListAsync([FromQuery] HbtWorkflowHistoryQueryDto query)
+        public async Task<IActionResult> GetListAsync([FromQuery] HbtWorkflowHistoryQueryDto query)
         {
-            var result = await _workflowHistoryService.GetPagedListAsync(query);
+            var result = await _workflowHistoryService.GetListAsync(query);
             return Success(result);
         }
 
@@ -55,9 +55,9 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// </summary>
         [HttpGet("{id}")]
         [HbtPerm("workflow:history:query")]
-        public async Task<IActionResult> GetAsync(long id)
+        public async Task<IActionResult> GetByIdAsync(long id)
         {
-            var result = await _workflowHistoryService.GetAsync(id);
+            var result = await _workflowHistoryService.GetByIdAsync(id);
             return Success(result);
         }
 
@@ -66,9 +66,9 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// </summary>
         [HttpPost]
         [HbtPerm("workflow:history:insert")]
-        public async Task<IActionResult> InsertAsync([FromBody] HbtWorkflowHistoryCreateDto input)
+        public async Task<IActionResult> CreateAsync([FromBody] HbtWorkflowHistoryCreateDto input)
         {
-            var result = await _workflowHistoryService.InsertAsync(input);
+            var result = await _workflowHistoryService.CreateAsync(input);
             return Success(result);
         }
 
@@ -127,7 +127,7 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         [HbtPerm("workflow:history:export")]
         public async Task<IActionResult> ExportAsync([FromQuery] HbtWorkflowHistoryQueryDto query, [FromQuery] string sheetName = "Sheet1")
         {
-            var data = await _workflowHistoryService.GetPagedListAsync(query);
+            var data = await _workflowHistoryService.GetListAsync(query);
             var result = await _workflowHistoryService.ExportAsync(data.Rows, sheetName);
             return File(result, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"工作流历史数据_{DateTime.Now:yyyyMMddHHmmss}.xlsx");
         }

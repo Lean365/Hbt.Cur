@@ -7,12 +7,7 @@
 // 描述   : 语言服务接口
 //===================================================================
 
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using System.IO;
-using Lean.Hbt.Common.Models;
 using Lean.Hbt.Application.Dtos.Admin;
-using Lean.Hbt.Domain.IServices.Admin;
 
 namespace Lean.Hbt.Application.Services.Admin
 {
@@ -26,21 +21,21 @@ namespace Lean.Hbt.Application.Services.Admin
         /// </summary>
         /// <param name="query">查询条件</param>
         /// <returns>语言分页列表</returns>
-        Task<HbtPagedResult<HbtLanguageDto>> GetPagedListAsync(HbtLanguageQueryDto query);
+        Task<HbtPagedResult<HbtLanguageDto>> GetListAsync(HbtLanguageQueryDto query);
 
         /// <summary>
         /// 获取语言详情
         /// </summary>
         /// <param name="LangId">语言ID</param>
         /// <returns>语言详情</returns>
-        Task<HbtLanguageDto> GetAsync(long LangId);
+        Task<HbtLanguageDto> GetByIdAsync(long LangId);
 
         /// <summary>
         /// 创建语言
         /// </summary>
         /// <param name="input">创建对象</param>
         /// <returns>语言ID</returns>
-        Task<long> InsertAsync(HbtLanguageCreateDto input);
+        Task<long> CreateAsync(HbtLanguageCreateDto input);
 
         /// <summary>
         /// 更新语言
@@ -93,4 +88,4 @@ namespace Lean.Hbt.Application.Services.Admin
         /// <returns>是否成功</returns>
         Task<bool> UpdateStatusAsync(HbtLanguageStatusDto input);
     }
-} 
+}

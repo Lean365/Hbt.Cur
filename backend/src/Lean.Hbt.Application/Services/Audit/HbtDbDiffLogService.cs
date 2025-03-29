@@ -54,7 +54,7 @@ namespace Lean.Hbt.Application.Services.Audit
         /// </summary>
         /// <param name="query">查询条件</param>
         /// <returns>返回分页结果</returns>
-        public async Task<HbtPagedResult<HbtDbDiffLogDto>> GetPagedListAsync(HbtDbDiffLogQueryDto query)
+        public async Task<HbtPagedResult<HbtDbDiffLogDto>> GetListAsync(HbtDbDiffLogQueryDto query)
         {
             var exp = Expressionable.Create<HbtDbDiffLog>();
 
@@ -73,14 +73,22 @@ namespace Lean.Hbt.Application.Services.Audit
             if (query?.EndTime.HasValue == true)
                 exp.And(x => x.CreateTime <= query.EndTime.Value);
 
-            var result = await _dbDiffLogRepository.GetPagedListAsync(exp.ToExpression(), query?.PageIndex ?? 1, query?.PageSize ?? 10);
+            
+            // 执行分页查询
+            var result = await _dbDiffLogRepository.GetPagedListAsync(
+                exp.ToExpression(),
+                query.PageIndex,
+                query.PageSize,
+                x => x.CreateTime,
+                OrderByType.Desc);
 
+            // 返回分页结果
             return new HbtPagedResult<HbtDbDiffLogDto>
             {
-                TotalNum = result.total,
-                PageIndex = query?.PageIndex ?? 1,
-                PageSize = query?.PageSize ?? 10,
-                Rows = result.list.Adapt<List<HbtDbDiffLogDto>>()
+                Rows = result.Rows.Adapt<List<HbtDbDiffLogDto>>(),
+                TotalNum = result.TotalNum,
+                PageIndex = result.PageIndex,
+                PageSize = result.PageSize
             };
         }
 
@@ -89,7 +97,7 @@ namespace Lean.Hbt.Application.Services.Audit
         /// </summary>
         /// <param name="logId">日志ID</param>
         /// <returns>返回数据库差异日志详情</returns>
-        public async Task<HbtDbDiffLogDto> GetAsync(long logId)
+        public async Task<HbtDbDiffLogDto> GetByIdAsync(long logId)
         {
             var log = await _dbDiffLogRepository.GetByIdAsync(logId);
             if (log == null)

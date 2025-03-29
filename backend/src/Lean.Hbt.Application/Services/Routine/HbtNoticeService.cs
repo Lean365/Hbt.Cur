@@ -12,12 +12,16 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.SignalR;
 using Lean.Hbt.Common.Models;
 using Lean.Hbt.Domain.Entities.Routine;
 using Lean.Hbt.Application.Dtos.Routine;
 using Lean.Hbt.Common.Exceptions;
 using Lean.Hbt.Common.Helpers;
 using Lean.Hbt.Domain.Repositories;
+using Lean.Hbt.Domain.Identity;
+using Lean.Hbt.Common.Enums;
+using Lean.Hbt.Domain.IServices.SignalR;
 using SqlSugar;
 using Mapster;
 
@@ -29,25 +33,33 @@ namespace Lean.Hbt.Application.Services.Routine
     public class HbtNoticeService : IHbtNoticeService
     {
         private readonly ILogger<HbtNoticeService> _logger;
-        private readonly IHbtRepository<HbtNotice> _noticeRepository;
+        private readonly IHbtRepository<HbtNotice> _repository;
+        private readonly IHbtCurrentUser _currentUser;
+        private readonly IHbtSignalRClient _signalRClient;
 
         /// <summary>
         /// 构造函数
         /// </summary>
         /// <param name="logger">日志记录器</param>
-        /// <param name="noticeRepository">通知仓储</param>
+        /// <param name="repository">通知仓储</param>
+        /// <param name="currentUser">当前用户</param>
+        /// <param name="signalRClient">SignalR客户端</param>
         public HbtNoticeService(
             ILogger<HbtNoticeService> logger,
-            IHbtRepository<HbtNotice> noticeRepository)
+            IHbtRepository<HbtNotice> repository,
+            IHbtCurrentUser currentUser,
+            IHbtSignalRClient signalRClient)
         {
             _logger = logger;
-            _noticeRepository = noticeRepository;
+            _repository = repository;
+            _currentUser = currentUser;
+            _signalRClient = signalRClient;
         }
 
         /// <summary>
         /// 获取通知分页列表
         /// </summary>
-        public async Task<HbtPagedResult<HbtNoticeDto>> GetPagedListAsync(HbtNoticeQueryDto query)
+        public async Task<HbtPagedResult<HbtNoticeDto>> GetListAsync(HbtNoticeQueryDto query)
         {
             var exp = Expressionable.Create<HbtNotice>();
 
@@ -66,23 +78,28 @@ namespace Lean.Hbt.Application.Services.Routine
             if (query.EndTime.HasValue)
                 exp.And(x => x.CreateTime <= query.EndTime.Value);
 
-            var result = await _noticeRepository.GetPagedListAsync(exp.ToExpression(), query.PageIndex, query.PageSize);
+            var result = await _repository.GetPagedListAsync(
+                exp.ToExpression(),
+                query.PageIndex,
+                query.PageSize,
+                x => x.Id,
+                OrderByType.Asc);
 
             return new HbtPagedResult<HbtNoticeDto>
             {
-                TotalNum = result.total,
+                TotalNum = result.TotalNum,
                 PageIndex = query.PageIndex,
                 PageSize = query.PageSize,
-                Rows = result.list.Adapt<List<HbtNoticeDto>>()
+                Rows = result.Rows.Adapt<List<HbtNoticeDto>>()
             };
         }
 
         /// <summary>
         /// 获取通知详情
         /// </summary>
-        public async Task<HbtNoticeDto> GetAsync(long noticeId)
+        public async Task<HbtNoticeDto> GetByIdAsync(long noticeId)
         {
-            var notice = await _noticeRepository.GetByIdAsync(noticeId);
+            var notice = await _repository.GetByIdAsync(noticeId);
             if (notice == null)
                 throw new HbtException($"通知不存在: {noticeId}");
 
@@ -97,7 +114,7 @@ namespace Lean.Hbt.Application.Services.Routine
             var notice = input.Adapt<HbtNotice>();
             notice.CreateTime = DateTime.Now;
 
-            var result = await _noticeRepository.InsertAsync(notice);
+            var result = await _repository.CreateAsync(notice);
             if (result <= 0)
                 throw new HbtException("创建通知失败");
 
@@ -109,12 +126,12 @@ namespace Lean.Hbt.Application.Services.Routine
         /// </summary>
         public async Task<bool> UpdateAsync(long noticeId, HbtNoticeDto input)
         {
-            var notice = await _noticeRepository.GetByIdAsync(noticeId);
+            var notice = await _repository.GetByIdAsync(noticeId);
             if (notice == null)
                 throw new HbtException($"通知不存在: {noticeId}");
 
             input.Adapt(notice);
-            var result = await _noticeRepository.UpdateAsync(notice);
+            var result = await _repository.UpdateAsync(notice);
             return result > 0;
         }
 
@@ -123,11 +140,11 @@ namespace Lean.Hbt.Application.Services.Routine
         /// </summary>
         public async Task<bool> DeleteAsync(long noticeId)
         {
-            var notice = await _noticeRepository.GetByIdAsync(noticeId);
+            var notice = await _repository.GetByIdAsync(noticeId);
             if (notice == null)
                 throw new HbtException($"通知不存在: {noticeId}");
 
-            var result = await _noticeRepository.DeleteAsync(noticeId);
+            var result = await _repository.DeleteAsync(noticeId);
             return result > 0;
         }
 
@@ -159,7 +176,7 @@ namespace Lean.Hbt.Application.Services.Routine
             if (query.NoticeStatus.HasValue)
                 exp.And(x => x.NoticeStatus == query.NoticeStatus.Value);
 
-            var list = await _noticeRepository.GetListAsync(exp.ToExpression());
+            var list = await _repository.GetListAsync(exp.ToExpression());
             var result = list.Adapt<List<HbtNoticeExportDto>>();
 
             return await HbtExcelHelper.ExportAsync(result, sheetName);
@@ -170,14 +187,14 @@ namespace Lean.Hbt.Application.Services.Routine
         /// </summary>
         public async Task<bool> PublishAsync(long noticeId)
         {
-            var notice = await _noticeRepository.GetByIdAsync(noticeId);
+            var notice = await _repository.GetByIdAsync(noticeId);
             if (notice == null)
                 throw new HbtException($"通知不存在: {noticeId}");
 
             notice.NoticeStatus = 1; // 已发布
             notice.NoticePublishTime = DateTime.Now;
             
-            var result = await _noticeRepository.UpdateAsync(notice);
+            var result = await _repository.UpdateAsync(notice);
             return result > 0;
         }
 
@@ -186,31 +203,49 @@ namespace Lean.Hbt.Application.Services.Routine
         /// </summary>
         public async Task<bool> CloseAsync(long noticeId)
         {
-            var notice = await _noticeRepository.GetByIdAsync(noticeId);
+            var notice = await _repository.GetByIdAsync(noticeId);
             if (notice == null)
                 throw new HbtException($"通知不存在: {noticeId}");
 
             notice.NoticeStatus = 2; // 已关闭
             
-            var result = await _noticeRepository.UpdateAsync(notice);
+            var result = await _repository.UpdateAsync(notice);
             return result > 0;
         }
 
         /// <summary>
         /// 标记通知已读
         /// </summary>
-        public async Task<bool> MarkAsReadAsync(long noticeId)
+        public async Task<bool> MarkAsReadAsync(long id)
         {
-            var notice = await _noticeRepository.GetByIdAsync(noticeId);
-            if (notice == null)
-                throw new HbtException($"通知不存在: {noticeId}");
+            var notice = await _repository.GetByIdAsync(id);
+            if (notice == null) return false;
 
-            notice.NoticeReadCount++;
-            // TODO: 添加当前用户ID到已读列表
-            notice.NoticeLastReceiptTime = DateTime.Now;
-            
-            var result = await _noticeRepository.UpdateAsync(notice);
-            return result > 0;
+            // 更新已读状态
+            var readIds = (notice.NoticeReadIds?.Split(',', StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>()).ToList();
+            var userId = _currentUser.UserId.ToString();
+            if (!readIds.Contains(userId))
+            {
+                readIds.Add(userId);
+                notice.NoticeReadIds = string.Join(",", readIds);
+                notice.NoticeReadCount = readIds.Count;
+                notice.NoticeLastReceiptTime = DateTime.Now;
+
+                await _repository.UpdateAsync(notice);
+                
+                // 发送已读通知
+                var notification = new HbtRealTimeNotification
+                {
+                    Type = HbtMessageType.Notification,
+                    Title = "通知已读",
+                    Content = $"通知 {notice.NoticeTitle} 已标记为已读",
+                    Timestamp = DateTime.Now,
+                    Data = notice
+                };
+                await _signalRClient.ReceiveNoticeStatus(notification);
+            }
+
+            return true;
         }
 
         /// <summary>
@@ -218,19 +253,137 @@ namespace Lean.Hbt.Application.Services.Routine
         /// </summary>
         public async Task<bool> ConfirmAsync(long noticeId)
         {
-            var notice = await _noticeRepository.GetByIdAsync(noticeId);
+            var notice = await _repository.GetByIdAsync(noticeId);
             if (notice == null)
                 throw new HbtException($"通知不存在: {noticeId}");
 
             if (!notice.NoticeRequireConfirm)
                 throw new HbtException($"该通知不需要确认");
 
-            notice.NoticeConfirmCount++;
-            // TODO: 添加当前用户ID到已确认列表
+            // 获取当前已确认人ID列表
+            var confirmIds = string.IsNullOrEmpty(notice.NoticeConfirmIds)
+                ? new List<long>()
+                : notice.NoticeConfirmIds.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                    .Select(id => long.Parse(id))
+                    .ToList();
+
+            // 如果当前用户已在已确认列表中，抛出异常
+            if (confirmIds.Contains(_currentUser.UserId))
+                throw new HbtException("您已确认过该通知");
+
+            // 添加当前用户到已确认列表
+            confirmIds.Add(_currentUser.UserId);
+            notice.NoticeConfirmIds = string.Join(",", confirmIds);
+            notice.NoticeConfirmCount = confirmIds.Count;
             notice.NoticeLastReceiptTime = DateTime.Now;
             
-            var result = await _noticeRepository.UpdateAsync(notice);
+            var result = await _repository.UpdateAsync(notice);
             return result > 0;
+        }
+
+        /// <summary>
+        /// 标记所有通知已读
+        /// </summary>
+        public async Task<int> MarkAllAsReadAsync(long userId)
+        {
+            var unreadNotices = await _repository.GetListAsync(n => 
+                string.IsNullOrEmpty(n.NoticeReadIds) || 
+                !n.NoticeReadIds.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                    .Select(id => long.Parse(id))
+                    .Contains(userId));
+
+            if (!unreadNotices.Any())
+                return 0;
+
+            foreach (var notice in unreadNotices)
+            {
+                var readIds = string.IsNullOrEmpty(notice.NoticeReadIds)
+                    ? new List<long>()
+                    : notice.NoticeReadIds.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                        .Select(id => long.Parse(id))
+                        .ToList();
+
+                if (!readIds.Contains(userId))
+                {
+                    readIds.Add(userId);
+                    notice.NoticeReadIds = string.Join(",", readIds);
+                    notice.NoticeReadCount = readIds.Count;
+                    notice.NoticeLastReceiptTime = DateTime.Now;
+                }
+            }
+
+            var result = await _repository.UpdateRangeAsync(unreadNotices);
+            return result;
+        }
+
+        /// <summary>
+        /// 标记通知未读
+        /// </summary>
+        public async Task<bool> MarkAsUnreadAsync(long id)
+        {
+            var notice = await _repository.GetByIdAsync(id);
+            if (notice == null)
+                return false;
+
+            // 获取当前已读人ID列表
+            var readIds = string.IsNullOrEmpty(notice.NoticeReadIds)
+                ? new List<long>()
+                : notice.NoticeReadIds.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(long.Parse).ToList();
+
+            // 如果当前用户不在已读列表中，则返回true
+            if (!readIds.Contains(_currentUser.UserId))
+                return true;
+
+            // 从已读列表中移除当前用户
+            readIds.Remove(_currentUser.UserId);
+            notice.NoticeReadIds = string.Join(",", readIds);
+            notice.NoticeReadCount = readIds.Count;
+
+            var result = await _repository.UpdateAsync(notice);
+            if (result > 0)
+            {
+                // 发送实时通知
+                var notification = new HbtRealTimeNotification
+                {
+                    Type = HbtMessageType.Notification,
+                    Title = "通知未读状态更新",
+                    Content = $"通知 {notice.NoticeTitle} 已标记为未读",
+                    Timestamp = DateTime.Now,
+                    Data = notice
+                };
+
+                await _signalRClient.ReceiveNoticeStatus(notification);
+            }
+
+            return result > 0;
+        }
+
+        /// <summary>
+        /// 标记所有通知未读
+        /// </summary>
+        public async Task<int> MarkAllAsUnreadAsync(long userId)
+        {
+            var readNotices = await _repository.GetListAsync(n => 
+                !string.IsNullOrEmpty(n.NoticeReadIds) && 
+                n.NoticeReadIds.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                    .Select(id => long.Parse(id))
+                    .Contains(userId));
+
+            if (!readNotices.Any())
+                return 0;
+
+            foreach (var notice in readNotices)
+            {
+                var readIds = notice.NoticeReadIds.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                    .Select(id => long.Parse(id))
+                    .ToList();
+                readIds.Remove(userId);
+                notice.NoticeReadIds = string.Join(",", readIds);
+                notice.NoticeReadCount = readIds.Count;
+            }
+
+            var result = await _repository.UpdateRangeAsync(readNotices);
+            return result;
         }
     }
 } 

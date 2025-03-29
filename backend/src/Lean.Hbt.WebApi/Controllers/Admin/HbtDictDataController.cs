@@ -45,9 +45,9 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
         /// <returns>字典数据分页列表</returns>
         [HttpGet]
         [HbtPerm("admin:dictdata:list")]
-        public async Task<IActionResult> GetPagedListAsync([FromQuery] HbtDictDataQueryDto query)
+        public async Task<IActionResult> GetListAsync([FromQuery] HbtDictDataQueryDto query)
         {
-            var result = await _dictDataService.GetPagedListAsync(query);
+            var result = await _dictDataService.GetListAsync(query);
             return Success(result);
         }
 
@@ -58,9 +58,9 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
         /// <returns>字典数据详情</returns>
         [HttpGet("{dictDataId}")]
         [HbtPerm("admin:dictdata:query")]
-        public async Task<IActionResult> GetAsync(long dictDataId)
+        public async Task<IActionResult> GetByIdAsync(long dictDataId)
         {
-            var result = await _dictDataService.GetAsync(dictDataId);
+            var result = await _dictDataService.GetByIdAsync(dictDataId);
             return Success(result);
         }
 
@@ -71,9 +71,9 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
         /// <returns>字典数据ID</returns>
         [HttpPost]
         [HbtPerm("admin:dictdata:create")]
-        public async Task<IActionResult> InsertAsync([FromBody] HbtDictDataCreateDto input)
+        public async Task<IActionResult> CreateAsync([FromBody] HbtDictDataCreateDto input)
         {
-            var result = await _dictDataService.InsertAsync(input);
+            var result = await _dictDataService.CreateAsync(input);
             return Success(result);
         }
 

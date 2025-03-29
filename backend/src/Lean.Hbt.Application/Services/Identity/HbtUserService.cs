@@ -11,16 +11,11 @@
 
 using System.Linq.Expressions;
 using Lean.Hbt.Application.Dtos.Identity;
-using Lean.Hbt.Common.Exceptions;
-using Lean.Hbt.Common.Helpers;
 using Lean.Hbt.Common.Utils;
 using Lean.Hbt.Domain.Entities.Identity;
-using Lean.Hbt.Domain.IServices.Admin;
 using Lean.Hbt.Domain.IServices.Identity;
 using Lean.Hbt.Domain.IServices.Security;
-using Lean.Hbt.Domain.Repositories;
-using Lean.Hbt.Domain.Utils;
-using SqlSugar;
+using Lean.Hbt.Common.Constants;
 
 namespace Lean.Hbt.Application.Services.Identity
 {
@@ -45,6 +40,7 @@ namespace Lean.Hbt.Application.Services.Identity
         private readonly IHbtRepository<HbtPost> _postRepository;
         private readonly IHbtRepository<HbtDept> _deptRepository;
         private readonly IHbtTenantContext _tenantContext;
+        private readonly IHbtCurrentUser _currentUser;
 
         /// <summary>
         /// 构造函数
@@ -61,7 +57,8 @@ namespace Lean.Hbt.Application.Services.Identity
             IHbtRepository<HbtRole> roleRepository,
             IHbtRepository<HbtPost> postRepository,
             IHbtRepository<HbtDept> deptRepository,
-            IHbtTenantContext tenantContext)
+            IHbtTenantContext tenantContext,
+            IHbtCurrentUser currentUser)
         {
             _userRepository = userRepository;
             _userRoleRepository = userRoleRepository;
@@ -75,6 +72,7 @@ namespace Lean.Hbt.Application.Services.Identity
             _postRepository = postRepository;
             _deptRepository = deptRepository;
             _tenantContext = tenantContext;
+            _currentUser = currentUser;
         }
 
         /// <summary>
@@ -82,7 +80,7 @@ namespace Lean.Hbt.Application.Services.Identity
         /// </summary>
         /// <param name="query">查询条件</param>
         /// <returns>返回分页结果</returns>
-        public async Task<HbtPagedResult<HbtUserDto>> GetPagedListAsync(HbtUserQueryDto query)
+        public async Task<HbtPagedResult<HbtUserDto>> GetListAsync(HbtUserQueryDto query)
         {
             var exp = Expressionable.Create<HbtUser>();
 
@@ -101,14 +99,19 @@ namespace Lean.Hbt.Application.Services.Identity
             if (query?.UserType.HasValue == true)
                 exp.And(x => x.UserType == query.UserType.Value);
 
-            var result = await _userRepository.GetPagedListAsync(exp.ToExpression(), query?.PageIndex ?? 1, query?.PageSize ?? 10);
+            var result = await _userRepository.GetPagedListAsync(
+                exp.ToExpression(),
+                query?.PageIndex ?? 1,
+                query?.PageSize ?? 10,
+                x => x.Id,
+                OrderByType.Asc);
 
             return new HbtPagedResult<HbtUserDto>
             {
-                TotalNum = result.total,
+                TotalNum = result.TotalNum,
                 PageIndex = query?.PageIndex ?? 1,
                 PageSize = query?.PageSize ?? 10,
-                Rows = result.list.Adapt<List<HbtUserDto>>()
+                Rows = result.Rows.Adapt<List<HbtUserDto>>()
             };
         }
 
@@ -117,7 +120,7 @@ namespace Lean.Hbt.Application.Services.Identity
         /// </summary>
         /// <param name="userId">用户ID</param>
         /// <returns>返回用户详情</returns>
-        public async Task<HbtUserDto> GetAsync(long userId)
+        public async Task<HbtUserDto> GetByIdAsync(long userId)
         {
             var user = await _userRepository.GetByIdAsync(userId);
             if (user == null)
@@ -148,16 +151,13 @@ namespace Lean.Hbt.Application.Services.Identity
         /// </summary>
         /// <param name="input">用户创建信息</param>
         /// <returns>返回新创建的用户ID</returns>
-        public async Task<long> InsertAsync(HbtUserCreateDto input)
+        public async Task<long> CreateAsync(HbtUserCreateDto input)
         {
             if (input == null)
                 throw new ArgumentNullException(nameof(input));
 
             if (string.IsNullOrEmpty(input.UserName))
                 throw new HbtException(_localization.L("User.Username.Required"));
-
-            if (string.IsNullOrEmpty(input.Password))
-                throw new HbtException(_localization.L("User.Password.Required"));
 
             // 验证租户是否存在且有效
             var tenant = await _tenantRepository.GetByIdAsync(input.TenantId);
@@ -172,12 +172,15 @@ namespace Lean.Hbt.Application.Services.Identity
             await HbtValidateUtils.ValidateFieldExistsAsync(_userRepository, "PhoneNumber", input.PhoneNumber);
             await HbtValidateUtils.ValidateFieldExistsAsync(_userRepository, "Email", input.Email);
 
+            // 使用默认密码或验证用户提供的密码
+            var password = string.IsNullOrEmpty(input.Password) ? _passwordPolicy.DefaultPassword : input.Password;
+
             // 验证密码复杂度
-            if (!_passwordPolicy.ValidatePasswordComplexity(input.Password))
+            if (!_passwordPolicy.ValidatePasswordComplexity(password))
                 throw new HbtException(_localization.L("User.Password.Invalid"));
 
             // 创建用户
-            var (hash, salt, iterations) = HbtPasswordUtils.CreateHash(input.Password);
+            var (hash, salt, iterations) = HbtPasswordUtils.CreateHash(password);
             var user = new HbtUser
             {
                 UserName = input.UserName,
@@ -196,7 +199,7 @@ namespace Lean.Hbt.Application.Services.Identity
                 Remark = input.Remark ?? string.Empty
             };
 
-            var result = await _userRepository.InsertAsync(user);
+            var result = await _userRepository.CreateAsync(user);
             if (result <= 0)
                 throw new HbtException(_localization.L("User.Create.Failed"));
 
@@ -214,7 +217,7 @@ namespace Lean.Hbt.Application.Services.Identity
                     RoleId = roleId,
                     TenantId = input.TenantId
                 }).ToList();
-                await _userRoleRepository.InsertRangeAsync(userRoles);
+                await _userRoleRepository.CreateRangeAsync(userRoles);
             }
 
             // 关联岗位
@@ -231,7 +234,7 @@ namespace Lean.Hbt.Application.Services.Identity
                     PostId = postId,
                     TenantId = input.TenantId
                 }).ToList();
-                await _userPostRepository.InsertRangeAsync(userPosts);
+                await _userPostRepository.CreateRangeAsync(userPosts);
             }
 
             // 关联部门
@@ -246,7 +249,7 @@ namespace Lean.Hbt.Application.Services.Identity
                 DeptId = input.DeptId,
                 TenantId = input.TenantId
             };
-            await _userDeptRepository.InsertAsync(userDept);
+            await _userDeptRepository.CreateAsync(userDept);
 
             _logger.Info(_localization.L("User.Created.Success", input.UserName));
             return user.Id;
@@ -266,10 +269,6 @@ namespace Lean.Hbt.Application.Services.Identity
             if (user == null)
                 throw new HbtException(_localization.L("User.NotFound"));
 
-            // 验证租户权限
-            if (user.TenantId != input.TenantId)
-                throw new HbtException(_localization.L("User.Tenant.Invalid"));
-
             // 验证字段是否已存在
             await HbtValidateUtils.ValidateFieldExistsAsync(_userRepository, "PhoneNumber", input.PhoneNumber, input.UserId);
             await HbtValidateUtils.ValidateFieldExistsAsync(_userRepository, "Email", input.Email, input.UserId);
@@ -279,8 +278,9 @@ namespace Lean.Hbt.Application.Services.Identity
             user.EnglishName = input.EnglishName ?? string.Empty;
             user.PhoneNumber = input.PhoneNumber ?? string.Empty;
             user.Email = input.Email ?? string.Empty;
-            user.Gender = 0;
+            user.Gender = input.Gender;
             user.Avatar = input.Avatar ?? string.Empty;
+            user.Status = input.Status;
             user.Remark = input.Remark ?? string.Empty;
 
             var result = await _userRepository.UpdateAsync(user);
@@ -288,58 +288,142 @@ namespace Lean.Hbt.Application.Services.Identity
                 throw new HbtException(_localization.L("User.Update.Failed"));
 
             // 更新角色关联
-            await _userRoleRepository.DeleteAsync((Expression<Func<HbtUserRole, bool>>)(x => x.UserId == user.Id));
-            if (input.RoleIds?.Any() == true)
+            _logger.Info($"[用户角色] 开始更新用户 {user.UserName}(ID:{user.Id}) 的角色关联");
+            try
             {
-                // 验证角色是否属于当前租户
-                var roles = await _roleRepository.GetListAsync((Expression<Func<HbtRole, bool>>)(r => input.RoleIds.Contains(r.Id) && r.TenantId == user.TenantId));
-                if (roles.Count != input.RoleIds.Count)
-                    throw new HbtException(_localization.L("User.Role.Invalid"));
+                // 获取现有的角色关联
+                var existingRoles = await _userRoleRepository.AsQueryable()
+                    .Where(x => x.UserId == user.Id && x.IsDeleted == 0)
+                    .ToListAsync();
 
-                var userRoles = input.RoleIds.Select(roleId => new HbtUserRole
+                var existingRoleIds = existingRoles.Select(x => x.RoleId).ToList();
+                var newRoleIds = input.RoleIds ?? new List<long>();
+
+                // 找出需要删除的角色关联（在新列表中不存在的）
+                var rolesToDelete = existingRoles.Where(x => !newRoleIds.Contains(x.RoleId)).ToList();
+                if (rolesToDelete.Any())
                 {
-                    UserId = user.Id,
-                    RoleId = roleId,
-                    TenantId = user.TenantId
-                }).ToList();
-                await _userRoleRepository.InsertRangeAsync(userRoles);
+                    await _userRoleRepository.DeleteRangeAsync(rolesToDelete);
+                }
+
+                // 找出需要新增的角色关联（在现有列表中不存在的）
+                var rolesToAdd = newRoleIds.Where(x => !existingRoleIds.Contains(x))
+                    .Select(roleId => new HbtUserRole
+                    {
+                        UserId = user.Id,
+                        RoleId = roleId,
+                        TenantId = user.TenantId,
+                        CreateTime = DateTime.Now,
+                        CreateBy = _currentUser.UserName ?? "Hbt365",
+                        IsDeleted = 0
+                    }).ToList();
+
+                if (rolesToAdd.Any())
+                {
+                    await _userRoleRepository.CreateRangeAsync(rolesToAdd);
+                }
+
+                _logger.Info($"[用户角色] 更新成功: 删除 {rolesToDelete.Count} 个角色, 新增 {rolesToAdd.Count} 个角色");
+            }
+            catch (Exception ex)
+            {
+                _logger.Error($"[用户角色] 更新失败: {ex.Message}");
+                _logger.Error($"[用户角色] 异常详情: {ex}");
+                throw;
             }
 
             // 更新岗位关联
-            await _userPostRepository.DeleteAsync((Expression<Func<HbtUserPost, bool>>)(x => x.UserId == user.Id));
-            if (input.PostIds?.Any() == true)
+            _logger.Info($"[用户岗位] 开始更新用户 {user.UserName}(ID:{user.Id}) 的岗位关联");
+            try
             {
-                // 验证岗位是否属于当前租户
-                var posts = await _postRepository.GetListAsync((Expression<Func<HbtPost, bool>>)(p => input.PostIds.Contains(p.Id) && p.TenantId == user.TenantId));
-                if (posts.Count != input.PostIds.Count)
-                    throw new HbtException(_localization.L("User.Post.Invalid"));
+                // 获取现有的岗位关联
+                var existingPosts = await _userPostRepository.AsQueryable()
+                    .Where(x => x.UserId == user.Id && x.IsDeleted == 0)
+                    .ToListAsync();
 
-                var userPosts = input.PostIds.Select(postId => new HbtUserPost
+                var existingPostIds = existingPosts.Select(x => x.PostId).ToList();
+                var newPostIds = input.PostIds ?? new List<long>();
+
+                // 找出需要删除的岗位关联（在新列表中不存在的）
+                var postsToDelete = existingPosts.Where(x => !newPostIds.Contains(x.PostId)).ToList();
+                if (postsToDelete.Any())
                 {
-                    UserId = user.Id,
-                    PostId = postId,
-                    TenantId = user.TenantId
-                }).ToList();
-                await _userPostRepository.InsertRangeAsync(userPosts);
+                    await _userPostRepository.DeleteRangeAsync(postsToDelete);
+                }
+
+                // 找出需要新增的岗位关联（在现有列表中不存在的）
+                var postsToAdd = newPostIds.Where(x => !existingPostIds.Contains(x))
+                    .Select(postId => new HbtUserPost
+                    {
+                        UserId = user.Id,
+                        PostId = postId,
+                        TenantId = user.TenantId,
+                        CreateTime = DateTime.Now,
+                        CreateBy = _currentUser.UserName ?? "Hbt365",
+                        IsDeleted = 0
+                    }).ToList();
+
+                if (postsToAdd.Any())
+                {
+                    await _userPostRepository.CreateRangeAsync(postsToAdd);
+                }
+
+                _logger.Info($"[用户岗位] 更新成功: 删除 {postsToDelete.Count} 个岗位, 新增 {postsToAdd.Count} 个岗位");
+            }
+            catch (Exception ex)
+            {
+                _logger.Error($"[用户岗位] 更新失败: {ex.Message}");
+                _logger.Error($"[用户岗位] 异常详情: {ex}");
+                throw;
             }
 
             // 更新部门关联
-            await _userDeptRepository.DeleteAsync((Expression<Func<HbtUserDept, bool>>)(x => x.UserId == user.Id));
-            // 验证部门是否属于当前租户
-            var dept = await _deptRepository.GetByIdAsync(input.DeptId);
-            if (dept == null || dept.TenantId != user.TenantId)
-                throw new HbtException(_localization.L("User.Dept.Invalid"));
-
-            var userDept = new HbtUserDept
+            _logger.Info($"[用户部门] 开始更新用户 {user.UserName}(ID:{user.Id}) 的部门关联");
+            try
             {
-                UserId = user.Id,
-                DeptId = input.DeptId,
-                TenantId = user.TenantId
-            };
-            await _userDeptRepository.InsertAsync(userDept);
+                // 获取现有的部门关联
+                var existingDepts = await _userDeptRepository.AsQueryable()
+                    .Where(x => x.UserId == user.Id && x.IsDeleted == 0)
+                    .ToListAsync();
+
+                var existingDeptIds = existingDepts.Select(x => x.DeptId).ToList();
+                var newDeptIds = input.DeptIds ?? new List<long>();
+
+                // 找出需要删除的部门关联（在新列表中不存在的）
+                var deptsToDelete = existingDepts.Where(x => !newDeptIds.Contains(x.DeptId)).ToList();
+                if (deptsToDelete.Any())
+                {
+                    await _userDeptRepository.DeleteRangeAsync(deptsToDelete);
+                }
+
+                // 找出需要新增的部门关联（在现有列表中不存在的）
+                var deptsToAdd = newDeptIds.Where(x => !existingDeptIds.Contains(x))
+                    .Select(deptId => new HbtUserDept
+                    {
+                        UserId = user.Id,
+                        DeptId = deptId,
+                        TenantId = user.TenantId,
+                        CreateTime = DateTime.Now,
+                        CreateBy = _currentUser.UserName ?? "Hbt365",
+                        IsDeleted = 0
+                    }).ToList();
+
+                if (deptsToAdd.Any())
+                {
+                    await _userDeptRepository.CreateRangeAsync(deptsToAdd);
+                }
+
+                _logger.Info($"[用户部门] 更新成功: 删除 {deptsToDelete.Count} 个部门, 新增 {deptsToAdd.Count} 个部门");
+            }
+            catch (Exception ex)
+            {
+                _logger.Error($"[用户部门] 更新失败: {ex.Message}");
+                _logger.Error($"[用户部门] 异常详情: {ex}");
+                throw;
+            }
 
             _logger.Info(_localization.L("User.Updated.Success", user.UserName));
-            return result > 0;
+            return true;
         }
 
         /// <summary>
@@ -353,14 +437,14 @@ namespace Lean.Hbt.Application.Services.Identity
             if (user == null)
                 throw new HbtException(_localization.L("User.NotFound"));
 
-            // 验证租户权限
-            if (user.TenantId != _tenantContext.TenantId)
-                throw new HbtException(_localization.L("User.Tenant.Invalid"));
-
             // 删除用户关联数据
-            await _userRoleRepository.DeleteAsync((Expression<Func<HbtUserRole, bool>>)(x => x.UserId == userId));
-            await _userPostRepository.DeleteAsync((Expression<Func<HbtUserPost, bool>>)(x => x.UserId == userId));
-            await _userDeptRepository.DeleteAsync((Expression<Func<HbtUserDept, bool>>)(x => x.UserId == userId));
+            Expression<Func<HbtUserRole, bool>> roleExp = x => x.UserId == userId;
+            Expression<Func<HbtUserPost, bool>> postExp = x => x.UserId == userId;
+            Expression<Func<HbtUserDept, bool>> deptExp = x => x.UserId == userId;
+
+            await _userRoleRepository.DeleteAsync(roleExp);
+            await _userPostRepository.DeleteAsync(postExp);
+            await _userDeptRepository.DeleteAsync(deptExp);
 
             // 删除用户
             var result = await _userRepository.DeleteAsync(userId);
@@ -379,15 +463,14 @@ namespace Lean.Hbt.Application.Services.Identity
             if (userIds == null || userIds.Length == 0)
                 throw new HbtException(_localization.L("User.BatchDelete.Empty"));
 
-            // 验证租户权限
-            var users = await _userRepository.GetListAsync(u => userIds.Contains(u.Id));
-            if (users.Any(u => u.TenantId != _tenantContext.TenantId))
-                throw new HbtException(_localization.L("User.Tenant.Invalid"));
-
             // 删除用户关联数据
-            await _userRoleRepository.DeleteAsync((Expression<Func<HbtUserRole, bool>>)(x => userIds.Contains(x.UserId)));
-            await _userPostRepository.DeleteAsync((Expression<Func<HbtUserPost, bool>>)(x => userIds.Contains(x.UserId)));
-            await _userDeptRepository.DeleteAsync((Expression<Func<HbtUserDept, bool>>)(x => userIds.Contains(x.UserId)));
+            Expression<Func<HbtUserRole, bool>> batchRoleExp = x => userIds.Contains(x.UserId);
+            Expression<Func<HbtUserPost, bool>> batchPostExp = x => userIds.Contains(x.UserId);
+            Expression<Func<HbtUserDept, bool>> batchDeptExp = x => userIds.Contains(x.UserId);
+
+            await _userRoleRepository.DeleteAsync(batchRoleExp);
+            await _userPostRepository.DeleteAsync(batchPostExp);
+            await _userDeptRepository.DeleteAsync(batchDeptExp);
 
             // 删除用户
             var result = await _userRepository.DeleteRangeAsync(userIds.Cast<object>().ToList());
@@ -475,7 +558,7 @@ namespace Lean.Hbt.Application.Services.Identity
                         Remark = user.Remark ?? string.Empty
                     };
 
-                    await _userRepository.InsertAsync(newUser);
+                    await _userRepository.CreateAsync(newUser);
                     success++;
                 }
                 catch (Exception ex)
@@ -629,6 +712,24 @@ namespace Lean.Hbt.Application.Services.Identity
 
             _logger.Info(_localization.L("User.Unlocked.Success", user.UserName));
             return result > 0;
+        }
+
+        public async Task<HbtUserDto> GetUserByNameAsync(string userName)
+        {
+            var user = await _userRepository.GetInfoAsync(x => x.UserName == userName);
+            if (user == null)
+                throw new HbtException(_localization.L("User.NotFound"), HbtConstants.ErrorCodes.NotFound);
+
+            return user.Adapt<HbtUserDto>();
+        }
+
+        public async Task<HbtUserDto> GetUserByPhoneAsync(string phoneNumber)
+        {
+            var user = await _userRepository.GetInfoAsync(x => x.PhoneNumber == phoneNumber);
+            if (user == null)
+                throw new HbtException(_localization.L("User.NotFound"), HbtConstants.ErrorCodes.NotFound);
+
+            return user.Adapt<HbtUserDto>();
         }
     }
 }

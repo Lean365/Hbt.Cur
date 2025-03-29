@@ -43,7 +43,7 @@ public class HbtTenantService : IHbtTenantService
     /// </summary>
     /// <param name="query">查询条件</param>
     /// <returns>返回分页结果</returns>
-    public async Task<HbtPagedResult<HbtTenantDto>> GetPagedListAsync(HbtTenantQueryDto query)
+    public async Task<HbtPagedResult<HbtTenantDto>> GetListAsync(HbtTenantQueryDto query)
     {
         var exp = Expressionable.Create<HbtTenant>();
 
@@ -56,14 +56,19 @@ public class HbtTenantService : IHbtTenantService
         if (query.Status.HasValue)
             exp.And(x => x.Status == query.Status.Value);
 
-        var result = await _repository.GetPagedListAsync(exp.ToExpression(), query.PageIndex, query.PageSize);
+        var result = await _repository.GetPagedListAsync(
+            exp.ToExpression(),
+            query.PageIndex,
+            query.PageSize,
+            x => x.TenantId,
+            OrderByType.Asc);
 
         return new HbtPagedResult<HbtTenantDto>
         {
-            TotalNum = result.total,
+            TotalNum = result.TotalNum,
             PageIndex = query.PageIndex,
             PageSize = query.PageSize,
-            Rows = result.list.Adapt<List<HbtTenantDto>>()
+            Rows = result.Rows.Adapt<List<HbtTenantDto>>()
         };
     }
 
@@ -72,7 +77,7 @@ public class HbtTenantService : IHbtTenantService
     /// </summary>
     /// <param name="id">租户ID</param>
     /// <returns>返回租户详情</returns>
-    public async Task<HbtTenantDto> GetAsync(long id)
+    public async Task<HbtTenantDto> GetByIdAsync(long id)
     {
         var tenant = await _repository.GetByIdAsync(id);
         if (tenant == null)
@@ -86,7 +91,7 @@ public class HbtTenantService : IHbtTenantService
     /// </summary>
     /// <param name="input">租户创建信息</param>
     /// <returns>返回新创建的租户ID</returns>
-    public async Task<long> InsertAsync(HbtTenantCreateDto input)
+    public async Task<long> CreateAsync(HbtTenantCreateDto input)
     {
         // 验证字段是否已存在
         if (!string.IsNullOrEmpty(input.TenantName))
@@ -101,7 +106,7 @@ public class HbtTenantService : IHbtTenantService
         var tenant = input.Adapt<HbtTenant>();
         tenant.Status = 0; // 0 表示正常状态
 
-        var result = await _repository.InsertAsync(tenant);
+        var result = await _repository.CreateAsync(tenant);
         return result > 0 ? tenant.Id : 0;
     }
 
@@ -172,14 +177,15 @@ public class HbtTenantService : IHbtTenantService
     {
         var tenants = await _repository.AsQueryable()
             .Where(t => t.Status == 0)  // 只获取正常状态的租户
-            .OrderBy(t => t.TenantName)
+            .OrderBy(t => t.TenantId)  // 按TenantId排序，确保系统租户（TenantId=0）在最前面
             .Select(t => new HbtSelectOption
             {
                 Label = t.TenantName,
-                Value = t.Id,
+                Value = t.TenantId,  // 使用 TenantId 而不是 Id
                 Disabled = false
             })
             .ToListAsync();
+
         return tenants;
     }
 
@@ -210,7 +216,7 @@ public class HbtTenantService : IHbtTenantService
                 var newTenant = tenant.Adapt<HbtTenant>();
                 newTenant.Status = 0;
 
-                var result = await _repository.InsertAsync(newTenant);
+                var result = await _repository.CreateAsync(newTenant);
                 if (result > 0)
                     success++;
                 else

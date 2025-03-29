@@ -1,12 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- 使用主题色，支持暗色模式 -->
   <style>
-    path { fill: var(--ant-color-primary); }
+    .primary { stroke: var(--ant-color-primary, #1890FF); }
+    .secondary { stroke: var(--ant-color-success, #52C41A); }
+    .accent { stroke: var(--ant-color-warning, #FAAD14); }
+    
     @media (prefers-color-scheme: dark) {
-      path { fill: #177ddc; }
+      .primary { stroke: #1890FF; }
+      .secondary { stroke: #52C41A; }
+      .accent { stroke: #FAAD14; }
+    }
+
+    .glow {
+      animation: glowEffect 3s infinite;
+    }
+
+    @keyframes glowEffect {
+      0% { filter: drop-shadow(0 0 1px rgba(24, 144, 255, 0.3)); }
+      33% { filter: drop-shadow(0 0 1px rgba(82, 196, 26, 0.3)); }
+      66% { filter: drop-shadow(0 0 1px rgba(250, 173, 20, 0.3)); }
+      100% { filter: drop-shadow(0 0 1px rgba(24, 144, 255, 0.3)); }
     }
   </style>
-  <!-- 简单的 L 形图标 -->
-  <path d="M6 4h4v20h16v4H6z"/>
+
+  <!-- 背景圆环 -->
+  <circle class="primary glow" cx="16" cy="16" r="15" stroke-width="1" fill="none" />
+  
+  <!-- H字母 -->
+  <path class="primary" d="M8 8v16M8 16h6M14 8v16" stroke-width="1.5" fill="none" />
+  
+  <!-- B字母 -->
+  <path class="secondary" d="M16 8v16h2c4 0 6-2 6-5v-1c0-2-1-3-3-3.5 2-0.5 3-1.5 3-3.5v-1c0-3-2-5-6-5h-2" stroke-width="1.5" fill="none" />
+  
+  <!-- T字母 -->
+  <path class="accent" d="M24 8h8M28 8v16" stroke-width="1.5" fill="none" />
 </svg> 

@@ -1,0 +1,50 @@
+#nullable enable
+
+//===================================================================
+// 项目名 : Lean.Hbt
+// 文件名 : {{ table.name }}.cs
+// 创建者 : Lean365
+// 创建时间: {{ date }}
+// 版本号 : V.0.0.1
+// 描述    : {{ table.comment }}
+//===================================================================
+using SqlSugar;
+using Lean.Hbt.Domain.Entities.Identity;
+
+namespace Lean.Hbt.Domain.Entities.{{ table.module_name }};
+
+/// <summary>
+/// {{ table.comment }}
+/// </summary>
+/// <remarks>
+/// 创建者: Lean365
+/// 创建时间: {{ date }}
+/// </remarks>
+[SugarTable("{{ table.name }}", "{{ table.comment }}")]
+public class {{ pascal_case table.table_name }} : HbtBaseEntity
+{
+    #region 属性
+    {{~ for column in table.columns ~}}
+    {{~ if column.column_name != "id" and column.column_name != "create_time" and column.column_name != "update_time" ~}}
+    /// <summary>
+    /// {{ column.column_comment }}
+    /// </summary>
+    [SugarColumn(ColumnName = "{{ column.column_name }}", ColumnDescription = "{{ column.column_comment }}", 
+        {{~ if column.is_pk ~}}IsPrimaryKey = true, {{~ end ~}}
+        {{~ if column.is_increment ~}}IsIdentity = true, {{~ end ~}}
+        {{~ if column.data_type == "nvarchar" or column.data_type == "varchar" ~}}
+        Length = {{ column.length }}, 
+        ColumnDataType = "{{ column.data_type }}", 
+        {{~ end ~}}
+        {{~ if column.data_type == "decimal" or column.data_type == "double" or column.data_type == "float" ~}}
+        Precision = {{ column.precision }},
+        Scale = {{ column.scale }},
+        {{~ end ~}}
+        IsNullable = {{ column.is_nullable | string.downcase }}, 
+        DefaultValue = "{{ column.default_value }}")]
+    public {{ to_csharp_type column.data_type }}{{~ if column.is_nullable ~}}?{{~ end ~}} {{ pascal_case column.column_name }} { get; set; }{{~ if column.is_nullable ~}} = null;{{~ else if column.data_type == "string" ~}} = string.Empty;{{~ end ~}}
+
+    {{~ end ~}}
+    {{~ end ~}}
+    #endregion
+} 

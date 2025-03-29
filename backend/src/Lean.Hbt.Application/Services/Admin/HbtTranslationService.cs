@@ -8,12 +8,7 @@
 //===================================================================
 
 using Lean.Hbt.Application.Dtos.Admin;
-using Lean.Hbt.Common.Exceptions;
-using Lean.Hbt.Common.Helpers;
 using Lean.Hbt.Domain.Entities.Admin;
-using Lean.Hbt.Domain.Repositories;
-using Lean.Hbt.Domain.Utils;
-using SqlSugar;
 
 namespace Lean.Hbt.Application.Services.Admin
 {
@@ -45,7 +40,7 @@ namespace Lean.Hbt.Application.Services.Admin
         /// <summary>
         /// 获取翻译分页列表
         /// </summary>
-        public async Task<HbtPagedResult<HbtTranslationDto>> GetPagedListAsync(HbtTranslationQueryDto query)
+        public async Task<HbtPagedResult<HbtTranslationDto>> GetListAsync(HbtTranslationQueryDto query)
         {
             var exp = Expressionable.Create<HbtTranslation>();
 
@@ -61,20 +56,26 @@ namespace Lean.Hbt.Application.Services.Admin
             if (query.Status.HasValue)
                 exp.And(x => x.Status == query.Status.Value);
 
-            var (list, total) = await _translationRepository.GetPagedListAsync(exp.ToExpression(), query.PageIndex, query.PageSize);
+            var result = await _translationRepository.GetPagedListAsync(
+                exp.ToExpression(),
+                query.PageIndex,
+                query.PageSize,
+                x => x.OrderNum,
+                OrderByType.Asc);
+
             return new HbtPagedResult<HbtTranslationDto>
             {
-                Rows = list.Adapt<List<HbtTranslationDto>>(),
-                TotalNum = total,
-                PageIndex = query.PageIndex,
-                PageSize = query.PageSize
+                Rows = result.Rows.Adapt<List<HbtTranslationDto>>(),
+                TotalNum = result.TotalNum,
+                PageIndex = result.PageIndex,
+                PageSize = result.PageSize
             };
         }
 
         /// <summary>
         /// 获取翻译详情
         /// </summary>
-        public async Task<HbtTranslationDto> GetAsync(long TransId)
+        public async Task<HbtTranslationDto> GetByIdAsync(long TransId)
         {
             var translation = await _translationRepository.GetByIdAsync(TransId);
             if (translation == null)
@@ -86,14 +87,14 @@ namespace Lean.Hbt.Application.Services.Admin
         /// <summary>
         /// 创建翻译
         /// </summary>
-        public async Task<long> InsertAsync(HbtTranslationCreateDto input)
+        public async Task<long> CreateAsync(HbtTranslationCreateDto input)
         {
             await HbtValidateUtils.ValidateFieldExistsAsync(_translationRepository, "TransKey", input.TransKey);
 
             var translation = input.Adapt<HbtTranslation>();
             translation.Status = 0; // 0表示正常状态
 
-            var result = await _translationRepository.InsertAsync(translation);
+            var result = await _translationRepository.CreateAsync(translation);
             return result > 0 ? translation.Id : 0;
         }
 
@@ -167,7 +168,7 @@ namespace Lean.Hbt.Application.Services.Admin
                     try
                     {
                         var translation = item.Adapt<HbtTranslation>();
-                        await _translationRepository.InsertAsync(translation);
+                        await _translationRepository.CreateAsync(translation);
                         success++;
                     }
                     catch (Exception ex)
@@ -255,8 +256,7 @@ namespace Lean.Hbt.Application.Services.Admin
         /// </summary>
         public async Task<string> GetTransValueAsync(string langCode, string transKey)
         {
-            var list = await _translationRepository.GetListAsync(x => x.LangCode == langCode && x.TransKey == transKey);
-            var translation = list.FirstOrDefault();
+            var translation = await _translationRepository.GetInfoAsync(x => x.LangCode == langCode && x.TransKey == transKey);
             return translation?.TransValue ?? string.Empty;
         }
 
@@ -291,46 +291,29 @@ namespace Lean.Hbt.Application.Services.Admin
             var langCodes = allLangCodes.Select(x => x.LangCode).Distinct().ToList();
 
             // 3. 获取分页数据
-            var (list, total) = await _translationRepository.GetPagedListAsync(
+            var result = await _translationRepository.GetPagedListAsync(
                 exp.ToExpression(),
                 query.PageIndex,
-                query.PageSize
-            );
+                query.PageSize,
+                x => x.OrderNum,
+                OrderByType.Asc);
 
-            // 4. 按翻译键分组
-            var transKeys = list.Select(x => x.TransKey).Distinct().OrderBy(x => x).ToList();
-            var rows = new List<Dictionary<string, string>>();
-
-            foreach (var transKey in transKeys)
-            {
-                var translations = list.Where(x => x.TransKey == transKey);
-                var langValues = new Dictionary<string, string>
+            // 4. 转换为字典格式
+            var transposedData = result.Rows.GroupBy(x => x.TransKey)
+                .Select(g => new Dictionary<string, string>
                 {
-                    ["transKey"] = transKey // 添加翻译键作为一个字段
-                };
+                    ["transKey"] = g.Key,
+                    // 添加每个语言的翻译
+                }.Concat(g.ToDictionary(x => x.LangCode, x => x.TransValue))
+                 .ToDictionary(x => x.Key, x => x.Value))
+                .ToList();
 
-                // 初始化所有语言的翻译值为空字符串
-                foreach (var langCode in langCodes)
-                {
-                    langValues[langCode] = string.Empty;
-                }
-
-                // 填充已有的翻译值
-                foreach (var translation in translations)
-                {
-                    langValues[translation.LangCode] = translation.TransValue;
-                }
-
-                rows.Add(langValues);
-            }
-
-            // 5. 返回分页结果
             return new HbtPagedResult<Dictionary<string, string>>
             {
-                Rows = rows,
-                TotalNum = total,
-                PageIndex = query.PageIndex,
-                PageSize = query.PageSize
+                Rows = transposedData,
+                TotalNum = result.TotalNum,
+                PageIndex = result.PageIndex,
+                PageSize = result.PageSize
             };
         }
     }

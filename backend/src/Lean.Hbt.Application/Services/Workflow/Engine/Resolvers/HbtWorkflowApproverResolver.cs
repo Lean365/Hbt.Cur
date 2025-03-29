@@ -98,16 +98,16 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine.Resolvers
                     break;
 
                 case 4: // 4 表示发起人上级
-                    var initiator = await _userRepository.FirstOrDefaultAsync(u => u.Id == instance.InitiatorId);
+                    var initiator = await GetUserByIdAsync(instance.InitiatorId);
                     if (initiator != null)
                     {
                         var initiatorDepts = await _userDeptRepository.GetListAsync(ud => ud.UserId == initiator.Id);
                         foreach (var dept in initiatorDepts)
                         {
-                            var deptInfo = await _deptRepository.FirstOrDefaultAsync(d => d.Id == dept.DeptId);
+                            var deptInfo = await GetDeptByIdAsync(dept.DeptId);
                             if (deptInfo?.Leader != null)
                             {
-                                var leader = await _userRepository.FirstOrDefaultAsync(u => u.UserName == deptInfo.Leader);
+                                var leader = await GetDeptLeaderAsync(deptInfo.Id);
                                 if (leader != null)
                                 {
                                     approvers.Add(leader.Id);
@@ -121,10 +121,10 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine.Resolvers
                     var initiatorDepartments = await _userDeptRepository.GetListAsync(ud => ud.UserId == instance.InitiatorId);
                     foreach (var dept in initiatorDepartments)
                     {
-                        var deptInfo = await _deptRepository.FirstOrDefaultAsync(d => d.Id == dept.DeptId);
+                        var deptInfo = await GetDeptByIdAsync(dept.DeptId);
                         if (deptInfo?.Leader != null)
                         {
-                            var leader = await _userRepository.FirstOrDefaultAsync(u => u.UserName == deptInfo.Leader);
+                            var leader = await GetDeptLeaderAsync(deptInfo.Id);
                             if (leader != null)
                             {
                                 approvers.Add(leader.Id);
@@ -138,6 +138,34 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine.Resolvers
             }
 
             return approvers.Distinct().ToList();
+        }
+
+        private async Task<HbtUser?> GetUserByIdAsync(long userId)
+        {
+            return await _userRepository.GetInfoAsync(x => x.Id == userId);
+        }
+
+        private async Task<HbtDept?> GetDeptByIdAsync(long deptId)
+        {
+            return await _deptRepository.GetInfoAsync(x => x.Id == deptId);
+        }
+
+        private async Task<HbtUser?> GetDeptLeaderAsync(long deptId)
+        {
+            var dept = await _deptRepository.GetInfoAsync(x => x.Id == deptId);
+            if (string.IsNullOrEmpty(dept?.Leader)) return null;
+            return await _userRepository.GetInfoAsync(x => x.UserName == dept.Leader);
+        }
+
+        private async Task<HbtUser?> GetParentDeptLeaderAsync(long deptId)
+        {
+            var dept = await _deptRepository.GetInfoAsync(x => x.Id == deptId);
+            if (dept?.ParentId == 0) return null;
+            
+            var parentDept = await _deptRepository.GetInfoAsync(x => x.Id == dept.ParentId);
+            if (string.IsNullOrEmpty(parentDept?.Leader)) return null;
+            
+            return await _userRepository.GetInfoAsync(x => x.UserName == parentDept.Leader);
         }
     }
 } 

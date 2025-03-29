@@ -54,7 +54,7 @@ namespace Lean.Hbt.Application.Services.Audit
         /// </summary>
         /// <param name="query">查询条件</param>
         /// <returns>返回分页结果</returns>
-        public async Task<HbtPagedResult<HbtOperLogDto>> GetPagedListAsync(HbtOperLogQueryDto query)
+        public async Task<HbtPagedResult<HbtOperLogDto>> GetListAsync(HbtOperLogQueryDto query)
         {
             var exp = Expressionable.Create<HbtOperLog>();
 
@@ -78,15 +78,21 @@ namespace Lean.Hbt.Application.Services.Audit
 
             if (query.EndTime.HasValue)
                 exp.And(x => x.CreateTime <= query.EndTime.Value);
+            // 执行分页查询
+            var result = await _operLogRepository.GetPagedListAsync(
+                exp.ToExpression(),
+                query.PageIndex,
+                query.PageSize,
+                x => x.CreateTime,
+                OrderByType.Desc);
 
-            var result = await _operLogRepository.GetPagedListAsync(exp.ToExpression(), query.PageIndex, query.PageSize);
-
+            // 返回分页结果
             return new HbtPagedResult<HbtOperLogDto>
             {
-                TotalNum = result.total,
-                PageIndex = query.PageIndex,
-                PageSize = query.PageSize,
-                Rows = result.list.Adapt<List<HbtOperLogDto>>()
+                Rows = result.Rows.Adapt<List<HbtOperLogDto>>(),
+                TotalNum = result.TotalNum,
+                PageIndex = result.PageIndex,
+                PageSize = result.PageSize
             };
         }
 
@@ -95,7 +101,7 @@ namespace Lean.Hbt.Application.Services.Audit
         /// </summary>
         /// <param name="logId">日志ID</param>
         /// <returns>返回操作日志详情</returns>
-        public async Task<HbtOperLogDto> GetAsync(long logId)
+        public async Task<HbtOperLogDto> GetByIdAsync(long logId)
         {
             var log = await _operLogRepository.GetByIdAsync(logId);
             if (log == null)

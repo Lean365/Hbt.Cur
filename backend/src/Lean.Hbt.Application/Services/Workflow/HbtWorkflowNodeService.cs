@@ -63,7 +63,7 @@ namespace Lean.Hbt.Application.Services.Workflow
         /// 4. PageIndex - 页码
         /// 5. PageSize - 每页记录数</param>
         /// <returns>返回分页后的节点列表</returns>
-        public async Task<HbtPagedResult<HbtWorkflowNodeDto>> GetPagedListAsync(HbtWorkflowNodeQueryDto query)
+        public async Task<HbtPagedResult<HbtWorkflowNodeDto>> GetListAsync(HbtWorkflowNodeQueryDto query)
         {
             var exp = Expressionable.Create<HbtWorkflowNode>();
 
@@ -76,14 +76,14 @@ namespace Lean.Hbt.Application.Services.Workflow
             if (query?.WorkflowDefinitionId.HasValue == true)
                 exp = exp.And(x => x.WorkflowDefinitionId == query.WorkflowDefinitionId.Value);
 
-            var result = await _nodeRepository.GetPagedListAsync(exp.ToExpression(), query?.PageIndex ?? 1, query?.PageSize ?? 10);
+            var result = await _nodeRepository.GetPagedListAsync(exp.ToExpression(), query?.PageIndex ?? 1, query?.PageSize ?? 10, x => x.OrderNum, OrderByType.Asc);
 
             return new HbtPagedResult<HbtWorkflowNodeDto>
             {
-                TotalNum = result.total,
+                TotalNum = result.TotalNum,
                 PageIndex = query?.PageIndex ?? 1,
                 PageSize = query?.PageSize ?? 10,
-                Rows = result.list.Adapt<List<HbtWorkflowNodeDto>>()
+                Rows = result.Rows.Adapt<List<HbtWorkflowNodeDto>>()
             };
         }
 
@@ -93,7 +93,7 @@ namespace Lean.Hbt.Application.Services.Workflow
         /// <param name="id">节点ID</param>
         /// <returns>节点详情DTO</returns>
         /// <exception cref="HbtException">当节点不存在时抛出异常</exception>
-        public async Task<HbtWorkflowNodeDto> GetAsync(long id)
+        public async Task<HbtWorkflowNodeDto> GetByIdAsync(long id)
         {
             var node = await _nodeRepository.GetByIdAsync(id);
             if (node == null)
@@ -109,13 +109,13 @@ namespace Lean.Hbt.Application.Services.Workflow
         /// <returns>新创建的节点ID</returns>
         /// <exception cref="ArgumentNullException">当输入参数为空时抛出异常</exception>
         /// <exception cref="HbtException">当节点创建失败时抛出异常</exception>
-        public async Task<long> InsertAsync(HbtWorkflowNodeCreateDto input)
+        public async Task<long> CreateAsync(HbtWorkflowNodeCreateDto input)
         {
             if (input == null)
                 throw new ArgumentNullException(nameof(input));
 
             var node = input.Adapt<HbtWorkflowNode>();
-            var result = await _nodeRepository.InsertAsync(node);
+            var result = await _nodeRepository.CreateAsync(node);
             if (result <= 0)
                 throw new HbtException(_localization.L("WorkflowNode.Create.Failed"));
 
@@ -207,7 +207,7 @@ namespace Lean.Hbt.Application.Services.Workflow
                     try
                     {
                         var node = item.Adapt<HbtWorkflowNode>();
-                        var insertResult = await _nodeRepository.InsertAsync(node);
+                        var insertResult = await _nodeRepository.CreateAsync(node);
                         if (insertResult > 0)
                         {
                             result.Add(node.Adapt<HbtWorkflowNodeDto>());

@@ -68,14 +68,22 @@ namespace Lean.Hbt.Application.Services.Audit
             if (query?.EndTime.HasValue == true)
                 exp.And(x => x.CreateTime <= query.EndTime.Value);
 
-            var result = await _quartzLogRepository.GetPagedListAsync(exp.ToExpression(), query?.PageIndex ?? 1, query?.PageSize ?? 10);
 
+            // 执行分页查询
+            var result = await _quartzLogRepository.GetPagedListAsync(
+                exp.ToExpression(),
+                query.PageIndex,
+                query.PageSize,
+                x => x.CreateTime,
+                OrderByType.Desc);
+
+            // 返回分页结果
             return new HbtPagedResult<HbtQuartzLogDto>
             {
-                TotalNum = result.total,
-                PageIndex = query?.PageIndex ?? 1,
-                PageSize = query?.PageSize ?? 10,
-                Rows = result.list.Adapt<List<HbtQuartzLogDto>>()
+                Rows = result.Rows.Adapt<List<HbtQuartzLogDto>>(),
+                TotalNum = result.TotalNum,
+                PageIndex = result.PageIndex,
+                PageSize = result.PageSize
             };
         }
 
@@ -84,7 +92,7 @@ namespace Lean.Hbt.Application.Services.Audit
         /// </summary>
         /// <param name="logId">日志ID</param>
         /// <returns>返回任务日志详情</returns>
-        public async Task<HbtQuartzLogDto> GetAsync(long logId)
+        public async Task<HbtQuartzLogDto> GetByIdAsync(long logId)
         {
             var log = await _quartzLogRepository.GetByIdAsync(logId);
             if (log == null)

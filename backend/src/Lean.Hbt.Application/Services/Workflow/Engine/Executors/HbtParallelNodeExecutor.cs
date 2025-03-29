@@ -71,7 +71,7 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine.Executors
                     IsCompleted = false
                 };
 
-                await _parallelBranchRepository.InsertAsync(branch);
+                await _parallelBranchRepository.CreateAsync(branch);
             }
 
             // 返回成功结果，包含所有并行分支的转换ID

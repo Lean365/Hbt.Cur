@@ -16,6 +16,8 @@ using Mapster;
 using SqlSugar;
 using SqlSugar.Extensions;
 using System.Linq.Expressions;
+using Lean.Hbt.Domain.IServices.SignalR;
+using Microsoft.Extensions.Logging;
 
 namespace Lean.Hbt.Application.Services.RealTime;
 
@@ -29,42 +31,59 @@ namespace Lean.Hbt.Application.Services.RealTime;
 public class HbtOnlineUserService : IHbtOnlineUserService
 {
     private readonly IHbtRepository<HbtOnlineUser> _repository;
+    private readonly IHbtSignalRUserService _signalRUserService;
+    private readonly ILogger<HbtOnlineUserService> _logger;
 
     /// <summary>
     /// 构造函数
     /// </summary>
-    public HbtOnlineUserService(IHbtRepository<HbtOnlineUser> repository)
-    {
+    public HbtOnlineUserService(
+        IHbtRepository<HbtOnlineUser> repository,
+        IHbtSignalRUserService signalRUserService,
+        ILogger<HbtOnlineUserService> logger)    {
         _repository = repository;
+        _signalRUserService = signalRUserService;
+        _logger = logger;
     }
 
     /// <summary>
     /// 获取在线用户分页列表
     /// </summary>
-    public async Task<HbtPagedResult<HbtOnlineUserDto>> GetPagedListAsync(HbtOnlineUserQueryDto query)
+    public async Task<HbtPagedResult<HbtOnlineUserDto>> GetListAsync(HbtOnlineUserQueryDto query)
     {
         // 1.构建查询条件
         var exp = Expressionable.Create<HbtOnlineUser>();
         
-        if (query.TenantId.HasValue)
-            exp = exp.And(u => u.TenantId == query.TenantId.Value);
-            
+        // 租户ID是必须的
+        exp = exp.And(u => u.TenantId == query.TenantId);
+        
         if (query.UserId.HasValue)
             exp = exp.And(u => u.UserId == query.UserId.Value);
+
+        if (!string.IsNullOrEmpty(query.ClientIp))
+            exp = exp.And(u => u.ClientIp.Contains(query.ClientIp));
+
+        if (query.StartTime.HasValue)
+            exp = exp.And(u => u.LastActivity >= query.StartTime.Value);
+
+        if (query.EndTime.HasValue)
+            exp = exp.And(u => u.LastActivity <= query.EndTime.Value);
 
         // 2.查询数据
         var result = await _repository.GetPagedListAsync(
             exp.ToExpression(),
             query.PageIndex,
-            query.PageSize);
+            query.PageSize,
+            x => x.LastActivity,
+            OrderByType.Desc);
 
-        // 3.转换并返回
+        // 3.转换数据
         return new HbtPagedResult<HbtOnlineUserDto>
         {
-            TotalNum = result.total,
+            TotalNum = result.TotalNum,
             PageIndex = query.PageIndex,
             PageSize = query.PageSize,
-            Rows = result.list.Adapt<List<HbtOnlineUserDto>>()
+            Rows = result.Rows.Select(x => x.Adapt<HbtOnlineUserDto>()).ToList()
         };
     }
 
@@ -79,11 +98,20 @@ public class HbtOnlineUserService : IHbtOnlineUserService
         // 1.构建查询条件
         var exp = Expressionable.Create<HbtOnlineUser>();
         
-        if (query.TenantId.HasValue)
-            exp = exp.And(u => u.TenantId == query.TenantId.Value);
+        // 租户ID是必须的
+        exp = exp.And(u => u.TenantId == query.TenantId);
             
         if (query.UserId.HasValue)
             exp = exp.And(u => u.UserId == query.UserId.Value);
+
+        if (!string.IsNullOrEmpty(query.ClientIp))
+            exp = exp.And(u => u.ClientIp.Contains(query.ClientIp));
+
+        if (query.StartTime.HasValue)
+            exp = exp.And(u => u.LastActivity >= query.StartTime.Value);
+
+        if (query.EndTime.HasValue)
+            exp = exp.And(u => u.LastActivity <= query.EndTime.Value);
 
         // 2.查询数据
         var users = await _repository.GetListAsync(exp.ToExpression());
@@ -120,19 +148,65 @@ public class HbtOnlineUserService : IHbtOnlineUserService
     {
         var user = input.Adapt<HbtOnlineUser>();
         user.LastActivity = DateTime.Now;
-        var result = await _repository.InsertAsync(user);
+        var result = await _repository.CreateAsync(user);
         return result > 0;
     }
 
     /// <summary>
     /// 删除在线用户
     /// </summary>
-    public async Task<bool> DeleteOnlineUserAsync(string connectionId)
+    public async Task<bool> DeleteOnlineUserAsync(string connectionId, string deleteBy)
     {
-        var exp = Expressionable.Create<HbtOnlineUser>();
-        exp.And(u => u.ConnectionId == connectionId);
-        var result = await _repository.DeleteAsync(exp.ToExpression());
-        return result > 0;
+        try
+        {
+            var exp = Expressionable.Create<HbtOnlineUser>();
+            exp.And(u => u.ConnectionId == connectionId);
+            
+            var user = await _repository.GetInfoAsync(exp.ToExpression());
+            if (user != null)
+            {
+                _logger.LogInformation("正在强制用户下线: ConnectionId={ConnectionId}, UserId={UserId}", connectionId, user.UserId);
+                
+                // 1. 发送强制下线消息
+                try {
+                    await _signalRUserService.SendMessageAsync(connectionId, "ForceOffline", new object[] { "您已被管理员强制下线" });
+                    _logger.LogInformation("已发送强制下线消息: ConnectionId={ConnectionId}", connectionId);
+                } catch (Exception ex) {
+                    _logger.LogError(ex, "发送强制下线消息失败: ConnectionId={ConnectionId}", connectionId);
+                }
+
+                // 2. 更新用户状态
+                try {
+                    user.DeleteBy = deleteBy;
+                    user.DeleteTime = DateTime.Now;
+                    user.OnlineStatus = 1; // 设置为离线状态
+                    user.IsDeleted = 1;//管理员强制下线，删除标记
+                    user.Remark = "被"+deleteBy+"要求强制下线";
+                    await _repository.UpdateAsync(user);
+                    _logger.LogInformation("已更新用户状态为离线: ConnectionId={ConnectionId}", connectionId);
+                } catch (Exception ex) {
+                    _logger.LogError(ex, "更新用户状态失败: ConnectionId={ConnectionId}", connectionId);
+                }
+
+                // 3. 断开 SignalR 连接
+                try {
+                    await _signalRUserService.DisconnectUserAsync(connectionId);
+                    _logger.LogInformation("已断开用户连接: ConnectionId={ConnectionId}", connectionId);
+                } catch (Exception ex) {
+                    _logger.LogError(ex, "断开用户连接失败: ConnectionId={ConnectionId}", connectionId);
+                }
+
+                _logger.LogInformation("用户强制下线成功: ConnectionId={ConnectionId}, UserId={UserId}", connectionId, user.UserId);
+                return true;
+            }
+            _logger.LogWarning("未找到要强制下线的用户: ConnectionId={ConnectionId}", connectionId);
+            return false;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "强制用户下线失败: ConnectionId={ConnectionId}", connectionId);
+            throw;
+        }
     }
 
     /// <summary>
@@ -145,5 +219,65 @@ public class HbtOnlineUserService : IHbtOnlineUserService
         exp.And(u => u.LastActivity < expiredTime);
 
         return await _repository.DeleteAsync(exp.ToExpression());
+    }
+
+    /// <summary>
+    /// 根据连接ID获取在线用户信息
+    /// </summary>
+    public async Task<HbtOnlineUserDto> GetUserByConnectionIdAsync(string connectionId)
+    {
+        var exp = Expressionable.Create<HbtOnlineUser>();
+        exp = exp.And(u => u.ConnectionId == connectionId);
+        
+        var user = await _repository.GetInfoAsync(exp.ToExpression());
+        return user?.Adapt<HbtOnlineUserDto>();
+    }
+
+    /// <summary>
+    /// 根据条件获取在线用户信息
+    /// </summary>
+    public async Task<HbtOnlineUserDto> GetInfoAsync(Expression<Func<HbtOnlineUserDto, bool>> predicate)
+    {
+        // 由于DTO和实体字段相同，直接使用相同的lambda表达式
+        var exp = predicate.Compile();
+        var users = await _repository.GetListAsync();
+        var dtos = users.Select(x => x.Adapt<HbtOnlineUserDto>());
+        return dtos.FirstOrDefault(exp);
+    }
+
+    /// <summary>
+    /// 更新在线用户信息
+    /// </summary>
+    public async Task<bool> UpdateAsync(HbtOnlineUserDto entity)
+    {
+        var user = entity.Adapt<HbtOnlineUser>();
+        return await _repository.UpdateAsync(user) > 0;
+    }
+
+    /// <summary>
+    /// 获取所有在线用户
+    /// </summary>
+    public async Task<List<HbtOnlineUserDto>> GetAllAsync()
+    {
+        var users = await _repository.GetListAsync();
+        return users.Select(x => x.Adapt<HbtOnlineUserDto>()).ToList();
+    }
+
+    /// <summary>
+    /// 更新所有在线用户的心跳时间
+    /// </summary>
+    public async Task<int> UpdateHeartbeatAsync()
+    {
+        var users = await _repository.GetListAsync();
+        if (!users.Any()) return 0;
+
+        foreach (var user in users)
+        {
+            user.LastHeartbeat = DateTime.Now;
+            user.LastActivity = DateTime.Now;
+            user.UpdateTime = DateTime.Now;
+        }
+
+        return await _repository.UpdateRangeAsync(users);
     }
 } 

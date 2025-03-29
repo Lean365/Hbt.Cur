@@ -35,7 +35,7 @@ namespace Lean.Hbt.Domain.IServices.Admin
         /// <summary>
         /// 获取日志清理配置
         /// </summary>
-        Task<LogCleanupOptions> GetConfigAsync();
+        Task<HbtLogCleanupOptions> GetConfigAsync();
 
         /// <summary>
         /// 执行日志清理

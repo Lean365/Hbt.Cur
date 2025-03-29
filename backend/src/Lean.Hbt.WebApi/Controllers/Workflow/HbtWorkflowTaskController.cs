@@ -44,9 +44,9 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// </summary>
         [HttpGet]
         [HbtPerm("workflow:task:list")]
-        public async Task<IActionResult> GetPagedListAsync([FromQuery] HbtWorkflowTaskQueryDto query)
+        public async Task<IActionResult> GetListAsync([FromQuery] HbtWorkflowTaskQueryDto query)
         {
-            var result = await _workflowTaskService.GetPagedListAsync(query);
+            var result = await _workflowTaskService.GetListAsync(query);
             return Success(result);
         }
 
@@ -55,9 +55,9 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// </summary>
         [HttpGet("{id}")]
         [HbtPerm("workflow:task:query")]
-        public async Task<IActionResult> GetAsync(long id)
+        public async Task<IActionResult> GetByIdAsync(long id)
         {
-            var result = await _workflowTaskService.GetAsync(id);
+            var result = await _workflowTaskService.GetByIdAsync(id);
             return Success(result);
         }
 
@@ -66,9 +66,9 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// </summary>
         [HttpPost]
         [HbtPerm("workflow:task:insert")]
-        public async Task<IActionResult> InsertAsync([FromBody] HbtWorkflowTaskCreateDto input)
+        public async Task<IActionResult> CreateAsync([FromBody] HbtWorkflowTaskCreateDto input)
         {
-            var result = await _workflowTaskService.InsertAsync(input);
+            var result = await _workflowTaskService.CreateAsync(input);
             return Success(result);
         }
 

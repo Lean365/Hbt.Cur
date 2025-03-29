@@ -7,7 +7,6 @@
 // 描述   : 系统配置种子数据初始化类
 //===================================================================
 
-using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Domain.Entities.Admin;
 using Lean.Hbt.Domain.IServices;
 
@@ -128,10 +127,10 @@ public class HbtDbSeedConfig
 
         foreach (var config in defaultConfigs)
         {
-            var existingConfig = await _configRepository.FirstOrDefaultAsync(c => c.ConfigKey == config.ConfigKey);
+            var existingConfig = await _configRepository.GetInfoAsync(c => c.ConfigKey == config.ConfigKey);
             if (existingConfig == null)
             {
-                await _configRepository.InsertAsync(config);
+                await _configRepository.CreateAsync(config);
                 insertCount++;
                 _logger.Info($"[创建] 配置 '{config.ConfigName}' 创建成功");
             }

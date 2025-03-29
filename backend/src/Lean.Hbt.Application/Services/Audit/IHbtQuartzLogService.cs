@@ -30,7 +30,7 @@ namespace Lean.Hbt.Application.Services.Audit
         /// </summary>
         /// <param name="logId">日志ID</param>
         /// <returns>任务日志详情</returns>
-        Task<HbtQuartzLogDto> GetAsync(long logId);
+        Task<HbtQuartzLogDto> GetByIdAsync(long logId);
 
         /// <summary>
         /// 导出任务日志数据

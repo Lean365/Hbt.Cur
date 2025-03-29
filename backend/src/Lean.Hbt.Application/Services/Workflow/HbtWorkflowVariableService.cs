@@ -89,7 +89,7 @@ namespace Lean.Hbt.Application.Services.Workflow
         /// 6. PageIndex - 页码
         /// 7. PageSize - 每页记录数</param>
         /// <returns>返回分页后的工作流变量列表</returns>
-        public async Task<HbtPagedResult<HbtWorkflowVariableDto>> GetPagedListAsync(HbtWorkflowVariableQueryDto query)
+        public async Task<HbtPagedResult<HbtWorkflowVariableDto>> GetListAsync(HbtWorkflowVariableQueryDto query)
         {
             var exp = Expressionable.Create<HbtWorkflowVariable>();
 
@@ -108,14 +108,19 @@ namespace Lean.Hbt.Application.Services.Workflow
             if (query?.VariableScope.HasValue == true)
                 exp = exp.And(x => x.Scope == query.VariableScope.Value);
 
-            var result = await _variableRepository.GetPagedListAsync(exp.ToExpression(), query?.PageIndex ?? 1, query?.PageSize ?? 10);
+            var result = await _variableRepository.GetPagedListAsync(
+                exp.ToExpression(),
+                query?.PageIndex ?? 1,
+                query?.PageSize ?? 10,
+                x => x.Id,
+                OrderByType.Desc);
 
             return new HbtPagedResult<HbtWorkflowVariableDto>
             {
-                TotalNum = result.total,
+                TotalNum = result.TotalNum,
                 PageIndex = query?.PageIndex ?? 1,
                 PageSize = query?.PageSize ?? 10,
-                Rows = result.list.Adapt<List<HbtWorkflowVariableDto>>()
+                Rows = result.Rows.Adapt<List<HbtWorkflowVariableDto>>()
             };
         }
 
@@ -125,7 +130,7 @@ namespace Lean.Hbt.Application.Services.Workflow
         /// <param name="id">工作流变量ID</param>
         /// <returns>工作流变量详情DTO</returns>
         /// <exception cref="HbtException">当工作流变量不存在时抛出异常</exception>
-        public async Task<HbtWorkflowVariableDto> GetAsync(long id)
+        public async Task<HbtWorkflowVariableDto> GetByIdAsync(long id)
         {
             var variable = await _variableRepository.GetByIdAsync(id);
             if (variable == null)
@@ -141,7 +146,7 @@ namespace Lean.Hbt.Application.Services.Workflow
         /// <returns>新创建的工作流变量ID</returns>
         /// <exception cref="ArgumentNullException">当输入参数为空时抛出异常</exception>
         /// <exception cref="HbtException">当工作流变量创建失败时抛出异常</exception>
-        public async Task<long> InsertAsync(HbtWorkflowVariableCreateDto input)
+        public async Task<long> CreateAsync(HbtWorkflowVariableCreateDto input)
         {
             if (input == null)
                 throw new ArgumentNullException(nameof(input));
@@ -151,7 +156,7 @@ namespace Lean.Hbt.Application.Services.Workflow
 
             var variable = input.Adapt<HbtWorkflowVariable>();
 
-            var result = await _variableRepository.InsertAsync(variable);
+            var result = await _variableRepository.CreateAsync(variable);
             if (result <= 0)
                 throw new HbtException(_localization.L("WorkflowVariable.Create.Failed"));
 
@@ -252,7 +257,7 @@ namespace Lean.Hbt.Application.Services.Workflow
 
             foreach (var variable in variables)
             {
-                await _variableRepository.InsertAsync(variable);
+                await _variableRepository.CreateAsync(variable);
             }
 
             return variables.Adapt<List<HbtWorkflowVariableDto>>();
@@ -291,7 +296,7 @@ namespace Lean.Hbt.Application.Services.Workflow
                 var variables = sheet.Value.Adapt<List<HbtWorkflowVariable>>();
                 foreach (var variable in variables)
                 {
-                    await _variableRepository.InsertAsync(variable);
+                    await _variableRepository.CreateAsync(variable);
                 }
                 result[sheet.Key] = variables.Adapt<List<HbtWorkflowVariableDto>>();
             }

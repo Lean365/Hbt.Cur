@@ -192,13 +192,13 @@ public class HbtDbSeedTranslation
 
         foreach (var translation in defaultTranslations)
         {
-            var existingTranslation = await _translationRepository.FirstOrDefaultAsync(t =>
+            var existingTranslation = await _translationRepository.GetInfoAsync(t =>
                 t.LangCode == translation.LangCode &&
                 t.TransKey == translation.TransKey);
 
             if (existingTranslation == null)
             {
-                await _translationRepository.InsertAsync(translation);
+                await _translationRepository.CreateAsync(translation);
                 insertCount++;
                 _logger.Info($"[创建] 翻译 '{translation.TransKey}' ({translation.LangCode}) 创建成功");
             }

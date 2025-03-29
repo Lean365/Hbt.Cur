@@ -2,16 +2,13 @@
   <div class="header-login-bar">
     <a-space>
       <locale-select />
-      <theme-switch />
+      <theme-select />
       <holiday-theme />
     </a-space>
   </div>
 </template>
 
 <script lang="ts" setup>
-import LocaleSelect from '@/components/base/LocaleSelect.vue'
-import ThemeSwitch from '@/components/base/ThemeSwitch.vue'
-import HolidayTheme from '@/components/base/HolidayTheme.vue'
 </script>
 
 <style lang="less" scoped>

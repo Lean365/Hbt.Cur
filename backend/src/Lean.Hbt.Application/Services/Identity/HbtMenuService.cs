@@ -60,7 +60,7 @@ namespace Lean.Hbt.Application.Services.Identity
         /// </summary>
         /// <param name="query">查询条件，包含页码、每页大小、菜单名称、状态等</param>
         /// <returns>返回分页后的菜单列表</returns>
-        public async Task<HbtPagedResult<HbtMenuDto>> GetPagedListAsync(HbtMenuQueryDto query)
+        public async Task<HbtPagedResult<HbtMenuDto>> GetListAsync(HbtMenuQueryDto query)
         {
             // 构建查询条件
             var exp = Expressionable.Create<HbtMenu>();
@@ -70,22 +70,27 @@ namespace Lean.Hbt.Application.Services.Identity
                 exp.And(x => x.MenuName.Contains(query.MenuName));
 
             // 根据状态精确查询
-            if (query.Status.HasValue)
+            if (query?.Status.HasValue == true && query.Status!.Value != -1)
                 exp.And(x => x.Status == query.Status.Value);
 
             var pageIndex = query?.PageIndex ?? 1;
             var pageSize = query?.PageSize ?? 10;
 
             // 执行分页查询
-            var result = await _menuRepository.GetPagedListAsync(exp.ToExpression(), pageIndex, pageSize);
+            var result = await _menuRepository.GetPagedListAsync(
+                exp.ToExpression(),
+                pageIndex,
+                pageSize,
+                x => x.OrderNum,
+                OrderByType.Asc);
 
             // 转换为DTO并返回
             return new HbtPagedResult<HbtMenuDto>
             {
-                TotalNum = result.total,
+                TotalNum = result.TotalNum,
                 PageIndex = pageIndex,
                 PageSize = pageSize,
-                Rows = result.list.Adapt<List<HbtMenuDto>>()
+                Rows = result.Rows.Adapt<List<HbtMenuDto>>()
             };
         }
 
@@ -95,7 +100,7 @@ namespace Lean.Hbt.Application.Services.Identity
         /// <param name="menuId">菜单ID</param>
         /// <returns>返回菜单详细信息</returns>
         /// <exception cref="HbtException">当菜单不存在时抛出异常</exception>
-        public async Task<HbtMenuDto> GetAsync(long menuId)
+        public async Task<HbtMenuDto> GetByIdAsync(long menuId)
         {
             var menu = await _menuRepository.GetByIdAsync(menuId);
             if (menu == null)
@@ -110,7 +115,7 @@ namespace Lean.Hbt.Application.Services.Identity
         /// <param name="input">菜单创建信息，包含菜单名称、路径、图标等</param>
         /// <returns>返回新创建的菜单ID</returns>
         /// <exception cref="HbtException">当菜单名称或翻译键已存在时抛出异常</exception>
-        public async Task<long> InsertAsync(HbtMenuCreateDto input)
+        public async Task<long> CreateAsync(HbtMenuCreateDto input)
         {
             // 验证菜单名称是否已存在
             await HbtValidateUtils.ValidateFieldExistsAsync(_menuRepository, "MenuName", input.MenuName);
@@ -141,7 +146,7 @@ namespace Lean.Hbt.Application.Services.Identity
             };
 
             // 保存菜单并返回ID
-            var result = await _menuRepository.InsertAsync(menu);
+            var result = await _menuRepository.CreateAsync(menu);
             return menu.Id;
         }
 
@@ -474,9 +479,9 @@ namespace Lean.Hbt.Application.Services.Identity
                     
                 var menuIds = await menuIdsQuery.ToListAsync();
 
-                _logger.LogInformation("[菜单服务] 角色菜单: Count={Count}, MenuIds={MenuIds}",
-                    menuIds?.Count ?? 0,
-                    string.Join(",", menuIds ?? new List<long>()));
+                // _logger.LogInformation("[菜单服务] 角色菜单: Count={Count}, MenuIds={MenuIds}",
+                //     menuIds?.Count ?? 0,
+                //     string.Join(",", menuIds ?? new List<long>()));
 
                 if (menuIds == null || !menuIds.Any())
                 {
@@ -489,8 +494,8 @@ namespace Lean.Hbt.Application.Services.Identity
                     .Where(m => menuIds.Contains(m.Id) && m.Status == 0 && m.MenuType != 2)
                     .OrderBy(m => m.OrderNum);
                     
-                _logger.LogInformation("[菜单服务] 菜单查询SQL: {Sql}", 
-                    menusQuery.ToSql());
+                // _logger.LogInformation("[菜单服务] 菜单查询SQL: {Sql}", 
+                //     menusQuery.ToSql());
                     
                 var menus = await menusQuery.ToListAsync();
 

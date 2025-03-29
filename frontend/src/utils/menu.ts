@@ -2,7 +2,7 @@ import type { Menu } from '@/types/identity/menu'
 import type { MenuProps } from 'ant-design-vue'
 import * as Icons from '@ant-design/icons-vue'
 import { h } from 'vue'
-import { HbtMenuType} from '@/types/common'
+import { HbtMenuType} from '@/types/identity/menu'
 import i18n from '@/locales'
 
 /**

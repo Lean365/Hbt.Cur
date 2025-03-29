@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { getHbtDictDataByType } from '@/api/admin/hbtDictData'
-import type { HbtDictData } from '@/types/admin/hbtDictData'
+import type { HbtDictData } from '@/types/admin/dictData'
 
 export interface DictOption {
   label: string

@@ -1,0 +1,330 @@
+#nullable enable
+
+//===================================================================
+// 项目名 : Lean.Hbt
+// 文件名 : {{ pascal_case table.table_name }}Service.cs
+// 创建者 : Lean365
+// 创建时间: {{ date }}
+// 版本号 : V0.0.1
+// 描述    : {{ table.comment }}服务实现类
+//===================================================================
+
+using System;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.Linq;
+using Microsoft.AspNetCore.Http;
+using Mapster;
+using SqlSugar;
+using Lean.Hbt.Common.Models;
+using Lean.Hbt.Common.Extensions;
+using Lean.Hbt.Common.Exceptions;
+using Lean.Hbt.Common.Utils;
+using Lean.Hbt.Domain.Entities.{{ table.module_name }};
+using Lean.Hbt.Application.Dtos.{{ table.module_name }};
+using Lean.Hbt.Infrastructure.Data.Repositories;
+using Lean.Hbt.Domain.Repositories.{{ table.module_name }};
+using Lean.Hbt.Domain.Dtos.{{ table.module_name }};
+using Lean.Hbt.Domain.Interfaces.{{ table.module_name }};
+using Lean.Hbt.Infrastructure.Exceptions;
+using Microsoft.Extensions.Logging;
+using System.IO;
+
+namespace Lean.Hbt.Application.Services.{{ table.module_name }};
+
+/// <summary>
+/// {{ table.comment }}服务实现类
+/// </summary>
+/// <remarks>
+/// 创建者: Lean365
+/// 创建时间: {{ date }}
+/// </remarks>
+public class {{ pascal_case table.table_name }}Service : I{{ pascal_case table.table_name }}Service
+{
+    private readonly I{{ pascal_case table.table_name }}Repository _repository;
+    private readonly ILogger<{{ pascal_case table.table_name }}Service> _logger;
+
+    /// <summary>
+    /// 构造函数
+    /// </summary>
+    public {{ pascal_case table.table_name }}Service(
+        I{{ pascal_case table.table_name }}Repository repository,
+        ILogger<{{ pascal_case table.table_name }}Service> logger)
+    {
+        _repository = repository;
+        _logger = logger;
+    }
+
+    /// <summary>
+    /// 获取分页列表
+    /// </summary>
+    /// <param name="query">查询参数</param>
+    /// <returns>分页结果</returns>
+    public async Task<HbtPagedResult<{{ pascal_case table.table_name }}Dto>> GetListAsync({{ pascal_case table.table_name }}QueryDto query)
+    {
+        var exp = Expressionable.Create<{{ pascal_case table.table_name }}>();
+
+        // 构建查询条件
+        {{~ for column in table.columns ~}}
+        {{~ if column.is_query ~}}
+        if (query.{{ pascal_case column.column_name }} != null)
+        {
+            {{~ if column.query_type == "LIKE" ~}}
+            exp.And(x => x.{{ pascal_case column.column_name }}.Contains(query.{{ pascal_case column.column_name }}));
+            {{~ else ~}}
+            exp.And(x => x.{{ pascal_case column.column_name }} == query.{{ pascal_case column.column_name }});
+            {{~ end ~}}
+        }
+        {{~ end ~}}
+        {{~ end ~}}
+
+        var result = await _repository.GetListAsync(exp.ToExpression(), query?.PageIndex ?? 1, query?.PageSize ?? 10);
+
+        return new HbtPagedResult<{{ pascal_case table.table_name }}Dto>
+        {
+            TotalNum = result.total,
+            PageIndex = query?.PageIndex ?? 1,
+            PageSize = query?.PageSize ?? 10,
+            Rows = result.list.Adapt<List<{{ pascal_case table.table_name }}Dto>>()
+        };
+    }
+
+    /// <summary>
+    /// 获取详情
+    /// </summary>
+    /// <param name="id">主键ID</param>
+    /// <returns>详情信息</returns>
+    public async Task<{{ pascal_case table.table_name }}Dto> GetByIdAsync(long id)
+    {
+        var entity = await _repository.GetByIdAsync(id);
+        if (entity == null)
+            throw new HbtException($"未找到ID为{id}的{{ table.comment }}");
+
+        return entity.Adapt<{{ pascal_case table.table_name }}Dto>();
+    }
+
+    /// <summary>
+    /// 创建数据
+    /// </summary>
+    /// <param name="input">创建参数</param>
+    /// <returns>创建结果</returns>
+    public async Task<HbtResult> CreateAsync({{ pascal_case table.table_name }}CreateDto input)
+    {
+        // 数据验证
+        {{~ for column in table.columns ~}}
+        {{~ if column.is_unique ~}}
+        await HbtValidateUtils.ValidateFieldExistsAsync(_repository, "{{ pascal_case column.column_name }}", input.{{ pascal_case column.column_name }});
+        {{~ end ~}}
+        {{~ end ~}}
+
+        var entity = input.Adapt<{{ pascal_case table.table_name }}>();
+        var result = await _repository.CreateAsync(entity);
+        return result ? HbtResult.Success("新增成功") : HbtResult.Error("新增失败");
+    }
+
+    /// <summary>
+    /// 更新数据
+    /// </summary>
+    /// <param name="input">更新参数</param>
+    /// <returns>更新结果</returns>
+    public async Task<HbtResult> UpdateAsync({{ pascal_case table.table_name }}UpdateDto input)
+    {
+        var entity = await _repository.GetByIdAsync(input.Id);
+        if (entity == null)
+            throw new HbtException($"未找到ID为{input.Id}的{{ table.comment }}");
+
+        // 数据验证
+        {{~ for column in table.columns ~}}
+        {{~ if column.is_unique ~}}
+        await HbtValidateUtils.ValidateFieldExistsAsync(_repository, "{{ pascal_case column.column_name }}", input.{{ pascal_case column.column_name }}, input.Id);
+        {{~ end ~}}
+        {{~ end ~}}
+
+        input.Adapt(entity);
+        var result = await _repository.UpdateAsync(entity);
+        return result ? HbtResult.Success("更新成功") : HbtResult.Error("更新失败");
+    }
+
+    /// <summary>
+    /// 删除数据
+    /// </summary>
+    /// <param name="ids">主键ID数组</param>
+    /// <returns>删除结果</returns>
+    public async Task<HbtResult> DeleteAsync(long[] ids)
+    {
+        var result = await _repository.DeleteAsync(ids);
+        return result ? HbtResult.Success("删除成功") : HbtResult.Error("删除失败");
+    }
+
+    #region 扩展操作
+
+    /// <summary>
+    /// 导入数据
+    /// </summary>
+    /// <param name="fileStream">Excel文件流</param>
+    /// <param name="sheetName">工作表名称</param>
+    /// <returns>返回导入结果(success:成功数量,fail:失败数量)</returns>
+    public async Task<(int success, int fail)> ImportAsync(Stream fileStream, string sheetName = "Sheet1")
+    {
+        try
+        {
+            var data = HbtExcelHelper.ImportFromExcel<{{ pascal_case table.table_name }}ImportDto>(fileStream, sheetName);
+            if (data == null || !data.Any())
+                return (0, 0);
+
+            var success = 0;
+            var fail = 0;
+
+            foreach (var item in data)
+            {
+                try
+                {
+                    // 数据验证
+                    {{~ for column in table.columns ~}}
+                    {{~ if column.is_unique ~}}
+                    await HbtValidateUtils.ValidateFieldExistsAsync(_repository, "{{ pascal_case column.column_name }}", item.{{ pascal_case column.column_name }});
+                    {{~ end ~}}
+                    {{~ end ~}}
+
+                    var entity = item.Adapt<{{ pascal_case table.table_name }}>();
+                    if (await _repository.CreateAsync(entity))
+                        success++;
+                    else
+                        fail++;
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "导入{{ table.comment }}数据失败，数据：{Data}", item);
+                    fail++;
+                }
+            }
+
+            return (success, fail);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "导入{{ table.comment }}数据失败");
+            throw new HbtException($"导入失败：{ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// 导出数据
+    /// </summary>
+    /// <param name="query">查询条件</param>
+    /// <param name="sheetName">工作表名称</param>
+    /// <returns>Excel文件字节数组</returns>
+    public async Task<byte[]> ExportAsync({{ pascal_case table.table_name }}QueryDto query, string sheetName = "Sheet1")
+    {
+        var list = await GetListAsync(query);
+        if (!list.Rows.Any())
+            return Array.Empty<byte>();
+
+        var data = list.Rows.Adapt<List<{{ pascal_case table.table_name }}ExportDto>>();
+        return HbtExcelHelper.ExportToExcel(data, sheetName);
+    }
+
+    /// <summary>
+    /// 获取导入模板
+    /// </summary>
+    /// <param name="sheetName">工作表名称</param>
+    /// <returns>Excel模板文件字节数组</returns>
+    public async Task<byte[]> GetTemplateAsync(string sheetName = "Sheet1")
+    {
+        var list = new List<{{ pascal_case table.table_name }}ImportDto>
+        {
+            new {{ pascal_case table.table_name }}ImportDto()
+        };
+        return HbtExcelHelper.ExportToExcel(list, sheetName);
+    }
+
+    /// <summary>
+    /// 更新状态
+    /// </summary>
+    /// <param name="input">状态更新参数</param>
+    /// <returns>更新结果</returns>
+    public async Task<HbtResult> UpdateStatusAsync({{ pascal_case table.table_name }}StatusDto input)
+    {
+        var entity = await _repository.GetByIdAsync(input.Id);
+        if (entity == null)
+            throw new HbtException($"未找到ID为{input.Id}的{{ table.comment }}");
+
+        entity.Status = input.Status;
+        var result = await _repository.UpdateAsync(entity);
+        return result ? HbtResult.Success("状态更新成功") : HbtResult.Error("状态更新失败");
+    }
+
+    /// <summary>
+    /// 审核数据
+    /// </summary>
+    /// <param name="input">审核参数</param>
+    /// <returns>审核结果</returns>
+    public async Task<HbtResult> AuditAsync({{ pascal_case table.table_name }}AuditDto input)
+    {
+        try
+        {
+            _logger.LogInformation("开始审核{{ table.comment }}，ID：{Id}", input.Id);
+            
+            var entity = await _repository.GetByIdAsync(input.Id);
+            if (entity == null)
+            {
+                throw new BusinessException($"未找到ID为{input.Id}的{{ table.comment }}");
+            }
+
+            // 更新审核状态
+            entity.Status = input.Status;
+            entity.AuditUserId = input.AuditUserId;
+            entity.AuditUserName = input.AuditUserName;
+            entity.AuditTime = DateTime.Now;
+            entity.AuditRemark = input.AuditRemark;
+            
+            var result = await _repository.UpdateAsync(entity);
+            
+            _logger.LogInformation("审核{{ table.comment }}成功，ID：{Id}", input.Id);
+            return result ? HbtResult.Success("审核成功") : HbtResult.Error("审核失败");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "审核{{ table.comment }}失败，ID：{Id}", input.Id);
+            throw new BusinessException("审核{{ table.comment }}失败", ex);
+        }
+    }
+
+    /// <summary>
+    /// 撤销数据
+    /// </summary>
+    /// <param name="input">撤销参数</param>
+    /// <returns>撤销结果</returns>
+    public async Task<HbtResult> CancelAsync({{ pascal_case table.table_name }}CancelDto input)
+    {
+        try
+        {
+            _logger.LogInformation("开始撤销{{ table.comment }}，ID：{Id}", input.Id);
+            
+            var entity = await _repository.GetByIdAsync(input.Id);
+            if (entity == null)
+            {
+                throw new BusinessException($"未找到ID为{input.Id}的{{ table.comment }}");
+            }
+
+            // 更新状态为草稿
+            entity.Status = 0;
+            entity.CancelUserId = input.CancelUserId;
+            entity.CancelUserName = input.CancelUserName;
+            entity.CancelTime = DateTime.Now;
+            entity.CancelRemark = input.CancelRemark;
+            
+            var result = await _repository.UpdateAsync(entity);
+            
+            _logger.LogInformation("撤销{{ table.comment }}成功，ID：{Id}", input.Id);
+            return result ? HbtResult.Success("撤销成功") : HbtResult.Error("撤销失败");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "撤销{{ table.comment }}失败，ID：{Id}", input.Id);
+            throw new BusinessException("撤销{{ table.comment }}失败", ex);
+        }
+    }
+
+    #endregion
+} 

@@ -47,7 +47,7 @@ namespace Lean.Hbt.Application.Services.Routine
         /// <summary>
         /// 获取邮件模板分页列表
         /// </summary>
-        public async Task<HbtPagedResult<HbtMailTmplDto>> GetPagedListAsync(HbtMailTmplQueryDto query)
+        public async Task<HbtPagedResult<HbtMailTmplDto>> GetListAsync(HbtMailTmplQueryDto query)
         {
             var exp = Expressionable.Create<HbtMailTmpl>();
 
@@ -66,21 +66,26 @@ namespace Lean.Hbt.Application.Services.Routine
             if (query.EndTime.HasValue)
                 exp.And(x => x.CreateTime <= query.EndTime.Value);
 
-            var result = await _tmplRepository.GetPagedListAsync(exp.ToExpression(), query.PageIndex, query.PageSize);
+            var result = await _tmplRepository.GetPagedListAsync(
+                exp.ToExpression(),
+                query.PageIndex,
+                query.PageSize,
+                x => x.Id,
+                OrderByType.Asc);
 
             return new HbtPagedResult<HbtMailTmplDto>
             {
-                TotalNum = result.total,
+                TotalNum = result.TotalNum,
                 PageIndex = query.PageIndex,
                 PageSize = query.PageSize,
-                Rows = result.list.Adapt<List<HbtMailTmplDto>>()
+                Rows = result.Rows.Adapt<List<HbtMailTmplDto>>()
             };
         }
 
         /// <summary>
         /// 获取邮件模板详情
         /// </summary>
-        public async Task<HbtMailTmplDto> GetAsync(long tmplId)
+        public async Task<HbtMailTmplDto> GetByIdAsync(long tmplId)
         {
             var tmpl = await _tmplRepository.GetByIdAsync(tmplId);
             if (tmpl == null)
@@ -98,11 +103,11 @@ namespace Lean.Hbt.Application.Services.Routine
             tmpl.CreateTime = DateTime.Now;
 
             // 验证模板编码是否已存在
-            var existingTmpl = await _tmplRepository.FirstOrDefaultAsync(x => x.TmplCode == input.TmplCode);
+            var existingTmpl = await _tmplRepository.GetInfoAsync(x => x.TmplCode == input.TmplCode);
             if (existingTmpl != null)
                 throw new HbtException($"模板编码已存在: {input.TmplCode}");
 
-            var result = await _tmplRepository.InsertAsync(tmpl);
+            var result = await _tmplRepository.CreateAsync(tmpl);
             if (result <= 0)
                 throw new HbtException("创建邮件模板失败");
 
@@ -119,7 +124,7 @@ namespace Lean.Hbt.Application.Services.Routine
                 throw new HbtException($"邮件模板不存在: {tmplId}");
 
             // 验证模板编码是否已存在
-            var existingTmpl = await _tmplRepository.FirstOrDefaultAsync(x => x.TmplCode == input.TmplCode && x.Id != tmplId);
+            var existingTmpl = await _tmplRepository.GetInfoAsync(x => x.TmplCode == input.TmplCode && x.Id != tmplId);
             if (existingTmpl != null)
                 throw new HbtException($"模板编码已存在: {input.TmplCode}");
 

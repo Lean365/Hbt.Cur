@@ -55,7 +55,7 @@ namespace Lean.Hbt.Application.Services.Routine
         /// </summary>
         /// <param name="query">查询条件</param>
         /// <returns>返回分页结果</returns>
-        public async Task<HbtPagedResult<HbtFileDto>> GetPagedListAsync(HbtFileQueryDto query)
+        public async Task<HbtPagedResult<HbtFileDto>> GetListAsync(HbtFileQueryDto query)
         {
             var exp = Expressionable.Create<HbtFile>();
 
@@ -77,14 +77,19 @@ namespace Lean.Hbt.Application.Services.Routine
             if (query?.EndTime.HasValue == true)
                 exp.And(x => x.CreateTime <= query.EndTime.Value);
 
-            var result = await _fileRepository.GetPagedListAsync(exp.ToExpression(), query?.PageIndex ?? 1, query?.PageSize ?? 10);
+            var result = await _fileRepository.GetPagedListAsync(
+                exp.ToExpression(),
+                query?.PageIndex ?? 1,
+                query?.PageSize ?? 10,
+                x => x.Id,
+                OrderByType.Asc);
 
             return new HbtPagedResult<HbtFileDto>
             {
-                TotalNum = result.total,
+                TotalNum = result.TotalNum,
                 PageIndex = query?.PageIndex ?? 1,
                 PageSize = query?.PageSize ?? 10,
-                Rows = result.list.Adapt<List<HbtFileDto>>()
+                Rows = result.Rows.Adapt<List<HbtFileDto>>()
             };
         }
 
@@ -93,7 +98,7 @@ namespace Lean.Hbt.Application.Services.Routine
         /// </summary>
         /// <param name="fileId">文件ID</param>
         /// <returns>返回文件详情</returns>
-        public async Task<HbtFileDto> GetAsync(long fileId)
+        public async Task<HbtFileDto> GetByIdAsync(long fileId)
         {
             var file = await _fileRepository.GetByIdAsync(fileId);
             if (file == null)
@@ -107,10 +112,10 @@ namespace Lean.Hbt.Application.Services.Routine
         /// </summary>
         /// <param name="input">创建对象</param>
         /// <returns>返回文件ID</returns>
-        public async Task<long> InsertAsync(HbtFileCreateDto input)
+        public async Task<long> CreateAsync(HbtFileCreateDto input)
         {
             var file = input.Adapt<HbtFile>();
-            var result = await _fileRepository.InsertAsync(file);
+            var result = await _fileRepository.CreateAsync(file);
             return result;
         }
 
@@ -180,7 +185,7 @@ namespace Lean.Hbt.Application.Services.Routine
                 try
                 {
                     var file = dto.Adapt<HbtFile>();
-                    await _fileRepository.InsertAsync(file);
+                    await _fileRepository.CreateAsync(file);
                     success++;
                 }
                 catch (Exception ex)
@@ -276,7 +281,7 @@ namespace Lean.Hbt.Application.Services.Routine
             }
 
             // 3. 保存文件信息到数据库
-            await _fileRepository.InsertAsync(fileEntity);
+            await _fileRepository.CreateAsync(fileEntity);
 
             return fileEntity.Adapt<HbtFileDto>();
         }

@@ -161,39 +161,40 @@ namespace Lean.Hbt.Infrastructure.Caching
         /// <summary>
         /// 设置缓存
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
-        /// <param name="expiration"></param>
-        /// <returns></returns>
         public async Task<bool> SetAsync<T>(string key, T value, TimeSpan expiration)
         {
             try
             {
-                _cache.Set(key, value, expiration);
-                return await Task.FromResult(true);
+                var options = new MemoryCacheEntryOptions
+                {
+                    AbsoluteExpirationRelativeToNow = expiration
+                };
+
+                options.RegisterPostEvictionCallback(OnPostEviction);
+                _cache.Set(key, value, options);
+                _keys.TryAdd(key, DateTime.Now.Add(expiration));
+                return true;
             }
             catch
             {
-                return await Task.FromResult(false);
+                return false;
             }
         }
 
         /// <summary>
-        /// 判断缓存是否存在
+        /// 移除缓存
         /// </summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
         public async Task<bool> RemoveAsync(string key)
         {
             try
             {
                 _cache.Remove(key);
-                return await Task.FromResult(true);
+                _keys.TryRemove(key, out _);
+                return true;
             }
             catch
             {
-                return await Task.FromResult(false);
+                return false;
             }
         }
 
@@ -215,6 +216,22 @@ namespace Lean.Hbt.Infrastructure.Caching
             {
                 return await Task.FromResult(false);
             }
+        }
+
+        /// <summary>
+        /// 判断缓存是否存在（异步）
+        /// </summary>
+        public async Task<bool> ExistsAsync(string key)
+        {
+            return await Task.FromResult(Exists(key));
+        }
+
+        /// <summary>
+        /// 根据模式搜索键（异步）
+        /// </summary>
+        public async Task<List<string>> SearchKeysAsync(string pattern)
+        {
+            return await Task.FromResult(SearchKeys(pattern));
         }
     }
 }

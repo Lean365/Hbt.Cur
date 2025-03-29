@@ -69,10 +69,10 @@ public class HbtDbSeedRelation
         int updateCount = 0;
 
         // 1. 获取默认用户、角色、岗位、部门
-        var adminUser = await _userRepository.FirstOrDefaultAsync(u => u.UserName == "admin");
-        var adminRole = await _roleRepository.FirstOrDefaultAsync(r => r.RoleKey == "admin");
-        var gmPost = await _postRepository.FirstOrDefaultAsync(p => p.PostCode == "GM");
-        var rootDept = await _deptRepository.FirstOrDefaultAsync(d => d.ParentId == 0);
+        var adminUser = await _userRepository.GetInfoAsync(u => u.UserName == "admin");
+        var adminRole = await _roleRepository.GetInfoAsync(r => r.RoleKey == "admin");
+        var gmPost = await _postRepository.GetInfoAsync(p => p.PostCode == "GM");
+        var rootDept = await _deptRepository.GetInfoAsync(d => d.ParentId == 0);
 
         if (adminUser == null || adminRole == null || gmPost == null || rootDept == null)
         {
@@ -81,12 +81,12 @@ public class HbtDbSeedRelation
         }
 
         // 2. 初始化用户-角色关联
-        var userRole = await _userRoleRepository.FirstOrDefaultAsync(ur => 
+        var userRole = await _userRoleRepository.GetInfoAsync(ur => 
             ur.UserId == adminUser.Id && ur.RoleId == adminRole.Id);
 
         if (userRole == null)
         {
-            await _userRoleRepository.InsertAsync(new HbtUserRole
+            await _userRoleRepository.CreateAsync(new HbtUserRole
             {
                 UserId = adminUser.Id,
                 RoleId = adminRole.Id,
@@ -100,12 +100,12 @@ public class HbtDbSeedRelation
         }
 
         // 3. 初始化用户-岗位关联
-        var userPost = await _userPostRepository.FirstOrDefaultAsync(up => 
+        var userPost = await _userPostRepository.GetInfoAsync(up => 
             up.UserId == adminUser.Id && up.PostId == gmPost.Id);
 
         if (userPost == null)
         {
-            await _userPostRepository.InsertAsync(new HbtUserPost
+            await _userPostRepository.CreateAsync(new HbtUserPost
             {
                 UserId = adminUser.Id,
                 PostId = gmPost.Id,
@@ -119,12 +119,12 @@ public class HbtDbSeedRelation
         }
 
         // 4. 初始化用户-部门关联
-        var userDept = await _userDeptRepository.FirstOrDefaultAsync(ud => 
+        var userDept = await _userDeptRepository.GetInfoAsync(ud => 
             ud.UserId == adminUser.Id && ud.DeptId == rootDept.Id);
 
         if (userDept == null)
         {
-            await _userDeptRepository.InsertAsync(new HbtUserDept
+            await _userDeptRepository.CreateAsync(new HbtUserDept
             {
                 UserId = adminUser.Id,
                 DeptId = rootDept.Id,
@@ -141,12 +141,12 @@ public class HbtDbSeedRelation
         var allMenus = await _menuRepository.GetListAsync(m => m.IsDeleted == 0);
         foreach (var menu in allMenus)
         {
-            var roleMenu = await _roleMenuRepository.FirstOrDefaultAsync(rm => 
+            var roleMenu = await _roleMenuRepository.GetInfoAsync(rm => 
                 rm.RoleId == adminRole.Id && rm.MenuId == menu.Id);
 
             if (roleMenu == null)
             {
-                await _roleMenuRepository.InsertAsync(new HbtRoleMenu
+                await _roleMenuRepository.CreateAsync(new HbtRoleMenu
                 {
                     RoleId = adminRole.Id,
                     MenuId = menu.Id,

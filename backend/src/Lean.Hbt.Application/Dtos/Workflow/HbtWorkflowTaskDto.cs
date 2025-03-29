@@ -75,6 +75,27 @@ namespace Lean.Hbt.Application.Dtos.Workflow
     public class HbtWorkflowTaskDto
     {
         /// <summary>
+        /// 构造函数
+        /// </summary>
+        public HbtWorkflowTaskDto()
+        {
+            WorkflowTaskId = 0;
+            WorkflowInstanceId = 0;
+            WorkflowNodeId = 0;
+            TaskType = 0;
+            AssigneeId = 0;
+            AssigneeName = string.Empty;
+            Status = 0;
+            TaskResult = 0;
+            Comment = string.Empty;
+            Remark = string.Empty;
+            Creator = string.Empty;
+            CreateTime = DateTime.Now;
+            UpdateBy = string.Empty;
+            UpdateTime = null;
+        }
+
+        /// <summary>
         /// 任务ID
         /// </summary>
         [AdaptMember("Id")]

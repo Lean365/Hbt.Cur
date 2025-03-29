@@ -20,7 +20,7 @@ namespace Lean.Hbt.WebApi.Controllers.Routine
     /// </summary>
     [Route("api/[controller]", Name = "定时任务")]
     [ApiController]
-    [ApiModule("routine", "定时任务")]
+    [ApiModule("routine", "日常办公")]
     public class HbtQuartzTaskController : HbtBaseController
     {
         private readonly IHbtQuartzTaskService _quartzTaskService;
@@ -41,9 +41,9 @@ namespace Lean.Hbt.WebApi.Controllers.Routine
         /// <param name="query">查询条件</param>
         /// <returns>定时任务分页列表</returns>
         [HttpGet]
-        public async Task<IActionResult> GetPagedListAsync([FromQuery] HbtQuartzTaskQueryDto query)
+        public async Task<IActionResult> GetListAsync([FromQuery] HbtQuartzTaskQueryDto query)
         {
-            var result = await _quartzTaskService.GetPagedListAsync(query);
+            var result = await _quartzTaskService.GetListAsync(query);
             return Success(result);
         }
 
@@ -53,9 +53,9 @@ namespace Lean.Hbt.WebApi.Controllers.Routine
         /// <param name="taskId">任务ID</param>
         /// <returns>定时任务详情</returns>
         [HttpGet("{taskId}")]
-        public async Task<IActionResult> GetAsync(long taskId)
+        public async Task<IActionResult> GetByIdAsync(long taskId)
         {
-            var result = await _quartzTaskService.GetAsync(taskId);
+            var result = await _quartzTaskService.GetByIdAsync(taskId);
             return Success(result);
         }
 

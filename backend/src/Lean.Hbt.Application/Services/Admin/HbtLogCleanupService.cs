@@ -30,7 +30,7 @@ namespace Lean.Hbt.Application.Services.Admin
         private readonly IHbtRepository<HbtExceptionLog> _exceptionLogRepository;
         private readonly IHbtRepository<HbtDbDiffLog> _dbDiffLogRepository;
         private readonly IHbtRepository<HbtConfig> _sysConfigRepository;
-        private readonly LogCleanupOptions _defaultOptions;
+        private readonly HbtLogCleanupOptions _defaultOptions;
 
         /// <summary>
         /// 构造函数
@@ -42,7 +42,7 @@ namespace Lean.Hbt.Application.Services.Admin
             IHbtRepository<HbtExceptionLog> exceptionLogRepository,
             IHbtRepository<HbtDbDiffLog> dbDiffLogRepository,
             IHbtRepository<HbtConfig> sysConfigRepository,
-            IOptions<LogCleanupOptions> options)
+            IOptions<HbtLogCleanupOptions> options)
         {
             _auditLogRepository = auditLogRepository;
             _operLogRepository = operLogRepository;
@@ -56,10 +56,10 @@ namespace Lean.Hbt.Application.Services.Admin
         /// <summary>
         /// 获取日志清理配置
         /// </summary>
-        public async Task<LogCleanupOptions> GetConfigAsync()
+        public async Task<HbtLogCleanupOptions> GetConfigAsync()
         {
             var configs = await _sysConfigRepository.GetListAsync();
-            var options = new LogCleanupOptions();
+            var options = new HbtLogCleanupOptions();
 
             // 从系统配置中获取配置值，如果不存在则使用默认值
             options.Enabled = GetConfigValue(configs, "log.cleanup.enabled", _defaultOptions.Enabled);

@@ -7,9 +7,13 @@
 // 描述   : 在线用户控制器
 //===================================================================
 
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Lean.Hbt.Application.Dtos.RealTime;
 using Lean.Hbt.Application.Services.RealTime;
 using Lean.Hbt.Domain.IServices.Admin;
+using Lean.Hbt.Domain.Identity;
+using Microsoft.AspNetCore.Antiforgery;
 
 namespace Lean.Hbt.WebApi.Controllers.RealTime
 {
@@ -23,18 +27,30 @@ namespace Lean.Hbt.WebApi.Controllers.RealTime
     [Route("api/[controller]", Name = "在线用户")]
     [ApiController]
     [ApiModule("realtime", "实时通讯")]
+    [Authorize]
+
     public class HbtOnlineUserController : HbtBaseController
     {
         private readonly IHbtOnlineUserService _onlineUserService;
+        private readonly IHbtCurrentUser _currentUser;
+        private readonly IAntiforgery _antiforgery;
 
         /// <summary>
         /// 构造函数
         /// </summary>
         /// <param name="onlineUserService">在线用户服务</param>
         /// <param name="localization">本地化服务</param>
-        public HbtOnlineUserController(IHbtOnlineUserService onlineUserService, IHbtLocalizationService localization) : base(localization)
+        /// <param name="currentUser">当前用户服务</param>
+        /// <param name="antiforgery">CSRF服务</param>
+        public HbtOnlineUserController(
+            IHbtOnlineUserService onlineUserService, 
+            IHbtLocalizationService localization,
+            IHbtCurrentUser currentUser,
+            IAntiforgery antiforgery) : base(localization)
         {
             _onlineUserService = onlineUserService;
+            _currentUser = currentUser;
+            _antiforgery = antiforgery;
         }
 
         /// <summary>
@@ -43,9 +59,31 @@ namespace Lean.Hbt.WebApi.Controllers.RealTime
         /// <param name="query">查询条件</param>
         /// <returns>在线用户分页列表</returns>
         [HttpGet]
-        public async Task<IActionResult> GetPagedListAsync([FromQuery] HbtOnlineUserQueryDto query)
+        [HbtPerm("realtime:online:list")]
+        public async Task<IActionResult> GetListAsync([FromQuery] HbtOnlineUserQueryDto query)
         {
-            var result = await _onlineUserService.GetPagedListAsync(query);
+            // 生成CSRF令牌
+            var tokens = _antiforgery.GetAndStoreTokens(HttpContext);
+            Response.Cookies.Append("XSRF-TOKEN", tokens.RequestToken, new CookieOptions
+            {
+                HttpOnly = false,
+                Secure = true,
+                SameSite = SameSiteMode.Lax,
+                Path = "/",
+                Expires = DateTimeOffset.Now.AddHours(1)
+            });
+
+            // 确保查询对象不为空
+            query ??= new HbtOnlineUserQueryDto();
+            
+            // 使用当前用户的租户ID
+            query.TenantId = _currentUser.TenantId;
+
+            // 设置默认分页参数
+            if (query.PageIndex <= 0) query.PageIndex = 1;
+            if (query.PageSize <= 0) query.PageSize = 10;
+
+            var result = await _onlineUserService.GetListAsync(query);
             return Success(result);
         }
 
@@ -56,6 +94,7 @@ namespace Lean.Hbt.WebApi.Controllers.RealTime
         /// <param name="sheetName">工作表名称</param>
         /// <returns>导出的Excel文件</returns>
         [HttpGet("export")]
+        [HbtPerm("realtime:online:export")]
         public async Task<IActionResult> ExportAsync([FromQuery] HbtOnlineUserQueryDto query, [FromQuery] string sheetName = "在线用户信息")
         {
             var result = await _onlineUserService.ExportAsync(query, sheetName);
@@ -67,10 +106,11 @@ namespace Lean.Hbt.WebApi.Controllers.RealTime
         /// </summary>
         /// <param name="connectionId">连接ID</param>
         /// <returns>是否成功</returns>
-        [HttpDelete("{connectionId}")]
+        [HttpPost("force-offline/{connectionId}")]
+        [HbtPerm("realtime:online:delete")]
         public async Task<IActionResult> ForceOfflineAsync(string connectionId)
         {
-            var result = await _onlineUserService.DeleteOnlineUserAsync(connectionId);
+            var result = await _onlineUserService.DeleteOnlineUserAsync(connectionId, _currentUser.UserName);
             return Success(result);
         }
 
@@ -80,10 +120,25 @@ namespace Lean.Hbt.WebApi.Controllers.RealTime
         /// <param name="minutes">超时时间(分钟)</param>
         /// <returns>清理数量</returns>
         [HttpPost("cleanup")]
+        [HbtPerm("realtime:online:cleanup")]
         public async Task<IActionResult> CleanupExpiredUsersAsync([FromQuery] int minutes = 20)
         {
             var result = await _onlineUserService.CleanupExpiredUsersAsync(minutes);
             return Success(result);
+        }
+
+        /// <summary>
+        /// 更新用户心跳
+        /// </summary>
+        [HttpPost("heartbeat")]
+        public async Task<IActionResult> UpdateHeartbeatAsync()
+        {
+            var count = await _onlineUserService.UpdateHeartbeatAsync();
+            if (count > 0)
+            {
+                return Ok(HbtApiResult.Success($"已更新{count}个用户的心跳"));
+            }
+            return Ok(HbtApiResult.Success("没有在线用户需要更新"));
         }
     }
 }

@@ -49,7 +49,7 @@ namespace Lean.Hbt.Application.Services.Identity
         /// <summary>
         /// 获取设备扩展信息分页列表
         /// </summary>
-        public async Task<HbtPagedResult<HbtDeviceExtendDto>> GetPagedListAsync(HbtDeviceExtendQueryDto query)
+        public async Task<HbtPagedResult<HbtDeviceExtendDto>> GetListAsync(HbtDeviceExtendQueryDto query)
         {
             var exp = Expressionable.Create<HbtDeviceExtend>();
 
@@ -77,15 +77,17 @@ namespace Lean.Hbt.Application.Services.Identity
             if (query.LastOnlineTimeEnd.HasValue)
                 exp.And(x => x.LastOnlineTime <= query.LastOnlineTimeEnd.Value);
 
-            var (list, total) = await _deviceExtendRepository.GetPagedListAsync(
+            var result = await _deviceExtendRepository.GetPagedListAsync(
                 exp.ToExpression(),
                 query.PageIndex,
-                query.PageSize);
+                query.PageSize,
+                x => x.OrderNum,
+                OrderByType.Asc);
 
             return new HbtPagedResult<HbtDeviceExtendDto>
             {
-                Rows = list.Adapt<List<HbtDeviceExtendDto>>(),
-                TotalNum = total,
+                Rows = result.Rows.Adapt<List<HbtDeviceExtendDto>>(),
+                TotalNum = result.TotalNum,
                 PageIndex = query.PageIndex,
                 PageSize = query.PageSize
             };
@@ -105,7 +107,7 @@ namespace Lean.Hbt.Application.Services.Identity
         public async Task<HbtDeviceExtendDto> UpdateDeviceInfoAsync(HbtDeviceExtendUpdateDto request)
         {
             var now = DateTime.Now;
-            var deviceExtend = await _deviceExtendRepository.FirstOrDefaultAsync(x =>
+            var deviceExtend = await _deviceExtendRepository.GetInfoAsync(x =>
                 x.UserId == request.UserId &&
                 x.DeviceId == request.DeviceId);
 
@@ -125,7 +127,7 @@ namespace Lean.Hbt.Application.Services.Identity
                     LastOnlineTime = now
                 };
 
-                await _deviceExtendRepository.InsertAsync(deviceExtend);
+                await _deviceExtendRepository.CreateAsync(deviceExtend);
             }
             else
             {
@@ -148,7 +150,7 @@ namespace Lean.Hbt.Application.Services.Identity
         /// </summary>
         public async Task<HbtDeviceExtendDto> UpdateOfflineInfoAsync(long userId, string deviceId)
         {
-            var deviceExtend = await _deviceExtendRepository.FirstOrDefaultAsync(x =>
+            var deviceExtend = await _deviceExtendRepository.GetInfoAsync(x =>
                 x.UserId == userId &&
                 x.DeviceId == deviceId);
 
@@ -170,7 +172,7 @@ namespace Lean.Hbt.Application.Services.Identity
         /// </summary>
         public async Task<HbtDeviceExtendDto> UpdateOnlinePeriodAsync(HbtDeviceOnlinePeriodUpdateDto request)
         {
-            var deviceExtend = await _deviceExtendRepository.FirstOrDefaultAsync(
+            var deviceExtend = await _deviceExtendRepository.GetInfoAsync(
                 x => x.UserId == request.UserId && x.DeviceId == request.DeviceId);
             if (deviceExtend == null)
             {
@@ -188,7 +190,7 @@ namespace Lean.Hbt.Application.Services.Identity
         /// </summary>
         public async Task<HbtDeviceExtendDto?> GetByUserIdAndDeviceIdAsync(long userId, string deviceId)
         {
-            var deviceExtend = await _deviceExtendRepository.FirstOrDefaultAsync(
+            var deviceExtend = await _deviceExtendRepository.GetInfoAsync(
                 x => x.UserId == userId && x.DeviceId == deviceId);
             return deviceExtend?.Adapt<HbtDeviceExtendDto>();
         }

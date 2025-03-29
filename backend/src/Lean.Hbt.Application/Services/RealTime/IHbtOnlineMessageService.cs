@@ -26,7 +26,7 @@ public interface IHbtOnlineMessageService
     /// </summary>
     /// <param name="query">查询条件</param>
     /// <returns>分页结果</returns>
-    Task<HbtPagedResult<HbtOnlineMessageDto>> GetPagedListAsync(HbtOnlineMessageQueryDto query);
+    Task<HbtPagedResult<HbtOnlineMessageDto>> GetListAsync(HbtOnlineMessageQueryDto query);
 
     /// <summary>
     /// 导出在线消息数据
@@ -63,4 +63,32 @@ public interface IHbtOnlineMessageService
     /// <param name="days">保留天数</param>
     /// <returns>清理数量</returns>
     Task<int> CleanupExpiredMessagesAsync(int days = 7);
+
+    /// <summary>
+    /// 标记消息为已读
+    /// </summary>
+    /// <param name="id">消息ID</param>
+    /// <returns>是否成功</returns>
+    Task<bool> MarkAsReadAsync(long id);
+
+    /// <summary>
+    /// 标记所有消息为已读
+    /// </summary>
+    /// <param name="userId">用户ID</param>
+    /// <returns>标记的消息数量</returns>
+    Task<int> MarkAllAsReadAsync(long userId);
+
+    /// <summary>
+    /// 标记消息为未读
+    /// </summary>
+    /// <param name="id">消息ID</param>
+    /// <returns>是否成功</returns>
+    Task<bool> MarkAsUnreadAsync(long id);
+
+    /// <summary>
+    /// 标记所有消息为未读
+    /// </summary>
+    /// <param name="userId">用户ID</param>
+    /// <returns>标记的消息数量</returns>
+    Task<int> MarkAllAsUnreadAsync(long userId);
 } 

@@ -208,7 +208,8 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
     resolve: {
       alias: {
         '@': fileURLToPath(new URL('./src', import.meta.url))
-      }
+      },
+      extensions: ['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json', '.d.ts']
     },
     optimizeDeps: {
       include: [
@@ -219,12 +220,35 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
         'ant-design-vue',
         '@ant-design/icons-vue'
       ],
-      exclude: []
+      exclude: [
+        'ant-design-vue/es/style',
+        'ant-design-vue/es/config-provider/style',
+        'ant-design-vue/es/locale/zh_CN',
+        'ant-design-vue/es/locale/en_US',
+        'ant-design-vue/es/table/style',
+        'ant-design-vue/es/dropdown/style',
+        'ant-design-vue/es/menu/style',
+        'ant-design-vue/es/tooltip/style',
+        'ant-design-vue/es/form/style',
+        'ant-design-vue/es/row/style',
+        'ant-design-vue/es/col/style',
+        'ant-design-vue/es/cascader/style',
+        'ant-design-vue/es/checkbox/style',
+        'ant-design-vue/es/radio/style',
+        'ant-design-vue/es/input-number/style',
+        'ant-design-vue/es/date-picker/style',
+        'ant-design-vue/es/input/style',
+        'ant-design-vue/es/pagination/style'
+      ]
     },
     server: {
       host: '0.0.0.0',
       port: Number(env.VITE_PORT) || 5349,
       https: null,
+      hmr: {
+        overlay: false,
+        timeout: 30000
+      },
       proxy: {
         '/api': {
           target: env.VITE_PROXY_TARGET,

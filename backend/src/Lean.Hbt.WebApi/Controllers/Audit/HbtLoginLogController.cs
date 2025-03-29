@@ -11,6 +11,7 @@ using Lean.Hbt.Application.Dtos.Audit;
 using Lean.Hbt.Application.Services.Audit;
 using Lean.Hbt.Domain.IServices.Admin;
 using System.ComponentModel;
+using Lean.Hbt.Infrastructure.Security.Attributes;
 
 namespace Lean.Hbt.WebApi.Controllers.Audit
 {
@@ -44,9 +45,10 @@ namespace Lean.Hbt.WebApi.Controllers.Audit
         /// <param name="query">查询条件</param>
         /// <returns>登录日志分页列表</returns>
         [HttpGet]
-        public async Task<IActionResult> GetPagedListAsync([FromQuery] HbtLoginLogQueryDto query)
+        [HbtPerm("audit:auditloginlog:list")]
+        public async Task<IActionResult> GetListAsync([FromQuery] HbtLoginLogQueryDto query)
         {
-            var result = await _loginLogService.GetPagedListAsync(query);
+            var result = await _loginLogService.GetListAsync(query);
             return Success(result);
         }
 
@@ -56,9 +58,10 @@ namespace Lean.Hbt.WebApi.Controllers.Audit
         /// <param name="logId">日志ID</param>
         /// <returns>登录日志详情</returns>
         [HttpGet("{logId}")]
-        public async Task<IActionResult> GetAsync(long logId)
+        [HbtPerm("audit:auditloginlog:query")]
+        public async Task<IActionResult> GetByIdAsync(long logId)
         {
-            var result = await _loginLogService.GetAsync(logId);
+            var result = await _loginLogService.GetByIdAsync(logId);
             return Success(result);
         }
 
@@ -70,6 +73,7 @@ namespace Lean.Hbt.WebApi.Controllers.Audit
         /// <returns>导出的Excel文件</returns>
         [HttpGet("export")]
         [ProducesResponseType(typeof(byte[]), StatusCodes.Status200OK)]
+        [HbtPerm("audit:auditloginlog:export")]
         public async Task<IActionResult> ExportAsync([FromQuery] HbtLoginLogQueryDto query, [FromQuery] string sheetName = "登录日志")
         {
             var result = await _loginLogService.ExportAsync(query, sheetName);
@@ -81,6 +85,7 @@ namespace Lean.Hbt.WebApi.Controllers.Audit
         /// </summary>
         /// <returns>是否成功</returns>
         [HttpDelete("clear")]
+        [HbtPerm("audit:auditloginlog:clear")]
         public async Task<IActionResult> ClearAsync()
         {
             var result = await _loginLogService.ClearAsync();
@@ -89,6 +94,7 @@ namespace Lean.Hbt.WebApi.Controllers.Audit
 
         [HttpPost("unlock/{userId}")]
         [Description("解锁用户")]
+        [HbtPerm("audit:auditloginlog:unlock")]
         public async Task<HbtApiResult> UnlockUserAsync([FromRoute] long userId)
         {
             await _loginLogService.UnlockUserAsync(userId);

@@ -49,7 +49,7 @@ namespace Lean.Hbt.Application.Services.Identity
         /// <summary>
         /// 获取岗位分页列表
         /// </summary>
-        public async Task<HbtPagedResult<HbtPostDto>> GetPagedListAsync(HbtPostQueryDto query)
+        public async Task<HbtPagedResult<HbtPostDto>> GetListAsync(HbtPostQueryDto query)
         {
             var predicate = Expressionable.Create<HbtPost>();
 
@@ -62,20 +62,26 @@ namespace Lean.Hbt.Application.Services.Identity
                 predicate.And(p => p.Status == query.Status.Value);
 
             // 查询数据
-            var posts = await _postRepository.AsQueryable()
-                .Where(predicate.ToExpression())
-                .OrderBy(p => p.OrderNum)
-                .ToPageListAsync(query.PageIndex, query.PageSize);
+            var result = await _postRepository.GetPagedListAsync(
+                predicate.ToExpression(),
+                query.PageIndex,
+                query.PageSize,
+                x => x.OrderNum,
+                OrderByType.Asc);
 
-            // 转换为DTO
-            var result = posts.Adapt<HbtPagedResult<HbtPostDto>>();
-            return result;
+            return new HbtPagedResult<HbtPostDto>
+            {
+                TotalNum = result.TotalNum,
+                PageIndex = query.PageIndex,
+                PageSize = query.PageSize,
+                Rows = result.Rows.Adapt<List<HbtPostDto>>()
+            };
         }
 
         /// <summary>
         /// 获取岗位详情
         /// </summary>
-        public async Task<HbtPostDto> GetAsync(long id)
+        public async Task<HbtPostDto> GetByIdAsync(long id)
         {
             var post = await _postRepository.GetByIdAsync(id);
             if (post == null)
@@ -87,7 +93,7 @@ namespace Lean.Hbt.Application.Services.Identity
         /// <summary>
         /// 创建岗位
         /// </summary>
-        public async Task<long> InsertAsync(HbtPostCreateDto input)
+        public async Task<long> CreateAsync(HbtPostCreateDto input)
         {
             // 验证字段是否已存在
             if (await _postRepository.AsQueryable().AnyAsync(x => x.PostCode == input.PostCode))
@@ -97,7 +103,7 @@ namespace Lean.Hbt.Application.Services.Identity
                 throw new HbtException(_localizationService.L("Common.NameExists"));
 
             var post = input.Adapt<HbtPost>();
-            var result = await _postRepository.InsertAsync(post);
+            var result = await _postRepository.CreateAsync(post);
             if (result > 0)
                 _logger.Info(_localizationService.L("Common.AddSuccess"));
 
@@ -230,7 +236,7 @@ namespace Lean.Hbt.Application.Services.Identity
                 CreateBy = "system" // TODO: 从当前用户上下文获取
             }).ToList();
 
-            await _postRepository.InsertRangeAsync(entities);
+            await _postRepository.CreateRangeAsync(entities);
             return posts;
         }
 

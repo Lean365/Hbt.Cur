@@ -45,9 +45,10 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <param name="query">查询条件</param>
         /// <returns>部门分页列表</returns>
         [HttpGet]
-        public async Task<IActionResult> GetPagedListAsync([FromQuery] HbtDeptQueryDto query)
+        [HbtPerm("identity:dept:list")]
+        public async Task<IActionResult> GetListAsync([FromQuery] HbtDeptQueryDto query)
         {
-            var result = await _deptService.GetPagedListAsync(query);
+            var result = await _deptService.GetListAsync(query);
             return Success(result);
         }
 
@@ -57,9 +58,10 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <param name="deptId">部门ID</param>
         /// <returns>部门详情</returns>
         [HttpGet("{deptId}")]
-        public async Task<IActionResult> GetAsync(long deptId)
+        [HbtPerm("identity:dept:query")]
+        public async Task<IActionResult> GetByIdAsync(long deptId)
         {
-            var result = await _deptService.GetAsync(deptId);
+            var result = await _deptService.GetByIdAsync(deptId);
             return Success(result);
         }
 
@@ -69,9 +71,10 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <param name="input">创建对象</param>
         /// <returns>部门ID</returns>
         [HttpPost]
-        public async Task<IActionResult> InsertAsync([FromBody] HbtDeptCreateDto input)
+        [HbtPerm("identity:dept:create")]
+        public async Task<IActionResult> CreateAsync([FromBody] HbtDeptCreateDto input)
         {
-            var result = await _deptService.InsertAsync(input);
+            var result = await _deptService.CreateAsync(input);
             return Success(result);
         }
 
@@ -81,6 +84,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <param name="input">更新对象</param>
         /// <returns>是否成功</returns>
         [HttpPut]
+        [HbtPerm("identity:dept:update")]
         public async Task<IActionResult> UpdateAsync([FromBody] HbtDeptUpdateDto input)
         {
             var result = await _deptService.UpdateAsync(input);
@@ -93,6 +97,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <param name="deptId">部门ID</param>
         /// <returns>是否成功</returns>
         [HttpDelete("{deptId}")]
+        [HbtPerm("identity:dept:delete")]
         public async Task<IActionResult> DeleteAsync(long deptId)
         {
             var result = await _deptService.DeleteAsync(deptId);
@@ -187,6 +192,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// </summary>
         /// <returns>部门选项列表</returns>
         [HttpGet("options")]
+        [HbtPerm("identity:dept:query")]
         public async Task<IActionResult> GetOptionsAsync()
         {
             var result = await _deptService.GetOptionsAsync();

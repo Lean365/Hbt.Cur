@@ -188,19 +188,50 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <summary>
         /// 用户登出
         /// </summary>
+        /// <param name="isSystemRestart">是否是系统重启导致的登出</param>
         /// <returns>操作结果</returns>
         [HttpPost("logout")]
-        [Authorize]
-        public async Task<IActionResult> Logout()
+        [AllowAnonymous]
+        public async Task<IActionResult> Logout([FromQuery] bool isSystemRestart = false)
         {
-            var userId = HttpContext.User.FindFirst("user_id")?.Value;
-            if (string.IsNullOrEmpty(userId))
+            try
             {
-                return Error(_localization.L("User.NotLoggedIn"));
-            }
+                _logger.LogInformation("[登出控制器] 开始处理登出请求, 是否是系统重启: {IsSystemRestart}", isSystemRestart);
+                
+                var userId = HttpContext.User.FindFirst("user_id")?.Value;
+                if (string.IsNullOrEmpty(userId))
+                {
+                    _logger.LogInformation("[登出控制器] 未找到用户ID，直接返回成功");
+                    return Success();
+                }
 
-            var result = await _loginService.LogoutAsync(long.Parse(userId));
-            return result ? Success() : Error(_localization.L("User.LogoutFailed"));
+                // 如果是系统重启导致的登出，直接返回成功
+                if (isSystemRestart)
+                {
+                    _logger.LogInformation("[登出控制器] 系统重启导致的登出，直接返回成功");
+                    return Success();
+                }
+
+                // 正常登出流程
+                _logger.LogInformation("[登出控制器] 用户ID: {UserId}", userId);
+                var result = await _loginService.LogoutAsync(long.Parse(userId));
+                
+                if (result)
+                {
+                    _logger.LogInformation("[登出控制器] 登出成功: UserId={UserId}", userId);
+                    return Success();
+                }
+                else
+                {
+                    _logger.LogWarning("[登出控制器] 登出失败: UserId={UserId}", userId);
+                    return Error(_localization.L("User.LogoutFailed"));
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "[登出控制器] 登出过程中发生错误: {Message}", ex.Message);
+                return StatusCode(500, new { code = int.Parse(HbtConstants.ErrorCodes.ServerError), msg = "服务器内部错误" });
+            }
         }
 
         /// <summary>

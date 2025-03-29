@@ -14,7 +14,7 @@ namespace Lean.Hbt.Application.Services.Admin
     /// </summary>
     public class HbtLogArchiveService : IHbtLogArchiveService
     {
-        private readonly IOptions<LogArchiveOptions> _defaultOptions;
+        private readonly IOptions<HbtLogArchiveOptions> _defaultOptions;
         private readonly IHbtRepository<HbtConfig> _configRepository;
         private readonly IHbtRepository<HbtAuditLog> _auditLogRepository;
         private readonly IHbtRepository<HbtOperLog> _operLogRepository;
@@ -35,7 +35,7 @@ namespace Lean.Hbt.Application.Services.Admin
         /// <param name="dbDiffLogRepository"></param>
         /// <param name="logger"></param>
         public HbtLogArchiveService(
-            IOptions<LogArchiveOptions> defaultOptions,
+            IOptions<HbtLogArchiveOptions> defaultOptions,
             IHbtRepository<HbtConfig> configRepository,
             IHbtRepository<HbtAuditLog> auditLogRepository,
             IHbtRepository<HbtOperLog> operLogRepository,
@@ -57,13 +57,13 @@ namespace Lean.Hbt.Application.Services.Admin
         /// <summary>
         /// 获取日志归档配置
         /// </summary>
-        public async Task<LogArchiveOptions> GetConfigAsync()
+        public async Task<HbtLogArchiveOptions> GetConfigAsync()
         {
             var configs = await _configRepository.GetListAsync(c => c.ConfigKey.StartsWith("log.archive."));
             if (configs == null || !configs.Any())
                 return _defaultOptions.Value;
 
-            return new LogArchiveOptions
+            return new HbtLogArchiveOptions
             {
                 Enabled = GetConfigValue(configs, "log.archive.enabled", _defaultOptions.Value.Enabled),
                 ArchivePeriodMonths = GetConfigValue(configs, "log.archive.periodMonths", _defaultOptions.Value.ArchivePeriodMonths),
@@ -148,18 +148,23 @@ namespace Lean.Hbt.Application.Services.Admin
             var totalCount = 0;
             while (true)
             {
-                var logs = await repository.GetPagedListAsync(x => x.CreateTime <= archiveDate, 1, batchSize);
+                var result = await repository.GetPagedListAsync(
+                    x => x.CreateTime <= archiveDate,
+                    1,
+                    batchSize,
+                    x => x.CreateTime,
+                    OrderByType.Asc);
 
-                if (logs.list == null || !logs.list.Any())
+                if (result.Rows == null || !result.Rows.Any())
                     break;
 
-                foreach (var log in logs.list)
+                foreach (var log in result.Rows)
                 {
                     await writer.WriteLineAsync(System.Text.Json.JsonSerializer.Serialize(log));
                     totalCount++;
                 }
 
-                var ids = logs.list.Select(l => l.Id).ToList();
+                var ids = result.Rows.Select(l => l.Id).ToList();
                 Expression<Func<T, bool>> predicate = x => ids.Contains(x.Id);
                 await repository.DeleteAsync(predicate);
             }

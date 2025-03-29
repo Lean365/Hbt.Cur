@@ -16,7 +16,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity;
 /// <summary>
 /// 租户管理
 /// </summary>
-[Route("api/admin/[controller]", Name = "租户")]
+[Route("api/[controller]", Name = "租户")]
 [ApiController]
 [ApiModule("identity", "身份认证")]
 public class HbtTenantController : HbtBaseController
@@ -39,9 +39,11 @@ public class HbtTenantController : HbtBaseController
     /// <param name="query">查询条件</param>
     /// <returns>租户列表</returns>
     [HttpGet("list")]
-    public async Task<HbtPagedResult<HbtTenantDto>> GetPagedListAsync([FromQuery] HbtTenantQueryDto query)
+    [HbtPerm("identity:tenant:list")]
+    public async Task<IActionResult> GetListAsync([FromQuery] HbtTenantQueryDto query)
     {
-        return await _tenantService.GetPagedListAsync(query);
+        var result = await _tenantService.GetListAsync(query);
+        return Ok(HbtApiResult.Success(result));
     }
 
     /// <summary>
@@ -50,9 +52,11 @@ public class HbtTenantController : HbtBaseController
     /// <param name="id">租户ID</param>
     /// <returns>租户详情</returns>
     [HttpGet("{id}")]
-    public async Task<HbtTenantDto> GetAsync(long id)
+    [HbtPerm("identity:tenant:query")]
+    public async Task<IActionResult> GetByIdAsync(long id)
     {
-        return await _tenantService.GetAsync(id);
+        var result = await _tenantService.GetByIdAsync(id);
+        return Ok(HbtApiResult.Success(result));
     }
 
     /// <summary>
@@ -61,9 +65,11 @@ public class HbtTenantController : HbtBaseController
     /// <param name="input">创建对象</param>
     /// <returns>租户ID</returns>
     [HttpPost]
-    public async Task<long> InsertAsync([FromBody] HbtTenantCreateDto input)
+    [HbtPerm("identity:tenant:add")]
+    public async Task<IActionResult> CreateAsync([FromBody] HbtTenantCreateDto input)
     {
-        return await _tenantService.InsertAsync(input);
+        var result = await _tenantService.CreateAsync(input);
+        return Ok(HbtApiResult.Success(result));
     }
 
     /// <summary>
@@ -72,9 +78,11 @@ public class HbtTenantController : HbtBaseController
     /// <param name="input">更新对象</param>
     /// <returns>是否成功</returns>
     [HttpPut]
-    public async Task<bool> UpdateAsync([FromBody] HbtTenantUpdateDto input)
+    [HbtPerm("identity:tenant:edit")]
+    public async Task<IActionResult> UpdateAsync([FromBody] HbtTenantUpdateDto input)
     {
-        return await _tenantService.UpdateAsync(input);
+        var result = await _tenantService.UpdateAsync(input);
+        return Ok(HbtApiResult.Success(result));
     }
 
     /// <summary>
@@ -83,9 +91,11 @@ public class HbtTenantController : HbtBaseController
     /// <param name="id">租户ID</param>
     /// <returns>是否成功</returns>
     [HttpDelete("{id}")]
-    public async Task<bool> DeleteAsync(long id)
+    [HbtPerm("identity:tenant:remove")]
+    public async Task<IActionResult> DeleteAsync(long id)
     {
-        return await _tenantService.DeleteAsync(id);
+        var result = await _tenantService.DeleteAsync(id);
+        return Ok(HbtApiResult.Success(result));
     }
 
     /// <summary>
@@ -152,9 +162,10 @@ public class HbtTenantController : HbtBaseController
     /// </summary>
     /// <returns>租户选项列表</returns>
     [HttpGet("options")]
+    [HbtPerm("identity:tenant:query")]
     public async Task<IActionResult> GetOptionsAsync()
     {
         var result = await _tenantService.GetOptionsAsync();
-        return Success(result);
+        return Ok(HbtApiResult.Success(result));
     }
 }

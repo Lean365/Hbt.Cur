@@ -1,7 +1,8 @@
 import request from '@/utils/request'
-import type { UserQuery, User, UserForm, UserStatus, ResetPassword, ChangePassword } from '@/types/identity/user'
+import type { UserQuery, User, UserStatus, ResetPassword, ChangePassword, UserUpdate,UserCreate } from '@/types/identity/user'
 import type { HbtPagedResult } from '@/types/common'
 import type { HbtApiResponse } from '@/types/common'
+import { useUserStore } from '@/stores/user'
 
 // 获取用户分页列表
 export function getPagedList(query: UserQuery) {
@@ -21,7 +22,7 @@ export function getUser(userId: number) {
 }
 
 // 创建用户
-export function createUser(data: UserForm) {
+export function createUser(data: UserCreate) {
   return request<HbtApiResponse<number>>({
     url: '/api/HbtUser',
     method: 'post',
@@ -30,7 +31,7 @@ export function createUser(data: UserForm) {
 }
 
 // 更新用户
-export function updateUser(data: UserForm) {
+export function updateUser(data: UserUpdate) {
   return request<HbtApiResponse<boolean>>({
     url: '/api/HbtUser',
     method: 'put',
@@ -114,5 +115,16 @@ export function changePassword(data: ChangePassword) {
     url: '/api/HbtUser/change-password',
     method: 'put',
     data
+  })
+}
+
+// 更新用户密码
+export function updateUserPassword(data: { userId: number; password: string }) {
+  return request({
+    url: `/api/HbtUser/${data.userId}/password`,
+    method: 'put',
+    data: {
+      password: data.password
+    }
   })
 }

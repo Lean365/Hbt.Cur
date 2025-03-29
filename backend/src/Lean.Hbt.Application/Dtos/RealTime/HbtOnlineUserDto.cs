@@ -1,5 +1,5 @@
 //===================================================================
-// 项目名 : Lean.Hbt 
+// 项目名 : Lean.Hbt
 // 文件名 : HbtOnlineUserDto.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-20 16:30
@@ -7,7 +7,7 @@
 // 描述    : 在线用户传输对象
 //===================================================================
 
-using Lean.Hbt.Common.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace Lean.Hbt.Application.Dtos.RealTime;
 
@@ -23,7 +23,7 @@ public class HbtOnlineUserQueryDto : HbtPagedQuery
     /// <summary>
     /// 租户ID
     /// </summary>
-    public long? TenantId { get; set; }
+    public long TenantId { get; set; }
 
     /// <summary>
     /// 用户ID
@@ -33,7 +33,8 @@ public class HbtOnlineUserQueryDto : HbtPagedQuery
     /// <summary>
     /// 客户端IP
     /// </summary>
-    public string ClientIp { get; set; }
+    [MaxLength(50, ErrorMessage = "客户端IP长度不能超过50个字符")]
+    public string? ClientIp { get; set; }
 
     /// <summary>
     /// 开始时间
@@ -53,7 +54,7 @@ public class HbtOnlineUserQueryDto : HbtPagedQuery
 /// 创建者: Lean365
 /// 创建时间: 2024-01-20
 /// </remarks>
-public class HbtOnlineUserDto
+public class HbtOnlineUserDto : HbtBaseEntity
 {
     /// <summary>
     /// 租户ID
@@ -64,6 +65,11 @@ public class HbtOnlineUserDto
     /// 用户ID
     /// </summary>
     public long UserId { get; set; }
+
+    /// <summary>
+    /// 用户组ID
+    /// </summary>
+    public long GroupId { get; set; }
 
     /// <summary>
     /// 连接ID
@@ -84,6 +90,41 @@ public class HbtOnlineUserDto
     /// 最后活动时间
     /// </summary>
     public DateTime LastActivity { get; set; }
+
+    /// <summary>
+    /// 最后心跳时间
+    /// </summary>
+    public DateTime LastHeartbeat { get; set; }
+
+    /// <summary>
+    /// 创建人
+    /// </summary>
+    public string CreateBy { get; set; }
+
+    /// <summary>
+    /// 创建时间
+    /// </summary>
+    public DateTime CreateTime { get; set; }
+
+    /// <summary>
+    /// 更新人
+    /// </summary>
+    public string UpdateBy { get; set; }
+
+    /// <summary>
+    /// 更新时间
+    /// </summary>
+    public DateTime UpdateTime { get; set; }
+
+    /// <summary>
+    /// 删除人
+    /// </summary>
+    public string DeleteBy { get; set; }
+
+    /// <summary>
+    /// 删除时间
+    /// </summary>
+    public DateTime? DeleteTime { get; set; }
 }
 
 /// <summary>
@@ -124,4 +165,4 @@ public class HbtOnlineUserExportDto
     /// 最后活动时间
     /// </summary>
     public DateTime LastActivity { get; set; }
-} 
+}

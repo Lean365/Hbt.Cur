@@ -178,7 +178,7 @@ public class HbtDbSeedUser
 
         foreach (var user in defaultUsers)
         {
-            var existingUser = await _userRepository.FirstOrDefaultAsync(u => u.UserName == user.UserName);
+            var existingUser = await _userRepository.GetInfoAsync(u => u.UserName == user.UserName);
             if (existingUser == null)
             {
                 // 为每个新用户生成独特的密码哈希和盐值
@@ -187,7 +187,7 @@ public class HbtDbSeedUser
                 user.Salt = salt;
                 user.Iterations = iterations;
                 
-                await _userRepository.InsertAsync(user);
+                await _userRepository.CreateAsync(user);
                 insertCount++;
                 _logger.Info($"[创建] 用户 '{user.NickName}' 创建成功");
             }

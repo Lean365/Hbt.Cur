@@ -29,21 +29,21 @@ namespace Lean.Hbt.Application.Services.Routine
         /// </summary>
         /// <param name="query">查询条件</param>
         /// <returns>文件分页列表</returns>
-        Task<HbtPagedResult<HbtFileDto>> GetPagedListAsync(HbtFileQueryDto query);
+        Task<HbtPagedResult<HbtFileDto>> GetListAsync(HbtFileQueryDto query);
 
         /// <summary>
         /// 获取文件详情
         /// </summary>
         /// <param name="fileId">文件ID</param>
         /// <returns>文件详情</returns>
-        Task<HbtFileDto> GetAsync(long fileId);
+        Task<HbtFileDto> GetByIdAsync(long fileId);
 
         /// <summary>
         /// 创建文件
         /// </summary>
         /// <param name="input">创建对象</param>
         /// <returns>文件ID</returns>
-        Task<long> InsertAsync(HbtFileCreateDto input);
+        Task<long> CreateAsync(HbtFileCreateDto input);
 
         /// <summary>
         /// 更新文件

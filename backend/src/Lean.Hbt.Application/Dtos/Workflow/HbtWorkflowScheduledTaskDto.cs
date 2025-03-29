@@ -19,6 +19,24 @@ namespace Lean.Hbt.Application.Dtos.Workflow
     public class HbtWorkflowScheduledTaskDto
     {
         /// <summary>
+        /// 构造函数
+        /// </summary>
+        public HbtWorkflowScheduledTaskDto()
+        {
+            WorkflowScheduledTaskId = 0;
+            WorkflowInstanceId = 0;
+            NodeId = 0;
+            TaskType = 0;
+            ScheduledTime = DateTime.Now;
+            ExecutedTime = null;
+            Status = 0;
+            RetryCount = 0;
+            MaxRetryCount = 3;
+            ErrorMessage = string.Empty;
+            TaskParameters = string.Empty;
+        }
+
+        /// <summary>
         /// 任务ID
         /// </summary>
         [AdaptMember("Id")]

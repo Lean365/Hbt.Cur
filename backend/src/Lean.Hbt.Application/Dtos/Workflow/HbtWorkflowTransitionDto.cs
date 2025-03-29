@@ -17,6 +17,18 @@ namespace Lean.Hbt.Application.Dtos.Workflow
     public class HbtWorkflowTransitionDto
     {
         /// <summary>
+        /// 构造函数
+        /// </summary>
+        public HbtWorkflowTransitionDto()
+        {
+            WorkflowTransitionId = 0;
+            SourceNodeId = 0;
+            TargetNodeId = 0;
+            Condition = string.Empty;
+            WorkflowDefinitionId = 0;
+        }
+
+        /// <summary>
         /// 主键
         /// </summary>
         [AdaptMember("Id")]

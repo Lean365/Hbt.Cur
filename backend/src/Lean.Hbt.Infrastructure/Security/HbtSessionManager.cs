@@ -15,6 +15,7 @@ using Microsoft.Extensions.Options;
 using Lean.Hbt.Domain.IServices.Identity;
 using Lean.Hbt.Domain.IServices.SignalR;
 using Lean.Hbt.Domain.IServices.Caching;
+using Lean.Hbt.Domain.Models.SignalR;
 
 namespace Lean.Hbt.Infrastructure.Security
 {
@@ -26,8 +27,7 @@ namespace Lean.Hbt.Infrastructure.Security
     /// 创建时间: 2024-01-16
     /// </remarks>
     public class HbtSessionManager : 
-        IHbtIdentitySessionManager,
-        IHbtSignalRSessionManager
+        IHbtIdentitySessionManager
     {
         private readonly HbtSessionOptions _defaultOptions;
         private readonly IHbtRedisCache _cache;
@@ -207,17 +207,17 @@ namespace Lean.Hbt.Infrastructure.Security
         }
 
         /// <summary>
-        /// 创建会话 (Domain.IServices.SignalR.IHbtSignalRSessionManager)
+        /// 创建会话
         /// </summary>
-        async Task<HbtSignalRSessionInfo> IHbtSignalRSessionManager.CreateSessionAsync(string userId)
+        public async Task<HbtSignalRSessionInfo> CreateSessionAsync(string userId)
         {
             return await CreateServiceSessionAsync(userId);
         }
 
         /// <summary>
-        /// 单点登出 (Domain.IServices.SignalR.IHbtSignalRSessionManager)
+        /// 单点登出
         /// </summary>
-        async Task IHbtSignalRSessionManager.SingleSignOutAsync(string userId, string excludeSessionId)
+        public async Task SingleSignOutAsync(string userId, string excludeSessionId)
         {
             var sessions = await GetUserIdentitySessionsAsync(userId);
             foreach (var session in sessions)

@@ -23,14 +23,14 @@ namespace Lean.Hbt.Application.Services.Routine
         /// </summary>
         /// <param name="query">查询条件</param>
         /// <returns>分页结果</returns>
-        Task<HbtPagedResult<HbtQuartzTaskDto>> GetPagedListAsync(HbtQuartzTaskQueryDto query);
+        Task<HbtPagedResult<HbtQuartzTaskDto>> GetListAsync(HbtQuartzTaskQueryDto query);
 
         /// <summary>
         /// 获取定时任务详情
         /// </summary>
         /// <param name="taskId">任务ID</param>
         /// <returns>任务详情</returns>
-        Task<HbtQuartzTaskDto> GetAsync(long taskId);
+        Task<HbtQuartzTaskDto> GetByIdAsync(long taskId);
 
         /// <summary>
         /// 创建定时任务

@@ -27,14 +27,14 @@ namespace Lean.Hbt.Application.Services.Audit
         /// </summary>
         /// <param name="query">查询条件</param>
         /// <returns>分页结果</returns>
-        Task<HbtPagedResult<HbtDbDiffLogDto>> GetPagedListAsync(HbtDbDiffLogQueryDto query);
+        Task<HbtPagedResult<HbtDbDiffLogDto>> GetListAsync(HbtDbDiffLogQueryDto query);
 
         /// <summary>
         /// 获取数据库差异日志详情
         /// </summary>
         /// <param name="logId">日志ID</param>
         /// <returns>数据库差异日志详情</returns>
-        Task<HbtDbDiffLogDto> GetAsync(long logId);
+        Task<HbtDbDiffLogDto> GetByIdAsync(long logId);
 
         /// <summary>
         /// 导出数据库差异日志数据

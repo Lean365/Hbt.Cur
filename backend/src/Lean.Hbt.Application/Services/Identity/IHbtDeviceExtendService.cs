@@ -26,7 +26,7 @@ namespace Lean.Hbt.Application.Services.Identity
         /// </summary>
         /// <param name="query">查询条件</param>
         /// <returns>分页列表</returns>
-        Task<HbtPagedResult<HbtDeviceExtendDto>> GetPagedListAsync(HbtDeviceExtendQueryDto query);
+        Task<HbtPagedResult<HbtDeviceExtendDto>> GetListAsync(HbtDeviceExtendQueryDto query);
 
         /// <summary>
         /// 导出设备扩展信息

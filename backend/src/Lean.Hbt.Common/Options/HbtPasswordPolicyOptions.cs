@@ -78,5 +78,10 @@ namespace Lean.Hbt.Common.Options
         /// 密码过期天数
         /// </summary>
         public int PasswordExpirationDays { get; set; } = 90;
+
+        /// <summary>
+        /// 默认密码
+        /// </summary>
+        public required string DefaultPassword { get; set; }
     }
 } 

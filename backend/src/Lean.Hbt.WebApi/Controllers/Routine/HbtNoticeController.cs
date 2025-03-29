@@ -13,27 +13,38 @@ using Lean.Hbt.Common.Models;
 using Lean.Hbt.Application.Dtos.Routine;
 using Lean.Hbt.Application.Services.Routine;
 using Lean.Hbt.Domain.IServices.Admin;
+using Microsoft.AspNetCore.Authorization;
+using Lean.Hbt.Common.Extensions;
+using Lean.Hbt.Infrastructure.Security.Attributes;
+using Lean.Hbt.Domain.Identity;
+
 namespace Lean.Hbt.WebApi.Controllers.Routine
 {
     /// <summary>
     /// 通知控制器
     /// </summary>
-    [Route("api/routine/[controller]")]
+    [Route("api/[controller]", Name = "通知管理")]
     [ApiController]
+    [ApiModule("routine", "常规功能")]
+    [Authorize]
     public class HbtNoticeController : HbtBaseController
     {
         private readonly IHbtNoticeService _noticeService;
+        private readonly IHbtCurrentUser _currentUser;
 
         /// <summary>
         /// 构造函数
         /// </summary>
         /// <param name="noticeService">通知服务</param>
         /// <param name="localization">本地化服务</param>
+        /// <param name="currentUser">当前用户服务</param>
         public HbtNoticeController(
-            IHbtNoticeService noticeService,
-            IHbtLocalizationService localization) : base(localization)
+            IHbtNoticeService noticeService, 
+            IHbtLocalizationService localization,
+            IHbtCurrentUser currentUser) : base(localization)
         {
             _noticeService = noticeService;
+            _currentUser = currentUser;
         }
 
         /// <summary>
@@ -42,20 +53,22 @@ namespace Lean.Hbt.WebApi.Controllers.Routine
         /// <param name="query">查询条件</param>
         /// <returns>通知分页列表</returns>
         [HttpGet("list")]
-        public async Task<HbtPagedResult<HbtNoticeDto>> GetPagedListAsync([FromQuery] HbtNoticeQueryDto query)
+        [HbtPerm("routine:notice:list")]
+        public async Task<HbtPagedResult<HbtNoticeDto>> GetListAsync([FromQuery] HbtNoticeQueryDto query)
         {
-            return await _noticeService.GetPagedListAsync(query);
+            return await _noticeService.GetListAsync(query);
         }
 
         /// <summary>
         /// 获取通知详情
         /// </summary>
-        /// <param name="noticeId">通知ID</param>
+        /// <param name="id">通知ID</param>
         /// <returns>通知详情</returns>
-        [HttpGet("{noticeId}")]
-        public async Task<HbtNoticeDto> GetAsync(long noticeId)
+        [HttpGet("{id}")]
+        [HbtPerm("routine:notice:query")]
+        public async Task<HbtNoticeDto> GetByIdAsync(long id)
         {
-            return await _noticeService.GetAsync(noticeId);
+            return await _noticeService.GetByIdAsync(id);
         }
 
         /// <summary>
@@ -64,6 +77,7 @@ namespace Lean.Hbt.WebApi.Controllers.Routine
         /// <param name="input">创建对象</param>
         /// <returns>通知ID</returns>
         [HttpPost]
+        [HbtPerm("routine:notice:add")]
         public async Task<long> CreateAsync([FromBody] HbtNoticeCreateDto input)
         {
             return await _noticeService.CreateAsync(input);
@@ -72,35 +86,38 @@ namespace Lean.Hbt.WebApi.Controllers.Routine
         /// <summary>
         /// 更新通知
         /// </summary>
-        /// <param name="noticeId">通知ID</param>
+        /// <param name="id">通知ID</param>
         /// <param name="input">更新对象</param>
         /// <returns>是否成功</returns>
-        [HttpPut("{noticeId}")]
-        public async Task<bool> UpdateAsync(long noticeId, [FromBody] HbtNoticeDto input)
+        [HttpPut("{id}")]
+        [HbtPerm("routine:notice:edit")]
+        public async Task<bool> UpdateAsync(long id, [FromBody] HbtNoticeDto input)
         {
-            return await _noticeService.UpdateAsync(noticeId, input);
+            return await _noticeService.UpdateAsync(id, input);
         }
 
         /// <summary>
         /// 删除通知
         /// </summary>
-        /// <param name="noticeId">通知ID</param>
+        /// <param name="id">通知ID</param>
         /// <returns>是否成功</returns>
-        [HttpDelete("{noticeId}")]
-        public async Task<bool> DeleteAsync(long noticeId)
+        [HttpDelete("{id}")]
+        [HbtPerm("routine:notice:delete")]
+        public async Task<bool> DeleteAsync(long id)
         {
-            return await _noticeService.DeleteAsync(noticeId);
+            return await _noticeService.DeleteAsync(id);
         }
 
         /// <summary>
         /// 批量删除通知
         /// </summary>
-        /// <param name="noticeIds">通知ID数组</param>
+        /// <param name="ids">通知ID数组</param>
         /// <returns>是否成功</returns>
         [HttpDelete("batch")]
-        public async Task<bool> BatchDeleteAsync([FromBody] long[] noticeIds)
+        [HbtPerm("routine:notice:delete")]
+        public async Task<bool> BatchDeleteAsync([FromBody] long[] ids)
         {
-            return await _noticeService.BatchDeleteAsync(noticeIds);
+            return await _noticeService.BatchDeleteAsync(ids);
         }
 
         /// <summary>
@@ -109,7 +126,9 @@ namespace Lean.Hbt.WebApi.Controllers.Routine
         /// <param name="query">查询条件</param>
         /// <returns>Excel文件</returns>
         [HttpGet("export")]
-        public async Task<IActionResult> ExportAsync([FromQuery] HbtNoticeQueryDto query)
+        [HbtPerm("routine:notice:export")]
+        [ProducesResponseType(typeof(byte[]), StatusCodes.Status200OK)]
+        public async Task<FileResult> ExportAsync([FromQuery] HbtNoticeQueryDto query)
         {
             var data = await _noticeService.ExportAsync(query);
             return File(data, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "通知数据.xlsx");
@@ -118,45 +137,81 @@ namespace Lean.Hbt.WebApi.Controllers.Routine
         /// <summary>
         /// 发布通知
         /// </summary>
-        /// <param name="noticeId">通知ID</param>
+        /// <param name="id">通知ID</param>
         /// <returns>是否成功</returns>
-        [HttpPost("{noticeId}/publish")]
-        public async Task<bool> PublishAsync(long noticeId)
+        [HttpPost("{id}/publish")]
+        [HbtPerm("routine:notice:publish")]
+        public async Task<bool> PublishAsync(long id)
         {
-            return await _noticeService.PublishAsync(noticeId);
+            return await _noticeService.PublishAsync(id);
         }
 
         /// <summary>
         /// 关闭通知
         /// </summary>
-        /// <param name="noticeId">通知ID</param>
+        /// <param name="id">通知ID</param>
         /// <returns>是否成功</returns>
-        [HttpPost("{noticeId}/close")]
-        public async Task<bool> CloseAsync(long noticeId)
+        [HttpPost("{id}/close")]
+        [HbtPerm("routine:notice:close")]
+        public async Task<bool> CloseAsync(long id)
         {
-            return await _noticeService.CloseAsync(noticeId);
+            return await _noticeService.CloseAsync(id);
         }
 
         /// <summary>
         /// 标记通知已读
         /// </summary>
-        /// <param name="noticeId">通知ID</param>
+        /// <param name="id">通知ID</param>
         /// <returns>是否成功</returns>
-        [HttpPost("{noticeId}/read")]
-        public async Task<bool> MarkAsReadAsync(long noticeId)
+        [HttpPost("{id}/read")]
+        [HbtPerm("routine:notice:read")]
+        public async Task<bool> MarkAsReadAsync(long id)
         {
-            return await _noticeService.MarkAsReadAsync(noticeId);
+            return await _noticeService.MarkAsReadAsync(id);
+        }
+
+        /// <summary>
+        /// 标记所有通知已读
+        /// </summary>
+        [HttpPost("read-all")]
+        [HbtPerm("routine:notice:read")]
+        public async Task<int> MarkAllAsReadAsync()
+        {
+            return await _noticeService.MarkAllAsReadAsync(_currentUser.UserId);
+        }
+
+        /// <summary>
+        /// 标记通知未读
+        /// </summary>
+        /// <param name="id">通知ID</param>
+        /// <returns>是否成功</returns>
+        [HttpPost("{id}/unread")]
+        [HbtPerm("routine:notice:read")]
+        public async Task<bool> MarkAsUnreadAsync(long id)
+        {
+            return await _noticeService.MarkAsUnreadAsync(id);
+        }
+
+        /// <summary>
+        /// 标记所有通知未读
+        /// </summary>
+        [HttpPost("unread-all")]
+        [HbtPerm("routine:notice:read")]
+        public async Task<int> MarkAllAsUnreadAsync()
+        {
+            return await _noticeService.MarkAllAsUnreadAsync(_currentUser.UserId);
         }
 
         /// <summary>
         /// 确认通知
         /// </summary>
-        /// <param name="noticeId">通知ID</param>
+        /// <param name="id">通知ID</param>
         /// <returns>是否成功</returns>
-        [HttpPost("{noticeId}/confirm")]
-        public async Task<bool> ConfirmAsync(long noticeId)
+        [HttpPost("{id}/confirm")]
+        [HbtPerm("routine:notice:confirm")]
+        public async Task<bool> ConfirmAsync(long id)
         {
-            return await _noticeService.ConfirmAsync(noticeId);
+            return await _noticeService.ConfirmAsync(id);
         }
     }
 } 

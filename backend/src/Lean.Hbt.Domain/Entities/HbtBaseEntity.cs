@@ -47,6 +47,12 @@ namespace Lean.Hbt.Domain.Entities
         public DateTime? UpdateTime { get; set; }
 
         /// <summary>
+        /// 是否删除（0未删除 1已删除）
+        /// </summary>
+        [SugarColumn(ColumnName = "is_deleted", ColumnDescription = "是否删除", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
+        public int IsDeleted { get; set; } = 0;
+
+        /// <summary>
         /// 删除者
         /// </summary>
         [SugarColumn(ColumnName = "delete_by", ColumnDescription = "删除者", Length = 50, ColumnDataType = "nvarchar", IsNullable = true)]
@@ -57,12 +63,6 @@ namespace Lean.Hbt.Domain.Entities
         /// </summary>
         [SugarColumn(ColumnName = "delete_time", ColumnDescription = "删除时间", ColumnDataType = "datetime", IsNullable = true)]
         public DateTime? DeleteTime { get; set; }
-
-        /// <summary>
-        /// 是否删除(0=未删除,1=已删除)
-        /// </summary>
-        [SugarColumn(ColumnName = "is_deleted", ColumnDescription = "是否删除(0=未删除,1=已删除)", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
-        public int IsDeleted { get; set; }
 
         /// <summary>
         /// 备注

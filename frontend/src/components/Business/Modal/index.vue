@@ -94,7 +94,7 @@ const { t } = useI18n()
 
 // === 计算属性 ===
 const finalSubmitText = computed(() => props.submitText || t('common.button.submit'))
-const finalCancelText = computed(() => props.cancelText || t('common.button.cancel'))
+const finalCancelText = computed(() => props.cancelText || t('common.actions.cancel'))
 
 const modalOpen = computed({
   get: () => props.open,

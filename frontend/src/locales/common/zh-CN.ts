@@ -8,6 +8,21 @@ export default {
       copyright: '© 2024 Lean365. 保留所有权利。'
     },
 
+    // ==================== 错误信息 ====================
+    error: {
+      systemRestart: '系统正在进行维护，请稍后重新登录',
+      network: '网络连接失败，请检查网络设置',
+      unauthorized: '未授权访问，请重新登录',
+      forbidden: '无权限访问',
+      notFound: '请求的资源不存在',
+      badRequest: '请求参数错误',
+      serverError: '服务器内部错误',
+      serviceUnavailable: '服务暂时不可用',
+      badGateway: '网关错误',
+      gatewayTimeout: '网关超时',
+      unknown: '未知错误'
+    },
+
     // ==================== 基础操作 ====================
     // 基础标题
     title: {
@@ -305,6 +320,8 @@ export default {
       view: '查看',          // @btn-view-color
       clear: '清空',         // @btn-clear-color
 
+
+
       // === 数据操作按钮 ===
       import: '导入',        // @btn-import-color
       export: '导出',        // @btn-export-color
@@ -517,7 +534,9 @@ export default {
     // 按钮文本
     button: {
       submit: '提交',
-      ok: '确定'
+      confirm:'确定',
+      ok: '确定',
+
     }
   },
 

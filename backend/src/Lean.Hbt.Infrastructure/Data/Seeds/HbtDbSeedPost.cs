@@ -988,10 +988,10 @@ public class HbtDbSeedPost
 
         foreach (var post in defaultPosts)
         {
-            var existingPost = await _postRepository.FirstOrDefaultAsync(p => p.PostCode == post.PostCode);
+            var existingPost = await _postRepository.GetInfoAsync(p => p.PostCode == post.PostCode);
             if (existingPost == null)
             {
-                await _postRepository.InsertAsync(post);
+                await _postRepository.CreateAsync(post);
                 insertCount++;
                 _logger.Info($"[创建] 岗位 '{post.PostName}' 创建成功");
             }

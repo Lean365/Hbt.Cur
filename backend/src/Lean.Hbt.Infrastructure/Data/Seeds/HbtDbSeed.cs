@@ -36,6 +36,22 @@ public class HbtDbSeed
     private readonly HbtDbSeedDictData _dictDataSeed;
     private readonly HbtDbSeedDept _deptSeed;
     private readonly HbtDbSeedPost _postSeed;
+    private readonly HbtDbSeedOADictType _oaDictTypeSeed;
+    private readonly HbtDbSeedOADictData _oaDictDataSeed;
+    private readonly HbtDbSeedCsDictType _csDictTypeSeed;
+    private readonly HbtDbSeedCsDictData _csDictDataSeed;
+    private readonly HbtDbSeedEquipmentDictType _equipmentDictTypeSeed;
+    private readonly HbtDbSeedEquipmentDictData _equipmentDictDataSeed;
+    private readonly HbtDbSeedFinanceDictType _financeDictTypeSeed;
+    private readonly HbtDbSeedFinanceDictData _financeDictDataSeed;
+    private readonly HbtDbSeedHrDictType _hrDictTypeSeed;
+    private readonly HbtDbSeedHrDictData _hrDictDataSeed;
+    private readonly HbtDbSeedIndDictType _indDictTypeSeed;
+    private readonly HbtDbSeedIndDictData _indDictDataSeed;
+    private readonly HbtDbSeedMaterialDictType _materialDictTypeSeed;
+    private readonly HbtDbSeedMaterialDictData _materialDictDataSeed;
+    private readonly HbtDbSeedNatureDictType _natureDictTypeSeed;
+    private readonly HbtDbSeedNatureDictData _natureDictDataSeed;
 
     /// <summary>
     /// 构造函数
@@ -54,7 +70,23 @@ public class HbtDbSeed
         HbtDbSeedDictType dictTypeSeed,
         HbtDbSeedDictData dictDataSeed,
         HbtDbSeedDept deptSeed,
-        HbtDbSeedPost postSeed)
+        HbtDbSeedPost postSeed,
+        HbtDbSeedOADictType oaDictTypeSeed,
+        HbtDbSeedOADictData oaDictDataSeed,
+        HbtDbSeedCsDictType csDictTypeSeed,
+        HbtDbSeedCsDictData csDictDataSeed,
+        HbtDbSeedEquipmentDictType equipmentDictTypeSeed,
+        HbtDbSeedEquipmentDictData equipmentDictDataSeed,
+        HbtDbSeedFinanceDictType financeDictTypeSeed,
+        HbtDbSeedFinanceDictData financeDictDataSeed,
+        HbtDbSeedHrDictType hrDictTypeSeed,
+        HbtDbSeedHrDictData hrDictDataSeed,
+        HbtDbSeedIndDictType indDictTypeSeed,
+        HbtDbSeedIndDictData indDictDataSeed,
+        HbtDbSeedMaterialDictType materialDictTypeSeed,
+        HbtDbSeedMaterialDictData materialDictDataSeed,
+        HbtDbSeedNatureDictType natureDictTypeSeed,
+        HbtDbSeedNatureDictData natureDictDataSeed)
     {
         _context = context;
         _logger = logger;
@@ -70,6 +102,22 @@ public class HbtDbSeed
         _dictDataSeed = dictDataSeed;
         _deptSeed = deptSeed;
         _postSeed = postSeed;
+        _oaDictTypeSeed = oaDictTypeSeed;
+        _oaDictDataSeed = oaDictDataSeed;
+        _csDictTypeSeed = csDictTypeSeed;
+        _csDictDataSeed = csDictDataSeed;
+        _equipmentDictTypeSeed = equipmentDictTypeSeed;
+        _equipmentDictDataSeed = equipmentDictDataSeed;
+        _financeDictTypeSeed = financeDictTypeSeed;
+        _financeDictDataSeed = financeDictDataSeed;
+        _hrDictTypeSeed = hrDictTypeSeed;
+        _hrDictDataSeed = hrDictDataSeed;
+        _indDictTypeSeed = indDictTypeSeed;
+        _indDictDataSeed = indDictDataSeed;
+        _materialDictTypeSeed = materialDictTypeSeed;
+        _materialDictDataSeed = materialDictDataSeed;
+        _natureDictTypeSeed = natureDictTypeSeed;
+        _natureDictDataSeed = natureDictDataSeed;
     }
 
     /// <summary>
@@ -123,7 +171,71 @@ public class HbtDbSeed
         var (dictDataInsertCount, dictDataUpdateCount) = await _dictDataSeed.InitializeDictDataAsync();
         _logger.Info($"字典数据初始化完成: 新增 {dictDataInsertCount} 条, 更新 {dictDataUpdateCount} 条");
 
-        // 12. 初始化关联关系数据
+        // 12. 初始化OA字典类型数据
+        var (oaDictTypeInsertCount, oaDictTypeUpdateCount) = await _oaDictTypeSeed.InitializeOADictTypeAsync();
+        _logger.Info($"OA字典类型数据初始化完成: 新增 {oaDictTypeInsertCount} 条, 更新 {oaDictTypeUpdateCount} 条");
+
+        // 13. 初始化OA字典数据
+        var (oaDictDataInsertCount, oaDictDataUpdateCount) = await _oaDictDataSeed.InitializeOADictDataAsync();
+        _logger.Info($"OA字典数据初始化完成: 新增 {oaDictDataInsertCount} 条, 更新 {oaDictDataUpdateCount} 条");
+
+        // 14. 初始化客户服务字典类型数据
+        var (csDictTypeInsertCount, csDictTypeUpdateCount) = await _csDictTypeSeed.InitializeCsDictTypeAsync();
+        _logger.Info($"客户服务字典类型数据初始化完成: 新增 {csDictTypeInsertCount} 条, 更新 {csDictTypeUpdateCount} 条");
+
+        // 15. 初始化客户服务字典数据
+        var (csDictDataInsertCount, csDictDataUpdateCount) = await _csDictDataSeed.InitializeCsDictDataAsync();
+        _logger.Info($"客户服务字典数据初始化完成: 新增 {csDictDataInsertCount} 条, 更新 {csDictDataUpdateCount} 条");
+
+        // 16. 初始化设备字典类型数据
+        var (equipmentDictTypeInsertCount, equipmentDictTypeUpdateCount) = await _equipmentDictTypeSeed.InitializeEquipmentDictTypeAsync();
+        _logger.Info($"设备字典类型数据初始化完成: 新增 {equipmentDictTypeInsertCount} 条, 更新 {equipmentDictTypeUpdateCount} 条");
+
+        // 17. 初始化设备字典数据
+        var (equipmentDictDataInsertCount, equipmentDictDataUpdateCount) = await _equipmentDictDataSeed.InitializeEquipmentDictDataAsync();
+        _logger.Info($"设备字典数据初始化完成: 新增 {equipmentDictDataInsertCount} 条, 更新 {equipmentDictDataUpdateCount} 条");
+
+        // 18. 初始化财务字典类型数据
+        var (financeDictTypeInsertCount, financeDictTypeUpdateCount) = await _financeDictTypeSeed.InitializeFinanceDictTypeAsync();
+        _logger.Info($"财务字典类型数据初始化完成: 新增 {financeDictTypeInsertCount} 条, 更新 {financeDictTypeUpdateCount} 条");
+
+        // 19. 初始化财务字典数据
+        var (financeDictDataInsertCount, financeDictDataUpdateCount) = await _financeDictDataSeed.InitializeFinanceDictDataAsync();
+        _logger.Info($"财务字典数据初始化完成: 新增 {financeDictDataInsertCount} 条, 更新 {financeDictDataUpdateCount} 条");
+
+        // 20. 初始化人力资源字典类型数据
+        var (hrDictTypeInsertCount, hrDictTypeUpdateCount) = await _hrDictTypeSeed.InitializeHrDictTypeAsync();
+        _logger.Info($"人力资源字典类型数据初始化完成: 新增 {hrDictTypeInsertCount} 条, 更新 {hrDictTypeUpdateCount} 条");
+
+        // 21. 初始化人力资源字典数据
+        var (hrDictDataInsertCount, hrDictDataUpdateCount) = await _hrDictDataSeed.InitializeHrDictDataAsync();
+        _logger.Info($"人力资源字典数据初始化完成: 新增 {hrDictDataInsertCount} 条, 更新 {hrDictDataUpdateCount} 条");
+
+        // 22. 初始化工业字典类型数据
+        var (indDictTypeInsertCount, indDictTypeUpdateCount) = await _indDictTypeSeed.InitializeIndDictTypeAsync();
+        _logger.Info($"工业字典类型数据初始化完成: 新增 {indDictTypeInsertCount} 条, 更新 {indDictTypeUpdateCount} 条");
+
+        // 23. 初始化工业字典数据
+        var (indDictDataInsertCount, indDictDataUpdateCount) = await _indDictDataSeed.InitializeIndDictDataAsync();
+        _logger.Info($"工业字典数据初始化完成: 新增 {indDictDataInsertCount} 条, 更新 {indDictDataUpdateCount} 条");
+
+        // 24. 初始化物料字典类型数据
+        var (materialDictTypeInsertCount, materialDictTypeUpdateCount) = await _materialDictTypeSeed.InitializeMaterialDictTypeAsync();
+        _logger.Info($"物料字典类型数据初始化完成: 新增 {materialDictTypeInsertCount} 条, 更新 {materialDictTypeUpdateCount} 条");
+
+        // 25. 初始化物料字典数据
+        var (materialDictDataInsertCount, materialDictDataUpdateCount) = await _materialDictDataSeed.InitializeMaterialDictDataAsync();
+        _logger.Info($"物料字典数据初始化完成: 新增 {materialDictDataInsertCount} 条, 更新 {materialDictDataUpdateCount} 条");
+
+        // 26. 初始化自然字典类型数据
+        var (natureDictTypeInsertCount, natureDictTypeUpdateCount) = await _natureDictTypeSeed.InitializeNatureDictTypeAsync();
+        _logger.Info($"自然字典类型数据初始化完成: 新增 {natureDictTypeInsertCount} 条, 更新 {natureDictTypeUpdateCount} 条");
+
+        // 27. 初始化自然字典数据
+        var (natureDictDataInsertCount, natureDictDataUpdateCount) = await _natureDictDataSeed.InitializeNatureDictDataAsync();
+        _logger.Info($"自然字典数据初始化完成: 新增 {natureDictDataInsertCount} 条, 更新 {natureDictDataUpdateCount} 条");
+
+        // 28. 初始化关联关系数据
         var (relationInsertCount, relationUpdateCount) = await _relationSeed.InitializeRelationsAsync();
         _logger.Info($"关联关系数据初始化完成: 新增 {relationInsertCount} 条, 更新 {relationUpdateCount} 条");
 

@@ -52,7 +52,7 @@ namespace Lean.Hbt.Application.Services.Routine
         /// <summary>
         /// 获取定时任务分页列表
         /// </summary>
-        public async Task<HbtPagedResult<HbtQuartzTaskDto>> GetPagedListAsync(HbtQuartzTaskQueryDto query)
+        public async Task<HbtPagedResult<HbtQuartzTaskDto>> GetListAsync(HbtQuartzTaskQueryDto query)
         {
             var exp = Expressionable.Create<HbtQuartzTask>();
 
@@ -77,21 +77,28 @@ namespace Lean.Hbt.Application.Services.Routine
             if (query.EndTime.HasValue)
                 exp.And(x => x.CreateTime <= query.EndTime.Value);
 
-            var result = await _taskRepository.GetPagedListAsync(exp.ToExpression(), query.PageIndex, query.PageSize);
+        // 2.查询数据
+        var result = await _taskRepository.GetPagedListAsync(
+            exp.ToExpression(),
+            query.PageIndex,
+            query.PageSize,
+            x => x.CreateTime,
+            OrderByType.Desc);
 
-            return new HbtPagedResult<HbtQuartzTaskDto>
-            {
-                TotalNum = result.total,
-                PageIndex = query.PageIndex,
-                PageSize = query.PageSize,
-                Rows = result.list.Adapt<List<HbtQuartzTaskDto>>()
-            };
+        // 3.转换数据
+        return new HbtPagedResult<HbtQuartzTaskDto>
+        {
+            TotalNum = result.TotalNum,
+            PageIndex = query.PageIndex,
+            PageSize = query.PageSize,
+            Rows = result.Rows.Select(x => x.Adapt<HbtQuartzTaskDto>()).ToList()
+        };
         }
 
         /// <summary>
         /// 获取定时任务详情
         /// </summary>
-        public async Task<HbtQuartzTaskDto> GetAsync(long taskId)
+        public async Task<HbtQuartzTaskDto> GetByIdAsync(long taskId)
         {
             var task = await _taskRepository.GetByIdAsync(taskId);
             if (task == null)
@@ -109,11 +116,11 @@ namespace Lean.Hbt.Application.Services.Routine
             task.CreateTime = DateTime.Now;
 
             // 验证任务是否已存在
-            var existingTask = await _taskRepository.FirstOrDefaultAsync(x => x.TaskName == input.TaskName && x.TaskGroupName == input.TaskGroupName);
+            var existingTask = await _taskRepository.GetInfoAsync(x => x.TaskName == input.TaskName && x.TaskGroupName == input.TaskGroupName);
             if (existingTask != null)
                 throw new HbtException($"任务已存在: {input.TaskName}");
 
-            var result = await _taskRepository.InsertAsync(task);
+            var result = await _taskRepository.CreateAsync(task);
             if (result <= 0)
                 throw new HbtException("创建定时任务失败");
 
