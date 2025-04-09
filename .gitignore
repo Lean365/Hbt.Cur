@@ -50,3 +50,6 @@ Thumbs.db
 # Logs
 logs/
 *.log
+
+# Auto-generated files
+CHANGELOG.md

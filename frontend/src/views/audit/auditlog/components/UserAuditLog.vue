@@ -64,7 +64,7 @@ import type { TablePaginationConfig } from 'ant-design-vue'
 import type { QueryField } from '@/types/components/query'
 import type { HbtAuditLogDto, HbtAuditLogQueryDto } from '@/types/audit/auditLog'
 import { getAuditLogs } from '@/api/audit/auditLog'
-import { useUserStore } from '@/store/modules/user'
+import { useUserStore } from '@/stores/user'
 import AuditLogDetail from './AuditLogDetail.vue'
 
 const userStore = useUserStore()
@@ -173,7 +173,7 @@ const queryParams = reactive<HbtAuditLogQueryDto>({
   pageSize: 10,
   orderByColumn: undefined,
   orderType: undefined,
-  userName: userStore.username,
+  userName: userStore.user?.userName,
   module: undefined,
   operation: undefined,
   logLevel: undefined,
@@ -186,8 +186,8 @@ const fetchData = async () => {
   loading.value = true
   try {
     const res = await getAuditLogs(queryParams)
-    tableData.value = res.rows
-    total.value = res.totalNum
+    tableData.value = res.data.rows
+    total.value = res.data.totalNum
   } catch (error) {
     console.error('获取审计日志失败:', error)
     message.error('获取审计日志失败')

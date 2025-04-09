@@ -238,6 +238,7 @@ namespace Lean.Hbt.Infrastructure.Security
             {
                 "/api/hbtauth/login",
                 "/api/hbtauth/logout",
+                "/api/hbtauth/check-login",  // 添加 check-login 路径
                 "/api/hbtlanguage/supported",
                 "/api/hbtonlineuser/force-offline",  // 添加强制下线接口
                 "/swagger",

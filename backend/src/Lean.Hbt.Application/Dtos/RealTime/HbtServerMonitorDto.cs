@@ -12,6 +12,37 @@ using System.ComponentModel.DataAnnotations;
 namespace Lean.Hbt.Application.Dtos.RealTime;
 
 /// <summary>
+/// 磁盘信息DTO
+/// </summary>
+public class HbtDiskInfo
+{
+    /// <summary>
+    /// 驱动器名称
+    /// </summary>
+    public string DriveName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 总空间(字节)
+    /// </summary>
+    public long TotalSpace { get; set; }
+
+    /// <summary>
+    /// 已用空间(字节)
+    /// </summary>
+    public long UsedSpace { get; set; }
+
+    /// <summary>
+    /// 可用空间(字节)
+    /// </summary>
+    public long FreeSpace { get; set; }
+
+    /// <summary>
+    /// 使用率(%)
+    /// </summary>
+    public double UsageRate { get; set; }
+}
+
+/// <summary>
 /// 服务器信息DTO
 /// </summary>
 public class HbtServerMonitorDto
@@ -67,6 +98,11 @@ public class HbtServerMonitorDto
     /// 磁盘使用率
     /// </summary>
     public double DiskUsage { get; set; }
+
+    /// <summary>
+    /// 磁盘信息列表
+    /// </summary>
+    public List<HbtDiskInfo> DiskInfos { get; set; } = new();
 
     /// <summary>
     /// 操作系统

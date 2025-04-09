@@ -7,51 +7,28 @@
 // 描述    : 服务集合扩展
 //===================================================================
 
-using System.Text;
-using Lean.Hbt.Common.Helpers;
+using Lean.Hbt.Application.Services.Admin;
+using Lean.Hbt.Application.Services.Audit;
+using Lean.Hbt.Application.Services.Identity;
+using Lean.Hbt.Application.Services.RealTime;
+using Lean.Hbt.Application.Services.Routine;
 using Lean.Hbt.Common.Options;
-using Lean.Hbt.Domain.IServices;
-using Lean.Hbt.Domain.IServices.Security;
-using Lean.Hbt.Domain.IServices.Admin;
-using Lean.Hbt.Domain.IServices.Identity;
-using Lean.Hbt.Domain.IServices.SignalR;
-using Lean.Hbt.Domain.IServices.Caching;
-using Lean.Hbt.Domain.IServices.Audit;
 using Lean.Hbt.Domain.Data;
+using Lean.Hbt.Domain.IServices;
+using Lean.Hbt.Domain.IServices.Admin;
+using Lean.Hbt.Domain.IServices.Audit;
+using Lean.Hbt.Domain.IServices.Caching;
+using Lean.Hbt.Domain.IServices.Security;
 using Lean.Hbt.Infrastructure.Authentication;
 using Lean.Hbt.Infrastructure.Caching;
 using Lean.Hbt.Infrastructure.Data.Contexts;
-using Lean.Hbt.Infrastructure.Data.Seeds;
+using Lean.Hbt.Infrastructure.Identity;
 using Lean.Hbt.Infrastructure.Logging;
 using Lean.Hbt.Infrastructure.Security;
 using Lean.Hbt.Infrastructure.Services;
-using Lean.Hbt.Infrastructure.SignalR;
-using Lean.Hbt.Application.Services.Admin;
-using Lean.Hbt.Application.Services.Identity;
-using Lean.Hbt.Application.Services.Audit;
-using Lean.Hbt.Application.Services.RealTime;
-using Lean.Hbt.Application.Services.Workflow;
-using Lean.Hbt.Application.Services.Workflow.Engine;
-using Lean.Hbt.Application.Services.Workflow.Engine.Executors;
-using Lean.Hbt.Application.Services.Workflow.Engine.Expressions;
-using Lean.Hbt.Application.Services.Workflow.Engine.Resolvers;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.Extensions.DependencyInjection;
-using SqlSugar;
-using System;
-using Lean.Hbt.Infrastructure.Repositories;
-using Lean.Hbt.Domain.Repositories;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
-using Microsoft.AspNetCore.Authorization;
-using DbType = SqlSugar.DbType;
-using StackExchange.Redis;
 using Lean.Hbt.Infrastructure.Services.Identity;
 using Lean.Hbt.Infrastructure.Services.Local;
-using Lean.Hbt.Application.Services.Routine;
-using Lean.Hbt.Infrastructure.Extensions;
-using Lean.Hbt.Infrastructure.Identity;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -97,16 +74,16 @@ namespace Lean.Hbt.Infrastructure.Extensions
         {
             // 添加仓储服务 - 用于数据访问
             services.AddScoped(typeof(IHbtRepository<>), typeof(HbtRepository<>));
-            
+
             // 添加领域服务
             services.AddSecurityServices();     // 安全服务
             services.AddCacheServices();        // 缓存服务
             services.AddLogServices();          // 日志服务
             services.AddLocalizationServices(); // 本地化服务
-            
+
             // 添加服务器监控服务
             services.AddScoped<IHbtServerMonitorService, HbtServerMonitorService>();
-            
+
             return services;
         }
 
@@ -131,7 +108,7 @@ namespace Lean.Hbt.Infrastructure.Extensions
             services.AddRealTimeServices();    // 实时服务
             services.AddWorkflowServices();    // 工作流服务
             services.AddRoutineServices();     // 常规业务服务
-            
+
             return services;
         }
 
@@ -143,15 +120,15 @@ namespace Lean.Hbt.Infrastructure.Extensions
             // 安全策略服务
             services.AddScoped<IHbtLoginPolicy, HbtLoginPolicy>();
             services.AddScoped<IHbtPasswordPolicy, HbtPasswordPolicy>();
-            
+
             // 注册会话管理
             services.AddScoped<IHbtIdentitySessionManager, HbtSessionManager>();
             services.AddScoped<IHbtSingleSignOnService, HbtSingleSignOnService>();
-            
+
             // 验证服务
             services.AddSingleton<IHbtCaptchaService, HbtCaptchaService>();
             services.AddScoped<IHbtOAuthService, HbtOAuthService>();
-            
+
             return services;
         }
 
@@ -163,11 +140,11 @@ namespace Lean.Hbt.Infrastructure.Extensions
             // 内存缓存
             services.AddMemoryCache();
             services.AddDistributedMemoryCache();
-            
+
             // 缓存服务
             services.AddScoped<IHbtMemoryCache, HbtMemoryCache>();
             services.AddScoped<HbtCacheConfigManager>();
-            
+
             return services;
         }
 
@@ -180,7 +157,7 @@ namespace Lean.Hbt.Infrastructure.Extensions
             services.AddScoped<IHbtLogger, HbtNLogger>();
             services.AddScoped<IHbtLogCleanupService, HbtLogCleanupService>();
             services.AddScoped<IHbtLogArchiveService, HbtLogArchiveService>();
-            
+
             return services;
         }
 
@@ -194,7 +171,7 @@ namespace Lean.Hbt.Infrastructure.Extensions
             services.AddScoped<IHbtLocalizationService, HbtLocalizationService>();  // 本地化服务
             services.AddScoped<IHbtTranslationService, HbtTranslationService>();    // 翻译服务
             services.AddScoped<IHbtLanguageService, HbtLanguageService>();          // 语言服务
-            
+
             return services;
         }
 
@@ -204,22 +181,22 @@ namespace Lean.Hbt.Infrastructure.Extensions
         private static IServiceCollection AddIdentityServices(this IServiceCollection services)
         {
             // 核心身份认证服务
-            services.AddScoped<IHbtLoginService, HbtLoginService>();         // 登录服务
+            services.AddScoped<IHbtAuthService, HbtAuthService>();         // 登录服务
             services.AddScoped<IHbtLoginExtendService, HbtLoginExtendService>(); // 登录扩展服务
             services.AddScoped<IHbtDeviceExtendService, HbtDeviceExtendService>(); // 设备扩展服务
             services.AddScoped<IHbtJwtHandler, HbtJwtHandler>();            // JWT令牌处理
             services.AddScoped<IHbtDeviceIdGenerator, HbtDeviceIdGenerator>(); // 设备ID生成器
-            
+
             // 用户和权限管理
             services.AddScoped<IHbtUserService, HbtUserService>();          // 用户管理
             services.AddScoped<IHbtRoleService, HbtRoleService>();          // 角色管理
             services.AddScoped<IHbtDeptService, HbtDeptService>();          // 部门管理
             services.AddScoped<IHbtPostService, HbtPostService>();          // 岗位管理
             services.AddScoped<IHbtMenuService, HbtMenuService>();          // 菜单管理
-            
+
             // 租户管理
             services.AddScoped<IHbtTenantService, HbtTenantService>();      // 租户服务
-            
+
             return services;
         }
 
@@ -230,11 +207,11 @@ namespace Lean.Hbt.Infrastructure.Extensions
         {
             // 系统服务
             services.AddScoped<IHbtConfigService, HbtConfigService>();     // 系统配置
-            
+
             // 字典和类型服务
             services.AddScoped<IHbtDictDataService, HbtDictDataService>();       // 字典数据服务
             services.AddScoped<IHbtDictTypeService, HbtDictTypeService>();       // 字典类型服务
-            
+
             return services;
         }
 
@@ -249,14 +226,14 @@ namespace Lean.Hbt.Infrastructure.Extensions
             services.AddScoped<IHbtDbDiffLogManager, HbtLogManager>();           // 数据库差异日志管理器
             services.AddScoped<IHbtOperLogManager, HbtLogManager>();             // 操作日志管理器
             services.AddScoped<IHbtExceptionLogManager, HbtLogManager>();        // 异常日志管理器
-            
+
             // 审计日志服务
             services.AddScoped<IHbtAuditsLogService, HbtAuditLogService>();     // 审计日志服务
             services.AddScoped<IHbtLoginLogService, HbtLoginLogService>();       // 登录日志服务
             services.AddScoped<IHbtOperLogService, HbtOperLogService>();         // 操作日志服务
             services.AddScoped<IHbtExceptionLogService, HbtExceptionLogService>(); // 异常日志服务
             services.AddScoped<IHbtDbDiffLogService, HbtDbDiffLogService>();     // 数据库差异日志服务
-            
+
             return services;
         }
 
@@ -319,7 +296,7 @@ namespace Lean.Hbt.Infrastructure.Extensions
         {
             // 添加 HttpClient 工厂
             services.AddHttpClient();
-            
+
             // 配置数据库 - 只在这里注册一次
             var connectionString = configuration.GetConnectionString("Default")
                 ?? throw new ArgumentException("数据库连接字符串不能为空");
@@ -341,7 +318,7 @@ namespace Lean.Hbt.Infrastructure.Extensions
             {
                 var options = sp.GetRequiredService<IOptions<ConnectionConfig>>();
                 var scope = new SqlSugarScope(options.Value);
-                
+
                 // 添加 SQL 执行日志
                 var logger = sp.GetRequiredService<ILogger<SqlSugarScope>>();
                 scope.Aop.OnLogExecuting = (sql, parameters) =>
@@ -362,7 +339,7 @@ namespace Lean.Hbt.Infrastructure.Extensions
                         logger.LogInformation("参数: {@Parameters}", parameters.ToDictionary(p => p.ParameterName, p => p.Value));
                     }
                 };
-                
+
                 return scope;
             });
             services.AddSingleton<ISqlSugarClient>(sp => sp.GetRequiredService<SqlSugarScope>());
@@ -372,9 +349,9 @@ namespace Lean.Hbt.Infrastructure.Extensions
             services.AddScoped<IHbtDbContext, HbtDbContext>();
 
             // 其他基础设施服务
-            services.AddScoped<IHbtUserContext, HbtUserContext>();
-            services.AddScoped<IHbtTenantContext, HbtTenantContext>();
-            
+            services.AddScoped<IHbtCurrentUser, HbtCurrentUser>();
+            services.AddScoped<IHbtCurrentTenant, HbtCurrentTenant>();
+
             return services;
         }
     }

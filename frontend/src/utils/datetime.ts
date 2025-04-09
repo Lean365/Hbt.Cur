@@ -35,6 +35,9 @@ import { useAppStore } from '@/stores/app'
 import { getCurrentInstance } from 'vue'
 import { useI18n } from 'vue-i18n'
 
+// 配置时区
+const TIMEZONE_OFFSET = 8 // 北京时间 UTC+8
+
 // 支持的语言类型
 type SupportedLocale = 'zh-cn' | 'zh-tw' | 'ja' | 'ko' | 'en' | 'fr' | 'es' | 'ru' | 'ar'
 
@@ -319,7 +322,10 @@ export function formatDateTime(time?: string | number | Date, pattern = 'yyyy-MM
     return ''
   }
   try {
-    return format(new Date(time), pattern, { locale: getLocale() })
+    const date = new Date(time)
+    // 调整时区
+    const localDate = new Date(date.getTime() + TIMEZONE_OFFSET * 60 * 60 * 1000)
+    return format(localDate, pattern, { locale: getLocale() })
   } catch (err) {
     const { t } = useI18n()
     console.error(`[${t('common.datetime.formatError')}]:`, err)

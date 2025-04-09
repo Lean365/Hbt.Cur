@@ -1,5 +1,5 @@
 // 查询字段类型定义
-export type FieldType = 'input' | 'select' | 'date' | 'dateRange' | 'number'
+export type FieldType = 'input' | 'select' | 'date' | 'datetime' | 'number'
 
 // 查询字段选项接口
 export interface QueryFieldOption {
@@ -11,7 +11,7 @@ export interface QueryFieldOption {
 export interface QueryField {
   name: string
   label: string
-  type: 'input' | 'select' | 'date' | 'datetime' | 'number'
+  type: FieldType
   placeholder?: string
   options?: QueryFieldOption[]
   defaultValue?: any

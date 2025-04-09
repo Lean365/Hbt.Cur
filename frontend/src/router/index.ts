@@ -112,12 +112,12 @@ const loadView = (view: string) => {
 export const constantRoutes: RouteRecordRaw[] = [
   {
     path: '/redirect',
-    component: () => import('@/layouts/BasicLayout.vue'),
+    component: () => import('@/layouts/BasicLayout/index.vue'),
     children: [
       {
         path: ':path(.*)*',
         name: 'Redirect',
-        component: () => import('@/components/Navigation/PageRedirect.vue'),
+        component: () => import('@/components/Navigation/HbtPageRedirect/index.vue'),
         meta: {
           title: 'redirect',
           requiresAuth: true,
@@ -138,7 +138,7 @@ export const constantRoutes: RouteRecordRaw[] = [
   },
   {
     path: '/',
-    component: () => import('@/layouts/BasicLayout.vue'),
+    component: () => import('@/layouts/BasicLayout/index.vue'),
     redirect: '/home',
     children: [
       {
@@ -150,6 +150,28 @@ export const constantRoutes: RouteRecordRaw[] = [
           icon: 'HomeOutlined',
           requiresAuth: true,
           transKey: 'menu.home'
+        }
+      },
+      {
+        path: 'identity/user/profile',
+        name: 'UserProfile',
+        component: () => import('@/views/identity/user/components/UserProfile.vue'),
+        meta: {
+          title: 'menu.identity.user.profile',
+          icon: 'ProfileOutlined',
+          requiresAuth: true,
+          transKey: 'menu.identity.user.profile',
+          hidden: true
+        }
+      },
+      {
+        path: 'identity/user/change-password',
+        name: 'ChangePwdForm',
+        component: () => import('@/views/identity/user/components/ChangePwdForm.vue'),
+        meta: {
+          title: '修改密码',
+          icon: 'lock',
+          hidden: true
         }
       },
       {
@@ -166,7 +188,7 @@ export const constantRoutes: RouteRecordRaw[] = [
           {
             path: 'icons',
             name: 'Icons',
-            component: () => import('@/components/Icon/index.vue'),
+            component: () => import('@/components/Base/HbtIcon/index.vue'),
             meta: {
               title: 'menu.components.icons',
               icon: 'StarOutlined',
@@ -262,40 +284,6 @@ export const constantRoutes: RouteRecordRaw[] = [
             }
           }
         ]
-      },
-      {
-        path: 'identity/user',
-        name: 'UserSettings',
-        meta: {
-          title: 'menu.user.settings',
-          icon: 'UserOutlined',
-          requiresAuth: true,
-          hidden: true
-        },
-        children: [
-          {
-            path: 'profile',
-            name: 'UserProfile',
-            component: () => import('@/views/identity/user/components/UserProfile.vue'),
-            meta: {
-              title: 'menu.user.profile',
-              icon: 'UserOutlined',
-              requiresAuth: true,
-              hidden: true
-            }
-          },
-          {
-            path: 'change-password',
-            name: 'UserChangePassword',
-            component: () => import('@/views/identity/user/components/ChangePwdForm.vue'),
-            meta: {
-              title: 'menu.user.changePassword',
-              icon: 'KeyOutlined',
-              requiresAuth: true,
-              hidden: true
-            }
-          }
-        ]
       }
     ]
   }
@@ -305,7 +293,7 @@ export const constantRoutes: RouteRecordRaw[] = [
 const dynamicRouteRoot: RouteRecordRaw = {
   path: '/',
   name: 'DynamicRoot',
-  component: () => import('@/layouts/BasicLayout.vue'),
+  component: () => import('@/layouts/BasicLayout/index.vue'),
   children: []
 }
 
@@ -380,7 +368,7 @@ export const registerDynamicRoutes = async (menus: Menu[]): Promise<boolean> => 
           name: routeName,
           component:
             menu.menuType === HbtMenuType.Directory
-              ? () => import('@/layouts/BasicLayout.vue')
+              ? () => import('@/layouts/BasicLayout/index.vue')
               : menu.component
                 ? loadView(menu.component)
                 : () => import('@/views/error/404.vue'),
@@ -476,17 +464,17 @@ router.beforeEach(async (to, from, next) => {
   const userStore = useUserStore()
   const menuStore = useMenuStore()
 
-  // console.log('[路由守卫] 开始处理路由:', {
-  //   目标路由: to.path,
-  //   来源路由: from.path,
-  //   认证状态: {
-  //     token: !!token,
-  //     用户信息: !!userStore.user,
-  //     菜单: !!menuStore.rawMenuList?.length,
-  //     菜单数量: menuStore.rawMenuList?.length || 0,
-  //     动态路由数量: router.getRoutes().filter(r => r.name?.toString().startsWith('HbtMenu_')).length
-  //   }
-  // })
+  console.log('[路由守卫] 开始处理路由:', {
+    目标路由: to.path,
+    来源路由: from.path,
+    认证状态: {
+      token: !!token,
+      用户信息: !!userStore.user,
+      菜单: !!menuStore.rawMenuList?.length,
+      菜单数量: menuStore.rawMenuList?.length || 0,
+      动态路由数量: router.getRoutes().filter(r => r.name?.toString().startsWith('HbtMenu_')).length
+    }
+  })
 
   // 不需要登录的页面直接放行
   if (to.meta.requiresAuth === false) {
@@ -518,11 +506,7 @@ router.beforeEach(async (to, from, next) => {
     if (!userStore.user) {
       console.log('[路由守卫] 开始获取用户信息')
       await userStore.getUserInfo()
-      // console.log('[路由守卫] 用户信息获取完成:', {
-      //   用户: userStore.user,
-      //   角色: userStore.roles,
-      //   权限: userStore.permissions
-      // })
+      console.log('[路由守卫] 用户信息获取成功:', userStore.user)
     }
 
     // 检查是否需要初始化菜单和动态路由
@@ -537,28 +521,23 @@ router.beforeEach(async (to, from, next) => {
       if (!menuStore.rawMenuList?.length) {
         console.log('[路由守卫] 加载菜单数据')
         await menuStore.reloadMenus()
+        console.log('[路由守卫] 菜单加载完成:', {
+          菜单数量: menuStore.rawMenuList?.length || 0,
+          顶级菜单: menuStore.rawMenuList?.filter(m => !m.parentId).map(m => m.menuName) || []
+        })
       }
 
-      console.log('[路由守卫] 菜单加载完成，开始注册动态路由:', {
-        菜单数量: menuStore.rawMenuList?.length || 0,
-        顶级菜单: menuStore.rawMenuList?.filter(m => !m.parentId).map(m => m.menuName) || []
-      })
-
       const success = await registerDynamicRoutes(menuStore.rawMenuList)
-      // console.log('[路由守卫] 动态路由注册结果:', {
-      //   成功: success,
-      //   当前路由表: router.getRoutes().map(r => ({
-      //     路径: r.path,
-      //     名称: r.name,
-      //     类型: r.name?.toString().startsWith('HbtMenu_') ? '动态路由' : '静态路由'
-      //   }))
-      // })
+      console.log('[路由守卫] 动态路由注册结果:', {
+        成功: success,
+        当前路由表: router.getRoutes().map(r => r.path)
+      })
 
       if (!success) {
         throw new Error('动态路由注册失败')
       }
 
-      // 重新导航到目标路由,触发新路由配置生效
+      // 重新导航到目标路由
       console.log('[路由守卫] 动态路由注册完成，重新导航到:', to.path)
       return next({ path: to.path, replace: true })
     }
@@ -566,11 +545,7 @@ router.beforeEach(async (to, from, next) => {
     // 检查路由是否存在
     const matchedRoute = router.resolve(to.path)
     if (!matchedRoute.matched.length) {
-      // console.log('[路由守卫] 路由未匹配，尝试重新注册动态路由:', {
-      //   目标路径: to.path,
-      //   当前路由表: router.getRoutes().map(r => r.path)
-      // })
-
+      console.log('[路由守卫] 路由不存在，尝试重新注册动态路由:', to.path)
       // 重新注册动态路由
       const success = await registerDynamicRoutes(menuStore.rawMenuList)
       console.log('[路由守卫] 重新注册动态路由结果:', {

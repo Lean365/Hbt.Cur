@@ -1,10 +1,9 @@
 export default {
   theme: {
     title: '主题设置',
-    dark: '深色模式',
     mode: {
-      light: '浅色模式',
-      dark: '深色模式',
+      light: '明亮',
+      dark: '暗黑',
       system: '跟随系统'
     },
     color: {

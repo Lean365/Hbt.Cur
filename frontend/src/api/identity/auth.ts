@@ -6,7 +6,8 @@ import type {
   SaltResponse, 
   CaptchaResponse, 
   CaptchaResult,
-  LockoutStatus
+  LockoutStatus,
+  LoginCheckResult
 } from '@/types/identity/auth'
 import type { HbtApiResponse } from '@/types/common'
 import type { UserInfoResponse } from '@/stores/user'
@@ -138,5 +139,17 @@ export function unlockUser(username: string) {
   return request<HbtApiResponse<boolean>>({
     url: `/api/HbtAuth/unlock/${username}`,
     method: 'post'
+  })
+}
+
+/**
+ * 检查登录状态
+ * @param data 登录参数
+ */
+export function checkLogin(data: LoginParams) {
+  return request<HbtApiResponse<LoginCheckResult>>({
+    url: '/api/HbtAuth/check-login',
+    method: 'post',
+    data
   })
 } 

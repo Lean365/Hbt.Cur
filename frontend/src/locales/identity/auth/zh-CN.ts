@@ -20,7 +20,10 @@ export default {
           invalidTenant: '无效的租户',
           invalidDevice: '设备信息无效',
           invalidGrant: '授权信息无效',
-          tooManyAttempts: '登录尝试次数过多，请稍后再试'
+          tooManyAttempts: '登录尝试次数过多，请稍后再试',
+          concurrentLogin: '该账号已在其他设备登录，请先退出其他设备',
+          existingSession: '该账号已在 {deviceInfo} 登录中，请先退出其他设备',
+          unknown: '登录失败，请稍后重试'
         },
         noToken: '登录响应中没有访问令牌',
         otherLogin: '其他登录方式',
@@ -59,11 +62,12 @@ export default {
         noSaltData: '获取加密参数失败',
         invalidSalt: '加密参数格式无效',
         invalidIterations: '加密迭代次数无效',
-        permanentlyLocked: '账号已被永久锁定，请联系管理员解锁',
-        temporarilyLocked: '账号已被临时锁定，请等待{minutes}分钟后再试',
+        permanentlyLocked: '账号已被永久锁定，请联系管理员',
+        temporarilyLocked: '账号已被临时锁定，请 {minutes} 分钟后重试',
         tooManyAttempts: '登录失败次数过多，账号已被锁定',
-        invalidCredentials: '用户名或密码错误'
+        invalidCredentials: '用户名或密码错误',
+        concurrentLogin: '该账号已在其他设备登录，请先退出其他设备'
       }
     }
   }
-} 
+}

@@ -141,9 +141,12 @@ namespace Lean.Hbt.WebApi.Controllers.RealTime
         [HbtPerm("realtime:message:read")]
         public async Task<IActionResult> MarkAllAsReadAsync()
         {
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-            if (userIdClaim == null || !long.TryParse(userIdClaim.Value, out var userId))
-                return Error("无效的用户ID");
+            var userIdClaim = User.FindFirst("uid");
+            if (userIdClaim == null)
+            {
+                return Unauthorized();
+            }
+            var userId = long.Parse(userIdClaim.Value);
 
             var result = await _onlineMessageService.MarkAllAsReadAsync(userId);
             return Success(result);
@@ -170,9 +173,12 @@ namespace Lean.Hbt.WebApi.Controllers.RealTime
         [HbtPerm("realtime:message:read")]
         public async Task<IActionResult> MarkAllAsUnreadAsync()
         {
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-            if (userIdClaim == null || !long.TryParse(userIdClaim.Value, out var userId))
-                return Error("无效的用户ID");
+            var userIdClaim = User.FindFirst("uid");
+            if (userIdClaim == null)
+            {
+                return Unauthorized();
+            }
+            var userId = long.Parse(userIdClaim.Value);
 
             var result = await _onlineMessageService.MarkAllAsUnreadAsync(userId);
             return Success(result);

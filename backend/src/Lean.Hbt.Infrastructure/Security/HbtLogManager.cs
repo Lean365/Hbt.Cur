@@ -31,7 +31,7 @@ public class HbtLogManager :
     private readonly IHbtLogger _logger;
     private readonly HbtDbContext _context;
     private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly IHbtUserContext _userContext;
+    private readonly IHbtCurrentUser _currentUser;
 
     /// <summary>
     /// 构造函数
@@ -40,12 +40,12 @@ public class HbtLogManager :
         IHbtLogger logger,
         HbtDbContext context,
         IHttpContextAccessor httpContextAccessor,
-        IHbtUserContext userContext)
+        IHbtCurrentUser currentUser)
     {
         _logger = logger;
         _context = context;
         _httpContextAccessor = httpContextAccessor;
-        _userContext = userContext;
+        _currentUser = currentUser;
 
         // 配置SqlSugar差异日志
         StaticConfig.CompleteInsertableFunc = it =>
@@ -132,15 +132,15 @@ public class HbtLogManager :
             SqlParameters = sqlParameters,
             BeforeData = beforeData,
             AfterData = afterData,
-            TenantId = _userContext.TenantId,
-            CreateBy = _userContext.UserName,
+            TenantId = _currentUser.TenantId,
+            CreateBy = _currentUser.UserName,
             CreateTime = DateTime.Now
         };
 
         try
         {
             await _context.Client.Insertable(log).ExecuteCommandAsync();
-            _logger.Info($"记录数据变更日志成功: {_userContext.UserName} 对表 {tableName} 执行了 {changeType} 操作");
+            _logger.Info($"记录数据变更日志成功: {_currentUser.UserName} 对表 {tableName} 执行了 {changeType} 操作");
         }
         catch (Exception ex)
         {
@@ -164,9 +164,9 @@ public class HbtLogManager :
         var log = new HbtOperLog
         {
             LogLevel = success ? GetLogLevel(operationType) : 4, // 失败时使用错误级别
-            UserId = _userContext.UserId,
-            UserName = _userContext.UserName,
-            TenantId = _userContext.TenantId,
+            UserId = _currentUser.UserId,
+            UserName = _currentUser.UserName,
+            TenantId = _currentUser.TenantId,
             TableName = tableName,
             OperationType = operationType,
             BusinessKey = businessKey,
@@ -176,14 +176,14 @@ public class HbtLogManager :
             Location = location,
             Status = success ? 0 : 1,
             ErrorMsg = errorMsg,
-            CreateBy = _userContext.UserName,
+            CreateBy = _currentUser.UserName,
             CreateTime = DateTime.Now
         };
 
         try
         {
             await _context.Client.Insertable(log).ExecuteCommandAsync();
-            _logger.Info($"记录操作日志成功: {_userContext.UserName} 在 {tableName} 执行了 {operationType} 操作");
+            _logger.Info($"记录操作日志成功: {_currentUser.UserName} 在 {tableName} 执行了 {operationType} 操作");
         }
         catch (Exception ex)
         {
@@ -203,9 +203,9 @@ public class HbtLogManager :
         var log = new HbtExceptionLog
         {
             LogLevel = 4, // 异常统一使用错误级别
-            UserId = _userContext.UserId,
-            UserName = _userContext.UserName,
-            TenantId = _userContext.TenantId,
+            UserId = _currentUser.UserId,
+            UserName = _currentUser.UserName,
+            TenantId = _currentUser.TenantId,
             Method = method ?? _httpContextAccessor.HttpContext?.Request.Path ?? "Unknown",
             Parameters = parameters,
             ExceptionType = ex.GetType().FullName ?? "Unknown",
@@ -213,14 +213,14 @@ public class HbtLogManager :
             StackTrace = ex.StackTrace ?? "No stack trace",
             IpAddress = GetClientIpAddress(),
             UserAgent = GetUserAgent(),
-            CreateBy = _userContext.UserName,
+            CreateBy = _currentUser.UserName,
             CreateTime = DateTime.Now
         };
 
         try
         {
             await _context.Client.Insertable(log).ExecuteCommandAsync();
-            _logger.Error($"记录异常日志成功: {_userContext.UserName} 在执行 {method ?? "Unknown"} 时发生异常", ex);
+            _logger.Error($"记录异常日志成功: {_currentUser.UserName} 在执行 {method ?? "Unknown"} 时发生异常", ex);
         }
         catch (Exception innerEx)
         {
@@ -287,9 +287,9 @@ public class HbtLogManager :
         var log = new HbtAuditLog
         {
             LogLevel = GetLogLevel(operation),
-            UserId = _userContext.UserId,
-            UserName = _userContext.UserName,
-            TenantId = _userContext.TenantId,
+            UserId = _currentUser.UserId,
+            UserName = _currentUser.UserName,
+            TenantId = _currentUser.TenantId,
             Module = module,
             Operation = operation,
             Method = method,
@@ -300,14 +300,14 @@ public class HbtLogManager :
             UserAgent = GetUserAgent(),
             RequestUrl = _httpContextAccessor.HttpContext?.Request.Path ?? string.Empty,
             RequestMethod = _httpContextAccessor.HttpContext?.Request.Method ?? string.Empty,
-            CreateBy = _userContext.UserName,
+            CreateBy = _currentUser.UserName,
             CreateTime = DateTime.Now
         };
 
         try
         {
             await _context.Client.Insertable(log).ExecuteCommandAsync();
-            _logger.Info($"记录审计日志成功: {_userContext.UserName} 在 {module} 模块执行了 {operation} 操作");
+            _logger.Info($"记录审计日志成功: {_currentUser.UserName} 在 {module} 模块执行了 {operation} 操作");
         }
         catch (Exception ex)
         {

@@ -2,23 +2,24 @@ export default {
   common: {
     // ==================== 系统信息 ====================
     system: {
-      title: '黑冰台',
-      slogan: '专业、高效、安全的企业级管理系统',
-      description: '基于.NET 8和Vue 3的现代化企业管理系统',
-      copyright: '© 2024 Lean365. 保留所有权利。'
+      title: '黑冰平台',
+      slogan: '专业、高效、安全的企业管理系统',
+      description: '基于 .NET 8 和 Vue 3 的现代化企业管理系统',
+      copyright: '© 2024 Lean365. All rights reserved.'
     },
 
     // ==================== 错误信息 ====================
     error: {
-      systemRestart: '系统正在进行维护，请稍后重新登录',
+      clientError: '客户端请求错误，请检查请求参数',
+      systemRestart: '系统维护中，请稍后再登录',
       network: '网络连接失败，请检查网络设置',
-      unauthorized: '未授权访问，请重新登录',
-      forbidden: '无权限访问',
+      unauthorized: '未授权，请重新登录',
+      forbidden: '访问被拒绝',
       notFound: '请求的资源不存在',
       badRequest: '请求参数错误',
       serverError: '服务器内部错误',
       serviceUnavailable: '服务暂时不可用',
-      badGateway: '网关错误',
+      badGateway: '错误的网关',
       gatewayTimeout: '网关超时',
       unknown: '未知错误'
     },
@@ -45,6 +46,7 @@ export default {
 
       // 是否状态
       yesNo: {
+        all: '全部',
         yes: '是',
         no: '否'
       },
@@ -319,8 +321,18 @@ export default {
       batchDelete: '批量删除', // @btn-batch-delete-color
       view: '查看',          // @btn-view-color
       clear: '清空',         // @btn-clear-color
-
-
+      forceOffline: '强制下线', // @btn-force-offline-color
+      onlineStatus: '在线状态', // @btn-online-status-color
+      loginHistory: '登录历史', // @btn-login-history-color
+      sendMail: '发送邮件',   // @btn-send-mail-color
+      viewMail: '查看邮件',   // @btn-view-mail-color
+      mailTemplate: '邮件模板', // @btn-mail-template-color
+      sendNotification: '发送通知', // @btn-send-notification-color
+      viewNotification: '查看通知', // @btn-view-notification-color
+      notificationSetting: '通知设置', // @btn-notification-setting-color
+      sendMessage: '发送消息', // @btn-send-message-color
+      viewMessage: '查看消息', // @btn-view-message-color
+      messageSetting: '消息设置', // @btn-message-setting-color
 
       // === 数据操作按钮 ===
       import: '导入',        // @btn-import-color
@@ -471,6 +483,9 @@ export default {
       createFailed: '新增失败',
       updateSuccess: '更新成功',
       updateFailed: '更新失败',
+      forceOfflineConfirm: '确定要强制下线该用户吗？',
+      forceOfflineSuccess: '强制下线成功',
+      forceOfflineFailed: '强制下线失败',
       networkError: '网络连接失败，请检查网络',
       systemError: '系统错误',
       timeout: '请求超时',
@@ -556,5 +571,63 @@ export default {
     networkError: '网络连接失败',
     serverError: '服务器错误',
     unknownError: '未知错误'
+  },
+
+  memorial: {
+    title: '纪念模式',
+    mode: '纪念模式',
+    holidays: '节日主题',
+    customTheme: '自定义主题',
+    autoMode: '自动模式',
+    clearTheme: '清除主题',
+    colorPrimary: '主色调',
+    colorBgContainer: '容器背景色',
+    colorBgLayout: '布局背景色',
+    colorText: '文本颜色',
+    colorTextSecondary: '次要文本颜色',
+    colorBorder: '边框颜色',
+    colorSplit: '分割线颜色',
+    // 中国节日
+    chineseNewYear: {
+      name: '春节'
+    },
+    qingming: {
+      name: '清明节'
+    },
+    dragonBoat: {
+      name: '端午节'
+    },
+    midAutumn: {
+      name: '中秋节'
+    },
+    // 日本节日
+    cherryBlossom: {
+      name: '樱花节'
+    },
+    tanabata: {
+      name: '七夕节'
+    },
+    autumnLeaves: {
+      name: '红叶节'
+    },
+    // 全球节日
+    newYear: {
+      name: '新年'
+    },
+    valentines: {
+      name: '情人节'
+    },
+    easter: {
+      name: '复活节'
+    },
+    halloween: {
+      name: '万圣节'
+    },
+    thanksgiving: {
+      name: '感恩节'
+    },
+    christmas: {
+      name: '圣诞节'
+    }
   }
 } 

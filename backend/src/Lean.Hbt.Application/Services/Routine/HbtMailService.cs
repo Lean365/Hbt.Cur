@@ -7,23 +7,11 @@
 // 描述   : 邮件服务实现
 //===================================================================
 
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Collections.Generic;
 using System.Linq.Expressions;
-using Microsoft.Extensions.Logging;
-using Lean.Hbt.Common.Models;
-using Lean.Hbt.Domain.Entities.Routine;
 using Lean.Hbt.Application.Dtos.Routine;
-using Lean.Hbt.Common.Exceptions;
-using Lean.Hbt.Common.Helpers;
-using Lean.Hbt.Domain.Repositories;
-using Lean.Hbt.Domain.Identity;
 using Lean.Hbt.Common.Enums;
+using Lean.Hbt.Domain.Entities.Routine;
 using Lean.Hbt.Domain.IServices.SignalR;
-using SqlSugar;
-using Mapster;
 
 namespace Lean.Hbt.Application.Services.Routine
 {
@@ -185,7 +173,7 @@ namespace Lean.Hbt.Application.Services.Routine
                 var mail = input.Adapt<HbtMail>();
                 mail.MailStatus = 1; // 发送成功
                 mail.MailSendTime = DateTime.Now;
-                
+
                 var result = await _mailRepository.CreateAsync(mail);
                 return result > 0;
             }
@@ -273,7 +261,7 @@ namespace Lean.Hbt.Application.Services.Routine
                 mail.MailLastReadTime = DateTime.Now;
 
                 await _mailRepository.UpdateAsync(mail);
-                
+
                 // 发送已读通知
                 var notification = new HbtRealTimeNotification
                 {
@@ -295,8 +283,8 @@ namespace Lean.Hbt.Application.Services.Routine
         public async Task<int> MarkAllAsReadAsync(long userId)
         {
             // 查找所有未读邮件（MailReadIds为空或不包含当前用户ID的邮件）
-            var unreadMails = await _mailRepository.GetListAsync(m => 
-                string.IsNullOrEmpty(m.MailReadIds) || 
+            var unreadMails = await _mailRepository.GetListAsync(m =>
+                string.IsNullOrEmpty(m.MailReadIds) ||
                 !m.MailReadIds.Split(',', StringSplitOptions.None).Select(id => long.Parse(id)).Contains(userId));
 
             if (!unreadMails.Any())
@@ -370,8 +358,8 @@ namespace Lean.Hbt.Application.Services.Routine
         public async Task<int> MarkAllAsUnreadAsync(long userId)
         {
             // 查找所有已读邮件（MailReadIds包含当前用户ID的邮件）
-            var readMails = await _mailRepository.GetListAsync(m => 
-                !string.IsNullOrEmpty(m.MailReadIds) && 
+            var readMails = await _mailRepository.GetListAsync(m =>
+                !string.IsNullOrEmpty(m.MailReadIds) &&
                 m.MailReadIds.Split(',', StringSplitOptions.None).Select(id => long.Parse(id)).Contains(userId));
 
             if (!readMails.Any())
@@ -394,4 +382,4 @@ namespace Lean.Hbt.Application.Services.Routine
             return result;
         }
     }
-} 
+}

@@ -1,18 +1,67 @@
-import { HubConnection } from '@microsoft/signalr'
-import { createHubConnection, signalRConfig } from './config'
-import { message } from 'ant-design-vue'
-import router from '@/router'
+import { HubConnection, HubConnectionState } from '@microsoft/signalr'
+import { createHubConnection, startHeartbeat, handleConnectionError } from './config'
+import { getToken, removeToken } from '@/utils/auth'
 import { useUserStore } from '@/stores/user'
+import { message } from 'ant-design-vue'
+import i18n from '@/locales'
+import { LogLevel, customLogger } from '@/utils/logger'
+import axios from 'axios'
 
-class SignalRService {
-  private connection: HubConnection | null = null
+const { t } = i18n.global
+
+type EventHandler = (...args: any[]) => void
+
+// 系统配置接口
+interface SystemConfig {
+  singleSignOn: {
+    enabled: boolean;
+  };
+  // 其他配置项...
+}
+
+// 默认配置
+const DEFAULT_CONFIG: SystemConfig = {
+  singleSignOn: {
+    enabled: false // 默认为多点登录
+  }
+};
+
+// 全局配置对象
+let globalConfig: SystemConfig = DEFAULT_CONFIG;
+
+// 初始化配置
+export async function initSystemConfig() {
+  try {
+    // 从后端获取系统配置
+    const response = await axios.get('/api/system/config')
+    globalConfig = response.data
+    console.log('[SignalR] 系统配置已加载:', globalConfig)
+  } catch (error) {
+    console.error('[SignalR] 获取系统配置失败，使用默认配置:', error)
+    globalConfig = DEFAULT_CONFIG
+  }
+}
+
+export class SignalRService {
   private static instance: SignalRService
-  private eventHandlers: Map<string, Function[]> = new Map()
-  private heartbeatTimer: NodeJS.Timeout | null = null
-  private reconnectCount = 0
-  private isForceOffline = false
+  private connection: HubConnection | null = null
+  private eventHandlers: Map<string, EventHandler[]> = new Map()
+  private heartbeat: any = null
+  private connecting: boolean = false
+  private isInitialized: boolean = false
+  private isStarting: boolean = false
+  private isConnected: boolean = false
+  private retryCount: number = 0
+  private maxRetries: number = 5
+  private lastConnectionId: string | null = null
+  private connectionCheckInterval: NodeJS.Timeout | null = null
 
-  private constructor() {}
+  private constructor() {
+    this.start = this.start.bind(this)
+    this.stop = this.stop.bind(this)
+    this.on = this.on.bind(this)
+    this.off = this.off.bind(this)
+  }
 
   public static getInstance(): SignalRService {
     if (!SignalRService.instance) {
@@ -21,293 +70,225 @@ class SignalRService {
     return SignalRService.instance
   }
 
-  // 设置强制下线状态
-  public setForceOffline(status: boolean): void {
-    this.isForceOffline = status
+  resetConnectionState() {
+    console.log('[SignalR] 重置连接状态')
+    this.connecting = false
+    this.isInitialized = false
+    this.isStarting = false
+    if (this.heartbeat) {
+      this.heartbeat.stop()
+      this.heartbeat = null
+    }
+    if (this.connection) {
+      this.connection.stop()
+      this.connection = null
+    }
+    this.retryCount = 0
+    this.isConnected = false
   }
 
-  // 获取强制下线状态
-  public getForceOffline(): boolean {
-    return this.isForceOffline
-  }
-
-  // 启动连接
   public async start(): Promise<void> {
-    if (this.connection) return
-    if (this.isForceOffline) {
-      console.log('[SignalR] 用户被强制下线,禁止重新连接')
-      return
-    }
-
-    this.connection = createHubConnection()
-    
-    // 注册重连事件
-    this.connection.onreconnecting(() => {
-      console.log('[SignalR] 正在重新连接...')
-      // 只在非登录页面显示重连消息
-      if (!window.location.pathname.includes('/login')) {
-        message.warning('[SignalR] 正在尝试重新连接到服务器...')
-      }
-    })
-
-    this.connection.onreconnected(() => {
-      console.log('[SignalR] 重新连接成功')
-      // 只在非登录页面显示重连成功消息
-      if (!window.location.pathname.includes('/login')) {
-        message.success('[SignalR] 已重新连接到服务器')
-      }
-      this.startHeartbeat()
-    })
-
-    this.connection.onclose(() => {
-      console.log('[SignalR] 连接已关闭')
-      // 只在非登录页面显示断开连接消息
-      if (!window.location.pathname.includes('/login')) {
-        message.error('[SignalR] 与服务器的连接已断开')
-      }
-      this.stopHeartbeat()
-      // 只有在非强制下线状态下才尝试重连
-      if (!this.isForceOffline) {
-        this.retryConnection()
-      }
-    })
-
-    // 注册事件处理
-    this.registerHandlers()
-
     try {
-      await this.connection.start()
-      console.log('[SignalR] 连接成功')
-      // 只在非登录页面显示连接成功消息
-      if (!window.location.pathname.includes('/login')) {
-        message.success('[SignalR] 已连接到服务器')
+      if (this.connecting) {
+        console.log('[SignalR] 已经在连接中，跳过重复连接')
+        return
       }
-      this.reconnectCount = 0
-      this.startHeartbeat()
+
+      this.connecting = true
+      console.log('[SignalR] 启动连接前的 Token 状态:', await getToken() ? '已获取' : '未获取')
+      
+      if (!this.connection) {
+        console.log('[SignalR] 开始创建新连接')
+        this.connection = await createHubConnection()
+      }
+
+      console.log('[SignalR] 开始启动连接')
+      await this.setupConnection()
+      
     } catch (error) {
-      console.error('[SignalR] 连接失败:', error)
-      // 只在非登录页面显示连接失败消息
-      if (!window.location.pathname.includes('/login')) {
-        message.error('[SignalR] 连接服务器失败')
+      const errorType = handleConnectionError(error as Error)
+      if (errorType === 'AUTH_ERROR') {
+        removeToken()
+        window.location.href = '/login'
+        return
       }
-      this.retryConnection()
+      throw error
+    } finally {
+      this.connecting = false
     }
   }
 
-  // 停止连接
-  public async stop(): Promise<void> {
-    this.stopHeartbeat()
+  async stop() {
+    try {
+      if (this.heartbeat) {
+        this.heartbeat.stop()
+        this.heartbeat = null
+      }
+      
+      if (this.connection) {
+        await this.connection.stop()
+        this.connection = null
+      }
+      
+      this.resetConnectionState()
+      console.log('[SignalR] 连接已停止')
+    } catch (error) {
+      console.error('[SignalR] 停止连接失败:', error)
+    }
+  }
+
+  on(eventName: string, handler: EventHandler) {
+    if (!this.eventHandlers.has(eventName)) {
+      this.eventHandlers.set(eventName, [])
+    }
+    this.eventHandlers.get(eventName)?.push(handler)
+    
+    if (this.connection) {
+      this.connection.on(eventName, handler)
+    }
+  }
+
+  off(eventName: string, handler?: EventHandler) {
+    if (handler) {
+      const handlers = this.eventHandlers.get(eventName)
+      if (handlers) {
+        const index = handlers.indexOf(handler)
+        if (index > -1) {
+          handlers.splice(index, 1)
+        }
+      }
+      if (this.connection) {
+        this.connection.off(eventName, handler)
+      }
+    } else {
+      this.eventHandlers.delete(eventName)
+      if (this.connection) {
+        this.connection.off(eventName)
+      }
+    }
+  }
+
+  private registerConnectionHandlers() {
     if (!this.connection) return
 
-    try {
-      await this.connection.stop()
-      this.connection = null
-      console.log('SignalR连接已停止')
-    } catch (error) {
-      console.error('停止SignalR连接失败:', error)
-      throw error
-    }
-  }
-
-  // 重试连接
-  private async retryConnection(): Promise<void> {
-    if (this.reconnectCount >= signalRConfig.maxRetries) {
-      console.error('[SignalR] 达到最大重试次数')
-      message.error('[SignalR] 无法连接到服务器，请刷新页面重试')
-      return
-    }
-
-    this.reconnectCount++
-    console.log(`[SignalR] 尝试重新连接 (${this.reconnectCount}/${signalRConfig.maxRetries})...`)
-    
-    setTimeout(() => {
-      this.start()
-    }, signalRConfig.reconnectInterval)
-  }
-
-  // 开始心跳检测
-  private startHeartbeat(): void {
-    this.stopHeartbeat()
-    
-    this.heartbeatTimer = setInterval(async () => {
-      try {
-        if (this.connection?.state === 'Connected') {
-          await this.connection.invoke('SendHeartbeat')
-        }
-      } catch (error) {
-        console.error('发送心跳包失败:', error)
+    this.connection.onclose((error) => {
+      console.error('[SignalR] 连接关闭:', error?.message || '未知原因')
+      this.isConnected = false
+      this.emit('ConnectionClosed', error)
+      
+      if (!this.isStarting) {
         this.retryConnection()
       }
-    }, signalRConfig.heartbeatInterval)
+    })
+
+    this.connection.onreconnecting((error) => {
+      console.warn('[SignalR] 正在重连:', error?.message || '未知原因')
+      this.emit('Reconnecting', error)
+    })
+
+    this.connection.onreconnected((connectionId) => {
+      console.log('[SignalR] 重连成功，新连接ID:', connectionId)
+      this.isConnected = true
+      this.retryCount = 0
+      this.emit('Reconnected', connectionId)
+    })
+
+    this.registerEventHandlers()
   }
 
-  // 停止心跳检测
-  private stopHeartbeat(): void {
-    if (this.heartbeatTimer) {
-      clearInterval(this.heartbeatTimer)
-      this.heartbeatTimer = null
-    }
-  }
+  private registerEventHandlers() {
+    if (!this.connection) return
 
-  // 注册事件处理
-  private registerHandlers(): void {
-    if (!this.connection) {
-      console.log('[SignalR] 连接未初始化，无法注册事件处理器')
-      return
-    }
-
-    console.log('[SignalR] 开始注册事件处理器')
-
-    // 接收消息
     this.connection.on('ReceiveMessage', (message: string) => {
       console.log('[SignalR] 收到消息:', message)
       this.emit('ReceiveMessage', message)
     })
 
-    // 用户上线通知
-    this.connection.on('UserOnline', (userId: string) => {
-      console.log('[SignalR] 用户上线:', userId)
-      this.emit('UserOnline', userId)
+    this.connection.on('UserStatusChanged', (userId: string, isOnline: boolean) => {
+      console.log('[SignalR] 用户状态变化:', userId, isOnline)
+      this.emit('UserStatusChanged', userId, isOnline)
     })
 
-    // 用户下线通知
-    this.connection.on('UserOffline', (userId: string) => {
-      console.log('[SignalR] 用户下线:', userId)
-      this.emit('UserOffline', userId)
+    this.connection.on('UserKickedOut', (message: string) => {
+      console.log('[SignalR] 用户被踢出:', message)
+      this.emit('UserKickedOut', message)
     })
 
-    // 心跳响应
-    this.connection.on('ReceiveHeartbeat', (timestamp: string) => {
-      console.debug('[SignalR] 收到心跳响应:', timestamp)
+    this.connection.on('ForceOffline', (message: string) => {
+      console.log('[SignalR] 收到强制下线通知:', message)
+      this.emit('ForceOffline', message)
     })
 
-    // 单点登录踢出处理
-    if (signalRConfig.sso.enabled) {
-      console.log('[SignalR] 注册单点登录踢出事件处理器')
-      this.connection.on(signalRConfig.sso.kickoutEvent, async (msg: string) => {
-        console.log('[SignalR] 收到踢出通知:', msg)
-        await this.handleKickout(msg)
-      })
-    }
-
-    // 强制下线处理
-    console.log('[SignalR] 注册强制下线事件处理器')
-    this.connection.on('ForceOffline', async (msg: string) => {
-      console.log('[SignalR] 收到强制下线通知:', msg)
-      try {
-        console.log('[SignalR] 开始处理强制下线')
-        await this.handleKickout(msg)
-        console.log('[SignalR] 强制下线处理完成')
-      } catch (error) {
-        console.error('[SignalR] 处理强制下线时发生错误:', error)
-      }
+    this.connection.on('Kickout', (message: string) => {
+      console.log('[SignalR] 收到Kickout事件:', message)
+      this.emit('Kickout', message)
     })
-
-    console.log('[SignalR] 事件处理器注册完成')
   }
 
-  // 处理踢出
-  private async handleKickout(msg: string): Promise<void> {
-    console.log('[SignalR] 开始处理踢出:', msg)
-    try {
-      // 设置强制下线状态
-      this.setForceOffline(true)
-      
-      // 显示提示
-      message.warning(msg || '您已被强制下线')
-      console.log('[SignalR] 已显示踢出提示')
-
-      // 清理登录状态
-      await this.cleanupLoginState()
-      console.log('[SignalR] 已清理登录状态')
-
-      // 跳转到登录页
-      await router.replace('/login')
-      console.log('[SignalR] 已跳转到登录页')
-
-      // 刷新页面
-      window.location.reload()
-      console.log('[SignalR] 已触发页面刷新')
-    } catch (error) {
-      console.error('[SignalR] 处理踢出时发生错误:', error)
-      throw error
-    }
-  }
-
-  // 清理登录状态
-  private async cleanupLoginState(): Promise<void> {
-    console.log('[SignalR] 开始清理登录状态')
-    try {
-      // 清除 token
-      localStorage.removeItem('token')
-      console.log('[SignalR] 已清除 token')
-
-      // 清除用户信息
-      localStorage.removeItem('user')
-      console.log('[SignalR] 已清除用户信息')
-
-      // 断开 SignalR 连接
-      if (this.connection) {
-        console.log('[SignalR] 准备断开连接')
-        await this.connection.stop()
-        console.log('[SignalR] 已断开连接')
-      }
-    } catch (error) {
-      console.error('[SignalR] 清理登录状态时发生错误:', error)
-      throw error
-    }
-  }
-
-  // 发送消息
-  public async sendMessage(message: string): Promise<void> {
-    if (!this.connection) {
-      throw new Error('SignalR未连接')
-    }
-
-    try {
-      await this.connection.invoke('SendMessage', message)
-    } catch (error) {
-      console.error('发送消息失败:', error)
-      throw error
-    }
-  }
-
-  // 获取连接状态
-  public getConnectionState(): string {
-    return this.connection?.state || 'Disconnected'
-  }
-
-  // 检查是否已连接
-  public isConnected(): boolean {
-    return this.connection?.state === 'Connected'
-  }
-
-  // 注册事件监听
-  public on(event: string, handler: Function): void {
-    if (!this.eventHandlers.has(event)) {
-      this.eventHandlers.set(event, [])
-    }
-    this.eventHandlers.get(event)?.push(handler)
-  }
-
-  // 移除事件监听
-  public off(event: string, handler: Function): void {
-    const handlers = this.eventHandlers.get(event)
-    if (handlers) {
-      const index = handlers.indexOf(handler)
-      if (index !== -1) {
-        handlers.splice(index, 1)
-      }
-    }
-  }
-
-  // 触发事件
-  private emit(event: string, ...args: any[]): void {
-    const handlers = this.eventHandlers.get(event)
+  private emit(eventName: string, ...args: any[]) {
+    const handlers = this.eventHandlers.get(eventName)
     if (handlers) {
       handlers.forEach(handler => handler(...args))
     }
   }
+
+  private async setupConnection(): Promise<void> {
+    try {
+      if (!this.connection) return
+
+      this.registerConnectionHandlers()
+      await this.connection.start()
+      
+      console.log('[SignalR] 连接已建立，连接ID:', this.connection.connectionId)
+      this.isConnected = true
+      this.retryCount = 0
+
+      this.startHeartbeat()
+      
+    } catch (error) {
+      console.error('[SignalR] 连接建立失败:', error)
+      this.isConnected = false
+      this.retryCount++
+      
+      if (this.retryCount >= this.maxRetries) {
+        console.error('[SignalR] 达到最大重试次数，停止重连')
+        throw error
+      }
+      
+      const delay = Math.min(1000 * Math.pow(2, this.retryCount), 30000)
+      console.log(`[SignalR] ${delay/1000}秒后重试连接...`)
+      await new Promise(resolve => setTimeout(resolve, delay))
+      return this.setupConnection()
+    }
+  }
+
+  private startHeartbeat() {
+    if (this.heartbeat) {
+      this.heartbeat.stop()
+    }
+    if (this.connection) {
+      this.heartbeat = startHeartbeat(this.connection)
+    }
+  }
+
+  private async retryConnection() {
+    if (this.retryCount >= this.maxRetries) {
+      console.error('[SignalR] 达到最大重试次数，停止重连')
+      return
+    }
+
+    this.retryCount++
+    const delay = Math.min(1000 * Math.pow(2, this.retryCount), 30000)
+    console.log(`[SignalR] ${delay/1000}秒后重试连接...`)
+    
+    await new Promise(resolve => setTimeout(resolve, delay))
+    try {
+      await this.start()
+    } catch (error) {
+      console.error('[SignalR] 重连失败:', error)
+    }
+  }
 }
 
+// 导出单例实例
 export const signalRService = SignalRService.getInstance() 

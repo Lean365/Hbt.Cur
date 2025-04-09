@@ -1,10 +1,5 @@
 <template>
-  <hbt-modal
-    v-model:visible="visible"
-    title="我的异常日志"
-    :width="1200"
-    :footer="null"
-  >
+  <div class="exception-log">
     <!-- 查询区域 -->
     <hbt-query
       v-show="showSearch"
@@ -49,17 +44,17 @@
 
     <!-- 详情组件 -->
     <exception-log-detail ref="detailRef" :exception-info="currentException" />
-  </hbt-modal>
+  </div>
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive, defineExpose } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import { message } from 'ant-design-vue'
 import type { TablePaginationConfig } from 'ant-design-vue'
 import type { QueryField } from '@/types/components/query'
 import type { HbtExceptionLogDto, HbtExceptionLogQueryDto } from '@/types/audit/exceptionLog'
 import { getExceptionLogs } from '@/api/audit/exceptionLog'
-import { useUserStore } from '@/store/modules/user'
+import { useUserStore } from '@/stores/user'
 import ExceptionLogDetail from './ExceptionLogDetail.vue'
 
 const userStore = useUserStore()
@@ -147,7 +142,6 @@ const columns = [
 ]
 
 // 状态定义
-const visible = ref(false)
 const loading = ref(false)
 const tableData = ref<HbtExceptionLogDto[]>([])
 const total = ref(0)
@@ -161,7 +155,7 @@ const queryParams = reactive<HbtExceptionLogQueryDto>({
   orderByColumn: undefined,
   orderType: undefined,
   logLevel: undefined,
-  userName: userStore.username,
+  userName: userStore.user?.userName,
   method: undefined,
   exceptionType: undefined,
   startTime: undefined,
@@ -173,8 +167,8 @@ const fetchData = async () => {
   loading.value = true
   try {
     const res = await getExceptionLogs(queryParams)
-    tableData.value = res.rows
-    total.value = res.totalNum
+    tableData.value = res.data.rows
+    total.value = res.data.totalNum
   } catch (error) {
     console.error('获取异常日志失败:', error)
     message.error('获取异常日志失败')
@@ -218,28 +212,14 @@ const handleViewDetail = (record: HbtExceptionLogDto) => {
   detailRef.value?.open()
 }
 
-/** 打开弹窗 */
-const open = () => {
-  visible.value = true
+// 组件挂载时获取数据
+onMounted(() => {
   fetchData()
-}
-
-/** 关闭弹窗 */
-const close = () => {
-  visible.value = false
-}
-
-// 暴露方法给父组件
-defineExpose({
-  open,
-  close
 })
 </script>
 
 <style lang="less" scoped>
-:deep(.ant-modal-body) {
+.exception-log {
   padding: 16px;
-  max-height: 800px;
-  overflow-y: auto;
 }
-</style> 
+</style>

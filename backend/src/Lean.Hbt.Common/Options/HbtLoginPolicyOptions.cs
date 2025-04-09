@@ -25,13 +25,23 @@ namespace Lean.Hbt.Common.Options
         public int LockoutMinutes { get; set; } = 30;
 
         /// <summary>
-        /// 是否允许多端登录
-        /// </summary>
-        public bool AllowMultipleLogin { get; set; } = true;
-
-        /// <summary>
         /// 是否启用登录限制
         /// </summary>
         public bool EnableLoginRestriction { get; set; } = true;
+
+        /// <summary>
+        /// 需要验证码的失败次数阈值
+        /// </summary>
+        public int CaptchaRequiredAttempts { get; set; } = 3;
+
+        /// <summary>
+        /// 验证码有效期(分钟)
+        /// </summary>
+        public int CaptchaRequiredMinutes { get; set; } = 5;
+
+        /// <summary>
+        /// 重复登录检测时间窗口(分钟)
+        /// </summary>
+        public int RepeatLoginMinutes { get; set; } = 5;
     }
 } 

@@ -18,11 +18,20 @@ using Lean.Hbt.Domain.IServices.Admin;
 using Lean.Hbt.Domain.Entities.Identity;
 using Lean.Hbt.Domain.Repositories;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Lean.Hbt.Common.Options;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Caching.Distributed;
+using System.Text.Json;
 
 namespace Lean.Hbt.Infrastructure.Authentication
 {
     /// <summary>
-    /// JWT令牌处理器实现
+    /// JWT处理器实现
     /// </summary>
     /// <remarks>
     /// 创建者: Lean365
@@ -37,6 +46,10 @@ namespace Lean.Hbt.Infrastructure.Authentication
         private readonly IHbtLocalizationService _localizationService;
         private readonly IHbtRepository<HbtUser> _userRepository;
         private readonly ILogger<HbtJwtHandler> _logger;
+        private readonly HbtJwtOptions _jwtOptions;
+        private readonly IMemoryCache _memoryCache;
+        private readonly IDistributedCache _distributedCache;
+        private readonly bool _useDistributedCache;
 
         /// <summary>
         /// 构造函数
@@ -45,77 +58,118 @@ namespace Lean.Hbt.Infrastructure.Authentication
         /// <param name="localizationService">本地化服务</param>
         /// <param name="userRepository">用户仓储</param>
         /// <param name="logger">日志接口</param>
+        /// <param name="jwtOptions">JWT配置</param>
+        /// <param name="memoryCache">内存缓存接口</param>
+        /// <param name="distributedCache">分布式缓存接口</param>
         public HbtJwtHandler(
             IConfiguration configuration, 
             IHbtLocalizationService localizationService,
             IHbtRepository<HbtUser> userRepository,
-            ILogger<HbtJwtHandler> logger)
+            ILogger<HbtJwtHandler> logger,
+            IOptions<HbtJwtOptions> jwtOptions,
+            IMemoryCache memoryCache,
+            IDistributedCache distributedCache = null)
         {
             _configuration = configuration;
             _localizationService = localizationService;
             _userRepository = userRepository;
             _logger = logger;
+            _jwtOptions = jwtOptions.Value;
+            _memoryCache = memoryCache;
+            _distributedCache = distributedCache;
+            _useDistributedCache = _distributedCache != null && configuration.GetValue<bool>("UseDistributedCache", false);
         }
 
         /// <summary>
         /// 生成访问令牌
         /// </summary>
-        public async Task<string> GenerateAccessTokenAsync(HbtUser user)
+        public async Task<string> GenerateAccessTokenAsync(HbtUser user, HbtTenant tenant, string[] roles, string[] permissions)
         {
-            try 
+            try
             {
-                // 获取用户权限和角色
-                var permissions = await _userRepository.GetUserPermissionsAsync(user.Id);
-                var roles = await _userRepository.GetUserRolesAsync(user.Id);
-                
+                _logger.LogInformation("开始生成访问令牌，JWT配置信息: {@JwtConfig}", new
+                {
+                    SecretKeyLength = _jwtOptions?.SecretKey?.Length ?? 0,
+                    Issuer = _jwtOptions?.Issuer,
+                    Audience = _jwtOptions?.Audience,
+                    ExpirationMinutes = _jwtOptions?.ExpirationMinutes,
+                    UseDistributedCache = _useDistributedCache
+                });
+
+                if (string.IsNullOrEmpty(_jwtOptions?.SecretKey))
+                {
+                    _logger.LogError("JWT SecretKey 未配置");
+                    throw new HbtException("JWT配置错误：SecretKey未配置", "JWT_CONFIG_ERROR");
+                }
+
                 var claims = new List<Claim>
                 {
-                    new Claim("user_id", user.Id.ToString()),
-                    new Claim(JwtRegisteredClaimNames.Name, user.UserName),
-                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                    new Claim("tenant_id", user.TenantId.ToString())
+                    new Claim("uid", user.Id.ToString()),          // 用户ID
+                    new Claim("unm", user.UserName),               // 用户名
+                    new Claim("nnm", user.NickName ?? string.Empty), // 昵称
+                    new Claim("enm", user.EnglishName ?? string.Empty), // 英文名
+                    new Claim("tid", user.TenantId.ToString()),    // 租户ID
+                    new Claim("tnm", tenant.TenantName),           // 租户名称
+                    new Claim("jti", Guid.NewGuid().ToString()),   // JWT ID
+                    new Claim("typ", user.UserType.ToString()),    // 用户类型
+                    new Claim("adm", (user.UserType == 2).ToString()) // 管理员标记
                 };
 
-                // 添加角色claims
-                if (roles != null && roles.Any())
+                // 添加角色和权限
+                if (roles?.Any() == true)
                 {
-                    foreach (var role in roles)
-                    {
-                        claims.Add(new Claim(ClaimTypes.Role, role));
-                    }
+                    // 只添加第一个角色，其他角色通过权限控制
+                    claims.Add(new Claim("rol", roles[0]));        // 主要角色
                 }
 
-                // 添加权限claims
-                if (permissions != null && permissions.Any())
+                if (permissions?.Any() == true)
                 {
-                    foreach (var permission in permissions)
+                    // 生成权限缓存key
+                    var permissionKey = $"pms:{user.Id}:{Guid.NewGuid():N}";
+                    var expiration = TimeSpan.FromMinutes(_jwtOptions.ExpirationMinutes);
+
+                    if (_useDistributedCache)
                     {
-                        claims.Add(new Claim("permissions", permission));
+                        // 使用分布式缓存(Redis)
+                        var permissionsJson = JsonSerializer.Serialize(permissions);
+                        var permissionsBytes = Encoding.UTF8.GetBytes(permissionsJson);
+                        var options = new DistributedCacheEntryOptions
+                        {
+                            AbsoluteExpirationRelativeToNow = expiration
+                        };
+                        await _distributedCache.SetAsync(permissionKey, permissionsBytes, options);
                     }
+                    else
+                    {
+                        // 使用内存缓存
+                        var cacheOptions = new MemoryCacheEntryOptions()
+                            .SetAbsoluteExpiration(expiration);
+                        _memoryCache.Set(permissionKey, permissions, cacheOptions);
+                    }
+                    
+                    // JWT中只存储权限的引用key
+                    claims.Add(new Claim("pms_key", permissionKey));
                 }
 
-                var secretKey = _configuration["Jwt:SecretKey"] ?? 
-                    throw HbtException.ValidationError(await _localizationService.GetLocalizedStringAsync("Jwt.SecretKeyNotConfigured"));
-                
-                var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
-                var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+                var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.SecretKey));
+                var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
                 var token = new JwtSecurityToken(
-                    issuer: _configuration["Jwt:Issuer"] ?? 
-                        throw HbtException.ValidationError(await _localizationService.GetLocalizedStringAsync("Jwt.IssuerNotConfigured")),
-                    audience: _configuration["Jwt:Audience"] ?? 
-                        throw HbtException.ValidationError(await _localizationService.GetLocalizedStringAsync("Jwt.AudienceNotConfigured")),
+                    issuer: _jwtOptions.Issuer,
+                    audience: _jwtOptions.Audience,
                     claims: claims,
-                    notBefore: DateTime.UtcNow,
-                    expires: DateTime.UtcNow.AddMinutes(Convert.ToDouble(_configuration["Jwt:ExpirationMinutes"] ?? "30")),
-                    signingCredentials: creds
-                );
+                    expires: DateTime.UtcNow.AddMinutes(_jwtOptions.ExpirationMinutes),
+                    signingCredentials: credentials);
 
-                return new JwtSecurityTokenHandler().WriteToken(token);
+                var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
+                _logger.LogInformation("访问令牌生成成功: Length={Length}", tokenString?.Length ?? 0);
+
+                return tokenString;
             }
             catch (Exception ex)
             {
-                throw HbtException.ValidationError($"生成访问令牌失败: {ex.Message}");
+                _logger.LogError(ex, "生成访问令牌时发生错误: {Message}", ex.Message);
+                throw new HbtException("生成访问令牌失败", "JWT_GENERATE_ERROR", ex);
             }
         }
 
@@ -124,7 +178,7 @@ namespace Lean.Hbt.Infrastructure.Authentication
         /// </summary>
         public async Task<string> GenerateRefreshTokenAsync()
         {
-            return await Task.FromResult(Guid.NewGuid().ToString("N"));
+            return Guid.NewGuid().ToString("N");
         }
 
         /// <summary>
@@ -134,122 +188,73 @@ namespace Lean.Hbt.Infrastructure.Authentication
         {
             try
             {
-                _logger.LogInformation("[Token验证] 开始验证Token: {TokenLength}字符", token?.Length ?? 0);
-
                 var tokenHandler = new JwtSecurityTokenHandler();
-                var secretKey = _configuration["Jwt:SecretKey"] ?? 
-                    throw HbtException.ValidationError(await _localizationService.GetLocalizedStringAsync("Jwt.SecretKeyNotConfigured"));
-
-                var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
+                var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.SecretKey));
                 var validationParameters = new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = key,
                     ValidateIssuer = true,
-                    ValidIssuer = _configuration["Jwt:Issuer"],
+                    ValidIssuer = _jwtOptions.Issuer,
                     ValidateAudience = true,
-                    ValidAudience = _configuration["Jwt:Audience"],
+                    ValidAudience = _jwtOptions.Audience,
                     ValidateLifetime = true,
                     ClockSkew = TimeSpan.Zero
                 };
 
-                _logger.LogInformation("[Token验证] 验证参数: {@Parameters}", new 
-                { 
-                    Issuer = validationParameters.ValidIssuer,
-                    Audience = validationParameters.ValidAudience,
-                    ValidateLifetime = validationParameters.ValidateLifetime,
-                    ClockSkew = validationParameters.ClockSkew
-                });
-
                 var principal = tokenHandler.ValidateToken(token, validationParameters, out var validatedToken);
-                _logger.LogInformation("[Token验证] Token验证成功，开始检查Claims");
 
                 // 检查必要的Claims
-                var userId = principal.FindFirst("user_id")?.Value;
+                var userId = principal.FindFirst("uid")?.Value;
                 if (string.IsNullOrEmpty(userId))
                 {
-                    _logger.LogWarning("[Token验证] Token缺少必要的Claim: user_id");
-                    throw new SecurityTokenException("Token missing required claim: user_id");
+                    throw new SecurityTokenException("Token missing required claim: uid");
                 }
 
-                var userName = principal.FindFirst(ClaimTypes.Name)?.Value;
+                var userName = principal.FindFirst("unm")?.Value;
                 if (string.IsNullOrEmpty(userName))
                 {
-                    _logger.LogWarning("[Token验证] Token缺少必要的Claim: name");
-                    throw new SecurityTokenException("Token missing required claim: name");
+                    throw new SecurityTokenException("Token missing required claim: unm");
                 }
 
-                var tenantId = principal.FindFirst("tenant_id")?.Value;
+                var tenantId = principal.FindFirst("tid")?.Value;
                 if (string.IsNullOrEmpty(tenantId))
                 {
-                    _logger.LogWarning("[Token验证] Token缺少必要的Claim: tenant_id");
-                    throw new SecurityTokenException("Token missing required claim: tenant_id");
+                    throw new SecurityTokenException("Token missing required claim: tid");
                 }
 
-                // 检查权限声明
-                var permissions = principal.FindAll("permissions").Select(c => c.Value).ToList();
-                _logger.LogInformation("[Token验证] 用户权限列表: {@Permissions}", permissions);
-                if (!permissions.Any())
-                {
-                    _logger.LogWarning("[Token验证] Token缺少必要的Claim: permissions");
-                    throw new SecurityTokenException("Token missing required claim: permissions");
-                }
-
-                _logger.LogInformation("[Token验证] Token验证完成，所有检查通过");
                 return true;
-            }
-            catch (SecurityTokenExpiredException)
-            {
-                _logger.LogWarning("[Token验证] Token已过期");
-                throw HbtException.ValidationError("Token已过期");
-            }
-            catch (SecurityTokenNotYetValidException)
-            {
-                _logger.LogWarning("[Token验证] Token尚未生效");
-                throw HbtException.ValidationError("Token尚未生效");
-            }
-            catch (SecurityTokenInvalidSignatureException)
-            {
-                _logger.LogWarning("[Token验证] Token签名无效");
-                throw HbtException.ValidationError("Token签名无效");
-            }
-            catch (SecurityTokenException ex)
-            {
-                _logger.LogWarning("[Token验证] Token验证失败: {Message}", ex.Message);
-                throw HbtException.ValidationError($"Token验证失败: {ex.Message}");
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "[Token验证] 发生未预期的错误");
-                throw HbtException.ValidationError($"Token验证失败: {ex.Message}");
+                _logger.LogError(ex, "验证访问令牌时发生错误: {Message}", ex.Message);
+                return false;
             }
         }
 
         /// <summary>
         /// 验证刷新令牌
         /// </summary>
-        public async Task<bool> ValidateRefreshToken(string token)
+        public async Task<bool> ValidateRefreshTokenAsync(string token)
         {
             try
             {
                 var tokenHandler = new JwtSecurityTokenHandler();
-                var secretKey = _configuration["Security:Jwt:RefreshSecretKey"] ?? throw HbtException.ValidationError(await _localizationService.GetLocalizedStringAsync("Jwt.RefreshSecretKeyNotConfigured"));
-                var key = Encoding.UTF8.GetBytes(secretKey);
-
-                var principal = tokenHandler.ValidateToken(token, new TokenValidationParameters
+                var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.SecretKey));
+                var validationParameters = new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    IssuerSigningKey = key,
                     ValidateIssuer = true,
-                    ValidIssuer = _configuration["Security:Jwt:Issuer"] ?? throw HbtException.ValidationError(await _localizationService.GetLocalizedStringAsync("Jwt.IssuerNotConfigured")),
+                    ValidIssuer = _jwtOptions.Issuer,
                     ValidateAudience = true,
-                    ValidAudience = _configuration["Security:Jwt:Audience"] ?? throw HbtException.ValidationError(await _localizationService.GetLocalizedStringAsync("Jwt.AudienceNotConfigured")),
+                    ValidAudience = _jwtOptions.Audience,
+                    ValidateLifetime = true,
                     ClockSkew = TimeSpan.Zero
-                }, out _);
+                };
 
-                // 验证令牌类型
-                var tokenType = principal.Claims.FirstOrDefault(c => c.Type == "type")?.Value;
-                return tokenType == "refresh";
+                var principal = tokenHandler.ValidateToken(token, validationParameters, out var validatedToken);
+                return true;
             }
             catch
             {
@@ -264,7 +269,7 @@ namespace Lean.Hbt.Infrastructure.Authentication
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var jwtToken = tokenHandler.ReadJwtToken(token);
-            var userIdClaim = jwtToken.Claims.First(c => c.Type == JwtRegisteredClaimNames.Sub);
+            var userIdClaim = jwtToken.Claims.First(c => c.Type == "uid");
             return long.Parse(userIdClaim.Value);
         }
     }

@@ -175,7 +175,11 @@ export default {
         role: '角色权限',
         dept: '部门岗位',
         other: '其他信息',
-        avatar: '头像设置'
+        avatar: '头像设置',
+        loginLog: '登录日志',
+        operateLog: '操作日志',
+        errorLog: '异常日志',
+        taskLog: '任务日志'
       },
       update: {
         validation: {

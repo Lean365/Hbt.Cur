@@ -90,6 +90,8 @@ namespace Lean.Hbt.Infrastructure.Security
             var userId = long.Parse(context.User.Claims.First(c => c.Type == "user_id").Value);
             var isAdmin = context.User.Claims.Any(c => c.Type == "is_admin" && c.Value == "true");
 
+            _logger.LogInformation("[权限中间件] 用户信息: UserId={UserId}, IsAdmin={IsAdmin}", userId, isAdmin);
+
             if (isAdmin)
             {
                 _logger.LogInformation("[权限中间件] 用户是管理员，自动通过权限验证");
@@ -102,6 +104,8 @@ namespace Lean.Hbt.Infrastructure.Security
             
             // 直接获取用户权限列表
             var permissions = await userRepository.GetUserPermissionsAsync(userId);
+            
+            _logger.LogInformation("[权限中间件] 用户权限列表: {Permissions}", string.Join(", ", permissions));
             
             // 检查具体权限
             var hasPermission = permissions.Contains(permAttribute.Permission);

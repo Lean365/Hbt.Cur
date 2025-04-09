@@ -6,25 +6,31 @@ using Lean.Hbt.Common.Options;
 using Lean.Hbt.Domain.IServices.SignalR;
 using Lean.Hbt.Domain.IServices.Security;
 using Lean.Hbt.Common.Models;
+using Microsoft.AspNetCore.SignalR;
+using Lean.Hbt.Infrastructure.SignalR;
+using Lean.Hbt.Domain.Entities;
+using Lean.Hbt.Domain.Repositories;
+using Lean.Hbt.Domain.Entities.RealTime;
+using Lean.Hbt.Domain.Entities.Identity;
+using System.Linq.Expressions;
+using System.Collections.Generic;
+using System.Linq;
+using Lean.Hbt.Common.Enums;
 
 namespace Lean.Hbt.Infrastructure.Security
 {
     /// <summary>
-    /// 单点登录服务实现
+    /// 登录服务实现
     /// </summary>
-    /// <remarks>
-    /// 提供单点登录的核心功能，包括：
-    /// 1. 用户登录限制检查
-    /// 2. 多设备登录管理
-    /// 3. 会话踢出处理
-    /// 4. 用户限制豁免判断
-    /// </remarks>
     public class HbtSingleSignOnService : IHbtSingleSignOnService
     {
         private readonly ILogger<HbtSingleSignOnService> _logger;
         private readonly IHbtSignalRUserService _signalRUserService;
         private readonly IHbtSignalRClient _signalRClient;
         private readonly HbtSingleSignOnOptions _options;
+        private readonly IHubContext<HbtSignalRHub> _hubContext;
+        private readonly IHbtRepository<HbtUser> _userRepository;
+        private readonly IHbtRepository<HbtOnlineUser> _onlineUserRepository;
 
         /// <summary>
         /// 构造函数
@@ -33,101 +39,194 @@ namespace Lean.Hbt.Infrastructure.Security
         /// <param name="signalRUserService">SignalR用户服务</param>
         /// <param name="signalRClient">SignalR客户端</param>
         /// <param name="options">单点登录配置选项</param>
+        /// <param name="hubContext">SignalR hub context</param>
+        /// <param name="userRepository">用户仓库</param>
+        /// <param name="onlineUserRepository">在线用户仓库</param>
         public HbtSingleSignOnService(
             ILogger<HbtSingleSignOnService> logger,
             IHbtSignalRUserService signalRUserService,
             IHbtSignalRClient signalRClient,
-            IOptions<HbtSingleSignOnOptions> options)
+            IOptions<HbtSingleSignOnOptions> options,
+            IHubContext<HbtSignalRHub> hubContext,
+            IHbtRepository<HbtUser> userRepository,
+            IHbtRepository<HbtOnlineUser> onlineUserRepository)
         {
             _logger = logger;
             _signalRUserService = signalRUserService;
             _signalRClient = signalRClient;
             _options = options.Value;
+            _hubContext = hubContext;
+            _userRepository = userRepository;
+            _onlineUserRepository = onlineUserRepository;
         }
 
         /// <summary>
         /// 检查用户是否可以登录
         /// </summary>
-        /// <param name="userId">用户ID</param>
-        /// <param name="userName">用户名</param>
-        /// <returns>true: 允许登录, false: 禁止登录</returns>
-        /// <remarks>
-        /// 判断逻辑：
-        /// 1. 如果单点登录未启用，允许登录
-        /// 2. 如果用户在豁免名单中，允许登录
-        /// 3. 如果用户没有活跃会话，允许登录
-        /// </remarks>
         public async Task<bool> CanUserLoginAsync(long userId, string userName)
         {
-            if (!_options.Enabled || !await IsUserRestrictedAsync(userId, userName))
+            var devices = _signalRUserService.GetUserDevices(userId.ToString());
+            if (!devices.Any())
             {
                 return true;
             }
 
-            var activeSessionCount = await GetUserActiveSessionCountAsync(userId);
-            return activeSessionCount == 0;
+            // 如果启用了单点登录，且已有设备登录，则不允许新设备登录
+            if (_options.Enabled)
+            {
+                return false;
+            }
+
+            // 如果未启用单点登录，则检查是否超过最大设备数
+            return devices.Count < _options.MaxDevices;
+        }
+
+        /// <summary>
+        /// 处理新设备登录
+        /// </summary>
+        public async Task HandleNewLoginAsync(string userId, string userName, string deviceId)
+        {
+            var devices = _signalRUserService.GetUserDevices(userId);
+            if (!devices.Any())
+            {
+                return;
+            }
+
+            // 如果启用了单点登录，踢出现有设备
+            if (_options.Enabled && _options.KickoutOldSession)
+            {
+                await HandleKickoutAsync(devices.First());
+                return;
+            }
+
+            // 如果超过最大设备数，踢出最早登录的设备
+            if (devices.Count >= _options.MaxDevices)
+            {
+                var oldestDevice = devices.OrderBy(d => d.LastActivity).First();
+                await HandleKickoutAsync(oldestDevice);
+            }
+        }
+
+        /// <summary>
+        /// 处理设备被踢出
+        /// </summary>
+        public async Task HandleKickoutAsync(HbtSignalRDevice device)
+        {
+            if (_options.NotifyKickout)
+            {
+                // TODO: 发送踢出通知
+                _logger.LogInformation("用户 {UserId} 的设备 {DeviceId} 被踢出", device.UserId, device.DeviceId);
+            }
+
+            await _signalRUserService.RemoveUserDevice(device.UserId.ToString(), device.DeviceId);
+        }
+
+        /// <summary>
+        /// 检查登录状态
+        /// </summary>
+        public async Task<(bool canLogin, string? existingDeviceInfo)> CheckLoginAsync(long userId, string userName, string deviceInfo)
+        {
+            var devices = _signalRUserService.GetUserDevices(userId.ToString());
+            if (!devices.Any())
+            {
+                return (true, null);
+            }
+
+            // 如果启用了单点登录，且已有设备登录，则不允许新设备登录
+            if (_options.Enabled)
+            {
+                var existingDevice = devices.First();
+                return (false, $"用户已在 {existingDevice.DeviceName} 设备上登录");
+            }
+
+            // 如果超过最大设备数，不允许新设备登录
+            if (devices.Count >= _options.MaxDevices)
+            {
+                return (false, $"已达到最大设备数限制 ({_options.MaxDevices})");
+            }
+
+            return (true, null);
         }
 
         /// <summary>
         /// 处理用户登录
         /// </summary>
-        /// <param name="userId">用户ID</param>
-        /// <param name="connectionId">当前连接ID</param>
-        /// <returns>处理结果</returns>
-        /// <remarks>
-        /// 处理流程：
-        /// 1. 检查是否启用单点登录和用户限制
-        /// 2. 如果配置为踢出旧会话：
-        ///    - 获取用户所有连接
-        ///    - 通知并关闭旧连接
-        ///    - 记录踢出日志
-        /// </remarks>
         public async Task HandleUserLoginAsync(string userId, string connectionId)
         {
             // 如果未启用单点登录，直接返回
-            if (!_options.Enabled)
+            if (_options.Enabled)
             {
                 _logger.LogInformation("单点登录未启用，允许多点登录");
                 return;
             }
 
-            // 检查用户是否属于豁免角色
-            if (await IsUserExemptAsync(userId))
+            // 获取用户现有会话
+            var userIdLong = long.Parse(userId);
+            var exp = Expressionable.Create<HbtOnlineUser>();
+            exp.And(u => u.UserId == userIdLong && u.OnlineStatus == 0);
+            var existingOnlineUsers = await _onlineUserRepository.GetListAsync(exp.ToExpression());
+
+            // 检查是否超过最大并发会话数
+            if (existingOnlineUsers.Count >= _options.MaxDevices)
             {
-                _logger.LogInformation($"用户 {userId} 属于豁免角色，允许多点登录");
-                return;
+                _logger.LogWarning("用户 {UserId} 已达到最大并发会话数 {MaxSessions}", userId, _options.MaxDevices);
+                if (_options.KickoutOldSession)
+                {
+                    // 按最后活动时间排序，踢出最早的会话
+                    var oldestSession = existingOnlineUsers.OrderBy(u => u.LastActivity).First();
+                    var device = new HbtSignalRDevice
+                    {
+                        UserId = oldestSession.UserId,
+                        DeviceId = oldestSession.DeviceId,
+                        DeviceName = "离线设备"
+                    };
+                    await HandleKickoutAsync(device);
+                }
+                else
+                {
+                    return;
+                }
             }
 
-            // 获取用户现有会话
-            var existingConnections = await _signalRUserService.GetConnectionIdsAsync(long.Parse(userId));
-            if (existingConnections?.Any() == true)
+            // 检查是否超过每个用户最大连接数
+            if (existingOnlineUsers.Count >= _options.MaxConnectionsPerUser)
+            {
+                _logger.LogWarning("用户 {UserId} 已达到最大连接数 {MaxConnections}", userId, _options.MaxConnectionsPerUser);
+                if (_options.KickoutOldSession)
+                {
+                    // 按最后活动时间排序，踢出最早的连接
+                    var oldestConnection = existingOnlineUsers.OrderBy(u => u.LastActivity).First();
+                    var deviceToKick = new HbtSignalRDevice
+                    {
+                        UserId = oldestConnection.UserId,
+                        DeviceId = oldestConnection.DeviceId,
+                        DeviceName = "离线设备"
+                    };
+                    await HandleKickoutAsync(deviceToKick);
+                }
+                else
+                {
+                    return;
+                }
+            }
+
+            if (existingOnlineUsers.Any())
             {
                 // 如果配置了踢出旧会话
                 if (_options.KickoutOldSession)
                 {
-                    foreach (var oldConnection in existingConnections)
+                    foreach (var oldUser in existingOnlineUsers)
                     {
                         // 如果配置了通知
                         if (_options.NotifyKickout)
                         {
                             await _signalRClient.ForceOffline(_options.KickoutMessage);
                         }
-
-                        // 删除旧连接
-                        await _signalRUserService.DeleteOnlineUserAsync(oldConnection, userId);
-                        _logger.LogInformation($"已踢出用户 {userId} 的旧会话 {oldConnection}");
+                        // 关闭旧连接
+                        await _hubContext.Clients.Client(oldUser.ConnectionId).SendAsync("ForceOffline", _options.KickoutMessage);
                     }
                 }
             }
-        }
-
-        /// <summary>
-        /// 处理用户登出
-        /// </summary>
-        public async Task HandleUserLogoutAsync(string userId, string connectionId)
-        {
-            await _signalRUserService.DeleteOnlineUserAsync(connectionId, userId);
-            _logger.LogInformation($"用户 {userId} 已登出，连接 {connectionId} 已删除");
         }
 
         /// <summary>
@@ -135,93 +234,8 @@ namespace Lean.Hbt.Infrastructure.Security
         /// </summary>
         public async Task HandleLogoutAsync(string userId, string connectionId)
         {
-            await HandleUserLogoutAsync(userId, connectionId);
-        }
-
-        /// <summary>
-        /// 获取用户当前活跃会话数
-        /// </summary>
-        /// <param name="userId">用户ID</param>
-        /// <returns>活跃会话数量</returns>
-        /// <remarks>
-        /// 通过SignalR用户服务获取用户的所有连接数量
-        /// </remarks>
-        public async Task<int> GetUserActiveSessionCountAsync(long userId)
-        {
-            var connections = await _signalRUserService.GetConnectionIdsAsync(userId);
-            return connections.Count;
-        }
-
-        /// <summary>
-        /// 检查用户是否受单点登录限制
-        /// </summary>
-        /// <param name="userId">用户ID</param>
-        /// <param name="userName">用户名</param>
-        /// <returns>true: 受限制, false: 不受限制</returns>
-        /// <remarks>
-        /// 判断逻辑：
-        /// 1. 检查用户是否在豁免用户列表中
-        /// 2. TODO: 检查用户角色是否在豁免角色列表中
-        /// </remarks>
-        public async Task<bool> IsUserRestrictedAsync(long userId, string userName)
-        {
-            // 检查用户是否在排除列表中
-            if (_options.ExcludeUsers.Contains(userName))
-            {
-                return false;
-            }
-
-            // TODO: 检查用户角色是否在排除列表中
-            // 这里需要注入用户服务来获取用户角色
-            // var userRoles = await _userService.GetUserRolesAsync(userId);
-            // if (userRoles.Any(role => _options.ExcludeRoles.Contains(role)))
-            // {
-            //     return false;
-            // }
-
-            return true;
-        }
-
-        /// <summary>
-        /// 处理新的登录
-        /// </summary>
-        public async Task HandleNewLoginAsync(string userId, string userName, string connectionId)
-        {
-            // 如果未启用单点登录，直接返回
-            if (!_options.Enabled)
-            {
-                _logger.LogInformation("单点登录未启用，允许多点登录");
-                return;
-            }
-
-            // 检查用户是否属于豁免角色或豁免用户
-            if (_options.ExcludeUsers.Contains(userName))
-            {
-                _logger.LogInformation($"用户 {userName} 在豁免名单中，允许多点登录");
-                return;
-            }
-
-            // 获取用户现有会话
-            var existingConnections = await _signalRUserService.GetConnectionIdsAsync(long.Parse(userId));
-            if (existingConnections?.Any() == true)
-            {
-                // 如果配置了踢出旧会话
-                if (_options.KickoutOldSession)
-                {
-                    foreach (var oldConnection in existingConnections)
-                    {
-                        // 如果配置了通知
-                        if (_options.NotifyKickout)
-                        {
-                            await _signalRClient.ForceOffline(_options.KickoutMessage);
-                        }
-
-                        // 删除旧连接
-                        await _signalRUserService.DeleteOnlineUserAsync(oldConnection, userId);
-                        _logger.LogInformation($"已踢出用户 {userName}({userId}) 的旧会话 {oldConnection}");
-                    }
-                }
-            }
+            await _signalRUserService.DeleteOnlineUserAsync(connectionId, userId);
+            _logger.LogInformation("用户 {UserId} 已登出，连接 {ConnectionId} 已删除", userId, connectionId);
         }
 
         /// <summary>
@@ -229,13 +243,11 @@ namespace Lean.Hbt.Infrastructure.Security
         /// </summary>
         public async Task<bool> IsUserLoggedInElsewhereAsync(string userId, string connectionId)
         {
-            if (!_options.Enabled)
-            {
-                return false;
-            }
-
-            var connections = await _signalRUserService.GetConnectionIdsAsync(long.Parse(userId));
-            return connections.Any(c => c != connectionId);
+            var userIdLong = long.Parse(userId);
+            var exp = Expressionable.Create<HbtOnlineUser>();
+            exp.And(u => u.UserId == userIdLong && u.OnlineStatus == 0 && u.ConnectionId != connectionId);
+            var existingOnlineUsers = await _onlineUserRepository.GetListAsync(exp.ToExpression());
+            return existingOnlineUsers.Any();
         }
 
         /// <summary>
@@ -243,19 +255,48 @@ namespace Lean.Hbt.Infrastructure.Security
         /// </summary>
         public async Task<int> GetActiveConnectionCountAsync(string userId)
         {
-            var connections = await _signalRUserService.GetConnectionIdsAsync(long.Parse(userId));
-            return connections.Count;
+            var userIdLong = long.Parse(userId);
+            var exp = Expressionable.Create<HbtOnlineUser>();
+            exp.And(u => u.UserId == userIdLong && u.OnlineStatus == 0);
+            var onlineUsers = await _onlineUserRepository.GetListAsync(exp.ToExpression());
+            return onlineUsers.Count;
         }
+    }
+
+    /// <summary>
+    /// 登录检查结果
+    /// </summary>
+    public class LoginCheckResult
+    {
+        /// <summary>
+        /// 是否可以登录
+        /// </summary>
+        public bool CanLogin { get; set; }
 
         /// <summary>
-        /// 检查用户是否属于豁免角色
+        /// 已存在的设备列表
         /// </summary>
-        private async Task<bool> IsUserExemptAsync(string userId)
-        {
-            // TODO: 实现角色检查逻辑
-            // 这里需要调用您的用户服务来获取用户角色
-            // 然后检查是否在豁免列表中
-            return false;
-        }
+        public List<HbtSignalRDevice> ExistingDevices { get; set; } = new();
+    }
+
+    /// <summary>
+    /// 设备信息
+    /// </summary>
+    public class DeviceInfo
+    {
+        /// <summary>
+        /// 设备名称
+        /// </summary>
+        public string DeviceName { get; set; }
+
+        /// <summary>
+        /// 登录时间
+        /// </summary>
+        public DateTime LoginTime { get; set; }
+
+        /// <summary>
+        /// 最后活动时间
+        /// </summary>
+        public DateTime LastActivity { get; set; }
     }
 } 

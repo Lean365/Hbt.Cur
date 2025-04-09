@@ -16,6 +16,8 @@ using Microsoft.Extensions.Logging;
 using Lean.Hbt.Domain.IServices.Security;
 using Lean.Hbt.Domain.Repositories;
 using Lean.Hbt.Domain.Entities.Identity;
+using Lean.Hbt.Common.Options;
+using Microsoft.Extensions.Options;
 
 namespace Lean.Hbt.Infrastructure.Security
 {
@@ -35,19 +37,12 @@ namespace Lean.Hbt.Infrastructure.Security
         private readonly IMemoryCache _cache;
         private readonly ILogger<HbtLoginPolicy> _logger;
         private readonly IHbtRepository<HbtUser> _userRepository;
+        private readonly HbtLoginPolicyOptions _options;
         
         // 缓存键前缀
         private const string LOGIN_ATTEMPT_PREFIX = "login_attempt:";      // 登录尝试次数缓存键前缀
         private const string LAST_LOGIN_PREFIX = "last_login:";           // 最后登录时间缓存键前缀
         private const string CAPTCHA_REQUIRED_PREFIX = "captcha_required:"; // 验证码要求标志缓存键前缀
-        
-        // 登录策略常量
-        private const int MAX_FAILED_ATTEMPTS = 5;           // 普通用户最大失败次数（5次后永久锁定）
-        private const int ADMIN_MAX_FAILED_ATTEMPTS = 3;     // 管理员最大失败次数（3次后临时锁定）
-        private const int ADMIN_LOCKOUT_MINUTES = 30;        // 管理员锁定时间（30分钟）
-        private const int CAPTCHA_REQUIRED_ATTEMPTS = 3;     // 需要验证码的失败次数阈值（3次）
-        private const int CAPTCHA_REQUIRED_MINUTES = 5;      // 验证码有效期（5分钟）
-        private const int REPEAT_LOGIN_MINUTES = 5;          // 重复登录检测时间窗口（5分钟）
 
         /// <summary>
         /// 构造函数
@@ -55,11 +50,13 @@ namespace Lean.Hbt.Infrastructure.Security
         public HbtLoginPolicy(
             IMemoryCache cache, 
             ILogger<HbtLoginPolicy> logger,
-            IHbtRepository<HbtUser> userRepository)
+            IHbtRepository<HbtUser> userRepository,
+            IOptions<HbtLoginPolicyOptions> options)
         {
             _cache = cache;
             _logger = logger;
             _userRepository = userRepository;
+            _options = options.Value;
         }
 
         /// <summary>
@@ -74,6 +71,12 @@ namespace Lean.Hbt.Infrastructure.Security
         /// </remarks>
         public async Task<(bool allowed, int? remainingSeconds)> ValidateLoginAttemptAsync(string username)
         {
+            // 如果未启用登录限制，直接允许登录
+            if (!_options.EnableLoginRestriction)
+            {
+                return (true, null);
+            }
+
             var attemptKey = $"{LOGIN_ATTEMPT_PREFIX}{username}";
             var lastLoginKey = $"{LAST_LOGIN_PREFIX}{username}";
             bool needCaptcha = false;
@@ -86,13 +89,14 @@ namespace Lean.Hbt.Infrastructure.Security
                 return (false, null);
             }
 
-            // 2. 检查是否在5分钟内重复登录（第二种情况）
+            // 2. 检查是否在指定时间内重复登录（第二种情况）
             if (_cache.TryGetValue(lastLoginKey, out DateTime lastLoginTime))
             {
                 var timeSinceLastLogin = DateTime.UtcNow - lastLoginTime;
-                if (timeSinceLastLogin.TotalMinutes <= REPEAT_LOGIN_MINUTES)
+                if (timeSinceLastLogin.TotalMinutes <= _options.RepeatLoginMinutes)
                 {
-                    _logger.LogInformation("[登录策略] 用户 {Username} 在5分钟内重复登录，需要验证码", username);
+                    _logger.LogInformation("[登录策略] 用户 {Username} 在{Minutes}分钟内重复登录，需要验证码", 
+                        username, _options.RepeatLoginMinutes);
                     needCaptcha = true;
                 }
             }
@@ -102,14 +106,14 @@ namespace Lean.Hbt.Infrastructure.Security
             _cache.TryGetValue(attemptKey, out failedAttempts);
 
             bool isAdmin = username.ToLower() == "admin";
-            int maxAttempts = isAdmin ? ADMIN_MAX_FAILED_ATTEMPTS : MAX_FAILED_ATTEMPTS;
+            int maxAttempts = isAdmin ? _options.MaxFailedAttempts / 2 : _options.MaxFailedAttempts;
 
             // 4. 检查是否达到最大失败次数
             if (failedAttempts >= maxAttempts)
             {
                 if (isAdmin)
                 {
-                    // 管理员特殊处理：临时锁定30分钟
+                    // 管理员特殊处理：临时锁定
                     var lockoutEndTime = _cache.Get<DateTime?>(attemptKey + "_lockout");
                     if (lockoutEndTime.HasValue && DateTime.UtcNow < lockoutEndTime.Value)
                     {
@@ -119,7 +123,7 @@ namespace Lean.Hbt.Infrastructure.Security
                 }
                 else
                 {
-                    // 普通用户处理：达到5次失败后永久锁定
+                    // 普通用户处理：达到最大失败次数后永久锁定
                     if (user != null)
                     {
                         user.IsLock = 2; // 设置永久锁定
@@ -131,8 +135,8 @@ namespace Lean.Hbt.Infrastructure.Security
                 }
             }
 
-            // 5. 检查是否需要验证码（3次以上失败）
-            if (failedAttempts >= CAPTCHA_REQUIRED_ATTEMPTS)
+            // 5. 检查是否需要验证码（达到指定失败次数）
+            if (failedAttempts >= _options.CaptchaRequiredAttempts)
             {
                 needCaptcha = true;
             }
@@ -153,10 +157,10 @@ namespace Lean.Hbt.Infrastructure.Security
         /// <remarks>
         /// 失败处理逻辑：
         /// 1. admin用户：
-        ///    - 3次失败后锁定30分钟
+        ///    - 达到最大失败次数的一半后锁定
         ///    - 锁定期间禁止登录
         /// 2. 普通用户：
-        ///    - 5次失败后永久锁定
+        ///    - 达到最大失败次数后永久锁定
         ///    - 需要管理员手动解锁
         /// </remarks>
         public async Task RecordFailedLoginAsync(string username)
@@ -169,17 +173,17 @@ namespace Lean.Hbt.Infrastructure.Security
             currentAttempts++;
 
             bool isAdmin = username.ToLower() == "admin";
-            int maxAttempts = isAdmin ? ADMIN_MAX_FAILED_ATTEMPTS : MAX_FAILED_ATTEMPTS;
+            int maxAttempts = isAdmin ? _options.MaxFailedAttempts / 2 : _options.MaxFailedAttempts;
 
             // 更新失败次数
             if (isAdmin)
             {
                 if (currentAttempts >= maxAttempts)
                 {
-                    // admin用户：锁定30分钟
-                    var lockoutEndTime = DateTime.UtcNow.AddMinutes(ADMIN_LOCKOUT_MINUTES);
-                    _cache.Set(attemptKey + "_lockout", lockoutEndTime, TimeSpan.FromMinutes(ADMIN_LOCKOUT_MINUTES));
-                    _logger.LogWarning("[登录策略] 管理员账号已被临时锁定 {Minutes} 分钟", ADMIN_LOCKOUT_MINUTES);
+                    // admin用户：临时锁定
+                    var lockoutEndTime = DateTime.UtcNow.AddMinutes(_options.LockoutMinutes);
+                    _cache.Set(attemptKey + "_lockout", lockoutEndTime, TimeSpan.FromMinutes(_options.LockoutMinutes));
+                    _logger.LogWarning("[登录策略] 管理员账号已被临时锁定 {Minutes} 分钟", _options.LockoutMinutes);
                 }
             }
             else
@@ -190,7 +194,7 @@ namespace Lean.Hbt.Infrastructure.Security
                 {
                     if (currentAttempts >= maxAttempts)
                     {
-                        // 达到5次失败，设置永久锁定
+                        // 达到最大失败次数，设置永久锁定
                         user.IsLock = 2;
                         user.LoginCount = currentAttempts;
                         await _userRepository.UpdateAsync(user);
@@ -229,8 +233,8 @@ namespace Lean.Hbt.Infrastructure.Security
             _cache.Remove(attemptKey);
             _cache.Remove(attemptKey + "_lockout");
 
-            // 记录最后登录时间（用于检测5分钟内的重复登录）
-            _cache.Set(lastLoginKey, DateTime.UtcNow, TimeSpan.FromMinutes(REPEAT_LOGIN_MINUTES));
+            // 记录最后登录时间（用于检测重复登录）
+            _cache.Set(lastLoginKey, DateTime.UtcNow, TimeSpan.FromMinutes(_options.RepeatLoginMinutes));
 
             // 更新用户状态
             var user = await _userRepository.GetInfoAsync(u => u.UserName == username);
@@ -252,7 +256,7 @@ namespace Lean.Hbt.Infrastructure.Security
         /// </summary>
         public Task<(bool allowed, int? remainingSeconds)> ValidateAdminLoginAttemptAsync(string userName)
         {
-            return Task.FromResult<(bool allowed, int? remainingSeconds)>((true, null));
+            return ValidateLoginAttemptAsync(userName);
         }
 
         /// <summary>
@@ -272,8 +276,11 @@ namespace Lean.Hbt.Infrastructure.Security
             int currentAttempts = 0;
             _cache.TryGetValue(attemptKey, out currentAttempts);
 
-            var maxAttempts = userName.ToLower() == "admin" ? ADMIN_MAX_FAILED_ATTEMPTS : MAX_FAILED_ATTEMPTS;
-            return Task.FromResult(Math.Max(0, maxAttempts - currentAttempts));
+            bool isAdmin = userName.ToLower() == "admin";
+            int maxAttempts = isAdmin ? _options.MaxFailedAttempts / 2 : _options.MaxFailedAttempts;
+            int remainingAttempts = maxAttempts - currentAttempts;
+
+            return Task.FromResult(remainingAttempts > 0 ? remainingAttempts : 0);
         }
 
         /// <summary>
@@ -282,24 +289,13 @@ namespace Lean.Hbt.Infrastructure.Security
         public async Task<int> GetLockoutRemainingSecondsAsync(string userName)
         {
             var attemptKey = $"{LOGIN_ATTEMPT_PREFIX}{userName}";
-            
-            if (userName.ToLower() == "admin")
+            var lockoutEndTime = _cache.Get<DateTime?>(attemptKey + "_lockout");
+
+            if (lockoutEndTime.HasValue && DateTime.UtcNow < lockoutEndTime.Value)
             {
-                var lockoutEndTime = _cache.Get<DateTime?>(attemptKey + "_lockout");
-                if (lockoutEndTime.HasValue)
-                {
-                    return (int)Math.Max(0, (lockoutEndTime.Value - DateTime.UtcNow).TotalSeconds);
-                }
+                return (int)(lockoutEndTime.Value - DateTime.UtcNow).TotalSeconds;
             }
-            else
-            {
-                var user = await _userRepository.GetInfoAsync(u => u.UserName == userName);
-                if (user?.IsLock == 2) // 永久锁定
-                {
-                    return -1; // 返回-1表示永久锁定
-                }
-            }
-            
+
             return 0;
         }
     }

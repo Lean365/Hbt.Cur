@@ -25,39 +25,34 @@
       :loading="loading"
       :data-source="tableData"
       :columns="columns"
-      :pagination="{
-        total: total,
-        current: queryParams.pageIndex,
-        pageSize: queryParams.pageSize,
-        showSizeChanger: true,
-        showQuickJumper: true,
-        showTotal: (total: number) => `共 ${total} 条`
-      }"
+      :pagination="false"
       :row-key="(record: HbtOnlineUserDto) => record.connectionId"
       v-model:selectedRowKeys="selectedRowKeys"
       :row-selection="{
         type: 'checkbox',
         columnWidth: 60
       }"
-      :scroll="{ x: 1200 }"
       @change="handleTableChange"
     >
       <!-- 操作列 -->
       <template #bodyCell="{ column, record }">
         <template v-if="column.key === 'action'">
-          <a-space>
-            <a-popconfirm
-              title="确定要强制下线该用户吗？"
-              @confirm="handleForceOffline(record)"
-              ok-text="确定"
-              cancel-text="取消"
-            >
-              <a class="text-danger" v-hasPermi="['realtime:online:delete']">强制下线</a>
-            </a-popconfirm>
-          </a-space>
+          <hbt-operation
+            :show-force-offline="true"
+            @force-offline="handleForceOffline"
+          />
         </template>
       </template>
     </hbt-table>
+
+    <!-- 分页组件 -->
+    <hbt-pagination
+      v-model:current="queryParams.pageIndex"
+      v-model:pageSize="queryParams.pageSize"
+      :total="total"
+      @change="handlePageChange"
+      @showSizeChange="handleSizeChange"
+    />
   </div>
 </template>
 
@@ -197,9 +192,20 @@ const resetQuery = () => {
 }
 
 /** 表格变化事件 */
-const handleTableChange = (pagination: TablePaginationConfig) => {
-  queryParams.pageIndex = pagination.current || 1
-  queryParams.pageSize = pagination.pageSize || 10
+const handleTableChange = () => {
+  // 移除分页相关逻辑，由 HbtPagination 组件处理
+}
+
+/** 页码变化事件 */
+const handlePageChange = (page: number) => {
+  queryParams.pageIndex = page
+  fetchData()
+}
+
+/** 每页条数变化事件 */
+const handleSizeChange = (size: number) => {
+  queryParams.pageSize = size
+  queryParams.pageIndex = 1
   fetchData()
 }
 
@@ -269,6 +275,6 @@ const toggleSearch = () => {
 
 <style lang="less" scoped>
 .online-user-container {
-  padding: 16px;
+  padding: 24px;
 }
 </style>

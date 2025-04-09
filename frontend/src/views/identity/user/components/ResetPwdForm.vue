@@ -16,7 +16,6 @@ import { useI18n } from 'vue-i18n'
 import { message } from 'ant-design-vue'
 import { resetPassword } from '@/api/identity/user'
 import type { ResetPassword } from '@/types/identity/user'
-import HbtModal from '@/components/Business/Modal/index.vue'
 import { useConfigStore } from '@/stores/config'
 
 const props = defineProps<{

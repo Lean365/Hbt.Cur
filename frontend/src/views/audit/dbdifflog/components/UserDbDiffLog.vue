@@ -59,7 +59,7 @@ import type { TablePaginationConfig } from 'ant-design-vue'
 import type { QueryField } from '@/types/components/query'
 import type { HbtDbDiffLogDto, HbtDbDiffLogQueryDto } from '@/types/audit/dbDiffLog'
 import { getDbDiffLogs } from '@/api/audit/dbDiffLog'
-import { useUserStore } from '@/store/modules/user'
+import { useUserStore } from '@/stores/user'
 import DbDiffLogDetail from './DbDiffLogDetail.vue'
 
 const userStore = useUserStore()
@@ -177,8 +177,8 @@ const fetchData = async () => {
   loading.value = true
   try {
     const res = await getDbDiffLogs(queryParams)
-    tableData.value = res.rows
-    total.value = res.totalNum
+    tableData.value = res.data.rows
+    total.value = res.data.totalNum
   } catch (error) {
     console.error('获取数据差异日志失败:', error)
     message.error('获取数据差异日志失败')

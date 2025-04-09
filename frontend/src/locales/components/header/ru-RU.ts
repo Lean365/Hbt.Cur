@@ -1,22 +1,62 @@
 export default {
   header: {
     title: 'Lean.Hbt',
+    query: {
+      title: 'Поиск',
+      placeholder: 'Пожалуйста, введите поисковый запрос'
+    },
     fontSize: {
-      title: 'Размер шрифта'
+      title: 'Размер Шрифта'
     },
     fullscreen: {
-      enter: 'Войти в полноэкранный режим',
-      exit: 'Выйти из полноэкранного режима'
+      enter: 'Полный Экран',
+      exit: 'Выйти из Полного Экрана',
+      error: 'Ошибка Полного Экрана'
     },
     notification: {
-      settings: 'Настройки уведомлений'
+      settings: 'Настройки Уведомлений',
+      title: 'Уведомления',
+      all: 'Все',
+      unread: 'Непрочитанные',
+      important: 'Важные',
+      unreadCount: 'Непрочитанные Уведомления',
+      importantCount: 'Важные Уведомления',
+      readAll: 'Все Прочитаны',
+      description: 'У вас есть новые уведомления',
+      markAllAsRead: 'Отметить Все как Прочитанные',
+      markAsRead: 'Отметить как Прочитанное',
+      markAsUnread: 'Отметить как Непрочитанное',
+      markAsImportant: 'Отметить как Важное',
+      markAsUnimportant: 'Отметить как Неважное',
+      preferences: 'Настройки',
+      system: 'Система',
+      task: 'Задача',
+      message: 'Сообщение',
+      empty: 'Нет уведомлений',
+      loadMore: 'Загрузить Еще'
     },
     settings: {
-      title: 'Настройки системы'
+      title: 'Настройки Системы'
     },
     refresh: {
-      success: 'Обновление успешно',
-      failed: 'Ошибка обновления'
+      success: 'Обновление Успешно',
+      failed: 'Ошибка Обновления'
+    },
+    user: {
+      profile: 'Профиль',
+      changePassword: 'Изменить Пароль',
+      clearCache: 'Очистить Кэш',
+      logout: 'Выйти'
+    },
+    clearCache: {
+      success: 'Кэш Успешно Очищен',
+      failed: 'Ошибка Очистки Кэша'
+    },
+    logout: {
+      title: 'Выход',
+      confirm: 'Вы уверены, что хотите выйти?',
+      success: 'Выход Успешно Выполнен',
+      failed: 'Ошибка Выхода'
     }
   }
-}
+} 

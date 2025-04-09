@@ -122,7 +122,7 @@ namespace Lean.Hbt.Infrastructure.Caching
         /// </summary>
         public T GetOrAdd<T>(string key, Func<T> factory, TimeSpan? expiry = null)
         {
-            if (_cache.TryGetValue(key, out object? value))
+            if (_cache.TryGetValue(key, out object? value) && value != null)
             {
                 return (T)value;
             }
@@ -163,22 +163,25 @@ namespace Lean.Hbt.Infrastructure.Caching
         /// </summary>
         public async Task<bool> SetAsync<T>(string key, T value, TimeSpan expiration)
         {
-            try
+            return await Task.Run(() =>
             {
-                var options = new MemoryCacheEntryOptions
+                try
                 {
-                    AbsoluteExpirationRelativeToNow = expiration
-                };
+                    var options = new MemoryCacheEntryOptions
+                    {
+                        AbsoluteExpirationRelativeToNow = expiration
+                    };
 
-                options.RegisterPostEvictionCallback(OnPostEviction);
-                _cache.Set(key, value, options);
-                _keys.TryAdd(key, DateTime.Now.Add(expiration));
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
+                    options.RegisterPostEvictionCallback(OnPostEviction);
+                    _cache.Set(key, value, options);
+                    _keys.TryAdd(key, DateTime.Now.Add(expiration));
+                    return true;
+                }
+                catch
+                {
+                    return false;
+                }
+            });
         }
 
         /// <summary>
@@ -186,16 +189,19 @@ namespace Lean.Hbt.Infrastructure.Caching
         /// </summary>
         public async Task<bool> RemoveAsync(string key)
         {
-            try
+            return await Task.Run(() =>
             {
-                _cache.Remove(key);
-                _keys.TryRemove(key, out _);
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
+                try
+                {
+                    _cache.Remove(key);
+                    _keys.TryRemove(key, out _);
+                    return true;
+                }
+                catch
+                {
+                    return false;
+                }
+            });
         }
 
         /// <summary>

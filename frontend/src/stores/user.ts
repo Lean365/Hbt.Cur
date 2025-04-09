@@ -1,10 +1,10 @@
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import type { MenuProps } from 'ant-design-vue'
-import { message } from 'ant-design-vue'
+import { message, Modal } from 'ant-design-vue'
 import type { HbtApiResponse } from '@/types/common'
-import type { LoginParams, UserInfo, LoginResult } from '@/types/identity/auth'
-import { login as userLogin, logout as userLogout, getInfo } from '@/api/identity/auth'
+import type { LoginParams, UserInfo, LoginResult, LoginCheckResult } from '@/types/identity/auth'
+import { login as userLogin, logout as userLogout, getInfo, checkLogin } from '@/api/identity/auth'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import { useMenuStore } from './menu'
 import { useDictStore } from './dict'
@@ -30,7 +30,10 @@ export const useUserStore = defineStore('user', () => {
   const needCaptcha = ref(false)
   const token = ref<string | null>(null)
   const refreshTokenValue = ref<string | null>(null)
-  const isSignalRConnected = ref(false)  // 添加SignalR连接状态
+  const isSignalRConnected = ref(false)
+
+  // 计算属性
+  const isLoggedIn = computed(() => !!user.value)
 
   // 重置状态
   const $reset = () => {
@@ -58,21 +61,77 @@ export const useUserStore = defineStore('user', () => {
   // 初始化SignalR连接
   const initSignalR = async () => {
     try {
-      if (!isSignalRConnected.value) {
-        await signalRService.start()
-        isSignalRConnected.value = true
-        console.log('[SignalR] 连接已建立')
+      console.log('[SignalR] 准备初始化连接')
+      
+      // 如果已经连接，直接返回
+      if (isSignalRConnected.value) {
+        console.log('[SignalR] 连接已存在，跳过初始化')
+        return
+      }
+      
+      // 启动SignalR连接
+      await signalRService.start()
+      
+      // 注册踢出事件监听
+      signalRService.on('Kickout', handleKickout)
+      signalRService.on('UserKickedOut', handleKickout)
+      signalRService.on('ForceOffline', handleKickout)
+      
+      isSignalRConnected.value = true
+      console.log('[SignalR] 连接初始化完成')
+    } catch (error) {
+      console.error('[SignalR] 连接初始化失败:', error)
+      isSignalRConnected.value = false
+      throw error
+    }
+  }
 
-        // 注册单点登录踢出处理
-        if (signalRService['connection']) {
-          signalRService['connection'].on('Kickout', (msg: string) => {
-            console.log('[SignalR] 收到踢出通知:', msg)
-            handleKickout(msg)
-          })
+  // 登录方法
+  const login = async (params: LoginParams) => {
+    try {
+      console.log('[Login] 开始登录流程')
+      const { userName, password } = params
+      
+      // 检查是否已有会话
+      const checkResponse = await checkLogin(params)
+      if (checkResponse.data?.canLogin === false) {
+        console.log('[Login] 检测到其他会话在线:', {
+          deviceInfo: checkResponse.data.existingDeviceInfo,
+          userName
+        })
+        throw new Error('您的账号已在其他地方登录')
+      }
+      
+      console.log('[Login] 开始登录请求')
+      const { data } = await userLogin(params)
+      console.log('[Login] 登录响应:', data)
+      
+      if (data) {
+        console.log('[Login] 登录成功，设置 Token')
+        setToken(data.accessToken)
+        console.log('[Login] Token 已设置，获取用户信息')
+        const userInfoResponse = await getInfo()
+        const userInfo = userInfoResponse.data
+        console.log('[Login] 用户信息:', userInfo)
+        
+        if (userInfo) {
+          console.log('[Login] 更新用户状态')
+          user.value = userInfo.user
+          roles.value = userInfo.roles || []
+          permissions.value = userInfo.permissions || []
+          
+          // 只有在未连接时才初始化SignalR
+          if (!isSignalRConnected.value) {
+            await initSignalR()
+          }
         }
       }
-    } catch (error) {
-      console.error('[SignalR] 连接失败:', error)
+    } catch (error: any) {
+      console.error('[Login] 登录失败:', error)
+      if (error.response?.data?.error === 'ConcurrentLogin') {
+        console.log('[Login] 检测到并发登录错误')
+        throw new Error('您的账号已在其他地方登录')
+      }
       throw error
     }
   }
@@ -94,7 +153,7 @@ export const useUserStore = defineStore('user', () => {
       }
 
       // 显示提示消息
-      message.warning(msg || '您的账号已在其他设备上登录')
+      message.warning(msg || t('identity.auth.login.error.concurrentLogin'))
       console.log('[UserStore] 提示消息已显示')
       
       // 跳转到登录页
@@ -109,106 +168,35 @@ export const useUserStore = defineStore('user', () => {
     }
   }
 
-  // 登录
-  const login = async (loginParams: LoginParams): Promise<HbtApiResponse<LoginResult>> => {
-    console.log('[用户登录] identity.auth.login.start', {
-      ...loginParams,
-      password: '******'
-    })
-
-    try {
-      console.log('[用户登录] 开始调用 userLogin')
-      const response = await userLogin(loginParams)
-      console.log('[用户登录] 登录响应:', response)
-
-      if (!response || response.code !== 200 || !response.data) {
-        console.error('[用户登录] 登录响应中没有数据')
-        throw new Error(t('identity.auth.login.noToken'))
-      }
-
-      const loginResult = response.data
-      if (!loginResult.accessToken) {
-        console.error('[用户登录] 登录响应中没有访问令牌', {
-          hasData: !!loginResult,
-          dataStructure: Object.keys(loginResult)
-        })
-        throw new Error(t('identity.auth.login.noToken'))
-      }
-
-      // 先保存 token 到本地存储，确保后续请求可以使用
-      setToken(loginResult.accessToken)
-      console.log('[用户登录] Token已保存')
-
-      // 保存到 store
-      token.value = loginResult.accessToken
-      refreshTokenValue.value = loginResult.refreshToken
-
-      // 验证token是否被正确设置
-      const currentToken = getToken()
-      if (!currentToken) {
-        console.error('[用户登录] Token未被正确设置')
-        throw new Error(t('identity.auth.login.tokenNotSet'))
-      }
-
-      // 添加一个小延迟，确保token已经被正确保存
-      await new Promise(resolve => setTimeout(resolve, 100))
-
-      // 获取完整的用户信息（包括权限和角色）
-      try {
-        console.log('[用户登录] 开始获取用户信息')
-        const userInfo = await getUserInfo()
-        console.log('[用户登录] 用户信息获取成功:', {
-          用户: userInfo.user,
-          角色: userInfo.roles,
-          权限: userInfo.permissions
-        })
-        
-        // 设置用户信息
-        user.value = userInfo.user
-        roles.value = userInfo.roles
-        permissions.value = userInfo.permissions
-
-        // 初始化SignalR连接
-        await initSignalR()
-
-        return response
-      } catch (error) {
-        console.error('[用户登录] 获取用户信息失败:', error)
-        // 清理token
-        removeToken()
-        token.value = null
-        refreshTokenValue.value = null
-        throw new Error(t('identity.auth.login.getUserInfoFailed'))
-      }
-    } catch (error) {
-      console.error('[用户登录] 登录失败:', error)
-      throw error
-    }
-  }
-
   // 获取用户信息
   const getUserInfo = async () => {
     try {
       console.log('[用户信息] 开始获取用户信息')
-      const res = await getInfo()
-      if (res.code === 200) {
-        const userInfo = res.data
+      const response = await getInfo()
+      if (response.code === 200 && response.data) {
+        const userInfo: UserInfoResponse = response.data
         console.log('[用户信息] 获取成功:', userInfo)
         
         // 更新store状态
-        user.value = userInfo.user
-        roles.value = userInfo.roles || []
-        permissions.value = userInfo.permissions || []
-        
-        return {
-          user: userInfo.user,
-          roles: userInfo.roles || [],
-          permissions: userInfo.permissions || []
+        if (userInfo) {
+          user.value = userInfo.user
+          roles.value = userInfo.roles || []
+          permissions.value = userInfo.permissions || []
+          
+          // 只有在未连接时才初始化SignalR
+          if (!isSignalRConnected.value) {
+            await initSignalR()
+          }
+          
+          return {
+            user: userInfo.user,
+            roles: userInfo.roles || [],
+            permissions: userInfo.permissions || []
+          }
         }
-      } else {
-        console.error('[用户信息] 获取失败:', res)
-        return Promise.reject(new Error(res.msg))
       }
+      console.error('[用户信息] 获取失败:', response)
+      return Promise.reject(new Error(response.msg || '获取用户信息失败'))
     } catch (error) {
       console.error('[用户信息] 获取出错:', error)
       return Promise.reject(error)
@@ -228,6 +216,8 @@ export const useUserStore = defineStore('user', () => {
       // 停止SignalR连接
       if (isSignalRConnected.value) {
         await signalRService.stop()
+        // 重置 SignalR 连接状态
+        signalRService.resetConnectionState()
         isSignalRConnected.value = false
       }
       
@@ -265,6 +255,8 @@ export const useUserStore = defineStore('user', () => {
     getUserInfo,
     logout,
     handleKickout,
-    $reset
+    $reset,
+    isLoggedIn,
+    initSignalR
   }
 }) 

@@ -1,5 +1,4 @@
-using System;
-using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace Lean.Hbt.Common.Options
 {
@@ -8,6 +7,11 @@ namespace Lean.Hbt.Common.Options
     /// </summary>
     public class HbtSingleSignOnOptions
     {
+        /// <summary>
+        /// 最大设备数
+        /// </summary>
+        public int MaxDevices { get; set; }
+
         /// <summary>
         /// 是否启用单点登录
         /// </summary>
@@ -19,23 +23,23 @@ namespace Lean.Hbt.Common.Options
         public bool KickoutOldSession { get; set; }
 
         /// <summary>
-        /// 排除的角色（这些角色不受单点登录限制）
-        /// </summary>
-        public List<string> ExcludeRoles { get; set; } = new();
-
-        /// <summary>
-        /// 排除的用户（这些用户不受单点登录限制）
-        /// </summary>
-        public List<string> ExcludeUsers { get; set; } = new();
-
-        /// <summary>
-        /// 是否通知被踢出的会话
+        /// 是否通知被踢出的用户
         /// </summary>
         public bool NotifyKickout { get; set; }
 
         /// <summary>
-        /// 踢出消息
+        /// 踢出提示消息
         /// </summary>
-        public string KickoutMessage { get; set; } = "您的账号已在其他设备上登录";
+        public string? KickoutMessage { get; set; }
+
+        /// <summary>
+        /// 最大并发会话数
+        /// </summary>
+        public int MaxConcurrentSessions { get; set; }
+
+        /// <summary>
+        /// 每个用户最大连接数
+        /// </summary>
+        public int MaxConnectionsPerUser { get; set; }
     }
 } 

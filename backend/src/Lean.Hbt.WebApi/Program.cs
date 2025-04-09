@@ -1,41 +1,38 @@
-using Lean.Hbt.Common.Utils;
+using System.Text;
 using Lean.Hbt.Common.Helpers;
 using Lean.Hbt.Common.Options;
+using Lean.Hbt.Common.Utils;
+using Lean.Hbt.Domain.IServices.Admin;
+using Lean.Hbt.Domain.IServices.Caching;
+using Lean.Hbt.Domain.IServices.Security;
+using Lean.Hbt.Domain.IServices.SignalR;
+using Lean.Hbt.Infrastructure.Caching;
 using Lean.Hbt.Infrastructure.Data.Contexts;
 using Lean.Hbt.Infrastructure.Data.Seeds;
 using Lean.Hbt.Infrastructure.Extensions;
-using Lean.Hbt.Infrastructure.Services;
+using Lean.Hbt.Infrastructure.Jobs;
 using Lean.Hbt.Infrastructure.Security;
-using Lean.Hbt.Infrastructure.Swagger;
-using Lean.Hbt.WebApi.Extensions;
+using Lean.Hbt.Infrastructure.Services;
+using Lean.Hbt.Infrastructure.Services.Identity;
+using Lean.Hbt.Infrastructure.SignalR;
+using Lean.Hbt.Infrastructure.SignalR.Cache;
 using Lean.Hbt.WebApi.Middlewares;
+using Microsoft.AspNetCore.Antiforgery;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using NLog;
 using NLog.Web;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
-using StackExchange.Redis;
-using Lean.Hbt.Domain.IServices.SignalR;
-using Lean.Hbt.Infrastructure.SignalR;
-using Lean.Hbt.Domain.IServices.Caching;
-using Lean.Hbt.Infrastructure.Caching;
-using Lean.Hbt.Infrastructure.SignalR.Cache;
 using Quartz;
-using Quartz.Impl;
-using Quartz.Spi;
-using Microsoft.AspNetCore.Routing;
-using Lean.Hbt.Domain.IServices.Admin;
-using Lean.Hbt.Domain.Identity;
-using Lean.Hbt.Infrastructure.Identity;
-using Lean.Hbt.Domain.IServices.Security;
-using Microsoft.AspNetCore.Antiforgery;
-using Lean.Hbt.Infrastructure.Jobs;
-using Microsoft.AspNetCore.SignalR;
 using SqlSugar;
+using Microsoft.Extensions.Logging;
+using System.Security.Claims;
 
+var builder = WebApplication.CreateBuilder(args);
 var logger = LogManager.Setup()
                       .LoadConfigurationFromFile("nlog.config")
                       .GetCurrentClassLogger();
@@ -43,18 +40,16 @@ try
 {
     logger.Info("正在初始化应用程序...");
 
-    var builder = WebApplication.CreateBuilder(args);
-
     // 添加NLog支持
     builder.Logging.ClearProviders();
     builder.Host.UseNLog();
-    
+
     // 配置SignalR日志
     builder.Logging.AddFilter("Microsoft.AspNetCore.SignalR", Microsoft.Extensions.Logging.LogLevel.Debug);
     builder.Logging.AddFilter("Microsoft.AspNetCore.Http.Connections", Microsoft.Extensions.Logging.LogLevel.Debug);
 
     // 配置 Kestrel 服务器
-    var serverConfig = builder.Configuration.GetSection("Server").Get<HbtServerConfig>() 
+    var serverConfig = builder.Configuration.GetSection("Server").Get<HbtServerConfig>()
         ?? throw new InvalidOperationException("服务器配置节点不能为空");
 
     if (serverConfig.HttpPort <= 0)
@@ -72,21 +67,23 @@ try
 
     builder.Services.Configure<IISServerOptions>(options =>
     {
-        options.AllowSynchronousIO = true;
-        options.MaxRequestBodySize = 30000000;
+        options.MaxRequestBodySize = null; // 移除请求体大小限制
     });
 
     builder.Services.Configure<KestrelServerOptions>(options =>
     {
         options.Limits.KeepAliveTimeout = TimeSpan.FromMinutes(2);
         options.Limits.RequestHeadersTimeout = TimeSpan.FromMinutes(1);
+        options.Limits.MaxRequestHeadersTotalSize = 32768; // 32KB
+        options.Limits.MaxRequestLineSize = 8192; // 8KB
     });
 
     builder.WebHost.ConfigureKestrel(options =>
     {
-        options.Limits.MaxRequestHeadersTotalSize = 1024 * 1024; // 设置为1MB
-        options.Limits.MaxRequestHeaderCount = 100;
-        options.Limits.MaxRequestBodySize = 1024 * 1024 * 100; // 设置为100MB
+        options.Limits.KeepAliveTimeout = TimeSpan.FromMinutes(2);
+        options.Limits.RequestHeadersTimeout = TimeSpan.FromMinutes(1);
+        options.Limits.MaxRequestHeadersTotalSize = 32768; // 32KB
+        options.Limits.MaxRequestLineSize = 8192; // 8KB
     });
 
     // 配置服务器URL
@@ -114,34 +111,29 @@ try
     };
 
     // 添加CORS服务
+    var corsOrigins = builder.Configuration.GetSection("Cors:Origins").Get<string[]>() ?? Array.Empty<string>();
+    var corsMethods = builder.Configuration.GetSection("Cors:Methods").Get<string[]>() ?? new[] { "GET", "POST", "PUT", "DELETE", "OPTIONS" };
+    var corsHeaders = builder.Configuration.GetSection("Cors:Headers").Get<string[]>() ?? new[] { "*" };
+    var allowCredentials = builder.Configuration.GetSection("Cors:AllowCredentials").Get<bool>();
+
     builder.Services.AddCors(options =>
     {
-        options.AddPolicy("HbtPolicy", policy =>
+        options.AddPolicy("HbtPolicy", builder =>
         {
-            policy.WithOrigins(builder.Configuration.GetSection("Cors:Origins").Get<string[]>() ?? Array.Empty<string>())
-                  .WithMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                  .WithHeaders(
-                      "Content-Type", 
-                      "Authorization", 
-                      "Accept", 
-                      "X-Requested-With", 
-                      "X-Tenant-Id", 
-                      "Cache-Control", 
-                      "Pragma",
-                      "X-CSRF-Token",// CSRF Token头
-                      "X-XSRF-TOKEN", // XSRF Token头
-                      "x-signalr-user-agent",// SignalR用户代理头
-                      "X-Device-Info" // 设备信息头
-                  )
-                  .AllowCredentials()
-                  .SetIsOriginAllowedToAllowWildcardSubdomains()
-                  .WithExposedHeaders("X-CSRF-Token", "X-XSRF-TOKEN")
-                  .SetPreflightMaxAge(TimeSpan.FromMinutes(10));
+            builder
+                .WithOrigins(corsOrigins)
+                .WithMethods(corsMethods)
+                .WithHeaders(corsHeaders)
+                .AllowCredentials()
+                .WithExposedHeaders("X-Device-Id", "X-Device-Name", "X-Device-Type", "X-Device-Model", 
+                    "X-OS-Type", "X-OS-Version", "X-Browser-Type", "X-Browser-Version", 
+                    "X-Resolution", "X-Location", "X-Device-Token");
         });
     });
 
     // 添加控制器服务
-    builder.Services.AddControllers(options => {
+    builder.Services.AddControllers(options =>
+    {
         options.EnableEndpointRouting = true;
     });
 
@@ -153,7 +145,7 @@ try
 
     // 配置安全选项
     builder.Services.Configure<HbtSecurityOptions>(builder.Configuration.GetSection("Security"));
-    
+
     // 配置验证码选项
     builder.Services.Configure<HbtCaptchaOptions>(builder.Configuration.GetSection("Captcha"));
 
@@ -186,35 +178,22 @@ try
                 ValidateIssuerSigningKey = true,
                 ValidIssuer = jwtSettings.Issuer,
                 ValidAudience = jwtSettings.Audience,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.SecretKey))
-            };
-
-            // 配置SignalR的JWT认证
-            options.Events = new JwtBearerEvents
-            {
-                OnMessageReceived = context =>
-                {
-                    var accessToken = context.Request.Query["access_token"];
-                    var path = context.HttpContext.Request.Path;
-                    if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/signalr"))
-                    {
-                        context.Token = accessToken;
-                    }
-                    return Task.CompletedTask;
-                }
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.SecretKey)),
+                NameClaimType = "unm",
+                RoleClaimType = "rol",
+                RequireExpirationTime = true,
+                RequireSignedTokens = true,
+                ClockSkew = TimeSpan.Zero,
+                ValidateTokenReplay = true,
+                RequireAudience = true,
+                TokenDecryptionKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.SecretKey))
             };
         });
 
-    // 配置 SignalR
-    builder.Services.AddSignalR();
+    // 配置SignalR
+    builder.Services.AddHbtSignalR(builder.Configuration);
+
     builder.Services.AddMemoryCache();
-    builder.Services.AddScoped<IHbtSignalRUserService, HbtSignalRUserService>();
-    builder.Services.AddScoped<IHbtSignalRClient>(sp => 
-    {
-        var hubContext = sp.GetRequiredService<IHubContext<HbtSignalRHub, IHbtSignalRClient>>();
-        return hubContext.Clients.All;
-    });
-    builder.Services.AddScoped<IHbtSignalRHub, HbtSignalRHub>();
 
     // 配置单点登录
     builder.Services.Configure<HbtSingleSignOnOptions>(builder.Configuration.GetSection("Security:SingleSignOn"));
@@ -222,15 +201,15 @@ try
 
     // 根据配置选择SignalR缓存实现
     var cacheSettings = builder.Configuration.GetSection("Cache").Get<HbtCacheOptions>();
-    
+
     // 注册缓存配置管理器（改为Scoped生命周期）
     builder.Services.AddScoped<HbtCacheConfigManager>();
-    
+
     // 注册内存缓存
     builder.Services.AddScoped<IHbtMemoryCache, HbtMemoryCache>();
-    
-    if (cacheSettings?.Provider == CacheProviderType.Redis && 
-        cacheSettings?.Redis?.Enabled == true && 
+
+    if (cacheSettings?.Provider == CacheProviderType.Redis &&
+        cacheSettings?.Redis?.Enabled == true &&
         !string.IsNullOrEmpty(cacheSettings.Redis.ConnectionString))
     {
         // 配置Redis连接
@@ -247,7 +226,7 @@ try
         builder.Services.AddScoped<IHbtRedisCache, HbtNullRedisCache>();
         builder.Services.AddScoped<IHbtSignalRCacheService, HbtSignalRMemoryCache>();
     }
-    
+
     // 注册缓存工厂
     builder.Services.AddScoped<IHbtCacheFactory, HbtCacheFactory>();
 
@@ -369,9 +348,6 @@ try
     builder.Services.Configure<HbtSystemRestartOptions>(
         builder.Configuration.GetSection("SystemRestart"));
 
-    builder.Services.Configure<HbtSignalRCacheOptions>(
-        builder.Configuration.GetSection("SignalRCache"));
-
     builder.Services.AddAntiforgery(options =>
     {
         options.HeaderName = "X-CSRF-TOKEN";
@@ -435,10 +411,10 @@ try
 
     // 1. 异常处理中间件（必须放在最前面，以捕获后续中间件中的所有异常）
     app.UseHbtExceptionHandler();
-    
+
     // 2. 会话安全中间件（处理会话相关的安全机制）
     app.UseHbtSessionSecurity();
-    
+
     // 3. SQL注入防护中间件（防止SQL注入攻击）
     app.UseHbtSqlInjection();
 
@@ -449,38 +425,42 @@ try
         logger.Info("CORS已启用");
     }
 
-    // 5. CSRF防护中间件（防止跨站请求伪造攻击）
+    // 5. 开启访问静态文件/wwwroot目录文件
+    app.UseStaticFiles();
+    logger.Info("静态文件中间件已启用");
+
+    // 6. CSRF防护中间件（防止跨站请求伪造攻击）
     app.UseHbtCsrf();
 
-    // 6. HTTPS重定向中间件（如果启用HTTPS）
+    // 7. HTTPS重定向中间件（如果启用HTTPS）
     if (serverConfig.UseHttps)
     {
         app.UseHttpsRedirection();
         logger.Info("已启用HTTPS重定向");
     }
 
-    // 7. 速率限制中间件（控制请求频率，防止DoS攻击）
+    // 8. 速率限制中间件（控制请求频率，防止DoS攻击）
     app.UseHbtRateLimit();
-    
-    // 8. 区分大小写路由中间件（确保路由匹配时区分大小写）
+
+    // 9. 区分大小写路由中间件（确保路由匹配时区分大小写）
     app.UseHbtCaseSensitiveRoute();
 
-    // 9. 添加路由中间件
+    // 10. 添加路由中间件
     app.UseRouting();
-    
-    // 10. 添加认证中间件
+
+    // 11. 添加认证中间件
     app.UseAuthentication();
     app.UseAuthorization();
 
-    // 11. 添加权限中间件
+    // 12. 添加权限中间件
     app.UseHbtPerm();
 
-    // 12. 添加本地化中间件
+    // 13. 添加本地化中间件
     app.UseHbtLocalization();
 
-    // 13. 注册所有控制器路由和SignalR Hub
+    // 14. 注册所有控制器路由和SignalR Hub
     app.MapControllers();
-    app.MapHub<HbtSignalRHub>("/signalr/hbthub");
+    app.UseHbtSignalR();
 
     // 配置Excel帮助类（用于处理Excel导入导出功能）
     var excelOptions = app.Services.GetRequiredService<IOptions<HbtExcelOptions>>();
@@ -492,13 +472,13 @@ try
     app.Use(async (context, next) =>
     {
         var antiforgery = context.RequestServices.GetRequiredService<IAntiforgery>();
-        
+
         // 只在Cookie不存在时生成新的CSRF Token
-        if (HttpMethods.IsGet(context.Request.Method) && 
+        if (HttpMethods.IsGet(context.Request.Method) &&
             !context.Request.Cookies.ContainsKey("XSRF-TOKEN"))
         {
             var tokens = antiforgery.GetAndStoreTokens(context);
-            context.Response.Cookies.Append("XSRF-TOKEN", tokens.RequestToken!, 
+            context.Response.Cookies.Append("XSRF-TOKEN", tokens.RequestToken!,
                 new CookieOptions
                 {
                     HttpOnly = false,
@@ -508,7 +488,7 @@ try
                     Expires = DateTimeOffset.Now.AddHours(1)
                 });
         }
-        
+
         await next(context);
     });
 

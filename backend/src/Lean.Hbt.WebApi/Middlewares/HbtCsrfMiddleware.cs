@@ -120,16 +120,20 @@ namespace Lean.Hbt.WebApi.Middlewares
             {
                 "/api/hbtauth/login",
                 "/api/hbtauth/logout",
+                "/api/hbtauth/check-login",  // 添加check-login路径
                 "/api/hbtlanguage/supported",
-                "/api/hbtonlineuser/force-offline",  // 添加强制下线接口
-                "/swagger",           // Swagger路径
-                "/_framework",        // 框架路径
-                "/_vs"               // Visual Studio路径
+                "/api/hbtonlineuser/force-offline",
+                "/swagger",
+                "/_framework",
+                "/_vs"
             };
+
+            // 移除路径中的HTTP方法前缀（如 "POST "）
+            var pathWithoutMethod = path.Split(' ').Last();
 
             foreach (var skipPath in skipPaths)
             {
-                if (path.StartsWith(skipPath, StringComparison.OrdinalIgnoreCase))
+                if (pathWithoutMethod.Equals(skipPath, StringComparison.OrdinalIgnoreCase))
                 {
                     _logger.LogInformation($"[CSRF] Path matches skip pattern: {skipPath}");
                     return true;

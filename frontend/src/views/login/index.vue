@@ -1,8 +1,6 @@
 <template>
   <div class="login-container">
-    <!-- 添加登录页头部导航栏 -->
-    <header-login-bar />
-    
+    <hbt-header-login />
     <div class="login-content">
       <!-- 左侧品牌展示卡片 -->
       <a-card class="brand-card" :bordered="false">
@@ -23,15 +21,13 @@
           @finish="handleLogin"
         >
           <a-form-item name="tenantId">
-            <a-input-number
+            <a-select
               v-model:value="loginForm.tenantId"
               :placeholder="t('identity.auth.login.tenantId')"
               class="login-input"
-            >
-              <template #prefix>
-                <apartment-outlined />
-              </template>
-            </a-input-number>
+              :options="tenantList"
+              :suffixIcon="h(ApartmentOutlined)"
+            />
           </a-form-item>
           <a-form-item name="userName">
             <a-input
@@ -111,7 +107,7 @@
       centered
     >
       <div class="captcha-modal-content">
-        <slider-captcha ref="captchaRef" @success="handleCaptchaSuccess" @error="handleCaptchaError" />
+        <hbt-slider-captcha ref="captchaRef" @success="handleCaptchaSuccess" @error="handleCaptchaError" />
       </div>
     </a-modal>
   </div>
@@ -121,26 +117,24 @@
 // 类型导入
 import type { FormInstance } from 'ant-design-vue'
 import type { RuleObject } from 'ant-design-vue/es/form'
-import type { LoginParams, SaltResponse, LockoutStatus } from '@/types/identity/auth'
-import type { SliderValidateDto } from '@/api/security/captcha'
-import type { DeviceInfo } from '@/types/identity/deviceExtend'
+import type { LoginParams } from '@/types/identity/auth'
 import { DEVICE_INFO_LENGTH, HbtDeviceType, HbtOsType, HbtBrowserType } from '@/types/identity/deviceExtend'
 
 // API和组件导入
-import { getSalt, login, checkAccountLockout } from '@/api/identity/auth'
-import { getCaptcha, verifyCaptcha } from '@/api/security/captcha'
-import SliderCaptcha from '@/components/Base/SliderCaptcha.vue'
-import HeaderLoginBar from '@/components/Navigation/HeaderLoginBar.vue'
+import { getSalt, checkAccountLockout } from '@/api/identity/auth'
+import { getTenantOptions } from '@/api/identity/tenant'
 import { PasswordEncryptor } from '@/utils/crypto'
 import { useUserStore } from '@/stores/user'
 import { useMenuStore } from '@/stores/menu'
 import { useI18n } from 'vue-i18n'
 import { message } from 'ant-design-vue'
-import { ref, reactive, onMounted, onUnmounted, nextTick, watch, computed } from 'vue'
+import { ref, reactive, onMounted, onUnmounted, nextTick, watch, computed, h } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { getDeviceInfo } from '@/utils/device'
 import { LOGIN_POLICY, LOGIN_STORAGE_KEYS, SPECIAL_USERS } from '@/types/identity/auth'
 import { registerDynamicRoutes } from '@/router'
+import { ApartmentOutlined, UserOutlined, LockOutlined, GithubOutlined } from '@ant-design/icons-vue'
+
 
 const { t } = useI18n()
 const router = useRouter()
@@ -153,14 +147,14 @@ const loginFormRef = ref<FormInstance>()
 const captchaRef = ref()
 
 // 登录表单数据
-const loginForm = ref<LoginParams>({
+const loginForm = ref({
   tenantId: 0,
   userName: 'admin',
   password: '123456',
   captchaToken: '',
   captchaOffset: 0,
   loginSource: 0,
-  deviceInfo: getDeviceInfo()
+  deviceInfo: null as any
 })
 
 // 表单验证规则
@@ -188,6 +182,30 @@ const loading = ref(false)
 // 验证码状态
 const captchaVerified = ref(false)
 const captchaParams = ref<{ token: string; xOffset: number } | null>(null)
+
+// 租户列表
+const tenantList = ref<{ id: number; name: string }[]>([])
+
+// 获取租户列表
+const loadTenantList = async () => {
+  try {
+    const res = await getTenantOptions()
+    if (res.code === 200 && Array.isArray(res.data)) {
+      tenantList.value = res.data
+      console.log('[租户列表] 加载成功:', tenantList.value)
+      // 如果是admin用户，自动选择默认租户
+      if (loginForm.value.userName.toLowerCase() === 'admin') {
+        loginForm.value.tenantId = 0
+      }
+    }
+  } catch (error) {
+    console.error('[租户列表] 加载失败:', error)
+    // 加载失败时添加默认租户
+    tenantList.value = [
+      { id: 0, name: '默认租户' }
+    ]
+  }
+}
 
 // 检查是否需要验证码（5分钟内重复登录）
 const checkNeedCaptcha = () => {
@@ -265,20 +283,22 @@ const handleLogin = async () => {
       saltResponse.iterations || 100000
     )
 
-    // 3. 构建登录参数
+    // 3. 获取设备信息
+    const deviceInfo = await getDeviceInfo()
+
+    // 4. 构建登录参数
     const loginParams: LoginParams = {
       ...loginForm.value,
-      password: hashedPassword
+      password: hashedPassword,
+      deviceInfo: deviceInfo,
+      loginSource: 0 // Web登录
     }
 
-    // 4. 发起登录请求
-    const response = await userStore.login(loginParams)
-    
-    if (response.code === 200) {
-      message.success(t('identity.auth.login.success'))
-      // 登录成功后的处理
-      await handleLoginSuccess()
-    }
+    // 5. 发起登录请求
+    await userStore.login(loginParams)
+    message.success(t('identity.auth.login.success'))
+    // 登录成功后的处理
+    await handleLoginSuccess()
   } catch (error: any) {
     console.error('[登录] 失败:', error)
     message.error(error.message || t('identity.auth.login.error.unknown'))
@@ -290,46 +310,53 @@ const handleLogin = async () => {
 // 处理登录成功
 const handleLoginSuccess = async () => {
   try {
+    console.log('[登录成功] 开始处理登录成功流程')
+    
     // 记录登录时间
     const loginTime = Date.now()
     localStorage.setItem(LOGIN_STORAGE_KEYS.LAST_LOGIN_TIME, loginTime.toString())
-    console.log('[登录成功] 记录登录时间:', {
-      timestamp: loginTime,
-      datetime: new Date(loginTime).toLocaleString()
-    })
+    console.log('[登录成功] 记录登录时间完成')
     
     // 重置失败次数
     resetFailedAttempts(loginForm.value.userName)
+    console.log('[登录成功] 重置失败次数完成')
 
-    // 先获取用户信息
+    // 获取用户信息
     console.log('[登录成功] 开始获取用户信息')
-    await userStore.getUserInfo()
-    console.log('[登录成功] 用户信息获取成功:', {
-      用户: userStore.user,
-      角色: userStore.roles,
-      权限: userStore.permissions
-    })
+    const userInfo = await userStore.getUserInfo()
+    console.log('[登录成功] 用户信息获取成功:', userInfo)
 
     // 加载菜单
-    const menuLoadSuccess = await menuStore.loadUserMenus()
-    if (!menuLoadSuccess) {
-      throw new Error(t('menu.error.loadFailed'))
-    }
+    console.log('[登录成功] 开始加载菜单')
+    const menus = await menuStore.loadUserMenus()
+    console.log('[登录成功] 菜单加载完成:', {
+      菜单数量: menuStore.rawMenuList?.length || 0,
+      顶级菜单: menuStore.rawMenuList?.filter(m => !m.parentId).map(m => m.menuName) || []
+    })
 
     // 注册动态路由
-    const routeRegisterSuccess = await registerDynamicRoutes(menuStore.rawMenuList)
-    if (!routeRegisterSuccess) {
-      throw new Error(t('router.error.registerFailed'))
-    }
+    console.log('[登录成功] 开始注册动态路由')
+    const routes = await registerDynamicRoutes(menuStore.rawMenuList)
+    console.log('[登录成功] 动态路由注册完成:', {
+      成功: routes,
+      当前路由表: router.getRoutes().map(r => r.path)
+    })
 
-    // 获取重定向地址
-    const redirect = route.query.redirect as string
-    const path = redirect || '/'
+    // 等待路由注册完成
+    await nextTick()
+    console.log('[登录成功] 等待路由更新完成')
 
-    // 跳转到目标页面
-    await router.push(path)
+    // 跳转到首页
+    console.log('[登录成功] 准备跳转到首页')
+    const result = await router.push({ path: '/' })
+    console.log('[登录成功] 跳转结果:', result)
   } catch (error: any) {
-    console.error('[登录成功处理] 失败:', error)
+    console.error('[登录成功处理] 失败:', {
+      错误: error,
+      错误信息: error.message,
+      错误堆栈: error.stack,
+      错误类型: error.name
+    })
     message.error(error.message || t('identity.auth.login.failed'))
   }
 }
@@ -437,8 +464,16 @@ const runEncryptionTest = async () => {
   }
 }
 
-// 组件挂载时
-onMounted(() => {
+// 初始化设备信息
+const initDeviceInfo = async () => {
+  loginForm.value.deviceInfo = await getDeviceInfo()
+}
+
+// 在组件挂载时初始化设备信息
+onMounted(async () => {
+  await initDeviceInfo()
+  await loadTenantList()
+  
   // 清理登录状态
   resetFailedAttempts(loginForm.value.userName)
   showCaptcha.value = false

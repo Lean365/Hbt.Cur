@@ -101,7 +101,7 @@ namespace Lean.Hbt.Application.Dtos.Audit
         /// <summary>
         /// 设备信息
         /// </summary>
-        public HbtDeviceInfo? DeviceInfo { get; set; }
+        public HbtSignalRDevice? DeviceInfo { get; set; }
 
         /// <summary>
         /// 设备扩展ID

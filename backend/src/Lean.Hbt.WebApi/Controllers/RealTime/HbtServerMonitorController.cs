@@ -16,7 +16,7 @@ namespace Lean.Hbt.WebApi.Controllers.RealTime;
 /// <summary>
 /// 服务器监控控制器
 /// </summary>
-[Route("api/audit/server", Name = "服务监控")]
+[Route("api/[controller]", Name = "服务监控")]
 [ApiModule("audit", "审计日志")]
 [ApiController]
 [Authorize]

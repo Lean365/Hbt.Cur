@@ -22,7 +22,7 @@ export default {
           gender: 'Gender',
           status: 'Status',
           createTime: 'Create Time',
-          lastLoginTime: 'Last Login Time',
+          lastLoginTime: 'Last Login',
           operation: 'Operation'
         },
         operation: {
@@ -44,67 +44,71 @@ export default {
         label: 'Username',
         placeholder: 'Please enter username',
         validation: {
-          required: 'Username cannot be empty',
-          format: 'Username must start with a lowercase letter, be 6-20 characters long, and can only contain lowercase letters, numbers, and underscores'
+          required: 'Username is required',
+          format: 'Username must start with a lowercase letter, be 6-20 characters long, and contain only lowercase letters, numbers, and underscores'
         }
       },
       nickName: {
         label: 'Nickname',
         placeholder: 'Please enter nickname',
         validation: {
-          required: 'Nickname cannot be empty',
-          format: 'Nickname must be 2-20 characters long and can only contain Chinese characters, English letters, numbers, and underscores'
+          required: 'Nickname is required',
+          format: 'Nickname must be 2-20 characters long and contain only Chinese characters, English letters, numbers, and underscores'
         }
       },
       englishName: {
         label: 'English Name',
         placeholder: 'Please enter English name',
         validation: {
-          format: 'English name must be 2-50 characters long and can only contain English letters, spaces, and hyphens'
+          format: 'English name must be 2-50 characters long and contain only English letters, spaces, and hyphens'
         }
       },
       password: {
         label: 'Password',
         placeholder: 'Please enter password',
         validation: {
-          required: 'Password cannot be empty',
-          length: 'Password length must be between 6-20 characters'
+          required: 'Password is required',
+          length: 'Password must be 6-20 characters long'
         }
       },
       confirmPassword: {
         label: 'Confirm Password',
         placeholder: 'Please enter password again',
         validation: {
-          required: 'Confirm password cannot be empty',
-          notMatch: 'The two passwords do not match'
+          required: 'Password confirmation is required',
+          notMatch: 'Passwords do not match'
         }
       },
       email: {
         label: 'Email',
         placeholder: 'Please enter email',
         validation: {
-          required: 'Email cannot be empty',
-          invalid: 'Email must be 6-100 characters long and in valid format'
+          required: 'Email is required',
+          invalid: 'Email must be 6-100 characters long and be in a valid format'
         }
       },
       phoneNumber: {
         label: 'Phone Number',
         placeholder: 'Please enter phone number',
         validation: {
-          required: 'Phone number cannot be empty',
-          invalid: 'Please enter a valid phone number or landline number format'
+          required: 'Phone number is required',
+          invalid: 'Please enter a valid mobile or landline phone number format'
         }
       },
       gender: {
         label: 'Gender',
         placeholder: 'Please select gender',
-        unknown: 'Unknown',
-        male: 'Male',
-        female: 'Female'
+        options: {
+          male: 'Male',
+          female: 'Female',
+          unknown: 'Unknown'
+        }
       },
       avatar: {
         label: 'Avatar',
-        upload: 'Upload Avatar'
+        upload: 'Upload Avatar',
+        uploadSuccess: 'Avatar uploaded successfully',
+        uploadError: 'Avatar upload failed'
       },
       deptName: {
         label: 'Department',
@@ -115,13 +119,16 @@ export default {
         placeholder: 'Please select role'
       },
       post: {
-        label: 'Post',
-        placeholder: 'Please select post'
+        label: 'Position',
+        placeholder: 'Please select position'
       },
       status: {
         label: 'Status',
-        normal: 'Normal',
-        disabled: 'Disabled'
+        placeholder: 'Please select status',
+        options: {
+          enabled: 'Enabled',
+          disabled: 'Disabled'
+        }
       },
       resetPwd: 'Reset Password',
       import: {
@@ -135,9 +142,19 @@ export default {
         success: 'Export successful',
         failed: 'Export failed'
       },
+      userType: {
+        label: 'User Type',
+        placeholder: 'Please select user type',
+        options: {
+          admin: 'Administrator',
+          user: 'Normal User'
+        }
+      },
+      createTime: 'Create Time',
+      lastLoginTime: 'Last Login',
       messages: {
-        confirmDelete: 'Are you sure you want to delete the selected user(s)?',
-        confirmResetPassword: 'Are you sure you want to reset the password for selected user(s)?',
+        confirmDelete: 'Are you sure you want to delete the selected users?',
+        confirmResetPassword: 'Are you sure you want to reset the password for the selected users?',
         confirmToggleStatus: 'Are you sure you want to {action} this user?',
         deleteSuccess: 'User deleted successfully',
         deleteFailed: 'Failed to delete user',
@@ -149,22 +166,31 @@ export default {
         importFailed: 'Failed to import users',
         exportSuccess: 'Users exported successfully',
         exportFailed: 'Failed to export users',
-        toggleStatusSuccess: 'Status updated successfully',
-        toggleStatusFailed: 'Failed to update status'
+        toggleStatusSuccess: 'Status changed successfully',
+        toggleStatusFailed: 'Failed to change status'
       },
-      // Tabs
       tab: {
-        basic: 'Basic Info',
+        basic: 'Basic Information',
         profile: 'Profile',
-        role: 'Roles & Permissions',
-        dept: 'Department & Post',
-        other: 'Other Info'
+        role: 'Roles and Permissions',
+        dept: 'Department and Position',
+        other: 'Other Information',
+        avatar: 'Avatar Settings',
+        loginLog: 'Login History',
+        operateLog: 'Operation History',
+        errorLog: 'Error Log',
+        taskLog: 'Task Log'
+      },
+      update: {
+        validation: {
+          required: 'User ID and Tenant ID are required'
+        }
       },
       tenantId: {
         label: 'Tenant',
         placeholder: 'Please select tenant',
         validation: {
-          required: 'Tenant cannot be empty'
+          required: 'Tenant is required'
         }
       },
       roles: {
@@ -175,10 +201,10 @@ export default {
         }
       },
       posts: {
-        label: 'Posts',
-        placeholder: 'Please select posts',
+        label: 'Positions',
+        placeholder: 'Please select positions',
         validation: {
-          required: 'Please select at least one post'
+          required: 'Please select at least one position'
         }
       },
       depts: {
@@ -190,55 +216,9 @@ export default {
       },
       remark: {
         label: 'Remark',
-        placeholder: 'Please enter remark information'
+        placeholder: 'Please enter remark'
       }
     }
-  },
-  title: 'User Management',
-  fields: {
-    userName: {
-      label: 'Username',
-      placeholder: 'Please enter username'
-    },
-    nickName: {
-      label: 'Nickname',
-      placeholder: 'Please enter nickname'
-    },
-    phoneNumber: {
-      label: 'Phone Number',
-      placeholder: 'Please enter phone number'
-    },
-    email: {
-      label: 'Email',
-      placeholder: 'Please enter email'
-    },
-    gender: {
-      label: 'Gender',
-      placeholder: 'Please select gender',
-      options: {
-        male: 'Male',
-        female: 'Female',
-        unknown: 'Unknown'
-      }
-    },
-    userType: {
-      label: 'User Type',
-      placeholder: 'Please select user type',
-      options: {
-        admin: 'Administrator',
-        user: 'Regular User'
-      }
-    },
-    status: {
-      label: 'Status',
-      placeholder: 'Please select status',
-      options: {
-        enabled: 'Enabled',
-        disabled: 'Disabled'
-      }
-    },
-    createTime: 'Create Time',
-    lastLoginTime: 'Last Login Time'
   },
   actions: {
     add: 'Add User',
@@ -253,4 +233,4 @@ export default {
     phoneNumber: 'Please enter a valid phone number',
     email: 'Please enter a valid email address'
   }
-} 
+}

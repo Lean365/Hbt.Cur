@@ -12,6 +12,7 @@ global using System;
 global using System.Collections.Generic;
 global using System.ComponentModel;
 global using System.Threading.Tasks;
+
 // 项目依赖
 global using Lean.Hbt.Common.Models;
 global using Lean.Hbt.Domain.Entities;
@@ -19,15 +20,14 @@ global using Lean.Hbt.Domain.IServices;
 global using Lean.Hbt.Domain.Utils;
 global using Mapster;
 
-
-
 global using Lean.Hbt.Application.Dtos.Generator;
 global using Lean.Hbt.Common.Exceptions;
 global using Lean.Hbt.Common.Helpers;
 global using Lean.Hbt.Domain.Entities.Generator;
-global using Lean.Hbt.Domain.Identity;
+global using Lean.Hbt.Domain.IServices.Identity;
 global using Lean.Hbt.Domain.IServices.Admin;
 global using Lean.Hbt.Domain.Repositories;
 global using SqlSugar;
+
 // Microsoft 扩展
 global using Microsoft.Extensions.Logging;

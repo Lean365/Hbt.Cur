@@ -7,23 +7,16 @@
 // 描述   : SignalR集线器
 //===================================================================
 
-using System;
-using System.Threading.Tasks;
+using System.IdentityModel.Tokens.Jwt;
+using System.Text.Json;
+using Lean.Hbt.Common.Enums;
+using Lean.Hbt.Common.Models;
+using Lean.Hbt.Domain.Entities.RealTime;
+using Lean.Hbt.Domain.IServices.Security;
+using Lean.Hbt.Domain.IServices.SignalR;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
-using Lean.Hbt.Common.Models;
-using Lean.Hbt.Common.Enums;
-using Lean.Hbt.Domain.IServices.SignalR;
-using Lean.Hbt.Application.Services.RealTime;
-using Lean.Hbt.Domain.Identity;
-using Lean.Hbt.Application.Dtos.RealTime;
-using Lean.Hbt.Domain.IServices.Security;
-using System.Text.Json;
-using System.Linq;
-using System.Collections.Generic;
-using Lean.Hbt.Infrastructure.Identity;
-using Lean.Hbt.Domain.IServices.Identity;
-using Lean.Hbt.Domain.Entities.RealTime;
+
 namespace Lean.Hbt.Infrastructure.SignalR
 {
     /// <summary>
@@ -32,115 +25,177 @@ namespace Lean.Hbt.Infrastructure.SignalR
     public class HbtSignalRHub : Hub<IHbtSignalRClient>, IHbtSignalRHub
     {
         private readonly ILogger<HbtSignalRHub> _logger;
-        private readonly IHbtSignalRUserService _signalRUserService;
+        private readonly IHbtSignalRUserService _userService;
+        private readonly IHbtSignalRCacheService _cacheService;
         private readonly IHbtSingleSignOnService _singleSignOnService;
         private readonly IHbtDeviceIdGenerator _deviceIdGenerator;
         private readonly IHbtRepository<HbtOnlineUser> _repository;
         private readonly IHubContext<HbtSignalRHub> _hubContext;
+        private readonly IConfiguration _configuration;
+        private static readonly SemaphoreSlim _connectionLock = new SemaphoreSlim(1, 1);
 
         /// <summary>
         /// 构造函数
         /// </summary>
         public HbtSignalRHub(
             ILogger<HbtSignalRHub> logger,
-            IHbtSignalRUserService signalRUserService,
+            IHbtSignalRUserService userService,
+            IHbtSignalRCacheService cacheService,
             IHbtSingleSignOnService singleSignOnService,
             IHbtDeviceIdGenerator deviceIdGenerator,
             IHbtRepository<HbtOnlineUser> repository,
-            IHubContext<HbtSignalRHub> hubContext)
+            IHubContext<HbtSignalRHub> hubContext,
+            IConfiguration configuration)
         {
             _logger = logger;
-            _signalRUserService = signalRUserService;
+            _userService = userService;
+            _cacheService = cacheService;
             _singleSignOnService = singleSignOnService;
             _deviceIdGenerator = deviceIdGenerator;
             _repository = repository;
             _hubContext = hubContext;
+            _configuration = configuration;
         }
 
         /// <summary>
-        /// 客户端连接时
+        /// 客户端连接
         /// </summary>
         public override async Task OnConnectedAsync()
         {
             try
             {
+                await _connectionLock.WaitAsync();
                 var httpContext = Context.GetHttpContext();
-                var deviceInfoJson = httpContext?.Request.Headers["X-Device-Info"].ToString();
-                var userId = Context.UserIdentifier;
-                var userName = Context.User?.Identity?.Name;
-
-                _logger.LogInformation("收到新的连接请求: ConnectionId={ConnectionId}, UserId={UserId}, UserName={UserName}", 
-                    Context.ConnectionId, userId, userName);
-
-                if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(userName))
+                if (httpContext == null)
                 {
-                    _logger.LogWarning("用户未认证，拒绝连接: ConnectionId={ConnectionId}", Context.ConnectionId);
-                    Context.Abort();
-                    return;
+                    throw new HubException("无法获取HTTP上下文");
                 }
 
-                // 生成设备ID和连接ID
-                var (deviceId, connectionId) = _deviceIdGenerator.GenerateIds(deviceInfoJson, userId);
-                _logger.LogInformation("生成设备ID和连接ID: DeviceId={DeviceId}, ConnectionId={ConnectionId}", deviceId, connectionId);
+                var deviceInfoJson = httpContext.Request.Query["deviceInfo"].ToString() ?? string.Empty;
+                var accessToken = httpContext.Request.Query["access_token"].ToString() ?? string.Empty;
 
-                // 处理新的登录连接
-                await _singleSignOnService.HandleNewLoginAsync(userId, userName, connectionId);
-                _logger.LogInformation("处理单点登录完成: UserId={UserId}, ConnectionId={ConnectionId}", userId, connectionId);
-
-                // 保存在线用户信息
-                var onlineUser = new HbtOnlineUser
+                if (string.IsNullOrEmpty(deviceInfoJson) || string.IsNullOrEmpty(accessToken))
                 {
-                    UserId = long.Parse(userId),
-                    ConnectionId = connectionId,
-                    DeviceId = deviceId,
-                    ClientIp = httpContext?.Connection?.RemoteIpAddress?.ToString(),
-                    UserAgent = httpContext?.Request?.Headers["User-Agent"].ToString(),
-                    LastActivity = DateTime.Now,
-                    LastHeartbeat = DateTime.Now,
-                    OnlineStatus = 0
-                };
+                    throw new HubException("设备信息或访问令牌不能为空");
+                }
 
-                await _signalRUserService.SaveOnlineUserAsync(onlineUser);
-                _logger.LogInformation("保存在线用户信息成功: UserId={UserId}, ConnectionId={ConnectionId}", userId, connectionId);
+                // URL 解码设备信息
+                deviceInfoJson = Uri.UnescapeDataString(deviceInfoJson);
 
-                await base.OnConnectedAsync();
-                _logger.LogInformation("连接处理完成: UserId={UserId}, ConnectionId={ConnectionId}", userId, connectionId);
+                // 从 token 中获取用户信息
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var jwtToken = tokenHandler.ReadJwtToken(accessToken);
+                var userId = jwtToken.Claims.FirstOrDefault(c => c.Type == "uid")?.Value;
+                var tenantId = jwtToken.Claims.FirstOrDefault(c => c.Type == "tid")?.Value;
+
+                if (string.IsNullOrEmpty(userId))
+                {
+                    throw new HubException("无效的用户ID");
+                }
+
+                // 解析前端传来的设备信息
+                var deviceInfo = JsonSerializer.Deserialize<HbtSignalRDevice>(deviceInfoJson);
+
+                if (deviceInfo == null)
+                {
+                    throw new HubException("无效的设备信息");
+                }
+
+                // 使用与登录时相同的设备ID生成方法
+                var (deviceId, connectionId) = _deviceIdGenerator.GenerateIds(JsonSerializer.Serialize(deviceInfo), userId);
+
+                // 检查用户是否已存在
+                var existingUser = await _userService.GetOnlineUserByDeviceAsync(long.Parse(userId), deviceId);
+                if (existingUser != null)
+                {
+                    // 更新现有用户
+                    existingUser.ConnectionId = Context.ConnectionId;
+                    existingUser.LastActivity = DateTime.Now;
+                    existingUser.LastHeartbeat = DateTime.Now;
+                    existingUser.OnlineStatus = 0;
+                    await _userService.SaveOnlineUserAsync(existingUser);
+                }
+                else
+                {
+                    // 创建新用户记录
+                    var onlineUser = new HbtOnlineUser
+                    {
+                        TenantId = long.Parse(tenantId ?? "0"),
+                        UserId = long.Parse(userId),
+                        GroupId = 0, // 默认组
+                        ConnectionId = Context.ConnectionId,
+                        DeviceId = deviceId,
+                        ClientIp = httpContext.Connection.RemoteIpAddress?.ToString(),
+                        UserAgent = httpContext.Request.Headers["User-Agent"].ToString(),
+                        LastActivity = DateTime.Now,
+                        LastHeartbeat = DateTime.Now,
+                        OnlineStatus = 0
+                    };
+                    await _userService.SaveOnlineUserAsync(onlineUser);
+                }
+
+                // 通知客户端连接成功
+                await Clients.Client(Context.ConnectionId).ReceiveMessage("连接成功");
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "处理客户端连接时发生错误: ConnectionId={ConnectionId}", Context.ConnectionId);
+                _logger.LogError(ex, "SignalR连接失败: {ConnectionId}", Context.ConnectionId);
                 throw;
+            }
+            finally
+            {
+                _connectionLock.Release();
             }
         }
 
         /// <summary>
-        /// 客户端断开连接时
+        /// 客户端断开连接
         /// </summary>
         public override async Task OnDisconnectedAsync(Exception? exception)
         {
             try
             {
-                var connectionId = Context.ConnectionId;
-                var userId = Context.UserIdentifier;
-                var userName = Context.User?.Identity?.Name;
+                await _connectionLock.WaitAsync();
+                var httpContext = Context.GetHttpContext();
+                var deviceId = httpContext.Request.Query["deviceId"].ToString();
+                var accessToken = httpContext.Request.Query["access_token"].ToString();
 
-                _logger.LogInformation("收到断开连接请求: ConnectionId={ConnectionId}, UserId={UserId}, UserName={UserName}, Exception={Exception}", 
-                    connectionId, userId, userName, exception?.Message);
-
-                if (!string.IsNullOrEmpty(userId))
+                if (string.IsNullOrEmpty(deviceId) || string.IsNullOrEmpty(accessToken))
                 {
-                    // 处理用户登出
-                    await _singleSignOnService.HandleLogoutAsync(userId, connectionId);
-                    _logger.LogInformation("处理用户登出完成: UserId={UserId}, ConnectionId={ConnectionId}", userId, connectionId);
+                    return;
                 }
 
-                await base.OnDisconnectedAsync(exception);
-                _logger.LogInformation("断开连接处理完成: ConnectionId={ConnectionId}", connectionId);
+                // 验证用户
+                var user = await _userService.GetOnlineUserAsync(Context.ConnectionId);
+                if (user == null)
+                {
+                    return;
+                }
+
+                // 更新在线用户状态
+                user.OnlineStatus = 1;
+                user.LastActivity = DateTime.Now;
+                await _userService.SaveOnlineUserAsync(user);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "处理客户端断开连接时发生错误: ConnectionId={ConnectionId}", Context.ConnectionId);
-                throw;
+                _logger.LogError(ex, "SignalR断开连接失败: {ConnectionId}", Context.ConnectionId);
+            }
+            finally
+            {
+                _connectionLock.Release();
+            }
+        }
+
+        /// <summary>
+        /// 发送消息给指定用户
+        /// </summary>
+        public async Task SendMessageAsync(string userId, string message)
+        {
+            var devices = _userService.GetUserDevices(userId);
+            foreach (var device in devices)
+            {
+                await Clients.Client(device.ConnectionId).ReceiveMessage(message);
             }
         }
 
@@ -159,7 +214,7 @@ namespace Lean.Hbt.Infrastructure.SignalR
             };
 
             // 获取需要接收此邮件状态的用户（包括收件人和抄送人）
-            var targetUsers = await _signalRUserService.GetMailReceivers(mailId);
+            var targetUsers = await _userService.GetMailReceivers(mailId);
             foreach (var userId in targetUsers)
             {
                 await Clients.User(userId.ToString()).ReceiveMailStatus(notification);
@@ -181,7 +236,7 @@ namespace Lean.Hbt.Infrastructure.SignalR
             };
 
             // 获取需要接收此通知的用户
-            var targetUsers = await _signalRUserService.GetNoticeReceivers(noticeId);
+            var targetUsers = await _userService.GetNoticeReceivers(noticeId);
             foreach (var userId in targetUsers)
             {
                 await Clients.User(userId.ToString()).ReceiveNoticeStatus(notification);
@@ -203,7 +258,7 @@ namespace Lean.Hbt.Infrastructure.SignalR
             };
 
             // 发送给邮件相关的用户
-            var targetUsers = await _signalRUserService.GetMailReceivers(mailId);
+            var targetUsers = await _userService.GetMailReceivers(mailId);
             foreach (var targetUserId in targetUsers)
             {
                 await Clients.User(targetUserId.ToString()).ReceiveMailStatus(notification);
@@ -225,7 +280,7 @@ namespace Lean.Hbt.Infrastructure.SignalR
             };
 
             // 发送给通知相关的用户
-            var targetUsers = await _signalRUserService.GetNoticeReceivers(noticeId);
+            var targetUsers = await _userService.GetNoticeReceivers(noticeId);
             foreach (var targetUserId in targetUsers)
             {
                 await Clients.User(targetUserId.ToString()).ReceiveNoticeStatus(notification);
@@ -259,7 +314,7 @@ namespace Lean.Hbt.Infrastructure.SignalR
                 Content = content,
                 Timestamp = DateTime.Now
             };
-            await Clients.Group($"User_{userId}").ReceivePersonalNotice(notification);
+            await Clients.User(userId).ReceivePersonalNotice(notification);
         }
 
         /// <summary>
@@ -282,72 +337,7 @@ namespace Lean.Hbt.Infrastructure.SignalR
         /// </summary>
         public async Task SendHeartbeat()
         {
-            await Clients.Caller.ReceiveHeartbeat(DateTime.Now);
-        }
-
-        /// <summary>
-        /// 获取设备唯一标识
-        /// </summary>
-        private string GetDeviceIdentifier(string userAgent, string clientIp)
-        {
-            // 解析User-Agent
-            var browser = GetBrowserInfo(userAgent);
-            var device = GetDeviceInfo(userAgent);
-            var os = GetOSInfo(userAgent);
-            
-            // 组合设备标识（使用特定信息的组合作为设备标识）
-            return $"{clientIp}_{browser}_{device}_{os}".GetHashCode().ToString("X8");
-        }
-
-        /// <summary>
-        /// 获取浏览器信息
-        /// </summary>
-        private string GetBrowserInfo(string userAgent)
-        {
-            if (string.IsNullOrEmpty(userAgent)) return "Unknown";
-            
-            // 提取主要浏览器标识
-            if (userAgent.Contains("Chrome/")) return "Chrome";
-            if (userAgent.Contains("Firefox/")) return "Firefox";
-            if (userAgent.Contains("Safari/") && !userAgent.Contains("Chrome/")) return "Safari";
-            if (userAgent.Contains("Edge/") || userAgent.Contains("Edg/")) return "Edge";
-            if (userAgent.Contains("MSIE") || userAgent.Contains("Trident/")) return "IE";
-            
-            return "Other";
-        }
-
-        /// <summary>
-        /// 获取设备信息
-        /// </summary>
-        private string GetDeviceInfo(string userAgent)
-        {
-            if (string.IsNullOrEmpty(userAgent)) return "Unknown";
-            
-            // 提取设备类型
-            if (userAgent.Contains("Mobile")) return "Mobile";
-            if (userAgent.Contains("Tablet")) return "Tablet";
-            if (userAgent.Contains("iPad")) return "iPad";
-            if (userAgent.Contains("iPhone")) return "iPhone";
-            if (userAgent.Contains("Android")) return "Android";
-            
-            return "Desktop";
-        }
-
-        /// <summary>
-        /// 获取操作系统信息
-        /// </summary>
-        private string GetOSInfo(string userAgent)
-        {
-            if (string.IsNullOrEmpty(userAgent)) return "Unknown";
-            
-            // 提取操作系统
-            if (userAgent.Contains("Windows")) return "Windows";
-            if (userAgent.Contains("Mac OS")) return "MacOS";
-            if (userAgent.Contains("Linux")) return "Linux";
-            if (userAgent.Contains("Android")) return "Android";
-            if (userAgent.Contains("iOS")) return "iOS";
-            
-            return "Other";
+            await Clients.Client(Context.ConnectionId).ReceiveHeartbeat(DateTime.Now);
         }
 
         /// <summary>
@@ -359,12 +349,15 @@ namespace Lean.Hbt.Infrastructure.SignalR
             try
             {
                 _logger.LogInformation("准备断开客户端连接: ConnectionId={ConnectionId}", connectionId);
-                
+
                 // 1. 发送强制下线消息
-                try {
-                    await Clients.Client(connectionId).ForceOffline("您已被管理员强制下线");
+                try
+                {
+                    await Clients.Client(connectionId).ForceOffline("您的账号已在其他设备登录，如非本人操作，请及时修改密码！");
                     _logger.LogInformation("已发送强制下线消息: ConnectionId={ConnectionId}", connectionId);
-                } catch (Exception ex) {
+                }
+                catch (Exception ex)
+                {
                     _logger.LogError(ex, "发送强制下线消息失败: ConnectionId={ConnectionId}", connectionId);
                 }
 
@@ -372,18 +365,29 @@ namespace Lean.Hbt.Infrastructure.SignalR
                 await Task.Delay(1000);
 
                 // 3. 断开连接
-                try {
-                    var context = Context.ConnectionId == connectionId ? Context : GetHubContext(connectionId);
-                    if (context != null)
+                try
+                {
+                    if (Context.ConnectionId == connectionId)
                     {
-                        context.Abort();
-                        _logger.LogInformation("已中止连接: ConnectionId={ConnectionId}", connectionId);
+                        Context.Abort();
+                        _logger.LogInformation("已中止当前连接: ConnectionId={ConnectionId}", connectionId);
                     }
                     else
                     {
-                        _logger.LogWarning("未找到连接上下文: ConnectionId={ConnectionId}", connectionId);
+                        var hubContext = _hubContext.Clients.Client(connectionId);
+                        if (hubContext != null)
+                        {
+                            await hubContext.SendAsync("ForceOffline", "您的账号已在其他设备登录，如非本人操作，请及时修改密码！");
+                            _logger.LogInformation("已发送强制下线消息给其他连接: ConnectionId={ConnectionId}", connectionId);
+                        }
+                        else
+                        {
+                            _logger.LogWarning("未找到连接: ConnectionId={ConnectionId}", connectionId);
+                        }
                     }
-                } catch (Exception ex) {
+                }
+                catch (Exception ex)
+                {
                     _logger.LogError(ex, "中止连接失败: ConnectionId={ConnectionId}", connectionId);
                 }
 
@@ -392,7 +396,8 @@ namespace Lean.Hbt.Infrastructure.SignalR
             catch (Exception ex)
             {
                 _logger.LogError(ex, "断开客户端连接时发生错误: ConnectionId={ConnectionId}", connectionId);
-                throw;
+                // 不再抛出异常，避免死循环
+                return;
             }
         }
 
@@ -417,4 +422,4 @@ namespace Lean.Hbt.Infrastructure.SignalR
             return null;
         }
     }
-} 
+}

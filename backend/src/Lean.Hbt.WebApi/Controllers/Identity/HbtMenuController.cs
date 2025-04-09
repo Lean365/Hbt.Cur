@@ -27,9 +27,9 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
     public class HbtMenuController : HbtBaseController
     {
         private readonly IHbtMenuService _menuService;
-        private readonly IHbtTenantContext _tenantContext;
+        private readonly IHbtCurrentTenant _currentTenant;
         private readonly ILogger<HbtMenuController> _logger;
-        private readonly IHbtUserContext _userContext;
+        private readonly IHbtCurrentUser _currentUser;
 
         /// <summary>
         /// 构造函数
@@ -38,18 +38,18 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <param name="localization">本地化服务</param>
         /// <param name="tenantContext">租户上下文</param>
         /// <param name="logger">日志服务</param>
-        /// <param name="userContext">用户上下文</param>
+        /// <param name="currentUser">用户上下文</param>
         public HbtMenuController(
             IHbtMenuService menuService,
             IHbtLocalizationService localization,
-            IHbtTenantContext tenantContext,
+            IHbtCurrentTenant tenantContext,
             ILogger<HbtMenuController> logger,
-            IHbtUserContext userContext) : base(localization)
+            IHbtCurrentUser currentUser) : base(localization)
         {
             _menuService = menuService;
-            _tenantContext = tenantContext;
+            _currentTenant = tenantContext;
             _logger = logger;
-            _userContext = userContext;
+            _currentUser = currentUser;
         }
 
         /// <summary>
@@ -233,7 +233,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         [HttpGet("current")]
         public async Task<IActionResult> GetCurrentUserMenusAsync()
         {
-            var userId = _userContext.UserId;
+            var userId = _currentUser.UserId;
             var result = await _menuService.GetCurrentUserMenusAsync(userId);
             return Success(result);
         }

@@ -10,6 +10,7 @@
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Lean.Hbt.Domain.Entities.RealTime;
+using Lean.Hbt.Common.Models;
 
 namespace Lean.Hbt.Domain.IServices.SignalR
 {
@@ -70,5 +71,47 @@ namespace Lean.Hbt.Domain.IServices.SignalR
         /// <param name="method">方法名</param>
         /// <param name="args">参数</param>
         Task SendMessageAsync(string connectionId, string method, object[] args);
+
+        /// <summary>
+        /// 获取连接的设备信息
+        /// </summary>
+        /// <param name="connectionId">连接ID</param>
+        /// <returns>设备信息</returns>
+        Task<string> GetDeviceInfo(string connectionId);
+
+        /// <summary>
+        /// 获取在线用户信息
+        /// </summary>
+        /// <param name="connectionId">连接ID</param>
+        /// <returns>在线用户信息</returns>
+        Task<HbtOnlineUser?> GetOnlineUserAsync(string connectionId);
+
+        /// <summary>
+        /// 获取用户设备列表
+        /// </summary>
+        /// <param name="userId">用户ID</param>
+        /// <returns>设备列表</returns>
+        List<HbtSignalRDevice> GetUserDevices(string userId);
+
+        /// <summary>
+        /// 移除用户设备
+        /// </summary>
+        /// <param name="userId">用户ID</param>
+        /// <param name="deviceId">设备ID</param>
+        Task RemoveUserDevice(string userId, string deviceId);
+
+        /// <summary>
+        /// 添加用户设备
+        /// </summary>
+        /// <param name="device">设备信息</param>
+        Task AddUserDevice(HbtSignalRDevice device);
+
+        /// <summary>
+        /// 根据设备ID获取在线用户
+        /// </summary>
+        /// <param name="userId">用户ID</param>
+        /// <param name="deviceId">设备ID</param>
+        /// <returns>在线用户信息</returns>
+        Task<HbtOnlineUser?> GetOnlineUserByDeviceAsync(long userId, string deviceId);
     }
 } 

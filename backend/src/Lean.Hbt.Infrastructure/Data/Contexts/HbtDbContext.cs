@@ -10,14 +10,8 @@
 //===================================================================
 
 using Lean.Hbt.Domain.Data;
-using Lean.Hbt.Domain.Entities.Admin;
 using Lean.Hbt.Domain.Entities.Audit;
-using Lean.Hbt.Domain.Entities.Identity;
-using Lean.Hbt.Domain.Entities.RealTime;
-using Lean.Hbt.Domain.Entities.Routine;
-using Lean.Hbt.Domain.Entities.Workflow;
 using Lean.Hbt.Domain.IServices;
-using Lean.Hbt.Domain.IServices.Identity;
 using Lean.Hbt.Infrastructure.Services.Identity;
 using Microsoft.Extensions.Options;
 
@@ -78,7 +72,7 @@ namespace Lean.Hbt.Infrastructure.Data.Contexts
         /// <summary>
         /// 构造函数
         /// </summary>
-        public HbtDbContext(IOptions<ConnectionConfig> options, IHbtLogger logger, IHbtUserContext userContext)
+        public HbtDbContext(IOptions<ConnectionConfig> options, IHbtLogger logger, IHbtCurrentUser currentUser)
         {
             _logger = logger;
 
@@ -100,28 +94,28 @@ namespace Lean.Hbt.Infrastructure.Data.Contexts
             _client.Aop.DataExecuting = (oldValue, entityInfo) =>
             {
                 if (entityInfo.EntityColumnInfo.IsPrimarykey) return;
-                
+
                 var entity = entityInfo.EntityValue as HbtBaseEntity;
                 if (entity != null)
                 {
                     if (entityInfo.OperationType == DataFilterType.InsertByObject)
                     {
-                        entity.CreateBy = userContext.UserName;
+                        entity.CreateBy = currentUser.UserName;
                         entity.CreateTime = DateTime.Now;
-                        entity.UpdateBy = userContext.UserName;
+                        entity.UpdateBy = currentUser.UserName;
                         entity.UpdateTime = DateTime.Now;
                         entity.IsDeleted = 0;
                     }
                     else if (entityInfo.OperationType == DataFilterType.UpdateByObject)
                     {
-                        entity.UpdateBy = userContext.UserName;
+                        entity.UpdateBy = currentUser.UserName;
                         entity.UpdateTime = DateTime.Now;
                     }
                     else if (entityInfo.OperationType == DataFilterType.DeleteByObject)
                     {
                         // 软删除处理
                         entity.IsDeleted = 1;
-                        entity.DeleteBy = userContext.UserName;
+                        entity.DeleteBy = currentUser.UserName;
                         entity.DeleteTime = DateTime.Now;
                         // 将删除操作转换为更新操作
                         entityInfo.OperationType = DataFilterType.UpdateByObject;
@@ -203,7 +197,7 @@ namespace Lean.Hbt.Infrastructure.Data.Contexts
                 {
                     throw new InvalidOperationException("数据库连接字符串不能为空");
                 }
-                
+
                 _client.DbMaintenance.CreateDatabase();
                 _logger.Info("数据库检查/创建成功");
 
@@ -211,8 +205,8 @@ namespace Lean.Hbt.Infrastructure.Data.Contexts
                 var entityTypes = AppDomain.CurrentDomain.GetAssemblies()
                     .Where(a => a.FullName != null && a.FullName.StartsWith("Lean.Hbt"))
                     .SelectMany(a => a.GetTypes())
-                    .Where(t => t.IsClass && !t.IsAbstract && t.IsPublic && 
-                               t.Namespace != null && 
+                    .Where(t => t.IsClass && !t.IsAbstract && t.IsPublic &&
+                               t.Namespace != null &&
                                t.Namespace.StartsWith("Lean.Hbt.Domain.Entities") &&
                                t.BaseType == typeof(HbtBaseEntity))
                     .OrderBy(t => t == typeof(HbtDbDiffLog) ? 0 : 1) // 确保日志表首先被创建
@@ -315,7 +309,7 @@ namespace Lean.Hbt.Infrastructure.Data.Contexts
             try
             {
                 // 从当前上下文获取租户ID
-                return HbtTenantContext.CurrentTenantId;
+                return HbtCurrentTenant.CurrentTenantId;
             }
             catch
             {
@@ -328,7 +322,7 @@ namespace Lean.Hbt.Infrastructure.Data.Contexts
         /// </summary>
         private void SetTenantId()
         {
-            var currentTenantId = HbtTenantContext.CurrentTenantId;
+            var currentTenantId = HbtCurrentTenant.CurrentTenantId;
             if (currentTenantId.HasValue)
             {
                 _client.Aop.DataExecuting = (oldValue, entityInfo) =>
@@ -359,7 +353,7 @@ namespace Lean.Hbt.Infrastructure.Data.Contexts
             // 为每个实体类型添加租户过滤器
             foreach (var entityType in tenantEntities)
             {
-                _client.QueryFilter.AddTableFilter<IHbtTenantEntity>(it => it.TenantId == HbtTenantContext.CurrentTenantId);
+                _client.QueryFilter.AddTableFilter<IHbtTenantEntity>(it => it.TenantId == HbtCurrentTenant.CurrentTenantId);
             }
         }
 

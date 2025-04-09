@@ -1,21 +1,33 @@
-const TokenKey = 'Admin-Token'
+import { useUserStore } from '@/stores/user'
 
-export function getToken(): string | null {
-  const token = localStorage.getItem(TokenKey)
-  console.log('[Token] 获取Token:', token ? '已存在' : '不存在')
-  return token
+// 获取Token
+export const getToken = (): string | null => {
+  return localStorage.getItem('token')
 }
 
-export function setToken(token: string) {
-  if (!token) {
-    console.error('[Token] 试图设置空token')
-    return
+// 设置Token
+export const setToken = (token: string) => {
+  localStorage.setItem('token', token)
+}
+
+// 移除Token
+export const removeToken = () => {
+  localStorage.removeItem('token')
+}
+
+// 检查Token是否有效
+export const isTokenValid = (): boolean => {
+  const token = getToken()
+  if (!token) return false
+
+  try {
+    const tokenParts = token.split('.')
+    if (tokenParts.length === 3) {
+      const payload = JSON.parse(atob(tokenParts[1]))
+      return payload.exp * 1000 > Date.now()
+    }
+  } catch (e) {
+    console.error('Token 验证失败:', e)
   }
-  console.log('[Token] 设置Token:', token.substring(0, 10) + '...')
-  return localStorage.setItem(TokenKey, token)
-}
-
-export function removeToken() {
-  console.log('[Token] 移除Token')
-  return localStorage.removeItem(TokenKey)
+  return false
 } 

@@ -4,17 +4,18 @@ export default {
     system: {
       title: 'Black Ice Platform',
       slogan: 'Professional, Efficient, and Secure Enterprise Management System',
-      description: 'Modern Enterprise Management System Based on .NET 8 and Vue 3',
+      description: 'Modern Enterprise Management System based on .NET 8 and Vue 3',
       copyright: '© 2024 Lean365. All rights reserved.'
     },
 
     // ==================== Error Messages ====================
     error: {
+      clientError: 'Client request error, please check request parameters',
       systemRestart: 'System is under maintenance, please login again later',
       network: 'Network connection failed, please check your network settings',
       unauthorized: 'Unauthorized access, please login again',
       forbidden: 'Access forbidden',
-      notFound: 'Requested resource not found',
+      notFound: 'Requested resource does not exist',
       badRequest: 'Invalid request parameters',
       serverError: 'Internal server error',
       serviceUnavailable: 'Service temporarily unavailable',
@@ -27,8 +28,8 @@ export default {
     // Basic Titles
     title: {
       list: 'List',
-      detail: 'Detail',
-      create: 'Create',
+      detail: 'Details',
+      create: 'Add New',
       edit: 'Edit',
       preview: 'Preview'
     },
@@ -45,6 +46,7 @@ export default {
 
       // Yes/No Status
       yesNo: {
+        all: 'All',
         yes: 'Yes',
         no: 'No'
       },
@@ -115,6 +117,117 @@ export default {
         date: 'Please select date',
         time: 'Please select time'
       },
+      // User Form
+      user: {
+        // Basic Information
+        userId: {
+          label: 'User ID',
+          placeholder: 'Please input user ID'
+        },
+        userName: {
+          label: 'Username',
+          placeholder: 'Please input username'
+        },
+        nickName: {
+          label: 'Nickname',
+          placeholder: 'Please input nickname'
+        },
+        realName: {
+          label: 'Real Name',
+          placeholder: 'Please input real name'
+        },
+        englishName: {
+          label: 'English Name',
+          placeholder: 'Please input English name'
+        },
+        password: {
+          label: 'Password',
+          placeholder: 'Please input password'
+        },
+        confirmPassword: {
+          label: 'Confirm Password',
+          placeholder: 'Please input password again'
+        },
+        
+        // Personal Information
+        avatar: {
+          label: 'Avatar',
+          placeholder: 'Please upload avatar'
+        },
+        gender: {
+          label: 'Gender',
+          placeholder: 'Please select gender',
+          options: {
+            male: 'Male',
+            female: 'Female',
+            other: 'Other'
+          }
+        },
+        birthday: {
+          label: 'Birthday',
+          placeholder: 'Please select birthday'
+        },
+        
+        // Contact Information
+        email: {
+          label: 'Email',
+          placeholder: 'Please input email'
+        },
+        phoneNumber: {
+          label: 'Mobile Phone',
+          placeholder: 'Please input mobile phone'
+        },
+        telephone: {
+          label: 'Telephone',
+          placeholder: 'Please input telephone'
+        },
+        
+        // Organization Information
+        deptId: {
+          label: 'Department',
+          placeholder: 'Please select department'
+        },
+        roleId: {
+          label: 'Role',
+          placeholder: 'Please select role'
+        },
+        postId: {
+          label: 'Position',
+          placeholder: 'Please select position'
+        },
+        
+        // Account Information
+        userType: {
+          label: 'User Type',
+          placeholder: 'Please select user type',
+          options: {
+            system: 'System User',
+            normal: 'Normal User'
+          }
+        },
+        status: {
+          label: 'Status',
+          placeholder: 'Please select status'
+        },
+        loginIp: {
+          label: 'Last Login IP',
+          placeholder: 'Last Login IP'
+        },
+        loginDate: {
+          label: 'Last Login Time',
+          placeholder: 'Last Login Time'
+        },
+        
+        // Other Information
+        remark: {
+          label: 'Remark',
+          placeholder: 'Please input remark'
+        },
+        sort: {
+          label: 'Sort',
+          placeholder: 'Please input sort number'
+        }
+      },
       // Remark Information
       remark: {
         label: 'Remark',
@@ -130,7 +243,7 @@ export default {
       config: {
         density: {
           default: 'Default',
-          middle: 'Middle',
+          middle: 'Medium',
           small: 'Compact'
         },
         columnSetting: 'Column Settings'
@@ -138,10 +251,10 @@ export default {
       pagination: {
         total: 'Total {total} items',
         current: 'Page {current}',
-        pageSize: '{pageSize} items/page',
+        pageSize: '{pageSize} items per page',
         jump: 'Go to'
       },
-      empty: 'No Data',
+      empty: 'No data',
       loading: 'Loading...',
       selectAll: 'Select All',
       selected: '{total} items selected'
@@ -170,15 +283,15 @@ export default {
     },
 
     // ==================== File Operations ====================
-    // Import & Export
+    // Import/Export
     import: {
       title: 'Import Data',
       file: 'Select File',
       select: 'Select File',
       template: 'Download Template',
       download: 'Download Template',
-      note: 'Import Notes',
-      tips: 'Please strictly follow the format of the import template, otherwise the import may fail',
+      note: 'Import Instructions',
+      tips: 'Please strictly follow the import template format, otherwise import may fail',
       format: 'Only Excel files are supported!',
       size: 'File size cannot exceed 2MB!',
       total: 'Total Records',
@@ -206,8 +319,20 @@ export default {
       edit: 'Edit',         // @btn-edit-color
       delete: 'Delete',     // @btn-delete-color
       batchDelete: 'Batch Delete', // @btn-batch-delete-color
-      view: 'View',         // @btn-view-color
-      clear: 'Clear',       // @btn-clear-color
+      view: 'View',          // @btn-view-color
+      clear: 'Clear',        // @btn-clear-color
+      forceOffline: 'Force Offline', // @btn-force-offline-color
+      onlineStatus: 'Online Status', // @btn-online-status-color
+      loginHistory: 'Login History', // @btn-login-history-color
+      sendMail: 'Send Mail', // @btn-send-mail-color
+      viewMail: 'View Mail', // @btn-view-mail-color
+      mailTemplate: 'Mail Template', // @btn-mail-template-color
+      sendNotification: 'Send Notification', // @btn-send-notification-color
+      viewNotification: 'View Notification', // @btn-view-notification-color
+      notificationSetting: 'Notification Setting', // @btn-notification-setting-color
+      sendMessage: 'Send Message', // @btn-send-message-color
+      viewMessage: 'View Message', // @btn-view-message-color
+      messageSetting: 'Message Setting', // @btn-message-setting-color
 
       // === Data Operation Buttons ===
       import: 'Import',     // @btn-import-color
@@ -225,37 +350,37 @@ export default {
       audit: 'Audit',       // @btn-audit-color
       revoke: 'Revoke',     // @btn-revoke-color
       stop: 'Stop',         // @btn-stop-color
-      run: 'Run',          // @btn-run-color
-      force: 'Force',      // @btn-forced-color
+      run: 'Run',           // @btn-run-color
+      force: 'Force',       // @btn-forced-color
 
       // === System Function Buttons ===
       generate: 'Generate', // @btn-generate-color
       refresh: 'Refresh',   // @btn-refresh-color
-      info: 'Info',        // @btn-info-color
-      log: 'Log',          // @btn-log-color
-      chat: 'Message',     // @btn-chat-color
-      copy: 'Copy',        // @btn-copy-color
+      info: 'Info',         // @btn-info-color
+      log: 'Log',           // @btn-log-color
+      chat: 'Message',      // @btn-chat-color
+      copy: 'Copy',         // @btn-copy-color
       execute: 'Execute',   // @btn-execute-color
       resetPwd: 'Reset Password', // @btn-reset-pwd-color
-      open: 'Open',        // @btn-open-color
-      close: 'Close',      // @btn-close-color
-      more: 'More',        // @btn-more-color
-      density: 'Density',  // @btn-density-color
+      open: 'Open',         // @btn-open-color
+      close: 'Close',       // @btn-close-color
+      more: 'More',         // @btn-more-color
+      density: 'Density',   // @btn-density-color
       columnSetting: 'Column Settings', // @btn-column-setting-color
 
       // === Extended Function Buttons ===
       search: 'Search',     // @btn-search-color
       filter: 'Filter',     // @btn-filter-color
-      sort: 'Sort',        // @btn-sort-color
-      config: 'Config',     // @btn-config-color
-      save: 'Save',        // @btn-save-color
+      sort: 'Sort',         // @btn-sort-color
+      config: 'Configure',  // @btn-config-color
+      save: 'Save',         // @btn-save-color
       cancel: 'Cancel',     // @btn-cancel-color
       upload: 'Upload',     // @btn-upload-color
-      print: 'Print',      // @btn-print-color
-      help: 'Help',        // @btn-help-color
-      share: 'Share',      // @btn-share-color
-      lock: 'Lock',        // @btn-lock-color
-      sync: 'Sync',        // @btn-sync-color
+      print: 'Print',       // @btn-print-color
+      help: 'Help',         // @btn-help-color
+      share: 'Share',       // @btn-share-color
+      lock: 'Lock',         // @btn-lock-color
+      sync: 'Sync',         // @btn-sync-color
       expand: 'Expand',     // @btn-expand-color
       collapse: 'Collapse', // @btn-collapse-color
       approve: 'Approve',   // @btn-approve-color
@@ -270,76 +395,76 @@ export default {
 
       // === Data Analysis Buttons ===
       analyze: 'Analyze',   // @btn-analyze-color
-      chart: 'Chart',      // @btn-chart-color
-      report: 'Report',    // @btn-report-color
+      chart: 'Chart',       // @btn-chart-color
+      report: 'Report',     // @btn-report-color
       dashboard: 'Dashboard', // @btn-dashboard-color
       statistics: 'Statistics', // @btn-statistics-color
       forecast: 'Forecast', // @btn-forecast-color
-      compare: 'Compare',  // @btn-compare-color
+      compare: 'Compare',   // @btn-compare-color
 
       // === Workflow Buttons ===
-      startFlow: 'Start Flow',   // @btn-start-flow-color
-      endFlow: 'End Flow',      // @btn-end-flow-color
+      startFlow: 'Start Flow', // @btn-start-flow-color
+      endFlow: 'End Flow',     // @btn-end-flow-color
       suspendFlow: 'Suspend Flow', // @btn-suspend-flow-color
-      resumeFlow: 'Resume Flow',  // @btn-resume-flow-color
-      transfer: 'Transfer',      // @btn-transfer-color
-      delegate: 'Delegate',      // @btn-delegate-color
-      notify: 'Notify',         // @btn-notify-color
-      urge: 'Urge',            // @btn-urge-color
-      sign: 'Sign',            // @btn-sign-color
+      resumeFlow: 'Resume Flow',   // @btn-resume-flow-color
+      transfer: 'Transfer',       // @btn-transfer-color
+      delegate: 'Delegate',       // @btn-delegate-color
+      notify: 'Notify',          // @btn-notify-color
+      urge: 'Urge',              // @btn-urge-color
+      sign: 'Sign',              // @btn-sign-color
       countersign: 'Countersign', // @btn-countersign-color
 
-      // === Mobile Specific Buttons ===
-      scan: 'Scan',         // @btn-scan-color
-      location: 'Location', // @btn-location-color
-      call: 'Call',        // @btn-call-color
-      photo: 'Photo',      // @btn-photo-color
-      voice: 'Voice',      // @btn-voice-color
-      faceId: 'Face ID',   // @btn-face-id-color
+      // === Mobile-specific Buttons ===
+      scan: 'Scan',              // @btn-scan-color
+      location: 'Location',      // @btn-location-color
+      call: 'Call',              // @btn-call-color
+      photo: 'Take Photo',       // @btn-photo-color
+      voice: 'Voice',            // @btn-voice-color
+      faceId: 'Face ID',         // @btn-face-id-color
       fingerPrint: 'Fingerprint', // @btn-finger-print-color
 
       // === Social Collaboration Buttons ===
-      follow: 'Follow',     // @btn-follow-color
-      collect: 'Collect',   // @btn-collect-color
-      like: 'Like',        // @btn-like-color
-      forward: 'Forward',   // @btn-forward-color
-      at: '@',             // @btn-at-color
-      group: 'Group',      // @btn-group-color
-      team: 'Team',        // @btn-team-color
+      follow: 'Follow',          // @btn-follow-color
+      collect: 'Collect',        // @btn-collect-color
+      like: 'Like',              // @btn-like-color
+      forward: 'Forward',        // @btn-forward-color
+      at: '@',                   // @btn-at-color
+      group: 'Group',            // @btn-group-color
+      team: 'Team',              // @btn-team-color
 
       // === Security Authentication Buttons ===
-      verifyCode: 'Verification Code', // @btn-verify-code-color
-      bind: 'Bind',        // @btn-bind-color
-      unbind: 'Unbind',    // @btn-unbind-color
-      authorize: 'Authorize', // @btn-authorize-color
+      verifyCode: 'Verify Code', // @btn-verify-code-color
+      bind: 'Bind',              // @btn-bind-color
+      unbind: 'Unbind',          // @btn-unbind-color
+      authorize: 'Authorize',    // @btn-authorize-color
       deauthorize: 'Deauthorize', // @btn-deauthorize-color
 
       // === Advanced Function Buttons ===
-      version: 'Version',   // @btn-version-color
-      history: 'History',   // @btn-history-color
-      restore: 'Restore',   // @btn-restore-color
-      archive: 'Archive',   // @btn-archive-color
-      unarchive: 'Unarchive', // @btn-unarchive-color
-      merge: 'Merge',      // @btn-merge-color
-      split: 'Split',      // @btn-split-color
+      version: 'Version',        // @btn-version-color
+      history: 'History',        // @btn-history-color
+      restore: 'Restore',        // @btn-restore-color
+      archive: 'Archive',        // @btn-archive-color
+      unarchive: 'Unarchive',    // @btn-unarchive-color
+      merge: 'Merge',            // @btn-merge-color
+      split: 'Split',            // @btn-split-color
 
       // === System Management Buttons ===
-      backup: 'Backup',     // @btn-backup-color
+      backup: 'Backup',          // @btn-backup-color
       restoreSys: 'System Restore', // @btn-restore-sys-color
-      clean: 'Clean',      // @btn-clean-color
-      optimize: 'Optimize', // @btn-optimize-color
-      monitor: 'Monitor',   // @btn-monitor-color
-      diagnose: 'Diagnose', // @btn-diagnose-color
-      maintain: 'Maintain'  // @btn-maintain-color
+      clean: 'Clean',            // @btn-clean-color
+      optimize: 'Optimize',      // @btn-optimize-color
+      monitor: 'Monitor',        // @btn-monitor-color
+      diagnose: 'Diagnose',      // @btn-diagnose-color
+      maintain: 'Maintain'       // @btn-maintain-color
     },
 
-    // ==================== Results & Messages ====================
+    // ==================== Results and Messages ====================
     // Result Status
     result: {
-      success: 'Success',
-      failed: 'Failed',
+      success: 'Operation successful',
+      failed: 'Operation failed',
       warning: 'Warning',
-      info: 'Information',
+      info: 'Info',
       error: 'Error'
     },
 
@@ -351,41 +476,44 @@ export default {
       deleting: 'Deleting...',
       operationSuccess: 'Operation successful',
       operationFailed: 'Operation failed',
-      deleteConfirm: 'Are you sure you want to delete?',
+      deleteConfirm: 'Are you sure to delete?',
       deleteSuccess: 'Delete successful',
       deleteFailed: 'Delete failed',
-      createSuccess: 'Create successful',
-      createFailed: 'Create failed',
+      createSuccess: 'Add successful',
+      createFailed: 'Add failed',
       updateSuccess: 'Update successful',
       updateFailed: 'Update failed',
-      networkError: 'Network connection failed, please check your network',
+      networkError: 'Network connection failed, please check network',
       systemError: 'System error',
       timeout: 'Request timeout',
-      invalidResponse: 'Invalid response format',
-      backendNotStarted: 'Backend service not started, please start the backend service first',
+      invalidResponse: 'Invalid response data format',
+      backendNotStarted: 'Backend service not started, please check service status',
       invalidRequest: 'Invalid request parameters',
       unauthorized: 'Unauthorized, please login again',
-      forbidden: 'Access denied',
-      notFound: 'Resource not found',
+      forbidden: 'Access forbidden',
+      notFound: 'Requested resource does not exist',
       serverError: 'Internal server error',
       httpError: {
         400: 'Invalid request parameters',
         401: 'Unauthorized, please login again',
-        403: 'Access denied',
-        404: 'Resource not found',
+        403: 'Access forbidden',
+        404: 'Requested resource does not exist',
         500: 'Internal server error',
-        502: 'Gateway error',
+        502: 'Bad gateway',
         503: 'Service unavailable',
         504: 'Gateway timeout'
       },
-      loadFailed: 'Load failed'
+      loadFailed: 'Load failed',
+      forceOfflineConfirm: 'Are you sure to force this user offline?',
+      forceOfflineSuccess: 'Force offline successful',
+      forceOfflineFailed: 'Force offline failed'
     },
 
     // ==================== Component Text ====================
     // Tabs
     tab: {
       // === Basic Information ===
-      basic: 'Basic Info',
+      basic: 'Basic Information',
       profile: 'Profile',
       avatar: 'Avatar Settings',
       password: 'Password Settings',
@@ -393,49 +521,50 @@ export default {
 
       // === Code Generation ===
       codegen: 'Code Generation',
-      codegenBasic: 'Generation Settings',
-      codegenField: 'Field Settings',
+      codegenBasic: 'Generation Config',
+      codegenField: 'Field Config',
       codegenPreview: 'Generation Preview',
-      codegenTemplate: 'Template Settings',
-      codegenImport: 'Import Settings',
+      codegenTemplate: 'Template Config',
+      codegenImport: 'Import Config',
       
       // === Workflow ===
       workflow: 'Workflow',
-      flowDesign: 'Process Design',
-      flowDeploy: 'Process Deployment',
-      flowInstance: 'Process Instances',
+      flowDesign: 'Flow Design',
+      flowDeploy: 'Flow Deploy',
+      flowInstance: 'Flow Instance',
       flowTask: 'Task Management',
-      flowForm: 'Form Settings',
-      flowNotify: 'Notifications',
+      flowForm: 'Form Config',
+      flowNotify: 'Message Notification',
       
       // === System Management ===
       permission: 'Data Permission',
       log: 'Operation Log',
-      dept: 'Department & Post',
-      role: 'Role & Permission',
-      config: 'Parameters',
-      task: 'Scheduled Tasks',
+      dept: 'Department Position',
+      role: 'Role Permission',
+      config: 'Parameter Config',
+      task: 'Scheduled Task',
       monitor: 'System Monitor'
     },
 
     // Button Text
     button: {
       submit: 'Submit',
+      confirm: 'Confirm',
       ok: 'OK'
     }
   },
 
   // ==================== Selector Component ====================
   select: {
-    loadMore: 'Load more',
+    loadMore: 'Load More',
     loading: 'Loading...',
-    notFound: 'No data found',
+    notFound: 'No data',
     selected: '{count} items selected',
     selectedTotal: 'Total {total} items',
     clear: 'Clear',
     search: 'Search',
     all: 'All',
-    // Error messages
+    // Error Messages
     loadError: 'Failed to load data',
     searchError: 'Search failed',
     networkError: 'Network connection failed',

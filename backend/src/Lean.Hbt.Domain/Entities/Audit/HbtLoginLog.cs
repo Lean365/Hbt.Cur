@@ -104,7 +104,7 @@ namespace Lean.Hbt.Domain.Entities.Audit
         /// 设备信息
         /// </summary>
         [SugarColumn(ColumnName = "device_info", ColumnDescription = "设备信息", ColumnDataType = "nvarchar(max)", IsJson = true)]
-        public HbtDeviceInfo? DeviceInfo { get; set; }
+        public HbtSignalRDevice? DeviceInfo { get; set; }
 
         /// <summary>
         /// 设备扩展ID

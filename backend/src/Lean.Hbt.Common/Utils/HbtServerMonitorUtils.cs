@@ -10,8 +10,8 @@
 
 using System.Diagnostics;
 using System.Runtime.InteropServices;
-using System.Diagnostics.Metrics;
-using LibreHardwareMonitor.Hardware;
+using System.Net.NetworkInformation;
+using System.Net.Sockets;
 
 namespace Lean.Hbt.Common.Utils;
 
@@ -26,70 +26,128 @@ namespace Lean.Hbt.Common.Utils;
 /// </remarks>
 public static class HbtServerMonitorUtils
 {
-    // LibreHardwareMonitor的主要对象，用于访问硬件信息
-    private static readonly Computer _computer;
-    
-    // 性能指标收集器
-    private static readonly Meter _meter = new("Lean.Hbt.ServerMonitor", "1.0.0");
-    
-    // CPU使用率计数器
-    private static readonly Counter<long> _cpuCounter = _meter.CreateCounter<long>("cpu_usage", "CPU使用率");
-    
-    // 内存使用率计数器
-    private static readonly Counter<long> _memoryCounter = _meter.CreateCounter<long>("memory_usage", "内存使用率");
-    
-    // 磁盘使用率计数器
-    private static readonly Counter<long> _diskCounter = _meter.CreateCounter<long>("disk_usage", "磁盘使用率");
-    
-    // 网络使用率计数器
-    private static readonly Counter<long> _networkCounter = _meter.CreateCounter<long>("network_usage", "网络使用率");
+    private static readonly Dictionary<string, (long LastBytesReceived, long LastBytesSent, DateTime LastCheck)> _networkStats;
+    private static readonly Process _currentProcess;
+    private static readonly DateTime _startTime;
 
-    /// <summary>
-    /// 静态构造函数，初始化硬件监控
-    /// </summary>
     static HbtServerMonitorUtils()
     {
-        // 初始化硬件监控对象，启用所有监控项
-        _computer = new Computer
-        {
-            IsCpuEnabled = true,      // 启用CPU监控
-            IsMemoryEnabled = true,   // 启用内存监控
-            IsStorageEnabled = true,  // 启用存储监控
-            IsNetworkEnabled = true   // 启用网络监控
-        };
-        _computer.Open(); // 打开硬件监控
+        _networkStats = new Dictionary<string, (long, long, DateTime)>();
+        _currentProcess = Process.GetCurrentProcess();
+        _startTime = DateTime.Now;
     }
 
     /// <summary>
-    /// 获取物理内存总量
+    /// 获取系统CPU使用率
     /// </summary>
-    /// <returns>物理内存总量，单位：字节</returns>
+    /// <returns>CPU使用率百分比（0-100）</returns>
+    /// <remarks>
+    /// 返回所有CPU核心的平均使用率
+    /// 值范围：0-100
+    /// 精确到小数点后2位
+    /// </remarks>
+    public static double GetSystemCpuUsage()
+    {
+        try
+        {
+            var startTime = DateTime.UtcNow;
+            var startCpuUsage = Process.GetProcesses().Sum(p => 
+            {
+                try 
+                {
+                    return p.TotalProcessorTime.TotalMilliseconds;
+                }
+                catch 
+                {
+                    return 0;
+                }
+            });
+
+            Thread.Sleep(1000); // 采样间隔1秒
+
+            var endTime = DateTime.UtcNow;
+            var endCpuUsage = Process.GetProcesses().Sum(p => 
+            {
+                try 
+                {
+                    return p.TotalProcessorTime.TotalMilliseconds;
+                }
+                catch 
+                {
+                    return 0;
+                }
+            });
+
+            var cpuUsedMs = endCpuUsage - startCpuUsage;
+            var totalMsPassed = (endTime - startTime).TotalMilliseconds * Environment.ProcessorCount;
+
+            var cpuUsageTotal = cpuUsedMs / (totalMsPassed * Environment.ProcessorCount) * 100;
+
+            return Math.Round(cpuUsageTotal, 2);
+        }
+        catch (Exception)
+        {
+            return 0;
+        }
+    }
+
+    /// <summary>
+    /// 获取物理内存信息
+    /// </summary>
+    /// <returns>物理内存总量和可用物理内存，单位：字节</returns>
     /// <remarks>
     /// 使用LibreHardwareMonitor获取内存信息
     /// 返回值单位为字节，如需其他单位请自行转换
     /// </remarks>
-    public static ulong GetTotalPhysicalMemory()
+    public static (ulong Total, ulong Available) GetPhysicalMemory()
     {
         try
         {
-            // 更新硬件信息
-            _computer.Accept(new UpdateVisitor());
-            
-            // 获取内存硬件信息
-            var memory = _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Memory);
-            if (memory != null)
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                // 获取总内存传感器数据
-                var totalMemory = memory.Sensors.FirstOrDefault(s => s.SensorType == SensorType.Data);
-                if (totalMemory != null)
+                var memoryStatus = new MEMORYSTATUSEX();
+                if (GlobalMemoryStatusEx(memoryStatus))
                 {
-                    // 转换为字节（传感器值单位为GB）
-                    return (ulong)(totalMemory.Value * 1024 * 1024 * 1024);
+                    return (memoryStatus.ullTotalPhys, memoryStatus.ullAvailPhys);
+                }
+            }
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            {
+                var memInfo = File.ReadAllLines("/proc/meminfo");
+                ulong total = 0, available = 0;
+
+                foreach (var line in memInfo)
+                {
+                    if (line.StartsWith("MemTotal:"))
+                    {
+                        total = ParseMemInfo(line) * 1024; // Convert KB to bytes
+                    }
+                    else if (line.StartsWith("MemAvailable:"))
+                    {
+                        available = ParseMemInfo(line) * 1024; // Convert KB to bytes
+                    }
+                }
+
+                if (total > 0)
+                {
+                    return (total, available);
+                }
+            }
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            {
+                var output = ExecuteCommand("sysctl", "-n hw.memsize hw.usermem");
+                var values = output.Split('\n', StringSplitOptions.RemoveEmptyEntries);
+                if (values.Length >= 2 && ulong.TryParse(values[0], out var total) && ulong.TryParse(values[1], out var available))
+                {
+                    return (total, available);
                 }
             }
         }
-        catch { }
-        return 0;
+        catch (Exception)
+        {
+            // 记录错误但继续执行
+        }
+        return (0, 0);
     }
 
     /// <summary>
@@ -103,12 +161,27 @@ public static class HbtServerMonitorUtils
     {
         try
         {
-            // 更新硬件信息
-            _computer.Accept(new UpdateVisitor());
-            
-            // 获取CPU硬件信息
-            var cpu = _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Cpu);
-            return cpu?.Name ?? "Unknown";
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                using var key = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"HARDWARE\DESCRIPTION\System\CentralProcessor\0");
+                if (key != null)
+                {
+                    return key.GetValue("ProcessorNameString")?.ToString() ?? "Unknown";
+                }
+            }
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            {
+                var cpuInfo = File.ReadAllLines("/proc/cpuinfo");
+                var modelName = cpuInfo.FirstOrDefault(line => line.StartsWith("model name"));
+                if (modelName != null)
+                {
+                    return modelName.Split(':')[1].Trim();
+                }
+            }
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            {
+                return ExecuteCommand("sysctl", "-n machdep.cpu.brand_string").Trim();
+            }
         }
         catch { }
         return "Unknown";
@@ -141,22 +214,30 @@ public static class HbtServerMonitorUtils
         var interfaces = new List<(string Name, string IpAddress, string MacAddress)>();
         try
         {
-            // 更新硬件信息
-            _computer.Accept(new UpdateVisitor());
-            
             // 获取所有网络接口
-            var networkInterfaces = _computer.Hardware.Where(h => h.HardwareType == HardwareType.Network);
-            
+            var networkInterfaces = NetworkInterface.GetAllNetworkInterfaces()
+                .Where(ni => ni.OperationalStatus == OperationalStatus.Up &&
+                            (ni.NetworkInterfaceType == NetworkInterfaceType.Ethernet ||
+                             ni.NetworkInterfaceType == NetworkInterfaceType.Wireless80211));
+
             foreach (var ni in networkInterfaces)
             {
-                // 获取IP地址和MAC地址信息
-                var ipAddress = ni.Sensors.FirstOrDefault(s => s.SensorType == SensorType.Data)?.Value.ToString() ?? string.Empty;
-                var macAddress = ni.Sensors.FirstOrDefault(s => s.SensorType == SensorType.SmallData)?.Value.ToString() ?? string.Empty;
+                var ipProps = ni.GetIPProperties();
+                var ipAddress = ipProps.UnicastAddresses
+                    .FirstOrDefault(addr => addr.Address.AddressFamily == AddressFamily.InterNetwork)
+                    ?.Address.ToString() ?? string.Empty;
                 
+                var macAddress = string.Join(":", ni.GetPhysicalAddress()
+                    .GetAddressBytes()
+                    .Select(b => b.ToString("X2")));
+
                 interfaces.Add((ni.Name, ipAddress, macAddress));
             }
         }
-        catch { }
+        catch (Exception)
+        {
+            // 记录错误但继续执行
+        }
         return interfaces;
     }
 
@@ -174,56 +255,42 @@ public static class HbtServerMonitorUtils
     {
         try
         {
-            // 更新硬件信息
-            _computer.Accept(new UpdateVisitor());
-            
-            // 查找指定名称的网络接口
-            var networkInterface = _computer.Hardware.FirstOrDefault(h => 
-                h.HardwareType == HardwareType.Network && h.Name == interfaceName);
-            
-            if (networkInterface != null)
-            {
-                // 获取发送和接收速率
-                var sendRate = networkInterface.Sensors.FirstOrDefault(s => 
-                    s.SensorType == SensorType.Throughput && s.Name.Contains("Send"))?.Value ?? 0;
-                var receiveRate = networkInterface.Sensors.FirstOrDefault(s => 
-                    s.SensorType == SensorType.Throughput && s.Name.Contains("Receive"))?.Value ?? 0;
-                
-                // 转换为KB/s
-                return (sendRate / 1024.0, receiveRate / 1024.0);
-            }
-        }
-        catch { }
-        return (0, 0);
-    }
+            var ni = NetworkInterface.GetAllNetworkInterfaces()
+                .FirstOrDefault(n => n.Name == interfaceName);
 
-    /// <summary>
-    /// 获取系统CPU使用率
-    /// </summary>
-    /// <returns>CPU使用率百分比（0-100）</returns>
-    /// <remarks>
-    /// 返回所有CPU核心的平均使用率
-    /// 值范围：0-100
-    /// 精确到小数点后2位
-    /// </remarks>
-    public static double GetSystemCpuUsage()
-    {
-        try
-        {
-            // 更新硬件信息
-            _computer.Accept(new UpdateVisitor());
-            
-            // 获取CPU信息
-            var cpu = _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Cpu);
-            if (cpu != null)
+            if (ni != null)
             {
-                // 获取CPU负载传感器数据
-                var load = cpu.Sensors.FirstOrDefault(s => s.SensorType == SensorType.Load);
-                return load?.Value ?? 0;
+                var stats = ni.GetIPv4Statistics();
+                var now = DateTime.Now;
+
+                if (!_networkStats.ContainsKey(interfaceName))
+                {
+                    _networkStats[interfaceName] = (stats.BytesReceived, stats.BytesSent, now);
+                    return (0, 0);
+                }
+
+                var (lastBytesReceived, lastBytesSent, lastCheck) = _networkStats[interfaceName];
+                var timeDiff = (now - lastCheck).TotalSeconds;
+
+                if (timeDiff > 0)
+                {
+                    var receiveDiff = stats.BytesReceived - lastBytesReceived;
+                    var sendDiff = stats.BytesSent - lastBytesSent;
+
+                    _networkStats[interfaceName] = (stats.BytesReceived, stats.BytesSent, now);
+
+                    return (
+                        Math.Round(sendDiff / timeDiff / 1024, 2),     // KB/s
+                        Math.Round(receiveDiff / timeDiff / 1024, 2)    // KB/s
+                    );
+                }
             }
         }
-        catch { }
-        return 0;
+        catch (Exception)
+        {
+            // 记录错误但继续执行
+        }
+        return (0, 0);
     }
 
     /// <summary>
@@ -239,22 +306,12 @@ public static class HbtServerMonitorUtils
     {
         try
         {
-            // 更新硬件信息
-            _computer.Accept(new UpdateVisitor());
-            
-            // 获取内存信息
-            var memory = _computer.Hardware.FirstOrDefault(h => h.HardwareType == HardwareType.Memory);
-            if (memory != null)
+            var totalMemory = GetPhysicalMemory().Total;
+            if (totalMemory > 0)
             {
-                // 获取已用内存和总内存
-                var used = memory.Sensors.FirstOrDefault(s => s.SensorType == SensorType.Data);
-                var total = memory.Sensors.FirstOrDefault(s => s.SensorType == SensorType.SmallData);
-                
-                // 计算使用率
-                if (used != null && total != null && total.Value > 0)
-                {
-                    return (double)Math.Round((decimal)(used.Value / total.Value * 100), 2);
-                }
+                var availableMemory = GetPhysicalMemory().Available;
+                var usedMemory = totalMemory - availableMemory;
+                return Math.Round((double)usedMemory / totalMemory * 100, 2);
             }
         }
         catch { }
@@ -262,46 +319,65 @@ public static class HbtServerMonitorUtils
     }
 
     /// <summary>
-    /// 硬件信息更新访问器
+    /// Windows内存状态结构
     /// </summary>
-    /// <remarks>
-    /// 实现IVisitor接口，用于更新硬件信息
-    /// 包含对计算机、硬件、传感器和参数的访问方法
-    /// </remarks>
-    private class UpdateVisitor : IVisitor
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
+    private class MEMORYSTATUSEX
     {
-        /// <summary>
-        /// 访问计算机对象
-        /// </summary>
-        /// <param name="computer">计算机对象</param>
-        public void VisitComputer(IComputer computer)
-        {
-            computer.Traverse(this);
-        }
+        public uint dwLength;
+        public uint dwMemoryLoad;
+        public ulong ullTotalPhys;
+        public ulong ullAvailPhys;
+        public ulong ullTotalPageFile;
+        public ulong ullAvailPageFile;
+        public ulong ullTotalVirtual;
+        public ulong ullAvailVirtual;
+        public ulong ullAvailExtendedVirtual;
 
-        /// <summary>
-        /// 访问硬件对象
-        /// </summary>
-        /// <param name="hardware">硬件对象</param>
-        public void VisitHardware(IHardware hardware)
+        public MEMORYSTATUSEX()
         {
-            hardware.Update();
-            foreach (IHardware subHardware in hardware.SubHardware)
+            dwLength = (uint)Marshal.SizeOf(typeof(MEMORYSTATUSEX));
+        }
+    }
+
+    [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern bool GlobalMemoryStatusEx([In, Out] MEMORYSTATUSEX lpBuffer);
+
+    private static string ExecuteCommand(string command, string arguments)
+    {
+        try
+        {
+            using var process = new Process
             {
-                subHardware.Accept(this);
-            }
+                StartInfo = new ProcessStartInfo
+                {
+                    FileName = command,
+                    Arguments = arguments,
+                    RedirectStandardOutput = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true
+                }
+            };
+            process.Start();
+            return process.StandardOutput.ReadToEnd();
         }
+        catch
+        {
+            return string.Empty;
+        }
+    }
 
-        /// <summary>
-        /// 访问传感器对象（空实现）
-        /// </summary>
-        /// <param name="sensor">传感器对象</param>
-        public void VisitSensor(ISensor sensor) { }
-
-        /// <summary>
-        /// 访问参数对象（空实现）
-        /// </summary>
-        /// <param name="parameter">参数对象</param>
-        public void VisitParameter(IParameter parameter) { }
+    private static ulong ParseMemInfo(string line)
+    {
+        var parts = line.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+        if (parts.Length >= 2 && ulong.TryParse(parts[1], out var value))
+        {
+            return value;
+        }
+        return 0;
     }
 } 
+
+
+

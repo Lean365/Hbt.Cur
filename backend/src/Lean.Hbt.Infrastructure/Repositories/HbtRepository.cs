@@ -7,17 +7,10 @@
 // 描述    : SqlSugar仓储实现
 //===================================================================
 
-using System;
-using System.Collections.Generic;
 using System.Linq.Expressions;
-using System.Threading.Tasks;
-using Lean.Hbt.Domain.Entities;
-using Lean.Hbt.Domain.Entities.Identity;
-using Lean.Hbt.Domain.Repositories;
-using Lean.Hbt.Domain.Identity;
-using SqlSugar;
-using SqlSugar.Extensions;
 using Lean.Hbt.Common.Models;
+using Lean.Hbt.Domain.Entities.Identity;
+using Microsoft.Extensions.Logging;
 
 namespace Lean.Hbt.Infrastructure.Repositories
 {
@@ -34,17 +27,20 @@ namespace Lean.Hbt.Infrastructure.Repositories
         private readonly SqlSugarScope _db;
         private readonly SimpleClient<TEntity> _entities;
         private readonly IHbtCurrentUser _currentUser;
+        private readonly ILogger<HbtRepository<TEntity>> _logger;
 
         /// <summary>
         /// 构造函数
         /// </summary>
         /// <param name="db">SqlSugar客户端</param>
         /// <param name="currentUser">当前用户服务</param>
-        public HbtRepository(SqlSugarScope db, IHbtCurrentUser currentUser)
+        /// <param name="logger">日志服务</param>
+        public HbtRepository(SqlSugarScope db, IHbtCurrentUser currentUser, ILogger<HbtRepository<TEntity>> logger)
         {
             _db = db;
             _entities = _db.GetSimpleClient<TEntity>();
             _currentUser = currentUser;
+            _logger = logger;
         }
 
         /// <summary>
@@ -76,13 +72,13 @@ namespace Lean.Hbt.Infrastructure.Repositories
         public async Task<TEntity?> GetByIdAsync(object id)
         {
             var query = _db.Queryable<TEntity>();
-            
+
             // 非管理员需要过滤已删除记录
             if (_currentUser.UserType != 2 && typeof(TEntity).IsSubclassOf(typeof(HbtBaseEntity)))
             {
                 query = query.Where("is_deleted = 0");
             }
-            
+
             return await query.InSingleAsync(id);
         }
 
@@ -94,13 +90,13 @@ namespace Lean.Hbt.Infrastructure.Repositories
         public async Task<TEntity?> GetInfoAsync(Expression<Func<TEntity, bool>> condition)
         {
             var query = _db.Queryable<TEntity>();
-            
+
             // 非管理员需要过滤已删除记录
             if (_currentUser.UserType != 2 && typeof(TEntity).IsSubclassOf(typeof(HbtBaseEntity)))
             {
                 query = query.Where("is_deleted = 0");
             }
-            
+
             return await query.Where(condition).FirstAsync();
         }
 
@@ -112,13 +108,13 @@ namespace Lean.Hbt.Infrastructure.Repositories
         public async Task<List<TEntity>> GetListAsync(Expression<Func<TEntity, bool>>? condition = null)
         {
             var query = _db.Queryable<TEntity>();
-            
+
             // 非管理员需要过滤已删除记录
             if (_currentUser.UserType != 2 && typeof(TEntity).IsSubclassOf(typeof(HbtBaseEntity)))
             {
                 query = query.Where("is_deleted = 0");
             }
-            
+
             if (condition != null)
             {
                 query = query.Where(condition);
@@ -144,7 +140,7 @@ namespace Lean.Hbt.Infrastructure.Repositories
             OrderByType orderByType = OrderByType.Desc)
         {
             var query = _db.Queryable<TEntity>();
-            
+
             // 非管理员需要过滤已删除记录
             if (_currentUser.UserType != 2 && typeof(TEntity).IsSubclassOf(typeof(HbtBaseEntity)))
             {
@@ -240,7 +236,7 @@ namespace Lean.Hbt.Infrastructure.Repositories
             };
         }
 
-        #endregion
+        #endregion 查询操作
 
         #region 新增操作
 
@@ -268,7 +264,7 @@ namespace Lean.Hbt.Infrastructure.Repositories
         {
             var now = DateTime.Now;
             var userName = _currentUser.UserName ?? "Hbt365";
-            
+
             foreach (var entity in entities)
             {
                 if (entity is HbtBaseEntity baseEntity)
@@ -308,7 +304,7 @@ namespace Lean.Hbt.Infrastructure.Repositories
         {
             var now = DateTime.Now;
             var userName = _currentUser.UserName ?? "Hbt365";
-            
+
             foreach (var entity in entities)
             {
                 if (entity is HbtBaseEntity baseEntity)
@@ -368,7 +364,7 @@ namespace Lean.Hbt.Infrastructure.Repositories
                     entities.Add(entity);
                 }
             }
-            
+
             if (!entities.Any()) return 0;
             return await DeleteRangeAsync(entities);
         }
@@ -382,7 +378,7 @@ namespace Lean.Hbt.Infrastructure.Repositories
         {
             var now = DateTime.Now;
             var userName = _currentUser.UserName ?? "Hbt365";
-            
+
             foreach (var entity in entities)
             {
                 if (entity is HbtBaseEntity baseEntity)
@@ -432,6 +428,8 @@ namespace Lean.Hbt.Infrastructure.Repositories
         /// </summary>
         public virtual async Task<List<string>> GetUserPermissionsAsync(long userId)
         {
+            _logger.LogInformation("[权限仓储] 开始查询用户权限: UserId={UserId}", userId);
+            
             var permissionStrings = await _db.Queryable<HbtUserRole>()
                 .LeftJoin<HbtRole>((ur, r) => ur.RoleId == r.Id)
                 .LeftJoin<HbtRoleMenu>((ur, r, rm) => r.Id == rm.RoleId)
@@ -443,10 +441,16 @@ namespace Lean.Hbt.Infrastructure.Repositories
                 .Select(x => x.Perms)
                 .ToListAsync() ?? new List<string>();
 
-            return permissionStrings
+            _logger.LogInformation("[权限仓储] 查询到的权限字符串: {PermissionStrings}", string.Join(", ", permissionStrings));
+
+            var permissions = permissionStrings
                 .SelectMany(perms => perms.Split(',', StringSplitOptions.RemoveEmptyEntries))
                 .Distinct()
                 .ToList();
+
+            _logger.LogInformation("[权限仓储] 最终权限列表: {Permissions}", string.Join(", ", permissions));
+
+            return permissions;
         }
 
         /// <summary>
@@ -471,6 +475,6 @@ namespace Lean.Hbt.Infrastructure.Repositories
                 .ToList();
         }
 
-        #endregion
+        #endregion 用户角色和权限
     }
 }

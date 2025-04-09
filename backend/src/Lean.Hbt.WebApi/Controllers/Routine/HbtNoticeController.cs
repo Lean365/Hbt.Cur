@@ -7,16 +7,9 @@
 // 描述   : 通知控制器
 //===================================================================
 
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Lean.Hbt.Common.Models;
 using Lean.Hbt.Application.Dtos.Routine;
 using Lean.Hbt.Application.Services.Routine;
 using Lean.Hbt.Domain.IServices.Admin;
-using Microsoft.AspNetCore.Authorization;
-using Lean.Hbt.Common.Extensions;
-using Lean.Hbt.Infrastructure.Security.Attributes;
-using Lean.Hbt.Domain.Identity;
 
 namespace Lean.Hbt.WebApi.Controllers.Routine
 {
@@ -39,7 +32,7 @@ namespace Lean.Hbt.WebApi.Controllers.Routine
         /// <param name="localization">本地化服务</param>
         /// <param name="currentUser">当前用户服务</param>
         public HbtNoticeController(
-            IHbtNoticeService noticeService, 
+            IHbtNoticeService noticeService,
             IHbtLocalizationService localization,
             IHbtCurrentUser currentUser) : base(localization)
         {
@@ -214,4 +207,4 @@ namespace Lean.Hbt.WebApi.Controllers.Routine
             return await _noticeService.ConfirmAsync(id);
         }
     }
-} 
+}

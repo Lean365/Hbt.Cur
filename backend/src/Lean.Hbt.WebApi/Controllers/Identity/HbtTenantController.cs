@@ -162,7 +162,7 @@ public class HbtTenantController : HbtBaseController
     /// </summary>
     /// <returns>租户选项列表</returns>
     [HttpGet("options")]
-    [HbtPerm("identity:tenant:query")]
+        [AllowAnonymous]
     public async Task<IActionResult> GetOptionsAsync()
     {
         var result = await _tenantService.GetOptionsAsync();

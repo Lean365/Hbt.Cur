@@ -1,7 +1,7 @@
 export default {
   footer: {
     copyright: '© 2024 Lean.Hbt. جميع الحقوق محفوظة.',
-    icp: 'رقم التسجيل',
+    icp: 'رقم التسجيل:京ICP备XXXXXXXX号',
     privacy: 'سياسة الخصوصية',
     terms: 'شروط الخدمة',
     website: 'الموقع الرسمي',

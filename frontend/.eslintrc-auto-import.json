@@ -330,6 +330,10 @@
     "useDictStore": true,
     "useLanguageStore": true,
     "useConfigStore": true,
-    "useWebSocketStore": true
+    "useWebSocketStore": true,
+    "DEFAULT_LOCALE": true,
+    "SUPPORTED_LOCALES": true,
+    "SupportedLocale": true,
+    "createRef": true
   }
 }

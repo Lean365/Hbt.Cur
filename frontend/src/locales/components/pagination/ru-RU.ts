@@ -1,12 +1,12 @@
 export default {
   pagination: {
-    total: 'Total {total} items',
-    page: 'Page {current}',
-    pageSize: '{pageSize} items/page',
-    jump: 'Go to',
-    prev: 'Previous',
-    next: 'Next',
-    first: 'First',
-    last: 'Last'
+    total: 'Всего {total} элементов',
+    page: 'Страница {current}',
+    pageSize: '{pageSize} элементов на странице',
+    jump: 'Перейти к',
+    prev: 'Предыдущая',
+    next: 'Следующая',
+    first: 'Первая',
+    last: 'Последняя'
   }
 } 

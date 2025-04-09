@@ -128,3 +128,29 @@ export function updateUserPassword(data: { userId: number; password: string }) {
     }
   })
 }
+
+/**
+ * 个人资料更新参数
+ */
+export interface ProfileUpdate {
+  userId: number
+  nickName: string
+  englishName?: string
+  email?: string
+  phoneNumber?: string
+  gender?: number
+  oldPassword?: string
+  newPassword?: string
+}
+
+/**
+ * 更新个人资料
+ * @param data 个人资料数据
+ */
+export function updateProfile(data: ProfileUpdate) {
+  return request<HbtApiResponse<boolean>>({
+    url: '/api/HbtAuth/profile',
+    method: 'put',
+    data
+  })
+}

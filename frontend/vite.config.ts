@@ -209,7 +209,7 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
       alias: {
         '@': fileURLToPath(new URL('./src', import.meta.url))
       },
-      extensions: ['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json', '.d.ts']
+      extensions: ['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json', '.d.ts', '.vue']
     },
     optimizeDeps: {
       include: [

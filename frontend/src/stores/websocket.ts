@@ -1,52 +1,85 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { useUserStore } from './user'
 
 export const useWebSocketStore = defineStore('websocket', () => {
-  const router = useRouter()
-  const userStore = useUserStore()
-  
   const ws = ref<WebSocket | null>(null)
   const connected = ref(false)
   const error = ref<string | null>(null)
   const reconnectAttempts = ref(0)
   const maxReconnectAttempts = 5
   const reconnectTimeout = ref<number | null>(null)
+  const lastErrorTime = ref<number>(0)
+  const errorDisplayInterval = 120000 // 错误提示最小间隔时间（2分钟）
+  
+  // 获取WebSocket配置
+  const getWebSocketConfig = () => {
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
+    const host = window.location.hostname
+    
+    // 根据环境设置不同的端口和路径
+    let port: string
+    let path: string
+    
+    if (import.meta.env.DEV) {
+      // 开发环境 - 使用Vite的WebSocket服务
+      const viteClientPort = '5349'  // Vite默认端口
+      const hmrPort = new URL(import.meta.env.VITE_DEV_SERVER_URL || '').port || viteClientPort
+      port = hmrPort
+      path = ''  // Vite的HMR会自动处理路径
+      console.log('当前环境: 开发环境')
+    } else if (import.meta.env.MODE === 'test') {
+      // 测试环境
+      port = import.meta.env.VITE_TEST_PORT || '5350'
+      path = '/ws'
+      console.log('当前环境: 测试环境')
+    } else {
+      // 生产环境
+      port = import.meta.env.VITE_PROD_PORT || '5000'
+      path = '/ws'
+      console.log('当前环境: 生产环境')
+    }
+    
+    return {
+      url: `${protocol}//${host}:${port}${path}`,
+      heartbeatInterval: import.meta.env.DEV ? 30000 : 60000 // 开发环境30秒，生产环境60秒
+    }
+  }
   
   // 连接 WebSocket
   const connect = () => {
+    // 如果是开发环境，不需要手动建立WebSocket连接
+    if (import.meta.env.DEV) {
+      console.log('开发环境下，Vite会自动处理HMR连接')
+      connected.value = true
+      error.value = null
+      return
+    }
+
     try {
       // 清除之前的连接
       disconnect()
       
+      // 获取配置
+      const config = getWebSocketConfig()
+      console.log('WebSocket连接配置:', config)
+      
       // 创建新的 WebSocket 连接
-      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
-      const host = window.location.hostname
-      const port = '5349' // 固定使用前端服务端口
-      ws.value = new WebSocket(`${protocol}//${host}:${port}/__vite_hmr`)
+      ws.value = new WebSocket(config.url)
       
       // 连接成功
       ws.value.onopen = () => {
-        console.log('WebSocket 连接成功')
+        console.log('服务连接成功')
         connected.value = true
         error.value = null
         reconnectAttempts.value = 0
-        
-        // 发送初始化消息
-        if (ws.value) {
-          ws.value.send(JSON.stringify({
-            type: 'connection-check',
-            timestamp: new Date().toISOString()
-          }))
-        }
       }
       
       // 连接关闭
       ws.value.onclose = (event) => {
-        console.log('WebSocket 连接关闭:', event.code, event.reason)
+        console.log('服务连接关闭:', event.code, event.reason)
         connected.value = false
-        // 只有在非正常关闭时才重连
+        
+        // 只有在非正常关闭时才重连和显示错误
         if (event.code !== 1000 && event.code !== 1001) {
           handleReconnect()
         }
@@ -54,28 +87,46 @@ export const useWebSocketStore = defineStore('websocket', () => {
       
       // 连接错误
       ws.value.onerror = (event) => {
-        console.error('WebSocket 连接错误:', event)
+        console.log('服务连接错误:', event)
         connected.value = false
-        error.value = '前端服务连接失败，正在重试...'
-        // 不立即重连，等待 onclose 事件处理
+        
+        // 检查是否应该显示错误提示
+        const now = Date.now()
+        if (now - lastErrorTime.value > errorDisplayInterval) {
+          error.value = '服务连接中断，正在重试...'
+          lastErrorTime.value = now
+        }
+        
+        handleReconnect()
       }
       
       // 接收消息
       ws.value.onmessage = (event) => {
         try {
           const data = JSON.parse(event.data)
-          // 如果是 Vite HMR 消息，忽略它
-          if (data.type && data.type.startsWith('vite')) {
-            return
+          // 处理服务状态消息
+          if (data.type === 'status') {
+            connected.value = data.status === 'ok'
           }
-          handleMessage(data)
         } catch (e) {
-          console.error('解析 WebSocket 消息失败:', e)
+          console.log('解析消息失败:', e)
         }
       }
+      
+      // 定期发送心跳
+      const heartbeat = setInterval(() => {
+        if (ws.value && ws.value.readyState === WebSocket.OPEN) {
+          ws.value.send(JSON.stringify({ type: 'ping' }))
+        }
+      }, config.heartbeatInterval)
+      
+      // 在组件卸载时清理心跳
+      return () => {
+        clearInterval(heartbeat)
+      }
+      
     } catch (e) {
-      console.error('创建 WebSocket 连接失败:', e)
-      error.value = '前端服务连接失败，正在重试...'
+      console.log('创建连接失败:', e)
       handleReconnect()
     }
   }
@@ -83,14 +134,12 @@ export const useWebSocketStore = defineStore('websocket', () => {
   // 断开连接
   const disconnect = () => {
     if (ws.value) {
-      try {
-        ws.value.close(1000, '正常关闭')
-      } catch (e) {
-        console.error('关闭 WebSocket 连接失败:', e)
-      }
+      ws.value.close()
       ws.value = null
     }
     connected.value = false
+    error.value = null
+    
     if (reconnectTimeout.value) {
       clearTimeout(reconnectTimeout.value)
       reconnectTimeout.value = null
@@ -100,47 +149,23 @@ export const useWebSocketStore = defineStore('websocket', () => {
   // 处理重连
   const handleReconnect = () => {
     if (reconnectAttempts.value >= maxReconnectAttempts) {
-      console.log('WebSocket 重连次数超过最大限制，退出登录')
-      handleMaxReconnectAttempts()
+      console.log('重连次数超过最大限制')
+      error.value = '服务连接失败，请刷新页面重试'
       return
     }
     
-    // 使用指数退避算法计算重连延迟
-    const delay = Math.min(1000 * Math.pow(2, reconnectAttempts.value), 30000)
+    // 使用递增的重连延迟，最小3秒，最大30秒
+    const delay = Math.min(3000 * (reconnectAttempts.value + 1), 30000)
     reconnectTimeout.value = window.setTimeout(() => {
       reconnectAttempts.value++
       connect()
     }, delay)
   }
   
-  // 处理超过最大重连次数
-  const handleMaxReconnectAttempts = () => {
-    // 清除用户登录状态
-    userStore.logout()
-    // 重定向到登录页
-    router.push('/login')
-  }
-  
-  // 处理接收到的消息
-  const handleMessage = (data: any) => {
-    // TODO: 根据消息类型处理不同的业务逻辑
-    console.log('收到 WebSocket 消息:', data)
-  }
-  
-  // 发送消息
-  const send = (data: any) => {
-    if (ws.value && connected.value) {
-      ws.value.send(JSON.stringify(data))
-    } else {
-      console.warn('WebSocket 未连接，无法发送消息')
-    }
-  }
-  
   return {
     connected,
     error,
     connect,
-    disconnect,
-    send
+    disconnect
   }
 }) 

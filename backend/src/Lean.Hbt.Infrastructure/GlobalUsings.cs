@@ -13,6 +13,12 @@ global using System.Collections.Generic;
 global using System.Data;
 global using System.Threading.Tasks;
 
+// 项目依赖
+global using Lean.Hbt.Domain.Entities;
+global using Lean.Hbt.Domain.IServices.Identity;
+global using Lean.Hbt.Domain.Repositories;
+global using Lean.Hbt.Infrastructure.Repositories;
+
 // Microsoft 扩展
 global using Microsoft.Extensions.Configuration;
 global using Microsoft.Extensions.DependencyInjection;
@@ -20,10 +26,3 @@ global using Microsoft.Extensions.DependencyInjection;
 // 第三方库
 global using SqlSugar;
 global using StackExchange.Redis;
-
-// 项目依赖
-global using Lean.Hbt.Common.Extensions;
-global using Lean.Hbt.Domain.Entities;
-global using Lean.Hbt.Domain.Repositories;
-global using Lean.Hbt.Infrastructure.Data;
-global using Lean.Hbt.Infrastructure.Repositories; 

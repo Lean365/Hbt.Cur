@@ -7,12 +7,10 @@
 // 描述   : 在线用户控制器
 //===================================================================
 
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+global using Lean.Hbt.Domain.IServices.Identity;
 using Lean.Hbt.Application.Dtos.RealTime;
 using Lean.Hbt.Application.Services.RealTime;
 using Lean.Hbt.Domain.IServices.Admin;
-using Lean.Hbt.Domain.Identity;
 using Microsoft.AspNetCore.Antiforgery;
 
 namespace Lean.Hbt.WebApi.Controllers.RealTime
@@ -28,7 +26,6 @@ namespace Lean.Hbt.WebApi.Controllers.RealTime
     [ApiController]
     [ApiModule("realtime", "实时通讯")]
     [Authorize]
-
     public class HbtOnlineUserController : HbtBaseController
     {
         private readonly IHbtOnlineUserService _onlineUserService;
@@ -43,7 +40,7 @@ namespace Lean.Hbt.WebApi.Controllers.RealTime
         /// <param name="currentUser">当前用户服务</param>
         /// <param name="antiforgery">CSRF服务</param>
         public HbtOnlineUserController(
-            IHbtOnlineUserService onlineUserService, 
+            IHbtOnlineUserService onlineUserService,
             IHbtLocalizationService localization,
             IHbtCurrentUser currentUser,
             IAntiforgery antiforgery) : base(localization)
@@ -75,7 +72,7 @@ namespace Lean.Hbt.WebApi.Controllers.RealTime
 
             // 确保查询对象不为空
             query ??= new HbtOnlineUserQueryDto();
-            
+
             // 使用当前用户的租户ID
             query.TenantId = _currentUser.TenantId;
 

@@ -171,11 +171,11 @@ import type {
   HbtTranslationUpdate
 } from '@/types/admin/translation'
 import TranslationForm from './components/TranslationForm.vue'
-import HbtPagination from '@/components/pagination/index.vue'
+import '@/components/Business/Pagination/index.vue'
 
 // 查询参数
 const queryParams = reactive<HbtTranslationQuery>({
-  pageNum: 1,
+  pageIndex: 1,
   pageSize: 10,
   langCode: '',
   moduleName: '',

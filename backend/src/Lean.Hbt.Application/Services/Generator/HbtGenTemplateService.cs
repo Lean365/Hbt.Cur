@@ -9,17 +9,6 @@
 // 描述   : 代码生成模板服务实现
 //===================================================================
 
-using System.Linq.Expressions;
-using Lean.Hbt.Application.Dtos.Generator;
-using Lean.Hbt.Common.Models;
-using Lean.Hbt.Domain.Entities.Generator;
-using Lean.Hbt.Domain.Repositories;
-using Microsoft.Extensions.Logging;
-using Lean.Hbt.Domain.Identity;
-using Mapster;
-using Lean.Hbt.Common.Utils;
-using Lean.Hbt.Common.Helpers;
-
 namespace Lean.Hbt.Application.Services.Generator;
 
 /// <summary>
@@ -206,7 +195,7 @@ public class HbtGenTemplateService : IHbtGenTemplateService
         return false;
     }
 
-    #endregion
+    #endregion 基础操作
 
     #region 模板操作
 
@@ -324,5 +313,5 @@ public class HbtGenTemplateService : IHbtGenTemplateService
         }
     }
 
-    #endregion
+    #endregion 模板操作
 }

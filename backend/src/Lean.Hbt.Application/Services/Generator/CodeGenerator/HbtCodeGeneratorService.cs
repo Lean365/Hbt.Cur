@@ -1,18 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
 using System.IO.Compression;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
-using Microsoft.AspNetCore.Hosting;
-using Lean.Hbt.Domain.Entities.Generator;
-using SqlSugar;
 using System.Linq.Expressions;
-using Lean.Hbt.Domain.Repositories;
 using Lean.Hbt.Application.Services.Generator.CodeGenerator.Models;
 using Lean.Hbt.Application.Services.Generator.CodeGenerator.Templates;
-using Lean.Hbt.Domain.Identity;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+
 namespace Lean.Hbt.Application.Services.Generator.CodeGenerator;
 
 /// <summary>
@@ -49,10 +41,10 @@ public class HbtCodeGeneratorService : IHbtCodeGeneratorService
 
         // 从配置中获取输出路径，如果没有则使用默认值
         _outputPath = configuration.GetValue<string>("CodeGenerator:OutputPath") ?? "wwwroot/generator/output";
-        
+
         // 确保输出路径是相对于应用程序根目录的
         _outputPath = Path.Combine(webHostEnvironment.ContentRootPath, _outputPath);
-        
+
         if (!Directory.Exists(_outputPath))
         {
             Directory.CreateDirectory(_outputPath);
@@ -82,7 +74,7 @@ public class HbtCodeGeneratorService : IHbtCodeGeneratorService
             {
                 // 获取表字段信息
                 var columns = _db.DbMaintenance.GetColumnInfosByTableName(tableInfo.Name);
-                
+
                 // 创建表信息
                 var table = new HbtGenTable
                 {
@@ -301,7 +293,7 @@ public class HbtCodeGeneratorService : IHbtCodeGeneratorService
             foreach (var template in _config.Templates)
             {
                 _logger.Debug($"开始生成模板:{template.TemplateName}");
-                
+
                 // 渲染模板
                 var content = await _templateEngine.RenderAsync(template.TemplateContent, model);
 
@@ -366,11 +358,11 @@ public class HbtCodeGeneratorService : IHbtCodeGeneratorService
             foreach (var template in _config.Templates)
             {
                 _logger.Debug($"开始预览模板:{template.TemplateName}");
-                
+
                 // 渲染模板
                 var content = await _templateEngine.RenderAsync(template.TemplateContent, model);
                 result[template.FileName] = content;
-                
+
                 _logger.Info($"模板预览成功:{template.TemplateName}");
             }
 
@@ -509,5 +501,5 @@ public class HbtCodeGeneratorService : IHbtCodeGeneratorService
         return string.Concat(words.Select(word => char.ToUpper(word[0]) + word.Substring(1).ToLower()));
     }
 
-    #endregion
+    #endregion 私有方法
 }

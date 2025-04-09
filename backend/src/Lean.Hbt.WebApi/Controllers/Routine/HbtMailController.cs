@@ -7,19 +7,9 @@
 // 描述   : 邮件控制器
 //===================================================================
 
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Lean.Hbt.Application.Dtos.Routine;
 using Lean.Hbt.Application.Services.Routine;
 using Lean.Hbt.Domain.IServices.Admin;
-using System;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using Lean.Hbt.Common.Models;
-using Lean.Hbt.Common.Extensions;
-using Microsoft.AspNetCore.Authorization;
-using Lean.Hbt.Infrastructure.Security.Attributes;
-using Lean.Hbt.Domain.Identity;
 
 namespace Lean.Hbt.WebApi.Controllers.Routine
 {
@@ -46,7 +36,7 @@ namespace Lean.Hbt.WebApi.Controllers.Routine
         /// <param name="localization">本地化服务</param>
         /// <param name="currentUser">当前用户服务</param>
         public HbtMailController(
-            IHbtMailService mailService, 
+            IHbtMailService mailService,
             IHbtLocalizationService localization,
             IHbtCurrentUser currentUser) : base(localization)
         {
@@ -210,4 +200,4 @@ namespace Lean.Hbt.WebApi.Controllers.Routine
             return File(data, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "邮件数据.xlsx");
         }
     }
-} 
+}

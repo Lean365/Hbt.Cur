@@ -11,11 +11,11 @@
 
 using System.Linq.Expressions;
 using Lean.Hbt.Application.Dtos.Identity;
+using Lean.Hbt.Common.Constants;
 using Lean.Hbt.Common.Utils;
 using Lean.Hbt.Domain.Entities.Identity;
 using Lean.Hbt.Domain.IServices.Identity;
 using Lean.Hbt.Domain.IServices.Security;
-using Lean.Hbt.Common.Constants;
 
 namespace Lean.Hbt.Application.Services.Identity
 {
@@ -39,7 +39,7 @@ namespace Lean.Hbt.Application.Services.Identity
         private readonly IHbtRepository<HbtRole> _roleRepository;
         private readonly IHbtRepository<HbtPost> _postRepository;
         private readonly IHbtRepository<HbtDept> _deptRepository;
-        private readonly IHbtTenantContext _tenantContext;
+        private readonly IHbtCurrentTenant _currentTenant;
         private readonly IHbtCurrentUser _currentUser;
 
         /// <summary>
@@ -57,7 +57,7 @@ namespace Lean.Hbt.Application.Services.Identity
             IHbtRepository<HbtRole> roleRepository,
             IHbtRepository<HbtPost> postRepository,
             IHbtRepository<HbtDept> deptRepository,
-            IHbtTenantContext tenantContext,
+            IHbtCurrentTenant tenantContext,
             IHbtCurrentUser currentUser)
         {
             _userRepository = userRepository;
@@ -71,7 +71,7 @@ namespace Lean.Hbt.Application.Services.Identity
             _roleRepository = roleRepository;
             _postRepository = postRepository;
             _deptRepository = deptRepository;
-            _tenantContext = tenantContext;
+            _currentTenant = tenantContext;
             _currentUser = currentUser;
         }
 
@@ -195,7 +195,7 @@ namespace Lean.Hbt.Application.Services.Identity
                 Gender = 0,
                 Avatar = input.Avatar ?? string.Empty,
                 Status = 0,
-                TenantId = _tenantContext.TenantId,
+                TenantId = _currentTenant.TenantId,
                 Remark = input.Remark ?? string.Empty
             };
 
@@ -554,7 +554,7 @@ namespace Lean.Hbt.Application.Services.Identity
                         Gender = 0,
                         Avatar = user.Avatar ?? string.Empty,
                         Status = 0,
-                        TenantId = _tenantContext.TenantId,
+                        TenantId = _currentTenant.TenantId,
                         Remark = user.Remark ?? string.Empty
                     };
 
@@ -699,7 +699,7 @@ namespace Lean.Hbt.Application.Services.Identity
                 throw new HbtException(_localization.L("User.NotFound"));
 
             // 验证租户权限
-            if (user.TenantId != _tenantContext.TenantId)
+            if (user.TenantId != _currentTenant.TenantId)
                 throw new HbtException(_localization.L("User.Tenant.Invalid"));
 
             // 更新用户锁定状态

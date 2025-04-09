@@ -7,23 +7,10 @@
 // 描述   : 通知服务实现
 //===================================================================
 
-using System;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using System.Linq.Expressions;
-using Microsoft.Extensions.Logging;
-using Microsoft.AspNetCore.SignalR;
-using Lean.Hbt.Common.Models;
-using Lean.Hbt.Domain.Entities.Routine;
 using Lean.Hbt.Application.Dtos.Routine;
-using Lean.Hbt.Common.Exceptions;
-using Lean.Hbt.Common.Helpers;
-using Lean.Hbt.Domain.Repositories;
-using Lean.Hbt.Domain.Identity;
 using Lean.Hbt.Common.Enums;
+using Lean.Hbt.Domain.Entities.Routine;
 using Lean.Hbt.Domain.IServices.SignalR;
-using SqlSugar;
-using Mapster;
 
 namespace Lean.Hbt.Application.Services.Routine
 {
@@ -193,7 +180,7 @@ namespace Lean.Hbt.Application.Services.Routine
 
             notice.NoticeStatus = 1; // 已发布
             notice.NoticePublishTime = DateTime.Now;
-            
+
             var result = await _repository.UpdateAsync(notice);
             return result > 0;
         }
@@ -208,7 +195,7 @@ namespace Lean.Hbt.Application.Services.Routine
                 throw new HbtException($"通知不存在: {noticeId}");
 
             notice.NoticeStatus = 2; // 已关闭
-            
+
             var result = await _repository.UpdateAsync(notice);
             return result > 0;
         }
@@ -232,7 +219,7 @@ namespace Lean.Hbt.Application.Services.Routine
                 notice.NoticeLastReceiptTime = DateTime.Now;
 
                 await _repository.UpdateAsync(notice);
-                
+
                 // 发送已读通知
                 var notification = new HbtRealTimeNotification
                 {
@@ -276,7 +263,7 @@ namespace Lean.Hbt.Application.Services.Routine
             notice.NoticeConfirmIds = string.Join(",", confirmIds);
             notice.NoticeConfirmCount = confirmIds.Count;
             notice.NoticeLastReceiptTime = DateTime.Now;
-            
+
             var result = await _repository.UpdateAsync(notice);
             return result > 0;
         }
@@ -286,8 +273,8 @@ namespace Lean.Hbt.Application.Services.Routine
         /// </summary>
         public async Task<int> MarkAllAsReadAsync(long userId)
         {
-            var unreadNotices = await _repository.GetListAsync(n => 
-                string.IsNullOrEmpty(n.NoticeReadIds) || 
+            var unreadNotices = await _repository.GetListAsync(n =>
+                string.IsNullOrEmpty(n.NoticeReadIds) ||
                 !n.NoticeReadIds.Split(',', StringSplitOptions.RemoveEmptyEntries)
                     .Select(id => long.Parse(id))
                     .Contains(userId));
@@ -363,8 +350,8 @@ namespace Lean.Hbt.Application.Services.Routine
         /// </summary>
         public async Task<int> MarkAllAsUnreadAsync(long userId)
         {
-            var readNotices = await _repository.GetListAsync(n => 
-                !string.IsNullOrEmpty(n.NoticeReadIds) && 
+            var readNotices = await _repository.GetListAsync(n =>
+                !string.IsNullOrEmpty(n.NoticeReadIds) &&
                 n.NoticeReadIds.Split(',', StringSplitOptions.RemoveEmptyEntries)
                     .Select(id => long.Parse(id))
                     .Contains(userId));
@@ -386,4 +373,4 @@ namespace Lean.Hbt.Application.Services.Routine
             return result;
         }
     }
-} 
+}

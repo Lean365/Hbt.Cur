@@ -234,10 +234,10 @@ import { getPostOptions } from '@/api/identity/post'
 import { getDeptOptions } from '@/api/identity/dept'
 import { getTenantOptions } from '@/api/identity/tenant'
 import { getSalt } from '@/api/identity/auth'
-import HbtModal from '@/components/Business/Modal/index.vue'
-import HbtImageUpload from '@/components/Upload/imageUpload.vue'
+
 import { PasswordEncryptor } from '@/utils/crypto'
 import { RegexUtils } from '@/utils/regex'
+
 
 const props = defineProps<{
   visible: boolean

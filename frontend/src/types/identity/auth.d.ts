@@ -188,3 +188,10 @@ export const LOGIN_STORAGE_KEYS = {
 export const SPECIAL_USERS = {
   ADMIN: 'admin'
 } as const
+
+export interface LoginCheckResult {
+  existingSession: boolean
+  deviceInfo?: string
+  canLogin: boolean
+  existingDeviceInfo?: string
+}

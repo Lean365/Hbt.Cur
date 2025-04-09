@@ -45,7 +45,7 @@
                 :wrapper-col="{ span: 18 }"
               >
                 <a-form-item :label="t('identity.user.userName.label')" name="userName">
-                  <a-input v-model:value="form.userName" disabled />
+                  <a-input v-model:value="form.userName" :placeholder="t('identity.user.userName.placeholder')" disabled />
                 </a-form-item>
                 <a-form-item :label="t('identity.user.nickName.label')" name="nickName">
                   <a-input v-model:value="form.nickName" :placeholder="t('identity.user.nickName.placeholder')" />
@@ -71,22 +71,22 @@
 
         <!-- 登录日志 -->
         <a-tab-pane key="loginLog" :tab="t('identity.user.tab.loginLog')">
-          <user-login-log :user-id="form.userId" />
+          <user-login-log :user-id="form.userId" :open="activeTab === 'loginLog'" :scroll="{ y: '540px' }" />
         </a-tab-pane>
 
         <!-- 操作日志 -->
         <a-tab-pane key="operateLog" :tab="t('identity.user.tab.operateLog')">
-          <user-oper-log :user-id="form.userId" />
+          <user-oper-log :user-id="form.userId" :open="activeTab === 'operateLog'" :scroll="{ y: '540px' }" />
         </a-tab-pane>
 
         <!-- 异常日志 -->
         <a-tab-pane key="errorLog" :tab="t('identity.user.tab.errorLog')">
-          <user-exception-log :user-id="form.userId" />
+          <user-exception-log :user-id="form.userId" :open="activeTab === 'errorLog'" :scroll="{ y: '540px' }" />
         </a-tab-pane>
 
         <!-- 任务日志 -->
         <a-tab-pane key="taskLog" :tab="t('identity.user.tab.taskLog')">
-          <user-quartz-log :user-id="form.userId" />
+          <user-quartz-log :user-id="form.userId" :open="activeTab === 'taskLog'" :scroll="{ y: '540px' }" />
         </a-tab-pane>
       </a-tabs>
     </a-card>

@@ -75,21 +75,25 @@ public class HbtServerMonitorService : IHbtServerMonitorService
             
             try
             {
-                // 获取内存信息（转换为GB）
-                var totalMemoryBytes = HbtServerMonitorUtils.GetTotalPhysicalMemory();
-                var totalMemoryGB = totalMemoryBytes / (1024.0 * 1024 * 1024);
-                dto.TotalMemory = totalMemoryGB;
+                // 获取内存信息（转换为字节）
+                var (totalMemory, availableMemory) = HbtServerMonitorUtils.GetPhysicalMemory();
+                dto.TotalMemory = totalMemory;
+                dto.UsedMemory = totalMemory - availableMemory;
+                dto.MemoryUsage = (double)dto.UsedMemory / dto.TotalMemory * 100;
 
                 // 获取CPU使用率
                 dto.CpuUsage = HbtServerMonitorUtils.GetSystemCpuUsage();
 
-                // 获取磁盘信息（转换为GB）
-                var drives = DriveInfo.GetDrives();
-                var totalDiskSpace = drives.Sum(d => d.TotalSize) / (1024.0 * 1024 * 1024);
-                var usedDiskSpace = drives.Sum(d => d.TotalSize - d.AvailableFreeSpace) / (1024.0 * 1024 * 1024);
-                dto.TotalDiskSpace = totalDiskSpace;
-                dto.UsedDiskSpace = usedDiskSpace;
-                dto.DiskUsage = usedDiskSpace / totalDiskSpace * 100;
+                // 获取所有磁盘信息
+                var drives = DriveInfo.GetDrives().Where(d => d.IsReady);
+                dto.DiskInfos = drives.Select(d => new HbtDiskInfo
+                {
+                    DriveName = d.Name,
+                    TotalSpace = d.TotalSize,
+                    UsedSpace = d.TotalSize - d.AvailableFreeSpace,
+                    FreeSpace = d.AvailableFreeSpace,
+                    UsageRate = (double)(d.TotalSize - d.AvailableFreeSpace) / d.TotalSize * 100
+                }).ToList();
             }
             catch (Exception ex)
             {

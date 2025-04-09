@@ -101,27 +101,36 @@
     <hbt-table
       :loading="loading"
       :data-source="tableData"
-      :columns="columns.filter(col => columnSettings[col.key])"
-      :pagination="{
-        total: total,
-        current: queryParams.pageIndex,
-        pageSize: queryParams.pageSize,
-        showSizeChanger: true,
-        showQuickJumper: true,
-        showTotal: (total: number) => `共 ${total} 条`
-      }"
+      :columns="columns"
+      :pagination="false"
+      :scroll="{ x: 'max-content' }"
+      :default-height="594"
       :row-key="(record: User) => String(record.userId)"
       v-model:selectedRowKeys="selectedRowKeys"
       :row-selection="{
         type: 'checkbox',
         columnWidth: 60
       }"
-      :scroll="{ x: 1200 }"     
       @change="handleTableChange"
       @row-click="handleRowClick"
     >
-      <!-- 用户类型列 -->
+      <!-- 头像列 -->
       <template #bodyCell="{ column, record }">
+        <template v-if="column.dataIndex === 'avatar'">
+          <a-image
+            :src="getAvatarUrl(record.avatar)"
+            :width="32"
+            :height="32"
+            :preview="{
+              src: getAvatarUrl(record.avatar),
+              mask: false,
+              movable: true
+            }"
+            style="border-radius: 50%; object-fit: cover;"
+          />
+        </template>
+
+        <!-- 用户类型列 -->
         <template v-if="column.dataIndex === 'userType'">
           <hbt-dict-tag dict-type="sys_user_type" :value="record.userType" />
         </template>
@@ -169,6 +178,18 @@
       </template>
     </hbt-table>
 
+    <!-- 分页组件 -->
+    <hbt-pagination
+      v-model:current="queryParams.pageIndex"
+      v-model:pageSize="queryParams.pageSize"
+      :total="total"
+      :show-size-changer="true"
+      :show-quick-jumper="true"
+      :show-total="(total: number) => `共 ${total} 条`"
+      @change="handlePageChange"
+      @showSizeChange="handleSizeChange"
+    />
+
     <!-- 用户表单对话框 -->
     <user-form
       v-model:visible="formVisible"
@@ -215,6 +236,7 @@
 <script lang="ts" setup>
 import { useI18n } from 'vue-i18n'
 import { message } from 'ant-design-vue'
+import { ref, computed } from 'vue'
 import type { TablePaginationConfig } from 'ant-design-vue'
 import { useDictStore } from '@/stores/dict'
 import type { User, UserQuery } from '@/types/identity/user'
@@ -227,11 +249,26 @@ import RoleAllocate from './components/RoleAllocate.vue'
 const { t } = useI18n()
 const dictStore = useDictStore()
 
+// 获取头像完整URL
+const getAvatarUrl = (avatar: string | null) => {
+  const baseUrl = 'https://localhost:7249'
+  return baseUrl + (avatar || '/avatar/default.gif')
+}
+
 // 查询字段类型定义
 type FieldType = 'input' | 'select' | 'date' | 'dateRange' | 'number' | 'radio' | 'checkbox' | 'cascader'
 
 // 表格列定义
-const columns = [
+interface TableColumn {
+  title: string
+  dataIndex?: string
+  key: string
+  width?: number
+  ellipsis?: boolean
+  fixed?: string
+}
+
+const columns: TableColumn[] = [
   {
     title: t('identity.user.userName.label'),
     dataIndex: 'userName',
@@ -595,6 +632,17 @@ const handleAuthorize = (record: User) => {
   roleAllocateVisible.value = true
 }
 
+// 分页处理
+const handlePageChange = (page: number) => {
+  queryParams.value.pageIndex = page
+  fetchData()
+}
+
+const handleSizeChange = (size: number) => {
+  queryParams.value.pageSize = size
+  fetchData()
+}
+
 onMounted(() => {
   // 加载字典数据
   dictStore.loadDicts(['sys_normal_disable', 'sys_gender', 'sys_user_type'])
@@ -607,7 +655,8 @@ onMounted(() => {
 
 <style lang="less" scoped>
 .user-container {
-  padding: 24px;
+  height: 100%;
+  background-color: #fff;
 }
 
 .column-setting-group {

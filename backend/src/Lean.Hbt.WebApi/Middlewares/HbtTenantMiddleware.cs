@@ -39,23 +39,23 @@ namespace Lean.Hbt.WebApi.Middlewares
                 {
                     if (long.TryParse(tenantId, out var tid))
                     {
-                        HbtTenantContext.CurrentTenantId = tid;
+                        HbtCurrentTenant.CurrentTenantId = tid;
                         _logger.LogInformation("[租户中间件] 从请求头获取租户ID: {TenantId}", tid);
                     }
                 }
 
                 // 2. 如果请求头中没有租户ID,尝试从Claims中获取
-                if (HbtTenantContext.CurrentTenantId == null && context.User?.Identity?.IsAuthenticated == true)
+                if (HbtCurrentTenant.CurrentTenantId == null && context.User?.Identity?.IsAuthenticated == true)
                 {
-                    var tenantClaim = context.User.FindFirst("tenant_id");
+                    var tenantClaim = context.User.FindFirst("tid");
                     if (tenantClaim != null && long.TryParse(tenantClaim.Value, out var tid))
                     {
-                        HbtTenantContext.CurrentTenantId = tid;
+                        HbtCurrentTenant.CurrentTenantId = tid;
                         _logger.LogInformation("[租户中间件] 从JWT获取租户ID: {TenantId}", tid);
                     }
                 }
 
-                _logger.LogInformation("[租户中间件] 当前租户ID: {TenantId}", HbtTenantContext.CurrentTenantId);
+                _logger.LogInformation("[租户中间件] 当前租户ID: {TenantId}", HbtCurrentTenant.CurrentTenantId);
 
                 await _next(context);
             }
@@ -67,7 +67,7 @@ namespace Lean.Hbt.WebApi.Middlewares
             finally
             {
                 // 请求结束时清除租户上下文
-                HbtTenantContext.Clear();
+                HbtCurrentTenant.Clear();
                 _logger.LogInformation("[租户中间件] 清除租户上下文");
             }
         }

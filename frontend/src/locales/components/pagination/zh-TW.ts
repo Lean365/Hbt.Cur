@@ -1,12 +1,12 @@
 export default {
   pagination: {
-    total: 'Total {total} items',
-    page: 'Page {current}',
-    pageSize: '{pageSize} items/page',
-    jump: 'Go to',
-    prev: 'Previous',
-    next: 'Next',
-    first: 'First',
-    last: 'Last'
+    total: '共 {total} 條',
+    page: '第 {current} 頁',
+    pageSize: '每頁 {pageSize} 條',
+    jump: '跳至',
+    prev: '上一頁',
+    next: '下一頁',
+    first: '第一頁',
+    last: '最後一頁'
   }
 } 

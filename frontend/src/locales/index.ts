@@ -1,220 +1,137 @@
 import { createI18n } from 'vue-i18n'
 
-// 导入管理模块翻译
-import adminTranslationZhCN from './admin/translation/zh-CN'
-import adminTranslationEnUS from './admin/translation/en-US'
-import adminLanguageZhCN from './admin/language/zh-CN'
-import adminLanguageEnUS from './admin/language/en-US'
-import adminDictTypeZhCN from './admin/dicttype/zh-CN'
-import adminDictTypeEnUS from './admin/dicttype/en-US'
+// 支持的语言列表
+const locales = [
+  'en-US', 'zh-CN', 'ar-SA', 'es-ES', 'fr-FR', 
+  'ja-JP', 'ko-KR', 'ru-RU', 'zh-TW'
+] as const
 
-// 导入代码生成器翻译
-import generatorZhCN from './generator/zh-CN'
-import generatorEnUS from './generator/en-US'
+type Locale = typeof locales[number]
 
-// 导入公共翻译
-import commonZhCN from './common/zh-CN'
-import commonEnUS from './common/en-US'
+// 模块列表 - 严格按照目录结构顺序
+const modules = [
+  // admin
+  'admin/config',
+  'admin/dicttype',
+  'admin/language',
+  'admin/translation',
+  
+  // components
+  'components/footer',
+  'components/header',
+  'components/memorial',
+  'components/icon',
+  'components/locale',
+  'components/menu',
+  'components/pagination',
+  'components/query',
+  'components/table',
+  'components/theme',
+  'components/setting',
+  
+  // common
+  'common',
+  
+  // dashboard
+  'dashboard',
+  
+  // error
+  'error',
+  
+  // generator
+  'generator',
+  
+  // home
+  'home',
+  
+  // identity
+  'identity/auth',
+  'identity/dept',
+  'identity/menu',
+  'identity/post',
+  'identity/role',
+  'identity/tenant',
+  'identity/user',
+  
+  // realtime
+  'realtime/message',
+  'realtime/online',
+  'realtime/server',
+  
+  // router
+  'router'
+] as const
 
-// 导入仪表盘翻译
-import dashboardZhCN from './dashboard/zh-CN'
-import dashboardEnUS from './dashboard/en-US'
+type Module = typeof modules[number]
 
-// 导入错误页面翻译
-import errorZhCN from './error/zh-CN'
-import errorEnUS from './error/en-US'
-
-// 导入页脚翻译
-import footerZhCN from './components/footer/zh-CN'
-import footerEnUS from './components/footer/en-US'
-
-// 导入页头翻译
-import headerZhCN from './components/header/zh-CN'
-import headerEnUS from './components/header/en-US'
-
-// 导入节日翻译
-import holidayZhCN from './components/holiday/zh-CN'
-import holidayEnUS from './components/holiday/en-US'
-
-// 导入首页翻译
-import homeZhCN from './home/zh-CN'
-import homeEnUS from './home/en-US'
-
-// 导入身份认证翻译
-import identityAuthZhCN from './identity/auth/zh-CN'
-import identityAuthEnUS from './identity/auth/en-US'
-
-// 导入身份菜单翻译
-import identityMenuZhCN from './identity/menu/zh-CN'
-import identityMenuEnUS from './identity/menu/en-US'
-
-// 导入本地化翻译
-import localeZhCN from './components/locale/zh-CN'
-import localeEnUS from './components/locale/en-US'
-
-// 导入菜单翻译
-import menuArSA from './components/menu/ar-SA'
-import menuEnUS from './components/menu/en-US'
-import menuEsES from './components/menu/es-ES'
-import menuFrFR from './components/menu/fr-FR'
-import menuJaJP from './components/menu/ja-JP'
-import menuKoKR from './components/menu/ko-KR'
-import menuRuRU from './components/menu/ru-RU'
-import menuZhCN from './components/menu/zh-CN'
-import menuZhTw from './components/menu/zh-TW'
-
-// 导入分页翻译
-import paginationZhCN from './components/pagination/zh-CN'
-import paginationEnUS from './components/pagination/en-US'
-
-// 导入表格翻译
-import tableZhCN from './components/table/zh-CN'
-import tableEnUS from './components/table/en-US'
-import columnSettingsZhCN from './components/table/column-settings/zh-CN'
-import columnSettingsEnUS from './components/table/column-settings/en-US'
-
-// 导入查询翻译
-import queryZhCN from './components/query/zh-CN'
-import queryEnUS from './components/query/en-US'
-
-// 导入路由翻译
-import routerZhCN from './router/zh-CN'
-import routerEnUS from './router/en-US'
-
-// 导入主题翻译
-import themeZhCN from './components/theme/zh-CN'
-import themeEnUS from './components/theme/en-US'
-
-// 导入身份认证相关翻译
-import identityUserZhCN from './identity/user/zh-CN'
-import identityUserEnUS from './identity/user/en-US'
-import identityRoleZhCN from './identity/role/zh-CN'
-import identityRoleEnUS from './identity/role/en-US'
-import identityDeptZhCN from './identity/dept/zh-CN'
-import identityDeptEnUS from './identity/dept/en-US'
-import identityPostZhCN from './identity/post/zh-CN'
-import identityPostEnUS from './identity/post/en-US'
-import identityTenantZhCN from './identity/tenant/zh-CN'
-import identityTenantEnUS from './identity/tenant/en-US'
-
-// 导入组件翻译
-import iconZhCN from './components/icon/zh-CN'
-import iconEnUS from './components/icon/en-US'
-
-// 合并所有翻译
-const messages = {
-  'ar-SA': {
-    ...menuArSA // 菜单翻译
-  },
-  'en-US': {
-    admin: {
-      ...adminTranslationEnUS.admin,
-      ...adminLanguageEnUS.admin,
-      ...adminDictTypeEnUS.admin
-    },
-    ...generatorEnUS,
-    ...commonEnUS,
-    ...dashboardEnUS,
-    ...errorEnUS,
-    ...footerEnUS,
-    ...headerEnUS,
-    ...holidayEnUS,
-    ...homeEnUS,
-    identity: {
-      ...identityAuthEnUS.identity,
-      ...identityMenuEnUS.identity,
-      ...identityUserEnUS.identity,
-      ...identityRoleEnUS.identity,
-      ...identityDeptEnUS.identity,
-      ...identityPostEnUS.identity,
-      ...identityTenantEnUS.identity
-    },
-    ...iconEnUS,
-    ...localeEnUS,
-    ...menuEnUS,
-    ...paginationEnUS,
-    table: {
-      ...tableEnUS.table,
-      ...columnSettingsEnUS.table
-    },
-    ...queryEnUS,
-    ...routerEnUS,
-    ...themeEnUS
-  },
-  'es-ES': {
-    ...menuEsES // 菜单翻译
-  },
-  'fr-FR': {
-    ...menuFrFR // 菜单翻译
-  },
-  'ja-JP': {
-    ...menuJaJP // 菜单翻译
-  },
-  'ko-KR': {
-    ...menuKoKR // 菜单翻译
-  },
-  'ru-RU': {
-    ...menuRuRU // 菜单翻译
-  },
-
-  'zh-CN': {
-    admin: {
-      ...adminTranslationZhCN.admin,
-      ...adminLanguageZhCN.admin,
-      ...adminDictTypeZhCN.admin
-    },
-    ...generatorZhCN,
-    ...commonZhCN,
-    ...dashboardZhCN,
-    ...errorZhCN,
-    ...footerZhCN,
-    ...headerZhCN,
-    ...holidayZhCN,
-    ...homeZhCN,
-    identity: {
-      ...identityAuthZhCN.identity,
-      ...identityMenuZhCN.identity,
-      ...identityUserZhCN.identity,
-      ...identityRoleZhCN.identity,
-      ...identityDeptZhCN.identity,
-      ...identityPostZhCN.identity,
-      ...identityTenantZhCN.identity
-    },
-    ...iconZhCN,
-    ...localeZhCN,
-    ...menuZhCN,
-    ...paginationZhCN,
-    table: {
-      ...tableZhCN.table,
-      ...columnSettingsZhCN.table
-    },
-    ...queryZhCN,
-    ...routerZhCN,
-    ...themeZhCN
-  },
-  'zh-TW': {
-    ...menuZhTw // 菜单翻译
-  }
+// 定义消息类型
+interface TranslationMessages {
+  [key: string]: any
 }
 
-// 创建i18n实例
-const i18n = createI18n({
-  legacy: false, // 使用Composition API模式
-  locale: localStorage.getItem('language') || 'zh-CN',
-  fallbackLocale: 'zh-CN',
-  messages,
-  globalInjection: true, // 全局注入 $t 函数
-  silentTranslationWarn: true, // 关闭翻译警告
-  missingWarn: false, // 关闭缺少翻译警告
-  silentFallbackWarn: true, // 关闭回退翻译警告
-  // 添加语言环境映射
-  availableLocales: ['zh-CN', 'en-US'],
-  fallbackLocaleChain: {
-    zh: ['zh-CN', 'en-US'],
-    'zh-CN': ['zh-CN', 'en-US'],
-    en: ['en-US', 'zh-CN'],
-    'en-US': ['en-US', 'zh-CN']
+interface Messages {
+  [locale: string]: TranslationMessages
+}
+
+// 深度合并对象
+function deepMerge(target: any, source: any): any {
+  if (!source) return target
+  if (!target) return source
+
+  const result = { ...target }
+  for (const key in source) {
+    if (source[key] && typeof source[key] === 'object') {
+      result[key] = deepMerge(result[key], source[key])
+    } else {
+      result[key] = source[key]
+    }
   }
+  return result
+}
+
+// 使用 Vite 的 import.meta.glob 动态导入所有翻译文件
+const translationModules = import.meta.glob([
+  './admin/**/*.ts',
+  './components/**/*.ts',
+  './common/**/*.ts',
+  './dashboard/**/*.ts',
+  './error/**/*.ts',
+  './generator/**/*.ts',
+  './home/**/*.ts',
+  './identity/**/*.ts',
+  './realtime/**/*.ts',
+  './router/**/*.ts'
+], { eager: true })
+
+// 处理翻译文件
+const messages = locales.reduce<Messages>((acc, locale) => {
+  acc[locale] = modules.reduce<TranslationMessages>((moduleAcc, module) => {
+    const path = `./${module}/${locale}.ts`
+    if (translationModules[path]) {
+      return deepMerge(moduleAcc, (translationModules[path] as any).default)
+    }
+    // 如果找不到翻译文件，使用英文作为后备
+    const fallbackPath = `./${module}/en-US.ts`
+    if (translationModules[fallbackPath]) {
+      console.warn(`Missing translation for ${module}/${locale}, using English as fallback`)
+      return deepMerge(moduleAcc, (translationModules[fallbackPath] as any).default)
+    }
+    console.warn(`Missing translation for ${module}/${locale} and no English fallback available`)
+    return moduleAcc
+  }, {})
+  return acc
+}, {})
+
+// 创建 i18n 实例
+const i18n = createI18n({
+  legacy: false,
+  locale: import.meta.env.VITE_LOCALE || 'zh-CN',
+  fallbackLocale: 'en-US',
+  messages,
+  silentTranslationWarn: true,
+  missingWarn: false,
+  fallbackWarn: false,
+  silentFallbackWarn: true
 })
 
 export default i18n

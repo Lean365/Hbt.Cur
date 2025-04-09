@@ -1,10 +1,5 @@
 <template>
-  <hbt-modal
-    v-model:visible="visible"
-    title="我的登录日志"
-    :width="1200"
-    :footer="null"
-  >
+  <div class="login-log">
     <!-- 查询区域 -->
     <hbt-query
       v-show="showSearch"
@@ -36,7 +31,7 @@
         showTotal: (total: number) => `共 ${total} 条`
       }"
       :row-key="(record: HbtLoginLogDto) => record.id"
-      :scroll="{ y: 400 }"
+      :scroll="{ y: 840 }"
       @change="handleTableChange"
     >
       <!-- 登录状态列 -->
@@ -57,17 +52,17 @@
 
     <!-- 详情组件 -->
     <login-log-detail ref="detailRef" :login-info="currentLogin" />
-  </hbt-modal>
+  </div>
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive, defineExpose } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import { message } from 'ant-design-vue'
 import type { TablePaginationConfig } from 'ant-design-vue'
 import type { QueryField } from '@/types/components/query'
 import type { HbtLoginLogDto, HbtLoginLogQueryDto } from '@/types/audit/loginLog'
 import { getLoginLogs } from '@/api/audit/loginLog'
-import { useUserStore } from '@/store/modules/user'
+import { useUserStore } from '@/stores/user'
 import LoginLogDetail from './LoginLogDetail.vue'
 
 const userStore = useUserStore()
@@ -200,7 +195,6 @@ const columns = [
 ]
 
 // 状态定义
-const visible = ref(false)
 const loading = ref(false)
 const tableData = ref<HbtLoginLogDto[]>([])
 const total = ref(0)
@@ -213,7 +207,7 @@ const queryParams = reactive<HbtLoginLogQueryDto>({
   pageSize: 10,
   orderByColumn: undefined,
   orderType: undefined,
-  userName: userStore.username,
+  userName: userStore.user?.userName,
   ipAddress: undefined,
   success: undefined,
   loginType: undefined,
@@ -237,8 +231,8 @@ const fetchData = async () => {
   loading.value = true
   try {
     const res = await getLoginLogs(queryParams)
-    tableData.value = res.rows
-    total.value = res.totalNum
+    tableData.value = res.data.rows
+    total.value = res.data.totalNum
   } catch (error) {
     console.error('获取登录日志失败:', error)
     message.error('获取登录日志失败')
@@ -282,28 +276,14 @@ const handleViewDetail = (record: HbtLoginLogDto) => {
   detailRef.value?.open()
 }
 
-/** 打开弹窗 */
-const open = () => {
-  visible.value = true
+// 组件挂载时获取数据
+onMounted(() => {
   fetchData()
-}
-
-/** 关闭弹窗 */
-const close = () => {
-  visible.value = false
-}
-
-// 暴露方法给父组件
-defineExpose({
-  open,
-  close
 })
 </script>
 
 <style lang="less" scoped>
-:deep(.ant-modal-body) {
+.login-log {
   padding: 16px;
-  max-height: 800px;
-  overflow-y: auto;
 }
-</style> 
+</style>

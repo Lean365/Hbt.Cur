@@ -7,23 +7,29 @@
 // 描述    : 基础认证控制器
 //===================================================================
 
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.Extensions.Logging;
 using Lean.Hbt.Application.Dtos.Identity;
-using Lean.Hbt.Common.Models;
-using Lean.Hbt.Common.Extensions;
-using Lean.Hbt.Common.Exceptions;
 using Lean.Hbt.Application.Services.Identity;
-using Lean.Hbt.Application.Services;
-using Lean.Hbt.Infrastructure.Security;
-using System.Security.Claims;
 using Lean.Hbt.Domain.IServices.Admin;
 using System.Security.Cryptography;
-using System;
 using Lean.Hbt.Common.Constants;
 using System.ComponentModel;
 using Lean.Hbt.Domain.IServices.Security;
+using Lean.Hbt.Domain.Entities.RealTime;
+using Lean.Hbt.Domain.IServices.SignalR;
+using System;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Lean.Hbt.Common.Models;
+using Lean.Hbt.Domain.IServices.Identity;
+using Lean.Hbt.Domain.Repositories;
+using SqlSugar;
+using Lean.Hbt.Domain.IServices.Identity;
+using System.Text.Json;
+using Lean.Hbt.Common.Options;
+using Lean.Hbt.Domain.Entities.Identity;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Options;
 
 namespace Lean.Hbt.WebApi.Controllers.Identity
 {
@@ -41,22 +47,79 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
     [ApiModule("identity", "身份认证")]
     public class HbtAuthController : HbtBaseController
     {
-        private readonly IHbtLoginService _loginService;
         private readonly ILogger<HbtAuthController> _logger;
         private readonly IHbtLoginPolicy _loginPolicy;
+        private readonly IHbtSingleSignOnService _singleSignOnService;
+        private readonly IHbtSignalRUserService _signalRUserService;
+        private readonly IHbtUserService _userService;
+        private readonly IHbtAuthService _loginService;
+        private readonly IHbtRepository<HbtOnlineUser> _onlineUserRepository;
+        private readonly IHbtDeviceIdGenerator _deviceIdGenerator;
+        private readonly IOptions<HbtJwtOptions> _jwtOptions;
 
         /// <summary>
         /// 构造函数
         /// </summary>
         public HbtAuthController(
-            IHbtLoginService loginService,
             IHbtLocalizationService localization,
+            ILogger<HbtAuthController> logger,
             IHbtLoginPolicy loginPolicy,
-            ILogger<HbtAuthController> logger) : base(localization)
+            IHbtSingleSignOnService singleSignOnService,
+            IHbtSignalRUserService signalRUserService,
+            IHbtUserService userService,
+            IHbtAuthService loginService,
+            IHbtRepository<HbtOnlineUser> onlineUserRepository,
+            IHbtDeviceIdGenerator deviceIdGenerator,
+            IOptions<HbtJwtOptions> jwtOptions) : base(localization)
         {
-            _loginService = loginService;
             _logger = logger;
             _loginPolicy = loginPolicy;
+            _singleSignOnService = singleSignOnService;
+            _signalRUserService = signalRUserService;
+            _userService = userService;
+            _loginService = loginService;
+            _onlineUserRepository = onlineUserRepository;
+            _deviceIdGenerator = deviceIdGenerator;
+            _jwtOptions = jwtOptions;
+        }
+
+        /// <summary>
+        /// 检查用户是否可以登录
+        /// </summary>
+        /// <param name="loginDto">登录信息</param>
+        /// <returns>检查结果</returns>
+        [HttpPost("check-login")]
+        [AllowAnonymous]
+        public async Task<IActionResult> CheckLogin([FromBody] HbtAuthDto loginDto)
+        {
+            try
+            {
+                _logger.LogInformation("[登录检查] 开始检查用户登录状态: {Username}", loginDto.UserName);
+                
+                // 获取用户信息
+                var user = await _loginService.GetUserByUsernameAsync(loginDto.UserName);
+                if (user == null)
+                {
+                    _logger.LogInformation("[登录检查] 用户不存在，允许登录");
+                    return Success(new { canLogin = true, existingDeviceInfo = (string?)null });
+                }
+
+                // 检查单点登录状态
+                var (canLogin, existingDeviceInfo) = await _singleSignOnService.CheckLoginAsync(
+                    user.Id,
+                    user.UserName,
+                    loginDto.DeviceInfo?.ToString() ?? string.Empty);
+
+                _logger.LogInformation("[登录检查] 检查完成: {Username}, 是否可以登录: {CanLogin}, 现有设备信息: {DeviceInfo}", 
+                    loginDto.UserName, canLogin, existingDeviceInfo);
+
+                return Success(new { canLogin, existingDeviceInfo });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "[登录检查] 检查过程中发生错误: {Message}", ex.Message);
+                return StatusCode(500, new { code = int.Parse(HbtConstants.ErrorCodes.ServerError), msg = "服务器内部错误" });
+            }
         }
 
         /// <summary>
@@ -79,88 +142,110 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <returns>登录结果</returns>
         [HttpPost("login")]
         [AllowAnonymous]
-        public async Task<IActionResult> Login([FromBody] HbtLoginDto loginDto)
+        public async Task<IActionResult> Login([FromBody] HbtAuthDto loginDto)
         {
-            try 
+            _logger.LogInformation("[登录] 开始处理登录请求: {UserName}", loginDto.UserName);
+
+            try
             {
-                _logger.LogInformation("[登录控制器] 开始处理登录请求: {Username}", loginDto.UserName);
-                var result = await _loginService.LoginAsync(loginDto);
-                _logger.LogInformation("[登录控制器] 登录成功: {Username}", loginDto.UserName);
-                return Success(result);
+                // 先检查用户是否可以登录
+                var checkResult = await CheckLogin(loginDto);
+                if (checkResult is OkObjectResult okResult && 
+                    okResult.Value is HbtApiResult apiResult && 
+                    apiResult.Data is { } data)
+                {
+                    var canLogin = (bool)data.GetType().GetProperty("canLogin")?.GetValue(data);
+                    var existingDeviceInfo = (string?)data.GetType().GetProperty("existingDeviceInfo")?.GetValue(data);
+                    
+                    _logger.LogInformation("[登录] 检查结果: 是否可以登录={CanLogin}, 现有设备信息={DeviceInfo}", 
+                        canLogin, existingDeviceInfo);
+
+                    if (!canLogin)
+                    {
+                        _logger.LogWarning("[登录] 用户不允许登录: {UserName}", loginDto.UserName);
+                        return checkResult;
+                    }
+                }
+
+                // 获取用户信息
+                var user = await _loginService.GetUserByUsernameAsync(loginDto.UserName);
+                if (user == null)
+                {
+                    _logger.LogWarning("[登录] 用户不存在: {UserName}", loginDto.UserName);
+                    return Ok(new HbtApiResult
+                    {
+                        Code = int.Parse(HbtConstants.ErrorCodes.NotFound),
+                        Msg = _localization.L("User.NotFound")
+                    });
+                }
+
+                // 生成设备ID和连接ID
+                var deviceInfoJson = JsonSerializer.Serialize(loginDto.DeviceInfo);
+                var (deviceId, connectionId) = _deviceIdGenerator.GenerateIds(deviceInfoJson, user.Id.ToString());
+                
+                _logger.LogInformation("[登录] 生成的设备信息: DeviceId={DeviceId}, ConnectionId={ConnectionId}", 
+                    deviceId, connectionId);
+                
+                // 确保设备信息不为空
+                if (loginDto.DeviceInfo == null)
+                {
+                    loginDto.DeviceInfo = new HbtSignalRDevice();
+                }
+                
+                loginDto.DeviceInfo.DeviceId = deviceId;
+                loginDto.DeviceInfo.DeviceToken = connectionId;
+                loginDto.DeviceInfo.TenantId = user.TenantId;
+
+                // 验证登录信息
+                var loginResult = await _loginService.LoginAsync(loginDto);
+                if (loginResult == null)
+                {
+                    _logger.LogWarning("[登录] 登录验证失败: {UserName}", loginDto.UserName);
+                    return Ok(new HbtApiResult
+                    {
+                        Code = int.Parse(HbtConstants.ErrorCodes.Unauthorized),
+                        Msg = _localization.L("User.InvalidPassword")
+                    });
+                }
+
+                // 生成登录结果
+                var loginResultDto = new HbtLoginResultDto
+                {
+                    AccessToken = loginResult.AccessToken,
+                    RefreshToken = loginResult.RefreshToken,
+                    ExpiresIn = _jwtOptions.Value.ExpirationMinutes * 60,
+                    UserInfo = loginResult.UserInfo
+                };
+
+                _logger.LogInformation("[登录] 登录成功: {UserName}", loginDto.UserName);
+
+                return Ok(new HbtApiResult
+                {
+                    Code = 200,
+                    Msg = _localization.L("User.LoginSuccess"),
+                    Data = loginResultDto
+                });
             }
             catch (HbtException ex)
             {
-                _logger.LogWarning("[登录控制器] 登录失败: {Username}, 错误代码: {Code}, 消息: {Message}", 
-                    loginDto.UserName, ex.Code, ex.Message);
-                
-                // 根据错误类型返回不同的状态码
-                if (ex.Code == int.Parse(HbtConstants.ErrorCodes.ValidationFailed))
+                _logger.LogError(ex, "[登录] 登录失败: {UserName}, {Message}, {Code}", loginDto.UserName, ex.Message, ex.Code);
+                return Ok(new HbtApiResult
                 {
-                    var remainingSeconds = ex.Data["RemainingSeconds"] as int?;
-                    var failedAttempts = ex.Data["FailedAttempts"] as int?;
-                    var remainingAttempts = ex.Data["RemainingAttempts"] as int?;
-                    
-                    // 如果有剩余等待时间，说明账号被锁定
-                    if (remainingSeconds.HasValue && remainingSeconds.Value > 0)
-                    {
-                        var minutes = Math.Ceiling(remainingSeconds.Value / 60.0);
-                        var isAdmin = loginDto.UserName.ToLower() == "admin";
-                        var lockoutMinutes = isAdmin ? 30 : 10;
-                        
-                        var message = $"账号已被锁定，请等待{minutes}分钟后再试\n{(isAdmin ? "管理员" : "普通用户")}账号锁定时间为{lockoutMinutes}分钟";
-                        
-                        return StatusCode(429, new { 
-                            code = ex.Code, 
-                            msg = message,
-                            remainingSeconds = remainingSeconds.Value,
-                            failedAttempts = failedAttempts ?? 1,
-                            remainingAttempts = remainingAttempts ?? 0
-                        });
-                    }
-                    
-                    // 需要验证码但未提供
-                    if (string.IsNullOrEmpty(loginDto.CaptchaToken))
-                    {
-                        return StatusCode(429, new { 
-                            code = ex.Code, 
-                            msg = "请完成验证码验证",
-                            remainingSeconds = 0,
-                            failedAttempts = failedAttempts ?? 1,
-                            remainingAttempts = remainingAttempts ?? 0,
-                            needCaptcha = true
-                        });
-                    }
-                    
-                    // 验证码验证失败
-                    return StatusCode(429, new { 
-                        code = ex.Code, 
-                        msg = ex.Message,
-                        remainingSeconds = 0,
-                        failedAttempts = failedAttempts ?? 1,
-                        remainingAttempts = remainingAttempts ?? 0,
-                        needCaptcha = true
-                    });
-                }
-                
-                // 用户名或密码错误返回401
-                if (ex.Code == int.Parse(HbtConstants.ErrorCodes.Unauthorized))
-                {
-                    return StatusCode(401, new { code = ex.Code, msg = ex.Message });
-                }
-                
-                // 用户或租户被禁用返回403
-                if (ex.Code == int.Parse(HbtConstants.ErrorCodes.Forbidden))
-                {
-                    return StatusCode(403, new { code = ex.Code, msg = ex.Message });
-                }
-                
-                // 其他业务错误返回400
-                return BadRequest(new { code = ex.Code, msg = ex.Message });
+                    Code = ex.Code,
+                    Msg = ex.Message,
+                    Data = null
+                });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "[登录控制器] 登录过程中发生错误: {Message}", ex.Message);
-                return StatusCode(500, new { code = int.Parse(HbtConstants.ErrorCodes.ServerError), msg = "服务器内部错误" });
+                _logger.LogError(ex, "[登录] 登录异常: {UserName}, {Message}, {StackTrace}, {InnerException}", 
+                    loginDto.UserName, ex.Message, ex.StackTrace, ex.InnerException?.Message);
+                return Ok(new HbtApiResult
+                {
+                    Code = 500,
+                    Msg = _localization.L("Server.Error") + ": " + ex.Message,
+                    Data = null
+                });
             }
         }
 
@@ -172,7 +257,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         [Authorize]
         public async Task<IActionResult> GetUserInfo()
         {
-            var userId = HttpContext.User.FindFirst("user_id")?.Value;
+            var userId = HttpContext.User.FindFirst("uid")?.Value;
             if (string.IsNullOrEmpty(userId))
             {
                 _logger.LogWarning("[用户信息] 未找到用户ID");
@@ -198,7 +283,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
             {
                 _logger.LogInformation("[登出控制器] 开始处理登出请求, 是否是系统重启: {IsSystemRestart}", isSystemRestart);
                 
-                var userId = HttpContext.User.FindFirst("user_id")?.Value;
+                var userId = HttpContext.User.FindFirst("uid")?.Value;
                 if (string.IsNullOrEmpty(userId))
                 {
                     _logger.LogInformation("[登出控制器] 未找到用户ID，直接返回成功");
