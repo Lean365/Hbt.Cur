@@ -63,6 +63,10 @@ export class SignalRService {
     this.off = this.off.bind(this)
   }
 
+  public getConnectionState(): boolean {
+    return this.isConnected
+  }
+
   public static getInstance(): SignalRService {
     if (!SignalRService.instance) {
       SignalRService.instance = new SignalRService()

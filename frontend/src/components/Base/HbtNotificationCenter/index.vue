@@ -374,7 +374,7 @@ onMounted(() => {
   loadNotifications()
   
   // 注册SignalR消息处理
-  if (signalRService.isConnected()) {
+  if (signalRService.getConnectionState()) {
     signalRService.on('receivePersonalNotice', handleNewNotification)
     signalRService.on('receiveMailStatus', handleMailStatus)
     signalRService.on('receiveNoticeStatus', handleNoticeStatus)
@@ -383,7 +383,7 @@ onMounted(() => {
 
 onUnmounted(() => {
   // 注销SignalR消息处理
-  if (signalRService.isConnected()) {
+  if (signalRService.getConnectionState()) {
     signalRService.off('receivePersonalNotice', handleNewNotification)
     signalRService.off('receiveMailStatus', handleMailStatus)
     signalRService.off('receiveNoticeStatus', handleNoticeStatus)

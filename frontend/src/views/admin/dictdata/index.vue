@@ -130,18 +130,8 @@ import { message } from 'ant-design-vue'
 import type { TablePaginationConfig } from 'ant-design-vue'
 import { hasPermi } from '@/directives/permission'
 import { useRoute } from 'vue-router'
-
 // 引入标准组件
-import HbtQuery from '@/components/Business/Query/index.vue'
-import HbtToolbar from '@/components/Business/Toolbar/index.vue'
-import HbtTable from '@/components/Business/Table/index.vue'
-import HbtOperation from '@/components/Business/Operation/index.vue'
-import HbtPagination from '@/components/Business/Pagination/index.vue'
-import HbtSelect from '@/components/Business/Select/index.vue'
 
-// 引入业务组件
-import DictDataForm from './components/DictDataForm.vue'
-import DictDataDetail from './components/DictDataDetail.vue'
 
 // 引入API和类型
 import {

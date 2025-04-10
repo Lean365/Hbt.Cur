@@ -171,7 +171,7 @@ import type {
   HbtTranslationUpdate
 } from '@/types/admin/translation'
 import TranslationForm from './components/TranslationForm.vue'
-import '@/components/Business/Pagination/index.vue'
+
 
 // 查询参数
 const queryParams = reactive<HbtTranslationQuery>({

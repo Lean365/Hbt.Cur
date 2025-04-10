@@ -57,7 +57,6 @@
 <script lang="ts" setup>
 import { useI18n } from 'vue-i18n'
 import type { HbtDictType } from '@/types/admin/dictType'
-import HbtModal from '@/components/Business/Modal/index.vue'
 
 const { t } = useI18n()
 
