@@ -284,6 +284,30 @@ export const constantRoutes: RouteRecordRaw[] = [
             }
           }
         ]
+      },
+      {
+        path: '/notification',
+        name: 'Notification',
+        redirect: '/notification/center',
+        meta: {
+          title: 'menu.notification.title',
+          icon: 'BellOutlined',
+          requiresAuth: true,
+          transKey: 'menu.notification.title'
+        },
+        children: [
+          {
+            path: 'center',
+            name: 'NotificationCenter',
+            component: () => import('@/components/Base/HbtNotificationCenter/index.vue'),
+            meta: {
+              title: 'menu.notification.center',
+              icon: 'NotificationOutlined',
+              requiresAuth: true,
+              transKey: 'menu.notification.center'
+            }
+          }
+        ]
       }
     ]
   }

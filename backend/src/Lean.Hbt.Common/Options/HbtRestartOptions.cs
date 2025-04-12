@@ -12,7 +12,7 @@ namespace Lean.Hbt.Common.Options
     /// <summary>
     /// 系统重启配置选项
     /// </summary>
-    public class HbtSystemRestartOptions
+    public class HbtRestartOptions
     {
         /// <summary>
         /// 是否清除用户会话

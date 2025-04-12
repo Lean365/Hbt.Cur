@@ -36,7 +36,7 @@
         showQuickJumper: true,
         showTotal: (total: number) => `共 ${total} 条`
       }"
-      :row-key="(record: HbtAuditLogDto) => record.id"
+      :row-key="(record: HbtAuditLogDto) => String(record.id)"
       v-model:selectedRowKeys="selectedRowKeys"
       :row-selection="{
         type: 'checkbox',

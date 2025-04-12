@@ -28,6 +28,7 @@ const modules = [
   'components/table',
   'components/theme',
   'components/setting',
+  'components/notification',
   
   // common
   'common',

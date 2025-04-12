@@ -7,16 +7,11 @@
 // 描述    : 权限中间件
 //===================================================================
 
-using Microsoft.AspNetCore.Http;
-using Lean.Hbt.Infrastructure.Security.Attributes;
-using System.Linq;
-using System;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using Microsoft.AspNetCore.Authorization;
-using Lean.Hbt.Domain.Repositories;
 using Lean.Hbt.Domain.Entities.Identity;
-using Microsoft.Extensions.DependencyInjection;
+using Lean.Hbt.Infrastructure.Security.Attributes;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 
 namespace Lean.Hbt.Infrastructure.Security
 {
@@ -87,8 +82,24 @@ namespace Lean.Hbt.Infrastructure.Security
             _logger.LogInformation("[权限中间件] 需要的权限: {Permission}", permAttribute.Permission);
 
             // 仅从Claims中获取用户ID
-            var userId = long.Parse(context.User.Claims.First(c => c.Type == "user_id").Value);
-            var isAdmin = context.User.Claims.Any(c => c.Type == "is_admin" && c.Value == "true");
+            var userIdClaim = context.User.Claims.FirstOrDefault(c => c.Type == "uid");
+            if (userIdClaim == null)
+            {
+                _logger.LogWarning("[权限中间件] 未找到uid Claim");
+                context.Response.StatusCode = 401;
+                await context.Response.WriteAsJsonAsync(new { message = "无效的认证信息" });
+                return;
+            }
+
+            if (!long.TryParse(userIdClaim.Value, out long userId))
+            {
+                _logger.LogWarning("[权限中间件] uid Claim格式无效: {Value}", userIdClaim.Value);
+                context.Response.StatusCode = 401;
+                await context.Response.WriteAsJsonAsync(new { message = "无效的用户ID" });
+                return;
+            }
+
+            var isAdmin = context.User.Claims.Any(c => c.Type == "adm" && c.Value == "true");
 
             _logger.LogInformation("[权限中间件] 用户信息: UserId={UserId}, IsAdmin={IsAdmin}", userId, isAdmin);
 
@@ -101,16 +112,16 @@ namespace Lean.Hbt.Infrastructure.Security
 
             // 从请求作用域获取仓储实例
             var userRepository = context.RequestServices.GetRequiredService<IHbtRepository<HbtUser>>();
-            
+
             // 直接获取用户权限列表
             var permissions = await userRepository.GetUserPermissionsAsync(userId);
-            
-            _logger.LogInformation("[权限中间件] 用户权限列表: {Permissions}", string.Join(", ", permissions));
-            
+
+            //_logger.LogInformation("[权限中间件] 用户权限列表: {Permissions}", string.Join(", ", permissions));
+
             // 检查具体权限
             var hasPermission = permissions.Contains(permAttribute.Permission);
-            _logger.LogInformation("[权限中间件] 权限验证结果: {Result}, 所需权限: {Permission}", 
-                hasPermission ? "通过" : "未通过", 
+            _logger.LogInformation("[权限中间件] 权限验证结果: {Result}, 所需权限: {Permission}",
+                hasPermission ? "通过" : "未通过",
                 permAttribute.Permission);
 
             if (!hasPermission)

@@ -1,5 +1,5 @@
 // 查询字段类型定义
-export type FieldType = 'input' | 'select' | 'date' | 'datetime' | 'number'
+export type FieldType = 'input' | 'select' | 'date' | 'dateRange' | 'number' | 'radio' | 'checkbox' | 'cascader'
 
 // 查询字段选项接口
 export interface QueryFieldOption {
@@ -13,7 +13,9 @@ export interface QueryField {
   label: string
   type: FieldType
   placeholder?: string
-  options?: QueryFieldOption[]
-  defaultValue?: any
+  span?: number
+  rules?: any[]
+  options?: { label: string; value: any }[]
+  disabled?: boolean
   props?: Record<string, any>
 } 

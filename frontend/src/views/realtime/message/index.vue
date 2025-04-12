@@ -13,10 +13,16 @@
     <hbt-toolbar
       :show-refresh="true"
       :show-delete="true"
+      :show-add="true"
+      :show-edit="true"
+      :add-permission="['realtime:message:create']"
+      :edit-permission="['realtime:message:create']"
       :delete-permission="['realtime:message:delete']"
       :disabled-delete="selectedRowKeys.length === 0"
       @refresh="fetchData"
       @delete="handleBatchDelete"
+      @add="handleSendMessage"
+      @edit="handleSendTestMessage"
       @toggle-search="toggleSearch"
     />
 
@@ -64,17 +70,24 @@
         </template>
       </template>
     </hbt-table>
+
+    <SendForm
+      v-model:visible="sendFormVisible"
+      @success="handleSearch"
+    />
   </div>
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive, onMounted, onUnmounted } from 'vue'
+import { ref, reactive, onMounted, onUnmounted, computed } from 'vue'
 import { message } from 'ant-design-vue'
 import type { TablePaginationConfig } from 'ant-design-vue'
 import type { QueryField } from '@/types/components/query'
 import type { HbtOnlineMessageDto } from '@/types/realtime/onlineMessage'
 import { getOnlineMessageList, deleteOnlineMessage } from '@/api/realtime/onlineMessage'
 import { signalRService } from '@/utils/SignalR/service'
+import { useUserStore } from '@/stores/user'
+import SendForm from './components/SendForm.vue'
 
 // 查询字段定义
 const queryFields: QueryField[] = [
@@ -152,9 +165,26 @@ const queryParams = reactive({
 })
 const selectedRowKeys = ref<string[]>([])
 const showSearch = ref(true)
+const sendFormVisible = ref(false)
+
+// 获取用户信息
+const userStore = useUserStore()
+const currentUser = computed(() => userStore.user)
 
 // 生命周期钩子
-onMounted(() => {
+onMounted(async () => {
+  // 获取用户信息
+  if (!userStore.user) {
+    try {
+      await userStore.getUserInfo()
+      console.log('用户信息获取成功:', userStore.user)
+    } catch (error) {
+      console.error('获取用户信息失败:', error)
+      message.error('获取用户信息失败，请重新登录')
+      return
+    }
+  }
+
   fetchData()
   // 监听新消息事件
   signalRService.on('ReceiveMessage', handleNewMessage)
@@ -260,10 +290,63 @@ const getMessageTypeText = (type: string) => {
   }
   return texts[type] || type
 }
+
+/** 处理搜索成功 */
+const handleSearch = () => {
+  queryParams.pageIndex = 1
+  fetchData()
+}
+
+const handleSendMessage = () => {
+  sendFormVisible.value = true
+}
+
+const handleSendTestMessage = async () => {
+  console.log('当前用户信息:', userStore.user)
+  
+  if (!userStore.user) {
+    message.warning('用户信息未获取到，请刷新页面重试')
+    return
+  }
+
+  if (!userStore.user.id) {
+    message.warning('用户ID未获取到，请重新登录')
+    return
+  }
+
+  try {
+    const testContent = `测试消息 ${new Date().toLocaleString()}`
+    console.log('发送测试消息:', {
+      userId: userStore.user.id,
+      userName: userStore.user.userName,
+      content: testContent
+    })
+    
+    await signalRService.sendMessage({
+      userId: userStore.user.id,
+      content: testContent
+    })
+    message.success('测试消息发送成功')
+  } catch (error) {
+    console.error('发送测试消息失败:', error)
+    message.error('发送测试消息失败')
+  }
+}
 </script>
 
 <style lang="less" scoped>
 .online-message-container {
   padding: 16px;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-actions {
+  display: flex;
+  gap: 10px;
 }
 </style> 

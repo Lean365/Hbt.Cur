@@ -39,7 +39,9 @@
         <template v-if="column.key === 'action'">
           <hbt-operation
             :show-force-offline="true"
-            @force-offline="handleForceOffline"
+            :show-send-message="true"
+            @force-offline="handleForceOffline(record)"
+            @send-message="handleSendMessage(record)"
           />
         </template>
       </template>
@@ -52,6 +54,13 @@
       :total="total"
       @change="handlePageChange"
       @showSizeChange="handleSizeChange"
+    />
+
+    <!-- 发送消息表单 -->
+    <SendForm
+      v-model:visible="sendFormVisible"
+      :default-user-id="selectedUserId"
+      @success="handleSendSuccess"
     />
   </div>
 </template>
@@ -66,6 +75,7 @@ import { getOnlineUserList, forceOfflineUser } from '@/api/realtime/onlineUser'
 import { signalRService } from '@/utils/SignalR/service'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
+import SendForm from './components/SendForm.vue'
 
 const { t } = useI18n()
 const router = useRouter()
@@ -141,6 +151,9 @@ const queryParams = reactive<HbtOnlineUserQueryParams>({
 })
 const selectedRowKeys = ref<string[]>([])
 const showSearch = ref(true)
+const sendFormVisible = ref(false)
+const selectedUserId = ref<number>()
+const receivedMessages = reactive<any[]>([])
 
 // 生命周期钩子
 onMounted(() => {
@@ -151,6 +164,8 @@ onMounted(() => {
   signalRService.on('UserOffline', handleUserOffline)
   // 监听强制下线事件
   signalRService.on('ForceOffline', handleForceOfflineEvent)
+  // 监听SignalR消息
+  signalRService.on('ReceiveMessage', handleReceivedMessage)
 })
 
 onUnmounted(() => {
@@ -159,6 +174,7 @@ onUnmounted(() => {
   signalRService.off('UserOnline', handleUserOnline)
   signalRService.off('UserOffline', handleUserOffline)
   signalRService.off('ForceOffline', handleForceOfflineEvent)
+  signalRService.off('ReceiveMessage', handleReceivedMessage)
 })
 
 /** 获取表格数据 */
@@ -271,10 +287,42 @@ const handleBatchDelete = async () => {
 const toggleSearch = () => {
   showSearch.value = !showSearch.value
 }
+
+/** 发送消息 */
+const handleSendMessage = (record: HbtOnlineUserDto) => {
+  selectedUserId.value = record.userId
+  sendFormVisible.value = true
+}
+
+/** 发送消息成功 */
+const handleSendSuccess = () => {
+  message.success('消息发送成功')
+  sendFormVisible.value = false
+}
+
+/** 处理接收到的消息 */
+const handleReceivedMessage = (message: any) => {
+  console.log('收到消息:', message)
+  const newMessage = {
+    id: Date.now().toString(),
+    senderId: message.senderId,
+    receiverId: message.receiverId,
+    content: message.content,
+    timestamp: new Date()
+  }
+  receivedMessages.push(newMessage)
+}
 </script>
 
-<style lang="less" scoped>
-.online-user-container {
-  padding: 24px;
+<style scoped>
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-actions {
+  display: flex;
+  gap: 10px;
 }
 </style>

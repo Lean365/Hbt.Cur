@@ -45,7 +45,7 @@ const handleLocaleChange = async (langCode: string) => {
   
   loading.value = true
   try {
-    await appStore.setLocale(langCode)
+    await appStore.setLocale(langCode as 'zh-CN' | 'en-US' | 'ar-SA' | 'es-ES' | 'fr-FR' | 'ja-JP' | 'ko-KR' | 'ru-RU' | 'zh-TW')
     message.success(t('common.message.operationSuccess'))
   } catch (error) {
     message.error(t('common.message.operationFailure'))

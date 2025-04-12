@@ -154,3 +154,16 @@ export function updateProfile(data: ProfileUpdate) {
     data
   })
 }
+
+// 搜索用户
+export function searchUser(query: { keyword: string }) {
+  return request<HbtApiResponse<HbtPagedResult<User>>>({
+    url: '/api/HbtUser',
+    method: 'get',
+    params: {
+      userName: query.keyword,
+      pageSize: 10,
+      pageIndex: 1
+    }
+  })
+}

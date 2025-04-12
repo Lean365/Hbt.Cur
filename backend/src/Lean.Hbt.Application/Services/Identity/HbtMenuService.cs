@@ -9,12 +9,7 @@
 
 using System.Linq.Expressions;
 using Lean.Hbt.Application.Dtos.Identity;
-using Lean.Hbt.Common.Exceptions;
-using Lean.Hbt.Common.Helpers;
 using Lean.Hbt.Domain.Entities.Identity;
-using Lean.Hbt.Domain.Repositories;
-using Lean.Hbt.Domain.Utils;
-using SqlSugar;
 
 namespace Lean.Hbt.Application.Services.Identity
 {
@@ -29,10 +24,13 @@ namespace Lean.Hbt.Application.Services.Identity
     {
         // 日志记录器
         private readonly ILogger<HbtMenuService> _logger;
+
         // 菜单仓储接口
         private readonly IHbtRepository<HbtMenu> _menuRepository;
+
         // 角色菜单仓储接口
         private readonly IHbtRepository<HbtRoleMenu> _roleMenuRepository;
+
         // 用户角色仓储接口
         private readonly IHbtRepository<HbtUserRole> _userRoleRepository;
 
@@ -129,7 +127,7 @@ namespace Lean.Hbt.Application.Services.Identity
             {
                 MenuName = input.MenuName,
                 TransKey = input.TransKey,
-                ParentId = input.ParentId??0,
+                ParentId = input.ParentId ?? 0,
                 OrderNum = input.OrderNum,
                 Path = input.Path,
                 Component = input.Component,
@@ -372,25 +370,25 @@ namespace Lean.Hbt.Application.Services.Identity
             try
             {
                 _logger.LogInformation("[菜单服务] 开始获取菜单树");
-                
+
                 // 获取所有菜单
                 var menus = await _menuRepository.AsQueryable()
                     .OrderBy(m => m.OrderNum)
                     .ToListAsync();
-                    
+
                 _logger.LogInformation("[菜单服务] 从数据库获取菜单数: {Count}", menus?.Count ?? 0);
 
                 // 转换为DTO
                 var menuDtos = menus.Adapt<List<HbtMenuDto>>();
-                
+
                 _logger.LogInformation("[菜单服务] 转换后的菜单DTO数: {Count}", menuDtos?.Count ?? 0);
 
                 // 构建树形结构 - 使用ParentId == 0作为根节点判断条件
                 var tree = menuDtos.Where(m => m.ParentId == 0).ToList();
-                
-                _logger.LogInformation("[菜单服务] 找到根节点数: {Count}, 根节点: {RootNodes}", 
-                    tree?.Count ?? 0,
-                    string.Join(", ", tree?.Select(n => $"{n.MenuName}({n.MenuId})") ?? new List<string>()));
+
+                //_logger.LogInformation("[菜单服务] 找到根节点数: {Count}, 根节点: {RootNodes}",
+                //    tree?.Count ?? 0,
+                //    string.Join(", ", tree?.Select(n => $"{n.MenuName}({n.MenuId})") ?? new List<string>()));
 
                 foreach (var node in tree)
                 {
@@ -419,9 +417,9 @@ namespace Lean.Hbt.Application.Services.Identity
                 var children = allMenus.Where(m => m.ParentId == node.MenuId).ToList();
                 if (children.Any())
                 {
-                    _logger.LogInformation("[菜单服务] 节点 {NodeName}({NodeId}) 找到 {Count} 个子节点", 
-                        node.MenuName, node.MenuId, children.Count);
-                        
+                    //_logger.LogInformation("[菜单服务] 节点 {NodeName}({NodeId}) 找到 {Count} 个子节点",
+                    //    node.MenuName, node.MenuId, children.Count);
+
                     node.Children = children;
                     foreach (var child in children)
                     {
@@ -431,7 +429,7 @@ namespace Lean.Hbt.Application.Services.Identity
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "[菜单服务] 构建节点 {NodeName}({NodeId}) 的子树时发生错误: {Message}", 
+                _logger.LogError(ex, "[菜单服务] 构建节点 {NodeName}({NodeId}) 的子树时发生错误: {Message}",
                     node.MenuName, node.MenuId, ex.Message);
                 throw;
             }
@@ -444,7 +442,7 @@ namespace Lean.Hbt.Application.Services.Identity
         /// <returns>返回用户有权限访问的菜单树形结构</returns>
         public async Task<List<HbtMenuDto>> GetCurrentUserMenusAsync(long userId)
         {
-            try 
+            try
             {
                 _logger.LogInformation("[菜单服务] 开始获取用户菜单: UserId={UserId}", userId);
 
@@ -452,14 +450,14 @@ namespace Lean.Hbt.Application.Services.Identity
                 var roleIdsQuery = _userRoleRepository.AsQueryable()
                     .Where(ur => ur.UserId == userId)
                     .Select(ur => ur.RoleId);
-                    
-                _logger.LogInformation("[菜单服务] 用户角色查询SQL: {Sql}", 
-                    roleIdsQuery.ToSql());
-                    
+
+                //_logger.LogInformation("[菜单服务] 用户角色查询SQL: {Sql}",
+                //    roleIdsQuery.ToSql());
+
                 var roleIds = await roleIdsQuery.ToListAsync();
 
-                _logger.LogInformation("[菜单服务] 用户角色: Count={Count}, RoleIds={RoleIds}", 
-                    roleIds?.Count ?? 0, 
+                _logger.LogInformation("[菜单服务] 用户角色: Count={Count}, RoleIds={RoleIds}",
+                    roleIds?.Count ?? 0,
                     string.Join(",", roleIds ?? new List<long>()));
 
                 if (roleIds == null || !roleIds.Any())
@@ -473,10 +471,10 @@ namespace Lean.Hbt.Application.Services.Identity
                     .Where(rm => roleIds.Contains(rm.RoleId))
                     .Select(rm => rm.MenuId)
                     .Distinct();
-                    
-                _logger.LogInformation("[菜单服务] 角色菜单查询SQL: {Sql}", 
-                    menuIdsQuery.ToSql());
-                    
+
+                //_logger.LogInformation("[菜单服务] 角色菜单查询SQL: {Sql}",
+                //    menuIdsQuery.ToSql());
+
                 var menuIds = await menuIdsQuery.ToListAsync();
 
                 // _logger.LogInformation("[菜单服务] 角色菜单: Count={Count}, MenuIds={MenuIds}",
@@ -493,16 +491,16 @@ namespace Lean.Hbt.Application.Services.Identity
                 var menusQuery = _menuRepository.AsQueryable()
                     .Where(m => menuIds.Contains(m.Id) && m.Status == 0 && m.MenuType != 2)
                     .OrderBy(m => m.OrderNum);
-                    
-                // _logger.LogInformation("[菜单服务] 菜单查询SQL: {Sql}", 
+
+                // _logger.LogInformation("[菜单服务] 菜单查询SQL: {Sql}",
                 //     menusQuery.ToSql());
-                    
+
                 var menus = await menusQuery.ToListAsync();
 
-                _logger.LogInformation("[菜单服务] 获取到的菜单: Count={Count}, MenuNames={MenuNames}, MenuTypes={MenuTypes}",
-                    menus?.Count ?? 0,
-                    string.Join(",", menus?.Select(m => m.MenuName) ?? new List<string>()),
-                    string.Join(",", menus?.Select(m => m.MenuType) ?? new List<int>()));
+                //_logger.LogInformation("[菜单服务] 获取到的菜单: Count={Count}, MenuNames={MenuNames}, MenuTypes={MenuTypes}",
+                //    menus?.Count ?? 0,
+                //    string.Join(",", menus?.Select(m => m.MenuName) ?? new List<string>()),
+                //    string.Join(",", menus?.Select(m => m.MenuType) ?? new List<int>()));
 
                 // 转换为DTO
                 var menuDtos = menus.Adapt<List<HbtMenuDto>>();
@@ -514,9 +512,9 @@ namespace Lean.Hbt.Application.Services.Identity
                     BuildMenuTree(node, menuDtos);
                 }
 
-                _logger.LogInformation("[菜单服务] 构建的菜单树: Count={Count}, RootMenus={RootMenus}", 
-                    tree?.Count ?? 0,
-                    string.Join(",", tree?.Select(m => m.MenuName) ?? new List<string>()));
+                //_logger.LogInformation("[菜单服务] 构建的菜单树: Count={Count}, RootMenus={RootMenus}",
+                //    tree?.Count ?? 0,
+                //    string.Join(",", tree?.Select(m => m.MenuName) ?? new List<string>()));
 
                 return tree;
             }

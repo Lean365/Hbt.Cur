@@ -14,12 +14,10 @@ using Lean.Hbt.Infrastructure.Jobs;
 using Lean.Hbt.Infrastructure.Security;
 using Lean.Hbt.Infrastructure.Services;
 using Lean.Hbt.Infrastructure.Services.Identity;
-using Lean.Hbt.Infrastructure.SignalR;
 using Lean.Hbt.Infrastructure.SignalR.Cache;
 using Lean.Hbt.WebApi.Middlewares;
 using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Options;
@@ -29,8 +27,6 @@ using NLog;
 using NLog.Web;
 using Quartz;
 using SqlSugar;
-using Microsoft.Extensions.Logging;
-using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 var logger = LogManager.Setup()
@@ -125,8 +121,8 @@ try
                 .WithMethods(corsMethods)
                 .WithHeaders(corsHeaders)
                 .AllowCredentials()
-                .WithExposedHeaders("X-Device-Id", "X-Device-Name", "X-Device-Type", "X-Device-Model", 
-                    "X-OS-Type", "X-OS-Version", "X-Browser-Type", "X-Browser-Version", 
+                .WithExposedHeaders("X-Device-Id", "X-Device-Name", "X-Device-Type", "X-Device-Model",
+                    "X-OS-Type", "X-OS-Version", "X-Browser-Type", "X-Browser-Version",
                     "X-Resolution", "X-Location", "X-Device-Token");
         });
     });
@@ -342,10 +338,10 @@ try
     });
 
     // 注册系统重启服务
-    builder.Services.AddScoped<IHbtSystemRestartService, HbtSystemRestartService>();
+    builder.Services.AddScoped<IHbtRestartService, HbtRestartService>();
 
     // 注册系统重启配置选项
-    builder.Services.Configure<HbtSystemRestartOptions>(
+    builder.Services.Configure<HbtRestartOptions>(
         builder.Configuration.GetSection("SystemRestart"));
 
     builder.Services.AddAntiforgery(options =>
@@ -390,7 +386,7 @@ try
         }
 
         // 执行系统重启清理
-        var systemRestartService = scope.ServiceProvider.GetRequiredService<IHbtSystemRestartService>();
+        var systemRestartService = scope.ServiceProvider.GetRequiredService<IHbtRestartService>();
         var result = await systemRestartService.ExecuteRestartCleanupAsync();
         if (result)
         {

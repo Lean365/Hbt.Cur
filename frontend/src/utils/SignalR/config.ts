@@ -104,11 +104,12 @@ export const createHubConnection = async (): Promise<HubConnection> => {
                     }
                     return token;
                 },
-                skipNegotiation: true,
+                skipNegotiation: false,
                 transport: HttpTransportType.WebSockets,
                 withCredentials: false
             })
             .withAutomaticReconnect()
+            .configureLogging(LogLevel.Debug)
             .build();
 
         // 设置连接事件处理

@@ -311,53 +311,35 @@ const handleLogin = async () => {
 const handleLoginSuccess = async () => {
   try {
     console.log('[登录成功] 开始处理登录成功流程')
-    
     // 记录登录时间
-    const loginTime = Date.now()
-    localStorage.setItem(LOGIN_STORAGE_KEYS.LAST_LOGIN_TIME, loginTime.toString())
+    await userStore.recordLoginTime()
     console.log('[登录成功] 记录登录时间完成')
     
     // 重置失败次数
-    resetFailedAttempts(loginForm.value.userName)
+    await userStore.resetLoginFailCount()
     console.log('[登录成功] 重置失败次数完成')
-
-    // 获取用户信息
+    
+    // 开始获取用户信息
     console.log('[登录成功] 开始获取用户信息')
-    const userInfo = await userStore.getUserInfo()
-    console.log('[登录成功] 用户信息获取成功:', userInfo)
-
-    // 加载菜单
+    await userStore.getUserInfo()
+    console.log('[登录成功] 用户信息获取成功:', userStore.user)
+    
+    // 开始加载菜单
     console.log('[登录成功] 开始加载菜单')
-    const menus = await menuStore.loadUserMenus()
-    console.log('[登录成功] 菜单加载完成:', {
-      菜单数量: menuStore.rawMenuList?.length || 0,
-      顶级菜单: menuStore.rawMenuList?.filter(m => !m.parentId).map(m => m.menuName) || []
-    })
-
-    // 注册动态路由
-    console.log('[登录成功] 开始注册动态路由')
-    const routes = await registerDynamicRoutes(menuStore.rawMenuList)
-    console.log('[登录成功] 动态路由注册完成:', {
-      成功: routes,
-      当前路由表: router.getRoutes().map(r => r.path)
-    })
-
-    // 等待路由注册完成
-    await nextTick()
+    await menuStore.reloadMenus()
+    console.log('[登录成功] 菜单加载完成')
+    
+    // 等待路由更新完成
     console.log('[登录成功] 等待路由更新完成')
-
-    // 跳转到首页
+    await nextTick()
     console.log('[登录成功] 准备跳转到首页')
-    const result = await router.push({ path: '/' })
+    
+    // 跳转到首页
+    const result = await router.push('/home')
     console.log('[登录成功] 跳转结果:', result)
-  } catch (error: any) {
-    console.error('[登录成功处理] 失败:', {
-      错误: error,
-      错误信息: error.message,
-      错误堆栈: error.stack,
-      错误类型: error.name
-    })
-    message.error(error.message || t('identity.auth.login.failed'))
+  } catch (error) {
+    console.error('[登录成功] 处理登录成功流程失败:', error)
+    message.error('登录成功，但初始化失败，请刷新页面重试')
   }
 }
 

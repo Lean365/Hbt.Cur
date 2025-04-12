@@ -16,6 +16,7 @@ using Lean.Hbt.Domain.IServices.Security;
 using Lean.Hbt.Domain.IServices.SignalR;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
+using System.Security.Claims;
 
 namespace Lean.Hbt.Infrastructure.SignalR
 {
@@ -64,87 +65,104 @@ namespace Lean.Hbt.Infrastructure.SignalR
         {
             try
             {
-                await _connectionLock.WaitAsync();
-                var httpContext = Context.GetHttpContext();
-                if (httpContext == null)
+                _logger.LogInformation("新连接建立 - 连接ID: {ConnectionId}", Context.ConnectionId);
+
+                // 获取设备信息
+                var deviceInfo = Context.GetHttpContext()?.Request.Query["deviceInfo"].ToString();
+                if (string.IsNullOrEmpty(deviceInfo))
                 {
-                    throw new HubException("无法获取HTTP上下文");
+                    _logger.LogWarning("未找到设备信息");
+                    return;
                 }
 
-                var deviceInfoJson = httpContext.Request.Query["deviceInfo"].ToString() ?? string.Empty;
-                var accessToken = httpContext.Request.Query["access_token"].ToString() ?? string.Empty;
-
-                if (string.IsNullOrEmpty(deviceInfoJson) || string.IsNullOrEmpty(accessToken))
+                // 获取访问令牌
+                var accessToken = Context.GetHttpContext()?.Request.Query["access_token"].ToString();
+                if (string.IsNullOrEmpty(accessToken))
                 {
-                    throw new HubException("设备信息或访问令牌不能为空");
+                    _logger.LogWarning("未找到访问令牌");
+                    return;
                 }
 
-                // URL 解码设备信息
-                deviceInfoJson = Uri.UnescapeDataString(deviceInfoJson);
-
-                // 从 token 中获取用户信息
+                // 从token中获取用户ID
                 var tokenHandler = new JwtSecurityTokenHandler();
                 var jwtToken = tokenHandler.ReadJwtToken(accessToken);
                 var userId = jwtToken.Claims.FirstOrDefault(c => c.Type == "uid")?.Value;
-                var tenantId = jwtToken.Claims.FirstOrDefault(c => c.Type == "tid")?.Value;
-
                 if (string.IsNullOrEmpty(userId))
                 {
-                    throw new HubException("无效的用户ID");
+                    _logger.LogWarning("未找到用户ID");
+                    return;
                 }
 
-                // 解析前端传来的设备信息
-                var deviceInfo = JsonSerializer.Deserialize<HbtSignalRDevice>(deviceInfoJson);
-
-                if (deviceInfo == null)
-                {
-                    throw new HubException("无效的设备信息");
-                }
+                _logger.LogInformation("用户 {UserId} 正在连接，设备信息: {DeviceInfo}", userId, deviceInfo);
 
                 // 使用与登录时相同的设备ID生成方法
-                var (deviceId, connectionId) = _deviceIdGenerator.GenerateIds(JsonSerializer.Serialize(deviceInfo), userId);
+                var (deviceId, _) = _deviceIdGenerator.GenerateIds(deviceInfo, userId);
+                _logger.LogInformation("生成的设备ID: {DeviceId}", deviceId);
 
                 // 检查用户是否已存在
                 var existingUser = await _userService.GetOnlineUserByDeviceAsync(long.Parse(userId), deviceId);
                 if (existingUser != null)
                 {
+                    _logger.LogInformation("找到现有用户记录，准备更新 - 用户ID: {UserId}, 设备ID: {DeviceId}", userId, deviceId);
                     // 更新现有用户
                     existingUser.ConnectionId = Context.ConnectionId;
                     existingUser.LastActivity = DateTime.Now;
                     existingUser.LastHeartbeat = DateTime.Now;
                     existingUser.OnlineStatus = 0;
                     await _userService.SaveOnlineUserAsync(existingUser);
+                    _logger.LogInformation("用户记录更新成功 - 用户ID: {UserId}, 连接ID: {ConnectionId}", userId, Context.ConnectionId);
                 }
                 else
                 {
+                    _logger.LogInformation("未找到现有用户记录，准备创建新记录 - 用户ID: {UserId}, 设备ID: {DeviceId}", userId, deviceId);
                     // 创建新用户记录
-                    var onlineUser = new HbtOnlineUser
+                    var newUser = new HbtOnlineUser
                     {
-                        TenantId = long.Parse(tenantId ?? "0"),
                         UserId = long.Parse(userId),
-                        GroupId = 0, // 默认组
-                        ConnectionId = Context.ConnectionId,
                         DeviceId = deviceId,
-                        ClientIp = httpContext.Connection.RemoteIpAddress?.ToString(),
-                        UserAgent = httpContext.Request.Headers["User-Agent"].ToString(),
+                        ConnectionId = Context.ConnectionId,
                         LastActivity = DateTime.Now,
                         LastHeartbeat = DateTime.Now,
-                        OnlineStatus = 0
+                        OnlineStatus = 0,
+                        TenantId = 0,  // 添加租户ID
+                        GroupId = 0,   // 添加组ID
+                        ClientIp = Context.GetHttpContext()?.Connection?.RemoteIpAddress?.ToString(),
+                        UserAgent = Context.GetHttpContext()?.Request.Headers["User-Agent"].ToString()
                     };
-                    await _userService.SaveOnlineUserAsync(onlineUser);
+                    await _userService.SaveOnlineUserAsync(newUser);
+                    _logger.LogInformation("新用户记录创建成功 - 用户ID: {UserId}, 连接ID: {ConnectionId}", userId, Context.ConnectionId);
                 }
 
-                // 通知客户端连接成功
+                // 添加设备信息
+                var device = new HbtSignalRDevice
+                {
+                    UserId = long.Parse(userId),
+                    DeviceId = deviceId,
+                    ConnectionId = Context.ConnectionId,
+                    LastActivity = DateTime.Now,
+                    LastHeartbeat = DateTime.Now,
+                    OnlineStatus = 0,
+                    TenantId = 0,
+                    GroupId = 0,
+                    IpAddress = Context.GetHttpContext()?.Connection?.RemoteIpAddress?.ToString(),
+                    UserAgent = Context.GetHttpContext()?.Request.Headers["User-Agent"].ToString()
+                };
+                _logger.LogInformation("准备添加设备信息 - 用户ID: {UserId}, 设备ID: {DeviceId}, 连接ID: {ConnectionId}", 
+                    device.UserId, device.DeviceId, device.ConnectionId);
+                await _userService.AddUserDevice(userId, deviceId, Context.ConnectionId);
+                _logger.LogInformation("设备信息添加成功 - 用户ID: {UserId}, 设备ID: {DeviceId}", userId, deviceId);
+
+                // 验证设备是否已添加
+                var devices = _userService.GetUserDevices(userId);
+                _logger.LogInformation("验证设备信息 - 用户ID: {UserId}, 设备数量: {DeviceCount}", userId, devices.Count);
+
                 await Clients.Client(Context.ConnectionId).ReceiveMessage("连接成功");
+                _logger.LogInformation("用户 {UserId} 连接成功，连接ID: {ConnectionId}", userId, Context.ConnectionId);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "SignalR连接失败: {ConnectionId}", Context.ConnectionId);
+                _logger.LogError(ex, "连接处理失败");
                 throw;
-            }
-            finally
-            {
-                _connectionLock.Release();
             }
         }
 
@@ -192,10 +210,73 @@ namespace Lean.Hbt.Infrastructure.SignalR
         /// </summary>
         public async Task SendMessageAsync(string userId, string message)
         {
-            var devices = _userService.GetUserDevices(userId);
-            foreach (var device in devices)
+            try
             {
-                await Clients.Client(device.ConnectionId).ReceiveMessage(message);
+                // 获取当前连接的用户信息
+                var currentUser = await _userService.GetOnlineUserAsync(Context.ConnectionId);
+                if (currentUser == null)
+                {
+                    _logger.LogWarning("发送者未找到: ConnectionId={ConnectionId}", Context.ConnectionId);
+                    return;
+                }
+
+                _logger.LogInformation("开始发送消息 - 发送者: {SenderId}, 接收者: {UserId}, 内容: {Message}, 当前连接ID: {ConnectionId}", 
+                    currentUser.UserId, userId, message, Context.ConnectionId);
+                
+                // 将字符串类型的userId转换为long
+                if (!long.TryParse(userId, out long targetUserId))
+                {
+                    _logger.LogWarning("无效的用户ID格式: {UserId}", userId);
+                    return;
+                }
+                
+                var devices = _userService.GetUserDevices(targetUserId.ToString());
+                _logger.LogInformation("找到接收者 {UserId} 的设备数量: {DeviceCount}", userId, devices.Count());
+                
+                if (!devices.Any())
+                {
+                    _logger.LogWarning("接收者 {UserId} 没有在线设备", userId);
+                    return;
+                }
+
+                foreach (var device in devices)
+                {
+                    try 
+                    {
+                        _logger.LogInformation("正在向设备发送消息 - 设备ID: {DeviceId}, 连接ID: {ConnectionId}", 
+                            device.DeviceId, device.ConnectionId);
+                        
+                        var client = Clients.Client(device.ConnectionId);
+                        if (client == null)
+                        {
+                            _logger.LogWarning("无法获取客户端连接 - 设备ID: {DeviceId}, 连接ID: {ConnectionId}", 
+                                device.DeviceId, device.ConnectionId);
+                            continue;
+                        }
+
+                        await client.ReceiveMessage(JsonSerializer.Serialize(new {
+                            SenderId = currentUser.UserId,
+                            ReceiverId = userId,
+                            Content = message,
+                            Timestamp = DateTime.Now
+                        }));
+                        
+                        _logger.LogInformation("消息发送成功 - 设备ID: {DeviceId}, 连接ID: {ConnectionId}", 
+                            device.DeviceId, device.ConnectionId);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "向设备发送消息失败 - 设备ID: {DeviceId}, 连接ID: {ConnectionId}", 
+                            device.DeviceId, device.ConnectionId);
+                    }
+                }
+                
+                _logger.LogInformation("消息发送处理完成");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "发送消息过程中发生错误");
+                throw;
             }
         }
 

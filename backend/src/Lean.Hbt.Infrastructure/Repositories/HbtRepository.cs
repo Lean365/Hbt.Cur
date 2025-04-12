@@ -429,7 +429,7 @@ namespace Lean.Hbt.Infrastructure.Repositories
         public virtual async Task<List<string>> GetUserPermissionsAsync(long userId)
         {
             _logger.LogInformation("[权限仓储] 开始查询用户权限: UserId={UserId}", userId);
-            
+
             var permissionStrings = await _db.Queryable<HbtUserRole>()
                 .LeftJoin<HbtRole>((ur, r) => ur.RoleId == r.Id)
                 .LeftJoin<HbtRoleMenu>((ur, r, rm) => r.Id == rm.RoleId)
@@ -441,14 +441,14 @@ namespace Lean.Hbt.Infrastructure.Repositories
                 .Select(x => x.Perms)
                 .ToListAsync() ?? new List<string>();
 
-            _logger.LogInformation("[权限仓储] 查询到的权限字符串: {PermissionStrings}", string.Join(", ", permissionStrings));
+            //_logger.LogInformation("[权限仓储] 查询到的权限字符串: {PermissionStrings}", string.Join(", ", permissionStrings));
 
             var permissions = permissionStrings
                 .SelectMany(perms => perms.Split(',', StringSplitOptions.RemoveEmptyEntries))
                 .Distinct()
                 .ToList();
 
-            _logger.LogInformation("[权限仓储] 最终权限列表: {Permissions}", string.Join(", ", permissions));
+            //_logger.LogInformation("[权限仓储] 最终权限列表: {Permissions}", string.Join(", ", permissions));
 
             return permissions;
         }
