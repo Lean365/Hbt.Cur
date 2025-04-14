@@ -16,38 +16,27 @@ export const useLanguageStore = defineStore('language', () => {
   const languageList = ref<Language[]>([])
   const initialized = ref(false)
 
-  // 获取支持的语言列表
+  // 获取语言列表
   async function fetchLanguages() {
     if (loading.value) return
 
     loading.value = true
     try {
-      const response: HbtApiResponse<HbtLanguage[]> = await getSupportedLanguages()
+      const response = await getSupportedLanguages()
+      console.log('[Language] 获取语言列表响应:', response)
 
-      if (!response || response.code !== 200 || !response.data) {
-        console.error('获取语言列表失败:', response)
-        return
-      }
-
-      const languages = response.data
-      if (Array.isArray(languages)) {
-        // 只保留支持的语言
-        const validLanguages = languages.filter(lang => 
-          lang && 
-          typeof lang === 'object' && 
-          typeof lang.langCode === 'string' && 
-          typeof lang.langName === 'string' &&
-          SUPPORTED_LOCALES.includes(lang.langCode as SupportedLocale)
-        )
-
-        languageList.value = validLanguages.map(lang => ({
+      if (response.code === 200 && Array.isArray(response.data)) {
+        languageList.value = response.data.map(lang => ({
           langCode: lang.langCode as SupportedLocale,
           langName: lang.langName,
           langIcon: lang.langIcon
         }))
+        console.log('[Language] 语言列表更新成功:', languageList.value)
+      } else {
+        console.error('[Language] 获取语言列表失败: 响应格式不正确')
       }
     } catch (error) {
-      console.error('获取语言列表失败:', error)
+      console.error('[Language] 获取语言列表失败:', error)
     } finally {
       loading.value = false
     }

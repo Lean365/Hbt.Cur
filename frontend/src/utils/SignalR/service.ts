@@ -244,44 +244,8 @@ export class SignalRService {
 
     // 接收消息事件
     this.connection.on('ReceiveMessage', (message: any) => {
-      try {
-        console.log('[SignalR] 收到原始消息:', message);
-        
-        if (typeof message === 'string' && message.includes('连接成功')) {
-          console.log('[SignalR] 收到连接成功消息，当前连接ID:', this.connection?.connectionId);
-          return;
-        }
-
-        // 解析消息对象
-        let messageData;
-        if (typeof message === 'string') {
-          try {
-            messageData = JSON.parse(message);
-          } catch (e) {
-            console.error('[SignalR] 消息解析失败:', e);
-            messageData = { Content: message };
-          }
-        } else {
-          messageData = message;
-        }
-
-        // 统一消息格式
-        const parsedMessage = {
-          senderId: messageData.SenderId || messageData.senderId,
-          receiverId: messageData.ReceiverId || messageData.receiverId,
-          content: messageData.Content || messageData.content,
-          timestamp: messageData.Timestamp || messageData.timestamp || new Date().toISOString(),
-          type: messageData.Type || messageData.type || 'message'
-        };
-
-        console.log('[SignalR] 解析后的消息:', parsedMessage);
-
-        // 发送给事件处理器
-        this.emit('ReceiveMessage', parsedMessage);
-      } catch (error) {
-        console.error('[SignalR] 处理接收消息时发生错误:', error);
-      }
-    });
+      this.handleNewMessage(message)
+    })
 
     // 接收邮件状态更新事件
     this.connection.on('ReceiveMailStatus', (notification: any) => {
@@ -448,7 +412,7 @@ export class SignalRService {
         content: data.content,
         connectionId: this.connection.connectionId,
         connectionState: this.connection.state,
-        currentUser: useUserStore().user
+        currentUser: useUserStore().userInfo
       });
       
       await this.connection.invoke('SendMessageAsync', data.userId, data.content);
@@ -473,6 +437,73 @@ export class SignalRService {
       console.error('[SignalR] 通知发送失败:', error)
       throw error
     }
+  }
+
+  // 处理新消息
+  private handleNewMessage(message: any) {
+    console.log('[SignalR] 收到原始消息:', message)
+    
+    try {
+      // 如果是字符串类型的消息，尝试解析为JSON
+      if (typeof message === 'string') {
+        // 检查是否是连接成功消息
+        if (message === '连接成功') {
+          console.log('[SignalR] 收到连接成功消息，当前连接ID:', this.connection?.connectionId)
+          return
+        }
+        
+        // 尝试解析为JSON
+        try {
+          message = JSON.parse(message)
+        } catch (e) {
+          console.warn('[SignalR] 消息不是JSON格式，使用原始内容:', message)
+        }
+      }
+      
+      // 处理不同类型的消息
+      if (message && typeof message === 'object') {
+        // 处理连接成功消息
+        if (message.type === 'connection' && message.status === 'success') {
+          console.log('[SignalR] 收到连接成功消息，当前连接ID:', message.connectionId)
+          if (this.connection) {
+            console.log('[SignalR] 连接ID已更新:', message.connectionId)
+          }
+          return
+        }
+        
+        // 处理其他类型的消息
+        this.handleMessage(message)
+      }
+    } catch (error) {
+      console.error('[SignalR] 处理消息时发生错误:', error)
+    }
+  }
+
+  // 处理具体消息内容
+  private handleMessage(message: any) {
+    // 根据消息类型进行不同的处理
+    switch (message.type) {
+      case 'notification':
+        this.handleNotification(message)
+        break
+      case 'system':
+        this.handleSystemMessage(message)
+        break
+      default:
+        console.log('[SignalR] 收到未知类型的消息:', message)
+    }
+  }
+
+  // 处理通知消息
+  private handleNotification(message: any) {
+    // 触发通知事件
+    this.emit('notification', message)
+  }
+
+  // 处理系统消息
+  private handleSystemMessage(message: any) {
+    // 触发系统消息事件
+    this.emit('system', message)
   }
 }
 

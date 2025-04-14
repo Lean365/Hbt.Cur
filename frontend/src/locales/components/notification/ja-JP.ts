@@ -9,6 +9,7 @@ export default {
     loadMore: 'もっと見る',
     noMore: 'これ以上ありません',
     markAsRead: '既読にする',
+    detail: '詳細',
     delete: '削除',
     newMessage: '新しいメッセージがあります',
     checkPrompt: 'ご確認ください',

@@ -55,13 +55,12 @@ public class HbtOnlineUserService : IHbtOnlineUserService
         var exp = Expressionable.Create<HbtOnlineUser>();
         
         // 租户ID是必须的
-        exp = exp.And(u => u.TenantId == query.TenantId);
+
         
         if (query.UserId.HasValue)
             exp = exp.And(u => u.UserId == query.UserId.Value);
 
-        if (!string.IsNullOrEmpty(query.ClientIp))
-            exp = exp.And(u => u.ClientIp.Contains(query.ClientIp));
+
 
         if (query.StartTime.HasValue)
             exp = exp.And(u => u.LastActivity >= query.StartTime.Value);
@@ -99,13 +98,12 @@ public class HbtOnlineUserService : IHbtOnlineUserService
         var exp = Expressionable.Create<HbtOnlineUser>();
         
         // 租户ID是必须的
-        exp = exp.And(u => u.TenantId == query.TenantId);
+
             
         if (query.UserId.HasValue)
             exp = exp.And(u => u.UserId == query.UserId.Value);
 
-        if (!string.IsNullOrEmpty(query.ClientIp))
-            exp = exp.And(u => u.ClientIp.Contains(query.ClientIp));
+
 
         if (query.StartTime.HasValue)
             exp = exp.And(u => u.LastActivity >= query.StartTime.Value);

@@ -9,6 +9,7 @@ export default {
     loadMore: 'تحميل المزيد',
     noMore: 'لا يوجد المزيد',
     markAsRead: 'تحديد كمقروء',
+    detail: 'التفاصيل',
     delete: 'حذف',
     newMessage: 'لديك رسالة جديدة',
     checkPrompt: 'يرجى التحقق',

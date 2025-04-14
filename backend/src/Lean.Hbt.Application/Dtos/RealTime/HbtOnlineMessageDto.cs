@@ -1,13 +1,84 @@
+#nullable enable
+
 //===================================================================
-// 项目名 : Lean.Hbt
-// 文件名 : HbtOnlineMessageDto.cs
-// 创建者 : Lean365
-// 创建时间: 2024-01-20 16:30
-// 版本号 : V1.0.0
-// 描述    : 在线消息数据传输对象
+// 项目名: Lean.Hbt.Application
+// 文件名: HbtOnlineMessageDto.cs
+// 创建者: Lean365
+// 创建时间: 2024-01-20
+// 版本号: V0.0.1
+// 描述: 在线消息数据传输对象
 //===================================================================
 
+using System.ComponentModel.DataAnnotations;
+using Mapster;
+
 namespace Lean.Hbt.Application.Dtos.RealTime;
+
+/// <summary>
+/// 在线消息基础DTO
+/// </summary>
+/// <remarks>
+/// 创建者: Lean365
+/// 创建时间: 2024-01-20
+/// </remarks>
+public class HbtOnlineMessageDto
+{
+    /// <summary>
+    /// 构造函数
+    /// </summary>
+    public HbtOnlineMessageDto()
+    {
+        Content = string.Empty;
+        IsRead = 0;
+        ReadTime = DateTime.Now;
+    }
+
+    /// <summary>
+    /// 租户ID
+    /// </summary>
+    [Required(ErrorMessage = "租户ID不能为空")]
+    [Range(1, long.MaxValue, ErrorMessage = "租户ID必须大于0")]
+    public long TenantId { get; set; }
+
+    /// <summary>
+    /// 发送者ID
+    /// </summary>
+    [Required(ErrorMessage = "发送者ID不能为空")]
+    [Range(1, long.MaxValue, ErrorMessage = "发送者ID必须大于0")]
+    public long SenderId { get; set; }
+
+    /// <summary>
+    /// 接收者ID
+    /// </summary>
+    [Required(ErrorMessage = "接收者ID不能为空")]
+    [Range(1, long.MaxValue, ErrorMessage = "接收者ID必须大于0")]
+    public long ReceiverId { get; set; }
+
+    /// <summary>
+    /// 消息类型
+    /// </summary>
+    [Required(ErrorMessage = "消息类型不能为空")]
+    [Range(0, int.MaxValue, ErrorMessage = "消息类型必须大于等于0")]
+    public int MessageType { get; set; }
+
+    /// <summary>
+    /// 消息内容
+    /// </summary>
+    [Required(ErrorMessage = "消息内容不能为空")]
+    [MaxLength(500, ErrorMessage = "消息内容长度不能超过500个字符")]
+    public string Content { get; set; }
+
+    /// <summary>
+    /// 是否已读（0未读 1已读）
+    /// </summary>
+    [Range(0, 1, ErrorMessage = "是否已读只能是0或1")]
+    public int IsRead { get; set; }
+
+    /// <summary>
+    /// 阅读时间
+    /// </summary>
+    public DateTime ReadTime { get; set; }
+}
 
 /// <summary>
 /// 在线消息查询对象
@@ -19,23 +90,29 @@ namespace Lean.Hbt.Application.Dtos.RealTime;
 public class HbtOnlineMessageQueryDto : HbtPagedQuery
 {
     /// <summary>
-    /// 租户ID
+    /// 构造函数
     /// </summary>
-    public long? TenantId { get; set; }
+    public HbtOnlineMessageQueryDto()
+    {
+        // 不需要初始化 MessageType，因为它已经是可空类型
+    }
 
     /// <summary>
     /// 发送者ID
     /// </summary>
+    [Range(1, long.MaxValue, ErrorMessage = "发送者ID必须大于0")]
     public long? SenderId { get; set; }
 
     /// <summary>
     /// 接收者ID
     /// </summary>
+    [Range(1, long.MaxValue, ErrorMessage = "接收者ID必须大于0")]
     public long? ReceiverId { get; set; }
 
     /// <summary>
     /// 消息类型
     /// </summary>
+    [Range(0, int.MaxValue, ErrorMessage = "消息类型必须大于等于0")]
     public int? MessageType { get; set; }
 
     /// <summary>
@@ -49,64 +126,85 @@ public class HbtOnlineMessageQueryDto : HbtPagedQuery
     public DateTime? EndTime { get; set; }
 
     /// <summary>
-    /// 是否已读（0-未读，1-已读）
+    /// 是否已读（0未读 1已读）
     /// </summary>
+    [Range(0, 1, ErrorMessage = "是否已读只能是0或1")]
     public int? IsRead { get; set; }
 }
 
 /// <summary>
-/// 在线消息基础传输对象
+/// 在线消息创建对象
 /// </summary>
 /// <remarks>
 /// 创建者: Lean365
 /// 创建时间: 2024-01-20
 /// </remarks>
-public class HbtOnlineMessageDto
+public class HbtOnlineMessageCreateDto
 {
+    /// <summary>
+    /// 构造函数
+    /// </summary>
+    public HbtOnlineMessageCreateDto()
+    {
+        Content = string.Empty;
+        IsRead = 0;
+    }
+
     /// <summary>
     /// 租户ID
     /// </summary>
+    [Required(ErrorMessage = "租户ID不能为空")]
+    [Range(1, long.MaxValue, ErrorMessage = "租户ID必须大于0")]
     public long TenantId { get; set; }
 
     /// <summary>
     /// 发送者ID
     /// </summary>
+    [Required(ErrorMessage = "发送者ID不能为空")]
+    [Range(1, long.MaxValue, ErrorMessage = "发送者ID必须大于0")]
     public long SenderId { get; set; }
-
-    /// <summary>
-    /// 发送者名称
-    /// </summary>
-    public string SenderName { get; set; }
 
     /// <summary>
     /// 接收者ID
     /// </summary>
-    public long? ReceiverId { get; set; }
-
-    /// <summary>
-    /// 接收者名称
-    /// </summary>
-    public string ReceiverName { get; set; }
-
-    /// <summary>
-    /// 群组名称
-    /// </summary>
-    public string GroupName { get; set; }
+    [Required(ErrorMessage = "接收者ID不能为空")]
+    [Range(1, long.MaxValue, ErrorMessage = "接收者ID必须大于0")]
+    public long ReceiverId { get; set; }
 
     /// <summary>
     /// 消息类型
     /// </summary>
+    [Required(ErrorMessage = "消息类型不能为空")]
+    [Range(0, int.MaxValue, ErrorMessage = "消息类型必须大于等于0")]
     public int MessageType { get; set; }
 
     /// <summary>
     /// 消息内容
     /// </summary>
+    [Required(ErrorMessage = "消息内容不能为空")]
+    [MaxLength(500, ErrorMessage = "消息内容长度不能超过500个字符")]
     public string Content { get; set; }
 
     /// <summary>
-    /// 发送时间
+    /// 是否已读（0未读 1已读）
     /// </summary>
-    public DateTime SendTime { get; set; }
+    [Range(0, 1, ErrorMessage = "是否已读只能是0或1")]
+    public int IsRead { get; set; }
+}
+
+/// <summary>
+/// 在线消息更新对象
+/// </summary>
+/// <remarks>
+/// 创建者: Lean365
+/// 创建时间: 2024-01-20
+/// </remarks>
+public class HbtOnlineMessageUpdateDto : HbtOnlineMessageCreateDto
+{
+    /// <summary>
+    /// 阅读时间
+    /// </summary>
+    public DateTime ReadTime { get; set; }
 }
 
 /// <summary>
@@ -119,29 +217,34 @@ public class HbtOnlineMessageDto
 public class HbtOnlineMessageExportDto
 {
     /// <summary>
-    /// 租户名称
+    /// 构造函数
     /// </summary>
-    public string TenantName { get; set; }
+    public HbtOnlineMessageExportDto()
+    {
+        Content = string.Empty;
+        IsRead = 0;
+        ReadTime = DateTime.Now;
+    }
 
     /// <summary>
-    /// 发送者名称
+    /// 租户ID
     /// </summary>
-    public string SenderName { get; set; }
+    public long TenantId { get; set; }
 
     /// <summary>
-    /// 接收者名称
+    /// 发送者ID
     /// </summary>
-    public string ReceiverName { get; set; }
+    public long SenderId { get; set; }
 
     /// <summary>
-    /// 群组名称
+    /// 接收者ID
     /// </summary>
-    public string GroupName { get; set; }
+    public long ReceiverId { get; set; }
 
     /// <summary>
     /// 消息类型
     /// </summary>
-    public string MessageType { get; set; }
+    public int MessageType { get; set; }
 
     /// <summary>
     /// 消息内容
@@ -149,7 +252,12 @@ public class HbtOnlineMessageExportDto
     public string Content { get; set; }
 
     /// <summary>
-    /// 发送时间
+    /// 是否已读（0未读 1已读）
     /// </summary>
-    public DateTime SendTime { get; set; }
+    public int IsRead { get; set; }
+
+    /// <summary>
+    /// 阅读时间
+    /// </summary>
+    public DateTime ReadTime { get; set; }
 }

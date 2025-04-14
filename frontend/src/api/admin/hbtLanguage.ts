@@ -17,7 +17,6 @@ import type {
   HbtLanguageStatus
 } from '@/types/admin/language'
 
-
 /**
  * 获取语言分页列表
  * @param query 查询参数
@@ -120,7 +119,7 @@ export function importHbtLanguage(file: File, sheetName: string = '语言') {
  * @returns 文件流
  */
 export function exportHbtLanguage(query: HbtLanguageQuery) {
-  return request<Blob>({
+  return request<HbtApiResponse<Blob>>({
     url: '/api/HbtLanguage/export',
     method: 'get',
     params: query,
@@ -133,7 +132,7 @@ export function exportHbtLanguage(query: HbtLanguageQuery) {
  * @returns 文件流
  */
 export function getHbtLanguageTemplate() {
-  return request<Blob>({
+  return request<HbtApiResponse<Blob>>({
     url: '/api/HbtLanguage/template',
     method: 'get',
     responseType: 'blob'

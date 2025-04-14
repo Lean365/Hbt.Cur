@@ -64,12 +64,14 @@ namespace Lean.Hbt.Infrastructure.Security
                 return;
             }
 
-            // 2. 处理GET请求
+            // 2. 获取现有的Cookie Token
+            var cookieToken = context.Request.Cookies[CsrfTokenCookie];
+            
+            // 3. 处理GET请求
             if (context.Request.Method == "GET")
             {
-                // 检查是否已经有Cookie Token
-                var existingToken = context.Request.Cookies[CsrfTokenCookie];
-                if (string.IsNullOrEmpty(existingToken))
+                // 只在没有Cookie Token时生成新的
+                if (string.IsNullOrEmpty(cookieToken))
                 {
                     // 生成新的CSRF Token
                     var token = GenerateCsrfToken();
@@ -87,16 +89,54 @@ namespace Lean.Hbt.Infrastructure.Security
                     
                     _logger.LogInformation("[CSRF] Generated new CSRF token: {Token}", token);
                 }
+                else
+                {
+                    // 如果已有Token，刷新缓存时间
+                    await CacheTokenAsync(cookieToken);
+                    _logger.LogInformation("[CSRF] Refreshed existing CSRF token: {Token}", cookieToken);
+                }
+                
+                await _next(context);
+                return;
             }
-            // 3. 处理非GET请求
-            else if (!await ValidateCsrfTokenAsync(context))
+            
+            // 4. 处理非GET请求
+            var requestToken = context.Request.Headers[CsrfTokenHeader].ToString();
+            
+            _logger.LogInformation("[CSRF] Request Token: {Token}", requestToken);
+            _logger.LogInformation("[CSRF] Cookie Token: {Token}", cookieToken);
+
+            if (string.IsNullOrEmpty(requestToken) || string.IsNullOrEmpty(cookieToken))
             {
-                _logger.LogWarning("[CSRF] CSRF validation failed");
+                _logger.LogWarning("[CSRF] Missing token in request or cookie");
                 context.Response.StatusCode = StatusCodes.Status403Forbidden;
                 await context.Response.WriteAsJsonAsync(new { message = "CSRF Token验证失败" });
                 return;
             }
 
+            if (requestToken != cookieToken)
+            {
+                _logger.LogWarning("[CSRF] Token mismatch - Request: {RequestToken}, Cookie: {CookieToken}", 
+                    requestToken, cookieToken);
+                context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                await context.Response.WriteAsJsonAsync(new { message = "CSRF Token验证失败" });
+                return;
+            }
+
+            // 验证Token是否在缓存中
+            var cacheKey = $"csrf:token:{cookieToken}";
+            var cachedToken = await _cache.GetStringAsync(cacheKey);
+            
+            if (string.IsNullOrEmpty(cachedToken))
+            {
+                _logger.LogWarning("[CSRF] Token not found in cache");
+                context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                await context.Response.WriteAsJsonAsync(new { message = "CSRF Token已过期" });
+                return;
+            }
+
+            // Token验证通过，刷新过期时间
+            await CacheTokenAsync(cookieToken);
             await _next(context);
         }
 
@@ -138,67 +178,6 @@ namespace Lean.Hbt.Infrastructure.Security
             {
                 _logger.LogError(ex, "[CSRF] Token缓存失败");
                 throw;
-            }
-        }
-
-        /// <summary>
-        /// 验证CSRF Token
-        /// </summary>
-        private async Task<bool> ValidateCsrfTokenAsync(HttpContext context)
-        {
-            try
-            {
-                // 1. 获取请求头中的Token
-                var requestToken = context.Request.Headers[CsrfTokenHeader].ToString();
-                _logger.LogInformation("[CSRF] 请求Token: {Token}", requestToken);
-
-                // 2. 获取Cookie中的Token
-                var cookieToken = context.Request.Cookies[CsrfTokenCookie];
-                _logger.LogInformation("[CSRF] Cookie Token: {Token}", cookieToken);
-
-                if (string.IsNullOrEmpty(requestToken) || string.IsNullOrEmpty(cookieToken))
-                {
-                    _logger.LogWarning("[CSRF] 请求或Cookie中缺少Token");
-                    return false;
-                }
-
-                // 3. 验证Token是否匹配
-                if (requestToken != cookieToken)
-                {
-                    _logger.LogWarning("[CSRF] Token不匹配");
-                    return false;
-                }
-
-                // 4. 验证Token是否在缓存中
-                var cacheKey = $"csrf:token:{requestToken}";
-                _logger.LogInformation("[CSRF] 开始验证缓存Token: {Key}", cacheKey);
-                
-                var cachedToken = await _cache.GetStringAsync(cacheKey);
-                _logger.LogInformation("[CSRF] 缓存Token: {Token}", cachedToken);
-                
-                if (string.IsNullOrEmpty(cachedToken))
-                {
-                    _logger.LogWarning("[CSRF] 缓存中未找到Token");
-                    return false;
-                }
-
-                // 5. 刷新Token的缓存时间
-                await _cache.SetStringAsync(
-                    cacheKey,
-                    requestToken,
-                    new DistributedCacheEntryOptions
-                    {
-                        AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(_options.CsrfTokenExpirationMinutes)
-                    }
-                );
-
-                _logger.LogInformation("[CSRF] Token验证成功");
-                return true;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "[CSRF] Token验证失败");
-                return false;
             }
         }
 
@@ -265,9 +244,10 @@ namespace Lean.Hbt.Infrastructure.Security
             {
                 HttpOnly = false,  // 允许 JavaScript 访问
                 Secure = true,     // 始终使用 HTTPS
-                SameSite = SameSiteMode.Lax,  // 使用宽松的 SameSite 策略
+                SameSite = SameSiteMode.None,  // 允许跨站点请求
                 Path = "/",
-                MaxAge = TimeSpan.FromMinutes(_options.CsrfTokenExpirationMinutes)
+                MaxAge = TimeSpan.FromMinutes(_options.CsrfTokenExpirationMinutes),
+                Domain = null // 让浏览器自动设置域名
             };
         }
     }

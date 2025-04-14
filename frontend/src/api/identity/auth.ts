@@ -50,12 +50,7 @@ export function logout(params?: { isSystemRestart?: boolean }) {
   return request<HbtApiResponse<void>>({
     url: '/api/HbtAuth/logout',
     method: 'post',
-    params,
-    data: null,
-    headers: {
-      'Content-Type': 'application/json',
-      'X-Requested-With': 'XMLHttpRequest'
-    }
+    params
   }).finally(() => {
     // 清理本地存储
     localStorage.removeItem('token')
@@ -146,10 +141,24 @@ export function unlockUser(username: string) {
  * 检查登录状态
  * @param data 登录参数
  */
-export function checkLogin(data: LoginParams) {
-  return request<HbtApiResponse<LoginCheckResult>>({
+export const checkLogin = (data: LoginParams): Promise<HbtApiResponse<LoginCheckResult>> => {
+  // 构建符合HbtAuthDto的参数
+  const loginDto = {
+    tenantId: data.tenantId,
+    userName: data.userName,
+    password: data.password,
+    captchaToken: data.captchaToken,
+    captchaOffset: data.captchaOffset,
+    ipAddress: data.ipAddress ?? window.location.hostname,
+    userAgent: data.userAgent ?? navigator.userAgent,
+    loginType: data.loginType ?? 0, // 默认使用密码登录
+    loginSource: data.loginSource ?? 0, // 默认使用Web登录
+    deviceInfo: data.deviceInfo
+  };
+
+  return request({
     url: '/api/HbtAuth/check-login',
     method: 'post',
-    data
-  })
+    data: loginDto
+  });
 } 

@@ -9,6 +9,7 @@ export default {
     loadMore: '加载更多',
     noMore: '没有更多了',
     markAsRead: '标记已读',
+    detail: '详情',
     delete: '删除',
     newMessage: '您有一条新消息',
     checkPrompt: '请注意查收',

@@ -9,6 +9,7 @@ export default {
     loadMore: '더 보기',
     noMore: '더 이상 없음',
     markAsRead: '읽음으로 표시',
+    detail: '상세',
     delete: '삭제',
     newMessage: '새로운 메시지가 있습니다',
     checkPrompt: '확인해 주세요',

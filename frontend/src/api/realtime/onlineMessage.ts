@@ -67,4 +67,20 @@ export function markAllMessagesAsRead() {
     url: '/api/HbtOnlineMessage/read-all',
     method: 'put'
   })
+}
+
+/** 标记消息为未读 */
+export function markMessageAsUnread(id: number | bigint) {
+  return request({
+    url: `/api/HbtOnlineMessage/${id}/unread`,
+    method: 'put'
+  })
+}
+
+/** 标记所有消息为未读 */
+export function markAllMessagesAsUnread() {
+  return request({
+    url: '/api/HbtOnlineMessage/unread-all',
+    method: 'put'
+  })
 } 

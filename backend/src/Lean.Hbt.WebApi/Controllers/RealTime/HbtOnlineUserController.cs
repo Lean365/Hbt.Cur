@@ -74,7 +74,7 @@ namespace Lean.Hbt.WebApi.Controllers.RealTime
             query ??= new HbtOnlineUserQueryDto();
 
             // 使用当前用户的租户ID
-            query.TenantId = _currentUser.TenantId;
+            //query.TenantId = _currentUser.TenantId;
 
             // 设置默认分页参数
             if (query.PageIndex <= 0) query.PageIndex = 1;

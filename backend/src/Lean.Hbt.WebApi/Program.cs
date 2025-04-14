@@ -344,16 +344,6 @@ try
     builder.Services.Configure<HbtRestartOptions>(
         builder.Configuration.GetSection("SystemRestart"));
 
-    builder.Services.AddAntiforgery(options =>
-    {
-        options.HeaderName = "X-CSRF-TOKEN";
-        options.Cookie.Name = "XSRF-TOKEN";
-        options.Cookie.HttpOnly = false; // 允许JavaScript访问
-        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-        options.Cookie.SameSite = SameSiteMode.Lax;
-        options.Cookie.Path = "/";
-    });
-
     var app = builder.Build();
 
     // 初始化IP位置查询工具
@@ -461,32 +451,6 @@ try
     // 配置Excel帮助类（用于处理Excel导入导出功能）
     var excelOptions = app.Services.GetRequiredService<IOptions<HbtExcelOptions>>();
     HbtExcelHelper.Configure(excelOptions);
-
-    app.UseAntiforgery();
-
-    // 添加CSRF中间件
-    app.Use(async (context, next) =>
-    {
-        var antiforgery = context.RequestServices.GetRequiredService<IAntiforgery>();
-
-        // 只在Cookie不存在时生成新的CSRF Token
-        if (HttpMethods.IsGet(context.Request.Method) &&
-            !context.Request.Cookies.ContainsKey("XSRF-TOKEN"))
-        {
-            var tokens = antiforgery.GetAndStoreTokens(context);
-            context.Response.Cookies.Append("XSRF-TOKEN", tokens.RequestToken!,
-                new CookieOptions
-                {
-                    HttpOnly = false,
-                    Secure = true,
-                    SameSite = SameSiteMode.Lax,
-                    Path = "/",
-                    Expires = DateTimeOffset.Now.AddHours(1)
-                });
-        }
-
-        await next(context);
-    });
 
     logger.Info("应用程序启动成功");
     app.Run();

@@ -9,6 +9,7 @@ export default {
     loadMore: 'Загрузить ещё',
     noMore: 'Больше нет данных',
     markAsRead: 'Отметить как прочитанное',
+    detail: 'Детали',
     delete: 'Удалить',
     newMessage: 'У вас новое сообщение',
     checkPrompt: 'Пожалуйста, проверьте',

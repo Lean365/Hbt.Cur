@@ -287,12 +287,24 @@ const handleLogin = async () => {
     const deviceInfo = await getDeviceInfo()
 
     // 4. 构建登录参数
+    console.log('[登录] 表单数据:', loginForm.value)
+    console.log('[登录] 加密后的密码:', hashedPassword)
+    console.log('[登录] 设备信息:', deviceInfo)
+    
     const loginParams: LoginParams = {
-      ...loginForm.value,
+      tenantId: loginForm.value.tenantId,
+      userName: loginForm.value.userName,
       password: hashedPassword,
-      deviceInfo: deviceInfo,
-      loginSource: 0 // Web登录
+      captchaToken: loginForm.value.captchaToken,
+      captchaOffset: loginForm.value.captchaOffset,
+      ipAddress: window.location.hostname,
+      userAgent: navigator.userAgent,
+      loginType: 0, // 密码登录
+      loginSource: 0, // Web登录
+      deviceInfo: deviceInfo
     }
+    
+    console.log('[登录] 构建的登录参数:', loginParams)
 
     // 5. 发起登录请求
     await userStore.login(loginParams)
@@ -311,6 +323,7 @@ const handleLogin = async () => {
 const handleLoginSuccess = async () => {
   try {
     console.log('[登录成功] 开始处理登录成功流程')
+    
     // 记录登录时间
     await userStore.recordLoginTime()
     console.log('[登录成功] 记录登录时间完成')
@@ -318,11 +331,6 @@ const handleLoginSuccess = async () => {
     // 重置失败次数
     await userStore.resetLoginFailCount()
     console.log('[登录成功] 重置失败次数完成')
-    
-    // 开始获取用户信息
-    console.log('[登录成功] 开始获取用户信息')
-    await userStore.getUserInfo()
-    console.log('[登录成功] 用户信息获取成功:', userStore.user)
     
     // 开始加载菜单
     console.log('[登录成功] 开始加载菜单')

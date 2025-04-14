@@ -493,7 +493,7 @@ router.beforeEach(async (to, from, next) => {
     来源路由: from.path,
     认证状态: {
       token: !!token,
-      用户信息: !!userStore.user,
+      用户信息: !!userStore.userInfo,
       菜单: !!menuStore.rawMenuList?.length,
       菜单数量: menuStore.rawMenuList?.length || 0,
       动态路由数量: router.getRoutes().filter(r => r.name?.toString().startsWith('HbtMenu_')).length
@@ -527,10 +527,10 @@ router.beforeEach(async (to, from, next) => {
 
   try {
     // 初始化用户信息
-    if (!userStore.user) {
+    if (!userStore.userInfo) {
       console.log('[路由守卫] 开始获取用户信息')
-      await userStore.getUserInfo()
-      console.log('[路由守卫] 用户信息获取成功:', userStore.user)
+      await userStore.fetchUserInfo()
+      console.log('[路由守卫] 用户信息获取成功:', userStore.userInfo)
     }
 
     // 检查是否需要初始化菜单和动态路由

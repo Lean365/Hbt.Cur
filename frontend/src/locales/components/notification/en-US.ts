@@ -9,6 +9,7 @@ export default {
     loadMore: 'Load more',
     noMore: 'No more data',
     markAsRead: 'Mark as read',
+    detail: 'Detail',
     delete: 'Delete',
     newMessage: 'You have a new message',
     checkPrompt: 'Please check',

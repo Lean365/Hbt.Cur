@@ -47,7 +47,7 @@ namespace Lean.Hbt.Domain.Entities.RealTime
         /// 消息内容
         /// </summary>
         [SugarColumn(ColumnName = "content", ColumnDescription = "消息内容", Length = 2000, ColumnDataType = "nvarchar", IsNullable = false)]
-        public string Content { get; set; }
+        public string? Content { get; set; }
 
         /// <summary>
         /// 是否已读

@@ -56,6 +56,7 @@
                     <hbt-notification-item
                       :data="item"
                       @read="markAsRead"
+                      @unread="markAsUnread"
                       @delete="deleteNotification"
                     />
                   </a-list-item>
@@ -72,6 +73,7 @@
                     <hbt-notification-item
                       :data="item"
                       @read="markAsRead"
+                      @unread="markAsUnread"
                       @delete="deleteNotification"
                     />
                   </a-list-item>
@@ -129,7 +131,7 @@ import HbtNotificationItem from '../HbtNotificationItem/index.vue'
 import { signalRService } from '@/utils/SignalR/service'
 import { MessageType, type HbtOnlineMessageDto } from '@/types/realtime/onlineMessage'
 import type { NotificationItem as NotificationItemType } from '@/types/settings'
-import { getOnlineMessageList, deleteOnlineMessage, markMessageAsRead, markAllMessagesAsRead } from '@/api/realtime/onlineMessage'
+import { getOnlineMessageList, deleteOnlineMessage, markMessageAsRead, markAllMessagesAsRead, markMessageAsUnread, markAllMessagesAsUnread } from '@/api/realtime/onlineMessage'
 import { getMailList, markMailAsRead } from '@/api/routine/mail'
 import { getNoticeList, markNoticeAsRead } from '@/api/routine/notice'
 import { useUserStore } from '@/stores/user'
@@ -237,43 +239,47 @@ const loadNotifications = async () => {
         getNoticeList({ pageIndex: 1, pageSize: 10 })
       ])
 
-      // 使用 Map 来去重
+      // 使用 Map 来去重，优先使用本地存储的状态
       const messageMap = new Map()
+      const storedNotifications = JSON.parse(localStorage.getItem('hbt_notifications') || '[]')
+      const storedMap = new Map(storedNotifications.map((n: NotificationItemType) => [n.id, n]))
 
       // 处理在线消息
       onlineMessages?.rows?.forEach(msg => {
         const item = convertToNotificationItem(msg, 'online')
-        messageMap.set(item.id, item)
+        // 如果本地存储中有这条消息，使用本地存储的状态
+        if (storedMap.has(item.id)) {
+          messageMap.set(item.id, storedMap.get(item.id))
+        } else {
+          messageMap.set(item.id, item)
+        }
       })
 
       // 处理邮件
       mailMessages?.rows?.forEach(msg => {
         const item = convertToNotificationItem(msg, 'mail')
-        messageMap.set(item.id, item)
+        if (storedMap.has(item.id)) {
+          messageMap.set(item.id, storedMap.get(item.id))
+        } else {
+          messageMap.set(item.id, item)
+        }
       })
 
       // 处理通知
       noticeMessages?.rows?.forEach(msg => {
         const item = convertToNotificationItem(msg, 'notice')
-        messageMap.set(item.id, item)
+        if (storedMap.has(item.id)) {
+          messageMap.set(item.id, storedMap.get(item.id))
+        } else {
+          messageMap.set(item.id, item)
+        }
       })
 
       // 转换为数组并按时间排序
       const newNotifications = Array.from(messageMap.values())
         .sort((a, b) => new Date(b.createTime).getTime() - new Date(a.createTime).getTime())
       
-      // 合并现有通知和新通知
-      const existingNotifications = notifications.value
-      const mergedNotifications = [...newNotifications]
-      
-      // 添加不在新通知中的现有通知
-      existingNotifications.forEach(existing => {
-        if (!messageMap.has(existing.id)) {
-          mergedNotifications.push(existing)
-        }
-      })
-      
-      notifications.value = mergedNotifications
+      notifications.value = newNotifications
       saveNotificationsToStorage()
     } catch (error) {
       console.error(`加载消息失败 (尝试 ${retryCount + 1}/${maxRetries}):`, error)
@@ -300,17 +306,57 @@ const loadMore = async () => {
   if (loading.value) return
   loading.value = true
   try {
-    const result = await getOnlineMessageList({
-      pageIndex: Math.ceil(notifications.value.length / 10) + 1,
-      pageSize: 10
-    })
-    if (result.rows.length === 0) {
-      hasMore.value = false
-    } else {
-      notifications.value.push(...result.rows.map(msg => convertToNotificationItem(msg, 'online')))
+    const pageIndex = Math.ceil(notifications.value.length / 10) + 1
+    const pageSize = 10
+
+    // 并行加载所有类型的消息
+    const [onlineMessages, mailMessages, noticeMessages] = await Promise.all([
+      getOnlineMessageList({ pageIndex, pageSize }),
+      getMailList({ pageIndex, pageSize }),
+      getNoticeList({ pageIndex, pageSize })
+    ])
+
+    // 使用 Map 来去重
+    const messageMap = new Map()
+
+    // 处理在线消息
+    if (onlineMessages?.rows?.length > 0) {
+      onlineMessages.rows.forEach(msg => {
+        const item = convertToNotificationItem(msg, 'online')
+        messageMap.set(item.id, item)
+      })
     }
+
+    // 处理邮件
+    if (mailMessages?.rows?.length > 0) {
+      mailMessages.rows.forEach(msg => {
+        const item = convertToNotificationItem(msg, 'mail')
+        messageMap.set(item.id, item)
+      })
+    }
+
+    // 处理通知
+    if (noticeMessages?.rows?.length > 0) {
+      noticeMessages.rows.forEach(msg => {
+        const item = convertToNotificationItem(msg, 'notice')
+        messageMap.set(item.id, item)
+      })
+    }
+
+    // 如果没有任何新消息，标记为没有更多
+    if (messageMap.size === 0) {
+      hasMore.value = false
+      return
+    }
+
+    // 转换为数组并按时间排序
+    const newNotifications = Array.from(messageMap.values())
+      .sort((a, b) => new Date(b.createTime).getTime() - new Date(a.createTime).getTime())
+    
+    // 添加新通知
+    notifications.value.push(...newNotifications)
   } catch (error) {
-    console.error('Failed to load more notifications:', error)
+    console.error('加载更多消息失败:', error)
   } finally {
     loading.value = false
   }
@@ -335,6 +381,7 @@ const markAsRead = async (id: string) => {
         break
     }
     item.status = 'read'
+    saveNotificationsToStorage() // 保存更新后的状态到本地存储
     
     // 如果当前在未读标签页且没有更多未读消息，自动切换到全部标签页
     if (activeTab.value === TabKeys.UNREAD && unreadCount.value === 0) {
@@ -370,6 +417,7 @@ const readAll = async () => {
         item.status = 'read'
       }
     })
+    saveNotificationsToStorage() // 保存更新后的状态到本地存储
     
     // 标记全部已读后，自动切换到全部标签页
     activeTab.value = TabKeys.ALL
@@ -399,6 +447,42 @@ const deleteNotification = async (id: string) => {
   }
 }
 
+// 标记消息为未读
+const markAsUnread = async (id: string) => {
+  try {
+    const messageId = id.split('_')[1]
+    await markMessageAsUnread(Number(messageId))
+    const index = notifications.value.findIndex(item => item.id === id)
+    if (index !== -1) {
+      notifications.value[index].status = 'unread'
+      saveNotificationsToStorage()
+    }
+  } catch (error) {
+    console.error('标记消息为未读失败:', error)
+    notification.error({
+      message: t('notification.error.unread'),
+      description: t('notification.error.unreadDesc')
+    })
+  }
+}
+
+// 标记所有消息为未读
+const markAllAsUnread = async () => {
+  try {
+    await markAllMessagesAsUnread()
+    notifications.value.forEach(item => {
+      item.status = 'unread'
+    })
+    saveNotificationsToStorage()
+  } catch (error) {
+    console.error('标记所有消息为未读失败:', error)
+    notification.error({
+      message: t('notification.error.unreadAll'),
+      description: t('notification.error.unreadAllDesc')
+    })
+  }
+}
+
 // 显示设置抽屉
 const showSettings = () => {
   showSettingsDrawer.value = true
@@ -409,217 +493,201 @@ const closeSettings = () => {
   showSettingsDrawer.value = false
 }
 
-// 修改 handleNewMessage 函数
+// 处理新消息
 const handleNewMessage = (message: any) => {
   console.log('[通知中心] 开始处理新消息')
   console.log('[通知中心] 收到的原始消息:', message)
   
   try {
-    // 如果是字符串格式的JSON，先解析成对象
-    let messageObj = message
+    // 如果是字符串类型的消息
     if (typeof message === 'string') {
+      // 检查是否是连接成功消息
+      if (message === '连接成功') {
+        console.log('[通知中心] 收到连接成功消息，跳过处理')
+        return
+      }
+      
+      // 尝试解析为JSON
       try {
-        messageObj = JSON.parse(message)
-        console.log('[通知中心] 解析JSON后的消息:', messageObj)
+        message = JSON.parse(message)
       } catch (e) {
-        console.warn('[通知中心] JSON解析失败，使用原始内容:', e)
-        if (message === '连接成功') {
-          console.log('[通知中心] 收到连接成功消息，跳过处理')
-          return
-        }
-        messageObj = { Content: message }
+        console.warn('[通知中心] 消息不是JSON格式，使用原始内容:', message)
+        // 如果不是JSON格式，直接作为系统消息处理
+        handleSystemMessage({
+          type: 'system',
+          content: message,
+          timestamp: new Date().toISOString()
+        })
+        return
       }
     }
-
-    // 解析消息内容
-    const messageContent = messageObj.Content || messageObj.content
-    if (!messageContent) {
-      console.warn('[通知中心] 消息内容为空，跳过处理')
-      return
-    }
     
-    const senderId = messageObj.SenderId || messageObj.senderId
-    const timestamp = messageObj.Timestamp || messageObj.timestamp || new Date().toISOString()
-    const messageId = `chat_${senderId}_${new Date(timestamp).getTime()}`
-    
-    console.log('[通知中心] 解析后的消息信息:', {
-      messageId,
-      senderId,
-      timestamp,
-      content: messageContent
-    })
-
-    // 创建新消息对象
-    const newMessage: NotificationItemType = {
-      id: messageId,
-      title: t('notification.types.chatMessage'),
-      content: messageContent,
-      createTime: timestamp,
-      status: 'unread',
-      type: 'message'
-    }
-
-    // 检查是否已存在相同内容的消息
-    const isDuplicate = notifications.value.some(item => 
-      item.content === messageContent && 
-      Math.abs(new Date(item.createTime).getTime() - new Date(timestamp).getTime()) < 1000
-    )
-
-    if (!isDuplicate) {
-      // 使用 nextTick 确保在 DOM 更新后添加新消息
-      nextTick(() => {
-        notifications.value = [newMessage, ...notifications.value]
-        saveNotificationsToStorage()
-        // 显示通知提醒
-        showNotification(newMessage)
-      })
+    // 处理不同类型的消息
+    if (message && typeof message === 'object') {
+      // 处理连接成功消息
+      if (message.type === 'connection' && message.status === 'success') {
+        console.log('[通知中心] 收到连接成功消息，跳过处理')
+        return
+      }
+      
+      // 处理通知消息
+      if (message.type === 'notification') {
+        handleNotification(message)
+      }
+      // 处理系统消息
+      else if (message.type === 'system') {
+        handleSystemMessage(message)
+      }
+      // 处理其他类型的消息
+      else {
+        console.log('[通知中心] 收到未知类型的消息:', message)
+        handleSystemMessage({
+          type: 'system',
+          content: JSON.stringify(message),
+          timestamp: new Date().toISOString()
+        })
+      }
     }
   } catch (error) {
-    console.error('[通知中心] 处理消息时出错:', error)
+    console.error('[通知中心] 处理消息时发生错误:', error)
+    // 发生错误时，将消息作为系统消息处理
+    handleSystemMessage({
+      type: 'system',
+      content: typeof message === 'string' ? message : JSON.stringify(message),
+      timestamp: new Date().toISOString(),
+      error: true
+    })
   }
 }
 
-// 修改 showNotification 函数
-const showNotification = (message: NotificationItemType) => {
-  let icon = null
+// 处理通知消息
+const handleNotification = (message: any) => {
+  console.log('[通知中心] 处理通知消息:', message)
   
-  // 根据消息类型设置图标
-  switch (message.type) {
-    case 'system':
-      icon = h(BellOutlined, { style: 'color: var(--ant-color-warning)' })
-      break
-    case 'task':
-      icon = h(ScheduleOutlined, { style: 'color: var(--ant-color-warning)' })
-      break
-    case 'message':
-      icon = h(MessageOutlined, { style: 'color: var(--ant-color-warning)' })
-      break
+  // 添加消息到通知列表
+  notifications.value.push({
+    id: Date.now(),
+    type: 'notification',
+    title: message.title || '通知',
+    content: message.content || '',
+    timestamp: message.timestamp || new Date().toISOString(),
+    read: false,
+    data: message.data || {}
+  })
+  
+  // 更新未读消息数量
+  updateUnreadCount()
+  
+  // 如果设置了自动显示通知，则显示通知
+  if (props.autoShow) {
+    showNotification(message)
   }
+}
 
-  // 创建按钮元素
-  const btn = h(
-    'div',
-    {
-      class: 'notification-actions'
-    },
-    [
-      h(
-        'span',
-        {
-          class: 'notification-prompt'
-        },
-        t('notification.checkPrompt')
-      ),
-      h(
-        'a-button',
-        {
-          type: 'primary',
-          size: 'small',
-          class: 'read-now-btn',
-          onClick: (e: Event) => {
-            e.stopPropagation()
-            if (message.status === 'unread') {
-              markAsRead(message.id)
-            }
-          }
-        },
-        t('notification.readNow')
-      )
-    ]
-  )
+// 处理系统消息
+const handleSystemMessage = (message: any) => {
+  console.log('[通知中心] 处理系统消息:', message)
+  
+  // 添加消息到系统消息列表
+  systemMessages.value.push({
+    id: Date.now(),
+    type: 'system',
+    content: message.content || '',
+    timestamp: message.timestamp || new Date().toISOString(),
+    error: message.error || false
+  })
+  
+  // 如果设置了自动显示系统消息，则显示消息
+  if (props.autoShowSystem) {
+    showSystemMessage(message)
+  }
+}
 
-  // 显示通知
-  notification.open({
-    message: message.title,
-    description: h('div', { class: 'notification-content' }, [
-      h('div', { class: 'message-content' }, message.content),
-      btn
-    ]),
-    icon,
-    placement: 'bottomRight',
-    duration: 4.5,
-    class: 'hbt-notification warning-notification'
+// 显示通知
+const showNotification = (message: any) => {
+  message.success({
+    content: message.content || '',
+    duration: props.notificationDuration,
+    onClick: () => {
+      // 点击通知时的处理
+      handleNotificationClick(message)
+    }
   })
 }
 
-// 发送消息
-const sendMessage = async (content: string, type: string = 'message') => {
-  try {
-    const message = {
-      content,
-      type,
-      senderId: currentUserId,
-      timestamp: new Date().toISOString()
-    }
-    
-    await signalRService.sendMessage(message)
-    console.log('[通知中心] 消息发送成功:', message)
-  } catch (error) {
-    console.error('[通知中心] 消息发送失败:', error)
-    notification.error({
-      message: t('notification.sendFailed'),
-      description: t('notification.sendFailedDesc')
+// 显示系统消息
+const showSystemMessage = (message: any) => {
+  if (message.error) {
+    message.error({
+      content: message.content || '系统消息',
+      duration: props.systemMessageDuration
+    })
+  } else {
+    message.info({
+      content: message.content || '系统消息',
+      duration: props.systemMessageDuration
     })
   }
 }
 
-// 发送通知
-const sendNotification = async (title: string, content: string, type: string = 'info') => {
-  try {
-    const notification = {
-      title,
-      content,
-      type,
-      senderId: currentUserId,
-      timestamp: new Date().toISOString()
-    }
-    
-    await signalRService.sendNotification(notification)
-    console.log('[通知中心] 通知发送成功:', notification)
-  } catch (error) {
-    console.error('[通知中心] 通知发送失败:', error)
-    notification.error({
-      message: t('notification.sendFailed'),
-      description: t('notification.sendFailedDesc')
-    })
+// 更新未读消息数量
+const updateUnreadCount = () => {
+  unreadCount.value = notifications.value.filter(n => !n.read).length
+}
+
+// 处理通知点击
+const handleNotificationClick = (message: any) => {
+  // 标记消息为已读
+  const notification = notifications.value.find(n => n.id === message.id)
+  if (notification) {
+    notification.read = true
+    updateUnreadCount()
+  }
+  
+  // 执行自定义点击处理
+  if (props.onNotificationClick) {
+    props.onNotificationClick(message)
   }
 }
 
-// 修改 handleNewNotification 函数
-const handleNewNotification = (data: any) => {
-  console.log('[通知中心] 收到新通知:', data)
+// 处理新通知
+const handleNewNotification = (notification: any) => {
+  console.log('[通知中心] 收到新通知:', notification)
   
   // 创建新通知对象
   const newNotification: NotificationItemType = {
-    id: `notification_${data.senderId}_${new Date(data.timestamp).getTime()}`,
-    title: data.title,
-    content: data.content,
-    type: data.type,
+    id: `notification_${notification.senderId}_${new Date(notification.timestamp).getTime()}`,
+    title: notification.title,
+    content: notification.content,
+    type: notification.type || 'notification',
     status: 'unread',
-    createTime: data.timestamp
+    createTime: notification.timestamp || new Date().toISOString()
   }
 
   // 检查是否已存在相同内容的通知
   const isDuplicate = notifications.value.some(item => 
-    item.content === data.content && 
-    Math.abs(new Date(item.createTime).getTime() - new Date(data.timestamp).getTime()) < 1000
+    item.content === notification.content && 
+    Math.abs(new Date(item.createTime).getTime() - new Date(notification.timestamp).getTime()) < 1000
   )
 
   if (!isDuplicate) {
     // 使用 nextTick 确保在 DOM 更新后添加新通知
     nextTick(() => {
       notifications.value = [newNotification, ...notifications.value]
+      saveNotificationsToStorage()
       // 显示通知提醒
       showNotification(newNotification)
     })
   }
 }
 
+// 处理邮件状态更新
 const handleMailStatus = (notification: any) => {
   console.log('[通知中心] 收到邮件状态更新:', notification)
   handleNewMessage(notification)
 }
 
+// 处理通知状态更新
 const handleNoticeStatus = (notification: any) => {
   console.log('[通知中心] 收到通知状态更新:', notification)
   handleNewMessage(notification)
@@ -641,9 +709,9 @@ onMounted(() => {
       }
 
       // 注册消息处理
-      signalRService.on('receivePersonalNotice', handleNewNotification)
-      signalRService.on('receiveMailStatus', handleMailStatus)
-      signalRService.on('receiveNoticeStatus', handleNoticeStatus)
+      signalRService.on('ReceivePersonalNotice', handleNewNotification)
+      signalRService.on('ReceiveMailStatus', handleMailStatus)
+      signalRService.on('ReceiveNoticeStatus', handleNoticeStatus)
       signalRService.on('ReceiveMessage', handleNewMessage)
 
       console.log('[通知中心] SignalR 连接已建立，消息处理已注册')
@@ -660,9 +728,9 @@ onMounted(() => {
     console.log('[通知中心] SignalR 连接状态变化:', state)
     if (state) {
       // 重新注册事件监听
-      signalRService.on('receivePersonalNotice', handleNewNotification)
-      signalRService.on('receiveMailStatus', handleMailStatus)
-      signalRService.on('receiveNoticeStatus', handleNoticeStatus)
+      signalRService.on('ReceivePersonalNotice', handleNewNotification)
+      signalRService.on('ReceiveMailStatus', handleMailStatus)
+      signalRService.on('ReceiveNoticeStatus', handleNoticeStatus)
       signalRService.on('ReceiveMessage', handleNewMessage)
     }
   })
@@ -670,9 +738,9 @@ onMounted(() => {
 
 onUnmounted(() => {
   // 注销所有消息处理
-  signalRService.off('receivePersonalNotice', handleNewNotification)
-  signalRService.off('receiveMailStatus', handleMailStatus)
-  signalRService.off('receiveNoticeStatus', handleNoticeStatus)
+  signalRService.off('ReceivePersonalNotice', handleNewNotification)
+  signalRService.off('ReceiveMailStatus', handleMailStatus)
+  signalRService.off('ReceiveNoticeStatus', handleNoticeStatus)
   signalRService.off('ReceiveMessage', handleNewMessage)
 })
 </script>
@@ -794,11 +862,16 @@ onUnmounted(() => {
         background-color: var(--ant-color-primary-bg);
       }
     }
+  }
 
-    .no-more {
-      color: var(--ant-color-text-secondary);
-      font-size: 13px;
-    }
+  .no-more {
+    text-align: center;
+    padding: 12px;
+    border-top: 1px solid var(--ant-color-border);
+    background: var(--ant-color-bg-container);
+    margin-top: auto;
+    color: var(--ant-color-text-secondary);
+    font-size: 13px;
   }
 }
 

@@ -39,8 +39,6 @@ public class HbtOnlineMessageService : IHbtOnlineMessageService
         // 1.构建查询条件
         var exp = Expressionable.Create<HbtOnlineMessage>();
 
-        if (query.TenantId.HasValue)
-            exp = exp.And(m => m.TenantId == query.TenantId.Value);
 
         if (query.SenderId.HasValue)
             exp = exp.And(m => m.SenderId == query.SenderId.Value);
@@ -86,8 +84,7 @@ public class HbtOnlineMessageService : IHbtOnlineMessageService
         // 1.构建查询条件
         var exp = Expressionable.Create<HbtOnlineMessage>();
 
-        if (query.TenantId.HasValue)
-            exp = exp.And(m => m.TenantId == query.TenantId.Value);
+
 
         if (query.SenderId.HasValue)
             exp = exp.And(m => m.SenderId == query.SenderId.Value);
@@ -122,8 +119,7 @@ public class HbtOnlineMessageService : IHbtOnlineMessageService
         // 1.构建查询条件
         var exp = Expressionable.Create<HbtOnlineMessage>();
 
-        if (query.TenantId.HasValue)
-            exp = exp.And(m => m.TenantId == query.TenantId.Value);
+
 
         if (query.SenderId.HasValue)
             exp = exp.And(m => m.SenderId == query.SenderId.Value);

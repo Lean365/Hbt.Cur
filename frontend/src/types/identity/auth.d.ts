@@ -59,61 +59,102 @@ export interface DeviceInfo {
  */
 export interface LoginParams {
   /** 租户ID */
-  tenantId: number;
+  tenantId: number;  // 对应C#的long
   /** 用户名 */
   userName: string;
   /** 密码 */
   password: string;
-  /** 验证码令牌 */
+  /** 验证码Token */
   captchaToken?: string;
   /** 验证码偏移量 */
-  captchaOffset?: number;
-  /** 验证码 */
-  code?: string;
-  /** 验证码UUID */
-  uuid?: string;
-  /** 设备信息 */
-  deviceInfo?: DeviceInfo;
+  captchaOffset: number;  // 对应C#的int
+  /** IP地址 */
+  ipAddress: string;
+  /** 用户代理 */
+  userAgent: string;
+  /** 登录类型（0=密码 1=短信 2=邮箱 3=微信 4=QQ 5=GitHub） */
+  loginType: number;  // 对应C#的HbtLoginType
   /** 登录来源（0=Web 1=App 2=小程序 3=其他） */
-  loginSource?: number;
+  loginSource: number;  // 对应C#的int
+  /** 设备信息 */
+  deviceInfo?: DeviceInfo;  // 对应C#的HbtSignalRDevice
+}
+
+/**
+ * 设备信息
+ */
+export interface HbtSignalRDevice {
+  /** 设备ID */
+  deviceId: string;
+  /** 设备类型 */
+  deviceType: number;
+  /** 设备名称 */
+  deviceName?: string;
+  /** 设备型号 */
+  deviceModel?: string;
+  /** 操作系统类型 */
+  osType?: number;
+  /** 操作系统版本 */
+  osVersion?: string;
+  /** 浏览器类型 */
+  browserType?: number;
+  /** 浏览器版本 */
+  browserVersion?: string;
+  /** 屏幕分辨率 */
+  resolution?: string;
+  /** IP地址 */
+  ipAddress?: string;
+  /** 地理位置 */
+  location?: string;
+  /** CPU核心数 */
+  processorCores?: string;
+  /** 平台供应商 */
+  platformVendor?: string;
+  /** 硬件并发数 */
+  hardwareConcurrency?: string;
+  /** 系统语言 */
+  systemLanguage?: string;
+  /** 时区 */
+  timeZone?: string;
+  /** 屏幕颜色深度 */
+  screenColorDepth?: string;
+  /** 设备内存 */
+  deviceMemory?: string;
+  /** WebGL渲染器 */
+  webGLRenderer?: string;
+  /** 设备指纹 */
+  deviceFingerprint?: string;
+  /** 设备令牌 */
+  deviceToken?: string;
+  /** 登录令牌 */
+  accessToken?: string;
+  /** 首次登录时间 */
+  firstLoginTime?: string;
+  /** 最后登录时间 */
+  lastLoginTime?: string;
 }
 
 /**
  * 用户信息
  */
-export interface UserInfo extends HbtBaseEntity {
-  /** 用户ID */
-  userId: number;
-  /** 用户名 */
-  userName: string;
-  /** 昵称 */
-  nickName: string;
-  /** 英文名 */
-  englishName?: string;
-  /** 租户ID */
-  tenantId: number;
-  /** 租户名称 */
-  tenantName: string;
-  /** 头像 */
-  avatar?: string;
-  /** 角色列表 */
-  roles: string[];
-  /** 权限列表 */
-  permissions: string[];
+export interface UserInfo {
+  userId: number
+  userName: string
+  nickName: string
+  englishName: string
+  userType: number
+  tenantId: number
+  tenantName: string
+  roles: string[]
+  permissions: string[]
 }
 
 /**
  * 登录响应
  */
 export interface LoginResult {
-  /** 访问令牌 */
   accessToken: string;
-  /** 刷新令牌 */
-  refreshToken: string;
-  /** 过期时间（秒） */
-  expiresIn: number;
-  /** 用户信息 */
-  userInfo: UserInfo;
+  userInfo: UserInfoResponse;
 }
 
 /**

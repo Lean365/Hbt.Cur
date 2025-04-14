@@ -1,4 +1,5 @@
 import { useUserStore } from '@/stores/user'
+import axios from 'axios'
 
 // 获取Token
 export const getToken = (): string | null => {

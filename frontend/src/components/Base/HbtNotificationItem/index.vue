@@ -1,54 +1,52 @@
 <template>
-  <div class="notification-item" :class="{ unread: data.status === 'unread' }">
+  <div class="notification-item" @click="toggleReadStatus" :data-status="data.status">
     <div class="item-icon">
-      <template v-if="data.type === 'system'">
-        <notification-outlined />
-      </template>
-      <template v-else-if="data.type === 'task'">
-        <schedule-outlined />
-      </template>
-      <template v-else>
-        <message-outlined />
-      </template>
+      <a-badge :dot="data.status === 'unread'" status="error" :offset="[-4, 4]">
+        <template v-if="data.type === 'system'">
+          <bell-outlined />
+        </template>
+        <template v-else-if="data.type === 'task'">
+          <schedule-outlined />
+        </template>
+        <template v-else>
+          <message-outlined />
+        </template>
+      </a-badge>
     </div>
     <div class="item-content">
-      <div class="item-title">{{ formatTitle(data.title) }}</div>
-      <div class="item-body">{{ formatContent(data.content) }}</div>
-      <div class="item-footer">
-        <span class="item-time">{{ formatTime(data.createTime) }}</span>
-        <div class="action-buttons">
-          <a-button
-            v-if="data.status === 'unread'"
-            type="text"
-            size="small"
-            class="action-btn"
-            @click.stop="$emit('read', data.id)"
-          >
-            {{ t('notification.markAsRead') }}
-          </a-button>
-          <a-divider type="vertical" v-if="data.status === 'unread'" />
-          <a-button
-            type="text"
-            size="small"
-            class="action-btn delete-btn"
-            @click.stop="$emit('delete', data.id)"
-          >
-            {{ t('notification.delete') }}
-          </a-button>
-        </div>
-      </div>
+      <div class="item-body">{{ truncatedContent }}</div>
+      <div class="item-time">{{ formatTime(data.createTime) }}</div>
+    </div>
+    <div class="action-buttons">
+      <a-tooltip :title="t('notification.detail')">
+        <a-button type="text" @click.stop="toggleReadStatus">
+          <template #icon>
+            <eye-outlined />
+          </template>
+        </a-button>
+      </a-tooltip>
+      <a-tooltip :title="t('notification.delete')">
+        <a-button type="text" @click.stop="$emit('delete', data.id)">
+          <template #icon>
+            <delete-outlined />
+          </template>
+        </a-button>
+      </a-tooltip>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
+import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { NotificationOutlined, ScheduleOutlined, MessageOutlined } from '@ant-design/icons-vue'
+import { BellOutlined, ScheduleOutlined, MessageOutlined, DeleteOutlined, EyeOutlined } from '@ant-design/icons-vue'
 import type { NotificationItem } from '@/types/settings'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
+import 'dayjs/locale/zh-cn'
 
 dayjs.extend(relativeTime)
+dayjs.locale('zh-cn')
 
 const { t } = useI18n()
 
@@ -60,10 +58,26 @@ interface Props {
 const props = defineProps<Props>()
 
 // Emits
-defineEmits<{
+const emit = defineEmits<{
   (e: 'read', id: string): void
+  (e: 'unread', id: string): void
   (e: 'delete', id: string): void
 }>()
+
+// 计算属性：截断的内容
+const truncatedContent = computed(() => {
+  const content = props.data.content || ''
+  return content.length > 40 ? content.slice(0, 40) + '...' : content
+})
+
+// 切换已读/未读状态
+const toggleReadStatus = () => {
+  if (props.data.status === 'unread') {
+    emit('read', props.data.id)
+  } else {
+    emit('unread', props.data.id)
+  }
+}
 
 // 格式化时间
 const formatTime = (time: string) => {
@@ -72,60 +86,12 @@ const formatTime = (time: string) => {
 
 // 格式化消息内容
 const formatContent = (content: string) => {
+  if (!content) return ''
   try {
-    // 尝试解析JSON内容
     const data = JSON.parse(content)
-    
-    // 如果是消息格式
-    if (data.senderId && data.receiverId) {
-      return `发送者: ${data.senderId}
-接收者: ${data.receiverId}
-内容: ${data.content || data.Content || '无内容'}`
-    }
-    
-    // 如果有标准内容字段
-    if (data.Content || data.content) {
-      return data.Content || data.content
-    }
-
-    // 如果是通知格式
-    if (data.type || data.messageType) {
-      const type = data.type || data.messageType
-      const title = data.title || data.messageTitle || ''
-      const msg = data.message || data.content || data.Content || ''
-      return `类型: ${t(`components.notification.types.${type}.label`) || type}
-${title ? `标题: ${title}\n` : ''}${msg ? `消息: ${msg}` : ''}`
-    }
-
-    // 如果是任务格式
-    if (data.taskId || data.jobId) {
-      return `任务ID: ${data.taskId || data.jobId}
-状态: ${data.status || data.state || '未知'}
-${data.message ? `详情: ${data.message}` : ''}`
-    }
-
-    // 如果是普通对象，格式化显示
-    const formatted = Object.entries(data)
-      .filter(([_, value]) => value !== undefined && value !== null)
-      .map(([key, value]) => {
-        // 处理时间戳
-        if (key.toLowerCase().includes('time') || key.toLowerCase().includes('date')) {
-          if (typeof value === 'string' || typeof value === 'number' || value instanceof Date) {
-            try {
-              return `${key}: ${dayjs(value).format('YYYY-MM-DD HH:mm:ss')}`
-            } catch {
-              return `${key}: ${value}`
-            }
-          }
-        }
-        return `${key}: ${value}`
-      })
-      .join('\n')
-    
-    return formatted || '无内容'
+    return data.content || data.Content || content
   } catch {
-    // 如果不是JSON，直接返回原内容
-    return content || '无内容'
+    return content
   }
 }
 
@@ -156,121 +122,116 @@ const formatTitle = (title: string) => {
 <style lang="less" scoped>
 .notification-item {
   display: flex;
-  padding: 16px;
+  align-items: center;
+  padding: 4px 6px;
+  margin: 0;
   cursor: pointer;
   transition: all 0.3s;
+  height: 36px;
+  box-sizing: border-box;
   width: 100%;
-  border-bottom: 1px solid var(--ant-color-border);
-  background: var(--ant-color-bg-container);
-
-  &:last-child {
-    border-bottom: none;
-  }
-
-  .item-icon {
-    flex-shrink: 0;
-    margin-right: 16px;
-    width: 40px;
-    height: 40px;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--ant-color-primary-bg);
-    
-    :deep(.anticon) {
-      font-size: 20px;
-      color: var(--ant-color-primary);
-    }
-  }
-
-  .item-content {
-    flex: 1;
-    min-width: 0;
-
-    .item-title {
-      margin-bottom: 8px;
-      color: var(--ant-color-text);
-      font-size: 15px;
-      font-weight: 500;
-      line-height: 1.4;
-    }
-
-    .item-body {
-      margin-bottom: 12px;
-      color: var(--ant-color-text-secondary);
-      font-size: 14px;
-      line-height: 1.8;
-      white-space: pre-line;
-      word-break: break-word;
-      background: var(--ant-color-bg-container-hover);
-      padding: 12px;
-      border-radius: 6px;
-      border: 1px solid var(--ant-color-border);
-    }
-
-    .item-footer {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-
-      .item-time {
-        color: var(--ant-color-text-quaternary);
-        font-size: 13px;
-      }
-
-      .action-buttons {
-        display: flex;
-        align-items: center;
-        
-        .action-btn {
-          padding: 4px 8px;
-          height: 24px;
-          font-size: 13px;
-          border: none;
-          background: transparent;
-          
-          &:hover {
-            background: rgba(0, 0, 0, 0.04);
-          }
-          
-          &.delete-btn {
-            color: #ff4d4f;
-            
-            &:hover {
-              color: #ff7875;
-              background: rgba(255, 77, 79, 0.1);
-            }
-          }
-        }
-
-        :deep(.ant-divider-vertical) {
-          margin: 0 12px;
-          height: 14px;
-          border-color: rgba(5, 5, 5, 0.06);
-        }
-      }
-    }
-  }
-
-  &.unread {
-    background-color: var(--ant-color-primary-bg);
-    
-    .item-title {
-      color: var(--ant-color-primary);
-    }
-
-    .item-body {
-      background: var(--ant-color-bg-container);
-    }
-  }
+  position: relative;
 
   &:hover {
     background-color: var(--ant-color-bg-container-hover);
   }
 
-  :deep(.ant-space) {
-    display: none;
+  .item-icon {
+    position: relative;
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background-color: var(--ant-color-bg-container);
+    color: var(--ant-color-primary);
+    font-size: 14px;
+    margin: 0;
   }
+
+  .item-content {
+    flex: 1;
+    min-width: 0;
+    padding-right: 64px;
+    display: flex;
+    flex-direction: column;
+    margin: 0 8px;
+    gap: 0;
+
+    .item-body {
+      color: var(--ant-color-text);
+      font-size: 13px;
+      line-height: 18px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 100%;
+      font-weight: normal;
+
+      [data-status="unread"] & {
+        font-weight: 600;
+      }
+    }
+
+    .item-time {
+      color: var(--ant-color-text-secondary);
+      font-size: 12px;
+      line-height: 14px;
+    }
+  }
+
+  .action-buttons {
+    position: absolute;
+    right: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    opacity: 0;
+    transition: opacity 0.2s;
+    margin: 0;
+    flex-shrink: 0;
+    width: 56px;
+
+    .ant-btn {
+      width: 20px;
+      height: 20px;
+      padding: 0;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      color: rgba(0, 0, 0, 0.45);
+      
+      &:hover {
+        color: rgba(0, 0, 0, 0.85);
+        background-color: rgba(0, 0, 0, 0.06);
+      }
+
+      &:last-child:hover {
+        color: var(--ant-color-error);
+        background-color: var(--ant-color-error-bg);
+      }
+
+      .anticon {
+        font-size: 14px;
+        line-height: 1;
+      }
+    }
+  }
+
+  &:hover .action-buttons {
+    opacity: 1;
+  }
+}
+
+:deep(.ant-badge-dot) {
+  box-shadow: 0 0 0 1px #fff;
+  width: 6px;
+  height: 6px;
 }
 </style> 

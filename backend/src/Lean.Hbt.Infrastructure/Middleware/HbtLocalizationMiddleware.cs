@@ -109,21 +109,33 @@ public class HbtLocalizationMiddleware
     /// </summary>
     private string GetLanguage(HttpContext context)
     {
-        // 1. 从请求头获取语言
-        var langHeader = context.Request.Headers["Accept-Language"].ToString();
-        if (!string.IsNullOrEmpty(langHeader))
+        try
         {
-            return langHeader.Split(',')[0];
-        }
+            // 1. 从请求头获取语言
+            var langHeader = context.Request.Headers["Accept-Language"].ToString();
+            if (!string.IsNullOrEmpty(langHeader))
+            {
+                var language = langHeader.Split(',')[0];
+                _logger.LogDebug("Language from header: {Language}", language);
+                return language;
+            }
 
-        // 2. 从Cookie获取语言
-        if (context.Request.Cookies.TryGetValue("lang", out var langCookie))
+            // 2. 从Cookie获取语言
+            if (context.Request.Cookies.TryGetValue("lang", out var langCookie))
+            {
+                _logger.LogDebug("Language from cookie: {Language}", langCookie);
+                return langCookie;
+            }
+
+            // 3. 返回默认语言
+            _logger.LogDebug("Using default language: {Language}", DEFAULT_LANGUAGE);
+            return DEFAULT_LANGUAGE;
+        }
+        catch (Exception ex)
         {
-            return langCookie;
+            _logger.LogError(ex, "Error getting language setting");
+            return DEFAULT_LANGUAGE;
         }
-
-        // 3. 返回默认语言
-        return DEFAULT_LANGUAGE;
     }
 
     /// <summary>
@@ -135,13 +147,27 @@ public class HbtLocalizationMiddleware
         if (!context.Request.Cookies.TryGetValue("lang", out var currentLang) || 
             currentLang != language)
         {
-            context.Response.Cookies.Append("lang", language, new CookieOptions
+            var cookieOptions = new CookieOptions
             {
                 Expires = DateTimeOffset.Now.AddYears(1),
-                HttpOnly = true,
-                Secure = context.Request.IsHttps,
-                SameSite = SameSiteMode.Lax
-            });
+                HttpOnly = false,     // 允许JavaScript访问
+                Secure = true,        // 要求HTTPS
+                SameSite = SameSiteMode.None,  // 允许跨站点请求
+                Path = "/",
+                IsEssential = true    // 标记为必要Cookie
+            };
+
+            // 在响应中设置Cookie
+            context.Response.Cookies.Append("lang", language, cookieOptions);
+            
+            // 记录Cookie设置日志
+            _logger.LogInformation(
+                "Language cookie updated: Language={Language}, SameSite={SameSite}, Secure={Secure}, HttpOnly={HttpOnly}",
+                language,
+                cookieOptions.SameSite,
+                cookieOptions.Secure,
+                cookieOptions.HttpOnly
+            );
         }
     }
 } 
