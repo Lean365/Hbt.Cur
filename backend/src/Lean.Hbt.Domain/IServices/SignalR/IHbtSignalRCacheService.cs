@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Lean.Hbt.Domain.Entities.RealTime;
+using Lean.Hbt.Domain.Entities.SignalR;
 
 namespace Lean.Hbt.Domain.IServices.SignalR
 {

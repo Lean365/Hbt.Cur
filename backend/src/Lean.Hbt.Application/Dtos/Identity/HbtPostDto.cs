@@ -110,6 +110,16 @@ namespace Lean.Hbt.Application.Dtos.Identity
     public class HbtPostCreateDto
     {
         /// <summary>
+        /// 构造函数
+        /// </summary>
+        public HbtPostCreateDto()
+        {
+            PostCode = string.Empty;
+            PostName = string.Empty;
+            Remark = string.Empty;
+        }
+
+        /// <summary>
         /// 岗位编码
         /// </summary>
         [Required(ErrorMessage = "岗位编码不能为空")]
@@ -263,7 +273,7 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// <summary>
         /// 备注
         /// </summary>
-        public string Remark { get; set; }
+        public string? Remark { get; set; }
     }
 
     /// <summary>
@@ -280,7 +290,7 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// </summary>
         public HbtPostTemplateDto()
         {
-            PostCode = "admin";
+            PostCode = "Hbt365";
             PostName = "系统管理员";
             OrderNum = 1;
             Status = 0;

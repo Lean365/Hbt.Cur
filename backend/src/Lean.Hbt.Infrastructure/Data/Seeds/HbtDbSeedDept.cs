@@ -509,7 +509,7 @@ public class HbtDbSeedDept
 
         foreach (var dept in defaultDepts)
         {
-            var existingDept = await _deptRepository.GetInfoAsync(d => d.Id == dept.Id);
+            var existingDept = await _deptRepository.GetFirstAsync(d => d.Id == dept.Id);
             if (existingDept == null)
             {
                 await _deptRepository.CreateAsync(dept);

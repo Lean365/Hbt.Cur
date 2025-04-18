@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.SignalR;
 using Lean.Hbt.Infrastructure.SignalR;
 using Lean.Hbt.Domain.Entities;
 using Lean.Hbt.Domain.Repositories;
-using Lean.Hbt.Domain.Entities.RealTime;
+using Lean.Hbt.Domain.Entities.SignalR;
 using Lean.Hbt.Domain.Entities.Identity;
 using System.Linq.Expressions;
 using System.Collections.Generic;
@@ -184,7 +184,7 @@ namespace Lean.Hbt.Infrastructure.Security
                     // 1. 更新数据库中的在线用户状态
                     var exp = Expressionable.Create<HbtOnlineUser>();
                     exp.And(u => u.UserId == userId && u.DeviceId == oldestDevice.DeviceId);
-                    var oldUser = await _onlineUserRepository.GetInfoAsync(exp.ToExpression());
+                    var oldUser = await _onlineUserRepository.GetFirstAsync(exp.ToExpression());
                     if (oldUser != null)
                     {
                         oldUser.OnlineStatus = 1; // 设置为离线

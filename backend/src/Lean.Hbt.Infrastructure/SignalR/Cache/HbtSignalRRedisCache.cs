@@ -1,5 +1,5 @@
 using Lean.Hbt.Domain.IServices.SignalR;
-using Lean.Hbt.Domain.Entities.RealTime;
+using Lean.Hbt.Domain.Entities.SignalR;
 using Lean.Hbt.Domain.IServices.Caching;
 using System.Text.Json;
 

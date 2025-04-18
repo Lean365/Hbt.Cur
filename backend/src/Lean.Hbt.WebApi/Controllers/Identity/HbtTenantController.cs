@@ -65,7 +65,7 @@ public class HbtTenantController : HbtBaseController
     /// <param name="input">创建对象</param>
     /// <returns>租户ID</returns>
     [HttpPost]
-    [HbtPerm("identity:tenant:add")]
+    [HbtPerm("identity:tenant:create")]
     public async Task<IActionResult> CreateAsync([FromBody] HbtTenantCreateDto input)
     {
         var result = await _tenantService.CreateAsync(input);
@@ -78,7 +78,7 @@ public class HbtTenantController : HbtBaseController
     /// <param name="input">更新对象</param>
     /// <returns>是否成功</returns>
     [HttpPut]
-    [HbtPerm("identity:tenant:edit")]
+    [HbtPerm("identity:tenant:update")]
     public async Task<IActionResult> UpdateAsync([FromBody] HbtTenantUpdateDto input)
     {
         var result = await _tenantService.UpdateAsync(input);

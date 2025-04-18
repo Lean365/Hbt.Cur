@@ -43,7 +43,7 @@ namespace Lean.Hbt.WebApi.Controllers.Audit
         /// </summary>
         /// <param name="query">查询条件</param>
         /// <returns>数据库差异日志分页列表</returns>
-        [HttpGet]
+        [HttpGet("list")]
         [HbtPerm("audit:difflog:list")]
         public async Task<IActionResult> GetListAsync([FromQuery] HbtDbDiffLogQueryDto query)
         {

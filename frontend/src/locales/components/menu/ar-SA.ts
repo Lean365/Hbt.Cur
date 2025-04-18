@@ -51,7 +51,7 @@ export default {
       variable: 'المتغيرات',
       history: 'السجل'
     },
-    realtime: {
+    signalr: {
       _self: 'المراقبة في الوقت الحقيقي',
       server: 'مراقبة الخادم',
       online: 'المستخدمون المتصلون',

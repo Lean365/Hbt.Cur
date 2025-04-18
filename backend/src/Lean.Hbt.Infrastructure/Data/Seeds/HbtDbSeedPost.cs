@@ -988,7 +988,7 @@ public class HbtDbSeedPost
 
         foreach (var post in defaultPosts)
         {
-            var existingPost = await _postRepository.GetInfoAsync(p => p.PostCode == post.PostCode);
+            var existingPost = await _postRepository.GetFirstAsync(p => p.PostCode == post.PostCode);
             if (existingPost == null)
             {
                 await _postRepository.CreateAsync(post);

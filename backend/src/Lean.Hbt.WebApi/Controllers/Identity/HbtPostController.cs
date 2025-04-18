@@ -42,7 +42,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// </summary>
         /// <param name="query">查询条件</param>
         /// <returns>岗位分页列表</returns>
-        [HttpGet]
+        [HttpGet("list")]
         [HbtPerm("identity:post:query")]
         public async Task<IActionResult> GetListAsync([FromQuery] HbtPostQueryDto query)
         {

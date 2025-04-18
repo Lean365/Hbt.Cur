@@ -51,7 +51,7 @@ export default {
       variable: 'Переменные',
       history: 'История'
     },
-    realtime: {
+    signalr: {
       _self: 'Мониторинг в реальном времени',
       server: 'Мониторинг сервера',
       online: 'Онлайн пользователи',

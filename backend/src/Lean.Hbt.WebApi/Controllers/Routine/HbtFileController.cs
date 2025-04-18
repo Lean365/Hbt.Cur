@@ -7,7 +7,6 @@
 // 描述   : 文件控制器
 //===================================================================
 
-using Microsoft.AspNetCore.Http;
 using Lean.Hbt.Application.Dtos.Routine;
 using Lean.Hbt.Application.Services.Routine;
 using Lean.Hbt.Domain.IServices.Admin;
@@ -43,7 +42,7 @@ namespace Lean.Hbt.WebApi.Controllers.Routine
         /// </summary>
         /// <param name="query">查询条件</param>
         /// <returns>文件分页列表</returns>
-        [HttpGet]
+        [HttpGet("list")]
         [HbtPerm("routine:file:list")]
         public async Task<IActionResult> GetListAsync([FromQuery] HbtFileQueryDto query)
         {
@@ -177,4 +176,4 @@ namespace Lean.Hbt.WebApi.Controllers.Routine
             return File(fileStream, contentType, fileName);
         }
     }
-} 
+}

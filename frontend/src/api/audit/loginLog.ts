@@ -18,7 +18,7 @@ import type { HbtLoginLogDto, HbtLoginLogQueryDto } from '@/types/audit/loginLog
  */
 export const getLoginLogs = (params: HbtLoginLogQueryDto) => {
   return request<HbtApiResponse<HbtPagedResult<HbtLoginLogDto>>>({
-    url: '/api/HbtLoginLog',
+    url: '/api/HbtLoginLog/list',
     method: 'get',
     params
   })

@@ -41,7 +41,7 @@ namespace Lean.Hbt.WebApi.Controllers.Audit
         /// </summary>
         /// <param name="query">查询条件</param>
         /// <returns>任务日志分页列表</returns>
-        [HttpGet]
+        [HttpGet("list")]
         [HbtPerm("audit:quartzlog:list")]
         public async Task<IActionResult> GetListAsync([FromQuery] HbtQuartzLogQueryDto query)
         {

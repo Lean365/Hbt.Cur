@@ -56,7 +56,7 @@ public class {{ pascal_case table.table_name }}Controller : HbtBaseController
     /// </summary>
     /// <param name="query">查询条件</param>
     /// <returns>分页结果</returns>
-    [HttpGet]
+    [HttpGet("list")]
     [HbtPerm("{{ table.module_name }}:{{ snake_case table.table_name }}:list")]
     public async Task<IActionResult> GetListAsync([FromQuery] {{ pascal_case table.table_name }}QueryDto query)
     {

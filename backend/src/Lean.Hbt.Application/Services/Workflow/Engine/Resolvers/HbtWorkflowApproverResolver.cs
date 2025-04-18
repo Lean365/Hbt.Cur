@@ -142,30 +142,30 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine.Resolvers
 
         private async Task<HbtUser?> GetUserByIdAsync(long userId)
         {
-            return await _userRepository.GetInfoAsync(x => x.Id == userId);
+            return await _userRepository.GetFirstAsync(x => x.Id == userId);
         }
 
         private async Task<HbtDept?> GetDeptByIdAsync(long deptId)
         {
-            return await _deptRepository.GetInfoAsync(x => x.Id == deptId);
+            return await _deptRepository.GetFirstAsync(x => x.Id == deptId);
         }
 
         private async Task<HbtUser?> GetDeptLeaderAsync(long deptId)
         {
-            var dept = await _deptRepository.GetInfoAsync(x => x.Id == deptId);
+            var dept = await _deptRepository.GetFirstAsync(x => x.Id == deptId);
             if (string.IsNullOrEmpty(dept?.Leader)) return null;
-            return await _userRepository.GetInfoAsync(x => x.UserName == dept.Leader);
+            return await _userRepository.GetFirstAsync(x => x.UserName == dept.Leader);
         }
 
         private async Task<HbtUser?> GetParentDeptLeaderAsync(long deptId)
         {
-            var dept = await _deptRepository.GetInfoAsync(x => x.Id == deptId);
+            var dept = await _deptRepository.GetFirstAsync(x => x.Id == deptId);
             if (dept?.ParentId == 0) return null;
             
-            var parentDept = await _deptRepository.GetInfoAsync(x => x.Id == dept.ParentId);
+            var parentDept = await _deptRepository.GetFirstAsync(x => x.Id == dept.ParentId);
             if (string.IsNullOrEmpty(parentDept?.Leader)) return null;
             
-            return await _userRepository.GetInfoAsync(x => x.UserName == parentDept.Leader);
+            return await _userRepository.GetFirstAsync(x => x.UserName == parentDept.Leader);
         }
     }
 } 

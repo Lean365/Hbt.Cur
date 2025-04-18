@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-import type { HbtApiResult } from '@/types/common'
+import type { HbtApiResponse } from '@/types/common'
 
 /**
  * 解锁用户
@@ -7,7 +7,7 @@ import type { HbtApiResult } from '@/types/common'
  * @returns 解锁结果
  */
 export function unlockUser(userId: number) {
-  return request<HbtApiResult<boolean>>({
+  return request<HbtApiResponse<boolean>>({
     url: `/api/login-policy/unlock/${userId}`,
     method: 'post'
   })
@@ -19,7 +19,7 @@ export function unlockUser(userId: number) {
  * @returns 剩余尝试次数
  */
 export function getRemainingAttempts(userName: string) {
-  return request<HbtApiResult<number>>({
+  return request<HbtApiResponse<number>>({
     url: `/api/login-policy/attempts/${userName}`,
     method: 'get'
   })
@@ -31,7 +31,7 @@ export function getRemainingAttempts(userName: string) {
  * @returns 剩余锁定时间(秒)
  */
 export function getLockoutRemainingSeconds(userName: string) {
-  return request<HbtApiResult<number>>({
+  return request<HbtApiResponse<number>>({
     url: `/api/login-policy/lockout/${userName}`,
     method: 'get'
   })

@@ -199,7 +199,7 @@ public class HbtDbSeedOADictType
 
         foreach (var dictType in oaDictTypes)
         {
-            var existingDictType = await _dictTypeRepository.GetInfoAsync(x => x.DictType == dictType.DictType);
+            var existingDictType = await _dictTypeRepository.GetFirstAsync(x => x.DictType == dictType.DictType);
             if (existingDictType == null)
             {
                 await _dictTypeRepository.CreateAsync(dictType);

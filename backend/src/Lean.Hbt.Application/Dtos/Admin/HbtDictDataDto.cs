@@ -8,8 +8,6 @@
 //===================================================================
 
 using System.ComponentModel.DataAnnotations;
-using Lean.Hbt.Common.Models;
-using Mapster;
 
 namespace Lean.Hbt.Application.Dtos.Admin
 {
@@ -18,11 +16,11 @@ namespace Lean.Hbt.Application.Dtos.Admin
     /// </summary>
     public class HbtDictDataDto
     {
-    /// <summary>
-    /// ID
-    /// </summary>
- [AdaptMember("Id")]
-    public long DictDataId { get; set; }
+        /// <summary>
+        /// ID
+        /// </summary>
+        [AdaptMember("Id")]
+        public long DictDataId { get; set; }
 
         /// <summary>
         /// 字典类型
@@ -192,12 +190,12 @@ namespace Lean.Hbt.Application.Dtos.Admin
     /// </summary>
     public class HbtDictDataUpdateDto
     {
-    /// <summary>
-    /// ID
-    /// </summary>
-    /// 
-    [Required(ErrorMessage = "字典数据ID不能为空")]
-         [AdaptMember("Id")]
+        /// <summary>
+        /// ID
+        /// </summary>
+        ///
+        [Required(ErrorMessage = "字典数据ID不能为空")]
+        [AdaptMember("Id")]
         public long DictDataId { get; set; }
 
         /// <summary>
@@ -341,17 +339,17 @@ namespace Lean.Hbt.Application.Dtos.Admin
         /// <summary>
         /// 字典类型
         /// </summary>
-        public string DictType { get; set; }
+        public string? DictType { get; set; }
 
         /// <summary>
         /// 字典标签
         /// </summary>
-        public string DictLabel { get; set; }
+        public string? DictLabel { get; set; }
 
         /// <summary>
         /// 字典键值
         /// </summary>
-        public string DictValue { get; set; }
+        public string? DictValue { get; set; }
 
         /// <summary>
         /// 扩展标签
@@ -402,17 +400,17 @@ namespace Lean.Hbt.Application.Dtos.Admin
         /// <summary>
         /// 字典类型
         /// </summary>
-        public string DictType { get; set; }
+        public string? DictType { get; set; }
 
         /// <summary>
         /// 字典标签
         /// </summary>
-        public string DictLabel { get; set; }
+        public string? DictLabel { get; set; }
 
         /// <summary>
         /// 字典键值
         /// </summary>
-        public string DictValue { get; set; }
+        public string? DictValue { get; set; }
 
         /// <summary>
         /// 扩展标签
@@ -455,11 +453,11 @@ namespace Lean.Hbt.Application.Dtos.Admin
     /// </summary>
     public class HbtDictDataStatusDto
     {
-    /// <summary>
-    /// 字典数据ID
-    /// </summary>
-[AdaptMember("Id")]
-    public long DictDataId { get; set; }
+        /// <summary>
+        /// 字典数据ID
+        /// </summary>
+        [AdaptMember("Id")]
+        public long DictDataId { get; set; }
 
         /// <summary>
         /// 状态

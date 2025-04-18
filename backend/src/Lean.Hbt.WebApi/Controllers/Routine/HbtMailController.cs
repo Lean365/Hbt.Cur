@@ -74,7 +74,7 @@ namespace Lean.Hbt.WebApi.Controllers.Routine
         /// <param name="input">创建对象</param>
         /// <returns>邮件ID</returns>
         [HttpPost]
-        [HbtPerm("routine:mail:add")]
+        [HbtPerm("routine:mail:create")]
         public async Task<long> CreateAsync([FromBody] HbtMailCreateDto input)
         {
             return await _mailService.CreateAsync(input);
@@ -86,7 +86,7 @@ namespace Lean.Hbt.WebApi.Controllers.Routine
         /// <param name="input">更新对象</param>
         /// <returns>是否成功</returns>
         [HttpPut]
-        [HbtPerm("routine:mail:edit")]
+        [HbtPerm("routine:mail:update")]
         public async Task<bool> UpdateAsync([FromBody] HbtMailUpdateDto input)
         {
             return await _mailService.UpdateAsync(input);

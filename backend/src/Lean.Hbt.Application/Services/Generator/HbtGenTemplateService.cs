@@ -97,7 +97,7 @@ public class HbtGenTemplateService : IHbtGenTemplateService
     public async Task<HbtGenTemplateDto> CreateAsync(HbtGenTemplateCreateDto input)
     {
         // 验证模板名称是否已存在
-        var existTemplate = await _templateRepository.GetInfoAsync(x => x.TemplateName == input.TemplateName);
+        var existTemplate = await _templateRepository.GetFirstAsync(x => x.TemplateName == input.TemplateName);
         if (existTemplate != null)
         {
             throw new HbtException($"模板名称[{input.TemplateName}]已存在");
@@ -134,7 +134,7 @@ public class HbtGenTemplateService : IHbtGenTemplateService
         // 验证模板名称是否已存在
         if (template.TemplateName != input.TemplateName)
         {
-            var existTemplate = await _templateRepository.GetInfoAsync(x => x.TemplateName == input.TemplateName);
+            var existTemplate = await _templateRepository.GetFirstAsync(x => x.TemplateName == input.TemplateName);
             if (existTemplate != null)
             {
                 throw new HbtException($"模板名称[{input.TemplateName}]已存在");
@@ -223,7 +223,7 @@ public class HbtGenTemplateService : IHbtGenTemplateService
                 try
                 {
                     // 验证模板名称是否已存在
-                    var existTemplate = await _templateRepository.GetInfoAsync(x => x.TemplateName == template.TemplateName);
+                    var existTemplate = await _templateRepository.GetFirstAsync(x => x.TemplateName == template.TemplateName);
                     if (existTemplate != null)
                     {
                         fail++;

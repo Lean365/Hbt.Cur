@@ -256,7 +256,7 @@ namespace Lean.Hbt.Application.Services.Admin
         /// </summary>
         public async Task<string> GetTransValueAsync(string langCode, string transKey)
         {
-            var translation = await _translationRepository.GetInfoAsync(x => x.LangCode == langCode && x.TransKey == transKey);
+            var translation = await _translationRepository.GetFirstAsync(x => x.LangCode == langCode && x.TransKey == transKey);
             return translation?.TransValue ?? string.Empty;
         }
 

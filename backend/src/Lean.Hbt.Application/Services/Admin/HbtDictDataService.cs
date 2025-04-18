@@ -347,7 +347,7 @@ namespace Lean.Hbt.Application.Services.Admin
             var dictData = await _dictDataRepository.GetByIdAsync(id);
             if (dictData == null) return false;
 
-            var dictType = await _dictTypeRepository.GetInfoAsync(x => x.DictType == dictData.DictType);
+            var dictType = await _dictTypeRepository.GetFirstAsync(x => x.DictType == dictData.DictType);
             return dictType != null && dictType.DictBuiltin == 1; // 1表示内置
         }
 

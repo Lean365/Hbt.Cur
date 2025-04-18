@@ -50,11 +50,11 @@ namespace Lean.Hbt.Domain.Repositories
         Task<TEntity?> GetByIdAsync(object id);
 
         /// <summary>
-        /// 获取实体详情
+        /// 获取第一个符合条件的实体
         /// </summary>
         /// <param name="condition">查询条件</param>
         /// <returns>实体</returns>
-        Task<TEntity?> GetInfoAsync(Expression<Func<TEntity, bool>> condition);
+        Task<TEntity?> GetFirstAsync(Expression<Func<TEntity, bool>> condition);
 
         /// <summary>
         /// 获取实体列表

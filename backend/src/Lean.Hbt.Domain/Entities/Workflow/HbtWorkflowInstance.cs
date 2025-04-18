@@ -1,15 +1,13 @@
 //===================================================================
-// 项目名 : Lean.Hbt 
-// 文件名 : HbtWorkflowInstance.cs 
+// 项目名 : Lean.Hbt
+// 文件名 : HbtWorkflowInstance.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-22 11:50
 // 版本号 : V.0.0.1
 // 描述    : 工作流实例实体类
 //===================================================================
 
-using System;
 using SqlSugar;
-using Lean.Hbt.Common.Enums;
 
 namespace Lean.Hbt.Domain.Entities.Workflow
 {
@@ -33,7 +31,7 @@ namespace Lean.Hbt.Domain.Entities.Workflow
         /// 流程标题
         /// </summary>
         [SugarColumn(ColumnName = "workflow_title", ColumnDescription = "流程标题", Length = 200, ColumnDataType = "nvarchar", IsNullable = false)]
-        public string WorkflowTitle { get; set; }
+        public string? WorkflowTitle { get; set; }
 
         /// <summary>
         /// 当前节点ID
@@ -51,7 +49,7 @@ namespace Lean.Hbt.Domain.Entities.Workflow
         /// 表单数据(JSON格式)
         /// </summary>
         [SugarColumn(ColumnName = "form_data", ColumnDescription = "表单数据(JSON格式)", ColumnDataType = "text", IsNullable = false)]
-        public string FormData { get; set; }
+        public string? FormData { get; set; }
 
         /// <summary>
         /// 实例状态
@@ -75,12 +73,12 @@ namespace Lean.Hbt.Domain.Entities.Workflow
         /// 工作流定义
         /// </summary>
         [Navigate(NavigateType.OneToOne, nameof(WorkflowDefinitionId))]
-        public HbtWorkflowDefinition WorkflowDefinition { get; set; }
+        public HbtWorkflowDefinition? WorkflowDefinition { get; set; }
 
         /// <summary>
         /// 当前节点
         /// </summary>
         [Navigate(NavigateType.OneToOne, nameof(CurrentNodeId))]
-        public HbtWorkflowNode CurrentNode { get; set; }
+        public HbtWorkflowNode? CurrentNode { get; set; }
     }
-} 
+}

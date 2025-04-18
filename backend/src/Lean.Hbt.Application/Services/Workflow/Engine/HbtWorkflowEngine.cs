@@ -79,7 +79,7 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine
                 }
 
                 // 获取开始节点
-                var startNode = await _nodeRepository.GetInfoAsync(x => 
+                var startNode = await _nodeRepository.GetFirstAsync(x => 
                     x.WorkflowDefinitionId == definitionId && 
                     x.NodeType == 1); // 1 表示开始节点
 

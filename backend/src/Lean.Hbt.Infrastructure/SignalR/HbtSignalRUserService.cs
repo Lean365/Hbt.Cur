@@ -13,7 +13,7 @@ using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading.Tasks;
 using Lean.Hbt.Common.Models;
-using Lean.Hbt.Domain.Entities.RealTime;
+using Lean.Hbt.Domain.Entities.SignalR;
 using Lean.Hbt.Domain.IServices.SignalR;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
@@ -215,7 +215,7 @@ namespace Lean.Hbt.Infrastructure.SignalR
                 var exp = Expressionable.Create<HbtOnlineUser>();
                 exp.And(u => u.UserId == user.UserId && u.DeviceId == user.DeviceId);
 
-                var existingUser = await _repository.GetInfoAsync(exp.ToExpression());
+                var existingUser = await _repository.GetFirstAsync(exp.ToExpression());
                 if (existingUser != null)
                 {
                     // 更新现有记录
@@ -250,7 +250,7 @@ namespace Lean.Hbt.Infrastructure.SignalR
             {
                 var exp = Expressionable.Create<HbtOnlineUser>();
                 exp.And(u => u.ConnectionId == connectionId);
-                return await _repository.GetInfoAsync(exp.ToExpression());
+                return await _repository.GetFirstAsync(exp.ToExpression());
             }
             catch (Exception ex)
             {
@@ -269,7 +269,7 @@ namespace Lean.Hbt.Infrastructure.SignalR
                 var exp = Expressionable.Create<HbtOnlineUser>();
                 exp.And(u => u.UserId == userId && u.DeviceId == deviceId);
 
-                return await _repository.GetInfoAsync(exp.ToExpression());
+                return await _repository.GetFirstAsync(exp.ToExpression());
             }
             catch (Exception ex)
             {
@@ -290,7 +290,7 @@ namespace Lean.Hbt.Infrastructure.SignalR
                 var exp = Expressionable.Create<HbtOnlineUser>();
                 exp.And(u => u.ConnectionId == connectionId);
 
-                var user = await _repository.GetInfoAsync(exp.ToExpression());
+                var user = await _repository.GetFirstAsync(exp.ToExpression());
                 return user?.DeviceId ?? string.Empty;
             }
             catch (Exception ex)
@@ -376,7 +376,7 @@ namespace Lean.Hbt.Infrastructure.SignalR
                 var exp = Expressionable.Create<HbtOnlineUser>();
                 exp.And(u => u.ConnectionId == connectionId);
 
-                var user = await _repository.GetInfoAsync(exp.ToExpression());
+                var user = await _repository.GetFirstAsync(exp.ToExpression());
                 if (user != null)
                 {
                     user.LastActivity = DateTime.Now;

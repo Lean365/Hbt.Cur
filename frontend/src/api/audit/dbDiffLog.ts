@@ -18,7 +18,7 @@ import type { HbtDbDiffLogDto, HbtDbDiffLogQueryDto } from '@/types/audit/dbDiff
  */
 export function getDbDiffLogs(query: HbtDbDiffLogQueryDto) {
   return request<HbtApiResponse<HbtPagedResult<HbtDbDiffLogDto>>>({
-    url: '/api/HbtDbDiffLog',
+    url: '/api/HbtDbDiffLog/list',
     method: 'get',
     params: query
   })

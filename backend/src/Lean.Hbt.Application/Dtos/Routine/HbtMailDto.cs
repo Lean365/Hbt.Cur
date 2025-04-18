@@ -7,10 +7,7 @@
 // 描述   : 邮件数据传输对象
 //===================================================================
 
-using System;
 using System.ComponentModel.DataAnnotations;
-using Lean.Hbt.Common.Models;
-using Mapster;
 
 namespace Lean.Hbt.Application.Dtos.Routine
 {
@@ -60,7 +57,7 @@ namespace Lean.Hbt.Application.Dtos.Routine
         /// <summary>
         /// 是否HTML
         /// </summary>
-        public bool MailIsHtml { get; set; }
+        public int MailIsHtml { get; set; }
 
         /// <summary>
         /// 抄送
@@ -183,7 +180,7 @@ namespace Lean.Hbt.Application.Dtos.Routine
         /// <summary>
         /// 是否HTML
         /// </summary>
-        public bool MailIsHtml { get; set; }
+        public int MailIsHtml { get; set; }
 
         /// <summary>
         /// 抄送
@@ -258,7 +255,7 @@ namespace Lean.Hbt.Application.Dtos.Routine
         /// <summary>
         /// 是否HTML
         /// </summary>
-        public bool MailIsHtml { get; set; }
+        public int MailIsHtml { get; set; }
 
         /// <summary>
         /// 抄送
@@ -313,7 +310,7 @@ namespace Lean.Hbt.Application.Dtos.Routine
         /// <summary>
         /// 是否HTML
         /// </summary>
-        public string MailIsHtml { get; set; }
+        public int MailIsHtml { get; set; }
 
         /// <summary>
         /// 抄送
@@ -328,7 +325,7 @@ namespace Lean.Hbt.Application.Dtos.Routine
         /// <summary>
         /// 发送状态
         /// </summary>
-        public string MailStatus { get; set; }
+        public int MailStatus { get; set; }
 
         /// <summary>
         /// 发送时间
@@ -345,4 +342,4 @@ namespace Lean.Hbt.Application.Dtos.Routine
         /// </summary>
         public DateTime CreateTime { get; set; }
     }
-} 
+}

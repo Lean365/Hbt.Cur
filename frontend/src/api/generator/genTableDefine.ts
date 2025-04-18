@@ -7,7 +7,7 @@ import type { HbtApiResponse } from '@/types/common';
  */
 export function getPagedList(params: HbtGenTableDefineDto) {
   return request<HbtApiResponse<HbtGenTableDefineDto[]>>({
-    url: '/api/HbtGenTableDefine',
+    url: '/api/HbtGenTableDefine/list',
     method: 'get',
     params
   });

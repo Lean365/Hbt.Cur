@@ -1,6 +1,6 @@
 using Lean.Hbt.Application.Services.Identity;
 using Lean.Hbt.Common.Options;
-using Lean.Hbt.Domain.Entities.RealTime;
+using Lean.Hbt.Domain.Entities.SignalR;
 using Lean.Hbt.Domain.IServices.Admin;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;

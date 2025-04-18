@@ -13,7 +13,7 @@ import type {
  */
 export function getPagedList(params: TenantQuery) {
   return request<HbtApiResponse<HbtPagedResult<Tenant>>>({
-    url: '/api/HbtTenant',
+    url: '/api/HbtTenant/list',
     method: 'get',
     params
   })

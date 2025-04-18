@@ -7,10 +7,7 @@
 // 描述   : 文件数据传输对象
 //===================================================================
 
-using System;
 using System.ComponentModel.DataAnnotations;
-using Lean.Hbt.Common.Models;
-using Mapster;
 
 namespace Lean.Hbt.Application.Dtos.Routine
 {
@@ -308,7 +305,7 @@ namespace Lean.Hbt.Application.Dtos.Routine
         /// <summary>
         /// 存储类型（0本地 1云存储）
         /// </summary>
-        public string FileStorageType { get; set; }
+        public int FileStorageType { get; set; }
 
         /// <summary>
         /// 存储位置
@@ -328,7 +325,7 @@ namespace Lean.Hbt.Application.Dtos.Routine
         /// <summary>
         /// 状态（0临时 1正式）
         /// </summary>
-        public string FileStatus { get; set; }
+        public int FileStatus { get; set; }
     }
 
     /// <summary>
@@ -384,7 +381,7 @@ namespace Lean.Hbt.Application.Dtos.Routine
         /// <summary>
         /// 存储类型
         /// </summary>
-        public string FileStorageType { get; set; }
+        public int FileStorageType { get; set; }
 
         /// <summary>
         /// 存储位置
@@ -404,7 +401,7 @@ namespace Lean.Hbt.Application.Dtos.Routine
         /// <summary>
         /// 状态
         /// </summary>
-        public string FileStatus { get; set; }
+        public int FileStatus { get; set; }
 
         /// <summary>
         /// 下载次数
@@ -469,7 +466,7 @@ namespace Lean.Hbt.Application.Dtos.Routine
         /// <summary>
         /// 存储类型(0=本地,1=云存储)
         /// </summary>
-        public string FileStorageType { get; set; }
+        public int FileStorageType { get; set; }
 
         /// <summary>
         /// 存储位置
@@ -489,6 +486,6 @@ namespace Lean.Hbt.Application.Dtos.Routine
         /// <summary>
         /// 状态(0=临时,1=正式)
         /// </summary>
-        public string FileStatus { get; set; }
+        public int FileStatus { get; set; }
     }
-} 
+}

@@ -7,7 +7,6 @@
 // 描述   : 邮件实体
 //===================================================================
 
-using System;
 using SqlSugar;
 
 namespace Lean.Hbt.Domain.Entities.Routine
@@ -48,8 +47,8 @@ namespace Lean.Hbt.Domain.Entities.Routine
         /// <summary>
         /// 是否HTML
         /// </summary>
-        [SugarColumn(ColumnName = "mail_is_html", ColumnDescription = "是否HTML", IsNullable = false, DefaultValue = "0", ColumnDataType = "bit")]
-        public bool MailIsHtml { get; set; }
+        [SugarColumn(ColumnName = "mail_is_html", ColumnDescription = "是否HTML", IsNullable = false, DefaultValue = "0", ColumnDataType = "int")]
+        public int MailIsHtml { get; set; }
 
         /// <summary>
         /// 抄送
@@ -111,4 +110,4 @@ namespace Lean.Hbt.Domain.Entities.Routine
         [SugarColumn(ColumnName = "mail_last_read_time", ColumnDescription = "最后阅读时间", IsNullable = true, ColumnDataType = "datetime")]
         public DateTime? MailLastReadTime { get; set; }
     }
-} 
+}

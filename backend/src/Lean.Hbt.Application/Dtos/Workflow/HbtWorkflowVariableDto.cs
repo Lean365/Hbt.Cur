@@ -7,8 +7,6 @@
 // 描述    : 工作流变量数据传输对象
 //===================================================================
 
-using System;
-
 namespace Lean.Hbt.Application.Dtos.Workflow
 {
     /// <summary>
@@ -32,7 +30,7 @@ namespace Lean.Hbt.Application.Dtos.Workflow
             VariableType = string.Empty;
             VariableScope = string.Empty;
             Remark = string.Empty;
-            Creator = string.Empty;
+            CreateBy = string.Empty;
             CreateTime = DateTime.Now;
             UpdateBy = string.Empty;
             UpdateTime = null;
@@ -57,32 +55,32 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 变量名称
         /// </summary>
-        public required string VariableName { get; set; }
+        public string VariableName { get; set; }
 
         /// <summary>
         /// 变量值
         /// </summary>
-        public required string VariableValue { get; set; }
+        public string VariableValue { get; set; }
 
         /// <summary>
         /// 变量类型
         /// </summary>
-        public required string VariableType { get; set; }
+        public string VariableType { get; set; }
 
         /// <summary>
         /// 变量作用域
         /// </summary>
-        public required string VariableScope { get; set; }
+        public string VariableScope { get; set; }
 
         /// <summary>
         /// 备注
         /// </summary>
-        public required string Remark { get; set; }
+        public string? Remark { get; set; }
 
         /// <summary>
         /// 创建者
         /// </summary>
-        public required string Creator { get; set; }
+        public string? CreateBy { get; set; }
 
         /// <summary>
         /// 创建时间
@@ -92,7 +90,7 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 修改者
         /// </summary>
-        public required string UpdateBy { get; set; }
+        public string UpdateBy { get; set; }
 
         /// <summary>
         /// 修改时间
@@ -122,7 +120,7 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 变量名称
         /// </summary>
-        public required string VariableName { get; set; }
+        public string VariableName { get; set; }
 
         /// <summary>
         /// 变量类型
@@ -157,27 +155,27 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 变量名称
         /// </summary>
-        public required string VariableName { get; set; }
+        public string VariableName { get; set; }
 
         /// <summary>
         /// 变量值
         /// </summary>
-        public required string VariableValue { get; set; }
+        public string VariableValue { get; set; }
 
         /// <summary>
         /// 变量类型
         /// </summary>
-        public required string VariableType { get; set; }
+        public string VariableType { get; set; }
 
         /// <summary>
         /// 变量作用域
         /// </summary>
-        public required string VariableScope { get; set; }
+        public string VariableScope { get; set; }
 
         /// <summary>
         /// 备注
         /// </summary>
-        public required string Remark { get; set; }
+        public string? Remark { get; set; }
     }
 
     /// <summary>
@@ -198,12 +196,12 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 变量值
         /// </summary>
-        public required string VariableValue { get; set; }
+        public string VariableValue { get; set; }
 
         /// <summary>
         /// 备注
         /// </summary>
-        public required string Remark { get; set; }
+        public string? Remark { get; set; }
     }
 
     /// <summary>
@@ -228,27 +226,27 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 变量名称
         /// </summary>
-        public string VariableName { get; set; }
+        public string? VariableName { get; set; }
 
         /// <summary>
         /// 变量值
         /// </summary>
-        public string VariableValue { get; set; }
+        public string? VariableValue { get; set; }
 
         /// <summary>
         /// 变量类型
         /// </summary>
-        public string VariableType { get; set; }
+        public string? VariableType { get; set; }
 
         /// <summary>
         /// 变量作用域
         /// </summary>
-        public string VariableScope { get; set; }
+        public string? VariableScope { get; set; }
 
         /// <summary>
         /// 备注
         /// </summary>
-        public string Remark { get; set; }
+        public string? Remark { get; set; }
     }
 
     /// <summary>
@@ -263,32 +261,32 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 变量名称
         /// </summary>
-        public string VariableName { get; set; }
+        public string? VariableName { get; set; }
 
         /// <summary>
         /// 变量值
         /// </summary>
-        public string VariableValue { get; set; }
+        public string? VariableValue { get; set; }
 
         /// <summary>
         /// 变量类型
         /// </summary>
-        public string VariableTypeName { get; set; }
+        public string? VariableTypeName { get; set; }
 
         /// <summary>
         /// 变量作用域
         /// </summary>
-        public string VariableScopeName { get; set; }
+        public string? VariableScopeName { get; set; }
 
         /// <summary>
         /// 备注
         /// </summary>
-        public string Remark { get; set; }
+        public string? Remark { get; set; }
 
         /// <summary>
         /// 创建者
         /// </summary>
-        public string Creator { get; set; }
+        public string? CreateBy { get; set; }
 
         /// <summary>
         /// 创建时间
@@ -308,21 +306,21 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 变量名称
         /// </summary>
-        public string VariableName { get; set; }
+        public string? VariableName { get; set; }
 
         /// <summary>
         /// 变量类型
         /// </summary>
-        public string VariableType { get; set; }
+        public string? VariableType { get; set; }
 
         /// <summary>
         /// 变量作用域
         /// </summary>
-        public string VariableScope { get; set; }
+        public string? VariableScope { get; set; }
 
         /// <summary>
         /// 备注
         /// </summary>
-        public string Remark { get; set; }
+        public string? Remark { get; set; }
     }
 }

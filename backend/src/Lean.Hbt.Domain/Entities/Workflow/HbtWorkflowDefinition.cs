@@ -25,13 +25,13 @@ namespace Lean.Hbt.Domain.Entities.Workflow
         /// 流程名称
         /// </summary>
         [SugarColumn(ColumnName = "workflow_name", ColumnDescription = "流程名称", Length = 100, ColumnDataType = "nvarchar", IsNullable = false)]
-        public string WorkflowName { get; set; }
+        public string? WorkflowName { get; set; }
 
         /// <summary>
         /// 流程分类(字典)
         /// </summary>
         [SugarColumn(ColumnName = "workflow_category", ColumnDescription = "流程分类", Length = 50, ColumnDataType = "nvarchar", IsNullable = false)]
-        public string WorkflowCategory { get; set; }
+        public string? WorkflowCategory { get; set; }
 
         /// <summary>
         /// 流程版本
@@ -44,14 +44,14 @@ namespace Lean.Hbt.Domain.Entities.Workflow
         /// 包含：表单字段、验证规则、UI配置等
         /// </summary>
         [SugarColumn(ColumnName = "form_config", ColumnDescription = "表单配置(JSON格式)", ColumnDataType = "text", IsNullable = false)]
-        public string FormConfig { get; set; }
+        public string? FormConfig { get; set; }
 
         /// <summary>
         /// 流程配置(JSON格式)
         /// 包含：节点布局、连线、条件等
         /// </summary>
         [SugarColumn(ColumnName = "workflow_config", ColumnDescription = "流程配置(JSON格式)", ColumnDataType = "text", IsNullable = false)]
-        public string WorkflowConfig { get; set; }
+        public string? WorkflowConfig { get; set; }
 
         /// <summary>
         /// 工作流状态
@@ -63,6 +63,6 @@ namespace Lean.Hbt.Domain.Entities.Workflow
         /// 流程节点列表
         /// </summary>
         [Navigate(NavigateType.OneToMany, nameof(HbtWorkflowNode.WorkflowDefinitionId))]
-        public List<HbtWorkflowNode> WorkflowNodes { get; set; }
+        public List<HbtWorkflowNode>? WorkflowNodes { get; set; }
     }
 }

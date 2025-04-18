@@ -24,7 +24,7 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
     /// </remarks>
     [Route("api/[controller]", Name = "翻译")]
     [ApiController]
-    [ApiModule("admin", "系统管理")]
+    [ApiModule("Hbt365", "系统管理")]
     public class HbtTranslationController : HbtBaseController
     {
         private readonly IHbtTranslationService _translationService;
@@ -44,7 +44,7 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
         /// </summary>
         /// <param name="query">查询条件</param>
         /// <returns>翻译分页列表</returns>
-        [HttpGet]
+        [HttpGet("list")]
         [HbtPerm("admin:trans:list")]
         public async Task<IActionResult> GetListAsync([FromQuery] HbtTranslationQueryDto query)
         {

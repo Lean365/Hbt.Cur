@@ -8,73 +8,126 @@
 //===================================================================
 
 import request from '@/utils/request'
-import type { HbtMailQueryParams, HbtMailPageResult, HbtMailDto, HbtMailCreateDto, HbtMailUpdateDto, HbtMailSendDto } from '@/types/routine/mail'
+import type { HbtMailDto, HbtMailQueryDto, HbtMailCreateDto, HbtMailUpdateDto } from '@/types/routine/mail'
+import type { HbtPagedResult, HbtApiResponse } from '@/types/common'
 
-/** 获取邮件列表 */
-export function getMailList(params: HbtMailQueryParams) {
-  return request<HbtMailPageResult>({
+/**
+ * 获取邮件列表
+ * @param params 查询参数
+ * @returns 邮件列表
+ */
+export function getMailList(params: HbtMailQueryDto) {
+  return request<HbtApiResponse<HbtPagedResult<HbtMailDto>>>({
     url: '/api/HbtMail/list',
     method: 'get',
     params
   })
 }
 
-/** 获取邮件详情 */
-export function getMail(id: number | bigint) {
-  return request<HbtMailDto>({
+/**
+ * 获取邮件详情
+ * @param id 邮件ID
+ * @returns 邮件详情
+ */
+export function getMailDetail(id: number | bigint) {
+  return request<HbtApiResponse<HbtMailDto>>({
     url: `/api/HbtMail/${id}`,
     method: 'get'
   })
 }
 
-/** 创建邮件 */
+/**
+ * 创建邮件
+ * @param data 邮件数据
+ * @returns 创建结果
+ */
 export function createMail(data: HbtMailCreateDto) {
-  return request<number>({
+  return request<HbtApiResponse<HbtMailDto>>({
     url: '/api/HbtMail',
     method: 'post',
     data
   })
 }
 
-/** 更新邮件 */
-export function updateMail(data: HbtMailUpdateDto) {
-  return request<boolean>({
-    url: '/api/HbtMail',
+/**
+ * 更新邮件
+ * @param id 邮件ID
+ * @param data 邮件数据
+ * @returns 更新结果
+ */
+export function updateMail(id: number | bigint, data: HbtMailUpdateDto) {
+  return request<HbtApiResponse<HbtMailDto>>({
+    url: `/api/HbtMail/${id}`,
     method: 'put',
     data
   })
 }
 
-/** 删除邮件 */
+/**
+ * 删除邮件
+ * @param id 邮件ID
+ * @returns 删除结果
+ */
 export function deleteMail(id: number | bigint) {
-  return request<boolean>({
+  return request<HbtApiResponse<boolean>>({
     url: `/api/HbtMail/${id}`,
     method: 'delete'
   })
 }
 
-/** 批量删除邮件 */
-export function batchDeleteMail(ids: (number | bigint)[]) {
-  return request<boolean>({
+/**
+ * 批量删除邮件
+ * @param ids 邮件ID列表
+ * @returns 删除结果
+ */
+export function batchDeleteMail(ids: number[] | bigint[]) {
+  return request<HbtApiResponse<boolean>>({
     url: '/api/HbtMail/batch',
     method: 'delete',
     data: ids
   })
 }
 
-/** 发送邮件 */
-export function sendMail(data: HbtMailSendDto) {
-  return request<boolean>({
-    url: '/api/HbtMail/send',
-    method: 'post',
-    data
+/**
+ * 导出邮件列表
+ * @param params 查询参数
+ * @returns 导出结果
+ */
+export function exportMailList(params: HbtMailQueryDto) {
+  return request<Blob>({
+    url: '/api/HbtMail/export',
+    method: 'get',
+    params,
+    responseType: 'blob'
   })
 }
 
-/** 批量发送邮件 */
-export function batchSendMail(data: HbtMailSendDto[]) {
-  return request<[number, number]>({
-    url: '/api/HbtMail/batch-send',
+/**
+ * 导入邮件列表
+ * @param file 文件
+ * @returns 导入结果
+ */
+export function importMailList(file: File) {
+  const formData = new FormData()
+  formData.append('file', file)
+  return request<HbtApiResponse<boolean>>({
+    url: '/api/HbtMail/import',
+    method: 'post',
+    data: formData,
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  })
+}
+
+/**
+ * 发送邮件
+ * @param data 邮件数据
+ * @returns 发送结果
+ */
+export function sendMail(data: HbtMailCreateDto) {
+  return request<HbtApiResponse<boolean>>({
+    url: '/api/HbtMail/send',
     method: 'post',
     data
   })
@@ -109,15 +162,5 @@ export function markAllMailAsUnread() {
   return request<number>({
     url: '/api/HbtMail/unread-all',
     method: 'post'
-  })
-}
-
-/** 导出邮件数据 */
-export function exportMail(params: HbtMailQueryParams) {
-  return request<Blob>({
-    url: '/api/HbtMail/export',
-    method: 'get',
-    params,
-    responseType: 'blob'
   })
 } 

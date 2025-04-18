@@ -622,7 +622,7 @@ public class HbtDbSeedUnDictData
 
         foreach (var dictData in defaultDictData)
         {
-            var existingDictData = await _dictDataRepository.GetInfoAsync(d => d.DictType == dictData.DictType && d.DictValue == dictData.DictValue);
+            var existingDictData = await _dictDataRepository.GetFirstAsync(d => d.DictType == dictData.DictType && d.DictValue == dictData.DictValue);
             if (existingDictData == null)
             {
                 await _dictDataRepository.CreateAsync(dictData);

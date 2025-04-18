@@ -53,7 +53,7 @@ export default {
       variable: 'Workflow Variables',
       history: 'Workflow History'
     },
-    realtime: {
+    signalr: {
       _self: 'Real-Time Monitoring',
       server: 'Server Monitoring',
       online: 'Online Users',

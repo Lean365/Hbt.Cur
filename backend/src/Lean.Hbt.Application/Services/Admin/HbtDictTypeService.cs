@@ -115,7 +115,7 @@ namespace Lean.Hbt.Application.Services.Admin
             if (string.IsNullOrEmpty(type))
                 throw new HbtException("字典类型不能为空");
 
-            var dictType = await _dictTypeRepository.GetInfoAsync(x => x.DictType == type);
+            var dictType = await _dictTypeRepository.GetFirstAsync(x => x.DictType == type);
             if (dictType == null)
                 throw new HbtException($"字典类型[{type}]不存在");
 

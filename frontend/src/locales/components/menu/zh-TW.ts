@@ -51,7 +51,7 @@ export default {
       variable: '流程變數',
       history: '流程歷史'
     },
-    realtime: {
+    signalr: {
       _self: '實時監控',
       server: '服務器監控',
       online: '在線用戶',

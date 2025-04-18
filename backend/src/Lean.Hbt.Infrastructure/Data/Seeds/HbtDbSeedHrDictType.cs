@@ -292,7 +292,7 @@ public class HbtDbSeedHrDictType
 
         foreach (var dictType in defaultDictTypes)
         {
-            var existingDictType = await _dictTypeRepository.GetInfoAsync(d => d.DictType == dictType.DictType);
+            var existingDictType = await _dictTypeRepository.GetFirstAsync(d => d.DictType == dictType.DictType);
             if (existingDictType == null)
             {
                 await _dictTypeRepository.CreateAsync(dictType);

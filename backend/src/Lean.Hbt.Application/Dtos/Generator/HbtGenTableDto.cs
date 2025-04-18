@@ -10,9 +10,6 @@
 //===================================================================
 
 using System.ComponentModel.DataAnnotations;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Lean.Hbt.Application.Dtos.Generator;
 
@@ -46,7 +43,7 @@ public class HbtGenTableDto
     /// <summary>
     /// 主键ID
     /// </summary>
-    public long Id { get; set; }
+    public long TableId { get; set; }
 
     /// <summary>
     /// 数据库名称
@@ -168,24 +165,24 @@ public class HbtGenTableDto
     public long TenantId { get; set; } = 0;
 
     /// <summary>
-    /// 创建时间
-    /// </summary>
-    public DateTime? CreateTime { get; set; }
-
-    /// <summary>
-    /// 更新时间
-    /// </summary>
-    public DateTime? UpdateTime { get; set; }
-
-    /// <summary>
     /// 创建人
     /// </summary>
     public string CreateBy { get; set; }
 
     /// <summary>
+    /// 创建时间
+    /// </summary>
+    public DateTime? CreateTime { get; set; }
+
+    /// <summary>
     /// 更新人
     /// </summary>
     public string UpdateBy { get; set; }
+
+    /// <summary>
+    /// 更新时间
+    /// </summary>
+    public DateTime? UpdateTime { get; set; }
 
     /// <summary>
     /// 页码
@@ -264,42 +261,56 @@ public class HbtGenTableUpdateDto
     /// 主键ID
     /// </summary>
     [Required(ErrorMessage = "主键ID不能为空")]
-    public long Id { get; set; }
+    public long TableId { get; set; }
+
+    /// <summary>
+    /// 数据库名称
+    /// </summary>
+    [Required(ErrorMessage = "数据库名称不能为空")]
+    [StringLength(100, ErrorMessage = "数据库名称长度不能超过100个字符")]
+    public string DatabaseName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 表名
+    /// </summary>
+    [Required(ErrorMessage = "表名不能为空")]
+    [StringLength(100, ErrorMessage = "表名长度不能超过100个字符")]
+    public string TableName { get; set; } = string.Empty;
 
     /// <summary>
     /// 表注释
     /// </summary>
     [Required(ErrorMessage = "表描述不能为空")]
     [StringLength(200, ErrorMessage = "表描述长度不能超过200个字符")]
-    public string TableComment { get; set; }
+    public string TableComment { get; set; } = string.Empty;
 
     /// <summary>
     /// 类名
     /// </summary>
     [Required(ErrorMessage = "实体类名不能为空")]
     [StringLength(100, ErrorMessage = "实体类名长度不能超过100个字符")]
-    public string ClassName { get; set; }
+    public string ClassName { get; set; } = string.Empty;
 
     /// <summary>
     /// 命名空间
     /// </summary>
     [Required(ErrorMessage = "命名空间不能为空")]
     [StringLength(200, ErrorMessage = "命名空间长度不能超过200个字符")]
-    public string Namespace { get; set; }
+    public string Namespace { get; set; } = string.Empty;
 
     /// <summary>
     /// 基础命名空间
     /// </summary>
     [Required(ErrorMessage = "命名前缀不能为空")]
     [StringLength(100, ErrorMessage = "命名前缀长度不能超过100个字符")]
-    public string BaseNamespace { get; set; }
+    public string BaseNamespace { get; set; } = string.Empty;
 
     /// <summary>
     /// C#类型名称
     /// </summary>
     [Required(ErrorMessage = "C#类名不能为空")]
     [StringLength(100, ErrorMessage = "C#类名长度不能超过100个字符")]
-    public string CsharpTypeName { get; set; }
+    public string CsharpTypeName { get; set; } = string.Empty;
 
     /// <summary>
     /// 父表名称
@@ -317,53 +328,59 @@ public class HbtGenTableUpdateDto
     /// 模板类型
     /// </summary>
     [Required(ErrorMessage = "使用模板不能为空")]
-    public int TemplateType { get; set; }
+    public int TemplateType { get; set; } = 1;
 
     /// <summary>
     /// 模块名称
     /// </summary>
     [Required(ErrorMessage = "模块名称不能为空")]
     [StringLength(50, ErrorMessage = "模块名称长度不能超过50个字符")]
-    public string ModuleName { get; set; }
+    public string ModuleName { get; set; } = string.Empty;
 
     /// <summary>
     /// 业务名称
     /// </summary>
     [Required(ErrorMessage = "业务名称不能为空")]
     [StringLength(50, ErrorMessage = "业务名称长度不能超过50个字符")]
-    public string BusinessName { get; set; }
+    public string BusinessName { get; set; } = string.Empty;
 
     /// <summary>
     /// 功能名称
     /// </summary>
     [Required(ErrorMessage = "功能名称不能为空")]
     [StringLength(50, ErrorMessage = "功能名称长度不能超过50个字符")]
-    public string FunctionName { get; set; }
+    public string FunctionName { get; set; } = string.Empty;
 
     /// <summary>
     /// 作者
     /// </summary>
     [Required(ErrorMessage = "作者名称不能为空")]
     [StringLength(50, ErrorMessage = "作者名称长度不能超过50个字符")]
-    public string Author { get; set; }
+    public string Author { get; set; } = string.Empty;
 
     /// <summary>
     /// 生成模式
     /// </summary>
     [Required(ErrorMessage = "生成方式不能为空")]
-    public int GenMode { get; set; }
+    public int GenMode { get; set; } = 0;
 
     /// <summary>
     /// 生成路径
     /// </summary>
     [Required(ErrorMessage = "存放位置不能为空")]
     [StringLength(200, ErrorMessage = "存放位置长度不能超过200个字符")]
-    public string GenPath { get; set; }
+    public string GenPath { get; set; } = string.Empty;
 
     /// <summary>
     /// 选项
     /// </summary>
     public string? Options { get; set; }
+
+    /// <summary>
+    /// 租户ID
+    /// </summary>
+    [Required(ErrorMessage = "租户ID不能为空")]
+    public long TenantId { get; set; } = 0;
 
     /// <summary>
     /// 列信息
@@ -398,87 +415,121 @@ public class HbtGenTableImportDto
     /// <summary>
     /// 数据库名称
     /// </summary>
-    public string DatabaseName { get; set; }
+    [Required(ErrorMessage = "数据库名称不能为空")]
+    [StringLength(100, ErrorMessage = "数据库名称长度不能超过100个字符")]
+    public string DatabaseName { get; set; } = string.Empty;
 
     /// <summary>
     /// 表名
     /// </summary>
-    public string TableName { get; set; }
+    [Required(ErrorMessage = "表名不能为空")]
+    [StringLength(100, ErrorMessage = "表名长度不能超过100个字符")]
+    public string TableName { get; set; } = string.Empty;
 
     /// <summary>
     /// 表注释
     /// </summary>
-    public string TableComment { get; set; }
+    [Required(ErrorMessage = "表描述不能为空")]
+    [StringLength(200, ErrorMessage = "表描述长度不能超过200个字符")]
+    public string TableComment { get; set; } = string.Empty;
 
     /// <summary>
     /// 类名
     /// </summary>
-    public string ClassName { get; set; }
+    [Required(ErrorMessage = "实体类名不能为空")]
+    [StringLength(100, ErrorMessage = "实体类名长度不能超过100个字符")]
+    public string ClassName { get; set; } = string.Empty;
 
     /// <summary>
     /// 命名空间
     /// </summary>
-    public string Namespace { get; set; }
+    [Required(ErrorMessage = "命名空间不能为空")]
+    [StringLength(200, ErrorMessage = "命名空间长度不能超过200个字符")]
+    public string Namespace { get; set; } = string.Empty;
 
     /// <summary>
     /// 基础命名空间
     /// </summary>
-    public string BaseNamespace { get; set; }
+    [Required(ErrorMessage = "命名前缀不能为空")]
+    [StringLength(100, ErrorMessage = "命名前缀长度不能超过100个字符")]
+    public string BaseNamespace { get; set; } = string.Empty;
 
     /// <summary>
     /// C#类型名称
     /// </summary>
-    public string CsharpTypeName { get; set; }
+    [Required(ErrorMessage = "C#类名不能为空")]
+    [StringLength(100, ErrorMessage = "C#类名长度不能超过100个字符")]
+    public string CsharpTypeName { get; set; } = string.Empty;
 
     /// <summary>
     /// 父表名称
     /// </summary>
+    [StringLength(100, ErrorMessage = "关联父表长度不能超过100个字符")]
     public string? ParentTableName { get; set; }
 
     /// <summary>
     /// 父表外键名称
     /// </summary>
+    [StringLength(100, ErrorMessage = "关联外键长度不能超过100个字符")]
     public string? ParentTableFkName { get; set; }
 
     /// <summary>
-    /// 模板类型(1=单表 2=主表 3=子表)
+    /// 模板类型
     /// </summary>
-    public string TemplateType { get; set; }
+    [Required(ErrorMessage = "使用模板不能为空")]
+    public int TemplateType { get; set; } = 1;
 
     /// <summary>
     /// 模块名称
     /// </summary>
-    public string ModuleName { get; set; }
+    [Required(ErrorMessage = "模块名称不能为空")]
+    [StringLength(50, ErrorMessage = "模块名称长度不能超过50个字符")]
+    public string ModuleName { get; set; } = string.Empty;
 
     /// <summary>
     /// 业务名称
     /// </summary>
-    public string BusinessName { get; set; }
+    [Required(ErrorMessage = "业务名称不能为空")]
+    [StringLength(50, ErrorMessage = "业务名称长度不能超过50个字符")]
+    public string BusinessName { get; set; } = string.Empty;
 
     /// <summary>
     /// 功能名称
     /// </summary>
-    public string FunctionName { get; set; }
+    [Required(ErrorMessage = "功能名称不能为空")]
+    [StringLength(50, ErrorMessage = "功能名称长度不能超过50个字符")]
+    public string FunctionName { get; set; } = string.Empty;
 
     /// <summary>
     /// 作者
     /// </summary>
-    public string Author { get; set; }
+    [Required(ErrorMessage = "作者名称不能为空")]
+    [StringLength(50, ErrorMessage = "作者名称长度不能超过50个字符")]
+    public string Author { get; set; } = string.Empty;
 
     /// <summary>
-    /// 生成模式(0=zip压缩包 1=自定义路径)
+    /// 生成模式
     /// </summary>
-    public string GenMode { get; set; }
+    [Required(ErrorMessage = "生成方式不能为空")]
+    public int GenMode { get; set; } = 0;
 
     /// <summary>
     /// 生成路径
     /// </summary>
-    public string GenPath { get; set; }
+    [Required(ErrorMessage = "存放位置不能为空")]
+    [StringLength(200, ErrorMessage = "存放位置长度不能超过200个字符")]
+    public string GenPath { get; set; } = string.Empty;
 
     /// <summary>
     /// 选项
     /// </summary>
     public string? Options { get; set; }
+
+    /// <summary>
+    /// 租户ID
+    /// </summary>
+    [Required(ErrorMessage = "租户ID不能为空")]
+    public long TenantId { get; set; } = 0;
 
     /// <summary>
     /// 字段列表
@@ -508,88 +559,115 @@ public class HbtGenTableExportDto
         FunctionName = string.Empty;
         Author = string.Empty;
         GenPath = string.Empty;
-        CreateTime = DateTime.Now;
     }
 
     /// <summary>
     /// 数据库名称
     /// </summary>
-    public string DatabaseName { get; set; }
+    [Required(ErrorMessage = "数据库名称不能为空")]
+    [StringLength(100, ErrorMessage = "数据库名称长度不能超过100个字符")]
+    public string DatabaseName { get; set; } = string.Empty;
 
     /// <summary>
     /// 表名
     /// </summary>
-    public string TableName { get; set; }
+    [Required(ErrorMessage = "表名不能为空")]
+    [StringLength(100, ErrorMessage = "表名长度不能超过100个字符")]
+    public string TableName { get; set; } = string.Empty;
 
     /// <summary>
     /// 表注释
     /// </summary>
-    public string TableComment { get; set; }
+    [Required(ErrorMessage = "表描述不能为空")]
+    [StringLength(200, ErrorMessage = "表描述长度不能超过200个字符")]
+    public string TableComment { get; set; } = string.Empty;
 
     /// <summary>
     /// 类名
     /// </summary>
-    public string ClassName { get; set; }
+    [Required(ErrorMessage = "实体类名不能为空")]
+    [StringLength(100, ErrorMessage = "实体类名长度不能超过100个字符")]
+    public string ClassName { get; set; } = string.Empty;
 
     /// <summary>
     /// 命名空间
     /// </summary>
-    public string Namespace { get; set; }
+    [Required(ErrorMessage = "命名空间不能为空")]
+    [StringLength(200, ErrorMessage = "命名空间长度不能超过200个字符")]
+    public string Namespace { get; set; } = string.Empty;
 
     /// <summary>
     /// 基础命名空间
     /// </summary>
-    public string BaseNamespace { get; set; }
+    [Required(ErrorMessage = "命名前缀不能为空")]
+    [StringLength(100, ErrorMessage = "命名前缀长度不能超过100个字符")]
+    public string BaseNamespace { get; set; } = string.Empty;
 
     /// <summary>
     /// C#类型名称
     /// </summary>
-    public string CsharpTypeName { get; set; }
+    [Required(ErrorMessage = "C#类名不能为空")]
+    [StringLength(100, ErrorMessage = "C#类名长度不能超过100个字符")]
+    public string CsharpTypeName { get; set; } = string.Empty;
 
     /// <summary>
     /// 父表名称
     /// </summary>
+    [StringLength(100, ErrorMessage = "关联父表长度不能超过100个字符")]
     public string? ParentTableName { get; set; }
 
     /// <summary>
     /// 父表外键名称
     /// </summary>
+    [StringLength(100, ErrorMessage = "关联外键长度不能超过100个字符")]
     public string? ParentTableFkName { get; set; }
 
     /// <summary>
     /// 模板类型
     /// </summary>
-    public int TemplateType { get; set; }
+    [Required(ErrorMessage = "使用模板不能为空")]
+    public int TemplateType { get; set; } = 1;
 
     /// <summary>
     /// 模块名称
     /// </summary>
-    public string ModuleName { get; set; }
+    [Required(ErrorMessage = "模块名称不能为空")]
+    [StringLength(50, ErrorMessage = "模块名称长度不能超过50个字符")]
+    public string ModuleName { get; set; } = string.Empty;
 
     /// <summary>
     /// 业务名称
     /// </summary>
-    public string BusinessName { get; set; }
+    [Required(ErrorMessage = "业务名称不能为空")]
+    [StringLength(50, ErrorMessage = "业务名称长度不能超过50个字符")]
+    public string BusinessName { get; set; } = string.Empty;
 
     /// <summary>
     /// 功能名称
     /// </summary>
-    public string FunctionName { get; set; }
+    [Required(ErrorMessage = "功能名称不能为空")]
+    [StringLength(50, ErrorMessage = "功能名称长度不能超过50个字符")]
+    public string FunctionName { get; set; } = string.Empty;
 
     /// <summary>
     /// 作者
     /// </summary>
-    public string Author { get; set; }
+    [Required(ErrorMessage = "作者名称不能为空")]
+    [StringLength(50, ErrorMessage = "作者名称长度不能超过50个字符")]
+    public string Author { get; set; } = string.Empty;
 
     /// <summary>
     /// 生成模式
     /// </summary>
-    public int GenMode { get; set; }
+    [Required(ErrorMessage = "生成方式不能为空")]
+    public int GenMode { get; set; } = 0;
 
     /// <summary>
     /// 生成路径
     /// </summary>
-    public string GenPath { get; set; }
+    [Required(ErrorMessage = "存放位置不能为空")]
+    [StringLength(200, ErrorMessage = "存放位置长度不能超过200个字符")]
+    public string GenPath { get; set; } = string.Empty;
 
     /// <summary>
     /// 选项
@@ -597,9 +675,10 @@ public class HbtGenTableExportDto
     public string? Options { get; set; }
 
     /// <summary>
-    /// 创建时间
+    /// 租户ID
     /// </summary>
-    public DateTime CreateTime { get; set; }
+    [Required(ErrorMessage = "租户ID不能为空")]
+    public long TenantId { get; set; } = 0;
 
     /// <summary>
     /// 表信息
@@ -611,4 +690,3 @@ public class HbtGenTableExportDto
     /// </summary>
     public List<HbtGenColumnDto> Columns { get; set; } = new();
 }
-

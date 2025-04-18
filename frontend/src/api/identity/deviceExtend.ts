@@ -11,7 +11,7 @@ import type {
 // 获取设备扩展信息列表
 export function getDeviceExtendList(params: DeviceExtendQuery) {
   return request<HbtApiResponse<DeviceExtend[]>>({
-    url: '/api/device-extend',
+    url: '/api/device-extend/list',
     method: 'get',
     params
   })

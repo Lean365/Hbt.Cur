@@ -351,6 +351,24 @@ public class HbtTenantExportDto
 public class HbtTenantTemplateDto
 {
     /// <summary>
+    /// 构造函数
+    /// </summary>
+    public HbtTenantTemplateDto()
+    {
+        TenantName = string.Empty;
+        TenantCode = string.Empty;
+        ContactPerson = string.Empty;
+        ContactPhone = string.Empty;
+        ContactEmail = string.Empty;
+        Address = string.Empty;
+        Domain = string.Empty;
+        Theme = string.Empty;
+        LicenseStartTime = string.Empty;
+        LicenseEndTime = string.Empty;
+        MaxUserCount = string.Empty;
+    }
+
+    /// <summary>
     /// 租户编码
     /// </summary>
     public string TenantCode { get; set; }

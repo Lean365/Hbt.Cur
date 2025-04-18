@@ -32,7 +32,7 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 可用操作列表
         /// </summary>
-        public List<string> AvailableOperations { get; set; }
+        public List<string>? AvailableOperations { get; set; }
 
         /// <summary>
         /// 状态描述
@@ -58,6 +58,15 @@ namespace Lean.Hbt.Application.Dtos.Workflow
             WorkflowName = string.Empty;
             WorkflowCategory = string.Empty;
             WorkflowVersion = 1;
+            FormConfig = string.Empty;
+            WorkflowConfig = string.Empty;
+            Status = 0;
+            WorkflowNodes = new List<HbtWorkflowNodeDto>();
+            Remark = string.Empty;
+            CreateBy = string.Empty;
+            CreateTime = DateTime.Now;
+            Modifier = string.Empty;
+            ModifyTime = null;
         }
 
         /// <summary>
@@ -104,12 +113,12 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 备注
         /// </summary>
-        public string Remark { get; set; }
+        public string? Remark { get; set; }
 
         /// <summary>
         /// 创建者
         /// </summary>
-        public string Creator { get; set; }
+        public string? CreateBy { get; set; }
 
         /// <summary>
         /// 创建时间
@@ -139,12 +148,12 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 工作流名称
         /// </summary>
-        public string WorkflowName { get; set; }
+        public string? WorkflowName { get; set; }
 
         /// <summary>
         /// 工作流分类
         /// </summary>
-        public string WorkflowCategory { get; set; }
+        public string? WorkflowCategory { get; set; }
 
         /// <summary>
         /// 工作流状态
@@ -174,32 +183,32 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 工作流名称
         /// </summary>
-        public string WorkflowName { get; set; }
+        public string? WorkflowName { get; set; }
 
         /// <summary>
         /// 工作流分类
         /// </summary>
-        public string WorkflowCategory { get; set; }
+        public string? WorkflowCategory { get; set; }
 
         /// <summary>
         /// 表单配置
         /// </summary>
-        public string FormConfig { get; set; }
+        public string? FormConfig { get; set; }
 
         /// <summary>
         /// 工作流配置
         /// </summary>
-        public string WorkflowConfig { get; set; }
+        public string? WorkflowConfig { get; set; }
 
         /// <summary>
         /// 工作流节点列表
         /// </summary>
-        public List<HbtWorkflowNodeCreateDto> WorkflowNodes { get; set; }
+        public List<HbtWorkflowNodeCreateDto>? WorkflowNodes { get; set; }
 
         /// <summary>
         /// 备注
         /// </summary>
-        public string Remark { get; set; }
+        public string? Remark { get; set; }
     }
 
     /// <summary>
@@ -219,22 +228,22 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 工作流名称
         /// </summary>
-        public string WorkflowName { get; set; }
+        public string? WorkflowName { get; set; }
 
         /// <summary>
         /// 工作流分类
         /// </summary>
-        public string WorkflowCategory { get; set; }
+        public string? WorkflowCategory { get; set; }
 
         /// <summary>
         /// 表单配置
         /// </summary>
-        public string FormConfig { get; set; }
+        public string? FormConfig { get; set; }
 
         /// <summary>
         /// 工作流配置
         /// </summary>
-        public string WorkflowConfig { get; set; }
+        public string? WorkflowConfig { get; set; }
 
         /// <summary>
         /// 工作流状态
@@ -244,12 +253,12 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 工作流节点列表
         /// </summary>
-        public List<HbtWorkflowNodeUpdateDto> WorkflowNodes { get; set; }
+        public List<HbtWorkflowNodeUpdateDto>? WorkflowNodes { get; set; }
 
         /// <summary>
         /// 备注
         /// </summary>
-        public string Remark { get; set; }
+        public string? Remark { get; set; }
     }
 
     /// <summary>
@@ -264,32 +273,32 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 工作流名称
         /// </summary>
-        public string WorkflowName { get; set; }
+        public string? WorkflowName { get; set; }
 
         /// <summary>
         /// 工作流分类
         /// </summary>
-        public string WorkflowCategory { get; set; }
+        public string? WorkflowCategory { get; set; }
 
         /// <summary>
         /// 表单配置
         /// </summary>
-        public string FormConfig { get; set; }
+        public string? FormConfig { get; set; }
 
         /// <summary>
         /// 工作流配置
         /// </summary>
-        public string WorkflowConfig { get; set; }
+        public string? WorkflowConfig { get; set; }
 
         /// <summary>
         /// 工作流节点列表(JSON格式)
         /// </summary>
-        public string WorkflowNodes { get; set; }
+        public string? WorkflowNodes { get; set; }
 
         /// <summary>
         /// 备注
         /// </summary>
-        public string Remark { get; set; }
+        public string? Remark { get; set; }
     }
 
     /// <summary>
@@ -304,12 +313,12 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 工作流名称
         /// </summary>
-        public string WorkflowName { get; set; }
+        public string? WorkflowName { get; set; }
 
         /// <summary>
         /// 工作流分类
         /// </summary>
-        public string WorkflowCategory { get; set; }
+        public string? WorkflowCategory { get; set; }
 
         /// <summary>
         /// 工作流版本
@@ -319,17 +328,17 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 工作流状态
         /// </summary>
-        public string WorkflowStatus { get; set; }
+        public string? WorkflowStatus { get; set; }
 
         /// <summary>
         /// 备注
         /// </summary>
-        public string Remark { get; set; }
+        public string? Remark { get; set; }
 
         /// <summary>
         /// 创建者
         /// </summary>
-        public string Creator { get; set; }
+        public string? Creator { get; set; }
 
         /// <summary>
         /// 创建时间
@@ -349,16 +358,16 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 工作流名称
         /// </summary>
-        public string WorkflowName { get; set; }
+        public string? WorkflowName { get; set; }
 
         /// <summary>
         /// 工作流分类
         /// </summary>
-        public string WorkflowCategory { get; set; }
+        public string? WorkflowCategory { get; set; }
 
         /// <summary>
         /// 备注
         /// </summary>
-        public string Remark { get; set; }
+        public string? Remark { get; set; }
     }
 }

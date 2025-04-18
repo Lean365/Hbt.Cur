@@ -24,7 +24,7 @@ import type {
  */
 export function getHbtLanguageList(query: HbtLanguageQuery) {
   return request<HbtApiResponse<HbtPagedResult<HbtLanguage>>>({
-    url: '/api/HbtLanguage',
+    url: '/api/HbtLanguage/list',
     method: 'get',
     params: query
   })

@@ -9,8 +9,8 @@
 // 描述   : 代码生成列实体
 //===================================================================
 
-using SqlSugar;
 using Lean.Hbt.Domain.Entities.Identity;
+using SqlSugar;
 
 namespace Lean.Hbt.Domain.Entities.Generator;
 
@@ -69,6 +69,12 @@ public class HbtGenColumn : HbtBaseEntity
     /// </summary>
     [SugarColumn(ColumnName = "csharp_decimal_digits", ColumnDescription = "C#小数位", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
     public int CsharpDecimalDigits { get; set; } = 0;
+
+    /// <summary>
+    /// C#字段名（首字母小写）
+    /// </summary>
+    [SugarColumn(ColumnName = "csharp_field", ColumnDescription = "C#字段名", Length = 50, ColumnDataType = "nvarchar", IsNullable = false)]
+    public string? CsharpField { get; set; }
 
     /// <summary>
     /// 是否自增（1是）
@@ -159,4 +165,4 @@ public class HbtGenColumn : HbtBaseEntity
     /// </summary>
     [Navigate(NavigateType.OneToOne, nameof(TenantId))]
     public HbtTenant? Tenant { get; set; }
-} 
+}

@@ -14,7 +14,7 @@ using System.Security.Cryptography;
 using Lean.Hbt.Common.Constants;
 using System.ComponentModel;
 using Lean.Hbt.Domain.IServices.Security;
-using Lean.Hbt.Domain.Entities.RealTime;
+using Lean.Hbt.Domain.Entities.SignalR;
 using Lean.Hbt.Domain.IServices.SignalR;
 using System;
 using System.Threading.Tasks;

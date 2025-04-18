@@ -82,7 +82,7 @@ namespace Lean.Hbt.Infrastructure.Security
             bool needCaptcha = false;
             
             // 1. 检查用户是否存在且是否被永久锁定
-            var user = await _userRepository.GetInfoAsync(u => u.UserName == username);
+            var user = await _userRepository.GetFirstAsync(u => u.UserName == username);
             if (user != null && user.IsLock == 2) // IsLock=2表示永久锁定
             {
                 _logger.LogWarning("[登录策略] 用户 {Username} 已被永久锁定，需要管理员解锁", username);
@@ -105,7 +105,7 @@ namespace Lean.Hbt.Infrastructure.Security
             int failedAttempts = 0;
             _cache.TryGetValue(attemptKey, out failedAttempts);
 
-            bool isAdmin = username.ToLower() == "admin";
+            bool isAdmin = username.ToLower() == "Hbt365";
             int maxAttempts = isAdmin ? _options.MaxFailedAttempts / 2 : _options.MaxFailedAttempts;
 
             // 4. 检查是否达到最大失败次数
@@ -172,7 +172,7 @@ namespace Lean.Hbt.Infrastructure.Security
             _cache.TryGetValue(attemptKey, out currentAttempts);
             currentAttempts++;
 
-            bool isAdmin = username.ToLower() == "admin";
+            bool isAdmin = username.ToLower() == "Hbt365";
             int maxAttempts = isAdmin ? _options.MaxFailedAttempts / 2 : _options.MaxFailedAttempts;
 
             // 更新失败次数
@@ -189,7 +189,7 @@ namespace Lean.Hbt.Infrastructure.Security
             else
             {
                 // 普通用户：更新数据库中的失败记录
-                var user = await _userRepository.GetInfoAsync(u => u.UserName == username);
+                var user = await _userRepository.GetFirstAsync(u => u.UserName == username);
                 if (user != null)
                 {
                     if (currentAttempts >= maxAttempts)
@@ -237,7 +237,7 @@ namespace Lean.Hbt.Infrastructure.Security
             _cache.Set(lastLoginKey, DateTime.UtcNow, TimeSpan.FromMinutes(_options.RepeatLoginMinutes));
 
             // 更新用户状态
-            var user = await _userRepository.GetInfoAsync(u => u.UserName == username);
+            var user = await _userRepository.GetFirstAsync(u => u.UserName == username);
             if (user != null)
             {
                 user.LoginCount = 0; // 重置登录失败次数
@@ -276,7 +276,7 @@ namespace Lean.Hbt.Infrastructure.Security
             int currentAttempts = 0;
             _cache.TryGetValue(attemptKey, out currentAttempts);
 
-            bool isAdmin = userName.ToLower() == "admin";
+            bool isAdmin = userName.ToLower() == "Hbt365";
             int maxAttempts = isAdmin ? _options.MaxFailedAttempts / 2 : _options.MaxFailedAttempts;
             int remainingAttempts = maxAttempts - currentAttempts;
 

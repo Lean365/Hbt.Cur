@@ -32,7 +32,8 @@ namespace Lean.Hbt.Application.Dtos.Workflow
             OperationResult = 0;
             OperationComment = string.Empty;
             Remark = string.Empty;
-            Creator = string.Empty;
+            CreateBy = string.Empty;
+            UpdateBy = string.Empty;
         }
 
         /// <summary>
@@ -79,12 +80,12 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 备注
         /// </summary>
-        public string Remark { get; set; }
+        public string? Remark { get; set; }
 
         /// <summary>
         /// 创建者
         /// </summary>
-        public string Creator { get; set; }
+        public string CreateBy { get; set; }
 
         /// <summary>
         /// 创建时间
@@ -174,17 +175,17 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 操作结果
         /// </summary>
-        public string OperationResult { get; set; }
+        public string? OperationResult { get; set; }
 
         /// <summary>
         /// 操作意见
         /// </summary>
-        public string OperationComment { get; set; }
+        public string? OperationComment { get; set; }
 
         /// <summary>
         /// 备注
         /// </summary>
-        public string Remark { get; set; }
+        public string? Remark { get; set; }
     }
 
     /// <summary>
@@ -205,17 +206,17 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 操作结果
         /// </summary>
-        public string OperationResult { get; set; }
+        public string? OperationResult { get; set; }
 
         /// <summary>
         /// 操作意见
         /// </summary>
-        public string OperationComment { get; set; }
+        public string? OperationComment { get; set; }
 
         /// <summary>
         /// 备注
         /// </summary>
-        public string Remark { get; set; }
+        public string? Remark { get; set; }
     }
 
     /// <summary>
@@ -240,7 +241,7 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 操作类型
         /// </summary>
-        public string OperationType { get; set; }
+        public string? OperationType { get; set; }
 
         /// <summary>
         /// 操作人ID
@@ -250,17 +251,17 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 操作结果
         /// </summary>
-        public string OperationResult { get; set; }
+        public string? OperationResult { get; set; }
 
         /// <summary>
         /// 操作意见
         /// </summary>
-        public string OperationComment { get; set; }
+        public string? OperationComment { get; set; }
 
         /// <summary>
         /// 备注
         /// </summary>
-        public string Remark { get; set; }
+        public string? Remark { get; set; }
     }
 
     /// <summary>
@@ -285,7 +286,7 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 操作类型
         /// </summary>
-        public string OperationType { get; set; }
+        public string? OperationType { get; set; }
 
         /// <summary>
         /// 操作人ID
@@ -295,22 +296,22 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 操作人名称
         /// </summary>
-        public string OperatorName { get; set; }
+        public string? OperatorName { get; set; }
 
         /// <summary>
         /// 操作结果
         /// </summary>
-        public string OperationResult { get; set; }
+        public string? OperationResult { get; set; }
 
         /// <summary>
         /// 操作意见
         /// </summary>
-        public string OperationComment { get; set; }
+        public string? OperationComment { get; set; }
 
         /// <summary>
         /// 备注
         /// </summary>
-        public string Remark { get; set; }
+        public string? Remark { get; set; }
 
         /// <summary>
         /// 创建时间
@@ -330,11 +331,11 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 操作类型
         /// </summary>
-        public string OperationType { get; set; }
+        public string? OperationType { get; set; }
 
         /// <summary>
         /// 备注
         /// </summary>
-        public string Remark { get; set; }
+        public string? Remark { get; set; }
     }
 }

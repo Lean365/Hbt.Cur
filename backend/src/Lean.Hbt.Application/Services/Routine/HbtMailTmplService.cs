@@ -103,7 +103,7 @@ namespace Lean.Hbt.Application.Services.Routine
             tmpl.CreateTime = DateTime.Now;
 
             // 验证模板编码是否已存在
-            var existingTmpl = await _tmplRepository.GetInfoAsync(x => x.TmplCode == input.TmplCode);
+            var existingTmpl = await _tmplRepository.GetFirstAsync(x => x.TmplCode == input.TmplCode);
             if (existingTmpl != null)
                 throw new HbtException($"模板编码已存在: {input.TmplCode}");
 
@@ -124,7 +124,7 @@ namespace Lean.Hbt.Application.Services.Routine
                 throw new HbtException($"邮件模板不存在: {tmplId}");
 
             // 验证模板编码是否已存在
-            var existingTmpl = await _tmplRepository.GetInfoAsync(x => x.TmplCode == input.TmplCode && x.Id != tmplId);
+            var existingTmpl = await _tmplRepository.GetFirstAsync(x => x.TmplCode == input.TmplCode && x.Id != tmplId);
             if (existingTmpl != null)
                 throw new HbtException($"模板编码已存在: {input.TmplCode}");
 

@@ -120,7 +120,7 @@ namespace Lean.Hbt.Application.Services.Workflow
                 throw new ArgumentNullException(nameof(input));
 
             // 检查名称是否已存在
-            var exists = await _definitionRepository.GetInfoAsync(x => x.WorkflowName == input.WorkflowName);
+            var exists = await _definitionRepository.GetFirstAsync(x => x.WorkflowName == input.WorkflowName);
             if (exists != null)
                 throw new HbtException(_localization.L("WorkflowDefinition.NameExists"));
 
@@ -153,7 +153,7 @@ namespace Lean.Hbt.Application.Services.Workflow
                 throw new HbtException(_localization.L("WorkflowDefinition.NotFound"));
 
             // 检查名称是否已被其他定义使用
-            var exists = await _definitionRepository.GetInfoAsync(x => x.WorkflowName == input.WorkflowName && x.Id != input.WorkflowActivityId);
+            var exists = await _definitionRepository.GetFirstAsync(x => x.WorkflowName == input.WorkflowName && x.Id != input.WorkflowActivityId);
             if (exists != null)
                 throw new HbtException(_localization.L("WorkflowDefinition.NameExists"));
 

@@ -59,7 +59,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
             var userInfo = await _oauthService.HandleCallbackAsync(provider, code, state);
 
             // 查找或创建用户
-            var user = await _userRepository.GetInfoAsync(u => u.UserName == userInfo.UserName);
+            var user = await _userRepository.GetFirstAsync(u => u.UserName == userInfo.UserName);
             if (user == null)
             {
                 user = new HbtUser
@@ -106,7 +106,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         [AllowAnonymous]
         public async Task<IActionResult> SelectTenantAsync(string userName, long tenantId)
         {
-            var user = await _userRepository.GetInfoAsync(u => u.UserName == userName);
+            var user = await _userRepository.GetFirstAsync(u => u.UserName == userName);
             if (user == null)
             {
                 return NotFound("用户不存在");

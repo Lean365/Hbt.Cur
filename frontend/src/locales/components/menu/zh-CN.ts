@@ -53,7 +53,7 @@ export default {
       variable: '流程变量',
       history: '流程历史'
     },
-    realtime: {
+    signalr: {
       _self: '实时监控',
       server: '服务监控',
       online: '在线用户',

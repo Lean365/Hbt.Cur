@@ -1,5 +1,3 @@
-using System.Text.Json.Serialization;
-
 namespace Lean.Hbt.Application.Dtos.Security;
 
 /// <summary>
@@ -10,17 +8,17 @@ public class SliderCaptchaDto
     /// <summary>
     /// 背景图片(Base64)
     /// </summary>
-    public string BackgroundImage { get; set; }
+    public string? BackgroundImage { get; set; }
 
     /// <summary>
     /// 滑块图片(Base64)
     /// </summary>
-    public string SliderImage { get; set; }
+    public string? SliderImage { get; set; }
 
     /// <summary>
     /// 验证令牌
     /// </summary>
-    public string Token { get; set; }
+    public string? Token { get; set; }
 }
 
 /// <summary>
@@ -31,7 +29,7 @@ public class SliderValidateDto
     /// <summary>
     /// 验证令牌
     /// </summary>
-    public string Token { get; set; }
+    public string? Token { get; set; }
 
     /// <summary>
     /// X轴偏移量
@@ -68,7 +66,7 @@ public class BehaviorDataDto
     /// <summary>
     /// 用户ID
     /// </summary>
-    public string UserId { get; set; }
+    public string? UserId { get; set; }
 
     /// <summary>
     /// 鼠标轨迹
@@ -99,5 +97,5 @@ public class CaptchaResultDto
     /// <summary>
     /// 错误消息
     /// </summary>
-    public string Message { get; set; }
-} 
+    public string? Message { get; set; }
+}

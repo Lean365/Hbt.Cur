@@ -7,10 +7,7 @@
 // 描述   : 邮件模板数据传输对象
 //===================================================================
 
-using System;
 using System.ComponentModel.DataAnnotations;
-using Lean.Hbt.Common.Models;
-using Mapster;
 
 namespace Lean.Hbt.Application.Dtos.Routine
 {
@@ -28,7 +25,8 @@ namespace Lean.Hbt.Application.Dtos.Routine
             TmplCode = string.Empty;
             TmplSubject = string.Empty;
             TmplBody = string.Empty;
-            CreateTime = DateTime.Now;
+            CreateBy = string.Empty;
+            UpdateBy = string.Empty;
         }
 
         /// <summary>
@@ -75,12 +73,27 @@ namespace Lean.Hbt.Application.Dtos.Routine
         /// <summary>
         /// 备注
         /// </summary>
-        public string? TmplRemark { get; set; }
+        public string? Remark { get; set; }
+
+        /// <summary>
+        /// 创建人
+        /// </summary>
+        public string CreateBy { get; set; }
 
         /// <summary>
         /// 创建时间
         /// </summary>
         public DateTime CreateTime { get; set; }
+
+        /// <summary>
+        /// 更新人
+        /// </summary>
+        public string UpdateBy { get; set; }
+
+        /// <summary>
+        /// 更新时间
+        /// </summary>
+        public DateTime UpdateTime { get; set; }
     }
 
     /// <summary>
@@ -188,7 +201,7 @@ namespace Lean.Hbt.Application.Dtos.Routine
         /// 备注
         /// </summary>
         [MaxLength(500, ErrorMessage = "备注长度不能超过500个字符")]
-        public string? TmplRemark { get; set; }
+        public string? Remark { get; set; }
     }
 
     /// <summary>
@@ -242,7 +255,7 @@ namespace Lean.Hbt.Application.Dtos.Routine
         /// <summary>
         /// 是否HTML
         /// </summary>
-        public string TmplIsHtml { get; set; }
+        public int TmplIsHtml { get; set; }
 
         /// <summary>
         /// 参数列表
@@ -252,12 +265,12 @@ namespace Lean.Hbt.Application.Dtos.Routine
         /// <summary>
         /// 状态（0停用 1启用）
         /// </summary>
-        public string TmplStatus { get; set; }
+        public int TmplStatus { get; set; }
 
         /// <summary>
         /// 备注
         /// </summary>
-        public string? TmplRemark { get; set; }
+        public string? Remark { get; set; }
     }
 
     /// <summary>
@@ -300,7 +313,7 @@ namespace Lean.Hbt.Application.Dtos.Routine
         /// <summary>
         /// 是否HTML
         /// </summary>
-        public string TmplIsHtml { get; set; }
+        public int TmplIsHtml { get; set; }
 
         /// <summary>
         /// 参数列表
@@ -310,12 +323,7 @@ namespace Lean.Hbt.Application.Dtos.Routine
         /// <summary>
         /// 状态
         /// </summary>
-        public string TmplStatus { get; set; }
-
-        /// <summary>
-        /// 备注
-        /// </summary>
-        public string? TmplRemark { get; set; }
+        public int TmplStatus { get; set; }
 
         /// <summary>
         /// 创建时间
@@ -362,7 +370,7 @@ namespace Lean.Hbt.Application.Dtos.Routine
         /// <summary>
         /// 是否HTML(0=否,1=是)
         /// </summary>
-        public string TmplIsHtml { get; set; }
+        public int TmplIsHtml { get; set; }
 
         /// <summary>
         /// 参数列表
@@ -372,11 +380,11 @@ namespace Lean.Hbt.Application.Dtos.Routine
         /// <summary>
         /// 状态(0=停用,1=启用)
         /// </summary>
-        public string TmplStatus { get; set; }
+        public int TmplStatus { get; set; }
 
         /// <summary>
         /// 备注
         /// </summary>
-        public string? TmplRemark { get; set; }
+        public string? Remark { get; set; }
     }
-} 
+}

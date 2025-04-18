@@ -51,7 +51,7 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// </summary>
         /// <param name="query">查询条件</param>
         /// <returns>工作流变量分页列表</returns>
-        [HttpGet]
+        [HttpGet("list")]
         [HbtPerm("workflow:variable:list")]
         public async Task<IActionResult> GetListAsync([FromQuery] HbtWorkflowVariableQueryDto query)
         {

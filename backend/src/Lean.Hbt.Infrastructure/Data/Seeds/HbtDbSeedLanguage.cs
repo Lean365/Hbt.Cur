@@ -180,7 +180,7 @@ public class HbtDbSeedLanguage
 
         foreach (var language in defaultLanguages)
         {
-            var existingLanguage = await _languageRepository.GetInfoAsync(l => l.LangCode == language.LangCode);
+            var existingLanguage = await _languageRepository.GetFirstAsync(l => l.LangCode == language.LangCode);
             if (existingLanguage == null)
             {
                 await _languageRepository.CreateAsync(language);

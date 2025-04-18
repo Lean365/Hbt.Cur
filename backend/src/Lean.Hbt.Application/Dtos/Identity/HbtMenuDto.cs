@@ -165,6 +165,20 @@ namespace Lean.Hbt.Application.Dtos.Identity
     public class HbtMenuCreateDto
     {
         /// <summary>
+        /// 构造函数
+        /// </summary>
+        public HbtMenuCreateDto()
+        {
+            MenuName = string.Empty;
+            TransKey = string.Empty;
+            Path = string.Empty;
+            Component = string.Empty;
+            QueryParams = string.Empty;
+            Perms = string.Empty;
+            Icon = string.Empty;
+        }
+
+        /// <summary>
         /// 菜单名称
         /// </summary>
         [Required(ErrorMessage = "菜单名称不能为空")]
@@ -236,14 +250,14 @@ namespace Lean.Hbt.Application.Dtos.Identity
         public long TenantId { get; set; }
 
         /// <summary>
-        /// 备注
-        /// </summary>
-        public string? Remark { get; set; }
-
-        /// <summary>
         /// 是否缓存
         /// </summary>
         public int IsCache { get; set; }
+
+        /// <summary>
+        /// 备注
+        /// </summary>
+        public string? Remark { get; set; }
     }
 
     /// <summary>

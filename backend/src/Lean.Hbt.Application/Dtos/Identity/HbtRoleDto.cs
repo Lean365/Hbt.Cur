@@ -333,7 +333,7 @@ namespace Lean.Hbt.Application.Dtos.Identity
         public HbtRoleTemplateDto()
         {
             RoleName = "系统管理员";
-            RoleKey = "admin";
+            RoleKey = "Hbt365";
             OrderNum = 1;
             DataScope = 0;
             Status = 0;
@@ -349,7 +349,7 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// 角色标识
         /// </summary>
         [Required(ErrorMessage = "角色标识不能为空")]
-        public string RoleKey { get; set; } = "admin";
+        public string RoleKey { get; set; } = "Hbt365";
 
         /// <summary>
         /// 排序号

@@ -276,7 +276,7 @@ public class HbtDbSeedHrDictData
             {
                 DictType = "sys_position_type",
                 DictLabel = "行政类",
-                DictValue = "ADMIN",
+                DictValue = "Hbt365",
                 OrderNum = 4,
                 Status = 0,
                 TenantId = 0,
@@ -970,7 +970,7 @@ public class HbtDbSeedHrDictData
 
         foreach (var dictData in defaultDictData)
         {
-            var existingDictData = await _dictDataRepository.GetInfoAsync(d => d.DictType == dictData.DictType && d.DictValue == dictData.DictValue);
+            var existingDictData = await _dictDataRepository.GetFirstAsync(d => d.DictType == dictData.DictType && d.DictValue == dictData.DictValue);
             if (existingDictData == null)
             {
                 await _dictDataRepository.CreateAsync(dictData);

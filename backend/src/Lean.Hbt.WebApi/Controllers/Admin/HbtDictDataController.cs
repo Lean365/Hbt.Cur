@@ -23,7 +23,7 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
     /// </remarks>
     [Route("api/[controller]", Name = "字典数据")]
     [ApiController]
-    [ApiModule("admin", "系统管理")]
+    [ApiModule("Hbt365", "系统管理")]
     public class HbtDictDataController : HbtBaseController
     {
         private readonly IHbtDictDataService _dictDataService;
@@ -43,7 +43,7 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
         /// </summary>
         /// <param name="query">查询条件</param>
         /// <returns>字典数据分页列表</returns>
-        [HttpGet]
+        [HttpGet("list")]
         [HbtPerm("admin:dictdata:list")]
         public async Task<IActionResult> GetListAsync([FromQuery] HbtDictDataQueryDto query)
         {

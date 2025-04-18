@@ -120,7 +120,7 @@ public class HbtGenConfigService : IHbtGenConfigService
     /// <returns>更新后的配置信息</returns>
     public async Task<HbtGenConfigDto> UpdateAsync(HbtGenConfigUpdateDto input)
     {
-        var config = await _configRepository.GetByIdAsync(input.Id);
+        var config = await _configRepository.GetByIdAsync(input.ConfigId);
         if (config == null)
         {
             throw new HbtException(_localization.L("GenConfig.NotFound"));
@@ -153,7 +153,7 @@ public class HbtGenConfigService : IHbtGenConfigService
     /// <returns>是否删除成功</returns>
     public async Task<bool> DeleteAsync(long id)
     {
-        var config = await _configRepository.GetInfoAsync(x => x.Id == id);
+        var config = await _configRepository.GetFirstAsync(x => x.Id == id);
         if (config == null)
             throw new HbtException(_localization.L("GenConfig.NotFound"));
 

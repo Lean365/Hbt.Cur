@@ -51,7 +51,7 @@ export default {
       variable: 'Variables',
       history: 'Historique'
     },
-    realtime: {
+    signalr: {
       _self: 'Surveillance en temps réel',
       server: 'Surveillance du serveur',
       online: 'Utilisateurs en ligne',

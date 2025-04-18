@@ -31,7 +31,7 @@ namespace Lean.Hbt.Application.Dtos.Workflow
             NodeConfig = string.Empty;
             OrderNum = 0;
             Remark = string.Empty;
-            Creator = string.Empty;
+            CreateBy = string.Empty;
             CreateTime = DateTime.Now;
             UpdateBy = string.Empty;
         }
@@ -75,12 +75,12 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 备注
         /// </summary>
-        public string Remark { get; set; }
+        public string? Remark { get; set; }
 
         /// <summary>
         /// 创建者
         /// </summary>
-        public string Creator { get; set; }
+        public string? CreateBy { get; set; }
 
         /// <summary>
         /// 创建时间
@@ -115,7 +115,7 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 节点名称
         /// </summary>
-        public string NodeName { get; set; }
+        public string? NodeName { get; set; }
 
         /// <summary>
         /// 节点类型
@@ -155,7 +155,7 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 节点名称
         /// </summary>
-        public string NodeName { get; set; }
+        public string? NodeName { get; set; }
 
         /// <summary>
         /// 节点类型
@@ -170,7 +170,7 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 节点配置
         /// </summary>
-        public string NodeConfig { get; set; }
+        public string? NodeConfig { get; set; }
 
         /// <summary>
         /// 节点排序
@@ -180,7 +180,7 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 备注
         /// </summary>
-        public string Remark { get; set; }
+        public string? Remark { get; set; }
     }
 
     /// <summary>
@@ -201,7 +201,7 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 节点名称
         /// </summary>
-        public string NodeName { get; set; }
+        public string? NodeName { get; set; }
 
         /// <summary>
         /// 节点类型
@@ -216,7 +216,7 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 节点配置
         /// </summary>
-        public string NodeConfig { get; set; }
+        public string? NodeConfig { get; set; }
 
         /// <summary>
         /// 节点排序
@@ -226,7 +226,7 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 备注
         /// </summary>
-        public string Remark { get; set; }
+        public string? Remark { get; set; }
     }
 
     /// <summary>
@@ -246,12 +246,12 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 节点名称
         /// </summary>
-        public string NodeName { get; set; }
+        public string? NodeName { get; set; }
 
         /// <summary>
         /// 节点类型
         /// </summary>
-        public string NodeType { get; set; }
+        public string? NodeType { get; set; }
 
         /// <summary>
         /// 父节点ID
@@ -261,7 +261,7 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 节点配置
         /// </summary>
-        public string NodeConfig { get; set; }
+        public string? NodeConfig { get; set; }
 
         /// <summary>
         /// 节点排序
@@ -271,7 +271,7 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 备注
         /// </summary>
-        public string Remark { get; set; }
+        public string? Remark { get; set; }
     }
 
     /// <summary>
@@ -291,12 +291,12 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 节点名称
         /// </summary>
-        public string NodeName { get; set; }
+        public string? NodeName { get; set; }
 
         /// <summary>
         /// 节点类型
         /// </summary>
-        public string NodeTypeName { get; set; }
+        public string? NodeTypeName { get; set; }
 
         /// <summary>
         /// 父节点ID
@@ -311,12 +311,12 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 备注
         /// </summary>
-        public string Remark { get; set; }
+        public string? Remark { get; set; }
 
         /// <summary>
         /// 创建者
         /// </summary>
-        public string Creator { get; set; }
+        public string? CreateBy { get; set; }
 
         /// <summary>
         /// 创建时间
@@ -336,16 +336,16 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 节点名称
         /// </summary>
-        public string NodeName { get; set; }
+        public string? NodeName { get; set; }
 
         /// <summary>
         /// 节点类型
         /// </summary>
-        public string NodeType { get; set; }
+        public string? NodeType { get; set; }
 
         /// <summary>
         /// 备注
         /// </summary>
-        public string Remark { get; set; }
+        public string? Remark { get; set; }
     }
 }

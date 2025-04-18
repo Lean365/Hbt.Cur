@@ -7,11 +7,9 @@
 // 描述   : 用户数据初始化类
 //===================================================================
 
-using Lean.Hbt.Common.Enums;
+using Lean.Hbt.Common.Utils;
 using Lean.Hbt.Domain.Entities.Identity;
 using Lean.Hbt.Domain.IServices;
-using Lean.Hbt.Common.Utils;
-using Microsoft.Extensions.Configuration;
 
 namespace Lean.Hbt.Infrastructure.Data.Seeds;
 
@@ -31,7 +29,7 @@ public class HbtDbSeedUser
     /// <param name="logger">日志记录器</param>
     /// <param name="configuration">配置</param>
     public HbtDbSeedUser(
-        IHbtRepository<HbtUser> userRepository, 
+        IHbtRepository<HbtUser> userRepository,
         IHbtLogger logger,
         IConfiguration configuration)
     {
@@ -60,10 +58,10 @@ public class HbtDbSeedUser
             {
                 Id = nextId++,
                 UserName = "admin",
-                NickName = "系统管理员",
+                NickName = "超级管理员",
                 EnglishName = "System Administrator",
-                UserType = 0, // 系统用户
-                Email = "admin@lean.com",
+                UserType = 2, // 管理员用户
+                Email = "admin@hbt365.net",
                 PhoneNumber = "13800000001",
                 Gender = 0,
                 Avatar = "/avatar/default.gif",
@@ -73,9 +71,9 @@ public class HbtDbSeedUser
                 IsLock = 0,
                 ErrorLimit = 0,
                 LoginCount = 0,
-                CreateBy = "system",
+                CreateBy ="Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy ="Hbt365",
                 UpdateTime = DateTime.Now
             },
 
@@ -97,9 +95,9 @@ public class HbtDbSeedUser
                 IsLock = 0,
                 ErrorLimit = 0,
                 LoginCount = 0,
-                CreateBy = "system",
+                CreateBy ="Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy ="Hbt365",
                 UpdateTime = DateTime.Now
             },
 
@@ -121,9 +119,9 @@ public class HbtDbSeedUser
                 IsLock = 0,
                 ErrorLimit = 0,
                 LoginCount = 0,
-                CreateBy = "system",
+                CreateBy ="Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy ="Hbt365",
                 UpdateTime = DateTime.Now
             },
 
@@ -145,9 +143,9 @@ public class HbtDbSeedUser
                 IsLock = 0,
                 ErrorLimit = 0,
                 LoginCount = 0,
-                CreateBy = "system",
+                CreateBy ="Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy ="Hbt365",
                 UpdateTime = DateTime.Now
             },
 
@@ -169,16 +167,16 @@ public class HbtDbSeedUser
                 IsLock = 0,
                 ErrorLimit = 0,
                 LoginCount = 0,
-                CreateBy = "system",
+                CreateBy ="Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy ="Hbt365",
                 UpdateTime = DateTime.Now
             }
         };
 
         foreach (var user in defaultUsers)
         {
-            var existingUser = await _userRepository.GetInfoAsync(u => u.UserName == user.UserName);
+            var existingUser = await _userRepository.GetFirstAsync(u => u.UserName == user.UserName);
             if (existingUser == null)
             {
                 // 为每个新用户生成独特的密码哈希和盐值
@@ -186,7 +184,7 @@ public class HbtDbSeedUser
                 user.Password = hash;
                 user.Salt = salt;
                 user.Iterations = iterations;
-                
+
                 await _userRepository.CreateAsync(user);
                 insertCount++;
                 _logger.Info($"[创建] 用户 '{user.NickName}' 创建成功");
@@ -203,7 +201,7 @@ public class HbtDbSeedUser
                 existingUser.Status = user.Status;
                 existingUser.TenantId = user.TenantId;
                 existingUser.LastPasswordChangeTime = user.LastPasswordChangeTime;
-                existingUser.UpdateBy = "system";
+                existingUser.UpdateBy ="Hbt365";
                 existingUser.UpdateTime = DateTime.Now;
 
                 await _userRepository.UpdateAsync(existingUser);

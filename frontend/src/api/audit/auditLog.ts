@@ -18,7 +18,7 @@ import type { HbtAuditLogDto, HbtAuditLogQueryDto } from '@/types/audit/auditLog
  */
 export function getAuditLogs(query: HbtAuditLogQueryDto) {
   return request<HbtApiResponse<HbtPagedResult<HbtAuditLogDto>>>({
-    url: '/api/HbtAuditLog',
+    url: '/api/HbtAuditLog/list',
     method: 'get',
     params: query
   })

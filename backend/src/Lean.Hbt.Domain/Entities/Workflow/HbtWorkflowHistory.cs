@@ -1,13 +1,12 @@
 //===================================================================
-// 项目名 : Lean.Hbt 
-// 文件名 : HbtWorkflowHistory.cs 
+// 项目名 : Lean.Hbt
+// 文件名 : HbtWorkflowHistory.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-22 11:50
 // 版本号 : V.0.0.1
 // 描述    : 工作流历史记录实体类
 //===================================================================
 
-using System;
 using SqlSugar;
 
 namespace Lean.Hbt.Domain.Entities.Workflow
@@ -50,7 +49,7 @@ namespace Lean.Hbt.Domain.Entities.Workflow
         /// 操作人名称
         /// </summary>
         [SugarColumn(ColumnName = "operator_name", ColumnDescription = "操作人名称", Length = 50, ColumnDataType = "nvarchar", IsNullable = false)]
-        public string OperatorName { get; set; }
+        public string? OperatorName { get; set; }
 
         /// <summary>
         /// 操作结果(1:同意 2:拒绝 3:转交 4:退回)
@@ -62,7 +61,7 @@ namespace Lean.Hbt.Domain.Entities.Workflow
         /// 操作意见
         /// </summary>
         [SugarColumn(ColumnName = "operation_comment", ColumnDescription = "操作意见", Length = 500, ColumnDataType = "nvarchar", IsNullable = true)]
-        public string OperationComment { get; set; }
+        public string? OperationComment { get; set; }
 
         /// <summary>
         /// 操作时间
@@ -74,12 +73,12 @@ namespace Lean.Hbt.Domain.Entities.Workflow
         /// 工作流实例
         /// </summary>
         [Navigate(NavigateType.OneToOne, nameof(WorkflowInstanceId))]
-        public HbtWorkflowInstance WorkflowInstance { get; set; }
+        public HbtWorkflowInstance? WorkflowInstance { get; set; }
 
         /// <summary>
         /// 节点
         /// </summary>
         [Navigate(NavigateType.OneToOne, nameof(NodeId))]
-        public HbtWorkflowNode Node { get; set; }
+        public HbtWorkflowNode? Node { get; set; }
     }
-} 
+}

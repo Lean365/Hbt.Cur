@@ -1,15 +1,13 @@
 //===================================================================
-// 项目名 : Lean.Hbt 
-// 文件名 : HbtWorkflowNode.cs 
+// 项目名 : Lean.Hbt
+// 文件名 : HbtWorkflowNode.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-22 11:50
 // 版本号 : V.0.0.1
 // 描述    : 工作流节点实体类
 //===================================================================
 
-using System.Collections.Generic;
 using SqlSugar;
-using Lean.Hbt.Common.Enums;
 
 namespace Lean.Hbt.Domain.Entities.Workflow
 {
@@ -27,7 +25,7 @@ namespace Lean.Hbt.Domain.Entities.Workflow
         /// 节点名称
         /// </summary>
         [SugarColumn(ColumnName = "node_name", ColumnDescription = "节点名称", Length = 100, ColumnDataType = "nvarchar", IsNullable = false)]
-        public string NodeName { get; set; }
+        public string? NodeName { get; set; }
 
         /// <summary>
         /// 节点类型
@@ -52,7 +50,7 @@ namespace Lean.Hbt.Domain.Entities.Workflow
         /// 包含：审批人配置、条件配置、预警配置等
         /// </summary>
         [SugarColumn(ColumnName = "node_config", ColumnDescription = "节点配置(JSON格式)", ColumnDataType = "text", IsNullable = false)]
-        public string NodeConfig { get; set; }
+        public string? NodeConfig { get; set; }
 
         /// <summary>
         /// 排序号
@@ -64,12 +62,12 @@ namespace Lean.Hbt.Domain.Entities.Workflow
         /// 工作流定义
         /// </summary>
         [Navigate(NavigateType.OneToOne, nameof(WorkflowDefinitionId))]
-        public HbtWorkflowDefinition WorkflowDefinition { get; set; }
+        public HbtWorkflowDefinition? WorkflowDefinition { get; set; }
 
         /// <summary>
         /// 子节点列表
         /// </summary>
         [Navigate(NavigateType.OneToMany, nameof(ParentNodeId))]
-        public List<HbtWorkflowNode> ChildNodes { get; set; }
+        public List<HbtWorkflowNode>? ChildNodes { get; set; }
     }
-} 
+}

@@ -7,10 +7,7 @@
 // 描述   : 通知数据传输对象
 //===================================================================
 
-using System;
 using System.ComponentModel.DataAnnotations;
-using Lean.Hbt.Common.Models;
-using Mapster;
 
 namespace Lean.Hbt.Application.Dtos.Routine
 {
@@ -246,12 +243,12 @@ namespace Lean.Hbt.Application.Dtos.Routine
         /// <summary>
         /// 类型（1通知 2公告）
         /// </summary>
-        public string NoticeType { get; set; }
+        public int NoticeType { get; set; }
 
         /// <summary>
         /// 状态（0草稿 1发布 2关闭）
         /// </summary>
-        public string NoticeStatus { get; set; }
+        public int NoticeStatus { get; set; }
 
         /// <summary>
         /// 发布时间
@@ -302,12 +299,12 @@ namespace Lean.Hbt.Application.Dtos.Routine
         /// <summary>
         /// 类型
         /// </summary>
-        public string NoticeType { get; set; }
+        public int NoticeType { get; set; }
 
         /// <summary>
         /// 状态
         /// </summary>
-        public string NoticeStatus { get; set; }
+        public int NoticeStatus { get; set; }
 
         /// <summary>
         /// 发布时间
@@ -377,12 +374,12 @@ namespace Lean.Hbt.Application.Dtos.Routine
         /// <summary>
         /// 类型(1=通知,2=公告)
         /// </summary>
-        public string NoticeType { get; set; }
+        public int NoticeType { get; set; }
 
         /// <summary>
         /// 状态(0=草稿,1=发布,2=关闭)
         /// </summary>
-        public string NoticeStatus { get; set; }
+        public int NoticeStatus { get; set; }
 
         /// <summary>
         /// 发布时间
@@ -404,4 +401,4 @@ namespace Lean.Hbt.Application.Dtos.Routine
         /// </summary>
         public string? NoticeAccessUrl { get; set; }
     }
-} 
+}

@@ -529,7 +529,7 @@ router.beforeEach(async (to, from, next) => {
     // 初始化用户信息
     if (!userStore.userInfo) {
       console.log('[路由守卫] 开始获取用户信息')
-      await userStore.fetchUserInfo()
+      await userStore.getUserInfo()
       console.log('[路由守卫] 用户信息获取成功:', userStore.userInfo)
     }
 

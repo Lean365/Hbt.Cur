@@ -57,7 +57,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// </summary>
         /// <param name="query">查询条件</param>
         /// <returns>菜单分页列表</returns>
-        [HttpGet]
+        [HttpGet("list")]
         [HbtPerm("identity:menu:query")]
         public async Task<IActionResult> GetListAsync([FromQuery] HbtMenuQueryDto query)
         {

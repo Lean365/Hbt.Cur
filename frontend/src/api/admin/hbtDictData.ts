@@ -25,7 +25,7 @@ import type {
  */
 export function getHbtDictDataList(query: HbtDictDataQuery) {
   return request<HbtApiResponse<HbtPagedResult<HbtDictData>>>({
-    url: '/api/HbtDictData',
+    url: '/api/HbtDictData/list',
     method: 'get',
     params: query
   })

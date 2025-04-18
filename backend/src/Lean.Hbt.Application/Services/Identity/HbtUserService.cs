@@ -716,7 +716,7 @@ namespace Lean.Hbt.Application.Services.Identity
 
         public async Task<HbtUserDto> GetUserByNameAsync(string userName)
         {
-            var user = await _userRepository.GetInfoAsync(x => x.UserName == userName);
+            var user = await _userRepository.GetFirstAsync(x => x.UserName == userName);
             if (user == null)
                 throw new HbtException(_localization.L("User.NotFound"), HbtConstants.ErrorCodes.NotFound);
 
@@ -725,7 +725,7 @@ namespace Lean.Hbt.Application.Services.Identity
 
         public async Task<HbtUserDto> GetUserByPhoneAsync(string phoneNumber)
         {
-            var user = await _userRepository.GetInfoAsync(x => x.PhoneNumber == phoneNumber);
+            var user = await _userRepository.GetFirstAsync(x => x.PhoneNumber == phoneNumber);
             if (user == null)
                 throw new HbtException(_localization.L("User.NotFound"), HbtConstants.ErrorCodes.NotFound);
 

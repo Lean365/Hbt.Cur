@@ -99,12 +99,12 @@ namespace Lean.Hbt.Domain.Entities.Workflow
         /// 工作流实例
         /// </summary>
         [Navigate(NavigateType.OneToOne, nameof(WorkflowInstanceId))]
-        public HbtWorkflowInstance WorkflowInstance { get; set; }
+        public HbtWorkflowInstance? WorkflowInstance { get; set; }
 
         /// <summary>
         /// 节点
         /// </summary>
         [Navigate(NavigateType.OneToOne, nameof(NodeId))]
-        public HbtWorkflowNode Node { get; set; }
+        public HbtWorkflowNode? Node { get; set; }
     }
 }

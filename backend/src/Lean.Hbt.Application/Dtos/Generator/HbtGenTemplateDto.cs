@@ -10,7 +10,6 @@
 //===================================================================
 
 using System.ComponentModel.DataAnnotations;
-using Lean.Hbt.Common.Models;
 
 namespace Lean.Hbt.Application.Dtos.Generator;
 
@@ -35,7 +34,7 @@ public class HbtGenTemplateDto
     /// <summary>
     /// 主键ID
     /// </summary>
-    public long Id { get; set; }
+    public long GenTemplateId { get; set; }
 
     /// <summary>
     /// 模板名称
@@ -89,26 +88,16 @@ public class HbtGenTemplateDto
     public string FileName { get; set; }
 
     /// <summary>
-    /// 备注
-    /// </summary>
-    [StringLength(500, ErrorMessage = "备注长度不能超过500个字符")]
-    public string? Remark { get; set; }
-
-    /// <summary>
     /// 状态（0：停用，1：正常）
     /// </summary>
     [Required(ErrorMessage = "状态不能为空")]
     public int Status { get; set; } = 1;
 
     /// <summary>
-    /// 创建时间
+    /// 备注
     /// </summary>
-    public DateTime? CreateTime { get; set; }
-
-    /// <summary>
-    /// 更新时间
-    /// </summary>
-    public DateTime? UpdateTime { get; set; }
+    [StringLength(500, ErrorMessage = "备注长度不能超过500个字符")]
+    public string? Remark { get; set; }
 
     /// <summary>
     /// 创建人
@@ -116,10 +105,21 @@ public class HbtGenTemplateDto
     public string CreateBy { get; set; }
 
     /// <summary>
+    /// 创建时间
+    /// </summary>
+    public DateTime? CreateTime { get; set; }
+
+    /// <summary>
     /// 更新人
     /// </summary>
     public string UpdateBy { get; set; }
+
+    /// <summary>
+    /// 更新时间
+    /// </summary>
+    public DateTime? UpdateTime { get; set; }
 }
+
 /// <summary>
 /// 代码生成模板查询DTO
 /// </summary>
@@ -405,7 +405,8 @@ public class HbtGenTemplateExportDto
         TemplateContent = string.Empty;
         GenPath = string.Empty;
         FileName = string.Empty;
-        CreateTime = DateTime.Now;
+        CreateBy = string.Empty;
+        UpdateBy = string.Empty;
     }
 
     /// <summary>
@@ -551,5 +552,3 @@ public class HbtGenTemplateTemplateDto
     /// </summary>
     public string Status { get; set; }
 }
-
-

@@ -163,7 +163,7 @@ namespace Lean.Hbt.Infrastructure.Services.Identity
         {
             get
             {
-                return Roles.Contains("admin");
+                return Roles.Contains("Hbt365");
             }
         }
     }

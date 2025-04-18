@@ -47,8 +47,8 @@ namespace Lean.Hbt.Domain.Entities.Routine
         /// <summary>
         /// 是否HTML
         /// </summary>
-        [SugarColumn(ColumnName = "tmpl_is_html", ColumnDescription = "是否HTML", IsNullable = false, DefaultValue = "0", ColumnDataType = "bit", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
-        public bool TmplIsHtml { get; set; }
+        [SugarColumn(ColumnName = "tmpl_is_html", ColumnDescription = "是否HTML", IsNullable = false, DefaultValue = "0", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
+        public int TmplIsHtml { get; set; }
 
         /// <summary>
         /// 参数列表
@@ -61,11 +61,5 @@ namespace Lean.Hbt.Domain.Entities.Routine
         /// </summary>
         [SugarColumn(ColumnName = "tmpl_status", ColumnDescription = "状态（0停用 1启用）", IsNullable = false, DefaultValue = "0", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
         public int TmplStatus { get; set; }
-
-        /// <summary>
-        /// 备注
-        /// </summary>
-        [SugarColumn(ColumnName = "tmpl_remark", ColumnDescription = "备注", Length = 500, IsNullable = true, DefaultValue = "", ColumnDataType = "nvarchar", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
-        public string? TmplRemark { get; set; }
     }
-} 
+}

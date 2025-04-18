@@ -505,7 +505,7 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// <summary>
         /// 备注
         /// </summary>
-        public string Remark { get; set; } = string.Empty;
+        public string? Remark { get; set; } = string.Empty;
     }
 
     /// <summary>
@@ -695,7 +695,7 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// <summary>
         /// 备注
         /// </summary>
-        public string Remark { get; set; } = string.Empty;
+        public string? Remark { get; set; } = string.Empty;
     }
 
     /// <summary>
@@ -837,6 +837,6 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// </summary>
         [Required(ErrorMessage = "备注不能为空")]
         [MaxLength(500, ErrorMessage = "备注长度不能超过500个字符")]
-        public string Remark { get; set; } = string.Empty;
+        public string? Remark { get; set; } = string.Empty;
     }
 }

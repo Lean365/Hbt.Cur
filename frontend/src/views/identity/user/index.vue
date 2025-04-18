@@ -122,9 +122,7 @@
             :width="32"
             :height="32"
             :preview="{
-              src: getAvatarUrl(record.avatar),
-              mask: false,
-              movable: true
+              src: getAvatarUrl(record.avatar)
             }"
             style="border-radius: 50%; object-fit: cover;"
           />
@@ -185,7 +183,7 @@
       :total="total"
       :show-size-changer="true"
       :show-quick-jumper="true"
-      :show-total="(total: number) => `共 ${total} 条`"
+      :show-total="(total: number, range: [number, number]) => h('span', null, `共 ${total} 条`)"
       @change="handlePageChange"
       @showSizeChange="handleSizeChange"
     />
@@ -236,7 +234,7 @@
 <script lang="ts" setup>
 import { useI18n } from 'vue-i18n'
 import { message } from 'ant-design-vue'
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, h } from 'vue'
 import type { TablePaginationConfig } from 'ant-design-vue'
 import { useDictStore } from '@/stores/dict'
 import type { User, UserQuery } from '@/types/identity/user'

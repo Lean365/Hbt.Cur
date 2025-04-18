@@ -192,7 +192,7 @@ public class HbtDbSeedTranslation
 
         foreach (var translation in defaultTranslations)
         {
-            var existingTranslation = await _translationRepository.GetInfoAsync(t =>
+            var existingTranslation = await _translationRepository.GetFirstAsync(t =>
                 t.LangCode == translation.LangCode &&
                 t.TransKey == translation.TransKey);
 

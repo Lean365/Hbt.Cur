@@ -12,7 +12,7 @@ import type {
 // 获取菜单分页列表
 export function getMenuList(params: MenuQuery) {
   return request<HbtApiResponse<HbtPagedResult<Menu>>>({
-    url: '/api/HbtMenu',
+    url: '/api/HbtMenu/list',
     method: 'get',
     params
   })

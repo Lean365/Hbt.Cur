@@ -62,8 +62,6 @@ namespace Lean.Hbt.Infrastructure.Repositories
             return _db.Queryable<TEntity>();
         }
 
-        #region 查询操作
-
         /// <summary>
         /// 根据ID获取实体
         /// </summary>
@@ -83,11 +81,11 @@ namespace Lean.Hbt.Infrastructure.Repositories
         }
 
         /// <summary>
-        /// 获取实体详情
+        /// 获取第一个符合条件的实体
         /// </summary>
         /// <param name="condition">查询条件</param>
         /// <returns>返回实体对象,如果未找到返回null</returns>
-        public async Task<TEntity?> GetInfoAsync(Expression<Func<TEntity, bool>> condition)
+        public async Task<TEntity?> GetFirstAsync(Expression<Func<TEntity, bool>> condition)
         {
             var query = _db.Queryable<TEntity>();
 
@@ -236,10 +234,6 @@ namespace Lean.Hbt.Infrastructure.Repositories
             };
         }
 
-        #endregion 查询操作
-
-        #region 新增操作
-
         /// <summary>
         /// 新增单个实体
         /// </summary>
@@ -276,10 +270,6 @@ namespace Lean.Hbt.Infrastructure.Repositories
             return await _db.Insertable(entities).ExecuteCommandAsync();
         }
 
-        #endregion 新增操作
-
-        #region 更新操作
-
         /// <summary>
         /// 更新单个实体
         /// </summary>
@@ -315,10 +305,6 @@ namespace Lean.Hbt.Infrastructure.Repositories
             }
             return await _db.Updateable(entities).ExecuteCommandAsync();
         }
-
-        #endregion 更新操作
-
-        #region 删除操作
 
         /// <summary>
         /// 根据主键删除
@@ -391,10 +377,6 @@ namespace Lean.Hbt.Infrastructure.Repositories
             return await _db.Updateable(entities).ExecuteCommandAsync();
         }
 
-        #endregion 删除操作
-
-        #region 用户角色和权限
-
         /// <summary>
         /// 获取用户角色列表
         /// </summary>
@@ -441,14 +423,10 @@ namespace Lean.Hbt.Infrastructure.Repositories
                 .Select(x => x.Perms)
                 .ToListAsync() ?? new List<string>();
 
-            //_logger.LogInformation("[权限仓储] 查询到的权限字符串: {PermissionStrings}", string.Join(", ", permissionStrings));
-
             var permissions = permissionStrings
                 .SelectMany(perms => perms.Split(',', StringSplitOptions.RemoveEmptyEntries))
                 .Distinct()
                 .ToList();
-
-            //_logger.LogInformation("[权限仓储] 最终权限列表: {Permissions}", string.Join(", ", permissions));
 
             return permissions;
         }
@@ -474,7 +452,5 @@ namespace Lean.Hbt.Infrastructure.Repositories
                 .Distinct()
                 .ToList();
         }
-
-        #endregion 用户角色和权限
     }
 }

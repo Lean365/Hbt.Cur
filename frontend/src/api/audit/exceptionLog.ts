@@ -18,7 +18,7 @@ import type { HbtExceptionLogDto, HbtExceptionLogQueryDto } from '@/types/audit/
  */
 export function getExceptionLogs(query: HbtExceptionLogQueryDto) {
   return request<HbtApiResponse<HbtPagedResult<HbtExceptionLogDto>>>({
-    url: '/api/HbtExceptionLog',
+    url: '/api/HbtExceptionLog/list',
     method: 'get',
     params: query
   })

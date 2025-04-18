@@ -10,7 +10,6 @@
 //===================================================================
 
 using Lean.Hbt.Application.Services.Generator.CodeGenerator;
-using System.Linq.Expressions;
 
 namespace Lean.Hbt.Application.Services.Generator;
 
@@ -121,7 +120,7 @@ public class HbtGenTableService : IHbtGenTableService
         entity.UpdateTime = DateTime.Now;
         entity.CreateBy = _currentUser.UserName ?? "Hbt365";
         entity.UpdateBy = _currentUser.UserName ?? "Hbt365";
-        
+
         await _tableRepository.CreateAsync(entity);
         return entity.Adapt<HbtGenTableDto>();
     }
@@ -133,10 +132,10 @@ public class HbtGenTableService : IHbtGenTableService
     /// <returns>更新后的表信息</returns>
     public async Task<HbtGenTableDto> UpdateAsync(HbtGenTableUpdateDto input)
     {
-        var table = await _tableRepository.GetByIdAsync(input.Id);
+        var table = await _tableRepository.GetByIdAsync(input.TableId);
         if (table == null)
         {
-            throw new Exception($"未找到ID为{input.Id}的表");
+            throw new Exception($"未找到ID为{input.TableId}的表");
         }
 
         // 更新表信息
@@ -209,21 +208,21 @@ public class HbtGenTableService : IHbtGenTableService
                     DbColumnType = column.DbColumnType,
                     CsharpType = column.CsharpType,
                     CsharpColumn = column.CsharpColumn,
-                    CsharpLength = int.Parse(column.CsharpLength ?? "0"),
-                    CsharpDecimalDigits = int.Parse(column.CsharpDecimalDigits ?? "0"),
-                    IsIncrement = int.Parse(column.IsIncrement ?? "0"),
-                    IsPrimaryKey = int.Parse(column.IsPrimaryKey ?? "0"),
-                    IsRequired = int.Parse(column.IsRequired ?? "0"),
-                    IsInsert = int.Parse(column.IsInsert ?? "0"),
-                    IsEdit = int.Parse(column.IsEdit ?? "0"),
-                    IsList = int.Parse(column.IsList ?? "0"),
-                    IsQuery = int.Parse(column.IsQuery ?? "0"),
+                    CsharpLength = column.CsharpLength,
+                    CsharpDecimalDigits = column.CsharpDecimalDigits,
+                    IsIncrement = column.IsIncrement,
+                    IsPrimaryKey = column.IsPrimaryKey,
+                    IsRequired = column.IsRequired,
+                    IsInsert = column.IsInsert,
+                    IsEdit = column.IsEdit,
+                    IsList = column.IsList,
+                    IsQuery = column.IsQuery,
                     QueryType = column.QueryType,
-                    IsSort = int.Parse(column.IsSort ?? "0"),
-                    IsExport = int.Parse(column.IsExport ?? "0"),
+                    IsSort = column.IsSort,
+                    IsExport = column.IsExport,
                     DisplayType = column.DisplayType,
                     DictType = column.DictType,
-                    OrderNum = int.Parse(column.OrderNum ?? "0"),
+                    OrderNum = column.OrderNum,
                     CreateTime = DateTime.Now,
                     UpdateTime = DateTime.Now,
                     CreateBy = _currentUser.UserName ?? "Hbt365",
@@ -299,7 +298,7 @@ public class HbtGenTableService : IHbtGenTableService
             CsharpLength = x.Length,
             CsharpDecimalDigits = x.DecimalDigits,
             IsIncrement = x.IsIdentity ? 1 : 0,
-            IsPk = x.IsPrimarykey ? 1 : 0,
+            IsPrimaryKey = x.IsPrimarykey ? 1 : 0,
             IsRequired = x.IsNullable ? 0 : 1,
             IsInsert = 1,
             IsEdit = 1,

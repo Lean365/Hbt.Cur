@@ -207,7 +207,7 @@ public class HbtDbSeedTenant
 
         foreach (var tenant in defaultTenants)
         {
-            var existingTenant = await _tenantRepository.GetInfoAsync(t => t.TenantCode == tenant.TenantCode);
+            var existingTenant = await _tenantRepository.GetFirstAsync(t => t.TenantCode == tenant.TenantCode);
             if (existingTenant == null)
             {
                 await _tenantRepository.CreateAsync(tenant);

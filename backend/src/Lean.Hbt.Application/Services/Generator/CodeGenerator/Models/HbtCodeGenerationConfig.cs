@@ -7,9 +7,8 @@
 // 描述    : 代码生成配置
 //===================================================================
 
-using Lean.Hbt.Domain.Entities.Generator;
-using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 
 namespace Lean.Hbt.Application.Services.Generator.CodeGenerator.Models;
 
@@ -20,6 +19,10 @@ public class HbtCodeGenerationConfig
 {
     private readonly IWebHostEnvironment _webHostEnvironment;
 
+    /// <summary>
+    /// 构造函数
+    /// </summary>
+    /// <param name="webHostEnvironment"> Web主机环境 </param>
     public HbtCodeGenerationConfig(IWebHostEnvironment webHostEnvironment)
     {
         _webHostEnvironment = webHostEnvironment;
@@ -28,62 +31,62 @@ public class HbtCodeGenerationConfig
     /// <summary>
     /// 作者
     /// </summary>
-    public string Author { get; set; }
+    public string? Author { get; set; }
 
     /// <summary>
     /// 模块名称
     /// </summary>
-    public string ModuleName { get; set; }
+    public string? ModuleName { get; set; }
 
     /// <summary>
     /// 包名称
     /// </summary>
-    public string PackageName { get; set; }
+    public string? PackageName { get; set; }
 
     /// <summary>
     /// 基础命名空间
     /// </summary>
-    public string BaseNamespace { get; set; }
+    public string? BaseNamespace { get; set; }
 
     /// <summary>
     /// 生成路径
     /// </summary>
-    public string GenPath { get; set; }
+    public string? GenPath { get; set; }
 
     /// <summary>
     /// 默认命名空间
     /// </summary>
-    public string DefaultNamespace { get; set; }
+    public string? DefaultNamespace { get; set; }
 
     /// <summary>
     /// 输出目录
     /// </summary>
-    public string OutputDirectory { get; set; }
+    public string? OutputDirectory { get; set; }
 
     /// <summary>
     /// 模板列表
     /// </summary>
-    public List<HbtGenTemplate> Templates { get; set; } = new();
+    public List<HbtGenTemplate>? Templates { get; set; } = new();
 
     /// <summary>
     /// 模板路径配置
     /// </summary>
-    public HbtTemplatePathConfig TemplatePaths { get; set; }
+    public HbtTemplatePathConfig? TemplatePaths { get; set; }
 
     /// <summary>
     /// 命名规则
     /// </summary>
-    public HbtNamingRules NamingRules { get; set; } = new();
+    public HbtNamingRules? NamingRules { get; set; } = new();
 
     /// <summary>
     /// 代码风格
     /// </summary>
-    public HbtCodeStyle CodeStyle { get; set; } = new();
+    public HbtCodeStyle? CodeStyle { get; set; } = new();
 
     /// <summary>
     /// 文件路径规则
     /// </summary>
-    public HbtFilePathRules FilePathRules { get; set; } = new();
+    public HbtFilePathRules? FilePathRules { get; set; } = new();
 
     /// <summary>
     /// 从配置加载
@@ -106,6 +109,10 @@ public class HbtTemplatePathConfig
 {
     private readonly IWebHostEnvironment _webHostEnvironment;
 
+    /// <summary>
+    /// 构造函数
+    /// </summary>
+    /// <param name="webHostEnvironment"> Web主机环境 </param>
     public HbtTemplatePathConfig(IWebHostEnvironment webHostEnvironment)
     {
         _webHostEnvironment = webHostEnvironment;
@@ -116,48 +123,48 @@ public class HbtTemplatePathConfig
     /// <summary>
     /// 实体模板路径
     /// </summary>
-    public string EntityTemplate { get; set; }
+    public string? EntityTemplate { get; set; }
 
     /// <summary>
     /// DTO模板路径
     /// </summary>
-    public string DtoTemplate { get; set; }
+    public string? DtoTemplate { get; set; }
 
     /// <summary>
     /// 服务模板路径
     /// </summary>
-    public string ServiceTemplate { get; set; }
+    public string? ServiceTemplate { get; set; }
 
     /// <summary>
     /// 控制器模板路径
     /// </summary>
-    public string ControllerTemplate { get; set; }
+    public string? ControllerTemplate { get; set; }
 
-    #endregion
+    #endregion 后端模板路径
 
     #region 前端模板路径
 
     /// <summary>
     /// API模板路径
     /// </summary>
-    public string ApiTemplate { get; set; }
+    public string? ApiTemplate { get; set; }
 
     /// <summary>
     /// 国际化模板路径
     /// </summary>
-    public string LocalesTemplate { get; set; }
+    public string? LocalesTemplate { get; set; }
 
     /// <summary>
     /// 类型定义模板路径
     /// </summary>
-    public string TypesTemplate { get; set; }
+    public string? TypesTemplate { get; set; }
 
     /// <summary>
     /// 视图模板路径
     /// </summary>
-    public string ViewsTemplate { get; set; }
+    public string? ViewsTemplate { get; set; }
 
-    #endregion
+    #endregion 前端模板路径
 
     /// <summary>
     /// 获取所有模板路径
@@ -171,7 +178,7 @@ public class HbtTemplatePathConfig
             { "Dto", Path.Combine(_webHostEnvironment.WebRootPath, DtoTemplate) },
             { "Service", Path.Combine(_webHostEnvironment.WebRootPath, ServiceTemplate) },
             { "Controller", Path.Combine(_webHostEnvironment.WebRootPath, ControllerTemplate) },
-            
+
             // 前端模板
             { "Api", Path.Combine(_webHostEnvironment.WebRootPath, ApiTemplate) },
             { "Locales", Path.Combine(_webHostEnvironment.WebRootPath, LocalesTemplate) },
@@ -277,4 +284,4 @@ public class HbtFilePathRules
     /// 实体路径模式
     /// </summary>
     public string EntityPathPattern { get; set; } = "Entities/{Module}/{Name}.cs";
-} 
+}

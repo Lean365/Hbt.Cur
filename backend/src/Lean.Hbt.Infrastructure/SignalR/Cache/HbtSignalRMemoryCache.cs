@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Caching.Memory;
 using Lean.Hbt.Domain.IServices.SignalR;
-using Lean.Hbt.Domain.Entities.RealTime;
+using Lean.Hbt.Domain.Entities.SignalR;
 using System.Collections.Concurrent;
 using Microsoft.Extensions.Options;
 using System.Threading;

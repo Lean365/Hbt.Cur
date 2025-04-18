@@ -104,7 +104,7 @@ namespace Lean.Hbt.Application.Services.Identity
         /// </summary>
         public async Task<HbtLoginExtendDto> UpdateLoginInfoAsync(HbtLoginExtendUpdateDto request)
         {
-            var loginExtend = await _loginExtendRepository.GetInfoAsync(x => x.UserId == request.UserId);
+            var loginExtend = await _loginExtendRepository.GetFirstAsync(x => x.UserId == request.UserId);
             var now = DateTime.Now;
 
             if (loginExtend == null)
@@ -169,7 +169,7 @@ namespace Lean.Hbt.Application.Services.Identity
         /// </summary>
         public async Task<HbtLoginExtendDto> UpdateOfflineInfoAsync(long userId)
         {
-            var loginExtend = await _loginExtendRepository.GetInfoAsync(x => x.UserId == userId);
+            var loginExtend = await _loginExtendRepository.GetFirstAsync(x => x.UserId == userId);
             if (loginExtend == null)
             {
                 throw new InvalidOperationException($"用户{userId}的登录扩展信息不存在");
@@ -187,7 +187,7 @@ namespace Lean.Hbt.Application.Services.Identity
         /// </summary>
         public async Task<HbtLoginExtendDto> UpdateOnlinePeriodAsync(HbtLoginExtendOnlinePeriodUpdateDto request)
         {
-            var loginExtend = await _loginExtendRepository.GetInfoAsync(x => x.UserId == request.UserId);
+            var loginExtend = await _loginExtendRepository.GetFirstAsync(x => x.UserId == request.UserId);
             if (loginExtend == null)
             {
                 throw new InvalidOperationException($"用户{request.UserId}的登录扩展信息不存在");
@@ -206,7 +206,7 @@ namespace Lean.Hbt.Application.Services.Identity
         /// </summary>
         public async Task<HbtLoginExtendDto?> GetByUserIdAsync(long userId)
         {
-            var loginExtend = await _loginExtendRepository.GetInfoAsync(x => x.UserId == userId);
+            var loginExtend = await _loginExtendRepository.GetFirstAsync(x => x.UserId == userId);
             return loginExtend?.Adapt<HbtLoginExtendDto>();
         }
 

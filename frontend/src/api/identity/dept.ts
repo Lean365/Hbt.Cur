@@ -7,7 +7,7 @@ import type { Dept, DeptQuery, DeptCreate, DeptUpdate } from '@/types/identity/d
  */
 export function getPagedList(params: DeptQuery) {
   return request<HbtApiResponse<Dept[]>>({
-    url: '/api/HbtDept',
+    url: '/api/HbtDept/list',
     method: 'get',
     params
   })

@@ -42,7 +42,7 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// <summary>
         /// 获取工作流历史分页列表
         /// </summary>
-        [HttpGet]
+        [HttpGet("list")]
         [HbtPerm("workflow:history:list")]
         public async Task<IActionResult> GetListAsync([FromQuery] HbtWorkflowHistoryQueryDto query)
         {

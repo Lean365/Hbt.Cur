@@ -10,7 +10,6 @@
 //===================================================================
 
 using System.ComponentModel.DataAnnotations;
-using Lean.Hbt.Common.Models;
 
 namespace Lean.Hbt.Application.Dtos.Generator;
 
@@ -69,7 +68,7 @@ public class HbtGenTableDefineDto
     [StringLength(200, ErrorMessage = "表描述长度不能超过200个字符")]
     public string TableComment { get; set; }
 
-    #endregion
+    #endregion 基本信息
 
     #region 类型信息
 
@@ -101,7 +100,7 @@ public class HbtGenTableDefineDto
     [StringLength(100, ErrorMessage = "C#类名长度不能超过100个字符")]
     public string CsharpTypeName { get; set; }
 
-    #endregion
+    #endregion 类型信息
 
     #region 关联信息
 
@@ -117,7 +116,7 @@ public class HbtGenTableDefineDto
     [StringLength(100, ErrorMessage = "关联外键长度不能超过100个字符")]
     public string? ParentTableFkName { get; set; }
 
-    #endregion
+    #endregion 关联信息
 
     #region 生成配置信息
 
@@ -155,7 +154,7 @@ public class HbtGenTableDefineDto
     [StringLength(50, ErrorMessage = "作者名称长度不能超过50个字符")]
     public string Author { get; set; }
 
-    #endregion
+    #endregion 生成配置信息
 
     #region 生成选项
 
@@ -177,7 +176,7 @@ public class HbtGenTableDefineDto
     /// </summary>
     public string? Options { get; set; }
 
-    #endregion
+    #endregion 生成选项
 
     #region 系统信息
 
@@ -187,26 +186,26 @@ public class HbtGenTableDefineDto
     public long TenantId { get; set; }
 
     /// <summary>
-    /// 创建时间
-    /// </summary>
-    public DateTime CreateTime { get; set; }
-
-    /// <summary>
-    /// 更新时间
-    /// </summary>
-    public DateTime? UpdateTime { get; set; }
-
-    /// <summary>
     /// 创建人
     /// </summary>
     public string CreateBy { get; set; }
+
+    /// <summary>
+    /// 创建时间
+    /// </summary>
+    public DateTime CreateTime { get; set; }
 
     /// <summary>
     /// 更新人
     /// </summary>
     public string UpdateBy { get; set; }
 
-    #endregion
+    /// <summary>
+    /// 更新时间
+    /// </summary>
+    public DateTime? UpdateTime { get; set; }
+
+    #endregion 系统信息
 
     /// <summary>
     /// 字段定义列表
@@ -290,7 +289,7 @@ public class HbtGenTableDefineCreateDto
     [StringLength(200, ErrorMessage = "表描述长度不能超过200个字符")]
     public string TableComment { get; set; }
 
-    #endregion
+    #endregion 基本信息
 
     #region 类型信息
 
@@ -322,7 +321,7 @@ public class HbtGenTableDefineCreateDto
     [StringLength(100, ErrorMessage = "C#类名长度不能超过100个字符")]
     public string CsharpTypeName { get; set; }
 
-    #endregion
+    #endregion 类型信息
 
     #region 关联信息
 
@@ -338,7 +337,7 @@ public class HbtGenTableDefineCreateDto
     [StringLength(100, ErrorMessage = "关联外键长度不能超过100个字符")]
     public string? ParentTableFkName { get; set; }
 
-    #endregion
+    #endregion 关联信息
 
     #region 生成配置信息
 
@@ -376,7 +375,7 @@ public class HbtGenTableDefineCreateDto
     [StringLength(50, ErrorMessage = "作者名称长度不能超过50个字符")]
     public string Author { get; set; }
 
-    #endregion
+    #endregion 生成配置信息
 
     #region 生成选项
 
@@ -398,7 +397,7 @@ public class HbtGenTableDefineCreateDto
     /// </summary>
     public string? Options { get; set; }
 
-    #endregion
+    #endregion 生成选项
 
     /// <summary>
     /// 字段定义列表
@@ -460,7 +459,7 @@ public class HbtGenTableDefineImportDto
     /// </summary>
     public string TableComment { get; set; }
 
-    #endregion
+    #endregion 基本信息
 
     #region 类型信息
 
@@ -484,7 +483,7 @@ public class HbtGenTableDefineImportDto
     /// </summary>
     public string CsharpTypeName { get; set; }
 
-    #endregion
+    #endregion 类型信息
 
     #region 关联信息
 
@@ -498,7 +497,7 @@ public class HbtGenTableDefineImportDto
     /// </summary>
     public string? ParentTableFkName { get; set; }
 
-    #endregion
+    #endregion 关联信息
 
     #region 生成配置信息
 
@@ -527,7 +526,7 @@ public class HbtGenTableDefineImportDto
     /// </summary>
     public string Author { get; set; }
 
-    #endregion
+    #endregion 生成配置信息
 
     #region 生成选项
 
@@ -546,7 +545,7 @@ public class HbtGenTableDefineImportDto
     /// </summary>
     public string? Options { get; set; }
 
-    #endregion
+    #endregion 生成选项
 
     /// <summary>
     /// 字段定义列表
@@ -598,7 +597,7 @@ public class HbtGenTableDefineExportDto
     /// </summary>
     public string TableComment { get; set; }
 
-    #endregion
+    #endregion 基本信息
 
     #region 类型信息
 
@@ -622,7 +621,7 @@ public class HbtGenTableDefineExportDto
     /// </summary>
     public string CsharpTypeName { get; set; }
 
-    #endregion
+    #endregion 类型信息
 
     #region 关联信息
 
@@ -636,7 +635,7 @@ public class HbtGenTableDefineExportDto
     /// </summary>
     public string? ParentTableFkName { get; set; }
 
-    #endregion
+    #endregion 关联信息
 
     #region 生成配置信息
 
@@ -665,7 +664,7 @@ public class HbtGenTableDefineExportDto
     /// </summary>
     public string Author { get; set; }
 
-    #endregion
+    #endregion 生成配置信息
 
     #region 生成选项
 
@@ -684,7 +683,7 @@ public class HbtGenTableDefineExportDto
     /// </summary>
     public string? Options { get; set; }
 
-    #endregion
+    #endregion 生成选项
 
     #region 系统信息
 
@@ -708,7 +707,7 @@ public class HbtGenTableDefineExportDto
     /// </summary>
     public string UpdateBy { get; set; }
 
-    #endregion
+    #endregion 系统信息
 
     /// <summary>
     /// 字段定义列表
@@ -760,7 +759,7 @@ public class HbtGenTableDefineTemplateDto
     /// </summary>
     public string TableComment { get; set; }
 
-    #endregion
+    #endregion 基本信息
 
     #region 类型信息
 
@@ -784,7 +783,7 @@ public class HbtGenTableDefineTemplateDto
     /// </summary>
     public string CsharpTypeName { get; set; }
 
-    #endregion
+    #endregion 类型信息
 
     #region 关联信息
 
@@ -798,7 +797,7 @@ public class HbtGenTableDefineTemplateDto
     /// </summary>
     public string? ParentTableFkName { get; set; }
 
-    #endregion
+    #endregion 关联信息
 
     #region 生成配置信息
 
@@ -827,7 +826,7 @@ public class HbtGenTableDefineTemplateDto
     /// </summary>
     public string Author { get; set; }
 
-    #endregion
+    #endregion 生成配置信息
 
     #region 生成选项
 
@@ -846,7 +845,7 @@ public class HbtGenTableDefineTemplateDto
     /// </summary>
     public string? Options { get; set; }
 
-    #endregion
+    #endregion 生成选项
 
     /// <summary>
     /// 字段定义列表

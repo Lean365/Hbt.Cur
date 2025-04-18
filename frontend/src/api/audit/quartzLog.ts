@@ -18,7 +18,7 @@ import type { HbtQuartzLogDto, HbtQuartzLogQueryDto } from '@/types/audit/quartz
  */
 export function getQuartzLogs(query: HbtQuartzLogQueryDto) {
   return request<HbtApiResponse<HbtPagedResult<HbtQuartzLogDto>>>({
-    url: '/api/HbtQuartzLog',
+    url: '/api/HbtQuartzTask/list',
     method: 'get',
     params: query
   })
@@ -31,7 +31,7 @@ export function getQuartzLogs(query: HbtQuartzLogQueryDto) {
  */
 export function getQuartzLog(logId: number) {
   return request<HbtApiResponse<HbtQuartzLogDto>>({
-    url: `/api/HbtQuartzLog/${logId}`,
+    url: `/api/HbtQuartzTask/${logId}`,
     method: 'get'
   })
 }
@@ -44,7 +44,7 @@ export function getQuartzLog(logId: number) {
  */
 export function exportQuartzLogs(query: HbtQuartzLogQueryDto, sheetName: string = '任务日志') {
   return request({
-    url: '/api/HbtQuartzLog/export',
+    url: '/api/HbtQuartzTask/export',
     method: 'get',
     params: { ...query, sheetName },
     responseType: 'blob'
@@ -57,7 +57,7 @@ export function exportQuartzLogs(query: HbtQuartzLogQueryDto, sheetName: string 
  */
 export function clearQuartzLogs() {
   return request<HbtApiResponse<boolean>>({
-    url: '/api/HbtQuartzLog/clear',
+    url: '/api/HbtQuartzTask/clear',
     method: 'delete'
   })
 } 

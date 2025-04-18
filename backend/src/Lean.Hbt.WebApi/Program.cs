@@ -133,6 +133,16 @@ try
         options.EnableEndpointRouting = true;
     });
 
+    // 添加 Antiforgery 服务
+    builder.Services.AddAntiforgery(options =>
+    {
+        options.HeaderName = "X-CSRF-Token";
+        options.Cookie.Name = "XSRF-TOKEN";
+        options.Cookie.HttpOnly = false;
+        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+        options.Cookie.SameSite = SameSiteMode.Lax;
+    });
+
     // 添加 HttpClient 服务
     builder.Services.AddHttpClient();
 
@@ -230,45 +240,7 @@ try
     builder.Services.AddHttpContextAccessor();
 
     // 注册种子数据服务
-    builder.Services.AddScoped<HbtDbSeedTenant>();
-    builder.Services.AddScoped<HbtDbSeedRole>();
-    builder.Services.AddScoped<HbtDbSeedUser>();
-    builder.Services.AddScoped<HbtDbSeedMenu>();
-    builder.Services.AddScoped<HbtDbSeedLanguage>();
-    builder.Services.AddScoped<HbtDbSeedDept>();
-    builder.Services.AddScoped<HbtDbSeedPost>();
-    builder.Services.AddScoped<HbtDbSeedRelation>();
-    builder.Services.AddScoped<HbtDbSeedConfig>();
-    builder.Services.AddScoped<HbtDbSeedDictType>();
-    builder.Services.AddScoped<HbtDbSeedDictData>();
-    builder.Services.AddScoped<HbtDbSeedTranslation>();
-    builder.Services.AddScoped<HbtDbSeedOADictType>();
-    builder.Services.AddScoped<HbtDbSeedOADictData>();
-    builder.Services.AddScoped<HbtDbSeedCsDictType>();
-    builder.Services.AddScoped<HbtDbSeedCsDictData>();
-    builder.Services.AddScoped<HbtDbSeedEquipmentDictType>();
-    builder.Services.AddScoped<HbtDbSeedEquipmentDictData>();
-    builder.Services.AddScoped<HbtDbSeedFinanceDictType>();
-    builder.Services.AddScoped<HbtDbSeedFinanceDictData>();
-    builder.Services.AddScoped<HbtDbSeedHrDictType>();
-    builder.Services.AddScoped<HbtDbSeedHrDictData>();
-    builder.Services.AddScoped<HbtDbSeedIndDictType>();
-    builder.Services.AddScoped<HbtDbSeedIndDictData>();
-    builder.Services.AddScoped<HbtDbSeedMaterialDictType>();
-    builder.Services.AddScoped<HbtDbSeedMaterialDictData>();
-    builder.Services.AddScoped<HbtDbSeedNatureDictType>();
-    builder.Services.AddScoped<HbtDbSeedNatureDictData>();
-    builder.Services.AddScoped<HbtDbSeedProductionDictType>();
-    builder.Services.AddScoped<HbtDbSeedProductionDictData>();
-    builder.Services.AddScoped<HbtDbSeedPurchaseDictType>();
-    builder.Services.AddScoped<HbtDbSeedPurchaseDictData>();
-    builder.Services.AddScoped<HbtDbSeedQualityDictType>();
-    builder.Services.AddScoped<HbtDbSeedQualityDictData>();
-    builder.Services.AddScoped<HbtDbSeedSalesDictType>();
-    builder.Services.AddScoped<HbtDbSeedSalesDictData>();
-    builder.Services.AddScoped<HbtDbSeedUnDictType>();
-    builder.Services.AddScoped<HbtDbSeedUnDictData>();
-    builder.Services.AddScoped<HbtDbSeed>();
+    builder.Services.AddHbtSeeds();
 
     // 添加后台服务
     builder.Services.AddHostedService<HbtLoginPolicyInitializer>();
@@ -416,7 +388,8 @@ try
     logger.Info("静态文件中间件已启用");
 
     // 6. CSRF防护中间件（防止跨站请求伪造攻击）
-    app.UseHbtCsrf();
+     app.UseHbtCsrf();
+    logger.Info("CSRF防护已启用");
 
     // 7. HTTPS重定向中间件（如果启用HTTPS）
     if (serverConfig.UseHttps)

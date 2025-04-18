@@ -11,7 +11,7 @@ import type {
 // 获取登录扩展列表
 export function getLoginExtendList(params: LoginExtendQuery) {
   return request<HbtApiResponse<LoginExtend[]>>({
-    url: '/api/login-extend',
+    url: '/api/login-extend/list',
     method: 'get',
     params
   })

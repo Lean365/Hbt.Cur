@@ -42,7 +42,7 @@ namespace Lean.Hbt.WebApi.Controllers.Audit
         /// </summary>
         /// <param name="query">查询条件</param>
         /// <returns>异常日志分页列表</returns>
-        [HttpGet]
+        [HttpGet("list")]
         [HbtPerm("audit:exceptionlog:list")]
         public async Task<IActionResult> GetListAsync([FromQuery] HbtExceptionLogQueryDto query)
         {

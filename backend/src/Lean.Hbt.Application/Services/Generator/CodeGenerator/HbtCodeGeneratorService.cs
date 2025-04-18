@@ -21,6 +21,17 @@ public class HbtCodeGeneratorService : IHbtCodeGeneratorService
     private readonly IHbtRepository<HbtGenColumn> _columnRepository;
     private readonly IHbtCurrentUser _currentUser;
 
+    /// <summary>
+    /// 构造函数
+    /// </summary>
+    /// <param name="templateEngine"> 模板引擎</param>
+    /// <param name="logger"> 日志</param>
+    /// <param name="db"> 数据库连接</param>
+    /// <param name="configuration"> 配置</param>
+    /// <param name="webHostEnvironment"> WebHost环境</param>
+    /// <param name="tableRepository"> 表信息仓储</param>
+    /// <param name="columnRepository">  字段信息仓储</param>
+    /// <param name="currentUser"> 当前用户</param>
     public HbtCodeGeneratorService(
         IHbtTemplateEngine templateEngine,
         IHbtLogger logger,

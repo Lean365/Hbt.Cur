@@ -11,7 +11,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Text.Json;
 using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Common.Models;
-using Lean.Hbt.Domain.Entities.RealTime;
+using Lean.Hbt.Domain.Entities.SignalR;
 using Lean.Hbt.Domain.IServices.Security;
 using Lean.Hbt.Domain.IServices.SignalR;
 using Microsoft.AspNetCore.SignalR;

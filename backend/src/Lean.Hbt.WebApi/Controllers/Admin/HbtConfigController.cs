@@ -22,7 +22,7 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
     /// </remarks>
     [Route("api/[controller]", Name = "系统配置")]
     [ApiController]
-    [ApiModule("admin", "系统管理")]
+    [ApiModule("Hbt365", "系统管理")]
     public class HbtConfigController : HbtBaseController
     {
         private readonly IHbtConfigService _configService;
@@ -42,7 +42,7 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
         /// </summary>
         /// <param name="query">查询条件</param>
         /// <returns>系统配置分页列表</returns>
-        [HttpGet]
+        [HttpGet("list")]
         [HbtPerm("admin:config:list")]
         public async Task<IActionResult> GetPagedListAsync([FromQuery] HbtConfigQueryDto query)
         {

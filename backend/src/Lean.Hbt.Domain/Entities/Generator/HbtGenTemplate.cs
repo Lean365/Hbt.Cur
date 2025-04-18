@@ -9,9 +9,8 @@
 // 描述   : 代码生成模板实体
 //===================================================================
 
-using SqlSugar;
 using Lean.Hbt.Domain.Entities.Identity;
-using System.ComponentModel.DataAnnotations;
+using SqlSugar;
 
 namespace Lean.Hbt.Domain.Entities.Generator;
 
@@ -40,13 +39,6 @@ public class HbtGenTemplate : HbtBaseEntity
     public int TemplateType { get; set; } = 1;
 
     /// <summary>
-    /// 模板内容
-    /// </summary>
-    [SugarColumn(ColumnName = "template_content", ColumnDescription = "模板内容", Length = -1, ColumnDataType = "nvarchar", IsNullable = false, DefaultValue = "")]
-    [Required(ErrorMessage = "模板内容不能为空")]
-    public string TemplateContent { get; set; } = string.Empty;
-
-    /// <summary>
     /// 模板分类
     /// </summary>
     [SugarColumn(ColumnName = "template_category", ColumnDescription = "模板分类", ColumnDataType = "int", IsNullable = false, DefaultValue = "1")]
@@ -66,8 +58,15 @@ public class HbtGenTemplate : HbtBaseEntity
     [SugarColumn(ColumnName = "template_version", ColumnDescription = "版本号", ColumnDataType = "int", IsNullable = false, DefaultValue = "1")]
     [Required(ErrorMessage = "版本号不能为空")]
     public int TemplateVersion { get; set; } = 1;
- 
-    #endregion
+
+    /// <summary>
+    /// 模板内容
+    /// </summary>
+    [SugarColumn(ColumnName = "template_content", ColumnDescription = "模板内容", Length = -1, ColumnDataType = "nvarchar", IsNullable = false, DefaultValue = "")]
+    [Required(ErrorMessage = "模板内容不能为空")]
+    public string TemplateContent { get; set; } = string.Empty;
+
+    #endregion 基本信息
 
     #region 生成配置
 
@@ -87,7 +86,7 @@ public class HbtGenTemplate : HbtBaseEntity
     [StringLength(100, ErrorMessage = "文件名长度不能超过100个字符")]
     public string FileName { get; set; } = string.Empty;
 
-    #endregion
+    #endregion 生成配置
 
     #region 状态信息
 
@@ -97,7 +96,7 @@ public class HbtGenTemplate : HbtBaseEntity
     [SugarColumn(ColumnName = "status", ColumnDescription = "状态", ColumnDataType = "int", IsNullable = false, DefaultValue = "1")]
     public int Status { get; set; } = 1;
 
-    #endregion
+    #endregion 状态信息
 
     #region 系统信息
 
@@ -113,5 +112,5 @@ public class HbtGenTemplate : HbtBaseEntity
     [Navigate(NavigateType.OneToOne, nameof(TenantId))]
     public HbtTenant? Tenant { get; set; }
 
-    #endregion
-} 
+    #endregion 系统信息
+}

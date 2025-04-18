@@ -7,7 +7,7 @@ import { useUserStore } from '@/stores/user'
 // 获取用户分页列表
 export function getPagedList(query: UserQuery) {
   return request<HbtApiResponse<HbtPagedResult<User>>>({
-    url: '/api/HbtUser',
+    url: '/api/HbtUser/list',
     method: 'get',
     params: query
   })

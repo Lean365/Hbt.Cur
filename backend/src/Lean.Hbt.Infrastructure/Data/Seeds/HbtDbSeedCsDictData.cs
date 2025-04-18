@@ -107,7 +107,7 @@ public class HbtDbSeedCsDictData
 
         foreach (var dictData in customerServiceDictData)
         {
-            var existingDictData = await _dictDataRepository.GetInfoAsync(x => x.DictType == dictData.DictType && x.DictValue == dictData.DictValue);
+            var existingDictData = await _dictDataRepository.GetFirstAsync(x => x.DictType == dictData.DictType && x.DictValue == dictData.DictValue);
             if (existingDictData == null)
             {
                 await _dictDataRepository.CreateAsync(dictData);
@@ -171,7 +171,7 @@ public class HbtDbSeedCsDictData
 
         foreach (var dictData in dictDataList)
         {
-            var existingDictData = await _dictDataRepository.GetInfoAsync(x => x.DictType == dictData.DictType && x.DictValue == dictData.DictValue);
+            var existingDictData = await _dictDataRepository.GetFirstAsync(x => x.DictType == dictData.DictType && x.DictValue == dictData.DictValue);
             if (existingDictData == null)
             {
                 await _dictDataRepository.CreateAsync(dictData);

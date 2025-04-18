@@ -19,7 +19,7 @@
       <template #buttons>
         <a-space>
           <a-button
-            v-if="checkPermission('{{ table.module_name }}:{{ table.name }}:add')"
+            v-if="checkPermission('{{ table.module_name }}:{{ table.name }}:create')"
             type="primary"
             @click="handleAdd"
           >
@@ -81,7 +81,7 @@
       <template #action="{ record }">
         <a-space>
           <a
-            v-if="checkPermission('{{ table.module_name }}:{{ table.name }}:edit')"
+            v-if="checkPermission('{{ table.module_name }}:{{ table.name }}:update')"
             @click="handleEdit(record)"
           >
             {{ t('{{ table.module_name }}.{{ table.name }}.button.edit') }}
@@ -101,7 +101,7 @@
           {{~ if has_status_column table ~}}
           <a-divider type="vertical" />
           <a-switch
-            v-if="checkPermission('{{ table.module_name }}:{{ table.name }}:edit')"
+            v-if="checkPermission('{{ table.module_name }}:{{ table.name }}:update')"
             :checked="record.status === 0"
             :loading="record.statusLoading"
             @change="(checked: boolean) => handleStatusChange(record, checked)"

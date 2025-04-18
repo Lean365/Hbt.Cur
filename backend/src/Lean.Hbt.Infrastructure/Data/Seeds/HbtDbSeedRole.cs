@@ -47,26 +47,26 @@ public class HbtDbSeedRole
             new HbtRole
             {
                 Id = nextId++,
-                RoleKey = "ADMIN",
+                RoleKey = "system_admin",
                 RoleName = "系统管理员",
                 OrderNum = 1,
                 Status = 0,
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now,
                 Remark = "System Administrator;システム管理者"
             },
             new HbtRole
             {
                 Id = nextId++,
-                RoleKey = "SECURITY_ADMIN",
+                RoleKey = "security_admin",
                 RoleName = "安全管理员",
                 OrderNum = 2,
                 Status = 0,
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now,
                 Remark = "Security Administrator;セキュリティ管理者"
             },
@@ -75,39 +75,39 @@ public class HbtDbSeedRole
             new HbtRole
             {
                 Id = nextId++,
-                RoleKey = "BIZ_MANAGER",
+                RoleKey = "biz_manager",
                 RoleName = "业务管理员",
                 OrderNum = 3,
                 Status = 0,
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now,
                 Remark = "Business Manager;業務管理者"
             },
             new HbtRole
             {
                 Id = nextId++,
-                RoleKey = "HR_MANAGER",
+                RoleKey = "hr_manager",
                 RoleName = "人事管理员",
                 OrderNum = 4,
                 Status = 0,
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now,
                 Remark = "HR Manager;人事管理者"
             },
             new HbtRole
             {
                 Id = nextId++,
-                RoleKey = "FIN_MANAGER",
+                RoleKey = "fin_manager",
                 RoleName = "财务管理员",
                 OrderNum = 5,
                 Status = 0,
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now,
                 Remark = "Finance Manager;財務管理者"
             },
@@ -116,26 +116,26 @@ public class HbtDbSeedRole
             new HbtRole
             {
                 Id = nextId++,
-                RoleKey = "PROD_MANAGER",
+                RoleKey = "prod_manager",
                 RoleName = "生产管理员",
                 OrderNum = 6,
                 Status = 0,
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now,
                 Remark = "Production Manager;生産管理者"
             },
             new HbtRole
             {
                 Id = nextId++,
-                RoleKey = "QC_MANAGER",
+                RoleKey = "qc_manager",
                 RoleName = "品质管理员",
                 OrderNum = 7,
                 Status = 0,
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now,
                 Remark = "Quality Control Manager;品質管理者"
             },
@@ -144,26 +144,26 @@ public class HbtDbSeedRole
             new HbtRole
             {
                 Id = nextId++,
-                RoleKey = "WH_MANAGER",
+                RoleKey = "wh_manager",
                 RoleName = "仓库管理员",
                 OrderNum = 8,
                 Status = 0,
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now,
                 Remark = "Warehouse Manager;倉庫管理者"
             },
             new HbtRole
             {
                 Id = nextId++,
-                RoleKey = "INV_MANAGER",
+                RoleKey = "inv_manager",
                 RoleName = "库存管理员",
                 OrderNum = 9,
                 Status = 0,
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now,
                 Remark = "Inventory Manager;在庫管理者"
             },
@@ -172,26 +172,26 @@ public class HbtDbSeedRole
             new HbtRole
             {
                 Id = nextId++,
-                RoleKey = "PURCHASE_MANAGER",
+                RoleKey = "purchase_manager",
                 RoleName = "采购管理员",
                 OrderNum = 10,
                 Status = 0,
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now,
                 Remark = "Purchase Manager;購買管理者"
             },
             new HbtRole
             {
                 Id = nextId++,
-                RoleKey = "SUPPLIER_MANAGER",
+                RoleKey = "supplier_manager",
                 RoleName = "供应商管理员",
                 OrderNum = 11,
                 Status = 0,
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now,
                 Remark = "Supplier Manager;仕入先管理者"
             },
@@ -200,26 +200,26 @@ public class HbtDbSeedRole
             new HbtRole
             {
                 Id = nextId++,
-                RoleKey = "SALES_MANAGER",
+                RoleKey = "sales_manager",
                 RoleName = "销售管理员",
                 OrderNum = 12,
                 Status = 0,
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now,
                 Remark = "Sales Manager;営業管理者"
             },
             new HbtRole
             {
                 Id = nextId++,
-                RoleKey = "CUSTOMER_MANAGER",
+                RoleKey = "customer_manager",
                 RoleName = "客户管理员",
                 OrderNum = 13,
                 Status = 0,
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now,
                 Remark = "Customer Manager;顧客管理者"
             },
@@ -228,26 +228,26 @@ public class HbtDbSeedRole
             new HbtRole
             {
                 Id = nextId++,
-                RoleKey = "MASTER_MANAGER",
+                RoleKey = "master_manager",
                 RoleName = "主数据管理员",
                 OrderNum = 14,
                 Status = 0,
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now,
                 Remark = "Master Data Manager;マスタ管理者"
             },
             new HbtRole
             {
                 Id = nextId++,
-                RoleKey = "CODE_MANAGER",
+                RoleKey = "code_manager",
                 RoleName = "编码管理员",
                 OrderNum = 15,
                 Status = 0,
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now,
                 Remark = "Code Manager;コード管理者"
             },
@@ -256,26 +256,26 @@ public class HbtDbSeedRole
             new HbtRole
             {
                 Id = nextId++,
-                RoleKey = "GENERAL_USER",
+                RoleKey = "general_user",
                 RoleName = "一般用户",
                 OrderNum = 16,
                 Status = 0,
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now,
                 Remark = "General User;一般ユーザー"
             },
             new HbtRole
             {
                 Id = nextId++,
-                RoleKey = "GUEST",
+                RoleKey = "guest",
                 RoleName = "访客",
                 OrderNum = 17,
                 Status = 0,
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now,
                 Remark = "Guest User;ゲストユーザー"
             }
@@ -283,7 +283,7 @@ public class HbtDbSeedRole
 
         foreach (var role in defaultRoles)
         {
-            var existingRole = await _roleRepository.GetInfoAsync(r => r.RoleKey == role.RoleKey);
+            var existingRole = await _roleRepository.GetFirstAsync(r => r.RoleKey == role.RoleKey);
             if (existingRole == null)
             {
                 await _roleRepository.CreateAsync(role);
@@ -296,7 +296,7 @@ public class HbtDbSeedRole
                 existingRole.OrderNum = role.OrderNum;
                 existingRole.Status = role.Status;
                 existingRole.Remark = role.Remark;
-                existingRole.UpdateBy = "system";
+                existingRole.UpdateBy = "Hbt365";
                 existingRole.UpdateTime = DateTime.Now;
 
                 await _roleRepository.UpdateAsync(existingRole);

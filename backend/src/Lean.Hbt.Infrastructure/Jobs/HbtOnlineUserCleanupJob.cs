@@ -7,7 +7,7 @@
 // 描述    : 在线用户清理任务
 //===================================================================
 
-using Lean.Hbt.Domain.Entities.RealTime;
+using Lean.Hbt.Domain.Entities.SignalR;
 using Lean.Hbt.Domain.Repositories;
 using Microsoft.Extensions.Logging;
 using Quartz;

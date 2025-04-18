@@ -23,7 +23,7 @@ import type {
  */
 export function getHbtConfigList(query: HbtConfigQuery) {
   return request<HbtApiResponse<HbtPagedResult<HbtConfig>>>({
-    url: '/api/HbtConfig',
+    url: '/api/HbtConfig/list',
     method: 'get',
     params: query
   })

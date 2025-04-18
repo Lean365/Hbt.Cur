@@ -18,7 +18,7 @@ import type { HbtOperLogDto, HbtOperLogQueryDto } from '@/types/audit/operLog'
  */
 export function getOperLogs(query: HbtOperLogQueryDto) {
   return request<HbtApiResponse<HbtPagedResult<HbtOperLogDto>>>({
-    url: '/api/HbtOperLog',
+    url: '/api/HbtOperLog/list',
     method: 'get',
     params: query
   })

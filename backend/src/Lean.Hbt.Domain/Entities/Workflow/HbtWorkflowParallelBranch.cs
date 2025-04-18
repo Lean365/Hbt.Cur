@@ -9,7 +9,6 @@
 // 描述    : 工作流并行分支状态实体
 //===================================================================
 
-using System;
 using SqlSugar;
 
 namespace Lean.Hbt.Domain.Entities.Workflow
@@ -54,18 +53,18 @@ namespace Lean.Hbt.Domain.Entities.Workflow
         /// 工作流实例
         /// </summary>
         [Navigate(NavigateType.OneToOne, nameof(WorkflowInstanceId))]
-        public HbtWorkflowInstance WorkflowInstance { get; set; }
+        public HbtWorkflowInstance? WorkflowInstance { get; set; }
 
         /// <summary>
         /// 并行节点
         /// </summary>
         [Navigate(NavigateType.OneToOne, nameof(ParallelNodeId))]
-        public HbtWorkflowNode ParallelNode { get; set; }
+        public HbtWorkflowNode? ParallelNode { get; set; }
 
         /// <summary>
         /// 分支转换
         /// </summary>
         [Navigate(NavigateType.OneToOne, nameof(BranchTransitionId))]
-        public HbtWorkflowTransition BranchTransition { get; set; }
+        public HbtWorkflowTransition? BranchTransition { get; set; }
     }
-} 
+}

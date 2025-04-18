@@ -10,7 +10,7 @@
 using Lean.Hbt.Application.Services.Admin;
 using Lean.Hbt.Application.Services.Audit;
 using Lean.Hbt.Application.Services.Identity;
-using Lean.Hbt.Application.Services.RealTime;
+using Lean.Hbt.Application.Services.SignalR;
 using Lean.Hbt.Application.Services.Routine;
 using Lean.Hbt.Common.Options;
 using Lean.Hbt.Domain.Data;
@@ -262,7 +262,7 @@ namespace Lean.Hbt.Infrastructure.Extensions
         private static IServiceCollection AddRoutineServices(this IServiceCollection services)
         {
             // 任务相关服务
-            services.AddScoped<IHbtQuartzTaskService, HbtQuartzTaskService>();  // 定时任务服务
+            services.AddScoped<IHbtQuartzService, HbtQuartzService>();  // 定时任务服务
             services.AddScoped<IHbtQuartzLogService, HbtQuartzLogService>();    // 任务日志服务
 
             // 邮件相关服务

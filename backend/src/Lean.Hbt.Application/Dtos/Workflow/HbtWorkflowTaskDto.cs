@@ -42,12 +42,12 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 处理人名称
         /// </summary>
-        public string AssigneeName { get; set; }
+        public string? AssigneeName { get; set; }
 
         /// <summary>
         /// 可用操作列表
         /// </summary>
-        public List<string> AvailableOperations { get; set; }
+        public List<string>? AvailableOperations { get; set; }
 
         /// <summary>
         /// 状态描述
@@ -89,7 +89,7 @@ namespace Lean.Hbt.Application.Dtos.Workflow
             TaskResult = 0;
             Comment = string.Empty;
             Remark = string.Empty;
-            Creator = string.Empty;
+            CreateBy = string.Empty;
             CreateTime = DateTime.Now;
             UpdateBy = string.Empty;
             UpdateTime = null;
@@ -144,12 +144,12 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 备注
         /// </summary>
-        public string Remark { get; set; }
+        public string? Remark { get; set; }
 
         /// <summary>
         /// 创建者
         /// </summary>
-        public string Creator { get; set; }
+        public string? CreateBy { get; set; }
 
         /// <summary>
         /// 创建时间
@@ -244,7 +244,7 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 备注
         /// </summary>
-        public string Remark { get; set; }
+        public string? Remark { get; set; }
     }
 
     /// <summary>
@@ -275,12 +275,12 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 处理意见
         /// </summary>
-        public string Comment { get; set; }
+        public string? Comment { get; set; }
 
         /// <summary>
         /// 备注
         /// </summary>
-        public string Remark { get; set; }
+        public string? Remark { get; set; }
     }
 
     /// <summary>
@@ -315,7 +315,7 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 备注
         /// </summary>
-        public string Remark { get; set; }
+        public string? Remark { get; set; }
     }
 
     /// <summary>
@@ -345,22 +345,22 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 处理结果
         /// </summary>
-        public string Result { get; set; }
+        public string? Result { get; set; }
 
         /// <summary>
         /// 处理意见
         /// </summary>
-        public string Comment { get; set; }
+        public string? Comment { get; set; }
 
         /// <summary>
         /// 备注
         /// </summary>
-        public string Remark { get; set; }
+        public string? Remark { get; set; }
 
         /// <summary>
         /// 创建者
         /// </summary>
-        public string Creator { get; set; }
+        public string? CreateBy { get; set; }
 
         /// <summary>
         /// 创建时间
@@ -385,7 +385,7 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 备注
         /// </summary>
-        public string Remark { get; set; }
+        public string? Remark { get; set; }
     }
 
     /// <summary>
@@ -406,11 +406,11 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 处理结果
         /// </summary>
-        public string Result { get; set; }
+        public string? Result { get; set; }
 
         /// <summary>
         /// 处理意见
         /// </summary>
-        public string Comment { get; set; }
+        public string? Comment { get; set; }
     }
 }

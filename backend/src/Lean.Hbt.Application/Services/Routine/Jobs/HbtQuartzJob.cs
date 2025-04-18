@@ -28,7 +28,7 @@ namespace Lean.Hbt.Application.Services.Routine.Jobs
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly ILogger<HbtQuartzJob> _logger;
-        private readonly IHbtRepository<HbtQuartzTask> _taskRepository;
+        private readonly IHbtRepository<HbtQuartz> _taskRepository;
         private readonly IHbtRepository<HbtQuartzLog> _logRepository;
         private readonly HttpClient _httpClient;
 
@@ -38,7 +38,7 @@ namespace Lean.Hbt.Application.Services.Routine.Jobs
         public HbtQuartzJob(
             IServiceProvider serviceProvider,
             ILogger<HbtQuartzJob> logger,
-            IHbtRepository<HbtQuartzTask> taskRepository,
+            IHbtRepository<HbtQuartz> taskRepository,
             IHbtRepository<HbtQuartzLog> logRepository,
             IHttpClientFactory httpClientFactory)
         {
@@ -125,7 +125,7 @@ namespace Lean.Hbt.Application.Services.Routine.Jobs
         /// <summary>
         /// 执行程序集
         /// </summary>
-        private async Task ExecuteAssemblyAsync(HbtQuartzTask task)
+        private async Task ExecuteAssemblyAsync(HbtQuartz task)
         {
             if (string.IsNullOrEmpty(task.TaskAssemblyName) || string.IsNullOrEmpty(task.TaskClassName))
                 throw new HbtException("程序集名称或类名为空");
@@ -160,7 +160,7 @@ namespace Lean.Hbt.Application.Services.Routine.Jobs
         /// <summary>
         /// 执行HTTP请求
         /// </summary>
-        private async Task ExecuteHttpRequestAsync(HbtQuartzTask task)
+        private async Task ExecuteHttpRequestAsync(HbtQuartz task)
         {
             if (string.IsNullOrEmpty(task.TaskApiUrl))
                 throw new HbtException("API地址为空");
@@ -197,7 +197,7 @@ namespace Lean.Hbt.Application.Services.Routine.Jobs
         /// <summary>
         /// 执行SQL语句
         /// </summary>
-        private async Task ExecuteSqlAsync(HbtQuartzTask task)
+        private async Task ExecuteSqlAsync(HbtQuartz task)
         {
             if (string.IsNullOrEmpty(task.TaskSql))
                 throw new HbtException("SQL语句为空");

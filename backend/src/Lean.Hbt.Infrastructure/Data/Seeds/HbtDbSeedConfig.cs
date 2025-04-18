@@ -127,7 +127,7 @@ public class HbtDbSeedConfig
 
         foreach (var config in defaultConfigs)
         {
-            var existingConfig = await _configRepository.GetInfoAsync(c => c.ConfigKey == config.ConfigKey);
+            var existingConfig = await _configRepository.GetFirstAsync(c => c.ConfigKey == config.ConfigKey);
             if (existingConfig == null)
             {
                 await _configRepository.CreateAsync(config);

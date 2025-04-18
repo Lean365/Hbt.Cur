@@ -32,7 +32,7 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
     /// </remarks>
     [Route("api/[controller]", Name = "语言")]
     [ApiController]
-    [ApiModule("admin", "系统管理")]
+    [ApiModule("Hbt365", "系统管理")]
   
     public class HbtLanguageController : HbtBaseController
     {
@@ -67,7 +67,7 @@ namespace Lean.Hbt.WebApi.Controllers.Admin
         /// </remarks>
         /// <param name="query">查询条件</param>
         /// <returns>语言分页列表</returns>
-        [HttpGet]
+        [HttpGet("list")]
         [HbtPerm("admin:language:list")]
         public async Task<IActionResult> GetListAsync([FromQuery] HbtLanguageQueryDto query)
         {

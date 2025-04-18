@@ -101,7 +101,7 @@ public class HbtDbSeedOADictData
 
         foreach (var dictData in oaDictData)
         {
-            var existingDictData = await _dictDataRepository.GetInfoAsync(x => x.DictType == dictData.DictType && x.DictValue == dictData.DictValue);
+            var existingDictData = await _dictDataRepository.GetFirstAsync(x => x.DictType == dictData.DictType && x.DictValue == dictData.DictValue);
             if (existingDictData == null)
             {
                 await _dictDataRepository.CreateAsync(dictData);

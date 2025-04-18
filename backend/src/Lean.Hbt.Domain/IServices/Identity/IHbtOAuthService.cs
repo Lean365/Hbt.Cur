@@ -1,5 +1,3 @@
-using System.Threading.Tasks;
-
 namespace Lean.Hbt.Domain.IServices.Identity
 {
     /// <summary>
@@ -33,31 +31,31 @@ namespace Lean.Hbt.Domain.IServices.Identity
         /// <summary>
         /// 提供商
         /// </summary>
-        public string Provider { get; set; }
+        public string? Provider { get; set; }
 
         /// <summary>
         /// 唯一标识
         /// </summary>
-        public string OpenId { get; set; }
+        public string? OpenId { get; set; }
 
         /// <summary>
         /// 用户名
         /// </summary>
-        public string UserName { get; set; }
+        public string? UserName { get; set; }
 
         /// <summary>
         /// 昵称
         /// </summary>
-        public string NickName { get; set; }
+        public string? NickName { get; set; }
 
         /// <summary>
         /// 邮箱
         /// </summary>
-        public string Email { get; set; }
+        public string? Email { get; set; }
 
         /// <summary>
         /// 头像
         /// </summary>
-        public string Avatar { get; set; }
+        public string? Avatar { get; set; }
     }
 }

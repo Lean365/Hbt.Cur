@@ -13,7 +13,7 @@ import type {
  */
 export function getPagedList(params: PostQuery) {
   return request<HbtApiResponse<HbtPagedResult<Post>>>({
-    url: '/api/HbtPost',
+    url: '/api/HbtPost/list',
     method: 'get',
     params
   })

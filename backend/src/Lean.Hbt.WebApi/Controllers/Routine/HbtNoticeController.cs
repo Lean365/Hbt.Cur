@@ -70,7 +70,7 @@ namespace Lean.Hbt.WebApi.Controllers.Routine
         /// <param name="input">创建对象</param>
         /// <returns>通知ID</returns>
         [HttpPost]
-        [HbtPerm("routine:notice:add")]
+        [HbtPerm("routine:notice:create")]
         public async Task<long> CreateAsync([FromBody] HbtNoticeCreateDto input)
         {
             return await _noticeService.CreateAsync(input);
@@ -83,7 +83,7 @@ namespace Lean.Hbt.WebApi.Controllers.Routine
         /// <param name="input">更新对象</param>
         /// <returns>是否成功</returns>
         [HttpPut("{id}")]
-        [HbtPerm("routine:notice:edit")]
+        [HbtPerm("routine:notice:update")]
         public async Task<bool> UpdateAsync(long id, [FromBody] HbtNoticeDto input)
         {
             return await _noticeService.UpdateAsync(id, input);
