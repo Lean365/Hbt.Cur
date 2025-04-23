@@ -9,7 +9,6 @@
 
 using Lean.Hbt.Application.Dtos.SignalR;
 using Lean.Hbt.Application.Services.SignalR;
-using Lean.Hbt.Domain.IServices.Admin;
 
 namespace Lean.Hbt.WebApi.Controllers.SignalR
 {
@@ -32,7 +31,10 @@ namespace Lean.Hbt.WebApi.Controllers.SignalR
         /// </summary>
         /// <param name="onlineMessageService">在线消息服务</param>
         /// <param name="localization">本地化服务</param>
-        public HbtOnlineMessageController(IHbtOnlineMessageService onlineMessageService, IHbtLocalizationService localization) : base(localization)
+        /// <param name="logger">日志服务</param>
+        public HbtOnlineMessageController(IHbtOnlineMessageService onlineMessageService,
+                                    IHbtLocalizationService localization,
+            IHbtLogger logger) : base(localization, logger)
         {
             _onlineMessageService = onlineMessageService;
         }

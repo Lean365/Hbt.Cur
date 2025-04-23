@@ -1,4 +1,4 @@
-import type { HbtBaseEntity, HbtPagedQuery, HbtPagedResult } from '@/types/common'
+import type { HbtBaseEntity, HbtPagedQuery, HbtPagedResult, HbtApiResponse } from '@/types/common'
 
 /**
  * 设备信息
@@ -65,7 +65,7 @@ export interface LoginParams {
   /** 密码 */
   password: string;
   /** 验证码Token */
-  captchaToken?: string;
+  captchaToken: string;
   /** 验证码偏移量 */
   captchaOffset: number;  // 对应C#的int
   /** IP地址 */
@@ -77,7 +77,7 @@ export interface LoginParams {
   /** 登录来源（0=Web 1=App 2=小程序 3=其他） */
   loginSource: number;  // 对应C#的int
   /** 设备信息 */
-  deviceInfo?: DeviceInfo;  // 对应C#的HbtSignalRDevice
+  deviceInfo: any;  // 对应C#的HbtSignalRDevice
 }
 
 /**
@@ -135,27 +135,49 @@ export interface HbtSignalRDevice {
 }
 
 /**
- * 用户信息
+ * 用户信息DTO
  */
 export interface UserInfo {
+  /** 用户ID */
   userId: number
+  /** 用户名 */
   userName: string
+  /** 昵称 */
   nickName: string
+  /** 英文名 */
   englishName: string
+  /** 用户类型 */
   userType: number
+  /** 租户ID */
   tenantId: number
+  /** 租户名称 */
   tenantName: string
+  /** 角色列表 */
   roles: string[]
+  /** 权限列表 */
   permissions: string[]
+  /** 头像 */
+  avatar?: string
+}
+
+/**
+ * 登录响应数据
+ */
+export interface LoginResultData {
+  /** 访问令牌 */
+  accessToken: string
+  /** 刷新令牌 */
+  refreshToken: string
+  /** 过期时间(秒) */
+  expiresIn: number
+  /** 用户信息 */
+  userInfo: UserInfo
 }
 
 /**
  * 登录响应
  */
-export interface LoginResult {
-  accessToken: string;
-  userInfo: UserInfoResponse;
-}
+export type LoginResult = HbtApiResponse<LoginResultData>
 
 /**
  * 盐值响应
@@ -230,9 +252,30 @@ export const SPECIAL_USERS = {
   ADMIN: 'admin'
 } as const
 
-export interface LoginCheckResult {
+/**
+ * 登录检查结果
+ */
+export interface LoginCheckResultData {
+  /** 是否存在会话 */
   existingSession: boolean
+  /** 设备信息 */
   deviceInfo?: string
+  /** 是否可以登录 */
   canLogin: boolean
+  /** 现有设备信息 */
   existingDeviceInfo?: string
 }
+
+/**
+ * 登录检查响应
+ */
+export interface LoginCheckResult {
+  /** 响应代码 */
+  code: number
+  /** 响应消息 */
+  msg: string
+  /** 响应数据 */
+  data: LoginCheckResultData
+}
+
+export { UserInfo, LoginResult, LoginParams }

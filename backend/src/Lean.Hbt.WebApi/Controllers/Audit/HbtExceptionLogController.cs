@@ -9,7 +9,6 @@
 
 using Lean.Hbt.Application.Dtos.Audit;
 using Lean.Hbt.Application.Services.Audit;
-using Lean.Hbt.Domain.IServices.Admin;
 
 namespace Lean.Hbt.WebApi.Controllers.Audit
 {
@@ -32,7 +31,10 @@ namespace Lean.Hbt.WebApi.Controllers.Audit
         /// </summary>
         /// <param name="exceptionLogService">异常日志服务</param>
         /// <param name="localization">本地化服务</param>
-        public HbtExceptionLogController(IHbtExceptionLogService exceptionLogService, IHbtLocalizationService localization) : base(localization)
+        /// <param name="logger">日志服务</param>
+        public HbtExceptionLogController(IHbtExceptionLogService exceptionLogService,
+            IHbtLocalizationService localization,
+            IHbtLogger logger) : base(localization, logger)
         {
             _exceptionLogService = exceptionLogService;
         }
@@ -74,8 +76,8 @@ namespace Lean.Hbt.WebApi.Controllers.Audit
         [ProducesResponseType(typeof(byte[]), StatusCodes.Status200OK)]
         public async Task<IActionResult> ExportAsync([FromQuery] HbtExceptionLogQueryDto query, [FromQuery] string sheetName = "异常日志数据")
         {
-            var result = await _exceptionLogService.ExportAsync(query, sheetName);
-            return File(result, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"异常日志_{DateTime.Now:yyyyMMddHHmmss}.xlsx");
+            var (_, content) = await _exceptionLogService.ExportAsync(query, sheetName);
+            return File(content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"异常日志_{DateTime.Now:yyyyMMddHHmmss}.xlsx");
         }
 
         /// <summary>

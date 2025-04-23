@@ -21,9 +21,8 @@ export default {
       _self: 'إدارة النظام',
       config: 'إعدادات النظام',
       language: 'إدارة اللغة',
-      dicttype: 'أنواع القاموس',
-      dictdata: 'بيانات القاموس',
-      translation: 'إدارة الترجمة'
+      dict: 'أنواع القاموس',
+
     },
     identity: {
       _self: 'إدارة الهوية',

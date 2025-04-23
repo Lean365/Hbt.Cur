@@ -35,7 +35,7 @@ public interface IHbtOnlineUserService
     /// <param name="query">查询条件</param>
     /// <param name="sheetName">工作表名称</param>
     /// <returns>Excel文件字节数组</returns>
-    Task<byte[]> ExportAsync(HbtOnlineUserQueryDto query, string sheetName = "在线用户信息");
+    Task<(string fileName, byte[] content)> ExportAsync(HbtOnlineUserQueryDto query, string sheetName = "在线用户信息");
 
     /// <summary>
     /// 获取用户连接ID列表

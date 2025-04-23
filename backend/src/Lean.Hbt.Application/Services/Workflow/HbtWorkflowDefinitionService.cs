@@ -13,7 +13,8 @@ using Lean.Hbt.Application.Dtos.Workflow;
 using Lean.Hbt.Common.Exceptions;
 using Lean.Hbt.Common.Helpers;
 using Lean.Hbt.Domain.Entities.Workflow;
-using Lean.Hbt.Domain.IServices.Admin;
+using Lean.Hbt.Domain.IServices.Extensions;
+using Lean.Hbt.Domain.IServices.Extensions;
 using Lean.Hbt.Domain.Repositories;
 using SqlSugar;
 
@@ -257,7 +258,7 @@ namespace Lean.Hbt.Application.Services.Workflow
         /// <summary>
         /// 导出工作流定义
         /// </summary>
-        public async Task<byte[]> ExportAsync(IEnumerable<HbtWorkflowDefinitionDto> data, string sheetName = "Sheet1")
+        public async Task<(string fileName, byte[] content)> ExportAsync(IEnumerable<HbtWorkflowDefinitionDto> data, string sheetName = "Sheet1")
         {
             try
             {
@@ -271,19 +272,13 @@ namespace Lean.Hbt.Application.Services.Workflow
         }
 
         /// <summary>
-        /// 获取工作流定义导入模板
+        /// 获取导入模板
         /// </summary>
-        public async Task<byte[]> GetTemplateAsync(string sheetName = "Sheet1")
+        /// <param name="sheetName">工作表名称</param>
+        /// <returns>Excel模板文件</returns>
+        public async Task<(string fileName, byte[] content)> GetTemplateAsync(string sheetName = "Sheet1")
         {
-            try
-            {
-                return await HbtExcelHelper.GenerateTemplateAsync<HbtWorkflowDefinitionImportDto>(sheetName);
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(_localization.L("WorkflowDefinition.Template.Failed"), ex);
-                throw new HbtException(_localization.L("WorkflowDefinition.Template.Failed"), ex);
-            }
+            return await HbtExcelHelper.GenerateTemplateAsync<HbtWorkflowDefinitionImportDto>(sheetName);
         }
 
         /// <summary>

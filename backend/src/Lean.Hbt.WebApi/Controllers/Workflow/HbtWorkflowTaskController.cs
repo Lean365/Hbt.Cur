@@ -1,5 +1,5 @@
 //===================================================================
-// 项目名 : Lean.Hbt 
+// 项目名 : Lean.Hbt
 // 文件名 : HbtWorkflowTaskController.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-23 12:00
@@ -7,15 +7,8 @@
 // 描述   : 工作流任务控制器
 //===================================================================
 
-using System;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http;
 using Lean.Hbt.Application.Dtos.Workflow;
 using Lean.Hbt.Application.Services.Workflow;
-using Lean.Hbt.Domain.IServices.Admin;
-using Lean.Hbt.Infrastructure.Security.Attributes;
-using Lean.Hbt.Infrastructure.Swagger;
 
 namespace Lean.Hbt.WebApi.Controllers.Workflow
 {
@@ -31,10 +24,14 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
 
         /// <summary>
         /// 构造函数
+        /// <param name="workflowTaskService">工作流任务服务</param>
+        /// <param name="localization">本地化服务</param>
+        /// <param name="logger">日志服务</param>
         /// </summary>
         public HbtWorkflowTaskController(
             IHbtWorkflowTaskService workflowTaskService,
-            IHbtLocalizationService localization) : base(localization)
+                        IHbtLocalizationService localization,
+            IHbtLogger logger) : base(localization, logger)
         {
             _workflowTaskService = workflowTaskService;
         }
@@ -193,4 +190,4 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
             return Success(success);
         }
     }
-} 
+}

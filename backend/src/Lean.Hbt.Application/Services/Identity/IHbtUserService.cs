@@ -7,12 +7,7 @@
 // 描述   : 用户服务接口
 //===================================================================
 
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using Lean.Hbt.Common.Models;
-using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Application.Dtos.Identity;
-using System.IO;
 
 namespace Lean.Hbt.Application.Services.Identity
 {
@@ -81,14 +76,14 @@ namespace Lean.Hbt.Application.Services.Identity
         /// <param name="query">查询条件</param>
         /// <param name="sheetName">工作表名称</param>
         /// <returns>Excel文件字节数组</returns>
-        Task<byte[]> ExportAsync(HbtUserQueryDto query, string sheetName = "Sheet1");
+        Task<(string fileName, byte[] content)> ExportAsync(HbtUserQueryDto query, string sheetName = "Sheet1");
 
         /// <summary>
         /// 获取用户导入模板
         /// </summary>
         /// <param name="sheetName">工作表名称</param>
         /// <returns>Excel模板文件字节数组</returns>
-        Task<byte[]> GetTemplateAsync(string sheetName = "Sheet1");
+        Task<(string fileName, byte[] content)> GetTemplateAsync(string sheetName = "Sheet1");
 
         /// <summary>
         /// 更新用户状态

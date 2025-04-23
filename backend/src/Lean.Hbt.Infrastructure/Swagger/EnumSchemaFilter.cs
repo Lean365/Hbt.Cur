@@ -1,5 +1,4 @@
 using System.ComponentModel;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
@@ -10,9 +9,18 @@ namespace Lean.Hbt.Infrastructure.Swagger
     /// </summary>
     public class EnumSchemaFilter : ISchemaFilter
     {
-        private readonly ILogger<EnumSchemaFilter> _logger;
+        /// <summary>
+        /// 日志服务
+        /// </summary>
+        protected readonly IHbtLogger _logger;
 
-        public EnumSchemaFilter(ILogger<EnumSchemaFilter> logger)
+        /// <summary>
+        /// 构造函数
+        /// </summary>
+        /// <param name="logger"></param>
+        public EnumSchemaFilter(
+            IHbtLogger logger
+                )
         {
             _logger = logger;
         }
@@ -43,7 +51,7 @@ namespace Lean.Hbt.Infrastructure.Swagger
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "处理枚举架构过滤器时发生错误");
+                _logger.Error("处理枚举架构过滤器时发生错误");
             }
         }
 

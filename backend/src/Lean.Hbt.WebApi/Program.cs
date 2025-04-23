@@ -2,7 +2,7 @@ using System.Text;
 using Lean.Hbt.Common.Helpers;
 using Lean.Hbt.Common.Options;
 using Lean.Hbt.Common.Utils;
-using Lean.Hbt.Domain.IServices.Admin;
+using Lean.Hbt.Domain.IServices.Extensions;
 using Lean.Hbt.Domain.IServices.Caching;
 using Lean.Hbt.Domain.IServices.Security;
 using Lean.Hbt.Domain.IServices.SignalR;
@@ -18,6 +18,7 @@ using Lean.Hbt.Infrastructure.SignalR.Cache;
 using Lean.Hbt.WebApi.Middlewares;
 using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Options;
@@ -39,6 +40,9 @@ try
     // 添加NLog支持
     builder.Logging.ClearProviders();
     builder.Host.UseNLog();
+
+    // 注册NLog.ILogger
+    builder.Services.AddSingleton<NLog.ILogger>(sp => LogManager.GetCurrentClassLogger());
 
     // 配置SignalR日志
     builder.Logging.AddFilter("Microsoft.AspNetCore.SignalR", Microsoft.Extensions.Logging.LogLevel.Debug);
@@ -131,6 +135,26 @@ try
     builder.Services.AddControllers(options =>
     {
         options.EnableEndpointRouting = true;
+    })
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.PropertyNamingPolicy = null;
+        options.JsonSerializerOptions.DictionaryKeyPolicy = null;
+    })
+    .ConfigureApiBehaviorOptions(options =>
+    {
+        options.SuppressModelStateInvalidFilter = true;
+    });
+
+    // 配置文件上传限制
+    builder.Services.Configure<FormOptions>(options =>
+    {
+        var fileUploadConfig = builder.Configuration.GetSection("FileUpload");
+        options.MultipartBodyLengthLimit = fileUploadConfig.GetValue<int>("MultipartBodyLengthLimit");
+        options.MultipartHeadersLengthLimit = fileUploadConfig.GetValue<int>("MultipartHeadersLengthLimit");
+        options.MultipartBoundaryLengthLimit = fileUploadConfig.GetValue<int>("MultipartBoundaryLengthLimit");
+        options.ValueLengthLimit = fileUploadConfig.GetValue<int>("ValueLengthLimit");
+        options.KeyLengthLimit = fileUploadConfig.GetValue<int>("KeyLengthLimit");
     });
 
     // 添加 Antiforgery 服务
@@ -315,6 +339,11 @@ try
     // 注册系统重启配置选项
     builder.Services.Configure<HbtRestartOptions>(
         builder.Configuration.GetSection("SystemRestart"));
+
+    builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
+    builder.Services.AddMvc()
+        .AddViewLocalization()
+        .AddDataAnnotationsLocalization();
 
     var app = builder.Build();
 

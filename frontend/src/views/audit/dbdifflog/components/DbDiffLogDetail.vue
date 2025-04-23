@@ -57,7 +57,7 @@
 
 <script lang="ts" setup>
 import { ref, defineProps, defineExpose } from 'vue'
-import type { HbtDbDiffLogDto } from '@/types/audit/dbDiffLog'
+import type { HbtDbDiffLogDto } from '@/types/audit/sqlDiffLog'
 
 const props = defineProps<{
   diffInfo?: HbtDbDiffLogDto

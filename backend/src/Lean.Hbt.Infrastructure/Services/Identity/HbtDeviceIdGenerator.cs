@@ -2,7 +2,7 @@ using System;
 using System.Text.Json;
 using System.Security.Cryptography;
 using System.Text;
-using Lean.Hbt.Domain.IServices.Identity;
+using Lean.Hbt.Domain.IServices.Extensions;
 
 namespace Lean.Hbt.Infrastructure.Identity;
 

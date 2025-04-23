@@ -7,21 +7,30 @@
 // 描述   : 通知服务实现
 //===================================================================
 
-using Lean.Hbt.Application.Dtos.Routine;
-using Lean.Hbt.Common.Enums;
+using System;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.Linq.Expressions;
+using Microsoft.AspNetCore.Http;
+using Lean.Hbt.Common.Models;
 using Lean.Hbt.Domain.Entities.Routine;
+using Lean.Hbt.Application.Dtos.Routine;
+using Lean.Hbt.Common.Exceptions;
+using Lean.Hbt.Common.Helpers;
+using Lean.Hbt.Domain.Repositories;
 using Lean.Hbt.Domain.IServices.SignalR;
+using Lean.Hbt.Common.Enums;
+using SqlSugar;
+using Mapster;
 
 namespace Lean.Hbt.Application.Services.Routine
 {
     /// <summary>
     /// 通知服务实现
     /// </summary>
-    public class HbtNoticeService : IHbtNoticeService
+    public class HbtNoticeService : HbtBaseService, IHbtNoticeService
     {
-        private readonly ILogger<HbtNoticeService> _logger;
         private readonly IHbtRepository<HbtNotice> _repository;
-        private readonly IHbtCurrentUser _currentUser;
         private readonly IHbtSignalRClient _signalRClient;
 
         /// <summary>
@@ -29,17 +38,15 @@ namespace Lean.Hbt.Application.Services.Routine
         /// </summary>
         /// <param name="logger">日志记录器</param>
         /// <param name="repository">通知仓储</param>
-        /// <param name="currentUser">当前用户</param>
         /// <param name="signalRClient">SignalR客户端</param>
+        /// <param name="httpContextAccessor">HTTP上下文访问器</param>
         public HbtNoticeService(
-            ILogger<HbtNoticeService> logger,
+            IHbtLogger logger,
             IHbtRepository<HbtNotice> repository,
-            IHbtCurrentUser currentUser,
-            IHbtSignalRClient signalRClient)
+            IHbtSignalRClient signalRClient,
+            IHttpContextAccessor httpContextAccessor) : base(logger, httpContextAccessor)
         {
-            _logger = logger;
             _repository = repository;
-            _currentUser = currentUser;
             _signalRClient = signalRClient;
         }
 
@@ -88,7 +95,7 @@ namespace Lean.Hbt.Application.Services.Routine
         {
             var notice = await _repository.GetByIdAsync(noticeId);
             if (notice == null)
-                throw new HbtException($"通知不存在: {noticeId}");
+                throw new HbtException(L("Notice.NotFound", noticeId));
 
             return notice.Adapt<HbtNoticeDto>();
         }
@@ -103,7 +110,7 @@ namespace Lean.Hbt.Application.Services.Routine
 
             var result = await _repository.CreateAsync(notice);
             if (result <= 0)
-                throw new HbtException("创建通知失败");
+                throw new HbtException(L("Notice.CreateFailed"));
 
             return notice.Id;
         }
@@ -115,7 +122,7 @@ namespace Lean.Hbt.Application.Services.Routine
         {
             var notice = await _repository.GetByIdAsync(noticeId);
             if (notice == null)
-                throw new HbtException($"通知不存在: {noticeId}");
+                throw new HbtException(L("Notice.NotFound", noticeId));
 
             input.Adapt(notice);
             var result = await _repository.UpdateAsync(notice);
@@ -129,7 +136,7 @@ namespace Lean.Hbt.Application.Services.Routine
         {
             var notice = await _repository.GetByIdAsync(noticeId);
             if (notice == null)
-                throw new HbtException($"通知不存在: {noticeId}");
+                throw new HbtException(L("Notice.NotFound", noticeId));
 
             var result = await _repository.DeleteAsync(noticeId);
             return result > 0;
@@ -140,6 +147,9 @@ namespace Lean.Hbt.Application.Services.Routine
         /// </summary>
         public async Task<bool> BatchDeleteAsync(long[] noticeIds)
         {
+            if (noticeIds == null || noticeIds.Length == 0)
+                throw new HbtException(L("Notice.SelectToDelete"));
+
             foreach (var noticeId in noticeIds)
             {
                 await DeleteAsync(noticeId);
@@ -150,23 +160,18 @@ namespace Lean.Hbt.Application.Services.Routine
         /// <summary>
         /// 导出通知数据
         /// </summary>
-        public async Task<byte[]> ExportAsync(HbtNoticeQueryDto query, string sheetName = "通知数据")
+        public async Task<(string fileName, byte[] content)> ExportAsync(HbtNoticeQueryDto query, string sheetName = "Notice")
         {
-            var exp = Expressionable.Create<HbtNotice>();
-
-            if (!string.IsNullOrEmpty(query.NoticeTitle))
-                exp.And(x => x.NoticeTitle.Contains(query.NoticeTitle));
-
-            if (query.NoticeType.HasValue)
-                exp.And(x => x.NoticeType == query.NoticeType.Value);
-
-            if (query.NoticeStatus.HasValue)
-                exp.And(x => x.NoticeStatus == query.NoticeStatus.Value);
-
-            var list = await _repository.GetListAsync(exp.ToExpression());
-            var result = list.Adapt<List<HbtNoticeExportDto>>();
-
-            return await HbtExcelHelper.ExportAsync(result, sheetName);
+            try
+            {
+                var list = await _repository.GetListAsync(KpNoticeQueryExpression(query));
+                return await HbtExcelHelper.ExportAsync(list.Adapt<List<HbtNoticeExportDto>>(), sheetName, L("Notice.ExportTitle"));
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(L("Notice.ExportFailed"), ex);
+                throw new HbtException(L("Notice.ExportFailed"));
+            }
         }
 
         /// <summary>
@@ -176,7 +181,7 @@ namespace Lean.Hbt.Application.Services.Routine
         {
             var notice = await _repository.GetByIdAsync(noticeId);
             if (notice == null)
-                throw new HbtException($"通知不存在: {noticeId}");
+                throw new HbtException(L("Notice.NotFound", noticeId));
 
             notice.NoticeStatus = 1; // 已发布
             notice.NoticePublishTime = DateTime.Now;
@@ -192,7 +197,7 @@ namespace Lean.Hbt.Application.Services.Routine
         {
             var notice = await _repository.GetByIdAsync(noticeId);
             if (notice == null)
-                throw new HbtException($"通知不存在: {noticeId}");
+                throw new HbtException(L("Notice.NotFound", noticeId));
 
             notice.NoticeStatus = 2; // 已关闭
 
@@ -210,7 +215,7 @@ namespace Lean.Hbt.Application.Services.Routine
 
             // 更新已读状态
             var readIds = (notice.NoticeReadIds?.Split(',', StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>()).ToList();
-            var userId = _currentUser.UserId.ToString();
+            var userId = UserId.ToString();
             if (!readIds.Contains(userId))
             {
                 readIds.Add(userId);
@@ -224,8 +229,8 @@ namespace Lean.Hbt.Application.Services.Routine
                 var notification = new HbtRealTimeNotification
                 {
                     Type = HbtMessageType.Notification,
-                    Title = "通知已读",
-                    Content = $"通知 {notice.NoticeTitle} 已标记为已读",
+                    Title = L("Notice.ReadTitle"),
+                    Content = L("Notice.ReadContent", notice.NoticeTitle),
                     Timestamp = DateTime.Now,
                     Data = notice
                 };
@@ -242,10 +247,10 @@ namespace Lean.Hbt.Application.Services.Routine
         {
             var notice = await _repository.GetByIdAsync(noticeId);
             if (notice == null)
-                throw new HbtException($"通知不存在: {noticeId}");
+                throw new HbtException(L("Notice.NotFound", noticeId));
 
             if (!notice.NoticeRequireConfirm)
-                throw new HbtException($"该通知不需要确认");
+                throw new HbtException(L("Notice.NoConfirmRequired"));
 
             // 获取当前已确认人ID列表
             var confirmIds = string.IsNullOrEmpty(notice.NoticeConfirmIds)
@@ -255,11 +260,11 @@ namespace Lean.Hbt.Application.Services.Routine
                     .ToList();
 
             // 如果当前用户已在已确认列表中，抛出异常
-            if (confirmIds.Contains(_currentUser.UserId))
-                throw new HbtException("您已确认过该通知");
+            if (confirmIds.Contains(UserId))
+                throw new HbtException(L("Notice.AlreadyConfirmed"));
 
             // 添加当前用户到已确认列表
-            confirmIds.Add(_currentUser.UserId);
+            confirmIds.Add(UserId);
             notice.NoticeConfirmIds = string.Join(",", confirmIds);
             notice.NoticeConfirmCount = confirmIds.Count;
             notice.NoticeLastReceiptTime = DateTime.Now;
@@ -318,11 +323,11 @@ namespace Lean.Hbt.Application.Services.Routine
                 : notice.NoticeReadIds.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(long.Parse).ToList();
 
             // 如果当前用户不在已读列表中，则返回true
-            if (!readIds.Contains(_currentUser.UserId))
+            if (!readIds.Contains(UserId))
                 return true;
 
             // 从已读列表中移除当前用户
-            readIds.Remove(_currentUser.UserId);
+            readIds.Remove(UserId);
             notice.NoticeReadIds = string.Join(",", readIds);
             notice.NoticeReadCount = readIds.Count;
 
@@ -333,8 +338,8 @@ namespace Lean.Hbt.Application.Services.Routine
                 var notification = new HbtRealTimeNotification
                 {
                     Type = HbtMessageType.Notification,
-                    Title = "通知未读状态更新",
-                    Content = $"通知 {notice.NoticeTitle} 已标记为未读",
+                    Title = L("Notice.UnreadTitle"),
+                    Content = L("Notice.UnreadContent", notice.NoticeTitle),
                     Timestamp = DateTime.Now,
                     Data = notice
                 };
@@ -371,6 +376,17 @@ namespace Lean.Hbt.Application.Services.Routine
 
             var result = await _repository.UpdateRangeAsync(readNotices);
             return result;
+        }
+
+        private Expression<Func<HbtNotice, bool>> KpNoticeQueryExpression(HbtNoticeQueryDto query)
+        {
+            return Expressionable.Create<HbtNotice>()
+                .AndIF(!string.IsNullOrEmpty(query.NoticeTitle), x => x.NoticeTitle.Contains(query.NoticeTitle))
+                .AndIF(query.NoticeType.HasValue, x => x.NoticeType == query.NoticeType.Value)
+                .AndIF(query.NoticeStatus.HasValue, x => x.NoticeStatus == query.NoticeStatus.Value)
+                .AndIF(query.StartTime.HasValue, x => x.CreateTime >= query.StartTime.Value)
+                .AndIF(query.EndTime.HasValue, x => x.CreateTime <= query.EndTime.Value)
+                .ToExpression();
         }
     }
 }

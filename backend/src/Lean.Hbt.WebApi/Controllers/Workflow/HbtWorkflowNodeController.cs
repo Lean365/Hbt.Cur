@@ -1,5 +1,5 @@
 //===================================================================
-// 项目名 : Lean.Hbt 
+// 项目名 : Lean.Hbt
 // 文件名 : HbtWorkflowNodeController.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-23 12:00
@@ -7,15 +7,8 @@
 // 描述   : 工作流节点控制器
 //===================================================================
 
-using System;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http;
 using Lean.Hbt.Application.Dtos.Workflow;
 using Lean.Hbt.Application.Services.Workflow;
-using Lean.Hbt.Domain.IServices.Admin;
-using Lean.Hbt.Infrastructure.Security.Attributes;
-using Lean.Hbt.Infrastructure.Swagger;
 
 namespace Lean.Hbt.WebApi.Controllers.Workflow
 {
@@ -31,10 +24,14 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
 
         /// <summary>
         /// 构造函数
+        /// <param name="workflowNodeService">工作流节点服务</param>
+        /// <param name="localization">本地化服务</param>
+        /// <param name="logger">日志服务</param>
         /// </summary>
         public HbtWorkflowNodeController(
             IHbtWorkflowNodeService workflowNodeService,
-            IHbtLocalizationService localization) : base(localization)
+                        IHbtLocalizationService localization,
+            IHbtLogger logger) : base(localization, logger)
         {
             _workflowNodeService = workflowNodeService;
         }
@@ -129,7 +126,7 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         {
             var data = await _workflowNodeService.GetListAsync(query);
             var result = await _workflowNodeService.ExportAsync(data.Rows, sheetName);
-            return File(result, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"工作流节点数据_{DateTime.Now:yyyyMMddHHmmss}.xlsx");
+            return File(result.content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", result.fileName);
         }
 
         /// <summary>
@@ -140,7 +137,7 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         public async Task<IActionResult> GetTemplateAsync([FromQuery] string sheetName = "Sheet1")
         {
             var result = await _workflowNodeService.GetTemplateAsync(sheetName);
-            return File(result, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"工作流节点导入模板_{DateTime.Now:yyyyMMddHHmmss}.xlsx");
+            return File(result.content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", result.fileName);
         }
 
         /// <summary>
@@ -176,4 +173,4 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
             return Success(result);
         }
     }
-} 
+}

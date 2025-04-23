@@ -7,16 +7,15 @@
 // 描述    : 服务集合扩展
 //===================================================================
 
-using Lean.Hbt.Application.Services.Admin;
+using Lean.Hbt.Application.Services.Core;
 using Lean.Hbt.Application.Services.Audit;
+using Lean.Hbt.Application.Services.Extensions;
 using Lean.Hbt.Application.Services.Identity;
-using Lean.Hbt.Application.Services.SignalR;
 using Lean.Hbt.Application.Services.Routine;
+using Lean.Hbt.Application.Services.SignalR;
 using Lean.Hbt.Common.Options;
 using Lean.Hbt.Domain.Data;
-using Lean.Hbt.Domain.IServices;
-using Lean.Hbt.Domain.IServices.Admin;
-using Lean.Hbt.Domain.IServices.Audit;
+using Lean.Hbt.Domain.IServices.Extensions;
 using Lean.Hbt.Domain.IServices.Caching;
 using Lean.Hbt.Domain.IServices.Security;
 using Lean.Hbt.Infrastructure.Authentication;
@@ -31,6 +30,8 @@ using Lean.Hbt.Infrastructure.Services.Local;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Lean.Hbt.Domain.IServices.Extensions;
+using NLog;
 
 namespace Lean.Hbt.Infrastructure.Extensions
 {
@@ -126,7 +127,7 @@ namespace Lean.Hbt.Infrastructure.Extensions
             services.AddScoped<IHbtSingleSignOnService, HbtSingleSignOnService>();
 
             // 验证服务
-            services.AddSingleton<IHbtCaptchaService, HbtCaptchaService>();
+            services.AddScoped<IHbtCaptchaService, HbtCaptchaService>();
             services.AddScoped<IHbtOAuthService, HbtOAuthService>();
 
             return services;
@@ -155,6 +156,7 @@ namespace Lean.Hbt.Infrastructure.Extensions
         {
             // 添加日志记录器 - 只在这里注册一次
             services.AddScoped<IHbtLogger, HbtNLogger>();
+            services.AddSingleton<IHbtLogger>(sp => new HbtNLogger(LogManager.GetCurrentClassLogger()));
             services.AddScoped<IHbtLogCleanupService, HbtLogCleanupService>();
             services.AddScoped<IHbtLogArchiveService, HbtLogArchiveService>();
 
@@ -222,17 +224,15 @@ namespace Lean.Hbt.Infrastructure.Extensions
         {
             // 审计日志记录器
             services.AddScoped<IHbtLogManager, HbtLogManager>();                  // 基础日志管理器
-            services.AddScoped<IHbtAuditLogManager, HbtLogManager>();            // 审计日志管理器
-            services.AddScoped<IHbtDbDiffLogManager, HbtLogManager>();           // 数据库差异日志管理器
+            services.AddScoped<IHbtSqlDiffLogManager, HbtLogManager>();           // 差异日志管理器
             services.AddScoped<IHbtOperLogManager, HbtLogManager>();             // 操作日志管理器
             services.AddScoped<IHbtExceptionLogManager, HbtLogManager>();        // 异常日志管理器
 
             // 审计日志服务
-            services.AddScoped<IHbtAuditsLogService, HbtAuditLogService>();     // 审计日志服务
             services.AddScoped<IHbtLoginLogService, HbtLoginLogService>();       // 登录日志服务
             services.AddScoped<IHbtOperLogService, HbtOperLogService>();         // 操作日志服务
             services.AddScoped<IHbtExceptionLogService, HbtExceptionLogService>(); // 异常日志服务
-            services.AddScoped<IHbtDbDiffLogService, HbtDbDiffLogService>();     // 数据库差异日志服务
+            services.AddScoped<IHbtSqlDiffLogService, HbtSqlDiffLogService>();     // 差异日志服务
 
             return services;
         }

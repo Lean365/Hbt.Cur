@@ -9,7 +9,7 @@
 
 using Microsoft.Extensions.Options;
 using Lean.Hbt.Common.Options;
-using Lean.Hbt.Domain.Entities.Admin;
+using Lean.Hbt.Domain.Entities.Core;
 using Lean.Hbt.Domain.Repositories;
 
 namespace Lean.Hbt.Infrastructure.Caching

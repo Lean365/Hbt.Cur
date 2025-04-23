@@ -7,12 +7,9 @@
 // 描述    : 登录策略初始化服务
 //===================================================================
 
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Caching.Memory;
 using System.Collections;
-using Lean.Hbt.Domain.IServices;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Hosting;
 
 namespace Lean.Hbt.Infrastructure.Services
 {
@@ -28,12 +25,17 @@ namespace Lean.Hbt.Infrastructure.Services
     public class HbtLoginPolicyInitializer : IHostedService
     {
         private readonly IServiceProvider _serviceProvider;
-        private readonly ILogger<HbtLoginPolicyInitializer> _logger;
+
+        /// <summary>
+        /// 日志服务
+        /// </summary>
+        protected readonly IHbtLogger _logger;
 
         /// <summary>
         /// 缓存键前缀常量
         /// </summary>
         private const string LOGIN_ATTEMPT_PREFIX = "login_attempt:";
+
         private const string LAST_LOGIN_PREFIX = "last_login:";
         private const string CAPTCHA_REQUIRED_PREFIX = "captcha_required:";
 
@@ -44,7 +46,8 @@ namespace Lean.Hbt.Infrastructure.Services
         /// <param name="logger">日志服务</param>
         public HbtLoginPolicyInitializer(
             IServiceProvider serviceProvider,
-            ILogger<HbtLoginPolicyInitializer> logger)
+            IHbtLogger logger
+)
         {
             _serviceProvider = serviceProvider;
             _logger = logger;
@@ -59,20 +62,20 @@ namespace Lean.Hbt.Infrastructure.Services
         {
             try
             {
-                _logger.LogInformation("[登录策略] 应用启动，开始清除所有登录限制缓存");
+                _logger.Info("[登录策略] 应用启动，开始清除所有登录限制缓存");
                 using var scope = _serviceProvider.CreateScope();
                 var cache = scope.ServiceProvider.GetRequiredService<IMemoryCache>();
 
                 if (cache is MemoryCache memoryCache)
                 {
                     // 获取内存缓存的所有项
-                    var field = typeof(MemoryCache).GetProperty("EntriesCollection", 
+                    var field = typeof(MemoryCache).GetProperty("EntriesCollection",
                         System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
                     var collection = field?.GetValue(memoryCache);
                     var items = collection?.GetType().GetProperty("Items")?.GetValue(collection);
                     var keys = new List<string>();
 
-                    _logger.LogInformation("[登录策略] 正在扫描缓存项...");
+                    _logger.Info("[登录策略] 正在扫描缓存项...");
 
                     // 查找所有需要清除的缓存项
                     if (items is IDictionary entries)
@@ -82,20 +85,20 @@ namespace Lean.Hbt.Infrastructure.Services
                             var key = entry.Key?.ToString();
                             if (key != null)
                             {
-                                _logger.LogInformation("[登录策略] 发现缓存项: {Key}", key);
-                                if (key.StartsWith(LOGIN_ATTEMPT_PREFIX) || 
+                                _logger.Info("[登录策略] 发现缓存项: {Key}", key);
+                                if (key.StartsWith(LOGIN_ATTEMPT_PREFIX) ||
                                     key.StartsWith(LAST_LOGIN_PREFIX) ||
                                     key.StartsWith(CAPTCHA_REQUIRED_PREFIX))
                                 {
                                     keys.Add(key);
-                                    _logger.LogInformation("[登录策略] 标记需要清除的缓存项: {Key}", key);
+                                    _logger.Info("[登录策略] 标记需要清除的缓存项: {Key}", key);
                                 }
                             }
                         }
                     }
                     else
                     {
-                        _logger.LogWarning("[登录策略] 无法获取缓存项集合");
+                        _logger.Warn("[登录策略] 无法获取缓存项集合");
                     }
 
                     // 清除所有找到的缓存项
@@ -106,16 +109,16 @@ namespace Lean.Hbt.Infrastructure.Services
                         {
                             cache.Remove(key);
                             clearedCount++;
-                            _logger.LogInformation("[登录策略] 已清除缓存项: {Key}", key);
+                            _logger.Info("[登录策略] 已清除缓存项: {Key}", key);
                         }
                         catch (Exception ex)
                         {
-                            _logger.LogError(ex, "[登录策略] 清除缓存项 {Key} 时发生错误", key);
+                            _logger.Error("[登录策略] 清除缓存项 {Key} 时发生错误", key);
                         }
                     }
 
-                    _logger.LogInformation("[登录策略] 清除完成，共清除 {Count} 个缓存项", clearedCount);
-                    
+                    _logger.Info("[登录策略] 清除完成，共清除 {Count} 个缓存项", clearedCount);
+
                     // 验证清除结果
                     var remainingKeys = new List<string>();
                     if (items is IDictionary entriesAfterClear)
@@ -124,7 +127,7 @@ namespace Lean.Hbt.Infrastructure.Services
                         {
                             var key = entry.Key?.ToString();
                             if (key != null && (
-                                key.StartsWith(LOGIN_ATTEMPT_PREFIX) || 
+                                key.StartsWith(LOGIN_ATTEMPT_PREFIX) ||
                                 key.StartsWith(LAST_LOGIN_PREFIX) ||
                                 key.StartsWith(CAPTCHA_REQUIRED_PREFIX)))
                             {
@@ -132,24 +135,24 @@ namespace Lean.Hbt.Infrastructure.Services
                             }
                         }
                     }
-                    
+
                     if (remainingKeys.Count > 0)
                     {
-                        _logger.LogWarning("[登录策略] 清除后仍有 {Count} 个相关缓存项: {Keys}", 
+                        _logger.Warn("[登录策略] 清除后仍有 {Count} 个相关缓存项: {Keys}",
                             remainingKeys.Count, string.Join(", ", remainingKeys));
                     }
                     else
                     {
-                        _logger.LogInformation("[登录策略] 验证通过，所有相关缓存项已清除");
+                        _logger.Info("[登录策略] 验证通过，所有相关缓存项已清除");
                     }
                 }
 
                 await Task.CompletedTask;
-                _logger.LogInformation("[登录策略] 初始化完成");
+                _logger.Info("[登录策略] 初始化完成");
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "[登录策略] 初始化过程中发生错误");
+                _logger.Error("[登录策略] 初始化过程中发生错误");
                 throw;
             }
         }
@@ -161,8 +164,8 @@ namespace Lean.Hbt.Infrastructure.Services
         /// <returns>异步任务</returns>
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            _logger.LogInformation("[登录策略] 服务停止");
+            _logger.Info("[登录策略] 服务停止");
             return Task.CompletedTask;
         }
     }
-} 
+}

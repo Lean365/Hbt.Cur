@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Mapster;
 using Lean.Hbt.Application.Dtos.{{ table.module_name }};
 using Lean.Hbt.Application.Services.{{ table.module_name }};
-using Lean.Hbt.Domain.IServices.Admin;
+using Lean.Hbt.Domain.IServices.Extensions;
 using Lean.Hbt.Infrastructure.Security.Attributes;
 
 namespace Lean.Hbt.WebApi.Controllers.{{ table.module_name }};

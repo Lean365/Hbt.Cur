@@ -1,32 +1,24 @@
 //===================================================================
-// 项目名 : Lean.Hbt 
-// 文件名 : HbtJwtHandler.cs 
+// 项目名 : Lean.Hbt
+// 文件名 : HbtJwtHandler.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-16 10:00
 // 版本号 : V0.0.1
 // 描述    : JWT令牌处理器实现
 //===================================================================
 
-using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using Lean.Hbt.Domain.IServices.Security;
-using Lean.Hbt.Common.Exceptions;
-using Lean.Hbt.Domain.IServices.Admin;
-using Lean.Hbt.Domain.Entities.Identity;
-using Lean.Hbt.Domain.Repositories;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Lean.Hbt.Common.Options;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Caching.Distributed;
 using System.Text.Json;
+using Lean.Hbt.Common.Exceptions;
+using Lean.Hbt.Common.Options;
+using Lean.Hbt.Domain.Entities.Identity;
+using Lean.Hbt.Domain.IServices.Security;
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Lean.Hbt.Infrastructure.Authentication
 {
@@ -43,9 +35,15 @@ namespace Lean.Hbt.Infrastructure.Authentication
         /// 配置接口
         /// </summary>
         private readonly IConfiguration _configuration;
+
         private readonly IHbtLocalizationService _localizationService;
         private readonly IHbtRepository<HbtUser> _userRepository;
-        private readonly ILogger<HbtJwtHandler> _logger;
+
+        /// <summary>
+        /// 日志服务
+        /// </summary>
+        protected readonly IHbtLogger _logger;
+
         private readonly HbtJwtOptions _jwtOptions;
         private readonly IMemoryCache _memoryCache;
         private readonly IDistributedCache _distributedCache;
@@ -62,10 +60,10 @@ namespace Lean.Hbt.Infrastructure.Authentication
         /// <param name="memoryCache">内存缓存接口</param>
         /// <param name="distributedCache">分布式缓存接口</param>
         public HbtJwtHandler(
-            IConfiguration configuration, 
+            IConfiguration configuration,
             IHbtLocalizationService localizationService,
             IHbtRepository<HbtUser> userRepository,
-            ILogger<HbtJwtHandler> logger,
+            IHbtLogger logger,
             IOptions<HbtJwtOptions> jwtOptions,
             IMemoryCache memoryCache,
             IDistributedCache distributedCache = null)
@@ -87,7 +85,7 @@ namespace Lean.Hbt.Infrastructure.Authentication
         {
             try
             {
-                _logger.LogInformation("开始生成访问令牌，JWT配置信息: {@JwtConfig}", new
+                _logger.Info("开始生成访问令牌，JWT配置信息: {@JwtConfig}", new
                 {
                     SecretKeyLength = _jwtOptions?.SecretKey?.Length ?? 0,
                     Issuer = _jwtOptions?.Issuer,
@@ -98,7 +96,7 @@ namespace Lean.Hbt.Infrastructure.Authentication
 
                 if (string.IsNullOrEmpty(_jwtOptions?.SecretKey))
                 {
-                    _logger.LogError("JWT SecretKey 未配置");
+                    _logger.Error("JWT SecretKey 未配置");
                     throw new HbtException("JWT配置错误：SecretKey未配置", "JWT_CONFIG_ERROR");
                 }
 
@@ -146,7 +144,7 @@ namespace Lean.Hbt.Infrastructure.Authentication
                             .SetAbsoluteExpiration(expiration);
                         _memoryCache.Set(permissionKey, permissions, cacheOptions);
                     }
-                    
+
                     // JWT中只存储权限的引用key
                     claims.Add(new Claim("pms_key", permissionKey));
                 }
@@ -162,13 +160,13 @@ namespace Lean.Hbt.Infrastructure.Authentication
                     signingCredentials: credentials);
 
                 var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
-                _logger.LogInformation("访问令牌生成成功: Length={Length}", tokenString?.Length ?? 0);
+                _logger.Info("访问令牌生成成功: Length={Length}", tokenString?.Length ?? 0);
 
                 return tokenString;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "生成访问令牌时发生错误: {Message}", ex.Message);
+                _logger.Error("生成访问令牌时发生错误: {Message}", ex.Message);
                 throw new HbtException("生成访问令牌失败", "JWT_GENERATE_ERROR", ex);
             }
         }
@@ -227,7 +225,7 @@ namespace Lean.Hbt.Infrastructure.Authentication
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "验证访问令牌时发生错误: {Message}", ex.Message);
+                _logger.Error("验证访问令牌时发生错误: {Message}", ex.Message);
                 return false;
             }
         }
@@ -273,4 +271,4 @@ namespace Lean.Hbt.Infrastructure.Authentication
             return long.Parse(userIdClaim.Value);
         }
     }
-} 
+}

@@ -92,6 +92,12 @@ public class HbtGenConfig : HbtBaseEntity
     [SugarColumn(ColumnName = "options", ColumnDescription = "选项配置", Length = -1, ColumnDataType = "nvarchar", IsNullable = true)]
     public string? Options { get; set; }
 
+    /// <summary>
+    /// 状态（0正常 1停用）
+    /// </summary>
+    [SugarColumn(ColumnName = "status", ColumnDescription = "状态（0正常 1停用）", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
+    public int Status { get; set; } = 0;
+
     #endregion
 
     #region 系统信息

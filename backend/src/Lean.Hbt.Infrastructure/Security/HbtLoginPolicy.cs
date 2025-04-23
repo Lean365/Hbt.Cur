@@ -7,16 +7,10 @@
 // 描述    : 登录限制策略实现
 //===================================================================
 
-using System;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Caching.Memory;
-using System.Collections;
-using System.Collections.Generic;
-using Microsoft.Extensions.Logging;
-using Lean.Hbt.Domain.IServices.Security;
-using Lean.Hbt.Domain.Repositories;
-using Lean.Hbt.Domain.Entities.Identity;
 using Lean.Hbt.Common.Options;
+using Lean.Hbt.Domain.Entities.Identity;
+using Lean.Hbt.Domain.IServices.Security;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 
 namespace Lean.Hbt.Infrastructure.Security
@@ -35,12 +29,18 @@ namespace Lean.Hbt.Infrastructure.Security
     public class HbtLoginPolicy : IHbtLoginPolicy
     {
         private readonly IMemoryCache _cache;
-        private readonly ILogger<HbtLoginPolicy> _logger;
+
+        /// <summary>
+        /// 日志服务
+        /// </summary>
+        protected readonly IHbtLogger _logger;
+
         private readonly IHbtRepository<HbtUser> _userRepository;
         private readonly HbtLoginPolicyOptions _options;
-        
+
         // 缓存键前缀
         private const string LOGIN_ATTEMPT_PREFIX = "login_attempt:";      // 登录尝试次数缓存键前缀
+
         private const string LAST_LOGIN_PREFIX = "last_login:";           // 最后登录时间缓存键前缀
         private const string CAPTCHA_REQUIRED_PREFIX = "captcha_required:"; // 验证码要求标志缓存键前缀
 
@@ -48,9 +48,9 @@ namespace Lean.Hbt.Infrastructure.Security
         /// 构造函数
         /// </summary>
         public HbtLoginPolicy(
-            IMemoryCache cache, 
-            ILogger<HbtLoginPolicy> logger,
+            IMemoryCache cache,
             IHbtRepository<HbtUser> userRepository,
+            IHbtLogger logger,
             IOptions<HbtLoginPolicyOptions> options)
         {
             _cache = cache;
@@ -80,12 +80,12 @@ namespace Lean.Hbt.Infrastructure.Security
             var attemptKey = $"{LOGIN_ATTEMPT_PREFIX}{username}";
             var lastLoginKey = $"{LAST_LOGIN_PREFIX}{username}";
             bool needCaptcha = false;
-            
+
             // 1. 检查用户是否存在且是否被永久锁定
             var user = await _userRepository.GetFirstAsync(u => u.UserName == username);
             if (user != null && user.IsLock == 2) // IsLock=2表示永久锁定
             {
-                _logger.LogWarning("[登录策略] 用户 {Username} 已被永久锁定，需要管理员解锁", username);
+                _logger.Warn("[登录策略] 用户 {Username} 已被永久锁定，需要管理员解锁", username);
                 return (false, null);
             }
 
@@ -95,7 +95,7 @@ namespace Lean.Hbt.Infrastructure.Security
                 var timeSinceLastLogin = DateTime.UtcNow - lastLoginTime;
                 if (timeSinceLastLogin.TotalMinutes <= _options.RepeatLoginMinutes)
                 {
-                    _logger.LogInformation("[登录策略] 用户 {Username} 在{Minutes}分钟内重复登录，需要验证码", 
+                    _logger.Info("[登录策略] 用户 {Username} 在{Minutes}分钟内重复登录，需要验证码",
                         username, _options.RepeatLoginMinutes);
                     needCaptcha = true;
                 }
@@ -129,7 +129,7 @@ namespace Lean.Hbt.Infrastructure.Security
                         user.IsLock = 2; // 设置永久锁定
                         user.LoginCount = failedAttempts;
                         await _userRepository.UpdateAsync(user);
-                        _logger.LogWarning("[登录策略] 用户 {Username} 已被永久锁定", username);
+                        _logger.Warn("[登录策略] 用户 {Username} 已被永久锁定", username);
                         return (false, null);
                     }
                 }
@@ -140,7 +140,7 @@ namespace Lean.Hbt.Infrastructure.Security
             {
                 needCaptcha = true;
             }
-            
+
             // 如果需要验证码，返回特殊状态
             if (needCaptcha)
             {
@@ -166,7 +166,7 @@ namespace Lean.Hbt.Infrastructure.Security
         public async Task RecordFailedLoginAsync(string username)
         {
             var attemptKey = $"{LOGIN_ATTEMPT_PREFIX}{username}";
-            
+
             // 获取当前失败次数
             int currentAttempts = 0;
             _cache.TryGetValue(attemptKey, out currentAttempts);
@@ -183,7 +183,7 @@ namespace Lean.Hbt.Infrastructure.Security
                     // admin用户：临时锁定
                     var lockoutEndTime = DateTime.UtcNow.AddMinutes(_options.LockoutMinutes);
                     _cache.Set(attemptKey + "_lockout", lockoutEndTime, TimeSpan.FromMinutes(_options.LockoutMinutes));
-                    _logger.LogWarning("[登录策略] 管理员账号已被临时锁定 {Minutes} 分钟", _options.LockoutMinutes);
+                    _logger.Warn("[登录策略] 管理员账号已被临时锁定 {Minutes} 分钟", _options.LockoutMinutes);
                 }
             }
             else
@@ -198,7 +198,7 @@ namespace Lean.Hbt.Infrastructure.Security
                         user.IsLock = 2;
                         user.LoginCount = currentAttempts;
                         await _userRepository.UpdateAsync(user);
-                        _logger.LogWarning("[登录策略] 用户 {Username} 已被永久锁定", username);
+                        _logger.Warn("[登录策略] 用户 {Username} 已被永久锁定", username);
                     }
                     else
                     {
@@ -211,8 +211,8 @@ namespace Lean.Hbt.Infrastructure.Security
 
             // 更新缓存中的失败次数（24小时有效期）
             _cache.Set(attemptKey, currentAttempts, TimeSpan.FromHours(24));
-            
-            _logger.LogWarning("[登录策略] 用户 {Username} 登录失败，当前失败次数: {Count}", username, currentAttempts);
+
+            _logger.Warn("[登录策略] 用户 {Username} 登录失败，当前失败次数: {Count}", username, currentAttempts);
         }
 
         /// <summary>
@@ -248,7 +248,7 @@ namespace Lean.Hbt.Infrastructure.Security
                 await _userRepository.UpdateAsync(user);
             }
 
-            _logger.LogInformation("[登录策略] 用户 {Username} 登录成功，清除所有限制", username);
+            _logger.Info("[登录策略] 用户 {Username} 登录成功，清除所有限制", username);
         }
 
         /// <summary>

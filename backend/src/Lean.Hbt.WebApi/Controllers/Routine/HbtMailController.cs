@@ -9,7 +9,6 @@
 
 using Lean.Hbt.Application.Dtos.Routine;
 using Lean.Hbt.Application.Services.Routine;
-using Lean.Hbt.Domain.IServices.Admin;
 
 namespace Lean.Hbt.WebApi.Controllers.Routine
 {
@@ -35,10 +34,12 @@ namespace Lean.Hbt.WebApi.Controllers.Routine
         /// <param name="mailService">邮件服务</param>
         /// <param name="localization">本地化服务</param>
         /// <param name="currentUser">当前用户服务</param>
+        /// <param name="logger">日志服务</param>
         public HbtMailController(
+            IHbtCurrentUser currentUser,
             IHbtMailService mailService,
-            IHbtLocalizationService localization,
-            IHbtCurrentUser currentUser) : base(localization)
+                        IHbtLocalizationService localization,
+            IHbtLogger logger) : base(localization, logger)
         {
             _mailService = mailService;
             _currentUser = currentUser;
@@ -197,7 +198,7 @@ namespace Lean.Hbt.WebApi.Controllers.Routine
         public async Task<FileResult> ExportAsync([FromQuery] HbtMailQueryDto query)
         {
             var data = await _mailService.ExportAsync(query);
-            return File(data, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "邮件数据.xlsx");
+            return File(data.content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", data.fileName);
         }
     }
 }

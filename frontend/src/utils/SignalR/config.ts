@@ -10,7 +10,8 @@ export const signalRConfig = {
   maxRetries: 5,
   heartbeatInterval: 30000,
   heartbeatTimeout: 10000,
-  baseUrl: `${import.meta.env.VITE_API_BASE_URL}/signalr/hbthub`
+  baseUrl: `${import.meta.env.VITE_API_BASE_URL}/signalr/hbthub`,
+  transport: HttpTransportType.WebSockets | HttpTransportType.ServerSentEvents | HttpTransportType.LongPolling
 }
 
 // 重试策略配置

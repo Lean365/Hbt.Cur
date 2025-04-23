@@ -7,12 +7,8 @@
 // 描述   : 任务日志控制器
 //===================================================================
 
-using System.Threading.Tasks;
 using Lean.Hbt.Application.Dtos.Audit;
 using Lean.Hbt.Application.Services.Audit;
-using Lean.Hbt.Domain.IServices.Admin;
-using Microsoft.AspNetCore.Mvc;
-using Lean.Hbt.Infrastructure.Security.Attributes;
 
 namespace Lean.Hbt.WebApi.Controllers.Audit
 {
@@ -31,7 +27,10 @@ namespace Lean.Hbt.WebApi.Controllers.Audit
         /// </summary>
         /// <param name="quartzLogService">任务日志服务</param>
         /// <param name="localization">本地化服务</param>
-        public HbtQuartzLogController(IHbtQuartzLogService quartzLogService, IHbtLocalizationService localization) : base(localization)
+        /// <param name="logger">日志服务</param>
+        public HbtQuartzLogController(IHbtQuartzLogService quartzLogService,
+                        IHbtLocalizationService localization,
+            IHbtLogger logger) : base(localization, logger)
         {
             _quartzLogService = quartzLogService;
         }
@@ -73,8 +72,8 @@ namespace Lean.Hbt.WebApi.Controllers.Audit
         [HbtPerm("audit:quartzlog:export")]
         public async Task<IActionResult> ExportAsync([FromQuery] HbtQuartzLogQueryDto query, [FromQuery] string sheetName = "任务日志数据")
         {
-            var result = await _quartzLogService.ExportAsync(query, sheetName);
-            return File(result, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"任务日志_{DateTime.Now:yyyyMMddHHmmss}.xlsx");
+            var (_, content) = await _quartzLogService.ExportAsync(query, sheetName);
+            return File(content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"任务日志_{DateTime.Now:yyyyMMddHHmmss}.xlsx");
         }
 
         /// <summary>
@@ -89,4 +88,4 @@ namespace Lean.Hbt.WebApi.Controllers.Audit
             return Success(result);
         }
     }
-} 
+}

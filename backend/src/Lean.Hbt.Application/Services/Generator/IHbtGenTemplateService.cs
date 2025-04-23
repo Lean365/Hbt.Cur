@@ -61,6 +61,13 @@ public interface IHbtGenTemplateService
     /// <returns>是否删除成功</returns>
     Task<bool> BatchDeleteAsync(long[] ids);
 
+    /// <summary>
+    /// 更新模板状态
+    /// </summary>
+    /// <param name="input">状态更新对象</param>
+    /// <returns>是否成功</returns>
+    Task<bool> UpdateStatusAsync(HbtGenTemplateStatusDto input);
+
     #endregion 基础操作
 
     #region 模板操作
@@ -79,14 +86,14 @@ public interface IHbtGenTemplateService
     /// <param name="query">查询条件</param>
     /// <param name="sheetName">工作表名称</param>
     /// <returns>Excel文件字节数组</returns>
-    Task<byte[]> ExportTemplatesAsync(HbtGenTemplateQueryDto query, string sheetName = "Sheet1");
+    Task<(string fileName, byte[] content)> ExportTemplatesAsync(HbtGenTemplateQueryDto query, string sheetName = "Sheet1");
 
     /// <summary>
     /// 获取模板文件
     /// </summary>
     /// <param name="sheetName">工作表名称</param>
     /// <returns>Excel模板文件字节数组</returns>
-    Task<byte[]> GetTemplateAsync(string sheetName = "Sheet1");
+    Task<(string fileName, byte[] content)> GetTemplateAsync(string sheetName = "Sheet1");
 
     #endregion 模板操作
 }

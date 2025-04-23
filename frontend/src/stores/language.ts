@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { getSupportedLanguages } from '@/api/admin/hbtLanguage'
+import { getSupportedLanguages } from '@/api/admin/language'
 import type { HbtLanguage } from '@/types/admin/language'
 import type { HbtApiResponse } from '@/types/common'
 import { SUPPORTED_LOCALES, type SupportedLocale } from './app'
@@ -22,21 +22,24 @@ export const useLanguageStore = defineStore('language', () => {
 
     loading.value = true
     try {
-      const response = await getSupportedLanguages()
+      const { data: response } = await getSupportedLanguages()
       console.log('[Language] 获取语言列表响应:', response)
 
       if (response.code === 200 && Array.isArray(response.data)) {
-        languageList.value = response.data.map(lang => ({
-          langCode: lang.langCode as SupportedLocale,
-          langName: lang.langName,
-          langIcon: lang.langIcon
-        }))
+        languageList.value = response.data
+          .map(lang => ({
+            langCode: lang.langCode as SupportedLocale,
+            langName: lang.langName,
+            langIcon: lang.langIcon
+          }))
+          .filter(lang => SUPPORTED_LOCALES.includes(lang.langCode))
         console.log('[Language] 语言列表更新成功:', languageList.value)
       } else {
-        console.error('[Language] 获取语言列表失败: 响应格式不正确')
+        throw new Error('响应格式不正确')
       }
     } catch (error) {
       console.error('[Language] 获取语言列表失败:', error)
+      throw error
     } finally {
       loading.value = false
     }

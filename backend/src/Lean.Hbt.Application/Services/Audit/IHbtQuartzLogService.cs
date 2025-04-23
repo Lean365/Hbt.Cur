@@ -38,7 +38,7 @@ namespace Lean.Hbt.Application.Services.Audit
         /// <param name="query">查询条件</param>
         /// <param name="sheetName">工作表名称</param>
         /// <returns>导出的Excel文件字节数组</returns>
-        Task<byte[]> ExportAsync(HbtQuartzLogQueryDto query, string sheetName = "任务日志数据");
+        Task<(string fileName, byte[] content)> ExportAsync(HbtQuartzLogQueryDto query, string sheetName = "任务日志数据");
 
         /// <summary>
         /// 清空任务日志

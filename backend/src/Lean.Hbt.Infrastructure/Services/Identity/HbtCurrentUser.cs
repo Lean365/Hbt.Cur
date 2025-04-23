@@ -8,7 +8,7 @@
 //===================================================================
 
 using System.Security.Claims;
-using Lean.Hbt.Domain.IServices.Identity;
+using Lean.Hbt.Domain.IServices.Extensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 

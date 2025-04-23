@@ -67,6 +67,6 @@ namespace Lean.Hbt.Application.Services.Routine
         /// <param name="query">查询条件</param>
         /// <param name="sheetName">工作表名称</param>
         /// <returns>Excel文件字节数组</returns>
-        Task<byte[]> ExportAsync(HbtMailTmplQueryDto query, string sheetName = "邮件模板数据");
+        Task<(string fileName, byte[] content)> ExportAsync(HbtMailTmplQueryDto query, string sheetName = "邮件模板数据");
     }
 } 

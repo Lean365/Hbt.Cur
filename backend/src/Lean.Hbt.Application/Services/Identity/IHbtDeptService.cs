@@ -7,12 +7,7 @@
 // 描述   : 部门服务接口
 //===================================================================
 
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Lean.Hbt.Application.Dtos.Identity;
-using Lean.Hbt.Common.Models;
-using Lean.Hbt.Common.Enums;
-using System.IO;
 
 namespace Lean.Hbt.Application.Services.Identity
 {
@@ -37,7 +32,7 @@ namespace Lean.Hbt.Application.Services.Identity
         /// </summary>
         /// <param name="status">状态</param>
         /// <returns>部门树形结构</returns>
-        Task<List<HbtDeptDto>> GetTreeAsync(int  status);
+        Task<List<HbtDeptDto>> GetTreeAsync(int status);
 
         /// <summary>
         /// 获取部门详情
@@ -75,27 +70,27 @@ namespace Lean.Hbt.Application.Services.Identity
         Task<bool> BatchDeleteAsync(long[] deptIds);
 
         /// <summary>
-        /// 导入部门
+        /// 导入部门数据
         /// </summary>
         /// <param name="fileStream">Excel文件流</param>
         /// <param name="sheetName">工作表名称</param>
         /// <returns>导入结果</returns>
-        Task<List<HbtDeptTemplateDto>> ImportAsync(Stream fileStream, string sheetName = "部门数据");
+        Task<(int success, int fail)> ImportAsync(Stream fileStream, string sheetName = "HbtDept");
 
         /// <summary>
-        /// 导出部门
+        /// 导出部门数据
         /// </summary>
-        /// <param name="data">要导出的数据</param>
+        /// <param name="query">查询条件</param>
         /// <param name="sheetName">工作表名称</param>
-        /// <returns>Excel文件字节数组</returns>
-        Task<byte[]> ExportAsync(IEnumerable<HbtDeptExportDto> data, string sheetName = "部门信息");
+        /// <returns>包含文件名和内容的元组</returns>
+        Task<(string fileName, byte[] content)> ExportAsync(HbtDeptQueryDto query, string sheetName = "HbtDept");
 
         /// <summary>
         /// 获取导入模板
         /// </summary>
         /// <param name="sheetName">工作表名称</param>
-        /// <returns>Excel模板文件字节数组</returns>
-        Task<byte[]> GenerateTemplateAsync(string sheetName = "部门导入模板");
+        /// <returns>包含文件名和内容的元组</returns>
+        Task<(string fileName, byte[] content)> GetTemplateAsync(string sheetName = "HbtDept");
 
         /// <summary>
         /// 修改部门状态
@@ -107,5 +102,12 @@ namespace Lean.Hbt.Application.Services.Identity
         /// </summary>
         /// <returns>部门选项列表</returns>
         Task<List<HbtSelectOption>> GetOptionsAsync();
+
+        /// <summary>
+        /// 生成导入模板
+        /// </summary>
+        /// <param name="sheetName">工作表名称</param>
+        /// <returns>包含文件名和内容的元组</returns>
+        Task<(string fileName, byte[] content)> GenerateTemplateAsync(string sheetName = "HbtDept");
     }
-} 
+}

@@ -15,7 +15,7 @@ global using System.Threading.Tasks;
 
 // 项目依赖
 global using Lean.Hbt.Domain.Entities;
-global using Lean.Hbt.Domain.IServices.Identity;
+global using Lean.Hbt.Domain.IServices.Extensions;
 global using Lean.Hbt.Domain.Repositories;
 global using Lean.Hbt.Infrastructure.Repositories;
 

@@ -7,7 +7,7 @@
     </a-button>
     <template #overlay>
       <a-menu @click="({ key }) => handleLocaleChange(String(key))">
-        <a-menu-item v-for="lang in languageStore.languageList" :key="lang.langCode">
+        <a-menu-item v-for="lang in languageList" :key="lang.langCode">
           <template #icon>
             <check-outlined v-if="currentLocale === lang.langCode" />
           </template>
@@ -15,8 +15,8 @@
             {{ lang.langIcon }} {{ lang.langName }}
           </span>
         </a-menu-item>
-        <a-menu-divider v-if="languageStore.languageList.length === 0" />
-        <a-menu-item v-if="languageStore.languageList.length === 0" disabled>
+        <a-menu-divider v-if="languageList.length === 0" />
+        <a-menu-item v-if="languageList.length === 0" disabled>
           {{ loading ? t('common.loading') : t('common.noData') }}
         </a-menu-item>
       </a-menu>
@@ -38,6 +38,7 @@ const appStore = useAppStore()
 const languageStore = useLanguageStore()
 const currentLocale = ref(appStore.language)
 const loading = ref(false)
+const languageList = ref(languageStore.languageList)
 
 // 处理语言切换
 const handleLocaleChange = async (langCode: string) => {
@@ -57,6 +58,11 @@ const handleLocaleChange = async (langCode: string) => {
 // 监听语言变化
 watch(() => appStore.language, (newLocale) => {
   currentLocale.value = newLocale
+})
+
+// 监听语言列表变化
+watch(() => languageStore.languageList, (newList) => {
+  languageList.value = newList
 })
 
 // 组件挂载时初始化语言列表

@@ -34,7 +34,7 @@ public interface IHbtOnlineMessageService
     /// <param name="query">查询条件</param>
     /// <param name="sheetName">工作表名称</param>
     /// <returns>Excel文件字节数组</returns>
-    Task<byte[]> ExportAsync(HbtOnlineMessageQueryDto query, string sheetName = "在线消息信息");
+    Task<(string fileName, byte[] content)> ExportAsync(HbtOnlineMessageQueryDto query, string sheetName = "在线消息信息");
 
     /// <summary>
     /// 获取消息详情

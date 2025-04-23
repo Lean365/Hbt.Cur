@@ -8,7 +8,7 @@
 //===================================================================
 
 using Lean.Hbt.Domain.Entities.Identity;
-using Lean.Hbt.Domain.IServices;
+using Lean.Hbt.Domain.IServices.Extensions;
 
 namespace Lean.Hbt.Infrastructure.Data.Seeds;
 

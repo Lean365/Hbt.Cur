@@ -47,7 +47,7 @@ namespace Lean.Hbt.Common.Options
         public int ExceptionLogRetentionDays { get; set; } = 90;
 
         /// <summary>
-        /// 数据库差异日志保留天数
+        /// 差异日志保留天数
         /// </summary>
         public int DbDiffLogRetentionDays { get; set; } = 90;
 

@@ -9,7 +9,7 @@
 
 using Lean.Hbt.Application.Dtos.Routine;
 using Lean.Hbt.Application.Services.Routine;
-using Lean.Hbt.Domain.IServices.Admin;
+using Lean.Hbt.Domain.IServices.Extensions;
 
 namespace Lean.Hbt.WebApi.Controllers.Routine
 {
@@ -28,7 +28,10 @@ namespace Lean.Hbt.WebApi.Controllers.Routine
         /// </summary>
         /// <param name="quartzTaskService">定时任务服务</param>
         /// <param name="localization">本地化服务</param>
-        public HbtQuartzController(IHbtQuartzService quartzTaskService, IHbtLocalizationService localization) : base(localization)
+        /// <param name="logger">日志服务</param>
+        public HbtQuartzController(IHbtQuartzService quartzTaskService,
+                                    IHbtLocalizationService localization,
+            IHbtLogger logger) : base(localization, logger)
         {
             _quartzTaskService = quartzTaskService;
         }
@@ -151,7 +154,7 @@ namespace Lean.Hbt.WebApi.Controllers.Routine
         public async Task<IActionResult> ExportAsync([FromQuery] HbtQuartzQueryDto query)
         {
             var result = await _quartzTaskService.ExportAsync(query);
-            return File(result, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "定时任务数据.xlsx");
+            return File(result.content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", result.fileName);
         }
     }
 }

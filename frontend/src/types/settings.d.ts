@@ -43,4 +43,6 @@ export interface NotificationItemType {
   status: 'read' | 'unread'
   /** 类型 */
   type: 'online' | 'mail' | 'notice'
+  /** 额外数据 */
+  data?: Record<string, any>
 } 

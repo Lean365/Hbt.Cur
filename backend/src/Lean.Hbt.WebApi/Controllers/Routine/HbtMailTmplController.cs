@@ -7,12 +7,9 @@
 // 描述   : 邮件模板控制器
 //===================================================================
 
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Lean.Hbt.Common.Models;
 using Lean.Hbt.Application.Dtos.Routine;
 using Lean.Hbt.Application.Services.Routine;
-using Lean.Hbt.Domain.IServices.Admin;
+
 namespace Lean.Hbt.WebApi.Controllers.Routine
 {
     /// <summary>
@@ -21,7 +18,6 @@ namespace Lean.Hbt.WebApi.Controllers.Routine
     [Route("api/[controller]", Name = "邮件模板")]
     [ApiController]
     [ApiModule("routine", "日常办公")]
-
     public class HbtMailTmplController : HbtBaseController
     {
         private readonly IHbtMailTmplService _tmplService;
@@ -31,9 +27,11 @@ namespace Lean.Hbt.WebApi.Controllers.Routine
         /// </summary>
         /// <param name="tmplService">邮件模板服务</param>
         /// <param name="localization">本地化服务</param>
+        /// <param name="logger">日志服务</param>
         public HbtMailTmplController(
             IHbtMailTmplService tmplService,
-            IHbtLocalizationService localization) : base(localization)
+                        IHbtLocalizationService localization,
+            IHbtLogger logger) : base(localization, logger)
         {
             _tmplService = tmplService;
         }
@@ -121,7 +119,7 @@ namespace Lean.Hbt.WebApi.Controllers.Routine
         public async Task<IActionResult> ExportAsync([FromQuery] HbtMailTmplQueryDto query)
         {
             var data = await _tmplService.ExportAsync(query);
-            return File(data, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "邮件模板数据.xlsx");
+            return File(data.content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", data.fileName);
         }
     }
-} 
+}

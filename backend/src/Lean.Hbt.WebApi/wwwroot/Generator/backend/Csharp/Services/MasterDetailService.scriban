@@ -43,14 +43,14 @@ public class {{ pascal_case table.table_name }}Service : I{{ pascal_case table.t
     {
         try
         {
-            _logger.LogInformation("开始获取{{ table.comment }}分页列表");
+            _logger.Info("开始获取{{ table.comment }}分页列表");
             var result = await _repository.GetListAsync(input);
-            _logger.LogInformation("获取{{ table.comment }}分页列表成功");
+            _logger.Info("获取{{ table.comment }}分页列表成功");
             return result;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "获取{{ table.comment }}分页列表失败");
+            _logger.Error( "获取{{ table.comment }}分页列表失败");
             throw new BusinessException("获取{{ table.comment }}分页列表失败", ex);
         }
     }
@@ -64,14 +64,14 @@ public class {{ pascal_case table.table_name }}Service : I{{ pascal_case table.t
     {
         try
         {
-            _logger.LogInformation("开始获取{{ table.comment }}详情，ID：{Id}", id);
+            _logger.Info("开始获取{{ table.comment }}详情，ID：{Id}", id);
             var result = await _repository.GetByIdAsync(id);
-            _logger.LogInformation("获取{{ table.comment }}详情成功，ID：{Id}", id);
+            _logger.Info("获取{{ table.comment }}详情成功，ID：{Id}", id);
             return result;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "获取{{ table.comment }}详情失败，ID：{Id}", id);
+            _logger.Error( "获取{{ table.comment }}详情失败，ID：{Id}", id);
             throw new BusinessException("获取{{ table.comment }}详情失败", ex);
         }
     }
@@ -85,14 +85,14 @@ public class {{ pascal_case table.table_name }}Service : I{{ pascal_case table.t
     {
         try
         {
-            _logger.LogInformation("开始创建{{ table.comment }}");
+            _logger.Info("开始创建{{ table.comment }}");
             var result = await _repository.CreateAsync(input);
-            _logger.LogInformation("创建{{ table.comment }}成功");
+            _logger.Info("创建{{ table.comment }}成功");
             return result;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "创建{{ table.comment }}失败");
+            _logger.Error( "创建{{ table.comment }}失败");
             throw new BusinessException("创建{{ table.comment }}失败", ex);
         }
     }
@@ -106,14 +106,14 @@ public class {{ pascal_case table.table_name }}Service : I{{ pascal_case table.t
     {
         try
         {
-            _logger.LogInformation("开始更新{{ table.comment }}，ID：{Id}", input.Id);
+            _logger.Info("开始更新{{ table.comment }}，ID：{Id}", input.Id);
             var result = await _repository.UpdateAsync(input);
-            _logger.LogInformation("更新{{ table.comment }}成功，ID：{Id}", input.Id);
+            _logger.Info("更新{{ table.comment }}成功，ID：{Id}", input.Id);
             return result;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "更新{{ table.comment }}失败，ID：{Id}", input.Id);
+            _logger.Error( "更新{{ table.comment }}失败，ID：{Id}", input.Id);
             throw new BusinessException("更新{{ table.comment }}失败", ex);
         }
     }
@@ -127,14 +127,14 @@ public class {{ pascal_case table.table_name }}Service : I{{ pascal_case table.t
     {
         try
         {
-            _logger.LogInformation("开始删除{{ table.comment }}，IDs：{Ids}", string.Join(",", ids));
+            _logger.Info("开始删除{{ table.comment }}，IDs：{Ids}", string.Join(",", ids));
             var result = await _repository.DeleteAsync(ids);
-            _logger.LogInformation("删除{{ table.comment }}成功，IDs：{Ids}", string.Join(",", ids));
+            _logger.Info("删除{{ table.comment }}成功，IDs：{Ids}", string.Join(",", ids));
             return result;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "删除{{ table.comment }}失败，IDs：{Ids}", string.Join(",", ids));
+            _logger.Error( "删除{{ table.comment }}失败，IDs：{Ids}", string.Join(",", ids));
             throw new BusinessException("删除{{ table.comment }}失败", ex);
         }
     }
@@ -148,14 +148,14 @@ public class {{ pascal_case table.table_name }}Service : I{{ pascal_case table.t
     {
         try
         {
-            _logger.LogInformation("开始获取{{ table.comment }}从表列表，主表ID：{MasterId}", masterId);
+            _logger.Info("开始获取{{ table.comment }}从表列表，主表ID：{MasterId}", masterId);
             var result = await _repository.GetDetailsAsync(masterId);
-            _logger.LogInformation("获取{{ table.comment }}从表列表成功，主表ID：{MasterId}", masterId);
+            _logger.Info("获取{{ table.comment }}从表列表成功，主表ID：{MasterId}", masterId);
             return result;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "获取{{ table.comment }}从表列表失败，主表ID：{MasterId}", masterId);
+            _logger.Error( "获取{{ table.comment }}从表列表失败，主表ID：{MasterId}", masterId);
             throw new BusinessException("获取{{ table.comment }}从表列表失败", ex);
         }
     }
@@ -170,14 +170,14 @@ public class {{ pascal_case table.table_name }}Service : I{{ pascal_case table.t
     {
         try
         {
-            _logger.LogInformation("开始更新{{ table.comment }}从表数据，主表ID：{MasterId}", masterId);
+            _logger.Info("开始更新{{ table.comment }}从表数据，主表ID：{MasterId}", masterId);
             var result = await _repository.UpdateDetailsAsync(masterId, details);
-            _logger.LogInformation("更新{{ table.comment }}从表数据成功，主表ID：{MasterId}", masterId);
+            _logger.Info("更新{{ table.comment }}从表数据成功，主表ID：{MasterId}", masterId);
             return result;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "更新{{ table.comment }}从表数据失败，主表ID：{MasterId}", masterId);
+            _logger.Error( "更新{{ table.comment }}从表数据失败，主表ID：{MasterId}", masterId);
             throw new BusinessException("更新{{ table.comment }}从表数据失败", ex);
         }
     }
@@ -191,14 +191,14 @@ public class {{ pascal_case table.table_name }}Service : I{{ pascal_case table.t
     {
         try
         {
-            _logger.LogInformation("开始删除{{ table.comment }}从表数据，主表ID：{MasterId}", masterId);
+            _logger.Info("开始删除{{ table.comment }}从表数据，主表ID：{MasterId}", masterId);
             var result = await _repository.DeleteDetailsAsync(masterId);
-            _logger.LogInformation("删除{{ table.comment }}从表数据成功，主表ID：{MasterId}", masterId);
+            _logger.Info("删除{{ table.comment }}从表数据成功，主表ID：{MasterId}", masterId);
             return result;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "删除{{ table.comment }}从表数据失败，主表ID：{MasterId}", masterId);
+            _logger.Error( "删除{{ table.comment }}从表数据失败，主表ID：{MasterId}", masterId);
             throw new BusinessException("删除{{ table.comment }}从表数据失败", ex);
         }
     }

@@ -27,7 +27,12 @@ namespace Lean.Hbt.Application.Services.Routine.Jobs
     public class HbtQuartzJob : IJob
     {
         private readonly IServiceProvider _serviceProvider;
-        private readonly ILogger<HbtQuartzJob> _logger;
+
+        /// <summary>
+        /// 日志服务
+        /// </summary>
+        protected readonly IHbtLogger _logger;
+
         private readonly IHbtRepository<HbtQuartz> _taskRepository;
         private readonly IHbtRepository<HbtQuartzLog> _logRepository;
         private readonly HttpClient _httpClient;
@@ -37,7 +42,7 @@ namespace Lean.Hbt.Application.Services.Routine.Jobs
         /// </summary>
         public HbtQuartzJob(
             IServiceProvider serviceProvider,
-            ILogger<HbtQuartzJob> logger,
+            IHbtLogger logger,
             IHbtRepository<HbtQuartz> taskRepository,
             IHbtRepository<HbtQuartzLog> logRepository,
             IHttpClientFactory httpClientFactory)
@@ -57,14 +62,14 @@ namespace Lean.Hbt.Application.Services.Routine.Jobs
             var taskId = context.JobDetail.JobDataMap.GetLong("taskId");
             if (taskId <= 0)
             {
-                _logger.LogError("任务ID为空，无法执行任务");
+                _logger.Error("任务ID为空，无法执行任务");
                 return;
             }
 
             var task = await _taskRepository.GetByIdAsync(taskId);
             if (task == null)
             {
-                _logger.LogError($"未找到ID为{taskId}的任务");
+                _logger.Error($"未找到ID为{taskId}的任务");
                 return;
             }
 
@@ -79,12 +84,15 @@ namespace Lean.Hbt.Application.Services.Routine.Jobs
                     case 1: // 程序集
                         await ExecuteAssemblyAsync(task);
                         break;
+
                     case 2: // 网络请求
                         await ExecuteHttpRequestAsync(task);
                         break;
+
                     case 3: // SQL语句
                         await ExecuteSqlAsync(task);
                         break;
+
                     default:
                         throw new HbtException($"不支持的任务类型: {task.TaskType}");
                 }
@@ -96,7 +104,7 @@ namespace Lean.Hbt.Application.Services.Routine.Jobs
             {
                 success = false;
                 message = $"执行失败: {ex.Message}";
-                _logger.LogError(ex, $"执行任务[{task.TaskName}]失败");
+                _logger.Error($"执行任务[{task.TaskName}]失败", ex.Message);
             }
 
             var endTime = DateTime.Now;
@@ -216,4 +224,4 @@ namespace Lean.Hbt.Application.Services.Routine.Jobs
             }
         }
     }
-} 
+}

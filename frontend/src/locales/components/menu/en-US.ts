@@ -19,11 +19,10 @@ export default {
     },
     admin: {
       _self: 'System Administration',
-      config: 'System Configuration',
+      config: 'Config Management',
       language: 'Language Management',
-      dicttype: 'Dictionary Types',
-      dictdata: 'Dictionary Data',
-      translation: 'Translation Management'
+      dict: 'Dictionary Management',
+
     },
     identity: {
       _self: 'Identity Management',

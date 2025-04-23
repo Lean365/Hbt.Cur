@@ -9,7 +9,6 @@
 
 using Lean.Hbt.Application.Dtos.Identity;
 using Lean.Hbt.Application.Services.Identity;
-using Lean.Hbt.Domain.IServices.Admin;
 
 namespace Lean.Hbt.WebApi.Controllers.Identity
 {
@@ -32,7 +31,10 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// </summary>
         /// <param name="postService">岗位服务</param>
         /// <param name="localization">本地化服务</param>
-        public HbtPostController(IHbtPostService postService, IHbtLocalizationService localization) : base(localization)
+        /// <param name="logger">日志服务</param>
+        public HbtPostController(IHbtPostService postService,
+                                    IHbtLocalizationService localization,
+            IHbtLogger logger) : base(localization, logger)
         {
             _postService = postService;
         }
@@ -140,8 +142,8 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         [HbtPerm("identity:post:export")]
         public async Task<IActionResult> ExportAsync([FromQuery] HbtPostQueryDto query, [FromQuery] string sheetName = "岗位数据")
         {
-            var result = await _postService.ExportAsync(query, sheetName);
-            return File(result, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "岗位数据.xlsx");
+            var (fileName, content) = await _postService.ExportAsync(query, sheetName);
+            return File(content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
         }
 
         /// <summary>

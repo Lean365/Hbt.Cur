@@ -7,17 +7,11 @@
 // 描述    : SignalR用户服务实现
 //===================================================================
 
-using System;
-using System.Collections.Generic;
 using System.Collections.Concurrent;
-using System.Linq;
-using System.Threading.Tasks;
 using Lean.Hbt.Common.Models;
 using Lean.Hbt.Domain.Entities.SignalR;
 using Lean.Hbt.Domain.IServices.SignalR;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.Extensions.Logging;
-using System.Linq.Expressions;
 
 namespace Lean.Hbt.Infrastructure.SignalR
 {
@@ -27,7 +21,12 @@ namespace Lean.Hbt.Infrastructure.SignalR
     public class HbtSignalRUserService : IHbtSignalRUserService
     {
         private readonly IHubContext<HbtSignalRHub> _hubContext;
-        private readonly ILogger<HbtSignalRUserService> _logger;
+
+        /// <summary>
+        /// 日志服务
+        /// </summary>
+        protected readonly IHbtLogger _logger;
+
         private readonly IHbtRepository<HbtOnlineUser> _repository;
         private static readonly ConcurrentDictionary<string, List<HbtSignalRDevice>> _userDevices = new();
 
@@ -39,7 +38,8 @@ namespace Lean.Hbt.Infrastructure.SignalR
         /// <param name="repository"></param>
         public HbtSignalRUserService(
             IHubContext<HbtSignalRHub> hubContext,
-            ILogger<HbtSignalRUserService> logger,
+            IHbtLogger logger,
+
             IHbtRepository<HbtOnlineUser> repository)
         {
             _hubContext = hubContext;
@@ -52,42 +52,65 @@ namespace Lean.Hbt.Infrastructure.SignalR
         /// </summary>
         public async Task AddUserDevice(HbtSignalRDevice device)
         {
-            _logger.LogInformation("开始添加用户设备 - 用户ID: {UserId}, 设备ID: {DeviceId}, 连接ID: {ConnectionId}", 
-                device.UserId, device.DeviceId, device.ConnectionId);
-
-            var userId = device.UserId.ToString();
-            if (!_userDevices.ContainsKey(userId))
+            try 
             {
-                _logger.LogInformation("创建新的用户设备列表 - 用户ID: {UserId}", userId);
-                _userDevices[userId] = new List<HbtSignalRDevice>();
+                _logger.Info("开始添加/更新用户设备 - UserId: {UserId}, DeviceId: {DeviceId}, ConnectionId: {ConnectionId}",
+                    device.UserId, device.DeviceId, device.ConnectionId);
+
+                var userId = device.UserId.ToString();
+                if (!_userDevices.ContainsKey(userId))
+                {
+                    _userDevices[userId] = new List<HbtSignalRDevice>();
+                }
+
+                // 检查是否存在相同设备ID的设备
+                var existingDevices = _userDevices[userId].Where(d => d.DeviceId == device.DeviceId).ToList();
+                if (existingDevices.Any())
+                {
+                    _logger.Info("发现相同设备ID的设备，更新设备信息 - 设备ID: {DeviceId}", device.DeviceId);
+                    // 更新所有相同设备ID的设备状态
+                    foreach (var existingDevice in existingDevices)
+                    {
+                        existingDevice.ConnectionId = device.ConnectionId;
+                        existingDevice.LastActivity = DateTime.Now;
+                        existingDevice.LastHeartbeat = DateTime.Now;
+                        existingDevice.OnlineStatus = device.OnlineStatus;
+                    }
+                }
+                else
+                {
+                    _logger.Info("添加新设备 - 设备ID: {DeviceId}", device.DeviceId);
+                    device.LastActivity = DateTime.Now;
+                    device.LastHeartbeat = DateTime.Now;
+                    _userDevices[userId].Add(device);
+                }
+
+                // 保存到数据库
+                var onlineUser = new HbtOnlineUser
+                {
+                    UserId = device.UserId,
+                    DeviceId = device.DeviceId,
+                    ConnectionId = device.ConnectionId,
+                    LastActivity = DateTime.Now,
+                    LastHeartbeat = DateTime.Now,
+                    OnlineStatus = device.OnlineStatus,
+                    TenantId = device.TenantId,
+                    GroupId = device.GroupId,
+                    ClientIp = device.IpAddress,
+                    UserAgent = device.UserAgent
+                };
+
+                await SaveOnlineUserAsync(onlineUser);
+                _logger.Info("设备信息已同步到数据库 - UserId: {UserId}, DeviceId: {DeviceId}", userId, device.DeviceId);
+
+                _logger.Info("当前用户 {UserId} 的设备数量: {DeviceCount}", userId, _userDevices[userId].Count);
             }
-
-            var existingDevice = _userDevices[userId]
-                .FirstOrDefault(d => d.DeviceId == device.DeviceId);
-
-            if (existingDevice != null)
+            catch (Exception ex)
             {
-                _logger.LogInformation("更新现有设备信息 - 设备ID: {DeviceId}", device.DeviceId);
-                existingDevice.ConnectionId = device.ConnectionId;
-                existingDevice.LastActivity = device.LastActivity;
-                existingDevice.LastHeartbeat = device.LastHeartbeat;
-                existingDevice.OnlineStatus = device.OnlineStatus;
+                _logger.Error("添加用户设备时发生错误 - UserId: {UserId}, DeviceId: {DeviceId}, Error: {Error}", 
+                    device.UserId, device.DeviceId, ex.Message);
+                throw;
             }
-            else
-            {
-                _logger.LogInformation("添加新设备 - 设备ID: {DeviceId}", device.DeviceId);
-                _userDevices[userId].Add(device);
-            }
-
-            _logger.LogInformation("当前用户 {UserId} 的设备数量: {DeviceCount}", 
-                userId, _userDevices[userId].Count);
-
-            // 验证设备是否已添加
-            var devices = GetUserDevices(userId);
-            _logger.LogInformation("验证设备信息 - 用户ID: {UserId}, 设备数量: {DeviceCount}", 
-                userId, devices.Count);
-
-            await Task.CompletedTask;
         }
 
         /// <summary>
@@ -95,8 +118,8 @@ namespace Lean.Hbt.Infrastructure.SignalR
         /// </summary>
         public List<HbtSignalRDevice> GetUserDevices(string userId)
         {
-            _logger.LogInformation("开始获取用户 {UserId} 的设备列表", userId);
-            
+            _logger.Info("开始获取用户 {UserId} 的设备列表", userId);
+
             // 先从内存中获取
             if (_userDevices.TryGetValue(userId, out var devices))
             {
@@ -104,22 +127,22 @@ namespace Lean.Hbt.Infrastructure.SignalR
                 devices = devices.Where(d => d.OnlineStatus == 0).ToList();
                 if (devices.Any())
                 {
-                    _logger.LogInformation("从内存中找到用户 {UserId} 的在线设备列表，数量: {DeviceCount}", userId, devices.Count);
+                    _logger.Info("从内存中找到用户 {UserId} 的在线设备列表，数量: {DeviceCount}", userId, devices.Count);
                     return devices;
                 }
                 // 如果内存中没有在线设备，从字典中移除
                 _userDevices.TryRemove(userId, out _);
             }
-            
+
             // 如果内存中没有，从数据库查询
             var exp = Expressionable.Create<HbtOnlineUser>();
             exp.And(u => u.UserId == long.Parse(userId) && u.OnlineStatus == 0);
             var onlineUsers = _repository.GetListAsync(exp.ToExpression()).Result;
-            
+
             if (onlineUsers != null && onlineUsers.Any())
             {
-                _logger.LogInformation("从数据库中找到用户 {UserId} 的在线设备列表，数量: {DeviceCount}", userId, onlineUsers.Count);
-                
+                _logger.Info("从数据库中找到用户 {UserId} 的在线设备列表，数量: {DeviceCount}", userId, onlineUsers.Count);
+
                 // 将数据库中的设备信息添加到内存中
                 devices = onlineUsers.Select(u => new HbtSignalRDevice
                 {
@@ -134,12 +157,12 @@ namespace Lean.Hbt.Infrastructure.SignalR
                     IpAddress = u.ClientIp,
                     UserAgent = u.UserAgent
                 }).ToList();
-                
+
                 _userDevices[userId] = devices;
                 return devices;
             }
-            
-            _logger.LogWarning("未找到用户 {UserId} 的在线设备列表", userId);
+
+            _logger.Warn("未找到用户 {UserId} 的在线设备列表", userId);
             return new List<HbtSignalRDevice>();
         }
 
@@ -168,7 +191,29 @@ namespace Lean.Hbt.Infrastructure.SignalR
         /// </summary>
         public HbtSignalRDevice GetUserDevice(string userId, string connectionId)
         {
-            return GetUserDevices(userId).FirstOrDefault(d => d.ConnectionId == connectionId);
+            try 
+            {
+                _logger.Info("开始获取用户设备 - UserId: {UserId}, ConnectionId: {ConnectionId}", userId, connectionId);
+                
+                var devices = GetUserDevices(userId);
+                _logger.Info("找到用户设备列表 - UserId: {UserId}, 设备数量: {Count}", userId, devices.Count);
+                
+                var device = devices.FirstOrDefault(d => d.ConnectionId == connectionId);
+                if (device == null)
+                {
+                    _logger.Warn("未找到指定连接ID的设备 - UserId: {UserId}, ConnectionId: {ConnectionId}", userId, connectionId);
+                    throw new Exception($"未找到连接ID为 {connectionId} 的用户设备");
+                }
+
+                _logger.Info("成功获取设备信息 - UserId: {UserId}, DeviceId: {DeviceId}", userId, device.DeviceId);
+                return device;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error("获取用户设备时发生错误 - UserId: {UserId}, ConnectionId: {ConnectionId}, Error: {Error}", 
+                    userId, connectionId, ex.Message);
+                throw;
+            }
         }
 
         /// <summary>
@@ -189,8 +234,8 @@ namespace Lean.Hbt.Infrastructure.SignalR
                 var device = _userDevices[userId].FirstOrDefault(d => d.DeviceId == deviceId);
                 if (device != null)
                 {
-                    device.LastActivity = DateTime.UtcNow;
-                    _logger.LogInformation("更新用户 {UserId} 的设备 {DeviceId} 活动时间", userId, deviceId);
+                    device.LastActivity = DateTime.Now;
+                    _logger.Info("更新用户 {UserId} 的设备 {DeviceId} 活动时间", userId, deviceId);
                 }
             }
         }
@@ -234,7 +279,7 @@ namespace Lean.Hbt.Infrastructure.SignalR
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "保存在线用户时发生错误: ConnectionId={ConnectionId}, UserId={UserId}", user.ConnectionId, user.UserId);
+                _logger.Error("保存在线用户时发生错误: ConnectionId={ConnectionId}, UserId={UserId}", user.ConnectionId, user.UserId);
                 throw;
             }
         }
@@ -244,17 +289,17 @@ namespace Lean.Hbt.Infrastructure.SignalR
         /// </summary>
         /// <param name="connectionId"></param>
         /// <returns></returns>
-        public async Task<HbtOnlineUser?> GetOnlineUserAsync(string connectionId)
+        public async Task<HbtOnlineUser> GetOnlineUserAsync(string connectionId)
         {
             try
             {
                 var exp = Expressionable.Create<HbtOnlineUser>();
                 exp.And(u => u.ConnectionId == connectionId);
-                return await _repository.GetFirstAsync(exp.ToExpression());
+                return await _repository.GetFirstAsync(exp.ToExpression()) ?? throw new Exception($"未找到连接ID为 {connectionId} 的在线用户");
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                _logger.LogError(ex, "获取在线用户信息时发生错误: ConnectionId={ConnectionId}", connectionId);
+                _logger.Error("获取在线用户信息时发生错误: ConnectionId={ConnectionId}", connectionId);
                 throw;
             }
         }
@@ -262,18 +307,18 @@ namespace Lean.Hbt.Infrastructure.SignalR
         /// <summary>
         /// 根据设备ID获取在线用户
         /// </summary>
-        public async Task<HbtOnlineUser?> GetOnlineUserByDeviceAsync(long userId, string deviceId)
+        public async Task<HbtOnlineUser> GetOnlineUserByDeviceAsync(long userId, string deviceId)
         {
             try
             {
                 var exp = Expressionable.Create<HbtOnlineUser>();
                 exp.And(u => u.UserId == userId && u.DeviceId == deviceId);
 
-                return await _repository.GetFirstAsync(exp.ToExpression());
+                return await _repository.GetFirstAsync(exp.ToExpression()) ?? throw new Exception($"未找到用户ID为 {userId} 设备ID为 {deviceId} 的在线用户");
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                _logger.LogError(ex, "获取在线用户信息时发生错误: UserId={UserId}, DeviceId={DeviceId}", userId, deviceId);
+                _logger.Error("获取在线用户信息时发生错误: UserId={UserId}, DeviceId={DeviceId}", userId, deviceId);
                 throw;
             }
         }
@@ -295,7 +340,7 @@ namespace Lean.Hbt.Infrastructure.SignalR
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "获取设备信息时发生错误: ConnectionId={ConnectionId}", connectionId);
+                _logger.Error("获取设备信息时发生错误: ConnectionId={ConnectionId}", connectionId);
                 return string.Empty;
             }
         }
@@ -314,7 +359,7 @@ namespace Lean.Hbt.Infrastructure.SignalR
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "删除在线用户时发生错误: ConnectionId={ConnectionId}", connectionId);
+                _logger.Error("删除在线用户时发生错误: ConnectionId={ConnectionId}", connectionId);
                 return false;
             }
         }
@@ -333,11 +378,13 @@ namespace Lean.Hbt.Infrastructure.SignalR
                 exp.And(u => u.LastActivity > DateTime.Now.AddMinutes(-5)); // 只返回5分钟内有活动的连接
 
                 var users = await _repository.GetListAsync(exp.ToExpression());
-                return users.Select(u => u.ConnectionId).ToList();
+                return users.Where(u => !string.IsNullOrEmpty(u.ConnectionId))
+                    .Select(u => u.ConnectionId!)
+                    .ToList();
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "获取用户连接ID列表时发生错误: UserId={UserId}", userId);
+                _logger.Error("获取用户连接ID列表时发生错误: UserId={UserId}", userId);
                 throw;
             }
         }
@@ -355,11 +402,13 @@ namespace Lean.Hbt.Infrastructure.SignalR
                 exp.And(u => u.TenantId == tenantId && u.OnlineStatus == 0);
 
                 var users = await _repository.GetListAsync(exp.ToExpression());
-                return users.Select(u => u.ConnectionId).ToList();
+                return users.Where(u => !string.IsNullOrEmpty(u.ConnectionId))
+                    .Select(u => u.ConnectionId!)
+                    .ToList();
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "获取租户组连接ID列表时发生错误: TenantId={TenantId}", tenantId);
+                _logger.Error("获取租户组连接ID列表时发生错误: TenantId={TenantId}", tenantId);
                 throw;
             }
         }
@@ -385,7 +434,7 @@ namespace Lean.Hbt.Infrastructure.SignalR
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "更新用户最后活动时间时发生错误: ConnectionId={ConnectionId}", connectionId);
+                _logger.Error("更新用户最后活动时间时发生错误: ConnectionId={ConnectionId}", connectionId);
                 throw;
             }
         }
@@ -404,11 +453,13 @@ namespace Lean.Hbt.Infrastructure.SignalR
                 exp.And(u => u.LastActivity > DateTime.Now.AddMinutes(-5));
 
                 var users = await _repository.GetListAsync(exp.ToExpression());
-                return users.Select(u => u.ConnectionId).ToList();
+                return users.Where(u => !string.IsNullOrEmpty(u.ConnectionId))
+                    .Select(u => u.ConnectionId!)
+                    .ToList();
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "获取邮件接收者列表时发生错误: UserId={UserId}", userId);
+                _logger.Error("获取邮件接收者列表时发生错误: UserId={UserId}", userId);
                 throw;
             }
         }
@@ -427,11 +478,13 @@ namespace Lean.Hbt.Infrastructure.SignalR
                 exp.And(u => u.LastActivity > DateTime.Now.AddMinutes(-5));
 
                 var users = await _repository.GetListAsync(exp.ToExpression());
-                return users.Select(u => u.ConnectionId).ToList();
+                return users.Where(u => !string.IsNullOrEmpty(u.ConnectionId))
+                    .Select(u => u.ConnectionId!)
+                    .ToList();
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "获取通知接收者列表时发生错误: UserId={UserId}", userId);
+                _logger.Error("获取通知接收者列表时发生错误: UserId={UserId}", userId);
                 throw;
             }
         }
@@ -445,12 +498,12 @@ namespace Lean.Hbt.Infrastructure.SignalR
         {
             try
             {
-                _logger.LogInformation("断开用户连接: ConnectionId={ConnectionId}", connectionId);
+                _logger.Info("断开用户连接: ConnectionId={ConnectionId}", connectionId);
                 await _hubContext.Clients.Client(connectionId).SendAsync("ForceOffline", "您已被管理员强制下线");
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "断开用户连接时发生错误: ConnectionId={ConnectionId}", connectionId);
+                _logger.Error("断开用户连接时发生错误: ConnectionId={ConnectionId}", connectionId);
                 throw;
             }
         }
@@ -470,7 +523,7 @@ namespace Lean.Hbt.Infrastructure.SignalR
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "发送消息时发生错误: ConnectionId={ConnectionId}, Method={Method}", connectionId, method);
+                _logger.Error("发送消息时发生错误: ConnectionId={ConnectionId}, Method={Method}", connectionId, method);
                 throw;
             }
         }
@@ -482,27 +535,52 @@ namespace Lean.Hbt.Infrastructure.SignalR
         {
             try
             {
-                var device = new HbtSignalRDevice
-                {
-                    UserId = long.Parse(userId),
-                    DeviceId = deviceId,
-                    ConnectionId = connectionId,
-                    LastActivity = DateTime.UtcNow,
-                    LastHeartbeat = DateTime.UtcNow,
-                    OnlineStatus = 0
-                };
+                _logger.Info("开始添加/更新用户设备: UserId={UserId}, DeviceId={DeviceId}, ConnectionId={ConnectionId}", 
+                    userId, deviceId, connectionId);
+
+                await Task.Yield(); // 确保方法异步执行
 
                 if (!_userDevices.ContainsKey(userId))
                 {
+                    _logger.Info("创建新的用户设备列表 - 用户ID: {UserId}", userId);
                     _userDevices[userId] = new List<HbtSignalRDevice>();
                 }
 
-                _userDevices[userId].Add(device);
-                _logger.LogInformation("添加用户设备: UserId={UserId}, DeviceId={DeviceId}, ConnectionId={ConnectionId}", userId, deviceId, connectionId);
+                // 检查是否存在相同设备ID的设备
+                var existingDevices = _userDevices[userId].Where(d => d.DeviceId == deviceId).ToList();
+                if (existingDevices.Any())
+                {
+                    _logger.Info("发现相同设备ID的设备，更新设备信息 - 设备ID: {DeviceId}", deviceId);
+                    // 更新所有相同设备ID的设备状态
+                    foreach (var existingDevice in existingDevices)
+                    {
+                        existingDevice.ConnectionId = connectionId;
+                        existingDevice.LastActivity = DateTime.Now;
+                        existingDevice.LastHeartbeat = DateTime.Now;
+                        existingDevice.OnlineStatus = 0;
+                    }
+                }
+                else
+                {
+                    var device = new HbtSignalRDevice
+                    {
+                        UserId = long.Parse(userId),
+                        DeviceId = deviceId,
+                        ConnectionId = connectionId,
+                        LastActivity = DateTime.Now,
+                        LastHeartbeat = DateTime.Now,
+                        OnlineStatus = 0
+                    };
+                    _logger.Info("添加新设备 - 设备ID: {DeviceId}", deviceId);
+                    _userDevices[userId].Add(device);
+                }
+
+                _logger.Info("当前用户 {UserId} 的设备数量: {DeviceCount}", userId, _userDevices[userId].Count);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                _logger.LogError(ex, "添加用户设备时发生错误: UserId={UserId}, DeviceId={DeviceId}", userId, deviceId);
+                _logger.Error("添加用户设备时发生错误: UserId={UserId}, DeviceId={DeviceId}", 
+                    userId, deviceId);
                 throw;
             }
         }

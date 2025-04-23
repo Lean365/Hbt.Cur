@@ -1,13 +1,15 @@
 import request from '@/utils/request'
+import type { AxiosResponse } from 'axios'
 import type { 
   LoginParams, 
-  LoginResult, 
+  LoginResultData, 
   UserInfo, 
   SaltResponse, 
   CaptchaResponse, 
   CaptchaResult,
   LockoutStatus,
-  LoginCheckResult
+  LoginCheckResult,
+  LoginCheckResultData
 } from '@/types/identity/auth'
 import type { HbtApiResponse } from '@/types/common'
 import type { UserInfoResponse } from '@/stores/user'
@@ -17,8 +19,8 @@ import { getToken } from '@/utils/auth'
  * 登录
  * @param data 登录参数
  */
-export function login(data: LoginParams) {
-  return request<HbtApiResponse<LoginResult>>({
+export function login(data: LoginParams): Promise<AxiosResponse<HbtApiResponse<LoginResultData>>> {
+  return request({
     url: '/api/HbtAuth/login',
     method: 'post',
     data
@@ -29,16 +31,11 @@ export function login(data: LoginParams) {
  * 获取盐值
  * @param username 用户名
  */
-export function getSalt(username: string) {
-  return request<HbtApiResponse<SaltResponse>>({
+export function getSalt(username: string): Promise<AxiosResponse<HbtApiResponse<SaltResponse>>> {
+  return request({
     url: '/api/HbtAuth/salt',
     method: 'get',
     params: { username }
-  }).then(response => {
-    if (response.code === 200 && response.data) {
-      return response.data
-    }
-    throw new Error('获取盐值失败')
   })
 }
 
@@ -46,17 +43,11 @@ export function getSalt(username: string) {
  * 登出
  * @param params 登出参数
  */
-export function logout(params?: { isSystemRestart?: boolean }) {
-  return request<HbtApiResponse<void>>({
+export function logout(params?: { isSystemRestart?: boolean }): Promise<AxiosResponse<HbtApiResponse<void>>> {
+  return request({
     url: '/api/HbtAuth/logout',
     method: 'post',
     params
-  }).finally(() => {
-    // 清理本地存储
-    localStorage.removeItem('token')
-    localStorage.removeItem('refreshToken')
-    localStorage.removeItem('userInfo')
-    localStorage.removeItem('isLoggingOut')
   })
 }
 
@@ -64,8 +55,8 @@ export function logout(params?: { isSystemRestart?: boolean }) {
  * 刷新Token
  * @param refreshToken 刷新令牌
  */
-export function refreshToken(refreshToken: string) {
-  return request<HbtApiResponse<LoginResult>>({
+export function refreshToken(refreshToken: string): Promise<AxiosResponse<HbtApiResponse<LoginResultData>>> {
+  return request({
     url: '/api/HbtAuth/refresh-token',
     method: 'post',
     data: { refreshToken }
@@ -75,8 +66,8 @@ export function refreshToken(refreshToken: string) {
 /**
  * 获取用户信息
  */
-export function getInfo() {
-  return request<HbtApiResponse<UserInfoResponse>>({
+export function getInfo(): Promise<AxiosResponse<HbtApiResponse<UserInfoResponse>>> {
+  return request({
     url: '/api/HbtAuth/info',
     method: 'get'
   })
@@ -85,8 +76,8 @@ export function getInfo() {
 /**
  * 获取验证码
  */
-export function getCaptcha() {
-  return request<HbtApiResponse<CaptchaResponse>>({
+export function getCaptcha(): Promise<AxiosResponse<HbtApiResponse<CaptchaResponse>>> {
+  return request({
     url: '/api/HbtAuth/captcha',
     method: 'get'
   })
@@ -96,8 +87,8 @@ export function getCaptcha() {
  * 验证验证码
  * @param data 验证参数
  */
-export function verifyCaptcha(data: { token: string; offset: number }) {
-  return request<HbtApiResponse<CaptchaResult>>({
+export function verifyCaptcha(data: { token: string; offset: number }): Promise<AxiosResponse<HbtApiResponse<CaptchaResult>>> {
+  return request({
     url: '/api/HbtAuth/verify-captcha',
     method: 'post',
     data
@@ -108,8 +99,8 @@ export function verifyCaptcha(data: { token: string; offset: number }) {
  * 检查账号锁定状态
  * @param username 用户名
  */
-export function checkAccountLockout(username: string) {
-  return request<HbtApiResponse<LockoutStatus>>({
+export function checkAccountLockout(username: string): Promise<AxiosResponse<HbtApiResponse<LockoutStatus>>> {
+  return request({
     url: `/api/HbtAuth/lockout/${username}`,
     method: 'get'
   })
@@ -119,8 +110,8 @@ export function checkAccountLockout(username: string) {
  * 获取剩余尝试次数
  * @param username 用户名
  */
-export function getRemainingAttempts(username: string) {
-  return request<HbtApiResponse<number>>({
+export function getRemainingAttempts(username: string): Promise<AxiosResponse<HbtApiResponse<number>>> {
+  return request({
     url: `/api/HbtAuth/attempts/${username}`,
     method: 'get'
   })
@@ -130,8 +121,8 @@ export function getRemainingAttempts(username: string) {
  * 解锁用户
  * @param username 用户名
  */
-export function unlockUser(username: string) {
-  return request<HbtApiResponse<boolean>>({
+export function unlockUser(username: string): Promise<AxiosResponse<HbtApiResponse<boolean>>> {
+  return request({
     url: `/api/HbtAuth/unlock/${username}`,
     method: 'post'
   })
@@ -141,7 +132,7 @@ export function unlockUser(username: string) {
  * 检查登录状态
  * @param data 登录参数
  */
-export const checkLogin = (data: LoginParams): Promise<HbtApiResponse<LoginCheckResult>> => {
+export function checkLogin(data: LoginParams): Promise<AxiosResponse<HbtApiResponse<LoginCheckResultData>>> {
   // 构建符合HbtAuthDto的参数
   const loginDto = {
     tenantId: data.tenantId,
@@ -154,11 +145,11 @@ export const checkLogin = (data: LoginParams): Promise<HbtApiResponse<LoginCheck
     loginType: data.loginType ?? 0, // 默认使用密码登录
     loginSource: data.loginSource ?? 0, // 默认使用Web登录
     deviceInfo: data.deviceInfo
-  };
+  }
 
   return request({
     url: '/api/HbtAuth/check-login',
     method: 'post',
     data: loginDto
-  });
+  })
 } 

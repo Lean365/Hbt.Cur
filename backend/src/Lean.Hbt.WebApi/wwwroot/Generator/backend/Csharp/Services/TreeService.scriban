@@ -252,7 +252,7 @@ public class {{ pascal_case table.table_name }}Service : I{{ pascal_case table.t
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "导入{{ table.comment }}数据失败，数据：{Data}", item);
+                    _logger.Error( "导入{{ table.comment }}数据失败，数据：{Data}", item);
                     fail++;
                 }
             }
@@ -261,7 +261,7 @@ public class {{ pascal_case table.table_name }}Service : I{{ pascal_case table.t
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "导入{{ table.comment }}数据失败");
+            _logger.Error( "导入{{ table.comment }}数据失败");
             throw new HbtException($"导入失败：{ex.Message}");
         }
     }
@@ -272,7 +272,7 @@ public class {{ pascal_case table.table_name }}Service : I{{ pascal_case table.t
     /// <param name="query">查询条件</param>
     /// <param name="sheetName">工作表名称</param>
     /// <returns>Excel文件字节数组</returns>
-    public async Task<byte[]> ExportAsync({{ pascal_case table.table_name }}QueryDto query, string sheetName = "Sheet1")
+    public async Task<(string fileName, byte[] content)> ExportAsync({{ pascal_case table.table_name }}QueryDto query, string sheetName = "Sheet1")
     {
         var list = await GetTreeListAsync(query);
         if (!list.Any())
@@ -287,7 +287,7 @@ public class {{ pascal_case table.table_name }}Service : I{{ pascal_case table.t
     /// </summary>
     /// <param name="sheetName">工作表名称</param>
     /// <returns>Excel模板文件字节数组</returns>
-    public async Task<byte[]> GetTemplateAsync(string sheetName = "Sheet1")
+    public async Task<(string fileName, byte[] content)> GetTemplateAsync(string sheetName = "Sheet1")
     {
         var list = new List<{{ pascal_case table.table_name }}ImportDto>
         {

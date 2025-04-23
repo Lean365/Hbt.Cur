@@ -81,7 +81,7 @@ namespace Lean.Hbt.Application.Services.Identity
         /// <param name="query">查询条件</param>
         /// <param name="sheetName">工作表名称</param>
         /// <returns>Excel文件字节数组</returns>
-        Task<byte[]> ExportAsync(HbtPostQueryDto query, string sheetName = "Sheet1");
+        Task<(string fileName, byte[] content)> ExportAsync(HbtPostQueryDto query, string sheetName = "Sheet1");
 
         /// <summary>
         /// 生成岗位导入模板

@@ -51,14 +51,14 @@ export interface HbtPagedResult<T> {
 }
 
 /**
- * API响应结果
+ * API响应基类
  */
-export interface HbtApiResponse<T> {
-  /** 状态码 */
+export interface HbtApiResponse<T = any> {
+  /** 响应代码 */
   code: number;
-  /** 消息 */
+  /** 响应消息 */
   msg: string;
-  /** 数据 */
+  /** 响应数据 */
   data: T;
 }
 
@@ -133,6 +133,7 @@ export interface HbtDictType {
   /** 创建时间 */
   createTime: string;
 }
+
 /**
  * 菜单类型枚举
  */
@@ -143,4 +144,67 @@ export enum HbtMenuType {
   Menu = 1,
   /** 按钮 */
   Button = 2
+}
+
+/**
+ * 分页请求参数
+ */
+export interface HbtPageRequest {
+  pageIndex: number;
+  pageSize: number;
+  keyword?: string;
+  sortField?: string;
+  sortOrder?: 'ascend' | 'descend';
+  [key: string]: any;
+}
+
+/**
+ * 分页响应数据
+ */
+export interface HbtPageResponse<T> {
+  total: number;
+  items: T[];
+}
+
+/**
+ * 分页结果类型（兼容后端返回格式）
+ */
+export interface HbtPagedResult<T> {
+  total: number;
+  items: T[];
+  pageIndex: number;
+  pageSize: number;
+  totalPages: number;
+  hasPreviousPage: boolean;
+  hasNextPage: boolean;
+}
+
+/**
+ * 通用状态类型
+ */
+export enum HbtStatus {
+  Disabled = 0,
+  Enabled = 1,
+  Deleted = -1
+}
+
+/**
+ * 通用选项类型
+ */
+export interface HbtOption {
+  label: string;
+  value: string | number;
+  disabled?: boolean;
+  children?: HbtOption[];
+}
+
+/**
+ * 通用树节点类型
+ */
+export interface HbtTreeNode {
+  id: string | number;
+  parentId: string | number;
+  name: string;
+  children?: HbtTreeNode[];
+  [key: string]: any;
 }

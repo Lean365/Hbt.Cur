@@ -18,32 +18,46 @@ using Lean.Hbt.Application.Dtos.Identity;
 using Lean.Hbt.Common.Models;
 using Lean.Hbt.Domain.Entities.Identity;
 using Lean.Hbt.Common.Extensions;
-using Lean.Hbt.Domain.IServices;
 using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Domain.Repositories;
 using Lean.Hbt.Common.Helpers;
 using System.Linq;
 using Microsoft.Extensions.Logging;
+using Lean.Hbt.Common.Exceptions;
+using Lean.Hbt.Common.Utils;
+using System.Linq.Expressions;
+using Lean.Hbt.Domain.IServices.Extensions;
+using Lean.Hbt.Domain.Utils;
+using Lean.Hbt.Domain.IServices.Extensions;
+using Microsoft.AspNetCore.Http;
+using System.IO;
 
 namespace Lean.Hbt.Application.Services.Identity
 {
     /// <summary>
-    /// 设备扩展信息服务实现
+    /// 设备扩展服务实现类
     /// </summary>
-    public class HbtDeviceExtendService : IHbtDeviceExtendService
+    /// <remarks>
+    /// 创建者: Lean365
+    /// 创建时间: 2024-01-20
+    /// </remarks>
+    public class HbtDeviceExtendService : HbtBaseService, IHbtDeviceExtendService
     {
+        // 设备扩展仓储接口
         private readonly IHbtRepository<HbtDeviceExtend> _deviceExtendRepository;
-        private readonly ILogger<HbtDeviceExtendService> _logger;
 
         /// <summary>
-        /// 构造函数
+        /// 构造函数，注入依赖服务
         /// </summary>
+        /// <param name="logger">日志记录器</param>
+        /// <param name="deviceExtendRepository">设备扩展仓库</param>
+        /// <param name="httpContextAccessor">HTTP上下文访问器</param>
         public HbtDeviceExtendService(
+            IHbtLogger logger,
             IHbtRepository<HbtDeviceExtend> deviceExtendRepository,
-            ILogger<HbtDeviceExtendService> logger)
+            IHttpContextAccessor httpContextAccessor) : base(logger, httpContextAccessor)
         {
             _deviceExtendRepository = deviceExtendRepository;
-            _logger = logger;
         }
 
         /// <summary>
@@ -51,34 +65,10 @@ namespace Lean.Hbt.Application.Services.Identity
         /// </summary>
         public async Task<HbtPagedResult<HbtDeviceExtendDto>> GetListAsync(HbtDeviceExtendQueryDto query)
         {
-            var exp = Expressionable.Create<HbtDeviceExtend>();
-
-            if (query.UserId.HasValue)
-                exp.And(x => x.UserId == query.UserId.Value);
-
-            if (query.TenantId.HasValue)
-                exp.And(x => x.TenantId == query.TenantId.Value);
-
-            if (query.DeviceType.HasValue)
-                exp.And(x => x.DeviceType == query.DeviceType.Value);
-
-            if (!string.IsNullOrEmpty(query.DeviceId))
-                exp.And(x => x.DeviceId.Contains(query.DeviceId));
-
-            if (!string.IsNullOrEmpty(query.DeviceName))
-                exp.And(x => x.DeviceName.Contains(query.DeviceName));
-
-            if (query.LoginStatus.HasValue)
-                exp.And(x => x.DeviceStatus == query.LoginStatus.Value);
-
-            if (query.LastOnlineTimeStart.HasValue)
-                exp.And(x => x.LastOnlineTime >= query.LastOnlineTimeStart.Value);
-
-            if (query.LastOnlineTimeEnd.HasValue)
-                exp.And(x => x.LastOnlineTime <= query.LastOnlineTimeEnd.Value);
+            var exp = HbtDeviceExtendQueryExpression(query);
 
             var result = await _deviceExtendRepository.GetPagedListAsync(
-                exp.ToExpression(),
+                exp,
                 query.PageIndex,
                 query.PageSize,
                 x => x.OrderNum,
@@ -94,11 +84,115 @@ namespace Lean.Hbt.Application.Services.Identity
         }
 
         /// <summary>
-        /// 导出设备扩展信息
+        /// 获取设备扩展详情
         /// </summary>
-        public async Task<byte[]> ExportAsync(IEnumerable<HbtDeviceExtendDto> data, string sheetName = "设备扩展信息")
+        /// <param name="deviceId">设备ID</param>
+        /// <returns>返回设备扩展详细信息</returns>
+        /// <exception cref="HbtException">当设备扩展不存在时抛出异常</exception>
+        public async Task<HbtDeviceExtendDto> GetByIdAsync(long deviceId)
         {
-            return await HbtExcelHelper.ExportAsync(data, sheetName);
+            var deviceExtend = await _deviceExtendRepository.GetByIdAsync(deviceId);
+            if (deviceExtend == null)
+                throw new HbtException(L("Identity.DeviceExtend.NotFound", deviceId));
+
+            return deviceExtend.Adapt<HbtDeviceExtendDto>();
+        }
+
+        /// <summary>
+        /// 创建设备扩展
+        /// </summary>
+        /// <param name="input">创建对象</param>
+        /// <returns>设备ID</returns>
+        public async Task<string> CreateAsync(HbtDeviceExtendCreateDto input)
+        {
+            // 验证设备ID是否已存在
+            await HbtValidateUtils.ValidateFieldExistsAsync(_deviceExtendRepository, "DeviceId", input.DeviceId);
+
+            var deviceExtend = input.Adapt<HbtDeviceExtend>();
+            return await _deviceExtendRepository.CreateAsync(deviceExtend) > 0 ? deviceExtend.DeviceId : throw new HbtException(L("Identity.DeviceExtend.CreateFailed"));
+        }
+
+        /// <summary>
+        /// 更新设备扩展
+        /// </summary>
+        /// <param name="input">更新对象</param>
+        /// <returns>是否成功</returns>
+        public async Task<bool> UpdateAsync(HbtDeviceExtendUpdateDto input)
+        {
+            var deviceExtend = await _deviceExtendRepository.GetByIdAsync(input.DeviceId)
+                ?? throw new HbtException(L("Identity.DeviceExtend.NotFound", input.DeviceId));
+
+            input.Adapt(deviceExtend);
+            return await _deviceExtendRepository.UpdateAsync(deviceExtend) > 0;
+        }
+
+        /// <summary>
+        /// 更新设备在线时段
+        /// </summary>
+        public async Task<HbtDeviceExtendDto> UpdateOnlinePeriodAsync(HbtDeviceOnlinePeriodUpdateDto request)
+        {
+            var deviceExtend = await _deviceExtendRepository.GetFirstAsync(
+                x => x.UserId == request.UserId && x.DeviceId == request.DeviceId);
+            if (deviceExtend == null)
+            {
+                throw new InvalidOperationException($"用户{request.UserId}的设备{request.DeviceId}扩展信息不存在");
+            }
+
+            deviceExtend.TodayOnlinePeriods = request.OnlinePeriod;
+            await _deviceExtendRepository.UpdateAsync(deviceExtend);
+
+            return deviceExtend.Adapt<HbtDeviceExtendDto>();
+        }
+
+        /// <summary>
+        /// 导出设备扩展数据
+        /// </summary>
+        /// <param name="data">要导出的数据</param>
+        /// <param name="sheetName">工作表名称</param>
+        /// <returns>包含文件名和内容的元组</returns>
+        public async Task<(string fileName, byte[] content)> ExportAsync(IEnumerable<HbtDeviceExtendDto> data, string sheetName = "HbtDeviceExtend")
+        {
+            return await HbtExcelHelper.ExportAsync(data, sheetName, "设备扩展数据");
+        }
+
+        /// <summary>
+        /// 更新设备扩展状态
+        /// </summary>
+        /// <param name="input">状态更新对象</param>
+        /// <returns>是否成功</returns>
+        public async Task<bool> UpdateStatusAsync(HbtDeviceExtendStatusDto input)
+        {
+            var deviceExtend = await _deviceExtendRepository.GetByIdAsync(input.DeviceId)
+                ?? throw new HbtException(L("Identity.DeviceExtend.NotFound", input.DeviceId));
+
+            input.Adapt(deviceExtend);
+            return await _deviceExtendRepository.UpdateAsync(deviceExtend) > 0;
+        }
+
+        /// <summary>
+        /// 删除设备扩展
+        /// </summary>
+        /// <param name="deviceId">设备ID</param>
+        /// <returns>是否成功</returns>
+        public async Task<bool> DeleteAsync(long deviceId)
+        {
+            var deviceExtend = await _deviceExtendRepository.GetByIdAsync(deviceId)
+                ?? throw new HbtException(L("Identity.DeviceExtend.NotFound", deviceId));
+
+            return await _deviceExtendRepository.DeleteAsync(deviceId) > 0;
+        }
+
+        /// <summary>
+        /// 批量删除设备扩展
+        /// </summary>
+        /// <param name="deviceIds">设备ID集合</param>
+        /// <returns>是否成功</returns>
+        public async Task<bool> BatchDeleteAsync(long[] deviceIds)
+        {
+            if (deviceIds == null || deviceIds.Length == 0)
+                throw new HbtException(L("Identity.DeviceExtend.SelectRequired"));
+
+            return await _deviceExtendRepository.DeleteRangeAsync(deviceIds.Cast<object>().ToList()) > 0;
         }
 
         /// <summary>
@@ -156,7 +250,7 @@ namespace Lean.Hbt.Application.Services.Identity
 
             if (deviceExtend == null)
             {
-                _logger.LogWarning("设备扩展信息不存在: userId={UserId}, deviceId={DeviceId}", userId, deviceId);
+                _logger.Warn($"设备扩展信息不存在: userId={userId}, deviceId={deviceId}");
                 throw new InvalidOperationException($"设备扩展信息不存在: userId={userId}, deviceId={deviceId}");
             }
 
@@ -164,24 +258,6 @@ namespace Lean.Hbt.Application.Services.Identity
             deviceExtend.LastOfflineTime = DateTime.Now;
 
             await _deviceExtendRepository.UpdateAsync(deviceExtend);
-            return deviceExtend.Adapt<HbtDeviceExtendDto>();
-        }
-
-        /// <summary>
-        /// 更新设备在线时段
-        /// </summary>
-        public async Task<HbtDeviceExtendDto> UpdateOnlinePeriodAsync(HbtDeviceOnlinePeriodUpdateDto request)
-        {
-            var deviceExtend = await _deviceExtendRepository.GetFirstAsync(
-                x => x.UserId == request.UserId && x.DeviceId == request.DeviceId);
-            if (deviceExtend == null)
-            {
-                throw new InvalidOperationException($"用户{request.UserId}的设备{request.DeviceId}扩展信息不存在");
-            }
-
-            deviceExtend.TodayOnlinePeriods = request.OnlinePeriod;
-            await _deviceExtendRepository.UpdateAsync(deviceExtend);
-
             return deviceExtend.Adapt<HbtDeviceExtendDto>();
         }
 
@@ -202,6 +278,40 @@ namespace Lean.Hbt.Application.Services.Identity
         {
             var deviceExtends = await _deviceExtendRepository.GetListAsync(x => x.UserId == userId);
             return deviceExtends.Adapt<List<HbtDeviceExtendDto>>();
+        }
+
+        /// <summary>
+        /// 构建设备扩展信息查询条件
+        /// </summary>
+        private Expression<Func<HbtDeviceExtend, bool>> HbtDeviceExtendQueryExpression(HbtDeviceExtendQueryDto query)
+        {
+            var exp = Expressionable.Create<HbtDeviceExtend>();
+
+            if (query.UserId.HasValue)
+                exp.And(x => x.UserId == query.UserId.Value);
+
+            if (query.TenantId.HasValue)
+                exp.And(x => x.TenantId == query.TenantId.Value);
+
+            if (query.DeviceType.HasValue)
+                exp.And(x => x.DeviceType == query.DeviceType.Value);
+
+            if (!string.IsNullOrEmpty(query.DeviceId))
+                exp.And(x => x.DeviceId.Contains(query.DeviceId));
+
+            if (!string.IsNullOrEmpty(query.DeviceName))
+                exp.And(x => x.DeviceName.Contains(query.DeviceName));
+
+            if (query.DeviceStatus.HasValue)
+                exp.And(x => x.DeviceStatus == query.DeviceStatus.Value);
+
+            if (query.LastOnlineTimeStart.HasValue)
+                exp.And(x => x.LastOnlineTime >= query.LastOnlineTimeStart.Value);
+
+            if (query.LastOnlineTimeEnd.HasValue)
+                exp.And(x => x.LastOnlineTime <= query.LastOnlineTimeEnd.Value);
+
+            return exp.ToExpression();
         }
     }
 } 

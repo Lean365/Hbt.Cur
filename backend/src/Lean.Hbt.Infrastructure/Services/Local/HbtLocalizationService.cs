@@ -8,16 +8,10 @@
 //===================================================================
 
 using System.Collections.Concurrent;
-using Lean.Hbt.Common.Enums;
-using Lean.Hbt.Domain.Entities.Admin;
-using Lean.Hbt.Domain.IServices.Admin;
-using Lean.Hbt.Domain.IServices.Caching;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Caching.Distributed;
 using System.Globalization;
 using System.Text.Json;
-using System.Threading;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Caching.Distributed;
 
 namespace Lean.Hbt.Infrastructure.Services.Local;
 
@@ -26,11 +20,14 @@ namespace Lean.Hbt.Infrastructure.Services.Local;
 /// </summary>
 public class HbtLocalizationService : IHbtLocalizationService
 {
+    /// <summary>
+    /// 日志服务
+    /// </summary>
+    protected readonly IHbtLogger _logger;
+
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IHbtTranslationCache _translationCache;
-    private readonly ILogger<HbtLocalizationService> _logger;
     private readonly IDistributedCache _distributedCache;
-
     private const string DefaultLanguage = "zh-CN";
     private const string LanguageHeader = "Accept-Language";
     private const string LanguageContextKey = "CurrentLanguage";
@@ -50,9 +47,10 @@ public class HbtLocalizationService : IHbtLocalizationService
     /// 构造函数
     /// </summary>
     public HbtLocalizationService(
+        IHbtLogger logger,
         IHttpContextAccessor httpContextAccessor,
         IHbtTranslationCache translationCache,
-        ILogger<HbtLocalizationService> logger,
+
         IDistributedCache distributedCache)
     {
         _httpContextAccessor = httpContextAccessor;
@@ -72,7 +70,7 @@ public class HbtLocalizationService : IHbtLocalizationService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "获取翻译失败: {Key}", key);
+            _logger.Error("获取翻译失败: {Key}", key);
             return key;
         }
     }
@@ -101,7 +99,7 @@ public class HbtLocalizationService : IHbtLocalizationService
             catch (Exception ex)
             {
                 // Redis连接失败时记录警告并继续
-                _logger.LogWarning(ex, "从分布式缓存获取翻译失败，将从翻译服务获取: {LangCode}, {Key}", langCode, key);
+                _logger.Warn("从分布式缓存获取翻译失败，将从翻译服务获取: {LangCode}, {Key}", langCode, key);
             }
 
             // 2. 从翻译服务获取
@@ -123,7 +121,7 @@ public class HbtLocalizationService : IHbtLocalizationService
                 catch (Exception ex)
                 {
                     // Redis连接失败时只记录警告
-                    _logger.LogWarning(ex, "保存翻译到分布式缓存失败: {LangCode}, {Key}", langCode, key);
+                    _logger.Warn("保存翻译到分布式缓存失败: {LangCode}, {Key}", langCode, key);
                 }
                 return args.Length > 0 ? string.Format(translation, args) : translation;
             }
@@ -139,7 +137,7 @@ public class HbtLocalizationService : IHbtLocalizationService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "获取翻译失败: {LangCode}, {Key}", langCode, key);
+            _logger.Error("获取翻译失败: {LangCode}, {Key}", langCode, key);
             return key;
         }
     }
@@ -207,7 +205,7 @@ public class HbtLocalizationService : IHbtLocalizationService
             catch (Exception ex)
             {
                 // Redis连接失败时记录警告并继续
-                _logger.LogWarning(ex, "从分布式缓存获取语言列表失败，将从翻译服务获取");
+                _logger.Warn("从分布式缓存获取语言列表失败，将从翻译服务获取");
             }
 
             // 2. 从翻译服务获取
@@ -235,7 +233,7 @@ public class HbtLocalizationService : IHbtLocalizationService
                         }
                         catch (Exception ex)
                         {
-                            _logger.LogWarning(ex, "异步保存语言列表到缓存失败");
+                            _logger.Warn("异步保存语言列表到缓存失败");
                         }
                     });
 
@@ -244,7 +242,7 @@ public class HbtLocalizationService : IHbtLocalizationService
             }
             catch (Exception ex)
             {
-                _logger.LogWarning(ex, "从翻译服务获取语言列表失败，使用默认语言列表");
+                _logger.Warn("从翻译服务获取语言列表失败，使用默认语言列表");
             }
 
             // 3. 使用默认支持的语言列表
@@ -252,7 +250,7 @@ public class HbtLocalizationService : IHbtLocalizationService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "获取支持的语言列表失败");
+            _logger.Error("获取支持的语言列表失败");
             return _defaultSupportedLanguages;
         }
     }
@@ -279,11 +277,11 @@ public class HbtLocalizationService : IHbtLocalizationService
             CultureInfo.CurrentCulture = culture;
             CultureInfo.CurrentUICulture = culture;
 
-            _logger.LogInformation("语言设置成功: {LangCode}", langCode);
+            _logger.Info("语言设置成功: {LangCode}", langCode);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "设置语言失败: {LangCode}", langCode);
+            _logger.Error("设置语言失败: {LangCode}", langCode);
             throw;
         }
     }
@@ -296,11 +294,11 @@ public class HbtLocalizationService : IHbtLocalizationService
         try
         {
             await _translationCache.ReloadAsync();
-            _logger.LogInformation("翻译缓存重新加载成功");
+            _logger.Info("翻译缓存重新加载成功");
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "重新加载翻译失败");
+            _logger.Error("重新加载翻译失败");
             throw;
         }
     }
@@ -341,11 +339,11 @@ public class HbtLocalizationService : IHbtLocalizationService
         {
             await _translationCache.ReloadAsync();
             _cultureCache.Clear();
-            _logger.LogInformation("本地化缓存刷新成功");
+            _logger.Info("本地化缓存刷新成功");
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "刷新本地化缓存失败");
+            _logger.Error("刷新本地化缓存失败");
             throw;
         }
     }

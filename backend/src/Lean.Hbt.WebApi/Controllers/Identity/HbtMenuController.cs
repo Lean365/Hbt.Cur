@@ -9,8 +9,6 @@
 
 using Lean.Hbt.Application.Dtos.Identity;
 using Lean.Hbt.Application.Services.Identity;
-using Lean.Hbt.Domain.IServices.Admin;
-using Lean.Hbt.Domain.IServices.Identity;
 
 namespace Lean.Hbt.WebApi.Controllers.Identity
 {
@@ -28,7 +26,6 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
     {
         private readonly IHbtMenuService _menuService;
         private readonly IHbtCurrentTenant _currentTenant;
-        private readonly ILogger<HbtMenuController> _logger;
         private readonly IHbtCurrentUser _currentUser;
 
         /// <summary>
@@ -41,14 +38,14 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <param name="currentUser">用户上下文</param>
         public HbtMenuController(
             IHbtMenuService menuService,
-            IHbtLocalizationService localization,
             IHbtCurrentTenant tenantContext,
-            ILogger<HbtMenuController> logger,
-            IHbtCurrentUser currentUser) : base(localization)
+            IHbtCurrentUser currentUser,
+                                    IHbtLocalizationService localization,
+            IHbtLogger logger) : base(localization, logger)
         {
             _menuService = menuService;
             _currentTenant = tenantContext;
-            _logger = logger;
+
             _currentUser = currentUser;
         }
 
@@ -155,8 +152,8 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         [HbtPerm("identity:menu:export")]
         public async Task<IActionResult> ExportAsync([FromQuery] HbtMenuQueryDto query, [FromQuery] string sheetName = "菜单数据")
         {
-            var result = await _menuService.ExportAsync(query, sheetName);
-            return File(result, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "菜单数据.xlsx");
+            var (_, content) = await _menuService.ExportAsync(query, sheetName);
+            return File(content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "菜单数据.xlsx");
         }
 
         /// <summary>
@@ -168,8 +165,8 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         [HbtPerm("identity:menu:query")]
         public async Task<IActionResult> GetImportTemplateAsync([FromQuery] string sheetName = "菜单导入模板")
         {
-            var result = await _menuService.GenerateTemplateAsync(sheetName);
-            return File(result, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "菜单导入模板.xlsx");
+            var (_, content) = await _menuService.GetTemplateAsync(sheetName);
+            return File(content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "菜单导入模板.xlsx");
         }
 
         /// <summary>

@@ -7,7 +7,7 @@
 // 描述   : 本地化扩展方法
 //===================================================================
 
-using Lean.Hbt.Domain.IServices.Admin;
+using Lean.Hbt.Domain.IServices.Extensions;
 using Lean.Hbt.Infrastructure.Services;
 using Lean.Hbt.Infrastructure.Middleware;
 using Microsoft.AspNetCore.Builder;

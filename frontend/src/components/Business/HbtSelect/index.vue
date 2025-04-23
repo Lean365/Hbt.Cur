@@ -110,7 +110,7 @@ const options = computed(() => props.dictType ? dictStore.getDictOptions(props.d
 // 统一处理值的类型转换
 const normalizeValue = (value: any): any => {
   if (value === undefined || value === null) {
-    return value;
+    return -1;
   }
   // 如果是字符串且可以转换为数字，则转换为数字
   if (typeof value === 'string' && !isNaN(Number(value))) {

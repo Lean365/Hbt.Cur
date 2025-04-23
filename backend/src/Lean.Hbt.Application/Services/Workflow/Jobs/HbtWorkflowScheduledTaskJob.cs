@@ -12,6 +12,7 @@
 using Lean.Hbt.Application.Services.Workflow.Engine;
 using Lean.Hbt.Domain.Data;
 using Lean.Hbt.Domain.Entities.Workflow;
+using Lean.Hbt.Domain.IServices.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Quartz;
 

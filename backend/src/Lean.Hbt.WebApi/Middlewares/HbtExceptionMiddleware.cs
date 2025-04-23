@@ -1,24 +1,13 @@
 //===================================================================
-// 项目名 : Lean.Hbt 
-// 文件名 : HbtExceptionMiddleware.cs 
+// 项目名 : Lean.Hbt
+// 文件名 : HbtExceptionMiddleware.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-05 10:00
 // 版本号 : V.0.0.1
 // 描述    : 全局异常处理中间件
 //===================================================================
 
-using System.Net;
 using Newtonsoft.Json;
-using Lean.Hbt.Common.Models;
-using Lean.Hbt.Common.Exceptions;
-using Lean.Hbt.Common.Constants;
-using Lean.Hbt.Infrastructure.Logging;
-using Lean.Hbt.Domain.IServices;
-using Microsoft.AspNetCore.Http;
-using System;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using System.Text.Json;
 
 namespace Lean.Hbt.WebApi.Middlewares
 {
@@ -32,14 +21,20 @@ namespace Lean.Hbt.WebApi.Middlewares
     public class HbtExceptionMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly ILogger<HbtExceptionMiddleware> _logger;
+
+        /// <summary>
+        /// 日志服务
+        /// </summary>
+        protected readonly IHbtLogger _logger;
 
         /// <summary>
         /// 构造函数
         /// </summary>
         /// <param name="next">请求委托</param>
         /// <param name="logger">日志记录器</param>
-        public HbtExceptionMiddleware(RequestDelegate next, ILogger<HbtExceptionMiddleware> logger)
+        public HbtExceptionMiddleware(RequestDelegate next,
+            IHbtLogger logger
+                )
         {
             _next = next;
             _logger = logger;
@@ -85,11 +80,11 @@ namespace Lean.Hbt.WebApi.Middlewares
 
             if (response.Code == 500)
             {
-                _logger.LogError(exception, "未处理的异常");
+                _logger.Error("未处理的异常");
             }
             else
             {
-                _logger.LogWarning("业务异常: {Message}", response.Msg);
+                _logger.Warn("业务异常: {Message}", response.Msg);
             }
 
             var settings = new JsonSerializerSettings
@@ -118,4 +113,4 @@ namespace Lean.Hbt.WebApi.Middlewares
             return app.UseMiddleware<HbtExceptionMiddleware>();
         }
     }
-} 
+}

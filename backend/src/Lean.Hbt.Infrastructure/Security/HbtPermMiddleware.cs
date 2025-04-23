@@ -11,7 +11,6 @@ using Lean.Hbt.Domain.Entities.Identity;
 using Lean.Hbt.Infrastructure.Security.Attributes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
 
 namespace Lean.Hbt.Infrastructure.Security
 {
@@ -21,14 +20,20 @@ namespace Lean.Hbt.Infrastructure.Security
     public class HbtPermMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly ILogger<HbtPermMiddleware> _logger;
+
+        /// <summary>
+        /// 日志服务
+        /// </summary>
+        protected readonly IHbtLogger _logger;
 
         /// <summary>
         /// 构造函数
         /// </summary>
         /// <param name="next">请求委托</param>
         /// <param name="logger">日志记录器</param>
-        public HbtPermMiddleware(RequestDelegate next, ILogger<HbtPermMiddleware> logger)
+        public HbtPermMiddleware(RequestDelegate next,
+            IHbtLogger logger
+                )
         {
             _next = next;
             _logger = logger;
@@ -41,13 +46,13 @@ namespace Lean.Hbt.Infrastructure.Security
         /// <returns>异步任务</returns>
         public async Task InvokeAsync(HttpContext context)
         {
-            _logger.LogInformation("[权限中间件] 开始处理请求: {Path}", context.Request.Path);
+            _logger.Info("[权限中间件] 开始处理请求: {Path}", context.Request.Path);
 
             // 获取当前请求的Endpoint
             var endpoint = context.GetEndpoint();
             if (endpoint == null)
             {
-                _logger.LogInformation("[权限中间件] 未找到Endpoint,跳过权限验证");
+                _logger.Info("[权限中间件] 未找到Endpoint,跳过权限验证");
                 await _next(context);
                 return;
             }
@@ -56,7 +61,7 @@ namespace Lean.Hbt.Infrastructure.Security
             var allowAnonymous = endpoint.Metadata.GetMetadata<AllowAnonymousAttribute>();
             if (allowAnonymous != null)
             {
-                _logger.LogInformation("[权限中间件] 发现AllowAnonymous特性,完全跳过权限验证");
+                _logger.Info("[权限中间件] 发现AllowAnonymous特性,完全跳过权限验证");
                 await _next(context);
                 return;
             }
@@ -65,7 +70,7 @@ namespace Lean.Hbt.Infrastructure.Security
             var permAttribute = endpoint.Metadata.GetMetadata<HbtPermAttribute>();
             if (permAttribute == null)
             {
-                _logger.LogInformation("[权限中间件] 未找到权限特性,跳过权限验证");
+                _logger.Info("[权限中间件] 未找到权限特性,跳过权限验证");
                 await _next(context);
                 return;
             }
@@ -73,19 +78,19 @@ namespace Lean.Hbt.Infrastructure.Security
             // 检查用户是否已认证
             if (!context.User.Identity?.IsAuthenticated ?? true)
             {
-                _logger.LogInformation("[权限中间件] 用户未认证,返回401");
+                _logger.Info("[权限中间件] 用户未认证,返回401");
                 context.Response.StatusCode = 401;
                 await context.Response.WriteAsJsonAsync(new { message = "未认证" });
                 return;
             }
 
-            _logger.LogInformation("[权限中间件] 需要的权限: {Permission}", permAttribute.Permission);
+            _logger.Info("[权限中间件] 需要的权限: {Permission}", permAttribute.Permission);
 
             // 仅从Claims中获取用户ID
             var userIdClaim = context.User.Claims.FirstOrDefault(c => c.Type == "uid");
             if (userIdClaim == null)
             {
-                _logger.LogWarning("[权限中间件] 未找到uid Claim");
+                _logger.Warn("[权限中间件] 未找到uid Claim");
                 context.Response.StatusCode = 401;
                 await context.Response.WriteAsJsonAsync(new { message = "无效的认证信息" });
                 return;
@@ -93,7 +98,7 @@ namespace Lean.Hbt.Infrastructure.Security
 
             if (!long.TryParse(userIdClaim.Value, out long userId))
             {
-                _logger.LogWarning("[权限中间件] uid Claim格式无效: {Value}", userIdClaim.Value);
+                _logger.Warn("[权限中间件] uid Claim格式无效: {Value}", userIdClaim.Value);
                 context.Response.StatusCode = 401;
                 await context.Response.WriteAsJsonAsync(new { message = "无效的用户ID" });
                 return;
@@ -101,11 +106,11 @@ namespace Lean.Hbt.Infrastructure.Security
 
             var isAdmin = context.User.Claims.Any(c => c.Type == "adm" && c.Value == "true");
 
-            _logger.LogInformation("[权限中间件] 用户信息: UserId={UserId}, IsAdmin={IsAdmin}", userId, isAdmin);
+            _logger.Info("[权限中间件] 用户信息: UserId={UserId}, IsAdmin={IsAdmin}", userId, isAdmin);
 
             if (isAdmin)
             {
-                _logger.LogInformation("[权限中间件] 用户是管理员，自动通过权限验证");
+                _logger.Info("[权限中间件] 用户是管理员，自动通过权限验证");
                 await _next(context);
                 return;
             }
@@ -116,17 +121,17 @@ namespace Lean.Hbt.Infrastructure.Security
             // 直接获取用户权限列表
             var permissions = await userRepository.GetUserPermissionsAsync(userId);
 
-            //_logger.LogInformation("[权限中间件] 用户权限列表: {Permissions}", string.Join(", ", permissions));
+            //_logger.Info("[权限中间件] 用户权限列表: {Permissions}", string.Join(", ", permissions));
 
             // 检查具体权限
             var hasPermission = permissions.Contains(permAttribute.Permission);
-            _logger.LogInformation("[权限中间件] 权限验证结果: {Result}, 所需权限: {Permission}",
+            _logger.Info("[权限中间件] 权限验证结果: {Result}, 所需权限: {Permission}",
                 hasPermission ? "通过" : "未通过",
                 permAttribute.Permission);
 
             if (!hasPermission)
             {
-                _logger.LogWarning("[权限中间件] 用户 {UserId} 没有所需权限 {Permission}", userId, permAttribute.Permission);
+                _logger.Warn("[权限中间件] 用户 {UserId} 没有所需权限 {Permission}", userId, permAttribute.Permission);
                 context.Response.StatusCode = 403;
                 await context.Response.WriteAsJsonAsync(new { message = "无访问权限" });
                 return;

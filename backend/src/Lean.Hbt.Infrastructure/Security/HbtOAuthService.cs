@@ -1,7 +1,7 @@
 using System.Web;
 using Lean.Hbt.Common.Options;
-using Lean.Hbt.Domain.Entities.Admin;
-using Lean.Hbt.Domain.IServices.Identity;
+using Lean.Hbt.Domain.Entities.Core;
+using Lean.Hbt.Domain.IServices.Extensions;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 

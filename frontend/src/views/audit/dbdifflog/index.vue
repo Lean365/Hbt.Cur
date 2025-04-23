@@ -103,8 +103,8 @@ import { ref, reactive } from 'vue'
 import { message } from 'ant-design-vue'
 import type { TablePaginationConfig } from 'ant-design-vue'
 import type { QueryField } from '@/types/components/query'
-import type { HbtDbDiffLogDto, HbtDbDiffLogQueryDto } from '@/types/audit/dbDiffLog'
-import { getDbDiffLogs, exportDbDiffLogs, clearDbDiffLogs } from '@/api/audit/dbDiffLog'
+import type { HbtDbDiffLogDto, HbtDbDiffLogQueryDto } from '@/types/audit/sqlDiffLog'
+import { getDbDiffLogs, exportDbDiffLogs, clearDbDiffLogs } from '@/api/audit/sqlDiffLog'
 import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()

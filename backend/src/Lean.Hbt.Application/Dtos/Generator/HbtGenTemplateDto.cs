@@ -552,3 +552,21 @@ public class HbtGenTemplateTemplateDto
     /// </summary>
     public string Status { get; set; }
 }
+
+/// <summary>
+/// 代码生成模板状态DTO
+/// </summary>
+public class HbtGenTemplateStatusDto
+{
+    /// <summary>
+    /// 模板ID
+    /// </summary>
+    [Required(ErrorMessage = "模板ID不能为空")]
+    public long TemplateId { get; set; }
+
+    /// <summary>
+    /// 状态（0：停用，1：正常）
+    /// </summary>
+    [Required(ErrorMessage = "状态不能为空")]
+    public int Status { get; set; }
+}

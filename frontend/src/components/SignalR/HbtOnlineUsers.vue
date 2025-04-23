@@ -1,10 +1,11 @@
 <template>
   <div class="online-users">
     <a-popover
-      v-model:visible="visible"
+      :open="isOpen"
       placement="bottomRight"
       trigger="click"
       :overlayStyle="{ width: '250px' }"
+      @update:open="handleVisibleChange"
     >
       <template #content>
         <div class="users-list">
@@ -33,15 +34,16 @@
         </div>
       </template>
       <a-button type="text">
-        <a-icon type="team" />
+        <team-outlined />
       </a-button>
     </a-popover>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, watch } from 'vue'
 import { signalRService } from '@/utils/SignalR/service'
+import { TeamOutlined } from '@ant-design/icons-vue'
 
 interface OnlineUser {
   id: string
@@ -50,7 +52,21 @@ interface OnlineUser {
   status: '在线' | '离开' | '忙碌'
 }
 
-const visible = ref(false)
+interface Props {
+  open: boolean
+}
+
+const props = defineProps<Props>()
+const emit = defineEmits<{
+  (e: 'update:open', open: boolean): void
+}>()
+
+const isOpen = ref(props.open)
+
+watch(() => props.open, (newVal) => {
+  isOpen.value = newVal
+})
+
 const onlineUsers = ref<OnlineUser[]>([])
 
 // 处理用户上线
@@ -71,6 +87,11 @@ const handleUserStatusUpdate = (userId: string, status: OnlineUser['status']) =>
   if (user) {
     user.status = status
   }
+}
+
+const handleVisibleChange = (val: boolean) => {
+  isOpen.value = val
+  emit('update:open', val)
 }
 
 onMounted(() => {

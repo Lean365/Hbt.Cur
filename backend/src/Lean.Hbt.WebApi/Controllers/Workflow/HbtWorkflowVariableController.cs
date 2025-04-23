@@ -1,5 +1,5 @@
 //===================================================================
-// 项目名 : Lean.Hbt 
+// 项目名 : Lean.Hbt
 // 文件名 : HbtWorkflowVariableController.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-23 12:00
@@ -7,17 +7,8 @@
 // 描述   : 工作流变量控制器
 //===================================================================
 
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http;
 using Lean.Hbt.Application.Dtos.Workflow;
 using Lean.Hbt.Application.Services.Workflow;
-using Lean.Hbt.Common.Models;
-using Lean.Hbt.Domain.IServices.Admin;
-using Lean.Hbt.Infrastructure.Security.Attributes;
-using Lean.Hbt.Infrastructure.Swagger;
 
 namespace Lean.Hbt.WebApi.Controllers.Workflow
 {
@@ -31,7 +22,6 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
     [Route("api/[controller]", Name = "工作流变量")]
     [ApiController]
     [ApiModule("workflow", "工作流")]
-   
     public class HbtWorkflowVariableController : HbtBaseController
     {
         private readonly IHbtWorkflowVariableService _workflowVariableService;
@@ -41,7 +31,10 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// </summary>
         /// <param name="workflowVariableService">工作流变量服务</param>
         /// <param name="localization">本地化服务</param>
-        public HbtWorkflowVariableController(IHbtWorkflowVariableService workflowVariableService, IHbtLocalizationService localization) : base(localization)
+        /// <param name="logger">日志服务</param>
+        public HbtWorkflowVariableController(IHbtWorkflowVariableService workflowVariableService,
+                                    IHbtLocalizationService localization,
+            IHbtLogger logger) : base(localization, logger)
         {
             _workflowVariableService = workflowVariableService;
         }
@@ -153,7 +146,7 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         public async Task<IActionResult> ExportAsync([FromQuery] IEnumerable<HbtWorkflowVariableDto> data, [FromQuery] string sheetName = "Sheet1")
         {
             var result = await _workflowVariableService.ExportAsync(data, sheetName);
-            return File(result, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"工作流变量数据_{DateTime.Now:yyyyMMddHHmmss}.xlsx");
+            return File(result.content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", result.fileName);
         }
 
         /// <summary>
@@ -166,7 +159,7 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         public async Task<IActionResult> GetTemplateAsync([FromQuery] string sheetName = "Sheet1")
         {
             var result = await _workflowVariableService.GetTemplateAsync(sheetName);
-            return File(result, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"工作流变量导入模板_{DateTime.Now:yyyyMMddHHmmss}.xlsx");
+            return File(result.content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", result.fileName);
         }
 
         /// <summary>
@@ -224,4 +217,4 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
             return Success(result);
         }
     }
-} 
+}

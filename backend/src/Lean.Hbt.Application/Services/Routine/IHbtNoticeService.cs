@@ -67,7 +67,7 @@ namespace Lean.Hbt.Application.Services.Routine
         /// <param name="query">查询条件</param>
         /// <param name="sheetName">工作表名称</param>
         /// <returns>Excel文件字节数组</returns>
-        Task<byte[]> ExportAsync(HbtNoticeQueryDto query, string sheetName = "通知数据");
+        Task<(string fileName, byte[] content)> ExportAsync(HbtNoticeQueryDto query, string sheetName = "通知数据");
 
         /// <summary>
         /// 发布通知

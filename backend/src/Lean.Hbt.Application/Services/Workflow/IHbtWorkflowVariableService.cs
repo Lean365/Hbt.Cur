@@ -70,7 +70,7 @@ namespace Lean.Hbt.Application.Services.Workflow
         /// <param name="data">数据集合</param>
         /// <param name="sheetName">工作表名称</param>
         /// <returns>Excel文件字节数组</returns>
-        Task<byte[]> ExportAsync(IEnumerable<HbtWorkflowVariableDto> data, string sheetName = "Sheet1");
+        Task<(string fileName, byte[] content)> ExportAsync(IEnumerable<HbtWorkflowVariableDto> data, string sheetName = "Sheet1");
 
         /// <summary>
         /// 导入工作流变量(单个Sheet)
@@ -85,7 +85,7 @@ namespace Lean.Hbt.Application.Services.Workflow
         /// </summary>
         /// <param name="sheets">Sheet数据字典，key为sheet名称，value为数据集合</param>
         /// <returns>Excel文件字节数组</returns>
-        Task<byte[]> ExportMultiSheetAsync(Dictionary<string, IEnumerable<HbtWorkflowVariableDto>> sheets);
+        Task<(string fileName, byte[] content)> ExportMultiSheetAsync(Dictionary<string, IEnumerable<HbtWorkflowVariableDto>> sheets);
 
         /// <summary>
         /// 导入工作流变量(多个Sheet)
@@ -99,7 +99,7 @@ namespace Lean.Hbt.Application.Services.Workflow
         /// </summary>
         /// <param name="sheetName">工作表名称</param>
         /// <returns>Excel模板文件字节数组</returns>
-        Task<byte[]> GetTemplateAsync(string sheetName = "Sheet1");
+        Task<(string fileName, byte[] content)> GetTemplateAsync(string sheetName = "Sheet1");
 
         /// <summary>
         /// 获取工作流实例的所有变量

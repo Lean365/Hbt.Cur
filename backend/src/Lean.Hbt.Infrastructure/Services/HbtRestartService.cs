@@ -1,9 +1,7 @@
 using Lean.Hbt.Application.Services.Identity;
 using Lean.Hbt.Common.Options;
 using Lean.Hbt.Domain.Entities.SignalR;
-using Lean.Hbt.Domain.IServices.Admin;
 using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Lean.Hbt.Infrastructure.Services;
@@ -24,7 +22,12 @@ public class HbtRestartService : IHbtRestartService
 {
     private readonly IHbtLoginExtendService _loginExtendService;
     private readonly IDistributedCache _cache;
-    private readonly ILogger<HbtRestartService> _logger;
+
+    /// <summary>
+    /// 日志服务
+    /// </summary>
+    protected readonly IHbtLogger _logger;
+
     private readonly HbtRestartOptions _options;
     private readonly IHbtRepository<HbtOnlineUser> _onlineUserRepository;
     private readonly IConnectionMultiplexer? _redisConnection;
@@ -43,7 +46,8 @@ public class HbtRestartService : IHbtRestartService
     public HbtRestartService(
         IHbtLoginExtendService loginExtendService,
         IDistributedCache cache,
-        ILogger<HbtRestartService> logger,
+        IHbtLogger logger,
+
         IOptions<HbtRestartOptions> options,
         IOptions<HbtCacheOptions> cacheOptions,
         IHbtRepository<HbtOnlineUser> onlineUserRepository,
@@ -115,12 +119,12 @@ public class HbtRestartService : IHbtRestartService
                 await CleanupDistributedStateAsync();
             }
 
-            _logger.LogInformation("系统重启清理完成");
+            _logger.Info("系统重启清理完成");
             return true;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "系统重启清理过程中发生错误");
+            _logger.Error("系统重启清理过程中发生错误");
             return false;
         }
     }
@@ -152,14 +156,14 @@ public class HbtRestartService : IHbtRestartService
                     user.LastActivity = DateTime.Now;
                 }
                 await _onlineUserRepository.UpdateRangeAsync(onlineUsers);
-                _logger.LogInformation("已更新{Count}个在线用户状态为离线", onlineUsers.Count);
+                _logger.Info("已更新{Count}个在线用户状态为离线", onlineUsers.Count);
             }
 
-            _logger.LogInformation("用户会话信息清理完成");
+            _logger.Info("用户会话信息清理完成");
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "清理用户会话信息时发生错误");
+            _logger.Error("清理用户会话信息时发生错误");
             throw;
         }
     }
@@ -188,7 +192,7 @@ public class HbtRestartService : IHbtRestartService
                 if (keys.Any())
                 {
                     await db.KeyDeleteAsync(keys);
-                    _logger.LogInformation("已清理{Count}个Redis缓存键", keys.Length);
+                    _logger.Info("已清理{Count}个Redis缓存键", keys.Length);
                 }
             }
             else
@@ -197,11 +201,11 @@ public class HbtRestartService : IHbtRestartService
                 await _cache.RemoveAsync("system:cache:all");
             }
 
-            _logger.LogInformation("缓存信息清理完成");
+            _logger.Info("缓存信息清理完成");
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "清理缓存信息时发生错误");
+            _logger.Error("清理缓存信息时发生错误");
             throw;
         }
     }
@@ -217,7 +221,7 @@ public class HbtRestartService : IHbtRestartService
     {
         try
         {
-            _logger.LogInformation("开始清理实时通信状态");
+            _logger.Info("开始清理实时通信状态");
 
             // 1. 清理在线用户表
             var exp = Expressionable.Create<HbtOnlineUser>();
@@ -232,7 +236,7 @@ public class HbtRestartService : IHbtRestartService
                     user.LastActivity = DateTime.Now;
                 }
                 await _onlineUserRepository.UpdateRangeAsync(onlineUsers);
-                _logger.LogInformation("已更新{Count}个在线用户状态为离线", onlineUsers.Count);
+                _logger.Info("已更新{Count}个在线用户状态为离线", onlineUsers.Count);
             }
 
             // 2. 清理 Redis 中的 SignalR 连接信息
@@ -246,7 +250,7 @@ public class HbtRestartService : IHbtRestartService
                 if (keys.Any())
                 {
                     await db.KeyDeleteAsync(keys);
-                    _logger.LogInformation("已清理{Count}个SignalR缓存键", keys.Length);
+                    _logger.Info("已清理{Count}个SignalR缓存键", keys.Length);
                 }
             }
             else
@@ -257,11 +261,11 @@ public class HbtRestartService : IHbtRestartService
                 await _cache.RemoveAsync("signalr:devices:all");
             }
 
-            _logger.LogInformation("实时通信状态清理完成");
+            _logger.Info("实时通信状态清理完成");
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "清理实时通信状态时发生错误");
+            _logger.Error("清理实时通信状态时发生错误");
             throw;
         }
     }
@@ -280,11 +284,11 @@ public class HbtRestartService : IHbtRestartService
         {
             // 清除系统状态相关的缓存
             await _cache.RemoveAsync("system:status:all");
-            _logger.LogInformation("系统状态清理完成");
+            _logger.Info("系统状态清理完成");
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "清理系统状态时发生错误");
+            _logger.Error("清理系统状态时发生错误");
             throw;
         }
     }
@@ -303,11 +307,11 @@ public class HbtRestartService : IHbtRestartService
         {
             // 清除安全相关的缓存
             await _cache.RemoveAsync("security:info:all");
-            _logger.LogInformation("安全相关信息清理完成");
+            _logger.Info("安全相关信息清理完成");
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "清理安全相关信息时发生错误");
+            _logger.Error("清理安全相关信息时发生错误");
             throw;
         }
     }
@@ -325,11 +329,11 @@ public class HbtRestartService : IHbtRestartService
         {
             // 清除临时数据相关的缓存
             await _cache.RemoveAsync("temp:data:all");
-            _logger.LogInformation("临时数据清理完成");
+            _logger.Info("临时数据清理完成");
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "清理临时数据时发生错误");
+            _logger.Error("清理临时数据时发生错误");
             throw;
         }
     }
@@ -347,11 +351,11 @@ public class HbtRestartService : IHbtRestartService
         {
             // 清除性能监控相关的缓存
             await _cache.RemoveAsync("performance:data:all");
-            _logger.LogInformation("性能监控数据清理完成");
+            _logger.Info("性能监控数据清理完成");
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "清理性能监控数据时发生错误");
+            _logger.Error("清理性能监控数据时发生错误");
             throw;
         }
     }
@@ -370,11 +374,11 @@ public class HbtRestartService : IHbtRestartService
         {
             // 清除分布式状态相关的缓存
             await _cache.RemoveAsync("distributed:state:all");
-            _logger.LogInformation("分布式状态清理完成");
+            _logger.Info("分布式状态清理完成");
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "清理分布式状态时发生错误");
+            _logger.Error("清理分布式状态时发生错误");
             throw;
         }
     }

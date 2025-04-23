@@ -10,6 +10,7 @@
 //===================================================================
 
 using System.Text.RegularExpressions;
+using Lean.Hbt.Domain.IServices.Extensions;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
 

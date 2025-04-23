@@ -78,7 +78,7 @@ public interface I{{ pascal_case table.table_name }}Service
     /// </summary>
     /// <param name="queryDto">查询参数</param>
     /// <returns>文件流</returns>
-    Task<byte[]> ExportAsync({{ pascal_case table.table_name }}QueryDto queryDto);
+    Task<(string fileName, byte[] content)> ExportAsync({{ pascal_case table.table_name }}QueryDto queryDto);
 
     /// <summary>
     /// 获取导入模板

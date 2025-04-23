@@ -9,7 +9,6 @@
 
 using Lean.Hbt.Application.Dtos.Routine;
 using Lean.Hbt.Application.Services.Routine;
-using Lean.Hbt.Domain.IServices.Admin;
 
 namespace Lean.Hbt.WebApi.Controllers.Routine
 {
@@ -32,7 +31,9 @@ namespace Lean.Hbt.WebApi.Controllers.Routine
         /// </summary>
         /// <param name="fileService">文件服务</param>
         /// <param name="localization">本地化服务</param>
-        public HbtFileController(IHbtFileService fileService, IHbtLocalizationService localization) : base(localization)
+        /// <param name="logger">日志服务</param>
+        public HbtFileController(IHbtFileService fileService, IHbtLocalizationService localization,
+            IHbtLogger logger) : base(localization, logger)
         {
             _fileService = fileService;
         }
@@ -135,7 +136,7 @@ namespace Lean.Hbt.WebApi.Controllers.Routine
         public async Task<IActionResult> ExportAsync([FromQuery] HbtFileQueryDto query, [FromQuery] string sheetName = "文件信息")
         {
             var result = await _fileService.ExportAsync(query, sheetName);
-            return File(result, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"文件信息_{DateTime.Now:yyyyMMddHHmmss}.xlsx");
+            return File(result.content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", result.fileName);
         }
 
         /// <summary>
@@ -148,7 +149,7 @@ namespace Lean.Hbt.WebApi.Controllers.Routine
         public async Task<IActionResult> GetTemplateAsync([FromQuery] string sheetName = "文件信息")
         {
             var result = await _fileService.GetTemplateAsync(sheetName);
-            return File(result, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"文件导入模板_{DateTime.Now:yyyyMMddHHmmss}.xlsx");
+            return File(result.content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", result.fileName);
         }
 
         /// <summary>

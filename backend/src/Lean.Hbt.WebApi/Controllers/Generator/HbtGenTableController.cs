@@ -9,11 +9,8 @@
 // 描述    : 代码生成表控制器
 //===================================================================
 
-using Microsoft.AspNetCore.Mvc;
-using Lean.Hbt.Application.Services.Generator;
 using Lean.Hbt.Application.Dtos.Generator;
-using Lean.Hbt.Common.Models;
-using Lean.Hbt.Domain.IServices.Admin;
+using Lean.Hbt.Application.Services.Generator;
 
 namespace Lean.Hbt.WebApi.Controllers.Generator;
 
@@ -31,9 +28,11 @@ public class HbtGenTableController : HbtBaseController
     /// </summary>
     /// <param name="genTableService">代码生成表服务</param>
     /// <param name="localization">本地化服务</param>
+    /// <param name="logger">日志服务</param>
     public HbtGenTableController(
         IHbtGenTableService genTableService,
-        IHbtLocalizationService localization) : base(localization)
+            IHbtLocalizationService localization,
+            IHbtLogger logger) : base(localization, logger)
     {
         _genTableService = genTableService;
     }
@@ -111,7 +110,7 @@ public class HbtGenTableController : HbtBaseController
     public async Task<IActionResult> Delete(long id)
     {
         var result = await _genTableService.DeleteAsync(id);
-        return result 
+        return result
             ? Success("删除成功")
             : Error("删除失败");
     }
@@ -184,7 +183,7 @@ public class HbtGenTableController : HbtBaseController
     public async Task<IActionResult> SyncTable(long id)
     {
         var result = await _genTableService.SyncTableAsync(id);
-        return result 
+        return result
             ? Success("同步成功")
             : Error("同步失败");
     }
@@ -210,7 +209,7 @@ public class HbtGenTableController : HbtBaseController
     public async Task<IActionResult> GenerateCode(long id)
     {
         var result = await _genTableService.GenerateCodeAsync(id);
-        return result 
+        return result
             ? Success("生成成功")
             : Error("生成失败");
     }

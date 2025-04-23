@@ -1,27 +1,27 @@
 //===================================================================
 // 项目名 : Lean.Hbt
-// 文件名 : hbtDictData.ts
+// 文件名 : dictData.d.ts
 // 创建者 : Claude
 // 创建时间: 2024-03-20
 // 版本号 : v1.0.0
-// 描述    : 字典数据相关类型定义
+// 描述    : 字典数据类型定义
 //===================================================================
 
 import type { HbtBaseEntity, HbtPagedQuery, HbtPagedResult } from '@/types/common'
 
 /**
- * 字典数据对象
+ * 字典数据实体
  */
 export interface HbtDictData extends HbtBaseEntity {
   /** 字典数据ID */
   dictDataId: number
-  /** 字典类型ID */
-  dictTypeId: number
+  /** 字典类型 */
+  dictType: string
   /** 字典标签 */
   dictLabel: string
   /** 字典键值 */
   dictValue: string
-  /** 字典排序 */
+  /** 排序号 */
   orderNum: number
   /** 样式属性 */
   cssClass?: string
@@ -35,37 +35,49 @@ export interface HbtDictData extends HbtBaseEntity {
   extLabel?: string
   /** 扩展值 */
   extValue?: string
-  /** 国际化翻译键值 */
+  /** 翻译键 */
   transKey?: string
+  /** 租户ID */
+  tenantId: number
   /** 备注 */
   remark?: string
+  /** 创建者 */
+  createBy: string
+  /** 创建时间 */
+  createTime: string
+  /** 更新者 */
+  updateBy: string
+  /** 更新时间 */
+  updateTime: string
+  /** 是否删除 */
+  isDeleted: number
 }
 
 /**
  * 字典数据查询参数
  */
 export interface HbtDictDataQuery extends HbtPagedQuery {
-  /** 字典类型ID */
-  dictTypeId?: number
   /** 字典类型 */
-  dictType?: string
+  dictType: string
+  /** 字典标签 */
+  dictLabel?: string
+  /** 字典键值 */
+  dictValue?: string
   /** 状态（0正常 1停用） */
   status?: number
-  /** 关键词 */
-  keyword?: string
 }
 
 /**
  * 字典数据创建参数
  */
 export interface HbtDictDataCreate {
-  /** 字典类型ID */
-  dictTypeId: number
+  /** 字典类型 */
+  dictType: string
   /** 字典标签 */
   dictLabel: string
   /** 字典键值 */
   dictValue: string
-  /** 字典排序 */
+  /** 排序号 */
   orderNum: number
   /** 样式属性 */
   cssClass?: string
@@ -79,8 +91,10 @@ export interface HbtDictDataCreate {
   extLabel?: string
   /** 扩展值 */
   extValue?: string
-  /** 国际化翻译键值 */
+  /** 翻译键 */
   transKey?: string
+  /** 租户ID */
+  tenantId: number
   /** 备注 */
   remark?: string
 }

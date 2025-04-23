@@ -9,7 +9,7 @@
 
 using System.Linq.Expressions;
 using Lean.Hbt.Domain.Entities.Identity;
-using Lean.Hbt.Domain.IServices;
+using Lean.Hbt.Domain.IServices.Extensions;
 
 namespace Lean.Hbt.Infrastructure.Data.Seeds;
 
@@ -190,7 +190,7 @@ public class HbtDbSeedMenu
             TransKey = "menu.admin._self",
             ParentId = 0,
             OrderNum = 6,
-            Path = "Hbt365",
+            Path = "admin",
             Component = "",
             QueryParams = null,
             IsExternal = 0,
@@ -482,8 +482,8 @@ public class HbtDbSeedMenu
                 TransKey = "menu.admin.config",
                 ParentId = parentId,
                 OrderNum = 1,
-                Path = "config",
-                Component = "admin/config/index",
+                Path = "configs",
+                Component = "admin/configs/index",
                 MenuType = 1,
                 Perms = "admin:config:list",
                 Icon = "ToolOutlined",
@@ -504,43 +504,18 @@ public class HbtDbSeedMenu
             },
             new HbtMenu
             {
-                MenuName = "字典类型",
-                TransKey = "menu.admin.dicttype",
+                MenuName = "字典管理",
+                TransKey = "menu.admin.dict",
                 ParentId = parentId,
                 OrderNum = 3,
-                Path = "dicttype",
-                Component = "admin/dicttype/index",
+                Path = "dict",
+                Component = "admin/dict/index",
                 MenuType = 1,
-                Perms = "admin:dicttype:list",
+                Perms = "admin:dict:list",
                 Icon = "BookOutlined",
                 Remark = "字典类型菜单"
             },
-            new HbtMenu
-            {
-                MenuName = "字典数据",
-                TransKey = "menu.admin.dictdata",
-                ParentId = parentId,
-                OrderNum = 4,
-                Path = "dictdata",
-                Component = "admin/dictdata/index",
-                MenuType = 1,
-                Perms = "admin:dictdata:list",
-                Icon = "DatabaseOutlined",
-                Remark = "字典数据菜单"
-            },
-            new HbtMenu
-            {
-                MenuName = "翻译管理",
-                TransKey = "menu.admin.translation",
-                ParentId = parentId,
-                OrderNum = 5,
-                Path = "translation",
-                Component = "admin/translation/index",
-                MenuType = 1,
-                Perms = "admin:translation:list",
-                Icon = "GlobalOutlined",
-                Remark = "翻译管理菜单"
-            }
+
         };
     }
 
@@ -769,26 +744,12 @@ public class HbtDbSeedMenu
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now
             },
-             new HbtMenu
-            {
-                MenuName = "审计日志",
-                TransKey = "menu.audit.auditlog",
-                ParentId = parentId,
-                OrderNum = 6,
-                Path = "auditlog",
-                Component = "audit/auditlog/index",
-                MenuType = 1,
-                Perms = "audit:log:list",
-                Icon = "AuditOutlined",
-                CreateBy = "Hbt365",
-                CreateTime = DateTime.Now
-            },
             new HbtMenu
             {
                 MenuName = "服务器监控",
                 TransKey = "menu.signalr.server",
                 ParentId = parentId,
-                OrderNum = 1,
+                OrderNum = 6,
                 Path = "server",
                 Component = "signalr/server/index",
                 QueryParams = null,

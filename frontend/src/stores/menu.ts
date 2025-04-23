@@ -1,84 +1,77 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import type { MenuProps } from 'ant-design-vue'
 import type { Menu } from '@/types/identity/menu'
+import { getCurrentUserMenus } from '@/api/admin/menu'
+import { registerDynamicRoutes } from '@/utils/route'
 import type { HbtApiResponse } from '@/types/common'
-import { getCurrentUserMenus } from '@/api/identity/menu'
 import { message } from 'ant-design-vue'
 import { transformMenu } from '@/utils/menu'
 import i18n from '@/locales'
+import { getMenuList } from '@/api/identity/menu'
+import type { RouteRecordRaw, Router } from 'vue-router'
+import { formatMenuToRoutes } from '@/utils/route'
 
 const { t } = i18n.global
 
 export const useMenuStore = defineStore('menu', () => {
-  // 菜单加载状态
-  const isLoading = ref(false)
-  // 原始菜单列表
   const rawMenuList = ref<Menu[]>([])
-  // 处理后的菜单树
-  const menuList = ref<MenuProps['items']>([])
-  // 菜单是否已加载
+  const menuList = ref<Menu[]>([])
+  const isLoading = ref(false)
   const isMenuLoaded = ref(false)
 
-  // 加载用户菜单
   const loadUserMenus = async () => {
-    // 如果菜单已加载且存在，直接返回true
     if (isMenuLoaded.value && rawMenuList.value?.length > 0) {
-      //console.log('[菜单加载] ' + t('menu.loading.alreadyLoaded'))
       return true
     }
 
-    // 如果正在加载中，等待加载完成
     if (isLoading.value) {
-      //console.log('[菜单加载] ' + t('menu.loading.inProgress'))
       return false
     }
 
-    //console.log('[菜单加载] ' + t('menu.loading.start'))
     isLoading.value = true
 
     try {
       const response = await getCurrentUserMenus()
-      //console.log('[菜单加载] ' + t('menu.loading.apiResponse'), response)
 
-      // 检查响应数据
       if (!response || !response.data) {
-        //console.error('[菜单加载] ' + t('menu.loading.invalidResponse'), response)
         message.error(t('menu.error.loadFailed.invalidResponse'))
         return false
       }
 
       const apiResult = response as unknown as HbtApiResponse<Menu[]>
 
-      // 检查业务状态码
       if (apiResult.code !== 200) {
-        //console.warn('[菜单加载] ' + t('menu.loading.businessError'), { code: apiResult.code, msg: apiResult.msg })
         message.error(
           apiResult.msg || t('menu.error.loadFailed.businessError', { code: apiResult.code })
         )
         return false
       }
 
-      // 检查菜单数据
       const menus = apiResult.data
       if (!Array.isArray(menus)) {
-        //console.error('[菜单加载] ' + t('menu.loading.invalidFormat'), menus)
         message.error(t('menu.error.loadFailed.invalidFormat'))
         return false
       }
 
-      // 更新菜单数据
+      console.log('[菜单] 原始菜单数据:', {
+        总数: menus.length,
+        菜单项: menus.map(m => ({
+          菜单ID: m.menuId,
+          名称: m.menuName,
+          路径: m.path,
+          组件: m.component,
+          类型: m.menuType,
+          状态: m.status,
+          权限: m.permission
+        }))
+      })
+
       rawMenuList.value = menus
-      menuList.value = transformMenu(menus)
+      menuList.value = menus
       isMenuLoaded.value = true
 
-      // console.log('[菜单加载] ' + t('menu.loading.complete'), {
-      //   rawMenuList: menus,
-      //   menuList: menuList.value
-      // })
       return true
     } catch (error) {
-      //console.error('[菜单加载] ' + t('menu.loading.error'), error)
       message.error(t('menu.error.loadFailed.retry'))
       return false
     } finally {
@@ -86,7 +79,6 @@ export const useMenuStore = defineStore('menu', () => {
     }
   }
 
-  // 清除菜单数据
   const clearMenus = () => {
     rawMenuList.value = []
     menuList.value = []
@@ -94,16 +86,105 @@ export const useMenuStore = defineStore('menu', () => {
     isLoading.value = false
   }
 
-  // 重新加载菜单
-  const reloadMenus = async () => {
-    clearMenus()
-    return await loadUserMenus()
+  const reloadMenus = async (router: Router) => {
+    try {
+      if (!router) {
+        console.error('[菜单] 路由实例未提供')
+        return []
+      }
+
+      isLoading.value = true
+      const response = await getCurrentUserMenus()
+      if (response.status === 200) {
+        const data = response.data as HbtApiResponse<Menu[]>
+        if (data.code === 200) {
+          // 处理菜单数据，确保ID和名称正确设置
+          const processedMenus = data.data.map(menu => {
+            const processedMenu = {
+              ...menu,
+              menuId: menu.menuId,
+              menuName: menu.menuName || `Menu_${menu.menuId}`,
+              children: menu.children?.map(child => ({
+                ...child,
+                menuId: child.menuId,
+                menuName: child.menuName || `Menu_${child.menuId}`,
+                parentId: menu.menuId,
+                component: child.component || '',
+                path: child.path || '',
+                menuType: child.menuType || 0,
+                status: child.status || 0,
+                permission: child.permission || ''
+              }))
+            }
+            
+            console.log('[菜单] 处理后的菜单项:', {
+              菜单ID: processedMenu.menuId,
+              名称: processedMenu.menuName,
+              路径: processedMenu.path,
+              组件: processedMenu.component,
+              类型: processedMenu.menuType,
+              子菜单数: processedMenu.children?.length || 0
+            })
+            
+            return processedMenu
+          })
+
+          console.log('[菜单] 加载的菜单数据:', {
+            总数: processedMenus.length,
+            菜单项: processedMenus.map(m => ({
+              菜单ID: m.menuId,
+              名称: m.menuName,
+              路径: m.path,
+              组件: m.component,
+              类型: m.menuType,
+              状态: m.status,
+              权限: m.permission,
+              子菜单数: m.children?.length || 0
+            }))
+          })
+
+          rawMenuList.value = processedMenus
+          menuList.value = processedMenus
+
+          // 注册动态路由前打印当前路由表
+          console.log('[路由] 当前路由表:', router.getRoutes().map(r => ({
+            路径: r.path,
+            名称: r.name,
+            完整路径: r.path + (r.children?.length ? '/' + r.children.map(c => c.path).join('/') : '')
+          })))
+
+          await registerDynamicRoutes(processedMenus, router)
+
+          // 注册动态路由后打印当前路由表
+          console.log('[路由] 注册后的路由表:', router.getRoutes().map(r => ({
+            路径: r.path,
+            名称: r.name,
+            完整路径: r.path + (r.children?.length ? '/' + r.children.map(c => c.path).join('/') : '')
+          })))
+
+          console.log('[菜单] 菜单加载成功')
+          return processedMenus
+        } else {
+          console.error('[菜单] 加载失败:', data.msg)
+          return []
+        }
+      } else {
+        console.error('[菜单] 加载失败:', response.statusText)
+        return []
+      }
+    } catch (error) {
+      console.error('[菜单] 加载出错:', error)
+      message.error(t('menu.loadError'))
+      return []
+    } finally {
+      isLoading.value = false
+    }
   }
 
   return {
-    isLoading,
     rawMenuList,
     menuList,
+    isLoading,
     isMenuLoaded,
     loadUserMenus,
     clearMenus,

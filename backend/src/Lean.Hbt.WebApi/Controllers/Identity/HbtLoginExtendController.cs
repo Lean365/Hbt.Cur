@@ -9,7 +9,6 @@
 
 using Lean.Hbt.Application.Dtos.Identity;
 using Lean.Hbt.Application.Services.Identity;
-using Lean.Hbt.Domain.IServices.Admin;
 
 namespace Lean.Hbt.WebApi.Controllers.Identity
 {
@@ -23,7 +22,6 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
     [Route("api/[controller]", Name = "登录扩展")]
     [ApiController]
     [ApiModule("identity", "身份认证")]
-
     public class HbtLoginExtendController : HbtBaseController
     {
         private readonly IHbtLoginExtendService _loginExtendService;
@@ -33,7 +31,10 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// </summary>
         /// <param name="loginExtendService">登录扩展信息服务</param>
         /// <param name="localization">本地化服务</param>
-        public HbtLoginExtendController(IHbtLoginExtendService loginExtendService, IHbtLocalizationService localization) : base(localization)
+        /// <param name="logger">日志服务</param>
+        public HbtLoginExtendController(IHbtLoginExtendService loginExtendService,
+                                    IHbtLocalizationService localization,
+            IHbtLogger logger) : base(localization, logger)
         {
             _loginExtendService = loginExtendService;
         }

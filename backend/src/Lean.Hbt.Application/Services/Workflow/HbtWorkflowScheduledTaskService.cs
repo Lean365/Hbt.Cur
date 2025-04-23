@@ -12,6 +12,7 @@
 using Lean.Hbt.Application.Dtos.Workflow;
 using Lean.Hbt.Domain.Data;
 using Lean.Hbt.Domain.Entities.Workflow;
+using Lean.Hbt.Domain.IServices.Extensions;
 
 namespace Lean.Hbt.Application.Services.Workflow
 {

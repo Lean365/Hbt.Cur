@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { getHbtDictDataByType } from '@/api/admin/hbtDictData'
+import { getHbtDictDataByType } from '@/api/admin/dictData'
 import type { HbtDictData } from '@/types/admin/dictData'
 
 export interface DictOption {
@@ -136,8 +136,8 @@ export const useDictStore = defineStore('dict', () => {
     const loadPromise = (async () => {
       try {
         const response = await getHbtDictDataByType(type)
-        if (response?.data) {
-          const dictDataList = (response as unknown as { data: HbtDictData[] }).data
+        if (response?.data?.code === 200) {
+          const dictDataList = response.data.data
           const options = dictDataList.map(item => ({
             label: item.dictLabel,
             value: Number(item.dictValue),

@@ -70,7 +70,7 @@
 import { ref, reactive, watch, onMounted } from 'vue'
 import type { HbtGenTableDto } from '@/types/generator/table'
 import type { HbtDictType } from '@/types/admin/dictType'
-import { getHbtDictTypeList } from '@/api/admin/hbtDictType'
+import { getHbtDictTypeList } from '@/api/admin/dictType'
 
 const props = defineProps<{
   modelValue: HbtGenTableDto

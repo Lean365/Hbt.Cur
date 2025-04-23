@@ -21,8 +21,10 @@ export interface HbtConfig extends HbtBaseEntity {
   configKey: string
   /** 配置键值 */
   configValue: string
-  /** 系统内置 */
-  configBuiltin: number
+  /** 系统内置（0否 1是） */
+  isBuiltin: number
+  /** 排序号 */
+  orderNum: number
   /** 备注 */
   remark: string
   /** 状态（0正常 1停用） */
@@ -37,10 +39,18 @@ export interface HbtConfigQuery extends HbtPagedQuery {
   configName?: string
   /** 配置键名 */
   configKey?: string
-  /** 系统内置 */
-  configBuiltin?: number
+  /** 配置键值 */
+  configValue?: string
+  /** 系统内置（0否 1是） */
+  isBuiltin: number
   /** 状态（0正常 1停用） */
-  status?: number
+  status: number
+  /** 是否加密（0否 1是） */
+  isEncrypted: number
+  /** 排序列 */
+  orderByColumn?: string
+  /** 排序方向 */
+  orderType?: 'asc' | 'desc'
 }
 
 /**
@@ -54,7 +64,7 @@ export interface HbtConfigCreate {
   /** 配置键值 */
   configValue: string
   /** 系统内置 */
-  configBuiltin: number
+  isBuiltin: number
   /** 排序号 */
   orderNum: number
   /** 备注 */
@@ -69,28 +79,6 @@ export interface HbtConfigCreate {
 export interface HbtConfigUpdate extends HbtConfigCreate {
   /** 配置ID */
   configId: number
-}
-
-/**
- * 接口响应
- */
-export interface ApiResponse<T> {
-  /** 状态码 */
-  code: number
-  /** 提示信息 */
-  msg: string
-  /** 响应数据 */
-  data: T
-}
-
-/**
- * 分页响应
- */
-export interface PageResponse<T> {
-  /** 数据列表 */
-  list: T[]
-  /** 总数 */
-  total: number
 }
 
 /**
@@ -151,22 +139,6 @@ export interface HbtConfigItem {
   createTime?: string
   /** 更新时间 */
   updateTime?: string
-}
-
-/**
- * 分页响应数据
- */
-export interface HbtPageResponse<T> {
-  /** 总记录数 */
-  totalNum: number
-  /** 当前页码 */
-  pageIndex: number
-  /** 每页大小 */
-  pageSize: number
-  /** 总页数 */
-  totalPage: number
-  /** 数据列表 */
-  rows: T[]
 }
 
 /**

@@ -7,11 +7,10 @@
 // 描述   : 服务器监控服务实现
 //===================================================================
 
-using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Lean.Hbt.Application.Dtos.Audit;
 using Lean.Hbt.Common.Utils;
-using LibreHardwareMonitor.Hardware;
+using Microsoft.AspNetCore.Http;
 
 namespace Lean.Hbt.Application.Services.Audit;
 
@@ -24,14 +23,16 @@ namespace Lean.Hbt.Application.Services.Audit;
 /// 2. 获取网络接口信息：网卡、IP地址、流量等
 /// 3. 实时监控系统资源使用情况
 /// </remarks>
-public class HbtServerMonitorService : IHbtServerMonitorService
+public class HbtServerMonitorService : HbtBaseService, IHbtServerMonitorService
 {
     private readonly DateTime _startTime;
 
     /// <summary>
     /// 构造函数
     /// </summary>
-    public HbtServerMonitorService()
+    public HbtServerMonitorService(
+        IHbtLogger logger,
+        IHttpContextAccessor httpContextAccessor) : base(logger, httpContextAccessor)
     {
         _startTime = DateTime.Now;
     }
@@ -58,21 +59,21 @@ public class HbtServerMonitorService : IHbtServerMonitorService
                 OsName = RuntimeInformation.OSDescription,
                 OsArchitecture = RuntimeInformation.OSArchitecture.ToString(),
                 OsVersion = RuntimeInformation.OSDescription,
-                
+
                 // 处理器信息
                 ProcessorName = HbtServerMonitorUtils.GetProcessorName(),
                 ProcessorCount = Environment.ProcessorCount,
-                
+
                 // 系统运行时间
                 SystemStartTime = HbtServerMonitorUtils.GetSystemStartTime(),
                 SystemUptime = (DateTime.Now - HbtServerMonitorUtils.GetSystemStartTime()).TotalDays,
-                
+
                 // .NET运行时信息
                 DotNetRuntimeVersion = RuntimeInformation.FrameworkDescription,
                 ClrVersion = Environment.Version.ToString(),
                 DotNetRuntimeDirectory = RuntimeEnvironment.GetRuntimeDirectory()
             };
-            
+
             try
             {
                 // 获取内存信息（转换为字节）
@@ -98,7 +99,7 @@ public class HbtServerMonitorService : IHbtServerMonitorService
             catch (Exception ex)
             {
                 // 记录错误日志
-                Debug.WriteLine($"获取服务器信息时发生错误: {ex.Message}");
+                _logger.Error(L("Audit.ServerMonitor.GetServerInfoFailed", ex.Message), ex);
             }
 
             return dto;
@@ -131,7 +132,7 @@ public class HbtServerMonitorService : IHbtServerMonitorService
                     AdapterName = ni.Name,
                     MacAddress = ni.MacAddress,
                     IpAddress = ni.IpAddress,
-                    IpLocation = "Unknown Location"
+                    IpLocation = L("Audit.ServerMonitor.UnknownLocation")
                 };
 
                 // 获取IP地理位置信息
@@ -147,7 +148,7 @@ public class HbtServerMonitorService : IHbtServerMonitorService
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"获取网络信息时发生错误: {ex.Message}");
+            _logger.Error(L("Audit.ServerMonitor.GetNetworkInfoFailed", ex.Message), ex);
         }
 
         return networkInfoList;
@@ -169,8 +170,8 @@ public class HbtServerMonitorService : IHbtServerMonitorService
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"获取IP地理位置信息时发生错误: {ex.Message}");
-            return "Unknown Location";
+            _logger.Error(L("Audit.ServerMonitor.GetLocationFailed", ipAddress, ex.Message), ex);
+            return L("Audit.ServerMonitor.UnknownLocation");
         }
     }
 }

@@ -126,6 +126,13 @@ namespace Lean.Hbt.Application.Dtos.Identity
     public class HbtRoleCreateDto
     {
         /// <summary>
+        /// 角色编码
+        /// </summary>
+        [Required(ErrorMessage = "角色编码不能为空")]
+        [MaxLength(50, ErrorMessage = "角色编码长度不能超过50个字符")]
+        public string RoleCode { get; set; } = string.Empty;
+
+        /// <summary>
         /// 角色名称
         /// </summary>
         [Required(ErrorMessage = "角色名称不能为空")]

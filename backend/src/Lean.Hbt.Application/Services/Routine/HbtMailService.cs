@@ -12,6 +12,7 @@ using Lean.Hbt.Application.Dtos.Routine;
 using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Domain.Entities.Routine;
 using Lean.Hbt.Domain.IServices.SignalR;
+using Microsoft.AspNetCore.Http;
 
 namespace Lean.Hbt.Application.Services.Routine
 {
@@ -22,11 +23,9 @@ namespace Lean.Hbt.Application.Services.Routine
     /// 创建者: Lean365
     /// 创建时间: 2024-03-07
     /// </remarks>
-    public class HbtMailService : IHbtMailService
+    public class HbtMailService : HbtBaseService, IHbtMailService
     {
-        private readonly ILogger<HbtMailService> _logger;
         private readonly IHbtRepository<HbtMail> _mailRepository;
-        private readonly IHbtCurrentUser _currentUser;
         private readonly IHbtSignalRClient _signalRClient;
 
         /// <summary>
@@ -34,17 +33,15 @@ namespace Lean.Hbt.Application.Services.Routine
         /// </summary>
         /// <param name="logger">日志记录器</param>
         /// <param name="mailRepository">邮件仓储</param>
-        /// <param name="currentUser">当前用户</param>
         /// <param name="signalRClient">SignalR客户端</param>
+        /// <param name="httpContextAccessor">HTTP上下文访问器</param>
         public HbtMailService(
-            ILogger<HbtMailService> logger,
+            IHbtLogger logger,
             IHbtRepository<HbtMail> mailRepository,
-            IHbtCurrentUser currentUser,
-            IHbtSignalRClient signalRClient)
+            IHbtSignalRClient signalRClient,
+            IHttpContextAccessor httpContextAccessor) : base(logger, httpContextAccessor)
         {
-            _logger = logger;
             _mailRepository = mailRepository;
-            _currentUser = currentUser;
             _signalRClient = signalRClient;
         }
 
@@ -97,7 +94,7 @@ namespace Lean.Hbt.Application.Services.Routine
         {
             var mail = await _mailRepository.GetByIdAsync(mailId);
             if (mail == null)
-                throw new HbtException($"邮件不存在: {mailId}");
+                throw new HbtException(L("Mail.NotFound", mailId));
 
             return mail.Adapt<HbtMailDto>();
         }
@@ -123,7 +120,7 @@ namespace Lean.Hbt.Application.Services.Routine
         {
             var mail = await _mailRepository.GetByIdAsync(input.MailId);
             if (mail == null)
-                throw new HbtException($"邮件不存在: {input.MailId}");
+                throw new HbtException(L("Mail.NotFound", input.MailId));
 
             input.Adapt(mail);
             var result = await _mailRepository.UpdateAsync(mail);
@@ -139,7 +136,7 @@ namespace Lean.Hbt.Application.Services.Routine
         {
             var mail = await _mailRepository.GetByIdAsync(mailId);
             if (mail == null)
-                throw new HbtException($"邮件不存在: {mailId}");
+                throw new HbtException(L("Mail.NotFound", mailId));
 
             var result = await _mailRepository.DeleteAsync(mail);
             return result > 0;
@@ -153,7 +150,7 @@ namespace Lean.Hbt.Application.Services.Routine
         public async Task<bool> BatchDeleteAsync(long[] mailIds)
         {
             if (mailIds == null || mailIds.Length == 0)
-                throw new HbtException("请选择要删除的邮件");
+                throw new HbtException(L("Mail.SelectToDelete"));
 
             Expression<Func<HbtMail, bool>> predicate = x => mailIds.Contains(x.Id);
             var result = await _mailRepository.DeleteAsync(predicate);
@@ -179,7 +176,7 @@ namespace Lean.Hbt.Application.Services.Routine
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"发送邮件失败: {input.MailSubject}");
+                _logger.Error(L("Mail.SendFailed", input.MailSubject), ex);
                 return false;
             }
         }
@@ -214,7 +211,7 @@ namespace Lean.Hbt.Application.Services.Routine
         /// <param name="query">查询条件</param>
         /// <param name="sheetName">工作表名称</param>
         /// <returns>返回Excel文件字节数组</returns>
-        public async Task<byte[]> ExportAsync(HbtMailQueryDto query, string sheetName = "邮件信息")
+        public async Task<(string fileName, byte[] content)> ExportAsync(HbtMailQueryDto query, string sheetName = "邮件信息")
         {
             var exp = Expressionable.Create<HbtMail>();
 
@@ -252,7 +249,7 @@ namespace Lean.Hbt.Application.Services.Routine
 
             // 更新已读状态
             var readIds = (mail.MailReadIds?.Split(',', StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>()).ToList();
-            var userId = _currentUser.UserId.ToString();
+            var userId = UserId.ToString();
             if (!readIds.Contains(userId))
             {
                 readIds.Add(userId);
@@ -266,8 +263,8 @@ namespace Lean.Hbt.Application.Services.Routine
                 var notification = new HbtRealTimeNotification
                 {
                     Type = HbtMessageType.MailRead,
-                    Title = "邮件已读",
-                    Content = $"邮件 {mail.MailSubject} 已标记为已读",
+                    Title = L("Mail.Read"),
+                    Content = L("Mail.ReadContent", mail.MailSubject),
                     Timestamp = DateTime.Now,
                     Data = mail
                 };
@@ -328,11 +325,11 @@ namespace Lean.Hbt.Application.Services.Routine
                 : mail.MailReadIds.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(long.Parse).ToList();
 
             // 如果当前用户不在已读列表中，则返回true
-            if (!readIds.Contains(_currentUser.UserId))
+            if (!readIds.Contains(UserId))
                 return true;
 
             // 从已读列表中移除当前用户
-            readIds.Remove(_currentUser.UserId);
+            readIds.Remove(UserId);
             mail.MailReadIds = string.Join(",", readIds);
             mail.MailReadCount = readIds.Count;
 
@@ -342,8 +339,8 @@ namespace Lean.Hbt.Application.Services.Routine
                 await _signalRClient.ReceiveMailStatus(new HbtRealTimeNotification
                 {
                     Type = HbtMessageType.MailUnread,
-                    Title = "邮件未读",
-                    Content = $"邮件 {mail.MailSubject} 已标记为未读",
+                    Title = L("Mail.Unread"),
+                    Content = L("Mail.UnreadContent", mail.MailSubject),
                     Timestamp = DateTime.Now,
                     Data = mail
                 });

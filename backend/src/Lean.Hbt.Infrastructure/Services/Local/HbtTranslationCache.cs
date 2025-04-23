@@ -8,10 +8,7 @@
 //===================================================================
 
 using System.Collections.Concurrent;
-using Lean.Hbt.Common.Enums;
-using Lean.Hbt.Domain.Entities.Admin;
-using Lean.Hbt.Domain.IServices.Admin;
-using Microsoft.Extensions.Logging;
+using Lean.Hbt.Domain.Entities.Core;
 
 namespace Lean.Hbt.Infrastructure.Services
 {
@@ -21,7 +18,12 @@ namespace Lean.Hbt.Infrastructure.Services
     public class HbtTranslationCache : IHbtTranslationCache
     {
         private readonly IHbtRepository<HbtTranslation> _translationRepository;
-        private readonly ILogger<HbtTranslationCache> _logger;
+
+        /// <summary>
+        /// 日志服务
+        /// </summary>
+        protected readonly IHbtLogger _logger;
+
         private readonly ConcurrentDictionary<string, ConcurrentDictionary<string, string>> _translations;
         private readonly ConcurrentHashSet<string> _supportedLanguages;
 
@@ -32,7 +34,8 @@ namespace Lean.Hbt.Infrastructure.Services
         /// <param name="logger">日志服务</param>
         public HbtTranslationCache(
             IHbtRepository<HbtTranslation> translationRepository,
-            ILogger<HbtTranslationCache> logger)
+            IHbtLogger logger
+)
         {
             _translationRepository = translationRepository;
             _logger = logger;
@@ -57,7 +60,7 @@ namespace Lean.Hbt.Infrastructure.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "获取翻译失败: {LangCode}, {Key}", langCode, key);
+                _logger.Error("获取翻译失败: {LangCode}, {Key}", langCode, key);
                 return null;
             }
         }
@@ -77,11 +80,11 @@ namespace Lean.Hbt.Infrastructure.Services
                     langDict.TryAdd(translation.TransKey, translation.TransValue);
                     _supportedLanguages.Add(translation.LangCode);
                 }
-                _logger.LogInformation("翻译数据初始化成功，共加载 {Count} 条记录", translations.Count);
+                _logger.Info("翻译数据初始化成功，共加载 {Count} 条记录", translations.Count);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "初始化翻译数据失败");
+                _logger.Error("初始化翻译数据失败");
                 throw;
             }
         }
@@ -96,11 +99,11 @@ namespace Lean.Hbt.Infrastructure.Services
                 _translations.Clear();
                 _supportedLanguages.Clear();
                 await InitializeTranslations();
-                _logger.LogInformation("翻译数据重新加载成功");
+                _logger.Info("翻译数据重新加载成功");
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "重新加载翻译数据失败");
+                _logger.Error("重新加载翻译数据失败");
                 throw;
             }
         }
@@ -116,7 +119,7 @@ namespace Lean.Hbt.Infrastructure.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "获取支持的语言列表失败");
+                _logger.Error("获取支持的语言列表失败");
                 throw;
             }
         }

@@ -8,10 +8,6 @@
 //===================================================================
 
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Lean.Hbt.Domain.IServices.Admin;
-using Lean.Hbt.Domain.IServices;
 
 namespace Lean.Hbt.Infrastructure.Middleware;
 
@@ -21,7 +17,12 @@ namespace Lean.Hbt.Infrastructure.Middleware;
 public class HbtLocalizationMiddleware
 {
     private readonly RequestDelegate _next;
-    private readonly ILogger<HbtLocalizationMiddleware> _logger;
+
+    /// <summary>
+    /// 日志服务
+    /// </summary>
+    protected readonly IHbtLogger _logger;
+
     private const string LANGUAGE_CACHE_KEY = "CurrentLanguage";
     private const string DEFAULT_LANGUAGE = "zh-CN";
 
@@ -30,7 +31,9 @@ public class HbtLocalizationMiddleware
     /// </summary>
     /// <param name="next">请求委托</param>
     /// <param name="logger">日志服务</param>
-    public HbtLocalizationMiddleware(RequestDelegate next, ILogger<HbtLocalizationMiddleware> logger)
+    public HbtLocalizationMiddleware(RequestDelegate next,
+        IHbtLogger logger
+            )
     {
         _next = next;
         _logger = logger;
@@ -53,33 +56,33 @@ public class HbtLocalizationMiddleware
 
             // 从请求作用域中获取本地化服务
             var localizationService = context.RequestServices.GetRequiredService<IHbtLocalizationService>();
-            
+
             // 获取语言设置
             var language = GetLanguage(context);
-            
+
             try
             {
                 // 设置语言
                 localizationService.SetLanguage(language);
-                
+
                 // 缓存语言设置
                 context.Items[LANGUAGE_CACHE_KEY] = language;
-                
+
                 // 更新Cookie
                 UpdateLanguageCookie(context, language);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "设置语言失败: {Language}", language);
+                _logger.Error("设置语言失败: {Language}", language);
                 // 使用默认语言
                 localizationService.SetLanguage(DEFAULT_LANGUAGE);
             }
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "本地化中间件执行失败");
+            _logger.Error("本地化中间件执行失败");
         }
-        
+
         await _next(context);
     }
 
@@ -116,24 +119,24 @@ public class HbtLocalizationMiddleware
             if (!string.IsNullOrEmpty(langHeader))
             {
                 var language = langHeader.Split(',')[0];
-                _logger.LogDebug("Language from header: {Language}", language);
+                _logger.Debug("Language from header: {Language}", language);
                 return language;
             }
 
             // 2. 从Cookie获取语言
             if (context.Request.Cookies.TryGetValue("lang", out var langCookie))
             {
-                _logger.LogDebug("Language from cookie: {Language}", langCookie);
+                _logger.Debug("Language from cookie: {Language}", langCookie);
                 return langCookie;
             }
 
             // 3. 返回默认语言
-            _logger.LogDebug("Using default language: {Language}", DEFAULT_LANGUAGE);
+            _logger.Debug("Using default language: {Language}", DEFAULT_LANGUAGE);
             return DEFAULT_LANGUAGE;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error getting language setting");
+            _logger.Error("Error getting language setting", ex.Message);
             return DEFAULT_LANGUAGE;
         }
     }
@@ -144,7 +147,7 @@ public class HbtLocalizationMiddleware
     private void UpdateLanguageCookie(HttpContext context, string language)
     {
         // 如果Cookie不存在或者值不同，则更新Cookie
-        if (!context.Request.Cookies.TryGetValue("lang", out var currentLang) || 
+        if (!context.Request.Cookies.TryGetValue("lang", out var currentLang) ||
             currentLang != language)
         {
             var cookieOptions = new CookieOptions
@@ -159,9 +162,9 @@ public class HbtLocalizationMiddleware
 
             // 在响应中设置Cookie
             context.Response.Cookies.Append("lang", language, cookieOptions);
-            
+
             // 记录Cookie设置日志
-            _logger.LogInformation(
+            _logger.Info(
                 "Language cookie updated: Language={Language}, SameSite={SameSite}, Secure={Secure}, HttpOnly={HttpOnly}",
                 language,
                 cookieOptions.SameSite,
@@ -170,4 +173,4 @@ public class HbtLocalizationMiddleware
             );
         }
     }
-} 
+}

@@ -11,7 +11,7 @@ type Locale = typeof locales[number]
 // 模块列表 - 严格按照目录结构顺序
 const modules = [
   // admin
-  'admin/config',
+  'admin/configs',
   'admin/dicttype',
   'admin/language',
   'admin/translation',

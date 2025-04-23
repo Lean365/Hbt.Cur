@@ -33,7 +33,7 @@ namespace Lean.Hbt.Application.Services.Identity
         /// <param name="data">要导出的数据</param>
         /// <param name="sheetName">工作表名称</param>
         /// <returns>Excel文件字节数组</returns>
-        Task<byte[]> ExportAsync(IEnumerable<HbtLoginExtendDto> data, string sheetName = "登录扩展信息");
+        Task<(string fileName, byte[] content)> ExportAsync(IEnumerable<HbtLoginExtendDto> data, string sheetName = "登录扩展信息");
 
         /// <summary>
         /// 更新用户登录信息

@@ -184,14 +184,19 @@ const captchaVerified = ref(false)
 const captchaParams = ref<{ token: string; xOffset: number } | null>(null)
 
 // 租户列表
-const tenantList = ref<{ id: number; name: string }[]>([])
+const tenantList = ref<{ value: number; label: string; disabled?: boolean }[]>([])
 
 // 获取租户列表
 const loadTenantList = async () => {
   try {
-    const res = await getTenantOptions()
+    const { data: res } = await getTenantOptions()
+    console.log('[租户列表] API响应:', res)
     if (res.code === 200 && Array.isArray(res.data)) {
-      tenantList.value = res.data
+      tenantList.value = res.data.map(item => ({
+        value: item.value,
+        label: item.label,
+        disabled: item.disabled
+      }))
       console.log('[租户列表] 加载成功:', tenantList.value)
       // 如果是admin用户，自动选择默认租户
       if (loginForm.value.userName.toLowerCase() === 'admin') {
@@ -202,7 +207,7 @@ const loadTenantList = async () => {
     console.error('[租户列表] 加载失败:', error)
     // 加载失败时添加默认租户
     tenantList.value = [
-      { id: 0, name: '默认租户' }
+      { value: 0, label: '默认租户' }
     ]
   }
 }
@@ -270,8 +275,8 @@ const handleLogin = async () => {
     loading.value = true
     
     // 1. 获取盐值
-    const saltResponse = await getSalt(loginForm.value.userName)
-    if (!saltResponse || !saltResponse.salt) {
+    const { data: saltResponse } = await getSalt(loginForm.value.userName)
+    if (!saltResponse || !saltResponse.data?.salt) {
       message.error(t('identity.auth.login.error.getSalt'))
       return
     }
@@ -279,8 +284,8 @@ const handleLogin = async () => {
     // 2. 使用盐值加密密码
     const hashedPassword = PasswordEncryptor.hashPassword(
       loginForm.value.password,
-      saltResponse.salt,
-      saltResponse.iterations || 100000
+      saltResponse.data.salt,
+      saltResponse.data.iterations || 100000
     )
 
     // 3. 获取设备信息

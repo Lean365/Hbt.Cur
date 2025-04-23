@@ -10,6 +10,7 @@
 //===================================================================
 
 using Lean.Hbt.Application.Services.Workflow.Jobs;
+using Lean.Hbt.Domain.IServices.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Quartz;

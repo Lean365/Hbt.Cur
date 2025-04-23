@@ -1,5 +1,4 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import type { RouteRecordRaw } from 'vue-router'
+import { createRouter, createWebHistory, type Router, type RouteRecordRaw } from 'vue-router'
 import { getToken, removeToken } from '@/utils/auth'
 import { useUserStore } from '@/stores/user'
 import { useMenuStore } from '@/stores/menu'
@@ -7,86 +6,103 @@ import type { Menu } from '@/types/identity/menu'
 import { HbtMenuType } from '@/types/identity/menu'
 import { message } from 'ant-design-vue'
 import i18n from '@/locales'
+import { filterAsyncRoutes } from '@/utils/route'
+import type { HbtRouteRecordRaw } from '@/types/route'
+
+interface HbtRouteMeta {
+  title: string
+  icon?: string
+  hidden?: boolean
+  keepAlive?: boolean
+  permission?: string
+  requiresAuth: boolean
+  menuId?: number
+  orderNum?: number
+  transKey?: string
+}
+
+interface HbtRouteRecord {
+  path: string
+  name: string
+  component?: (() => Promise<unknown>) | undefined
+  redirect?: string | undefined
+  meta: HbtRouteMeta
+  children?: HbtRouteRecord[]
+}
+
+// 使用相对路径导入所有 Vue 组件
+const modules = import.meta.glob('../views/**/*.vue')
 
 // 页面组件加载函数
 const loadView = (view: string) => {
-  // console.log('[路由] 开始加载组件:', {
-  //   组件路径: view,
-  //   完整路径: `/src/views/${view}.vue`,
-  //   当前路由: router.currentRoute.value.path,
-  //   可用模块: Object.keys(import.meta.glob('/src/views/**/*.vue'))
-  // })
-
   try {
     // 规范化组件路径
-    const normalizedPath = view.replace(/\//g, '_').replace(/\./g, '_')
+    const normalizedPath = view.replace(/^\/+|\/+$/g, '') // 移除开头和结尾的所有斜杠
+    
+    // 如果路径为空，直接返回404组件
+    if (!normalizedPath) {
+      console.warn('[路由] 组件路径为空，返回404页面')
+      return () => import('@/views/error/404.vue')
+    }
 
-    // console.log('[路由] 组件加载配置:', {
-    //   原始路径: view,
-    //   规范化路径: normalizedPath,
-    //   加载方式: '动态导入',
-    //   当前路由状态: {
-    //     路径: router.currentRoute.value.path,
-    //     参数: router.currentRoute.value.params,
-    //     查询: router.currentRoute.value.query
-    //   }
-    // })
+    // 使用后端返回的组件路径
+    const modulePath = `../views/${normalizedPath}.vue`
+    const availableModules = Object.keys(modules)
+
+    console.log('[路由] 组件加载配置:', {
+      原始路径: view,
+      规范化路径: normalizedPath,
+      模块路径: modulePath,
+      是否存在: availableModules.includes(modulePath),
+      可用模块列表: availableModules
+    })
 
     const component = () => {
-      console.log('[路由] 执行组件加载:', view)
-
-      // 使用 Vite 的动态导入
       return new Promise((resolve, reject) => {
         try {
-          // 构建导入表达式
-          const modules = import.meta.glob('/src/views/**/*.vue')
-          const modulePath = `/src/views/${view}.vue`
-
-          // console.log('[路由] 组件加载详情:', {
-          //   路径: modulePath,
-          //   模块列表: Object.keys(modules),
-          //   是否存在: modules[modulePath] !== undefined
-          // })
-
           if (modules[modulePath]) {
             modules[modulePath]()
               .then((module: any) => {
-                // console.log('[路由] 组件加载成功:', {
-                //   路径: view,
-                //   模块: module,
-                //   组件名称: module.default?.name,
-                //   组件定义: Object.keys(module.default || {})
-                // })
+                console.log('[路由] 组件加载成功:', {
+                  路径: view,
+                  模块路径: modulePath,
+                  组件名称: module.default?.name || '未命名组件',
+                  组件类型: module.default?.type || '未知类型',
+                  异步组件: module.default?.__asyncLoader ? '是' : '否'
+                })
                 resolve(module.default || module)
               })
               .catch((error: Error) => {
-                // console.error('[路由] 组件加载失败:', {
-                //   路径: view,
-                //   错误: error,
-                //   错误堆栈: error.stack,
-                //   错误类型: error.name,
-                //   错误信息: error.message
-                // })
+                console.error('[路由] 组件加载失败:', {
+                  路径: view,
+                  模块路径: modulePath,
+                  错误: error.message,
+                  错误堆栈: error.stack,
+                  尝试加载的完整路径: modulePath
+                })
                 message.error(`组件 ${view} 加载失败: ${error.message}`)
                 import('@/views/error/404.vue').then(resolve)
               })
           } else {
-            // console.error('[路由] 组件不存在:', {
-            //   查找路径: modulePath,
-            //   可用组件: Object.keys(modules)
-            // })
+            console.error('[路由] 组件不存在:', {
+              查找路径: modulePath,
+              原始路径: view,
+              规范化路径: normalizedPath,
+              可用组件完整列表: availableModules.join('\n'),
+              尝试加载的完整路径: modulePath
+            })
             message.error(`组件 ${view} 不存在`)
             import('@/views/error/404.vue').then(resolve)
           }
         } catch (error) {
           const err = error as Error
-          // console.error('[路由] 组件导入错误:', {
-          //   路径: view,
-          //   错误: err,
-          //   错误堆栈: err.stack,
-          //   错误类型: err.name,
-          //   错误消息: err.message
-          // })
+          console.error('[路由] 组件导入错误:', {
+            路径: view,
+            模块路径: modulePath,
+            错误: err.message,
+            错误堆栈: err.stack,
+            尝试加载的完整路径: modulePath
+          })
           message.error(`组件导入错误: ${err.message}`)
           import('@/views/error/404.vue').then(resolve)
         }
@@ -96,13 +112,11 @@ const loadView = (view: string) => {
     return component
   } catch (error: unknown) {
     const err = error as Error
-    // console.error('[路由] 组件加载配置失败:', {
-    //   组件路径: view,
-    //   错误信息: err,
-    //   错误堆栈: err.stack,
-    //   错误类型: err.name,
-    //   错误消息: err.message
-    // })
+    console.error('[路由] 组件加载配置失败:', {
+      组件路径: view,
+      错误信息: err.message,
+      错误堆栈: err.stack
+    })
     message.error(`组件配置失败: ${err.message}`)
     return () => import('@/views/error/404.vue')
   }
@@ -334,150 +348,154 @@ const router = createRouter({
   }
 })
 
-// 注册动态路由
-export const registerDynamicRoutes = async (menus: Menu[]): Promise<boolean> => {
+// 动态路由注册
+export async function registerDynamicRoutes(router: Router) {
   try {
-    if (!menus?.length) {
+    console.log('[路由守卫] 加载菜单数据')
+    const menuStore = useMenuStore()
+    const userStore = useUserStore()
+    
+    // 加载菜单数据
+    const menus = await menuStore.reloadMenus(router)
+    console.log('[路由守卫] 菜单加载完成:', {
+      菜单数量: menus?.length || 0,
+      顶级菜单: menus || []
+    })
+    
+    if (!menus || menus.length === 0) {
       console.warn('[路由] 菜单列表为空，跳过注册')
       return false
     }
+    
+    // 过滤路由权限
+    const filteredMenus = filterAsyncRoutes<Menu>(menus, userStore.permissions)
+    console.log('[路由] 过滤后的菜单:', filteredMenus)
 
-    // console.log('[路由] 开始注册动态路由:', {
-    //   菜单数量: menus.length,
-    //   菜单列表: menus.map(m => ({
-    //     ID: m.menuId,
-    //     名称: m.menuName,
-    //     路径: m.path,
-    //     类型: m.menuType,
-    //     父ID: m.parentId,
-    //     组件: m.component
-    //   }))
-    // })
-
-    // 移除现有的动态路由
-    router.getRoutes().forEach(route => {
-      if (route.name?.toString().startsWith('HbtMenu_')) {
-        router.removeRoute(route.name.toString())
-      }
-    })
-
-    // 构建路由配置
-    const buildRouteConfig = (menu: Menu): RouteRecordRaw => {
-      try {
-        // 生成唯一的路由名称
-        const routeName = `HbtMenu_${menu.path.replace(/\//g, '_')}`
-
-        // 处理路径
-        let routePath = menu.path
-        if (!menu.parentId) {
-          // 顶层路由必须以/开头
-          routePath = routePath.startsWith('/') ? routePath : `/${routePath}`
-        } else {
-          // 子路由不能以/开头
-          routePath = routePath.startsWith('/') ? routePath.slice(1) : routePath
+    // 清理现有路由
+    router.getRoutes()
+      .filter(route => route.name?.toString().startsWith('HbtMenu_'))
+      .forEach(route => {
+        if (route.name) {
+          router.removeRoute(route.name)
         }
+      })
+    
+    // 注册所有路由
+    const processMenus = (menus: Menu[]) => {
+      // 创建根路由
+      const rootRoute: RouteRecordRaw = {
+        path: '/',
+        name: 'Layout',
+        component: () => import('@/layouts/BasicLayout/index.vue'),
+        redirect: '/home',
+        children: [] as RouteRecordRaw[]
+      }
 
-        // console.log('[路由] 构建路由配置:', {
-        //   菜单路径: menu.path,
-        //   路由名称: routeName,
-        //   处理后路径: routePath,
-        //   菜单类型: menu.menuType,
-        //   组件路径: menu.component,
-        //   是否顶层: !menu.parentId
-        // })
-
-        // 创建路由配置
+      // 处理菜单项
+      const processMenuItem = (menu: Menu): RouteRecordRaw => {
+        const routeName = `HbtMenu_${menu.menuId}`
+        const routePath = menu.path.startsWith('/') ? menu.path.slice(1) : menu.path
+        
         const route: RouteRecordRaw = {
           path: routePath,
           name: routeName,
-          component:
-            menu.menuType === HbtMenuType.Directory
-              ? () => import('@/layouts/BasicLayout/index.vue')
-              : menu.component
-                ? loadView(menu.component)
-                : () => import('@/views/error/404.vue'),
-          children: [], // 初始化为空数组
+          component: menu.menuType === HbtMenuType.Directory 
+            ? () => import('@/layouts/BasicLayout/index.vue')
+            : loadView(menu.component || ''),
           meta: {
-            title: menu.transKey ? i18n.global.t(menu.transKey) : menu.menuName,
+            title: menu.menuName || '',
             icon: menu.icon,
-            menuId: menu.menuId,
-            menuType: menu.menuType,
+            hidden: menu.hidden,
+            keepAlive: menu.keepAlive,
+            permission: menu.permission,
             requiresAuth: true,
-            transKey: menu.transKey
-          }
+            menuId: menu.menuId,
+            orderNum: menu.orderNum
+          },
+          children: [] as RouteRecordRaw[],
+          redirect: undefined
         }
 
-        // 处理子菜单
         if (menu.children?.length) {
-          const childRoutes = menu.children
-            .filter(child => child.menuType !== HbtMenuType.Button)
-            .map(child => buildRouteConfig(child))
-          route.children = childRoutes
+          route.children = menu.children.map(child => processMenuItem(child))
+          route.redirect = `/${routePath}/${menu.children[0].path}`
         }
 
         return route
-      } catch (error) {
-        console.error('[路由] 构建路由配置失败:', {
-          菜单: menu,
-          错误: error
-        })
-        throw error
       }
-    }
 
-    // 注册路由
-    const registeredRoutes: RouteRecordRaw[] = []
-
-    // 注册动态路由
-    for (const menu of menus) {
-      if (!menu.parentId) {
-        // 只处理顶层菜单
-        try {
-          const route = buildRouteConfig(menu)
-          // console.log('[路由] 注册顶层路由:', {
-          //   路由名称: route.name,
-          //   路由路径: route.path,
-          //   子路由数量: route.children?.length || 0,
-          //   完整配置: route
-          // })
-
-          // 添加到根路由
-          router.addRoute(route)
-          registeredRoutes.push(route)
-        } catch (error) {
-          console.error('[路由] 注册动态路由失败:', error)
-          return false
+      // 处理所有顶级菜单
+      menus.forEach(menu => {
+        if (menu.menuType === HbtMenuType.Directory) {
+          const route = processMenuItem(menu)
+          rootRoute.children?.push(route)
+          
+          console.log('[路由] 注册目录路由:', {
+            路径: route.path,
+            名称: route.name,
+            组件: route.component ? '已配置' : '未配置',
+            子路由数量: route.children?.length || 0,
+            重定向: route.redirect || '无'
+          })
         }
+      })
+
+      // 注册根路由
+      router.addRoute(rootRoute)
+
+      // 验证路由注册状态
+      console.log('[路由] 验证路由注册状态 ============================')
+      const routes = router.getRoutes()
+      
+      console.log('[路由] 已注册的路由:', routes.map(route => ({
+        名称: route.name,
+        路径: route.path,
+        完整路径: route.path,
+        组件: route.components?.default?.name || '未知组件',
+        子路由数量: route.children?.length || 0,
+        子路由: route.children?.map(child => ({
+          路径: child.path,
+          名称: child.name,
+          完整路径: `${route.path}/${child.path}`.replace(/\/+/g, '/')
+        }))
+      })))
+
+      // 特别检查 /admin/configs 路由
+      const adminConfigsRoute = router.resolve('/admin/configs')
+      console.log('[路由] 检查 /admin/configs 路由:', {
+        是否存在: adminConfigsRoute.matched.length > 0,
+        匹配路由: adminConfigsRoute.matched,
+        完整路径: adminConfigsRoute.fullPath,
+        路由详情: adminConfigsRoute.matched.map(r => ({
+          名称: r.name,
+          路径: r.path,
+          完整路径: r.path,
+          组件: r.components?.default?.name || '未知组件'
+        }))
+      })
+
+      return true
+    }
+
+    // 处理所有菜单
+    processMenus(filteredMenus)
+
+    // 添加通配符路由
+    router.addRoute({
+      path: '/:pathMatch(.*)*',
+      name: 'NotFound',
+      component: () => import('@/views/error/404.vue'),
+      meta: {
+        title: '404',
+        hidden: true,
+        requiresAuth: false
       }
-    }
+    })
 
-    // 打印路由表
-    // console.log('[路由] 动态路由注册完成:', {
-    //   注册数量: registeredRoutes.length,
-    //   路由表: router.getRoutes().map(r => ({
-    //     路径: r.path,
-    //     名称: r.name,
-    //     类型: r.name?.toString().startsWith('HbtMenu_') ? '动态路由' : '静态路由',
-    //     子路由: r.children?.map(c => ({
-    //       路径: c.path,
-    //       名称: c.name
-    //     }))
-    //   }))
-    // })
-
-    // 重新触发路由匹配
-    const currentRoute = router.currentRoute.value
-    if (currentRoute.path !== '/') {
-      // console.log('[路由] 重新触发路由匹配:', {
-      //   当前路径: currentRoute.path,
-      //   目标路径: currentRoute.path
-      // })
-      await router.replace(currentRoute.path)
-    }
-
+    console.log('[路由] 动态路由注册完成')
     return true
   } catch (error) {
-    console.error('[路由] 注册动态路由失败:', error)
+    console.error('[路由] 动态路由注册失败:', error)
     return false
   }
 }
@@ -488,21 +506,8 @@ router.beforeEach(async (to, from, next) => {
   const userStore = useUserStore()
   const menuStore = useMenuStore()
 
-  console.log('[路由守卫] 开始处理路由:', {
-    目标路由: to.path,
-    来源路由: from.path,
-    认证状态: {
-      token: !!token,
-      用户信息: !!userStore.userInfo,
-      菜单: !!menuStore.rawMenuList?.length,
-      菜单数量: menuStore.rawMenuList?.length || 0,
-      动态路由数量: router.getRoutes().filter(r => r.name?.toString().startsWith('HbtMenu_')).length
-    }
-  })
-
   // 不需要登录的页面直接放行
   if (to.meta.requiresAuth === false) {
-    console.log('[路由守卫] 无需认证的页面，直接放行:', to.path)
     next()
     return
   }
@@ -510,7 +515,6 @@ router.beforeEach(async (to, from, next) => {
   // 未登录时跳转到登录页
   if (!token) {
     if (to.path !== '/login') {
-      console.log('[路由守卫] 未登录，跳转到登录页')
       next({ path: '/login', query: { redirect: to.fullPath } })
     } else {
       next()
@@ -520,7 +524,6 @@ router.beforeEach(async (to, from, next) => {
 
   // 已登录时访问登录页，跳转到首页
   if (to.path === '/login') {
-    console.log('[路由守卫] 已登录，从登录页跳转到首页')
     next({ path: '/' })
     return
   }
@@ -528,9 +531,7 @@ router.beforeEach(async (to, from, next) => {
   try {
     // 初始化用户信息
     if (!userStore.userInfo) {
-      console.log('[路由守卫] 开始获取用户信息')
       await userStore.getUserInfo()
-      console.log('[路由守卫] 用户信息获取成功:', userStore.userInfo)
     }
 
     // 检查是否需要初始化菜单和动态路由
@@ -539,61 +540,68 @@ router.beforeEach(async (to, from, next) => {
       router.getRoutes().filter(r => r.name?.toString().startsWith('HbtMenu_')).length === 0
 
     if (needInitRoutes) {
-      console.log('[路由守卫] 开始加载菜单和注册动态路由')
-
-      // 如果菜单未加载，先加载菜单
-      if (!menuStore.rawMenuList?.length) {
-        console.log('[路由守卫] 加载菜单数据')
-        await menuStore.reloadMenus()
-        console.log('[路由守卫] 菜单加载完成:', {
-          菜单数量: menuStore.rawMenuList?.length || 0,
-          顶级菜单: menuStore.rawMenuList?.filter(m => !m.parentId).map(m => m.menuName) || []
+      console.log('[路由] 需要初始化路由')
+      const menus = await menuStore.reloadMenus(router)
+      if (!menus || menus.length === 0) {
+        console.warn('[路由] 菜单列表为空，跳过注册')
+        next()
+        return
+      }
+      
+      // 等待路由注册完成
+      let retryCount = 0
+      const maxRetries = 10  // 增加重试次数
+      const retryInterval = 50  // 缩短重试间隔
+      
+      while (retryCount < maxRetries) {
+        // 检查目标路由是否已注册
+        const matchedRoute = router.resolve(to.fullPath)
+        if (matchedRoute.matched.length > 0) {
+          console.log('[路由] 目标路由已注册:', {
+            路径: to.fullPath,
+            匹配路由: matchedRoute.matched.map(r => ({
+              名称: r.name,
+              路径: r.path,
+              完整路径: r.path
+            }))
+          })
+          break
+        }
+        
+        console.log(`[路由] 等待路由注册完成 (${retryCount + 1}/${maxRetries})`, {
+          目标路径: to.fullPath,
+          当前路由表: router.getRoutes().map(r => ({
+            名称: r.name,
+            路径: r.path
+          }))
         })
+        
+        await new Promise(resolve => setTimeout(resolve, retryInterval))
+        retryCount++
       }
 
-      const success = await registerDynamicRoutes(menuStore.rawMenuList)
-      console.log('[路由守卫] 动态路由注册结果:', {
-        成功: success,
-        当前路由表: router.getRoutes().map(r => r.path)
-      })
-
-      if (!success) {
-        throw new Error('动态路由注册失败')
+      // 再次检查路由是否存在
+      const finalCheck = router.resolve(to.fullPath)
+      if (finalCheck.matched.length === 0) {
+        console.warn('[路由] 路由注册超时，目标路由未找到:', {
+          路径: to.fullPath,
+          可用路由: router.getRoutes().map(r => ({
+            名称: r.name,
+            路径: r.path,
+            完整路径: r.path
+          }))
+        })
+        // 如果是刷新页面，尝试重定向到父路由
+        if (from.path === '/') {
+          const parentPath = to.path.split('/').slice(0, -1).join('/')
+          if (parentPath) {
+            console.log('[路由] 尝试重定向到父路由:', parentPath)
+            next({ path: parentPath })
+            return
+          }
+        }
       }
-
-      // 重新导航到目标路由
-      console.log('[路由守卫] 动态路由注册完成，重新导航到:', to.path)
-      return next({ path: to.path, replace: true })
     }
-
-    // 检查路由是否存在
-    const matchedRoute = router.resolve(to.path)
-    if (!matchedRoute.matched.length) {
-      console.log('[路由守卫] 路由不存在，尝试重新注册动态路由:', to.path)
-      // 重新注册动态路由
-      const success = await registerDynamicRoutes(menuStore.rawMenuList)
-      console.log('[路由守卫] 重新注册动态路由结果:', {
-        成功: success,
-        当前路由表: router.getRoutes().map(r => r.path)
-      })
-
-      if (!success) {
-        throw new Error('动态路由重新注册失败')
-      }
-
-      // 再次检查路由并强制刷新
-      const newMatchedRoute = router.resolve(to.path)
-      if (!newMatchedRoute.matched.length) {
-        console.warn('[路由守卫] 路由不存在:', to.path)
-        return next({ name: '404' })
-      }
-
-      // 强制刷新当前路由
-      console.log('[路由守卫] 路由重新匹配成功，强制刷新到:', to.path)
-      return next({ path: to.path, replace: true })
-    }
-
-    console.log('[路由守卫] 路由处理完成，放行:', to.path)
     next()
   } catch (error) {
     console.error('[路由守卫] 错误:', error)
@@ -630,51 +638,21 @@ export const handleRouteNavigation = async (path: string): Promise<boolean> => {
     // 确保路径以斜杠开头
     const normalizedPath = path.startsWith('/') ? path : `/${path}`
 
-    // 打印当前所有路由表
-    // console.log(
-    //   '[路由] 当前路由表:',
-    //   router.getRoutes().map(r => ({
-    //     路径: r.path,
-    //     名称: r.name,
-    //     完整路径: r.path + (r.children?.length ? '/' + r.children.map(c => c.path).join('/') : ''),
-    //     子路由: r.children?.map(c => ({
-    //       路径: c.path,
-    //       名称: c.name,
-    //       完整路径: `${r.path}/${c.path}`.replace(/\/+/g, '/')
-    //     }))
-    //   }))
-    // )
+    // 获取目标路由信息
+    const matchedRoute = router.resolve(normalizedPath)
+    const targetRoute = matchedRoute.matched[matchedRoute.matched.length - 1]
 
     console.log('[路由] 准备导航:', {
       原始路径: path,
       标准路径: normalizedPath,
-      当前路径: router.currentRoute.value.path
+      当前路径: router.currentRoute.value.path,
+      目标路由: targetRoute ? {
+        名称: targetRoute.name,
+        路径: targetRoute.path,
+        组件: targetRoute.components?.default?.name || '未知组件',
+        元数据: targetRoute.meta
+      } : '未找到路由'
     })
-
-    // 检查路由是否存在
-    const matchedRoute = router.resolve(normalizedPath)
-
-    // 打印匹配过程
-    // console.log('[路由] 匹配过程:', {
-    //   待匹配路径: normalizedPath,
-    //   父级匹配: matchedRoute.matched.map(m => ({
-    //     路径: m.path,
-    //     名称: m.name,
-    //     完整路径: m.path + (m.children?.length ? '/' + m.children.map(c => c.path).join('/') : '')
-    //   })),
-    //   路由参数: matchedRoute.params,
-    //   查询参数: matchedRoute.query,
-    //   完整路径: matchedRoute.fullPath
-    // })
-
-    // console.log('[路由] 路由匹配结果:', {
-    //   路径: normalizedPath,
-    //   匹配结果: matchedRoute.matched.map(m => ({
-    //     路径: m.path,
-    //     名称: m.name,
-    //     完整路径: m.path + (m.children?.length ? '/' + m.children.map(c => c.path).join('/') : '')
-    //   }))
-    // })
 
     if (!matchedRoute.matched.length) {
       console.error('[路由] 路由不存在:', normalizedPath)

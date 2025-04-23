@@ -1,29 +1,25 @@
-using System;
-using System.IO;
-using System.Net.Http;
 using System.Security.Cryptography;
-using System.Threading.Tasks;
+using System.Text.Json;
+using Lean.Hbt.Application.Services;
 using Lean.Hbt.Common.Options;
 using Lean.Hbt.Domain.IServices.Security;
-using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Drawing.Processing;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
-using SixLabors.ImageSharp.Drawing.Processing;
-using System.Text.Json;
-using System.Linq;
-using Lean.Hbt.Common.Helpers;
 using Point = SixLabors.ImageSharp.Point;
+using Microsoft.AspNetCore.Http;
 
 namespace Lean.Hbt.Infrastructure.Security;
 
 /// <summary>
 /// 验证码服务实现
 /// </summary>
-public class HbtCaptchaService : IHbtCaptchaService
+public class HbtCaptchaService : HbtBaseService, IHbtCaptchaService
 {
     private readonly IDistributedCache _cache;
     private readonly HbtCaptchaOptions _options;
@@ -32,7 +28,6 @@ public class HbtCaptchaService : IHbtCaptchaService
     private readonly IWebHostEnvironment _webHostEnvironment;
     private readonly string _backgroundImagesPath;
     private readonly string _templatePath;
-    private readonly ILogger<HbtCaptchaService> _logger;
     private bool _templatesValid = false;
 
     /// <summary>
@@ -42,19 +37,19 @@ public class HbtCaptchaService : IHbtCaptchaService
         IDistributedCache cache,
         IOptions<HbtCaptchaOptions> options,
         IWebHostEnvironment webHostEnvironment,
-        ILogger<HbtCaptchaService> logger)
+        IHbtLogger logger,
+        IHttpContextAccessor httpContextAccessor) : base(logger, httpContextAccessor)
     {
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _logger.LogInformation("开始构造验证码服务...");
-            
+        _logger.Info("开始构造验证码服务...");
+
         _cache = cache ?? throw new ArgumentNullException(nameof(cache));
         _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
         _webHostEnvironment = webHostEnvironment ?? throw new ArgumentNullException(nameof(webHostEnvironment));
 
         _templatePath = Path.Combine(_webHostEnvironment.WebRootPath, _options.Slider.BackgroundImages.Template.TemplatePath);
         _backgroundImagesPath = Path.Combine(_webHostEnvironment.WebRootPath, _options.Slider.BackgroundImages.StoragePath);
-        
-        _logger.LogInformation("验证码服务构造完成");
+
+        _logger.Info("验证码服务构造完成");
     }
 
     /// <summary>
@@ -101,20 +96,20 @@ public class HbtCaptchaService : IHbtCaptchaService
         // 计算有效的X坐标范围（确保滑块不会超出背景图片）
         var minX = sliderSize * 2; // 留出左边距，避免太靠左
         var maxX = targetWidth - sliderSize * 3; // 留出右边距
-        
+
         // 生成随机的X坐标，Y坐标固定在中间位置
         var xPos = random.Next(minX, maxX);
         var yPos = (targetHeight - sliderSize) / 2;
 
         // 创建一个新的背景图副本，用于应用挖空效果
         using var processedBgImage = bgImage.Clone();
-        
+
         // 在背景图上应用挖空效果
         processedBgImage.Mutate(x => x.DrawImage(holeImage, new Point(xPos, yPos), 0.8f));
 
         // 创建滑块图片（保持原始大小）
         using var finalSliderImage = new Image<Rgba32>(sliderSize, sliderSize);
-        finalSliderImage.Mutate(x => 
+        finalSliderImage.Mutate(x =>
         {
             x.Clear(Color.Transparent);
             x.DrawImage(sliderImage, new Point(0, 0), 1f);
@@ -151,20 +146,20 @@ public class HbtCaptchaService : IHbtCaptchaService
     /// </summary>
     public async Task<bool> ValidateSliderAsync(string token, int xOffset)
     {
-        _logger.LogInformation("验证Token详情 - 接收到的Token: {Token}, 时间: {Time}", token, DateTime.Now);
-        
+        _logger.Info("验证Token详情 - 接收到的Token: {Token}, 时间: {Time}", token, DateTime.Now);
+
         var cacheKey = $"{_sliderCachePrefix}{token}";
         var cacheValue = await _cache.GetStringAsync(cacheKey);
         if (string.IsNullOrEmpty(cacheValue))
         {
-            _logger.LogWarning("验证失败：Token无效或已过期 - Token: {Token}, 缓存Key: {CacheKey}", token, cacheKey);
+            _logger.Warn("验证失败：Token无效或已过期 - Token: {Token}, 缓存Key: {CacheKey}", token, cacheKey);
             return false;
         }
 
         var cacheData = JsonSerializer.Deserialize<SliderCacheData>(cacheValue);
         if (cacheData == null)
         {
-            _logger.LogWarning("验证失败：缓存数据无效 - Token: {Token}", token);
+            _logger.Warn("验证失败：缓存数据无效 - Token: {Token}", token);
             return false;
         }
 
@@ -172,9 +167,9 @@ public class HbtCaptchaService : IHbtCaptchaService
         var timeSinceCreation = DateTime.UtcNow - cacheData.CreatedAt;
         if (timeSinceCreation.TotalMinutes > _options.Slider.ExpirationMinutes)
         {
-            _logger.LogWarning("验证失败：验证码已过期 - Token: {Token}, 创建时间: {CreatedAt}, 当前时间: {Now}, 已过时间: {TimeSinceCreation:g}", 
-                token, 
-                cacheData.CreatedAt, 
+            _logger.Warn("验证失败：验证码已过期 - Token: {Token}, 创建时间: {CreatedAt}, 当前时间: {Now}, 已过时间: {TimeSinceCreation:g}",
+                token,
+                cacheData.CreatedAt,
                 DateTime.UtcNow,
                 timeSinceCreation);
             await _cache.RemoveAsync(cacheKey);
@@ -184,15 +179,15 @@ public class HbtCaptchaService : IHbtCaptchaService
         // 验证是否已被使用
         if (cacheData.IsVerified)
         {
-            _logger.LogWarning("验证失败：验证码已被使用 - Token: {Token}", token);
+            _logger.Warn("验证失败：验证码已被使用 - Token: {Token}", token);
             return false;
         }
 
         // 验证偏移量是否在容差范围内
         var difference = Math.Abs(xOffset - cacheData.X);
         var isValid = difference <= _options.Slider.Tolerance;
-        
-        _logger.LogInformation(
+
+        _logger.Info(
             "验证详情 - 期望位置: {ExpectedX}, 实际位置: {ActualX}, 差值: {Difference}, 容差: {Tolerance}, 结果: {Result}",
             cacheData.X,
             xOffset,
@@ -200,7 +195,7 @@ public class HbtCaptchaService : IHbtCaptchaService
             _options.Slider.Tolerance,
             isValid ? "验证通过" : "验证失败"
         );
-        
+
         return isValid;
     }
 
@@ -225,7 +220,7 @@ public class HbtCaptchaService : IHbtCaptchaService
                         AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(_options.Slider.ExpirationMinutes)
                     }
                 );
-                _logger.LogInformation("验证码已标记为已使用 - Token: {Token}", token);
+                _logger.Info("验证码已标记为已使用 - Token: {Token}", token);
             }
         }
     }
@@ -283,10 +278,10 @@ public class HbtCaptchaService : IHbtCaptchaService
 
         // 验证行为分数是否达到阈值
         var isValid = cacheData.Score >= _options.Behavior.ScoreThreshold;
-        
+
         // 验证完成后删除缓存
         await _cache.RemoveAsync(cacheKey);
-        
+
         return isValid;
     }
 
@@ -329,7 +324,7 @@ public class HbtCaptchaService : IHbtCaptchaService
         if (data.MouseTrack.Count >= 10)
         {
             score += 0.3;
-            
+
             // 检查轨迹是否平滑
             var smoothScore = CalculateTrackSmoothness(data.MouseTrack);
             score += smoothScore * 0.2;
@@ -367,7 +362,7 @@ public class HbtCaptchaService : IHbtCaptchaService
             var v2x = next.X - curr.X;
             var v2y = next.Y - curr.Y;
 
-            var cos = (v1x * v2x + v1y * v2y) / 
+            var cos = (v1x * v2x + v1y * v2y) /
                      (Math.Sqrt(v1x * v1x + v1y * v1y) * Math.Sqrt(v2x * v2x + v2y * v2y));
 
             // 夹角小于45度认为是平滑的
@@ -390,7 +385,7 @@ public class HbtCaptchaService : IHbtCaptchaService
         return $"data:image/png;base64,{Convert.ToBase64String(ms.ToArray())}";
     }
 
-    #endregion
+    #endregion 私有方法
 
     #region 私有类
 
@@ -410,5 +405,5 @@ public class HbtCaptchaService : IHbtCaptchaService
         public double Score { get; set; }
     }
 
-    #endregion
-} 
+    #endregion 私有类
+}

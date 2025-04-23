@@ -54,6 +54,17 @@ public static class HbtSeedsCollectionExtensions
         services.AddScoped<HbtDbSeedSalesDictData>();
         services.AddScoped<HbtDbSeedUnDictType>();
         services.AddScoped<HbtDbSeedUnDictData>();
+
+        // 注册翻译种子服务
+        services.AddScoped<HbtCoreSeedTranslation>();
+        services.AddScoped<HbtGeneratorSeedTranslation>();
+        services.AddScoped<HbtIdentitySeedTranslation>();
+        services.AddScoped<HbtLogsSeedTranslation>();
+        services.AddScoped<HbtRoutineSeedTranslation>();
+        services.AddScoped<HbtSignalRSeedTranslation>();
+        services.AddScoped<HbtWorkflowSeedTranslation>();
+
+        // 最后注册主种子服务
         services.AddScoped<HbtDbSeed>();
 
         return services;

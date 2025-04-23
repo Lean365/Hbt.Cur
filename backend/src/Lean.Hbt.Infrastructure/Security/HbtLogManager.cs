@@ -8,13 +8,12 @@
 //===================================================================
 
 using Lean.Hbt.Domain.Entities.Audit;
-using Lean.Hbt.Domain.IServices;
-using Lean.Hbt.Domain.IServices.Audit;
-using Lean.Hbt.Domain.IServices.Identity;
+using Lean.Hbt.Domain.IServices.Extensions;
 using Lean.Hbt.Infrastructure.Data.Contexts;
 using Microsoft.AspNetCore.Http;
 using System.Text.Json;
 using SqlSugar;
+using Lean.Hbt.Domain.IServices.Extensions;
 
 namespace Lean.Hbt.Infrastructure.Security;
 
@@ -23,8 +22,7 @@ namespace Lean.Hbt.Infrastructure.Security;
 /// </summary>
 public class HbtLogManager : 
     IHbtLogManager,
-    IHbtAuditLogManager,
-    IHbtDbDiffLogManager,
+    IHbtSqlDiffLogManager,
     IHbtOperLogManager,
     IHbtExceptionLogManager
 {
@@ -115,23 +113,25 @@ public class HbtLogManager :
         string? beforeData = null,
         string? afterData = null)
     {
-        var log = new HbtDbDiffLog
+        var log = new HbtSqlDiffLog
         {
-            LogLevel = GetLogLevel(changeType),
+            DiffType = changeType,
             TableName = tableName,
-            ChangeType = changeType,
-            ColumnName = columnName,
-            OldDataType = oldDataType,
-            NewDataType = newDataType,
-            OldLength = oldLength,
-            NewLength = newLength,
-            OldIsNullable = oldIsNullable,
-            NewIsNullable = newIsNullable,
-            ChangeDescription = changeDescription ?? string.Empty,
-            ExecuteSql = executeSql,
-            SqlParameters = sqlParameters,
+            BusinessName = changeDescription ?? string.Empty,
+            PrimaryKey = columnName,
             BeforeData = beforeData,
             AfterData = afterData,
+            DiffFields = JsonSerializer.Serialize(new
+            {
+                OldDataType = oldDataType,
+                NewDataType = newDataType,
+                OldLength = oldLength,
+                NewLength = newLength,
+                OldIsNullable = oldIsNullable,
+                NewIsNullable = newIsNullable
+            }),
+            ExecuteSql = executeSql,
+            SqlParameters = sqlParameters,
             TenantId = _currentUser.TenantId,
             CreateBy = _currentUser.UserName,
             CreateTime = DateTime.Now
@@ -254,7 +254,7 @@ public class HbtLogManager :
     }
 
     /// <summary>
-    /// 记录日志
+    /// 记录错误日志
     /// </summary>
     /// <param name="message"></param>
     /// <param name="ex"></param>
@@ -271,48 +271,5 @@ public class HbtLogManager :
     public void Fatal(string message, Exception ex)
     {
         _logger.Fatal(message, ex);
-    }
-
-    /// <summary>
-    /// 记录审计日志
-    /// </summary>
-    public async Task LogAuditAsync(
-        string module,
-        string operation,
-        string method,
-        string? parameters = null,
-        string? result = null,
-        long elapsed = 0)
-    {
-        var log = new HbtAuditLog
-        {
-            LogLevel = GetLogLevel(operation),
-            UserId = _currentUser.UserId,
-            UserName = _currentUser.UserName,
-            TenantId = _currentUser.TenantId,
-            Module = module,
-            Operation = operation,
-            Method = method,
-            Parameters = parameters,
-            Result = result,
-            Elapsed = elapsed,
-            IpAddress = GetClientIpAddress(),
-            UserAgent = GetUserAgent(),
-            RequestUrl = _httpContextAccessor.HttpContext?.Request.Path ?? string.Empty,
-            RequestMethod = _httpContextAccessor.HttpContext?.Request.Method ?? string.Empty,
-            CreateBy = _currentUser.UserName,
-            CreateTime = DateTime.Now
-        };
-
-        try
-        {
-            await _context.Client.Insertable(log).ExecuteCommandAsync();
-            _logger.Info($"记录审计日志成功: {_currentUser.UserName} 在 {module} 模块执行了 {operation} 操作");
-        }
-        catch (Exception ex)
-        {
-            _logger.Error("记录审计日志失败", ex);
-            throw;
-        }
     }
 }

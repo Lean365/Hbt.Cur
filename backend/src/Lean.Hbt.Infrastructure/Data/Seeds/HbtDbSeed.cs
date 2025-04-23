@@ -9,9 +9,9 @@
 
 using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Common.Utils;
-using Lean.Hbt.Domain.Entities.Admin;
+using Lean.Hbt.Domain.Entities.Core;
 using Lean.Hbt.Domain.Entities.Identity;
-using Lean.Hbt.Domain.IServices;
+using Lean.Hbt.Domain.IServices.Extensions;
 using Lean.Hbt.Infrastructure.Data.Contexts;
 using System.Threading.Tasks;
 
@@ -52,6 +52,13 @@ public class HbtDbSeed
     private readonly HbtDbSeedMaterialDictData _materialDictDataSeed;
     private readonly HbtDbSeedNatureDictType _natureDictTypeSeed;
     private readonly HbtDbSeedNatureDictData _natureDictDataSeed;
+    private readonly HbtCoreSeedTranslation _coreSeedTranslation;
+    private readonly HbtGeneratorSeedTranslation _generatorSeedTranslation;
+    private readonly HbtIdentitySeedTranslation _identitySeedTranslation;
+    private readonly HbtLogsSeedTranslation _logsSeedTranslation;
+    private readonly HbtRoutineSeedTranslation _routineSeedTranslation;
+    private readonly HbtSignalRSeedTranslation _signalRSeedTranslation;
+    private readonly HbtWorkflowSeedTranslation _workflowSeedTranslation;
 
     /// <summary>
     /// 构造函数
@@ -86,7 +93,14 @@ public class HbtDbSeed
         HbtDbSeedMaterialDictType materialDictTypeSeed,
         HbtDbSeedMaterialDictData materialDictDataSeed,
         HbtDbSeedNatureDictType natureDictTypeSeed,
-        HbtDbSeedNatureDictData natureDictDataSeed)
+        HbtDbSeedNatureDictData natureDictDataSeed,
+        HbtCoreSeedTranslation coreSeedTranslation,
+        HbtGeneratorSeedTranslation generatorSeedTranslation,
+        HbtIdentitySeedTranslation identitySeedTranslation,
+        HbtLogsSeedTranslation logsSeedTranslation,
+        HbtRoutineSeedTranslation routineSeedTranslation,
+        HbtSignalRSeedTranslation signalRSeedTranslation,
+        HbtWorkflowSeedTranslation workflowSeedTranslation)
     {
         _context = context;
         _logger = logger;
@@ -118,6 +132,13 @@ public class HbtDbSeed
         _materialDictDataSeed = materialDictDataSeed;
         _natureDictTypeSeed = natureDictTypeSeed;
         _natureDictDataSeed = natureDictDataSeed;
+        _coreSeedTranslation = coreSeedTranslation;
+        _generatorSeedTranslation = generatorSeedTranslation;
+        _identitySeedTranslation = identitySeedTranslation;
+        _logsSeedTranslation = logsSeedTranslation;
+        _routineSeedTranslation = routineSeedTranslation;
+        _signalRSeedTranslation = signalRSeedTranslation;
+        _workflowSeedTranslation = workflowSeedTranslation;
     }
 
     /// <summary>
@@ -238,6 +259,34 @@ public class HbtDbSeed
         // 28. 初始化关联关系数据
         var (relationInsertCount, relationUpdateCount) = await _relationSeed.InitializeRelationsAsync();
         _logger.Info($"关联关系数据初始化完成: 新增 {relationInsertCount} 条, 更新 {relationUpdateCount} 条");
+
+        // 29. 初始化核心模块翻译数据
+        var (coreTransInsertCount, coreTransUpdateCount) = await _coreSeedTranslation.InitializeCoreTranslationAsync();
+        _logger.Info($"核心模块翻译数据初始化完成: 新增 {coreTransInsertCount} 条, 更新 {coreTransUpdateCount} 条");
+
+        // 30. 初始化代码生成器翻译数据
+        var (generatorTransInsertCount, generatorTransUpdateCount) = await _generatorSeedTranslation.InitializeGeneratorTranslationAsync();
+        _logger.Info($"代码生成器翻译数据初始化完成: 新增 {generatorTransInsertCount} 条, 更新 {generatorTransUpdateCount} 条");
+
+        // 31. 初始化身份认证翻译数据
+        var (identityTransInsertCount, identityTransUpdateCount) = await _identitySeedTranslation.InitializeIdentityTranslationAsync();
+        _logger.Info($"身份认证翻译数据初始化完成: 新增 {identityTransInsertCount} 条, 更新 {identityTransUpdateCount} 条");
+
+        // 32. 初始化日志翻译数据
+        var (logsTransInsertCount, logsTransUpdateCount) = await _logsSeedTranslation.InitializeLogsTranslationAsync();
+        _logger.Info($"日志翻译数据初始化完成: 新增 {logsTransInsertCount} 条, 更新 {logsTransUpdateCount} 条");
+
+        // 33. 初始化日常办公翻译数据
+        var (routineTransInsertCount, routineTransUpdateCount) = await _routineSeedTranslation.InitializeRoutineTranslationAsync();
+        _logger.Info($"日常办公翻译数据初始化完成: 新增 {routineTransInsertCount} 条, 更新 {routineTransUpdateCount} 条");
+
+        // 34. 初始化SignalR翻译数据
+        var (signalRTransInsertCount, signalRTransUpdateCount) = await _signalRSeedTranslation.InitializeSignalRTranslationAsync();
+        _logger.Info($"SignalR翻译数据初始化完成: 新增 {signalRTransInsertCount} 条, 更新 {signalRTransUpdateCount} 条");
+
+        // 35. 初始化工作流翻译数据
+        var (workflowTransInsertCount, workflowTransUpdateCount) = await _workflowSeedTranslation.InitializeWorkflowTranslationAsync();
+        _logger.Info($"工作流翻译数据初始化完成: 新增 {workflowTransInsertCount} 条, 更新 {workflowTransUpdateCount} 条");
 
         _logger.Info("数据库种子数据初始化完成。");
     }

@@ -72,7 +72,7 @@ namespace Lean.Hbt.Application.Services.Identity
         /// <param name="query">查询条件</param>
         /// <param name="sheetName">工作表名称</param>
         /// <returns>Excel文件字节数组</returns>
-        Task<byte[]> ExportAsync(HbtRoleQueryDto query, string sheetName = "Sheet1");
+        Task<(string fileName, byte[] content)> ExportAsync(HbtRoleQueryDto query, string sheetName = "Sheet1");
 
         /// <summary>
         /// 更新角色状态
@@ -86,7 +86,7 @@ namespace Lean.Hbt.Application.Services.Identity
         /// </summary>
         /// <param name="sheetName">工作表名称</param>
         /// <returns>Excel模板文件字节数组</returns>
-        Task<byte[]> GetTemplateAsync(string sheetName = "Sheet1");
+        Task<(string fileName, byte[] content)> GetTemplateAsync(string sheetName = "Sheet1");
 
         /// <summary>
         /// 导入角色数据

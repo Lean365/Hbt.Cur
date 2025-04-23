@@ -7,10 +7,9 @@
 // 描述   : 在线用户控制器
 //===================================================================
 
-global using Lean.Hbt.Domain.IServices.Identity;
+global using Lean.Hbt.Domain.IServices.Extensions;
 using Lean.Hbt.Application.Dtos.SignalR;
 using Lean.Hbt.Application.Services.SignalR;
-using Lean.Hbt.Domain.IServices.Admin;
 
 namespace Lean.Hbt.WebApi.Controllers.SignalR
 {
@@ -36,10 +35,12 @@ namespace Lean.Hbt.WebApi.Controllers.SignalR
         /// <param name="onlineUserService">在线用户服务</param>
         /// <param name="localization">本地化服务</param>
         /// <param name="currentUser">当前用户服务</param>
+        /// <param name="logger">日志服务</param>
         public HbtOnlineUserController(
+            IHbtCurrentUser currentUser,
             IHbtOnlineUserService onlineUserService,
-            IHbtLocalizationService localization,
-            IHbtCurrentUser currentUser) : base(localization)
+                        IHbtLocalizationService localization,
+            IHbtLogger logger) : base(localization, logger)
         {
             _onlineUserService = onlineUserService;
             _currentUser = currentUser;

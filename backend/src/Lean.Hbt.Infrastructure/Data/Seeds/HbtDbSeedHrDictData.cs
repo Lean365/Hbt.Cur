@@ -7,8 +7,8 @@
 // 描述   : 人力资源相关字典数据种子数据初始化类
 //===================================================================
 
-using Lean.Hbt.Domain.Entities.Admin;
-using Lean.Hbt.Domain.IServices;
+using Lean.Hbt.Domain.Entities.Core;
+using Lean.Hbt.Domain.IServices.Extensions;
 
 namespace Lean.Hbt.Infrastructure.Data.Seeds;
 

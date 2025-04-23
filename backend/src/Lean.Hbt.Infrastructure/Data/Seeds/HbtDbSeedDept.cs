@@ -9,9 +9,9 @@
 
 using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Common.Utils;
-using Lean.Hbt.Domain.Entities.Admin;
+using Lean.Hbt.Domain.Entities.Core;
 using Lean.Hbt.Domain.Entities.Identity;
-using Lean.Hbt.Domain.IServices;
+using Lean.Hbt.Domain.IServices.Extensions;
 using Lean.Hbt.Infrastructure.Data.Contexts;
 
 namespace Lean.Hbt.Infrastructure.Data.Seeds;

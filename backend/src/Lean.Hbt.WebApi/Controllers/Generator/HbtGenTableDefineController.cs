@@ -9,11 +9,8 @@
 // 描述   : 代码生成表定义控制器
 //===================================================================
 
-using Microsoft.AspNetCore.Mvc;
-using Lean.Hbt.Application.Services.Generator;
 using Lean.Hbt.Application.Dtos.Generator;
-using Lean.Hbt.Domain.Entities.Generator;
-using Lean.Hbt.Domain.IServices.Admin;
+using Lean.Hbt.Application.Services.Generator;
 
 namespace Lean.Hbt.WebApi.Controllers.Generator;
 
@@ -32,9 +29,11 @@ public class HbtGenTableDefineController : HbtBaseController
     /// </summary>
     /// <param name="service">代码生成表定义服务</param>
     /// <param name="localization">本地化服务</param>
+    /// <param name="logger">日志服务</param>
     public HbtGenTableDefineController(
         IHbtGenTableDefineService service,
-        IHbtLocalizationService localization) : base(localization)
+            IHbtLocalizationService localization,
+            IHbtLogger logger) : base(localization, logger)
     {
         _service = service;
     }

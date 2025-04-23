@@ -117,6 +117,18 @@ namespace Lean.Hbt.Domain.Entities.Identity
         public DateTime? LastPasswordChangeTime { get; set; }
 
         /// <summary>
+        /// 锁定结束时间
+        /// </summary>
+        [SugarColumn(ColumnName = "lock_end_time", ColumnDescription = "锁定结束时间", ColumnDataType = "datetime", IsNullable = true)]
+        public DateTime? LockEndTime { get; set; }
+
+        /// <summary>
+        /// 锁定原因
+        /// </summary>
+        [SugarColumn(ColumnName = "lock_reason", ColumnDescription = "锁定原因", Length = 200, ColumnDataType = "nvarchar", IsNullable = true)]
+        public string? LockReason { get; set; }
+
+        /// <summary>
         /// 用户角色关联
         /// </summary>
         [Navigate(NavigateType.OneToMany, nameof(HbtUserRole.UserId))]

@@ -7,9 +7,24 @@
 // 描述   : 部门服务实现
 //===================================================================
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
+using Mapster;
+using SqlSugar;
 using Lean.Hbt.Application.Dtos.Identity;
+using Lean.Hbt.Common.Models;
 using Lean.Hbt.Domain.Entities.Identity;
+using Lean.Hbt.Common.Extensions;
+using Lean.Hbt.Domain.Repositories;
+using Lean.Hbt.Common.Enums;
+using Lean.Hbt.Common.Helpers;
+using Lean.Hbt.Domain.IServices.Extensions;
+using Lean.Hbt.Domain.IServices.Caching;
+using Microsoft.Extensions.Localization;
+using Microsoft.AspNetCore.Http;
 
 namespace Lean.Hbt.Application.Services.Identity
 {
@@ -20,20 +35,38 @@ namespace Lean.Hbt.Application.Services.Identity
     /// 创建者: Lean365
     /// 创建时间: 2024-01-20
     /// </remarks>
-    public class HbtDeptService : IHbtDeptService
+    public class HbtDeptService : HbtBaseService, IHbtDeptService
     {
-        private readonly ILogger<HbtDeptService> _logger;
         private readonly IHbtRepository<HbtDept> _deptRepository;
+        private readonly IHbtRepository<HbtUser> _userRepository;
 
         /// <summary>
         /// 构造函数
         /// </summary>
         public HbtDeptService(
-            ILogger<HbtDeptService> logger,
-            IHbtRepository<HbtDept> deptRepository)
+            IHbtLogger logger,
+            IHttpContextAccessor httpContextAccessor,
+            IHbtRepository<HbtDept> deptRepository,
+            IHbtRepository<HbtUser> userRepository) : base(logger, httpContextAccessor)
         {
-            _logger = logger;
             _deptRepository = deptRepository;
+            _userRepository = userRepository;
+        }
+
+        /// <summary>
+        /// 构建部门查询条件
+        /// </summary>
+        private Expression<Func<HbtDept, bool>> QueryExpression(HbtDeptQueryDto query)
+        {
+            var exp = Expressionable.Create<HbtDept>();
+
+            if (!string.IsNullOrEmpty(query.DeptName))
+                exp.And(x => x.DeptName.Contains(query.DeptName));
+
+            if (query.Status.HasValue)
+                exp.And(x => x.Status == query.Status.Value);
+
+            return exp.ToExpression();
         }
 
         /// <summary>
@@ -41,27 +74,21 @@ namespace Lean.Hbt.Application.Services.Identity
         /// </summary>
         public async Task<HbtPagedResult<HbtDeptDto>> GetListAsync(HbtDeptQueryDto query)
         {
-            var exp = Expressionable.Create<HbtDept>();
-
-            if (!string.IsNullOrEmpty(query?.DeptName))
-                exp.And(x => x.DeptName.Contains(query.DeptName));
-
-            if (query?.Status.HasValue == true&& query.Status!.Value != -1)
-                exp.And(x => x.Status == query.Status.Value);
+            var exp = QueryExpression(query);
 
             var result = await _deptRepository.GetPagedListAsync(
-                exp.ToExpression(),
-                query?.PageIndex ?? 1,
-                query?.PageSize ?? 10,
+                exp,
+                query.PageIndex,
+                query.PageSize,
                 x => x.OrderNum,
                 OrderByType.Asc);
 
             return new HbtPagedResult<HbtDeptDto>
             {
+                Rows = result.Rows.Adapt<List<HbtDeptDto>>(),
                 TotalNum = result.TotalNum,
-                PageIndex = query?.PageIndex ?? 1,
-                PageSize = query?.PageSize ?? 10,
-                Rows = result.Rows.Adapt<List<HbtDeptDto>>()
+                PageIndex = query.PageIndex,
+                PageSize = query.PageSize
             };
         }
 
@@ -95,88 +122,56 @@ namespace Lean.Hbt.Application.Services.Identity
         /// <summary>
         /// 获取部门详情
         /// </summary>
-        public async Task<HbtDeptDto> GetByIdAsync(long id)
+        public async Task<HbtDeptDto> GetByIdAsync(long deptId)
         {
-            var dept = await _deptRepository.GetByIdAsync(id);
+            var dept = await _deptRepository.GetFirstAsync(x => x.Id == deptId);
             if (dept == null)
-                throw new HbtException("部门不存在");
-
+                throw new HbtException("Identity.Dept.NotFound", deptId.ToString());
             return dept.Adapt<HbtDeptDto>();
         }
 
         /// <summary>
         /// 创建部门
         /// </summary>
-        public async Task<long> CreateAsync(HbtDeptCreateDto input)
+        public async Task<long> CreateAsync(HbtDeptCreateDto request)
         {
-            // 1.检查部门名称是否存在
-            var exists = await _deptRepository.AsQueryable()
-                .AnyAsync(d => d.DeptName == input.DeptName && d.ParentId == input.ParentId);
-            if (exists)
-                throw new HbtException("部门名称已存在");
+            var dept = request.Adapt<HbtDept>();
+            dept.CreateTime = DateTime.Now;
+            dept.Status = 1;
 
-            // 2.创建部门实体
-            var dept = input.Adapt<HbtDept>();
-
-            // 3.保存部门
-            var result = await _deptRepository.CreateAsync(dept);
-            if (result <= 0)
-                throw new HbtException("创建部门失败");
-
+            await _deptRepository.CreateAsync(dept);
             return dept.Id;
         }
 
         /// <summary>
         /// 更新部门
         /// </summary>
-        public async Task<bool> UpdateAsync(HbtDeptUpdateDto input)
+        public async Task<bool> UpdateAsync(HbtDeptUpdateDto request)
         {
-            // 1.获取部门
-            var dept = await _deptRepository.GetByIdAsync(input.DeptId);
+            var dept = await _deptRepository.GetFirstAsync(x => x.Id == request.DeptId);
             if (dept == null)
-                throw new HbtException("部门不存在");
-
-            // 2.检查部门名称是否存在
-            var exists = await _deptRepository.AsQueryable()
-                .AnyAsync(d => d.Id != input.DeptId && d.DeptName == input.DeptName && d.ParentId == input.ParentId);
-            if (exists)
-                throw new HbtException("部门名称已存在");
-
-            // 3.检查上级部门是否正确
-            if (input.ParentId != null)
             {
-                if (input.ParentId == input.DeptId)
-                    throw new HbtException("上级部门不能是自己");
-
-                var parent = await _deptRepository.GetByIdAsync(input.ParentId);
-                if (parent == null)
-                    throw new HbtException("上级部门不存在");
-
-                // 检查是否会形成循环
-                if (await HasCircularReference(input.DeptId, input.ParentId))
-                    throw new HbtException("不能选择子部门作为上级部门");
+                throw new InvalidOperationException($"Identity.Dept.Operation.UpdateFailed: {request.DeptId}");
             }
 
-            // 4.更新部门
-            input.Adapt(dept);
-            var result = await _deptRepository.UpdateAsync(dept);
-            return result > 0;
+            request.Adapt(dept);
+            dept.UpdateTime = DateTime.Now;
+
+            return await _deptRepository.UpdateAsync(dept) > 0;
         }
 
         /// <summary>
         /// 删除部门
         /// </summary>
-        public async Task<bool> DeleteAsync(long id)
+        public async Task<bool> DeleteAsync(long deptId)
         {
-            // 1.检查是否存在子部门
-            var hasChildren = await _deptRepository.AsQueryable()
-                .AnyAsync(d => d.ParentId == id);
-            if (hasChildren)
-                throw new HbtException("存在子部门，无法删除");
+            var dept = await _deptRepository.GetFirstAsync(x => x.Id == deptId);
+            if (dept == null)
+            {
+                throw new InvalidOperationException($"Identity.Dept.Operation.DeleteFailed: {deptId}");
+            }
 
-            // 2.删除部门
-            var result = await _deptRepository.DeleteAsync(id);
-            return result > 0;
+            return await _deptRepository.DeleteAsync(dept) > 0;
         }
 
         /// <summary>
@@ -188,7 +183,7 @@ namespace Lean.Hbt.Application.Services.Identity
             var hasChildren = await _deptRepository.AsQueryable()
                 .AnyAsync(d => deptIds.Contains(d.ParentId == 0 ? 0 : d.ParentId));
             if (hasChildren)
-                throw new HbtException("选中的部门中存在子部门，无法删除");
+                throw new HbtException("Identity.Dept.HasChildren");
 
             // 2.批量删除
             Expression<Func<HbtDept, bool>> condition = d => deptIds.Contains(d.Id);
@@ -197,58 +192,72 @@ namespace Lean.Hbt.Application.Services.Identity
         }
 
         /// <summary>
-        /// 导入部门
+        /// 导入部门数据
         /// </summary>
-        public async Task<List<HbtDeptTemplateDto>> ImportAsync(Stream fileStream, string sheetName = "部门数据")
+        public async Task<(int success, int fail)> ImportAsync(Stream fileStream, string sheetName = "HbtDept")
         {
             try
             {
                 var importDtos = await HbtExcelHelper.ImportAsync<HbtDeptTemplateDto>(fileStream, sheetName);
                 if (importDtos == null || !importDtos.Any())
-                    throw new HbtException("导入数据为空");
+                    throw new HbtException("Identity.Dept.ImportEmpty");
 
-                return importDtos;
+                var success = 0;
+                var fail = 0;
+
+                foreach (var item in importDtos)
+                {
+                    try
+                    {
+                        var dept = item.Adapt<HbtDept>();
+                        dept.CreateTime = DateTime.Now;
+                        dept.Status = 0;
+
+                        await _deptRepository.CreateAsync(dept);
+                        success++;
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.Error("Identity.Dept.Log.ImportFailed", ex.Message, ex);
+                        fail++;
+                    }
+                }
+
+                return (success, fail);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "导入部门数据失败");
-                throw;
+                _logger.Error("Identity.Dept.Log.ImportDataFailed");
+                throw new HbtException("Identity.Dept.ImportFailed");
             }
         }
 
         /// <summary>
-        /// 导出部门
+        /// 导出部门数据
         /// </summary>
-        /// <param name="data">要导出的数据</param>
-        /// <param name="sheetName">工作表名称</param>
-        /// <returns>Excel文件字节数组</returns>
-        public async Task<byte[]> ExportAsync(IEnumerable<HbtDeptExportDto> data, string sheetName = "部门信息")
+        public async Task<(string fileName, byte[] content)> ExportAsync(HbtDeptQueryDto query, string sheetName = "HbtDept")
         {
             try
             {
-                return await HbtExcelHelper.ExportAsync(data, sheetName);
+                var list = await _deptRepository.GetListAsync(QueryExpression(query));
+                var exportList = list.Adapt<List<HbtDeptExportDto>>();
+                return await HbtExcelHelper.ExportAsync(exportList, sheetName, "部门数据");
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "导出部门数据失败");
-                throw;
+                _logger.Error("Identity.Dept.Log.ExportDataFailed");
+                throw new HbtException("Identity.Dept.ExportFailed");
             }
         }
 
         /// <summary>
         /// 获取导入模板
         /// </summary>
-        public async Task<byte[]> GenerateTemplateAsync(string sheetName = "部门导入模板")
+        /// <param name="sheetName">工作表名称</param>
+        /// <returns>Excel模板文件</returns>
+        public async Task<(string fileName, byte[] content)> GetTemplateAsync(string sheetName = "Sheet1")
         {
-            try
-            {
-                return await HbtExcelHelper.GenerateTemplateAsync<HbtDeptTemplateDto>(sheetName);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "获取部门导入模板失败");
-                throw;
-            }
+            return await HbtExcelHelper.GenerateTemplateAsync<HbtDeptTemplateDto>(sheetName);
         }
 
         /// <summary>
@@ -273,17 +282,20 @@ namespace Lean.Hbt.Application.Services.Identity
         /// <returns>部门选项列表</returns>
         public async Task<List<HbtSelectOption>> GetOptionsAsync()
         {
-            var depts = await _deptRepository.AsQueryable()
-                .Where(d => d.Status == 0)  // 只获取正常状态的部门
-                .OrderBy(d => d.OrderNum)
-                .Select(d => new HbtSelectOption
-                {
-                    Label = d.DeptName,
-                    Value = d.Id,
-                    Disabled = false
-                })
-                .ToListAsync();
-            return depts;
+            var depts = await _deptRepository.GetListAsync(x => x.Status == 1);
+            return depts.Select(x => new HbtSelectOption
+            {
+                Label = x.DeptName,
+                Value = x.Id
+            }).ToList();
+        }
+
+        /// <summary>
+        /// 生成导入模板
+        /// </summary>
+        public async Task<(string fileName, byte[] content)> GenerateTemplateAsync(string sheetName = "HbtDept")
+        {
+            return await HbtExcelHelper.GenerateTemplateAsync<HbtDeptImportDto>(sheetName);
         }
 
         /// <summary>

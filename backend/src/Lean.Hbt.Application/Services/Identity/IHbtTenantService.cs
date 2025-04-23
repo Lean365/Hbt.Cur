@@ -81,14 +81,14 @@ public interface IHbtTenantService
     /// <param name="query">查询条件</param>
     /// <param name="sheetName">工作表名称</param>
     /// <returns>Excel文件字节数组</returns>
-    Task<byte[]> ExportAsync(HbtTenantQueryDto query, string sheetName = "Sheet1");
+    Task<(string fileName, byte[] content)> ExportAsync(HbtTenantQueryDto query, string sheetName = "Sheet1");
 
     /// <summary>
     /// 获取租户导入模板
     /// </summary>
     /// <param name="sheetName">工作表名称</param>
     /// <returns>Excel模板文件字节数组</returns>
-    Task<byte[]> GetTemplateAsync(string sheetName = "Sheet1");
+    Task<(string fileName, byte[] content)> GetTemplateAsync(string sheetName = "Sheet1");
 
     /// <summary>
     /// 更新租户状态

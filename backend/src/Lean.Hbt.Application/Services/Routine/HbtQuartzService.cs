@@ -11,6 +11,7 @@ using System;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Lean.Hbt.Common.Models;
 using Lean.Hbt.Domain.Entities.Routine;
@@ -21,15 +22,15 @@ using Lean.Hbt.Domain.Repositories;
 using SqlSugar;
 using Mapster;
 using Quartz;
+using Lean.Hbt.Application.Services.Routine.Jobs;
 
 namespace Lean.Hbt.Application.Services.Routine
 {
     /// <summary>
     /// 定时任务服务实现
     /// </summary>
-    public class HbtQuartzService : IHbtQuartzService
+    public class HbtQuartzService : HbtBaseService, IHbtQuartzService
     {
-        private readonly ILogger<HbtQuartzService> _logger;
         private readonly IHbtRepository<HbtQuartz> _taskRepository;
         private readonly IScheduler _scheduler;
 
@@ -39,12 +40,13 @@ namespace Lean.Hbt.Application.Services.Routine
         /// <param name="logger">日志记录器</param>
         /// <param name="taskRepository">任务仓储</param>
         /// <param name="scheduler">调度器</param>
+        /// <param name="httpContextAccessor">HTTP上下文访问器</param>
         public HbtQuartzService(
-            ILogger<HbtQuartzService> logger,
+            IHbtLogger logger,
             IHbtRepository<HbtQuartz> taskRepository,
-            IScheduler scheduler)
+            IScheduler scheduler,
+            IHttpContextAccessor httpContextAccessor) : base(logger, httpContextAccessor)
         {
-            _logger = logger;
             _taskRepository = taskRepository;
             _scheduler = scheduler;
         }
@@ -60,13 +62,10 @@ namespace Lean.Hbt.Application.Services.Routine
                 exp.And(x => x.TaskName.Contains(query.TaskName));
 
             if (!string.IsNullOrEmpty(query.TaskGroupName))
-                exp.And(x => x.TaskGroupName.Contains(query.TaskGroupName));
+                exp.And(x => x.TaskGroupName == query.TaskGroupName);
 
             if (query.TaskType.HasValue)
                 exp.And(x => x.TaskType == query.TaskType.Value);
-
-            if (query.TaskTriggerType.HasValue)
-                exp.And(x => x.TaskTriggerType == query.TaskTriggerType.Value);
 
             if (query.TaskStatus.HasValue)
                 exp.And(x => x.TaskStatus == query.TaskStatus.Value);
@@ -77,22 +76,20 @@ namespace Lean.Hbt.Application.Services.Routine
             if (query.EndTime.HasValue)
                 exp.And(x => x.CreateTime <= query.EndTime.Value);
 
-        // 2.查询数据
-        var result = await _taskRepository.GetPagedListAsync(
-            exp.ToExpression(),
-            query.PageIndex,
-            query.PageSize,
-            x => x.CreateTime,
-            OrderByType.Desc);
+            var result = await _taskRepository.GetPagedListAsync(
+                exp.ToExpression(),
+                query.PageIndex,
+                query.PageSize,
+                x => x.Id,
+                OrderByType.Asc);
 
-        // 3.转换数据
-        return new HbtPagedResult<HbtQuartzDto>
-        {
-            TotalNum = result.TotalNum,
-            PageIndex = query.PageIndex,
-            PageSize = query.PageSize,
-            Rows = result.Rows.Select(x => x.Adapt<HbtQuartzDto>()).ToList()
-        };
+            return new HbtPagedResult<HbtQuartzDto>
+            {
+                TotalNum = result.TotalNum,
+                PageIndex = query.PageIndex,
+                PageSize = query.PageSize,
+                Rows = result.Rows.Adapt<List<HbtQuartzDto>>()
+            };
         }
 
         /// <summary>
@@ -102,7 +99,7 @@ namespace Lean.Hbt.Application.Services.Routine
         {
             var task = await _taskRepository.GetByIdAsync(taskId);
             if (task == null)
-                throw new HbtException($"定时任务不存在: {taskId}");
+                throw new HbtException(L("Quartz.NotFound", taskId));
 
             return task.Adapt<HbtQuartzDto>();
         }
@@ -118,11 +115,11 @@ namespace Lean.Hbt.Application.Services.Routine
             // 验证任务是否已存在
             var existingTask = await _taskRepository.GetFirstAsync(x => x.TaskName == input.TaskName && x.TaskGroupName == input.TaskGroupName);
             if (existingTask != null)
-                throw new HbtException($"任务已存在: {input.TaskName}");
+                throw new HbtException(L("Quartz.AlreadyExists", input.TaskName));
 
             var result = await _taskRepository.CreateAsync(task);
             if (result <= 0)
-                throw new HbtException("创建定时任务失败");
+                throw new HbtException(L("Quartz.CreateFailed"));
 
             // 如果任务状态为启用，则立即启动
             if (task.TaskStatus == 1)
@@ -138,7 +135,7 @@ namespace Lean.Hbt.Application.Services.Routine
         {
             var task = await _taskRepository.GetByIdAsync(taskId);
             if (task == null)
-                throw new HbtException($"定时任务不存在: {taskId}");
+                throw new HbtException(L("Quartz.NotFound", taskId));
 
             // 如果任务正在运行，需要先停止
             if (task.TaskStatus == 1)
@@ -148,7 +145,7 @@ namespace Lean.Hbt.Application.Services.Routine
             input.Adapt(task);
             var result = await _taskRepository.UpdateAsync(task);
             if (result <= 0)
-                throw new HbtException("更新定时任务失败");
+                throw new HbtException(L("Quartz.UpdateFailed"));
 
             // 如果更新后的状态为启用，则重新启动任务
             if (task.TaskStatus == 1)
@@ -164,7 +161,7 @@ namespace Lean.Hbt.Application.Services.Routine
         {
             var task = await _taskRepository.GetByIdAsync(taskId);
             if (task == null)
-                throw new HbtException($"定时任务不存在: {taskId}");
+                throw new HbtException(L("Quartz.NotFound", taskId));
 
             // 如果任务正在运行，需要先停止
             if (task.TaskStatus == 1)
@@ -179,11 +176,34 @@ namespace Lean.Hbt.Application.Services.Routine
         /// </summary>
         public async Task<bool> BatchDeleteAsync(long[] taskIds)
         {
+            if (taskIds == null || taskIds.Length == 0)
+                throw new HbtException(L("Quartz.SelectToDelete"));
+
             foreach (var taskId in taskIds)
             {
                 await DeleteAsync(taskId);
             }
             return true;
+        }
+
+        /// <summary>
+        /// 执行定时任务
+        /// </summary>
+        public async Task<bool> ExecuteAsync(long taskId)
+        {
+            var task = await _taskRepository.GetByIdAsync(taskId);
+            if (task == null)
+                throw new HbtException(L("Quartz.NotFound", taskId));
+
+            try
+            {
+                return await HbtQuartzHelper.TriggerJobAsync(task.TaskName, task.TaskGroupName);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(L("Quartz.ExecuteFailed", taskId), ex);
+                throw new HbtException(L("Quartz.ExecuteFailed", taskId));
+            }
         }
 
         /// <summary>
@@ -193,47 +213,17 @@ namespace Lean.Hbt.Application.Services.Routine
         {
             var task = await _taskRepository.GetByIdAsync(taskId);
             if (task == null)
-                throw new HbtException($"定时任务不存在: {taskId}");
+                throw new HbtException(L("Quartz.NotFound", taskId));
 
-            // 创建任务
-            var jobDetail = JobBuilder.Create<IJob>()
-                .WithIdentity(task.TaskName, task.TaskGroupName)
-                .UsingJobData("taskId", task.Id)
-                .Build();
-
-            // 创建触发器
-            ITrigger trigger;
-            if (task.TaskTriggerType == 0) // Simple触发器
+            try
             {
-                trigger = TriggerBuilder.Create()
-                    .WithIdentity($"{task.TaskName}_trigger", task.TaskGroupName)
-                    .WithSimpleSchedule(x => x
-                        .WithIntervalInSeconds(task.TaskInterval)
-                        .RepeatForever())
-                    .Build();
+                return await HbtQuartzHelper.AddOrUpdateJobAsync<HbtQuartzJob>(task.TaskName, task.TaskGroupName, task.TaskCronExpression);
             }
-            else // Cron触发器
+            catch (Exception ex)
             {
-                trigger = TriggerBuilder.Create()
-                    .WithIdentity($"{task.TaskName}_trigger", task.TaskGroupName)
-                    .WithCronSchedule(task.TaskCronExpression)
-                    .Build();
+                _logger.Error(L("Quartz.StartFailed", taskId), ex);
+                throw new HbtException(L("Quartz.StartFailed", taskId));
             }
-
-            // 设置开始时间和结束时间
-            if (task.TaskStartTime.HasValue)
-                trigger.GetTriggerBuilder().StartAt(task.TaskStartTime.Value);
-            if (task.TaskEndTime.HasValue)
-                trigger.GetTriggerBuilder().EndAt(task.TaskEndTime.Value);
-
-            // 调度任务
-            await _scheduler.ScheduleJob(jobDetail, trigger);
-
-            // 更新任务状态
-            task.TaskStatus = 1;
-            await _taskRepository.UpdateAsync(task);
-
-            return true;
         }
 
         /// <summary>
@@ -243,59 +233,107 @@ namespace Lean.Hbt.Application.Services.Routine
         {
             var task = await _taskRepository.GetByIdAsync(taskId);
             if (task == null)
-                throw new HbtException($"定时任务不存在: {taskId}");
+                throw new HbtException(L("Quartz.NotFound", taskId));
 
-            // 暂停任务
-            await _scheduler.PauseJob(new JobKey(task.TaskName, task.TaskGroupName));
-            // 移除任务
-            await _scheduler.DeleteJob(new JobKey(task.TaskName, task.TaskGroupName));
-
-            // 更新任务状态
-            task.TaskStatus = 0;
-            await _taskRepository.UpdateAsync(task);
-
-            return true;
+            try
+            {
+                return await HbtQuartzHelper.DeleteJobAsync(task.TaskName, task.TaskGroupName);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(L("Quartz.StopFailed", taskId), ex);
+                throw new HbtException(L("Quartz.StopFailed", taskId));
+            }
         }
 
         /// <summary>
-        /// 立即执行定时任务
+        /// 暂停定时任务
         /// </summary>
-        public async Task<bool> ExecuteAsync(long taskId)
+        public async Task<bool> PauseAsync(long taskId)
         {
             var task = await _taskRepository.GetByIdAsync(taskId);
             if (task == null)
-                throw new HbtException($"定时任务不存在: {taskId}");
+                throw new HbtException(L("Quartz.NotFound", taskId));
 
-            await _scheduler.TriggerJob(new JobKey(task.TaskName, task.TaskGroupName));
-            return true;
+            try
+            {
+                return await HbtQuartzHelper.PauseJobAsync(task.TaskName, task.TaskGroupName);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(L("Quartz.PauseFailed", taskId), ex);
+                throw new HbtException(L("Quartz.PauseFailed", taskId));
+            }
+        }
+
+        /// <summary>
+        /// 恢复定时任务
+        /// </summary>
+        public async Task<bool> ResumeAsync(long taskId)
+        {
+            var task = await _taskRepository.GetByIdAsync(taskId);
+            if (task == null)
+                throw new HbtException(L("Quartz.NotFound", taskId));
+
+            try
+            {
+                return await HbtQuartzHelper.ResumeJobAsync(task.TaskName, task.TaskGroupName);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(L("Quartz.ResumeFailed", taskId), ex);
+                throw new HbtException(L("Quartz.ResumeFailed", taskId));
+            }
+        }
+
+        /// <summary>
+        /// 立即执行一次定时任务
+        /// </summary>
+        public async Task<bool> TriggerAsync(long taskId)
+        {
+            var task = await _taskRepository.GetByIdAsync(taskId);
+            if (task == null)
+                throw new HbtException(L("Quartz.NotFound", taskId));
+
+            try
+            {
+                await _scheduler.TriggerJob(new JobKey(task.TaskName, task.TaskGroupName));
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(L("Quartz.TriggerFailed", taskId), ex);
+                throw new HbtException(L("Quartz.TriggerFailed", taskId));
+            }
         }
 
         /// <summary>
         /// 导出定时任务数据
         /// </summary>
-        public async Task<byte[]> ExportAsync(HbtQuartzQueryDto query, string sheetName = "定时任务数据")
+        public async Task<(string fileName, byte[] content)> ExportAsync(HbtQuartzQueryDto query, string sheetName = "Quartz")
         {
-            var exp = Expressionable.Create<HbtQuartz>();
+            try
+            {
+                var list = await _taskRepository.GetListAsync(KpQuartzQueryExpression(query));
+                return await HbtExcelHelper.ExportAsync(list.Adapt<List<HbtQuartzExportDto>>(), sheetName, L("Quartz.ExportTitle"));
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(L("Quartz.ExportFailed"), ex);
+                throw new HbtException(L("Quartz.ExportFailed"));
+            }
+        }
 
-            if (!string.IsNullOrEmpty(query.TaskName))
-                exp.And(x => x.TaskName.Contains(query.TaskName));
-
-            if (!string.IsNullOrEmpty(query.TaskGroupName))
-                exp.And(x => x.TaskGroupName.Contains(query.TaskGroupName));
-
-            if (query.TaskType.HasValue)
-                exp.And(x => x.TaskType == query.TaskType.Value);
-
-            if (query.TaskTriggerType.HasValue)
-                exp.And(x => x.TaskTriggerType == query.TaskTriggerType.Value);
-
-            if (query.TaskStatus.HasValue)
-                exp.And(x => x.TaskStatus == query.TaskStatus.Value);
-
-            var list = await _taskRepository.GetListAsync(exp.ToExpression());
-            var result = list.Adapt<List<HbtQuartzExportDto>>();
-
-            return await HbtExcelHelper.ExportAsync(result, sheetName);
+        private Expression<Func<HbtQuartz, bool>> KpQuartzQueryExpression(HbtQuartzQueryDto query)
+        {
+            return Expressionable.Create<HbtQuartz>()
+                .AndIF(!string.IsNullOrEmpty(query.TaskName), x => x.TaskName.Contains(query.TaskName))
+                .AndIF(!string.IsNullOrEmpty(query.TaskGroupName), x => x.TaskGroupName == query.TaskGroupName)
+                .AndIF(query.TaskType.HasValue, x => x.TaskType == query.TaskType.Value)
+                .AndIF(query.TaskStatus.HasValue, x => x.TaskStatus == query.TaskStatus.Value)
+                .AndIF(query.StartTime.HasValue, x => x.CreateTime >= query.StartTime.Value)
+                .AndIF(query.EndTime.HasValue, x => x.CreateTime <= query.EndTime.Value)
+                .ToExpression();
         }
     }
 } 

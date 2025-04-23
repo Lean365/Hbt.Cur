@@ -9,7 +9,6 @@
 
 using Lean.Hbt.Application.Dtos.Identity;
 using Lean.Hbt.Application.Services.Identity;
-using Lean.Hbt.Domain.IServices.Admin;
 
 namespace Lean.Hbt.WebApi.Controllers.Identity;
 
@@ -28,7 +27,10 @@ public class HbtTenantController : HbtBaseController
     /// </summary>
     /// <param name="tenantService">租户服务</param>
     /// <param name="localization">本地化服务</param>
-    public HbtTenantController(IHbtTenantService tenantService, IHbtLocalizationService localization) : base(localization)
+    /// <param name="logger">日志服务</param>
+    public HbtTenantController(IHbtTenantService tenantService,
+                                IHbtLocalizationService localization,
+            IHbtLogger logger) : base(localization, logger)
     {
         _tenantService = tenantService;
     }
@@ -129,8 +131,8 @@ public class HbtTenantController : HbtBaseController
     [HttpGet("export")]
     public async Task<IActionResult> ExportAsync([FromQuery] HbtTenantQueryDto query)
     {
-        var result = await _tenantService.ExportAsync(query, "Sheet1");
-        return File(result, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "租户数据.xlsx");
+        var (fileName, content) = await _tenantService.ExportAsync(query, "Sheet1");
+        return File(content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
     }
 
     /// <summary>
@@ -140,8 +142,8 @@ public class HbtTenantController : HbtBaseController
     [HttpGet("template")]
     public async Task<IActionResult> GetTemplateAsync()
     {
-        var result = await _tenantService.GetTemplateAsync("Sheet1");
-        return File(result, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "租户导入模板.xlsx");
+        var (fileName, content) = await _tenantService.GetTemplateAsync("Sheet1");
+        return File(content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
     }
 
     /// <summary>
@@ -162,7 +164,7 @@ public class HbtTenantController : HbtBaseController
     /// </summary>
     /// <returns>租户选项列表</returns>
     [HttpGet("options")]
-        [AllowAnonymous]
+    [AllowAnonymous]
     public async Task<IActionResult> GetOptionsAsync()
     {
         var result = await _tenantService.GetOptionsAsync();

@@ -24,8 +24,8 @@ global using Lean.Hbt.Application.Dtos.Generator;
 global using Lean.Hbt.Common.Exceptions;
 global using Lean.Hbt.Common.Helpers;
 global using Lean.Hbt.Domain.Entities.Generator;
-global using Lean.Hbt.Domain.IServices.Identity;
-global using Lean.Hbt.Domain.IServices.Admin;
+global using Lean.Hbt.Domain.IServices.Extensions;
+global using Lean.Hbt.Domain.IServices.Extensions;
 global using Lean.Hbt.Domain.Repositories;
 global using SqlSugar;
 

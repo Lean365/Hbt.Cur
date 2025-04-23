@@ -88,6 +88,6 @@ namespace Lean.Hbt.Application.Services.Routine
         /// <param name="query">查询条件</param>
         /// <param name="sheetName">工作表名称</param>
         /// <returns>Excel文件字节数组</returns>
-        Task<byte[]> ExportAsync(HbtQuartzQueryDto query, string sheetName = "定时任务数据");
+        Task<(string fileName, byte[] content)> ExportAsync(HbtQuartzQueryDto query, string sheetName = "定时任务数据");
     }
 } 

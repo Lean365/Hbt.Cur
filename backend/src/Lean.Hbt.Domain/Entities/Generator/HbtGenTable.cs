@@ -91,6 +91,12 @@ public class HbtGenTable : HbtBaseEntity
     #region 生成配置信息
 
     /// <summary>
+    /// 状态（0：停用，1：正常）
+    /// </summary>
+    [SugarColumn(ColumnName = "status", ColumnDescription = "状态", ColumnDataType = "int", IsNullable = false, DefaultValue = "1")]
+    public int Status { get; set; } = 1;
+
+    /// <summary>
     /// 使用的模板
     /// </summary>
     [SugarColumn(ColumnName = "template_type", ColumnDescription = "使用模板", ColumnDataType = "int", IsNullable = false, DefaultValue = "1")]

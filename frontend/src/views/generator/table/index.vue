@@ -113,7 +113,7 @@
 
     <!-- 代码预览对话框 -->
     <preview-modal
-      v-model:visible="previewVisible"
+      v-model:open="previewVisible"
       :loading="previewLoading"
       :preview-data="previewData"
     />
@@ -296,8 +296,8 @@ const fetchData = async () => {
   try {
     const res = await getPagedList(queryParams)
     if (res.data) {
-      tableData.value = res.data.items
-      total.value = res.data.total
+      tableData.value = res.data.data.items
+      total.value = res.data.data.total
     }
   } finally {
     loading.value = false
@@ -406,7 +406,7 @@ const handlePreview = async (record: HbtGenTableDto) => {
   try {
     const res = await previewGenTable(record.id as number)
     if (res.data) {
-      previewData.value = res.data
+      previewData.value = res.data.data
       previewVisible.value = true
     }
   } catch (error) {
@@ -436,7 +436,7 @@ const handleGenerate = async (record: HbtGenTableDto) => {
 const handleDownload = async (record: HbtGenTableDto) => {
   try {
     const res = await downloadGenTable(record.id as number)
-    const blob = new Blob([res], { type: 'application/zip' })
+    const blob = new Blob([res.data], { type: 'application/zip' })
     const link = document.createElement('a')
     link.href = window.URL.createObjectURL(blob)
     link.download = `code-${record.tableName}.zip`

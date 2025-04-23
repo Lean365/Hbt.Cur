@@ -10,6 +10,7 @@
 //===================================================================
 
 using Lean.Hbt.Domain.Entities.Workflow;
+using Lean.Hbt.Domain.IServices.Extensions;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace Lean.Hbt.Application.Services.Workflow.Engine.Cache

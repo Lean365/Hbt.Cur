@@ -9,7 +9,7 @@
 
 using System.Threading;
 using Microsoft.AspNetCore.Http;
-using Lean.Hbt.Domain.IServices.Identity;
+using Lean.Hbt.Domain.IServices.Extensions;
 
 namespace Lean.Hbt.Infrastructure.Services.Identity
 {

@@ -9,9 +9,6 @@
 
 using Lean.Hbt.Application.Dtos.Identity;
 using Lean.Hbt.Application.Services.Identity;
-using Lean.Hbt.Common.Enums;
-using Lean.Hbt.Domain.IServices.Admin;
-using Lean.Hbt.Infrastructure.Security.Attributes;
 
 namespace Lean.Hbt.WebApi.Controllers.Identity
 {
@@ -34,7 +31,10 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// </summary>
         /// <param name="deptService">部门服务</param>
         /// <param name="localization">本地化服务</param>
-        public HbtDeptController(IHbtDeptService deptService, IHbtLocalizationService localization) : base(localization)
+        /// <param name="logger">日志服务</param>
+        public HbtDeptController(IHbtDeptService deptService,
+                                    IHbtLocalizationService localization,
+            IHbtLogger logger) : base(localization, logger)
         {
             _deptService = deptService;
         }
@@ -137,14 +137,14 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <summary>
         /// 导出部门数据
         /// </summary>
-        /// <param name="data">要导出的数据</param>
+        /// <param name="query">查询条件</param>
         /// <param name="sheetName">工作表名称</param>
         /// <returns>导出的Excel文件</returns>
         [HttpPost("export")]
-        public async Task<IActionResult> ExportAsync([FromBody] IEnumerable<HbtDeptExportDto> data, [FromQuery] string sheetName = "部门信息")
+        public async Task<IActionResult> ExportAsync([FromQuery] HbtDeptQueryDto query, [FromQuery] string sheetName = "部门信息")
         {
-            var result = await _deptService.ExportAsync(data, sheetName);
-            return File(result, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"部门信息_{DateTime.Now:yyyyMMddHHmmss}.xlsx");
+            var (fileName, content) = await _deptService.ExportAsync(query, sheetName);
+            return File(content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
         }
 
         /// <summary>
@@ -155,8 +155,8 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         [HttpGet("template")]
         public async Task<IActionResult> GenerateTemplateAsync([FromQuery] string sheetName = "部门导入模板")
         {
-            var result = await _deptService.GenerateTemplateAsync(sheetName);
-            return File(result, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"部门导入模板_{DateTime.Now:yyyyMMddHHmmss}.xlsx");
+            var (fileName, content) = await _deptService.GenerateTemplateAsync(sheetName);
+            return File(content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
         }
 
         /// <summary>

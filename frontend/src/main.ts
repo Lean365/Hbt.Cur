@@ -18,75 +18,88 @@ import { useAppStore } from '@/stores/app'
 import { useSettingStore } from '@/stores/settings'
 import { setupPermission } from './directives/permission'
 import setupIcons from '@/utils/icons'
+import { useUserStore } from './stores/user'
+import { useMenuStore } from './stores/menu'
+import { getToken } from './utils/auth'
+import { enUS } from 'date-fns/locale'
 
-// 导入 date-fns 及其语言包
-import { format, formatDistance, formatRelative, isDate } from 'date-fns'
-import { zhCN, zhTW, ja, ko, enUS, fr, es, ru, arSA } from 'date-fns/locale'
-
-// 语言包映射
-const LOCALE_MAP: Record<string, any> = {
-  // 东亚语言
-  'zh-cn': zhCN, // 简体中文
-  'zh-tw': zhTW, // 繁体中文
-  ja: ja, // 日语
-  ko: ko, // 韩语
-
-  // 联合国官方语言
-  en: enUS, // 英语
-  fr: fr, // 法语
-  es: es, // 西班牙语
-  ru: ru, // 俄语
-  ar: arSA // 阿拉伯语
-}
-
+// 初始化函数
 async function bootstrap() {
-  const app = createApp(App)
-  const pinia = createPinia()
-  app.use(pinia)
+  try {
+    const app = createApp(App)
+    const pinia = createPinia()
 
-  // 初始化 store
-  const appStore = useAppStore()
-  await appStore.initialize()
+    // 初始化状态管理
+    app.use(pinia)
+    
+    // 注册 Ant Design Vue
+    app.use(Antd)
 
-  // 初始化设置
-  const settingStore = useSettingStore()
-  await settingStore.loadFromStorage()
+    // 设置图标
+    setupIcons(app)
 
-  // 注册路由
-  app.use(router)
-  
-  // 注册 i18n
-  app.use(i18n)
+    // 注册国际化
+    app.use(i18n)
+    
+    // 设置默认语言包
+    app.config.globalProperties.$dateLocale = enUS
 
-  // 注册 Ant Design Vue
-  app.use(Antd)
+    // 注册权限指令
+    setupPermission(app)
 
-  // 设置图标
-  setupIcons(app)
-
-  // 监听语言变化，设置 date-fns 语言包
-  watch(
-    () => i18n.global.locale.value,
-    newLang => {
+    // 如果有token，预加载用户信息和菜单
+    const token = getToken()
+    if (token) {
+      console.log('[应用] 检测到token，开始预加载用户信息和菜单')
       try {
-        const lang = newLang.toLowerCase()
-        const locale = LOCALE_MAP[lang] || enUS
-        app.config.globalProperties.$dateLocale = locale
-      } catch (err) {
-        console.warn('[date-fns] 设置语言失败，将使用默认语言 en-US:', err)
-        app.config.globalProperties.$dateLocale = enUS
+        // 获取 store 实例
+        const userStore = useUserStore()
+        const menuStore = useMenuStore()
+
+        // 加载用户信息
+        await userStore.getUserInfo()
+        
+        // 加载菜单并注册路由
+        console.log('[应用] 开始加载菜单')
+        const menus = await menuStore.reloadMenus(router)
+        if (menus && menus.length > 0) {
+          console.log('[应用] 菜单加载完成，等待路由注册')
+          
+          // 等待路由注册完成
+          let retryCount = 0
+          const maxRetries = 10
+          while (retryCount < maxRetries) {
+            // 检查目标路由是否已注册（以 /admin/configs 为例）
+            const testRoute = router.resolve('/admin/configs')
+            if (testRoute.matched.length > 0) {
+              console.log('[应用] 动态路由注册完成')
+              break
+            }
+            await new Promise(resolve => setTimeout(resolve, 50))
+            retryCount++
+            if (retryCount === maxRetries) {
+              console.warn('[应用] 路由注册超时')
+            }
+          }
+        } else {
+          console.warn('[应用] 未加载到菜单数据')
+        }
+      } catch (error) {
+        console.error('[应用] 预加载失败:', error)
       }
-    },
-    { immediate: true }
-  )
+    }
 
-  // 注册权限指令
-  setupPermission(app)
+    // 注册路由（确保在动态路由加载完成后再注册）
+    app.use(router)
 
-  // 挂载应用
-  app.mount('#app')
+    // 挂载应用
+    app.mount('#app')
+    
+    console.log('[应用] 初始化完成')
+  } catch (error) {
+    console.error('[应用] 初始化失败:', error)
+  }
 }
 
-bootstrap().catch(err => {
-  console.error('应用启动失败:', err)
-})
+// 启动应用
+bootstrap()

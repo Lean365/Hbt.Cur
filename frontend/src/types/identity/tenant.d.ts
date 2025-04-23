@@ -107,4 +107,16 @@ export interface TenantStatus {
 /**
  * 租户分页结果
  */
-export type TenantPageResult = HbtPagedResult<Tenant> 
+export type TenantPageResult = HbtPagedResult<Tenant>
+
+/**
+ * 租户选项接口
+ */
+export interface TenantOption {
+  /** 选项值 */
+  value: number
+  /** 选项标签 */
+  label: string
+  /** 是否禁用 */
+  disabled: boolean
+} 

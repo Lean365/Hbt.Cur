@@ -22,6 +22,7 @@ using Lean.Hbt.Domain.Repositories;
 using SqlSugar;
 using Mapster;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Http;
 
 namespace Lean.Hbt.Application.Services.Routine
 {
@@ -32,9 +33,8 @@ namespace Lean.Hbt.Application.Services.Routine
     /// 创建者: Lean365
     /// 创建时间: 2024-03-07
     /// </remarks>
-    public class HbtFileService : IHbtFileService
+    public class HbtFileService : HbtBaseService, IHbtFileService
     {
-        private readonly ILogger<HbtFileService> _logger;
         private readonly IHbtRepository<HbtFile> _fileRepository;
 
         /// <summary>
@@ -42,11 +42,12 @@ namespace Lean.Hbt.Application.Services.Routine
         /// </summary>
         /// <param name="logger">日志记录器</param>
         /// <param name="fileRepository">文件仓储</param>
+        /// <param name="httpContextAccessor">HTTP上下文访问器</param>
         public HbtFileService(
-            ILogger<HbtFileService> logger,
-            IHbtRepository<HbtFile> fileRepository)
+            IHbtLogger logger,
+            IHbtRepository<HbtFile> fileRepository,
+            IHttpContextAccessor httpContextAccessor) : base(logger, httpContextAccessor)
         {
-            _logger = logger;
             _fileRepository = fileRepository;
         }
 
@@ -102,7 +103,7 @@ namespace Lean.Hbt.Application.Services.Routine
         {
             var file = await _fileRepository.GetByIdAsync(fileId);
             if (file == null)
-                throw new HbtException($"文件不存在: {fileId}");
+                throw new HbtException(L("File.NotFound", fileId));
 
             return file.Adapt<HbtFileDto>();
         }
@@ -128,7 +129,7 @@ namespace Lean.Hbt.Application.Services.Routine
         {
             var file = await _fileRepository.GetByIdAsync(input.FileId);
             if (file == null)
-                throw new HbtException($"文件不存在: {input.FileId}");
+                throw new HbtException(L("File.NotFound", input.FileId));
 
             input.Adapt(file);
             var result = await _fileRepository.UpdateAsync(file);
@@ -144,7 +145,7 @@ namespace Lean.Hbt.Application.Services.Routine
         {
             var file = await _fileRepository.GetByIdAsync(fileId);
             if (file == null)
-                throw new HbtException($"文件不存在: {fileId}");
+                throw new HbtException(L("File.NotFound", fileId));
 
             var result = await _fileRepository.DeleteAsync(file);
             return result > 0;
@@ -158,7 +159,7 @@ namespace Lean.Hbt.Application.Services.Routine
         public async Task<bool> BatchDeleteAsync(long[] fileIds)
         {
             if (fileIds == null || fileIds.Length == 0)
-                throw new HbtException("请选择要删除的文件");
+                throw new HbtException(L("File.SelectToDelete"));
 
             Expression<Func<HbtFile, bool>> predicate = x => fileIds.Contains(x.Id);
             var result = await _fileRepository.DeleteAsync(predicate);
@@ -190,7 +191,7 @@ namespace Lean.Hbt.Application.Services.Routine
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, $"导入文件数据失败: {dto.FileOriginalName}");
+                    _logger.Error(L("File.ImportFailed", dto.FileOriginalName), ex);
                     fail++;
                 }
             }
@@ -204,7 +205,7 @@ namespace Lean.Hbt.Application.Services.Routine
         /// <param name="query">查询条件</param>
         /// <param name="sheetName">工作表名称</param>
         /// <returns>返回导出的Excel文件字节数组</returns>
-        public async Task<byte[]> ExportAsync(HbtFileQueryDto query, string sheetName = "文件信息")
+        public async Task<(string fileName, byte[] content)> ExportAsync(HbtFileQueryDto query, string sheetName = "文件信息")
         {
             var predicate = Expressionable.Create<HbtFile>();
 
@@ -240,7 +241,7 @@ namespace Lean.Hbt.Application.Services.Routine
         /// </summary>
         /// <param name="sheetName">工作表名称</param>
         /// <returns>返回Excel文件字节数组</returns>
-        public async Task<byte[]> GetTemplateAsync(string sheetName = "文件信息")
+        public async Task<(string fileName, byte[] content)> GetTemplateAsync(string sheetName = "文件信息")
         {
             var template = new List<HbtFileTemplateDto>();
             return await HbtExcelHelper.ExportAsync(template, sheetName);
@@ -295,10 +296,10 @@ namespace Lean.Hbt.Application.Services.Routine
         {
             var file = await _fileRepository.GetByIdAsync(fileId);
             if (file == null)
-                throw new HbtException($"文件不存在: {fileId}");
+                throw new HbtException(L("File.NotFound", fileId));
 
             if (!System.IO.File.Exists(file.FilePath))
-                throw new HbtException($"文件不存在: {file.FilePath}");
+                throw new HbtException(L("File.NotFound", file.FilePath));
 
             // 更新下载次数
             file.FileDownloadCount++;

@@ -7,12 +7,8 @@
 // 描述    : 设备扩展信息控制器
 //===================================================================
 
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 using Lean.Hbt.Application.Dtos.Identity;
 using Lean.Hbt.Application.Services.Identity;
-using Lean.Hbt.Domain.IServices.Admin;
 
 namespace Lean.Hbt.WebApi.Controllers.Identity
 {
@@ -35,7 +31,10 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// </summary>
         /// <param name="deviceExtendService">设备扩展信息服务</param>
         /// <param name="localization">本地化服务</param>
-        public HbtDeviceExtendController(IHbtDeviceExtendService deviceExtendService, IHbtLocalizationService localization) : base(localization)
+        /// <param name="logger">日志服务</param>
+        public HbtDeviceExtendController(IHbtDeviceExtendService deviceExtendService,
+                                    IHbtLocalizationService localization,
+            IHbtLogger logger) : base(localization, logger)
         {
             _deviceExtendService = deviceExtendService;
         }

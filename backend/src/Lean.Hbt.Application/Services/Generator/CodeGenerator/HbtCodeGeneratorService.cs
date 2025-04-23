@@ -2,6 +2,7 @@ using System.IO.Compression;
 using System.Linq.Expressions;
 using Lean.Hbt.Application.Services.Generator.CodeGenerator.Models;
 using Lean.Hbt.Application.Services.Generator.CodeGenerator.Templates;
+using Lean.Hbt.Domain.IServices.Extensions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 

@@ -7,8 +7,6 @@
 // 描述   : 操作日志服务接口
 //===================================================================
 
-using System.Threading.Tasks;
-using Lean.Hbt.Common.Models;
 using Lean.Hbt.Application.Dtos.Audit;
 
 namespace Lean.Hbt.Application.Services.Audit
@@ -42,7 +40,7 @@ namespace Lean.Hbt.Application.Services.Audit
         /// <param name="query">查询条件</param>
         /// <param name="sheetName">工作表名称</param>
         /// <returns>Excel文件字节数组</returns>
-        Task<byte[]> ExportAsync(HbtOperLogQueryDto query, string sheetName);
+        Task<(string fileName, byte[] content)> ExportAsync(HbtOperLogQueryDto query, string sheetName);
 
         /// <summary>
         /// 清空操作日志
@@ -50,4 +48,4 @@ namespace Lean.Hbt.Application.Services.Audit
         /// <returns>是否成功</returns>
         Task<bool> ClearAsync();
     }
-} 
+}

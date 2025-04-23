@@ -80,14 +80,14 @@ namespace Lean.Hbt.Application.Services.Routine
         /// <param name="query">查询条件</param>
         /// <param name="sheetName">工作表名称</param>
         /// <returns>Excel文件字节数组</returns>
-        Task<byte[]> ExportAsync(HbtFileQueryDto query, string sheetName = "文件信息");
+        Task<(string fileName, byte[] content)> ExportAsync(HbtFileQueryDto query, string sheetName = "文件信息");
 
         /// <summary>
         /// 获取导入模板
         /// </summary>
         /// <param name="sheetName">工作表名称</param>
         /// <returns>Excel文件字节数组</returns>
-        Task<byte[]> GetTemplateAsync(string sheetName = "文件信息");
+        Task<(string fileName, byte[] content)> GetTemplateAsync(string sheetName = "文件信息");
 
         /// <summary>
         /// 上传文件

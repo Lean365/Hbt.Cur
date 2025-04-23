@@ -10,7 +10,7 @@
 using System.Linq.Expressions;
 using Lean.Hbt.Common.Exceptions;
 using Lean.Hbt.Domain.Repositories;
-using Lean.Hbt.Domain.IServices.Admin;
+using Lean.Hbt.Domain.IServices.Extensions;
 using SqlSugar;
 
 namespace Lean.Hbt.Domain.Utils

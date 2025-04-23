@@ -9,8 +9,7 @@
 
 using Lean.Hbt.Application.Dtos.Identity;
 using Lean.Hbt.Application.Services.Identity;
-using Lean.Hbt.Domain.IServices.Admin;
-using Lean.Hbt.Infrastructure.Security.Attributes;
+
 namespace Lean.Hbt.WebApi.Controllers.Identity
 {
     /// <summary>
@@ -32,8 +31,10 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// </summary>
         /// <param name="userService">用户服务</param>
         /// <param name="localization">本地化服务</param>
-        public HbtUserController(IHbtUserService userService, IHbtLocalizationService localization)
-            : base(localization)
+        /// <param name="logger">日志服务</param>
+        public HbtUserController(IHbtUserService userService,
+            IHbtLocalizationService localization,
+            IHbtLogger logger) : base(localization, logger)
         {
             _userService = userService;
         }
@@ -138,7 +139,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         public async Task<IActionResult> ExportAsync([FromQuery] HbtUserQueryDto query)
         {
             var result = await _userService.ExportAsync(query, "Sheet1");
-            return File(result, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "用户数据.xlsx");
+            return File(result.content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", result.fileName);
         }
 
         /// <summary>
@@ -149,7 +150,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         public async Task<IActionResult> GetTemplateAsync()
         {
             var result = await _userService.GetTemplateAsync("Sheet1");
-            return File(result, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "用户导入模板.xlsx");
+            return File(result.content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", result.fileName);
         }
 
         /// <summary>

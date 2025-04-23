@@ -1,168 +1,158 @@
+//===================================================================
+// 项目名 : Lean.Hbt
+// 文件名 : index.vue
+// 创建者 : Claude
+// 创建时间: 2024-03-20
+// 版本号 : v1.0.0
+// 描述    : 语言管理页面
+//===================================================================
+
 <template>
-  <div class="p-6">
-    <a-card>
-      <!-- 搜索表单 -->
-      <a-form layout="inline" :model="queryParams">
-        <a-form-item label="语言代码">
-          <a-input v-model:value="queryParams.langCode" placeholder="请输入语言代码" allowClear />
-        </a-form-item>
-        <a-form-item label="语言名称">
-          <a-input v-model:value="queryParams.langName" placeholder="请输入语言名称" allowClear />
-        </a-form-item>
-        <a-form-item label="状态">
-          <a-select v-model:value="queryParams.status" placeholder="请选择" allowClear>
-            <a-select-option :value="0">正常</a-select-option>
-            <a-select-option :value="1">停用</a-select-option>
-          </a-select>
-        </a-form-item>
-        <a-form-item>
-          <a-space>
-            <a-button type="primary" @click="handleSearch" v-hasPermi="['admin:lang:list']">查询</a-button>
-            <a-button @click="handleReset">重置</a-button>
-          </a-space>
-        </a-form-item>
-      </a-form>
+  <div class="language-container">
+    <!-- 查询区域 -->
+    <hbt-query-form
+      :loading="loading"
+      :fields="queryFields"
+      v-model:queryParams="queryParams"
+      @search="handleSearch"
+      @reset="handleReset"
+    />
 
-      <!-- 工具栏 -->
-      <div class="mb-4 flex justify-between">
-        <div>
-          <a-space>
-            <a-button type="primary" @click="handleAdd" v-hasPermi="['admin:lang:create']">
-              <plus-outlined />新增
-            </a-button>
-            <a-button 
-              :disabled="!selectedRowKeys.length"
-              @click="handleBatchDelete"
-              v-hasPermi="['admin:lang:delete']"
-            >
-              <delete-outlined />批量删除
-            </a-button>
-            <a-upload
-              name="file"
-              :show-upload-list="false"
-              :before-upload="handleImport"
-              v-hasPermi="['admin:lang:import']"
-            >
-              <a-button>
-                <upload-outlined />导入
-              </a-button>
-            </a-upload>
-            <a-button @click="handleExport" v-hasPermi="['admin:lang:export']">
-              <download-outlined />导出
-            </a-button>
-            <a-button @click="handleTemplate" v-hasPermi="['admin:lang:query']">
-              <file-outlined />模板
-            </a-button>
-          </a-space>
-        </div>
-        <div>
-          <a-button @click="handleRefresh">
-            <reload-outlined />刷新
-          </a-button>
-        </div>
-      </div>
+    <!-- 工具栏 -->
+    <hbt-toolbar
+      :show-add="true"
+      :add-permission="['admin:language:create']"
+      :show-edit="true"
+      :edit-permission="['admin:language:update']"
+      :show-delete="true"
+      :delete-permission="['admin:language:delete']"
+      :disabled-edit="selectedRowKeys.length !== 1"
+      :disabled-delete="selectedRowKeys.length === 0"
+      @add="handleAdd"
+      @edit="handleEditSelected"
+      @delete="handleBatchDelete"
+      @refresh="fetchData"
+    />
 
-      <!-- 语言表格 -->
-      <a-table
-        :loading="loading"
-        :columns="columns"
-        :data-source="languageList"
-        :pagination="false"
-        :row-selection="{
-          selectedRowKeys: selectedRowKeys,
-          onChange: onSelectChange
-        }"
-        row-key="id"
-      >
-        <template #bodyCell="{ column, record }">
-          <template v-if="column.key === 'isDefault'">
-            {{ record.isDefault ? '是' : '否' }}
-          </template>
-          <template v-else-if="column.key === 'status'">
-            <span v-hasPermi="['admin:lang:update']">
-              <a-switch
-                :checked="(record as HbtLanguage).status === 0"
-                :loading="(record as HbtLanguage).statusLoading"
-                @change="(checked: string | number | boolean) => handleStatusChange(record as HbtLanguage, Boolean(checked))"
-              />
-            </span>
-          </template>
-          <template v-else-if="column.key === 'action'">
-            <a-space>
-              <a-button type="link" @click="handleEdit(record as HbtLanguage)" v-hasPermi="['admin:lang:update']">编辑</a-button>
-              <a-button 
-                type="link" 
-                danger
-                v-hasPermi="['admin:lang:delete']"
-              >
-                <a-popconfirm
-                  title="确定要删除吗？"
-                  @confirm="handleDelete(record as HbtLanguage)"
-                >
-                  <template #default>
-                    <span>删除</span>
-                  </template>
-                </a-popconfirm>
-              </a-button>
-            </a-space>
-          </template>
+    <!-- 数据表格 -->
+    <hbt-table
+      :loading="loading"
+      :data-source="tableData"
+      :columns="columns"
+      :pagination="false"
+      :scroll="{ x: 'max-content' }"
+      :row-key="(record: HbtLanguage) => String(record.languageId)"
+      v-model:selectedRowKeys="selectedRowKeys"
+      :row-selection="{
+        type: 'checkbox',
+        columnWidth: 60
+      }"
+    >
+      <!-- 状态列 -->
+      <template #bodyCell="{ column, record }">
+        <template v-if="column.dataIndex === 'status'">
+          <hbt-dict-tag dict-type="sys_normal_disable" :value="record.status" />
         </template>
-      </a-table>
 
-      <!-- 分页组件 -->
-      <hbt-pagination
-        v-model:current="queryParams.pageNum"
-        v-model:pageSize="queryParams.pageSize"
-        :total="total"
-        @change="handlePageChange"
-      />
+        <!-- 是否默认列 -->
+        <template v-if="column.dataIndex === 'isDefault'">
+          <hbt-dict-tag dict-type="sys_yes_no" :value="record.isDefault ? 1 : 0" />
+        </template>
 
-      <!-- 语言表单 -->
-      <language-form
-        v-model:visible="modalVisible"
-        :title="modalTitle"
-        :record="currentRecord"
-        @submit="handleSubmit"
-      />
-    </a-card>
+        <!-- 操作列 -->
+        <template v-if="column.key === 'action'">
+          <hbt-operation
+            :record="record"
+            :show-view="true"
+            :view-permission="['admin:language:query']"
+            :show-edit="true"
+            :edit-permission="['admin:language:update']"
+            :show-delete="true"
+            :delete-permission="['admin:language:delete']"
+            size="small"
+            @view="handleView"
+            @edit="handleEdit"
+            @delete="handleDelete"
+          />
+          <a-button
+            type="link"
+            size="small"
+            @click="handleTranslation(record)"
+          >
+            {{ t('admin.language.translation') }}
+          </a-button>
+        </template>
+      </template>
+    </hbt-table>
+
+    <!-- 分页组件 -->
+    <hbt-pagination
+      v-model:current="queryParams.pageIndex"
+      v-model:pageSize="queryParams.pageSize"
+      :total="total"
+      :show-size-changer="true"
+      :show-quick-jumper="true"
+      :show-total="(total: number, range: [number, number]) => h('span', null, `共 ${total} 条`)"
+      @change="handlePageChange"
+      @showSizeChange="handleSizeChange"
+    />
+
+    <!-- 语言表单对话框 -->
+    <language-form
+      v-model:visible="formVisible"
+      :title="formTitle"
+      :language-id="selectedLanguageId"
+      @success="handleSuccess"
+    />
+
+    <!-- 语言详情对话框 -->
+    <language-detail
+      v-model:dialog-visible="detailVisible"
+      :language-id="selectedLanguageId!"
+    />
+
+    <!-- 翻译管理对话框 -->
+    <translation
+      v-if="selectedLanguage"
+      v-model:visible="translationVisible"
+      :lang-code="selectedLanguage.langCode"
+    />
   </div>
 </template>
 
-<script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
+<script lang="ts" setup>
+import { ref, reactive, onMounted, h } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { message } from 'ant-design-vue'
-import type { ColumnType } from 'ant-design-vue/es/table'
-import { 
-  PlusOutlined, 
-  DeleteOutlined,
-  UploadOutlined,
-  DownloadOutlined,
-  FileOutlined,
-  ReloadOutlined 
-} from '@ant-design/icons-vue'
+import type { HbtLanguage, HbtLanguageQuery } from '@/types/admin/language'
 import {
   getHbtLanguageList,
   getHbtLanguage,
   createHbtLanguage,
   updateHbtLanguage,
   deleteHbtLanguage,
-  batchDeleteHbtLanguage,
-  importHbtLanguage,
-  exportHbtLanguage,
-  getHbtLanguageTemplate,
-  updateHbtLanguageStatus
-} from '@/api/admin/hbtLanguage'
-import type {
-  HbtLanguage,
-  HbtLanguageQuery,
-  HbtLanguageCreate,
-  HbtLanguageUpdate
-} from '@/types/admin/language'
+  batchDeleteHbtLanguage
+} from '@/api/admin/language'
 import LanguageForm from './components/LanguageForm.vue'
+import LanguageDetail from './components/LanguageDetail.vue'
+import Translation from './components/Translation.vue'
 
+const { t } = useI18n()
 
-// 查询参数
-const queryParams = reactive<HbtLanguageQuery>({
+// === 状态定义 ===
+const loading = ref(false)
+const tableData = ref<HbtLanguage[]>([])
+const selectedRowKeys = ref<string[]>([])
+const selectedLanguageId = ref<number>()
+const selectedLanguage = ref<HbtLanguage>()
+const formVisible = ref(false)
+const formTitle = ref('')
+const detailVisible = ref(false)
+const translationVisible = ref(false)
+const total = ref(0)
+
+// === 查询参数 ===
+const queryParams = ref<HbtLanguageQuery>({
   pageIndex: 1,
   pageSize: 10,
   langCode: '',
@@ -170,283 +160,241 @@ const queryParams = reactive<HbtLanguageQuery>({
   status: undefined
 })
 
-// 状态定义
-const loading = ref(false)
-const languageList = ref<HbtLanguage[]>([])
-const selectedRowKeys = ref<(string | number)[]>([])
-const modalVisible = ref(false)
-const modalTitle = ref('新增语言')
-const currentRecord = ref<HbtLanguage>()
-const total = ref(0)
-
-// 表格列定义
-const columns: ColumnType<HbtLanguage>[] = [
+// === 查询字段定义 ===
+const queryFields = [
   {
-    title: '语言代码',
+    label: t('admin.language.langCode'),
+    name: 'langCode',
+    component: 'Input',
+    componentProps: {
+      placeholder: t('admin.language.langCodePlaceholder')
+    }
+  },
+  {
+    label: t('admin.language.langName'),
+    name: 'langName',
+    component: 'Input',
+    componentProps: {
+      placeholder: t('admin.language.langNamePlaceholder')
+    }
+  },
+  {
+    label: t('admin.language.status'),
+    name: 'status',
+    component: 'Select',
+    componentProps: {
+      placeholder: t('admin.language.statusPlaceholder'),
+      options: [
+        { label: t('common.status.normal'), value: 0 },
+        { label: t('common.status.disable'), value: 1 }
+      ]
+    }
+  }
+]
+
+// === 表格列定义 ===
+const columns = [
+  {
+    title: t('admin.language.langCode'),
     dataIndex: 'langCode',
     key: 'langCode',
     width: 150
   },
   {
-    title: '语言名称',
+    title: t('admin.language.langName'),
     dataIndex: 'langName',
     key: 'langName',
     width: 150
   },
   {
-    title: '排序号',
-    dataIndex: 'orderNum',
-    key: 'orderNum',
+    title: t('admin.language.langIcon'),
+    dataIndex: 'langIcon',
+    key: 'langIcon',
     width: 100
   },
   {
-    title: '是否默认',
+    title: t('admin.language.orderNum'),
+    dataIndex: 'orderNum',
+    key: 'orderNum',
+    width: 100,
+    sorter: true
+  },
+  {
+    title: t('admin.language.isDefault'),
     dataIndex: 'isDefault',
     key: 'isDefault',
     width: 100
   },
   {
-    title: '状态',
+    title: t('admin.language.status'),
     dataIndex: 'status',
     key: 'status',
     width: 100
   },
   {
-    title: '备注',
+    title: t('admin.language.remark'),
     dataIndex: 'remark',
     key: 'remark',
+    width: 200,
     ellipsis: true
   },
   {
-    title: '创建时间',
+    title: t('common.createTime'),
     dataIndex: 'createTime',
     key: 'createTime',
-    width: 180
+    width: 180,
+    sorter: true
   },
   {
-    title: '操作',
+    title: t('common.table.header.operation'),
     key: 'action',
-    width: 150,
-    fixed: 'right' as const
+    width: 180,
+    fixed: 'right'
   }
 ]
 
-// 加载语言列表
-const loadLanguageList = async () => {
-  loading.value = true
+// === 方法定义 ===
+// 获取数据
+const fetchData = async () => {
   try {
-    const { data } = await getHbtLanguageList({
-      ...queryParams,
-      pageIndex: queryParams.pageNum,
-      pageSize: queryParams.pageSize
-    })
-    if (data?.code === 200) {
-      languageList.value = data.data.rows
-      total.value = data.data.totalNum
+    loading.value = true
+    const res = await getHbtLanguageList(queryParams.value)
+    if (res.code === 200) {
+      tableData.value = res.data.rows
+      total.value = res.data.totalNum
     } else {
-      message.error(data?.msg || '加载语言列表失败')
-      languageList.value = []
-      total.value = 0
+      message.error(res.msg || t('common.failed'))
     }
   } catch (error) {
     console.error('加载语言列表失败:', error)
-    message.error('加载语言列表失败')
-    languageList.value = []
-    total.value = 0
+    message.error(t('common.failed'))
   } finally {
     loading.value = false
   }
 }
 
-// 页码变化处理
-const handlePageChange = (page: number, size: number) => {
-  queryParams.pageNum = page
-  queryParams.pageSize = size
-  loadLanguageList()
-}
-
-// 选择变化处理
-const onSelectChange = (keys: (string | number)[]) => {
-  selectedRowKeys.value = keys
-}
-
-// 搜索处理
+// 查询
 const handleSearch = () => {
-  queryParams.pageNum = 1
-  loadLanguageList()
+  queryParams.value.pageIndex = 1
+  fetchData()
 }
 
-// 重置处理
+// 重置
 const handleReset = () => {
-  queryParams.langCode = ''
-  queryParams.langName = ''
-  queryParams.status = undefined
-  queryParams.pageNum = 1
-  loadLanguageList()
+  queryParams.value = {
+    pageIndex: 1,
+    pageSize: 10,
+    langCode: '',
+    langName: '',
+    status: undefined
+  }
+  fetchData()
 }
 
-// 刷新处理
-const handleRefresh = () => {
-  loadLanguageList()
-}
-
-// 新增处理
+// 新增
 const handleAdd = () => {
-  modalTitle.value = '新增语言'
-  currentRecord.value = undefined
-  modalVisible.value = true
+  selectedLanguageId.value = undefined
+  formTitle.value = t('common.title.create')
+  formVisible.value = true
 }
 
-// 编辑处理
-const handleEdit = async (record: HbtLanguage) => {
-  try {
-    const { data } = await getHbtLanguage(record.id)
-    if (data?.code === 200) {
-      modalTitle.value = '编辑语言'
-      currentRecord.value = data.data
-      modalVisible.value = true
-    } else {
-      message.error(data?.msg || '获取语言详情失败')
-    }
-  } catch (error) {
-    console.error('获取语言详情失败:', error)
-    message.error('获取语言详情失败')
+// 编辑选中
+const handleEditSelected = () => {
+  if (selectedRowKeys.value.length !== 1) {
+    message.warning(t('common.message.selectOneRecord'))
+    return
+  }
+  const record = tableData.value.find(item => String(item.languageId) === selectedRowKeys.value[0])
+  if (record) {
+    handleEdit(record)
   }
 }
 
-// 删除处理
+// 编辑
+const handleEdit = (record: HbtLanguage) => {
+  selectedLanguageId.value = record.languageId
+  formTitle.value = t('common.title.edit')
+  formVisible.value = true
+}
+
+// 查看
+const handleView = (record: HbtLanguage) => {
+  selectedLanguageId.value = record.languageId
+  detailVisible.value = true
+}
+
+// 删除
 const handleDelete = async (record: HbtLanguage) => {
   try {
-    const { data } = await deleteHbtLanguage(record.id)
-    if (data?.code === 200) {
-      message.success('删除成功')
-      loadLanguageList()
+    const res = await deleteHbtLanguage(record.languageId)
+    if (res.code === 200) {
+      message.success(t('common.message.deleteSuccess'))
+      fetchData()
     } else {
-      message.error(data?.msg || '删除失败')
+      message.error(res.msg || t('common.message.deleteFailed'))
     }
   } catch (error) {
     console.error('删除失败:', error)
-    message.error('删除失败')
+    message.error(t('common.message.deleteFailed'))
   }
 }
 
-// 批量删除处理
+// 批量删除
 const handleBatchDelete = async () => {
+  if (selectedRowKeys.value.length === 0) {
+    message.warning(t('common.message.selectRecord'))
+    return
+  }
   try {
-    const { data } = await batchDeleteHbtLanguage(selectedRowKeys.value.map(Number))
-    if (data?.code === 200) {
-      message.success('批量删除成功')
+    const res = await batchDeleteHbtLanguage(selectedRowKeys.value.map(key => Number(key)))
+    if (res.code === 200) {
+      message.success(t('common.message.deleteSuccess'))
       selectedRowKeys.value = []
-      loadLanguageList()
+      fetchData()
     } else {
-      message.error(data?.msg || '批量删除失败')
+      message.error(res.msg || t('common.message.deleteFailed'))
     }
   } catch (error) {
     console.error('批量删除失败:', error)
-    message.error('批量删除失败')
+    message.error(t('common.message.deleteFailed'))
   }
 }
 
-// 导入处理
-const handleImport = async (file: File) => {
-  try {
-    const { data } = await importHbtLanguage(file)
-    if (data?.code === 200) {
-      message.success('导入成功')
-      loadLanguageList()
-    } else {
-      message.error(data?.msg || '导入失败')
-    }
-  } catch (error) {
-    console.error('导入失败:', error)
-    message.error('导入失败')
-  }
-  return false
+// 翻译管理
+const handleTranslation = (record: HbtLanguage) => {
+  selectedLanguage.value = record
+  translationVisible.value = true
 }
 
-// 导出处理
-const handleExport = async () => {
-  try {
-    const { data } = await exportHbtLanguage(queryParams)
-    const url = window.URL.createObjectURL(new Blob([data]))
-    const link = document.createElement('a')
-    link.href = url
-    link.download = '语言数据.xlsx'
-    link.click()
-    window.URL.revokeObjectURL(url)
-  } catch (error) {
-    console.error('导出失败:', error)
-    message.error('导出失败')
-  }
+// 页码变化
+const handlePageChange = (page: number) => {
+  queryParams.value.pageIndex = page
+  fetchData()
 }
 
-// 下载模板
-const handleTemplate = async () => {
-  try {
-    const { data } = await getHbtLanguageTemplate()
-    const url = window.URL.createObjectURL(new Blob([data]))
-    const link = document.createElement('a')
-    link.href = url
-    link.download = '语言导入模板.xlsx'
-    link.click()
-    window.URL.revokeObjectURL(url)
-  } catch (error) {
-    console.error('下载模板失败:', error)
-    message.error('下载模板失败')
-  }
+// 每页条数变化
+const handleSizeChange = (current: number, size: number) => {
+  queryParams.value.pageIndex = current
+  queryParams.value.pageSize = size
+  fetchData()
 }
 
-// 状态变更处理
-const handleStatusChange = async (record: HbtLanguage, checked: boolean) => {
-  try {
-    record.statusLoading = true
-    const { data } = await updateHbtLanguageStatus(record.id, checked ? 0 : 1)
-    if (data?.code === 200) {
-      message.success('状态更新成功')
-      record.status = checked ? 0 : 1
-    } else {
-      message.error(data?.msg || '状态更新失败')
-    }
-  } catch (error) {
-    console.error('状态更新失败:', error)
-    message.error('状态更新失败')
-  } finally {
-    record.statusLoading = false
-  }
+// 表单提交成功
+const handleSuccess = () => {
+  formVisible.value = false
+  fetchData()
 }
 
-// 表单提交处理
-const handleSubmit = async (formData: HbtLanguageCreate | HbtLanguageUpdate) => {
-  try {
-    const { data } = await (currentRecord.value
-      ? updateHbtLanguage(formData as HbtLanguageUpdate)
-      : createHbtLanguage(formData as HbtLanguageCreate))
-      
-    if (data?.code === 200) {
-      message.success(`${currentRecord.value ? '更新' : '创建'}成功`)
-      modalVisible.value = false
-      loadLanguageList()
-    } else {
-      message.error(data?.msg || `${currentRecord.value ? '更新' : '创建'}失败`)
-    }
-  } catch (error) {
-    console.error(`${currentRecord.value ? '更新' : '创建'}失败:`, error)
-    message.error(`${currentRecord.value ? '更新' : '创建'}失败`)
-  }
-}
-
-// 组件挂载时加载数据
+// === 生命周期 ===
 onMounted(() => {
-  loadLanguageList()
+  fetchData()
 })
 </script>
 
-<style scoped>
-.ant-form {
-  margin-bottom: 24px;
-}
-
-.ant-table {
-  margin-top: 24px;
+<style lang="less" scoped>
+.language-container {
+  padding: 16px;
+  background-color: #fff;
+  border-radius: 4px;
 }
 </style> 

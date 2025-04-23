@@ -7,21 +7,13 @@
 // 描述    : Swagger操作过滤器
 //===================================================================
 
+using System.Reflection;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.OpenApi.Models;
-using Microsoft.OpenApi.Any;
-using Swashbuckle.AspNetCore.SwaggerGen;
-using System.Reflection;
 using Swashbuckle.AspNetCore.Annotations;
-using System.Linq;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
-using Microsoft.Extensions.Logging;
+using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Lean.Hbt.Infrastructure.Swagger
 {
@@ -30,14 +22,30 @@ namespace Lean.Hbt.Infrastructure.Swagger
     /// </summary>
     public class SwaggerOperationFilter : IOperationFilter
     {
-        private readonly ILogger<SwaggerOperationFilter> _logger;
+        /// <summary>
+        /// 日志服务
+        /// </summary>
+        protected readonly IHbtLogger _logger;
+
         private static readonly HashSet<Type> _processedTypes = new HashSet<Type>();
 
-        public SwaggerOperationFilter(ILogger<SwaggerOperationFilter> logger)
+        /// <summary>
+        /// 构造函数
+        /// </summary>
+        /// <param name="logger"></param>
+        public SwaggerOperationFilter(
+            IHbtLogger logger
+
+            )
         {
             _logger = logger;
         }
 
+        /// <summary>
+        /// 操作过滤器
+        /// </summary>
+        /// <param name="operation"></param>
+        /// <param name="context"></param>
         public void Apply(OpenApiOperation operation, OperationFilterContext context)
         {
             try
@@ -113,10 +121,15 @@ namespace Lean.Hbt.Infrastructure.Swagger
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "处理 Swagger 操作过滤器时发生错误");
+                _logger.Error("处理 Swagger 操作过滤器时发生错误");
             }
         }
 
+        /// <summary>
+        /// 处理操作属性
+        /// </summary>
+        /// <param name="operation"></param>
+        /// <param name="context"></param>
         private void HandleOperationAttributes(OpenApiOperation operation, OperationFilterContext context)
         {
             var attribute = context.MethodInfo.GetCustomAttribute<SwaggerOperationAttribute>();
@@ -124,12 +137,17 @@ namespace Lean.Hbt.Infrastructure.Swagger
             {
                 if (!string.IsNullOrEmpty(attribute.Summary))
                     operation.Summary = attribute.Summary;
-                
+
                 if (!string.IsNullOrEmpty(attribute.Description))
                     operation.Description = attribute.Description;
             }
         }
 
+        /// <summary>
+        /// 获取参数描述
+        /// </summary>
+        /// <param name="parameter"></param>
+        /// <returns></returns>
         private string GetParameterDescription(ApiParameterDescription parameter)
         {
             if (parameter.ModelMetadata?.Description != null)
@@ -139,10 +157,15 @@ namespace Lean.Hbt.Infrastructure.Swagger
             return string.Empty;
         }
 
+        /// <summary>
+        /// 创建示例数据
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
         private string CreateExample(Type type)
         {
             if (type == null) return "null";
-            
+
             if (!_processedTypes.Add(type))
             {
                 return "{}";
@@ -192,4 +215,4 @@ namespace Lean.Hbt.Infrastructure.Swagger
             }
         }
     }
-} 
+}

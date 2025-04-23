@@ -79,14 +79,14 @@ public interface IHbtGenConfigService
     /// <param name="query">查询条件</param>
     /// <param name="sheetName">工作表名称</param>
     /// <returns>Excel文件字节数组</returns>
-    Task<byte[]> ExportConfigsAsync(HbtGenConfigQueryDto query, string sheetName = "Sheet1");
+    Task<(string fileName, byte[] content)> ExportConfigsAsync(HbtGenConfigQueryDto query, string sheetName = "Sheet1");
 
     /// <summary>
     /// 获取配置模板
     /// </summary>
     /// <param name="sheetName">工作表名称</param>
     /// <returns>Excel模板文件字节数组</returns>
-    Task<byte[]> GetTemplateAsync(string sheetName = "Sheet1");
+    Task<(string fileName, byte[] content)> GetTemplateAsync(string sheetName = "Sheet1");
 
     #endregion 配置操作
 }

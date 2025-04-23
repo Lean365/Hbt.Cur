@@ -7,20 +7,11 @@
 // 描述   : 操作日志服务实现
 //===================================================================
 
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Collections.Generic;
 using System.Linq.Expressions;
-using Lean.Hbt.Common.Models;
-using Lean.Hbt.Domain.Entities.Audit;
 using Lean.Hbt.Application.Dtos.Audit;
-using Lean.Hbt.Common.Exceptions;
-using Lean.Hbt.Common.Helpers;
-using Lean.Hbt.Domain.Repositories;
-using SqlSugar;
-using Mapster;
+using Lean.Hbt.Domain.Entities.Audit;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Http;
 
 namespace Lean.Hbt.Application.Services.Audit
 {
@@ -31,22 +22,37 @@ namespace Lean.Hbt.Application.Services.Audit
     /// 创建者: Lean365
     /// 创建时间: 2024-01-20
     /// </remarks>
-    public class HbtOperLogService : IHbtOperLogService
+    public class HbtOperLogService : HbtBaseService, IHbtOperLogService
     {
-        private readonly ILogger<HbtOperLogService> _logger;
         private readonly IHbtRepository<HbtOperLog> _operLogRepository;
+        private readonly IHbtLogger _logger;
 
         /// <summary>
         /// 构造函数
         /// </summary>
-        /// <param name="logger">日志记录器</param>
-        /// <param name="operLogRepository">操作日志仓储</param>
         public HbtOperLogService(
-            ILogger<HbtOperLogService> logger,
-            IHbtRepository<HbtOperLog> operLogRepository)
+            IHbtRepository<HbtOperLog> operLogRepository,
+            IHbtLogger logger,
+            IHttpContextAccessor httpContextAccessor) : base(logger, httpContextAccessor)
         {
+            _operLogRepository = operLogRepository ?? throw new ArgumentNullException(nameof(operLogRepository));
             _logger = logger;
-            _operLogRepository = operLogRepository;
+        }
+
+        /// <summary>
+        /// 构建查询条件
+        /// </summary>
+        private Expression<Func<HbtOperLog, bool>> KpOperLogQueryExpression(HbtOperLogQueryDto query)
+        {
+            return Expressionable.Create<HbtOperLog>()
+                .AndIF(!string.IsNullOrEmpty(query.UserName), x => x.UserName.Contains(query.UserName!))
+                .AndIF(!string.IsNullOrEmpty(query.OperationType), x => x.OperationType.Contains(query.OperationType!))
+                .AndIF(!string.IsNullOrEmpty(query.TableName), x => x.TableName.Contains(query.TableName!))
+                .AndIF(!string.IsNullOrEmpty(query.IpAddress), x => x.IpAddress.Contains(query.IpAddress!))
+                .AndIF(query.Status.HasValue, x => x.Status == query.Status.Value)
+                .AndIF(query.StartTime.HasValue, x => x.CreateTime >= query.StartTime.Value)
+                .AndIF(query.EndTime.HasValue, x => x.CreateTime <= query.EndTime.Value)
+                .ToExpression();
         }
 
         /// <summary>
@@ -54,45 +60,23 @@ namespace Lean.Hbt.Application.Services.Audit
         /// </summary>
         /// <param name="query">查询条件</param>
         /// <returns>返回分页结果</returns>
-        public async Task<HbtPagedResult<HbtOperLogDto>> GetListAsync(HbtOperLogQueryDto query)
+        public async Task<HbtPagedResult<HbtOperLogDto>> GetListAsync(HbtOperLogQueryDto? query)
         {
-            var exp = Expressionable.Create<HbtOperLog>();
+            query ??= new HbtOperLogQueryDto();
 
-            if (!string.IsNullOrEmpty(query.UserName))
-                exp.And(x => x.UserName.Contains(query.UserName));
-
-            if (!string.IsNullOrEmpty(query.OperationType))
-                exp.And(x => x.OperationType.Contains(query.OperationType));
-
-            if (!string.IsNullOrEmpty(query.TableName))
-                exp.And(x => x.TableName.Contains(query.TableName));
-
-            if (!string.IsNullOrEmpty(query.IpAddress))
-                exp.And(x => x.IpAddress.Contains(query.IpAddress));
-
-            if (query.Status.HasValue)
-                exp.And(x => x.Status == query.Status.Value);
-
-            if (query.StartTime.HasValue)
-                exp.And(x => x.CreateTime >= query.StartTime.Value);
-
-            if (query.EndTime.HasValue)
-                exp.And(x => x.CreateTime <= query.EndTime.Value);
-            // 执行分页查询
             var result = await _operLogRepository.GetPagedListAsync(
-                exp.ToExpression(),
+                KpOperLogQueryExpression(query),
                 query.PageIndex,
                 query.PageSize,
                 x => x.CreateTime,
                 OrderByType.Desc);
 
-            // 返回分页结果
             return new HbtPagedResult<HbtOperLogDto>
             {
-                Rows = result.Rows.Adapt<List<HbtOperLogDto>>(),
                 TotalNum = result.TotalNum,
-                PageIndex = result.PageIndex,
-                PageSize = result.PageSize
+                PageIndex = query.PageIndex,
+                PageSize = query.PageSize,
+                Rows = result.Rows.Adapt<List<HbtOperLogDto>>()
             };
         }
 
@@ -104,60 +88,26 @@ namespace Lean.Hbt.Application.Services.Audit
         public async Task<HbtOperLogDto> GetByIdAsync(long logId)
         {
             var log = await _operLogRepository.GetByIdAsync(logId);
-            if (log == null)
-                throw new HbtException($"操作日志不存在: {logId}");
-
-            return log.Adapt<HbtOperLogDto>();
+            return log == null ? throw new HbtException(L("Audit.OperLog.NotFound", logId)) : log.Adapt<HbtOperLogDto>();
         }
 
         /// <summary>
         /// 导出操作日志数据
         /// </summary>
         /// <param name="query">查询条件</param>
-        /// <param name="sheetName">工作表名称</param>
-        /// <returns>Excel文件字节数组</returns>
-        public async Task<byte[]> ExportAsync(HbtOperLogQueryDto query, string sheetName)
+        /// <param name="sheetName">Excel工作表名称</param>
+        /// <returns>返回导出的Excel文件内容</returns>
+        public async Task<(string fileName, byte[] content)> ExportAsync(HbtOperLogQueryDto query, string sheetName = "OperLog")
         {
             try
             {
-                // 1.构建查询条件
-                var predicate = Expressionable.Create<HbtOperLog>();
-
-                if (!string.IsNullOrEmpty(query?.UserName))
-                    predicate.And(x => x.UserName.Contains(query.UserName));
-
-                if (!string.IsNullOrEmpty(query?.OperationType))
-                    predicate.And(x => x.OperationType.Contains(query.OperationType));
-
-                if (!string.IsNullOrEmpty(query?.TableName))
-                    predicate.And(x => x.TableName.Contains(query.TableName));
-
-                if (!string.IsNullOrEmpty(query?.IpAddress))
-                    predicate.And(x => x.IpAddress.Contains(query.IpAddress));
-
-                if (query?.Status.HasValue == true)
-                    predicate.And(x => x.Status == query.Status.Value);
-
-                if (query?.StartTime.HasValue == true)
-                    predicate.And(x => x.CreateTime >= query.StartTime.Value);
-
-                if (query?.EndTime.HasValue == true)
-                    predicate.And(x => x.CreateTime <= query.EndTime.Value);
-
-                // 2.查询数据
-                var logs = await _operLogRepository.AsQueryable()
-                    .Where(predicate.ToExpression())
-                    .OrderByDescending(x => x.CreateTime)
-                    .ToListAsync();
-
-                // 3.转换并导出
-                var dtos = logs.Adapt<List<HbtOperLogDto>>();
-                return await HbtExcelHelper.ExportAsync(dtos, sheetName);
+                var list = await _operLogRepository.GetListAsync(KpOperLogQueryExpression(query));
+                return await HbtExcelHelper.ExportAsync(list.Adapt<List<HbtOperLogExportDto>>(), sheetName, L("Audit.OperLog.ExportTitle"));
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "导出操作日志数据失败");
-                return Array.Empty<byte>();
+                _logger.Error(L("Audit.OperLog.ExportFailed", ex.Message), ex);
+                throw new HbtException(L("Audit.OperLog.ExportFailed"));
             }
         }
 
@@ -167,8 +117,16 @@ namespace Lean.Hbt.Application.Services.Audit
         /// <returns>返回是否清空成功</returns>
         public async Task<bool> ClearAsync()
         {
-            var result = await _operLogRepository.DeleteAsync((Expression<Func<HbtOperLog, bool>>)(x => true));
-            return result > 0;
+            try
+            {
+                var result = await _operLogRepository.DeleteAsync((Expression<Func<HbtOperLog, bool>>)(x => true));
+                return result > 0;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(L("Audit.OperLog.ClearFailed", ex.Message), ex);
+                throw new HbtException(L("Audit.OperLog.ClearFailed"));
+            }
         }
     }
-} 
+}

@@ -7,11 +7,9 @@
 // 描述   : 登录日志控制器
 //===================================================================
 
+using System.ComponentModel;
 using Lean.Hbt.Application.Dtos.Audit;
 using Lean.Hbt.Application.Services.Audit;
-using Lean.Hbt.Domain.IServices.Admin;
-using System.ComponentModel;
-using Lean.Hbt.Infrastructure.Security.Attributes;
 
 namespace Lean.Hbt.WebApi.Controllers.Audit
 {
@@ -34,7 +32,10 @@ namespace Lean.Hbt.WebApi.Controllers.Audit
         /// </summary>
         /// <param name="loginLogService">登录日志服务</param>
         /// <param name="localization">本地化服务</param>
-        public HbtLoginLogController(IHbtLoginLogService loginLogService, IHbtLocalizationService localization) : base(localization)
+        /// <param name="logger">日志服务</param>
+        public HbtLoginLogController(IHbtLoginLogService loginLogService,
+                        IHbtLocalizationService localization,
+            IHbtLogger logger) : base(localization, logger)
         {
             _loginLogService = loginLogService;
         }
@@ -76,8 +77,8 @@ namespace Lean.Hbt.WebApi.Controllers.Audit
         [HbtPerm("audit:auditloginlog:export")]
         public async Task<IActionResult> ExportAsync([FromQuery] HbtLoginLogQueryDto query, [FromQuery] string sheetName = "登录日志")
         {
-            var result = await _loginLogService.ExportAsync(query, sheetName);
-            return File(result, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"登录日志_{DateTime.Now:yyyyMMddHHmmss}.xlsx");
+            var (_, content) = await _loginLogService.ExportAsync(query, sheetName);
+            return File(content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"登录日志_{DateTime.Now:yyyyMMddHHmmss}.xlsx");
         }
 
         /// <summary>

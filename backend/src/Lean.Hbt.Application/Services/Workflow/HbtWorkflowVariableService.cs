@@ -13,7 +13,8 @@ using Lean.Hbt.Application.Dtos.Workflow;
 using Lean.Hbt.Common.Exceptions;
 using Lean.Hbt.Common.Helpers;
 using Lean.Hbt.Domain.Entities.Workflow;
-using Lean.Hbt.Domain.IServices.Admin;
+using Lean.Hbt.Domain.IServices.Extensions;
+using Lean.Hbt.Domain.IServices.Extensions;
 using Lean.Hbt.Domain.Repositories;
 using Lean.Hbt.Domain.Utils;
 using SqlSugar;
@@ -235,11 +236,8 @@ namespace Lean.Hbt.Application.Services.Workflow
         /// <summary>
         /// 导出工作流变量(单个Sheet)
         /// </summary>
-        public async Task<byte[]> ExportAsync(IEnumerable<HbtWorkflowVariableDto> data, string sheetName = "Sheet1")
+        public async Task<(string fileName, byte[] content)> ExportAsync(IEnumerable<HbtWorkflowVariableDto> data, string sheetName = "Sheet1")
         {
-            if (data == null)
-                throw new ArgumentNullException(nameof(data));
-
             var exportData = data.Adapt<List<HbtWorkflowVariableExportDto>>();
             return await HbtExcelHelper.ExportAsync(exportData, sheetName);
         }
@@ -266,18 +264,22 @@ namespace Lean.Hbt.Application.Services.Workflow
         /// <summary>
         /// 导出工作流变量(多个Sheet)
         /// </summary>
-        public async Task<byte[]> ExportMultiSheetAsync(Dictionary<string, IEnumerable<HbtWorkflowVariableDto>> sheets)
+        public async Task<(string fileName, byte[] content)> ExportMultiSheetAsync(Dictionary<string, IEnumerable<HbtWorkflowVariableDto>> sheets)
         {
-            if (sheets == null)
-                throw new ArgumentNullException(nameof(sheets));
-
-            var exportSheets = new Dictionary<string, IEnumerable<HbtWorkflowVariableExportDto>>();
-            foreach (var sheet in sheets)
+            try
             {
-                exportSheets[sheet.Key] = sheet.Value.Adapt<List<HbtWorkflowVariableExportDto>>();
+                var exportSheets = new Dictionary<string, IEnumerable<HbtWorkflowVariableExportDto>>();
+                foreach (var sheet in sheets)
+                {
+                    exportSheets[sheet.Key] = sheet.Value.Adapt<List<HbtWorkflowVariableExportDto>>();
+                }
+                return await HbtExcelHelper.ExportMultiSheetAsync(exportSheets);
             }
-
-            return await HbtExcelHelper.ExportMultiSheetAsync(exportSheets);
+            catch (Exception ex)
+            {
+                _logger.Error(_localization.L("WorkflowVariable.Export.Failed"), ex);
+                throw new HbtException(_localization.L("WorkflowVariable.Export.Failed"), ex);
+            }
         }
 
         /// <summary>
@@ -305,14 +307,13 @@ namespace Lean.Hbt.Application.Services.Workflow
         }
 
         /// <summary>
-        /// 获取工作流变量导入模板
+        /// 获取导入模板
         /// </summary>
         /// <param name="sheetName">工作表名称</param>
-        /// <returns>Excel模板文件字节数组</returns>
-        public async Task<byte[]> GetTemplateAsync(string sheetName = "Sheet1")
+        /// <returns>Excel模板文件</returns>
+        public async Task<(string fileName, byte[] content)> GetTemplateAsync(string sheetName = "Sheet1")
         {
-            var template = new List<HbtWorkflowVariableExportDto>();
-            return await HbtExcelHelper.ExportAsync(template, sheetName);
+            return await HbtExcelHelper.GenerateTemplateAsync<HbtWorkflowVariableImportDto>(sheetName);
         }
 
         /// <summary>

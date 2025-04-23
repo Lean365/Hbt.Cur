@@ -5,7 +5,8 @@ import type {
   Tenant,
   TenantCreate,
   TenantUpdate,
-  TenantStatus
+  TenantStatus,
+  TenantOption
 } from '@/types/identity/tenant'
 
 /**
@@ -135,8 +136,8 @@ export function getCurrentTenant() {
 /**
  * 获取租户选项列表
  */
-export const getTenantOptions = () => {
-  return request({
+export function getTenantOptions() {
+  return request<HbtApiResponse<TenantOption[]>>({
     url: '/api/HbtTenant/options',
     method: 'get'
   })

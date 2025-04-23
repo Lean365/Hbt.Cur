@@ -8,11 +8,11 @@
 //===================================================================
 
 <template>
-  <a-modal
-    :open="visible"
+  <hbt-modal
     :title="title"
+    :open="visible"
     :confirm-loading="loading"
-    @ok="handleOk"
+    @ok="handleSubmit"
     @cancel="handleCancel"
   >
     <a-form
@@ -21,136 +21,208 @@
       :rules="rules"
       :label-col="{ span: 6 }"
       :wrapper-col="{ span: 16 }"
+      class="language-form"
     >
-      <a-form-item label="语言代码" name="langCode">
-        <a-input v-model:value="formData.langCode" placeholder="请输入语言代码" />
+      <a-form-item :label="t('admin.language.langCode')" name="langCode">
+        <a-input
+          v-model:value="formData.langCode"
+          :placeholder="t('admin.language.langCodePlaceholder')"
+          :disabled="!!languageId"
+        />
       </a-form-item>
-      <a-form-item label="语言名称" name="langName">
-        <a-input v-model:value="formData.langName" placeholder="请输入语言名称" />
+
+      <a-form-item :label="t('admin.language.langName')" name="langName">
+        <a-input
+          v-model:value="formData.langName"
+          :placeholder="t('admin.language.langNamePlaceholder')"
+        />
       </a-form-item>
-      <a-form-item label="排序号" name="orderNum">
-        <a-input-number v-model:value="formData.orderNum" :min="0" style="width: 100%" />
+
+      <a-form-item :label="t('admin.language.langIcon')" name="langIcon">
+        <a-input
+          v-model:value="formData.langIcon"
+          :placeholder="t('admin.language.langIconPlaceholder')"
+        />
       </a-form-item>
-      <a-form-item label="是否默认" name="isDefault">
-        <a-switch v-model:checked="formData.isDefault" />
+
+      <a-form-item :label="t('admin.language.orderNum')" name="orderNum">
+        <a-input-number
+          v-model:value="formData.orderNum"
+          :min="0"
+          :max="999"
+          :placeholder="t('admin.language.orderNumPlaceholder')"
+          style="width: 100%"
+        />
       </a-form-item>
-      <a-form-item label="状态" name="status">
-        <a-select v-model:value="formData.status" placeholder="请选择">
-          <a-select-option :value="0">正常</a-select-option>
-          <a-select-option :value="1">停用</a-select-option>
-        </a-select>
+
+      <a-form-item :label="t('admin.language.isDefault')" name="isDefault">
+        <a-switch
+          v-model:checked="formData.isDefault"
+          :checked-value="1"
+          :unchecked-value="0"
+        />
       </a-form-item>
-      <a-form-item label="备注" name="remark">
-        <a-textarea v-model:value="formData.remark" placeholder="请输入备注" :rows="4" />
+
+      <a-form-item :label="t('admin.language.status')" name="status">
+        <a-radio-group v-model:value="formData.status">
+          <a-radio :value="0">{{ t('common.status.normal') }}</a-radio>
+          <a-radio :value="1">{{ t('common.status.disable') }}</a-radio>
+        </a-radio-group>
+      </a-form-item>
+
+      <a-form-item :label="t('admin.language.remark')" name="remark">
+        <a-textarea
+          v-model:value="formData.remark"
+          :rows="3"
+          :placeholder="t('admin.language.remarkPlaceholder')"
+        />
       </a-form-item>
     </a-form>
-  </a-modal>
+  </hbt-modal>
 </template>
 
-<script setup lang="ts">
-import { ref, reactive, watch } from 'vue'
-import type { FormInstance, Rule } from 'ant-design-vue/es/form'
-import type { HbtLanguage, HbtLanguageCreate, HbtLanguageUpdate } from '@/types/admin/language'
+<script lang="ts" setup>
+import { ref, reactive, watch, onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { message } from 'ant-design-vue'
+import type { FormInstance } from 'ant-design-vue'
+import type { Rule } from 'ant-design-vue/es/form'
+import type { HbtLanguage } from '@/types/admin/language'
+import { getHbtLanguage, createHbtLanguage, updateHbtLanguage } from '@/api/admin/language'
 
 const props = defineProps<{
   visible: boolean
   title: string
-  record?: HbtLanguage
+  languageId?: number
 }>()
 
 const emit = defineEmits<{
-  (e: 'update:visible', visible: boolean): void
-  (e: 'submit', data: HbtLanguageCreate | HbtLanguageUpdate): void
+  (e: 'update:visible', value: boolean): void
+  (e: 'success'): void
 }>()
 
-// 表单状态
+const { t } = useI18n()
+
+// === 状态定义 ===
 const loading = ref(false)
 const formRef = ref<FormInstance>()
-const formData = reactive<HbtLanguageCreate>({
+
+// === 表单数据 ===
+const formData = reactive<HbtLanguage>({
+  languageId: 0,
   langCode: '',
   langName: '',
+  langIcon: '',
   orderNum: 0,
-  isDefault: false,
+  isDefault: 0,
   status: 0,
-  remark: ''
+  id: 0,
+  createBy: '',
+  createTime: '',
+  isDeleted: 0,
+  remark: '',
+  updateTime: '',
+  updateBy: ''
 })
 
-// 表单校验规则
+// === 表单校验规则 ===
 const rules: Record<string, Rule[]> = {
   langCode: [
-    { required: true, message: '请输入语言代码', trigger: 'blur', type: 'string' },
-    { max: 10, message: '语言代码长度不能超过10个字符', trigger: 'blur', type: 'string' }
+    { required: true, type: 'string', message: t('admin.language.langCodeRequired'), trigger: 'blur' },
+    { type: 'string', min: 2, max: 10, message: t('admin.language.langCodeLength'), trigger: 'blur' }
   ],
   langName: [
-    { required: true, message: '请输入语言名称', trigger: 'blur', type: 'string' },
-    { max: 50, message: '语言名称长度不能超过50个字符', trigger: 'blur', type: 'string' }
+    { required: true, type: 'string', message: t('admin.language.langNameRequired'), trigger: 'blur' },
+    { type: 'string', min: 2, max: 50, message: t('admin.language.langNameLength'), trigger: 'blur' }
+  ],
+  langIcon: [
+    { required: true, type: 'string', message: t('admin.language.langIconRequired'), trigger: 'blur' }
   ],
   orderNum: [
-    { required: true, message: '请输入排序号', trigger: 'blur', type: 'number' }
-  ],
-  isDefault: [
-    { required: true, message: '请选择是否默认', trigger: 'change', type: 'boolean' }
+    { required: true, type: 'number', message: t('admin.language.orderNumRequired'), trigger: 'blur' }
   ],
   status: [
-    { required: true, message: '请选择状态', trigger: 'change', type: 'number' }
+    { required: true, message: t('admin.language.statusRequired'), trigger: 'change' }
   ]
 }
 
-// 监听record变化
-watch(
-  () => props.record,
-  (record) => {
-    if (record) {
-      Object.assign(formData, record)
-    } else {
-      Object.assign(formData, {
-        langCode: '',
-        langName: '',
-        orderNum: 0,
-        isDefault: false,
-        status: 0,
-        remark: ''
-      })
-    }
-  }
-)
-
-// 确定处理
-const handleOk = async () => {
+// === 方法定义 ===
+// 获取语言详情
+const getLanguageDetail = async (id: number) => {
   try {
     loading.value = true
-    await formRef.value?.validate()
-    
-    const submitData = props.record
-      ? { ...formData, id: props.record.id }
-      : formData
-      
-    emit('submit', submitData)
+    const res = await getHbtLanguage(id)
+    if (res.code === 200) {
+      Object.assign(formData, res.data)
+    } else {
+      message.error(res.msg || t('common.failed'))
+    }
   } catch (error) {
-    // 校验失败
-    console.error('表单验证失败:', error)
+    console.error('获取语言详情失败:', error)
+    message.error(t('common.failed'))
   } finally {
     loading.value = false
   }
 }
 
-// 取消处理
+// 提交表单
+const handleSubmit = async () => {
+  if (!formRef.value) return
+  try {
+    await formRef.value.validate()
+    loading.value = true
+    const api = props.languageId ? updateHbtLanguage : createHbtLanguage
+    const res = await api(formData)
+    if (res.code === 200) {
+      message.success(t('common.message.saveSuccess'))
+      emit('success')
+    } else {
+      message.error(res.msg || t('common.message.saveFailed'))
+    }
+  } catch (error) {
+    console.error('保存失败:', error)
+    message.error(t('common.message.saveFailed'))
+  } finally {
+    loading.value = false
+  }
+}
+
+// 取消
 const handleCancel = () => {
-  formRef.value?.resetFields()
   emit('update:visible', false)
 }
+
+// === 监听器 ===
+watch(
+  () => props.visible,
+  (val) => {
+    if (val && props.languageId) {
+      getLanguageDetail(props.languageId)
+    } else {
+      formRef.value?.resetFields()
+      Object.assign(formData, {
+        languageId: 0,
+        langCode: '',
+        langName: '',
+        langIcon: '',
+        orderNum: 0,
+        isDefault: 0,
+        status: 0,
+        id: 0,
+        createBy: '',
+        createTime: '',
+        isDeleted: 0,
+        remark: '',
+        updateTime: '',
+        updateBy: ''
+      })
+    }
+  }
+)
 </script>
 
-<style scoped>
-.ant-form {
-  padding: 24px 0;
-}
-
-.ant-form-item {
-  margin-bottom: 24px;
-}
-
-.ant-input-number {
-  width: 100%;
+<style lang="less" scoped>
+.language-form {
+  padding: 24px;
 }
 </style> 

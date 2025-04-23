@@ -13,23 +13,24 @@ using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Common.Exceptions;
 using Lean.Hbt.Common.Helpers;
 using Lean.Hbt.Domain.Entities.Identity;
-using Lean.Hbt.Domain.IServices.Admin;
+using Lean.Hbt.Domain.IServices.Extensions;
+using Lean.Hbt.Domain.IServices.Extensions;
 using Lean.Hbt.Domain.Repositories;
 using Lean.Hbt.Domain.Utils;
 using Mapster;
 using SqlSugar;
+using Microsoft.Extensions.Localization;
+using Microsoft.AspNetCore.Http;
 
 namespace Lean.Hbt.Application.Services.Identity
 {
     /// <summary>
     /// 岗位服务实现
     /// </summary>
-    public class HbtPostService : IHbtPostService
+    public class HbtPostService : HbtBaseService, IHbtPostService
     {
         private readonly IHbtRepository<HbtPost> _postRepository;
         private readonly IHbtRepository<HbtUserPost> _userPostRepository;
-        private readonly IHbtLogger _logger;
-        private readonly IHbtLocalizationService _localizationService;
 
         /// <summary>
         /// 构造函数
@@ -37,13 +38,30 @@ namespace Lean.Hbt.Application.Services.Identity
         public HbtPostService(
             IHbtRepository<HbtPost> postRepository,
             IHbtRepository<HbtUserPost> userPostRepository,
-            IHbtLocalizationService localizationService,
-            IHbtLogger logger)
+            IHbtLogger logger,
+            IHttpContextAccessor httpContextAccessor) : base(logger, httpContextAccessor)
         {
             _postRepository = postRepository;
             _userPostRepository = userPostRepository;
-            _localizationService = localizationService;
-            _logger = logger;
+        }
+
+        /// <summary>
+        /// 构建岗位查询条件
+        /// </summary>
+        private Expression<Func<HbtPost, bool>> HbtPostQueryExpression(HbtPostQueryDto query)
+        {
+            var exp = Expressionable.Create<HbtPost>();
+
+            if (!string.IsNullOrEmpty(query.PostName))
+                exp.And(x => x.PostName.Contains(query.PostName));
+
+            if (!string.IsNullOrEmpty(query.PostCode))
+                exp.And(x => x.PostCode.Contains(query.PostCode));
+
+            if (query.Status.HasValue)
+                exp.And(x => x.Status == query.Status.Value);
+
+            return exp.ToExpression();
         }
 
         /// <summary>
@@ -51,19 +69,8 @@ namespace Lean.Hbt.Application.Services.Identity
         /// </summary>
         public async Task<HbtPagedResult<HbtPostDto>> GetListAsync(HbtPostQueryDto query)
         {
-            var predicate = Expressionable.Create<HbtPost>();
-
-            // 构建查询条件
-            if (!string.IsNullOrEmpty(query.PostCode))
-                predicate.And(p => p.PostCode.Contains(query.PostCode));
-            if (!string.IsNullOrEmpty(query.PostName))
-                predicate.And(p => p.PostName.Contains(query.PostName));
-            if (query.Status.HasValue)
-                predicate.And(p => p.Status == query.Status.Value);
-
-            // 查询数据
             var result = await _postRepository.GetPagedListAsync(
-                predicate.ToExpression(),
+                HbtPostQueryExpression(query),
                 query.PageIndex,
                 query.PageSize,
                 x => x.OrderNum,
@@ -85,7 +92,7 @@ namespace Lean.Hbt.Application.Services.Identity
         {
             var post = await _postRepository.GetByIdAsync(id);
             if (post == null)
-                throw new HbtException(_localizationService.L("Common.NotExists"));
+                throw new HbtException(L("Identity.Post.NotFound"));
 
             return post.Adapt<HbtPostDto>();
         }
@@ -96,16 +103,13 @@ namespace Lean.Hbt.Application.Services.Identity
         public async Task<long> CreateAsync(HbtPostCreateDto input)
         {
             // 验证字段是否已存在
-            if (await _postRepository.AsQueryable().AnyAsync(x => x.PostCode == input.PostCode))
-                throw new HbtException(_localizationService.L("Common.CodeExists"));
-
-            if (await _postRepository.AsQueryable().AnyAsync(x => x.PostName == input.PostName))
-                throw new HbtException(_localizationService.L("Common.NameExists"));
+            await HbtValidateUtils.ValidateFieldExistsAsync(_postRepository, "PostCode", input.PostCode);
+            await HbtValidateUtils.ValidateFieldExistsAsync(_postRepository, "PostName", input.PostName);
 
             var post = input.Adapt<HbtPost>();
             var result = await _postRepository.CreateAsync(post);
             if (result > 0)
-                _logger.Info(_localizationService.L("Common.AddSuccess"));
+                _logger.Info(L("Common.AddSuccess"));
 
             return post.Id;
         }
@@ -115,23 +119,17 @@ namespace Lean.Hbt.Application.Services.Identity
         /// </summary>
         public async Task<bool> UpdateAsync(HbtPostUpdateDto input)
         {
-            var post = await _postRepository.GetByIdAsync(input.PostId);
-            if (post == null)
-            {
-                throw new HbtException("岗位不存在");
-            }
+            var post = await _postRepository.GetByIdAsync(input.PostId)
+                ?? throw new HbtException(L("Identity.Post.NotFound"));
 
-            post.PostCode = input.PostCode;
-            post.PostName = input.PostName;
-            post.OrderNum = input.OrderNum;
-            post.Status = input.Status;
-            post.Remark = input.Remark;
+            // 验证字段是否已存在
+            if (post.PostCode != input.PostCode)
+                await HbtValidateUtils.ValidateFieldExistsAsync(_postRepository, "PostCode", input.PostCode, input.PostId);
+            if (post.PostName != input.PostName)
+                await HbtValidateUtils.ValidateFieldExistsAsync(_postRepository, "PostName", input.PostName, input.PostId);
 
-            var result = await _postRepository.UpdateAsync(post);
-            if (result > 0)
-                _logger.Info(_localizationService.L("Common.UpdateSuccess"));
-
-            return result > 0;
+            input.Adapt(post);
+            return await _postRepository.UpdateAsync(post) > 0;
         }
 
         /// <summary>
@@ -139,19 +137,14 @@ namespace Lean.Hbt.Application.Services.Identity
         /// </summary>
         public async Task<bool> DeleteAsync(long id)
         {
-            var post = await _postRepository.GetByIdAsync(id);
-            if (post == null)
-                throw new HbtException(_localizationService.L("Common.NotExists"));
+            var post = await _postRepository.GetByIdAsync(id)
+                ?? throw new HbtException(L("Identity.Post.NotFound"));
 
             // 检查是否有用户关联
             if (await _userPostRepository.AsQueryable().AnyAsync(x => x.PostId == id))
-                throw new HbtException(_localizationService.L("Common.DeleteFailed"));
+                throw new HbtException(L("Identity.Post.DeleteFailed"));
 
-            var result = await _postRepository.DeleteAsync(post);
-            if (result > 0)
-                _logger.Info(_localizationService.L("Common.DeleteSuccess"));
-
-            return result > 0;
+            return await _postRepository.DeleteAsync(post) > 0;
         }
 
         /// <summary>
@@ -160,15 +153,13 @@ namespace Lean.Hbt.Application.Services.Identity
         public async Task<bool> BatchDeleteAsync(long[] postIds)
         {
             if (postIds == null || postIds.Length == 0)
-                throw new HbtException("请选择要删除的岗位");
+                throw new HbtException(L("Identity.Post.SelectRequired"));
 
             // 检查是否有用户关联
             if (await _userPostRepository.AsQueryable().AnyAsync(up => postIds.Contains(up.PostId)))
-                throw new HbtException("选中的岗位中已有岗位分配,不能删除");
+                throw new HbtException(L("Identity.Post.HasUsers"));
 
-            Expression<Func<HbtPost, bool>> condition = p => postIds.Contains(p.Id);
-            var result = await _postRepository.DeleteAsync(condition);
-            return result > 0;
+            return await _postRepository.DeleteRangeAsync(postIds.Cast<object>().ToList()) > 0;
         }
 
         /// <summary>
@@ -193,92 +184,75 @@ namespace Lean.Hbt.Application.Services.Identity
         /// <summary>
         /// 导入岗位数据
         /// </summary>
-        /// <param name="fileStream">Excel文件流</param>
-        /// <param name="sheetName">工作表名称</param>
-        /// <returns>返回导入的岗位数据集合</returns>
         public async Task<List<HbtPostImportDto>> ImportAsync(Stream fileStream, string sheetName = "Sheet1")
         {
-            // 1.从Excel导入数据
-            var posts = await HbtExcelHelper.ImportAsync<HbtPostImportDto>(fileStream, sheetName);
-            if (!posts.Any())
-                return new List<HbtPostImportDto>();
-
-            // 2.检查字段是否已存在
-            foreach (var post in posts)
+            try
             {
-                try
+                var posts = await HbtExcelHelper.ImportAsync<HbtPostImportDto>(fileStream, sheetName);
+                if (!posts.Any())
+                    return new List<HbtPostImportDto>();
+
+                foreach (var post in posts)
                 {
-                    if (string.IsNullOrEmpty(post.PostCode) || string.IsNullOrEmpty(post.PostName))
+                    try
                     {
-                        _logger.Warn("导入岗位失败: 岗位编码或岗位名称不能为空");
-                        continue;
+                        if (string.IsNullOrEmpty(post.PostCode) || string.IsNullOrEmpty(post.PostName))
+                        {
+                            _logger.Warn(L("Identity.Post.Log.ImportEmptyFields"));
+                            continue;
+                        }
+
+                        await HbtValidateUtils.ValidateFieldExistsAsync(_postRepository, "PostCode", post.PostCode);
+                        await HbtValidateUtils.ValidateFieldExistsAsync(_postRepository, "PostName", post.PostName);
+
+                        var entity = post.Adapt<HbtPost>();
+                        entity.CreateTime = DateTime.Now;
+                        entity.CreateBy = "system"; // TODO: 从当前用户上下文获取
+
+                        await _postRepository.CreateAsync(entity);
                     }
+                    catch (Exception ex)
+                    {
+                        _logger.Warn(L("Identity.Post.Log.ImportFailed", ex.Message));
+                    }
+                }
 
-                    await HbtValidateUtils.ValidateFieldExistsAsync(_postRepository, "PostCode", post.PostCode);
-                    await HbtValidateUtils.ValidateFieldExistsAsync(_postRepository, "PostName", post.PostName);
-                }
-                catch (HbtException ex)
-                {
-                    _logger.Warn($"导入岗位失败: {ex.Message}");
-                    continue;
-                }
+                return posts;
             }
-
-            // 3.转换为实体并批量插入
-            var entities = posts.Select(post => new HbtPost
+            catch (Exception ex)
             {
-                PostCode = post.PostCode,
-                PostName = post.PostName,
-                OrderNum = post.OrderNum,
-                Status = post.Status == 0 ? 0 : 1,
-                Remark = post.Remark ?? string.Empty,
-                CreateTime = DateTime.Now,
-                CreateBy = "system" // TODO: 从当前用户上下文获取
-            }).ToList();
-
-            await _postRepository.CreateRangeAsync(entities);
-            return posts;
-        }
-
-        /// <summary>
-        /// 导出岗位数据
-        /// </summary>
-        /// <param name="query">查询条件</param>
-        /// <param name="sheetName">工作表名称</param>
-        /// <returns>返回导出的Excel文件字节数组</returns>
-        public async Task<byte[]> ExportAsync(HbtPostQueryDto query, string sheetName = "Sheet1")
-        {
-            var predicate = Expressionable.Create<HbtPost>();
-
-            // 构建查询条件
-            if (!string.IsNullOrEmpty(query.PostCode))
-                predicate.And(p => p.PostCode.Contains(query.PostCode));
-            if (!string.IsNullOrEmpty(query.PostName))
-                predicate.And(p => p.PostName.Contains(query.PostName));
-            if (query.Status.HasValue)
-                predicate.And(p => p.Status == query.Status.Value);
-
-            // 查询数据
-            var posts = await _postRepository.AsQueryable()
-                .Where(predicate.ToExpression())
-                .OrderBy(p => p.OrderNum)
-                .ToListAsync();
-
-            // 转换为导出DTO
-            var exportData = posts.Adapt<List<HbtPostExportDto>>();
-
-            // 导出Excel
-            return await HbtExcelHelper.ExportAsync(exportData, sheetName);
+                _logger.Error(L("Identity.Post.Log.ImportDataFailed"), ex);
+                throw new HbtException(L("Identity.Post.ImportFailed"));
+            }
         }
 
         /// <summary>
         /// 生成岗位导入模板
         /// </summary>
         /// <param name="sheetName">工作表名称</param>
-        /// <returns>返回导入模板Excel文件字节数组</returns>
+        /// <returns>Excel模板文件字节数组</returns>
         public async Task<byte[]> GenerateTemplateAsync(string sheetName = "Sheet1")
         {
-            return await HbtExcelHelper.GenerateTemplateAsync<HbtPostTemplateDto>(sheetName);
+            var (_, content) = await HbtExcelHelper.GenerateTemplateAsync<HbtPostTemplateDto>(sheetName);
+            return content;
+        }
+
+        /// <summary>
+        /// 导出岗位数据
+        /// </summary>
+        public async Task<(string fileName, byte[] content)> ExportAsync(HbtPostQueryDto query, string sheetName = "Sheet1")
+        {
+            try
+            {
+                var list = await _postRepository.GetListAsync(HbtPostQueryExpression(query));
+                var exportList = list.Adapt<List<HbtPostExportDto>>();
+                return await HbtExcelHelper.ExportAsync(exportList, sheetName, "岗位数据");
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(L("Identity.Post.Log.ExportDataFailed"), ex);
+                throw new HbtException(L("Identity.Post.ExportFailed"));
+            }
         }
 
         /// <summary>
@@ -288,7 +262,7 @@ namespace Lean.Hbt.Application.Services.Identity
         {
             var post = await _postRepository.GetByIdAsync(input.PostId);
             if (post == null)
-                throw new HbtException($"岗位不存在: {input.PostId}");
+                throw new HbtException(L("Identity.Post.NotFound"));
 
             post.Status = input.Status;
             var result = await _postRepository.UpdateAsync(post);

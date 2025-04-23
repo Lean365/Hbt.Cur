@@ -1,6 +1,4 @@
 using Lean.Hbt.Infrastructure.Services.Identity;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
 
 namespace Lean.Hbt.WebApi.Middlewares
 {
@@ -10,14 +8,20 @@ namespace Lean.Hbt.WebApi.Middlewares
     public class HbtTenantMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly ILogger<HbtTenantMiddleware> _logger;
+
+        /// <summary>
+        /// 日志服务
+        /// </summary>
+        protected readonly IHbtLogger _logger;
 
         /// <summary>
         /// 构造函数
         /// </summary>
         /// <param name="next"></param>
         /// <param name="logger"></param>
-        public HbtTenantMiddleware(RequestDelegate next, ILogger<HbtTenantMiddleware> logger)
+        public HbtTenantMiddleware(RequestDelegate next,
+            IHbtLogger logger
+            )
         {
             _next = next;
             _logger = logger;
@@ -32,7 +36,7 @@ namespace Lean.Hbt.WebApi.Middlewares
         {
             try
             {
-                _logger.LogInformation("[租户中间件] 开始处理请求: {Path}", context.Request.Path);
+                _logger.Info("[租户中间件] 开始处理请求: {Path}", context.Request.Path);
 
                 // 1. 从请求头中获取租户ID
                 if (context.Request.Headers.TryGetValue("X-Tenant-Id", out var tenantId))
@@ -40,7 +44,7 @@ namespace Lean.Hbt.WebApi.Middlewares
                     if (long.TryParse(tenantId, out var tid))
                     {
                         HbtCurrentTenant.CurrentTenantId = tid;
-                        _logger.LogInformation("[租户中间件] 从请求头获取租户ID: {TenantId}", tid);
+                        _logger.Info("[租户中间件] 从请求头获取租户ID: {TenantId}", tid);
                     }
                 }
 
@@ -51,24 +55,24 @@ namespace Lean.Hbt.WebApi.Middlewares
                     if (tenantClaim != null && long.TryParse(tenantClaim.Value, out var tid))
                     {
                         HbtCurrentTenant.CurrentTenantId = tid;
-                        _logger.LogInformation("[租户中间件] 从JWT获取租户ID: {TenantId}", tid);
+                        _logger.Info("[租户中间件] 从JWT获取租户ID: {TenantId}", tid);
                     }
                 }
 
-                _logger.LogInformation("[租户中间件] 当前租户ID: {TenantId}", HbtCurrentTenant.CurrentTenantId);
+                _logger.Info("[租户中间件] 当前租户ID: {TenantId}", HbtCurrentTenant.CurrentTenantId);
 
                 await _next(context);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "[租户中间件] 处理请求时发生错误");
+                _logger.Error("[租户中间件] 处理请求时发生错误");
                 throw;
             }
             finally
             {
                 // 请求结束时清除租户上下文
                 HbtCurrentTenant.Clear();
-                _logger.LogInformation("[租户中间件] 清除租户上下文");
+                _logger.Info("[租户中间件] 清除租户上下文");
             }
         }
     }

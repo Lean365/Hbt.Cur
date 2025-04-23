@@ -26,6 +26,7 @@
           <hbt-font-size />
           <hbt-full-screen />
           <hbt-notification-center />
+          <hbt-online-users :open="false" />
           <hbt-locale />
           <hbt-memorial />
           <hbt-theme />
@@ -36,7 +37,7 @@
                   <user-outlined />
                 </template>
               </a-avatar>
-              <span class="username">{{ userStore.user?.nickName || userStore.user?.englishName || userStore.user?.userName }}</span>
+              <span class="username">{{ userStore.userInfo?.nickName || userStore.userInfo?.englishName || userStore.userInfo?.userName }}</span>
             </div>
             <template #overlay>
               <a-menu class="user-menu">
@@ -222,7 +223,7 @@ const handleLogout = () => {
 }
 
 // 计算头像URL
-const avatarUrl = computed(() => userStore.user?.avatar || '')
+const avatarUrl = computed(() => userStore.userInfo?.avatar || '')
 </script>
 
 <style lang="less" scoped>

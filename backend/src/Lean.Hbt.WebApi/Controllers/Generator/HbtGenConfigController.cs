@@ -9,11 +9,8 @@
 // 描述    : 代码生成配置控制器
 //===================================================================
 
-using Microsoft.AspNetCore.Mvc;
-using Lean.Hbt.Application.Services.Generator;
 using Lean.Hbt.Application.Dtos.Generator;
-using Lean.Hbt.Domain.Entities.Generator;
-using Lean.Hbt.Domain.IServices.Admin;
+using Lean.Hbt.Application.Services.Generator;
 
 namespace Lean.Hbt.WebApi.Controllers.Generator;
 
@@ -32,9 +29,11 @@ public class HbtGenConfigController : HbtBaseController
     /// </summary>
     /// <param name="service">代码生成配置服务</param>
     /// <param name="localization">本地化服务</param>
+    /// <param name="logger">日志服务</param>
     public HbtGenConfigController(
         IHbtGenConfigService service,
-        IHbtLocalizationService localization) : base(localization)
+            IHbtLocalizationService localization,
+            IHbtLogger logger) : base(localization, logger)
     {
         _service = service;
     }
@@ -143,8 +142,8 @@ public class HbtGenConfigController : HbtBaseController
     [HbtPerm("generator:config:export")]
     public async Task<IActionResult> Export([FromQuery] HbtGenConfigQueryDto query)
     {
-        var bytes = await _service.ExportConfigsAsync(query);
-        return File(bytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "代码生成配置.xlsx");
+        var result = await _service.ExportConfigsAsync(query);
+        return File(result.content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", result.fileName);
     }
 
     /// <summary>
@@ -155,7 +154,7 @@ public class HbtGenConfigController : HbtBaseController
     [HbtPerm("generator:config:import")]
     public async Task<IActionResult> GetTemplate()
     {
-        var bytes = await _service.GetTemplateAsync();
-        return File(bytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "代码生成配置导入模板.xlsx");
+        var result = await _service.GetTemplateAsync();
+        return File(result.content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", result.fileName);
     }
 }

@@ -12,7 +12,8 @@
 using Lean.Hbt.Application.Dtos.Workflow;
 using Lean.Hbt.Common.Exceptions;
 using Lean.Hbt.Domain.Entities.Workflow;
-using Lean.Hbt.Domain.IServices.Admin;
+using Lean.Hbt.Domain.IServices.Extensions;
+using Lean.Hbt.Domain.IServices.Extensions;
 using Lean.Hbt.Domain.Repositories;
 using SqlSugar;
 

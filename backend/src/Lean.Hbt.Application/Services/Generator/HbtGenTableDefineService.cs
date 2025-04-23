@@ -14,23 +14,23 @@ using Lean.Hbt.Common.Models;
 using Lean.Hbt.Domain.Entities.Generator;
 using Lean.Hbt.Domain.Repositories;
 using Lean.Hbt.Domain.Utils;
-using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Http;
 using SqlSugar;
 using System.Linq.Expressions;
 using System.Text;
 using Scriban;
+using Lean.Hbt.Domain.IServices.Extensions;
+using Lean.Hbt.Common.Exceptions;
 
 namespace Lean.Hbt.Application.Services.Generator;
 
 /// <summary>
 /// 代码生成表定义服务实现
 /// </summary>
-public class HbtGenTableDefineService : IHbtGenTableDefineService
+public class HbtGenTableDefineService : HbtBaseService, IHbtGenTableDefineService
 {
     private readonly IHbtRepository<HbtGenTableDefine> _tableDefineRepository;
     private readonly IHbtRepository<HbtGenColumnDefine> _columnDefineRepository;
-    private readonly ILogger<HbtGenTableDefineService> _logger;
-    private readonly IHbtCurrentUser _currentUser;
     private readonly ISqlSugarClient _db;
 
     /// <summary>
@@ -39,15 +39,13 @@ public class HbtGenTableDefineService : IHbtGenTableDefineService
     public HbtGenTableDefineService(
         IHbtRepository<HbtGenTableDefine> tableDefineRepository,
         IHbtRepository<HbtGenColumnDefine> columnDefineRepository,
-        ILogger<HbtGenTableDefineService> logger,
-        IHbtCurrentUser currentUser,
-        ISqlSugarClient db)
+        IHbtLogger logger,
+        IHttpContextAccessor httpContextAccessor,
+        ISqlSugarClient db) : base(logger, httpContextAccessor)
     {
-        _tableDefineRepository = tableDefineRepository;
-        _columnDefineRepository = columnDefineRepository;
-        _logger = logger;
-        _currentUser = currentUser;
-        _db = db;
+        _tableDefineRepository = tableDefineRepository ?? throw new ArgumentNullException(nameof(tableDefineRepository));
+        _columnDefineRepository = columnDefineRepository ?? throw new ArgumentNullException(nameof(columnDefineRepository));
+        _db = db ?? throw new ArgumentNullException(nameof(db));
     }
 
     #region 基础操作
@@ -138,7 +136,7 @@ public class HbtGenTableDefineService : IHbtGenTableDefineService
             }
         }
 
-        return await GetByIdAsync(entity.Id) ?? throw new HbtException("创建表定义失败");
+        return await GetByIdAsync(entity.Id) ?? throw new HbtException(L("Generator.TableDefine.CreateFailed"));
     }
 
     /// <summary>
@@ -150,7 +148,7 @@ public class HbtGenTableDefineService : IHbtGenTableDefineService
     {
         var table = await _tableDefineRepository.GetByIdAsync(input.Id);
         if (table == null)
-            throw new HbtException($"表定义[{input.Id}]不存在");
+            throw new HbtException(L("Generator.TableDefine.NotFound", input.Id));
 
         // 检查表名是否已存在
         await HbtValidateUtils.ValidateFieldExistsAsync(_tableDefineRepository, nameof(HbtGenTableDefine.TableName), input.TableName, input.Id);
@@ -178,7 +176,7 @@ public class HbtGenTableDefineService : IHbtGenTableDefineService
             }
         }
 
-        return await GetByIdAsync(input.Id) ?? throw new HbtException("更新表定义失败");
+        return await GetByIdAsync(input.Id) ?? throw new HbtException(L("Generator.TableDefine.UpdateFailed"));
     }
 
     /// <summary>
@@ -388,7 +386,7 @@ public class HbtGenTableDefineService : IHbtGenTableDefineService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "初始化表结构失败");
+            _logger.Error("初始化表结构失败", ex);
             throw;
         }
     }
@@ -455,7 +453,7 @@ public class HbtGenTableDefineService : IHbtGenTableDefineService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "同步表结构失败");
+            _logger.Error("同步表结构失败", ex);
             return false;
         }
     }

@@ -18,6 +18,7 @@ using System.Threading.Tasks;
 using Lean.Hbt.Common.Options;
 using Microsoft.Extensions.Options;
 using OfficeOpenXml;
+using OfficeOpenXml.DataValidation;
 
 namespace Lean.Hbt.Common.Helpers
 {
@@ -27,6 +28,17 @@ namespace Lean.Hbt.Common.Helpers
     public class HbtExcelHelper
     {
         private static HbtExcelOptions? _options;
+
+        /// <summary>
+        /// 生成带时间戳的文件名
+        /// </summary>
+        /// <param name="baseFileName">基础文件名</param>
+        /// <returns>带时间戳的文件名</returns>
+        private static string GenerateTimestampFileName(string baseFileName)
+        {
+            var timestamp = DateTime.Now.ToString("yyyyMMddHHmmssfff");
+            return $"{baseFileName}_{timestamp}.xlsx";
+        }
 
         /// <summary>
         /// 设置Excel配置
@@ -70,8 +82,9 @@ namespace Lean.Hbt.Common.Helpers
         /// <typeparam name="T">要导出的数据类型</typeparam>
         /// <param name="data">数据集合</param>
         /// <param name="sheetName">工作表名称</param>
-        /// <returns>Excel文件字节数组</returns>
-        public static Task<byte[]> ExportAsync<T>(IEnumerable<T> data, string sheetName = "Sheet1") where T : class
+        /// <param name="fileName">文件名（不包含扩展名）</param>
+        /// <returns>包含文件名和内容的元组</returns>
+        public static async Task<(string fileName, byte[] content)> ExportAsync<T>(IEnumerable<T> data, string sheetName = "Sheet1", string? fileName = null) where T : class
         {
             ArgumentNullException.ThrowIfNull(data);
             ArgumentException.ThrowIfNullOrEmpty(sheetName);
@@ -81,7 +94,11 @@ namespace Lean.Hbt.Common.Helpers
             using var package = new ExcelPackage();
             SetWorkbookProperties(package.Workbook);
             ExportToSheetAsync(package, data, sheetName);
-            return package.GetAsByteArrayAsync();
+            
+            var actualFileName = GenerateTimestampFileName(fileName ?? sheetName);
+            var content = await package.GetAsByteArrayAsync();
+            
+            return (actualFileName, content);
         }
 
         /// <summary>
@@ -110,8 +127,8 @@ namespace Lean.Hbt.Common.Helpers
         /// 导出Excel(多个Sheet)
         /// </summary>
         /// <param name="sheets">Sheet数据字典，key为sheet名称，value为数据集合</param>
-        /// <returns>Excel文件字节数组</returns>
-        public static Task<byte[]> ExportMultiSheetAsync<T>(Dictionary<string, IEnumerable<T>> sheets) where T : class
+        /// <returns>包含文件名和内容的元组</returns>
+        public static async Task<(string fileName, byte[] content)> ExportMultiSheetAsync<T>(Dictionary<string, IEnumerable<T>> sheets) where T : class
         {
             ArgumentNullException.ThrowIfNull(sheets);
             if (!sheets.Any()) throw new ArgumentException("至少需要一个Sheet", nameof(sheets));
@@ -131,7 +148,9 @@ namespace Lean.Hbt.Common.Helpers
                 ExportToSheetAsync(package, sheet.Value, sheet.Key);
             }
 
-            return package.GetAsByteArrayAsync();
+            var fileName = GenerateTimestampFileName("多Sheet数据");
+            var content = await package.GetAsByteArrayAsync();
+            return (fileName, content);
         }
 
         /// <summary>
@@ -168,7 +187,7 @@ namespace Lean.Hbt.Common.Helpers
         /// <typeparam name="T">模板类型</typeparam>
         /// <param name="sheetName">工作表名称</param>
         /// <returns>Excel模板文件字节数组</returns>
-        public static Task<byte[]> GenerateTemplateAsync<T>(string sheetName = "Sheet1") where T : class, new()
+        public static async Task<(string fileName, byte[] content)> GenerateTemplateAsync<T>(string sheetName = "Sheet1") where T : class, new()
         {
             ArgumentException.ThrowIfNullOrEmpty(sheetName);
 
@@ -180,7 +199,8 @@ namespace Lean.Hbt.Common.Helpers
 
             // 获取属性信息
             var properties = typeof(T).GetProperties()
-                .Where(p => p.GetCustomAttribute<BrowsableAttribute>()?.Browsable != false)
+                .Where(p => p.GetCustomAttribute<BrowsableAttribute>()?.Browsable != false
+                    && p.Name != "Id")  // 排除 Id 属性
                 .ToList();
 
             // 写入表头
@@ -188,57 +208,36 @@ namespace Lean.Hbt.Common.Helpers
             {
                 var displayName = properties[i].GetCustomAttribute<DisplayNameAttribute>()?.DisplayName
                     ?? properties[i].Name;
-                var description = properties[i].GetCustomAttribute<DescriptionAttribute>()?.Description;
+                worksheet.Cells[1, i + 1].Value = displayName;
 
-                // 设置表头
-                var cell = worksheet.Cells[1, i + 1];
-                cell.Value = displayName;
-
-                // 添加注释说明
-                if (!string.IsNullOrEmpty(description))
-                {
-                    var comment = cell.AddComment(description, _options?.Author ?? "System");
-                    if (comment != null)
-                    {
-                        comment.AutoFit = true;
-                    }
-                }
-
-                // 设置数据验证和格式
+                // 根据属性类型添加数据验证
                 var propertyType = properties[i].PropertyType;
-                var column = $"{(char)('A' + i)}2:{(char)('A' + i)}1000";
+                var column = worksheet.Cells[2, i + 1, 100, i + 1].Address;
 
-                if (propertyType.IsEnum)
+                if (propertyType == typeof(string))
                 {
-                    // 枚举类型添加下拉列表
-                    var enumValues = Enum.GetNames(propertyType);
-                    var validation = worksheet.DataValidations.AddListValidation(column);
-                    if (validation?.Formula.Values != null)
+                    // 字符串类型添加长度验证
+                    var validation = worksheet.DataValidations.AddTextLengthValidation(column);
+                    if (validation != null)
                     {
-                        foreach (var value in enumValues)
-                        {
-                            validation.Formula.Values.Add(value);
-                        }
-                    }
-                }
-                else if (propertyType == typeof(bool) || propertyType == typeof(bool?))
-                {
-                    // 布尔类型添加是/否下拉列表
-                    var validation = worksheet.DataValidations.AddListValidation(column);
-                    if (validation?.Formula.Values != null)
-                    {
-                        validation.Formula.Values.Add("是");
-                        validation.Formula.Values.Add("否");
+                        validation.ShowErrorMessage = true;
+                        validation.Error = "请输入有效的文本";
+                        validation.Operator = ExcelDataValidationOperator.between;
+                        validation.Formula.Value = 0;
+                        validation.Formula2.Value = 255;
                     }
                 }
                 else if (propertyType == typeof(DateTime) || propertyType == typeof(DateTime?))
                 {
-                    // 日期类型添加日期格式验证
+                    // 日期类型添加日期验证
                     var validation = worksheet.DataValidations.AddDateTimeValidation(column);
                     if (validation != null)
                     {
                         validation.ShowErrorMessage = true;
-                        validation.Error = "请输入有效的日期格式";
+                        validation.Error = "请输入有效的日期";
+                        validation.Operator = ExcelDataValidationOperator.between;
+                        validation.Formula.Value = new DateTime(1900, 1, 1);
+                        validation.Formula2.Value = new DateTime(9999, 12, 31);
                     }
                     worksheet.Column(i + 1).Style.Numberformat.Format = "yyyy-MM-dd HH:mm:ss";
                 }
@@ -252,6 +251,9 @@ namespace Lean.Hbt.Common.Helpers
                     {
                         validation.ShowErrorMessage = true;
                         validation.Error = "请输入有效的数值";
+                        validation.Operator = ExcelDataValidationOperator.between;
+                        validation.Formula.Value = -999999999.0;
+                        validation.Formula2.Value = 999999999.0;
                     }
                     worksheet.Column(i + 1).Style.Numberformat.Format = "#,##0.00";
                 }
@@ -264,6 +266,9 @@ namespace Lean.Hbt.Common.Helpers
                     {
                         validation.ShowErrorMessage = true;
                         validation.Error = "请输入有效的整数";
+                        validation.Operator = ExcelDataValidationOperator.between;
+                        validation.Formula.Value = -2147483648;
+                        validation.Formula2.Value = 2147483647;
                     }
                     worksheet.Column(i + 1).Style.Numberformat.Format = "#,##0";
                 }
@@ -275,7 +280,8 @@ namespace Lean.Hbt.Common.Helpers
                 worksheet.Cells[worksheet.Dimension.Address].AutoFitColumns();
             }
 
-            return package.GetAsByteArrayAsync();
+            var content = await package.GetAsByteArrayAsync();
+            return ($"{typeof(T).Name}模板.xlsx", content);
         }
 
         #endregion 模板导入导出
@@ -295,7 +301,8 @@ namespace Lean.Hbt.Common.Helpers
 
             // 获取属性信息
             var properties = typeof(T).GetProperties()
-                .Where(p => p.GetCustomAttribute<BrowsableAttribute>()?.Browsable != false)
+                .Where(p => p.GetCustomAttribute<BrowsableAttribute>()?.Browsable != false
+                    && p.Name != "Id")  // 排除 Id 属性
                 .ToList();
 
             // 写入表头
@@ -351,7 +358,8 @@ namespace Lean.Hbt.Common.Helpers
 
             var result = new List<T>();
             var properties = typeof(T).GetProperties()
-                .Where(p => p.GetCustomAttribute<BrowsableAttribute>()?.Browsable != false)
+                .Where(p => p.GetCustomAttribute<BrowsableAttribute>()?.Browsable != false
+                    && p.Name != "Id")  // 排除 Id 属性
                 .ToList();
 
             // 获取表头与属性的映射关系

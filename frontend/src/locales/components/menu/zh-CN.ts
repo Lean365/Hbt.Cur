@@ -21,9 +21,7 @@ export default {
       _self: '系统管理',
       config: '系统配置',
       language: '语言管理',
-      dicttype: '字典类型',
-      dictdata: '字典数据',
-      translation: '翻译管理'
+      dict: '字典管理',
     },
     identity: {
       _self: '身份认证',

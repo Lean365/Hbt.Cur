@@ -1,5 +1,5 @@
 //===================================================================
-// 项目名 : Lean.Hbt 
+// 项目名 : Lean.Hbt
 // 文件名 : HbtOnlineUserCleanupJob.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-20 16:30
@@ -8,10 +8,7 @@
 //===================================================================
 
 using Lean.Hbt.Domain.Entities.SignalR;
-using Lean.Hbt.Domain.Repositories;
-using Microsoft.Extensions.Logging;
 using Quartz;
-using SqlSugar;
 
 namespace Lean.Hbt.Infrastructure.Jobs
 {
@@ -29,7 +26,11 @@ namespace Lean.Hbt.Infrastructure.Jobs
     public class HbtOnlineUserCleanupJob : IJob
     {
         private readonly IHbtRepository<HbtOnlineUser> _repository;
-        private readonly ILogger<HbtOnlineUserCleanupJob> _logger;
+
+        /// <summary>
+        /// 日志服务
+        /// </summary>
+        protected readonly IHbtLogger _logger;
 
         /// <summary>
         /// 构造函数
@@ -38,7 +39,7 @@ namespace Lean.Hbt.Infrastructure.Jobs
         /// <param name="logger">日志记录器</param>
         public HbtOnlineUserCleanupJob(
             IHbtRepository<HbtOnlineUser> repository,
-            ILogger<HbtOnlineUserCleanupJob> logger)
+            IHbtLogger logger)
         {
             _repository = repository;
             _logger = logger;
@@ -53,7 +54,7 @@ namespace Lean.Hbt.Infrastructure.Jobs
         {
             try
             {
-                _logger.LogInformation("开始执行在线用户清理任务");
+                _logger.Info("开始执行在线用户清理任务");
 
                 // 获取超过5分钟未更新心跳的用户
                 var timeout = DateTime.Now.AddMinutes(-5);
@@ -63,7 +64,7 @@ namespace Lean.Hbt.Infrastructure.Jobs
 
                 if (timeoutUsers?.Any() == true)
                 {
-                    _logger.LogInformation("发现{Count}个超时用户，开始批量更新", timeoutUsers.Count);
+                    _logger.Info("发现{Count}个超时用户，开始批量更新", timeoutUsers.Count);
 
                     // 开启事务
                     try
@@ -78,34 +79,34 @@ namespace Lean.Hbt.Infrastructure.Jobs
                         }
                         await _repository.UpdateRangeAsync(timeoutUsers);
 
-                        _logger.LogInformation("成功清理{Count}个超时用户", timeoutUsers.Count);
-                        
+                        _logger.Info("成功清理{Count}个超时用户", timeoutUsers.Count);
+
                         // 记录每个用户的详细信息
                         foreach (var user in timeoutUsers)
                         {
-                            _logger.LogInformation(
-                                "用户{UserId}被标记为离线 - 最后心跳时间:{LastHeartbeat}, 连接ID:{ConnectionId}", 
-                                user.UserId, 
+                            _logger.Info(
+                                "用户{UserId}被标记为离线 - 最后心跳时间:{LastHeartbeat}, 连接ID:{ConnectionId}",
+                                user.UserId,
                                 user.LastHeartbeat,
                                 user.ConnectionId);
                         }
                     }
                     catch (Exception ex)
                     {
-                        _logger.LogError(ex, "批量更新用户状态时发生错误");
+                        _logger.Error("批量更新用户状态时发生错误");
                         throw;
                     }
                 }
                 else
                 {
-                    _logger.LogInformation("没有发现需要清理的超时用户");
+                    _logger.Info("没有发现需要清理的超时用户");
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "执行在线用户清理任务时发生错误");
+                _logger.Error("执行在线用户清理任务时发生错误");
                 throw;
             }
         }
     }
-} 
+}

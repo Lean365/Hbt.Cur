@@ -16,10 +16,10 @@ using System.Threading.Tasks;
 using System.Text.Json;
 using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Domain.Entities.Workflow;
-using Lean.Hbt.Domain.IServices;
 using Lean.Hbt.Domain.Models.Workflow;
 using Lean.Hbt.Domain.Repositories;
 using Lean.Hbt.Application.Services.Workflow.Engine.Resolvers;
+using Lean.Hbt.Domain.IServices.Extensions;
 
 namespace Lean.Hbt.Application.Services.Workflow.Engine.Executors
 {

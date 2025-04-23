@@ -7,7 +7,7 @@
 // 描述    : NLog日志实现
 //===================================================================
 
-using Lean.Hbt.Domain.IServices;
+using Lean.Hbt.Domain.IServices.Extensions;
 using NLog;
 
 namespace Lean.Hbt.Infrastructure.Logging
@@ -25,9 +25,9 @@ namespace Lean.Hbt.Infrastructure.Logging
         /// <summary>
         /// 构造函数
         /// </summary>
-        public HbtNLogger()
+        public HbtNLogger(ILogger logger)
         {
-            _logger = LogManager.GetCurrentClassLogger();
+            _logger = logger;
         }
 
         /// <summary>
@@ -103,7 +103,7 @@ namespace Lean.Hbt.Infrastructure.Logging
         /// <param name="ex">异常对象</param>
         public void Error(string message, Exception ex)
         {
-            _logger.Error(ex, message);
+            _logger.Error( message);
         }
 
         /// <summary>

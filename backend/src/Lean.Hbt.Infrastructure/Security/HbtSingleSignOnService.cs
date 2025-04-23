@@ -1,23 +1,12 @@
-using System;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Lean.Hbt.Common.Options;
-using Lean.Hbt.Domain.IServices.SignalR;
-using Lean.Hbt.Domain.IServices.Security;
 using Lean.Hbt.Common.Models;
-using Microsoft.AspNetCore.SignalR;
-using Lean.Hbt.Infrastructure.SignalR;
-using Lean.Hbt.Domain.Entities;
-using Lean.Hbt.Domain.Repositories;
-using Lean.Hbt.Domain.Entities.SignalR;
+using Lean.Hbt.Common.Options;
 using Lean.Hbt.Domain.Entities.Identity;
-using System.Linq.Expressions;
-using System.Collections.Generic;
-using System.Linq;
-using Lean.Hbt.Common.Enums;
-using Lean.Hbt.Domain.IServices.Admin;
-using SqlSugar;
+using Lean.Hbt.Domain.Entities.SignalR;
+using Lean.Hbt.Domain.IServices.Security;
+using Lean.Hbt.Domain.IServices.SignalR;
+using Lean.Hbt.Infrastructure.SignalR;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Options;
 
 namespace Lean.Hbt.Infrastructure.Security
 {
@@ -26,7 +15,11 @@ namespace Lean.Hbt.Infrastructure.Security
     /// </summary>
     public class HbtSingleSignOnService : IHbtSingleSignOnService
     {
-        private readonly ILogger<HbtSingleSignOnService> _logger;
+        /// <summary>
+        /// 日志服务
+        /// </summary>
+        protected readonly IHbtLogger _logger;
+
         private readonly IHbtSignalRUserService _signalRUserService;
         private readonly IHbtSignalRClient _signalRClient;
         private readonly HbtSingleSignOnOptions _options;
@@ -45,7 +38,7 @@ namespace Lean.Hbt.Infrastructure.Security
         /// <param name="userRepository">用户仓库</param>
         /// <param name="onlineUserRepository">在线用户仓库</param>
         public HbtSingleSignOnService(
-            ILogger<HbtSingleSignOnService> logger,
+            IHbtLogger logger,
             IHbtSignalRUserService signalRUserService,
             IHbtSignalRClient signalRClient,
             IOptions<HbtSingleSignOnOptions> options,
@@ -117,7 +110,7 @@ namespace Lean.Hbt.Infrastructure.Security
             if (_options.NotifyKickout)
             {
                 // TODO: 发送踢出通知
-                _logger.LogInformation("用户 {UserId} 的设备 {DeviceId} 被踢出", device.UserId, device.DeviceId);
+                _logger.Info("用户 {UserId} 的设备 {DeviceId} 被踢出", device.UserId, device.DeviceId);
             }
 
             await _signalRUserService.RemoveUserDevice(device.UserId.ToString(), device.DeviceId);
@@ -157,30 +150,30 @@ namespace Lean.Hbt.Infrastructure.Security
         {
             try
             {
-                _logger.LogInformation("开始处理用户登录 - 用户ID: {UserId}, 设备ID: {DeviceId}", userId, deviceId);
+                _logger.Info("开始处理用户登录 - 用户ID: {UserId}, 设备ID: {DeviceId}", userId, deviceId);
 
                 // 检查是否启用单点登录
                 if (!_options.Enabled)
                 {
-                    _logger.LogInformation("单点登录未启用，允许用户 {UserId} 登录", userId);
+                    _logger.Info("单点登录未启用，允许用户 {UserId} 登录", userId);
                     return new HbtApiResult { Code = 200, Msg = "登录成功" };
                 }
 
                 // 获取用户所有设备
                 var devices = _signalRUserService.GetUserDevices(userId.ToString());
-                
+
                 // 检查是否超过最大设备数限制
                 if (devices.Count >= _options.MaxDevices)
                 {
                     if (!_options.KickoutOldSession)
                     {
-                        _logger.LogWarning("用户 {UserId} 已达到最大设备数限制 ({MaxDevices})", userId, _options.MaxDevices);
+                        _logger.Warn("用户 {UserId} 已达到最大设备数限制 ({MaxDevices})", userId, _options.MaxDevices);
                         return new HbtApiResult { Code = 500, Msg = $"已达到最大设备数限制 ({_options.MaxDevices})" };
                     }
-                    
+
                     // 如果允许踢出旧会话，则踢出最早登录的设备
                     var oldestDevice = devices.OrderBy(d => d.LastActivity).First();
-                    
+
                     // 1. 更新数据库中的在线用户状态
                     var exp = Expressionable.Create<HbtOnlineUser>();
                     exp.And(u => u.UserId == userId && u.DeviceId == oldestDevice.DeviceId);
@@ -191,25 +184,25 @@ namespace Lean.Hbt.Infrastructure.Security
                         oldUser.LastActivity = DateTime.Now;
                         await _onlineUserRepository.UpdateAsync(oldUser);
                     }
-                    
+
                     // 2. 从内存中移除设备
                     await _signalRUserService.RemoveUserDevice(userId.ToString(), oldestDevice.DeviceId);
-                    
+
                     // 3. 发送踢出通知，包含具体原因
                     if (_options.NotifyKickout)
                     {
                         var kickoutReason = $"您的账号已在其他设备登录，当前设备已被强制下线。原因：已达到最大设备数限制 ({_options.MaxDevices})";
                         await _signalRClient.ForceOffline(kickoutReason);
                     }
-                    
-                    _logger.LogInformation("踢出用户 {UserId} 的最早登录设备 {DeviceId}", userId, oldestDevice.DeviceId);
+
+                    _logger.Info("踢出用户 {UserId} 的最早登录设备 {DeviceId}", userId, oldestDevice.DeviceId);
                 }
 
                 // 检查用户是否已在当前设备登录
                 var existingUser = await _signalRUserService.GetOnlineUserByDeviceAsync(userId, deviceId);
                 if (existingUser != null)
                 {
-                    _logger.LogInformation("用户 {UserId} 已在设备 {DeviceId} 登录，更新登录信息", userId, deviceId);
+                    _logger.Info("用户 {UserId} 已在设备 {DeviceId} 登录，更新登录信息", userId, deviceId);
                 }
 
                 // 创建或更新在线用户记录
@@ -228,13 +221,13 @@ namespace Lean.Hbt.Infrastructure.Security
                 };
 
                 await _signalRUserService.SaveOnlineUserAsync(onlineUser);
-                _logger.LogInformation("用户 {UserId} 登录成功", userId);
+                _logger.Info("用户 {UserId} 登录成功", userId);
 
                 return new HbtApiResult { Code = 200, Msg = "登录成功" };
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "处理用户登录时发生错误 - 用户ID: {UserId}", userId);
+                _logger.Error("处理用户登录时发生错误 - 用户ID: {UserId}", userId);
                 return new HbtApiResult { Code = 500, Msg = "处理登录请求时发生错误" };
             }
         }
@@ -246,7 +239,7 @@ namespace Lean.Hbt.Infrastructure.Security
         {
             try
             {
-                _logger.LogInformation("开始处理用户退出 - 用户ID: {UserId}, 连接ID: {ConnectionId}", userId, connectionId);
+                _logger.Info("开始处理用户退出 - 用户ID: {UserId}, 连接ID: {ConnectionId}", userId, connectionId);
 
                 // 删除在线用户记录
                 var exp = Expressionable.Create<HbtOnlineUser>();
@@ -260,11 +253,11 @@ namespace Lean.Hbt.Infrastructure.Security
                     await _signalRUserService.RemoveUserDevice(device.UserId.ToString(), device.DeviceId);
                 }
 
-                _logger.LogInformation("用户 {UserId} 退出成功", userId);
+                _logger.Info("用户 {UserId} 退出成功", userId);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "处理用户退出时发生错误 - 用户ID: {UserId}", userId);
+                _logger.Error("处理用户退出时发生错误 - 用户ID: {UserId}", userId);
             }
         }
 
@@ -299,12 +292,12 @@ namespace Lean.Hbt.Infrastructure.Security
         {
             try
             {
-                _logger.LogInformation("开始处理用户登录 - 用户ID: {UserId}, 连接ID: {ConnectionId}", userId, connectionId);
-                
+                _logger.Info("开始处理用户登录 - 用户ID: {UserId}, 连接ID: {ConnectionId}", userId, connectionId);
+
                 // 检查是否启用单点登录
                 if (!_options.Enabled)
                 {
-                    _logger.LogInformation("单点登录未启用，允许用户 {UserId} 登录", userId);
+                    _logger.Info("单点登录未启用，允许用户 {UserId} 登录", userId);
                     return;
                 }
 
@@ -315,16 +308,16 @@ namespace Lean.Hbt.Infrastructure.Security
                     // 如果用户已登录，检查是否允许重复登录
                     if (!_options.KickoutOldSession)
                     {
-                        _logger.LogWarning("用户 {UserId} 已在其他设备登录，且不允许重复登录", userId);
+                        _logger.Warn("用户 {UserId} 已在其他设备登录，且不允许重复登录", userId);
                         return;
                     }
                 }
 
-                _logger.LogInformation("用户 {UserId} 登录成功", userId);
+                _logger.Info("用户 {UserId} 登录成功", userId);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "处理用户登录时发生错误 - 用户ID: {UserId}", userId);
+                _logger.Error("处理用户登录时发生错误 - 用户ID: {UserId}", userId);
             }
         }
     }
@@ -365,4 +358,4 @@ namespace Lean.Hbt.Infrastructure.Security
         /// </summary>
         public DateTime LastActivity { get; set; }
     }
-} 
+}

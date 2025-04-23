@@ -323,9 +323,7 @@ export function formatDateTime(time?: string | number | Date, pattern = 'yyyy-MM
   }
   try {
     const date = new Date(time)
-    // 调整时区
-    const localDate = new Date(date.getTime() + TIMEZONE_OFFSET * 60 * 60 * 1000)
-    return format(localDate, pattern, { locale: getLocale() })
+    return format(date, pattern, { locale: getLocale() })
   } catch (err) {
     const { t } = useI18n()
     console.error(`[${t('common.datetime.formatError')}]:`, err)

@@ -140,7 +140,16 @@ import type { HbtNoticeDto } from '@/types/routine/notice'
 
 const { t } = useI18n()
 const userStore = useUserStore()
-const currentUserId = userStore.user?.userId?.toString() || ''
+const currentUserId = userStore.userInfo?.userId?.toString() || ''
+
+// 定义props
+const props = defineProps({
+  autoShow: { type: Boolean, default: true },
+  autoShowSystem: { type: Boolean, default: true },
+  notificationDuration: { type: Number, default: 4.5 },
+  systemMessageDuration: { type: Number, default: 4.5 },
+  onNotificationClick: { type: Function, default: null }
+})
 
 // 标签页类型
 type TabKey = 'all' | 'unread'
@@ -205,7 +214,7 @@ const convertToNotificationItem = (message: HbtOnlineMessageDto | HbtMailDto | H
         id: `mail_${mailMessage.mailId}`,
         title: mailMessage.mailSubject,
         content: mailMessage.mailBody,
-        createTime: mailMessage.createTime,
+        createTime: mailMessage.createTime?.toISOString() || new Date().toISOString(),
         status: mailMessage.mailStatus === 0 ? 'unread' : 'read',
         type: 'message'
       }
@@ -232,8 +241,12 @@ const loadNotifications = async () => {
   const maxRetries = 3
 
   const loadWithRetry = async () => {
+    let onlineMessages: any = null
+    let mailMessages: any = null
+    let noticeMessages: any = null
+    
     try {
-      const [onlineMessages, mailMessages, noticeMessages] = await Promise.all([
+      [onlineMessages, mailMessages, noticeMessages] = await Promise.all([
         getOnlineMessageList({ pageIndex: 1, pageSize: 10 }),
         getMailList({ pageIndex: 1, pageSize: 10 }),
         getNoticeList({ pageIndex: 1, pageSize: 10 })
@@ -245,35 +258,40 @@ const loadNotifications = async () => {
       const storedMap = new Map(storedNotifications.map((n: NotificationItemType) => [n.id, n]))
 
       // 处理在线消息
-      onlineMessages?.rows?.forEach(msg => {
-        const item = convertToNotificationItem(msg, 'online')
-        // 如果本地存储中有这条消息，使用本地存储的状态
-        if (storedMap.has(item.id)) {
-          messageMap.set(item.id, storedMap.get(item.id))
-        } else {
-          messageMap.set(item.id, item)
-        }
-      })
+      if (onlineMessages?.data?.rows) {
+        onlineMessages.data.rows.forEach((msg: HbtOnlineMessageDto) => {
+          const item = convertToNotificationItem(msg, 'online')
+          if (storedMap.has(item.id)) {
+            messageMap.set(item.id, storedMap.get(item.id))
+          } else {
+            messageMap.set(item.id, item)
+          }
+        })
+      }
 
       // 处理邮件
-      mailMessages?.rows?.forEach(msg => {
-        const item = convertToNotificationItem(msg, 'mail')
-        if (storedMap.has(item.id)) {
-          messageMap.set(item.id, storedMap.get(item.id))
-        } else {
-          messageMap.set(item.id, item)
-        }
-      })
+      if (mailMessages?.data?.data?.rows) {
+        mailMessages.data.data.rows.forEach((msg: HbtMailDto) => {
+          const item = convertToNotificationItem(msg, 'mail')
+          if (storedMap.has(item.id)) {
+            messageMap.set(item.id, storedMap.get(item.id))
+          } else {
+            messageMap.set(item.id, item)
+          }
+        })
+      }
 
       // 处理通知
-      noticeMessages?.rows?.forEach(msg => {
-        const item = convertToNotificationItem(msg, 'notice')
-        if (storedMap.has(item.id)) {
-          messageMap.set(item.id, storedMap.get(item.id))
-        } else {
-          messageMap.set(item.id, item)
-        }
-      })
+      if (noticeMessages?.data?.data?.rows) {
+        noticeMessages.data.data.rows.forEach((msg: HbtNoticeDto) => {
+          const item = convertToNotificationItem(msg, 'notice')
+          if (storedMap.has(item.id)) {
+            messageMap.set(item.id, storedMap.get(item.id))
+          } else {
+            messageMap.set(item.id, item)
+          }
+        })
+      }
 
       // 转换为数组并按时间排序
       const newNotifications = Array.from(messageMap.values())
@@ -281,7 +299,16 @@ const loadNotifications = async () => {
       
       notifications.value = newNotifications
       saveNotificationsToStorage()
-    } catch (error) {
+    } catch (error: any) {
+      // 如果是空数据导致的错误,不进行重试
+      if (error.message === '请求失败' && 
+          (!onlineMessages?.data?.rows?.length && 
+           !mailMessages?.data?.data?.rows?.length && 
+           !noticeMessages?.data?.data?.rows?.length)) {
+        console.log('没有新消息')
+        return
+      }
+      
       console.error(`加载消息失败 (尝试 ${retryCount + 1}/${maxRetries}):`, error)
       if (retryCount < maxRetries) {
         retryCount++
@@ -320,24 +347,24 @@ const loadMore = async () => {
     const messageMap = new Map()
 
     // 处理在线消息
-    if (onlineMessages?.rows?.length > 0) {
-      onlineMessages.rows.forEach(msg => {
+    if (onlineMessages?.data?.rows?.length > 0) {
+      onlineMessages.data.rows.forEach(msg => {
         const item = convertToNotificationItem(msg, 'online')
         messageMap.set(item.id, item)
       })
     }
 
     // 处理邮件
-    if (mailMessages?.rows?.length > 0) {
-      mailMessages.rows.forEach(msg => {
+    if (mailMessages?.data?.data?.rows?.length > 0) {
+      mailMessages.data.data.rows.forEach(msg => {
         const item = convertToNotificationItem(msg, 'mail')
         messageMap.set(item.id, item)
       })
     }
 
     // 处理通知
-    if (noticeMessages?.rows?.length > 0) {
-      noticeMessages.rows.forEach(msg => {
+    if (noticeMessages?.data?.data?.rows?.length > 0) {
+      noticeMessages.data.data.rows.forEach(msg => {
         const item = convertToNotificationItem(msg, 'notice')
         messageMap.set(item.id, item)
       })
@@ -566,17 +593,13 @@ const handleNotification = (message: any) => {
   
   // 添加消息到通知列表
   notifications.value.push({
-    id: Date.now(),
-    type: 'notification',
+    id: Date.now().toString(),
+    type: 'message',
     title: message.title || '通知',
     content: message.content || '',
-    timestamp: message.timestamp || new Date().toISOString(),
-    read: false,
-    data: message.data || {}
+    createTime: message.timestamp || new Date().toISOString(),
+    status: 'unread'
   })
-  
-  // 更新未读消息数量
-  updateUnreadCount()
   
   // 如果设置了自动显示通知，则显示通知
   if (props.autoShow) {
@@ -589,12 +612,13 @@ const handleSystemMessage = (message: any) => {
   console.log('[通知中心] 处理系统消息:', message)
   
   // 添加消息到系统消息列表
-  systemMessages.value.push({
-    id: Date.now(),
+  notifications.value.push({
+    id: Date.now().toString(),
     type: 'system',
+    title: message.title || '系统消息',
     content: message.content || '',
-    timestamp: message.timestamp || new Date().toISOString(),
-    error: message.error || false
+    createTime: message.timestamp || new Date().toISOString(),
+    status: 'unread'
   })
   
   // 如果设置了自动显示系统消息，则显示消息
@@ -630,18 +654,11 @@ const showSystemMessage = (message: any) => {
   }
 }
 
-// 更新未读消息数量
-const updateUnreadCount = () => {
-  unreadCount.value = notifications.value.filter(n => !n.read).length
-}
-
 // 处理通知点击
 const handleNotificationClick = (message: any) => {
-  // 标记消息为已读
   const notification = notifications.value.find(n => n.id === message.id)
   if (notification) {
-    notification.read = true
-    updateUnreadCount()
+    notification.status = 'read'
   }
   
   // 执行自定义点击处理
@@ -656,7 +673,7 @@ const handleNewNotification = (notification: any) => {
   
   // 创建新通知对象
   const newNotification: NotificationItemType = {
-    id: `notification_${notification.senderId}_${new Date(notification.timestamp).getTime()}`,
+    id: Date.now().toString(),
     title: notification.title,
     content: notification.content,
     type: notification.type || 'notification',

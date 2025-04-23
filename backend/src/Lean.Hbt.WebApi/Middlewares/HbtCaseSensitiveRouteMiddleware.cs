@@ -1,7 +1,3 @@
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.Logging;
-
 namespace Lean.Hbt.WebApi.Middlewares
 {
     /// <summary>
@@ -10,9 +6,15 @@ namespace Lean.Hbt.WebApi.Middlewares
     public class HbtCaseSensitiveRouteMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly ILogger<HbtCaseSensitiveRouteMiddleware> _logger;
 
-        public HbtCaseSensitiveRouteMiddleware(RequestDelegate next, ILogger<HbtCaseSensitiveRouteMiddleware> logger)
+        /// <summary>
+        /// 日志服务
+        /// </summary>
+        protected readonly IHbtLogger _logger;
+
+        public HbtCaseSensitiveRouteMiddleware(RequestDelegate next,
+                IHbtLogger logger
+                )
         {
             _next = next;
             _logger = logger;
@@ -26,7 +28,7 @@ namespace Lean.Hbt.WebApi.Middlewares
                 var routePattern = (endpoint as RouteEndpoint)?.RoutePattern.RawText;
                 var requestPath = context.Request.Path.Value?.TrimStart('/');
 
-                _logger.LogInformation($"[路由中间件] 请求路径: {context.Request.Path.Value}, 路由模式: {routePattern}");
+                _logger.Info($"[路由中间件] 请求路径: {context.Request.Path.Value}, 路由模式: {routePattern}");
 
                 if (!string.IsNullOrEmpty(routePattern) && !string.IsNullOrEmpty(requestPath))
                 {
@@ -45,16 +47,16 @@ namespace Lean.Hbt.WebApi.Middlewares
                             if (controllerActionDescriptor != null)
                             {
                                 routeController = controllerActionDescriptor.ControllerName;
-                                _logger.LogInformation($"[路由中间件] 控制器名称: {routeController}");
+                                _logger.Info($"[路由中间件] 控制器名称: {routeController}");
                             }
                         }
 
                         var requestController = requestParts[1];
-                        
+
                         // 严格大小写匹配控制器名称
                         if (requestController != routeController)
                         {
-                            _logger.LogWarning($"[路由中间件] 控制器名称大小写不匹配. 期望: {routeController}, 实际: {requestController}");
+                            _logger.Warn($"[路由中间件] 控制器名称大小写不匹配. 期望: {routeController}, 实际: {requestController}");
                             context.Response.StatusCode = StatusCodes.Status404NotFound;
                             await context.Response.WriteAsJsonAsync(new { code = 404, msg = $"路由不存在，控制器名称应为: {routeController}" });
                             return;
@@ -65,11 +67,11 @@ namespace Lean.Hbt.WebApi.Middlewares
                         {
                             var expectedAction = routeParts[2];
                             var actualAction = requestParts[2];
-                            
+
                             // 如果期望的action不是路由参数（不包含{和}），则进行严格大小写匹配
                             if (!expectedAction.Contains("{") && expectedAction != actualAction)
                             {
-                                _logger.LogWarning($"[路由中间件] Action名称大小写不匹配. 期望: {expectedAction}, 实际: {actualAction}");
+                                _logger.Warn($"[路由中间件] Action名称大小写不匹配. 期望: {expectedAction}, 实际: {actualAction}");
                                 context.Response.StatusCode = StatusCodes.Status404NotFound;
                                 await context.Response.WriteAsJsonAsync(new { code = 404, msg = $"路由不存在，Action名称应为: {expectedAction}" });
                                 return;
@@ -93,4 +95,4 @@ namespace Lean.Hbt.WebApi.Middlewares
             return builder.UseMiddleware<HbtCaseSensitiveRouteMiddleware>();
         }
     }
-} 
+}

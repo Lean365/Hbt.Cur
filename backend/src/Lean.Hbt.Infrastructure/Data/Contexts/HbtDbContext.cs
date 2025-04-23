@@ -11,7 +11,7 @@
 
 using Lean.Hbt.Domain.Data;
 using Lean.Hbt.Domain.Entities.Audit;
-using Lean.Hbt.Domain.IServices;
+using Lean.Hbt.Domain.IServices.Extensions;
 using Lean.Hbt.Infrastructure.Services.Identity;
 using Microsoft.Extensions.Options;
 
@@ -209,7 +209,7 @@ namespace Lean.Hbt.Infrastructure.Data.Contexts
                                t.Namespace != null &&
                                t.Namespace.StartsWith("Lean.Hbt.Domain.Entities") &&
                                t.BaseType == typeof(HbtBaseEntity))
-                    .OrderBy(t => t == typeof(HbtDbDiffLog) ? 0 : 1) // 确保日志表首先被创建
+                    .OrderBy(t => t == typeof(HbtSqlDiffLog) ? 0 : 1) // 确保日志表首先被创建
                     .ToArray();
 
                 // 3.创建/更新表

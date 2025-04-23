@@ -10,30 +10,28 @@
 //===================================================================
 
 namespace Lean.Hbt.Application.Services.Generator;
+using Lean.Hbt.Domain.IServices.Extensions;
+using Microsoft.AspNetCore.Http;
 
 /// <summary>
 /// 代码生成模板服务实现
 /// </summary>
-public class HbtGenTemplateService : IHbtGenTemplateService
+public class HbtGenTemplateService : HbtBaseService, IHbtGenTemplateService
 {
     private readonly IHbtRepository<HbtGenTemplate> _templateRepository;
-    private readonly ILogger<HbtGenTemplateService> _logger;
-    private readonly IHbtCurrentUser _currentUser;
 
     /// <summary>
     /// 构造函数
     /// </summary>
     /// <param name="templateRepository">模板仓储</param>
     /// <param name="logger">日志服务</param>
-    /// <param name="currentUser">当前用户服务</param>
+    /// <param name="httpContextAccessor">HTTP上下文访问器</param>
     public HbtGenTemplateService(
         IHbtRepository<HbtGenTemplate> templateRepository,
-        ILogger<HbtGenTemplateService> logger,
-        IHbtCurrentUser currentUser)
+        IHbtLogger logger,
+        IHttpContextAccessor httpContextAccessor) : base(logger, httpContextAccessor)
     {
         _templateRepository = templateRepository;
-        _logger = logger;
-        _currentUser = currentUser;
     }
 
     #region 基础操作
@@ -104,9 +102,9 @@ public class HbtGenTemplateService : IHbtGenTemplateService
         }
 
         var template = input.Adapt<HbtGenTemplate>();
-        template.CreateBy = _currentUser.UserName;
+        template.CreateBy = UserName;
         template.CreateTime = DateTime.Now;
-        template.UpdateBy = _currentUser.UserName;
+        template.UpdateBy = UserName;
         template.UpdateTime = DateTime.Now;
 
         var result = await _templateRepository.CreateAsync(template);
@@ -146,7 +144,7 @@ public class HbtGenTemplateService : IHbtGenTemplateService
         template.TemplateContent = input.TemplateContent;
         template.Status = input.Status;
         template.Remark = input.Remark;
-        template.UpdateBy = _currentUser.UserName;
+        template.UpdateBy = UserName;
         template.UpdateTime = DateTime.Now;
 
         var result = await _templateRepository.UpdateAsync(template);
@@ -181,18 +179,27 @@ public class HbtGenTemplateService : IHbtGenTemplateService
     /// <returns>是否删除成功</returns>
     public async Task<bool> BatchDeleteAsync(long[] ids)
     {
-        if (ids == null || ids.Length == 0)
-        {
-            throw new HbtException("请选择要删除的模板");
-        }
+        if (ids == null || !ids.Any())
+            throw new HbtException(L("GenTemplate.BatchDelete.Empty"));
 
-        var templates = await _templateRepository.GetListAsync(x => ids.Contains(x.Id));
-        if (templates?.Count > 0)
-        {
-            return await _templateRepository.DeleteRangeAsync(templates) > 0;
-        }
+        return await _templateRepository.DeleteRangeAsync(ids.Cast<object>().ToList()) > 0;
+    }
 
-        return false;
+    /// <summary>
+    /// 更新模板状态
+    /// </summary>
+    /// <param name="input">状态更新对象</param>
+    /// <returns>是否成功</returns>
+    public async Task<bool> UpdateStatusAsync(HbtGenTemplateStatusDto input)
+    {
+        var template = await _templateRepository.GetByIdAsync(input.TemplateId)
+            ?? throw new HbtException(L("GenTemplate.NotFound", input.TemplateId));
+
+        template.Status = input.Status;
+        template.UpdateBy = UserName;
+        template.UpdateTime = DateTime.Now;
+
+        return await _templateRepository.UpdateAsync(template) > 0;
     }
 
     #endregion 基础操作
@@ -230,9 +237,9 @@ public class HbtGenTemplateService : IHbtGenTemplateService
                         continue;
                     }
 
-                    template.CreateBy = _currentUser.UserName;
+                    template.CreateBy = UserName;
                     template.CreateTime = DateTime.Now;
-                    template.UpdateBy = _currentUser.UserName;
+                    template.UpdateBy = UserName;
                     template.UpdateTime = DateTime.Now;
 
                     var result = await _templateRepository.CreateAsync(template);
@@ -255,7 +262,6 @@ public class HbtGenTemplateService : IHbtGenTemplateService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "导入模板失败");
             throw new HbtException("导入模板失败");
         }
     }
@@ -266,51 +272,28 @@ public class HbtGenTemplateService : IHbtGenTemplateService
     /// <param name="query">查询条件</param>
     /// <param name="sheetName">工作表名称</param>
     /// <returns>Excel文件字节数组</returns>
-    public async Task<byte[]> ExportTemplatesAsync(HbtGenTemplateQueryDto query, string sheetName = "Sheet1")
+    public async Task<(string fileName, byte[] content)> ExportTemplatesAsync(HbtGenTemplateQueryDto query, string sheetName = "Sheet1")
     {
         try
         {
-            var exp = Expressionable.Create<HbtGenTemplate>();
-
-            // 构建查询条件
-            if (!string.IsNullOrEmpty(query.TemplateName))
-                exp.And(x => x.TemplateName.Contains(query.TemplateName));
-            if (query.TemplateType.HasValue)
-                exp.And(x => x.TemplateType == query.TemplateType.Value);
-            if (query.Status.HasValue)
-                exp.And(x => x.Status == query.Status.Value);
-
-            var templates = await _templateRepository.GetListAsync(exp.ToExpression());
-            if (templates == null || !templates.Any())
-            {
-                return Array.Empty<byte>();
-            }
-
-            return await HbtExcelHelper.ExportAsync(templates, sheetName);
+            var data = await GetListAsync(new HbtGenTemplateQueryDto());
+            return await HbtExcelHelper.ExportAsync(data.Rows, sheetName);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "导出模板失败");
-            throw new HbtException("导出模板失败");
+            _logger.Error(L("GenTemplate.Export.Failed"), ex);
+            throw new HbtException(L("GenTemplate.Export.Failed"), ex);
         }
     }
 
     /// <summary>
-    /// 获取模板文件
+    /// 获取导入模板
     /// </summary>
     /// <param name="sheetName">工作表名称</param>
-    /// <returns>Excel模板文件字节数组</returns>
-    public async Task<byte[]> GetTemplateAsync(string sheetName = "Sheet1")
+    /// <returns>Excel模板文件</returns>
+    public async Task<(string fileName, byte[] content)> GetTemplateAsync(string sheetName = "Sheet1")
     {
-        try
-        {
-            return await HbtExcelHelper.GenerateTemplateAsync<HbtGenTemplate>(sheetName);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "获取模板文件失败");
-            throw new HbtException("获取模板文件失败");
-        }
+        return await HbtExcelHelper.GenerateTemplateAsync<HbtGenTemplate>(sheetName);
     }
 
     #endregion 模板操作

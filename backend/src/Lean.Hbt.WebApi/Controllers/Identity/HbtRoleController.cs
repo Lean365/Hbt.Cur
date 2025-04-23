@@ -9,7 +9,6 @@
 
 using Lean.Hbt.Application.Dtos.Identity;
 using Lean.Hbt.Application.Services.Identity;
-using Lean.Hbt.Domain.IServices.Admin;
 
 namespace Lean.Hbt.WebApi.Controllers.Identity
 {
@@ -32,7 +31,10 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// </summary>
         /// <param name="roleService">角色服务</param>
         /// <param name="localization">本地化服务</param>
-        public HbtRoleController(IHbtRoleService roleService, IHbtLocalizationService localization) : base(localization)
+        /// <param name="logger">日志服务</param>
+        public HbtRoleController(IHbtRoleService roleService,
+                                    IHbtLocalizationService localization,
+            IHbtLogger logger) : base(localization, logger)
         {
             _roleService = roleService;
         }
@@ -135,8 +137,8 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         [HttpGet("export")]
         public async Task<IActionResult> ExportAsync([FromQuery] HbtRoleQueryDto query)
         {
-            var result = await _roleService.ExportAsync(query, "Sheet1");
-            return File(result, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "角色数据.xlsx");
+            var (fileName, content) = await _roleService.ExportAsync(query, "Sheet1");
+            return File(content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
         }
 
         /// <summary>
@@ -146,8 +148,8 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         [HttpGet("template")]
         public async Task<IActionResult> GetTemplateAsync()
         {
-            var result = await _roleService.GetTemplateAsync("Sheet1");
-            return File(result, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "角色导入模板.xlsx");
+            var (fileName, content) = await _roleService.GetTemplateAsync("Sheet1");
+            return File(content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
         }
 
         /// <summary>

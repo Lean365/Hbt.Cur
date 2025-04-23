@@ -80,14 +80,14 @@ namespace Lean.Hbt.Application.Services.Workflow
         /// <param name="data">要导出的数据集合</param>
         /// <param name="sheetName">工作表名称</param>
         /// <returns>Excel文件字节数组</returns>
-        Task<byte[]> ExportAsync(IEnumerable<HbtWorkflowDefinitionDto> data, string sheetName = "Sheet1");
+        Task<(string fileName, byte[] content)> ExportAsync(IEnumerable<HbtWorkflowDefinitionDto> data, string sheetName = "Sheet1");
 
         /// <summary>
         /// 获取工作流定义导入模板
         /// </summary>
         /// <param name="sheetName">工作表名称</param>
         /// <returns>Excel模板文件字节数组</returns>
-        Task<byte[]> GetTemplateAsync(string sheetName = "Sheet1");
+        Task<(string fileName, byte[] content)> GetTemplateAsync(string sheetName = "Sheet1");
 
         /// <summary>
         /// 更新工作流定义状态

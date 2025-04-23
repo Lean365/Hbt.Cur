@@ -21,9 +21,8 @@ export default {
       _self: 'Administración del sistema',
       config: 'Configuración del sistema',
       language: 'Gestión de idiomas',
-      dicttype: 'Tipos de diccionario',
-      dictdata: 'Datos del diccionario',
-      translation: 'Gestión de traducciones'
+      dict: 'Gestión de diccionario',
+
     },
     identity: {
       _self: 'Gestión de identidad',

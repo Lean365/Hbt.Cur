@@ -10,7 +10,6 @@
 using System.Linq.Expressions;
 using Lean.Hbt.Common.Models;
 using Lean.Hbt.Domain.Entities.Identity;
-using Microsoft.Extensions.Logging;
 
 namespace Lean.Hbt.Infrastructure.Repositories
 {
@@ -27,7 +26,11 @@ namespace Lean.Hbt.Infrastructure.Repositories
         private readonly SqlSugarScope _db;
         private readonly SimpleClient<TEntity> _entities;
         private readonly IHbtCurrentUser _currentUser;
-        private readonly ILogger<HbtRepository<TEntity>> _logger;
+
+        /// <summary>
+        /// 日志服务
+        /// </summary>
+        protected readonly IHbtLogger _logger;
 
         /// <summary>
         /// 构造函数
@@ -35,7 +38,10 @@ namespace Lean.Hbt.Infrastructure.Repositories
         /// <param name="db">SqlSugar客户端</param>
         /// <param name="currentUser">当前用户服务</param>
         /// <param name="logger">日志服务</param>
-        public HbtRepository(SqlSugarScope db, IHbtCurrentUser currentUser, ILogger<HbtRepository<TEntity>> logger)
+        public HbtRepository(SqlSugarScope db, IHbtCurrentUser currentUser,
+            IHbtLogger logger
+
+            )
         {
             _db = db;
             _entities = _db.GetSimpleClient<TEntity>();
@@ -410,7 +416,7 @@ namespace Lean.Hbt.Infrastructure.Repositories
         /// </summary>
         public virtual async Task<List<string>> GetUserPermissionsAsync(long userId)
         {
-            _logger.LogInformation("[权限仓储] 开始查询用户权限: UserId={UserId}", userId);
+            _logger.Info("[权限仓储] 开始查询用户权限: UserId={UserId}", userId);
 
             var permissionStrings = await _db.Queryable<HbtUserRole>()
                 .LeftJoin<HbtRole>((ur, r) => ur.RoleId == r.Id)

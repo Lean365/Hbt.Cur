@@ -8,7 +8,6 @@
 //===================================================================
 
 using Lean.Hbt.Application.Services.Audit;
-using Lean.Hbt.Domain.IServices.Admin;
 
 namespace Lean.Hbt.WebApi.Controllers.Audit;
 
@@ -28,9 +27,11 @@ public class HbtServerMonitorController : HbtBaseController
     /// </summary>
     /// <param name="serverMonitorService">服务器监控服务</param>
     /// <param name="localization">本地化服务</param>
+    /// <param name="logger">日志服务</param>
     public HbtServerMonitorController(
         IHbtServerMonitorService serverMonitorService,
-        IHbtLocalizationService localization) : base(localization)
+            IHbtLocalizationService localization,
+            IHbtLogger logger) : base(localization, logger)
     {
         _serverMonitorService = serverMonitorService;
     }

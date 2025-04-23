@@ -1,6 +1,5 @@
 using Lean.Hbt.Application.Dtos.Identity;
 using Lean.Hbt.Domain.Entities.Identity;
-using Lean.Hbt.Domain.IServices.Admin;
 using Lean.Hbt.Domain.Repositories;
 
 namespace Lean.Hbt.WebApi.Controllers.Identity
@@ -19,12 +18,18 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
 
         /// <summary>
         /// 构造函数
+        /// <param name="oauthService">OAuth服务</param>
+        /// <param name="sessionManager">会话管理器</param>
+        /// <param name="userRepository">用户仓储</param>
+        /// <param name="localization">本地化</param>
+        /// <param name="logger">日志</param>
         /// </summary>
         public HbtOAuthController(
             IHbtOAuthService oauthService,
             IHbtIdentitySessionManager sessionManager,
             IHbtRepository<HbtUser> userRepository,
-            IHbtLocalizationService localization) : base(localization)
+                        IHbtLocalizationService localization,
+            IHbtLogger logger) : base(localization, logger)
         {
             _oauthService = oauthService;
             _sessionManager = sessionManager;

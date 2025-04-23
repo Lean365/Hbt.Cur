@@ -9,8 +9,6 @@
 
 using Lean.Hbt.Application.Dtos.Workflow;
 using Lean.Hbt.Application.Services.Workflow;
-using Lean.Hbt.Domain.IServices.Admin;
-using Lean.Hbt.Infrastructure.Security.Attributes;
 
 namespace Lean.Hbt.WebApi.Controllers.Workflow
 {
@@ -26,10 +24,14 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
 
         /// <summary>
         /// 构造函数
+        /// <param name="workflowDefinitionService">工作流定义服务</param>
+        /// <param name="localization">本地化服务</param>
+        /// <param name="logger">日志服务</param>
         /// </summary>
         public HbtWorkflowDefinitionController(
             IHbtWorkflowDefinitionService workflowDefinitionService,
-            IHbtLocalizationService localization) : base(localization)
+                        IHbtLocalizationService localization,
+            IHbtLogger logger) : base(localization, logger)
         {
             _workflowDefinitionService = workflowDefinitionService;
         }
@@ -124,7 +126,7 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         {
             var data = await _workflowDefinitionService.GetListAsync(query);
             var result = await _workflowDefinitionService.ExportAsync(data.Rows, sheetName);
-            return File(result, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"工作流定义数据_{DateTime.Now:yyyyMMddHHmmss}.xlsx");
+            return File(result.content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", result.fileName);
         }
 
         /// <summary>
@@ -135,7 +137,7 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         public async Task<IActionResult> GetTemplateAsync([FromQuery] string sheetName = "Sheet1")
         {
             var result = await _workflowDefinitionService.GetTemplateAsync(sheetName);
-            return File(result, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"工作流定义导入模板_{DateTime.Now:yyyyMMddHHmmss}.xlsx");
+            return File(result.content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", result.fileName);
         }
 
         /// <summary>

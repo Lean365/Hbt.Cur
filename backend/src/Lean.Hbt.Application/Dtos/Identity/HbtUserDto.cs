@@ -226,6 +226,7 @@ namespace Lean.Hbt.Application.Dtos.Identity
             Avatar = string.Empty;
             RoleIds = new List<long>();
             PostIds = new List<long>();
+            DeptIds = new List<long>();
             DeptId = 0;
             Remark = string.Empty;
         }
@@ -316,6 +317,11 @@ namespace Lean.Hbt.Application.Dtos.Identity
         public List<long> PostIds { get; set; }
 
         /// <summary>
+        /// 部门ID列表
+        /// </summary>
+        public List<long> DeptIds { get; set; }
+
+        /// <summary>
         /// 备注
         /// </summary>
         [MaxLength(500, ErrorMessage = "备注长度不能超过500个字符")]
@@ -336,6 +342,7 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// </summary>
         public HbtUserUpdateDto()
         {
+            UserName = string.Empty;
             NickName = string.Empty;
             EnglishName = string.Empty;
             PhoneNumber = string.Empty;
@@ -353,6 +360,13 @@ namespace Lean.Hbt.Application.Dtos.Identity
         [Required(ErrorMessage = "用户ID不能为空")]
         [Range(1, long.MaxValue, ErrorMessage = "用户ID必须大于0")]
         public long UserId { get; set; }
+
+        /// <summary>
+        /// 用户名
+        /// </summary>
+        [Required(ErrorMessage = "用户名不能为空")]
+        [MaxLength(30, ErrorMessage = "用户名长度不能超过30个字符")]
+        public string UserName { get; set; }
 
         /// <summary>
         /// 昵称

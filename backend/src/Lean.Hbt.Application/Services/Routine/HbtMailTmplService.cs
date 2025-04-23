@@ -11,7 +11,7 @@ using System;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Http;
 using Lean.Hbt.Common.Models;
 using Lean.Hbt.Domain.Entities.Routine;
 using Lean.Hbt.Application.Dtos.Routine;
@@ -26,9 +26,8 @@ namespace Lean.Hbt.Application.Services.Routine
     /// <summary>
     /// 邮件模板服务实现
     /// </summary>
-    public class HbtMailTmplService : IHbtMailTmplService
+    public class HbtMailTmplService : HbtBaseService, IHbtMailTmplService
     {
-        private readonly ILogger<HbtMailTmplService> _logger;
         private readonly IHbtRepository<HbtMailTmpl> _tmplRepository;
 
         /// <summary>
@@ -36,11 +35,12 @@ namespace Lean.Hbt.Application.Services.Routine
         /// </summary>
         /// <param name="logger">日志记录器</param>
         /// <param name="tmplRepository">模板仓储</param>
+        /// <param name="httpContextAccessor">HTTP上下文访问器</param>
         public HbtMailTmplService(
-            ILogger<HbtMailTmplService> logger,
-            IHbtRepository<HbtMailTmpl> tmplRepository)
+            IHbtLogger logger,
+            IHbtRepository<HbtMailTmpl> tmplRepository,
+            IHttpContextAccessor httpContextAccessor) : base(logger, httpContextAccessor)
         {
-            _logger = logger;
             _tmplRepository = tmplRepository;
         }
 
@@ -89,7 +89,7 @@ namespace Lean.Hbt.Application.Services.Routine
         {
             var tmpl = await _tmplRepository.GetByIdAsync(tmplId);
             if (tmpl == null)
-                throw new HbtException($"邮件模板不存在: {tmplId}");
+                throw new HbtException(L("MailTmpl.NotFound", tmplId));
 
             return tmpl.Adapt<HbtMailTmplDto>();
         }
@@ -105,11 +105,11 @@ namespace Lean.Hbt.Application.Services.Routine
             // 验证模板编码是否已存在
             var existingTmpl = await _tmplRepository.GetFirstAsync(x => x.TmplCode == input.TmplCode);
             if (existingTmpl != null)
-                throw new HbtException($"模板编码已存在: {input.TmplCode}");
+                throw new HbtException(L("MailTmpl.CodeExists", input.TmplCode));
 
             var result = await _tmplRepository.CreateAsync(tmpl);
             if (result <= 0)
-                throw new HbtException("创建邮件模板失败");
+                throw new HbtException(L("MailTmpl.CreateFailed"));
 
             return tmpl.Id;
         }
@@ -121,12 +121,12 @@ namespace Lean.Hbt.Application.Services.Routine
         {
             var tmpl = await _tmplRepository.GetByIdAsync(tmplId);
             if (tmpl == null)
-                throw new HbtException($"邮件模板不存在: {tmplId}");
+                throw new HbtException(L("MailTmpl.NotFound", tmplId));
 
             // 验证模板编码是否已存在
             var existingTmpl = await _tmplRepository.GetFirstAsync(x => x.TmplCode == input.TmplCode && x.Id != tmplId);
             if (existingTmpl != null)
-                throw new HbtException($"模板编码已存在: {input.TmplCode}");
+                throw new HbtException(L("MailTmpl.CodeExists", input.TmplCode));
 
             input.Adapt(tmpl);
             var result = await _tmplRepository.UpdateAsync(tmpl);
@@ -140,7 +140,7 @@ namespace Lean.Hbt.Application.Services.Routine
         {
             var tmpl = await _tmplRepository.GetByIdAsync(tmplId);
             if (tmpl == null)
-                throw new HbtException($"邮件模板不存在: {tmplId}");
+                throw new HbtException(L("MailTmpl.NotFound", tmplId));
 
             var result = await _tmplRepository.DeleteAsync(tmplId);
             return result > 0;
@@ -151,6 +151,9 @@ namespace Lean.Hbt.Application.Services.Routine
         /// </summary>
         public async Task<bool> BatchDeleteAsync(long[] tmplIds)
         {
+            if (tmplIds == null || tmplIds.Length == 0)
+                throw new HbtException(L("MailTmpl.SelectToDelete"));
+
             foreach (var tmplId in tmplIds)
             {
                 await DeleteAsync(tmplId);
@@ -161,23 +164,29 @@ namespace Lean.Hbt.Application.Services.Routine
         /// <summary>
         /// 导出邮件模板数据
         /// </summary>
-        public async Task<byte[]> ExportAsync(HbtMailTmplQueryDto query, string sheetName = "邮件模板数据")
+        public async Task<(string fileName, byte[] content)> ExportAsync(HbtMailTmplQueryDto query, string sheetName = "MailTmpl")
         {
-            var exp = Expressionable.Create<HbtMailTmpl>();
+            try
+            {
+                var list = await _tmplRepository.GetListAsync(KpMailTmplQueryExpression(query));
+                return await HbtExcelHelper.ExportAsync(list.Adapt<List<HbtMailTmplExportDto>>(), sheetName, L("MailTmpl.ExportTitle"));
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(L("MailTmpl.ExportFailed"), ex);
+                throw new HbtException(L("MailTmpl.ExportFailed"));
+            }
+        }
 
-            if (!string.IsNullOrEmpty(query.TmplName))
-                exp.And(x => x.TmplName.Contains(query.TmplName));
-
-            if (!string.IsNullOrEmpty(query.TmplCode))
-                exp.And(x => x.TmplCode.Contains(query.TmplCode));
-
-            if (query.TmplStatus.HasValue)
-                exp.And(x => x.TmplStatus == query.TmplStatus.Value);
-
-            var list = await _tmplRepository.GetListAsync(exp.ToExpression());
-            var result = list.Adapt<List<HbtMailTmplExportDto>>();
-
-            return await HbtExcelHelper.ExportAsync(result, sheetName);
+        private Expression<Func<HbtMailTmpl, bool>> KpMailTmplQueryExpression(HbtMailTmplQueryDto query)
+        {
+            return Expressionable.Create<HbtMailTmpl>()
+                .AndIF(!string.IsNullOrEmpty(query.TmplName), x => x.TmplName.Contains(query.TmplName))
+                .AndIF(!string.IsNullOrEmpty(query.TmplCode), x => x.TmplCode.Contains(query.TmplCode))
+                .AndIF(query.TmplStatus.HasValue, x => x.TmplStatus == query.TmplStatus.Value)
+                .AndIF(query.StartTime.HasValue, x => x.CreateTime >= query.StartTime.Value)
+                .AndIF(query.EndTime.HasValue, x => x.CreateTime <= query.EndTime.Value)
+                .ToExpression();
         }
     }
 } 

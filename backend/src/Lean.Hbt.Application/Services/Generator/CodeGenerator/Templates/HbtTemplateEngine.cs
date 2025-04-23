@@ -8,6 +8,7 @@
 //===================================================================
 
 using Lean.Hbt.Application.Services.Generator.CodeGenerator.Models;
+using Lean.Hbt.Domain.IServices.Extensions;
 using Scriban;
 using Scriban.Runtime;
 

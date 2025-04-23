@@ -12,6 +12,7 @@
 using System.Text.Json;
 using Lean.Hbt.Application.Services.Workflow.Engine.Expressions;
 using Lean.Hbt.Domain.Entities.Workflow;
+using Lean.Hbt.Domain.IServices.Extensions;
 using Lean.Hbt.Domain.Models.Workflow;
 using Lean.Hbt.Domain.Repositories;
 

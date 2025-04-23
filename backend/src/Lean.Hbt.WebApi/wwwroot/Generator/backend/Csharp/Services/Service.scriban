@@ -194,7 +194,7 @@ public class {{ pascal_case table.table_name }}Service : I{{ pascal_case table.t
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "导入{{ table.comment }}数据失败，数据：{Data}", item);
+                    _logger.Error( "导入{{ table.comment }}数据失败，数据：{Data}", item);
                     fail++;
                 }
             }
@@ -203,7 +203,7 @@ public class {{ pascal_case table.table_name }}Service : I{{ pascal_case table.t
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "导入{{ table.comment }}数据失败");
+            _logger.Error( "导入{{ table.comment }}数据失败");
             throw new HbtException($"导入失败：{ex.Message}");
         }
     }
@@ -214,7 +214,7 @@ public class {{ pascal_case table.table_name }}Service : I{{ pascal_case table.t
     /// <param name="query">查询条件</param>
     /// <param name="sheetName">工作表名称</param>
     /// <returns>Excel文件字节数组</returns>
-    public async Task<byte[]> ExportAsync({{ pascal_case table.table_name }}QueryDto query, string sheetName = "Sheet1")
+    public async Task<(string fileName, byte[] content)> ExportAsync({{ pascal_case table.table_name }}QueryDto query, string sheetName = "Sheet1")
     {
         var list = await GetListAsync(query);
         if (!list.Rows.Any())
@@ -229,7 +229,7 @@ public class {{ pascal_case table.table_name }}Service : I{{ pascal_case table.t
     /// </summary>
     /// <param name="sheetName">工作表名称</param>
     /// <returns>Excel模板文件字节数组</returns>
-    public async Task<byte[]> GetTemplateAsync(string sheetName = "Sheet1")
+    public async Task<(string fileName, byte[] content)> GetTemplateAsync(string sheetName = "Sheet1")
     {
         var list = new List<{{ pascal_case table.table_name }}ImportDto>
         {
@@ -263,7 +263,7 @@ public class {{ pascal_case table.table_name }}Service : I{{ pascal_case table.t
     {
         try
         {
-            _logger.LogInformation("开始审核{{ table.comment }}，ID：{Id}", input.Id);
+            _logger.Info("开始审核{{ table.comment }}，ID：{Id}", input.Id);
             
             var entity = await _repository.GetByIdAsync(input.Id);
             if (entity == null)
@@ -280,12 +280,12 @@ public class {{ pascal_case table.table_name }}Service : I{{ pascal_case table.t
             
             var result = await _repository.UpdateAsync(entity);
             
-            _logger.LogInformation("审核{{ table.comment }}成功，ID：{Id}", input.Id);
+            _logger.Info("审核{{ table.comment }}成功，ID：{Id}", input.Id);
             return result ? HbtResult.Success("审核成功") : HbtResult.Error("审核失败");
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "审核{{ table.comment }}失败，ID：{Id}", input.Id);
+            _logger.Error( "审核{{ table.comment }}失败，ID：{Id}", input.Id);
             throw new BusinessException("审核{{ table.comment }}失败", ex);
         }
     }
@@ -299,7 +299,7 @@ public class {{ pascal_case table.table_name }}Service : I{{ pascal_case table.t
     {
         try
         {
-            _logger.LogInformation("开始撤销{{ table.comment }}，ID：{Id}", input.Id);
+            _logger.Info("开始撤销{{ table.comment }}，ID：{Id}", input.Id);
             
             var entity = await _repository.GetByIdAsync(input.Id);
             if (entity == null)
@@ -316,12 +316,12 @@ public class {{ pascal_case table.table_name }}Service : I{{ pascal_case table.t
             
             var result = await _repository.UpdateAsync(entity);
             
-            _logger.LogInformation("撤销{{ table.comment }}成功，ID：{Id}", input.Id);
+            _logger.Info("撤销{{ table.comment }}成功，ID：{Id}", input.Id);
             return result ? HbtResult.Success("撤销成功") : HbtResult.Error("撤销失败");
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "撤销{{ table.comment }}失败，ID：{Id}", input.Id);
+            _logger.Error( "撤销{{ table.comment }}失败，ID：{Id}", input.Id);
             throw new BusinessException("撤销{{ table.comment }}失败", ex);
         }
     }

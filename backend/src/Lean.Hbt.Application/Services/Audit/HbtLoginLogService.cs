@@ -16,11 +16,12 @@ using Lean.Hbt.Common.Models;
 using Lean.Hbt.Domain.Entities.Audit;
 using Lean.Hbt.Application.Dtos.Audit;
 using Lean.Hbt.Common.Exceptions;
-using Lean.Hbt.Common.Helpers;
+using Lean.Hbt.Common.Utils;
 using Lean.Hbt.Domain.Repositories;
 using SqlSugar;
 using Mapster;
-using Microsoft.Extensions.Logging;
+using Lean.Hbt.Domain.IServices.Extensions;
+using Microsoft.AspNetCore.Http;
 
 namespace Lean.Hbt.Application.Services.Audit
 {
@@ -31,22 +32,34 @@ namespace Lean.Hbt.Application.Services.Audit
     /// 创建者: Lean365
     /// 创建时间: 2024-01-20
     /// </remarks>
-    public class HbtLoginLogService : IHbtLoginLogService
+    public class HbtLoginLogService : HbtBaseService, IHbtLoginLogService
     {
-        private readonly ILogger<HbtLoginLogService> _logger;
         private readonly IHbtRepository<HbtLoginLog> _loginLogRepository;
+        private readonly IHbtLogger _logger;
 
         /// <summary>
         /// 构造函数
         /// </summary>
-        /// <param name="logger">日志记录器</param>
-        /// <param name="loginLogRepository">登录日志仓储</param>
         public HbtLoginLogService(
-            ILogger<HbtLoginLogService> logger,
-            IHbtRepository<HbtLoginLog> loginLogRepository)
+            IHbtRepository<HbtLoginLog> loginLogRepository,
+            IHbtLogger logger,
+            IHttpContextAccessor httpContextAccessor) : base(logger, httpContextAccessor)
         {
+            _loginLogRepository = loginLogRepository ?? throw new ArgumentNullException(nameof(loginLogRepository));
             _logger = logger;
-            _loginLogRepository = loginLogRepository;
+        }
+
+        /// <summary>
+        /// 构建查询条件
+        /// </summary>
+        private Expression<Func<HbtLoginLog, bool>> KpLoginLogQueryExpression(HbtLoginLogQueryDto query)
+        {
+            return Expressionable.Create<HbtLoginLog>()
+                .AndIF(!string.IsNullOrEmpty(query.UserName), x => x.UserName.Contains(query.UserName!))
+                .AndIF(!string.IsNullOrEmpty(query.IpAddress), x => x.IpAddress.Contains(query.IpAddress!))
+                .AndIF(query.StartTime.HasValue, x => x.CreateTime >= query.StartTime.Value)
+                .AndIF(query.EndTime.HasValue, x => x.CreateTime <= query.EndTime.Value)
+                .ToExpression();
         }
 
         /// <summary>
@@ -54,42 +67,32 @@ namespace Lean.Hbt.Application.Services.Audit
         /// </summary>
         /// <param name="query">查询条件</param>
         /// <returns>返回分页结果</returns>
-        public async Task<HbtPagedResult<HbtLoginLogDto>> GetListAsync(HbtLoginLogQueryDto query)
+        public async Task<HbtPagedResult<HbtLoginLogDto>> GetListAsync(HbtLoginLogQueryDto? query)
         {
-            var exp = Expressionable.Create<HbtLoginLog>();
+            query ??= new HbtLoginLogQueryDto();
 
-            if (!string.IsNullOrEmpty(query.UserName))
-                exp.And(x => x.UserName.Contains(query.UserName));
-
-            if (!string.IsNullOrEmpty(query.IpAddress))
-                exp.And(x => x.IpAddress.Contains(query.IpAddress));
-
-            if (query.Success.HasValue)
-                exp.And(x => x.Success == (query.Success.Value ? 1 : 0));
-
-            if (query.StartTime.HasValue)
-                exp.And(x => x.CreateTime >= query.StartTime.Value);
-
-            if (query.EndTime.HasValue)
-                exp.And(x => x.CreateTime <= query.EndTime.Value);
-
-
-            // 执行分页查询
-            var result = await _loginLogRepository.GetPagedListAsync(
-                exp.ToExpression(),
-                query.PageIndex,
-                query.PageSize,
-                x => x.CreateTime,
-                OrderByType.Desc);
-
-            // 返回分页结果
-            return new HbtPagedResult<HbtLoginLogDto>
+            try
             {
-                Rows = result.Rows.Adapt<List<HbtLoginLogDto>>(),
-                TotalNum = result.TotalNum,
-                PageIndex = result.PageIndex,
-                PageSize = result.PageSize
-            };
+                var result = await _loginLogRepository.GetPagedListAsync(
+                    KpLoginLogQueryExpression(query),
+                    query.PageIndex,
+                    query.PageSize,
+                    x => x.CreateTime,
+                    OrderByType.Desc);
+
+                return new HbtPagedResult<HbtLoginLogDto>
+                {
+                    TotalNum = result.TotalNum,
+                    PageIndex = query.PageIndex,
+                    PageSize = query.PageSize,
+                    Rows = result.Rows.Adapt<List<HbtLoginLogDto>>()
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.Error("获取登录日志分页列表失败", ex);
+                throw;
+            }
         }
 
         /// <summary>
@@ -99,55 +102,35 @@ namespace Lean.Hbt.Application.Services.Audit
         /// <returns>返回登录日志详情</returns>
         public async Task<HbtLoginLogDto> GetByIdAsync(long logId)
         {
-            var log = await _loginLogRepository.GetByIdAsync(logId);
-            if (log == null)
-                throw new HbtException($"登录日志不存在: {logId}");
-
-            return log.Adapt<HbtLoginLogDto>();
+            try
+            {
+                var log = await _loginLogRepository.GetByIdAsync(logId);
+                return log == null ? throw new HbtException(L("Audit.LoginLog.NotFound", logId)) : log.Adapt<HbtLoginLogDto>();
+            }
+            catch (Exception ex)
+            {
+                _logger.Error("获取登录日志详情失败", ex);
+                throw;
+            }
         }
 
         /// <summary>
         /// 导出登录日志数据
         /// </summary>
         /// <param name="query">查询条件</param>
-        /// <param name="sheetName">工作表名称</param>
-        /// <returns>Excel文件字节数组</returns>
-        public async Task<byte[]> ExportAsync(HbtLoginLogQueryDto query, string sheetName)
+        /// <param name="sheetName">Excel工作表名称</param>
+        /// <returns>返回导出的Excel文件内容</returns>
+        public async Task<(string fileName, byte[] content)> ExportAsync(HbtLoginLogQueryDto query, string sheetName = "LoginLog")
         {
             try
             {
-                // 1.构建查询条件
-                var predicate = Expressionable.Create<HbtLoginLog>();
-
-                if (!string.IsNullOrEmpty(query?.UserName))
-                    predicate.And(x => x.UserName.Contains(query.UserName));
-
-                if (!string.IsNullOrEmpty(query?.IpAddress))
-                    predicate.And(x => x.IpAddress.Contains(query.IpAddress));
-
-                if (query?.Success.HasValue == true)
-                    predicate.And(x => x.Success == (query.Success.Value ? 1 : 0));
-
-                if (query?.StartTime.HasValue == true)
-                    predicate.And(x => x.CreateTime >= query.StartTime.Value);
-
-                if (query?.EndTime.HasValue == true)
-                    predicate.And(x => x.CreateTime <= query.EndTime.Value);
-
-                // 2.查询数据
-                var logs = await _loginLogRepository.AsQueryable()
-                    .Where(predicate.ToExpression())
-                    .OrderByDescending(x => x.CreateTime)
-                    .ToListAsync();
-
-                // 3.转换并导出
-                var dtos = logs.Adapt<List<HbtLoginLogDto>>();
-                return await HbtExcelHelper.ExportAsync(dtos, sheetName);
+                var list = await _loginLogRepository.GetListAsync(KpLoginLogQueryExpression(query));
+                return await HbtExcelHelper.ExportAsync(list.Adapt<List<HbtLoginLogExportDto>>(), sheetName, L("Audit.LoginLog.ExportTitle"));
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "导出登录日志数据失败");
-                return Array.Empty<byte>();
+                _logger.Error(L("Audit.LoginLog.ExportFailed", ex.Message), ex);
+                throw new HbtException(L("Audit.LoginLog.ExportFailed"));
             }
         }
 
@@ -157,8 +140,16 @@ namespace Lean.Hbt.Application.Services.Audit
         /// <returns>返回是否清空成功</returns>
         public async Task<bool> ClearAsync()
         {
-            var result = await _loginLogRepository.DeleteAsync((Expression<Func<HbtLoginLog, bool>>)(x => true));
-            return result > 0;
+            try
+            {
+                var result = await _loginLogRepository.DeleteAsync((Expression<Func<HbtLoginLog, bool>>)(x => true));
+                return result > 0;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error("删除登录日志失败", ex);
+                throw;
+            }
         }
 
         /// <summary>
@@ -168,10 +159,18 @@ namespace Lean.Hbt.Application.Services.Audit
         /// <returns>任务</returns>
         public async Task UnlockUserAsync(long userId)
         {
-            var exp = Expressionable.Create<HbtLoginLog>();
-            exp.And(x => x.UserId == userId);
-            
-            await _loginLogRepository.DeleteAsync(exp.ToExpression());
+            try
+            {
+                var exp = Expressionable.Create<HbtLoginLog>();
+                exp.And(x => x.UserId == userId);
+                
+                await _loginLogRepository.DeleteAsync(exp.ToExpression());
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(L("Audit.LoginLog.UnlockFailed", userId, ex.Message), ex);
+                throw new HbtException(L("Audit.LoginLog.UnlockFailed", userId));
+            }
         }
     }
 } 

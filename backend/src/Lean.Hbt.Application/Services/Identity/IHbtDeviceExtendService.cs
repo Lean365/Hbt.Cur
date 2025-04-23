@@ -34,7 +34,7 @@ namespace Lean.Hbt.Application.Services.Identity
         /// <param name="data">要导出的数据</param>
         /// <param name="sheetName">工作表名称</param>
         /// <returns>Excel文件字节数组</returns>
-        Task<byte[]> ExportAsync(IEnumerable<HbtDeviceExtendDto> data, string sheetName = "设备扩展信息");
+        Task<(string fileName, byte[] content)> ExportAsync(IEnumerable<HbtDeviceExtendDto> data, string sheetName = "设备扩展信息");
 
         /// <summary>
         /// 更新设备信息

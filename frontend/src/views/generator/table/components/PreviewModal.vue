@@ -1,6 +1,6 @@
 <template>
   <a-modal
-    :visible="visible"
+    :open="open"
     title="代码预览"
     width="80%"
     :footer="null"
@@ -46,13 +46,13 @@ import TypesPreview from './preview/TypesPreview.vue'
 import LocalesPreview from './preview/LocalesPreview.vue'
 
 defineProps<{
-  visible: boolean
+  open: boolean
   loading: boolean
   previewData: HbtGenTablePreviewDto
 }>()
 
 const emit = defineEmits<{
-  (e: 'update:visible', visible: boolean): void
+  (e: 'update:open', open: boolean): void
 }>()
 
 // 当前激活的标签页
@@ -60,7 +60,7 @@ const activeKey = ref('controllers')
 
 /** 取消按钮点击事件 */
 const handleCancel = () => {
-  emit('update:visible', false)
+  emit('update:open', false)
 }
 </script>
 

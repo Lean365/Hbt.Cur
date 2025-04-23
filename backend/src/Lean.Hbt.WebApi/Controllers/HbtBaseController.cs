@@ -9,7 +9,7 @@
 
 using Microsoft.AspNetCore.Mvc;
 using Lean.Hbt.Common.Models;
-using Lean.Hbt.Domain.IServices.Admin;
+using Lean.Hbt.Domain.IServices.Extensions;
 
 namespace Lean.Hbt.WebApi.Controllers
 {
@@ -26,12 +26,19 @@ namespace Lean.Hbt.WebApi.Controllers
         protected readonly IHbtLocalizationService _localization;
 
         /// <summary>
+        /// 日志服务
+        /// </summary>
+        protected readonly IHbtLogger _logger;
+
+        /// <summary>
         /// 构造函数
         /// </summary>
         /// <param name="localization">本地化服务</param>
-        protected HbtBaseController(IHbtLocalizationService localization)
+        /// <param name="logger">日志服务</param>
+        protected HbtBaseController(IHbtLocalizationService localization, IHbtLogger logger)
         {
             _localization = localization;
+            _logger = logger;
         }
 
         /// <summary>

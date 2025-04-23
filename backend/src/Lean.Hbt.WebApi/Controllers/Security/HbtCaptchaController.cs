@@ -1,7 +1,5 @@
 using Lean.Hbt.Application.Dtos.Security;
-using Lean.Hbt.Domain.IServices.Admin;
 using Lean.Hbt.Domain.IServices.Security;
-using Microsoft.Extensions.Logging;
 
 namespace Lean.Hbt.WebApi.Controllers.Security;
 
@@ -11,11 +9,9 @@ namespace Lean.Hbt.WebApi.Controllers.Security;
 [Route("api/[controller]", Name = "验证码")]
 [ApiController]
 [ApiModule("identity", "身份认证")]
-
 public class HbtCaptchaController : HbtBaseController
 {
     private readonly IHbtCaptchaService _captchaService;
-    private readonly ILogger<HbtCaptchaController> _logger;
 
     /// <summary>
     /// 构造函数
@@ -24,13 +20,12 @@ public class HbtCaptchaController : HbtBaseController
     /// <param name="localization">本地化服务</param>
     /// <param name="logger">日志服务</param>
     public HbtCaptchaController(
-        IHbtCaptchaService captchaService, 
-        IHbtLocalizationService localization,
-        ILogger<HbtCaptchaController> logger) : base(localization)
+        IHbtCaptchaService captchaService,
+                        IHbtLocalizationService localization,
+            IHbtLogger logger) : base(localization, logger)
     {
-        _logger = logger;
         _captchaService = captchaService;
-        _logger.LogInformation("验证码控制器已创建");
+        _logger.Info("验证码控制器已创建");
     }
 
     /// <summary>
@@ -40,11 +35,11 @@ public class HbtCaptchaController : HbtBaseController
     [AllowAnonymous]
     public async Task<ActionResult<SliderCaptchaDto>> GenerateSliderAsync()
     {
-        _logger.LogInformation("开始生成滑块验证码");
+        _logger.Info("开始生成滑块验证码");
         try
         {
             var (bgImage, sliderImage, token) = await _captchaService.GenerateSliderAsync();
-            _logger.LogInformation("滑块验证码生成成功 - Token: {Token}, 时间: {Time}", token, DateTime.Now);
+            _logger.Info("滑块验证码生成成功 - Token: {Token}, 时间: {Time}", token, DateTime.Now);
             return Ok(new SliderCaptchaDto
             {
                 BackgroundImage = bgImage,
@@ -54,7 +49,7 @@ public class HbtCaptchaController : HbtBaseController
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "生成滑块验证码时发生错误");
+            _logger.Error("生成滑块验证码时发生错误", ex.Message);
             throw;
         }
     }
@@ -66,11 +61,11 @@ public class HbtCaptchaController : HbtBaseController
     [AllowAnonymous]
     public async Task<ActionResult<CaptchaResultDto>> ValidateSliderAsync([FromBody] SliderValidateDto request)
     {
-        _logger.LogInformation("开始验证滑块: Token={Token}, XOffset={XOffset}", request.Token, request.XOffset);
+        _logger.Info("开始验证滑块: Token={Token}, XOffset={XOffset}", request.Token, request.XOffset);
         try
         {
             var isValid = await _captchaService.ValidateSliderAsync(request.Token, request.XOffset);
-            _logger.LogInformation("滑块验证结果: {Result}", isValid ? "验证通过" : "验证失败");
+            _logger.Info("滑块验证结果: {Result}", isValid ? "验证通过" : "验证失败");
             return Ok(new CaptchaResultDto
             {
                 Success = isValid,
@@ -79,7 +74,7 @@ public class HbtCaptchaController : HbtBaseController
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "验证滑块时发生错误");
+            _logger.Error("验证滑块时发生错误", ex.Message);
             throw;
         }
     }

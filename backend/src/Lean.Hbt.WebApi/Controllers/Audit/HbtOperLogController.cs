@@ -9,8 +9,6 @@
 
 using Lean.Hbt.Application.Dtos.Audit;
 using Lean.Hbt.Application.Services.Audit;
-using Lean.Hbt.Domain.IServices.Admin;
-using Lean.Hbt.Infrastructure.Security.Attributes;
 
 namespace Lean.Hbt.WebApi.Controllers.Audit
 {
@@ -24,7 +22,6 @@ namespace Lean.Hbt.WebApi.Controllers.Audit
     [Route("api/[controller]", Name = "操作日志")]
     [ApiController]
     [ApiModule("audit", "审计日志")]
-
     public class HbtOperLogController : HbtBaseController
     {
         private readonly IHbtOperLogService _operLogService;
@@ -34,7 +31,10 @@ namespace Lean.Hbt.WebApi.Controllers.Audit
         /// </summary>
         /// <param name="operLogService">操作日志服务</param>
         /// <param name="localization">本地化服务</param>
-        public HbtOperLogController(IHbtOperLogService operLogService, IHbtLocalizationService localization) : base(localization)
+        /// <param name="logger">日志服务</param>
+        public HbtOperLogController(IHbtOperLogService operLogService,
+                        IHbtLocalizationService localization,
+            IHbtLogger logger) : base(localization, logger)
         {
             _operLogService = operLogService;
         }
@@ -77,7 +77,7 @@ namespace Lean.Hbt.WebApi.Controllers.Audit
         public async Task<IActionResult> ExportAsync([FromQuery] HbtOperLogQueryDto query, [FromQuery] string sheetName = "操作日志")
         {
             var result = await _operLogService.ExportAsync(query, sheetName);
-            return File(result, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"操作日志_{DateTime.Now:yyyyMMddHHmmss}.xlsx");
+            return File(result.content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", result.fileName);
         }
 
         /// <summary>

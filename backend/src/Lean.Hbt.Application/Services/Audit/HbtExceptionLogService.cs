@@ -7,20 +7,10 @@
 // 描述   : 异常日志服务实现
 //===================================================================
 
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Collections.Generic;
 using System.Linq.Expressions;
-using Lean.Hbt.Common.Models;
-using Lean.Hbt.Domain.Entities.Audit;
 using Lean.Hbt.Application.Dtos.Audit;
-using Lean.Hbt.Common.Exceptions;
-using Lean.Hbt.Common.Helpers;
-using Lean.Hbt.Domain.Repositories;
-using SqlSugar;
-using Mapster;
-using Microsoft.Extensions.Logging;
+using Lean.Hbt.Domain.Entities.Audit;
+using Microsoft.AspNetCore.Http;
 
 namespace Lean.Hbt.Application.Services.Audit
 {
@@ -31,22 +21,33 @@ namespace Lean.Hbt.Application.Services.Audit
     /// 创建者: Lean365
     /// 创建时间: 2024-01-20
     /// </remarks>
-    public class HbtExceptionLogService : IHbtExceptionLogService
+    public class HbtExceptionLogService : HbtBaseService, IHbtExceptionLogService
     {
-        private readonly ILogger<HbtExceptionLogService> _logger;
         private readonly IHbtRepository<HbtExceptionLog> _exceptionLogRepository;
 
         /// <summary>
         /// 构造函数
         /// </summary>
-        /// <param name="logger">日志记录器</param>
-        /// <param name="exceptionLogRepository">异常日志仓储</param>
         public HbtExceptionLogService(
-            ILogger<HbtExceptionLogService> logger,
-            IHbtRepository<HbtExceptionLog> exceptionLogRepository)
+            IHbtRepository<HbtExceptionLog> exceptionLogRepository,
+            IHbtLogger logger,
+            IHttpContextAccessor httpContextAccessor) : base(logger, httpContextAccessor)
         {
-            _logger = logger;
-            _exceptionLogRepository = exceptionLogRepository;
+            _exceptionLogRepository = exceptionLogRepository ?? throw new ArgumentNullException(nameof(exceptionLogRepository));
+        }
+
+        /// <summary>
+        /// 构建查询条件
+        /// </summary>
+        private Expression<Func<HbtExceptionLog, bool>> KpExceptionLogQueryExpression(HbtExceptionLogQueryDto query)
+        {
+            return Expressionable.Create<HbtExceptionLog>()
+                .AndIF(!string.IsNullOrEmpty(query.UserName), x => x.UserName.Contains(query.UserName!))
+                .AndIF(!string.IsNullOrEmpty(query.Method), x => x.Method.Contains(query.Method!))
+                .AndIF(!string.IsNullOrEmpty(query.ExceptionType), x => x.ExceptionType.Contains(query.ExceptionType!))
+                .AndIF(query.StartTime.HasValue, x => x.CreateTime >= query.StartTime.Value)
+                .AndIF(query.EndTime.HasValue, x => x.CreateTime <= query.EndTime.Value)
+                .ToExpression();
         }
 
         /// <summary>
@@ -54,43 +55,25 @@ namespace Lean.Hbt.Application.Services.Audit
         /// </summary>
         /// <param name="query">查询条件</param>
         /// <returns>返回分页结果</returns>
-        public async Task<HbtPagedResult<HbtExceptionLogDto>> GetListAsync(HbtExceptionLogQueryDto query)
+        public async Task<HbtPagedResult<HbtExceptionLogDto>> GetListAsync(HbtExceptionLogQueryDto? query)
         {
-            var exp = Expressionable.Create<HbtExceptionLog>();
+            query ??= new HbtExceptionLogQueryDto();
 
-            if (!string.IsNullOrEmpty(query.UserName))
-                exp.And(x => x.UserName.Contains(query.UserName));
-
-            if (!string.IsNullOrEmpty(query.Method))
-                exp.And(x => x.Method.Contains(query.Method));
-
-            if (!string.IsNullOrEmpty(query.ExceptionType))
-                exp.And(x => x.ExceptionType.Contains(query.ExceptionType));
-
-            if (query.StartTime.HasValue)
-                exp.And(x => x.CreateTime >= query.StartTime.Value);
-
-            if (query.EndTime.HasValue)
-                exp.And(x => x.CreateTime <= query.EndTime.Value);
-
-            // 执行分页查询
             var result = await _exceptionLogRepository.GetPagedListAsync(
-                exp.ToExpression(),
+                KpExceptionLogQueryExpression(query),
                 query.PageIndex,
                 query.PageSize,
                 x => x.CreateTime,
                 OrderByType.Desc);
 
-            // 返回分页结果
             return new HbtPagedResult<HbtExceptionLogDto>
             {
-                Rows = result.Rows.Adapt<List<HbtExceptionLogDto>>(),
                 TotalNum = result.TotalNum,
-                PageIndex = result.PageIndex,
-                PageSize = result.PageSize
+                PageIndex = query.PageIndex,
+                PageSize = query.PageSize,
+                Rows = result.Rows.Adapt<List<HbtExceptionLogDto>>()
             };
         }
-
 
         /// <summary>
         /// 获取异常日志详情
@@ -100,10 +83,7 @@ namespace Lean.Hbt.Application.Services.Audit
         public async Task<HbtExceptionLogDto> GetByIdAsync(long logId)
         {
             var log = await _exceptionLogRepository.GetByIdAsync(logId);
-            if (log == null)
-                throw new HbtException($"异常日志不存在: {logId}");
-
-            return log.Adapt<HbtExceptionLogDto>();
+            return log == null ? throw new HbtException(L("Audit.ExceptionLog.NotFound", logId)) : log.Adapt<HbtExceptionLogDto>();
         }
 
         /// <summary>
@@ -111,36 +91,19 @@ namespace Lean.Hbt.Application.Services.Audit
         /// </summary>
         /// <param name="query">查询条件</param>
         /// <param name="sheetName">Excel工作表名称</param>
-        /// <returns>返回导出的Excel文件字节数组</returns>
-        public async Task<byte[]> ExportAsync(HbtExceptionLogQueryDto query, string sheetName = "异常日志数据")
+        /// <returns>返回导出的Excel文件内容</returns>
+        public async Task<(string fileName, byte[] content)> ExportAsync(HbtExceptionLogQueryDto query, string sheetName = "ExceptionLog")
         {
-            // 1.构建查询条件
-            var predicate = Expressionable.Create<HbtExceptionLog>();
-
-            if (!string.IsNullOrEmpty(query.UserName))
-                predicate.And(x => x.UserName.Contains(query.UserName));
-
-            if (!string.IsNullOrEmpty(query.Method))
-                predicate.And(x => x.Method.Contains(query.Method));
-
-            if (!string.IsNullOrEmpty(query.ExceptionType))
-                predicate.And(x => x.ExceptionType.Contains(query.ExceptionType));
-
-            if (query.StartTime.HasValue)
-                predicate.And(x => x.CreateTime >= query.StartTime.Value);
-
-            if (query.EndTime.HasValue)
-                predicate.And(x => x.CreateTime <= query.EndTime.Value);
-
-            // 2.查询数据
-            var logs = await _exceptionLogRepository.AsQueryable()
-                .Where(predicate.ToExpression())
-                .OrderByDescending(x => x.CreateTime)
-                .ToListAsync();
-
-            // 3.转换并导出
-            var exportDtos = logs.Adapt<List<HbtExceptionLogExportDto>>();
-            return await HbtExcelHelper.ExportAsync(exportDtos, sheetName);
+            try
+            {
+                var list = await _exceptionLogRepository.GetListAsync(KpExceptionLogQueryExpression(query));
+                return await HbtExcelHelper.ExportAsync(list.Adapt<List<HbtExceptionLogExportDto>>(), sheetName, L("Audit.ExceptionLog.ExportTitle"));
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(L("Audit.ExceptionLog.ExportFailed", ex.Message), ex);
+                throw new HbtException(L("Audit.ExceptionLog.ExportFailed"));
+            }
         }
 
         /// <summary>
@@ -149,8 +112,16 @@ namespace Lean.Hbt.Application.Services.Audit
         /// <returns>返回是否清空成功</returns>
         public async Task<bool> ClearAsync()
         {
-            var result = await _exceptionLogRepository.DeleteAsync((Expression<Func<HbtExceptionLog, bool>>)(x => true));
-            return result > 0;
+            try
+            {
+                var result = await _exceptionLogRepository.DeleteAsync((Expression<Func<HbtExceptionLog, bool>>)(x => true));
+                return result > 0;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(L("Audit.ExceptionLog.ClearFailed", ex.Message), ex);
+                throw new HbtException(L("Audit.ExceptionLog.ClearFailed"));
+            }
         }
     }
-} 
+}

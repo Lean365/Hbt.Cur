@@ -13,7 +13,8 @@ using Lean.Hbt.Application.Dtos.Workflow;
 using Lean.Hbt.Common.Exceptions;
 using Lean.Hbt.Common.Helpers;
 using Lean.Hbt.Domain.Entities.Workflow;
-using Lean.Hbt.Domain.IServices.Admin;
+using Lean.Hbt.Domain.IServices.Extensions;
+using Lean.Hbt.Domain.IServices.Extensions;
 using Lean.Hbt.Domain.Repositories;
 using SqlSugar;
 
@@ -231,7 +232,7 @@ namespace Lean.Hbt.Application.Services.Workflow
         /// <summary>
         /// 导出工作流节点
         /// </summary>
-        public async Task<byte[]> ExportAsync(IEnumerable<HbtWorkflowNodeDto> data, string sheetName = "Sheet1")
+        public async Task<(string fileName, byte[] content)> ExportAsync(IEnumerable<HbtWorkflowNodeDto> data, string sheetName = "Sheet1")
         {
             try
             {
@@ -247,7 +248,7 @@ namespace Lean.Hbt.Application.Services.Workflow
         /// <summary>
         /// 获取工作流节点导入模板
         /// </summary>
-        public async Task<byte[]> GetTemplateAsync(string sheetName = "Sheet1")
+        public async Task<(string fileName, byte[] content)> GetTemplateAsync(string sheetName = "Sheet1")
         {
             try
             {
