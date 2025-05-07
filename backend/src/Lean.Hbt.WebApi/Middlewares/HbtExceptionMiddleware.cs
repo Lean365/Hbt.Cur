@@ -57,6 +57,12 @@ namespace Lean.Hbt.WebApi.Middlewares
             }
         }
 
+        /// <summary>
+        /// 处理异常
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="exception"></param>
+        /// <returns></returns>
         private async Task HandleExceptionAsync(HttpContext context, Exception exception)
         {
             var response = exception switch
@@ -78,13 +84,56 @@ namespace Lean.Hbt.WebApi.Middlewares
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = StatusCodes.Status500InternalServerError;
 
+            // 获取请求信息
+            var requestPath = context.Request.Path;
+            var requestMethod = context.Request.Method;
+            var queryString = context.Request.QueryString.ToString();
+            var user = context.User.Identity?.Name ?? "Anonymous";
+            var userId = context.User.FindFirst("uid")?.Value ?? "0";
+            var tenantId = context.User.FindFirst("tid")?.Value ?? "0";
+
+            // 记录详细日志
             if (response.Code == 500)
             {
-                _logger.Error("未处理的异常");
+                _logger.Error(
+                    "未处理的异常: {ExceptionType}\n" +
+                    "异常消息: {Message}\n" +
+                    "堆栈跟踪: {StackTrace}\n" +
+                    "请求路径: {RequestPath}\n" +
+                    "请求方法: {RequestMethod}\n" +
+                    "查询参数: {QueryString}\n" +
+                    "用户信息: {User} (ID: {UserId}, Tenant: {TenantId})\n" +
+                    "内部异常: {InnerException}",
+                    exception.GetType().FullName,
+                    exception.Message,
+                    exception.StackTrace,
+                    requestPath,
+                    requestMethod,
+                    queryString,
+                    user,
+                    userId,
+                    tenantId,
+                    exception.InnerException?.Message ?? "None"
+                );
             }
             else
             {
-                _logger.Warn("业务异常: {Message}", response.Msg);
+                _logger.Warn(
+                    "业务异常: {Message}\n" +
+                    "错误代码: {Code}\n" +
+                    "请求路径: {RequestPath}\n" +
+                    "请求方法: {RequestMethod}\n" +
+                    "查询参数: {QueryString}\n" +
+                    "用户信息: {User} (ID: {UserId}, Tenant: {TenantId})",
+                    response.Msg,
+                    response.Code,
+                    requestPath,
+                    requestMethod,
+                    queryString,
+                    user,
+                    userId,
+                    tenantId
+                );
             }
 
             var settings = new JsonSerializerSettings

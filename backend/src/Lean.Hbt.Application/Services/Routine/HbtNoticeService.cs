@@ -32,6 +32,7 @@ namespace Lean.Hbt.Application.Services.Routine
     {
         private readonly IHbtRepository<HbtNotice> _repository;
         private readonly IHbtSignalRClient _signalRClient;
+        private readonly IHbtCurrentUser _currentUser;
 
         /// <summary>
         /// 构造函数
@@ -40,14 +41,19 @@ namespace Lean.Hbt.Application.Services.Routine
         /// <param name="repository">通知仓储</param>
         /// <param name="signalRClient">SignalR客户端</param>
         /// <param name="httpContextAccessor">HTTP上下文访问器</param>
+        /// <param name="currentUser">当前用户服务</param>
+        /// <param name="localization">本地化服务</param>
         public HbtNoticeService(
             IHbtLogger logger,
             IHbtRepository<HbtNotice> repository,
             IHbtSignalRClient signalRClient,
-            IHttpContextAccessor httpContextAccessor) : base(logger, httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor,
+            IHbtCurrentUser currentUser,
+            IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
         {
             _repository = repository;
             _signalRClient = signalRClient;
+            _currentUser = currentUser;
         }
 
         /// <summary>
@@ -215,7 +221,7 @@ namespace Lean.Hbt.Application.Services.Routine
 
             // 更新已读状态
             var readIds = (notice.NoticeReadIds?.Split(',', StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>()).ToList();
-            var userId = UserId.ToString();
+            var userId = _currentUser.UserId.ToString();
             if (!readIds.Contains(userId))
             {
                 readIds.Add(userId);
@@ -260,11 +266,11 @@ namespace Lean.Hbt.Application.Services.Routine
                     .ToList();
 
             // 如果当前用户已在已确认列表中，抛出异常
-            if (confirmIds.Contains(UserId))
+            if (confirmIds.Contains(_currentUser.UserId))
                 throw new HbtException(L("Notice.AlreadyConfirmed"));
 
             // 添加当前用户到已确认列表
-            confirmIds.Add(UserId);
+            confirmIds.Add(_currentUser.UserId);
             notice.NoticeConfirmIds = string.Join(",", confirmIds);
             notice.NoticeConfirmCount = confirmIds.Count;
             notice.NoticeLastReceiptTime = DateTime.Now;
@@ -323,11 +329,11 @@ namespace Lean.Hbt.Application.Services.Routine
                 : notice.NoticeReadIds.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(long.Parse).ToList();
 
             // 如果当前用户不在已读列表中，则返回true
-            if (!readIds.Contains(UserId))
+            if (!readIds.Contains(_currentUser.UserId))
                 return true;
 
             // 从已读列表中移除当前用户
-            readIds.Remove(UserId);
+            readIds.Remove(_currentUser.UserId);
             notice.NoticeReadIds = string.Join(",", readIds);
             notice.NoticeReadCount = readIds.Count;
 

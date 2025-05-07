@@ -155,13 +155,20 @@ namespace Lean.Hbt.WebApi.Controllers.Routine
         /// <summary>
         /// 上传文件
         /// </summary>
-        /// <param name="file">文件</param>
+        /// <param name="input">上传对象</param>
         /// <returns>上传结果</returns>
         [HttpPost("upload")]
-        public async Task<IActionResult> UploadAsync(IFormFile file)
+        public async Task<IActionResult> UploadAsync([FromForm] HbtFileUploadDto input)
         {
+            var file = Request.Form.Files.FirstOrDefault();
+            if (file == null)
+            {
+                return Error("未找到上传的文件");
+            }
+
             using var stream = file.OpenReadStream();
-            var result = await _fileService.UploadAsync(stream, file.FileName);
+            input.File = stream;            
+            var result = await _fileService.UploadAsync(stream, input);
             return Success(result);
         }
 

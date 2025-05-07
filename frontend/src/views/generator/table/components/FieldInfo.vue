@@ -1,7 +1,7 @@
 <template>
   <div class="field-info">
     <a-table
-      :data-source="formData.columns"
+      :data-source="formData.columns || []"
       :columns="columns"
       :pagination="false"
       :scroll="{ y: 400 }"
@@ -68,20 +68,21 @@
 
 <script lang="ts" setup>
 import { ref, reactive, watch, onMounted } from 'vue'
-import type { HbtGenTableDto } from '@/types/generator/table'
-import type { HbtDictType } from '@/types/admin/dictType'
-import { getHbtDictTypeList } from '@/api/admin/dictType'
+import type { HbtGenTable } from '@/types/generator/genTable'
+import type { HbtGenColumn } from '@/types/generator/genColumn'
+import type { HbtDictType } from '@/types/core/dictType'
+import { getHbtDictTypeList } from '@/api/core/dictType'
 
 const props = defineProps<{
-  modelValue: HbtGenTableDto
+  modelValue: HbtGenTable & { columns?: HbtGenColumn[] }
 }>()
 
 const emit = defineEmits<{
-  (e: 'update:modelValue', value: HbtGenTableDto): void
+  (e: 'update:modelValue', value: HbtGenTable & { columns?: HbtGenColumn[] }): void
 }>()
 
 // 表单数据
-const formData = reactive<HbtGenTableDto>({
+const formData = reactive<HbtGenTable & { columns?: HbtGenColumn[] }>({
   ...props.modelValue
 })
 
@@ -159,8 +160,8 @@ const getDictTypes = async () => {
       pageIndex: 1,
       pageSize: 100
     })
-    if (res.data?.rows) {
-      dictOptions.value = res.data.rows
+    if (res.data?.data?.items) {
+      dictOptions.value = res.data.data.items
     }
   } catch (error) {
     console.error('获取字典类型列表失败:', error)

@@ -16,8 +16,8 @@
       <a-form-item label="实体类名" name="className">
         <a-input v-model:value="formData.className" placeholder="请输入实体类名" />
       </a-form-item>
-      <a-form-item label="作者" name="functionAuthor">
-        <a-input v-model:value="formData.functionAuthor" placeholder="请输入作者" />
+      <a-form-item label="作者" name="author">
+        <a-input v-model:value="formData.author" placeholder="请输入作者" />
       </a-form-item>
       <a-form-item label="备注" name="remark">
         <a-textarea v-model:value="formData.remark" placeholder="请输入备注" :rows="4" />
@@ -30,20 +30,20 @@
 import { ref, reactive, watch } from 'vue'
 import type { FormInstance } from 'ant-design-vue'
 import type { Rule } from 'ant-design-vue/es/form'
-import type { HbtGenTableDto } from '@/types/generator/table'
+import type { HbtGenTable } from '@/types/generator/genTable'
 
 const props = defineProps<{
-  modelValue: HbtGenTableDto
+  modelValue: HbtGenTable
 }>()
 
 const emit = defineEmits<{
-  (e: 'update:modelValue', value: HbtGenTableDto): void
+  (e: 'update:modelValue', value: HbtGenTable): void
 }>()
 
 const formRef = ref<FormInstance>()
 
 // 表单数据
-const formData = reactive<HbtGenTableDto>({
+const formData = reactive<HbtGenTable>({
   ...props.modelValue
 })
 
@@ -52,7 +52,7 @@ const rules: Record<string, Rule[]> = {
   tableName: [{ required: true, message: '请输入表名', trigger: 'blur' }],
   tableComment: [{ required: true, message: '请输入表注释', trigger: 'blur' }],
   className: [{ required: true, message: '请输入实体类名', trigger: 'blur' }],
-  functionAuthor: [{ required: true, message: '请输入作者', trigger: 'blur' }]
+  author: [{ required: true, message: '请输入作者', trigger: 'blur' }]
 }
 
 // 监听表单数据变化

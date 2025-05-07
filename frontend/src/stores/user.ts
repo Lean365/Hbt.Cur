@@ -8,6 +8,7 @@ import { useDictStore } from './dict'
 import i18n from '@/locales'
 import { getDeviceInfo } from '@/utils/device'
 import request from '@/utils/request'
+import { SignalRService } from '@/utils/SignalR/service'
 
 const { t } = i18n.global
 
@@ -160,19 +161,33 @@ export const useUserStore = defineStore('user', {
 
     async logout() {
       try {
-        console.log('[Logout] 开始退出登录')
+        // 停止 SignalR 连接
+        const signalRService = SignalRService.getInstance()
+        await signalRService.stop()
+        
+        // 调用登出 API
         await userLogout()
+        
+        // 清除本地存储
         removeToken()
-        removeRefreshToken()
-        this.token = undefined
-        this.refreshToken = ''
-        this.tokenExpireTime = 0
+        this.token = ''
         this.userInfo = null
-        this.permissions = []
         this.roles = []
-        console.log('[Logout] 退出登录成功')
+        this.permissions = []
       } catch (error) {
-        console.error('[Logout] 退出登录失败:', error)
+        console.error('登出失败:', error)
+        throw error
+      }
+    },
+
+    // 初始化 SignalR 连接
+    async initSignalR() {
+      try {
+        const signalRService = SignalRService.getInstance()
+        await signalRService.start()
+        console.log('[UserStore] SignalR 连接初始化成功')
+      } catch (error) {
+        console.error('[UserStore] SignalR 连接初始化失败:', error)
         throw error
       }
     }

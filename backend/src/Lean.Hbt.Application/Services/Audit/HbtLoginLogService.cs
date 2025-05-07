@@ -1,10 +1,12 @@
+#nullable enable
+
 //===================================================================
 // 项目名 : Lean.Hbt
 // 文件名 : HbtLoginLogService.cs
 // 创建者 : Lean365
-// 创建时间: 2024-01-20 16:30
+// 创建时间: 2024-03-20
 // 版本号 : V0.0.1
-// 描述   : 登录日志服务实现
+// 描述    : 登录日志服务实现
 //===================================================================
 
 using System;
@@ -30,7 +32,7 @@ namespace Lean.Hbt.Application.Services.Audit
     /// </summary>
     /// <remarks>
     /// 创建者: Lean365
-    /// 创建时间: 2024-01-20
+    /// 创建时间: 2024-03-20
     /// </remarks>
     public class HbtLoginLogService : HbtBaseService, IHbtLoginLogService
     {
@@ -40,10 +42,17 @@ namespace Lean.Hbt.Application.Services.Audit
         /// <summary>
         /// 构造函数
         /// </summary>
+        /// <param name="loginLogRepository">登录日志仓储</param>
+        /// <param name="logger">日志服务</param>
+        /// <param name="httpContextAccessor">HTTP上下文访问器</param>
+        /// <param name="currentUser">当前用户服务</param>
+        /// <param name="localization">本地化服务</param>
         public HbtLoginLogService(
             IHbtRepository<HbtLoginLog> loginLogRepository,
             IHbtLogger logger,
-            IHttpContextAccessor httpContextAccessor) : base(logger, httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor,
+            IHbtCurrentUser currentUser,
+            IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
         {
             _loginLogRepository = loginLogRepository ?? throw new ArgumentNullException(nameof(loginLogRepository));
             _logger = logger;

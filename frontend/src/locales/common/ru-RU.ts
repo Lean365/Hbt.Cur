@@ -550,7 +550,13 @@ export default {
     button: {
       submit: 'Отправить',
       confirm: 'Подтвердить',
-      ok: 'OK'
+      ok: 'OK',
+      cancel: 'Отмена',
+      close: 'Закрыть',
+      reset: 'Сбросить',
+      clear: 'Очистить',
+      save: 'Сохранить',
+      delete: 'Удалить'
     }
   },
 

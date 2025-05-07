@@ -1,12 +1,12 @@
 import request from '@/utils/request';
-import type { HbtGenConfigDto, HbtGenConfigQuery, HbtGenConfigPagedResult } from '@/types/generator/config';
+import type { HbtGenConfig, HbtGenConfigQuery, HbtGenConfigPageResult } from '@/types/generator/genConfig';
 import type { HbtApiResponse } from '@/types/common';
 
 /**
  * 获取代码生成配置列表
  */
 export function getPagedList(params: HbtGenConfigQuery) {
-  return request<HbtApiResponse<HbtGenConfigPagedResult>>({
+  return request<HbtApiResponse<HbtGenConfigPageResult>>({
     url: '/api/HbtGenConfig/list',
     method: 'get',
     params
@@ -17,7 +17,7 @@ export function getPagedList(params: HbtGenConfigQuery) {
  * 获取代码生成配置详情
  */
 export function getGenConfig(id: number) {
-  return request<HbtApiResponse<HbtGenConfigDto>>({
+  return request<HbtApiResponse<HbtGenConfig>>({
     url: `/api/HbtGenConfig/${id}`,
     method: 'get'
   });
@@ -26,8 +26,8 @@ export function getGenConfig(id: number) {
 /**
  * 创建代码生成配置
  */
-export function createGenConfig(data: HbtGenConfigDto) {
-  return request<HbtApiResponse<HbtGenConfigDto>>({
+export function createGenConfig(data: HbtGenConfig) {
+  return request<HbtApiResponse<HbtGenConfig>>({
     url: '/api/HbtGenConfig',
     method: 'post',
     data
@@ -37,8 +37,8 @@ export function createGenConfig(data: HbtGenConfigDto) {
 /**
  * 更新代码生成配置
  */
-export function updateGenConfig(id: number, data: HbtGenConfigDto) {
-  return request<HbtApiResponse<HbtGenConfigDto>>({
+export function updateGenConfig(id: number, data: HbtGenConfig) {
+  return request<HbtApiResponse<HbtGenConfig>>({
     url: `/api/HbtGenConfig/${id}`,
     method: 'put',
     data

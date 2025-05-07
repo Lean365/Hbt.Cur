@@ -19,6 +19,7 @@ using Lean.Hbt.Domain.IServices.Extensions;
 using Lean.Hbt.Domain.IServices.Extensions;
 using Lean.Hbt.Domain.Repositories;
 using SqlSugar;
+using Microsoft.AspNetCore.Http;
 
 namespace Lean.Hbt.Application.Services.Workflow
 {
@@ -29,23 +30,26 @@ namespace Lean.Hbt.Application.Services.Workflow
     /// 创建者: Lean365
     /// 创建时间: 2024-01-23
     /// </remarks>
-    public class HbtWorkflowHistoryService : IHbtWorkflowHistoryService
+    public class HbtWorkflowHistoryService : HbtBaseService, IHbtWorkflowHistoryService
     {
         private readonly IHbtRepository<HbtWorkflowHistory> _historyRepository;
-        private readonly IHbtLogger _logger;
-        private readonly IHbtLocalizationService _localization;
 
         /// <summary>
         /// 构造函数
         /// </summary>
+        /// <param name="logger">日志服务</param>
+        /// <param name="historyRepository">工作流历史仓储接口</param>
+        /// <param name="httpContextAccessor">HTTP上下文访问器</param>
+        /// <param name="currentUser">当前用户服务</param>
+        /// <param name="localization">本地化服务</param>
         public HbtWorkflowHistoryService(
-            IHbtRepository<HbtWorkflowHistory> historyRepository,
             IHbtLogger logger,
-            IHbtLocalizationService localization)
+            IHbtRepository<HbtWorkflowHistory> historyRepository,
+            IHttpContextAccessor httpContextAccessor,
+            IHbtCurrentUser currentUser,
+            IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
         {
             _historyRepository = historyRepository;
-            _logger = logger;
-            _localization = localization;
         }
 
         /// <summary>
@@ -86,7 +90,7 @@ namespace Lean.Hbt.Application.Services.Workflow
         {
             var history = await _historyRepository.GetByIdAsync(id);
             if (history == null)
-                throw new HbtException(_localization.L("WorkflowHistory.NotFound"));
+                throw new HbtException(L("WorkflowHistory.NotFound"));
 
             return history.Adapt<HbtWorkflowHistoryDto>();
         }
@@ -115,9 +119,9 @@ namespace Lean.Hbt.Application.Services.Workflow
 
             var result = await _historyRepository.CreateAsync(history);
             if (result <= 0)
-                throw new HbtException(_localization.L("WorkflowHistory.Create.Failed"));
+                throw new HbtException(L("WorkflowHistory.Create.Failed"));
 
-            _logger.Info(_localization.L("WorkflowHistory.Created.Success", history.Id));
+            _logger.Info(L("WorkflowHistory.Created.Success", history.Id));
             return history.Id;
         }
 
@@ -133,7 +137,7 @@ namespace Lean.Hbt.Application.Services.Workflow
 
             var history = await _historyRepository.GetByIdAsync(input.WorkflowHistoryId);
             if (history == null)
-                throw new HbtException(_localization.L("WorkflowHistory.NotFound"));
+                throw new HbtException(L("WorkflowHistory.NotFound"));
 
             history.OperationResult = input.OperationResult != null ? (int?)Enum.Parse<int>(input.OperationResult) : null;
             history.OperationComment = input.OperationComment ?? string.Empty;
@@ -141,9 +145,9 @@ namespace Lean.Hbt.Application.Services.Workflow
 
             var result = await _historyRepository.UpdateAsync(history);
             if (result <= 0)
-                throw new HbtException(_localization.L("WorkflowHistory.Update.Failed"));
+                throw new HbtException(L("WorkflowHistory.Update.Failed"));
 
-            _logger.Info(_localization.L("WorkflowHistory.Updated.Success", history.Id));
+            _logger.Info(L("WorkflowHistory.Updated.Success", history.Id));
             return true;
         }
 
@@ -156,13 +160,13 @@ namespace Lean.Hbt.Application.Services.Workflow
         {
             var history = await _historyRepository.GetByIdAsync(id);
             if (history == null)
-                throw new HbtException(_localization.L("WorkflowHistory.NotFound"));
+                throw new HbtException(L("WorkflowHistory.NotFound"));
 
             var result = await _historyRepository.DeleteAsync(history);
             if (result <= 0)
-                throw new HbtException(_localization.L("WorkflowHistory.Delete.Failed"));
+                throw new HbtException(L("WorkflowHistory.Delete.Failed"));
 
-            _logger.Info(_localization.L("WorkflowHistory.Deleted.Success", id));
+            _logger.Info(L("WorkflowHistory.Deleted.Success", id));
             return true;
         }
 
@@ -179,9 +183,9 @@ namespace Lean.Hbt.Application.Services.Workflow
             Expression<Func<HbtWorkflowHistory, bool>> predicate = x => ids.Contains(x.Id);
             var result = await _historyRepository.DeleteAsync(predicate);
             if (result <= 0)
-                throw new HbtException(_localization.L("WorkflowHistory.BatchDelete.Failed"));
+                throw new HbtException(L("WorkflowHistory.BatchDelete.Failed"));
 
-            _logger.Info(_localization.L("WorkflowHistory.BatchDeleted.Success", string.Join(",", ids)));
+            _logger.Info(L("WorkflowHistory.BatchDeleted.Success", string.Join(",", ids)));
             return true;
         }
 
@@ -195,7 +199,6 @@ namespace Lean.Hbt.Application.Services.Workflow
         {
             try
             {
-                // 使用 HbtExcelHelper 导入数据
                 var importHistories = await HbtExcelHelper.ImportAsync<HbtWorkflowHistoryImportDto>(fileStream, sheetName);
                 var result = new List<HbtWorkflowHistoryDto>();
 
@@ -212,7 +215,7 @@ namespace Lean.Hbt.Application.Services.Workflow
                     }
                     catch (Exception ex)
                     {
-                        _logger.Error(_localization.L("WorkflowHistory.Import.Failed"), ex);
+                        _logger.Error(L("WorkflowHistory.Import.Failed"), ex);
                     }
                 }
 
@@ -220,8 +223,8 @@ namespace Lean.Hbt.Application.Services.Workflow
             }
             catch (Exception ex)
             {
-                _logger.Error(_localization.L("WorkflowHistory.Import.Failed"), ex);
-                throw new HbtException(_localization.L("WorkflowHistory.Import.Failed"), ex);
+                _logger.Error(L("WorkflowHistory.Import.Failed"), ex);
+                throw new HbtException(L("WorkflowHistory.Import.Failed"), ex);
             }
         }
 
@@ -239,8 +242,8 @@ namespace Lean.Hbt.Application.Services.Workflow
             }
             catch (Exception ex)
             {
-                _logger.Error(_localization.L("WorkflowHistory.Export.Failed"), ex);
-                throw new HbtException(_localization.L("WorkflowHistory.Export.Failed"), ex);
+                _logger.Error(L("WorkflowHistory.Export.Failed"), ex);
+                throw new HbtException(L("WorkflowHistory.Export.Failed"), ex);
             }
         }
 
@@ -301,7 +304,7 @@ namespace Lean.Hbt.Application.Services.Workflow
             Expression<Func<HbtWorkflowHistory, bool>> predicate = x => x.OperationTime < cutoffDate;
             var result = await _historyRepository.DeleteAsync(predicate);
 
-            _logger.Info(_localization.L("WorkflowHistory.Cleanup.Success", result));
+            _logger.Info(L("WorkflowHistory.Cleanup.Success", result));
             return result;
         }
     }

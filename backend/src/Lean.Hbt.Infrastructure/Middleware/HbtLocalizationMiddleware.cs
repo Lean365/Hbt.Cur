@@ -73,14 +73,14 @@ public class HbtLocalizationMiddleware
             }
             catch (Exception ex)
             {
-                _logger.Error("设置语言失败: {Language}", language);
+                _logger.Error("设置语言失败: {Language}", language, ex.Message);
                 // 使用默认语言
                 localizationService.SetLanguage(DEFAULT_LANGUAGE);
             }
         }
         catch (Exception ex)
         {
-            _logger.Error("本地化中间件执行失败");
+            _logger.Error("本地化中间件执行失败", ex.Message);
         }
 
         await _next(context);

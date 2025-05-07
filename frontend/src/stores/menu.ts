@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import type { Menu } from '@/types/identity/menu'
-import { getCurrentUserMenus } from '@/api/admin/menu'
+import { getCurrentUserMenus } from '@/api/core/menu'
 import { registerDynamicRoutes } from '@/utils/route'
 import type { HbtApiResponse } from '@/types/common'
 import { message } from 'ant-design-vue'
@@ -62,7 +62,7 @@ export const useMenuStore = defineStore('menu', () => {
           组件: m.component,
           类型: m.menuType,
           状态: m.status,
-          权限: m.permission
+          权限: m.perms
         }))
       })
 
@@ -89,7 +89,7 @@ export const useMenuStore = defineStore('menu', () => {
   const reloadMenus = async (router: Router) => {
     try {
       if (!router) {
-        console.error('[菜单] 路由实例未提供')
+        //console.error('[菜单] 路由实例未提供')
         return []
       }
 
@@ -113,35 +113,35 @@ export const useMenuStore = defineStore('menu', () => {
                 path: child.path || '',
                 menuType: child.menuType || 0,
                 status: child.status || 0,
-                permission: child.permission || ''
+                perms: child.perms || ''
               }))
             }
             
-            console.log('[菜单] 处理后的菜单项:', {
-              菜单ID: processedMenu.menuId,
-              名称: processedMenu.menuName,
-              路径: processedMenu.path,
-              组件: processedMenu.component,
-              类型: processedMenu.menuType,
-              子菜单数: processedMenu.children?.length || 0
-            })
+            // console.log('[菜单] 处理后的菜单项:', {
+            //   菜单ID: processedMenu.menuId,
+            //   名称: processedMenu.menuName,
+            //   路径: processedMenu.path,
+            //   组件: processedMenu.component,
+            //   类型: processedMenu.menuType,
+            //   子菜单数: processedMenu.children?.length || 0
+            // })
             
             return processedMenu
           })
 
-          console.log('[菜单] 加载的菜单数据:', {
-            总数: processedMenus.length,
-            菜单项: processedMenus.map(m => ({
-              菜单ID: m.menuId,
-              名称: m.menuName,
-              路径: m.path,
-              组件: m.component,
-              类型: m.menuType,
-              状态: m.status,
-              权限: m.permission,
-              子菜单数: m.children?.length || 0
-            }))
-          })
+          // console.log('[菜单] 加载的菜单数据:', {
+          //   总数: processedMenus.length,
+          //   菜单项: processedMenus.map(m => ({
+          //     菜单ID: m.menuId,
+          //     名称: m.menuName,
+          //     路径: m.path,
+          //     组件: m.component,
+          //     类型: m.menuType,
+          //     状态: m.status,
+          //     权限: m.perms,
+          //     子菜单数: m.children?.length || 0
+          //   }))
+          // })
 
           rawMenuList.value = processedMenus
           menuList.value = processedMenus
@@ -156,11 +156,11 @@ export const useMenuStore = defineStore('menu', () => {
           await registerDynamicRoutes(processedMenus, router)
 
           // 注册动态路由后打印当前路由表
-          console.log('[路由] 注册后的路由表:', router.getRoutes().map(r => ({
-            路径: r.path,
-            名称: r.name,
-            完整路径: r.path + (r.children?.length ? '/' + r.children.map(c => c.path).join('/') : '')
-          })))
+          // console.log('[路由] 注册后的路由表:', router.getRoutes().map(r => ({
+          //   路径: r.path,
+          //   名称: r.name,
+          //   完整路径: r.path + (r.children?.length ? '/' + r.children.map(c => c.path).join('/') : '')
+          // })))
 
           console.log('[菜单] 菜单加载成功')
           return processedMenus

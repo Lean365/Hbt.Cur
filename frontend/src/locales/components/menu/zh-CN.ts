@@ -1,3 +1,5 @@
+import { countReset } from "node:console";
+
 export default {
   menu: {
     home: '首页',
@@ -17,7 +19,7 @@ export default {
       terms: '服务条款',
       index: '关于Hbt'
     },
-    admin: {
+    core: {
       _self: '系统管理',
       config: '系统配置',
       language: '语言管理',
@@ -67,12 +69,66 @@ export default {
     },
     routine: {
       _self: '日常办公',
+      vehicle: {
+        _self: '用车管理',
+        vehicleMaster: {
+          _self: '车辆主数据',
+          vehicleInfo: '车辆信息',
+          driverInfo: '驾驶员信息',
+          maintenance: '车辆维护'
+        },
+        vehicleBooking: {
+          _self: '用车申请',
+          newBooking: '新建申请',
+          bookingList: '申请列表',
+          bookingApproval: '申请审批'
+        },
+        vehicleDispatch: {
+          _self: '车辆调度',
+          dispatchPlan: '调度计划',
+          realTimeTracking: '实时跟踪',
+          dispatchHistory: '调度历史'
+        },
+        vehicleReporting: {
+          _self: '用车报表',
+          usageReport: '使用报表',
+          costReport: '费用报表',
+          maintenanceReport: '维护报表'
+        }
+      },
       file: '文件管理',
       mail: '邮件管理',
       mailTmpl: '邮件模板',
+      meeting: {
+        _self: '会议管理',
+        meetingRoom: {
+          _self: '会议室管理',
+          roomInfo: '会议室信息',
+          roomBooking: '会议室预订',
+          roomSchedule: '会议室日程'
+        },
+        meetingPlan: {
+          _self: '会议计划',
+          newMeeting: '新建会议',
+          meetingList: '会议列表',
+          meetingApproval: '会议审批'
+        },
+        meetingExecution: {
+          _self: '会议执行',
+          attendance: '会议签到',
+          minutes: '会议纪要',
+          followUp: '会议跟进'
+        },
+        meetingReporting: {
+          _self: '会议报表',
+          meetingReport: '会议报表',
+          attendanceReport: '出席报表',
+          costReport: '费用报表'
+        }
+      },
       notice: '通知公告',
-      task: '工作任务',
-      schedule: '日程管理'
+      schedule: '日程管理',
+      quartz: '工作任务'
     },
     finance: {
       _self: '核算',
@@ -147,36 +203,73 @@ export default {
     },
     logistics: {
       _self: '后勤',
-      sales: {
-        _self: '销售管理',
-        customer: {
-          _self: '客户管理',
-          client: '顾客',
-          customers: '客户列表',
-          creditControl: '信用管理'
+      equipment: {
+        _self: '设备管理',
+        equipmentMaster: '设备主数据',
+        maintenancePlanning: {
+          _self: '维护计划',
+          preventiveMaintenance: '预防性维护',
+          maintenanceTaskList: '维护任务清单',
+          scheduling: '维护排程'
         },
-        order: {
-          _self: '订单管理',
-          order: '销售订单',
-          orderDetail: '订单明细',
-          orderTracking: '订单跟踪'
+        maintenanceExecution: {
+          _self: '维护执行',
+          workOrder: '维护工单',
+          confirmation: '维护确认',
+          breakdownMaintenance: '故障维护'
         },
-        delivery: {
-          _self: '交货管理',
-          delivery: '交货单',
-          deliveryDetail: '交货明细',
-          shipping: '运输管理'
+        maintenanceReporting: {
+          _self: '维护报表',
+          equipmentReports: '设备报表',
+          maintenanceHistory: '维护历史',
+          performanceAnalysis: '性能分析'
         },
-        billing: {
-          _self: '开票管理',
-          invoice: '发票管理',
-          invoiceDetail: '发票明细',
-          payment: '收款管理'
+        sparePartsManagement: {
+          _self: '备件管理',
+          sparePartsInventory: '备件库存',
+          sparePartsProcurement: '备件采购',
+          sparePartsUsage: '备件使用'
+        }
+      },
+      material: {
+        _self: '物料管理',
+        materialMaster: '物料主数据',
+        materialCategory: '物料类别',
+        materialUnit: '物料单位',
+        materialStock: {
+          _self: '物料库存',
+          stockOverview: '库存概览',
+          stockIn: '物料入库',
+          stockOut: '物料出库',
+          stockTransfer: '库存转移',
+          stockAdjustment: '库存调整',
+          stockCheck: '库存盘点'
+        },
+        purchase: {
+          _self: '采购管理',
+          purchaseRequisition: '采购申请',
+          purchaseOrder: '采购订单',
+          purchaseOrderDetail: '采购订单明细',
+          supplier: '供应商管理'
+        },
+        inventoryManagement: {
+          _self: '库存管理',
+          goodsReceipt: '收货',
+          goodsIssue: '发货',
+          transferPosting: '转储过账',
+          stockOverview: '库存概览'
+        },
+        valuation: {
+          _self: '物料估价',
+          priceControl: '价格控制',
+          standardPrice: '标准价格',
+          movingAveragePrice: '移动平均价格'
         },
         reporting: {
           _self: '报表与分析',
-          salesReports: '销售报表',
-          performanceAnalysis: '绩效分析'
+          stockReports: '库存报表',
+          purchaseReports: '采购报表',
+          inventoryReports: '库存分析报表'
         }
       },
       production: {
@@ -220,138 +313,138 @@ export default {
           defectRecording: '缺陷记录'
         }
       },
-      material: {
-        _self: '物料管理',
-        materialMaster: '物料主数据',
-        materialCategory: '物料类别',
-        materialUnit: '物料单位',
-        materialStock: {
-          _self: '物料库存',
-          stockOverview: '库存概览',
-          stockIn: '物料入库',
-          stockOut: '物料出库',
-          stockTransfer: '库存转移',
-          stockAdjustment: '库存调整',
-          stockCheck: '库存盘点'
+      project: {
+        _self: '项目管理',
+        projectMaster: {
+          _self: '项目主数据',
+          projectDefinition: '项目定义',
+          projectStructure: '项目结构',
+          projectTeam: '项目团队',
+          projectCalendar: '项目日历'
         },
-        purchase: {
-          _self: '采购管理',
-          purchaseRequisition: '采购申请',
-          purchaseOrder: '采购订单',
-          purchaseOrderDetail: '采购订单明细',
-          supplier: '供应商管理'
+        projectPlanning: {
+          _self: '项目计划',
+          workBreakdown: '工作分解',
+          scheduling: '进度计划',
+          resourcePlanning: '资源计划',
+          costPlanning: '成本计划'
         },
-        inventoryManagement: {
-          _self: '库存管理',
-          goodsReceipt: '收货',
-          goodsIssue: '发货',
-          transferPosting: '转储过账',
-          stockOverview: '库存概览'
+        projectExecution: {
+          _self: '项目执行',
+          taskManagement: '任务管理',
+          progressTracking: '进度跟踪',
+          resourceManagement: '资源管理',
+          costControl: '成本控制'
         },
-        valuation: {
-          _self: '物料估价',
-          priceControl: '价格控制',
-          standardPrice: '标准价格',
-          movingAveragePrice: '移动平均价格'
+        projectMonitoring: {
+          _self: '项目监控',
+          progressReports: '进度报表',
+          resourceReports: '资源报表',
+          costReports: '成本报表',
+          riskManagement: '风险管理'
+        },
+        projectClosure: {
+          _self: '项目收尾',
+          finalReport: '最终报告',
+          lessonsLearned: '经验总结',
+          projectArchive: '项目归档'
+        }
+      },
+      quality: {
+        _self: '质量管理',
+        inspection: {
+          _self: '检验管理',
+          inspectionLot: '检验批',
+          resultsRecording: '结果记录',
+          defectRecording: '缺陷记录',
+          usageDecision: '使用决策'
+        },
+        qualityPlanning: {
+          _self: '质量计划',
+          inspectionPlan: '检验计划',
+          qualityInfoRecord: '质量信息记录',
+          samplingProcedure: '抽样程序'
+        },
+        qualityControl: {
+          _self: '质量控制',
+          controlChart: '控制图',
+          qualityNotifications: '质量通知',
+          correctiveActions: '纠正措施'
+        },
+        qualityReporting: {
+          _self: '质量报表',
+          inspectionReports: '检验报表',
+          defectReports: '缺陷报表',
+          qualityAnalysis: '质量分析'
+        }
+      },
+      sales: {
+        _self: '销售管理',
+        customer: {
+          _self: '客户管理',
+          client: '顾客',
+          customers: '客户列表',
+          creditControl: '信用管理'
+        },
+        order: {
+          _self: '订单管理',
+          order: '销售订单',
+          orderDetail: '订单明细',
+          orderTracking: '订单跟踪'
+        },
+        delivery: {
+          _self: '交货管理',
+          delivery: '交货单',
+          deliveryDetail: '交货明细',
+          shipping: '运输管理'
+        },
+        billing: {
+          _self: '开票管理',
+          invoice: '发票管理',
+          invoiceDetail: '发票明细',
+          payment: '收款管理'
         },
         reporting: {
           _self: '报表与分析',
-          stockReports: '库存报表',
-          purchaseReports: '采购报表',
-          inventoryReports: '库存分析报表'
+          salesReports: '销售报表',
+          performanceAnalysis: '绩效分析'
         }
-      }
-    },
-    quality: {
-      _self: '质量管理',
-      inspection: {
-        _self: '检验管理',
-        inspectionLot: '检验批',
-        resultsRecording: '结果记录',
-        defectRecording: '缺陷记录',
-        usageDecision: '使用决策'
       },
-      qualityPlanning: {
-        _self: '质量计划',
-        inspectionPlan: '检验计划',
-        qualityInfoRecord: '质量信息记录',
-        samplingProcedure: '抽样程序'
-      },
-      qualityControl: {
-        _self: '质量控制',
-        controlChart: '控制图',
-        qualityNotifications: '质量通知',
-        correctiveActions: '纠正措施'
-      },
-      qualityReporting: {
-        _self: '质量报表',
-        inspectionReports: '检验报表',
-        defectReports: '缺陷报表',
-        qualityAnalysis: '质量分析'
-      }
-    },
-    service: {
-      _self: '客户服务',
-      serviceOrder: {
-        _self: '服务订单',
-        create: '创建服务订单',
-        manage: '管理服务订单',
-        complete: '完成服务订单',
-        cancel: '取消服务订单'
-      },
-      serviceContract: {
-        _self: '服务合同',
-        create: '创建服务合同',
-        manage: '管理服务合同',
-        renew: '续签服务合同',
-        terminate: '终止服务合同'
-      },
-      customerInteraction: {
-        _self: '客户互动',
-        inquiries: '客户咨询',
-        complaints: '客户投诉',
-        feedback: '客户反馈'
-      },
-      serviceExecution: {
-        _self: '服务执行',
-        schedule: '服务计划',
-        dispatch: '服务派工',
-        execution: '服务执行',
-        confirmation: '服务确认'
-      },
-      serviceReporting: {
-        _self: '服务报表',
-        orderReports: '服务订单报表',
-        contractReports: '服务合同报表',
-        performanceReports: '服务绩效报表'
-      }
-    },
-    equipment: {
-      _self: '设备管理',
-      equipmentMaster: '设备主数据',
-      maintenancePlanning: {
-        _self: '维护计划',
-        preventiveMaintenance: '预防性维护',
-        maintenanceTaskList: '维护任务清单',
-        scheduling: '维护排程'
-      },
-      maintenanceExecution: {
-        _self: '维护执行',
-        workOrder: '维护工单',
-        confirmation: '维护确认',
-        breakdownMaintenance: '故障维护'
-      },
-      maintenanceReporting: {
-        _self: '维护报表',
-        equipmentReports: '设备报表',
-        maintenanceHistory: '维护历史',
-        performanceAnalysis: '性能分析'
-      },
-      sparePartsManagement: {
-        _self: '备件管理',
-        sparePartsInventory: '备件库存',
-        sparePartsProcurement: '备件采购',
-        sparePartsUsage: '备件使用'
+      service: {
+        _self: '客户服务',
+        serviceOrder: {
+          _self: '服务订单',
+          create: '创建服务订单',
+          manage: '管理服务订单',
+          complete: '完成服务订单',
+          cancel: '取消服务订单'
+        },
+        serviceContract: {
+          _self: '服务合同',
+          create: '创建服务合同',
+          manage: '管理服务合同',
+          renew: '续签服务合同',
+          terminate: '终止服务合同'
+        },
+        customerInteraction: {
+          _self: '客户互动',
+          inquiries: '客户咨询',
+          complaints: '客户投诉',
+          feedback: '客户反馈'
+        },
+        serviceExecution: {
+          _self: '服务执行',
+          schedule: '服务计划',
+          dispatch: '服务派工',
+          execution: '服务执行',
+          confirmation: '服务确认'
+        },
+        serviceReporting: {
+          _self: '服务报表',
+          orderReports: '服务订单报表',
+          contractReports: '服务合同报表',
+          performanceReports: '服务绩效报表'
+        }
       }
     },
     humanResources: {

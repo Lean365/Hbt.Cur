@@ -73,6 +73,7 @@ namespace Lean.Hbt.Infrastructure.Extensions
             services.AddScoped<IHbtWorkflowTaskService, HbtWorkflowTaskService>();            // 工作流任务管理
             services.AddScoped<IHbtWorkflowHistoryService, HbtWorkflowHistoryService>();      // 工作流历史记录
             services.AddScoped<IHbtWorkflowActivityService, HbtWorkflowActivityService>();     // 工作流活动管理
+            services.AddScoped<IHbtWorkflowVariableService, HbtWorkflowVariableService>();     // 工作流变量管理
 
             // 注册工作流节点执行器,处理不同类型节点的具体执行逻辑
             services.AddScoped<IHbtWorkflowNodeExecutor, HbtStartNodeExecutor>();      // 开始节点执行器

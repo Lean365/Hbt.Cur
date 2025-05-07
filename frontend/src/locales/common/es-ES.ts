@@ -550,7 +550,13 @@ export default {
     button: {
       submit: 'Enviar',
       confirm: 'Confirmar',
-      ok: 'Aceptar'
+      ok: 'Aceptar',
+      cancel: 'Cancelar',
+      close: 'Cerrar',
+      reset: 'Reiniciar',
+      clear: 'Limpiar',
+      save: 'Guardar',
+      delete: 'Eliminar'
     }
   },
 

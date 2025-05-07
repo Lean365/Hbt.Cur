@@ -1,16 +1,17 @@
 import request from '@/utils/request'
 import type { HbtApiResponse } from '@/types/common'
 import type { 
-  WorkflowVariableQuery, 
-  WorkflowVariable,
-  WorkflowVariableCreate,
-  WorkflowVariableUpdate
+  HbtWorkflowVariableQuery, 
+  HbtWorkflowVariable,
+  HbtWorkflowVariableCreate,
+  HbtWorkflowVariableUpdate,
+  HbtWorkflowVariablePagedResult
 } from '@/types/workflow/workflowVariable'
 
 // 获取工作流变量列表
-export function getWorkflowVariableList(params: WorkflowVariableQuery) {
-  return request<HbtApiResponse<WorkflowVariable[]>>({
-    url: '/api/HbtWorkflowVariable',
+export function getWorkflowVariableList(params: HbtWorkflowVariableQuery) {
+  return request<HbtApiResponse<HbtWorkflowVariablePagedResult>>({
+    url: '/api/HbtWorkflowVariable/list',
     method: 'get',
     params
   })
@@ -18,14 +19,14 @@ export function getWorkflowVariableList(params: WorkflowVariableQuery) {
 
 // 获取工作流变量详情
 export function getWorkflowVariable(id: number) {
-  return request<HbtApiResponse<WorkflowVariable>>({
+  return request<HbtApiResponse<HbtWorkflowVariable>>({
     url: `/api/HbtWorkflowVariable/${id}`,
     method: 'get'
   })
 }
 
 // 创建工作流变量
-export function createWorkflowVariable(data: WorkflowVariableCreate) {
+export function createWorkflowVariable(data: HbtWorkflowVariableCreate) {
   return request<HbtApiResponse<any>>({
     url: '/api/HbtWorkflowVariable',
     method: 'post',
@@ -34,7 +35,7 @@ export function createWorkflowVariable(data: WorkflowVariableCreate) {
 }
 
 // 更新工作流变量
-export function updateWorkflowVariable(data: WorkflowVariableUpdate) {
+export function updateWorkflowVariable(data: HbtWorkflowVariableUpdate) {
   return request<HbtApiResponse<any>>({
     url: '/api/HbtWorkflowVariable',
     method: 'put',
@@ -75,11 +76,11 @@ export function importWorkflowVariable(file: File, sheetName: string = 'Sheet1')
 }
 
 // 导出工作流变量
-export function exportWorkflowVariable(data: WorkflowVariable[], sheetName: string = 'Sheet1') {
+export function exportWorkflowVariable(params: HbtWorkflowVariableQuery, sheetName: string = 'Sheet1') {
   return request({
     url: '/api/HbtWorkflowVariable/export',
     method: 'get',
-    params: { data, sheetName },
+    params: { ...params, sheetName },
     responseType: 'blob'
   })
 }
@@ -96,7 +97,7 @@ export function getWorkflowVariableTemplate(sheetName: string = 'Sheet1') {
 
 // 获取工作流实例的所有变量
 export function getVariablesByWorkflowInstance(workflowInstanceId: number) {
-  return request<HbtApiResponse<WorkflowVariable[]>>({
+  return request<HbtApiResponse<HbtWorkflowVariable[]>>({
     url: `/api/HbtWorkflowVariable/instance/${workflowInstanceId}`,
     method: 'get'
   })
@@ -104,7 +105,7 @@ export function getVariablesByWorkflowInstance(workflowInstanceId: number) {
 
 // 获取工作流节点的所有变量
 export function getVariablesByWorkflowNode(workflowNodeId: number) {
-  return request<HbtApiResponse<WorkflowVariable[]>>({
+  return request<HbtApiResponse<HbtWorkflowVariable[]>>({
     url: `/api/HbtWorkflowVariable/node/${workflowNodeId}`,
     method: 'get'
   })

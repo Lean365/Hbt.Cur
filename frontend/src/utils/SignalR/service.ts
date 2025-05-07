@@ -36,7 +36,7 @@ let globalConfig: SystemConfig = DEFAULT_CONFIG;
 export async function initSystemConfig() {
   try {
     // 从后端获取系统配置
-    const response = await axios.get('/api/system/config')
+    const response = await axios.get('/api/admin/config')
     globalConfig = response.data
     console.log('[SignalR] 系统配置已加载:', globalConfig)
   } catch (error) {
@@ -217,7 +217,8 @@ export class SignalRService {
 
     // 连接关闭事件
     this.connection.onclose((error) => {
-      console.error('[SignalR] 连接关闭:', error?.message || '未知原因')
+      const reason = error ? error.message : '正常关闭'
+      console.log('[SignalR] 连接关闭:', reason)
       this.isConnected = false
       this.emit('ConnectionClosed', error)
     })

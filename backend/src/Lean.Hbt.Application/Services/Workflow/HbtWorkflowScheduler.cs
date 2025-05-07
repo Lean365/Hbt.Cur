@@ -16,29 +16,34 @@ using Microsoft.Extensions.Hosting;
 using Quartz;
 using Quartz.Impl;
 using Quartz.Spi;
+using Microsoft.AspNetCore.Http;
 
 namespace Lean.Hbt.Application.Services.Workflow
 {
     /// <summary>
     /// 工作流调度器
     /// </summary>
-    public class HbtWorkflowScheduler : IHostedService
+    public class HbtWorkflowScheduler : HbtBaseService, IHostedService
     {
         private readonly IServiceProvider _serviceProvider;
-        private readonly IHbtLogger _logger;
         private IScheduler _scheduler;
 
         /// <summary>
         /// 构造函数
         /// </summary>
-        /// <param name="serviceProvider"></param>
-        /// <param name="logger"></param>
+        /// <param name="serviceProvider">服务提供者</param>
+        /// <param name="logger">日志服务</param>
+        /// <param name="httpContextAccessor">HTTP上下文访问器</param>
+        /// <param name="currentUser">当前用户服务</param>
+        /// <param name="localization">本地化服务</param>
         public HbtWorkflowScheduler(
             IServiceProvider serviceProvider,
-            IHbtLogger logger)
+            IHbtLogger logger,
+            IHttpContextAccessor httpContextAccessor,
+            IHbtCurrentUser currentUser,
+            IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
         {
             _serviceProvider = serviceProvider;
-            _logger = logger;
         }
 
         /// <summary>
@@ -222,8 +227,8 @@ namespace Lean.Hbt.Application.Services.Workflow
         /// <summary>
         /// 构造函数
         /// </summary>
-        /// <param name="serviceProvider"></param>
-        /// <param name="logger"></param>
+        /// <param name="serviceProvider">服务提供者</param>
+        /// <param name="logger">日志服务</param>
         public HbtWorkflowTaskScannerJob(IServiceProvider serviceProvider, IHbtLogger logger)
         {
             _serviceProvider = serviceProvider;

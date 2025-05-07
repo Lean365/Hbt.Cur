@@ -43,33 +43,15 @@ public class HbtOnlineUserService : HbtBaseService, IHbtOnlineUserService
         IHbtLogger logger,
         IHbtRepository<HbtOnlineUser> repository,
         IHttpContextAccessor httpContextAccessor,
-        IHbtSignalRUserService signalRUserService) : base(logger, httpContextAccessor)
+        IHbtSignalRUserService signalRUserService,
+        IHbtCurrentUser currentUser,
+        IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
     {
         _repository = repository;
         _signalRUserService = signalRUserService;
     }
 
-    /// <summary>
-    /// 构建在线用户查询表达式
-    /// </summary>
-    private Expression<Func<HbtOnlineUser, bool>> KpUserQueryExpression(HbtOnlineUserQueryDto query)
-    {
-        var exp = Expressionable.Create<HbtOnlineUser>();
 
-        if (query.UserId.HasValue)
-            exp = exp.And(u => u.UserId == query.UserId.Value);
-
-        if (query.StartTime.HasValue)
-            exp = exp.And(u => u.LastActivity >= query.StartTime.Value);
-
-        if (query.EndTime.HasValue)
-            exp = exp.And(u => u.LastActivity <= query.EndTime.Value);
-
-        if (query.OnlineStatus.HasValue)
-            exp = exp.And(u => u.OnlineStatus == query.OnlineStatus.Value);
-
-        return exp.ToExpression();
-    }
 
     /// <summary>
     /// 获取在线用户分页列表
@@ -389,7 +371,7 @@ public class HbtOnlineUserService : HbtBaseService, IHbtOnlineUserService
     /// 删除在线用户
     /// </summary>
     public async Task<bool> DeleteOnlineUserAsync(string connectionId, string deleteBy)
-    {
+        {
         try
         {
             var exp = Expressionable.Create<HbtOnlineUser>();
@@ -450,5 +432,26 @@ public class HbtOnlineUserService : HbtBaseService, IHbtOnlineUserService
             _logger.Error("强制用户下线失败: ConnectionId={ConnectionId}", ex, connectionId);
             throw;
         }
+    }
+        /// <summary>
+    /// 构建在线用户查询表达式
+    /// </summary>
+    private Expression<Func<HbtOnlineUser, bool>> KpUserQueryExpression(HbtOnlineUserQueryDto query)
+    {
+        var exp = Expressionable.Create<HbtOnlineUser>();
+
+        if (query.UserId.HasValue)
+            exp = exp.And(u => u.UserId == query.UserId.Value);
+
+        if (query.StartTime.HasValue)
+            exp = exp.And(u => u.LastActivity >= query.StartTime.Value);
+
+        if (query.EndTime.HasValue)
+            exp = exp.And(u => u.LastActivity <= query.EndTime.Value);
+
+        if (query.OnlineStatus.HasValue)
+            exp = exp.And(u => u.OnlineStatus == query.OnlineStatus.Value);
+
+        return exp.ToExpression();
     }
 }

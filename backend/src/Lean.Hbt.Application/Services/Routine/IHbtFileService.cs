@@ -93,9 +93,9 @@ namespace Lean.Hbt.Application.Services.Routine
         /// 上传文件
         /// </summary>
         /// <param name="file">文件流</param>
-        /// <param name="fileName">文件名</param>
+        /// <param name="input">上传参数</param>
         /// <returns>上传结果</returns>
-        Task<HbtFileDto> UploadAsync(Stream file, string fileName);
+        Task<HbtFileDto> UploadAsync(Stream file, HbtFileUploadDto input);
 
         /// <summary>
         /// 下载文件

@@ -6,89 +6,42 @@
         list-type="picture-card"
         :action="uploadUrl"
         :before-upload="handleBeforeUpload"
-        :custom-request="customRequest"
         :show-upload-list="true"
         :headers="headers"
         :file-list="fileList"
         @preview="handlePreview"
         @change="handleChange"
+        @remove="handleRemove"
+        drag
       >
         <div v-if="fileList.length < maxCount">
           <plus-outlined />
-          <div style="margin-top: 8px">上传图片</div>
+          <div style="margin-top: 8px">上传图片（点击或拖拽）</div>
         </div>
       </a-upload>
     </div>
 
-    <!-- 图片预览 -->
-    <a-modal
-      :open="previewVisible"
-      :title="previewTitle"
-      :footer="null"
-      @cancel="handlePreviewCancel"
-    >
-      <img :src="previewImage" :alt="previewTitle" style="width: 100%" />
-    </a-modal>
+    <a-image
+      v-if="previewImage"
+      :style="{ display: 'none' }"
+      :src="previewImage"
+      :preview="{
+        visible: previewVisible,
+        onVisibleChange: (visible: boolean) => {
+          previewVisible = visible
+        }
+      }"
+    />
 
     <!-- 图片裁剪 -->
-    <a-modal
-      :open="cropperVisible"
-      title="图片裁剪"
-      :maskClosable="false"
-      :width="800"
-      @ok="handleCropperOk"
+    <hbt-images-cropper
+      v-model:visible="cropperVisible"
+      :image-url="previewImage"
+      :title="cropperTitle"
+      :options="cropperOptions"
+      @success="handleCropperSuccess"
       @cancel="handleCropperCancel"
-    >
-      <div class="hbt-cropper-container">
-        <div class="hbt-cropper-wrap">
-          <cropper-canvas background>
-            <cropper-image ref="cropperRef" :src="cropperImage"></cropper-image>
-            <cropper-shade hidden></cropper-shade>
-            <cropper-handle action="select" plain></cropper-handle>
-            <cropper-selection :initial-coverage="0.5" movable resizable>
-              <cropper-grid role="grid" bordered covered></cropper-grid>
-              <cropper-crosshair centered></cropper-crosshair>
-              <cropper-handle action="move" theme-color="rgba(255, 255, 255, 0.35)"></cropper-handle>
-              <cropper-handle action="n-resize"></cropper-handle>
-              <cropper-handle action="e-resize"></cropper-handle>
-              <cropper-handle action="s-resize"></cropper-handle>
-              <cropper-handle action="w-resize"></cropper-handle>
-              <cropper-handle action="ne-resize"></cropper-handle>
-              <cropper-handle action="nw-resize"></cropper-handle>
-              <cropper-handle action="se-resize"></cropper-handle>
-              <cropper-handle action="sw-resize"></cropper-handle>
-            </cropper-selection>
-          </cropper-canvas>
-        </div>
-        <div class="hbt-cropper-toolbar">
-          <a-space>
-            <a-button @click="rotateLeft">向左旋转</a-button>
-            <a-button @click="rotateRight">向右旋转</a-button>
-            <a-button @click="zoomIn">放大</a-button>
-            <a-button @click="zoomOut">缩小</a-button>
-            <a-button @click="resetCropper">重置</a-button>
-          </a-space>
-          <div class="size-settings">
-            <a-space>
-              <a-input-number
-                v-model:value="cropperWidth"
-                :min="10"
-                addon-after="px"
-                placeholder="宽度"
-              />
-              <span>x</span>
-              <a-input-number
-                v-model:value="cropperHeight"
-                :min="10"
-                addon-after="px"
-                placeholder="高度"
-              />
-              <a-button type="primary" @click="applyCropperSize">应用尺寸</a-button>
-            </a-space>
-          </div>
-        </div>
-      </div>
-    </a-modal>
+    />
     
     <!-- 上传进度 -->
     <a-progress
@@ -100,32 +53,20 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onBeforeUnmount, nextTick } from 'vue'
-import { message } from 'ant-design-vue'
+import { ref, computed, onMounted, onBeforeUnmount, nextTick, watch } from 'vue'
+import { message, Upload } from 'ant-design-vue'
 import { PlusOutlined } from '@ant-design/icons-vue'
-import {
-  CropperCanvas,
-  CropperImage,
-  CropperShade,
-  CropperHandle,
-  CropperSelection,
-  CropperGrid,
-  CropperCrosshair,
-} from 'cropperjs'
 import type { UploadChangeParam, UploadProps, UploadFile } from 'ant-design-vue'
 import type { UploadRequestOption } from 'ant-design-vue/es/vc-upload/interface'
 import fileUploader, { ChunkInfo } from '@/utils/upload'
 import imageProcessor from '@/utils/image'
 import { PropType } from 'vue'
-import { createRequestHeaders } from '@/utils/request'
+import { getToken } from '@/utils/auth'
+import HbtImagesCropper from './HbtImagesCropper.vue'
 
-interface FileItem {
-  uid: string
-  name: string
-  status?: string
-  url?: string
-  thumbUrl?: string
-  percent?: number
+// 注册组件
+const components = {
+  HbtImagesCropper
 }
 
 // 配置参数
@@ -134,66 +75,56 @@ const props = defineProps({
     type: String,
     required: true
   },
-  // 保存路径配置
   savePath: {
     type: String,
-    default: 'uploads/images' // 默认图片保存目录
+    default: 'uploads/images'
   },
-  // 文件名称
   fileName: {
     type: String,
     default: ''
   },
-  // 文件数量限制
   maxCount: {
     type: Number,
-    default: 8 // 默认最多8张图片
+    default: 8
   },
-  // 文件大小限制
   maxSize: {
     type: Number,
-    default: 50 // 默认最大50MB
+    default: 50
   },
-  // 文件类型限制
   accept: {
     type: String,
-    default: '.jpg,.jpeg,.png,.gif' // 默认接受的图片类型
+    default: '.jpg,.jpeg,.png,.gif'
   },
   fileTypes: {
     type: Array as PropType<string[]>,
-    default: () => ['image/jpeg', 'image/png', 'image/gif'] // 允许的MIME类型
+    default: () => ['image/jpeg', 'image/png', 'image/gif']
   },
-  // 文件名称处理方式
   nameStrategy: {
     type: String as PropType<'original' | 'random' | 'custom'>,
-    default: 'random' // 图片默认使用随机文件名
+    default: 'random'
   },
-  // 自定义文件名模板
   nameTemplate: {
     type: String,
-    default: '{random}{ext}' // 支持 {filename} {ext} {timestamp} {random} 变量
+    default: '{random}{ext}'
   },
-  // 分片上传配置
   chunkSize: {
     type: Number,
-    default: 2 * 1024 * 1024 // 默认分块大小2MB
+    default: 2 * 1024 * 1024
   },
-  // 图片压缩配置
   compress: {
     type: Object,
     default: () => ({
-      quality: 0.8, // 压缩质量
-      maxWidth: 1920, // 最大宽度
-      maxHeight: 1080 // 最大高度
+      quality: 0.8,
+      maxWidth: 1920,
+      maxHeight: 1080
     })
   },
-  // 默认裁剪配置
   crop: {
     type: Object,
     default: () => ({
-      aspect: 16 / 9, // 默认宽高比
-      width: 800, // 默认宽度
-      height: 450 // 默认高度
+      aspect: 16 / 9,
+      width: 800,
+      height: 450
     })
   }
 })
@@ -212,86 +143,46 @@ const previewImage = ref('')
 const previewTitle = ref('')
 
 // 裁剪状态
-const cropperRef = ref<CropperImage>()
 const cropperVisible = ref(false)
-const cropperImage = ref('')
-const cropperWidth = ref(props.crop.width)
-const cropperHeight = ref(props.crop.height)
-const cropperFile = ref<File>()
+const cropperTitle = ref('图片裁剪')
+const cropperOptions = ref({
+  aspectRatio: props.crop.aspect,
+  viewMode: 2,
+  dragMode: 'crop',
+  autoCropArea: 1,
+  restore: false,
+  modal: true,
+  guides: true,
+  highlight: true,
+  cropBoxMovable: true,
+  cropBoxResizable: true,
+  toggleDragModeOnDblclick: false,
+  responsive: true,
+  checkCrossOrigin: false,
+  checkOrientation: true,
+  background: true,
+  center: true,
+  zoomOnWheel: true,
+  wheelZoomRatio: 0.1,
+  zoomOnTouch: true,
+  movable: true,
+  rotatable: true,
+  scalable: true,
+  zoomable: true,
+  autoCrop: true,
+  minCropBoxWidth: 200,
+  minCropBoxHeight: 200
+})
 
 // 计算属性
-const headers = computed(() => createRequestHeaders())
+const headers = computed(() => ({
+  Authorization: `Bearer ${getToken()}`
+}))
 
 // 格式化进度
 const progressFormat = (percent?: number) => {
   if (percent === undefined) return ''
   return percent === 100 ? '上传完成' : `${percent}%`
-}
-
-// 初始化裁剪器
-const initCropper = () => {
-  if (!cropperRef.value) return
-  cropperVisible.value = true
-}
-
-// 裁剪图片
-const cropImage = (): Promise<File> => {
-  return new Promise((resolve, reject) => {
-    if (!cropperRef.value || !cropperFile.value) {
-      reject(new Error('裁剪器未初始化'))
-      return
-    }
-
-    const canvas = cropperRef.value.querySelector('canvas')
-    if (canvas) {
-      canvas.toBlob((blob: Blob | null) => {
-        if (blob) {
-          const file = new File([blob], cropperFile.value!.name, {
-            type: cropperFile.value!.type,
-            lastModified: Date.now()
-          })
-          resolve(file)
-        } else {
-          reject(new Error('图片裁剪失败'))
-        }
-      }, cropperFile.value.type, 1)
-    } else {
-      reject(new Error('无法获取裁剪画布'))
-    }
-  })
-}
-
-// 裁剪器操作
-const rotateLeft = () => {
-  const selection = cropperRef.value?.querySelector('cropper-selection')
-  selection?.setAttribute('rotate', '-90')
-}
-const rotateRight = () => {
-  const selection = cropperRef.value?.querySelector('cropper-selection')
-  selection?.setAttribute('rotate', '90')
-}
-const zoomIn = () => {
-  const selection = cropperRef.value?.querySelector('cropper-selection')
-  selection?.setAttribute('scale', '1.1')
-}
-const zoomOut = () => {
-  const selection = cropperRef.value?.querySelector('cropper-selection')
-  selection?.setAttribute('scale', '0.9')
-}
-const resetCropper = () => {
-  const selection = cropperRef.value?.querySelector('cropper-selection')
-  if (selection) {
-    selection.removeAttribute('rotate')
-    selection.removeAttribute('scale')
-  }
-}
-
-const applyCropperSize = () => {
-  const selection = cropperRef.value?.querySelector?.('cropper-selection') as HTMLElement | null
-  if (selection) {
-    selection.style.width = `${cropperWidth.value}px`
-    selection.style.height = `${cropperHeight.value}px`
-  }
 }
 
 // 处理预览
@@ -309,13 +200,53 @@ const handlePreviewCancel = () => {
   previewTitle.value = ''
 }
 
-// 处理裁剪
-const handleCropperOk = async () => {
+// 上传前处理
+const handleBeforeUpload = async (file: File) => {
+  // 检查文件类型
+  if (!props.fileTypes.includes(file.type)) {
+    message.error(`不支持的图片格式，请上传${props.accept}格式的图片`)
+    return Upload.LIST_IGNORE
+  }
+
+  // 检查数量限制
+  if (fileList.value.length >= props.maxCount) {
+    message.error(`最多只能上传${props.maxCount}张图片`)
+    return Upload.LIST_IGNORE
+  }
+
+  // 如果文件大小小于等于 maxSize，直接上传
+  if (file.size <= props.maxSize * 1024 * 1024) {
+    emit('file-selected', file)
+    return false // 阻止默认上传
+  }
+
+  // 否则弹出裁剪框
+  currentFile.value = file
+  previewImage.value = await getBase64(file)
+  cropperVisible.value = true
+
+  return false // 阻止默认上传
+}
+
+// 裁剪成功
+const handleCropperSuccess = async (result: any) => {
   try {
-    const croppedFile = await cropImage()
-    const compressedFile = await imageProcessor.compress(croppedFile, props.compress)
-    await uploadFile(compressedFile)
+    const { blob, dataUrl } = result
+    // 生成 base64 预览
+    const preview = await getBase64(blob)
+    // 计算 fileMd5
+    const fileMd5 = await fileUploader.calculateFileMD5(blob)
+    // 替换 fileList 中当前图片
+    const index = fileList.value.findIndex(f => f.uid === (currentFile.value as any).uid)
+    if (index !== -1) {
+      fileList.value[index].originFileObj = blob as any
+      fileList.value[index].preview = preview
+      fileList.value[index].thumbUrl = preview
+      fileList.value[index].name = currentFile.value!.name
+    }
     cropperVisible.value = false
+    message.success('裁剪成功')
+    emit('file-selected', blob)
   } catch (error) {
     message.error('图片处理失败')
   }
@@ -323,11 +254,6 @@ const handleCropperOk = async () => {
 
 const handleCropperCancel = () => {
   cropperVisible.value = false
-  const selection = cropperRef.value?.querySelector('cropper-selection')
-  if (selection) {
-    selection.removeAttribute('rotate')
-    selection.removeAttribute('scale')
-  }
 }
 
 // 生成文件名
@@ -353,117 +279,45 @@ const generateFileName = (file: File): string => {
   }
 }
 
-// 上传前处理
-const handleBeforeUpload = async (file: File) => {
-  // 检查文件大小
-  if (file.size > props.maxSize * 1024 * 1024) {
-    message.error(`文件大小不能超过${props.maxSize}MB`)
-    return false
+// 处理上传状态改变
+const handleChange = (info: UploadChangeParam) => {
+  // 如果文件被忽略，不做任何处理
+  if (info.file.status === 'error' && info.file.response === Upload.LIST_IGNORE) {
+    return
   }
-
-  // 检查文件类型
-  if (!props.fileTypes.includes(file.type)) {
-    message.error(`不支持的图片格式，请上传${props.accept}格式的图片`)
-    return false
-  }
-
-  // 检查数量限制
-  if (fileList.value.length >= props.maxCount) {
-    message.error(`最多只能上传${props.maxCount}张图片`)
-    return false
-  }
-
-  // 显示裁剪对话框
-  cropperFile.value = file
-  cropperImage.value = await getBase64(file)
-  cropperVisible.value = true
-  await nextTick()
-  initCropper()
-
-  return false // 阻止默认上传
-}
-
-// 自定义上传
-const customRequest = async (options: UploadRequestOption) => {
-  const { file, onProgress, onSuccess, onError } = options
-  try {
-    await uploadFile(file as File)
-    onSuccess?.({})
-  } catch (error) {
-    onError?.(error as Error)
+  
+  const file = info.file
+  fileList.value = info.fileList
+  if ((file.status === 'done' || file.status === 'success') && file.originFileObj) {
+    emit('file-selected', file.originFileObj)
   }
 }
 
-// 上传文件
-const uploadFile = async (file: File) => {
-  try {
-    currentFile.value = file
-    const fileMd5 = await fileUploader.calculateFileMD5(file)
-    const fileName = generateFileName(file)
-    const fileChunks = fileUploader.createFileChunks(file)
-    chunks.value = fileChunks.map(chunk => ({
-      ...chunk,
-      hash: `${fileMd5}-${chunk.index}`
-    }))
-
-    // 检查已上传的块
-    const response = await fetch(`${props.uploadUrl}/check`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        ...headers.value
-      },
-      body: JSON.stringify({
-        filename: fileName,
-        fileMd5,
-        savePath: props.savePath
-      })
-    })
-
-    const { uploaded } = await response.json()
-    uploadedChunks.value = new Set(uploaded)
-
-    // 开始上传未完成的块
-    await fileUploader.uploadChunks(
-      chunks.value,
-      props.uploadUrl,
-      headers.value,
-      (progress) => {
-        uploadProgress.value = progress
-      },
-      uploadedChunks.value
-    )
-
-    // 所有分块上传完成，通知服务器合并
-    if (uploadedChunks.value.size === chunks.value.length) {
-      const mergeResponse = await fileUploader.mergeChunks(
-        props.uploadUrl,
-        headers.value,
-        {
-          filename: fileName,
-          size: file.size,
-          chunks: chunks.value.length
-        }
-      )
-
-      const result = await mergeResponse.json()
-      if (result.code === 200) {
-        message.success('上传成功')
-        emit('success', result)
-      } else {
-        throw new Error('文件合并失败')
-      }
-    }
-  } catch (error) {
-    message.error('上传失败')
-    emit('error', error)
-  }
-}
+// 定义事件
+const emit = defineEmits<{
+  (e: 'file-selected', file: File): void
+}>()
 
 // 生命周期
+onMounted(() => {
+  // 移除cropperRef相关代码
+})
+
 onBeforeUnmount(() => {
-  if (cropperRef.value) {
-    cropperRef.value.remove()
+  // 移除cropperRef相关代码
+})
+
+// 裁剪器就绪回调
+const onCropperReady = () => {
+  // 移除cropperRef相关代码
+}
+
+// 监听裁剪弹窗
+watch(cropperVisible, async (visible) => {
+  if (visible) {
+    await nextTick()
+  } else {
+    previewImage.value = ''
   }
 })
 
@@ -471,57 +325,87 @@ onBeforeUnmount(() => {
 const getBase64 = imageProcessor.getBase64
 
 // 处理上传状态改变
-const handleChange = (info: UploadChangeParam) => {
-  const file = info.file
-  fileList.value = info.fileList
-
-  if (file.status === 'done') {
-    uploadProgress.value = 100
-  } else if (file.status === 'error') {
-    uploadProgress.value = 0
-  }
+const handleRemove = (file: any) => {
+  const index = fileList.value.indexOf(file)
+  const newFileList = fileList.value.slice()
+  newFileList.splice(index, 1)
+  fileList.value = newFileList
 }
-
-// 定义事件
-const emit = defineEmits<{
-  (e: 'success', result: any): void
-  (e: 'error', error: any): void
-}>()
-
-// 注册自定义元素
-if (!customElements.get('cropper-canvas')) {
-  customElements.define('cropper-canvas', CropperCanvas)
-  customElements.define('cropper-image', CropperImage)
-  customElements.define('cropper-shade', CropperShade)
-  customElements.define('cropper-handle', CropperHandle)
-  customElements.define('cropper-selection', CropperSelection)
-  customElements.define('cropper-grid', CropperGrid)
-  customElements.define('cropper-crosshair', CropperCrosshair)
-}
-
-// 生成日期路径
-const getDatePath = () => {
-  const date = new Date()
-  const year = date.getFullYear()
-  const month = String(date.getMonth() + 1).padStart(2, '0')
-  const day = String(date.getDate()).padStart(2, '0')
-  return `${year}${month}${day}`
-}
-
-// 获取完整保存路径
-const getSavePath = computed(() => {
-  return `${props.savePath}/${getDatePath()}`
-})
 </script>
 
 <style lang="less" scoped>
 .hbt-image-upload {
   .hbt-upload-list {
     :deep(.ant-upload-list-picture-card) {
-      .ant-upload-list-item-info {
-        &::before {
-          left: 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+
+      .ant-upload-list-item {
+        width: 104px;
+        height: 104px;
+        margin: 0;
+        padding: 4px;
+        border: 1px solid #d9d9d9;
+        border-radius: 8px;
+        
+        &-info {
+          &::before {
+            left: 0;
+          }
         }
+        
+        &-thumbnail {
+          img {
+            object-fit: cover;
+            width: 100%;
+            height: 100%;
+          }
+        }
+
+        &-actions {
+          .anticon-eye {
+            color: #52c41a !important;
+            &:hover {
+              color: #73d13d !important;
+            }
+          }
+          .anticon-delete {
+            color: #ff4d4f !important;
+            &:hover {
+              color: #ff7875 !important;
+            }
+          }
+        }
+
+        &-uploading {
+          padding: 8px;
+          .ant-upload-list-item-progress {
+            bottom: 14px;
+            padding-inline: 0;
+          }
+        }
+      }
+    }
+
+    :deep(.ant-upload.ant-upload-select) {
+      width: 104px;
+      height: 104px;
+      margin: 0;
+      border: 1px dashed #d9d9d9;
+      border-radius: 8px;
+      background-color: #fafafa;
+      
+      &:hover {
+        border-color: #1890ff;
+      }
+
+      .ant-upload {
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
       }
     }
   }
@@ -530,13 +414,19 @@ const getSavePath = computed(() => {
     .hbt-cropper-wrap {
       height: 400px;
       background-color: #f0f0f0;
+      overflow: hidden;
+      position: relative;
+      
+      img {
+        max-width: 100%;
+        max-height: 100%;
+      }
     }
 
     .hbt-cropper-toolbar {
       margin-top: 16px;
       display: flex;
-      justify-content: space-between;
-      align-items: center;
+      justify-content: center;
     }
   }
 
@@ -545,4 +435,4 @@ const getSavePath = computed(() => {
     color: rgba(0, 0, 0, 0.45);
   }
 }
-</style> 
+</style>

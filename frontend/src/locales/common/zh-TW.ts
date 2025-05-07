@@ -550,7 +550,13 @@ export default {
     button: {
       submit: '提交',
       confirm: '確認',
-      ok: '確定'
+      ok: '確定',
+      cancel: '取消',
+      close: '關閉',
+      reset: '重置',
+      clear: '清空',
+      save: '保存',
+      delete: '刪除',
     }
   },
 

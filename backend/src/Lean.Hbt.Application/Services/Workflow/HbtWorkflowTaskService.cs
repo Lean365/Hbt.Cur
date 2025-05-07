@@ -19,6 +19,7 @@ using SqlSugar;
 using Mapster;
 using Lean.Hbt.Domain.Repositories;
 using Lean.Hbt.Domain.IServices.Extensions;
+using Microsoft.AspNetCore.Http;
 
 namespace Lean.Hbt.Application.Services.Workflow
 {
@@ -34,11 +35,9 @@ namespace Lean.Hbt.Application.Services.Workflow
     /// 3. 实现工作流任务的状态管理
     /// 4. 提供任务的完成、转办、退回、撤销等操作
     /// </remarks>
-    public class HbtWorkflowTaskService : IHbtWorkflowTaskService
+    public class HbtWorkflowTaskService : HbtBaseService, IHbtWorkflowTaskService
     {
         private readonly IHbtRepository<HbtWorkflowTask> _taskRepository;
-        private readonly IHbtLogger _logger;
-        private readonly IHbtLocalizationService _localization;
 
         static HbtWorkflowTaskService()
         {
@@ -70,15 +69,17 @@ namespace Lean.Hbt.Application.Services.Workflow
         /// </summary>
         /// <param name="taskRepository">工作流任务仓储接口</param>
         /// <param name="logger">日志服务</param>
+        /// <param name="httpContextAccessor">HTTP上下文访问器</param>
+        /// <param name="currentUser">当前用户服务</param>
         /// <param name="localization">本地化服务</param>
         public HbtWorkflowTaskService(
             IHbtRepository<HbtWorkflowTask> taskRepository,
             IHbtLogger logger,
-            IHbtLocalizationService localization)
+            IHttpContextAccessor httpContextAccessor,
+            IHbtCurrentUser currentUser,
+            IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
         {
             _taskRepository = taskRepository;
-            _logger = logger;
-            _localization = localization;
         }
 
         /// <summary>

@@ -10,14 +10,14 @@ const LAYOUT = () => import('@/layouts/default/index.vue')
  */
 export function formatMenuToRoutes(menus: Menu[]): RouteRecordRaw[] {
   return menus.map(menu => {
-    console.log('[路由] 处理菜单项:', {
-      菜单ID: menu.menuId,
-      名称: menu.menuName,
-      路径: menu.path,
-      组件: menu.component,
-      类型: menu.menuType,
-      状态: menu.status
-    })
+    // console.log('[路由] 处理菜单项:', {
+    //   菜单ID: menu.menuId,
+    //   名称: menu.menuName,
+    //   路径: menu.path,
+    //   组件: menu.component,
+    //   类型: menu.menuType,
+    //   状态: menu.status
+    // })
 
     // 构造基础路由对象
     const route = {
@@ -29,9 +29,9 @@ export function formatMenuToRoutes(menus: Menu[]): RouteRecordRaw[] {
       meta: {
         title: menu.menuName || '',
         icon: menu.icon,
-        hidden: menu.hidden,
-        keepAlive: menu.keepAlive,
-        permission: menu.permission,
+        hidden: menu.visible === 1,
+        keepAlive: menu.isCache === 1,
+        permission: menu.perms,
         requiresAuth: true,
         menuId: menu.menuId,
         orderNum: menu.orderNum,
@@ -41,16 +41,16 @@ export function formatMenuToRoutes(menus: Menu[]): RouteRecordRaw[] {
 
     // 处理子路由
     if (menu.children && menu.children.length > 0) {
-      console.log('[路由] 处理子菜单:', {
-        父菜单: menu.menuName,
-        父路径: route.path,
-        子菜单数量: menu.children.length,
-        子菜单: menu.children.map(child => ({
-          名称: child.menuName,
-          路径: child.path,
-          组件: child.component
-        }))
-      })
+      // console.log('[路由] 处理子菜单:', {
+      //   父菜单: menu.menuName,
+      //   父路径: route.path,
+      //   子菜单数量: menu.children.length,
+      //   子菜单: menu.children.map(child => ({
+      //     名称: child.menuName,
+      //     路径: child.path,
+      //     组件: child.component
+      //   }))
+      // })
 
       // 处理子路由
       route.children = menu.children.map(child => {
@@ -65,12 +65,12 @@ export function formatMenuToRoutes(menus: Menu[]): RouteRecordRaw[] {
             ? () => {
                 // 使用相对路径，因为动态导入不支持别名
                 const componentPath = `../views/${child.component}.vue`
-                console.log('[路由] 加载子路由组件:', {
-                  菜单名称: child.menuName,
-                  组件路径: componentPath,
-                  原始组件: child.component,
-                  完整路径: `${route.path}/${childPath}`
-                })
+                // console.log('[路由] 加载子路由组件:', {
+                //   菜单名称: child.menuName,
+                //   组件路径: componentPath,
+                //   原始组件: child.component,
+                //   完整路径: `${route.path}/${childPath}`
+                // })
                 return import(/* @vite-ignore */ componentPath)
               }
             : () => import('@/views/error/404.vue'),  // 静态导入可以使用别名
@@ -78,9 +78,9 @@ export function formatMenuToRoutes(menus: Menu[]): RouteRecordRaw[] {
           meta: {
             title: child.menuName || '',
             icon: child.icon,
-            hidden: child.hidden,
-            keepAlive: child.keepAlive,
-            permission: child.permission,
+            hidden: child.visible === 1,
+            keepAlive: child.isCache === 1,
+            permission: child.perms,
             requiresAuth: true,
             menuId: child.menuId,
             orderNum: child.orderNum,
@@ -101,9 +101,9 @@ export function formatMenuToRoutes(menus: Menu[]): RouteRecordRaw[] {
             meta: {
               title: grandChild.menuName || '',
               icon: grandChild.icon,
-              hidden: grandChild.hidden,
-              keepAlive: grandChild.keepAlive,
-              permission: grandChild.permission,
+              hidden: grandChild.visible === 1,
+              keepAlive: grandChild.isCache === 1,
+              permission: grandChild.perms,
               requiresAuth: true,
               menuId: grandChild.menuId,
               orderNum: grandChild.orderNum,
@@ -121,16 +121,16 @@ export function formatMenuToRoutes(menus: Menu[]): RouteRecordRaw[] {
       const firstChildPath = firstChild.path.replace(/^\/+/, '')
       route.redirect = `${route.path}/${firstChildPath}`
       
-      console.log('[路由] 设置重定向:', {
-        从: route.path,
-        到: route.redirect,
-        第一个子路由: {
-          名称: firstChild.menuName,
-          路径: firstChildPath,
-          组件: firstChild.component,
-          完整路径: `${route.path}/${firstChildPath}`
-        }
-      })
+      // console.log('[路由] 设置重定向:', {
+      //   从: route.path,
+      //   到: route.redirect,
+      //   第一个子路由: {
+      //     名称: firstChild.menuName,
+      //     路径: firstChildPath,
+      //     组件: firstChild.component,
+      //     完整路径: `${route.path}/${firstChildPath}`
+      //   }
+      // })
     }
 
     return route
@@ -150,11 +150,11 @@ export function filterAsyncRoutes<T extends { meta?: { permission?: string }, ch
     // 检查路由权限
     if (route.meta?.permission && typeof route.meta.permission === 'string') {
       const hasPermission = permissions.includes(route.meta.permission)
-      console.log('[路由] 权限检查:', {
-        路径: route.path,
-        权限: route.meta.permission,
-        结果: hasPermission
-      })
+      // console.log('[路由] 权限检查:', {
+      //   路径: route.path,
+      //   权限: route.meta.permission,
+      //   结果: hasPermission
+      // })
       return hasPermission
     }
     
@@ -170,10 +170,10 @@ export function filterAsyncRoutes<T extends { meta?: { permission?: string }, ch
 
 export const registerDynamicRoutes = async (menus: Menu[], router: Router) => {
   try {
-    console.log('[路由] 开始注册动态路由:', {
-      菜单数量: menus.length,
-      当前路由: router.getRoutes()
-    })
+    // console.log('[路由] 开始注册动态路由:', {
+    //   菜单数量: menus.length,
+    //   当前路由: router.getRoutes()
+    // })
 
     // 先清理已存在的动态路由
     router.getRoutes()
@@ -188,16 +188,16 @@ export const registerDynamicRoutes = async (menus: Menu[], router: Router) => {
     routes.forEach(route => {
       try {
         router.addRoute(route)
-        console.log('[路由] 添加路由成功:', {
-          路径: route.path,
-          名称: route.name,
-          组件: route.component?.name,
-          子路由: route.children?.map(child => ({
-            路径: child.path,
-            名称: child.name,
-            完整路径: `${route.path}/${child.path}`
-          }))
-        })
+        // console.log('[路由] 添加路由成功:', {
+        //   路径: route.path,
+        //   名称: route.name,
+        //   组件: route.component?.name,
+        //   子路由: route.children?.map(child => ({
+        //     路径: child.path,
+        //     名称: child.name,
+        //     完整路径: `${route.path}/${child.path}`
+        //   }))
+        // })
       } catch (error) {
         console.error('[路由] 添加路由失败:', {
           路径: route.path,
@@ -209,15 +209,15 @@ export const registerDynamicRoutes = async (menus: Menu[], router: Router) => {
 
     // 验证路由注册状态
     const registeredRoutes = router.getRoutes()
-    console.log('[路由] 已注册的路由:', registeredRoutes.map(route => ({
-      名称: route.name,
-      路径: route.path,
-      子路由: route.children?.map(child => ({
-        路径: child.path,
-        名称: child.name,
-        完整路径: `${route.path}/${child.path}`
-      }))
-    })))
+    // console.log('[路由] 已注册的路由:', registeredRoutes.map(route => ({
+    //   名称: route.name,
+    //   路径: route.path,
+    //   子路由: route.children?.map(child => ({
+    //     路径: child.path,
+    //     名称: child.name,
+    //     完整路径: `${route.path}/${child.path}`
+    //   }))
+    // })))
 
     console.log('[路由] 动态路由注册完成')
   } catch (error) {

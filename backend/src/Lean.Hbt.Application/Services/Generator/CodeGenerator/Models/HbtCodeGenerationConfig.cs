@@ -97,7 +97,16 @@ public class HbtCodeGenerationConfig
     public static HbtCodeGenerationConfig FromConfiguration(IConfiguration configuration, IWebHostEnvironment webHostEnvironment)
     {
         var config = new HbtCodeGenerationConfig(webHostEnvironment);
-        configuration.GetSection("CodeGeneration").Bind(config);
+        
+        // 绑定配置
+        configuration.GetSection("CodeGeneration").Bind(config, options => options.BindNonPublicProperties = true);
+        
+        // 设置TemplatePaths的WebHostEnvironment
+        if (config.TemplatePaths != null)
+        {
+            config.TemplatePaths.WebHostEnvironment = webHostEnvironment;
+        }
+        
         return config;
     }
 }
@@ -107,16 +116,26 @@ public class HbtCodeGenerationConfig
 /// </summary>
 public class HbtTemplatePathConfig
 {
-    private readonly IWebHostEnvironment _webHostEnvironment;
+    /// <summary>
+    /// 默认构造函数
+    /// </summary>
+    public HbtTemplatePathConfig()
+    {
+    }
 
     /// <summary>
-    /// 构造函数
+    /// 带WebHostEnvironment的构造函数
     /// </summary>
-    /// <param name="webHostEnvironment"> Web主机环境 </param>
+    /// <param name="webHostEnvironment">Web主机环境</param>
     public HbtTemplatePathConfig(IWebHostEnvironment webHostEnvironment)
     {
-        _webHostEnvironment = webHostEnvironment;
+        WebHostEnvironment = webHostEnvironment;
     }
+
+    /// <summary>
+    /// Web主机环境
+    /// </summary>
+    public IWebHostEnvironment? WebHostEnvironment { get; set; }
 
     #region 后端模板路径
 
@@ -171,19 +190,24 @@ public class HbtTemplatePathConfig
     /// </summary>
     public Dictionary<string, string> GetAllTemplatePaths()
     {
+        if (WebHostEnvironment == null)
+        {
+            throw new InvalidOperationException("WebHostEnvironment is not set");
+        }
+
         return new Dictionary<string, string>
         {
             // 后端模板
-            { "Entity", Path.Combine(_webHostEnvironment.WebRootPath, EntityTemplate) },
-            { "Dto", Path.Combine(_webHostEnvironment.WebRootPath, DtoTemplate) },
-            { "Service", Path.Combine(_webHostEnvironment.WebRootPath, ServiceTemplate) },
-            { "Controller", Path.Combine(_webHostEnvironment.WebRootPath, ControllerTemplate) },
+            { "Entity", Path.Combine(WebHostEnvironment.WebRootPath, EntityTemplate) },
+            { "Dto", Path.Combine(WebHostEnvironment.WebRootPath, DtoTemplate) },
+            { "Service", Path.Combine(WebHostEnvironment.WebRootPath, ServiceTemplate) },
+            { "Controller", Path.Combine(WebHostEnvironment.WebRootPath, ControllerTemplate) },
 
             // 前端模板
-            { "Api", Path.Combine(_webHostEnvironment.WebRootPath, ApiTemplate) },
-            { "Locales", Path.Combine(_webHostEnvironment.WebRootPath, LocalesTemplate) },
-            { "Types", Path.Combine(_webHostEnvironment.WebRootPath, TypesTemplate) },
-            { "Views", Path.Combine(_webHostEnvironment.WebRootPath, ViewsTemplate) }
+            { "Api", Path.Combine(WebHostEnvironment.WebRootPath, ApiTemplate) },
+            { "Locales", Path.Combine(WebHostEnvironment.WebRootPath, LocalesTemplate) },
+            { "Types", Path.Combine(WebHostEnvironment.WebRootPath, TypesTemplate) },
+            { "Views", Path.Combine(WebHostEnvironment.WebRootPath, ViewsTemplate) }
         };
     }
 }

@@ -550,7 +550,13 @@ export default {
     button: {
       submit: '送信',
       confirm: '確認',
-      ok: 'OK'
+      ok: 'OK',
+      cancel: 'キャンセル',
+      close: '閉じる',
+      reset: 'リセット',
+      clear: 'クリア',
+      save: '保存',
+      delete: '削除'
     }
   },
 

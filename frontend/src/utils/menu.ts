@@ -65,7 +65,7 @@ export function transformMenu(menus: Menu[]): MenuProps['items'] {
         key: menu.menuType === HbtMenuType.Directory ? `dir_${menu.menuId}` : path,
         label: menu.transKey ? i18n.global.t(menu.transKey) : menu.menuName,
         icon: getIcon(menu.icon),
-        disabled: menu.disabled || false,
+        status: menu.status,
         selectable: menu.menuType !== HbtMenuType.Directory
       }
 

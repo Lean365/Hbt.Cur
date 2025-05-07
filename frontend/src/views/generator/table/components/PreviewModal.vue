@@ -36,7 +36,6 @@
 
 <script lang="ts" setup>
 import { ref } from 'vue'
-import type { HbtGenTablePreviewDto } from '@/types/generator/table'
 import ControllersPreview from './preview/ControllersPreview.vue'
 import ServicesPreview from './preview/ServicesPreview.vue'
 import EntitiesPreview from './preview/EntitiesPreview.vue'
@@ -48,7 +47,7 @@ import LocalesPreview from './preview/LocalesPreview.vue'
 defineProps<{
   open: boolean
   loading: boolean
-  previewData: HbtGenTablePreviewDto
+  previewData: Record<string, string>
 }>()
 
 const emit = defineEmits<{

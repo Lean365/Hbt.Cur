@@ -76,6 +76,7 @@ import { signalRService } from '@/utils/SignalR/service'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import SendForm from './components/SendForm.vue'
+import type { HbtApiResponse, HbtPagedResult } from '@/types/common'
 
 const { t } = useI18n()
 const router = useRouter()
@@ -181,7 +182,7 @@ onUnmounted(() => {
 const fetchData = async () => {
   loading.value = true
   try {
-    const res = await getOnlineUserList(queryParams)
+    const { data: res } = await getOnlineUserList(queryParams)
     if (res.code === 200) {
       tableData.value = res.data.rows || []
       total.value = res.data.totalNum || 0
@@ -245,7 +246,7 @@ const handleForceOfflineEvent = async (msg: string) => {
 /** 强制下线 */
 const handleForceOffline = async (record: HbtOnlineUserDto) => {
   try {
-    const currentUser = userStore.user
+    const currentUser = userStore.userInfo
     console.log('[在线用户] 当前用户:', currentUser)
     console.log('[在线用户] 被下线用户:', record)
     

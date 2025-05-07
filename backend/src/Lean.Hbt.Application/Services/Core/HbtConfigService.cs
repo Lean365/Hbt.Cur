@@ -1,27 +1,30 @@
+#nullable enable
+
 //===================================================================
 // 项目名 : Lean.Hbt
 // 文件名 : HbtConfigService.cs
 // 创建者 : Lean365
-// 创建时间: 2024-01-20 16:30
+// 创建时间: 2024-03-20
 // 版本号 : V0.0.1
-// 描述   : 系统配置服务实现类
+// 描述    : 系统配置服务实现
 //===================================================================
 
 using System.Linq.Expressions;
 using Lean.Hbt.Application.Dtos.Core;
 using Lean.Hbt.Common.Utils;
 using Lean.Hbt.Domain.Entities.Core;
+using Lean.Hbt.Domain.IServices.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Http;
 
 namespace Lean.Hbt.Application.Services.Core
 {
     /// <summary>
-    /// 系统配置服务实现类
+    /// 系统配置服务实现
     /// </summary>
     /// <remarks>
     /// 创建者: Lean365
-    /// 创建时间: 2024-01-20
+    /// 创建时间: 2024-03-20
     /// </remarks>
     public class HbtConfigService : HbtBaseService, IHbtConfigService
     {
@@ -30,10 +33,17 @@ namespace Lean.Hbt.Application.Services.Core
         /// <summary>
         /// 构造函数
         /// </summary>
+        /// <param name="configRepository">配置仓储</param>
+        /// <param name="logger">日志服务</param>
+        /// <param name="httpContextAccessor">HTTP上下文访问器</param>
+        /// <param name="currentUser">当前用户服务</param>
+        /// <param name="localization">本地化服务</param>
         public HbtConfigService(
             IHbtRepository<HbtConfig> configRepository,
             IHbtLogger logger,
-            IHttpContextAccessor httpContextAccessor) : base(logger, httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor,
+            IHbtCurrentUser currentUser,
+            IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
         {
             _configRepository = configRepository ?? throw new ArgumentNullException(nameof(configRepository));
         }

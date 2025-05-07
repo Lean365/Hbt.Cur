@@ -1,16 +1,17 @@
 import request from '@/utils/request'
 import type { HbtApiResponse } from '@/types/common'
 import type { 
-  WorkflowHistoryQuery, 
-  WorkflowHistory,
-  WorkflowHistoryCreate,
-  WorkflowHistoryUpdate
+  HbtWorkflowHistoryQuery, 
+  HbtWorkflowHistory,
+  HbtWorkflowHistoryCreate,
+  HbtWorkflowHistoryUpdate,
+  HbtWorkflowHistoryPagedResult
 } from '@/types/workflow/workflowHistory'
 
 // 获取工作流历史列表
-export function getWorkflowHistoryList(params: WorkflowHistoryQuery) {
-  return request<HbtApiResponse<WorkflowHistory[]>>({
-    url: '/api/HbtWorkflowHistory',
+export function getWorkflowHistoryList(params: HbtWorkflowHistoryQuery) {
+  return request<HbtApiResponse<HbtWorkflowHistoryPagedResult>>({
+    url: '/api/HbtWorkflowHistory/list',
     method: 'get',
     params
   })
@@ -18,14 +19,14 @@ export function getWorkflowHistoryList(params: WorkflowHistoryQuery) {
 
 // 获取工作流历史详情
 export function getWorkflowHistory(id: number) {
-  return request<HbtApiResponse<WorkflowHistory>>({
+  return request<HbtApiResponse<HbtWorkflowHistory>>({
     url: `/api/HbtWorkflowHistory/${id}`,
     method: 'get'
   })
 }
 
 // 创建工作流历史
-export function createWorkflowHistory(data: WorkflowHistoryCreate) {
+export function createWorkflowHistory(data: HbtWorkflowHistoryCreate) {
   return request<HbtApiResponse<any>>({
     url: '/api/HbtWorkflowHistory',
     method: 'post',
@@ -34,7 +35,7 @@ export function createWorkflowHistory(data: WorkflowHistoryCreate) {
 }
 
 // 更新工作流历史
-export function updateWorkflowHistory(data: WorkflowHistoryUpdate) {
+export function updateWorkflowHistory(data: HbtWorkflowHistoryUpdate) {
   return request<HbtApiResponse<any>>({
     url: '/api/HbtWorkflowHistory',
     method: 'put',
@@ -75,7 +76,7 @@ export function importWorkflowHistory(file: File, sheetName: string = 'Sheet1') 
 }
 
 // 导出工作流历史
-export function exportWorkflowHistory(params: WorkflowHistoryQuery, sheetName: string = 'Sheet1') {
+export function exportWorkflowHistory(params: HbtWorkflowHistoryQuery, sheetName: string = 'Sheet1') {
   return request({
     url: '/api/HbtWorkflowHistory/export',
     method: 'get',
@@ -96,7 +97,7 @@ export function getWorkflowHistoryTemplate(sheetName: string = 'Sheet1') {
 
 // 获取工作流实例的历史记录
 export function getHistoriesByWorkflowInstance(workflowInstanceId: number) {
-  return request<HbtApiResponse<WorkflowHistory[]>>({
+  return request<HbtApiResponse<HbtWorkflowHistory[]>>({
     url: `/api/HbtWorkflowHistory/instance/${workflowInstanceId}`,
     method: 'get'
   })
@@ -104,7 +105,7 @@ export function getHistoriesByWorkflowInstance(workflowInstanceId: number) {
 
 // 获取工作流节点的历史记录
 export function getHistoriesByWorkflowNode(workflowNodeId: number) {
-  return request<HbtApiResponse<WorkflowHistory[]>>({
+  return request<HbtApiResponse<HbtWorkflowHistory[]>>({
     url: `/api/HbtWorkflowHistory/node/${workflowNodeId}`,
     method: 'get'
   })
@@ -112,7 +113,7 @@ export function getHistoriesByWorkflowNode(workflowNodeId: number) {
 
 // 获取用户的操作历史记录
 export function getHistoriesByOperator(operatorId: number) {
-  return request<HbtApiResponse<WorkflowHistory[]>>({
+  return request<HbtApiResponse<HbtWorkflowHistory[]>>({
     url: `/api/HbtWorkflowHistory/operator/${operatorId}`,
     method: 'get'
   })

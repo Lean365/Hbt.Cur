@@ -49,21 +49,18 @@ public class HbtOnlineUserDto
     /// 租户ID
     /// </summary>
     [Required(ErrorMessage = "租户ID不能为空")]
-    [Range(1, long.MaxValue, ErrorMessage = "租户ID必须大于0")]
     public long TenantId { get; set; }
 
     /// <summary>
     /// 用户ID
     /// </summary>
     [Required(ErrorMessage = "用户ID不能为空")]
-    [Range(1, long.MaxValue, ErrorMessage = "用户ID必须大于0")]
     public long UserId { get; set; }
 
     /// <summary>
     /// 用户组ID
     /// </summary>
     [Required(ErrorMessage = "用户组ID不能为空")]
-    [Range(1, long.MaxValue, ErrorMessage = "用户组ID必须大于0")]
     public long GroupId { get; set; }
 
     /// <summary>
@@ -102,7 +99,6 @@ public class HbtOnlineUserDto
     /// <summary>
     /// 在线状态（0离线 1在线）
     /// </summary>
-    [Range(0, 1, ErrorMessage = "在线状态只能是0或1")]
     public int OnlineStatus { get; set; }
 
     /// <summary>
@@ -161,7 +157,6 @@ public class HbtOnlineUserQueryDto : HbtPagedQuery
     /// <summary>
     /// 在线状态（0离线 1在线）
     /// </summary>
-    [Range(0, 1, ErrorMessage = "在线状态只能是0或1")]
     public int? OnlineStatus { get; set; }
 }
 
@@ -190,21 +185,18 @@ public class HbtOnlineUserCreateDto
     /// 租户ID
     /// </summary>
     [Required(ErrorMessage = "租户ID不能为空")]
-    [Range(1, long.MaxValue, ErrorMessage = "租户ID必须大于0")]
     public long TenantId { get; set; }
 
     /// <summary>
     /// 用户ID
     /// </summary>
     [Required(ErrorMessage = "用户ID不能为空")]
-    [Range(1, long.MaxValue, ErrorMessage = "用户ID必须大于0")]
     public long UserId { get; set; }
 
     /// <summary>
     /// 用户组ID
     /// </summary>
     [Required(ErrorMessage = "用户组ID不能为空")]
-    [Range(1, long.MaxValue, ErrorMessage = "用户组ID必须大于0")]
     public long GroupId { get; set; }
 
     /// <summary>
@@ -238,7 +230,6 @@ public class HbtOnlineUserCreateDto
     /// <summary>
     /// 在线状态（0离线 1在线）
     /// </summary>
-    [Range(0, 1, ErrorMessage = "在线状态只能是0或1")]
     public int OnlineStatus { get; set; }
 }
 

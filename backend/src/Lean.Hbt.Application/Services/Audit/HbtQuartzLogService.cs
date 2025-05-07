@@ -1,15 +1,18 @@
+#nullable enable
+
 //===================================================================
 // 项目名 : Lean.Hbt
 // 文件名 : HbtQuartzLogService.cs
 // 创建者 : Lean365
-// 创建时间: 2024-01-20 16:30
+// 创建时间: 2024-03-20
 // 版本号 : V0.0.1
-// 描述   : 定时任务日志服务实现
+// 描述    : 定时任务日志服务实现
 //===================================================================
 
 using System.Linq.Expressions;
 using Lean.Hbt.Application.Dtos.Audit;
 using Lean.Hbt.Domain.Entities.Audit;
+using Lean.Hbt.Domain.IServices.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Http;
 
@@ -32,7 +35,9 @@ namespace Lean.Hbt.Application.Services.Audit
         public HbtQuartzLogService(
             IHbtRepository<HbtQuartzLog> quartzLogRepository,
             IHbtLogger logger,
-            IHttpContextAccessor httpContextAccessor) : base(logger, httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor,
+            IHbtCurrentUser currentUser,
+            IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
         {
             _quartzLogRepository = quartzLogRepository ?? throw new ArgumentNullException(nameof(quartzLogRepository));
         }

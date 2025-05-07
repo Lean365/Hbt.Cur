@@ -227,7 +227,7 @@ namespace Lean.Hbt.Infrastructure.Security
             }
             catch (Exception ex)
             {
-                _logger.Error("处理用户登录时发生错误 - 用户ID: {UserId}", userId);
+                _logger.Error("处理用户登录时发生错误 - 用户ID: {UserId}", userId, ex.Message);
                 return new HbtApiResult { Code = 500, Msg = "处理登录请求时发生错误" };
             }
         }
@@ -257,7 +257,7 @@ namespace Lean.Hbt.Infrastructure.Security
             }
             catch (Exception ex)
             {
-                _logger.Error("处理用户退出时发生错误 - 用户ID: {UserId}", userId);
+                _logger.Error("处理用户退出时发生错误 - 用户ID: {UserId}", userId, ex.Message);
             }
         }
 
@@ -317,7 +317,7 @@ namespace Lean.Hbt.Infrastructure.Security
             }
             catch (Exception ex)
             {
-                _logger.Error("处理用户登录时发生错误 - 用户ID: {UserId}", userId);
+                _logger.Error("处理用户登录时发生错误 - 用户ID: {UserId}", userId, ex.Message);
             }
         }
     }

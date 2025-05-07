@@ -286,17 +286,17 @@ namespace Lean.Hbt.Infrastructure.Security
         /// <summary>
         /// 获取账户锁定剩余时间(秒)
         /// </summary>
-        public async Task<int> GetLockoutRemainingSecondsAsync(string userName)
+        public Task<int> GetLockoutRemainingSecondsAsync(string userName)
         {
             var attemptKey = $"{LOGIN_ATTEMPT_PREFIX}{userName}";
             var lockoutEndTime = _cache.Get<DateTime?>(attemptKey + "_lockout");
 
             if (lockoutEndTime.HasValue && DateTime.UtcNow < lockoutEndTime.Value)
             {
-                return (int)(lockoutEndTime.Value - DateTime.UtcNow).TotalSeconds;
+                return Task.FromResult((int)(lockoutEndTime.Value - DateTime.UtcNow).TotalSeconds);
             }
 
-            return 0;
+            return Task.FromResult(0);
         }
     }
 }

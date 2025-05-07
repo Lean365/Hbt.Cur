@@ -15,13 +15,15 @@ using Lean.Hbt.Domain.Repositories;
 using Mapster;
 using System.Threading.Tasks;
 using System.Linq.Expressions;
+using Microsoft.AspNetCore.Http;
+using Lean.Hbt.Domain.IServices.Extensions;
 
 namespace Lean.Hbt.Application.Services.Workflow
 {
     /// <summary>
     /// 工作流转换服务实现
     /// </summary>
-    public class HbtWorkflowTransitionService : IHbtWorkflowTransitionService
+    public class HbtWorkflowTransitionService : HbtBaseService, IHbtWorkflowTransitionService
     {
         private readonly IHbtRepository<HbtWorkflowTransition> _transitionRepository;
 
@@ -29,7 +31,16 @@ namespace Lean.Hbt.Application.Services.Workflow
         /// 构造函数
         /// </summary>
         /// <param name="transitionRepository">工作流转换仓储</param>
-        public HbtWorkflowTransitionService(IHbtRepository<HbtWorkflowTransition> transitionRepository)
+        /// <param name="logger">日志服务</param>
+        /// <param name="httpContextAccessor">HTTP上下文访问器</param>
+        /// <param name="currentUser">当前用户服务</param>
+        /// <param name="localization">本地化服务</param>
+        public HbtWorkflowTransitionService(
+            IHbtRepository<HbtWorkflowTransition> transitionRepository,
+            IHbtLogger logger,
+            IHttpContextAccessor httpContextAccessor,
+            IHbtCurrentUser currentUser,
+            IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
         {
             _transitionRepository = transitionRepository;
         }

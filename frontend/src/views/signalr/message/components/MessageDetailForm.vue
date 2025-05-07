@@ -64,19 +64,19 @@ watch(() => props.messageData, (newVal) => {
       sendTime: newVal.sendTime ? new Date(newVal.sendTime).toLocaleString() : '',
       messageType: getMessageTypeText(newVal.messageType),
       messageStatus: getMessageStatusText(newVal.messageStatus),
-      content: newVal.content || ''
+      content: newVal.messageContent || ''
     }
   }
 }, { immediate: true })
 
 // 获取消息类型文本
-const getMessageTypeText = (type: number) => {
+const getMessageTypeText = (type: string) => {
   switch (type) {
-    case 1:
+    case 'System':
       return t('message.types.system')
-    case 2:
+    case 'Task':
       return t('message.types.task')
-    case 3:
+    case 'Chat':
       return t('message.types.chat')
     default:
       return t('message.types.unknown')

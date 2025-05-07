@@ -550,7 +550,13 @@ export default {
     button: {
       submit: '제출',
       confirm: '확인',
-      ok: '확인'
+      ok: '확인',
+      cancel: '취소',
+      close: '닫기',
+      reset: '초기화',
+      clear: '지우기',
+      save: '저장',
+      delete: '삭제'
     }
   },
 

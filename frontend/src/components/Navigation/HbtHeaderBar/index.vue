@@ -37,7 +37,7 @@
                   <user-outlined />
                 </template>
               </a-avatar>
-              <span class="username">{{ userStore.userInfo?.nickName || userStore.userInfo?.englishName || userStore.userInfo?.userName }}</span>
+              <!-- <span class="username">{{ userStore.userInfo?.nickName || userStore.userInfo?.englishName || userStore.userInfo?.userName }}</span> -->
             </div>
             <template #overlay>
               <a-menu class="user-menu">
@@ -207,7 +207,7 @@ const handleClearCache = () => {
 const handleLogout = () => {
   Modal.confirm({
     title: t('header.user.logout'),
-    content: t('header.user.logoutConfirm'),
+    content: t('header.logout.confirm'),
     okText: t('common.button.confirm'),
     cancelText: t('common.button.cancel'),
     onOk: async () => {

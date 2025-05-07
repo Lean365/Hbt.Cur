@@ -550,7 +550,13 @@ export default {
     button: {
       submit: 'إرسال',
       confirm: 'تأكيد',
-      ok: 'موافق'
+      ok: 'موافق',
+      cancel: 'إلغاء',
+      close: 'إغلاق',
+      reset: 'إعادة تعيين',
+      clear: 'مسح',
+      save: 'حفظ',
+      delete: 'حذف'
     }
   },
 

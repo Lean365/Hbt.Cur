@@ -24,7 +24,7 @@
     <template v-if="type === 'radio-button'">
       <a-radio-button 
         v-for="option in displayOptions" 
-        :key="String(option.value ?? '')" 
+        :key="getOptionKey(option.value)" 
         :value="option.value"
         :disabled="option.disabled"
       >
@@ -34,7 +34,7 @@
     <template v-else-if="type === 'checkbox'">
       <a-checkbox 
         v-for="option in displayOptions" 
-        :key="String(option.value ?? '')" 
+        :key="getOptionKey(option.value)" 
         :value="option.value"
         :disabled="option.disabled"
       >
@@ -77,6 +77,7 @@ interface Props {
   loading?: boolean
   filterOption?: boolean | ((input: string, option: DefaultOptionType) => boolean)
   showAll?: boolean
+  valueType?: 'string' | 'number'
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -95,7 +96,8 @@ const props = withDefaults(defineProps<Props>(), {
   showAll: true,
   filterOption: (input: string, option: DefaultOptionType) => {
     return (option?.label as string)?.toLowerCase().includes(input.toLowerCase())
-  }
+  },
+  valueType: 'string'
 })
 
 const emit = defineEmits<{
@@ -107,46 +109,35 @@ const emit = defineEmits<{
 const dictStore = useDictStore()
 const options = computed(() => props.dictType ? dictStore.getDictOptions(props.dictType) : [])
 
-// 统一处理值的类型转换
-const normalizeValue = (value: any): any => {
+// 获取选项的key值
+const getOptionKey = (value: any): string => {
   if (value === undefined || value === null) {
-    return -1;
+    return 'empty';
   }
-  // 如果是字符串且可以转换为数字，则转换为数字
-  if (typeof value === 'string' && !isNaN(Number(value))) {
-    return Number(value);
+  if (typeof value === 'number' && isNaN(value)) {
+    return 'nan';
   }
-  return value;
+  return String(value);
 }
 
 // 根据值查找对应的选项
 const findOptionByValue = (value: any, options: DefaultOptionType[]): DefaultOptionType | undefined => {
-  const normalizedSearchValue = normalizeValue(value);
-  return options.find(opt => normalizeValue(opt.value) === normalizedSearchValue);
+  if (value === undefined || value === null) {
+    return undefined;
+  }
+  // 用字符串比较，兼容类型
+  return options.find(opt => String(opt.value) === String(value));
 }
 
 // 显示选项
 const displayOptions = computed(() => {
   let opts: DefaultOptionType[] = []
   
-  // 添加其他选项
-  if (props.options && props.options.length > 0) {
-    opts = [...opts, ...props.options.map(opt => ({
-      ...opt,
-      value: normalizeValue(opt.value)
-    }))]
-  } else if (props.dictType) {
-    opts = [...opts, ...options.value.map(opt => ({
-      ...opt,
-      value: normalizeValue(opt.value)
-    }))]
-  }
-  
-  // 如果是 radio 类型且 showAll 为 true，添加"全部"选项
+  // 如果是 radio 类型且 showAll 为 true，先添加"全部"选项
   if (props.type === 'radio' && props.showAll) {
-    opts.unshift({
+    opts.push({
       label: t('select.all'),
-      value: undefined,
+      value: '',
       disabled: false,
       cssClass: '',
       listClass: '',
@@ -154,6 +145,21 @@ const displayOptions = computed(() => {
       extValue: '',
       transKey: ''
     })
+  }
+  
+  // 添加其他选项
+  if (props.options && props.options.length > 0) {
+    opts = [...opts, ...props.options.map(opt => ({
+      ...opt,
+      value: opt.value, // 保持原始类型
+      key: getOptionKey(opt.value)
+    }))]
+  } else if (props.dictType) {
+    opts = [...opts, ...options.value.map(opt => ({
+      ...opt,
+      value: opt.value, // 保持原始类型
+      key: getOptionKey(opt.value)
+    }))]
   }
   
   return opts
@@ -207,14 +213,25 @@ const controlProps = computed(() => {
         onSearch: props.remote ? handleSearch : undefined
       }
     case 'radio':
+      return {
+        ...baseProps,
+        optionType: 'default',
+        options: displayOptions.value,
+        placeholder: localizedPlaceholder.value,
+        direction: 'horizontal',
+        allowClear: props.allowClear,
+        value: innerValue.value
+      }
     case 'radio-button':
       return {
         ...baseProps,
-        optionType: props.type === 'radio-button' ? 'button' : 'default',
+        optionType: 'button',
         options: displayOptions.value,
         placeholder: localizedPlaceholder.value,
-        buttonStyle: props.type === 'radio-button' ? 'solid' : undefined,
-        direction: 'horizontal'
+        buttonStyle: 'solid',
+        direction: 'horizontal',
+        allowClear: props.allowClear,
+        value: innerValue.value
       }
     case 'checkbox':
     case 'checkbox-group':
@@ -245,52 +262,59 @@ const controlProps = computed(() => {
 const innerValue = computed({
   get: () => {
     const opts = displayOptions.value;
-    const normalizedValue = normalizeValue(props.value);
+    const value = props.value;
     
-    // 如果选项还没有加载完成，先返回原始值
+    console.log('[HbtSelect] get value:', value, 'options:', opts);
+    
+    // 如果选项还没有加载完成，返回原始值
     if (opts.length === 0 && (props.options || props.dictType)) {
-      return normalizedValue;
+      return value;
     }
     
-    // 对于所有类型，都尝试查找匹配的选项
-    const matchingOption = findOptionByValue(normalizedValue, opts);
+    // 对于radio类型，直接返回当前值
+    if (props.type === 'radio') {
+      return value;
+    }
     
-    // 如果找到匹配的选项，返回其值（保持原始类型）
+    // 对于其他类型，尝试查找匹配的选项
+    const matchingOption = findOptionByValue(value, opts);
+    
+    // 如果找到匹配的选项，返回其值
     if (matchingOption) {
       return matchingOption.value;
     }
     
     // 如果没有找到匹配的选项，返回原始值
-    return normalizedValue;
+    return value;
   },
   set: (val: SelectValue) => {
-    // 发出更新事件时，确保值的类型正确
-    emit('update:value', normalizeValue(val));
+    console.log('[HbtSelect] set value:', val);
+    emit('update:value', val);
   }
 })
 
 // 处理change事件
 const handleChange = (value: SelectValue, option: DefaultOptionType | DefaultOptionType[]) => {
   if (value === undefined || value === null) {
-    emit('change', value, option);
+    emit('change', '', option);
     return;
   }
   
-  let convertedValue;
+  let convertedValue: any;
   switch (props.type) {
     case 'switch':
       convertedValue = value ? props.checkedValue : props.uncheckedValue;
       break;
     case 'checkbox':
     case 'checkbox-group':
-      convertedValue = Array.isArray(value)
-        ? value.map(normalizeValue)
-        : [normalizeValue(value)];
+      convertedValue = Array.isArray(value) ? value : [value];
+      break;
+    case 'radio':
+      // 对于radio类型，确保只返回单个值
+      convertedValue = Array.isArray(value) ? value[0] : value;
       break;
     default:
-      convertedValue = Array.isArray(value)
-        ? value.map(normalizeValue)
-        : normalizeValue(value);
+      convertedValue = value;
   }
   
   emit('change', convertedValue, option);

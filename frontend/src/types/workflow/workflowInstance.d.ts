@@ -1,80 +1,99 @@
-// 工作流实例查询参数
-export interface WorkflowInstanceQuery {
-  pageNum?: number;
-  pageSize?: number;
-  workflowDefinitionId?: number;
-  workflowTitle?: string;
-  initiatorId?: number;
-  status?: string;
-  beginTime?: string;
-  endTime?: string;
+/**
+ * 工作流实例相关类型定义
+ */
+
+import type { HbtBaseEntity, HbtPagedQuery, HbtPagedResult } from '@/types/common'
+import type { HbtWorkflowDefinition } from './workflowDefinition'
+import type { HbtWorkflowNode } from './workflowNode'
+
+/**
+ * 工作流实例查询参数
+ */
+export interface HbtWorkflowInstanceQuery extends HbtPagedQuery {
+  workflowDefinitionId?: number
+  workflowTitle?: string
+  currentNodeId?: number
+  initiatorId?: number
+  status?: number
+  startTime?: string
+  endTime?: string
 }
 
-// 工作流实例对象
-export interface WorkflowInstance {
-  id: number;
-  workflowDefinitionId: number;
-  workflowTitle: string;
-  initiatorId: number;
-  initiatorName: string;
-  status: string;
-  startTime: string;
-  endTime: string;
-  duration: number;
-  createBy: string;
-  createTime: string;
-  updateBy: string;
-  updateTime: string;
-  remark: string;
+/**
+ * 工作流实例数据传输对象
+ */
+export interface HbtWorkflowInstance extends HbtBaseEntity {
+  workflowDefinitionId: number
+  workflowTitle: string
+  currentNodeId: number
+  initiatorId: number
+  formData: string
+  status: number
+  startTime: string
+  endTime?: string
+  workflowDefinition?: HbtWorkflowDefinition
+  currentNode?: HbtWorkflowNode
 }
 
-// 创建工作流实例参数
-export interface WorkflowInstanceCreate {
-  workflowDefinitionId: number;
-  workflowTitle: string;
-  initiatorId: number;
-  status: string;
-  remark?: string;
+/**
+ * 工作流实例创建参数
+ */
+export interface HbtWorkflowInstanceCreate {
+  workflowDefinitionId: number
+  workflowTitle: string
+  currentNodeId: number
+  initiatorId: number
+  formData: string
+  status: number
+  startTime: string
+  endTime?: string
 }
 
-// 更新工作流实例参数
-export interface WorkflowInstanceUpdate extends WorkflowInstanceCreate {
-  id: number;
+/**
+ * 工作流实例更新参数
+ */
+export interface HbtWorkflowInstanceUpdate extends HbtWorkflowInstanceCreate {
+  id: string
 }
 
-// 工作流实例状态更新参数
-export interface WorkflowInstanceStatus {
-  workflowInstanceId: number;
-  status: string;
-  reason?: string;
+/**
+ * 工作流实例状态更新参数
+ */
+export interface HbtWorkflowInstanceStatus {
+  id: string
+  status: number
 }
 
-// 工作流实例导入参数
-export interface WorkflowInstanceImport {
-  workflowDefinitionId: number;
-  workflowTitle: string;
-  initiatorId: number;
-  status: string;
-  remark?: string;
+/**
+ * 工作流实例导入参数
+ */
+export interface HbtWorkflowInstanceImport {
+  file: File
 }
 
-// 工作流实例导出参数
-export interface WorkflowInstanceExport extends WorkflowInstanceQuery {
-  orderByColumn?: string;
-  isAsc?: string;
+/**
+ * 工作流实例导出参数
+ */
+export interface HbtWorkflowInstanceExport extends HbtWorkflowInstanceQuery {
+  orderByColumn?: string
+  isAsc?: string
 }
 
-// 工作流实例模板参数
-export interface WorkflowInstanceTemplate {
-  workflowDefinitionId: number;
-  workflowTitle: string;
-  initiatorId: number;
-  status: string;
-  remark: string;
+/**
+ * 工作流实例模板参数
+ */
+export interface HbtWorkflowInstanceTemplate {
+  workflowDefinitionId: number
+  workflowTitle: string
+  currentNodeId: number
+  initiatorId: number
+  formData: string
+  status: number
+  startTime: string
+  endTime?: string
 }
 
-// 工作流实例终止参数
-export interface WorkflowInstanceTerminate {
-  workflowInstanceId: number;
-  reason: string;
-} 
+/**
+ * 工作流实例分页结果
+ */
+export type HbtWorkflowInstancePagedResult = HbtPagedResult<HbtWorkflowInstance>

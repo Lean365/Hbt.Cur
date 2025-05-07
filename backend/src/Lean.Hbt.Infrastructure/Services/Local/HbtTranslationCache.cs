@@ -60,7 +60,7 @@ namespace Lean.Hbt.Infrastructure.Services
             }
             catch (Exception ex)
             {
-                _logger.Error("获取翻译失败: {LangCode}, {Key}", langCode, key);
+                _logger.Error("获取翻译失败: {LangCode}, {Key}", langCode, key, ex.Message);
                 return null;
             }
         }
@@ -84,7 +84,7 @@ namespace Lean.Hbt.Infrastructure.Services
             }
             catch (Exception ex)
             {
-                _logger.Error("初始化翻译数据失败");
+                _logger.Error("初始化翻译数据失败", ex.Message);
                 throw;
             }
         }
@@ -103,7 +103,7 @@ namespace Lean.Hbt.Infrastructure.Services
             }
             catch (Exception ex)
             {
-                _logger.Error("重新加载翻译数据失败");
+                _logger.Error("重新加载翻译数据失败", ex.Message);
                 throw;
             }
         }
@@ -119,7 +119,7 @@ namespace Lean.Hbt.Infrastructure.Services
             }
             catch (Exception ex)
             {
-                _logger.Error("获取支持的语言列表失败");
+                _logger.Error("获取支持的语言列表失败", ex.Message);
                 throw;
             }
         }

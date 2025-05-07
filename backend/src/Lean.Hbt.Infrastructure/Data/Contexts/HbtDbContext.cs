@@ -198,7 +198,7 @@ namespace Lean.Hbt.Infrastructure.Data.Contexts
                     throw new InvalidOperationException("数据库连接字符串不能为空");
                 }
 
-                _client.DbMaintenance.CreateDatabase();
+                await Task.Run(() => _client.DbMaintenance.CreateDatabase());
                 _logger.Info("数据库检查/创建成功");
 
                 // 2.获取所有实体类型
@@ -219,16 +219,16 @@ namespace Lean.Hbt.Infrastructure.Data.Contexts
                     var entityInfo = _client.EntityMaintenance.GetEntityInfo(entityType);
 
                     // 检查表是否存在
-                    var isTableExists = _client.DbMaintenance.IsAnyTable(tableName);
+                    var isTableExists = await Task.Run(() => _client.DbMaintenance.IsAnyTable(tableName));
                     if (!isTableExists)
                     {
                         _logger.Info($"[表结构] 新建表 {tableName}");
-                        _client.CodeFirst.InitTables(entityType);
+                        await Task.Run(() => _client.CodeFirst.InitTables(entityType));
                         continue;
                     }
 
                     // 获取数据库中的列信息
-                    var dbColumns = _client.DbMaintenance.GetColumnInfosByTableName(tableName);
+                    var dbColumns = await Task.Run(() => _client.DbMaintenance.GetColumnInfosByTableName(tableName));
                     // 获取实体中的列信息
                     var entityColumns = entityInfo.Columns;
 
@@ -255,7 +255,7 @@ namespace Lean.Hbt.Infrastructure.Data.Contexts
                     if (shouldUpdate)
                     {
                         _logger.Info($"[表结构] 更新表 {tableName}");
-                        _client.CodeFirst.InitTables(entityType);
+                        await Task.Run(() => _client.CodeFirst.InitTables(entityType));
                     }
                 }
 

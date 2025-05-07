@@ -15,7 +15,7 @@ namespace Lean.Hbt.Domain.Entities.Core
     /// <summary>
     /// 系统配置实体
     /// </summary>
-    [SugarTable("hbt_adm_config", "系统配置表")]
+    [SugarTable("hbt_core_config", "系统配置表")]
     [SugarIndex("ix_tenant_config", nameof(TenantId), OrderByType.Asc)]
     [SugarIndex("ix_name_config", nameof(ConfigName), OrderByType.Asc)]
     public class HbtConfig : HbtBaseEntity

@@ -106,11 +106,15 @@ export const createHubConnection = async (): Promise<HubConnection> => {
                     return token;
                 },
                 skipNegotiation: false,
-                transport: HttpTransportType.WebSockets,
-                withCredentials: false
+                transport: signalRConfig.transport,
+                withCredentials: true,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Access-Control-Allow-Origin': '*'
+                }
             })
-            .withAutomaticReconnect()
-            .configureLogging(LogLevel.Debug)
+            .withAutomaticReconnect(retryPolicy)
+            .configureLogging(customLogger)
             .build();
 
         // 设置连接事件处理

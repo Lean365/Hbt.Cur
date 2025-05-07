@@ -1,17 +1,18 @@
 import request from '@/utils/request'
 import type { HbtApiResponse } from '@/types/common'
 import type { 
-  WorkflowDefinitionQuery, 
-  WorkflowDefinition,
-  WorkflowDefinitionCreate,
-  WorkflowDefinitionUpdate,
-  WorkflowDefinitionStatus
+  HbtWorkflowDefinitionQuery, 
+  HbtWorkflowDefinition,
+  HbtWorkflowDefinitionCreate,
+  HbtWorkflowDefinitionUpdate,
+  HbtWorkflowDefinitionStatus,
+  HbtWorkflowDefinitionPagedResult
 } from '@/types/workflow/workflowDefinition'
 
 // 获取工作流定义列表
-export function getWorkflowDefinitionList(params: WorkflowDefinitionQuery) {
-  return request<HbtApiResponse<WorkflowDefinition[]>>({
-    url: '/api/HbtWorkflowDefinition',
+export function getWorkflowDefinitionList(params: HbtWorkflowDefinitionQuery) {
+  return request<HbtApiResponse<HbtWorkflowDefinitionPagedResult>>({
+    url: '/api/HbtWorkflowDefinition/list',
     method: 'get',
     params
   })
@@ -19,14 +20,14 @@ export function getWorkflowDefinitionList(params: WorkflowDefinitionQuery) {
 
 // 获取工作流定义详情
 export function getWorkflowDefinition(id: number) {
-  return request<HbtApiResponse<WorkflowDefinition>>({
+  return request<HbtApiResponse<HbtWorkflowDefinition>>({
     url: `/api/HbtWorkflowDefinition/${id}`,
     method: 'get'
   })
 }
 
 // 创建工作流定义
-export function createWorkflowDefinition(data: WorkflowDefinitionCreate) {
+export function createWorkflowDefinition(data: HbtWorkflowDefinitionCreate) {
   return request<HbtApiResponse<any>>({
     url: '/api/HbtWorkflowDefinition',
     method: 'post',
@@ -35,7 +36,7 @@ export function createWorkflowDefinition(data: WorkflowDefinitionCreate) {
 }
 
 // 更新工作流定义
-export function updateWorkflowDefinition(data: WorkflowDefinitionUpdate) {
+export function updateWorkflowDefinition(data: HbtWorkflowDefinitionUpdate) {
   return request<HbtApiResponse<any>>({
     url: '/api/HbtWorkflowDefinition',
     method: 'put',
@@ -76,7 +77,7 @@ export function importWorkflowDefinition(file: File, sheetName: string = 'Sheet1
 }
 
 // 导出工作流定义
-export function exportWorkflowDefinition(params: WorkflowDefinitionQuery, sheetName: string = 'Sheet1') {
+export function exportWorkflowDefinition(params: HbtWorkflowDefinitionQuery, sheetName: string = 'Sheet1') {
   return request({
     url: '/api/HbtWorkflowDefinition/export',
     method: 'get',
@@ -96,7 +97,7 @@ export function getWorkflowDefinitionTemplate(sheetName: string = 'Sheet1') {
 }
 
 // 更新工作流定义状态
-export function updateWorkflowDefinitionStatus(id: number, data: WorkflowDefinitionStatus) {
+export function updateWorkflowDefinitionStatus(id: number, data: HbtWorkflowDefinitionStatus) {
   return request<HbtApiResponse<any>>({
     url: `/api/HbtWorkflowDefinition/${id}/status`,
     method: 'put',

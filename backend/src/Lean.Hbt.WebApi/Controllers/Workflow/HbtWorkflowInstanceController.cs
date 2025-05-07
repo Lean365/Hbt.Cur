@@ -62,7 +62,7 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// 创建工作流实例
         /// </summary>
         [HttpPost]
-        [HbtPerm("workflow:instance:insert")]
+        [HbtPerm("workflow:instance:create")]
         public async Task<IActionResult> CreateAsync([FromBody] HbtWorkflowInstanceCreateDto input)
         {
             var result = await _workflowInstanceService.CreateAsync(input);

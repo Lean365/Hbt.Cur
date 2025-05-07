@@ -1,8 +1,7 @@
 <template>
   <div class="hbt-file-upload">
     <div class="hbt-upload-list">
-      <a-upload
-        ref="uploadRef"
+      <a-upload-dragger
         :action="uploadUrl"
         :before-upload="handleBeforeUpload"
         :custom-request="customRequest"
@@ -12,18 +11,12 @@
         :max-count="maxCount"
         @change="handleChange"
       >
-        <a-button type="primary">
-          <upload-outlined />
-          <span>选择文件</span>
-        </a-button>
-        <template #itemRender="{ file }">
-          <div class="hbt-upload-item">
-            <file-outlined />
-            <span class="hbt-file-name">{{ file.name }}</span>
-            <span class="hbt-file-size">{{ formatFileSize(file.size) }}</span>
-          </div>
-        </template>
-      </a-upload>
+        <p class="ant-upload-drag-icon">
+          <inbox-outlined />
+        </p>
+        <p class="ant-upload-text">点击或拖拽文件到此区域上传</p>
+        <p class="ant-upload-hint">支持单个或批量上传</p>
+      </a-upload-dragger>
     </div>
 
     <!-- 上传进度 -->
@@ -37,8 +30,8 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { message } from 'ant-design-vue'
-import { UploadOutlined, FileOutlined } from '@ant-design/icons-vue'
+import { message, Upload } from 'ant-design-vue'
+import { UploadOutlined, FileOutlined, InboxOutlined } from '@ant-design/icons-vue'
 import type { UploadChangeParam, UploadFile } from 'ant-design-vue'
 import type { UploadRequestOption } from 'ant-design-vue/es/vc-upload/interface'
 import fileUploader, { ChunkInfo } from '@/utils/upload'
@@ -173,25 +166,25 @@ const handleBeforeUpload = (file: File) => {
   // 检查文件大小
   if (file.size > props.maxSize * 1024 * 1024) {
     message.error(`文件大小不能超过${props.maxSize}MB`)
-    return false
+    return Upload.LIST_IGNORE
   }
 
   // 检查文件类型
   if (props.accept && !file.name.toLowerCase().match(props.accept)) {
     message.error('不支持的文件类型')
-    return false
+    return Upload.LIST_IGNORE
   }
 
   // 检查MIME类型
   if (props.fileTypes.length > 0 && !props.fileTypes.includes(file.type)) {
     message.error('不支持的文件类型')
-    return false
+    return Upload.LIST_IGNORE
   }
 
   // 检查数量限制
   if (fileList.value.length >= props.maxCount) {
     message.error(`最多只能上传${props.maxCount}个文件`)
-    return false
+    return Upload.LIST_IGNORE
   }
 
   return true
@@ -214,7 +207,11 @@ const customRequest = async (options: UploadRequestOption) => {
 const uploadFile = async (file: File, onProgress?: (percent: number) => void) => {
   try {
     currentFile.value = file
-    const fileMd5 = await fileUploader.calculateFileMD5(file)
+    const fileMd5 = await fileUploader.calculateFileMD5(file, (progress) => {
+      console.log('MD5 计算进度:', progress)
+    }, (error) => {
+      console.error('MD5 计算错误:', error)
+    })
     const fileName = generateFileName(file)
     const fileChunks = fileUploader.createFileChunks(file)
     chunks.value = fileChunks.map(chunk => ({
@@ -266,7 +263,14 @@ const uploadFile = async (file: File, onProgress?: (percent: number) => void) =>
       const result = await mergeResponse.json()
       if (result.code === 200) {
         message.success('上传成功')
-        emit('success', result)
+        emit('success', {
+          ...result,
+          fileOriginalName: file.name,
+          fileExtension: file.name.substring(file.name.lastIndexOf('.')),
+          fileType: file.type,
+          fileSize: file.size,
+          fileMd5
+        })
       } else {
         throw new Error('文件合并失败')
       }
@@ -279,19 +283,22 @@ const uploadFile = async (file: File, onProgress?: (percent: number) => void) =>
 
 // 处理上传状态改变
 const handleChange = (info: UploadChangeParam) => {
-  const file = info.file
+  // 如果文件被忽略，不做任何处理
+  if (info.file.status === 'error' && info.file.response === Upload.LIST_IGNORE) {
+    return
+  }
+  
   fileList.value = info.fileList
-
-  if (file.status === 'done') {
-    uploadProgress.value = 100
-  } else if (file.status === 'error') {
-    uploadProgress.value = 0
+  if ((info.file.status === 'done' || info.file.status === 'success') && info.file.originFileObj) {
+    console.log('emit file-selected', info.file.originFileObj)
+    emit('file-selected', info.file.originFileObj)
   }
 }
 
 // 定义事件
 const emit = defineEmits<{
-  (e: 'success', result: any): void
+  (e: 'file-selected', file: File): void
+  (e: 'success', result: { fileOriginalName: string, fileExtension: string, fileType: string, fileSize: number, fileMd5: string }): void
   (e: 'error', error: any): void
 }>()
 </script>

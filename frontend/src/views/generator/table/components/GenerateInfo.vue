@@ -60,23 +60,32 @@
 import { ref, reactive } from 'vue'
 import type { FormInstance } from 'ant-design-vue'
 import type { Rule } from 'ant-design-vue/es/form'
-import type { HbtGenTableDto } from '@/types/generator/table'
+import type { HbtGenTable } from '@/types/generator/genTable'
 import type { Menu } from '@/types/identity/menu'
 import { getMenuList } from '@/api/identity/menu'
 
 const props = defineProps<{
-  modelValue: HbtGenTableDto
+  modelValue: HbtGenTable
 }>()
 
 const emit = defineEmits<{
-  (e: 'update:modelValue', value: HbtGenTableDto): void
+  (e: 'update:modelValue', value: HbtGenTable): void
 }>()
 
 const formRef = ref<FormInstance>()
 
 // 表单数据
-const formData = reactive<HbtGenTableDto>({
-  ...props.modelValue
+const formData = reactive<HbtGenTable & { 
+  options?: string[],
+  packageName: string,
+  parentMenuId?: number,
+  tplCategory?: string
+}>({
+  ...props.modelValue,
+  options: props.modelValue.options ? JSON.parse(props.modelValue.options) : [],
+  packageName: '',
+  parentMenuId: undefined,
+  tplCategory: 'crud'
 })
 
 // 菜单选项
@@ -98,8 +107,8 @@ const getMenus = async () => {
       pageIndex: 1,
       pageSize: 100
     })
-    if (res.data?.rows) {
-      menuOptions.value = res.data.rows
+    if (res.data?.data?.items) {
+      menuOptions.value = res.data.data.items
     }
   } catch (error) {
     console.error('获取菜单列表失败:', error)

@@ -24,7 +24,6 @@ namespace Lean.Hbt.Application.Services.Identity;
 public class HbtTenantService : HbtBaseService, IHbtTenantService
 {
     private readonly IHbtRepository<HbtTenant> _repository;
-    private readonly IHbtLocalizationService _localizationService;
 
     /// <summary>
     /// 构造函数
@@ -33,10 +32,10 @@ public class HbtTenantService : HbtBaseService, IHbtTenantService
         IHbtRepository<HbtTenant> repository,
         IHbtLogger logger,
         IHttpContextAccessor httpContextAccessor,
-        IHbtLocalizationService localizationService) : base(logger, httpContextAccessor)
+        IHbtLocalizationService localization,
+        IHbtCurrentUser currentUser) : base(logger, httpContextAccessor, currentUser, localization)
     {
         _repository = repository ?? throw new ArgumentNullException(nameof(repository));
-        _localizationService = localizationService;
     }
 
     /// <summary>
@@ -92,7 +91,7 @@ public class HbtTenantService : HbtBaseService, IHbtTenantService
     {
         var tenant = await _repository.GetByIdAsync(id);
         if (tenant == null)
-            throw new HbtException(_localizationService.L("Common.NotExists"));
+            throw new HbtException(L("Common.NotExists"));
 
         return tenant.Adapt<HbtTenantDto>();
     }
@@ -112,7 +111,7 @@ public class HbtTenantService : HbtBaseService, IHbtTenantService
         var tenant = input.Adapt<HbtTenant>();
         var result = await _repository.CreateAsync(tenant);
         if (result > 0)
-            _logger.Info(_localizationService.L("Common.AddSuccess"));
+            _logger.Info(L("Common.AddSuccess"));
 
         return tenant.Id;
     }
@@ -125,7 +124,7 @@ public class HbtTenantService : HbtBaseService, IHbtTenantService
     public async Task<bool> UpdateAsync(HbtTenantUpdateDto input)
     {
         var tenant = await _repository.GetByIdAsync(input.TenantId)
-            ?? throw new HbtException(_localizationService.L("Common.NotExists"));
+            ?? throw new HbtException(L("Common.NotExists"));
 
         // 验证字段是否已存在
         if (tenant.TenantName != input.TenantName)
@@ -147,7 +146,7 @@ public class HbtTenantService : HbtBaseService, IHbtTenantService
     public async Task<bool> DeleteAsync(long id)
     {
         var tenant = await _repository.GetByIdAsync(id)
-            ?? throw new HbtException(_localizationService.L("Common.NotExists"));
+            ?? throw new HbtException(L("Common.NotExists"));
 
         return await _repository.DeleteAsync(tenant) > 0;
     }
@@ -262,12 +261,12 @@ public class HbtTenantService : HbtBaseService, IHbtTenantService
     {
         var tenant = await _repository.GetByIdAsync(id);
         if (tenant == null)
-            throw new HbtException(_localizationService.L("Common.NotExists"));
+            throw new HbtException(L("Common.NotExists"));
 
         tenant.Status = status;
         var result = await _repository.UpdateAsync(tenant);
         if (result <= 0)
-            throw new HbtException(_localizationService.L("Common.UpdateFailed"));
+            throw new HbtException(L("Common.UpdateFailed"));
 
         return new HbtTenantStatusDto
         {

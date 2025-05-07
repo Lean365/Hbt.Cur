@@ -1,8 +1,10 @@
+#nullable enable
+
 //===================================================================
 // 项目名 : Lean.Hbt
 // 文件名 : HbtServerMonitorService.cs
 // 创建者 : Lean365
-// 创建时间: 2024-02-18 11:00
+// 创建时间: 2024-03-20
 // 版本号 : V0.0.1
 // 描述   : 服务器监控服务实现
 //===================================================================
@@ -10,6 +12,7 @@
 using System.Runtime.InteropServices;
 using Lean.Hbt.Application.Dtos.Audit;
 using Lean.Hbt.Common.Utils;
+using Lean.Hbt.Domain.IServices.Extensions;
 using Microsoft.AspNetCore.Http;
 
 namespace Lean.Hbt.Application.Services.Audit;
@@ -32,7 +35,9 @@ public class HbtServerMonitorService : HbtBaseService, IHbtServerMonitorService
     /// </summary>
     public HbtServerMonitorService(
         IHbtLogger logger,
-        IHttpContextAccessor httpContextAccessor) : base(logger, httpContextAccessor)
+        IHttpContextAccessor httpContextAccessor,
+        IHbtCurrentUser currentUser,
+        IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
     {
         _startTime = DateTime.Now;
     }

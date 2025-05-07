@@ -32,7 +32,9 @@ namespace Lean.Hbt.Application.Services.Core
         public HbtTranslationService(
             IHbtRepository<HbtTranslation> translationRepository,
             IHbtLogger logger,
-            IHttpContextAccessor httpContextAccessor) : base(logger, httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor,
+            IHbtCurrentUser currentUser,
+            IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
         {
             _translationRepository = translationRepository ?? throw new ArgumentNullException(nameof(translationRepository));
         }

@@ -10,9 +10,9 @@
 <template>
   <a-modal
     :title="t('common.import.title')"
-    :visible="open"
+    :open="open"
     :confirm-loading="loading"
-    @update:visible="handleVisibleChange"
+    @update:open="handleVisibleChange"
     @ok="handleSubmit"
   >
     <a-form :label-col="{ span: 4 }" :wrapper-col="{ span: 19 }">
@@ -23,7 +23,6 @@
           :show-upload-list="true"
           :before-upload="handleBeforeUpload"
           :customRequest="handleCustomRequest"
-          :data="{}"
           :name="'file'"
           :maxCount="1"
           @change="handleChange"
@@ -101,7 +100,7 @@ interface ImportResult {
 interface Props {
   open: boolean
   /** 上传方法 */
-  uploadMethod: (file: File) => Promise<any>
+  uploadMethod: (file: File, onUploadProgress?: (progressEvent: any) => void) => Promise<any>
   /** 模板下载方法 */
   templateMethod: () => Promise<Blob>
   /** 模板文件名 */
@@ -177,13 +176,53 @@ const handleChange = (info: UploadChangeParam) => {
   }
 }
 
+// 自定义上传请求
+const handleCustomRequest = async (options: any) => {
+  const { file, onProgress, onSuccess, onError } = options
+  
+  try {
+    // 设置上传进度
+    const onUploadProgress = (progressEvent: any) => {
+      if (progressEvent.total) {
+        const percent = Math.round((progressEvent.loaded * 100) / progressEvent.total)
+        onProgress({ percent })
+      }
+    }
+
+    console.log('[上传文件] 开始上传:', {
+      name: file.name,
+      size: file.size,
+      type: file.type
+    })
+
+    // 使用props传入的uploadMethod处理文件上传
+    const response = await props.uploadMethod(file, onUploadProgress)
+    
+    console.log('[上传文件] 上传成功:', response)
+    
+    // 处理响应
+    if (response?.code === 200) {
+      onSuccess(response)
+    } else {
+      onError(new Error(response?.msg || t('common.import.failed')))
+    }
+  } catch (error: any) {
+    console.error('[上传文件] 上传失败:', error)
+    onError(error)
+  }
+}
+
 // 上传前校验
 const handleBeforeUpload = (file: File) => {
+  // 检查文件对象和内容
+  if (!file || file.size === 0) {
+    message.error(t('common.import.empty'))
+    return false
+  }
+
   // 检查文件类型
-  const isExcel = /\.(xlsx|xls)$/i.test(file.name) && (
-    file.type === 'application/vnd.ms-excel' || 
+  const isExcel = file.type === 'application/vnd.ms-excel' || 
     file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-  )
   if (!isExcel) {
     message.error(t('common.import.format'))
     return false
@@ -196,33 +235,7 @@ const handleBeforeUpload = (file: File) => {
     return false
   }
 
-  // 检查文件名是否包含特殊字符
-  const hasSpecialChars = /[<>:"/\\|?*\u0000-\u001F]|\.\./.test(file.name)
-  if (hasSpecialChars) {
-    message.error('文件名不能包含特殊字符')
-    return false
-  }
-
-  // 检查文件名长度
-  if (file.name.length > 100) {
-    message.error('文件名长度不能超过100个字符')
-    return false
-  }
-
-  uploadFile.value = file
-  return false // 阻止默认上传
-}
-
-// 自定义上传请求
-const handleCustomRequest = async (options: any) => {
-  const { file } = options
-  
-  try {
-    const response = await props.uploadMethod(file)
-    options.onSuccess(response, file)
-  } catch (error: any) {
-    options.onError(error, file)
-  }
+  return true
 }
 
 // 下载模板
@@ -256,8 +269,17 @@ const handleSubmit = async () => {
   
   try {
     loading.value = true
-    const response = await props.uploadMethod(uploadFile.value)
+    console.log('开始提交文件:', {
+      name: uploadFile.value.name,
+      size: uploadFile.value.size,
+      type: uploadFile.value.type
+    })
     
+    // 使用props传入的uploadMethod处理文件上传
+    const response = await props.uploadMethod(uploadFile.value)
+    console.log('提交成功:', response)
+    
+    // 处理响应
     if (response.code === 200) {
       importResult.value = {
         total: (response.data.success || 0) + (response.data.fail || 0),
@@ -274,7 +296,8 @@ const handleSubmit = async () => {
       message.error(response.msg || t('common.import.failed'))
     }
   } catch (error: any) {
-    message.error(error.message || t('common.import.failed'))
+    console.error('提交失败:', error)
+    message.error(error.response?.data?.msg || error.message || t('common.import.failed'))
   } finally {
     loading.value = false
   }

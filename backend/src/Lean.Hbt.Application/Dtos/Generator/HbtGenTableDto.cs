@@ -690,3 +690,151 @@ public class HbtGenTableExportDto
     /// </summary>
     public List<HbtGenColumnDto> Columns { get; set; } = new();
 }
+
+
+/// <summary>
+/// 数据库表信息DTO
+/// </summary>
+public class HbtGenTableInfoDto
+{
+    /// <summary>
+    /// 表名
+    /// </summary>
+    public string Name { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 表描述
+    /// </summary>
+    public string Description { get; set; } = string.Empty;
+}
+
+/// <summary>
+/// 数据库表列信息DTO（与SqlSugar DbColumnInfo字段一致）
+/// </summary>
+public class HbtGenTableColumnInfoDto
+{
+    /// <summary>
+    /// 表名
+    /// </summary>
+    public string TableName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 表ID
+    /// </summary>
+    public long TableId { get; set; }
+
+    /// <summary>
+    /// 列名
+    /// </summary>
+    public string DbColumnName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 属性名
+    /// </summary>
+    public string PropertyName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 数据类型
+    /// </summary>
+    public string DataType { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Oracle类型
+    /// </summary>
+    public string OracleDataType { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 属性类型
+    /// </summary>
+    public string PropertyType { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 长度
+    /// </summary>
+    public int Length { get; set; }
+
+    /// <summary>
+    /// 列描述
+    /// </summary>
+    public string ColumnDescription { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 默认值
+    /// </summary>
+    public string DefaultValue { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 是否可空
+    /// </summary>
+    public bool IsNullable { get; set; }
+
+    /// <summary>
+    /// 是否自增
+    /// </summary>
+    public bool IsIdentity { get; set; }
+
+    /// <summary>
+    /// 是否主键
+    /// </summary>
+    public bool IsPrimarykey { get; set; }
+
+    /// <summary>
+    /// 值
+    /// </summary>
+    public object? Value { get; set; }
+
+    /// <summary>
+    /// 小数位数
+    /// </summary>
+    public int DecimalDigits { get; set; }
+
+    /// <summary>
+    /// 精度
+    /// </summary>
+    public int Scale { get; set; }
+
+    /// <summary>
+    /// 是否数组
+    /// </summary>
+    public bool IsArray { get; set; }
+
+    /// <summary>
+    /// 是否Json
+    /// </summary>
+    public bool IsJson { get; set; }
+
+    /// <summary>
+    /// 是否无符号
+    /// </summary>
+   // public bool IsUnsigned { get; set; }
+
+    /// <summary>
+    /// 建表字段排序
+    /// </summary>
+    public int CreateTableFieldSort { get; set; }
+
+    /// <summary>
+    /// 插入服务器时间
+    /// </summary>
+    //public DateTime? InsertServerTime { get; set; }
+
+    /// <summary>
+    /// 插入SQL
+    /// </summary>
+    public string InsertSql { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 更新服务器时间
+    /// </summary>
+   // public DateTime? UpdateServerTime { get; set; }
+
+    /// <summary>
+    /// 更新SQL
+    /// </summary>
+    public string UpdateSql { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 参数类型
+    /// </summary>
+    //public string SqlParameterDbType { get; set; } = string.Empty;
+}

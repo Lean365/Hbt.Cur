@@ -1,11 +1,11 @@
 <template>
-  <a-modal
-    :visible="visible"
+  <hbt-modal
+    v-model:open="visible"
     :title="title"
-    :confirm-loading="loading"
-    width="800px"
-    @ok="handleOk"
+    :width="800"
+    :loading="loading"
     @cancel="handleCancel"
+    @ok="handleOk"
   >
     <a-form
       ref="formRef"
@@ -53,26 +53,31 @@
         />
       </a-form-item>
     </a-form>
-  </a-modal>
+  </hbt-modal>
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive, watch } from 'vue'
+import { ref, reactive, watch, computed } from 'vue'
 import { message } from 'ant-design-vue'
 import type { FormInstance } from 'ant-design-vue'
 import type { Rule } from 'ant-design-vue/es/form'
 import { getGenConfig, createGenConfig, updateGenConfig } from '@/api/generator/genConfig'
 
 const props = defineProps<{
-  visible: boolean
+  open: boolean
   title: string
   configId?: number
 }>()
 
 const emit = defineEmits<{
-  (e: 'update:visible', visible: boolean): void
+  (e: 'update:open', value: boolean): void
   (e: 'success'): void
 }>()
+
+const visible = computed({
+  get: () => props.open,
+  set: (value) => emit('update:open', value)
+})
 
 // 表单引用
 const formRef = ref<FormInstance>()
@@ -93,7 +98,16 @@ const formData = reactive({
   genTemplate: '',
   genPath: '',
   options: '',
-  tenantId: 0
+  tenantId: 0,
+  templateName: '',
+  templateType: 0,
+  templateContent: '',
+  status: 0,
+  createTime: '',
+  updateTime: '',
+  createBy: '',
+  updateBy: '',
+  isDeleted: 0
 })
 
 // 表单验证规则
@@ -137,7 +151,16 @@ watch(
         genTemplate: '',
         genPath: '',
         options: '',
-        tenantId: 0
+        tenantId: 0,
+        templateName: '',
+        templateType: 0,
+        templateContent: '',
+        status: 0,
+        createTime: '',
+        updateTime: '',
+        createBy: '',
+        updateBy: '',
+        isDeleted: 0
       })
     }
   },
@@ -157,7 +180,7 @@ const handleOk = () => {
         message.success('新增成功')
       }
       emit('success')
-      emit('update:visible', false)
+      emit('update:open', false)
     } catch (error) {
       message.error(props.configId ? '修改失败' : '新增失败')
     } finally {
@@ -168,7 +191,7 @@ const handleOk = () => {
 
 /** 取消按钮点击事件 */
 const handleCancel = () => {
-  emit('update:visible', false)
+  emit('update:open', false)
   formRef.value?.resetFields()
 }
 </script> 

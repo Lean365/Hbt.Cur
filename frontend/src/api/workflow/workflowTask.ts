@@ -1,17 +1,17 @@
 import request from '@/utils/request'
 import type { HbtApiResponse } from '@/types/common'
 import type { 
-  WorkflowTaskQuery, 
-  WorkflowTask,
-  WorkflowTaskCreate,
-  WorkflowTaskUpdate,
-  WorkflowTaskStatus
+  HbtWorkflowTaskQuery, 
+  HbtWorkflowTask,
+  HbtWorkflowTaskCreate,
+  HbtWorkflowTaskUpdate,
+  HbtWorkflowTaskPagedResult
 } from '@/types/workflow/workflowTask'
 
 // 获取工作流任务列表
-export function getWorkflowTaskList(params: WorkflowTaskQuery) {
-  return request<HbtApiResponse<WorkflowTask[]>>({
-    url: '/api/HbtWorkflowTask',
+export function getWorkflowTaskList(params: HbtWorkflowTaskQuery) {
+  return request<HbtApiResponse<HbtWorkflowTaskPagedResult>>({
+    url: '/api/HbtWorkflowTask/list',
     method: 'get',
     params
   })
@@ -19,14 +19,14 @@ export function getWorkflowTaskList(params: WorkflowTaskQuery) {
 
 // 获取工作流任务详情
 export function getWorkflowTask(id: number) {
-  return request<HbtApiResponse<WorkflowTask>>({
+  return request<HbtApiResponse<HbtWorkflowTask>>({
     url: `/api/HbtWorkflowTask/${id}`,
     method: 'get'
   })
 }
 
 // 创建工作流任务
-export function createWorkflowTask(data: WorkflowTaskCreate) {
+export function createWorkflowTask(data: HbtWorkflowTaskCreate) {
   return request<HbtApiResponse<any>>({
     url: '/api/HbtWorkflowTask',
     method: 'post',
@@ -35,7 +35,7 @@ export function createWorkflowTask(data: WorkflowTaskCreate) {
 }
 
 // 更新工作流任务
-export function updateWorkflowTask(data: WorkflowTaskUpdate) {
+export function updateWorkflowTask(data: HbtWorkflowTaskUpdate) {
   return request<HbtApiResponse<any>>({
     url: '/api/HbtWorkflowTask',
     method: 'put',
@@ -61,35 +61,42 @@ export function batchDeleteWorkflowTask(ids: number[]) {
 }
 
 // 导入工作流任务
-export function importWorkflowTask(tasks: any[]) {
+export function importWorkflowTask(file: File, sheetName: string = 'Sheet1') {
+  const formData = new FormData()
+  formData.append('file', file)
   return request<HbtApiResponse<any>>({
     url: '/api/HbtWorkflowTask/import',
     method: 'post',
-    data: tasks
+    data: formData,
+    params: { sheetName },
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
   })
 }
 
 // 导出工作流任务
-export function exportWorkflowTask(params: WorkflowTaskQuery) {
+export function exportWorkflowTask(params: HbtWorkflowTaskQuery, sheetName: string = 'Sheet1') {
   return request({
     url: '/api/HbtWorkflowTask/export',
     method: 'get',
-    params,
+    params: { ...params, sheetName },
     responseType: 'blob'
   })
 }
 
 // 获取工作流任务导入模板
-export function getWorkflowTaskTemplate() {
+export function getWorkflowTaskTemplate(sheetName: string = 'Sheet1') {
   return request({
     url: '/api/HbtWorkflowTask/template',
     method: 'get',
+    params: { sheetName },
     responseType: 'blob'
   })
 }
 
 // 更新工作流任务状态
-export function updateWorkflowTaskStatus(id: number, data: WorkflowTaskStatus) {
+export function updateWorkflowTaskStatus(id: number, data: HbtWorkflowTaskStatus) {
   return request<HbtApiResponse<any>>({
     url: `/api/HbtWorkflowTask/${id}/status`,
     method: 'put',

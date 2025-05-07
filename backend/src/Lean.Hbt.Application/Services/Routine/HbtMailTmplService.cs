@@ -36,10 +36,14 @@ namespace Lean.Hbt.Application.Services.Routine
         /// <param name="logger">日志记录器</param>
         /// <param name="tmplRepository">模板仓储</param>
         /// <param name="httpContextAccessor">HTTP上下文访问器</param>
+        /// <param name="currentUser">当前用户服务</param>
+        /// <param name="localization">本地化服务</param>
         public HbtMailTmplService(
             IHbtLogger logger,
             IHbtRepository<HbtMailTmpl> tmplRepository,
-            IHttpContextAccessor httpContextAccessor) : base(logger, httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor,
+            IHbtCurrentUser currentUser,
+            IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
         {
             _tmplRepository = tmplRepository;
         }

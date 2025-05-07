@@ -81,7 +81,7 @@ const handleSearch = async (value: string) => {
   }
   loading.value = true
   try {
-    const res = await searchUser({ keyword: value })
+    const { data: res } = await searchUser({ keyword: value })
     userOptions.value = res.data.rows.map(user => ({
       label: `${user.userName} (${user.nickName})`,
       value: user.userId
@@ -106,7 +106,7 @@ const handleSubmit = async () => {
     console.log('准备发送消息:', {
       userId: formState.userId,
       content: formState.content,
-      currentUser: useUserStore().user
+      currentUser: useUserStore().userInfo
     })
     
     await signalRService.sendMessage({

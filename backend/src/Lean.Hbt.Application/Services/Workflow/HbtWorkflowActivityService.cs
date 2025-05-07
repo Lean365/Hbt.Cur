@@ -16,6 +16,8 @@ using Mapster;
 using System.Threading.Tasks;
 using System.Linq.Expressions;
 using SqlSugar;
+using Microsoft.AspNetCore.Http;
+using Lean.Hbt.Application.Services;
 
 namespace Lean.Hbt.Application.Services.Workflow
 {
@@ -30,7 +32,7 @@ namespace Lean.Hbt.Application.Services.Workflow
     /// 4. 更新现有工作流活动
     /// 5. 删除工作流活动
     /// </remarks>
-    public class HbtWorkflowActivityService : IHbtWorkflowActivityService
+    public class HbtWorkflowActivityService : HbtBaseService, IHbtWorkflowActivityService
     {
         /// <summary>
         /// 工作流活动仓储接口
@@ -40,11 +42,17 @@ namespace Lean.Hbt.Application.Services.Workflow
         /// <summary>
         /// 构造函数
         /// </summary>
+        /// <param name="logger">日志记录器</param>
         /// <param name="activityRepository">工作流活动仓储接口</param>
-        /// <remarks>
-        /// 通过依赖注入方式注入工作流活动仓储接口
-        /// </remarks>
-        public HbtWorkflowActivityService(IHbtRepository<HbtWorkflowActivity> activityRepository)
+        /// <param name="httpContextAccessor">HTTP上下文访问器</param>
+        /// <param name="currentUser">当前用户服务</param>
+        /// <param name="localization">本地化服务</param>
+        public HbtWorkflowActivityService(
+            IHbtLogger logger,
+            IHbtRepository<HbtWorkflowActivity> activityRepository,
+            IHttpContextAccessor httpContextAccessor,
+            IHbtCurrentUser currentUser,
+            IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
         {
             _activityRepository = activityRepository;
         }

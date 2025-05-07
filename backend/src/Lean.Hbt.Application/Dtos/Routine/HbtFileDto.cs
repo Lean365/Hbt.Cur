@@ -8,6 +8,7 @@
 //===================================================================
 
 using System.ComponentModel.DataAnnotations;
+using System.IO;
 
 namespace Lean.Hbt.Application.Dtos.Routine
 {
@@ -487,5 +488,85 @@ namespace Lean.Hbt.Application.Dtos.Routine
         /// 状态(0=临时,1=正式)
         /// </summary>
         public int FileStatus { get; set; }
+    }
+
+    /// <summary>
+    /// 文件上传DTO
+    /// </summary>
+    public class HbtFileUploadDto
+    {
+        /// <summary>
+        /// 构造函数
+        /// </summary>
+        public HbtFileUploadDto()
+        {
+            FileOriginalName = string.Empty;
+            FileExtension = string.Empty;
+            FileName = string.Empty;
+            FilePath = string.Empty;
+            FileType = string.Empty;
+            FileStorageLocation = string.Empty;
+            FileAccessUrl = string.Empty;
+        }
+
+        /// <summary>
+        /// 文件原名
+        /// </summary>
+        public string FileOriginalName { get; set; }
+
+        /// <summary>
+        /// 文件扩展名
+        /// </summary>
+        public string FileExtension { get; set; }
+
+        /// <summary>
+        /// 文件名
+        /// </summary>
+        public string FileName { get; set; }
+
+        /// <summary>
+        /// 文件路径
+        /// </summary>
+        public string FilePath { get; set; }
+
+        /// <summary>
+        /// 文件类型
+        /// </summary>
+        public string FileType { get; set; }
+
+        /// <summary>
+        /// 文件大小（字节）
+        /// </summary>
+        public long FileSize { get; set; }
+
+        /// <summary>
+        /// 存储类型（0本地 1云存储）
+        /// </summary>
+        public int FileStorageType { get; set; }
+
+        /// <summary>
+        /// 存储位置
+        /// </summary>
+        public string FileStorageLocation { get; set; }
+
+        /// <summary>
+        /// 访问地址
+        /// </summary>
+        public string FileAccessUrl { get; set; }
+
+        /// <summary>
+        /// 文件MD5
+        /// </summary>
+        public string? FileMd5 { get; set; }
+
+        /// <summary>
+        /// 状态（0临时 1正式）
+        /// </summary>
+        public int FileStatus { get; set; }
+
+        /// <summary>
+        /// 文件流
+        /// </summary>
+        public Stream? File { get; set; }
     }
 }

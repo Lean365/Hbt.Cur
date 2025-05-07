@@ -25,29 +25,25 @@ export interface MenuQuery extends HbtPagedQuery {
  * 后端返回的菜单项类型
  */
 export interface Menu {
-  menuId: number
   menuName: string
-  menuType: number
+  transKey?: string
   parentId?: number
+  orderNum: number
   path: string
   component: string
-  query?: string
-  icon?: string
-  title?: string
-  isLink?: boolean
-  isHide?: boolean
-  isFull?: boolean
-  isAffix?: boolean
-  isKeepAlive?: boolean
+  queryParams?: string
+  isExternal?: number
+  isCache?: number
+  menuType: number
+  visible?: number
   status?: number
-  permission?: string
-  orderNum?: number
-  createTime?: string
-  children?: Menu[]
-  hidden?: boolean
-  keepAlive?: boolean
-  redirect?: string
+  perms?: string
+  icon?: string
+  tenantId?: number
   remark?: string
+  children?: Menu[]
+  createTime?: string
+  menuId: number
 }
 
 /**
@@ -63,7 +59,7 @@ export type MenuNode = Required<NonNullable<MenuProps['items']>>[number] & {
   /** 菜单组件路径 */
   component?: string;
   /** 权限标识 */
-  permission?: string;
+  perms?: string;
   /** 子菜单 */
   children?: MenuNode[];
 };
@@ -80,10 +76,10 @@ export interface MenuCreate {
   component?: string;
   queryParams?: string;
   /** 是否外链（0=否 1=是） */
-  isFrame?: number;
+  isExternal?: number;
   /** 是否缓存（0=不缓存 1=缓存） */
   isCache?: number;
-  /** 菜单类型（1=目录 2=菜单 3=按钮） */
+  /** 菜单类型（0=目录 1=菜单 2=按钮） */
   menuType: number;
   /** 是否可见（0=显示 1=隐藏） */
   visible?: number;
@@ -91,6 +87,8 @@ export interface MenuCreate {
   status: number;
   perms?: string;
   icon?: string;
+  tenantId?: number;
+  remark?: string;
 }
 
 /**

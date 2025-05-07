@@ -1,15 +1,15 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { getHbtDictDataByType } from '@/api/admin/dictData'
-import type { HbtDictData } from '@/types/admin/dictData'
+import { getHbtDictDataByType } from '@/api/core/dictData'
+import type { HbtDictData } from '@/types/core/dictData'
 
 export interface DictOption {
   label: string
-  value: number
+  value: number | string
   cssClass?: string
   listClass?: string
   extLabel?: string
-  extValue?: string
+  extValue?: number | string
   transKey?: string
   disabled?: boolean
 }
@@ -116,9 +116,9 @@ export const useDictStore = defineStore('dict', () => {
     return option?.extLabel || ''
   }
 
-  const getDictExtValue = (type: string, value: number | string): string => {
-    const option = getDictOptions(type).find(item => item.value === Number(value))
-    return option?.extValue || ''
+  const getDictExtValue = (type: string, value: number | string): number | string | undefined => {
+    const option = getDictOptions(type).find(item => item.value === value)
+    return option?.extValue
   }
 
   // 动作
@@ -140,11 +140,11 @@ export const useDictStore = defineStore('dict', () => {
           const dictDataList = response.data.data
           const options = dictDataList.map(item => ({
             label: item.dictLabel,
-            value: Number(item.dictValue),
+            value: /^\d+$/.test(item.dictValue) ? Number(item.dictValue) : item.dictValue,
             cssClass: item.cssClass,
             listClass: item.listClass,
             extLabel: item.extLabel,
-            extValue: item.extValue,
+            extValue: (item.extValue !== undefined && item.extValue !== null && /^\d+$/.test(item.extValue)) ? Number(item.extValue) : item.extValue || '',
             transKey: item.transKey,
             disabled: item.status === 1
           }))

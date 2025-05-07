@@ -39,7 +39,7 @@
         showQuickJumper: true,
         showTotal: (total: number) => `共 ${total} 条`
       }"
-      :row-key="(record: HbtOnlineMessageDto) => record.id"
+      :row-key="(record: HbtOnlineMessageDto) => record.id.toString()"
       v-model:selectedRowKeys="selectedRowKeys"
       :row-selection="{
         type: 'checkbox',
@@ -86,7 +86,7 @@ import type { QueryField } from '@/types/components/query'
 import type { HbtOnlineMessageDto } from '@/types/signalr/onlineMessage'
 import { getOnlineMessageList, deleteOnlineMessage } from '@/api/signalr/onlineMessage'
 import { signalRService } from '@/utils/SignalR/service'
-import { useUserStore } from '@/stores/user'
+import { useUserStore, type UserInfoResponse } from '@/stores/user'
 import SendForm from './components/SendForm.vue'
 
 // 查询字段定义
@@ -169,15 +169,15 @@ const sendFormVisible = ref(false)
 
 // 获取用户信息
 const userStore = useUserStore()
-const currentUser = computed(() => userStore.user)
+const currentUser = computed(() => userStore.userInfo)
 
 // 生命周期钩子
 onMounted(async () => {
   // 获取用户信息
-  if (!userStore.user) {
+  if (!userStore.userInfo) {
     try {
       await userStore.getUserInfo()
-      console.log('用户信息获取成功:', userStore.user)
+      console.log('用户信息获取成功:', userStore.userInfo)
     } catch (error) {
       console.error('获取用户信息失败:', error)
       message.error('获取用户信息失败，请重新登录')
@@ -199,9 +199,9 @@ onUnmounted(() => {
 const fetchData = async () => {
   loading.value = true
   try {
-    const res = await getOnlineMessageList(queryParams)
-    tableData.value = res.items
-    total.value = res.total
+    const { data: res } = await getOnlineMessageList(queryParams)
+    tableData.value = res.rows || []
+    total.value = res.totalNum || 0
   } finally {
     loading.value = false
   }
@@ -302,14 +302,15 @@ const handleSendMessage = () => {
 }
 
 const handleSendTestMessage = async () => {
-  console.log('当前用户信息:', userStore.user)
+  const userInfo = userStore.userInfo as UserInfoResponse
+  console.log('当前用户信息:', userInfo)
   
-  if (!userStore.user) {
+  if (!userInfo) {
     message.warning('用户信息未获取到，请刷新页面重试')
     return
   }
 
-  if (!userStore.user.id) {
+  if (!userInfo.userId) {
     message.warning('用户ID未获取到，请重新登录')
     return
   }
@@ -317,13 +318,13 @@ const handleSendTestMessage = async () => {
   try {
     const testContent = `测试消息 ${new Date().toLocaleString()}`
     console.log('发送测试消息:', {
-      userId: userStore.user.id,
-      userName: userStore.user.userName,
+      userId: userInfo.userId,
+      userName: userInfo.userName,
       content: testContent
     })
     
     await signalRService.sendMessage({
-      userId: userStore.user.id,
+      userId: userInfo.userId.toString(),
       content: testContent
     })
     message.success('测试消息发送成功')

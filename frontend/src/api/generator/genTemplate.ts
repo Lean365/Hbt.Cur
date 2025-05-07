@@ -1,12 +1,12 @@
 import request from '@/utils/request';
-import type { HbtGenTemplateDto } from '@/types/generator/template';
+import type { HbtGenTemplate } from '@/types/generator/genTemplate';
 import type { HbtApiResponse } from '@/types/common';
 
 /**
  * 获取代码生成模板列表
  */
-export function getPagedList(params: HbtGenTemplateDto) {
-  return request<HbtApiResponse<HbtGenTemplateDto[]>>({
+export function getPagedList(params: HbtGenTemplate) {
+  return request<HbtApiResponse<HbtGenTemplate[]>>({
     url: '/api/HbtGenTemplate/list',
     method: 'get',
     params
@@ -17,7 +17,7 @@ export function getPagedList(params: HbtGenTemplateDto) {
  * 获取代码生成模板详情
  */
 export function getGenTemplate(id: number) {
-  return request<HbtApiResponse<HbtGenTemplateDto>>({
+  return request<HbtApiResponse<HbtGenTemplate>>({
     url: `/api/HbtGenTemplate/${id}`,
     method: 'get'
   });
@@ -26,8 +26,8 @@ export function getGenTemplate(id: number) {
 /**
  * 创建代码生成模板
  */
-export function createGenTemplate(data: HbtGenTemplateDto) {
-  return request<HbtApiResponse<HbtGenTemplateDto>>({
+export function createGenTemplate(data: HbtGenTemplate) {
+  return request<HbtApiResponse<HbtGenTemplate>>({
     url: '/api/HbtGenTemplate',
     method: 'post',
     data
@@ -37,8 +37,8 @@ export function createGenTemplate(data: HbtGenTemplateDto) {
 /**
  * 更新代码生成模板
  */
-export function updateGenTemplate(id: number, data: HbtGenTemplateDto) {
-  return request<HbtApiResponse<HbtGenTemplateDto>>({
+export function updateGenTemplate(id: number, data: HbtGenTemplate) {
+  return request<HbtApiResponse<HbtGenTemplate>>({
     url: `/api/HbtGenTemplate/${id}`,
     method: 'put',
     data

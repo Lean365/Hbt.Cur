@@ -58,6 +58,19 @@ const modules = [
   'realtime/message',
   'realtime/online',
   'realtime/server',
+
+  'routine/file',
+  'routine/mailtmpl',
+  'routine/mail',
+  'routine/notice',
+  'routine/quartz',
+
+  'workflow/definition',
+  'workflow/history',
+  'workflow/instance',
+  'workflow/node',
+  'workflow/task',
+  'workflow/variable',
   
   // router
   'router'
@@ -101,7 +114,9 @@ const translationModules = import.meta.glob([
   './home/**/*.ts',
   './identity/**/*.ts',
   './realtime/**/*.ts',
-  './router/**/*.ts'
+  './routine/**/*.ts',
+  './router/**/*.ts',
+  './workflow/**/*.ts'
 ], { eager: true })
 
 // 处理翻译文件

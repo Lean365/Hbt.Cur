@@ -41,12 +41,16 @@ namespace Lean.Hbt.Application.Services.Identity
         /// <param name="userRoleRepository">用户角色仓库</param>
         /// <param name="roleMenuRepository">角色菜单仓库</param>
         /// <param name="httpContextAccessor">HTTP上下文访问器</param>
+        /// <param name="currentUser">当前用户服务</param>
+        /// <param name="localization">本地化服务</param>
         public HbtRoleService(
             IHbtLogger logger,
             IHbtRepository<HbtRole> roleRepository,
             IHbtRepository<HbtUserRole> userRoleRepository,
             IHbtRepository<HbtRoleMenu> roleMenuRepository,
-            IHttpContextAccessor httpContextAccessor) : base(logger, httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor,
+            IHbtCurrentUser currentUser,
+            IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
         {
             _roleRepository = roleRepository;
             _userRoleRepository = userRoleRepository;

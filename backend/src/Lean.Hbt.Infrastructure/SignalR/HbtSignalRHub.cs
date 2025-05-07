@@ -103,7 +103,16 @@ namespace Lean.Hbt.Infrastructure.SignalR
                 _logger.Info("生成的设备ID: {DeviceId}", deviceId);
 
                 // 检查用户是否已存在
-                var existingUser = await _userService.GetOnlineUserByDeviceAsync(long.Parse(userId), deviceId);
+                HbtOnlineUser? existingUser = null;
+                try
+                {
+                    existingUser = await _userService.GetOnlineUserByDeviceAsync(long.Parse(userId), deviceId);
+                }
+                catch (Exception ex)
+                {
+                    _logger.Info("未找到现有用户记录，准备创建新记录 - 用户ID: {UserId}, 设备ID: {DeviceId}", userId, deviceId, ex.Message);
+                }
+
                 if (existingUser != null)
                 {
                     _logger.Info("找到现有用户记录，准备更新 - 用户ID: {UserId}, 设备ID: {DeviceId}", userId, deviceId);
@@ -127,8 +136,8 @@ namespace Lean.Hbt.Infrastructure.SignalR
                         LastActivity = DateTime.Now,
                         LastHeartbeat = DateTime.Now,
                         OnlineStatus = 0,
-                        TenantId = 0,  // 添加租户ID
-                        GroupId = 0,   // 添加组ID
+                        TenantId = long.Parse(jwtToken.Claims.FirstOrDefault(c => c.Type == "tid")?.Value ?? "1"),  // 从token中获取租户ID
+                        GroupId = 1,   // 设置默认组ID为1
                         ClientIp = Context.GetHttpContext()?.Connection?.RemoteIpAddress?.ToString(),
                         UserAgent = Context.GetHttpContext()?.Request.Headers["User-Agent"].ToString()
                     };
@@ -164,7 +173,7 @@ namespace Lean.Hbt.Infrastructure.SignalR
             }
             catch (Exception ex)
             {
-                _logger.Error("连接处理失败");
+                _logger.Error("连接处理失败", ex.Message);
                 throw;
             }
         }
@@ -200,7 +209,7 @@ namespace Lean.Hbt.Infrastructure.SignalR
             }
             catch (Exception ex)
             {
-                _logger.Error("SignalR断开连接失败: {ConnectionId}", Context.ConnectionId);
+                _logger.Error("SignalR断开连接失败: {ConnectionId}", Context.ConnectionId, ex.Message);
             }
             finally
             {
@@ -271,7 +280,7 @@ namespace Lean.Hbt.Infrastructure.SignalR
                     catch (Exception ex)
                     {
                         _logger.Error("向设备发送消息失败 - 设备ID: {DeviceId}, 连接ID: {ConnectionId}",
-                            device.DeviceId, device.ConnectionId);
+                            device.DeviceId, device.ConnectionId, ex.Message);
                     }
                 }
 
@@ -279,7 +288,7 @@ namespace Lean.Hbt.Infrastructure.SignalR
             }
             catch (Exception ex)
             {
-                _logger.Error("发送消息过程中发生错误");
+                _logger.Error("发送消息过程中发生错误", ex.Message);
                 throw;
             }
         }
@@ -443,7 +452,7 @@ namespace Lean.Hbt.Infrastructure.SignalR
                 }
                 catch (Exception ex)
                 {
-                    _logger.Error("发送强制下线消息失败: ConnectionId={ConnectionId}", connectionId);
+                    _logger.Error("发送强制下线消息失败: ConnectionId={ConnectionId}", connectionId, ex.Message);
                 }
 
                 // 2. 等待一段时间让客户端处理消息
@@ -473,14 +482,14 @@ namespace Lean.Hbt.Infrastructure.SignalR
                 }
                 catch (Exception ex)
                 {
-                    _logger.Error("中止连接失败: ConnectionId={ConnectionId}", connectionId);
+                    _logger.Error("中止连接失败: ConnectionId={ConnectionId}", connectionId, ex.Message);
                 }
 
                 _logger.Info("已断开客户端连接: ConnectionId={ConnectionId}", connectionId);
             }
             catch (Exception ex)
             {
-                _logger.Error("断开客户端连接时发生错误: ConnectionId={ConnectionId}", connectionId);
+                _logger.Error("断开客户端连接时发生错误: ConnectionId={ConnectionId}", connectionId, ex.Message);
                 // 不再抛出异常，避免死循环
                 return;
             }
@@ -502,7 +511,7 @@ namespace Lean.Hbt.Infrastructure.SignalR
             }
             catch (Exception ex)
             {
-                _logger.Error("获取 Hub 上下文失败: ConnectionId={ConnectionId}", connectionId);
+                _logger.Error("获取 Hub 上下文失败: ConnectionId={ConnectionId}", connectionId, ex.Message);
             }
             return null;
         }

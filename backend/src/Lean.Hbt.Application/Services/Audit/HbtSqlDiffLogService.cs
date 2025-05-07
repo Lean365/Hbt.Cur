@@ -1,15 +1,18 @@
+#nullable enable
+
 //===================================================================
 // 项目名 : Lean.Hbt
 // 文件名 : HbtSqlDiffLogService.cs
 // 创建者 : Lean365
-// 创建时间: 2024-01-20 16:30
+// 创建时间: 2024-03-20
 // 版本号 : V0.0.1
-// 描述   : 差异日志服务实现
+// 描述    : 差异日志服务实现
 //===================================================================
 
 using System.Linq.Expressions;
 using Lean.Hbt.Application.Dtos.Audit;
 using Lean.Hbt.Domain.Entities.Audit;
+using Lean.Hbt.Domain.IServices.Extensions;
 using Microsoft.AspNetCore.Http;
 
 namespace Lean.Hbt.Application.Services.Audit
@@ -41,10 +44,14 @@ namespace Lean.Hbt.Application.Services.Audit
         /// </summary>
         /// <param name="logger">日志记录器</param>
         /// <param name="sqlDiffLogRepository">差异日志仓储</param>
+        /// <param name="currentUser">当前用户服务</param>
+        /// <param name="localization">本地化服务</param>
         public HbtSqlDiffLogService(
             IHbtRepository<HbtSqlDiffLog> sqlDiffLogRepository,
             IHbtLogger logger,
-            IHttpContextAccessor httpContextAccessor) : base(logger, httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor,
+            IHbtCurrentUser currentUser,
+            IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
         {
             _sqlDiffLogRepository = sqlDiffLogRepository ?? throw new ArgumentNullException(nameof(sqlDiffLogRepository));
         }

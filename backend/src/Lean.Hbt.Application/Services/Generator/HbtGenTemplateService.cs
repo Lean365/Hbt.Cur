@@ -26,10 +26,14 @@ public class HbtGenTemplateService : HbtBaseService, IHbtGenTemplateService
     /// <param name="templateRepository">模板仓储</param>
     /// <param name="logger">日志服务</param>
     /// <param name="httpContextAccessor">HTTP上下文访问器</param>
+    /// <param name="currentUser">当前用户服务</param>
+    /// <param name="localization">本地化服务</param>
     public HbtGenTemplateService(
         IHbtRepository<HbtGenTemplate> templateRepository,
         IHbtLogger logger,
-        IHttpContextAccessor httpContextAccessor) : base(logger, httpContextAccessor)
+        IHttpContextAccessor httpContextAccessor,
+        IHbtCurrentUser currentUser,
+        IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
     {
         _templateRepository = templateRepository;
     }
@@ -94,23 +98,14 @@ public class HbtGenTemplateService : HbtBaseService, IHbtGenTemplateService
     /// <returns>创建结果</returns>
     public async Task<HbtGenTemplateDto> CreateAsync(HbtGenTemplateCreateDto input)
     {
-        // 验证模板名称是否已存在
-        var existTemplate = await _templateRepository.GetFirstAsync(x => x.TemplateName == input.TemplateName);
-        if (existTemplate != null)
-        {
-            throw new HbtException($"模板名称[{input.TemplateName}]已存在");
-        }
+        // 验证字段是否已存在
+        await HbtValidateUtils.ValidateFieldExistsAsync(_templateRepository, "TemplateName", input.TemplateName);
 
         var template = input.Adapt<HbtGenTemplate>();
-        template.CreateBy = UserName;
-        template.CreateTime = DateTime.Now;
-        template.UpdateBy = UserName;
-        template.UpdateTime = DateTime.Now;
-
         var result = await _templateRepository.CreateAsync(template);
         if (result <= 0)
         {
-            throw new HbtException("创建模板失败");
+            throw new HbtException(L("GenTemplate.CreateFailed"));
         }
 
         return template.Adapt<HbtGenTemplateDto>();
@@ -123,34 +118,20 @@ public class HbtGenTemplateService : HbtBaseService, IHbtGenTemplateService
     /// <returns>更新后的模板信息</returns>
     public async Task<HbtGenTemplateDto> UpdateAsync(HbtGenTemplateUpdateDto input)
     {
-        var template = await _templateRepository.GetByIdAsync(input.Id);
-        if (template == null)
-        {
-            throw new HbtException($"模板[{input.Id}]不存在");
-        }
+        var template = await _templateRepository.GetByIdAsync(input.Id)
+            ?? throw new HbtException(L("GenTemplate.NotFound", input.Id));
 
-        // 验证模板名称是否已存在
+        // 验证字段是否已存在
         if (template.TemplateName != input.TemplateName)
         {
-            var existTemplate = await _templateRepository.GetFirstAsync(x => x.TemplateName == input.TemplateName);
-            if (existTemplate != null)
-            {
-                throw new HbtException($"模板名称[{input.TemplateName}]已存在");
-            }
+            await HbtValidateUtils.ValidateFieldExistsAsync(_templateRepository, "TemplateName", input.TemplateName, input.Id);
         }
 
-        template.TemplateName = input.TemplateName;
-        template.TemplateType = input.TemplateType;
-        template.TemplateContent = input.TemplateContent;
-        template.Status = input.Status;
-        template.Remark = input.Remark;
-        template.UpdateBy = UserName;
-        template.UpdateTime = DateTime.Now;
-
+        input.Adapt(template);
         var result = await _templateRepository.UpdateAsync(template);
         if (result <= 0)
         {
-            throw new HbtException("更新模板失败");
+            throw new HbtException(L("GenTemplate.UpdateFailed"));
         }
 
         return template.Adapt<HbtGenTemplateDto>();
@@ -196,7 +177,7 @@ public class HbtGenTemplateService : HbtBaseService, IHbtGenTemplateService
             ?? throw new HbtException(L("GenTemplate.NotFound", input.TemplateId));
 
         template.Status = input.Status;
-        template.UpdateBy = UserName;
+        template.UpdateBy = _currentUser.UserName;
         template.UpdateTime = DateTime.Now;
 
         return await _templateRepository.UpdateAsync(template) > 0;
@@ -237,9 +218,9 @@ public class HbtGenTemplateService : HbtBaseService, IHbtGenTemplateService
                         continue;
                     }
 
-                    template.CreateBy = UserName;
+                    template.CreateBy = _currentUser.UserName;
                     template.CreateTime = DateTime.Now;
-                    template.UpdateBy = UserName;
+                    template.UpdateBy = _currentUser.UserName;
                     template.UpdateTime = DateTime.Now;
 
                     var result = await _templateRepository.CreateAsync(template);

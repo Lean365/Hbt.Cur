@@ -1,33 +1,34 @@
 import request from '@/utils/request';
-import type { HbtGenTableDto, HbtGenTableQueryDto, HbtGenTablePageResultDto } from '@/types/generator/table';
-import type { HbtApiResponse } from '@/types/common';
+import type { HbtGenTable, HbtGenTableCreate, HbtGenTableUpdate, HbtGenTableQuery, HbtGenTablePageResult, TableInfoDto, TableInfoTuple } from '@/types/generator/genTable';
+import type { HbtGenColumn } from '@/types/generator/genColumn';
+import type { HbtApiResponse, HbtPagedResult } from '@/types/common';
 
 /**
- * 获取代码生成表列表
+ * 获取代码生成表分页列表
  */
-export function getPagedList(params: HbtGenTableQueryDto) {
-  return request<HbtApiResponse<HbtGenTablePageResultDto>>({
+export function getTableList(query: HbtGenTable.Query) {
+  return request<HbtApiResponse<HbtPagedResult<HbtGenTable.Table>>>({
     url: '/api/HbtGenTable/list',
     method: 'get',
-    params
+    params: query
   });
 }
 
 /**
- * 获取代码生成表详情
+ * 获取代码生成表详情（包含字段信息）
  */
-export function getGenTable(id: number) {
-  return request<HbtApiResponse<HbtGenTableDto>>({
+export function getTable(id: number) {
+  return request<HbtApiResponse<HbtGenTable.Table>>({
     url: `/api/HbtGenTable/${id}`,
     method: 'get'
   });
 }
 
 /**
- * 创建代码生成表
+ * 创建代码生成表（包含字段信息）
  */
-export function createGenTable(data: HbtGenTableDto) {
-  return request<HbtApiResponse<HbtGenTableDto>>({
+export function createTable(data: HbtGenTable.Create) {
+  return request<HbtApiResponse<HbtGenTable.Table>>({
     url: '/api/HbtGenTable',
     method: 'post',
     data
@@ -35,20 +36,20 @@ export function createGenTable(data: HbtGenTableDto) {
 }
 
 /**
- * 更新代码生成表
+ * 更新代码生成表（包含字段信息）
  */
-export function updateGenTable(id: number, data: HbtGenTableDto) {
-  return request<HbtApiResponse<HbtGenTableDto>>({
-    url: `/api/HbtGenTable/${id}`,
+export function updateTable(data: HbtGenTable.Update) {
+  return request<HbtApiResponse<HbtGenTable.Table>>({
+    url: '/api/HbtGenTable',
     method: 'put',
     data
   });
 }
 
 /**
- * 删除代码生成表
+ * 删除代码生成表（同时删除关联的字段信息）
  */
-export function deleteGenTable(id: number) {
+export function deleteTable(id: number) {
   return request<HbtApiResponse<boolean>>({
     url: `/api/HbtGenTable/${id}`,
     method: 'delete'
@@ -56,19 +57,71 @@ export function deleteGenTable(id: number) {
 }
 
 /**
- * 生成代码
+ * 获取表字段列表
  */
-export function generateGenTable(id: number) {
+export function getTableColumns(tableId: number) {
+  return request<HbtApiResponse<HbtGenColumn.Column[]>>({
+    url: `/api/HbtGenTable/${tableId}/columns`,
+    method: 'get'
+  });
+}
+
+/**
+ * 更新表字段信息
+ */
+export function updateTableColumns(tableId: number, columns: HbtGenColumn.Column[]) {
   return request<HbtApiResponse<boolean>>({
-    url: `/api/HbtGenTable/${id}/generate`,
+    url: `/api/HbtGenTable/${tableId}/columns`,
+    method: 'put',
+    data: columns
+  });
+}
+
+/**
+ * 从数据库导入表结构
+ */
+export function importTableFromDb(input: { tableNames: string[] }) {
+  return request<HbtApiResponse<HbtGenTable.Table[]>>({
+    url: '/api/HbtGenTable/import',
+    method: 'post',
+    data: input
+  });
+}
+
+/**
+ * 获取数据库列表
+ */
+export function getDatabaseList() {
+  return request<HbtApiResponse<string[]>>({
+    url: '/api/HbtGenTable/databases',
+    method: 'get'
+  });
+}
+
+/**
+ * 获取数据库表列表
+ */
+export function getTableListByDb(databaseName: string): Promise<HbtApiResponse<{ code: number; msg: string; data: Array<{ name: string; description: string }> }>> {
+  return request({
+    url: `/api/HbtGenTable/tables/${databaseName}`,
+    method: 'get'
+  })
+}
+
+/**
+ * 同步表结构到数据库
+ */
+export function syncTable(id: number) {
+  return request<HbtApiResponse<boolean>>({
+    url: `/api/HbtGenTable/${id}/sync`,
     method: 'post'
   });
 }
 
 /**
- * 预览代码
+ * 预览生成的代码
  */
-export function previewGenTable(id: number) {
+export function previewCode(id: number) {
   return request<HbtApiResponse<Record<string, string>>>({
     url: `/api/HbtGenTable/${id}/preview`,
     method: 'get'
@@ -76,9 +129,30 @@ export function previewGenTable(id: number) {
 }
 
 /**
- * 下载代码
+ * 生成代码
  */
-export function downloadGenTable(id: number) {
+export function generateCode(id: number) {
+  return request<HbtApiResponse<boolean>>({
+    url: `/api/HbtGenTable/${id}/generate`,
+    method: 'post'
+  });
+}
+
+/**
+ * 批量生成代码
+ */
+export function batchGenerateCode(ids: number[]) {
+  return request<HbtApiResponse<string>>({
+    url: '/api/HbtGenTable/batch-generate',
+    method: 'post',
+    data: ids
+  });
+}
+
+/**
+ * 下载生成的代码
+ */
+export function downloadCode(id: number) {
   return request<Blob>({
     url: `/api/HbtGenTable/${id}/download`,
     method: 'get',
@@ -87,11 +161,22 @@ export function downloadGenTable(id: number) {
 }
 
 /**
- * 同步数据库
+ * 获取数据库表列信息
  */
-export function syncGenTable(id: number) {
-  return request<HbtApiResponse<boolean>>({
-    url: `/api/HbtGenTable/${id}/sync`,
-    method: 'post'
+export function getTableColumnList(databaseName: string, tableName: string) {
+  return request<HbtApiResponse<HbtGenColumn.Column[]>>({
+    url: `/api/HbtGenTable/columns/${databaseName}/${tableName}`,
+    method: 'get'
+  });
+}
+
+/**
+ * 导入表及其列信息
+ */
+export function importTableAndColumns(databaseName: string, tableName: string) {
+  return request<HbtApiResponse<HbtGenTable.Table>>({
+    url: `/api/HbtGenTable/import-table-and-columns/${databaseName}/${tableName}`,
+    method: 'post',
+    timeout: 60000 // 增加超时时间到60秒
   });
 }

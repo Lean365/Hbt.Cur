@@ -1,10 +1,12 @@
+#nullable enable
+
 //===================================================================
 // 项目名 : Lean.Hbt
 // 文件名 : HbtGenConfigService.cs
 // 创建者 : Lean365
-// 创建时间: 2024-01-18 10:00
+// 创建时间: 2024-03-20
 // 版本号 : V0.0.1
-// 描述   : 生成配置服务实现类
+// 描述    : 生成配置服务实现类
 //===================================================================
 
 using System.Linq.Expressions;
@@ -35,7 +37,9 @@ public class HbtGenConfigService : HbtBaseService, IHbtGenConfigService
     public HbtGenConfigService(
         IHbtRepository<HbtGenConfig> configRepository,
         IHbtLogger logger,
-        IHttpContextAccessor httpContextAccessor) : base(logger, httpContextAccessor)
+        IHttpContextAccessor httpContextAccessor,
+        IHbtCurrentUser currentUser,
+        IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
     {
         _configRepository = configRepository ?? throw new ArgumentNullException(nameof(configRepository));
     }

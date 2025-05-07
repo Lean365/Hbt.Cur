@@ -10,7 +10,6 @@
 using Lean.Hbt.Application.Dtos.Core;
 using Lean.Hbt.Application.Services.Core;
 
-
 namespace Lean.Hbt.WebApi.Controllers.Core
 {
     /// <summary>
@@ -22,7 +21,7 @@ namespace Lean.Hbt.WebApi.Controllers.Core
     /// </remarks>
     [Route("api/[controller]", Name = "系统配置")]
     [ApiController]
-    [ApiModule("admin", "系统管理")]
+    [ApiModule("core", "系统管理")]
     public class HbtConfigController : HbtBaseController
     {
         private readonly IHbtConfigService _configService;
@@ -47,7 +46,7 @@ namespace Lean.Hbt.WebApi.Controllers.Core
         /// <param name="query">查询条件</param>
         /// <returns>系统配置分页列表</returns>
         [HttpGet("list")]
-        [HbtPerm("admin:config:list")]
+        [HbtPerm("core:config:list")]
         public async Task<IActionResult> GetPagedListAsync([FromQuery] HbtConfigQueryDto query)
         {
             var result = await _configService.GetListAsync(query);
@@ -60,7 +59,7 @@ namespace Lean.Hbt.WebApi.Controllers.Core
         /// <param name="configId">配置ID</param>
         /// <returns>系统配置详情</returns>
         [HttpGet("{configId}")]
-        [HbtPerm("admin:config:query")]
+        [HbtPerm("core:config:query")]
         public async Task<IActionResult> GetByIdAsync(long configId)
         {
             var result = await _configService.GetByIdAsync(configId);
@@ -73,7 +72,7 @@ namespace Lean.Hbt.WebApi.Controllers.Core
         /// <param name="input">创建对象</param>
         /// <returns>配置ID</returns>
         [HttpPost]
-        [HbtPerm("admin:config:create")]
+        [HbtPerm("core:config:create")]
         public async Task<IActionResult> CreateAsync([FromBody] HbtConfigCreateDto input)
         {
             var result = await _configService.CreateAsync(input);
@@ -86,7 +85,7 @@ namespace Lean.Hbt.WebApi.Controllers.Core
         /// <param name="input">更新对象</param>
         /// <returns>是否成功</returns>
         [HttpPut]
-        [HbtPerm("admin:config:update")]
+        [HbtPerm("core:config:update")]
         public async Task<IActionResult> UpdateAsync([FromBody] HbtConfigUpdateDto input)
         {
             var result = await _configService.UpdateAsync(input);
@@ -99,7 +98,7 @@ namespace Lean.Hbt.WebApi.Controllers.Core
         /// <param name="configId">配置ID</param>
         /// <returns>是否成功</returns>
         [HttpDelete("{configId}")]
-        [HbtPerm("admin:config:delete")]
+        [HbtPerm("core:config:delete")]
         public async Task<IActionResult> DeleteAsync(long configId)
         {
             var result = await _configService.DeleteAsync(configId);
@@ -112,7 +111,7 @@ namespace Lean.Hbt.WebApi.Controllers.Core
         /// <param name="configIds">配置ID集合</param>
         /// <returns>是否成功</returns>
         [HttpDelete("batch")]
-        [HbtPerm("admin:config:delete")]
+        [HbtPerm("core:config:delete")]
         public async Task<IActionResult> BatchDeleteAsync([FromBody] long[] configIds)
         {
             var result = await _configService.BatchDeleteAsync(configIds);
@@ -126,8 +125,8 @@ namespace Lean.Hbt.WebApi.Controllers.Core
         /// <param name="sheetName">工作表名称</param>
         /// <returns>导入结果</returns>
         [HttpPost("import")]
-        [HbtPerm("admin:config:import")]
-        public async Task<IActionResult> ImportAsync(IFormFile file, string sheetName)
+        [HbtPerm("core:config:import")]
+        public async Task<IActionResult> ImportAsync([FromForm] IFormFile file, [FromForm] string sheetName)
         {
             try
             {
@@ -156,17 +155,28 @@ namespace Lean.Hbt.WebApi.Controllers.Core
                     return BadRequest(_localization.L("FileSizeExceeded"));
                 }
 
-                using (var stream = file.OpenReadStream())
-                {
-                    var (successCount, failureCount) = await _configService.ImportAsync(stream, sheetName);
-                    _logger.Info($"导入完成，成功：{successCount}，失败：{failureCount}");
-                    return Ok(new { successCount, failureCount });
-                }
+                // 使用ExcelPackage读取文件
+                using var stream = new MemoryStream();
+                await file.CopyToAsync(stream);
+                stream.Position = 0;
+
+                var (successCount, failureCount) = await _configService.ImportAsync(stream, sheetName);
+                _logger.Info($"导入完成，成功：{successCount}，失败：{failureCount}");
+                return Ok(new { 
+                    success = true,
+                    message = $"导入完成，成功：{successCount}，失败：{failureCount}",
+                    successCount, 
+                    failureCount 
+                });
             }
             catch (Exception ex)
             {
                 _logger.Error($"导入配置失败：{ex.Message}", ex);
-                return StatusCode(500, _localization.L("ImportFailed"));
+                return StatusCode(500, new { 
+                    success = false,
+                    message = _localization.L("ImportFailed"),
+                    error = ex.Message
+                });
             }
         }
 
@@ -177,7 +187,7 @@ namespace Lean.Hbt.WebApi.Controllers.Core
         /// <param name="sheetName">工作表名称</param>
         /// <returns>Excel文件</returns>
         [HttpGet("export")]
-        [HbtPerm("admin:config:export")]
+        [HbtPerm("core:config:export")]
         public async Task<IActionResult> ExportAsync([FromQuery] HbtConfigQueryDto query, [FromQuery] string sheetName = "HbtConfig")
         {
             var (fileName, content) = await _configService.ExportAsync(query, sheetName);
@@ -190,7 +200,7 @@ namespace Lean.Hbt.WebApi.Controllers.Core
         /// <param name="sheetName">工作表名称</param>
         /// <returns>Excel模板文件</returns>
         [HttpGet("template")]
-        [HbtPerm("admin:config:query")]
+        [HbtPerm("core:config:query")]
         public async Task<IActionResult> GetTemplateAsync([FromQuery] string sheetName = "HbtConfig")
         {
             var (fileName, content) = await _configService.GetTemplateAsync(sheetName);
@@ -207,7 +217,7 @@ namespace Lean.Hbt.WebApi.Controllers.Core
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [HbtPerm("admin:config:update")]
+        [HbtPerm("core:config:update")]
         public async Task<IActionResult> UpdateStatusAsync(long configId, [FromQuery] int status)
         {
             var input = new HbtConfigStatusDto

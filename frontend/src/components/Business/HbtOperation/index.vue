@@ -32,6 +32,28 @@
       </a-button>
     </a-tooltip>
 
+    <a-tooltip v-if="showImport" :title="t('common.actions.import')">
+      <a-button
+        :type="buttonType"
+        :size="size"
+        @click="handleImport"
+        class="hbt-btn-import"
+      >
+        <template #icon><import-outlined /></template>
+      </a-button>
+    </a-tooltip>
+
+    <a-tooltip v-if="showExport" :title="t('common.actions.export')">
+      <a-button
+        :type="buttonType"
+        :size="size"
+        @click="handleExport"
+        class="hbt-btn-export"
+      >
+        <template #icon><export-outlined /></template>
+      </a-button>
+    </a-tooltip>
+
     <a-popconfirm
       v-if="showDelete"
       :title="t('common.message.deleteConfirm')"
@@ -365,6 +387,7 @@ import {
   UserSwitchOutlined,
   ClockCircleOutlined,
   ExportOutlined,
+  ImportOutlined,
   PrinterOutlined,
   FileTextOutlined,
   LogoutOutlined,
@@ -388,11 +411,12 @@ interface Props {
   showEdit?: boolean // 是否显示编辑按钮
   showDelete?: boolean // 是否显示删除按钮
   showCopy?: boolean // 是否显示复制按钮
+  showImport?: boolean // 是否显示导入按钮
+  showExport?: boolean // 是否显示导出按钮
   showStartFlow?: boolean // 是否显示开始流程按钮
   showEndFlow?: boolean // 是否显示结束流程按钮
   showAudit?: boolean // 是否显示审核按钮
   showRevoke?: boolean // 是否显示撤销按钮
-  showExport?: boolean // 是否显示导出按钮
   showPrint?: boolean // 是否显示打印按钮
   showLog?: boolean // 是否显示日志按钮
   showAuthorize?: boolean // 是否显示授权按钮
@@ -429,11 +453,12 @@ const props = withDefaults(defineProps<Props>(), {
   showEdit: false,
   showDelete: false,
   showCopy: false,
+  showImport: false,
+  showExport: false,
   showStartFlow: false,
   showEndFlow: false,
   showAudit: false,
   showRevoke: false,
-  showExport: false,
   showPrint: false,
   showLog: false,
   showAuthorize: false,
@@ -469,6 +494,8 @@ const emit = defineEmits([
   'edit',
   'delete',
   'copy',
+  'import',
+  'export',
   'start-flow',
   'end-flow',
   'audit',
@@ -482,7 +509,6 @@ const emit = defineEmits([
   'sync',
   'sort',
   'preview',
-  'export',
   'print',
   'log',
   'force-offline',
@@ -516,6 +542,8 @@ const handleView = () => emit('view', props.record)
 const handleEdit = () => emit('edit', props.record)
 const handleDelete = () => emit('delete', props.record)
 const handleCopy = () => emit('copy', props.record)
+const handleImport = () => emit('import', props.record)
+const handleExport = () => emit('export', props.record)
 const handleStartFlow = () => emit('start-flow', props.record)
 const handleEndFlow = () => emit('end-flow', props.record)
 const handleAudit = () => emit('audit', props.record)
@@ -529,7 +557,6 @@ const handleGenerate = () => emit('generate', props.record)
 const handleSync = () => emit('sync', props.record)
 const handleSort = () => emit('sort', props.record)
 const handlePreview = () => emit('preview', props.record)
-const handleExport = () => emit('export', props.record)
 const handlePrint = () => emit('print', props.record)
 const handleLog = () => emit('log', props.record)
 const handleForceOffline = () => emit('force-offline', props.record)

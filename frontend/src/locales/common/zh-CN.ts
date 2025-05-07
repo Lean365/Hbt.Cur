@@ -309,7 +309,15 @@ export default {
       limit: {
         size: '文件大小不能超过 {size}',
         type: '仅支持 {type} 格式'
-      }
+      },
+      success: '上传成功',
+      failed: '上传失败',
+      fileEmpty: '文件为空，无法上传',
+      fileType: '文件类型不支持',
+      fileSize: '文件大小超出限制',
+      fileExists: '文件已存在',
+      fileNameRequired: '文件名不能为空',
+      fileSelect: '请选择要上传的文件'
     },
 
     // ==================== 功能按钮 ====================
@@ -551,7 +559,14 @@ export default {
       submit: '提交',
       confirm:'确定',
       ok: '确定',
-
+      cancel: '取消',
+      close: '关闭',
+      reset: '重置',
+      clear: '清空',
+      save: '保存',
+      delete: '删除',
+      edit: '编辑',
+      view: '查看'
     }
   },
 

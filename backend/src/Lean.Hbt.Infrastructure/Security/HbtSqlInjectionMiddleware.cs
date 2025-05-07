@@ -56,13 +56,20 @@ namespace Lean.Hbt.Infrastructure.Security
             // 2. 检查请求方法
             if (context.Request.Method != "GET")
             {
-                // 3. 读取请求体
+                // 3. 检查是否是文件上传请求
+                if (IsFileUploadRequest(context))
+                {
+                    await _next(context);
+                    return;
+                }
+
+                // 4. 读取请求体
                 context.Request.EnableBuffering();
                 using var reader = new StreamReader(context.Request.Body, leaveOpen: true);
                 var body = await reader.ReadToEndAsync();
                 context.Request.Body.Position = 0;
 
-                // 4. 检查请求参数
+                // 5. 检查请求参数
                 if (ContainsSqlInjection(body) ||
                     ContainsSqlInjection(context.Request.QueryString.Value))
                 {
@@ -83,6 +90,19 @@ namespace Lean.Hbt.Infrastructure.Security
             }
 
             await _next(context);
+        }
+
+        /// <summary>
+        /// 检查是否是文件上传请求
+        /// </summary>
+        private bool IsFileUploadRequest(HttpContext context)
+        {
+            var contentType = context.Request.ContentType;
+            if (string.IsNullOrEmpty(contentType))
+                return false;
+
+            return contentType.Contains("multipart/form-data") || 
+                   contentType.Contains("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         }
 
         /// <summary>
@@ -108,6 +128,12 @@ namespace Lean.Hbt.Infrastructure.Security
                 path.EndsWith(".jpg") ||
                 path.EndsWith(".png") ||
                 path.EndsWith(".gif")))
+            {
+                return true;
+            }
+
+            // 3. 跳过文件上传接口
+            if (path != null && path.Contains("/import"))
             {
                 return true;
             }

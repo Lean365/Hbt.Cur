@@ -34,7 +34,6 @@ public class HbtAuthService : HbtBaseService, IHbtAuthService
 {
     private readonly IHbtRepository<HbtUser> _userRepository;
     private readonly IHbtRepository<HbtTenant> _tenantRepository;
-    private readonly IHbtLoginPolicy _loginPolicy;
     private readonly IHbtCaptchaService _captchaService;
     private readonly IHbtJwtHandler _jwtHandler;
     private readonly IHbtMemoryCache _cache;
@@ -42,12 +41,7 @@ public class HbtAuthService : HbtBaseService, IHbtAuthService
     private readonly IHbtRepository<HbtLoginExtend> _loginExtendRepository;
     private readonly IHbtRepository<HbtDeviceExtend> _deviceExtendRepository;
     private readonly IHbtRepository<HbtLoginLog> _loginLogRepository;
-    private readonly IHbtRepository<HbtUserRole> _userRoleRepository;
-    private readonly IHbtRepository<HbtUserDept> _userDeptRepository;
-    private readonly IHbtRepository<HbtUserPost> _userPostRepository;
-    private readonly IHbtOnlineUserService _onlineUserService;
     private readonly IHbtRepository<HbtOnlineUser> _onlineUserRepository;
-    private readonly IHbtDeviceIdGenerator _deviceIdGenerator;
 
     /// <summary>
     /// 构造函数
@@ -57,7 +51,6 @@ public class HbtAuthService : HbtBaseService, IHbtAuthService
         IHttpContextAccessor httpContextAccessor,
         IHbtRepository<HbtUser> userRepository,
         IHbtRepository<HbtTenant> tenantRepository,
-        IHbtLoginPolicy loginPolicy,
         IHbtCaptchaService captchaService,
         IHbtJwtHandler jwtHandler,
         IHbtMemoryCache cache,
@@ -65,16 +58,12 @@ public class HbtAuthService : HbtBaseService, IHbtAuthService
         IHbtRepository<HbtLoginExtend> loginExtendRepository,
         IHbtRepository<HbtDeviceExtend> deviceExtendRepository,
         IHbtRepository<HbtLoginLog> loginLogRepository,
-        IHbtRepository<HbtUserRole> userRoleRepository,
-        IHbtRepository<HbtUserDept> userDeptRepository,
-        IHbtRepository<HbtUserPost> userPostRepository,
-        IHbtOnlineUserService onlineUserService,
         IHbtRepository<HbtOnlineUser> onlineUserRepository,
-        IHbtDeviceIdGenerator deviceIdGenerator) : base(logger, httpContextAccessor)
+        IHbtCurrentUser currentUser,
+        IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
     {
         _userRepository = userRepository;
         _tenantRepository = tenantRepository;
-        _loginPolicy = loginPolicy;
         _captchaService = captchaService;
         _jwtHandler = jwtHandler;
         _cache = cache;
@@ -82,12 +71,7 @@ public class HbtAuthService : HbtBaseService, IHbtAuthService
         _loginExtendRepository = loginExtendRepository;
         _deviceExtendRepository = deviceExtendRepository;
         _loginLogRepository = loginLogRepository;
-        _userRoleRepository = userRoleRepository;
-        _userDeptRepository = userDeptRepository;
-        _userPostRepository = userPostRepository;
-        _onlineUserService = onlineUserService;
         _onlineUserRepository = onlineUserRepository;
-        _deviceIdGenerator = deviceIdGenerator;
     }
 
     /// <summary>

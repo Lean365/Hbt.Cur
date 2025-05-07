@@ -1,8 +1,10 @@
+#nullable enable
+
 //===================================================================
 // 项目名 : Lean.Hbt
 // 文件名 : HbtDictTypeService.cs
 // 创建者 : Lean365
-// 创建时间: 2024-01-18 10:00
+// 创建时间: 2024-03-20
 // 版本号 : V0.0.1
 // 描述   : 字典类型服务实现类
 //===================================================================
@@ -37,7 +39,9 @@ namespace Lean.Hbt.Application.Services.Core
             IHbtRepository<HbtDictType> dictTypeRepository,
             IHbtRepository<HbtDictData> dictDataRepository,
             IHbtLogger logger,
-            IHttpContextAccessor httpContextAccessor) : base(logger, httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor,
+            IHbtCurrentUser currentUser,
+            IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
         {
             _dictTypeRepository = dictTypeRepository ?? throw new ArgumentNullException(nameof(dictTypeRepository));
             _dictDataRepository = dictDataRepository ?? throw new ArgumentNullException(nameof(dictDataRepository));

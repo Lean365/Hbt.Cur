@@ -113,7 +113,7 @@ namespace Lean.Hbt.Infrastructure.Services
                         }
                         catch (Exception ex)
                         {
-                            _logger.Error("[登录策略] 清除缓存项 {Key} 时发生错误", key);
+                            _logger.Error("[登录策略] 清除缓存项 {Key} 时发生错误", key, ex.Message);
                         }
                     }
 
@@ -152,7 +152,7 @@ namespace Lean.Hbt.Infrastructure.Services
             }
             catch (Exception ex)
             {
-                _logger.Error("[登录策略] 初始化过程中发生错误");
+                _logger.Error("[登录策略] 初始化过程中发生错误", ex.Message);
                 throw;
             }
         }

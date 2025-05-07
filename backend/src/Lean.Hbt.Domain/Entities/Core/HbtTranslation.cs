@@ -16,7 +16,7 @@ namespace Lean.Hbt.Domain.Entities.Core
     /// <summary>
     /// 翻译实体
     /// </summary>
-    [SugarTable("hbt_adm_translation", "翻译表")]
+    [SugarTable("hbt_core_translation", "翻译表")]
     [SugarIndex("ix_tenant_translation", nameof(TenantId), OrderByType.Asc)]
     public class HbtTranslation : HbtBaseEntity
     {

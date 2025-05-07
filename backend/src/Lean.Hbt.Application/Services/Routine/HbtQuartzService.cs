@@ -41,11 +41,15 @@ namespace Lean.Hbt.Application.Services.Routine
         /// <param name="taskRepository">任务仓储</param>
         /// <param name="scheduler">调度器</param>
         /// <param name="httpContextAccessor">HTTP上下文访问器</param>
+        /// <param name="currentUser">当前用户服务</param>
+        /// <param name="localization">本地化服务</param>
         public HbtQuartzService(
             IHbtLogger logger,
             IHbtRepository<HbtQuartz> taskRepository,
             IScheduler scheduler,
-            IHttpContextAccessor httpContextAccessor) : base(logger, httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor,
+            IHbtCurrentUser currentUser,
+            IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
         {
             _taskRepository = taskRepository;
             _scheduler = scheduler;

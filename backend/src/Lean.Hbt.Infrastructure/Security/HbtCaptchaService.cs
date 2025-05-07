@@ -28,7 +28,6 @@ public class HbtCaptchaService : HbtBaseService, IHbtCaptchaService
     private readonly IWebHostEnvironment _webHostEnvironment;
     private readonly string _backgroundImagesPath;
     private readonly string _templatePath;
-    private bool _templatesValid = false;
 
     /// <summary>
     /// 初始化验证码服务
@@ -38,7 +37,9 @@ public class HbtCaptchaService : HbtBaseService, IHbtCaptchaService
         IOptions<HbtCaptchaOptions> options,
         IWebHostEnvironment webHostEnvironment,
         IHbtLogger logger,
-        IHttpContextAccessor httpContextAccessor) : base(logger, httpContextAccessor)
+        IHttpContextAccessor httpContextAccessor,
+        IHbtCurrentUser currentUser,
+        IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
     {
         _logger.Info("开始构造验证码服务...");
 

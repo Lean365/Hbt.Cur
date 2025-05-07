@@ -62,7 +62,7 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// 创建工作流历史
         /// </summary>
         [HttpPost]
-        [HbtPerm("workflow:history:insert")]
+        [HbtPerm("workflow:history:create")]
         public async Task<IActionResult> CreateAsync([FromBody] HbtWorkflowHistoryCreateDto input)
         {
             var result = await _workflowHistoryService.CreateAsync(input);

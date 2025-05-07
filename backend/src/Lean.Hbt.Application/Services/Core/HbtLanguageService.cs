@@ -1,15 +1,18 @@
+#nullable enable
+
 //===================================================================
 // 项目名 : Lean.Hbt
 // 文件名 : HbtLanguageService.cs
 // 创建者 : Lean365
-// 创建时间: 2024-01-22 16:30
+// 创建时间: 2024-03-20
 // 版本号 : V0.0.1
-// 描述   : 语言服务实现类
+// 描述    : 语言服务实现类
 //===================================================================
 
 using System.Linq.Expressions;
 using Lean.Hbt.Application.Dtos.Core;
 using Lean.Hbt.Domain.Entities.Core;
+using Lean.Hbt.Domain.IServices.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Http;
 
@@ -32,10 +35,14 @@ namespace Lean.Hbt.Application.Services.Core
         /// <param name="languageRepository">语言仓储</param>
         /// <param name="logger">日志接口</param>
         /// <param name="httpContextAccessor">HTTP上下文访问器</param>
+        /// <param name="currentUser">当前用户服务</param>
+        /// <param name="localization">本地化服务</param>
         public HbtLanguageService(
             IHbtRepository<HbtLanguage> languageRepository,
             IHbtLogger logger,
-            IHttpContextAccessor httpContextAccessor) : base(logger, httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor,
+            IHbtCurrentUser currentUser,
+            IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
         {
             _languageRepository = languageRepository ?? throw new ArgumentNullException(nameof(languageRepository));
         }

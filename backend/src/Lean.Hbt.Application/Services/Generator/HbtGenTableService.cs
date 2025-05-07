@@ -15,6 +15,8 @@ using Microsoft.AspNetCore.Http;
 using Lean.Hbt.Domain.Entities.Generator;
 using Lean.Hbt.Application.Dtos.Generator;
 using System.Linq.Expressions;
+using SqlSugar;
+using System.Text.Json;
 
 namespace Lean.Hbt.Application.Services.Generator;
 
@@ -26,7 +28,7 @@ public class HbtGenTableService : HbtBaseService, IHbtGenTableService
     private readonly IHbtRepository<HbtGenTable> _tableRepository;
     private readonly IHbtRepository<HbtGenColumn> _columnRepository;
     private readonly IHbtCodeGeneratorService _codeGeneratorService;
-    private readonly ISqlSugarClient _db;
+    private readonly SqlSugarScope _db;
 
     /// <summary>
     /// 构造函数
@@ -37,13 +39,17 @@ public class HbtGenTableService : HbtBaseService, IHbtGenTableService
     /// <param name="db">数据库客户端</param>
     /// <param name="logger">日志服务</param>
     /// <param name="httpContextAccessor">HTTP上下文访问器</param>
+    /// <param name="currentUser">当前用户服务</param>
+    /// <param name="localization">本地化服务</param>
     public HbtGenTableService(
         IHbtRepository<HbtGenTable> tableRepository,
         IHbtRepository<HbtGenColumn> columnRepository,
         IHbtCodeGeneratorService codeGeneratorService,
-        ISqlSugarClient db,
+        SqlSugarScope db,
         IHbtLogger logger,
-        IHttpContextAccessor httpContextAccessor) : base(logger, httpContextAccessor)
+        IHttpContextAccessor httpContextAccessor,
+        IHbtCurrentUser currentUser,
+        IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
     {
         _tableRepository = tableRepository;
         _columnRepository = columnRepository;
@@ -128,9 +134,9 @@ public class HbtGenTableService : HbtBaseService, IHbtGenTableService
         }
 
         var table = input.Adapt<HbtGenTable>();
-        table.CreateBy = UserName;
+        table.CreateBy = _currentUser.UserName;
         table.CreateTime = DateTime.Now;
-        table.UpdateBy = UserName;
+        table.UpdateBy = _currentUser.UserName;
         table.UpdateTime = DateTime.Now;
 
         var result = await _tableRepository.CreateAsync(table);
@@ -178,7 +184,7 @@ public class HbtGenTableService : HbtBaseService, IHbtGenTableService
         table.Options = input.Options;
         table.Status = input.Status;
         table.Remark = input.Remark;
-        table.UpdateBy = UserName;
+        table.UpdateBy = _currentUser.UserName;
         table.UpdateTime = DateTime.Now;
 
         var result = await _tableRepository.UpdateAsync(table);
@@ -270,7 +276,7 @@ public class HbtGenTableService : HbtBaseService, IHbtGenTableService
         column.DisplayType = input.DisplayType;
         column.DictType = input.DictType;
         column.OrderNum = input.OrderNum;
-        column.UpdateBy = UserName;
+        column.UpdateBy = _currentUser.UserName;
         column.UpdateTime = DateTime.Now;
 
         return await _columnRepository.UpdateAsync(column) > 0;
@@ -305,9 +311,9 @@ public class HbtGenTableService : HbtBaseService, IHbtGenTableService
                 GenMode = input.GenMode,
                 GenPath = input.GenPath,
                 Options = input.Options,
-                CreateBy = UserName,
+                CreateBy = _currentUser.UserName,
                 CreateTime = DateTime.Now,
-                UpdateBy = UserName,
+                UpdateBy = _currentUser.UserName,
                 UpdateTime = DateTime.Now
             };
 
@@ -364,6 +370,99 @@ public class HbtGenTableService : HbtBaseService, IHbtGenTableService
         return await HbtExcelHelper.GenerateTemplateAsync<HbtGenTable>(sheetName);
     }
 
+    /// <summary>
+    /// 导入表及其所有字段信息
+    /// </summary>
+    /// <param name="databaseName">数据库名</param>
+    /// <param name="tableName">表名</param>
+    /// <returns>是否成功</returns>
+    public async Task<bool> ImportTableAndColumnsAsync(string databaseName, string tableName)
+    {
+        // 切换数据库
+        var db = _db;
+        if (!string.IsNullOrEmpty(databaseName) && db.CurrentConnectionConfig.DbType != SqlSugar.DbType.Sqlite)
+        {
+            db = new SqlSugarScope(new ConnectionConfig
+            {
+                ConnectionString = db.CurrentConnectionConfig.ConnectionString.Replace(db.Ado.Connection.Database, databaseName),
+                DbType = db.CurrentConnectionConfig.DbType,
+                IsAutoCloseConnection = true
+            });
+        }
+        // 1. 获取表结构
+        var tableInfo = db.DbMaintenance.GetTableInfoList(false).FirstOrDefault(t => t.Name == tableName);
+        if (tableInfo == null)
+            throw new Exception($"未找到表: {tableName}");
+
+        // 2. 写入HbtGenTable（字段严格对齐）
+        var genTable = new HbtGenTable
+        {
+            DatabaseName = databaseName,
+            TableName = tableInfo.Name,
+            TableComment = tableInfo.Description,
+            ClassName = ToPascalCase(tableInfo.Name),
+            Namespace = "Lean.Hbt.Domain.Entities",
+            BaseNamespace = "Lean.Hbt",
+            CsharpTypeName = ToPascalCase(tableInfo.Name),
+            ParentTableName = null,
+            ParentTableFkName = null,
+            Status = 1,
+            TemplateType = 1,
+            ModuleName = string.Empty,
+            BusinessName = string.Empty,
+            FunctionName = string.Empty,
+            Author = _currentUser.UserName,
+            GenMode = 0,
+            GenPath = string.Empty,
+            Options = null,
+            TenantId = _currentUser.TenantId,
+            CreateBy = _currentUser.UserName,
+            CreateTime = DateTime.Now,
+            UpdateBy = _currentUser.UserName,
+            UpdateTime = DateTime.Now,
+            Columns = new List<HbtGenColumn>()
+        };
+        await _tableRepository.CreateAsync(genTable);
+
+        // 3. 获取列结构，写入HbtGenColumn（字段严格对齐）
+        var columns = db.DbMaintenance.GetColumnInfosByTableName(tableName);
+        foreach (var col in columns)
+        {
+            var genColumn = new HbtGenColumn
+            {
+                TableId = genTable.Id,
+                ColumnName = col.DbColumnName,
+                ColumnComment = col.ColumnDescription,
+                DbColumnType = col.DataType,
+                CsharpType = GetCsharpType(col.DataType),
+                CsharpColumn = ToPascalCase(col.DbColumnName),
+                CsharpLength = col.Length,
+                CsharpDecimalDigits = col.DecimalDigits,
+                CsharpField = null,
+                IsIncrement = col.IsIdentity ? 1 : 0,
+                IsPrimaryKey = col.IsPrimarykey ? 1 : 0,
+                IsRequired = col.IsNullable ? 0 : 1,
+                IsInsert = 1,
+                IsEdit = 1,
+                IsList = 1,
+                IsQuery = 0,
+                QueryType = "EQ",
+                IsSort = 0,
+                IsExport = 1,
+                DisplayType = "input",
+                DictType = string.Empty,
+                OrderNum = 0,
+                TenantId = _currentUser.TenantId,
+                CreateBy = _currentUser.UserName,
+                CreateTime = DateTime.Now,
+                UpdateBy = _currentUser.UserName,
+                UpdateTime = DateTime.Now
+            };
+            await _columnRepository.CreateAsync(genColumn);
+        }
+        return true;
+    }
+
     #endregion 导入导出
 
     #region 表操作
@@ -383,10 +482,65 @@ public class HbtGenTableService : HbtBaseService, IHbtGenTableService
     /// </summary>
     /// <param name="databaseName">数据库名称</param>
     /// <returns>表列表</returns>
-    public Task<List<string>> GetTableListAsync(string databaseName)
+    public Task<List<HbtGenTableInfoDto>> GetTableListAsync(string databaseName)
     {
-        var tables = _db.DbMaintenance.GetTableInfoList();
-        return Task.FromResult(tables.Select(x => x.Name).ToList());
+        try
+        {
+            _logger.Info($"开始获取数据库 {databaseName} 的表列表");
+            
+            // 获取当前数据库配置
+            var mainConfig = _db.GetConnectionScope("main").CurrentConnectionConfig;
+            _logger.Info($"主数据库配置: {JsonSerializer.Serialize(mainConfig)}");
+            
+            // 创建新的数据库连接配置
+            var dbConfig = new ConnectionConfig
+            {
+                ConfigId = databaseName,
+                DbType = mainConfig.DbType,
+                ConnectionString = mainConfig.ConnectionString.Replace(
+                    mainConfig.ConnectionString.Split(';')
+                        .First(x => x.StartsWith("Database=", StringComparison.OrdinalIgnoreCase))
+                        .Split('=')[1],
+                    databaseName
+                ),
+                IsAutoCloseConnection = true,
+                InitKeyType = InitKeyType.Attribute
+            };
+            _logger.Info($"目标数据库配置: {JsonSerializer.Serialize(dbConfig)}");
+            
+            // 添加或更新数据库配置
+            _db.AddConnection(dbConfig);
+            
+            // 切换到指定数据库并获取表列表
+            using (var db = _db.GetConnectionScope(databaseName))
+            {
+                _logger.Info($"成功切换到数据库 {databaseName}");
+                
+                var tables = db.DbMaintenance.GetTableInfoList(false);
+                _logger.Info($"获取到 {tables.Count} 个表");
+                
+                foreach (var table in tables)
+                {
+                    _logger.Info($"表信息: Name={table.Name}, Description={table.Description}");
+                }
+                
+                // 转换为DTO对象
+                var result = tables.Select(t => new HbtGenTableInfoDto 
+                { 
+                    Name = t.Name, 
+                    Description = t.Description 
+                }).ToList();
+                
+                _logger.Info($"处理后的表列表: {JsonSerializer.Serialize(result)}");
+                
+                return Task.FromResult(result);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.Error($"获取表列表失败: {ex.Message}", ex);
+            throw new HbtException($"获取表列表失败: {ex.Message}");
+        }
     }
 
     /// <summary>
@@ -395,32 +549,22 @@ public class HbtGenTableService : HbtBaseService, IHbtGenTableService
     /// <param name="databaseName">数据库名称</param>
     /// <param name="tableName">表名</param>
     /// <returns>字段列表</returns>
-    public Task<List<HbtGenColumnDto>> GetTableColumnListAsync(string databaseName, string tableName)
+    public Task<List<HbtGenTableColumnInfoDto>> GetTableColumnListAsync(string databaseName, string tableName)
     {
-        var columns = _db.DbMaintenance.GetColumnInfosByTableName(tableName);
-        return Task.FromResult(columns.Select(x => new HbtGenColumnDto
+        // 切换数据库
+        var db = _db;
+        if (!string.IsNullOrEmpty(databaseName) && db.CurrentConnectionConfig.DbType != SqlSugar.DbType.Sqlite)
         {
-            ColumnName = x.DbColumnName,
-            ColumnComment = x.ColumnDescription,
-            DbColumnType = x.DataType,
-            CsharpType = GetCsharpType(x.DataType),
-            CsharpColumn = ToPascalCase(x.DbColumnName),
-            CsharpLength = x.Length,
-            CsharpDecimalDigits = x.DecimalDigits,
-            IsIncrement = x.IsIdentity ? 1 : 0,
-            IsPrimaryKey = x.IsPrimarykey ? 1 : 0,
-            IsRequired = x.IsNullable ? 0 : 1,
-            IsInsert = 1,
-            IsEdit = 1,
-            IsList = 1,
-            IsQuery = 0,
-            QueryType = "EQ",
-            IsSort = 0,
-            IsExport = 1,
-            DisplayType = "input",
-            DictType = string.Empty,
-            OrderNum = 0
-        }).ToList());
+            db = new SqlSugarScope(new ConnectionConfig
+            {
+                ConnectionString = db.CurrentConnectionConfig.ConnectionString.Replace(db.Ado.Connection.Database, databaseName),
+                DbType = db.CurrentConnectionConfig.DbType,
+                IsAutoCloseConnection = true
+            });
+        }
+        var columns = db.DbMaintenance.GetColumnInfosByTableName(tableName);
+       
+        return Task.FromResult(columns.Adapt<List<HbtGenTableColumnInfoDto>>());
     }
 
     /// <summary>
@@ -447,7 +591,7 @@ public class HbtGenTableService : HbtBaseService, IHbtGenTableService
         // 更新表信息
         table.TableComment = currentTable.Description;
         table.UpdateTime = DateTime.Now;
-        table.UpdateBy = UserName;
+        table.UpdateBy = _currentUser.UserName;
         await _tableRepository.UpdateAsync(table);
 
         // 同步字段信息
@@ -486,8 +630,8 @@ public class HbtGenTableService : HbtBaseService, IHbtGenTableService
                     IsRequired = column.IsNullable ? 0 : 1,
                     CreateTime = DateTime.Now,
                     UpdateTime = DateTime.Now,
-                    CreateBy = UserName,
-                    UpdateBy = UserName
+                    CreateBy = _currentUser.UserName,
+                    UpdateBy = _currentUser.UserName
                 };
                 await _columnRepository.CreateAsync(newColumn);
             }
@@ -503,7 +647,7 @@ public class HbtGenTableService : HbtBaseService, IHbtGenTableService
                 existingColumn.IsIncrement = column.IsIdentity ? 1 : 0;
                 existingColumn.IsRequired = column.IsNullable ? 0 : 1;
                 existingColumn.UpdateTime = DateTime.Now;
-                existingColumn.UpdateBy = UserName;
+                existingColumn.UpdateBy = _currentUser.UserName;
                 await _columnRepository.UpdateAsync(existingColumn);
             }
         }

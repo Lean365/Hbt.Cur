@@ -124,7 +124,7 @@ public class HbtRestartService : IHbtRestartService
         }
         catch (Exception ex)
         {
-            _logger.Error("系统重启清理过程中发生错误");
+            _logger.Error("系统重启清理过程中发生错误", ex.Message);
             return false;
         }
     }
@@ -163,7 +163,7 @@ public class HbtRestartService : IHbtRestartService
         }
         catch (Exception ex)
         {
-            _logger.Error("清理用户会话信息时发生错误");
+            _logger.Error("清理用户会话信息时发生错误", ex.Message);
             throw;
         }
     }
@@ -205,7 +205,7 @@ public class HbtRestartService : IHbtRestartService
         }
         catch (Exception ex)
         {
-            _logger.Error("清理缓存信息时发生错误");
+            _logger.Error("清理缓存信息时发生错误", ex.Message);
             throw;
         }
     }
@@ -265,7 +265,7 @@ public class HbtRestartService : IHbtRestartService
         }
         catch (Exception ex)
         {
-            _logger.Error("清理实时通信状态时发生错误");
+            _logger.Error("清理实时通信状态时发生错误", ex.Message);
             throw;
         }
     }
@@ -288,7 +288,7 @@ public class HbtRestartService : IHbtRestartService
         }
         catch (Exception ex)
         {
-            _logger.Error("清理系统状态时发生错误");
+            _logger.Error("清理系统状态时发生错误", ex.Message);
             throw;
         }
     }
@@ -311,7 +311,7 @@ public class HbtRestartService : IHbtRestartService
         }
         catch (Exception ex)
         {
-            _logger.Error("清理安全相关信息时发生错误");
+            _logger.Error("清理安全相关信息时发生错误", ex.Message);
             throw;
         }
     }
@@ -333,7 +333,7 @@ public class HbtRestartService : IHbtRestartService
         }
         catch (Exception ex)
         {
-            _logger.Error("清理临时数据时发生错误");
+            _logger.Error("清理临时数据时发生错误", ex.Message);
             throw;
         }
     }
@@ -355,7 +355,7 @@ public class HbtRestartService : IHbtRestartService
         }
         catch (Exception ex)
         {
-            _logger.Error("清理性能监控数据时发生错误");
+            _logger.Error("清理性能监控数据时发生错误", ex.Message);
             throw;
         }
     }
@@ -378,7 +378,7 @@ public class HbtRestartService : IHbtRestartService
         }
         catch (Exception ex)
         {
-            _logger.Error("清理分布式状态时发生错误");
+            _logger.Error("清理分布式状态时发生错误", ex.Message);
             throw;
         }
     }

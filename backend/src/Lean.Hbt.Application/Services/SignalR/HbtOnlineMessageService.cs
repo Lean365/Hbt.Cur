@@ -40,7 +40,9 @@ public class HbtOnlineMessageService : HbtBaseService, IHbtOnlineMessageService
     public HbtOnlineMessageService(
         IHbtLogger logger,
         IHbtRepository<HbtOnlineMessage> repository,
-        IHttpContextAccessor httpContextAccessor) : base(logger, httpContextAccessor)
+        IHttpContextAccessor httpContextAccessor,
+        IHbtCurrentUser currentUser,
+        IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
     {
         _repository = repository;
     }
@@ -52,36 +54,15 @@ public class HbtOnlineMessageService : HbtBaseService, IHbtOnlineMessageService
     {
         try
         {
-            // 1.构建查询条件
-            var exp = Expressionable.Create<HbtOnlineMessage>();
-
-            if (query.SenderId.HasValue)
-                exp = exp.And(m => m.SenderId == query.SenderId.Value);
-
-            if (query.ReceiverId.HasValue)
-                exp = exp.And(m => m.ReceiverId == query.ReceiverId.Value);
-
-            if (query.MessageType.HasValue)
-                exp = exp.And(m => m.MessageType == query.MessageType.Value);
-
-            if (query.StartTime.HasValue)
-                exp = exp.And(m => m.CreateTime >= query.StartTime.Value);
-
-            if (query.EndTime.HasValue)
-                exp = exp.And(m => m.CreateTime <= query.EndTime.Value);
-
-            if (query.IsRead.HasValue)
-                exp = exp.And(m => m.IsRead == query.IsRead.Value);
-
-            // 2.查询数据
+            // 查询数据
             var result = await _repository.GetPagedListAsync(
-                exp.ToExpression(),
+                KpMessageQueryExpression(query),
                 query.PageIndex,
                 query.PageSize,
                 x => x.Id,
                 OrderByType.Desc);
 
-            // 3.转换数据
+            // 转换数据
             return new HbtPagedResult<HbtOnlineMessageDto>
             {
                 TotalNum = result.TotalNum,
@@ -102,28 +83,10 @@ public class HbtOnlineMessageService : HbtBaseService, IHbtOnlineMessageService
     /// </summary>
     public async Task<List<HbtOnlineMessageExportDto>> GetExportDataAsync(HbtOnlineMessageQueryDto query)
     {
-        // 1.构建查询条件
-        var exp = Expressionable.Create<HbtOnlineMessage>();
+        // 查询数据
+        var messages = await _repository.GetListAsync(KpMessageQueryExpression(query));
 
-        if (query.SenderId.HasValue)
-            exp = exp.And(m => m.SenderId == query.SenderId.Value);
-
-        if (query.ReceiverId.HasValue)
-            exp = exp.And(m => m.ReceiverId == query.ReceiverId.Value);
-
-        if (query.MessageType.HasValue)
-            exp = exp.And(m => m.MessageType == query.MessageType.Value);
-
-        if (query.StartTime.HasValue)
-            exp = exp.And(m => m.CreateTime >= query.StartTime.Value);
-
-        if (query.EndTime.HasValue)
-            exp = exp.And(m => m.CreateTime <= query.EndTime.Value);
-
-        // 2.查询数据
-        var messages = await _repository.GetListAsync(exp.ToExpression());
-
-        // 3.转换并返回
+        // 转换并返回
         return messages.Adapt<List<HbtOnlineMessageExportDto>>();
     }
 

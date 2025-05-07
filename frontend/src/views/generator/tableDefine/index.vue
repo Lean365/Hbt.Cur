@@ -23,15 +23,19 @@
       :import-permission="['generator:tabledefine:import']"
       :show-export="true"
       :export-permission="['generator:tabledefine:export']"
+      :show-initialize="true"
+      :initialize-permission="['generator:tabledefine:initialize']"
       :disabled-edit="selectedRowKeys.length !== 1"
       :disabled-delete="selectedRowKeys.length === 0"
       :disabled-sync="selectedRowKeys.length !== 1"
+      :disabled-initialize="selectedRowKeys.length !== 1"
       @add="handleAdd"
       @edit="handleEditSelected"
       @delete="handleBatchDelete"
       @sync="handleSync"
       @import="handleImport"
       @export="handleExport"
+      @initialize="handleInitialize"
       @refresh="fetchData"
       @column-setting="handleColumnSetting"
       @toggle-search="toggleSearch"
@@ -53,6 +57,7 @@
             <a-button type="link" @click="handleEdit(record)">编辑</a-button>
             <a-button type="link" @click="handleDelete(record)">删除</a-button>
             <a-button type="link" @click="handleSync(record)">同步</a-button>
+            <a-button type="link" @click="handleInitialize(record)">初始化</a-button>
           </a-space>
         </template>
       </template>
@@ -60,7 +65,7 @@
 
     <!-- 代码生成表定义表单对话框 -->
     <table-define-form
-      v-model:visible="formVisible"
+      v-model:open="formVisible"
       :title="formTitle"
       :table-id="selectedTableId"
       @success="handleSuccess"
@@ -91,18 +96,18 @@
 import { ref, reactive, onMounted } from 'vue'
 import { message, Modal } from 'ant-design-vue'
 import type { TablePaginationConfig } from 'ant-design-vue/es/table/interface'
-import type { HbtGenTableDefineDto, HbtGenTableDefineQuery } from '@/types/generator/tableDefine'
+import type { HbtGenTableDefine, HbtGenTableDefineQuery, HbtGenTableDefinePageResult } from '@/types/generator/genTableDefine'
 import type { QueryField } from '@/types/components/query'
 import {
-  getPagedList,
+  getTableDefineList,
   deleteTableDefine,
   batchDeleteTableDefine,
   importTableDefine,
   exportTableDefine,
-  getTemplate,
-  syncTable,
-  initializeTable
-} from '@/api/generator/tableDefine'
+  getTableDefineTemplate,
+  syncTableDefine,
+  initializeTableDefine
+} from '@/api/generator/genTableDefine'
 import TableDefineForm from './components/TableDefineForm.vue'
 
 /** 生成类型选项 */
@@ -119,19 +124,51 @@ const statusOptions = [
 
 /** 查询字段 */
 const queryFields: QueryField[] = [
-  { name: 'tableName', label: '表名', type: 'input', placeholder: '请输入表名' },
-  { name: 'tableComment', label: '表注释', type: 'input', placeholder: '请输入表注释' },
-  { name: 'className', label: '实体类名', type: 'input', placeholder: '请输入实体类名' },
-  { name: 'moduleName', label: '模块名', type: 'input', placeholder: '请输入模块名' },
-  { name: 'businessName', label: '业务名', type: 'input', placeholder: '请输入业务名' },
-  { name: 'functionName', label: '功能名', type: 'input', placeholder: '请输入功能名' },
-  { name: 'author', label: '作者', type: 'input', placeholder: '请输入作者' },
-  { name: 'genType', label: '生成类型', type: 'select', options: genTypeOptions },
-  { name: 'status', label: '状态', type: 'select', options: statusOptions },
-  { name: 'dateRange', label: '创建时间', type: 'dateRange' }
+  {
+    name: 'tableName',
+    label: '表名',
+    type: 'input',
+    placeholder: '请输入表名'
+  },
+  {
+    name: 'tableComment',
+    label: '表注释',
+    type: 'input',
+    placeholder: '请输入表注释'
+  },
+  {
+    name: 'databaseName',
+    label: '数据库名',
+    type: 'input',
+    placeholder: '请输入数据库名'
+  },
+  {
+    name: 'tableType',
+    label: '表类型',
+    type: 'select',
+    options: [
+      { label: '普通表', value: 1 },
+      { label: '视图', value: 2 }
+    ]
+  },
+  {
+    name: 'status',
+    label: '状态',
+    type: 'select',
+    options: [
+      { label: '正常', value: 1 },
+      { label: '停用', value: 0 }
+    ]
+  },
+  {
+    name: 'dateRange',
+    label: '创建时间',
+    type: 'dateRange',
+    placeholder: '请选择时间范围'
+  }
 ]
 
-// 表格列定义
+/** 表格列 */
 const columns = [
   {
     title: '表名',
@@ -148,55 +185,41 @@ const columns = [
     ellipsis: true
   },
   {
-    title: '实体类名',
-    dataIndex: 'className',
-    key: 'className',
+    title: '数据库名',
+    dataIndex: 'databaseName',
+    key: 'databaseName',
     width: 120,
     ellipsis: true
   },
   {
-    title: '模块名',
-    dataIndex: 'moduleName',
-    key: 'moduleName',
-    width: 100,
-    ellipsis: true
-  },
-  {
-    title: '包名',
-    dataIndex: 'packageName',
-    key: 'packageName',
-    width: 180,
-    ellipsis: true
-  },
-  {
-    title: '业务名',
-    dataIndex: 'businessName',
-    key: 'businessName',
-    width: 100,
-    ellipsis: true
-  },
-  {
-    title: '功能名',
-    dataIndex: 'functionName',
-    key: 'functionName',
-    width: 120,
-    ellipsis: true
-  },
-  {
-    title: '作者',
-    dataIndex: 'author',
-    key: 'author',
-    width: 100,
-    ellipsis: true
-  },
-  {
-    title: '生成类型',
-    dataIndex: 'genType',
-    key: 'genType',
+    title: '表类型',
+    dataIndex: 'tableType',
+    key: 'tableType',
     width: 100,
     customRender: ({ text }: { text: number }) => {
-      return text === 1 ? '单表' : '主从表'
+      return text === 1 ? '普通表' : '视图'
     }
+  },
+  {
+    title: '表引擎',
+    dataIndex: 'engine',
+    key: 'engine',
+    width: 100,
+    ellipsis: true
+  },
+  {
+    title: '字符集',
+    dataIndex: 'charset',
+    key: 'charset',
+    width: 100,
+    ellipsis: true
+  },
+  {
+    title: '排序规则',
+    dataIndex: 'collation',
+    key: 'collation',
+    width: 120,
+    ellipsis: true
   },
   {
     title: '状态',
@@ -218,13 +241,6 @@ const columns = [
     dataIndex: 'updateTime',
     key: 'updateTime',
     width: 180
-  },
-  {
-    title: '备注',
-    dataIndex: 'remark',
-    key: 'remark',
-    width: 120,
-    ellipsis: true
   },
   {
     title: '操作',
@@ -250,21 +266,15 @@ const columnSettings = reactive(
 
 // 状态定义
 const loading = ref(false)
-const tableData = ref<HbtGenTableDefineDto[]>([])
+const tableData = ref<HbtGenTableDefine[]>([])
 const total = ref(0)
 const queryParams = reactive<HbtGenTableDefineQuery>({
   pageIndex: 1,
   pageSize: 10,
   tableName: '',
   tableComment: '',
-  className: '',
-  moduleName: '',
-  businessName: '',
-  functionName: '',
-  author: '',
-  genType: undefined,
-  status: undefined,
-  dateRange: undefined
+  beginTime: undefined,
+  endTime: undefined
 })
 const selectedRowKeys = ref<string[]>([])
 const selectedTableId = ref<number>()
@@ -281,7 +291,7 @@ const pagination = reactive<TablePaginationConfig>({
   showTotal: (total: number) => `共 ${total} 条`
 })
 const rowSelection = ref({
-  type: 'checkbox',
+  type: 'checkbox' as const,
   columnWidth: 60
 })
 
@@ -294,10 +304,10 @@ onMounted(() => {
 const fetchData = async () => {
   loading.value = true
   try {
-    const res = await getPagedList({
+    const res = await getTableDefineList({
       ...queryParams,
-      pageIndex: pagination.current ?? 1,
-      pageSize: pagination.pageSize ?? 10
+      pageIndex: queryParams.pageIndex,
+      pageSize: queryParams.pageSize
     })
     if (res.data) {
       tableData.value = res.data.rows
@@ -318,27 +328,20 @@ const handleQuery = () => {
 const resetQuery = () => {
   queryParams.tableName = ''
   queryParams.tableComment = ''
-  queryParams.className = ''
-  queryParams.moduleName = ''
-  queryParams.businessName = ''
-  queryParams.functionName = ''
-  queryParams.author = ''
-  queryParams.genType = undefined
-  queryParams.status = undefined
-  queryParams.dateRange = undefined
-  queryParams.pageIndex = 1
+  queryParams.beginTime = undefined
+  queryParams.endTime = undefined
   fetchData()
 }
 
 /** 表格变化事件 */
 const handleTableChange = (pag: TablePaginationConfig) => {
-  pagination.current = pag.current ?? 1
-  pagination.pageSize = pag.pageSize ?? 10
+  queryParams.pageIndex = pag.current ?? 1
+  queryParams.pageSize = pag.pageSize ?? 10
   fetchData()
 }
 
 /** 行点击事件 */
-const handleRowClick = (record: HbtGenTableDefineDto) => {
+const handleRowClick = (record: HbtGenTableDefine) => {
   selectedTableId.value = record.id
 }
 
@@ -361,14 +364,14 @@ const handleEditSelected = () => {
 }
 
 /** 编辑按钮操作 */
-const handleEdit = (record: HbtGenTableDefineDto) => {
+const handleEdit = (record: HbtGenTableDefine) => {
   selectedTableId.value = record.id
   formTitle.value = '修改代码生成表定义'
   formVisible.value = true
 }
 
 /** 删除按钮操作 */
-const handleDelete = async (record: HbtGenTableDefineDto) => {
+const handleDelete = async (record: HbtGenTableDefine) => {
   Modal.confirm({
     title: '确认删除',
     content: `是否确认删除表名为"${record.tableName}"的数据项？`,
@@ -413,13 +416,13 @@ const handleBatchDelete = async () => {
 }
 
 /** 同步按钮操作 */
-const handleSync = async (record: HbtGenTableDefineDto) => {
+const handleSync = async (record: HbtGenTableDefine) => {
   Modal.confirm({
     title: '确认同步',
     content: '是否确认同步表结构？',
     async onOk() {
       try {
-        await syncTable(record.id)
+        await syncTableDefine(record.id)
         message.success('同步成功')
         fetchData()
       } catch (error) {
@@ -430,13 +433,13 @@ const handleSync = async (record: HbtGenTableDefineDto) => {
 }
 
 /** 初始化按钮操作 */
-const handleInitialize = async (record: HbtGenTableDefineDto) => {
+const handleInitialize = async (record: HbtGenTableDefine) => {
   Modal.confirm({
     title: '确认初始化',
     content: `是否确认初始化表名为"${record.tableName}"的表结构？`,
     async onOk() {
       try {
-        await initializeTable(record)
+        await initializeTableDefine(record)
         message.success('初始化成功')
         fetchData()
       } catch (error) {
@@ -449,8 +452,8 @@ const handleInitialize = async (record: HbtGenTableDefineDto) => {
 /** 导入按钮操作 */
 const handleImport = async () => {
   try {
-    const res = await getTemplate()
-    const blob = new Blob([res.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
+    const res = await getTableDefineTemplate()
+    const blob = res.data.data
     const link = document.createElement('a')
     link.href = window.URL.createObjectURL(blob)
     link.download = '代码生成表定义导入模板.xlsx'
@@ -466,7 +469,7 @@ const handleImport = async () => {
 const handleExport = async () => {
   try {
     const res = await exportTableDefine()
-    const blob = new Blob([res.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
+    const blob = res.data.data
     const link = document.createElement('a')
     link.href = window.URL.createObjectURL(blob)
     link.download = `代码生成表定义_${new Date().toLocaleString()}.xlsx`

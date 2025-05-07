@@ -51,7 +51,7 @@ namespace Lean.Hbt.Infrastructure.Swagger
             }
             catch (Exception ex)
             {
-                _logger.Error("处理枚举架构过滤器时发生错误");
+                _logger.Error("处理枚举架构过滤器时发生错误", ex.Message);
             }
         }
 

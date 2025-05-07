@@ -70,7 +70,7 @@ public class HbtLocalizationService : IHbtLocalizationService
         }
         catch (Exception ex)
         {
-            _logger.Error("获取翻译失败: {Key}", key);
+            _logger.Error("获取翻译失败: {Key}", key, ex.Message);
             return key;
         }
     }
@@ -99,7 +99,7 @@ public class HbtLocalizationService : IHbtLocalizationService
             catch (Exception ex)
             {
                 // Redis连接失败时记录警告并继续
-                _logger.Warn("从分布式缓存获取翻译失败，将从翻译服务获取: {LangCode}, {Key}", langCode, key);
+                _logger.Warn("从分布式缓存获取翻译失败，将从翻译服务获取: {LangCode}, {Key}", langCode, key, ex.Message);
             }
 
             // 2. 从翻译服务获取
@@ -121,7 +121,7 @@ public class HbtLocalizationService : IHbtLocalizationService
                 catch (Exception ex)
                 {
                     // Redis连接失败时只记录警告
-                    _logger.Warn("保存翻译到分布式缓存失败: {LangCode}, {Key}", langCode, key);
+                    _logger.Warn("保存翻译到分布式缓存失败: {LangCode}, {Key}", langCode, key, ex.Message);
                 }
                 return args.Length > 0 ? string.Format(translation, args) : translation;
             }
@@ -137,7 +137,7 @@ public class HbtLocalizationService : IHbtLocalizationService
         }
         catch (Exception ex)
         {
-            _logger.Error("获取翻译失败: {LangCode}, {Key}", langCode, key);
+            _logger.Error("获取翻译失败: {LangCode}, {Key}", langCode, key, ex.Message);
             return key;
         }
     }
@@ -205,7 +205,7 @@ public class HbtLocalizationService : IHbtLocalizationService
             catch (Exception ex)
             {
                 // Redis连接失败时记录警告并继续
-                _logger.Warn("从分布式缓存获取语言列表失败，将从翻译服务获取");
+                _logger.Warn("从分布式缓存获取语言列表失败，将从翻译服务获取", ex.Message);
             }
 
             // 2. 从翻译服务获取
@@ -233,7 +233,7 @@ public class HbtLocalizationService : IHbtLocalizationService
                         }
                         catch (Exception ex)
                         {
-                            _logger.Warn("异步保存语言列表到缓存失败");
+                            _logger.Warn("异步保存语言列表到缓存失败", ex.Message);
                         }
                     });
 
@@ -242,7 +242,7 @@ public class HbtLocalizationService : IHbtLocalizationService
             }
             catch (Exception ex)
             {
-                _logger.Warn("从翻译服务获取语言列表失败，使用默认语言列表");
+                _logger.Warn("从翻译服务获取语言列表失败，使用默认语言列表", ex.Message);
             }
 
             // 3. 使用默认支持的语言列表
@@ -250,7 +250,7 @@ public class HbtLocalizationService : IHbtLocalizationService
         }
         catch (Exception ex)
         {
-            _logger.Error("获取支持的语言列表失败");
+            _logger.Error("获取支持的语言列表失败", ex.Message);
             return _defaultSupportedLanguages;
         }
     }
@@ -281,7 +281,7 @@ public class HbtLocalizationService : IHbtLocalizationService
         }
         catch (Exception ex)
         {
-            _logger.Error("设置语言失败: {LangCode}", langCode);
+            _logger.Error("设置语言失败: {LangCode}", langCode, ex.Message);
             throw;
         }
     }
@@ -298,7 +298,7 @@ public class HbtLocalizationService : IHbtLocalizationService
         }
         catch (Exception ex)
         {
-            _logger.Error("重新加载翻译失败");
+            _logger.Error("重新加载翻译失败", ex.Message);
             throw;
         }
     }
@@ -343,7 +343,7 @@ public class HbtLocalizationService : IHbtLocalizationService
         }
         catch (Exception ex)
         {
-            _logger.Error("刷新本地化缓存失败");
+            _logger.Error("刷新本地化缓存失败", ex.Message);
             throw;
         }
     }

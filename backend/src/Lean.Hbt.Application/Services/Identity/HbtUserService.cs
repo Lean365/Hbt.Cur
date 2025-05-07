@@ -36,11 +36,6 @@ namespace Lean.Hbt.Application.Services.Identity
         private readonly IHbtRepository<HbtUserDept> _userDeptRepository;
         private readonly IHbtPasswordPolicy _passwordPolicy;
         private readonly IHbtRepository<HbtTenant> _tenantRepository;
-        private readonly IHbtRepository<HbtRole> _roleRepository;
-        private readonly IHbtRepository<HbtPost> _postRepository;
-        private readonly IHbtRepository<HbtDept> _deptRepository;
-        private readonly IHbtCurrentTenant _currentTenant;
-        private readonly IHbtCurrentUser _currentUser;
 
         /// <summary>
         /// 构造函数
@@ -53,12 +48,9 @@ namespace Lean.Hbt.Application.Services.Identity
             IHbtRepository<HbtUserDept> userDeptRepository,
             IHbtPasswordPolicy passwordPolicy,
             IHbtRepository<HbtTenant> tenantRepository,
-            IHbtRepository<HbtRole> roleRepository,
-            IHbtRepository<HbtPost> postRepository,
-            IHbtRepository<HbtDept> deptRepository,
-            IHbtCurrentTenant tenantContext,
             IHbtCurrentUser currentUser,
-            IHttpContextAccessor httpContextAccessor) : base(logger, httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor,
+            IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
         {
             _userRepository = userRepository;
             _userRoleRepository = userRoleRepository;
@@ -66,11 +58,6 @@ namespace Lean.Hbt.Application.Services.Identity
             _userDeptRepository = userDeptRepository;
             _passwordPolicy = passwordPolicy;
             _tenantRepository = tenantRepository;
-            _roleRepository = roleRepository;
-            _postRepository = postRepository;
-            _deptRepository = deptRepository;
-            _currentTenant = tenantContext;
-            _currentUser = currentUser;
         }
 
         /// <summary>

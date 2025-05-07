@@ -105,7 +105,7 @@ function generateDeviceFingerprint(): string {
   }
 
   // 输出特征值
-  console.log('设备特征:', features)
+  // console.log('设备特征:', features)
 
   // 转换为特征字符串
   const featureString = Object.values(features).join('|')

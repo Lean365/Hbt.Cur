@@ -251,7 +251,7 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
       },
       proxy: {
         '/api': {
-          target: env.VITE_PROXY_TARGET,
+          target: env.VITE_API_BASE_URL,
           changeOrigin: true,
           secure: false,
           ws: true,
@@ -262,7 +262,7 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
               console.log('\x1b[31m[vite] 后端服务连接失败\x1b[0m')
               console.log('\x1b[31m[vite] 错误信息: ' + err.code + '\x1b[0m')
               console.log('\x1b[33m[vite] 请检查后端服务是否已启动\x1b[0m')
-              console.log('\x1b[33m[vite] 后端服务地址: ' + env.VITE_PROXY_TARGET + '\x1b[0m')
+              console.log('\x1b[33m[vite] 后端服务地址: ' + env.VITE_API_BASE_URL + '\x1b[0m')
               console.log('\n')
             })
           }

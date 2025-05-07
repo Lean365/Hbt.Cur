@@ -54,8 +54,6 @@
       :edit-permission="['routine:mail:edit']"
       :show-delete="true"
       :delete-permission="['routine:mail:delete']"
-      :show-import="true"
-      :import-permission="['routine:mail:import']"
       :show-export="true"
       :export-permission="['routine:mail:export']"
       :disabled-edit="selectedRowKeys.length !== 1"
@@ -63,8 +61,6 @@
       @add="handleAdd"
       @edit="handleEditSelected"
       @delete="handleBatchDelete"
-      @import="handleImport"
-      @template="handleTemplate"
       @export="handleExport"
       @refresh="fetchData"
       @column-setting="handleColumnSetting"
@@ -150,14 +146,6 @@
       v-model:open="sendMailVisible"
       :mail-id="selectedMailId"
       @success="handleSendSuccess"
-    />
-
-    <!-- 导入对话框 -->
-    <hbt-import-dialog
-      v-model:visible="importVisible"
-      :upload-url="'/api/HbtMail/import'"
-      :template-name="'mail_template.xlsx'"
-      @success="handleImportSuccess"
     />
 
     <!-- 列设置抽屉 -->
@@ -325,9 +313,6 @@ const selectedMailId = ref<number | bigint>()
 // 发送邮件表单
 const sendMailVisible = ref(false)
 
-// 导入对话框
-const importVisible = ref(false)
-
 // 列设置相关
 const columnSettingVisible = ref(false)
 const defaultColumns = columns
@@ -345,20 +330,18 @@ const columnSettings = ref<Record<string, boolean>>({})
 
 // 获取表格数据
 const fetchData = async () => {
-  loading.value = true
   try {
     const res = await getMailList(queryParams.value)
-    if (res.code === 200) {
-      tableData.value = res.data.rows
-      total.value = res.data.totalNum
+    if (res.data.code === 200) {
+      tableData.value = res.data.data.rows
+      total.value = res.data.data.totalNum
     } else {
-      message.error(res.msg || t('common.failed'))
+      message.error(res.data.msg || '获取数据失败')
     }
   } catch (error) {
     console.error(error)
-    message.error(t('common.failed'))
+    message.error('获取数据失败')
   }
-  loading.value = false
 }
 
 // 查询方法
@@ -418,11 +401,11 @@ const handleEdit = (record: HbtMailDto) => {
 const handleDelete = async (record: HbtMailDto) => {
   try {
     const res = await deleteMail(record.mailId)
-    if (res.code === 200) {
+    if (res.data.code === 200) {
       message.success('删除成功')
       fetchData()
     } else {
-      message.error(res.msg || '删除失败')
+      message.error(res.data.msg || '删除失败')
     }
   } catch (error) {
     console.error(error)
@@ -432,31 +415,26 @@ const handleDelete = async (record: HbtMailDto) => {
 
 // 处理批量删除
 const handleBatchDelete = async () => {
-  if (!selectedRowKeys.value.length) {
-    message.warning('请至少选择一条记录')
-    return
-  }
-  
   try {
     const mailIds = selectedRowKeys.value.map(id => Number(id))
     const res = await batchDeleteMail(mailIds)
-    if (res.code === 200) {
-      message.success('批量删除成功')
-      selectedRowKeys.value = []
+    if (res.data.code === 200) {
+      message.success('删除成功')
       fetchData()
     } else {
-      message.error(res.msg || '批量删除失败')
+      message.error(res.data.msg || '删除失败')
     }
   } catch (error) {
     console.error(error)
-    message.error('批量删除失败')
+    message.error('删除失败')
   }
 }
 
 // 处理导出
 const handleExport = async () => {
   try {
-    const blob = await exportMailList(queryParams.value)
+    const res = await exportMailList(queryParams.value)
+    const blob = new Blob([res.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
     const url = window.URL.createObjectURL(blob)
     const link = document.createElement('a')
     link.href = url
@@ -469,16 +447,6 @@ const handleExport = async () => {
     console.error(error)
     message.error('导出失败')
   }
-}
-
-// 处理导入
-const handleImport = () => {
-  // 实现导入逻辑
-}
-
-// 处理下载模板
-const handleTemplate = () => {
-  // 实现下载模板逻辑
 }
 
 // 处理表单提交成功
@@ -557,13 +525,6 @@ const handleSizeChange = (size: number) => {
 
 // 详情对话框
 const detailVisible = ref(false)
-
-// 处理导入成功
-const handleImportSuccess = () => {
-  importVisible.value = false
-  message.success('导入成功')
-  fetchData()
-}
 
 onMounted(() => {
   // 加载字典数据

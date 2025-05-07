@@ -1,15 +1,18 @@
+#nullable enable
+
 //===================================================================
 // 项目名 : Lean.Hbt
 // 文件名 : HbtExceptionLogService.cs
 // 创建者 : Lean365
-// 创建时间: 2024-01-20 16:30
+// 创建时间: 2024-03-20
 // 版本号 : V0.0.1
-// 描述   : 异常日志服务实现
+// 描述    : 异常日志服务实现
 //===================================================================
 
 using System.Linq.Expressions;
 using Lean.Hbt.Application.Dtos.Audit;
 using Lean.Hbt.Domain.Entities.Audit;
+using Lean.Hbt.Domain.IServices.Extensions;
 using Microsoft.AspNetCore.Http;
 
 namespace Lean.Hbt.Application.Services.Audit
@@ -28,10 +31,17 @@ namespace Lean.Hbt.Application.Services.Audit
         /// <summary>
         /// 构造函数
         /// </summary>
+        /// <param name="exceptionLogRepository">异常日志仓储</param>
+        /// <param name="logger">日志服务</param>
+        /// <param name="httpContextAccessor">HTTP上下文访问器</param>
+        /// <param name="currentUser">当前用户服务</param>
+        /// <param name="localization">本地化服务</param>
         public HbtExceptionLogService(
             IHbtRepository<HbtExceptionLog> exceptionLogRepository,
             IHbtLogger logger,
-            IHttpContextAccessor httpContextAccessor) : base(logger, httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor,
+            IHbtCurrentUser currentUser,
+            IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
         {
             _exceptionLogRepository = exceptionLogRepository ?? throw new ArgumentNullException(nameof(exceptionLogRepository));
         }

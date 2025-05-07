@@ -41,7 +41,7 @@
         showQuickJumper: true,
         showTotal: (total: number) => `共 ${total} 条`
       }"
-      :row-key="(record: HbtGenConfigDto) => String(record.id)"
+      :row-key="(record: HbtGenConfig) => String(record.id)"
       v-model:selectedRowKeys="selectedRowKeys"
       :row-selection="{
         type: 'checkbox',
@@ -65,9 +65,9 @@
       </template>
     </hbt-table>
 
-    <!-- 添加/修改配置对话框 -->
+    <!-- 新增/编辑表单 -->
     <config-form
-      v-model:visible="formVisible"
+      v-model:open="formVisible"
       :title="formTitle"
       :config-id="selectedConfigId"
       @success="handleSuccess"
@@ -100,7 +100,7 @@ import { useI18n } from 'vue-i18n'
 import { message } from 'ant-design-vue'
 import type { TablePaginationConfig } from 'ant-design-vue'
 import type { QueryField } from '@/types/components/query'
-import type { HbtGenConfigDto, HbtGenConfigQuery, HbtGenConfigPagedResult } from '@/types/generator/config'
+import type { HbtGenConfig, HbtGenConfigQuery, HbtGenConfigPageResult } from '@/types/generator/genConfig'
 import { 
   getPagedList,
   getGenConfig,
@@ -234,15 +234,15 @@ const columnSettings = ref<Record<string, boolean>>(
 
 // 状态定义
 const loading = ref(false)
-const tableData = ref<HbtGenConfigDto[]>([])
+const tableData = ref<HbtGenConfig[]>([])
 const total = ref(0)
 const queryParams = ref<HbtGenConfigQuery>({
   pageIndex: 1,
   pageSize: 10,
-  tableName: '',
-  author: '',
-  moduleName: '',
-  businessName: ''
+  templateName: '',
+  templateType: undefined,
+  genType: undefined,
+  status: undefined
 })
 const selectedRowKeys = ref<(string | number)[]>([])
 const selectedConfigId = ref<number>()
@@ -261,11 +261,11 @@ const fetchData = async () => {
   loading.value = true
   try {
     const res = await getPagedList(queryParams.value)
-    if (res.code === 200) {
-      tableData.value = res.data.rows
-      total.value = res.data.totalNum
+    if (res.data.code === 200) {
+      tableData.value = res.data.data.rows
+      total.value = res.data.data.totalNum
     } else {
-      message.error(res.msg || '获取数据失败')
+      message.error(res.data.msg || '获取数据失败')
     }
   } catch (error) {
     console.error('获取数据失败:', error)
@@ -287,10 +287,10 @@ const resetQuery = () => {
   queryParams.value = {
     pageIndex: 1,
     pageSize: 10,
-    tableName: '',
-    author: '',
-    moduleName: '',
-    businessName: ''
+    templateName: '',
+    templateType: undefined,
+    genType: undefined,
+    status: undefined
   }
   selectedRowKeys.value = []
   handleQuery()
@@ -304,7 +304,7 @@ const handleTableChange = (pagination: TablePaginationConfig) => {
 }
 
 /** 行点击事件 */
-const handleRowClick = (record: HbtGenConfigDto) => {
+const handleRowClick = (record: HbtGenConfig) => {
   selectedConfigId.value = record.id
 }
 
@@ -327,25 +327,25 @@ const handleEditSelected = () => {
 }
 
 /** 编辑按钮操作 */
-const handleEdit = (record: HbtGenConfigDto) => {
+const handleEdit = (record: HbtGenConfig) => {
   selectedConfigId.value = record.id
   formTitle.value = '修改生成配置'
   formVisible.value = true
 }
 
 /** 删除按钮操作 */
-const handleDelete = async (record: HbtGenConfigDto) => {
+const handleDelete = async (record: HbtGenConfig) => {
   if (!record.id) {
     message.error('无效的配置ID')
     return
   }
   try {
     const res = await deleteGenConfig(record.id)
-    if (res.code === 200) {
+    if (res.data.code === 200) {
       message.success('删除成功')
       fetchData()
     } else {
-      message.error(res.msg || '删除失败')
+      message.error(res.data.msg || '删除失败')
     }
   } catch (error) {
     console.error('删除失败:', error)
@@ -361,12 +361,12 @@ const handleBatchDelete = async () => {
   }
   try {
     const res = await batchDeleteGenConfig(selectedRowKeys.value.map(Number))
-    if (res.code === 200) {
+    if (res.data.code === 200) {
       message.success('批量删除成功')
       selectedRowKeys.value = []
       fetchData()
     } else {
-      message.error(res.msg || '批量删除失败')
+      message.error(res.data.msg || '批量删除失败')
     }
   } catch (error) {
     console.error('批量删除失败:', error)

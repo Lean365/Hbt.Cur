@@ -23,6 +23,10 @@ using SqlSugar;
 using Mapster;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Hosting;
+using Lean.Hbt.Common.Utils;
+using Lean.Hbt.Domain.Utils;
+using Lean.Hbt.Common.Constants;
 
 namespace Lean.Hbt.Application.Services.Routine
 {
@@ -36,6 +40,7 @@ namespace Lean.Hbt.Application.Services.Routine
     public class HbtFileService : HbtBaseService, IHbtFileService
     {
         private readonly IHbtRepository<HbtFile> _fileRepository;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
         /// <summary>
         /// 构造函数
@@ -43,12 +48,19 @@ namespace Lean.Hbt.Application.Services.Routine
         /// <param name="logger">日志记录器</param>
         /// <param name="fileRepository">文件仓储</param>
         /// <param name="httpContextAccessor">HTTP上下文访问器</param>
+        /// <param name="currentUser">当前用户服务</param>
+        /// <param name="localization">本地化服务</param>
+        /// <param name="webHostEnvironment">Web主机环境</param>
         public HbtFileService(
             IHbtLogger logger,
             IHbtRepository<HbtFile> fileRepository,
-            IHttpContextAccessor httpContextAccessor) : base(logger, httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor,
+            IHbtCurrentUser currentUser,
+            IHbtLocalizationService localization,
+            IWebHostEnvironment webHostEnvironment) : base(logger, httpContextAccessor, currentUser, localization)
         {
             _fileRepository = fileRepository;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         /// <summary>
@@ -58,40 +70,44 @@ namespace Lean.Hbt.Application.Services.Routine
         /// <returns>返回分页结果</returns>
         public async Task<HbtPagedResult<HbtFileDto>> GetListAsync(HbtFileQueryDto query)
         {
-            var exp = Expressionable.Create<HbtFile>();
+            _logger.Info("开始查询文件列表，查询条件：{@Query}", query);
 
-            if (!string.IsNullOrEmpty(query?.FileOriginalName))
-                exp.And(x => x.FileOriginalName.Contains(query.FileOriginalName));
-
-            if (!string.IsNullOrEmpty(query?.FileType))
-                exp.And(x => x.FileType.Contains(query.FileType));
-
-            if (query?.FileStorageType.HasValue == true)
-                exp.And(x => x.FileStorageType == query.FileStorageType.Value);
-
-            if (query?.FileStatus.HasValue == true)
-                exp.And(x => x.FileStatus == query.FileStatus.Value);
-
-            if (query?.StartTime.HasValue == true)
-                exp.And(x => x.CreateTime >= query.StartTime.Value);
-
-            if (query?.EndTime.HasValue == true)
-                exp.And(x => x.CreateTime <= query.EndTime.Value);
+            var predicate = QueryExpression(query);
+            _logger.Info("生成的查询表达式：{@Predicate}", predicate);
 
             var result = await _fileRepository.GetPagedListAsync(
-                exp.ToExpression(),
+                predicate,
                 query?.PageIndex ?? 1,
                 query?.PageSize ?? 10,
                 x => x.Id,
                 OrderByType.Asc);
 
-            return new HbtPagedResult<HbtFileDto>
+            _logger.Info("查询结果：总数={TotalNum}, 当前页={PageIndex}, 每页大小={PageSize}, 数据行数={RowCount}",
+                result.TotalNum,
+                query?.PageIndex ?? 1,
+                query?.PageSize ?? 10,
+                result.Rows?.Count ?? 0);
+
+            if (result.Rows != null && result.Rows.Any())
+            {
+                _logger.Info("第一条数据：{@FirstRow}", result.Rows.First());
+            }
+
+            var dtoResult = new HbtPagedResult<HbtFileDto>
             {
                 TotalNum = result.TotalNum,
                 PageIndex = query?.PageIndex ?? 1,
                 PageSize = query?.PageSize ?? 10,
                 Rows = result.Rows.Adapt<List<HbtFileDto>>()
             };
+
+            _logger.Info("转换后的DTO结果：总数={TotalNum}, 当前页={PageIndex}, 每页大小={PageSize}, 数据行数={RowCount}",
+                dtoResult.TotalNum,
+                dtoResult.PageIndex,
+                dtoResult.PageSize,
+                dtoResult.Rows?.Count ?? 0);
+
+            return dtoResult;
         }
 
         /// <summary>
@@ -147,6 +163,24 @@ namespace Lean.Hbt.Application.Services.Routine
             if (file == null)
                 throw new HbtException(L("File.NotFound", fileId));
 
+            // 删除物理文件
+            if (!string.IsNullOrEmpty(file.FileName))
+            {
+                var filePath = Path.Combine(_webHostEnvironment.WebRootPath, file.FilePath);
+                if (File.Exists(filePath))
+                {
+                    try
+                    {
+                        File.Delete(filePath);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.Error("删除物理文件失败 - 文件路径: {FilePath}", filePath, ex);
+                        throw new HbtException(L("File.DeletePhysicalFileFailed", filePath), HbtConstants.ErrorCodes.ServerError, ex);
+                    }
+                }
+            }
+
             var result = await _fileRepository.DeleteAsync(file);
             return result > 0;
         }
@@ -161,8 +195,32 @@ namespace Lean.Hbt.Application.Services.Routine
             if (fileIds == null || fileIds.Length == 0)
                 throw new HbtException(L("File.SelectToDelete"));
 
-            Expression<Func<HbtFile, bool>> predicate = x => fileIds.Contains(x.Id);
-            var result = await _fileRepository.DeleteAsync(predicate);
+            var files = await _fileRepository.GetListAsync(x => fileIds.Contains(x.Id));
+            if (files == null || !files.Any())
+                throw new HbtException(L("File.NotFound"));
+
+            // 删除物理文件
+            foreach (var file in files)
+            {
+                if (!string.IsNullOrEmpty(file.FileName))
+                {
+                    var filePath = Path.Combine(_webHostEnvironment.WebRootPath, file.FilePath);
+                    if (File.Exists(filePath))
+                    {
+                        try
+                        {
+                            File.Delete(filePath);
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.Error("删除物理文件失败 - 文件路径: {FilePath}", filePath, ex);
+                            throw new HbtException(L("File.DeletePhysicalFileFailed", filePath), HbtConstants.ErrorCodes.ServerError, ex);
+                        }
+                    }
+                }
+            }
+
+            var result = await _fileRepository.DeleteRangeAsync(files);
             return result > 0;
         }
 
@@ -207,28 +265,10 @@ namespace Lean.Hbt.Application.Services.Routine
         /// <returns>返回导出的Excel文件字节数组</returns>
         public async Task<(string fileName, byte[] content)> ExportAsync(HbtFileQueryDto query, string sheetName = "文件信息")
         {
-            var predicate = Expressionable.Create<HbtFile>();
-
-            if (!string.IsNullOrEmpty(query?.FileOriginalName))
-                predicate.And(x => x.FileOriginalName.Contains(query.FileOriginalName));
-
-            if (!string.IsNullOrEmpty(query?.FileType))
-                predicate.And(x => x.FileType.Contains(query.FileType));
-
-            if (query?.FileStorageType.HasValue == true)
-                predicate.And(x => x.FileStorageType == query.FileStorageType.Value);
-
-            if (query?.FileStatus.HasValue == true)
-                predicate.And(x => x.FileStatus == query.FileStatus.Value);
-
-            if (query?.StartTime.HasValue == true)
-                predicate.And(x => x.CreateTime >= query.StartTime.Value);
-
-            if (query?.EndTime.HasValue == true)
-                predicate.And(x => x.CreateTime <= query.EndTime.Value);
+            var predicate = QueryExpression(query);
 
             var files = await _fileRepository.AsQueryable()
-                .Where(predicate.ToExpression())
+                .Where(predicate)
                 .OrderByDescending(x => x.CreateTime)
                 .ToListAsync();
 
@@ -251,38 +291,62 @@ namespace Lean.Hbt.Application.Services.Routine
         /// 上传文件
         /// </summary>
         /// <param name="file">文件流</param>
-        /// <param name="fileName">文件名</param>
+        /// <param name="input">上传参数</param>
         /// <returns>返回上传结果</returns>
-        public async Task<HbtFileDto> UploadAsync(Stream file, string fileName)
+        public async Task<HbtFileDto> UploadAsync(Stream file, HbtFileUploadDto input)
         {
+            if (file == null)
+                throw new HbtException(L("File.FileStreamRequired"));
+
+            if (input == null)
+                throw new HbtException(L("File.UploadParamRequired"));
+
+            if (string.IsNullOrEmpty(input.FileOriginalName))
+                throw new HbtException(L("File.FileNameRequired"));
+
+            if (string.IsNullOrEmpty(input.FileExtension))
+                throw new HbtException(L("File.FileExtensionRequired"));
+
+            if (string.IsNullOrEmpty(input.FileType))
+                throw new HbtException(L("File.FileTypeRequired"));
+
+            // 检查文件名是否已存在
+            await HbtValidateUtils.ValidateFieldExistsAsync(_fileRepository, "FileOriginalName", input.FileOriginalName);
+
             // 1. 生成文件信息
-            var fileInfo = new FileInfo(fileName);
             var fileEntity = new HbtFile
             {
-                FileOriginalName = fileName,
-                FileExtension = fileInfo.Extension,
-                FileName = $"{Guid.NewGuid():N}{fileInfo.Extension}",
-                FileType = fileInfo.Extension.TrimStart('.').ToLower(),
-                FileSize = file.Length,
-                FileStorageType = 0, // 本地存储
-                FileStatus = 1, // 正式文件
+                FileOriginalName = input.FileOriginalName,
+                FileExtension = input.FileExtension,
+                FileName = input.FileName,
+                FilePath = input.FilePath,
+                FileType = input.FileType,
+                FileSize = input.FileSize,
+                FileStorageType = input.FileStorageType,
+                FileStorageLocation = input.FileStorageLocation,
+                FileAccessUrl = input.FileAccessUrl,
+                FileMd5 = input.FileMd5,
+                FileStatus = input.FileStatus,
                 FileDownloadCount = 0
             };
 
-            // 2. 保存文件
-            var savePath = Path.Combine("uploads", DateTime.Now.ToString("yyyy/MM/dd"));
+            // 2. 保存文件信息到数据库
+            var fileId = await _fileRepository.CreateAsync(fileEntity);
+            fileEntity.Id = fileId;
+
+            // 3. 保存文件
+            var savePath = Path.Combine(_webHostEnvironment.WebRootPath, input.FilePath);
             Directory.CreateDirectory(savePath);
-            fileEntity.FilePath = Path.Combine(savePath, fileEntity.FileName);
+            fileEntity.FilePath = Path.Combine(input.FilePath, fileEntity.FileName);
             fileEntity.FileStorageLocation = savePath;
             fileEntity.FileAccessUrl = $"/api/file/download/{fileEntity.Id}";
-
-            using (var fileStream = new FileStream(fileEntity.FilePath, FileMode.Create))
+            using (var fileStream = new FileStream(Path.Combine(savePath, fileEntity.FileName), FileMode.Create))
             {
                 await file.CopyToAsync(fileStream);
             }
 
-            // 3. 保存文件信息到数据库
-            await _fileRepository.CreateAsync(fileEntity);
+            // 4. 更新文件信息
+            await _fileRepository.UpdateAsync(fileEntity);
 
             return fileEntity.Adapt<HbtFileDto>();
         }
@@ -329,6 +393,36 @@ namespace Lean.Hbt.Application.Services.Routine
                 ".txt" => "text/plain",
                 _ => "application/octet-stream"
             };
+        }
+
+        /// <summary>
+        /// 构建查询表达式
+        /// </summary>
+        /// <param name="query">查询条件</param>
+        /// <returns>查询表达式</returns>
+        private Expression<Func<HbtFile, bool>> QueryExpression(HbtFileQueryDto query)
+        {
+            var exp = Expressionable.Create<HbtFile>();
+
+            if (!string.IsNullOrEmpty(query?.FileOriginalName))
+                exp.And(x => x.FileOriginalName.Contains(query.FileOriginalName));
+
+            if (!string.IsNullOrEmpty(query?.FileType))
+                exp.And(x => x.FileType.Contains(query.FileType));
+
+            if (query?.FileStorageType.HasValue == true && query.FileStorageType.Value != -1)
+                exp.And(x => x.FileStorageType == query.FileStorageType.Value);
+
+            if (query?.FileStatus.HasValue == true && query.FileStatus.Value != -1)
+                exp.And(x => x.FileStatus == query.FileStatus.Value);
+
+            if (query?.StartTime.HasValue == true)
+                exp.And(x => x.CreateTime >= query.StartTime.Value);
+
+            if (query?.EndTime.HasValue == true)
+                exp.And(x => x.CreateTime <= query.EndTime.Value);
+
+            return exp.ToExpression();
         }
     }
 } 

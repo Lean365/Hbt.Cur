@@ -1,16 +1,17 @@
 import request from '@/utils/request'
 import type { HbtApiResponse } from '@/types/common'
 import type { 
-  WorkflowNodeQuery, 
-  WorkflowNode,
-  WorkflowNodeCreate,
-  WorkflowNodeUpdate
+  HbtWorkflowNodeQuery, 
+  HbtWorkflowNode,
+  HbtWorkflowNodeCreate,
+  HbtWorkflowNodeUpdate,
+  HbtWorkflowNodePagedResult
 } from '@/types/workflow/workflowNode'
 
 // 获取工作流节点列表
-export function getWorkflowNodeList(params: WorkflowNodeQuery) {
-  return request<HbtApiResponse<WorkflowNode[]>>({
-    url: '/api/HbtWorkflowNode',
+export function getWorkflowNodeList(params: HbtWorkflowNodeQuery) {
+  return request<HbtApiResponse<HbtWorkflowNodePagedResult>>({
+    url: '/api/HbtWorkflowNode/list',
     method: 'get',
     params
   })
@@ -18,14 +19,14 @@ export function getWorkflowNodeList(params: WorkflowNodeQuery) {
 
 // 获取工作流节点详情
 export function getWorkflowNode(id: number) {
-  return request<HbtApiResponse<WorkflowNode>>({
+  return request<HbtApiResponse<HbtWorkflowNode>>({
     url: `/api/HbtWorkflowNode/${id}`,
     method: 'get'
   })
 }
 
 // 创建工作流节点
-export function createWorkflowNode(data: WorkflowNodeCreate) {
+export function createWorkflowNode(data: HbtWorkflowNodeCreate) {
   return request<HbtApiResponse<any>>({
     url: '/api/HbtWorkflowNode',
     method: 'post',
@@ -34,7 +35,7 @@ export function createWorkflowNode(data: WorkflowNodeCreate) {
 }
 
 // 更新工作流节点
-export function updateWorkflowNode(data: WorkflowNodeUpdate) {
+export function updateWorkflowNode(data: HbtWorkflowNodeUpdate) {
   return request<HbtApiResponse<any>>({
     url: '/api/HbtWorkflowNode',
     method: 'put',
@@ -75,7 +76,7 @@ export function importWorkflowNode(file: File, sheetName: string = 'Sheet1') {
 }
 
 // 导出工作流节点
-export function exportWorkflowNode(params: WorkflowNodeQuery, sheetName: string = 'Sheet1') {
+export function exportWorkflowNode(params: HbtWorkflowNodeQuery, sheetName: string = 'Sheet1') {
   return request({
     url: '/api/HbtWorkflowNode/export',
     method: 'get',
@@ -96,7 +97,7 @@ export function getWorkflowNodeTemplate(sheetName: string = 'Sheet1') {
 
 // 获取工作流定义的所有节点
 export function getNodesByWorkflowDefinition(workflowDefinitionId: number) {
-  return request<HbtApiResponse<WorkflowNode[]>>({
+  return request<HbtApiResponse<HbtWorkflowNode[]>>({
     url: `/api/HbtWorkflowNode/definition/${workflowDefinitionId}`,
     method: 'get'
   })
@@ -104,7 +105,7 @@ export function getNodesByWorkflowDefinition(workflowDefinitionId: number) {
 
 // 获取指定节点的子节点列表
 export function getChildNodes(nodeId: number) {
-  return request<HbtApiResponse<WorkflowNode[]>>({
+  return request<HbtApiResponse<HbtWorkflowNode[]>>({
     url: `/api/HbtWorkflowNode/${nodeId}/children`,
     method: 'get'
   })

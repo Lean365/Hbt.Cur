@@ -13,24 +13,33 @@ using Lean.Hbt.Application.Dtos.Workflow;
 using Lean.Hbt.Domain.Data;
 using Lean.Hbt.Domain.Entities.Workflow;
 using Lean.Hbt.Domain.IServices.Extensions;
+using Microsoft.AspNetCore.Http;
 
 namespace Lean.Hbt.Application.Services.Workflow
 {
     /// <summary>
     /// 工作流定时任务服务实现
     /// </summary>
-    public class HbtWorkflowScheduledTaskService : IHbtWorkflowScheduledTaskService
+    public class HbtWorkflowScheduledTaskService : HbtBaseService, IHbtWorkflowScheduledTaskService
     {
         private readonly IHbtDbContext _dbContext;
-        private readonly IHbtLogger _logger;
 
         /// <summary>
         /// 构造函数
         /// </summary>
-        public HbtWorkflowScheduledTaskService(IHbtDbContext dbContext, IHbtLogger logger)
+        /// <param name="logger">日志服务</param>
+        /// <param name="dbContext">数据库上下文</param>
+        /// <param name="httpContextAccessor">HTTP上下文访问器</param>
+        /// <param name="currentUser">当前用户服务</param>
+        /// <param name="localization">本地化服务</param>
+        public HbtWorkflowScheduledTaskService(
+            IHbtLogger logger,
+            IHbtDbContext dbContext,
+            IHttpContextAccessor httpContextAccessor,
+            IHbtCurrentUser currentUser,
+            IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
         {
             _dbContext = dbContext;
-            _logger = logger;
         }
 
         /// <inheritdoc/>
@@ -55,7 +64,7 @@ namespace Lean.Hbt.Application.Services.Workflow
             }
             catch (Exception ex)
             {
-                _logger.Error($"创建定时任务失败: {ex.Message}", ex);
+                _logger.Error(L("WorkflowScheduledTask.Create.Failed"), ex);
                 throw;
             }
         }
@@ -70,13 +79,13 @@ namespace Lean.Hbt.Application.Services.Workflow
 
                 if (task == null)
                 {
-                    _logger.Warn($"未找到ID为{taskId}的定时任务");
+                    _logger.Warn(L("WorkflowScheduledTask.NotFound", taskId));
                     return false;
                 }
 
                 if (task.Status != 0) // 待处理
                 {
-                    _logger.Warn($"定时任务{taskId}状态为{task.Status},无法取消");
+                    _logger.Warn(L("WorkflowScheduledTask.CannotCancel", taskId, task.Status));
                     return false;
                 }
 
@@ -93,7 +102,7 @@ namespace Lean.Hbt.Application.Services.Workflow
             }
             catch (Exception ex)
             {
-                _logger.Error($"取消定时任务失败: {ex.Message}", ex);
+                _logger.Error(L("WorkflowScheduledTask.Cancel.Failed"), ex);
                 throw;
             }
         }
@@ -108,13 +117,13 @@ namespace Lean.Hbt.Application.Services.Workflow
 
                 if (task == null)
                 {
-                    _logger.Warn($"未找到ID为{taskId}的定时任务");
+                    _logger.Warn(L("WorkflowScheduledTask.NotFound", taskId));
                     return false;
                 }
 
                 if (task.Status != 0) // 待处理
                 {
-                    _logger.Warn($"定时任务{taskId}状态为{task.Status},无法执行");
+                    _logger.Warn(L("WorkflowScheduledTask.CannotExecute", taskId, task.Status));
                     return false;
                 }
 
@@ -155,7 +164,7 @@ namespace Lean.Hbt.Application.Services.Workflow
                             break;
 
                         default:
-                            throw new NotSupportedException($"不支持的任务类型: {task.TaskType}");
+                            throw new NotSupportedException(L("WorkflowScheduledTask.UnsupportedTaskType", task.TaskType));
                     }
 
                     // 更新任务状态为已完成
@@ -164,7 +173,7 @@ namespace Lean.Hbt.Application.Services.Workflow
                 }
                 catch (Exception ex)
                 {
-                    _logger.Error($"执行定时任务{taskId}失败: {ex.Message}", ex);
+                    _logger.Error(L("WorkflowScheduledTask.Execute.Failed", taskId), ex);
 
                     // 更新重试次数和状态
                     if (task.RetryCount >= task.MaxRetryCount)
@@ -189,7 +198,7 @@ namespace Lean.Hbt.Application.Services.Workflow
             }
             catch (Exception ex)
             {
-                _logger.Error($"执行定时任务失败: {ex.Message}", ex);
+                _logger.Error(L("WorkflowScheduledTask.Execute.Failed"), ex);
                 throw;
             }
         }
@@ -271,7 +280,7 @@ namespace Lean.Hbt.Application.Services.Workflow
             }
             catch (Exception ex)
             {
-                _logger.Error($"清理过期定时任务失败: {ex.Message}", ex);
+                _logger.Error(L("WorkflowScheduledTask.Cleanup.Failed"), ex);
                 throw;
             }
         }

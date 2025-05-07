@@ -70,11 +70,11 @@ async function bootstrap() {
           const maxRetries = 10
           while (retryCount < maxRetries) {
             // 检查目标路由是否已注册（以 /admin/configs 为例）
-            const testRoute = router.resolve('/admin/configs')
-            if (testRoute.matched.length > 0) {
-              console.log('[应用] 动态路由注册完成')
-              break
-            }
+            // const testRoute = router.resolve('/admin/configs')
+            // if (testRoute.matched.length > 0) {
+            //   console.log('[应用] 动态路由注册完成')
+            //   break
+            // }
             await new Promise(resolve => setTimeout(resolve, 50))
             retryCount++
             if (retryCount === maxRetries) {

@@ -17,6 +17,7 @@ using Lean.Hbt.Domain.IServices.Extensions;
 using Lean.Hbt.Domain.IServices.Extensions;
 using Lean.Hbt.Domain.Repositories;
 using SqlSugar;
+using Microsoft.AspNetCore.Http;
 
 namespace Lean.Hbt.Application.Services.Workflow
 {
@@ -32,26 +33,26 @@ namespace Lean.Hbt.Application.Services.Workflow
     /// 3. 实现节点之间的父子关系管理
     /// 4. 提供节点排序功能
     /// </remarks>
-    public class HbtWorkflowNodeService : IHbtWorkflowNodeService
+    public class HbtWorkflowNodeService : HbtBaseService, IHbtWorkflowNodeService
     {
         private readonly IHbtRepository<HbtWorkflowNode> _nodeRepository;
-        private readonly IHbtLogger _logger;
-        private readonly IHbtLocalizationService _localization;
 
         /// <summary>
         /// 构造函数，注入所需依赖
         /// </summary>
-        /// <param name="nodeRepository">节点仓储接口</param>
         /// <param name="logger">日志服务</param>
+        /// <param name="nodeRepository">节点仓储接口</param>
+        /// <param name="httpContextAccessor">HTTP上下文访问器</param>
+        /// <param name="currentUser">当前用户服务</param>
         /// <param name="localization">本地化服务</param>
         public HbtWorkflowNodeService(
-            IHbtRepository<HbtWorkflowNode> nodeRepository,
             IHbtLogger logger,
-            IHbtLocalizationService localization)
+            IHbtRepository<HbtWorkflowNode> nodeRepository,
+            IHttpContextAccessor httpContextAccessor,
+            IHbtCurrentUser currentUser,
+            IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
         {
             _nodeRepository = nodeRepository;
-            _logger = logger;
-            _localization = localization;
         }
 
         /// <summary>
@@ -98,7 +99,7 @@ namespace Lean.Hbt.Application.Services.Workflow
         {
             var node = await _nodeRepository.GetByIdAsync(id);
             if (node == null)
-                throw new HbtException(_localization.L("WorkflowNode.NotFound"));
+                throw new HbtException(L("WorkflowNode.NotFound"));
 
             return node.Adapt<HbtWorkflowNodeDto>();
         }
@@ -118,9 +119,9 @@ namespace Lean.Hbt.Application.Services.Workflow
             var node = input.Adapt<HbtWorkflowNode>();
             var result = await _nodeRepository.CreateAsync(node);
             if (result <= 0)
-                throw new HbtException(_localization.L("WorkflowNode.Create.Failed"));
+                throw new HbtException(L("WorkflowNode.Create.Failed"));
 
-            _logger.Info(_localization.L("WorkflowNode.Created.Success", node.Id));
+            _logger.Info(L("WorkflowNode.Created.Success", node.Id));
             return node.Id;
         }
 

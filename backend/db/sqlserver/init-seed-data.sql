@@ -584,7 +584,7 @@ INSERT INTO hbt_id_menu (
     delete_by, delete_time, is_deleted
 ) VALUES
 ('系统配置', 'menu.admin.config', @AdminMenuId, 1,
- 'config', 'admin/config/index', NULL, 0,
+ 'configs', 'admin/config/index', NULL, 0,
  0, 1, 0, 0,
  'admin:config:list', 'ToolOutlined', 0, '系统配置菜单',
  'admin', GETDATE(), 'admin', GETDATE(),

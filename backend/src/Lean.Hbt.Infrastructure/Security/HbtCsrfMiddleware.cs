@@ -182,7 +182,7 @@ namespace Lean.Hbt.Infrastructure.Security
             }
             catch (Exception ex)
             {
-                _logger.Error("[CSRF] Token缓存失败");
+                _logger.Error("[CSRF] Token缓存失败", ex.Message);
                 throw;
             }
         }

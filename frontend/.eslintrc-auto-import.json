@@ -334,6 +334,8 @@
     "DEFAULT_LOCALE": true,
     "SUPPORTED_LOCALES": true,
     "SupportedLocale": true,
-    "createRef": true
+    "createRef": true,
+    "Slot": true,
+    "Slots": true
   }
 }

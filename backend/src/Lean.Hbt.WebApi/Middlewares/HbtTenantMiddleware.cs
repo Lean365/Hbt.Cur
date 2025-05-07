@@ -65,7 +65,7 @@ namespace Lean.Hbt.WebApi.Middlewares
             }
             catch (Exception ex)
             {
-                _logger.Error("[租户中间件] 处理请求时发生错误");
+                _logger.Error("[租户中间件] 处理请求时发生错误", ex.Message);
                 throw;
             }
             finally

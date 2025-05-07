@@ -46,7 +46,7 @@ namespace Lean.Hbt.Infrastructure.Authentication
 
         private readonly HbtJwtOptions _jwtOptions;
         private readonly IMemoryCache _memoryCache;
-        private readonly IDistributedCache _distributedCache;
+        private readonly IDistributedCache? _distributedCache;
         private readonly bool _useDistributedCache;
 
         /// <summary>
@@ -66,7 +66,7 @@ namespace Lean.Hbt.Infrastructure.Authentication
             IHbtLogger logger,
             IOptions<HbtJwtOptions> jwtOptions,
             IMemoryCache memoryCache,
-            IDistributedCache distributedCache = null)
+            IDistributedCache? distributedCache = null)
         {
             _configuration = configuration;
             _localizationService = localizationService;
@@ -126,7 +126,7 @@ namespace Lean.Hbt.Infrastructure.Authentication
                     var permissionKey = $"pms:{user.Id}:{Guid.NewGuid():N}";
                     var expiration = TimeSpan.FromMinutes(_jwtOptions.ExpirationMinutes);
 
-                    if (_useDistributedCache)
+                    if (_useDistributedCache && _distributedCache != null)
                     {
                         // 使用分布式缓存(Redis)
                         var permissionsJson = JsonSerializer.Serialize(permissions);
@@ -162,6 +162,11 @@ namespace Lean.Hbt.Infrastructure.Authentication
                 var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
                 _logger.Info("访问令牌生成成功: Length={Length}", tokenString?.Length ?? 0);
 
+                if (string.IsNullOrEmpty(tokenString))
+                {
+                    throw new HbtException("生成访问令牌失败：令牌为空", "JWT_GENERATE_ERROR");
+                }
+
                 return tokenString;
             }
             catch (Exception ex)
@@ -174,15 +179,15 @@ namespace Lean.Hbt.Infrastructure.Authentication
         /// <summary>
         /// 生成刷新令牌
         /// </summary>
-        public async Task<string> GenerateRefreshTokenAsync()
+        public Task<string> GenerateRefreshTokenAsync()
         {
-            return Guid.NewGuid().ToString("N");
+            return Task.FromResult(Guid.NewGuid().ToString("N"));
         }
 
         /// <summary>
         /// 验证访问令牌
         /// </summary>
-        public async Task<bool> ValidateAccessTokenAsync(string token)
+        public Task<bool> ValidateAccessTokenAsync(string token)
         {
             try
             {
@@ -221,19 +226,19 @@ namespace Lean.Hbt.Infrastructure.Authentication
                     throw new SecurityTokenException("Token missing required claim: tid");
                 }
 
-                return true;
+                return Task.FromResult(true);
             }
             catch (Exception ex)
             {
                 _logger.Error("验证访问令牌时发生错误: {Message}", ex.Message);
-                return false;
+                return Task.FromResult(false);
             }
         }
 
         /// <summary>
         /// 验证刷新令牌
         /// </summary>
-        public async Task<bool> ValidateRefreshTokenAsync(string token)
+        public Task<bool> ValidateRefreshTokenAsync(string token)
         {
             try
             {
@@ -252,11 +257,11 @@ namespace Lean.Hbt.Infrastructure.Authentication
                 };
 
                 var principal = tokenHandler.ValidateToken(token, validationParameters, out var validatedToken);
-                return true;
+                return Task.FromResult(true);
             }
             catch
             {
-                return false;
+                return Task.FromResult(false);
             }
         }
 
@@ -267,7 +272,11 @@ namespace Lean.Hbt.Infrastructure.Authentication
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var jwtToken = tokenHandler.ReadJwtToken(token);
-            var userIdClaim = jwtToken.Claims.First(c => c.Type == "uid");
+            var userIdClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "uid");
+            if (userIdClaim == null)
+            {
+                throw new SecurityTokenException("Token missing required claim: uid");
+            }
             return long.Parse(userIdClaim.Value);
         }
     }

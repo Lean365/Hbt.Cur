@@ -201,8 +201,8 @@ watch(() => wsStore.error, handleWebSocketError)
 watch(() => wsStore.connected, handleWebSocketConnection)
 
 // 监听用户信息变化，初始化 SignalR
-watch(() => userStore.user, async (newUser) => {
-  if (newUser && userStore.isLoggedIn) {
+watch(() => userStore.userInfo, async (newUser) => {
+  if (newUser && userStore.token) {
     try {
       await userStore.initSignalR()
     } catch (error) {

@@ -52,10 +52,14 @@ namespace Lean.Hbt.Application.Services.Identity
         /// <param name="logger">日志记录器</param>
         /// <param name="deviceExtendRepository">设备扩展仓库</param>
         /// <param name="httpContextAccessor">HTTP上下文访问器</param>
+        /// <param name="currentUser">当前用户服务</param>
+        /// <param name="localization">本地化服务</param>
         public HbtDeviceExtendService(
             IHbtLogger logger,
             IHbtRepository<HbtDeviceExtend> deviceExtendRepository,
-            IHttpContextAccessor httpContextAccessor) : base(logger, httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor,
+            IHbtCurrentUser currentUser,
+            IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
         {
             _deviceExtendRepository = deviceExtendRepository;
         }

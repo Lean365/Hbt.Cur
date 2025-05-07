@@ -87,13 +87,13 @@ namespace Lean.Hbt.Infrastructure.Jobs
                             _logger.Info(
                                 "用户{UserId}被标记为离线 - 最后心跳时间:{LastHeartbeat}, 连接ID:{ConnectionId}",
                                 user.UserId,
-                                user.LastHeartbeat,
-                                user.ConnectionId);
+                                user.LastHeartbeat.ToString("yyyy-MM-dd HH:mm:ss"),
+                                user.ConnectionId ?? "未知");
                         }
                     }
                     catch (Exception ex)
                     {
-                        _logger.Error("批量更新用户状态时发生错误");
+                        _logger.Error("批量更新用户状态时发生错误", ex.Message);
                         throw;
                     }
                 }
@@ -104,7 +104,7 @@ namespace Lean.Hbt.Infrastructure.Jobs
             }
             catch (Exception ex)
             {
-                _logger.Error("执行在线用户清理任务时发生错误");
+                _logger.Error("执行在线用户清理任务时发生错误", ex.Message);
                 throw;
             }
         }

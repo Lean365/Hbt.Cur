@@ -52,7 +52,7 @@ namespace Lean.Hbt.Infrastructure.SignalR
         /// </summary>
         public async Task AddUserDevice(HbtSignalRDevice device)
         {
-            try 
+            try
             {
                 _logger.Info("开始添加/更新用户设备 - UserId: {UserId}, DeviceId: {DeviceId}, ConnectionId: {ConnectionId}",
                     device.UserId, device.DeviceId, device.ConnectionId);
@@ -107,7 +107,7 @@ namespace Lean.Hbt.Infrastructure.SignalR
             }
             catch (Exception ex)
             {
-                _logger.Error("添加用户设备时发生错误 - UserId: {UserId}, DeviceId: {DeviceId}, Error: {Error}", 
+                _logger.Error("添加用户设备时发生错误 - UserId: {UserId}, DeviceId: {DeviceId}, Error: {Error}",
                     device.UserId, device.DeviceId, ex.Message);
                 throw;
             }
@@ -191,13 +191,13 @@ namespace Lean.Hbt.Infrastructure.SignalR
         /// </summary>
         public HbtSignalRDevice GetUserDevice(string userId, string connectionId)
         {
-            try 
+            try
             {
                 _logger.Info("开始获取用户设备 - UserId: {UserId}, ConnectionId: {ConnectionId}", userId, connectionId);
-                
+
                 var devices = GetUserDevices(userId);
                 _logger.Info("找到用户设备列表 - UserId: {UserId}, 设备数量: {Count}", userId, devices.Count);
-                
+
                 var device = devices.FirstOrDefault(d => d.ConnectionId == connectionId);
                 if (device == null)
                 {
@@ -210,7 +210,7 @@ namespace Lean.Hbt.Infrastructure.SignalR
             }
             catch (Exception ex)
             {
-                _logger.Error("获取用户设备时发生错误 - UserId: {UserId}, ConnectionId: {ConnectionId}, Error: {Error}", 
+                _logger.Error("获取用户设备时发生错误 - UserId: {UserId}, ConnectionId: {ConnectionId}, Error: {Error}",
                     userId, connectionId, ex.Message);
                 throw;
             }
@@ -279,7 +279,7 @@ namespace Lean.Hbt.Infrastructure.SignalR
             }
             catch (Exception ex)
             {
-                _logger.Error("保存在线用户时发生错误: ConnectionId={ConnectionId}, UserId={UserId}", user.ConnectionId, user.UserId);
+                _logger.Error("保存在线用户时发生错误: ConnectionId={ConnectionId}, UserId={UserId}", user.ConnectionId, user.UserId, ex.Message);
                 throw;
             }
         }
@@ -340,7 +340,7 @@ namespace Lean.Hbt.Infrastructure.SignalR
             }
             catch (Exception ex)
             {
-                _logger.Error("获取设备信息时发生错误: ConnectionId={ConnectionId}", connectionId);
+                _logger.Error("获取设备信息时发生错误: ConnectionId={ConnectionId}", connectionId, ex.Message);
                 return string.Empty;
             }
         }
@@ -359,7 +359,7 @@ namespace Lean.Hbt.Infrastructure.SignalR
             }
             catch (Exception ex)
             {
-                _logger.Error("删除在线用户时发生错误: ConnectionId={ConnectionId}", connectionId);
+                _logger.Error("删除在线用户时发生错误: ConnectionId={ConnectionId}", connectionId, ex.Message);
                 return false;
             }
         }
@@ -384,7 +384,7 @@ namespace Lean.Hbt.Infrastructure.SignalR
             }
             catch (Exception ex)
             {
-                _logger.Error("获取用户连接ID列表时发生错误: UserId={UserId}", userId);
+                _logger.Error("获取用户连接ID列表时发生错误: UserId={UserId}", userId, ex.Message);
                 throw;
             }
         }
@@ -408,7 +408,7 @@ namespace Lean.Hbt.Infrastructure.SignalR
             }
             catch (Exception ex)
             {
-                _logger.Error("获取租户组连接ID列表时发生错误: TenantId={TenantId}", tenantId);
+                _logger.Error("获取租户组连接ID列表时发生错误: TenantId={TenantId}", tenantId, ex.Message, ex.Message);
                 throw;
             }
         }
@@ -434,7 +434,7 @@ namespace Lean.Hbt.Infrastructure.SignalR
             }
             catch (Exception ex)
             {
-                _logger.Error("更新用户最后活动时间时发生错误: ConnectionId={ConnectionId}", connectionId);
+                _logger.Error("更新用户最后活动时间时发生错误: ConnectionId={ConnectionId}", connectionId, ex.Message, ex.Message);
                 throw;
             }
         }
@@ -459,7 +459,7 @@ namespace Lean.Hbt.Infrastructure.SignalR
             }
             catch (Exception ex)
             {
-                _logger.Error("获取邮件接收者列表时发生错误: UserId={UserId}", userId);
+                _logger.Error("获取邮件接收者列表时发生错误: UserId={UserId}", userId, ex.Message);
                 throw;
             }
         }
@@ -484,7 +484,7 @@ namespace Lean.Hbt.Infrastructure.SignalR
             }
             catch (Exception ex)
             {
-                _logger.Error("获取通知接收者列表时发生错误: UserId={UserId}", userId);
+                _logger.Error("获取通知接收者列表时发生错误: UserId={UserId}", userId, ex.Message, ex.Message);
                 throw;
             }
         }
@@ -503,7 +503,7 @@ namespace Lean.Hbt.Infrastructure.SignalR
             }
             catch (Exception ex)
             {
-                _logger.Error("断开用户连接时发生错误: ConnectionId={ConnectionId}", connectionId);
+                _logger.Error("断开用户连接时发生错误: ConnectionId={ConnectionId}", connectionId, ex.Message, ex.Message, ex.Message);
                 throw;
             }
         }
@@ -523,7 +523,7 @@ namespace Lean.Hbt.Infrastructure.SignalR
             }
             catch (Exception ex)
             {
-                _logger.Error("发送消息时发生错误: ConnectionId={ConnectionId}, Method={Method}", connectionId, method);
+                _logger.Error("发送消息时发生错误: ConnectionId={ConnectionId}, Method={Method}", connectionId, method, ex.Message);
                 throw;
             }
         }
@@ -535,7 +535,7 @@ namespace Lean.Hbt.Infrastructure.SignalR
         {
             try
             {
-                _logger.Info("开始添加/更新用户设备: UserId={UserId}, DeviceId={DeviceId}, ConnectionId={ConnectionId}", 
+                _logger.Info("开始添加/更新用户设备: UserId={UserId}, DeviceId={DeviceId}, ConnectionId={ConnectionId}",
                     userId, deviceId, connectionId);
 
                 await Task.Yield(); // 确保方法异步执行
@@ -579,7 +579,7 @@ namespace Lean.Hbt.Infrastructure.SignalR
             }
             catch (Exception)
             {
-                _logger.Error("添加用户设备时发生错误: UserId={UserId}, DeviceId={DeviceId}", 
+                _logger.Error("添加用户设备时发生错误: UserId={UserId}, DeviceId={DeviceId}",
                     userId, deviceId);
                 throw;
             }

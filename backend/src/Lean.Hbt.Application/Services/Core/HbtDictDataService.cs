@@ -1,15 +1,18 @@
+#nullable enable
+
 //===================================================================
 // 项目名 : Lean.Hbt
 // 文件名 : HbtDictDataService.cs
 // 创建者 : Lean365
-// 创建时间: 2024-01-18 10:00
+// 创建时间: 2024-03-20
 // 版本号 : V0.0.1
-// 描述   : 字典数据服务实现类
+// 描述    : 字典数据服务实现类
 //===================================================================
 
 using System.Linq.Expressions;
 using Lean.Hbt.Application.Dtos.Core;
 using Lean.Hbt.Domain.Entities.Core;
+using Lean.Hbt.Domain.IServices.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Http;
 
@@ -34,7 +37,9 @@ namespace Lean.Hbt.Application.Services.Core
             IHbtRepository<HbtDictData> dictDataRepository,
             IHbtRepository<HbtDictType> dictTypeRepository,
             IHbtLogger logger,
-            IHttpContextAccessor httpContextAccessor) : base(logger, httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor,
+            IHbtCurrentUser currentUser,
+            IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
         {
             _dictDataRepository = dictDataRepository ?? throw new ArgumentNullException(nameof(dictDataRepository));
             _dictTypeRepository = dictTypeRepository ?? throw new ArgumentNullException(nameof(dictTypeRepository));

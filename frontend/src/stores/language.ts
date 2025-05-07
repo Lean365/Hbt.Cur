@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { getSupportedLanguages } from '@/api/admin/language'
-import type { HbtLanguage } from '@/types/admin/language'
+import { getSupportedLanguages } from '@/api/core/language'
+import type { HbtLanguage } from '@/types/core/language'
 import type { HbtApiResponse } from '@/types/common'
 import { SUPPORTED_LOCALES, type SupportedLocale } from './app'
 

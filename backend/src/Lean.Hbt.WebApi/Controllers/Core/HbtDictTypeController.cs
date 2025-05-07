@@ -21,7 +21,7 @@ namespace Lean.Hbt.WebApi.Controllers.Core
     /// </remarks>
     [Route("api/[controller]", Name = "字典类型")]
     [ApiController]
-    [ApiModule("admin", "系统管理")]
+    [ApiModule("core", "系统管理")]
     public class HbtDictTypeController : HbtBaseController
     {
         private readonly IHbtDictTypeService _dictTypeService;
@@ -45,7 +45,7 @@ namespace Lean.Hbt.WebApi.Controllers.Core
         /// <param name="query">查询条件</param>
         /// <returns>字典类型分页列表</returns>
         [HttpGet("list")]
-        [HbtPerm("admin:dict:list")]
+        [HbtPerm("core:dict:list")]
         public async Task<IActionResult> GetListAsync([FromQuery] HbtDictTypeQueryDto query)
         {
             var result = await _dictTypeService.GetListAsync(query);
@@ -58,7 +58,7 @@ namespace Lean.Hbt.WebApi.Controllers.Core
         /// <param name="dictTypeId">字典类型ID</param>
         /// <returns>字典类型详情</returns>
         [HttpGet("{dictTypeId}")]
-        [HbtPerm("admin:dict:query")]
+        [HbtPerm("core:dict:query")]
         public async Task<IActionResult> GetByIdAsync(long dictTypeId)
         {
             var result = await _dictTypeService.GetByIdAsync(dictTypeId);
@@ -71,7 +71,7 @@ namespace Lean.Hbt.WebApi.Controllers.Core
         /// <param name="type">字典类型</param>
         /// <returns>字典类型详情</returns>
         [HttpGet("type/{type}")]
-        [HbtPerm("admin:dict:query")]
+        [HbtPerm("core:dict:query")]
         public async Task<IActionResult> GetByTypeAsync(string type)
         {
             if (string.IsNullOrEmpty(type))
@@ -88,7 +88,7 @@ namespace Lean.Hbt.WebApi.Controllers.Core
         /// <param name="input">创建对象</param>
         /// <returns>字典类型ID</returns>
         [HttpPost]
-        [HbtPerm("admin:dict:create")]
+        [HbtPerm("core:dict:create")]
         public async Task<IActionResult> CreateAsync([FromBody] HbtDictTypeCreateDto input)
         {
             var result = await _dictTypeService.CreateAsync(input);
@@ -101,7 +101,7 @@ namespace Lean.Hbt.WebApi.Controllers.Core
         /// <param name="input">更新对象</param>
         /// <returns>是否成功</returns>
         [HttpPut]
-        [HbtPerm("admin:dict:update")]
+        [HbtPerm("core:dict:update")]
         public async Task<IActionResult> UpdateAsync([FromBody] HbtDictTypeUpdateDto input)
         {
             var result = await _dictTypeService.UpdateAsync(input);
@@ -114,7 +114,7 @@ namespace Lean.Hbt.WebApi.Controllers.Core
         /// <param name="dictTypeId">字典类型ID</param>
         /// <returns>是否成功</returns>
         [HttpDelete("{dictTypeId}")]
-        [HbtPerm("admin:dict:delete")]
+        [HbtPerm("core:dict:delete")]
         public async Task<IActionResult> DeleteAsync(long dictTypeId)
         {
             var result = await _dictTypeService.DeleteAsync(dictTypeId);
@@ -127,7 +127,7 @@ namespace Lean.Hbt.WebApi.Controllers.Core
         /// <param name="dictTypeIds">字典类型ID集合</param>
         /// <returns>是否成功</returns>
         [HttpDelete("batch")]
-        [HbtPerm("admin:dict:delete")]
+        [HbtPerm("core:dict:delete")]
         public async Task<IActionResult> BatchDeleteAsync([FromBody] long[] dictTypeIds)
         {
             var result = await _dictTypeService.BatchDeleteAsync(dictTypeIds);
@@ -141,7 +141,7 @@ namespace Lean.Hbt.WebApi.Controllers.Core
         /// <param name="sheetName">表格名称</param>
         /// <returns>导入结果</returns>
         [HttpPost("import")]
-        [HbtPerm("admin:dict:import")]
+        [HbtPerm("core:dict:import")]
         public async Task<IActionResult> ImportAsync(IFormFile file, [FromQuery] string sheetName = "字典类型")
         {
             using var stream = file.OpenReadStream();
@@ -156,7 +156,7 @@ namespace Lean.Hbt.WebApi.Controllers.Core
         /// <param name="sheetName">表格名称</param>
         /// <returns>导出数据列表</returns>
         [HttpGet("export")]
-        [HbtPerm("admin:dict:export")]
+        [HbtPerm("core:dict:export")]
         public async Task<IActionResult> ExportAsync([FromQuery] HbtDictTypeQueryDto query, [FromQuery] string sheetName = "字典类型")
         {
             var result = await _dictTypeService.ExportAsync(query, sheetName);
@@ -169,7 +169,7 @@ namespace Lean.Hbt.WebApi.Controllers.Core
         /// <param name="sheetName">表格名称</param>
         /// <returns>模板数据</returns>
         [HttpGet("template")]
-        [HbtPerm("admin:dict:query")]
+        [HbtPerm("core:dict:query")]
         public async Task<IActionResult> GetTemplateAsync([FromQuery] string sheetName = "字典类型")
         {
             var result = await _dictTypeService.GetTemplateAsync(sheetName);
@@ -203,7 +203,7 @@ namespace Lean.Hbt.WebApi.Controllers.Core
         /// <param name="dictTypeId">字典类型ID</param>
         /// <returns>字典数据列表</returns>
         [HttpGet("executeSql/{dictTypeId}")]
-        [HbtPerm("admin:dict:list")]
+        [HbtPerm("core:dict:list")]
         public async Task<IActionResult> ExecuteDictSqlAsync(long dictTypeId)
         {
             var dictType = await _dictTypeService.GetByIdAsync(dictTypeId);

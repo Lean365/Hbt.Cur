@@ -405,9 +405,9 @@ export async function registerDynamicRoutes(router: Router) {
           meta: {
             title: menu.menuName || '',
             icon: menu.icon,
-            hidden: menu.hidden,
-            keepAlive: menu.keepAlive,
-            permission: menu.permission,
+            hidden: menu.visible === 1,
+            keepAlive: menu.isCache === 1,
+            permission: menu.perms,
             requiresAuth: true,
             menuId: menu.menuId,
             orderNum: menu.orderNum
@@ -430,13 +430,13 @@ export async function registerDynamicRoutes(router: Router) {
           const route = processMenuItem(menu)
           rootRoute.children?.push(route)
           
-          console.log('[路由] 注册目录路由:', {
-            路径: route.path,
-            名称: route.name,
-            组件: route.component ? '已配置' : '未配置',
-            子路由数量: route.children?.length || 0,
-            重定向: route.redirect || '无'
-          })
+          // console.log('[路由] 注册目录路由:', {
+          //   路径: route.path,
+          //   名称: route.name,
+          //   组件: route.component ? '已配置' : '未配置',
+          //   子路由数量: route.children?.length || 0,
+          //   重定向: route.redirect || '无'
+          // })
         }
       })
 
@@ -444,35 +444,35 @@ export async function registerDynamicRoutes(router: Router) {
       router.addRoute(rootRoute)
 
       // 验证路由注册状态
-      console.log('[路由] 验证路由注册状态 ============================')
-      const routes = router.getRoutes()
+      //console.log('[路由] 验证路由注册状态 ============================')
+      //const routes = router.getRoutes()
       
-      console.log('[路由] 已注册的路由:', routes.map(route => ({
-        名称: route.name,
-        路径: route.path,
-        完整路径: route.path,
-        组件: route.components?.default?.name || '未知组件',
-        子路由数量: route.children?.length || 0,
-        子路由: route.children?.map(child => ({
-          路径: child.path,
-          名称: child.name,
-          完整路径: `${route.path}/${child.path}`.replace(/\/+/g, '/')
-        }))
-      })))
+      // console.log('[路由] 已注册的路由:', routes.map(route => ({
+      //   名称: route.name,
+      //   路径: route.path,
+      //   完整路径: route.path,
+      //   组件: route.components?.default?.name || '未知组件',
+      //   子路由数量: route.children?.length || 0,
+      //   子路由: route.children?.map(child => ({
+      //     路径: child.path,
+      //     名称: child.name,
+      //     完整路径: `${route.path}/${child.path}`.replace(/\/+/g, '/')
+      //   }))
+      // })))
 
       // 特别检查 /admin/configs 路由
-      const adminConfigsRoute = router.resolve('/admin/configs')
-      console.log('[路由] 检查 /admin/configs 路由:', {
-        是否存在: adminConfigsRoute.matched.length > 0,
-        匹配路由: adminConfigsRoute.matched,
-        完整路径: adminConfigsRoute.fullPath,
-        路由详情: adminConfigsRoute.matched.map(r => ({
-          名称: r.name,
-          路径: r.path,
-          完整路径: r.path,
-          组件: r.components?.default?.name || '未知组件'
-        }))
-      })
+      // const adminConfigsRoute = router.resolve('/admin/configs')
+      // console.log('[路由] 检查 /admin/configs 路由:', {
+      //   是否存在: adminConfigsRoute.matched.length > 0,
+      //   匹配路由: adminConfigsRoute.matched,
+      //   完整路径: adminConfigsRoute.fullPath,
+      //   路由详情: adminConfigsRoute.matched.map(r => ({
+      //     名称: r.name,
+      //     路径: r.path,
+      //     完整路径: r.path,
+      //     组件: r.components?.default?.name || '未知组件'
+      //   }))
+      // })
 
       return true
     }

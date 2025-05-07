@@ -15,7 +15,7 @@ namespace Lean.Hbt.Domain.Entities.Core
     /// <summary>
     /// 字典数据实体
     /// </summary>
-    [SugarTable("hbt_adm_dict_data", "字典数据表")]
+    [SugarTable("hbt_core_dict_data", "字典数据表")]
     [SugarIndex("ix_tenant_dict_type", nameof(TenantId), OrderByType.Asc)]
     public class HbtDictData : HbtBaseEntity
     {

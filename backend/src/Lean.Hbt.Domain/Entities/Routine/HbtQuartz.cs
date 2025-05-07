@@ -14,7 +14,7 @@ namespace Lean.Hbt.Domain.Entities.Routine
     /// <summary>
     /// 定时任务实体
     /// </summary>
-    [SugarTable("hbt_rou_quartz_task", "定时任务")]
+    [SugarTable("hbt_rou_quartz", "定时任务")]
     [SugarIndex("index_task_name", nameof(TaskName), OrderByType.Asc)]
     [SugarIndex("index_task_group", nameof(TaskGroupName), OrderByType.Asc)]
     [SugarIndex("index_task_status", nameof(TaskStatus), OrderByType.Asc)]

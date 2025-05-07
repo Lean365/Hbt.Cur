@@ -18,6 +18,7 @@ using Lean.Hbt.Domain.IServices.Extensions;
 using Lean.Hbt.Domain.Repositories;
 using Lean.Hbt.Domain.Utils;
 using SqlSugar;
+using Microsoft.AspNetCore.Http;
 
 namespace Lean.Hbt.Application.Services.Workflow
 {
@@ -33,11 +34,9 @@ namespace Lean.Hbt.Application.Services.Workflow
     /// 3. 实现工作流变量的作用域管理
     /// 4. 提供变量值的获取和设置功能
     /// </remarks>
-    public class HbtWorkflowVariableService : IHbtWorkflowVariableService
+    public class HbtWorkflowVariableService : HbtBaseService, IHbtWorkflowVariableService
     {
         private readonly IHbtRepository<HbtWorkflowVariable> _variableRepository;
-        private readonly IHbtLogger _logger;
-        private readonly IHbtLocalizationService _localization;
 
         static HbtWorkflowVariableService()
         {
@@ -67,15 +66,17 @@ namespace Lean.Hbt.Application.Services.Workflow
         /// </summary>
         /// <param name="variableRepository">工作流变量仓储接口</param>
         /// <param name="logger">日志服务</param>
+        /// <param name="httpContextAccessor">HTTP上下文访问器</param>
+        /// <param name="currentUser">当前用户服务</param>
         /// <param name="localization">本地化服务</param>
         public HbtWorkflowVariableService(
             IHbtRepository<HbtWorkflowVariable> variableRepository,
             IHbtLogger logger,
-            IHbtLocalizationService localization)
+            IHttpContextAccessor httpContextAccessor,
+            IHbtCurrentUser currentUser,
+            IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
         {
             _variableRepository = variableRepository;
-            _logger = logger;
-            _localization = localization;
         }
 
         /// <summary>
@@ -135,7 +136,7 @@ namespace Lean.Hbt.Application.Services.Workflow
         {
             var variable = await _variableRepository.GetByIdAsync(id);
             if (variable == null)
-                throw new HbtException(_localization.L("WorkflowVariable.NotFound"));
+                throw new HbtException(L("WorkflowVariable.NotFound"));
 
             return variable.Adapt<HbtWorkflowVariableDto>();
         }
@@ -159,9 +160,9 @@ namespace Lean.Hbt.Application.Services.Workflow
 
             var result = await _variableRepository.CreateAsync(variable);
             if (result <= 0)
-                throw new HbtException(_localization.L("WorkflowVariable.Create.Failed"));
+                throw new HbtException(L("WorkflowVariable.Create.Failed"));
 
-            _logger.Info(_localization.L("WorkflowVariable.Created.Success", variable.Id));
+            _logger.Info(L("WorkflowVariable.Created.Success", variable.Id));
             return variable.Id;
         }
 
@@ -179,14 +180,14 @@ namespace Lean.Hbt.Application.Services.Workflow
 
             var variable = await _variableRepository.GetByIdAsync(input.WorkflowVariableId);
             if (variable == null)
-                throw new HbtException(_localization.L("WorkflowVariable.NotFound"));
+                throw new HbtException(L("WorkflowVariable.NotFound"));
 
             input.Adapt(variable);
             var result = await _variableRepository.UpdateAsync(variable);
             if (result <= 0)
-                throw new HbtException(_localization.L("WorkflowVariable.Update.Failed"));
+                throw new HbtException(L("WorkflowVariable.Update.Failed"));
 
-            _logger.Info(_localization.L("WorkflowVariable.Updated.Success", variable.Id));
+            _logger.Info(L("WorkflowVariable.Updated.Success", variable.Id));
             return true;
         }
 
@@ -200,13 +201,13 @@ namespace Lean.Hbt.Application.Services.Workflow
         {
             var variable = await _variableRepository.GetByIdAsync(id);
             if (variable == null)
-                throw new HbtException(_localization.L("WorkflowVariable.NotFound"));
+                throw new HbtException(L("WorkflowVariable.NotFound"));
 
             var result = await _variableRepository.DeleteAsync(variable);
             if (result <= 0)
-                throw new HbtException(_localization.L("WorkflowVariable.Delete.Failed"));
+                throw new HbtException(L("WorkflowVariable.Delete.Failed"));
 
-            _logger.Info(_localization.L("WorkflowVariable.Deleted.Success", id));
+            _logger.Info(L("WorkflowVariable.Deleted.Success", id));
             return true;
         }
 
@@ -227,9 +228,9 @@ namespace Lean.Hbt.Application.Services.Workflow
 
             var result = await _variableRepository.DeleteAsync(exp.ToExpression());
             if (result <= 0)
-                throw new HbtException(_localization.L("WorkflowVariable.BatchDelete.Failed"));
+                throw new HbtException(L("WorkflowVariable.BatchDelete.Failed"));
 
-            _logger.Info(_localization.L("WorkflowVariable.BatchDeleted.Success", string.Join(",", ids)));
+            _logger.Info(L("WorkflowVariable.BatchDeleted.Success", string.Join(",", ids)));
             return true;
         }
 
@@ -277,8 +278,8 @@ namespace Lean.Hbt.Application.Services.Workflow
             }
             catch (Exception ex)
             {
-                _logger.Error(_localization.L("WorkflowVariable.Export.Failed"), ex);
-                throw new HbtException(_localization.L("WorkflowVariable.Export.Failed"), ex);
+                _logger.Error(L("WorkflowVariable.Export.Failed"), ex);
+                throw new HbtException(L("WorkflowVariable.Export.Failed"), ex);
             }
         }
 
@@ -352,7 +353,7 @@ namespace Lean.Hbt.Application.Services.Workflow
                                x.VariableName == variableName);
 
             if (variable == null)
-                throw new HbtException(_localization.L("WorkflowVariable.NotFound"));
+                throw new HbtException(L("WorkflowVariable.NotFound"));
 
             return variable.VariableValue;
         }
@@ -372,15 +373,15 @@ namespace Lean.Hbt.Application.Services.Workflow
                                x.VariableName == variableName);
 
             if (variable == null)
-                throw new HbtException(_localization.L("WorkflowVariable.NotFound"));
+                throw new HbtException(L("WorkflowVariable.NotFound"));
 
             variable.VariableValue = variableValue;
 
             var result = await _variableRepository.UpdateAsync(variable);
             if (result <= 0)
-                throw new HbtException(_localization.L("WorkflowVariable.UpdateValue.Failed"));
+                throw new HbtException(L("WorkflowVariable.UpdateValue.Failed"));
 
-            _logger.Info(_localization.L("WorkflowVariable.UpdatedValue.Success", variable.Id));
+            _logger.Info(L("WorkflowVariable.UpdatedValue.Success", variable.Id));
             return true;
         }
     }

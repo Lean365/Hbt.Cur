@@ -91,7 +91,7 @@ public interface IHbtGenTableService
     /// </summary>
     /// <param name="databaseName">数据库名称</param>
     /// <returns>表列表</returns>
-    Task<List<string>> GetTableListAsync(string databaseName);
+    Task<List<HbtGenTableInfoDto>> GetTableListAsync(string databaseName);
 
     /// <summary>
     /// 获取表字段列表
@@ -99,7 +99,7 @@ public interface IHbtGenTableService
     /// <param name="databaseName">数据库名称</param>
     /// <param name="tableName">表名</param>
     /// <returns>字段列表</returns>
-    Task<List<HbtGenColumnDto>> GetTableColumnListAsync(string databaseName, string tableName);
+    Task<List<HbtGenTableColumnInfoDto>> GetTableColumnListAsync(string databaseName, string tableName);
 
     /// <summary>
     /// 同步表结构
@@ -107,6 +107,14 @@ public interface IHbtGenTableService
     /// <param name="id">表ID</param>
     /// <returns>是否同步成功</returns>
     Task<bool> SyncTableAsync(long id);
+
+    /// <summary>
+    /// 导入表及其所有字段信息
+    /// </summary>
+    /// <param name="databaseName">数据库名</param>
+    /// <param name="tableName">表名</param>
+    /// <returns>是否成功</returns>
+    Task<bool> ImportTableAndColumnsAsync(string databaseName, string tableName);
 
     #endregion
 

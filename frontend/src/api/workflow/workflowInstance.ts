@@ -1,17 +1,17 @@
 import request from '@/utils/request'
 import type { HbtApiResponse } from '@/types/common'
 import type { 
-  WorkflowInstanceQuery, 
-  WorkflowInstance,
-  WorkflowInstanceCreate,
-  WorkflowInstanceUpdate,
-  WorkflowInstanceStatus
+  HbtWorkflowInstanceQuery, 
+  HbtWorkflowInstance,
+  HbtWorkflowInstanceCreate,
+  HbtWorkflowInstanceUpdate,
+  HbtWorkflowInstancePagedResult
 } from '@/types/workflow/workflowInstance'
 
 // 获取工作流实例列表
-export function getWorkflowInstanceList(params: WorkflowInstanceQuery) {
-  return request<HbtApiResponse<WorkflowInstance[]>>({
-    url: '/api/HbtWorkflowInstance',
+export function getWorkflowInstanceList(params: HbtWorkflowInstanceQuery) {
+  return request<HbtApiResponse<HbtWorkflowInstancePagedResult>>({
+    url: '/api/HbtWorkflowInstance/list',
     method: 'get',
     params
   })
@@ -19,14 +19,14 @@ export function getWorkflowInstanceList(params: WorkflowInstanceQuery) {
 
 // 获取工作流实例详情
 export function getWorkflowInstance(id: number) {
-  return request<HbtApiResponse<WorkflowInstance>>({
+  return request<HbtApiResponse<HbtWorkflowInstance>>({
     url: `/api/HbtWorkflowInstance/${id}`,
     method: 'get'
   })
 }
 
 // 创建工作流实例
-export function createWorkflowInstance(data: WorkflowInstanceCreate) {
+export function createWorkflowInstance(data: HbtWorkflowInstanceCreate) {
   return request<HbtApiResponse<any>>({
     url: '/api/HbtWorkflowInstance',
     method: 'post',
@@ -35,7 +35,7 @@ export function createWorkflowInstance(data: WorkflowInstanceCreate) {
 }
 
 // 更新工作流实例
-export function updateWorkflowInstance(data: WorkflowInstanceUpdate) {
+export function updateWorkflowInstance(data: HbtWorkflowInstanceUpdate) {
   return request<HbtApiResponse<any>>({
     url: '/api/HbtWorkflowInstance',
     method: 'put',
@@ -61,35 +61,42 @@ export function batchDeleteWorkflowInstance(ids: number[]) {
 }
 
 // 导入工作流实例
-export function importWorkflowInstance(instances: any[]) {
+export function importWorkflowInstance(file: File, sheetName: string = 'Sheet1') {
+  const formData = new FormData()
+  formData.append('file', file)
   return request<HbtApiResponse<any>>({
     url: '/api/HbtWorkflowInstance/import',
     method: 'post',
-    data: instances
+    data: formData,
+    params: { sheetName },
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
   })
 }
 
 // 导出工作流实例
-export function exportWorkflowInstance(params: WorkflowInstanceQuery) {
+export function exportWorkflowInstance(params: HbtWorkflowInstanceQuery, sheetName: string = 'Sheet1') {
   return request({
     url: '/api/HbtWorkflowInstance/export',
     method: 'get',
-    params,
+    params: { ...params, sheetName },
     responseType: 'blob'
   })
 }
 
 // 获取工作流实例导入模板
-export function getWorkflowInstanceTemplate() {
+export function getWorkflowInstanceTemplate(sheetName: string = 'Sheet1') {
   return request({
     url: '/api/HbtWorkflowInstance/template',
     method: 'get',
+    params: { sheetName },
     responseType: 'blob'
   })
 }
 
 // 更新工作流实例状态
-export function updateWorkflowInstanceStatus(id: number, data: WorkflowInstanceStatus) {
+export function updateWorkflowInstanceStatus(id: number, data: HbtWorkflowInstanceStatus) {
   return request<HbtApiResponse<any>>({
     url: `/api/HbtWorkflowInstance/${id}/status`,
     method: 'put',
@@ -114,10 +121,25 @@ export function withdrawWorkflowInstance(id: number) {
 }
 
 // 终止工作流实例
-export function terminateWorkflowInstance(id: number, reason: string) {
+export function terminateWorkflowInstance(id: number) {
   return request<HbtApiResponse<any>>({
     url: `/api/HbtWorkflowInstance/${id}/terminate`,
-    method: 'post',
-    params: { reason }
+    method: 'post'
+  })
+}
+
+// 暂停工作流实例
+export function suspendWorkflowInstance(id: number) {
+  return request<HbtApiResponse<any>>({
+    url: `/api/HbtWorkflowInstance/${id}/suspend`,
+    method: 'post'
+  })
+}
+
+// 恢复工作流实例
+export function resumeWorkflowInstance(id: number) {
+  return request<HbtApiResponse<any>>({
+    url: `/api/HbtWorkflowInstance/${id}/resume`,
+    method: 'post'
   })
 } 

@@ -41,7 +41,9 @@ public class HbtGenTableDefineService : HbtBaseService, IHbtGenTableDefineServic
         IHbtRepository<HbtGenColumnDefine> columnDefineRepository,
         IHbtLogger logger,
         IHttpContextAccessor httpContextAccessor,
-        ISqlSugarClient db) : base(logger, httpContextAccessor)
+        IHbtCurrentUser currentUser,
+        IHbtLocalizationService localization,
+        ISqlSugarClient db) : base(logger, httpContextAccessor, currentUser, localization)
     {
         _tableDefineRepository = tableDefineRepository ?? throw new ArgumentNullException(nameof(tableDefineRepository));
         _columnDefineRepository = columnDefineRepository ?? throw new ArgumentNullException(nameof(columnDefineRepository));

@@ -17,6 +17,7 @@ using Lean.Hbt.Domain.IServices.Extensions;
 using Lean.Hbt.Domain.IServices.Extensions;
 using Lean.Hbt.Domain.Repositories;
 using SqlSugar;
+using Microsoft.AspNetCore.Http;
 
 namespace Lean.Hbt.Application.Services.Workflow
 {
@@ -32,26 +33,26 @@ namespace Lean.Hbt.Application.Services.Workflow
     /// 3. 实现工作流定义的版本管理
     /// 4. 提供工作流定义的启用/禁用功能
     /// </remarks>
-    public class HbtWorkflowDefinitionService : IHbtWorkflowDefinitionService
+    public class HbtWorkflowDefinitionService : HbtBaseService, IHbtWorkflowDefinitionService
     {
         private readonly IHbtRepository<HbtWorkflowDefinition> _definitionRepository;
-        private readonly IHbtLogger _logger;
-        private readonly IHbtLocalizationService _localization;
 
         /// <summary>
         /// 构造函数，注入所需依赖
         /// </summary>
-        /// <param name="definitionRepository">工作流定义仓储接口</param>
         /// <param name="logger">日志服务</param>
+        /// <param name="definitionRepository">工作流定义仓储接口</param>
+        /// <param name="httpContextAccessor">HTTP上下文访问器</param>
+        /// <param name="currentUser">当前用户服务</param>
         /// <param name="localization">本地化服务</param>
         public HbtWorkflowDefinitionService(
-            IHbtRepository<HbtWorkflowDefinition> definitionRepository,
             IHbtLogger logger,
-            IHbtLocalizationService localization)
+            IHbtRepository<HbtWorkflowDefinition> definitionRepository,
+            IHttpContextAccessor httpContextAccessor,
+            IHbtCurrentUser currentUser,
+            IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
         {
             _definitionRepository = definitionRepository;
-            _logger = logger;
-            _localization = localization;
         }
 
         /// <summary>
@@ -103,7 +104,7 @@ namespace Lean.Hbt.Application.Services.Workflow
         {
             var definition = await _definitionRepository.GetByIdAsync(id);
             if (definition == null)
-                throw new HbtException(_localization.L("WorkflowDefinition.NotFound"));
+                throw new HbtException(L("WorkflowDefinition.NotFound"));
 
             return definition.Adapt<HbtWorkflowDefinitionDto>();
         }
@@ -123,7 +124,7 @@ namespace Lean.Hbt.Application.Services.Workflow
             // 检查名称是否已存在
             var exists = await _definitionRepository.GetFirstAsync(x => x.WorkflowName == input.WorkflowName);
             if (exists != null)
-                throw new HbtException(_localization.L("WorkflowDefinition.NameExists"));
+                throw new HbtException(L("WorkflowDefinition.NameExists"));
 
             var definition = input.Adapt<HbtWorkflowDefinition>();
             definition.WorkflowVersion = 1; // 新建定义默认版本为1
@@ -131,9 +132,9 @@ namespace Lean.Hbt.Application.Services.Workflow
 
             var result = await _definitionRepository.CreateAsync(definition);
             if (result <= 0)
-                throw new HbtException(_localization.L("WorkflowDefinition.Create.Failed"));
+                throw new HbtException(L("WorkflowDefinition.Create.Failed"));
 
-            _logger.Info(_localization.L("WorkflowDefinition.Created.Success", definition.Id));
+            _logger.Info(L("WorkflowDefinition.Created.Success", definition.Id));
             return definition.Id;
         }
 
@@ -151,19 +152,19 @@ namespace Lean.Hbt.Application.Services.Workflow
 
             var definition = await _definitionRepository.GetByIdAsync(input.WorkflowActivityId);
             if (definition == null)
-                throw new HbtException(_localization.L("WorkflowDefinition.NotFound"));
+                throw new HbtException(L("WorkflowDefinition.NotFound"));
 
             // 检查名称是否已被其他定义使用
             var exists = await _definitionRepository.GetFirstAsync(x => x.WorkflowName == input.WorkflowName && x.Id != input.WorkflowActivityId);
             if (exists != null)
-                throw new HbtException(_localization.L("WorkflowDefinition.NameExists"));
+                throw new HbtException(L("WorkflowDefinition.NameExists"));
 
             input.Adapt(definition);
             var result = await _definitionRepository.UpdateAsync(definition);
             if (result <= 0)
-                throw new HbtException(_localization.L("WorkflowDefinition.Update.Failed"));
+                throw new HbtException(L("WorkflowDefinition.Update.Failed"));
 
-            _logger.Info(_localization.L("WorkflowDefinition.Updated.Success", definition.Id));
+            _logger.Info(L("WorkflowDefinition.Updated.Success", definition.Id));
             return true;
         }
 
@@ -177,17 +178,17 @@ namespace Lean.Hbt.Application.Services.Workflow
         {
             var definition = await _definitionRepository.GetByIdAsync(id);
             if (definition == null)
-                throw new HbtException(_localization.L("WorkflowDefinition.NotFound"));
+                throw new HbtException(L("WorkflowDefinition.NotFound"));
 
             // 检查工作流定义是否处于活动状态
             if (definition.Status == 1) // 1 表示已发布状态
-                throw new HbtException(_localization.L("WorkflowDefinition.CannotDeleteActive"));
+                throw new HbtException(L("WorkflowDefinition.CannotDeleteActive"));
 
             var result = await _definitionRepository.DeleteAsync(definition);
             if (result <= 0)
-                throw new HbtException(_localization.L("WorkflowDefinition.Delete.Failed"));
+                throw new HbtException(L("WorkflowDefinition.Delete.Failed"));
 
-            _logger.Info(_localization.L("WorkflowDefinition.Deleted.Success", id));
+            _logger.Info(L("WorkflowDefinition.Deleted.Success", id));
             return true;
         }
 
@@ -206,16 +207,16 @@ namespace Lean.Hbt.Application.Services.Workflow
             // 检查是否有活动状态的定义
             var activeDefinitions = await _definitionRepository.GetListAsync(x => ids.Contains(x.Id) && x.Status == 1); // 1 表示已发布状态
             if (activeDefinitions.Any())
-                throw new HbtException(_localization.L("WorkflowDefinition.CannotDeleteActive"));
+                throw new HbtException(L("WorkflowDefinition.CannotDeleteActive"));
 
             var exp = Expressionable.Create<HbtWorkflowDefinition>();
             exp = exp.And(x => ids.Contains(x.Id));
 
             var result = await _definitionRepository.DeleteAsync(exp.ToExpression());
             if (result <= 0)
-                throw new HbtException(_localization.L("WorkflowDefinition.BatchDelete.Failed"));
+                throw new HbtException(L("WorkflowDefinition.BatchDelete.Failed"));
 
-            _logger.Info(_localization.L("WorkflowDefinition.BatchDeleted.Success", string.Join(",", ids)));
+            _logger.Info(L("WorkflowDefinition.BatchDeleted.Success", string.Join(",", ids)));
             return true;
         }
 
@@ -242,7 +243,7 @@ namespace Lean.Hbt.Application.Services.Workflow
                     }
                     catch (Exception ex)
                     {
-                        _logger.Error(_localization.L("WorkflowDefinition.Import.Failed"), ex);
+                        _logger.Error(L("WorkflowDefinition.Import.Failed"), ex);
                     }
                 }
 
@@ -250,8 +251,8 @@ namespace Lean.Hbt.Application.Services.Workflow
             }
             catch (Exception ex)
             {
-                _logger.Error(_localization.L("WorkflowDefinition.Import.Failed"), ex);
-                throw new HbtException(_localization.L("WorkflowDefinition.Import.Failed"), ex);
+                _logger.Error(L("WorkflowDefinition.Import.Failed"), ex);
+                throw new HbtException(L("WorkflowDefinition.Import.Failed"), ex);
             }
         }
 
@@ -266,8 +267,8 @@ namespace Lean.Hbt.Application.Services.Workflow
             }
             catch (Exception ex)
             {
-                _logger.Error(_localization.L("WorkflowDefinition.Export.Failed"), ex);
-                throw new HbtException(_localization.L("WorkflowDefinition.Export.Failed"), ex);
+                _logger.Error(L("WorkflowDefinition.Export.Failed"), ex);
+                throw new HbtException(L("WorkflowDefinition.Export.Failed"), ex);
             }
         }
 
@@ -291,14 +292,14 @@ namespace Lean.Hbt.Application.Services.Workflow
         {
             var definition = await _definitionRepository.GetByIdAsync(input.WorkflowDefinitionId);
             if (definition == null)
-                throw new HbtException(_localization.L("WorkflowDefinition.NotFound"));
+                throw new HbtException(L("WorkflowDefinition.NotFound"));
 
             definition.Status = input.Status;
             var result = await _definitionRepository.UpdateAsync(definition);
             if (result <= 0)
-                throw new HbtException(_localization.L("WorkflowDefinition.UpdateStatus.Failed"));
+                throw new HbtException(L("WorkflowDefinition.UpdateStatus.Failed"));
 
-            _logger.Info(_localization.L("WorkflowDefinition.UpdatedStatus.Success", definition.Id));
+            _logger.Info(L("WorkflowDefinition.UpdatedStatus.Success", definition.Id));
             return true;
         }
     }

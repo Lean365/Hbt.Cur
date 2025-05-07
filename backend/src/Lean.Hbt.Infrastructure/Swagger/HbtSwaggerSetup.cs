@@ -25,7 +25,7 @@ namespace Lean.Hbt.Infrastructure.Swagger
         private static readonly Dictionary<string, string> ApiModules = new()
         {
             { "identity", "身份认证" },
-            { "Hbt365", "系统管理" },
+            { "admin", "系统管理" },
             { "workflow", "工作流" },
             { "audit", "审计日志" },
             { "realtime", "实时通信" }

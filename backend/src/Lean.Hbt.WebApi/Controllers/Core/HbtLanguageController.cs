@@ -30,7 +30,7 @@ namespace Lean.Hbt.WebApi.Controllers.Core
     /// </remarks>
     [Route("api/[controller]", Name = "语言")]
     [ApiController]
-    [ApiModule("admin", "系统管理")]
+    [ApiModule("core", "系统管理")]
     public class HbtLanguageController : HbtBaseController
     {
         private readonly IHbtLanguageService _languageService;
@@ -63,7 +63,7 @@ namespace Lean.Hbt.WebApi.Controllers.Core
         /// <param name="query">查询条件</param>
         /// <returns>语言分页列表</returns>
         [HttpGet("list")]
-        [HbtPerm("admin:language:list")]
+        [HbtPerm("core:language:list")]
         public async Task<IActionResult> GetListAsync([FromQuery] HbtLanguageQueryDto query)
         {
             var result = await _languageService.GetListAsync(query);
@@ -79,7 +79,7 @@ namespace Lean.Hbt.WebApi.Controllers.Core
         /// <param name="langId">语言ID</param>
         /// <returns>语言详情</returns>
         [HttpGet("{langId}")]
-        [HbtPerm("admin:language:query")]
+        [HbtPerm("core:language:query")]
         public async Task<IActionResult> GetByIdAsync(long langId)
         {
             var result = await _languageService.GetByIdAsync(langId);
@@ -95,7 +95,7 @@ namespace Lean.Hbt.WebApi.Controllers.Core
         /// <param name="input">创建对象</param>
         /// <returns>新创建的语言ID</returns>
         [HttpPost]
-        [HbtPerm("admin:language:create")]
+        [HbtPerm("core:language:create")]
         public async Task<IActionResult> CreateAsync([FromBody] HbtLanguageCreateDto input)
         {
             var result = await _languageService.CreateAsync(input);
@@ -111,7 +111,7 @@ namespace Lean.Hbt.WebApi.Controllers.Core
         /// <param name="input">更新对象</param>
         /// <returns>更新结果</returns>
         [HttpPut]
-        [HbtPerm("admin:language:update")]
+        [HbtPerm("core:language:update")]
         public async Task<IActionResult> UpdateAsync([FromBody] HbtLanguageUpdateDto input)
         {
             var result = await _languageService.UpdateAsync(input);
@@ -128,7 +128,7 @@ namespace Lean.Hbt.WebApi.Controllers.Core
         /// <param name="langId">语言ID</param>
         /// <returns>删除结果</returns>
         [HttpDelete("{langId}")]
-        [HbtPerm("admin:language:delete")]
+        [HbtPerm("core:language:delete")]
         public async Task<IActionResult> DeleteAsync(long langId)
         {
             var result = await _languageService.DeleteAsync(langId);
@@ -145,7 +145,7 @@ namespace Lean.Hbt.WebApi.Controllers.Core
         /// <param name="langIds">语言ID集合</param>
         /// <returns>批量删除结果</returns>
         [HttpDelete("batch")]
-        [HbtPerm("admin:language:delete")]
+        [HbtPerm("core:language:delete")]
         public async Task<IActionResult> BatchDeleteAsync([FromBody] long[] langIds)
         {
             var result = await _languageService.BatchDeleteAsync(langIds);
@@ -163,7 +163,7 @@ namespace Lean.Hbt.WebApi.Controllers.Core
         /// <param name="sheetName">工作表名称</param>
         /// <returns>导入结果，包含成功和失败数量</returns>
         [HttpPost("import")]
-        [HbtPerm("admin:language:import")]
+        [HbtPerm("core:language:import")]
         public async Task<IActionResult> ImportAsync(IFormFile file, [FromQuery] string sheetName = "语言数据")
         {
             using var stream = file.OpenReadStream();
@@ -182,7 +182,7 @@ namespace Lean.Hbt.WebApi.Controllers.Core
         /// <param name="sheetName">工作表名称</param>
         /// <returns>Excel文件</returns>
         [HttpGet("export")]
-        [HbtPerm("admin:language:export")]
+        [HbtPerm("core:language:export")]
         public async Task<IActionResult> ExportAsync([FromQuery] HbtLanguageQueryDto query, [FromQuery] string sheetName = "语言数据")
         {
             var (_, content) = await _languageService.ExportAsync(query, sheetName);
@@ -199,7 +199,7 @@ namespace Lean.Hbt.WebApi.Controllers.Core
         /// <param name="sheetName">工作表名称</param>
         /// <returns>Excel模板文件</returns>
         [HttpGet("template")]
-        [HbtPerm("admin:language:query")]
+        [HbtPerm("core:language:query")]
         public async Task<IActionResult> GetTemplateAsync([FromQuery] string sheetName = "语言数据导入模板")
         {
             var (_, content) = await _languageService.GetTemplateAsync(sheetName);
@@ -220,7 +220,7 @@ namespace Lean.Hbt.WebApi.Controllers.Core
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [HbtPerm("admin:language:update")]
+        [HbtPerm("core:language:update")]
         public async Task<IActionResult> UpdateStatusAsync(long LangId, [FromQuery] int status)
         {
             var input = new HbtLanguageStatusDto

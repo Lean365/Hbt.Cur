@@ -187,10 +187,10 @@ public class HbtDbSeedMenu
         new HbtMenu
         {
             MenuName = "系统管理",
-            TransKey = "menu.admin._self",
+            TransKey = "menu.core._self",
             ParentId = 0,
             OrderNum = 6,
-            Path = "admin",
+            Path = "core",
             Component = "",
             QueryParams = null,
             IsExternal = 0,
@@ -479,39 +479,39 @@ public class HbtDbSeedMenu
             new HbtMenu
             {
                 MenuName = "系统配置",
-                TransKey = "menu.admin.config",
+                TransKey = "menu.core.config",
                 ParentId = parentId,
                 OrderNum = 1,
                 Path = "configs",
-                Component = "admin/configs/index",
+                Component = "core/configs/index",
                 MenuType = 1,
-                Perms = "admin:config:list",
+                Perms = "core:config:list",
                 Icon = "ToolOutlined",
                 Remark = "系统配置菜单"
             },
             new HbtMenu
             {
                 MenuName = "语言管理",
-                TransKey = "menu.admin.language",
+                TransKey = "menu.core.language",
                 ParentId = parentId,
                 OrderNum = 2,
                 Path = "language",
-                Component = "admin/language/index",
+                Component = "core/language/index",
                 MenuType = 1,
-                Perms = "admin:language:list",
+                Perms = "core:language:list",
                 Icon = "TranslationOutlined",
                 Remark = "语言管理菜单"
             },
             new HbtMenu
             {
                 MenuName = "字典管理",
-                TransKey = "menu.admin.dict",
+                TransKey = "menu.core.dict",
                 ParentId = parentId,
                 OrderNum = 3,
                 Path = "dict",
-                Component = "admin/dict/index",
+                Component = "core/dict/index",
                 MenuType = 1,
-                Perms = "admin:dict:list",
+                Perms = "core:dict:list",
                 Icon = "BookOutlined",
                 Remark = "字典类型菜单"
             },
@@ -1141,18 +1141,18 @@ public class HbtDbSeedMenu
         new HbtMenu
         {
             MenuName = "工作任务",
-            TransKey = "menu.routine.quartztask",
+            TransKey = "menu.routine.quartz",
             ParentId = parentId,
             OrderNum = 5,
-            Path = "quartztask",
-            Component = "routine/quartztask/index",
+            Path = "quartz",
+            Component = "routine/quartz/index",
             QueryParams = null,
             IsExternal = 0,
             IsCache = 0,
             MenuType = 1,
             Visible = 0,
             Status = 0,
-            Perms = "routine:quartztask:list",
+            Perms = "routine:quartz:list",
             Icon = "CheckSquareOutlined",
             TenantId = 0,
             Remark = "工作任务菜单",
@@ -1426,8 +1426,8 @@ public class HbtDbSeedMenu
         var buttonPerms = new[] { "query", "create", "update", "delete", "detail", "preview", "print", "import", "export", "template", "audit", "revoke" };
 
         // 代码生成按钮
-        var buttonGenNames = new[] { "查询", "新增", "修改", "删除", "生成代码", "预览代码", "下载代码", "同步数据库" };
-        var buttonGenPerms = new[] { "query", "create", "update", "delete", "generate", "preview", "download", "sync" };
+        var buttonGenNames = new[] { "查询", "新增", "修改", "删除", "生成代码", "预览代码", "下载代码", "同步数据库", "导入", "导出" };
+        var buttonGenPerms = new[] { "query", "create", "update", "delete", "generate", "preview", "download", "sync", "import", "export" };
 
         // 工作流按钮
         var buttonFlowNames = new[] { "查询", "新增", "修改", "删除", "发布", "停用", "挂起", "恢复", "转办", "委托", "退回", "终止", "导入", "导出", "打印" };

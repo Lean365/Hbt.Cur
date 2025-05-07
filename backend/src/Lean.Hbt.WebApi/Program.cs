@@ -150,11 +150,13 @@ try
     builder.Services.Configure<FormOptions>(options =>
     {
         var fileUploadConfig = builder.Configuration.GetSection("FileUpload");
-        options.MultipartBodyLengthLimit = fileUploadConfig.GetValue<int>("MultipartBodyLengthLimit");
-        options.MultipartHeadersLengthLimit = fileUploadConfig.GetValue<int>("MultipartHeadersLengthLimit");
-        options.MultipartBoundaryLengthLimit = fileUploadConfig.GetValue<int>("MultipartBoundaryLengthLimit");
-        options.ValueLengthLimit = fileUploadConfig.GetValue<int>("ValueLengthLimit");
-        options.KeyLengthLimit = fileUploadConfig.GetValue<int>("KeyLengthLimit");
+        options.MultipartBodyLengthLimit = fileUploadConfig.GetValue<int>("MultipartBodyLengthLimit", 268435456); // 256MB
+        options.MultipartHeadersLengthLimit = fileUploadConfig.GetValue<int>("MultipartHeadersLengthLimit", 32768); // 32KB
+        options.MultipartBoundaryLengthLimit = fileUploadConfig.GetValue<int>("MultipartBoundaryLengthLimit", 128); // 128 bytes
+        options.ValueLengthLimit = fileUploadConfig.GetValue<int>("ValueLengthLimit", 10485760); // 10MB
+        options.KeyLengthLimit = fileUploadConfig.GetValue<int>("KeyLengthLimit", 1024); // 1KB
+        options.BufferBody = true;
+        options.MemoryBufferThreshold = 1048576; // 1MB
     });
 
     // 添加 Antiforgery 服务
@@ -189,7 +191,7 @@ try
     builder.Services.AddDomainServices();
 
     // 添加应用服务
-    builder.Services.AddApplicationServices();
+    builder.Services.AddApplicationServices(builder.Configuration, builder.Environment);
 
     // 添加本地化服务
     builder.Services.AddHbtLocalization();

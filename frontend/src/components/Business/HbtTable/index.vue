@@ -42,7 +42,7 @@
 
 <script lang="ts" setup>
 import { computed, ref, watch } from 'vue'
-import type { TableProps } from 'ant-design-vue'
+import type { TableProps, TablePaginationConfig } from 'ant-design-vue'
 
 // === 类型定义 ===
 interface Props {
@@ -56,7 +56,7 @@ interface Props {
   loading?: boolean
   
   // 分页配置 - 设置分页器的参数，如每页条数、是否显示快速跳转等
-  pagination?: any
+  pagination?: false | TablePaginationConfig
   
   // 行选择配置 - 设置行选择的类型（单选/多选）和选择事件回调
   rowSelection?: TableProps['rowSelection']
@@ -107,8 +107,8 @@ const props = withDefaults(defineProps<Props>(), {
 
 // === 事件定义 - 声明组件对外暴露的事件 ===
 const emit = defineEmits<{
-  // 分页、排序、筛选变化时触发
-  'change': [pagination: any, filters: any, sorter: any]
+  // 排序、筛选变化时触发
+  'change': [filters: any, sorter: any]
   // 行点击事件
   'row-click': [record: any, index: number, event: Event]
   // 选中项发生变化时触发
@@ -132,12 +132,8 @@ const rowSelectionConfig = computed(() => {
 })
 
 // 分页配置 - 处理分页器的显示和功能
-const paginationConfig = computed(() => {
-  if (!props.pagination) return false
-  return {
-    ...props.pagination,
-    showTotal: (total: number) => `共 ${total} 条`
-  }
+const paginationConfig = computed<false | TablePaginationConfig>(() => {
+  return false
 })
 
 // 表格高度 - 根据传入的scroll.y或defaultHeight计算
@@ -162,9 +158,9 @@ const scrollConfig = computed(() => {
 })
 
 // === 事件处理 ===
-// 表格变化事件处理 - 处理分页、排序、筛选等变化
-const handleTableChange = (pagination: any, filters: any, sorter: any) => {
-  emit('change', pagination, filters, sorter)
+// 表格变化事件处理 - 处理排序、筛选等变化
+const handleTableChange = (filters: any, sorter: any) => {
+  emit('change', filters, sorter)
 }
 
 // 行点击事件处理

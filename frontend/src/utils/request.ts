@@ -5,24 +5,91 @@ import { useUserStore } from '@/stores/user'
 
 // 创建axios实例
 const service: AxiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
-  timeout: 10000
+  baseURL: import.meta.env.VITE_API_BASE_URL,  // 使用环境变量中的 baseURL
+  timeout: 30000, // 增加超时时间
+  withCredentials: true, // 允许跨域请求携带 cookie
+  maxContentLength: Infinity, // 允许上传大文件
+  maxBodyLength: Infinity,
+  headers: {
+    'Accept': 'application/json, text/plain, */*'
+  }
 })
+
+// 从 cookie 中获取 CSRF 令牌
+export function getCsrfToken(): string | null {
+  const cookies = document.cookie.split(';')
+  for (const cookie of cookies) {
+    const [name, value] = cookie.trim().split('=')
+    if (name === 'XSRF-TOKEN') {
+      // 对 Cookie 中的 Token 进行 URL 解码
+      const decodedValue = decodeURIComponent(value)
+      console.log('[CSRF] 从cookie中获取到完整令牌:', decodedValue)
+      return decodedValue
+    }
+  }
+  console.warn('[CSRF] 未在cookie中找到XSRF-TOKEN令牌')
+  return null
+}
 
 // 请求拦截器
 service.interceptors.request.use(
   (config) => {
-    // 在请求发送之前做一些处理
-    const token = getToken()
-    if (token && config.headers) {
-      // 让每个请求携带token
-      config.headers['Authorization'] = `Bearer ${token}`
+    console.log('=== 请求拦截器开始 ===')
+    console.log('请求配置:', config)
+
+    // 获取 CSRF Token
+    const csrfToken = getCsrfToken()
+    if (csrfToken) {
+      console.log('[CSRF] 从cookie中获取到完整令牌:', csrfToken)
+      config.headers['X-CSRF-TOKEN'] = csrfToken
+      console.log('CSRF Token: 存在')
     }
+
+    // 获取认证 Token
+    const token = getToken()
+    if (token) {
+      config.headers['Authorization'] = `Bearer ${token}`
+      console.log('Authorization Token: 存在')
+    }
+
+    // 处理文件上传
+    if (config.data instanceof FormData) {
+      console.log('[Request] 文件上传请求:', {
+        url: config.url,
+        method: config.method,
+        headers: config.headers,
+        data: config.data
+      })
+
+      // 验证 FormData 内容
+      console.log('[Request] FormData 内容详情:')
+      for (const [key, value] of config.data.entries()) {
+        console.log(`- ${key}:`, value)
+        if (value instanceof File) {
+          console.log(`  文件详情:`, {
+            name: value.name,
+            size: value.size,
+            type: value.type,
+            lastModified: value.lastModified
+          })
+        }
+      }
+
+      // 设置文件上传超时时间
+      config.timeout = 60000
+
+      // 删除 Content-Type 头，让浏览器自动设置正确的 boundary
+      delete config.headers['Content-Type']
+
+      // 添加 X-Requested-With 头
+      config.headers['X-Requested-With'] = 'XMLHttpRequest'
+    }
+
+    console.log('=== 请求拦截器结束 ===')
     return config
   },
-  error => {
-    // 发送失败
-    console.error('[Request] 请求错误:', error)
+  (error) => {
+    console.error('请求拦截器错误:', error)
     return Promise.reject(error)
   }
 )
@@ -60,7 +127,24 @@ service.interceptors.response.use(
     const { data: res } = response
     
     // 记录原始响应
-    console.log(`[Response] 原始数据:`, res)
+    console.log(`[Response] 原始响应:`, {
+      status: response.status,
+      statusText: response.statusText,
+      headers: response.headers,
+      data: res
+    })
+    
+    // 如果是文件上传响应，直接返回
+    if (response.config.data instanceof FormData) {
+      console.log('[Response] 文件上传响应，直接返回')
+      return response
+    }
+    
+    // 如果是Blob类型，直接返回response.data
+    if (res instanceof Blob) {
+      console.log('[Response] 检测到Blob响应，返回response.data')
+      return response.data
+    }
     
     // 转换为统一的小驼峰格式
     const normalizedData = normalizeKeys(res)
@@ -89,7 +173,14 @@ service.interceptors.response.use(
   error => {
     // 处理HTTP错误
     if (error.response) {
-      const { status, data } = error.response
+      const { status, data, headers } = error.response
+      console.error('[Response] HTTP错误:', {
+        status,
+        statusText: error.response.statusText,
+        headers,
+        data
+      })
+      
       switch (status) {
         case 401: // 未授权
           const userStore = useUserStore()
@@ -109,10 +200,16 @@ service.interceptors.response.use(
       }
     } else if (error.request) {
       // 请求已发出但没有收到响应
-      console.error('[Response] 网络错误:', error.message)
+      console.error('[Response] 网络错误:', {
+        message: error.message,
+        request: error.request
+      })
     } else {
       // 请求配置出错
-      console.error('[Response] 请求配置错误:', error.message)
+      console.error('[Response] 请求配置错误:', {
+        message: error.message,
+        config: error.config
+      })
     }
     
     return Promise.reject(error)

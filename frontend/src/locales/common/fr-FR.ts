@@ -550,7 +550,13 @@ export default {
     button: {
       submit: 'Soumettre',
       confirm: 'Confirmer',
-      ok: 'OK'
+      ok: 'OK',
+      cancel: 'Annuler',
+      close: 'Fermer',
+      reset: 'Réinitialiser',
+      clear: 'Effacer',
+      save: 'Enregistrer',
+      delete: 'Supprimer'
     }
   },
 

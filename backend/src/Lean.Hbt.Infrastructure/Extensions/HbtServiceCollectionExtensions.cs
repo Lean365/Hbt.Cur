@@ -32,6 +32,12 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Lean.Hbt.Domain.IServices.Extensions;
 using NLog;
+using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Hosting;
+
+// 添加代码生成相关服务的命名空间
+using Lean.Hbt.Application.Services.Generator;
+using Lean.Hbt.Application.Services.Generator.CodeGenerator;
 
 namespace Lean.Hbt.Infrastructure.Extensions
 {
@@ -100,8 +106,10 @@ namespace Lean.Hbt.Infrastructure.Extensions
         /// 5. 工作流服务 - 业务流程管理
         /// </remarks>
         /// <param name="services">服务集合</param>
+        /// <param name="configuration">配置</param>
+        /// <param name="webHostEnvironment">Web主机环境</param>
         /// <returns>服务集合</returns>
-        public static IServiceCollection AddApplicationServices(this IServiceCollection services)
+        public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment webHostEnvironment)
         {
             services.AddIdentityServices();    // 身份认证服务
             services.AddAdminServices();       // 管理服务
@@ -109,6 +117,7 @@ namespace Lean.Hbt.Infrastructure.Extensions
             services.AddRealTimeServices();    // 实时服务
             services.AddWorkflowServices();    // 工作流服务
             services.AddRoutineServices();     // 常规业务服务
+            services.AddGeneratorServices(configuration, webHostEnvironment);   // 代码生成服务
 
             return services;
         }
@@ -317,8 +326,25 @@ namespace Lean.Hbt.Infrastructure.Extensions
             services.AddSingleton<SqlSugarScope>(sp =>
             {
                 var options = sp.GetRequiredService<IOptions<ConnectionConfig>>();
-                var scope = new SqlSugarScope(options.Value);
-
+                var mainConfig = options.Value;
+                
+                // 创建连接配置列表
+                var configs = new List<ConnectionConfig>
+                {
+                    // 主数据库配置
+                    new ConnectionConfig
+                    {
+                        ConfigId = "main",
+                        ConnectionString = mainConfig.ConnectionString,
+                        DbType = mainConfig.DbType,
+                        IsAutoCloseConnection = true,
+                        InitKeyType = InitKeyType.Attribute
+                    }
+                };
+                
+                // 创建 SqlSugar 实例
+                var scope = new SqlSugarScope(configs);
+                
                 // 添加 SQL 执行日志
                 var logger = sp.GetRequiredService<ILogger<SqlSugarScope>>();
                 scope.Aop.OnLogExecuting = (sql, parameters) =>
@@ -329,7 +355,7 @@ namespace Lean.Hbt.Infrastructure.Extensions
                         logger.LogInformation("参数: {@Parameters}", parameters.ToDictionary(p => p.ParameterName, p => p.Value));
                     }
                 };
-
+                
                 // 添加 SQL 执行结果日志
                 scope.Aop.OnLogExecuted = (sql, parameters) =>
                 {
@@ -339,7 +365,7 @@ namespace Lean.Hbt.Infrastructure.Extensions
                         logger.LogInformation("参数: {@Parameters}", parameters.ToDictionary(p => p.ParameterName, p => p.Value));
                     }
                 };
-
+                
                 return scope;
             });
             services.AddSingleton<ISqlSugarClient>(sp => sp.GetRequiredService<SqlSugarScope>());

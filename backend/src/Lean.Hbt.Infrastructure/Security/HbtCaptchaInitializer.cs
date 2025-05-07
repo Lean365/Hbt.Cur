@@ -121,10 +121,10 @@ public class HbtCaptchaInitializer : IHostedService
             _logger.Info("开始验证滑块验证码模板...");
 
             // 检查并创建模板目录
-            if (!Directory.Exists(_templatePath))
+            if (!await Task.Run(() => Directory.Exists(_templatePath)))
             {
                 _logger.Info("创建模板目录: {Path}", _templatePath);
-                Directory.CreateDirectory(_templatePath);
+                await Task.Run(() => Directory.CreateDirectory(_templatePath));
             }
 
             // 检查每个模板组目录
@@ -134,7 +134,7 @@ public class HbtCaptchaInitializer : IHostedService
                 var groupPath = Path.Combine(_templatePath, i.ToString());
                 _logger.Info("检查模板组目录 {Group}: {Path}", i, groupPath);
 
-                if (!Directory.Exists(groupPath))
+                if (!await Task.Run(() => Directory.Exists(groupPath)))
                 {
                     _logger.Warn("模板组目录 {Group} 不存在: {Path}", i, groupPath);
                     continue;
@@ -144,13 +144,13 @@ public class HbtCaptchaInitializer : IHostedService
                 var holePath = Path.Combine(groupPath, "hole.png");
                 var sliderPath = Path.Combine(groupPath, "slider.png");
 
-                if (!File.Exists(holePath))
+                if (!await Task.Run(() => File.Exists(holePath)))
                 {
                     _logger.Warn("模板组 {Group} 缺少挖空背景图: {Path}", i, holePath);
                     continue;
                 }
 
-                if (!File.Exists(sliderPath))
+                if (!await Task.Run(() => File.Exists(sliderPath)))
                 {
                     _logger.Warn("模板组 {Group} 缺少滑块图片: {Path}", i, sliderPath);
                     continue;
@@ -198,7 +198,7 @@ public class HbtCaptchaInitializer : IHostedService
                     }
                     catch (Exception ex)
                     {
-                        _logger.Error("删除图片文件时发生错误: {File}", file);
+                        _logger.Error("删除图片文件时发生错误: {File}", file, ex.Message);
                     }
                 }
                 existingFiles = Array.Empty<string>();
