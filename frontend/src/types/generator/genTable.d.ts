@@ -8,13 +8,12 @@
 //===================================================================
 
 import type { HbtBaseEntity, HbtPagedQuery, HbtPagedResult } from '@/types/common'
+import type { HbtGenColumn } from './genColumn'
 
 /**
- * 代码生成数据库表实体
+ * 代码生成数据库表
  */
 export interface HbtGenTable extends HbtBaseEntity {
-  /** 表ID */
-  tableId: number
   /** 数据库名称 */
   databaseName: string
   /** 表名 */
@@ -22,21 +21,49 @@ export interface HbtGenTable extends HbtBaseEntity {
   /** 表描述 */
   tableComment: string
   /** 实体类名 */
-  className: string
-  /** 命名空间 */
-  namespace: string
+  entityClassName: string
+  /** 实体命名空间 */
+  entityNamespace: string
   /** 基本命名空间前缀 */
   baseNamespace: string
-  /** C#类名 */
-  csharpTypeName: string
-  /** 关联父表名 */
-  parentTableName?: string
-  /** 本表关联父表的外键名 */
-  parentTableFkName?: string
-  /** 状态（0：停用，1：正常） */
-  status: number
+  /** DTO类型 */
+  dtoType: string[]
+  /** DTO命名空间 */
+  dtoNamespace: string
+  /** DTO类名 */
+  dtoClassName: string
+  /** 服务命名空间 */
+  serviceNamespace: string
+  /** 服务接口类名 */
+  iServiceClassName: string
+  /** 服务类名 */
+  serviceClassName: string
+  /** 仓储接口命名空间 */
+  iRepositoryNamespace: string
+  /** 仓储接口类名 */
+  iRepositoryClassName: string
+  /** 仓储命名空间 */
+  repositoryNamespace: string
+  /** 仓储类名 */
+  repositoryClassName: string
+  /** 控制器命名空间 */
+  controllerNamespace: string
+  /** 控制器类名 */
+  controllerClassName: string
+  /** 模板类型 */
+  tplType: string
   /** 使用的模板 */
-  templateType: number
+  tplCategory: string
+  /** 关联子表名 */
+  subTableName?: string
+  /** 本表关联子表的外键名 */
+  subTableFkName?: string
+  /** 树编码字段 */
+  treeCode: string
+  /** 树名称字段 */
+  treeName: string
+  /** 树父编码字段 */
+  treeParentCode: string
   /** 模块名称 */
   moduleName: string
   /** 业务名称 */
@@ -45,64 +72,60 @@ export interface HbtGenTable extends HbtBaseEntity {
   functionName: string
   /** 作者名称 */
   author: string
-  /** 生成方式 */
-  genMode: number
+  /** 生成代码方式 */
+  genType: string
   /** 存放位置 */
   genPath: string
-  /** 其他选项 */
-  options?: string
+  /** 上级菜单ID */
+  parentMenuId: number
+  /** 排序类型 */
+  sortType: string
+  /** 排序字段 */
+  sortField: string
+  /** 权限前缀 */
+  permsPrefix: string
+  /** 是否生成菜单 */
+  generateMenu: number
+  /** 前端模板 */
+  frontTpl: number
+  /** 按钮样式 */
+  btnStyle: number
+  /** 前端样式 */
+  frontStyle: number
+  /** 状态（0：停用，1：正常） */
+  status: number
+  /** 基础选项 */
+  options: CodeOptions
+  /** 字段列表 */
+  columns?: HbtGenColumn[]
+  /** 子表信息 */
+  subTable?: HbtGenTable
   /** 租户ID */
   tenantId: number
+}
+
+/**
+ * 代码生成选项
+ */
+export interface CodeOptions {
+  /** 是否启用SQL差异 */
+  isSqlDiff: number
+  /** 是否使用雪花id */
+  isSnowflakeId: number
+  /** 是否生成仓储层 */
+  isRepository: number
+  /** CRUD组 */
+  crudGroup: number[]
 }
 
 /**
  * 代码生成数据库表查询参数
  */
 export interface HbtGenTableQuery extends HbtPagedQuery {
-  /** 数据库名称 */
-  databaseName?: string
   /** 表名 */
   tableName?: string
   /** 表描述 */
   tableComment?: string
-  /** 实体类名 */
-  className?: string
-  /** 命名空间 */
-  namespace?: string
-  /** 基本命名空间前缀 */
-  baseNamespace?: string
-  /** C#类名 */
-  csharpTypeName?: string
-  /** 关联父表名 */
-  parentTableName?: string
-  /** 本表关联父表的外键名 */
-  parentTableFkName?: string
-  /** 状态（0：停用，1：正常） */
-  status?: number
-  /** 使用的模板 */
-  templateType?: number
-  /** 模块名称 */
-  moduleName?: string
-  /** 业务名称 */
-  businessName?: string
-  /** 功能名称 */
-  functionName?: string
-  /** 作者名称 */
-  author?: string
-  /** 生成方式 */
-  genMode?: number
-  /** 存放位置 */
-  genPath?: string
-  /** 其他选项 */
-  options?: string
-  /** 租户ID */
-  tenantId?: number
-  /** 日期范围 */
-  dateRange?: [string, string]
-  /** 排序列 */
-  orderByColumn?: string
-  /** 排序方向 */
-  orderType?: 'asc' | 'desc'
 }
 
 /**
@@ -116,21 +139,49 @@ export interface HbtGenTableCreate {
   /** 表描述 */
   tableComment: string
   /** 实体类名 */
-  className: string
-  /** 命名空间 */
-  namespace: string
+  entityClassName: string
+  /** 实体命名空间 */
+  entityNamespace: string
   /** 基本命名空间前缀 */
   baseNamespace: string
-  /** C#类名 */
-  csharpTypeName: string
-  /** 关联父表名 */
-  parentTableName?: string
-  /** 本表关联父表的外键名 */
-  parentTableFkName?: string
-  /** 状态（0：停用，1：正常） */
-  status: number
+  /** DTO类型 */
+  dtoType: string[]
+  /** DTO命名空间 */
+  dtoNamespace: string
+  /** DTO类名 */
+  dtoClassName: string
+  /** 服务命名空间 */
+  serviceNamespace: string
+  /** 服务接口类名 */
+  iServiceClassName: string
+  /** 服务类名 */
+  serviceClassName: string
+  /** 仓储接口命名空间 */
+  iRepositoryNamespace: string
+  /** 仓储接口类名 */
+  iRepositoryClassName: string
+  /** 仓储命名空间 */
+  repositoryNamespace: string
+  /** 仓储类名 */
+  repositoryClassName: string
+  /** 控制器命名空间 */
+  controllerNamespace: string
+  /** 控制器类名 */
+  controllerClassName: string
+  /** 模板类型 */
+  tplType: string
   /** 使用的模板 */
-  templateType: number
+  tplCategory: string
+  /** 关联子表名 */
+  subTableName?: string
+  /** 本表关联子表的外键名 */
+  subTableFkName?: string
+  /** 树编码字段 */
+  treeCode: string
+  /** 树名称字段 */
+  treeName: string
+  /** 树父编码字段 */
+  treeParentCode: string
   /** 模块名称 */
   moduleName: string
   /** 业务名称 */
@@ -139,14 +190,32 @@ export interface HbtGenTableCreate {
   functionName: string
   /** 作者名称 */
   author: string
-  /** 生成方式 */
-  genMode: number
+  /** 生成代码方式 */
+  genType: string
   /** 存放位置 */
   genPath: string
-  /** 其他选项 */
-  options?: string
-  /** 租户ID */
-  tenantId: number
+  /** 上级菜单ID */
+  parentMenuId: number
+  /** 排序类型 */
+  sortType: string
+  /** 排序字段 */
+  sortField: string
+  /** 权限前缀 */
+  permsPrefix: string
+  /** 是否生成菜单 */
+  generateMenu: number
+  /** 前端模板 */
+  frontTpl: number
+  /** 按钮样式 */
+  btnStyle: number
+  /** 前端样式 */
+  frontStyle: number
+  /** 状态（0：停用，1：正常） */
+  status: number
+  /** 基础选项 */
+  options: CodeOptions
+  /** 字段列表 */
+  columns?: HbtGenColumn[]
 }
 
 /**
@@ -154,7 +223,7 @@ export interface HbtGenTableCreate {
  */
 export interface HbtGenTableUpdate extends HbtGenTableCreate {
   /** 表ID */
-  tableId: number
+  id: number
 }
 
 /**
@@ -162,7 +231,7 @@ export interface HbtGenTableUpdate extends HbtGenTableCreate {
  */
 export interface HbtGenTableBatchDelete {
   /** 表ID数组 */
-  tableIds: number[]
+  ids: number[]
 }
 
 /**
@@ -170,7 +239,7 @@ export interface HbtGenTableBatchDelete {
  */
 export interface HbtGenTableStatusUpdate {
   /** 表ID */
-  tableId: number
+  id: number
   /** 状态（0：停用，1：正常） */
   status: number
 }
@@ -179,10 +248,91 @@ export interface HbtGenTableStatusUpdate {
  * 导入代码生成数据库表参数
  */
 export interface HbtGenTableImport {
-  /** 文件对象 */
-  file: File
-  /** 工作表名称 */
-  sheetName?: string
+  /** 数据库名称 */
+  databaseName: string
+  /** 表名 */
+  tableName: string
+  /** 表描述 */
+  tableComment: string
+    /** 基本命名空间前缀 */
+    baseNamespace: string
+      /** 实体命名空间 */
+  entityNamespace: string
+  /** 实体类名 */
+  entityClassName: string
+
+
+
+  /** DTO命名空间 */
+  dtoNamespace: string
+  /** DTO类名 */
+  dtoClassName: string
+    /** DTO类型 */
+    dtoType: string[]
+  /** 服务命名空间 */
+  serviceNamespace: string
+  /** 服务接口类名 */
+  iServiceClassName: string
+  /** 服务类名 */
+  serviceClassName: string
+  /** 仓储接口命名空间 */
+  iRepositoryNamespace: string
+  /** 仓储接口类名 */
+  iRepositoryClassName: string
+  /** 仓储命名空间 */
+  repositoryNamespace: string
+  /** 仓储类名 */
+  repositoryClassName: string
+  /** 控制器命名空间 */
+  controllerNamespace: string
+  /** 控制器类名 */
+  controllerClassName: string
+  /** 模板类型 */
+  tplType: string
+  /** 使用的模板 */
+  tplCategory: string
+  /** 关联子表名 */
+  subTableName?: string
+  /** 本表关联子表的外键名 */
+  subTableFkName?: string
+  /** 树编码字段 */
+  treeCode: string
+  /** 树名称字段 */
+  treeName: string
+  /** 树父编码字段 */
+  treeParentCode: string
+  /** 模块名称 */
+  moduleName: string
+  /** 业务名称 */
+  businessName: string
+  /** 功能名称 */
+  functionName: string
+  /** 作者名称 */
+  author: string
+  /** 生成代码方式 */
+  genType: string
+  /** 存放位置 */
+  genPath: string
+  /** 上级菜单ID */
+  parentMenuId: number
+  /** 排序类型 */
+  sortType: string
+  /** 排序字段 */
+  sortField: string
+  /** 权限前缀 */
+  permsPrefix: string
+  /** 是否生成菜单 */
+  generateMenu: number
+  /** 前端模板 */
+  frontTpl: number
+  /** 按钮样式 */
+  btnStyle: number
+  /** 前端样式 */
+  frontStyle: number
+  /** 状态（0：停用，1：正常） */
+  status: number
+  /** 基础选项 */
+  options: CodeOptions
 }
 
 /**
@@ -198,103 +348,29 @@ export interface HbtGenTableExport extends HbtGenTableQuery {
  */
 export type HbtGenTablePageResult = HbtPagedResult<HbtGenTable>
 
-declare namespace HbtGenTable {
-  /** 数据库信息 */
-  interface DatabaseInfo {
-    /** 数据库名称 */
-    name: string;
-    /** 数据库注释 */
-    comment: string;
-  }
-
-  /** 代码生成表 */
-  interface Table {
-    /** 表ID */
-    id: number;
-    /** 数据库名称 */
-    databaseName: string;
-    /** 表名称 */
-    tableName: string;
-    /** 表描述 */
-    tableComment: string;
-    /** 实体类名称 */
-    className: string;
-    /** 命名空间 */
-    namespace: string;
-    /** 基础命名空间 */
-    baseNamespace: string;
-    /** C#类型名称 */
-    csharpTypeName: string;
-    /** 生成模块名 */
-    moduleName: string;
-    /** 生成业务名 */
-    businessName: string;
-    /** 生成功能名 */
-    functionName: string;
-    /** 作者 */
-    author: string;
-    /** 生成方式 */
-    genMode: string;
-    /** 生成路径 */
-    genPath: string;
-    /** 生成选项 */
-    options: string;
-    /** 状态 */
-    status: number;
-    /** 备注 */
-    remark: string;
-    /** 创建者 */
-    createBy: string;
-    /** 创建时间 */
-    createTime: string;
-    /** 更新者 */
-    updateBy: string;
-    /** 更新时间 */
-    updateTime: string;
-    /** 字段列表 */
-    columns?: HbtGenColumn.Column[];
-  }
-
-  /** 创建表参数 */
-  interface Create extends Omit<Table, 'id' | 'createBy' | 'createTime' | 'updateBy' | 'updateTime'> {}
-
-  /** 更新表参数 */
-  interface Update extends Partial<Create> {
-    /** 表ID */
-    tableId: number;
-  }
-
-  /** 查询表参数 */
-  interface Query {
-    /** 表名称 */
-    tableName?: string;
-    /** 表描述 */
-    tableComment?: string;
-    /** 状态 */
-    status?: number;
-    /** 页码 */
-    pageIndex: number;
-    /** 每页记录数 */
-    pageSize: number;
-  }
-
-  /** 分页结果 */
-  interface PageResult {
-    /** 数据列表 */
-    rows: Table[];
-    /** 总记录数 */
-    totalNum: number;
-    /** 页码 */
-    pageIndex: number;
-    /** 每页记录数 */
-    pageSize: number;
-  }
+/**
+ * 数据库信息
+ */
+export interface HbtGenTableDatabaseInfo {
+  /** 数据库名称 */
+  name: string
+  /** 数据库注释 */
+  comment: string
 }
 
+/**
+ * 表信息
+ */
 export interface TableInfoDto {
+  /** 表名 */
   name: string
+  /** 表描述 */
   description: string
+  /** 表类型 */
   tableType: string
 }
 
+/**
+ * 表信息元组
+ */
 export type TableInfoTuple = [string, string] 

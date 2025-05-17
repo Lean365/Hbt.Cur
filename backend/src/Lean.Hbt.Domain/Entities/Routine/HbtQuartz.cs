@@ -7,6 +7,7 @@
 // 描述   : 定时任务实体
 //===================================================================
 
+using Lean.Hbt.Domain.Entities.Identity;
 using SqlSugar;
 
 namespace Lean.Hbt.Domain.Entities.Routine
@@ -14,7 +15,7 @@ namespace Lean.Hbt.Domain.Entities.Routine
     /// <summary>
     /// 定时任务实体
     /// </summary>
-    [SugarTable("hbt_rou_quartz", "定时任务")]
+    [SugarTable("hbt_routine_quartz", "定时任务")]
     [SugarIndex("index_task_name", nameof(TaskName), OrderByType.Asc)]
     [SugarIndex("index_task_group", nameof(TaskGroupName), OrderByType.Asc)]
     [SugarIndex("index_task_status", nameof(TaskStatus), OrderByType.Asc)]
@@ -133,5 +134,16 @@ namespace Lean.Hbt.Domain.Entities.Routine
         /// </summary>
         [SugarColumn(ColumnName = "task_status", ColumnDescription = "状态（0停用 1启用）", IsNullable = false, DefaultValue = "0", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
         public int TaskStatus { get; set; }
+        /// <summary>
+        /// 租户ID
+        /// </summary>
+        [SugarColumn(ColumnName = "tenant_id", ColumnDescription = "租户ID", ColumnDataType = "bigint", IsNullable = false)]
+        public long TenantId { get; set; }
+
+        /// <summary>
+        /// 租户
+        /// </summary>
+        [Navigate(NavigateType.OneToOne, nameof(TenantId))]
+        public HbtTenant? Tenant { get; set; }
     }
 }

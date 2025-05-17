@@ -14,7 +14,7 @@ namespace Lean.Hbt.Domain.Entities.Audit
     /// <summary>
     /// 定时任务日志实体
     /// </summary>
-    [SugarTable("hbt_mon_quartz_log", "任务日志")]
+    [SugarTable("hbt_audit_quartz_log", "任务日志")]
     public class HbtQuartzLog : HbtBaseEntity
     {
         /// <summary>

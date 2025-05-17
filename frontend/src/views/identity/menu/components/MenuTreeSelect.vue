@@ -1,22 +1,22 @@
 <template>
   <a-tree-select
     :value="modelValue"
-    :tree-data="treeData"
+    :tree-data="filteredTreeData"
     :field-names="{
       children: 'children',
       label: 'menuName',
       value: 'menuId'
     }"
-    :placeholder="t('identity.menu.fields.parentMenu.placeholder')"
+    :placeholder="t('identity.menu.fields.parentId.placeholder')"
     :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
     allow-clear
     tree-default-expand-all
-    @update:value="(value: number | undefined) => emit('update:modelValue', value)"
+    @change="handleChange"
   />
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { message } from 'ant-design-vue'
 import type { Menu } from '@/types/identity/menu'
@@ -24,11 +24,14 @@ import type { HbtApiResponse } from '@/types/common'
 import { getMenuTree } from '@/api/identity/menu'
 
 const props = defineProps<{
-  modelValue?: number
+  modelValue?: number,
+  menuType?: number // 新增菜单类型 prop
 }>()
 
 const emit = defineEmits<{
   (e: 'update:modelValue', value?: number): void
+  (e: 'selectMenu', menu?: any): void
+  (e: 'load', data: Menu[]): void
 }>()
 
 const { t } = useI18n()
@@ -36,22 +39,59 @@ const { t } = useI18n()
 // 树形数据
 const treeData = ref<Menu[]>([])
 
+// 过滤后的树形数据
+const filteredTreeData = computed(() => {
+  if (props.menuType === 0) {
+    // 只显示 parentId=0 的菜单，加上根菜单，且 children 置空
+    return [
+      {
+        menuId: 0,
+        menuName: t('identity.menu.fields.parentId.root') || '顶级菜单',
+        children: []
+      },
+      ...treeData.value
+        .filter(menu => menu.parentId === 0 || menu.parentId === null)
+        .map(menu => ({ ...menu, children: [] }))
+    ]
+  }
+  if (props.menuType === 1) {
+    // 只显示 parentId=0 的菜单，不加虚拟根节点
+    return treeData.value
+      .filter(menu => menu.parentId === 0 || menu.parentId === null)
+      .map(menu => ({ ...menu, children: [] }))
+  }
+  if (props.menuType === 2) {
+    // 显示所有 menuType=1 的菜单（不分层级，平铺），不包含按钮
+    function flattenMenus(list: Menu[]): Menu[] {
+      let result: Menu[] = []
+      list.forEach((item: Menu) => {
+        if (item.menuType === 1) {
+          result.push({ ...item, children: [] })
+        }
+        if (item.children && item.children.length > 0) {
+          result = result.concat(flattenMenus(item.children))
+        }
+      })
+      return result
+    }
+    return flattenMenus(treeData.value)
+  }
+  // 其它类型暂时返回全部
+  return treeData.value
+})
+
 // 加载菜单树数据
 const loadTreeData = async () => {
   try {
-    console.log('[菜单树选择] 开始加载菜单树数据')
-    const res = await getMenuTree()
-    console.log('[菜单树选择] API返回数据:', res)
-    
-    if (res.code === 200) {
-      treeData.value = res.data
-      console.log('[菜单树选择] 设置树形数据:', treeData.value)
+    const { data } = await getMenuTree()
+    if (data.code === 200) {
+      treeData.value = data.data
+      emit('load', data.data) // 传递原始菜单数组
     } else {
-      console.error('[菜单树选择] 加载失败:', res.msg)
-      message.error(res.msg || t('common.failed'))
+      message.error(data.msg || t('common.failed'))
     }
   } catch (error) {
-    console.error('[菜单树选择] 加载出错:', error)
+    console.error(error)
     message.error(t('common.failed'))
   }
 }
@@ -60,4 +100,21 @@ const loadTreeData = async () => {
 onMounted(() => {
   loadTreeData()
 })
+
+function handleChange(value: number | undefined) {
+  emit('update:modelValue', value)
+  // 查找选中的菜单对象
+  const findMenu = (list: any[], id: number | undefined): any | undefined => {
+    for (const item of list) {
+      if (item.menuId === id) return item
+      if (item.children && item.children.length > 0) {
+        const found = findMenu(item.children, id)
+        if (found) return found
+      }
+    }
+    return undefined
+  }
+  const selectedMenu = findMenu(treeData.value, value)
+  emit('selectMenu', selectedMenu)
+}
 </script>

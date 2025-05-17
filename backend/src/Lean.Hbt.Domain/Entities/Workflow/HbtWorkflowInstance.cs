@@ -7,6 +7,7 @@
 // 描述    : 工作流实例实体类
 //===================================================================
 
+using Lean.Hbt.Domain.Entities.Identity;
 using SqlSugar;
 
 namespace Lean.Hbt.Domain.Entities.Workflow
@@ -18,7 +19,7 @@ namespace Lean.Hbt.Domain.Entities.Workflow
     /// 创建者: Lean365
     /// 创建时间: 2024-01-22
     /// </remarks>
-    [SugarTable("hbt_wf_instance", "工作流实例表")]
+    [SugarTable("hbt_workflow_instance", "工作流实例表")]
     public class HbtWorkflowInstance : HbtBaseEntity
     {
         /// <summary>
@@ -68,6 +69,17 @@ namespace Lean.Hbt.Domain.Entities.Workflow
         /// </summary>
         [SugarColumn(ColumnName = "end_time", ColumnDescription = "结束时间", ColumnDataType = "datetime", IsNullable = true)]
         public DateTime? EndTime { get; set; }
+        /// <summary>
+        /// 租户ID
+        /// </summary>
+        [SugarColumn(ColumnName = "tenant_id", ColumnDescription = "租户ID", ColumnDataType = "bigint", IsNullable = false)]
+        public long TenantId { get; set; }
+
+        /// <summary>
+        /// 租户
+        /// </summary>
+        [Navigate(NavigateType.OneToOne, nameof(TenantId))]
+        public HbtTenant? Tenant { get; set; }
 
         /// <summary>
         /// 工作流定义

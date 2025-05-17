@@ -48,4 +48,30 @@ export interface RoleStatus {
 }
 
 // 角色分页结果
-export type RolePageResult = HbtPagedResult<Role> 
+export type RolePageResult = HbtPagedResult<Role>
+
+/**
+ * 角色部门DTO
+ */
+export interface HbtRoleDeptDto {
+  id: number;
+  roleId: number;
+  deptId: number;
+  deptName: string;
+  deptCode: string;
+  createTime: string;
+  createBy: string;
+}
+
+/**
+ * 角色菜单DTO
+ */
+export interface HbtRoleMenuDto {
+  id: number;
+  roleId: number;
+  menuId: number;
+  menuName: string;
+  menuCode: string;
+  createTime: string;
+  createBy: string;
+} 

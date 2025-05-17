@@ -105,11 +105,11 @@ watch(
     if (newVal) {
       try {
         const res = await getDept(newVal)
-        if (res.code === 200) {
-          const { deptId, ...rest } = res.data
+        if (res.data.code === 200) {
+          const { deptId, ...rest } = res.data.data
           form.value = rest
         } else {
-          message.error(res.msg || t('common.failed'))
+          message.error(res.data.msg || t('common.failed'))
         }
       } catch (error) {
         console.error('[部门管理] 获取部门详情出错:', error)
@@ -153,21 +153,21 @@ const submitForm = async () => {
         deptId: props.deptId
       }
       const res = await updateDept(updateData)
-      if (res.code === 200) {
+      if (res.data.code === 200) {
         message.success(t('common.update.success'))
         emit('update:visible', false)
         emit('success')
       } else {
-        message.error(res.msg || t('common.update.failed'))
+        message.error(res.data.msg || t('common.update.failed'))
       }
     } else {
       const res = await createDept(form.value)
-      if (res.code === 200) {
+      if (res.data.code === 200) {
         message.success(t('common.create.success'))
         emit('update:visible', false)
         emit('success')
       } else {
-        message.error(res.msg || t('common.create.failed'))
+        message.error(res.data.msg || t('common.create.failed'))
       }
     }
   } catch (error) {

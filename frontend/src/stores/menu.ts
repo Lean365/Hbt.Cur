@@ -89,16 +89,13 @@ export const useMenuStore = defineStore('menu', () => {
   const reloadMenus = async (router: Router) => {
     try {
       if (!router) {
-        //console.error('[菜单] 路由实例未提供')
         return []
       }
-
       isLoading.value = true
       const response = await getCurrentUserMenus()
       if (response.status === 200) {
         const data = response.data as HbtApiResponse<Menu[]>
         if (data.code === 200) {
-          // 处理菜单数据，确保ID和名称正确设置
           const processedMenus = data.data.map(menu => {
             const processedMenu = {
               ...menu,
@@ -116,53 +113,12 @@ export const useMenuStore = defineStore('menu', () => {
                 perms: child.perms || ''
               }))
             }
-            
-            // console.log('[菜单] 处理后的菜单项:', {
-            //   菜单ID: processedMenu.menuId,
-            //   名称: processedMenu.menuName,
-            //   路径: processedMenu.path,
-            //   组件: processedMenu.component,
-            //   类型: processedMenu.menuType,
-            //   子菜单数: processedMenu.children?.length || 0
-            // })
-            
             return processedMenu
           })
-
-          // console.log('[菜单] 加载的菜单数据:', {
-          //   总数: processedMenus.length,
-          //   菜单项: processedMenus.map(m => ({
-          //     菜单ID: m.menuId,
-          //     名称: m.menuName,
-          //     路径: m.path,
-          //     组件: m.component,
-          //     类型: m.menuType,
-          //     状态: m.status,
-          //     权限: m.perms,
-          //     子菜单数: m.children?.length || 0
-          //   }))
-          // })
-
           rawMenuList.value = processedMenus
           menuList.value = processedMenus
-
-          // 注册动态路由前打印当前路由表
-          console.log('[路由] 当前路由表:', router.getRoutes().map(r => ({
-            路径: r.path,
-            名称: r.name,
-            完整路径: r.path + (r.children?.length ? '/' + r.children.map(c => c.path).join('/') : '')
-          })))
-
           await registerDynamicRoutes(processedMenus, router)
-
-          // 注册动态路由后打印当前路由表
-          // console.log('[路由] 注册后的路由表:', router.getRoutes().map(r => ({
-          //   路径: r.path,
-          //   名称: r.name,
-          //   完整路径: r.path + (r.children?.length ? '/' + r.children.map(c => c.path).join('/') : '')
-          // })))
-
-          console.log('[菜单] 菜单加载成功')
+          // 动态路由注册完成后再 resolve
           return processedMenus
         } else {
           console.error('[菜单] 加载失败:', data.msg)

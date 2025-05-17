@@ -77,10 +77,10 @@ watch(
     if (val && props.mailId) {
       try {
         const res = await getMailDetail(props.mailId)
-        if (res.code === 200) {
-          mailData.value = res.data
+        if (res.data.code === 200) {
+          mailData.value = res.data.data
         } else {
-          message.error(res.msg || '获取邮件数据失败')
+          message.error(res.data.msg || '获取邮件数据失败')
           handleCancel()
         }
       } catch (error) {

@@ -1,0 +1,272 @@
+#nullable enable
+
+//===================================================================
+// 项目名 : {{ table.service_namespace }}
+// 文件名 : {{ table.service_class_name }}.cs
+// 创建者 : Lean365
+// 创建时间: {{ date }}
+// 版本号 : V1.0.0
+// 描述    : {{ table.comment }}服务实现
+//===================================================================
+
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.Linq.Expressions;
+using Lean.Hbt.Common.Models;
+using Lean.Hbt.Common.Services;
+using Lean.Hbt.Common.Exceptions;
+using Lean.Hbt.Common.Helpers;
+using Lean.Hbt.Domain.Repositories;
+using SqlSugar;
+using Mapster;
+using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Hosting;
+using {{ table.dto_namespace }};
+using {{ table.entity_namespace }};
+using {{ table.irepository_namespace }};
+
+namespace {{ table.service_namespace }};
+
+/// <summary>
+/// {{ table.comment }}服务实现
+/// </summary>
+/// <remarks>
+/// 创建者: Lean365
+/// 创建时间: {{ date }}
+/// </remarks>
+public class {{ table.service_class_name }} : HbtBaseService, {{ table.iservice_class_name }}
+{
+    private readonly IHbtRepository<{{ table.entity_class_name }}> _repository;
+    private readonly IWebHostEnvironment _webHostEnvironment;
+
+    /// <summary>
+    /// 构造函数
+    /// </summary>
+    /// <param name="logger">日志记录器</param>
+    /// <param name="repository">仓储</param>
+    /// <param name="httpContextAccessor">HTTP上下文访问器</param>
+    /// <param name="currentUser">当前用户服务</param>
+    /// <param name="localization">本地化服务</param>
+    /// <param name="webHostEnvironment">Web主机环境</param>
+    public {{ table.service_class_name }}(
+        IHbtLogger logger,
+        IHbtRepository<{{ table.entity_class_name }}> repository,
+        IHttpContextAccessor httpContextAccessor,
+        IHbtCurrentUser currentUser,
+        IHbtLocalizationService localization,
+        IWebHostEnvironment webHostEnvironment) : base(logger, httpContextAccessor, currentUser, localization)
+    {
+        _repository = repository;
+        _webHostEnvironment = webHostEnvironment;
+    }
+
+    /// <summary>
+    /// 获取{{ table.comment }}列表
+    /// </summary>
+    /// <param name="query">查询参数</param>
+    /// <returns>分页数据</returns>
+    public async Task<HbtPagedResult<{{ table.dto_class_name }}>> GetListAsync({{ table.dto_class_name | string.replace "Dto" "" }}QueryDto query)
+    {
+        _logger.Info("开始查询{{ table.comment }}列表，查询条件：{@Query}", query);
+
+        var predicate = QueryExpression(query);
+        _logger.Info("生成的查询表达式：{@Predicate}", predicate);
+
+        var result = await _repository.GetPagedListAsync(
+            predicate,
+            query?.PageIndex ?? 1,
+            query?.PageSize ?? 10,
+            x => x.Id,
+            OrderByType.Asc);
+
+        _logger.Info("查询结果：总数={TotalNum}, 当前页={PageIndex}, 每页大小={PageSize}, 数据行数={RowCount}",
+            result.TotalNum,
+            query?.PageIndex ?? 1,
+            query?.PageSize ?? 10,
+            result.Rows?.Count ?? 0);
+
+        var dtoResult = new HbtPagedResult<{{ table.dto_class_name }}>
+        {
+            TotalNum = result.TotalNum,
+            PageIndex = query?.PageIndex ?? 1,
+            PageSize = query?.PageSize ?? 10,
+            Rows = result.Rows.Adapt<List<{{ table.dto_class_name }}>>()
+        };
+
+        return dtoResult;
+    }
+
+    /// <summary>
+    /// 获取{{ table.comment }}详情
+    /// </summary>
+    /// <param name="id">主键</param>
+    /// <returns>详情数据</returns>
+    public async Task<{{ table.dto_class_name }}> GetInfoAsync(long id)
+    {
+        var entity = await _repository.GetByIdAsync(id);
+        if (entity == null)
+            throw new HbtException(L("{{ table.entity_class_name }}.NotFound", id));
+
+        return entity.Adapt<{{ table.dto_class_name }}>();
+    }
+
+    /// <summary>
+    /// 创建{{ table.comment }}
+    /// </summary>
+    /// <param name="input">创建参数</param>
+    /// <returns>主键</returns>
+    public async Task<long> CreateAsync({{ table.dto_class_name | string.replace "Dto" "" }}CreateDto input)
+    {
+        var entity = input.Adapt<{{ table.entity_class_name }}>();
+        var result = await _repository.CreateAsync(entity);
+        return result;
+    }
+
+    /// <summary>
+    /// 更新{{ table.comment }}
+    /// </summary>
+    /// <param name="input">更新参数</param>
+    /// <returns>是否成功</returns>
+    public async Task<bool> UpdateAsync({{ table.dto_class_name | string.replace "Dto" "" }}UpdateDto input)
+    {
+        var entity = await _repository.GetByIdAsync(input.Id);
+        if (entity == null)
+            throw new HbtException(L("{{ table.entity_class_name }}.NotFound", input.Id));
+
+        input.Adapt(entity);
+        var result = await _repository.UpdateAsync(entity);
+        return result > 0;
+    }
+
+    /// <summary>
+    /// 删除{{ table.comment }}
+    /// </summary>
+    /// <param name="input">删除参数</param>
+    /// <returns>是否成功</returns>
+    public async Task<bool> DeleteAsync({{ table.dto_class_name | string.replace "Dto" "" }}DeleteDto input)
+    {
+        var entity = await _repository.GetByIdAsync(input.Id);
+        if (entity == null)
+            throw new HbtException(L("{{ table.entity_class_name }}.NotFound", input.Id));
+
+        var result = await _repository.DeleteAsync(entity);
+        return result > 0;
+    }
+
+    /// <summary>
+    /// 导入{{ table.comment }}
+    /// </summary>
+    /// <param name="input">导入参数</param>
+    /// <returns>是否成功</returns>
+    public async Task<bool> ImportAsync(List<{{ table.dto_class_name | string.replace "Dto" "" }}ImportDto> input)
+    {
+        var entities = input.Adapt<List<{{ table.entity_class_name }}>>>();
+        var result = await _repository.InsertRangeAsync(entities);
+        return result > 0;
+    }
+
+    /// <summary>
+    /// 导出{{ table.comment }}
+    /// </summary>
+    /// <param name="query">查询参数</param>
+    /// <returns>导出数据</returns>
+    public async Task<List<{{ table.dto_class_name }}ExportDto>> ExportAsync({{ table.dto_class_name | string.replace "Dto" "" }}QueryDto query)
+    {
+        var predicate = QueryExpression(query);
+        var list = await _repository.AsQueryable()
+            .Where(predicate)
+            .OrderByDescending(x => x.CreateTime)
+            .ToListAsync();
+
+        return list.Adapt<List<{{ table.dto_class_name }}ExportDto>>();
+    }
+
+    /// <summary>
+    /// 获取{{ table.comment }}模板
+    /// </summary>
+    /// <returns>模板数据</returns>
+    public async Task<List<{{ table.dto_class_name | string.replace "Dto" "" }}TplDto>> GetTplAsync()
+    {
+        var list = await _repository.GetListAsync();
+        return list.Adapt<List<{{ table.dto_class_name }}TplDto>>();
+    }
+
+    /// <summary>
+    /// 更新{{ table.comment }}状态
+    /// </summary>
+    /// <param name="input">状态参数</param>
+    /// <returns>是否成功</returns>
+    public async Task<bool> UpdateStatusAsync({{ table.dto_class_name | string.replace "Dto" "" }}StatusDto input)
+    {
+        var entity = await _repository.GetByIdAsync(input.Id);
+        if (entity == null)
+            throw new HbtException(L("{{ table.entity_class_name }}.NotFound", input.Id));
+
+        entity.Status = input.Status;
+        var result = await _repository.UpdateAsync(entity);
+        return result > 0;
+    }
+
+    /// <summary>
+    /// 更新{{ table.comment }}排序
+    /// </summary>
+    /// <param name="input">排序参数</param>
+    /// <returns>是否成功</returns>
+    public async Task<bool> UpdateSortAsync({{ table.dto_class_name | string.replace "Dto" "" }}SortDto input)
+    {
+        var entity = await _repository.GetByIdAsync(input.Id);
+        if (entity == null)
+            throw new HbtException(L("{{ table.entity_class_name }}.NotFound", input.Id));
+
+        entity.Sort = input.Sort;
+        var result = await _repository.UpdateAsync(entity);
+        return result > 0;
+    }
+
+    /// <summary>
+    /// 审核{{ table.comment }}
+    /// </summary>
+    /// <param name="input">审核参数</param>
+    /// <returns>是否成功</returns>
+    public async Task<bool> AuditAsync({{ table.dto_class_name | string.replace "Dto" "" }}AuditDto input)
+    {
+        var entity = await _repository.GetByIdAsync(input.Id);
+        if (entity == null)
+            throw new HbtException(L("{{ table.entity_class_name }}.NotFound", input.Id));
+
+        entity.AuditStatus = input.AuditStatus;
+        entity.AuditRemark = input.AuditRemark;
+        var result = await _repository.UpdateAsync(entity);
+        return result > 0;
+    }
+
+    /// <summary>
+    /// 构建查询表达式
+    /// </summary>
+    /// <param name="query">查询条件</param>
+    /// <returns>查询表达式</returns>
+    private Expression<Func<{{ table.entity_class_name }}, bool>> QueryExpression({{ table.dto_class_name | string.replace "Dto" "" }}QueryDto query)
+    {
+        var exp = Expressionable.Create<{{ table.entity_class_name }}>();
+
+        {{~ for column in table.columns ~}}
+        {{~ if column.is_query ~}}
+        {{~ if column.csharp_type == "string" ~}}
+        if (!string.IsNullOrEmpty(query?.{{ column.property_name }}))
+            exp.And(x => x.{{ column.property_name }}.Contains(query.{{ column.property_name }}));
+        {{~ else if column.csharp_type == "int" || column.csharp_type == "long" || column.csharp_type == "decimal" || column.csharp_type == "double" || column.csharp_type == "float" ~}}
+        if (query?.{{ column.property_name }}.HasValue == true && query.{{ column.property_name }}.Value != -1)
+            exp.And(x => x.{{ column.property_name }} == query.{{ column.property_name }}.Value);
+        {{~ else if column.csharp_type == "DateTime" ~}}
+        if (query?.{{ column.property_name }}.HasValue == true)
+            exp.And(x => x.{{ column.property_name }} == query.{{ column.property_name }}.Value);
+        {{~ end ~}}
+        {{~ end ~}}
+        {{~ end ~}}
+
+        return exp.ToExpression();
+    }
+} 

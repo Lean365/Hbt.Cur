@@ -9,26 +9,26 @@
 // 描述   : 代码生成配置实体
 //===================================================================
 
-using SqlSugar;
 using Lean.Hbt.Domain.Entities.Identity;
+using SqlSugar;
 
 namespace Lean.Hbt.Domain.Entities.Generator;
 
 /// <summary>
 /// 代码生成配置实体
 /// </summary>
-[SugarTable("hbt_gen_config", "代码生成配置表")]
-[SugarIndex("ix_gen_config_table", nameof(TableName), OrderByType.Asc, true)]
-[SugarIndex("ix_gen_config_tenant", nameof(TenantId), OrderByType.Asc, nameof(TableName), OrderByType.Asc, true)]
+[SugarTable("hbt_generator_config", "代码生成配置表")]
+[SugarIndex("ix_gen_config_name", nameof(GenConfigName), OrderByType.Asc, true)]
+[SugarIndex("ix_gen_config_tenant", nameof(TenantId), OrderByType.Asc, nameof(GenConfigName), OrderByType.Asc, true)]
 public class HbtGenConfig : HbtBaseEntity
 {
     #region 基本信息
 
     /// <summary>
-    /// 表名
+    /// 配置名称
     /// </summary>
-    [SugarColumn(ColumnName = "table_name", ColumnDescription = "表名", Length = 100, ColumnDataType = "nvarchar", IsNullable = false, DefaultValue = "")]
-    public string TableName { get; set; } = string.Empty;
+    [SugarColumn(ColumnName = "gen_config_name", ColumnDescription = "配置名称", Length = 100, ColumnDataType = "nvarchar", IsNullable = false, DefaultValue = "")]
+    public string GenConfigName { get; set; } = string.Empty;
 
     /// <summary>
     /// 作者
@@ -75,10 +75,10 @@ public class HbtGenConfig : HbtBaseEntity
     public int GenType { get; set; } = 1;
 
     /// <summary>
-    /// 生成模板
+    /// 模板选用方式（0：使用wwwroot/Generator/*.scriban模板，1：使用HbtGenTemplate表中的模板）
     /// </summary>
-    [SugarColumn(ColumnName = "gen_template", ColumnDescription = "生成模板", Length = -1, ColumnDataType = "nvarchar", IsNullable = false, DefaultValue = "")]
-    public string GenTemplate { get; set; } = string.Empty;
+    [SugarColumn(ColumnName = "gen_template_type", ColumnDescription = "模板选用方式（0：使用wwwroot/Generator/*.scriban模板，1：使用HbtGenTemplate表中的模板）", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
+    public int GenTemplateType { get; set; } = 0;
 
     /// <summary>
     /// 生成路径
@@ -105,8 +105,8 @@ public class HbtGenConfig : HbtBaseEntity
     /// <summary>
     /// 租户ID
     /// </summary>
-    [SugarColumn(ColumnName = "tenant_id", ColumnDescription = "租户ID", ColumnDataType = "bigint", IsNullable = false, DefaultValue = "0")]
-    public long TenantId { get; set; } = 0;
+    [SugarColumn(ColumnName = "tenant_id", ColumnDescription = "租户ID", ColumnDataType = "bigint", IsNullable = false)]
+    public long TenantId { get; set; }
 
     /// <summary>
     /// 租户
@@ -115,4 +115,4 @@ public class HbtGenConfig : HbtBaseEntity
     public HbtTenant? Tenant { get; set; }
 
     #endregion
-} 
+}

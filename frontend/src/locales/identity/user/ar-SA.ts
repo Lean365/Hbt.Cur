@@ -2,27 +2,35 @@ export default {
   identity: {
     user: {
       title: 'إدارة المستخدمين',
-      toolbar: {
-        add: 'إضافة مستخدم',
-        edit: 'تعديل المستخدم',
-        delete: 'حذف المستخدم',
-        import: 'استيراد المستخدمين',
-        export: 'تصدير المستخدمين',
-        resetPassword: 'إعادة تعيين كلمة المرور',
-        downloadTemplate: 'تحميل القالب'
-      },
       table: {
         columns: {
+          userId: 'معرف المستخدم',
+          tenantId: 'المستأجر',
           userName: 'اسم المستخدم',
           nickName: 'الاسم المستعار',
-          deptName: 'القسم',
-          role: 'الدور',
+          englishName: 'الاسم بالإنجليزية',
+          userType: 'النوع',
           email: 'البريد الإلكتروني',
           phoneNumber: 'رقم الهاتف',
           gender: 'الجنس',
-      status: 'الحالة',
+          avatar: 'الصورة الرمزية',
+          status: 'الحالة',
+          lastPasswordChangeTime: 'آخر تعديل كلمة المرور',
+          lockEndTime: 'انتهاء القفل',
+          lockReason: 'سبب القفل',
+          isLock: 'هل هو مقفل',
+          errorLimit: 'حد الأخطاء',
+          loginCount: 'عدد مرات الدخول',
+          deptName: 'القسم',
+          role: 'الدور',
+          createBy: 'أنشأ بواسطة',
           createTime: 'تاريخ الإنشاء',
-          lastLoginTime: 'آخر تسجيل دخول',
+          updateBy: 'تم التحديث بواسطة',
+          updateTime: 'تاريخ التحديث',
+          deleteBy: 'تم الحذف بواسطة',
+          deleteTime: 'تاريخ الحذف',
+          isDeleted: 'تم الحذف',
+          remark: 'ملاحظة',
           operation: 'العملية'
         },
         operation: {
@@ -39,119 +47,111 @@ export default {
           }
         }
       },
-      userId: 'معرف المستخدم',
-      userName: {
-        label: 'اسم المستخدم',
-        placeholder: 'أدخل اسم المستخدم',
-        validation: {
-          required: 'اسم المستخدم مطلوب',
-          format: 'يجب أن يبدأ اسم المستخدم بحرف صغير، وأن يكون طوله 6-20 حرفًا، وأن يحتوي فقط على أحرف صغيرة وأرقام وشرطات سفلية'
+      fields: {
+        userId: 'معرف المستخدم',
+        tenantId: {
+          label: 'المستأجر',
+          placeholder: 'يرجى اختيار المستأجر',
+          validation: {
+            required: 'المستأجر مطلوب'
+          }
+        },
+        userName: {
+          label: 'اسم المستخدم',
+          placeholder: 'يرجى إدخال اسم المستخدم',
+          validation: {
+            required: 'اسم المستخدم مطلوب',
+            format: 'يجب أن يبدأ اسم المستخدم بحرف صغير، وأن يكون طوله 6-20 حرفًا، وأن يحتوي فقط على أحرف صغيرة وأرقام وشرطات سفلية'
+          }
+        },
+        nickName: {
+          label: 'الاسم المستعار',
+          placeholder: 'يرجى إدخال الاسم المستعار',
+          validation: {
+            required: 'الاسم المستعار مطلوب',
+            format: 'يجب أن يكون طول الاسم المستعار 2-20 حرفًا وأن يحتوي فقط على أحرف صينية وأحرف إنجليزية وأرقام وشرطات سفلية'
+          }
+        },
+        englishName: {
+          label: 'الاسم بالإنجليزية',
+          placeholder: 'يرجى إدخال الاسم بالإنجليزية',
+          validation: {
+            format: 'يجب أن يكون طول الاسم بالإنجليزية 2-50 حرفًا وأن يحتوي فقط على أحرف إنجليزية ومسافات وشرطات'
+          }
+        },
+        userType: {
+          label: 'النوع',
+          placeholder: 'يرجى اختيار نوع المستخدم',
+          options: {
+            admin: 'مدير',
+            user: 'مستخدم عادي'
+          }
+        },
+        email: {
+          label: 'البريد الإلكتروني',
+          placeholder: 'يرجى إدخال البريد الإلكتروني',
+          validation: {
+            required: 'البريد الإلكتروني مطلوب',
+            invalid: 'يجب أن يكون طول البريد الإلكتروني 6-100 حرفًا وأن يكون بتنسيق صالح'
+          }
+        },
+        phoneNumber: {
+          label: 'رقم الهاتف',
+          placeholder: 'يرجى إدخال رقم الهاتف',
+          validation: {
+            required: 'رقم الهاتف مطلوب',
+            invalid: 'أدخل تنسيق رقم هاتف محمول أو ثابت صالح'
+          }
+        },
+        gender: {
+          label: 'الجنس',
+          placeholder: 'يرجى اختيار الجنس',
+          options: {
+            male: 'ذكر',
+            female: 'أنثى',
+            unknown: 'غير معروف'
+          }
+        },
+        avatar: {
+          label: 'الصورة الرمزية',
+          upload: 'تحميل الصورة الرمزية',
+          uploadSuccess: 'تم تحميل الصورة الرمزية بنجاح',
+          uploadError: 'فشل في تحميل الصورة الرمزية'
+        },
+        status: {
+          label: 'الحالة',
+          placeholder: 'يرجى اختيار الحالة',
+          options: {
+            enabled: 'مفعل',
+            disabled: 'معطل'
+          }
+        },
+        deptName: {
+          label: 'القسم',
+          placeholder: 'يرجى اختيار القسم',
+          validation: {
+            required: 'القسم مطلوب'
+          }
+        },
+        role: {
+          label: 'الدور',
+          placeholder: 'يرجى اختيار الدور',
+          validation: {
+            required: 'الدور مطلوب'
+          }
+        },
+        post: {
+          label: 'المنصب',
+          placeholder: 'يرجى اختيار المنصب',
+          validation: {
+            required: 'المنصب مطلوب'
+          }
+        },
+        remark: {
+          label: 'ملاحظة',
+          placeholder: 'يرجى إدخال ملاحظة'
         }
       },
-      nickName: {
-        label: 'الاسم المستعار',
-        placeholder: 'أدخل الاسم المستعار',
-        validation: {
-          required: 'الاسم المستعار مطلوب',
-          format: 'يجب أن يكون طول الاسم المستعار 2-20 حرفًا وأن يحتوي فقط على أحرف صينية وأحرف إنجليزية وأرقام وشرطات سفلية'
-        }
-      },
-      englishName: {
-        label: 'الاسم بالإنجليزية',
-        placeholder: 'أدخل الاسم بالإنجليزية',
-        validation: {
-          format: 'يجب أن يكون طول الاسم بالإنجليزية 2-50 حرفًا وأن يحتوي فقط على أحرف إنجليزية ومسافات وشرطات'
-        }
-      },
-      password: {
-        label: 'كلمة المرور',
-        placeholder: 'أدخل كلمة المرور',
-        validation: {
-          required: 'كلمة المرور مطلوبة',
-          length: 'يجب أن يكون طول كلمة المرور 6-20 حرفًا'
-        }
-      },
-      confirmPassword: {
-        label: 'تأكيد كلمة المرور',
-        placeholder: 'أدخل كلمة المرور مرة أخرى',
-        validation: {
-          required: 'تأكيد كلمة المرور مطلوب',
-          notMatch: 'كلمات المرور غير متطابقة'
-        }
-      },
-      email: {
-        label: 'البريد الإلكتروني',
-        placeholder: 'أدخل البريد الإلكتروني',
-        validation: {
-          required: 'البريد الإلكتروني مطلوب',
-          invalid: 'يجب أن يكون طول البريد الإلكتروني 6-100 حرفًا وأن يكون بتنسيق صالح'
-        }
-      },
-      phoneNumber: {
-        label: 'رقم الهاتف',
-        placeholder: 'أدخل رقم الهاتف',
-        validation: {
-          required: 'رقم الهاتف مطلوب',
-          invalid: 'أدخل تنسيق رقم هاتف محمول أو ثابت صالح'
-        }
-      },
-      gender: {
-        label: 'الجنس',
-        placeholder: 'اختر الجنس',
-        options: {
-          male: 'ذكر',
-          female: 'أنثى',
-          unknown: 'غير معروف'
-        }
-      },
-      avatar: {
-        label: 'الصورة الرمزية',
-        upload: 'تحميل الصورة الرمزية',
-        uploadSuccess: 'تم تحميل الصورة الرمزية بنجاح',
-        uploadError: 'فشل في تحميل الصورة الرمزية'
-      },
-      deptName: {
-        label: 'القسم',
-        placeholder: 'اختر القسم'
-      },
-      role: {
-        label: 'الدور',
-        placeholder: 'اختر الدور'
-      },
-      post: {
-        label: 'المنصب',
-        placeholder: 'اختر المنصب'
-      },
-      status: {
-        label: 'الحالة',
-        placeholder: 'اختر الحالة',
-        options: {
-          enabled: 'مفعل',
-          disabled: 'معطل'
-        }
-      },
-      resetPwd: 'إعادة تعيين كلمة المرور',
-      import: {
-        title: 'استيراد المستخدمين',
-        template: 'تحميل القالب',
-        success: 'تم الاستيراد بنجاح',
-        failed: 'فشل في الاستيراد'
-      },
-      export: {
-        title: 'تصدير المستخدمين',
-        success: 'تم التصدير بنجاح',
-        failed: 'فشل في التصدير'
-      },
-      userType: {
-        label: 'نوع المستخدم',
-        placeholder: 'اختر نوع المستخدم',
-        options: {
-          admin: 'مدير',
-          user: 'مستخدم عادي'
-        }
-      },
-      createTime: 'تاريخ الإنشاء',
-      lastLoginTime: 'آخر تسجيل دخول',
       messages: {
         confirmDelete: 'هل أنت متأكد من حذف المستخدمين المحددين؟',
         confirmResetPassword: 'هل أنت متأكد من إعادة تعيين كلمة المرور للمستخدمين المحددين؟',
@@ -186,38 +186,18 @@ export default {
           required: 'معرف المستخدم ومعرف المستأجر مطلوبان'
         }
       },
-      tenantId: {
-        label: 'المستأجر',
-        placeholder: 'اختر المستأجر',
-        validation: {
-          required: 'المستأجر مطلوب'
-        }
+      import: {
+        title: 'استيراد المستخدمين',
+        template: 'تحميل القالب',
+        success: 'تم الاستيراد بنجاح',
+        failed: 'فشل في الاستيراد'
       },
-      roles: {
-        label: 'الأدوار',
-        placeholder: 'اختر الأدوار',
-        validation: {
-          required: 'اختر دورًا واحدًا على الأقل'
-        }
+      export: {
+        title: 'تصدير المستخدمين',
+        success: 'تم التصدير بنجاح',
+        failed: 'فشل في التصدير'
       },
-      posts: {
-        label: 'المناصب',
-        placeholder: 'اختر المناصب',
-        validation: {
-          required: 'اختر منصبًا واحدًا على الأقل'
-        }
-      },
-      depts: {
-        label: 'الأقسام',
-        placeholder: 'اختر الأقسام',
-        validation: {
-          required: 'اختر قسمًا واحدًا على الأقل'
-        }
-      },
-      remark: {
-        label: 'ملاحظة',
-        placeholder: 'أدخل ملاحظة'
-      }
+      resetPwd: 'إعادة تعيين كلمة المرور'
     }
   },
   actions: {

@@ -276,7 +276,7 @@ namespace Lean.Hbt.Infrastructure.Extensions
 
             // 邮件相关服务
             services.AddScoped<IHbtMailService, HbtMailService>();              // 邮件服务
-            services.AddScoped<IHbtMailTmplService, HbtMailTmplService>();      // 邮件模板服务
+            services.AddScoped<IHbtMailTplService, HbtMailTplService>();      // 邮件模板服务
 
             // 文件服务
             services.AddScoped<IHbtFileService, HbtFileService>();              // 文件服务

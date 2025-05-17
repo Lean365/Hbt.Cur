@@ -259,10 +259,10 @@ watch(
       try {
         loading.value = true
         const res = await getTenant(newVal)
-        if (res.code === 200) {
-          formData.value = res.data
+        if (res.data.code === 200) {
+          formData.value = res.data.data
         } else {
-          message.error(res.msg || t('common.failed'))
+          message.error(res.data.msg || t('common.failed'))
         }
       } catch (error) {
         console.error(error)
@@ -301,12 +301,12 @@ const handleOk = () => {
       const res = props.tenantId
         ? await updateTenant({ ...data, tenantId: props.tenantId })
         : await createTenant(data)
-      if (res.code === 200) {
+      if (res.data.code === 200) {
         message.success(t(props.tenantId ? 'common.update.success' : 'common.create.success'))
         emit('success')
         emit('update:visible', false)
       } else {
-        message.error(res.msg || t(props.tenantId ? 'common.update.failed' : 'common.create.failed'))
+        message.error(res.data.msg || t(props.tenantId ? 'common.update.failed' : 'common.create.failed'))
       }
     } catch (error) {
       console.error(error)

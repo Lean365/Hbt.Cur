@@ -121,7 +121,7 @@ function generateDeviceFingerprint(): string {
   // 使用固定的时间戳和随机数
   const fingerprint = `${Math.abs(hash).toString(36)}-${Date.now().toString(36)}`
   
-  console.log('生成的指纹:', fingerprint)
+  //console.log('生成的指纹:', fingerprint)
   return fingerprint
 }
 
@@ -134,11 +134,11 @@ let cachedDeviceInfo: DeviceInfo | null = null
 export async function getDeviceInfo(): Promise<DeviceInfo> {
   // 如果已经缓存了设备信息，直接返回
   if (cachedDeviceInfo) {
-    console.log('[Device] 使用缓存的设备信息')
+    //console.log('[Device] 使用缓存的设备信息')
     return cachedDeviceInfo
   }
   
-  console.log('[Device] 开始收集设备信息')
+  //console.log('[Device] 开始收集设备信息')
   
   // 生成设备指纹
   const fingerprint = generateDeviceFingerprint()
@@ -177,7 +177,7 @@ export async function getDeviceInfo(): Promise<DeviceInfo> {
   // 缓存设备信息
   cachedDeviceInfo = deviceInfo
   
-  console.log('[Device] 设备信息收集完成:', deviceInfo)
+  //console.log('[Device] 设备信息收集完成:', deviceInfo)
   return deviceInfo
 }
 

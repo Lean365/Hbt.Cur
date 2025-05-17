@@ -6,11 +6,12 @@
 // 创建者 : Lean365
 // 创建时间: 2024-01-17 16:30
 // 版本号 : V.0.0.1
-// 描述    : 数据库上下文
+// 描述    : 数据库上下文，负责数据库连接和操作的核心类
 //===================================================================
 
 using Lean.Hbt.Domain.Data;
 using Lean.Hbt.Domain.Entities.Audit;
+using Lean.Hbt.Domain.Entities.Generator;
 using Lean.Hbt.Domain.IServices.Extensions;
 using Lean.Hbt.Infrastructure.Services.Identity;
 using Microsoft.Extensions.Options;
@@ -18,12 +19,21 @@ using Microsoft.Extensions.Options;
 namespace Lean.Hbt.Infrastructure.Data.Contexts
 {
     /// <summary>
-    /// 数据库上下文
+    /// 数据库上下文类
+    /// 负责管理数据库连接、事务、实体映射和数据库操作
+    /// 实现了多租户、软删除、审计日志等核心功能
     /// </summary>
     public class HbtDbContext : IHbtDbContext
     {
+        /// <summary>
+        /// 数据库列信息比较器
+        /// 用于比较数据库列的定义是否相同
+        /// </summary>
         private class ColumnInfoComparer : IEqualityComparer<DbColumnInfo>
         {
+            /// <summary>
+            /// 比较两个数据库列信息是否相等
+            /// </summary>
             public bool Equals(DbColumnInfo x, DbColumnInfo y)
             {
                 if (x == null && y == null) return true;
@@ -37,6 +47,9 @@ namespace Lean.Hbt.Infrastructure.Data.Contexts
                        string.Equals(x.DefaultValue?.ToString(), y.DefaultValue?.ToString(), StringComparison.OrdinalIgnoreCase);
             }
 
+            /// <summary>
+            /// 获取数据库列信息的哈希码
+            /// </summary>
             public int GetHashCode(DbColumnInfo obj)
             {
                 if (obj == null) return 0;
@@ -66,12 +79,22 @@ namespace Lean.Hbt.Infrastructure.Data.Contexts
             }
         }
 
+        /// <summary>
+        /// SqlSugar数据库客户端实例
+        /// </summary>
         private readonly SqlSugarScope _client;
+
+        /// <summary>
+        /// 日志记录器
+        /// </summary>
         private readonly IHbtLogger _logger;
 
         /// <summary>
         /// 构造函数
         /// </summary>
+        /// <param name="options">数据库连接配置选项</param>
+        /// <param name="logger">日志记录器</param>
+        /// <param name="currentUser">当前用户信息</param>
         public HbtDbContext(IOptions<ConnectionConfig> options, IHbtLogger logger, IHbtCurrentUser currentUser)
         {
             _logger = logger;
@@ -84,13 +107,13 @@ namespace Lean.Hbt.Infrastructure.Data.Contexts
 
             _client = new SqlSugarScope(config);
 
-            // SQL日志记录
+            // 配置SQL执行日志记录
             _client.Aop.OnLogExecuting = (sql, parameters) =>
             {
                 _logger.Debug(sql);
             };
 
-            // 添加实体插入Aop
+            // 配置实体操作拦截器
             _client.Aop.DataExecuting = (oldValue, entityInfo) =>
             {
                 if (entityInfo.EntityColumnInfo.IsPrimarykey) return;
@@ -100,6 +123,7 @@ namespace Lean.Hbt.Infrastructure.Data.Contexts
                 {
                     if (entityInfo.OperationType == DataFilterType.InsertByObject)
                     {
+                        // 插入操作时设置审计字段
                         entity.CreateBy = currentUser.UserName;
                         entity.CreateTime = DateTime.Now;
                         entity.UpdateBy = currentUser.UserName;
@@ -108,6 +132,7 @@ namespace Lean.Hbt.Infrastructure.Data.Contexts
                     }
                     else if (entityInfo.OperationType == DataFilterType.UpdateByObject)
                     {
+                        // 更新操作时设置审计字段
                         entity.UpdateBy = currentUser.UserName;
                         entity.UpdateTime = DateTime.Now;
                     }
@@ -132,12 +157,12 @@ namespace Lean.Hbt.Infrastructure.Data.Contexts
         }
 
         /// <summary>
-        /// 获取数据库客户端
+        /// 获取数据库客户端实例
         /// </summary>
         public SqlSugarScope Client => _client;
 
         /// <summary>
-        /// 开始事务
+        /// 开始数据库事务
         /// </summary>
         public void BeginTran()
         {
@@ -153,7 +178,7 @@ namespace Lean.Hbt.Infrastructure.Data.Contexts
         }
 
         /// <summary>
-        /// 提交事务
+        /// 提交数据库事务
         /// </summary>
         public void CommitTran()
         {
@@ -169,7 +194,7 @@ namespace Lean.Hbt.Infrastructure.Data.Contexts
         }
 
         /// <summary>
-        /// 回滚事务
+        /// 回滚数据库事务
         /// </summary>
         public void RollbackTran()
         {
@@ -179,7 +204,7 @@ namespace Lean.Hbt.Infrastructure.Data.Contexts
         /// <summary>
         /// 获取数据库连接
         /// </summary>
-        /// <returns>数据库连接</returns>
+        /// <returns>数据库连接对象</returns>
         public IDbConnection GetConnection()
         {
             return Client.Ado.Connection;
@@ -187,6 +212,7 @@ namespace Lean.Hbt.Infrastructure.Data.Contexts
 
         /// <summary>
         /// 初始化数据库
+        /// 包括创建数据库、创建表、更新表结构等操作
         /// </summary>
         public async Task InitializeAsync()
         {
@@ -269,56 +295,8 @@ namespace Lean.Hbt.Infrastructure.Data.Contexts
         }
 
         /// <summary>
-        /// 获取数据库中的列信息
-        /// </summary>
-        /// <param name="sql"></param>
-        /// <returns></returns>
-        private string GetTableNameFromSql(string sql)
-        {
-            // 简单的SQL解析，获取表名
-            var match = System.Text.RegularExpressions.Regex.Match(sql, @"(?:INSERT\s+INTO|UPDATE|DELETE\s+FROM)\s+([^\s\(]+)", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
-            return match.Success ? match.Groups[1].Value.Trim('[', ']', '`') : "Unknown";
-        }
-
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="sql"></param>
-        /// <returns></returns>
-        private string GetChangeTypeFromSql(string sql)
-        {
-            if (sql.StartsWith("INSERT", StringComparison.OrdinalIgnoreCase))
-                return "Insert";
-            if (sql.StartsWith("UPDATE", StringComparison.OrdinalIgnoreCase))
-                return "Update";
-            if (sql.StartsWith("DELETE", StringComparison.OrdinalIgnoreCase))
-                return "Delete";
-            return "Unknown";
-        }
-
-        private bool IsDataChangeOperation(string sql)
-        {
-            sql = sql.TrimStart();
-            return sql.StartsWith("INSERT", StringComparison.OrdinalIgnoreCase) ||
-                   sql.StartsWith("UPDATE", StringComparison.OrdinalIgnoreCase) ||
-                   sql.StartsWith("DELETE", StringComparison.OrdinalIgnoreCase);
-        }
-
-        private long? GetCurrentTenantId()
-        {
-            try
-            {
-                // 从当前上下文获取租户ID
-                return HbtCurrentTenant.CurrentTenantId;
-            }
-            catch
-            {
-                return null;
-            }
-        }
-
-        /// <summary>
         /// 设置租户ID
+        /// 在插入数据时自动设置租户ID
         /// </summary>
         private void SetTenantId()
         {
@@ -341,6 +319,7 @@ namespace Lean.Hbt.Infrastructure.Data.Contexts
 
         /// <summary>
         /// 添加租户过滤器
+        /// 为所有实现了IHbtTenantEntity接口的实体添加租户过滤
         /// </summary>
         private void AddTenantFilter()
         {
@@ -355,39 +334,6 @@ namespace Lean.Hbt.Infrastructure.Data.Contexts
             {
                 _client.QueryFilter.AddTableFilter<IHbtTenantEntity>(it => it.TenantId == HbtCurrentTenant.CurrentTenantId);
             }
-        }
-
-        private bool IsTypeEquivalent(string dbType, string entityType)
-        {
-            // 定义类型映射关系
-            var typeMap = new Dictionary<string, string[]>(StringComparer.OrdinalIgnoreCase)
-            {
-                { "varchar", new[] { "string", "String" } },
-                { "nvarchar", new[] { "string", "String" } },
-                { "int", new[] { "int", "Int32" } },
-                { "bigint", new[] { "long", "Int64" } },
-                { "bit", new[] { "bool", "Boolean" } },
-                { "datetime", new[] { "DateTime" } },
-                { "decimal", new[] { "decimal", "Decimal" } }
-            };
-
-            // 检查类型是否等效
-            foreach (var map in typeMap)
-            {
-                if (dbType.StartsWith(map.Key, StringComparison.OrdinalIgnoreCase) &&
-                    map.Value.Contains(entityType, StringComparer.OrdinalIgnoreCase))
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        private bool ShouldCompareLength(string dataType)
-        {
-            var typesWithLength = new[] { "varchar", "nvarchar", "char", "nchar" };
-            return typesWithLength.Any(t => dataType.StartsWith(t, StringComparison.OrdinalIgnoreCase));
         }
     }
 }

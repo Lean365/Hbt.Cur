@@ -70,7 +70,7 @@
 import { ref, watch, reactive, h } from 'vue'
 import { message } from 'ant-design-vue'
 import type { HbtGenTable } from '@/types/generator/genTable'
-import { getDatabaseList, getTableListByDb, importTableFromDb, getTableColumnList, importTableAndColumns } from '@/api/generator/genTable'
+import { getDatabasesByDb, getTablesByDb, importTable, getTableColumnsByDb, importTableAndColumns } from '@/api/generator/genTable'
 import type { SelectValue } from 'ant-design-vue/es/select'
 import type { DefaultOptionType } from 'ant-design-vue/es/select'
 import HbtTable from '@/components/Business/HbtTable/index.vue'
@@ -152,7 +152,7 @@ watch(
 const fetchDatabaseList = async () => {
   loading.value = true
   try {
-    const res = await getDatabaseList()
+    const res = await getDatabasesByDb()
     databaseList.value = res.data?.data || []
   } catch (error) {
     console.error('获取数据库列表失败:', error)
@@ -162,31 +162,11 @@ const fetchDatabaseList = async () => {
   }
 }
 
-/** 数据库选择变更事件 */
-const handleDatabaseChange = async (value: SelectValue, option: DefaultOptionType | DefaultOptionType[]) => {
-  if (typeof value !== 'string') return
-  if (!value) return
-  
-  // 清空已选择的表
-  selectedTables.value = []
-  tableLoading.value = true
-  
-  try {
-    await getTables(value)
-  } catch (error) {
-    console.error('获取数据表列表失败:', error)
-    message.error('获取数据表列表失败')
-    dbTableList.value = []
-  } finally {
-    tableLoading.value = false
-  }
-}
-
 /** 获取表列表 */
-const getTables = async (databaseName: string) => {
+const fetchTableList = async (databaseName: string) => {
   try {
     console.log('开始获取表列表，数据库名称:', databaseName)
-    const res = await getTableListByDb(databaseName)
+    const res = await getTablesByDb(databaseName)
     console.log('获取表列表完整响应:', res)
     console.log('响应数据类型:', typeof res)
     console.log('响应数据结构:', JSON.stringify(res, null, 2))
@@ -206,7 +186,7 @@ const getTables = async (databaseName: string) => {
     }
     
     // 过滤掉无效数据
-    const validTables = tableData.filter(item => item && item.name && item.description)
+    const validTables = tableData.filter(item => item && item.tableName && item.tableComment)
     console.log('有效表数据:', JSON.stringify(validTables, null, 2))
     
     if (validTables.length === 0) {
@@ -223,8 +203,8 @@ const getTables = async (databaseName: string) => {
     
     // 直接使用返回的数据结构
     tableOptions.value = pageData.map(item => ({
-      name: item.name,
-      description: item.description,
+      name: item.tableName,
+      description: item.tableComment,
       tableType: 'BASE TABLE'
     }))
     
@@ -236,20 +216,37 @@ const getTables = async (databaseName: string) => {
       isDeleted: 0,
       tableId: 0,
       databaseName: databaseName,
-      tableName: item.name,
-      tableComment: item.description,
+      tableName: item.tableName,
+      tableComment: item.tableComment,
       className: '',
       namespace: '',
       baseNamespace: '',
       csharpTypeName: '',
-      status: 1,
-      templateType: 0,
+      tplCategory: 'crud',
+      treeCode: '',
+      treeName: '',
+      treeParentCode: '',
       moduleName: '',
       businessName: '',
       functionName: '',
       author: '',
-      genMode: 0,
+      genType: '0',
       genPath: '',
+      parentMenuId: 0,
+      sortType: 'asc',
+      sortField: '',
+      permsPrefix: '',
+      generateMenu: 1,
+      frontTpl: 1,
+      btnStyle: 1,
+      colNum: 24,
+      status: 1,
+      options: {
+        enableLog: 1,
+        useSnowflakeId: 1,
+        generateRepo: 0,
+        checkedBtn: [1, 2, 3, 4, 5, 6, 7, 8]
+      },
       tenantId: 0
     }))
     
@@ -260,6 +257,26 @@ const getTables = async (databaseName: string) => {
     dbTableList.value = []
     tableOptions.value = []
     pagination.total = 0
+  }
+}
+
+/** 数据库选择变更事件 */
+const handleDatabaseChange = async (value: SelectValue, option: DefaultOptionType | DefaultOptionType[]) => {
+  if (typeof value !== 'string') return
+  if (!value) return
+  
+  // 清空已选择的表
+  selectedTables.value = []
+  tableLoading.value = true
+  
+  try {
+    await fetchTableList(value)
+  } catch (error) {
+    console.error('获取数据表列表失败:', error)
+    message.error('获取数据表列表失败')
+    dbTableList.value = []
+  } finally {
+    tableLoading.value = false
   }
 }
 
@@ -331,7 +348,7 @@ const handleBatchImport = async () => {
   loading.value = true
   try {
     const tableNames = selectedTables.value.map(table => table.tableName)
-    await importTableFromDb({ tableNames })
+    await importTable({ tableNames })
     message.success('导入成功')
     emit('success')
     handleCancel()
@@ -374,7 +391,7 @@ const handlePageChange = (page: number) => {
   pagination.current = page
   // 重新加载数据
   if (formState.databaseName) {
-    getTables(formState.databaseName)
+    fetchTableList(formState.databaseName)
   }
 }
 
@@ -384,7 +401,7 @@ const handleSizeChange = (current: number, size: number) => {
   pagination.pageSize = size
   // 重新加载数据
   if (formState.databaseName) {
-    getTables(formState.databaseName)
+    fetchTableList(formState.databaseName)
   }
 }
 </script>

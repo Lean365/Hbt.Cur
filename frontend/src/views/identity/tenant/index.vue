@@ -282,12 +282,12 @@ const columns: TableColumnsType = [
 const getList = async () => {
   try {
     loading.value = true
-    const res = await getPagedList(queryParams.value)
-    if (res.code === 200) {
-      list.value = res.data.rows
-      pagination.value.total = res.data.totalNum
+    const { data } = await getPagedList(queryParams.value)
+    if (data.code === 200) {
+      list.value = data.data.rows
+      pagination.value.total = data.data.totalNum
     } else {
-      message.error(res.msg || t('common.failed'))
+      message.error(data.msg || t('common.failed'))
     }
   } catch (error) {
     console.error('[租户管理] 获取租户列表出错:', error)
@@ -355,12 +355,12 @@ const handleEdit = (record: Record<string, any>) => {
 // 处理删除
 const handleDelete = async (record: Record<string, any>) => {
   try {
-    const res = await deleteTenant(Number(record.tenantId))
-    if (res.code === 200) {
+    const { data } = await deleteTenant(Number(record.tenantId))
+    if (data.code === 200) {
       message.success(t('common.delete.success'))
       getList()
     } else {
-      message.error(res.msg || t('common.delete.failed'))
+      message.error(data.msg || t('common.delete.failed'))
     }
   } catch (error) {
     console.error(error)
@@ -375,13 +375,13 @@ const handleBatchDelete = () => {
     content: t('common.delete.message', { count: selectedKeys.value.length }),
     async onOk() {
       try {
-        const res = await batchDeleteTenant(selectedKeys.value.map(id => Number(id)))
-        if (res.code === 200) {
+        const { data } = await batchDeleteTenant(selectedKeys.value.map(id => Number(id)))
+        if (data.code === 200) {
           message.success(t('common.delete.success'))
           selectedKeys.value = []
           getList()
         } else {
-          message.error(res.msg || t('common.delete.failed'))
+          message.error(data.msg || t('common.delete.failed'))
         }
       } catch (error) {
         console.error(error)
@@ -394,11 +394,11 @@ const handleBatchDelete = () => {
 // 处理导出
 const handleExport = async () => {
   try {
-    const res = await exportTenant()
-    if (res.code === 200) {
+    const { data } = await exportTenant()
+    if (data.code === 200) {
       message.success(t('common.export.success'))
     } else {
-      message.error(res.msg || t('common.export.failed'))
+      message.error(data.msg || t('common.export.failed'))
     }
   } catch (error) {
     console.error(error)

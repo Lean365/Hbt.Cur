@@ -9,6 +9,7 @@
 // 描述    : 工作流并行分支状态实体
 //===================================================================
 
+using Lean.Hbt.Domain.Entities.Identity;
 using SqlSugar;
 
 namespace Lean.Hbt.Domain.Entities.Workflow
@@ -16,7 +17,7 @@ namespace Lean.Hbt.Domain.Entities.Workflow
     /// <summary>
     /// 工作流并行分支状态实体
     /// </summary>
-    [SugarTable("hbt_wf_parallel_branch", "工作流并行分支状态表")]
+    [SugarTable("hbt_workflow_parallel_branch", "工作流并行分支状态表")]
     public class HbtWorkflowParallelBranch : HbtBaseEntity
     {
         /// <summary>
@@ -40,7 +41,7 @@ namespace Lean.Hbt.Domain.Entities.Workflow
         /// <summary>
         /// 是否完成
         /// </summary>
-        [SugarColumn(ColumnName = "is_completed", ColumnDescription = "是否完成", ColumnDataType = "bit", IsNullable = false)]
+        [SugarColumn(ColumnName = "is_completed", ColumnDescription = "是否完成", ColumnDataType = "bit", IsNullable = false, DefaultValue = "true")]
         public bool IsCompleted { get; set; }
 
         /// <summary>
@@ -48,6 +49,17 @@ namespace Lean.Hbt.Domain.Entities.Workflow
         /// </summary>
         [SugarColumn(ColumnName = "complete_time", ColumnDescription = "完成时间", ColumnDataType = "datetime", IsNullable = true)]
         public DateTime? CompleteTime { get; set; }
+        /// <summary>
+        /// 租户ID
+        /// </summary>
+        [SugarColumn(ColumnName = "tenant_id", ColumnDescription = "租户ID", ColumnDataType = "bigint", IsNullable = false)]
+        public long TenantId { get; set; }
+
+        /// <summary>
+        /// 租户
+        /// </summary>
+        [Navigate(NavigateType.OneToOne, nameof(TenantId))]
+        public HbtTenant? Tenant { get; set; }
 
         /// <summary>
         /// 工作流实例

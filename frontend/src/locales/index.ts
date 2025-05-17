@@ -40,8 +40,8 @@ const modules = [
   'error',
   
   // generator
-  'generator',
-  
+  'generator/tabledefine',
+  'generator/table',
   // home
   'home',
   

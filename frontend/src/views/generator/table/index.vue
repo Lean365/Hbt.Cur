@@ -61,7 +61,7 @@
       :columns="columns"
       :pagination="false"
       :scroll="{ x: 1000 }"
-      :row-key="(record: HbtGenTable) => String(record.tableId)"
+      :row-key="(record: HbtGenTable) => String(record.id)"
       v-model:selectedRowKeys="selectedRowKeys"
       :row-selection="{
         type: 'checkbox',
@@ -81,10 +81,16 @@
             :edit-permission="['generator:table:update']"
             :show-delete="true"
             :delete-permission="['generator:table:delete']"
+            :show-generate="true"
+            :generate-permission="['generator:table:generate']"
+            :show-sync="true"
+            :sync-permission="['generator:table:sync']"
             size="small"
             @view="handleView"
             @edit="handleEdit"
             @delete="handleDelete"
+            @generate="handleGenerate"
+            @sync="handleSync"
           />
         </template>
       </template>
@@ -106,7 +112,7 @@
     <table-form
       v-model:open="formVisible"
       :title="formTitle"
-      :table-id="selectedTableId"
+      :id="selectedTableId"
       @success="handleSuccess"
     />
 
@@ -114,6 +120,7 @@
     <table-detail
       v-model:open="detailVisible"
       :table-id="selectedTableId"
+      @update:open="handleDetailClose"
     />
 
     <!-- 列设置抽屉 -->
@@ -146,18 +153,16 @@
 <script lang="ts" setup>
 import { useI18n } from 'vue-i18n'
 import { message } from 'ant-design-vue'
-import { ref, computed, onMounted, h } from 'vue'
+import { ref, computed, onMounted, h, nextTick } from 'vue'
 import type { TablePaginationConfig } from 'ant-design-vue'
-import type { HbtGenTable, HbtGenTableQuery } from '@/types/generator/genTable'
+import type { HbtGenTable, HbtGenTableQuery } from '@/types/generator/genTable.d'
 import type { QueryField } from '@/types/components/query'
 import {
   getTableList,
-  getTable,
-  createTable,
-  updateTable,
-  deleteTable,
-  importTableFromDb,
-  downloadCode
+  deleteTable, 
+  downloadCode,
+  generateCode,
+  syncTable
 } from '@/api/generator/genTable'
 import { getTableDefineTemplate } from '@/api/generator/genTableDefine'
 import TableForm from './components/TableForm.vue'
@@ -207,24 +212,318 @@ const queryFields = computed<QueryField[]>(() => [
 // === 表格列定义 ===
 const defaultColumns = [
   {
-    title: t('generator.table.name'),
+    title: 'ID',
+    dataIndex: 'id',
+    key: 'id',
+    width: 80,
+    fixed: 'left',
+  },
+  {
+    title: t('generator.table.databaseName'),
+    dataIndex: 'databaseName',
+    key: 'databaseName',
+    width: 150,
+    ellipsis: true
+  },
+  {
+    title: t('generator.table.tableName'),
     dataIndex: 'tableName',
     key: 'tableName',
-    width: 200,
+    width: 150,
     ellipsis: true
   },
   {
-    title: t('generator.table.comment'),
+    title: t('generator.table.tableComment'),
     dataIndex: 'tableComment',
     key: 'tableComment',
+    width: 150,
+    ellipsis: true
+  },
+  {
+    title: t('generator.table.baseNamespace'),
+    dataIndex: 'baseNamespace',
+    key: 'baseNamespace',
     width: 200,
     ellipsis: true
   },
   {
-    title: t('generator.table.className'),
-    dataIndex: 'className',
-    key: 'className',
+    title: t('generator.table.entityNamespace'),
+    dataIndex: 'entityNamespace',
+    key: 'entityNamespace',
     width: 200,
+    ellipsis: true
+  },
+  {
+    title: t('generator.table.entityClassName'),
+    dataIndex: 'entityClassName',
+    key: 'entityClassName',
+    width: 150,
+    ellipsis: true
+  },
+  {
+    title: t('generator.table.dtoNamespace'),
+    dataIndex: 'dtoNamespace',
+    key: 'dtoNamespace',
+    width: 200,
+    ellipsis: true
+  },
+  {
+    title: t('generator.table.dtoClassName'),
+    dataIndex: 'dtoClassName',
+    key: 'dtoClassName',
+    width: 150,
+    ellipsis: true
+  },
+  {
+    title: t('generator.table.dtoType'),
+    dataIndex: 'dtoType',
+    key: 'dtoType',
+    width: 200,
+    ellipsis: true
+  },
+  {
+    title: t('generator.table.serviceNamespace'),
+    dataIndex: 'serviceNamespace',
+    key: 'serviceNamespace',
+    width: 200,
+    ellipsis: true
+  },
+  {
+    title: t('generator.table.iServiceClassName'),
+    dataIndex: 'iServiceClassName',
+    key: 'iServiceClassName',
+    width: 150,
+    ellipsis: true
+  },
+  {
+    title: t('generator.table.serviceClassName'),
+    dataIndex: 'serviceClassName',
+    key: 'serviceClassName',
+    width: 150,
+    ellipsis: true
+  },
+  {
+    title: t('generator.table.iRepositoryNamespace'),
+    dataIndex: 'iRepositoryNamespace',
+    key: 'iRepositoryNamespace',
+    width: 200,
+    ellipsis: true
+  },
+  {
+    title: t('generator.table.iRepositoryClassName'),
+    dataIndex: 'iRepositoryClassName',
+    key: 'iRepositoryClassName',
+    width: 150,
+    ellipsis: true
+  },
+  {
+    title: t('generator.table.repositoryNamespace'),
+    dataIndex: 'repositoryNamespace',
+    key: 'repositoryNamespace',
+    width: 200,
+    ellipsis: true
+  },
+  {
+    title: t('generator.table.repositoryClassName'),
+    dataIndex: 'repositoryClassName',
+    key: 'repositoryClassName',
+    width: 150,
+    ellipsis: true
+  },
+  {
+    title: t('generator.table.controllerNamespace'),
+    dataIndex: 'controllerNamespace',
+    key: 'controllerNamespace',
+    width: 200,
+    ellipsis: true
+  },
+  {
+    title: t('generator.table.controllerClassName'),
+    dataIndex: 'controllerClassName',
+    key: 'controllerClassName',
+    width: 150,
+    ellipsis: true
+  },
+  {
+    title: t('generator.table.tplType'),
+    dataIndex: 'tplType',
+    key: 'tplType',
+    width: 120,
+    ellipsis: true
+  },
+  {
+    title: t('generator.table.tplCategory'),
+    dataIndex: 'tplCategory',
+    key: 'tplCategory',
+    width: 120,
+    ellipsis: true
+  },
+  {
+    title: t('generator.table.subTableName'),
+    dataIndex: 'subTableName',
+    key: 'subTableName',
+    width: 150,
+    ellipsis: true
+  },
+  {
+    title: t('generator.table.subTableFkName'),
+    dataIndex: 'subTableFkName',
+    key: 'subTableFkName',
+    width: 150,
+    ellipsis: true
+  },
+  {
+    title: t('generator.table.treeCode'),
+    dataIndex: 'treeCode',
+    key: 'treeCode',
+    width: 120,
+    ellipsis: true
+  },
+  {
+    title: t('generator.table.treeName'),
+    dataIndex: 'treeName',
+    key: 'treeName',
+    width: 120,
+    ellipsis: true
+  },
+  {
+    title: t('generator.table.treeParentCode'),
+    dataIndex: 'treeParentCode',
+    key: 'treeParentCode',
+    width: 120,
+    ellipsis: true
+  },
+  {
+    title: t('generator.table.moduleName'),
+    dataIndex: 'moduleName',
+    key: 'moduleName',
+    width: 120,
+    ellipsis: true
+  },
+  {
+    title: t('generator.table.businessName'),
+    dataIndex: 'businessName',
+    key: 'businessName',
+    width: 120,
+    ellipsis: true
+  },
+  {
+    title: t('generator.table.functionName'),
+    dataIndex: 'functionName',
+    key: 'functionName',
+    width: 120,
+    ellipsis: true
+  },
+  {
+    title: t('generator.table.author'),
+    dataIndex: 'author',
+    key: 'author',
+    width: 100,
+    ellipsis: true
+  },
+  {
+    title: t('generator.table.genType'),
+    dataIndex: 'genType',
+    key: 'genType',
+    width: 100,
+    ellipsis: true
+  },
+  {
+    title: t('generator.table.genPath'),
+    dataIndex: 'genPath',
+    key: 'genPath',
+    width: 200,
+    ellipsis: true
+  },
+  {
+    title: t('generator.table.parentMenuId'),
+    dataIndex: 'parentMenuId',
+    key: 'parentMenuId',
+    width: 100,
+    ellipsis: true
+  },
+  {
+    title: t('generator.table.sortType'),
+    dataIndex: 'sortType',
+    key: 'sortType',
+    width: 100,
+    ellipsis: true
+  },
+  {
+    title: t('generator.table.sortField'),
+    dataIndex: 'sortField',
+    key: 'sortField',
+    width: 100,
+    ellipsis: true
+  },
+  {
+    title: t('generator.table.permsPrefix'),
+    dataIndex: 'permsPrefix',
+    key: 'permsPrefix',
+    width: 150,
+    ellipsis: true
+  },
+  {
+    title: t('generator.table.generateMenu'),
+    dataIndex: 'generateMenu',
+    key: 'generateMenu',
+    width: 100,
+    ellipsis: true
+  },
+  {
+    title: t('generator.table.frontTpl'),
+    dataIndex: 'frontTpl',
+    key: 'frontTpl',
+    width: 100,
+    ellipsis: true
+  },
+  {
+    title: t('generator.table.btnStyle'),
+    dataIndex: 'btnStyle',
+    key: 'btnStyle',
+    width: 100,
+    ellipsis: true
+  },
+  {
+    title: t('generator.table.frontStyle'),
+    dataIndex: 'frontStyle',
+    key: 'frontStyle',
+    width: 100,
+    ellipsis: true
+  },
+  {
+    title: t('generator.table.status'),
+    dataIndex: 'status',
+    key: 'status',
+    width: 100,
+    ellipsis: true
+  },
+  {
+    title: t('generator.table.remark'),
+    dataIndex: 'remark',
+    key: 'remark',
+    width: 150,
+    ellipsis: true
+  },
+  {
+    title: t('generator.table.tenantId'),
+    dataIndex: 'tenantId',
+    key: 'tenantId',
+    width: 100,
+    ellipsis: true
+  },
+  {
+    title: t('generator.table.options'),
+    dataIndex: 'options',
+    key: 'options',
+    width: 150,
+    ellipsis: true
+  },
+  {
+    title: t('generator.table.createBy'),
+    dataIndex: 'createBy',
+    key: 'createBy',
+    width: 100,
     ellipsis: true
   },
   {
@@ -233,6 +532,27 @@ const defaultColumns = [
     key: 'createTime',
     width: 180,
     sorter: true
+  },
+  {
+    title: t('generator.table.updateBy'),
+    dataIndex: 'updateBy',
+    key: 'updateBy',
+    width: 100,
+    ellipsis: true
+  },
+  {
+    title: t('generator.table.updateTime'),
+    dataIndex: 'updateTime',
+    key: 'updateTime',
+    width: 180,
+    sorter: true
+  },
+  {
+    title: t('generator.table.isDeleted'),
+    dataIndex: 'isDeleted',
+    key: 'isDeleted',
+    width: 100,
+    ellipsis: true
   },
   {
     title: t('common.table.header.operation'),
@@ -254,8 +574,25 @@ const fetchData = async () => {
   try {
     loading.value = true
     const res = await getTableList(queryParams.value)
+    console.log('获取表列表响应:', res)
     if (res.data.code === 200) {
-      tableData.value = res.data.data.rows
+      // 检查数据是否包含必要的字段
+      const validData = res.data.data.rows.map((item: any) => {
+        if (!item.id || typeof item.id !== 'number') {
+          console.error('记录缺少有效的 id:', item)
+          return null
+        }
+        return {
+          ...item,
+          id: Number(item.id) // 确保 id 是数字类型
+        }
+      }).filter(Boolean)
+      
+      if (validData.length !== res.data.data.rows.length) {
+        console.warn('部分记录缺少有效的 id，已过滤')
+      }
+      
+      tableData.value = validData
       total.value = res.data.data.totalNum
     } else {
       message.error(res.data.msg || t('common.failed'))
@@ -298,7 +635,22 @@ const handleTableChange = (pag: TablePaginationConfig) => {
 
 // 行点击
 const handleRowClick = (record: HbtGenTable) => {
-  selectedTableId.value = record.tableId
+  console.log('handleRowClick - 记录:', record)
+  if (!record.id || typeof record.id !== 'number') {
+    console.error('handleRowClick - 记录缺少有效的 id:', record)
+    message.error(t('common.message.invalidRecord'))
+    return
+  }
+  
+  const tableId = Number(record.id)
+  if (isNaN(tableId)) {
+    console.error('handleRowClick - id 转换为数字失败:', record.id)
+    message.error(t('common.message.invalidRecord'))
+    return
+  }
+  
+  selectedTableId.value = tableId
+  console.log('handleRowClick - 设置 id:', tableId)
 }
 
 // 选择行变化
@@ -311,6 +663,21 @@ const handleColumnSettingChange = (checkedValues: (string | number | boolean)[])
   defaultColumns.forEach(col => {
     columnSettings.value[col.key] = checkedValues.includes(col.key)
   })
+  // 保存列设置到本地存储
+  localStorage.setItem('genTableColumns', JSON.stringify(columnSettings.value))
+}
+
+// 初始化列设置
+const initColumnSettings = () => {
+  const savedSettings = localStorage.getItem('genTableColumns')
+  if (savedSettings) {
+    columnSettings.value = JSON.parse(savedSettings)
+  } else {
+    // 默认显示所有列
+    defaultColumns.forEach(col => {
+      columnSettings.value[col.key] = true
+    })
+  }
 }
 
 // 切换搜索
@@ -336,7 +703,7 @@ const handleEditSelected = () => {
     message.warning(t('common.message.selectOneRecord'))
     return
   }
-  const record = tableData.value.find(item => String(item.tableId) === selectedRowKeys.value[0])
+  const record = tableData.value.find(item => String(item.id) === selectedRowKeys.value[0])
   if (record) {
     handleEdit(record)
   }
@@ -344,21 +711,45 @@ const handleEditSelected = () => {
 
 // 编辑
 const handleEdit = (record: HbtGenTable) => {
-  selectedTableId.value = record.tableId
+  selectedTableId.value = record.id
   formTitle.value = t('common.title.edit')
   formVisible.value = true
 }
 
 // 查看
 const handleView = (record: HbtGenTable) => {
-  selectedTableId.value = record.tableId
-  detailVisible.value = true
+  console.log('handleView - 记录:', record)
+  if (!record.id || typeof record.id !== 'number') {
+    console.error('handleView - 记录缺少有效的 id:', record)
+    message.error(t('common.message.invalidRecord'))
+    return
+  }
+  
+  const tableId = Number(record.id)
+  if (isNaN(tableId)) {
+    console.error('handleView - id 转换为数字失败:', record.id)
+    message.error(t('common.message.invalidRecord'))
+    return
+  }
+  
+  selectedTableId.value = tableId
+  console.log('handleView - 设置 id:', tableId)
+  // 确保在设置 tableId 后再打开对话框
+  nextTick(() => {
+    detailVisible.value = true
+  })
+}
+
+// 处理详情对话框关闭
+const handleDetailClose = () => {
+  detailVisible.value = false
+  selectedTableId.value = undefined
 }
 
 // 删除
 const handleDelete = async (record: HbtGenTable) => {
   try {
-    const res = await deleteTable(record.tableId)
+    const res = await deleteTable(record.id)
     if (res.data.code === 200) {
       message.success(t('common.message.deleteSuccess'))
       fetchData()
@@ -430,6 +821,12 @@ const handleExport = async () => {
 
 // 列设置
 const handleColumnSetting = () => {
+  // 初始化列设置状态
+  if (Object.keys(columnSettings.value).length === 0) {
+    defaultColumns.forEach(col => {
+      columnSettings.value[col.key] = true
+    })
+  }
   columnSettingVisible.value = true
 }
 
@@ -481,12 +878,41 @@ const handleTemplate = async () => {
   }
 }
 
+// 生成代码
+const handleGenerate = async (record: HbtGenTable) => {
+  try {
+    const res = await generateCode(record.id)
+    if (res.data.code === 200) {
+      message.success(t('common.message.generateSuccess'))
+    } else {
+      message.error(res.data.msg || t('common.message.generateFailed'))
+    }
+  } catch (error) {
+    console.error('生成代码失败:', error)
+    message.error(t('common.message.generateFailed'))
+  }
+}
+
+// 同步表结构
+const handleSync = async (record: HbtGenTable) => {
+  try {
+    const res = await syncTable(record.id)
+    if (res.data.code === 200) {
+      message.success(t('common.message.syncSuccess'))
+      fetchData()
+    } else {
+      message.error(res.data.msg || t('common.message.syncFailed'))
+    }
+  } catch (error) {
+    console.error('同步表结构失败:', error)
+    message.error(t('common.message.syncFailed'))
+  }
+}
+
 // === 生命周期 ===
 onMounted(() => {
   // 初始化列设置
-  defaultColumns.forEach(col => {
-    columnSettings.value[col.key] = true
-  })
+  initColumnSettings()
   // 加载数据
   fetchData()
 })

@@ -4,87 +4,173 @@ export default {
       title: '菜单管理',
       columns: {
         menuName: '菜单名称',
-        icon: '图标',
+        transKey: '国际化标识',
+        parentId: '上级菜单',
         orderNum: '排序',
-        perms: '权限标识',
+        path: '路由地址',
         component: '组件路径',
+        queryParams: '路由参数',
+        isExternal: '是否外链',
+        isCache: '是否缓存',
+        menuType: '菜单类型',
+        visible: '显示状态',
         status: '状态',
+        perms: '权限标识',
+        icon: '图标',
+        tenantId: '租户ID',
+        id: '主键',
+        createBy: '创建者',
         createTime: '创建时间',
+        updateBy: '更新者',
+        updateTime: '更新时间',
+        deleteBy: '删除者',
+        deleteTime: '删除时间',
+        isDeleted: '是否删除',
+        remark: '备注',
         action: '操作'
       },
-      form: {
-        base: {
-          parentMenu: {
-            label: '上级菜单',
-            placeholder: '请选择上级菜单',
-            root: '根菜单'
-          },
-          name: {
-            label: '菜单名称',
-            placeholder: '请输入菜单名称'
-          },
-          transKey: {
-            label: '翻译键',
-            placeholder: '请输入翻译键',
-            preview: '预览',
-            notFound: '未找到翻译'
-          },
-          orderNum: {
-            label: '显示排序'
+      fields: {
+        menuName: {
+          label: '菜单名称',
+          placeholder: '请输入菜单名称',
+          validation: {
+            required: '请输入菜单名称',
+            length: '菜单名称长度必须在2-50个字符之间',
+            format: '菜单名称格式错误，必须为英文（不允许重音符号）、法语/西语、中文、日文、韩文、阿拉伯文、俄文'
           }
         },
-        display: {
-          type: {
-            label: '菜单类型',
+        menuDirectoryName: {
+          label: '目录名称',
+          placeholder: '请输入目录名称',
+          validation: {
+            required: '请输入目录名称',
+            length: '目录名称长度必须在2-50个字符之间',
+            format: '目录名称格式错误，必须为英文（不允许重音符号）、法语/西语、中文、日文、韩文、阿拉伯文、俄文'
+          }
+        },
+        menuButtonName: {
+          label: '按钮名称',
+          placeholder: '请输入按钮名称',
+          validation: {
+            required: '请输入按钮名称',
+            length: '按钮名称长度必须在2-50个字符之间',
+            format: '按钮名称格式错误，必须为英文（不允许重音符号）、法语/西语、中文、日文、韩文、阿拉伯文、俄文',
+            menuNameExists: '菜单名称已存在'
+          }
+        },
+        transKey: {
+          label: '国际化标识',
+          placeholder: '请输入国际化标识',
+          validation: {
+            required: '请输入国际化标识',
+            format: '国际化标识格式错误，必须为 menu.xxx._self 或 menu.xxx.xxx._self，且中间为字母'
+          }
+        },
+        parentId: {
+          label: '上级菜单',
+          placeholder: '请选择上级菜单',
+          root: '根菜单',
+          validation: {
+            required: '请选择上级菜单'
+          }
+        },
+        orderNum: {
+          label: '显示排序',
+          placeholder: '请输入显示排序',
+          validation: {
+            required: '请输入显示排序'
+          }
+        },
+        path: {
+          label: '路由地址',
+          placeholder: '请输入路由地址',
+          validation: {
+            required: '请输入路由地址',
+            length: '路由地址长度必须在2-50个字符之间',
+            format: '路由地址格式错误，且只能包含小写字母'
+          }
+        },
+        component: {
+          label: '组件路径',
+          placeholder: '请输入组件路径',
+          validation: {
+            required: '请输入组件路径'
+          }
+        },
+        queryParams: {
+          label: '路由参数',
+          placeholder: '请输入路由参数',
+          validation: {
+            required: '请输入路由参数'
+          }
+        },
+        isExternal: {
+          label: '是否外链',
+          placeholder: '请选择是否外链',
+          options: {
+            yes: '是',
+            no: '否'
+          }
+        },
+        isCache: {
+          label: '是否缓存',
+          placeholder: '请选择是否缓存',
+          options: {
+            yes: '是',
+            no: '否'
+          }
+        },
+        menuType: {
+          label: '菜单类型',
+          options: {
             directory: '目录',
             menu: '菜单',
             button: '按钮'
           },
-          icon: {
-            label: '菜单图标',
-            placeholder: '请输入菜单图标'
-          },
-          isFrame: {
-            label: '是否外链',
-            yes: '是',
-            no: '否'
-          },
-          isCache: {
-            label: '是否缓存',
-            yes: '是',
-            no: '否'
-          },
-          visible: {
-            label: '显示状态',
+          validation: {
+            required: '请选择菜单类型'
+          }
+        },
+        visible: {
+          label: '显示状态',
+          placeholder: '请选择显示状态',
+          options: {
             show: '显示',
             hide: '隐藏'
-          },
-          status: {
-            label: '菜单状态',
+          }
+        },
+        status: {
+          label: '状态',
+          placeholder: '请选择菜单状态',
+          options: {
             normal: '正常',
             disabled: '停用'
           }
         },
-        route: {
-          path: {
-            label: '路由地址',
-            placeholder: '请输入路由地址'
-          },
-          component: {
-            label: '组件路径',
-            placeholder: '请输入组件路径'
-          },
-          query: {
-            label: '路由参数',
-            placeholder: '请输入路由参数'
+        perms: {
+          label: '权限标识',
+          placeholder: '请输入权限标识',
+          validation: {
+            required: '请输入权限标识'
           }
         },
-        permission: {
-          perms: {
-            label: '权限标识',
-            placeholder: '请输入权限标识'
+        icon: {
+          label: '菜单图标',
+          placeholder: '请输入菜单图标',
+          select: '选择图标',
+          validation: {
+            required: '请选择菜单图标'
           }
+        },
+        tenantId: {
+          label: '租户ID',
+          placeholder: '请输入租户ID'
         }
+      },
+      dialog: {
+        create: '添加菜单',
+        update: '编辑菜单',
+        delete: '删除菜单'
       },
       operation: {
         add: {
@@ -103,20 +189,7 @@ export default {
           success: '删除成功',
           failed: '删除失败'
         }
-      },
-      dashboard: '仪表盘',
-      system: '系统管理',
-      user: '用户管理',
-      role: '角色管理',
-      permission: '权限管理',
-      dept: '部门管理',
-      post: '岗位管理',
-      dict: '字典管理',
-      config: '参数设置',
-      notice: '通知公告',
-      log: '日志管理',
-      profile: '个人中心',
-      setting: '个人设置'
+      }
     }
   }
 } 

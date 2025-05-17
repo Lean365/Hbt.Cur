@@ -3,10 +3,10 @@
 //===================================================================
 // 项目名 : Lean.Hbt
 // 文件名 : HbtGenColumnDto.cs
-// 创建者 : Lean365
-// 创建时间: 2024-03-20
+// 创建者 : Claude
+// 创建时间: 2024-03-21
 // 版本号 : V0.0.1
-// 描述    : 代码生成列DTO
+// 描述   : 代码生成列数据传输对象
 //===================================================================
 
 using System.ComponentModel.DataAnnotations;
@@ -14,7 +14,7 @@ using System.ComponentModel.DataAnnotations;
 namespace Lean.Hbt.Application.Dtos.Generator;
 
 /// <summary>
-/// 代码生成列DTO
+/// 代码生成列数据传输对象
 /// </summary>
 public class HbtGenColumnDto
 {
@@ -28,71 +28,60 @@ public class HbtGenColumnDto
         DbColumnType = string.Empty;
         CsharpType = string.Empty;
         CsharpField = string.Empty;
-        CsharpColumn = string.Empty;
-        QueryType = string.Empty;
+        QueryType = "EQ";
         DisplayType = string.Empty;
         DictType = string.Empty;
-        CreateBy = string.Empty;
-        UpdateBy = string.Empty;
     }
 
     /// <summary>
-    /// 主键ID
+    /// 列ID
     /// </summary>
+    [AdaptMember("Id")]
     public long GenColumnId { get; set; }
-
-    /// <summary>
-    /// 表ID
-    /// </summary>
-    [Required(ErrorMessage = "表ID不能为空")]
-    public long TableId { get; set; }
 
     /// <summary>
     /// 列名
     /// </summary>
     [Required(ErrorMessage = "列名不能为空")]
-    [StringLength(100, ErrorMessage = "列名长度不能超过100个字符")]
+    [StringLength(50, ErrorMessage = "列名长度不能超过50个字符")]
     public string ColumnName { get; set; }
 
     /// <summary>
     /// 列注释
     /// </summary>
-    [Required(ErrorMessage = "列描述不能为空")]
-    [StringLength(200, ErrorMessage = "列描述长度不能超过200个字符")]
+    [Required(ErrorMessage = "列注释不能为空")]
+    [StringLength(200, ErrorMessage = "列注释长度不能超过200个字符")]
     public string ColumnComment { get; set; }
 
     /// <summary>
     /// 数据库列类型
     /// </summary>
     [Required(ErrorMessage = "数据库列类型不能为空")]
+    [StringLength(50, ErrorMessage = "数据库列类型长度不能超过50个字符")]
     public string DbColumnType { get; set; }
 
     /// <summary>
-    /// 列类型
+    /// C#类型
     /// </summary>
-    [Required(ErrorMessage = "列类型不能为空")]
+    [Required(ErrorMessage = "C#类型不能为空")]
+    [StringLength(50, ErrorMessage = "C#类型长度不能超过50个字符")]
     public string CsharpType { get; set; }
-
-    /// <summary>
-    /// C#列名（首字母大写）
-    /// </summary>
-    [Required(ErrorMessage = "C#列名不能为空")]
-    public string CsharpColumn { get; set; }
 
     /// <summary>
     /// C#长度（字符串长度、数值类型的整数位数）
     /// </summary>
-    public int CsharpLength { get; set; }
+    public int? CsharpLength { get; set; }
 
     /// <summary>
     /// C#小数位数（decimal等数值类型的小数位数）
     /// </summary>
-    public int CsharpDecimalDigits { get; set; }
+    public int? CsharpDecimalDigits { get; set; }
 
     /// <summary>
-    /// 实体字段名
+    /// C#字段名（首字母小写）
     /// </summary>
-    [Required(ErrorMessage = "实体字段名不能为空")]
+    [Required(ErrorMessage = "C#字段名不能为空")]
+    [StringLength(50, ErrorMessage = "C#字段名长度不能超过50个字符")]
     public string CsharpField { get; set; }
 
     /// <summary>
@@ -111,14 +100,13 @@ public class HbtGenColumnDto
     public int IsRequired { get; set; }
 
     /// <summary>
-    /// 是否列表字段（1是）
+    /// 是否为新增字段（1是）
     /// </summary>
-
     public int IsInsert { get; set; }
+
     /// <summary>
     /// 是否编辑字段（1是）
     /// </summary>
-
     public int IsEdit { get; set; }
 
     /// <summary>
@@ -134,6 +122,7 @@ public class HbtGenColumnDto
     /// <summary>
     /// 查询方式（等于、不等于、大于、小于、范围）
     /// </summary>
+    [StringLength(50, ErrorMessage = "查询方式长度不能超过50个字符")]
     public string QueryType { get; set; }
 
     /// <summary>
@@ -149,11 +138,13 @@ public class HbtGenColumnDto
     /// <summary>
     /// 显示类型（文本框、文本域、下拉框、复选框、单选框、日期控件）
     /// </summary>
+    [StringLength(50, ErrorMessage = "显示类型长度不能超过50个字符")]
     public string DisplayType { get; set; }
 
     /// <summary>
-    /// 字典类型
+    /// 字典类型（用于下拉框、单选框、复选框等需要数据字典的字段）
     /// </summary>
+    [StringLength(200, ErrorMessage = "字典类型长度不能超过200个字符")]
     public string DictType { get; set; }
 
     /// <summary>
@@ -165,26 +156,6 @@ public class HbtGenColumnDto
     /// 租户ID
     /// </summary>
     public long TenantId { get; set; }
-
-    /// <summary>
-    /// 创建人
-    /// </summary>
-    public string CreateBy { get; set; }
-
-    /// <summary>
-    /// 创建时间
-    /// </summary>
-    public DateTime? CreateTime { get; set; }
-
-    /// <summary>
-    /// 更新人
-    /// </summary>
-    public string UpdateBy { get; set; }
-
-    /// <summary>
-    /// 更新时间
-    /// </summary>
-    public DateTime? UpdateTime { get; set; }
 }
 
 /// <summary>
@@ -200,13 +171,13 @@ public class HbtGenColumnQueryDto : HbtPagedQuery
     /// <summary>
     /// 列名
     /// </summary>
-    [StringLength(100, ErrorMessage = "列名长度不能超过100个字符")]
+    [StringLength(50, ErrorMessage = "列名长度不能超过50个字符")]
     public string? ColumnName { get; set; }
 
     /// <summary>
     /// 列注释
     /// </summary>
-    [StringLength(200, ErrorMessage = "列描述长度不能超过200个字符")]
+    [StringLength(200, ErrorMessage = "列注释长度不能超过200个字符")]
     public string? ColumnComment { get; set; }
 }
 
@@ -225,8 +196,7 @@ public class HbtGenColumnCreateDto
         DbColumnType = string.Empty;
         CsharpType = string.Empty;
         CsharpField = string.Empty;
-        CsharpColumn = string.Empty;
-        QueryType = string.Empty;
+        QueryType = "EQ";
         DisplayType = string.Empty;
         DictType = string.Empty;
     }
@@ -241,48 +211,45 @@ public class HbtGenColumnCreateDto
     /// 列名
     /// </summary>
     [Required(ErrorMessage = "列名不能为空")]
-    [StringLength(100, ErrorMessage = "列名长度不能超过100个字符")]
+    [StringLength(50, ErrorMessage = "列名长度不能超过50个字符")]
     public string ColumnName { get; set; }
 
     /// <summary>
     /// 列注释
     /// </summary>
-    [Required(ErrorMessage = "列描述不能为空")]
-    [StringLength(200, ErrorMessage = "列描述长度不能超过200个字符")]
+    [Required(ErrorMessage = "列注释不能为空")]
+    [StringLength(200, ErrorMessage = "列注释长度不能超过200个字符")]
     public string ColumnComment { get; set; }
 
     /// <summary>
     /// 数据库列类型
     /// </summary>
     [Required(ErrorMessage = "数据库列类型不能为空")]
+    [StringLength(50, ErrorMessage = "数据库列类型长度不能超过50个字符")]
     public string DbColumnType { get; set; }
 
     /// <summary>
-    /// 列类型
+    /// C#类型
     /// </summary>
-    [Required(ErrorMessage = "列类型不能为空")]
+    [Required(ErrorMessage = "C#类型不能为空")]
+    [StringLength(50, ErrorMessage = "C#类型长度不能超过50个字符")]
     public string CsharpType { get; set; }
-
-    /// <summary>
-    /// C#列名（首字母大写）
-    /// </summary>
-    [Required(ErrorMessage = "C#列名不能为空")]
-    public string CsharpColumn { get; set; }
 
     /// <summary>
     /// C#长度（字符串长度、数值类型的整数位数）
     /// </summary>
-    public int CsharpLength { get; set; }
+    public int? CsharpLength { get; set; }
 
     /// <summary>
     /// C#小数位数（decimal等数值类型的小数位数）
     /// </summary>
-    public int CsharpDecimalDigits { get; set; }
+    public int? CsharpDecimalDigits { get; set; }
 
     /// <summary>
-    /// 实体字段名
+    /// C#字段名（首字母小写）
     /// </summary>
-    [Required(ErrorMessage = "实体字段名不能为空")]
+    [Required(ErrorMessage = "C#字段名不能为空")]
+    [StringLength(50, ErrorMessage = "C#字段名长度不能超过50个字符")]
     public string CsharpField { get; set; }
 
     /// <summary>
@@ -301,14 +268,13 @@ public class HbtGenColumnCreateDto
     public int IsRequired { get; set; }
 
     /// <summary>
-    /// 是否列表字段（1是）
+    /// 是否为新增字段（1是）
     /// </summary>
-
     public int IsInsert { get; set; }
+
     /// <summary>
     /// 是否编辑字段（1是）
     /// </summary>
-
     public int IsEdit { get; set; }
 
     /// <summary>
@@ -324,6 +290,7 @@ public class HbtGenColumnCreateDto
     /// <summary>
     /// 查询方式（等于、不等于、大于、小于、范围）
     /// </summary>
+    [StringLength(50, ErrorMessage = "查询方式长度不能超过50个字符")]
     public string QueryType { get; set; }
 
     /// <summary>
@@ -339,11 +306,13 @@ public class HbtGenColumnCreateDto
     /// <summary>
     /// 显示类型（文本框、文本域、下拉框、复选框、单选框、日期控件）
     /// </summary>
+    [StringLength(50, ErrorMessage = "显示类型长度不能超过50个字符")]
     public string DisplayType { get; set; }
 
     /// <summary>
-    /// 字典类型
+    /// 字典类型（用于下拉框、单选框、复选框等需要数据字典的字段）
     /// </summary>
+    [StringLength(200, ErrorMessage = "字典类型长度不能超过200个字符")]
     public string DictType { get; set; }
 
     /// <summary>
@@ -363,8 +332,10 @@ public class HbtGenColumnCreateDto
 public class HbtGenColumnUpdateDto : HbtGenColumnCreateDto
 {
     /// <summary>
-    /// 主键ID
+    /// 列ID
     /// </summary>
+    [Required(ErrorMessage = "列ID不能为空")]
+    [AdaptMember("Id")]
     public long GenColumnId { get; set; }
 }
 
@@ -383,64 +354,54 @@ public class HbtGenColumnImportDto
         DbColumnType = string.Empty;
         CsharpType = string.Empty;
         CsharpField = string.Empty;
-        CsharpColumn = string.Empty;
-        QueryType = string.Empty;
+        QueryType = "EQ";
         DisplayType = string.Empty;
         DictType = string.Empty;
     }
 
     /// <summary>
-    /// 表ID
-    /// </summary>
-    [Required(ErrorMessage = "表ID不能为空")]
-    public long TableId { get; set; }
-
-    /// <summary>
     /// 列名
     /// </summary>
     [Required(ErrorMessage = "列名不能为空")]
-    [StringLength(100, ErrorMessage = "列名长度不能超过100个字符")]
+    [StringLength(50, ErrorMessage = "列名长度不能超过50个字符")]
     public string ColumnName { get; set; }
 
     /// <summary>
     /// 列注释
     /// </summary>
-    [Required(ErrorMessage = "列描述不能为空")]
-    [StringLength(200, ErrorMessage = "列描述长度不能超过200个字符")]
+    [Required(ErrorMessage = "列注释不能为空")]
+    [StringLength(200, ErrorMessage = "列注释长度不能超过200个字符")]
     public string ColumnComment { get; set; }
 
     /// <summary>
     /// 数据库列类型
     /// </summary>
     [Required(ErrorMessage = "数据库列类型不能为空")]
+    [StringLength(50, ErrorMessage = "数据库列类型长度不能超过50个字符")]
     public string DbColumnType { get; set; }
 
     /// <summary>
-    /// 列类型
+    /// C#类型
     /// </summary>
-    [Required(ErrorMessage = "列类型不能为空")]
+    [Required(ErrorMessage = "C#类型不能为空")]
+    [StringLength(50, ErrorMessage = "C#类型长度不能超过50个字符")]
     public string CsharpType { get; set; }
-
-    /// <summary>
-    /// C#列名（首字母大写）
-    /// </summary>
-    [Required(ErrorMessage = "C#列名不能为空")]
-    public string CsharpColumn { get; set; }
 
     /// <summary>
     /// C#长度（字符串长度、数值类型的整数位数）
     /// </summary>
-    public int CsharpLength { get; set; }
+    public int? CsharpLength { get; set; }
 
     /// <summary>
     /// C#小数位数（decimal等数值类型的小数位数）
     /// </summary>
-    public int CsharpDecimalDigits { get; set; }
+    public int? CsharpDecimalDigits { get; set; }
 
     /// <summary>
-    /// 实体字段名
+    /// C#字段名（首字母小写）
     /// </summary>
-    [Required(ErrorMessage = "实体字段名不能为空")]
+    [Required(ErrorMessage = "C#字段名不能为空")]
+    [StringLength(50, ErrorMessage = "C#字段名长度不能超过50个字符")]
     public string CsharpField { get; set; }
 
     /// <summary>
@@ -459,14 +420,13 @@ public class HbtGenColumnImportDto
     public int IsRequired { get; set; }
 
     /// <summary>
-    /// 是否列表字段（1是）
+    /// 是否为新增字段（1是）
     /// </summary>
-
     public int IsInsert { get; set; }
+
     /// <summary>
     /// 是否编辑字段（1是）
     /// </summary>
-
     public int IsEdit { get; set; }
 
     /// <summary>
@@ -482,6 +442,7 @@ public class HbtGenColumnImportDto
     /// <summary>
     /// 查询方式（等于、不等于、大于、小于、范围）
     /// </summary>
+    [StringLength(50, ErrorMessage = "查询方式长度不能超过50个字符")]
     public string QueryType { get; set; }
 
     /// <summary>
@@ -497,27 +458,19 @@ public class HbtGenColumnImportDto
     /// <summary>
     /// 显示类型（文本框、文本域、下拉框、复选框、单选框、日期控件）
     /// </summary>
+    [StringLength(50, ErrorMessage = "显示类型长度不能超过50个字符")]
     public string DisplayType { get; set; }
 
     /// <summary>
-    /// 字典类型
+    /// 字典类型（用于下拉框、单选框、复选框等需要数据字典的字段）
     /// </summary>
+    [StringLength(200, ErrorMessage = "字典类型长度不能超过200个字符")]
     public string DictType { get; set; }
 
     /// <summary>
     /// 排序
     /// </summary>
     public int OrderNum { get; set; }
-
-    /// <summary>
-    /// 租户ID
-    /// </summary>
-    public long TenantId { get; set; }
-
-    /// <summary>
-    /// 备注
-    /// </summary>
-    public string? Remark { get; set; }
 }
 
 /// <summary>
@@ -535,64 +488,44 @@ public class HbtGenColumnExportDto
         DbColumnType = string.Empty;
         CsharpType = string.Empty;
         CsharpField = string.Empty;
-        CsharpColumn = string.Empty;
-        QueryType = string.Empty;
+        QueryType = "EQ";
         DisplayType = string.Empty;
         DictType = string.Empty;
     }
 
     /// <summary>
-    /// 表ID
-    /// </summary>
-    [Required(ErrorMessage = "表ID不能为空")]
-    public long TableId { get; set; }
-
-    /// <summary>
     /// 列名
     /// </summary>
-    [Required(ErrorMessage = "列名不能为空")]
-    [StringLength(100, ErrorMessage = "列名长度不能超过100个字符")]
     public string ColumnName { get; set; }
 
     /// <summary>
     /// 列注释
     /// </summary>
-    [Required(ErrorMessage = "列描述不能为空")]
-    [StringLength(200, ErrorMessage = "列描述长度不能超过200个字符")]
     public string ColumnComment { get; set; }
 
     /// <summary>
     /// 数据库列类型
     /// </summary>
-    [Required(ErrorMessage = "数据库列类型不能为空")]
     public string DbColumnType { get; set; }
 
     /// <summary>
-    /// 列类型
+    /// C#类型
     /// </summary>
-    [Required(ErrorMessage = "列类型不能为空")]
     public string CsharpType { get; set; }
-
-    /// <summary>
-    /// C#列名（首字母大写）
-    /// </summary>
-    [Required(ErrorMessage = "C#列名不能为空")]
-    public string CsharpColumn { get; set; }
 
     /// <summary>
     /// C#长度（字符串长度、数值类型的整数位数）
     /// </summary>
-    public int CsharpLength { get; set; }
+    public int? CsharpLength { get; set; }
 
     /// <summary>
     /// C#小数位数（decimal等数值类型的小数位数）
     /// </summary>
-    public int CsharpDecimalDigits { get; set; }
+    public int? CsharpDecimalDigits { get; set; }
 
     /// <summary>
-    /// 实体字段名
+    /// C#字段名（首字母小写）
     /// </summary>
-    [Required(ErrorMessage = "实体字段名不能为空")]
     public string CsharpField { get; set; }
 
     /// <summary>
@@ -611,14 +544,13 @@ public class HbtGenColumnExportDto
     public int IsRequired { get; set; }
 
     /// <summary>
-    /// 是否列表字段（1是）
+    /// 是否为新增字段（1是）
     /// </summary>
-
     public int IsInsert { get; set; }
+
     /// <summary>
     /// 是否编辑字段（1是）
     /// </summary>
-
     public int IsEdit { get; set; }
 
     /// <summary>
@@ -652,7 +584,7 @@ public class HbtGenColumnExportDto
     public string DisplayType { get; set; }
 
     /// <summary>
-    /// 字典类型
+    /// 字典类型（用于下拉框、单选框、复选框等需要数据字典的字段）
     /// </summary>
     public string DictType { get; set; }
 
@@ -660,161 +592,105 @@ public class HbtGenColumnExportDto
     /// 排序
     /// </summary>
     public int OrderNum { get; set; }
-
-    /// <summary>
-    /// 租户ID
-    /// </summary>
-    public long TenantId { get; set; }
 }
 
 /// <summary>
-/// 代码生成列模板DTO
+/// 数据库表列信息DTO
 /// </summary>
-public class HbtGenColumnTemplateDto
+public class HbtGenTableColumnInfoDto
 {
-    /// <summary>
-    /// 构造函数
-    /// </summary>
-    public HbtGenColumnTemplateDto()
-    {
-        ColumnName = string.Empty;
-        ColumnComment = string.Empty;
-        DbColumnType = string.Empty;
-        CsharpType = string.Empty;
-        CsharpField = string.Empty;
-        CsharpColumn = string.Empty;
-        QueryType = string.Empty;
-        DisplayType = string.Empty;
-        DictType = string.Empty;
-    }
-
-    /// <summary>
-    /// 表ID
-    /// </summary>
-    [Required(ErrorMessage = "表ID不能为空")]
-    public long TableId { get; set; }
-
     /// <summary>
     /// 列名
     /// </summary>
-    [Required(ErrorMessage = "列名不能为空")]
-    [StringLength(100, ErrorMessage = "列名长度不能超过100个字符")]
-    public string ColumnName { get; set; }
+    public string DbColumnName { get; set; } = string.Empty;
 
     /// <summary>
-    /// 列注释
+    /// 数据类型
     /// </summary>
-    [Required(ErrorMessage = "列描述不能为空")]
-    [StringLength(200, ErrorMessage = "列描述长度不能超过200个字符")]
-    public string ColumnComment { get; set; }
+    public string DataType { get; set; } = string.Empty;
 
     /// <summary>
-    /// 数据库列类型
+    /// 长度
     /// </summary>
-    [Required(ErrorMessage = "数据库列类型不能为空")]
-    public string DbColumnType { get; set; }
+    public int Length { get; set; }
 
     /// <summary>
-    /// 列类型
+    /// 小数位数
     /// </summary>
-    [Required(ErrorMessage = "列类型不能为空")]
-    public string CsharpType { get; set; }
+    public int DecimalDigits { get; set; }
 
     /// <summary>
-    /// C#列名（首字母大写）
+    /// 精度
     /// </summary>
-    [Required(ErrorMessage = "C#列名不能为空")]
-    public string CsharpColumn { get; set; }
+    public int Scale { get; set; }
 
     /// <summary>
-    /// C#长度（字符串长度、数值类型的整数位数）
+    /// 是否可空
     /// </summary>
-    public int CsharpLength { get; set; }
+    public bool IsNullable { get; set; }
 
     /// <summary>
-    /// C#小数位数（decimal等数值类型的小数位数）
+    /// 是否自增
     /// </summary>
-    public int CsharpDecimalDigits { get; set; }
+    public bool IsIdentity { get; set; }
 
     /// <summary>
-    /// 实体字段名
+    /// 是否主键
     /// </summary>
-    [Required(ErrorMessage = "实体字段名不能为空")]
-    public string CsharpField { get; set; }
+    public bool IsPrimarykey { get; set; }
 
     /// <summary>
-    /// 是否自增（1是）
+    /// 默认值
     /// </summary>
-    public int IsIncrement { get; set; }
+    public string DefaultValue { get; set; } = string.Empty;
 
     /// <summary>
-    /// 是否主键（1是）
+    /// 列描述
     /// </summary>
-    public int IsPrimaryKey { get; set; }
+    public string ColumnDescription { get; set; } = string.Empty;
 
     /// <summary>
-    /// 是否必填（1是）
+    /// Oracle类型
     /// </summary>
-    public int IsRequired { get; set; }
+    public string OracleDataType { get; set; } = string.Empty;
 
     /// <summary>
-    /// 是否列表字段（1是）
+    /// 属性名
     /// </summary>
-
-    public int IsInsert { get; set; }
-    /// <summary>
-    /// 是否编辑字段（1是）
-    /// </summary>
-
-    public int IsEdit { get; set; }
+    public string PropertyName { get; set; } = string.Empty;
 
     /// <summary>
-    /// 是否列表字段（1是）
+    /// 属性类型
     /// </summary>
-    public int IsList { get; set; }
+    public string PropertyType { get; set; } = string.Empty;
 
     /// <summary>
-    /// 是否查询字段（1是）
+    /// 值
     /// </summary>
-    public int IsQuery { get; set; }
+    public object? Value { get; set; }
 
     /// <summary>
-    /// 查询方式（等于、不等于、大于、小于、范围）
+    /// 是否数组
     /// </summary>
-    public string QueryType { get; set; }
+    public bool IsArray { get; set; }
 
     /// <summary>
-    /// 是否排序字段（1是）
+    /// 是否Json
     /// </summary>
-    public int IsSort { get; set; }
+    public bool IsJson { get; set; }
 
     /// <summary>
-    /// 是否导出字段（1是）
+    /// 建表字段排序
     /// </summary>
-    public int IsExport { get; set; }
+    public int CreateTableFieldSort { get; set; }
 
     /// <summary>
-    /// 显示类型（文本框、文本域、下拉框、复选框、单选框、日期控件）
+    /// 插入SQL
     /// </summary>
-    public string DisplayType { get; set; }
+    public string InsertSql { get; set; } = string.Empty;
 
     /// <summary>
-    /// 字典类型
+    /// 更新SQL
     /// </summary>
-    public string DictType { get; set; }
-
-    /// <summary>
-    /// 排序
-    /// </summary>
-    public int OrderNum { get; set; }
-
-    /// <summary>
-    /// 租户ID
-    /// </summary>
-    public long TenantId { get; set; }
-
-    /// <summary>
-    /// 备注
-    /// </summary>
-    public string? Remark { get; set; }
+    public string UpdateSql { get; set; } = string.Empty;
 }

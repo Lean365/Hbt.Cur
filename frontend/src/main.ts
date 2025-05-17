@@ -63,24 +63,7 @@ async function bootstrap() {
         console.log('[应用] 开始加载菜单')
         const menus = await menuStore.reloadMenus(router)
         if (menus && menus.length > 0) {
-          console.log('[应用] 菜单加载完成，等待路由注册')
-          
-          // 等待路由注册完成
-          let retryCount = 0
-          const maxRetries = 10
-          while (retryCount < maxRetries) {
-            // 检查目标路由是否已注册（以 /admin/configs 为例）
-            // const testRoute = router.resolve('/admin/configs')
-            // if (testRoute.matched.length > 0) {
-            //   console.log('[应用] 动态路由注册完成')
-            //   break
-            // }
-            await new Promise(resolve => setTimeout(resolve, 50))
-            retryCount++
-            if (retryCount === maxRetries) {
-              console.warn('[应用] 路由注册超时')
-            }
-          }
+          console.log('[应用] 菜单加载完成，路由注册完成')
         } else {
           console.warn('[应用] 未加载到菜单数据')
         }

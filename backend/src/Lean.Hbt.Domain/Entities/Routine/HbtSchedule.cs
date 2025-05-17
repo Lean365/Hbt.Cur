@@ -7,8 +7,7 @@
 // 描述   : 日程管理实体
 //===================================================================
 
-using System;
-using System.Collections.Generic;
+using Lean.Hbt.Domain.Entities.Identity;
 using SqlSugar;
 
 namespace Lean.Hbt.Domain.Entities.Routine;
@@ -16,7 +15,7 @@ namespace Lean.Hbt.Domain.Entities.Routine;
 /// <summary>
 /// 日程管理实体
 /// </summary>
-[SugarTable("hbt_rou_schedule", "日程管理")]
+[SugarTable("hbt_routine_schedule", "日程管理")]
 [SugarIndex("index_schedule_title", nameof(Title), OrderByType.Asc)]
 [SugarIndex("index_schedule_type", nameof(ScheduleType), OrderByType.Asc)]
 [SugarIndex("index_schedule_status", nameof(Status), OrderByType.Asc)]
@@ -93,4 +92,15 @@ public class HbtSchedule : HbtBaseEntity
     /// </summary>
     [SugarColumn(ColumnName = "participants", ColumnDescription = "参与人", IsNullable = true, DefaultValue = "", ColumnDataType = "text", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
     public string? Participants { get; set; }
+    /// <summary>
+    /// 租户ID
+    /// </summary>
+    [SugarColumn(ColumnName = "tenant_id", ColumnDescription = "租户ID", ColumnDataType = "bigint", IsNullable = false)]
+    public long TenantId { get; set; }
+
+    /// <summary>
+    /// 租户
+    /// </summary>
+    [Navigate(NavigateType.OneToOne, nameof(TenantId))]
+    public HbtTenant? Tenant { get; set; }
 }

@@ -1,6 +1,6 @@
 <template>
   <a-modal
-    :visible="visible"
+    :open="visible"
     title="分配菜单权限"
     :confirm-loading="confirmLoading"
     @update:visible="(val) => $emit('update:visible', val)"
@@ -8,14 +8,16 @@
   >
     <a-tree
       v-model:checkedKeys="checkedKeys"
+      v-model:expandedKeys="expandedKeys"
       :tree-data="treeData"
       :field-names="{
         children: 'children',
-        title: 'menuName',
-        key: 'menuId'
+        title: 'title',
+        key: 'key'
       }"
       checkable
-      :default-expand-all="true"
+      :default-expand-all="false"
+      @expand="handleExpand"
     />
   </a-modal>
 </template>
@@ -24,9 +26,10 @@
 import { ref, watch } from 'vue'
 import { message } from 'ant-design-vue'
 import type { TreeDataItem } from 'ant-design-vue/es/tree'
+import type { EventDataNode } from 'ant-design-vue/es/tree'
 import type { Menu } from '@/types/identity/menu'
 import { getMenuTree } from '@/api/identity/menu'
-import { getRoleMenuList, allocateRoleMenu } from '@/api/identity/roleMenu'
+import { getRoleMenus, allocateRoleMenu } from '@/api/identity/role'
 
 interface Props {
   visible: boolean
@@ -48,38 +51,71 @@ const menuTree = ref<Menu[]>([])
 // 转换后的树形数据
 const treeData = ref<TreeDataItem[]>([])
 // 选中的菜单ID
-const checkedKeys = ref<number[]>([])
+const checkedKeys = ref<string[]>([])
 // 确认加载
 const confirmLoading = ref(false)
+// 展开的节点keys
+const expandedKeys = ref<string[]>([])
 
 // 转换树形数据
 const transformTreeData = (menus: Menu[]): TreeDataItem[] => {
   return menus.map(menu => ({
-    key: menu.menuId,
+    key: String(menu.menuId),
     title: menu.menuName,
-    children: menu.children ? transformTreeData(menu.children) : undefined
+    children: menu.children ? transformTreeData(menu.children) : undefined,
+    disabled: menu.status === 1
   }))
+}
+
+// 处理展开/收缩事件
+const handleExpand = (expandedKeys: (string | number)[], info: { node: EventDataNode; expanded: boolean; nativeEvent: MouseEvent }) => {
+  console.log('展开的节点:', expandedKeys)
 }
 
 // 加载菜单树数据
 const loadMenuTree = async () => {
   try {
-    const { data } = await getMenuTree()
-    menuTree.value = data
-    treeData.value = transformTreeData(data)
+    const res = await getMenuTree()
+    if (res.data.code === 200) {
+      menuTree.value = res.data.data
+      treeData.value = transformTreeData(res.data.data)
+      // 只展开前两项
+      expandedKeys.value = treeData.value.slice(0, 2).map(node => node.key as string)
+    } else {
+      message.error(res.data.msg || '加载菜单树失败')
+    }
   } catch (err) {
     console.error('加载菜单树失败:', err)
+    message.error('加载菜单树失败')
   }
+}
+
+// 获取所有节点的key
+const getAllKeys = (nodes: TreeDataItem[]): string[] => {
+  const keys: string[] = []
+  const traverse = (node: TreeDataItem) => {
+    keys.push(node.key as string)
+    if (node.children) {
+      node.children.forEach(traverse)
+    }
+  }
+  nodes.forEach(traverse)
+  return keys
 }
 
 // 加载角色菜单
 const loadRoleMenus = async () => {
   if (!props.roleId) return
   try {
-    const { data } = await getRoleMenuList(props.roleId)
-    checkedKeys.value = data
+    const res = await getRoleMenus(props.roleId)
+    if (res.data.code === 200) {
+      checkedKeys.value = res.data.data.map((item: any) => String(item.menuId))
+    } else {
+      message.error(res.data.msg || '加载角色菜单失败')
+    }
   } catch (err) {
     console.error('加载角色菜单失败:', err)
+    message.error('加载角色菜单失败')
   }
 }
 
@@ -88,10 +124,7 @@ const handleSubmit = async () => {
   if (!props.roleId) return
   try {
     confirmLoading.value = true
-    await allocateRoleMenu({
-      roleId: props.roleId,
-      menuIds: checkedKeys.value
-    })
+    await allocateRoleMenu(props.roleId, checkedKeys.value.map(id => Number(id)))
     message.success('分配成功')
     emit('success')
     emit('update:visible', false)

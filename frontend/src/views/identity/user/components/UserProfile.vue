@@ -170,10 +170,10 @@ const uploadHeaders = {
 const getUserInfo = async () => {
   try {
     const res = await getInfo()
-    if (res.code === 200) {
-      Object.assign(form, res.data)
+    if (res.data.code === 200) {
+      Object.assign(form, res.data.data)
     } else {
-      message.error(res.msg || t('common.failed'))
+      message.error(res.data.msg || t('common.failed'))
     }
   } catch (error) {
     console.error(error)
@@ -218,7 +218,7 @@ const handleSubmit = async () => {
     await formRef.value?.validate()
     const formData = { ...form }
     const params: UserUpdate = {
-      userId: userStore.user?.userId ?? 0,
+      userId: userStore.userInfo?.userId ?? 0,
       nickName: formData.nickName,
       gender: 0, // 默认性别未知
       status: 1, // 默认启用状态

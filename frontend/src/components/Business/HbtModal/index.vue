@@ -19,7 +19,7 @@
     :title="title"
     :width="width"
     :confirm-loading="loading"
-    :footer="footer"
+    :footer="footer === false || footer === null ? null : undefined"
     :mask-closable="maskClosable"
     :keyboard="keyboard"
     :centered="centered"
@@ -36,7 +36,7 @@
     <template v-else>
       <slot></slot>
     </template>
-    <template #footer v-if="footer !== null">
+    <template #footer v-if="footer !== false && footer !== null">
       <slot name="footer">
         <a-button key="cancel" @click="handleCancel">{{ finalCancelText }}</a-button>
         <a-button

@@ -17,7 +17,7 @@ namespace Lean.Hbt.Domain.Entities.Generator;
 /// <summary>
 /// 代码生成列定义实体
 /// </summary>
-[SugarTable("hbt_gen_column_define", "代码生成列定义表")]
+[SugarTable("hbt_generator_column_define", "代码生成列定义表")]
 [SugarIndex("ix_gen_column_define_table", nameof(TableId), OrderByType.Asc, nameof(ColumnName), OrderByType.Asc, true)]
 [SugarIndex("ix_gen_column_define_tenant", nameof(TenantId), OrderByType.Asc, nameof(TableId), OrderByType.Asc, nameof(ColumnName), OrderByType.Asc, true)]
 public class HbtGenColumnDefine : HbtBaseEntity
@@ -157,8 +157,8 @@ public class HbtGenColumnDefine : HbtBaseEntity
     /// <summary>
     /// 租户ID
     /// </summary>
-    [SugarColumn(ColumnName = "tenant_id", ColumnDescription = "租户ID", ColumnDataType = "bigint", IsNullable = false, DefaultValue = "0")]
-    public long TenantId { get; set; } = 0;
+    [SugarColumn(ColumnName = "tenant_id", ColumnDescription = "租户ID", ColumnDataType = "bigint", IsNullable = false)]
+    public long TenantId { get; set; }
 
     /// <summary>
     /// 租户

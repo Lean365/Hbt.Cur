@@ -9,14 +9,20 @@
 // 描述   : 代码生成表服务实现
 //===================================================================
 
-using Lean.Hbt.Application.Services.Generator.CodeGenerator;
-using Lean.Hbt.Domain.IServices.Extensions;
-using Microsoft.AspNetCore.Http;
-using Lean.Hbt.Domain.Entities.Generator;
 using Lean.Hbt.Application.Dtos.Generator;
-using System.Linq.Expressions;
+using Lean.Hbt.Common.Models;
+using Lean.Hbt.Domain.Entities.Generator;
+using Lean.Hbt.Domain.Repositories;
+using Lean.Hbt.Domain.Utils;
+using Microsoft.AspNetCore.Http;
 using SqlSugar;
-using System.Text.Json;
+using System.Linq.Expressions;
+using Lean.Hbt.Domain.IServices.Extensions;
+using Lean.Hbt.Common.Exceptions;
+using Lean.Hbt.Common.Extensions;
+using Lean.Hbt.Common.Utils;
+using Microsoft.Extensions.Logging;
+using Lean.Hbt.Common.Helpers;
 
 namespace Lean.Hbt.Application.Services.Generator;
 
@@ -27,34 +33,23 @@ public class HbtGenTableService : HbtBaseService, IHbtGenTableService
 {
     private readonly IHbtRepository<HbtGenTable> _tableRepository;
     private readonly IHbtRepository<HbtGenColumn> _columnRepository;
-    private readonly IHbtCodeGeneratorService _codeGeneratorService;
-    private readonly SqlSugarScope _db;
+    private readonly ISqlSugarClient _db;
 
     /// <summary>
     /// 构造函数
     /// </summary>
-    /// <param name="tableRepository">表仓储</param>
-    /// <param name="columnRepository">列仓储</param>
-    /// <param name="codeGeneratorService">代码生成服务</param>
-    /// <param name="db">数据库客户端</param>
-    /// <param name="logger">日志服务</param>
-    /// <param name="httpContextAccessor">HTTP上下文访问器</param>
-    /// <param name="currentUser">当前用户服务</param>
-    /// <param name="localization">本地化服务</param>
     public HbtGenTableService(
         IHbtRepository<HbtGenTable> tableRepository,
         IHbtRepository<HbtGenColumn> columnRepository,
-        IHbtCodeGeneratorService codeGeneratorService,
-        SqlSugarScope db,
         IHbtLogger logger,
         IHttpContextAccessor httpContextAccessor,
         IHbtCurrentUser currentUser,
-        IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
+        IHbtLocalizationService localization,
+        ISqlSugarClient db) : base(logger, httpContextAccessor, currentUser, localization)
     {
-        _tableRepository = tableRepository;
-        _columnRepository = columnRepository;
-        _codeGeneratorService = codeGeneratorService;
-        _db = db;
+        _tableRepository = tableRepository ?? throw new ArgumentNullException(nameof(tableRepository));
+        _columnRepository = columnRepository ?? throw new ArgumentNullException(nameof(columnRepository));
+        _db = db ?? throw new ArgumentNullException(nameof(db));
     }
 
     #region 基础操作
@@ -68,30 +63,26 @@ public class HbtGenTableService : HbtBaseService, IHbtGenTableService
     {
         var table = await _tableRepository.GetByIdAsync(id);
         if (table == null)
-        {
             return null;
-        }
 
-        return table.Adapt<HbtGenTableDto>();
+        var dto = table.Adapt<HbtGenTableDto>();
+        
+        // 获取列信息
+        var columns = await _columnRepository.GetListAsync(x => x.TableId == id);
+        dto.Columns = columns.Adapt<List<HbtGenColumnDto>>();
+
+        return dto;
     }
 
     /// <summary>
     /// 构建查询条件
     /// </summary>
-    private Expression<Func<HbtGenTable, bool>> HbtGenTableQueryExpression(HbtGenTableQueryDto query)
+    private Expression<Func<HbtGenTable, bool>> HbtGenTableQueryExpression(HbtGenTableQueryDto input)
     {
-        var exp = Expressionable.Create<HbtGenTable>();
-
-        if (!string.IsNullOrEmpty(query.TableName))
-            exp.And(x => x.TableName.Contains(query.TableName));
-
-        if (!string.IsNullOrEmpty(query.TableComment))
-            exp.And(x => x.TableComment.Contains(query.TableComment));
-
-        if (query.Status.HasValue)
-            exp.And(x => x.Status == query.Status.Value);
-
-        return exp.ToExpression();
+        return Expressionable.Create<HbtGenTable>()
+            .AndIF(!string.IsNullOrEmpty(input.TableName), x => x.TableName.Contains(input.TableName))
+            .AndIF(!string.IsNullOrEmpty(input.TableComment), x => x.TableComment.Contains(input.TableComment))
+            .ToExpression();
     }
 
     /// <summary>
@@ -101,51 +92,53 @@ public class HbtGenTableService : HbtBaseService, IHbtGenTableService
     /// <returns>分页结果</returns>
     public async Task<HbtPagedResult<HbtGenTableDto>> GetListAsync(HbtGenTableQueryDto input)
     {
-        var exp = HbtGenTableQueryExpression(input);
-
         var result = await _tableRepository.GetPagedListAsync(
-            exp,
+            HbtGenTableQueryExpression(input),
             input.PageIndex,
             input.PageSize,
-            x => x.Id,
-            OrderByType.Asc);
+            x => x.CreateTime,
+            OrderByType.Desc);
 
-        return new HbtPagedResult<HbtGenTableDto>
-        {
-            Rows = result.Rows.Adapt<List<HbtGenTableDto>>(),
-            TotalNum = result.TotalNum,
-            PageIndex = input.PageIndex,
-            PageSize = input.PageSize
-        };
+        return result.Adapt<HbtPagedResult<HbtGenTableDto>>();
+    }
+
+    /// <summary>
+    /// 获取表字段列表
+    /// </summary>
+    /// <param name="tableId">表ID</param>
+    /// <returns>字段列表</returns>
+    public async Task<List<HbtGenColumnDto>> GetColumnListAsync(long tableId)
+    {
+        var columns = await _columnRepository.GetListAsync(x => x.TableId == tableId);
+        return columns.Adapt<List<HbtGenColumnDto>>();
     }
 
     /// <summary>
     /// 创建表信息
     /// </summary>
-    /// <param name="input">表信息</param>
+    /// <param name="input">创建参数</param>
     /// <returns>创建结果</returns>
-    public async Task<HbtGenTableDto> CreateAsync(HbtGenTableDto input)
+    public async Task<HbtGenTableDto> CreateAsync(HbtGenTableCreateDto input)
     {
-        // 验证表名是否已存在
-        var existTable = await _tableRepository.GetFirstAsync(x => x.TableName == input.TableName);
-        if (existTable != null)
-        {
-            throw new HbtException($"表名[{input.TableName}]已存在");
-        }
+        // 检查表名是否已存在
+        await HbtValidateUtils.ValidateFieldExistsAsync(_tableRepository, nameof(HbtGenTable.TableName), input.TableName);
 
+        // 创建表信息
         var table = input.Adapt<HbtGenTable>();
-        table.CreateBy = _currentUser.UserName;
-        table.CreateTime = DateTime.Now;
-        table.UpdateBy = _currentUser.UserName;
-        table.UpdateTime = DateTime.Now;
+        await _tableRepository.CreateAsync(table);
 
-        var result = await _tableRepository.CreateAsync(table);
-        if (result <= 0)
+        // 创建列信息
+        if (input.Columns != null && input.Columns.Any())
         {
-            throw new HbtException("创建表失败");
+            var columns = input.Columns.Adapt<List<HbtGenColumn>>();
+            foreach (var column in columns)
+            {
+                column.TableId = table.Id;
+                await _columnRepository.CreateAsync(column);
+            }
         }
 
-        return table.Adapt<HbtGenTableDto>();
+        return await GetByIdAsync(table.Id) ?? throw new HbtException(L("Generator.Table.CreateFailed"));
     }
 
     /// <summary>
@@ -155,45 +148,37 @@ public class HbtGenTableService : HbtBaseService, IHbtGenTableService
     /// <returns>更新后的表信息</returns>
     public async Task<HbtGenTableDto> UpdateAsync(HbtGenTableUpdateDto input)
     {
-        var table = await _tableRepository.GetByIdAsync(input.TableId);
+        var table = await _tableRepository.GetByIdAsync(input.Id);
         if (table == null)
-        {
-            throw new HbtException($"表[{input.TableId}]不存在");
-        }
+            throw new HbtException(L("Generator.Table.NotFound", input.Id));
 
-        // 验证表名是否已存在
-        if (table.TableName != input.TableName)
+        // 检查表名是否已存在
+        await HbtValidateUtils.ValidateFieldExistsAsync(_tableRepository, nameof(HbtGenTable.TableName), input.TableName, input.Id);
+
+        // 更新表信息
+        input.Adapt(table);
+        await _tableRepository.UpdateAsync(table);
+
+        // 更新列信息
+        if (input.Columns != null && input.Columns.Any())
         {
-            var existTable = await _tableRepository.GetFirstAsync(x => x.TableName == input.TableName);
-            if (existTable != null)
+            // 删除旧的列信息
+            var oldColumns = await _columnRepository.GetListAsync(x => x.TableId == input.Id);
+            foreach (var column in oldColumns)
             {
-                throw new HbtException($"表名[{input.TableName}]已存在");
+                await _columnRepository.DeleteAsync(column.Id);
+            }
+
+            // 创建新的列信息
+            var columns = input.Columns.Adapt<List<HbtGenColumn>>();
+            foreach (var column in columns)
+            {
+                column.TableId = input.Id;
+                await _columnRepository.CreateAsync(column);
             }
         }
 
-        table.TableName = input.TableName;
-        table.TableComment = input.TableComment;
-        table.ClassName = input.ClassName;
-        table.BaseNamespace = input.BaseNamespace;
-        table.ModuleName = input.ModuleName;
-        table.BusinessName = input.BusinessName;
-        table.FunctionName = input.FunctionName;
-        table.Author = input.Author;
-        table.GenMode = input.GenMode;
-        table.GenPath = input.GenPath;
-        table.Options = input.Options;
-        table.Status = input.Status;
-        table.Remark = input.Remark;
-        table.UpdateBy = _currentUser.UserName;
-        table.UpdateTime = DateTime.Now;
-
-        var result = await _tableRepository.UpdateAsync(table);
-        if (result <= 0)
-        {
-            throw new HbtException("更新表失败");
-        }
-
-        return table.Adapt<HbtGenTableDto>();
+        return await GetByIdAsync(input.Id) ?? throw new HbtException(L("Generator.Table.UpdateFailed"));
     }
 
     /// <summary>
@@ -203,88 +188,22 @@ public class HbtGenTableService : HbtBaseService, IHbtGenTableService
     /// <returns>是否删除成功</returns>
     public async Task<bool> DeleteAsync(long id)
     {
-        var table = await _tableRepository.GetByIdAsync(id);
-        if (table == null)
+        // 删除表信息
+        await _tableRepository.DeleteAsync(id);
+
+        // 删除关联的列信息
+        var columns = await _columnRepository.GetListAsync(x => x.TableId == id);
+        foreach (var column in columns)
         {
-            throw new HbtException($"表[{id}]不存在");
+            await _columnRepository.DeleteAsync(column.Id);
         }
 
-        return await _tableRepository.DeleteAsync(table) > 0;
+        return true;
     }
 
-    /// <summary>
-    /// 批量删除表
-    /// </summary>
-    /// <param name="ids">表ID集合</param>
-    /// <returns>是否删除成功</returns>
-    public async Task<bool> BatchDeleteAsync(long[] ids)
-    {
-        if (ids == null || ids.Length == 0)
-        {
-            throw new HbtException("请选择要删除的表");
-        }
+    #endregion
 
-        var tables = await _tableRepository.GetListAsync(x => ids.Contains(x.Id));
-        if (tables?.Count > 0)
-        {
-            return await _tableRepository.DeleteRangeAsync(tables) > 0;
-        }
-
-        return false;
-    }
-
-    #endregion 基础操作
-
-    #region 列操作
-
-    /// <summary>
-    /// 获取表列列表
-    /// </summary>
-    /// <param name="tableId">表ID</param>
-    /// <returns>列列表</returns>
-    public async Task<List<HbtGenColumnDto>> GetColumnListAsync(long tableId)
-    {
-        var columns = await _columnRepository.GetListAsync(x => x.TableId == tableId);
-        return columns.Adapt<List<HbtGenColumnDto>>();
-    }
-
-    /// <summary>
-    /// 更新表列信息
-    /// </summary>
-    /// <param name="input">列信息</param>
-    /// <returns>是否更新成功</returns>
-    public async Task<bool> UpdateColumnAsync(HbtGenColumnUpdateDto input)
-    {
-        var column = await _columnRepository.GetByIdAsync(input.GenColumnId);
-        if (column == null)
-        {
-            throw new HbtException($"列[{input.GenColumnId}]不存在");
-        }
-
-        column.ColumnComment = input.ColumnComment;
-        column.DbColumnType = input.DbColumnType;
-        column.CsharpType = input.CsharpType;
-        column.CsharpField = input.CsharpField;
-        column.IsPrimaryKey = input.IsPrimaryKey;
-        column.IsIncrement = input.IsIncrement;
-        column.IsRequired = input.IsRequired;
-        column.IsInsert = input.IsInsert;
-        column.IsEdit = input.IsEdit;
-        column.IsList = input.IsList;
-        column.IsQuery = input.IsQuery;
-        column.QueryType = input.QueryType;
-        column.DisplayType = input.DisplayType;
-        column.DictType = input.DictType;
-        column.OrderNum = input.OrderNum;
-        column.UpdateBy = _currentUser.UserName;
-        column.UpdateTime = DateTime.Now;
-
-        return await _columnRepository.UpdateAsync(column) > 0;
-    }
-
-    #endregion 列操作
-
-    #region 导入导出
+    #region 表操作
 
     /// <summary>
     /// 导入表
@@ -293,81 +212,348 @@ public class HbtGenTableService : HbtBaseService, IHbtGenTableService
     /// <returns>导入的表列表</returns>
     public async Task<List<HbtGenTableDto>> ImportTablesAsync(HbtGenTableImportDto input)
     {
+        var result = new List<HbtGenTableDto>();
+        var failTables = new List<string>();
+
         try
         {
-            var table = new HbtGenTable
+            _logger.Info($"开始导入表：{input.TableName}");
+            
+            // 获取表信息
+            var tableInfo = await Task.Run(() => _db.DbMaintenance.GetTableInfoList(false).FirstOrDefault(x => x.Name == input.TableName));
+            if (tableInfo == null)
             {
-                DatabaseName = input.DatabaseName,
-                TableName = input.TableName,
-                TableComment = input.TableComment,
-                ClassName = input.ClassName,
-                Namespace = input.Namespace,
-                BaseNamespace = input.BaseNamespace,
-                CsharpTypeName = input.CsharpTypeName,
-                ModuleName = input.ModuleName,
-                BusinessName = input.BusinessName,
-                FunctionName = input.FunctionName,
-                Author = input.Author,
-                GenMode = input.GenMode,
-                GenPath = input.GenPath,
-                Options = input.Options,
-                CreateBy = _currentUser.UserName,
-                CreateTime = DateTime.Now,
-                UpdateBy = _currentUser.UserName,
-                UpdateTime = DateTime.Now
-            };
-
-            var result = await _tableRepository.CreateAsync(table);
-            if (result <= 0)
-            {
-                throw new HbtException("导入表失败");
+                _logger.Error($"表不存在：{input.TableName}");
+                throw new HbtException(L("Generator.Table.NotFound", input.TableName));
             }
 
-            return new List<HbtGenTableDto> { table.Adapt<HbtGenTableDto>() };
+            _logger.Info($"获取到表信息：{input.TableName}");
+
+            // 检查表是否已存在
+            var existingTable = await _tableRepository.GetFirstAsync(x => x.TableName == input.TableName);
+            if (existingTable != null)
+            {
+                _logger.Info($"表已存在，准备更新：{input.TableName}");
+                
+                // 更新表信息
+                existingTable.DatabaseName = input.DatabaseName;
+                existingTable.TableName = input.TableName;
+                existingTable.TableComment = input.TableComment;
+                existingTable.EntityClassName = input.EntityClassName;
+                existingTable.EntityNamespace = input.EntityNamespace;
+                existingTable.BaseNamespace = "Lean.Hbt";
+                existingTable.DtoType = input.DtoType;
+                existingTable.DtoClassName = HbtNamingHelper.GetDtoClassName(input.TableName);
+                existingTable.TplType = input.TplType;
+                existingTable.TplCategory = input.TplCategory;
+                existingTable.SubTableName = input.SubTableName;
+                existingTable.SubTableFkName = input.SubTableFkName;
+                existingTable.TreeCode = input.TreeCode;
+                tableInfo.Description = input.TableComment;
+                existingTable.TreeName = input.TreeName;
+                existingTable.TreeParentCode = input.TreeParentCode;
+                existingTable.ModuleName = input.ModuleName;
+                existingTable.BusinessName = input.BusinessName;
+                existingTable.FunctionName = input.FunctionName;
+                existingTable.Author = input.Author;
+                existingTable.GenType = input.GenType;
+                existingTable.GenPath = input.GenPath;
+                existingTable.ParentMenuId = input.ParentMenuId;
+                existingTable.SortType = input.SortType;
+                existingTable.SortField = input.SortField;
+                existingTable.PermsPrefix = input.PermsPrefix;
+                existingTable.GenerateMenu = input.GenerateMenu;
+                existingTable.FrontTpl = input.FrontTpl;
+                existingTable.BtnStyle = input.BtnStyle;
+                existingTable.FrontStyle = input.FrontStyle;
+                existingTable.Status = input.Status;
+                existingTable.Options = new CodeOptions
+                {
+                    IsSqlDiff = 1,
+                    IsSnowflakeId = 1,
+                    IsRepository = 0,
+                    CrudGroup = new int[] { 1, 2, 3, 4, 5, 6, 7, 8 }
+                };
+
+                // 获取并创建新的列信息
+                var columns = await Task.Run(() => _db.DbMaintenance.GetColumnInfosByTableName(input.TableName, false));
+                if (columns == null || !columns.Any())
+                {
+                    _logger.Error($"表没有列信息：{input.TableName}");
+                    throw new HbtException(L("Generator.Table.NoColumns", input.TableName));
+                }
+
+                _logger.Info($"获取到列信息，数量：{columns.Count}");
+
+                // 处理列信息
+                var existingColumns = await _columnRepository.GetListAsync(x => x.TableId == existingTable.Id);
+                var currentColumnNames = columns.Select(x => x.DbColumnName).ToList();
+
+                // 更新或创建列
+                foreach (var column in columns)
+                {
+                    var existingColumn = existingColumns.FirstOrDefault(x => x.ColumnName == column.DbColumnName);
+
+                    if (existingColumn != null)
+                    {
+                        _logger.Info($"列已存在，准备更新：{column.DbColumnName}");
+                        // 更新列信息
+                        existingColumn.ColumnName = column.DbColumnName;
+                        existingColumn.ColumnComment = column.ColumnDescription;
+                        existingColumn.DbColumnType = column.DataType;
+                        existingColumn.CsharpType = HbtStringUtils.GetCsharpType(column.DataType);
+                        existingColumn.CsharpField = HbtStringUtils.ToCamelCase(column.DbColumnName);
+                        existingColumn.CsharpLength = column.Length;
+                        existingColumn.CsharpDecimalDigits = column.DecimalDigits;
+                        existingColumn.IsIncrement = column.IsIdentity ? 1 : 0;
+                        existingColumn.IsPrimaryKey = column.IsPrimarykey ? 1 : 0;
+                        existingColumn.IsRequired = !column.IsNullable ? 1 : 0;
+                        existingColumn.IsInsert = 1;
+                        existingColumn.IsEdit = 1;
+                        existingColumn.IsList = 1;
+                        existingColumn.IsQuery = 0;
+                        existingColumn.QueryType = "EQ";
+                        existingColumn.IsSort = 0;
+                        existingColumn.IsExport = 1;
+                        existingColumn.DisplayType = "input";
+                        existingColumn.DictType = "";
+                        existingColumn.OrderNum = column.CreateTableFieldSort;
+
+                        await _columnRepository.UpdateAsync(existingColumn);
+                    }
+                    else
+                    {
+                        _logger.Info($"列不存在，准备创建：{column.DbColumnName}");
+                        // 创建新列
+                        var newColumn = new HbtGenColumn
+                        {
+                            TableId = existingTable.Id,
+                            ColumnName = column.DbColumnName,
+                            ColumnComment = column.ColumnDescription,
+                            DbColumnType = column.DataType,
+                            CsharpType = HbtStringUtils.GetCsharpType(column.DataType),
+                            CsharpField = HbtStringUtils.ToCamelCase(column.DbColumnName),
+                            CsharpLength = column.Length,
+                            CsharpDecimalDigits = column.DecimalDigits,
+                            IsIncrement = column.IsIdentity ? 1 : 0,
+                            IsPrimaryKey = column.IsPrimarykey ? 1 : 0,
+                            IsRequired = !column.IsNullable ? 1 : 0,
+                            IsInsert = 1,
+                            IsEdit = 1,
+                            IsList = 1,
+                            IsQuery = 0,
+                            QueryType = "EQ",
+                            IsSort = 0,
+                            IsExport = 1,
+                            DisplayType = "input",
+                            DictType = "",
+                            OrderNum = column.CreateTableFieldSort
+                        };
+
+                        await _columnRepository.CreateAsync(newColumn);
+                    }
+                }
+
+                // 删除不再存在的列
+                var columnsToDelete = existingColumns.Where(x => !currentColumnNames.Contains(x.ColumnName)).ToList();
+                foreach (var column in columnsToDelete)
+                {
+                    _logger.Info($"删除不再存在的列：{column.ColumnName}");
+                    await _columnRepository.DeleteAsync(column.Id);
+                }
+
+                await _tableRepository.UpdateAsync(existingTable);
+                _logger.Info($"表信息更新成功，ID：{existingTable.Id}");
+
+                var updatedTable = await GetByIdAsync(existingTable.Id);
+                if (updatedTable == null)
+                {
+                    _logger.Error($"更新后无法获取表信息：{input.TableName}");
+                    throw new HbtException(L("Generator.Table.ImportFailed"));
+                }
+
+                result.Add(updatedTable);
+                _logger.Info($"表更新成功：{input.TableName}");
+            }
+            else
+            {
+                // 创建新表
+                var table = new HbtGenTable
+                {
+                    DatabaseName = input.DatabaseName,
+                    TableName = input.TableName,
+                    TableComment = input.TableComment,
+                    Remark = input.TableComment,
+                    EntityClassName = input.EntityClassName,
+                    BaseNamespace = "Lean.Hbt"
+                };
+
+                // 设置实体相关命名空间
+                table.EntityNamespace = HbtNamingHelper.GetEntityNamespace(table.BaseNamespace, input.TableName);
+                table.DtoType = input.DtoType;
+                table.DtoNamespace = HbtNamingHelper.GetDtoNamespace(table.BaseNamespace, input.TableName);
+                table.DtoClassName = HbtNamingHelper.GetDtoClassName(input.TableName);
+
+                // 设置服务相关命名空间
+                table.ServiceNamespace = HbtNamingHelper.GetServiceNamespace(table.BaseNamespace, input.TableName);
+                table.IServiceClassName = HbtNamingHelper.GetIServiceClassName(input.TableName);
+                table.ServiceClassName = HbtNamingHelper.GetServiceClassName(input.TableName);
+
+                // 设置仓储相关命名空间
+                table.IRepositoryNamespace = HbtNamingHelper.GetRepositoryNamespace(table.BaseNamespace, input.TableName);
+                table.IRepositoryClassName = HbtNamingHelper.GetIRepositoryClassName(input.TableName);
+                table.RepositoryNamespace = HbtNamingHelper.GetRepositoryNamespace(table.BaseNamespace, input.TableName);
+                table.RepositoryClassName = HbtNamingHelper.GetRepositoryClassName(input.TableName);
+
+                // 设置控制器相关命名空间
+                table.ControllerNamespace = HbtNamingHelper.GetControllerNamespace(table.BaseNamespace, input.TableName);
+                table.ControllerClassName = HbtNamingHelper.GetControllerClassName(input.TableName);
+
+                // 设置其他属性
+                table.TplCategory = input.TplCategory;
+                table.TplType = input.TplType;
+                table.SubTableName = input.SubTableName;
+                table.SubTableFkName = input.SubTableFkName;
+                table.TreeCode = input.TreeCode;
+                table.TreeName = input.TreeName;
+                table.TreeParentCode = input.TreeParentCode;
+                table.ModuleName = input.ModuleName;
+                table.BusinessName = input.BusinessName;
+                table.FunctionName = input.FunctionName;
+                table.Author = input.Author;
+                table.GenType = input.GenType;
+                table.GenPath = input.GenPath;
+                table.ParentMenuId = input.ParentMenuId;
+                table.SortType = input.SortType;
+                table.SortField = input.SortField;
+                table.PermsPrefix = input.PermsPrefix;
+                table.GenerateMenu = input.GenerateMenu;
+                table.FrontTpl = input.FrontTpl;
+                table.BtnStyle = input.BtnStyle;
+                table.FrontStyle = input.FrontStyle;
+                table.Status = input.Status;
+                table.Options = new CodeOptions
+                {
+                    IsSqlDiff = 1,
+                    IsSnowflakeId = 1,
+                    IsRepository = 0,
+                    CrudGroup = new int[] { 1, 2, 3, 4, 5, 6, 7, 8 }
+                };
+
+                _logger.Info($"开始获取列信息：{input.TableName}");
+                
+                // 获取并创建列信息
+                var columns = await Task.Run(() => _db.DbMaintenance.GetColumnInfosByTableName(input.TableName, false));
+                if (columns == null || !columns.Any())
+                {
+                    _logger.Error($"表没有列信息：{input.TableName}");
+                    throw new HbtException(L("Generator.Table.NoColumns", input.TableName));
+                }
+
+                _logger.Info($"获取到列信息，数量：{columns.Count}");
+
+                // 处理列信息
+                var existingColumns = await _columnRepository.GetListAsync(x => x.TableId == table.Id);
+                var currentColumnNames = columns.Select(x => x.DbColumnName).ToList();
+
+                // 更新或创建列
+                foreach (var column in columns)
+                {
+                    var existingColumn = existingColumns.FirstOrDefault(x => x.ColumnName == column.DbColumnName);
+
+                    if (existingColumn != null)
+                    {
+                        _logger.Info($"列已存在，准备更新：{column.DbColumnName}");
+                        // 更新列信息
+                        existingColumn.ColumnName = column.DbColumnName;
+                        existingColumn.ColumnComment = column.ColumnDescription;
+                        existingColumn.DbColumnType = column.DataType;
+                        existingColumn.CsharpType = HbtStringUtils.GetCsharpType(column.DataType);
+                        existingColumn.CsharpField = HbtStringUtils.ToCamelCase(column.DbColumnName);
+                        existingColumn.CsharpLength = column.Length;
+                        existingColumn.CsharpDecimalDigits = column.DecimalDigits;
+                        existingColumn.IsIncrement = column.IsIdentity ? 1 : 0;
+                        existingColumn.IsPrimaryKey = column.IsPrimarykey ? 1 : 0;
+                        existingColumn.IsRequired = !column.IsNullable ? 1 : 0;
+                        existingColumn.IsInsert = 1;
+                        existingColumn.IsEdit = 1;
+                        existingColumn.IsList = 1;
+                        existingColumn.IsQuery = 0;
+                        existingColumn.QueryType = "EQ";
+                        existingColumn.IsSort = 0;
+                        existingColumn.IsExport = 1;
+                        existingColumn.DisplayType = "input";
+                        existingColumn.DictType = "";
+                        existingColumn.OrderNum = column.CreateTableFieldSort;
+
+                        await _columnRepository.UpdateAsync(existingColumn);
+                    }
+                    else
+                    {
+                        _logger.Info($"列不存在，准备创建：{column.DbColumnName}");
+                        // 创建新列
+                        var newColumn = new HbtGenColumn
+                        {
+                            TableId = table.Id,
+                            ColumnName = column.DbColumnName,
+                            ColumnComment = column.ColumnDescription,
+                            DbColumnType = column.DataType,
+                            CsharpType = HbtStringUtils.GetCsharpType(column.DataType),
+                            CsharpField = HbtStringUtils.ToCamelCase(column.DbColumnName),
+                            CsharpLength = column.Length,
+                            CsharpDecimalDigits = column.DecimalDigits,
+                            IsIncrement = column.IsIdentity ? 1 : 0,
+                            IsPrimaryKey = column.IsPrimarykey ? 1 : 0,
+                            IsRequired = !column.IsNullable ? 1 : 0,
+                            IsInsert = 1,
+                            IsEdit = 1,
+                            IsList = 1,
+                            IsQuery = 0,
+                            QueryType = "EQ",
+                            IsSort = 0,
+                            IsExport = 1,
+                            DisplayType = "input",
+                            DictType = "",
+                            OrderNum = column.CreateTableFieldSort
+                        };
+
+                        await _columnRepository.CreateAsync(newColumn);
+                    }
+                }
+
+                // 删除不再存在的列
+                var columnsToDelete = existingColumns.Where(x => !currentColumnNames.Contains(x.ColumnName)).ToList();
+                foreach (var column in columnsToDelete)
+                {
+                    _logger.Info($"删除不再存在的列：{column.ColumnName}");
+                    await _columnRepository.DeleteAsync(column.Id);
+                }
+
+                _logger.Info($"开始保存表信息：{input.TableName}");
+                
+                // 保存表信息
+                await _tableRepository.CreateAsync(table);
+                
+                // 获取新创建表的ID
+                var savedTable = await _tableRepository.GetFirstAsync(x => x.TableName == input.TableName);
+                if (savedTable == null)
+                {
+                    _logger.Error($"保存后无法获取表信息：{input.TableName}");
+                    throw new HbtException(L("Generator.Table.ImportFailed"));
+                }
+                table = savedTable;
+
+                result.Add(await GetByIdAsync(table.Id) ?? throw new HbtException(L("Generator.Table.ImportFailed")));
+                _logger.Info($"表导入成功：{input.TableName}");
+            }
         }
         catch (Exception ex)
         {
-            _logger.Error(L("GenTable.Import.Failed"), ex);
-            throw new HbtException(L("GenTable.Import.Failed"), ex);
+            _logger.Error($"导入表失败，表名：{input.TableName}", ex);
+            throw;
         }
-    }
 
-    /// <summary>
-    /// 导出表
-    /// </summary>
-    /// <returns>导出的表列表</returns>
-    public async Task<List<HbtGenTableExportDto>> ExportTablesAsync()
-    {
-        try
-        {
-            var tables = await _tableRepository.GetListAsync();
-            var result = new List<HbtGenTableExportDto>();
-
-            foreach (var table in tables)
-            {
-                var dto = table.Adapt<HbtGenTableExportDto>();
-                var columns = await _columnRepository.GetListAsync(x => x.TableId == table.Id);
-                dto.Columns = columns.Adapt<List<HbtGenColumnDto>>();
-                result.Add(dto);
-            }
-
-            return result;
-        }
-        catch (Exception ex)
-        {
-            _logger.Error(L("GenTable.Export.Failed"), ex);
-            throw new HbtException(L("GenTable.Export.Failed"), ex);
-        }
-    }
-
-    /// <summary>
-    /// 获取导入表模板
-    /// </summary>
-    /// <param name="sheetName">工作表名称</param>
-    /// <returns>Excel模板文件</returns>
-    public async Task<(string fileName, byte[] content)> GetTemplateAsync(string sheetName = "Sheet1")
-    {
-        return await HbtExcelHelper.GenerateTemplateAsync<HbtGenTable>(sheetName);
+        return result;
     }
 
     /// <summary>
@@ -378,103 +564,291 @@ public class HbtGenTableService : HbtBaseService, IHbtGenTableService
     /// <returns>是否成功</returns>
     public async Task<bool> ImportTableAndColumnsAsync(string databaseName, string tableName)
     {
-        // 切换数据库
-        var db = _db;
-        if (!string.IsNullOrEmpty(databaseName) && db.CurrentConnectionConfig.DbType != SqlSugar.DbType.Sqlite)
+        try
         {
-            db = new SqlSugarScope(new ConnectionConfig
-            {
-                ConnectionString = db.CurrentConnectionConfig.ConnectionString.Replace(db.Ado.Connection.Database, databaseName),
-                DbType = db.CurrentConnectionConfig.DbType,
-                IsAutoCloseConnection = true
-            });
-        }
-        // 1. 获取表结构
-        var tableInfo = db.DbMaintenance.GetTableInfoList(false).FirstOrDefault(t => t.Name == tableName);
-        if (tableInfo == null)
-            throw new Exception($"未找到表: {tableName}");
+            _logger.Info($"开始导入表和列信息：{tableName}");
 
-        // 2. 写入HbtGenTable（字段严格对齐）
-        var genTable = new HbtGenTable
-        {
-            DatabaseName = databaseName,
-            TableName = tableInfo.Name,
-            TableComment = tableInfo.Description,
-            ClassName = ToPascalCase(tableInfo.Name),
-            Namespace = "Lean.Hbt.Domain.Entities",
-            BaseNamespace = "Lean.Hbt",
-            CsharpTypeName = ToPascalCase(tableInfo.Name),
-            ParentTableName = null,
-            ParentTableFkName = null,
-            Status = 1,
-            TemplateType = 1,
-            ModuleName = string.Empty,
-            BusinessName = string.Empty,
-            FunctionName = string.Empty,
-            Author = _currentUser.UserName,
-            GenMode = 0,
-            GenPath = string.Empty,
-            Options = null,
-            TenantId = _currentUser.TenantId,
-            CreateBy = _currentUser.UserName,
-            CreateTime = DateTime.Now,
-            UpdateBy = _currentUser.UserName,
-            UpdateTime = DateTime.Now,
-            Columns = new List<HbtGenColumn>()
-        };
-        await _tableRepository.CreateAsync(genTable);
-
-        // 3. 获取列结构，写入HbtGenColumn（字段严格对齐）
-        var columns = db.DbMaintenance.GetColumnInfosByTableName(tableName);
-        foreach (var col in columns)
-        {
-            var genColumn = new HbtGenColumn
+            // 检查表是否存在
+            var tableExists = await Task.Run(() => _db.DbMaintenance.IsAnyTable(tableName, false));
+            if (!tableExists)
             {
-                TableId = genTable.Id,
-                ColumnName = col.DbColumnName,
-                ColumnComment = col.ColumnDescription,
-                DbColumnType = col.DataType,
-                CsharpType = GetCsharpType(col.DataType),
-                CsharpColumn = ToPascalCase(col.DbColumnName),
-                CsharpLength = col.Length,
-                CsharpDecimalDigits = col.DecimalDigits,
-                CsharpField = null,
-                IsIncrement = col.IsIdentity ? 1 : 0,
-                IsPrimaryKey = col.IsPrimarykey ? 1 : 0,
-                IsRequired = col.IsNullable ? 0 : 1,
-                IsInsert = 1,
-                IsEdit = 1,
-                IsList = 1,
-                IsQuery = 0,
-                QueryType = "EQ",
-                IsSort = 0,
-                IsExport = 1,
-                DisplayType = "input",
-                DictType = string.Empty,
-                OrderNum = 0,
-                TenantId = _currentUser.TenantId,
-                CreateBy = _currentUser.UserName,
-                CreateTime = DateTime.Now,
-                UpdateBy = _currentUser.UserName,
-                UpdateTime = DateTime.Now
-            };
-            await _columnRepository.CreateAsync(genColumn);
+                _logger.Error($"表不存在：{tableName}");
+                throw new HbtException(L("Generator.Table.NotFound", tableName));
+            }
+
+            // 获取表信息
+            var tableInfo = await Task.Run(() => _db.DbMaintenance.GetTableInfoList(false).FirstOrDefault(x => x.Name == tableName));
+            if (tableInfo == null)
+            {
+                _logger.Error($"无法获取表信息：{tableName}");
+                throw new HbtException(L("Generator.Table.InfoNotFound", tableName));
+            }
+
+            _logger.Info($"获取到表信息：{tableName}");
+
+            // 检查表是否已存在
+            var existingTable = await _tableRepository.GetFirstAsync(x => x.TableName == tableName);
+            HbtGenTable table;
+
+            if (existingTable != null)
+            {
+                _logger.Info($"表已存在，准备更新：{tableName}");
+                table = existingTable;
+                
+                // 更新表信息
+                table.DatabaseName = databaseName;
+                table.TableName = tableName;
+                table.TableComment = tableInfo.Description;
+                table.Remark = tableName + "(" + tableInfo.Description + ")";
+                table.EntityClassName = HbtNamingHelper.GetEntityClassName(tableName);
+                table.BaseNamespace = "Lean.Hbt";
+                table.EntityNamespace = HbtNamingHelper.GetEntityNamespace(table.BaseNamespace, tableName);
+                table.DtoType = "Dto,QueryDto,CreateDto,UpdateDto,DeleteDto,TplDto,ImportDto,ExportDto";
+                table.DtoNamespace = HbtNamingHelper.GetDtoNamespace(table.BaseNamespace, tableName);
+                table.DtoClassName = HbtNamingHelper.GetDtoClassName(tableName);
+                table.ServiceNamespace = HbtNamingHelper.GetServiceNamespace(table.BaseNamespace, tableName);
+                table.IServiceClassName = HbtNamingHelper.GetIServiceClassName(tableName);
+                table.ServiceClassName = HbtNamingHelper.GetServiceClassName(tableName);
+                table.IRepositoryNamespace = HbtNamingHelper.GetRepositoryNamespace(table.BaseNamespace, tableName);
+                table.IRepositoryClassName = HbtNamingHelper.GetIRepositoryClassName(tableName);
+                table.RepositoryNamespace = HbtNamingHelper.GetRepositoryNamespace(table.BaseNamespace, tableName);
+                table.RepositoryClassName = HbtNamingHelper.GetRepositoryClassName(tableName);
+                table.ControllerNamespace = HbtNamingHelper.GetControllerNamespace(table.BaseNamespace, tableName);
+                table.ControllerClassName = HbtNamingHelper.GetControllerClassName(tableName);
+                table.TplType = "0";
+                table.TplCategory = "crud";
+                table.ModuleName = HbtNamingHelper.ExtractModuleName(tableName);
+                table.BusinessName = HbtNamingHelper.GetBusinessName(tableName);
+                table.FunctionName = tableInfo.Description;
+                table.Author = "Lean365";
+                table.GenType = "0";
+                table.GenPath = "/";
+                table.ParentMenuId = 0;
+                table.SortType = "asc";
+                table.SortField = "CreateTime";
+                table.PermsPrefix = HbtNamingHelper.GetPermsPrefix(tableName);
+                table.GenerateMenu = 1;
+                table.FrontTpl = 2;
+                table.BtnStyle = 1;
+                table.FrontStyle = 24;
+                table.Status = 0;
+                table.Options = new CodeOptions
+                {
+                    IsSqlDiff = 1,
+                    IsSnowflakeId = 1,
+                    IsRepository = 0,
+                    CrudGroup = new int[] { 1, 2, 3, 4, 5, 6, 7, 8 }
+                };
+
+                await _tableRepository.UpdateAsync(table);
+                
+                // 获取更新后的表信息
+                var updatedTable = await _tableRepository.GetFirstAsync(x => x.TableName == tableName);
+                if (updatedTable == null)
+                {
+                    _logger.Error($"更新后无法获取表信息：{tableName}");
+                    throw new HbtException(L("Generator.Table.ImportFailed"));
+                }
+                table = updatedTable;
+            }
+            else
+            {
+                _logger.Info($"表不存在，准备创建：{tableName}");
+                
+                // 创建新表
+                table = new HbtGenTable
+                {
+                    DatabaseName = databaseName,
+                    TableName = tableName,
+                    TableComment = tableInfo.Description,
+                    Remark = tableName + "(" + tableInfo.Description + ")",
+                    EntityClassName = HbtNamingHelper.GetEntityClassName(tableName),
+                    BaseNamespace = "Lean.Hbt"
+                };
+
+                // 设置实体相关命名空间
+                table.EntityNamespace = HbtNamingHelper.GetEntityNamespace(table.BaseNamespace, tableName);               
+                table.DtoNamespace = HbtNamingHelper.GetDtoNamespace(table.BaseNamespace, tableName);
+                table.DtoClassName = HbtNamingHelper.GetDtoClassName(tableName);
+                table.DtoType = "Dto,QueryDto,CreateDto,UpdateDto,DeleteDto,TplDto,ImportDto,ExportDto";
+
+                // 设置服务相关命名空间
+                table.ServiceNamespace = HbtNamingHelper.GetServiceNamespace(table.BaseNamespace, tableName);
+                table.IServiceClassName = HbtNamingHelper.GetIServiceClassName(tableName);
+                table.ServiceClassName = HbtNamingHelper.GetServiceClassName(tableName);
+
+                // 设置仓储相关命名空间
+                table.IRepositoryNamespace = HbtNamingHelper.GetRepositoryNamespace(table.BaseNamespace, tableName);
+                table.IRepositoryClassName = HbtNamingHelper.GetIRepositoryClassName(tableName);
+                table.RepositoryNamespace = HbtNamingHelper.GetRepositoryNamespace(table.BaseNamespace, tableName);
+                table.RepositoryClassName = HbtNamingHelper.GetRepositoryClassName(tableName);
+
+                // 设置控制器相关命名空间
+                table.ControllerNamespace = HbtNamingHelper.GetControllerNamespace(table.BaseNamespace, tableName);
+                table.ControllerClassName = HbtNamingHelper.GetControllerClassName(tableName);
+
+                // 设置其他属性
+                table.TplType = "0";
+                table.TplCategory = "crud";
+                table.ModuleName = HbtNamingHelper.ExtractModuleName(tableName);
+                table.BusinessName = HbtNamingHelper.GetBusinessName(tableName);
+                table.FunctionName = tableInfo.Description;
+                table.Author = "Lean365";
+                table.GenType = "0";
+                table.GenPath = "/";
+                table.ParentMenuId = 0;
+                table.SortType = "asc";
+                table.SortField = "CreateTime";
+                table.PermsPrefix = HbtNamingHelper.GetPermsPrefix(tableName);
+                table.GenerateMenu = 1;
+                table.FrontTpl = 2;
+                table.BtnStyle = 1;
+                table.FrontStyle = 24;
+                table.Status = 0;
+                table.Options = new CodeOptions
+                {
+                    IsSqlDiff = 1,
+                    IsSnowflakeId = 1,
+                    IsRepository = 0,
+                    CrudGroup = new int[] { 1, 2, 3, 4, 5, 6, 7, 8 }
+                };
+
+                await _tableRepository.CreateAsync(table);
+                
+                // 获取新创建表的ID
+                var savedTable = await _tableRepository.GetFirstAsync(x => x.TableName == tableName);
+                if (savedTable == null)
+                {
+                    _logger.Error($"保存后无法获取表信息：{tableName}");
+                    throw new HbtException(L("Generator.Table.ImportFailed"));
+                }
+                table = savedTable;
+            }
+
+            // 获取列信息
+            var columns = await Task.Run(() => _db.DbMaintenance.GetColumnInfosByTableName(tableName, false));
+            if (columns == null || !columns.Any())
+            {
+                _logger.Error($"表没有列信息：{tableName}");
+                throw new HbtException(L("Generator.Table.NoColumns", tableName));
+            }
+
+            _logger.Info($"获取到列信息，数量：{columns.Count}");
+
+            // 处理列信息
+            var existingColumns = await _columnRepository.GetListAsync(x => x.TableId == table.Id);
+            var currentColumnNames = columns.Select(x => x.DbColumnName).ToList();
+
+            // 更新或创建列
+            foreach (var column in columns)
+            {
+                var existingColumn = existingColumns.FirstOrDefault(x => x.ColumnName == column.DbColumnName);
+
+                if (existingColumn != null)
+                {
+                    _logger.Info($"列已存在，准备更新：{column.DbColumnName}");
+                    // 更新列信息
+                    existingColumn.ColumnName = column.DbColumnName;
+                    existingColumn.ColumnComment = column.ColumnDescription;
+                    existingColumn.DbColumnType = column.DataType;
+                    existingColumn.CsharpType = HbtStringUtils.GetCsharpType(column.DataType);
+                    existingColumn.CsharpField = HbtStringUtils.ToCamelCase(column.DbColumnName);
+                    existingColumn.CsharpLength = column.Length;
+                    existingColumn.CsharpDecimalDigits = column.DecimalDigits;
+                    existingColumn.IsIncrement = column.IsIdentity ? 1 : 0;
+                    existingColumn.IsPrimaryKey = column.IsPrimarykey ? 1 : 0;
+                    existingColumn.IsRequired = !column.IsNullable ? 1 : 0;
+                    existingColumn.IsInsert = 1;
+                    existingColumn.IsEdit = 1;
+                    existingColumn.IsList = 1;
+                    existingColumn.IsQuery = 0;
+                    existingColumn.QueryType = "EQ";
+                    existingColumn.IsSort = 0;
+                    existingColumn.IsExport = 1;
+                    existingColumn.DisplayType = "input";
+                    existingColumn.DictType = "";
+                    existingColumn.OrderNum = column.CreateTableFieldSort;
+
+                    await _columnRepository.UpdateAsync(existingColumn);
+                }
+                else
+                {
+                    _logger.Info($"列不存在，准备创建：{column.DbColumnName}");
+                    // 创建新列
+                    var newColumn = new HbtGenColumn
+                    {
+                        TableId = table.Id,
+                        ColumnName = column.DbColumnName,
+                        ColumnComment = column.ColumnDescription,
+                        DbColumnType = column.DataType,
+                        CsharpType = HbtStringUtils.GetCsharpType(column.DataType),
+                        CsharpField = HbtStringUtils.ToCamelCase(column.DbColumnName),
+                        CsharpLength = column.Length,
+                        CsharpDecimalDigits = column.DecimalDigits,
+                        IsIncrement = column.IsIdentity ? 1 : 0,
+                        IsPrimaryKey = column.IsPrimarykey ? 1 : 0,
+                        IsRequired = !column.IsNullable ? 1 : 0,
+                        IsInsert = 1,
+                        IsEdit = 1,
+                        IsList = 1,
+                        IsQuery = 0,
+                        QueryType = "EQ",
+                        IsSort = 0,
+                        IsExport = 1,
+                        DisplayType = "input",
+                        DictType = "",
+                        OrderNum = column.CreateTableFieldSort
+                    };
+
+                    await _columnRepository.CreateAsync(newColumn);
+                }
+            }
+
+            // 删除不再存在的列
+            var columnsToDelete = existingColumns.Where(x => !currentColumnNames.Contains(x.ColumnName)).ToList();
+            foreach (var column in columnsToDelete)
+            {
+                _logger.Info($"删除不再存在的列：{column.ColumnName}");
+                await _columnRepository.DeleteAsync(column.Id);
+            }
+
+            _logger.Info($"表和列信息导入完成：{tableName}");
+            return true;
         }
-        return true;
+        catch (Exception ex)
+        {
+            _logger.Error($"导入表和列信息失败：{tableName}", ex);
+            throw;
+        }
     }
 
-    #endregion 导入导出
+    /// <summary>
+    /// 导出表
+    /// </summary>
+    /// <returns>导出的表列表</returns>
+    public async Task<List<HbtGenTableExportDto>> ExportTablesAsync()
+    {
+        var tables = await _tableRepository.GetListAsync();
+        var result = new List<HbtGenTableExportDto>();
 
-    #region 表操作
+        foreach (var table in tables)
+        {
+            var dto = table.Adapt<HbtGenTableExportDto>();
+            var columns = await _columnRepository.GetListAsync(x => x.TableId == table.Id);
+            dto.Columns = columns.Adapt<List<HbtGenColumnDto>>();
+            result.Add(dto);
+        }
+
+        return result;
+    }
 
     /// <summary>
     /// 获取数据库列表
     /// </summary>
     /// <returns>数据库列表</returns>
-    public Task<List<string>> GetDatabaseListAsync()
+    public Task<List<string>> GetDatabaseListByDbAsync()
     {
-        var databases = _db.DbMaintenance.GetDataBaseList();
-        return Task.FromResult(databases);
+        return Task.FromResult(_db.DbMaintenance.GetDataBaseList());
     }
 
     /// <summary>
@@ -482,65 +856,14 @@ public class HbtGenTableService : HbtBaseService, IHbtGenTableService
     /// </summary>
     /// <param name="databaseName">数据库名称</param>
     /// <returns>表列表</returns>
-    public Task<List<HbtGenTableInfoDto>> GetTableListAsync(string databaseName)
+    public async Task<List<HbtGenTableInfoDto>> GetTableListByDbAsync(string databaseName)
     {
-        try
+        var tables = await Task.Run(() => _db.DbMaintenance.GetTableInfoList(false));
+        return tables.Select(x => new HbtGenTableInfoDto
         {
-            _logger.Info($"开始获取数据库 {databaseName} 的表列表");
-            
-            // 获取当前数据库配置
-            var mainConfig = _db.GetConnectionScope("main").CurrentConnectionConfig;
-            _logger.Info($"主数据库配置: {JsonSerializer.Serialize(mainConfig)}");
-            
-            // 创建新的数据库连接配置
-            var dbConfig = new ConnectionConfig
-            {
-                ConfigId = databaseName,
-                DbType = mainConfig.DbType,
-                ConnectionString = mainConfig.ConnectionString.Replace(
-                    mainConfig.ConnectionString.Split(';')
-                        .First(x => x.StartsWith("Database=", StringComparison.OrdinalIgnoreCase))
-                        .Split('=')[1],
-                    databaseName
-                ),
-                IsAutoCloseConnection = true,
-                InitKeyType = InitKeyType.Attribute
-            };
-            _logger.Info($"目标数据库配置: {JsonSerializer.Serialize(dbConfig)}");
-            
-            // 添加或更新数据库配置
-            _db.AddConnection(dbConfig);
-            
-            // 切换到指定数据库并获取表列表
-            using (var db = _db.GetConnectionScope(databaseName))
-            {
-                _logger.Info($"成功切换到数据库 {databaseName}");
-                
-                var tables = db.DbMaintenance.GetTableInfoList(false);
-                _logger.Info($"获取到 {tables.Count} 个表");
-                
-                foreach (var table in tables)
-                {
-                    _logger.Info($"表信息: Name={table.Name}, Description={table.Description}");
-                }
-                
-                // 转换为DTO对象
-                var result = tables.Select(t => new HbtGenTableInfoDto 
-                { 
-                    Name = t.Name, 
-                    Description = t.Description 
-                }).ToList();
-                
-                _logger.Info($"处理后的表列表: {JsonSerializer.Serialize(result)}");
-                
-                return Task.FromResult(result);
-            }
-        }
-        catch (Exception ex)
-        {
-            _logger.Error($"获取表列表失败: {ex.Message}", ex);
-            throw new HbtException($"获取表列表失败: {ex.Message}");
-        }
+            TableName = x.Name,
+            TableComment = x.Description
+        }).ToList();
     }
 
     /// <summary>
@@ -549,22 +872,18 @@ public class HbtGenTableService : HbtBaseService, IHbtGenTableService
     /// <param name="databaseName">数据库名称</param>
     /// <param name="tableName">表名</param>
     /// <returns>字段列表</returns>
-    public Task<List<HbtGenTableColumnInfoDto>> GetTableColumnListAsync(string databaseName, string tableName)
+    public async Task<List<HbtGenTableColumnInfoDto>> GetTableColumnListByDbAsync(string databaseName, string tableName)
     {
-        // 切换数据库
-        var db = _db;
-        if (!string.IsNullOrEmpty(databaseName) && db.CurrentConnectionConfig.DbType != SqlSugar.DbType.Sqlite)
+        var columns = await Task.Run(() => _db.DbMaintenance.GetColumnInfosByTableName(tableName, false));
+        return columns.Select(x => new HbtGenTableColumnInfoDto
         {
-            db = new SqlSugarScope(new ConnectionConfig
-            {
-                ConnectionString = db.CurrentConnectionConfig.ConnectionString.Replace(db.Ado.Connection.Database, databaseName),
-                DbType = db.CurrentConnectionConfig.DbType,
-                IsAutoCloseConnection = true
-            });
-        }
-        var columns = db.DbMaintenance.GetColumnInfosByTableName(tableName);
-       
-        return Task.FromResult(columns.Adapt<List<HbtGenTableColumnInfoDto>>());
+            DbColumnName = x.DbColumnName,
+            ColumnDescription = x.ColumnDescription,
+            DataType = x.DataType,
+            IsPrimarykey = x.IsPrimarykey,
+            IsIdentity = x.IsIdentity,
+            IsNullable = x.IsNullable
+        }).ToList();
     }
 
     /// <summary>
@@ -576,212 +895,10 @@ public class HbtGenTableService : HbtBaseService, IHbtGenTableService
     {
         var table = await _tableRepository.GetByIdAsync(id);
         if (table == null)
-        {
-            throw new Exception($"未找到ID为{id}的表");
-        }
+            throw new HbtException(L("Generator.Table.NotFound", id));
 
-        // 同步表信息
-        var tableInfo = _db.DbMaintenance.GetTableInfoList();
-        var currentTable = tableInfo.FirstOrDefault(x => x.Name == table.TableName);
-        if (currentTable == null)
-        {
-            throw new Exception($"未找到表:{table.TableName}");
-        }
-
-        // 更新表信息
-        table.TableComment = currentTable.Description;
-        table.UpdateTime = DateTime.Now;
-        table.UpdateBy = _currentUser.UserName;
-        await _tableRepository.UpdateAsync(table);
-
-        // 同步字段信息
-        var columns = _db.DbMaintenance.GetColumnInfosByTableName(table.TableName);
-        var existingColumns = await _columnRepository.GetListAsync(x => x.TableId == table.Id);
-
-        // 删除不存在的字段
-        var columnNames = columns.Select(x => x.DbColumnName).ToList();
-        foreach (var column in existingColumns)
-        {
-            if (!columnNames.Contains(column.ColumnName))
-            {
-                await _columnRepository.DeleteAsync(column.Id);
-            }
-        }
-
-        // 更新或添加字段
-        foreach (var column in columns)
-        {
-            var existingColumn = existingColumns.FirstOrDefault(x => x.ColumnName == column.DbColumnName);
-            if (existingColumn == null)
-            {
-                // 添加新字段
-                var newColumn = new HbtGenColumn
-                {
-                    TableId = table.Id,
-                    ColumnName = column.DbColumnName,
-                    ColumnComment = column.ColumnDescription,
-                    DbColumnType = column.DataType,
-                    CsharpType = GetCsharpType(column.DataType),
-                    CsharpField = ToPascalCase(column.DbColumnName),
-                    CsharpLength = column.Length,
-                    CsharpDecimalDigits = column.DecimalDigits,
-                    IsPrimaryKey = column.IsPrimarykey ? 1 : 0,
-                    IsIncrement = column.IsIdentity ? 1 : 0,
-                    IsRequired = column.IsNullable ? 0 : 1,
-                    CreateTime = DateTime.Now,
-                    UpdateTime = DateTime.Now,
-                    CreateBy = _currentUser.UserName,
-                    UpdateBy = _currentUser.UserName
-                };
-                await _columnRepository.CreateAsync(newColumn);
-            }
-            else
-            {
-                // 更新现有字段
-                existingColumn.ColumnComment = column.ColumnDescription;
-                existingColumn.DbColumnType = column.DataType;
-                existingColumn.CsharpType = GetCsharpType(column.DataType);
-                existingColumn.CsharpLength = column.Length;
-                existingColumn.CsharpDecimalDigits = column.DecimalDigits;
-                existingColumn.IsPrimaryKey = column.IsPrimarykey ? 1 : 0;
-                existingColumn.IsIncrement = column.IsIdentity ? 1 : 0;
-                existingColumn.IsRequired = column.IsNullable ? 0 : 1;
-                existingColumn.UpdateTime = DateTime.Now;
-                existingColumn.UpdateBy = _currentUser.UserName;
-                await _columnRepository.UpdateAsync(existingColumn);
-            }
-        }
-
-        return true;
+        return await ImportTableAndColumnsAsync(table.DatabaseName, table.TableName);
     }
 
-    #endregion 表操作
-
-    #region 代码生成
-
-    /// <summary>
-    /// 预览代码
-    /// </summary>
-    /// <param name="id">表ID</param>
-    /// <returns>代码预览结果</returns>
-    public async Task<Dictionary<string, string>> PreviewCodeAsync(long id)
-    {
-        var table = await _tableRepository.GetByIdAsync(id);
-        if (table == null)
-            throw new HbtException($"表[{id}]不存在");
-
-        return await _codeGeneratorService.PreviewCodeAsync(table);
-    }
-
-    /// <summary>
-    /// 生成代码
-    /// </summary>
-    /// <param name="id">表ID</param>
-    /// <returns>是否生成成功</returns>
-    public async Task<bool> GenerateCodeAsync(long id)
-    {
-        var table = await _tableRepository.GetByIdAsync(id);
-        if (table == null)
-            throw new HbtException($"表[{id}]不存在");
-
-        try
-        {
-            return await _codeGeneratorService.GenerateCodeAsync(table);
-        }
-        catch (Exception ex)
-        {
-            _logger.Error("生成代码失败，表ID：{0}", id, ex);
-            return false;
-        }
-    }
-
-    /// <summary>
-    /// 批量生成代码
-    /// </summary>
-    /// <param name="ids">表ID集合</param>
-    /// <returns>生成结果</returns>
-    public async Task<string> BatchGenerateCodeAsync(long[] ids)
-    {
-        var successCount = 0;
-        var failCount = 0;
-        foreach (var id in ids)
-        {
-            try
-            {
-                if (await GenerateCodeAsync(id))
-                    successCount++;
-                else
-                    failCount++;
-            }
-            catch (Exception ex)
-            {
-                _logger.Error("生成代码失败，表ID：{0}", id, ex);
-                failCount++;
-            }
-        }
-        return $"生成完成，成功：{successCount}，失败：{failCount}";
-    }
-
-    /// <summary>
-    /// 下载代码
-    /// </summary>
-    /// <param name="id">表ID</param>
-    /// <returns>代码文件字节数组</returns>
-    public async Task<byte[]> DownloadCodeAsync(long id)
-    {
-        var table = await _tableRepository.GetByIdAsync(id);
-        if (table == null)
-            throw new HbtException($"表[{id}]不存在");
-
-        return await _codeGeneratorService.DownloadCodeAsync(table);
-    }
-
-    #endregion 代码生成
-
-    #region 私有方法
-
-    /// <summary>
-    /// 获取C#类型
-    /// </summary>
-    /// <param name="dbType">数据库类型</param>
-    /// <returns>C#类型</returns>
-    private string GetCsharpType(string dbType)
-    {
-        return dbType.ToLower() switch
-        {
-            "int" => "int",
-            "bigint" => "long",
-            "smallint" => "short",
-            "tinyint" => "byte",
-            "decimal" => "decimal",
-            "numeric" => "decimal",
-            "float" => "float",
-            "real" => "double",
-            "datetime" => "DateTime",
-            "date" => "DateTime",
-            "time" => "TimeSpan",
-            "char" => "string",
-            "varchar" => "string",
-            "nvarchar" => "string",
-            "text" => "string",
-            "ntext" => "string",
-            "bit" => "bool",
-            "uniqueidentifier" => "Guid",
-            _ => "string"
-        };
-    }
-
-    /// <summary>
-    /// 转换为Pascal命名
-    /// </summary>
-    /// <param name="input">输入字符串</param>
-    /// <returns>Pascal命名字符串</returns>
-    private string ToPascalCase(string input)
-    {
-        if (string.IsNullOrEmpty(input)) return input;
-        var words = input.Split(new[] { '_', '-', ' ' }, StringSplitOptions.RemoveEmptyEntries);
-        return string.Concat(words.Select(word => char.ToUpper(word[0]) + word.Substring(1).ToLower()));
-    }
-
-    #endregion 私有方法
+    #endregion
 }

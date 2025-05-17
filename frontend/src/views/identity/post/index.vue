@@ -97,8 +97,8 @@
     <!-- 表单弹窗 -->
     <post-form
       v-model:visible="formVisible"
-      :title="formTitle"
-      :post-id="formPostId"
+      :form-type="formPostId ? 'update' : 'create'"
+      :form-data="formPostId ? { postId: formPostId } : undefined"
       @success="getList"
     />
   </div>
@@ -227,11 +227,11 @@ const getList = async () => {
   try {
     loading.value = true
     const res = await getPagedList(queryParams.value)
-    if (res.code === 200) {
-      list.value = res.data.rows
-      pagination.value.total = res.data.totalNum
+    if (res.data.code === 200) {
+      list.value = res.data.data.rows
+      pagination.value.total = res.data.data.totalNum
     } else {
-      message.error(res.msg || t('common.failed'))
+      message.error(res.data.msg || t('common.failed'))
     }
   } catch (error) {
     console.error('[岗位管理] 获取岗位列表出错:', error)
@@ -298,11 +298,11 @@ const handleEdit = (record: Record<string, any>) => {
 const handleDelete = async (record: Record<string, any>) => {
   try {
     const res = await deletePost(Number(record.postId))
-    if (res.code === 200) {
+    if (res.data.code === 200) {
       message.success(t('common.delete.success'))
       getList()
     } else {
-      message.error(res.msg || t('common.delete.failed'))
+      message.error(res.data.msg || t('common.delete.failed'))
     }
   } catch (error) {
     console.error(error)
@@ -318,12 +318,12 @@ const handleBatchDelete = () => {
     async onOk() {
       try {
         const res = await batchDeletePost(selectedKeys.value.map(id => Number(id)))
-        if (res.code === 200) {
+        if (res.data.code === 200) {
           message.success(t('common.delete.success'))
           selectedKeys.value = []
           getList()
         } else {
-          message.error(res.msg || t('common.delete.failed'))
+          message.error(res.data.msg || t('common.delete.failed'))
         }
       } catch (error) {
         console.error(error)
@@ -337,14 +337,18 @@ const handleBatchDelete = () => {
 const handleExport = async () => {
   try {
     const res = await exportPost()
-    if (res.code === 200) {
+    if (res.data.code === 200) {
       message.success(t('common.export.success'))
     } else {
-      message.error(res.msg || t('common.export.failed'))
+      message.error(res.data.msg || t('common.export.failed'))
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error(error)
-    message.error(t('common.export.failed'))
+    if (error.response?.status === 500) {
+      message.error(t('common.export.failed'))
+    } else {
+      message.error(error.response?.data?.msg || t('common.export.failed'))
+    }
   }
 }
 

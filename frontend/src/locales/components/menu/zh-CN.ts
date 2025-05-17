@@ -132,319 +132,108 @@ export default {
     },
     finance: {
       _self: '核算',
-      management: {
+      accounting: {
         _self: '管理会计',
-        cost: {
-          _self: '成本管理',
-          costFactors: '成本要素',
-          costCenter: '成本中心',
-          profitCenter: '利润中心',
-          productCost: '产品成本',
-          activityType: '活动类型',
-          internalOrder: '内部订单'
-        },
-        planning: {
-          _self: '计划管理',
-          costPlanning: '成本计划',
-          profitPlanning: '利润计划',
-          budgetControl: '预算控制'
-        },
-        reporting: {
-          _self: '报表与分析',
-          costReports: '成本报表',
-          profitReports: '利润报表',
-          varianceAnalysis: '差异分析'
-        }
+        companyaccounts: '公司科目',
+        glaccount: '会计科目',
+        generalledger: '总账',
+        payable: '应付',
+        receivable: '应收',
+        asset: '固定资产',
+        bank: '银行',
+        tax: '税务',
+        planning: '计划管理',
+        reporting: '报表与分析'
       },
-      financial: {
-        _self: '财务会计',
-        generalLedger: {
-          _self: '总账',
-          account: '科目',
-          accountType: '科目类型',
-          journalEntry: '凭证录入',
-          reconciliation: '对账',
-          closing: '期末结账'
-        },
-        accountsReceivable: {
-          _self: '应收账款',
-          customer: '客户管理',
-          invoice: '客户发票',
-          payment: '客户收款',
-          creditControl: '信用控制'
-        },
-        accountsPayable: {
-          _self: '应付账款',
-          supplier: '供应商管理',
-          invoice: '供应商发票',
-          payment: '供应商付款',
-          agingReport: '账龄分析'
-        },
-        assetAccounting: {
-          _self: '资产会计',
-          assets: '固定资产',
-          depreciation: '折旧管理',
-          assetTransfer: '资产转移',
-          assetRetirement: '资产报废'
-        },
-        tax: {
-          _self: '税务管理',
-          taxCodes: '税码管理',
-          taxReporting: '税务报表',
-          taxPayments: '税款支付'
-        },
-        financialReporting: {
-          _self: '财务报表',
-          balanceSheet: '资产负债表',
-          profitAndLoss: '利润表',
-          cashFlow: '现金流量表'
-        }
-      }
+      controlling: {
+        _self: '控制会计',
+        costelement: '成本要素',
+        costcenter: '成本中心',
+        profitcenter: '利润中心',
+        accountsReceivable: '应收账款',
+        accountsPayable: '应付账款',
+        assetAccounting: '资产会计',
+        tax: '税务管理',
+        financialReporting: '财务报表'
+      
     },
+  },
     logistics: {
       _self: '后勤',
       equipment: {
         _self: '设备管理',
-        equipmentMaster: '设备主数据',
-        maintenancePlanning: {
-          _self: '维护计划',
-          preventiveMaintenance: '预防性维护',
-          maintenanceTaskList: '维护任务清单',
-          scheduling: '维护排程'
-        },
-        maintenanceExecution: {
-          _self: '维护执行',
-          workOrder: '维护工单',
-          confirmation: '维护确认',
-          breakdownMaintenance: '故障维护'
-        },
-        maintenanceReporting: {
-          _self: '维护报表',
-          equipmentReports: '设备报表',
-          maintenanceHistory: '维护历史',
-          performanceAnalysis: '性能分析'
-        },
-        sparePartsManagement: {
-          _self: '备件管理',
-          sparePartsInventory: '备件库存',
-          sparePartsProcurement: '备件采购',
-          sparePartsUsage: '备件使用'
-        }
+        data: '设备主数据',
+        location: '设备位置',
+        material: '物料关联',
+        workorder: '工单'
+
       },
       material: {
         _self: '物料管理',
-        materialMaster: '物料主数据',
-        materialCategory: '物料类别',
-        materialUnit: '物料单位',
-        materialStock: {
-          _self: '物料库存',
-          stockOverview: '库存概览',
-          stockIn: '物料入库',
-          stockOut: '物料出库',
-          stockTransfer: '库存转移',
-          stockAdjustment: '库存调整',
-          stockCheck: '库存盘点'
-        },
-        purchase: {
-          _self: '采购管理',
-          purchaseRequisition: '采购申请',
-          purchaseOrder: '采购订单',
-          purchaseOrderDetail: '采购订单明细',
-          supplier: '供应商管理'
-        },
-        inventoryManagement: {
-          _self: '库存管理',
-          goodsReceipt: '收货',
-          goodsIssue: '发货',
-          transferPosting: '转储过账',
-          stockOverview: '库存概览'
-        },
-        valuation: {
-          _self: '物料估价',
-          priceControl: '价格控制',
-          standardPrice: '标准价格',
-          movingAveragePrice: '移动平均价格'
-        },
-        reporting: {
-          _self: '报表与分析',
-          stockReports: '库存报表',
-          purchaseReports: '采购报表',
-          inventoryReports: '库存分析报表'
-        }
+        info: '物料主数据',
+        factory: '工厂',
+        vendor: '供应商',
+        supplier: '供应商',
+        price: '物料价格',
+        requisition: '采购申请',
+        order: '采购订单'
+
+
       },
       production: {
         _self: '生产管理',
         bom: '物料清单 (BOM)',
         routing: '工艺路线',
-        workOrder: {
-          _self: '生产订单',
-          create: '创建生产订单',
-          manage: '管理生产订单',
-          release: '下达生产订单',
-          complete: '完成生产订单'
-        },
-        capacityPlanning: {
-          _self: '产能计划',
-          workCenter: '工作中心',
-          capacityEvaluation: '产能评估',
-          capacityLeveling: '产能平衡'
-        },
-        productionScheduling: {
-          _self: '生产排程',
-          schedule: '排程计划',
-          reschedule: '重新排程'
-        },
-        productionExecution: {
-          _self: '生产执行',
-          confirm: '生产确认',
-          goodsIssue: '生产领料',
-          goodsReceipt: '生产入库'
-        },
-        productionReporting: {
-          _self: '生产报表',
-          orderReports: '订单报表',
-          capacityReports: '产能报表',
-          efficiencyReports: '效率报表'
-        },
-        qualityManagement: {
-          _self: '质量管理',
-          inspectionLot: '检验批',
-          resultsRecording: '结果记录',
-          defectRecording: '缺陷记录'
-        }
+        change: '工程变更',
+        workcenter: '工作中心',
+        order: '生产订单',
+        kanban: '看板'
+
+
       },
       project: {
         _self: '项目管理',
-        projectMaster: {
-          _self: '项目主数据',
-          projectDefinition: '项目定义',
-          projectStructure: '项目结构',
-          projectTeam: '项目团队',
-          projectCalendar: '项目日历'
-        },
-        projectPlanning: {
-          _self: '项目计划',
-          workBreakdown: '工作分解',
-          scheduling: '进度计划',
-          resourcePlanning: '资源计划',
-          costPlanning: '成本计划'
-        },
-        projectExecution: {
-          _self: '项目执行',
-          taskManagement: '任务管理',
-          progressTracking: '进度跟踪',
-          resourceManagement: '资源管理',
-          costControl: '成本控制'
-        },
-        projectMonitoring: {
-          _self: '项目监控',
-          progressReports: '进度报表',
-          resourceReports: '资源报表',
-          costReports: '成本报表',
-          riskManagement: '风险管理'
-        },
-        projectClosure: {
-          _self: '项目收尾',
-          finalReport: '最终报告',
-          lessonsLearned: '经验总结',
-          projectArchive: '项目归档'
-        }
+        define: '项目定义',
+        cost: '成本计划',
+        resource: '资源计划',
+        schedule: '进度计划',
+
       },
       quality: {
         _self: '质量管理',
-        inspection: {
-          _self: '检验管理',
-          inspectionLot: '检验批',
-          resultsRecording: '结果记录',
-          defectRecording: '缺陷记录',
-          usageDecision: '使用决策'
-        },
-        qualityPlanning: {
-          _self: '质量计划',
-          inspectionPlan: '检验计划',
-          qualityInfoRecord: '质量信息记录',
-          samplingProcedure: '抽样程序'
-        },
-        qualityControl: {
-          _self: '质量控制',
-          controlChart: '控制图',
-          qualityNotifications: '质量通知',
-          correctiveActions: '纠正措施'
-        },
-        qualityReporting: {
-          _self: '质量报表',
-          inspectionReports: '检验报表',
-          defectReports: '缺陷报表',
-          qualityAnalysis: '质量分析'
-        }
+        item: '检验项目',
+        receiving: '收货检验',
+        process: '过程检验',
+        storage: '存储检验',
+        return: '退货检验',
+  
       },
       sales: {
         _self: '销售管理',
-        customer: {
-          _self: '客户管理',
-          client: '顾客',
-          customers: '客户列表',
-          creditControl: '信用管理'
-        },
-        order: {
-          _self: '订单管理',
-          order: '销售订单',
-          orderDetail: '订单明细',
-          orderTracking: '订单跟踪'
-        },
-        delivery: {
-          _self: '交货管理',
-          delivery: '交货单',
-          deliveryDetail: '交货明细',
-          shipping: '运输管理'
-        },
-        billing: {
-          _self: '开票管理',
-          invoice: '发票管理',
-          invoiceDetail: '发票明细',
-          payment: '收款管理'
-        },
-        reporting: {
-          _self: '报表与分析',
-          salesReports: '销售报表',
-          performanceAnalysis: '绩效分析'
-        }
+        customer: '客户',
+        client: '客户',
+        price: '销售价格',
+        order: '销售订单',
       },
       service: {
         _self: '客户服务',
-        serviceOrder: {
-          _self: '服务订单',
-          create: '创建服务订单',
-          manage: '管理服务订单',
-          complete: '完成服务订单',
-          cancel: '取消服务订单'
-        },
-        serviceContract: {
-          _self: '服务合同',
-          create: '创建服务合同',
-          manage: '管理服务合同',
-          renew: '续签服务合同',
-          terminate: '终止服务合同'
-        },
-        customerInteraction: {
-          _self: '客户互动',
-          inquiries: '客户咨询',
-          complaints: '客户投诉',
-          feedback: '客户反馈'
-        },
-        serviceExecution: {
-          _self: '服务执行',
-          schedule: '服务计划',
-          dispatch: '服务派工',
-          execution: '服务执行',
-          confirmation: '服务确认'
-        },
-        serviceReporting: {
-          _self: '服务报表',
-          orderReports: '服务订单报表',
-          contractReports: '服务合同报表',
-          performanceReports: '服务绩效报表'
-        }
+        item: '服务项目',
+        contract: '服务合同',
+        request: '服务请求',
+        workorder: '服务工单',
+        timesheet: '工时记录',
+        consumption: '物料消耗',
+        outsourcing: '外协服务'
+
+      },
+      complaint: {
+        _self: '客诉管理',
+        notice: '质量通知单',
+        mark: '客诉明细',
+        analysis: '原因分析',
+        corrective: '纠正措施',
+        return: '退换货执行',
+        followUp: '跟进处理'
       }
     },
     humanResources: {

@@ -18,7 +18,7 @@ namespace Lean.Hbt.Domain.Entities.Identity
     /// 创建者: Lean365
     /// 创建时间: 2024-01-16
     /// </remarks>
-    [SugarTable("hbt_id_user_role", "用户角色关联表")]
+    [SugarTable("hbt_identity_user_role", "用户角色关联表")]
     [SugarIndex("ix_user_role", nameof(UserId), OrderByType.Asc, nameof(RoleId), OrderByType.Asc, true)]
     public class HbtUserRole : HbtBaseEntity
     {

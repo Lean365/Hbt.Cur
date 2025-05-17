@@ -3,39 +3,10 @@
     <!-- 查询区域 -->
     <hbt-query
       v-show="showSearch"
-      :model="queryParams"
       :query-fields="queryFields"
       @search="handleQuery"
       @reset="resetQuery"
-    >
-      <template #queryForm>
-        <a-form-item :label="t('identity.role.fields.roleName.label')">
-          <a-input
-            v-model:value="queryParams.roleName"
-            :placeholder="t('identity.role.fields.roleName.placeholder')"
-            allow-clear
-            @keyup.enter="handleQuery"
-          />
-        </a-form-item>
-        <a-form-item :label="t('identity.role.fields.roleKey.label')">
-          <a-input
-            v-model:value="queryParams.roleKey"
-            :placeholder="t('identity.role.fields.roleKey.placeholder')"
-            allow-clear
-            @keyup.enter="handleQuery"
-          />
-        </a-form-item>
-        <a-form-item :label="t('identity.role.fields.status.label')">
-          <hbt-select
-            v-model:value="queryParams.status"
-            dict-type="sys_normal_disable"
-            type="radio"
-            :placeholder="t('identity.role.fields.status.placeholder')"
-            allow-clear
-          />
-        </a-form-item>
-      </template>
-    </hbt-query>
+    />
 
     <!-- 工具栏 -->
     <hbt-toolbar
@@ -54,29 +25,39 @@
       @edit="handleEditSelected"
       @delete="handleBatchDelete"
       @export="handleExport"
+      @column-setting="handleColumnSetting"
+      @toggle-search="toggleSearch"
+      @toggle-fullscreen="toggleFullscreen"
     />
 
     <!-- 数据表格 -->
     <hbt-table
-      row-key="roleId"
       :loading="loading"
-      :columns="columns"
       :data-source="tableData"
-      :pagination="{
-        total,
-        current: queryParams.pageIndex,
-        pageSize: queryParams.pageSize
-      }"
+      :columns="columns.filter(col => columnSettings[col.key])"
+      :pagination="false"
+      :scroll="{ x: 'max-content' }"
+      :default-height="594"
+      :row-key="(record: Role) => String(record.roleId)"
+      v-model:selectedRowKeys="selectedRowKeys"
       :row-selection="{
-        selectedRowKeys,
-        onChange: (keys: (string | number)[]) => selectedRowKeys = keys
+        type: 'checkbox',
+        columnWidth: 60
       }"
       @change="handleTableChange"
+      @row-click="handleRowClick"
     >
       <!-- 状态列 -->
       <template #bodyCell="{ column, record }">
         <template v-if="column.key === 'status'">
-          <hbt-dict-tag dict-type="sys_normal_disable" :value="record.status" />
+          <a-switch
+            :checked="record.status === 0"
+            checked-children="正常"
+            un-checked-children="停用"
+            @change="val => handleStatusChange(record, !!val)"
+            :loading="record.statusLoading"
+            :disabled="record.roleKey === 'system_admin'"
+          />
         </template>
 
         <!-- 操作列 -->
@@ -85,18 +66,54 @@
             :record="record"
             :show-edit="true"
             :edit-permission="['identity:role:update']"
-            :show-delete="true"
+            :show-delete="record.roleKey !== 'system_admin'"
             :delete-permission="['identity:role:delete']"
-            :show-authorize="true"
-            :authorize-permission="['identity:role:allocate']"
             size="small"
             @edit="handleEdit"
             @delete="handleDelete"
-            @authorize="handleAuthorize"
-          />
+          >
+            <template #extra>
+              <a-tooltip :title="t('identity.role.actions.authorize')">
+                <a-button
+                  v-hasPermi="['identity:role:allocate']"
+                  :disabled="record.roleKey === 'system_admin'"
+                  type="default"
+                  size="small"
+                  class="hbt-btn-menu"
+                  @click.stop="handleAuthorize(record)"
+                >
+                  <template #icon><menu-outlined /></template>
+                </a-button>
+              </a-tooltip>
+              <a-tooltip :title="t('identity.user.allocateDept')">
+                <a-button
+                  v-hasPermi="['identity:role:allocate']"
+                  :disabled="record.roleKey === 'system_admin'"
+                  type="default"
+                  size="small"
+                  class="hbt-btn-dept"
+                  @click.stop="handleDeptAuthorize(record)"
+                >
+                  <template #icon><team-outlined /></template>
+                </a-button>
+              </a-tooltip>
+            </template>
+          </hbt-operation>
         </template>
       </template>
     </hbt-table>
+
+    <!-- 分页组件 -->
+    <hbt-pagination
+      v-model:current="queryParams.pageIndex"
+      v-model:pageSize="queryParams.pageSize"
+      :total="total"
+      :show-size-changer="true"
+      :show-quick-jumper="true"
+      :show-total="(total: number, range: [number, number]) => h('span', null, `共 ${total} 条`)"
+      @change="handlePageChange"
+      @showSizeChange="handleSizeChange"
+    />
 
     <!-- 角色表单对话框 -->
     <role-form
@@ -112,22 +129,50 @@
       :role-id="selectedRoleId"
       @success="handleSuccess"
     />
+
+    <!-- 部门分配对话框 -->
+    <dept-allocate
+      v-model:visible="deptAllocateVisible"
+      :role-id="selectedRoleId"
+      @success="handleSuccess"
+    />
+
+    <!-- 列设置抽屉 -->
+    <a-drawer
+      :visible="columnSettingVisible"
+      title="列设置"
+      placement="right"
+      width="300"
+      @close="columnSettingVisible = false"
+    >
+      <a-checkbox-group
+        :value="Object.keys(columnSettings).filter(key => columnSettings[key])"
+        @change="handleColumnSettingChange"
+        class="column-setting-group"
+      >
+        <div v-for="col in columns" :key="col.key" class="column-setting-item">
+          <a-checkbox :value="col.key" :disabled="col.key === 'action'">{{ col.title }}</a-checkbox>
+        </div>
+      </a-checkbox-group>
+    </a-drawer>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed, onMounted, h, nextTick, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { message } from 'ant-design-vue'
 import type { TablePaginationConfig } from 'ant-design-vue'
-import type { QueryField } from '@/types/components/query'
+import { useDictStore } from '@/stores/dict'
 import type { Role, RoleQuery } from '@/types/identity/role'
-import type { HbtApiResponse, HbtPagedResult } from '@/types/common'
-import { getPagedList, deleteRole } from '@/api/identity/role'
+import type { QueryField } from '@/types/components/query'
+import { getPagedList, deleteRole, exportRole, updateRoleStatus } from '@/api/identity/role'
 import RoleForm from './components/RoleForm.vue'
 import MenuAllocate from './components/MenuAllocate.vue'
+import DeptAllocate from './components/DeptAllocate.vue'
 
 const { t } = useI18n()
+const dictStore = useDictStore()
 
 // 表格列定义
 const columns = [
@@ -164,13 +209,6 @@ const columns = [
     width: 100
   },
   {
-    title: t('common.datetime.createTime'),
-    dataIndex: 'createTime',
-    key: 'createTime',
-    width: 180,
-    ellipsis: true
-  },
-  {
     title: t('identity.role.fields.description.label'),
     dataIndex: 'remark',
     key: 'remark',
@@ -178,21 +216,40 @@ const columns = [
     ellipsis: true
   },
   {
+    title: t('common.datetime.createTime'),
+    dataIndex: 'createTime',
+    key: 'createTime',
+    width: 180,
+    ellipsis: true
+  },
+  {
+    title: t('common.datetime.updateTime'),
+    dataIndex: 'updateTime',
+    key: 'updateTime',
+    width: 180,
+    ellipsis: true
+  },
+  {
+    title: t('common.datetime.createBy'),
+    dataIndex: 'createBy',
+    key: 'createBy',
+    width: 120,
+    ellipsis: true
+  },
+  {
+    title: t('common.datetime.updateBy'),
+    dataIndex: 'updateBy',
+    key: 'updateBy',
+    width: 120,
+    ellipsis: true
+  },
+  {
     title: t('common.table.header.operation'),
     key: 'action',
     width: 150,
-    fixed: 'right' as const
+    fixed: 'right'
   }
 ]
-
-// 查询参数
-const queryParams = ref<RoleQuery>({
-  pageIndex: 1,
-  pageSize: 10,
-  roleName: '',
-  roleKey: '',
-  status: undefined
-})
 
 // 查询字段定义
 const queryFields: QueryField[] = [
@@ -212,10 +269,20 @@ const queryFields: QueryField[] = [
     type: 'select' as const,
     props: {
       dictType: 'sys_normal_disable',
-      type: 'radio'
+      type: 'radio',
+      showAll: true
     }
   }
 ]
+
+// 查询参数
+const queryParams = ref<RoleQuery>({
+  pageIndex: 1,
+  pageSize: 10,
+  roleName: '',
+  roleKey: '',
+  status: -1
+})
 
 // 表格相关
 const loading = ref(false)
@@ -231,17 +298,73 @@ const selectedRoleId = ref<number>()
 
 // 菜单分配弹窗
 const menuAllocateVisible = ref(false)
+// 部门分配弹窗
+const deptAllocateVisible = ref(false)
+
+// 列设置相关
+const columnSettingVisible = ref(false)
+const columnSettings = ref<Record<string, boolean>>({})
+
+// 初始化列设置
+const initColumnSettings = () => {
+  // 每次刷新页面时清除localStorage
+  localStorage.removeItem('roleColumnSettings')
+  
+  // 初始化所有列为false
+  columnSettings.value = Object.fromEntries(columns.map(col => [col.key, false]))
+  
+  // 获取前9列（不包含操作列）
+  const firstNineColumns = columns.filter(col => col.key !== 'action').slice(0, 9)
+  
+  // 设置前9列为true
+  firstNineColumns.forEach(col => {
+    columnSettings.value[col.key] = true
+  })
+  
+  // 确保操作列显示
+  columnSettings.value['action'] = true
+}
+
+// 处理列设置变更
+const handleColumnSettingChange = (checkedValue: Array<string | number | boolean>) => {
+  const settings: Record<string, boolean> = {}
+  columns.forEach(col => {
+    // 操作列始终为true
+    if (col.key === 'action') {
+      settings[col.key] = true
+    } else {
+      settings[col.key] = checkedValue.includes(col.key)
+    }
+  })
+  columnSettings.value = settings
+  localStorage.setItem('roleColumnSettings', JSON.stringify(settings))
+}
+
+// 列设置
+const handleColumnSetting = () => {
+  columnSettingVisible.value = true
+}
+
+// 切换搜索显示
+const toggleSearch = (visible: boolean) => {
+  showSearch.value = visible
+}
+
+// 切换全屏
+const toggleFullscreen = (isFullscreen: boolean) => {
+  console.log('切换全屏状态:', isFullscreen)
+}
 
 // 获取表格数据
 const fetchData = async () => {
   loading.value = true
   try {
     const res = await getPagedList(queryParams.value)
-    if (res.code === 200) {
-      tableData.value = res.data.rows
-      total.value = res.data.totalNum
+    if (res.data.code === 200) {
+      tableData.value = res.data.data.rows
+      total.value = res.data.data.totalNum
     } else {
-      message.error(res.msg || t('common.failed'))
+      message.error(res.data.msg || t('common.failed'))
     }
   } catch (error) {
     console.error(error)
@@ -251,7 +374,10 @@ const fetchData = async () => {
 }
 
 // 查询方法
-const handleQuery = () => {
+const handleQuery = (values?: any) => {
+  if (values) {
+    Object.assign(queryParams.value, values)
+  }
   queryParams.value.pageIndex = 1
   fetchData()
 }
@@ -263,7 +389,7 @@ const resetQuery = () => {
     pageSize: 10,
     roleName: '',
     roleKey: '',
-    status: undefined
+    status: -1
   }
   fetchData()
 }
@@ -293,11 +419,11 @@ const handleEdit = (record: Role) => {
 const handleDelete = async (record: Role) => {
   try {
     const res = await deleteRole(record.roleId)
-    if (res.code === 200) {
+    if (res.data.code === 200) {
       message.success(t('common.delete.success'))
       fetchData()
     } else {
-      message.error(res.msg || t('common.delete.failed'))
+      message.error(res.data.msg || t('common.delete.failed'))
     }
   } catch (error) {
     console.error(error)
@@ -338,7 +464,7 @@ const handleBatchDelete = async () => {
   
   try {
     const results = await Promise.all(selectedRowKeys.value.map(id => deleteRole(Number(id))))
-    const hasError = results.some(res => res.code !== 200)
+    const hasError = results.some(res => res.data.code !== 200)
     if (!hasError) {
       message.success(t('common.delete.success'))
       selectedRowKeys.value = []
@@ -354,13 +480,64 @@ const handleBatchDelete = async () => {
 
 // 处理授权
 const handleAuthorize = (record: Role) => {
+  if (record.roleKey === 'system_admin') return
   formTitle.value = t('identity.role.actions.authorize')
   selectedRoleId.value = record.roleId
   menuAllocateVisible.value = true
 }
 
-// 初始化
-fetchData()
+// 处理状态变化
+const handleStatusChange = async (record: Role, checked: boolean) => {
+  // @ts-ignore
+  record.statusLoading = true
+  try {
+    const newStatus = checked ? 0 : 1
+    const res = await updateRoleStatus({ roleId: record.roleId, status: newStatus })
+    if (res.data.code === 200) {
+      record.status = newStatus
+      message.success('状态更新成功')
+    } else {
+      message.error(res.data.msg || '状态更新失败')
+    }
+  } catch (error) {
+    message.error('状态更新失败')
+  }
+  // @ts-ignore
+  record.statusLoading = false
+}
+
+// 处理行点击
+const handleRowClick = (record: Role) => {
+  console.log('行点击:', record)
+}
+
+// 分页处理
+const handlePageChange = (page: number) => {
+  queryParams.value.pageIndex = page
+  fetchData()
+}
+
+const handleSizeChange = (size: number) => {
+  queryParams.value.pageSize = size
+  fetchData()
+}
+
+// 处理部门授权
+const handleDeptAuthorize = (record: Role) => {
+  if (record.roleKey === 'system_admin') return
+  formTitle.value = t('identity.role.actions.deptAuthorize')
+  selectedRoleId.value = record.roleId
+  deptAllocateVisible.value = true
+}
+
+onMounted(() => {
+  // 加载字典数据
+  dictStore.loadDicts(['sys_normal_disable'])
+  // 初始化列设置
+  initColumnSettings()
+  // 加载表格数据
+  fetchData()
+})
 </script>
 
 <style lang="less" scoped>

@@ -116,7 +116,7 @@ const { t } = useI18n()
 // 查询字段定义
 const queryFields: QueryField[] = [
   {
-    name: 'tableName',
+    name: 'genConfigName',
     label: '表名',
     type: 'input',
     placeholder: '请输入表名'
@@ -145,8 +145,8 @@ const queryFields: QueryField[] = [
 const columns = [
   {
     title: '表名',
-    dataIndex: 'tableName',
-    key: 'tableName',
+    dataIndex: 'genConfigName',
+    key: 'genConfigName',
     width: 120,
     ellipsis: true
   },

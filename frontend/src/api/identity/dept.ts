@@ -94,7 +94,10 @@ export function exportDept(params?: DeptQuery) {
     url: '/api/HbtDept/export',
     method: 'get',
     params,
-    responseType: 'blob'
+    responseType: 'blob',
+    headers: {
+      'Accept': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    }
   })
 }
 

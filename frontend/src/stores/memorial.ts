@@ -611,13 +611,13 @@ export const useMemorialStore = defineStore('memorial', () => {
       // })
       
       if (holiday.date === currentDate) {
-        console.log('找到匹配的节日:', holidayId)
+        //console.log('找到匹配的节日:', holidayId)
         currentHoliday.value = holidayId as HolidayId
         return
       }
     }
 
-    console.log('没有找到匹配的节日')
+    //console.log('没有找到匹配的节日')
     currentHoliday.value = null
   }
 

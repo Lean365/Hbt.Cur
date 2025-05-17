@@ -233,7 +233,7 @@ const convertToNotificationItem = (message: HbtOnlineMessageDto | HbtMailDto | H
   }
 }
 
-// 加载通知列表
+// 加载通知
 const loadNotifications = async () => {
   if (loading.value) return
   loading.value = true
@@ -241,56 +241,47 @@ const loadNotifications = async () => {
   const maxRetries = 3
 
   const loadWithRetry = async () => {
-    let onlineMessages: any = null
-    let mailMessages: any = null
-    let noticeMessages: any = null
-    
     try {
-      [onlineMessages, mailMessages, noticeMessages] = await Promise.all([
+      // 并行加载所有类型的消息
+      const [onlineMessages, mailMessages, noticeMessages] = await Promise.all([
         getOnlineMessageList({ pageIndex: 1, pageSize: 10 }),
         getMailList({ pageIndex: 1, pageSize: 10 }),
         getNoticeList({ pageIndex: 1, pageSize: 10 })
       ])
 
-      // 使用 Map 来去重，优先使用本地存储的状态
+      // 使用 Map 来去重
       const messageMap = new Map()
-      const storedNotifications = JSON.parse(localStorage.getItem('hbt_notifications') || '[]')
-      const storedMap = new Map(storedNotifications.map((n: NotificationItemType) => [n.id, n]))
 
       // 处理在线消息
-      if (onlineMessages?.data?.rows) {
-        onlineMessages.data.rows.forEach((msg: HbtOnlineMessageDto) => {
+      if (onlineMessages?.data?.code === 200 && onlineMessages?.data?.data?.rows?.length > 0) {
+        onlineMessages.data.data.rows.forEach((msg: HbtOnlineMessageDto) => {
           const item = convertToNotificationItem(msg, 'online')
-          if (storedMap.has(item.id)) {
-            messageMap.set(item.id, storedMap.get(item.id))
-          } else {
-            messageMap.set(item.id, item)
-          }
+          messageMap.set(item.id, item)
         })
       }
 
       // 处理邮件
-      if (mailMessages?.data?.data?.rows) {
+      if (mailMessages?.data?.code === 200 && mailMessages?.data?.data?.rows?.length > 0) {
         mailMessages.data.data.rows.forEach((msg: HbtMailDto) => {
           const item = convertToNotificationItem(msg, 'mail')
-          if (storedMap.has(item.id)) {
-            messageMap.set(item.id, storedMap.get(item.id))
-          } else {
-            messageMap.set(item.id, item)
-          }
+          messageMap.set(item.id, item)
         })
       }
 
       // 处理通知
-      if (noticeMessages?.data?.data?.rows) {
+      if (noticeMessages?.data?.code === 200 && noticeMessages?.data?.data?.rows?.length > 0) {
         noticeMessages.data.data.rows.forEach((msg: HbtNoticeDto) => {
           const item = convertToNotificationItem(msg, 'notice')
-          if (storedMap.has(item.id)) {
-            messageMap.set(item.id, storedMap.get(item.id))
-          } else {
-            messageMap.set(item.id, item)
-          }
+          messageMap.set(item.id, item)
         })
+      }
+
+      // 如果没有任何消息，直接返回
+      if (messageMap.size === 0) {
+        console.log('没有新消息')
+        notifications.value = []
+        saveNotificationsToStorage()
+        return
       }
 
       // 转换为数组并按时间排序
@@ -300,16 +291,12 @@ const loadNotifications = async () => {
       notifications.value = newNotifications
       saveNotificationsToStorage()
     } catch (error: any) {
-      // 如果是空数据导致的错误,不进行重试
-      if (error.message === '请求失败' && 
-          (!onlineMessages?.data?.rows?.length && 
-           !mailMessages?.data?.data?.rows?.length && 
-           !noticeMessages?.data?.data?.rows?.length)) {
-        console.log('没有新消息')
-        return
-      }
-      
-      console.error(`加载消息失败 (尝试 ${retryCount + 1}/${maxRetries}):`, error)
+      console.error(`加载消息失败 (尝试 ${retryCount + 1}/${maxRetries}):`, {
+        error,
+        retryCount,
+        maxRetries
+      })
+
       if (retryCount < maxRetries) {
         retryCount++
         await new Promise(resolve => setTimeout(resolve, 1000))
@@ -347,24 +334,24 @@ const loadMore = async () => {
     const messageMap = new Map()
 
     // 处理在线消息
-    if (onlineMessages?.data?.rows?.length > 0) {
-      onlineMessages.data.rows.forEach(msg => {
+    if (onlineMessages?.data?.code === 200 && onlineMessages?.data?.data?.rows?.length > 0) {
+      onlineMessages.data.data.rows.forEach((msg: HbtOnlineMessageDto) => {
         const item = convertToNotificationItem(msg, 'online')
         messageMap.set(item.id, item)
       })
     }
 
     // 处理邮件
-    if (mailMessages?.data?.data?.rows?.length > 0) {
-      mailMessages.data.data.rows.forEach(msg => {
+    if (mailMessages?.data?.code === 200 && mailMessages?.data?.data?.rows?.length > 0) {
+      mailMessages.data.data.rows.forEach((msg: HbtMailDto) => {
         const item = convertToNotificationItem(msg, 'mail')
         messageMap.set(item.id, item)
       })
     }
 
     // 处理通知
-    if (noticeMessages?.data?.data?.rows?.length > 0) {
-      noticeMessages.data.data.rows.forEach(msg => {
+    if (noticeMessages?.data?.code === 200 && noticeMessages?.data?.data?.rows?.length > 0) {
+      noticeMessages.data.data.rows.forEach((msg: HbtNoticeDto) => {
         const item = convertToNotificationItem(msg, 'notice')
         messageMap.set(item.id, item)
       })

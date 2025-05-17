@@ -362,6 +362,9 @@
         <template #icon><setting-outlined /></template>
       </a-button>
     </a-tooltip>
+
+    <!-- 支持自定义按钮插槽 -->
+    <slot name="extra"></slot>
   </div>
 </template>
 

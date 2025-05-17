@@ -54,4 +54,33 @@ export interface PostStatus {
 /**
  * 岗位分页结果
  */
-export type PostPageResult = HbtPagedResult<Post> 
+export type PostPageResult = HbtPagedResult<Post>
+
+/**
+ * 岗位DTO
+ */
+export interface HbtPostDto {
+  postId: number
+  postName: string
+  postCode: string
+  postSort: number
+  status: number
+  remark: string
+  createTime: string
+  createBy: string
+  updateTime: string
+  updateBy: string
+}
+
+/**
+ * 用户岗位DTO
+ */
+export interface HbtUserPostDto {
+  id: number
+  userId: number
+  postId: number
+  postName: string
+  postCode: string
+  createTime: string
+  createBy: string
+} 

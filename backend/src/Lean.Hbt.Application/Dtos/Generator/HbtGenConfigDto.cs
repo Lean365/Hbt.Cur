@@ -23,13 +23,12 @@ public class HbtGenConfigDto
     /// </summary>
     public HbtGenConfigDto()
     {
-        TableName = string.Empty;
+        GenConfigName = string.Empty;
         FunctionName = string.Empty;
         ModuleName = string.Empty;
         BusinessName = string.Empty;
         PackageName = string.Empty;
         Author = string.Empty;
-        GenTemplate = string.Empty;
         GenPath = string.Empty;
         Options = string.Empty;
         CreateBy = string.Empty;
@@ -42,11 +41,11 @@ public class HbtGenConfigDto
     public long ConfigId { get; set; }
 
     /// <summary>
-    /// 表名
+    /// 配置名称
     /// </summary>
-    [Required(ErrorMessage = "表名不能为空")]
-    [StringLength(100, ErrorMessage = "表名长度不能超过100个字符")]
-    public string TableName { get; set; }
+    [Required(ErrorMessage = "配置名称不能为空")]
+    [StringLength(100, ErrorMessage = "配置名称长度不能超过100个字符")]
+    public string GenConfigName { get; set; }
 
     /// <summary>
     /// 作者
@@ -90,20 +89,30 @@ public class HbtGenConfigDto
     public int GenType { get; set; } = 1;
 
     /// <summary>
-    /// 生成模板
+    /// 模板选用方式（0：使用wwwroot/Generator/*.scriban模板，1：使用HbtGenTemplate表中的模板）
     /// </summary>
-    public string GenTemplate { get; set; }
+    [Required(ErrorMessage = "模板选用方式不能为空")]
+    [Range(0, 1, ErrorMessage = "模板选用方式必须是0或1")]
+    public int GenTemplateType { get; set; } = 0;
 
     /// <summary>
     /// 生成路径
     /// </summary>
+    [Required(ErrorMessage = "生成路径不能为空")]
+    [StringLength(200, ErrorMessage = "生成路径长度不能超过200个字符")]
     public string GenPath { get; set; }
 
     /// <summary>
     /// 生成选项
     /// </summary>
-
     public string Options { get; set; }
+
+    /// <summary>
+    /// 状态（0正常 1停用）
+    /// </summary>
+    [Required(ErrorMessage = "状态不能为空")]
+    [Range(0, 1, ErrorMessage = "状态必须是0或1")]
+    public int Status { get; set; } = 0;
 
     /// <summary>
     /// 租户ID
@@ -137,10 +146,10 @@ public class HbtGenConfigDto
 public class HbtGenConfigQueryDto : HbtPagedQuery
 {
     /// <summary>
-    /// 表名
+    /// 配置名称
     /// </summary>
-    [StringLength(100, ErrorMessage = "表名长度不能超过100个字符")]
-    public string? TableName { get; set; }
+    [StringLength(100, ErrorMessage = "配置名称长度不能超过100个字符")]
+    public string? GenConfigName { get; set; }
 
     /// <summary>
     /// 模块名称
@@ -185,23 +194,22 @@ public class HbtGenConfigCreateDto
     /// </summary>
     public HbtGenConfigCreateDto()
     {
-        TableName = string.Empty;
+        GenConfigName = string.Empty;
         Author = string.Empty;
         FunctionName = string.Empty;
         ModuleName = string.Empty;
         BusinessName = string.Empty;
         PackageName = string.Empty;
-        GenTemplate = string.Empty;
         GenPath = string.Empty;
         Options = string.Empty;
     }
 
     /// <summary>
-    /// 表名
+    /// 配置名称
     /// </summary>
-    [Required(ErrorMessage = "表名不能为空")]
-    [StringLength(100, ErrorMessage = "表名长度不能超过100个字符")]
-    public string TableName { get; set; }
+    [Required(ErrorMessage = "配置名称不能为空")]
+    [StringLength(100, ErrorMessage = "配置名称长度不能超过100个字符")]
+    public string GenConfigName { get; set; }
 
     /// <summary>
     /// 作者
@@ -245,20 +253,30 @@ public class HbtGenConfigCreateDto
     public int GenType { get; set; } = 1;
 
     /// <summary>
-    /// 生成模板
+    /// 模板选用方式（0：使用wwwroot/Generator/*.scriban模板，1：使用HbtGenTemplate表中的模板）
     /// </summary>
-    public string GenTemplate { get; set; }
+    [Required(ErrorMessage = "模板选用方式不能为空")]
+    [Range(0, 1, ErrorMessage = "模板选用方式必须是0或1")]
+    public int GenTemplateType { get; set; } = 0;
 
     /// <summary>
     /// 生成路径
     /// </summary>
+    [Required(ErrorMessage = "生成路径不能为空")]
+    [StringLength(200, ErrorMessage = "生成路径长度不能超过200个字符")]
     public string GenPath { get; set; }
 
     /// <summary>
     /// 生成选项
     /// </summary>
-
     public string Options { get; set; }
+
+    /// <summary>
+    /// 状态（0正常 1停用）
+    /// </summary>
+    [Required(ErrorMessage = "状态不能为空")]
+    [Range(0, 1, ErrorMessage = "状态必须是0或1")]
+    public int Status { get; set; } = 0;
 
     /// <summary>
     /// 租户ID
@@ -288,23 +306,22 @@ public class HbtGenConfigImportDto
     /// </summary>
     public HbtGenConfigImportDto()
     {
-        TableName = string.Empty;
+        GenConfigName = string.Empty;
         Author = string.Empty;
         FunctionName = string.Empty;
         ModuleName = string.Empty;
         BusinessName = string.Empty;
         PackageName = string.Empty;
-        GenTemplate = string.Empty;
         GenPath = string.Empty;
         Options = string.Empty;
     }
 
     /// <summary>
-    /// 表名
+    /// 配置名称
     /// </summary>
-    [Required(ErrorMessage = "表名不能为空")]
-    [StringLength(100, ErrorMessage = "表名长度不能超过100个字符")]
-    public string TableName { get; set; }
+    [Required(ErrorMessage = "配置名称不能为空")]
+    [StringLength(100, ErrorMessage = "配置名称长度不能超过100个字符")]
+    public string GenConfigName { get; set; }
 
     /// <summary>
     /// 作者
@@ -348,20 +365,30 @@ public class HbtGenConfigImportDto
     public int GenType { get; set; } = 1;
 
     /// <summary>
-    /// 生成模板
+    /// 模板选用方式（0：使用wwwroot/Generator/*.scriban模板，1：使用HbtGenTemplate表中的模板）
     /// </summary>
-    public string GenTemplate { get; set; }
+    [Required(ErrorMessage = "模板选用方式不能为空")]
+    [Range(0, 1, ErrorMessage = "模板选用方式必须是0或1")]
+    public int GenTemplateType { get; set; } = 0;
 
     /// <summary>
     /// 生成路径
     /// </summary>
+    [Required(ErrorMessage = "生成路径不能为空")]
+    [StringLength(200, ErrorMessage = "生成路径长度不能超过200个字符")]
     public string GenPath { get; set; }
 
     /// <summary>
     /// 生成选项
     /// </summary>
-
     public string Options { get; set; }
+
+    /// <summary>
+    /// 状态（0正常 1停用）
+    /// </summary>
+    [Required(ErrorMessage = "状态不能为空")]
+    [Range(0, 1, ErrorMessage = "状态必须是0或1")]
+    public int Status { get; set; } = 0;
 
     /// <summary>
     /// 租户ID
@@ -379,23 +406,22 @@ public class HbtGenConfigExportDto
     /// </summary>
     public HbtGenConfigExportDto()
     {
-        TableName = string.Empty;
+        GenConfigName = string.Empty;
         Author = string.Empty;
         FunctionName = string.Empty;
         ModuleName = string.Empty;
         BusinessName = string.Empty;
         PackageName = string.Empty;
-        GenTemplate = string.Empty;
         GenPath = string.Empty;
         Options = string.Empty;
     }
 
     /// <summary>
-    /// 表名
+    /// 配置名称
     /// </summary>
-    [Required(ErrorMessage = "表名不能为空")]
-    [StringLength(100, ErrorMessage = "表名长度不能超过100个字符")]
-    public string TableName { get; set; }
+    [Required(ErrorMessage = "配置名称不能为空")]
+    [StringLength(100, ErrorMessage = "配置名称长度不能超过100个字符")]
+    public string GenConfigName { get; set; }
 
     /// <summary>
     /// 作者
@@ -439,20 +465,30 @@ public class HbtGenConfigExportDto
     public int GenType { get; set; } = 1;
 
     /// <summary>
-    /// 生成模板
+    /// 模板选用方式（0：使用wwwroot/Generator/*.scriban模板，1：使用HbtGenTemplate表中的模板）
     /// </summary>
-    public string GenTemplate { get; set; }
+    [Required(ErrorMessage = "模板选用方式不能为空")]
+    [Range(0, 1, ErrorMessage = "模板选用方式必须是0或1")]
+    public int GenTemplateType { get; set; } = 0;
 
     /// <summary>
     /// 生成路径
     /// </summary>
+    [Required(ErrorMessage = "生成路径不能为空")]
+    [StringLength(200, ErrorMessage = "生成路径长度不能超过200个字符")]
     public string GenPath { get; set; }
 
     /// <summary>
     /// 生成选项
     /// </summary>
-
     public string Options { get; set; }
+
+    /// <summary>
+    /// 状态（0正常 1停用）
+    /// </summary>
+    [Required(ErrorMessage = "状态不能为空")]
+    [Range(0, 1, ErrorMessage = "状态必须是0或1")]
+    public int Status { get; set; } = 0;
 
     /// <summary>
     /// 租户ID
@@ -475,23 +511,22 @@ public class HbtGenConfigTemplateDto
     /// </summary>
     public HbtGenConfigTemplateDto()
     {
-        TableName = string.Empty;
+        GenConfigName = string.Empty;
         Author = string.Empty;
         FunctionName = string.Empty;
         ModuleName = string.Empty;
         BusinessName = string.Empty;
         PackageName = string.Empty;
-        GenTemplate = string.Empty;
         GenPath = string.Empty;
         Options = string.Empty;
     }
 
     /// <summary>
-    /// 表名
+    /// 配置名称
     /// </summary>
-    [Required(ErrorMessage = "表名不能为空")]
-    [StringLength(100, ErrorMessage = "表名长度不能超过100个字符")]
-    public string TableName { get; set; }
+    [Required(ErrorMessage = "配置名称不能为空")]
+    [StringLength(100, ErrorMessage = "配置名称长度不能超过100个字符")]
+    public string GenConfigName { get; set; }
 
     /// <summary>
     /// 作者
@@ -535,20 +570,30 @@ public class HbtGenConfigTemplateDto
     public int GenType { get; set; } = 1;
 
     /// <summary>
-    /// 生成模板
+    /// 模板选用方式（0：使用wwwroot/Generator/*.scriban模板，1：使用HbtGenTemplate表中的模板）
     /// </summary>
-    public string GenTemplate { get; set; }
+    [Required(ErrorMessage = "模板选用方式不能为空")]
+    [Range(0, 1, ErrorMessage = "模板选用方式必须是0或1")]
+    public int GenTemplateType { get; set; } = 0;
 
     /// <summary>
     /// 生成路径
     /// </summary>
+    [Required(ErrorMessage = "生成路径不能为空")]
+    [StringLength(200, ErrorMessage = "生成路径长度不能超过200个字符")]
     public string GenPath { get; set; }
 
     /// <summary>
     /// 生成选项
     /// </summary>
-
     public string Options { get; set; }
+
+    /// <summary>
+    /// 状态（0正常 1停用）
+    /// </summary>
+    [Required(ErrorMessage = "状态不能为空")]
+    [Range(0, 1, ErrorMessage = "状态必须是0或1")]
+    public int Status { get; set; } = 0;
 
     /// <summary>
     /// 租户ID

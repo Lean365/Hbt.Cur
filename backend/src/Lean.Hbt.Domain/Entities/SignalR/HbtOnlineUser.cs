@@ -18,8 +18,8 @@ namespace Lean.Hbt.Domain.Entities.SignalR
     /// 创建者: Lean365
     /// 创建时间: 2024-01-20
     /// </remarks>
-    [SugarTable("hbt_sig_online_user", "在线用户表")]
-    [SugarIndex("ix_tenant_user", nameof(TenantId), OrderByType.Asc, nameof(UserId), OrderByType.Asc,nameof(ConnectionId), OrderByType.Asc,nameof(DeviceId), OrderByType.Asc, true)]
+    [SugarTable("hbt_signalr_user", "在线用户表")]
+    [SugarIndex("ix_tenant_user", nameof(TenantId), OrderByType.Asc, nameof(UserId), OrderByType.Asc, nameof(ConnectionId), OrderByType.Asc, nameof(DeviceId), OrderByType.Asc, true)]
     public class HbtOnlineUser : HbtBaseEntity
     {
         /// <summary>

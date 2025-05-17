@@ -106,11 +106,12 @@ const formData = ref<HbtMailCreateDto | HbtMailUpdateDto>({
   mailTo: '',
   mailSubject: '',
   mailBody: '',
-  mailIsHtml: false,
+  mailIsHtml: 0,
   mailCc: '',
   mailAttachments: '',
   mailStatus: 0,
-  remark: ''
+  remark: '',
+  ...(props.mailId ? { mailId: props.mailId } : {})
 })
 
 // 表单校验规则
@@ -156,8 +157,8 @@ watch(
       if (props.mailId) {
         try {
           const res = await getMailDetail(props.mailId)
-          if (res.code === 200) {
-            const mail = res.data
+          if (res.data.code === 200) {
+            const mail = res.data.data
             formData.value = {
               mailId: mail.mailId,
               mailFrom: mail.mailFrom,
@@ -171,11 +172,11 @@ watch(
               remark: mail.remark
             }
           } else {
-            message.error(res.msg || '获取邮件数据失败')
+            message.error(res.data.msg || '获取邮件数据失败')
             handleCancel()
           }
         } catch (error) {
-          console.error(error)
+          console.error('获取邮件数据失败:', error)
           message.error('获取邮件数据失败')
           handleCancel()
         }
@@ -205,12 +206,12 @@ const handleSubmit = async () => {
       res = await createMail(submitData as HbtMailCreateDto)
     }
     
-    if (res.code === 200) {
+    if (res.data.code === 200) {
       message.success(props.mailId ? '修改成功' : '新增成功')
       emit('success')
       handleCancel()
     } else {
-      message.error(res.msg || (props.mailId ? '修改失败' : '新增失败'))
+      message.error(res.data.msg || (props.mailId ? '修改失败' : '新增失败'))
     }
   } catch (error) {
     console.error(error)

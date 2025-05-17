@@ -9,7 +9,6 @@
 // 描述    : 异常日志实体
 //===================================================================
 
-using Lean.Hbt.Common.Enums;
 using SqlSugar;
 
 namespace Lean.Hbt.Domain.Entities.Audit
@@ -17,7 +16,7 @@ namespace Lean.Hbt.Domain.Entities.Audit
     /// <summary>
     /// 异常日志实体
     /// </summary>
-    [SugarTable("hbt_mon_exception_log", "异常日志表")]
+    [SugarTable("hbt_audit_exception_log", "异常日志表")]
     [SugarIndex("ix_tenant_exception", nameof(TenantId), OrderByType.Asc)]
     public class HbtExceptionLog : HbtBaseEntity
     {

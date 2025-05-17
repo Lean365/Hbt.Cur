@@ -104,7 +104,7 @@ const handleSubmit = async () => {
   try {
     await formRef.value?.validate()
     const params: ChangePassword = {
-      userId: userStore.user?.userId ?? 0,
+      userId: userStore.userInfo?.userId ?? 0,
       oldPassword: form.oldPassword,
       newPassword: form.newPassword
     }

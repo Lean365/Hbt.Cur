@@ -6,6 +6,7 @@ import type { HbtBaseEntity, HbtPagedQuery, HbtPagedResult } from '@/types/commo
 export interface DeptQuery extends HbtPagedQuery {
   deptName?: string;
   status?: number;
+  sheetName?: string;
 }
 
 /**

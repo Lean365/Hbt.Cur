@@ -18,18 +18,18 @@
         >
           <a-row :gutter="16">
             <a-col :span="12">
-              <a-form-item :label="t('identity.user.tenantId.label')" name="tenantId">
+              <a-form-item :label="t('identity.user.fields.tenantId.label')" name="tenantId">
                 <template v-if="!userId">
                   <hbt-select
                     v-model:value="form.tenantId"
                     :options="tenantOptions"
-                    :placeholder="t('identity.user.tenantId.placeholder')"
+                    :placeholder="t('identity.user.fields.tenantId.placeholder')"
                   />
                 </template>
                 <template v-else>
                   <a-input-number
                     v-model:value="form.tenantId"
-                    :placeholder="t('identity.user.tenantId.placeholder')"
+                    :placeholder="t('identity.user.fields.tenantId.placeholder')"
                     style="width: 100%"
                     :disabled="true"
                   />
@@ -37,10 +37,10 @@
               </a-form-item>
             </a-col>
             <a-col :span="12">
-              <a-form-item :label="t('identity.user.userName.label')" name="userName">
+              <a-form-item :label="t('identity.user.fields.userName.label')" name="userName">
                 <a-input
                   v-model:value="form.userName"
-                  :placeholder="t('identity.user.userName.placeholder')"
+                  :placeholder="t('identity.user.fields.userName.placeholder')"
                   :disabled="!!userId"
                 />
               </a-form-item>
@@ -49,10 +49,10 @@
 
           <a-row :gutter="16" v-if="!userId">
             <a-col :span="12">
-              <a-form-item :label="t('identity.user.password.label')" name="password">
+              <a-form-item :label="t('identity.user.fields.password.label')" name="password" :rules="!!props.userId ? [] : rules.password">
                 <a-input-password
                   v-model:value="form.password"
-                  :placeholder="t('identity.user.password.placeholder')"
+                  :placeholder="t('identity.user.fields.password.placeholder')"
                   :disabled="true"
                 />
               </a-form-item>
@@ -61,18 +61,18 @@
 
           <a-row :gutter="16">
             <a-col :span="12">
-              <a-form-item :label="t('identity.user.nickName.label')" name="nickName">
+              <a-form-item :label="t('identity.user.fields.nickName.label')" name="nickName">
                 <a-input
                   v-model:value="form.nickName"
-                  :placeholder="t('identity.user.nickName.placeholder')"
+                  :placeholder="t('identity.user.fields.nickName.placeholder')"
                 />
               </a-form-item>
             </a-col>
             <a-col :span="12">
-              <a-form-item :label="t('identity.user.englishName.label')" name="englishName">
+              <a-form-item :label="t('identity.user.fields.englishName.label')" name="englishName">
                 <a-input
                   v-model:value="form.englishName"
-                  :placeholder="t('identity.user.englishName.placeholder')"
+                  :placeholder="t('identity.user.fields.englishName.placeholder')"
                 />
               </a-form-item>
             </a-col>
@@ -80,21 +80,21 @@
 
           <a-row :gutter="16">
             <a-col :span="12">
-              <a-form-item :label="t('identity.user.userType.label')" name="userType">
+              <a-form-item :label="t('identity.user.fields.userType.label')" name="userType">
                 <hbt-select
                   v-model:value="form.userType"
                   dict-type="sys_user_type"
                   
-                  :placeholder="t('identity.user.userType.placeholder')"
+                  :placeholder="t('identity.user.fields.userType.placeholder')"
                   :show-all="false"
                 />
               </a-form-item>
             </a-col>
             <a-col :span="12">
-              <a-form-item :label="t('identity.user.email.label')" name="email">
+              <a-form-item :label="t('identity.user.fields.email.label')" name="email">
                 <a-input
                   v-model:value="form.email"
-                  :placeholder="t('identity.user.email.placeholder')"
+                  :placeholder="t('identity.user.fields.email.placeholder')"
                 />
               </a-form-item>
             </a-col>
@@ -102,20 +102,20 @@
 
           <a-row :gutter="16">
             <a-col :span="12">
-              <a-form-item :label="t('identity.user.phoneNumber.label')" name="phoneNumber">
+              <a-form-item :label="t('identity.user.fields.phoneNumber.label')" name="phoneNumber">
                 <a-input
                   v-model:value="form.phoneNumber"
-                  :placeholder="t('identity.user.phoneNumber.placeholder')"
+                  :placeholder="t('identity.user.fields.phoneNumber.placeholder')"
                 />
               </a-form-item>
             </a-col>
             <a-col :span="12">
-              <a-form-item :label="t('identity.user.gender.label')" name="gender">
+              <a-form-item :label="t('identity.user.fields.gender.label')" name="gender">
                 <hbt-select
                   v-model:value="form.gender"
                   dict-type="sys_gender"
                   type="radio"
-                  :placeholder="t('identity.user.gender.placeholder')"
+                  :placeholder="t('identity.user.fields.gender.placeholder')"
                   :show-all="false"
                 />
               </a-form-item>
@@ -124,12 +124,12 @@
 
           <a-row :gutter="16">
             <a-col :span="12">
-              <a-form-item :label="t('identity.user.status.label')" name="status">
+              <a-form-item :label="t('identity.user.fields.status.label')" name="status">
                 <hbt-select
                   v-model:value="form.status"
                   dict-type="sys_normal_disable"
                   type="radio"
-                  :placeholder="t('identity.user.status.placeholder')"
+                  :placeholder="t('identity.user.fields.status.placeholder')"
                   :show-all="false"
                 />
               </a-form-item>
@@ -138,12 +138,12 @@
 
           <a-row :gutter="16">
             <a-col :span="24">
-              <a-form-item :label="t('identity.user.depts.label')" name="deptIds">
+              <a-form-item :label="t('identity.user.fields.deptName.label')" name="deptIds">
                 <hbt-select
                   v-model:value="form.deptIds"
                   :options="deptOptions"
                   mode="multiple"
-                  :placeholder="t('identity.user.depts.placeholder')"
+                  :placeholder="t('identity.user.fields.deptName.placeholder')"
                 />
               </a-form-item>
             </a-col>
@@ -151,12 +151,12 @@
 
           <a-row :gutter="16">
             <a-col :span="24">
-              <a-form-item :label="t('identity.user.roles.label')" name="roleIds">
+              <a-form-item :label="t('identity.user.fields.role.label')" name="roleIds">
                 <hbt-select
                   v-model:value="form.roleIds"
                   :options="roleOptions"
                   mode="multiple"
-                  :placeholder="t('identity.user.roles.placeholder')"
+                  :placeholder="t('identity.user.fields.role.placeholder')"
                 />
               </a-form-item>
             </a-col>
@@ -164,12 +164,12 @@
 
           <a-row :gutter="16">
             <a-col :span="24">
-              <a-form-item :label="t('identity.user.posts.label')" name="postIds">
+              <a-form-item :label="t('identity.user.fields.post.label')" name="postIds">
                 <hbt-select
                   v-model:value="form.postIds"
                   :options="postOptions"
                   mode="multiple"
-                  :placeholder="t('identity.user.posts.placeholder')"
+                  :placeholder="t('identity.user.fields.post.placeholder')"
                 />
               </a-form-item>
             </a-col>
@@ -177,10 +177,10 @@
 
           <a-row :gutter="16">
             <a-col :span="24">
-              <a-form-item :label="t('identity.user.remark.label')" name="remark">
+              <a-form-item :label="t('identity.user.fields.remark.label')" name="remark">
                 <a-textarea
                   v-model:value="form.remark"
-                  :placeholder="t('identity.user.remark.placeholder')"
+                  :placeholder="t('identity.user.fields.remark.placeholder')"
                   :rows="4"
                 />
               </a-form-item>
@@ -191,7 +191,7 @@
 
       <a-tab-pane :key="'avatar'" :tab="t('common.tab.avatar')">
         <div class="avatar-container">
-          <a-form-item :label="t('identity.user.avatar.label')" name="avatar">
+          <a-form-item :label="t('identity.user.fields.avatar.label')" name="avatar">
             <hbt-image-upload
               :upload-url="uploadUrl"
               save-path="uploads/avatars"
@@ -264,7 +264,7 @@ const form = reactive<UserForm>({
   nickName: '',
   englishName: '',
   userType: 0,
-  password: '123456',  // 设置默认密码为123456
+  password: 'Hbt@123852',  // 设置默认密码为Hbt@123852
   email: '',
   phoneNumber: '',
   gender: 0,
@@ -291,36 +291,37 @@ const tenantOptions = ref<{ label: string; value: number }[]>([])
 // 表单校验规则
 const rules: Record<string, Rule[]> = {
   tenantId: [
-    { required: true, message: t('identity.user.tenantId.validation.required') }
+    { required: true, message: t('identity.user.fields.tenantId.validation.required') }
   ],
   userName: [
-    { required: true, message: t('identity.user.userName.validation.required') },
+    { required: true, message: t('identity.user.fields.userName.validation.required') },
     { 
       validator: (_, value) => {
         if (value && !RegexUtils.isValidUsername(value)) {
-          return Promise.reject(t('identity.user.userName.validation.format'))
+          return Promise.reject(t('identity.user.fields.userName.validation.format'))
         }
         return Promise.resolve()
       }
     }
   ],
   password: [
-    { required: true, message: t('identity.user.password.validation.required') },
-    { 
+    {
       validator: (_, value) => {
-        if (value && !RegexUtils.isValidPassword(value)) {
-          return Promise.reject(t('identity.user.password.validation.length'))
+        if (!props.userId) {
+          if (!value || value.length < 6 || value.length > 20) {
+            return Promise.reject('密码长度必须在6-20个字符之间')
+          }
         }
         return Promise.resolve()
       }
     }
   ],
   nickName: [
-    { required: true, message: t('identity.user.nickName.validation.required') },
+    { required: true, message: t('identity.user.fields.nickName.validation.required') },
     { 
       validator: (_, value) => {
         if (value && !RegexUtils.isValidNickname(value)) {
-          return Promise.reject(t('identity.user.nickName.validation.format'))
+          return Promise.reject(t('identity.user.fields.nickName.validation.format'))
         }
         return Promise.resolve()
       }
@@ -330,51 +331,51 @@ const rules: Record<string, Rule[]> = {
     { 
       validator: (_, value) => {
         if (value && !RegexUtils.isValidEnglishName(value)) {
-          return Promise.reject(t('identity.user.englishName.validation.format'))
+          return Promise.reject(t('identity.user.fields.englishName.validation.format'))
         }
         return Promise.resolve()
       }
     }
   ],
   userType: [
-    { required: true, message: t('identity.user.userType.validation.required') }
+    { required: true, message: t('identity.user.fields.userType.validation.required') }
   ],
   email: [
-    { required: true, message: t('identity.user.email.validation.required') },
+    { required: true, message: t('identity.user.fields.email.validation.required') },
     { 
       validator: (_, value) => {
         if (value && !RegexUtils.isValidEmail(value)) {
-          return Promise.reject(t('identity.user.email.validation.invalid'))
+          return Promise.reject(t('identity.user.fields.email.validation.invalid'))
         }
         return Promise.resolve()
       }
     }
   ],
   phoneNumber: [
-    { required: true, message: t('identity.user.phoneNumber.validation.required') },
+    { required: true, message: t('identity.user.fields.phoneNumber.validation.required') },
     { 
       validator: (_, value) => {
         if (value && !RegexUtils.isValidTelephone(value)) {
-          return Promise.reject(t('identity.user.phoneNumber.validation.invalid'))
+          return Promise.reject(t('identity.user.fields.phoneNumber.validation.invalid'))
         }
         return Promise.resolve()
       }
     }
   ],
   gender: [
-    { required: true, message: t('identity.user.gender.validation.required') }
+    { required: true, message: t('identity.user.fields.gender.validation.required') }
   ],
   status: [
-    { required: true, message: t('identity.user.status.validation.required') }
+    { required: true, message: t('identity.user.fields.status.validation.required') }
   ],
   roleIds: [
-    { required: true, type: 'array', message: t('identity.user.roles.validation.required') }
+    { required: true, type: 'array', message: t('identity.user.fields.role.validation.required') }
   ],
   postIds: [
-    { required: true, type: 'array', message: t('identity.user.posts.validation.required') }
+    { required: true, type: 'array', message: t('identity.user.fields.post.validation.required') }
   ],
   deptIds: [
-    { required: true, type: 'array', message: t('identity.user.depts.validation.required') }
+    { required: true, type: 'array', message: t('identity.user.fields.deptName.validation.required') }
   ]
 }
 
@@ -385,10 +386,10 @@ const loading = ref(false)
 const getInfo = async (userId: number) => {
   try {
     const res = await getUser(userId)
-    if (res.code === 200) {
-      Object.assign(form, res.data)
+    if (res.data.code === 200) {
+      Object.assign(form, res.data.data)
     } else {
-      message.error(res.msg || t('common.failed'))
+      message.error(res.data.msg || t('common.failed'))
     }
   } catch (error) {
     console.error(error)
@@ -405,10 +406,10 @@ const fetchOptions = async () => {
       getDeptOptions(),
       getTenantOptions()
     ])
-    roleOptions.value = roles.data
-    postOptions.value = posts.data
-    deptOptions.value = depts.data
-    tenantOptions.value = tenants.data
+    roleOptions.value = roles.data.data
+    postOptions.value = posts.data.data
+    deptOptions.value = depts.data.data
+    tenantOptions.value = tenants.data.data
     
     // 只在第一次初始化时设置默认值
     if (!isInitialized.value && !props.userId) {
@@ -459,13 +460,13 @@ const handleSubmit = () => {
           loading.value = true
           
           res = await updateUser(updateData)
-          if (res.code === 200) {
+          if (res.data.code === 200) {
             message.success(t('common.success'))
             emit('success')
             handleVisibleChange(false)
           } else {
             // 处理特定的错误码
-            switch (res.code) {
+            switch (res.data.code) {
               case 401:
                 // Token过期，不需要处理，request.ts会处理重定向
                 break
@@ -476,7 +477,7 @@ const handleSubmit = () => {
                 message.error(t('common.error.serverError'))
                 break
               default:
-                message.error(res.msg || t('common.failed'))
+                message.error(res.data.msg || t('common.failed'))
             }
           }
         } catch (error: any) {
@@ -493,29 +494,17 @@ const handleSubmit = () => {
           loading.value = false
         }
       } else {
-        // 创建用户时，对密码进行加密
-        const saltResponse = await getSalt(form.userName)
-        if (!saltResponse || !saltResponse.salt || !form.password) {
-          message.error(t('identity.auth.login.error.getSalt'))
-          return
-        }
-
-        const hashedPassword = PasswordEncryptor.hashPassword(
-          form.password,
-          saltResponse.salt,
-          saltResponse.iterations || 100000
-        )
-
-        const createData = { ...form, password: hashedPassword } as UserCreate
+        // 创建用户时，直接传明文密码，不加密
+        const createData = { ...form } as UserCreate
         console.log('创建用户数据:', createData)
         try {
           res = await createUser(createData)
-          if (res.code === 200) {
+          if (res.data.code === 200) {
             message.success(t('common.success'))
             emit('success')
             handleVisibleChange(false)
           } else {
-            message.error(res.msg || t('common.failed'))
+            message.error(res.data.msg || t('common.failed'))
           }
         } catch (error: any) {
           console.error('创建用户失败:', error)

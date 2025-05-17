@@ -16,9 +16,12 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Lean.Hbt.Common.Options;
+using Lean.Hbt.Common.Exceptions;
 using Microsoft.Extensions.Options;
 using OfficeOpenXml;
 using OfficeOpenXml.DataValidation;
+using System.Xml;
+using NLog;
 
 namespace Lean.Hbt.Common.Helpers
 {
@@ -27,7 +30,17 @@ namespace Lean.Hbt.Common.Helpers
     /// </summary>
     public class HbtExcelHelper
     {
+        private static readonly ILogger _logger = LogManager.GetCurrentClassLogger();
+
         private static HbtExcelOptions? _options;
+
+        /// <summary>
+        /// 静态构造函数，设置EPPlus许可证
+        /// </summary>
+        static HbtExcelHelper()
+        {
+            ExcelPackage.License.SetNonCommercialOrganization("Lean.Hbt");
+        }
 
         /// <summary>
         /// 生成带时间戳的文件名
@@ -77,28 +90,74 @@ namespace Lean.Hbt.Common.Helpers
         #region 单Sheet导入导出
 
         /// <summary>
-        /// 导出Excel(单个Sheet)
+        /// 导出Excel(单个Sheet，支持超大数据分批导出多个文件)
         /// </summary>
         /// <typeparam name="T">要导出的数据类型</typeparam>
         /// <param name="data">数据集合</param>
         /// <param name="sheetName">工作表名称</param>
         /// <param name="fileName">文件名（不包含扩展名）</param>
-        /// <returns>包含文件名和内容的元组</returns>
+        /// <returns>包含所有文件名和内容的列表</returns>
         public static async Task<(string fileName, byte[] content)> ExportAsync<T>(IEnumerable<T> data, string sheetName = "Sheet1", string? fileName = null) where T : class
         {
             ArgumentNullException.ThrowIfNull(data);
             ArgumentException.ThrowIfNullOrEmpty(sheetName);
 
-            ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
+            const int maxRows = 10000;
+            var dataList = data.ToList();
+            int total = dataList.Count;
 
-            using var package = new ExcelPackage();
-            SetWorkbookProperties(package.Workbook);
-            ExportToSheetAsync(package, data, sheetName);
-            
-            var actualFileName = GenerateTimestampFileName(fileName ?? sheetName);
-            var content = await package.GetAsByteArrayAsync();
-            
-            return (actualFileName, content);
+            if (total == 0)
+            {
+                // 生成只有表头的空Excel
+                using var package = new OfficeOpenXml.ExcelPackage();
+                SetWorkbookProperties(package.Workbook);
+                await Task.Run(() => ExportToSheetAsync(package, dataList, sheetName));
+                var actualFileName = GenerateTimestampFileName(fileName ?? sheetName);
+                var content = await package.GetAsByteArrayAsync();
+                return (actualFileName, content);
+            }
+
+            if (total <= maxRows)
+            {
+                // 只生成一个Excel
+                using var package = new OfficeOpenXml.ExcelPackage();
+                SetWorkbookProperties(package.Workbook);
+                await Task.Run(() => ExportToSheetAsync(package, dataList, sheetName));
+                var actualFileName = GenerateTimestampFileName(fileName ?? sheetName);
+                var content = await package.GetAsByteArrayAsync();
+                return (actualFileName, content);
+            }
+            else
+            {
+                // 超过10000，分批生成多个Excel并打包zip
+                int fileCount = (int)Math.Ceiling(total / (double)maxRows);
+                var fileList = new List<(string fileName, byte[] content)>();
+                for (int i = 0; i < fileCount; i++)
+                {
+                    var batch = dataList.Skip(i * maxRows).Take(maxRows).ToList();
+                    using var package = new OfficeOpenXml.ExcelPackage();
+                    SetWorkbookProperties(package.Workbook);
+                    await Task.Run(() => ExportToSheetAsync(package, batch, sheetName));
+                    var batchFileName = GenerateTimestampFileName($"{fileName ?? sheetName}_{i + 1}");
+                    var batchContent = await package.GetAsByteArrayAsync();
+                    fileList.Add((batchFileName, batchContent));
+                }
+
+                // 打包为zip
+                using var ms = new MemoryStream();
+                using (var zip = new System.IO.Compression.ZipArchive(ms, System.IO.Compression.ZipArchiveMode.Create, true))
+                {
+                    foreach (var (batchFileName, batchContent) in fileList)
+                    {
+                        var entry = zip.CreateEntry(batchFileName, System.IO.Compression.CompressionLevel.Optimal);
+                        using var entryStream = entry.Open();
+                        await entryStream.WriteAsync(batchContent, 0, batchContent.Length);
+                    }
+                }
+                ms.Position = 0;
+                var zipName = $"{fileName ?? sheetName}_{DateTime.Now:yyyyMMddHHmmss}.zip";
+                return (zipName, ms.ToArray());
+            }
         }
 
         /// <summary>
@@ -112,8 +171,6 @@ namespace Lean.Hbt.Common.Helpers
         {
             ArgumentNullException.ThrowIfNull(fileStream);
             ArgumentException.ThrowIfNullOrEmpty(sheetName);
-
-            ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
 
             using var package = new ExcelPackage(fileStream);
             return ImportFromSheetAsync<T>(package, sheetName);
@@ -132,8 +189,6 @@ namespace Lean.Hbt.Common.Helpers
         {
             ArgumentNullException.ThrowIfNull(sheets);
             if (!sheets.Any()) throw new ArgumentException("至少需要一个Sheet", nameof(sheets));
-
-            ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
 
             using var package = new ExcelPackage();
             SetWorkbookProperties(package.Workbook);
@@ -163,8 +218,6 @@ namespace Lean.Hbt.Common.Helpers
         {
             ArgumentNullException.ThrowIfNull(fileStream);
 
-            ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
-
             using var package = new ExcelPackage(fileStream);
             var result = new Dictionary<string, List<T>>();
 
@@ -191,8 +244,6 @@ namespace Lean.Hbt.Common.Helpers
         {
             ArgumentException.ThrowIfNullOrEmpty(sheetName);
 
-            ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
-
             using var package = new ExcelPackage();
             SetWorkbookProperties(package.Workbook);
             var worksheet = package.Workbook.Worksheets.Add(sheetName);
@@ -203,16 +254,48 @@ namespace Lean.Hbt.Common.Helpers
                     && p.Name != "Id")  // 排除 Id 属性
                 .ToList();
 
-            // 写入表头
+            // 读取XML注释
+            var xmlDoc = new XmlDocument();
+            string? xmlPath = null;
+            try
+            {
+                var asm = typeof(T).Assembly;
+                xmlPath = Path.ChangeExtension(asm.Location, ".xml");
+                if (File.Exists(xmlPath))
+                    xmlDoc.Load(xmlPath);
+            }
+            catch { }
+
+            // 三行表头
+            var headers = new string[properties.Count];     // XML注释
+            var fields = new string[properties.Count];      // 字段名
+
             for (int i = 0; i < properties.Count; i++)
             {
-                var displayName = properties[i].GetCustomAttribute<DisplayNameAttribute>()?.DisplayName
-                    ?? properties[i].Name;
-                worksheet.Cells[1, i + 1].Value = displayName;
+                // 字段名
+                fields[i] = properties[i].Name;
 
-                // 根据属性类型添加数据验证
+                // XML注释
+                string summary = properties[i].Name;
+                if (xmlDoc.DocumentElement != null)
+                {
+                    var memberName = $"P:{typeof(T).FullName}.{properties[i].Name}";
+                    var node = xmlDoc.SelectSingleNode($"//member[@name='{memberName}']/summary");
+                    if (node != null && !string.IsNullOrWhiteSpace(node.InnerText))
+                        summary = node.InnerText.Trim();
+                }
+                headers[i] = summary;
+            }
+
+            // 写入两行表头
+            worksheet.Cells[1, 1].LoadFromArrays(new[] { headers });  // 第一行：XML注释
+            worksheet.Cells[2, 1].LoadFromArrays(new[] { fields });   // 第二行：字段名
+
+            // 根据属性类型添加数据验证，从第3行开始
+            for (int i = 0; i < properties.Count; i++)
+            {
                 var propertyType = properties[i].PropertyType;
-                var column = worksheet.Cells[2, i + 1, 100, i + 1].Address;
+                var column = worksheet.Cells[3, i + 1, 100, i + 1].Address;
 
                 if (propertyType == typeof(string))
                 {
@@ -305,39 +388,71 @@ namespace Lean.Hbt.Common.Helpers
                     && p.Name != "Id")  // 排除 Id 属性
                 .ToList();
 
-            // 写入表头
+            // 读取XML注释
+            var xmlDoc = new XmlDocument();
+            string? xmlPath = null;
+            try
+            {
+                var asm = typeof(T).Assembly;
+                xmlPath = Path.ChangeExtension(asm.Location, ".xml");
+                if (File.Exists(xmlPath))
+                    xmlDoc.Load(xmlPath);
+            }
+            catch { }
+
+            // 优化：使用数组存储表头
+            var headers = new string[properties.Count];
             for (int i = 0; i < properties.Count; i++)
             {
-                var displayName = properties[i].GetCustomAttribute<DisplayNameAttribute>()?.DisplayName
-                    ?? properties[i].Name;
-                worksheet.Cells[1, i + 1].Value = displayName;
+                // 优先使用XML注释
+                string header = properties[i].Name;
+                if (xmlDoc.DocumentElement != null)
+                {
+                    var memberName = $"P:{typeof(T).FullName}.{properties[i].Name}";
+                    var node = xmlDoc.SelectSingleNode($"//member[@name='{memberName}']/summary");
+                    if (node != null && !string.IsNullOrWhiteSpace(node.InnerText))
+                        header = node.InnerText.Trim();
+                }
+                headers[i] = header;
             }
 
-            // 写入数据
-            int row = 2;
+            // 优化：批量写入表头
+            worksheet.Cells[1, 1].LoadFromArrays(new[] { headers });
+
+            // 优化：使用数组批量写入数据
+            var dataArray = new List<object[]>();
             foreach (var item in data)
             {
-                for (int col = 0; col < properties.Count; col++)
+                var row = new object[properties.Count];
+                for (int i = 0; i < properties.Count; i++)
                 {
-                    var property = properties[col];
-                    var value = property.GetValue(item);
-
-                    // 特殊类型处理
-                    if (property.PropertyType == typeof(DateTime) || property.PropertyType == typeof(DateTime?))
-                    {
-                        worksheet.Cells[row, col + 1].Style.Numberformat.Format = "yyyy-MM-dd HH:mm:ss";
-                    }
-                    else if (property.PropertyType == typeof(decimal) || property.PropertyType == typeof(decimal?))
-                    {
-                        worksheet.Cells[row, col + 1].Style.Numberformat.Format = "#,##0.00";
-                    }
-
-                    worksheet.Cells[row, col + 1].Value = value;
+                    row[i] = properties[i].GetValue(item) ?? DBNull.Value;
                 }
-                row++;
+                dataArray.Add(row);
             }
 
-            // 自动调整列宽
+            if (dataArray.Any())
+            {
+                worksheet.Cells[2, 1].LoadFromArrays(dataArray);
+            }
+
+            // 优化：设置列格式
+            for (int i = 0; i < properties.Count; i++)
+            {
+                var propertyType = properties[i].PropertyType;
+                var column = worksheet.Column(i + 1);
+
+                if (propertyType == typeof(DateTime) || propertyType == typeof(DateTime?))
+                {
+                    column.Style.Numberformat.Format = "yyyy-MM-dd HH:mm:ss";
+                }
+                else if (propertyType == typeof(decimal) || propertyType == typeof(decimal?))
+                {
+                    column.Style.Numberformat.Format = "#,##0.00";
+                }
+            }
+
+            // 优化：自动调整列宽
             worksheet.Cells[worksheet.Dimension.Address].AutoFitColumns();
 
             // 冻结首行
@@ -362,16 +477,20 @@ namespace Lean.Hbt.Common.Helpers
                     && p.Name != "Id")  // 排除 Id 属性
                 .ToList();
 
+            // 输出Excel表头和DTO属性名日志
+            _logger.Info("Excel表头：" + string.Join(",", Enumerable.Range(1, worksheet.Dimension.End.Column).Select(c => worksheet.Cells[2, c].Value?.ToString() ?? "null")));
+            _logger.Info("DTO属性：" + string.Join(",", properties.Select(p => p.Name)));
+
             // 获取表头与属性的映射关系
             var headerMap = new Dictionary<string, PropertyInfo>();
             for (int col = 1; col <= worksheet.Dimension.End.Column; col++)
             {
-                var headerValue = worksheet.Cells[1, col].Value?.ToString();
+                // 从第二行（字段名）获取表头
+                var headerValue = worksheet.Cells[2, col].Value?.ToString();
                 if (string.IsNullOrEmpty(headerValue)) continue;
 
                 var property = properties.FirstOrDefault(p =>
-                    p.GetCustomAttribute<DisplayNameAttribute>()?.DisplayName == headerValue
-                    || p.Name == headerValue);
+                    p.Name == headerValue);
 
                 if (property != null)
                 {
@@ -379,29 +498,73 @@ namespace Lean.Hbt.Common.Helpers
                 }
             }
 
+            _logger.Info($"表头映射: {string.Join(", ", headerMap.Keys)}");
+            if (headerMap.Count == 0)
+            {
+                _logger.Warn("未找到任何表头映射！");
+                _logger.Warn($"工作表维度: {worksheet.Dimension?.Address}");
+                _logger.Warn($"第二行数据: {string.Join(", ", Enumerable.Range(1, worksheet.Dimension?.End.Column ?? 0).Select(c => worksheet.Cells[2, c].Value?.ToString() ?? "null"))}");
+            }
+
             // 读取数据
-            for (int row = 2; row <= worksheet.Dimension.End.Row; row++)
+            for (int row = 3; row <= worksheet.Dimension.End.Row; row++)
             {
                 var item = new T();
+                _logger.Info($"开始读取第 {row} 行数据");
                 foreach (var header in headerMap)
                 {
                     var property = header.Value;
                     var col = GetColumnByHeader(worksheet, header.Key);
-                    if (col == -1) continue;
+                    if (col == -1)
+                    {
+                        _logger.Warn($"未找到列 {header.Key} 的位置");
+                        continue;
+                    }
 
                     var cell = worksheet.Cells[row, col];
                     var cellValue = cell.Value?.ToString();
-                    if (string.IsNullOrEmpty(cellValue)) continue;
+                    _logger.Debug($"  列 {header.Key}: 原始值={cellValue}");
+                    if (string.IsNullOrEmpty(cellValue))
+                    {
+                        _logger.Debug($"  列 {header.Key}: 值为空，跳过");
+                        continue;
+                    }
 
                     var value = ConvertValue(cellValue, property.PropertyType);
+                    _logger.Debug($"  列 {header.Key}: 转换后值={value}");
                     if (value != null)
                     {
                         property.SetValue(item, value);
+                        _logger.Debug($"  列 {header.Key}: 设置值成功");
+                    }
+                    else
+                    {
+                        _logger.Warn($"  列 {header.Key}: 值转换失败，原始值={cellValue}");
                     }
                 }
+
+                // 验证必填字段
+                var requiredProps = typeof(T).GetProperties();
+                foreach (var prop in requiredProps)
+                {
+                    var value = prop.GetValue(item);
+                    if (value == null || (value is string str && string.IsNullOrWhiteSpace(str)))
+                    {
+                        _logger.Warn($"第 {row} 行 {prop.Name} 字段为空");
+                    }
+                }
+
                 result.Add(item);
+                _logger.Info($"第 {row} 行数据读取完成");
             }
 
+            if (result.Count == 0)
+            {
+                _logger.Warn("未读取到任何数据！");
+                return Task.FromResult(new List<T>());
+            }
+
+            _logger.Info($"成功读取 {result.Count} 行数据");
             return Task.FromResult(result);
         }
 
@@ -409,7 +572,8 @@ namespace Lean.Hbt.Common.Helpers
         {
             for (int col = 1; col <= worksheet.Dimension.End.Column; col++)
             {
-                if (worksheet.Cells[1, col].Value?.ToString() == headerText)
+                // 查找第二行（字段名）
+                if (worksheet.Cells[2, col].Value?.ToString() == headerText)
                     return col;
             }
             return -1;
@@ -444,6 +608,31 @@ namespace Lean.Hbt.Common.Helpers
             {
                 return null;
             }
+        }
+
+        /// <summary>
+        /// 将多个Excel文件打包为zip并返回
+        /// </summary>
+        /// <param name="files">要打包的文件列表</param>
+        /// <param name="zipFileName">zip文件名（不含扩展名）</param>
+        /// <returns>zip文件名和内容</returns>
+        public static async Task<(string fileName, byte[] content)> PackToZipAsync(List<(string fileName, byte[] content)> files, string zipFileName)
+        {
+            if (files == null || files.Count == 0)
+                throw new ArgumentException("没有可打包的文件", nameof(files));
+            using var ms = new MemoryStream();
+            using (var zip = new System.IO.Compression.ZipArchive(ms, System.IO.Compression.ZipArchiveMode.Create, true))
+            {
+                foreach (var (fileName, content) in files)
+                {
+                    var entry = zip.CreateEntry(fileName, System.IO.Compression.CompressionLevel.Optimal);
+                    using var entryStream = entry.Open();
+                    await entryStream.WriteAsync(content, 0, content.Length);
+                }
+            }
+            ms.Position = 0;
+            var zipName = $"{zipFileName}_{DateTime.Now:yyyyMMddHHmmss}.zip";
+            return (zipName, ms.ToArray());
         }
 
         #endregion 私有辅助方法

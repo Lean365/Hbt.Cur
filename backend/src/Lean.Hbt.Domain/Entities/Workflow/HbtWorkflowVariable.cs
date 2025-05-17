@@ -7,16 +7,15 @@
 // 描述    : 工作流变量实体类
 //===================================================================
 
-using System;
+using Lean.Hbt.Domain.Entities.Identity;
 using SqlSugar;
-using Lean.Hbt.Common.Enums;
 
 namespace Lean.Hbt.Domain.Entities.Workflow
 {
     /// <summary>
     /// 工作流变量实体类
     /// </summary>
-    [SugarTable("hbt_wf_variable", "工作流变量表")]
+    [SugarTable("hbt_workflow_variable", "工作流变量表")]
     public class HbtWorkflowVariable : HbtBaseEntity
     {
         /// <summary>
@@ -54,6 +53,17 @@ namespace Lean.Hbt.Domain.Entities.Workflow
         /// </summary>
         [SugarColumn(ColumnName = "node_id", ColumnDescription = "节点ID", ColumnDataType = "bigint", IsNullable = true)]
         public long? NodeId { get; set; }
+        /// <summary>
+        /// 租户ID
+        /// </summary>
+        [SugarColumn(ColumnName = "tenant_id", ColumnDescription = "租户ID", ColumnDataType = "bigint", IsNullable = false)]
+        public long TenantId { get; set; }
+
+        /// <summary>
+        /// 租户
+        /// </summary>
+        [Navigate(NavigateType.OneToOne, nameof(TenantId))]
+        public HbtTenant? Tenant { get; set; }
 
         /// <summary>
         /// 工作流实例
@@ -67,4 +77,4 @@ namespace Lean.Hbt.Domain.Entities.Workflow
         [Navigate(NavigateType.OneToOne, nameof(NodeId))]
         public HbtWorkflowNode? Node { get; set; }
     }
-} 
+}

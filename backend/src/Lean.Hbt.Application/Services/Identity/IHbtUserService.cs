@@ -118,5 +118,50 @@ namespace Lean.Hbt.Application.Services.Identity
         /// </summary>
         /// <returns>用户选项列表</returns>
         Task<List<HbtSelectOption>> GetOptionsAsync();
+
+        /// <summary>
+        /// 获取用户角色列表
+        /// </summary>
+        /// <param name="userId">用户ID</param>
+        /// <returns>用户角色列表</returns>
+        Task<List<HbtUserRoleDto>> GetUserRoleIdsAsync(long userId);
+
+        /// <summary>
+        /// 获取用户部门列表
+        /// </summary>
+        /// <param name="userId">用户ID</param>
+        /// <returns>用户部门列表</returns>
+        Task<List<HbtUserDeptDto>> GetUserDeptIdsAsync(long userId);
+
+        /// <summary>
+        /// 获取用户岗位列表
+        /// </summary>
+        /// <param name="userId">用户ID</param>
+        /// <returns>用户岗位列表</returns>
+        Task<List<HbtUserPostDto>> GetUserPostIdsAsync(long userId);
+
+        /// <summary>
+        /// 分配用户角色
+        /// </summary>
+        /// <param name="userId">用户ID</param>
+        /// <param name="roleIds">角色ID列表</param>
+        /// <returns>是否成功</returns>
+        Task<bool> AllocateUserRolesAsync(long userId, long[] roleIds);
+
+        /// <summary>
+        /// 分配用户部门
+        /// </summary>
+        /// <param name="userId">用户ID</param>
+        /// <param name="deptIds">部门ID列表</param>
+        /// <returns>是否成功</returns>
+        Task<bool> AllocateUserDeptsAsync(long userId, long[] deptIds);
+
+        /// <summary>
+        /// 分配用户岗位
+        /// </summary>
+        /// <param name="userId">用户ID</param>
+        /// <param name="postIds">岗位ID列表</param>
+        /// <returns>是否成功</returns>
+        Task<bool> AllocateUserPostsAsync(long userId, long[] postIds);
     }
 }

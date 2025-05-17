@@ -1,6 +1,6 @@
 <template>
   <a-modal
-    :visible="visible"
+    :open="visible"
     title="分配数据权限"
     :confirm-loading="confirmLoading"
     @update:visible="(val) => $emit('update:visible', val)"
@@ -11,11 +11,12 @@
       :tree-data="treeData"
       :field-names="{
         children: 'children',
-        title: 'deptName',
-        key: 'deptId'
+        title: 'title',
+        key: 'key'
       }"
       checkable
       :default-expand-all="true"
+      :expanded-keys="expandedKeys"
     />
   </a-modal>
 </template>
@@ -26,7 +27,10 @@ import { message } from 'ant-design-vue'
 import type { TreeDataItem } from 'ant-design-vue/es/tree'
 import type { Dept } from '@/types/identity/dept'
 import { getDeptTree } from '@/api/identity/dept'
-import { getRoleDeptList, allocateRoleDept } from '@/api/identity/roleDept'
+import { getRoleDepts, allocateRoleDept } from '@/api/identity/role'
+
+// 展开的节点keys
+const expandedKeys = ref<string[]>([])
 
 interface Props {
   visible: boolean
@@ -48,27 +52,48 @@ const deptTree = ref<Dept[]>([])
 // 转换后的树形数据
 const treeData = ref<TreeDataItem[]>([])
 // 选中的部门ID
-const checkedKeys = ref<number[]>([])
+const checkedKeys = ref<string[]>([])
 // 确认加载
 const confirmLoading = ref(false)
 
 // 转换树形数据
 const transformTreeData = (depts: Dept[]): TreeDataItem[] => {
   return depts.map(dept => ({
-    key: dept.deptId || 0,
+    key: String(dept.deptId || '0'),
     title: dept.deptName,
-    children: dept.children ? transformTreeData(dept.children) : undefined
+    children: dept.children ? transformTreeData(dept.children) : undefined,
+    disabled: dept.status === 1
   }))
+}
+
+// 获取所有节点的key
+const getAllKeys = (nodes: TreeDataItem[]): string[] => {
+  const keys: string[] = []
+  const traverse = (node: TreeDataItem) => {
+    keys.push(node.key as string)
+    if (node.children) {
+      node.children.forEach(traverse)
+    }
+  }
+  nodes.forEach(traverse)
+  return keys
 }
 
 // 加载部门树数据
 const loadDeptTree = async () => {
   try {
-    const { data } = await getDeptTree()
-    deptTree.value = data
-    treeData.value = transformTreeData(data)
+    const res = await getDeptTree()
+    if (res.data.code === 200) {
+      deptTree.value = res.data.data
+      treeData.value = transformTreeData(res.data.data)
+      // 设置所有节点为展开状态
+      expandedKeys.value = getAllKeys(treeData.value)
+    } else {
+      message.error(res.data.msg || '加载部门树失败')
+    }
   } catch (err) {
     console.error('加载部门树失败:', err)
+    message.error('加载部门树失败')
   }
 }
 
@@ -76,10 +101,15 @@ const loadDeptTree = async () => {
 const loadRoleDepts = async () => {
   if (!props.roleId) return
   try {
-    const { data } = await getRoleDeptList(props.roleId)
-    checkedKeys.value = data
+    const res = await getRoleDepts(props.roleId)
+    if (res.data.code === 200) {
+      checkedKeys.value = res.data.data.map((item: any) => String(item.deptId))
+    } else {
+      message.error(res.data.msg || '加载角色部门失败')
+    }
   } catch (err) {
     console.error('加载角色部门失败:', err)
+    message.error('加载角色部门失败')
   }
 }
 
@@ -88,10 +118,7 @@ const handleSubmit = async () => {
   if (!props.roleId) return
   try {
     confirmLoading.value = true
-    await allocateRoleDept({
-      roleId: props.roleId,
-      deptIds: checkedKeys.value
-    })
+    await allocateRoleDept(props.roleId, checkedKeys.value.map(id => Number(id)))
     message.success('分配成功')
     emit('success')
     emit('update:visible', false)
@@ -105,10 +132,10 @@ const handleSubmit = async () => {
 // 监听弹窗显示
 watch(
   () => props.visible,
-  (val) => {
+  async (val) => {
     if (val) {
-      loadDeptTree()
-      loadRoleDepts()
+      await loadDeptTree()
+      await loadRoleDepts()
     } else {
       checkedKeys.value = []
     }

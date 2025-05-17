@@ -10,26 +10,6 @@ namespace Lean.Hbt.Application.Services.Generator.CodeGenerator;
 public interface IHbtCodeGeneratorService
 {
     /// <summary>
-    /// 获取当前数据库中的所有表
-    /// </summary>
-    /// <returns>表信息列表</returns>
-    Task<List<HbtGenTable>> GetAllTablesFromDatabaseAsync();
-
-    /// <summary>
-    /// 从数据库同步到页面
-    /// </summary>
-    /// <param name="table">表信息</param>
-    /// <returns>同步结果</returns>
-    Task<bool> SyncFromDatabaseAsync(HbtGenTable table);
-
-    /// <summary>
-    /// 从页面同步到数据库
-    /// </summary>
-    /// <param name="table">表信息</param>
-    /// <returns>同步结果</returns>
-    Task<bool> SyncToDatabaseAsync(HbtGenTable table);
-
-    /// <summary>
     /// 生成代码
     /// </summary>
     /// <param name="table">表信息</param>

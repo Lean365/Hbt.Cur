@@ -218,10 +218,10 @@ const getList = async () => {
   try {
     loading.value = true
     const res = await getDeptTree()
-    if (res.code === 200) {
-      list.value = res.data
+    if (res.data.code === 200) {
+      list.value = res.data.data
     } else {
-      message.error(res.msg || t('common.failed'))
+      message.error(res.data.msg || t('common.failed'))
     }
   } catch (error) {
     console.error('[部门管理] 获取部门列表出错:', error)
@@ -279,11 +279,11 @@ const handleEdit = (record: Record<string, any>) => {
 const handleDelete = async (record: Record<string, any>) => {
   try {
     const res = await deleteDept(Number(record.deptId))
-    if (res.code === 200) {
+    if (res.data.code === 200) {
       message.success(t('common.delete.success'))
       getList()
     } else {
-      message.error(res.msg || t('common.delete.failed'))
+      message.error(res.data.msg || t('common.delete.failed'))
     }
   } catch (error) {
     console.error(error)
@@ -299,12 +299,12 @@ const handleBatchDelete = () => {
     async onOk() {
       try {
         const res = await batchDeleteDept(selectedKeys.value.map(id => Number(id)))
-        if (res.code === 200) {
+        if (res.data.code === 200) {
           message.success(t('common.delete.success'))
           selectedKeys.value = []
           getList()
         } else {
-          message.error(res.msg || t('common.delete.failed'))
+          message.error(res.data.msg || t('common.delete.failed'))
         }
       } catch (error) {
         console.error(error)
@@ -317,15 +317,38 @@ const handleBatchDelete = () => {
 // 处理导出
 const handleExport = async () => {
   try {
-    const res = await exportDept()
-    if (res.code === 200) {
+    const res = await exportDept({
+      deptName: queryParams.value.deptName,
+      status: queryParams.value.status,
+      sheetName: '部门信息',
+      pageIndex: 1,
+      pageSize: 10
+    })
+    
+    // 检查响应类型
+    if (res.data instanceof Blob) {
+      const blob = new Blob([res.data], { 
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' 
+      })
+      const url = window.URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = `部门列表_${new Date().getTime()}.xlsx`
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      window.URL.revokeObjectURL(url)
       message.success(t('common.export.success'))
     } else {
-      message.error(res.msg || t('common.export.failed'))
+      message.error(t('common.export.failed'))
     }
-  } catch (error) {
-    console.error(error)
-    message.error(t('common.export.failed'))
+  } catch (error: any) {
+    console.error('导出部门失败:', error)
+    if (error.response?.status === 500) {
+      message.error(t('identity.dept.messages.exportFailed'))
+    } else {
+      message.error(error.response?.data?.msg || t('common.export.failed'))
+    }
   }
 }
 

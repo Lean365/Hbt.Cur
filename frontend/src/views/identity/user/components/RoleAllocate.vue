@@ -12,6 +12,7 @@
       :titles="['未分配', '已分配']"
       :render="(item) => item.title"
       :disabled="false"
+      :default-expand-all="true"
     />
   </a-modal>
 </template>
@@ -21,8 +22,10 @@ import { ref, watch } from 'vue'
 import { message } from 'ant-design-vue'
 import type { TransferItem } from 'ant-design-vue/es/transfer'
 import type { Role } from '@/types/identity/role'
-import { getRoleList } from '@/api/identity/role'
-import { getUserRoleList, allocateUserRole } from '@/api/identity/userRole'
+import { getRoleOptions } from '@/api/identity/role'
+import { getUserRoles } from '@/api/identity/user'
+import { allocateUserRole } from '@/api/identity/userRole'
+import { useI18n } from 'vue-i18n'
 
 interface Props {
   visible: boolean
@@ -39,6 +42,8 @@ const emit = defineEmits<{
   (e: 'success'): void
 }>()
 
+const i18n = useI18n()
+
 // 角色列表
 const roleList = ref<TransferItem[]>([])
 // 已选角色
@@ -49,11 +54,11 @@ const confirmLoading = ref(false)
 // 加载角色列表
 const loadRoleList = async () => {
   try {
-    const { data } = await getRoleList()
-    roleList.value = data.map(role => ({
-      key: role.roleId.toString(),
-      title: role.roleName,
-      description: role.remark
+    const res = await getRoleOptions()
+    roleList.value = res.data.data.map(role => ({
+      key: role.value.toString(),
+      title: role.label,
+      description: ''
     }))
   } catch (err) {
     console.error('加载角色列表失败:', err)
@@ -64,8 +69,8 @@ const loadRoleList = async () => {
 const loadUserRoles = async () => {
   if (!props.userId) return
   try {
-    const { data } = await getUserRoleList(props.userId)
-    targetKeys.value = data.map(id => id.toString())
+    const { data } = await getUserRoles(props.userId)
+    targetKeys.value = data.data.map(role => role.roleId.toString())
   } catch (err) {
     console.error('加载用户角色失败:', err)
   }
@@ -75,18 +80,21 @@ const loadUserRoles = async () => {
 const handleSubmit = async () => {
   if (!props.userId) return
   try {
-    confirmLoading.value = true
-    await allocateUserRole({
+    const res = await allocateUserRole({
       userId: props.userId,
       roleIds: targetKeys.value.map(key => parseInt(key))
     })
-    message.success('分配成功')
-    emit('success')
-    emit('update:visible', false)
-  } catch (err) {
-    console.error('分配角色失败:', err)
-  } finally {
-    confirmLoading.value = false
+    if (res.data.code === 200) {
+      message.success(i18n.t('common.success'))
+      emit('success')
+      targetKeys.value = []
+      emit('update:visible', false)
+    } else {
+      message.error(res.data.msg || i18n.t('common.failed'))
+    }
+  } catch (error) {
+    console.error(error)
+    message.error(i18n.t('common.failed'))
   }
 }
 

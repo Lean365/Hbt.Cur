@@ -7,6 +7,7 @@
 // 描述   : 文件实体
 //===================================================================
 
+using Lean.Hbt.Domain.Entities.Identity;
 using SqlSugar;
 
 namespace Lean.Hbt.Domain.Entities.Routine
@@ -14,7 +15,7 @@ namespace Lean.Hbt.Domain.Entities.Routine
     /// <summary>
     /// 文件实体
     /// </summary>
-    [SugarTable("hbt_rou_file", "文件")]
+    [SugarTable("hbt_routine_file", "文件")]
     public class HbtFile : HbtBaseEntity
     {
         /// <summary>
@@ -88,5 +89,17 @@ namespace Lean.Hbt.Domain.Entities.Routine
         /// </summary>
         [SugarColumn(ColumnName = "file_download_count", ColumnDescription = "下载次数", IsNullable = false, DefaultValue = "0", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
         public int FileDownloadCount { get; set; }
+
+        /// <summary>
+        /// 租户ID
+        /// </summary>
+        [SugarColumn(ColumnName = "tenant_id", ColumnDescription = "租户ID", ColumnDataType = "bigint", IsNullable = false)]
+        public long TenantId { get; set; }
+
+        /// <summary>
+        /// 租户
+        /// </summary>
+        [Navigate(NavigateType.OneToOne, nameof(TenantId))]
+        public HbtTenant? Tenant { get; set; }
     }
-} 
+}

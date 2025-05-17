@@ -137,7 +137,7 @@ const displayOptions = computed(() => {
   if (props.type === 'radio' && props.showAll) {
     opts.push({
       label: t('select.all'),
-      value: '',
+      value: -1,
       disabled: false,
       cssClass: '',
       listClass: '',
@@ -271,9 +271,9 @@ const innerValue = computed({
       return value;
     }
     
-    // 对于radio类型，直接返回当前值
-    if (props.type === 'radio') {
-      return value;
+    // 对于radio类型，如果值为undefined或null，返回-1（全部）
+    if (props.type === 'radio' && (value === undefined || value === null)) {
+      return -1;
     }
     
     // 对于其他类型，尝试查找匹配的选项
@@ -295,11 +295,6 @@ const innerValue = computed({
 
 // 处理change事件
 const handleChange = (value: SelectValue, option: DefaultOptionType | DefaultOptionType[]) => {
-  if (value === undefined || value === null) {
-    emit('change', '', option);
-    return;
-  }
-  
   let convertedValue: any;
   switch (props.type) {
     case 'switch':
@@ -312,6 +307,14 @@ const handleChange = (value: SelectValue, option: DefaultOptionType | DefaultOpt
     case 'radio':
       // 对于radio类型，确保只返回单个值
       convertedValue = Array.isArray(value) ? value[0] : value;
+      // 如果是"全部"选项，返回 -1
+      if (convertedValue === 0) {
+        convertedValue = -1;
+      }
+      // 如果是 undefined 或 null，返回 -1
+      if (convertedValue === undefined || convertedValue === null) {
+        convertedValue = -1;
+      }
       break;
     default:
       convertedValue = value;

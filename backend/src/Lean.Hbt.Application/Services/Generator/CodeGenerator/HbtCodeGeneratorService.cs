@@ -5,6 +5,9 @@ using Lean.Hbt.Application.Services.Generator.CodeGenerator.Templates;
 using Lean.Hbt.Domain.IServices.Extensions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Lean.Hbt.Domain.Entities.Generator;
+using Lean.Hbt.Domain.Repositories;
+using System.Text.Json;
 
 namespace Lean.Hbt.Application.Services.Generator.CodeGenerator;
 
@@ -15,257 +18,40 @@ public class HbtCodeGeneratorService : IHbtCodeGeneratorService
 {
     private readonly IHbtTemplateEngine _templateEngine;
     private readonly IHbtLogger _logger;
-    private readonly string _outputPath;
-    private readonly ISqlSugarClient _db;
-    private readonly HbtCodeGenerationConfig _config;
     private readonly IHbtRepository<HbtGenTable> _tableRepository;
     private readonly IHbtRepository<HbtGenColumn> _columnRepository;
-    private readonly IHbtCurrentUser _currentUser;
+    private readonly IHbtRepository<HbtGenConfig> _configRepository;
+    private readonly IHbtRepository<HbtGenTemplate> _templateRepository;
+    private readonly IWebHostEnvironment _webHostEnvironment;
 
     /// <summary>
     /// 构造函数
     /// </summary>
     /// <param name="templateEngine"> 模板引擎</param>
     /// <param name="logger"> 日志</param>
-    /// <param name="db"> 数据库连接</param>
     /// <param name="configuration"> 配置</param>
     /// <param name="webHostEnvironment"> WebHost环境</param>
-    /// <param name="tableRepository"> 表信息仓储</param>
-    /// <param name="columnRepository">  字段信息仓储</param>
-    /// <param name="currentUser"> 当前用户</param>
+    /// <param name="tableRepository"> 表仓储</param>
+    /// <param name="columnRepository"> 列仓储</param>
+    /// <param name="configRepository"> 配置仓储</param>
+    /// <param name="templateRepository"> 模板仓储</param>
     public HbtCodeGeneratorService(
         IHbtTemplateEngine templateEngine,
         IHbtLogger logger,
-        ISqlSugarClient db,
         IConfiguration configuration,
         IWebHostEnvironment webHostEnvironment,
         IHbtRepository<HbtGenTable> tableRepository,
         IHbtRepository<HbtGenColumn> columnRepository,
-        IHbtCurrentUser currentUser)
+        IHbtRepository<HbtGenConfig> configRepository,
+        IHbtRepository<HbtGenTemplate> templateRepository)
     {
         _templateEngine = templateEngine;
         _logger = logger;
-        _db = db;
-        _config = HbtCodeGenerationConfig.FromConfiguration(configuration, webHostEnvironment);
         _tableRepository = tableRepository;
         _columnRepository = columnRepository;
-        _currentUser = currentUser;
-
-        // 从配置中获取输出路径，如果没有则使用默认值
-        _outputPath = configuration.GetValue<string>("CodeGenerator:OutputPath") ?? "wwwroot/generator/output";
-
-        // 确保输出路径是相对于应用程序根目录的
-        _outputPath = Path.Combine(webHostEnvironment.ContentRootPath, _outputPath);
-
-        if (!Directory.Exists(_outputPath))
-        {
-            Directory.CreateDirectory(_outputPath);
-        }
-    }
-
-    /// <summary>
-    /// 获取当前数据库中的所有表
-    /// </summary>
-    /// <returns>表信息列表</returns>
-    public async Task<List<HbtGenTable>> GetAllTablesFromDatabaseAsync()
-    {
-        try
-        {
-            _logger.Info("开始获取数据库中的所有表");
-
-            // 获取数据库表信息
-            var tableInfos = _db.DbMaintenance.GetTableInfoList();
-            if (!tableInfos.Any())
-            {
-                _logger.Warn("未找到任何表");
-                return new List<HbtGenTable>();
-            }
-
-            var tables = new List<HbtGenTable>();
-            foreach (var tableInfo in tableInfos)
-            {
-                // 获取表字段信息
-                var columns = _db.DbMaintenance.GetColumnInfosByTableName(tableInfo.Name);
-
-                // 创建表信息
-                var table = new HbtGenTable
-                {
-                    DatabaseName = _db.CurrentConnectionConfig.ConnectionString.Split(';').FirstOrDefault(x => x.StartsWith("Database=", StringComparison.OrdinalIgnoreCase))?.Split('=')[1] ?? "Unknown",
-                    TableName = tableInfo.Name,
-                    TableComment = tableInfo.Description,
-                    ClassName = ToPascalCase(tableInfo.Name),
-                    Namespace = "Lean.Hbt.Domain.Entities",
-                    BaseNamespace = "Lean.Hbt",
-                    CsharpTypeName = ToPascalCase(tableInfo.Name),
-                    CreateTime = DateTime.Now,
-                    UpdateTime = DateTime.Now,
-                    CreateBy = _currentUser.UserName ?? "Lean365",
-                    UpdateBy = _currentUser.UserName ?? "Lean365"
-                };
-
-                // 保存表信息
-                await _tableRepository.CreateAsync(table);
-
-                // 创建字段信息
-                foreach (var column in columns)
-                {
-                    var genColumn = new HbtGenColumn
-                    {
-                        TableId = table.Id,
-                        ColumnName = column.DbColumnName,
-                        ColumnComment = column.ColumnDescription,
-                        DbColumnType = column.DataType,
-                        CsharpType = GetCsharpType(column.DataType),
-                        CsharpColumn = ToPascalCase(column.DbColumnName),
-                        CsharpLength = column.Length,
-                        CsharpDecimalDigits = column.DecimalDigits,
-                        IsIncrement = column.IsIdentity ? 1 : 0,
-                        IsPrimaryKey = column.IsPrimarykey ? 1 : 0,
-                        IsRequired = column.IsNullable ? 0 : 1,
-                        IsInsert = 1,
-                        IsEdit = 1,
-                        IsList = 1,
-                        IsQuery = 0,
-                        QueryType = "EQ",
-                        IsSort = 0,
-                        IsExport = 1,
-                        CreateTime = DateTime.Now,
-                        UpdateTime = DateTime.Now,
-                        CreateBy = _currentUser.UserName ?? "Lean365",
-                        UpdateBy = _currentUser.UserName ?? "Lean365"
-                    };
-
-                    await _columnRepository.CreateAsync(genColumn);
-                }
-
-                tables.Add(table);
-            }
-
-            _logger.Info($"成功获取到 {tables.Count} 个表");
-            return tables;
-        }
-        catch (Exception ex)
-        {
-            _logger.Error($"获取数据库表失败: {ex.Message}", ex);
-            throw;
-        }
-    }
-
-    /// <summary>
-    /// 从数据库同步到页面
-    /// </summary>
-    public async Task<bool> SyncFromDatabaseAsync(HbtGenTable table)
-    {
-        try
-        {
-            _logger.Info($"开始从数据库同步到页面,表名:{table.TableName}");
-
-            // 获取数据库表信息
-            var tableInfo = _db.DbMaintenance.GetTableInfoList();
-            var currentTable = tableInfo.FirstOrDefault(x => x.Name == table.TableName);
-            if (currentTable == null)
-            {
-                _logger.Warn($"未找到表:{table.TableName}");
-                return false;
-            }
-
-            // 获取表字段信息
-            var columns = _db.DbMaintenance.GetColumnInfosByTableName(table.TableName);
-            if (!columns.Any())
-            {
-                _logger.Warn($"表 {table.TableName} 没有字段信息");
-                return false;
-            }
-
-            // 更新表信息
-            table.TableComment = currentTable.Description;
-            table.UpdateTime = DateTime.Now;
-
-            // 更新字段信息
-            var columnList = columns.Select(col => new HbtGenColumn
-            {
-                TableId = table.Id,
-                ColumnName = col.DbColumnName,
-                ColumnComment = col.ColumnDescription,
-                DbColumnType = col.DataType,
-                CsharpType = GetCsharpType(col.DataType),
-                CsharpColumn = ToPascalCase(col.DbColumnName),
-                CsharpLength = col.Length,
-                CsharpDecimalDigits = col.DecimalDigits,
-                IsIncrement = col.IsIdentity ? 1 : 0,
-                IsPrimaryKey = col.IsPrimarykey ? 1 : 0,
-                IsRequired = col.IsNullable ? 0 : 1,
-                CreateTime = DateTime.Now,
-                UpdateTime = DateTime.Now
-            }).ToList();
-
-            // 保存表信息
-            await _tableRepository.UpdateAsync(table);
-
-            // 删除原有字段
-            Expression<Func<HbtGenColumn, bool>> deleteExpression = x => x.TableId == table.Id;
-            await _columnRepository.DeleteAsync(deleteExpression);
-
-            // 保存新字段
-            foreach (var column in columnList)
-            {
-                await _columnRepository.CreateAsync(column);
-            }
-
-            _logger.Info($"从数据库同步到页面成功,表名:{table.TableName},字段数:{columnList.Count}");
-            return true;
-        }
-        catch (Exception ex)
-        {
-            _logger.Error($"从数据库同步到页面失败,表名:{table.TableName}", ex);
-            return false;
-        }
-    }
-
-    /// <summary>
-    /// 从页面同步到数据库
-    /// </summary>
-    public async Task<bool> SyncToDatabaseAsync(HbtGenTable table)
-    {
-        try
-        {
-            _logger.Info($"开始从页面同步到数据库,表名:{table.TableName}");
-
-            // 更新表注释
-            var updateTableSql = GenerateUpdateTableSql(table);
-            await _db.Ado.ExecuteCommandAsync(updateTableSql);
-            _logger.Info($"更新表成功,表名:{table.TableName}");
-
-            // 同步字段
-            var columns = _db.DbMaintenance.GetColumnInfosByTableName(table.TableName);
-            var existingColumns = columns.Select(x => x.DbColumnName).ToList();
-            var newColumns = table.Columns?.Where(x => !existingColumns.Contains(x.ColumnName)).ToList() ?? new List<HbtGenColumn>();
-            var updateColumns = table.Columns?.Where(x => existingColumns.Contains(x.ColumnName)).ToList() ?? new List<HbtGenColumn>();
-
-            // 添加新字段
-            foreach (var column in newColumns)
-            {
-                var addColumnSql = GenerateAddColumnSql(table.TableName, column);
-                await _db.Ado.ExecuteCommandAsync(addColumnSql);
-                _logger.Info($"添加字段成功,表名:{table.TableName},字段名:{column.ColumnName}");
-            }
-
-            // 更新现有字段
-            foreach (var column in updateColumns)
-            {
-                var updateColumnSql = GenerateUpdateColumnSql(table.TableName, column);
-                await _db.Ado.ExecuteCommandAsync(updateColumnSql);
-                _logger.Info($"更新字段成功,表名:{table.TableName},字段名:{column.ColumnName}");
-            }
-
-            _logger.Info($"从页面同步到数据库成功,表名:{table.TableName}");
-            return true;
-        }
-        catch (Exception ex)
-        {
-            _logger.Error($"从页面同步到数据库失败,表名:{table.TableName}", ex);
-            return false;
-        }
+        _configRepository = configRepository;
+        _templateRepository = templateRepository;
+        _webHostEnvironment = webHostEnvironment;
     }
 
     /// <summary>
@@ -277,48 +63,159 @@ public class HbtCodeGeneratorService : IHbtCodeGeneratorService
         {
             _logger.Info($"开始生成代码,表名:{table.TableName}");
 
+            // 获取表信息
+            var genTable = await _tableRepository.GetFirstAsync(x => x.TableName == table.TableName && x.Status == 0);
+            if (genTable == null)
+            {
+                _logger.Error($"未找到表 {table.TableName} 的生成信息");
+                throw new HbtException($"未找到表 {table.TableName} 的生成信息，请先在代码生成表中设置该表的信息");
+            }
+
+            // 获取列信息
+            var columns = await _columnRepository.GetListAsync(x => x.TableId == genTable.Id);
+            if (columns == null || !columns.Any())
+            {
+                _logger.Error($"未找到表 {table.TableName} 的列信息");
+                throw new HbtException($"未找到表 {table.TableName} 的列信息，请先设置表的列信息");
+            }
+
+            // 获取生成配置
+            var config = await _configRepository.GetFirstAsync(x => x.Status == 0);
+            if (config == null)
+            {
+                _logger.Error("未找到可用的代码生成配置");
+                throw new HbtException("未找到可用的代码生成配置，请先配置代码生成参数");
+            }
+
+            // 获取模板列表
+            List<HbtGenTemplate> templates;
+            if (config.GenTemplateType == 0)
+            {
+                // 使用 wwwroot/Generator/*.scriban 模板
+                var templatePath = Path.Combine(_webHostEnvironment.WebRootPath, "Generator");
+                if (!Directory.Exists(templatePath))
+                {
+                    _logger.Error($"模板目录不存在: {templatePath}");
+                    throw new HbtException("模板目录不存在，请确保 wwwroot/Generator 目录存在");
+                }
+
+                var templateFiles = Directory.GetFiles(templatePath, "*.scriban", SearchOption.AllDirectories);
+                if (!templateFiles.Any())
+                {
+                    _logger.Error("未找到可用的代码生成模板文件");
+                    throw new HbtException("未找到可用的代码生成模板文件，请确保 wwwroot/Generator 目录下有 .scriban 文件");
+                }
+
+                templates = templateFiles.Select(file => new HbtGenTemplate
+                {
+                    TemplateName = Path.GetFileNameWithoutExtension(file),
+                    FileName = Path.GetFileName(file),
+                    TemplateContent = File.ReadAllText(file),
+                    TemplateLanguage = GetTemplateLanguage(file),
+                    Status = 0
+                }).ToList();
+            }
+            else
+            {
+                // 使用 HbtGenTemplate 表中的模板
+                templates = await _templateRepository.GetListAsync(x => x.Status == 0);
+                if (templates == null || !templates.Any())
+                {
+                    _logger.Error("未找到可用的代码生成模板");
+                    throw new HbtException("未找到可用的代码生成模板，请先配置代码生成模板");
+                }
+            }
+
             // 准备生成模型
             var model = new HbtGeneratorModel
             {
-                Table = table,
-                Config = _config,
-                Options = new Models.HbtGeneratorOptions
+                Table = genTable,
+                Template = templates.First(), // 设置默认模板
+                Config = new HbtCodeGenerationConfig(_webHostEnvironment)
                 {
-                    Author = _config.Author,
-                    ModuleName = _config.ModuleName,
-                    PackageName = _config.PackageName,
-                    BaseNamespace = _config.BaseNamespace,
-                    GenPath = _config.GenPath,
-                    GenerateController = true,
-                    GenerateService = true,
-                    GenerateRepository = true,
-                    GenerateEntity = true,
-                    GenerateDto = true,
-                    GenerateFrontend = true,
-                    GenerateApiDoc = true,
-                    IsTree = false,
-                    IsMasterDetail = false
-                }
+                    Author = config.Author,
+                    ModuleName = config.ModuleName,
+                    PackageName = config.PackageName,
+                    BaseNamespace = config.PackageName,
+                    GenPath = config.GenPath,
+                    Templates = templates.ToList()
+                },
+                Columns = columns.ToList(), // 添加列信息
             };
 
-            // 生成代码
-            foreach (var template in _config.Templates)
+            // 创建生成选项
+            var options = new Models.HbtGeneratorOptions
             {
-                _logger.Debug($"开始生成模板:{template.TemplateName}");
+                Author = config.Author,
+                ModuleName = config.ModuleName,
+                PackageName = config.PackageName,
+                BaseNamespace = config.PackageName,
+                GenPath = config.GenPath,
+                GenerateController = true,
+                GenerateService = true,
+                GenerateRepository = true,
+                GenerateEntity = true,
+                GenerateDto = true,
+                GenerateFrontend = true,
+                GenerateApiDoc = true,
+                IsTree = genTable.TplCategory == "tree",
+                IsMasterDetail = genTable.TplCategory == "sub"
+            };
 
-                // 渲染模板
-                var content = await _templateEngine.RenderAsync(template.TemplateContent, model);
-
-                // 生成文件
-                var filePath = Path.Combine(_outputPath, _config.GenPath, template.FileName);
-                var directory = Path.GetDirectoryName(filePath);
-                if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
+            // 解析选项配置
+            if (!string.IsNullOrEmpty(config.Options))
+            {
+                var optionsDict = JsonSerializer.Deserialize<Dictionary<string, object>>(config.Options);
+                if (optionsDict != null)
                 {
-                    Directory.CreateDirectory(directory);
+                    // 设置生成选项
+                    if (optionsDict.ContainsKey("isTree"))
+                    {
+                        options.IsTree = Convert.ToBoolean(optionsDict["isTree"]);
+                    }
+                    if (optionsDict.ContainsKey("isMasterDetail"))
+                    {
+                        options.IsMasterDetail = Convert.ToBoolean(optionsDict["isMasterDetail"]);
+                    }
+                    if (optionsDict.ContainsKey("generateController"))
+                    {
+                        options.GenerateController = Convert.ToBoolean(optionsDict["generateController"]);
+                    }
+                    if (optionsDict.ContainsKey("generateService"))
+                    {
+                        options.GenerateService = Convert.ToBoolean(optionsDict["generateService"]);
+                    }
+                    if (optionsDict.ContainsKey("generateRepository"))
+                    {
+                        options.GenerateRepository = Convert.ToBoolean(optionsDict["generateRepository"]);
+                    }
+                    if (optionsDict.ContainsKey("generateEntity"))
+                    {
+                        options.GenerateEntity = Convert.ToBoolean(optionsDict["generateEntity"]);
+                    }
+                    if (optionsDict.ContainsKey("generateDto"))
+                    {
+                        options.GenerateDto = Convert.ToBoolean(optionsDict["generateDto"]);
+                    }
+                    if (optionsDict.ContainsKey("generateFrontend"))
+                    {
+                        options.GenerateFrontend = Convert.ToBoolean(optionsDict["generateFrontend"]);
+                    }
+                    if (optionsDict.ContainsKey("generateApiDoc"))
+                    {
+                        options.GenerateApiDoc = Convert.ToBoolean(optionsDict["generateApiDoc"]);
+                    }
                 }
+            }
 
-                await File.WriteAllTextAsync(filePath, content);
-                _logger.Info($"模板生成成功:{template.TemplateName},文件路径:{filePath}");
+            model.Options = options;
+
+            // 生成代码
+            var result = await GenerateCodeInternalAsync(model);
+            if (!result)
+            {
+                _logger.Error($"代码生成失败,表名:{table.TableName}");
+                throw new HbtException($"代码生成失败，请检查配置和模板是否正确");
             }
 
             _logger.Info($"代码生成成功,表名:{table.TableName}");
@@ -326,8 +223,8 @@ public class HbtCodeGeneratorService : IHbtCodeGeneratorService
         }
         catch (Exception ex)
         {
-            _logger.Error($"代码生成失败,表名:{table.TableName}", ex);
-            return false;
+            _logger.Error($"代码生成失败,表名:{table.TableName},错误:{ex.Message}");
+            throw new HbtException($"代码生成失败：{ex.Message}");
         }
     }
 
@@ -340,39 +237,164 @@ public class HbtCodeGeneratorService : IHbtCodeGeneratorService
         {
             _logger.Info($"开始预览代码,表名:{table.TableName}");
 
+            // 获取表信息
+            var genTable = await _tableRepository.GetFirstAsync(x => x.TableName == table.TableName && x.Status == 0);
+            if (genTable == null)
+            {
+                _logger.Error($"未找到表 {table.TableName} 的生成信息");
+                throw new HbtException($"未找到表 {table.TableName} 的生成信息，请先在代码生成表中设置该表的信息");
+            }
+
+            // 获取列信息
+            var columns = await _columnRepository.GetListAsync(x => x.TableId == genTable.Id);
+            if (columns == null || !columns.Any())
+            {
+                _logger.Error($"未找到表 {table.TableName} 的列信息");
+                throw new HbtException($"未找到表 {table.TableName} 的列信息，请先设置表的列信息");
+            }
+
+            // 获取生成配置
+            var config = await _configRepository.GetFirstAsync(x => x.Status == 0);
+            if (config == null)
+            {
+                _logger.Error("未找到可用的代码生成配置");
+                throw new HbtException("未找到可用的代码生成配置，请先配置代码生成参数");
+            }
+
+            // 获取模板列表
+            List<HbtGenTemplate> templates;
+            if (config.GenTemplateType == 0)
+            {
+                // 使用 wwwroot/Generator/*.scriban 模板
+                var templatePath = Path.Combine(_webHostEnvironment.WebRootPath, "Generator");
+                if (!Directory.Exists(templatePath))
+                {
+                    _logger.Error($"模板目录不存在: {templatePath}");
+                    throw new HbtException("模板目录不存在，请确保 wwwroot/Generator 目录存在");
+                }
+
+                var templateFiles = Directory.GetFiles(templatePath, "*.scriban", SearchOption.AllDirectories);
+                if (!templateFiles.Any())
+                {
+                    _logger.Error("未找到可用的代码生成模板文件");
+                    throw new HbtException("未找到可用的代码生成模板文件，请确保 wwwroot/Generator 目录下有 .scriban 文件");
+                }
+
+                templates = templateFiles.Select(file => new HbtGenTemplate
+                {
+                    TemplateName = Path.GetFileNameWithoutExtension(file),
+                    FileName = Path.GetFileName(file),
+                    TemplateContent = File.ReadAllText(file),
+                    TemplateLanguage = GetTemplateLanguage(file),
+                    Status = 0
+                }).ToList();
+            }
+            else
+            {
+                // 使用 HbtGenTemplate 表中的模板
+                templates = await _templateRepository.GetListAsync(x => x.Status == 0);
+                if (templates == null || !templates.Any())
+                {
+                    _logger.Error("未找到可用的代码生成模板");
+                    throw new HbtException("未找到可用的代码生成模板，请先配置代码生成模板");
+                }
+            }
+
             // 准备生成模型
             var model = new HbtGeneratorModel
             {
-                Table = table,
-                Config = _config,
-                Options = new Models.HbtGeneratorOptions
+                Table = genTable,
+                Template = templates.First(), // 设置默认模板
+                Config = new HbtCodeGenerationConfig(_webHostEnvironment)
                 {
-                    Author = _config.Author,
-                    ModuleName = _config.ModuleName,
-                    PackageName = _config.PackageName,
-                    BaseNamespace = _config.BaseNamespace,
-                    GenPath = _config.GenPath,
-                    GenerateController = true,
-                    GenerateService = true,
-                    GenerateRepository = true,
-                    GenerateEntity = true,
-                    GenerateDto = true,
-                    GenerateFrontend = true,
-                    GenerateApiDoc = true,
-                    IsTree = false,
-                    IsMasterDetail = false
-                }
+                    Author = config.Author,
+                    ModuleName = config.ModuleName,
+                    PackageName = config.PackageName,
+                    BaseNamespace = config.PackageName,
+                    GenPath = config.GenPath,
+                    Templates = templates.ToList()
+                },
+                Columns = columns.ToList(), // 添加列信息
             };
+
+            // 创建生成选项
+            var options = new Models.HbtGeneratorOptions
+            {
+                Author = config.Author,
+                ModuleName = config.ModuleName,
+                PackageName = config.PackageName,
+                BaseNamespace = config.PackageName,
+                GenPath = config.GenPath,
+                GenerateController = true,
+                GenerateService = true,
+                GenerateRepository = true,
+                GenerateEntity = true,
+                GenerateDto = true,
+                GenerateFrontend = true,
+                GenerateApiDoc = true,
+                IsTree = genTable.TplCategory == "tree",
+                IsMasterDetail = genTable.TplCategory == "sub"
+            };
+
+            // 解析选项配置
+            if (!string.IsNullOrEmpty(config.Options))
+            {
+                var optionsDict = JsonSerializer.Deserialize<Dictionary<string, object>>(config.Options);
+                if (optionsDict != null)
+                {
+                    // 设置生成选项
+                    if (optionsDict.ContainsKey("isTree"))
+                    {
+                        options.IsTree = Convert.ToBoolean(optionsDict["isTree"]);
+                    }
+                    if (optionsDict.ContainsKey("isMasterDetail"))
+                    {
+                        options.IsMasterDetail = Convert.ToBoolean(optionsDict["isMasterDetail"]);
+                    }
+                    if (optionsDict.ContainsKey("generateController"))
+                    {
+                        options.GenerateController = Convert.ToBoolean(optionsDict["generateController"]);
+                    }
+                    if (optionsDict.ContainsKey("generateService"))
+                    {
+                        options.GenerateService = Convert.ToBoolean(optionsDict["generateService"]);
+                    }
+                    if (optionsDict.ContainsKey("generateRepository"))
+                    {
+                        options.GenerateRepository = Convert.ToBoolean(optionsDict["generateRepository"]);
+                    }
+                    if (optionsDict.ContainsKey("generateEntity"))
+                    {
+                        options.GenerateEntity = Convert.ToBoolean(optionsDict["generateEntity"]);
+                    }
+                    if (optionsDict.ContainsKey("generateDto"))
+                    {
+                        options.GenerateDto = Convert.ToBoolean(optionsDict["generateDto"]);
+                    }
+                    if (optionsDict.ContainsKey("generateFrontend"))
+                    {
+                        options.GenerateFrontend = Convert.ToBoolean(optionsDict["generateFrontend"]);
+                    }
+                    if (optionsDict.ContainsKey("generateApiDoc"))
+                    {
+                        options.GenerateApiDoc = Convert.ToBoolean(optionsDict["generateApiDoc"]);
+                    }
+                }
+            }
+
+            model.Options = options;
 
             var result = new Dictionary<string, string>();
 
             // 预览代码
-            foreach (var template in _config.Templates)
+            foreach (var template in templates)
             {
                 _logger.Debug($"开始预览模板:{template.TemplateName}");
 
+                model.Template = template; // 动态设置当前模板
+
                 // 渲染模板
-                var content = await _templateEngine.RenderAsync(template.TemplateContent, model);
+                var content = await _templateEngine.RenderAsync(template.TemplateName, model);
                 result[template.FileName] = content;
 
                 _logger.Info($"模板预览成功:{template.TemplateName}");
@@ -382,8 +404,8 @@ public class HbtCodeGeneratorService : IHbtCodeGeneratorService
         }
         catch (Exception ex)
         {
-            _logger.Error($"代码预览失败,表名:{table.TableName}", ex);
-            return new Dictionary<string, string>();
+            _logger.Error($"代码预览失败,表名:{table.TableName},错误:{ex.Message}");
+            throw new HbtException($"代码预览失败：{ex.Message}");
         }
     }
 
@@ -396,32 +418,178 @@ public class HbtCodeGeneratorService : IHbtCodeGeneratorService
         {
             _logger.Info($"开始下载代码,表名:{table.TableName}");
 
+            // 获取表信息
+            var genTable = await _tableRepository.GetFirstAsync(x => x.TableName == table.TableName && x.Status == 0);
+            if (genTable == null)
+            {
+                _logger.Error($"未找到表 {table.TableName} 的生成信息");
+                throw new HbtException($"未找到表 {table.TableName} 的生成信息，请先在代码生成表中设置该表的信息");
+            }
+
+            // 获取列信息
+            var columns = await _columnRepository.GetListAsync(x => x.TableId == genTable.Id);
+            if (columns == null || !columns.Any())
+            {
+                _logger.Error($"未找到表 {table.TableName} 的列信息");
+                throw new HbtException($"未找到表 {table.TableName} 的列信息，请先设置表的列信息");
+            }
+
+            // 获取生成配置
+            var config = await _configRepository.GetFirstAsync(x => x.Status == 0);
+            if (config == null)
+            {
+                _logger.Error("未找到可用的代码生成配置");
+                throw new HbtException("未找到可用的代码生成配置，请先配置代码生成参数");
+            }
+
+            // 获取模板列表
+            List<HbtGenTemplate> templates;
+            if (config.GenTemplateType == 0)
+            {
+                // 使用 wwwroot/Generator/*.scriban 模板
+                var templatePath = Path.Combine(_webHostEnvironment.WebRootPath, "Generator");
+                if (!Directory.Exists(templatePath))
+                {
+                    _logger.Error($"模板目录不存在: {templatePath}");
+                    throw new HbtException("模板目录不存在，请确保 wwwroot/Generator 目录存在");
+                }
+
+                var templateFiles = Directory.GetFiles(templatePath, "*.scriban", SearchOption.AllDirectories);
+                if (!templateFiles.Any())
+                {
+                    _logger.Error("未找到可用的代码生成模板文件");
+                    throw new HbtException("未找到可用的代码生成模板文件，请确保 wwwroot/Generator 目录下有 .scriban 文件");
+                }
+
+                templates = templateFiles.Select(file => new HbtGenTemplate
+                {
+                    TemplateName = Path.GetFileNameWithoutExtension(file),
+                    FileName = Path.GetFileName(file),
+                    TemplateContent = File.ReadAllText(file),
+                    TemplateLanguage = GetTemplateLanguage(file),
+                    Status = 0
+                }).ToList();
+            }
+            else
+            {
+                // 使用 HbtGenTemplate 表中的模板
+                templates = await _templateRepository.GetListAsync(x => x.Status == 0);
+                if (templates == null || !templates.Any())
+                {
+                    _logger.Error("未找到可用的代码生成模板");
+                    throw new HbtException("未找到可用的代码生成模板，请先配置代码生成模板");
+                }
+            }
+
             // 准备生成模型
             var model = new HbtGeneratorModel
             {
-                Table = table,
-                Config = _config,
-                Options = new Models.HbtGeneratorOptions
+                Table = genTable,
+                Template = templates.First(), // 设置默认模板
+                Config = new HbtCodeGenerationConfig(_webHostEnvironment)
                 {
-                    Author = _config.Author,
-                    ModuleName = _config.ModuleName,
-                    PackageName = _config.PackageName,
-                    BaseNamespace = _config.BaseNamespace,
-                    GenPath = _config.GenPath
-                }
+                    Author = config.Author,
+                    ModuleName = config.ModuleName,
+                    PackageName = config.PackageName,
+                    BaseNamespace = config.PackageName,
+                    GenPath = config.GenPath,
+                    Templates = templates.ToList()
+                },
+                Columns = columns.ToList(), // 添加列信息
             };
+
+            // 创建生成选项
+            var options = new Models.HbtGeneratorOptions
+            {
+                Author = config.Author,
+                ModuleName = config.ModuleName,
+                PackageName = config.PackageName,
+                BaseNamespace = config.PackageName,
+                GenPath = config.GenPath,
+                GenerateController = true,
+                GenerateService = true,
+                GenerateRepository = true,
+                GenerateEntity = true,
+                GenerateDto = true,
+                GenerateFrontend = true,
+                GenerateApiDoc = true,
+                IsTree = genTable.TplCategory == "tree",
+                IsMasterDetail = genTable.TplCategory == "sub"
+            };
+
+            // 解析选项配置
+            if (!string.IsNullOrEmpty(config.Options))
+            {
+                var optionsDict = JsonSerializer.Deserialize<Dictionary<string, object>>(config.Options);
+                if (optionsDict != null)
+                {
+                    // 设置生成选项
+                    if (optionsDict.ContainsKey("isTree"))
+                    {
+                        options.IsTree = Convert.ToBoolean(optionsDict["isTree"]);
+                    }
+                    if (optionsDict.ContainsKey("isMasterDetail"))
+                    {
+                        options.IsMasterDetail = Convert.ToBoolean(optionsDict["isMasterDetail"]);
+                    }
+                    if (optionsDict.ContainsKey("generateController"))
+                    {
+                        options.GenerateController = Convert.ToBoolean(optionsDict["generateController"]);
+                    }
+                    if (optionsDict.ContainsKey("generateService"))
+                    {
+                        options.GenerateService = Convert.ToBoolean(optionsDict["generateService"]);
+                    }
+                    if (optionsDict.ContainsKey("generateRepository"))
+                    {
+                        options.GenerateRepository = Convert.ToBoolean(optionsDict["generateRepository"]);
+                    }
+                    if (optionsDict.ContainsKey("generateEntity"))
+                    {
+                        options.GenerateEntity = Convert.ToBoolean(optionsDict["generateEntity"]);
+                    }
+                    if (optionsDict.ContainsKey("generateDto"))
+                    {
+                        options.GenerateDto = Convert.ToBoolean(optionsDict["generateDto"]);
+                    }
+                    if (optionsDict.ContainsKey("generateFrontend"))
+                    {
+                        options.GenerateFrontend = Convert.ToBoolean(optionsDict["generateFrontend"]);
+                    }
+                    if (optionsDict.ContainsKey("generateApiDoc"))
+                    {
+                        options.GenerateApiDoc = Convert.ToBoolean(optionsDict["generateApiDoc"]);
+                    }
+                }
+            }
+
+            model.Options = options;
 
             // 创建ZIP文件
             using var ms = new MemoryStream();
             using (var archive = new ZipArchive(ms, ZipArchiveMode.Create))
             {
-                foreach (var template in _config.Templates)
+                foreach (var template in templates)
                 {
-                    // 渲染模板
-                    var content = await _templateEngine.RenderAsync(template.TemplateContent, model);
+                    _logger.Debug($"开始生成模板:{template.TemplateName}");
 
-                    // 添加到ZIP
-                    var filePath = Path.Combine(_config.GenPath, template.FileName);
+                    model.Template = template; // 动态设置当前模板
+
+                    // 渲染模板
+                    var content = await _templateEngine.RenderAsync(template.TemplateName, model);
+
+                    // 获取文件路径信息
+                    var (directory, fileName) = GetFilePathInfo(template.TemplateName, model);
+                    var filePath = Path.Combine(directory, fileName);
+                    
+                    _logger.Info($"生成文件路径: {filePath}");
+                    
+                    if (!Directory.Exists(directory))
+                    {
+                        Directory.CreateDirectory(directory);
+                        _logger.Info($"创建目录: {directory}");
+                    }
+
                     var entry = archive.CreateEntry(filePath);
                     using var entryStream = entry.Open();
                     using var writer = new StreamWriter(entryStream);
@@ -435,83 +603,248 @@ public class HbtCodeGeneratorService : IHbtCodeGeneratorService
         }
         catch (Exception ex)
         {
-            _logger.Error($"代码下载失败,表名:{table.TableName}", ex);
-            return Array.Empty<byte>();
+            _logger.Error($"代码下载失败,表名:{table.TableName},错误:{ex.Message}");
+            throw new HbtException($"代码下载失败：{ex.Message}");
         }
     }
 
-    #region 私有方法
-
     /// <summary>
-    /// 生成更新表SQL
+    /// 生成代码内部实现
     /// </summary>
-    private string GenerateUpdateTableSql(HbtGenTable table)
+    private async Task<bool> GenerateCodeInternalAsync(HbtGeneratorModel model)
     {
-        return $"ALTER TABLE [{table.TableName}] MODIFY COMMENT '{table.TableComment}'";
-    }
-
-    /// <summary>
-    /// 生成添加字段SQL
-    /// </summary>
-    private string GenerateAddColumnSql(string tableName, HbtGenColumn column)
-    {
-        return $"ALTER TABLE [{tableName}] ADD [{column.ColumnName}] {column.DbColumnType}" +
-               (column.CsharpLength > 0 ? $"({column.CsharpLength})" : "") +
-               (column.IsRequired == 1 ? " NOT NULL" : " NULL") +
-               (column.IsPrimaryKey == 1 ? " PRIMARY KEY" : "") +
-               (column.IsIncrement == 1 ? " IDENTITY(1,1)" : "") +
-               (string.IsNullOrEmpty(column.ColumnComment) ? "" : $" COMMENT '{column.ColumnComment}'");
-    }
-
-    /// <summary>
-    /// 生成更新字段SQL
-    /// </summary>
-    private string GenerateUpdateColumnSql(string tableName, HbtGenColumn column)
-    {
-        return $"ALTER TABLE [{tableName}] ALTER COLUMN [{column.ColumnName}] {column.DbColumnType}" +
-               (column.CsharpLength > 0 ? $"({column.CsharpLength})" : "") +
-               (column.IsRequired == 1 ? " NOT NULL" : " NULL") +
-               (string.IsNullOrEmpty(column.ColumnComment) ? "" : $" COMMENT '{column.ColumnComment}'");
-    }
-
-    /// <summary>
-    /// 获取C#类型
-    /// </summary>
-    private string GetCsharpType(string dbType)
-    {
-        return dbType.ToLower() switch
+        try
         {
-            "int" => "int",
-            "bigint" => "long",
-            "smallint" => "short",
-            "tinyint" => "byte",
-            "decimal" => "decimal",
-            "numeric" => "decimal",
-            "float" => "float",
-            "real" => "double",
-            "datetime" => "DateTime",
-            "date" => "DateTime",
-            "time" => "TimeSpan",
-            "char" => "string",
-            "varchar" => "string",
-            "nvarchar" => "string",
-            "text" => "string",
-            "ntext" => "string",
-            "bit" => "bool",
-            "uniqueidentifier" => "Guid",
-            _ => "string"
+            _logger.Info($"GenPath: {model.Config.GenPath}");
+            _logger.Info($"TplType: {model.Table.TplType}, TplCategory: {model.Table.TplCategory}");
+
+            // 定义需要排除的基类字段
+            var baseEntityFields = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "id",
+                "create_by",
+                "create_time",
+                "update_by",
+                "update_time",
+                "is_deleted",
+                "delete_by",
+                "delete_time",
+                "remark"
+            };
+
+            // 过滤掉基类字段
+            model.Columns = model.Columns.Where(c => !baseEntityFields.Contains(c.ColumnName.ToLower())).ToList();
+
+            // 只保留一套模板过滤逻辑
+            var templates = model.Config.Templates;
+            if (model.Table.TplType == "1")
+            {
+                // 数据库模板，按类别过滤
+                templates = templates.Where(t =>
+                    t.TemplateCategory.ToString().Equals(model.Table.TplCategory, StringComparison.OrdinalIgnoreCase)).ToList();
+            }
+
+            if (!templates.Any())
+            {
+                _logger.Error($"未找到可用的模板，模板类型: {model.Table.TplType}, 模板类别: {model.Table.TplCategory}");
+                throw new HbtException($"未找到可用的模板，请检查模板配置");
+            }
+
+            // 定义后端生成顺序
+            var backendOrder = new Dictionary<string, int>
+            {
+                { "Entity", 1 },      // 实体
+                { "Dto", 2 },         // 对象
+                { "IService", 3 },    // 服务接口
+                { "Service", 4 },     // 服务实现
+                { "Controller", 5 }   // 控制器
+            };
+
+            // 定义前端生成顺序
+            var frontendOrder = new Dictionary<string, int>
+            {
+                { "types", 1 },       // 类型定义
+                { "api", 2 },         // API接口
+                { "vue", 3 },         // 页面组件
+                { "locales", 4 }      // 语言包
+            };
+
+            // 按顺序生成后端代码
+            var backendTemplates = templates.Where(t => !t.TemplateName.Contains("vue") && 
+                                                      !t.TemplateName.Contains("api") && 
+                                                      !t.TemplateName.Contains("types") && 
+                                                      !t.TemplateName.Contains("locales"))
+                                          .OrderBy(t => backendOrder.GetValueOrDefault(t.TemplateName, 999));
+
+            foreach (var template in backendTemplates)
+            {
+                _logger.Debug($"开始生成后端模板:{template.TemplateName}");
+                model.Template = template;
+
+                // 渲染模板
+                var content = await _templateEngine.RenderAsync(template.TemplateName, model);
+
+                // 获取文件路径信息
+                var (directory, fileName) = GetFilePathInfo(template.TemplateName, model);
+                var filePath = Path.Combine(directory, fileName);
+                
+                _logger.Info($"生成后端文件路径: {filePath}");
+                
+                if (!Directory.Exists(directory))
+                {
+                    Directory.CreateDirectory(directory);
+                    _logger.Info($"创建目录: {directory}");
+                }
+
+                await File.WriteAllTextAsync(filePath, content);
+                _logger.Info($"后端模板生成成功:{template.TemplateName},文件路径:{filePath}");
+            }
+
+            // 按顺序生成前端代码
+            var frontendTemplates = templates.Where(t => t.TemplateName.Contains("vue") || 
+                                                       t.TemplateName.Contains("api") || 
+                                                       t.TemplateName.Contains("types") || 
+                                                       t.TemplateName.Contains("locales"))
+                                           .OrderBy(t => frontendOrder.GetValueOrDefault(t.TemplateName.ToLower(), 999));
+
+            foreach (var template in frontendTemplates)
+            {
+                _logger.Debug($"开始生成前端模板:{template.TemplateName}");
+                model.Template = template;
+
+                // 渲染模板
+                var content = await _templateEngine.RenderAsync(template.TemplateName, model);
+
+                // 获取文件路径信息
+                var (directory, fileName) = GetFilePathInfo(template.TemplateName, model);
+                var filePath = Path.Combine(directory, fileName);
+                
+                _logger.Info($"生成前端文件路径: {filePath}");
+                
+                if (!Directory.Exists(directory))
+                {
+                    Directory.CreateDirectory(directory);
+                    _logger.Info($"创建目录: {directory}");
+                }
+
+                await File.WriteAllTextAsync(filePath, content);
+                _logger.Info($"前端模板生成成功:{template.TemplateName},文件路径:{filePath}");
+            }
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _logger.Error($"生成代码时发生错误: {ex.Message}, 堆栈: {ex.StackTrace}");
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// 获取文件路径信息
+    /// </summary>
+    private (string Directory, string FileName) GetFilePathInfo(string templateFilePath, HbtGeneratorModel model)
+    {
+        // 输出日志，便于排查
+        _logger.Info($"GetFilePathInfo: templateFilePath={templateFilePath}");
+
+        // 获取模板名称（不含扩展名）
+        var templateName = Path.GetFileNameWithoutExtension(templateFilePath);
+        
+        // 判断类型
+        string type = model.Table.TplCategory?.ToLower() ?? "crud";
+        
+        // 判断是前端还是后端
+        bool isBackend = true;  // 默认后端
+        bool isFrontend = false;
+
+        // 根据模板名称判断类型
+        if (templateName.Contains("vue") || templateName.Contains("api") || 
+            templateName.Contains("types") || templateName.Contains("locales"))
+        {
+            isBackend = false;
+            isFrontend = true;
+        }
+
+        // 取模块名
+        var moduleName = model.Table.ModuleName?.ToLower() ?? "common";
+        var genPath = model.Table.GenPath;
+
+        // 拼接输出目录
+        string directory;
+        if (isBackend)
+        {
+            directory = Path.Combine(genPath, "backend", type, moduleName);
+        }
+        else
+        {
+            directory = Path.Combine(genPath, "frontend", type, moduleName);
+        }
+
+        // 根据模板名称生成文件名
+        string outputFileName;
+        if (templateName.Contains("Entity"))
+        {
+            outputFileName = $"{model.Table.EntityClassName}.cs";
+        }
+        else if (templateName.Contains("Dto"))
+        {
+            outputFileName = $"{model.Table.DtoClassName}.cs";
+        }
+        else if (templateName.Contains("IService"))
+        {
+            outputFileName = $"{model.Table.IServiceClassName}.cs";
+        }
+        else if (templateName.Contains("Service"))
+        {
+            outputFileName = $"{model.Table.ServiceClassName}.cs";
+        }
+        else if (templateName.Contains("Controller"))
+        {
+            outputFileName = $"{model.Table.ControllerClassName}.cs";
+        }
+        else if (templateName.Contains("types"))
+        {
+            outputFileName = $"{model.Table.EntityClassName.ToLower()}.types.ts";
+        }
+        else if (templateName.Contains("api"))
+        {
+            outputFileName = $"{model.Table.EntityClassName.ToLower()}.ts";
+        }
+        else if (templateName.Contains("vue"))
+        {
+            outputFileName = $"{model.Table.EntityClassName.ToLower()}.vue";
+        }
+        else if (templateName.Contains("locales"))
+        {
+            outputFileName = "zh-CN.ts";
+        }
+        else
+        {
+            outputFileName = $"{model.Table.EntityClassName}{templateName}.cs";
+        }
+
+        _logger.Info($"生成文件路径: directory={directory}, fileName={outputFileName}");
+        return (directory, outputFileName);
+    }
+
+    /// <summary>
+    /// 根据文件扩展名获取模板语言类型
+    /// </summary>
+    private int GetTemplateLanguage(string filePath)
+    {
+        var extension = Path.GetExtension(filePath).ToLower();
+        return extension switch
+        {
+            ".cs.scriban" => 1,    // C#
+            ".ts.scriban" => 2,    // TypeScript
+            ".js.scriban" => 3,    // JavaScript
+            ".java.scriban" => 4,  // Java
+            ".vue.scriban" => 5,   // Vue
+            ".html.scriban" => 6,  // HTML
+            ".css.scriban" => 7,   // CSS
+            ".sql.scriban" => 8,   // SQL
+            _ => 1                 // 默认C#
         };
     }
-
-    /// <summary>
-    /// 转换为Pascal命名
-    /// </summary>
-    private string ToPascalCase(string input)
-    {
-        if (string.IsNullOrEmpty(input)) return input;
-        var words = input.Split(new[] { '_', '-', ' ' }, StringSplitOptions.RemoveEmptyEntries);
-        return string.Concat(words.Select(word => char.ToUpper(word[0]) + word.Substring(1).ToLower()));
-    }
-
-    #endregion 私有方法
 }

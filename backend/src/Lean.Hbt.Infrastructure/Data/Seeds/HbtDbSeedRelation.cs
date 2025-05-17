@@ -14,6 +14,7 @@ using Lean.Hbt.Domain.Entities.Identity;
 using Lean.Hbt.Domain.IServices.Extensions;
 using Lean.Hbt.Infrastructure.Data.Contexts;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace Lean.Hbt.Infrastructure.Data.Seeds;
 
@@ -70,6 +71,11 @@ public class HbtDbSeedRelation
     {
         int insertCount = 0;
         int updateCount = 0;
+
+        // 初始化管理员关联关系
+        var (adminInsert, adminUpdate) = await InitializeAdminRelationsAsync();
+        insertCount += adminInsert;
+        updateCount += adminUpdate;
 
         // 初始化所有用户关联关系
         var (userInsertCount, userUpdateCount) = await InitializeUserRelationsAsync();
@@ -219,7 +225,7 @@ public class HbtDbSeedRelation
         long nextId = 1;
 
         // 获取所有用户、角色、部门、岗位和菜单
-        var allUsers = await _userRepository.GetListAsync(u => u.IsDeleted == 0);
+        var allUsers = (await _userRepository.GetListAsync(u => u.IsDeleted == 0 && u.UserName != "admin")).Take(100).ToList();
         var allRoles = await _roleRepository.GetListAsync(r => r.IsDeleted == 0);
         var allDepts = await _deptRepository.GetListAsync(d => d.IsDeleted == 0);
         var allPosts = await _postRepository.GetListAsync(p => p.IsDeleted == 0);

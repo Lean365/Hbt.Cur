@@ -60,7 +60,7 @@ namespace Lean.Hbt.Domain.Entities.Core
         /// 租户ID
         /// </summary>
         [SugarColumn(ColumnName = "tenant_id", ColumnDescription = "租户ID", ColumnDataType = "bigint", IsNullable = false)]
-        public long TenantId { get; set; } = 0;
+       public long TenantId { get; set; }
 
         /// <summary>
         /// 租户导航属性

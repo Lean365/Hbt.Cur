@@ -35,7 +35,13 @@ export function getCsrfToken(): string | null {
 service.interceptors.request.use(
   (config) => {
     console.log('=== 请求拦截器开始 ===')
-    console.log('请求配置:', config)
+    console.log('请求配置:', {
+      url: config.url,
+      method: config.method,
+      params: config.params,
+      data: config.data,
+      headers: config.headers
+    })
 
     // 获取 CSRF Token
     const csrfToken = getCsrfToken()
@@ -128,6 +134,8 @@ service.interceptors.response.use(
     
     // 记录原始响应
     console.log(`[Response] 原始响应:`, {
+      url: response.config.url,
+      method: response.config.method,
       status: response.status,
       statusText: response.statusText,
       headers: response.headers,
@@ -136,14 +144,31 @@ service.interceptors.response.use(
     
     // 如果是文件上传响应，直接返回
     if (response.config.data instanceof FormData) {
-      console.log('[Response] 文件上传响应，直接返回')
       return response
     }
     
-    // 如果是Blob类型，直接返回response.data
-    if (res instanceof Blob) {
-      console.log('[Response] 检测到Blob响应，返回response.data')
-      return response.data
+    // 如果是Blob类型，检查响应头
+    if (response.config.responseType === 'blob') {
+      // 检查响应头中的Content-Type
+      const contentType = response.headers['content-type']
+      if (contentType && contentType.includes('application/json')) {
+        // 如果是JSON格式的错误响应，需要解析错误信息
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader()
+          reader.onload = () => {
+            try {
+              const errorData = JSON.parse(reader.result as string)
+              reject(new Error(errorData.msg || '导出失败'))
+            } catch (e) {
+              reject(new Error('导出失败'))
+            }
+          }
+          reader.onerror = () => reject(new Error('导出失败'))
+          reader.readAsText(res)
+        })
+      }
+      // 如果是Excel文件，直接返回整个response对象
+      return response
     }
     
     // 转换为统一的小驼峰格式
@@ -168,18 +193,38 @@ service.interceptors.response.use(
         break
     }
     
-    return Promise.reject(new Error(normalizedData.msg || '请求失败'))
+    return Promise.reject(normalizedData)
   },
   error => {
     // 处理HTTP错误
     if (error.response) {
       const { status, data, headers } = error.response
       console.error('[Response] HTTP错误:', {
+        url: error.config.url,
+        method: error.config.method,
         status,
         statusText: error.response.statusText,
         headers,
-        data
+        data,
+        config: error.config
       })
+      
+      // 如果是Blob类型的错误响应，需要解析错误信息
+      if (error.config.responseType === 'blob' && data instanceof Blob) {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader()
+          reader.onload = () => {
+            try {
+              const errorData = JSON.parse(reader.result as string)
+              reject(new Error(errorData.msg || '导出失败'))
+            } catch (e) {
+              reject(new Error('导出失败'))
+            }
+          }
+          reader.onerror = () => reject(new Error('导出失败'))
+          reader.readAsText(data)
+        })
+      }
       
       switch (status) {
         case 401: // 未授权
@@ -201,12 +246,17 @@ service.interceptors.response.use(
     } else if (error.request) {
       // 请求已发出但没有收到响应
       console.error('[Response] 网络错误:', {
+        url: error.config.url,
+        method: error.config.method,
         message: error.message,
-        request: error.request
+        request: error.request,
+        config: error.config
       })
     } else {
       // 请求配置出错
       console.error('[Response] 请求配置错误:', {
+        url: error.config.url,
+        method: error.config.method,
         message: error.message,
         config: error.config
       })

@@ -7,6 +7,7 @@
 // 描述   : 用车管理实体
 //===================================================================
 
+using Lean.Hbt.Domain.Entities.Identity;
 using SqlSugar;
 
 namespace Lean.Hbt.Domain.Entities.Routine
@@ -14,7 +15,7 @@ namespace Lean.Hbt.Domain.Entities.Routine
     /// <summary>
     /// 用车管理实体
     /// </summary>
-    [SugarTable("hbt_rou_vehicle", "用车管理")]
+    [SugarTable("hbt_routine_vehicle", "用车管理")]
     [SugarIndex("index_vehicle_plate", nameof(PlateNumber), OrderByType.Asc)]
     [SugarIndex("index_vehicle_type", nameof(VehicleType), OrderByType.Asc)]
     [SugarIndex("index_vehicle_status", nameof(Status), OrderByType.Asc)]
@@ -91,5 +92,16 @@ namespace Lean.Hbt.Domain.Entities.Routine
         /// </summary>
         [SugarColumn(ColumnName = "inspection_expiry_date", ColumnDescription = "年检到期日期", IsNullable = true, ColumnDataType = "datetime", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
         public DateTime? InspectionExpiryDate { get; set; }
+        /// <summary>
+        /// 租户ID
+        /// </summary>
+        [SugarColumn(ColumnName = "tenant_id", ColumnDescription = "租户ID", ColumnDataType = "bigint", IsNullable = false)]
+        public long TenantId { get; set; }
+
+        /// <summary>
+        /// 租户
+        /// </summary>
+        [Navigate(NavigateType.OneToOne, nameof(TenantId))]
+        public HbtTenant? Tenant { get; set; }
     }
-} 
+}

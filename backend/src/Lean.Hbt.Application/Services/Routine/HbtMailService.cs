@@ -27,7 +27,6 @@ namespace Lean.Hbt.Application.Services.Routine
     {
         private readonly IHbtRepository<HbtMail> _mailRepository;
         private readonly IHbtSignalRClient _signalRClient;
-        private readonly IHbtCurrentUser _currentUser;
 
         /// <summary>
         /// 构造函数
@@ -48,7 +47,6 @@ namespace Lean.Hbt.Application.Services.Routine
         {
             _mailRepository = mailRepository;
             _signalRClient = signalRClient;
-            _currentUser = currentUser;
         }
 
         /// <summary>

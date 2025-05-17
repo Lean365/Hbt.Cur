@@ -131,3 +131,13 @@ export function getPostOptions() {
     method: 'get'
   })
 }
+
+/**
+ * 获取岗位列表
+ */
+export function getPostList() {
+  return request<HbtApiResponse<HbtPostDto[]>>({
+    url: '/api/HbtPost/list',
+    method: 'get'
+  })
+}

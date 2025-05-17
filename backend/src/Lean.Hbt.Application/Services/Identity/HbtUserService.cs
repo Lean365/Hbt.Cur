@@ -11,11 +11,8 @@
 
 using System.Linq.Expressions;
 using Lean.Hbt.Application.Dtos.Identity;
-using Lean.Hbt.Common.Constants;
 using Lean.Hbt.Common.Utils;
 using Lean.Hbt.Domain.Entities.Identity;
-using Lean.Hbt.Domain.IServices.Extensions;
-using Lean.Hbt.Domain.IServices.Extensions;
 using Lean.Hbt.Domain.IServices.Security;
 using Microsoft.AspNetCore.Http;
 
@@ -61,38 +58,13 @@ namespace Lean.Hbt.Application.Services.Identity
         }
 
         /// <summary>
-        /// 构建用户查询条件
-        /// </summary>
-        private Expression<Func<HbtUser, bool>> HbtUserQueryExpression(HbtUserQueryDto query)
-        {
-            var exp = Expressionable.Create<HbtUser>();
-
-            if (!string.IsNullOrEmpty(query.UserName))
-                exp.And(x => x.UserName.Contains(query.UserName));
-
-            if (!string.IsNullOrEmpty(query.NickName))
-                exp.And(x => x.NickName.Contains(query.NickName));
-
-            if (!string.IsNullOrEmpty(query.PhoneNumber))
-                exp.And(x => x.PhoneNumber.Contains(query.PhoneNumber));
-
-            if (query.Status.HasValue)
-                exp.And(x => x.Status == query.Status.Value);
-
-            if (query.DeptId.HasValue)
-                exp.And(x => x.UserDepts != null && x.UserDepts.Any(d => d.DeptId == query.DeptId.Value));
-
-            return exp.ToExpression();
-        }
-
-        /// <summary>
         /// 获取用户分页列表
         /// </summary>
         /// <param name="query">查询条件</param>
         /// <returns>返回分页结果</returns>
         public async Task<HbtPagedResult<HbtUserDto>> GetListAsync(HbtUserQueryDto query)
         {
-            var exp = HbtUserQueryExpression(query);
+            var exp = QueryExpression(query);
 
             var result = await _userRepository.GetPagedListAsync(
                 exp,
@@ -155,7 +127,8 @@ namespace Lean.Hbt.Application.Services.Identity
                 throw new HbtException(L("Identity.User.Username.Required"));
 
             // 验证租户是否存在且有效
-            var tenant = await _tenantRepository.GetByIdAsync(input.TenantId);
+            //var tenant = await _tenantRepository.GetByIdAsync(input.TenantId);
+            var tenant = await _tenantRepository.GetFirstAsync(x => x.TenantId == input.TenantId);
             if (tenant == null)
                 throw new HbtException(L("Identity.Tenant.NotFound"));
 
@@ -274,54 +247,87 @@ namespace Lean.Hbt.Application.Services.Identity
             // 更新用户角色关联
             if (input.RoleIds != null)
             {
-                await _userRoleRepository.DeleteAsync((HbtUserRole ur) => ur.UserId == user.Id);
+                var userRoles = await _userRoleRepository.GetListAsync(ur => ur.UserId == user.Id);
+                if (userRoles.Any())
+                {
+                    await _userRoleRepository.DeleteRangeAsync(userRoles);
+                }
                 if (input.RoleIds.Any())
                 {
-                    var userRoles = input.RoleIds.Select(roleId => new HbtUserRole
+                    // 过滤掉已存在的角色关联
+                    var existingRoleIds = userRoles.Select(ur => ur.RoleId).ToList();
+                    var newRoleIds = input.RoleIds.Except(existingRoleIds).ToList();
+                    
+                    if (newRoleIds.Any())
                     {
-                        UserId = user.Id,
-                        RoleId = roleId,
-                        CreateBy = _currentUser.UserName,
-                        CreateTime = DateTime.Now
-                    }).ToList();
+                        var newUserRoles = newRoleIds.Select(roleId => new HbtUserRole
+                        {
+                            UserId = user.Id,
+                            RoleId = roleId,
+                            CreateBy = _currentUser.UserName,
+                            CreateTime = DateTime.Now
+                        }).ToList();
 
-                    await _userRoleRepository.CreateRangeAsync(userRoles);
+                        await _userRoleRepository.CreateRangeAsync(newUserRoles);
+                    }
                 }
             }
 
             // 更新用户岗位关联
             if (input.PostIds != null)
             {
-                await _userPostRepository.DeleteAsync((HbtUserPost up) => up.UserId == user.Id);
+                var userPosts = await _userPostRepository.GetListAsync(up => up.UserId == user.Id);
+                if (userPosts.Any())
+                {
+                    await _userPostRepository.DeleteRangeAsync(userPosts);
+                }
                 if (input.PostIds.Any())
                 {
-                    var userPosts = input.PostIds.Select(postId => new HbtUserPost
+                    // 过滤掉已存在的岗位关联
+                    var existingPostIds = userPosts.Select(up => up.PostId).ToList();
+                    var newPostIds = input.PostIds.Except(existingPostIds).ToList();
+                    
+                    if (newPostIds.Any())
                     {
-                        UserId = user.Id,
-                        PostId = postId,
-                        CreateBy = _currentUser.UserName,
-                        CreateTime = DateTime.Now
-                    }).ToList();
+                        var newUserPosts = newPostIds.Select(postId => new HbtUserPost
+                        {
+                            UserId = user.Id,
+                            PostId = postId,
+                            CreateBy = _currentUser.UserName,
+                            CreateTime = DateTime.Now
+                        }).ToList();
 
-                    await _userPostRepository.CreateRangeAsync(userPosts);
+                        await _userPostRepository.CreateRangeAsync(newUserPosts);
+                    }
                 }
             }
 
             // 更新用户部门关联
             if (input.DeptIds != null)
             {
-                await _userDeptRepository.DeleteAsync((HbtUserDept ud) => ud.UserId == user.Id);
+                var userDepts = await _userDeptRepository.GetListAsync(ud => ud.UserId == user.Id);
+                if (userDepts.Any())
+                {
+                    await _userDeptRepository.DeleteRangeAsync(userDepts);
+                }
                 if (input.DeptIds.Any())
                 {
-                    var userDepts = input.DeptIds.Select(deptId => new HbtUserDept
+                    // 过滤掉已存在的部门关联
+                    var existingDeptIds = userDepts.Select(ud => ud.DeptId).ToList();
+                    var newDeptIds = input.DeptIds.Except(existingDeptIds).ToList();
+                    
+                    if (newDeptIds.Any())
                     {
-                        UserId = user.Id,
-                        DeptId = deptId,
-                        CreateBy = _currentUser.UserName,
-                        CreateTime = DateTime.Now
-                    }).ToList();
+                        var newUserDepts = newDeptIds.Select(deptId => new HbtUserDept
+                        {
+                            UserId = user.Id,
+                            DeptId = deptId,
+                            CreateBy = _currentUser.UserName,
+                            CreateTime = DateTime.Now
+                        }).ToList();
 
-                    await _userDeptRepository.CreateRangeAsync(userDepts);
+                        await _userDeptRepository.CreateRangeAsync(newUserDepts);
+                    }
                 }
             }
 
@@ -339,14 +345,36 @@ namespace Lean.Hbt.Application.Services.Identity
             var user = await _userRepository.GetByIdAsync(userId)
                 ?? throw new HbtException(L("Identity.User.NotFound"));
 
+            // 禁止删除admin用户
+            if (user.UserName == "admin")
+                throw new HbtException("超级管理员账号不可删除！");
+
+            // 更新用户状态为停用
+            user.Status = 1;
+            user.UpdateBy = _currentUser.UserName;
+            user.UpdateTime = DateTime.Now;
+            await _userRepository.UpdateAsync(user);
+
             // 删除用户角色关联
-            await _userRoleRepository.DeleteAsync((HbtUserRole ur) => ur.UserId == userId);
+            var userRoleIds = (await _userRoleRepository.GetListAsync(ur => ur.UserId == userId)).Select(ur => ur.Id).ToList();
+            foreach (var id in userRoleIds)
+            {
+                await _userRoleRepository.DeleteAsync(id);
+            }
 
             // 删除用户岗位关联
-            await _userPostRepository.DeleteAsync((HbtUserPost up) => up.UserId == userId);
+            var userPostIds = (await _userPostRepository.GetListAsync(up => up.UserId == userId)).Select(up => up.Id).ToList();
+            foreach (var id in userPostIds)
+            {
+                await _userPostRepository.DeleteAsync(id);
+            }
 
             // 删除用户部门关联
-            await _userDeptRepository.DeleteAsync((HbtUserDept ud) => ud.UserId == userId);
+            var userDeptIds = (await _userDeptRepository.GetListAsync(ud => ud.UserId == userId)).Select(ud => ud.Id).ToList();
+            foreach (var id in userDeptIds)
+            {
+                await _userDeptRepository.DeleteAsync(id);
+            }
 
             // 删除用户
             var result = await _userRepository.DeleteAsync(user);
@@ -364,7 +392,26 @@ namespace Lean.Hbt.Application.Services.Identity
         public async Task<bool> BatchDeleteAsync(long[] userIds)
         {
             if (userIds == null || userIds.Length == 0)
-                throw new HbtException("请选择要删除的用户");
+                throw new HbtException(L("Identity.User.SelectRequired"));
+
+            foreach (var userId in userIds)
+            {
+                var user = await _userRepository.GetByIdAsync(userId);
+                if (user == null) continue;
+                // 禁止删除admin用户
+                if (user.UserName == "admin")
+                    throw new HbtException($"超级管理员账号不可删除！(ID: {userId})");
+            }
+
+            // 更新用户状态为停用
+            var users = await _userRepository.GetListAsync(u => userIds.Contains(u.Id));
+            foreach (var user in users)
+            {
+                user.Status = 1;
+                user.UpdateBy = _currentUser.UserName;
+                user.UpdateTime = DateTime.Now;
+            }
+            await _userRepository.UpdateRangeAsync(users);
 
             // 删除用户角色关联
             await _userRoleRepository.DeleteAsync((HbtUserRole ur) => userIds.Contains(ur.UserId));
@@ -416,9 +463,18 @@ namespace Lean.Hbt.Application.Services.Identity
                             continue;
                         }
 
+                        // 校验用户名是否已存在
                         await HbtValidateUtils.ValidateFieldExistsAsync(_userRepository, "UserName", user.UserName);
-
+                        // 校验手机号是否已存在
+                        await HbtValidateUtils.ValidateFieldExistsAsync(_userRepository, "PhoneNumber", user.PhoneNumber);
+                        // 校验邮箱是否已存在
+                        await HbtValidateUtils.ValidateFieldExistsAsync(_userRepository, "Email", user.Email);
+                        string ss = _passwordPolicy.DefaultPassword;
                         var entity = user.Adapt<HbtUser>();
+                        var (hash, salt, iterations) = HbtPasswordUtils.CreateHash(_passwordPolicy.DefaultPassword);
+                        entity.Password = hash;
+                        entity.Salt = salt;
+                        entity.Iterations = iterations;
                         entity.CreateTime = DateTime.Now;
                         entity.CreateBy = _currentUser.UserName;
                         entity.Status = 0;
@@ -450,20 +506,12 @@ namespace Lean.Hbt.Application.Services.Identity
         /// </summary>
         /// <param name="query">查询条件</param>
         /// <param name="sheetName">工作表名称</param>
-        /// <returns>Excel文件</returns>
+        /// <returns>Excel文件或zip文件</returns>
         public async Task<(string fileName, byte[] content)> ExportAsync(HbtUserQueryDto query, string sheetName = "Sheet1")
         {
-            try
-            {
-                var list = await _userRepository.GetListAsync(HbtUserQueryExpression(query));
-                var exportList = list.Adapt<List<HbtUserExportDto>>();
-                return await HbtExcelHelper.ExportAsync(exportList, sheetName, "用户数据");
-            }
-            catch (Exception ex)
-            {
-                _logger.Error("导出用户数据失败", ex);
-                throw new HbtException("导出用户数据失败");
-            }
+            var list = await _userRepository.GetListAsync(QueryExpression(query));
+            var exportList = list.Adapt<List<HbtUserExportDto>>();
+            return await HbtExcelHelper.ExportAsync(exportList, sheetName, "用户数据");
         }
 
         /// <summary>
@@ -633,6 +681,316 @@ namespace Lean.Hbt.Application.Services.Identity
                 })
                 .ToListAsync();
             return users;
+        }
+
+        /// <summary>
+        /// 获取用户已分配的角色列表
+        /// </summary>
+        /// <param name="userId">用户ID</param>
+        /// <returns>角色列表</returns>
+        public async Task<List<HbtUserRoleDto>> GetUserRoleIdsAsync(long userId)
+        {
+            var userRoles = await _userRoleRepository.GetListAsync(ur => ur.UserId == userId && ur.IsDeleted == 0);
+            return userRoles.Adapt<List<HbtUserRoleDto>>();
+        }
+
+        /// <summary>
+        /// 获取用户已分配的部门列表
+        /// </summary>
+        /// <param name="userId">用户ID</param>
+        /// <returns>部门列表</returns>
+        public async Task<List<HbtUserDeptDto>> GetUserDeptIdsAsync(long userId)
+        {
+            var userDepts = await _userDeptRepository.GetListAsync(ud => ud.UserId == userId && ud.IsDeleted == 0);
+            return userDepts.Adapt<List<HbtUserDeptDto>>();
+        }
+
+        /// <summary>
+        /// 获取用户已分配的岗位列表
+        /// </summary>
+        /// <param name="userId">用户ID</param>
+        /// <returns>岗位列表</returns>
+        public async Task<List<HbtUserPostDto>> GetUserPostIdsAsync(long userId)
+        {
+            var userPosts = await _userPostRepository.GetListAsync(up => up.UserId == userId && up.IsDeleted == 0);
+            return userPosts.Adapt<List<HbtUserPostDto>>();
+        }
+
+        /// <summary>
+        /// 分配用户角色
+        /// </summary>
+        /// <param name="userId">用户ID</param>
+        /// <param name="roleIds">角色ID列表</param>
+        /// <returns>是否成功</returns>
+        public async Task<bool> AllocateUserRolesAsync(long userId, long[] roleIds)
+        {
+            try
+            {
+                _logger.Info($"开始分配用户角色 - 用户ID: {userId}, 角色IDs: {string.Join(",", roleIds)}");
+
+                // 1. 获取用户现有关联的角色（包括已删除的）
+                var existingRoles = await _userRoleRepository.GetListAsync(ur => ur.UserId == userId);
+                _logger.Info($"用户现有关联角色数量: {existingRoles.Count}");
+
+                // 2. 找出需要标记删除的关联（在现有关联中但不在新的角色列表中）
+                var rolesToDelete = existingRoles.Where(ur => !roleIds.Contains(ur.RoleId)).ToList();
+                if (rolesToDelete.Any())
+                {
+                    _logger.Info($"需要标记删除的角色关联数量: {rolesToDelete.Count}, 角色IDs: {string.Join(",", rolesToDelete.Select(d => d.RoleId))}");
+                    foreach (var role in rolesToDelete)
+                    {
+                        role.IsDeleted = 1; // 1 表示已删除
+                        role.DeleteBy = _currentUser.UserName;
+                        role.DeleteTime = DateTime.Now;
+                        role.UpdateBy = _currentUser.UserName;
+                        role.UpdateTime = DateTime.Now;
+                        await _userRoleRepository.UpdateAsync(role);
+                    }
+                    _logger.Info("角色关联标记删除完成");
+                }
+
+                // 3. 处理需要恢复的关联（在新的角色列表中且已存在但被标记为删除）
+                var rolesToRestore = existingRoles.Where(ur => roleIds.Contains(ur.RoleId) && ur.IsDeleted == 1).ToList();
+                if (rolesToRestore.Any())
+                {
+                    _logger.Info($"需要恢复的角色关联数量: {rolesToRestore.Count}, 角色IDs: {string.Join(",", rolesToRestore.Select(d => d.RoleId))}");
+                    foreach (var role in rolesToRestore)
+                    {
+                        role.IsDeleted = 0; // 0 表示未删除
+                        role.DeleteBy = null;
+                        role.DeleteTime = null;
+                        role.UpdateBy = _currentUser.UserName;
+                        role.UpdateTime = DateTime.Now;
+                        await _userRoleRepository.UpdateAsync(role);
+                    }
+                    _logger.Info("角色关联恢复完成");
+                }
+
+                // 4. 找出需要新增的关联（在新的角色列表中且不存在任何记录）
+                var existingRoleIds = existingRoles.Select(ur => ur.RoleId).ToList();
+                var rolesToAdd = roleIds.Where(roleId => !existingRoleIds.Contains(roleId))
+                    .Select(roleId => new HbtUserRole
+                    {
+                        UserId = userId,
+                        RoleId = roleId,
+                        IsDeleted = 0, // 0 表示未删除
+                        CreateBy = _currentUser.UserName,
+                        CreateTime = DateTime.Now,
+                        UpdateBy = _currentUser.UserName,
+                        UpdateTime = DateTime.Now
+                    }).ToList();
+
+                if (rolesToAdd.Any())
+                {
+                    _logger.Info($"需要新增的角色关联数量: {rolesToAdd.Count}, 角色IDs: {string.Join(",", rolesToAdd.Select(d => d.RoleId))}");
+                    await _userRoleRepository.CreateRangeAsync(rolesToAdd);
+                    _logger.Info("角色关联新增完成");
+                }
+
+                _logger.Info("用户角色分配完成");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error($"分配用户角色失败: {ex.Message}", ex);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// 分配用户部门
+        /// </summary>
+        /// <param name="userId">用户ID</param>
+        /// <param name="deptIds">部门ID列表</param>
+        /// <returns>是否成功</returns>
+        public async Task<bool> AllocateUserDeptsAsync(long userId, long[] deptIds)
+        {
+            try
+            {
+                _logger.Info($"开始分配用户部门 - 用户ID: {userId}, 部门IDs: {string.Join(",", deptIds)}");
+
+                // 1. 获取用户现有关联的部门（包括已删除的）
+                var existingDepts = await _userDeptRepository.GetListAsync(ud => ud.UserId == userId);
+                _logger.Info($"用户现有关联部门数量: {existingDepts.Count}");
+
+                // 2. 找出需要标记删除的关联（在现有关联中但不在新的部门列表中）
+                var deptsToDelete = existingDepts.Where(ud => !deptIds.Contains(ud.DeptId)).ToList();
+                if (deptsToDelete.Any())
+                {
+                    _logger.Info($"需要标记删除的部门关联数量: {deptsToDelete.Count}, 部门IDs: {string.Join(",", deptsToDelete.Select(d => d.DeptId))}");
+                    foreach (var dept in deptsToDelete)
+                    {
+                        dept.IsDeleted = 1; // 1 表示已删除
+                        dept.DeleteBy = _currentUser.UserName;
+                        dept.DeleteTime = DateTime.Now;
+                        dept.UpdateBy = _currentUser.UserName;
+                        dept.UpdateTime = DateTime.Now;
+                        await _userDeptRepository.UpdateAsync(dept);
+                    }
+                    _logger.Info("部门关联标记删除完成");
+                }
+
+                // 3. 处理需要恢复的关联（在新的部门列表中且已存在但被标记为删除）
+                var deptsToRestore = existingDepts.Where(ud => deptIds.Contains(ud.DeptId) && ud.IsDeleted == 1).ToList();
+                if (deptsToRestore.Any())
+                {
+                    _logger.Info($"需要恢复的部门关联数量: {deptsToRestore.Count}, 部门IDs: {string.Join(",", deptsToRestore.Select(d => d.DeptId))}");
+                    foreach (var dept in deptsToRestore)
+                    {
+                        dept.IsDeleted = 0; // 0 表示未删除
+                        dept.DeleteBy = null;
+                        dept.DeleteTime = null;
+                        dept.UpdateBy = _currentUser.UserName;
+                        dept.UpdateTime = DateTime.Now;
+                        await _userDeptRepository.UpdateAsync(dept);
+                    }
+                    _logger.Info("部门关联恢复完成");
+                }
+
+                // 4. 找出需要新增的关联（在新的部门列表中且不存在任何记录）
+                var existingDeptIds = existingDepts.Select(ud => ud.DeptId).ToList();
+                var deptsToAdd = deptIds.Where(deptId => !existingDeptIds.Contains(deptId))
+                    .Select(deptId => new HbtUserDept
+                    {
+                        UserId = userId,
+                        DeptId = deptId,
+                        IsDeleted = 0, // 0 表示未删除
+                        CreateBy = _currentUser.UserName,
+                        CreateTime = DateTime.Now,
+                        UpdateBy = _currentUser.UserName,
+                        UpdateTime = DateTime.Now
+                    }).ToList();
+
+                if (deptsToAdd.Any())
+                {
+                    _logger.Info($"需要新增的部门关联数量: {deptsToAdd.Count}, 部门IDs: {string.Join(",", deptsToAdd.Select(d => d.DeptId))}");
+                    await _userDeptRepository.CreateRangeAsync(deptsToAdd);
+                    _logger.Info("部门关联新增完成");
+                }
+
+                _logger.Info("用户部门分配完成");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error($"分配用户部门失败: {ex.Message}", ex);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// 分配用户岗位
+        /// </summary>
+        /// <param name="userId">用户ID</param>
+        /// <param name="postIds">岗位ID列表</param>
+        /// <returns>是否成功</returns>
+        public async Task<bool> AllocateUserPostsAsync(long userId, long[] postIds)
+        {
+            try
+            {
+                _logger.Info($"开始分配用户岗位 - 用户ID: {userId}, 岗位IDs: {string.Join(",", postIds)}");
+
+                // 1. 获取用户现有关联的岗位（包括已删除的）
+                var existingPosts = await _userPostRepository.GetListAsync(up => up.UserId == userId);
+                _logger.Info($"用户现有关联岗位数量: {existingPosts.Count}");
+
+                // 2. 找出需要标记删除的关联（在现有关联中但不在新的岗位列表中）
+                var postsToDelete = existingPosts.Where(up => !postIds.Contains(up.PostId)).ToList();
+                if (postsToDelete.Any())
+                {
+                    _logger.Info($"需要标记删除的岗位关联数量: {postsToDelete.Count}, 岗位IDs: {string.Join(",", postsToDelete.Select(d => d.PostId))}");
+                    foreach (var post in postsToDelete)
+                    {
+                        post.IsDeleted = 1; // 1 表示已删除
+                        post.DeleteBy = _currentUser.UserName;
+                        post.DeleteTime = DateTime.Now;
+                        post.UpdateBy = _currentUser.UserName;
+                        post.UpdateTime = DateTime.Now;
+                        await _userPostRepository.UpdateAsync(post);
+                    }
+                    _logger.Info("岗位关联标记删除完成");
+                }
+
+                // 3. 处理需要恢复的关联（在新的岗位列表中且已存在但被标记为删除）
+                var postsToRestore = existingPosts.Where(up => postIds.Contains(up.PostId) && up.IsDeleted == 1).ToList();
+                if (postsToRestore.Any())
+                {
+                    _logger.Info($"需要恢复的岗位关联数量: {postsToRestore.Count}, 岗位IDs: {string.Join(",", postsToRestore.Select(d => d.PostId))}");
+                    foreach (var post in postsToRestore)
+                    {
+                        post.IsDeleted = 0; // 0 表示未删除
+                        post.DeleteBy = null;
+                        post.DeleteTime = null;
+                        post.UpdateBy = _currentUser.UserName;
+                        post.UpdateTime = DateTime.Now;
+                        await _userPostRepository.UpdateAsync(post);
+                    }
+                    _logger.Info("岗位关联恢复完成");
+                }
+
+                // 4. 找出需要新增的关联（在新的岗位列表中且不存在任何记录）
+                var existingPostIds = existingPosts.Select(up => up.PostId).ToList();
+                var postsToAdd = postIds.Where(postId => !existingPostIds.Contains(postId))
+                    .Select(postId => new HbtUserPost
+                    {
+                        UserId = userId,
+                        PostId = postId,
+                        IsDeleted = 0, // 0 表示未删除
+                        CreateBy = _currentUser.UserName,
+                        CreateTime = DateTime.Now,
+                        UpdateBy = _currentUser.UserName,
+                        UpdateTime = DateTime.Now
+                    }).ToList();
+
+                if (postsToAdd.Any())
+                {
+                    _logger.Info($"需要新增的岗位关联数量: {postsToAdd.Count}, 岗位IDs: {string.Join(",", postsToAdd.Select(d => d.PostId))}");
+                    await _userPostRepository.CreateRangeAsync(postsToAdd);
+                    _logger.Info("岗位关联新增完成");
+                }
+
+                _logger.Info("用户岗位分配完成");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error($"分配用户岗位失败: {ex.Message}", ex);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// 构建用户查询条件
+        /// </summary>
+        private static Expression<Func<HbtUser, bool>> QueryExpression(HbtUserQueryDto query)
+        {
+            var exp = Expressionable.Create<HbtUser>();
+
+            if (!string.IsNullOrEmpty(query.UserName))
+                exp.And(x => x.UserName.Contains(query.UserName));
+
+            if (!string.IsNullOrEmpty(query.NickName))
+                exp.And(x => x.NickName.Contains(query.NickName));
+
+            if (!string.IsNullOrEmpty(query.PhoneNumber))
+                exp.And(x => x.PhoneNumber.Contains(query.PhoneNumber));
+
+            if (!string.IsNullOrEmpty(query.Email))
+                exp.And(x => x.Email.Contains(query.Email));
+
+            if (query.Status.HasValue && query.Status.Value != -1)
+                exp.And(x => x.Status == query.Status.Value);
+
+            if (query.UserType.HasValue && query.UserType.Value != -1)
+                exp.And(x => x.UserType == query.UserType.Value);
+
+            if (query.Gender.HasValue && query.Gender.Value != -1)
+                exp.And(x => x.Gender == query.Gender.Value);
+
+            if (query.DeptId.HasValue)
+                exp.And(x => x.UserDepts != null && x.UserDepts.Any(d => d.DeptId == query.DeptId.Value));
+
+            return exp.ToExpression();
         }
     }
 }

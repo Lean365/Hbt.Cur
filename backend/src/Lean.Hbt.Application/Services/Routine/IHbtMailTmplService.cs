@@ -1,6 +1,6 @@
 //===================================================================
 // 项目名 : Lean.Hbt
-// 文件名 : IHbtMailTmplService.cs
+// 文件名 : IHbtMailTplService.cs
 // 创建者 : Lean365
 // 创建时间: 2024-03-07 16:30
 // 版本号 : V1.0.0
@@ -16,28 +16,28 @@ namespace Lean.Hbt.Application.Services.Routine
     /// <summary>
     /// 邮件模板服务接口
     /// </summary>
-    public interface IHbtMailTmplService
+    public interface IHbtMailTplService
     {
         /// <summary>
         /// 获取邮件模板分页列表
         /// </summary>
         /// <param name="query">查询条件</param>
         /// <returns>邮件模板分页列表</returns>
-        Task<HbtPagedResult<HbtMailTmplDto>> GetListAsync(HbtMailTmplQueryDto query);
+        Task<HbtPagedResult<HbtMailTplDto>> GetListAsync(HbtMailTplQueryDto query);
 
         /// <summary>
         /// 获取邮件模板详情
         /// </summary>
         /// <param name="tmplId">模板ID</param>
         /// <returns>邮件模板详情</returns>
-        Task<HbtMailTmplDto> GetByIdAsync(long tmplId);
+        Task<HbtMailTplDto> GetByIdAsync(long tmplId);
 
         /// <summary>
         /// 创建邮件模板
         /// </summary>
         /// <param name="input">创建对象</param>
         /// <returns>邮件模板ID</returns>
-        Task<long> CreateAsync(HbtMailTmplCreateDto input);
+        Task<long> CreateAsync(HbtMailTplCreateDto input);
 
         /// <summary>
         /// 更新邮件模板
@@ -45,7 +45,7 @@ namespace Lean.Hbt.Application.Services.Routine
         /// <param name="tmplId">模板ID</param>
         /// <param name="input">更新对象</param>
         /// <returns>是否成功</returns>
-        Task<bool> UpdateAsync(long tmplId, HbtMailTmplDto input);
+        Task<bool> UpdateAsync(long tmplId, HbtMailTplDto input);
 
         /// <summary>
         /// 删除邮件模板
@@ -67,6 +67,6 @@ namespace Lean.Hbt.Application.Services.Routine
         /// <param name="query">查询条件</param>
         /// <param name="sheetName">工作表名称</param>
         /// <returns>Excel文件字节数组</returns>
-        Task<(string fileName, byte[] content)> ExportAsync(HbtMailTmplQueryDto query, string sheetName = "邮件模板数据");
+        Task<(string fileName, byte[] content)> ExportAsync(HbtMailTplQueryDto query, string sheetName = "邮件模板数据");
     }
 } 

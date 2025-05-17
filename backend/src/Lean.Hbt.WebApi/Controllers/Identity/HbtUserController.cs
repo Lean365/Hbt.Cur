@@ -100,8 +100,15 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         [HbtPerm("identity:user:delete")]
         public async Task<IActionResult> DeleteAsync(long userId)
         {
-            var result = await _userService.DeleteAsync(userId);
-            return Success(result, _localization.L("User.Delete.Success"));
+            try
+            {
+                var result = await _userService.DeleteAsync(userId);
+                return Success(result, _localization.L("User.Delete.Success"));
+            }
+            catch (HbtException ex)
+            {
+                return Error(ex.Message);
+            }
         }
 
         /// <summary>
@@ -123,23 +130,31 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <param name="file">Excel文件</param>
         /// <returns>导入结果</returns>
         [HttpPost("import")]
+        [HbtPerm("identity:user:import")]
         public async Task<IActionResult> ImportAsync(IFormFile file)
         {
             using var stream = file.OpenReadStream();
-            var result = await _userService.ImportAsync(stream, "Sheet1");
-            return Success(result, _localization.L("User.Import.Success"));
+            var (success, fail) = await _userService.ImportAsync(stream, "Sheet1");
+            return Success(new { success, fail }, _localization.L("User.Import.Success"));
         }
 
         /// <summary>
         /// 导出用户数据
         /// </summary>
         /// <param name="query">查询条件</param>
-        /// <returns>Excel文件</returns>
+        /// <returns>Excel文件或zip文件</returns>
         [HttpGet("export")]
+        [HbtPerm("identity:user:export")]
         public async Task<IActionResult> ExportAsync([FromQuery] HbtUserQueryDto query)
         {
             var result = await _userService.ExportAsync(query, "Sheet1");
-            return File(result.content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", result.fileName);
+            var contentType = result.fileName.EndsWith(".zip", StringComparison.OrdinalIgnoreCase)
+                ? "application/zip"
+                : "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+            // 只在 filename* 用 UTF-8 编码，filename 用 ASCII
+            var safeFileName = System.Text.Encoding.ASCII.GetString(System.Text.Encoding.ASCII.GetBytes(result.fileName));
+            Response.Headers["Content-Disposition"] = $"attachment; filename*=UTF-8''{Uri.EscapeDataString(result.fileName)}";
+            return File(result.content, contentType, result.fileName);
         }
 
         /// <summary>
@@ -147,6 +162,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// </summary>
         /// <returns>Excel模板文件</returns>
         [HttpGet("template")]
+        [HbtPerm("identity:user:export")]
         public async Task<IActionResult> GetTemplateAsync()
         {
             var result = await _userService.GetTemplateAsync("Sheet1");
@@ -224,6 +240,87 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         public async Task<IActionResult> GetOptionsAsync()
         {
             var result = await _userService.GetOptionsAsync();
+            return Success(result);
+        }
+
+        /// <summary>
+        /// 获取用户角色列表
+        /// </summary>
+        /// <param name="userId">用户ID</param>
+        /// <returns>用户角色列表</returns>
+        [HttpGet("{userId}/roles")]
+        [HbtPerm("identity:user:query")]
+        public async Task<IActionResult> GetUserRolesAsync(long userId)
+        {
+            var result = await _userService.GetUserRoleIdsAsync(userId);
+            return Success(result);
+        }
+
+        /// <summary>
+        /// 获取用户部门列表
+        /// </summary>
+        /// <param name="userId">用户ID</param>
+        /// <returns>用户部门列表</returns>
+        [HttpGet("{userId}/depts")]
+        [HbtPerm("identity:user:query")]
+        public async Task<IActionResult> GetUserDeptsAsync(long userId)
+        {
+            var result = await _userService.GetUserDeptIdsAsync(userId);
+            return Success(result);
+        }
+
+        /// <summary>
+        /// 获取用户岗位列表
+        /// </summary>
+        /// <param name="userId">用户ID</param>
+        /// <returns>用户岗位列表</returns>
+        [HttpGet("{userId}/posts")]
+        [HbtPerm("identity:user:query")]
+        public async Task<IActionResult> GetUserPostsAsync(long userId)
+        {
+            var result = await _userService.GetUserPostIdsAsync(userId);
+            return Success(result);
+        }
+
+        /// <summary>
+        /// 分配用户角色
+        /// </summary>
+        /// <param name="userId">用户ID</param>
+        /// <param name="roleIds">角色ID列表</param>
+        /// <returns>是否成功</returns>
+        [HttpPut("{userId}/roles")]
+        [HbtPerm("identity:user:allocate")]
+        public async Task<IActionResult> AllocateUserRolesAsync(long userId, [FromBody] long[] roleIds)
+        {
+            var result = await _userService.AllocateUserRolesAsync(userId, roleIds);
+            return Success(result);
+        }
+
+        /// <summary>
+        /// 分配用户部门
+        /// </summary>
+        /// <param name="userId">用户ID</param>
+        /// <param name="deptIds">部门ID列表</param>
+        /// <returns>是否成功</returns>
+        [HttpPut("{userId}/depts")]
+        [HbtPerm("identity:user:allocate")]
+        public async Task<IActionResult> AllocateUserDeptsAsync(long userId, [FromBody] long[] deptIds)
+        {
+            var result = await _userService.AllocateUserDeptsAsync(userId, deptIds);
+            return Success(result);
+        }
+
+        /// <summary>
+        /// 分配用户岗位
+        /// </summary>
+        /// <param name="userId">用户ID</param>
+        /// <param name="postIds">岗位ID列表</param>
+        /// <returns>是否成功</returns>
+        [HttpPut("{userId}/posts")]
+        [HbtPerm("identity:user:allocate")]
+        public async Task<IActionResult> AllocateUserPostsAsync(long userId, [FromBody] long[] postIds)
+        {
+            var result = await _userService.AllocateUserPostsAsync(userId, postIds);
             return Success(result);
         }
     }

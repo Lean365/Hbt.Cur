@@ -14,8 +14,8 @@
       :label-col="{ span: 4 }"
       :wrapper-col="{ span: 19 }"
     >
-      <a-form-item label="表名" name="tableName">
-        <a-input v-model:value="formData.tableName" placeholder="请输入表名" />
+      <a-form-item label="配置名称" name="genConfigName">
+        <a-input v-model:value="formData.genConfigName" placeholder="请输入配置名称" />
       </a-form-item>
       <a-form-item label="作者" name="author">
         <a-input v-model:value="formData.author" placeholder="请输入作者" />
@@ -88,7 +88,7 @@ const loading = ref(false)
 // 表单数据
 const formData = reactive({
   id: 0,
-  tableName: '',
+  genConfigName: '',
   author: '',
   moduleName: '',
   packageName: '',
@@ -112,7 +112,7 @@ const formData = reactive({
 
 // 表单验证规则
 const rules: Record<string, Rule[]> = {
-  tableName: [{ required: true, message: '请输入表名', trigger: 'blur' }],
+  genConfigName: [{ required: true, message: '请输入配置名称', trigger: 'blur' }],
   author: [{ required: true, message: '请输入作者', trigger: 'blur' }],
   moduleName: [{ required: true, message: '请输入模块名', trigger: 'blur' }],
   packageName: [{ required: true, message: '请输入包名', trigger: 'blur' }],
@@ -141,7 +141,7 @@ watch(
     } else {
       Object.assign(formData, {
         id: 0,
-        tableName: '',
+        genConfigName: '',
         author: '',
         moduleName: '',
         packageName: '',

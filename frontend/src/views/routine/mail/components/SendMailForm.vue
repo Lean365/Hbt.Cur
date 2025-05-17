@@ -137,8 +137,8 @@ watch(
       // 加载邮件数据
       try {
         const res = await getMailDetail(props.mailId)
-        if (res.code === 200) {
-          const mail = res.data
+        if (res.data.code === 200) {
+          const mail = res.data.data
           formData.value = {
             mailTo: mail.mailTo,
             mailSubject: mail.mailSubject,
@@ -147,7 +147,7 @@ watch(
             mailAttachments: mail.mailAttachments || ''
           }
         } else {
-          message.error(res.msg || '获取邮件数据失败')
+          message.error(res.data.msg || '获取邮件数据失败')
           handleCancel()
         }
       } catch (error) {
@@ -191,12 +191,12 @@ const handleSubmit = async () => {
     
     const res = await sendMail(submitData)
     
-    if (res.code === 200) {
+    if (res.data.code === 200) {
       message.success('发送成功')
       emit('success')
       handleCancel()
     } else {
-      message.error(res.msg || '发送失败')
+      message.error(res.data.msg || '发送失败')
     }
   } catch (error) {
     console.error(error)

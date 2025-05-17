@@ -3,10 +3,10 @@
 //===================================================================
 // 项目名 : Lean.Hbt
 // 文件名 : HbtGenTableDto.cs
-// 创建者 : Lean365
-// 创建时间: 2024-03-20
+// 创建者 : Claude
+// 创建时间: 2024-03-21
 // 版本号 : V0.0.1
-// 描述    : 代码生成表DTO
+// 描述   : 代码生成表DTO
 //===================================================================
 
 using System.ComponentModel.DataAnnotations;
@@ -18,186 +18,250 @@ namespace Lean.Hbt.Application.Dtos.Generator;
 /// </summary>
 public class HbtGenTableDto
 {
-    /// <summary>
-    /// 构造函数
-    /// </summary>
-    public HbtGenTableDto()
-    {
-        DatabaseName = string.Empty;
-        TableName = string.Empty;
-        TableComment = string.Empty;
-        ClassName = string.Empty;
-        Namespace = string.Empty;
-        BaseNamespace = string.Empty;
-        CsharpTypeName = string.Empty;
-        ModuleName = string.Empty;
-        BusinessName = string.Empty;
-        FunctionName = string.Empty;
-        Author = string.Empty;
-        GenPath = string.Empty;
-        CreateBy = string.Empty;
-        UpdateBy = string.Empty;
-        Columns = new List<HbtGenColumnDto>();
-    }
+    #region 基本信息
 
     /// <summary>
-    /// 主键ID
+    /// 主键
     /// </summary>
-    public long TableId { get; set; }
+    public long Id { get; set; }
 
     /// <summary>
     /// 数据库名称
     /// </summary>
-    [Required(ErrorMessage = "数据库名称不能为空")]
-    [StringLength(100, ErrorMessage = "数据库名称长度不能超过100个字符")]
     public string DatabaseName { get; set; } = string.Empty;
 
     /// <summary>
     /// 表名
     /// </summary>
-    [Required(ErrorMessage = "表名不能为空")]
-    [StringLength(100, ErrorMessage = "表名长度不能超过100个字符")]
     public string TableName { get; set; } = string.Empty;
 
     /// <summary>
-    /// 表注释
+    /// 表描述
     /// </summary>
-    [Required(ErrorMessage = "表描述不能为空")]
-    [StringLength(200, ErrorMessage = "表描述长度不能超过200个字符")]
     public string TableComment { get; set; } = string.Empty;
 
     /// <summary>
-    /// 类名
+    /// 关联父表名
     /// </summary>
-    [Required(ErrorMessage = "实体类名不能为空")]
-    [StringLength(100, ErrorMessage = "实体类名长度不能超过100个字符")]
-    public string ClassName { get; set; } = string.Empty;
+    public string? SubTableName { get; set; }
 
     /// <summary>
-    /// 命名空间
+    /// 本表关联父表的外键名
     /// </summary>
-    [Required(ErrorMessage = "命名空间不能为空")]
-    [StringLength(200, ErrorMessage = "命名空间长度不能超过200个字符")]
-    public string Namespace { get; set; } = string.Empty;
+    public string? SubTableFkName { get; set; }
 
     /// <summary>
-    /// 基础命名空间
+    /// 树编码字段
     /// </summary>
-    [Required(ErrorMessage = "命名前缀不能为空")]
-    [StringLength(100, ErrorMessage = "命名前缀长度不能超过100个字符")]
+    public string TreeCode { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 树名称字段
+    /// </summary>
+    public string TreeName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 树父编码字段
+    /// </summary>
+    public string TreeParentCode { get; set; } = string.Empty;
+
+    #endregion
+
+    #region 类型信息
+    /// <summary>
+    /// 模板类型（0使用wwwroot/Generator/*.scriban模板 1使用HbtGenTemplate数据表中的模板）
+    /// </summary>
+    public string TplType { get; set; } = "0";
+
+
+    /// <summary>
+    /// 使用的模板（crud单表操作 tree树表操作 sub主子表操作）
+    /// </summary>
+    public string TplCategory { get; set; } = "crud";
+
+    /// <summary>
+    /// 基本命名空间前缀
+    /// </summary>
     public string BaseNamespace { get; set; } = string.Empty;
 
     /// <summary>
-    /// C#类型名称
+    /// 实体命名空间
     /// </summary>
-    [Required(ErrorMessage = "C#类名不能为空")]
-    [StringLength(100, ErrorMessage = "C#类名长度不能超过100个字符")]
-    public string CsharpTypeName { get; set; } = string.Empty;
+    public string EntityNamespace { get; set; } = string.Empty;
 
     /// <summary>
-    /// 父表名称
+    /// 实体类名
     /// </summary>
-    [StringLength(100, ErrorMessage = "关联父表长度不能超过100个字符")]
-    public string? ParentTableName { get; set; }
+    public string EntityClassName { get; set; } = string.Empty;
 
     /// <summary>
-    /// 父表外键名称
+    /// 对象命名空间
     /// </summary>
-    [StringLength(100, ErrorMessage = "关联外键长度不能超过100个字符")]
-    public string? ParentTableFkName { get; set; }
+    public string DtoNamespace { get; set; } = string.Empty;
 
     /// <summary>
-    /// 模板类型
+    /// 对象类型
     /// </summary>
-    [Required(ErrorMessage = "使用模板不能为空")]
-    public int TemplateType { get; set; } = 1;
+    public string DtoType { get; set; } = string.Empty;
 
     /// <summary>
-    /// 模块名称
+    /// 对象类名
     /// </summary>
-    [Required(ErrorMessage = "模块名称不能为空")]
-    [StringLength(50, ErrorMessage = "模块名称长度不能超过50个字符")]
+    public string DtoClassName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 服务命名空间
+    /// </summary>
+    public string ServiceNamespace { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 服务接口类名称
+    /// </summary>
+    public string IServiceClassName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 服务类名称
+    /// </summary>
+    public string ServiceClassName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 仓储接口命名空间
+    /// </summary>
+    public string IRepositoryNamespace { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 仓储命名空间
+    /// </summary>
+    public string RepositoryNamespace { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 仓储接口类名称
+    /// </summary>
+    public string IRepositoryClassName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 仓储类名称
+    /// </summary>
+    public string RepositoryClassName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 控制器命名空间
+    /// </summary>
+    public string ControllerNamespace { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 控制器类名称
+    /// </summary>
+    public string ControllerClassName { get; set; } = string.Empty;
+
+    #endregion
+
+    #region 生成配置信息
+
+    /// <summary>
+    /// 生成模块名
+    /// </summary>
     public string ModuleName { get; set; } = string.Empty;
 
     /// <summary>
-    /// 业务名称
+    /// 生成业务名
     /// </summary>
-    [Required(ErrorMessage = "业务名称不能为空")]
-    [StringLength(50, ErrorMessage = "业务名称长度不能超过50个字符")]
     public string BusinessName { get; set; } = string.Empty;
 
     /// <summary>
-    /// 功能名称
+    /// 生成功能名
     /// </summary>
-    [Required(ErrorMessage = "功能名称不能为空")]
-    [StringLength(50, ErrorMessage = "功能名称长度不能超过50个字符")]
     public string FunctionName { get; set; } = string.Empty;
 
     /// <summary>
-    /// 作者
+    /// 生成作者名
     /// </summary>
-    [Required(ErrorMessage = "作者名称不能为空")]
-    [StringLength(50, ErrorMessage = "作者名称长度不能超过50个字符")]
     public string Author { get; set; } = string.Empty;
 
-    /// <summary>
-    /// 生成模式
-    /// </summary>
-    [Required(ErrorMessage = "生成方式不能为空")]
-    public int GenMode { get; set; } = 0;
+    #endregion
+
+    #region 生成选项
 
     /// <summary>
-    /// 生成路径
+    /// 生成代码方式（0zip压缩包 1自定义路径）
     /// </summary>
-    [Required(ErrorMessage = "存放位置不能为空")]
-    [StringLength(200, ErrorMessage = "存放位置长度不能超过200个字符")]
-    public string GenPath { get; set; } = string.Empty;
+    public string GenType { get; set; } = "0";
 
     /// <summary>
-    /// 选项
+    /// 代码生成存放位置
     /// </summary>
-    public string? Options { get; set; }
+    public string GenPath { get; set; } = "/";
+
+    /// <summary>
+    /// 上级菜单ID
+    /// </summary>
+    public long ParentMenuId { get; set; }
+
+    /// <summary>
+    /// 排序类型
+    /// </summary>
+    public string SortType { get; set; } = "asc";
+
+    /// <summary>
+    /// 排序字段
+    /// </summary>
+    public string SortField { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 权限前缀
+    /// </summary>
+    public string PermsPrefix { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 自动生成菜单
+    /// </summary>
+    public int GenerateMenu { get; set; }
+
+    /// <summary>
+    /// 前端模板 1、element ui 2、element plus
+    /// </summary>
+    public int FrontTpl { get; set; } = 2;
+
+    /// <summary>
+    /// 前端样式 12,24
+    /// </summary>
+    public int FrontStyle { get; set; } = 24;
+
+    /// <summary>
+    /// 操作按钮样式
+    /// </summary>
+    public int BtnStyle { get; set; } = 1;
+
+    /// <summary>
+    /// 代码生成选项
+    /// </summary>
+    public CodeOptions? Options { get; set; }
+
+    /// <summary>
+    /// 状态（0：停用，1：正常）
+    /// </summary>
+    public int Status { get; set; } = 1;
+
+    #endregion
+
+    #region 系统信息
 
     /// <summary>
     /// 租户ID
     /// </summary>
-    [Required(ErrorMessage = "租户ID不能为空")]
-    public long TenantId { get; set; } = 0;
-
-    /// <summary>
-    /// 创建人
-    /// </summary>
-    public string CreateBy { get; set; }
-
-    /// <summary>
-    /// 创建时间
-    /// </summary>
-    public DateTime? CreateTime { get; set; }
-
-    /// <summary>
-    /// 更新人
-    /// </summary>
-    public string UpdateBy { get; set; }
-
-    /// <summary>
-    /// 更新时间
-    /// </summary>
-    public DateTime? UpdateTime { get; set; }
-
-    /// <summary>
-    /// 页码
-    /// </summary>
-    public int PageIndex { get; set; } = 1;
-
-    /// <summary>
-    /// 每页记录数
-    /// </summary>
-    public int PageSize { get; set; } = 10;
+    public long TenantId { get; set; }
 
     /// <summary>
     /// 列信息
     /// </summary>
     public List<HbtGenColumnDto> Columns { get; set; } = new();
+
+    /// <summary>
+    /// 子表信息
+    /// </summary>
+    public HbtGenTableDto? SubTable { get; set; }
+
+    #endregion
 }
 
 /// <summary>
@@ -206,484 +270,241 @@ public class HbtGenTableDto
 public class HbtGenTableQueryDto : HbtPagedQuery
 {
     /// <summary>
-    /// 数据库名称
-    /// </summary>
-    [StringLength(100, ErrorMessage = "数据库名称长度不能超过100个字符")]
-    public string? DatabaseName { get; set; }
-
-    /// <summary>
     /// 表名
     /// </summary>
-    [StringLength(100, ErrorMessage = "表名长度不能超过100个字符")]
     public string? TableName { get; set; }
 
     /// <summary>
-    /// 表注释
+    /// 表描述
     /// </summary>
-    [StringLength(200, ErrorMessage = "表描述长度不能超过200个字符")]
     public string? TableComment { get; set; }
-
-    /// <summary>
-    /// 状态
-    /// </summary>
-    public int? Status { get; set; }
-
-    /// <summary>
-    /// 创建时间范围开始
-    /// </summary>
-    public DateTime? BeginTime { get; set; }
-
-    /// <summary>
-    /// 创建时间范围结束
-    /// </summary>
-    public DateTime? EndTime { get; set; }
 }
 
 /// <summary>
-/// 代码生成表更新DTO
+/// 代码生成表创建DTO
 /// </summary>
-public class HbtGenTableUpdateDto
+public class HbtGenTableCreateDto
 {
-    /// <summary>
-    /// 构造函数
-    /// </summary>
-    public HbtGenTableUpdateDto()
-    {
-        DatabaseName = string.Empty;
-        TableName = string.Empty;
-        TableComment = string.Empty;
-        ClassName = string.Empty;
-        Namespace = string.Empty;
-        PackageName = string.Empty;
-        BaseNamespace = string.Empty;
-        CsharpTypeName = string.Empty;
-        ModuleName = string.Empty;
-        BusinessName = string.Empty;
-        FunctionName = string.Empty;
-        Author = string.Empty;
-        GenPath = string.Empty;
-        Columns = new List<HbtGenColumnDto>();
-    }
-
-    /// <summary>
-    /// 主键ID
-    /// </summary>
-    [Required(ErrorMessage = "主键ID不能为空")]
-    public long TableId { get; set; }
+    #region 基本信息
 
     /// <summary>
     /// 数据库名称
     /// </summary>
-    [Required(ErrorMessage = "数据库名称不能为空")]
-    [StringLength(100, ErrorMessage = "数据库名称长度不能超过100个字符")]
-    public string DatabaseName { get; set; }
+    public string DatabaseName { get; set; } = string.Empty;
 
     /// <summary>
     /// 表名
     /// </summary>
-    [Required(ErrorMessage = "表名不能为空")]
-    [StringLength(100, ErrorMessage = "表名长度不能超过100个字符")]
-    public string TableName { get; set; }
+    public string TableName { get; set; } = string.Empty;
 
     /// <summary>
-    /// 表注释
+    /// 表描述
     /// </summary>
-    [Required(ErrorMessage = "表描述不能为空")]
-    [StringLength(200, ErrorMessage = "表描述长度不能超过200个字符")]
-    public string TableComment { get; set; }
+    public string TableComment { get; set; } = string.Empty;
 
     /// <summary>
-    /// 类名
+    /// 关联父表名
     /// </summary>
-    [Required(ErrorMessage = "实体类名不能为空")]
-    [StringLength(100, ErrorMessage = "实体类名长度不能超过100个字符")]
-    public string ClassName { get; set; }
+    public string? SubTableName { get; set; }
 
     /// <summary>
-    /// 命名空间
+    /// 本表关联父表的外键名
     /// </summary>
-    [Required(ErrorMessage = "命名空间不能为空")]
-    [StringLength(200, ErrorMessage = "命名空间长度不能超过200个字符")]
-    public string Namespace { get; set; }
+    public string? SubTableFkName { get; set; }
 
     /// <summary>
-    /// 包名
+    /// 树编码字段
     /// </summary>
-    [Required(ErrorMessage = "包名不能为空")]
-    [StringLength(200, ErrorMessage = "包名长度不能超过200个字符")]
-    public string PackageName { get; set; }
+    public string TreeCode { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 树名称字段
+    /// </summary>
+    public string TreeName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 树父编码字段
+    /// </summary>
+    public string TreeParentCode { get; set; } = string.Empty;
+
+    #endregion
+
+    #region 类型信息
+
+    /// <summary>
+    /// 模板类型（0使用wwwroot/Generator/*.scriban模板 1使用HbtGenTemplate数据表中的模板）
+    /// </summary>
+    public string TplType { get; set; } = "0";
+
+    /// <summary>
+    /// 使用的模板（crud单表操作 tree树表操作 sub主子表操作）
+    /// </summary>
+    public string TplCategory { get; set; } = "crud";
 
     /// <summary>
     /// 基本命名空间前缀
     /// </summary>
-    [StringLength(200, ErrorMessage = "基本命名空间前缀长度不能超过200个字符")]
-    public string BaseNamespace { get; set; }
+    public string BaseNamespace { get; set; } = string.Empty;
 
     /// <summary>
-    /// C#类名
+    /// 实体命名空间
     /// </summary>
-    [StringLength(100, ErrorMessage = "C#类名长度不能超过100个字符")]
-    public string CsharpTypeName { get; set; }
+    public string EntityNamespace { get; set; } = string.Empty;
 
     /// <summary>
-    /// 模块名称
+    /// 实体类名
     /// </summary>
-    [Required(ErrorMessage = "模块名称不能为空")]
-    [StringLength(50, ErrorMessage = "模块名称长度不能超过50个字符")]
-    public string ModuleName { get; set; }
+    public string EntityClassName { get; set; } = string.Empty;
 
     /// <summary>
-    /// 业务名称
+    /// 对象命名空间
     /// </summary>
-    [Required(ErrorMessage = "业务名称不能为空")]
-    [StringLength(50, ErrorMessage = "业务名称长度不能超过50个字符")]
-    public string BusinessName { get; set; }
+    public string DtoNamespace { get; set; } = string.Empty;
 
     /// <summary>
-    /// 功能名称
+    /// 对象类型
     /// </summary>
-    [Required(ErrorMessage = "功能名称不能为空")]
-    [StringLength(50, ErrorMessage = "功能名称长度不能超过50个字符")]
-    public string FunctionName { get; set; }
+    public string DtoType { get; set; } = string.Empty;
 
     /// <summary>
-    /// 作者
+    /// 对象类名
     /// </summary>
-    [Required(ErrorMessage = "作者不能为空")]
-    [StringLength(50, ErrorMessage = "作者长度不能超过50个字符")]
-    public string Author { get; set; }
+    public string DtoClassName { get; set; } = string.Empty;
 
     /// <summary>
-    /// 生成代码方式
+    /// 服务命名空间
     /// </summary>
-    [Required(ErrorMessage = "生成方式不能为空")]
-    public int GenMode { get; set; }
+    public string ServiceNamespace { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 服务接口类名称
+    /// </summary>
+    public string IServiceClassName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 服务类名称
+    /// </summary>
+    public string ServiceClassName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 仓储接口命名空间
+    /// </summary>
+    public string IRepositoryNamespace { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 仓储命名空间
+    /// </summary>
+    public string RepositoryNamespace { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 仓储接口类名称
+    /// </summary>
+    public string IRepositoryClassName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 仓储类名称
+    /// </summary>
+    public string RepositoryClassName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 控制器命名空间
+    /// </summary>
+    public string ControllerNamespace { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 控制器类名称
+    /// </summary>
+    public string ControllerClassName { get; set; } = string.Empty;
+
+    #endregion
+
+    #region 生成配置信息
+
+    /// <summary>
+    /// 生成模块名
+    /// </summary>
+    public string ModuleName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 生成业务名
+    /// </summary>
+    public string BusinessName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 生成功能名
+    /// </summary>
+    public string FunctionName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 生成作者名
+    /// </summary>
+    public string Author { get; set; } = string.Empty;
+
+    #endregion
+
+    #region 生成选项
+
+    /// <summary>
+    /// 生成代码方式（0zip压缩包 1自定义路径）
+    /// </summary>
+    public string GenType { get; set; } = "0";
 
     /// <summary>
     /// 代码生成存放位置
     /// </summary>
-    [Required(ErrorMessage = "存放位置不能为空")]
-    [StringLength(200, ErrorMessage = "存放位置长度不能超过200个字符")]
-    public string GenPath { get; set; }
+    public string GenPath { get; set; } = "/";
 
     /// <summary>
-    /// 其他生成选项
+    /// 上级菜单ID
     /// </summary>
-    public string? Options { get; set; }
+    public long ParentMenuId { get; set; }
 
     /// <summary>
-    /// 状态
+    /// 排序类型
     /// </summary>
-    public int Status { get; set; }
+    public string SortType { get; set; } = "asc";
 
     /// <summary>
-    /// 备注
+    /// 排序字段
     /// </summary>
-    [StringLength(500, ErrorMessage = "备注长度不能超过500个字符")]
-    public string? Remark { get; set; }
+    public string SortField { get; set; } = string.Empty;
 
     /// <summary>
-    /// 列信息
+    /// 权限前缀
     /// </summary>
-    public List<HbtGenColumnDto> Columns { get; set; }
-}
-
-/// <summary>
-/// 代码生成表导入DTO
-/// </summary>
-public class HbtGenTableImportDto
-{
-    /// <summary>
-    /// 构造函数
-    /// </summary>
-    public HbtGenTableImportDto()
-    {
-        DatabaseName = string.Empty;
-        TableName = string.Empty;
-        TableComment = string.Empty;
-        ClassName = string.Empty;
-        Namespace = string.Empty;
-        BaseNamespace = string.Empty;
-        CsharpTypeName = string.Empty;
-        ModuleName = string.Empty;
-        BusinessName = string.Empty;
-        FunctionName = string.Empty;
-        Author = string.Empty;
-        GenPath = string.Empty;
-    }
+    public string PermsPrefix { get; set; } = string.Empty;
 
     /// <summary>
-    /// 数据库名称
+    /// 自动生成菜单
     /// </summary>
-    [Required(ErrorMessage = "数据库名称不能为空")]
-    [StringLength(100, ErrorMessage = "数据库名称长度不能超过100个字符")]
-    public string DatabaseName { get; set; } = string.Empty;
+    public int GenerateMenu { get; set; }
 
     /// <summary>
-    /// 表名
+    /// 前端模板 1、element ui 2、element plus
     /// </summary>
-    [Required(ErrorMessage = "表名不能为空")]
-    [StringLength(100, ErrorMessage = "表名长度不能超过100个字符")]
-    public string TableName { get; set; } = string.Empty;
+    public int FrontTpl { get; set; } = 2;
 
     /// <summary>
-    /// 表注释
+    /// 前端样式 12,24
     /// </summary>
-    [Required(ErrorMessage = "表描述不能为空")]
-    [StringLength(200, ErrorMessage = "表描述长度不能超过200个字符")]
-    public string TableComment { get; set; } = string.Empty;
+    public int FrontStyle { get; set; } = 24;
 
     /// <summary>
-    /// 类名
+    /// 操作按钮样式
     /// </summary>
-    [Required(ErrorMessage = "实体类名不能为空")]
-    [StringLength(100, ErrorMessage = "实体类名长度不能超过100个字符")]
-    public string ClassName { get; set; } = string.Empty;
+    public int BtnStyle { get; set; } = 1;
 
     /// <summary>
-    /// 命名空间
+    /// 代码生成选项
     /// </summary>
-    [Required(ErrorMessage = "命名空间不能为空")]
-    [StringLength(200, ErrorMessage = "命名空间长度不能超过200个字符")]
-    public string Namespace { get; set; } = string.Empty;
+    public CodeOptions? Options { get; set; }
 
     /// <summary>
-    /// 基础命名空间
+    /// 状态（0：停用，1：正常）
     /// </summary>
-    [Required(ErrorMessage = "命名前缀不能为空")]
-    [StringLength(100, ErrorMessage = "命名前缀长度不能超过100个字符")]
-    public string BaseNamespace { get; set; } = string.Empty;
+    public int Status { get; set; } = 1;
 
-    /// <summary>
-    /// C#类型名称
-    /// </summary>
-    [Required(ErrorMessage = "C#类名不能为空")]
-    [StringLength(100, ErrorMessage = "C#类名长度不能超过100个字符")]
-    public string CsharpTypeName { get; set; } = string.Empty;
-
-    /// <summary>
-    /// 父表名称
-    /// </summary>
-    [StringLength(100, ErrorMessage = "关联父表长度不能超过100个字符")]
-    public string? ParentTableName { get; set; }
-
-    /// <summary>
-    /// 父表外键名称
-    /// </summary>
-    [StringLength(100, ErrorMessage = "关联外键长度不能超过100个字符")]
-    public string? ParentTableFkName { get; set; }
-
-    /// <summary>
-    /// 模板类型
-    /// </summary>
-    [Required(ErrorMessage = "使用模板不能为空")]
-    public int TemplateType { get; set; } = 1;
-
-    /// <summary>
-    /// 模块名称
-    /// </summary>
-    [Required(ErrorMessage = "模块名称不能为空")]
-    [StringLength(50, ErrorMessage = "模块名称长度不能超过50个字符")]
-    public string ModuleName { get; set; } = string.Empty;
-
-    /// <summary>
-    /// 业务名称
-    /// </summary>
-    [Required(ErrorMessage = "业务名称不能为空")]
-    [StringLength(50, ErrorMessage = "业务名称长度不能超过50个字符")]
-    public string BusinessName { get; set; } = string.Empty;
-
-    /// <summary>
-    /// 功能名称
-    /// </summary>
-    [Required(ErrorMessage = "功能名称不能为空")]
-    [StringLength(50, ErrorMessage = "功能名称长度不能超过50个字符")]
-    public string FunctionName { get; set; } = string.Empty;
-
-    /// <summary>
-    /// 作者
-    /// </summary>
-    [Required(ErrorMessage = "作者名称不能为空")]
-    [StringLength(50, ErrorMessage = "作者名称长度不能超过50个字符")]
-    public string Author { get; set; } = string.Empty;
-
-    /// <summary>
-    /// 生成模式
-    /// </summary>
-    [Required(ErrorMessage = "生成方式不能为空")]
-    public int GenMode { get; set; } = 0;
-
-    /// <summary>
-    /// 生成路径
-    /// </summary>
-    [Required(ErrorMessage = "存放位置不能为空")]
-    [StringLength(200, ErrorMessage = "存放位置长度不能超过200个字符")]
-    public string GenPath { get; set; } = string.Empty;
-
-    /// <summary>
-    /// 选项
-    /// </summary>
-    public string? Options { get; set; }
-
-    /// <summary>
-    /// 租户ID
-    /// </summary>
-    [Required(ErrorMessage = "租户ID不能为空")]
-    public long TenantId { get; set; } = 0;
-
-    /// <summary>
-    /// 字段列表
-    /// </summary>
-    public List<HbtGenColumnImportDto> Columns { get; set; } = new();
-}
-
-/// <summary>
-/// 代码生成表导出DTO
-/// </summary>
-public class HbtGenTableExportDto
-{
-    /// <summary>
-    /// 构造函数
-    /// </summary>
-    public HbtGenTableExportDto()
-    {
-        DatabaseName = string.Empty;
-        TableName = string.Empty;
-        TableComment = string.Empty;
-        ClassName = string.Empty;
-        Namespace = string.Empty;
-        BaseNamespace = string.Empty;
-        CsharpTypeName = string.Empty;
-        ModuleName = string.Empty;
-        BusinessName = string.Empty;
-        FunctionName = string.Empty;
-        Author = string.Empty;
-        GenPath = string.Empty;
-    }
-
-    /// <summary>
-    /// 数据库名称
-    /// </summary>
-    [Required(ErrorMessage = "数据库名称不能为空")]
-    [StringLength(100, ErrorMessage = "数据库名称长度不能超过100个字符")]
-    public string DatabaseName { get; set; } = string.Empty;
-
-    /// <summary>
-    /// 表名
-    /// </summary>
-    [Required(ErrorMessage = "表名不能为空")]
-    [StringLength(100, ErrorMessage = "表名长度不能超过100个字符")]
-    public string TableName { get; set; } = string.Empty;
-
-    /// <summary>
-    /// 表注释
-    /// </summary>
-    [Required(ErrorMessage = "表描述不能为空")]
-    [StringLength(200, ErrorMessage = "表描述长度不能超过200个字符")]
-    public string TableComment { get; set; } = string.Empty;
-
-    /// <summary>
-    /// 类名
-    /// </summary>
-    [Required(ErrorMessage = "实体类名不能为空")]
-    [StringLength(100, ErrorMessage = "实体类名长度不能超过100个字符")]
-    public string ClassName { get; set; } = string.Empty;
-
-    /// <summary>
-    /// 命名空间
-    /// </summary>
-    [Required(ErrorMessage = "命名空间不能为空")]
-    [StringLength(200, ErrorMessage = "命名空间长度不能超过200个字符")]
-    public string Namespace { get; set; } = string.Empty;
-
-    /// <summary>
-    /// 基础命名空间
-    /// </summary>
-    [Required(ErrorMessage = "命名前缀不能为空")]
-    [StringLength(100, ErrorMessage = "命名前缀长度不能超过100个字符")]
-    public string BaseNamespace { get; set; } = string.Empty;
-
-    /// <summary>
-    /// C#类型名称
-    /// </summary>
-    [Required(ErrorMessage = "C#类名不能为空")]
-    [StringLength(100, ErrorMessage = "C#类名长度不能超过100个字符")]
-    public string CsharpTypeName { get; set; } = string.Empty;
-
-    /// <summary>
-    /// 父表名称
-    /// </summary>
-    [StringLength(100, ErrorMessage = "关联父表长度不能超过100个字符")]
-    public string? ParentTableName { get; set; }
-
-    /// <summary>
-    /// 父表外键名称
-    /// </summary>
-    [StringLength(100, ErrorMessage = "关联外键长度不能超过100个字符")]
-    public string? ParentTableFkName { get; set; }
-
-    /// <summary>
-    /// 模板类型
-    /// </summary>
-    [Required(ErrorMessage = "使用模板不能为空")]
-    public int TemplateType { get; set; } = 1;
-
-    /// <summary>
-    /// 模块名称
-    /// </summary>
-    [Required(ErrorMessage = "模块名称不能为空")]
-    [StringLength(50, ErrorMessage = "模块名称长度不能超过50个字符")]
-    public string ModuleName { get; set; } = string.Empty;
-
-    /// <summary>
-    /// 业务名称
-    /// </summary>
-    [Required(ErrorMessage = "业务名称不能为空")]
-    [StringLength(50, ErrorMessage = "业务名称长度不能超过50个字符")]
-    public string BusinessName { get; set; } = string.Empty;
-
-    /// <summary>
-    /// 功能名称
-    /// </summary>
-    [Required(ErrorMessage = "功能名称不能为空")]
-    [StringLength(50, ErrorMessage = "功能名称长度不能超过50个字符")]
-    public string FunctionName { get; set; } = string.Empty;
-
-    /// <summary>
-    /// 作者
-    /// </summary>
-    [Required(ErrorMessage = "作者名称不能为空")]
-    [StringLength(50, ErrorMessage = "作者名称长度不能超过50个字符")]
-    public string Author { get; set; } = string.Empty;
-
-    /// <summary>
-    /// 生成模式
-    /// </summary>
-    [Required(ErrorMessage = "生成方式不能为空")]
-    public int GenMode { get; set; } = 0;
-
-    /// <summary>
-    /// 生成路径
-    /// </summary>
-    [Required(ErrorMessage = "存放位置不能为空")]
-    [StringLength(200, ErrorMessage = "存放位置长度不能超过200个字符")]
-    public string GenPath { get; set; } = string.Empty;
-
-    /// <summary>
-    /// 选项
-    /// </summary>
-    public string? Options { get; set; }
-
-    /// <summary>
-    /// 租户ID
-    /// </summary>
-    [Required(ErrorMessage = "租户ID不能为空")]
-    public long TenantId { get; set; } = 0;
-
-    /// <summary>
-    /// 表信息
-    /// </summary>
-    public HbtGenTableDto Table { get; set; } = new();
+    #endregion
 
     /// <summary>
     /// 列信息
@@ -691,27 +512,706 @@ public class HbtGenTableExportDto
     public List<HbtGenColumnDto> Columns { get; set; } = new();
 }
 
-
 /// <summary>
-/// 数据库表信息DTO
+/// 代码生成表更新DTO
 /// </summary>
-public class HbtGenTableInfoDto
+public class HbtGenTableUpdateDto
 {
+    #region 基本信息
+
+    /// <summary>
+    /// 主键
+    /// </summary>
+    public long Id { get; set; }
+
+    /// <summary>
+    /// 数据库名称
+    /// </summary>
+    public string DatabaseName { get; set; } = string.Empty;
+
     /// <summary>
     /// 表名
     /// </summary>
-    public string Name { get; set; } = string.Empty;
+    public string TableName { get; set; } = string.Empty;
 
     /// <summary>
     /// 表描述
     /// </summary>
-    public string Description { get; set; } = string.Empty;
+    public string TableComment { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 关联父表名
+    /// </summary>
+    public string? SubTableName { get; set; }
+
+    /// <summary>
+    /// 本表关联父表的外键名
+    /// </summary>
+    public string? SubTableFkName { get; set; }
+
+    /// <summary>
+    /// 树编码字段
+    /// </summary>
+    public string TreeCode { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 树名称字段
+    /// </summary>
+    public string TreeName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 树父编码字段
+    /// </summary>
+    public string TreeParentCode { get; set; } = string.Empty;
+
+    #endregion
+
+    #region 类型信息
+
+    /// <summary>
+    /// 使用的模板（crud单表操作 tree树表操作 sub主子表操作）
+    /// </summary>
+    public string TplCategory { get; set; } = "crud";
+
+    /// <summary>
+    /// 基本命名空间前缀
+    /// </summary>
+    public string BaseNamespace { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 实体命名空间
+    /// </summary>
+    public string EntityNamespace { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 实体类名
+    /// </summary>
+    public string EntityClassName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 对象命名空间
+    /// </summary>
+    public string DtoNamespace { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 对象类型
+    /// </summary>
+    public string DtoType { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 对象类名
+    /// </summary>
+    public string DtoClassName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 服务命名空间
+    /// </summary>
+    public string ServiceNamespace { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 服务接口类名称
+    /// </summary>
+    public string IServiceClassName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 服务类名称
+    /// </summary>
+    public string ServiceClassName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 仓储接口命名空间
+    /// </summary>
+    public string IRepositoryNamespace { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 仓储命名空间
+    /// </summary>
+    public string RepositoryNamespace { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 仓储接口类名称
+    /// </summary>
+    public string IRepositoryClassName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 仓储类名称
+    /// </summary>
+    public string RepositoryClassName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 控制器命名空间
+    /// </summary>
+    public string ControllerNamespace { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 控制器类名称
+    /// </summary>
+    public string ControllerClassName { get; set; } = string.Empty;
+
+    #endregion
+
+    #region 生成配置信息
+
+    /// <summary>
+    /// 生成模块名
+    /// </summary>
+    public string ModuleName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 生成业务名
+    /// </summary>
+    public string BusinessName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 生成功能名
+    /// </summary>
+    public string FunctionName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 生成作者名
+    /// </summary>
+    public string Author { get; set; } = string.Empty;
+
+    #endregion
+
+    #region 生成选项
+
+    /// <summary>
+    /// 生成代码方式（0zip压缩包 1自定义路径）
+    /// </summary>
+    public string GenType { get; set; } = "0";
+
+    /// <summary>
+    /// 代码生成存放位置
+    /// </summary>
+    public string GenPath { get; set; } = "/";
+
+    /// <summary>
+    /// 上级菜单ID
+    /// </summary>
+    public long ParentMenuId { get; set; }
+
+    /// <summary>
+    /// 排序类型
+    /// </summary>
+    public string SortType { get; set; } = "asc";
+
+    /// <summary>
+    /// 排序字段
+    /// </summary>
+    public string SortField { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 权限前缀
+    /// </summary>
+    public string PermsPrefix { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 自动生成菜单
+    /// </summary>
+    public int GenerateMenu { get; set; }
+
+    /// <summary>
+    /// 前端模板 1、element ui 2、element plus
+    /// </summary>
+    public int FrontTpl { get; set; } = 2;
+
+    /// <summary>
+    /// 前端样式 12,24
+    /// </summary>
+    public int FrontStyle { get; set; } = 24;
+
+    /// <summary>
+    /// 操作按钮样式
+    /// </summary>
+    public int BtnStyle { get; set; } = 1;
+
+    /// <summary>
+    /// 代码生成选项
+    /// </summary>
+    public CodeOptions? Options { get; set; }
+
+    /// <summary>
+    /// 状态（0：停用，1：正常）
+    /// </summary>
+    public int Status { get; set; } = 1;
+
+    #endregion
+
+    /// <summary>
+    /// 列信息
+    /// </summary>
+    public List<HbtGenColumnDto> Columns { get; set; } = new();
 }
 
 /// <summary>
-/// 数据库表列信息DTO（与SqlSugar DbColumnInfo字段一致）
+/// 代码生成表导入DTO
 /// </summary>
-public class HbtGenTableColumnInfoDto
+public class HbtGenTableImportDto
+{
+    #region 基本信息
+
+    /// <summary>
+    /// 数据库名称
+    /// </summary>
+    public string DatabaseName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 表名
+    /// </summary>
+    public string TableName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 表描述
+    /// </summary>
+    public string TableComment { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 关联父表名
+    /// </summary>
+    public string? SubTableName { get; set; }
+
+    /// <summary>
+    /// 本表关联父表的外键名
+    /// </summary>
+    public string? SubTableFkName { get; set; }
+
+    /// <summary>
+    /// 树编码字段
+    /// </summary>
+    public string TreeCode { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 树名称字段
+    /// </summary>
+    public string TreeName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 树父编码字段
+    /// </summary>
+    public string TreeParentCode { get; set; } = string.Empty;
+
+    #endregion
+
+    #region 类型信息
+
+    /// <summary>
+    /// 模板类型（0使用wwwroot/Generator/*.scriban模板 1使用HbtGenTemplate数据表中的模板）
+    /// </summary>
+    public string TplType { get; set; } = "0";
+
+    /// <summary>
+    /// 使用的模板（crud单表操作 tree树表操作 sub主子表操作）
+    /// </summary>
+    public string TplCategory { get; set; } = "crud";
+
+    /// <summary>
+    /// 基本命名空间前缀
+    /// </summary>
+    public string BaseNamespace { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 实体命名空间
+    /// </summary>
+    public string EntityNamespace { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 实体类名
+    /// </summary>
+    public string EntityClassName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 对象命名空间
+    /// </summary>
+    public string DtoNamespace { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 对象类型
+    /// </summary>
+    public string DtoType { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 对象类名
+    /// </summary>
+    public string DtoClassName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 服务命名空间
+    /// </summary>
+    public string ServiceNamespace { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 服务接口类名称
+    /// </summary>
+    public string IServiceClassName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 服务类名称
+    /// </summary>
+    public string ServiceClassName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 仓储接口命名空间
+    /// </summary>
+    public string IRepositoryNamespace { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 仓储命名空间
+    /// </summary>
+    public string RepositoryNamespace { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 仓储接口类名称
+    /// </summary>
+    public string IRepositoryClassName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 仓储类名称
+    /// </summary>
+    public string RepositoryClassName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 控制器命名空间
+    /// </summary>
+    public string ControllerNamespace { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 控制器类名称
+    /// </summary>
+    public string ControllerClassName { get; set; } = string.Empty;
+
+    #endregion
+
+    #region 生成配置信息
+
+    /// <summary>
+    /// 生成模块名
+    /// </summary>
+    public string ModuleName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 生成业务名
+    /// </summary>
+    public string BusinessName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 生成功能名
+    /// </summary>
+    public string FunctionName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 生成作者名
+    /// </summary>
+    public string Author { get; set; } = string.Empty;
+
+    #endregion
+
+    #region 生成选项
+
+    /// <summary>
+    /// 生成代码方式（0zip压缩包 1自定义路径）
+    /// </summary>
+    public string GenType { get; set; } = "0";
+
+    /// <summary>
+    /// 代码生成存放位置
+    /// </summary>
+    public string GenPath { get; set; } = "/";
+
+    /// <summary>
+    /// 上级菜单ID
+    /// </summary>
+    public long ParentMenuId { get; set; }
+
+    /// <summary>
+    /// 排序类型
+    /// </summary>
+    public string SortType { get; set; } = "asc";
+
+    /// <summary>
+    /// 排序字段
+    /// </summary>
+    public string SortField { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 权限前缀
+    /// </summary>
+    public string PermsPrefix { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 自动生成菜单
+    /// </summary>
+    public int GenerateMenu { get; set; }
+
+    /// <summary>
+    /// 前端模板 1、element ui 2、element plus
+    /// </summary>
+    public int FrontTpl { get; set; } = 2;
+
+    /// <summary>
+    /// 前端样式 12,24
+    /// </summary>
+    public int FrontStyle { get; set; } = 24;
+
+    /// <summary>
+    /// 操作按钮样式
+    /// </summary>
+    public int BtnStyle { get; set; } = 1;
+
+    /// <summary>
+    /// 代码生成选项
+    /// </summary>
+    public CodeOptions? Options { get; set; }
+
+    /// <summary>
+    /// 状态（0：停用，1：正常）
+    /// </summary>
+    public int Status { get; set; } = 1;
+
+    #endregion
+
+    /// <summary>
+    /// 列信息
+    /// </summary>
+    public List<HbtGenColumnDto> Columns { get; set; } = new();
+}
+
+/// <summary>
+/// 代码生成表导出DTO
+/// </summary>
+public class HbtGenTableExportDto
+{
+    #region 基本信息
+
+    /// <summary>
+    /// 数据库名称
+    /// </summary>
+    public string DatabaseName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 表名
+    /// </summary>
+    public string TableName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 表描述
+    /// </summary>
+    public string TableComment { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 关联父表名
+    /// </summary>
+    public string? SubTableName { get; set; }
+
+    /// <summary>
+    /// 本表关联父表的外键名
+    /// </summary>
+    public string? SubTableFkName { get; set; }
+
+    /// <summary>
+    /// 树编码字段
+    /// </summary>
+    public string TreeCode { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 树名称字段
+    /// </summary>
+    public string TreeName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 树父编码字段
+    /// </summary>
+    public string TreeParentCode { get; set; } = string.Empty;
+
+    #endregion
+
+    #region 类型信息
+
+    /// <summary>
+    /// 模板类型（0使用wwwroot/Generator/*.scriban模板 1使用HbtGenTemplate数据表中的模板）
+    /// </summary>
+    public string TplType { get; set; } = "0";
+
+    /// <summary>
+    /// 使用的模板（crud单表操作 tree树表操作 sub主子表操作）
+    /// </summary>
+    public string TplCategory { get; set; } = "crud";
+
+    /// <summary>
+    /// 基本命名空间前缀
+    /// </summary>
+    public string BaseNamespace { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 实体命名空间
+    /// </summary>
+    public string EntityNamespace { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 实体类名
+    /// </summary>
+    public string EntityClassName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 对象命名空间
+    /// </summary>
+    public string DtoNamespace { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 对象类型
+    /// </summary>
+    public string DtoType { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 对象类名
+    /// </summary>
+    public string DtoClassName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 服务命名空间
+    /// </summary>
+    public string ServiceNamespace { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 服务接口类名称
+    /// </summary>
+    public string IServiceClassName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 服务类名称
+    /// </summary>
+    public string ServiceClassName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 仓储接口命名空间
+    /// </summary>
+    public string IRepositoryNamespace { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 仓储命名空间
+    /// </summary>
+    public string RepositoryNamespace { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 仓储接口类名称
+    /// </summary>
+    public string IRepositoryClassName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 仓储类名称
+    /// </summary>
+    public string RepositoryClassName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 控制器命名空间
+    /// </summary>
+    public string ControllerNamespace { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 控制器类名称
+    /// </summary>
+    public string ControllerClassName { get; set; } = string.Empty;
+
+    #endregion
+
+    #region 生成配置信息
+
+    /// <summary>
+    /// 生成模块名
+    /// </summary>
+    public string ModuleName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 生成业务名
+    /// </summary>
+    public string BusinessName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 生成功能名
+    /// </summary>
+    public string FunctionName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 生成作者名
+    /// </summary>
+    public string Author { get; set; } = string.Empty;
+
+    #endregion
+
+    #region 生成选项
+
+    /// <summary>
+    /// 生成代码方式（0zip压缩包 1自定义路径）
+    /// </summary>
+    public string GenType { get; set; } = "0";
+
+    /// <summary>
+    /// 代码生成存放位置
+    /// </summary>
+    public string GenPath { get; set; } = "/";
+
+    /// <summary>
+    /// 上级菜单ID
+    /// </summary>
+    public long ParentMenuId { get; set; }
+
+    /// <summary>
+    /// 排序类型
+    /// </summary>
+    public string SortType { get; set; } = "asc";
+
+    /// <summary>
+    /// 排序字段
+    /// </summary>
+    public string SortField { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 权限前缀
+    /// </summary>
+    public string PermsPrefix { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 自动生成菜单
+    /// </summary>
+    public int GenerateMenu { get; set; }
+
+    /// <summary>
+    /// 前端模板 1、element ui 2、element plus
+    /// </summary>
+    public int FrontTpl { get; set; } = 2;
+
+    /// <summary>
+    /// 前端样式 12,24
+    /// </summary>
+    public int FrontStyle { get; set; } = 24;
+
+    /// <summary>
+    /// 操作按钮样式
+    /// </summary>
+    public int BtnStyle { get; set; } = 1;
+
+    /// <summary>
+    /// 代码生成选项
+    /// </summary>
+    public CodeOptions? Options { get; set; }
+
+    /// <summary>
+    /// 状态（0：停用，1：正常）
+    /// </summary>
+    public int Status { get; set; } = 1;
+
+    #endregion
+
+    /// <summary>
+    /// 列信息
+    /// </summary>
+    public List<HbtGenColumnDto> Columns { get; set; } = new();
+}
+
+/// <summary>
+/// 代码生成表信息DTO
+/// </summary>
+public class HbtGenTableInfoDto
 {
     /// <summary>
     /// 表名
@@ -719,122 +1219,7 @@ public class HbtGenTableColumnInfoDto
     public string TableName { get; set; } = string.Empty;
 
     /// <summary>
-    /// 表ID
+    /// 表描述
     /// </summary>
-    public long TableId { get; set; }
-
-    /// <summary>
-    /// 列名
-    /// </summary>
-    public string DbColumnName { get; set; } = string.Empty;
-
-    /// <summary>
-    /// 属性名
-    /// </summary>
-    public string PropertyName { get; set; } = string.Empty;
-
-    /// <summary>
-    /// 数据类型
-    /// </summary>
-    public string DataType { get; set; } = string.Empty;
-
-    /// <summary>
-    /// Oracle类型
-    /// </summary>
-    public string OracleDataType { get; set; } = string.Empty;
-
-    /// <summary>
-    /// 属性类型
-    /// </summary>
-    public string PropertyType { get; set; } = string.Empty;
-
-    /// <summary>
-    /// 长度
-    /// </summary>
-    public int Length { get; set; }
-
-    /// <summary>
-    /// 列描述
-    /// </summary>
-    public string ColumnDescription { get; set; } = string.Empty;
-
-    /// <summary>
-    /// 默认值
-    /// </summary>
-    public string DefaultValue { get; set; } = string.Empty;
-
-    /// <summary>
-    /// 是否可空
-    /// </summary>
-    public bool IsNullable { get; set; }
-
-    /// <summary>
-    /// 是否自增
-    /// </summary>
-    public bool IsIdentity { get; set; }
-
-    /// <summary>
-    /// 是否主键
-    /// </summary>
-    public bool IsPrimarykey { get; set; }
-
-    /// <summary>
-    /// 值
-    /// </summary>
-    public object? Value { get; set; }
-
-    /// <summary>
-    /// 小数位数
-    /// </summary>
-    public int DecimalDigits { get; set; }
-
-    /// <summary>
-    /// 精度
-    /// </summary>
-    public int Scale { get; set; }
-
-    /// <summary>
-    /// 是否数组
-    /// </summary>
-    public bool IsArray { get; set; }
-
-    /// <summary>
-    /// 是否Json
-    /// </summary>
-    public bool IsJson { get; set; }
-
-    /// <summary>
-    /// 是否无符号
-    /// </summary>
-   // public bool IsUnsigned { get; set; }
-
-    /// <summary>
-    /// 建表字段排序
-    /// </summary>
-    public int CreateTableFieldSort { get; set; }
-
-    /// <summary>
-    /// 插入服务器时间
-    /// </summary>
-    //public DateTime? InsertServerTime { get; set; }
-
-    /// <summary>
-    /// 插入SQL
-    /// </summary>
-    public string InsertSql { get; set; } = string.Empty;
-
-    /// <summary>
-    /// 更新服务器时间
-    /// </summary>
-   // public DateTime? UpdateServerTime { get; set; }
-
-    /// <summary>
-    /// 更新SQL
-    /// </summary>
-    public string UpdateSql { get; set; } = string.Empty;
-
-    /// <summary>
-    /// 参数类型
-    /// </summary>
-    //public string SqlParameterDbType { get; set; } = string.Empty;
+    public string TableComment { get; set; } = string.Empty;
 }

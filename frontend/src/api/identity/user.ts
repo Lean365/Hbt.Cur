@@ -1,8 +1,9 @@
 import request from '@/utils/request'
-import type { UserQuery, User, UserStatus, ResetPassword, ChangePassword, UserUpdate,UserCreate } from '@/types/identity/user'
+import type { UserQuery, User, UserStatus, ResetPassword, ChangePassword, UserUpdate, UserCreate, HbtUserRoleDto, HbtUserDeptDto, HbtUserPostDto } from '@/types/identity/user'
 import type { HbtPagedResult } from '@/types/common'
 import type { HbtApiResponse } from '@/types/common'
 import { useUserStore } from '@/stores/user'
+import { AxiosResponse } from 'axios'
 
 // 获取用户分页列表
 export function getPagedList(query: UserQuery) {
@@ -60,7 +61,7 @@ export function batchDeleteUser(userIds: number[]) {
 export function importUser(file: File) {
   const formData = new FormData()
   formData.append('file', file)
-  return request<{ success: number; fail: number }>({
+  return request<HbtApiResponse<{ success: number; fail: number }>>({
     url: '/api/HbtUser/import',
     method: 'post',
     data: formData,
@@ -165,5 +166,61 @@ export function searchUser(query: { keyword: string }) {
       pageSize: 10,
       pageIndex: 1
     }
+  })
+}
+
+// 获取用户角色列表
+export function getUserRoles(userId: number) {
+  return request<HbtApiResponse<HbtUserRoleDto[]>>({
+    url: `/api/HbtUser/${userId}/roles`,
+    method: 'get'
+  })
+}
+
+/**
+ * 获取用户部门列表
+ * @param userId 用户ID
+ */
+export function getUserDepts(userId: number) {
+  return request<HbtApiResponse<HbtUserDeptDto[]>>({
+    url: `/api/HbtUser/${userId}/depts`,
+    method: 'get'
+  })
+}
+
+/**
+ * 分配用户部门
+ * @param userId 用户ID
+ * @param deptIds 部门ID列表
+ */
+export function allocateUserDepts(userId: number, deptIds: number[]) {
+  return request<HbtApiResponse<boolean>>({
+    url: `/api/HbtUser/${userId}/depts`,
+    method: 'put',
+    data: deptIds
+  })
+}
+
+/**
+ * 获取用户岗位列表
+ * @param userId 用户ID
+ */
+export function getUserPosts(userId: number) {
+  return request<HbtApiResponse<HbtUserPostDto[]>>({
+    url: `/api/HbtUser/${userId}/posts`,
+    method: 'get'
+  })
+}
+
+/**
+ * 分配用户岗位
+ * @param userId 用户ID
+ * @param postIds 岗位ID列表
+ */
+export function allocateUserPosts(userId: number, postIds: number[]) {
+  return request<HbtApiResponse<boolean>>({
+    url: `/api/HbtUser/${userId}/posts`,
+    method: 'put',
+    data: postIds
   })
 }

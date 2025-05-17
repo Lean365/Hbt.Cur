@@ -32,7 +32,6 @@ namespace Lean.Hbt.Application.Services.Routine
     {
         private readonly IHbtRepository<HbtNotice> _repository;
         private readonly IHbtSignalRClient _signalRClient;
-        private readonly IHbtCurrentUser _currentUser;
 
         /// <summary>
         /// 构造函数
@@ -53,7 +52,6 @@ namespace Lean.Hbt.Application.Services.Routine
         {
             _repository = repository;
             _signalRClient = signalRClient;
-            _currentUser = currentUser;
         }
 
         /// <summary>

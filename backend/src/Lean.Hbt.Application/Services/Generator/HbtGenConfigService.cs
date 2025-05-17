@@ -50,7 +50,7 @@ public class HbtGenConfigService : HbtBaseService, IHbtGenConfigService
     private Expression<Func<HbtGenConfig, bool>> HbtGenConfigQueryExpression(HbtGenConfigQueryDto query)
     {
         return Expressionable.Create<HbtGenConfig>()
-            .AndIF(!string.IsNullOrEmpty(query.TableName), x => x.TableName.Contains(query.TableName!))
+            .AndIF(!string.IsNullOrEmpty(query.GenConfigName), x => x.GenConfigName.Contains(query.GenConfigName!))
             .AndIF(!string.IsNullOrEmpty(query.ModuleName), x => x.ModuleName.Contains(query.ModuleName!))
             .AndIF(!string.IsNullOrEmpty(query.BusinessName), x => x.BusinessName.Contains(query.BusinessName!))
             .AndIF(query.GenType.HasValue, x => x.GenType == query.GenType.Value)
@@ -102,7 +102,7 @@ public class HbtGenConfigService : HbtBaseService, IHbtGenConfigService
     public async Task<HbtGenConfigDto> CreateAsync(HbtGenConfigCreateDto input)
     {
         // 验证字段是否已存在
-        await HbtValidateUtils.ValidateFieldExistsAsync(_configRepository, "TableName", input.TableName);
+        await HbtValidateUtils.ValidateFieldExistsAsync(_configRepository, "GenConfigName", input.GenConfigName);
 
         var config = input.Adapt<HbtGenConfig>();
         var result = await _configRepository.CreateAsync(config);
@@ -123,8 +123,8 @@ public class HbtGenConfigService : HbtBaseService, IHbtGenConfigService
             ?? throw new HbtException(L("Generator.Config.NotFound", input.ConfigId));
 
         // 验证字段是否已存在
-        if (config.TableName != input.TableName)
-            await HbtValidateUtils.ValidateFieldExistsAsync(_configRepository, "TableName", input.TableName, input.ConfigId);
+        if (config.GenConfigName != input.GenConfigName)
+            await HbtValidateUtils.ValidateFieldExistsAsync(_configRepository, "GenConfigName", input.GenConfigName, input.ConfigId);
 
         input.Adapt(config);
         var result = await _configRepository.UpdateAsync(config);
@@ -175,7 +175,7 @@ public class HbtGenConfigService : HbtBaseService, IHbtGenConfigService
             try
             {
                 // 验证字段是否已存在
-                await HbtValidateUtils.ValidateFieldExistsAsync(_configRepository, "TableName", config.TableName);
+                await HbtValidateUtils.ValidateFieldExistsAsync(_configRepository, "GenConfigName", config.GenConfigName);
 
                 await _configRepository.CreateAsync(config.Adapt<HbtGenConfig>());
                 success++;

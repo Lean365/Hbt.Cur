@@ -7,6 +7,7 @@
 // 描述   : 通知实体
 //===================================================================
 
+using Lean.Hbt.Domain.Entities.Identity;
 using SqlSugar;
 
 namespace Lean.Hbt.Domain.Entities.Routine
@@ -14,7 +15,7 @@ namespace Lean.Hbt.Domain.Entities.Routine
     /// <summary>
     /// 通知实体
     /// </summary>
-    [SugarTable("hbt_rou_notice", "通知")]
+    [SugarTable("hbt_routine_notice", "通知")]
     public class HbtNotice : HbtBaseEntity
     {
         /// <summary>
@@ -106,5 +107,16 @@ namespace Lean.Hbt.Domain.Entities.Routine
         /// </summary>
         [SugarColumn(ColumnName = "notice_last_receipt_time", ColumnDescription = "最后回执时间", IsNullable = true, ColumnDataType = "datetime", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
         public DateTime? NoticeLastReceiptTime { get; set; }
+        /// <summary>
+        /// 租户ID
+        /// </summary>
+        [SugarColumn(ColumnName = "tenant_id", ColumnDescription = "租户ID", ColumnDataType = "bigint", IsNullable = false)]
+        public long TenantId { get; set; }
+
+        /// <summary>
+        /// 租户
+        /// </summary>
+        [Navigate(NavigateType.OneToOne, nameof(TenantId))]
+        public HbtTenant? Tenant { get; set; }
     }
-} 
+}

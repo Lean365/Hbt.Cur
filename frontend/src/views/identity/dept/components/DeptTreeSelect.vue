@@ -59,10 +59,10 @@ const loadTreeData = async () => {
   try {
     loading.value = true
     const res = await getDeptTree()
-    if (res.code === 200) {
-      treeData.value = filterTree(res.data, props.exclude)
+    if (res.data.code === 200) {
+      treeData.value = filterTree(res.data.data, props.exclude)
     } else {
-      message.error(res.msg || t('common.failed'))
+      message.error(res.data.msg || t('common.failed'))
     }
   } catch (error) {
     console.error('[部门管理] 获取部门树形数据出错:', error)

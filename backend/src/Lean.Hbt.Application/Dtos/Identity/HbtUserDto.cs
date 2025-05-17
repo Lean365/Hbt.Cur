@@ -69,6 +69,7 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// <summary>
         /// 邮箱
         /// </summary>
+        [MaxLength(50, ErrorMessage = "邮箱长度不能超过50个字符")]
         public string? Email { get; set; }
 
         /// <summary>
@@ -102,11 +103,6 @@ namespace Lean.Hbt.Application.Dtos.Identity
         public string TenantName { get; set; }
 
         /// <summary>
-        /// 创建时间
-        /// </summary>
-        public DateTime CreateTime { get; set; }
-
-        /// <summary>
         /// 角色列表
         /// </summary>
         public List<string> Roles { get; set; }
@@ -132,11 +128,6 @@ namespace Lean.Hbt.Application.Dtos.Identity
         public int LoginCount { get; set; } = 0;
 
         /// <summary>
-        /// 备注
-        /// </summary>
-        public string? Remark { get; set; }
-
-        /// <summary>
         /// 角色ID列表
         /// </summary>
         public List<long> RoleIds { get; set; }
@@ -150,6 +141,46 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// 部门ID列表
         /// </summary>
         public List<long> DeptIds { get; set; }
+
+        /// <summary>
+        /// 备注
+        /// </summary>
+        public string? Remark { get; set; }
+
+        /// <summary>
+        /// 创建者
+        /// </summary>
+        public string? CreateBy { get; set; }
+
+        /// <summary>
+        /// 创建时间
+        /// </summary>
+        public DateTime CreateTime { get; set; }
+
+        /// <summary>
+        /// 更新者
+        /// </summary>
+        public string? UpdateBy { get; set; }
+
+        /// <summary>
+        /// 更新时间
+        /// </summary>
+        public DateTime? UpdateTime { get; set; }
+
+        /// <summary>
+        /// 是否删除（0未删除 1已删除）
+        /// </summary>
+        public int IsDeleted { get; set; }
+
+        /// <summary>
+        /// 删除者
+        /// </summary>
+        public string? DeleteBy { get; set; }
+
+        /// <summary>
+        /// 删除时间
+        /// </summary>
+        public DateTime? DeleteTime { get; set; }
     }
 
     /// <summary>
@@ -168,6 +199,7 @@ namespace Lean.Hbt.Application.Dtos.Identity
         {
             UserName = string.Empty;
             PhoneNumber = string.Empty;
+            Email = string.Empty;
         }
 
         /// <summary>
@@ -189,14 +221,25 @@ namespace Lean.Hbt.Application.Dtos.Identity
         public string? PhoneNumber { get; set; }
 
         /// <summary>
+        /// 邮箱
+        /// </summary>
+        [MaxLength(50, ErrorMessage = "邮箱长度不能超过50个字符")]
+        public string? Email { get; set; }
+
+        /// <summary>
         /// 状态（0正常 1停用）
         /// </summary>
         public int? Status { get; set; }
 
         /// <summary>
-        /// 用户类型
+        /// 用户类型（0系统用户 1普通用户 2管理员 3OAuth用户）
         /// </summary>
         public int? UserType { get; set; }
+
+        /// <summary>
+        /// 性别（0未知 1男 2女）
+        /// </summary>
+        public int? Gender { get; set; }
 
         /// <summary>
         /// 部门ID
@@ -267,7 +310,6 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// 邮箱
         /// </summary>
         [MaxLength(50, ErrorMessage = "邮箱长度不能超过50个字符")]
-        [EmailAddress(ErrorMessage = "邮箱格式不正确")]
         public string? Email { get; set; }
 
         /// <summary>
@@ -444,17 +486,15 @@ namespace Lean.Hbt.Application.Dtos.Identity
             UserName = string.Empty;
             NickName = string.Empty;
             EnglishName = string.Empty;
-            UserType = string.Empty;
-            Password = string.Empty;
             PhoneNumber = string.Empty;
             Email = string.Empty;
-            Gender = string.Empty;
             Avatar = string.Empty;
-            DeptName = string.Empty;
-            RoleNames = string.Empty;
-            PostNames = string.Empty;
             Remark = string.Empty;
         }
+        /// <summary>
+        /// 租户ID
+        /// </summary>
+        public long TenantId { get; set; }
 
         /// <summary>
         /// 用户名
@@ -472,49 +512,34 @@ namespace Lean.Hbt.Application.Dtos.Identity
         public string EnglishName { get; set; }
 
         /// <summary>
-        /// 用户类型（0系统用户 1普通用户 2管理员 3OAuth用户）
+        /// 用户类型(0=系统用户,1=普通用户)
         /// </summary>
-        public string UserType { get; set; }
-
-        /// <summary>
-        /// 密码
-        /// </summary>
-        public string Password { get; set; } = string.Empty;
-
-        /// <summary>
-        /// 邮箱
-        /// </summary>
-        public string? Email { get; set; }
+        public int UserType { get; set; }
 
         /// <summary>
         /// 手机号码
         /// </summary>
-        public string? PhoneNumber { get; set; }
+        public string PhoneNumber { get; set; } = string.Empty;
 
         /// <summary>
-        /// 性别（0未知 1男 2女）
+        /// 邮箱
         /// </summary>
-        public string Gender { get; set; }
+        public string Email { get; set; } = string.Empty;
+
+        /// <summary>
+        /// 性别(0=未知,1=男,2=女)
+        /// </summary>
+        public int Gender { get; set; }
 
         /// <summary>
         /// 头像
         /// </summary>
         public string Avatar { get; set; } = string.Empty;
-
+        
         /// <summary>
-        /// 部门名称
+        /// 状态（0正常 1停用）
         /// </summary>
-        public string DeptName { get; set; } = string.Empty;
-
-        /// <summary>
-        /// 角色名称列表，逗号分隔
-        /// </summary>
-        public string RoleNames { get; set; } = string.Empty;
-
-        /// <summary>
-        /// 岗位名称列表，逗号分隔
-        /// </summary>
-        public string PostNames { get; set; } = string.Empty;
+        public int Status { get; set; }
 
         /// <summary>
         /// 备注
@@ -634,17 +659,15 @@ namespace Lean.Hbt.Application.Dtos.Identity
             UserName = string.Empty;
             NickName = string.Empty;
             EnglishName = string.Empty;
-            UserType = string.Empty;
-            Password = string.Empty;
             PhoneNumber = string.Empty;
             Email = string.Empty;
-            Gender = string.Empty;
             Avatar = string.Empty;
-            DeptName = string.Empty;
-            RoleNames = string.Empty;
-            PostNames = string.Empty;
             Remark = string.Empty;
         }
+        /// <summary>
+        /// 租户ID
+        /// </summary>
+        public long TenantId { get; set; }
 
         /// <summary>
         /// 用户名
@@ -664,12 +687,8 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// <summary>
         /// 用户类型(0=系统用户,1=普通用户)
         /// </summary>
-        public string UserType { get; set; }
+        public int UserType { get; set; } 
 
-        /// <summary>
-        /// 密码
-        /// </summary>
-        public string Password { get; set; } = string.Empty;
 
         /// <summary>
         /// 手机号码
@@ -684,27 +703,17 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// <summary>
         /// 性别(0=未知,1=男,2=女)
         /// </summary>
-        public string Gender { get; set; }
+        public int Gender { get; set; }
 
         /// <summary>
         /// 头像
         /// </summary>
         public string Avatar { get; set; } = string.Empty;
-
+        
         /// <summary>
-        /// 部门名称
+        /// 状态（0正常 1停用）
         /// </summary>
-        public string DeptName { get; set; } = string.Empty;
-
-        /// <summary>
-        /// 角色名称列表，多个逗号分隔
-        /// </summary>
-        public string RoleNames { get; set; } = string.Empty;
-
-        /// <summary>
-        /// 岗位名称列表，多个逗号分隔
-        /// </summary>
-        public string PostNames { get; set; } = string.Empty;
+        public int Status { get; set; } 
 
         /// <summary>
         /// 备注

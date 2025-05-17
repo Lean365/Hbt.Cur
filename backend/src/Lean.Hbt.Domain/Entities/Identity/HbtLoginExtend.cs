@@ -16,7 +16,7 @@ namespace Lean.Hbt.Domain.Entities.Identity
     /// <summary>
     /// 登录扩展实体
     /// </summary>
-    [SugarTable("hbt_id_login_extend", "登录扩展表")]
+    [SugarTable("hbt_identity_login_extend", "登录扩展表")]
     [SugarIndex("ix_login_tenant_user", nameof(TenantId), OrderByType.Asc, nameof(UserId), OrderByType.Asc, nameof(FirstLoginDeviceId), OrderByType.Asc,true)]
     public class HbtLoginExtend : HbtBaseEntity
     {

@@ -167,10 +167,10 @@ const getInfo = async (roleId: number) => {
   try {
     loading.value = true
     const res = await getRole(roleId)
-    if (res.code === 200) {
-      Object.assign(form, res.data)
+    if (res.data.code === 200) {
+      Object.assign(form, res.data.data)
     } else {
-      message.error(res.msg || t('common.failed'))
+      message.error(res.data.msg || t('common.failed'))
     }
   } catch (error) {
     console.error(error)
@@ -192,11 +192,11 @@ const transformMenuToTreeData = (menus: Menu[]): DataNode[] => {
 const getMenuTree = async () => {
   try {
     const res = await getCurrentUserMenus()
-    if (res.code === 200) {
-      menuTree.value = transformMenuToTreeData(res.data)
+    if (res.data.code === 200) {
+      menuTree.value = transformMenuToTreeData(res.data.data)
     } else {
       console.error('获取菜单树失败:', res)
-      message.error(res.msg || '获取菜单树失败')
+      message.error(res.data.msg || '获取菜单树失败')
     }
   } catch (error) {
     console.error('获取菜单树出错:', error)
@@ -256,12 +256,12 @@ const handleSubmit = () => {
       } else {
         res = await createRole(form)
       }
-      if (res.code === 200) {
+      if (res.data.code === 200) {
         message.success(t('common.save.success'))
         emit('success')
         handleVisibleChange(false)
       } else {
-        message.error(res.msg || t('common.save.failed'))
+        message.error(res.data.msg || t('common.save.failed'))
       }
     } catch (error) {
       console.error(error)

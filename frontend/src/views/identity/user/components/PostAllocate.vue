@@ -1,108 +1,158 @@
 <template>
   <a-modal
     :open="visible"
-    title="分配岗位"
-    :confirm-loading="confirmLoading"
-    @update:open="(val) => $emit('update:visible', val)"
+    :title="t('identity.user.allocatePost')"
+    :width="500"
+    :mask-closable="false"
+    @cancel="handleCancel"
     @ok="handleSubmit"
   >
-    <a-transfer
-      v-model:targetKeys="targetKeys"
-      :data-source="postList"
-      :titles="['未分配', '已分配']"
-      :render="(item) => item.title"
-      :disabled="false"
-    />
+    <a-form :model="formState" :rules="rules" ref="formRef">
+      <a-form-item name="postIds" :label="t('identity.user.postIds')">
+        <a-select
+          v-model:value="formState.postIds"
+          mode="multiple"
+          :options="postOptions"
+          :placeholder="t('identity.user.postIds.placeholder')"
+          style="width: 100%"
+        />
+      </a-form-item>
+    </a-form>
   </a-modal>
 </template>
 
-<script setup lang="ts">
-import { ref, watch } from 'vue'
+<script lang="ts" setup>
+import { ref, reactive, onMounted, watch, nextTick } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { message } from 'ant-design-vue'
-import type { TransferItem } from 'ant-design-vue/es/transfer'
-import type { Post } from '@/types/identity/post'
-import { getPagedList } from '@/api/identity/post'
-import { getUserPostList, allocateUserPost } from '@/api/identity/userPost'
+import { getUserPosts, allocateUserPosts } from '@/api/identity/user'
+import { getPostOptions } from '@/api/identity/post'
 
-interface Props {
+const { t } = useI18n()
+
+const props = defineProps<{
   visible: boolean
-  userId?: number
-}
-
-const props = withDefaults(defineProps<Props>(), {
-  visible: false,
-  userId: undefined
-})
-
-const emit = defineEmits<{
-  (e: 'update:visible', visible: boolean): void
-  (e: 'success'): void
+  userId: number
 }>()
 
-// 岗位列表
-const postList = ref<TransferItem[]>([])
-// 已选岗位
-const targetKeys = ref<string[]>([])
-// 确认加载
-const confirmLoading = ref(false)
+const emit = defineEmits(['update:visible', 'success'])
 
-// 加载岗位列表
-const loadPostList = async () => {
+const formRef = ref()
+const postOptions = ref<{ label: string; value: number }[]>([])
+
+const formState = reactive({
+  postIds: [] as number[]
+})
+
+const rules = {
+  postIds: [{ required: true, message: t('identity.user.postIds.required') }]
+}
+
+// 获取岗位列表
+const fetchPostList = async () => {
   try {
-    const { data } = await getPagedList({
-      pageIndex: 1,
-      pageSize: 100
-    })
-    postList.value = data.rows.map(post => ({
-      key: post.postId.toString(),
-      title: post.postName,
-      description: post.remark
-    }))
-  } catch (err) {
-    console.error('加载岗位列表失败:', err)
+    console.log('开始获取岗位列表数据')
+    const res = await getPostOptions()
+    console.log('岗位列表接口返回数据:', res)
+    if (res.data.code === 200) {
+      postOptions.value = res.data.data
+      console.log('岗位选项数据:', postOptions.value)
+      return true
+    }
+    return false
+  } catch (error) {
+    console.error('获取岗位列表失败:', error)
+    message.error(t('common.failed'))
+    return false
   }
 }
 
-// 加载用户岗位
-const loadUserPosts = async () => {
-  if (!props.userId) return
+// 获取用户岗位
+const fetchUserPosts = async () => {
   try {
-    const { data } = await getUserPostList(props.userId)
-    targetKeys.value = data.map(id => id.toString())
-  } catch (err) {
-    console.error('加载用户岗位失败:', err)
+    console.log('开始获取用户岗位数据, userId:', props.userId)
+    const res = await getUserPosts(props.userId)
+    console.log('用户岗位接口返回数据:', res)
+    if (res.data.code === 200) {
+      const postIds = res.data.data.map((item: any) => Number(item.postId))
+      console.log('转换后的用户岗位ID:', postIds)
+      return postIds
+    }
+    return []
+  } catch (error) {
+    console.error('获取用户岗位失败:', error)
+    message.error(t('common.failed'))
+    return []
   }
 }
 
-// 提交分配
+// 取消
+const handleCancel = () => {
+  emit('update:visible', false)
+}
+
+// 提交
 const handleSubmit = async () => {
-  if (!props.userId) return
   try {
-    confirmLoading.value = true
-    await allocateUserPost({
-      userId: props.userId,
-      postIds: targetKeys.value.map(key => parseInt(key))
-    })
-    message.success('分配成功')
-    emit('success')
-    emit('update:visible', false)
-  } catch (err) {
-    console.error('分配岗位失败:', err)
-  } finally {
-    confirmLoading.value = false
+    console.log('开始提交岗位分配')
+    await formRef.value.validate()
+    console.log('表单验证通过')
+    
+    // 确保 postIds 不为空
+    if (!formState.postIds || formState.postIds.length === 0) {
+      console.warn('岗位ID为空')
+      message.warning(t('identity.user.postIds.required'))
+      return
+    }
+    
+    console.log('准备提交的岗位ID:', formState.postIds)
+    const res = await allocateUserPosts(props.userId, formState.postIds)
+    console.log('分配岗位接口返回:', res)
+    
+    if (res.data.code === 200) {
+      message.success(t('common.success'))
+      emit('success')
+      formState.postIds = []
+      handleCancel()
+    } else {
+      message.error(res.data.msg || t('common.failed'))
+    }
+  } catch (error) {
+    console.error('分配岗位失败:', error)
+    message.error(t('common.failed'))
   }
 }
 
 // 监听弹窗显示
 watch(
   () => props.visible,
-  (val) => {
+  async (val) => {
+    console.log('弹窗显示状态变化:', val)
     if (val) {
-      loadPostList()
-      loadUserPosts()
+      // 先获取岗位列表
+      const listLoaded = await fetchPostList()
+      console.log('岗位列表加载状态:', listLoaded)
+      if (!listLoaded) {
+        message.error(t('common.failed'))
+        return
+      }
+      
+      // 等待列表渲染完成
+      await nextTick()
+      console.log('列表渲染完成')
+      
+      // 获取用户岗位并设置选中值
+      const postIds = await fetchUserPosts()
+      console.log('获取到的用户岗位ID:', postIds)
+      if (postIds.length > 0) {
+        formState.postIds = postIds
+        console.log('设置选中岗位:', formState.postIds)
+      }
     } else {
-      targetKeys.value = []
+      formState.postIds = []
+      console.log('清空选中岗位')
     }
-  }
+  },
+  { immediate: true }
 )
 </script> 

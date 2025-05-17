@@ -17,8 +17,12 @@ export interface User extends HbtBaseEntity {
   gender: number;
   avatar: string;
   status: number;
-  lastPasswordChangeTime: string;
-  remark: string;
+  lastPasswordChangeTime: string;  
+  lockEndTime?: string;
+  lockReason?: string;
+  isLock?: number;
+  errorLimit?: number;
+  loginCount?: number;
 }
 
 /**
@@ -33,6 +37,7 @@ export interface UserQuery extends HbtPagedQuery {
   status?: number;
   userType?: number;
   deptId?: number;
+  sheetName?: string;
 }
 
 /**
@@ -160,3 +165,42 @@ export interface UserForm {
  * 用户分页结果
  */
 export type UserPageResult = HbtPagedResult<User>
+
+/**
+ * 用户角色DTO
+ */
+export interface HbtUserRoleDto {
+  id: number;
+  userId: number;
+  roleId: number;
+  roleName: string;
+  roleKey: string;
+  createTime: string;
+  createBy: string;
+}
+
+/**
+ * 用户部门DTO
+ */
+export interface HbtUserDeptDto {
+  id: number;
+  userId: number;
+  deptId: number;
+  deptName: string;
+  deptCode: string;
+  createTime: string;
+  createBy: string;
+}
+
+/**
+ * 用户岗位DTO
+ */
+export interface HbtUserPostDto {
+  id: number;
+  userId: number;
+  postId: number;
+  postName: string;
+  postCode: string;
+  createTime: string;
+  createBy: string;
+}

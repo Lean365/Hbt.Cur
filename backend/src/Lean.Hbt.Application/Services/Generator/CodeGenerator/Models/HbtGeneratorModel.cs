@@ -26,6 +26,16 @@ public class HbtGeneratorModel
     /// 模板信息
     /// </summary>
     public HbtGenTemplate Template { get; set; }
+
+    /// <summary>
+    /// 列信息
+    /// </summary>
+    public List<HbtGenColumn> Columns { get; set; }
+
+    /// <summary>
+    /// DTO类型
+    /// </summary>
+    public string DtoType { get; set; }
 }
 
 /// <summary>

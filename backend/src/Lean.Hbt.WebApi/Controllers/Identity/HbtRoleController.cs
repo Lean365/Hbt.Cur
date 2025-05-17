@@ -7,8 +7,10 @@
 // 描述   : 角色控制器
 //===================================================================
 
+using Microsoft.AspNetCore.Mvc;
 using Lean.Hbt.Application.Dtos.Identity;
 using Lean.Hbt.Application.Services.Identity;
+
 
 namespace Lean.Hbt.WebApi.Controllers.Identity
 {
@@ -182,6 +184,74 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         public async Task<IActionResult> GetOptionsAsync()
         {
             var result = await _roleService.GetOptionsAsync();
+            return Success(result);
+        }
+
+        /// <summary>
+        /// 获取角色部门列表
+        /// </summary>
+        /// <param name="roleId">角色ID</param>
+        /// <returns>角色部门列表</returns>
+        [HttpGet("{roleId}/depts")]
+        [HbtPerm("identity:role:query")]
+        public async Task<IActionResult> GetRoleDeptsAsync(long roleId)
+        {
+            var result = await _roleService.GetRoleDeptIdsAsync(roleId);
+            return Success(result);
+        }
+
+        /// <summary>
+        /// 获取角色菜单列表
+        /// </summary>
+        /// <param name="roleId">角色ID</param>
+        /// <returns>角色菜单列表</returns>
+        [HttpGet("{roleId}/menus")]
+        [HbtPerm("identity:role:query")]
+        public async Task<IActionResult> GetRoleMenusAsync(long roleId)
+        {
+            var menus = await _roleService.GetRoleMenuIdsAsync(roleId);
+            return Success(menus);
+        }
+
+        /// <summary>
+        /// 分配角色菜单
+        /// </summary>
+        /// <param name="roleId">角色ID</param>
+        /// <param name="menuIds">菜单ID列表</param>
+        /// <returns>是否成功</returns>
+        [HttpPut("{roleId}/menus")]
+        [HbtPerm("identity:role:allocate")]
+        public async Task<IActionResult> AllocateRoleMenusAsync(long roleId, [FromBody] long[] menuIds)
+        {
+            var result = await _roleService.AllocateRoleMenusAsync(roleId, menuIds);
+            return Success(result);
+        }
+
+        /// <summary>
+        /// 分配角色用户
+        /// </summary>
+        /// <param name="roleId">角色ID</param>
+        /// <param name="userIds">用户ID列表</param>
+        /// <returns>是否成功</returns>
+        [HttpPut("{roleId}/users")]
+        [HbtPerm("identity:role:allocate")]
+        public async Task<IActionResult> AllocateRoleUsersAsync(long roleId, [FromBody] long[] userIds)
+        {
+            var result = await _roleService.AllocateRoleUsersAsync(roleId, userIds);
+            return Success(result);
+        }
+
+        /// <summary>
+        /// 分配角色部门
+        /// </summary>
+        /// <param name="roleId">角色ID</param>
+        /// <param name="deptIds">部门ID列表</param>
+        /// <returns>是否成功</returns>
+        [HttpPut("{roleId}/depts")]
+        [HbtPerm("identity:role:allocate")]
+        public async Task<IActionResult> AllocateRoleDeptsAsync(long roleId, [FromBody] long[] deptIds)
+        {
+            var result = await _roleService.AllocateRoleDeptsAsync(roleId, deptIds);
             return Success(result);
         }
     }

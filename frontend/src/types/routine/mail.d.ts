@@ -59,6 +59,10 @@ export interface HbtMailCreateDto {
   mailCc?: string
   /** 附件 */
   mailAttachments?: string
+  /** 发送状态（0失败 1成功） */
+  mailStatus: number
+  /** 备注 */
+  remark?: string
 }
 
 /** 邮件更新DTO */

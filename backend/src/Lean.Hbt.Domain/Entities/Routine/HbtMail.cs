@@ -7,6 +7,7 @@
 // 描述   : 邮件实体
 //===================================================================
 
+using Lean.Hbt.Domain.Entities.Identity;
 using SqlSugar;
 
 namespace Lean.Hbt.Domain.Entities.Routine
@@ -14,7 +15,7 @@ namespace Lean.Hbt.Domain.Entities.Routine
     /// <summary>
     /// 邮件实体
     /// </summary>
-    [SugarTable("hbt_rou_mail", "邮件")]
+    [SugarTable("hbt_routine_mail", "邮件")]
     [SugarIndex("index_mail_to", nameof(MailTo), OrderByType.Asc)]
     [SugarIndex("index_mail_status", nameof(MailStatus), OrderByType.Asc)]
     [SugarIndex("index_mail_send_time", nameof(MailSendTime), OrderByType.Desc)]
@@ -109,5 +110,17 @@ namespace Lean.Hbt.Domain.Entities.Routine
         /// </summary>
         [SugarColumn(ColumnName = "mail_last_read_time", ColumnDescription = "最后阅读时间", IsNullable = true, ColumnDataType = "datetime")]
         public DateTime? MailLastReadTime { get; set; }
+
+        /// <summary>
+        /// 租户ID
+        /// </summary>
+        [SugarColumn(ColumnName = "tenant_id", ColumnDescription = "租户ID", ColumnDataType = "bigint", IsNullable = false)]
+        public long TenantId { get; set; }
+
+        /// <summary>
+        /// 租户
+        /// </summary>
+        [Navigate(NavigateType.OneToOne, nameof(TenantId))]
+        public HbtTenant? Tenant { get; set; }
     }
 }

@@ -29,6 +29,7 @@ using NLog.Web;
 using Quartz;
 using SqlSugar;
 
+
 var builder = WebApplication.CreateBuilder(args);
 var logger = LogManager.Setup()
                       .LoadConfigurationFromFile("nlog.config")
@@ -125,7 +126,7 @@ try
                 .WithMethods(corsMethods)
                 .WithHeaders(corsHeaders)
                 .AllowCredentials()
-                .WithExposedHeaders("X-Device-Id", "X-Device-Name", "X-Device-Type", "X-Device-Model",
+                .WithExposedHeaders("Content-Disposition", "X-Device-Id", "X-Device-Name", "X-Device-Type", "X-Device-Model",
                     "X-OS-Type", "X-OS-Version", "X-Browser-Type", "X-Browser-Version",
                     "X-Resolution", "X-Location", "X-Device-Token");
         });
@@ -177,6 +178,9 @@ try
 
     // 配置安全选项
     builder.Services.Configure<HbtSecurityOptions>(builder.Configuration.GetSection("Security"));
+
+    // 配置密码策略选项
+    builder.Services.Configure<HbtPasswordPolicyOptions>(builder.Configuration.GetSection("Security:PasswordPolicy"));
 
     // 配置验证码选项
     builder.Services.Configure<HbtCaptchaOptions>(builder.Configuration.GetSection("Captcha"));

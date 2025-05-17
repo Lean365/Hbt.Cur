@@ -48,9 +48,10 @@ namespace Lean.Hbt.WebApi.Controllers.Routine
         /// <returns>通知分页列表</returns>
         [HttpGet("list")]
         [HbtPerm("routine:notice:list")]
-        public async Task<HbtPagedResult<HbtNoticeDto>> GetListAsync([FromQuery] HbtNoticeQueryDto query)
+        public async Task<IActionResult> GetListAsync([FromQuery] HbtNoticeQueryDto query)
         {
-            return await _noticeService.GetListAsync(query);
+            var result = await _noticeService.GetListAsync(query);
+            return Success(result);
         }
 
         /// <summary>

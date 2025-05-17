@@ -52,9 +52,10 @@ namespace Lean.Hbt.WebApi.Controllers.Routine
         /// <returns>邮件分页列表</returns>
         [HttpGet("list")]
         [HbtPerm("routine:mail:list")]
-        public async Task<HbtPagedResult<HbtMailDto>> GetListAsync([FromQuery] HbtMailQueryDto query)
+        public async Task<IActionResult> GetListAsync([FromQuery] HbtMailQueryDto query)
         {
-            return await _mailService.GetListAsync(query);
+            var result = await _mailService.GetListAsync(query);
+            return Success(result);
         }
 
         /// <summary>

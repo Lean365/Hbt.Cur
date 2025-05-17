@@ -4,87 +4,128 @@ export default {
       title: 'Menu Management',
       columns: {
         menuName: 'Menu Name',
-        icon: 'Icon',
+        transKey: 'I18n Key',
+        parentId: 'Parent Menu',
         orderNum: 'Order',
-        perms: 'Permission',
+        path: 'Route Path',
         component: 'Component Path',
+        queryParams: 'Route Params',
+        isExternal: 'External Link',
+        isCache: 'Cache',
+        menuType: 'Menu Type',
+        visible: 'Visibility',
         status: 'Status',
-        createTime: 'Create Time',
+        perms: 'Permission Key',
+        icon: 'Icon',
+        tenantId: 'Tenant ID',
+        id: 'ID',
+        createBy: 'Created By',
+        createTime: 'Created Time',
+        updateBy: 'Updated By',
+        updateTime: 'Updated Time',
+        deleteBy: 'Deleted By',
+        deleteTime: 'Deleted Time',
+        isDeleted: 'Deleted',
+        remark: 'Remark',
         action: 'Action'
       },
-      form: {
-        base: {
-          parentMenu: {
-            label: 'Parent Menu',
-            placeholder: 'Please select parent menu',
-            root: 'Root Menu'
-          },
-          name: {
-            label: 'Menu Name',
-            placeholder: 'Please input menu name'
-          },
-          transKey: {
-            label: 'Translation Key',
-            placeholder: 'Please input translation key',
-            preview: 'Preview',
-            notFound: 'Translation not found'
-          },
-          orderNum: {
-            label: 'Display Order'
+      fields: {
+        menuName: {
+          label: 'Menu Name',
+          placeholder: 'Please enter menu name',
+          validation: {
+            required: 'Please enter menu name',
+            length: 'Menu name length must be between 2 and 50 characters'
           }
         },
-        display: {
-          type: {
-            label: 'Menu Type',
+        transKey: {
+          label: 'I18n Key',
+          placeholder: 'Please enter i18n key'
+        },
+        parentId: {
+          label: 'Parent Menu',
+          placeholder: 'Please select parent menu',
+          root: 'Root Menu'
+        },
+        orderNum: {
+          label: 'Order',
+          placeholder: 'Please enter order',
+          validation: {
+            required: 'Please enter order'
+          }
+        },
+        path: {
+          label: 'Route Path',
+          placeholder: 'Please enter route path'
+        },
+        component: {
+          label: 'Component Path',
+          placeholder: 'Please enter component path'
+        },
+        queryParams: {
+          label: 'Route Params',
+          placeholder: 'Please enter route params'
+        },
+        isExternal: {
+          label: 'External Link',
+          placeholder: 'Please select if external link',
+          options: {
+            yes: 'Yes',
+            no: 'No'
+          }
+        },
+        isCache: {
+          label: 'Cache',
+          placeholder: 'Please select if cache',
+          options: {
+            yes: 'Yes',
+            no: 'No'
+          }
+        },
+        menuType: {
+          label: 'Menu Type',
+          options: {
             directory: 'Directory',
             menu: 'Menu',
             button: 'Button'
           },
-          icon: {
-            label: 'Menu Icon',
-            placeholder: 'Please input menu icon'
-          },
-          isFrame: {
-            label: 'External Link',
-            yes: 'Yes',
-            no: 'No'
-          },
-          isCache: {
-            label: 'Cache',
-            yes: 'Yes',
-            no: 'No'
-          },
-          visible: {
-            label: 'Display Status',
+          validation: {
+            required: 'Please select menu type'
+          }
+        },
+        visible: {
+          label: 'Visibility',
+          placeholder: 'Please select visibility',
+          options: {
             show: 'Show',
             hide: 'Hide'
-          },
-          status: {
-            label: 'Menu Status',
+          }
+        },
+        status: {
+          label: 'Status',
+          placeholder: 'Please select status',
+          options: {
             normal: 'Normal',
             disabled: 'Disabled'
           }
         },
-        route: {
-          path: {
-            label: 'Route Path',
-            placeholder: 'Please input route path'
-          },
-          component: {
-            label: 'Component Path',
-            placeholder: 'Please input component path'
-          },
-          query: {
-            label: 'Route Parameters',
-            placeholder: 'Please input route parameters'
-          }
+        perms: {
+          label: 'Permission Key',
+          placeholder: 'Please enter permission key'
         },
-        permission: {
-          perms: {
-            label: 'Permission',
-            placeholder: 'Please input permission'
-          }
+        icon: {
+          label: 'Menu Icon',
+          placeholder: 'Please enter menu icon'
+        },
+        tenantId: {
+          label: 'Tenant ID',
+          placeholder: 'Please enter tenant ID'
         }
+      },
+      dialog: {
+        create: 'Add Menu',
+        update: 'Edit Menu',
+        delete: 'Delete Menu'
       },
       operation: {
         add: {
@@ -94,16 +135,16 @@ export default {
         },
         edit: {
           title: 'Edit Menu',
-          success: 'Modified successfully',
-          failed: 'Modify failed'
+          success: 'Edited successfully',
+          failed: 'Edit failed'
         },
         delete: {
           title: 'Delete Menu',
-          confirm: 'Are you sure to delete this menu?',
+          confirm: 'Are you sure you want to delete this menu?',
           success: 'Deleted successfully',
           failed: 'Delete failed'
         }
       }
     }
   }
-} 
+}

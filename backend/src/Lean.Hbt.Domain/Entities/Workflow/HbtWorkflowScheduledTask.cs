@@ -9,16 +9,15 @@
 // 描述    : 工作流定时任务实体
 //===================================================================
 
-using System;
+using Lean.Hbt.Domain.Entities.Identity;
 using SqlSugar;
-using Lean.Hbt.Common.Enums;
 
 namespace Lean.Hbt.Domain.Entities.Workflow
 {
     /// <summary>
     /// 工作流定时任务实体
     /// </summary>
-    [SugarTable("hbt_wf_scheduled_task", "工作流定时任务表")]
+    [SugarTable("hbt_workflow_scheduled_task", "工作流定时任务表")]
     public class HbtWorkflowScheduledTask : HbtBaseEntity
     {
         /// <summary>
@@ -80,6 +79,17 @@ namespace Lean.Hbt.Domain.Entities.Workflow
         /// </summary>
         [SugarColumn(ColumnName = "task_parameters", ColumnDescription = "任务参数(JSON格式)", ColumnDataType = "text", IsNullable = true)]
         public string? TaskParameters { get; set; }
+        /// <summary>
+        /// 租户ID
+        /// </summary>
+        [SugarColumn(ColumnName = "tenant_id", ColumnDescription = "租户ID", ColumnDataType = "bigint", IsNullable = false)]
+        public long TenantId { get; set; }
+
+        /// <summary>
+        /// 租户
+        /// </summary>
+        [Navigate(NavigateType.OneToOne, nameof(TenantId))]
+        public HbtTenant? Tenant { get; set; }
 
         /// <summary>
         /// 工作流实例
@@ -93,4 +103,4 @@ namespace Lean.Hbt.Domain.Entities.Workflow
         [Navigate(NavigateType.OneToOne, nameof(NodeId))]
         public HbtWorkflowNode? Node { get; set; }
     }
-} 
+}

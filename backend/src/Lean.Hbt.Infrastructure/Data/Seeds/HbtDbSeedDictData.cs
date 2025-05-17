@@ -80,7 +80,7 @@ public class HbtDbSeedDictData
             {
                 DictType = "sys_yes_no",
                 DictLabel = "是",
-                DictValue = "1",
+                DictValue = "0",
                 OrderNum = 1,
                 Status = 0,
                 TenantId = 0,
@@ -96,7 +96,7 @@ public class HbtDbSeedDictData
             {
                 DictType = "sys_yes_no",
                 DictLabel = "否",
-                DictValue = "0",
+                DictValue = "1",
                 OrderNum = 2,
                 Status = 0,
                 TenantId = 0,
@@ -456,13 +456,45 @@ public class HbtDbSeedDictData
                 UpdateBy = "system",
                 UpdateTime = DateTime.Now
             },
+             new HbtDictData
+            {
+                DictType = "sys_user_type",
+                DictLabel = "管理员",
+                DictValue = "2",
+                OrderNum = 2,
+                Status = 0,
+                TenantId = 0,
+                CssClass = 2,
+                ListClass = 2,
+                Remark = "普通用户",
+                CreateBy = "system",
+                CreateTime = DateTime.Now,
+                UpdateBy = "system",
+                UpdateTime = DateTime.Now
+            },
+            new HbtDictData
+            {
+                DictType = "sys_user_type",
+                DictLabel = "OAuth用户",
+                DictValue = "3",
+                OrderNum = 2,
+                Status = 0,
+                TenantId = 0,
+                CssClass = 2,
+                ListClass = 2,
+                Remark = "OAuth用户",
+                CreateBy = "system",
+                CreateTime = DateTime.Now,
+                UpdateBy = "system",
+                UpdateTime = DateTime.Now
+            },
 
             // 是否默认
             new HbtDictData
             {
                 DictType = "sys_is_default",
                 DictLabel = "是",
-                DictValue = "1",
+                DictValue = "0",
                 OrderNum = 1,
                 Status = 0,
                 TenantId = 0,
@@ -478,7 +510,7 @@ public class HbtDbSeedDictData
             {
                 DictType = "sys_is_default",
                 DictLabel = "否",
-                DictValue = "0",
+                DictValue = "1",
                 OrderNum = 2,
                 Status = 0,
                 TenantId = 0,
@@ -578,7 +610,7 @@ public class HbtDbSeedDictData
             {
                 DictType = "sys_IsExternal",
                 DictLabel = "是",
-                DictValue = "1",
+                DictValue = "0",
                 OrderNum = 1,
                 Status = 0,
                 TenantId = 0,
@@ -594,7 +626,7 @@ public class HbtDbSeedDictData
             {
                 DictType = "sys_IsExternal",
                 DictLabel = "否",
-                DictValue = "0",
+                DictValue = "1",
                 OrderNum = 2,
                 Status = 0,
                 TenantId = 0,
@@ -612,7 +644,7 @@ public class HbtDbSeedDictData
             {
                 DictType = "sys_is_cache",
                 DictLabel = "是",
-                DictValue = "1",
+                DictValue = "0",
                 OrderNum = 1,
                 Status = 0,
                 TenantId = 0,
@@ -628,7 +660,7 @@ public class HbtDbSeedDictData
             {
                 DictType = "sys_is_cache",
                 DictLabel = "否",
-                DictValue = "0",
+                DictValue = "1",
                 OrderNum = 2,
                 Status = 0,
                 TenantId = 0,
@@ -696,7 +728,7 @@ public class HbtDbSeedDictData
             {
                 DictType = "sys_is_visible",
                 DictLabel = "显示",
-                DictValue = "1",
+                DictValue = "0",
                 OrderNum = 1,
                 Status = 0,
                 TenantId = 0,
@@ -712,7 +744,7 @@ public class HbtDbSeedDictData
             {
                 DictType = "sys_is_visible",
                 DictLabel = "隐藏",
-                DictValue = "0",
+                DictValue = "1",
                 OrderNum = 2,
                 Status = 0,
                 TenantId = 0,

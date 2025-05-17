@@ -47,7 +47,7 @@ public interface IHbtGenTableService
     /// </summary>
     /// <param name="input">创建参数</param>
     /// <returns>创建结果</returns>
-    Task<HbtGenTableDto> CreateAsync(HbtGenTableDto input);
+    Task<HbtGenTableDto> CreateAsync(HbtGenTableCreateDto input);
 
     /// <summary>
     /// 更新表信息
@@ -75,6 +75,14 @@ public interface IHbtGenTableService
     Task<List<HbtGenTableDto>> ImportTablesAsync(HbtGenTableImportDto input);
 
     /// <summary>
+    /// 导入表及其所有字段信息
+    /// </summary>
+    /// <param name="databaseName">数据库名</param>
+    /// <param name="tableName">表名</param>
+    /// <returns>是否成功</returns>
+    Task<bool> ImportTableAndColumnsAsync(string databaseName, string tableName);
+
+    /// <summary>
     /// 导出表
     /// </summary>
     /// <returns>导出的表列表</returns>
@@ -84,14 +92,14 @@ public interface IHbtGenTableService
     /// 获取数据库列表
     /// </summary>
     /// <returns>数据库列表</returns>
-    Task<List<string>> GetDatabaseListAsync();
+    Task<List<string>> GetDatabaseListByDbAsync();
 
     /// <summary>
     /// 获取表列表
     /// </summary>
     /// <param name="databaseName">数据库名称</param>
     /// <returns>表列表</returns>
-    Task<List<HbtGenTableInfoDto>> GetTableListAsync(string databaseName);
+    Task<List<HbtGenTableInfoDto>> GetTableListByDbAsync(string databaseName);
 
     /// <summary>
     /// 获取表字段列表
@@ -99,7 +107,7 @@ public interface IHbtGenTableService
     /// <param name="databaseName">数据库名称</param>
     /// <param name="tableName">表名</param>
     /// <returns>字段列表</returns>
-    Task<List<HbtGenTableColumnInfoDto>> GetTableColumnListAsync(string databaseName, string tableName);
+    Task<List<HbtGenTableColumnInfoDto>> GetTableColumnListByDbAsync(string databaseName, string tableName);
 
     /// <summary>
     /// 同步表结构
@@ -107,46 +115,6 @@ public interface IHbtGenTableService
     /// <param name="id">表ID</param>
     /// <returns>是否同步成功</returns>
     Task<bool> SyncTableAsync(long id);
-
-    /// <summary>
-    /// 导入表及其所有字段信息
-    /// </summary>
-    /// <param name="databaseName">数据库名</param>
-    /// <param name="tableName">表名</param>
-    /// <returns>是否成功</returns>
-    Task<bool> ImportTableAndColumnsAsync(string databaseName, string tableName);
-
-    #endregion
-
-    #region 代码生成
-
-    /// <summary>
-    /// 预览代码
-    /// </summary>
-    /// <param name="id">表ID</param>
-    /// <returns>代码预览结果</returns>
-    Task<Dictionary<string, string>> PreviewCodeAsync(long id);
-
-    /// <summary>
-    /// 生成代码
-    /// </summary>
-    /// <param name="id">表ID</param>
-    /// <returns>是否生成成功</returns>
-    Task<bool> GenerateCodeAsync(long id);
-
-    /// <summary>
-    /// 批量生成代码
-    /// </summary>
-    /// <param name="ids">表ID集合</param>
-    /// <returns>生成结果</returns>
-    Task<string> BatchGenerateCodeAsync(long[] ids);
-
-    /// <summary>
-    /// 下载代码
-    /// </summary>
-    /// <param name="id">表ID</param>
-    /// <returns>代码文件字节数组</returns>
-    Task<byte[]> DownloadCodeAsync(long id);
 
     #endregion
 }

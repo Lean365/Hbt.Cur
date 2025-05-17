@@ -20,7 +20,7 @@ namespace Lean.Hbt.Domain.Entities.Identity
     /// 创建者: Lean365
     /// 创建时间: 2024-01-16
     /// </remarks>
-    [SugarTable("hbt_id_dept", "部门表")]
+    [SugarTable("hbt_identity_dept", "部门表")]
     [SugarIndex("ix_dept_name", nameof(DeptName), OrderByType.Asc)]
     [SugarIndex("ix_tenant_dept", nameof(TenantId), OrderByType.Asc)]
     public class HbtDept : HbtBaseEntity
@@ -70,8 +70,8 @@ namespace Lean.Hbt.Domain.Entities.Identity
         /// <summary>
         /// 租户ID
         /// </summary>
-        [SugarColumn(ColumnName = "tenant_id", ColumnDescription = "租户ID", ColumnDataType = "bigint", IsNullable = false, DefaultValue = "0")]
-        public long TenantId { get; set; } = 0;
+        [SugarColumn(ColumnName = "tenant_id", ColumnDescription = "租户ID", ColumnDataType = "bigint", IsNullable = false)]
+        public long TenantId { get; set; }
 
         /// <summary>
         /// 租户

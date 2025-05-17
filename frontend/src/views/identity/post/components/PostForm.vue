@@ -1,6 +1,6 @@
 <template>
   <a-modal
-    :visible="visible"
+    :open="visible"
     :title="title"
     :confirm-loading="confirmLoading"
     @update:visible="(val) => $emit('update:visible', val)"

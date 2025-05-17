@@ -16,7 +16,7 @@ namespace Lean.Hbt.Domain.Entities.Identity
     /// <summary>
     /// 设备扩展信息实体
     /// </summary>
-    [SugarTable("hbt_id_device_extend", "设备扩展信息表")]
+    [SugarTable("hbt_identity_device_extend", "设备扩展信息表")]
     [SugarIndex("ix_device_tenant_user", nameof(TenantId), OrderByType.Asc, nameof(UserId), OrderByType.Asc, nameof(DeviceId), OrderByType.Asc, true)]
     public class HbtDeviceExtend : HbtBaseEntity
     {

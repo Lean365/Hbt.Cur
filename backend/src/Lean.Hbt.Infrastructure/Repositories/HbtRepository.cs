@@ -273,7 +273,16 @@ namespace Lean.Hbt.Infrastructure.Repositories
                     baseEntity.CreateBy = userName;
                 }
             }
-            return await _db.Insertable(entities).ExecuteCommandAsync();
+
+            // 超大数据量时使用Fastest批量插入（同步）
+            if (entities.Count > 50000)
+            {
+                _db.Fastest<TEntity>().PageSize(100000).BulkCopy(entities);
+                return entities.Count;
+            }
+
+            // 普通批量插入使用PageSize分批（异步）
+            return await _db.Insertable(entities).PageSize(10000).ExecuteCommandAsync();
         }
 
         /// <summary>
@@ -309,7 +318,22 @@ namespace Lean.Hbt.Infrastructure.Repositories
                     baseEntity.UpdateBy = userName;
                 }
             }
-            return await _db.Updateable(entities).ExecuteCommandAsync();
+
+            // 超大数据量时使用分批更新
+            if (entities.Count > 50000)
+            {
+                var total = 0;
+                // 每批10000条
+                for (int i = 0; i < entities.Count; i += 10000)
+                {
+                    var batch = entities.Skip(i).Take(10000).ToList();
+                    total += await _db.Updateable(batch).ExecuteCommandAsync();
+                }
+                return total;
+            }
+
+            // 普通批量更新使用PageSize分批
+            return await _db.Updateable(entities).PageSize(10000).ExecuteCommandAsync();
         }
 
         /// <summary>

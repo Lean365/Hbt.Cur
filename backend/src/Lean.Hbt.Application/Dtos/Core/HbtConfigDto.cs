@@ -64,7 +64,7 @@ namespace Lean.Hbt.Application.Dtos.Core
         /// <summary>
         /// 租户ID
         /// </summary>
-        public long TenantId { get; set; } = 0;
+       public long TenantId { get; set; }
 
         /// <summary>
         /// 排序
@@ -173,7 +173,7 @@ namespace Lean.Hbt.Application.Dtos.Core
         /// <summary>
         /// 租户ID
         /// </summary>
-        public long TenantId { get; set; } = 0;
+       public long TenantId { get; set; }
 
         /// <summary>
         /// 排序
@@ -241,7 +241,7 @@ namespace Lean.Hbt.Application.Dtos.Core
         /// <summary>
         /// 租户ID
         /// </summary>
-        public long TenantId { get; set; } = 0;
+       public long TenantId { get; set; }
 
         /// <summary>
         /// 排序
@@ -302,7 +302,7 @@ namespace Lean.Hbt.Application.Dtos.Core
         /// <summary>
         /// 租户ID
         /// </summary>
-        public long TenantId { get; set; } = 0;
+       public long TenantId { get; set; }
 
         /// <summary>
         /// 排序
@@ -358,7 +358,7 @@ namespace Lean.Hbt.Application.Dtos.Core
         /// <summary>
         /// 租户ID
         /// </summary>
-        public long TenantId { get; set; } = 0;
+       public long TenantId { get; set; }
 
         /// <summary>
         /// 排序

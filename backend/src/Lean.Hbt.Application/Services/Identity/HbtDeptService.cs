@@ -7,23 +7,9 @@
 // 描述   : 部门服务实现
 //===================================================================
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Threading.Tasks;
-using Mapster;
-using SqlSugar;
 using Lean.Hbt.Application.Dtos.Identity;
-using Lean.Hbt.Common.Models;
 using Lean.Hbt.Domain.Entities.Identity;
-using Lean.Hbt.Common.Extensions;
-using Lean.Hbt.Domain.Repositories;
-using Lean.Hbt.Common.Enums;
-using Lean.Hbt.Common.Helpers;
-using Lean.Hbt.Domain.IServices.Extensions;
-using Lean.Hbt.Domain.IServices.Caching;
-using Microsoft.Extensions.Localization;
 using Microsoft.AspNetCore.Http;
 
 namespace Lean.Hbt.Application.Services.Identity
@@ -284,7 +270,7 @@ namespace Lean.Hbt.Application.Services.Identity
         /// <returns>部门选项列表</returns>
         public async Task<List<HbtSelectOption>> GetOptionsAsync()
         {
-            var depts = await _deptRepository.GetListAsync(x => x.Status == 1);
+            var depts = await _deptRepository.GetListAsync(x => x.Status == 0);
             return depts.Select(x => new HbtSelectOption
             {
                 Label = x.DeptName,

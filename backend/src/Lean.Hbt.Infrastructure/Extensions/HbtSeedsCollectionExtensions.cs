@@ -46,16 +46,8 @@ public static class HbtSeedsCollectionExtensions
         services.AddScoped<HbtDbSeedNatureDictData>();
         services.AddScoped<HbtDbSeedFileDictType>();
         services.AddScoped<HbtDbSeedFileDictData>();
-        services.AddScoped<HbtDbSeedProductionDictType>();
-        services.AddScoped<HbtDbSeedProductionDictData>();
-        services.AddScoped<HbtDbSeedPurchaseDictType>();
-        services.AddScoped<HbtDbSeedPurchaseDictData>();
-        services.AddScoped<HbtDbSeedQualityDictType>();
-        services.AddScoped<HbtDbSeedQualityDictData>();
-        services.AddScoped<HbtDbSeedSalesDictType>();
-        services.AddScoped<HbtDbSeedSalesDictData>();
-        services.AddScoped<HbtDbSeedUnDictType>();
-        services.AddScoped<HbtDbSeedUnDictData>();
+        services.AddScoped<HbtDbSeedGeneratorDictType>();
+        services.AddScoped<HbtDbSeedGeneratorDictData>();
         services.AddScoped<HbtCoreSeedTranslation>();
         services.AddScoped<HbtGeneratorSeedTranslation>();
         services.AddScoped<HbtIdentitySeedTranslation>();
@@ -63,6 +55,8 @@ public static class HbtSeedsCollectionExtensions
         services.AddScoped<HbtRoutineSeedTranslation>();
         services.AddScoped<HbtSignalRSeedTranslation>();
         services.AddScoped<HbtWorkflowSeedTranslation>();
+        services.AddScoped<HbtDbSeedGenConfig>();
+        services.AddScoped<HbtDbSeedGenTemplate>();
 
         // 最后注册主种子服务
         services.AddScoped<HbtDbSeed>();
