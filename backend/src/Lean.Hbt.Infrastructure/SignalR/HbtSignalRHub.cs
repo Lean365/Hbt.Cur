@@ -154,7 +154,7 @@ namespace Lean.Hbt.Infrastructure.SignalR
                     LastActivity = DateTime.Now,
                     LastHeartbeat = DateTime.Now,
                     OnlineStatus = 0,
-                    TenantId = 0,
+                    
                     GroupId = 0,
                     IpAddress = Context.GetHttpContext()?.Connection?.RemoteIpAddress?.ToString(),
                     UserAgent = Context.GetHttpContext()?.Request.Headers["User-Agent"].ToString()

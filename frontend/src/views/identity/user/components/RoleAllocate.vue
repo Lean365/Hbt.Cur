@@ -21,7 +21,7 @@
 import { ref, watch } from 'vue'
 import { message } from 'ant-design-vue'
 import type { TransferItem } from 'ant-design-vue/es/transfer'
-import type { Role } from '@/types/identity/role'
+import type { HbtRole } from '@/types/identity/role'
 import { getRoleOptions } from '@/api/identity/role'
 import { getUserRoles } from '@/api/identity/user'
 import { allocateUserRole } from '@/api/identity/userRole'

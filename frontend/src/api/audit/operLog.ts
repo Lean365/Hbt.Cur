@@ -16,7 +16,7 @@ import type { HbtOperLogDto, HbtOperLogQueryDto } from '@/types/audit/operLog'
  * @param query 查询参数
  * @returns 操作日志列表
  */
-export function getOperLogs(query: HbtOperLogQueryDto) {
+export function getOperLogList(query: HbtOperLogQueryDto) {
   return request<HbtApiResponse<HbtPagedResult<HbtOperLogDto>>>({
     url: '/api/HbtOperLog/list',
     method: 'get',
@@ -42,7 +42,7 @@ export function getOperLog(logId: number) {
  * @param sheetName 工作表名称
  * @returns Excel文件
  */
-export function exportOperLogs(query: HbtOperLogQueryDto, sheetName: string = '操作日志') {
+export function exportOperLog(query: HbtOperLogQueryDto, sheetName: string = '操作日志') {
   return request({
     url: '/api/HbtOperLog/export',
     method: 'get',
@@ -55,7 +55,7 @@ export function exportOperLogs(query: HbtOperLogQueryDto, sheetName: string = '�
  * 清空操作日志
  * @returns 是否成功
  */
-export function clearOperLogs() {
+export function clearOperLog() {
   return request<HbtApiResponse<boolean>>({
     url: '/api/HbtOperLog/clear',
     method: 'delete'

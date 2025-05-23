@@ -3,7 +3,6 @@
     <!-- 查询区域 -->
     <hbt-query
       v-show="showSearch"
-      :model="queryParams"
       :query-fields="queryFields"
       @search="handleQuery"
       @reset="resetQuery"
@@ -20,23 +19,18 @@
       @refresh="fetchData"
       @export="handleExport"
       @delete="handleBatchDelete"
+      @column-setting="handleColumnSetting"
       @toggle-search="toggleSearch"
+      @toggle-fullscreen="toggleFullscreen"
     />
 
     <!-- 数据表格 -->
     <hbt-table
       :loading="loading"
       :data-source="tableData"
-      :columns="columns"
-      :pagination="{
-        total: total,
-        current: queryParams.pageIndex,
-        pageSize: queryParams.pageSize,
-        showSizeChanger: true,
-        showQuickJumper: true,
-        showTotal: (total: number) => `共 ${total} 条`
-      }"
-      :row-key="(record: HbtLoginLogDto) => record.id"
+      :columns="columns.filter(col => col.key && columnSettings[col.key])"
+      :pagination="false"
+      row-key="loginLogId"
       v-model:selectedRowKeys="selectedRowKeys"
       :row-selection="{
         type: 'checkbox',
@@ -47,26 +41,77 @@
     >
       <!-- 登录状态列 -->
       <template #bodyCell="{ column, record }">
-        <template v-if="column.key === 'success'">
-          <a-tag :color="record.success ? 'success' : 'error'">
-            {{ record.success ? '成功' : '失败' }}
+        <template v-if="column.key === 'status'">
+          <a-tag :color="record.status === '0' ? 'success' : 'error'">
+            {{ record.status === '0' ? '成功' : '失败' }}
           </a-tag>
+        </template>
+        <template v-else-if="column.key === 'action'">
+          <hbt-operation
+            :record="record"
+            :show-detail="true"
+            :show-delete="true"
+            :detail-permission="['audit:loginlog:detail']"
+            :delete-permission="['audit:loginlog:delete']"
+            size="small"
+            @detail="handleViewDetail"
+            @delete="handleDelete"
+          />
         </template>
       </template>
     </hbt-table>
+
+    <!-- 分页组件 -->
+    <hbt-pagination
+      v-model:current="queryParams.pageIndex"
+      v-model:pageSize="queryParams.pageSize"
+      :total="total"
+      :show-size-changer="true"
+      :show-quick-jumper="true"
+      :show-total="(total: number, range: [number, number]) => h('span', null, `共 ${total} 条`)"
+      @change="handlePageChange"
+      @showSizeChange="handleSizeChange"
+    />
+    <!-- 登录详情对话框 -->
+    <login-log-detail
+      v-if="detailVisible"
+      :login-info="currentLogin"
+      @close="detailVisible = false"
+    />
+
+    <!-- 列设置抽屉 -->
+    <a-drawer
+      :visible="columnSettingVisible"
+      title="列设置"
+      placement="right"
+      width="300"
+      @close="columnSettingVisible = false"
+    >
+      <a-checkbox-group
+        :value="Object.keys(columnSettings).filter(key => columnSettings[key])"
+        @change="handleColumnSettingChange"
+        class="column-setting-group"
+      >
+        <div v-for="col in defaultColumns" :key="col.key" class="column-setting-item">
+          <a-checkbox :value="col.key" :disabled="col.key === 'action'">{{ col.title }}</a-checkbox>
+        </div>
+      </a-checkbox-group>
+    </a-drawer>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive } from 'vue'
-import { message } from 'ant-design-vue'
+import { ref, reactive, onMounted } from 'vue'
+import { message, Drawer, Checkbox, Button } from 'ant-design-vue'
 import type { TablePaginationConfig } from 'ant-design-vue'
 import type { QueryField } from '@/types/components/query'
-import type { HbtLoginLogDto, HbtLoginLogQueryDto } from '@/types/audit/loginLog'
-import { getLoginLogs, exportLoginLogs, clearLoginLogs } from '@/api/audit/loginLog'
+import type { HbtLoginLogDto, HbtLoginLogQuery, HbtLoginLog } from '@/types/audit/loginLog'
+import { getLoginLogList, exportLoginLog, clearLoginLog } from '@/api/audit/loginLog'
 import { useI18n } from 'vue-i18n'
+import LoginLogDetail from './components/LoginLogDetail.vue'
 
 const { t } = useI18n()
+
 // 查询字段定义
 const queryFields: QueryField[] = [
   {
@@ -82,7 +127,7 @@ const queryFields: QueryField[] = [
     placeholder: '请输入IP地址'
   },
   {
-    name: 'success',
+    name: 'loginSuccess',
     label: '登录状态',
     type: 'select',
     placeholder: '请选择登录状态',
@@ -146,7 +191,7 @@ const columns = [
   },
   {
     title: '登录状态',
-    dataIndex: 'success',
+    dataIndex: 'loginSuccess',
     key: 'success',
     width: 100
   },
@@ -158,29 +203,73 @@ const columns = [
   },
   {
     title: '消息',
-    dataIndex: 'message',
+    dataIndex: 'loginMessage',
     key: 'message',
     width: 200,
     ellipsis: true
   },
   {
-    title: '登录时间',
+    title: t('identity.user.table.columns.remark'),
+    dataIndex: 'remark',
+    key: 'remark',
+    width: 120
+  },
+  {
+    title: t('identity.user.table.columns.createBy'),
+    dataIndex: 'createBy',
+    key: 'createBy',
+    width: 120
+  },
+  {
+    title: t('identity.user.table.columns.createTime'),
     dataIndex: 'createTime',
     key: 'createTime',
     width: 180
+  },
+  {
+    title: t('identity.user.table.columns.updateBy'),
+    dataIndex: 'updateBy',
+    key: 'updateBy',
+    width: 120
+  },
+  {
+    title: t('identity.user.table.columns.updateTime'),
+    dataIndex: 'updateTime',
+    key: 'updateTime',
+    width: 180
+  },
+  {
+    title: t('identity.user.table.columns.deleteBy'),
+    dataIndex: 'deleteBy',
+    key: 'deleteBy',
+    width: 120
+  },
+  {
+    title: t('identity.user.table.columns.deleteTime'),
+    dataIndex: 'deleteTime',
+    key: 'deleteTime',
+    width: 180
+  },
+  {
+    title: t('common.table.header.operation'),
+    dataIndex: 'action',
+    key: 'action',
+    width: 150,
+    fixed: 'right',
+    ellipsis: true
   }
 ]
 
 // 状态定义
 const loading = ref(false)
-const tableData = ref<HbtLoginLogDto[]>([])
+const tableData = ref<HbtLoginLog[]>([])
 const total = ref(0)
-const queryParams = reactive<HbtLoginLogQueryDto>({
+const queryParams = reactive<HbtLoginLogQuery>({
   pageIndex: 1,
   pageSize: 10,
   userName: undefined,
   ipAddress: undefined,
-  success: undefined,
+  loginSuccess: undefined,
   loginType: undefined,
   loginStatus: undefined,
   startTime: undefined,
@@ -188,17 +277,26 @@ const queryParams = reactive<HbtLoginLogQueryDto>({
 })
 const selectedRowKeys = ref<(string | number)[]>([])
 const showSearch = ref(true)
+const detailRef = ref()
+const currentLogin = ref<HbtLoginLogDto>()
+const visibleColumns = ref<string[]>(columns.map(col => col.key))
+const defaultColumns = columns
+const columnSettings = ref<Record<string, boolean>>({})
+const columnSettingVisible = ref(false)
+const detailVisible = ref(false)
+const allColumnKeys = columns.map(col => col.key)
+const checkedColumnKeys = ref<string[]>(allColumnKeys)
 
 /** 获取表格数据 */
 const fetchData = async () => {
   loading.value = true
   try {
-    const res = await getLoginLogs(queryParams)
-    if (res.code === 200) {
-      tableData.value = res.data.rows
-      total.value = res.data.totalNum
+    const res = await getLoginLogList(queryParams)
+    if (res.data.code === 200) {
+      tableData.value = res.data.data.rows
+      total.value = res.data.data.totalNum
     } else {
-      message.error(res.msg || t('common.failed'))
+      message.error(res.data.msg || t('common.failed'))
     }
   } catch (error) {
     console.error('获取登录日志失败:', error)
@@ -218,7 +316,7 @@ const handleQuery = () => {
 const resetQuery = () => {
   queryParams.userName = undefined
   queryParams.ipAddress = undefined
-  queryParams.success = undefined
+  queryParams.loginSuccess = undefined
   queryParams.loginType = undefined
   queryParams.loginStatus = undefined
   queryParams.startTime = undefined
@@ -237,7 +335,7 @@ const handleTableChange = (pagination: TablePaginationConfig) => {
 /** 导出登录日志 */
 const handleExport = async () => {
   try {
-    await exportLoginLogs(queryParams, '登录日志')
+    await exportLoginLog(queryParams)
     message.success('导出成功')
   } catch (error) {
     console.error('导出登录日志失败:', error)
@@ -252,7 +350,7 @@ const handleBatchDelete = async () => {
     return
   }
   try {
-    await clearLoginLogs()
+    await clearLoginLog()
     message.success('清空成功')
     selectedRowKeys.value = []
     fetchData()
@@ -266,13 +364,100 @@ const handleBatchDelete = async () => {
 const toggleSearch = () => {
   showSearch.value = !showSearch.value
 }
+// 切换全屏
+const toggleFullscreen = (isFullscreen: boolean) => {
+  console.log('切换全屏状态:', isFullscreen)
+}
+/** 查看详情 */
+const handleViewDetail = (record: HbtLoginLogDto) => {
+  currentLogin.value = record
+  detailRef.value?.open()
+}
+
+/** 处理列设置 */
+const handleColumnSetting = () => {
+  columnSettingVisible.value = true
+}
+
+const handleColumnSettingChange = (checkedKeys: (string | number | boolean)[]) => {
+  const settings: Record<string, boolean> = {}
+  defaultColumns.forEach(col => {
+    // 操作列始终为true
+    if (col.key === 'action') {
+      settings[col.key] = true
+    } else {
+      settings[col.key] = checkedKeys.includes(col.key)
+    }
+  })
+  columnSettings.value = settings
+  localStorage.setItem('loginLogColumnSettings', JSON.stringify(settings))
+}
+
+// 新增 handleDelete 方法
+const handleDelete = async (record: HbtLoginLogDto) => {
+  // 这里可根据实际API实现删除逻辑
+  // 示例：await deleteLoginLog(record.loginLogId)
+  // fetchData()
+}
 
 // 初始化加载数据
 fetchData()
+
+// 初始化列设置
+const initColumnSettings = () => {
+  // 每次刷新页面时清除localStorage
+  localStorage.removeItem('loginLogColumnSettings')
+  // 初始化所有列为false
+  columnSettings.value = Object.fromEntries(defaultColumns.map(col => [col.key, false]))
+  // 获取前6列（不包含操作列）
+  const firstColumns = defaultColumns.filter(col => col.key !== 'action').slice(0, 6)
+  // 设置前6列为true
+  firstColumns.forEach(col => {
+    columnSettings.value[col.key] = true
+  })
+  // 确保操作列显示
+  columnSettings.value['action'] = true
+}
+
+onMounted(() => {
+  initColumnSettings()
+})
+
+const handlePageChange = (page: number) => {
+  queryParams.pageIndex = page
+  fetchData()
+}
+const handleSizeChange = (size: number) => {
+  queryParams.pageSize = size
+  fetchData()
+}
 </script>
 
 <style lang="less" scoped>
 .login-log-container {
   padding: 16px;
+  background-color: #fff;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  .ant-table-wrapper {
+    flex: 1;
+  }
 }
-</style> 
+
+.column-setting-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.column-setting-item {
+  padding: 8px;
+  border-bottom: 1px solid var(--ant-color-split);
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+</style>

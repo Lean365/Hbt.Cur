@@ -29,7 +29,10 @@ namespace Lean.Hbt.Application.Dtos.Identity
             RoleKey = string.Empty;
             MenuIds = new List<long>();
             DeptIds = new List<long>();
-            CreateTime = DateTime.Now;
+            Remark = string.Empty;
+            CreateBy = string.Empty;
+            UpdateBy = string.Empty;
+            DeleteBy = string.Empty;
         }
 
         /// <summary>
@@ -59,6 +62,11 @@ namespace Lean.Hbt.Application.Dtos.Identity
         public int DataScope { get; set; }
 
         /// <summary>
+        /// 用户数
+        /// </summary>
+        public int UserCount { get; set; }
+
+        /// <summary>
         /// 状态（0正常 1停用）
         /// </summary>
         public int Status { get; set; }
@@ -69,14 +77,44 @@ namespace Lean.Hbt.Application.Dtos.Identity
         public long TenantId { get; set; }
 
         /// <summary>
+        /// 备注
+        /// </summary>
+        public string? Remark { get; set; }
+
+        /// <summary>
         /// 创建时间
         /// </summary>
         public DateTime CreateTime { get; set; }
 
         /// <summary>
-        /// 备注
+        /// 创建者
         /// </summary>
-        public string? Remark { get; set; }
+        public string CreateBy { get; set; } = string.Empty;
+
+        /// <summary>
+        /// 更新时间
+        /// </summary>
+        public DateTime UpdateTime { get; set; }
+
+        /// <summary>
+        /// 更新者
+        /// </summary>
+        public string UpdateBy { get; set; } = string.Empty;
+
+        /// <summary>
+        /// 是否删除
+        /// </summary>
+        public int IsDeleted { get; set; }
+
+        /// <summary>
+        /// 删除时间
+        /// </summary>
+        public DateTime DeleteTime { get; set; }
+
+        /// <summary>
+        /// 删除者
+        /// </summary>
+        public string DeleteBy { get; set; } = string.Empty;
 
         /// <summary>
         /// 菜单ID列表
@@ -157,6 +195,11 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// 数据范围（1：全部数据权限 2：自定数据权限 3：本部门数据权限 4：本部门及以下数据权限 5：仅本人数据权限）
         /// </summary>
         public int DataScope { get; set; }
+
+        /// <summary>
+        /// 用户数
+        /// </summary>
+        public int UserCount { get; set; }
 
         /// <summary>
         /// 状态（0正常 1停用）

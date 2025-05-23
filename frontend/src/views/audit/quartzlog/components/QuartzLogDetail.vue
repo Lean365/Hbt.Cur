@@ -1,6 +1,6 @@
 <template>
   <hbt-modal
-    v-model:visible="visible"
+    v-model:open="visible"
     title="任务日志详情"
     :width="800"
     :footer="null"

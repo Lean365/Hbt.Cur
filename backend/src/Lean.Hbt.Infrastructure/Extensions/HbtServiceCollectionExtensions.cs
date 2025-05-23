@@ -193,8 +193,8 @@ namespace Lean.Hbt.Infrastructure.Extensions
         {
             // 核心身份认证服务
             services.AddScoped<IHbtAuthService, HbtAuthService>();         // 登录服务
-            services.AddScoped<IHbtLoginExtendService, HbtLoginExtendService>(); // 登录扩展服务
-            services.AddScoped<IHbtDeviceExtendService, HbtDeviceExtendService>(); // 设备扩展服务
+            services.AddScoped<IHbtLoginEnvLogService, HbtLoginEnvLogService>(); // 登录环境日志服务
+            services.AddScoped<IHbtLoginDevLogService, HbtLoginDevLogService>(); // 登录设备服务
             services.AddScoped<IHbtJwtHandler, HbtJwtHandler>();            // JWT令牌处理
             services.AddScoped<IHbtDeviceIdGenerator, HbtDeviceIdGenerator>(); // 设备ID生成器
 

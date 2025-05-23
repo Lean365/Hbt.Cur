@@ -39,7 +39,7 @@ export default {
       _self: '監査ログ',
       operlog: '操作ログ',
       loginlog: 'ログインログ',
-      dbdifflog: 'データベース差分ログ',
+      sqldifflog: 'データベース差分ログ',
       exceptionlog: '例外ログ',
       auditlog: '監査ログ',
       quartzlog: 'タスクログ'

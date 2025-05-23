@@ -24,85 +24,79 @@
       :wrapper-col="{ span: 16 }"
       layout="horizontal"
     >
-      <a-row :gutter="24">
-        <a-col :span="12">
-          <a-form-item :label="t('admin.config.name')" name="configName">
-            <a-input
-              v-model:value="formState.configName"
-              :placeholder="t('admin.config.placeholder.name')"
-              allow-clear
-            />
-          </a-form-item>
-        </a-col>
-        <a-col :span="12">
-          <a-form-item :label="t('admin.config.key')" name="configKey">
-            <a-input
-              v-model:value="formState.configKey"
-              :placeholder="t('admin.config.placeholder.key')"
-              allow-clear
-            />
-          </a-form-item>
-        </a-col>
-      </a-row>
+      <a-form-item :label="t('core.config.fields.configName.label')" name="configName">
+        <a-input
+          v-model:value="formState.configName"
+          :placeholder="t('core.config.fields.configName.placeholder')"
+          allow-clear
+        />
+      </a-form-item>
 
-      <a-row :gutter="24">
-        <a-col :span="12">
-          <a-form-item :label="t('admin.config.value')" name="configValue">
-            <a-input
-              v-model:value="formState.configValue"
-              :placeholder="t('admin.config.placeholder.value')"
-              allow-clear
-            />
-          </a-form-item>
-        </a-col>
-        <a-col :span="12">
-          <a-form-item :label="t('admin.config.builtin')" name="isBuiltin">
-            <hbt-select
-              v-model:value="formState.isBuiltin"
-              dict-type="sys_yes_no"
-              type="radio"
-              :placeholder="t('admin.config.placeholder.builtin')"
-            />
-          </a-form-item>
-        </a-col>
-      </a-row>
+      <a-form-item :label="t('core.config.fields.configKey.label')" name="configKey">
+        <a-input
+          v-model:value="formState.configKey"
+          :placeholder="t('core.config.fields.configKey.placeholder')"
+          allow-clear
+        />
+      </a-form-item>
 
-      <a-row :gutter="24">
-        <a-col :span="12">
-          <a-form-item :label="t('admin.config.order')" name="orderNum">
-            <a-input-number
-              v-model:value="formState.orderNum"
-              :min="0"
-              :max="9999"
-              :placeholder="t('admin.config.placeholder.order')"
-              style="width: 100%"
-            />
-          </a-form-item>
-        </a-col>
-        <a-col :span="12">
-          <a-form-item :label="t('admin.config.status')" name="status">
-            <hbt-select
-              v-model:value="formState.status"
-              dict-type="sys_normal_disable"
-              type="radio"
-              :placeholder="t('admin.config.placeholder.status')"
-            />
-          </a-form-item>
-        </a-col>
-      </a-row>
+      <a-form-item :label="t('core.config.fields.configValue.label')" name="configValue">
+        <a-textarea
+          v-model:value="formState.configValue"
+          :placeholder="t('core.config.fields.configValue.placeholder')"
+          :rows="4"
+          allow-clear
+        />
+      </a-form-item>
 
-      <a-row :gutter="24">
-        <a-col :span="24">
-          <a-form-item :label="t('admin.config.remark')" name="remark">
-            <a-textarea
-              v-model:value="formState.remark"
-              :placeholder="t('admin.config.placeholder.remark')"
-              :rows="4"
-              allow-clear
-            />
-          </a-form-item>
-        </a-col>
-      </a-row>
+      <a-form-item :label="t('core.config.fields.isBuiltin.label')" name="isBuiltin">
+        <hbt-select
+          v-model:value="formState.isBuiltin"
+          dict-type="sys_yes_no"
+          type="radio"
+          :show-all="false"
+          :placeholder="t('core.config.fields.isBuiltin.placeholder')"
+        />
+      </a-form-item>
+
+      <a-form-item :label="t('core.config.fields.orderNum.label')" name="orderNum">
+        <a-input-number
+          v-model:value="formState.orderNum"
+          :min="0"
+          :max="9999"
+          :placeholder="t('core.config.fields.orderNum.placeholder')"
+          style="width: 100%"
+        />
+      </a-form-item>
+
+      <a-form-item :label="t('core.config.fields.status.label')" name="status">
+        <hbt-select
+          v-model:value="formState.status"
+          dict-type="sys_normal_disable"
+          type="radio"
+          :show-all="false"
+          :placeholder="t('core.config.fields.status.placeholder')"
+        />
+      </a-form-item>
+
+      <a-form-item :label="t('core.config.fields.isEncrypted.label')" name="isEncrypted">
+        <hbt-select
+          v-model:value="formState.isEncrypted"
+          dict-type="sys_yes_no"
+          type="radio"
+          :show-all="false"
+          :placeholder="t('core.config.fields.isEncrypted.placeholder')"
+        />
+      </a-form-item>
+
+      <a-form-item :label="t('table.columns.remark')" name="remark">
+        <a-textarea
+          v-model:value="formState.remark"
+          :placeholder="t('table.columns.remark')"
+          :rows="4"
+          allow-clear
+        />
+      </a-form-item>
     </a-form>
 
     <template #footer>
@@ -155,7 +149,8 @@ const initialFormState: HbtConfigCreate = {
   isBuiltin: 0,
   orderNum: 0,
   remark: '',
-  status: 0
+  status: 0,
+  isEncrypted: 0
 }
 
 // 表单数据
@@ -164,27 +159,30 @@ const formState = reactive<HbtConfigCreate>({ ...initialFormState })
 // 表单校验规则
 const rules: Record<string, Rule[]> = {
   configName: [
-    { required: true, message: t('admin.config.validation.name.required'), trigger: 'blur' },
-    { max: 100, message: t('admin.config.validation.name.maxLength'), trigger: 'blur' }
+    { required: true, message: t('core.config.fields.configName.validation.required'), trigger: 'blur' },
+    { max: 50, message: t('core.config.fields.configName.validation.maxLength'), trigger: 'blur' }
   ],
   configKey: [
-    { required: true, message: t('admin.config.validation.key.required'), trigger: 'blur' },
-    { max: 100, message: t('admin.config.validation.key.maxLength'), trigger: 'blur' },
-    { pattern: /^[a-zA-Z][a-zA-Z0-9_.:]*$/, message: t('admin.config.validation.key.pattern'), trigger: 'blur' }
+    { required: true, message: t('core.config.fields.configKey.validation.required'), trigger: 'blur' },
+    { max: 50, message: t('core.config.fields.configKey.validation.maxLength'), trigger: 'blur' },
+    { pattern: /^[a-zA-Z][a-zA-Z0-9_.:]*$/, message: t('core.config.fields.configKey.validation.pattern'), trigger: 'blur' }
   ],
   configValue: [
-    { required: true, message: t('admin.config.validation.value.required'), trigger: 'blur' },
-    { max: 500, message: t('admin.config.validation.value.maxLength'), trigger: 'blur' }
+    { required: true, message: t('core.config.fields.configValue.validation.required'), trigger: 'blur' },
+    { max: 500, message: t('core.config.fields.configValue.validation.maxLength'), trigger: 'blur' }
   ],
   isBuiltin: [
-    { required: true, message: t('admin.config.validation.builtin.required'), trigger: 'change' }
+    { required: true, message: t('core.config.fields.isBuiltin.validation.required'), trigger: 'change' }
   ],
   orderNum: [
-    { required: true, message: t('admin.config.validation.order.required'), trigger: 'blur' },
-    { type: 'number', min: 0, max: 9999, message: t('admin.config.validation.order.range'), trigger: 'blur' }
+    { required: true, message: t('core.config.fields.orderNum.validation.required'), trigger: 'blur' },
+    { type: 'number', min: 0, max: 9999, message: t('core.config.fields.orderNum.validation.range'), trigger: 'blur' }
   ],
   status: [
-    { required: true, message: t('admin.config.validation.status.required'), trigger: 'change' }
+    { required: true, message: t('core.config.fields.status.validation.required'), trigger: 'change' }
+  ],
+  isEncrypted: [
+    { required: true, message: t('core.config.fields.isEncrypted.validation.required'), trigger: 'change' }
   ]
 }
 

@@ -9,15 +9,12 @@
 // 描述    : 操作日志实体
 //===================================================================
 
-using Lean.Hbt.Common.Enums;
-using SqlSugar;
-
 namespace Lean.Hbt.Domain.Entities.Audit
 {
     /// <summary>
     /// 操作日志实体
     /// </summary>
-    [SugarTable("hbt_audit_oper_log", "操作日志表")]
+    [SugarTable("hbt_audit_oper_log", "操作日志")]
     [SugarIndex("ix_tenant_oper", nameof(TenantId), OrderByType.Asc)]
     public class HbtOperLog : HbtBaseEntity
     {
@@ -99,4 +96,4 @@ namespace Lean.Hbt.Domain.Entities.Audit
         [SugarColumn(ColumnName = "error_msg", ColumnDescription = "错误消息", Length = -1, ColumnDataType = "nvarchar", IsNullable = true)]
         public string? ErrorMsg { get; set; }
     }
-} 
+}

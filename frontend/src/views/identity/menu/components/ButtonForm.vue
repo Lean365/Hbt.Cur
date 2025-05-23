@@ -96,7 +96,7 @@ import { ref, reactive, onMounted, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { message } from 'ant-design-vue'
 import type { FormInstance, RuleObject } from 'ant-design-vue/es/form'
-import type { Menu, MenuCreate } from '@/types/identity/menu'
+import type { HbtMenu, HbtMenuCreate } from '@/types/identity/menu'
 import { getMenu, createMenu, updateMenu } from '@/api/identity/menu'
 import MenuTreeSelect from '../components/MenuTreeSelect.vue'
 
@@ -113,9 +113,9 @@ const { t } = useI18n()
 const formRef = ref<FormInstance>()
 
 // 表单数据
-const form = reactive<MenuCreate>({
+const form = reactive<HbtMenuCreate>({
   menuName: '',
-  parentId: undefined,
+  parentId: 0,
   orderNum: 0,
   path: '',
   component: '',

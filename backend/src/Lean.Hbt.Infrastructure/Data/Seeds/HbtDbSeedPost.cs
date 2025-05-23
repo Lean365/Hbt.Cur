@@ -7,9 +7,7 @@
 // 描述   : 岗位数据初始化类
 //===================================================================
 
-using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Domain.Entities.Identity;
-using Lean.Hbt.Domain.IServices.Extensions;
 
 namespace Lean.Hbt.Infrastructure.Data.Seeds;
 
@@ -35,953 +33,603 @@ public class HbtDbSeedPost
     /// <summary>
     /// 初始化岗位数据
     /// </summary>
-    public async Task<(int, int)> InitializePostAsync()
+    public async Task<(int, int)> InitializePostAsync(long tenantId)
     {
         int insertCount = 0;
         int updateCount = 0;
-        long nextId = 1;
+        int nextOrderNum = 1;
 
         var defaultPosts = new List<HbtPost>
         {
             // 董事会成员
             new HbtPost
             {
-                Id = nextId++,
                 PostCode = "CHAIRMAN",
                 PostName = "董事长",
-                OrderNum = 1,
+                OrderNum = nextOrderNum++,
                 Status = 0,
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now,
                 Remark = "Chairman;会長"
             },
             new HbtPost
             {
-                Id = nextId++,
                 PostCode = "VICE_CHAIRMAN",
                 PostName = "副董事长",
-                OrderNum = 2,
+                OrderNum = nextOrderNum++,
                 Status = 0,
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now,
                 Remark = "Vice Chairman;副会長"
             },
             new HbtPost
             {
-                Id = nextId++,
                 PostCode = "EXECUTIVE_DIRECTOR",
                 PostName = "执行董事",
-                OrderNum = 3,
+                OrderNum = nextOrderNum++,
                 Status = 0,
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now,
                 Remark = "Executive Director;執行取締役"
             },
             new HbtPost
             {
-                Id = nextId++,
                 PostCode = "NON_EXECUTIVE_DIRECTOR",
                 PostName = "非执行董事",
-                OrderNum = 4,
+                OrderNum = nextOrderNum++,
                 Status = 0,
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now,
                 Remark = "Non-Executive Director;非執行取締役"
             },
             new HbtPost
             {
-                Id = nextId++,
                 PostCode = "MANAGING_DIRECTOR",
                 PostName = "常务董事",
-                OrderNum = 5,
+                OrderNum = nextOrderNum++,
                 Status = 0,
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now,
                 Remark = "Managing Director;常務取締役"
             },
             new HbtPost
             {
-                Id = nextId++,
                 PostCode = "INDEPENDENT_DIRECTOR",
                 PostName = "独立董事",
-                OrderNum = 6,
+                OrderNum = nextOrderNum++,
                 Status = 0,
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now,
                 Remark = "Independent Director;独立取締役"
             },
 
             // 监事会成员
             new HbtPost
             {
-                Id = nextId++,
                 PostCode = "SUPERVISOR_CHAIRMAN",
                 PostName = "监事会主席",
-                OrderNum = 7,
+                OrderNum = nextOrderNum++,
                 Status = 0,
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now,
                 Remark = "Chairman of Supervisory Board;監査役会議長"
             },
             new HbtPost
             {
-                Id = nextId++,
                 PostCode = "SUPERVISOR_VICE_CHAIRMAN",
                 PostName = "监事会副主席",
-                OrderNum = 8,
+                OrderNum = nextOrderNum++,
                 Status = 0,
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now,
                 Remark = "Vice Chairman of Supervisory Board;監査役会副議長"
             },
             new HbtPost
             {
-                Id = nextId++,
                 PostCode = "MANAGING_SUPERVISOR",
                 PostName = "常务监事",
-                OrderNum = 9,
+                OrderNum = nextOrderNum++,
                 Status = 0,
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now,
                 Remark = "Managing Supervisor;常勤監査役"
             },
             new HbtPost
             {
-                Id = nextId++,
                 PostCode = "SUPERVISOR",
                 PostName = "监事",
-                OrderNum = 10,
+                OrderNum = nextOrderNum++,
                 Status = 0,
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now,
                 Remark = "Supervisor;監査役"
             },
 
             // 高管层级
             new HbtPost
             {
-                Id = nextId++,
                 PostCode = "CEO",
                 PostName = "首席执行官",
-                OrderNum = 11,
+                OrderNum = nextOrderNum++,
                 Status = 0,
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now,
                 Remark = "Chief Executive Officer;最高経営責任者"
             },
             new HbtPost
             {
-                Id = nextId++,
                 PostCode = "PRESIDENT",
                 PostName = "总裁",
-                OrderNum = 12,
+                OrderNum = nextOrderNum++,
                 Status = 0,
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now,
                 Remark = "President;社長"
             },
             new HbtPost
             {
-                Id = nextId++,
                 PostCode = "SENIOR_EXECUTIVE_VP",
                 PostName = "高级执行副总裁",
-                OrderNum = 13,
+                OrderNum = nextOrderNum++,
                 Status = 0,
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now,
                 Remark = "Senior Executive Vice President;上級執行副社長"
             },
             new HbtPost
             {
-                Id = nextId++,
                 PostCode = "EXECUTIVE_VP",
                 PostName = "执行副总裁",
-                OrderNum = 14,
+                OrderNum = nextOrderNum++,
                 Status = 0,
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now,
                 Remark = "Executive Vice President;執行副社長"
             },
             new HbtPost
             {
-                Id = nextId++,
                 PostCode = "SENIOR_VP",
                 PostName = "高级副总裁",
-                OrderNum = 15,
+                OrderNum = nextOrderNum++,
                 Status = 0,
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now,
                 Remark = "Senior Vice President;上級副社長"
             },
             new HbtPost
             {
-                Id = nextId++,
                 PostCode = "VP",
                 PostName = "副总裁",
-                OrderNum = 16,
+                OrderNum = nextOrderNum++,
                 Status = 0,
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now,
                 Remark = "Vice President;副社長"
             },
 
             // 首席官职级
             new HbtPost
             {
-                Id = nextId++,
                 PostCode = "COO",
                 PostName = "首席运营官",
-                OrderNum = 17,
+                OrderNum = nextOrderNum++,
                 Status = 0,
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now,
                 Remark = "Chief Operating Officer;最高執行責任者"
             },
             new HbtPost
             {
-                Id = nextId++,
                 PostCode = "CFO",
                 PostName = "首席财务官",
-                OrderNum = 18,
+                OrderNum = nextOrderNum++,
                 Status = 0,
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now,
                 Remark = "Chief Financial Officer;最高財務責任者"
             },
             new HbtPost
             {
-                Id = nextId++,
                 PostCode = "CTO",
                 PostName = "首席技术官",
-                OrderNum = 19,
+                OrderNum = nextOrderNum++,
                 Status = 0,
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now,
                 Remark = "Chief Technology Officer;最高技術責任者"
             },
             new HbtPost
             {
-                Id = nextId++,
                 PostCode = "CIO",
                 PostName = "首席信息官",
-                OrderNum = 20,
+                OrderNum = nextOrderNum++,
                 Status = 0,
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now,
                 Remark = "Chief Information Officer;最高情報責任者"
             },
             new HbtPost
             {
-                Id = nextId++,
                 PostCode = "CMO",
                 PostName = "首席市场官",
-                OrderNum = 21,
+                OrderNum = nextOrderNum++,
                 Status = 0,
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now,
                 Remark = "Chief Marketing Officer;最高マーケティング責任者"
             },
             new HbtPost
             {
-                Id = nextId++,
                 PostCode = "CLO",
                 PostName = "首席法务官",
-                OrderNum = 22,
+                OrderNum = nextOrderNum++,
                 Status = 0,
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now,
                 Remark = "Chief Legal Officer;最高法務責任者"
             },
             new HbtPost
             {
-                Id = nextId++,
                 PostCode = "CSO",
                 PostName = "首席战略官",
-                OrderNum = 23,
+                OrderNum = nextOrderNum++,
                 Status = 0,
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now,
                 Remark = "Chief Strategy Officer;最高戦略責任者"
             },
             new HbtPost
             {
-                Id = nextId++,
                 PostCode = "CQO",
                 PostName = "首席质量官",
-                OrderNum = 24,
+                OrderNum = nextOrderNum++,
                 Status = 0,
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now,
                 Remark = "Chief Quality Officer;最高品質責任者"
             },
 
             // 总经理层级
             new HbtPost
             {
-                Id = nextId++,
                 PostCode = "GM",
                 PostName = "总经理",
-                OrderNum = 25,
+                OrderNum = nextOrderNum++,
                 Status = 0,
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now,
                 Remark = "General Manager;総経理"
             },
             new HbtPost
             {
-                Id = nextId++,
                 PostCode = "DEPUTY_GM",
                 PostName = "副总经理",
-                OrderNum = 26,
+                OrderNum = nextOrderNum++,
                 Status = 0,
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now,
                 Remark = "Deputy General Manager;副総経理"
             },
             new HbtPost
             {
-                Id = nextId++,
                 PostCode = "FACTORY_DIRECTOR",
                 PostName = "厂长",
-                OrderNum = 27,
+                OrderNum = nextOrderNum++,
                 Status = 0,
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now,
                 Remark = "Factory Director;工場長"
             },
             new HbtPost
             {
-                Id = nextId++,
                 PostCode = "EXECUTIVE_ASSISTANT",
                 PostName = "特助",
-                OrderNum = 28,
+                OrderNum = nextOrderNum++,
                 Status = 0,
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now,
                 Remark = "Executive Assistant;スペシャルアシスタント"
             },
 
             // 本部长层级
             new HbtPost
             {
-                Id = nextId++,
                 PostCode = "DIVISION_DIRECTOR",
                 PostName = "本部长",
-                OrderNum = 29,
+                OrderNum = nextOrderNum++,
                 Status = 0,
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now,
                 Remark = "Division Director;本部長"
             },
             new HbtPost
             {
-                Id = nextId++,
                 PostCode = "DEPUTY_DIVISION_DIRECTOR",
                 PostName = "副本部长",
-                OrderNum = 30,
+                OrderNum = nextOrderNum++,
                 Status = 0,
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now,
                 Remark = "Deputy Division Director;副本部長"
             },
 
             // 总监层级
             new HbtPost
             {
-                Id = nextId++,
                 PostCode = "DIRECTOR",
                 PostName = "总监",
-                OrderNum = 31,
+                OrderNum = nextOrderNum++,
                 Status = 0,
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now,
                 Remark = "Director;ディレクター"
             },
             new HbtPost
             {
-                Id = nextId++,
                 PostCode = "DEPUTY_DIRECTOR",
                 PostName = "副总监",
-                OrderNum = 32,
+                OrderNum = nextOrderNum++,
                 Status = 0,
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now,
                 Remark = "Deputy Director;副ディレクター"
             },
 
             // 部长层级
             new HbtPost
             {
-                Id = nextId++,
                 PostCode = "DEPT_DIRECTOR",
                 PostName = "部长",
-                OrderNum = 33,
+                OrderNum = nextOrderNum++,
                 Status = 0,
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now,
                 Remark = "Department Director;部長"
             },
             new HbtPost
             {
-                Id = nextId++,
                 PostCode = "DEPUTY_DEPT_DIRECTOR",
                 PostName = "副部长",
-                OrderNum = 34,
+                OrderNum = nextOrderNum++,
                 Status = 0,
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now,
                 Remark = "Deputy Department Director;副部長"
             },
             new HbtPost
             {
-                Id = nextId++,
                 PostCode = "ASSOCIATE_DIRECTOR",
                 PostName = "次长",
-                OrderNum = 35,
+                OrderNum = nextOrderNum++,
                 Status = 0,
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now,
                 Remark = "Associate Director;次長"
             },
 
             // 经理层级
             new HbtPost
             {
-                Id = nextId++,
                 PostCode = "SENIOR_MANAGER",
                 PostName = "高级经理",
-                OrderNum = 36,
+                OrderNum = nextOrderNum++,
                 Status = 0,
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now,
                 Remark = "Senior Manager;上級マネージャー"
             },
             new HbtPost
             {
-                Id = nextId++,
                 PostCode = "MANAGER",
                 PostName = "经理",
-                OrderNum = 37,
+                OrderNum = nextOrderNum++,
                 Status = 0,
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now,
                 Remark = "Manager;マネージャー"
             },
             new HbtPost
             {
-                Id = nextId++,
                 PostCode = "DEPUTY_MANAGER",
                 PostName = "副经理",
-                OrderNum = 38,
+                OrderNum = nextOrderNum++,
                 Status = 0,
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now,
                 Remark = "Deputy Manager;副マネージャー"
             },
 
             // 科长层级
             new HbtPost
             {
-                Id = nextId++,
                 PostCode = "DIVISION_CHIEF",
                 PostName = "科长",
-                OrderNum = 39,
+                OrderNum = nextOrderNum++,
                 Status = 0,
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now,
                 Remark = "Division Chief;科長"
             },
             new HbtPost
             {
-                Id = nextId++,
                 PostCode = "DEPUTY_DIVISION_CHIEF",
                 PostName = "副科长",
-                OrderNum = 40,
+                OrderNum = nextOrderNum++,
                 Status = 0,
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now,
                 Remark = "Deputy Division Chief;副科長"
             },
 
             // 课长层级
             new HbtPost
             {
-                Id = nextId++,
                 PostCode = "SECTION_CHIEF",
                 PostName = "课长",
-                OrderNum = 41,
+                OrderNum = nextOrderNum++,
                 Status = 0,
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now,
                 Remark = "Section Chief;課長"
             },
             new HbtPost
             {
-                Id = nextId++,
                 PostCode = "DEPUTY_SECTION_CHIEF",
                 PostName = "副课长",
-                OrderNum = 42,
+                OrderNum = nextOrderNum++,
                 Status = 0,
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now,
                 Remark = "Deputy Section Chief;副課長"
             },
 
             // 主管层级
             new HbtPost
             {
-                Id = nextId++,
                 PostCode = "SUPERVISOR",
                 PostName = "主管",
-                OrderNum = 43,
+                OrderNum = nextOrderNum++,
                 Status = 0,
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now,
                 Remark = "Supervisor;主任"
             },
             new HbtPost
             {
-                Id = nextId++,
                 PostCode = "DEPUTY_SUPERVISOR",
                 PostName = "副主管",
-                OrderNum = 44,
+                OrderNum = nextOrderNum++,
                 Status = 0,
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now,
                 Remark = "Deputy Supervisor;副主任"
             },
 
             // 股长层级
             new HbtPost
             {
-                Id = nextId++,
                 PostCode = "GROUP_LEADER",
                 PostName = "股长",
-                OrderNum = 45,
+                OrderNum = nextOrderNum++,
                 Status = 0,
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now,
                 Remark = "Group Leader;係長"
             },
             new HbtPost
             {
-                Id = nextId++,
                 PostCode = "DEPUTY_GROUP_LEADER",
                 PostName = "副股长",
-                OrderNum = 46,
+                OrderNum = nextOrderNum++,
                 Status = 0,
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now,
                 Remark = "Deputy Group Leader;副係長"
             },
 
             // 班组长层级
             new HbtPost
             {
-                Id = nextId++,
                 PostCode = "TEAM_LEADER",
                 PostName = "班组长",
-                OrderNum = 47,
+                OrderNum = nextOrderNum++,
                 Status = 0,
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now,
                 Remark = "Team Leader;班長"
             },
             new HbtPost
             {
-                Id = nextId++,
                 PostCode = "DEPUTY_TEAM_LEADER",
                 PostName = "副班组长",
-                OrderNum = 48,
+                OrderNum = nextOrderNum++,
                 Status = 0,
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now,
                 Remark = "Deputy Team Leader;副班長"
             },
 
             // 专业技术职级
             new HbtPost
             {
-                Id = nextId++,
                 PostCode = "SENIOR_EXPERT",
                 PostName = "资深专家",
-                OrderNum = 49,
+                OrderNum = nextOrderNum++,
                 Status = 0,
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now,
                 Remark = "Senior Expert;上級専門家"
             },
             new HbtPost
             {
-                Id = nextId++,
                 PostCode = "SENIOR_ENGINEER",
                 PostName = "正高级工程师",
-                OrderNum = 50,
+                OrderNum = nextOrderNum++,
                 Status = 0,
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now,
                 Remark = "Senior Engineer;上級エンジニア"
             },
             new HbtPost
             {
-                Id = nextId++,
                 PostCode = "SENIOR_ACCOUNTANT",
                 PostName = "正高级会计师",
-                OrderNum = 51,
+                OrderNum = nextOrderNum++,
                 Status = 0,
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now,
                 Remark = "Senior Accountant;上級会計士"
             },
             new HbtPost
             {
-                Id = nextId++,
                 PostCode = "SENIOR_CONSULTANT",
                 PostName = "正高级顾问",
-                OrderNum = 52,
+                OrderNum = nextOrderNum++,
                 Status = 0,
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now,
                 Remark = "Senior Consultant;上級コンサルタント"
             },
             new HbtPost
             {
-                Id = nextId++,
                 PostCode = "HIGH_ENGINEER",
                 PostName = "高级工程师",
-                OrderNum = 53,
+                OrderNum = nextOrderNum++,
                 Status = 0,
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now,
                 Remark = "High Engineer;高級エンジニア"
             },
             new HbtPost
             {
-                Id = nextId++,
                 PostCode = "HIGH_ACCOUNTANT",
                 PostName = "高级会计师",
-                OrderNum = 54,
+                OrderNum = nextOrderNum++,
                 Status = 0,
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now,
                 Remark = "High Accountant;高級会計士"
             },
             new HbtPost
             {
-                Id = nextId++,
                 PostCode = "HIGH_CONSULTANT",
                 PostName = "高级顾问",
-                OrderNum = 55,
+                OrderNum = nextOrderNum++,
                 Status = 0,
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now,
                 Remark = "High Consultant;高級コンサルタント"
             },
             new HbtPost
             {
-                Id = nextId++,
                 PostCode = "MID_ENGINEER",
                 PostName = "中级工程师",
-                OrderNum = 56,
+                OrderNum = nextOrderNum++,
                 Status = 0,
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now,
                 Remark = "Mid Engineer;中級エンジニア"
             },
             new HbtPost
             {
-                Id = nextId++,
                 PostCode = "MID_ACCOUNTANT",
                 PostName = "中级会计师",
-                OrderNum = 57,
+                OrderNum = nextOrderNum++,
                 Status = 0,
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now,
                 Remark = "Mid Accountant;中級会計士"
             },
             new HbtPost
             {
-                Id = nextId++,
                 PostCode = "MID_CONSULTANT",
                 PostName = "中级顾问",
-                OrderNum = 58,
+                OrderNum = nextOrderNum++,
                 Status = 0,
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now,
                 Remark = "Mid Consultant;中級コンサルタント"
             },
             new HbtPost
             {
-                Id = nextId++,
                 PostCode = "ASSISTANT_ENGINEER",
                 PostName = "助理工程师",
-                OrderNum = 59,
+                OrderNum = nextOrderNum++,
                 Status = 0,
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now,
                 Remark = "Assistant Engineer;助理エンジニア"
             },
             new HbtPost
             {
-                Id = nextId++,
                 PostCode = "ASSISTANT_ACCOUNTANT",
                 PostName = "助理会计师",
-                OrderNum = 60,
+                OrderNum = nextOrderNum++,
                 Status = 0,
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now,
                 Remark = "Assistant Accountant;助理会計士"
             },
             new HbtPost
             {
-                Id = nextId++,
                 PostCode = "ASSISTANT_CONSULTANT",
                 PostName = "助理顾问",
-                OrderNum = 61,
+                OrderNum = nextOrderNum++,
                 Status = 0,
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now,
                 Remark = "Assistant Consultant;助理コンサルタント"
             },
 
             // 基层职级
             new HbtPost
             {
-                Id = nextId++,
                 PostCode = "TECHNICIAN",
                 PostName = "技术员",
-                OrderNum = 62,
+                OrderNum = nextOrderNum++,
                 Status = 0,
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now,
                 Remark = "Technician;技術員"
             },
             new HbtPost
             {
-                Id = nextId++,
                 PostCode = "ACCOUNTANT",
                 PostName = "会计员",
-                OrderNum = 63,
+                OrderNum = nextOrderNum++,
                 Status = 0,
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now,
                 Remark = "Accountant;会計員"
             },
             new HbtPost
             {
-                Id = nextId++,
                 PostCode = "CLERK",
                 PostName = "事务员",
-                OrderNum = 64,
+                OrderNum = nextOrderNum++,
                 Status = 0,
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now,
                 Remark = "Clerk;事務員"
             },
             new HbtPost
             {
-                Id = nextId++,
                 PostCode = "MULTI_SKILLED_OPERATOR",
                 PostName = "多能工",
-                OrderNum = 65,
+                OrderNum = nextOrderNum++,
                 Status = 0,
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now,
                 Remark = "Multi-skilled Operator;多能工"
             },
             new HbtPost
             {
-                Id = nextId++,
                 PostCode = "INSPECTOR",
                 PostName = "检查员",
-                OrderNum = 66,
+                OrderNum = nextOrderNum++,
                 Status = 0,
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now,
                 Remark = "Inspector;検査員"
             },
             new HbtPost
             {
-                Id = nextId++,
                 PostCode = "WAREHOUSE_KEEPER",
                 PostName = "库管员",
-                OrderNum = 67,
+                OrderNum = nextOrderNum++,
                 Status = 0,
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now,
                 Remark = "Warehouse Keeper;倉庫管理員"
             },
             new HbtPost
             {
-                Id = nextId++,
                 PostCode = "CLEANER",
                 PostName = "保洁员",
-                OrderNum = 68,
+                OrderNum = nextOrderNum++,
                 Status = 0,
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now,
                 Remark = "Cleaner;清掃員"
             },
             new HbtPost
             {
-                Id = nextId++,
                 PostCode = "SECURITY",
                 PostName = "安保员",
-                OrderNum = 69,
+                OrderNum = nextOrderNum++,
                 Status = 0,
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now,
                 Remark = "Security Guard;警備員"
             },
             new HbtPost
             {
-                Id = nextId++,
                 PostCode = "COOK",
                 PostName = "厨师",
-                OrderNum = 70,
+                OrderNum = nextOrderNum++,
                 Status = 0,
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now,
                 Remark = "Cook;調理師"
             }
         };
@@ -991,6 +639,13 @@ public class HbtDbSeedPost
             var existingPost = await _postRepository.GetFirstAsync(p => p.PostCode == post.PostCode);
             if (existingPost == null)
             {
+                // 统一处理租户和审计字段
+                post.TenantId = tenantId;
+                post.CreateBy = "Hbt365";
+                post.CreateTime = DateTime.Now;
+                post.UpdateBy = "Hbt365";
+                post.UpdateTime = DateTime.Now;
+
                 await _postRepository.CreateAsync(post);
                 insertCount++;
                 _logger.Info($"[创建] 岗位 '{post.PostName}' 创建成功");
@@ -1001,7 +656,10 @@ public class HbtDbSeedPost
                 existingPost.OrderNum = post.OrderNum;
                 existingPost.Status = post.Status;
                 existingPost.Remark = post.Remark;
-                existingPost.UpdateBy = "system";
+                
+                // 统一处理租户和审计字段
+                existingPost.TenantId = tenantId;
+                existingPost.UpdateBy = "Hbt365";
                 existingPost.UpdateTime = DateTime.Now;
 
                 await _postRepository.UpdateAsync(existingPost);
@@ -1012,4 +670,4 @@ public class HbtDbSeedPost
 
         return (insertCount, updateCount);
     }
-} 
+}

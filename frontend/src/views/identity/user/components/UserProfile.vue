@@ -30,7 +30,7 @@
                 <div v-else>
                   <loading-outlined v-if="uploading" />
                   <plus-outlined v-else />
-                  <div class="ant-upload-text">{{ t('identity.user.profile.upload') }}</div>
+                  <div class="ant-upload-text">{{ t('identity.user.fields.avatar.upload') }}</div>
                 </div>
               </a-upload>
             </div>
@@ -44,17 +44,27 @@
                 :label-col="{ span: 4 }"
                 :wrapper-col="{ span: 18 }"
               >
-                <a-form-item :label="t('identity.user.userName.label')" name="userName">
-                  <a-input v-model:value="form.userName" :placeholder="t('identity.user.userName.placeholder')" disabled />
+              
+                <a-form-item :label="t('identity.user.fields.userName.label')" name="userName">
+                  <a-input v-model:value="form.userName" :placeholder="t('identity.user.fields.userName.placeholder')" disabled />
                 </a-form-item>
-                <a-form-item :label="t('identity.user.nickName.label')" name="nickName">
-                  <a-input v-model:value="form.nickName" :placeholder="t('identity.user.nickName.placeholder')" />
+                <a-form-item :label="t('identity.user.fields.userType.label')" name="userType">
+                  <a-input v-model:value="form.userType" :placeholder="t('identity.user.fields.userType.placeholder')" disabled />
                 </a-form-item>
-                <a-form-item :label="t('identity.user.phoneNumber.label')" name="phoneNumber">
-                  <a-input v-model:value="form.phoneNumber" :placeholder="t('identity.user.phoneNumber.placeholder')" />
+                <a-form-item :label="t('identity.user.fields.nickName.label')" name="nickName">
+                  <a-input v-model:value="form.nickName" :placeholder="t('identity.user.fields.nickName.placeholder')" />
                 </a-form-item>
-                <a-form-item :label="t('identity.user.email.label')" name="email">
-                  <a-input v-model:value="form.email" :placeholder="t('identity.user.email.placeholder')" />
+                <a-form-item :label="t('identity.user.fields.realName.label')" name="realName">
+                  <a-input v-model:value="form.realName" :placeholder="t('identity.user.fields.realName.placeholder')" />
+                </a-form-item>
+                <a-form-item :label="t('identity.user.fields.fullName.label')" name="fullName">
+                  <a-input v-model:value="form.fullName" :placeholder="t('identity.user.fields.fullName.placeholder')" />
+                </a-form-item>
+                <a-form-item :label="t('identity.user.fields.phoneNumber.label')" name="phoneNumber">
+                  <a-input v-model:value="form.phoneNumber" :placeholder="t('identity.user.fields.phoneNumber.placeholder')" />
+                </a-form-item>
+                <a-form-item :label="t('identity.user.fields.email.label')" name="email">
+                  <a-input v-model:value="form.email" :placeholder="t('identity.user.fields.email.placeholder')" />
                 </a-form-item>
                 <a-form-item :wrapper-col="{ span: 18, offset: 4 }">
                   <a-button type="primary" :loading="submitting" @click="handleSubmit">
@@ -102,9 +112,9 @@ import type { Rule } from 'ant-design-vue/es/form'
 import { useUserStore } from '@/stores/user'
 import { PlusOutlined, LoadingOutlined } from '@ant-design/icons-vue'
 import { getInfo } from '@/api/identity/auth'
-import { updateUser } from '@/api/identity/user'
-import type { UserInfo } from '@/types/identity/auth'
-import type { UserUpdate } from '@/types/identity/user'
+import { updateUser, getUser } from '@/api/identity/user'
+import type { HbtUserUpdate } from '@/types/identity/user'
+import type { UserInfoResponse } from '@/stores/user'
 import { getToken } from '@/utils/auth'
 import UserLoginLog from '@/views/audit/loginlog/components/UserLoginLog.vue'
 import UserOperLog from '@/views/audit/operlog/components/UserOperLog.vue'
@@ -126,18 +136,48 @@ interface ProfileForm {
   userId: number
   userName: string
   nickName: string
+  realName: string
+  fullName: string
+  englishName: string
+  userType: number
+  password: string
   phoneNumber: string
   email: string
+  gender: number
   avatar?: string
+  status: number
+  remark?: string
+  tenantId: number
+  tenantName: string
+  roles: string[]
+  permissions: string[]
+  roleIds: number[]
+  postIds: number[]
+  deptIds: number[]
 }
 
 const form = reactive<ProfileForm>({
   userId: 0,
   userName: '',
   nickName: '',
+  realName: '',
+  fullName: '',
+  englishName: '',
+  userType: 0,
+  password: '',
   phoneNumber: '',
   email: '',
-  avatar: undefined
+  gender: 0,
+  avatar: undefined,
+  status: 1,
+  remark: '',
+  tenantId: 0,
+  tenantName: '',
+  roles: [],
+  permissions: [],
+  roleIds: [],
+  postIds: [],
+  deptIds: []
 })
 
 // 表单校验规则
@@ -169,9 +209,39 @@ const uploadHeaders = {
 // 获取用户信息
 const getUserInfo = async () => {
   try {
+    // 获取基本信息
     const res = await getInfo()
     if (res.data.code === 200) {
-      Object.assign(form, res.data.data)
+      const userInfo = res.data.data as UserInfoResponse
+      Object.assign(form, {
+        userId: userInfo.userId,
+        userName: userInfo.userName,
+        nickName: userInfo.nickName,
+        englishName: userInfo.englishName,
+        userType: userInfo.userType,
+        tenantId: userInfo.tenantId,
+        roles: userInfo.roles,
+        permissions: userInfo.permissions,
+        avatar: userInfo.avatar
+      })
+
+      // 获取详细信息
+      const detailRes = await getUser(userInfo.userId)
+      if (detailRes.data.code === 200) {
+        const userDetail = detailRes.data.data
+        Object.assign(form, {
+          realName: userDetail.realName,
+          fullName: userDetail.fullName,
+          phoneNumber: userDetail.phoneNumber,
+          email: userDetail.email,
+          gender: userDetail.gender,
+          status: userDetail.status,
+          remark: userDetail.remark,
+          roleIds: userDetail.roleIds,
+          postIds: userDetail.postIds,
+          deptIds: userDetail.deptIds
+        })
+      }
     } else {
       message.error(res.data.msg || t('common.failed'))
     }
@@ -185,12 +255,12 @@ const getUserInfo = async () => {
 const beforeUpload = (file: File) => {
   const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png'
   if (!isJpgOrPng) {
-    message.error(t('identity.user.profile.avatar.type'))
+    message.error(t('identity.user.fields.avatar.type'))
     return false
   }
   const isLt2M = file.size / 1024 / 1024 < 2
   if (!isLt2M) {
-    message.error(t('identity.user.profile.avatar.size'))
+    message.error(t('identity.user.fields.avatar.size'))
     return false
   }
   return true
@@ -217,17 +287,25 @@ const handleSubmit = async () => {
   try {
     await formRef.value?.validate()
     const formData = { ...form }
-    const params: UserUpdate = {
-      userId: userStore.userInfo?.userId ?? 0,
+    const params: HbtUserUpdate = {
+      tenantId: formData.tenantId,
+      userId: formData.userId,
+      userName: formData.userName,
       nickName: formData.nickName,
-      gender: 0, // 默认性别未知
-      status: 1, // 默认启用状态
-      roleIds: [], // 保持原有角色不变
-      postIds: [], // 保持原有岗位不变
-      deptIds: [], // 保持原有部门不变
+      realName: formData.realName,
+      fullName: formData.fullName,
+      englishName: formData.englishName,
+      userType: formData.userType,
+      password: formData.password,
       email: formData.email,
       phoneNumber: formData.phoneNumber,
-      avatar: formData.avatar
+      avatar: formData.avatar,
+      gender: formData.gender,
+      status: formData.status,
+      remark: formData.remark,
+      roleIds: [], // 保持原有角色不变
+      postIds: [], // 保持原有岗位不变
+      deptIds: [] // 保持原有部门不变
     }
     await updateUser(params)
     message.success('个人信息更新成功')

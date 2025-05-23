@@ -3,7 +3,6 @@
     <!-- 查询区域 -->
     <hbt-query
       v-show="showSearch"
-      :model="queryParams"
       :query-fields="queryFields"
       @search="handleQuery"
       @reset="resetQuery"
@@ -30,7 +29,7 @@
         showQuickJumper: true,
         showTotal: (total: number) => `共 ${total} 条`
       }"
-      :row-key="(record: HbtExceptionLogDto) => record.id"
+      :row-key="'exceptionLogId'"
       :scroll="{ y: 400 }"
       @change="handleTableChange"
     >
@@ -53,7 +52,7 @@ import { message } from 'ant-design-vue'
 import type { TablePaginationConfig } from 'ant-design-vue'
 import type { QueryField } from '@/types/components/query'
 import type { HbtExceptionLogDto, HbtExceptionLogQueryDto } from '@/types/audit/exceptionLog'
-import { getExceptionLogs } from '@/api/audit/exceptionLog'
+import { getExceptionLogList } from '@/api/audit/exceptionLog'
 import { useUserStore } from '@/stores/user'
 import ExceptionLogDetail from './ExceptionLogDetail.vue'
 
@@ -61,84 +60,24 @@ const userStore = useUserStore()
 
 // 查询字段定义
 const queryFields: QueryField[] = [
-  {
-    name: 'ipAddress',
-    label: 'IP地址',
-    type: 'input',
-    placeholder: '请输入IP地址'
-  },
-  {
-    name: 'exceptionType',
-    label: '异常类型',
-    type: 'input',
-    placeholder: '请输入异常类型'
-  },
-  {
-    name: 'requestMethod',
-    label: '请求方法',
-    type: 'input',
-    placeholder: '请输入请求方法'
-  },
-  {
-    name: 'startTime',
-    label: '开始时间',
-    type: 'date',
-    placeholder: '请选择开始时间'
-  },
-  {
-    name: 'endTime',
-    label: '结束时间',
-    type: 'date',
-    placeholder: '请选择结束时间'
-  }
+  { name: 'userName', label: '操作人员', type: 'input', placeholder: '请输入操作人员' },
+  { name: 'method', label: '请求方法', type: 'input', placeholder: '请输入请求方法' },
+  { name: 'exceptionType', label: '异常类型', type: 'input', placeholder: '请输入异常类型' },
+  { name: 'startTime', label: '开始时间', type: 'date', placeholder: '请选择开始时间' },
+  { name: 'endTime', label: '结束时间', type: 'date', placeholder: '请选择结束时间' }
 ]
 
 // 表格列定义
 const columns = [
-  {
-    title: '异常名称',
-    dataIndex: 'exceptionName',
-    key: 'exceptionName',
-    width: 200,
-    ellipsis: true
-  },
-  {
-    title: '异常类型',
-    dataIndex: 'exceptionType',
-    key: 'exceptionType',
-    width: 200,
-    ellipsis: true
-  },
-  {
-    title: '请求方法',
-    dataIndex: 'requestMethod',
-    key: 'requestMethod',
-    width: 100
-  },
-  {
-    title: 'IP地址',
-    dataIndex: 'ipAddress',
-    key: 'ipAddress',
-    width: 130
-  },
-  {
-    title: 'IP位置',
-    dataIndex: 'ipLocation',
-    key: 'ipLocation',
-    width: 150
-  },
-  {
-    title: '请求时间',
-    dataIndex: 'requestTime',
-    key: 'requestTime',
-    width: 180
-  },
-  {
-    title: '操作',
-    key: 'action',
-    width: 80,
-    fixed: 'right'
-  }
+  { title: '日志级别', dataIndex: 'logLevel', key: 'logLevel', width: 100 },
+  { title: '操作人员', dataIndex: 'userName', key: 'userName', width: 120 },
+  { title: '请求方法', dataIndex: 'method', key: 'method', width: 150 },
+  { title: '异常类型', dataIndex: 'exceptionType', key: 'exceptionType', width: 150 },
+  { title: '异常消息', dataIndex: 'exceptionMessage', key: 'exceptionMessage', width: 200, ellipsis: true },
+  { title: 'IP地址', dataIndex: 'ipAddress', key: 'ipAddress', width: 130 },
+  { title: '用户代理', dataIndex: 'userAgent', key: 'userAgent', width: 200, ellipsis: true },
+  { title: '操作时间', dataIndex: 'createTime', key: 'createTime', width: 180 },
+  { title: '操作', key: 'action', width: 80, fixed: 'right' }
 ]
 
 // 状态定义
@@ -152,10 +91,7 @@ const currentException = ref<HbtExceptionLogDto>()
 const queryParams = reactive<HbtExceptionLogQueryDto>({
   pageIndex: 1,
   pageSize: 10,
-  orderByColumn: undefined,
-  orderType: undefined,
-  logLevel: undefined,
-  userName: userStore.user?.userName,
+  userName: userStore.userInfo?.userName,
   method: undefined,
   exceptionType: undefined,
   startTime: undefined,
@@ -166,9 +102,9 @@ const queryParams = reactive<HbtExceptionLogQueryDto>({
 const fetchData = async () => {
   loading.value = true
   try {
-    const res = await getExceptionLogs(queryParams)
-    tableData.value = res.data.rows
-    total.value = res.data.totalNum
+    const res = await getExceptionLogList(queryParams)
+    tableData.value = res.data.data.rows
+    total.value = res.data.data.totalNum
   } catch (error) {
     console.error('获取异常日志失败:', error)
     message.error('获取异常日志失败')
@@ -185,7 +121,7 @@ const handleQuery = () => {
 
 /** 重置按钮操作 */
 const resetQuery = () => {
-  queryParams.logLevel = undefined
+  queryParams.userName = userStore.userInfo?.userName
   queryParams.method = undefined
   queryParams.exceptionType = undefined
   queryParams.startTime = undefined

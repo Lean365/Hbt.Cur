@@ -21,7 +21,7 @@
 import { ref, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { message } from 'ant-design-vue'
-import type { Dept } from '@/types/identity/dept'
+import type { HbtDept } from '@/types/identity/dept'
 import { getDeptTree } from '@/api/identity/dept'
 
 const { t } = useI18n()
@@ -40,14 +40,14 @@ const emit = defineEmits<{
 const loading = ref(false)
 
 // 树形数据
-const treeData = ref<Dept[]>([])
+const treeData = ref<HbtDept[]>([])
 
 // 过滤树形数据
-const filterTree = (tree: Dept[], excludeId?: number): Dept[] => {
+const filterTree = (tree: HbtDept[], excludeId?: number): HbtDept[] => {
   if (!excludeId) return tree
 
   return tree
-    .filter((node) => node.deptId !== excludeId)
+    .filter((node) => node.id !== excludeId)
     .map((node) => ({
       ...node,
       children: node.children ? filterTree(node.children, excludeId) : undefined

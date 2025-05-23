@@ -20,27 +20,17 @@ export interface HbtDictType extends HbtBaseEntity {
   /** 字典类型 */
   dictType: string
   /** 字典分类 */
-  dictCategory: string
+  dictCategory: number
   /** 系统内置（0否 1是） */
-  dictBuiltin: number
+  isBuiltin: number
+  /** SQL脚本 */
+  sqlScript?: string
   /** 排序号 */
   orderNum: number
-  /** 租户ID */
-  tenantId: number
   /** 状态（0正常 1停用） */
   status: number
-  /** 备注 */
-  remark: string
-  /** 创建者 */
-  createBy: string
-  /** 创建时间 */
-  createTime: string
-  /** 更新者 */
-  updateBy: string
-  /** 更新时间 */
-  updateTime: string
-  /** 是否删除 */
-  isDeleted: number
+  /** 租户ID */
+  tenantId: number
 }
 
 /**
@@ -52,9 +42,9 @@ export interface HbtDictTypeQuery extends HbtPagedQuery {
   /** 字典类型 */
   dictType?: string
   /** 字典分类 */
-  dictCategory?: string
+  dictCategory?: number
   /** 系统内置（0否 1是） */
-  dictBuiltin?: number
+  isBuiltin?: number
   /** 状态（0正常 1停用） */
   status?: number
 }
@@ -68,15 +58,17 @@ export interface HbtDictTypeCreate {
   /** 字典类型 */
   dictType: string
   /** 字典分类 */
-  dictCategory: string
+  dictCategory: number
   /** 系统内置（0否 1是） */
-  dictBuiltin: number
+  isBuiltin: number
+  /** SQL脚本 */
+  sqlScript?: string
   /** 排序号 */
   orderNum: number
-  /** 租户ID */
-  tenantId: number
   /** 状态（0正常 1停用） */
   status: number
+  /** 租户ID */
+  tenantId: number
   /** 备注 */
   remark?: string
 }

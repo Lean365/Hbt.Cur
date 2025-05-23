@@ -216,7 +216,7 @@ namespace Lean.Hbt.Infrastructure.Security
                     LastActivity = DateTime.Now,
                     LastHeartbeat = DateTime.Now,
                     OnlineStatus = 0, // 0表示在线状态
-                    TenantId = 0,
+                    
                     GroupId = 0
                 };
 

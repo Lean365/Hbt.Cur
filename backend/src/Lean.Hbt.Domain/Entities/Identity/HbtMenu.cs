@@ -9,8 +9,6 @@
 
 #nullable enable
 
-using SqlSugar;
-
 namespace Lean.Hbt.Domain.Entities.Identity
 {
     /// <summary>
@@ -29,13 +27,19 @@ namespace Lean.Hbt.Domain.Entities.Identity
         /// 菜单名称
         /// </summary>
         [SugarColumn(ColumnName = "menu_name", ColumnDescription = "菜单名称", Length = 50, ColumnDataType = "nvarchar", IsNullable = false, DefaultValue = "")]
-        public string MenuName { get; set; } = string.Empty;
+        public string? MenuName { get; set; }
 
         /// <summary>
         /// 翻译Key
         /// </summary>
-        [SugarColumn(ColumnName = "trans_key", ColumnDescription = "翻译Key", Length = 100, ColumnDataType = "nvarchar", IsNullable = true)]
+        [SugarColumn(ColumnName = "trans_key", ColumnDescription = "翻译Key", Length = 100, ColumnDataType = "nvarchar", IsNullable = false)]
         public string? TransKey { get; set; }
+
+        /// <summary>
+        /// 菜单图标
+        /// </summary>
+        [SugarColumn(ColumnName = "icon", ColumnDescription = "菜单图标", Length = 100, ColumnDataType = "nvarchar", IsNullable = true)]
+        public string? Icon { get; set; }
 
         /// <summary>
         /// 父菜单ID
@@ -70,32 +74,26 @@ namespace Lean.Hbt.Domain.Entities.Identity
         /// <summary>
         /// 是否为外链（0否 1是）
         /// </summary>
-        [SugarColumn(ColumnName = "is_frame", ColumnDescription = "是否为外链（0否 1是）", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
+        [SugarColumn(ColumnName = "is_frame", ColumnDescription = "是否外链", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
         public int IsExternal { get; set; } = 0;
 
         /// <summary>
         /// 是否缓存（0否 1是）
         /// </summary>
-        [SugarColumn(ColumnName = "is_cache", ColumnDescription = "是否缓存（0否 1是）", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
+        [SugarColumn(ColumnName = "is_cache", ColumnDescription = "是否缓存", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
         public int IsCache { get; set; } = 0;
 
         /// <summary>
         /// 菜单类型（0目录 1菜单 2按钮）
         /// </summary>
-        [SugarColumn(ColumnName = "menu_type", ColumnDescription = "菜单类型（0目录 1菜单 2按钮）", ColumnDataType = "int", IsNullable = false, DefaultValue = "1")]
+        [SugarColumn(ColumnName = "menu_type", ColumnDescription = "菜单类型", ColumnDataType = "int", IsNullable = false, DefaultValue = "1")]
         public int MenuType { get; set; } = 1;
 
         /// <summary>
         /// 显示状态（0显示 1隐藏）
         /// </summary>
-        [SugarColumn(ColumnName = "visible", ColumnDescription = "显示状态（0显示 1隐藏）", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
+        [SugarColumn(ColumnName = "visible", ColumnDescription = "显示状态", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
         public int Visible { get; set; } = 0;
-
-        /// <summary>
-        /// 菜单状态（0正常 1停用）
-        /// </summary>
-        [SugarColumn(ColumnName = "status", ColumnDescription = "菜单状态（0正常 1停用）", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
-        public int Status { get; set; } = 0;
 
         /// <summary>
         /// 权限标识
@@ -104,16 +102,16 @@ namespace Lean.Hbt.Domain.Entities.Identity
         public string? Perms { get; set; }
 
         /// <summary>
-        /// 菜单图标
+        /// 菜单状态（0正常 1停用）
         /// </summary>
-        [SugarColumn(ColumnName = "icon", ColumnDescription = "菜单图标", Length = 100, ColumnDataType = "nvarchar", IsNullable = true)]
-        public string? Icon { get; set; }
+        [SugarColumn(ColumnName = "status", ColumnDescription = "菜单状态", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
+        public int Status { get; set; } = 0;
 
         /// <summary>
         /// 租户ID
         /// </summary>
-                [SugarColumn(ColumnName = "tenant_id", ColumnDescription = "租户ID", ColumnDataType = "bigint", IsNullable = false)]
-       public long TenantId { get; set; }
+        [SugarColumn(ColumnName = "tenant_id", ColumnDescription = "租户ID", ColumnDataType = "bigint", IsNullable = false)]
+        public long TenantId { get; set; }
 
         /// <summary>
         /// 租户导航属性

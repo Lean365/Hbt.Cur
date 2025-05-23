@@ -8,8 +8,6 @@
 // 版本号 : V0.0.1
 // 描述   : 字典数据实体
 //===================================================================
-using SqlSugar;
-
 namespace Lean.Hbt.Domain.Entities.Core
 {
     /// <summary>
@@ -76,14 +74,14 @@ namespace Lean.Hbt.Domain.Entities.Core
         /// <summary>
         /// 状态（0正常 1停用）
         /// </summary>
-        [SugarColumn(ColumnName = "status", ColumnDescription = "状态（0正常 1停用）", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
+        [SugarColumn(ColumnName = "status", ColumnDescription = "状态", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
         public int Status { get; set; } = 0;
 
         /// <summary>
         /// 租户ID
         /// </summary>
         [SugarColumn(ColumnName = "tenant_id", ColumnDescription = "租户ID", ColumnDataType = "bigint", IsNullable = false)]
-       public long TenantId { get; set; }
+        public long TenantId { get; set; }
 
         /// <summary>
         /// 构造函数

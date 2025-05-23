@@ -12,7 +12,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import VFormDesigner from 'vform3-builds'
-import 'vform3-builds/dist/designer.umd.css'
+import 'vform3-builds/dist/designer.umd.min.css'
 
 const props = defineProps<{
   modelValue?: any

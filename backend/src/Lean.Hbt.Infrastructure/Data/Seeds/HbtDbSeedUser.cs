@@ -9,7 +9,6 @@
 
 using Lean.Hbt.Common.Utils;
 using Lean.Hbt.Domain.Entities.Identity;
-using Lean.Hbt.Domain.IServices.Extensions;
 
 namespace Lean.Hbt.Infrastructure.Data.Seeds;
 
@@ -41,11 +40,10 @@ public class HbtDbSeedUser
     /// <summary>
     /// 初始化系统预设用户（admin、dev_admin、developer、tester、user）
     /// </summary>
-    private async Task<(int, int)> InitializeSystemUsersAsync()
+    public async Task<(int, int)> InitializeSystemUsersAsync(long systemTenantId)
     {
         int insertCount = 0;
         int updateCount = 0;
-        long nextId = 1;
         var defaultPassword = _configuration.GetValue<string>("Security:PasswordPolicy:DefaultPassword")!;
         var systemUserNames = new[] { "admin", "dev_admin", "developer", "tester", "user" };
         var existingUsers = await _userRepository.GetListAsync(u => systemUserNames.Contains(u.UserName));
@@ -55,11 +53,11 @@ public class HbtDbSeedUser
         var now = DateTime.Now;
         var systemUsers = new List<HbtUser>
         {
-            new HbtUser { Id = nextId++, UserName = "admin", NickName = "超级管理员", EnglishName = "System Administrator", UserType = 2, Email = "admin@hbt365.net", PhoneNumber = "13800000001", Gender = 0, Avatar = "/avatar/default.gif", Status = 0, TenantId = 0, LastPasswordChangeTime = now, IsLock = 0, ErrorLimit = 0, LoginCount = 0, CreateBy = "Hbt365", CreateTime = now, UpdateBy = "Hbt365", UpdateTime = now },
-            new HbtUser { Id = nextId++, UserName = "dev_admin", NickName = "开发管理员", EnglishName = "Development Administrator", UserType = 2, Email = "dev_admin@lean.com", PhoneNumber = "13800000002", Gender = 0, Avatar = "/avatar/default.gif", Status = 0, TenantId = 0, LastPasswordChangeTime = now, IsLock = 0, ErrorLimit = 0, LoginCount = 0, CreateBy = "Hbt365", CreateTime = now, UpdateBy = "Hbt365", UpdateTime = now },
-            new HbtUser { Id = nextId++, UserName = "developer", NickName = "开发工程师", EnglishName = "Developer", UserType = 1, Email = "developer@lean.com", PhoneNumber = "13800000003", Gender = 0, Avatar = "/avatar/default.gif", Status = 0, TenantId = 0, LastPasswordChangeTime = now, IsLock = 0, ErrorLimit = 0, LoginCount = 0, CreateBy = "Hbt365", CreateTime = now, UpdateBy = "Hbt365", UpdateTime = now },
-            new HbtUser { Id = nextId++, UserName = "tester", NickName = "测试工程师", EnglishName = "Test Engineer", UserType = 1, Email = "tester@lean.com", PhoneNumber = "13800000004", Gender = 0, Avatar = "/avatar/default.gif", Status = 0, TenantId = 0, LastPasswordChangeTime = now, IsLock = 0, ErrorLimit = 0, LoginCount = 0, CreateBy = "Hbt365", CreateTime = now, UpdateBy = "Hbt365", UpdateTime = now },
-            new HbtUser { Id = nextId++, UserName = "user", NickName = "普通用户", EnglishName = "Normal User", UserType = 1, Email = "user@lean.com", PhoneNumber = "13800000005", Gender = 0, Avatar = "/avatar/default.gif", Status = 0, TenantId = 0, LastPasswordChangeTime = now, IsLock = 0, ErrorLimit = 0, LoginCount = 0, CreateBy = "Hbt365", CreateTime = now, UpdateBy = "Hbt365", UpdateTime = now }
+            new HbtUser { UserName = "admin", NickName = "超级管理员",RealName = "超级管理员",FullName = "超级管理员",EnglishName = "System Administrator", UserType = 2, Email = "admin@hbt365.net", PhoneNumber = "13800000001", Gender = 0, Avatar = "/avatar/default.gif", Status = 0, LastPasswordChangeTime = now, IsLock = 0, ErrorLimit = 0, LoginCount = 0 },
+            new HbtUser { UserName = "dev_admin", NickName = "开发管理员",RealName = "开发管理员",FullName = "开发管理员",EnglishName = "Development Administrator", UserType = 2, Email = "dev_admin@lean.com", PhoneNumber = "13800000002", Gender = 0, Avatar = "/avatar/default.gif", Status = 0, LastPasswordChangeTime = now, IsLock = 0, ErrorLimit = 0, LoginCount = 0 },
+            new HbtUser { UserName = "developer", NickName = "开发工程师",RealName = "开发工程师",FullName = "开发工程师",EnglishName = "Developer", UserType = 1, Email = "developer@lean.com", PhoneNumber = "13800000003", Gender = 0, Avatar = "/avatar/default.gif", Status = 0, LastPasswordChangeTime = now, IsLock = 0, ErrorLimit = 0, LoginCount = 0 },
+            new HbtUser { UserName = "tester", NickName = "测试工程师",RealName = "测试工程师",FullName = "测试工程师",EnglishName = "Test Engineer", UserType = 1, Email = "tester@lean.com", PhoneNumber = "13800000004", Gender = 0, Avatar = "/avatar/default.gif", Status = 0, LastPasswordChangeTime = now, IsLock = 0, ErrorLimit = 0, LoginCount = 0 },
+            new HbtUser { UserName = "user", NickName = "普通用户",RealName = "普通用户",FullName = "普通用户",EnglishName = "Normal User", UserType = 1, Email = "user@lean.com", PhoneNumber = "13800000005", Gender = 0, Avatar = "/avatar/default.gif", Status = 0, LastPasswordChangeTime = now, IsLock = 0, ErrorLimit = 0, LoginCount = 0 }
         };
         var systemToInsert = new List<HbtUser>();
         var systemToUpdate = new List<HbtUser>();
@@ -68,6 +66,8 @@ public class HbtDbSeedUser
             if (existingUserDict.TryGetValue(user.UserName, out var existingUser))
             {
                 existingUser.NickName = user.NickName;
+                existingUser.RealName = user.RealName;
+                existingUser.FullName = user.FullName;
                 existingUser.EnglishName = user.EnglishName;
                 existingUser.UserType = user.UserType;
                 existingUser.Email = user.Email;
@@ -75,10 +75,13 @@ public class HbtDbSeedUser
                 existingUser.Gender = user.Gender;
                 existingUser.Avatar = user.Avatar;
                 existingUser.Status = user.Status;
-                existingUser.TenantId = user.TenantId;
                 existingUser.LastPasswordChangeTime = user.LastPasswordChangeTime;
+                
+                // 统一处理租户和审计字段
+                existingUser.TenantId = systemTenantId;
                 existingUser.UpdateBy = "Hbt365";
                 existingUser.UpdateTime = now;
+                
                 systemToUpdate.Add(existingUser);
             }
             else if (!existingPhones.Contains(user.PhoneNumber))
@@ -87,6 +90,14 @@ public class HbtDbSeedUser
                 user.Password = hash;
                 user.Salt = salt;
                 user.Iterations = iterations;
+                
+                // 统一处理租户和审计字段
+                user.TenantId = systemTenantId;
+                user.CreateBy = "Hbt365";
+                user.CreateTime = now;
+                user.UpdateBy = "Hbt365";
+                user.UpdateTime = now;
+                
                 systemToInsert.Add(user);
             }
         }
@@ -108,32 +119,40 @@ public class HbtDbSeedUser
     /// <summary>
     /// 初始化批量普通用户（user1~userN）
     /// </summary>
-    private async Task<(int, int)> InitializeBatchUsersAsync(int totalCount = 1000)
+    public async Task<(int, int)> InitializeBatchUsersAsync(long systemTenantId, int totalCount = 1000)
     {
         int insertCount = 0;
         int updateCount = 0;
-        long nextId = 100; // 避免和系统用户ID冲突
         var defaultPassword = _configuration.GetValue<string>("Security:PasswordPolicy:DefaultPassword")!;
         var db = _userRepository.SqlSugarClient;
         var now = DateTime.Now;
         var batchSize = 1000;
         var totalBatches = (int)Math.Ceiling((double)totalCount / batchSize);
-        var existingUsers = await _userRepository.GetListAsync(u => u.UserName.StartsWith("user") && u.UserName != "user");
+        var existingUsers = await _userRepository.GetListAsync(u => u.UserName.StartsWith("user") && u.UserName != "user" && u.TenantId == systemTenantId);
         var existingUserDict = existingUsers.ToDictionary(u => u.UserName, u => u);
         var existingPhones = existingUsers.Select(u => u.PhoneNumber).ToHashSet();
+
+        _logger.Info($"[批量用户] 开始初始化 {totalCount} 条用户数据，分 {totalBatches} 批处理");
+
         for (int batch = 0; batch < totalBatches; batch++)
         {
             var startIndex = batch * batchSize + 1;
             var endIndex = Math.Min((batch + 1) * batchSize, totalCount);
             var toInsert = new List<HbtUser>(batchSize);
             var toUpdate = new List<HbtUser>();
+
+            _logger.Info($"[批量用户] 开始处理第 {batch + 1}/{totalBatches} 批，用户范围: {startIndex}-{endIndex}");
+
             for (int i = startIndex; i <= endIndex; i++)
             {
                 var userName = $"user{i}";
                 var phoneNumber = $"{13810000000 + i:D11}";
+
                 if (existingUserDict.TryGetValue(userName, out var existingUser))
                 {
                     existingUser.NickName = $"普通用户{i}";
+                    existingUser.RealName = $"普通用户{i}";
+                    existingUser.FullName = $"普通用户{i}";
                     existingUser.EnglishName = $"Normal User {i}";
                     existingUser.UserType = 1;
                     existingUser.Email = $"user{i}@lean.com";
@@ -141,20 +160,27 @@ public class HbtDbSeedUser
                     existingUser.Gender = 0;
                     existingUser.Avatar = "/avatar/default.gif";
                     existingUser.Status = 0;
-                    existingUser.TenantId = 0;
                     existingUser.LastPasswordChangeTime = now;
+                    existingUser.IsLock = 0;
+                    existingUser.ErrorLimit = 0;
+                    existingUser.LoginCount = 0;
+                    
+                    // 统一处理租户和审计字段
+                    existingUser.TenantId = systemTenantId;
                     existingUser.UpdateBy = "Hbt365";
                     existingUser.UpdateTime = now;
+                    
                     toUpdate.Add(existingUser);
                 }
                 else if (!existingPhones.Contains(phoneNumber))
                 {
                     var (hash, salt, iterations) = HbtPasswordUtils.CreateHash(defaultPassword);
-                    toInsert.Add(new HbtUser
+                    var newUser = new HbtUser
                     {
-                        Id = nextId++,
                         UserName = userName,
                         NickName = $"普通用户{i}",
+                        RealName = $"普通用户{i}",
+                        FullName = $"普通用户{i}",
                         EnglishName = $"Normal User {i}",
                         UserType = 1,
                         Email = $"user{i}@lean.com",
@@ -162,45 +188,68 @@ public class HbtDbSeedUser
                         Gender = 0,
                         Avatar = "/avatar/default.gif",
                         Status = 0,
-                        TenantId = 0,
                         LastPasswordChangeTime = now,
                         IsLock = 0,
                         ErrorLimit = 0,
                         LoginCount = 0,
+                        Password = hash,
+                        Salt = salt,
+                        Iterations = iterations,
+                        TenantId = systemTenantId,
                         CreateBy = "Hbt365",
                         CreateTime = now,
                         UpdateBy = "Hbt365",
-                        UpdateTime = now,
-                        Password = hash,
-                        Salt = salt,
-                        Iterations = iterations
-                    });
+                        UpdateTime = now
+                    };
+                    
+                    toInsert.Add(newUser);
                 }
             }
+
             if (toInsert.Count > 0)
             {
-                db.Fastest<HbtUser>().PageSize(batchSize).BulkCopy(toInsert);
-                insertCount += toInsert.Count;
-                _logger.Info($"[批量插入] {toInsert.Count} 条用户数据插入成功");
+                try
+                {
+                    db.Fastest<HbtUser>().PageSize(batchSize).BulkCopy(toInsert);
+                    insertCount += toInsert.Count;
+                    _logger.Info($"[批量用户] 第 {batch + 1} 批成功插入 {toInsert.Count} 条用户数据");
+                }
+                catch (Exception ex)
+                {
+                    _logger.Error($"[批量用户] 第 {batch + 1} 批插入失败: {ex.Message}");
+                    throw;
+                }
             }
+
             if (toUpdate.Count > 0)
             {
-                await db.Updateable(toUpdate).ExecuteCommandAsync();
-                updateCount += toUpdate.Count;
-                _logger.Info($"[批量更新] {toUpdate.Count} 条用户数据更新成功");
+                try
+                {
+                    await db.Updateable(toUpdate).ExecuteCommandAsync();
+                    updateCount += toUpdate.Count;
+                    _logger.Info($"[批量用户] 第 {batch + 1} 批成功更新 {toUpdate.Count} 条用户数据");
+                }
+                catch (Exception ex)
+                {
+                    _logger.Error($"[批量用户] 第 {batch + 1} 批更新失败: {ex.Message}");
+                    throw;
+                }
             }
-            _logger.Info($"[批次完成] 第 {batch + 1}/{totalBatches} 批处理完成");
+
+            _logger.Info($"[批量用户] 第 {batch + 1}/{totalBatches} 批处理完成");
         }
+
+        _logger.Info($"[批量用户] 初始化完成，共插入 {insertCount} 条，更新 {updateCount} 条用户数据");
         return (insertCount, updateCount);
     }
 
     /// <summary>
     /// 初始化用户数据（入口）
     /// </summary>
-    public async Task<(int, int)> InitializeUserAsync()
+    public async Task<(int, int)> InitializeUserAsync(long systemTenantId)
     {
-        var (sysInsert, sysUpdate) = await InitializeSystemUsersAsync();
-        var (batchInsert, batchUpdate) = await InitializeBatchUsersAsync();
+        var (sysInsert, sysUpdate) = await InitializeSystemUsersAsync(systemTenantId);
+        var (batchInsert, batchUpdate) = await InitializeBatchUsersAsync(systemTenantId);
         return (sysInsert + batchInsert, sysUpdate + batchUpdate);
     }
 }

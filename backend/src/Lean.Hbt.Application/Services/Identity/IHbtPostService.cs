@@ -68,6 +68,29 @@ namespace Lean.Hbt.Application.Services.Identity
         Task<List<HbtSelectOption>> GetOptionsAsync();
 
         /// <summary>
+        /// 获取岗位用户列表
+        /// </summary>
+        /// <param name="postId">岗位ID</param>
+        /// <returns>岗位用户列表</returns>
+        Task<HbtUserPostDto> GetPostUsersAsync(long postId);
+
+        /// <summary>
+        /// 分配岗位用户
+        /// </summary>
+        /// <param name="postId">岗位ID</param>
+        /// <param name="userIds">用户ID集合</param>
+        /// <returns>是否成功</returns>
+        Task<bool> AssignPostUsersAsync(long postId, long[] userIds);
+
+        /// <summary>
+        /// 移除岗位用户
+        /// </summary>
+        /// <param name="postId">岗位ID</param>
+        /// <param name="userIds">用户ID集合</param>
+        /// <returns>是否成功</returns>
+        Task<bool> RemovePostUsersAsync(long postId, long[] userIds);
+
+        /// <summary>
         /// 导入岗位数据
         /// </summary>
         /// <param name="fileStream">Excel文件流</param>

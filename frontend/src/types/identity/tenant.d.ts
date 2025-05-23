@@ -1,122 +1,157 @@
 import type { HbtBaseEntity, HbtPagedQuery, HbtPagedResult } from '@/types/common'
-
-/**
- * 租户查询参数
- */
-export interface TenantQuery extends HbtPagedQuery {
-  /** 租户编码 */
-  tenantCode?: string
-  /** 租户名称 */
-  tenantName?: string
-  /** 联系人 */
-  contactPerson?: string
-  /** 联系电话 */
-  contactPhone?: string
-  /** 状态（0=正常 1=停用） */
-  status?: number
-}
+import type { Dayjs } from 'dayjs'
 
 /**
  * 租户对象
  */
-export interface Tenant extends HbtBaseEntity {
-  /** 租户ID */
-  tenantId: number
-  /** 租户编码 */
-  tenantCode: string
-  /** 租户名称 */
-  tenantName: string
-  /** 联系人 */
-  contactPerson: string
-  /** 联系电话 */
-  contactPhone: string
-  /** 联系邮箱 */
-  contactEmail: string
-  /** 租户地址 */
-  address: string
-  /** 租户域名 */
-  domain: string
-  /** 租户Logo */
-  logoUrl: string
-  /** 租户主题 */
-  theme: string
-  /** 授权开始时间 */
-  licenseStartTime?: string
-  /** 授权结束时间 */
-  licenseEndTime?: string
-  /** 最大用户数 */
-  maxUserCount: number
-  /** 状态（0=正常 1=停用） */
-  status: number
-  /** 备注 */
-  remark?: string
+export interface HbtTenant extends HbtBaseEntity {
+  tenantId: number;
+  tenantName: string;
+  tenantCode: string;
+  contactUser?: string;
+  contactPhone?: string;
+  contactEmail: string;
+  address?: string;
+  license?: string;
+  expireTime?: string;
+  status: number;
+  isDefault: number;
+  dbConnection: string;
+  domain: string;
+  logoUrl?: string;
+  theme?: string;
+  licenseStartTime?: string | Dayjs;
+  licenseEndTime?: string | Dayjs;
+  maxUserCount: number;
 }
 
 /**
- * 租户创建参数
+ * 租户查询参数
  */
-export interface TenantCreate {
-  /** 租户编码 */
-  tenantCode: string
-  /** 租户名称 */
-  tenantName: string
-  /** 联系人 */
-  contactPerson: string
-  /** 联系电话 */
-  contactPhone: string
-  /** 联系邮箱 */
-  contactEmail: string
-  /** 租户地址 */
-  address: string
-  /** 租户域名 */
-  domain: string
-  /** 租户Logo */
-  logoUrl: string
-  /** 租户主题 */
-  theme: string
-  /** 授权开始时间 */
-  licenseStartTime?: string
-  /** 授权结束时间 */
-  licenseEndTime?: string
-  /** 最大用户数 */
-  maxUserCount: number
-  /** 状态（0=正常 1=停用） */
-  status: number
-  /** 备注 */
-  remark?: string
+export interface HbtTenantQuery extends HbtPagedQuery {
+  tenantName?: string;
+  tenantCode?: string;
+  contactUser?: string;
+  contactPhone?: string;
+  status?: number;
+  beginTime?: string;
+  endTime?: string;
 }
 
 /**
- * 租户更新参数
+ * 创建租户参数
  */
-export interface TenantUpdate extends TenantCreate {
-  /** 租户ID */
-  tenantId: number
+export interface HbtTenantCreate {
+  tenantName: string;
+  tenantCode: string;
+  contactUser: string;
+  contactPhone: string;
+  contactEmail: string;
+  address?: string;
+  license: string;
+  expireTime: string | Dayjs;
+  status: number;
+  isDefault: number;
+  dbConnection: string;
+  domain: string;
+  logoUrl?: string;
+  theme?: string;
+  licenseStartTime?: string | Dayjs;
+  licenseEndTime?: string | Dayjs;
+  maxUserCount: number;
 }
 
 /**
- * 租户状态参数
+ * 更新租户参数
  */
-export interface TenantStatus {
-  /** 租户ID */
-  tenantId: number
-  /** 状态（0=正常 1=停用） */
-  status: number
+export interface HbtTenantUpdate extends HbtTenantCreate {
+  tenantId: number;
+}
+
+/**
+ * 租户导入模板
+ */
+export interface HbtTenantTemplate {
+  tenantCode: string;
+  tenantName: string;
+  contactPerson: string;
+  contactPhone: string;
+  contactEmail: string;
+  address: string;
+  domain: string;
+  theme: string;
+  licenseStartTime: string;
+  licenseEndTime: string;
+  maxUserCount: string;
+}
+
+/**
+ * 租户导入参数
+ */
+export interface HbtTenantImport {
+  tenantName: string;
+  tenantCode: string;
+  contactPerson?: string;
+  contactPhone?: string;
+  contactEmail?: string;
+  address?: string;
+  domain?: string;
+}
+
+/**
+ * 租户导出参数
+ */
+export interface HbtTenantExport {
+  tenantName: string;
+  tenantCode: string;
+  contactPerson: string;
+  contactPhone: string;
+  contactEmail: string;
+  address: string;
+  domain: string;
+  createTime: string;
+} 
+
+/**
+ * 租户状态更新参数
+ */
+export interface HbtTenantStatus {
+  tenantId: number;
+  status: number;
 }
 
 /**
  * 租户分页结果
  */
-export type TenantPageResult = HbtPagedResult<Tenant>
+export type HbtTenantPageResult = HbtPagedResult<HbtTenant>
 
 /**
- * 租户选项接口
+ * 租户DTO
  */
-export interface TenantOption {
-  /** 选项值 */
-  value: number
-  /** 选项标签 */
-  label: string
-  /** 是否禁用 */
-  disabled: boolean
-} 
+export interface HbtTenantDto {
+  tenantId: number;
+  tenantNo: number;
+  tenantName: string;
+  tenantCode: string;
+  contactPerson: string;
+  contactPhone: string;
+  contactEmail: string;
+  address: string;
+  domain: string;
+  logoUrl: string;
+  theme: string;
+  licenseStartTime?: string;
+  licenseEndTime?: string;
+  maxUserCount: number;
+  status: number;
+  createTime: string;
+}
+
+/**
+ * 租户选项
+ */
+export interface HbtTenantOption {
+  label: string;
+  value: number;
+}
+

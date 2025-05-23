@@ -120,7 +120,7 @@ export function importHbtLanguage(file: File, sheetName: string = '语言') {
  * @returns 文件流
  */
 export function exportHbtLanguage(query: HbtLanguageQuery) {
-  return request<HbtApiResponse<Blob>>({
+  return request<Blob>({
     url: '/api/HbtLanguage/export',
     method: 'get',
     params: query,
@@ -133,7 +133,7 @@ export function exportHbtLanguage(query: HbtLanguageQuery) {
  * @returns 文件流
  */
 export function getHbtLanguageTemplate() {
-  return request<HbtApiResponse<Blob>>({
+  return request<Blob>({
     url: '/api/HbtLanguage/template',
     method: 'get',
     responseType: 'blob'

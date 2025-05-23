@@ -173,10 +173,9 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive, watch, computed } from 'vue'
+import { ref, reactive, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type { FormInstance } from 'ant-design-vue'
-import type { SizeType } from 'ant-design-vue/es/config-provider'
 import {
   SearchOutlined,
   RedoOutlined,
@@ -241,7 +240,16 @@ const formRef = ref<FormInstance>()
 const formState = reactive<Record<string, any>>({})
 const collapsed = ref(true)
 
-// === 计算属性 ===
+// === 工具函数：根据字段类型返回默认值 ===
+function getDefaultValue(field: QueryField) {
+  if (field.type === 'input' || field.type === 'date' || field.type === 'dateRange' || field.type === 'cascader') {
+    return ''
+  }
+  if (field.type === 'select' || field.type === 'radio' || field.type === 'checkbox' || field.type === 'number') {
+    return -1
+  }
+  return ''
+}
 
 // === 监听器 ===
 watch(
@@ -249,7 +257,7 @@ watch(
   (fields) => {
     fields.forEach((field) => {
       if (!(field.name in formState)) {
-        formState[field.name] = undefined
+        formState[field.name] = getDefaultValue(field)
       }
     })
   },
@@ -258,10 +266,18 @@ watch(
 
 // === 事件处理 ===
 const handleFinish = (values: any) => {
-  emit('search', values)
+  // 过滤掉 undefined，保证有默认值
+  const result: Record<string, any> = {}
+  props.queryFields.forEach(field => {
+    result[field.name] = values[field.name] !== undefined ? values[field.name] : getDefaultValue(field)
+  })
+  emit('search', result)
 }
 
 const handleReset = () => {
+  props.queryFields.forEach(field => {
+    formState[field.name] = getDefaultValue(field)
+  })
   formRef.value?.resetFields()
   emit('reset')
 }

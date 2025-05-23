@@ -10,12 +10,9 @@
 // System 命名空间
 global using System;
 global using System.Collections.Generic;
-global using System.ComponentModel;
 global using System.ComponentModel.DataAnnotations;
 global using System.Threading.Tasks;
-
 // 项目依赖
 global using Lean.Hbt.Common.Enums;
-global using Lean.Hbt.Domain.Entities;
 global using Lean.Hbt.Domain.Repositories;
-global using Lean.Hbt.Domain.IServices; 
+global using SqlSugar;

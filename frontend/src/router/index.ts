@@ -2,7 +2,7 @@ import { createRouter, createWebHistory, type Router, type RouteRecordRaw } from
 import { getToken, removeToken } from '@/utils/auth'
 import { useUserStore } from '@/stores/user'
 import { useMenuStore } from '@/stores/menu'
-import type { Menu } from '@/types/identity/menu'
+import type { HbtMenu } from '@/types/identity/menu'
 import { HbtMenuType } from '@/types/identity/menu'
 import { message } from 'ant-design-vue'
 import i18n from '@/locales'
@@ -171,7 +171,7 @@ export const constantRoutes: RouteRecordRaw[] = [
         name: 'UserProfile',
         component: () => import('@/views/identity/user/components/UserProfile.vue'),
         meta: {
-          title: 'menu.identity.user.profile',
+          title: 'identity.user.profile',
           icon: 'ProfileOutlined',
           requiresAuth: true,
           transKey: 'menu.identity.user.profile',
@@ -185,6 +185,8 @@ export const constantRoutes: RouteRecordRaw[] = [
         meta: {
           title: '修改密码',
           icon: 'lock',
+          requiresAuth: true,
+          transKey: 'identity.user.changePassword',
           hidden: true
         }
       },
@@ -368,7 +370,7 @@ export async function registerDynamicRoutes(router: Router) {
     }
     
     // 过滤路由权限
-    const filteredMenus = filterAsyncRoutes<Menu>(menus, userStore.permissions)
+    const filteredMenus = filterAsyncRoutes<HbtMenu>(menus, userStore.permissions)
     console.log('[路由] 过滤后的菜单:', filteredMenus)
 
     // 清理现有路由
@@ -381,7 +383,7 @@ export async function registerDynamicRoutes(router: Router) {
       })
     
     // 注册所有路由
-    const processMenus = (menus: Menu[]) => {
+    const processMenus = (menus: HbtMenu[]) => {
       // 创建根路由
       const rootRoute: RouteRecordRaw = {
         path: '/',
@@ -392,7 +394,7 @@ export async function registerDynamicRoutes(router: Router) {
       }
 
       // 处理菜单项
-      const processMenuItem = (menu: Menu): RouteRecordRaw => {
+      const processMenuItem = (menu: HbtMenu): RouteRecordRaw => {
         const routeName = `HbtMenu_${menu.menuId}`
         const routePath = menu.path.startsWith('/') ? menu.path.slice(1) : menu.path
         

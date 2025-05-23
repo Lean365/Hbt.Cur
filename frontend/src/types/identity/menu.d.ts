@@ -14,108 +14,336 @@ export enum HbtMenuType {
 }
 
 /**
- * 菜单基础类型
+ * 菜单对象
  */
-export interface Menu extends HbtBaseEntity {
-  menuName: string;
-  transKey?: string;
-  parentId?: number;
-  orderNum: number;
-  path: string;
-  component: string;
-  queryParams?: string;
-  isExternal: number;
-  isCache: number;
-  menuType: number;
-  visible: number;
-  status: number;
-  perms?: string;
-  icon?: string;
-  tenantId?: number;
-  menuId: number;
-  children?: Menu[];
+export interface HbtMenu extends HbtBaseEntity {
+  /** 菜单ID */
+  menuId: number
+  /** 租户ID */
+  tenantId: number
+  /** 菜单名称 */
+  menuName: string
+  /** 翻译Key */
+  transKey?: string
+  /** 父菜单ID */
+  parentId: number
+  /** 显示顺序 */
+  orderNum: number
+  /** 路由地址 */
+  path: string
+  /** 组件路径 */
+  component?: string
+  /** 路由参数 */
+  queryParams?: string
+  /** 是否为外链（0否 1是） */
+  isExternal: number
+  /** 是否缓存（0否 1是） */
+  isCache: number
+  /** 菜单类型（0目录 1菜单 2按钮） */
+  menuType: number
+  /** 菜单状态（0显示 1隐藏） */
+  visible: number
+  /** 菜单状态（0正常 1停用） */
+  status: number
+  /** 权限标识 */
+  perms?: string
+  /** 菜单图标 */
+  icon?: string
+  /** 子菜单 */
+  children?: HbtMenu[]
 }
 
 /**
  * 菜单查询参数
  */
-export interface MenuQuery extends HbtPagedQuery {
-  menuName?: string;
-  status?: number;
-  menuType?: number;
-  parentId?: number;
+export interface HbtMenuQuery extends HbtPagedQuery {
+  /** 菜单名称 */
+  menuName?: string
+  /** 菜单状态（0正常 1停用） */
+  status?: number
+  /** 菜单状态（0显示 1隐藏） */
+  visible?: number
+  /** 菜单类型（0目录 1菜单 2按钮） */
+  menuType?: number
+  /** 是否为外链（0否 1是） */
+  isExternal?: number
+  /** 是否缓存（0否 1是） */
+  isCache?: number
 }
 
 /**
- * 菜单创建参数
+ * 菜单树形查询参数
  */
-export interface MenuCreate {
-  menuName: string;
-  transKey?: string;
-  parentId?: number;
-  orderNum: number;
-  path?: string;
-  component?: string;
-  queryParams?: string;
-  isExternal: number;
-  isCache: number;
-  menuType: number;
-  visible: number;
-  status: number;
-  perms?: string;
-  icon?: string;
-  tenantId?: number;
+export interface HbtMenuTreeQuery {
+  /** 菜单名称 */
+  menuName?: string
+  /** 菜单状态（0正常 1停用） */
+  status?: number
+  /** 菜单状态（0显示 1隐藏） */
+  visible?: number
+  /** 菜单类型（0目录 1菜单 2按钮） */
+  menuType?: number
+  /** 是否为外链（0否 1是） */
+  isExternal?: number
+  /** 是否缓存（0否 1是） */
+  isCache?: number
+  /** 父菜单ID */
+  parentId?: number
 }
 
 /**
- * 菜单更新参数
+ * 创建菜单参数
  */
-export interface MenuUpdate extends MenuCreate {
-  menuId: number;
+export interface HbtMenuCreate {
+  /** 菜单名称 */
+  menuName: string
+  /** 翻译Key */
+  transKey?: string
+  /** 父菜单ID */
+  parentId: number
+  /** 显示顺序 */
+  orderNum: number
+  /** 路由地址 */
+  path: string
+  /** 组件路径 */
+  component?: string
+  /** 路由参数 */
+  queryParams?: string
+  /** 是否为外链（0否 1是） */
+  isExternal: number
+  /** 是否缓存（0否 1是） */
+  isCache: number
+  /** 菜单类型（0目录 1菜单 2按钮） */
+  menuType: number
+  /** 菜单状态（0显示 1隐藏） */
+  visible: number
+  /** 菜单状态（0正常 1停用） */
+  status: number
+  /** 权限标识 */
+  perms?: string
+  /** 菜单图标 */
+  icon?: string
+  /** 备注 */
+  remark?: string
+  /** 租户ID */
+  tenantId: number
+}
+
+/**
+ * 更新菜单参数
+ */
+export interface HbtMenuUpdate extends HbtMenuCreate {
+  /** 菜单ID */
+  menuId: number
 }
 
 /**
  * 菜单状态更新参数
  */
-export interface MenuStatus {
-  menuId: number;
-  status: number;
+export interface HbtMenuStatus {
+  /** 菜单ID */
+  menuId: number
+  /** 状态（0正常 1停用） */
+  status: number
 }
 
 /**
  * 菜单排序更新参数
  */
-export interface MenuOrder {
-  menuId: number;
-  orderNum: number;
+export interface HbtMenuOrder {
+  /** 菜单ID */
+  menuId: number
+  /** 显示顺序 */
+  orderNum: number
 }
 
 /**
- * 菜单表单类型
+ * 菜单导入模板
  */
-export interface MenuForm {
-  menuName: string;
-  transKey?: string;
-  parentId?: number;
-  orderNum: number;
-  path?: string;
-  component?: string;
-  queryParams?: string;
-  isExternal: number;
-  isCache: number;
-  menuType: number;
-  visible: number;
-  status: number;
-  perms?: string;
-  icon?: string;
-  tenantId?: number;
-  menuId?: number;
+export interface HbtMenuTemplate {
+  /** 菜单名称 */
+  menuName: string
+  /** 翻译Key */
+  transKey: string
+  /** 父菜单名称 */
+  parentMenuName: string
+  /** 显示顺序 */
+  orderNum: string
+  /** 路由地址 */
+  path: string
+  /** 组件路径 */
+  component: string
+  /** 路由参数 */
+  queryParams: string
+  /** 是否为外链 */
+  isExternal: string
+  /** 是否缓存 */
+  isCache: string
+  /** 菜单类型 */
+  menuType: string
+  /** 菜单状态 */
+  visible: string
+  /** 状态 */
+  status: string
+  /** 权限标识 */
+  perms: string
+  /** 菜单图标 */
+  icon: string
+  /** 备注 */
+  remark: string
+}
+
+/**
+ * 菜单导入参数
+ */
+export interface HbtMenuImport {
+  /** 菜单名称 */
+  menuName: string
+  /** 翻译Key */
+  transKey?: string
+  /** 父菜单名称 */
+  parentMenuName?: string
+  /** 显示顺序 */
+  orderNum: number
+  /** 路由地址 */
+  path: string
+  /** 组件路径 */
+  component?: string
+  /** 路由参数 */
+  queryParams?: string
+  /** 是否为外链（0否 1是） */
+  isExternal: number
+  /** 是否缓存（0否 1是） */
+  isCache: number
+  /** 菜单类型（0目录 1菜单 2按钮） */
+  menuType: number
+  /** 菜单状态（0显示 1隐藏） */
+  visible: number
+  /** 菜单状态（0正常 1停用） */
+  status: number
+  /** 权限标识 */
+  perms?: string
+  /** 菜单图标 */
+  icon?: string
+  /** 备注 */
+  remark?: string
+}
+
+/**
+ * 菜单导出参数
+ */
+export interface HbtMenuExport {
+  /** 菜单名称 */
+  menuName: string
+  /** 翻译Key */
+  transKey: string
+  /** 父菜单ID */
+  parentId: number
+  /** 显示顺序 */
+  orderNum: number
+  /** 路由地址 */
+  path: string
+  /** 组件路径 */
+  component: string
+  /** 路由参数 */
+  queryParams: string
+  /** 是否为外链 */
+  isExternal: number
+  /** 是否缓存 */
+  isCache: number
+  /** 菜单类型 */
+  menuType: number
+  /** 菜单状态 */
+  visible: number
+  /** 状态 */
+  status: number
+  /** 权限标识 */
+  perms: string
+  /** 菜单图标 */
+  icon: string
+  /** 备注 */
+  remark: string
+  /** 创建时间 */
+  createTime: string
 }
 
 /**
  * 菜单分页结果
  */
-export type MenuPageResult = HbtPagedResult<Menu>
+export type HbtMenuPageResult = HbtPagedResult<HbtMenu>
+
+/**
+ * 菜单DTO
+ */
+export interface HbtMenuDto {
+  /** 菜单ID */
+  menuId: number
+  /** 菜单名称 */
+  menuName: string
+  /** 翻译Key */
+  transKey: string
+  /** 父菜单ID */
+  parentId: number
+  /** 显示顺序 */
+  orderNum: number
+  /** 路由地址 */
+  path: string
+  /** 组件路径 */
+  component: string
+  /** 路由参数 */
+  queryParams: string
+  /** 是否为外链 */
+  isExternal: number
+  /** 是否缓存 */
+  isCache: number
+  /** 菜单类型 */
+  menuType: number
+  /** 菜单状态 */
+  visible: number
+  /** 状态 */
+  status: number
+  /** 权限标识 */
+  perms: string
+  /** 菜单图标 */
+  icon: string
+  /** 备注 */
+  remark: string
+  /** 创建时间 */
+  createTime: string
+  /** 创建者 */
+  createBy: string
+  /** 更新时间 */
+  updateTime: string
+  /** 更新者 */
+  updateBy: string
+  /** 子菜单 */
+  children: HbtMenuDto[]
+}
+
+/**
+ * 菜单选项
+ */
+export interface HbtMenuOption {
+  /** 标签 */
+  label: string
+  /** 值 */
+  value: number
+  /** 子菜单 */
+  children?: HbtMenuOption[]
+}
+
+/**
+ * 用户菜单DTO
+ */
+export interface HbtUserMenuDto {
+  id: number;
+  userId: number;
+  menuId: number;
+  menuName: string;
+  menuCode: string;
+  createTime: string;
+  createBy: string;
+}
 
 /**
  * 前端菜单项类型

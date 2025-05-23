@@ -9,8 +9,6 @@
 // 描述    : 角色实体类
 //===================================================================
 
-using SqlSugar;
-
 namespace Lean.Hbt.Domain.Entities.Identity
 {
     /// <summary>
@@ -46,16 +44,22 @@ namespace Lean.Hbt.Domain.Entities.Identity
         public int DataScope { get; set; } = 1;
 
         /// <summary>
-        /// 状态（0正常 1停用）
+        /// 用户数
         /// </summary>
-        [SugarColumn(ColumnName = "status", ColumnDescription = "状态（0正常 1停用）", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
+        [SugarColumn(ColumnName = "user_count", ColumnDescription = "用户数", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
+        public int UserCount { get; set; } = 0;
+
+        /// <summary>
+        /// 角色状态（0正常 1停用）
+        /// </summary>
+        [SugarColumn(ColumnName = "status", ColumnDescription = "角色状态", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
         public int Status { get; set; } = 0;
 
         /// <summary>
         /// 租户ID
         /// </summary>
-                [SugarColumn(ColumnName = "tenant_id", ColumnDescription = "租户ID", ColumnDataType = "bigint", IsNullable = false)]
-       public long TenantId { get; set; }
+        [SugarColumn(ColumnName = "tenant_id", ColumnDescription = "租户ID", ColumnDataType = "bigint", IsNullable = false)]
+        public long TenantId { get; set; }
 
         /// <summary>
         /// 租户

@@ -93,7 +93,7 @@ public class HbtTenantController : HbtBaseController
     /// <param name="id">租户ID</param>
     /// <returns>是否成功</returns>
     [HttpDelete("{id}")]
-    [HbtPerm("identity:tenant:remove")]
+    [HbtPerm("identity:tenant:delete")]
     public async Task<IActionResult> DeleteAsync(long id)
     {
         var result = await _tenantService.DeleteAsync(id);
@@ -106,6 +106,7 @@ public class HbtTenantController : HbtBaseController
     /// <param name="ids">租户ID集合</param>
     /// <returns>是否成功</returns>
     [HttpDelete("batch")]
+    [HbtPerm("identity:tenant:delete")]
     public async Task<bool> BatchDeleteAsync([FromBody] long[] ids)
     {
         return await _tenantService.BatchDeleteAsync(ids);
@@ -117,6 +118,7 @@ public class HbtTenantController : HbtBaseController
     /// <param name="file">Excel文件</param>
     /// <returns>导入结果</returns>
     [HttpPost("import")]
+    [HbtPerm("identity:tenant:import")]
     public async Task<(int success, int fail)> ImportAsync(IFormFile file)
     {
         using var stream = file.OpenReadStream();
@@ -129,6 +131,7 @@ public class HbtTenantController : HbtBaseController
     /// <param name="query">查询条件</param>
     /// <returns>Excel文件</returns>
     [HttpGet("export")]
+    [HbtPerm("identity:tenant:export")]
     public async Task<IActionResult> ExportAsync([FromQuery] HbtTenantQueryDto query)
     {
         var (fileName, content) = await _tenantService.ExportAsync(query, "Sheet1");
@@ -140,6 +143,7 @@ public class HbtTenantController : HbtBaseController
     /// </summary>
     /// <returns>Excel模板文件</returns>
     [HttpGet("template")]
+    [HbtPerm("identity:tenant:import")]
     public async Task<IActionResult> GetTemplateAsync()
     {
         var (fileName, content) = await _tenantService.GetTemplateAsync("Sheet1");
@@ -149,14 +153,14 @@ public class HbtTenantController : HbtBaseController
     /// <summary>
     /// 更新租户状态
     /// </summary>
-    /// <param name="tenantId">租户ID</param>
+    /// <param name="id">租户ID</param>
     /// <param name="status">状态</param>
-    /// <returns>是否成功</returns>
-    [HttpPut("{tenantId}/status")]
-    public async Task<IActionResult> UpdateStatusAsync(long tenantId, [FromQuery] int status)
+    /// <returns>更新后的租户状态信息</returns>
+    [HttpPut("{id}/status/{status}")]
+    [HbtPerm("identity:tenant:update")]
+    public async Task<HbtTenantStatusDto> UpdateStatus(long id, int status)
     {
-        var result = await _tenantService.UpdateStatusAsync(tenantId, status);
-        return Success(result);
+        return await _tenantService.UpdateStatusAsync(id, status);
     }
 
     /// <summary>

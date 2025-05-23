@@ -122,89 +122,45 @@ namespace Lean.Hbt.WebApi.Controllers.Core
         /// 导入系统配置数据
         /// </summary>
         /// <param name="file">Excel文件</param>
-        /// <param name="sheetName">工作表名称</param>
         /// <returns>导入结果</returns>
         [HttpPost("import")]
         [HbtPerm("core:config:import")]
-        public async Task<IActionResult> ImportAsync([FromForm] IFormFile file, [FromForm] string sheetName)
+        public async Task<IActionResult> ImportAsync(IFormFile file)
         {
-            try
-            {
-                _logger.Info($"开始导入配置，文件名：{file?.FileName}，大小：{file?.Length}，工作表：{sheetName}");
-
-                if (file == null || file.Length == 0)
-                {
-                    _logger.Warn("上传的文件为空");
-                    return BadRequest(_localization.L("FileUploadEmpty"));
-                }
-
-                // 验证文件类型
-                var allowedExtensions = new[] { ".xlsx", ".xls" };
-                var fileExtension = Path.GetExtension(file.FileName).ToLowerInvariant();
-                if (!allowedExtensions.Contains(fileExtension))
-                {
-                    _logger.Warn($"不支持的文件类型：{fileExtension}");
-                    return BadRequest(_localization.L("FileTypeNotSupported"));
-                }
-
-                // 验证文件大小（10MB）
-                const int maxFileSize = 10 * 1024 * 1024;
-                if (file.Length > maxFileSize)
-                {
-                    _logger.Warn($"文件大小超过限制：{file.Length} 字节");
-                    return BadRequest(_localization.L("FileSizeExceeded"));
-                }
-
-                // 使用ExcelPackage读取文件
-                using var stream = new MemoryStream();
-                await file.CopyToAsync(stream);
-                stream.Position = 0;
-
-                var (successCount, failureCount) = await _configService.ImportAsync(stream, sheetName);
-                _logger.Info($"导入完成，成功：{successCount}，失败：{failureCount}");
-                return Ok(new { 
-                    success = true,
-                    message = $"导入完成，成功：{successCount}，失败：{failureCount}",
-                    successCount, 
-                    failureCount 
-                });
-            }
-            catch (Exception ex)
-            {
-                _logger.Error($"导入配置失败：{ex.Message}", ex);
-                return StatusCode(500, new { 
-                    success = false,
-                    message = _localization.L("ImportFailed"),
-                    error = ex.Message
-                });
-            }
+            using var stream = file.OpenReadStream();
+            var (success, fail) = await _configService.ImportAsync(stream, "HbtConfig");
+            return Success(new { success, fail }, _localization.L("Core.Config.Import.Success"));
         }
 
         /// <summary>
         /// 导出系统配置数据
         /// </summary>
         /// <param name="query">查询条件</param>
-        /// <param name="sheetName">工作表名称</param>
         /// <returns>Excel文件</returns>
         [HttpGet("export")]
         [HbtPerm("core:config:export")]
-        public async Task<IActionResult> ExportAsync([FromQuery] HbtConfigQueryDto query, [FromQuery] string sheetName = "HbtConfig")
+        public async Task<IActionResult> ExportAsync([FromQuery] HbtConfigQueryDto query)
         {
-            var (fileName, content) = await _configService.ExportAsync(query, sheetName);
-            return File(content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
+            var result = await _configService.ExportAsync(query, "HbtConfig");
+            var contentType = result.fileName.EndsWith(".zip", StringComparison.OrdinalIgnoreCase)
+                ? "application/zip"
+                : "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+            // 只在 filename* 用 UTF-8 编码，filename 用 ASCII
+            var safeFileName = System.Text.Encoding.ASCII.GetString(System.Text.Encoding.ASCII.GetBytes(result.fileName));
+            Response.Headers["Content-Disposition"] = $"attachment; filename*=UTF-8''{Uri.EscapeDataString(result.fileName)}";
+            return File(result.content, contentType, result.fileName);
         }
 
         /// <summary>
         /// 获取导入模板
         /// </summary>
-        /// <param name="sheetName">工作表名称</param>
         /// <returns>Excel模板文件</returns>
         [HttpGet("template")]
-        [HbtPerm("core:config:query")]
-        public async Task<IActionResult> GetTemplateAsync([FromQuery] string sheetName = "HbtConfig")
+        [HbtPerm("core:config:export")]
+        public async Task<IActionResult> GetTemplateAsync()
         {
-            var (fileName, content) = await _configService.GetTemplateAsync(sheetName);
-            return File(content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
+            var result = await _configService.GetTemplateAsync("HbtConfig");
+            return File(result.content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", result.fileName);
         }
 
         /// <summary>

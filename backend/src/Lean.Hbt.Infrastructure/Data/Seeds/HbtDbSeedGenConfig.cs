@@ -45,7 +45,7 @@ public class HbtDbSeedGenConfig
     /// <summary>
     /// 初始化代码生成配置数据
     /// </summary>
-    public async Task<(int insertCount, int updateCount)> InitializeGenConfigAsync()
+    public async Task<(int insertCount, int updateCount)> InitializeGenConfigAsync(long tenantId)
     {
         var seedData = GetSeedData();
         var insertCount = 0;
@@ -57,6 +57,11 @@ public class HbtDbSeedGenConfig
 
             if (existingConfig == null)
             {
+                config.TenantId = tenantId;
+                config.CreateBy = "Hbt365";
+                config.CreateTime = DateTime.Now;
+                config.UpdateBy = "Hbt365";
+                config.UpdateTime = DateTime.Now;
                 await _genConfigRepository.CreateAsync(config);
                 insertCount++;
                 _logger.Info($"[创建] 代码生成配置 '{config.GenConfigName}' 创建成功");
@@ -74,7 +79,8 @@ public class HbtDbSeedGenConfig
                 existingConfig.GenPath = config.GenPath;
                 existingConfig.Options = config.Options;
                 existingConfig.Status = config.Status;
-                existingConfig.UpdateBy = "system";
+                existingConfig.TenantId = tenantId;
+                existingConfig.UpdateBy = "Hbt365";
                 existingConfig.UpdateTime = DateTime.Now;
 
                 await _genConfigRepository.UpdateAsync(existingConfig);
@@ -114,9 +120,9 @@ public class HbtDbSeedGenConfig
                     { "crudGroup", new[] { 1, 2, 3, 4, 5, 6, 7, 8 } }
                 }),
                 Status = 0,
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtGenConfig
@@ -138,9 +144,9 @@ public class HbtDbSeedGenConfig
                     { "crudGroup", new[] { 1, 2, 3, 4, 5, 6, 7, 8 } }
                 }),
                 Status = 0,
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             }
         };

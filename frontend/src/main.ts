@@ -32,6 +32,10 @@ async function bootstrap() {
     // 初始化状态管理
     app.use(pinia)
     
+    // 初始化应用配置
+    const appStore = useAppStore()
+    const settingStore = useSettingStore()
+    
     // 注册 Ant Design Vue
     app.use(Antd)
 

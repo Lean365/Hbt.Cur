@@ -189,6 +189,17 @@ export default {
           success: '删除成功',
           failed: '删除失败'
         }
+      },
+      actions: {
+        addDirectory: '添加目录',
+        addMenu: '添加菜单',
+        addButton: '添加按钮',
+        selectType: '请选择菜单类型'
+      },
+      types: {
+        directory: '目录',
+        menu: '菜单',
+        button: '按钮'
       }
     }
   }

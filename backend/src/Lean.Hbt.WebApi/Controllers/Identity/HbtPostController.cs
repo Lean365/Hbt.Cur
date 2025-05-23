@@ -192,5 +192,46 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
             var posts = await _postService.GetOptionsAsync();
             return Success(posts);
         }
+
+        /// <summary>
+        /// 获取岗位用户列表
+        /// </summary>
+        /// <param name="postId">岗位ID</param>
+        /// <returns>岗位用户列表</returns>
+        [HttpGet("{postId}/users")]
+        [HbtPerm("identity:post:query")]
+        public async Task<IActionResult> GetPostUsersAsync(long postId)
+        {
+            var result = await _postService.GetPostUsersAsync(postId);
+            return Success(result);
+        }
+
+        /// <summary>
+        /// 分配岗位用户
+        /// </summary>
+        /// <param name="postId">岗位ID</param>
+        /// <param name="userIds">用户ID集合</param>
+        /// <returns>是否成功</returns>
+        [HttpPost("{postId}/users")]
+        [HbtPerm("identity:post:allocate")]
+        public async Task<IActionResult> AssignPostUsersAsync(long postId, [FromBody] long[] userIds)
+        {
+            var result = await _postService.AssignPostUsersAsync(postId, userIds);
+            return Success(result);
+        }
+
+        /// <summary>
+        /// 移除岗位用户
+        /// </summary>
+        /// <param name="postId">岗位ID</param>
+        /// <param name="userIds">用户ID集合</param>
+        /// <returns>是否成功</returns>
+        [HttpDelete("{postId}/users")]
+        [HbtPerm("identity:post:allocate")]
+        public async Task<IActionResult> RemovePostUsersAsync(long postId, [FromBody] long[] userIds)
+        {
+            var result = await _postService.RemovePostUsersAsync(postId, userIds);
+            return Success(result);
+        }
     }
 }

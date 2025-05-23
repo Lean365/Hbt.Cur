@@ -9,191 +9,99 @@
 
 <template>
   <div class="dict-container">
-    <a-row :gutter="16">
-      <!-- 字典类型列表 -->
-      <a-col :span="8">
-        <a-card title="字典类型列表" :bordered="false">
-          <!-- 查询表单 -->
-          <hbt-query
-            :loading="dictTypeLoading"
-            :query-fields="dictTypeSearchFormItems"
-            v-model:form-data="dictTypeQueryParams"
-            @search="handleSearchDictType"
-            @reset="handleResetDictType"
-          />
 
-          <!-- 工具栏 -->
-          <hbt-toolbar
-            :show-add="true"
-            :add-permission="['admin:dict:create']"
-            :show-edit="true"
-            :edit-permission="['admin:dict:update']"
-            :show-delete="true"
-            :delete-permission="['admin:dict:delete']"
-            :show-import="true"
-            :import-permission="['admin:dict:import']"
-            :show-export="true"
-            :export-permission="['admin:dict:export']"
-            :disabled-edit="selectedDictTypeId === undefined"
-            :disabled-delete="selectedDictTypeId === undefined"
-            @add="handleAddDictType"
-            @edit="handleEditDictType"
-            @delete="handleDeleteDictType"
-            @import="handleImportDictType"
-            @template="handleTemplateDictType"
-            @export="handleExportDictType"
-            @refresh="fetchDictTypeList"
-          />
+      <!-- 查询表单 -->
+      <hbt-query
+        :loading="dictTypeLoading"
+        :query-fields="queryFields"
+        @search="handleQuery"
+        @reset="handleResetDictType"
+      />
 
-          <!-- 数据表格 -->
-          <hbt-table
-            :loading="dictTypeLoading"
-            :data-source="dictTypeList"
-            :columns="dictTypeColumns"
-            :pagination="false"
-            :scroll="{ y: 'calc(100vh - 350px)' }"
-            :row-key="(record: HbtDictType) => String(record.dictTypeId)"
-            v-model:selectedRowKeys="selectedDictTypeKeys"
-            :row-selection="{
-              type: 'radio',
-              columnWidth: 60
-            }"
-            @change="handleDictTypeSelect"
-          >
-            <!-- 状态列 -->
-            <template #bodyCell="{ column, record }">
-              <template v-if="column.dataIndex === 'status'">
-                <hbt-dict-tag dict-type="sys_normal_disable" :value="record.status" />
-              </template>
+      <!-- 工具栏 -->
+      <hbt-toolbar
+        :show-add="true"
+        :add-permission="['core:dict:create']"
+        :show-edit="true"
+        :edit-permission="['core:dict:update']"
+        :show-delete="true"
+        :delete-permission="['core:dict:delete']"
+        :show-import="true"
+        :import-permission="['core:dict:import']"
+        :show-export="true"
+        :export-permission="['core:dict:export']"
+        :disabled-edit="selectedDictTypeId === undefined"
+        :disabled-delete="selectedDictTypeId === undefined"
+        @add="handleAddDictType"
+        @edit="handleEditDictType"
+        @delete="handleDeleteDictType"
+        @import="handleImportDictType"
+        @template="handleTemplateDictType"
+        @export="handleExportDictType"
+        @refresh="fetchDictTypeList"
+        @column-setting="handleColumnSetting"
+        @toggle-search="toggleSearch"
+        @toggle-fullscreen="toggleFullscreen"
+      />
 
-              <!-- 操作列 -->
-              <template v-if="column.key === 'action'">
-                <hbt-operation
-                  :record="record"
-                  :show-view="true"
-                  :view-permission="['admin:dicttype:query']"
-                  :show-edit="true"
-                  :edit-permission="['admin:dicttype:update']"
-                  :show-delete="true"
-                  :delete-permission="['admin:dicttype:delete']"
-                  size="small"
-                  @view="handleViewDictType"
-                  @edit="handleEditDictType"
-                  @delete="handleDeleteDictType"
-                />
-              </template>
-            </template>
-          </hbt-table>
+      <!-- 数据表格 -->
+      <hbt-table
+        :loading="dictTypeLoading"
+        :data-source="dictTypeList"
+        :columns="columns"
+        :pagination="false"
+        :scroll="{ y: 'calc(70vh - 200px)' }"
+        :row-key="(record: HbtDictType) => String(record.dictTypeId)"
+        v-model:selectedRowKeys="selectedDictTypeKeys"
+        :row-selection="{
+          type: 'radio',
+          columnWidth: 60
+        }"
+        @change="handleDictTypeSelect"
+      >
+        <!-- 状态列 -->
+        <template #bodyCell="{ column, record }">
+          <template v-if="column.dataIndex === 'status'">
+            <hbt-dict-tag dict-type="sys_normal_disable" :value="record.status" />
+          </template>
+          <template v-else-if="column.dataIndex === 'dictType'">
+            <a @click.stop="handleShowDictDataModal(record)">{{ record.dictType }}</a>
+          </template>
+          <!-- 操作列 -->
+          <template v-if="column.key === 'action'">
+            <hbt-operation
+              :record="record"
+              :show-view="true"
+              :view-permission="['core:dicttype:query']"
+              :show-edit="true"
+              :edit-permission="['core:dicttype:update']"
+              :show-delete="true"
+              :delete-permission="['core:dicttype:delete']"
+              size="small"
+              @view="handleViewDictType"
+              @edit="handleEditDictType"
+              @delete="handleDeleteDictType"
+            />
+          </template>
+        </template>
+      </hbt-table>
 
-          <!-- 分页组件 -->
-          <hbt-pagination
-            v-model:current="dictTypeQueryParams.pageIndex"
-            v-model:pageSize="dictTypeQueryParams.pageSize"
-            :total="dictTypeTotal"
-            :show-size-changer="true"
-            :show-quick-jumper="true"
-            :show-total="(total: number, range: [number, number]) => h('span', null, `共 ${total} 条`)"
-            @change="handleDictTypePageChange"
-            @showSizeChange="handleDictTypeSizeChange"
-          />
-        </a-card>
-      </a-col>
+      <!-- 分页组件 -->
+      <hbt-pagination
+        v-model:current="queryParams.pageIndex"
+        v-model:pageSize="queryParams.pageSize"
+        :total="dictTypeTotal"
+        :show-size-changer="true"
+        :show-quick-jumper="true"
+        :show-total="(total: number, range: [number, number]) => h('span', null, `共 ${total} 条`)"
+        @change="handleDictTypePageChange"
+        @showSizeChange="handleDictTypeSizeChange"
+      />
 
-      <!-- 字典数据列表 -->
-      <a-col :span="16">
-        <a-card :title="dictDataTitle" :bordered="false">
-          <!-- 查询表单 -->
-          <hbt-query
-            :loading="dictDataLoading"
-            :query-fields="dictDataSearchFormItems"
-            v-model:form-data="dictDataQueryParams"
-            @search="handleSearchDictData"
-            @reset="handleResetDictData"
-          />
-
-          <!-- 工具栏 -->
-          <hbt-toolbar
-            :show-add="true"
-            :add-permission="['admin:dictdata:create']"
-            :show-edit="true"
-            :edit-permission="['admin:dictdata:update']"
-            :show-delete="true"
-            :delete-permission="['admin:dictdata:delete']"
-            :show-import="true"
-            :import-permission="['admin:dictdata:import']"
-            :show-export="true"
-            :export-permission="['admin:dictdata:export']"
-            :disabled-add="selectedDictTypeId === undefined"
-            :disabled-edit="selectedDictDataKeys.length !== 1"
-            :disabled-delete="selectedDictDataKeys.length === 0"
-            :disabled-import="selectedDictTypeId === undefined"
-            :disabled-export="selectedDictTypeId === undefined"
-            @add="handleAddDictData"
-            @edit="handleEditDictData"
-            @delete="handleBatchDeleteDictData"
-            @import="handleImportDictData"
-            @template="handleTemplateDictData"
-            @export="handleExportDictData"
-            @refresh="fetchDictDataList"
-          />
-
-          <!-- 数据表格 -->
-          <hbt-table
-            :loading="dictDataLoading"
-            :data-source="dictDataList"
-            :columns="dictDataColumns"
-            :pagination="false"
-            :scroll="{ y: 'calc(100vh - 350px)' }"
-            :row-key="(record: HbtDictData) => String(record.dictDataId)"
-            v-model:selectedRowKeys="selectedDictDataKeys"
-            :row-selection="{
-              type: 'checkbox',
-              columnWidth: 60
-            }"
-          >
-            <!-- 状态列 -->
-            <template #bodyCell="{ column, record }">
-              <template v-if="column.dataIndex === 'status'">
-                <hbt-dict-tag dict-type="sys_normal_disable" :value="record.status" />
-              </template>
-
-              <!-- 操作列 -->
-              <template v-if="column.key === 'action'">
-                <hbt-operation
-                  :record="record"
-                  :show-view="true"
-                  :view-permission="['admin:dictdata:query']"
-                  :show-edit="true"
-                  :edit-permission="['admin:dictdata:update']"
-                  :show-delete="true"
-                  :delete-permission="['admin:dictdata:delete']"
-                  size="small"
-                  @view="handleViewDictData"
-                  @edit="handleEditDictData"
-                  @delete="handleDeleteDictData"
-                />
-              </template>
-            </template>
-          </hbt-table>
-
-          <!-- 分页组件 -->
-          <hbt-pagination
-            v-model:current="dictDataQueryParams.pageIndex"
-            v-model:pageSize="dictDataQueryParams.pageSize"
-            :total="dictDataTotal"
-            :show-size-changer="true"
-            :show-quick-jumper="true"
-            :show-total="(total: number, range: [number, number]) => h('span', null, `共 ${total} 条`)"
-            @change="handleDictDataPageChange"
-            @showSizeChange="handleDictDataSizeChange"
-          />
-        </a-card>
-      </a-col>
-    </a-row>
 
     <!-- 字典类型表单对话框 -->
     <dict-type-form
-      v-model:visible="dictTypeFormVisible"
+      v-model:open="dictTypeFormVisible"
       :title="dictTypeFormTitle"
       :dict-type-id="selectedDictTypeId"
       @success="handleDictTypeSuccess"
@@ -201,24 +109,36 @@
 
     <!-- 字典类型详情对话框 -->
     <dict-type-detail
-      v-model:visible="dictTypeDetailVisible"
+      v-model:open="dictTypeDetailVisible"
       :dict-type-id="selectedDictTypeId"
     />
 
-    <!-- 字典数据表单对话框 -->
-    <dict-data-form
-      v-model:visible="dictDataFormVisible"
-      :title="dictDataFormTitle"
-      :dict-type="selectedDictType"
-      :dict-data-id="selectedDictDataId"
-      @success="handleDictDataSuccess"
+    <!-- 字典数据表格对话框 -->
+    <DictData
+      v-model:open="dictDataVisible"
+      :dict-type-id="currentDictType?.dictTypeId"
+      :dict-type="currentDictType"
+      @cancel="handleDictDataCancel"
     />
 
-    <!-- 字典数据详情对话框 -->
-    <dict-data-detail
-      v-model:visible="dictDataDetailVisible"
-      :dict-data-id="selectedDictDataId"
-    />
+    <!-- 列设置抽屉 -->
+    <a-drawer
+      :visible="columnSettingVisible"
+      title="列设置"
+      placement="right"
+      width="300"
+      @close="columnSettingVisible = false"
+    >
+      <a-checkbox-group
+        :value="Object.keys(columnSettings).filter(key => columnSettings[key])"
+        @change="handleColumnSettingChange"
+        class="column-setting-group"
+      >
+        <div v-for="col in defaultColumns" :key="col.key" class="column-setting-item">
+          <a-checkbox :value="col.key" :disabled="col.key === 'action'">{{ col.title }}</a-checkbox>
+        </div>
+      </a-checkbox-group>
+    </a-drawer>
   </div>
 </template>
 
@@ -227,7 +147,6 @@ import { ref, reactive, computed, onMounted, h } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { message } from 'ant-design-vue'
 import type { HbtDictType, HbtDictTypeQuery } from '@/types/core/dictType'
-import type { HbtDictData, HbtDictDataQuery } from '@/types/core/dictData'
 import {
   getHbtDictTypeList,
   getHbtDictType,
@@ -239,231 +158,265 @@ import {
   exportHbtDictType,
   getHbtDictTypeTemplate
 } from '@/api/core/dictType'
-import {
-  getHbtDictDataList,
-  getHbtDictData,
-  createHbtDictData,
-  updateHbtDictData,
-  deleteHbtDictData,
-  batchDeleteHbtDictData,
-  importHbtDictData,
-  exportHbtDictData,
-  getHbtDictDataTemplate
-} from '@/api/core/dictData'
 import DictTypeForm from './components/DictTypeForm.vue'
 import DictTypeDetail from './components/DictTypeDetail.vue'
-import DictDataForm from './components/DictDataForm.vue'
-import DictDataDetail from './components/DictDataDetail.vue'
+import DictData from './components/DictData.vue'
 
 const { t } = useI18n()
+
+// 查询区域显示状态
+const showSearch = ref(true)
 
 // === 字典类型状态定义 ===
 const dictTypeLoading = ref(false)
 const dictTypeList = ref<HbtDictType[]>([])
 const selectedDictTypeKeys = ref<string[]>([])
 const selectedDictTypeId = ref<number>()
-const selectedDictType = ref<string>('')
 const dictTypeFormVisible = ref(false)
 const dictTypeFormTitle = ref('')
 const dictTypeDetailVisible = ref(false)
 const dictTypeTotal = ref(0)
 
-// === 字典数据状态定义 ===
-const dictDataLoading = ref(false)
-const dictDataList = ref<HbtDictData[]>([])
-const selectedDictDataKeys = ref<string[]>([])
-const selectedDictDataId = ref<number>()
-const dictDataFormVisible = ref(false)
-const dictDataFormTitle = ref('')
-const dictDataDetailVisible = ref(false)
-const dictDataTotal = ref(0)
+// === DictData相关状态 ===
+const dictDataVisible = ref(false)
+const currentDictType = ref<HbtDictType>()
 
 // === 字典类型查询参数 ===
-const dictTypeQueryParams = ref<HbtDictTypeQuery>({
+const queryParams = ref<HbtDictTypeQuery>({
   pageIndex: 1,
   pageSize: 10,
   dictName: '',
   dictType: '',
-  status: undefined,
-  orderByColumn: undefined,
-  orderType: undefined
-})
-
-// === 字典数据查询参数 ===
-const dictDataQueryParams = ref<HbtDictDataQuery>({
-  pageIndex: 1,
-  pageSize: 10,
-  dictType: '',
-  dictLabel: '',
-  dictValue: '',
-  status: undefined,
-  orderByColumn: undefined,
-  orderType: undefined
-})
-
-// === 字典数据标题 ===
-const dictDataTitle = computed(() => {
-  return selectedDictType.value ? `字典数据列表 - ${selectedDictType.value}` : '字典数据列表'
+  dictCategory: -1,
+  isBuiltin: -1,
+  status: -1,
 })
 
 // === 字典类型搜索表单配置 ===
-const dictTypeSearchFormItems = [
+const queryFields = [
   {
     type: 'input' as const,
     name: 'dictName',
-    label: t('admin.dict.dictName.label'),
-    placeholder: t('admin.dict.dictName.placeholder')
+    label: t('core.dict.dictTypes.fields.dictName.label'),
+    placeholder: t('core.dict.dictTypes.fields.dictName.placeholder')
   },
   {
     type: 'input' as const,
     name: 'dictType',
-    label: t('admin.dict.dictType.label'),
-    placeholder: t('admin.dict.dictType.placeholder')
+    label: t('core.dict.dictTypes.fields.dictType.label'),
+    placeholder: t('core.dict.dictTypes.fields.dictType.placeholder')
+  },
+  {
+    type: 'select' as const,
+    name: 'dictCategory',
+    label: t('core.dict.dictTypes.fields.dictCategory.label'),
+    placeholder: t('core.dict.dictTypes.fields.dictCategory.placeholder'),
+    props: {
+      dictType: 'sys_dict_category',
+      type: 'radio'
+    }
+  },
+  {
+    type: 'select' as const,
+    name: 'isBuiltin',
+    label: t('core.dict.dictTypes.fields.isBuiltin.label'),
+    placeholder: t('core.dict.dictTypes.fields.isBuiltin.placeholder'),
+    props: {
+      dictType: 'sys_yes_no',
+      type: 'radio'
+    }
   },
   {
     type: 'select' as const,
     name: 'status',
-    label: t('admin.dict.status.label'),
-    placeholder: t('admin.dict.status.placeholder'),
-    options: [
-      { label: t('admin.dict.status.normal'), value: 0 },
-      { label: t('admin.dict.status.disable'), value: 1 }
-    ]
-  }
-]
-
-// === 字典数据搜索表单配置 ===
-const dictDataSearchFormItems = [
-  {
-    type: 'input' as const,
-    name: 'dictLabel',
-    label: t('admin.dict.dictLabel.label'),
-    placeholder: t('admin.dict.dictLabel.placeholder')
-  },
-  {
-    type: 'input' as const,
-    name: 'dictValue',
-    label: t('admin.dict.dictValue.label'),
-    placeholder: t('admin.dict.dictValue.placeholder')
-  },
-  {
-    type: 'select' as const,
-    name: 'status',
-    label: t('admin.dict.status.label'),
-    placeholder: t('admin.dict.status.placeholder'),
-    options: [
-      { label: t('admin.dict.status.normal'), value: 0 },
-      { label: t('admin.dict.status.disable'), value: 1 }
-    ]
+    label: t('core.dict.dictTypes.fields.status.label'),
+    placeholder: t('core.dict.dictTypes.fields.status.placeholder'),
+    props: {
+      dictType: 'sys_normal_disable',
+      type: 'radio'
+    }
   }
 ]
 
 // === 字典类型表格列定义 ===
 const dictTypeColumns = [
   {
-    title: t('admin.dict.dictName.label'),
+    title: t('core.dict.dictTypes.table.columns.dictName'),
     dataIndex: 'dictName',
     key: 'dictName',
     width: 150,
     ellipsis: true
   },
   {
-    title: t('admin.dict.dictType.label'),
+    title: t('core.dict.dictTypes.table.columns.dictType'),
     dataIndex: 'dictType',
     key: 'dictType',
     width: 150,
     ellipsis: true
   },
   {
-    title: t('admin.dict.status.label'),
+    title: t('core.dict.dictTypes.table.columns.dictCategory'),
+    dataIndex: 'dictCategory',
+    key: 'dictCategory',
+    width: 100
+  },
+  {
+    title: t('core.dict.dictTypes.table.columns.isBuiltin'),
+    dataIndex: 'isBuiltin',
+    key: 'isBuiltin',
+    width: 100
+  },
+  {
+    title: t('core.dict.dictTypes.table.columns.sqlScript'),
+    dataIndex: 'sqlScript',
+    key: 'sqlScript',
+    width: 100
+  },
+  {
+    title: t('core.dict.dictTypes.table.columns.orderNum'),
+    dataIndex: 'orderNum',
+    key: 'orderNum',
+    width: 100
+  },
+  {
+    title: t('core.dict.dictTypes.table.columns.status'),
     dataIndex: 'status',
     key: 'status',
     width: 100
   },
   {
-    title: t('admin.dict.remark.label'),
+    title: t('table.columns.remark'),
     dataIndex: 'remark',
     key: 'remark',
-    width: 200,
-    ellipsis: true
+    width: 120
   },
   {
-    title: t('common.createTime'),
+    title: t('table.columns.createBy'),
+    dataIndex: 'createBy',
+    key: 'createBy',
+    width: 120
+  },
+  {
+    title: t('table.columns.createTime'),
     dataIndex: 'createTime',
     key: 'createTime',
-    width: 180,
-    sorter: true
+    width: 180
   },
   {
-    title: t('common.table.header.operation'),
+    title: t('table.columns.updateBy'),
+    dataIndex: 'updateBy',
+    key: 'updateBy',
+    width: 120
+  },
+  {
+    title: t('table.columns.updateTime'),
+    dataIndex: 'updateTime',
+    key: 'updateTime',
+    width: 180
+  },
+  {
+    title: t('table.columns.isDeleted'),
+    dataIndex: 'isDeleted',
+    key: 'isDeleted',
+    width: 100
+  },
+  {
+    title: t('table.columns.deleteBy'),
+    dataIndex: 'deleteBy',
+    key: 'deleteBy',
+    width: 120
+  },
+  {
+    title: t('table.columns.deleteTime'),
+    dataIndex: 'deleteTime',
+    key: 'deleteTime',
+    width: 180
+  },
+  {
+    title: t('table.columns.operation'),
     key: 'action',
-    width: 180,
+    width: 150,
     fixed: 'right'
   }
 ]
 
-// === 字典数据表格列定义 ===
-const dictDataColumns = [
-  {
-    title: t('admin.dict.dictLabel.label'),
-    dataIndex: 'dictLabel',
-    key: 'dictLabel',
-    width: 150,
-    ellipsis: true
-  },
-  {
-    title: t('admin.dict.dictValue.label'),
-    dataIndex: 'dictValue',
-    key: 'dictValue',
-    width: 150,
-    ellipsis: true
-  },
-  {
-    title: t('admin.dict.orderNum.label'),
-    dataIndex: 'orderNum',
-    key: 'orderNum',
-    width: 100,
-    sorter: true
-  },
-  {
-    title: t('admin.dict.status.label'),
-    dataIndex: 'status',
-    key: 'status',
-    width: 100
-  },
-  {
-    title: t('admin.dict.remark.label'),
-    dataIndex: 'remark',
-    key: 'remark',
-    width: 200,
-    ellipsis: true
-  },
-  {
-    title: t('common.createTime'),
-    dataIndex: 'createTime',
-    key: 'createTime',
-    width: 180,
-    sorter: true
-  },
-  {
-    title: t('common.table.header.operation'),
-    key: 'action',
-    width: 180,
-    fixed: 'right'
+// 列设置相关
+const columnSettingVisible = ref(false)
+const defaultColumns = dictTypeColumns
+const columnSettings = ref<Record<string, boolean>>({})
+const columns = computed(() => {
+  return defaultColumns.filter(col => columnSettings.value[col.key])
+})
+
+// 初始化列设置
+const initColumnSettings = () => {
+  // 每次刷新页面时清除localStorage
+  localStorage.removeItem('dictTypeColumnSettings')
+
+  // 初始化所有列为false
+  columnSettings.value = Object.fromEntries(defaultColumns.map(col => [col.key, false]))
+
+  // 获取前9列（不包含操作列）
+  const firstNineColumns = defaultColumns.filter(col => col.key !== 'action').slice(0, 9)
+
+  // 设置前9列为true
+  firstNineColumns.forEach(col => {
+    columnSettings.value[col.key] = true
+  })
+
+  // 确保操作列显示
+  columnSettings.value['action'] = true
+}
+
+// 处理列设置变更
+const handleColumnSettingChange = (checkedValue: Array<string | number | boolean>) => {
+  const settings: Record<string, boolean> = {}
+  defaultColumns.forEach(col => {
+    // 操作列始终为true
+    if (col.key === 'action') {
+      settings[col.key] = true
+    } else {
+      settings[col.key] = checkedValue.includes(col.key)
+    }
+  })
+  columnSettings.value = settings
+  localStorage.setItem('dictTypeColumnSettings', JSON.stringify(settings))
+}
+
+// 列设置
+const handleColumnSetting = () => {
+  columnSettingVisible.value = true
+}
+
+// 切换搜索
+const toggleSearch = () => {
+  showSearch.value = !showSearch.value
+}
+
+// 切换全屏
+const toggleFullscreen = () => {
+  const element = document.documentElement
+  if (document.fullscreenElement) {
+    document.exitFullscreen()
+  } else {
+    element.requestFullscreen()
   }
-]
+}
 
 // === 字典类型方法定义 ===
 // 获取字典类型列表
 const fetchDictTypeList = async () => {
   try {
     dictTypeLoading.value = true
-    const res = await getHbtDictTypeList(dictTypeQueryParams.value)
-    if (res.code === 200) {
-      dictTypeList.value = res.data.rows
-      dictTypeTotal.value = res.data.totalNum
+    console.log('查询参数:', {
+      ...queryParams.value
+    })
+    const res = await getHbtDictTypeList(queryParams.value)
+    if (res.data.code === 200) {
+      dictTypeList.value = res.data.data.rows
+      dictTypeTotal.value = res.data.data.totalNum
     } else {
-      message.error(res.msg || t('common.failed'))
+      message.error(res.data.msg || t('common.failed'))
     }
   } catch (error) {
     console.error('加载字典类型列表失败:', error)
@@ -474,21 +427,24 @@ const fetchDictTypeList = async () => {
 }
 
 // 搜索字典类型
-const handleSearchDictType = () => {
-  dictTypeQueryParams.value.pageIndex = 1
+const handleQuery = (values?: any) => {
+  if (values) {
+    Object.assign(queryParams.value, values)
+  }
+  queryParams.value.pageIndex = 1
   fetchDictTypeList()
 }
 
 // 重置字典类型搜索
 const handleResetDictType = () => {
-  dictTypeQueryParams.value = {
+  queryParams.value = {
     pageIndex: 1,
     pageSize: 10,
     dictName: '',
     dictType: '',
-    status: undefined,
-    orderByColumn: undefined,
-    orderType: undefined
+    dictCategory: -1,
+    isBuiltin: -1,
+    status: -1,
   }
   fetchDictTypeList()
 }
@@ -522,16 +478,11 @@ const handleDeleteDictType = async (record?: HbtDictType) => {
 
   try {
     const res = await deleteHbtDictType(id)
-    if (res.code === 200) {
+    if (res.data.code === 200) {
       message.success(t('common.message.deleteSuccess'))
-      if (id === selectedDictTypeId.value) {
-        selectedDictTypeId.value = undefined
-        selectedDictType.value = ''
-        fetchDictDataList()
-      }
       fetchDictTypeList()
     } else {
-      message.error(res.msg || t('common.message.deleteFailed'))
+      message.error(res.data.msg || t('common.message.deleteFailed'))
     }
   } catch (error) {
     console.error('删除失败:', error)
@@ -539,76 +490,112 @@ const handleDeleteDictType = async (record?: HbtDictType) => {
   }
 }
 
-// 批量删除字典类型
-const handleBatchDeleteDictType = async () => {
-  if (selectedDictTypeKeys.value.length === 0) {
-    message.warning(t('common.message.selectRecord'))
-    return
-  }
-  try {
-    const res = await batchDeleteHbtDictType(selectedDictTypeKeys.value.map(key => Number(key)))
-    if (res.code === 200) {
-      message.success(t('common.message.deleteSuccess'))
-      selectedDictTypeKeys.value = []
-      if (selectedDictTypeKeys.value.includes(String(selectedDictTypeId.value))) {
-        selectedDictTypeId.value = undefined
-        selectedDictType.value = ''
-        fetchDictDataList()
-      }
-      fetchDictTypeList()
-    } else {
-      message.error(res.msg || t('common.message.deleteFailed'))
-    }
-  } catch (error) {
-    console.error('批量删除失败:', error)
-    message.error(t('common.message.deleteFailed'))
-  }
-}
-
 // 导入字典类型
-const handleImportDictType = () => {
-  // TODO: 实现导入功能
+const handleImportDictType = async () => {
+  try {
+    const input = document.createElement('input')
+    input.type = 'file'
+    input.accept = '.xlsx,.xls'
+    input.onchange = async (e: Event) => {
+      const file = (e.target as HTMLInputElement).files?.[0]
+      if (!file) return
+      const formData = new FormData()
+      formData.append('file', file)
+      const res = await importHbtDictType(formData)
+      if (res.data.code === 200) {
+        message.success(t('common.import.success'))
+        fetchDictTypeList()
+      } else {
+        message.error(res.data.msg || t('common.import.failed'))
+      }
+    }
+    input.click()
+  } catch (error: any) {
+    console.error('导入失败:', error)
+    message.error(error.message || t('common.import.failed'))
+  }
 }
 
 // 下载字典类型模板
-const handleTemplateDictType = () => {
-  // TODO: 实现下载模板功能
+const handleTemplateDictType = async () => {
+  try {
+    const res = await getHbtDictTypeTemplate()
+    const blob = new Blob([res.data], { type: 'application/vnd.ms-excel' })
+    const link = document.createElement('a')
+    link.href = window.URL.createObjectURL(blob)
+    link.download = '字典类型导入模板.xlsx'
+    link.click()
+    window.URL.revokeObjectURL(link.href)
+  } catch (error) {
+    console.error('下载模板失败:', error)
+    message.error('下载模板失败')
+  }
 }
 
 // 导出字典类型
-const handleExportDictType = () => {
-  // TODO: 实现导出功能
+const handleExportDictType = async () => {
+  try {
+    const res = await exportHbtDictType({
+      ...queryParams.value
+    })
+    // 动态获取文件名
+    console.log('res.headers', res.headers)
+    const disposition =
+      res.headers && (res.headers['content-disposition'] || res.headers['Content-Disposition'])
+    console.log('disposition', disposition)
+    let fileName = ''
+    if (disposition) {
+      // 优先匹配 filename*（带中文）
+      let match = disposition.match(/filename\*=UTF-8''([^;]+)/)
+      if (match && match[1]) {
+        fileName = decodeURIComponent(match[1])
+      } else {
+        // 再匹配 filename
+        match = disposition.match(/filename="?([^";]+)"?/)
+        if (match && match[1]) {
+          fileName = match[1]
+        }
+      }
+    }
+    if (!fileName) {
+      fileName = `系统配置_${new Date().getTime()}.xlsx`
+    }
+    const link = document.createElement('a')
+    link.href = window.URL.createObjectURL(res.data)
+    link.download = fileName
+    link.click()
+    window.URL.revokeObjectURL(link.href)
+    message.success(t('common.export.success'))
+  } catch (error: any) {
+    console.error('导出失败:', error)
+    message.error(error.message || t('common.export.failed'))
+  }
 }
 
 // 字典类型页码变化
 const handleDictTypePageChange = (page: number) => {
-  dictTypeQueryParams.value.pageIndex = page
+  queryParams.value.pageIndex = page
   fetchDictTypeList()
 }
 
 // 字典类型每页条数变化
 const handleDictTypeSizeChange = (current: number, size: number) => {
-  dictTypeQueryParams.value.pageIndex = current
-  dictTypeQueryParams.value.pageSize = size
+  queryParams.value.pageIndex = current
+  queryParams.value.pageSize = size
   fetchDictTypeList()
 }
 
 // 字典类型选择变化
 const handleDictTypeSelect = (selectedKeys: string[]) => {
+  
   if (selectedKeys.length > 0) {
     const record = dictTypeList.value.find(item => String(item.dictTypeId) === selectedKeys[0])
     if (record) {
       selectedDictTypeId.value = record.dictTypeId
-      selectedDictType.value = record.dictType
-      dictDataQueryParams.value.dictType = record.dictType
-      fetchDictDataList()
+      
     }
   } else {
     selectedDictTypeId.value = undefined
-    selectedDictType.value = ''
-    dictDataQueryParams.value.dictType = ''
-    dictDataList.value = []
-    dictDataTotal.value = 0
   }
 }
 
@@ -618,157 +605,21 @@ const handleDictTypeSuccess = () => {
   fetchDictTypeList()
 }
 
-// === 字典数据方法定义 ===
-// 获取字典数据列表
-const fetchDictDataList = async () => {
-  if (!selectedDictTypeId.value) {
-    dictDataList.value = []
-    dictDataTotal.value = 0
-    return
-  }
-
-  try {
-    dictDataLoading.value = true
-    const res = await getHbtDictDataList(dictDataQueryParams.value)
-    if (res.code === 200) {
-      dictDataList.value = res.data.rows
-      dictDataTotal.value = res.data.totalNum
-    } else {
-      message.error(res.msg || t('common.failed'))
-    }
-  } catch (error) {
-    console.error('加载字典数据列表失败:', error)
-    message.error(t('common.failed'))
-  } finally {
-    dictDataLoading.value = false
-  }
+// 显示字典数据对话框
+const handleShowDictDataModal = (record: HbtDictType) => {
+  currentDictType.value = record
+  dictDataVisible.value = true
 }
 
-// 搜索字典数据
-const handleSearchDictData = () => {
-  dictDataQueryParams.value.pageIndex = 1
-  fetchDictDataList()
-}
-
-// 重置字典数据搜索
-const handleResetDictData = () => {
-  dictDataQueryParams.value = {
-    pageIndex: 1,
-    pageSize: 10,
-    dictType: selectedDictType.value,
-    dictLabel: '',
-    dictValue: '',
-    status: undefined,
-    orderByColumn: undefined,
-    orderType: undefined
-  }
-  fetchDictDataList()
-}
-
-// 新增字典数据
-const handleAddDictData = () => {
-  if (!selectedDictTypeId.value) {
-    message.warning(t('common.message.selectDictType'))
-    return
-  }
-  selectedDictDataId.value = undefined
-  dictDataFormTitle.value = t('common.title.create')
-  dictDataFormVisible.value = true
-}
-
-// 编辑字典数据
-const handleEditDictData = (record?: HbtDictData) => {
-  if (record) {
-    selectedDictDataId.value = record.dictDataId
-  } else if (selectedDictDataKeys.value.length === 1) {
-    selectedDictDataId.value = Number(selectedDictDataKeys.value[0])
-  } else {
-    message.warning(t('common.message.selectOneRecord'))
-    return
-  }
-  dictDataFormTitle.value = t('common.title.edit')
-  dictDataFormVisible.value = true
-}
-
-// 查看字典数据
-const handleViewDictData = (record: HbtDictData) => {
-  selectedDictDataId.value = record.dictDataId
-  dictDataDetailVisible.value = true
-}
-
-// 删除字典数据
-const handleDeleteDictData = async (record: HbtDictData) => {
-  try {
-    const res = await deleteHbtDictData(record.dictDataId)
-    if (res.code === 200) {
-      message.success(t('common.message.deleteSuccess'))
-      fetchDictDataList()
-    } else {
-      message.error(res.msg || t('common.message.deleteFailed'))
-    }
-  } catch (error) {
-    console.error('删除失败:', error)
-    message.error(t('common.message.deleteFailed'))
-  }
-}
-
-// 批量删除字典数据
-const handleBatchDeleteDictData = async () => {
-  if (selectedDictDataKeys.value.length === 0) {
-    message.warning(t('common.message.selectRecord'))
-    return
-  }
-  try {
-    const res = await batchDeleteHbtDictData(selectedDictDataKeys.value.map(key => Number(key)))
-    if (res.code === 200) {
-      message.success(t('common.message.deleteSuccess'))
-      selectedDictDataKeys.value = []
-      fetchDictDataList()
-    } else {
-      message.error(res.msg || t('common.message.deleteFailed'))
-    }
-  } catch (error) {
-    console.error('批量删除失败:', error)
-    message.error(t('common.message.deleteFailed'))
-  }
-}
-
-// 导入字典数据
-const handleImportDictData = () => {
-  // TODO: 实现导入功能
-}
-
-// 下载字典数据模板
-const handleTemplateDictData = () => {
-  // TODO: 实现下载模板功能
-}
-
-// 导出字典数据
-const handleExportDictData = () => {
-  // TODO: 实现导出功能
-}
-
-// 字典数据页码变化
-const handleDictDataPageChange = (page: number) => {
-  dictDataQueryParams.value.pageIndex = page
-  fetchDictDataList()
-}
-
-// 字典数据每页条数变化
-const handleDictDataSizeChange = (current: number, size: number) => {
-  dictDataQueryParams.value.pageIndex = current
-  dictDataQueryParams.value.pageSize = size
-  fetchDictDataList()
-}
-
-// 字典数据表单提交成功
-const handleDictDataSuccess = () => {
-  dictDataFormVisible.value = false
-  fetchDictDataList()
+// 字典数据对话框取消
+const handleDictDataCancel = () => {
+  dictDataVisible.value = false
+  currentDictType.value = undefined
 }
 
 // === 生命周期 ===
 onMounted(() => {
+  initColumnSettings()
   fetchDictTypeList()
 })
 </script>
@@ -778,5 +629,20 @@ onMounted(() => {
   padding: 16px;
   background-color: #fff;
   border-radius: 4px;
+}
+
+.column-setting-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.column-setting-item {
+  padding: 8px;
+  border-bottom: 1px solid var(--ant-color-split);
+
+  &:last-child {
+    border-bottom: none;
+  }
 }
 </style> 

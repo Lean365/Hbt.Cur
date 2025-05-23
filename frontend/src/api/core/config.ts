@@ -13,11 +13,8 @@ import type {
   HbtConfig,
   HbtConfigQuery,
   HbtConfigCreate,
-  HbtConfigUpdate,
-  HbtConfigImportResult
+  HbtConfigUpdate,  
 } from '@/types/core/config'
-import type { AxiosProgressEvent, AxiosRequestConfig, AxiosResponse } from 'axios'
-import { getToken } from '@/utils/auth'
 
 /**
  * 获取配置分页列表
@@ -141,53 +138,16 @@ export function getHbtConfigTemplate() {
 /**
  * 导入系统配置
  * @param file 文件对象
- * @param sheetName 工作表名称
  * @returns 导入结果
  */
-export function importHbtConfig(file: File, sheetName: string = 'HbtConfig'): Promise<AxiosResponse<HbtApiResponse<HbtConfigImportResult>>> {
-  console.log('开始导入配置，文件信息:', {
-    name: file.name,
-    size: file.size,
-    type: file.type
-  })
-
-  // 验证文件对象
-  if (!file || !(file instanceof File)) {
-    console.error('无效的文件对象:', file)
-    return Promise.reject(new Error('无效的文件对象'))
-  }
-
-  if (file.size === 0) {
-    console.error('文件大小为0:', file)
-    return Promise.reject(new Error('文件大小为0'))
-  }
-
-  // 创建 FormData 对象
+export function importHbtConfig(file: File) {
   const formData = new FormData()
   formData.append('file', file)
-  formData.append('sheetName', sheetName)
-
-  // 验证 FormData 内容
-  console.log('FormData 内容:')
-  for (const [key, value] of formData.entries()) {
-    console.log(`- ${key}:`, value)
-    if (value instanceof File) {
-      console.log(`  文件详情:`, {
-        name: value.name,
-        size: value.size,
-        type: value.type,
-        lastModified: value.lastModified
-      })
-    }
-  }
-
-  // 发送请求
   return request({
     url: '/api/HbtConfig/import',
     method: 'post',
     data: formData,
     headers: {
-      'Authorization': `Bearer ${getToken()}`,
       'Content-Type': 'multipart/form-data'
     }
   })

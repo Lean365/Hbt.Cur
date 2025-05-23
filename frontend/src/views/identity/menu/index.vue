@@ -7,24 +7,6 @@
       @search="handleQuery"
       @reset="handleReset"
     >
-      <template #queryForm>
-        <a-form-item :label="t('identity.menu.fields.menuName.label')">
-          <a-input
-            v-model:value="queryParams.menuName"
-            :placeholder="t('identity.menu.fields.menuName.placeholder')"
-            allow-clear
-            @keyup.enter="handleQuery"
-          />
-        </a-form-item>
-        <a-form-item :label="t('identity.menu.fields.status.label')">
-          <hbt-select
-            v-model:value="queryParams.status"
-            dict-type="sys_normal_disable"
-            :placeholder="t('identity.menu.fields.status.placeholder')"
-            allow-clear
-          />
-        </a-form-item>
-      </template>
     </hbt-query>
 
     <!-- 工具栏 -->
@@ -33,40 +15,61 @@
       :selected-count="selectedKeys.length"
       :show-select-count="true"
       :show-add="true"
-      :show-edit="true"
-      :show-delete="true"
+      :show-edit="false"
+      :show-delete="false"
       :show-export="true"
+      :show-import="true"
       :add-permission="['identity:menu:create']"
       :edit-permission="['identity:menu:update']"
       :delete-permission="['identity:menu:delete']"
       :export-permission="['identity:menu:export']"
+      :import-permission="['identity:menu:import']"
       :disabled-edit="selectedKeys.length !== 1"
       :disabled-delete="selectedKeys.length === 0"
       @add="handleAdd"
       @edit="handleEditSelected"
       @delete="handleBatchDelete"
       @export="handleExport"
+      @import="handleImport"
+      @template="handleTemplate"
       @refresh="getList"
       @column-setting="handleColumnSetting"
       @toggle-search="toggleSearch"
       @toggle-fullscreen="toggleFullscreen"
-    />
+    >
+      <!-- 自定义按钮 -->
+      <template #extra>
+        <a-button @click="toggleExpand" class="hbt-btn-expand">
+          <template #icon><expand-outlined /></template>
+          {{ isExpanded ? '收缩' : '展开' }}
+        </a-button>
+      </template>
+    </hbt-toolbar>
 
     <!-- 数据表格 -->
-    <a-table
-      :columns="columns.filter(col => columnSettings[col.key])"
+    <hbt-tree-table
+      ref="treeTableRef"
+      :columns="columns.filter(col => col.key && columnSettings[col.key])"
       :data-source="list"
       :loading="loading"
-      :pagination="false"
       :row-selection="{
         selectedRowKeys: selectedKeys,
         onChange: onSelectChange
       }"
+      v-model:expanded-row-keys="expandedRowKeys"
+      :indent-size="20"
+      :children-column-name="'children'"
       row-key="menuId"
       size="middle"
       bordered
-      :default-expand-all="true"
       :scroll="{ x: 1200, y: 'calc(100vh - 300px)' }"
+      :virtual="true"
+      :lazy="true"
+      :height="500"
+      :item-size="54"
+      :overscan="5"
+      @expand="onExpand"
+      @load-data="handleLoadData"
     >
       <template #bodyCell="{ column, record }">
         <!-- 菜单名称 -->
@@ -111,13 +114,14 @@
           />
         </template>
       </template>
-    </a-table>
+    </hbt-tree-table>
 
     <!-- 表单弹窗 -->
     <menu-tabs
       :visible="formVisible"
       :title="formTitle"
       :menu-id="formMenuId"
+      :menu-type="formMenuType"
       @success="getList"
       @update:visible="formVisible = $event"
     />
@@ -140,6 +144,14 @@
         </div>
       </a-checkbox-group>
     </a-drawer>
+
+    <MenuType
+      v-model:visible="menuTypeDialogVisible"
+      :title="t('identity.menu.actions.selectType')"
+      :ok-text="t('common.ok')"
+      :cancel-text="t('common.cancel')"
+      @ok="onMenuTypeOk"
+    />
   </div>
 </template>
 
@@ -147,16 +159,20 @@
 import { ref, onMounted, h, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { message, Modal } from 'ant-design-vue'
-import {
-  FolderOutlined,
-  MenuOutlined,
-  ToolOutlined
-} from '@ant-design/icons-vue'
+import { FolderOutlined, MenuOutlined, ToolOutlined, ExpandOutlined, CompressOutlined } from '@ant-design/icons-vue'
 import type { TableColumnsType } from 'ant-design-vue'
 import type { QueryField } from '@/types/components/query'
-import type { Menu, MenuQuery } from '@/types/identity/menu'
-import { getMenuList, deleteMenu, batchDeleteMenu, exportMenu, getMenuTree } from '@/api/identity/menu'
+import type { HbtMenu, HbtMenuTreeQuery } from '@/types/identity/menu'
+import {
+  getMenuTree,
+  deleteMenu,
+  batchDeleteMenu,
+  exportMenu,
+  importMenu,
+  getTemplate
+} from '@/api/identity/menu'
 import MenuTabs from './components/MenuTabs.vue'
+import MenuType from './components/MenuType.vue'
 
 const { t } = useI18n()
 
@@ -165,7 +181,7 @@ const showSearch = ref(true)
 
 // 列设置相关
 const columnSettingVisible = ref(false)
-const defaultColumns = [  
+const defaultColumns = [
   {
     title: t('identity.menu.columns.menuName'),
     dataIndex: 'menuName',
@@ -356,43 +372,88 @@ const queryFields: QueryField[] = [
   {
     name: 'menuName',
     label: t('identity.menu.fields.menuName.label'),
+    placeholder: t('identity.menu.fields.menuName.placeholder'),
     type: 'input',
     props: {
-      placeholder: t('identity.menu.fields.menuName.placeholder'),
+      allowClear: true
+    }
+  },
+  {
+    name: 'menuType',
+    label: t('identity.menu.fields.menuType.label'),
+    placeholder: t('identity.menu.fields.menuType.placeholder'),
+    type: 'select',
+    props: {
+      dictType: 'sys_menu_type',
+      type: 'radio',
+      showAll: true,
+      allowClear: true
+    }
+  },
+  {
+    name: 'visible',
+    label: t('identity.menu.fields.visible.label'),
+    placeholder: t('identity.menu.fields.visible.placeholder'),
+    type: 'select',
+    props: {
+      dictType: 'sys_is_visible',
+      type: 'radio',
+      showAll: true,
+      allowClear: true
+    }
+  },
+  {
+    name: 'isExternal',
+    label: t('identity.menu.fields.isExternal.label'),
+    placeholder: t('identity.menu.fields.isExternal.placeholder'),
+    type: 'select',
+    props: {
+      dictType: 'sys_yes_no',
+      type: 'radio',
+      showAll: true,
+      allowClear: true
+    }
+  },
+  {
+    name: 'isCache',
+    label: t('identity.menu.fields.isCache.label'),
+    placeholder: t('identity.menu.fields.isCache.placeholder'),
+    type: 'select',
+    props: {
+      dictType: 'sys_yes_no',
+      type: 'radio',
+      showAll: true,
       allowClear: true
     }
   },
   {
     name: 'status',
     label: t('identity.menu.fields.status.label'),
+    placeholder: t('identity.menu.fields.status.placeholder'),
     type: 'select',
     props: {
       dictType: 'sys_normal_disable',
-      placeholder: t('identity.menu.fields.status.placeholder'),
+      type: 'radio',
+      showAll: true,
       allowClear: true
     }
   }
 ]
 
 // 查询参数
-const queryParams = ref<MenuQuery>({
-  pageIndex: 1,
-  pageSize: 10,
-  menuName: undefined,
-  status: undefined
+const queryParams = ref<HbtMenuTreeQuery>({
+  menuName: '',
+  status: -1
 })
 
 // 加载状态
 const loading = ref(false)
 
 // 菜单列表数据
-const list = ref<Menu[]>([])
+const list = ref<HbtMenu[]>([])
 
 // 选中的菜单ID
 const selectedKeys = ref<(string | number)[]>([])
-
-// 总记录数
-const total = ref(0)
 
 // 表单弹窗显示状态
 const formVisible = ref(false)
@@ -403,75 +464,307 @@ const formTitle = ref('')
 // 当前编辑的菜单ID
 const formMenuId = ref<number>()
 
-// 表格列定义（用于表格渲染）
-const columns = defaultColumns
+// 表格列定义
+const columns: TableColumnsType = [
+  {
+    title: t('identity.menu.fields.menuName.label'),
+    dataIndex: 'menuName',
+    key: 'menuName',
+    width: 200,
+    ellipsis: true
+  },
+  {
+    title: t('identity.menu.fields.icon.label'),
+    dataIndex: 'icon',
+    key: 'icon',
+    width: 100,
+    ellipsis: true
+  },
+  {
+    title: t('identity.menu.fields.orderNum.label'),
+    dataIndex: 'orderNum',
+    key: 'orderNum',
+    width: 100,
+    ellipsis: true
+  },
+  {
+    title: t('identity.menu.fields.perms.label'),
+    dataIndex: 'perms',
+    key: 'perms',
+    width: 150,
+    ellipsis: true
+  },
+  {
+    title: t('identity.menu.fields.path.label'),
+    dataIndex: 'path',
+    key: 'path',
+    width: 150,
+    ellipsis: true
+  },
+  {
+    title: t('identity.menu.fields.component.label'),
+    dataIndex: 'component',
+    key: 'component',
+    width: 150,
+    ellipsis: true
+  },
+  {
+    title: t('identity.menu.fields.query.label'),
+    dataIndex: 'query',
+    key: 'query',
+    width: 150,
+    ellipsis: true
+  },
+  {
+    title: t('identity.menu.fields.isFrame.label'),
+    dataIndex: 'isFrame',
+    key: 'isFrame',
+    width: 100,
+    ellipsis: true
+  },
+  {
+    title: t('identity.menu.fields.isCache.label'),
+    dataIndex: 'isCache',
+    key: 'isCache',
+    width: 100,
+    ellipsis: true
+  },
+  {
+    title: t('identity.menu.fields.menuType.label'),
+    dataIndex: 'menuType',
+    key: 'menuType',
+    width: 100,
+    ellipsis: true
+  },
+  {
+    title: t('identity.menu.fields.visible.label'),
+    dataIndex: 'visible',
+    key: 'visible',
+    width: 100,
+    ellipsis: true
+  },
+  {
+    title: t('identity.menu.fields.status.label'),
+    dataIndex: 'status',
+    key: 'status',
+    width: 100,
+    ellipsis: true
+  },
+  {
+    title: t('identity.user.table.columns.remark'),
+    dataIndex: 'remark',
+    key: 'remark',
+    width: 120,
+    ellipsis: true
+  },
+  {
+    title: t('identity.user.table.columns.createBy'),
+    dataIndex: 'createBy',
+    key: 'createBy',
+    width: 120,
+    ellipsis: true
+  },
+  {
+    title: t('identity.user.table.columns.createTime'),
+    dataIndex: 'createTime',
+    key: 'createTime',
+    width: 180,
+    ellipsis: true
+  },
+  {
+    title: t('identity.user.table.columns.updateBy'),
+    dataIndex: 'updateBy',
+    key: 'updateBy',
+    width: 120,
+    ellipsis: true
+  },
+  {
+    title: t('identity.user.table.columns.updateTime'),
+    dataIndex: 'updateTime',
+    key: 'updateTime',
+    width: 180,
+    ellipsis: true
+  },
+  {
+    title: t('identity.user.table.columns.deleteBy'),
+    dataIndex: 'deleteBy',
+    key: 'deleteBy',
+    width: 120,
+    ellipsis: true
+  },
+  {
+    title: t('identity.user.table.columns.deleteTime'),
+    dataIndex: 'deleteTime',
+    key: 'deleteTime',
+    width: 180,
+    ellipsis: true
+  },
+  {
+    title: t('identity.user.table.columns.isDeleted'),
+    dataIndex: 'isDeleted',
+    key: 'isDeleted',
+    width: 100,
+    ellipsis: true
+  },
+  {
+    title: t('identity.user.table.columns.remark'),
+    dataIndex: 'remark',
+    key: 'remark',
+    width: 200,
+    ellipsis: true
+  },
+  {
+    title: t('identity.user.table.columns.action'),
+    dataIndex: 'action',
+    key: 'action',
+    width: 150,
+    fixed: 'right',
+    ellipsis: true
+  }
+]
 
 // 在 script 部分添加
 const menuTabsRef = ref()
+
+// 在 script 部分添加
+const formMenuType = ref<number>(0)
+
+// 在 script 部分添加
+const menuTypeDialogVisible = ref(false)
+
+// 在 script 部分修改
+const treeTableRef = ref()
+const isExpanded = ref(false)
+const expandedRowKeys = ref<(string | number)[]>([])
+
+// 递归获取所有节点的ID
+const getAllKeys = (data: HbtMenu[]): (string | number)[] => {
+  return data.flatMap(item => [
+    item.menuId,
+    ...(item.children ? getAllKeys(item.children) : [])
+  ])
+}
+
+// 处理展开/收缩事件
+const onExpand = async (expanded: boolean, record: HbtMenu) => {
+  if (expanded && !record.children) {
+    try {
+      loading.value = true
+      const res = await getMenuTree({
+        ...queryParams.value,
+        parentId: record.menuId
+      })
+      if (res.data.code === 200) {
+        record.children = res.data.data
+      } else {
+        message.error(res.data.msg || t('common.failed'))
+      }
+    } catch (error: any) {
+      console.error('[菜单管理] 加载子节点数据出错:', error)
+      message.error(t('common.failed'))
+    } finally {
+      loading.value = false
+    }
+  }
+  isExpanded.value = expandedRowKeys.value.length > 0
+}
+
+// 切换展开/收缩
+const toggleExpand = () => {
+  isExpanded.value = !isExpanded.value
+  if (isExpanded.value) {
+    // 只展开第一层
+    expandedRowKeys.value = list.value.map(item => item.menuId)
+  } else {
+    expandedRowKeys.value = []
+  }
+}
 
 // 获取菜单列表
 const getList = async () => {
   try {
     loading.value = true
-    const { data } = await getMenuTree()
-    if (data.code === 200) {
-      list.value = data.data
+    const res = await getMenuTree(queryParams.value)
+    if (res.data.code === 200) {
+      list.value = res.data.data
+      // 如果当前是展开状态，只展开第一层
+      if (isExpanded.value) {
+        expandedRowKeys.value = list.value.map(item => item.menuId)
+      } else {
+        expandedRowKeys.value = []
+      }
     } else {
-      message.error(data.msg || t('common.failed'))
+      message.error(res.data.msg || t('common.failed'))
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error('[菜单管理] 获取菜单列表出错:', error)
-    message.error(t('common.failed'))
+    if (error.response?.status === 401) {
+      message.error('登录已过期，请重新登录')
+      window.location.href = '/login'
+    } else {
+      message.error(t('common.failed'))
+    }
   } finally {
     loading.value = false
   }
 }
 
-// 处理查询
-const handleQuery = () => {
-  selectedKeys.value = []
+// 查询方法
+const handleQuery = (values?: HbtMenuTreeQuery) => {
+  if (values) {
+    Object.assign(queryParams.value, values)
+  }
   getList()
 }
 
-// 处理重置
+// 重置查询
 const handleReset = () => {
   queryParams.value = {
-    pageIndex: 1,
-    pageSize: 10,
-    menuName: undefined,
-    status: undefined
+    menuName: '',
+    status: -1
   }
   getList()
 }
 
 // 处理选择变化
-const onSelectChange = (keys: (string | number)[], _: Menu[]) => {
+const onSelectChange = (keys: (string | number)[], _: HbtMenu[]) => {
   selectedKeys.value = keys
 }
 
 // 处理新增
 const handleAdd = () => {
-  formTitle.value = t('identity.menu.dialog.create')
+  menuTypeDialogVisible.value = true
+}
+
+function onMenuTypeOk(type: number) {
+  formMenuType.value = type
+  formTitle.value =
+    type === 0
+      ? t('identity.menu.actions.addDirectory')
+      : type === 1
+        ? t('identity.menu.actions.addMenu')
+        : t('identity.menu.actions.addButton')
   formMenuId.value = undefined
   formVisible.value = true
 }
 
 // 处理编辑
-const handleEdit = (record: Record<string, any>) => {
-  formTitle.value = t('identity.menu.dialog.update')
-  formMenuId.value = Number(record.menuId)
+const handleEdit = (record: HbtMenu) => {
+  formTitle.value = t('identity.menu.actions.edit')
+  formMenuId.value = record.menuId
+  formMenuType.value = record.menuType
   formVisible.value = true
 }
 
 // 处理删除
 const handleDelete = async (record: Record<string, any>) => {
   try {
-    const { data } = await deleteMenu(Number(record.menuId))
-    if (data.code === 200) {
+    const res = await deleteMenu(Number(record.menuId))
+    if (res.data.code === 200) {
       message.success(t('common.delete.success'))
       getList()
     } else {
-      message.error(data.msg || t('common.delete.failed'))
+      message.error(res.data.msg || t('common.delete.failed'))
     }
   } catch (error) {
     console.error(error)
@@ -486,13 +779,13 @@ const handleBatchDelete = () => {
     content: t('common.delete.message', { count: selectedKeys.value.length }),
     async onOk() {
       try {
-        const { data } = await batchDeleteMenu(selectedKeys.value.map(id => Number(id)))
-        if (data.code === 200) {
+        const res = await batchDeleteMenu(selectedKeys.value.map(id => Number(id)))
+        if (res.data.code === 200) {
           message.success(t('common.delete.success'))
           selectedKeys.value = []
           getList()
         } else {
-          message.error(data.msg || t('common.delete.failed'))
+          message.error(res.data.msg || t('common.delete.failed'))
         }
       } catch (error) {
         console.error(error)
@@ -546,6 +839,77 @@ const handleFormSubmit = () => {
   menuTabsRef.value?.handleSubmit()
 }
 
+// 处理懒加载数据
+const handleLoadData = async (record: HbtMenu) => {
+  try {
+    loading.value = true
+    const res = await getMenuTree({
+      ...queryParams.value,
+      parentId: record.menuId
+    })
+    if (res.data.code === 200) {
+      // 更新子节点数据
+      record.children = res.data.data
+    } else {
+      message.error(res.data.msg || t('common.failed'))
+    }
+  } catch (error: any) {
+    console.error('[菜单管理] 加载子节点数据出错:', error)
+    if (error.response?.status === 401) {
+      message.error('登录已过期，请重新登录')
+      window.location.href = '/login'
+    } else {
+      message.error(t('common.failed'))
+    }
+  } finally {
+    loading.value = false
+  }
+}
+
+// 处理导入
+const handleImport = async () => {
+  try {
+    const input = document.createElement('input')
+    input.type = 'file'
+    input.accept = '.xlsx,.xls'
+    input.onchange = async (e: Event) => {
+      const file = (e.target as HTMLInputElement).files?.[0]
+      if (!file) return
+      const res = await importMenu(file)
+      const { success = 0, fail = 0 } = (res.data as any).Data || {}
+      if (success > 0 && fail === 0) {
+        message.success(`导入成功${success}条，全部成功！`)
+      } else if (success > 0 && fail > 0) {
+        message.warning(`导入成功${success}条，失败${fail}条`)
+      } else if (success === 0 && fail > 0) {
+        message.error(`全部导入失败，共${fail}条`)
+      } else {
+        message.info('未读取到任何数据')
+      }
+      if (success > 0) getList()
+    }
+    input.click()
+  } catch (error: any) {
+    console.error('导入失败:', error)
+    message.error(error.message || t('common.import.failed'))
+  }
+}
+
+// 处理下载模板
+const handleTemplate = async () => {
+  try {
+    const res = await getTemplate()
+    const link = document.createElement('a')
+    link.href = window.URL.createObjectURL(new Blob([res.data]))
+    link.download = `菜单导入模板_${new Date().getTime()}.xlsx`
+    link.click()
+    window.URL.revokeObjectURL(link.href)
+  } catch (error: any) {
+    console.error('下载模板失败:', error)
+    message.error(error.message || t('common.template.failed'))
+  }
+}
+
 onMounted(() => {
   initColumnSettings()
   getList()
@@ -564,19 +928,19 @@ onMounted(() => {
     flex: 1;
     margin-top: 16px;
     background-color: #fff;
-    
+
     .ant-spin-nested-loading {
       height: 100%;
-      
+
       .ant-spin-container {
         height: 100%;
         display: flex;
         flex-direction: column;
-        
+
         .ant-table {
           flex: 1;
           overflow: hidden;
-          
+
           .ant-table-container {
             height: 100%;
           }
@@ -595,7 +959,7 @@ onMounted(() => {
 .column-setting-item {
   padding: 8px;
   border-bottom: 1px solid var(--ant-color-split);
-  
+
   &:last-child {
     border-bottom: none;
   }

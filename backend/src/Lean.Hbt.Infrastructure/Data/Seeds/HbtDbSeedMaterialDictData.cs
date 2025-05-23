@@ -34,7 +34,7 @@ public class HbtDbSeedMaterialDictData
     /// <summary>
     /// 初始化物料相关字典数据
     /// </summary>
-    public async Task<(int, int)> InitializeMaterialDictDataAsync()
+    public async Task<(int, int)> InitializeMaterialDictDataAsync(long tenantId)
     {
         int insertCount = 0;
         int updateCount = 0;
@@ -49,13 +49,13 @@ public class HbtDbSeedMaterialDictData
                 DictValue = "RAW",
                 OrderNum = 1,
                 Status = 0,
-                TenantId = 0,
+                
                 CssClass = 1,
                 ListClass = 1,
                 Remark = "原材料物料",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictData
@@ -65,13 +65,13 @@ public class HbtDbSeedMaterialDictData
                 DictValue = "SEMI",
                 OrderNum = 2,
                 Status = 0,
-                TenantId = 0,
+                
                 CssClass = 2,
                 ListClass = 2,
                 Remark = "半成品物料",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictData
@@ -81,13 +81,13 @@ public class HbtDbSeedMaterialDictData
                 DictValue = "FINISHED",
                 OrderNum = 3,
                 Status = 0,
-                TenantId = 0,
+                
                 CssClass = 3,
                 ListClass = 3,
                 Remark = "成品物料",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictData
@@ -97,13 +97,13 @@ public class HbtDbSeedMaterialDictData
                 DictValue = "TRADE",
                 OrderNum = 4,
                 Status = 0,
-                TenantId = 0,
+                
                 CssClass = 4,
                 ListClass = 4,
                 Remark = "贸易商品物料",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictData
@@ -113,13 +113,13 @@ public class HbtDbSeedMaterialDictData
                 DictValue = "SERVICE",
                 OrderNum = 5,
                 Status = 0,
-                TenantId = 0,
+                
                 CssClass = 5,
                 ListClass = 5,
                 Remark = "服务物料",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
 
@@ -131,13 +131,13 @@ public class HbtDbSeedMaterialDictData
                 DictValue = "METAL",
                 OrderNum = 1,
                 Status = 0,
-                TenantId = 0,
+                
                 CssClass = 1,
                 ListClass = 1,
                 Remark = "金属材料组",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictData
@@ -147,13 +147,13 @@ public class HbtDbSeedMaterialDictData
                 DictValue = "CHEMICAL",
                 OrderNum = 2,
                 Status = 0,
-                TenantId = 0,
+                
                 CssClass = 2,
                 ListClass = 2,
                 Remark = "化工材料组",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictData
@@ -163,13 +163,13 @@ public class HbtDbSeedMaterialDictData
                 DictValue = "ELECTRONIC",
                 OrderNum = 3,
                 Status = 0,
-                TenantId = 0,
+                
                 CssClass = 3,
                 ListClass = 3,
                 Remark = "电子元件组",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictData
@@ -179,13 +179,13 @@ public class HbtDbSeedMaterialDictData
                 DictValue = "PACKAGING",
                 OrderNum = 4,
                 Status = 0,
-                TenantId = 0,
+                
                 CssClass = 4,
                 ListClass = 4,
                 Remark = "包装材料组",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
 
@@ -197,13 +197,13 @@ public class HbtDbSeedMaterialDictData
                 DictValue = "STANDARD",
                 OrderNum = 1,
                 Status = 0,
-                TenantId = 0,
+                
                 CssClass = 1,
                 ListClass = 1,
                 Remark = "标准件分类",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictData
@@ -213,13 +213,13 @@ public class HbtDbSeedMaterialDictData
                 DictValue = "CUSTOM",
                 OrderNum = 2,
                 Status = 0,
-                TenantId = 0,
+                
                 CssClass = 2,
                 ListClass = 2,
                 Remark = "定制件分类",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictData
@@ -229,13 +229,13 @@ public class HbtDbSeedMaterialDictData
                 DictValue = "PURCHASED",
                 OrderNum = 3,
                 Status = 0,
-                TenantId = 0,
+                
                 CssClass = 3,
                 ListClass = 3,
                 Remark = "外购件分类",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictData
@@ -245,13 +245,13 @@ public class HbtDbSeedMaterialDictData
                 DictValue = "MANUFACTURED",
                 OrderNum = 4,
                 Status = 0,
-                TenantId = 0,
+                
                 CssClass = 4,
                 ListClass = 4,
                 Remark = "自制件分类",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
 
@@ -263,13 +263,13 @@ public class HbtDbSeedMaterialDictData
                 DictValue = "DEVELOPING",
                 OrderNum = 1,
                 Status = 0,
-                TenantId = 0,
+                
                 CssClass = 1,
                 ListClass = 1,
                 Remark = "物料开发中",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictData
@@ -279,13 +279,13 @@ public class HbtDbSeedMaterialDictData
                 DictValue = "RELEASED",
                 OrderNum = 2,
                 Status = 0,
-                TenantId = 0,
+                
                 CssClass = 2,
                 ListClass = 2,
                 Remark = "物料已发布",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictData
@@ -295,13 +295,13 @@ public class HbtDbSeedMaterialDictData
                 DictValue = "FROZEN",
                 OrderNum = 3,
                 Status = 0,
-                TenantId = 0,
+                
                 CssClass = 3,
                 ListClass = 3,
                 Remark = "物料已冻结",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictData
@@ -311,13 +311,13 @@ public class HbtDbSeedMaterialDictData
                 DictValue = "OBSOLETE",
                 OrderNum = 4,
                 Status = 0,
-                TenantId = 0,
+                
                 CssClass = 4,
                 ListClass = 4,
                 Remark = "物料已废弃",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
 
@@ -329,13 +329,13 @@ public class HbtDbSeedMaterialDictData
                 DictValue = "SELF",
                 OrderNum = 1,
                 Status = 0,
-                TenantId = 0,
+                
                 CssClass = 1,
                 ListClass = 1,
                 Remark = "自制物料",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictData
@@ -345,13 +345,13 @@ public class HbtDbSeedMaterialDictData
                 DictValue = "PURCHASE",
                 OrderNum = 2,
                 Status = 0,
-                TenantId = 0,
+                
                 CssClass = 2,
                 ListClass = 2,
                 Remark = "外购物料",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictData
@@ -361,13 +361,13 @@ public class HbtDbSeedMaterialDictData
                 DictValue = "OUTSOURCE",
                 OrderNum = 3,
                 Status = 0,
-                TenantId = 0,
+                
                 CssClass = 3,
                 ListClass = 3,
                 Remark = "委外物料",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
 
@@ -379,13 +379,13 @@ public class HbtDbSeedMaterialDictData
                 DictValue = "STANDARD",
                 OrderNum = 1,
                 Status = 0,
-                TenantId = 0,
+                
                 CssClass = 1,
                 ListClass = 1,
                 Remark = "标准成本计价",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictData
@@ -395,13 +395,13 @@ public class HbtDbSeedMaterialDictData
                 DictValue = "MOVING_AVG",
                 OrderNum = 2,
                 Status = 0,
-                TenantId = 0,
+                
                 CssClass = 2,
                 ListClass = 2,
                 Remark = "移动平均计价",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictData
@@ -411,13 +411,13 @@ public class HbtDbSeedMaterialDictData
                 DictValue = "FIFO",
                 OrderNum = 3,
                 Status = 0,
-                TenantId = 0,
+                
                 CssClass = 3,
                 ListClass = 3,
                 Remark = "先进先出计价",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictData
@@ -427,13 +427,13 @@ public class HbtDbSeedMaterialDictData
                 DictValue = "LIFO",
                 OrderNum = 4,
                 Status = 0,
-                TenantId = 0,
+                
                 CssClass = 4,
                 ListClass = 4,
                 Remark = "后进先出计价",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
 
@@ -445,13 +445,13 @@ public class HbtDbSeedMaterialDictData
                 DictValue = "YES",
                 OrderNum = 1,
                 Status = 0,
-                TenantId = 0,
+                
                 CssClass = 1,
                 ListClass = 1,
                 Remark = "启用批次管理",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictData
@@ -461,13 +461,13 @@ public class HbtDbSeedMaterialDictData
                 DictValue = "NO",
                 OrderNum = 2,
                 Status = 0,
-                TenantId = 0,
+                
                 CssClass = 2,
                 ListClass = 2,
                 Remark = "不启用批次管理",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
 
@@ -479,13 +479,13 @@ public class HbtDbSeedMaterialDictData
                 DictValue = "YES",
                 OrderNum = 1,
                 Status = 0,
-                TenantId = 0,
+                
                 CssClass = 1,
                 ListClass = 1,
                 Remark = "启用序列号管理",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictData
@@ -495,13 +495,13 @@ public class HbtDbSeedMaterialDictData
                 DictValue = "NO",
                 OrderNum = 2,
                 Status = 0,
-                TenantId = 0,
+                
                 CssClass = 2,
                 ListClass = 2,
                 Remark = "不启用序列号管理",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
 
@@ -513,13 +513,13 @@ public class HbtDbSeedMaterialDictData
                 DictValue = "YES",
                 OrderNum = 1,
                 Status = 0,
-                TenantId = 0,
+                
                 CssClass = 1,
                 ListClass = 1,
                 Remark = "启用库存管理",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictData
@@ -529,13 +529,13 @@ public class HbtDbSeedMaterialDictData
                 DictValue = "NO",
                 OrderNum = 2,
                 Status = 0,
-                TenantId = 0,
+                
                 CssClass = 2,
                 ListClass = 2,
                 Remark = "不启用库存管理",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
 
@@ -547,13 +547,13 @@ public class HbtDbSeedMaterialDictData
                 DictValue = "YES",
                 OrderNum = 1,
                 Status = 0,
-                TenantId = 0,
+                
                 CssClass = 1,
                 ListClass = 1,
                 Remark = "启用成本核算",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictData
@@ -563,13 +563,13 @@ public class HbtDbSeedMaterialDictData
                 DictValue = "NO",
                 OrderNum = 2,
                 Status = 0,
-                TenantId = 0,
+                
                 CssClass = 2,
                 ListClass = 2,
                 Remark = "不启用成本核算",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             }
         };
@@ -579,6 +579,11 @@ public class HbtDbSeedMaterialDictData
             var existingDictData = await _dictDataRepository.GetFirstAsync(d => d.DictType == dictData.DictType && d.DictValue == dictData.DictValue);
             if (existingDictData == null)
             {
+                dictData.TenantId = tenantId;
+                dictData.CreateBy = "Hbt365";
+                dictData.CreateTime = DateTime.Now;
+                dictData.UpdateBy = "Hbt365";
+                dictData.UpdateTime = DateTime.Now;
                 await _dictDataRepository.CreateAsync(dictData);
                 insertCount++;
                 _logger.Info($"[创建] 物料字典数据 '{dictData.DictLabel}' 创建成功");
@@ -592,11 +597,11 @@ public class HbtDbSeedMaterialDictData
                 existingDictData.CssClass = dictData.CssClass;
                 existingDictData.ListClass = dictData.ListClass;
                 existingDictData.Status = dictData.Status;
-                existingDictData.TenantId = dictData.TenantId;
+                existingDictData.TenantId = tenantId;
                 existingDictData.Remark = dictData.Remark;
                 existingDictData.CreateBy = dictData.CreateBy;
                 existingDictData.CreateTime = dictData.CreateTime;
-                existingDictData.UpdateBy = "system";
+                existingDictData.UpdateBy = "Hbt365";
                 existingDictData.UpdateTime = DateTime.Now;
 
                 await _dictDataRepository.UpdateAsync(existingDictData);

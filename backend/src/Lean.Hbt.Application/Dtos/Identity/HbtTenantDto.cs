@@ -11,22 +11,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Lean.Hbt.Application.Dtos.Identity;
 
-/// <summary>
-/// 租户状态传输对象
-/// </summary>
-public class HbtTenantStatusDto
-{
-    /// <summary>
-    /// 租户ID
-    /// </summary>
-    [AdaptMember("Id")]
-    public long TenantId { get; set; }
 
-    /// <summary>
-    /// 状态
-    /// </summary>
-    public int Status { get; set; }
-}
 
 /// <summary>
 /// 租户基础传输对象
@@ -40,13 +25,18 @@ public class HbtTenantDto
     {
         TenantName = string.Empty;
         TenantCode = string.Empty;
-        ContactPerson = string.Empty;
+        ContactUser = string.Empty;
         ContactPhone = string.Empty;
         ContactEmail = string.Empty;
         Address = string.Empty;
         Domain = string.Empty;
         LogoUrl = string.Empty;
         Theme = string.Empty;
+        Remark = string.Empty;
+        CreateBy = string.Empty;
+        UpdateBy = string.Empty;
+        DeleteBy = string.Empty;
+
     }
 
     /// <summary>
@@ -54,6 +44,7 @@ public class HbtTenantDto
     /// </summary>
     [AdaptMember("Id")]
     public long TenantId { get; set; }
+
 
     /// <summary>
     /// 租户名称
@@ -71,7 +62,7 @@ public class HbtTenantDto
     /// 联系人
     /// </summary>
     [Required]
-    public string ContactPerson { get; set; }
+    public string ContactUser { get; set; }
 
     /// <summary>
     /// 联系电话
@@ -130,9 +121,45 @@ public class HbtTenantDto
     public int Status { get; set; }
 
     /// <summary>
+    /// 备注
+    /// </summary>
+    public string? Remark { get; set; }
+
+    /// <summary>
     /// 创建时间
     /// </summary>
     public DateTime CreateTime { get; set; }
+
+    /// <summary>
+    /// 创建人
+    /// </summary>
+    public string CreateBy { get; set; }
+
+    /// <summary>
+    /// 更新时间
+    /// </summary>
+    public DateTime UpdateTime { get; set; }
+
+    /// <summary>
+    /// 更新人
+    /// </summary>
+    public string UpdateBy { get; set;  }
+
+        /// <summary>
+    /// 是否删除
+    /// </summary>
+    public int IsDeleted { get; set; } 
+
+    /// <summary>
+    /// 删除时间
+    /// </summary>
+    public DateTime? DeleteTime { get; set; }
+
+    /// <summary>
+    /// 删除人
+    /// </summary>
+    public string? DeleteBy { get; set; }    
+    
 }
 
 /// <summary>
@@ -153,7 +180,7 @@ public class HbtTenantQueryDto : HbtPagedQuery
     /// <summary>
     /// 联系人
     /// </summary>
-    public string? ContactPerson { get; set; }
+    public string? ContactUser { get; set; }
 
     /// <summary>
     /// 联系电话
@@ -176,6 +203,7 @@ public class HbtTenantCreateDto
     /// </summary>
     public HbtTenantCreateDto()
     {
+
         TenantName = string.Empty;
         TenantCode = string.Empty;
         ContactUser = string.Empty;
@@ -270,6 +298,12 @@ public class HbtTenantCreateDto
     /// </summary>
     [Range(1, int.MaxValue, ErrorMessage = "最大用户数必须大于0")]
     public int MaxUserCount { get; set; }
+
+    /// <summary>
+    /// 备注
+    /// </summary>
+    [MaxLength(200, ErrorMessage = "备注长度不能超过200个字符")]
+    public string? Remark { get; set; }
 }
 
 /// <summary>
@@ -295,9 +329,10 @@ public class HbtTenantExportDto
     /// </summary>
     public HbtTenantExportDto()
     {
+
         TenantName = string.Empty;
         TenantCode = string.Empty;
-        ContactPerson = string.Empty;
+        ContactUser = string.Empty;
         ContactPhone = string.Empty;
         ContactEmail = string.Empty;
         Address = string.Empty;
@@ -317,7 +352,7 @@ public class HbtTenantExportDto
     /// <summary>
     /// 联系人
     /// </summary>
-    public string ContactPerson { get; set; }
+    public string ContactUser { get; set; }
 
     /// <summary>
     /// 联系电话
@@ -343,6 +378,13 @@ public class HbtTenantExportDto
     /// 创建时间
     /// </summary>
     public DateTime CreateTime { get; set; }
+
+    /// <summary>
+    /// 创建人
+    /// </summary>
+    public string CreateBy { get; set; }
+    
+
 }
 
 /// <summary>
@@ -355,9 +397,9 @@ public class HbtTenantTemplateDto
     /// </summary>
     public HbtTenantTemplateDto()
     {
-        TenantName = string.Empty;
         TenantCode = string.Empty;
-        ContactPerson = string.Empty;
+        TenantName = string.Empty;
+        ContactUser = string.Empty;
         ContactPhone = string.Empty;
         ContactEmail = string.Empty;
         Address = string.Empty;
@@ -367,6 +409,7 @@ public class HbtTenantTemplateDto
         LicenseEndTime = string.Empty;
         MaxUserCount = string.Empty;
     }
+
 
     /// <summary>
     /// 租户编码
@@ -381,7 +424,7 @@ public class HbtTenantTemplateDto
     /// <summary>
     /// 联系人
     /// </summary>
-    public string ContactPerson { get; set; }
+    public string ContactUser { get; set; }
 
     /// <summary>
     /// 联系电话
@@ -422,6 +465,11 @@ public class HbtTenantTemplateDto
     /// 最大用户数
     /// </summary>
     public string MaxUserCount { get; set; }
+
+    /// <summary>
+    /// 备注
+    /// </summary>
+    public string? Remark { get; set; }
 }
 
 /// <summary>
@@ -429,6 +477,7 @@ public class HbtTenantTemplateDto
 /// </summary>
 public class HbtTenantImportDto
 {
+
     /// <summary>
     /// 租户名称
     /// </summary>
@@ -445,7 +494,7 @@ public class HbtTenantImportDto
     /// 联系人
     /// </summary>
     [Description("联系人")]
-    public string? ContactPerson { get; set; }
+    public string? ContactUser { get; set; }
 
     /// <summary>
     /// 联系电话
@@ -506,4 +555,20 @@ public class HbtTenantImportDto
     /// </summary>
     [Description("备注")]
     public string? Remark { get; set; }
+}
+/// <summary>
+/// 租户状态传输对象
+/// </summary>
+public class HbtTenantStatusDto
+{
+    /// <summary>
+    /// 租户ID
+    /// </summary>
+    [AdaptMember("Id")]
+    public long TenantId { get; set; }
+
+    /// <summary>
+    /// 状态
+    /// </summary>
+    public int Status { get; set; }
 }

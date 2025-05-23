@@ -38,7 +38,7 @@ public class HbtDbSeedGeneratorDictData
     {
         dictData.CreateBy = "system";
         dictData.CreateTime = DateTime.Now;
-        dictData.UpdateBy = "system";
+        dictData.UpdateBy = "Hbt365";
         dictData.UpdateTime = DateTime.Now;
         return dictData;
     }
@@ -46,7 +46,7 @@ public class HbtDbSeedGeneratorDictData
     /// <summary>
     /// 初始化代码生成器字典数据
     /// </summary>
-    public async Task<(int, int)> InitializeGeneratorDictDataAsync()
+    public async Task<(int, int)> InitializeGeneratorDictDataAsync(long tenantId)
     {
         int insertCount = 0;
         int updateCount = 0;
@@ -54,55 +54,55 @@ public class HbtDbSeedGeneratorDictData
         var generatorDictData = new List<HbtDictData>
         {
             // 生成模板
-            SetCommonProperties(new HbtDictData { DictType = "gen_template_type", DictLabel = "单表（增删改查）", DictValue = "crud", OrderNum = 1, Status = 0, TenantId = 0, CssClass = 1, ListClass = 1, Remark = "单表（增删改查）" }),
-            SetCommonProperties(new HbtDictData { DictType = "gen_template_type", DictLabel = "树表（增删改查）", DictValue = "tree", OrderNum = 2, Status = 0, TenantId = 0, CssClass = 2, ListClass = 2, Remark = "树表（增删改查）" }),
-            SetCommonProperties(new HbtDictData { DictType = "gen_template_type", DictLabel = "主子表（增删改查）", DictValue = "sub", OrderNum = 3, Status = 0, TenantId = 0, CssClass = 3, ListClass = 3, Remark = "主子表（增删改查）" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_template_type", DictLabel = "单表（增删改查）", DictValue = "crud", OrderNum = 1, Status = 0,  CssClass = 1, ListClass = 1, Remark = "单表（增删改查）" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_template_type", DictLabel = "树表（增删改查）", DictValue = "tree", OrderNum = 2, Status = 0,  CssClass = 2, ListClass = 2, Remark = "树表（增删改查）" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_template_type", DictLabel = "主子表（增删改查）", DictValue = "sub", OrderNum = 3, Status = 0,  CssClass = 3, ListClass = 3, Remark = "主子表（增删改查）" }),
 
             // 前端模板
-            SetCommonProperties(new HbtDictData { DictType = "gen_frontend_type", DictLabel = "Element Plus", DictValue = "element-plus", OrderNum = 1, Status = 0, TenantId = 0, CssClass = 1, ListClass = 1, Remark = "Element Plus前端模板" }),
-            SetCommonProperties(new HbtDictData { DictType = "gen_frontend_type", DictLabel = "Ant Design Vue", DictValue = "ant-design-vue", OrderNum = 2, Status = 0, TenantId = 0, CssClass = 2, ListClass = 2, Remark = "Ant Design Vue前端模板" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_frontend_type", DictLabel = "Element Plus", DictValue = "element-plus", OrderNum = 1, Status = 0,  CssClass = 1, ListClass = 1, Remark = "Element Plus前端模板" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_frontend_type", DictLabel = "Ant Design Vue", DictValue = "ant-design-vue", OrderNum = 2, Status = 0,  CssClass = 2, ListClass = 2, Remark = "Ant Design Vue前端模板" }),
 
             // 生成模块
-            SetCommonProperties(new HbtDictData { DictType = "gen_module_name", DictLabel = "Audit日志审计", DictValue = "audit", OrderNum = 1, Status = 0, TenantId = 0, CssClass = 1, ListClass = 1, Remark = "Audit日志审计模块" }),
-            SetCommonProperties(new HbtDictData { DictType = "gen_module_name", DictLabel = "Core系统功能", DictValue = "core", OrderNum = 2, Status = 0, TenantId = 0, CssClass = 2, ListClass = 2, Remark = "Core系统功能模块" }),
-            SetCommonProperties(new HbtDictData { DictType = "gen_module_name", DictLabel = "Generator代码生成", DictValue = "generator", OrderNum = 3, Status = 0, TenantId = 0, CssClass = 3, ListClass = 3, Remark = "Generator代码生成模块" }),
-            SetCommonProperties(new HbtDictData { DictType = "gen_module_name", DictLabel = "Identity身份认证", DictValue = "identity", OrderNum = 4, Status = 0, TenantId = 0, CssClass = 4, ListClass = 4, Remark = "Identity身份认证模块" }),
-            SetCommonProperties(new HbtDictData { DictType = "gen_module_name", DictLabel = "Routine日常事务", DictValue = "routine", OrderNum = 5, Status = 0, TenantId = 0, CssClass = 5, ListClass = 5, Remark = "Routine日常事务模块" }),
-            SetCommonProperties(new HbtDictData { DictType = "gen_module_name", DictLabel = "SignalR在线管理", DictValue = "signalr", OrderNum = 6, Status = 0, TenantId = 0, CssClass = 6, ListClass = 6, Remark = "SignalR在线管理模块" }),
-            SetCommonProperties(new HbtDictData { DictType = "gen_module_name", DictLabel = "Workflow工作流", DictValue = "workflow", OrderNum = 7, Status = 0, TenantId = 0, CssClass = 7, ListClass = 7, Remark = "Workflow工作流模块" }),
-            SetCommonProperties(new HbtDictData { DictType = "gen_module_name", DictLabel = "Finance财务管理", DictValue = "finance", OrderNum = 8, Status = 0, TenantId = 0, CssClass = 8, ListClass = 8, Remark = "Finance财务管理模块" }),
-            SetCommonProperties(new HbtDictData { DictType = "gen_module_name", DictLabel = "Logistics后勤管理", DictValue = "logistics", OrderNum = 9, Status = 0, TenantId = 0, CssClass = 9, ListClass = 9, Remark = "Logistics后勤管理模块" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_module_name", DictLabel = "Audit日志审计", DictValue = "audit", OrderNum = 1, Status = 0,  CssClass = 1, ListClass = 1, Remark = "Audit日志审计模块" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_module_name", DictLabel = "Core系统功能", DictValue = "core", OrderNum = 2, Status = 0,  CssClass = 2, ListClass = 2, Remark = "Core系统功能模块" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_module_name", DictLabel = "Generator代码生成", DictValue = "generator", OrderNum = 3, Status = 0,  CssClass = 3, ListClass = 3, Remark = "Generator代码生成模块" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_module_name", DictLabel = "Identity身份认证", DictValue = "identity", OrderNum = 4, Status = 0,  CssClass = 4, ListClass = 4, Remark = "Identity身份认证模块" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_module_name", DictLabel = "Routine日常事务", DictValue = "routine", OrderNum = 5, Status = 0,  CssClass = 5, ListClass = 5, Remark = "Routine日常事务模块" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_module_name", DictLabel = "SignalR在线管理", DictValue = "signalr", OrderNum = 6, Status = 0,  CssClass = 6, ListClass = 6, Remark = "SignalR在线管理模块" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_module_name", DictLabel = "Workflow工作流", DictValue = "workflow", OrderNum = 7, Status = 0,  CssClass = 7, ListClass = 7, Remark = "Workflow工作流模块" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_module_name", DictLabel = "Finance财务管理", DictValue = "finance", OrderNum = 8, Status = 0,  CssClass = 8, ListClass = 8, Remark = "Finance财务管理模块" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_module_name", DictLabel = "Logistics后勤管理", DictValue = "logistics", OrderNum = 9, Status = 0,  CssClass = 9, ListClass = 9, Remark = "Logistics后勤管理模块" }),
 
             // 前端布局
-            SetCommonProperties(new HbtDictData { DictType = "gen_frontend_style", DictLabel = "一行一列", DictValue = "single", OrderNum = 1, Status = 0, TenantId = 0, CssClass = 1, ListClass = 1, Remark = "一行一列布局" }),
-            SetCommonProperties(new HbtDictData { DictType = "gen_frontend_style", DictLabel = "一行两列", DictValue = "double", OrderNum = 2, Status = 0, TenantId = 0, CssClass = 2, ListClass = 2, Remark = "一行两列布局" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_frontend_style", DictLabel = "一行一列", DictValue = "single", OrderNum = 1, Status = 0,  CssClass = 1, ListClass = 1, Remark = "一行一列布局" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_frontend_style", DictLabel = "一行两列", DictValue = "double", OrderNum = 2, Status = 0,  CssClass = 2, ListClass = 2, Remark = "一行两列布局" }),
 
             // 按钮样式
-            SetCommonProperties(new HbtDictData { DictType = "gen_button_style", DictLabel = "默认样式", DictValue = "default", OrderNum = 1, Status = 0, TenantId = 0, CssClass = 1, ListClass = 1, Remark = "默认按钮样式" }),
-            SetCommonProperties(new HbtDictData { DictType = "gen_button_style", DictLabel = "自定义样式", DictValue = "custom", OrderNum = 2, Status = 0, TenantId = 0, CssClass = 2, ListClass = 2, Remark = "自定义按钮样式" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_button_style", DictLabel = "默认样式", DictValue = "default", OrderNum = 1, Status = 0,  CssClass = 1, ListClass = 1, Remark = "默认按钮样式" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_button_style", DictLabel = "自定义样式", DictValue = "custom", OrderNum = 2, Status = 0,  CssClass = 2, ListClass = 2, Remark = "自定义按钮样式" }),
 
             // 生成方式
-            SetCommonProperties(new HbtDictData { DictType = "gen_type", DictLabel = "自定义路径", DictValue = "0", OrderNum = 1, Status = 0, TenantId = 0, CssClass = 1, ListClass = 1, Remark = "自定义生成路径" }),
-            SetCommonProperties(new HbtDictData { DictType = "gen_type", DictLabel = "下载压缩包", DictValue = "1", OrderNum = 2, Status = 0, TenantId = 0, CssClass = 2, ListClass = 2, Remark = "下载压缩包" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_type", DictLabel = "自定义路径", DictValue = "0", OrderNum = 1, Status = 0,  CssClass = 1, ListClass = 1, Remark = "自定义生成路径" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_type", DictLabel = "下载压缩包", DictValue = "1", OrderNum = 2, Status = 0,  CssClass = 2, ListClass = 2, Remark = "下载压缩包" }),
 
             // 生成功能
-            SetCommonProperties(new HbtDictData { DictType = "gen_function", DictLabel = "新增", DictValue = "add", OrderNum = 1, Status = 0, TenantId = 0, CssClass = 1, ListClass = 1, Remark = "新增功能" }),
-            SetCommonProperties(new HbtDictData { DictType = "gen_function", DictLabel = "修改", DictValue = "update", OrderNum = 2, Status = 0, TenantId = 0, CssClass = 2, ListClass = 2, Remark = "修改功能" }),
-            SetCommonProperties(new HbtDictData { DictType = "gen_function", DictLabel = "删除", DictValue = "delete", OrderNum = 3, Status = 0, TenantId = 0, CssClass = 3, ListClass = 3, Remark = "删除功能" }),
-            SetCommonProperties(new HbtDictData { DictType = "gen_function", DictLabel = "导出", DictValue = "export", OrderNum = 4, Status = 0, TenantId = 0, CssClass = 4, ListClass = 4, Remark = "导出功能" }),
-            SetCommonProperties(new HbtDictData { DictType = "gen_function", DictLabel = "详情", DictValue = "detail", OrderNum = 5, Status = 0, TenantId = 0, CssClass = 5, ListClass = 5, Remark = "详情功能" }),
-            SetCommonProperties(new HbtDictData { DictType = "gen_function", DictLabel = "预览", DictValue = "preview", OrderNum = 6, Status = 0, TenantId = 0, CssClass = 6, ListClass = 6, Remark = "预览功能" }),
-            SetCommonProperties(new HbtDictData { DictType = "gen_function", DictLabel = "打印", DictValue = "print", OrderNum = 7, Status = 0, TenantId = 0, CssClass = 7, ListClass = 7, Remark = "打印功能" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_function", DictLabel = "新增", DictValue = "add", OrderNum = 1, Status = 0,  CssClass = 1, ListClass = 1, Remark = "新增功能" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_function", DictLabel = "修改", DictValue = "update", OrderNum = 2, Status = 0,  CssClass = 2, ListClass = 2, Remark = "修改功能" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_function", DictLabel = "删除", DictValue = "delete", OrderNum = 3, Status = 0,  CssClass = 3, ListClass = 3, Remark = "删除功能" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_function", DictLabel = "导出", DictValue = "export", OrderNum = 4, Status = 0,  CssClass = 4, ListClass = 4, Remark = "导出功能" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_function", DictLabel = "详情", DictValue = "detail", OrderNum = 5, Status = 0,  CssClass = 5, ListClass = 5, Remark = "详情功能" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_function", DictLabel = "预览", DictValue = "preview", OrderNum = 6, Status = 0,  CssClass = 6, ListClass = 6, Remark = "预览功能" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_function", DictLabel = "打印", DictValue = "print", OrderNum = 7, Status = 0,  CssClass = 7, ListClass = 7, Remark = "打印功能" }),
 
             // 树表配置
-            SetCommonProperties(new HbtDictData { DictType = "gen_tree_config", DictLabel = "树编码字段", DictValue = "treeCode", OrderNum = 1, Status = 0, TenantId = 0, CssClass = 1, ListClass = 1, Remark = "树编码字段" }),
-            SetCommonProperties(new HbtDictData { DictType = "gen_tree_config", DictLabel = "树父编码字段", DictValue = "treeParentCode", OrderNum = 2, Status = 0, TenantId = 0, CssClass = 2, ListClass = 2, Remark = "树父编码字段" }),
-            SetCommonProperties(new HbtDictData { DictType = "gen_tree_config", DictLabel = "树名称字段", DictValue = "treeName", OrderNum = 3, Status = 0, TenantId = 0, CssClass = 3, ListClass = 3, Remark = "树名称字段" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_tree_config", DictLabel = "树编码字段", DictValue = "treeCode", OrderNum = 1, Status = 0,  CssClass = 1, ListClass = 1, Remark = "树编码字段" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_tree_config", DictLabel = "树父编码字段", DictValue = "treeParentCode", OrderNum = 2, Status = 0,  CssClass = 2, ListClass = 2, Remark = "树父编码字段" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_tree_config", DictLabel = "树名称字段", DictValue = "treeName", OrderNum = 3, Status = 0,  CssClass = 3, ListClass = 3, Remark = "树名称字段" }),
 
             // 主子表配置
-            SetCommonProperties(new HbtDictData { DictType = "gen_sub_config", DictLabel = "主表名称", DictValue = "mainTable", OrderNum = 1, Status = 0, TenantId = 0, CssClass = 1, ListClass = 1, Remark = "主表名称" }),
-            SetCommonProperties(new HbtDictData { DictType = "gen_sub_config", DictLabel = "子表名称", DictValue = "subTable", OrderNum = 2, Status = 0, TenantId = 0, CssClass = 2, ListClass = 2, Remark = "子表名称" }),
-            SetCommonProperties(new HbtDictData { DictType = "gen_sub_config", DictLabel = "主表外键", DictValue = "mainTableFk", OrderNum = 3, Status = 0, TenantId = 0, CssClass = 3, ListClass = 3, Remark = "主表外键" })
+            SetCommonProperties(new HbtDictData { DictType = "gen_sub_config", DictLabel = "主表名称", DictValue = "mainTable", OrderNum = 1, Status = 0,  CssClass = 1, ListClass = 1, Remark = "主表名称" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_sub_config", DictLabel = "子表名称", DictValue = "subTable", OrderNum = 2, Status = 0,  CssClass = 2, ListClass = 2, Remark = "子表名称" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_sub_config", DictLabel = "主表外键", DictValue = "mainTableFk", OrderNum = 3, Status = 0,  CssClass = 3, ListClass = 3, Remark = "主表外键" })
         };
 
         foreach (var dictData in generatorDictData)
@@ -110,11 +110,17 @@ public class HbtDbSeedGeneratorDictData
             var existingDictData = await _dictDataRepository.GetFirstAsync(x => x.DictType == dictData.DictType && x.DictValue == dictData.DictValue);
             if (existingDictData == null)
             {
+                dictData.TenantId = tenantId;
+                dictData.CreateBy = "Hbt365";
+                dictData.CreateTime = DateTime.Now;
+                dictData.UpdateBy = "Hbt365";
+                dictData.UpdateTime = DateTime.Now;
                 await _dictDataRepository.CreateAsync(dictData);
                 insertCount++;
             }
             else
-            {
+            {   
+                existingDictData.TenantId = tenantId;
                 existingDictData.DictLabel = dictData.DictLabel;
                 existingDictData.OrderNum = dictData.OrderNum;
                 existingDictData.Status = dictData.Status;

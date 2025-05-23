@@ -10,7 +10,6 @@
 //===================================================================
 
 using Lean.Hbt.Domain.Entities.Identity;
-using SqlSugar;
 
 namespace Lean.Hbt.Domain.Entities.Generator;
 
@@ -37,17 +36,11 @@ public class HbtGenColumn : HbtBaseEntity
     /// <summary>
     /// 列说明
     /// </summary>
-    private string columnComment = string.Empty;
-
     /// <summary>
     /// 列说明
     /// </summary>
     [SugarColumn(ColumnName = "column_comment", ColumnDescription = "列说明", Length = 200, ColumnDataType = "nvarchar", IsNullable = false, DefaultValue = "")]
-    public string ColumnComment
-    {
-        get => string.IsNullOrEmpty(columnComment) ? CsharpField : columnComment;
-        set => columnComment = value;
-    }
+    public string ColumnComment { get; set; } = string.Empty;
 
     /// <summary>
     /// 数据库列类型

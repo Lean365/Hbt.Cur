@@ -1,10 +1,9 @@
 <template>
   <hbt-modal
     :title="translationId ? t('common.title.edit') : t('common.title.create')"
-    :open="dialogVisible"
+   :open="open"
     width="600px"
-    append-to-body
-    destroy-on-close
+    @cancel="handleCancel"
   >
     <a-form
       ref="formRef"
@@ -13,33 +12,33 @@
       :label-col="{ span: 6 }"
       :wrapper-col="{ span: 18 }"
     >
-      <a-form-item :label="t('admin.language.translation.moduleName')" name="moduleName">
-        <a-input v-model:value="form.moduleName" :placeholder="t('admin.language.translation.moduleNamePlaceholder')" />
+      <a-form-item :label="t('core.translation.fields.moduleName.label')" name="moduleName">
+        <a-input v-model:value="form.moduleName" :placeholder="t('core.translation.fields.moduleName.placeholder')" />
       </a-form-item>
-      <a-form-item :label="t('admin.language.translation.transKey')" name="transKey">
-        <a-input v-model:value="form.transKey" :placeholder="t('admin.language.translation.transKeyPlaceholder')" />
+      <a-form-item :label="t('core.translation.fields.transKey.label')" name="transKey">
+        <a-input v-model:value="form.transKey" :placeholder="t('core.translation.fields.transKey.placeholder')" />
       </a-form-item>
-      <a-form-item :label="t('admin.language.translation.transValue')" name="transValue">
+      <a-form-item :label="t('core.translation.fields.transValue.label')" name="transValue">
         <a-textarea
           v-model:value="form.transValue"
           :rows="3"
-          :placeholder="t('admin.language.translation.transValuePlaceholder')"
+          :placeholder="t('core.translation.fields.transValue.placeholder')"
         />
       </a-form-item>
-      <a-form-item :label="t('admin.language.translation.orderNum')" name="orderNum">
+      <a-form-item :label="t('core.translation.fields.orderNum.label')" name="orderNum">
         <a-input-number v-model:value="form.orderNum" :min="0" :max="999" style="width: 100%" />
       </a-form-item>
-      <a-form-item :label="t('admin.language.translation.status')" name="status">
+      <a-form-item :label="t('core.translation.fields.status.label')" name="status">
         <a-radio-group v-model:value="form.status">
           <a-radio :value="0">{{ t('common.status.enabled') }}</a-radio>
           <a-radio :value="1">{{ t('common.status.disabled') }}</a-radio>
         </a-radio-group>
       </a-form-item>
-      <a-form-item :label="t('admin.language.translation.remark')" name="remark">
+      <a-form-item :label="t('core.translation.fields.remark.label')" name="remark">
         <a-textarea
           v-model:value="form.remark"
           :rows="2"
-          :placeholder="t('admin.language.translation.remarkPlaceholder')"
+          :placeholder="t('core.translation.fields.remark.placeholder')"
         />
       </a-form-item>
     </a-form>
@@ -64,11 +63,12 @@ import type { HbtTranslation } from '@/types/core/translation'
 import { getHbtTranslation, createHbtTranslation, updateHbtTranslation } from '@/api/core/translation'
 
 const props = defineProps<{
+  open: boolean
   translationId?: number
   langCode: string
 }>()
 
-const emit = defineEmits(['update:visible', 'success'])
+const emit = defineEmits(['update:open', 'success'])
 
 const { t } = useI18n()
 const formRef = ref<FormInstance>()
@@ -76,7 +76,6 @@ const loading = ref(false)
 const dialogVisible = ref(true)
 
 const form = reactive<HbtTranslation>({
-  id: 0,
   translationId: 0,
   langCode: props.langCode,
   moduleName: '',
@@ -94,21 +93,21 @@ const form = reactive<HbtTranslation>({
 
 const rules: Partial<Record<keyof HbtTranslation, Rule[]>> = {
   moduleName: [
-    { required: true, type: 'string', message: t('admin.language.translation.moduleNameRequired'), trigger: 'blur' },
-    { type: 'string', min: 2, max: 50, message: t('admin.language.translation.moduleNameLength'), trigger: 'blur' }
+    { required: true, type: 'string', message: t('core.translation.fields.moduleName.validation.required'), trigger: 'blur' },
+    { type: 'string', min: 2, max: 50, message: t('core.translation.fields.moduleName.validation.length'), trigger: 'blur' }
   ],
   transKey: [
-    { required: true, type: 'string', message: t('admin.language.translation.transKeyRequired'), trigger: 'blur' },
-    { type: 'string', min: 2, max: 100, message: t('admin.language.translation.transKeyLength'), trigger: 'blur' }
+    { required: true, type: 'string', message: t('core.translation.fields.transKey.validation.required'), trigger: 'blur' },
+    { type: 'string', min: 2, max: 100, message: t('core.translation.fields.transKey.validation.length'), trigger: 'blur' }
   ],
   transValue: [
-    { required: true, type: 'string', message: t('admin.language.translation.transValueRequired'), trigger: 'blur' }
+    { required: true, type: 'string', message: t('corion.fields.trafields.nsValue.va.validation.ridation.required'), trigger: 'blur' }
   ],
   orderNum: [
-    { required: true, type: 'number', message: t('admin.language.translation.orderNumRequired'), trigger: 'blur' }
+    { required: true, type: 'number', message: t('corion.fields.ordfields.erNum.va.validation.ridation.required'), trigger: 'blur' }
   ],
   status: [
-    { required: true, type: 'number', message: t('admin.language.translation.statusRequired'), trigger: 'change' }
+    { required: true, type: 'number', message: t('core.translation.fields.status.validation.required'), trigger: 'change' }
   ]
 }
 
@@ -119,10 +118,10 @@ const getDetail = async () => {
   try {
     loading.value = true
     const res = await getHbtTranslation(props.translationId)
-    if (res.code === 200) {
-      Object.assign(form, res.data)
+    if (res.data.code === 200) {
+      Object.assign(form, res.data.data)
     } else {
-      message.error(res.msg || t('common.failed'))
+      message.error(res.data.msg || t('common.failed'))
     }
   } catch (error) {
     console.error('获取翻译详情失败:', error)
@@ -142,19 +141,20 @@ const handleSubmit = async () => {
     
     const data = {
       ...form,
-      langCode: props.langCode
+      langCode: props.langCode,
+      id: form.translationId
     }
     
     const res = props.translationId
       ? await updateHbtTranslation(data)
       : await createHbtTranslation(data)
       
-    if (res.code === 200) {
+    if (res.data.code === 200) {
       message.success(t('common.message.saveSuccess'))
       emit('success')
       handleCancel()
     } else {
-      message.error(res.msg || t('common.message.saveFailed'))
+      message.error(res.data.msg || t('common.message.saveFailed'))
     }
   } catch (error) {
     console.error('保存失败:', error)
@@ -166,13 +166,15 @@ const handleSubmit = async () => {
 
 // 取消
 const handleCancel = () => {
-  dialogVisible.value = false
-  emit('update:visible', false)
+  emit('update:open', false)
+  //emit('update:open', false)
 }
 
 // 监听对话框可见性变化
-watch(() => dialogVisible.value, (val) => {
-  emit('update:visible', val)
+watch(() => props.open, (val) => {
+  if (val && props.translationId) {
+    getDetail()
+  }
 })
 
 // 初始化

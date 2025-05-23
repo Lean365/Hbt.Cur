@@ -30,14 +30,15 @@
         showQuickJumper: true,
         showTotal: (total: number) => `共 ${total} 条`
       }"
-      :row-key="(record: HbtOperLogDto) => record.id"
+      row-key="operLogId"
+      :scroll="{ y: 400 }"
       @change="handleTableChange"
     >
       <!-- 自定义列 -->
       <template #bodyCell="{ column, record }">
-        <template v-if="column.key === 'success'">
-          <a-tag :color="record.success ? 'success' : 'error'">
-            {{ record.success ? '成功' : '失败' }}
+        <template v-if="column.key === 'status'">
+          <a-tag :color="record.status === 0 ? 'success' : 'error'">
+            {{ record.status === 0 ? '成功' : '失败' }}
           </a-tag>
         </template>
         <template v-if="column.key === 'action'">
@@ -57,19 +58,21 @@ import { message } from 'ant-design-vue'
 import type { TablePaginationConfig } from 'ant-design-vue'
 import type { QueryField } from '@/types/components/query'
 import type { HbtOperLogDto, HbtOperLogQueryDto } from '@/types/audit/operLog'
-import { getOperLogs } from '@/api/audit/operLog'
+import { getOperLogList } from '@/api/audit/operLog'
 import { useUserStore } from '@/stores/user'
+import { useI18n } from 'vue-i18n'
 import OperLogDetail from './OperLogDetail.vue'
 
+const { t } = useI18n()
 const userStore = useUserStore()
 
 // 查询字段定义
 const queryFields: QueryField[] = [
   {
-    name: 'moduleName',
-    label: '模块名称',
+    name: 'tableName',
+    label: '表名',
     type: 'input',
-    placeholder: '请输入模块名称'
+    placeholder: '请输入表名'
   },
   {
     name: 'operationType',
@@ -78,13 +81,13 @@ const queryFields: QueryField[] = [
     placeholder: '请输入操作类型'
   },
   {
-    name: 'success',
+    name: 'status',
     label: '操作状态',
     type: 'select',
     placeholder: '请选择操作状态',
     options: [
-      { label: '成功', value: true },
-      { label: '失败', value: false }
+      { label: '成功', value: 0 },
+      { label: '失败', value: 1 }
     ]
   },
   {
@@ -104,9 +107,9 @@ const queryFields: QueryField[] = [
 // 表格列定义
 const columns = [
   {
-    title: '模块名称',
-    dataIndex: 'moduleName',
-    key: 'moduleName',
+    title: '表名',
+    dataIndex: 'tableName',
+    key: 'tableName',
     width: 150
   },
   {
@@ -128,21 +131,21 @@ const columns = [
     width: 130
   },
   {
-    title: 'IP位置',
-    dataIndex: 'ipLocation',
-    key: 'ipLocation',
+    title: '操作地点',
+    dataIndex: 'location',
+    key: 'location',
     width: 150
   },
   {
     title: '操作状态',
-    dataIndex: 'success',
-    key: 'success',
+    dataIndex: 'status',
+    key: 'status',
     width: 100
   },
   {
     title: '操作时间',
-    dataIndex: 'operateTime',
-    key: 'operateTime',
+    dataIndex: 'createTime',
+    key: 'createTime',
     width: 180
   },
   {
@@ -166,7 +169,7 @@ const queryParams = reactive<HbtOperLogQueryDto>({
   pageSize: 10,
   orderByColumn: undefined,
   orderType: undefined,
-  userName: userStore.user?.userName,
+  userName: userStore.userInfo?.userName,
   tableName: undefined,
   operationType: undefined,
   status: undefined,
@@ -178,9 +181,16 @@ const queryParams = reactive<HbtOperLogQueryDto>({
 const fetchData = async () => {
   loading.value = true
   try {
-    const res = await getOperLogs(queryParams)
-    tableData.value = res.data.rows
-    total.value = res.data.totalNum
+    const res = await getOperLogList(queryParams)
+    if (res.data.code === 200) {
+      tableData.value = res.data.data.rows.map((item: HbtOperLogDto) => ({
+        ...item,
+        errorMsg: item.errorMsg ?? ''
+      }))
+      total.value = res.data.data.totalNum
+    } else {
+      message.error(res.data.msg || t('common.failed'))
+    }
   } catch (error) {
     console.error('获取操作日志失败:', error)
     message.error('获取操作日志失败')

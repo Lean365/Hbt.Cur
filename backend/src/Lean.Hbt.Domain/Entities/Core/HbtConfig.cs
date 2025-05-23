@@ -8,8 +8,6 @@
 // 版本号 : V0.0.1
 // 描述   : 系统配置实体
 //===================================================================
-using SqlSugar;
-
 namespace Lean.Hbt.Domain.Entities.Core
 {
     /// <summary>
@@ -38,24 +36,23 @@ namespace Lean.Hbt.Domain.Entities.Core
         [SugarColumn(ColumnName = "config_value", ColumnDescription = "配置键值", Length = 500, ColumnDataType = "nvarchar", IsNullable = false)]
         public string? ConfigValue { get; set; }
 
+
+        /// <summary>
+        /// 系统内置（0是 1否）
+        /// </summary>
+        [SugarColumn(ColumnName = "is_builtin", ColumnDescription = "内置", ColumnDataType = "int", IsNullable = false, DefaultValue = "1")]
+        public int IsBuiltin { get; set; } = 1;
+
+        /// <summary>
+        /// 是否加密（0是 1否）
+        /// </summary>
+        [SugarColumn(ColumnName = "is_encrypted", ColumnDescription = "加密", ColumnDataType = "int", IsNullable = false, DefaultValue = "1")]
+        public int IsEncrypted { get; set; } = 1;
         /// <summary>
         /// 状态（0正常 1停用）
         /// </summary>
-        [SugarColumn(ColumnName = "status", ColumnDescription = "状态（0正常 1停用）", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
+        [SugarColumn(ColumnName = "status", ColumnDescription = "状态", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
         public int Status { get; set; } = 0;
-
-        /// <summary>
-        /// 系统内置（0否 1是）
-        /// </summary>
-        [SugarColumn(ColumnName = "is_builtin", ColumnDescription = "系统内置（0否 1是）", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
-        public int IsBuiltin { get; set; } = 0;
-
-        /// <summary>
-        /// 是否加密
-        /// </summary>
-        [SugarColumn(ColumnName = "is_encrypted", ColumnDescription = "是否加密", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
-        public int IsEncrypted { get; set; } = 0;
-
         /// <summary>
         /// 租户ID
         /// </summary>

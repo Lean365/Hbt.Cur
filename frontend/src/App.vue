@@ -170,7 +170,7 @@ onMounted(async () => {
   themeStore.initTheme()
   memorialStore.initMemorialMode()
   document.documentElement.style.colorScheme = isDark.value ? 'dark' : 'light'
-  initAutoLogout()
+  initAutoLogout(userStore)
   wsStore.connect()
 })
 

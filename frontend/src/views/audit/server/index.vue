@@ -1,6 +1,6 @@
 <template>
   <div class="hbt-server-monitor">
-    {{ t('identity.auth.login.password') }}
+   
     <a-card :bordered="false" class="monitor-card">
       <template #title>
         <div class="card-title">
@@ -25,8 +25,8 @@
                   </div>
                   <a-progress
                     type="dashboard"
-                    :percent="Number(serverInfo.cpuUsage.toFixed(1))"
-                    :stroke-color="getUsageColor(serverInfo.cpuUsage)"
+                    :percent="Number((serverInfo?.cpuUsage || 0).toFixed(1))"
+                    :stroke-color="getUsageColor(serverInfo?.cpuUsage || 0)"
                     :format="percent => `${percent}%`"
                   />
                 </div>
@@ -40,30 +40,30 @@
                   </div>
                   <a-progress
                     type="dashboard"
-                    :percent="Number(serverInfo.memoryUsage.toFixed(1))"
-                    :stroke-color="getUsageColor(serverInfo.memoryUsage)"
+                    :percent="Number((serverInfo?.memoryUsage || 0).toFixed(1))"
+                    :stroke-color="getUsageColor(serverInfo?.memoryUsage || 0)"
                     :format="percent => `${percent}%`"
                   />
                   <div class="usage-detail">
-                    {{ formatSize(serverInfo.usedMemory) }} / {{ formatSize(serverInfo.totalMemory) }}
+                    {{ formatSize(serverInfo?.usedMemory || 0) }} / {{ formatSize(serverInfo?.totalMemory || 0) }}
                   </div>
                 </div>
               </a-col>
 
               <!-- 磁盘使用情况 -->
-              <a-col :span="8" v-for="disk in serverInfo.diskInfos" :key="disk.driveName">
+              <a-col :span="8" v-for="disk in (serverInfo?.diskInfos || [])" :key="disk.driveName">
                 <div class="resource-usage-item">
                   <div class="usage-header">
                     <span class="usage-name">{{ disk.driveName }}</span>
                   </div>
                   <a-progress
                     type="dashboard"
-                    :percent="Number((disk.usedSpace / disk.totalSpace * 100).toFixed(1))"
-                    :stroke-color="getUsageColor(disk.usedSpace / disk.totalSpace * 100)"
+                    :percent="Number(((disk.usedSpace || 0) / (disk.totalSpace || 1) * 100).toFixed(1))"
+                    :stroke-color="getUsageColor((disk.usedSpace || 0) / (disk.totalSpace || 1) * 100)"
                     :format="percent => `${percent}%`"
                   />
                   <div class="usage-detail">
-                    {{ formatSize(disk.usedSpace) }} / {{ formatSize(disk.totalSpace) }}
+                    {{ formatSize(disk.usedSpace || 0) }} / {{ formatSize(disk.totalSpace || 0) }}
                   </div>
                 </div>
               </a-col>
@@ -76,25 +76,25 @@
           <div class="tab-content">
             <a-descriptions :column="3">
               <a-descriptions-item :label="t('realtime.server.system.os')">
-                {{ serverInfo.osName }}
+                {{ serverInfo?.osName || '-' }}
               </a-descriptions-item>
               <a-descriptions-item :label="t('realtime.server.system.architecture')">
-                {{ serverInfo.osArchitecture }}
+                {{ serverInfo?.osArchitecture || '-' }}
               </a-descriptions-item>
               <a-descriptions-item :label="t('realtime.server.system.version')">
-                {{ serverInfo.osVersion }}
+                {{ serverInfo?.osVersion || '-' }}
               </a-descriptions-item>
               <a-descriptions-item :label="t('realtime.server.system.processor.name')">
-                {{ serverInfo.processorName }}
+                {{ serverInfo?.processorName || '-' }}
               </a-descriptions-item>
               <a-descriptions-item :label="t('realtime.server.system.processor.count')">
-                {{ serverInfo.processorCount }} {{ t('realtime.server.system.processor.unit') }}
+                {{ serverInfo?.processorCount || 0 }} {{ t('realtime.server.system.processor.unit') }}
               </a-descriptions-item>
               <a-descriptions-item :label="t('realtime.server.system.startup.time')">
-                {{ formatDateTime(serverInfo.systemStartTime) }}
+                {{ serverInfo?.systemStartTime ? formatDateTime(serverInfo.systemStartTime) : '-' }}
               </a-descriptions-item>
               <a-descriptions-item :label="t('realtime.server.system.startup.uptime')">
-                {{ formatUptime(serverInfo.systemUptime) }}
+                {{ formatUptime(serverInfo?.systemUptime || 0) }}
               </a-descriptions-item>
             </a-descriptions>
           </div>
@@ -106,14 +106,14 @@
             <a-descriptions :column="2">
               <a-descriptions-item :label="t('realtime.server.dotnet.runtime.version')">
                 <span class="version-text">.NET</span>
-                <span class="version-number">{{ serverInfo.dotNetRuntimeVersion.replace('.NET ', '') }}</span>
+                <span class="version-number">{{ (serverInfo?.dotNetRuntimeVersion || '').replace('.NET ', '') }}</span>
               </a-descriptions-item>
               <a-descriptions-item :label="t('realtime.server.dotnet.clr.version')">
-                {{ serverInfo.clrVersion }}
+                {{ serverInfo?.clrVersion || '-' }}
               </a-descriptions-item>
               <a-descriptions-item :label="t('realtime.server.dotnet.runtime.directory')" :span="2">
-                <a-tooltip :title="serverInfo.dotNetRuntimeDirectory">
-                  <span class="ellipsis-text">{{ serverInfo.dotNetRuntimeDirectory }}</span>
+                <a-tooltip :title="serverInfo?.dotNetRuntimeDirectory || ''">
+                  <span class="ellipsis-text">{{ serverInfo?.dotNetRuntimeDirectory || '-' }}</span>
                 </a-tooltip>
               </a-descriptions-item>
             </a-descriptions>
@@ -151,7 +151,9 @@ import { useI18n } from 'vue-i18n'
 import { ReloadOutlined } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
 import type { HbtServerMonitorDto, HbtNetworkDto } from '@/types/realtime/serverMonitor'
-import { getServerInfo, getNetworkInfo } from '@/api/signalr/serverMonitor'
+import type { HbtApiResponse } from '@/types/common'
+import type { AxiosResponse } from 'axios'
+import { getServerInfo, getNetworkInfo } from '@/api/audit/serverMonitor'
 import { formatDateTime } from '@/utils/format'
 import * as echarts from 'echarts'
 
@@ -393,8 +395,16 @@ const refreshData = async () => {
       getServerInfo(),
       getNetworkInfo()
     ])
-    serverInfo.value = serverRes.data
-    networkInfo.value = networkRes.data
+    
+    if (serverRes.data.code === 200 && serverRes.data.data) {
+      serverInfo.value = {
+        ...serverInfo.value,
+        ...serverRes.data.data
+      }
+    }
+    if (networkRes.data.code === 200 && networkRes.data.data) {
+      networkInfo.value = networkRes.data.data
+    }
     updateCharts()
     message.success(t('realtime.server.refreshResult.success'))
   } catch (error) {

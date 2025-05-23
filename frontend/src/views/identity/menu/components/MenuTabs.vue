@@ -5,10 +5,15 @@
     :width="800"
     @update:open="handleVisibleChange"
     @ok="handleOk"
-    
+    @cancel="handleCancel"
   >
+  
     <a-tabs v-model:activeKey="activeKey">
-      <a-tab-pane key="directory" tab="目录">
+      <a-tab-pane 
+        key="directory" 
+        tab="目录"
+        :disabled="menuType === 1 || menuType === 2"
+      >
         <directory-form
           ref="directoryFormRef"
           :visible="true"
@@ -16,7 +21,11 @@
           :menu-id="menuId"
         />
       </a-tab-pane>
-      <a-tab-pane key="menu" tab="菜单">
+      <a-tab-pane 
+        key="menu" 
+        tab="菜单"
+        :disabled="menuType === 0 || menuType === 2"
+      >
         <menu-form
           ref="menuFormRef"
           :visible="true"
@@ -24,7 +33,11 @@
           :menu-id="menuId"
         />
       </a-tab-pane>
-      <a-tab-pane key="button" tab="按钮">
+      <a-tab-pane 
+        key="button" 
+        tab="按钮"
+        :disabled="menuType === 0 || menuType === 1"
+      >
         <button-form
           ref="buttonFormRef"
           :visible="true"
@@ -37,7 +50,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import DirectoryForm from './DirectoryForm.vue'
 import MenuForm from './MenuForm.vue'
 import ButtonForm from './ButtonForm.vue'
@@ -47,12 +60,24 @@ const props = defineProps<{
   visible: boolean
   title: string
   menuId?: number
+  menuType?: number
 }>()
 
 const emit = defineEmits(['update:visible', 'success'])
 
 // 当前激活的标签页
-const activeKey = ref('directory')
+const activeKey = ref('')
+
+// 根据menuType设置默认页签
+watch(() => props.menuType, (newType) => {
+  if (newType === 0) {
+    activeKey.value = 'directory'
+  } else if (newType === 1) {
+    activeKey.value = 'menu'
+  } else if (newType === 2) {
+    activeKey.value = 'button'
+  }
+}, { immediate: true })
 
 const directoryFormRef = ref()
 const menuFormRef = ref()
@@ -78,7 +103,10 @@ async function handleOk() {
   }
 }
 
-
+// 处理取消
+const handleCancel = () => {
+  emit('update:visible', false)
+}
 </script>
 
 <style scoped>
@@ -107,5 +135,11 @@ async function handleOk() {
 
 .menu-tabs :deep(.ant-tabs-ink-bar) {
   background: #1890ff;
+}
+
+/* 添加禁用标签页的样式 */
+.menu-tabs :deep(.ant-tabs-tab-disabled) {
+  cursor: not-allowed;
+  opacity: 0.5;
 }
 </style> 

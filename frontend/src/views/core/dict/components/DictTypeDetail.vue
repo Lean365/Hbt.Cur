@@ -9,42 +9,40 @@
 
 <template>
   <hbt-modal
-    :title="t('common.title.detail')"
-    :open="visible"
+    :open="open"
+    :title="t('core.dict.dictType.detail')"
     width="600px"
-    append-to-body
-    destroy-on-close
     @cancel="handleCancel"
   >
-    <hbt-descriptions :column="1" bordered>
-      <hbt-descriptions-item :label="t('admin.dict.dictName.label')">
+    <a-descriptions :column="1" bordered>
+      <a-descriptions-item :label="t('admin.dict.dictName.label')">
         {{ detailData.dictName }}
-      </hbt-descriptions-item>
+      </a-descriptions-item>
 
-      <hbt-descriptions-item :label="t('admin.dict.dictType.label')">
+      <a-descriptions-item :label="t('admin.dict.dictType.label')">
         {{ detailData.dictType }}
-      </hbt-descriptions-item>
+      </a-descriptions-item>
 
-      <hbt-descriptions-item :label="t('admin.dict.status.label')">
+      <a-descriptions-item :label="t('admin.dict.status.label')">
         <hbt-dict-tag dict-type="sys_normal_disable" :value="detailData.status" />
-      </hbt-descriptions-item>
+      </a-descriptions-item>
 
-      <hbt-descriptions-item :label="t('admin.dict.remark.label')">
+      <a-descriptions-item :label="t('admin.dict.remark.label')">
         {{ detailData.remark }}
-      </hbt-descriptions-item>
+      </a-descriptions-item>
 
-      <hbt-descriptions-item :label="t('common.createTime')">
+      <a-descriptions-item :label="t('common.createTime')">
         {{ detailData.createTime }}
-      </hbt-descriptions-item>
+      </a-descriptions-item>
 
-      <hbt-descriptions-item :label="t('common.updateTime')">
+      <a-descriptions-item :label="t('common.updateTime')">
         {{ detailData.updateTime }}
-      </hbt-descriptions-item>
-    </hbt-descriptions>
+      </a-descriptions-item>
+    </a-descriptions>
 
     <template #footer>
       <div class="dialog-footer">
-        <hbt-button @click="handleCancel">{{ t('common.close') }}</hbt-button>
+        <a-button @click="handleCancel">{{ t('common.button.cancel') }}</a-button>
       </div>
     </template>
   </hbt-modal>
@@ -58,7 +56,7 @@ import type { HbtDictType } from '@/types/core/dictType'
 import { getHbtDictType } from '@/api/core/dictType'
 
 const props = defineProps({
-  visible: {
+  open: {
     type: Boolean,
     default: false
   },
@@ -68,7 +66,7 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['update:visible'])
+const emit = defineEmits(['update:open'])
 
 const { t } = useI18n()
 
@@ -77,12 +75,11 @@ const loading = ref(false)
 
 // === 详情数据 ===
 const detailData = reactive<HbtDictType>({
-  id: 0,
   dictTypeId: 0,
   dictName: '',
   dictType: '',
-  dictCategory: '',
-  dictBuiltin: 0,
+  dictCategory: 0,
+  isBuiltin: 0,
   orderNum: 0,
   tenantId: 0,
   status: 0,
@@ -100,10 +97,10 @@ const getDictType = async (id: number) => {
   try {
     loading.value = true
     const res = await getHbtDictType(id)
-    if (res.code === 200) {
-      Object.assign(detailData, res.data)
+    if (res.data.code === 200) {
+      Object.assign(detailData, res.data.data)
     } else {
-      message.error(res.msg || t('common.failed'))
+      message.error(res.data.msg || t('common.failed'))
     }
   } catch (error) {
     console.error('获取字典类型详情失败:', error)
@@ -115,12 +112,12 @@ const getDictType = async (id: number) => {
 
 // 取消
 const handleCancel = () => {
-  emit('update:visible', false)
+  emit('update:open', false)
 }
 
 // === 监听器 ===
 // 监听对话框可见性变化
-watch(() => props.visible, (val) => {
+watch(() => props.open, (val) => {
   if (val && props.dictTypeId) {
     getDictType(props.dictTypeId)
   }
@@ -128,7 +125,7 @@ watch(() => props.visible, (val) => {
 
 // === 生命周期 ===
 onMounted(() => {
-  if (props.visible && props.dictTypeId) {
+  if (props.open && props.dictTypeId) {
     getDictType(props.dictTypeId)
   }
 })

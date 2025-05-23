@@ -20,14 +20,16 @@
       @refresh="fetchData"
       @export="handleExport"
       @delete="handleBatchDelete"
+      @column-setting="handleColumnSetting"
       @toggle-search="toggleSearch"
+      @toggle-fullscreen="toggleFullscreen"
     />
 
     <!-- 数据表格 -->
     <hbt-table
       :loading="loading"
       :data-source="tableData"
-      :columns="columns"
+      :columns="columns.filter(col => col.key && columnSettings[col.key])"
       :pagination="{
         total: total,
         current: queryParams.pageIndex,
@@ -36,7 +38,7 @@
         showQuickJumper: true,
         showTotal: (total: number) => `共 ${total} 条`
       }"
-      :row-key="(record: HbtOperLogDto) => record.id"
+      row-key="operId"
       v-model:selectedRowKeys="selectedRowKeys"
       :row-selection="{
         type: 'checkbox',
@@ -52,8 +54,33 @@
             {{ record.status === 1 ? '成功' : '失败' }}
           </a-tag>
         </template>
+        <template v-if="column.key === 'action'">
+          <a @click="handleViewDetail(record)">详情</a>
+        </template>
       </template>
     </hbt-table>
+
+    <!-- 操作详情对话框 -->
+    <oper-log-detail v-if="detailVisible" :oper-info="currentOper" @close="detailVisible = false" />
+
+    <!-- 列设置抽屉 -->
+    <a-drawer
+      :visible="columnSettingVisible"
+      title="列设置"
+      placement="right"
+      width="300"
+      @close="columnSettingVisible = false"
+    >
+      <a-checkbox-group
+        :value="Object.keys(columnSettings).filter(key => columnSettings[key])"
+        @change="handleColumnSettingChange"
+        class="column-setting-group"
+      >
+        <div v-for="col in defaultColumns" :key="col.key" class="column-setting-item">
+          <a-checkbox :value="col.key" :disabled="col.key === 'action'">{{ col.title }}</a-checkbox>
+        </div>
+      </a-checkbox-group>
+    </a-drawer>
   </div>
 </template>
 
@@ -63,8 +90,12 @@ import { message } from 'ant-design-vue'
 import type { TablePaginationConfig } from 'ant-design-vue'
 import type { QueryField } from '@/types/components/query'
 import type { HbtOperLogDto, HbtOperLogQueryDto } from '@/types/audit/operLog'
-import { getOperLogs, exportOperLogs, clearOperLogs } from '@/api/audit/operLog'
+import { getOperLogList, exportOperLog, clearOperLog } from '@/api/audit/operLog'
+import { ref, reactive, onMounted } from 'vue'
+import OperLogDetail from './components/OperLogDetail.vue'
+
 const { t } = useI18n()
+
 // 查询字段定义
 const queryFields: QueryField[] = [
   {
@@ -98,13 +129,13 @@ const queryFields: QueryField[] = [
   {
     name: 'startTime',
     label: '开始时间',
-    type: 'datetime',
+    type: 'date',
     placeholder: '请选择开始时间'
   },
   {
     name: 'endTime',
     label: '结束时间',
-    type: 'datetime',
+    type: 'date',
     placeholder: '请选择结束时间'
   }
 ]
@@ -181,6 +212,56 @@ const columns = [
     key: 'result',
     width: 200,
     ellipsis: true
+  },
+  {
+    title: t('identity.user.table.columns.remark'),
+    dataIndex: 'remark',
+    key: 'remark',
+    width: 120
+  },
+  {
+    title: t('identity.user.table.columns.createBy'),
+    dataIndex: 'createBy',
+    key: 'createBy',
+    width: 120
+  },
+  {
+    title: t('identity.user.table.columns.createTime'),
+    dataIndex: 'createTime',
+    key: 'createTime',
+    width: 180
+  },
+  {
+    title: t('identity.user.table.columns.updateBy'),
+    dataIndex: 'updateBy',
+    key: 'updateBy',
+    width: 120
+  },
+  {
+    title: t('identity.user.table.columns.updateTime'),
+    dataIndex: 'updateTime',
+    key: 'updateTime',
+    width: 180
+  },
+  {
+    title: t('identity.user.table.columns.deleteBy'),
+    dataIndex: 'deleteBy',
+    key: 'deleteBy',
+    width: 120
+  },
+  {
+    title: t('identity.user.table.columns.deleteTime'),
+    dataIndex: 'deleteTime',
+    key: 'deleteTime',
+    width: 180
+  },
+  {
+    title: t('common.table.header.operation'),
+    dataIndex: 'action',
+    key: 'action',
+    width: 150,
+    fixed: 'right',
+    ellipsis: true
   }
 ]
 
@@ -200,17 +281,56 @@ const queryParams = reactive<HbtOperLogQueryDto>({
 })
 const selectedRowKeys = ref<(string | number)[]>([])
 const showSearch = ref(true)
+const detailVisible = ref(false)
+const currentOper = ref<HbtOperLogDto>()
+const visibleColumns = ref(columns.map(col => col.key))
+const defaultColumns = columns
+const columnSettings = ref<Record<string, boolean>>({})
+const columnSettingVisible = ref(false)
+
+/** 处理列设置 */
+const handleColumnSetting = () => {
+  columnSettingVisible.value = true
+}
+
+const handleColumnSettingChange = (checkedKeys: (string | number | boolean)[]) => {
+  const settings: Record<string, boolean> = {}
+  defaultColumns.forEach(col => {
+    settings[col.key] = checkedKeys.includes(col.key)
+  })
+  columnSettings.value = settings
+  localStorage.setItem('operLogColumnSettings', JSON.stringify(settings))
+}
+
+const initColumnSettings = () => {
+  // 每次刷新页面时清除localStorage
+  localStorage.removeItem('operLogColumnSettings')
+  // 初始化所有列为false
+  columnSettings.value = Object.fromEntries(defaultColumns.map(col => [col.key, false]))
+  // 获取前6列（不包含操作列）
+  const firstColumns = defaultColumns.filter(col => col.key !== 'action').slice(0, 6)
+  // 设置前6列为true
+  firstColumns.forEach(col => {
+    columnSettings.value[col.key] = true
+  })
+  // 确保操作列显示
+  columnSettings.value['action'] = true
+}
+
+onMounted(() => {
+  initColumnSettings()
+})
 
 /** 获取表格数据 */
 const fetchData = async () => {
   loading.value = true
   try {
-    const res = await getOperLogs(queryParams)
-    if (res.code === 200) {
-      tableData.value = res.data.rows
-      total.value = res.data.totalNum
+    const res = await getOperLogList(queryParams)
+    if (res.data.code === 200) {
+      tableData.value = res.data.data.rows
+      total.value = res.data.data.totalNum
     } else {
-      message.error(res.msg || t('common.failed'))
+      message.error(res.data.msg || t('common.failed'))
     }
   } catch (error) {
     console.error('获取操作日志失败:', error)
@@ -248,7 +368,7 @@ const handleTableChange = (pagination: TablePaginationConfig) => {
 /** 导出操作日志 */
 const handleExport = async () => {
   try {
-    await exportOperLogs(queryParams, '操作日志')
+    await exportOperLog(queryParams)
     message.success('导出成功')
   } catch (error) {
     console.error('导出操作日志失败:', error)
@@ -263,7 +383,7 @@ const handleBatchDelete = async () => {
     return
   }
   try {
-    await clearOperLogs()
+    await clearOperLog()
     message.success('清空成功')
     selectedRowKeys.value = []
     fetchData()
@@ -277,6 +397,15 @@ const handleBatchDelete = async () => {
 const toggleSearch = () => {
   showSearch.value = !showSearch.value
 }
+// 切换全屏
+const toggleFullscreen = (isFullscreen: boolean) => {
+  console.log('切换全屏状态:', isFullscreen)
+}
+/** 查看操作详情 */
+const handleViewDetail = (record: HbtOperLogDto) => {
+  currentOper.value = record
+  detailVisible.value = true
+}
 
 // 初始化加载数据
 fetchData()
@@ -285,5 +414,28 @@ fetchData()
 <style lang="less" scoped>
 .oper-log-container {
   padding: 16px;
+  background-color: #fff;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  .ant-table-wrapper {
+    flex: 1;
+  }
+}
+
+.column-setting-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.column-setting-item {
+  padding: 8px;
+  border-bottom: 1px solid var(--ant-color-split);
+
+  &:last-child {
+    border-bottom: none;
+  }
 }
 </style>

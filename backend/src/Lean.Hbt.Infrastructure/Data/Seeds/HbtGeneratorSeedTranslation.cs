@@ -34,28 +34,10 @@ public class HbtGeneratorSeedTranslation
         _logger = logger;
     }
 
-    private HbtTranslation CreateTranslation(string langCode, string transKey, string transValue)
-    {
-        return new HbtTranslation
-        {
-            LangCode = langCode,
-            TransKey = transKey,
-            TransValue = transValue,
-            ModuleName = "Generator",
-            Status = 0,
-            TransBuiltin = 1,
-            TenantId = 0,
-            CreateBy = "Hbt365",
-            CreateTime = DateTime.Now,
-            UpdateBy = "Hbt365",
-            UpdateTime = DateTime.Now
-        };
-    }
-
     /// <summary>
     /// 初始化代码生成器本地化资源
     /// </summary>
-    public async Task<(int insertCount, int updateCount)> InitializeGeneratorTranslationAsync()
+    public async Task<(int insertCount, int updateCount)> InitializeGeneratorTranslationAsync(long tenantId)
     {
         int insertCount = 0;
         int updateCount = 0;
@@ -63,50 +45,50 @@ public class HbtGeneratorSeedTranslation
         var translations = new List<HbtTranslation>
         {
             // 代码生成器模块
-            CreateTranslation("zh-CN", "generator.module.name", "代码生成器"),
-            CreateTranslation("en-US", "generator.module.name", "Code Generator"),
-            CreateTranslation("zh-CN", "generator.module.description", "快速生成代码的工具"),
-            CreateTranslation("en-US", "generator.module.description", "A tool for quickly generating code"),
+            new HbtTranslation { LangCode = "zh-CN", TransKey = "generator.module.name", TransValue = "代码生成器", ModuleName = "Generator", Status = 0 },
+            new HbtTranslation { LangCode = "en-US", TransKey = "generator.module.name", TransValue = "Code Generator", ModuleName = "Generator", Status = 0 },
+            new HbtTranslation { LangCode = "zh-CN", TransKey = "generator.module.description", TransValue = "快速生成代码的工具", ModuleName = "Generator", Status = 0 },
+            new HbtTranslation { LangCode = "en-US", TransKey = "generator.module.description", TransValue = "A tool for quickly generating code", ModuleName = "Generator", Status = 0 },
 
             // 代码生成器页面
-            CreateTranslation("zh-CN", "generator.page.title", "代码生成"),
-            CreateTranslation("en-US", "generator.page.title", "Code Generation"),
-            CreateTranslation("zh-CN", "generator.page.description", "选择模板并生成代码"),
-            CreateTranslation("en-US", "generator.page.description", "Select template and generate code"),
+            new HbtTranslation { LangCode = "zh-CN", TransKey = "generator.page.title", TransValue = "代码生成", ModuleName = "Generator", Status = 0 },
+            new HbtTranslation { LangCode = "en-US", TransKey = "generator.page.title", TransValue = "Code Generation", ModuleName = "Generator", Status = 0 },
+            new HbtTranslation { LangCode = "zh-CN", TransKey = "generator.page.description", TransValue = "选择模板并生成代码", ModuleName = "Generator", Status = 0 },
+            new HbtTranslation { LangCode = "en-US", TransKey = "generator.page.description", TransValue = "Select template and generate code", ModuleName = "Generator", Status = 0 },
 
             // 代码生成器操作
-            CreateTranslation("zh-CN", "generator.action.generate", "生成代码"),
-            CreateTranslation("en-US", "generator.action.generate", "Generate Code"),
-            CreateTranslation("zh-CN", "generator.action.preview", "预览代码"),
-            CreateTranslation("en-US", "generator.action.preview", "Preview Code"),
-            CreateTranslation("zh-CN", "generator.action.download", "下载代码"),
-            CreateTranslation("en-US", "generator.action.download", "Download Code"),
+            new HbtTranslation { LangCode = "zh-CN", TransKey = "generator.action.generate", TransValue = "生成代码", ModuleName = "Generator", Status = 0 },
+            new HbtTranslation { LangCode = "en-US", TransKey = "generator.action.generate", TransValue = "Generate Code", ModuleName = "Generator", Status = 0 },
+            new HbtTranslation { LangCode = "zh-CN", TransKey = "generator.action.preview", TransValue = "预览代码", ModuleName = "Generator", Status = 0 },
+            new HbtTranslation { LangCode = "en-US", TransKey = "generator.action.preview", TransValue = "Preview Code", ModuleName = "Generator", Status = 0 },
+            new HbtTranslation { LangCode = "zh-CN", TransKey = "generator.action.download", TransValue = "下载代码", ModuleName = "Generator", Status = 0 },
+            new HbtTranslation { LangCode = "en-US", TransKey = "generator.action.download", TransValue = "Download Code", ModuleName = "Generator", Status = 0 },
 
             // 代码生成器模板
-            CreateTranslation("zh-CN", "generator.template.entity", "实体类模板"),
-            CreateTranslation("en-US", "generator.template.entity", "Entity Template"),
-            CreateTranslation("zh-CN", "generator.template.repository", "仓储类模板"),
-            CreateTranslation("en-US", "generator.template.repository", "Repository Template"),
-            CreateTranslation("zh-CN", "generator.template.service", "服务类模板"),
-            CreateTranslation("en-US", "generator.template.service", "Service Template"),
-            CreateTranslation("zh-CN", "generator.template.controller", "控制器模板"),
-            CreateTranslation("en-US", "generator.template.controller", "Controller Template"),
+            new HbtTranslation { LangCode = "zh-CN", TransKey = "generator.template.entity", TransValue = "实体类模板", ModuleName = "Generator", Status = 0 },
+            new HbtTranslation { LangCode = "en-US", TransKey = "generator.template.entity", TransValue = "Entity Template", ModuleName = "Generator", Status = 0 },
+            new HbtTranslation { LangCode = "zh-CN", TransKey = "generator.template.repository", TransValue = "仓储类模板", ModuleName = "Generator", Status = 0 },
+            new HbtTranslation { LangCode = "en-US", TransKey = "generator.template.repository", TransValue = "Repository Template", ModuleName = "Generator", Status = 0 },
+            new HbtTranslation { LangCode = "zh-CN", TransKey = "generator.template.service", TransValue = "服务类模板", ModuleName = "Generator", Status = 0 },
+            new HbtTranslation { LangCode = "en-US", TransKey = "generator.template.service", TransValue = "Service Template", ModuleName = "Generator", Status = 0 },
+            new HbtTranslation { LangCode = "zh-CN", TransKey = "generator.template.controller", TransValue = "控制器模板", ModuleName = "Generator", Status = 0 },
+            new HbtTranslation { LangCode = "en-US", TransKey = "generator.template.controller", TransValue = "Controller Template", ModuleName = "Generator", Status = 0 },
 
             // 代码生成器配置
-            CreateTranslation("zh-CN", "generator.config.namespace", "命名空间"),
-            CreateTranslation("en-US", "generator.config.namespace", "Namespace"),
-            CreateTranslation("zh-CN", "generator.config.author", "作者"),
-            CreateTranslation("en-US", "generator.config.author", "Author"),
-            CreateTranslation("zh-CN", "generator.config.date", "创建日期"),
-            CreateTranslation("en-US", "generator.config.date", "Create Date"),
+            new HbtTranslation { LangCode = "zh-CN", TransKey = "generator.config.namespace", TransValue = "命名空间", ModuleName = "Generator", Status = 0 },
+            new HbtTranslation { LangCode = "en-US", TransKey = "generator.config.namespace", TransValue = "Namespace", ModuleName = "Generator", Status = 0 },
+            new HbtTranslation { LangCode = "zh-CN", TransKey = "generator.config.author", TransValue = "作者", ModuleName = "Generator", Status = 0 },
+            new HbtTranslation { LangCode = "en-US", TransKey = "generator.config.author", TransValue = "Author", ModuleName = "Generator", Status = 0 },
+            new HbtTranslation { LangCode = "zh-CN", TransKey = "generator.config.date", TransValue = "创建日期", ModuleName = "Generator", Status = 0 },
+            new HbtTranslation { LangCode = "en-US", TransKey = "generator.config.date", TransValue = "Create Date", ModuleName = "Generator", Status = 0 },
 
             // 代码生成器状态
-            CreateTranslation("zh-CN", "generator.status.generating", "正在生成"),
-            CreateTranslation("en-US", "generator.status.generating", "Generating"),
-            CreateTranslation("zh-CN", "generator.status.success", "生成成功"),
-            CreateTranslation("en-US", "generator.status.success", "Generation Successful"),
-            CreateTranslation("zh-CN", "generator.status.failed", "生成失败"),
-            CreateTranslation("en-US", "generator.status.failed", "Generation Failed")
+            new HbtTranslation { LangCode = "zh-CN", TransKey = "generator.status.generating", TransValue = "正在生成", ModuleName = "Generator", Status = 0 },
+            new HbtTranslation { LangCode = "en-US", TransKey = "generator.status.generating", TransValue = "Generating", ModuleName = "Generator", Status = 0 },
+            new HbtTranslation { LangCode = "zh-CN", TransKey = "generator.status.success", TransValue = "生成成功", ModuleName = "Generator", Status = 0 },
+            new HbtTranslation { LangCode = "en-US", TransKey = "generator.status.success", TransValue = "Generation Successful", ModuleName = "Generator", Status = 0 },
+            new HbtTranslation { LangCode = "zh-CN", TransKey = "generator.status.failed", TransValue = "生成失败", ModuleName = "Generator", Status = 0 },
+            new HbtTranslation { LangCode = "en-US", TransKey = "generator.status.failed", TransValue = "Generation Failed", ModuleName = "Generator", Status = 0 }
         };
 
         foreach (var translation in translations)
@@ -117,14 +99,21 @@ public class HbtGeneratorSeedTranslation
 
             if (existingTranslation == null)
             {
+                translation.TenantId = tenantId;
+                translation.CreateBy = "Hbt365";
+                translation.CreateTime = DateTime.Now;
+                translation.UpdateBy = "Hbt365";
+                translation.UpdateTime = DateTime.Now;
+                
                 await _translationRepository.CreateAsync(translation);
                 insertCount++;
             }
             else
             {
                 existingTranslation.TransValue = translation.TransValue;
-                existingTranslation.UpdateBy = translation.UpdateBy;
-                existingTranslation.UpdateTime = translation.UpdateTime;
+                existingTranslation.TenantId = tenantId;
+                existingTranslation.UpdateBy = "Hbt365";
+                existingTranslation.UpdateTime = DateTime.Now;
                 await _translationRepository.UpdateAsync(existingTranslation);
                 updateCount++;
             }

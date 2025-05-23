@@ -268,7 +268,7 @@ namespace Lean.Hbt.Application.Services.Core
 
             config.ConfigValue = configValue;
             config.UpdateTime = DateTime.Now;
-            config.UpdateBy = "system";
+            config.UpdateBy = "Hbt365";
 
             await _configRepository.UpdateAsync(config);
         }

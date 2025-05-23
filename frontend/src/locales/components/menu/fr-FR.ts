@@ -39,7 +39,7 @@ export default {
       _self: 'Audit',
       operlog: 'Journal des opérations',
       loginlog: 'Journal de connexion',
-      dbdifflog: 'Journal des différences de base de données',
+      sqldifflog: 'Journal des différences de base de données',
       exceptionlog: 'Journal des exceptions',
       auditlog: 'Journal d\'audit',
       quartzlog: 'Journal des tâches'

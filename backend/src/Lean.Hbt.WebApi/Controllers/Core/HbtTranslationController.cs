@@ -55,13 +55,13 @@ namespace Lean.Hbt.WebApi.Controllers.Core
         /// <summary>
         /// 获取翻译详情
         /// </summary>
-        /// <param name="transId">翻译ID</param>
+        /// <param name="TranslationId">翻译ID</param>
         /// <returns>翻译详情</returns>
-        [HttpGet("{transId}")]
+        [HttpGet("{TranslationId}")]
         [HbtPerm("core:language:query")]
-        public async Task<IActionResult> GetByIdAsync(long transId)
+        public async Task<IActionResult> GetByIdAsync(long TranslationId)
         {
-            var result = await _translationService.GetByIdAsync(transId);
+            var result = await _translationService.GetByIdAsync(TranslationId);
             return Success(result);
         }
 
@@ -94,26 +94,26 @@ namespace Lean.Hbt.WebApi.Controllers.Core
         /// <summary>
         /// 删除翻译
         /// </summary>
-        /// <param name="transId">翻译ID</param>
+        /// <param name="TranslationId">翻译ID</param>
         /// <returns>是否成功</returns>
-        [HttpDelete("{transId}")]
+        [HttpDelete("{TranslationId}")]
         [HbtPerm("core:language:delete")]
-        public async Task<IActionResult> DeleteAsync(long transId)
+        public async Task<IActionResult> DeleteAsync(long TranslationId)
         {
-            var result = await _translationService.DeleteAsync(transId);
+            var result = await _translationService.DeleteAsync(TranslationId);
             return Success(result);
         }
 
         /// <summary>
         /// 批量删除翻译
         /// </summary>
-        /// <param name="transIds">翻译ID集合</param>
+        /// <param name="TranslationIds">翻译ID集合</param>
         /// <returns>是否成功</returns>
         [HttpDelete("batch")]
         [HbtPerm("core:language:delete")]
-        public async Task<IActionResult> BatchDeleteAsync([FromBody] long[] transIds)
+        public async Task<IActionResult> BatchDeleteAsync([FromBody] long[] TranslationIds)
         {
-            var result = await _translationService.BatchDeleteAsync(transIds);
+            var result = await _translationService.BatchDeleteAsync(TranslationIds);
             return Success(result);
         }
 
@@ -125,14 +125,15 @@ namespace Lean.Hbt.WebApi.Controllers.Core
         /// <returns>导入结果</returns>
         [HttpPost("import")]
         [HbtPerm("core:language:import")]
+        [ProducesResponseType(typeof((int Success, int Fail)), StatusCodes.Status200OK)]
         public async Task<IActionResult> ImportAsync(IFormFile file, [FromQuery] string sheetName = "翻译数据")
         {
             if (file == null || file.Length == 0)
-                return Error("请选择要导入的文件");
+                return BadRequest(_localization.L("Translation.Import.FileRequired"));
 
             using var stream = file.OpenReadStream();
-            var result = await _translationService.ImportAsync(stream, sheetName);
-            return Success(result);
+            var (success, fail) = await _translationService.ImportAsync(stream, sheetName);
+            return Success(new { success, fail }, _localization.L("Translation.Import.Success"));
         }
 
         /// <summary>
@@ -143,10 +144,17 @@ namespace Lean.Hbt.WebApi.Controllers.Core
         /// <returns>Excel文件</returns>
         [HttpGet("export")]
         [HbtPerm("core:language:export")]
+        [ProducesResponseType(typeof(byte[]), StatusCodes.Status200OK)]
         public async Task<IActionResult> ExportAsync([FromQuery] HbtTranslationQueryDto query, [FromQuery] string sheetName = "翻译数据")
         {
-            var (_, content) = await _translationService.ExportAsync(query, sheetName);
-            return File(content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"翻译数据_{DateTime.Now:yyyyMMddHHmmss}.xlsx");
+            var result = await _translationService.ExportAsync(query, sheetName);
+            var contentType = result.fileName.EndsWith(".zip", StringComparison.OrdinalIgnoreCase)
+                ? "application/zip"
+                : "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+            // 只在 filename* 用 UTF-8 编码，filename 用 ASCII
+            var safeFileName = System.Text.Encoding.ASCII.GetString(System.Text.Encoding.ASCII.GetBytes(result.fileName));
+            Response.Headers["Content-Disposition"] = $"attachment; filename*=UTF-8''{Uri.EscapeDataString(result.fileName)}";
+            return File(result.content, contentType, result.fileName);
         }
 
         /// <summary>
@@ -156,27 +164,28 @@ namespace Lean.Hbt.WebApi.Controllers.Core
         /// <returns>Excel模板文件</returns>
         [HttpGet("template")]
         [HbtPerm("core:language:query")]
+        [ProducesResponseType(typeof(byte[]), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetTemplateAsync([FromQuery] string sheetName = "翻译数据导入模板")
         {
-            var (_, content) = await _translationService.GetTemplateAsync(sheetName);
-            return File(content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"翻译数据导入模板_{DateTime.Now:yyyyMMddHHmmss}.xlsx");
+            var result = await _translationService.GetTemplateAsync(sheetName);
+            return File(result.content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", result.fileName);
         }
 
         /// <summary>
         /// 更新翻译状态
         /// </summary>
-        /// <param name="transId">翻译ID</param>
+        /// <param name="TranslationId">翻译ID</param>
         /// <param name="status">状态</param>
         /// <returns>是否成功</returns>
-        [HttpPut("{transId}/status")]
+        [HttpPut("{TranslationId}/status")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> UpdateStatusAsync(long transId, [FromQuery] int status)
+        public async Task<IActionResult> UpdateStatusAsync(long TranslationId, [FromQuery] int status)
         {
             var input = new HbtTranslationStatusDto
             {
-                TransId = transId,
+                TranslationId = TranslationId,
                 Status = status
             };
             var result = await _translationService.UpdateStatusAsync(input);

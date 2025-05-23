@@ -33,16 +33,19 @@ export default {
       post: '岗位管理',
       menu: '菜单管理',
       tenant: '租户管理',
-      oauth: 'OAuth管理'
+      oauth: 'OAuth管理',
+      profile: '个人信息',
+      changePassword: '修改密码'
     },
     audit: {
       _self: '审计日志',
       operlog: '操作日志',
       loginlog: '登录日志',
-      dbdifflog: '差异日志',
+      sqldifflog: '差异日志',
       exceptionlog: '异常日志',
       auditlog: '审计日志',
-      quartzlog: '任务日志'
+      quartzlog: '任务日志',
+      server: '服务监控'
     },
     workflow: {
       _self: '工作流程',
@@ -170,9 +173,9 @@ export default {
       },
       material: {
         _self: '物料管理',
-        info: '物料主数据',
-        factory: '工厂',
-        vendor: '供应商',
+        info: '物料数据',
+        factory: '工厂物料',
+        vendor: '卖方',
         supplier: '供应商',
         price: '物料价格',
         requisition: '采购申请',
@@ -210,7 +213,7 @@ export default {
       },
       sales: {
         _self: '销售管理',
-        customer: '客户',
+        customer: '顾客',
         client: '客户',
         price: '销售价格',
         order: '销售订单',

@@ -30,15 +30,15 @@
         showQuickJumper: true,
         showTotal: (total: number) => `共 ${total} 条`
       }"
-      :row-key="(record: HbtQuartzLogDto) => record.logId"
+      row-key="quartzLogId"
       :height="540"
       @change="handleTableChange"
     >
       <!-- 自定义列 -->
       <template #bodyCell="{ column, record }">
-        <template v-if="column.key === 'success'">
-          <a-tag :color="record.success ? 'success' : 'error'">
-            {{ record.success ? '成功' : '失败' }}
+        <template v-if="column.key === 'logStatus'">
+          <a-tag :color="record.logStatus === 1 ? 'success' : 'error'">
+            {{ record.logStatus === 1 ? '成功' : '失败' }}
           </a-tag>
         </template>
         <template v-if="column.key === 'action'">
@@ -58,38 +58,40 @@ import { message } from 'ant-design-vue'
 import type { TablePaginationConfig } from 'ant-design-vue'
 import type { QueryField } from '@/types/components/query'
 import type { HbtQuartzLogDto, HbtQuartzLogQueryDto } from '@/types/audit/quartzLog'
-import { getQuartzLogs } from '@/api/audit/quartzLog'
+import { getQuartzLogList } from '@/api/audit/quartzLog'
 import { useUserStore } from '@/stores/user'
+import { useI18n } from 'vue-i18n'
 import QuartzLogDetail from './QuartzLogDetail.vue'
 
+const { t } = useI18n()
 const userStore = useUserStore()
 
 // 查询字段定义
 const queryFields: QueryField[] = [
   {
-    name: 'jobName',
+    name: 'logTaskName',
     label: '任务名称',
     type: 'input',
     placeholder: '请输入任务名称'
   },
   {
-    name: 'jobGroup',
+    name: 'logGroupName',
     label: '任务组',
     type: 'input',
     placeholder: '请输入任务组'
   },
   {
-    name: 'success',
+    name: 'logStatus',
     label: '执行状态',
     type: 'select',
     placeholder: '请选择执行状态',
     options: [
-      { label: '成功', value: true },
-      { label: '失败', value: false }
+      { label: '成功', value: 1 },
+      { label: '失败', value: 0 }
     ]
   },
   {
-    name: 'startTime',
+    name: 'beginTime',
     label: '开始时间',
     type: 'date',
     placeholder: '请选择开始时间'
@@ -106,46 +108,46 @@ const queryFields: QueryField[] = [
 const columns = [
   {
     title: '任务名称',
-    dataIndex: 'jobName',
-    key: 'jobName',
+    dataIndex: 'logTaskName',
+    key: 'logTaskName',
     width: 150
   },
   {
     title: '任务组',
-    dataIndex: 'jobGroup',
-    key: 'jobGroup',
+    dataIndex: 'logGroupName',
+    key: 'logGroupName',
     width: 120
   },
   {
     title: '调用目标',
-    dataIndex: 'invokeTarget',
-    key: 'invokeTarget',
+    dataIndex: 'logExecuteParams',
+    key: 'logExecuteParams',
     width: 200,
     ellipsis: true
   },
   {
     title: '执行状态',
-    dataIndex: 'success',
-    key: 'success',
+    dataIndex: 'logStatus',
+    key: 'logStatus',
     width: 100
   },
   {
-    title: '执行时间',
-    dataIndex: 'executeTime',
-    key: 'executeTime',
+    title: '执行耗时',
+    dataIndex: 'logExecuteDuration',
+    key: 'logExecuteDuration',
     width: 100,
     customRender: ({ text }: { text: number }) => `${text}ms`
   },
   {
-    title: '开始时间',
-    dataIndex: 'startTime',
-    key: 'startTime',
+    title: '执行时间',
+    dataIndex: 'logExecuteTime',
+    key: 'logExecuteTime',
     width: 180
   },
   {
-    title: '结束时间',
-    dataIndex: 'endTime',
-    key: 'endTime',
+    title: '创建时间',
+    dataIndex: 'createTime',
+    key: 'createTime',
     width: 180
   },
   {
@@ -180,9 +182,13 @@ const queryParams = reactive<HbtQuartzLogQueryDto>({
 const fetchData = async () => {
   loading.value = true
   try {
-    const res = await getQuartzLogs(queryParams)
-    tableData.value = res.data.rows
-    total.value = res.data.totalNum
+    const res = await getQuartzLogList(queryParams)
+    if (res.data.code === 200) {
+      tableData.value = res.data.data.rows
+      total.value = res.data.data.totalNum
+    } else {
+      message.error(res.data.msg || t('common.failed'))
+    }
   } catch (error) {
     console.error('获取任务日志失败:', error)
     message.error('获取任务日志失败')

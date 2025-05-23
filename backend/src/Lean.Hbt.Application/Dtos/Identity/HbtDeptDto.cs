@@ -30,7 +30,11 @@ namespace Lean.Hbt.Application.Dtos.Identity
             Phone = string.Empty;
             Email = string.Empty;
             Children = new List<HbtDeptDto>();
-            CreateTime = DateTime.Now;
+            Remark = string.Empty;
+            CreateBy = string.Empty;
+            UpdateBy = string.Empty;
+            DeleteBy = string.Empty;
+           
         }
 
         /// <summary>
@@ -77,10 +81,20 @@ namespace Lean.Hbt.Application.Dtos.Identity
         public string Email { get; set; } = string.Empty;
 
         /// <summary>
+        /// 用户数
+        /// </summary>
+        public int UserCount { get; set; }
+
+        /// <summary>
         /// 部门状态（0正常 1停用）
         /// </summary>
         [Required(ErrorMessage = "状态不能为空")]
         public int Status { get; set; }
+
+        /// <summary>
+        /// 备注
+        /// </summary>
+        public string? Remark { get; set; }
 
         /// <summary>
         /// 创建时间
@@ -88,14 +102,41 @@ namespace Lean.Hbt.Application.Dtos.Identity
         public DateTime CreateTime { get; set; }
 
         /// <summary>
+        /// 创建者
+        /// </summary>
+        public string CreateBy { get; set; } = string.Empty;
+
+        /// <summary>
+        /// 更新时间
+        /// </summary>
+        public DateTime UpdateTime { get; set; }
+
+        /// <summary>
+        /// 更新者
+        /// </summary>
+        public string UpdateBy { get; set; } = string.Empty;
+
+        /// <summary>
+        /// 是否删除
+        /// </summary>
+        public int IsDeleted { get; set; }
+
+        /// <summary>
+        /// 删除时间
+        /// </summary>
+        public DateTime DeleteTime { get; set; }
+
+        /// <summary>
+        /// 删除者
+        /// </summary>
+        public string DeleteBy { get; set; } = string.Empty;
+
+        /// <summary>
         /// 子部门列表
         /// </summary>
         public List<HbtDeptDto> Children { get; set; }
 
-        /// <summary>
-        /// 备注
-        /// </summary>
-        public string? Remark { get; set; }
+
     }
 
     /// <summary>
@@ -166,6 +207,11 @@ namespace Lean.Hbt.Application.Dtos.Identity
         [MaxLength(50, ErrorMessage = "邮箱长度不能超过50个字符")]
         [EmailAddress(ErrorMessage = "邮箱格式不正确")]
         public string? Email { get; set; }
+
+        /// <summary>
+        /// 用户数
+        /// </summary>
+        public int UserCount { get; set; }
 
         /// <summary>
         /// 部门状态（0正常 1停用）
@@ -255,9 +301,54 @@ namespace Lean.Hbt.Application.Dtos.Identity
         public string Email { get; set; }
 
         /// <summary>
+        /// 用户数
+        /// </summary>
+        public int UserCount { get; set; }
+
+        /// <summary>
+        /// 部门状态（0正常 1停用）
+        /// </summary>
+        public int Status { get; set; }
+
+        /// <summary>
+        /// 备注
+        /// </summary>
+        public string? Remark { get; set; }
+
+        /// <summary>
         /// 创建时间
         /// </summary>
         public DateTime CreateTime { get; set; }
+
+        /// <summary>
+        /// 创建者
+        /// </summary>
+        public string CreateBy { get; set; } = string.Empty;
+
+        /// <summary>
+        /// 更新时间
+        /// </summary>
+        public DateTime UpdateTime { get; set; }
+
+        /// <summary>
+        /// 更新者
+        /// </summary>
+        public string UpdateBy { get; set; } = string.Empty;
+
+        /// <summary>
+        /// 是否删除
+        /// </summary>
+        public int IsDeleted { get; set; }
+
+        /// <summary>
+        /// 删除时间
+        /// </summary>
+        public DateTime DeleteTime { get; set; }
+
+        /// <summary>
+        /// 删除者
+        /// </summary>
+        public string DeleteBy { get; set; } = string.Empty;
     }
 
     /// <summary>
@@ -343,10 +434,22 @@ namespace Lean.Hbt.Application.Dtos.Identity
         public string Email { get; set; }
 
         /// <summary>
+        /// 用户数
+        /// </summary>
+        public int UserCount { get; set; }
+
+        /// <summary>
         /// 状态（正常/停用）
         /// </summary>
         [Required(ErrorMessage = "状态不能为空")]
         public int Status { get; set; }
+
+        /// <summary>
+        /// 租户ID
+        /// </summary>
+        [Required(ErrorMessage = "租户ID不能为空")]
+        [Range(0, 9999, ErrorMessage = "租户ID必须在0-9999之间")]
+        public long TenantId { get; set; }
     }
 
     /// <summary>
@@ -409,6 +512,11 @@ namespace Lean.Hbt.Application.Dtos.Identity
         [MaxLength(100, ErrorMessage = "邮箱长度不能超过100个字符")]
         [EmailAddress(ErrorMessage = "邮箱格式不正确")]
         public string Email { get; set; }
+
+        /// <summary>
+        /// 用户数
+        /// </summary>
+        public int UserCount { get; set; }
 
         /// <summary>
         /// 状态（正常/停用）

@@ -1,5 +1,5 @@
-import type { DeviceInfo } from '@/types/identity/auth'
-import { HbtDeviceType, HbtOsType, HbtBrowserType } from '@/types/identity/deviceExtend'
+import type { HbtSignalRDevice } from '@/types/identity/auth'
+import { HbtDeviceType, HbtOsType, HbtBrowserType } from '@/types/audit/loginDevLog'
 
 /**
  * 检测浏览器类型
@@ -126,12 +126,12 @@ function generateDeviceFingerprint(): string {
 }
 
 // 缓存设备信息
-let cachedDeviceInfo: DeviceInfo | null = null
+let cachedDeviceInfo: HbtSignalRDevice | null = null
 
 /**
  * 获取设备信息
  */
-export async function getDeviceInfo(): Promise<DeviceInfo> {
+export async function getDeviceInfo(): Promise<HbtSignalRDevice> {
   // 如果已经缓存了设备信息，直接返回
   if (cachedDeviceInfo) {
     //console.log('[Device] 使用缓存的设备信息')
@@ -153,7 +153,13 @@ export async function getDeviceInfo(): Promise<DeviceInfo> {
   const browserType = detectBrowserType()
   
   // 收集完整的设备信息
-  const deviceInfo: DeviceInfo = {
+  const deviceInfo: HbtSignalRDevice = {
+    tenantId: 1,
+    userId: 0,
+    groupId: 0,
+    lastActivity: new Date().toISOString(),
+    lastHeartbeat: new Date().toISOString(),
+    onlineStatus: 0,
     deviceId: fingerprint,
     deviceType,
     deviceName: navigator.platform,
@@ -163,12 +169,6 @@ export async function getDeviceInfo(): Promise<DeviceInfo> {
     browserType,
     browserVersion: navigator.userAgent,
     resolution: `${window.screen.width}x${window.screen.height}`,
-    processorCores: String(navigator.hardwareConcurrency || 'unknown'),
-    platformVendor: navigator.vendor || 'unknown',
-    hardwareConcurrency: String(navigator.hardwareConcurrency || 'unknown'),
-    systemLanguage: navigator.language,
-    timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-    screenColorDepth: String(window.screen.colorDepth),
     deviceMemory: String((navigator as any).deviceMemory || 'unknown'),
     webGLRenderer: getWebGLRenderer(),
     deviceFingerprint: fingerprint

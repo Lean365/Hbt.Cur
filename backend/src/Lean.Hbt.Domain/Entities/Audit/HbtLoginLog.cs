@@ -10,8 +10,6 @@
 //===================================================================
 
 using Lean.Hbt.Common.Models;
-using Lean.Hbt.Domain.Entities.Identity;
-using SqlSugar;
 
 namespace Lean.Hbt.Domain.Entities.Audit
 {
@@ -65,13 +63,13 @@ namespace Lean.Hbt.Domain.Entities.Audit
         public string UserAgent { get; set; } = string.Empty;
 
         /// <summary>
-        /// 登录类型
+        /// 登录类型（0:其他，1:用户密码登录，2:短信登录，3:邮件登录，4:微信登录，5:QQ登录，6:钉钉登录，7:企业微信登录，8:飞书登录，9:支付宝登录，等等）
         /// </summary>
         [SugarColumn(ColumnName = "login_type", ColumnDescription = "登录类型", ColumnDataType = "int", IsNullable = false)]
         public HbtLoginType LoginType { get; set; }
 
-        /// <summary>
-        /// 登录状态
+        /// <summary>t
+        /// 登录状态（0:成功，1:失败）
         /// </summary>
         [SugarColumn(ColumnName = "login_status", ColumnDescription = "登录状态", ColumnDataType = "int", IsNullable = false)]
         public HbtLoginStatus LoginStatus { get; set; }
@@ -83,16 +81,16 @@ namespace Lean.Hbt.Domain.Entities.Audit
         public int LoginSource { get; set; }
 
         /// <summary>
-        /// 是否成功（0失败 1成功）
+        /// 是否成功（0：成功，1：失败）
         /// </summary>
-        [SugarColumn(ColumnName = "success", ColumnDescription = "是否成功（0失败 1成功）", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
-        public int Success { get; set; } = 0;
+        [SugarColumn(ColumnName = "login_success", ColumnDescription = "是否成功（0失败 1成功）", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
+        public int LoginSuccess { get; set; } = 0;
 
         /// <summary>
         /// 消息
         /// </summary>
-        [SugarColumn(ColumnName = "message", ColumnDescription = "消息", Length = 500, ColumnDataType = "nvarchar", IsNullable = true)]
-        public string? Message { get; set; }
+        [SugarColumn(ColumnName = "login_message", ColumnDescription = "消息", Length = 500, ColumnDataType = "nvarchar", IsNullable = true)]
+        public string? LoginMessage { get; set; }
 
         /// <summary>
         /// 登录时间
@@ -107,27 +105,33 @@ namespace Lean.Hbt.Domain.Entities.Audit
         public HbtSignalRDevice? DeviceInfo { get; set; }
 
         /// <summary>
-        /// 设备扩展ID
+        /// 环境信息
         /// </summary>
-        [SugarColumn(ColumnName = "device_extend_id", ColumnDescription = "设备扩展ID", ColumnDataType = "bigint", IsNullable = true)]
-        public long? DeviceExtendId { get; set; }
+        [SugarColumn(ColumnName = "environment_info", ColumnDescription = "环境信息", ColumnDataType = "nvarchar(max)", IsJson = true)]
+        public HbtSignalREnvironment? EnvironmentInfo { get; set; }
 
         /// <summary>
-        /// 设备扩展信息
+        /// 设备ID
         /// </summary>
-        [Navigate(NavigateType.OneToOne, nameof(DeviceExtendId))]
-        public virtual HbtDeviceExtend? DeviceExtend { get; set; }
+        [SugarColumn(ColumnName = "device_id", ColumnDescription = "设备ID", Length = 200, ColumnDataType = "nvarchar", IsNullable = true)]
+        public string? DeviceId { get; set; }
 
         /// <summary>
-        /// 登录扩展ID
+        /// 登录设备日志
         /// </summary>
-        [SugarColumn(ColumnName = "login_extend_id", ColumnDescription = "登录扩展ID", ColumnDataType = "bigint", IsNullable = true)]
-        public long? LoginExtendId { get; set; }
+        [Navigate(NavigateType.OneToOne, nameof(DeviceId))]
+        public virtual HbtLoginDevLog? DeviceLog { get; set; }
 
         /// <summary>
-        /// 登录扩展信息
+        /// 环境ID（根据环境指纹生成的唯一标识）
         /// </summary>
-        [Navigate(NavigateType.OneToOne, nameof(LoginExtendId))]
-        public virtual HbtLoginExtend? LoginExtend { get; set; }
+        [SugarColumn(ColumnName = "environment_id", ColumnDescription = "环境ID", Length = 200, ColumnDataType = "nvarchar", IsNullable = true)]
+        public string? EnvironmentId { get; set; }
+
+        /// <summary>
+        /// 登录环境日志信息
+        /// </summary>
+        [Navigate(NavigateType.OneToOne, nameof(EnvironmentId))]
+        public virtual HbtLoginEnvLog? EnvLog { get; set; }
     }
 }

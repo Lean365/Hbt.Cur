@@ -34,7 +34,7 @@ public class HbtDbSeedSalesDictType
     /// <summary>
     /// 初始化销售相关字典类型数据
     /// </summary>
-    public async Task<(int, int)> InitializeSalesDictTypeAsync()
+    public async Task<(int, int)> InitializeSalesDictTypeAsync(long tenantId)
     {
         int insertCount = 0;
         int updateCount = 0;
@@ -47,11 +47,11 @@ public class HbtDbSeedSalesDictType
                 DictType = "sys_sales_order_type",
                 OrderNum = 1,
                 Status = 0,
-                TenantId = 0,
+                
                 Remark = "销售订单类型字典",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictType
@@ -60,11 +60,11 @@ public class HbtDbSeedSalesDictType
                 DictType = "sys_sales_order_status",
                 OrderNum = 2,
                 Status = 0,
-                TenantId = 0,
+                
                 Remark = "销售订单状态字典",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictType
@@ -73,11 +73,11 @@ public class HbtDbSeedSalesDictType
                 DictType = "sys_sales_org",
                 OrderNum = 3,
                 Status = 0,
-                TenantId = 0,
+                
                 Remark = "销售组织字典",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictType
@@ -86,11 +86,11 @@ public class HbtDbSeedSalesDictType
                 DictType = "sys_distribution_channel",
                 OrderNum = 4,
                 Status = 0,
-                TenantId = 0,
+                
                 Remark = "分销渠道字典",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictType
@@ -99,11 +99,11 @@ public class HbtDbSeedSalesDictType
                 DictType = "sys_sales_type",
                 OrderNum = 5,
                 Status = 0,
-                TenantId = 0,
+                
                 Remark = "销售类型字典",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictType
@@ -112,11 +112,11 @@ public class HbtDbSeedSalesDictType
                 DictType = "sys_sales_condition",
                 OrderNum = 6,
                 Status = 0,
-                TenantId = 0,
+                
                 Remark = "销售条件字典",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictType
@@ -125,11 +125,11 @@ public class HbtDbSeedSalesDictType
                 DictType = "sys_sales_plan_type",
                 OrderNum = 7,
                 Status = 0,
-                TenantId = 0,
+                
                 Remark = "销售计划类型字典",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictType
@@ -138,11 +138,11 @@ public class HbtDbSeedSalesDictType
                 DictType = "sys_customer_type",
                 OrderNum = 8,
                 Status = 0,
-                TenantId = 0,
+                
                 Remark = "客户类型字典",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictType
@@ -151,11 +151,11 @@ public class HbtDbSeedSalesDictType
                 DictType = "sys_customer_level",
                 OrderNum = 9,
                 Status = 0,
-                TenantId = 0,
+                
                 Remark = "客户等级字典",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictType
@@ -164,11 +164,11 @@ public class HbtDbSeedSalesDictType
                 DictType = "sys_customer_status",
                 OrderNum = 10,
                 Status = 0,
-                TenantId = 0,
+                
                 Remark = "客户状态字典",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             }
         };
@@ -178,6 +178,11 @@ public class HbtDbSeedSalesDictType
             var existingDictType = await _dictTypeRepository.GetFirstAsync(d => d.DictType == dictType.DictType);
             if (existingDictType == null)
             {
+                dictType.TenantId = tenantId;
+                dictType.CreateBy = "Hbt365";
+                dictType.CreateTime = DateTime.Now;
+                dictType.UpdateBy = "Hbt365";
+                dictType.UpdateTime = DateTime.Now;
                 await _dictTypeRepository.CreateAsync(dictType);
                 insertCount++;
                 _logger.Info($"[创建] 销售字典类型 '{dictType.DictName}' 创建成功");
@@ -186,14 +191,14 @@ public class HbtDbSeedSalesDictType
             {
                 existingDictType.DictName = dictType.DictName;
                 existingDictType.DictType = dictType.DictType;
-                existingDictType.DictBuiltin = dictType.DictBuiltin;
+                existingDictType.IsBuiltin = dictType.IsBuiltin;
                 existingDictType.OrderNum = dictType.OrderNum;
                 existingDictType.Status = dictType.Status;
-                existingDictType.TenantId = dictType.TenantId;
+                existingDictType.TenantId = tenantId;
                 existingDictType.Remark = dictType.Remark;
                 existingDictType.CreateBy = dictType.CreateBy;
                 existingDictType.CreateTime = dictType.CreateTime;
-                existingDictType.UpdateBy = "system";
+                existingDictType.UpdateBy = "Hbt365";
                 existingDictType.UpdateTime = DateTime.Now;
 
                 await _dictTypeRepository.UpdateAsync(existingDictType);

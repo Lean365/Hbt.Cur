@@ -14,7 +14,7 @@ import type { HbtBaseEntity, HbtPagedQuery, HbtPagedResult } from '@/types/commo
  */
 export interface HbtLanguage extends HbtBaseEntity {
   /** 语言ID */
-  langId: number
+  languageId: number
   /** 语言代码 */
   langCode: string
   /** 语言名称 */
@@ -23,8 +23,14 @@ export interface HbtLanguage extends HbtBaseEntity {
   langIcon?: string
   /** 排序号 */
   orderNum: number
+  /** 系统内置(0=否,1=是) */
+  isBuiltin: number
+  /** 是否默认 */
+  isDefault: number
   /** 状态(0=禁用,1=启用) */
   status: number
+  /** 租户ID */
+  tenantId: number
 }
 
 /**
@@ -35,6 +41,10 @@ export interface HbtLanguageQuery extends HbtPagedQuery {
   langCode?: string
   /** 语言名称 */
   langName?: string
+  /** 系统内置(0=否,1=是) */
+  isBuiltin?: number
+  /** 是否默认 */
+  isDefault?: number
   /** 状态(0=禁用,1=启用) */
   status?: number
   /** 开始时间 */
@@ -55,6 +65,10 @@ export interface HbtLanguageCreate {
   langIcon?: string
   /** 排序号 */
   orderNum: number
+  /** 系统内置(0=否,1=是) */
+  isBuiltin: number
+  /** 是否默认 */
+  isDefault: number
   /** 状态(0=禁用,1=启用) */
   status: number
   /** 备注 */
@@ -66,7 +80,7 @@ export interface HbtLanguageCreate {
  */
 export interface HbtLanguageUpdate extends HbtLanguageCreate {
   /** 语言ID */
-  langId: number
+  languageId: number
 }
 
 /**

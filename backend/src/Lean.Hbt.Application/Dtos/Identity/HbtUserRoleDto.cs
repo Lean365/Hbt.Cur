@@ -8,6 +8,7 @@
 //===================================================================
 
 using System;
+using System.Collections.Generic;
 
 namespace Lean.Hbt.Application.Dtos.Identity
 {
@@ -75,5 +76,20 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// 租户名称（导航属性）
         /// </summary>
         public string? TenantName { get; set; }
+
+        /// <summary>
+        /// 角色ID集合（用于批量操作）
+        /// </summary>
+        public long[] RoleIds { get; set; } = Array.Empty<long>();
+
+        /// <summary>
+        /// 已分配角色列表
+        /// </summary>
+        public List<HbtRoleDto> AssignedRoles { get; set; } = new();
+
+        /// <summary>
+        /// 可选角色列表
+        /// </summary>
+        public List<HbtRoleDto> OptionalRoles { get; set; } = new();
     }
 } 

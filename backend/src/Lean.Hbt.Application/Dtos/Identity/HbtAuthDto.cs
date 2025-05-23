@@ -11,7 +11,6 @@
 
 using System.ComponentModel.DataAnnotations;
 using Lean.Hbt.Common.Enums;
-using Lean.Hbt.Common.Models;
 
 namespace Lean.Hbt.Application.Dtos.Identity;
 
@@ -79,6 +78,11 @@ public class HbtAuthDto
     /// 设备信息
     /// </summary>
     public HbtSignalRDevice? DeviceInfo { get; set; }
+
+    /// <summary>
+    /// 环境信息
+    /// </summary>
+    public HbtSignalREnvironment? EnvironmentInfo { get; set; }
 }
 
 /// <summary>
@@ -162,7 +166,7 @@ public class HbtUserInfoDto
     /// <summary>
     /// 英文名称
     /// </summary>
-    public string EnglishName{get;set;}
+    public string EnglishName { get; set; }
 
     /// <summary>
     /// 用户类型

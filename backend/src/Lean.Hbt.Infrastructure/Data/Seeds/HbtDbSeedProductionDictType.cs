@@ -34,7 +34,7 @@ public class HbtDbSeedProductionDictType
     /// <summary>
     /// 初始化生产相关字典类型数据
     /// </summary>
-    public async Task<(int, int)> InitializeProductionDictTypeAsync()
+    public async Task<(int, int)> InitializeProductionDictTypeAsync(long tenantId)
     {
         int insertCount = 0;
         int updateCount = 0;
@@ -47,11 +47,11 @@ public class HbtDbSeedProductionDictType
                 DictType = "prod_order_type",
                 OrderNum = 1,
                 Status = 0,
-                TenantId = 0,
+                
                 Remark = "生产订单类型字典",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictType
@@ -60,11 +60,11 @@ public class HbtDbSeedProductionDictType
                 DictType = "prod_status",
                 OrderNum = 2,
                 Status = 0,
-                TenantId = 0,
+                
                 Remark = "生产状态字典",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictType
@@ -73,11 +73,11 @@ public class HbtDbSeedProductionDictType
                 DictType = "prod_process_type",
                 OrderNum = 3,
                 Status = 0,
-                TenantId = 0,
+                
                 Remark = "生产工序类型字典",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictType
@@ -86,11 +86,11 @@ public class HbtDbSeedProductionDictType
                 DictType = "prod_resource_type",
                 OrderNum = 4,
                 Status = 0,
-                TenantId = 0,
+                
                 Remark = "生产资源类型字典",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictType
@@ -99,11 +99,11 @@ public class HbtDbSeedProductionDictType
                 DictType = "prod_plan_type",
                 OrderNum = 5,
                 Status = 0,
-                TenantId = 0,
+                
                 Remark = "生产计划类型字典",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictType
@@ -112,11 +112,11 @@ public class HbtDbSeedProductionDictType
                 DictType = "prod_exception_type",
                 OrderNum = 6,
                 Status = 0,
-                TenantId = 0,
+                
                 Remark = "生产异常类型字典",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictType
@@ -125,11 +125,11 @@ public class HbtDbSeedProductionDictType
                 DictType = "prod_work_order_priority",
                 OrderNum = 7,
                 Status = 0,
-                TenantId = 0,
+                
                 Remark = "生产工单优先级字典",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictType
@@ -138,11 +138,11 @@ public class HbtDbSeedProductionDictType
                 DictType = "prod_quality_level",
                 OrderNum = 8,
                 Status = 0,
-                TenantId = 0,
+                
                 Remark = "生产质量等级字典",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             }
         };
@@ -152,11 +152,17 @@ public class HbtDbSeedProductionDictType
             var existingDictType = await _dictTypeRepository.GetFirstAsync(x => x.DictType == dictType.DictType);
             if (existingDictType == null)
             {
+                dictType.TenantId = tenantId;
+                dictType.CreateBy = "Hbt365";
+                dictType.CreateTime = DateTime.Now;
+                dictType.UpdateBy = "Hbt365";
+                dictType.UpdateTime = DateTime.Now;
                 await _dictTypeRepository.CreateAsync(dictType);
                 insertCount++;
             }
             else
             {
+                dictType.TenantId = tenantId;
                 existingDictType.DictName = dictType.DictName;
                 existingDictType.OrderNum = dictType.OrderNum;
                 existingDictType.Status = dictType.Status;

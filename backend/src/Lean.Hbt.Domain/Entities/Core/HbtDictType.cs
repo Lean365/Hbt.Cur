@@ -8,8 +8,6 @@
 // 版本号 : V0.0.1
 // 描述   : 字典类型实体
 //===================================================================
-using SqlSugar;
-
 namespace Lean.Hbt.Domain.Entities.Core
 {
     /// <summary>
@@ -34,14 +32,14 @@ namespace Lean.Hbt.Domain.Entities.Core
         /// <summary>
         /// 字典类别（0系统 1SQL）
         /// </summary>
-        [SugarColumn(ColumnName = "dict_category", ColumnDescription = "字典类别（0系统 1SQL）", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
+        [SugarColumn(ColumnName = "dict_category", ColumnDescription = "字典类别", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
         public int DictCategory { get; set; } = 0;
 
         /// <summary>
-        /// 字典内置（0否 1是）
+        /// 字典内置（0是 1否）
         /// </summary>
-        [SugarColumn(ColumnName = "dict_builtin", ColumnDescription = "字典内置（0否 1是）", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
-        public int DictBuiltin { get; set; } = 0;
+        [SugarColumn(ColumnName = "is_builtin", ColumnDescription = "内置", ColumnDataType = "int", IsNullable = false, DefaultValue = "1")]
+        public int IsBuiltin { get; set; } = 1;
 
         /// <summary>
         /// SQL脚本
@@ -58,13 +56,13 @@ namespace Lean.Hbt.Domain.Entities.Core
         /// <summary>
         /// 状态（0正常 1停用）
         /// </summary>
-        [SugarColumn(ColumnName = "status", ColumnDescription = "状态（0正常 1停用）", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
+        [SugarColumn(ColumnName = "status", ColumnDescription = "状态", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
         public int Status { get; set; } = 0;
 
         /// <summary>
         /// 租户ID
         /// </summary>
         [SugarColumn(ColumnName = "tenant_id", ColumnDescription = "租户ID", ColumnDataType = "bigint", IsNullable = false)]
-       public long TenantId { get; set; }
+        public long TenantId { get; set; }
     }
 }

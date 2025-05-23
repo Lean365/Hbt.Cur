@@ -10,7 +10,7 @@
 <template>
   <hbt-modal
     :title="title"
-    :open="visible"
+    :open="open"
     :confirm-loading="loading"
     @ok="handleSubmit"
     @cancel="handleCancel"
@@ -20,42 +20,45 @@
       :model="formData"
       :rules="rules"
       :label-col="{ span: 6 }"
-      :wrapper-col="{ span: 16 }"
+      :wrapper-col="{ span: 18 }"
       class="language-form"
     >
-      <a-form-item :label="t('admin.language.langCode')" name="langCode">
-        <a-input
-          v-model:value="formData.langCode"
-          :placeholder="t('admin.language.langCodePlaceholder')"
+      <a-form-item :label="t('core.language.fields.langCode.label')" name="langCode">
+        <hbt-flag-icon
+          v-model="formData.langCode"
+          :placeholder="t('core.language.fields.langCode.placeholder')"
           :disabled="!!languageId"
+          @change="handleLangCodeChange"
         />
       </a-form-item>
 
-      <a-form-item :label="t('admin.language.langName')" name="langName">
+      <a-form-item :label="t('core.language.fields.langName.label')" name="langName">
         <a-input
           v-model:value="formData.langName"
-          :placeholder="t('admin.language.langNamePlaceholder')"
+          :placeholder="t('core.language.fields.langName.placeholder')"
+          disabled
         />
       </a-form-item>
 
-      <a-form-item :label="t('admin.language.langIcon')" name="langIcon">
+      <a-form-item :label="t('core.language.fields.langIcon.label')" name="langIcon">
         <a-input
           v-model:value="formData.langIcon"
-          :placeholder="t('admin.language.langIconPlaceholder')"
+          :placeholder="t('core.language.fields.langIcon.placeholder')"
+          disabled
         />
       </a-form-item>
 
-      <a-form-item :label="t('admin.language.orderNum')" name="orderNum">
+      <a-form-item :label="t('core.language.fields.orderNum.label')" name="orderNum">
         <a-input-number
           v-model:value="formData.orderNum"
           :min="0"
           :max="999"
-          :placeholder="t('admin.language.orderNumPlaceholder')"
+          :placeholder="t('core.language.fields.orderNum.placeholder')"
           style="width: 100%"
         />
       </a-form-item>
 
-      <a-form-item :label="t('admin.language.isDefault')" name="isDefault">
+      <a-form-item :label="t('core.language.fields.isDefault.label')" name="isDefault">
         <a-switch
           v-model:checked="formData.isDefault"
           :checked-value="1"
@@ -63,18 +66,27 @@
         />
       </a-form-item>
 
-      <a-form-item :label="t('admin.language.status')" name="status">
-        <a-radio-group v-model:value="formData.status">
-          <a-radio :value="0">{{ t('common.status.normal') }}</a-radio>
-          <a-radio :value="1">{{ t('common.status.disable') }}</a-radio>
-        </a-radio-group>
+      <a-form-item :label="t('core.language.fields.isBuiltin.label')" name="isBuiltin">
+        <a-switch
+          v-model:checked="formData.isBuiltin"
+          :checked-value="1"
+          :unchecked-value="0"
+        />
       </a-form-item>
 
-      <a-form-item :label="t('admin.language.remark')" name="remark">
+      <a-form-item :label="t('core.language.fields.status.label')" name="status">
+        <a-switch
+          v-model:checked="formData.status"
+          :checked-value="0"
+          :unchecked-value="1"
+        />
+      </a-form-item>
+
+      <a-form-item :label="t('core.language.fields.remark.label')" name="remark">
         <a-textarea
           v-model:value="formData.remark"
           :rows="3"
-          :placeholder="t('admin.language.remarkPlaceholder')"
+          :placeholder="t('core.language.fields.remark.placeholder')"
         />
       </a-form-item>
     </a-form>
@@ -89,9 +101,18 @@ import type { FormInstance } from 'ant-design-vue'
 import type { Rule } from 'ant-design-vue/es/form'
 import type { HbtLanguage } from '@/types/core/language'
 import { getHbtLanguage, createHbtLanguage, updateHbtLanguage } from '@/api/core/language'
+import countries from 'i18n-iso-countries'
+import zh from 'i18n-iso-countries/langs/zh.json'
+import en from 'i18n-iso-countries/langs/en.json'
+import type { SelectValue, DefaultOptionType } from 'ant-design-vue/es/select'
+import HbtFlagIcon from '@/components/Base/HbtFlagIcon/index.vue'
+
+// 注册语言
+countries.registerLocale(zh)
+countries.registerLocale(en)
 
 const props = defineProps<{
-  visible: boolean
+  open: boolean
   title: string
   languageId?: number
 }>()
@@ -101,11 +122,14 @@ const emit = defineEmits<{
   (e: 'success'): void
 }>()
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 
 // === 状态定义 ===
 const loading = ref(false)
 const formRef = ref<FormInstance>()
+
+// 获取所有国家的ISO代码
+const countryCodes = countries.getAlpha2Codes()
 
 // === 表单数据 ===
 const formData = reactive<HbtLanguage>({
@@ -115,8 +139,9 @@ const formData = reactive<HbtLanguage>({
   langIcon: '',
   orderNum: 0,
   isDefault: 0,
+  isBuiltin: 0,
   status: 0,
-  id: 0,
+  tenantId: 0,
   createBy: '',
   createTime: '',
   isDeleted: 0,
@@ -128,22 +153,33 @@ const formData = reactive<HbtLanguage>({
 // === 表单校验规则 ===
 const rules: Record<string, Rule[]> = {
   langCode: [
-    { required: true, type: 'string', message: t('admin.language.langCodeRequired'), trigger: 'blur' },
-    { type: 'string', min: 2, max: 10, message: t('admin.language.langCodeLength'), trigger: 'blur' }
+    { required: true, type: 'string', message: t('core.language.fields.langCode.validation.required'), trigger: 'blur' },
+    { type: 'string', min: 2, max: 10, message: t('core.language.fields.langCode.validation.length'), trigger: 'blur' }
   ],
   langName: [
-    { required: true, type: 'string', message: t('admin.language.langNameRequired'), trigger: 'blur' },
-    { type: 'string', min: 2, max: 50, message: t('admin.language.langNameLength'), trigger: 'blur' }
+    { required: true, type: 'string', message: t('core.language.fields.langName.validation.required'), trigger: 'blur' },
+    { type: 'string', min: 2, max: 50, message: t('core.language.fields.langName.validation.length'), trigger: 'blur' }
   ],
   langIcon: [
-    { required: true, type: 'string', message: t('admin.language.langIconRequired'), trigger: 'blur' }
+    { required: true, type: 'string', message: t('core.language.fields.langIcon.validation.required'), trigger: 'blur' }
   ],
   orderNum: [
-    { required: true, type: 'number', message: t('admin.language.orderNumRequired'), trigger: 'blur' }
+    { required: true, type: 'number', message: t('core.language.fields.orderNum.validation.required'), trigger: 'blur' }
   ],
   status: [
-    { required: true, message: t('admin.language.statusRequired'), trigger: 'change' }
+    { required: true, message: t('core.language.fields.status.validation.required'), trigger: 'change' }
   ]
+}
+
+// 处理语言代码变化
+const handleLangCodeChange = (value: { code: string; name: string }) => {
+  if (value) {
+    formData.langName = value.name
+    formData.langIcon = `fi-${value.code.toLowerCase()}`
+  } else {
+    formData.langName = ''
+    formData.langIcon = ''
+  }
 }
 
 // === 方法定义 ===
@@ -152,10 +188,10 @@ const getLanguageDetail = async (id: number) => {
   try {
     loading.value = true
     const res = await getHbtLanguage(id)
-    if (res.code === 200) {
-      Object.assign(formData, res.data)
+    if (res.data.code === 200) {
+      Object.assign(formData, res.data.data)
     } else {
-      message.error(res.msg || t('common.failed'))
+      message.error(res.data.msg || t('common.failed'))
     }
   } catch (error) {
     console.error('获取语言详情失败:', error)
@@ -173,11 +209,11 @@ const handleSubmit = async () => {
     loading.value = true
     const api = props.languageId ? updateHbtLanguage : createHbtLanguage
     const res = await api(formData)
-    if (res.code === 200) {
+    if (res.data.code === 200) {
       message.success(t('common.message.saveSuccess'))
       emit('success')
     } else {
-      message.error(res.msg || t('common.message.saveFailed'))
+      message.error(res.data.msg || t('common.message.saveFailed'))
     }
   } catch (error) {
     console.error('保存失败:', error)
@@ -194,7 +230,7 @@ const handleCancel = () => {
 
 // === 监听器 ===
 watch(
-  () => props.visible,
+  () => props.open,
   (val) => {
     if (val && props.languageId) {
       getLanguageDetail(props.languageId)
@@ -207,8 +243,9 @@ watch(
         langIcon: '',
         orderNum: 0,
         isDefault: 0,
+        isBuiltin: 0,
         status: 0,
-        id: 0,
+        tenantId: 0,
         createBy: '',
         createTime: '',
         isDeleted: 0,
@@ -224,5 +261,23 @@ watch(
 <style lang="less" scoped>
 .language-form {
   padding: 24px;
+
+  :deep(.ant-form-item) {
+    margin-bottom: 24px;
+
+    .ant-form-item-label {
+      text-align: right;
+      padding-right: 8px;
+    }
+
+    .ant-form-item-control {
+      .ant-input,
+      .ant-input-number,
+      .ant-select,
+      .ant-textarea {
+        width: 100%;
+      }
+    }
+  }
 }
 </style> 

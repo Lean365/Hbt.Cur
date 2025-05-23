@@ -1,21 +1,22 @@
 import request from '@/utils/request'
 import type { HbtApiResponse, HbtPagedResult } from '@/types/common'
 import type { 
-  PostQuery, 
-  Post,
-  PostCreate,
-  PostUpdate,
-  PostStatus
+  HbtPostQuery, 
+  HbtPost,
+  HbtPostCreate,
+  HbtPostUpdate,
+  HbtPostStatus
 } from '@/types/identity/post'
+import type { HbtUser } from '@/types/identity/user'
 
 /**
  * 获取岗位分页列表
  */
-export function getPagedList(params: PostQuery) {
-  return request<HbtApiResponse<HbtPagedResult<Post>>>({
+export function getPostList(query: HbtPostQuery) {
+  return request<HbtApiResponse<HbtPagedResult<HbtPost>>>({
     url: '/api/HbtPost/list',
     method: 'get',
-    params
+    params: query
   })
 }
 
@@ -23,7 +24,7 @@ export function getPagedList(params: PostQuery) {
  * 获取岗位详情
  */
 export function getPost(postId: number) {
-  return request<HbtApiResponse<Post>>({
+  return request<HbtApiResponse<HbtPost>>({
     url: `/api/HbtPost/${postId}`,
     method: 'get'
   })
@@ -32,8 +33,8 @@ export function getPost(postId: number) {
 /**
  * 创建岗位
  */
-export function createPost(data: PostCreate) {
-  return request<HbtApiResponse<number>>({
+export function createPost(data: HbtPostCreate) {
+  return request({
     url: '/api/HbtPost',
     method: 'post',
     data
@@ -43,8 +44,8 @@ export function createPost(data: PostCreate) {
 /**
  * 更新岗位
  */
-export function updatePost(data: PostUpdate) {
-  return request<HbtApiResponse<boolean>>({
+export function updatePost(data: HbtPost) {
+  return request({
     url: '/api/HbtPost',
     method: 'put',
     data
@@ -54,9 +55,9 @@ export function updatePost(data: PostUpdate) {
 /**
  * 删除岗位
  */
-export function deletePost(postId: number) {
-  return request<HbtApiResponse<boolean>>({
-    url: `/api/HbtPost/${postId}`,
+export function deletePost(id: number) {
+  return request({
+    url: `/api/HbtPost/${id}`,
     method: 'delete'
   })
 }
@@ -64,18 +65,18 @@ export function deletePost(postId: number) {
 /**
  * 批量删除岗位
  */
-export function batchDeletePost(postIds: number[]) {
-  return request<HbtApiResponse<boolean>>({
+export function batchDeletePost(ids: number[]) {
+  return request({
     url: '/api/HbtPost/batch',
     method: 'delete',
-    data: postIds
+    data: ids
   })
 }
 
 /**
  * 更新岗位状态
  */
-export function updatePostStatus(data: PostStatus) {
+export function updatePostStatus(data: HbtPostStatus) {
   return request<HbtApiResponse<boolean>>({
     url: `/api/HbtPost/${data.postId}/status`,
     method: 'put',
@@ -86,11 +87,11 @@ export function updatePostStatus(data: PostStatus) {
 /**
  * 导出岗位数据
  */
-export function exportPost(params?: PostQuery) {
+export function exportPost(query: HbtPostQuery) {
   return request({
     url: '/api/HbtPost/export',
     method: 'get',
-    params,
+    params: query,
     responseType: 'blob'
   })
 }
@@ -135,9 +136,41 @@ export function getPostOptions() {
 /**
  * 获取岗位列表
  */
-export function getPostList() {
-  return request<HbtApiResponse<HbtPostDto[]>>({
+export function getPostAllList() {
+  return request<HbtApiResponse<HbtPost[]>>({
     url: '/api/HbtPost/list',
     method: 'get'
+  })
+}
+
+/**
+ * 获取岗位用户列表
+ */
+export function getPostUsers(postId: number) {
+  return request({
+    url: `/api/HbtPost/${postId}/users`,
+    method: 'get'
+  })
+}
+
+/**
+ * 分配岗位用户
+ */
+export function assignPostUsers(postId: number, userIds: number[]) {
+  return request({
+    url: `/api/HbtPost/${postId}/users`,
+    method: 'post',
+    data: userIds
+  })
+}
+
+/**
+ * 移除岗位用户
+ */
+export function removePostUsers(postId: number, userIds: number[]) {
+  return request({
+    url: `/api/HbtPost/${postId}/users`,
+    method: 'delete',
+    data: userIds
   })
 }

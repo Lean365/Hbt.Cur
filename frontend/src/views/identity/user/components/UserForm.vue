@@ -6,6 +6,7 @@
     :width="800"
     @update:open="handleVisibleChange"
     @ok="handleSubmit"
+    @cancel="handleCancel"
   >
     <a-tabs>
       <a-tab-pane :key="'basic'" :tab="t('common.tab.basic')">
@@ -19,7 +20,7 @@
           <a-row :gutter="16">
             <a-col :span="12">
               <a-form-item :label="t('identity.user.fields.tenantId.label')" name="tenantId">
-                <template v-if="!userId">
+                <template v-if="!props.userId">
                   <hbt-select
                     v-model:value="form.tenantId"
                     :options="tenantOptions"
@@ -41,13 +42,15 @@
                 <a-input
                   v-model:value="form.userName"
                   :placeholder="t('identity.user.fields.userName.placeholder')"
-                  :disabled="!!userId"
+                  :disabled="!!props.userId"
+                  show-count
+                  :maxlength="50"
                 />
               </a-form-item>
             </a-col>
           </a-row>
 
-          <a-row :gutter="16" v-if="!userId">
+          <a-row :gutter="16" v-if="!id">
             <a-col :span="12">
               <a-form-item :label="t('identity.user.fields.password.label')" name="password" :rules="!!props.userId ? [] : rules.password">
                 <a-input-password
@@ -65,6 +68,30 @@
                 <a-input
                   v-model:value="form.nickName"
                   :placeholder="t('identity.user.fields.nickName.placeholder')"
+                  show-count
+                  :maxlength="100"
+                />
+              </a-form-item>
+            </a-col>
+            <a-col :span="12">
+              <a-form-item :label="t('identity.user.fields.realName.label')" name="realName">
+                <a-input
+                  v-model:value="form.realName"
+                  :placeholder="t('identity.user.fields.realName.placeholder')"
+                  show-count
+                  :maxlength="100"
+                />
+              </a-form-item>
+            </a-col>
+          </a-row>
+          <a-row :gutter="16">
+            <a-col :span="12">
+              <a-form-item :label="t('identity.user.fields.fullName.label')" name="fullName">
+                <a-input
+                  v-model:value="form.fullName"
+                  :placeholder="t('identity.user.fields.fullName.placeholder')"
+                  show-count
+                  :maxlength="100"
                 />
               </a-form-item>
             </a-col>
@@ -73,11 +100,12 @@
                 <a-input
                   v-model:value="form.englishName"
                   :placeholder="t('identity.user.fields.englishName.placeholder')"
+                  show-count
+                  :maxlength="100"
                 />
               </a-form-item>
             </a-col>
           </a-row>
-
           <a-row :gutter="16">
             <a-col :span="12">
               <a-form-item :label="t('identity.user.fields.userType.label')" name="userType">
@@ -95,6 +123,8 @@
                 <a-input
                   v-model:value="form.email"
                   :placeholder="t('identity.user.fields.email.placeholder')"
+                  show-count
+                  :maxlength="100"
                 />
               </a-form-item>
             </a-col>
@@ -106,6 +136,8 @@
                 <a-input
                   v-model:value="form.phoneNumber"
                   :placeholder="t('identity.user.fields.phoneNumber.placeholder')"
+                  show-count
+                  :maxlength="20"
                 />
               </a-form-item>
             </a-col>
@@ -227,7 +259,7 @@ import { message } from 'ant-design-vue'
 import type { FormInstance, Rule } from 'ant-design-vue/es/form'
 import { PlusOutlined } from '@ant-design/icons-vue'
 import { useDictStore } from '@/stores/dict'
-import type { UserForm, UserCreate, UserUpdate } from '@/types/identity/user'
+import type { HbtUser, HbtUserForm, HbtUserCreate, HbtUserUpdate } from '@/types/identity/user'
 import { getUser, createUser, updateUser } from '@/api/identity/user'
 import { getRoleOptions } from '@/api/identity/role'
 import { getPostOptions } from '@/api/identity/post'
@@ -237,6 +269,7 @@ import { getSalt } from '@/api/identity/auth'
 
 import { PasswordEncryptor } from '@/utils/crypto'
 import { RegexUtils } from '@/utils/regex'
+import { id } from 'date-fns/locale'
 
 
 const props = defineProps<{
@@ -257,11 +290,12 @@ const dictStore = useDictStore()
 const formRef = ref<FormInstance>()
 
 // 表单数据
-const form = reactive<UserForm>({
-  userId: undefined,
+const form = reactive<HbtUserForm>({  
   tenantId: 0,  // 类型要求必须是 number，所以保持为 0
   userName: '',
   nickName: '',
+  realName: '',
+  fullName: '',
   englishName: '',
   userType: 0,
   password: 'Hbt@123852',  // 设置默认密码为Hbt@123852
@@ -295,12 +329,12 @@ const rules: Record<string, Rule[]> = {
   ],
   userName: [
     { required: true, message: t('identity.user.fields.userName.validation.required') },
-    { 
+    {
       validator: (_, value) => {
-        if (value && !RegexUtils.isValidUsername(value)) {
-          return Promise.reject(t('identity.user.fields.userName.validation.format'))
+        if (value &&!RegexUtils.isValidUsername(value)) {
+          return Promise.reject(t('identity.user.fields.userName.validation.format'));
         }
-        return Promise.resolve()
+        return Promise.resolve();
       }
     }
   ],
@@ -309,31 +343,54 @@ const rules: Record<string, Rule[]> = {
       validator: (_, value) => {
         if (!props.userId) {
           if (!value || value.length < 6 || value.length > 20) {
-            return Promise.reject('密码长度必须在6-20个字符之间')
+            return Promise.reject(t('identity.user.fields.password.validation.format'));
           }
         }
-        return Promise.resolve()
+        return Promise.resolve();
       }
     }
   ],
   nickName: [
     { required: true, message: t('identity.user.fields.nickName.validation.required') },
-    { 
+    {
       validator: (_, value) => {
-        if (value && !RegexUtils.isValidNickname(value)) {
-          return Promise.reject(t('identity.user.fields.nickName.validation.format'))
+        if (value &&!RegexUtils.isValidNickname(value)) {
+          return Promise.reject(t('identity.user.fields.nickName.validation.format'));
         }
-        return Promise.resolve()
+        return Promise.resolve();
       }
     }
   ],
   englishName: [
-    { 
+    { required: true, message: t('identity.user.fields.englishName.validation.required') },
+    {
       validator: (_, value) => {
         if (value && !RegexUtils.isValidEnglishName(value)) {
-          return Promise.reject(t('identity.user.fields.englishName.validation.format'))
+          return Promise.reject(t('identity.user.fields.englishName.validation.format'));
         }
-        return Promise.resolve()
+        return Promise.resolve();
+      }
+    }
+  ],
+  fullName: [
+    { required: true, message: t('identity.user.fields.fullName.validation.required') },
+    {
+      validator: (_, value) => {
+        if (value && !RegexUtils.isValidFullName(value)) {
+          return Promise.reject(t('identity.user.fields.fullName.validation.format'));
+        }
+        return Promise.resolve();
+      }
+    }
+  ],
+  realName: [
+    { required: true, message: t('identity.user.fields.realName.validation.required') },
+    {
+      validator: (_, value) => {
+        if (value && !RegexUtils.isValidRealName(value)) {
+          return Promise.reject(t('identity.user.fields.realName.validation.format'));
+        }
+        return Promise.resolve();
       }
     }
   ],
@@ -353,9 +410,10 @@ const rules: Record<string, Rule[]> = {
   ],
   phoneNumber: [
     { required: true, message: t('identity.user.fields.phoneNumber.validation.required') },
-    { 
+    {
       validator: (_, value) => {
-        if (value && !RegexUtils.isValidTelephone(value)) {
+        console.log('phone校验', value, RegexUtils.PHONE.test(value))
+        if (value && !RegexUtils.PHONE.test(value)) {
           return Promise.reject(t('identity.user.fields.phoneNumber.validation.invalid'))
         }
         return Promise.resolve()
@@ -384,6 +442,7 @@ const loading = ref(false)
 
 // 获取用户信息
 const getInfo = async (userId: number) => {
+  console.log('userId:', userId)
   try {
     const res = await getUser(userId)
     if (res.data.code === 200) {
@@ -440,9 +499,15 @@ const handleSubmit = () => {
       let res
       if (props.userId) {
         // 更新用户时，只发送必要的字段
-        const updateData: UserUpdate = {
+        const updateData: HbtUserUpdate = {
           userId: props.userId,
+          tenantId: form.tenantId,
+          userName: form.userName,
           nickName: form.nickName,
+          userType: form.userType,
+          password: form.password??'',
+          realName: form.realName,
+          fullName: form.fullName,
           englishName: form.englishName,
           email: form.email,
           phoneNumber: form.phoneNumber,
@@ -495,7 +560,7 @@ const handleSubmit = () => {
         }
       } else {
         // 创建用户时，直接传明文密码，不加密
-        const createData = { ...form } as UserCreate
+        const createData = { ...form } as HbtUserCreate
         console.log('创建用户数据:', createData)
         try {
           res = await createUser(createData)
@@ -522,13 +587,60 @@ const handleSubmit = () => {
   })
 }
 
-// 处理对话框显示状态变化
+// 重置表单
+const resetForm = () => {  
+  form.tenantId = 0
+  form.userName = ''
+  form.nickName = ''
+  form.realName = ''
+  form.fullName = ''
+  form.englishName = ''
+  form.userType = 0
+  form.email = ''
+  form.phoneNumber = ''
+  form.gender = 0
+  form.avatar = ''
+  form.status = 0
+  form.remark = ''
+  form.roleIds = []
+  form.postIds = []
+  form.deptIds = []
+  formRef.value?.resetFields()
+}
+
+// 处理弹窗显示状态变化
 const handleVisibleChange = (val: boolean) => {
   emit('update:visible', val)
   if (!val) {
-    formRef.value?.resetFields()
+    resetForm()
   }
 }
+
+// 处理取消
+const handleCancel = () => {
+  emit('update:visible', false)
+  resetForm()
+}
+
+// 监听userName变化，自动赋值englishName（仅为空时）
+watch(
+  () => form.userName,
+  (val) => {
+    if (!props.userId && !form.englishName) {
+      form.englishName = val
+    }
+  }
+)
+// 监听nickName变化，自动赋值realName、fullName（仅为空时）
+watch(
+  () => form.nickName,
+  (val) => {
+    if (!props.userId) {
+      if (!form.realName) form.realName = val
+      if (!form.fullName) form.fullName = val
+    }
+  }
+)
 
 // 监听用户ID变化
 watch(
@@ -538,6 +650,12 @@ watch(
       getInfo(val)
     } else {
       formRef.value?.resetFields()
+      // 新建时同步赋值
+      if (form.nickName) {
+        form.realName = form.nickName
+        form.fullName = form.nickName
+        form.englishName = form.nickName
+      }
     }
   }
 )

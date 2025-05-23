@@ -7,7 +7,6 @@
 // 描述    : 实体基类
 //===================================================================
 
-using SqlSugar;
 
 namespace Lean.Hbt.Domain.Entities
 {
@@ -19,7 +18,7 @@ namespace Lean.Hbt.Domain.Entities
         /// <summary>
         /// 主键
         /// </summary>
-        [SugarColumn(IsPrimaryKey = true, IsIdentity = true)]
+        [SugarColumn(IsPrimaryKey = true, IsIdentity = true, ColumnName = "id", ColumnDescription = "主键", ColumnDataType = "bigint", IsNullable = false)]
         public long Id { get; set; }
 
         /// <summary>

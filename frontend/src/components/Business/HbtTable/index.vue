@@ -121,7 +121,7 @@ const rowSelectionConfig = computed(() => {
   if (!props.rowSelection) return undefined
   
   const baseConfig = props.rowSelection
-  return {
+  const config = {
     ...baseConfig,
     selectedRowKeys: props.selectedRowKeys,
     onChange: (selectedKeys: (string | number)[], selectedRows: any[]) => {
@@ -129,6 +129,8 @@ const rowSelectionConfig = computed(() => {
       baseConfig.onChange?.(selectedKeys, selectedRows)
     }
   }
+  console.log('【HbtTable】rowSelectionConfig:', config)
+  return config
 })
 
 // 分页配置 - 处理分页器的显示和功能

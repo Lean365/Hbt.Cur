@@ -11,10 +11,10 @@ type Locale = typeof locales[number]
 // 模块列表 - 严格按照目录结构顺序
 const modules = [
   // admin
-  'admin/configs',
-  'admin/dicttype',
-  'admin/language',
-  'admin/translation',
+  'core/configs',
+  'core/dict',
+  'core/language',
+  'core/translation',
   
   // components
   'components/footer',
@@ -26,6 +26,7 @@ const modules = [
   'components/pagination',
   'components/query',
   'components/table',
+  'components/table/column-settings',
   'components/theme',
   'components/setting',
   'components/notification',
@@ -105,7 +106,7 @@ function deepMerge(target: any, source: any): any {
 
 // 使用 Vite 的 import.meta.glob 动态导入所有翻译文件
 const translationModules = import.meta.glob([
-  './admin/**/*.ts',
+  './core/**/*.ts',
   './components/**/*.ts',
   './common/**/*.ts',
   './dashboard/**/*.ts',

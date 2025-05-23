@@ -1,12 +1,12 @@
 import request from '@/utils/request'
 import type { HbtApiResponse } from '@/types/common'
-import type { Dept, DeptQuery, DeptCreate, DeptUpdate } from '@/types/identity/dept'
+import type { HbtDept, HbtDeptQuery, HbtDeptCreate, HbtDeptUpdate, HbtDeptTemplate, HbtDeptImport, HbtDeptExport } from '@/types/identity/dept'
 
 /**
  * 获取部门分页列表
  */
-export function getPagedList(params: DeptQuery) {
-  return request<HbtApiResponse<Dept[]>>({
+export function getPagedList(params: HbtDeptQuery) {
+  return request<HbtApiResponse<HbtDept[]>>({
     url: '/api/HbtDept/list',
     method: 'get',
     params
@@ -17,7 +17,7 @@ export function getPagedList(params: DeptQuery) {
  * 获取部门详情
  */
 export function getDept(deptId: number) {
-  return request<HbtApiResponse<Dept>>({
+  return request<HbtApiResponse<HbtDept>>({
     url: `/api/HbtDept/${deptId}`,
     method: 'get'
   })
@@ -26,7 +26,7 @@ export function getDept(deptId: number) {
 /**
  * 创建部门
  */
-export function createDept(data: DeptCreate) {
+export function createDept(data: HbtDeptCreate) {
   return request<HbtApiResponse<number>>({
     url: '/api/HbtDept',
     method: 'post',
@@ -37,7 +37,7 @@ export function createDept(data: DeptCreate) {
 /**
  * 更新部门
  */
-export function updateDept(data: DeptUpdate) {
+export function updateDept(data: HbtDeptUpdate) {
   return request<HbtApiResponse<boolean>>({
     url: '/api/HbtDept',
     method: 'put',
@@ -58,10 +58,11 @@ export function deleteDept(deptId: number) {
 /**
  * 获取部门树形数据
  */
-export function getDeptTree() {
-  return request<HbtApiResponse<Dept[]>>({
+export function getDeptTree(params?: HbtDeptQuery) {
+  return request<HbtApiResponse<HbtDept[]>>({
     url: '/api/HbtDept/tree',
-    method: 'get'
+    method: 'get',
+    params
   })
 }
 
@@ -89,15 +90,12 @@ export function batchDeleteDept(deptIds: number[]) {
 /**
  * 导出部门数据
  */
-export function exportDept(params?: DeptQuery) {
-  return request({
+export function exportDept(params?: HbtDeptQuery) {
+  return request<Blob>({
     url: '/api/HbtDept/export',
     method: 'get',
     params,
     responseType: 'blob',
-    headers: {
-      'Accept': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-    }
   })
 }
 
@@ -120,8 +118,8 @@ export function importDept(file: File) {
 /**
  * 下载部门导入模板
  */
-export function downloadTemplate() {
-  return request({
+export function getTemplate() {
+  return request<Blob>({
     url: '/api/HbtDept/template',
     method: 'get',
     responseType: 'blob'

@@ -1,12 +1,14 @@
+import { isValidPhoneNumber, parsePhoneNumber, CountryCode } from 'libphonenumber-js'
+
 /**
  * 正则表达式工具类
  */
 export class RegexUtils {
   /**
    * 手机号码正则表达式
-   * 支持13、14、15、16、17、18、19开头的手机号
+   * 只允许+开头的国际号码（8-15位）或中国大陆手机号（1开头11位）
    */
-  static readonly PHONE = /^1[3-9]\d{9}$/
+  static readonly PHONE = /^(\+[1-9]\d{7,14}|1[3-9]\d{9})$/
 
   /**
    * 电话号码正则表达式（包含座机）
@@ -28,30 +30,38 @@ export class RegexUtils {
   /**
    * 用户名正则表达式
    * 必须以小写字母开头
-   * 长度在6-20位之间
-   * 只能包含小写字母、数字和下划线
+   * 长度在4-50位之间
+   * 只能包含小写字母、数字和连字符，不允许点和下划线
    */
-  static readonly USERNAME = /^[a-z][a-z0-9_]{4,18}[a-z0-9]$/
+  static readonly USERNAME = /^[a-z][a-z0-9-]{3,49}$/
 
   /**
    * 昵称正则表达式
-   * 2-20位字符
-   * 支持中文、英文、数字、下划线
+   * 2-50位字符，允许中文、日语、韩语、英文、数字、英文句点和连字符，不允许下划线和空格
    */
-  static readonly NICKNAME = /^[\u4e00-\u9fa5a-zA-Z0-9_]{2,20}$/
+  static readonly NICKNAME = /^[\u4e00-\u9fa5\u3040-\u30ff\uac00-\ud7afA-Za-z0-9.-]{2,50}$/
+  /**
+   * 姓名（全名）正则表达式
+   * 2-100位字符，允许中文、日语、韩语、英文、数字、英文句点和连字符，不允许下划线和空格
+   */
+  static readonly FULLNAME = /^[\u4e00-\u9fa5\u3040-\u30ff\uac00-\ud7afA-Za-z0-9.-]{2,100}$/
 
   /**
-   * 英文名称正则表达式
-   * 2-50位字符
-   * 只能包含英文字母、空格和连字符
+   * 姓名（真实姓名）正则表达式
+   * 2-100位字符，允许中文、日语、韩语、英文、数字、英文句点和连字符，不允许下划线和空格
    */
-  static readonly ENGLISH_NAME = /^[a-zA-Z\s-]{2,50}$/
+  static readonly REALNAME = /^[\u4e00-\u9fa5\u3040-\u30ff\uac00-\ud7afA-Za-z0-9.-]{2,100}$/
+  /**
+   * 英文名称正则表达式
+   * 2-100位字符，必须字母开头，允许字母、连字符、英文句点，不允许空格
+   */
+  static readonly ENGLISH_NAME = /^[A-Za-z][A-Za-z\-.]{1,99}$/
 
   /**
    * 密码正则表达式
-   * 6-20位字母、数字、特殊字符
+   * 6-20位，必须字母开头，包含大写、小写、数字、特殊字符，不允许连续重复字符
    */
-  static readonly PASSWORD = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,20}$/
+  static readonly PASSWORD = /^(?!.*([A-Za-z0-9@$!%*?&])\1)[A-Za-z](?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{5,19}$/
 
   /**
    * 身份证号码正则表达式
@@ -75,12 +85,41 @@ export class RegexUtils {
   static readonly POSTAL_CODE = /^[1-9]\d{5}$/
 
   /**
-   * 验证手机号码
-   * @param phone 手机号码
-   * @returns boolean
+   * 使用 libphonenumber-js 校验手机号（支持全球）
+   * @param phone 手机号
+   * @param country 国家码（如 'CN', 'US'，可选，建议传递）
    */
-  static isValidPhone(phone: string): boolean {
-    return this.PHONE.test(phone)
+  static isValidPhone(phone: string, country: CountryCode = 'CN'): boolean {
+    try {
+      return isValidPhoneNumber(phone, country)
+    } catch {
+      return false
+    }
+  }
+
+  /**
+   * 使用 libphonenumber-js 校验座机/固话（支持全球）
+   * @param phone 电话号码
+   * @param country 国家码（如 'CN', 'US'，可选，建议传递）
+   */
+  static isValidTelephone(phone: string, country: CountryCode = 'CN'): boolean {
+    try {
+      return isValidPhoneNumber(phone, country)
+    } catch {
+      return false
+    }
+  }
+
+  /**
+   * 获取电话号码归属国家
+   */
+  static getTelephoneCountry(phone: string): string | undefined {
+    try {
+      const pn = parsePhoneNumber(phone)
+      return pn.country
+    } catch {
+      return undefined
+    }
   }
 
   /**
@@ -165,15 +204,6 @@ export class RegexUtils {
   }
 
   /**
-   * 验证电话号码（包含座机）
-   * @param phone 电话号码
-   * @returns boolean
-   */
-  static isValidTelephone(phone: string): boolean {
-    return this.TELEPHONE.test(phone)
-  }
-
-  /**
    * 提取字符串中的数字
    * @param str 字符串
    * @returns string[]
@@ -252,5 +282,19 @@ export class RegexUtils {
    */
   static formatBankCard(cardNo: string): string {
     return cardNo.replace(/(\d{4})(?=\d)/g, '$1-')
+  }
+
+  /**
+   * 校验全名
+   */
+  static isValidFullName(fullName: string): boolean {
+    return this.FULLNAME.test(fullName)
+  }
+
+  /**
+   * 校验真实姓名
+   */
+  static isValidRealName(realName: string): boolean {
+    return this.REALNAME.test(realName)
   }
 } 

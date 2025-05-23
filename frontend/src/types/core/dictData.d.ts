@@ -39,18 +39,7 @@ export interface HbtDictData extends HbtBaseEntity {
   transKey?: string
   /** 租户ID */
   tenantId: number
-  /** 备注 */
-  remark?: string
-  /** 创建者 */
-  createBy: string
-  /** 创建时间 */
-  createTime: string
-  /** 更新者 */
-  updateBy: string
-  /** 更新时间 */
-  updateTime: string
-  /** 是否删除 */
-  isDeleted: number
+
 }
 
 /**
@@ -71,32 +60,30 @@ export interface HbtDictDataQuery extends HbtPagedQuery {
  * 字典数据创建参数
  */
 export interface HbtDictDataCreate {
-  /** 字典类型 */
-  dictType: string
-  /** 字典标签 */
-  dictLabel: string
-  /** 字典键值 */
-  dictValue: string
-  /** 排序号 */
-  orderNum: number
-  /** 样式属性 */
-  cssClass?: string
-  /** 表格回显样式 */
-  listClass?: string
-  /** 是否默认（0否 1是） */
-  isDefault: number
-  /** 状态（0正常 1停用） */
-  status: number
-  /** 扩展标签 */
-  extLabel?: string
-  /** 扩展值 */
-  extValue?: string
-  /** 翻译键 */
-  transKey?: string
-  /** 租户ID */
-  tenantId: number
-  /** 备注 */
-  remark?: string
+    /** 字典类型 */
+    dictType: string
+    /** 字典标签 */
+    dictLabel: string
+    /** 字典键值 */
+    dictValue: string
+    /** 扩展标签 */
+    extLabel?: string
+    /** 扩展值 */
+    extValue?: string
+    /** 翻译键 */
+    transKey?: string
+    /** 排序号 */
+    orderNum: number
+    /** 样式属性 */
+    cssClass?: string
+    /** 表格回显样式 */
+    listClass?: string
+    /** 状态（0正常 1停用） */
+    status: number
+    /** 租户ID */
+    tenantId: number
+    /** 备注 */
+    remark?: string
 }
 
 /**

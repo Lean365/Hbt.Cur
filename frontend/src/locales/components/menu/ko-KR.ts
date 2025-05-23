@@ -39,7 +39,7 @@ export default {
       _self: '감사 로그',
       operlog: '작업 로그',
       loginlog: '로그인 로그',
-      dbdifflog: '데이터베이스 차이 로그',
+      sqldifflog: '데이터베이스 차이 로그',
       exceptionlog: '예외 로그',
       auditlog: '감사 로그',
       quartzlog: '작업 로그'

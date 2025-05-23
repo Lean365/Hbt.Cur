@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import type { Menu } from '@/types/identity/menu'
-import { getCurrentUserMenus } from '@/api/core/menu'
+import type { HbtMenu   } from '@/types/identity/menu'
+import { getCurrentUserMenus } from '@/api/identity/menu'
 import { registerDynamicRoutes } from '@/utils/route'
 import type { HbtApiResponse } from '@/types/common'
 import { message } from 'ant-design-vue'
@@ -14,8 +14,8 @@ import { formatMenuToRoutes } from '@/utils/route'
 const { t } = i18n.global
 
 export const useMenuStore = defineStore('menu', () => {
-  const rawMenuList = ref<Menu[]>([])
-  const menuList = ref<Menu[]>([])
+  const rawMenuList = ref<HbtMenu[]>([])
+  const menuList = ref<HbtMenu[]>([])
   const isLoading = ref(false)
   const isMenuLoaded = ref(false)
 
@@ -38,7 +38,7 @@ export const useMenuStore = defineStore('menu', () => {
         return false
       }
 
-      const apiResult = response as unknown as HbtApiResponse<Menu[]>
+      const apiResult = response as unknown as HbtApiResponse<HbtMenu[]>
 
       if (apiResult.code !== 200) {
         message.error(
@@ -94,7 +94,7 @@ export const useMenuStore = defineStore('menu', () => {
       isLoading.value = true
       const response = await getCurrentUserMenus()
       if (response.status === 200) {
-        const data = response.data as HbtApiResponse<Menu[]>
+        const data = response.data as HbtApiResponse<HbtMenu[]>
         if (data.code === 200) {
           const processedMenus = data.data.map(menu => {
             const processedMenu = {

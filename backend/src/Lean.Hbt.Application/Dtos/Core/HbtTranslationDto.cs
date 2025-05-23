@@ -6,10 +6,7 @@
 // 版本号 : V0.0.1
 // 描述   : 翻译数据传输对象
 //===================================================================
-using System;
 using System.ComponentModel.DataAnnotations;
-using Lean.Hbt.Common.Models;
-using Mapster;
 
 namespace Lean.Hbt.Application.Dtos.Core
 {
@@ -22,7 +19,7 @@ namespace Lean.Hbt.Application.Dtos.Core
         /// ID
         /// </summary>
         [AdaptMember("Id")]
-        public long TransId { get; set; }
+        public long TranslationId { get; set; }
 
         /// <summary>
         /// 语言代码
@@ -60,14 +57,44 @@ namespace Lean.Hbt.Application.Dtos.Core
         public int TransBuiltin { get; set; }
 
         /// <summary>
+        /// 备注
+        /// </summary>
+        public string? Remark { get; set; }
+
+        /// <summary>
+        /// 创建者
+        /// </summary>
+        public string? CreateBy { get; set; }
+
+        /// <summary>
         /// 创建时间
         /// </summary>
         public DateTime CreateTime { get; set; }
 
         /// <summary>
-        /// 备注
+        /// 更新者
         /// </summary>
-        public string? Remark { get; set; }
+        public string? UpdateBy { get; set; }
+
+        /// <summary>
+        /// 更新时间
+        /// </summary>
+        public DateTime? UpdateTime { get; set; }
+
+        /// <summary>
+        /// 是否删除（0未删除 1已删除）
+        /// </summary>
+        public int IsDeleted { get; set; }
+
+        /// <summary>
+        /// 删除者
+        /// </summary>
+        public string? DeleteBy { get; set; }
+
+        /// <summary>
+        /// 删除时间
+        /// </summary>
+        public DateTime? DeleteTime { get; set; }
     }
 
     /// <summary>
@@ -165,7 +192,7 @@ namespace Lean.Hbt.Application.Dtos.Core
         /// ID
         /// </summary>
         [Required(ErrorMessage = "翻译ID不能为空")]
-        public long TransId { get; set; }
+        public long TranslationId { get; set; }
     }
 
     /// <summary>
@@ -275,7 +302,7 @@ namespace Lean.Hbt.Application.Dtos.Core
         /// ID
         /// </summary>
         [Required(ErrorMessage = "翻译ID不能为空")]
-        public long TransId { get; set; }
+        public long TranslationId { get; set; }
 
         /// <summary>
         /// 状态（0正常 1停用）
@@ -283,4 +310,4 @@ namespace Lean.Hbt.Application.Dtos.Core
         [Required(ErrorMessage = "状态不能为空")]
         public int Status { get; set; }
     }
-} 
+}

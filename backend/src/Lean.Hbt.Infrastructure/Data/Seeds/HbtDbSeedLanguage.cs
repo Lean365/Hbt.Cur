@@ -8,7 +8,6 @@
 //===================================================================
 
 using Lean.Hbt.Domain.Entities.Core;
-using Lean.Hbt.Domain.IServices.Extensions;
 
 namespace Lean.Hbt.Infrastructure.Data.Seeds;
 
@@ -34,7 +33,7 @@ public class HbtDbSeedLanguage
     /// <summary>
     /// 初始化语言数据
     /// </summary>
-    public async Task<(int, int)> InitializeLanguageAsync()
+    public async Task<(int, int)> InitializeLanguageAsync(long systemTenantId)
     {
         int insertCount = 0;
         int updateCount = 0;
@@ -49,12 +48,8 @@ public class HbtDbSeedLanguage
                 OrderNum = 1,
                 Status = 0,
                 IsDefault = 0,
-                LangBuiltin = 1,
-                TenantId = 0,
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now
+                IsBuiltin = 1,
+
             },
             new HbtLanguage
             {
@@ -64,12 +59,8 @@ public class HbtDbSeedLanguage
                 OrderNum = 2,
                 Status = 0,
                 IsDefault = 0,
-                LangBuiltin = 1,
-                TenantId = 0,
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now
+                IsBuiltin = 1,
+
             },
             new HbtLanguage
             {
@@ -79,12 +70,8 @@ public class HbtDbSeedLanguage
                 OrderNum = 3,
                 Status = 0,
                 IsDefault = 0,
-                LangBuiltin = 1,
-                TenantId = 0,
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now
+                IsBuiltin = 1,
+
             },
             new HbtLanguage
             {
@@ -94,12 +81,8 @@ public class HbtDbSeedLanguage
                 OrderNum = 4,
                 Status = 0,
                 IsDefault = 0,
-                LangBuiltin = 1,
-                TenantId = 0,
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now
+                IsBuiltin = 1,
+
             },
             new HbtLanguage
             {
@@ -109,12 +92,8 @@ public class HbtDbSeedLanguage
                 OrderNum = 5,
                 Status = 0,
                 IsDefault = 0,
-                LangBuiltin = 1,
-                TenantId = 0,
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now
+                IsBuiltin = 1,
+
             },
             new HbtLanguage
             {
@@ -124,12 +103,8 @@ public class HbtDbSeedLanguage
                 OrderNum = 6,
                 Status = 0,
                 IsDefault = 0,
-                LangBuiltin = 1,
-                TenantId = 0,
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now
+                IsBuiltin = 1,
+
             },
             new HbtLanguage
             {
@@ -139,12 +114,8 @@ public class HbtDbSeedLanguage
                 OrderNum = 7,
                 Status = 0,
                 IsDefault = 0,
-                LangBuiltin = 1,
-                TenantId = 0,
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now
+                IsBuiltin = 1,
+
             },
             new HbtLanguage
             {
@@ -154,12 +125,8 @@ public class HbtDbSeedLanguage
                 OrderNum = 8,
                 Status = 0,
                 IsDefault = 0,
-                LangBuiltin = 1,
-                TenantId = 0,
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now
+                IsBuiltin = 1,
+
             },
             new HbtLanguage
             {
@@ -169,12 +136,8 @@ public class HbtDbSeedLanguage
                 OrderNum = 9,
                 Status = 0,
                 IsDefault = 0,
-                LangBuiltin = 1,
-                TenantId = 0,
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now
+                IsBuiltin = 1,               
+
             }
         };
 
@@ -183,6 +146,12 @@ public class HbtDbSeedLanguage
             var existingLanguage = await _languageRepository.GetFirstAsync(l => l.LangCode == language.LangCode);
             if (existingLanguage == null)
             {
+                language.TenantId = systemTenantId;
+                language.CreateBy = "Hbt365";
+                language.CreateTime = DateTime.Now;
+                language.UpdateBy = "Hbt365";
+                language.UpdateTime = DateTime.Now;
+                
                 await _languageRepository.CreateAsync(language);
                 insertCount++;
                 _logger.Info($"[创建] 语言 '{language.LangName}' 创建成功");
@@ -191,14 +160,14 @@ public class HbtDbSeedLanguage
             {
                 existingLanguage.LangCode = language.LangCode;
                 existingLanguage.LangName = language.LangName;
-                existingLanguage.LangBuiltin = language.LangBuiltin;
+                existingLanguage.IsBuiltin = language.IsBuiltin;
                 existingLanguage.OrderNum = language.OrderNum;
                 existingLanguage.Status = language.Status;
-                existingLanguage.TenantId = language.TenantId;
+                existingLanguage.TenantId = systemTenantId;
                 existingLanguage.Remark = language.Remark;
                 existingLanguage.CreateBy = language.CreateBy;
                 existingLanguage.CreateTime = language.CreateTime;
-                existingLanguage.UpdateBy = "system";
+                existingLanguage.UpdateBy = "Hbt365";
                 existingLanguage.UpdateTime = DateTime.Now;
 
                 await _languageRepository.UpdateAsync(existingLanguage);

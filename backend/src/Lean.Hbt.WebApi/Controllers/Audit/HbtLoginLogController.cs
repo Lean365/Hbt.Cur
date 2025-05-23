@@ -77,8 +77,14 @@ namespace Lean.Hbt.WebApi.Controllers.Audit
         [HbtPerm("audit:auditloginlog:export")]
         public async Task<IActionResult> ExportAsync([FromQuery] HbtLoginLogQueryDto query, [FromQuery] string sheetName = "登录日志")
         {
-            var (_, content) = await _loginLogService.ExportAsync(query, sheetName);
-            return File(content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"登录日志_{DateTime.Now:yyyyMMddHHmmss}.xlsx");
+            var result = await _loginLogService.ExportAsync(query, sheetName);
+            var contentType = result.fileName.EndsWith(".zip", StringComparison.OrdinalIgnoreCase)
+                ? "application/zip"
+                : "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+            // 只在 filename* 用 UTF-8 编码，filename 用 ASCII
+            var safeFileName = System.Text.Encoding.ASCII.GetString(System.Text.Encoding.ASCII.GetBytes(result.fileName));
+            Response.Headers["Content-Disposition"] = $"attachment; filename*=UTF-8''{Uri.EscapeDataString(result.fileName)}";
+            return File(result.content, contentType, result.fileName);
         }
 
         /// <summary>

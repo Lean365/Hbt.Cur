@@ -157,7 +157,7 @@ import { ref, reactive, onMounted, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { message } from 'ant-design-vue'
 import type { FormInstance, RuleObject } from 'ant-design-vue/es/form'
-import type { Menu, MenuCreate } from '@/types/identity/menu'
+import type { HbtMenu, HbtMenuCreate } from '@/types/identity/menu'
 import { getMenu, createMenu, updateMenu } from '@/api/identity/menu'
 import MenuTreeSelect from '../components/MenuTreeSelect.vue'
 import { h } from 'vue'
@@ -182,9 +182,9 @@ const menuStore = useMenuStore()
 const formRef = ref<FormInstance>()
 
 // 表单数据
-const form = reactive<MenuCreate>({
+const form = reactive<HbtMenuCreate>({
   menuName: '',
-  parentId: undefined,
+  parentId: 0,
   orderNum: 0,
   path: '',
   component: '',
@@ -335,12 +335,30 @@ const getInfo = async (menuId: number) => {
   }
 }
 
+// 重置表单
+const resetForm = () => {
+  form.parentId = 0
+  form.menuName = ''
+  form.orderNum = 0
+  form.path = ''
+  form.component = ''
+  form.queryParams = ''
+  form.isExternal = 0
+  form.isCache = 0
+  form.visible = 1
+  form.status = 0
+  form.perms = ''
+  form.icon = ''
+  form.tenantId = 0
+  formRef.value?.resetFields()
+}
+
 // 处理弹窗显示状态变化
-const handleVisibleChange = (visible: boolean) => {
-  if (!visible) {
-    formRef.value?.resetFields()
+const handleVisibleChange = (val: boolean) => {
+  emit('update:visible', val)
+  if (!val) {
+    resetForm()
   }
-  emit('update:visible', visible)
 }
 
 // transKey 计算属性

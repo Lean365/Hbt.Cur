@@ -11,65 +11,12 @@
   <div class="config-container">
     <!-- 查询区域 -->
     <hbt-query
-      v-show="showSearch"
-      :model="queryParams"
+      v-model:show="showSearch"
       :query-fields="queryFields"
-      @search="handleSearch"
+      @search="handleQuery"
       @reset="handleReset"
     >
-      <template #queryForm>
-        <a-form-item :label="t('admin.config.name')">
-          <a-input
-            v-model:value="queryParams.configName"
-            :placeholder="t('admin.config.placeholder.name')"
-            allow-clear
-            @keyup.enter="handleSearch"
-          />
-        </a-form-item>
-        <a-form-item :label="t('admin.config.key')">
-          <a-input
-            v-model:value="queryParams.configKey"
-            :placeholder="t('admin.config.placeholder.key')"
-            allow-clear
-            @keyup.enter="handleSearch"
-          />
-        </a-form-item>
-        <a-form-item :label="t('admin.config.value')">
-          <a-input
-            v-model:value="queryParams.configValue"
-            :placeholder="t('admin.config.placeholder.value')"
-            allow-clear
-            @keyup.enter="handleSearch"
-          />
-        </a-form-item>
-        <a-form-item :label="t('admin.config.builtin')">
-          <hbt-select
-            v-model:value="queryParams.isBuiltin"
-            dict-type="sys_yes_no"
-            type="radio"
-            :placeholder="t('admin.config.placeholder.builtin')"
-            allow-clear
-          />
-        </a-form-item>
-        <a-form-item :label="t('admin.config.status')">
-          <hbt-select
-            v-model:value="queryParams.status"
-            dict-type="sys_normal_disable"
-            type="radio"
-            :placeholder="t('admin.config.placeholder.status')"
-            allow-clear
-          />
-        </a-form-item>
-        <a-form-item :label="t('admin.config.isEncrypted')">
-          <hbt-select
-            v-model:value="queryParams.isEncrypted"
-            dict-type="sys_yes_no"
-            type="radio"
-            :placeholder="t('admin.config.placeholder.isEncrypted')"
-            allow-clear
-          />
-        </a-form-item>
-      </template>
+
     </hbt-query>
 
     <!-- 工具栏 -->
@@ -113,6 +60,7 @@
       }"
       @change="handleTableChange"
       @row-click="handleRowClick"
+      @selectChange="onSelectChange"
     >
       <!-- 配置类型列 -->
       <template #bodyCell="{ column, record }">
@@ -188,52 +136,6 @@
         </div>
       </a-checkbox-group>
     </a-drawer>
-
-    <!-- 导入对话框 -->
-    <a-modal
-      :open="importVisible"
-      :title="t('common.import.title')"
-      :confirm-loading="importLoading"
-      @update:open="handleImportVisibleChange"
-      @ok="handleImportSubmit"
-    >
-      <a-form :label-col="{ span: 4 }" :wrapper-col="{ span: 19 }">
-        <!-- 文件上传 -->
-        <a-form-item :label="t('common.import.file')">
-          <a-upload
-            :accept="'.xlsx,.xls'"
-            :show-upload-list="true"
-            :before-upload="handleBeforeUpload"
-            :customRequest="handleCustomRequest"
-            :name="'file'"
-            :maxCount="1"
-            :multiple="false"
-            :file-list="fileList"
-            @change="handleChange"
-            :headers="{
-              'Authorization': `Bearer ${getToken()}`
-            }"
-            :data="{
-              sheetName: 'HbtConfig'
-            }"
-          >
-            <a-button>
-              <upload-outlined />
-              {{ t('common.import.select') }}
-            </a-button>
-          </a-upload>
-        </a-form-item>
-
-        <!-- 导入说明 -->
-        <a-form-item :label="t('common.import.note')">
-          <a-alert
-            :message="`请确保 Excel 文件的 sheet 名称为：HbtConfig`"
-            type="warning"
-            show-icon
-          />
-        </a-form-item>
-      </a-form>
-    </a-modal>
   </div>
 </template>
 
@@ -278,10 +180,6 @@ const formTitle = ref('')
 const detailVisible = ref(false)
 const columnSettingVisible = ref(false)
 const total = ref(0)
-const importVisible = ref(false)
-const importLoading = ref(false)
-const fileList = ref<UploadFile[]>([])
-const templateUrl = ref('/api/HbtConfig/template')
 
 // === 查询参数 ===
 const queryParams = ref<HbtConfigQuery>({
@@ -292,114 +190,151 @@ const queryParams = ref<HbtConfigQuery>({
   configValue: '',
   isBuiltin: -1,
   status: -1,
-  isEncrypted: -1
+  isEncrypted: -1,
 })
 
 // === 查询字段定义 ===
-const queryFields = computed<QueryField[]>(() => [
+const queryFields: QueryField[] = [
   {
     name: 'configName',
-    label: t('admin.config.configName'),
-    type: 'input',
-    placeholder: t('admin.config.placeholder.configName')
+    label: t('core.config.fields.configName.label'),
+    placeholder: t('core.config.fields.configName.placeholder'),
+    type: 'input' as const
   },
   {
     name: 'configKey',
-    label: t('admin.config.configKey'),
-    type: 'input',
-    placeholder: t('admin.config.placeholder.configKey')
+    label: t('core.config.fields.configKey.label'),
+    placeholder: t('core.config.fields.configKey.placeholder'),
+    type: 'input' as const
   },
   {
     name: 'configValue',
-    label: t('admin.config.configValue'),
-    type: 'input',
-    placeholder: t('admin.config.placeholder.configValue')
+    label: t('core.config.fields.configValue.label'),
+    placeholder: t('core.config.fields.configValue.placeholder'),
+    type: 'input' as const
   },
   {
     name: 'isBuiltin',
-    label: t('admin.config.builtin'),
-    type: 'select',
+    label: t('core.config.fields.isBuiltin.label'),
+    placeholder: t('core.config.fields.isBuiltin.placeholder'),
+    type: 'select' as const,
     props: {
       dictType: 'sys_yes_no',
-      type: 'radio'
-    },
-    placeholder: t('admin.config.placeholder.builtin')
+      type: 'radio',
+      showAll: true
+    }
   },
   {
     name: 'status',
-    label: t('admin.config.status'),
-    type: 'select',
+    label: t('core.config.fields.status.label'),
+    placeholder: t('core.config.fields.status.placeholder'),
+    type: 'select' as const,
     props: {
       dictType: 'sys_normal_disable',
-      type: 'radio'
-    },
-    placeholder: t('admin.config.placeholder.status')
+      type: 'radio',
+      showAll: true
+    }
   },
   {
     name: 'isEncrypted',
-    label: t('admin.config.isEncrypted'),
-    type: 'select',
+    label: t('core.config.fields.isEncrypted.label'),
+    placeholder: t('core.config.fields.isEncrypted.placeholder'),
+    type: 'select' as const,
     props: {
       dictType: 'sys_yes_no',
-      type: 'radio'
-    },
-    placeholder: t('admin.config.placeholder.isEncrypted')
+      type: 'radio',
+      showAll: true
+    }
   }
-])
+]
 
 // === 表格列定义 ===
 const defaultColumns = [
   {
-    title: t('admin.config.name'),
+    title: t('core.config.table.columns.configName'),
     dataIndex: 'configName',
     key: 'configName',
     width: 200,
     ellipsis: true
   },
   {
-    title: t('admin.config.key'),
+    title: t('core.config.table.columns.configKey'),
     dataIndex: 'configKey',
     key: 'configKey',
     width: 200,
     ellipsis: true
   },
   {
-    title: t('admin.config.value'),
+    title: t('core.config.table.columns.configValue'),
     dataIndex: 'configValue',
     key: 'configValue',
     width: 300,
     ellipsis: true
   },
   {
-    title: t('admin.config.builtin'),
+    title: t('core.config.table.columns.isBuiltin'),
     dataIndex: 'isBuiltin',
     key: 'isBuiltin',
     width: 100
   },
   {
-    title: t('admin.config.status'),
+    title: t('core.config.table.columns.status'),
     dataIndex: 'status',
     key: 'status',
     width: 100
   },
   {
-    title: t('admin.config.remark'),
+    title: t('core.config.table.columns.isEncrypted'),
+    dataIndex: 'isEncrypted',
+    key: 'isEncrypted',
+    width: 100
+  },
+  {
+    title: t('table.columns.remark'),
     dataIndex: 'remark',
     key: 'remark',
-    width: 200,
-    ellipsis: true
+    width: 120
   },
   {
-    title: t('admin.config.createTime'),
+    title: t('table.columns.createBy'),
+    dataIndex: 'createBy',
+    key: 'createBy',
+    width: 120
+  },
+  {
+    title: t('table.columns.createTime'),
     dataIndex: 'createTime',
     key: 'createTime',
-    width: 180,
-    sorter: true
+    width: 180
   },
   {
-    title: t('common.table.header.operation'),
+    title: t('table.columns.updateBy'),
+    dataIndex: 'updateBy',
+    key: 'updateBy',
+    width: 120
+  },
+  {
+    title: t('table.columns.updateTime'),
+    dataIndex: 'updateTime',
+    key: 'updateTime',
+    width: 180
+  },
+  {
+    title: t('table.columns.deleteBy'),
+    dataIndex: 'deleteBy',
+    key: 'deleteBy',
+    width: 120
+  },
+  {
+    title: t('table.columns.deleteTime'),
+    dataIndex: 'deleteTime',
+    key: 'deleteTime',
+    width: 180
+  },
+  {
+    title: t('table.columns.operation'),
     key: 'action',
-    width: 180,
+    width: 150,
     fixed: 'right'
   }
 ]
@@ -415,6 +350,9 @@ const columns = computed(() => {
 const fetchData = async () => {
   try {
     loading.value = true
+    console.log('查询参数:', {
+      ...queryParams.value
+    })
     const res = await getHbtConfigList(queryParams.value)
     if (res.data.code === 200) {
       tableData.value = res.data.data.rows
@@ -430,8 +368,11 @@ const fetchData = async () => {
   }
 }
 
-// 查询
-const handleSearch = () => {
+// 查询方法
+const handleQuery = (values?: any) => {
+  if (values) {
+    Object.assign(queryParams.value, values)
+  }
   queryParams.value.pageIndex = 1
   fetchData()
 }
@@ -446,7 +387,7 @@ const handleReset = () => {
     configValue: '',
     isBuiltin: -1,
     status: -1,
-    isEncrypted: -1
+    isEncrypted: -1,
   }
   fetchData()
 }
@@ -472,11 +413,39 @@ const onSelectChange = (keys: string[]) => {
   selectedRowKeys.value = keys
 }
 
-// 列设置变化
-const handleColumnSettingChange = (checkedValues: (string | number | boolean)[]) => {
-  defaultColumns.forEach(col => {
-    columnSettings.value[col.key] = checkedValues.includes(col.key)
+// 初始化列设置
+const initColumnSettings = () => {
+  // 每次刷新页面时清除localStorage
+  localStorage.removeItem('configColumnSettings')
+
+  // 初始化所有列为false
+  columnSettings.value = Object.fromEntries(defaultColumns.map(col => [col.key, false]))
+
+  // 获取前9列（不包含操作列）
+  const firstNineColumns = defaultColumns.filter(col => col.key !== 'action').slice(0, 9)
+
+  // 设置前9列为true
+  firstNineColumns.forEach(col => {
+    columnSettings.value[col.key] = true
   })
+
+  // 确保操作列显示
+  columnSettings.value['action'] = true
+}
+
+// 处理列设置变更
+const handleColumnSettingChange = (checkedValue: Array<string | number | boolean>) => {
+  const settings: Record<string, boolean> = {}
+  defaultColumns.forEach(col => {
+    // 操作列始终为true
+    if (col.key === 'action') {
+      settings[col.key] = true
+    } else {
+      settings[col.key] = checkedValue.includes(col.key)
+    }
+  })
+  columnSettings.value = settings
+  localStorage.setItem('configColumnSettings', JSON.stringify(settings))
 }
 
 // 切换搜索
@@ -559,153 +528,86 @@ const handleBatchDelete = async () => {
 }
 
 // 导入
-const handleImport = () => {
-  importVisible.value = true
-  fileList.value = []
-}
-
-// 修改上传前校验函数
-const handleBeforeUpload = (file: File) => {
-  console.log('上传前校验，文件信息:', {
-    name: file.name,
-    size: file.size,
-    type: file.type
-  })
-
-  // 检查文件对象和内容
-  if (!file || file.size === 0) {
-    message.error(t('common.import.empty'))
-    return false
-  }
-
-  // 检查文件类型
-  const isExcel = file.type === 'application/vnd.ms-excel' || 
-    file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-  if (!isExcel) {
-    message.error(t('common.import.format'))
-    return false
-  }
-
-  // 检查文件大小
-  const maxSize = 2 // MB
-  const isLtMaxSize = file.size / 1024 / 1024 < maxSize
-  if (!isLtMaxSize) {
-    message.error(t('common.import.size', { size: maxSize }))
-    return false
-  }
-
-  return true
-}
-
-// 修改自定义上传请求函数
-const handleCustomRequest = async (options: any) => {
-  const { file, onProgress, onSuccess, onError } = options
-  
+const handleImport = async () => {
   try {
-    console.log('开始处理文件上传:', {
-      file: file,
-      name: file.name,
-      size: file.size,
-      type: file.type
-    })
-
-    // 验证文件对象
-    if (!file || !(file instanceof File)) {
-      throw new Error('无效的文件对象')
-    }
-
-    // 设置上传进度
-    const onUploadProgress = (progressEvent: any) => {
-      if (progressEvent.total) {
-        const percent = Math.round((progressEvent.loaded * 100) / progressEvent.total)
-        console.log('上传进度:', percent)
-        onProgress({ percent })
+    const input = document.createElement('input')
+    input.type = 'file'
+    input.accept = '.xlsx,.xls'
+    input.onchange = async (e: Event) => {
+      const file = (e.target as HTMLInputElement).files?.[0]
+      if (!file) return
+      const res = await importHbtConfig(file)
+      const { success = 0, fail = 0 } = (res.data as any).Data || {}
+      if (success > 0 && fail === 0) {
+        message.success(`导入成功${success}条，全部成功！`)
+      } else if (success > 0 && fail > 0) {
+        message.warning(`导入成功${success}条，失败${fail}条`)
+      } else if (success === 0 && fail > 0) {
+        message.error(`全部导入失败，共${fail}条`)
+      } else {
+        message.info('未读取到任何数据')
       }
+      if (success > 0) fetchData()
     }
-
-    // 使用 request 发送请求
-    const response = await importHbtConfig(file, 'HbtConfig')
-
-    console.log('上传响应:', response)
-
-    if (response.data.code === 200) {
-      message.success(response.data.msg || t('common.import.success'))
-      handleImportVisibleChange(false)
-      fetchData()
-      onSuccess(response)
-    } else {
-      throw new Error(response.data.msg || t('common.import.failed'))
-    }
+    input.click()
   } catch (error: any) {
-    console.error('上传失败:', {
-      message: error.message,
-      response: error.response ? {
-        status: error.response.status,
-        statusText: error.response.statusText,
-        data: error.response.data
-      } : null
-    })
-    onError(error)
-  }
-}
-
-// 修改文件变化处理函数
-const handleChange = (info: any) => {
-  console.log('文件变化:', info)
-  
-  // 更新文件列表
-  fileList.value = info.fileList
-
-  // 处理上传状态
-  if (info.file.status === 'uploading') {
-    importLoading.value = true
-  } else if (info.file.status === 'done') {
-    importLoading.value = false
-    if (info.file.response?.code === 200) {
-      message.success(t('common.import.success'))
-      handleImportVisibleChange(false)
-      fetchData()
-    } else {
-      message.error(info.file.response?.msg || t('common.import.failed'))
-    }
-  } else if (info.file.status === 'error') {
-    importLoading.value = false
-    message.error(info.file.response?.msg || t('common.import.failed'))
-  }
-}
-
-// 修改导入对话框显示状态变化
-const handleImportVisibleChange = (val: boolean) => {
-  importVisible.value = val
-  if (!val) {
-    fileList.value = []
+    console.error('导入失败:', error)
+    message.error(error.message || t('common.import.failed'))
   }
 }
 
 // 导出
 const handleExport = async () => {
   try {
-    loading.value = true
-    const res = await exportHbtConfig(queryParams.value)
-    if (res instanceof Blob) {
-      // 创建下载链接
-      const url = window.URL.createObjectURL(res)
-      const link = document.createElement('a')
-      link.href = url
-      link.download = `系统配置_${formatDateTime(new Date(), 'yyyyMMddHHmmss')}.xlsx`
-      document.body.appendChild(link)
-      link.click()
-      document.body.removeChild(link)
-      window.URL.revokeObjectURL(url)
-      message.success(t('common.message.exportSuccess'))
-    } else {
-      message.error(t('common.message.exportFailed'))
+    const res = await exportHbtConfig({
+      ...queryParams.value
+    })
+    // 动态获取文件名
+    console.log('res.headers', res.headers)
+    const disposition =
+      res.headers && (res.headers['content-disposition'] || res.headers['Content-Disposition'])
+    console.log('disposition', disposition)
+    let fileName = ''
+    if (disposition) {
+      // 优先匹配 filename*（带中文）
+      let match = disposition.match(/filename\*=UTF-8''([^;]+)/)
+      if (match && match[1]) {
+        fileName = decodeURIComponent(match[1])
+      } else {
+        // 再匹配 filename
+        match = disposition.match(/filename="?([^";]+)"?/)
+        if (match && match[1]) {
+          fileName = match[1]
+        }
+      }
     }
-  } catch (error) {
+    if (!fileName) {
+      fileName = `系统配置_${new Date().getTime()}.xlsx`
+    }
+    const link = document.createElement('a')
+    link.href = window.URL.createObjectURL(res.data)
+    link.download = fileName
+    link.click()
+    window.URL.revokeObjectURL(link.href)
+    message.success(t('common.export.success'))
+  } catch (error: any) {
     console.error('导出失败:', error)
-    message.error(t('common.message.exportFailed'))
-  } finally {
-    loading.value = false
+    message.error(error.message || t('common.export.failed'))
+  }
+}
+
+// 下载模板
+const handleTemplate = async () => {
+  try {
+    const res = await getHbtConfigTemplate()
+    const link = document.createElement('a')
+    link.href = window.URL.createObjectURL(new Blob([res.data]))
+    link.download = `系统配置导入模板_${new Date().getTime()}.xlsx`
+    link.click()
+    window.URL.revokeObjectURL(link.href)
+  } catch (error: any) {
+    console.error('下载模板失败:', error)
+    message.error(error.message || t('common.template.failed'))
   }
 }
 
@@ -735,118 +637,10 @@ const handleSuccess = () => {
   fetchData()
 }
 
-// 修改模板下载函数
-const handleTemplate = async () => {
-  try {
-    loading.value = true
-    const res = await getHbtConfigTemplate()
-    const blob = res.data
-    const url = window.URL.createObjectURL(blob)
-    const link = document.createElement('a')
-    link.href = url
-    link.download = `系统配置导入模板_${formatDateTime(new Date(), 'yyyyMMddHHmmss')}.xlsx`
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-    window.URL.revokeObjectURL(url)
-    message.success(t('common.message.downloadSuccess'))
-  } catch (error) {
-    console.error('下载模板失败:', error)
-    message.error(t('common.message.downloadFailed'))
-  } finally {
-    loading.value = false
-  }
-}
-
-// 修改导入提交函数
-const handleImportSubmit = async () => {
-  console.log('开始导入，fileList:', fileList.value)
-  
-  if (fileList.value.length === 0) {
-    message.warning(t('common.import.select'))
-    return
-  }
-  
-  const fileInfo = fileList.value[0]
-  console.log('fileInfo:', fileInfo)
-  
-  if (!fileInfo || !fileInfo.originFileObj) {
-    message.error(t('common.import.empty'))
-    return
-  }
-
-  importLoading.value = true
-
-  try {
-    // 创建 FormData 对象
-    const formData = new FormData()
-    
-    // 验证文件对象
-    const file = fileInfo.originFileObj
-    console.log('原始文件对象:', file)
-    console.log('文件类型:', typeof file)
-    console.log('文件是否为 File 实例:', file instanceof File)
-    console.log('文件大小:', file.size)
-    console.log('文件名称:', file.name)
-    console.log('文件类型:', file.type)
-    
-    // 确保文件对象有效
-    if (!(file instanceof File) || file.size === 0) {
-      throw new Error(t('common.import.empty'))
-    }
-    
-    // 添加文件到 FormData
-    formData.append('file', file)
-    formData.append('sheetName', 'HbtConfig')
-    
-    // 验证 FormData 内容
-    console.log('FormData 内容验证:')
-    for (const [key, value] of formData.entries()) {
-      console.log(`字段 ${key}:`, value)
-      if (value instanceof File) {
-        console.log(`文件 ${key} 详情:`, {
-          name: value.name,
-          size: value.size,
-          type: value.type,
-          lastModified: value.lastModified
-        })
-      }
-    }
-
-    // 发送请求
-    const response = await request({
-      url: '/api/HbtConfig/import',
-      method: 'post',
-      data: formData,
-      headers: {
-        'Authorization': `Bearer ${getToken()}`,
-        'Content-Type': 'multipart/form-data'
-      }
-    })
-
-    console.log('上传响应:', response)
-
-    if (response.data.code === 200) {
-      message.success(response.data.msg || t('common.import.success'))
-      handleImportVisibleChange(false)
-      fetchData()
-    } else {
-      throw new Error(response.data.msg || t('common.import.failed'))
-    }
-  } catch (error: any) {
-    console.error('导入失败:', error)
-    message.error(error.message || t('common.import.failed'))
-  } finally {
-    importLoading.value = false
-  }
-}
-
 // === 生命周期 ===
 onMounted(() => {
   // 初始化列设置
-  defaultColumns.forEach(col => {
-    columnSettings.value[col.key] = true
-  })
+  initColumnSettings()
   // 加载数据
   fetchData()
 })
@@ -876,3 +670,4 @@ onMounted(() => {
   font-size: 14px;
 }
 </style>
+

@@ -39,7 +39,7 @@ export default {
       _self: '審計日誌',
       operlog: '操作日誌',
       loginlog: '登錄日誌',
-      dbdifflog: '差異日誌',
+      sqldifflog: '差異日誌',
       exceptionlog: '異常日誌',
       auditlog: '審計日誌',
       quartzlog: '任務日誌'

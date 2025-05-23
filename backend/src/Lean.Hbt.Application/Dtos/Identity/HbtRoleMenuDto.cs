@@ -8,6 +8,7 @@
 //===================================================================
 
 using System;
+using System.Collections.Generic;
 
 namespace Lean.Hbt.Application.Dtos.Identity
 {
@@ -65,5 +66,20 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// 菜单名称（导航属性）
         /// </summary>
         public string? MenuName { get; set; }
+
+        /// <summary>
+        /// 菜单ID集合（用于批量操作）
+        /// </summary>
+        public long[] MenuIds { get; set; } = Array.Empty<long>();
+
+        /// <summary>
+        /// 已分配菜单列表
+        /// </summary>
+        public List<HbtMenuDto> AssignedMenus { get; set; } = new();
+
+        /// <summary>
+        /// 可选菜单列表
+        /// </summary>
+        public List<HbtMenuDto> OptionalMenus { get; set; } = new();
     }
 } 

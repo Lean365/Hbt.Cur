@@ -142,11 +142,15 @@ namespace Lean.Hbt.WebApi.Controllers.Core
         /// <returns>导入结果</returns>
         [HttpPost("import")]
         [HbtPerm("core:dict:import")]
+        [ProducesResponseType(typeof((int Success, int Fail)), StatusCodes.Status200OK)]
         public async Task<IActionResult> ImportAsync(IFormFile file, [FromQuery] string sheetName = "字典类型")
         {
+            if (file == null || file.Length == 0)
+                return BadRequest(_localization.L("DictType.Import.FileRequired"));
+
             using var stream = file.OpenReadStream();
-            var result = await _dictTypeService.ImportAsync(stream, sheetName);
-            return Success(result);
+            var (success, fail) = await _dictTypeService.ImportAsync(stream, sheetName);
+            return Success(new { success, fail }, _localization.L("DictType.Import.Success"));
         }
 
         /// <summary>
@@ -157,10 +161,17 @@ namespace Lean.Hbt.WebApi.Controllers.Core
         /// <returns>导出数据列表</returns>
         [HttpGet("export")]
         [HbtPerm("core:dict:export")]
+        [ProducesResponseType(typeof(byte[]), StatusCodes.Status200OK)]
         public async Task<IActionResult> ExportAsync([FromQuery] HbtDictTypeQueryDto query, [FromQuery] string sheetName = "字典类型")
         {
             var result = await _dictTypeService.ExportAsync(query, sheetName);
-            return Success(result);
+            var contentType = result.fileName.EndsWith(".zip", StringComparison.OrdinalIgnoreCase)
+                ? "application/zip"
+                : "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+            // 只在 filename* 用 UTF-8 编码，filename 用 ASCII
+            var safeFileName = System.Text.Encoding.ASCII.GetString(System.Text.Encoding.ASCII.GetBytes(result.fileName));
+            Response.Headers["Content-Disposition"] = $"attachment; filename*=UTF-8''{Uri.EscapeDataString(result.fileName)}";
+            return File(result.content, contentType, result.fileName);
         }
 
         /// <summary>
@@ -170,10 +181,11 @@ namespace Lean.Hbt.WebApi.Controllers.Core
         /// <returns>模板数据</returns>
         [HttpGet("template")]
         [HbtPerm("core:dict:query")]
+        [ProducesResponseType(typeof(byte[]), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetTemplateAsync([FromQuery] string sheetName = "字典类型")
         {
             var result = await _dictTypeService.GetTemplateAsync(sheetName);
-            return Success(result);
+            return File(result.content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", result.fileName);
         }
 
         /// <summary>

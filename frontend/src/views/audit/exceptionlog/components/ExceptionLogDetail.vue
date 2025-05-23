@@ -1,38 +1,21 @@
 <template>
   <hbt-modal
-    v-model:visible="visible"
+    v-model:open="visible"
     title="异常详情"
     :width="800"
     :footer="null"
   >
     <a-descriptions bordered :column="2">
-      <a-descriptions-item label="日志级别">
-        {{ exceptionInfo?.logLevel }}
-      </a-descriptions-item>
-      <a-descriptions-item label="用户名">
-        {{ exceptionInfo?.userName }}
-      </a-descriptions-item>
-      <a-descriptions-item label="异常类型">
-        {{ exceptionInfo?.exceptionType }}
-      </a-descriptions-item>
-      <a-descriptions-item label="方法">
-        {{ exceptionInfo?.method }}
-      </a-descriptions-item>
-      <a-descriptions-item label="参数" :span="2">
-        <pre>{{ exceptionInfo?.parameters }}</pre>
-      </a-descriptions-item>
-      <a-descriptions-item label="异常消息" :span="2">
-        <pre>{{ exceptionInfo?.exceptionMessage }}</pre>
-      </a-descriptions-item>
-      <a-descriptions-item label="堆栈跟踪" :span="2">
-        <pre>{{ exceptionInfo?.stackTrace }}</pre>
-      </a-descriptions-item>
-      <a-descriptions-item label="IP地址">
-        {{ exceptionInfo?.ipAddress }}
-      </a-descriptions-item>
-      <a-descriptions-item label="用户代理">
-        {{ exceptionInfo?.userAgent }}
-      </a-descriptions-item>
+      <a-descriptions-item label="日志级别">{{ exceptionInfo?.logLevel }}</a-descriptions-item>
+      <a-descriptions-item label="操作人员">{{ exceptionInfo?.userName }}</a-descriptions-item>
+      <a-descriptions-item label="异常类型">{{ exceptionInfo?.exceptionType }}</a-descriptions-item>
+      <a-descriptions-item label="请求方法">{{ exceptionInfo?.method }}</a-descriptions-item>
+      <a-descriptions-item label="参数" :span="2"><pre>{{ exceptionInfo?.parameters }}</pre></a-descriptions-item>
+      <a-descriptions-item label="异常消息" :span="2"><pre>{{ exceptionInfo?.exceptionMessage }}</pre></a-descriptions-item>
+      <a-descriptions-item label="堆栈跟踪" :span="2"><pre>{{ exceptionInfo?.stackTrace }}</pre></a-descriptions-item>
+      <a-descriptions-item label="IP地址">{{ exceptionInfo?.ipAddress }}</a-descriptions-item>
+      <a-descriptions-item label="用户代理">{{ exceptionInfo?.userAgent }}</a-descriptions-item>
+      <a-descriptions-item label="操作时间">{{ exceptionInfo?.createTime }}</a-descriptions-item>
     </a-descriptions>
   </hbt-modal>
 </template>

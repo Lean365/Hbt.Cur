@@ -67,18 +67,18 @@ public class HbtDbSeedRelation
     /// <summary>
     /// 初始化所有关联关系数据
     /// </summary>
-    public async Task<(int, int)> InitializeRelationsAsync()
+    public async Task<(int, int)> InitializeRelationsAsync(long tenantId)
     {
         int insertCount = 0;
         int updateCount = 0;
 
         // 初始化管理员关联关系
-        var (adminInsert, adminUpdate) = await InitializeAdminRelationsAsync();
+        var (adminInsert, adminUpdate) = await InitializeAdminRelationsAsync(tenantId);
         insertCount += adminInsert;
         updateCount += adminUpdate;
 
         // 初始化所有用户关联关系
-        var (userInsertCount, userUpdateCount) = await InitializeUserRelationsAsync();
+        var (userInsertCount, userUpdateCount) = await InitializeUserRelationsAsync(tenantId);
         insertCount += userInsertCount;
         updateCount += userUpdateCount;
 
@@ -88,7 +88,7 @@ public class HbtDbSeedRelation
     /// <summary>
     /// 初始化管理员关联关系数据
     /// </summary>
-    private async Task<(int, int)> InitializeAdminRelationsAsync()
+    private async Task<(int, int)> InitializeAdminRelationsAsync(long tenantId)
     {
         int insertCount = 0;
         int updateCount = 0;
@@ -111,11 +111,12 @@ public class HbtDbSeedRelation
 
         if (userRole == null)
         {
+
             await _userRoleRepository.CreateAsync(new HbtUserRole
             {
                 UserId = adminUser.Id,
                 RoleId = adminRole.Id,
-                TenantId = 0,
+                TenantId = tenantId,
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
                 UpdateBy = "Hbt365",
@@ -135,7 +136,7 @@ public class HbtDbSeedRelation
             {
                 UserId = adminUser.Id,
                 PostId = gmPost.Id,
-                TenantId = 0,
+                TenantId = tenantId,
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
                 UpdateBy = "Hbt365",
@@ -155,7 +156,7 @@ public class HbtDbSeedRelation
             {
                 UserId = adminUser.Id,
                 DeptId = rootDept.Id,
-                TenantId = 0,
+                TenantId = tenantId,
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
                 UpdateBy = "Hbt365",
@@ -178,6 +179,7 @@ public class HbtDbSeedRelation
                 {
                     RoleId = adminRole.Id,
                     MenuId = menu.Id,
+                    TenantId = tenantId,
                     CreateBy = "Hbt365",
                     CreateTime = DateTime.Now,
                     UpdateBy = "Hbt365",
@@ -201,7 +203,7 @@ public class HbtDbSeedRelation
                 {
                     RoleId = adminRole.Id,
                     DeptId = dept.Id,
-                    TenantId = 0,
+                    TenantId = tenantId,
                     CreateBy = "Hbt365",
                     CreateTime = DateTime.Now,
                     UpdateBy = "Hbt365",
@@ -218,18 +220,18 @@ public class HbtDbSeedRelation
     /// <summary>
     /// 初始化其他用户关联关系数据
     /// </summary>
-    private async Task<(int, int)> InitializeUserRelationsAsync()
+    private async Task<(int, int)> InitializeUserRelationsAsync(long tenantId)
     {
         int insertCount = 0;
         int updateCount = 0;
         long nextId = 1;
 
         // 获取所有用户、角色、部门、岗位和菜单
-        var allUsers = (await _userRepository.GetListAsync(u => u.IsDeleted == 0 && u.UserName != "admin")).Take(100).ToList();
-        var allRoles = await _roleRepository.GetListAsync(r => r.IsDeleted == 0);
-        var allDepts = await _deptRepository.GetListAsync(d => d.IsDeleted == 0);
-        var allPosts = await _postRepository.GetListAsync(p => p.IsDeleted == 0);
-        var allMenus = await _menuRepository.GetListAsync(m => m.IsDeleted == 0);
+        var allUsers = (await _userRepository.GetListAsync(u => u.IsDeleted == 0 && u.UserName != "admin" && u.TenantId == tenantId)).Take(100).ToList();
+        var allRoles = await _roleRepository.GetListAsync(r => r.IsDeleted == 0 && r.TenantId == tenantId);
+        var allDepts = await _deptRepository.GetListAsync(d => d.IsDeleted == 0 && d.TenantId == tenantId);
+        var allPosts = await _postRepository.GetListAsync(p => p.IsDeleted == 0 && p.TenantId == tenantId);
+        var allMenus = await _menuRepository.GetListAsync(m => m.IsDeleted == 0 && m.TenantId == tenantId);
 
         // 1. 创建角色-部门关联（根据角色类型分配部门）
         foreach (var role in allRoles)
@@ -296,7 +298,7 @@ public class HbtDbSeedRelation
                 {
                     RoleId = role.Id,
                     DeptId = dept.Id,
-                    TenantId = 0,
+                    TenantId = tenantId,
                     CreateBy = "Hbt365",
                     CreateTime = DateTime.Now,
                     UpdateBy = "Hbt365",
@@ -304,7 +306,7 @@ public class HbtDbSeedRelation
                 };
 
                 var existingRoleDept = await _roleDeptRepository.GetFirstAsync(rd =>
-                    rd.RoleId == roleDept.RoleId && rd.DeptId == roleDept.DeptId);
+                    rd.RoleId == roleDept.RoleId && rd.DeptId == roleDept.DeptId && rd.TenantId == tenantId);
 
                 if (existingRoleDept == null)
                 {
@@ -380,6 +382,7 @@ public class HbtDbSeedRelation
                 {
                     RoleId = role.Id,
                     MenuId = menu.Id,
+                    TenantId = tenantId,
                     CreateBy = "Hbt365",
                     CreateTime = DateTime.Now,
                     UpdateBy = "Hbt365",
@@ -387,7 +390,7 @@ public class HbtDbSeedRelation
                 };
 
                 var existingRoleMenu = await _roleMenuRepository.GetFirstAsync(rm =>
-                    rm.RoleId == roleMenu.RoleId && rm.MenuId == roleMenu.MenuId);
+                    rm.RoleId == roleMenu.RoleId && rm.MenuId == roleMenu.MenuId && rm.TenantId == tenantId);
 
                 if (existingRoleMenu == null)
                 {
@@ -410,7 +413,7 @@ public class HbtDbSeedRelation
                     Id = nextId++,
                     UserId = user.Id,
                     RoleId = role.Id,
-                    TenantId = 0,
+                    TenantId = tenantId,
                     CreateBy = "Hbt365",
                     CreateTime = DateTime.Now,
                     UpdateBy = "Hbt365",
@@ -418,7 +421,7 @@ public class HbtDbSeedRelation
                 };
 
                 var existingUserRole = await _userRoleRepository.GetFirstAsync(ur =>
-                    ur.UserId == userRole.UserId);
+                    ur.UserId == userRole.UserId && ur.TenantId == tenantId);
 
                 if (existingUserRole == null)
                 {
@@ -492,7 +495,7 @@ public class HbtDbSeedRelation
                         Id = nextId++,
                         UserId = user.Id,
                         DeptId = dept.Id,
-                        TenantId = 0,
+                        TenantId = tenantId,
                         CreateBy = "Hbt365",
                         CreateTime = DateTime.Now,
                         UpdateBy = "Hbt365",
@@ -500,7 +503,7 @@ public class HbtDbSeedRelation
                     };
 
                     var existingUserDept = await _userDeptRepository.GetFirstAsync(ud =>
-                        ud.UserId == userDept.UserId);
+                        ud.UserId == userDept.UserId && ud.TenantId == tenantId);
 
                     if (existingUserDept == null)
                     {
@@ -520,7 +523,7 @@ public class HbtDbSeedRelation
                     Id = nextId++,
                     UserId = user.Id,
                     PostId = post.Id,
-                    TenantId = 0,
+                    TenantId = tenantId,
                     CreateBy = "Hbt365",
                     CreateTime = DateTime.Now,
                     UpdateBy = "Hbt365",
@@ -528,7 +531,7 @@ public class HbtDbSeedRelation
                 };
 
                 var existingUserPost = await _userPostRepository.GetFirstAsync(up =>
-                    up.UserId == userPost.UserId);
+                    up.UserId == userPost.UserId && up.TenantId == tenantId);
 
                 if (existingUserPost == null)
                 {

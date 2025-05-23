@@ -26,9 +26,9 @@ namespace Lean.Hbt.Application.Services.Core
         /// <summary>
         /// 获取语言详情
         /// </summary>
-        /// <param name="LangId">语言ID</param>
+        /// <param name="LanguageId">语言ID</param>
         /// <returns>语言详情</returns>
-        Task<HbtLanguageDto> GetByIdAsync(long LangId);
+        Task<HbtLanguageDto> GetByIdAsync(long LanguageId);
 
         /// <summary>
         /// 创建语言
@@ -47,16 +47,16 @@ namespace Lean.Hbt.Application.Services.Core
         /// <summary>
         /// 删除语言
         /// </summary>
-        /// <param name="LangId">语言ID</param>
+        /// <param name="LanguageId">语言ID</param>
         /// <returns>是否成功</returns>
-        Task<bool> DeleteAsync(long LangId);
+        Task<bool> DeleteAsync(long LanguageId);
 
         /// <summary>
         /// 批量删除语言
         /// </summary>
-        /// <param name="LangIds">语言ID集合</param>
+        /// <param name="LanguageIds">语言ID集合</param>
         /// <returns>是否成功</returns>
-        Task<bool> BatchDeleteAsync(long[] LangIds);
+        Task<bool> BatchDeleteAsync(long[] LanguageIds);
 
         /// <summary>
         /// 导入语言数据

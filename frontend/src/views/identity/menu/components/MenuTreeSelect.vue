@@ -19,7 +19,7 @@
 import { ref, onMounted, watch, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { message } from 'ant-design-vue'
-import type { Menu } from '@/types/identity/menu'
+import type { HbtMenu } from '@/types/identity/menu'
 import type { HbtApiResponse } from '@/types/common'
 import { getMenuTree } from '@/api/identity/menu'
 
@@ -31,13 +31,13 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: 'update:modelValue', value?: number): void
   (e: 'selectMenu', menu?: any): void
-  (e: 'load', data: Menu[]): void
+  (e: 'load', data: HbtMenu[]): void
 }>()
 
 const { t } = useI18n()
 
 // 树形数据
-const treeData = ref<Menu[]>([])
+const treeData = ref<HbtMenu[]>([])
 
 // 过滤后的树形数据
 const filteredTreeData = computed(() => {
@@ -62,9 +62,9 @@ const filteredTreeData = computed(() => {
   }
   if (props.menuType === 2) {
     // 显示所有 menuType=1 的菜单（不分层级，平铺），不包含按钮
-    function flattenMenus(list: Menu[]): Menu[] {
-      let result: Menu[] = []
-      list.forEach((item: Menu) => {
+    function flattenMenus(list: HbtMenu[]): HbtMenu[] {
+      let result: HbtMenu[] = []
+      list.forEach((item: HbtMenu) => {
         if (item.menuType === 1) {
           result.push({ ...item, children: [] })
         }

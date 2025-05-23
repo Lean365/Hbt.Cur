@@ -8,6 +8,8 @@
 //===================================================================
 
 using System.Security.Claims;
+using Lean.Hbt.Common.Exceptions;
+using Lean.Hbt.Common.Constants;
 using Lean.Hbt.Domain.IServices.Extensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -108,7 +110,12 @@ namespace Lean.Hbt.Infrastructure.Services.Identity
             get
             {
                 var tenantIdClaim = _httpContextAccessor.HttpContext?.User.FindFirst("tid");
-                return tenantIdClaim != null ? long.Parse(tenantIdClaim.Value) : 0;
+                if (tenantIdClaim == null)
+                {
+                    _logger.LogWarning("未找到租户ID声明，请确保用户已正确登录并包含租户信息");
+                    throw new HbtException("未找到租户信息，请重新登录", HbtConstants.ErrorCodes.Unauthorized);
+                }
+                return long.Parse(tenantIdClaim.Value);
             }
         }
 

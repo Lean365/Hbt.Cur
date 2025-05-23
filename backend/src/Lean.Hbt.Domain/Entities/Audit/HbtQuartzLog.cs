@@ -7,8 +7,6 @@
 // 描述   : 定时任务日志实体
 //===================================================================
 
-using SqlSugar;
-
 namespace Lean.Hbt.Domain.Entities.Audit
 {
     /// <summary>
@@ -77,4 +75,4 @@ namespace Lean.Hbt.Domain.Entities.Audit
         [SugarColumn(ColumnName = "log_execute_host", ColumnDescription = "执行机器名", Length = 100, IsNullable = true, DefaultValue = "", ColumnDataType = "nvarchar", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
         public string? LogExecuteHost { get; set; }
     }
-} 
+}

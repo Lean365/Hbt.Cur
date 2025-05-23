@@ -1,23 +1,36 @@
 export default {
-  table: {
-    header: {
-      operation: '操作'
-    },
-    config: {
-      density: {
-        default: '默认',
-        middle: '中等',
-        small: '紧凑'
+    // ==================== 表格操作 ====================
+    table: {
+      columns: {
+        id: 'ID',
+        tenantId: '租户ID',
+        remark: '备注',
+        createBy: '创建者',
+        createTime: '创建时间',
+        updateBy: '更新者',
+        updateTime: '更新时间',
+        deleteBy: '删除者',
+        deleteTime: '删除时间',
+        isDeleted: '是否删除',
+        operation: '操作',
       },
-      columnSetting: '列设置'
-    },
-    empty: '暂无数据',
-    loading: '加载中...',
-    selectAll: '全选',
-    selected: '已选择 {total} 项',
-    sort: {
-      ascend: '升序',
-      descend: '降序'
+      config: {
+        density: {
+          default: '默认',
+          middle: '中等',
+          small: '紧凑'
+        },
+        columnSetting: '列设置'
+      },
+      pagination: {
+        total: '共 {total} 条',
+        current: '第 {current} 页',
+        pageSize: '每页 {pageSize} 条',
+        jump: '跳至'
+      },
+      empty: '暂无数据',
+      loading: '加载中...',
+      selectAll: '全选',
+      selected: '已选择 {total} 项'
     }
-  }
 } 

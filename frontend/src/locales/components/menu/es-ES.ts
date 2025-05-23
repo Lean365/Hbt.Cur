@@ -39,7 +39,7 @@ export default {
       _self: 'Auditoría',
       operlog: 'Registro de operaciones',
       loginlog: 'Registro de inicio de sesión',
-      dbdifflog: 'Registro de diferencias de base de datos',
+      sqldifflog: 'Registro de diferencias de base de datos',
       exceptionlog: 'Registro de excepciones',
       auditlog: 'Registro de auditoría',
       quartzlog: 'Registro de tareas'

@@ -271,7 +271,7 @@ namespace Lean.Hbt.Application.Services.Core
             if (dictData == null) return false;
 
             var dictType = await _dictTypeRepository.GetFirstAsync(x => x.DictType == dictData.DictType);
-            return dictType != null && dictType.DictBuiltin == 1; // 1表示内置
+            return dictType != null && dictType.IsBuiltin == 1; // 1表示内置
         }
 
         /// <summary>

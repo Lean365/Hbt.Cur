@@ -229,6 +229,11 @@ namespace Lean.Hbt.Application.Services.Identity
                         role.CreateTime = DateTime.Now;
                         role.Status = 0;
 
+                        // 验证角色名称是否已存在
+                        await HbtValidateUtils.ValidateFieldExistsAsync(_roleRepository, "RoleName", role.RoleName);
+                        // 验证角色编码是否已存在
+                        await HbtValidateUtils.ValidateFieldExistsAsync(_roleRepository, "RoleKey", role.RoleKey);
+
                         await _roleRepository.CreateAsync(role);
                         success++;
                     }
@@ -296,7 +301,7 @@ namespace Lean.Hbt.Application.Services.Identity
                 {
                     Label = r.RoleName,
                     Value = r.Id,
-                    Disabled = false
+                    
                 })
                 .ToListAsync();
             return roles;

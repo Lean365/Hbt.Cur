@@ -8,18 +8,6 @@
 //===================================================================
 
 using System.Linq.Expressions;
-using Lean.Hbt.Application.Dtos.Identity;
-using Lean.Hbt.Common.Enums;
-using Lean.Hbt.Common.Exceptions;
-using Lean.Hbt.Common.Helpers;
-using Lean.Hbt.Domain.Entities.Identity;
-using Lean.Hbt.Domain.IServices.Extensions;
-using Lean.Hbt.Domain.IServices.Extensions;
-using Lean.Hbt.Domain.Repositories;
-using Lean.Hbt.Domain.Utils;
-using Mapster;
-using SqlSugar;
-using Microsoft.Extensions.Localization;
 using Microsoft.AspNetCore.Http;
 
 namespace Lean.Hbt.Application.Services.Identity
@@ -60,7 +48,7 @@ namespace Lean.Hbt.Application.Services.Identity
             if (!string.IsNullOrEmpty(query.PostCode))
                 exp.And(x => x.PostCode.Contains(query.PostCode));
 
-            if (query.Status.HasValue)
+            if (query.Status.HasValue && query.Status.Value != -1)
                 exp.And(x => x.Status == query.Status.Value);
 
             return exp.ToExpression();
@@ -177,7 +165,7 @@ namespace Lean.Hbt.Application.Services.Identity
                 {
                     Label = p.PostName,
                     Value = p.Id,
-                    Disabled = false
+
                 })
                 .ToListAsync();
             return posts;
@@ -269,6 +257,101 @@ namespace Lean.Hbt.Application.Services.Identity
             post.Status = input.Status;
             var result = await _postRepository.UpdateAsync(post);
             return result > 0;
+        }
+
+        /// <summary>
+        /// 获取岗位用户列表
+        /// </summary>
+        /// <param name="postId">岗位ID</param>
+        /// <returns>岗位用户列表</returns>
+        public async Task<HbtUserPostDto> GetPostUsersAsync(long postId)
+        {
+            var post = await _postRepository.GetByIdAsync(postId)
+                ?? throw new HbtException(L("Identity.Post.NotFound"));
+
+            // 获取已分配的用户
+            var assignedUsers = await _userPostRepository.AsQueryable()
+                .LeftJoin<HbtUser>((up, u) => up.UserId == u.Id)
+                .Where(up => up.PostId == postId)
+                .Select((up, u) => new HbtUserDto
+                {
+                    UserId = u.Id,
+                    UserName = u.UserName,
+                    NickName = u.NickName,
+                    UserType = u.UserType,
+                    Status = u.Status
+                })
+                .ToListAsync();
+
+            // 获取所有可选用户（未分配的用户）
+            var optionalUsers = await _userPostRepository.AsQueryable()
+                .RightJoin<HbtUser>((up, u) => up.UserId == u.Id)
+                .Where((up, u) => up.PostId != postId || up.PostId == null)
+                .Select((up, u) => new HbtUserDto
+                {
+                    UserId = u.Id,
+                    UserName = u.UserName,
+                    NickName = u.NickName,
+                    UserType = u.UserType,
+                    Status = u.Status
+                })
+                .ToListAsync();
+
+            return new HbtUserPostDto
+            {
+                PostId = postId,
+                AssignedUsers = assignedUsers,
+                OptionalUsers = optionalUsers
+            };
+        }
+
+        /// <summary>
+        /// 分配岗位用户
+        /// </summary>
+        /// <param name="postId">岗位ID</param>
+        /// <param name="userIds">用户ID集合</param>
+        /// <returns>是否成功</returns>
+        public async Task<bool> AssignPostUsersAsync(long postId, long[] userIds)
+        {
+            var post = await _postRepository.GetByIdAsync(postId)
+                ?? throw new HbtException(L("Identity.Post.NotFound"));
+
+            // 获取已分配的用户
+            var existingUserPosts = await _userPostRepository.AsQueryable()
+                .Where(up => up.PostId == postId)
+                .ToListAsync();
+
+            // 过滤出需要新增的用户
+            var newUserIds = userIds.Except(existingUserPosts.Select(up => up.UserId)).ToList();
+            if (!newUserIds.Any())
+                return true;
+
+            // 批量创建用户岗位关联
+            var userPosts = newUserIds.Select(userId => new HbtUserPost
+            {
+                PostId = postId,
+                UserId = userId,
+                CreateTime = DateTime.Now,
+                CreateBy = _currentUser.UserName
+            }).ToList();
+
+            return await _userPostRepository.CreateRangeAsync(userPosts) > 0;
+        }
+
+        /// <summary>
+        /// 移除岗位用户
+        /// </summary>
+        /// <param name="postId">岗位ID</param>
+        /// <param name="userIds">用户ID集合</param>
+        /// <returns>是否成功</returns>
+        public async Task<bool> RemovePostUsersAsync(long postId, long[] userIds)
+        {
+            var post = await _postRepository.GetByIdAsync(postId)
+                ?? throw new HbtException(L("Identity.Post.NotFound"));
+
+            // 删除用户岗位关联
+            return await _userPostRepository.DeleteAsync((HbtUserPost up) =>
+                up.PostId == postId && userIds.Contains(up.UserId)) > 0;
         }
     }
 }

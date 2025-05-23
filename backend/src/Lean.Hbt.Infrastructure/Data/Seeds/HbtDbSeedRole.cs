@@ -7,9 +7,7 @@
 // 描述   : 角色数据初始化类
 //===================================================================
 
-using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Domain.Entities.Identity;
-using Lean.Hbt.Domain.IServices.Extensions;
 
 namespace Lean.Hbt.Infrastructure.Data.Seeds;
 
@@ -35,7 +33,8 @@ public class HbtDbSeedRole
     /// <summary>
     /// 初始化角色数据
     /// </summary>
-    public async Task<(int, int)> InitializeRoleAsync()
+    /// <param name="systemTenantId">系统租户ID</param>
+    public async Task<(int, int)> InitializeRoleAsync(long systemTenantId)
     {
         int insertCount = 0;
         int updateCount = 0;
@@ -51,6 +50,7 @@ public class HbtDbSeedRole
                 RoleName = "系统管理员",
                 OrderNum = 1,
                 Status = 0,
+
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
                 UpdateBy = "Hbt365",
@@ -64,6 +64,7 @@ public class HbtDbSeedRole
                 RoleName = "安全管理员",
                 OrderNum = 2,
                 Status = 0,
+
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
                 UpdateBy = "Hbt365",
@@ -79,6 +80,7 @@ public class HbtDbSeedRole
                 RoleName = "业务管理员",
                 OrderNum = 3,
                 Status = 0,
+
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
                 UpdateBy = "Hbt365",
@@ -92,6 +94,7 @@ public class HbtDbSeedRole
                 RoleName = "人事管理员",
                 OrderNum = 4,
                 Status = 0,
+
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
                 UpdateBy = "Hbt365",
@@ -105,6 +108,7 @@ public class HbtDbSeedRole
                 RoleName = "财务管理员",
                 OrderNum = 5,
                 Status = 0,
+
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
                 UpdateBy = "Hbt365",
@@ -120,6 +124,7 @@ public class HbtDbSeedRole
                 RoleName = "生产管理员",
                 OrderNum = 6,
                 Status = 0,
+
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
                 UpdateBy = "Hbt365",
@@ -133,6 +138,7 @@ public class HbtDbSeedRole
                 RoleName = "品质管理员",
                 OrderNum = 7,
                 Status = 0,
+
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
                 UpdateBy = "Hbt365",
@@ -148,6 +154,7 @@ public class HbtDbSeedRole
                 RoleName = "仓库管理员",
                 OrderNum = 8,
                 Status = 0,
+
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
                 UpdateBy = "Hbt365",
@@ -161,6 +168,7 @@ public class HbtDbSeedRole
                 RoleName = "库存管理员",
                 OrderNum = 9,
                 Status = 0,
+
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
                 UpdateBy = "Hbt365",
@@ -176,6 +184,7 @@ public class HbtDbSeedRole
                 RoleName = "采购管理员",
                 OrderNum = 10,
                 Status = 0,
+
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
                 UpdateBy = "Hbt365",
@@ -189,6 +198,7 @@ public class HbtDbSeedRole
                 RoleName = "供应商管理员",
                 OrderNum = 11,
                 Status = 0,
+
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
                 UpdateBy = "Hbt365",
@@ -204,6 +214,7 @@ public class HbtDbSeedRole
                 RoleName = "销售管理员",
                 OrderNum = 12,
                 Status = 0,
+
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
                 UpdateBy = "Hbt365",
@@ -217,6 +228,7 @@ public class HbtDbSeedRole
                 RoleName = "客户管理员",
                 OrderNum = 13,
                 Status = 0,
+
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
                 UpdateBy = "Hbt365",
@@ -232,6 +244,7 @@ public class HbtDbSeedRole
                 RoleName = "主数据管理员",
                 OrderNum = 14,
                 Status = 0,
+
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
                 UpdateBy = "Hbt365",
@@ -245,6 +258,7 @@ public class HbtDbSeedRole
                 RoleName = "编码管理员",
                 OrderNum = 15,
                 Status = 0,
+
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
                 UpdateBy = "Hbt365",
@@ -260,6 +274,7 @@ public class HbtDbSeedRole
                 RoleName = "一般用户",
                 OrderNum = 16,
                 Status = 0,
+
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
                 UpdateBy = "Hbt365",
@@ -273,6 +288,7 @@ public class HbtDbSeedRole
                 RoleName = "访客",
                 OrderNum = 17,
                 Status = 0,
+
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
                 UpdateBy = "Hbt365",
@@ -286,6 +302,11 @@ public class HbtDbSeedRole
             var existingRole = await _roleRepository.GetFirstAsync(r => r.RoleKey == role.RoleKey);
             if (existingRole == null)
             {
+                role.TenantId = systemTenantId;
+                role.CreateBy = "Hbt365";
+                role.CreateTime = DateTime.Now;
+                role.UpdateBy = "Hbt365";
+                role.UpdateTime = DateTime.Now;
                 await _roleRepository.CreateAsync(role);
                 insertCount++;
                 _logger.Info($"[创建] 角色 '{role.RoleName}' 创建成功");
@@ -295,6 +316,7 @@ public class HbtDbSeedRole
                 existingRole.RoleName = role.RoleName;
                 existingRole.OrderNum = role.OrderNum;
                 existingRole.Status = role.Status;
+                existingRole.TenantId = systemTenantId;
                 existingRole.Remark = role.Remark;
                 existingRole.UpdateBy = "Hbt365";
                 existingRole.UpdateTime = DateTime.Now;
@@ -307,4 +329,4 @@ public class HbtDbSeedRole
 
         return (insertCount, updateCount);
     }
-} 
+}

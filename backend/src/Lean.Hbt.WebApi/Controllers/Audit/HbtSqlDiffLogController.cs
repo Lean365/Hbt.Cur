@@ -78,8 +78,14 @@ namespace Lean.Hbt.WebApi.Controllers.Audit
         [HbtPerm("audit:sqldifflog:export")]
         public async Task<IActionResult> ExportAsync([FromQuery] HbtSqlDiffLogQueryDto query, [FromQuery] string sheetName = "差异日志")
         {
-            var (_, content) = await _sqlDiffLogService.ExportAsync(query, sheetName);
-            return File(content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"差异日志_{DateTime.Now:yyyyMMddHHmmss}.xlsx");
+            var result = await _sqlDiffLogService.ExportAsync(query, sheetName);
+            var contentType = result.fileName.EndsWith(".zip", StringComparison.OrdinalIgnoreCase)
+                ? "application/zip"
+                : "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+            // 只在 filename* 用 UTF-8 编码，filename 用 ASCII
+            var safeFileName = System.Text.Encoding.ASCII.GetString(System.Text.Encoding.ASCII.GetBytes(result.fileName));
+            Response.Headers["Content-Disposition"] = $"attachment; filename*=UTF-8''{Uri.EscapeDataString(result.fileName)}";
+            return File(result.content, contentType, result.fileName);
         }
 
         /// <summary>

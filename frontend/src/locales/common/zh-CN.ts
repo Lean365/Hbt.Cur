@@ -105,31 +105,6 @@ export default {
       }
     },
 
-    // ==================== 表格操作 ====================
-    table: {
-      header: {
-        operation: '操作'
-      },
-      config: {
-        density: {
-          default: '默认',
-          middle: '中等',
-          small: '紧凑'
-        },
-        columnSetting: '列设置'
-      },
-      pagination: {
-        total: '共 {total} 条',
-        current: '第 {current} 页',
-        pageSize: '每页 {pageSize} 条',
-        jump: '跳至'
-      },
-      empty: '暂无数据',
-      loading: '加载中...',
-      selectAll: '全选',
-      selected: '已选择 {total} 项'
-    },
-
     // ==================== 时间操作 ====================
     datetime: {
       date: '日期',

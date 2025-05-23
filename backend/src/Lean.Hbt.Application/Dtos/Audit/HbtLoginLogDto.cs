@@ -11,7 +11,6 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using Lean.Hbt.Common.Models;
 using Lean.Hbt.Common.Enums;
-using Lean.Hbt.Application.Dtos.Identity;
 using Mapster;
 
 namespace Lean.Hbt.Application.Dtos.Audit
@@ -33,7 +32,7 @@ namespace Lean.Hbt.Application.Dtos.Audit
             UserName = string.Empty;
             IpAddress = string.Empty;
             UserAgent = string.Empty;
-            Message = string.Empty;
+            LoginMessage = string.Empty;
             CreateTime = DateTime.Now;
         }
 
@@ -84,14 +83,14 @@ namespace Lean.Hbt.Application.Dtos.Audit
         public int LoginSource { get; set; }
 
         /// <summary>
-        /// 是否成功
+        /// 是否成功（0失败 1成功）
         /// </summary>
-        public bool Success { get; set; }
+        public int LoginSuccess { get; set; }
 
         /// <summary>
         /// 消息
         /// </summary>
-        public string Message { get; set; }
+        public string? LoginMessage { get; set; }
 
         /// <summary>
         /// 创建时间
@@ -104,24 +103,29 @@ namespace Lean.Hbt.Application.Dtos.Audit
         public HbtSignalRDevice? DeviceInfo { get; set; }
 
         /// <summary>
-        /// 设备扩展ID
+        /// 登录设备ID
         /// </summary>
-        public long? DeviceExtendId { get; set; }
+        public string? DeviceId { get; set; }
 
         /// <summary>
-        /// 设备扩展信息
+        /// 登录设备日志
         /// </summary>
-        public HbtDeviceExtendDto? DeviceExtend { get; set; }
+        public HbtLoginDevLogDto? LoginDevLog { get; set; }
 
         /// <summary>
-        /// 登录扩展ID
+        /// 环境信息
         /// </summary>
-        public long? LoginExtendId { get; set; }
+        public HbtSignalREnvironment? EnvironmentInfo { get; set; }
 
         /// <summary>
-        /// 登录扩展信息
+        /// 登录环境日志ID
         /// </summary>
-        public HbtLoginExtendDto? LoginExtend { get; set; }
+        public string? EnvironmentId { get; set; }
+
+        /// <summary>
+        /// 登录环境日志信息
+        /// </summary>
+        public HbtLoginEnvLogDto? LoginEnvLog { get; set; }
     }
 
     /// <summary>
@@ -157,7 +161,7 @@ namespace Lean.Hbt.Application.Dtos.Audit
         /// <summary>
         /// 是否成功
         /// </summary>
-        public bool? Success { get; set; }
+        public int? LoginSuccess { get; set; }
 
         /// <summary>
         /// 登录类型
@@ -212,7 +216,7 @@ namespace Lean.Hbt.Application.Dtos.Audit
             UserName = string.Empty;
             IpAddress = string.Empty;
             UserAgent = string.Empty;
-            Message = string.Empty;
+            LoginMessage = string.Empty;
             CreateTime = DateTime.Now;
             DeviceName = string.Empty;
             OsVersion = string.Empty;
@@ -288,12 +292,12 @@ namespace Lean.Hbt.Application.Dtos.Audit
         /// <summary>
         /// 是否成功
         /// </summary>
-        public bool Success { get; set; }
+        public int LoginSuccess { get; set; }
 
         /// <summary>
         /// 消息
         /// </summary>
-        public string Message { get; set; }
+        public string? LoginMessage { get; set; }
 
         /// <summary>
         /// 创建时间

@@ -118,7 +118,7 @@
 import type { FormInstance } from 'ant-design-vue'
 import type { RuleObject } from 'ant-design-vue/es/form'
 import type { LoginParams } from '@/types/identity/auth'
-import { DEVICE_INFO_LENGTH, HbtDeviceType, HbtOsType, HbtBrowserType } from '@/types/identity/deviceExtend'
+import { HbtDeviceType, HbtOsType, HbtBrowserType } from '@/types/audit/loginDevLog'
 
 // API和组件导入
 import { getSalt, checkAccountLockout } from '@/api/identity/auth'
@@ -131,6 +131,7 @@ import { message } from 'ant-design-vue'
 import { ref, reactive, onMounted, onUnmounted, nextTick, watch, computed, h } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { getDeviceInfo } from '@/utils/device'
+import { getEnvironmentInfo } from '@/utils/environment'
 import { LOGIN_POLICY, LOGIN_STORAGE_KEYS, SPECIAL_USERS } from '@/types/identity/auth'
 import { registerDynamicRoutes } from '@/router'
 import { ApartmentOutlined, UserOutlined, LockOutlined, GithubOutlined } from '@ant-design/icons-vue'
@@ -148,13 +149,14 @@ const captchaRef = ref()
 
 // 登录表单数据
 const loginForm = ref({
-  tenantId: 0,
+  tenantId: 1,
   userName: 'admin',
   password: '123456',
   captchaToken: '',
   captchaOffset: 0,
   loginSource: 0,
-  deviceInfo: null as any
+  deviceInfo: null as any,
+  environmentInfo: null as any
 })
 
 // 表单验证规则
@@ -184,7 +186,7 @@ const captchaVerified = ref(false)
 const captchaParams = ref<{ token: string; xOffset: number } | null>(null)
 
 // 租户列表
-const tenantList = ref<{ value: number; label: string; disabled?: boolean }[]>([])
+const tenantList = ref<{ value: number; label: string }[]>([])
 
 // 获取租户列表
 const loadTenantList = async () => {
@@ -194,21 +196,20 @@ const loadTenantList = async () => {
     if (res.code === 200 && Array.isArray(res.data)) {
       tenantList.value = res.data.map(item => ({
         value: item.value,
-        label: item.label,
-        disabled: item.disabled
+        label: item.label
       }))
       console.log('[租户列表] 加载成功:', tenantList.value)
       // 如果是admin用户，自动选择默认租户
       if (loginForm.value.userName.toLowerCase() === 'admin') {
-        loginForm.value.tenantId = 0
+        loginForm.value.tenantId = 1
       }
     }
   } catch (error) {
     console.error('[租户列表] 加载失败:', error)
     // 加载失败时添加默认租户
-    tenantList.value = [
-      { value: 0, label: '默认租户' }
-    ]
+    // tenantList.value = [
+    //   { value: 1, label: '系统租户' }
+    // ]
   }
 }
 
@@ -262,7 +263,7 @@ const handleUserNameChange = (e: Event) => {
   const value = (e.target as HTMLInputElement).value;
   // 如果是admin用户，自动设置租户ID为0
   if (value.toLowerCase() === 'admin') {
-    loginForm.value.tenantId = 0;
+    loginForm.value.tenantId = 1;
   }
 }
 
@@ -273,6 +274,13 @@ const isAdmin = computed(() => loginForm.value.userName.toLowerCase() === SPECIA
 const handleLogin = async () => {
   try {
     loading.value = true
+    
+    // 验证凭证
+    const isValid = await validateCredentials()
+    if (!isValid) {
+      loading.value = false
+      return
+    }
     
     // 1. 获取盐值
     const { data: saltResponse } = await getSalt(loginForm.value.userName)
@@ -288,13 +296,15 @@ const handleLogin = async () => {
       saltResponse.data.iterations || 100000
     )
 
-    // 3. 获取设备信息
+    // 3. 获取设备信息和环境信息
     const deviceInfo = await getDeviceInfo()
+    const environmentInfo = await getEnvironmentInfo()
 
     // 4. 构建登录参数
     console.log('[登录] 表单数据:', loginForm.value)
     console.log('[登录] 加密后的密码:', hashedPassword)
     console.log('[登录] 设备信息:', deviceInfo)
+    console.log('[登录] 环境信息:', environmentInfo)
     
     const loginParams: LoginParams = {
       tenantId: loginForm.value.tenantId,
@@ -306,7 +316,44 @@ const handleLogin = async () => {
       userAgent: navigator.userAgent,
       loginType: 0, // 密码登录
       loginSource: 0, // Web登录
-      deviceInfo: deviceInfo
+      deviceInfo: deviceInfo,
+      environmentInfo: {
+        tenantId: loginForm.value.tenantId,
+        userId: 0,
+        deviceId: 0,
+        environmentId: environmentInfo.environmentId,
+        loginType: 0,
+        loginSource: 0,
+        loginStatus: 0,
+        loginProvider: 0,
+        providerKey: '',
+        providerDisplayName: '',
+        networkType: environmentInfo.networkType,
+        timeZone: environmentInfo.timeZone,
+        language: environmentInfo.language,
+        isVpn: environmentInfo.isVpn,
+        isProxy: environmentInfo.isProxy,
+        status: 0,
+        firstLoginTime: environmentInfo.firstLoginTime,
+        firstLoginIp: '',
+        firstLoginLocation: '',
+        firstLoginDeviceId: '',
+        firstLoginDeviceType: 0,
+        firstLoginBrowser: 0,
+        firstLoginOs: 0,
+        lastLoginTime: environmentInfo.lastLoginTime,
+        lastLoginIp: '',
+        lastLoginLocation: '',
+        lastLoginDeviceId: '',
+        lastLoginDeviceType: 0,
+        lastLoginBrowser: 0,
+        lastLoginOs: 0,
+        lastOfflineTime: '',
+        todayOnlinePeriods: 0,
+        loginCount: 0,
+        continuousLoginDays: 0,
+        environmentFingerprint: environmentInfo.environmentFingerprint
+      }
     }
     
     console.log('[登录] 构建的登录参数:', loginParams)
@@ -339,7 +386,7 @@ const handleLoginSuccess = async () => {
     
     // 开始加载菜单
     console.log('[登录成功] 开始加载菜单')
-    await menuStore.reloadMenus()
+    await menuStore.reloadMenus(router)
     console.log('[登录成功] 菜单加载完成')
     
     // 等待路由更新完成
@@ -448,25 +495,29 @@ const handleOAuthLogin = (provider: string) => {
   message.info(t('identity.auth.login.notAvailable', { feature: `${provider}${t('identity.auth.login.form.submit')}` }))
 }
 
-// 添加测试方法
-const runEncryptionTest = async () => {
+// 初始化设备信息
+const initDeviceInfo = async () => {
   try {
-    loading.value = true
-    await new Promise(resolve => setTimeout(resolve, 0)) // 让UI有机会更新
-    window.testPasswordEncryption()
-  } finally {
-    loading.value = false
+    loginForm.value.deviceInfo = await getDeviceInfo()
+  } catch (error) {
+    console.error('初始化设备信息失败:', error)
   }
 }
 
-// 初始化设备信息
-const initDeviceInfo = async () => {
-  loginForm.value.deviceInfo = await getDeviceInfo()
+// 初始化环境信息
+const initEnvironmentInfo = async () => {
+  try {
+    const environmentInfo = await getEnvironmentInfo()
+    loginForm.value.environmentInfo = environmentInfo
+  } catch (error) {
+    console.error('初始化环境信息失败:', error)
+  }
 }
 
 // 在组件挂载时初始化设备信息
 onMounted(async () => {
   await initDeviceInfo()
+  await initEnvironmentInfo()
   await loadTenantList()
   
   // 清理登录状态
@@ -481,7 +532,7 @@ onMounted(async () => {
     rememberMe.value = true
     // 如果是admin用户，自动设置租户ID为0
     if (lastUsername.toLowerCase() === 'admin') {
-      loginForm.value.tenantId = 0
+      loginForm.value.tenantId = 1
     }
   }
 })

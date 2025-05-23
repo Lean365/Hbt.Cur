@@ -34,7 +34,7 @@ public class HbtDbSeedMaterialDictType
     /// <summary>
     /// 初始化物料相关字典类型数据
     /// </summary>
-    public async Task<(int, int)> InitializeMaterialDictTypeAsync()
+    public async Task<(int, int)> InitializeMaterialDictTypeAsync(long tenantId)
     {
         int insertCount = 0;
         int updateCount = 0;
@@ -47,11 +47,11 @@ public class HbtDbSeedMaterialDictType
                 DictType = "sys_material_type",
                 OrderNum = 1,
                 Status = 0,
-                TenantId = 0,
+                
                 Remark = "物料类型字典",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictType
@@ -60,11 +60,11 @@ public class HbtDbSeedMaterialDictType
                 DictType = "sys_material_group",
                 OrderNum = 2,
                 Status = 0,
-                TenantId = 0,
+                
                 Remark = "物料组字典",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictType
@@ -73,11 +73,11 @@ public class HbtDbSeedMaterialDictType
                 DictType = "sys_material_category",
                 OrderNum = 3,
                 Status = 0,
-                TenantId = 0,
+                
                 Remark = "物料分类字典",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictType
@@ -86,11 +86,11 @@ public class HbtDbSeedMaterialDictType
                 DictType = "sys_material_status",
                 OrderNum = 4,
                 Status = 0,
-                TenantId = 0,
+                
                 Remark = "物料状态字典",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictType
@@ -99,11 +99,11 @@ public class HbtDbSeedMaterialDictType
                 DictType = "sys_material_source",
                 OrderNum = 5,
                 Status = 0,
-                TenantId = 0,
+                
                 Remark = "物料来源字典",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictType
@@ -112,11 +112,11 @@ public class HbtDbSeedMaterialDictType
                 DictType = "sys_material_valuation",
                 OrderNum = 6,
                 Status = 0,
-                TenantId = 0,
+                
                 Remark = "物料计价方式字典",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictType
@@ -125,11 +125,11 @@ public class HbtDbSeedMaterialDictType
                 DictType = "sys_material_batch",
                 OrderNum = 7,
                 Status = 0,
-                TenantId = 0,
+                
                 Remark = "物料批次管理字典",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictType
@@ -138,11 +138,11 @@ public class HbtDbSeedMaterialDictType
                 DictType = "sys_material_serial",
                 OrderNum = 8,
                 Status = 0,
-                TenantId = 0,
+                
                 Remark = "物料序列号管理字典",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictType
@@ -151,11 +151,11 @@ public class HbtDbSeedMaterialDictType
                 DictType = "sys_material_stock",
                 OrderNum = 9,
                 Status = 0,
-                TenantId = 0,
+                
                 Remark = "物料库存管理字典",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictType
@@ -164,11 +164,11 @@ public class HbtDbSeedMaterialDictType
                 DictType = "sys_material_cost",
                 OrderNum = 10,
                 Status = 0,
-                TenantId = 0,
+                
                 Remark = "物料成本核算字典",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             }
         };
@@ -178,6 +178,11 @@ public class HbtDbSeedMaterialDictType
             var existingDictType = await _dictTypeRepository.GetFirstAsync(d => d.DictType == dictType.DictType);
             if (existingDictType == null)
             {
+                dictType.TenantId = tenantId;
+                dictType.CreateBy = "Hbt365";
+                dictType.CreateTime = DateTime.Now;
+                dictType.UpdateBy = "Hbt365";
+                dictType.UpdateTime = DateTime.Now;
                 await _dictTypeRepository.CreateAsync(dictType);
                 insertCount++;
                 _logger.Info($"[创建] 物料字典类型 '{dictType.DictName}' 创建成功");
@@ -186,14 +191,14 @@ public class HbtDbSeedMaterialDictType
             {
                 existingDictType.DictName = dictType.DictName;
                 existingDictType.DictType = dictType.DictType;
-                existingDictType.DictBuiltin = dictType.DictBuiltin;
+                existingDictType.IsBuiltin = dictType.IsBuiltin;
                 existingDictType.OrderNum = dictType.OrderNum;
                 existingDictType.Status = dictType.Status;
-                existingDictType.TenantId = dictType.TenantId;
+                existingDictType.TenantId = tenantId;
                 existingDictType.Remark = dictType.Remark;
                 existingDictType.CreateBy = dictType.CreateBy;
                 existingDictType.CreateTime = dictType.CreateTime;
-                existingDictType.UpdateBy = "system";
+                existingDictType.UpdateBy = "Hbt365";
                 existingDictType.UpdateTime = DateTime.Now;
 
                 await _dictTypeRepository.UpdateAsync(existingDictType);

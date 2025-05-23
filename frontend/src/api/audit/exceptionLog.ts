@@ -16,7 +16,7 @@ import type { HbtExceptionLogDto, HbtExceptionLogQueryDto } from '@/types/audit/
  * @param query 查询参数
  * @returns 异常日志列表
  */
-export function getExceptionLogs(query: HbtExceptionLogQueryDto) {
+export function getExceptionLogList(query: HbtExceptionLogQueryDto) {
   return request<HbtApiResponse<HbtPagedResult<HbtExceptionLogDto>>>({
     url: '/api/HbtExceptionLog/list',
     method: 'get',
@@ -42,7 +42,7 @@ export function getExceptionLog(logId: number) {
  * @param sheetName 工作表名称
  * @returns Excel文件
  */
-export function exportExceptionLogs(query: HbtExceptionLogQueryDto, sheetName: string = '异常日志') {
+export function exportExceptionLog(query: HbtExceptionLogQueryDto, sheetName: string = '异常日志') {
   return request({
     url: '/api/HbtExceptionLog/export',
     method: 'get',
@@ -55,7 +55,7 @@ export function exportExceptionLogs(query: HbtExceptionLogQueryDto, sheetName: s
  * 清空异常日志
  * @returns 是否成功
  */
-export function clearExceptionLogs() {
+export function clearExceptionLog() {
   return request<HbtApiResponse<boolean>>({
     url: '/api/HbtExceptionLog/clear',
     method: 'delete'

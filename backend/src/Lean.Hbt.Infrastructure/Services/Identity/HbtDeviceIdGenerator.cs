@@ -125,4 +125,67 @@ public class HbtDeviceIdGenerator : IHbtDeviceIdGenerator
         var hash = sha256.ComputeHash(bytes);
         return BitConverter.ToString(hash).Replace("-", "").ToLower();
     }
+
+    /// <summary>
+    /// 生成环境ID
+    /// </summary>
+    /// <param name="environmentInfoJson">环境信息JSON</param>
+    /// <param name="userId">用户ID</param>
+    /// <returns>环境ID</returns>
+    public string GenerateEnvironmentId(string? environmentInfoJson, string userId)
+    {
+        // 提取环境特征
+        var environmentFeatures = ExtractEnvironmentFeatures(environmentInfoJson);
+        
+        // 生成环境ID（使用完整的32位哈希值）
+        return GenerateHash(
+            string.Join(":", new[]
+            {
+                environmentFeatures.fingerprint,
+                environmentFeatures.browserInfo,
+                environmentFeatures.osInfo,
+                environmentFeatures.screenInfo,
+                environmentFeatures.timezone,
+                environmentFeatures.language,
+                environmentFeatures.plugins,
+                environmentFeatures.canvasFingerprint,
+                environmentFeatures.webglFingerprint,
+                userId
+            })
+        );
+    }
+
+    /// <summary>
+    /// 从JSON中提取环境特征
+    /// </summary>
+    private (string fingerprint, string browserInfo, string osInfo, string screenInfo, string timezone, string language, string plugins, string canvasFingerprint, string webglFingerprint) 
+        ExtractEnvironmentFeatures(string? environmentInfoJson)
+    {
+        if (string.IsNullOrEmpty(environmentInfoJson))
+        {
+            return ("unknown", "unknown", "unknown", "unknown", "unknown", "unknown", "unknown", "unknown", "unknown");
+        }
+
+        try
+        {
+            using var doc = JsonDocument.Parse(environmentInfoJson);
+            var root = doc.RootElement;
+
+            var fingerprint = GetJsonValue(root, "Fingerprint", "unknown");
+            var browserInfo = GetJsonValue(root, "BrowserInfo", "unknown");
+            var osInfo = GetJsonValue(root, "OsInfo", "unknown");
+            var screenInfo = GetJsonValue(root, "ScreenInfo", "unknown");
+            var timezone = GetJsonValue(root, "Timezone", "unknown");
+            var language = GetJsonValue(root, "Language", "unknown");
+            var plugins = GetJsonValue(root, "Plugins", "unknown");
+            var canvasFingerprint = GetJsonValue(root, "CanvasFingerprint", "unknown");
+            var webglFingerprint = GetJsonValue(root, "WebglFingerprint", "unknown");
+
+            return (fingerprint, browserInfo, osInfo, screenInfo, timezone, language, plugins, canvasFingerprint, webglFingerprint);
+        }
+        catch
+        {
+            return ("unknown", "unknown", "unknown", "unknown", "unknown", "unknown", "unknown", "unknown", "unknown");
+        }
+    }
 } 

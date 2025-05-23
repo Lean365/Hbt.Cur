@@ -53,9 +53,11 @@ namespace Lean.Hbt.Application.Services.Core
         private Expression<Func<HbtDictType, bool>> KpDictTypeQueryExpression(HbtDictTypeQueryDto query)
         {
             return Expressionable.Create<HbtDictType>()
-                .AndIF(!string.IsNullOrEmpty(query.DictName), x => x.DictName.Contains(query.DictName!))
-                .AndIF(!string.IsNullOrEmpty(query.DictType), x => x.DictType.Contains(query.DictType!))
-                .AndIF(query.Status.HasValue, x => x.Status == query.Status)
+                .AndIF(!string.IsNullOrEmpty(query.DictName), x => x.DictName!.Contains(query.DictName!))
+                .AndIF(!string.IsNullOrEmpty(query.DictType), x => x.DictType!.Contains(query.DictType!))
+                .AndIF(query.Status != -1, x => x.Status == query.Status)
+                .AndIF(query.IsBuiltin != -1, x => x.IsBuiltin == query.IsBuiltin)
+                .AndIF(query.DictCategory != -1, x => x.DictCategory == query.DictCategory)
                 .ToExpression();
         }
 
@@ -151,7 +153,7 @@ namespace Lean.Hbt.Application.Services.Core
             var dictType = await _dictTypeRepository.GetByIdAsync(dictTypeId) 
                 ?? throw new HbtException(L("Core.DictType.NotFound", dictTypeId));
 
-            if (dictType.DictBuiltin == 1)
+            if (dictType.IsBuiltin == 1)
                 throw new HbtException(L("Core.DictType.CannotDeleteBuiltin"));
 
             return await _dictTypeRepository.DeleteAsync(dictTypeId) > 0;

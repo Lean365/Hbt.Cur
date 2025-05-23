@@ -34,7 +34,7 @@ public class HbtDbSeedFinanceDictData
     /// <summary>
     /// 初始化财务相关字典数据
     /// </summary>
-    public async Task<(int, int)> InitializeFinanceDictDataAsync()
+    public async Task<(int, int)> InitializeFinanceDictDataAsync(long tenantId)
     {
         int insertCount = 0;
         int updateCount = 0;
@@ -49,13 +49,13 @@ public class HbtDbSeedFinanceDictData
                 DictValue = "SALES",
                 OrderNum = 1,
                 Status = 0,
-                TenantId = 0,
+                
                 CssClass = 1,
                 ListClass = 1,
                 Remark = "销售部门利润中心",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictData
@@ -65,13 +65,13 @@ public class HbtDbSeedFinanceDictData
                 DictValue = "PROD",
                 OrderNum = 2,
                 Status = 0,
-                TenantId = 0,
+                
                 CssClass = 2,
                 ListClass = 2,
                 Remark = "生产部门利润中心",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictData
@@ -81,13 +81,13 @@ public class HbtDbSeedFinanceDictData
                 DictValue = "R&D",
                 OrderNum = 3,
                 Status = 0,
-                TenantId = 0,
+                
                 CssClass = 3,
                 ListClass = 3,
                 Remark = "研发部门利润中心",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
 
@@ -99,13 +99,13 @@ public class HbtDbSeedFinanceDictData
                 DictValue = "WORKSHOP",
                 OrderNum = 1,
                 Status = 0,
-                TenantId = 0,
+                
                 CssClass = 1,
                 ListClass = 1,
                 Remark = "生产车间成本中心",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictData
@@ -115,13 +115,13 @@ public class HbtDbSeedFinanceDictData
                 DictValue = "Hbt365",
                 OrderNum = 2,
                 Status = 0,
-                TenantId = 0,
+                
                 CssClass = 2,
                 ListClass = 2,
                 Remark = "管理部门成本中心",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictData
@@ -131,13 +131,13 @@ public class HbtDbSeedFinanceDictData
                 DictValue = "R&D",
                 OrderNum = 3,
                 Status = 0,
-                TenantId = 0,
+                
                 CssClass = 3,
                 ListClass = 3,
                 Remark = "研发部门成本中心",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
 
@@ -149,13 +149,13 @@ public class HbtDbSeedFinanceDictData
                 DictValue = "MACHINE",
                 OrderNum = 1,
                 Status = 0,
-                TenantId = 0,
+                
                 CssClass = 1,
                 ListClass = 1,
                 Remark = "机加工工作中心",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictData
@@ -165,13 +165,13 @@ public class HbtDbSeedFinanceDictData
                 DictValue = "ASSEMBLY",
                 OrderNum = 2,
                 Status = 0,
-                TenantId = 0,
+                
                 CssClass = 2,
                 ListClass = 2,
                 Remark = "装配工作中心",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictData
@@ -181,13 +181,13 @@ public class HbtDbSeedFinanceDictData
                 DictValue = "TEST",
                 OrderNum = 3,
                 Status = 0,
-                TenantId = 0,
+                
                 CssClass = 3,
                 ListClass = 3,
                 Remark = "测试工作中心",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
 
@@ -199,13 +199,13 @@ public class HbtDbSeedFinanceDictData
                 DictValue = "RAW",
                 OrderNum = 1,
                 Status = 0,
-                TenantId = 0,
+                
                 CssClass = 1,
                 ListClass = 1,
                 Remark = "原材料评估类",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictData
@@ -215,13 +215,13 @@ public class HbtDbSeedFinanceDictData
                 DictValue = "SEMI",
                 OrderNum = 2,
                 Status = 0,
-                TenantId = 0,
+                
                 CssClass = 2,
                 ListClass = 2,
                 Remark = "半成品评估类",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictData
@@ -231,13 +231,13 @@ public class HbtDbSeedFinanceDictData
                 DictValue = "FINISH",
                 OrderNum = 3,
                 Status = 0,
-                TenantId = 0,
+                
                 CssClass = 3,
                 ListClass = 3,
                 Remark = "产成品评估类",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
 
@@ -249,13 +249,13 @@ public class HbtDbSeedFinanceDictData
                 DictValue = "STD",
                 OrderNum = 1,
                 Status = 0,
-                TenantId = 0,
+                
                 CssClass = 1,
                 ListClass = 1,
                 Remark = "标准价格控制",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictData
@@ -265,13 +265,13 @@ public class HbtDbSeedFinanceDictData
                 DictValue = "MAP",
                 OrderNum = 2,
                 Status = 0,
-                TenantId = 0,
+                
                 CssClass = 2,
                 ListClass = 2,
                 Remark = "移动平均价格控制",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictData
@@ -281,13 +281,13 @@ public class HbtDbSeedFinanceDictData
                 DictValue = "ACT",
                 OrderNum = 3,
                 Status = 0,
-                TenantId = 0,
+                
                 CssClass = 3,
                 ListClass = 3,
                 Remark = "实际成本价格控制",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
 
@@ -299,13 +299,13 @@ public class HbtDbSeedFinanceDictData
                 DictValue = "STD",
                 OrderNum = 1,
                 Status = 0,
-                TenantId = 0,
+                
                 CssClass = 1,
                 ListClass = 1,
                 Remark = "标准成本核算方法",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictData
@@ -315,13 +315,13 @@ public class HbtDbSeedFinanceDictData
                 DictValue = "ACT",
                 OrderNum = 2,
                 Status = 0,
-                TenantId = 0,
+                
                 CssClass = 2,
                 ListClass = 2,
                 Remark = "实际成本核算方法",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictData
@@ -331,13 +331,13 @@ public class HbtDbSeedFinanceDictData
                 DictValue = "ABC",
                 OrderNum = 3,
                 Status = 0,
-                TenantId = 0,
+                
                 CssClass = 3,
                 ListClass = 3,
                 Remark = "作业成本核算方法",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
 
@@ -349,13 +349,13 @@ public class HbtDbSeedFinanceDictData
                 DictValue = "DM",
                 OrderNum = 1,
                 Status = 0,
-                TenantId = 0,
+                
                 CssClass = 1,
                 ListClass = 1,
                 Remark = "直接材料成本要素",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictData
@@ -365,13 +365,13 @@ public class HbtDbSeedFinanceDictData
                 DictValue = "DL",
                 OrderNum = 2,
                 Status = 0,
-                TenantId = 0,
+                
                 CssClass = 2,
                 ListClass = 2,
                 Remark = "直接人工成本要素",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictData
@@ -381,13 +381,13 @@ public class HbtDbSeedFinanceDictData
                 DictValue = "MOH",
                 OrderNum = 3,
                 Status = 0,
-                TenantId = 0,
+                
                 CssClass = 3,
                 ListClass = 3,
                 Remark = "制造费用成本要素",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
 
@@ -399,13 +399,13 @@ public class HbtDbSeedFinanceDictData
                 DictValue = "PROD",
                 OrderNum = 1,
                 Status = 0,
-                TenantId = 0,
+                
                 CssClass = 1,
                 ListClass = 1,
                 Remark = "产品成本对象",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictData
@@ -415,13 +415,13 @@ public class HbtDbSeedFinanceDictData
                 DictValue = "ORDER",
                 OrderNum = 2,
                 Status = 0,
-                TenantId = 0,
+                
                 CssClass = 2,
                 ListClass = 2,
                 Remark = "订单成本对象",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictData
@@ -431,13 +431,13 @@ public class HbtDbSeedFinanceDictData
                 DictValue = "PROJ",
                 OrderNum = 3,
                 Status = 0,
-                TenantId = 0,
+                
                 CssClass = 3,
                 ListClass = 3,
                 Remark = "项目成本对象",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
 
@@ -449,13 +449,13 @@ public class HbtDbSeedFinanceDictData
                 DictValue = "DIRECT",
                 OrderNum = 1,
                 Status = 0,
-                TenantId = 0,
+                
                 CssClass = 1,
                 ListClass = 1,
                 Remark = "直接分配方法",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictData
@@ -465,13 +465,13 @@ public class HbtDbSeedFinanceDictData
                 DictValue = "STEP",
                 OrderNum = 2,
                 Status = 0,
-                TenantId = 0,
+                
                 CssClass = 2,
                 ListClass = 2,
                 Remark = "阶梯分配方法",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictData
@@ -481,13 +481,13 @@ public class HbtDbSeedFinanceDictData
                 DictValue = "RECIP",
                 OrderNum = 3,
                 Status = 0,
-                TenantId = 0,
+                
                 CssClass = 3,
                 ListClass = 3,
                 Remark = "交互分配方法",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
 
@@ -499,13 +499,13 @@ public class HbtDbSeedFinanceDictData
                 DictValue = "PROD",
                 OrderNum = 1,
                 Status = 0,
-                TenantId = 0,
+                
                 CssClass = 1,
                 ListClass = 1,
                 Remark = "生产型成本中心",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictData
@@ -515,13 +515,13 @@ public class HbtDbSeedFinanceDictData
                 DictValue = "SERV",
                 OrderNum = 2,
                 Status = 0,
-                TenantId = 0,
+                
                 CssClass = 2,
                 ListClass = 2,
                 Remark = "服务型成本中心",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictData
@@ -531,13 +531,13 @@ public class HbtDbSeedFinanceDictData
                 DictValue = "Hbt365",
                 OrderNum = 3,
                 Status = 0,
-                TenantId = 0,
+                
                 CssClass = 3,
                 ListClass = 3,
                 Remark = "管理型成本中心",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             }
         };
@@ -547,6 +547,11 @@ public class HbtDbSeedFinanceDictData
             var existingDictData = await _dictDataRepository.GetFirstAsync(d => d.DictType == dictData.DictType && d.DictValue == dictData.DictValue);
             if (existingDictData == null)
             {
+                dictData.TenantId = tenantId;
+                dictData.CreateBy = "Hbt365";
+                dictData.CreateTime = DateTime.Now;
+                dictData.UpdateBy = "Hbt365";
+                dictData.UpdateTime = DateTime.Now;
                 await _dictDataRepository.CreateAsync(dictData);
                 insertCount++;
                 _logger.Info($"[创建] 财务字典数据 '{dictData.DictLabel}' 创建成功");
@@ -560,11 +565,11 @@ public class HbtDbSeedFinanceDictData
                 existingDictData.CssClass = dictData.CssClass;
                 existingDictData.ListClass = dictData.ListClass;
                 existingDictData.Status = dictData.Status;
-                existingDictData.TenantId = dictData.TenantId;
+                existingDictData.TenantId = tenantId;
                 existingDictData.Remark = dictData.Remark;
                 existingDictData.CreateBy = dictData.CreateBy;
                 existingDictData.CreateTime = dictData.CreateTime;
-                existingDictData.UpdateBy = "system";
+                existingDictData.UpdateBy = "Hbt365";
                 existingDictData.UpdateTime = DateTime.Now;
 
                 await _dictDataRepository.UpdateAsync(existingDictData);

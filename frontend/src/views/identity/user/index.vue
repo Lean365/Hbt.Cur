@@ -42,7 +42,7 @@
       :pagination="false"
       :scroll="{ x: 'max-content' }"
       :default-height="594"
-      :row-key="(record: User) => String(record.userId)"
+      row-key="userId"
       v-model:selectedRowKeys="selectedRowKeys"
       :row-selection="{
         type: 'checkbox',
@@ -61,7 +61,7 @@
             :preview="{
               src: getAvatarUrl(record.avatar)
             }"
-            style="border-radius: 50%; object-fit: cover;"
+            style="border-radius: 50%; object-fit: cover"
           />
         </template>
 
@@ -69,12 +69,12 @@
         <template v-if="column.dataIndex === 'userType'">
           <hbt-dict-tag dict-type="sys_user_type" :value="record.userType" />
         </template>
-        
+
         <!-- 性别列 -->
         <template v-if="column.dataIndex === 'gender'">
           <hbt-dict-tag dict-type="sys_gender" :value="record.gender" />
         </template>
-        
+
         <!-- 状态列 -->
         <template v-if="column.dataIndex === 'status'">
           <a-switch
@@ -100,7 +100,11 @@
         <!-- 锁定状态列 -->
         <template v-if="column.dataIndex === 'isLock'">
           <a-tag :color="record.isLock === 1 ? 'red' : 'green'">
-            {{ record.isLock === 1 ? t('common.status.base.disabled') : t('common.status.base.normal') }}
+            {{
+              record.isLock === 1
+                ? t('common.status.base.disabled')
+                : t('common.status.base.normal')
+            }}
           </a-tag>
         </template>
 
@@ -131,13 +135,16 @@
           >
             <template #extra>
               <a-dropdown>
-              <a-button>
-                {{t('common.actions.more')}}
-                <DownOutlined />
-              </a-button>
-            <template #overlay>
-          <a-menu>
-            <a-tooltip v-if="record.userName !== 'admin'" :title="t('identity.user.resetPwd')">
+                <a-button>
+                  {{ t('common.actions.more') }}
+                  <DownOutlined />
+                </a-button>
+                <template #overlay>
+                  <a-menu>
+                    <a-tooltip
+                      v-if="record.userName !== 'admin'"
+                      :title="t('identity.user.resetPwd')"
+                    >
                       <a-button
                         v-hasPermi="['identity:user:resetpwd']"
                         type="default"
@@ -170,10 +177,9 @@
                         <template #icon><solution-outlined /></template>
                       </a-button>
                     </a-tooltip>
-          </a-menu>
-        </template>
-      </a-dropdown>
-
+                  </a-menu>
+                </template>
+              </a-dropdown>
             </template>
           </hbt-operation>
         </template>
@@ -187,14 +193,14 @@
       :total="total"
       :show-size-changer="true"
       :show-quick-jumper="true"
-      :show-total="(total: number, range: [number, number]) => h('span', null, `共 ${total} 条`)"
+      :show-total="(total: number, range: [number, number]) => h('span', null, t('table.pagination.total', { total }))"
       @change="handlePageChange"
       @showSizeChange="handleSizeChange"
     />
 
     <!-- 用户表单对话框 -->
     <user-form
-      v-model:visible="formVisible"
+      v-model:visible="userFormVisible"
       :title="formTitle"
       :user-id="selectedUserId"
       @success="handleSuccess"
@@ -203,30 +209,29 @@
     <!-- 重置密码表单对话框 -->
     <reset-pwd-form
       v-model:visible="resetPwdVisible"
-      :user-id="selectedUserId"
+      :user-id="selectedUserId!"
       @success="handleResetPwdSuccess"
     />
 
     <!-- 角色分配对话框 -->
     <role-allocate
-      v-if="selectedUserId"
-      v-model:visible="roleAllocateVisible"
-      :user-id="selectedUserId"
+      v-model:visible="roleDialogVisible"
+      :user-id="selectedUserId!"
       @success="handleSuccess"
     />
 
     <!-- 部门分配对话框 -->
     <dept-allocate
-      v-if="selectedUserId"
-      v-model:visible="deptAllocateVisible"
+      v-if="deptDialogVisible && selectedUserId !== undefined"
+      v-model:visible="deptDialogVisible"
       :user-id="selectedUserId"
       @success="handleSuccess"
     />
 
     <!-- 岗位分配对话框 -->
     <post-allocate
-      v-if="selectedUserId"
-      v-model:visible="postAllocateVisible"
+      v-if="postDialogVisible && selectedUserId !== undefined"
+      v-model:visible="postDialogVisible"
       :user-id="selectedUserId"
       @success="handleSuccess"
     />
@@ -258,9 +263,20 @@ import { message } from 'ant-design-vue'
 import { ref, computed, onMounted, h, nextTick, watch } from 'vue'
 import type { TablePaginationConfig } from 'ant-design-vue'
 import { useDictStore } from '@/stores/dict'
-import type { User, UserQuery } from '@/types/identity/user'
+import type { HbtUser, HbtUserQuery } from '@/types/identity/user'
 import type { QueryField } from '@/types/components/query'
-import { getPagedList, deleteUser, exportUser, importUser, getTemplate, getUser, createUser, updateUser, resetPassword, updateUserStatus } from '@/api/identity/user'
+import {
+  getUserList,
+  deleteUser,
+  exportUser,
+  importUser,
+  getTemplate,
+  getUser,
+  createUser,
+  updateUser,
+  resetPassword,
+  updateUserStatus
+} from '@/api/identity/user'
 import UserForm from './components/UserForm.vue'
 import ResetPwdForm from './components/ResetPwdForm.vue'
 import RoleAllocate from './components/RoleAllocate.vue'
@@ -277,7 +293,15 @@ const getAvatarUrl = (avatar: string | null) => {
 }
 
 // 查询字段类型定义
-type FieldType = 'input' | 'select' | 'date' | 'dateRange' | 'number' | 'radio' | 'checkbox' | 'cascader'
+type FieldType =
+  | 'input'
+  | 'select'
+  | 'date'
+  | 'dateRange'
+  | 'number'
+  | 'radio'
+  | 'checkbox'
+  | 'cascader'
 
 // 表格列定义
 interface TableColumn {
@@ -290,6 +314,13 @@ interface TableColumn {
 }
 
 const columns: TableColumn[] = [
+  {
+    title: 'ID',
+    dataIndex: 'userId',
+    key: 'userId',
+    width: 80,
+    ellipsis: true
+  },
   {
     title: t('identity.user.table.columns.userName'),
     dataIndex: 'userName',
@@ -387,17 +418,52 @@ const columns: TableColumn[] = [
     dataIndex: 'lastPasswordChangeTime',
     key: 'lastPasswordChangeTime',
     width: 180,
-    ellipsis: true  
+    ellipsis: true
   },
-  {title: t('identity.user.table.columns.remark'), dataIndex: 'remark', key: 'remark', width: 120},
-  {title: t('identity.user.table.columns.createBy'), dataIndex: 'createBy', key: 'createBy', width: 120},
-  {title: t('identity.user.table.columns.createTime'), dataIndex: 'createTime', key: 'createTime', width: 180},
-  {title: t('identity.user.table.columns.updateBy'), dataIndex: 'updateBy', key: 'updateBy', width: 120},
-  {title: t('identity.user.table.columns.updateTime'), dataIndex: 'updateTime', key: 'updateTime', width: 180},
-  {title: t('identity.user.table.columns.deleteBy'), dataIndex: 'deleteBy', key: 'deleteBy', width: 120},
-  {title: t('identity.user.table.columns.deleteTime'), dataIndex: 'deleteTime', key: 'deleteTime', width: 180},
   {
-    title: t('common.table.header.operation'),
+    title: t('table.columns.remark'),
+    dataIndex: 'remark',
+    key: 'remark',
+    width: 120
+  },
+  {
+    title: t('table.columns.createBy'),
+    dataIndex: 'createBy',
+    key: 'createBy',
+    width: 120
+  },
+  {
+    title: t('table.columns.createTime'),
+    dataIndex: 'createTime',
+    key: 'createTime',
+    width: 180
+  },
+  {
+    title: t('table.columns.updateBy'),
+    dataIndex: 'updateBy',
+    key: 'updateBy',
+    width: 120
+  },
+  {
+    title: t('table.columns.updateTime'),
+    dataIndex: 'updateTime',
+    key: 'updateTime',
+    width: 180
+  },
+  {
+    title: t('table.columns.deleteBy'),
+    dataIndex: 'deleteBy',
+    key: 'deleteBy',
+    width: 120
+  },
+  {
+    title: t('table.columns.deleteTime'),
+    dataIndex: 'deleteTime',
+    key: 'deleteTime',
+    width: 180
+  },
+  {
+    title: t('table.columns.operation'),
     key: 'action',
     width: 150,
     fixed: 'right'
@@ -405,7 +471,7 @@ const columns: TableColumn[] = [
 ]
 
 // 查询参数
-const queryParams = ref<UserQuery>({
+const queryParams = ref<HbtUserQuery>({
   pageIndex: 1,
   pageSize: 10,
   userName: '',
@@ -423,7 +489,7 @@ const queryFields: QueryField[] = [
   {
     name: 'userName',
     label: t('identity.user.table.columns.userName'),
-    type: 'input' as const
+    type: 'input' as const,
   },
   {
     name: 'nickName',
@@ -475,12 +541,12 @@ const queryFields: QueryField[] = [
 // 表格相关
 const loading = ref(false)
 const total = ref(0)
-const tableData = ref<User[]>([])
+const tableData = ref<HbtUser[]>([])
 const selectedRowKeys = ref<(string | number)[]>([])
 const showSearch = ref(true)
 
 // 表单对话框
-const formVisible = ref(false)
+const userFormVisible = ref(false)
 const formTitle = ref('')
 const selectedUserId = ref<number>()
 
@@ -488,13 +554,13 @@ const selectedUserId = ref<number>()
 const resetPwdVisible = ref(false)
 
 // 角色分配弹窗
-const roleAllocateVisible = ref(false)
+const roleDialogVisible = ref(false)
 
 // 部门分配弹窗
-const deptAllocateVisible = ref(false)
+const deptDialogVisible = ref(false)
 
 // 岗位分配弹窗
-const postAllocateVisible = ref(false)
+const postDialogVisible = ref(false)
 
 // 列设置相关
 const columnSettingVisible = ref(false)
@@ -505,18 +571,18 @@ const columnSettings = ref<Record<string, boolean>>({})
 const initColumnSettings = () => {
   // 每次刷新页面时清除localStorage
   localStorage.removeItem('userColumnSettings')
-  
+
   // 初始化所有列为false
   columnSettings.value = Object.fromEntries(defaultColumns.map(col => [col.key, false]))
-  
+
   // 获取前9列（不包含操作列）
   const firstNineColumns = defaultColumns.filter(col => col.key !== 'action').slice(0, 9)
-  
+
   // 设置前9列为true
   firstNineColumns.forEach(col => {
     columnSettings.value[col.key] = true
   })
-  
+
   // 确保操作列显示
   columnSettings.value['action'] = true
 }
@@ -526,10 +592,10 @@ const fetchData = async () => {
   loading.value = true
   try {
     console.log('查询参数:', {
-       ...queryParams.value 
+      ...queryParams.value
     })
 
-    const res = await getPagedList(queryParams.value)
+    const res = await getUserList(queryParams.value)
     console.log('res:', res)
     if (res.data.code === 200) {
       tableData.value = res.data.data.rows
@@ -581,18 +647,18 @@ const handleTableChange = (pagination: TablePaginationConfig) => {
 const handleAdd = () => {
   formTitle.value = t('common.actions.add')
   selectedUserId.value = undefined
-  formVisible.value = true
+  userFormVisible.value = true
 }
 
 // 处理编辑
-const handleEdit = (record: User) => {
+const handleEdit = (record: HbtUser) => {
   formTitle.value = t('common.actions.edit')
   selectedUserId.value = record.userId
-  formVisible.value = true
+  userFormVisible.value = true
 }
 
 // 处理删除
-const handleDelete = async (record: User) => {
+const handleDelete = async (record: HbtUser) => {
   if (record.userName === 'admin') {
     message.warning('不能删除超级管理员账号！')
     return
@@ -615,12 +681,13 @@ const handleDelete = async (record: User) => {
 const handleExport = async () => {
   try {
     const res = await exportUser({
-      ...queryParams.value,
-      sheetName: '用户信息'
+      ...queryParams.value
+      //sheetName: '用户信息'
     })
     // 动态获取文件名
     console.log('res.headers', res.headers)
-    const disposition = res.headers && (res.headers['content-disposition'] || res.headers['Content-Disposition'])
+    const disposition =
+      res.headers && (res.headers['content-disposition'] || res.headers['Content-Disposition'])
     console.log('disposition', disposition)
     let fileName = ''
     if (disposition) {
@@ -653,7 +720,7 @@ const handleExport = async () => {
 
 // 处理表单提交成功
 const handleSuccess = () => {
-  formVisible.value = false
+  userFormVisible.value = false
   fetchData()
 }
 
@@ -673,8 +740,10 @@ const handleEditSelected = () => {
     message.warning(t('common.selectOne'))
     return
   }
-  
-  const record = tableData.value.find(item => String(item.userId) === String(selectedRowKeys.value[0]))
+
+  const record = tableData.value.find(
+    item => String(item.userId) === String(selectedRowKeys.value[0])
+  )
   if (record) {
     handleEdit(record)
   }
@@ -688,7 +757,9 @@ const handleBatchDelete = async () => {
   }
 
   // 判断是否包含 admin 用户
-  const selectedUsers = tableData.value.filter(item => selectedRowKeys.value.includes(String(item.userId)))
+  const selectedUsers = tableData.value.filter(item =>
+    selectedRowKeys.value.includes(String(item.userId))
+  )
   console.log('selectedUsers:', selectedUsers)
   if (selectedUsers.some(user => user.userName === 'admin')) {
     message.warning('不能删除超级管理员账号！')
@@ -734,12 +805,12 @@ const handleColumnSetting = () => {
 }
 
 // 处理行点击
-const handleRowClick = (record: User) => {
+const handleRowClick = (record: HbtUser) => {
   console.log('行点击:', record)
 }
 
 // 处理重置密码
-const handleResetPassword = (record: User) => {
+const handleResetPassword = (record: HbtUser) => {
   // 这里假设有resetPassword API，传递userId和默认密码
   resetPassword({ userId: record.userId, password: 'Hbt@123852' })
     .then(res => {
@@ -772,8 +843,13 @@ const handleImport = async () => {
       if (!file) return
       const res = await importUser(file)
       const { success = 0, fail = 0 } = (res.data as any).Data || {}
-      console.log('fail:', (res.data as any).Data?.fail, 'success:', (res.data as any).Data?.success)
-     
+      console.log(
+        'fail:',
+        (res.data as any).Data?.fail,
+        'success:',
+        (res.data as any).Data?.success
+      )
+
       if (success > 0 && fail === 0) {
         message.success(`导入成功${success}条，全部成功！`)
       } else if (success > 0 && fail > 0) {
@@ -808,21 +884,21 @@ const handleTemplate = async () => {
 }
 
 // 处理授权
-const handleAuthorize = (record: User) => {
+const handleAuthorize = (record: HbtUser) => {
   selectedUserId.value = record.userId
-  roleAllocateVisible.value = true
+  roleDialogVisible.value = true
 }
 
 // 处理分配部门
-const handleAllocateDept = (record: User) => {
+const handleAllocateDept = (record: HbtUser) => {
   selectedUserId.value = record.userId
-  deptAllocateVisible.value = true
+  deptDialogVisible.value = true
 }
 
 // 处理分配岗位
-const handleAllocatePost = (record: User) => {
+const handleAllocatePost = (record: HbtUser) => {
   selectedUserId.value = record.userId
-  postAllocateVisible.value = true
+  postDialogVisible.value = true
 }
 
 // 分页处理
@@ -837,7 +913,7 @@ const handleSizeChange = (size: number) => {
 }
 
 // 处理状态变化
-const handleStatusChange = async (record: User, checked: boolean) => {
+const handleStatusChange = async (record: HbtUser, checked: boolean) => {
   // @ts-ignore
   record.statusLoading = true
   try {
@@ -881,7 +957,7 @@ onMounted(() => {
 .column-setting-item {
   padding: 8px;
   border-bottom: 1px solid var(--ant-color-split);
-  
+
   &:last-child {
     border-bottom: none;
   }

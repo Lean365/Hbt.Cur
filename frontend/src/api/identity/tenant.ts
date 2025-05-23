@@ -1,19 +1,19 @@
 import request from '@/utils/request'
 import type { HbtApiResponse, HbtPagedResult } from '@/types/common'
 import type { 
-  TenantQuery, 
-  Tenant,
-  TenantCreate,
-  TenantUpdate,
-  TenantStatus,
-  TenantOption
+  HbtTenantQuery, 
+  HbtTenant,
+  HbtTenantCreate,
+  HbtTenantUpdate,
+  HbtTenantStatus,
+  HbtTenantOption
 } from '@/types/identity/tenant'
 
 /**
  * 获取租户分页列表
  */
-export function getPagedList(params: TenantQuery) {
-  return request<HbtApiResponse<HbtPagedResult<Tenant>>>({
+export function getTenantList(params: HbtTenantQuery) {
+  return request<HbtApiResponse<HbtPagedResult<HbtTenant>>>({
     url: '/api/HbtTenant/list',
     method: 'get',
     params
@@ -24,7 +24,7 @@ export function getPagedList(params: TenantQuery) {
  * 获取租户详情
  */
 export function getTenant(tenantId: number) {
-  return request<HbtApiResponse<Tenant>>({
+  return request<HbtApiResponse<HbtTenant>>({
     url: `/api/HbtTenant/${tenantId}`,
     method: 'get'
   })
@@ -33,7 +33,7 @@ export function getTenant(tenantId: number) {
 /**
  * 创建租户
  */
-export function createTenant(data: TenantCreate) {
+export function createTenant(data: HbtTenantCreate) {
   return request<HbtApiResponse<number>>({
     url: '/api/HbtTenant',
     method: 'post',
@@ -44,7 +44,7 @@ export function createTenant(data: TenantCreate) {
 /**
  * 更新租户
  */
-export function updateTenant(data: TenantUpdate) {
+export function updateTenant(data: HbtTenantUpdate) {
   return request<HbtApiResponse<boolean>>({
     url: '/api/HbtTenant',
     method: 'put',
@@ -76,7 +76,7 @@ export function batchDeleteTenant(tenantIds: number[]) {
 /**
  * 更新租户状态
  */
-export function updateTenantStatus(data: TenantStatus) {
+export function updateTenantStatus(data: HbtTenantStatus) {
   return request<HbtApiResponse<boolean>>({
     url: `/api/HbtTenant/${data.tenantId}/status`,
     method: 'put',
@@ -87,7 +87,7 @@ export function updateTenantStatus(data: TenantStatus) {
 /**
  * 导出租户数据
  */
-export function exportTenant(params?: TenantQuery) {
+export function exportTenant(params?: HbtTenantQuery) {
   return request({
     url: '/api/HbtTenant/export',
     method: 'get',
@@ -127,7 +127,7 @@ export function downloadTemplate() {
  * 获取当前租户信息
  */
 export function getCurrentTenant() {
-  return request<HbtApiResponse<Tenant>>({
+  return request<HbtApiResponse<HbtTenant>>({
     url: '/api/HbtTenant/current',
     method: 'get'
   })
@@ -137,8 +137,9 @@ export function getCurrentTenant() {
  * 获取租户选项列表
  */
 export function getTenantOptions() {
-  return request<HbtApiResponse<TenantOption[]>>({
+  return request<HbtApiResponse<HbtTenantOption[]>>({
     url: '/api/HbtTenant/options',
     method: 'get'
   })
 }
+

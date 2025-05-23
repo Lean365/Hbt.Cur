@@ -41,21 +41,7 @@ namespace Lean.Hbt.Application.Services.Identity
             _userRepository = userRepository;
         }
 
-        /// <summary>
-        /// 构建部门查询条件
-        /// </summary>
-        private Expression<Func<HbtDept, bool>> QueryExpression(HbtDeptQueryDto query)
-        {
-            var exp = Expressionable.Create<HbtDept>();
 
-            if (!string.IsNullOrEmpty(query.DeptName))
-                exp.And(x => x.DeptName.Contains(query.DeptName));
-
-            if (query.Status.HasValue)
-                exp.And(x => x.Status == query.Status.Value);
-
-            return exp.ToExpression();
-        }
 
         /// <summary>
         /// 获取部门分页列表
@@ -81,23 +67,50 @@ namespace Lean.Hbt.Application.Services.Identity
         }
 
         /// <summary>
-        /// 获取部门树形结构
+        /// 获取部门树形结构（支持名称递归查询）
         /// </summary>
-        public async Task<List<HbtDeptDto>> GetTreeAsync(int status)
+        public async Task<List<HbtDeptDto>> GetTreeAsync(HbtDeptQueryDto query)
         {
-            // 1.查询所有部门
-            var predicate = Expressionable.Create<HbtDept>();
-            predicate.And(d => d.Status == status);
-
-            var depts = await _deptRepository.AsQueryable()
-                .Where(predicate.ToExpression())
+            // 1. 查询所有部门
+            var allDepts = await _deptRepository.AsQueryable()
                 .OrderBy(d => d.OrderNum)
                 .ToListAsync();
 
-            // 2.转换为DTO
-            var dtos = depts.Adapt<List<HbtDeptDto>>();
+            // 2. 找到所有名称匹配的部门
+            var matchedDepts = allDepts
+                .Where(d => string.IsNullOrEmpty(query.DeptName) || d.DeptName.Contains(query.DeptName))
+                .ToList();
 
-            // 3.构建树形结构
+            // 3. 递归查找所有父节点
+            var resultSet = new HashSet<long>(matchedDepts.Select(d => d.Id));
+            void AddParent(long parentId)
+            {
+                if (parentId == 0) return;
+                var parent = allDepts.FirstOrDefault(d => d.Id == parentId);
+                if (parent != null && resultSet.Add(parent.Id))
+                    AddParent(parent.ParentId);
+            }
+            foreach (var dept in matchedDepts)
+                AddParent(dept.ParentId);
+
+            // 4. 递归查找所有子节点
+            void AddChildren(long id)
+            {
+                var children = allDepts.Where(d => d.ParentId == id).ToList();
+                foreach (var child in children)
+                {
+                    if (resultSet.Add(child.Id))
+                        AddChildren(child.Id);
+                }
+            }
+            foreach (var dept in matchedDepts)
+                AddChildren(dept.Id);
+
+            // 5. 过滤出所有相关部门
+            var filteredDepts = allDepts.Where(d => resultSet.Contains(d.Id)).ToList();
+            var dtos = filteredDepts.Adapt<List<HbtDeptDto>>();
+
+            // 6. 构建树形结构
             var tree = dtos.Where(d => d.ParentId == 0).ToList();
             foreach (var node in tree)
             {
@@ -320,6 +333,21 @@ namespace Lean.Hbt.Application.Services.Identity
             }
 
             return false;
+        }
+        /// <summary>
+        /// 构建部门查询条件
+        /// </summary>
+        private static Expression<Func<HbtDept, bool>> QueryExpression(HbtDeptQueryDto query)
+        {
+            var exp = Expressionable.Create<HbtDept>();
+
+            if (!string.IsNullOrEmpty(query.DeptName))
+                exp.And(x => x.DeptName.Contains(query.DeptName));
+
+            if (query.Status.HasValue && query.Status.Value != -1)
+                exp.And(x => x.Status == query.Status.Value);
+
+            return exp.ToExpression();
         }
     }
 }

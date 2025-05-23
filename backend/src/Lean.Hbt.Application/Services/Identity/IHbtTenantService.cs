@@ -7,11 +7,6 @@
 // 描述   : 租户服务接口
 //===================================================================
 
-using Lean.Hbt.Application.Dtos.Identity;
-using Lean.Hbt.Common.Enums;
-using Lean.Hbt.Common.Models;
-using System.IO;
-
 namespace Lean.Hbt.Application.Services.Identity;
 
 /// <summary>
@@ -97,4 +92,5 @@ public interface IHbtTenantService
     /// <param name="status">状态</param>
     /// <returns>更新后的租户状态信息</returns>
     Task<HbtTenantStatusDto> UpdateStatusAsync(long id, int status);
+
 }

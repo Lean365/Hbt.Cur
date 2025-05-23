@@ -76,13 +76,13 @@ namespace Lean.Hbt.WebApi.Controllers.Core
         /// <remarks>
         /// 根据语言ID获取单个语言配置的详细信息
         /// </remarks>
-        /// <param name="langId">语言ID</param>
+        /// <param name="LanguageId">语言ID</param>
         /// <returns>语言详情</returns>
-        [HttpGet("{langId}")]
+        [HttpGet("{LanguageId}")]
         [HbtPerm("core:language:query")]
-        public async Task<IActionResult> GetByIdAsync(long langId)
+        public async Task<IActionResult> GetByIdAsync(long LanguageId)
         {
-            var result = await _languageService.GetByIdAsync(langId);
+            var result = await _languageService.GetByIdAsync(LanguageId);
             return Success(result);
         }
 
@@ -125,13 +125,13 @@ namespace Lean.Hbt.WebApi.Controllers.Core
         /// 删除指定ID的语言配置
         /// 注意：删除前会检查该语言是否被使用
         /// </remarks>
-        /// <param name="langId">语言ID</param>
+        /// <param name="LanguageId">语言ID</param>
         /// <returns>删除结果</returns>
-        [HttpDelete("{langId}")]
+        [HttpDelete("{LanguageId}")]
         [HbtPerm("core:language:delete")]
-        public async Task<IActionResult> DeleteAsync(long langId)
+        public async Task<IActionResult> DeleteAsync(long LanguageId)
         {
-            var result = await _languageService.DeleteAsync(langId);
+            var result = await _languageService.DeleteAsync(LanguageId);
             return Success(result);
         }
 
@@ -142,13 +142,13 @@ namespace Lean.Hbt.WebApi.Controllers.Core
         /// 批量删除多个语言配置
         /// 注意：会检查所有语言是否可以删除
         /// </remarks>
-        /// <param name="langIds">语言ID集合</param>
+        /// <param name="LanguageIds">语言ID集合</param>
         /// <returns>批量删除结果</returns>
         [HttpDelete("batch")]
         [HbtPerm("core:language:delete")]
-        public async Task<IActionResult> BatchDeleteAsync([FromBody] long[] langIds)
+        public async Task<IActionResult> BatchDeleteAsync([FromBody] long[] LanguageIds)
         {
-            var result = await _languageService.BatchDeleteAsync(langIds);
+            var result = await _languageService.BatchDeleteAsync(LanguageIds);
             return Success(result);
         }
 
@@ -164,11 +164,15 @@ namespace Lean.Hbt.WebApi.Controllers.Core
         /// <returns>导入结果，包含成功和失败数量</returns>
         [HttpPost("import")]
         [HbtPerm("core:language:import")]
+        [ProducesResponseType(typeof((int Success, int Fail)), StatusCodes.Status200OK)]
         public async Task<IActionResult> ImportAsync(IFormFile file, [FromQuery] string sheetName = "语言数据")
         {
+            if (file == null || file.Length == 0)
+                return BadRequest(_localization.L("Language.Import.FileRequired"));
+
             using var stream = file.OpenReadStream();
-            var result = await _languageService.ImportAsync(stream, sheetName);
-            return Success(result);
+            var (success, fail) = await _languageService.ImportAsync(stream, sheetName);
+            return Success(new { success, fail }, _localization.L("Language.Import.Success"));
         }
 
         /// <summary>
@@ -183,10 +187,17 @@ namespace Lean.Hbt.WebApi.Controllers.Core
         /// <returns>Excel文件</returns>
         [HttpGet("export")]
         [HbtPerm("core:language:export")]
+        [ProducesResponseType(typeof(byte[]), StatusCodes.Status200OK)]
         public async Task<IActionResult> ExportAsync([FromQuery] HbtLanguageQueryDto query, [FromQuery] string sheetName = "语言数据")
         {
-            var (_, content) = await _languageService.ExportAsync(query, sheetName);
-            return File(content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"语言数据_{DateTime.Now:yyyyMMddHHmmss}.xlsx");
+            var result = await _languageService.ExportAsync(query, sheetName);
+            var contentType = result.fileName.EndsWith(".zip", StringComparison.OrdinalIgnoreCase)
+                ? "application/zip"
+                : "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+            // 只在 filename* 用 UTF-8 编码，filename 用 ASCII
+            var safeFileName = System.Text.Encoding.ASCII.GetString(System.Text.Encoding.ASCII.GetBytes(result.fileName));
+            Response.Headers["Content-Disposition"] = $"attachment; filename*=UTF-8''{Uri.EscapeDataString(result.fileName)}";
+            return File(result.content, contentType, result.fileName);
         }
 
         /// <summary>
@@ -200,10 +211,11 @@ namespace Lean.Hbt.WebApi.Controllers.Core
         /// <returns>Excel模板文件</returns>
         [HttpGet("template")]
         [HbtPerm("core:language:query")]
+        [ProducesResponseType(typeof(byte[]), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetTemplateAsync([FromQuery] string sheetName = "语言数据导入模板")
         {
-            var (_, content) = await _languageService.GetTemplateAsync(sheetName);
-            return File(content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"语言数据导入模板_{DateTime.Now:yyyyMMddHHmmss}.xlsx");
+            var result = await _languageService.GetTemplateAsync(sheetName);
+            return File(result.content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", result.fileName);
         }
 
         /// <summary>
@@ -213,19 +225,19 @@ namespace Lean.Hbt.WebApi.Controllers.Core
         /// 修改语言的启用/禁用状态
         /// 状态：0-启用，1-禁用
         /// </remarks>
-        /// <param name="LangId">语言ID</param>
+        /// <param name="LanguageId">语言ID</param>
         /// <param name="status">状态值</param>
         /// <returns>更新结果</returns>
-        [HttpPut("{LangId}/status")]
+        [HttpPut("{LanguageId}/status")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HbtPerm("core:language:update")]
-        public async Task<IActionResult> UpdateStatusAsync(long LangId, [FromQuery] int status)
+        public async Task<IActionResult> UpdateStatusAsync(long LanguageId, [FromQuery] int status)
         {
             var input = new HbtLanguageStatusDto
             {
-                LangId = LangId,
+                LanguageId = LanguageId,
                 Status = status
             };
             var result = await _languageService.UpdateStatusAsync(input);

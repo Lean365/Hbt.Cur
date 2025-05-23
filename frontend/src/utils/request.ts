@@ -149,10 +149,8 @@ service.interceptors.response.use(
     
     // 如果是Blob类型，检查响应头
     if (response.config.responseType === 'blob') {
-      // 检查响应头中的Content-Type
       const contentType = response.headers['content-type']
       if (contentType && contentType.includes('application/json')) {
-        // 如果是JSON格式的错误响应，需要解析错误信息
         return new Promise((resolve, reject) => {
           const reader = new FileReader()
           reader.onload = () => {
@@ -167,7 +165,11 @@ service.interceptors.response.use(
           reader.readAsText(res)
         })
       }
-      // 如果是Excel文件，直接返回整个response对象
+      return response
+    }
+    
+    // === 新增：如果响应是原始类型，直接返回 ===
+    if (typeof res === 'number' || typeof res === 'string' || typeof res === 'boolean') {
       return response
     }
     

@@ -1,12 +1,12 @@
 <template>
   <a-modal
-    :visible="visible"
+    :open="visible"
     :title="title"
     :mask-closable="false"
     @ok="submitForm"
-    @cancel="cancel"
+    @cancel="handleCancel"
     :confirm-loading="submitLoading"
-    @update:visible="(val: boolean) => emit('update:visible', val)"
+    @update:visible="handleVisibleChange"
   >
     <a-form
       ref="formRef"
@@ -42,6 +42,8 @@
         <hbt-select
           v-model:value="form.status"
           dict-type="sys_normal_disable"
+          type="radio"
+          :show-all="false"
           :placeholder="t('identity.dept.fields.status.placeholder')"
         />
       </a-form-item>
@@ -55,7 +57,7 @@ import { useI18n } from 'vue-i18n'
 import { message } from 'ant-design-vue'
 import type { FormInstance } from 'ant-design-vue'
 import type { Rule } from 'ant-design-vue/es/form'
-import type { Dept, DeptCreate, DeptUpdate } from '@/types/identity/dept'
+import type { HbtDept, HbtDeptCreate, HbtDeptUpdate } from '@/types/identity/dept'
 import { getDept, createDept, updateDept } from '@/api/identity/dept'
 import DeptTreeSelect from './DeptTreeSelect.vue'
 
@@ -88,14 +90,16 @@ const rules: Record<string, Rule[]> = {
 }
 
 // 表单数据
-const form = ref<DeptCreate>({
+const form = ref<HbtDeptCreate>({
   deptName: '',
   parentId: 0,
   orderNum: 0,
   leader: '',
   phone: '',
   email: '',
-  status: 0
+  tenantId: 0,
+  status: 0,
+  userCount: 0
 })
 
 // 监听部门ID变化
@@ -130,13 +134,23 @@ const resetForm = () => {
     leader: '',
     phone: '',
     email: '',
-    status: 0
+    tenantId: 0,
+    status: 0,
+    userCount: 0
   }
   formRef.value?.resetFields()
 }
 
-// 取消
-const cancel = () => {
+// 处理弹窗显示状态变化
+const handleVisibleChange = (val: boolean) => {
+  emit('update:visible', val)
+  if (!val) {
+    resetForm()
+  }
+}
+
+// 处理取消
+const handleCancel = () => {
   emit('update:visible', false)
   resetForm()
 }
@@ -148,7 +162,7 @@ const submitForm = async () => {
     submitLoading.value = true
 
     if (props.deptId) {
-      const updateData: DeptUpdate = {
+      const updateData: HbtDeptUpdate = {
         ...form.value,
         deptId: props.deptId
       }

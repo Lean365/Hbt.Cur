@@ -34,7 +34,7 @@ public class HbtDbSeedIndDictType
     /// <summary>
     /// 初始化国民经济行业分类字典类型数据
     /// </summary>
-    public async Task<(int, int)> InitializeIndDictTypeAsync()
+    public async Task<(int, int)> InitializeIndDictTypeAsync(long tenantId)
     {
         int insertCount = 0;
         int updateCount = 0;
@@ -47,11 +47,11 @@ public class HbtDbSeedIndDictType
                 DictType = "sys_industry_type",
                 OrderNum = 1,
                 Status = 0,
-                TenantId = 0,
+                
                 Remark = "国民经济行业分类字典",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             }
         };
@@ -61,6 +61,11 @@ public class HbtDbSeedIndDictType
             var existingDictType = await _dictTypeRepository.GetFirstAsync(d => d.DictType == dictType.DictType);
             if (existingDictType == null)
             {
+                dictType.TenantId = tenantId;
+                dictType.CreateBy = "Hbt365";
+                dictType.CreateTime = DateTime.Now;
+                dictType.UpdateBy = "Hbt365";
+                dictType.UpdateTime = DateTime.Now;
                 await _dictTypeRepository.CreateAsync(dictType);
                 insertCount++;
                 _logger.Info($"[创建] 国民经济行业分类字典类型 '{dictType.DictName}' 创建成功");
@@ -69,14 +74,14 @@ public class HbtDbSeedIndDictType
             {
                 existingDictType.DictName = dictType.DictName;
                 existingDictType.DictType = dictType.DictType;
-                existingDictType.DictBuiltin = dictType.DictBuiltin;
+                existingDictType.IsBuiltin = dictType.IsBuiltin;
                 existingDictType.OrderNum = dictType.OrderNum;
                 existingDictType.Status = dictType.Status;
-                existingDictType.TenantId = dictType.TenantId;
+                existingDictType.TenantId = tenantId;
                 existingDictType.Remark = dictType.Remark;
                 existingDictType.CreateBy = dictType.CreateBy;
                 existingDictType.CreateTime = dictType.CreateTime;
-                existingDictType.UpdateBy = "system";
+                existingDictType.UpdateBy = "Hbt365";
                 existingDictType.UpdateTime = DateTime.Now;
 
                 await _dictTypeRepository.UpdateAsync(existingDictType);

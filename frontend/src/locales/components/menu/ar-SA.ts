@@ -39,7 +39,7 @@ export default {
       _self: 'التدقيق',
       operlog: 'سجل العمليات',
       loginlog: 'سجل تسجيل الدخول',
-      dbdifflog: 'سجل اختلافات قاعدة البيانات',
+      sqldifflog: 'سجل اختلافات قاعدة البيانات',
       exceptionlog: 'سجل الاستثناءات',
       auditlog: 'سجل التدقيق',
       quartzlog: 'سجل المهام'

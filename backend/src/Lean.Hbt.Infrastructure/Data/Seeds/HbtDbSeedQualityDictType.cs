@@ -34,7 +34,7 @@ public class HbtDbSeedQualityDictType
     /// <summary>
     /// 初始化质量相关字典类型数据
     /// </summary>
-    public async Task<(int, int)> InitializeQualityDictTypeAsync()
+    public async Task<(int, int)> InitializeQualityDictTypeAsync(long tenantId)
     {
         int insertCount = 0;
         int updateCount = 0;
@@ -47,11 +47,11 @@ public class HbtDbSeedQualityDictType
                 DictType = "sys_inspection_type",
                 OrderNum = 1,
                 Status = 0,
-                TenantId = 0,
+                
                 Remark = "质量检验类型字典",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictType
@@ -60,11 +60,11 @@ public class HbtDbSeedQualityDictType
                 DictType = "sys_inspection_status",
                 OrderNum = 2,
                 Status = 0,
-                TenantId = 0,
+                
                 Remark = "质量检验状态字典",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictType
@@ -73,11 +73,11 @@ public class HbtDbSeedQualityDictType
                 DictType = "sys_inspection_result",
                 OrderNum = 3,
                 Status = 0,
-                TenantId = 0,
+                
                 Remark = "质量检验结果字典",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictType
@@ -86,11 +86,11 @@ public class HbtDbSeedQualityDictType
                 DictType = "sys_defect_type",
                 OrderNum = 4,
                 Status = 0,
-                TenantId = 0,
+                
                 Remark = "不合格类型字典",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictType
@@ -99,11 +99,11 @@ public class HbtDbSeedQualityDictType
                 DictType = "sys_defect_level",
                 OrderNum = 5,
                 Status = 0,
-                TenantId = 0,
+                
                 Remark = "不合格等级字典",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictType
@@ -112,11 +112,11 @@ public class HbtDbSeedQualityDictType
                 DictType = "sys_defect_disposition",
                 OrderNum = 6,
                 Status = 0,
-                TenantId = 0,
+                
                 Remark = "不合格处理方式字典",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictType
@@ -125,11 +125,11 @@ public class HbtDbSeedQualityDictType
                 DictType = "sys_quality_level",
                 OrderNum = 7,
                 Status = 0,
-                TenantId = 0,
+                
                 Remark = "质量等级字典",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictType
@@ -138,11 +138,11 @@ public class HbtDbSeedQualityDictType
                 DictType = "sys_quality_characteristic",
                 OrderNum = 8,
                 Status = 0,
-                TenantId = 0,
+                
                 Remark = "质量特性字典",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictType
@@ -151,11 +151,11 @@ public class HbtDbSeedQualityDictType
                 DictType = "sys_quality_tool",
                 OrderNum = 9,
                 Status = 0,
-                TenantId = 0,
+                
                 Remark = "质量工具字典",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictType
@@ -164,11 +164,11 @@ public class HbtDbSeedQualityDictType
                 DictType = "sys_quality_cost_type",
                 OrderNum = 10,
                 Status = 0,
-                TenantId = 0,
+                
                 Remark = "质量成本类型字典",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             }
         };
@@ -178,6 +178,11 @@ public class HbtDbSeedQualityDictType
             var existingDictType = await _dictTypeRepository.GetFirstAsync(d => d.DictType == dictType.DictType);
             if (existingDictType == null)
             {
+                dictType.TenantId = tenantId;
+                dictType.CreateBy = "Hbt365";
+                dictType.CreateTime = DateTime.Now;
+                dictType.UpdateBy = "Hbt365";
+                dictType.UpdateTime = DateTime.Now;
                 await _dictTypeRepository.CreateAsync(dictType);
                 insertCount++;
                 _logger.Info($"[创建] 质量字典类型 '{dictType.DictName}' 创建成功");
@@ -186,14 +191,14 @@ public class HbtDbSeedQualityDictType
             {
                 existingDictType.DictName = dictType.DictName;
                 existingDictType.DictType = dictType.DictType;
-                existingDictType.DictBuiltin = dictType.DictBuiltin;
+                existingDictType.IsBuiltin = dictType.IsBuiltin;
                 existingDictType.OrderNum = dictType.OrderNum;
                 existingDictType.Status = dictType.Status;
-                existingDictType.TenantId = dictType.TenantId;
+                existingDictType.TenantId = tenantId;
                 existingDictType.Remark = dictType.Remark;
                 existingDictType.CreateBy = dictType.CreateBy;
                 existingDictType.CreateTime = dictType.CreateTime;
-                existingDictType.UpdateBy = "system";
+                existingDictType.UpdateBy = "Hbt365";
                 existingDictType.UpdateTime = DateTime.Now;
 
                 await _dictTypeRepository.UpdateAsync(existingDictType);

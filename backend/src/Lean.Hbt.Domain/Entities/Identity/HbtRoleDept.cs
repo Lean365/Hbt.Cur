@@ -7,8 +7,6 @@
 // 描述    : 角色部门关联实体类
 //===================================================================
 
-using SqlSugar;
-
 namespace Lean.Hbt.Domain.Entities.Identity
 {
     /// <summary>
@@ -18,7 +16,7 @@ namespace Lean.Hbt.Domain.Entities.Identity
     /// 创建者: Lean365
     /// 创建时间: 2024-01-16
     /// </remarks>
-    [SugarTable("hbt_identity_role_dept", "角色部门关联表")]
+    [SugarTable("hbt_identity_role_dept", "角色部门")]
     [SugarIndex("ix_role_dept", nameof(RoleId), OrderByType.Asc, nameof(DeptId), OrderByType.Asc, true)]
     public class HbtRoleDept : HbtBaseEntity
     {

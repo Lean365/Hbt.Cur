@@ -8,8 +8,6 @@
 //===================================================================
 
 using System.Linq.Expressions;
-using Lean.Hbt.Application.Dtos.Identity;
-using Lean.Hbt.Domain.Entities.Identity;
 using Microsoft.AspNetCore.Http;
 
 namespace Lean.Hbt.Application.Services.Identity;
@@ -70,7 +68,7 @@ public class HbtTenantService : HbtBaseService, IHbtTenantService
             exp,
             query.PageIndex,
             query.PageSize,
-            x => x.TenantId,
+            x => x.Id,
             OrderByType.Asc);
 
         return new HbtPagedResult<HbtTenantDto>
@@ -283,12 +281,11 @@ public class HbtTenantService : HbtBaseService, IHbtTenantService
     {
         var tenants = await _repository.AsQueryable()
             .Where(t => t.Status == 0)  // 只获取正常状态的租户
-            .OrderBy(t => t.TenantId)
+            .OrderBy(t => t.Id)
             .Select(t => new HbtSelectOption
             {
                 Label = t.TenantName,
-                Value = t.TenantId,
-                Disabled = false
+                Value = t.Id,
             })
             .ToListAsync();
         return tenants;

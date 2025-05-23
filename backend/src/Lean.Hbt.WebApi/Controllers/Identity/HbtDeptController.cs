@@ -165,9 +165,9 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <returns>返回树形部门列表</returns>
         [HttpGet("tree")]
         [ProducesResponseType(typeof(HbtApiResult<List<HbtDeptDto>>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetTreeAsync()
+        public async Task<IActionResult> GetTreeAsync([FromQuery] HbtDeptQueryDto query)
         {
-            var depts = await _deptService.GetTreeAsync(0);
+            var depts = await _deptService.GetTreeAsync(query);
             return Success(depts);
         }
 

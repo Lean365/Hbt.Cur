@@ -8,7 +8,6 @@
 //===================================================================
 
 using Lean.Hbt.Domain.Entities.Core;
-using Lean.Hbt.Domain.IServices.Extensions;
 
 namespace Lean.Hbt.Infrastructure.Data.Seeds;
 
@@ -34,7 +33,7 @@ public class HbtDbSeedCsDictType
     /// <summary>
     /// 初始化客户服务和项目管理相关字典类型数据
     /// </summary>
-    public async Task<(int, int)> InitializeCustomerServiceDictTypeAsync()
+    public async Task<(int, int)> InitializeCustomerServiceDictTypeAsync(long tenantId)
     {
         int insertCount = 0;
         int updateCount = 0;
@@ -46,66 +45,57 @@ public class HbtDbSeedCsDictType
             {
                 DictName = "客户类型",
                 DictType = "sys_customer_type",
+                DictCategory=0,
+                IsBuiltin=0,
                 OrderNum = 1,
                 Status = 0,
-                TenantId = 0,
                 Remark = "客户类型字典",
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now
+
             },
             new HbtDictType
             {
                 DictName = "客户等级",
                 DictType = "sys_customer_level",
+                DictCategory=0,
+                IsBuiltin=0,
                 OrderNum = 2,
                 Status = 0,
-                TenantId = 0,
                 Remark = "客户等级字典",
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now
+
             },
             new HbtDictType
             {
                 DictName = "服务请求类型",
                 DictType = "sys_service_request_type",
+                DictCategory=0,
+                IsBuiltin=0,
                 OrderNum = 3,
                 Status = 0,
-                TenantId = 0,
                 Remark = "服务请求类型字典",
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now
+
             },
             new HbtDictType
             {
                 DictName = "服务请求状态",
                 DictType = "sys_service_request_status",
+                DictCategory=0,
+                IsBuiltin=0,
                 OrderNum = 4,
                 Status = 0,
-                TenantId = 0,
                 Remark = "服务请求状态字典",
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now
+
             },
             new HbtDictType
             {
                 DictName = "服务请求优先级",
                 DictType = "sys_service_request_priority",
+                                DictCategory=0,
+                IsBuiltin=0,
                 OrderNum = 5,
                 Status = 0,
-                TenantId = 0,
+
                 Remark = "服务请求优先级字典",
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now
+
             },
 
             // 项目管理相关
@@ -113,66 +103,56 @@ public class HbtDbSeedCsDictType
             {
                 DictName = "项目类型",
                 DictType = "sys_project_type",
+                DictCategory=0,
+                IsBuiltin=0,
                 OrderNum = 6,
                 Status = 0,
-                TenantId = 0,
                 Remark = "项目类型字典",
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now
+
             },
             new HbtDictType
             {
                 DictName = "项目状态",
                 DictType = "sys_project_status",
+                DictCategory=0,
+                IsBuiltin=0,
                 OrderNum = 7,
                 Status = 0,
-                TenantId = 0,
                 Remark = "项目状态字典",
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now
+
             },
             new HbtDictType
             {
                 DictName = "项目优先级",
                 DictType = "sys_project_priority",
+                DictCategory=0,
+                IsBuiltin=0,
                 OrderNum = 8,
                 Status = 0,
-                TenantId = 0,
                 Remark = "项目优先级字典",
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now
+
             },
             new HbtDictType
             {
                 DictName = "项目风险等级",
                 DictType = "sys_project_risk_level",
+                DictCategory=0,
+                IsBuiltin=0,
                 OrderNum = 9,
                 Status = 0,
-                TenantId = 0,
                 Remark = "项目风险等级字典",
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now
+
             },
             new HbtDictType
             {
                 DictName = "项目里程碑类型",
                 DictType = "sys_project_milestone_type",
+                DictCategory=0,
+                IsBuiltin=0,
                 OrderNum = 10,
                 Status = 0,
-                TenantId = 0,
                 Remark = "项目里程碑类型字典",
-                CreateBy = "system",
-                CreateTime = DateTime.Now,
-                UpdateBy = "system",
-                UpdateTime = DateTime.Now
+
             }
         };
 
@@ -181,6 +161,13 @@ public class HbtDbSeedCsDictType
             var existingDictType = await _dictTypeRepository.GetFirstAsync(x => x.DictType == dictType.DictType);
             if (existingDictType == null)
             {
+                // 统一处理审计字段和租户
+                dictType.CreateBy = "Hbt365";
+                dictType.CreateTime = DateTime.Now;
+                dictType.UpdateBy = "Hbt365";
+                dictType.UpdateTime = DateTime.Now;
+                dictType.TenantId = tenantId;
+
                 await _dictTypeRepository.CreateAsync(dictType);
                 insertCount++;
             }
@@ -192,6 +179,7 @@ public class HbtDbSeedCsDictType
                 existingDictType.Remark = dictType.Remark;
                 existingDictType.UpdateBy = dictType.UpdateBy;
                 existingDictType.UpdateTime = dictType.UpdateTime;
+                existingDictType.TenantId = tenantId;
                 await _dictTypeRepository.UpdateAsync(existingDictType);
                 updateCount++;
             }
@@ -203,7 +191,7 @@ public class HbtDbSeedCsDictType
     /// <summary>
     /// 初始化客户服务字典类型数据
     /// </summary>
-    public async Task<(int insertCount, int updateCount)> InitializeCsDictTypeAsync()
+    public async Task<(int insertCount, int updateCount)> InitializeCsDictTypeAsync(long tenantId)
     {
         var dictTypes = new List<HbtDictType>
         {
@@ -213,11 +201,11 @@ public class HbtDbSeedCsDictType
                 DictType = "sys_customer_type",
                 OrderNum = 1,
                 Status = 1,
-                TenantId = 1,
+
                 Remark = "客户类型字典",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictType
@@ -226,11 +214,11 @@ public class HbtDbSeedCsDictType
                 DictType = "sys_customer_level",
                 OrderNum = 2,
                 Status = 1,
-                TenantId = 1,
+
                 Remark = "客户等级字典",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             }
         };
@@ -243,6 +231,11 @@ public class HbtDbSeedCsDictType
             var existingDictType = await _dictTypeRepository.GetFirstAsync(x => x.DictType == dictType.DictType);
             if (existingDictType == null)
             {
+                dictType.TenantId = tenantId;
+                dictType.CreateBy = "Hbt365";
+                dictType.CreateTime = DateTime.Now;
+                dictType.UpdateBy = "Hbt365";
+                dictType.UpdateTime = DateTime.Now;
                 await _dictTypeRepository.CreateAsync(dictType);
                 insertCount++;
             }
@@ -254,6 +247,7 @@ public class HbtDbSeedCsDictType
                 existingDictType.Remark = dictType.Remark;
                 existingDictType.UpdateBy = dictType.UpdateBy;
                 existingDictType.UpdateTime = dictType.UpdateTime;
+                existingDictType.TenantId = tenantId;
                 await _dictTypeRepository.UpdateAsync(existingDictType);
                 updateCount++;
             }

@@ -1,4 +1,7 @@
 import type { HbtBaseEntity, HbtPagedQuery, HbtPagedResult } from '@/types/common'
+import type { HbtSignalRDevice, HbtSignalREnvironment } from '@/types/common/signalR'
+import type { HbtLoginDevLog } from './loginDevLog'
+import type { HbtLoginEnvLog } from './loginEnvLog'
 
 /** 设备信息 */
 export interface HbtDeviceInfo {
@@ -55,13 +58,13 @@ export interface HbtDeviceInfo {
 }
 
 /** 登录日志查询参数 */
-export interface HbtLoginLogQueryDto extends HbtPagedQuery {
+export interface HbtLoginLogQuery extends HbtPagedQuery {
   /** 用户名 */
   userName?: string
   /** IP地址 */
   ipAddress?: string
   /** 是否成功（0失败 1成功） */
-  success?: number
+  loginSuccess?: number
   /** 登录类型（0普通 1短信 2邮箱 3微信 4QQ 5GitHub） */
   loginType?: number
   /** 登录状态（0成功 1失败 2锁定 3离线） */
@@ -79,7 +82,9 @@ export interface HbtLoginLogQueryDto extends HbtPagedQuery {
 }
 
 /** 登录日志数据 */
-export interface HbtLoginLogDto extends HbtBaseEntity {
+export interface HbtLoginLog extends HbtBaseEntity {
+  /** 登录日志ID */
+  loginLogId: number
   /** 日志级别 */
   logLevel: number
   /** 用户ID */
@@ -90,6 +95,8 @@ export interface HbtLoginLogDto extends HbtBaseEntity {
   userName: string
   /** IP地址 */
   ipAddress: string
+  /** IP地理位置 */
+  location: string
   /** 用户代理 */
   userAgent: string
   /** 登录类型（0普通 1短信 2邮箱 3微信 4QQ 5GitHub） */
@@ -99,18 +106,132 @@ export interface HbtLoginLogDto extends HbtBaseEntity {
   /** 登录来源（0Web 1App 2小程序 3其他） */
   loginSource: number
   /** 是否成功（0失败 1成功） */
-  success: number
+  loginSuccess: number
   /** 消息 */
-  message?: string
+  loginMessage?: string
   /** 登录时间 */
   loginTime: string
   /** 设备信息 */
-  deviceInfo?: HbtDeviceInfo
-  /** 设备扩展ID */
-  deviceExtendId?: number
-  /** 登录扩展ID */
-  loginExtendId?: number
+  deviceInfo?: HbtSignalRDevice
+  /** 环境信息 */
+  environmentInfo?: HbtSignalREnvironment
+  /** 设备ID */
+  deviceId?: string
+  /** 设备日志 */
+  deviceLog?: HbtLoginDevLog
+  /** 环境ID */
+  environmentId?: string
+  /** 环境日志 */
+  envLog?: HbtLoginEnvLog
+}
+
+/** 登录日志创建参数 */
+export interface HbtLoginLogCreate {
+  /** 日志级别 */
+  logLevel: number
+  /** 用户ID */
+  userId: number
+  /** 租户ID */
+  tenantId?: number
+  /** 用户名 */
+  userName: string
+  /** IP地址 */
+  ipAddress: string
+  /** IP地理位置 */
+  location: string
+  /** 用户代理 */
+  userAgent: string
+  /** 登录类型（0普通 1短信 2邮箱 3微信 4QQ 5GitHub） */
+  loginType: number
+  /** 登录状态（0成功 1失败 2锁定 3离线） */
+  loginStatus: number
+  /** 登录来源（0Web 1App 2小程序 3其他） */
+  loginSource: number
+  /** 是否成功（0失败 1成功） */
+  loginSuccess: number
+  /** 消息 */
+  loginMessage?: string
+  /** 登录时间 */
+  loginTime: string
+  /** 设备信息 */
+  deviceInfo?: HbtSignalRDevice
+  /** 环境信息 */
+  environmentInfo?: HbtSignalREnvironment
+  /** 设备ID */
+  deviceId?: string
+  /** 环境ID */
+  environmentId?: string
+}
+
+/** 登录日志更新参数 */
+export interface HbtLoginLogUpdate extends HbtLoginLogCreate {
+  /** ID */
+  logId: number
+}
+
+/** 登录日志导出参数 */
+export interface HbtLoginLogExport {
+  /** 用户名 */
+  userName: string
+  /** IP地址 */
+  ipAddress: string
+  /** IP地理位置 */
+  location: string
+  /** 用户代理 */
+  userAgent: string
+  /** 登录类型 */
+  loginType: number
+  /** 登录状态 */
+  loginStatus: number
+  /** 登录来源 */
+  loginSource: number
+  /** 是否成功 */
+  loginSuccess: number
+  /** 消息 */
+  loginMessage: string
+  /** 登录时间 */
+  loginTime: string
+  /** 创建时间 */
+  createTime: string
 }
 
 /** 登录日志分页结果 */
-export type HbtLoginLogPageResult = HbtPagedResult<HbtLoginLogDto> 
+export type HbtLoginLogPageResult = HbtPagedResult<HbtLoginLog>
+
+/** 登录日志DTO */
+export interface HbtLoginLogDto {
+  /** 登录日志ID */
+  loginLogId: number
+  /** 用户ID */
+  userId: number
+  /** 租户ID */
+  tenantId?: number
+  /** 用户名 */
+  userName: string
+  /** IP地址 */
+  ipAddress: string
+  /** 用户代理 */
+  userAgent: string
+  /** 登录类型 */
+  loginType: number
+  /** 登录状态 */
+  loginStatus: number
+  /** 登录来源 */
+  loginSource: number
+  /** 是否成功 */
+  loginSuccess: number
+  /** 消息 */
+  loginMessage: string
+  /** 创建时间 */
+  createTime: string
+  /** 设备信息 */
+  deviceInfo?: HbtSignalRDevice
+  /** 设备扩展ID */
+  deviceExtendId?: number
+  /** 设备扩展 */
+  deviceExtend?: HbtLoginDevLog
+  /** 登录扩展ID */
+  loginExtendId?: number
+  /** 登录扩展 */
+  loginExtend?: HbtLoginEnvLog
+} 

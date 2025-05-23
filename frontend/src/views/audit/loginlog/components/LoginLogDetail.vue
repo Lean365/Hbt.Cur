@@ -1,6 +1,6 @@
 <template>
   <hbt-modal
-    v-model:visible="visible"
+    v-model:open="visible"
     title="登录详情"
     :width="800"
     :footer="null"
@@ -51,7 +51,7 @@
         {{ loginInfo?.message }}
       </a-descriptions-item>
       <a-descriptions-item label="登录时间" :span="2">
-        {{ loginInfo?.loginTime }}
+        {{ loginInfo?.createTime }}
       </a-descriptions-item>
     </a-descriptions>
   </hbt-modal>

@@ -157,12 +157,12 @@ const handleRefresh = async () => {
 
 // 处理个人信息
 const handleProfile = () => {
-  router.push('/profile')
+  router.push('/identity/user/profile')
 }
 
 // 处理修改密码
 const handleChangePassword = () => {
-  router.push('/change-password')
+  router.push('/identity/user/change-password')
 }
 
 // 处理清除缓存

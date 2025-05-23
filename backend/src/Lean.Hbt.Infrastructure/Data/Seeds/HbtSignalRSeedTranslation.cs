@@ -33,103 +33,86 @@ public class HbtSignalRSeedTranslation
         _logger = logger;
     }
 
-    private HbtTranslation CreateTranslation(string langCode, string transKey, string transValue)
-    {
-        return new HbtTranslation
-        {
-            LangCode = langCode,
-            TransKey = transKey,
-            TransValue = transValue,
-            ModuleName = "SignalR",
-            Status = 0,
-            TransBuiltin = 1,
-            TenantId = 0,
-            CreateBy = "Hbt365",
-            CreateTime = DateTime.Now,
-            UpdateBy = "Hbt365",
-            UpdateTime = DateTime.Now
-        };
-    }
-
     /// <summary>
     /// 初始化SignalR本地化资源
     /// </summary>
-    public async Task<(int insertCount, int updateCount)> InitializeSignalRTranslationAsync()
+    public async Task<(int insertCount, int updateCount)> InitializeSignalRTranslationAsync(long tenantId)
     {
         var defaultTranslations = new List<HbtTranslation>
         {
             // SignalR 基础操作
-            CreateTranslation("zh-CN", "SignalR.NotFound", "SignalR连接不存在"),
-            CreateTranslation("en-US", "SignalR.NotFound", "SignalR connection not found"),
-            CreateTranslation("ja-JP", "SignalR.NotFound", "SignalR接続が存在しません"),
+            new HbtTranslation { LangCode = "zh-CN", TransKey = "SignalR.NotFound", TransValue = "SignalR连接不存在", ModuleName = "SignalR", Status = 0 },
+            new HbtTranslation { LangCode = "en-US", TransKey = "SignalR.NotFound", TransValue = "SignalR connection not found", ModuleName = "SignalR", Status = 0 },
+            new HbtTranslation { LangCode = "ja-JP", TransKey = "SignalR.NotFound", TransValue = "SignalR接続が存在しません", ModuleName = "SignalR", Status = 0 },
 
-            CreateTranslation("zh-CN", "SignalR.CreateFailed", "创建SignalR连接失败"),
-            CreateTranslation("en-US", "SignalR.CreateFailed", "Failed to create SignalR connection"),
-            CreateTranslation("ja-JP", "SignalR.CreateFailed", "SignalR接続の作成に失敗しました"),
+            new HbtTranslation { LangCode = "zh-CN", TransKey = "SignalR.CreateFailed", TransValue = "创建SignalR连接失败", ModuleName = "SignalR", Status = 0 },
+            new HbtTranslation { LangCode = "en-US", TransKey = "SignalR.CreateFailed", TransValue = "Failed to create SignalR connection", ModuleName = "SignalR", Status = 0 },
+            new HbtTranslation { LangCode = "ja-JP", TransKey = "SignalR.CreateFailed", TransValue = "SignalR接続の作成に失敗しました", ModuleName = "SignalR", Status = 0 },
 
-            CreateTranslation("zh-CN", "SignalR.UpdateFailed", "更新SignalR连接失败"),
-            CreateTranslation("en-US", "SignalR.UpdateFailed", "Failed to update SignalR connection"),
-            CreateTranslation("ja-JP", "SignalR.UpdateFailed", "SignalR接続の更新に失敗しました"),
+            new HbtTranslation { LangCode = "zh-CN", TransKey = "SignalR.UpdateFailed", TransValue = "更新SignalR连接失败", ModuleName = "SignalR", Status = 0 },
+            new HbtTranslation { LangCode = "en-US", TransKey = "SignalR.UpdateFailed", TransValue = "Failed to update SignalR connection", ModuleName = "SignalR", Status = 0 },
+            new HbtTranslation { LangCode = "ja-JP", TransKey = "SignalR.UpdateFailed", TransValue = "SignalR接続の更新に失敗しました", ModuleName = "SignalR", Status = 0 },
 
-            CreateTranslation("zh-CN", "SignalR.DeleteFailed", "删除SignalR连接失败"),
-            CreateTranslation("en-US", "SignalR.DeleteFailed", "Failed to delete SignalR connection"),
-            CreateTranslation("ja-JP", "SignalR.DeleteFailed", "SignalR接続の削除に失敗しました"),
+            new HbtTranslation { LangCode = "zh-CN", TransKey = "SignalR.DeleteFailed", TransValue = "删除SignalR连接失败", ModuleName = "SignalR", Status = 0 },
+            new HbtTranslation { LangCode = "en-US", TransKey = "SignalR.DeleteFailed", TransValue = "Failed to delete SignalR connection", ModuleName = "SignalR", Status = 0 },
+            new HbtTranslation { LangCode = "ja-JP", TransKey = "SignalR.DeleteFailed", TransValue = "SignalR接続の削除に失敗しました", ModuleName = "SignalR", Status = 0 },
 
             // 消息推送相关
-            CreateTranslation("zh-CN", "SignalR.Message.NotFound", "消息不存在"),
-            CreateTranslation("en-US", "SignalR.Message.NotFound", "Message not found"),
-            CreateTranslation("ja-JP", "SignalR.Message.NotFound", "メッセージが存在しません"),
+            new HbtTranslation { LangCode = "zh-CN", TransKey = "SignalR.Message.NotFound", TransValue = "消息不存在", ModuleName = "SignalR", Status = 0 },
+            new HbtTranslation { LangCode = "en-US", TransKey = "SignalR.Message.NotFound", TransValue = "Message not found", ModuleName = "SignalR", Status = 0 },
+            new HbtTranslation { LangCode = "ja-JP", TransKey = "SignalR.Message.NotFound", TransValue = "メッセージが存在しません", ModuleName = "SignalR", Status = 0 },
 
-            CreateTranslation("zh-CN", "SignalR.Message.SendFailed", "发送消息失败"),
-            CreateTranslation("en-US", "SignalR.Message.SendFailed", "Failed to send message"),
-            CreateTranslation("ja-JP", "SignalR.Message.SendFailed", "メッセージの送信に失敗しました"),
+            new HbtTranslation { LangCode = "zh-CN", TransKey = "SignalR.Message.SendFailed", TransValue = "发送消息失败", ModuleName = "SignalR", Status = 0 },
+            new HbtTranslation { LangCode = "en-US", TransKey = "SignalR.Message.SendFailed", TransValue = "Failed to send message", ModuleName = "SignalR", Status = 0 },
+            new HbtTranslation { LangCode = "ja-JP", TransKey = "SignalR.Message.SendFailed", TransValue = "メッセージの送信に失敗しました", ModuleName = "SignalR", Status = 0 },
 
-            CreateTranslation("zh-CN", "SignalR.Message.ReceiveFailed", "接收消息失败"),
-            CreateTranslation("en-US", "SignalR.Message.ReceiveFailed", "Failed to receive message"),
-            CreateTranslation("ja-JP", "SignalR.Message.ReceiveFailed", "メッセージの受信に失敗しました"),
+            new HbtTranslation { LangCode = "zh-CN", TransKey = "SignalR.Message.ReceiveFailed", TransValue = "接收消息失败", ModuleName = "SignalR", Status = 0 },
+            new HbtTranslation { LangCode = "en-US", TransKey = "SignalR.Message.ReceiveFailed", TransValue = "Failed to receive message", ModuleName = "SignalR", Status = 0 },
+            new HbtTranslation { LangCode = "ja-JP", TransKey = "SignalR.Message.ReceiveFailed", TransValue = "メッセージの受信に失敗しました", ModuleName = "SignalR", Status = 0 },
 
             // 连接状态相关
-            CreateTranslation("zh-CN", "SignalR.Connection.Connected", "连接已建立"),
-            CreateTranslation("en-US", "SignalR.Connection.Connected", "Connection established"),
-            CreateTranslation("ja-JP", "SignalR.Connection.Connected", "接続が確立されました"),
+            new HbtTranslation { LangCode = "zh-CN", TransKey = "SignalR.Connection.Connected", TransValue = "连接已建立", ModuleName = "SignalR", Status = 0 },
+            new HbtTranslation { LangCode = "en-US", TransKey = "SignalR.Connection.Connected", TransValue = "Connection established", ModuleName = "SignalR", Status = 0 },
+            new HbtTranslation { LangCode = "ja-JP", TransKey = "SignalR.Connection.Connected", TransValue = "接続が確立されました", ModuleName = "SignalR", Status = 0 },
 
-            CreateTranslation("zh-CN", "SignalR.Connection.Disconnected", "连接已断开"),
-            CreateTranslation("en-US", "SignalR.Connection.Disconnected", "Connection disconnected"),
-            CreateTranslation("ja-JP", "SignalR.Connection.Disconnected", "接続が切断されました"),
+            new HbtTranslation { LangCode = "zh-CN", TransKey = "SignalR.Connection.Disconnected", TransValue = "连接已断开", ModuleName = "SignalR", Status = 0 },
+            new HbtTranslation { LangCode = "en-US", TransKey = "SignalR.Connection.Disconnected", TransValue = "Connection disconnected", ModuleName = "SignalR", Status = 0 },
+            new HbtTranslation { LangCode = "ja-JP", TransKey = "SignalR.Connection.Disconnected", TransValue = "接続が切断されました", ModuleName = "SignalR", Status = 0 },
 
-            CreateTranslation("zh-CN", "SignalR.Connection.Reconnecting", "正在重新连接"),
-            CreateTranslation("en-US", "SignalR.Connection.Reconnecting", "Reconnecting"),
-            CreateTranslation("ja-JP", "SignalR.Connection.Reconnecting", "再接続中です"),
+            new HbtTranslation { LangCode = "zh-CN", TransKey = "SignalR.Connection.Reconnecting", TransValue = "正在重新连接", ModuleName = "SignalR", Status = 0 },
+            new HbtTranslation { LangCode = "en-US", TransKey = "SignalR.Connection.Reconnecting", TransValue = "Reconnecting", ModuleName = "SignalR", Status = 0 },
+            new HbtTranslation { LangCode = "ja-JP", TransKey = "SignalR.Connection.Reconnecting", TransValue = "再接続中です", ModuleName = "SignalR", Status = 0 },
 
             // 错误处理相关
-            CreateTranslation("zh-CN", "SignalR.Error.ConnectionFailed", "连接失败"),
-            CreateTranslation("en-US", "SignalR.Error.ConnectionFailed", "Connection failed"),
-            CreateTranslation("ja-JP", "SignalR.Error.ConnectionFailed", "接続に失敗しました"),
+            new HbtTranslation { LangCode = "zh-CN", TransKey = "SignalR.Error.ConnectionFailed", TransValue = "连接失败", ModuleName = "SignalR", Status = 0 },
+            new HbtTranslation { LangCode = "en-US", TransKey = "SignalR.Error.ConnectionFailed", TransValue = "Connection failed", ModuleName = "SignalR", Status = 0 },
+            new HbtTranslation { LangCode = "ja-JP", TransKey = "SignalR.Error.ConnectionFailed", TransValue = "接続に失敗しました", ModuleName = "SignalR", Status = 0 },
 
-            CreateTranslation("zh-CN", "SignalR.Error.MessageFailed", "消息处理失败"),
-            CreateTranslation("en-US", "SignalR.Error.MessageFailed", "Message processing failed"),
-            CreateTranslation("ja-JP", "SignalR.Error.MessageFailed", "メッセージ処理に失敗しました"),
+            new HbtTranslation { LangCode = "zh-CN", TransKey = "SignalR.Error.MessageFailed", TransValue = "消息处理失败", ModuleName = "SignalR", Status = 0 },
+            new HbtTranslation { LangCode = "en-US", TransKey = "SignalR.Error.MessageFailed", TransValue = "Message processing failed", ModuleName = "SignalR", Status = 0 },
+            new HbtTranslation { LangCode = "ja-JP", TransKey = "SignalR.Error.MessageFailed", TransValue = "メッセージ処理に失敗しました", ModuleName = "SignalR", Status = 0 },
 
-            CreateTranslation("zh-CN", "SignalR.Error.Timeout", "连接超时"),
-            CreateTranslation("en-US", "SignalR.Error.Timeout", "Connection timeout"),
-            CreateTranslation("ja-JP", "SignalR.Error.Timeout", "接続がタイムアウトしました")
+            new HbtTranslation { LangCode = "zh-CN", TransKey = "SignalR.Error.Timeout", TransValue = "连接超时", ModuleName = "SignalR", Status = 0 },
+            new HbtTranslation { LangCode = "en-US", TransKey = "SignalR.Error.Timeout", TransValue = "Connection timeout", ModuleName = "SignalR", Status = 0 },
+            new HbtTranslation { LangCode = "ja-JP", TransKey = "SignalR.Error.Timeout", TransValue = "接続がタイムアウトしました", ModuleName = "SignalR", Status = 0 }
         };
 
-        return await CreateTranslationsAsync(defaultTranslations);
-    }
-
-    private async Task<(int insertCount, int updateCount)> CreateTranslationsAsync(List<HbtTranslation> translations)
-    {
         int insertCount = 0;
         int updateCount = 0;
 
-        foreach (var translation in translations)
+        foreach (var translation in defaultTranslations)
         {
             var existingTranslation = await _context.Client.Queryable<HbtTranslation>()
                 .FirstAsync(t => t.LangCode == translation.LangCode && t.TransKey == translation.TransKey);
 
             if (existingTranslation == null)
             {
+                translation.TenantId = tenantId;
+                translation.CreateBy = "Hbt365";
+                translation.CreateTime = DateTime.Now;
+                translation.UpdateBy = "Hbt365";
+                translation.UpdateTime = DateTime.Now;
+                
                 await _context.Client.Insertable(translation).ExecuteCommandAsync();
                 insertCount++;
                 _logger.Info($"[创建] 翻译 '{translation.TransKey}' ({translation.LangCode}) 创建成功");
@@ -137,6 +120,7 @@ public class HbtSignalRSeedTranslation
             else
             {
                 existingTranslation.TransValue = translation.TransValue;
+                existingTranslation.TenantId = tenantId;
                 existingTranslation.UpdateBy = "Hbt365";
                 existingTranslation.UpdateTime = DateTime.Now;
 

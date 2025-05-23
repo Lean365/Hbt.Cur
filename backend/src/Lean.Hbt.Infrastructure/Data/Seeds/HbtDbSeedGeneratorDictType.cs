@@ -40,7 +40,7 @@ public class HbtDbSeedGeneratorDictType
     {
         dictType.CreateBy = "system";
         dictType.CreateTime = DateTime.Now;
-        dictType.UpdateBy = "system";
+        dictType.UpdateBy = "Hbt365";
         dictType.UpdateTime = DateTime.Now;
         return dictType;
     }
@@ -48,22 +48,22 @@ public class HbtDbSeedGeneratorDictType
     /// <summary>
     /// 初始化代码生成器字典类型
     /// </summary>
-    public async Task<(int, int)> InitializeGeneratorDictTypeAsync()
+    public async Task<(int, int)> InitializeGeneratorDictTypeAsync(long tenantId)
     {
         int insertCount = 0;
         int updateCount = 0;
 
         var generatorDictTypes = new List<HbtDictType>
         {
-            SetCommonProperties(new HbtDictType { DictName = "生成模板", DictType = "gen_template_type", OrderNum = 1, Status = 0, TenantId = 0, Remark = "代码生成模板类型" }),
-            SetCommonProperties(new HbtDictType { DictName = "前端模板", DictType = "gen_frontend_type", OrderNum = 2, Status = 0, TenantId = 0, Remark = "前端模板类型" }),
-            SetCommonProperties(new HbtDictType { DictName = "生成模块", DictType = "gen_module_name", OrderNum = 3, Status = 0, TenantId = 0, Remark = "代码生成模块名称" }),
-            SetCommonProperties(new HbtDictType { DictName = "前端布局", DictType = "gen_frontend_style", OrderNum = 4, Status = 0, TenantId = 0, Remark = "前端页面布局" }),
-            SetCommonProperties(new HbtDictType { DictName = "按钮样式", DictType = "gen_button_style", OrderNum = 5, Status = 0, TenantId = 0, Remark = "按钮样式类型" }),
-            SetCommonProperties(new HbtDictType { DictName = "生成方式", DictType = "gen_type", OrderNum = 6, Status = 0, TenantId = 0, Remark = "代码生成方式" }),
-            SetCommonProperties(new HbtDictType { DictName = "生成功能", DictType = "gen_function", OrderNum = 7, Status = 0, TenantId = 0, Remark = "代码生成功能" }),
-            SetCommonProperties(new HbtDictType { DictName = "树表配置", DictType = "gen_tree_config", OrderNum = 8, Status = 0, TenantId = 0, Remark = "树表配置" }),
-            SetCommonProperties(new HbtDictType { DictName = "主子表配置", DictType = "gen_sub_config", OrderNum = 9, Status = 0, TenantId = 0, Remark = "主子表配置" })
+            SetCommonProperties(new HbtDictType { DictName = "生成模板", DictType = "gen_template_type", OrderNum = 1, Status = 0,  Remark = "代码生成模板类型" }),
+            SetCommonProperties(new HbtDictType { DictName = "前端模板", DictType = "gen_frontend_type", OrderNum = 2, Status = 0,  Remark = "前端模板类型" }),
+            SetCommonProperties(new HbtDictType { DictName = "生成模块", DictType = "gen_module_name", OrderNum = 3, Status = 0,  Remark = "代码生成模块名称" }),
+            SetCommonProperties(new HbtDictType { DictName = "前端布局", DictType = "gen_frontend_style", OrderNum = 4, Status = 0,  Remark = "前端页面布局" }),
+            SetCommonProperties(new HbtDictType { DictName = "按钮样式", DictType = "gen_button_style", OrderNum = 5, Status = 0,  Remark = "按钮样式类型" }),
+            SetCommonProperties(new HbtDictType { DictName = "生成方式", DictType = "gen_type", OrderNum = 6, Status = 0,  Remark = "代码生成方式" }),
+            SetCommonProperties(new HbtDictType { DictName = "生成功能", DictType = "gen_function", OrderNum = 7, Status = 0,  Remark = "代码生成功能" }),
+            SetCommonProperties(new HbtDictType { DictName = "树表配置", DictType = "gen_tree_config", OrderNum = 8, Status = 0,  Remark = "树表配置" }),
+            SetCommonProperties(new HbtDictType { DictName = "主子表配置", DictType = "gen_sub_config", OrderNum = 9, Status = 0,  Remark = "主子表配置" })
         };
 
         foreach (var dictType in generatorDictTypes)
@@ -71,6 +71,11 @@ public class HbtDbSeedGeneratorDictType
             var existingDictType = await _dictTypeRepository.GetFirstAsync(x => x.DictType == dictType.DictType);
             if (existingDictType == null)
             {
+                dictType.TenantId = tenantId;
+                dictType.CreateBy = "Hbt365";
+                dictType.CreateTime = DateTime.Now;
+                dictType.UpdateBy = "Hbt365";
+                dictType.UpdateTime = DateTime.Now;
                 await _dictTypeRepository.CreateAsync(dictType);
                 insertCount++;
             }
@@ -82,6 +87,7 @@ public class HbtDbSeedGeneratorDictType
                 existingDictType.Remark = dictType.Remark;
                 existingDictType.UpdateBy = dictType.UpdateBy;
                 existingDictType.UpdateTime = dictType.UpdateTime;
+                existingDictType.TenantId = tenantId;
                 await _dictTypeRepository.UpdateAsync(existingDictType);
                 updateCount++;
             }

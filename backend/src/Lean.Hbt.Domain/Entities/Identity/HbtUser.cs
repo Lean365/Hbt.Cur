@@ -8,8 +8,6 @@
 // 版本号 : V.0.0.1
 // 描述    : 用户实体类
 //===================================================================
-using SqlSugar;
-
 namespace Lean.Hbt.Domain.Entities.Identity
 {
     /// <summary>
@@ -27,18 +25,6 @@ namespace Lean.Hbt.Domain.Entities.Identity
     public class HbtUser : HbtBaseEntity
     {
         /// <summary>
-        /// 租户ID
-        /// </summary>
-        [SugarColumn(ColumnName = "tenant_id", ColumnDescription = "租户ID", ColumnDataType = "bigint", IsNullable = false)]
-        public long TenantId { get; set; }
-
-        /// <summary>
-        /// 租户
-        /// </summary>
-        [Navigate(NavigateType.OneToOne, nameof(TenantId))]
-        public HbtTenant? Tenant { get; set; }
-
-        /// <summary>
         /// 用户名
         /// </summary>
         [SugarColumn(ColumnName = "user_name", ColumnDescription = "用户名", Length = 50, ColumnDataType = "nvarchar", IsNullable = false, DefaultValue = "")]
@@ -47,19 +33,31 @@ namespace Lean.Hbt.Domain.Entities.Identity
         /// <summary>
         /// 昵称
         /// </summary>
-        [SugarColumn(ColumnName = "nick_name", ColumnDescription = "昵称", Length = 50, ColumnDataType = "nvarchar", IsNullable = true)]
+        [SugarColumn(ColumnName = "nick_name", ColumnDescription = "昵称", Length = 50, ColumnDataType = "nvarchar", IsNullable = false)]
         public string? NickName { get; set; }
 
         /// <summary>
         /// 英文名称
         /// </summary>
-        [SugarColumn(ColumnName = "english_name", ColumnDescription = "英文名称", Length = 50, ColumnDataType = "nvarchar", IsNullable = true)]
+        [SugarColumn(ColumnName = "english_name", ColumnDescription = "英文名称", Length = 100, ColumnDataType = "nvarchar", IsNullable = false)]
         public string? EnglishName { get; set; }
+
+        /// <summary>
+        /// 实名
+        /// </summary>
+        [SugarColumn(ColumnName = "real_name", ColumnDescription = "实名", Length = 100, ColumnDataType = "nvarchar", IsNullable = true)]
+        public string? RealName { get; set; }
+
+        /// <summary>
+        /// 全名
+        /// </summary>
+        [SugarColumn(ColumnName = "full_name", ColumnDescription = "全名", Length = 100, ColumnDataType = "nvarchar", IsNullable = true)]
+        public string? FullName { get; set; }
 
         /// <summary>
         /// 用户类型（0系统用户 1普通用户 2管理员 3OAuth用户）
         /// </summary>
-        [SugarColumn(ColumnName = "user_type", ColumnDescription = "用户类型（0系统用户 1普通用户 2管理员 3OAuth用户）", ColumnDataType = "int", IsNullable = false, DefaultValue = "1")]
+        [SugarColumn(ColumnName = "user_type", ColumnDescription = "用户类型", ColumnDataType = "int", IsNullable = false, DefaultValue = "1")]
         public int UserType { get; set; } = 1;
 
         /// <summary>
@@ -105,12 +103,6 @@ namespace Lean.Hbt.Domain.Entities.Identity
         public string? Avatar { get; set; }
 
         /// <summary>
-        /// 状态（0正常 1停用）
-        /// </summary>
-        [SugarColumn(ColumnName = "status", ColumnDescription = "状态（0正常 1停用）", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
-        public int Status { get; set; } = 0;
-
-        /// <summary>
         /// 最后修改密码时间
         /// </summary>
         [SugarColumn(ColumnName = "last_password_change_time", ColumnDescription = "最后修改密码时间", ColumnDataType = "datetime", IsNullable = true)]
@@ -127,6 +119,41 @@ namespace Lean.Hbt.Domain.Entities.Identity
         /// </summary>
         [SugarColumn(ColumnName = "lock_reason", ColumnDescription = "锁定原因", Length = 200, ColumnDataType = "nvarchar", IsNullable = true)]
         public string? LockReason { get; set; }
+
+        /// <summary>
+        /// 锁定状态（0正常 1临时锁定30分钟 2永久锁定需要人工干预）
+        /// </summary>
+        [SugarColumn(ColumnName = "is_lock", ColumnDescription = "锁定状态（0正常 1临时锁定30分钟 2永久锁定需要人工干预）", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
+        public int IsLock { get; set; } = 0;
+
+        /// <summary>
+        /// 错误次数限制（0是3次 1是5次）
+        /// </summary>
+        [SugarColumn(ColumnName = "error_limit", ColumnDescription = "错误次数限制（0是3次 1是5次）", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
+        public int ErrorLimit { get; set; } = 0;
+
+        /// <summary>
+        /// 登录次数
+        /// </summary>
+        [SugarColumn(ColumnName = "login_count", ColumnDescription = "登录次数", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
+        public int LoginCount { get; set; } = 0;
+
+        /// <summary>
+        /// 状态（0正常 1停用）
+        /// </summary>
+        [SugarColumn(ColumnName = "status", ColumnDescription = "状态（0正常 1停用）", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
+        public int Status { get; set; } = 0;
+        /// <summary>
+        /// 租户ID
+        /// </summary>
+        [SugarColumn(ColumnName = "tenant_id", ColumnDescription = "租户ID", ColumnDataType = "bigint", IsNullable = false)]
+        public long TenantId { get; set; }
+
+        /// <summary>
+        /// 租户
+        /// </summary>
+        [Navigate(NavigateType.OneToOne, nameof(TenantId))]
+        public HbtTenant? Tenant { get; set; }
 
         /// <summary>
         /// 用户角色关联
@@ -146,22 +173,6 @@ namespace Lean.Hbt.Domain.Entities.Identity
         [Navigate(NavigateType.OneToMany, nameof(HbtUserPost.UserId))]
         public List<HbtUserPost>? UserPosts { get; set; }
 
-        /// <summary>
-        /// 锁定状态（0正常 1临时锁定30分钟 2永久锁定需要人工干预）
-        /// </summary>
-        [SugarColumn(ColumnName = "is_lock", ColumnDescription = "锁定状态（0正常 1临时锁定30分钟 2永久锁定需要人工干预）", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
-        public int IsLock { get; set; } = 0;
 
-        /// <summary>
-        /// 错误次数限制（0是3次 1是5次）
-        /// </summary>
-        [SugarColumn(ColumnName = "error_limit", ColumnDescription = "错误次数限制（0是3次 1是5次）", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
-        public int ErrorLimit { get; set; } = 0;
-
-        /// <summary>
-        /// 登录次数
-        /// </summary>
-        [SugarColumn(ColumnName = "login_count", ColumnDescription = "登录次数", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
-        public int LoginCount { get; set; } = 0;
     }
 }

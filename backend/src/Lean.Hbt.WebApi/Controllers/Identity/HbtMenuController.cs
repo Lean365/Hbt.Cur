@@ -213,13 +213,14 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <summary>
         /// 获取菜单树形结构
         /// </summary>
+        /// <param name="query">查询条件</param>
         /// <returns>返回树形菜单列表</returns>
         [HttpGet("tree")]
         [HbtPerm("identity:menu:query")]
         [ProducesResponseType(typeof(HbtApiResult<List<HbtMenuDto>>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetTreeAsync()
+        public async Task<IActionResult> GetTreeAsync([FromQuery] HbtMenuQueryDto query)
         {
-            var menus = await _menuService.GetTreeAsync();
+            var menus = await _menuService.GetTreeAsync(query);
             return Success(menus);
         }
 

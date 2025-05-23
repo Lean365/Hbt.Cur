@@ -3,6 +3,7 @@ export default {
     auth: {
       login: {
         title: '登录',
+        tenantNo: '租户',
         username: '用户名',
         password: '密码',
         rememberMe: '记住密码',

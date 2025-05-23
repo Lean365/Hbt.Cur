@@ -1,13 +1,13 @@
 import request from '@/utils/request'
-import type { UserQuery, User, UserStatus, ResetPassword, ChangePassword, UserUpdate, UserCreate, HbtUserRoleDto, HbtUserDeptDto, HbtUserPostDto } from '@/types/identity/user'
+import type { HbtUserQuery, HbtUser, HbtUserStatus,HbtUserPassword, HbtUserResetPwd, HbtUserUpdate, HbtUserCreate, HbtUserRoleDto, HbtUserDeptDto, HbtUserPostDto } from '@/types/identity/user'
 import type { HbtPagedResult } from '@/types/common'
 import type { HbtApiResponse } from '@/types/common'
 import { useUserStore } from '@/stores/user'
 import { AxiosResponse } from 'axios'
 
 // 获取用户分页列表
-export function getPagedList(query: UserQuery) {
-  return request<HbtApiResponse<HbtPagedResult<User>>>({
+export function getUserList(query: HbtUserQuery) {
+  return request<HbtApiResponse<HbtPagedResult<HbtUser>>>({
     url: '/api/HbtUser/list',
     method: 'get',
     params: query
@@ -16,14 +16,14 @@ export function getPagedList(query: UserQuery) {
 
 // 获取用户详情
 export function getUser(userId: number) {
-  return request<HbtApiResponse<User>>({
+  return request<HbtApiResponse<HbtUser>>({
     url: `/api/HbtUser/${userId}`,
     method: 'get'
   })
 }
 
 // 创建用户
-export function createUser(data: UserCreate) {
+export function createUser(data: HbtUserCreate) {
   return request<HbtApiResponse<number>>({
     url: '/api/HbtUser',
     method: 'post',
@@ -32,7 +32,7 @@ export function createUser(data: UserCreate) {
 }
 
 // 更新用户
-export function updateUser(data: UserUpdate) {
+export function updateUser(data: HbtUserUpdate) {
   return request<HbtApiResponse<boolean>>({
     url: '/api/HbtUser',
     method: 'put',
@@ -72,7 +72,7 @@ export function importUser(file: File) {
 }
 
 // 导出用户
-export function exportUser(query: UserQuery) {
+export function exportUser(query: HbtUserQuery) {
   return request<Blob>({
     url: '/api/HbtUser/export',
     method: 'get',
@@ -91,7 +91,7 @@ export function getTemplate() {
 }
 
 // 更新用户状态
-export function updateUserStatus(data: UserStatus) {
+export function updateUserStatus(data: HbtUserStatus) {
   return request<HbtApiResponse<boolean>>({
     url: `/api/HbtUser/${data.userId}/status`,
     method: 'put',
@@ -102,7 +102,7 @@ export function updateUserStatus(data: UserStatus) {
 }
 
 // 重置密码
-export function resetPassword(data: ResetPassword) {
+export function resetPassword(data: HbtUserResetPwd) {
   return request<boolean>({
     url: '/api/HbtUser/reset-password',
     method: 'put',
@@ -111,7 +111,7 @@ export function resetPassword(data: ResetPassword) {
 }
 
 // 修改密码
-export function changePassword(data: ChangePassword) {
+export function changePassword(data: HbtUserPassword) {
   return request<boolean>({
     url: '/api/HbtUser/change-password',
     method: 'put',
@@ -158,7 +158,7 @@ export function updateProfile(data: ProfileUpdate) {
 
 // 搜索用户
 export function searchUser(query: { keyword: string }) {
-  return request<HbtApiResponse<HbtPagedResult<User>>>({
+  return request<HbtApiResponse<HbtPagedResult<HbtUser>>>({
     url: '/api/HbtUser',
     method: 'get',
     params: {

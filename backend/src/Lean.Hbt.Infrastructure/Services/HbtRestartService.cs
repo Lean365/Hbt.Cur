@@ -1,4 +1,4 @@
-using Lean.Hbt.Application.Services.Identity;
+using Lean.Hbt.Application.Services.Audit;
 using Lean.Hbt.Common.Options;
 using Lean.Hbt.Domain.Entities.SignalR;
 using Microsoft.Extensions.Caching.Distributed;
@@ -20,7 +20,7 @@ namespace Lean.Hbt.Infrastructure.Services;
 /// </summary>
 public class HbtRestartService : IHbtRestartService
 {
-    private readonly IHbtLoginExtendService _loginExtendService;
+    private readonly IHbtLoginEnvLogService _loginExtendService;
     private readonly IDistributedCache _cache;
 
     /// <summary>
@@ -36,7 +36,7 @@ public class HbtRestartService : IHbtRestartService
     /// <summary>
     /// 构造函数
     /// </summary>
-    /// <param name="loginExtendService">登录扩展服务</param>
+    /// <param name="loginExtendService">登录环境日志服务</param>
     /// <param name="cache">分布式缓存服务</param>
     /// <param name="logger">日志服务</param>
     /// <param name="options">系统重启选项</param>
@@ -44,7 +44,7 @@ public class HbtRestartService : IHbtRestartService
     /// <param name="onlineUserRepository">在线用户仓储</param>
     /// <param name="redisConnection">Redis连接</param>
     public HbtRestartService(
-        IHbtLoginExtendService loginExtendService,
+        IHbtLoginEnvLogService loginExtendService,
         IDistributedCache cache,
         IHbtLogger logger,
 

@@ -16,9 +16,9 @@ import type { HbtQuartzLogDto, HbtQuartzLogQueryDto } from '@/types/audit/quartz
  * @param query 查询参数
  * @returns 任务日志列表
  */
-export function getQuartzLogs(query: HbtQuartzLogQueryDto) {
+export function getQuartzLogList(query: HbtQuartzLogQueryDto) {
   return request<HbtApiResponse<HbtPagedResult<HbtQuartzLogDto>>>({
-    url: '/api/HbtQuartzTask/list',
+    url: '/api/HbtQuartzLog/list',
     method: 'get',
     params: query
   })
@@ -31,7 +31,7 @@ export function getQuartzLogs(query: HbtQuartzLogQueryDto) {
  */
 export function getQuartzLog(logId: number) {
   return request<HbtApiResponse<HbtQuartzLogDto>>({
-    url: `/api/HbtQuartzTask/${logId}`,
+    url: `/api/HbtQuartzLog/${logId}`,
     method: 'get'
   })
 }
@@ -42,9 +42,9 @@ export function getQuartzLog(logId: number) {
  * @param sheetName 工作表名称
  * @returns Excel文件
  */
-export function exportQuartzLogs(query: HbtQuartzLogQueryDto, sheetName: string = '任务日志') {
+export function exportQuartzLog(query: HbtQuartzLogQueryDto, sheetName: string = '任务日志') {
   return request({
-    url: '/api/HbtQuartzTask/export',
+    url: '/api/HbtQuartzLog/export',
     method: 'get',
     params: { ...query, sheetName },
     responseType: 'blob'
@@ -55,9 +55,9 @@ export function exportQuartzLogs(query: HbtQuartzLogQueryDto, sheetName: string 
  * 清空任务日志
  * @returns 是否成功
  */
-export function clearQuartzLogs() {
+export function clearQuartzLog() {
   return request<HbtApiResponse<boolean>>({
-    url: '/api/HbtQuartzTask/clear',
+    url: '/api/HbtQuartzLog/clear',
     method: 'delete'
   })
 } 

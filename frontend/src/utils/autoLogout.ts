@@ -1,12 +1,11 @@
 import { useUserStore } from '@/stores/user'
-import { useRouter } from 'vue-router'
 import { message } from 'ant-design-vue'
-import { useI18n } from 'vue-i18n'
 
 // 30分钟无操作自动登出
 const INACTIVITY_TIMEOUT = 30 * 60 * 1000
 
 let inactivityTimer: NodeJS.Timeout | null = null
+let userStore: ReturnType<typeof useUserStore> | null = null
 
 // 重置定时器
 const resetTimer = () => {
@@ -15,18 +14,16 @@ const resetTimer = () => {
   }
 
   inactivityTimer = setTimeout(async () => {
-    const userStore = useUserStore()
-    const router = useRouter()
-    const { t } = useI18n()
+    if (!userStore) return
 
     // 显示提示消息
-    message.warning(t('auth.autoLogout'))
+    message.warning('由于长时间未操作，您已被自动登出')
 
     // 执行登出
     await userStore.logout()
 
     // 跳转到登录页
-    router.push('/login')
+    window.location.href = '/login'
   }, INACTIVITY_TIMEOUT)
 }
 
@@ -53,7 +50,8 @@ const clearActivityListeners = () => {
 }
 
 // 初始化自动登出
-export const initAutoLogout = () => {
+export const initAutoLogout = (store: ReturnType<typeof useUserStore>) => {
+  userStore = store
   resetTimer()
   setupActivityListeners()
 }
@@ -61,4 +59,5 @@ export const initAutoLogout = () => {
 // 清理自动登出
 export const clearAutoLogout = () => {
   clearActivityListeners()
+  userStore = null
 } 

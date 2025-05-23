@@ -131,11 +131,11 @@ namespace Lean.Hbt.WebApi.Controllers.Core
         public async Task<IActionResult> ImportAsync(IFormFile file, [FromQuery] string sheetName = "字典数据")
         {
             if (file == null || file.Length == 0)
-                return BadRequest("请选择要导入的文件");
+                return BadRequest(_localization.L("Dict.Import.FileRequired"));
 
             using var stream = file.OpenReadStream();
-            var result = await _dictDataService.ImportAsync(stream, sheetName);
-            return Ok(result);
+            var (success, fail) = await _dictDataService.ImportAsync(stream, sheetName);
+            return Success(new { success, fail }, _localization.L("Dict.Import.Success"));
         }
 
         /// <summary>
@@ -149,8 +149,14 @@ namespace Lean.Hbt.WebApi.Controllers.Core
         [ProducesResponseType(typeof(byte[]), StatusCodes.Status200OK)]
         public async Task<IActionResult> ExportAsync([FromQuery] HbtDictDataQueryDto query, [FromQuery] string sheetName = "字典数据")
         {
-            var (_, content) = await _dictDataService.ExportAsync(query, sheetName);
-            return File(content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"字典数据_{DateTime.Now:yyyyMMddHHmmss}.xlsx");
+            var result = await _dictDataService.ExportAsync(query, sheetName);
+            var contentType = result.fileName.EndsWith(".zip", StringComparison.OrdinalIgnoreCase)
+                ? "application/zip"
+                : "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+            // 只在 filename* 用 UTF-8 编码，filename 用 ASCII
+            var safeFileName = System.Text.Encoding.ASCII.GetString(System.Text.Encoding.ASCII.GetBytes(result.fileName));
+            Response.Headers["Content-Disposition"] = $"attachment; filename*=UTF-8''{Uri.EscapeDataString(result.fileName)}";
+            return File(result.content, contentType, result.fileName);
         }
 
         /// <summary>
@@ -163,8 +169,8 @@ namespace Lean.Hbt.WebApi.Controllers.Core
         [ProducesResponseType(typeof(byte[]), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetTemplateAsync([FromQuery] string sheetName = "字典数据导入模板")
         {
-            var (_, content) = await _dictDataService.GetTemplateAsync(sheetName);
-            return File(content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"字典数据导入模板_{DateTime.Now:yyyyMMddHHmmss}.xlsx");
+            var result = await _dictDataService.GetTemplateAsync(sheetName);
+            return File(result.content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", result.fileName);
         }
 
         /// <summary>

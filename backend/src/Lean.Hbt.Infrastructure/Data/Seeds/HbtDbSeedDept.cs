@@ -7,12 +7,7 @@
 // 描述   : 部门数据初始化类
 //===================================================================
 
-using Lean.Hbt.Common.Enums;
-using Lean.Hbt.Common.Utils;
-using Lean.Hbt.Domain.Entities.Core;
 using Lean.Hbt.Domain.Entities.Identity;
-using Lean.Hbt.Domain.IServices.Extensions;
-using Lean.Hbt.Infrastructure.Data.Contexts;
 
 namespace Lean.Hbt.Infrastructure.Data.Seeds;
 
@@ -38,7 +33,7 @@ public class HbtDbSeedDept
     /// <summary>
     /// 初始化部门数据
     /// </summary>
-    public async Task<(int, int)> InitializeDeptAsync()
+    public async Task<(int, int)> InitializeDeptAsync(long systemTenantId)
     {
         int insertCount = 0;
         int updateCount = 0;
@@ -58,10 +53,10 @@ public class HbtDbSeedDept
             Phone = "13800138000",
             Email = "chairman@lean365.com",
             Status = 0,
-            TenantId = 0,
-            CreateBy = "system",
+
+            CreateBy = "Hbt365",
             CreateTime = DateTime.Now,
-            UpdateBy = "system",
+            UpdateBy = "Hbt365",
             UpdateTime = DateTime.Now,
             Remark = "Headquarters;本社"
         };
@@ -78,10 +73,10 @@ public class HbtDbSeedDept
             Phone = "13800138001",
             Email = "president@lean365.com",
             Status = 0,
-            TenantId = 0,
-            CreateBy = "system",
+
+            CreateBy = "Hbt365",
             CreateTime = DateTime.Now,
-            UpdateBy = "system",
+            UpdateBy = "Hbt365",
             UpdateTime = DateTime.Now,
             Remark = "Branch Company;支社"
         };
@@ -98,10 +93,10 @@ public class HbtDbSeedDept
             Phone = "13800138002",
             Email = "gm@lean365.com",
             Status = 0,
-            TenantId = 0,
-            CreateBy = "system",
+
+            CreateBy = "Hbt365",
             CreateTime = DateTime.Now,
-            UpdateBy = "system",
+            UpdateBy = "Hbt365",
             UpdateTime = DateTime.Now,
             Remark = "General Manager Office;社長室"
         };
@@ -118,10 +113,10 @@ public class HbtDbSeedDept
             Phone = "13800138003",
             Email = "ga@lean365.com",
             Status = 0,
-            TenantId = 0,
-            CreateBy = "system",
+
+            CreateBy = "Hbt365",
             CreateTime = DateTime.Now,
-            UpdateBy = "system",
+            UpdateBy = "Hbt365",
             UpdateTime = DateTime.Now,
             Remark = "General Affairs Department;総務部"
         };
@@ -138,10 +133,10 @@ public class HbtDbSeedDept
             Phone = "13800138004",
             Email = "finance@lean365.com",
             Status = 0,
-            TenantId = 0,
-            CreateBy = "system",
+
+            CreateBy = "Hbt365",
             CreateTime = DateTime.Now,
-            UpdateBy = "system",
+            UpdateBy = "Hbt365",
             UpdateTime = DateTime.Now,
             Remark = "Finance Department;財務部"
         };
@@ -158,10 +153,10 @@ public class HbtDbSeedDept
             Phone = "13800138005",
             Email = "it@lean365.com",
             Status = 0,
-            TenantId = 0,
-            CreateBy = "system",
+
+            CreateBy = "Hbt365",
             CreateTime = DateTime.Now,
-            UpdateBy = "system",
+            UpdateBy = "Hbt365",
             UpdateTime = DateTime.Now,
             Remark = "IT Department;IT部"
         };
@@ -178,10 +173,10 @@ public class HbtDbSeedDept
             Phone = "13800138006",
             Email = "business@lean365.com",
             Status = 0,
-            TenantId = 0,
-            CreateBy = "system",
+
+            CreateBy = "Hbt365",
             CreateTime = DateTime.Now,
-            UpdateBy = "system",
+            UpdateBy = "Hbt365",
             UpdateTime = DateTime.Now,
             Remark = "Business Promotion Division;事業推進本部"
         };
@@ -198,10 +193,10 @@ public class HbtDbSeedDept
             Phone = "13800138007",
             Email = "admin@lean365.com",
             Status = 0,
-            TenantId = 0,
-            CreateBy = "system",
+
+            CreateBy = "Hbt365",
             CreateTime = DateTime.Now,
-            UpdateBy = "system",
+            UpdateBy = "Hbt365",
             UpdateTime = DateTime.Now,
             Remark = "Administration Department;管理部"
         };
@@ -218,10 +213,10 @@ public class HbtDbSeedDept
             Phone = "13800138008",
             Email = "ppc@lean365.com",
             Status = 0,
-            TenantId = 0,
-            CreateBy = "system",
+
+            CreateBy = "Hbt365",
             CreateTime = DateTime.Now,
-            UpdateBy = "system",
+            UpdateBy = "Hbt365",
             UpdateTime = DateTime.Now,
             Remark = "Production Control Section;生産管理課"
         };
@@ -238,10 +233,10 @@ public class HbtDbSeedDept
             Phone = "13800138009",
             Email = "deptmgr@lean365.com",
             Status = 0,
-            TenantId = 0,
-            CreateBy = "system",
+
+            CreateBy = "Hbt365",
             CreateTime = DateTime.Now,
-            UpdateBy = "system",
+            UpdateBy = "Hbt365",
             UpdateTime = DateTime.Now,
             Remark = "Department Management Section;部門管理課"
         };
@@ -258,10 +253,10 @@ public class HbtDbSeedDept
             Phone = "13800138010",
             Email = "customs@lean365.com",
             Status = 0,
-            TenantId = 0,
-            CreateBy = "system",
+
+            CreateBy = "Hbt365",
             CreateTime = DateTime.Now,
-            UpdateBy = "system",
+            UpdateBy = "Hbt365",
             UpdateTime = DateTime.Now,
             Remark = "Customs Declaration Section;通関課"
         };
@@ -278,10 +273,10 @@ public class HbtDbSeedDept
             Phone = "13800138011",
             Email = "material@lean365.com",
             Status = 0,
-            TenantId = 0,
-            CreateBy = "system",
+
+            CreateBy = "Hbt365",
             CreateTime = DateTime.Now,
-            UpdateBy = "system",
+            UpdateBy = "Hbt365",
             UpdateTime = DateTime.Now,
             Remark = "Material Department;資材部"
         };
@@ -298,10 +293,10 @@ public class HbtDbSeedDept
             Phone = "13800138012",
             Email = "purchase@lean365.com",
             Status = 0,
-            TenantId = 0,
-            CreateBy = "system",
+
+            CreateBy = "Hbt365",
             CreateTime = DateTime.Now,
-            UpdateBy = "system",
+            UpdateBy = "Hbt365",
             UpdateTime = DateTime.Now,
             Remark = "Purchasing Section;購買課"
         };
@@ -318,10 +313,10 @@ public class HbtDbSeedDept
             Phone = "13800138013",
             Email = "production@lean365.com",
             Status = 0,
-            TenantId = 0,
-            CreateBy = "system",
+
+            CreateBy = "Hbt365",
             CreateTime = DateTime.Now,
-            UpdateBy = "system",
+            UpdateBy = "Hbt365",
             UpdateTime = DateTime.Now,
             Remark = "Production Improvement Division;生産改善推進本部"
         };
@@ -338,10 +333,10 @@ public class HbtDbSeedDept
             Phone = "13800138014",
             Email = "tech@lean365.com",
             Status = 0,
-            TenantId = 0,
-            CreateBy = "system",
+
+            CreateBy = "Hbt365",
             CreateTime = DateTime.Now,
-            UpdateBy = "system",
+            UpdateBy = "Hbt365",
             UpdateTime = DateTime.Now,
             Remark = "Technical Department;技術部"
         };
@@ -358,10 +353,10 @@ public class HbtDbSeedDept
             Phone = "13800138015",
             Email = "engineering@lean365.com",
             Status = 0,
-            TenantId = 0,
-            CreateBy = "system",
+
+            CreateBy = "Hbt365",
             CreateTime = DateTime.Now,
-            UpdateBy = "system",
+            UpdateBy = "Hbt365",
             UpdateTime = DateTime.Now,
             Remark = "Engineering Section;技術課"
         };
@@ -378,10 +373,10 @@ public class HbtDbSeedDept
             Phone = "13800138016",
             Email = "manufacturing@lean365.com",
             Status = 0,
-            TenantId = 0,
-            CreateBy = "system",
+
+            CreateBy = "Hbt365",
             CreateTime = DateTime.Now,
-            UpdateBy = "system",
+            UpdateBy = "Hbt365",
             UpdateTime = DateTime.Now,
             Remark = "Manufacturing Department;製造部"
         };
@@ -398,10 +393,10 @@ public class HbtDbSeedDept
             Phone = "13800138017",
             Email = "mfg1@lean365.com",
             Status = 0,
-            TenantId = 0,
-            CreateBy = "system",
+
+            CreateBy = "Hbt365",
             CreateTime = DateTime.Now,
-            UpdateBy = "system",
+            UpdateBy = "Hbt365",
             UpdateTime = DateTime.Now,
             Remark = "Manufacturing Section 1;製造1課"
         };
@@ -418,10 +413,10 @@ public class HbtDbSeedDept
             Phone = "13800138018",
             Email = "mfg2@lean365.com",
             Status = 0,
-            TenantId = 0,
-            CreateBy = "system",
+
+            CreateBy = "Hbt365",
             CreateTime = DateTime.Now,
-            UpdateBy = "system",
+            UpdateBy = "Hbt365",
             UpdateTime = DateTime.Now,
             Remark = "Manufacturing Section 2;製造2課"
         };
@@ -438,10 +433,10 @@ public class HbtDbSeedDept
             Phone = "13800138019",
             Email = "mfgtech@lean365.com",
             Status = 0,
-            TenantId = 0,
-            CreateBy = "system",
+
+            CreateBy = "Hbt365",
             CreateTime = DateTime.Now,
-            UpdateBy = "system",
+            UpdateBy = "Hbt365",
             UpdateTime = DateTime.Now,
             Remark = "Manufacturing Technology Section;製造技術課"
         };
@@ -458,10 +453,10 @@ public class HbtDbSeedDept
             Phone = "13800138020",
             Email = "qa@lean365.com",
             Status = 0,
-            TenantId = 0,
-            CreateBy = "system",
+
+            CreateBy = "Hbt365",
             CreateTime = DateTime.Now,
-            UpdateBy = "system",
+            UpdateBy = "Hbt365",
             UpdateTime = DateTime.Now,
             Remark = "Quality Assurance Department;品質管理部"
         };
@@ -478,10 +473,10 @@ public class HbtDbSeedDept
             Phone = "13800138021",
             Email = "inspection@lean365.com",
             Status = 0,
-            TenantId = 0,
-            CreateBy = "system",
+
+            CreateBy = "Hbt365",
             CreateTime = DateTime.Now,
-            UpdateBy = "system",
+            UpdateBy = "Hbt365",
             UpdateTime = DateTime.Now,
             Remark = "Inspection Section;検査課"
         };
@@ -498,10 +493,10 @@ public class HbtDbSeedDept
             Phone = "13800138022",
             Email = "qc@lean365.com",
             Status = 0,
-            TenantId = 0,
-            CreateBy = "system",
+
+            CreateBy = "Hbt365",
             CreateTime = DateTime.Now,
-            UpdateBy = "system",
+            UpdateBy = "Hbt365",
             UpdateTime = DateTime.Now,
             Remark = "Quality Control Section;品質管理課"
         };
@@ -512,6 +507,11 @@ public class HbtDbSeedDept
             var existingDept = await _deptRepository.GetFirstAsync(d => d.Id == dept.Id);
             if (existingDept == null)
             {
+                dept.TenantId = systemTenantId;
+                dept.CreateBy = "Hbt365";
+                dept.CreateTime = DateTime.Now;
+                dept.UpdateBy = "Hbt365";
+                dept.UpdateTime = DateTime.Now;
                 await _deptRepository.CreateAsync(dept);
                 insertCount++;
                 _logger.Info($"[创建] 部门 '{dept.DeptName}' 创建成功");
@@ -525,8 +525,8 @@ public class HbtDbSeedDept
                 existingDept.Phone = dept.Phone;
                 existingDept.Email = dept.Email;
                 existingDept.Status = dept.Status;
-                existingDept.TenantId = dept.TenantId;
-                existingDept.UpdateBy = "system";
+                existingDept.TenantId = systemTenantId;
+                existingDept.UpdateBy = "Hbt365";
                 existingDept.UpdateTime = DateTime.Now;
 
                 await _deptRepository.UpdateAsync(existingDept);
@@ -537,4 +537,4 @@ public class HbtDbSeedDept
 
         return (insertCount, updateCount);
     }
-} 
+}

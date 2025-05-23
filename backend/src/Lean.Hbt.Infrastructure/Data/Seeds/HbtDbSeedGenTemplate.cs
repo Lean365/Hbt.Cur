@@ -32,7 +32,7 @@ public class HbtDbSeedGenTemplate
     /// <summary>
     /// 初始化代码生成模板数据
     /// </summary>
-    public async Task<(int insertCount, int updateCount)> InitializeGenTemplateAsync()
+    public async Task<(int insertCount, int updateCount)> InitializeGenTemplateAsync(long tenantId)
     {
         var seedData = GetSeedData();
         var insertCount = 0;
@@ -44,6 +44,12 @@ public class HbtDbSeedGenTemplate
 
             if (existingTemplate == null)
             {
+                template.TenantId = tenantId;
+                template.CreateBy = "Hbt365";
+                template.CreateTime = DateTime.Now;
+                template.UpdateBy = "Hbt365";
+                template.UpdateTime = DateTime.Now;
+                
                 await _genTemplateRepository.CreateAsync(template);
                 insertCount++;
                 _logger.Info($"[创建] 代码生成模板 '{template.TemplateName}' 创建成功");
@@ -57,7 +63,8 @@ public class HbtDbSeedGenTemplate
                 existingTemplate.TemplateVersion = template.TemplateVersion;
                 existingTemplate.FileName = template.FileName;
                 existingTemplate.TemplateContent = template.TemplateContent;
-                existingTemplate.UpdateBy = "system";
+                existingTemplate.TenantId = tenantId;
+                existingTemplate.UpdateBy = "Hbt365";
                 existingTemplate.UpdateTime = DateTime.Now;
 
                 await _genTemplateRepository.UpdateAsync(existingTemplate);
@@ -104,9 +111,9 @@ namespace {{base_namespace}}.Domain.Entities.{{module_name}}
         {{end}}
     }
 }",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtGenTemplate
@@ -135,9 +142,9 @@ namespace {{base_namespace}}.Domain.Dtos.{{module_name}}
         {{end}}
     }
 }",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtGenTemplate
@@ -184,9 +191,9 @@ namespace {{base_namespace}}.Domain.IServices.{{module_name}}
         Task DeleteAsync(long id);
     }
 }",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtGenTemplate
@@ -304,9 +311,9 @@ namespace {{base_namespace}}.Infrastructure.Services.{{module_name}}
         }
     }
 }",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtGenTemplate
@@ -328,9 +335,9 @@ namespace {{base_namespace}}.Domain.IRepositories.{{module_name}}
     {
     }
 }",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtGenTemplate
@@ -356,9 +363,9 @@ namespace {{base_namespace}}.Infrastructure.Repositories.{{module_name}}
         }
     }
 }",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtGenTemplate
@@ -391,9 +398,9 @@ export function update(data: {{className}}Dto) {
 export function remove(id: number) {
   return request.delete(`/api/{{table_name}}/${id}`);
 }",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtGenTemplate
@@ -410,9 +417,9 @@ export function remove(id: number) {
   {{column.property_name}}: {{column.ts_type}};
   {{end}}
 }",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtGenTemplate
@@ -436,9 +443,9 @@ import ManageForm from './components/ManageForm.vue';
   padding: 16px;
 }
 </style>",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtGenTemplate
@@ -467,9 +474,9 @@ const form = ref<{{className}}Dto>({});
 </script>
 <style scoped>
 </style>",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtGenTemplate
@@ -488,9 +495,9 @@ const form = ref<{{className}}Dto>({});
     {{end}}
   }
 };",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtGenTemplate
@@ -509,9 +516,9 @@ const form = ref<{{className}}Dto>({});
     {{end}}
   }
 };",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtGenTemplate
@@ -638,9 +645,9 @@ namespace {{base_namespace}}.Web.Controllers.{{module_name}}
         }
     }
 }",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             }
         };

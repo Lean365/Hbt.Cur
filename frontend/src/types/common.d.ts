@@ -2,8 +2,6 @@
  * 基础实体类型
  */
 export interface HbtBaseEntity {
-  /** 主键 */
-  id: number;
   /** 创建者 */
   createBy: string;
   /** 创建时间 */

@@ -8,11 +8,7 @@
 //===================================================================
 
 using System.Linq.Expressions;
-using Lean.Hbt.Application.Dtos.Identity;
-using Lean.Hbt.Domain.Entities.Identity;
-using Microsoft.Extensions.Localization;
 using Microsoft.AspNetCore.Http;
-using SqlSugar;
 
 namespace Lean.Hbt.Application.Services.Identity
 {
@@ -70,21 +66,6 @@ namespace Lean.Hbt.Application.Services.Identity
             _userRepository = userRepository;
         }
 
-        /// <summary>
-        /// 构建菜单查询条件
-        /// </summary>
-        private Expression<Func<HbtMenu, bool>> HbtMenuQueryExpression(HbtMenuQueryDto query)
-        {
-            var exp = Expressionable.Create<HbtMenu>();
-
-            if (!string.IsNullOrEmpty(query.MenuName))
-                exp.And(x => x.MenuName.Contains(query.MenuName));
-
-            if (query.Status.HasValue)
-                exp.And(x => x.Status == query.Status.Value);
-
-            return exp.ToExpression();
-        }
 
         /// <summary>
         /// 获取菜单分页列表
@@ -93,7 +74,7 @@ namespace Lean.Hbt.Application.Services.Identity
         /// <returns>返回分页后的菜单列表</returns>
         public async Task<HbtPagedResult<HbtMenuDto>> GetListAsync(HbtMenuQueryDto query)
         {
-            var exp = HbtMenuQueryExpression(query);
+            var exp = QueryExpression(query);
 
             var result = await _menuRepository.GetPagedListAsync(
                 exp,
@@ -164,7 +145,7 @@ namespace Lean.Hbt.Application.Services.Identity
 
                 var menu = input.Adapt<HbtMenu>();
                 var result = await _menuRepository.CreateAsync(menu);
-                
+
                 if (result > 0)
                 {
                     _logger.Info($"[菜单服务] 菜单创建成功: MenuId={menu.Id}, MenuName={menu.MenuName}");
@@ -219,7 +200,7 @@ namespace Lean.Hbt.Application.Services.Identity
                     }
                     return newMenu.Id;
                 }
-                
+
                 _logger.Error($"[菜单服务] 菜单创建失败: MenuName={input.MenuName}");
                 throw new HbtException(L("Identity.Menu.CreateFailed"));
             }
@@ -507,7 +488,7 @@ namespace Lean.Hbt.Application.Services.Identity
         {
             try
             {
-                var list = await _menuRepository.GetListAsync(HbtMenuQueryExpression(query));
+                var list = await _menuRepository.GetListAsync(QueryExpression(query));
                 var exportList = list.Adapt<List<HbtMenuExportDto>>();
                 return await HbtExcelHelper.ExportAsync(exportList, sheetName, "菜单数据");
             }
@@ -540,7 +521,7 @@ namespace Lean.Hbt.Application.Services.Identity
                 {
                     Label = m.MenuName,
                     Value = m.Id,
-                    Disabled = false
+
                 })
                 .ToListAsync();
             return menus;
@@ -578,31 +559,91 @@ namespace Lean.Hbt.Application.Services.Identity
         /// 获取菜单树形结构
         /// </summary>
         /// <returns>返回菜单树形结构列表</returns>
-        public async Task<List<HbtMenuDto>> GetTreeAsync()
+        public async Task<List<HbtMenuDto>> GetTreeAsync(HbtMenuQueryDto query = null)
         {
             try
             {
                 _logger.Info("[菜单服务] 开始获取菜单树");
 
                 // 获取所有菜单
-                var menus = await _menuRepository.AsQueryable()
-                    .OrderBy(m => m.OrderNum)
-                    .ToListAsync();
+                var queryable = _menuRepository.AsQueryable()
+                    .OrderBy(m => m.OrderNum);
+
+                // 应用查询条件
+                if (query != null)
+                {
+                    var exp = QueryExpression(query);
+                    queryable = queryable.Where(exp);
+                }
+
+                var menus = await queryable.ToListAsync();
 
                 _logger.Info($"[菜单服务] 从数据库获取菜单数: {menus?.Count ?? 0}");
+
+                // 如果有查询条件，需要获取所有相关的子菜单
+                if (query != null && !string.IsNullOrEmpty(query.MenuName))
+                {
+                    var matchedMenuIds = menus.Select(m => m.Id).ToList();
+                    var childMenuIds = new List<long>();
+
+                    // 递归获取所有子菜单
+                    while (true)
+                    {
+                        var childMenus = await _menuRepository.AsQueryable()
+                            .Where(m => matchedMenuIds.Contains(m.ParentId))
+                            .ToListAsync();
+
+                        if (!childMenus.Any()) break;
+
+                        childMenuIds.AddRange(childMenus.Select(m => m.Id));
+                        matchedMenuIds = childMenus.Select(m => m.Id).ToList();
+                    }
+
+                    // 获取所有相关的菜单
+                    if (childMenuIds.Any())
+                    {
+                        var allRelatedMenus = await _menuRepository.AsQueryable()
+                            .Where(m => childMenuIds.Contains(m.Id))
+                            .ToListAsync();
+                        menus.AddRange(allRelatedMenus);
+                    }
+                }
 
                 // 转换为DTO
                 var menuDtos = menus.Adapt<List<HbtMenuDto>>();
 
                 _logger.Info($"[菜单服务] 转换后的菜单DTO数: {menuDtos?.Count ?? 0}");
 
-                // 构建树形结构 - 使用ParentId == 0作为根节点判断条件
-                var tree = menuDtos.Where(m => m.ParentId == 0).ToList();
+                // 构建树形结构
+                List<HbtMenuDto> tree;
 
-                // 递归构建子树
-                foreach (var node in tree)
+                if (query != null && !string.IsNullOrEmpty(query.MenuName))
                 {
-                    BuildMenuTree(node, menuDtos);
+                    // 如果有查询条件，找到匹配的菜单项
+                    var matchedMenus = menuDtos.Where(m => m.MenuName.Contains(query.MenuName)).ToList();
+                    if (matchedMenus.Any())
+                    {
+                        // 从匹配的菜单项开始构建树
+                        tree = matchedMenus;
+                        foreach (var node in tree)
+                        {
+                            BuildMenuTree(node, menuDtos);
+                        }
+                    }
+                    else
+                    {
+                        // 如果没有找到匹配的菜单，返回空列表
+                        tree = new List<HbtMenuDto>();
+                    }
+                }
+                else
+                {
+                    // 如果没有查询条件，从顶级菜单开始构建树
+                    tree = menuDtos.Where(m => m.ParentId == 0).ToList();
+                    foreach (var node in tree)
+                    {
+                        BuildMenuTree(node, menuDtos);
+                    }
                 }
 
                 _logger.Info("[菜单服务] 菜单树构建完成");
@@ -705,6 +746,22 @@ namespace Lean.Hbt.Application.Services.Identity
                 _logger.Error($"[菜单服务] 获取用户菜单失败: {ex.Message}", ex);
                 throw;
             }
+        }
+
+        /// <summary>
+        /// 构建菜单查询条件
+        /// </summary>
+        private Expression<Func<HbtMenu, bool>> QueryExpression(HbtMenuQueryDto query)
+        {
+            var exp = Expressionable.Create<HbtMenu>();
+
+            if (!string.IsNullOrEmpty(query.MenuName))
+                exp.And(x => x.MenuName.Contains(query.MenuName));
+
+            if (query.Status.HasValue && query.Status.Value != -1)
+                exp.And(x => x.Status == query.Status.Value);
+
+            return exp.ToExpression();
         }
     }
 }

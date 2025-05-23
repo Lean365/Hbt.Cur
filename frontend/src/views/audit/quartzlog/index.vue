@@ -3,7 +3,6 @@
     <!-- 查询区域 -->
     <hbt-query
       v-show="showSearch"
-      :model="queryParams"
       :query-fields="queryFields"
       @search="handleQuery"
       @reset="resetQuery"
@@ -15,19 +14,21 @@
       :show-export="true"
       :show-delete="true"
       :delete-permission="['audit:quartzlog:delete']"
-       :export-permission="['audit:quartzlog:export']"
+      :export-permission="['audit:quartzlog:export']"
       :disabled-delete="selectedRowKeys.length === 0"
       @refresh="fetchData"
       @export="handleExport"
       @delete="handleBatchDelete"
+      @column-setting="handleColumnSetting"
       @toggle-search="toggleSearch"
+      @toggle-fullscreen="toggleFullscreen"
     />
 
     <!-- 数据表格 -->
     <hbt-table
       :loading="loading"
       :data-source="tableData"
-      :columns="columns"
+      :columns="columns.filter(col => col.key && columnSettings[col.key])"
       :pagination="{
         total: total,
         current: queryParams.pageIndex,
@@ -36,7 +37,7 @@
         showQuickJumper: true,
         showTotal: (total: number) => `共 ${total} 条`
       }"
-      :row-key="(record: HbtQuartzLogDto) => record.logId"
+      row-key="quartzLogId"
       v-model:selectedRowKeys="selectedRowKeys"
       :row-selection="{
         type: 'checkbox',
@@ -48,63 +49,52 @@
       <!-- 任务状态列 -->
       <template #bodyCell="{ column, record }">
         <template v-if="column.key === 'status'">
-          <a-tag :color="record.status === 1 ? 'success' : 'error'">
-            {{ record.status === 1 ? '成功' : '失败' }}
+          <a-tag :color="record.status === '0' ? 'success' : 'error'">
+            {{ record.status === '0' ? '成功' : '失败' }}
           </a-tag>
+        </template>
+        <template v-if="column.key === 'action'">
+          <a @click="handleViewDetail(record)">详情</a>
         </template>
       </template>
     </hbt-table>
 
     <!-- 任务详情对话框 -->
-    <a-modal
-      v-model:visible="detailVisible"
-      title="任务详情"
-      width="800px"
-      :footer="null"
+    <quartz-log-detail ref="detailRef" :quartz-info="currentTask" />
+
+    <!-- 列设置抽屉 -->
+    <a-drawer
+      :visible="columnSettingVisible"
+      title="列设置"
+      placement="right"
+      width="300"
+      @close="columnSettingVisible = false"
     >
-      <a-descriptions bordered>
-        <a-descriptions-item label="任务名称" :span="3">
-          {{ currentTask?.logTaskName }}
-        </a-descriptions-item>
-        <a-descriptions-item label="任务组" :span="3">
-          {{ currentTask?.logGroupName }}
-        </a-descriptions-item>
-        <a-descriptions-item label="执行机器" :span="3">
-          {{ currentTask?.logExecuteHost }}
-        </a-descriptions-item>
-        <a-descriptions-item label="执行参数" :span="3">
-          {{ currentTask?.logExecuteParams }}
-        </a-descriptions-item>
-        <a-descriptions-item label="执行状态" :span="1">
-          <a-tag :color="currentTask?.logStatus === 1 ? 'success' : 'error'">
-            {{ currentTask?.logStatus === 1 ? '成功' : '失败' }}
-          </a-tag>
-        </a-descriptions-item>
-        <a-descriptions-item label="执行时间" :span="1">
-          {{ currentTask?.logExecuteTime }}
-        </a-descriptions-item>
-        <a-descriptions-item label="执行耗时" :span="1">
-          {{ currentTask?.logExecuteDuration }}ms
-        </a-descriptions-item>
-        <a-descriptions-item label="错误信息" :span="3">
-          <pre v-if="currentTask?.logErrorInfo">{{ currentTask.logErrorInfo }}</pre>
-          <span v-else>无</span>
-        </a-descriptions-item>
-      </a-descriptions>
-    </a-modal>
+      <a-checkbox-group
+        :value="Object.keys(columnSettings).filter(key => columnSettings[key])"
+        @change="handleColumnSettingChange"
+        class="column-setting-group"
+      >
+        <div v-for="col in defaultColumns" :key="col.key" class="column-setting-item">
+          <a-checkbox :value="col.key" :disabled="col.key === 'action'">{{ col.title }}</a-checkbox>
+        </div>
+      </a-checkbox-group>
+    </a-drawer>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive, h } from 'vue'
+import { ref, reactive, h, onMounted } from 'vue'
 import { message } from 'ant-design-vue'
 import type { TablePaginationConfig } from 'ant-design-vue'
 import type { QueryField } from '@/types/components/query'
 import type { HbtQuartzLogDto, HbtQuartzLogQueryDto } from '@/types/audit/quartzLog'
-import { getQuartzLogs, exportQuartzLogs, clearQuartzLogs } from '@/api/audit/quartzLog'
+import { getQuartzLogList, exportQuartzLog, clearQuartzLog } from '@/api/audit/quartzLog'
 import { useI18n } from 'vue-i18n'
+import QuartzLogDetail from './components/QuartzLogDetail.vue'
 
 const { t } = useI18n()
+
 // 查询字段定义
 const queryFields: QueryField[] = [
   {
@@ -190,15 +180,54 @@ const columns = [
     width: 180
   },
   {
-    title: '操作',
+    title: t('identity.user.table.columns.remark'),
+    dataIndex: 'remark',
+    key: 'remark',
+    width: 120
+  },
+  {
+    title: t('identity.user.table.columns.createBy'),
+    dataIndex: 'createBy',
+    key: 'createBy',
+    width: 120
+  },
+  {
+    title: t('identity.user.table.columns.createTime'),
+    dataIndex: 'createTime',
+    key: 'createTime',
+    width: 180
+  },
+  {
+    title: t('identity.user.table.columns.updateBy'),
+    dataIndex: 'updateBy',
+    key: 'updateBy',
+    width: 120
+  },
+  {
+    title: t('identity.user.table.columns.updateTime'),
+    dataIndex: 'updateTime',
+    key: 'updateTime',
+    width: 180
+  },
+  {
+    title: t('identity.user.table.columns.deleteBy'),
+    dataIndex: 'deleteBy',
+    key: 'deleteBy',
+    width: 120
+  },
+  {
+    title: t('identity.user.table.columns.deleteTime'),
+    dataIndex: 'deleteTime',
+    key: 'deleteTime',
+    width: 180
+  },
+  {
+    title: t('common.table.header.operation'),
+    dataIndex: 'action',
     key: 'action',
-    width: 80,
+    width: 150,
     fixed: 'right',
-    render: (_: any, record: HbtQuartzLogDto) => {
-      return h('a', {
-        onClick: () => handleViewDetail(record)
-      }, '详情')
-    }
+    ellipsis: true
   }
 ]
 
@@ -217,25 +246,28 @@ const queryParams = reactive<HbtQuartzLogQueryDto>({
 })
 const selectedRowKeys = ref<(string | number)[]>([])
 const showSearch = ref(true)
-const detailVisible = ref(false)
+const detailRef = ref()
 const currentTask = ref<HbtQuartzLogDto>()
+const columnSettingVisible = ref(false)
+const defaultColumns = columns
+const columnSettings = ref<Record<string, boolean>>({})
 
 /** 查看任务详情 */
 const handleViewDetail = (record: HbtQuartzLogDto) => {
   currentTask.value = record
-  detailVisible.value = true
+  detailRef.value?.open()
 }
 
 /** 获取表格数据 */
 const fetchData = async () => {
   loading.value = true
   try {
-    const res = await getQuartzLogs(queryParams)
-    if (res.code === 200) {
-      tableData.value = res.data.rows
-      total.value = res.data.totalNum
+    const res = await getQuartzLogList(queryParams)
+    if (res.data.code === 200) {
+      tableData.value = res.data.data.rows
+      total.value = res.data.data.totalNum
     } else {
-      message.error(res.msg || t('common.failed'))
+      message.error(res.data.msg || t('common.failed'))
     }
   } catch (error) {
     console.error('获取任务日志失败:', error)
@@ -272,7 +304,7 @@ const handleTableChange = (pagination: TablePaginationConfig) => {
 /** 导出任务日志 */
 const handleExport = async () => {
   try {
-    await exportQuartzLogs(queryParams, '任务日志')
+    await exportQuartzLog(queryParams, '任务日志')
     message.success('导出成功')
   } catch (error) {
     console.error('导出任务日志失败:', error)
@@ -287,7 +319,7 @@ const handleBatchDelete = async () => {
     return
   }
   try {
-    await clearQuartzLogs()
+    await clearQuartzLog()
     message.success('清空成功')
     selectedRowKeys.value = []
     fetchData()
@@ -301,6 +333,49 @@ const handleBatchDelete = async () => {
 const toggleSearch = () => {
   showSearch.value = !showSearch.value
 }
+// 切换全屏
+const toggleFullscreen = (isFullscreen: boolean) => {
+  console.log('切换全屏状态:', isFullscreen)
+}
+
+/** 处理列设置 */
+const handleColumnSetting = () => {
+  columnSettingVisible.value = true
+}
+
+// 初始化列设置
+const initColumnSettings = () => {
+  // 每次刷新页面时清除localStorage
+  localStorage.removeItem('quartzLogColumnSettings')
+  // 初始化所有列为false
+  columnSettings.value = Object.fromEntries(defaultColumns.map(col => [col.key, false]))
+  // 获取前6列（不包含操作列）
+  const firstColumns = defaultColumns.filter(col => col.key !== 'action').slice(0, 6)
+  // 设置前6列为true
+  firstColumns.forEach(col => {
+    columnSettings.value[col.key] = true
+  })
+  // 确保操作列显示
+  columnSettings.value['action'] = true
+}
+
+const handleColumnSettingChange = (checkedValue: Array<string | number | boolean>) => {
+  const settings: Record<string, boolean> = {}
+  defaultColumns.forEach(col => {
+    // 操作列始终为true
+    if (col.key === 'action') {
+      settings[col.key] = true
+    } else {
+      settings[col.key] = checkedValue.includes(col.key)
+    }
+  })
+  columnSettings.value = settings
+  localStorage.setItem('quartzLogColumnSettings', JSON.stringify(settings))
+}
+
+onMounted(() => {
+  initColumnSettings()
+})
 
 // 初始化加载数据
 fetchData()
@@ -309,18 +384,28 @@ fetchData()
 <style lang="less" scoped>
 .quartz-log-container {
   padding: 16px;
+  background-color: #fff;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 
-  :deep(.ant-descriptions-item-content) {
-    pre {
-      margin: 0;
-      padding: 8px;
-      background-color: #f5f5f5;
-      border-radius: 4px;
-      max-height: 300px;
-      overflow: auto;
-      white-space: pre-wrap;
-      word-wrap: break-word;
-    }
+  .ant-table-wrapper {
+    flex: 1;
   }
 }
-</style> 
+
+.column-setting-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.column-setting-item {
+  padding: 8px;
+  border-bottom: 1px solid var(--ant-color-split);
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+</style>

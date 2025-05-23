@@ -9,55 +9,141 @@
 
 import request from '@/utils/request'
 import type { HbtApiResponse, HbtPagedResult } from '@/types/common'
-import type { HbtLoginLogDto, HbtLoginLogQueryDto } from '@/types/audit/loginLog'
+import type { 
+  HbtLoginLog, 
+  HbtLoginLogQuery, 
+  HbtLoginLogCreate, 
+  HbtLoginLogUpdate, 
+  HbtLoginLogExport 
+} from '@/types/audit/loginLog'
 
 /**
  * 获取登录日志列表
  * @param params 查询参数
  * @returns 登录日志列表
  */
-export const getLoginLogs = (params: HbtLoginLogQueryDto) => {
-  return request<HbtApiResponse<HbtPagedResult<HbtLoginLogDto>>>({
+export function getLoginLogList(query: HbtLoginLogQuery) {
+  return request<HbtApiResponse<HbtPagedResult<HbtLoginLog>>>({
     url: '/api/HbtLoginLog/list',
     method: 'get',
-    params
+    params: query
   })
 }
 
 /**
  * 获取登录日志详情
- * @param logId 日志ID
+ * @param id 日志ID
  * @returns 登录日志详情
  */
-export function getLoginLog(logId: number) {
-  return request<HbtApiResponse<HbtLoginLogDto>>({
-    url: `/api/HbtLoginLog/${logId}`,
+export function getLoginLog(id: number) {
+  return request<HbtApiResponse<HbtLoginLog>>({
+    url: `/api/HbtLoginLog/${id}`,
     method: 'get'
   })
 }
 
 /**
- * 导出登录日志数据
- * @param query 查询条件
- * @param sheetName 工作表名称
- * @returns Excel文件
+ * 创建登录日志
+ * @param data 创建参数
+ * @returns 创建结果
  */
-export function exportLoginLogs(query: HbtLoginLogQueryDto, sheetName: string = '登录日志') {
-  return request({
-    url: '/api/HbtLoginLog/export',
-    method: 'get',
-    params: { ...query, sheetName },
-    responseType: 'blob'
+export function createLoginLog(data: HbtLoginLogCreate) {
+  return request<HbtApiResponse<number>>({
+    url: '/api/HbtLoginLog',
+    method: 'post',
+    data
+  })
+}
+
+/**
+ * 更新登录日志
+ * @param data 更新参数
+ * @returns 更新结果
+ */
+export function updateLoginLog(data: HbtLoginLogUpdate) {
+  return request<HbtApiResponse<boolean>>({
+    url: '/api/HbtLoginLog',
+    method: 'put',
+    data
+  })
+}
+
+/**
+ * 删除登录日志
+ * @param id 日志ID
+ * @returns 删除结果
+ */
+export function deleteLoginLog(id: number) {
+  return request<HbtApiResponse<boolean>>({
+    url: `/api/HbtLoginLog/${id}`,
+    method: 'delete'
+  })
+}
+
+/**
+ * 批量删除登录日志
+ * @param ids 日志ID数组
+ * @returns 删除结果
+ */
+export function batchDeleteLoginLog(ids: number[]) {
+  return request<HbtApiResponse<boolean>>({
+    url: '/api/HbtLoginLog/batch',
+    method: 'delete',
+    data: ids
   })
 }
 
 /**
  * 清空登录日志
- * @returns 是否成功
+ * @returns 清空结果
  */
-export function clearLoginLogs() {
+export function clearLoginLog() {
   return request<HbtApiResponse<boolean>>({
     url: '/api/HbtLoginLog/clear',
     method: 'delete'
+  })
+}
+
+/**
+ * 导入登录日志
+ * @param file 上传的文件
+ * @returns 导入结果
+ */
+export function importLoginLog(file: File) {
+  const formData = new FormData()
+  formData.append('file', file)
+  return request<HbtApiResponse<{ success: number; fail: number }>>({
+    url: '/api/HbtLoginLog/import',
+    method: 'post',
+    data: formData,
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  })
+}
+
+/**
+ * 导出登录日志
+ * @param query 查询参数
+ * @returns Excel文件
+ */
+export function exportLoginLog(query: HbtLoginLogQuery) {
+  return request<Blob>({
+    url: '/api/HbtLoginLog/export',
+    method: 'get',
+    params: query,
+    responseType: 'blob'
+  })
+}
+
+/**
+ * 获取导入模板
+ * @returns 导入模板文件
+ */
+export function getTemplate() {
+  return request<Blob>({
+    url: '/api/HbtLoginLog/template',
+    method: 'get',
+    responseType: 'blob'
   })
 }

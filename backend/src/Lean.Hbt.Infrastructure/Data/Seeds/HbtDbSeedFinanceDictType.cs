@@ -34,7 +34,7 @@ public class HbtDbSeedFinanceDictType
     /// <summary>
     /// 初始化财务相关字典类型数据
     /// </summary>
-    public async Task<(int, int)> InitializeFinanceDictTypeAsync()
+    public async Task<(int, int)> InitializeFinanceDictTypeAsync(long tenantId)
     {
         int insertCount = 0;
         int updateCount = 0;
@@ -47,11 +47,11 @@ public class HbtDbSeedFinanceDictType
                 DictType = "sys_profit_center",
                 OrderNum = 1,
                 Status = 0,
-                TenantId = 0,
+                
                 Remark = "利润中心字典",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictType
@@ -60,11 +60,11 @@ public class HbtDbSeedFinanceDictType
                 DictType = "sys_cost_center",
                 OrderNum = 2,
                 Status = 0,
-                TenantId = 0,
+                
                 Remark = "成本中心字典",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictType
@@ -73,11 +73,11 @@ public class HbtDbSeedFinanceDictType
                 DictType = "sys_work_center",
                 OrderNum = 3,
                 Status = 0,
-                TenantId = 0,
+                
                 Remark = "工作中心字典",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictType
@@ -86,11 +86,11 @@ public class HbtDbSeedFinanceDictType
                 DictType = "sys_valuation_class",
                 OrderNum = 4,
                 Status = 0,
-                TenantId = 0,
+                
                 Remark = "评估类字典",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictType
@@ -99,11 +99,11 @@ public class HbtDbSeedFinanceDictType
                 DictType = "sys_price_control",
                 OrderNum = 5,
                 Status = 0,
-                TenantId = 0,
+                
                 Remark = "价格控制类字典",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictType
@@ -112,11 +112,11 @@ public class HbtDbSeedFinanceDictType
                 DictType = "sys_cost_method",
                 OrderNum = 6,
                 Status = 0,
-                TenantId = 0,
+                
                 Remark = "成本核算方法字典",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictType
@@ -125,11 +125,11 @@ public class HbtDbSeedFinanceDictType
                 DictType = "sys_cost_element",
                 OrderNum = 7,
                 Status = 0,
-                TenantId = 0,
+                
                 Remark = "成本要素字典",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictType
@@ -138,11 +138,11 @@ public class HbtDbSeedFinanceDictType
                 DictType = "sys_cost_object",
                 OrderNum = 8,
                 Status = 0,
-                TenantId = 0,
+                
                 Remark = "成本对象字典",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictType
@@ -151,11 +151,11 @@ public class HbtDbSeedFinanceDictType
                 DictType = "sys_cost_allocation",
                 OrderNum = 9,
                 Status = 0,
-                TenantId = 0,
+                
                 Remark = "成本分配方法字典",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictType
@@ -164,11 +164,11 @@ public class HbtDbSeedFinanceDictType
                 DictType = "sys_cost_center_type",
                 OrderNum = 10,
                 Status = 0,
-                TenantId = 0,
+                
                 Remark = "成本中心类型字典",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             }
         };
@@ -178,6 +178,11 @@ public class HbtDbSeedFinanceDictType
             var existingDictType = await _dictTypeRepository.GetFirstAsync(d => d.DictType == dictType.DictType);
             if (existingDictType == null)
             {
+                dictType.TenantId = tenantId;
+                dictType.CreateBy = "Hbt365";
+                dictType.CreateTime = DateTime.Now;
+                dictType.UpdateBy = "Hbt365";
+                dictType.UpdateTime = DateTime.Now;
                 await _dictTypeRepository.CreateAsync(dictType);
                 insertCount++;
                 _logger.Info($"[创建] 财务字典类型 '{dictType.DictName}' 创建成功");
@@ -186,14 +191,14 @@ public class HbtDbSeedFinanceDictType
             {
                 existingDictType.DictName = dictType.DictName;
                 existingDictType.DictType = dictType.DictType;
-                existingDictType.DictBuiltin = dictType.DictBuiltin;
+                existingDictType.IsBuiltin = dictType.IsBuiltin;
                 existingDictType.OrderNum = dictType.OrderNum;
                 existingDictType.Status = dictType.Status;
-                existingDictType.TenantId = dictType.TenantId;
+                existingDictType.TenantId = tenantId;
                 existingDictType.Remark = dictType.Remark;
                 existingDictType.CreateBy = dictType.CreateBy;
                 existingDictType.CreateTime = dictType.CreateTime;
-                existingDictType.UpdateBy = "system";
+                existingDictType.UpdateBy = "Hbt365";
                 existingDictType.UpdateTime = DateTime.Now;
 
                 await _dictTypeRepository.UpdateAsync(existingDictType);

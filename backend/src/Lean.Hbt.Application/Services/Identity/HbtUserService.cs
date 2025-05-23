@@ -10,9 +10,7 @@
 #nullable enable
 
 using System.Linq.Expressions;
-using Lean.Hbt.Application.Dtos.Identity;
 using Lean.Hbt.Common.Utils;
-using Lean.Hbt.Domain.Entities.Identity;
 using Lean.Hbt.Domain.IServices.Security;
 using Microsoft.AspNetCore.Http;
 
@@ -128,7 +126,7 @@ namespace Lean.Hbt.Application.Services.Identity
 
             // 验证租户是否存在且有效
             //var tenant = await _tenantRepository.GetByIdAsync(input.TenantId);
-            var tenant = await _tenantRepository.GetFirstAsync(x => x.TenantId == input.TenantId);
+            var tenant = await _tenantRepository.GetFirstAsync(x => x.Id == input.TenantId);
             if (tenant == null)
                 throw new HbtException(L("Identity.Tenant.NotFound"));
 
@@ -257,7 +255,7 @@ namespace Lean.Hbt.Application.Services.Identity
                     // 过滤掉已存在的角色关联
                     var existingRoleIds = userRoles.Select(ur => ur.RoleId).ToList();
                     var newRoleIds = input.RoleIds.Except(existingRoleIds).ToList();
-                    
+
                     if (newRoleIds.Any())
                     {
                         var newUserRoles = newRoleIds.Select(roleId => new HbtUserRole
@@ -286,7 +284,7 @@ namespace Lean.Hbt.Application.Services.Identity
                     // 过滤掉已存在的岗位关联
                     var existingPostIds = userPosts.Select(up => up.PostId).ToList();
                     var newPostIds = input.PostIds.Except(existingPostIds).ToList();
-                    
+
                     if (newPostIds.Any())
                     {
                         var newUserPosts = newPostIds.Select(postId => new HbtUserPost
@@ -315,7 +313,7 @@ namespace Lean.Hbt.Application.Services.Identity
                     // 过滤掉已存在的部门关联
                     var existingDeptIds = userDepts.Select(ud => ud.DeptId).ToList();
                     var newDeptIds = input.DeptIds.Except(existingDeptIds).ToList();
-                    
+
                     if (newDeptIds.Any())
                     {
                         var newUserDepts = newDeptIds.Select(deptId => new HbtUserDept
@@ -677,7 +675,6 @@ namespace Lean.Hbt.Application.Services.Identity
                 {
                     Label = u.NickName,
                     Value = u.Id,
-                    Disabled = false
                 })
                 .ToListAsync();
             return users;

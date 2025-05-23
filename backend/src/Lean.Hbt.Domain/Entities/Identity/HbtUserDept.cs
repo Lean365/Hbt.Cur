@@ -7,8 +7,6 @@
 // 描述    : 用户部门关联实体类
 //===================================================================
 
-using SqlSugar;
-
 namespace Lean.Hbt.Domain.Entities.Identity
 {
     /// <summary>
@@ -18,7 +16,7 @@ namespace Lean.Hbt.Domain.Entities.Identity
     /// 创建者: Lean365
     /// 创建时间: 2024-01-16
     /// </remarks>
-    [SugarTable("hbt_identity_user_dept", "用户部门关联表")]
+    [SugarTable("hbt_identity_user_dept", "用户部门")]
     [SugarIndex("ix_user_dept", nameof(UserId), OrderByType.Asc, nameof(DeptId), OrderByType.Asc, true)]
     public class HbtUserDept : HbtBaseEntity
     {

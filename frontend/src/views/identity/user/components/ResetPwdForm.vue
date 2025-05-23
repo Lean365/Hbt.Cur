@@ -15,7 +15,7 @@ import { ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { message } from 'ant-design-vue'
 import { resetPassword } from '@/api/identity/user'
-import type { ResetPassword } from '@/types/identity/user'
+import type { HbtUserResetPwd } from '@/types/identity/user'
 import { useConfigStore } from '@/stores/config'
 
 const props = defineProps<{
@@ -45,7 +45,7 @@ const handleOk = async () => {
 
   loading.value = true
   try {
-    const data: ResetPassword = {
+    const data: HbtUserResetPwd = {
       userId: userId,
       password: formData.value.password // 使用从配置中获取的默认密码
     }

@@ -34,7 +34,7 @@ public class HbtDbSeedEquipmentDictType
     /// <summary>
     /// 初始化设备相关字典类型数据
     /// </summary>
-    public async Task<(int, int)> InitializeEquipmentDictTypeAsync()
+    public async Task<(int, int)> InitializeEquipmentDictTypeAsync(long tenantId)
     {
         int insertCount = 0;
         int updateCount = 0;
@@ -47,11 +47,11 @@ public class HbtDbSeedEquipmentDictType
                 DictType = "equip_type",
                 OrderNum = 1,
                 Status = 0,
-                TenantId = 0,
+                
                 Remark = "设备类型字典",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictType
@@ -60,11 +60,11 @@ public class HbtDbSeedEquipmentDictType
                 DictType = "equip_status",
                 OrderNum = 2,
                 Status = 0,
-                TenantId = 0,
+                
                 Remark = "设备状态字典",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictType
@@ -73,11 +73,11 @@ public class HbtDbSeedEquipmentDictType
                 DictType = "equip_maintenance_type",
                 OrderNum = 3,
                 Status = 0,
-                TenantId = 0,
+                
                 Remark = "设备维护类型字典",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictType
@@ -86,11 +86,11 @@ public class HbtDbSeedEquipmentDictType
                 DictType = "equip_fault_type",
                 OrderNum = 4,
                 Status = 0,
-                TenantId = 0,
+                
                 Remark = "设备故障类型字典",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictType
@@ -99,11 +99,11 @@ public class HbtDbSeedEquipmentDictType
                 DictType = "equip_maintenance_cycle",
                 OrderNum = 5,
                 Status = 0,
-                TenantId = 0,
+                
                 Remark = "设备保养周期字典",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictType
@@ -112,11 +112,11 @@ public class HbtDbSeedEquipmentDictType
                 DictType = "equip_unit",
                 OrderNum = 6,
                 Status = 0,
-                TenantId = 0,
+                
                 Remark = "设备计量单位字典",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             }
         };
@@ -126,6 +126,11 @@ public class HbtDbSeedEquipmentDictType
             var existingDictType = await _dictTypeRepository.GetFirstAsync(x => x.DictType == dictType.DictType);
             if (existingDictType == null)
             {
+                dictType.TenantId = tenantId;
+                dictType.CreateBy = "Hbt365";
+                dictType.CreateTime = DateTime.Now;
+                dictType.UpdateBy = "Hbt365";
+                dictType.UpdateTime = DateTime.Now;
                 await _dictTypeRepository.CreateAsync(dictType);
                 insertCount++;
             }
@@ -134,6 +139,7 @@ public class HbtDbSeedEquipmentDictType
                 existingDictType.DictName = dictType.DictName;
                 existingDictType.OrderNum = dictType.OrderNum;
                 existingDictType.Status = dictType.Status;
+                existingDictType.TenantId = tenantId;
                 existingDictType.Remark = dictType.Remark;
                 existingDictType.UpdateBy = dictType.UpdateBy;
                 existingDictType.UpdateTime = dictType.UpdateTime;

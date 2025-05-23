@@ -4,83 +4,83 @@
 // 创建者 : Claude
 // 创建时间: 2024-03-20
 // 版本号 : v1.0.0
-// 描述    : 语言管理页面
+// 描述    : 语言管理主页面（主子表结构，完全对齐字典管理页面）
 //===================================================================
 
 <template>
   <div class="language-container">
-    <!-- 查询区域 -->
-    <hbt-query-form
-      :loading="loading"
-      :fields="queryFields"
-      v-model:queryParams="queryParams"
-      @search="handleSearch"
+    <!-- 查询表单 -->
+    <hbt-query
+      :loading="languageLoading"
+      :query-fields="queryFields"
+      @search="handleQuery"
       @reset="handleReset"
     />
 
     <!-- 工具栏 -->
     <hbt-toolbar
       :show-add="true"
-      :add-permission="['admin:language:create']"
+      :add-permission="['core:language:create']"
       :show-edit="true"
-      :edit-permission="['admin:language:update']"
+      :edit-permission="['core:language:update']"
       :show-delete="true"
-      :delete-permission="['admin:language:delete']"
-      :disabled-edit="selectedRowKeys.length !== 1"
-      :disabled-delete="selectedRowKeys.length === 0"
-      @add="handleAdd"
-      @edit="handleEditSelected"
-      @delete="handleBatchDelete"
-      @refresh="fetchData"
+      :delete-permission="['core:language:delete']"
+      :show-import="true"
+      :import-permission="['core:language:import']"
+      :show-export="true"
+      :export-permission="['core:language:export']"
+      :disabled-edit="selectedLanguageId === undefined"
+      :disabled-delete="selectedLanguageId === undefined"
+      @add="handleAddLanguage"
+      @edit="handleEditLanguage"
+      @delete="handleDeleteLanguage"
+      @import="handleImportLanguage"
+      @template="handleTemplateLanguage"
+      @export="handleExportLanguage"
+      @refresh="fetchLanguageList"
+      @column-setting="handleColumnSetting"
+      @toggle-search="toggleSearch"
+      @toggle-fullscreen="toggleFullscreen"      
     />
 
     <!-- 数据表格 -->
     <hbt-table
-      :loading="loading"
-      :data-source="tableData"
-      :columns="columns"
+      :loading="languageLoading"
+      :data-source="languageList"
+      :columns="visibleColumns"
       :pagination="false"
-      :scroll="{ x: 'max-content' }"
+      :scroll="{ y: 'calc(70vh - 200px)' }"
       :row-key="(record: HbtLanguage) => String(record.languageId)"
-      v-model:selectedRowKeys="selectedRowKeys"
+      v-model:selectedRowKeys="selectedLanguageKeys"
       :row-selection="{
-        type: 'checkbox',
+        type: 'radio',
         columnWidth: 60
       }"
+      @change="handleLanguageSelect"
     >
       <!-- 状态列 -->
       <template #bodyCell="{ column, record }">
         <template v-if="column.dataIndex === 'status'">
           <hbt-dict-tag dict-type="sys_normal_disable" :value="record.status" />
         </template>
-
-        <!-- 是否默认列 -->
-        <template v-if="column.dataIndex === 'isDefault'">
-          <hbt-dict-tag dict-type="sys_yes_no" :value="record.isDefault ? 1 : 0" />
+        <template v-else-if="column.dataIndex === 'langCode'">
+          <a @click.stop.prevent="handleShowTranslationModal(record)">{{ record.langCode }}</a>
         </template>
-
         <!-- 操作列 -->
         <template v-if="column.key === 'action'">
           <hbt-operation
             :record="record"
             :show-view="true"
-            :view-permission="['admin:language:query']"
+            :view-permission="['core:language:query']"
             :show-edit="true"
-            :edit-permission="['admin:language:update']"
+            :edit-permission="['core:language:update']"
             :show-delete="true"
-            :delete-permission="['admin:language:delete']"
+            :delete-permission="['core:language:delete']"
             size="small"
-            @view="handleView"
-            @edit="handleEdit"
-            @delete="handleDelete"
+            @view="handleViewLanguage"
+            @edit="handleEditLanguage"
+            @delete="handleDeleteLanguage"
           />
-          <a-button
-            type="link"
-            size="small"
-            @click="handleTranslation(record)"
-          >
-            {{ t('admin.language.translation') }}
-          </a-button>
         </template>
       </template>
     </hbt-table>
@@ -89,39 +89,60 @@
     <hbt-pagination
       v-model:current="queryParams.pageIndex"
       v-model:pageSize="queryParams.pageSize"
-      :total="total"
+      :total="languageTotal"
       :show-size-changer="true"
       :show-quick-jumper="true"
       :show-total="(total: number, range: [number, number]) => h('span', null, `共 ${total} 条`)"
-      @change="handlePageChange"
-      @showSizeChange="handleSizeChange"
+      @change="handleLanguagePageChange"
+      @showSizeChange="handleLanguageSizeChange"
     />
 
     <!-- 语言表单对话框 -->
-    <language-form
-      v-model:visible="formVisible"
-      :title="formTitle"
+    <Language-form
+      v-model:open="languageFormVisible"
+      :title="languageFormTitle"
       :language-id="selectedLanguageId"
-      @success="handleSuccess"
+      @success="handleLanguageSuccess"
     />
 
     <!-- 语言详情对话框 -->
-    <language-detail
-      v-model:dialog-visible="detailVisible"
-      :language-id="selectedLanguageId!"
+    <Language-detail
+      v-model:open="languageDetailVisible"
+      :language-id="selectedLanguageId || 0"
     />
 
-    <!-- 翻译管理对话框 -->
-    <translation
-      v-if="selectedLanguage"
-      v-model:visible="translationVisible"
-      :lang-code="selectedLanguage.langCode"
+    <!-- 翻译数据表格对话框 -->
+    <Translation
+      v-if="currentLanguage"
+      v-model:open="translationVisible"
+      :lang-code="currentLanguage"
+      :language-id="currentLanguage.languageId"
+      @cancel="handleTranslationCancel"
     />
+
+    <!-- 列设置抽屉 -->
+    <a-drawer
+      :open="columnSettingVisible"
+      :title="t('common.columnSetting')"
+      placement="right"
+      width="300"
+      @close="columnSettingVisible = false"
+    >
+      <a-checkbox-group
+        :value="Object.keys(columnSettings).filter(key => columnSettings[key])"
+        @change="handleColumnSettingChange"
+        class="column-setting-group"
+      >
+        <div v-for="col in defaultColumns" :key="col.key" class="column-setting-item">
+          <a-checkbox :value="col.key" :disabled="col.key === 'action'">{{ col.title }}</a-checkbox>
+        </div>
+      </a-checkbox-group>
+    </a-drawer>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive, onMounted, h } from 'vue'
+import { ref, reactive, computed, onMounted, h } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { message } from 'ant-design-vue'
 import type { HbtLanguage, HbtLanguageQuery } from '@/types/core/language'
@@ -131,7 +152,10 @@ import {
   createHbtLanguage,
   updateHbtLanguage,
   deleteHbtLanguage,
-  batchDeleteHbtLanguage
+  batchDeleteHbtLanguage,
+  importHbtLanguage,
+  exportHbtLanguage,
+  getHbtLanguageTemplate
 } from '@/api/core/language'
 import LanguageForm from './components/LanguageForm.vue'
 import LanguageDetail from './components/LanguageDetail.vue'
@@ -139,199 +163,223 @@ import Translation from './components/Translation.vue'
 
 const { t } = useI18n()
 
-// === 状态定义 ===
-const loading = ref(false)
-const tableData = ref<HbtLanguage[]>([])
-const selectedRowKeys = ref<string[]>([])
+// === 语言状态定义 ===
+const languageLoading = ref(false)
+const languageList = ref<HbtLanguage[]>([])
+const selectedLanguageKeys = ref<string[]>([])
 const selectedLanguageId = ref<number>()
-const selectedLanguage = ref<HbtLanguage>()
-const formVisible = ref(false)
-const formTitle = ref('')
-const detailVisible = ref(false)
-const translationVisible = ref(false)
-const total = ref(0)
+const languageFormVisible = ref(false)
+const languageFormTitle = ref('')
+const languageDetailVisible = ref(false)
+const languageTotal = ref(0)
 
-// === 查询参数 ===
+// === Translation相关状态 ===
+const translationVisible = ref(false)
+const currentLanguage = ref<HbtLanguage>()
+
+// === 语言查询参数 ===
 const queryParams = ref<HbtLanguageQuery>({
   pageIndex: 1,
   pageSize: 10,
   langCode: '',
   langName: '',
-  status: undefined
+  isDefault: -1,
+  isBuiltin: -1,
+  status: -1
 })
 
-// === 查询字段定义 ===
+// === 语言搜索表单配置 ===
 const queryFields = [
   {
-    label: t('admin.language.langCode'),
+    type: 'input' as const,
     name: 'langCode',
-    component: 'Input',
-    componentProps: {
-      placeholder: t('admin.language.langCodePlaceholder')
-    }
+    label: t('core.language.fields.langCode.label'),
+    placeholder: t('core.language.fields.langCode.placeholder')
   },
   {
-    label: t('admin.language.langName'),
+    type: 'input' as const,
     name: 'langName',
-    component: 'Input',
-    componentProps: {
-      placeholder: t('admin.language.langNamePlaceholder')
-    }
+    label: t('core.language.fields.langName.label'),
+    placeholder: t('core.language.fields.langName.placeholder')
   },
   {
-    label: t('admin.language.status'),
+    type: 'select' as const,
     name: 'status',
-    component: 'Select',
-    componentProps: {
-      placeholder: t('admin.language.statusPlaceholder'),
-      options: [
-        { label: t('common.status.normal'), value: 0 },
-        { label: t('common.status.disable'), value: 1 }
-      ]
+    label: t('core.language.fields.status.label'),
+    placeholder: t('core.language.fields.status.placeholder'),
+    props: {
+      dictType: 'sys_normal_disable',
+      type: 'radio'
     }
   }
 ]
 
-// === 表格列定义 ===
+// === 语言表格列定义 ===
 const columns = [
   {
-    title: t('admin.language.langCode'),
+    title: t('core.language.table.columns.langCode'),
     dataIndex: 'langCode',
     key: 'langCode',
-    width: 150
+    width: 150,
+    ellipsis: true
   },
   {
-    title: t('admin.language.langName'),
+    title: t('core.language.table.columns.langName'),
     dataIndex: 'langName',
     key: 'langName',
-    width: 150
+    width: 150,
+    ellipsis: true
   },
   {
-    title: t('admin.language.langIcon'),
+    title: t('core.language.table.columns.langIcon'),
     dataIndex: 'langIcon',
     key: 'langIcon',
     width: 100
   },
   {
-    title: t('admin.language.orderNum'),
+    title: t('core.language.table.columns.orderNum'),
     dataIndex: 'orderNum',
     key: 'orderNum',
     width: 100,
     sorter: true
   },
   {
-    title: t('admin.language.isDefault'),
-    dataIndex: 'isDefault',
-    key: 'isDefault',
-    width: 100
-  },
-  {
-    title: t('admin.language.status'),
+    title: t('core.language.table.columns.status'),
     dataIndex: 'status',
     key: 'status',
     width: 100
   },
   {
-    title: t('admin.language.remark'),
+    title: t('table.columns.remark'),
     dataIndex: 'remark',
     key: 'remark',
-    width: 200,
-    ellipsis: true
+    width: 120
   },
   {
-    title: t('common.createTime'),
+    title: t('table.columns.createBy'),
+    dataIndex: 'createBy',
+    key: 'createBy',
+    width: 120
+  },
+  {
+    title: t('table.columns.createTime'),
     dataIndex: 'createTime',
     key: 'createTime',
-    width: 180,
-    sorter: true
+    width: 180
   },
   {
-    title: t('common.table.header.operation'),
+    title: t('table.columns.updateBy'),
+    dataIndex: 'updateBy',
+    key: 'updateBy',
+    width: 120
+  },
+  {
+    title: t('table.columns.updateTime'),
+    dataIndex: 'updateTime',
+    key: 'updateTime',
+    width: 180
+  },
+  {
+    title: t('table.columns.isDeleted'),
+    dataIndex: 'isDeleted',
+    key: 'isDeleted',
+    width: 100
+  },
+  {
+    title: t('table.columns.deleteBy'),
+    dataIndex: 'deleteBy',
+    key: 'deleteBy',
+    width: 120
+  },
+  {
+    title: t('table.columns.deleteTime'),
+    dataIndex: 'deleteTime',
+    key: 'deleteTime',
+    width: 180
+  },
+  {
+    title: t('table.columns.operation'),
     key: 'action',
-    width: 180,
+    width: 150,
     fixed: 'right'
   }
 ]
 
-// === 方法定义 ===
-// 获取数据
-const fetchData = async () => {
+// 列设置相关
+const defaultColumns = columns
+const visibleColumns = computed(() => {
+  return defaultColumns.filter(col => columnSettings.value[col.key])
+})
+
+// === 语言方法定义 ===
+const fetchLanguageList = async () => {
   try {
-    loading.value = true
+    languageLoading.value = true
     const res = await getHbtLanguageList(queryParams.value)
-    if (res.code === 200) {
-      tableData.value = res.data.rows
-      total.value = res.data.totalNum
+    if (res.data.code === 200) {
+      languageList.value = res.data.data.rows
+      languageTotal.value = res.data.data.totalNum
     } else {
-      message.error(res.msg || t('common.failed'))
+      message.error(res.data.msg || t('common.failed'))
     }
   } catch (error) {
     console.error('加载语言列表失败:', error)
     message.error(t('common.failed'))
   } finally {
-    loading.value = false
+    languageLoading.value = false
   }
 }
 
-// 查询
-const handleSearch = () => {
+const handleQuery = (values?: any) => {
+  if (values) {
+    Object.assign(queryParams.value, values)
+  }
   queryParams.value.pageIndex = 1
-  fetchData()
+  fetchLanguageList()
 }
 
-// 重置
 const handleReset = () => {
   queryParams.value = {
     pageIndex: 1,
     pageSize: 10,
     langCode: '',
     langName: '',
-    status: undefined
+    isDefault: -1,
+    isBuiltin: -1,
+    status: -1
   }
-  fetchData()
+  fetchLanguageList()
 }
 
-// 新增
-const handleAdd = () => {
+const handleAddLanguage = () => {
   selectedLanguageId.value = undefined
-  formTitle.value = t('common.title.create')
-  formVisible.value = true
+  languageFormTitle.value = t('common.title.create')
+  languageFormVisible.value = true
 }
 
-// 编辑选中
-const handleEditSelected = () => {
-  if (selectedRowKeys.value.length !== 1) {
-    message.warning(t('common.message.selectOneRecord'))
-    return
-  }
-  const record = tableData.value.find(item => String(item.languageId) === selectedRowKeys.value[0])
+const handleEditLanguage = (record?: HbtLanguage) => {
   if (record) {
-    handleEdit(record)
+    selectedLanguageId.value = record.languageId
   }
+  languageFormTitle.value = t('common.title.edit')
+  languageFormVisible.value = true
 }
 
-// 编辑
-const handleEdit = (record: HbtLanguage) => {
+const handleViewLanguage = (record: HbtLanguage) => {
   selectedLanguageId.value = record.languageId
-  formTitle.value = t('common.title.edit')
-  formVisible.value = true
+  languageDetailVisible.value = true
 }
 
-// 查看
-const handleView = (record: HbtLanguage) => {
-  selectedLanguageId.value = record.languageId
-  detailVisible.value = true
-}
-
-// 删除
-const handleDelete = async (record: HbtLanguage) => {
+const handleDeleteLanguage = async (record?: HbtLanguage) => {
+  const id = record ? record.languageId : selectedLanguageId.value
+  if (!id) return
   try {
-    const res = await deleteHbtLanguage(record.languageId)
-    if (res.code === 200) {
+    const res = await deleteHbtLanguage(id)
+    if (res.data.code === 200) {
       message.success(t('common.message.deleteSuccess'))
-      fetchData()
+      fetchLanguageList()
     } else {
-      message.error(res.msg || t('common.message.deleteFailed'))
+      message.error(res.data.msg || t('common.message.deleteFailed'))
     }
   } catch (error) {
     console.error('删除失败:', error)
@@ -339,55 +387,184 @@ const handleDelete = async (record: HbtLanguage) => {
   }
 }
 
-// 批量删除
-const handleBatchDelete = async () => {
-  if (selectedRowKeys.value.length === 0) {
-    message.warning(t('common.message.selectRecord'))
-    return
-  }
+const handleImportLanguage = async () => {
   try {
-    const res = await batchDeleteHbtLanguage(selectedRowKeys.value.map(key => Number(key)))
-    if (res.code === 200) {
-      message.success(t('common.message.deleteSuccess'))
-      selectedRowKeys.value = []
-      fetchData()
-    } else {
-      message.error(res.msg || t('common.message.deleteFailed'))
+    const input = document.createElement('input')
+    input.type = 'file'
+    input.accept = '.xlsx,.xls'
+    input.onchange = async (e: Event) => {
+      const file = (e.target as HTMLInputElement).files?.[0]
+      if (!file) return
+      const formData = new FormData()
+      formData.append('file', file)
+      const res = await importHbtLanguage(file)
+      if (res.data.code === 200) {
+        message.success(t('common.import.success'))
+        fetchLanguageList()
+      } else {
+        message.error(res.data.msg || t('common.import.failed'))
+      }
     }
-  } catch (error) {
-    console.error('批量删除失败:', error)
-    message.error(t('common.message.deleteFailed'))
+    input.click()
+  } catch (error: any) {
+    console.error('导入失败:', error)
+    message.error(error.message || t('common.import.failed'))
   }
 }
 
-// 翻译管理
-const handleTranslation = (record: HbtLanguage) => {
-  selectedLanguage.value = record
-  translationVisible.value = true
+const handleTemplateLanguage = async () => {
+  try {
+    const res = await getHbtLanguageTemplate()
+    const blob = new Blob([res.data], { type: 'application/vnd.ms-excel' })
+    const link = document.createElement('a')
+    link.href = window.URL.createObjectURL(blob)
+    link.download = '语言数据导入模板.xlsx'
+    link.click()
+    window.URL.revokeObjectURL(link.href)
+  } catch (error) {
+    console.error('下载模板失败:', error)
+    message.error('下载模板失败')
+  }
 }
 
-// 页码变化
-const handlePageChange = (page: number) => {
+const handleExportLanguage = async () => {
+  try {
+    const res = await exportHbtLanguage({
+      ...queryParams.value
+    })
+    // 动态获取文件名
+    const disposition =
+      res.headers && (res.headers['content-disposition'] || res.headers['Content-Disposition'])
+    let fileName = ''
+    if (disposition) {
+      let match = disposition.match(/filename\*=UTF-8''([^;]+)/)
+      if (match && match[1]) {
+        fileName = decodeURIComponent(match[1])
+      } else {
+        match = disposition.match(/filename="?([^";]+)"?/)
+        if (match && match[1]) {
+          fileName = match[1]
+        }
+      }
+    }
+    if (!fileName) {
+      fileName = `语言数据_${new Date().getTime()}.xlsx`
+    }
+    const link = document.createElement('a')
+    link.href = window.URL.createObjectURL(res.data)
+    link.download = fileName
+    link.click()
+    window.URL.revokeObjectURL(link.href)
+    message.success(t('common.export.success'))
+  } catch (error: any) {
+    console.error('导出失败:', error)
+    message.error(error.message || t('common.export.failed'))
+  }
+}
+
+const handleLanguagePageChange = (page: number) => {
   queryParams.value.pageIndex = page
-  fetchData()
+  fetchLanguageList()
 }
 
-// 每页条数变化
-const handleSizeChange = (current: number, size: number) => {
+const handleLanguageSizeChange = (current: number, size: number) => {
   queryParams.value.pageIndex = current
   queryParams.value.pageSize = size
-  fetchData()
+  fetchLanguageList()
 }
 
-// 表单提交成功
-const handleSuccess = () => {
-  formVisible.value = false
-  fetchData()
+const handleLanguageSuccess = () => {
+  languageFormVisible.value = false
+  fetchLanguageList()
+}
+
+const handleShowTranslationModal = (record: HbtLanguage) => {
+  currentLanguage.value = record
+  translationVisible.value = true
+
+  console.log('currentLanguage:', currentLanguage.value) // 这里输出
+}
+
+const handleTranslationCancel = () => {
+  translationVisible.value = false
+  currentLanguage.value = undefined
+}
+
+// === 工具栏相关功能 ===
+const showSearch = ref(true)
+const columnSettingVisible = ref(false)
+const columnSettings = ref<Record<string, boolean>>({})
+
+// 初始化列设置
+const initColumnSettings = () => {
+  // 每次刷新页面时清除localStorage
+  localStorage.removeItem('languageColumnSettings')
+
+  // 初始化所有列为false
+  columnSettings.value = Object.fromEntries(defaultColumns.map(col => [col.key, false]))
+
+  // 获取前9列（不包含操作列）
+  const firstNineColumns = defaultColumns.filter(col => col.key !== 'action').slice(0, 9)
+
+  // 设置前9列为true
+  firstNineColumns.forEach(col => {
+    columnSettings.value[col.key] = true
+  })
+
+  // 确保操作列显示
+  columnSettings.value['action'] = true
+}
+
+// 处理列设置变更
+const handleColumnSettingChange = (checkedValue: Array<string | number | boolean>) => {
+  const settings: Record<string, boolean> = {}
+  defaultColumns.forEach(col => {
+    // 操作列始终为true
+    if (col.key === 'action') {
+      settings[col.key] = true
+    } else {
+      settings[col.key] = checkedValue.includes(col.key)
+    }
+  })
+  columnSettings.value = settings
+  localStorage.setItem('languageColumnSettings', JSON.stringify(settings))
+}
+
+// 列设置
+const handleColumnSetting = () => {
+  columnSettingVisible.value = true
+}
+
+// 切换搜索
+const toggleSearch = () => {
+  showSearch.value = !showSearch.value
+}
+
+// 切换全屏
+const toggleFullscreen = () => {
+  const element = document.documentElement
+  if (document.fullscreenElement) {
+    document.exitFullscreen()
+  } else {
+    element.requestFullscreen()
+  }
+}
+
+const handleLanguageSelect = (selectedKeys: (string | number)[], selectedRows: any[]) => {
+  if (selectedKeys.length > 0) {
+    const record = languageList.value.find(item => String(item.languageId) === String(selectedKeys[0]))
+    if (record) {
+      selectedLanguageId.value = record.languageId
+    }
+  } else {
+    selectedLanguageId.value = undefined
+  }
 }
 
 // === 生命周期 ===
 onMounted(() => {
-  fetchData()
+  initColumnSettings()
+  fetchLanguageList()
 })
 </script>
 
@@ -397,4 +574,19 @@ onMounted(() => {
   background-color: #fff;
   border-radius: 4px;
 }
-</style> 
+
+.column-setting-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.column-setting-item {
+  padding: 8px;
+  border-bottom: 1px solid var(--ant-color-split);
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+</style>

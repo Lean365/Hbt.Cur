@@ -35,29 +35,29 @@ public class HbtDbSeedMenu
     /// <summary>
     /// 初始化菜单数据
     /// </summary>
-    public async Task<(int, int)> InitializeMenuAsync()
+    public async Task<(int, int)> InitializeMenuAsync(long systemTenantId)
     {
         int insertCount = 0;
         int updateCount = 0;
         var menuNameToId = new Dictionary<string, long>();
 
         // 1. 初始化顶级菜单
-        var (topInsertCount, topUpdateCount) = await InitializeTopMenusAsync(menuNameToId);
+        var (topInsertCount, topUpdateCount) = await InitializeTopMenusAsync(menuNameToId,systemTenantId);
         insertCount += topInsertCount;
         updateCount += topUpdateCount;
 
         // 2. 初始化次级菜单
-        var (secondInsertCount, secondUpdateCount) = await InitializeSecondMenusAsync(menuNameToId);
+        var (secondInsertCount, secondUpdateCount) = await InitializeSecondMenusAsync(menuNameToId, systemTenantId);
         insertCount += secondInsertCount;
         updateCount += secondUpdateCount;
 
         // 3. 初始化子菜单
-        var (subInsertCount, subUpdateCount) = await InitializeSubMenusAsync(menuNameToId);
+        var (subInsertCount, subUpdateCount) = await InitializeSubMenusAsync(menuNameToId, systemTenantId);
         insertCount += subInsertCount;
         updateCount += subUpdateCount;
 
         // 4. 初始化按钮
-        var (btnInsertCount, btnUpdateCount) = await InitializeButtonsAsync(menuNameToId);
+        var (btnInsertCount, btnUpdateCount) = await InitializeButtonsAsync(menuNameToId, systemTenantId);
         insertCount += btnInsertCount;
         updateCount += btnUpdateCount;
 
@@ -67,7 +67,7 @@ public class HbtDbSeedMenu
     /// <summary>
     /// 初始化顶级菜单
     /// </summary>
-    private async Task<(int, int)> InitializeTopMenusAsync(Dictionary<string, long> menuNameToId)
+    private async Task<(int, int)> InitializeTopMenusAsync(Dictionary<string, long> menuNameToId, long systemTenantId)
     {
         int insertCount = 0;
         int updateCount = 0;
@@ -90,7 +90,7 @@ public class HbtDbSeedMenu
             Status = 0,
             Perms = "",
             Icon = "FileTextOutlined",
-            TenantId = 0,
+            
             Remark = "日常办公目录",
             CreateBy = "Hbt365",
             CreateTime = DateTime.Now,
@@ -113,7 +113,7 @@ public class HbtDbSeedMenu
             Status = 0,
             Perms = "",
             Icon = "AccountBookOutlined",
-            TenantId = 0,
+            
             Remark = "财务管理目录",
             CreateBy = "Hbt365",
             CreateTime = DateTime.Now,
@@ -136,7 +136,7 @@ public class HbtDbSeedMenu
             Status = 0,
             Perms = "",
             Icon = "ClusterOutlined",
-            TenantId = 0,
+            
             Remark = "后勤管理目录",
             CreateBy = "Hbt365",
             CreateTime = DateTime.Now,
@@ -159,7 +159,7 @@ public class HbtDbSeedMenu
             Status = 0,
             Perms = "",
             Icon = "DeploymentUnitOutlined",
-            TenantId = 0,
+            
             Remark = "工作流程目录",
             CreateBy = "Hbt365",
             CreateTime = DateTime.Now,
@@ -182,7 +182,7 @@ public class HbtDbSeedMenu
             Status = 0,
             Perms = "",
             Icon = "UserOutlined",
-            TenantId = 0,
+            
             Remark = "身份认证目录",
             CreateBy = "Hbt365",
             CreateTime = DateTime.Now,
@@ -205,7 +205,7 @@ public class HbtDbSeedMenu
             Status = 0,
             Perms = "",
             Icon = "SettingOutlined",
-            TenantId = 0,
+            
             Remark = "系统管理目录",
             CreateBy = "Hbt365",
             CreateTime = DateTime.Now,
@@ -228,7 +228,7 @@ public class HbtDbSeedMenu
             Status = 0,
             Perms = "",
             Icon = "CodeOutlined",
-            TenantId = 0,
+            
             Remark = "代码生成目录",
             CreateBy = "Hbt365",
             CreateTime = DateTime.Now,
@@ -251,7 +251,7 @@ public class HbtDbSeedMenu
             Status = 0,
             Perms = "",
             Icon = "AuditOutlined",
-            TenantId = 0,
+            
             Remark = "审计日志目录",
             CreateBy = "Hbt365",
             CreateTime = DateTime.Now,
@@ -274,7 +274,7 @@ public class HbtDbSeedMenu
             Status = 0,
             Perms = "",
             Icon = "DashboardOutlined",
-            TenantId = 0,
+            
             Remark = "实时监控目录",
             CreateBy = "Hbt365",
             CreateTime = DateTime.Now,
@@ -285,6 +285,11 @@ public class HbtDbSeedMenu
 
         foreach (var menu in topMenus)
         {
+            menu.TenantId = systemTenantId;
+            menu.CreateBy = "Hbt365";
+            menu.CreateTime = DateTime.Now;
+            menu.UpdateBy = "Hbt365";
+            menu.UpdateTime = DateTime.Now;
             var (isNew, savedMenu) = await CreateOrUpdateMenuAsync(menu, true);
             menuNameToId[menu.MenuName] = savedMenu.Id;
 
@@ -298,7 +303,7 @@ public class HbtDbSeedMenu
     /// <summary>
     /// 初始化次级菜单
     /// </summary>
-    private async Task<(int, int)> InitializeSecondMenusAsync(Dictionary<string, long> menuNameToId)
+    private async Task<(int, int)> InitializeSecondMenusAsync(Dictionary<string, long> menuNameToId, long systemTenantId)
     {
         int insertCount = 0;
         int updateCount = 0;
@@ -308,9 +313,14 @@ public class HbtDbSeedMenu
         if (financeMenu != null)
         {
             // 初始化管理会计和控制会计目录
-            var financeSubMenus = GetFinanceSubMenus(financeMenu.Id);
+            var financeSubMenus = GetFinanceSubMenus(financeMenu.Id, systemTenantId);
             foreach (var menu in financeSubMenus)
             {
+                menu.TenantId = systemTenantId;
+                menu.CreateBy = "Hbt365";
+                menu.CreateTime = DateTime.Now;
+                menu.UpdateBy = "Hbt365";
+                menu.UpdateTime = DateTime.Now;
                 var (isNew, savedMenu) = await CreateOrUpdateMenuAsync(menu, false);
                 menuNameToId[menu.MenuName] = savedMenu.Id;
 
@@ -324,9 +334,14 @@ public class HbtDbSeedMenu
         if (logisticsMenu != null)
         {
             // 初始化后勤管理的次级目录
-            var logisticsSubMenus = GetLogisticsSubMenus(logisticsMenu.Id);
+            var logisticsSubMenus = GetLogisticsSubMenus(logisticsMenu.Id, systemTenantId);
             foreach (var menu in logisticsSubMenus)
             {
+                menu.TenantId = systemTenantId;
+                menu.CreateBy = "Hbt365";
+                menu.CreateTime = DateTime.Now;
+                menu.UpdateBy = "Hbt365";
+                menu.UpdateTime = DateTime.Now;
                 var (isNew, savedMenu) = await CreateOrUpdateMenuAsync(menu, false);
                 menuNameToId[menu.MenuName] = savedMenu.Id;
 
@@ -341,7 +356,7 @@ public class HbtDbSeedMenu
     /// <summary>
     /// 初始化子菜单
     /// </summary>
-    private async Task<(int, int)> InitializeSubMenusAsync(Dictionary<string, long> menuNameToId)
+    private async Task<(int, int)> InitializeSubMenusAsync(Dictionary<string, long> menuNameToId, long systemTenantId)
     {
         int insertCount = 0;
         int updateCount = 0;
@@ -355,7 +370,7 @@ public class HbtDbSeedMenu
         var routineMenu = await _menuRepository.GetFirstAsync(m => m.MenuName == "日常办公" && m.ParentId == 0);
         if (routineMenu != null)
         {
-            var routineSubMenus = GetRoutineSubMenus(routineMenu.Id);
+            var routineSubMenus = GetRoutineSubMenus(routineMenu.Id, systemTenantId);
             subMenus.AddRange(routineSubMenus);
         }
 
@@ -364,7 +379,7 @@ public class HbtDbSeedMenu
         var managementMenu = await _menuRepository.GetFirstAsync(m => m.MenuName == "管理会计" && m.ParentId == topMenuDict["财务管理"]);
         if (managementMenu != null)
         {
-            var managementSubMenus = GetManagementSubMenus(managementMenu.Id);
+            var managementSubMenus = GetManagementSubMenus(managementMenu.Id, systemTenantId);
             subMenus.AddRange(managementSubMenus);
         }
 
@@ -372,7 +387,7 @@ public class HbtDbSeedMenu
         var controlMenu = await _menuRepository.GetFirstAsync(m => m.MenuName == "控制会计" && m.ParentId == topMenuDict["财务管理"]);
         if (controlMenu != null)
         {
-            var controlSubMenus = GetControlSubMenus(controlMenu.Id);
+            var controlSubMenus = GetControlSubMenus(controlMenu.Id, systemTenantId);
             subMenus.AddRange(controlSubMenus);
         }
 
@@ -384,7 +399,7 @@ public class HbtDbSeedMenu
             var materialMenu = await _menuRepository.GetFirstAsync(m => m.MenuName == "物料管理" && m.ParentId == logisticsMenu.Id);
             if (materialMenu != null)
             {
-                var materialSubMenus = GetMaterialSubMenus(materialMenu.Id);
+                var materialSubMenus = GetMaterialSubMenus(materialMenu.Id, systemTenantId);
                 subMenus.AddRange(materialSubMenus);
             }
 
@@ -392,7 +407,7 @@ public class HbtDbSeedMenu
             var productionMenu = await _menuRepository.GetFirstAsync(m => m.MenuName == "生产管理" && m.ParentId == logisticsMenu.Id);
             if (productionMenu != null)
             {
-                var productionSubMenus = GetProductionSubMenus(productionMenu.Id);
+                var productionSubMenus = GetProductionSubMenus(productionMenu.Id, systemTenantId);
                 subMenus.AddRange(productionSubMenus);
             }
 
@@ -400,7 +415,7 @@ public class HbtDbSeedMenu
             var salesMenu = await _menuRepository.GetFirstAsync(m => m.MenuName == "销售管理" && m.ParentId == logisticsMenu.Id);
             if (salesMenu != null)
             {
-                var salesSubMenus = GetSalesSubMenus(salesMenu.Id);
+                var salesSubMenus = GetSalesSubMenus(salesMenu.Id, systemTenantId);
                 subMenus.AddRange(salesSubMenus);
             }
 
@@ -408,7 +423,7 @@ public class HbtDbSeedMenu
             var qualityMenu = await _menuRepository.GetFirstAsync(m => m.MenuName == "质量管理" && m.ParentId == logisticsMenu.Id);
             if (qualityMenu != null)
             {
-                var qualitySubMenus = GetQualitySubMenus(qualityMenu.Id);
+                var qualitySubMenus = GetQualitySubMenus(qualityMenu.Id, systemTenantId);
                 subMenus.AddRange(qualitySubMenus);
             }
 
@@ -416,7 +431,7 @@ public class HbtDbSeedMenu
             var equipmentMenu = await _menuRepository.GetFirstAsync(m => m.MenuName == "设备管理" && m.ParentId == logisticsMenu.Id);
             if (equipmentMenu != null)
             {
-                var equipmentSubMenus = GetEquipmentSubMenus(equipmentMenu.Id);
+                var equipmentSubMenus = GetEquipmentSubMenus(equipmentMenu.Id, systemTenantId);
                 subMenus.AddRange(equipmentSubMenus);
             }
 
@@ -424,7 +439,7 @@ public class HbtDbSeedMenu
             var complaintMenu = await _menuRepository.GetFirstAsync(m => m.MenuName == "客诉管理" && m.ParentId == logisticsMenu.Id);
             if (complaintMenu != null)
             {
-                var complaintSubMenus = GetComplaintSubMenus(complaintMenu.Id);
+                var complaintSubMenus = GetComplaintSubMenus(complaintMenu.Id, systemTenantId);
                 subMenus.AddRange(complaintSubMenus);
             }
 
@@ -432,7 +447,7 @@ public class HbtDbSeedMenu
             var serviceMenu = await _menuRepository.GetFirstAsync(m => m.MenuName == "客服管理" && m.ParentId == logisticsMenu.Id);
             if (serviceMenu != null)
             {
-                var serviceSubMenus = GetServiceSubMenus(serviceMenu.Id);
+                var serviceSubMenus = GetServiceSubMenus(serviceMenu.Id, systemTenantId);
                 subMenus.AddRange(serviceSubMenus);
             }
 
@@ -440,7 +455,7 @@ public class HbtDbSeedMenu
             var projectMenu = await _menuRepository.GetFirstAsync(m => m.MenuName == "项目管理" && m.ParentId == logisticsMenu.Id);
             if (projectMenu != null)
             {
-                var projectSubMenus = GetProjectSubMenus(projectMenu.Id);
+                var projectSubMenus = GetProjectSubMenus(projectMenu.Id, systemTenantId);
                 subMenus.AddRange(projectSubMenus);
             }
         }
@@ -449,7 +464,7 @@ public class HbtDbSeedMenu
         var workflowMenu = await _menuRepository.GetFirstAsync(m => m.MenuName == "工作流程" && m.ParentId == 0);
         if (workflowMenu != null)
         {
-            var workflowSubMenus = GetWorkflowSubMenus(workflowMenu.Id);
+            var workflowSubMenus = GetWorkflowSubMenus(workflowMenu.Id, systemTenantId);
             subMenus.AddRange(workflowSubMenus);
         }
 
@@ -457,7 +472,7 @@ public class HbtDbSeedMenu
         var identityMenu = await _menuRepository.GetFirstAsync(m => m.MenuName == "身份认证" && m.ParentId == 0);
         if (identityMenu != null)
         {
-            var identitySubMenus = GetIdentitySubMenus(identityMenu.Id);
+            var identitySubMenus = GetIdentitySubMenus(identityMenu.Id, systemTenantId);
             subMenus.AddRange(identitySubMenus);
         }
 
@@ -465,7 +480,7 @@ public class HbtDbSeedMenu
         var adminMenu = await _menuRepository.GetFirstAsync(m => m.MenuName == "系统管理" && m.ParentId == 0);
         if (adminMenu != null)
         {
-            var adminSubMenus = GetSystemManagementSubMenus(adminMenu.Id);
+            var adminSubMenus = GetSystemManagementSubMenus(adminMenu.Id, systemTenantId);
             subMenus.AddRange(adminSubMenus);
         }
 
@@ -473,7 +488,7 @@ public class HbtDbSeedMenu
         var generatorMenu = await _menuRepository.GetFirstAsync(m => m.MenuName == "代码生成" && m.ParentId == 0);
         if (generatorMenu != null)
         {
-            var generatorSubMenus = GetGeneratorSubMenus(generatorMenu.Id);
+            var generatorSubMenus = GetGeneratorSubMenus(generatorMenu.Id, systemTenantId);
             subMenus.AddRange(generatorSubMenus);
         }
 
@@ -481,7 +496,7 @@ public class HbtDbSeedMenu
         var auditMenu = await _menuRepository.GetFirstAsync(m => m.MenuName == "审计日志" && m.ParentId == 0);
         if (auditMenu != null)
         {
-            var auditSubMenus = GetAuditSubMenus(auditMenu.Id);
+            var auditSubMenus = GetAuditSubMenus(auditMenu.Id, systemTenantId);
             subMenus.AddRange(auditSubMenus);
         }
 
@@ -489,12 +504,17 @@ public class HbtDbSeedMenu
         var realtimeMenu = await _menuRepository.GetFirstAsync(m => m.MenuName == "实时监控" && m.ParentId == 0);
         if (realtimeMenu != null)
         {
-            var realtimeSubMenus = GetRealtimeSubMenus(realtimeMenu.Id);
+            var realtimeSubMenus = GetRealtimeSubMenus(realtimeMenu.Id, systemTenantId);
             subMenus.AddRange(realtimeSubMenus);
         }
 
         foreach (var menu in subMenus)
         {
+            menu.TenantId = systemTenantId;
+            menu.CreateBy = "Hbt365";
+            menu.CreateTime = DateTime.Now;
+            menu.UpdateBy = "Hbt365";
+            menu.UpdateTime = DateTime.Now;
             var (isNew, savedMenu) = await CreateOrUpdateMenuAsync(menu, false);
             menuNameToId[menu.MenuName] = savedMenu.Id;
 
@@ -508,7 +528,7 @@ public class HbtDbSeedMenu
     /// <summary>
     /// 初始化按钮
     /// </summary>
-    private async Task<(int, int)> InitializeButtonsAsync(Dictionary<string, long> menuNameToId)
+    private async Task<(int, int)> InitializeButtonsAsync(Dictionary<string, long> menuNameToId, long systemTenantId)
     {
         int insertCount = 0;
         int updateCount = 0;
@@ -521,11 +541,16 @@ public class HbtDbSeedMenu
             if (!string.IsNullOrEmpty(menu.Perms))
             {
                 var modulePrefix = menu.Perms.Split(':')[0];
-                var buttons = GetMenuButtons(menu, modulePrefix);
+                var buttons = GetMenuButtons(menu, modulePrefix, systemTenantId);
 
                 foreach (var button in buttons)
                 {
                     button.ParentId = menu.Id; // 使用数据库中的菜单ID
+                    button.TenantId = systemTenantId;
+                    button.CreateBy = "Hbt365";
+                    button.CreateTime = DateTime.Now;
+                    button.UpdateBy = "Hbt365";
+                    button.UpdateTime = DateTime.Now;
                     var (isNew, savedButton) = await CreateOrUpdateMenuAsync(button, false);
 
                     if (isNew) insertCount++;
@@ -590,7 +615,7 @@ public class HbtDbSeedMenu
     /// <summary>
     /// 获取系统管理子菜单列表
     /// </summary>
-    private List<HbtMenu> GetSystemManagementSubMenus(long parentId)
+    private List<HbtMenu> GetSystemManagementSubMenus(long parentId, long systemTenantId)
     {
         return new List<HbtMenu>
         {
@@ -640,7 +665,7 @@ public class HbtDbSeedMenu
     /// <summary>
     /// 获取身份认证子菜单
     /// </summary>
-    private List<HbtMenu> GetIdentitySubMenus(long parentId)
+    private List<HbtMenu> GetIdentitySubMenus(long parentId, long systemTenantId)
     {
         return new List<HbtMenu>
         {
@@ -660,7 +685,7 @@ public class HbtDbSeedMenu
                 Status = 0,
                 Perms = "identity:user:list",
                 Icon = "UserOutlined",
-                TenantId = 0,
+                
                 Remark = "用户管理菜单",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -683,7 +708,7 @@ public class HbtDbSeedMenu
                 Status = 0,
                 Perms = "identity:role:list",
                 Icon = "TeamOutlined",
-                TenantId = 0,
+                
                 Remark = "角色管理菜单",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -706,7 +731,7 @@ public class HbtDbSeedMenu
                 Status = 0,
                 Perms = "identity:menu:list",
                 Icon = "MenuOutlined",
-                TenantId = 0,
+                
                 Remark = "菜单管理菜单",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -729,7 +754,7 @@ public class HbtDbSeedMenu
                 Status = 0,
                 Perms = "identity:dept:list",
                 Icon = "ApartmentOutlined",
-                TenantId = 0,
+                
                 Remark = "部门管理菜单",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -752,7 +777,7 @@ public class HbtDbSeedMenu
                 Status = 0,
                 Perms = "identity:post:list",
                 Icon = "IdcardOutlined",
-                TenantId = 0,
+                
                 Remark = "岗位管理菜单",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -775,7 +800,7 @@ public class HbtDbSeedMenu
                 Status = 0,
                 Perms = "identity:tenant:list",
                 Icon = "ShopOutlined",
-                TenantId = 0,
+                
                 Remark = "租户管理菜单",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -788,7 +813,7 @@ public class HbtDbSeedMenu
     /// <summary>
     /// 获取审计日志子菜单列表
     /// </summary>
-    private List<HbtMenu> GetAuditSubMenus(long parentId)
+    private List<HbtMenu> GetAuditSubMenus(long parentId, long systemTenantId)
     {
         return new List<HbtMenu>
         {
@@ -823,13 +848,13 @@ public class HbtDbSeedMenu
             new HbtMenu
             {
                 MenuName = "差异日志",
-                TransKey = "menu.audit.dbdifflog",
+                TransKey = "menu.audit.sqldifflog",
                 ParentId = parentId,
                 OrderNum = 3,
-                Path = "dbdifflog",
-                Component = "audit/dbdifflog/index",
+                Path = "sqldifflog",
+                Component = "audit/sqldifflog/index",
                 MenuType = 1,
-                Perms = "audit:difflog:list",
+                Perms = "audit:sqldifflog:list",
                 Icon = "DiffOutlined",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now
@@ -865,20 +890,20 @@ public class HbtDbSeedMenu
             new HbtMenu
             {
                 MenuName = "服务器监控",
-                TransKey = "menu.signalr.server",
+                TransKey = "menu.audit.server",
                 ParentId = parentId,
                 OrderNum = 6,
                 Path = "server",
-                Component = "signalr/server/index",
+                Component = "audit/server/index",
                 QueryParams = null,
                 IsExternal = 0,
                 IsCache = 0,
                 MenuType = 1,
                 Visible = 0,
                 Status = 0,
-                Perms = "signalr:server:list",
+                Perms = "audit:server:list",
                 Icon = "DashboardOutlined",
-                TenantId = 0,
+                
                 Remark = "服务器监控菜单",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -891,7 +916,7 @@ public class HbtDbSeedMenu
     /// <summary>
     /// 获取工作流程子菜单列表
     /// </summary>
-    private List<HbtMenu> GetWorkflowSubMenus(long parentId)
+    private List<HbtMenu> GetWorkflowSubMenus(long parentId, long systemTenantId)
     {
         return new List<HbtMenu>
         {
@@ -979,7 +1004,7 @@ public class HbtDbSeedMenu
     /// <summary>
     /// 获取实时监控子菜单
     /// </summary>
-    private List<HbtMenu> GetRealtimeSubMenus(long parentId)
+    private List<HbtMenu> GetRealtimeSubMenus(long parentId, long systemTenantId)
     {
         return new List<HbtMenu>
         {
@@ -999,7 +1024,7 @@ public class HbtDbSeedMenu
                 Status = 0,
                 Perms = "signalr:online:list",
                 Icon = "TeamOutlined",
-                TenantId = 0,
+                
                 Remark = "在线用户菜单",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -1022,7 +1047,7 @@ public class HbtDbSeedMenu
                 Status = 0,
                 Perms = "signalr:message:list",
                 Icon = "MessageOutlined",
-                TenantId = 0,
+                
                 Remark = "在线消息菜单",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -1035,7 +1060,7 @@ public class HbtDbSeedMenu
     /// <summary>
     /// 获取代码生成子菜单列表
     /// </summary>
-    private List<HbtMenu> GetGeneratorSubMenus(long parentId)
+    private List<HbtMenu> GetGeneratorSubMenus(long parentId, long systemTenantId)
     {
         return new List<HbtMenu>
         {
@@ -1055,7 +1080,7 @@ public class HbtDbSeedMenu
                 Status = 0,
                 Perms = "generator:table:list",
                 Icon = "TableOutlined",
-                TenantId = 0,
+                
                 Remark = "数据库表管理菜单",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -1078,7 +1103,7 @@ public class HbtDbSeedMenu
                 Status = 0,
                 Perms = "generator:tableDefine:list",
                 Icon = "TableOutlined",
-                TenantId = 0,
+                
                 Remark = "数据库表定义管理菜单",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -1101,7 +1126,7 @@ public class HbtDbSeedMenu
                 Status = 0,
                 Perms = "generator:template:list",
                 Icon = "FileTextOutlined",
-                TenantId = 0,
+                
                 Remark = "代码模板管理菜单",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -1124,7 +1149,7 @@ public class HbtDbSeedMenu
                 Status = 0,
                 Perms = "generator:config:list",
                 Icon = "SettingOutlined",
-                TenantId = 0,
+                
                 Remark = "生成配置管理菜单",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -1147,7 +1172,7 @@ public class HbtDbSeedMenu
                 Status = 0,
                 Perms = "generator:api:list",
                 Icon = "ApiOutlined",
-                TenantId = 0,
+                
                 Remark = "API文档管理菜单",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -1160,7 +1185,7 @@ public class HbtDbSeedMenu
     /// <summary>
     /// 获取日常办公子菜单列表
     /// </summary>
-    private List<HbtMenu> GetRoutineSubMenus(long parentId)
+    private List<HbtMenu> GetRoutineSubMenus(long parentId, long systemTenantId)
     {
         return new List<HbtMenu>
     {
@@ -1180,7 +1205,7 @@ public class HbtDbSeedMenu
             Status = 0,
             Perms = "routine:file:list",
             Icon = "FileOutlined",
-            TenantId = 0,
+            
             Remark = "文件管理菜单",
             CreateBy = "Hbt365",
             CreateTime = DateTime.Now,
@@ -1203,7 +1228,7 @@ public class HbtDbSeedMenu
             Status = 0,
             Perms = "routine:mail:list",
             Icon = "MailOutlined",
-            TenantId = 0,
+            
             Remark = "邮件管理菜单",
             CreateBy = "Hbt365",
             CreateTime = DateTime.Now,
@@ -1226,7 +1251,7 @@ public class HbtDbSeedMenu
             Status = 0,
             Perms = "routine:mailTmpl:list",
             Icon = "FileTextOutlined",
-            TenantId = 0,
+            
             Remark = "邮件模板菜单",
             CreateBy = "Hbt365",
             CreateTime = DateTime.Now,
@@ -1249,7 +1274,7 @@ public class HbtDbSeedMenu
             Status = 0,
             Perms = "routine:notice:list",
             Icon = "NotificationOutlined",
-            TenantId = 0,
+            
             Remark = "通知公告菜单",
             CreateBy = "Hbt365",
             CreateTime = DateTime.Now,
@@ -1272,7 +1297,7 @@ public class HbtDbSeedMenu
             Status = 0,
             Perms = "routine:quartz:list",
             Icon = "CheckSquareOutlined",
-            TenantId = 0,
+            
             Remark = "工作任务菜单",
             CreateBy = "Hbt365",
             CreateTime = DateTime.Now,
@@ -1295,7 +1320,7 @@ public class HbtDbSeedMenu
             Status = 0,
             Perms = "routine:schedule:list",
             Icon = "CalendarOutlined",
-            TenantId = 0,
+            
             Remark = "日程管理菜单",
             CreateBy = "Hbt365",
             CreateTime = DateTime.Now,
@@ -1308,7 +1333,7 @@ public class HbtDbSeedMenu
     /// <summary>
     /// 获取财务管理子菜单列表
     /// </summary>
-    private List<HbtMenu> GetFinanceSubMenus(long parentId)
+    private List<HbtMenu> GetFinanceSubMenus(long parentId, long systemTenantId)
     {
         var menus = new List<HbtMenu>();
         
@@ -1329,7 +1354,7 @@ public class HbtDbSeedMenu
             Status = 0,
             Perms = "",
             Icon = "FundOutlined",
-            TenantId = 0,
+            
             Remark = "管理会计子目录",  // 修改为子目录
             CreateBy = "Hbt365",
             CreateTime = DateTime.Now,
@@ -1355,7 +1380,7 @@ public class HbtDbSeedMenu
             Status = 0,
             Perms = "",
             Icon = "ControlOutlined",
-            TenantId = 0,
+            
             Remark = "控制会计子目录",  // 已经是子目录
             CreateBy = "Hbt365",
             CreateTime = DateTime.Now,
@@ -1370,7 +1395,7 @@ public class HbtDbSeedMenu
     /// <summary>
     /// 获取管理会计子菜单列表
     /// </summary>
-    private List<HbtMenu> GetManagementSubMenus(long parentId)
+    private List<HbtMenu> GetManagementSubMenus(long parentId, long systemTenantId)
     {
         return new List<HbtMenu>
         {
@@ -1499,7 +1524,7 @@ public class HbtDbSeedMenu
     /// <summary>
     /// 获取控制会计子菜单列表
     /// </summary>
-    private List<HbtMenu> GetControlSubMenus(long parentId)
+    private List<HbtMenu> GetControlSubMenus(long parentId, long systemTenantId)
     {
         return new List<HbtMenu>
         {
@@ -1560,7 +1585,7 @@ public class HbtDbSeedMenu
     /// <summary>
     /// 获取后勤管理子菜单列表
     /// </summary>
-    private List<HbtMenu> GetLogisticsSubMenus(long parentId)
+    private List<HbtMenu> GetLogisticsSubMenus(long parentId, long systemTenantId)
     {
         return new List<HbtMenu>
         {
@@ -1580,7 +1605,7 @@ public class HbtDbSeedMenu
                 Status = 0,
                 Perms = "",
                 Icon = "InboxOutlined",
-                TenantId = 0,
+                
                 Remark = "物料管理目录",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -1603,7 +1628,7 @@ public class HbtDbSeedMenu
                 Status = 0,
                 Perms = "",
                 Icon = "ExperimentOutlined",
-                TenantId = 0,
+                
                 Remark = "生产管理目录",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -1626,7 +1651,7 @@ public class HbtDbSeedMenu
                 Status = 0,
                 Perms = "",
                 Icon = "ShoppingCartOutlined",
-                TenantId = 0,
+                
                 Remark = "销售管理目录",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -1649,7 +1674,7 @@ public class HbtDbSeedMenu
                 Status = 0,
                 Perms = "",
                 Icon = "SafetyCertificateOutlined",
-                TenantId = 0,
+                
                 Remark = "质量管理目录",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -1672,7 +1697,7 @@ public class HbtDbSeedMenu
                 Status = 0,
                 Perms = "",
                 Icon = "ToolOutlined",
-                TenantId = 0,
+                
                 Remark = "设备管理目录",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -1695,7 +1720,7 @@ public class HbtDbSeedMenu
                 Status = 0,
                 Perms = "",
                 Icon = "CustomerServiceOutlined",
-                TenantId = 0,
+                
                 Remark = "客服管理目录",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -1718,7 +1743,7 @@ public class HbtDbSeedMenu
                 Status = 0,
                 Perms = "",
                 Icon = "WarningOutlined",
-                TenantId = 0,
+                
                 Remark = "客诉管理目录",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -1741,7 +1766,7 @@ public class HbtDbSeedMenu
                 Status = 0,
                 Perms = "",
                 Icon = "ProjectOutlined",
-                TenantId = 0,
+                
                 Remark = "项目管理目录",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -1754,7 +1779,7 @@ public class HbtDbSeedMenu
     /// <summary>
     /// 获取物料管理子菜单列表
     /// </summary>
-    private List<HbtMenu> GetMaterialSubMenus(long parentId)
+    private List<HbtMenu> GetMaterialSubMenus(long parentId, long systemTenantId)
     {
         return new List<HbtMenu>
         {
@@ -1859,7 +1884,7 @@ public class HbtDbSeedMenu
     /// <summary>
     /// 获取生产管理子菜单列表
     /// </summary>
-    private List<HbtMenu> GetProductionSubMenus(long parentId)
+    private List<HbtMenu> GetProductionSubMenus(long parentId, long systemTenantId)
     {
         return new List<HbtMenu>
         {
@@ -1938,7 +1963,7 @@ public class HbtDbSeedMenu
     /// <summary>
     /// 获取销售管理子菜单列表
     /// </summary>
-    private List<HbtMenu> GetSalesSubMenus(long parentId)
+    private List<HbtMenu> GetSalesSubMenus(long parentId, long systemTenantId)
     {
         return new List<HbtMenu>
         {
@@ -2004,7 +2029,7 @@ public class HbtDbSeedMenu
     /// <summary>
     /// 获取质量管理子菜单列表
     /// </summary>
-    private List<HbtMenu> GetQualitySubMenus(long parentId)
+    private List<HbtMenu> GetQualitySubMenus(long parentId, long systemTenantId)
     {
         return new List<HbtMenu>
         {
@@ -2083,7 +2108,7 @@ public class HbtDbSeedMenu
     /// <summary>
     /// 获取设备管理子菜单列表
     /// </summary>
-    private List<HbtMenu> GetEquipmentSubMenus(long parentId)
+    private List<HbtMenu> GetEquipmentSubMenus(long parentId, long systemTenantId)
     {
         return new List<HbtMenu>
         {
@@ -2149,7 +2174,7 @@ public class HbtDbSeedMenu
     /// <summary>
     /// 获取客服管理子菜单列表
     /// </summary>
-    private List<HbtMenu> GetServiceSubMenus(long parentId)
+    private List<HbtMenu> GetServiceSubMenus(long parentId, long systemTenantId)
     {
         return new List<HbtMenu>
         {
@@ -2254,7 +2279,7 @@ public class HbtDbSeedMenu
     /// <summary>
     /// 获取客诉管理子菜单列表
     /// </summary>
-    private List<HbtMenu> GetComplaintSubMenus(long parentId)
+    private List<HbtMenu> GetComplaintSubMenus(long parentId, long systemTenantId)
     {
         return new List<HbtMenu>
         {
@@ -2333,7 +2358,7 @@ public class HbtDbSeedMenu
     /// <summary>
     /// 获取项目管理子菜单列表
     /// </summary>
-    private List<HbtMenu> GetProjectSubMenus(long parentId)
+    private List<HbtMenu> GetProjectSubMenus(long parentId, long systemTenantId)
     {
         return new List<HbtMenu>
         {
@@ -2399,7 +2424,7 @@ public class HbtDbSeedMenu
     /// <summary>
     /// 获取菜单按钮列表
     /// </summary>
-    private List<HbtMenu> GetMenuButtons(HbtMenu menu, string modulePrefix)
+    private List<HbtMenu> GetMenuButtons(HbtMenu menu, string modulePrefix, long systemTenantId)
     {
         var buttons = new List<HbtMenu>();
 
@@ -2487,7 +2512,7 @@ public class HbtDbSeedMenu
                 MenuType = 2,
                 Perms = $"{modulePrefix}:{menuPerm}:{perms[i]}", // 使用三级结构
                 Icon = string.Empty,
-                TenantId = 0,
+                
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
                 UpdateBy = "Hbt365",

@@ -34,7 +34,7 @@ public class HbtDbSeedNatureDictData
     /// <summary>
     /// 初始化企业性质字典数据
     /// </summary>
-    public async Task<(int, int)> InitializeNatureDictDataAsync()
+    public async Task<(int, int)> InitializeNatureDictDataAsync(long tenantId)
     {
         int insertCount = 0;
         int updateCount = 0;
@@ -48,13 +48,13 @@ public class HbtDbSeedNatureDictData
                 DictValue = "LLC",
                 OrderNum = 1,
                 Status = 0,
-                TenantId = 0,
+                
                 CssClass = 1,
                 ListClass = 1,
                 Remark = "有限责任公司",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictData
@@ -64,13 +64,13 @@ public class HbtDbSeedNatureDictData
                 DictValue = "JSC",
                 OrderNum = 2,
                 Status = 0,
-                TenantId = 0,
+                
                 CssClass = 2,
                 ListClass = 2,
                 Remark = "股份有限公司",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictData
@@ -80,13 +80,13 @@ public class HbtDbSeedNatureDictData
                 DictValue = "SOE",
                 OrderNum = 3,
                 Status = 0,
-                TenantId = 0,
+                
                 CssClass = 3,
                 ListClass = 3,
                 Remark = "国有独资公司",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictData
@@ -96,13 +96,13 @@ public class HbtDbSeedNatureDictData
                 DictValue = "PIE",
                 OrderNum = 4,
                 Status = 0,
-                TenantId = 0,
+                
                 CssClass = 4,
                 ListClass = 4,
                 Remark = "个人独资企业",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictData
@@ -112,13 +112,13 @@ public class HbtDbSeedNatureDictData
                 DictValue = "PE",
                 OrderNum = 5,
                 Status = 0,
-                TenantId = 0,
+                
                 CssClass = 5,
                 ListClass = 5,
                 Remark = "合伙企业",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictData
@@ -128,13 +128,13 @@ public class HbtDbSeedNatureDictData
                 DictValue = "FIE",
                 OrderNum = 6,
                 Status = 0,
-                TenantId = 0,
+                
                 CssClass = 6,
                 ListClass = 6,
                 Remark = "外商投资企业",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictData
@@ -144,13 +144,13 @@ public class HbtDbSeedNatureDictData
                 DictValue = "HMT",
                 OrderNum = 7,
                 Status = 0,
-                TenantId = 0,
+                
                 CssClass = 7,
                 ListClass = 7,
                 Remark = "港澳台投资企业",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictData
@@ -160,13 +160,13 @@ public class HbtDbSeedNatureDictData
                 DictValue = "IE",
                 OrderNum = 8,
                 Status = 0,
-                TenantId = 0,
+                
                 CssClass = 8,
                 ListClass = 8,
                 Remark = "个体工商户",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictData
@@ -176,13 +176,13 @@ public class HbtDbSeedNatureDictData
                 DictValue = "FPC",
                 OrderNum = 9,
                 Status = 0,
-                TenantId = 0,
+                
                 CssClass = 9,
                 ListClass = 9,
                 Remark = "农民专业合作社",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
             new HbtDictData
@@ -192,13 +192,13 @@ public class HbtDbSeedNatureDictData
                 DictValue = "OTHER",
                 OrderNum = 10,
                 Status = 0,
-                TenantId = 0,
+                
                 CssClass = 10,
                 ListClass = 10,
                 Remark = "其他企业",
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             }
         };
@@ -208,6 +208,11 @@ public class HbtDbSeedNatureDictData
             var existingDictData = await _dictDataRepository.GetFirstAsync(d => d.DictType == dictData.DictType && d.DictValue == dictData.DictValue);
             if (existingDictData == null)
             {
+                dictData.TenantId = tenantId;
+                dictData.CreateBy = "Hbt365";
+                dictData.CreateTime = DateTime.Now;
+                dictData.UpdateBy = "Hbt365";
+                dictData.UpdateTime = DateTime.Now;
                 await _dictDataRepository.CreateAsync(dictData);
                 insertCount++;
                 _logger.Info($"[创建] 企业性质字典数据 '{dictData.DictLabel}' 创建成功");
@@ -221,11 +226,11 @@ public class HbtDbSeedNatureDictData
                 existingDictData.CssClass = dictData.CssClass;
                 existingDictData.ListClass = dictData.ListClass;
                 existingDictData.Status = dictData.Status;
-                existingDictData.TenantId = dictData.TenantId;
+                existingDictData.TenantId = tenantId;
                 existingDictData.Remark = dictData.Remark;
                 existingDictData.CreateBy = dictData.CreateBy;
                 existingDictData.CreateTime = dictData.CreateTime;
-                existingDictData.UpdateBy = "system";
+                existingDictData.UpdateBy = "Hbt365";
                 existingDictData.UpdateTime = DateTime.Now;
 
                 await _dictDataRepository.UpdateAsync(existingDictData);

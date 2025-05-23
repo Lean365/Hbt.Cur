@@ -9,16 +9,16 @@
 
 import request from '@/utils/request'
 import type { HbtApiResponse, HbtPagedResult } from '@/types/common'
-import type { HbtDbDiffLogDto, HbtDbDiffLogQueryDto } from '@/types/audit/sqlDiffLog'
+import type { HbtSqlDiffLogDto, HbtSqlDiffLogQueryDto } from '@/types/audit/sqlDiffLog'
 
 /**
  * 获取数据库差异日志列表
  * @param query 查询参数
  * @returns 数据库差异日志列表
  */
-export function getDbDiffLogs(query: HbtDbDiffLogQueryDto) {
-  return request<HbtApiResponse<HbtPagedResult<HbtDbDiffLogDto>>>({
-    url: '/api/HbtDbDiffLog/list',
+export function getSqlDiffLogList(query: HbtSqlDiffLogQueryDto) {
+  return request<HbtApiResponse<HbtPagedResult<HbtSqlDiffLogDto>>>({
+    url: '/api/HbtSqlDiffLog/list',
     method: 'get',
     params: query
   })
@@ -29,9 +29,9 @@ export function getDbDiffLogs(query: HbtDbDiffLogQueryDto) {
  * @param logId 日志ID
  * @returns 数据库差异日志详情
  */
-export function getDbDiffLog(logId: number) {
-  return request<HbtApiResponse<HbtDbDiffLogDto>>({
-    url: `/api/HbtDbDiffLog/${logId}`,
+export function getSqlDiffLog(logId: number) {
+  return request<HbtApiResponse<HbtSqlDiffLogDto>>({
+    url: `/api/HbtSqlDiffLog/${logId}`,
     method: 'get'
   })
 }
@@ -42,9 +42,9 @@ export function getDbDiffLog(logId: number) {
  * @param sheetName 工作表名称
  * @returns Excel文件
  */
-export function exportDbDiffLogs(query: HbtDbDiffLogQueryDto, sheetName: string = '数据库差异日志') {
+export function exportSqllDiffLog(query: HbtSqlDiffLogQueryDto, sheetName: string = '数据库差异日志') {
   return request({
-    url: '/api/HbtDbDiffLog/export',
+    url: '/api/HbtSqlDiffLog/export',
     method: 'get',
     params: { ...query, sheetName },
     responseType: 'blob'
@@ -55,9 +55,9 @@ export function exportDbDiffLogs(query: HbtDbDiffLogQueryDto, sheetName: string 
  * 清空数据库差异日志
  * @returns 是否成功
  */
-export function clearDbDiffLogs() {
+export function clearSqlDiffLog() {
   return request<HbtApiResponse<boolean>>({
-    url: '/api/HbtDbDiffLog/clear',
+    url: '/api/HbtSqlDiffLog/clear',
     method: 'delete'
   })
 } 

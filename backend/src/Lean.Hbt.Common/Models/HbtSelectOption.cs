@@ -22,11 +22,6 @@ namespace Lean.Hbt.Common.Models
         /// <summary>
         /// 选项值
         /// </summary>
-        public long Value { get; set; }
-
-        /// <summary>
-        /// 是否禁用
-        /// </summary>
-        public bool Disabled { get; set; }
+        public object Value { get; set; } = string.Empty;
     }
 } 

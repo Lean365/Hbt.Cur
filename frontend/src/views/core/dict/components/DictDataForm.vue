@@ -9,81 +9,155 @@
 
 <template>
   <hbt-modal
+  :open="open"
     :title="title"
-    :open="visible"
     width="600px"
-    append-to-body
-    destroy-on-close
     @cancel="handleCancel"
   >
-    <hbt-form
+    <a-form
       ref="formRef"
       :model="formData"
       :rules="rules"
       :label-col="{ span: 6 }"
       :wrapper-col="{ span: 16 }"
     >
-      <hbt-form-item
-        :label="t('admin.dict.dictLabel.label')"
+      <a-form-item
+        :label="t('core.dict.dictDatas.fields.dictType.label')"
+        name="dictType"
+      >
+        <a-input
+          v-model:value="formData.dictType"
+          :placeholder="t('core.dict.dictDatas.fields.dictType.placeholder')"
+          disabled
+        />
+      </a-form-item>
+
+      <a-form-item
+        :label="t('core.dict.dictDatas.fields.dictLabel.label')"
         name="dictLabel"
       >
-        <hbt-input
+        <a-input
           v-model:value="formData.dictLabel"
-          :placeholder="t('admin.dict.dictLabel.placeholder')"
+          :placeholder="t('core.dict.dictDatas.fields.dictLabel.placeholder')"
         />
-      </hbt-form-item>
+      </a-form-item>
 
-      <hbt-form-item
-        :label="t('admin.dict.dictValue.label')"
+      <a-form-item
+        :label="t('core.dict.dictDatas.fields.dictValue.label')"
         name="dictValue"
       >
-        <hbt-input
+        <a-input
           v-model:value="formData.dictValue"
-          :placeholder="t('admin.dict.dictValue.placeholder')"
+          :placeholder="t('core.dict.dictDatas.fields.dictValue.placeholder')"
         />
-      </hbt-form-item>
+      </a-form-item>
 
-      <hbt-form-item
-        :label="t('admin.dict.orderNum.label')"
+      <a-form-item
+        :label="t('core.dict.dictDatas.fields.orderNum.label')"
         name="orderNum"
       >
-        <hbt-input-number
+        <a-input-number
           v-model:value="formData.orderNum"
-          :placeholder="t('admin.dict.orderNum.placeholder')"
+          :placeholder="t('core.dict.dictDatas.fields.orderNum.placeholder')"
           :min="0"
           :max="999"
           style="width: 100%"
         />
-      </hbt-form-item>
+      </a-form-item>
 
-      <hbt-form-item
-        :label="t('admin.dict.status.label')"
+      <a-form-item
+        :label="t('core.dict.dictDatas.fields.cssClass.label')"
+        name="cssClass"
+      >
+        <a-input
+          v-model:value="formData.cssClass"
+          :placeholder="t('core.dict.dictDatas.fields.cssClass.placeholder')"
+        />
+      </a-form-item>
+
+      <a-form-item
+        :label="t('core.dict.dictDatas.fields.listClass.label')"
+        name="listClass"
+      >
+        <a-input
+          v-model:value="formData.listClass"
+          :placeholder="t('core.dict.dictDatas.fields.listClass.placeholder')"
+        />
+      </a-form-item>
+
+      <a-form-item
+        :label="t('core.dict.dictDatas.fields.status.label')"
         name="status"
       >
-        <hbt-radio-group v-model:value="formData.status">
-          <hbt-radio :value="0">{{ t('admin.dict.status.normal') }}</hbt-radio>
-          <hbt-radio :value="1">{{ t('admin.dict.status.disable') }}</hbt-radio>
-        </hbt-radio-group>
-      </hbt-form-item>
+        <a-radio-group v-model:value="formData.status">
+          <a-radio :value="0">{{ t('core.dict.dictDatas.fields.status.normal') }}</a-radio>
+          <a-radio :value="1">{{ t('core.dict.dictDatas.fields.status.disable') }}</a-radio>
+        </a-radio-group>
+      </a-form-item>
 
-      <hbt-form-item
-        :label="t('admin.dict.remark.label')"
+      <a-form-item
+        :label="t('core.dict.dictDatas.fields.extLabel.label')"
+        name="extLabel"
+      >
+        <a-input
+          v-model:value="formData.extLabel"
+          :placeholder="t('core.dict.dictDatas.fields.extLabel.placeholder')"
+        />
+      </a-form-item>
+
+      <a-form-item
+        :label="t('core.dict.dictDatas.fields.extValue.label')"
+        name="extValue"
+      >
+        <a-input
+          v-model:value="formData.extValue"
+          :placeholder="t('core.dict.dictDatas.fields.extValue.placeholder')"
+        />
+      </a-form-item>
+
+      <a-form-item :label="t('core.dict.dictDatas.fields.transKey.label')">
+        <a-input-group compact>
+          <a-form-item name="transKeyFirst" style="display:inline-block;margin-bottom:0;">
+            <a-input v-model:value="transKeyFirst" style="width:80px" :placeholder="t('core.dict.dictDatas.fields.transKey.first')" />
+          </a-form-item>
+          <span style="width:36px;display:inline-block;text-align:center;">_</span>
+          <a-form-item name="transKeySecond" style="display:inline-block;margin-bottom:0;">
+            <a-input v-model:value="transKeySecond" style="width:80px" :placeholder="t('core.dict.dictDatas.fields.transKey.second')" />
+          </a-form-item>
+          <span style="width:36px;display:inline-block;text-align:center;">_</span>
+          <a-form-item name="transKeyThird" style="display:inline-block;margin-bottom:0;">
+            <a-input v-model:value="transKeyThird" style="width:80px" :placeholder="t('core.dict.dictDatas.fields.transKey.third')" />
+          </a-form-item>
+        </a-input-group>
+      </a-form-item>
+
+      <a-form-item
+        :label="t('core.dict.dictDatas.fields.tenantId.label')"
+        name="tenantId"
+      >
+        <a-input
+          v-model:value="formData.tenantId"
+          :placeholder="t('core.dict.dictDatas.fields.tenantId.placeholder')"
+          disabled
+        />
+      </a-form-item>
+
+      <a-form-item
+        :label="t('core.dict.dictDatas.fields.remark.label')"
         name="remark"
       >
-        <hbt-textarea
+        <a-textarea
           v-model:value="formData.remark"
-          :placeholder="t('admin.dict.remark.placeholder')"
+          :placeholder="t('core.dict.dictDatas.fields.remark.placeholder')"
           :rows="4"
         />
-      </hbt-form-item>
-    </hbt-form>
+      </a-form-item>
+    </a-form>
 
     <template #footer>
       <div class="dialog-footer">
-        <hbt-button @click="handleCancel">{{ t('common.cancel') }}</hbt-button>
-        <hbt-button type="primary" :loading="loading" @click="handleSubmit">
-          {{ t('common.confirm') }}
-        </hbt-button>
+        <a-button @click="handleCancel" :disabled="loading">{{ t('common.button.cancel') }}</a-button>
+        <a-button type="primary" @click="handleSubmit" :loading="loading">{{ t('common.button.submit') }}</a-button>
       </div>
     </template>
   </hbt-modal>
@@ -94,11 +168,14 @@ import { ref, reactive, watch, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { message } from 'ant-design-vue'
 import type { FormInstance } from 'ant-design-vue'
+import type { Rule } from 'ant-design-vue/es/form'
 import type { HbtDictData, HbtDictDataCreate, HbtDictDataUpdate } from '@/types/core/dictData'
 import { getHbtDictData, createHbtDictData, updateHbtDictData } from '@/api/core/dictData'
+import { useUserStore } from '@/stores/user'
+import { useRouter } from 'vue-router'
 
 const props = defineProps({
-  visible: {
+  open: {
     type: Boolean,
     default: false
   },
@@ -116,13 +193,30 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['update:visible', 'success'])
+const emit = defineEmits(['update:open', 'success'])
 
 const { t } = useI18n()
+const userStore = useUserStore()
+const router = useRouter()
+
+// 获取租户ID
+const getTenantId = () => {
+  const tenantId = userStore.userInfo?.tenantId
+  if (!tenantId) {
+    message.error(t('common.message.sessionExpired'))
+    userStore.logout()
+    router.push('/login')
+    return
+  }
+  return tenantId
+}
 
 // === 状态定义 ===
 const loading = ref(false)
 const formRef = ref<FormInstance>()
+const transKeyFirst = ref('')
+const transKeySecond = ref('')
+const transKeyThird = ref('')
 
 // === 表单数据 ===
 const formData = reactive<HbtDictDataCreate>({
@@ -130,14 +224,18 @@ const formData = reactive<HbtDictDataCreate>({
   dictLabel: '',
   dictValue: '',
   orderNum: 0,
+  cssClass: '',
+  listClass: '',
   status: 0,
-  isDefault: 0,
-  tenantId: 0,
+  extLabel: '',
+  extValue: '',
+  transKey: '',
+  tenantId: getTenantId()!,
   remark: ''
 })
 
 // === 表单验证规则 ===
-const rules = {
+const rules: Record<string, Rule[]> = {
   dictLabel: [
     { required: true, message: t('admin.dict.dictLabel.required'), trigger: 'blur' },
     { min: 2, max: 50, message: t('admin.dict.dictLabel.length'), trigger: 'blur' }
@@ -160,10 +258,10 @@ const getDictData = async (id: number) => {
   try {
     loading.value = true
     const res = await getHbtDictData(id)
-    if (res.code === 200) {
-      Object.assign(formData, res.data)
+    if (res.data.code === 200) {
+      Object.assign(formData, res.data.data)
     } else {
-      message.error(res.msg || t('common.failed'))
+      message.error(res.data.msg || t('common.failed'))
     }
   } catch (error) {
     console.error('获取字典数据详情失败:', error)
@@ -192,11 +290,11 @@ const handleSubmit = async () => {
       res = await createHbtDictData(formData)
     }
 
-    if (res.code === 200) {
+    if (res.data.code === 200) {
       message.success(t('common.message.saveSuccess'))
       emit('success')
     } else {
-      message.error(res.msg || t('common.message.saveFailed'))
+      message.error(res.data.msg || t('common.message.saveFailed'))
     }
   } catch (error) {
     console.error('保存失败:', error)
@@ -208,7 +306,7 @@ const handleSubmit = async () => {
 
 // 取消
 const handleCancel = () => {
-  emit('update:visible', false)
+  emit('update:open', false)
 }
 
 // 重置表单
@@ -219,16 +317,20 @@ const resetForm = () => {
     dictLabel: '',
     dictValue: '',
     orderNum: 0,
+    cssClass: '',
+    listClass: '',
     status: 0,
-    isDefault: 0,
-    tenantId: 0,
+    extLabel: '',
+    extValue: '',
+    transKey: '',
+    tenantId: getTenantId()!,
     remark: ''
   })
 }
 
 // === 监听器 ===
 // 监听对话框可见性变化
-watch(() => props.visible, (val) => {
+watch(() => props.open, (val) => {
   if (val) {
     if (props.dictDataId) {
       getDictData(props.dictDataId)
@@ -240,9 +342,14 @@ watch(() => props.visible, (val) => {
 
 // === 生命周期 ===
 onMounted(() => {
-  if (props.visible && props.dictDataId) {
+  if (props.open && props.dictDataId) {
     getDictData(props.dictDataId)
   }
+})
+
+// 监听transKey输入变化
+watch([transKeyFirst, transKeySecond, transKeyThird], ([first, second, third]) => {
+  formData.transKey = [first, second, third].filter(Boolean).join('_')
 })
 </script>
 

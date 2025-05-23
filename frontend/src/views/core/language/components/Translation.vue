@@ -9,8 +9,9 @@
 
 <template>
   <hbt-modal
-    :title="t('admin.language.translation.title', { name: language?.langName })"
-    :open="dialogVisible"
+   :open="visible"
+    :title="t('core.translation.title' )+ ' - ' + props.langCode?.langName"
+    :footer="null"
     width="900px"
     append-to-body
     destroy-on-close
@@ -18,15 +19,15 @@
     <!-- 工具栏 -->
     <hbt-toolbar
       :show-add="true"
-      :add-permission="['admin:translation:create']"
+      :add-permission="['core:language:create']"
       :show-edit="true"
-      :edit-permission="['admin:translation:update']"
+      :edit-permission="['core:language:update']"
       :show-delete="true"
-      :delete-permission="['admin:translation:delete']"
+      :delete-permission="['core:language:delete']"
       :show-import="true"
-      :import-permission="['admin:translation:import']"
+      :import-permission="['core:language:import']"
       :show-export="true"
-      :export-permission="['admin:translation:export']"
+      :export-permission="['core:language:export']"
       :disabled-edit="selectedRowKeys.length !== 1"
       :disabled-delete="selectedRowKeys.length === 0"
       @add="handleAdd"
@@ -36,16 +37,19 @@
       @template="handleTemplate"
       @export="handleExport"
       @refresh="fetchData"
+      @column-setting="handleColumnSetting"
+      @toggle-search="toggleSearch"
+      @toggle-fullscreen="toggleFullscreen"
     />
 
     <!-- 数据表格 -->
     <hbt-table
       :loading="loading"
       :data-source="tableData"
-      :columns="columns"
+      :columns="visibleColumns"
       :pagination="false"
       :scroll="{ x: 'max-content', y: 400 }"
-      :row-key="(record: HbtTranslation) => String(record.id)"
+      :row-key="(record: HbtTranslation) => String(record.translationId)"
       v-model:selectedRowKeys="selectedRowKeys"
       :row-selection="{
         type: 'checkbox',
@@ -63,11 +67,11 @@
           <hbt-operation
             :record="record"
             :show-view="true"
-            :view-permission="['admin:translation:query']"
+            :view-permission="['core:language:query']"
             :show-edit="true"
-            :edit-permission="['admin:translation:update']"
+            :edit-permission="['core:language:update']"
             :show-delete="true"
-            :delete-permission="['admin:translation:delete']"
+            :delete-permission="['core:language:delete']"
             size="small"
             @view="handleView"
             @edit="handleEdit"
@@ -91,22 +95,41 @@
 
     <!-- 翻译表单对话框 -->
     <translation-form
-      v-model:visible="formVisible"
+      v-model:open="formVisible"
       :translation-id="selectedTranslationId"
-      :lang-code="langCode"
+      :lang-code="props.langCode?.langCode || ''"
       @success="handleSuccess"
     />
 
     <!-- 翻译详情对话框 -->
     <translation-detail
-      v-model:visible="detailVisible"
+      v-model:open="detailVisible"
       :translation-id="selectedTranslationId"
     />
+
+    <!-- 列设置抽屉 -->
+    <a-drawer
+      :open="columnSettingVisible"
+      :title="t('common.columnSetting')"
+      placement="right"
+      width="300"
+      @close="columnSettingVisible = false"
+    >
+      <a-checkbox-group
+        :value="Object.keys(columnSettings).filter(key => columnSettings[key])"
+        @change="handleColumnSettingChange"
+        class="column-setting-group"
+      >
+        <div v-for="col in defaultColumns" :key="col.key" class="column-setting-item">
+          <a-checkbox :value="col.key" :disabled="col.key === 'action'">{{ col.title }}</a-checkbox>
+        </div>
+      </a-checkbox-group>
+    </a-drawer>
   </hbt-modal>
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive, watch, onMounted, h } from 'vue'
+import { ref, reactive, watch, onMounted, h, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { message } from 'ant-design-vue'
 import type { TablePaginationConfig } from 'ant-design-vue'
@@ -132,15 +155,10 @@ const props = defineProps({
     default: false
   },
   langCode: {
-    type: String,
-    default: ''
-  },
-  language: {
     type: Object as () => HbtLanguage,
-    default: undefined
+    required: true
   }
 })
-
 const emit = defineEmits(['update:visible'])
 
 const { t } = useI18n()
@@ -153,13 +171,15 @@ const selectedTranslationId = ref<number | undefined>(undefined)
 const formVisible = ref(false)
 const detailVisible = ref(false)
 const total = ref(0)
-const dialogVisible = ref(props.visible)
+const showSearch = ref(true)
+const columnSettingVisible = ref(false)
+const columnSettings = ref<Record<string, boolean>>({})
 
 // === 查询参数 ===
 const queryParams = ref<HbtTranslationQuery>({
   pageIndex: 1,
   pageSize: 10,
-  langCode: props.langCode,
+  langCode: props.langCode?.langCode || '',
   transKey: '',
   transValue: '',
   status: undefined
@@ -168,47 +188,47 @@ const queryParams = ref<HbtTranslationQuery>({
 // === 表格列定义 ===
 const columns = [
   {
-    title: t('admin.language.translation.moduleName'),
+    title: t('core.translation.table.columns.moduleName'),
     dataIndex: 'moduleName',
     key: 'moduleName',
     width: 150,
     ellipsis: true
   },
   {
-    title: t('admin.language.translation.transKey'),
+    title: t('core.translation.table.columns.transKey'),
     dataIndex: 'transKey',
     key: 'transKey',
     width: 200,
     ellipsis: true
   },
   {
-    title: t('admin.language.translation.transValue'),
+    title: t('core.translation.table.columns.transValue'),
     dataIndex: 'transValue',
     key: 'transValue',
     width: 300,
     ellipsis: true
   },
   {
-    title: t('admin.language.translation.orderNum'),
+    title: t('core.translation.table.columns.orderNum'),
     dataIndex: 'orderNum',
     key: 'orderNum',
     width: 100
   },
   {
-    title: t('admin.language.translation.status'),
+    title: t('core.translation.table.columns.status'),
     dataIndex: 'status',
     key: 'status',
     width: 100
   },
   {
-    title: t('admin.language.translation.remark'),
+    title: t('core.translation.table.columns.remark'),
     dataIndex: 'remark',
     key: 'remark',
     width: 200,
     ellipsis: true
   },
   {
-    title: t('common.createTime'),
+    title: t('common.table.createTime'),
     dataIndex: 'createTime',
     key: 'createTime',
     width: 180,
@@ -222,6 +242,67 @@ const columns = [
   }
 ]
 
+// 列设置相关
+const defaultColumns = columns
+const visibleColumns = computed(() => {
+  return defaultColumns.filter(col => columnSettings.value[col.key])
+})
+
+// 初始化列设置
+const initColumnSettings = () => {
+  // 每次刷新页面时清除localStorage
+  localStorage.removeItem('translationColumnSettings')
+
+  // 初始化所有列为false
+  columnSettings.value = Object.fromEntries(defaultColumns.map(col => [col.key, false]))
+
+  // 获取前9列（不包含操作列）
+  const firstNineColumns = defaultColumns.filter(col => col.key !== 'action').slice(0, 9)
+
+  // 设置前9列为true
+  firstNineColumns.forEach(col => {
+    columnSettings.value[col.key] = true
+  })
+
+  // 确保操作列显示
+  columnSettings.value['action'] = true
+}
+
+// 处理列设置变更
+const handleColumnSettingChange = (checkedValue: Array<string | number | boolean>) => {
+  const settings: Record<string, boolean> = {}
+  defaultColumns.forEach(col => {
+    // 操作列始终为true
+    if (col.key === 'action') {
+      settings[col.key] = true
+    } else {
+      settings[col.key] = checkedValue.includes(col.key)
+    }
+  })
+  columnSettings.value = settings
+  localStorage.setItem('translationColumnSettings', JSON.stringify(settings))
+}
+
+// 列设置
+const handleColumnSetting = () => {
+  columnSettingVisible.value = true
+}
+
+// 切换搜索
+const toggleSearch = () => {
+  showSearch.value = !showSearch.value
+}
+
+// 切换全屏
+const toggleFullscreen = () => {
+  const element = document.documentElement
+  if (document.fullscreenElement) {
+    document.exitFullscreen()
+  } else {
+    element.requestFullscreen()
+  }
+}
+
 // === 方法定义 ===
 // 获取数据
 const fetchData = async () => {
@@ -230,11 +311,11 @@ const fetchData = async () => {
   try {
     loading.value = true
     const res = await getHbtTranslationList(queryParams.value)
-    if (res.code === 200) {
-      tableData.value = res.data.rows
-      total.value = res.data.totalNum
+    if (res.data.code === 200) {
+      tableData.value = res.data.data.rows
+      total.value = res.data.data.totalNum
     } else {
-      message.error(res.msg || t('common.failed'))
+      message.error(res.data.msg || t('common.failed'))
     }
   } catch (error) {
     console.error('加载翻译列表失败:', error)
@@ -256,7 +337,7 @@ const handleEditSelected = () => {
     message.warning(t('common.message.selectOneRecord'))
     return
   }
-  const record = tableData.value.find(item => String(item.id) === selectedRowKeys.value[0])
+  const record = tableData.value.find(item => String(item.translationId) === selectedRowKeys.value[0])
   if (record) {
     handleEdit(record)
   }
@@ -264,25 +345,25 @@ const handleEditSelected = () => {
 
 // 编辑
 const handleEdit = (record: HbtTranslation) => {
-  selectedTranslationId.value = record.id
+  selectedTranslationId.value = record.translationId
   formVisible.value = true
 }
 
 // 查看
 const handleView = (record: HbtTranslation) => {
-  selectedTranslationId.value = record.id
+  selectedTranslationId.value = record.translationId
   detailVisible.value = true
 }
 
 // 删除
 const handleDelete = async (record: HbtTranslation) => {
   try {
-    const res = await deleteHbtTranslation(record.id)
-    if (res.code === 200) {
+    const res = await deleteHbtTranslation(record.translationId)
+    if (res.data.code === 200) {
       message.success(t('common.message.deleteSuccess'))
       fetchData()
     } else {
-      message.error(res.msg || t('common.message.deleteFailed'))
+      message.error(res.data.msg || t('common.message.deleteFailed'))
     }
   } catch (error) {
     console.error('删除失败:', error)
@@ -298,12 +379,12 @@ const handleBatchDelete = async () => {
   }
   try {
     const res = await batchDeleteHbtTranslation(selectedRowKeys.value.map(key => Number(key)))
-    if (res.code === 200) {
+    if (res.data.code === 200) {
       message.success(t('common.message.deleteSuccess'))
       selectedRowKeys.value = []
       fetchData()
     } else {
-      message.error(res.msg || t('common.message.deleteFailed'))
+      message.error(res.data.msg || t('common.message.deleteFailed'))
     }
   } catch (error) {
     console.error('批量删除失败:', error)
@@ -345,26 +426,37 @@ const handleSuccess = () => {
   fetchData()
 }
 
+// 取消
+const handleCancel = () => {
+  emit('update:visible', false)
+}
+
 // 监听对话框可见性变化
 watch(() => props.visible, (val) => {
-  dialogVisible.value = val
+  if (!val) {
+    formVisible.value = false
+    detailVisible.value = false
+  }
 })
 
 // 监听对话框可见性变化，同步到父组件
-watch(() => dialogVisible.value, (val) => {
-  emit('update:visible', val)
+watch([formVisible, detailVisible], ([formVal, detailVal]) => {
+  if (!formVal && !detailVal) {
+    emit('update:visible', false)
+  }
 })
 
 // 监听语言代码变化，加载数据
 watch(() => props.langCode, (val) => {
   if (val) {
-    queryParams.value.langCode = val
+    queryParams.value.langCode = val?.langCode || ''
     fetchData()
   }
 }, { immediate: true })
 
 // === 生命周期 ===
 onMounted(() => {
+  initColumnSettings()
   if (props.langCode) {
     fetchData()
   }
@@ -376,5 +468,20 @@ onMounted(() => {
   display: flex;
   justify-content: flex-end;
   gap: 12px;
+}
+
+.column-setting-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.column-setting-item {
+  padding: 8px;
+  border-bottom: 1px solid var(--ant-color-split);
+
+  &:last-child {
+    border-bottom: none;
+  }
 }
 </style> 

@@ -27,17 +27,22 @@ namespace Lean.Hbt.Application.Dtos.Identity
         {
             UserName = string.Empty;
             NickName = string.Empty;
+            RealName = string.Empty;
+            FullName = string.Empty;
             EnglishName = string.Empty;
             PhoneNumber = string.Empty;
             Email = string.Empty;
             Avatar = string.Empty;
             TenantName = string.Empty;
-            CreateTime = DateTime.Now;
             Roles = new List<string>();
             Permissions = new List<string>();
             RoleIds = new List<long>();
             PostIds = new List<long>();
             DeptIds = new List<long>();
+            Remark = string.Empty;
+            CreateBy = string.Empty;
+            UpdateBy = string.Empty;
+            DeleteBy = string.Empty;
         }
 
         /// <summary>
@@ -57,9 +62,20 @@ namespace Lean.Hbt.Application.Dtos.Identity
         public string NickName { get; set; } = string.Empty;
 
         /// <summary>
+        /// 真实姓名
+        /// </summary>
+        public string RealName { get; set; } = string.Empty;
+
+        /// <summary>
+        /// 全名
+        /// </summary>
+        public string FullName { get; set; } = string.Empty;
+
+        /// <summary>
         /// 英文名称
         /// </summary>
-        public string EnglishName { get; set; }
+        public string EnglishName { get; set; } = string.Empty;
+
 
         /// <summary>
         /// 用户类型（0系统用户 1普通用户 2管理员 3OAuth用户）
@@ -263,6 +279,8 @@ namespace Lean.Hbt.Application.Dtos.Identity
         {
             UserName = string.Empty;
             NickName = string.Empty;
+            RealName = string.Empty;
+            FullName = string.Empty;
             EnglishName = string.Empty;
             PhoneNumber = string.Empty;
             Email = string.Empty;
@@ -296,10 +314,22 @@ namespace Lean.Hbt.Application.Dtos.Identity
         public string Password { get; set; } = string.Empty;
 
         /// <summary>
+        /// 真实姓名
+        /// </summary>
+        [MaxLength(50, ErrorMessage = "真实姓名长度不能超过50个字符")]
+        public string RealName { get; set; } = string.Empty;
+
+        /// <summary>
+        /// 全名
+        /// </summary>
+        [MaxLength(50, ErrorMessage = "全名长度不能超过50个字符")]
+        public string FullName { get; set; } = string.Empty;
+
+        /// <summary>
         /// 英文名称
         /// </summary>
         [MaxLength(50, ErrorMessage = "英文名称长度不能超过50个字符")]
-        public string EnglishName { get; set; }
+        public string EnglishName { get; set; } = string.Empty;
 
         /// <summary>
         /// 用户类型（0系统用户 1普通用户 2管理员 3OAuth用户）
@@ -377,24 +407,8 @@ namespace Lean.Hbt.Application.Dtos.Identity
     /// 创建者: Lean365
     /// 创建时间: 2024-01-17
     /// </remarks>
-    public class HbtUserUpdateDto
+    public class HbtUserUpdateDto: HbtUserCreateDto
     {
-        /// <summary>
-        /// 构造函数
-        /// </summary>
-        public HbtUserUpdateDto()
-        {
-            UserName = string.Empty;
-            NickName = string.Empty;
-            EnglishName = string.Empty;
-            PhoneNumber = string.Empty;
-            Email = string.Empty;
-            Avatar = string.Empty;
-            RoleIds = new List<long>();
-            PostIds = new List<long>();
-            DeptIds = new List<long>();
-            Remark = string.Empty;
-        }
 
         /// <summary>
         /// 用户ID
@@ -403,70 +417,7 @@ namespace Lean.Hbt.Application.Dtos.Identity
         [Range(1, long.MaxValue, ErrorMessage = "用户ID必须大于0")]
         public long UserId { get; set; }
 
-        /// <summary>
-        /// 用户名
-        /// </summary>
-        [Required(ErrorMessage = "用户名不能为空")]
-        [MaxLength(30, ErrorMessage = "用户名长度不能超过30个字符")]
-        public string UserName { get; set; }
 
-        /// <summary>
-        /// 昵称
-        /// </summary>
-        [Required(ErrorMessage = "昵称不能为空")]
-        [MaxLength(30, ErrorMessage = "昵称长度不能超过30个字符")]
-        public string NickName { get; set; } = string.Empty;
-
-        /// <summary>
-        /// 英文名称
-        /// </summary>
-        [MaxLength(50, ErrorMessage = "英文名称长度不能超过50个字符")]
-        public string? EnglishName { get; set; }
-
-        /// <summary>
-        /// 邮箱
-        /// </summary>
-        public string? Email { get; set; }
-
-        /// <summary>
-        /// 手机号码
-        /// </summary>
-        public string? PhoneNumber { get; set; }
-
-        /// <summary>
-        /// 性别（0未知 1男 2女）
-        /// </summary>
-        public int Gender { get; set; }
-
-        /// <summary>
-        /// 头像
-        /// </summary>
-        public string? Avatar { get; set; }
-
-        /// <summary>
-        /// 状态（0正常 1停用）
-        /// </summary>
-        public int Status { get; set; }
-
-        /// <summary>
-        /// 角色ID列表
-        /// </summary>
-        public List<long> RoleIds { get; set; }
-
-        /// <summary>
-        /// 岗位ID列表
-        /// </summary>
-        public List<long> PostIds { get; set; }
-
-        /// <summary>
-        /// 部门ID列表
-        /// </summary>
-        public List<long> DeptIds { get; set; }
-
-        /// <summary>
-        /// 备注
-        /// </summary>
-        public string? Remark { get; set; }
     }
 
     /// <summary>
@@ -485,6 +436,8 @@ namespace Lean.Hbt.Application.Dtos.Identity
         {
             UserName = string.Empty;
             NickName = string.Empty;
+            RealName = string.Empty;
+            FullName = string.Empty;
             EnglishName = string.Empty;
             PhoneNumber = string.Empty;
             Email = string.Empty;
@@ -507,9 +460,19 @@ namespace Lean.Hbt.Application.Dtos.Identity
         public string NickName { get; set; } = string.Empty;
 
         /// <summary>
+        /// 真实姓名
+        /// </summary>
+        public string RealName { get; set; } = string.Empty;
+
+        /// <summary>
+        /// 全名
+        /// </summary>
+        public string FullName { get; set; } = string.Empty;
+
+        /// <summary>
         /// 英文名称
         /// </summary>
-        public string EnglishName { get; set; }
+        public string EnglishName { get; set; } = string.Empty;
 
         /// <summary>
         /// 用户类型(0=系统用户,1=普通用户)
@@ -563,6 +526,8 @@ namespace Lean.Hbt.Application.Dtos.Identity
         {
             UserName = string.Empty;
             NickName = string.Empty;
+            RealName = string.Empty;
+            FullName = string.Empty;
             EnglishName = string.Empty;
             UserType = string.Empty;
             PhoneNumber = string.Empty;
@@ -585,6 +550,16 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// 昵称
         /// </summary>
         public string NickName { get; set; } = string.Empty;
+
+        /// <summary>
+        /// 真实姓名
+        /// </summary>
+        public string RealName { get; set; } = string.Empty;
+
+        /// <summary>
+        /// 全名
+        /// </summary>
+        public string FullName { get; set; } = string.Empty;
 
         /// <summary>
         /// 英文名称
@@ -658,6 +633,8 @@ namespace Lean.Hbt.Application.Dtos.Identity
         {
             UserName = string.Empty;
             NickName = string.Empty;
+            RealName = string.Empty;
+            FullName = string.Empty;
             EnglishName = string.Empty;
             PhoneNumber = string.Empty;
             Email = string.Empty;
@@ -680,7 +657,15 @@ namespace Lean.Hbt.Application.Dtos.Identity
         public string NickName { get; set; } = string.Empty;
 
         /// <summary>
-        /// 英文名称
+        /// 真实姓名
+        /// </summary>
+        public string RealName { get; set; } = string.Empty;
+
+        /// <summary>
+        /// 全名
+        /// </summary>
+        public string FullName { get; set; } = string.Empty;
+
         /// </summary>
         public string EnglishName { get; set; }
 

@@ -30,9 +30,9 @@ namespace Lean.Hbt.Application.Services.Core
         /// <summary>
         /// 获取翻译详情
         /// </summary>
-        /// <param name="TransId">翻译ID</param>
+        /// <param name="TranslationId">翻译ID</param>
         /// <returns>翻译详情</returns>
-        Task<HbtTranslationDto> GetByIdAsync(long TransId);
+        Task<HbtTranslationDto> GetByIdAsync(long TranslationId);
 
         /// <summary>
         /// 创建翻译
@@ -51,16 +51,16 @@ namespace Lean.Hbt.Application.Services.Core
         /// <summary>
         /// 删除翻译
         /// </summary>
-        /// <param name="TransId">翻译ID</param>
+        /// <param name="TranslationId">翻译ID</param>
         /// <returns>是否成功</returns>
-        Task<bool> DeleteAsync(long TransId);
+        Task<bool> DeleteAsync(long TranslationId);
 
         /// <summary>
         /// 批量删除翻译
         /// </summary>
-        /// <param name="TransIds">翻译ID集合</param>
+        /// <param name="TranslationIds">翻译ID集合</param>
         /// <returns>是否成功</returns>
-        Task<bool> BatchDeleteAsync(long[] TransIds);
+        Task<bool> BatchDeleteAsync(long[] TranslationIds);
 
         /// <summary>
         /// 导入翻译数据

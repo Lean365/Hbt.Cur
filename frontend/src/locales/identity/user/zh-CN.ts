@@ -2,12 +2,39 @@ export default {
   identity: {
     user: {
       title: '用户管理',
-      table: {
-        columns: {
-          userId: '用户ID',
+      profile: '个人信息',
+      changePassword: '修改密码',
+      password: {
+        old: {
+          label: '旧密码',
+          placeholder: '请输入旧密码',
+          validation: {
+            required: '旧密码不能为空',
+          }
+        },
+        new: {
+          label: '新密码',
+          placeholder: '请输入新密码',
+          validation: {
+            required: '新密码不能为空',
+          }
+        },
+        confirm: {
+          label: '确认密码',
+          placeholder: '请输入确认密码',
+          validation: {
+            required: '确认密码不能为空',
+          }
+        }
+      },
+        table: {
+          columns: {
+            userId: '用户ID',
           tenantId: '租户',
           userName: '用户名',
           nickName: '昵称',
+          realName: '真实姓名',
+          fullName: '全名',
           englishName: '英文名',
           userType: '类型',
           email: '邮箱',
@@ -61,7 +88,7 @@ export default {
           placeholder: '请输入用户名',
           validation: {
             required: '用户名不能为空',
-            format: '用户名必须以小写字母开头，长度在6-20位之间，只能包含小写字母、数字和下划线'
+            format: '必须以小写字母开头，只能包含小写字母、数字和连字符，不允许点和下划线，长度在4-50位之间'
           }
         },
         nickName: {
@@ -69,13 +96,30 @@ export default {
           placeholder: '请输入昵称',
           validation: {
             required: '昵称不能为空',
-            format: '昵称长度必须在2-20位之间，只能包含中文、英文、数字和下划线'
+            format: '2-50位字符，允许中文、日语、韩语、英文、数字、英文句点和连字符，不允许下划线和空格'
+          }
+        },
+        realName: {
+          label: '真实姓名',
+          placeholder: '请输入真实姓名',
+          validation: {
+            required: '真实姓名不能为空',
+            format: '真实姓名长度必须在2-20位之间，只能包含中文、英文、数字和下划线'
+          }
+        },
+        fullName: {
+          label: '全名',
+          placeholder: '请输入全名',
+          validation: {
+            required: '全名不能为空',
+            format: '全名长度必须在2-20位之间，只能包含中文、英文、数字和下划线'
           }
         },
         englishName: {
           label: '英文名',
           placeholder: '请输入英文名',
           validation: {
+            required: '英文名不能为空',
             format: '英文名长度必须在2-50位之间，只能包含英文字母、空格和连字符'
           }
         },

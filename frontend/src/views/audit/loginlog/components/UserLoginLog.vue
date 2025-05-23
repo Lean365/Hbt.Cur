@@ -3,7 +3,6 @@
     <!-- 查询区域 -->
     <hbt-query
       v-show="showSearch"
-      :model="queryParams"
       :query-fields="queryFields"
       @search="handleQuery"
       @reset="resetQuery"
@@ -30,7 +29,7 @@
         showQuickJumper: true,
         showTotal: (total: number) => `共 ${total} 条`
       }"
-      :row-key="(record: HbtLoginLogDto) => record.id"
+      row-key="loginLogId"
       :scroll="{ y: 840 }"
       @change="handleTableChange"
     >
@@ -60,11 +59,13 @@ import { ref, reactive, onMounted } from 'vue'
 import { message } from 'ant-design-vue'
 import type { TablePaginationConfig } from 'ant-design-vue'
 import type { QueryField } from '@/types/components/query'
-import type { HbtLoginLogDto, HbtLoginLogQueryDto } from '@/types/audit/loginLog'
-import { getLoginLogs } from '@/api/audit/loginLog'
+import type { HbtLoginLog, HbtLoginLogQuery, HbtLoginLogDto } from '@/types/audit/loginLog'
+import { getLoginLogList } from '@/api/audit/loginLog'
 import { useUserStore } from '@/stores/user'
+import { useI18n } from 'vue-i18n'
 import LoginLogDetail from './LoginLogDetail.vue'
 
+const { t } = useI18n()
 const userStore = useUserStore()
 
 // 查询字段定义
@@ -129,7 +130,7 @@ const columns = [
     title: '浏览器',
     key: 'browser',
     width: 120,
-    customRender: ({ record }: { record: HbtLoginLogDto }) => {
+    customRender: ({ record }: { record: HbtLoginLog }) => {
       const type = record.deviceInfo?.browserType
       const version = record.deviceInfo?.browserVersion
       const browserName = type === 0 ? 'Chrome' :
@@ -144,7 +145,7 @@ const columns = [
     title: '操作系统',
     key: 'os',
     width: 120,
-    customRender: ({ record }: { record: HbtLoginLogDto }) => {
+    customRender: ({ record }: { record: HbtLoginLog }) => {
       const type = record.deviceInfo?.osType
       const version = record.deviceInfo?.osVersion
       const osName = type === 0 ? 'Windows' :
@@ -175,8 +176,8 @@ const columns = [
   },
   {
     title: '消息',
-    dataIndex: 'message',
-    key: 'message',
+    dataIndex: 'loginMessage',
+    key: 'loginMessage',
     width: 200,
     ellipsis: true
   },
@@ -196,20 +197,20 @@ const columns = [
 
 // 状态定义
 const loading = ref(false)
-const tableData = ref<HbtLoginLogDto[]>([])
+const tableData = ref<HbtLoginLog[]>([])
 const total = ref(0)
 const showSearch = ref(true)
 const detailRef = ref()
 const currentLogin = ref<HbtLoginLogDto>()
 
-const queryParams = reactive<HbtLoginLogQueryDto>({
+const queryParams = reactive<HbtLoginLogQuery>({
   pageIndex: 1,
   pageSize: 10,
   orderByColumn: undefined,
   orderType: undefined,
-  userName: userStore.user?.userName,
+  userName: userStore.userInfo?.userName,
   ipAddress: undefined,
-  success: undefined,
+  loginSuccess: undefined,
   loginType: undefined,
   startTime: undefined,
   endTime: undefined
@@ -230,9 +231,13 @@ const getLoginTypeName = (type?: number) => {
 const fetchData = async () => {
   loading.value = true
   try {
-    const res = await getLoginLogs(queryParams)
-    tableData.value = res.data.rows
-    total.value = res.data.totalNum
+    const res = await getLoginLogList(queryParams)
+    if (res.data.code === 200) {
+      tableData.value = res.data.data.rows
+      total.value = res.data.data.totalNum
+    } else {
+      message.error(res.data.msg || t('common.failed'))
+    }
   } catch (error) {
     console.error('获取登录日志失败:', error)
     message.error('获取登录日志失败')
@@ -250,7 +255,7 @@ const handleQuery = () => {
 /** 重置按钮操作 */
 const resetQuery = () => {
   queryParams.ipAddress = undefined
-  queryParams.success = undefined
+  queryParams.loginSuccess = undefined
   queryParams.loginType = undefined
   queryParams.startTime = undefined
   queryParams.endTime = undefined
@@ -271,8 +276,11 @@ const toggleSearch = () => {
 }
 
 /** 查看详情 */
-const handleViewDetail = (record: HbtLoginLogDto) => {
-  currentLogin.value = record
+const handleViewDetail = (record: HbtLoginLog) => {
+  currentLogin.value = {
+    ...record,
+    loginMessage: record.loginMessage ?? ''
+  }
   detailRef.value?.open()
 }
 

@@ -30,9 +30,9 @@ namespace Lean.Hbt.Application.Services.Identity
         /// <summary>
         /// 获取部门树形结构
         /// </summary>
-        /// <param name="status">状态</param>
+        /// <param name="query">状态</param>
         /// <returns>部门树形结构</returns>
-        Task<List<HbtDeptDto>> GetTreeAsync(int status);
+        Task<List<HbtDeptDto>> GetTreeAsync(HbtDeptQueryDto query);
 
         /// <summary>
         /// 获取部门详情

@@ -9,15 +9,12 @@
 // 描述    : SqlSugar差异日志实体
 //===================================================================
 
-using Lean.Hbt.Common.Enums;
-using SqlSugar;
-
 namespace Lean.Hbt.Domain.Entities.Audit
 {
     /// <summary>
     /// SqlSugar差异日志实体
     /// </summary>
-    [SugarTable("hbt_audit_diff_log", "SqlSugar差异日志表")]
+    [SugarTable("hbt_audit_diff_log", "差异日志")]
     [SugarIndex("ix_tenant_dbdiff", nameof(TenantId), OrderByType.Asc)]
     public class HbtSqlDiffLog : HbtBaseEntity
     {
@@ -81,4 +78,4 @@ namespace Lean.Hbt.Domain.Entities.Audit
         [SugarColumn(ColumnName = "tenant_id", ColumnDescription = "租户ID", ColumnDataType = "bigint", IsNullable = true)]
         public long? TenantId { get; set; }
     }
-} 
+}

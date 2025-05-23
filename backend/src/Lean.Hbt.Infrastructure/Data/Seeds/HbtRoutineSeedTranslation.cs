@@ -33,149 +33,132 @@ public class HbtRoutineSeedTranslation
         _logger = logger;
     }
 
-    private HbtTranslation CreateTranslation(string langCode, string transKey, string transValue)
-    {
-        return new HbtTranslation
-        {
-            LangCode = langCode,
-            TransKey = transKey,
-            TransValue = transValue,
-            ModuleName = "Routine",
-            Status = 0,
-            TransBuiltin = 1,
-            TenantId = 0,
-            CreateBy = "Hbt365",
-            CreateTime = DateTime.Now,
-            UpdateBy = "Hbt365",
-            UpdateTime = DateTime.Now
-        };
-    }
-
     /// <summary>
     /// 初始化定时任务本地化资源
     /// </summary>
-    public async Task<(int insertCount, int updateCount)> InitializeRoutineTranslationAsync()
+    public async Task<(int insertCount, int updateCount)> InitializeRoutineTranslationAsync(long tenantId)
     {
         var defaultTranslations = new List<HbtTranslation>
         {
             // 日常办公基础操作
-            CreateTranslation("zh-CN", "Routine.NotFound", "日常办公记录不存在"),
-            CreateTranslation("en-US", "Routine.NotFound", "Routine record not found"),
-            CreateTranslation("ja-JP", "Routine.NotFound", "日常業務記録が存在しません"),
+            new HbtTranslation { LangCode = "zh-CN", TransKey = "Routine.NotFound", TransValue = "日常办公记录不存在", ModuleName = "Routine", Status = 0 },
+            new HbtTranslation { LangCode = "en-US", TransKey = "Routine.NotFound", TransValue = "Routine record not found", ModuleName = "Routine", Status = 0 },
+            new HbtTranslation { LangCode = "ja-JP", TransKey = "Routine.NotFound", TransValue = "日常業務記録が存在しません", ModuleName = "Routine", Status = 0 },
 
-            CreateTranslation("zh-CN", "Routine.CreateFailed", "创建日常办公记录失败"),
-            CreateTranslation("en-US", "Routine.CreateFailed", "Failed to create routine record"),
-            CreateTranslation("ja-JP", "Routine.CreateFailed", "日常業務記録の作成に失敗しました"),
+            new HbtTranslation { LangCode = "zh-CN", TransKey = "Routine.CreateFailed", TransValue = "创建日常办公记录失败", ModuleName = "Routine", Status = 0 },
+            new HbtTranslation { LangCode = "en-US", TransKey = "Routine.CreateFailed", TransValue = "Failed to create routine record", ModuleName = "Routine", Status = 0 },
+            new HbtTranslation { LangCode = "ja-JP", TransKey = "Routine.CreateFailed", TransValue = "日常業務記録の作成に失敗しました", ModuleName = "Routine", Status = 0 },
 
-            CreateTranslation("zh-CN", "Routine.UpdateFailed", "更新日常办公记录失败"),
-            CreateTranslation("en-US", "Routine.UpdateFailed", "Failed to update routine record"),
-            CreateTranslation("ja-JP", "Routine.UpdateFailed", "日常業務記録の更新に失敗しました"),
+            new HbtTranslation { LangCode = "zh-CN", TransKey = "Routine.UpdateFailed", TransValue = "更新日常办公记录失败", ModuleName = "Routine", Status = 0 },
+            new HbtTranslation { LangCode = "en-US", TransKey = "Routine.UpdateFailed", TransValue = "Failed to update routine record", ModuleName = "Routine", Status = 0 },
+            new HbtTranslation { LangCode = "ja-JP", TransKey = "Routine.UpdateFailed", TransValue = "日常業務記録の更新に失敗しました", ModuleName = "Routine", Status = 0 },
 
-            CreateTranslation("zh-CN", "Routine.DeleteFailed", "删除日常办公记录失败"),
-            CreateTranslation("en-US", "Routine.DeleteFailed", "Failed to delete routine record"),
-            CreateTranslation("ja-JP", "Routine.DeleteFailed", "日常業務記録の削除に失敗しました"),
+            new HbtTranslation { LangCode = "zh-CN", TransKey = "Routine.DeleteFailed", TransValue = "删除日常办公记录失败", ModuleName = "Routine", Status = 0 },
+            new HbtTranslation { LangCode = "en-US", TransKey = "Routine.DeleteFailed", TransValue = "Failed to delete routine record", ModuleName = "Routine", Status = 0 },
+            new HbtTranslation { LangCode = "ja-JP", TransKey = "Routine.DeleteFailed", TransValue = "日常業務記録の削除に失敗しました", ModuleName = "Routine", Status = 0 },
 
             // 日程安排相关
-            CreateTranslation("zh-CN", "Routine.Schedule.NotFound", "日程安排不存在"),
-            CreateTranslation("en-US", "Routine.Schedule.NotFound", "Schedule not found"),
-            CreateTranslation("ja-JP", "Routine.Schedule.NotFound", "スケジュールが存在しません"),
+            new HbtTranslation { LangCode = "zh-CN", TransKey = "Routine.Schedule.NotFound", TransValue = "日程安排不存在", ModuleName = "Routine", Status = 0 },
+            new HbtTranslation { LangCode = "en-US", TransKey = "Routine.Schedule.NotFound", TransValue = "Schedule not found", ModuleName = "Routine", Status = 0 },
+            new HbtTranslation { LangCode = "ja-JP", TransKey = "Routine.Schedule.NotFound", TransValue = "スケジュールが存在しません", ModuleName = "Routine", Status = 0 },
 
-            CreateTranslation("zh-CN", "Routine.Schedule.CreateFailed", "创建日程安排失败"),
-            CreateTranslation("en-US", "Routine.Schedule.CreateFailed", "Failed to create schedule"),
-            CreateTranslation("ja-JP", "Routine.Schedule.CreateFailed", "スケジュールの作成に失敗しました"),
+            new HbtTranslation { LangCode = "zh-CN", TransKey = "Routine.Schedule.CreateFailed", TransValue = "创建日程安排失败", ModuleName = "Routine", Status = 0 },
+            new HbtTranslation { LangCode = "en-US", TransKey = "Routine.Schedule.CreateFailed", TransValue = "Failed to create schedule", ModuleName = "Routine", Status = 0 },
+            new HbtTranslation { LangCode = "ja-JP", TransKey = "Routine.Schedule.CreateFailed", TransValue = "スケジュールの作成に失敗しました", ModuleName = "Routine", Status = 0 },
 
-            CreateTranslation("zh-CN", "Routine.Schedule.UpdateFailed", "更新日程安排失败"),
-            CreateTranslation("en-US", "Routine.Schedule.UpdateFailed", "Failed to update schedule"),
-            CreateTranslation("ja-JP", "Routine.Schedule.UpdateFailed", "スケジュールの更新に失敗しました"),
+            new HbtTranslation { LangCode = "zh-CN", TransKey = "Routine.Schedule.UpdateFailed", TransValue = "更新日程安排失败", ModuleName = "Routine", Status = 0 },
+            new HbtTranslation { LangCode = "en-US", TransKey = "Routine.Schedule.UpdateFailed", TransValue = "Failed to update schedule", ModuleName = "Routine", Status = 0 },
+            new HbtTranslation { LangCode = "ja-JP", TransKey = "Routine.Schedule.UpdateFailed", TransValue = "スケジュールの更新に失敗しました", ModuleName = "Routine", Status = 0 },
 
-            CreateTranslation("zh-CN", "Routine.Schedule.DeleteFailed", "删除日程安排失败"),
-            CreateTranslation("en-US", "Routine.Schedule.DeleteFailed", "Failed to delete schedule"),
-            CreateTranslation("ja-JP", "Routine.Schedule.DeleteFailed", "スケジュールの削除に失敗しました"),
+            new HbtTranslation { LangCode = "zh-CN", TransKey = "Routine.Schedule.DeleteFailed", TransValue = "删除日程安排失败", ModuleName = "Routine", Status = 0 },
+            new HbtTranslation { LangCode = "en-US", TransKey = "Routine.Schedule.DeleteFailed", TransValue = "Failed to delete schedule", ModuleName = "Routine", Status = 0 },
+            new HbtTranslation { LangCode = "ja-JP", TransKey = "Routine.Schedule.DeleteFailed", TransValue = "スケジュールの削除に失敗しました", ModuleName = "Routine", Status = 0 },
 
             // 待办事项相关
-            CreateTranslation("zh-CN", "Routine.Todo.NotFound", "待办事项不存在"),
-            CreateTranslation("en-US", "Routine.Todo.NotFound", "Todo item not found"),
-            CreateTranslation("ja-JP", "Routine.Todo.NotFound", "ToDo項目が存在しません"),
+            new HbtTranslation { LangCode = "zh-CN", TransKey = "Routine.Todo.NotFound", TransValue = "待办事项不存在", ModuleName = "Routine", Status = 0 },
+            new HbtTranslation { LangCode = "en-US", TransKey = "Routine.Todo.NotFound", TransValue = "Todo item not found", ModuleName = "Routine", Status = 0 },
+            new HbtTranslation { LangCode = "ja-JP", TransKey = "Routine.Todo.NotFound", TransValue = "ToDo項目が存在しません", ModuleName = "Routine", Status = 0 },
 
-            CreateTranslation("zh-CN", "Routine.Todo.CreateFailed", "创建待办事项失败"),
-            CreateTranslation("en-US", "Routine.Todo.CreateFailed", "Failed to create todo item"),
-            CreateTranslation("ja-JP", "Routine.Todo.CreateFailed", "ToDo項目の作成に失敗しました"),
+            new HbtTranslation { LangCode = "zh-CN", TransKey = "Routine.Todo.CreateFailed", TransValue = "创建待办事项失败", ModuleName = "Routine", Status = 0 },
+            new HbtTranslation { LangCode = "en-US", TransKey = "Routine.Todo.CreateFailed", TransValue = "Failed to create todo item", ModuleName = "Routine", Status = 0 },
+            new HbtTranslation { LangCode = "ja-JP", TransKey = "Routine.Todo.CreateFailed", TransValue = "ToDo項目の作成に失敗しました", ModuleName = "Routine", Status = 0 },
 
-            CreateTranslation("zh-CN", "Routine.Todo.UpdateFailed", "更新待办事项失败"),
-            CreateTranslation("en-US", "Routine.Todo.UpdateFailed", "Failed to update todo item"),
-            CreateTranslation("ja-JP", "Routine.Todo.UpdateFailed", "ToDo項目の更新に失敗しました"),
+            new HbtTranslation { LangCode = "zh-CN", TransKey = "Routine.Todo.UpdateFailed", TransValue = "更新待办事项失败", ModuleName = "Routine", Status = 0 },
+            new HbtTranslation { LangCode = "en-US", TransKey = "Routine.Todo.UpdateFailed", TransValue = "Failed to update todo item", ModuleName = "Routine", Status = 0 },
+            new HbtTranslation { LangCode = "ja-JP", TransKey = "Routine.Todo.UpdateFailed", TransValue = "ToDo項目の更新に失敗しました", ModuleName = "Routine", Status = 0 },
 
-            CreateTranslation("zh-CN", "Routine.Todo.DeleteFailed", "删除待办事项失败"),
-            CreateTranslation("en-US", "Routine.Todo.DeleteFailed", "Failed to delete todo item"),
-            CreateTranslation("ja-JP", "Routine.Todo.DeleteFailed", "ToDo項目の削除に失敗しました"),
+            new HbtTranslation { LangCode = "zh-CN", TransKey = "Routine.Todo.DeleteFailed", TransValue = "删除待办事项失败", ModuleName = "Routine", Status = 0 },
+            new HbtTranslation { LangCode = "en-US", TransKey = "Routine.Todo.DeleteFailed", TransValue = "Failed to delete todo item", ModuleName = "Routine", Status = 0 },
+            new HbtTranslation { LangCode = "ja-JP", TransKey = "Routine.Todo.DeleteFailed", TransValue = "ToDo項目の削除に失敗しました", ModuleName = "Routine", Status = 0 },
 
             // 会议管理相关
-            CreateTranslation("zh-CN", "Routine.Meeting.NotFound", "会议记录不存在"),
-            CreateTranslation("en-US", "Routine.Meeting.NotFound", "Meeting record not found"),
-            CreateTranslation("ja-JP", "Routine.Meeting.NotFound", "会議記録が存在しません"),
+            new HbtTranslation { LangCode = "zh-CN", TransKey = "Routine.Meeting.NotFound", TransValue = "会议记录不存在", ModuleName = "Routine", Status = 0 },
+            new HbtTranslation { LangCode = "en-US", TransKey = "Routine.Meeting.NotFound", TransValue = "Meeting record not found", ModuleName = "Routine", Status = 0 },
+            new HbtTranslation { LangCode = "ja-JP", TransKey = "Routine.Meeting.NotFound", TransValue = "会議記録が存在しません", ModuleName = "Routine", Status = 0 },
 
-            CreateTranslation("zh-CN", "Routine.Meeting.CreateFailed", "创建会议记录失败"),
-            CreateTranslation("en-US", "Routine.Meeting.CreateFailed", "Failed to create meeting record"),
-            CreateTranslation("ja-JP", "Routine.Meeting.CreateFailed", "会議記録の作成に失敗しました"),
+            new HbtTranslation { LangCode = "zh-CN", TransKey = "Routine.Meeting.CreateFailed", TransValue = "创建会议记录失败", ModuleName = "Routine", Status = 0 },
+            new HbtTranslation { LangCode = "en-US", TransKey = "Routine.Meeting.CreateFailed", TransValue = "Failed to create meeting record", ModuleName = "Routine", Status = 0 },
+            new HbtTranslation { LangCode = "ja-JP", TransKey = "Routine.Meeting.CreateFailed", TransValue = "会議記録の作成に失敗しました", ModuleName = "Routine", Status = 0 },
 
-            CreateTranslation("zh-CN", "Routine.Meeting.UpdateFailed", "更新会议记录失败"),
-            CreateTranslation("en-US", "Routine.Meeting.UpdateFailed", "Failed to update meeting record"),
-            CreateTranslation("ja-JP", "Routine.Meeting.UpdateFailed", "会議記録の更新に失敗しました"),
+            new HbtTranslation { LangCode = "zh-CN", TransKey = "Routine.Meeting.UpdateFailed", TransValue = "更新会议记录失败", ModuleName = "Routine", Status = 0 },
+            new HbtTranslation { LangCode = "en-US", TransKey = "Routine.Meeting.UpdateFailed", TransValue = "Failed to update meeting record", ModuleName = "Routine", Status = 0 },
+            new HbtTranslation { LangCode = "ja-JP", TransKey = "Routine.Meeting.UpdateFailed", TransValue = "会議記録の更新に失敗しました", ModuleName = "Routine", Status = 0 },
 
-            CreateTranslation("zh-CN", "Routine.Meeting.DeleteFailed", "删除会议记录失败"),
-            CreateTranslation("en-US", "Routine.Meeting.DeleteFailed", "Failed to delete meeting record"),
-            CreateTranslation("ja-JP", "Routine.Meeting.DeleteFailed", "会議記録の削除に失敗しました"),
+            new HbtTranslation { LangCode = "zh-CN", TransKey = "Routine.Meeting.DeleteFailed", TransValue = "删除会议记录失败", ModuleName = "Routine", Status = 0 },
+            new HbtTranslation { LangCode = "en-US", TransKey = "Routine.Meeting.DeleteFailed", TransValue = "Failed to delete meeting record", ModuleName = "Routine", Status = 0 },
+            new HbtTranslation { LangCode = "ja-JP", TransKey = "Routine.Meeting.DeleteFailed", TransValue = "会議記録の削除に失敗しました", ModuleName = "Routine", Status = 0 },
 
             // 公告通知相关
-            CreateTranslation("zh-CN", "Routine.Notice.NotFound", "公告通知不存在"),
-            CreateTranslation("en-US", "Routine.Notice.NotFound", "Notice not found"),
-            CreateTranslation("ja-JP", "Routine.Notice.NotFound", "お知らせが存在しません"),
+            new HbtTranslation { LangCode = "zh-CN", TransKey = "Routine.Notice.NotFound", TransValue = "公告通知不存在", ModuleName = "Routine", Status = 0 },
+            new HbtTranslation { LangCode = "en-US", TransKey = "Routine.Notice.NotFound", TransValue = "Notice not found", ModuleName = "Routine", Status = 0 },
+            new HbtTranslation { LangCode = "ja-JP", TransKey = "Routine.Notice.NotFound", TransValue = "お知らせが存在しません", ModuleName = "Routine", Status = 0 },
 
-            CreateTranslation("zh-CN", "Routine.Notice.CreateFailed", "创建公告通知失败"),
-            CreateTranslation("en-US", "Routine.Notice.CreateFailed", "Failed to create notice"),
-            CreateTranslation("ja-JP", "Routine.Notice.CreateFailed", "お知らせの作成に失敗しました"),
+            new HbtTranslation { LangCode = "zh-CN", TransKey = "Routine.Notice.CreateFailed", TransValue = "创建公告通知失败", ModuleName = "Routine", Status = 0 },
+            new HbtTranslation { LangCode = "en-US", TransKey = "Routine.Notice.CreateFailed", TransValue = "Failed to create notice", ModuleName = "Routine", Status = 0 },
+            new HbtTranslation { LangCode = "ja-JP", TransKey = "Routine.Notice.CreateFailed", TransValue = "お知らせの作成に失敗しました", ModuleName = "Routine", Status = 0 },
 
-            CreateTranslation("zh-CN", "Routine.Notice.UpdateFailed", "更新公告通知失败"),
-            CreateTranslation("en-US", "Routine.Notice.UpdateFailed", "Failed to update notice"),
-            CreateTranslation("ja-JP", "Routine.Notice.UpdateFailed", "お知らせの更新に失敗しました"),
+            new HbtTranslation { LangCode = "zh-CN", TransKey = "Routine.Notice.UpdateFailed", TransValue = "更新公告通知失败", ModuleName = "Routine", Status = 0 },
+            new HbtTranslation { LangCode = "en-US", TransKey = "Routine.Notice.UpdateFailed", TransValue = "Failed to update notice", ModuleName = "Routine", Status = 0 },
+            new HbtTranslation { LangCode = "ja-JP", TransKey = "Routine.Notice.UpdateFailed", TransValue = "お知らせの更新に失敗しました", ModuleName = "Routine", Status = 0 },
 
-            CreateTranslation("zh-CN", "Routine.Notice.DeleteFailed", "删除公告通知失败"),
-            CreateTranslation("en-US", "Routine.Notice.DeleteFailed", "Failed to delete notice"),
-            CreateTranslation("ja-JP", "Routine.Notice.DeleteFailed", "お知らせの削除に失敗しました"),
+            new HbtTranslation { LangCode = "zh-CN", TransKey = "Routine.Notice.DeleteFailed", TransValue = "删除公告通知失败", ModuleName = "Routine", Status = 0 },
+            new HbtTranslation { LangCode = "en-US", TransKey = "Routine.Notice.DeleteFailed", TransValue = "Failed to delete notice", ModuleName = "Routine", Status = 0 },
+            new HbtTranslation { LangCode = "ja-JP", TransKey = "Routine.Notice.DeleteFailed", TransValue = "お知らせの削除に失敗しました", ModuleName = "Routine", Status = 0 },
 
             // 文件管理相关
-            CreateTranslation("zh-CN", "Routine.File.NotFound", "文件不存在"),
-            CreateTranslation("en-US", "Routine.File.NotFound", "File not found"),
-            CreateTranslation("ja-JP", "Routine.File.NotFound", "ファイルが存在しません"),
+            new HbtTranslation { LangCode = "zh-CN", TransKey = "Routine.File.NotFound", TransValue = "文件不存在", ModuleName = "Routine", Status = 0 },
+            new HbtTranslation { LangCode = "en-US", TransKey = "Routine.File.NotFound", TransValue = "File not found", ModuleName = "Routine", Status = 0 },
+            new HbtTranslation { LangCode = "ja-JP", TransKey = "Routine.File.NotFound", TransValue = "ファイルが存在しません", ModuleName = "Routine", Status = 0 },
 
-            CreateTranslation("zh-CN", "Routine.File.UploadFailed", "文件上传失败"),
-            CreateTranslation("en-US", "Routine.File.UploadFailed", "Failed to upload file"),
-            CreateTranslation("ja-JP", "Routine.File.UploadFailed", "ファイルのアップロードに失敗しました"),
+            new HbtTranslation { LangCode = "zh-CN", TransKey = "Routine.File.UploadFailed", TransValue = "文件上传失败", ModuleName = "Routine", Status = 0 },
+            new HbtTranslation { LangCode = "en-US", TransKey = "Routine.File.UploadFailed", TransValue = "Failed to upload file", ModuleName = "Routine", Status = 0 },
+            new HbtTranslation { LangCode = "ja-JP", TransKey = "Routine.File.UploadFailed", TransValue = "ファイルのアップロードに失敗しました", ModuleName = "Routine", Status = 0 },
 
-            CreateTranslation("zh-CN", "Routine.File.DownloadFailed", "文件下载失败"),
-            CreateTranslation("en-US", "Routine.File.DownloadFailed", "Failed to download file"),
-            CreateTranslation("ja-JP", "Routine.File.DownloadFailed", "ファイルのダウンロードに失敗しました"),
+            new HbtTranslation { LangCode = "zh-CN", TransKey = "Routine.File.DownloadFailed", TransValue = "文件下载失败", ModuleName = "Routine", Status = 0 },
+            new HbtTranslation { LangCode = "en-US", TransKey = "Routine.File.DownloadFailed", TransValue = "Failed to download file", ModuleName = "Routine", Status = 0 },
+            new HbtTranslation { LangCode = "ja-JP", TransKey = "Routine.File.DownloadFailed", TransValue = "ファイルのダウンロードに失敗しました", ModuleName = "Routine", Status = 0 },
 
-            CreateTranslation("zh-CN", "Routine.File.DeleteFailed", "文件删除失败"),
-            CreateTranslation("en-US", "Routine.File.DeleteFailed", "Failed to delete file"),
-            CreateTranslation("ja-JP", "Routine.File.DeleteFailed", "ファイルの削除に失敗しました")
+            new HbtTranslation { LangCode = "zh-CN", TransKey = "Routine.File.DeleteFailed", TransValue = "文件删除失败", ModuleName = "Routine", Status = 0 },
+            new HbtTranslation { LangCode = "en-US", TransKey = "Routine.File.DeleteFailed", TransValue = "Failed to delete file", ModuleName = "Routine", Status = 0 },
+            new HbtTranslation { LangCode = "ja-JP", TransKey = "Routine.File.DeleteFailed", TransValue = "ファイルの削除に失敗しました", ModuleName = "Routine", Status = 0 }
         };
 
-        return await CreateTranslationsAsync(defaultTranslations);
-    }
-
-    private async Task<(int insertCount, int updateCount)> CreateTranslationsAsync(List<HbtTranslation> translations)
-    {
         int insertCount = 0;
         int updateCount = 0;
 
-        foreach (var translation in translations)
+        foreach (var translation in defaultTranslations)
         {
             var existingTranslation = await _context.Client.Queryable<HbtTranslation>()
                 .FirstAsync(t => t.LangCode == translation.LangCode && t.TransKey == translation.TransKey);
 
             if (existingTranslation == null)
             {
+                translation.TenantId = tenantId;
+                translation.CreateBy = "Hbt365";
+                translation.CreateTime = DateTime.Now;
+                translation.UpdateBy = "Hbt365";
+                translation.UpdateTime = DateTime.Now;
+                
                 await _context.Client.Insertable(translation).ExecuteCommandAsync();
                 insertCount++;
                 _logger.Info($"[创建] 翻译 '{translation.TransKey}' ({translation.LangCode}) 创建成功");
@@ -183,6 +166,7 @@ public class HbtRoutineSeedTranslation
             else
             {
                 existingTranslation.TransValue = translation.TransValue;
+                existingTranslation.TenantId = tenantId;
                 existingTranslation.UpdateBy = "Hbt365";
                 existingTranslation.UpdateTime = DateTime.Now;
 

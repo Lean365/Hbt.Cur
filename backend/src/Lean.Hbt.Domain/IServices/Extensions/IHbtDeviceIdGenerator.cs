@@ -27,4 +27,12 @@ public interface IHbtDeviceIdGenerator
     /// <param name="userId">用户ID</param>
     /// <returns>(设备ID, 连接ID)</returns>
     (string deviceId, string connectionId) GenerateIds(string? deviceInfoJson, string userId);
+
+    /// <summary>
+    /// 生成环境ID
+    /// </summary>
+    /// <param name="environmentInfoJson">环境信息JSON</param>
+    /// <param name="userId">用户ID</param>
+    /// <returns>环境ID</returns>
+    string GenerateEnvironmentId(string? environmentInfoJson, string userId);
 }

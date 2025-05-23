@@ -19,10 +19,21 @@ namespace Lean.Hbt.Application.Dtos.Core
     public class HbtLanguageDto
     {
         /// <summary>
+        /// 构造函数
+        /// </summary>
+        public HbtLanguageDto()
+        {
+            LangCode = string.Empty;
+            LangName = string.Empty;
+            LangIcon = string.Empty;
+
+        }
+
+        /// <summary>
         /// ID
         /// </summary>
         [AdaptMember("Id")]
-        public long LangId { get; set; }
+        public long LanguageId { get; set; }
 
         /// <summary>
         /// 语言代码
@@ -37,7 +48,7 @@ namespace Lean.Hbt.Application.Dtos.Core
         /// <summary>
         /// 语言图标
         /// </summary>
-        public string? LangIcon { get; set; }
+        public string? LangIcon { get; set; }= string.Empty;
 
         /// <summary>
         /// 排序号
@@ -62,7 +73,17 @@ namespace Lean.Hbt.Application.Dtos.Core
         /// <summary>
         /// 语言内置（0否 1是）
         /// </summary>
-        public int LangBuiltin { get; set; }
+        public int IsBuiltin { get; set; }
+
+        /// <summary>
+        /// 备注
+        /// </summary>
+        public string? Remark { get; set; }
+
+        /// <summary>
+        /// 创建者
+        /// </summary>
+        public string? CreateBy { get; set; }
 
         /// <summary>
         /// 创建时间
@@ -70,9 +91,29 @@ namespace Lean.Hbt.Application.Dtos.Core
         public DateTime CreateTime { get; set; }
 
         /// <summary>
-        /// 备注
+        /// 更新者
         /// </summary>
-        public string? Remark { get; set; }
+        public string? UpdateBy { get; set; }
+
+        /// <summary>
+        /// 更新时间
+        /// </summary>
+        public DateTime? UpdateTime { get; set; }
+
+        /// <summary>
+        /// 是否删除（0未删除 1已删除）
+        /// </summary>
+        public int IsDeleted { get; set; }
+
+        /// <summary>
+        /// 删除者
+        /// </summary>
+        public string? DeleteBy { get; set; }
+
+        /// <summary>
+        /// 删除时间
+        /// </summary>
+        public DateTime? DeleteTime { get; set; }
     }
 
     /// <summary>
@@ -93,6 +134,11 @@ namespace Lean.Hbt.Application.Dtos.Core
         public string? LangName { get; set; }
 
         /// <summary>
+        /// 是否默认语言（0否 1是）
+        /// </summary>
+        public int? IsDefault { get; set; }
+
+        /// <summary>
         /// 状态（0正常 1停用）
         /// </summary>
         public int? Status { get; set; }
@@ -103,6 +149,17 @@ namespace Lean.Hbt.Application.Dtos.Core
     /// </summary>
     public class HbtLanguageCreateDto
     {
+
+        /// <summary>
+        /// 构造函数
+        /// </summary>
+        public HbtLanguageCreateDto()
+        {
+            LangCode = string.Empty;
+            LangName = string.Empty;
+            LangIcon = string.Empty;
+
+        }
         /// <summary>
         /// 语言代码
         /// </summary>
@@ -151,7 +208,7 @@ namespace Lean.Hbt.Application.Dtos.Core
         /// <summary>
         /// 语言内置（0否 1是）
         /// </summary>
-        public int LangBuiltin { get; set; }
+        public int IsBuiltin { get; set; }
 
         /// <summary>
         /// 备注
@@ -169,7 +226,7 @@ namespace Lean.Hbt.Application.Dtos.Core
         /// ID
         /// </summary>
         [Required(ErrorMessage = "语言ID不能为空")]
-        public long LangId { get; set; }
+        public long LanguageId { get; set; }
     }
 
     /// <summary>
@@ -294,7 +351,7 @@ namespace Lean.Hbt.Application.Dtos.Core
         /// ID
         /// </summary>
         [Required(ErrorMessage = "语言ID不能为空")]
-        public long LangId { get; set; }
+        public long LanguageId { get; set; }
 
         /// <summary>
         /// 状态（0正常 1停用）

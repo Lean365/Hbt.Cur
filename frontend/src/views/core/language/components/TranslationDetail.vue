@@ -9,71 +9,92 @@
 
 <template>
   <hbt-modal
-    :title="t('common.title.detail')"
-    :open="dialogVisible"
+    :title="t('core.translation.actions.detail')"
+    :open="open"
+    :footer="null"
     width="600px"
-    append-to-body
-    destroy-on-close
+    @cancel="handleCancel"
   >
-    <a-descriptions :column="1" bordered>
-      <a-descriptions-item :label="t('admin.language.translation.moduleName')">
-        {{ form.moduleName }}
+    <a-descriptions
+      :column="2"
+      bordered
+      class="translation-detail"
+    >
+      <a-descriptions-item :label="t('core.translation.fields.langCode.label')">
+        {{ translation.langCode }}
       </a-descriptions-item>
-      <a-descriptions-item :label="t('admin.language.translation.transKey')">
-        {{ form.transKey }}
+
+      <a-descriptions-item :label="t('core.translation.fields.transKey.label')">
+        {{ translation.transKey }}
       </a-descriptions-item>
-      <a-descriptions-item :label="t('admin.language.translation.transValue')">
-        {{ form.transValue }}
+
+      <a-descriptions-item :label="t('core.translation.fields.transValue.label')">
+        {{ translation.transValue }}
       </a-descriptions-item>
-      <a-descriptions-item :label="t('admin.language.translation.orderNum')">
-        {{ form.orderNum }}
+
+      <a-descriptions-item :label="t('core.translation.fields.remark.label')">
+        {{ translation.remark }}
       </a-descriptions-item>
-      <a-descriptions-item :label="t('admin.language.translation.status')">
-        <hbt-dict-tag dict-type="sys_normal_disable" :value="form.status" />
+
+      <a-descriptions-item :label="t('table.columns.createBy')">
+        {{ translation.createBy }}
       </a-descriptions-item>
-      <a-descriptions-item :label="t('admin.language.translation.remark')">
-        {{ form.remark }}
+
+      <a-descriptions-item :label="t('table.columns.createTime')">
+        {{ translation.createTime }}
       </a-descriptions-item>
-      <a-descriptions-item :label="t('common.createTime')">
-        {{ form.createTime }}
+
+      <a-descriptions-item :label="t('table.columns.updateBy')">
+        {{ translation.updateBy }}
       </a-descriptions-item>
-      <a-descriptions-item :label="t('common.updateTime')">
-        {{ form.updateTime }}
+
+      <a-descriptions-item :label="t('table.columns.updateTime')">
+        {{ translation.updateTime }}
       </a-descriptions-item>
-      <a-descriptions-item :label="t('common.createBy')">
-        {{ form.createBy }}
+
+      <a-descriptions-item :label="t('table.columns.isDeleted')">
+        <hbt-dict-tag dict-type="sys_yes_no" :value="translation.isDeleted" />
       </a-descriptions-item>
-      <a-descriptions-item :label="t('common.updateBy')">
-        {{ form.updateBy }}
+
+      <a-descriptions-item :label="t('table.columns.deleteBy')">
+        {{ translation.deleteBy }}
+      </a-descriptions-item>
+
+      <a-descriptions-item :label="t('table.columns.deleteTime')">
+        {{ translation.deleteTime }}
       </a-descriptions-item>
     </a-descriptions>
     <template #footer>
       <div class="dialog-footer">
-        <a-button @click="handleCancel">{{ t('common.button.close') }}</a-button>
+        <a-button @click="handleCancel">{{ t('common.button.cancel') }}</a-button>
       </div>
     </template>
   </hbt-modal>
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive, watch } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { message } from 'ant-design-vue'
 import type { HbtTranslation } from '@/types/core/translation'
 import { getHbtTranslation } from '@/api/core/translation'
 
-const props = defineProps<{
-  translationId?: number
-}>()
-
-const emit = defineEmits(['update:visible'])
-
 const { t } = useI18n()
-const loading = ref(false)
-const dialogVisible = ref(true)
 
-const form = reactive<HbtTranslation>({
-  id: 0,
+const props = defineProps({
+  open: {
+    type: Boolean,
+    default: false
+  },
+  translationId: {
+    type: Number,
+    required: false
+  }
+})
+
+const emit = defineEmits(['update:open'])
+
+const translation = ref<HbtTranslation>({
   translationId: 0,
   langCode: '',
   moduleName: '',
@@ -82,52 +103,58 @@ const form = reactive<HbtTranslation>({
   orderNum: 0,
   status: 0,
   remark: '',
-  createTime: '',
-  updateTime: '',
   createBy: '',
+  createTime: '',
   updateBy: '',
-  isDeleted: 0
+  updateTime: '',
+  isDeleted: 0,
+  deleteBy: '',
+  deleteTime: ''
 })
 
-// 获取翻译详情
-const getDetail = async () => {
-  if (!props.translationId) return
+const loadTranslationDetail = async () => {
+  if (!props.translationId) {
+    message.error(t('common.message.paramError'))
+    return
+  }
   
   try {
-    loading.value = true
     const res = await getHbtTranslation(props.translationId)
-    if (res.code === 200) {
-      Object.assign(form, res.data)
+    if (res.data.code === 200) {
+      translation.value = res.data.data
     } else {
-      message.error(res.msg || t('common.failed'))
+      message.error(res.data.msg || t('common.message.queryFailed'))
     }
   } catch (error) {
-    console.error('获取翻译详情失败:', error)
-    message.error(t('common.failed'))
-  } finally {
-    loading.value = false
+    console.error('加载翻译详情失败:', error)
+    message.error(t('common.message.queryFailed'))
   }
 }
 
-// 取消
 const handleCancel = () => {
-  dialogVisible.value = false
-  emit('update:visible', false)
+  emit('update:open', false)
 }
 
-// 监听对话框可见性变化
-watch(() => dialogVisible.value, (val) => {
-  emit('update:visible', val)
-})
+// 监听visible和translationId的变化
+watch(
+  () => [props.open, props.translationId],
+  ([newOpen, newTranslationId]) => {
+    if (newOpen && newTranslationId) {
+      loadTranslationDetail()
+    }
+  },
+  { immediate: true }
+)
 
-// 初始化
-getDetail()
+onMounted(() => {
+  if (props.open && props.translationId) {
+    loadTranslationDetail()
+  }
+})
 </script>
 
 <style lang="less" scoped>
-.dialog-footer {
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
+.translation-detail {
+  padding: 24px;
 }
 </style> 

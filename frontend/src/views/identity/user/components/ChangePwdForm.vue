@@ -17,19 +17,19 @@
         :label-col="{ span: 6 }"
         :wrapper-col="{ span: 16 }"
       >
-        <a-form-item :label="t('identity.user.password.old')" name="oldPassword">
+        <a-form-item :label="t('identity.user.password.old.label')" name="oldPassword">
           <a-input-password
             v-model:value="form.oldPassword"
             :placeholder="t('identity.user.password.old.placeholder')"
           />
         </a-form-item>
-        <a-form-item :label="t('identity.user.password.new')" name="newPassword">
+        <a-form-item :label="t('identity.user.password.new.label')" name="newPassword">
           <a-input-password
             v-model:value="form.newPassword"
             :placeholder="t('identity.user.password.new.placeholder')"
           />
         </a-form-item>
-        <a-form-item :label="t('identity.user.password.confirm')" name="confirmPassword">
+        <a-form-item :label="t('identity.user.password.confirm.label')" name="confirmPassword">
           <a-input-password
             v-model:value="form.confirmPassword"
             :placeholder="t('identity.user.password.confirm.placeholder')"
@@ -57,7 +57,7 @@ import type { Rule } from 'ant-design-vue/es/form'
 import { useUserStore } from '@/stores/user'
 import { useRouter } from 'vue-router'
 import { changePassword } from '@/api/identity/user'
-import type { ChangePassword } from '@/types/identity/user'
+import type { HbtUserPassword } from '@/types/identity/user'
 
 const { t } = useI18n()
 const userStore = useUserStore()
@@ -99,14 +99,16 @@ const rules: Record<string, Rule[]> = {
 // 提交状态
 const submitting = ref(false)
 
+
 // 提交表单
 const handleSubmit = async () => {
   try {
     await formRef.value?.validate()
-    const params: ChangePassword = {
+    const params: HbtUserPassword = {
       userId: userStore.userInfo?.userId ?? 0,
       oldPassword: form.oldPassword,
-      newPassword: form.newPassword
+      newPassword: form.newPassword,
+      confirmPassword: form.confirmPassword
     }
     const success = await changePassword(params)
     if (success) {
@@ -115,6 +117,7 @@ const handleSubmit = async () => {
       form.oldPassword = ''
       form.newPassword = ''
       form.confirmPassword = ''
+      
       formRef.value?.resetFields()
     } else {
       message.error('密码修改失败，请重试')

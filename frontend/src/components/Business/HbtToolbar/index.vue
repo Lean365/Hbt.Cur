@@ -91,7 +91,7 @@
           </a-tooltip>
         </div>
         <!-- 自定义按钮插槽 -->
-        <slot v-if="false" name="buttons"></slot>
+        <slot name="extra"></slot>
       </a-space>
     </div>
 

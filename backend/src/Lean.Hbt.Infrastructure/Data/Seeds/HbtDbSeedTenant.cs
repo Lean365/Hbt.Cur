@@ -8,7 +8,6 @@
 //===================================================================
 
 using Lean.Hbt.Domain.Entities.Identity;
-using Lean.Hbt.Domain.IServices.Extensions;
 
 namespace Lean.Hbt.Infrastructure.Data.Seeds;
 
@@ -43,7 +42,6 @@ public class HbtDbSeedTenant
         {
             new HbtTenant
             {
-                TenantId = 0,
                 TenantName = "系统租户",
                 TenantCode = "system",
                 ContactUser = "系统管理员",
@@ -54,23 +52,22 @@ public class HbtDbSeedTenant
                 ExpireTime = DateTime.Now.AddYears(99),
                 Status = 0,
                 IsDefault = 1,
-                DbConnection = "Server=localhost;Database=LeanHbt_System;Trusted_Connection=True;MultipleActiveResultSets=true",
+                DbConnection = "Server=localhost;Database=LeanHbt_System;User ID=sa;Password=System26901333.;Trusted_Connection=True;MultipleActiveResultSets=true",
                 Domain = "localhost",
-                LogoUrl = "/logo.png",
-                Theme = "default",
+                LogoUrl = "/system.png",
+                Theme = "system",
                 LicenseStartTime = DateTime.Now,
                 LicenseEndTime = DateTime.Now.AddYears(99),
                 MaxUserCount = 999999,
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now,
                 Remark = "系统租户",
                 IsDeleted = 0
             },
             new HbtTenant
             {
-                TenantId = 1,
                 TenantName = "默认租户",
                 TenantCode = "default",
                 ContactUser = "管理员",
@@ -81,128 +78,176 @@ public class HbtDbSeedTenant
                 ExpireTime = DateTime.Now.AddYears(1),
                 Status = 0,
                 IsDefault = 0,
-                DbConnection = "Server=localhost;Database=LeanHbt_Dev;Trusted_Connection=True;MultipleActiveResultSets=true",
+                DbConnection = "Server=localhost;Database=LeanHbt_Dev;User ID=sa;Password=Dev26901333.;Trusted_Connection=True;MultipleActiveResultSets=true",
                 Domain = "localhost",
-                LogoUrl = "/logo.png",
-                Theme = "default",
+                LogoUrl = "/dev.png",
+                Theme = "dev",
                 LicenseStartTime = DateTime.Now,
                 LicenseEndTime = DateTime.Now.AddYears(1),
                 MaxUserCount = 100,
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now,
                 Remark = "默认租户",
                 IsDeleted = 0
             },
             new HbtTenant
             {
-                TenantId = 2,
-                TenantName = "测试租户A",
-                TenantCode = "test_a",
-                ContactUser = "测试管理员A",
+                TenantName = "TCJ",
+                TenantCode = "tcj",
+                ContactUser = "TCJ公司",
                 ContactPhone = "13800138002",
-                ContactEmail = "test_a@lean365.com",
-                Address = "测试地址A",
+                ContactEmail = "tcj@lean365.com",
+                Address = "TCJ公司",
                 License = "Professional",
                 ExpireTime = DateTime.Now.AddYears(1),
                 Status = 0,
                 IsDefault = 0,
-                DbConnection = "Server=localhost;Database=LeanHbt_TestA;Trusted_Connection=True;MultipleActiveResultSets=true",
-                Domain = "test-a.localhost",
-                LogoUrl = "/logo.png",
-                Theme = "default",
+                DbConnection = "Server=localhost;Database=LeanHbt_Tcj;User ID=sa;Password=Tcj26901333.;Trusted_Connection=True;MultipleActiveResultSets=true",
+                Domain = "tcj.localhost",
+                LogoUrl = "/tcj.png",
+                Theme = "tcj",
                 LicenseStartTime = DateTime.Now,
                 LicenseEndTime = DateTime.Now.AddYears(1),
                 MaxUserCount = 50,
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now,
-                Remark = "测试租户A",
+                Remark = "TCJ公司",
                 IsDeleted = 0
             },
             new HbtTenant
             {
-                TenantId = 3,
-                TenantName = "测试租户B",
-                TenantCode = "test_b",
-                ContactUser = "测试管理员B",
+                TenantName = "TCA",
+                TenantCode = "tca",
+                ContactUser = "TCA公司",
                 ContactPhone = "13800138003",
-                ContactEmail = "test_b@lean365.com",
-                Address = "测试地址B",
+                ContactEmail = "tca@lean365.com",
+                Address = "TCA公司",
                 License = "Professional",
                 ExpireTime = DateTime.Now.AddYears(1),
                 Status = 0,
                 IsDefault = 0,
-                DbConnection = "Server=localhost;Database=LeanHbt_TestB;Trusted_Connection=True;MultipleActiveResultSets=true",
-                Domain = "test-b.localhost",
-                LogoUrl = "/logo.png",
-                Theme = "default",
+                DbConnection = "Server=localhost;Database=LeanHbt_Tca;User ID=sa;Password=Tca26901333.;Trusted_Connection=True;MultipleActiveResultSets=true",
+                Domain = "tca.localhost",
+                LogoUrl = "/tca.png",
+                Theme = "tca",
                 LicenseStartTime = DateTime.Now,
                 LicenseEndTime = DateTime.Now.AddYears(1),
                 MaxUserCount = 50,
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now,
-                Remark = "测试租户B",
+                Remark = "TCA公司",
                 IsDeleted = 0
             },
             new HbtTenant
             {
-                TenantId = 4,
-                TenantName = "演示租户A",
-                TenantCode = "demo_a",
-                ContactUser = "演示管理员A",
+                TenantName = "TMS",
+                TenantCode = "tms",
+                ContactUser = "TMS公司",
                 ContactPhone = "13800138004",
-                ContactEmail = "demo_a@lean365.com",
-                Address = "演示地址A",
+                ContactEmail = "tms@lean365.com",
+                Address = "TMS公司",
                 License = "Standard",
                 ExpireTime = DateTime.Now.AddMonths(3),
                 Status = 0,
                 IsDefault = 0,
-                DbConnection = "Server=localhost;Database=LeanHbt_DemoA;Trusted_Connection=True;MultipleActiveResultSets=true",
-                Domain = "demo-a.localhost",
-                LogoUrl = "/logo.png",
-                Theme = "default",
+                DbConnection = "Server=localhost;Database=LeanHbt_Tms;User ID=sa;Password=Tms26901333.;Trusted_Connection=True;MultipleActiveResultSets=true",
+                Domain = "tms.localhost",
+                LogoUrl = "/tms.png",
+                Theme = "tms",
                 LicenseStartTime = DateTime.Now,
                 LicenseEndTime = DateTime.Now.AddMonths(3),
                 MaxUserCount = 20,
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now,
-                Remark = "演示租户A",
+                Remark = "TMS公司",
                 IsDeleted = 0
             },
             new HbtTenant
             {
-                TenantId = 5,
-                TenantName = "演示租户B",
-                TenantCode = "demo_b",
-                ContactUser = "演示管理员B",
+                TenantName = "DTA",
+                TenantCode = "dta",
+                ContactUser = "DTA公司",
                 ContactPhone = "13800138005",
-                ContactEmail = "demo_b@lean365.com",
-                Address = "演示地址B",
+                ContactEmail = "dta@lean365.com",
+                Address = "DTA公司",
                 License = "Standard",
                 ExpireTime = DateTime.Now.AddMonths(3),
                 Status = 0,
                 IsDefault = 0,
-                DbConnection = "Server=localhost;Database=LeanHbt_DemoB;Trusted_Connection=True;MultipleActiveResultSets=true",
-                Domain = "demo-b.localhost",
-                LogoUrl = "/logo.png",
-                Theme = "default",
+                DbConnection = "Server=localhost;Database=LeanHbt_Tdz;User ID=sa;Password=Dta26901333.;Trusted_Connection=True;MultipleActiveResultSets=true",
+                Domain = "dta.localhost",
+                LogoUrl = "/dta.png",
+                Theme = "dta",
                 LicenseStartTime = DateTime.Now,
                 LicenseEndTime = DateTime.Now.AddMonths(3),
                 MaxUserCount = 20,
-                CreateBy = "system",
+                CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
-                UpdateBy = "system",
+                UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now,
-                Remark = "演示租户B",
+                Remark = "DTA公司",
                 IsDeleted = 0
-            }
+            },
+            new HbtTenant
+            {
+                TenantName = "TAC",
+                TenantCode = "tac",
+                ContactUser = "TAC公司",
+                ContactPhone = "13800138006",
+                ContactEmail = "tac@lean365.com",
+                Address = "TAC公司",
+                License = "Standard",
+                ExpireTime = DateTime.Now.AddMonths(3),
+                Status = 0,
+                IsDefault = 0,
+                DbConnection = "Server=localhost;Database=LeanHbt_Tac;User ID=sa;Password=Tac26901333.;Trusted_Connection=True;MultipleActiveResultSets=true",
+                Domain = "tac.localhost",
+                LogoUrl = "/tac.png",
+                Theme = "tac",
+                LicenseStartTime = DateTime.Now,
+                LicenseEndTime = DateTime.Now.AddMonths(3),
+                MaxUserCount = 20,
+                CreateBy = "Hbt365",
+                CreateTime = DateTime.Now,
+                UpdateBy = "Hbt365",
+                UpdateTime = DateTime.Now,
+                Remark = "TAC公司",
+                IsDeleted = 0
+            },
+             new HbtTenant
+            {
+                TenantName = "TSZ",
+                TenantCode = "tsz",
+                ContactUser = "TSZ公司",
+                ContactPhone = "13800138007",
+                ContactEmail = "tsz@lean365.com",
+                Address = "TSZ公司",
+                License = "Standard",
+                ExpireTime = DateTime.Now.AddMonths(3),
+                Status = 0,
+                IsDefault = 0,
+                DbConnection = "Server=localhost;Database=LeanHbt_Tsz;User ID=sa;Password=Tsz26901333.;Trusted_Connection=True;MultipleActiveResultSets=true",
+                Domain = "tsz.localhost",
+                LogoUrl = "/tsz.png",
+                Theme = "tsz",
+                LicenseStartTime = DateTime.Now,
+                LicenseEndTime = DateTime.Now.AddMonths(3),
+                MaxUserCount = 20,
+                CreateBy = "Hbt365",
+                CreateTime = DateTime.Now,
+                UpdateBy = "Hbt365",
+                UpdateTime = DateTime.Now,
+                Remark = "TSZ公司",
+                IsDeleted = 0
+            },
         };
 
         foreach (var tenant in defaultTenants)
@@ -234,7 +279,7 @@ public class HbtDbSeedTenant
                 existingTenant.MaxUserCount = tenant.MaxUserCount;
                 existingTenant.Remark = tenant.Remark;
                 existingTenant.IsDeleted = tenant.IsDeleted;
-                existingTenant.UpdateBy = "system";
+                existingTenant.UpdateBy = "Hbt365";
                 existingTenant.UpdateTime = DateTime.Now;
 
                 await _tenantRepository.UpdateAsync(existingTenant);
@@ -244,5 +289,14 @@ public class HbtDbSeedTenant
         }
 
         return (insertCount, updateCount);
+    }
+
+    /// <summary>
+    /// 获取系统租户
+    /// </summary>
+    /// <returns>系统租户信息</returns>
+    public async Task<HbtTenant?> GetSystemTenantAsync()
+    {
+        return await _tenantRepository.GetFirstAsync(t => t.TenantCode == "system" && t.IsDeleted == 0);
     }
 }

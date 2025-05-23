@@ -25,10 +25,11 @@ export interface HbtConfig extends HbtBaseEntity {
   isBuiltin: number
   /** 排序号 */
   orderNum: number
-  /** 备注 */
-  remark: string
+
   /** 状态（0正常 1停用） */
   status: number
+  /** 是否加密（0否 1是） */
+  isEncrypted: number
 }
 
 /**
@@ -47,10 +48,6 @@ export interface HbtConfigQuery extends HbtPagedQuery {
   status: number
   /** 是否加密（0否 1是） */
   isEncrypted: number
-  /** 排序列 */
-  orderByColumn?: string
-  /** 排序方向 */
-  orderType?: 'asc' | 'desc'
 }
 
 /**
@@ -71,6 +68,8 @@ export interface HbtConfigCreate {
   remark?: string
   /** 状态（0正常 1停用） */
   status: number
+  /** 是否加密（0否 1是） */
+  isEncrypted: number 
 }
 
 /**
@@ -122,7 +121,7 @@ export interface HbtConfigExport extends HbtConfigQuery {
  */
 export interface HbtConfigItem {
   /** 配置ID */
-  id: number
+  configId: number
   /** 配置名称 */
   configName: string
   /** 配置键 */
@@ -130,9 +129,11 @@ export interface HbtConfigItem {
   /** 配置值 */
   configValue: string
   /** 是否系统配置 */
-  isSystem: boolean
+  isBuiltin: number
   /** 状态（0正常 1停用） */
   status: number
+  /** 是否加密（0否 1是） */
+  isEncrypted: number
   /** 备注 */
   remark?: string
   /** 创建时间 */
@@ -146,16 +147,3 @@ export interface HbtConfigItem {
  */
 export type HbtConfigPageResult = HbtPagedResult<HbtConfig>
 
-/**
- * 导入系统配置结果
- */
-export interface HbtConfigImportResult {
-  /** 是否成功 */
-  success: boolean
-  /** 消息 */
-  message: string
-  /** 成功数量 */
-  successCount?: number
-  /** 失败数量 */
-  failureCount?: number
-} 

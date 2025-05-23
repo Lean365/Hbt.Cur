@@ -33,7 +33,7 @@ public class HbtDbSeedFileDictData
     /// <summary>
     /// 初始化文件相关字典数据
     /// </summary>
-    public async Task<(int, int)> InitializeFileDictDataAsync()
+    public async Task<(int, int)> InitializeFileDictDataAsync(long tenantId)
     {
         int insertCount = 0;
         int updateCount = 0;
@@ -41,25 +41,25 @@ public class HbtDbSeedFileDictData
         var fileDictData = new List<HbtDictData>
         {
             // 文件路径
-            new HbtDictData { DictType = "file_path", DictLabel = "图片目录", DictValue = "uploads/images", OrderNum = 1, Status = 0, TenantId = 0, Remark = "图片上传目录", CreateBy = "system", CreateTime = DateTime.Now, UpdateBy = "system", UpdateTime = DateTime.Now },
-            new HbtDictData { DictType = "file_path", DictLabel = "文件目录", DictValue = "uploads/files", OrderNum = 2, Status = 0, TenantId = 0, Remark = "通用文件上传目录", CreateBy = "system", CreateTime = DateTime.Now, UpdateBy = "system", UpdateTime = DateTime.Now },
-            new HbtDictData { DictType = "file_path", DictLabel = "文档目录", DictValue = "uploads/documents", OrderNum = 3, Status = 0, TenantId = 0, Remark = "文档上传目录", CreateBy = "system", CreateTime = DateTime.Now, UpdateBy = "system", UpdateTime = DateTime.Now },
-            new HbtDictData { DictType = "file_path", DictLabel = "视频目录", DictValue = "uploads/videos", OrderNum = 4, Status = 0, TenantId = 0, Remark = "视频上传目录", CreateBy = "system", CreateTime = DateTime.Now, UpdateBy = "system", UpdateTime = DateTime.Now },
+            new HbtDictData { DictType = "file_path", DictLabel = "图片目录", DictValue = "uploads/images", OrderNum = 1, Status = 0,  Remark = "图片上传目录", CreateBy = "Hbt365", CreateTime = DateTime.Now, UpdateBy = "Hbt365", UpdateTime = DateTime.Now },
+            new HbtDictData { DictType = "file_path", DictLabel = "文件目录", DictValue = "uploads/files", OrderNum = 2, Status = 0,  Remark = "通用文件上传目录", CreateBy = "Hbt365", CreateTime = DateTime.Now, UpdateBy = "Hbt365", UpdateTime = DateTime.Now },
+            new HbtDictData { DictType = "file_path", DictLabel = "文档目录", DictValue = "uploads/documents", OrderNum = 3, Status = 0,  Remark = "文档上传目录", CreateBy = "Hbt365", CreateTime = DateTime.Now, UpdateBy = "Hbt365", UpdateTime = DateTime.Now },
+            new HbtDictData { DictType = "file_path", DictLabel = "视频目录", DictValue = "uploads/videos", OrderNum = 4, Status = 0,  Remark = "视频上传目录", CreateBy = "Hbt365", CreateTime = DateTime.Now, UpdateBy = "Hbt365", UpdateTime = DateTime.Now },
 
             // 存储位置
-            new HbtDictData { DictType = "file_storage_location", DictLabel = "默认存储位置", DictValue = "default", OrderNum = 1, Status = 0, TenantId = 0, Remark = "默认存储位置", CreateBy = "system", CreateTime = DateTime.Now, UpdateBy = "system", UpdateTime = DateTime.Now },
-            new HbtDictData { DictType = "file_storage_location", DictLabel = "备用存储位置1", DictValue = "backup1", OrderNum = 2, Status = 0, TenantId = 0, Remark = "备用存储位置1", CreateBy = "system", CreateTime = DateTime.Now, UpdateBy = "system", UpdateTime = DateTime.Now },
-            new HbtDictData { DictType = "file_storage_location", DictLabel = "备用存储位置2", DictValue = "backup2", OrderNum = 3, Status = 0, TenantId = 0, Remark = "备用存储位置2", CreateBy = "system", CreateTime = DateTime.Now, UpdateBy = "system", UpdateTime = DateTime.Now },
+            new HbtDictData { DictType = "file_storage_location", DictLabel = "默认存储位置", DictValue = "default", OrderNum = 1, Status = 0,  Remark = "默认存储位置", CreateBy = "Hbt365", CreateTime = DateTime.Now, UpdateBy = "Hbt365", UpdateTime = DateTime.Now },
+            new HbtDictData { DictType = "file_storage_location", DictLabel = "备用存储位置1", DictValue = "backup1", OrderNum = 2, Status = 0,  Remark = "备用存储位置1", CreateBy = "Hbt365", CreateTime = DateTime.Now, UpdateBy = "Hbt365", UpdateTime = DateTime.Now },
+            new HbtDictData { DictType = "file_storage_location", DictLabel = "备用存储位置2", DictValue = "backup2", OrderNum = 3, Status = 0,  Remark = "备用存储位置2", CreateBy = "Hbt365", CreateTime = DateTime.Now, UpdateBy = "Hbt365", UpdateTime = DateTime.Now },
 
             // 存储类型
-            new HbtDictData { DictType = "file_storage_type", DictLabel = "本地存储", DictValue = "local", OrderNum = 1, Status = 0, TenantId = 0, Remark = "本地存储", CreateBy = "system", CreateTime = DateTime.Now, UpdateBy = "system", UpdateTime = DateTime.Now },
-            new HbtDictData { DictType = "file_storage_type", DictLabel = "阿里云OSS", DictValue = "aliyun", OrderNum = 2, Status = 0, TenantId = 0, Remark = "阿里云对象存储", CreateBy = "system", CreateTime = DateTime.Now, UpdateBy = "system", UpdateTime = DateTime.Now },
-            new HbtDictData { DictType = "file_storage_type", DictLabel = "腾讯云COS", DictValue = "tencent", OrderNum = 3, Status = 0, TenantId = 0, Remark = "腾讯云对象存储", CreateBy = "system", CreateTime = DateTime.Now, UpdateBy = "system", UpdateTime = DateTime.Now },
-            new HbtDictData { DictType = "file_storage_type", DictLabel = "七牛云存储", DictValue = "qiniu", OrderNum = 4, Status = 0, TenantId = 0, Remark = "七牛云对象存储", CreateBy = "system", CreateTime = DateTime.Now, UpdateBy = "system", UpdateTime = DateTime.Now },
+            new HbtDictData { DictType = "file_storage_type", DictLabel = "本地存储", DictValue = "local", OrderNum = 1, Status = 0,  Remark = "本地存储", CreateBy = "Hbt365", CreateTime = DateTime.Now, UpdateBy = "Hbt365", UpdateTime = DateTime.Now },
+            new HbtDictData { DictType = "file_storage_type", DictLabel = "阿里云OSS", DictValue = "aliyun", OrderNum = 2, Status = 0,  Remark = "阿里云对象存储", CreateBy = "Hbt365", CreateTime = DateTime.Now, UpdateBy = "Hbt365", UpdateTime = DateTime.Now },
+            new HbtDictData { DictType = "file_storage_type", DictLabel = "腾讯云COS", DictValue = "tencent", OrderNum = 3, Status = 0,  Remark = "腾讯云对象存储", CreateBy = "Hbt365", CreateTime = DateTime.Now, UpdateBy = "Hbt365", UpdateTime = DateTime.Now },
+            new HbtDictData { DictType = "file_storage_type", DictLabel = "七牛云存储", DictValue = "qiniu", OrderNum = 4, Status = 0,  Remark = "七牛云对象存储", CreateBy = "Hbt365", CreateTime = DateTime.Now, UpdateBy = "Hbt365", UpdateTime = DateTime.Now },
             //文件命名规则
-            new HbtDictData { DictType = "file_name_rule", DictLabel = "原文件名", DictValue = "original", OrderNum = 1, Status = 0, TenantId = 0, Remark = "原文件名", CreateBy = "system", CreateTime = DateTime.Now, UpdateBy = "system", UpdateTime = DateTime.Now },
-            new HbtDictData { DictType = "file_name_rule", DictLabel = "随机文件名", DictValue = "random", OrderNum = 2, Status = 0, TenantId = 0, Remark = "随机文件名", CreateBy = "system", CreateTime = DateTime.Now, UpdateBy = "system", UpdateTime = DateTime.Now },
-            new HbtDictData { DictType = "file_name_rule", DictLabel = "时间戳文件名", DictValue = "timestamp", OrderNum = 3, Status = 0, TenantId = 0, Remark = "时间戳文件名", CreateBy = "system", CreateTime = DateTime.Now, UpdateBy = "system", UpdateTime = DateTime.Now }
+            new HbtDictData { DictType = "file_name_rule", DictLabel = "原文件名", DictValue = "original", OrderNum = 1, Status = 0,  Remark = "原文件名", CreateBy = "Hbt365", CreateTime = DateTime.Now, UpdateBy = "Hbt365", UpdateTime = DateTime.Now },
+            new HbtDictData { DictType = "file_name_rule", DictLabel = "随机文件名", DictValue = "random", OrderNum = 2, Status = 0,  Remark = "随机文件名", CreateBy = "Hbt365", CreateTime = DateTime.Now, UpdateBy = "Hbt365", UpdateTime = DateTime.Now },
+            new HbtDictData { DictType = "file_name_rule", DictLabel = "时间戳文件名", DictValue = "timestamp", OrderNum = 3, Status = 0,  Remark = "时间戳文件名", CreateBy = "Hbt365", CreateTime = DateTime.Now, UpdateBy = "Hbt365", UpdateTime = DateTime.Now }
 
         };
 
@@ -68,6 +68,11 @@ public class HbtDbSeedFileDictData
             var existingDictData = await _dictDataRepository.GetFirstAsync(x => x.DictType == dictData.DictType && x.DictValue == dictData.DictValue);
             if (existingDictData == null)
             {
+                dictData.TenantId = tenantId;
+                dictData.CreateBy = "Hbt365";
+                dictData.CreateTime = DateTime.Now;
+                dictData.UpdateBy = "Hbt365";
+                dictData.UpdateTime = DateTime.Now;
                 await _dictDataRepository.CreateAsync(dictData);
                 insertCount++;
             }
@@ -79,6 +84,7 @@ public class HbtDbSeedFileDictData
                 existingDictData.Remark = dictData.Remark;
                 existingDictData.UpdateBy = dictData.UpdateBy;
                 existingDictData.UpdateTime = dictData.UpdateTime;
+                existingDictData.TenantId = tenantId;
                 await _dictDataRepository.UpdateAsync(existingDictData);
                 updateCount++;
             }

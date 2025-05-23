@@ -8,8 +8,6 @@
 // 版本号 : V0.0.1
 // 描述   : 语言实体
 //===================================================================
-using SqlSugar;
-
 namespace Lean.Hbt.Domain.Entities.Core
 {
     /// <summary>
@@ -44,27 +42,27 @@ namespace Lean.Hbt.Domain.Entities.Core
         public int OrderNum { get; set; } = 0;
 
         /// <summary>
-        /// 状态（0正常 1停用）
+        /// 语言内置（0是 1否）
         /// </summary>
-        [SugarColumn(ColumnName = "status", ColumnDescription = "状态（0正常 1停用）", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
-        public int Status { get; set; } = 0;
+        [SugarColumn(ColumnName = "is_builtin", ColumnDescription = "内置", ColumnDataType = "int", IsNullable = false, DefaultValue = "1")]
+        public int IsBuiltin { get; set; } = 1;
 
         /// <summary>
-        /// 是否默认语言（0否 1是）
+        /// 是否默认语言（0是 1否）
         /// </summary>
-        [SugarColumn(ColumnName = "is_default", ColumnDescription = "是否默认语言（0否 1是）", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
-        public int IsDefault { get; set; } = 0;
-
+        [SugarColumn(ColumnName = "is_default", ColumnDescription = "默认", ColumnDataType = "int", IsNullable = false, DefaultValue = "1")]
+        public int IsDefault { get; set; } = 1;
+        /// <summary>
+        /// 状态（0正常 1停用）
+        /// </summary>
+        [SugarColumn(ColumnName = "status", ColumnDescription = "状态", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
+        public int Status { get; set; } = 0;
         /// <summary>
         /// 租户ID
         /// </summary>
         [SugarColumn(ColumnName = "tenant_id", ColumnDescription = "租户ID", ColumnDataType = "bigint", IsNullable = false)]
-       public long TenantId { get; set; }
+        public long TenantId { get; set; }
 
-        /// <summary>
-        /// 语言内置（0否 1是）
-        /// </summary>
-        [SugarColumn(ColumnName = "lang_builtin", ColumnDescription = "语言内置（0否 1是）", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
-        public int LangBuiltin { get; set; } = 0;
+
     }
 }

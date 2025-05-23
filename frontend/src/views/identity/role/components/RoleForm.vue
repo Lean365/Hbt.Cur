@@ -6,32 +6,33 @@
     :width="800"
     @update:open="handleVisibleChange"
     @ok="handleSubmit"
+    @cancel="handleCancel"
   >
     <a-tabs>
       <!-- 基本信息标签页 -->
       <a-tab-pane :key="'basic'" :tab="t('identity.role.tabs.basic')">
         <a-form
           ref="formRef"
-          :model="form"
+          :model="formState"
           :rules="rules"
           :label-col="{ span: 6 }"
           :wrapper-col="{ span: 16 }"
         >
           <a-form-item :label="t('identity.role.fields.roleName.label')" name="roleName">
             <a-input
-              v-model:value="form.roleName"
+              v-model:value="formState.roleName"
               :placeholder="t('identity.role.fields.roleName.placeholder')"
             />
           </a-form-item>
           <a-form-item :label="t('identity.role.fields.roleKey.label')" name="roleKey">
             <a-input
-              v-model:value="form.roleKey"
+              v-model:value="formState.roleKey"
               :placeholder="t('identity.role.fields.roleKey.placeholder')"
             />
           </a-form-item>
           <a-form-item :label="t('identity.role.fields.roleSort.label')" name="orderNum">
             <a-input-number
-              v-model:value="form.orderNum"
+              v-model:value="formState.orderNum"
               :min="0"
               style="width: 100%"
               :placeholder="t('identity.role.fields.roleSort.placeholder')"
@@ -39,7 +40,7 @@
           </a-form-item>
           <a-form-item :label="t('identity.role.fields.dataScope.label')" name="dataScope">
             <a-select
-              v-model:value="form.dataScope"
+              v-model:value="formState.dataScope"
               :placeholder="t('identity.role.fields.dataScope.placeholder')"
             >
               <a-select-option :value="1">{{ t('identity.role.fields.dataScope.options.all') }}</a-select-option>
@@ -50,14 +51,14 @@
             </a-select>
           </a-form-item>
           <a-form-item :label="t('identity.role.fields.status.label')" name="status">
-            <a-radio-group v-model:value="form.status">
+            <a-radio-group v-model:value="formState.status">
               <a-radio :value="0">{{ t('identity.role.fields.status.options.enabled') }}</a-radio>
               <a-radio :value="1">{{ t('identity.role.fields.status.options.disabled') }}</a-radio>
             </a-radio-group>
           </a-form-item>
           <a-form-item :label="t('identity.role.fields.description.label')" name="remark">
             <a-textarea
-              v-model:value="form.remark"
+              v-model:value="formState.remark"
               :rows="4"
               :placeholder="t('identity.role.fields.description.placeholder')"
             />
@@ -78,7 +79,7 @@
             </a-checkbox>
           </template>
           <a-tree
-            v-model:checkedKeys="form.menuIds"
+            v-model:checkedKeys="formState.menuIds"
             :tree-data="menuTree"
             checkable
             :defaultExpandAll="true"
@@ -91,16 +92,16 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { message } from 'ant-design-vue'
 import type { FormInstance, Rule } from 'ant-design-vue/es/form'
 import type { TreeDataItem, DataNode } from 'ant-design-vue/es/tree'
-import type { Role } from '@/types/identity/role'
-import type { HbtApiResponse } from '@/types/common'
+import type { HbtRole, HbtRoleUpdate } from '@/types/identity/role'
+
 import { getRole, createRole, updateRole } from '@/api/identity/role'
 import { getCurrentUserMenus } from '@/api/identity/menu'
-import type { Menu } from '@/types/identity/menu'
+import type { HbtMenu } from '@/types/identity/menu'
 
 const props = defineProps<{
   visible: boolean
@@ -118,41 +119,44 @@ const { t } = useI18n()
 // 表单引用
 const formRef = ref<FormInstance>()
 
+// 提交按钮loading
+const submitLoading = ref(false)
+
+// 表单校验规则
+const rules: Record<string, Rule[]> = {
+  roleName: [
+    { required: true, message: t('identity.role.fields.roleName.validation.required') },
+    { max: 30, message: t('identity.role.fields.roleName.validation.maxLength') }
+  ],
+  roleKey: [
+    { required: true, message: t('identity.role.fields.roleKey.validation.required') },
+    { max: 100, message: t('identity.role.fields.roleKey.validation.maxLength') }
+  ],
+  roleSort: [
+    { required: true, message: t('identity.role.fields.roleSort.validation.required') },
+    { type: 'number', message: t('identity.role.fields.roleSort.validation.type') }
+  ],
+  status: [{ required: true, message: t('identity.role.fields.status.validation.required') }],
+  remark: [{ max: 500, message: t('identity.role.fields.remark.validation.maxLength') }]
+}
+
 // 表单数据
-const form = reactive<Role>({
-  roleId: 0,
+const formState = ref<Partial<HbtRole>>({
+  roleId: undefined,
   roleName: '',
   roleKey: '',
   orderNum: 0,
   dataScope: 1,
   status: 0,
   tenantId: 0,
+  userCount: 0,
   remark: '',
   menuIds: [],
   deptIds: [],
-  id: 0,
   createBy: '',
   createTime: '',
   isDeleted: 0
 })
-
-// 表单校验规则
-const rules: Record<string, Rule[]> = {
-  roleName: [
-    { required: true, message: t('identity.role.fields.roleName.validation.required'), type: 'string' as const },
-    { max: 50, message: t('identity.role.fields.roleName.validation.length'), type: 'string' as const }
-  ],
-  roleKey: [
-    { required: true, message: t('identity.role.fields.roleKey.validation.required'), type: 'string' as const },
-    { max: 100, message: t('identity.role.fields.roleKey.validation.length'), type: 'string' as const }
-  ],
-  orderNum: [
-    { required: true, message: t('identity.role.fields.roleSort.validation.required'), type: 'number' as const }
-  ],
-  dataScope: [
-    { required: true, message: t('identity.role.fields.dataScope.validation.required'), type: 'number' as const }
-  ]
-}
 
 // 加载状态
 const loading = ref(false)
@@ -165,23 +169,20 @@ const menuIndeterminate = ref(false)
 // 获取角色信息
 const getInfo = async (roleId: number) => {
   try {
-    loading.value = true
     const res = await getRole(roleId)
     if (res.data.code === 200) {
-      Object.assign(form, res.data.data)
+      Object.assign(formState.value, res.data.data)
     } else {
       message.error(res.data.msg || t('common.failed'))
     }
   } catch (error) {
-    console.error(error)
+    console.error('获取角色信息失败:', error)
     message.error(t('common.failed'))
-  } finally {
-    loading.value = false
   }
 }
 
 // 将菜单数据转换为树形控件数据
-const transformMenuToTreeData = (menus: Menu[]): DataNode[] => {
+const transformMenuToTreeData = (menus: HbtMenu[]): DataNode[] => {
   return menus.map(menu => ({
     key: menu.menuId,
     title: menu.menuName,
@@ -207,7 +208,7 @@ const getMenuTree = async () => {
 // 处理全选菜单
 const handleMenuCheckAllChange = (e: { target: { checked: boolean } }) => {
   const allKeys = getAllMenuKeys(menuTree.value)
-  form.menuIds = e.target.checked ? allKeys : []
+  formState.value.menuIds = e.target.checked ? allKeys : []
   menuIndeterminate.value = false
   menuCheckAll.value = e.target.checked
 }
@@ -237,47 +238,112 @@ const getAllMenuKeys = (menus: TreeDataItem[]): number[] => {
   return keys
 }
 
+// 监听角色ID变化
+watch(
+  () => props.roleId,
+  async (newVal: number | undefined) => {
+    if (newVal) {
+      try {
+        const res = await getRole(newVal)
+        if (res.data.code === 200) {
+          const { roleId, ...rest } = res.data.data
+          formState.value = rest
+        } else {
+          message.error(res.data.msg || t('common.failed'))
+        }
+      } catch (error) {
+        console.error('[角色管理] 获取角色详情出错:', error)
+        message.error(t('common.failed'))
+      }
+    } else {
+      resetForm()
+    }
+  }
+)
+
+// 重置表单
+const resetForm = () => {
+  formState.value = {
+    roleId: undefined,
+    roleName: '',
+    roleKey: '',
+    orderNum: 0,
+    dataScope: 1,
+    status: 0,
+    tenantId: 0,
+    userCount: 0,
+    remark: '',
+    menuIds: [],
+    deptIds: [],
+    createBy: '',
+    createTime: '',
+    isDeleted: 0
+  }
+  formRef.value?.resetFields()
+}
+
 // 处理弹窗显示状态变化
-const handleVisibleChange = (visible: boolean) => {
-  emit('update:visible', visible)
-  if (!visible) {
-    formRef.value?.resetFields()
+const handleVisibleChange = (val: boolean) => {
+  emit('update:visible', val)
+  if (!val) {
+    resetForm()
   }
 }
 
-// 处理表单提交
+// 处理取消
+const handleCancel = () => {
+  emit('update:visible', false)
+  resetForm()
+}
+
+// 提交表单
 const handleSubmit = () => {
   formRef.value?.validate().then(async () => {
     try {
-      loading.value = true
-      let res
+      submitLoading.value = true
       if (props.roleId) {
-        res = await updateRole(form)
+        const res = await updateRole(formState.value as HbtRole)
+        if (res.data.code === 200) {
+          message.success(t('common.update.success'))
+          emit('update:visible', false)
+          emit('success')
+        } else {
+          message.error(res.data.msg || t('common.update.failed'))
+        }
       } else {
-        res = await createRole(form)
-      }
-      if (res.data.code === 200) {
-        message.success(t('common.save.success'))
-        emit('success')
-        handleVisibleChange(false)
-      } else {
-        message.error(res.data.msg || t('common.save.failed'))
+        const res = await createRole(formState.value as HbtRole)
+        if (res.data.code === 200) {
+          message.success(t('common.create.success'))
+          emit('update:visible', false)
+          emit('success')
+        } else {
+          message.error(res.data.msg || t('common.create.failed'))
+        }
       }
     } catch (error) {
-      console.error(error)
-      message.error(t('common.save.failed'))
+      console.error('[角色管理] 提交表单出错:', error)
+      message.error(t('common.failed'))
     } finally {
-      loading.value = false
+      submitLoading.value = false
     }
   })
 }
 
-// 初始化
 onMounted(() => {
-  if (props.roleId) {
-    getInfo(props.roleId)
+  const initData = async () => {
+    if (props.roleId) {
+      const res = await getRole(props.roleId)
+      if (res.data.code === 200) {
+        formState.value = res.data.data
+      }
+    }
   }
+  initData()
   getMenuTree()
+})
+
+defineExpose({
+  resetForm
 })
 </script>
 

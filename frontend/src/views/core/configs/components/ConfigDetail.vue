@@ -10,42 +10,42 @@
 <template>
   <hbt-modal
     :open="open"
-    :title="t('admin.config.detail.title')"
+    :title="t('core.config.title')"
     :width="800"
     @update:open="handleOpenChange"
   >
     <a-descriptions :column="2" bordered>
-      <a-descriptions-item :label="t('admin.config.name')" :span="1">
+      <a-descriptions-item :label="t('core.config.fields.configName.label')" :span="1">
         {{ form.configName }}
       </a-descriptions-item>
-      <a-descriptions-item :label="t('admin.config.key')" :span="1">
+      <a-descriptions-item :label="t('core.config.fields.configKey.label')" :span="1">
         {{ form.configKey }}
       </a-descriptions-item>
-      <a-descriptions-item :label="t('admin.config.value')" :span="1">
+      <a-descriptions-item :label="t('core.config.fields.configValue.label')" :span="2">
         {{ form.configValue }}
       </a-descriptions-item>
-      <a-descriptions-item :label="t('admin.config.builtin')" :span="1">
+      <a-descriptions-item :label="t('core.config.fields.isBuiltin.label')" :span="1">
         <hbt-dict-tag :dict-type="'sys_yes_no'" :value="form.isBuiltin" />
       </a-descriptions-item>
-      <a-descriptions-item :label="t('admin.config.order')" :span="1">
+      <a-descriptions-item :label="t('core.config.fields.orderNum.label')" :span="1">
         {{ form.orderNum }}
       </a-descriptions-item>
-      <a-descriptions-item :label="t('admin.config.status')" :span="1">
+      <a-descriptions-item :label="t('core.config.fields.status.label')" :span="1">
         <hbt-dict-tag :dict-type="'sys_normal_disable'" :value="form.status" />
       </a-descriptions-item>
-      <a-descriptions-item :label="t('admin.config.remark')" :span="2">
+      <a-descriptions-item :label="t('table.columns.remark')" :span="2">
         {{ form.remark }}
       </a-descriptions-item>
-      <a-descriptions-item :label="t('admin.config.createTime')" :span="1">
+      <a-descriptions-item :label="t('table.columns.createTime')" :span="1">
         {{ form.createTime }}
       </a-descriptions-item>
-      <a-descriptions-item :label="t('admin.config.updateTime')" :span="1">
+      <a-descriptions-item :label="t('table.columns.updateTime')" :span="1">
         {{ form.updateTime }}
       </a-descriptions-item>
-      <a-descriptions-item :label="t('admin.config.createBy')" :span="1">
+      <a-descriptions-item :label="t('table.columns.createBy')" :span="1">
         {{ form.createBy }}
       </a-descriptions-item>
-      <a-descriptions-item :label="t('admin.config.updateBy')" :span="1">
+      <a-descriptions-item :label="t('table.columns.updateBy')" :span="1">
         {{ form.updateBy }}
       </a-descriptions-item>
     </a-descriptions>
@@ -84,8 +84,8 @@ const form = reactive<HbtConfig>({
   updateTime: '',
   createBy: '',
   updateBy: '',
-  id: 0,
-  isDeleted: 0
+  isDeleted: 0,
+  isEncrypted: 0
 })
 
 // 获取配置信息

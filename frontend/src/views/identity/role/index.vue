@@ -17,14 +17,18 @@
       :show-edit="true"
       :show-delete="true"
       :show-export="true"
+      :show-import="true"
       :add-permission="['identity:role:create']"
       :edit-permission="['identity:role:update']"
       :delete-permission="['identity:role:delete']"
       :export-permission="['identity:role:export']"
+      :import-permission="['identity:role:import']"
       @add="handleAdd"
       @edit="handleEditSelected"
       @delete="handleBatchDelete"
       @export="handleExport"
+      @import="handleImport"
+      @template="handleTemplate"
       @column-setting="handleColumnSetting"
       @toggle-search="toggleSearch"
       @toggle-fullscreen="toggleFullscreen"
@@ -38,7 +42,7 @@
       :pagination="false"
       :scroll="{ x: 'max-content' }"
       :default-height="594"
-      :row-key="(record: Role) => String(record.roleId)"
+      row-key="roleId"
       v-model:selectedRowKeys="selectedRowKeys"
       :row-selection="{
         type: 'checkbox',
@@ -115,12 +119,12 @@
       @showSizeChange="handleSizeChange"
     />
 
-    <!-- 角色表单对话框 -->
+    <!-- 角色表单弹窗 -->
     <role-form
       v-model:visible="formVisible"
       :title="formTitle"
-      :role-id="selectedRoleId"
-      @success="handleSuccess"
+      :role-id="formRoleId"
+      @success="getList"
     />
 
     <!-- 菜单分配对话框 -->
@@ -164,9 +168,9 @@ import { useI18n } from 'vue-i18n'
 import { message } from 'ant-design-vue'
 import type { TablePaginationConfig } from 'ant-design-vue'
 import { useDictStore } from '@/stores/dict'
-import type { Role, RoleQuery } from '@/types/identity/role'
+import type { HbtRole, HbtRoleQuery } from '@/types/identity/role'
 import type { QueryField } from '@/types/components/query'
-import { getPagedList, deleteRole, exportRole, updateRoleStatus } from '@/api/identity/role'
+import { getRoleList, deleteRole, exportRole, updateRoleStatus, getTemplate, importRole } from '@/api/identity/role'
 import RoleForm from './components/RoleForm.vue'
 import MenuAllocate from './components/MenuAllocate.vue'
 import DeptAllocate from './components/DeptAllocate.vue'
@@ -276,7 +280,7 @@ const queryFields: QueryField[] = [
 ]
 
 // 查询参数
-const queryParams = ref<RoleQuery>({
+const queryParams = ref<HbtRoleQuery>({
   pageIndex: 1,
   pageSize: 10,
   roleName: '',
@@ -287,7 +291,7 @@ const queryParams = ref<RoleQuery>({
 // 表格相关
 const loading = ref(false)
 const total = ref(0)
-const tableData = ref<Role[]>([])
+const tableData = ref<HbtRole[]>([])
 const selectedRowKeys = ref<(string | number)[]>([])
 const showSearch = ref(true)
 
@@ -295,6 +299,7 @@ const showSearch = ref(true)
 const formVisible = ref(false)
 const formTitle = ref('')
 const selectedRoleId = ref<number>()
+const formRoleId = ref<number>()
 
 // 菜单分配弹窗
 const menuAllocateVisible = ref(false)
@@ -309,18 +314,18 @@ const columnSettings = ref<Record<string, boolean>>({})
 const initColumnSettings = () => {
   // 每次刷新页面时清除localStorage
   localStorage.removeItem('roleColumnSettings')
-  
+
   // 初始化所有列为false
   columnSettings.value = Object.fromEntries(columns.map(col => [col.key, false]))
-  
+
   // 获取前9列（不包含操作列）
   const firstNineColumns = columns.filter(col => col.key !== 'action').slice(0, 9)
-  
+
   // 设置前9列为true
   firstNineColumns.forEach(col => {
     columnSettings.value[col.key] = true
   })
-  
+
   // 确保操作列显示
   columnSettings.value['action'] = true
 }
@@ -359,7 +364,10 @@ const toggleFullscreen = (isFullscreen: boolean) => {
 const fetchData = async () => {
   loading.value = true
   try {
-    const res = await getPagedList(queryParams.value)
+    console.log('查询参数:', {
+      ...queryParams.value
+    })
+    const res = await getRoleList(queryParams.value)
     if (res.data.code === 200) {
       tableData.value = res.data.data.rows
       total.value = res.data.data.totalNum
@@ -404,19 +412,19 @@ const handleTableChange = (pagination: TablePaginationConfig) => {
 // 处理新增
 const handleAdd = () => {
   formTitle.value = t('common.add')
-  selectedRoleId.value = undefined
+  formRoleId.value = undefined
   formVisible.value = true
 }
 
 // 处理编辑
-const handleEdit = (record: Role) => {
+const handleEdit = (record: HbtRole) => {
   formTitle.value = t('common.edit')
-  selectedRoleId.value = record.roleId
+  formRoleId.value = record.roleId
   formVisible.value = true
 }
 
 // 处理删除
-const handleDelete = async (record: Role) => {
+const handleDelete = async (record: HbtRole) => {
   try {
     const res = await deleteRole(record.roleId)
     if (res.data.code === 200) {
@@ -430,6 +438,43 @@ const handleDelete = async (record: Role) => {
     message.error(t('common.delete.failed'))
   }
 }
+
+// 处理导入
+const handleImport = async () => {
+  try {
+    const input = document.createElement('input')
+    input.type = 'file'
+    input.accept = '.xlsx,.xls'
+    input.onchange = async (e: Event) => {
+      const file = (e.target as HTMLInputElement).files?.[0]
+      if (!file) return
+      const res = await importRole(file)
+      const { success = 0, fail = 0 } = (res.data as any).Data || {}
+      console.log(
+        'fail:',
+        (res.data as any).Data?.fail,
+        'success:',
+        (res.data as any).Data?.success
+      )
+
+      if (success > 0 && fail === 0) {
+        message.success(`导入成功${success}条，全部成功！`)
+      } else if (success > 0 && fail > 0) {
+        message.warning(`导入成功${success}条，失败${fail}条`)
+      } else if (success === 0 && fail > 0) {
+        message.error(`全部导入失败，共${fail}条`)
+      } else {
+        message.info('未读取到任何数据')
+      }
+      if (success > 0) fetchData()
+    }
+    input.click()
+  } catch (error: any) {
+    console.error('导入失败:', error)
+    message.error(error.message || t('common.import.failed'))
+  }
+}
+
 
 // 处理导出
 const handleExport = () => {
@@ -448,10 +493,12 @@ const handleEditSelected = () => {
     message.warning(t('common.selectOne'))
     return
   }
-  
+
   const record = tableData.value.find(item => String(item.roleId) === String(selectedRowKeys.value[0]))
   if (record) {
-    handleEdit(record)
+    formTitle.value = t('common.edit')
+    formRoleId.value = record.roleId
+    formVisible.value = true
   }
 }
 
@@ -461,7 +508,7 @@ const handleBatchDelete = async () => {
     message.warning(t('common.selectAtLeastOne'))
     return
   }
-  
+
   try {
     const results = await Promise.all(selectedRowKeys.value.map(id => deleteRole(Number(id))))
     const hasError = results.some(res => res.data.code !== 200)
@@ -479,7 +526,7 @@ const handleBatchDelete = async () => {
 }
 
 // 处理授权
-const handleAuthorize = (record: Role) => {
+const handleAuthorize = (record: HbtRole) => {
   if (record.roleKey === 'system_admin') return
   formTitle.value = t('identity.role.actions.authorize')
   selectedRoleId.value = record.roleId
@@ -487,7 +534,7 @@ const handleAuthorize = (record: Role) => {
 }
 
 // 处理状态变化
-const handleStatusChange = async (record: Role, checked: boolean) => {
+const handleStatusChange = async (record: HbtRole, checked: boolean) => {
   // @ts-ignore
   record.statusLoading = true
   try {
@@ -507,7 +554,7 @@ const handleStatusChange = async (record: Role, checked: boolean) => {
 }
 
 // 处理行点击
-const handleRowClick = (record: Role) => {
+const handleRowClick = (record: HbtRole) => {
   console.log('行点击:', record)
 }
 
@@ -523,11 +570,31 @@ const handleSizeChange = (size: number) => {
 }
 
 // 处理部门授权
-const handleDeptAuthorize = (record: Role) => {
+const handleDeptAuthorize = (record: HbtRole) => {
   if (record.roleKey === 'system_admin') return
   formTitle.value = t('identity.role.actions.deptAuthorize')
   selectedRoleId.value = record.roleId
   deptAllocateVisible.value = true
+}
+
+// 处理列表刷新
+const getList = () => {
+  fetchData()
+}
+
+// 处理下载模板
+const handleTemplate = async () => {
+  try {
+    const res = await getTemplate()
+    const link = document.createElement('a')
+    link.href = window.URL.createObjectURL(new Blob([res.data]))
+    link.download = `角色导入模板_${new Date().getTime()}.xlsx`
+    link.click()
+    window.URL.revokeObjectURL(link.href)
+  } catch (error: any) {
+    console.error('下载模板失败:', error)
+    message.error(error.message || t('common.template.failed'))
+  }
 }
 
 onMounted(() => {

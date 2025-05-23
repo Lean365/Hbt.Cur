@@ -9,46 +9,61 @@
 
 <template>
   <hbt-modal
-    :title="t('common.title.detail')"
-    :open="visible"
+    :open="open"
+    :title="t('core.dict.dictData.detail')"
+    :footer="null"
     width="600px"
-    append-to-body
-    destroy-on-close
     @cancel="handleCancel"
   >
-    <hbt-descriptions :column="1" bordered>
-      <hbt-descriptions-item :label="t('admin.dict.dictLabel.label')">
+    <a-descriptions :column="1" bordered>
+      <a-descriptions-item :label="t('core.dict.dictDatas.fields.dictLabel.label')">
         {{ detailData.dictLabel }}
-      </hbt-descriptions-item>
+      </a-descriptions-item>
 
-      <hbt-descriptions-item :label="t('admin.dict.dictValue.label')">
+      <a-descriptions-item :label="t('core.dict.dictDatas.fields.dictValue.label')">
         {{ detailData.dictValue }}
-      </hbt-descriptions-item>
+      </a-descriptions-item>
 
-      <hbt-descriptions-item :label="t('admin.dict.orderNum.label')">
+      <a-descriptions-item :label="t('core.dict.dictDatas.fields.dictType.label')">
+        {{ detailData.dictType }}
+      </a-descriptions-item>
+      <a-descriptions-item :label="t('core.dict.dictDatas.fields.extLabel.label')">
+        {{ detailData.extLabel }}
+      </a-descriptions-item>
+      <a-descriptions-item :label="t('core.dict.dictDatas.fields.extValue.label')">
+        {{ detailData.extValue }}
+      </a-descriptions-item>
+      <a-descriptions-item :label="t('core.dict.dictDatas.fields.listClass.label')">
+        {{ detailData.listClass }}
+      </a-descriptions-item>
+      <a-descriptions-item :label="t('core.dict.dictDatas.fields.cssClass.label')">
+        {{ detailData.cssClass }}
+      </a-descriptions-item>
+
+      <a-descriptions-item :label="t('core.dict.dictDatas.fields.orderNum.label')">
         {{ detailData.orderNum }}
-      </hbt-descriptions-item>
+      </a-descriptions-item>
 
-      <hbt-descriptions-item :label="t('admin.dict.status.label')">
+      <a-descriptions-item :label="t('core.dict.dictDatas.fields.status.label')">
         <hbt-dict-tag dict-type="sys_normal_disable" :value="detailData.status" />
-      </hbt-descriptions-item>
+      </a-descriptions-item>
 
-      <hbt-descriptions-item :label="t('admin.dict.remark.label')">
+      <a-descriptions-item :label="t('core.dict.dictDatas.fields.remark.label')">
         {{ detailData.remark }}
-      </hbt-descriptions-item>
+      </a-descriptions-item>
 
-      <hbt-descriptions-item :label="t('common.createTime')">
+      <a-descriptions-item :label="t('common.createTime')">
         {{ detailData.createTime }}
-      </hbt-descriptions-item>
+      </a-descriptions-item>
 
-      <hbt-descriptions-item :label="t('common.updateTime')">
+      <a-descriptions-item :label="t('common.updateTime')">
         {{ detailData.updateTime }}
-      </hbt-descriptions-item>
-    </hbt-descriptions>
+      </a-descriptions-item>
+    </a-descriptions>
 
     <template #footer>
       <div class="dialog-footer">
-        <hbt-button @click="handleCancel">{{ t('common.close') }}</hbt-button>
+        <a-button @click="handleCancel">{{ t('common.button.cancel') }}</a-button>
       </div>
     </template>
   </hbt-modal>
@@ -62,7 +77,7 @@ import type { HbtDictData } from '@/types/core/dictData'
 import { getHbtDictData } from '@/api/core/dictData'
 
 const props = defineProps({
-  visible: {
+  open: {
     type: Boolean,
     default: false
   },
@@ -72,7 +87,7 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['update:visible'])
+const emit = defineEmits(['update:open'])
 
 const { t } = useI18n()
 
@@ -81,7 +96,6 @@ const loading = ref(false)
 
 // === 详情数据 ===
 const detailData = reactive<HbtDictData>({
-  id: 0,
   dictDataId: 0,
   dictType: '',
   dictLabel: '',
@@ -104,10 +118,10 @@ const getDictData = async (id: number) => {
   try {
     loading.value = true
     const res = await getHbtDictData(id)
-    if (res.code === 200) {
-      Object.assign(detailData, res.data)
+    if (res.data.code === 200) {
+      Object.assign(detailData, res.data.data)
     } else {
-      message.error(res.msg || t('common.failed'))
+      message.error(res.data.msg || t('common.failed'))
     }
   } catch (error) {
     console.error('获取字典数据详情失败:', error)
@@ -119,12 +133,12 @@ const getDictData = async (id: number) => {
 
 // 取消
 const handleCancel = () => {
-  emit('update:visible', false)
+  emit('update:open', false)
 }
 
 // === 监听器 ===
 // 监听对话框可见性变化
-watch(() => props.visible, (val) => {
+watch(() => props.open, (val) => {
   if (val && props.dictDataId) {
     getDictData(props.dictDataId)
   }
@@ -132,7 +146,7 @@ watch(() => props.visible, (val) => {
 
 // === 生命周期 ===
 onMounted(() => {
-  if (props.visible && props.dictDataId) {
+  if (props.open && props.dictDataId) {
     getDictData(props.dictDataId)
   }
 })
