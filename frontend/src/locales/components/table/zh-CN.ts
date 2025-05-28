@@ -1,6 +1,10 @@
 export default {
     // ==================== 表格操作 ====================
     table: {
+      viewMode: {
+        normal: '传统表格',
+        transpose: '转置表格'
+      },
       columns: {
         id: 'ID',
         tenantId: '租户ID',

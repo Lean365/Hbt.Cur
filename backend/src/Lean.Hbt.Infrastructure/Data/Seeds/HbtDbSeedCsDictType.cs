@@ -166,7 +166,6 @@ public class HbtDbSeedCsDictType
                 dictType.CreateTime = DateTime.Now;
                 dictType.UpdateBy = "Hbt365";
                 dictType.UpdateTime = DateTime.Now;
-                dictType.TenantId = tenantId;
 
                 await _dictTypeRepository.CreateAsync(dictType);
                 insertCount++;
@@ -179,7 +178,6 @@ public class HbtDbSeedCsDictType
                 existingDictType.Remark = dictType.Remark;
                 existingDictType.UpdateBy = dictType.UpdateBy;
                 existingDictType.UpdateTime = dictType.UpdateTime;
-                existingDictType.TenantId = tenantId;
                 await _dictTypeRepository.UpdateAsync(existingDictType);
                 updateCount++;
             }
@@ -231,7 +229,6 @@ public class HbtDbSeedCsDictType
             var existingDictType = await _dictTypeRepository.GetFirstAsync(x => x.DictType == dictType.DictType);
             if (existingDictType == null)
             {
-                dictType.TenantId = tenantId;
                 dictType.CreateBy = "Hbt365";
                 dictType.CreateTime = DateTime.Now;
                 dictType.UpdateBy = "Hbt365";
@@ -245,9 +242,10 @@ public class HbtDbSeedCsDictType
                 existingDictType.OrderNum = dictType.OrderNum;
                 existingDictType.Status = dictType.Status;
                 existingDictType.Remark = dictType.Remark;
-                existingDictType.UpdateBy = dictType.UpdateBy;
-                existingDictType.UpdateTime = dictType.UpdateTime;
-                existingDictType.TenantId = tenantId;
+                existingDictType.CreateBy = "Hbt365";
+                existingDictType.CreateTime = DateTime.Now;
+                existingDictType.UpdateBy = "Hbt365";
+                existingDictType.UpdateTime = DateTime.Now;
                 await _dictTypeRepository.UpdateAsync(existingDictType);
                 updateCount++;
             }

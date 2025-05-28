@@ -58,5 +58,50 @@ namespace Lean.Hbt.Domain.Utils
             if (await repository.AsQueryable().AnyAsync(exp.ToExpression()))
                 throw HbtException.ValidationError($"Common.FieldExists:{fieldName}={fieldValue}");
         }
+
+        /// <summary>
+        /// 验证多个字段组合是否已存在
+        /// </summary>
+        /// <typeparam name="T">实体类型</typeparam>
+        /// <param name="repository">仓储接口</param>
+        /// <param name="fieldValues">字段名和值的字典</param>
+        /// <param name="excludeId">排除的ID</param>
+        /// <returns>验证任务</returns>
+        public static async Task ValidateFieldsExistsAsync<T>(IHbtRepository<T> repository, Dictionary<string, string> fieldValues, long? excludeId = null) where T : class, new()
+        {
+            if (fieldValues == null || !fieldValues.Any())
+                return;
+
+            var exp = Expressionable.Create<T>();
+            var parameter = Expression.Parameter(typeof(T), "x");
+
+            foreach (var field in fieldValues)
+            {
+                if (string.IsNullOrEmpty(field.Value))
+                    continue;
+
+                var property = Expression.Property(parameter, field.Key);
+                var constant = Expression.Constant(field.Value);
+                var equals = Expression.Equal(property, constant);
+                var lambda = Expression.Lambda<Func<T, bool>>(equals, parameter);
+                exp.And(lambda);
+            }
+
+            if (excludeId.HasValue)
+            {
+                var idProperty = Expression.Property(parameter, "Id");
+                var idConstant = Expression.Constant(excludeId.Value);
+                var notEquals = Expression.NotEqual(idProperty, idConstant);
+                var idLambda = Expression.Lambda<Func<T, bool>>(notEquals, parameter);
+                exp.And(idLambda);
+            }
+
+            if (await repository.AsQueryable().AnyAsync(exp.ToExpression()))
+            {
+                var fieldNames = string.Join(",", fieldValues.Keys);
+                var fieldValuesStr = string.Join(",", fieldValues.Values);
+                throw HbtException.ValidationError($"Common.FieldExists:{fieldNames}={fieldValuesStr}");
+            }
+        }
     }
 }

@@ -7,9 +7,8 @@
 // 描述    : 代码生成配置种子数据
 //===================================================================
 
-using Lean.Hbt.Domain.Entities.Generator;
-using Lean.Hbt.Domain.IServices.Extensions;
 using System.Text.Json;
+using Lean.Hbt.Domain.Entities.Generator;
 
 namespace Lean.Hbt.Infrastructure.Data.Seeds;
 
@@ -57,7 +56,6 @@ public class HbtDbSeedGenConfig
 
             if (existingConfig == null)
             {
-                config.TenantId = tenantId;
                 config.CreateBy = "Hbt365";
                 config.CreateTime = DateTime.Now;
                 config.UpdateBy = "Hbt365";
@@ -79,7 +77,6 @@ public class HbtDbSeedGenConfig
                 existingConfig.GenPath = config.GenPath;
                 existingConfig.Options = config.Options;
                 existingConfig.Status = config.Status;
-                existingConfig.TenantId = tenantId;
                 existingConfig.UpdateBy = "Hbt365";
                 existingConfig.UpdateTime = DateTime.Now;
 
@@ -98,7 +95,7 @@ public class HbtDbSeedGenConfig
     private static IEnumerable<HbtGenConfig> GetSeedData()
     {
         var projectPath = GetCurrentProjectPath();
-        
+
         return new List<HbtGenConfig>
         {
             new HbtGenConfig

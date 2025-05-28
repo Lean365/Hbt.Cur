@@ -30,11 +30,16 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// 构造函数
         /// </summary>
         /// <param name="postService">岗位服务</param>
-        /// <param name="localization">本地化服务</param>
         /// <param name="logger">日志服务</param>
-        public HbtPostController(IHbtPostService postService,
-                                    IHbtLocalizationService localization,
-            IHbtLogger logger) : base(localization, logger)
+        /// <param name="currentUser">当前用户服务</param>
+        /// <param name="currentTenant">当前租户服务</param>
+        /// <param name="localization">本地化服务</param>
+        public HbtPostController(
+            IHbtPostService postService,
+            IHbtLogger logger,
+            IHbtCurrentUser currentUser,
+            IHbtCurrentTenant currentTenant,
+            IHbtLocalizationService localization) : base(logger, currentUser, currentTenant, localization)
         {
             _postService = postService;
         }
@@ -72,6 +77,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <returns>岗位ID</returns>
         [HttpPost]
         [HbtPerm("identity:post:create")]
+        [HbtLog("创建岗位")]
         public async Task<IActionResult> CreateAsync([FromBody] HbtPostCreateDto input)
         {
             var result = await _postService.CreateAsync(input);
@@ -85,6 +91,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <returns>是否成功</returns>
         [HttpPut]
         [HbtPerm("identity:post:update")]
+        [HbtLog("更新岗位")]
         public async Task<IActionResult> UpdateAsync([FromBody] HbtPostUpdateDto input)
         {
             var result = await _postService.UpdateAsync(input);
@@ -98,6 +105,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <returns>是否成功</returns>
         [HttpDelete("{postId}")]
         [HbtPerm("identity:post:delete")]
+        [HbtLog("删除岗位")]
         public async Task<IActionResult> DeleteAsync(long postId)
         {
             var result = await _postService.DeleteAsync(postId);
@@ -111,6 +119,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <returns>是否成功</returns>
         [HttpDelete("batch")]
         [HbtPerm("identity:post:delete")]
+        [HbtLog("批量删除岗位")]
         public async Task<IActionResult> BatchDeleteAsync([FromBody] long[] postIds)
         {
             var result = await _postService.BatchDeleteAsync(postIds);
@@ -125,6 +134,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <returns>导入结果</returns>
         [HttpPost("import")]
         [HbtPerm("identity:post:import")]
+        [HbtLog("导入岗位数据")]
         public async Task<IActionResult> ImportAsync(IFormFile file, [FromQuery] string sheetName = "Sheet1")
         {
             using var stream = file.OpenReadStream();
@@ -167,6 +177,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <returns>是否成功</returns>
         [HttpPut("{postId}/status")]
         [HbtPerm("identity:post:update")]
+        [HbtLog("更新岗位状态")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -214,6 +225,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <returns>是否成功</returns>
         [HttpPost("{postId}/users")]
         [HbtPerm("identity:post:allocate")]
+        [HbtLog("分配岗位用户")]
         public async Task<IActionResult> AssignPostUsersAsync(long postId, [FromBody] long[] userIds)
         {
             var result = await _postService.AssignPostUsersAsync(postId, userIds);
@@ -228,6 +240,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <returns>是否成功</returns>
         [HttpDelete("{postId}/users")]
         [HbtPerm("identity:post:allocate")]
+        [HbtLog("移除岗位用户")]
         public async Task<IActionResult> RemovePostUsersAsync(long postId, [FromBody] long[] userIds)
         {
             var result = await _postService.RemovePostUsersAsync(postId, userIds);

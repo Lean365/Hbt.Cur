@@ -7,14 +7,7 @@
 // 描述   : 关联关系数据初始化类
 //===================================================================
 
-using Lean.Hbt.Common.Enums;
-using Lean.Hbt.Common.Utils;
-using Lean.Hbt.Domain.Entities.Core;
 using Lean.Hbt.Domain.Entities.Identity;
-using Lean.Hbt.Domain.IServices.Extensions;
-using Lean.Hbt.Infrastructure.Data.Contexts;
-using System.Threading.Tasks;
-using System.Linq;
 
 namespace Lean.Hbt.Infrastructure.Data.Seeds;
 
@@ -33,6 +26,8 @@ public class HbtDbSeedRelation
     private readonly IHbtRepository<HbtPost> _postRepository;
     private readonly IHbtRepository<HbtDept> _deptRepository;
     private readonly IHbtRepository<HbtMenu> _menuRepository;
+    private readonly IHbtRepository<HbtUserTenant> _userTenantRepository;
+    private readonly IHbtRepository<HbtTenant> _tenantRepository;
     private readonly IHbtLogger _logger;
 
     /// <summary>
@@ -49,6 +44,8 @@ public class HbtDbSeedRelation
         IHbtRepository<HbtPost> postRepository,
         IHbtRepository<HbtDept> deptRepository,
         IHbtRepository<HbtMenu> menuRepository,
+        IHbtRepository<HbtUserTenant> userTenantRepository,
+        IHbtRepository<HbtTenant> tenantRepository,
         IHbtLogger logger)
     {
         _userRoleRepository = userRoleRepository;
@@ -61,6 +58,8 @@ public class HbtDbSeedRelation
         _postRepository = postRepository;
         _deptRepository = deptRepository;
         _menuRepository = menuRepository;
+        _userTenantRepository = userTenantRepository;
+        _tenantRepository = tenantRepository;
         _logger = logger;
     }
 
@@ -71,6 +70,11 @@ public class HbtDbSeedRelation
     {
         int insertCount = 0;
         int updateCount = 0;
+
+        // 初始化用户租户关联关系
+        var (userTenantInsert, userTenantUpdate) = await InitializeUserTenantRelationsAsync(tenantId);
+        insertCount += userTenantInsert;
+        updateCount += userTenantUpdate;
 
         // 初始化管理员关联关系
         var (adminInsert, adminUpdate) = await InitializeAdminRelationsAsync(tenantId);
@@ -95,7 +99,7 @@ public class HbtDbSeedRelation
 
         // 1. 获取默认用户、角色、岗位、部门
         var adminUser = await _userRepository.GetFirstAsync(u => u.UserName == "admin");
-        var adminRole = await _roleRepository.GetFirstAsync(r => r.RoleKey == "SYSTEM_ADMIN");
+        var adminRole = await _roleRepository.GetFirstAsync(r => r.RoleKey == "system_admin");
         var gmPost = await _postRepository.GetFirstAsync(p => p.PostCode == "GM");
         var rootDept = await _deptRepository.GetFirstAsync(d => d.ParentId == 0);
 
@@ -106,7 +110,7 @@ public class HbtDbSeedRelation
         }
 
         // 2. 初始化用户-角色关联
-        var userRole = await _userRoleRepository.GetFirstAsync(ur => 
+        var userRole = await _userRoleRepository.GetFirstAsync(ur =>
             ur.UserId == adminUser.Id && ur.RoleId == adminRole.Id);
 
         if (userRole == null)
@@ -116,7 +120,7 @@ public class HbtDbSeedRelation
             {
                 UserId = adminUser.Id,
                 RoleId = adminRole.Id,
-                TenantId = tenantId,
+
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
                 UpdateBy = "Hbt365",
@@ -127,7 +131,7 @@ public class HbtDbSeedRelation
         }
 
         // 3. 初始化用户-岗位关联
-        var userPost = await _userPostRepository.GetFirstAsync(up => 
+        var userPost = await _userPostRepository.GetFirstAsync(up =>
             up.UserId == adminUser.Id && up.PostId == gmPost.Id);
 
         if (userPost == null)
@@ -136,7 +140,7 @@ public class HbtDbSeedRelation
             {
                 UserId = adminUser.Id,
                 PostId = gmPost.Id,
-                TenantId = tenantId,
+
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
                 UpdateBy = "Hbt365",
@@ -147,7 +151,7 @@ public class HbtDbSeedRelation
         }
 
         // 4. 初始化用户-部门关联
-        var userDept = await _userDeptRepository.GetFirstAsync(ud => 
+        var userDept = await _userDeptRepository.GetFirstAsync(ud =>
             ud.UserId == adminUser.Id && ud.DeptId == rootDept.Id);
 
         if (userDept == null)
@@ -156,7 +160,7 @@ public class HbtDbSeedRelation
             {
                 UserId = adminUser.Id,
                 DeptId = rootDept.Id,
-                TenantId = tenantId,
+
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
                 UpdateBy = "Hbt365",
@@ -170,7 +174,7 @@ public class HbtDbSeedRelation
         var allMenus = await _menuRepository.GetListAsync(m => m.IsDeleted == 0);
         foreach (var menu in allMenus)
         {
-            var roleMenu = await _roleMenuRepository.GetFirstAsync(rm => 
+            var roleMenu = await _roleMenuRepository.GetFirstAsync(rm =>
                 rm.RoleId == adminRole.Id && rm.MenuId == menu.Id);
 
             if (roleMenu == null)
@@ -179,7 +183,7 @@ public class HbtDbSeedRelation
                 {
                     RoleId = adminRole.Id,
                     MenuId = menu.Id,
-                    TenantId = tenantId,
+
                     CreateBy = "Hbt365",
                     CreateTime = DateTime.Now,
                     UpdateBy = "Hbt365",
@@ -194,7 +198,7 @@ public class HbtDbSeedRelation
         var allDepts = await _deptRepository.GetListAsync(d => d.IsDeleted == 0);
         foreach (var dept in allDepts)
         {
-            var roleDept = await _roleDeptRepository.GetFirstAsync(rd => 
+            var roleDept = await _roleDeptRepository.GetFirstAsync(rd =>
                 rd.RoleId == adminRole.Id && rd.DeptId == dept.Id);
 
             if (roleDept == null)
@@ -203,7 +207,7 @@ public class HbtDbSeedRelation
                 {
                     RoleId = adminRole.Id,
                     DeptId = dept.Id,
-                    TenantId = tenantId,
+
                     CreateBy = "Hbt365",
                     CreateTime = DateTime.Now,
                     UpdateBy = "Hbt365",
@@ -227,67 +231,70 @@ public class HbtDbSeedRelation
         long nextId = 1;
 
         // 获取所有用户、角色、部门、岗位和菜单
-        var allUsers = (await _userRepository.GetListAsync(u => u.IsDeleted == 0 && u.UserName != "admin" && u.TenantId == tenantId)).Take(100).ToList();
-        var allRoles = await _roleRepository.GetListAsync(r => r.IsDeleted == 0 && r.TenantId == tenantId);
-        var allDepts = await _deptRepository.GetListAsync(d => d.IsDeleted == 0 && d.TenantId == tenantId);
-        var allPosts = await _postRepository.GetListAsync(p => p.IsDeleted == 0 && p.TenantId == tenantId);
-        var allMenus = await _menuRepository.GetListAsync(m => m.IsDeleted == 0 && m.TenantId == tenantId);
+        var userTenants = await _userTenantRepository.GetListAsync(ut => ut.IsDeleted == 0 && ut.TenantId == tenantId);
+        var userIds = userTenants.Select(ut => ut.UserId).ToList();
+        var allUsers = (await _userRepository.GetListAsync(u => u.IsDeleted == 0 && u.UserName != "admin" && userIds.Contains(u.Id))).Take(100).ToList();
+        var allRoles = await _roleRepository.GetListAsync(r => r.IsDeleted == 0);
+        var allDepts = await _deptRepository.GetListAsync(d => d.IsDeleted == 0);
+        var allPosts = await _postRepository.GetListAsync(p => p.IsDeleted == 0);
+        var allMenus = await _menuRepository.GetListAsync(m => m.IsDeleted == 0);
 
         // 1. 创建角色-部门关联（根据角色类型分配部门）
         foreach (var role in allRoles)
         {
-            var depts = allDepts.Where(d => {
+            var depts = allDepts.Where(d =>
+            {
                 // 系统管理员可以管理所有部门
                 if (role.RoleKey == "system_admin") return true;
-                
+
                 // 安全管理员管理安全相关部门
-                if (role.RoleKey == "security_admin") 
+                if (role.RoleKey == "security_admin")
                     return d.DeptName.Contains("安全") || d.DeptName.Contains("IT");
-                
+
                 // 业务管理员管理业务相关部门
-                if (role.RoleKey == "biz_manager") 
+                if (role.RoleKey == "biz_manager")
                     return d.DeptName.Contains("业务") || d.DeptName.Contains("管理");
-                
+
                 // 人事管理员管理人事相关部门
                 if (role.RoleKey == "hr_manager")
                     return d.DeptName.Contains("人事") || d.DeptName.Contains("人力资源");
-                
+
                 // 财务管理员管理财务相关部门
                 if (role.RoleKey == "fin_manager")
                     return d.DeptName.Contains("财务") || d.DeptName.Contains("会计");
-                
+
                 // 生产管理员管理生产相关部门
                 if (role.RoleKey == "prod_manager")
                     return d.DeptName.Contains("生产") || d.DeptName.Contains("制造");
-                
+
                 // 品质管理员管理品质相关部门
                 if (role.RoleKey == "qc_manager")
                     return d.DeptName.Contains("品质") || d.DeptName.Contains("质量");
-                
+
                 // 仓库管理员管理仓库相关部门
                 if (role.RoleKey == "wh_manager")
                     return d.DeptName.Contains("仓库") || d.DeptName.Contains("仓储");
-                
+
                 // 库存管理员管理库存相关部门
                 if (role.RoleKey == "inv_manager")
                     return d.DeptName.Contains("库存") || d.DeptName.Contains("仓储");
-                
+
                 // 采购管理员管理采购相关部门
                 if (role.RoleKey == "purchase_manager")
                     return d.DeptName.Contains("采购") || d.DeptName.Contains("购买");
-                
+
                 // 供应商管理员管理供应商相关部门
                 if (role.RoleKey == "supplier_manager")
                     return d.DeptName.Contains("供应商") || d.DeptName.Contains("采购");
-                
+
                 // 销售管理员管理销售相关部门
                 if (role.RoleKey == "sales_manager")
                     return d.DeptName.Contains("销售") || d.DeptName.Contains("营销");
-                
+
                 // 客户管理员管理客户相关部门
                 if (role.RoleKey == "customer_manager")
                     return d.DeptName.Contains("客户") || d.DeptName.Contains("销售");
-                
+
                 // 其他角色根据角色名称匹配对应的部门
                 return d.DeptName.Contains(role.RoleName.Replace("管理员", ""));
             }).ToList();
@@ -298,7 +305,7 @@ public class HbtDbSeedRelation
                 {
                     RoleId = role.Id,
                     DeptId = dept.Id,
-                    TenantId = tenantId,
+
                     CreateBy = "Hbt365",
                     CreateTime = DateTime.Now,
                     UpdateBy = "Hbt365",
@@ -306,7 +313,7 @@ public class HbtDbSeedRelation
                 };
 
                 var existingRoleDept = await _roleDeptRepository.GetFirstAsync(rd =>
-                    rd.RoleId == roleDept.RoleId && rd.DeptId == roleDept.DeptId && rd.TenantId == tenantId);
+                    rd.RoleId == roleDept.RoleId && rd.DeptId == roleDept.DeptId);
 
                 if (existingRoleDept == null)
                 {
@@ -320,58 +327,59 @@ public class HbtDbSeedRelation
         // 2. 创建角色-菜单关联（根据角色类型分配菜单）
         foreach (var role in allRoles)
         {
-            var menus = allMenus.Where(m => {
+            var menus = allMenus.Where(m =>
+            {
                 // 系统管理员拥有所有菜单
                 if (role.RoleKey == "system_admin") return true;
-                
+
                 // 安全管理员拥有安全相关菜单
-                if (role.RoleKey == "security_admin") 
+                if (role.RoleKey == "security_admin")
                     return m.MenuName.Contains("安全") || m.MenuName.Contains("权限");
-                
+
                 // 业务管理员拥有业务相关菜单
-                if (role.RoleKey == "biz_manager") 
+                if (role.RoleKey == "biz_manager")
                     return m.MenuName.Contains("业务") || m.MenuName.Contains("管理");
-                
+
                 // 人事管理员拥有人事相关菜单
                 if (role.RoleKey == "hr_manager")
                     return m.MenuName.Contains("人事") || m.MenuName.Contains("员工");
-                
+
                 // 财务管理员拥有财务相关菜单
                 if (role.RoleKey == "fin_manager")
                     return m.MenuName.Contains("财务") || m.MenuName.Contains("会计");
-                
+
                 // 生产管理员拥有生产相关菜单
                 if (role.RoleKey == "prod_manager")
                     return m.MenuName.Contains("生产") || m.MenuName.Contains("制造");
-                
+
                 // 品质管理员拥有品质相关菜单
                 if (role.RoleKey == "qc_manager")
                     return m.MenuName.Contains("品质") || m.MenuName.Contains("质量");
-                
+
                 // 仓库管理员拥有仓库相关菜单
                 if (role.RoleKey == "wh_manager")
                     return m.MenuName.Contains("仓库") || m.MenuName.Contains("仓储");
-                
+
                 // 库存管理员拥有库存相关菜单
                 if (role.RoleKey == "inv_manager")
                     return m.MenuName.Contains("库存") || m.MenuName.Contains("仓储");
-                
+
                 // 采购管理员拥有采购相关菜单
                 if (role.RoleKey == "purchase_manager")
                     return m.MenuName.Contains("采购") || m.MenuName.Contains("购买");
-                
+
                 // 供应商管理员拥有供应商相关菜单
                 if (role.RoleKey == "supplier_manager")
                     return m.MenuName.Contains("供应商") || m.MenuName.Contains("采购");
-                
+
                 // 销售管理员拥有销售相关菜单
                 if (role.RoleKey == "sales_manager")
                     return m.MenuName.Contains("销售") || m.MenuName.Contains("营销");
-                
+
                 // 客户管理员拥有客户相关菜单
                 if (role.RoleKey == "customer_manager")
                     return m.MenuName.Contains("客户") || m.MenuName.Contains("销售");
-                
+
                 // 其他角色根据角色名称匹配对应的菜单
                 return m.MenuName.Contains(role.RoleName.Replace("管理员", ""));
             }).ToList();
@@ -382,7 +390,7 @@ public class HbtDbSeedRelation
                 {
                     RoleId = role.Id,
                     MenuId = menu.Id,
-                    TenantId = tenantId,
+
                     CreateBy = "Hbt365",
                     CreateTime = DateTime.Now,
                     UpdateBy = "Hbt365",
@@ -390,7 +398,7 @@ public class HbtDbSeedRelation
                 };
 
                 var existingRoleMenu = await _roleMenuRepository.GetFirstAsync(rm =>
-                    rm.RoleId == roleMenu.RoleId && rm.MenuId == roleMenu.MenuId && rm.TenantId == tenantId);
+                    rm.RoleId == roleMenu.RoleId && rm.MenuId == roleMenu.MenuId);
 
                 if (existingRoleMenu == null)
                 {
@@ -413,7 +421,7 @@ public class HbtDbSeedRelation
                     Id = nextId++,
                     UserId = user.Id,
                     RoleId = role.Id,
-                    TenantId = tenantId,
+
                     CreateBy = "Hbt365",
                     CreateTime = DateTime.Now,
                     UpdateBy = "Hbt365",
@@ -421,7 +429,7 @@ public class HbtDbSeedRelation
                 };
 
                 var existingUserRole = await _userRoleRepository.GetFirstAsync(ur =>
-                    ur.UserId == userRole.UserId && ur.TenantId == tenantId);
+                    ur.UserId == userRole.UserId);
 
                 if (existingUserRole == null)
                 {
@@ -431,58 +439,59 @@ public class HbtDbSeedRelation
                 }
 
                 // 3.2 创建用户-部门关联（一个用户一个部门，根据角色分配）
-                var depts = allDepts.Where(d => {
+                var depts = allDepts.Where(d =>
+                {
                     // 系统管理员可以管理所有部门
                     if (role.RoleKey == "system_admin") return true;
-                    
+
                     // 安全管理员管理安全相关部门
-                    if (role.RoleKey == "security_admin") 
+                    if (role.RoleKey == "security_admin")
                         return d.DeptName.Contains("安全") || d.DeptName.Contains("IT");
-                    
+
                     // 业务管理员管理业务相关部门
-                    if (role.RoleKey == "biz_manager") 
+                    if (role.RoleKey == "biz_manager")
                         return d.DeptName.Contains("业务") || d.DeptName.Contains("管理");
-                    
+
                     // 人事管理员管理人事相关部门
                     if (role.RoleKey == "hr_manager")
                         return d.DeptName.Contains("人事") || d.DeptName.Contains("人力资源");
-                    
+
                     // 财务管理员管理财务相关部门
                     if (role.RoleKey == "fin_manager")
                         return d.DeptName.Contains("财务") || d.DeptName.Contains("会计");
-                    
+
                     // 生产管理员管理生产相关部门
                     if (role.RoleKey == "prod_manager")
                         return d.DeptName.Contains("生产") || d.DeptName.Contains("制造");
-                    
+
                     // 品质管理员管理品质相关部门
                     if (role.RoleKey == "qc_manager")
                         return d.DeptName.Contains("品质") || d.DeptName.Contains("质量");
-                    
+
                     // 仓库管理员管理仓库相关部门
                     if (role.RoleKey == "wh_manager")
                         return d.DeptName.Contains("仓库") || d.DeptName.Contains("仓储");
-                    
+
                     // 库存管理员管理库存相关部门
                     if (role.RoleKey == "inv_manager")
                         return d.DeptName.Contains("库存") || d.DeptName.Contains("仓储");
-                    
+
                     // 采购管理员管理采购相关部门
                     if (role.RoleKey == "purchase_manager")
                         return d.DeptName.Contains("采购") || d.DeptName.Contains("购买");
-                    
+
                     // 供应商管理员管理供应商相关部门
                     if (role.RoleKey == "supplier_manager")
                         return d.DeptName.Contains("供应商") || d.DeptName.Contains("采购");
-                    
+
                     // 销售管理员管理销售相关部门
                     if (role.RoleKey == "sales_manager")
                         return d.DeptName.Contains("销售") || d.DeptName.Contains("营销");
-                    
+
                     // 客户管理员管理客户相关部门
                     if (role.RoleKey == "customer_manager")
                         return d.DeptName.Contains("客户") || d.DeptName.Contains("销售");
-                    
+
                     // 其他角色根据角色名称匹配对应的部门
                     return d.DeptName.Contains(role.RoleName.Replace("管理员", ""));
                 }).ToList();
@@ -495,7 +504,7 @@ public class HbtDbSeedRelation
                         Id = nextId++,
                         UserId = user.Id,
                         DeptId = dept.Id,
-                        TenantId = tenantId,
+
                         CreateBy = "Hbt365",
                         CreateTime = DateTime.Now,
                         UpdateBy = "Hbt365",
@@ -503,7 +512,7 @@ public class HbtDbSeedRelation
                     };
 
                     var existingUserDept = await _userDeptRepository.GetFirstAsync(ud =>
-                        ud.UserId == userDept.UserId && ud.TenantId == tenantId);
+                        ud.UserId == userDept.UserId);
 
                     if (existingUserDept == null)
                     {
@@ -523,7 +532,7 @@ public class HbtDbSeedRelation
                     Id = nextId++,
                     UserId = user.Id,
                     PostId = post.Id,
-                    TenantId = tenantId,
+
                     CreateBy = "Hbt365",
                     CreateTime = DateTime.Now,
                     UpdateBy = "Hbt365",
@@ -531,7 +540,7 @@ public class HbtDbSeedRelation
                 };
 
                 var existingUserPost = await _userPostRepository.GetFirstAsync(up =>
-                    up.UserId == userPost.UserId && up.TenantId == tenantId);
+                    up.UserId == userPost.UserId);
 
                 if (existingUserPost == null)
                 {
@@ -544,4 +553,131 @@ public class HbtDbSeedRelation
 
         return (insertCount, updateCount);
     }
-} 
+
+    /// <summary>
+    /// 初始化用户租户关联数据
+    /// </summary>
+    private async Task<(int, int)> InitializeUserTenantRelationsAsync(long tenantId)
+    {
+        int insertCount = 0;
+        int updateCount = 0;
+
+        try
+        {
+            // 获取所有用户
+            var allUsers = await _userRepository.GetListAsync(u => u.IsDeleted == 0);
+            if (!allUsers.Any())
+            {
+                _logger.Info("未找到任何用户，跳过用户租户关联初始化");
+                return (0, 0);
+            }
+
+            // 获取所有租户
+            var allTenants = await _tenantRepository.GetListAsync(t => t.IsDeleted == 0);
+            if (!allTenants.Any())
+            {
+                _logger.Info("未找到任何租户，跳过用户租户关联初始化");
+                return (0, 0);
+            }
+
+            foreach (var user in allUsers)
+            {
+                // 如果是 admin 用户，关联到所有租户
+                if (user.UserName == "admin")
+                {
+                    foreach (var tenant in allTenants)
+                    {
+                        // 检查用户租户关联是否存在
+                        var existingUserTenant = await _userTenantRepository.GetFirstAsync(ut =>
+                            ut.UserId == user.Id && ut.TenantId == tenant.Id);
+
+                        if (existingUserTenant == null)
+                        {
+                            // 创建新的用户租户关联
+                            var userTenant = new HbtUserTenant
+                            {
+                                UserId = user.Id,
+                                TenantId = tenant.Id,
+                                IsDefault = tenant.IsDefault == 1 ? 1 : 0,
+                                Status = 0,
+                                CreateBy = "Hbt365",
+                                CreateTime = DateTime.Now,
+                                UpdateBy = "Hbt365",
+                                UpdateTime = DateTime.Now
+                            };
+
+                            await _userTenantRepository.CreateAsync(userTenant);
+                            insertCount++;
+                            _logger.Info($"[创建] 用户租户关联 - 用户:{user.UserName}, 租户:{tenant.TenantName}");
+                        }
+                        else
+                        {
+                            // 更新现有用户租户关联
+                            existingUserTenant.IsDefault = tenant.IsDefault == 1 ? 1 : 0;
+                            existingUserTenant.Status = 0;
+                            existingUserTenant.UpdateBy  = "Hbt365";
+                            existingUserTenant.UpdateTime = DateTime.Now;
+
+                            await _userTenantRepository.UpdateAsync(existingUserTenant);
+                            updateCount++;
+                            _logger.Info($"[更新] 用户租户关联 - 用户:{user.UserName}, 租户:{tenant.TenantName}");
+                        }
+                    }
+                }
+                else
+                {
+                    // 其他用户只关联到指定租户
+                    var tenant = await _tenantRepository.GetFirstAsync(t => t.Id == tenantId && t.IsDeleted == 0);
+                    if (tenant == null)
+                    {
+                        _logger.Info($"未找到租户ID为{tenantId}的租户，跳过用户租户关联初始化");
+                        continue;
+                    }
+
+                    // 检查用户租户关联是否存在
+                    var existingUserTenant = await _userTenantRepository.GetFirstAsync(ut =>
+                        ut.UserId == user.Id && ut.TenantId == tenantId);
+
+                    if (existingUserTenant == null)
+                    {
+                        // 创建新的用户租户关联
+                        var userTenant = new HbtUserTenant
+                        {
+                            UserId = user.Id,
+                            TenantId = tenantId,
+                            IsDefault = tenant.IsDefault == 1 ? 1 : 0,
+                            Status = 0,
+                            CreateBy = "Hbt365",
+                            CreateTime = DateTime.Now,
+                            UpdateBy = "Hbt365",
+                            UpdateTime = DateTime.Now
+                        };
+
+                        await _userTenantRepository.CreateAsync(userTenant);
+                        insertCount++;
+                        _logger.Info($"[创建] 用户租户关联 - 用户:{user.UserName}, 租户:{tenant.TenantName}");
+                    }
+                    else
+                    {
+                        // 更新现有用户租户关联
+                        existingUserTenant.IsDefault = tenant.IsDefault == 1 ? 1 : 0;
+                        existingUserTenant.Status = 0;
+                        existingUserTenant.UpdateBy  = "Hbt365";
+                        existingUserTenant.UpdateTime = DateTime.Now;
+
+                        await _userTenantRepository.UpdateAsync(existingUserTenant);
+                        updateCount++;
+                        _logger.Info($"[更新] 用户租户关联 - 用户:{user.UserName}, 租户:{tenant.TenantName}");
+                    }
+                }
+            }
+
+            return (insertCount, updateCount);
+        }
+        catch (Exception ex)
+        {
+            _logger.Error("初始化用户租户关联数据时发生错误: {0}", ex.Message, ex);
+            throw;
+        }
+    }
+}

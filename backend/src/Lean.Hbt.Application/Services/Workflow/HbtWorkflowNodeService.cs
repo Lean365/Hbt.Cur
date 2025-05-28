@@ -44,13 +44,15 @@ namespace Lean.Hbt.Application.Services.Workflow
         /// <param name="nodeRepository">节点仓储接口</param>
         /// <param name="httpContextAccessor">HTTP上下文访问器</param>
         /// <param name="currentUser">当前用户服务</param>
+        /// <param name="currentTenant">当前租户服务</param>
         /// <param name="localization">本地化服务</param>
         public HbtWorkflowNodeService(
             IHbtLogger logger,
             IHbtRepository<HbtWorkflowNode> nodeRepository,
             IHttpContextAccessor httpContextAccessor,
             IHbtCurrentUser currentUser,
-            IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
+            IHbtCurrentTenant currentTenant,
+            IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, currentTenant, localization)
         {
             _nodeRepository = nodeRepository;
         }

@@ -92,15 +92,5 @@ public class HbtSchedule : HbtBaseEntity
     /// </summary>
     [SugarColumn(ColumnName = "participants", ColumnDescription = "参与人", IsNullable = true, DefaultValue = "", ColumnDataType = "text", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
     public string? Participants { get; set; }
-    /// <summary>
-    /// 租户ID
-    /// </summary>
-    [SugarColumn(ColumnName = "tenant_id", ColumnDescription = "租户ID", ColumnDataType = "bigint", IsNullable = false)]
-    public long TenantId { get; set; }
 
-    /// <summary>
-    /// 租户
-    /// </summary>
-    [Navigate(NavigateType.OneToOne, nameof(TenantId))]
-    public HbtTenant? Tenant { get; set; }
 }

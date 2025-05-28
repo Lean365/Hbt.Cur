@@ -7,9 +7,14 @@
 // 描述    : 当前租户实现
 //===================================================================
 
+#nullable enable
+
 using System.Threading;
 using Microsoft.AspNetCore.Http;
 using Lean.Hbt.Domain.IServices.Extensions;
+using Lean.Hbt.Common.Exceptions;
+using Lean.Hbt.Common.Constants;
+using Microsoft.Extensions.Configuration;
 
 namespace Lean.Hbt.Infrastructure.Services.Identity
 {
@@ -36,8 +41,15 @@ namespace Lean.Hbt.Infrastructure.Services.Identity
         {
             get
             {
-                var tenantId = _httpContextAccessor.HttpContext?.User.FindFirst("tid")?.Value;
-                return tenantId != null ? long.Parse(tenantId) : 0;
+                // 从JWT中获取租户ID
+                var tenantIdClaim = _httpContextAccessor.HttpContext?.User?.FindFirst("tid");
+                if (tenantIdClaim != null && long.TryParse(tenantIdClaim.Value, out var tenantId))
+                {
+                    return tenantId;
+                }
+
+                // 如果JWT中没有租户ID，则返回静态属性中的值
+                return _currentTenantId.Value.HasValue ? _currentTenantId.Value.Value : -1;
             }
         }
 
@@ -53,20 +65,19 @@ namespace Lean.Hbt.Infrastructure.Services.Identity
         }
 
         /// <summary>
-        /// 获取或设置当前租户ID（静态属性）
+        /// 设置当前租户ID
         /// </summary>
-        public static long? CurrentTenantId
+        public void SetTenantId(long tenantId)
         {
-            get => _currentTenantId.Value;
-            set => _currentTenantId.Value = value;
+            _currentTenantId.Value = tenantId;
         }
 
         /// <summary>
         /// 清除当前租户信息
         /// </summary>
-        public static void Clear()
+        public void Clear()
         {
-            CurrentTenantId = null;
+            _currentTenantId.Value = null;
         }
     }
 }

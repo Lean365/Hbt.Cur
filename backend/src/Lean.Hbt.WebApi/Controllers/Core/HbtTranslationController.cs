@@ -32,9 +32,14 @@ namespace Lean.Hbt.WebApi.Controllers.Core
         /// <param name="translationService">翻译服务</param>
         /// <param name="localization">本地化服务</param>
         /// <param name="logger">日志服务</param>
-        public HbtTranslationController(IHbtTranslationService translationService,
-                        IHbtLocalizationService localization,
-            IHbtLogger logger) : base(localization, logger)
+        /// <param name="currentUser">当前用户服务</param>
+        /// <param name="currentTenant">当前租户服务</param>
+        public HbtTranslationController(
+            IHbtTranslationService translationService,
+            IHbtCurrentUser currentUser,
+            IHbtCurrentTenant currentTenant,
+            IHbtLocalizationService localization,
+            IHbtLogger logger) : base(logger, currentUser, currentTenant, localization)
         {
             _translationService = translationService;
         }
@@ -72,6 +77,7 @@ namespace Lean.Hbt.WebApi.Controllers.Core
         /// <returns>翻译ID</returns>
         [HttpPost]
         [HbtPerm("core:language:create")]
+        [HbtLog("创建翻译")]
         public async Task<IActionResult> CreateAsync([FromBody] HbtTranslationCreateDto input)
         {
             var result = await _translationService.CreateAsync(input);
@@ -85,6 +91,7 @@ namespace Lean.Hbt.WebApi.Controllers.Core
         /// <returns>是否成功</returns>
         [HttpPut]
         [HbtPerm("core:language:update")]
+        [HbtLog("更新翻译")]
         public async Task<IActionResult> UpdateAsync([FromBody] HbtTranslationUpdateDto input)
         {
             var result = await _translationService.UpdateAsync(input);
@@ -98,6 +105,7 @@ namespace Lean.Hbt.WebApi.Controllers.Core
         /// <returns>是否成功</returns>
         [HttpDelete("{TranslationId}")]
         [HbtPerm("core:language:delete")]
+        [HbtLog("删除翻译")]
         public async Task<IActionResult> DeleteAsync(long TranslationId)
         {
             var result = await _translationService.DeleteAsync(TranslationId);
@@ -111,6 +119,7 @@ namespace Lean.Hbt.WebApi.Controllers.Core
         /// <returns>是否成功</returns>
         [HttpDelete("batch")]
         [HbtPerm("core:language:delete")]
+        [HbtLog("批量删除翻译")]
         public async Task<IActionResult> BatchDeleteAsync([FromBody] long[] TranslationIds)
         {
             var result = await _translationService.BatchDeleteAsync(TranslationIds);
@@ -178,6 +187,7 @@ namespace Lean.Hbt.WebApi.Controllers.Core
         /// <param name="status">状态</param>
         /// <returns>是否成功</returns>
         [HttpPut("{TranslationId}/status")]
+        [HbtLog("更新翻译状态")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -244,9 +254,80 @@ namespace Lean.Hbt.WebApi.Controllers.Core
         /// }
         /// </remarks>
         [HttpGet("transposed")]
-        public async Task<IActionResult> GetTransposedDataAsync([FromQuery] HbtTranslationQueryDto query)
+        [HbtPerm("core:language:list")]
+       
+        public async Task<IActionResult> GetTransposedDataAsync([FromQuery] HbtTransposedQueryDto query)
         {
             var result = await _translationService.GetTransposedDataAsync(query);
+            return Success(result);
+        }
+
+        /// <summary>
+        /// 获取转置后的翻译详情
+        /// </summary>
+        /// <param name="transKey">翻译键</param>
+        /// <returns>转置后的翻译详情</returns>
+        /// <remarks>
+        /// 返回数据结构:
+        /// {
+        ///   "transKey": "key1",
+        ///   "moduleName": "模块1",
+        ///   "orderNum": 1,
+        ///   "status": 0,
+        ///   "remark": "备注",
+        ///   "createBy": "创建人",
+        ///   "createTime": "2024-03-20 10:00:00",
+        ///   "updateBy": "更新人",
+        ///   "updateTime": "2024-03-20 11:00:00",
+        ///   "translations": {
+        ///     "zh-CN": {
+        ///       "translationId": 1,
+        ///       "langCode": "zh-CN",
+        ///       "transValue": "中文翻译",
+        ///       "status": 0
+        ///     },
+        ///     "en-US": {
+        ///       "translationId": 2,
+        ///       "langCode": "en-US",
+        ///       "transValue": "English Translation",
+        ///       "status": 0
+        ///     }
+        ///   }
+        /// }
+        /// </remarks>
+        [HttpGet("transposed/{transKey}")]
+        [HbtPerm("core:language:query")]
+        public async Task<IActionResult> GetTransposedDetailAsync(string transKey)
+        {
+            var result = await _translationService.GetTransposedDetailAsync(transKey);
+            return Success(result);
+        }
+
+        /// <summary>
+        /// 创建转置翻译数据
+        /// </summary>
+        /// <param name="input">转置数据创建对象</param>
+        /// <returns>是否成功</returns>
+        [HttpPost("transposed")]
+        [HbtPerm("core:language:create")]
+         [HbtLog("创建转置翻译数据")]
+        public async Task<IActionResult> CreateTransposedAsync([FromBody] HbtTransposedDto input)
+        {
+            var result = await _translationService.CreateTransposedAsync(input);
+            return Success(result);
+        }
+
+        /// <summary>
+        /// 更新转置翻译数据
+        /// </summary>
+        /// <param name="input">转置数据更新对象</param>
+        /// <returns>是否成功</returns>
+        [HttpPut("transposed")]
+        [HbtPerm("core:language:update")]
+        [HbtLog("更新转置翻译数据")]
+        public async Task<IActionResult> UpdateTransposedAsync([FromBody] HbtTransposedDto input)
+        {
+            var result = await _translationService.UpdateTransposedAsync(input);
             return Success(result);
         }
     }

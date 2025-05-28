@@ -222,6 +222,11 @@ export interface HbtSignalRDevice {
   location?: string;
   /** 设备指纹 */
   deviceFingerprint?: string;
+  /** 环境信息 */
+  environment?: {
+    timezone?: string;
+    language?: string;
+  };
 }
 
 /**

@@ -35,7 +35,6 @@ declare module 'vue' {
     AInputGroup: typeof import('ant-design-vue/es')['InputGroup']
     AInputNumber: typeof import('ant-design-vue/es')['InputNumber']
     AInputPassword: typeof import('ant-design-vue/es')['InputPassword']
-    AInputSearch: typeof import('ant-design-vue/es')['InputSearch']
     ALayout: typeof import('ant-design-vue/es')['Layout']
     ALayoutContent: typeof import('ant-design-vue/es')['LayoutContent']
     ALayoutHeader: typeof import('ant-design-vue/es')['LayoutHeader']
@@ -72,6 +71,7 @@ declare module 'vue' {
     ATree: typeof import('ant-design-vue/es')['Tree']
     ATreeSelect: typeof import('ant-design-vue/es')['TreeSelect']
     AUpload: typeof import('ant-design-vue/es')['Upload']
+    DatabaseConnection: typeof import('./components/DatabaseConnection/index.vue')['default']
     DownOutlined: typeof import('@ant-design/icons-vue')['DownOutlined']
     HbtAvatarUpload: typeof import('./components/Business/HbtUpload/HbtAvatarUpload.vue')['default']
     HbtBreadcrumb: typeof import('./components/Navigation/HbtBreadcrumb/index.vue')['default']
@@ -113,6 +113,7 @@ declare module 'vue' {
     HbtSiderMenu: typeof import('./components/Navigation/HbtSiderMenu/index.vue')['default']
     HbtSliderCaptcha: typeof import('./components/Base/HbtSliderCaptcha/index.vue')['default']
     HbtTable: typeof import('./components/Business/HbtTable/index.vue')['default']
+    HbtTenant: typeof import('./components/Base/HbtTenant/index.vue')['default']
     HbtTheme: typeof import('./components/Base/HbtTheme/index.vue')['default']
     HbtToolbar: typeof import('./components/Business/HbtToolbar/index.vue')['default']
     HbtTreeSelect: typeof import('./components/Business/HbtTreeSelect/index.vue')['default']
@@ -124,5 +125,6 @@ declare module 'vue' {
     RouterView: typeof import('vue-router')['RouterView']
     SolutionOutlined: typeof import('@ant-design/icons-vue')['SolutionOutlined']
     TeamOutlined: typeof import('@ant-design/icons-vue')['TeamOutlined']
+    TenantSwitch: typeof import('./components/TenantSwitch.vue')['default']
   }
 }

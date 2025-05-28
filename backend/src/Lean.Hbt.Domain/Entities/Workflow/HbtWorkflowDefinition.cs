@@ -1,3 +1,7 @@
+#nullable enable
+
+using SqlSugar;
+
 //===================================================================
 // 项目名 : Lean.Hbt
 // 文件名 : HbtWorkflowDefinition.cs
@@ -6,9 +10,6 @@
 // 版本号 : V.0.0.1
 // 描述    : 工作流定义实体类
 //===================================================================
-
-using Lean.Hbt.Domain.Entities.Identity;
-using SqlSugar;
 
 namespace Lean.Hbt.Domain.Entities.Workflow
 {
@@ -20,6 +21,7 @@ namespace Lean.Hbt.Domain.Entities.Workflow
     /// 创建时间: 2024-01-22
     /// </remarks>
     [SugarTable("hbt_workflow_definition", "工作流定义表")]
+    [SugarIndex("ix_workflow_name", nameof(WorkflowName), OrderByType.Asc, true)]
     public class HbtWorkflowDefinition : HbtBaseEntity
     {
         /// <summary>
@@ -48,28 +50,23 @@ namespace Lean.Hbt.Domain.Entities.Workflow
         public string? FormConfig { get; set; }
 
         /// <summary>
-        /// 流程配置(JSON格式)
-        /// 包含：节点布局、连线、条件等
+        /// 工作流配置(JSON格式)
+        /// 包含：节点定义、连线定义、变量定义等
         /// </summary>
-        [SugarColumn(ColumnName = "workflow_config", ColumnDescription = "流程配置(JSON格式)", ColumnDataType = "text", IsNullable = false)]
+        [SugarColumn(ColumnName = "workflow_config", ColumnDescription = "工作流配置(JSON格式)", ColumnDataType = "text", IsNullable = false)]
         public string? WorkflowConfig { get; set; }
 
         /// <summary>
-        /// 工作流状态
+        /// 状态(0=草稿 1=已发布 2=已停用)
         /// </summary>
-        [SugarColumn(ColumnName = "status", ColumnDescription = "工作流状态", ColumnDataType = "int", IsNullable = false)]
+        [SugarColumn(ColumnName = "status", ColumnDescription = "状态", ColumnDataType = "int", IsNullable = false)]
         public int Status { get; set; }
-        /// <summary>
-        /// 租户ID
-        /// </summary>
-        [SugarColumn(ColumnName = "tenant_id", ColumnDescription = "租户ID", ColumnDataType = "bigint", IsNullable = false)]
-        public long TenantId { get; set; }
 
         /// <summary>
-        /// 租户
+        /// 备注
         /// </summary>
-        [Navigate(NavigateType.OneToOne, nameof(TenantId))]
-        public HbtTenant? Tenant { get; set; }
+        [SugarColumn(ColumnName = "remark", ColumnDescription = "备注", Length = 500, ColumnDataType = "nvarchar", IsNullable = true)]
+        public string? Remark { get; set; }
 
         /// <summary>
         /// 流程节点列表

@@ -77,7 +77,7 @@ function backendStatusPlugin(proxyTarget: string, locale: string = 'zh-CN'): Plu
         const options = {
           hostname: url.hostname,
           port: url.port,
-          path: '/api/HbtLanguage/supported',
+          path: '/api/HbtLanguage/options',
           method: 'GET',
           headers: {
             'Accept': 'application/json'

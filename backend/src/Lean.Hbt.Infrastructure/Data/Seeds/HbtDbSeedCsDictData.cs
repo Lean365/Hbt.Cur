@@ -8,7 +8,6 @@
 //===================================================================
 
 using Lean.Hbt.Domain.Entities.Core;
-using Lean.Hbt.Domain.IServices.Extensions;
 
 namespace Lean.Hbt.Infrastructure.Data.Seeds;
 
@@ -115,8 +114,7 @@ public class HbtDbSeedCsDictData
                 dictData.CreateTime = DateTime.Now;
                 dictData.UpdateBy = "Hbt365";
                 dictData.UpdateTime = DateTime.Now;
-                dictData.TenantId = tenantId;
-                
+
                 await _dictDataRepository.CreateAsync(dictData);
                 insertCount++;
             }
@@ -128,7 +126,6 @@ public class HbtDbSeedCsDictData
                 existingDictData.Remark = dictData.Remark;
                 existingDictData.UpdateBy = dictData.UpdateBy;
                 existingDictData.UpdateTime = dictData.UpdateTime;
-                existingDictData.TenantId = tenantId;
                 await _dictDataRepository.UpdateAsync(existingDictData);
                 updateCount++;
             }
@@ -151,7 +148,6 @@ public class HbtDbSeedCsDictData
                 DictValue = "1",
                 OrderNum = 1,
                 Status = 1,
-                TenantId = 1,
                 Remark = "战略客户",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -165,7 +161,7 @@ public class HbtDbSeedCsDictData
                 DictValue = "2",
                 OrderNum = 2,
                 Status = 1,
-                TenantId = 1,
+
                 Remark = "重点客户",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -182,7 +178,6 @@ public class HbtDbSeedCsDictData
             var existingDictData = await _dictDataRepository.GetFirstAsync(x => x.DictType == dictData.DictType && x.DictValue == dictData.DictValue);
             if (existingDictData == null)
             {
-                dictData.TenantId = tenantId;
                 dictData.CreateBy = "Hbt365";
                 dictData.CreateTime = DateTime.Now;
                 dictData.UpdateBy = "Hbt365";
@@ -198,7 +193,6 @@ public class HbtDbSeedCsDictData
                 existingDictData.Remark = dictData.Remark;
                 existingDictData.UpdateBy = dictData.UpdateBy;
                 existingDictData.UpdateTime = dictData.UpdateTime;
-                existingDictData.TenantId = tenantId;
                 await _dictDataRepository.UpdateAsync(existingDictData);
                 updateCount++;
             }
@@ -206,4 +200,4 @@ public class HbtDbSeedCsDictData
 
         return (insertCount, updateCount);
     }
-} 
+}

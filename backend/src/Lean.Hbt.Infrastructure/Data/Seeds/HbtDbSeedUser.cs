@@ -76,12 +76,12 @@ public class HbtDbSeedUser
                 existingUser.Avatar = user.Avatar;
                 existingUser.Status = user.Status;
                 existingUser.LastPasswordChangeTime = user.LastPasswordChangeTime;
-                
+
                 // 统一处理租户和审计字段
-                existingUser.TenantId = systemTenantId;
+
                 existingUser.UpdateBy = "Hbt365";
                 existingUser.UpdateTime = now;
-                
+
                 systemToUpdate.Add(existingUser);
             }
             else if (!existingPhones.Contains(user.PhoneNumber))
@@ -90,14 +90,14 @@ public class HbtDbSeedUser
                 user.Password = hash;
                 user.Salt = salt;
                 user.Iterations = iterations;
-                
+
                 // 统一处理租户和审计字段
-                user.TenantId = systemTenantId;
+
                 user.CreateBy = "Hbt365";
                 user.CreateTime = now;
                 user.UpdateBy = "Hbt365";
                 user.UpdateTime = now;
-                
+
                 systemToInsert.Add(user);
             }
         }
@@ -128,7 +128,7 @@ public class HbtDbSeedUser
         var now = DateTime.Now;
         var batchSize = 1000;
         var totalBatches = (int)Math.Ceiling((double)totalCount / batchSize);
-        var existingUsers = await _userRepository.GetListAsync(u => u.UserName.StartsWith("user") && u.UserName != "user" && u.TenantId == systemTenantId);
+        var existingUsers = await _userRepository.GetListAsync(u => u.UserName.StartsWith("user") && u.UserName != "user");
         var existingUserDict = existingUsers.ToDictionary(u => u.UserName, u => u);
         var existingPhones = existingUsers.Select(u => u.PhoneNumber).ToHashSet();
 
@@ -164,12 +164,12 @@ public class HbtDbSeedUser
                     existingUser.IsLock = 0;
                     existingUser.ErrorLimit = 0;
                     existingUser.LoginCount = 0;
-                    
+
                     // 统一处理租户和审计字段
-                    existingUser.TenantId = systemTenantId;
+
                     existingUser.UpdateBy = "Hbt365";
                     existingUser.UpdateTime = now;
-                    
+
                     toUpdate.Add(existingUser);
                 }
                 else if (!existingPhones.Contains(phoneNumber))
@@ -195,13 +195,13 @@ public class HbtDbSeedUser
                         Password = hash,
                         Salt = salt,
                         Iterations = iterations,
-                        TenantId = systemTenantId,
+
                         CreateBy = "Hbt365",
                         CreateTime = now,
                         UpdateBy = "Hbt365",
                         UpdateTime = now
                     };
-                    
+
                     toInsert.Add(newUser);
                 }
             }

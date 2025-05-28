@@ -197,7 +197,7 @@ public class HbtLogsSeedTranslation
 
             if (existingTranslation == null)
             {
-                translation.TenantId = tenantId;
+
                 translation.CreateBy = "Hbt365";
                 translation.CreateTime = DateTime.Now;
                 translation.UpdateBy = "Hbt365";
@@ -210,7 +210,7 @@ public class HbtLogsSeedTranslation
             else
             {
                 existingTranslation.TransValue = translation.TransValue;
-                existingTranslation.TenantId = tenantId;
+
                 existingTranslation.UpdateBy = "Hbt365";
                 existingTranslation.UpdateTime = DateTime.Now;
 

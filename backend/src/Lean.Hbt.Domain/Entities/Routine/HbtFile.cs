@@ -1,3 +1,8 @@
+#nullable enable
+
+using Lean.Hbt.Domain.Entities.Identity;
+using SqlSugar;
+
 //===================================================================
 // 项目名 : Lean.Hbt.Domain.Entities.Routine
 // 文件名 : HbtFile.cs
@@ -6,9 +11,6 @@
 // 版本号 : V1.0.0
 // 描述   : 文件实体
 //===================================================================
-
-using Lean.Hbt.Domain.Entities.Identity;
-using SqlSugar;
 
 namespace Lean.Hbt.Domain.Entities.Routine
 {
@@ -89,17 +91,5 @@ namespace Lean.Hbt.Domain.Entities.Routine
         /// </summary>
         [SugarColumn(ColumnName = "file_download_count", ColumnDescription = "下载次数", IsNullable = false, DefaultValue = "0", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
         public int FileDownloadCount { get; set; }
-
-        /// <summary>
-        /// 租户ID
-        /// </summary>
-        [SugarColumn(ColumnName = "tenant_id", ColumnDescription = "租户ID", ColumnDataType = "bigint", IsNullable = false)]
-        public long TenantId { get; set; }
-
-        /// <summary>
-        /// 租户
-        /// </summary>
-        [Navigate(NavigateType.OneToOne, nameof(TenantId))]
-        public HbtTenant? Tenant { get; set; }
     }
 }

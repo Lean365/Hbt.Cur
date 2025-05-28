@@ -7,11 +7,8 @@
 // 描述   : 工作流本地化资源种子
 //===================================================================
 
-using Lean.Hbt.Common.Utils;
 using Lean.Hbt.Domain.Entities.Core;
-using Lean.Hbt.Domain.IServices.Extensions;
 using Lean.Hbt.Infrastructure.Data.Contexts;
-using SqlSugar;
 
 namespace Lean.Hbt.Infrastructure.Data.Seeds;
 
@@ -154,12 +151,12 @@ public class HbtWorkflowSeedTranslation
 
             if (existingTranslation == null)
             {
-                translation.TenantId = tenantId;
+
                 translation.CreateBy = "Hbt365";
                 translation.CreateTime = DateTime.Now;
                 translation.UpdateBy = "Hbt365";
                 translation.UpdateTime = DateTime.Now;
-                
+
                 await _context.Client.Insertable(translation).ExecuteCommandAsync();
                 insertCount++;
                 _logger.Info($"[创建] 翻译 '{translation.TransKey}' ({translation.LangCode}) 创建成功");
@@ -167,7 +164,7 @@ public class HbtWorkflowSeedTranslation
             else
             {
                 existingTranslation.TransValue = translation.TransValue;
-                existingTranslation.TenantId = tenantId;
+
                 existingTranslation.UpdateBy = "Hbt365";
                 existingTranslation.UpdateTime = DateTime.Now;
 
@@ -180,4 +177,4 @@ public class HbtWorkflowSeedTranslation
         _logger.Info($"[操作] 翻译操作完成, 插入: {insertCount}, 更新: {updateCount}");
         return (insertCount, updateCount);
     }
-} 
+}

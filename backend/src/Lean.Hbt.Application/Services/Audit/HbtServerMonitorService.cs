@@ -33,11 +33,18 @@ public class HbtServerMonitorService : HbtBaseService, IHbtServerMonitorService
     /// <summary>
     /// 构造函数
     /// </summary>
+    /// <param name="logger">日志服务</param>
+    /// <param name="httpContextAccessor">HTTP上下文访问器</param>
+    /// <param name="currentUser">当前用户服务</param>
+    /// <param name="currentTenant">当前租户服务</param>
+    /// <param name="localization">本地化服务</param>
     public HbtServerMonitorService(
+
         IHbtLogger logger,
         IHttpContextAccessor httpContextAccessor,
         IHbtCurrentUser currentUser,
-        IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
+        IHbtCurrentTenant currentTenant,
+        IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, currentTenant, localization)
     {
         _startTime = DateTime.Now;
     }

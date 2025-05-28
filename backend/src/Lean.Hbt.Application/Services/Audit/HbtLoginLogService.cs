@@ -37,7 +37,7 @@ namespace Lean.Hbt.Application.Services.Audit
     public class HbtLoginLogService : HbtBaseService, IHbtLoginLogService
     {
         private readonly IHbtRepository<HbtLoginLog> _loginLogRepository;
-        private readonly IHbtLogger _logger;
+
 
         /// <summary>
         /// 构造函数
@@ -46,16 +46,18 @@ namespace Lean.Hbt.Application.Services.Audit
         /// <param name="logger">日志服务</param>
         /// <param name="httpContextAccessor">HTTP上下文访问器</param>
         /// <param name="currentUser">当前用户服务</param>
+        /// <param name="currentTenant">当前租户服务</param>
         /// <param name="localization">本地化服务</param>
         public HbtLoginLogService(
             IHbtRepository<HbtLoginLog> loginLogRepository,
             IHbtLogger logger,
             IHttpContextAccessor httpContextAccessor,
             IHbtCurrentUser currentUser,
-            IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
+            IHbtCurrentTenant currentTenant,
+            IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, currentTenant, localization)
         {
             _loginLogRepository = loginLogRepository ?? throw new ArgumentNullException(nameof(loginLogRepository));
-            _logger = logger;
+
         }
 
         /// <summary>

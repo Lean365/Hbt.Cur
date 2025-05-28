@@ -50,10 +50,6 @@ namespace Lean.Hbt.Application.Dtos.Audit
         /// </summary>
         public long UserId { get; set; }
 
-        /// <summary>
-        /// 租户ID
-        /// </summary>
-        public long? TenantId { get; set; }
 
         /// <summary>
         /// 用户名

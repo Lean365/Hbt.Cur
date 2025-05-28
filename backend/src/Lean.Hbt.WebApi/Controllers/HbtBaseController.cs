@@ -31,14 +31,28 @@ namespace Lean.Hbt.WebApi.Controllers
         protected readonly IHbtLogger _logger;
 
         /// <summary>
+        /// 当前租户服务
+        /// </summary>
+        protected readonly IHbtCurrentTenant _currentTenant;
+
+        /// <summary>
+        /// 当前用户服务
+        /// </summary>
+        protected readonly IHbtCurrentUser _currentUser;
+
+        /// <summary>
         /// 构造函数
         /// </summary>
-        /// <param name="localization">本地化服务</param>
         /// <param name="logger">日志服务</param>
-        protected HbtBaseController(IHbtLocalizationService localization, IHbtLogger logger)
+        /// <param name="currentUser">当前用户服务</param>
+        /// <param name="currentTenant">当前租户服务</param>
+        /// <param name="localization">本地化服务</param>
+        protected HbtBaseController(IHbtLogger logger, IHbtCurrentUser currentUser, IHbtCurrentTenant currentTenant, IHbtLocalizationService localization)
         {
-            _localization = localization;
             _logger = logger;
+            _currentUser = currentUser;
+            _currentTenant = currentTenant;
+            _localization = localization;
         }
 
         /// <summary>

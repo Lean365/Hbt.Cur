@@ -8,7 +8,6 @@
 //===================================================================
 
 using Lean.Hbt.Domain.Entities.Core;
-using Lean.Hbt.Domain.IServices.Extensions;
 
 namespace Lean.Hbt.Infrastructure.Data.Seeds;
 
@@ -47,7 +46,7 @@ public class HbtDbSeedQualityDictType
                 DictType = "sys_inspection_type",
                 OrderNum = 1,
                 Status = 0,
-                
+
                 Remark = "质量检验类型字典",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -60,7 +59,7 @@ public class HbtDbSeedQualityDictType
                 DictType = "sys_inspection_status",
                 OrderNum = 2,
                 Status = 0,
-                
+
                 Remark = "质量检验状态字典",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -73,7 +72,7 @@ public class HbtDbSeedQualityDictType
                 DictType = "sys_inspection_result",
                 OrderNum = 3,
                 Status = 0,
-                
+
                 Remark = "质量检验结果字典",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -86,7 +85,7 @@ public class HbtDbSeedQualityDictType
                 DictType = "sys_defect_type",
                 OrderNum = 4,
                 Status = 0,
-                
+
                 Remark = "不合格类型字典",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -99,7 +98,7 @@ public class HbtDbSeedQualityDictType
                 DictType = "sys_defect_level",
                 OrderNum = 5,
                 Status = 0,
-                
+
                 Remark = "不合格等级字典",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -112,7 +111,7 @@ public class HbtDbSeedQualityDictType
                 DictType = "sys_defect_disposition",
                 OrderNum = 6,
                 Status = 0,
-                
+
                 Remark = "不合格处理方式字典",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -125,7 +124,7 @@ public class HbtDbSeedQualityDictType
                 DictType = "sys_quality_level",
                 OrderNum = 7,
                 Status = 0,
-                
+
                 Remark = "质量等级字典",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -138,7 +137,7 @@ public class HbtDbSeedQualityDictType
                 DictType = "sys_quality_characteristic",
                 OrderNum = 8,
                 Status = 0,
-                
+
                 Remark = "质量特性字典",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -151,7 +150,7 @@ public class HbtDbSeedQualityDictType
                 DictType = "sys_quality_tool",
                 OrderNum = 9,
                 Status = 0,
-                
+
                 Remark = "质量工具字典",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -164,7 +163,7 @@ public class HbtDbSeedQualityDictType
                 DictType = "sys_quality_cost_type",
                 OrderNum = 10,
                 Status = 0,
-                
+
                 Remark = "质量成本类型字典",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -178,7 +177,7 @@ public class HbtDbSeedQualityDictType
             var existingDictType = await _dictTypeRepository.GetFirstAsync(d => d.DictType == dictType.DictType);
             if (existingDictType == null)
             {
-                dictType.TenantId = tenantId;
+
                 dictType.CreateBy = "Hbt365";
                 dictType.CreateTime = DateTime.Now;
                 dictType.UpdateBy = "Hbt365";
@@ -194,7 +193,7 @@ public class HbtDbSeedQualityDictType
                 existingDictType.IsBuiltin = dictType.IsBuiltin;
                 existingDictType.OrderNum = dictType.OrderNum;
                 existingDictType.Status = dictType.Status;
-                existingDictType.TenantId = tenantId;
+
                 existingDictType.Remark = dictType.Remark;
                 existingDictType.CreateBy = dictType.CreateBy;
                 existingDictType.CreateTime = dictType.CreateTime;
@@ -209,4 +208,4 @@ public class HbtDbSeedQualityDictType
 
         return (insertCount, updateCount);
     }
-} 
+}

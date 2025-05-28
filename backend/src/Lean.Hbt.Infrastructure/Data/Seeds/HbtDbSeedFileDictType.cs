@@ -46,7 +46,7 @@ public class HbtDbSeedFileDictType
                 DictType = "file_path",
                 OrderNum = 1,
                 Status = 1,
-                
+
                 Remark = "文件上传路径数据字典",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -59,7 +59,7 @@ public class HbtDbSeedFileDictType
                 DictType = "file_storage_location",
                 OrderNum = 2,
                 Status = 1,
-                
+
                 Remark = "文件存储物理位置数据字典",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -72,7 +72,7 @@ public class HbtDbSeedFileDictType
                 DictType = "file_storage_type",
                 OrderNum = 3,
                 Status = 1,
-                
+
                 Remark = "本地/云存储类型数据字典",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -85,7 +85,7 @@ public class HbtDbSeedFileDictType
                 DictType = "file_name_rule",
                 OrderNum = 4,
                 Status = 1,
-                
+
                 Remark = "文件命名规则数据字典",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -99,7 +99,6 @@ public class HbtDbSeedFileDictType
             var existingDictType = await _dictTypeRepository.GetFirstAsync(x => x.DictType == dictType.DictType);
             if (existingDictType == null)
             {
-                dictType.TenantId = tenantId;
                 dictType.CreateBy = "Hbt365";
                 dictType.CreateTime = DateTime.Now;
                 dictType.UpdateBy = "Hbt365";
@@ -115,7 +114,6 @@ public class HbtDbSeedFileDictType
                 existingDictType.Remark = dictType.Remark;
                 existingDictType.UpdateBy = dictType.UpdateBy;
                 existingDictType.UpdateTime = dictType.UpdateTime;
-                existingDictType.TenantId = tenantId;
                 await _dictTypeRepository.UpdateAsync(existingDictType);
                 updateCount++;
             }

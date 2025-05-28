@@ -1,3 +1,7 @@
+#nullable enable
+
+using SqlSugar;
+
 //===================================================================
 // 项目名 : Lean.Hbt
 // 文件名 : HbtOnlineMessage.cs
@@ -7,23 +11,14 @@
 // 描述    : 在线消息实体
 //===================================================================
 
-using SqlSugar;
-
 namespace Lean.Hbt.Domain.Entities.SignalR
 {
     /// <summary>
     /// 在线消息实体
     /// </summary>
     [SugarTable("hbt_signalr_message", "在线消息表")]
-    [SugarIndex("ix_tenant_message", nameof(TenantId), OrderByType.Asc, nameof(CreateTime), OrderByType.Desc)]
     public class HbtOnlineMessage : HbtBaseEntity
     {
-        /// <summary>
-        /// 租户ID
-        /// </summary>
-        [SugarColumn(ColumnName = "tenant_id", ColumnDescription = "租户ID", ColumnDataType = "bigint", IsNullable = false)]
-        public long TenantId { get; set; }
-
         /// <summary>
         /// 发送者ID
         /// </summary>

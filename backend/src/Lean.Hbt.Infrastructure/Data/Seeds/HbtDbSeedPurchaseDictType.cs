@@ -8,7 +8,6 @@
 //===================================================================
 
 using Lean.Hbt.Domain.Entities.Core;
-using Lean.Hbt.Domain.IServices.Extensions;
 
 namespace Lean.Hbt.Infrastructure.Data.Seeds;
 
@@ -47,7 +46,7 @@ public class HbtDbSeedPurchaseDictType
                 DictType = "sys_purchase_order_type",
                 OrderNum = 1,
                 Status = 0,
-                
+
                 Remark = "采购订单类型字典",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -60,7 +59,7 @@ public class HbtDbSeedPurchaseDictType
                 DictType = "sys_purchase_order_status",
                 OrderNum = 2,
                 Status = 0,
-                
+
                 Remark = "采购订单状态字典",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -73,7 +72,7 @@ public class HbtDbSeedPurchaseDictType
                 DictType = "sys_purchase_group",
                 OrderNum = 3,
                 Status = 0,
-                
+
                 Remark = "采购组字典",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -86,7 +85,7 @@ public class HbtDbSeedPurchaseDictType
                 DictType = "sys_purchase_type",
                 OrderNum = 4,
                 Status = 0,
-                
+
                 Remark = "采购类型字典",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -99,7 +98,7 @@ public class HbtDbSeedPurchaseDictType
                 DictType = "sys_purchase_source",
                 OrderNum = 5,
                 Status = 0,
-                
+
                 Remark = "采购来源字典",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -112,7 +111,7 @@ public class HbtDbSeedPurchaseDictType
                 DictType = "sys_purchase_condition",
                 OrderNum = 6,
                 Status = 0,
-                
+
                 Remark = "采购条件字典",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -125,7 +124,7 @@ public class HbtDbSeedPurchaseDictType
                 DictType = "sys_purchase_plan_type",
                 OrderNum = 7,
                 Status = 0,
-                
+
                 Remark = "采购计划类型字典",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -138,7 +137,7 @@ public class HbtDbSeedPurchaseDictType
                 DictType = "sys_supplier_type",
                 OrderNum = 8,
                 Status = 0,
-                
+
                 Remark = "供应商类型字典",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -151,7 +150,7 @@ public class HbtDbSeedPurchaseDictType
                 DictType = "sys_supplier_level",
                 OrderNum = 9,
                 Status = 0,
-                
+
                 Remark = "供应商等级字典",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -164,7 +163,7 @@ public class HbtDbSeedPurchaseDictType
                 DictType = "sys_supplier_status",
                 OrderNum = 10,
                 Status = 0,
-                
+
                 Remark = "供应商状态字典",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -178,7 +177,7 @@ public class HbtDbSeedPurchaseDictType
             var existingDictType = await _dictTypeRepository.GetFirstAsync(d => d.DictType == dictType.DictType);
             if (existingDictType == null)
             {
-                dictType.TenantId = tenantId;
+
                 dictType.CreateBy = "Hbt365";
                 dictType.CreateTime = DateTime.Now;
                 dictType.UpdateBy = "Hbt365";
@@ -194,7 +193,7 @@ public class HbtDbSeedPurchaseDictType
                 existingDictType.IsBuiltin = dictType.IsBuiltin;
                 existingDictType.OrderNum = dictType.OrderNum;
                 existingDictType.Status = dictType.Status;
-                existingDictType.TenantId = tenantId;
+
                 existingDictType.Remark = dictType.Remark;
                 existingDictType.CreateBy = dictType.CreateBy;
                 existingDictType.CreateTime = dictType.CreateTime;
@@ -209,4 +208,4 @@ public class HbtDbSeedPurchaseDictType
 
         return (insertCount, updateCount);
     }
-} 
+}

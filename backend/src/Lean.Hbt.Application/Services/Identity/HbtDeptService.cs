@@ -35,7 +35,8 @@ namespace Lean.Hbt.Application.Services.Identity
             IHbtRepository<HbtDept> deptRepository,
             IHbtRepository<HbtUser> userRepository,
             IHbtCurrentUser currentUser,
-            IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
+        IHbtCurrentTenant currentTenant,
+        IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, currentTenant, localization)
         {
             _deptRepository = deptRepository;
             _userRepository = userRepository;

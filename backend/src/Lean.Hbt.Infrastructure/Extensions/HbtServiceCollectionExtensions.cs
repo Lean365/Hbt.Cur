@@ -24,6 +24,7 @@ using Lean.Hbt.Infrastructure.Data.Contexts;
 using Lean.Hbt.Infrastructure.Identity;
 using Lean.Hbt.Infrastructure.Logging;
 using Lean.Hbt.Infrastructure.Security;
+using Lean.Hbt.Infrastructure.Security.Filters;
 using Lean.Hbt.Infrastructure.Services;
 using Lean.Hbt.Infrastructure.Services.Identity;
 using Lean.Hbt.Infrastructure.Services.Local;
@@ -34,10 +35,23 @@ using Lean.Hbt.Domain.IServices.Extensions;
 using NLog;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Hosting;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Logging;
+using SqlSugar;
+using Lean.Hbt.Common.Extensions;
+using Lean.Hbt.Common.Utils;
+using Newtonsoft.Json;
 
 // 添加代码生成相关服务的命名空间
 using Lean.Hbt.Application.Services.Generator;
 using Lean.Hbt.Application.Services.Generator.CodeGenerator;
+using Castle.DynamicProxy;
 
 namespace Lean.Hbt.Infrastructure.Extensions
 {
@@ -168,6 +182,27 @@ namespace Lean.Hbt.Infrastructure.Extensions
             services.AddSingleton<IHbtLogger>(sp => new HbtNLogger(LogManager.GetCurrentClassLogger()));
             services.AddScoped<IHbtLogCleanupService, HbtLogCleanupService>();
             services.AddScoped<IHbtLogArchiveService, HbtLogArchiveService>();
+
+            // 注册日志管理器
+            services.AddScoped<IHbtLogManager, HbtLogManager>();
+            services.AddScoped<IHbtSqlDiffLogManager, HbtLogManager>();
+            services.AddScoped<IHbtOperLogManager, HbtLogManager>();
+            services.AddScoped<IHbtExceptionLogManager, HbtLogManager>();
+
+            // 注册操作日志服务
+            services.AddScoped<HbtOperLogService>();
+            services.AddScoped<IHbtOperLogService, HbtOperLogService>();
+
+            // 注册其他日志服务
+            services.AddScoped<IHbtLoginLogService, HbtLoginLogService>();
+            services.AddScoped<IHbtExceptionLogService, HbtExceptionLogService>();
+            services.AddScoped<IHbtSqlDiffLogService, HbtSqlDiffLogService>();
+
+            // 配置控制器拦截
+            services.AddControllers(options =>
+            {
+                options.Filters.Add<HbtLogActionFilter>();
+            });
 
             return services;
         }
@@ -322,49 +357,93 @@ namespace Lean.Hbt.Infrastructure.Extensions
                 options.InitKeyType = InitKeyType.Attribute;
             });
 
-            // 配置 SqlSugar
+            // 配置SqlSugar
             services.AddSingleton<SqlSugarScope>(sp =>
             {
+                var logger = sp.GetRequiredService<IHbtLogger>();
                 var options = sp.GetRequiredService<IOptions<ConnectionConfig>>();
-                var mainConfig = options.Value;
-                
-                // 创建连接配置列表
-                var configs = new List<ConnectionConfig>
+                var scope = new SqlSugarScope(options.Value, db =>
                 {
-                    // 主数据库配置
-                    new ConnectionConfig
+                    // 配置SqlSugar
+                    db.Aop.OnLogExecuting = (sql, parameters) =>
                     {
-                        ConfigId = "main",
-                        ConnectionString = mainConfig.ConnectionString,
-                        DbType = mainConfig.DbType,
-                        IsAutoCloseConnection = true,
-                        InitKeyType = InitKeyType.Attribute
-                    }
-                };
-                
-                // 创建 SqlSugar 实例
-                var scope = new SqlSugarScope(configs);
-                
-                // 添加 SQL 执行日志
-                var logger = sp.GetRequiredService<ILogger<SqlSugarScope>>();
-                scope.Aop.OnLogExecuting = (sql, parameters) =>
-                {
-                    logger.LogInformation("SQL执行: {SQL}", sql);
-                    if (parameters?.Any() == true)
+                        logger.Debug($"执行SQL: {sql}");
+                        if (parameters != null && parameters.Length > 0)
+                        {
+                            logger.Debug($"参数: {string.Join(", ", parameters.Select(p => $"{p.ParameterName}={p.Value}"))}");
+                        }
+                    };
+
+                    db.Aop.OnError = (ex) =>
                     {
-                        logger.LogInformation("参数: {@Parameters}", parameters.ToDictionary(p => p.ParameterName, p => p.Value));
-                    }
-                };
-                
-                // 添加 SQL 执行结果日志
-                scope.Aop.OnLogExecuted = (sql, parameters) =>
-                {
-                    logger.LogInformation("SQL执行完成: {SQL}", sql);
-                    if (parameters?.Any() == true)
+                        logger.Error("SqlSugar执行出错", ex);
+                    };
+
+                    // 添加差异日志记录
+                    db.Aop.OnDiffLogEvent = async (diffLog) =>
                     {
-                        logger.LogInformation("参数: {@Parameters}", parameters.ToDictionary(p => p.ParameterName, p => p.Value));
-                    }
-                };
+                        try
+                        {
+                            // 获取表名
+                            var tableName = diffLog.GetType().GetProperty("TableName")?.GetValue(diffLog)?.ToString();
+                            if (string.IsNullOrEmpty(tableName)) return;
+
+                            // 创建新的scope来解析scoped服务
+                            using var scope = sp.CreateScope();
+                            var diffLogManager = scope.ServiceProvider.GetRequiredService<IHbtSqlDiffLogManager>();
+
+                            await diffLogManager.LogDbDiffAsync(
+                                tableName,
+                                diffLog.DiffType.ToString(),
+                                null,
+                                null,
+                                null,
+                                null,
+                                null,
+                                null,
+                                null,
+                                null,
+                                diffLog.Sql,
+                                JsonConvert.SerializeObject(diffLog.Parameters),
+                                JsonConvert.SerializeObject(diffLog.BeforeData),
+                                JsonConvert.SerializeObject(diffLog.AfterData)
+                            );
+                        }
+                        catch (Exception ex)
+                        {
+                            logger.Error("记录差异日志失败", ex);
+                        }
+                    };
+
+                    // 配置差异日志
+                    db.Aop.DataExecuting = (oldValue, entityInfo) =>
+                    {
+                        if (entityInfo.EntityColumnInfo.IsPrimarykey) return;
+
+                        var entity = entityInfo.EntityValue as HbtBaseEntity;
+                        if (entity != null)
+                        {
+                            if (entityInfo.OperationType == DataFilterType.InsertByObject)
+                            {
+                                // 只有在CreateBy为空时才赋值，防止覆盖种子数据
+                                if (string.IsNullOrEmpty(entity.CreateBy))
+                                    entity.CreateBy = GetCurrentUserName() ?? "Hbt365";
+                                entity.CreateTime = DateTime.Now;
+                                entity.UpdateBy = GetCurrentUserName() ?? "Hbt365";
+                                entity.UpdateTime = DateTime.Now;
+                                entity.IsDeleted = 0;
+                            }
+                            else if (entityInfo.OperationType == DataFilterType.UpdateByObject)
+                            {
+                                entity.UpdateBy = GetCurrentUserName() ?? "Hbt365";
+                                entity.UpdateTime = DateTime.Now;
+                            }
+                        }
+                    };
+
+                    // 配置全局过滤器
+                    db.QueryFilter.AddTableFilter<HbtBaseEntity>(it => it.IsDeleted == 0);
+                });
                 
                 return scope;
             });

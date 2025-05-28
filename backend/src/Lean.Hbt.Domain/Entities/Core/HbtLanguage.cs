@@ -14,7 +14,6 @@ namespace Lean.Hbt.Domain.Entities.Core
     /// 语言实体
     /// </summary>
     [SugarTable("hbt_core_language", "语言表")]
-    [SugarIndex("ix_tenant_language", nameof(TenantId), OrderByType.Asc)]
     public class HbtLanguage : HbtBaseEntity
     {
         /// <summary>
@@ -36,12 +35,6 @@ namespace Lean.Hbt.Domain.Entities.Core
         public string? LangIcon { get; set; }
 
         /// <summary>
-        /// 排序
-        /// </summary>
-        [SugarColumn(ColumnName = "order_num", ColumnDescription = "排序", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
-        public int OrderNum { get; set; } = 0;
-
-        /// <summary>
         /// 语言内置（0是 1否）
         /// </summary>
         [SugarColumn(ColumnName = "is_builtin", ColumnDescription = "内置", ColumnDataType = "int", IsNullable = false, DefaultValue = "1")]
@@ -57,12 +50,12 @@ namespace Lean.Hbt.Domain.Entities.Core
         /// </summary>
         [SugarColumn(ColumnName = "status", ColumnDescription = "状态", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
         public int Status { get; set; } = 0;
-        /// <summary>
-        /// 租户ID
-        /// </summary>
-        [SugarColumn(ColumnName = "tenant_id", ColumnDescription = "租户ID", ColumnDataType = "bigint", IsNullable = false)]
-        public long TenantId { get; set; }
 
+        /// <summary>
+        /// 排序
+        /// </summary>
+        [SugarColumn(ColumnName = "order_num", ColumnDescription = "排序", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
+        public int OrderNum { get; set; } = 0;
 
     }
 }

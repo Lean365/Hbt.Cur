@@ -12,58 +12,67 @@
     :title="t('core.translation.actions.detail')"
     :open="open"
     :footer="null"
-    width="600px"
+    width="800px"
     @cancel="handleCancel"
   >
-    <a-descriptions
-      :column="2"
-      bordered
-      class="translation-detail"
-    >
-      <a-descriptions-item :label="t('core.translation.fields.langCode.label')">
-        {{ translation.langCode }}
-      </a-descriptions-item>
+    <a-spin :spinning="loading">
+      <a-descriptions
+        :column="1"
+        bordered
+        class="translation-detail"
+        size="small"
+      >
+        <a-descriptions-item :label="t('core.translation.fields.transKey.label')">
+          {{ detail.transKey }}
+        </a-descriptions-item>
 
-      <a-descriptions-item :label="t('core.translation.fields.transKey.label')">
-        {{ translation.transKey }}
-      </a-descriptions-item>
+        <a-descriptions-item :label="t('core.translation.fields.moduleName.label')">
+          {{ detail.moduleName }}
+        </a-descriptions-item>
 
-      <a-descriptions-item :label="t('core.translation.fields.transValue.label')">
-        {{ translation.transValue }}
-      </a-descriptions-item>
+        <a-descriptions-item :label="t('core.translation.fields.status.label')">
+          <hbt-dict-tag dict-type="sys_normal_disable" :value="detail.status" />
+        </a-descriptions-item>
 
-      <a-descriptions-item :label="t('core.translation.fields.remark.label')">
-        {{ translation.remark }}
-      </a-descriptions-item>
+        <a-descriptions-item :label="t('core.translation.fields.remark.label')">
+          {{ detail.remark }}
+        </a-descriptions-item>
 
-      <a-descriptions-item :label="t('table.columns.createBy')">
-        {{ translation.createBy }}
-      </a-descriptions-item>
+        <a-descriptions-item :label="t('table.columns.createBy')">
+          {{ detail.createBy }}
+        </a-descriptions-item>
 
-      <a-descriptions-item :label="t('table.columns.createTime')">
-        {{ translation.createTime }}
-      </a-descriptions-item>
+        <a-descriptions-item :label="t('table.columns.createTime')">
+          {{ detail.createTime }}
+        </a-descriptions-item>
 
-      <a-descriptions-item :label="t('table.columns.updateBy')">
-        {{ translation.updateBy }}
-      </a-descriptions-item>
+        <a-descriptions-item :label="t('table.columns.updateBy')">
+          {{ detail.updateBy }}
+        </a-descriptions-item>
 
-      <a-descriptions-item :label="t('table.columns.updateTime')">
-        {{ translation.updateTime }}
-      </a-descriptions-item>
+        <a-descriptions-item :label="t('table.columns.updateTime')">
+          {{ detail.updateTime }}
+        </a-descriptions-item>
+      </a-descriptions>
 
-      <a-descriptions-item :label="t('table.columns.isDeleted')">
-        <hbt-dict-tag dict-type="sys_yes_no" :value="translation.isDeleted" />
-      </a-descriptions-item>
-
-      <a-descriptions-item :label="t('table.columns.deleteBy')">
-        {{ translation.deleteBy }}
-      </a-descriptions-item>
-
-      <a-descriptions-item :label="t('table.columns.deleteTime')">
-        {{ translation.deleteTime }}
-      </a-descriptions-item>
-    </a-descriptions>
+      <!-- 翻译列表 -->
+      <div class="translation-list">
+        <h3 class="section-title">{{ t('core.translation.fields.translations.label') }}</h3>
+        <a-table
+          :columns="columns"
+          :data-source="translationList"
+          :pagination="false"
+          size="small"
+          bordered
+        >
+          <template #bodyCell="{ column, record }">
+            <template v-if="column.dataIndex === 'status'">
+              <hbt-dict-tag dict-type="sys_normal_disable" :value="record.status" />
+            </template>
+          </template>
+        </a-table>
+      </div>
+    </a-spin>
     <template #footer>
       <div class="dialog-footer">
         <a-button @click="handleCancel">{{ t('common.button.cancel') }}</a-button>
@@ -73,11 +82,11 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, watch, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { message } from 'ant-design-vue'
-import type { HbtTranslation } from '@/types/core/translation'
-import { getHbtTranslation } from '@/api/core/translation'
+import type { HbtTransposedData, HbtTranslationLang } from '@/types/core/translation'
+import { getHbtTransposedDetail } from '@/api/core/translation'
 
 const { t } = useI18n()
 
@@ -86,48 +95,76 @@ const props = defineProps({
     type: Boolean,
     default: false
   },
-  translationId: {
-    type: Number,
-    required: false
+  transKey: {
+    type: String,
+    required: true
   }
 })
 
 const emit = defineEmits(['update:open'])
 
-const translation = ref<HbtTranslation>({
-  translationId: 0,
-  langCode: '',
-  moduleName: '',
+const loading = ref(false)
+const detail = ref<HbtTransposedData>({
   transKey: '',
-  transValue: '',
-  orderNum: 0,
+  moduleName: '',
   status: 0,
   remark: '',
   createBy: '',
   createTime: '',
   updateBy: '',
   updateTime: '',
-  isDeleted: 0,
-  deleteBy: '',
-  deleteTime: ''
+  translations: {}
+})
+
+// 表格列定义
+const columns = [
+  {
+    title: t('core.translation.fields.langCode.label'),
+    dataIndex: 'langCode',
+    key: 'langCode',
+    width: 120
+  },
+  {
+    title: t('core.translation.fields.transValue.label'),
+    dataIndex: 'transValue',
+    key: 'transValue',
+    ellipsis: true
+  },
+  {
+    title: t('core.translation.fields.status.label'),
+    dataIndex: 'status',
+    key: 'status',
+    width: 100
+  }
+]
+
+// 转换翻译数据为表格数据
+const translationList = computed(() => {
+  return Object.entries(detail.value.translations).map(([langCode, translation]) => ({
+    key: langCode,
+    ...translation
+  }))
 })
 
 const loadTranslationDetail = async () => {
-  if (!props.translationId) {
+  if (!props.transKey) {
     message.error(t('common.message.paramError'))
     return
   }
   
   try {
-    const res = await getHbtTranslation(props.translationId)
+    loading.value = true
+    const res = await getHbtTransposedDetail(props.transKey)
     if (res.data.code === 200) {
-      translation.value = res.data.data
+      detail.value = res.data.data
     } else {
       message.error(res.data.msg || t('common.message.queryFailed'))
     }
   } catch (error) {
     console.error('加载翻译详情失败:', error)
     message.error(t('common.message.queryFailed'))
+  } finally {
+    loading.value = false
   }
 }
 
@@ -135,11 +172,11 @@ const handleCancel = () => {
   emit('update:open', false)
 }
 
-// 监听visible和translationId的变化
+// 监听visible和transKey的变化
 watch(
-  () => [props.open, props.translationId],
-  ([newOpen, newTranslationId]) => {
-    if (newOpen && newTranslationId) {
+  () => [props.open, props.transKey],
+  ([newOpen, newTransKey]) => {
+    if (newOpen && newTransKey) {
       loadTranslationDetail()
     }
   },
@@ -147,7 +184,7 @@ watch(
 )
 
 onMounted(() => {
-  if (props.open && props.translationId) {
+  if (props.open && props.transKey) {
     loadTranslationDetail()
   }
 })
@@ -156,5 +193,27 @@ onMounted(() => {
 <style lang="less" scoped>
 .translation-detail {
   padding: 24px;
+
+  :deep(.ant-descriptions-item-label) {
+    width: 120px;
+    font-weight: 500;
+  }
+}
+
+.translation-list {
+  margin-top: 24px;
+  padding: 0 24px 24px;
+
+  .section-title {
+    margin-bottom: 16px;
+    font-size: 16px;
+    font-weight: 500;
+  }
+}
+
+.dialog-footer {
+  text-align: right;
+  padding: 8px 24px;
+  border-top: 1px solid var(--ant-color-split);
 }
 </style> 

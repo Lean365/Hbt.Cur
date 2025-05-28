@@ -136,7 +136,7 @@ namespace Lean.Hbt.Infrastructure.SignalR
                         LastActivity = DateTime.Now,
                         LastHeartbeat = DateTime.Now,
                         OnlineStatus = 0,
-                        TenantId = long.Parse(jwtToken.Claims.FirstOrDefault(c => c.Type == "tid")?.Value ?? "1"),  // 从token中获取租户ID
+
                         GroupId = 1,   // 设置默认组ID为1
                         ClientIp = Context.GetHttpContext()?.Connection?.RemoteIpAddress?.ToString(),
                         UserAgent = Context.GetHttpContext()?.Request.Headers["User-Agent"].ToString()
@@ -154,7 +154,7 @@ namespace Lean.Hbt.Infrastructure.SignalR
                     LastActivity = DateTime.Now,
                     LastHeartbeat = DateTime.Now,
                     OnlineStatus = 0,
-                    
+
                     GroupId = 0,
                     IpAddress = Context.GetHttpContext()?.Connection?.RemoteIpAddress?.ToString(),
                     UserAgent = Context.GetHttpContext()?.Request.Headers["User-Agent"].ToString()

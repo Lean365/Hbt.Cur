@@ -12,6 +12,7 @@ using Lean.Hbt.Application.Dtos.Core;
 using Lean.Hbt.Domain.Entities.Core;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Http;
+using Lean.Hbt.Domain.Utils;
 
 namespace Lean.Hbt.Application.Services.Core
 {
@@ -25,18 +26,29 @@ namespace Lean.Hbt.Application.Services.Core
     public class HbtTranslationService : HbtBaseService, IHbtTranslationService
     {
         private readonly IHbtRepository<HbtTranslation> _translationRepository;
+        private readonly IHbtRepository<HbtLanguage> _languageRepository;
 
         /// <summary>
         /// 构造函数
         /// </summary>
+        /// <param name="translationRepository">翻译仓储</param>
+        /// <param name="languageRepository">语言仓储</param>
+        /// <param name="logger">日志服务</param>
+        /// <param name="httpContextAccessor">HTTP上下文访问器</param>
+        /// <param name="currentUser">当前用户服务</param>
+        /// <param name="currentTenant">当前租户服务</param>
+        /// <param name="localization">本地化服务</param>
         public HbtTranslationService(
             IHbtRepository<HbtTranslation> translationRepository,
+            IHbtRepository<HbtLanguage> languageRepository,
             IHbtLogger logger,
             IHttpContextAccessor httpContextAccessor,
             IHbtCurrentUser currentUser,
-            IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
+        IHbtCurrentTenant currentTenant,
+        IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, currentTenant, localization)
         {
             _translationRepository = translationRepository ?? throw new ArgumentNullException(nameof(translationRepository));
+            _languageRepository = languageRepository ?? throw new ArgumentNullException(nameof(languageRepository));
         }
 
         /// <summary>
@@ -47,7 +59,8 @@ namespace Lean.Hbt.Application.Services.Core
             return Expressionable.Create<HbtTranslation>()
                 .AndIF(!string.IsNullOrEmpty(query.LangCode), x => x.LangCode == query.LangCode)
                 .AndIF(!string.IsNullOrEmpty(query.TransKey), x => x.TransKey.Contains(query.TransKey))
-                .AndIF(!string.IsNullOrEmpty(query.ModuleName), x => x.ModuleName == query.ModuleName)
+                .AndIF(!string.IsNullOrEmpty(query.TransValue), x => x.TransValue.Contains(query.TransValue))
+                .AndIF(!string.IsNullOrEmpty(query.ModuleName) && query.ModuleName != "-1", x => x.ModuleName == query.ModuleName)
                 .AndIF(query.Status != -1, x => x.Status == query.Status)
                 .ToExpression();
         }
@@ -95,8 +108,13 @@ namespace Lean.Hbt.Application.Services.Core
         /// <returns>翻译ID</returns>
         public async Task<long> CreateAsync(HbtTranslationCreateDto input)
         {
-            // 验证字段是否已存在
-            await HbtValidateUtils.ValidateFieldExistsAsync(_translationRepository, "TransKey", input.TransKey);
+            // 验证字段组合是否已存在
+            var fieldValues = new Dictionary<string, string>
+            {
+                { "LangCode", input.LangCode },
+                { "TransKey", input.TransKey }
+            };
+            await HbtValidateUtils.ValidateFieldsExistsAsync(_translationRepository, fieldValues);
 
             var translation = input.Adapt<HbtTranslation>();
             translation.Status = 0; // 0表示正常状态
@@ -114,9 +132,16 @@ namespace Lean.Hbt.Application.Services.Core
             var translation = await _translationRepository.GetByIdAsync(input.TranslationId)
                 ?? throw new HbtException(L("Core.Translation.NotFound", input.TranslationId));
 
-            // 验证字段是否已存在
-            if (translation.TransKey != input.TransKey)
-                await HbtValidateUtils.ValidateFieldExistsAsync(_translationRepository, "TransKey", input.TransKey, input.TranslationId);
+            // 验证字段组合是否已存在
+            if (translation.LangCode != input.LangCode || translation.TransKey != input.TransKey)
+            {
+                var fieldValues = new Dictionary<string, string>
+                {
+                    { "LangCode", input.LangCode },
+                    { "TransKey", input.TransKey }
+                };
+                await HbtValidateUtils.ValidateFieldsExistsAsync(_translationRepository, fieldValues, input.TranslationId);
+            }
 
             input.Adapt(translation);
             return await _translationRepository.UpdateAsync(translation) > 0;
@@ -162,8 +187,13 @@ namespace Lean.Hbt.Application.Services.Core
             {
                 try
                 {
-                    // 验证字段是否已存在
-                    await HbtValidateUtils.ValidateFieldExistsAsync(_translationRepository, "TransKey", translation.TransKey);
+                    // 验证字段组合是否已存在
+                    var fieldValues = new Dictionary<string, string>
+                    {
+                        { "LangCode", translation.LangCode },
+                        { "TransKey", translation.TransKey }
+                    };
+                    await HbtValidateUtils.ValidateFieldsExistsAsync(_translationRepository, fieldValues);
 
                     await _translationRepository.CreateAsync(translation.Adapt<HbtTranslation>());
                     success++;
@@ -243,49 +273,247 @@ namespace Lean.Hbt.Application.Services.Core
         /// </summary>
         /// <param name="query">查询条件</param>
         /// <returns>转置后的翻译数据,包含分页信息</returns>
-        public async Task<HbtPagedResult<Dictionary<string, string>>> GetTransposedDataAsync(HbtTranslationQueryDto query)
+        public async Task<HbtPagedResult<HbtTransposedDto>> GetTransposedDataAsync(HbtTransposedQueryDto query)
         {
-            // 1. 构建查询条件
-            var exp = KpTranslationQueryExpression(query);
+            // 1. 获取所有启用的语言代码
+            var languages = await _languageRepository.GetListAsync(x => x.Status == 0);
+            var langCodes = languages.Select(x => x.LangCode).ToList();
+            _logger.Info($"获取到的语言代码列表: {string.Join(", ", langCodes)}");
 
-            // 2. 获取所有语言代码
-            var allTranslations = await _translationRepository.GetListAsync(x => true);
-            var langCodes = allTranslations.Select(x => x.LangCode).Distinct().ToList();
+            // 2. 构建查询条件
+            var exp = Expressionable.Create<HbtTranslation>()
+                .AndIF(!string.IsNullOrEmpty(query.TransKey), x => x.TransKey.Contains(query.TransKey))
+                .AndIF(!string.IsNullOrEmpty(query.TransValue), x => x.TransValue.Contains(query.TransValue))
+                .AndIF(!string.IsNullOrEmpty(query.ModuleName) && query.ModuleName != "-1", x => x.ModuleName == query.ModuleName)
+                .AndIF(query.Status != -1, x => x.Status == query.Status)
+                .ToExpression();
 
-            // 3. 获取分页数据
-            var result = await _translationRepository.GetPagedListAsync(
-                exp,
-                query.PageIndex,
-                query.PageSize,
-                x => x.OrderNum,
-                OrderByType.Asc);
+            // 3. 获取所有翻译键并分页
+            var allTranslations = await _translationRepository.GetListAsync(exp);
+            _logger.Info($"查询到的翻译数据数量: {allTranslations.Count}");
+            var transKeys = allTranslations.Select(x => x.TransKey).Distinct().ToList();
+            _logger.Info($"翻译键数量: {transKeys.Count}");
+            var totalNum = transKeys.Count;
+            var pagedTransKeys = transKeys
+                .Skip((query.PageIndex - 1) * query.PageSize)
+                .Take(query.PageSize)
+                .ToList();
 
             // 4. 转置数据
-            var transposedRows = new List<Dictionary<string, string>>();
-            foreach (var row in result.Rows)
+            var transposedRows = new List<HbtTransposedDto>();
+            foreach (var transKey in pagedTransKeys)
             {
-                var dict = new Dictionary<string, string>
+                var firstTranslation = allTranslations.FirstOrDefault(x => x.TransKey == transKey);
+                if (firstTranslation == null) continue;
+
+                var dto = new HbtTransposedDto
                 {
-                    { "TransKey", row.TransKey },
-                    { "ModuleName", row.ModuleName }
+                    TransKey = transKey,
+                    ModuleName = firstTranslation.ModuleName,
+                    Translations = new Dictionary<string, HbtTranslationLangDto>()
                 };
 
+                // 为每个语言代码添加翻译值
                 foreach (var langCode in langCodes)
                 {
-                    var translation = allTranslations.FirstOrDefault(x => x.TransKey == row.TransKey && x.LangCode == langCode);
-                    dict[langCode] = translation?.TransValue ?? string.Empty;
+                    var translation = allTranslations.FirstOrDefault(x => x.TransKey == transKey && x.LangCode == langCode);
+                    dto.Translations[langCode] = new HbtTranslationLangDto
+                    {
+                        TranslationId = translation?.Id ?? 0,
+                        LangCode = langCode,
+                        TransValue = translation?.TransValue ?? string.Empty,
+                        Status = translation?.Status ?? 0
+                    };
                 }
 
-                transposedRows.Add(dict);
+                transposedRows.Add(dto);
             }
 
-            return new HbtPagedResult<Dictionary<string, string>>
+            return new HbtPagedResult<HbtTransposedDto>
             {
-                TotalNum = result.TotalNum,
+                TotalNum = totalNum,
                 PageIndex = query.PageIndex,
                 PageSize = query.PageSize,
                 Rows = transposedRows
             };
+        }
+
+        /// <summary>
+        /// 获取转置后的翻译详情
+        /// </summary>
+        /// <param name="transKey">翻译键</param>
+        /// <returns>转置后的翻译详情</returns>
+        public async Task<HbtTransposedDto> GetTransposedDetailAsync(string transKey)
+        {
+            if (string.IsNullOrEmpty(transKey))
+            {
+                throw new HbtException(L("Core.Translation.TransKeyRequired"));
+            }
+
+            // 1. 获取所有启用的语言代码
+            var languages = await _languageRepository.GetListAsync(x => x.Status == 0);
+            var langCodes = languages.Select(x => x.LangCode).ToList();
+
+            // 2. 获取指定翻译键的所有翻译
+            var translations = await _translationRepository.GetListAsync(x => x.TransKey == transKey);
+            if (!translations.Any())
+            {
+                throw new HbtException(L("Core.Translation.NotFound", transKey));
+            }
+
+            // 3. 构建转置详情
+            var firstTranslation = translations.First();
+            var detail = new HbtTransposedDto
+            {
+                TransKey = transKey,
+                ModuleName = firstTranslation.ModuleName,
+                OrderNum = firstTranslation.OrderNum,
+                Status = firstTranslation.Status,
+                Remark = firstTranslation.Remark,
+                CreateBy = firstTranslation.CreateBy,
+                CreateTime = firstTranslation.CreateTime.ToString("yyyy-MM-dd HH:mm:ss"),
+                UpdateBy = firstTranslation.UpdateBy,
+                UpdateTime = firstTranslation.UpdateTime?.ToString("yyyy-MM-dd HH:mm:ss"),
+                Translations = new Dictionary<string, HbtTranslationLangDto>()
+            };
+
+            // 4. 添加各语言的翻译信息
+            foreach (var langCode in langCodes)
+            {
+                var translation = translations.FirstOrDefault(x => x.LangCode == langCode);
+                detail.Translations[langCode] = new HbtTranslationLangDto
+                {
+                    TranslationId = translation?.Id ?? 0,
+                    LangCode = langCode,
+                    TransValue = translation?.TransValue ?? string.Empty,
+                    Status = translation?.Status ?? 0
+                };
+            }
+
+            return detail;
+        }
+
+        /// <summary>
+        /// 创建转置翻译数据
+        /// </summary>
+        /// <param name="input">转置数据创建对象</param>
+        /// <returns>是否成功</returns>
+        public async Task<bool> CreateTransposedAsync(HbtTransposedDto input)
+        {
+            if (input == null || string.IsNullOrEmpty(input.TransKey) || string.IsNullOrEmpty(input.ModuleName))
+            {
+                throw new HbtException(L("Core.Translation.InvalidInput"));
+            }
+
+            try
+            {
+                // 获取所有启用的语言
+                var languages = await _languageRepository.GetListAsync(x => x.Status == 0);
+                var langCodes = languages.Select(x => x.LangCode).ToList();
+
+                // 验证每个语言的翻译数据
+                foreach (var langCode in langCodes)
+                {
+                    if (input.Translations.TryGetValue(langCode, out var translation))
+                    {
+                        // 验证字段组合是否已存在
+                        var fieldValues = new Dictionary<string, string>
+                        {
+                            { "LangCode", langCode },
+                            { "TransKey", input.TransKey }
+                        };
+                        await HbtValidateUtils.ValidateFieldsExistsAsync(_translationRepository, fieldValues);
+
+                        // 创建翻译记录，不管 TransValue 是否有值
+                        var translationEntity = new HbtTranslation
+                        {
+                            LangCode = langCode,
+                            TransKey = input.TransKey,
+                            TransValue = translation.TransValue ?? string.Empty,
+                            ModuleName = input.ModuleName,
+                            Status = input.Status,
+                            Remark = input.Remark,
+                            CreateBy = _currentUser.UserName,
+                            CreateTime = DateTime.Now
+                        };
+
+                        await _translationRepository.CreateAsync(translationEntity);
+                    }
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error($"创建转置翻译数据失败: {ex.Message}", ex);
+                throw new HbtException(L("Core.Translation.CreateFailed"));
+            }
+        }
+
+        /// <summary>
+        /// 更新转置翻译数据
+        /// </summary>
+        /// <param name="input">转置数据更新对象</param>
+        /// <returns>是否成功</returns>
+        public async Task<bool> UpdateTransposedAsync(HbtTransposedDto input)
+        {
+            if (input == null || string.IsNullOrEmpty(input.TransKey) || string.IsNullOrEmpty(input.ModuleName))
+            {
+                throw new HbtException(L("Core.Translation.InvalidInput"));
+            }
+
+            try
+            {
+                // 获取所有启用的语言
+                var languages = await _languageRepository.GetListAsync(x => x.Status == 0);
+
+                // 处理每个语言的翻译
+                foreach (var language in languages)
+                {
+                    var langCode = language.LangCode;
+                    if (input.Translations.TryGetValue(langCode, out var translation))
+                    {
+                        // 根据 LangCode 和 TransKey 查询已存在的翻译记录
+                        var existingTranslation = await _translationRepository.GetFirstAsync(x => 
+                            x.LangCode == langCode && x.TransKey == input.TransKey);
+
+                        if (existingTranslation != null)
+                        {
+                            // 更新已存在的记录
+                            existingTranslation.TransValue = translation.TransValue ?? string.Empty;
+                            existingTranslation.Status = input.Status;
+                            existingTranslation.Remark = input.Remark;
+                            existingTranslation.UpdateBy = _currentUser.UserName;
+                            existingTranslation.UpdateTime = DateTime.Now;
+                            await _translationRepository.UpdateAsync(existingTranslation);
+                        }
+                        else
+                        {
+                            // 创建不存在的记录
+                            var newTranslation = new HbtTranslation
+                            {
+                                LangCode = langCode,
+                                TransKey = input.TransKey,
+                                TransValue = translation.TransValue ?? string.Empty,
+                                ModuleName = input.ModuleName,
+                                Status = input.Status,
+                                Remark = input.Remark,
+                                CreateBy = _currentUser.UserName,
+                                CreateTime = DateTime.Now
+                            };
+
+                            await _translationRepository.CreateAsync(newTranslation);
+                        }
+                    }
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error($"更新转置翻译数据失败: {ex.Message}", ex);
+                throw new HbtException(L("Core.Translation.UpdateFailed"));
+            }
         }
     }
 }

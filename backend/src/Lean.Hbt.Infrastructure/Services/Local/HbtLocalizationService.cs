@@ -31,17 +31,10 @@ public class HbtLocalizationService : IHbtLocalizationService
     private const string DefaultLanguage = "zh-CN";
     private const string LanguageHeader = "Accept-Language";
     private const string LanguageContextKey = "CurrentLanguage";
-    private const string SupportedLanguagesCacheKey = "SupportedLanguages";
     private const int CacheExpirationMinutes = 30;
 
     private static readonly ConcurrentDictionary<string, CultureInfo> _cultureCache
         = new ConcurrentDictionary<string, CultureInfo>();
-
-    private static readonly string[] _defaultSupportedLanguages = new[]
-    {
-        "zh-CN", // 简体中文
-        "en-US"  // 英语（美国）
-    };
 
     /// <summary>
     /// 构造函数
@@ -178,80 +171,6 @@ public class HbtLocalizationService : IHbtLocalizationService
             // 4. 使用默认语言
             context.Items[LanguageContextKey] = DefaultLanguage;
             return DefaultLanguage;
-        }
-    }
-
-    /// <summary>
-    /// 获取支持的语言列表
-    /// </summary>
-    public async Task<IEnumerable<string>> GetSupportedLanguagesAsync()
-    {
-        try
-        {
-            // 1. 尝试从分布式缓存获取
-            try
-            {
-                var cts = new CancellationTokenSource(TimeSpan.FromSeconds(3));
-                var cachedBytes = await _distributedCache.GetAsync(SupportedLanguagesCacheKey, cts.Token);
-                if (cachedBytes != null)
-                {
-                    var cachedLanguages = JsonSerializer.Deserialize<string[]>(cachedBytes);
-                    if (cachedLanguages != null && cachedLanguages.Length > 0)
-                    {
-                        return cachedLanguages;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                // Redis连接失败时记录警告并继续
-                _logger.Warn("从分布式缓存获取语言列表失败，将从翻译服务获取", ex.Message);
-            }
-
-            // 2. 从翻译服务获取
-            try
-            {
-                var cts = new CancellationTokenSource(TimeSpan.FromSeconds(8));
-                var languages = await _translationCache.GetSupportedLanguagesAsync();
-                if (languages != null && languages.Any())
-                {
-                    var languagesArray = languages.ToArray();
-
-                    // 尝试异步保存到分布式缓存
-                    _ = Task.Run(async () =>
-                    {
-                        try
-                        {
-                            var options = new DistributedCacheEntryOptions
-                            {
-                                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(CacheExpirationMinutes)
-                            };
-                            await _distributedCache.SetAsync(
-                                SupportedLanguagesCacheKey,
-                                JsonSerializer.SerializeToUtf8Bytes(languagesArray),
-                                options);
-                        }
-                        catch (Exception ex)
-                        {
-                            _logger.Warn("异步保存语言列表到缓存失败", ex.Message);
-                        }
-                    });
-
-                    return languagesArray;
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.Warn("从翻译服务获取语言列表失败，使用默认语言列表", ex.Message);
-            }
-
-            // 3. 使用默认支持的语言列表
-            return _defaultSupportedLanguages;
-        }
-        catch (Exception ex)
-        {
-            _logger.Error("获取支持的语言列表失败", ex.Message);
-            return _defaultSupportedLanguages;
         }
     }
 

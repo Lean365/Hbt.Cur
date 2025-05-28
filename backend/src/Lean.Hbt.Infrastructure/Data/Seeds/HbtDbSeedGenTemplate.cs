@@ -8,7 +8,6 @@
 //===================================================================
 
 using Lean.Hbt.Domain.Entities.Generator;
-using Lean.Hbt.Domain.IServices.Extensions;
 
 namespace Lean.Hbt.Infrastructure.Data.Seeds;
 
@@ -44,12 +43,11 @@ public class HbtDbSeedGenTemplate
 
             if (existingTemplate == null)
             {
-                template.TenantId = tenantId;
                 template.CreateBy = "Hbt365";
                 template.CreateTime = DateTime.Now;
                 template.UpdateBy = "Hbt365";
                 template.UpdateTime = DateTime.Now;
-                
+
                 await _genTemplateRepository.CreateAsync(template);
                 insertCount++;
                 _logger.Info($"[创建] 代码生成模板 '{template.TemplateName}' 创建成功");
@@ -63,7 +61,6 @@ public class HbtDbSeedGenTemplate
                 existingTemplate.TemplateVersion = template.TemplateVersion;
                 existingTemplate.FileName = template.FileName;
                 existingTemplate.TemplateContent = template.TemplateContent;
-                existingTemplate.TenantId = tenantId;
                 existingTemplate.UpdateBy = "Hbt365";
                 existingTemplate.UpdateTime = DateTime.Now;
 

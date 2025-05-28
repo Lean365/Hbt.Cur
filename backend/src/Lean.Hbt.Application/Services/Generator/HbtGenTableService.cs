@@ -9,20 +9,9 @@
 // 描述   : 代码生成表服务实现
 //===================================================================
 
-using Lean.Hbt.Application.Dtos.Generator;
-using Lean.Hbt.Common.Models;
-using Lean.Hbt.Domain.Entities.Generator;
-using Lean.Hbt.Domain.Repositories;
-using Lean.Hbt.Domain.Utils;
-using Microsoft.AspNetCore.Http;
-using SqlSugar;
 using System.Linq.Expressions;
-using Lean.Hbt.Domain.IServices.Extensions;
-using Lean.Hbt.Common.Exceptions;
-using Lean.Hbt.Common.Extensions;
 using Lean.Hbt.Common.Utils;
-using Microsoft.Extensions.Logging;
-using Lean.Hbt.Common.Helpers;
+using Microsoft.AspNetCore.Http;
 
 namespace Lean.Hbt.Application.Services.Generator;
 
@@ -38,14 +27,22 @@ public class HbtGenTableService : HbtBaseService, IHbtGenTableService
     /// <summary>
     /// 构造函数
     /// </summary>
+    /// <param name="tableRepository">表仓储</param>
+    /// <param name="columnRepository">列仓储</param>
+    /// <param name="logger">日志服务</param>
+    /// <param name="httpContextAccessor">HTTP上下文访问器</param>
+    /// <param name="currentUser">当前用户服务</param>
+    /// <param name="currentTenant">当前租户服务</param>
+    /// <param name="localization">本地化服务</param>
     public HbtGenTableService(
         IHbtRepository<HbtGenTable> tableRepository,
         IHbtRepository<HbtGenColumn> columnRepository,
         IHbtLogger logger,
         IHttpContextAccessor httpContextAccessor,
         IHbtCurrentUser currentUser,
+        IHbtCurrentTenant currentTenant,
         IHbtLocalizationService localization,
-        ISqlSugarClient db) : base(logger, httpContextAccessor, currentUser, localization)
+        ISqlSugarClient db) : base(logger, httpContextAccessor, currentUser, currentTenant, localization)
     {
         _tableRepository = tableRepository ?? throw new ArgumentNullException(nameof(tableRepository));
         _columnRepository = columnRepository ?? throw new ArgumentNullException(nameof(columnRepository));
@@ -66,7 +63,7 @@ public class HbtGenTableService : HbtBaseService, IHbtGenTableService
             return null;
 
         var dto = table.Adapt<HbtGenTableDto>();
-        
+
         // 获取列信息
         var columns = await _columnRepository.GetListAsync(x => x.TableId == id);
         dto.Columns = columns.Adapt<List<HbtGenColumnDto>>();
@@ -218,7 +215,7 @@ public class HbtGenTableService : HbtBaseService, IHbtGenTableService
         try
         {
             _logger.Info($"开始导入表：{input.TableName}");
-            
+
             // 获取表信息
             var tableInfo = await Task.Run(() => _db.DbMaintenance.GetTableInfoList(false).FirstOrDefault(x => x.Name == input.TableName));
             if (tableInfo == null)
@@ -234,7 +231,7 @@ public class HbtGenTableService : HbtBaseService, IHbtGenTableService
             if (existingTable != null)
             {
                 _logger.Info($"表已存在，准备更新：{input.TableName}");
-                
+
                 // 更新表信息
                 existingTable.DatabaseName = input.DatabaseName;
                 existingTable.TableName = input.TableName;
@@ -267,13 +264,7 @@ public class HbtGenTableService : HbtBaseService, IHbtGenTableService
                 existingTable.BtnStyle = input.BtnStyle;
                 existingTable.FrontStyle = input.FrontStyle;
                 existingTable.Status = input.Status;
-                existingTable.Options = new CodeOptions
-                {
-                    IsSqlDiff = 1,
-                    IsSnowflakeId = 1,
-                    IsRepository = 0,
-                    CrudGroup = new int[] { 1, 2, 3, 4, 5, 6, 7, 8 }
-                };
+
 
                 // 获取并创建新的列信息
                 var columns = await Task.Run(() => _db.DbMaintenance.GetColumnInfosByTableName(input.TableName, false));
@@ -432,16 +423,10 @@ public class HbtGenTableService : HbtBaseService, IHbtGenTableService
                 table.BtnStyle = input.BtnStyle;
                 table.FrontStyle = input.FrontStyle;
                 table.Status = input.Status;
-                table.Options = new CodeOptions
-                {
-                    IsSqlDiff = 1,
-                    IsSnowflakeId = 1,
-                    IsRepository = 0,
-                    CrudGroup = new int[] { 1, 2, 3, 4, 5, 6, 7, 8 }
-                };
+
 
                 _logger.Info($"开始获取列信息：{input.TableName}");
-                
+
                 // 获取并创建列信息
                 var columns = await Task.Run(() => _db.DbMaintenance.GetColumnInfosByTableName(input.TableName, false));
                 if (columns == null || !columns.Any())
@@ -530,10 +515,10 @@ public class HbtGenTableService : HbtBaseService, IHbtGenTableService
                 }
 
                 _logger.Info($"开始保存表信息：{input.TableName}");
-                
+
                 // 保存表信息
                 await _tableRepository.CreateAsync(table);
-                
+
                 // 获取新创建表的ID
                 var savedTable = await _tableRepository.GetFirstAsync(x => x.TableName == input.TableName);
                 if (savedTable == null)
@@ -594,7 +579,7 @@ public class HbtGenTableService : HbtBaseService, IHbtGenTableService
             {
                 _logger.Info($"表已存在，准备更新：{tableName}");
                 table = existingTable;
-                
+
                 // 更新表信息
                 table.DatabaseName = databaseName;
                 table.TableName = tableName;
@@ -632,16 +617,10 @@ public class HbtGenTableService : HbtBaseService, IHbtGenTableService
                 table.BtnStyle = 1;
                 table.FrontStyle = 24;
                 table.Status = 0;
-                table.Options = new CodeOptions
-                {
-                    IsSqlDiff = 1,
-                    IsSnowflakeId = 1,
-                    IsRepository = 0,
-                    CrudGroup = new int[] { 1, 2, 3, 4, 5, 6, 7, 8 }
-                };
+
 
                 await _tableRepository.UpdateAsync(table);
-                
+
                 // 获取更新后的表信息
                 var updatedTable = await _tableRepository.GetFirstAsync(x => x.TableName == tableName);
                 if (updatedTable == null)
@@ -654,7 +633,7 @@ public class HbtGenTableService : HbtBaseService, IHbtGenTableService
             else
             {
                 _logger.Info($"表不存在，准备创建：{tableName}");
-                
+
                 // 创建新表
                 table = new HbtGenTable
                 {
@@ -667,7 +646,7 @@ public class HbtGenTableService : HbtBaseService, IHbtGenTableService
                 };
 
                 // 设置实体相关命名空间
-                table.EntityNamespace = HbtNamingHelper.GetEntityNamespace(table.BaseNamespace, tableName);               
+                table.EntityNamespace = HbtNamingHelper.GetEntityNamespace(table.BaseNamespace, tableName);
                 table.DtoNamespace = HbtNamingHelper.GetDtoNamespace(table.BaseNamespace, tableName);
                 table.DtoClassName = HbtNamingHelper.GetDtoClassName(tableName);
                 table.DtoType = "Dto,QueryDto,CreateDto,UpdateDto,DeleteDto,TplDto,ImportDto,ExportDto";
@@ -705,16 +684,10 @@ public class HbtGenTableService : HbtBaseService, IHbtGenTableService
                 table.BtnStyle = 1;
                 table.FrontStyle = 24;
                 table.Status = 0;
-                table.Options = new CodeOptions
-                {
-                    IsSqlDiff = 1,
-                    IsSnowflakeId = 1,
-                    IsRepository = 0,
-                    CrudGroup = new int[] { 1, 2, 3, 4, 5, 6, 7, 8 }
-                };
+
 
                 await _tableRepository.CreateAsync(table);
-                
+
                 // 获取新创建表的ID
                 var savedTable = await _tableRepository.GetFirstAsync(x => x.TableName == tableName);
                 if (savedTable == null)

@@ -29,7 +29,8 @@ namespace Lean.Hbt.Application.Services.Identity
             IHbtLogger logger,
             IHttpContextAccessor httpContextAccessor,
             IHbtCurrentUser currentUser,
-            IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
+        IHbtCurrentTenant currentTenant,
+        IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, currentTenant, localization)
         {
             _postRepository = postRepository;
             _userPostRepository = userPostRepository;

@@ -343,11 +343,47 @@ export class SignalRService {
 
       // 启动连接
       console.log('[SignalR] 开始启动连接，当前连接ID:', this.connection.connectionId)
-      await this.connection.start()
+      
+      // 添加重试机制
+      let retryCount = 0
+      const maxRetries = 3
+      const retryDelay = 1000 // 1秒
+
+      while (retryCount < maxRetries) {
+        try {
+          await this.connection.start()
+          break
+        } catch (error) {
+          retryCount++
+          console.error(`[SignalR] 第 ${retryCount} 次连接尝试失败:`, error)
+          
+          if (retryCount >= maxRetries) {
+            throw error
+          }
+          
+          console.log(`[SignalR] 等待 ${retryDelay}ms 后重试...`)
+          await new Promise(resolve => setTimeout(resolve, retryDelay))
+        }
+      }
       
       // 等待连接状态稳定
-      if (this.connection.state !== 'Connected') {
-        throw new Error('连接状态异常')
+      let stateCheckCount = 0
+      const maxStateChecks = 10
+      const stateCheckDelay = 500 // 0.5秒
+
+      while (stateCheckCount < maxStateChecks) {
+        if (this.connection.state === 'Connected') {
+          break
+        }
+        
+        stateCheckCount++
+        console.log(`[SignalR] 等待连接状态稳定，当前状态: ${this.connection.state}, 第 ${stateCheckCount} 次检查`)
+        
+        if (stateCheckCount >= maxStateChecks) {
+          throw new Error('连接状态检查超时')
+        }
+        
+        await new Promise(resolve => setTimeout(resolve, stateCheckDelay))
       }
 
       this.isConnected = true
@@ -364,22 +400,26 @@ export class SignalRService {
       this.emit('Connected', connectionId)
 
       // 添加重试机制，定期检查连接ID
-      let retryCount = 0
-      const maxRetries = 5
-      const checkConnectionId = () => {
+      let idCheckCount = 0
+      const maxIdChecks = 5
+      const idCheckDelay = 500 // 0.5秒
+
+      while (idCheckCount < maxIdChecks) {
         if (this.connection?.connectionId) {
           console.log('[SignalR] 连接ID已可用:', this.connection.connectionId)
-          return
+          break
         }
-        if (retryCount < maxRetries) {
-          retryCount++
-          console.log(`[SignalR] 第${retryCount}次检查连接ID，当前连接ID:`, this.connection?.connectionId)
-          setTimeout(checkConnectionId, 500)
-        } else {
+        
+        idCheckCount++
+        console.log(`[SignalR] 第 ${idCheckCount} 次检查连接ID，当前连接ID:`, this.connection?.connectionId)
+        
+        if (idCheckCount >= maxIdChecks) {
           console.warn('[SignalR] 连接ID检查超时，可能存在问题')
+          break
         }
+        
+        await new Promise(resolve => setTimeout(resolve, idCheckDelay))
       }
-      setTimeout(checkConnectionId, 500)
     } catch (error) {
       console.error('[SignalR] 连接建立失败:', error)
       this.isConnected = false

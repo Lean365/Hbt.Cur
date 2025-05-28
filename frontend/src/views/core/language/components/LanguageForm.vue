@@ -102,14 +102,19 @@ import type { Rule } from 'ant-design-vue/es/form'
 import type { HbtLanguage } from '@/types/core/language'
 import { getHbtLanguage, createHbtLanguage, updateHbtLanguage } from '@/api/core/language'
 import countries from 'i18n-iso-countries'
+import languages from '@cospired/i18n-iso-languages'
 import zh from 'i18n-iso-countries/langs/zh.json'
 import en from 'i18n-iso-countries/langs/en.json'
+import zhLang from '@cospired/i18n-iso-languages/langs/zh.json'
+import enLang from '@cospired/i18n-iso-languages/langs/en.json'
 import type { SelectValue, DefaultOptionType } from 'ant-design-vue/es/select'
 import HbtFlagIcon from '@/components/Base/HbtFlagIcon/index.vue'
 
 // 注册语言
 countries.registerLocale(zh)
 countries.registerLocale(en)
+languages.registerLocale(zhLang)
+languages.registerLocale(enLang)
 
 const props = defineProps<{
   open: boolean
@@ -118,7 +123,7 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  (e: 'update:visible', value: boolean): void
+  (e: 'update:open', value: boolean): void
   (e: 'success'): void
 }>()
 
@@ -130,7 +135,9 @@ const formRef = ref<FormInstance>()
 
 // 获取所有国家的ISO代码
 const countryCodes = countries.getAlpha2Codes()
-
+// 获取当前用户
+const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}')
+const currentTenantId = userInfo.tenantId || 1
 // === 表单数据 ===
 const formData = reactive<HbtLanguage>({
   languageId: 0,
@@ -141,7 +148,7 @@ const formData = reactive<HbtLanguage>({
   isDefault: 0,
   isBuiltin: 0,
   status: 0,
-  tenantId: 0,
+  tenantId: currentTenantId,
   createBy: '',
   createTime: '',
   isDeleted: 0,
@@ -174,7 +181,11 @@ const rules: Record<string, Rule[]> = {
 // 处理语言代码变化
 const handleLangCodeChange = (value: { code: string; name: string }) => {
   if (value) {
-    formData.langName = value.name
+    // 从语言代码中提取语言部分（例如：从 zh_CN 提取 zh）
+    const langCode = value.code.split('_')[0].toLowerCase()
+    // 获取语言名称
+    const langName = languages.getName(langCode, locale.value)
+    formData.langName = langName || value.name
     formData.langIcon = `fi-${value.code.toLowerCase()}`
   } else {
     formData.langName = ''
@@ -213,11 +224,21 @@ const handleSubmit = async () => {
       message.success(t('common.message.saveSuccess'))
       emit('success')
     } else {
-      message.error(res.data.msg || t('common.message.saveFailed'))
+      // 判断是否是重复
+      if (res.data.msg && res.data.msg.includes('FieldExists')) {
+        message.error(t('core.language.fields.langCode.validation.exists') || '语言代码已存在')
+      } else {
+        message.error(res.data.msg || t('common.message.saveFailed'))
+      }
     }
-  } catch (error) {
-    console.error('保存失败:', error)
-    message.error(t('common.message.saveFailed'))
+  } catch (error: any) {
+    // 后端直接抛出异常时
+    const msg = error?.response?.data?.msg || error?.message || ''
+    if (msg.includes('FieldExists')) {
+      message.error(t('core.language.fields.langCode.validation.exists') || '语言代码已存在')
+    } else {
+      message.error(t('common.message.saveFailed'))
+    }
   } finally {
     loading.value = false
   }
@@ -225,7 +246,7 @@ const handleSubmit = async () => {
 
 // 取消
 const handleCancel = () => {
-  emit('update:visible', false)
+  emit('update:open', false)
 }
 
 // === 监听器 ===
@@ -245,7 +266,7 @@ watch(
         isDefault: 0,
         isBuiltin: 0,
         status: 0,
-        tenantId: 0,
+        tenantId: currentTenantId,
         createBy: '',
         createTime: '',
         isDeleted: 0,

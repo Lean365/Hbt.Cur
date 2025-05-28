@@ -7,9 +7,7 @@
 // 描述   : Identity本地化资源种子
 //===================================================================
 
-using Lean.Hbt.Common.Utils;
 using Lean.Hbt.Domain.Entities.Core;
-using Lean.Hbt.Domain.IServices.Extensions;
 using Lean.Hbt.Infrastructure.Data.Contexts;
 
 namespace Lean.Hbt.Infrastructure.Data.Seeds;
@@ -44,7 +42,7 @@ public class HbtIdentitySeedTranslation
     /// </summary>
     public async Task<(int insertCount, int updateCount)> InitializeIdentityTranslationAsync(long tenantId)
     {
-                int insertCount = 0;
+        int insertCount = 0;
         int updateCount = 0;
         var defaultTranslations = new List<HbtTranslation>
         {
@@ -332,25 +330,25 @@ public class HbtIdentitySeedTranslation
 
         foreach (var translation in defaultTranslations)
         {
-            var existingTranslation = await _translationRepository.GetFirstAsync(x => 
-                x.LangCode == translation.LangCode && 
+            var existingTranslation = await _translationRepository.GetFirstAsync(x =>
+                x.LangCode == translation.LangCode &&
                 x.TransKey == translation.TransKey);
 
             if (existingTranslation == null)
             {
-                translation.TenantId = tenantId;
+
                 translation.CreateBy = "Hbt365";
                 translation.CreateTime = DateTime.Now;
                 translation.UpdateBy = "Hbt365";
                 translation.UpdateTime = DateTime.Now;
-                
+
                 await _translationRepository.CreateAsync(translation);
                 insertCount++;
             }
             else
             {
                 existingTranslation.TransValue = translation.TransValue;
-                existingTranslation.TenantId = tenantId;
+
                 existingTranslation.UpdateBy = "Hbt365";
                 existingTranslation.UpdateTime = DateTime.Now;
                 await _translationRepository.UpdateAsync(existingTranslation);

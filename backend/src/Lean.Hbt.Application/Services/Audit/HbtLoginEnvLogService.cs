@@ -9,28 +9,8 @@
 // 描述    : 登录环境日志信息服务实现
 //===================================================================
 
-using System;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using Mapster;
-using SqlSugar;
-using Lean.Hbt.Common.Models;
-using Lean.Hbt.Domain.Entities.Identity;
-using Lean.Hbt.Common.Extensions;
-using Lean.Hbt.Common.Enums;
-using Lean.Hbt.Domain.Repositories;
-using Lean.Hbt.Common.Helpers;
-using System.Linq;
-using Microsoft.Extensions.Logging;
-using Lean.Hbt.Common.Exceptions;
-using Lean.Hbt.Common.Utils;
 using System.Linq.Expressions;
-using Lean.Hbt.Domain.IServices.Extensions;
-using Lean.Hbt.Domain.Utils;
-using Lean.Hbt.Domain.IServices.Extensions;
 using Microsoft.AspNetCore.Http;
-using System.IO;
-using Lean.Hbt.Application.Dtos.Audit;
 
 namespace Lean.Hbt.Application.Services.Audit
 {
@@ -53,13 +33,15 @@ namespace Lean.Hbt.Application.Services.Audit
         /// <param name="loginExtendRepository">登录环境日志仓库</param>
         /// <param name="httpContextAccessor">HTTP上下文访问器</param>
         /// <param name="currentUser">当前用户服务</param>
+        /// <param name="currentTenant">当前租户服务</param>
         /// <param name="localization">本地化服务</param>
         public HbtLoginEnvLogService(
             IHbtLogger logger,
             IHbtRepository<HbtLoginEnvLog> loginExtendRepository,
             IHttpContextAccessor httpContextAccessor,
             IHbtCurrentUser currentUser,
-            IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
+            IHbtCurrentTenant currentTenant,
+            IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, currentTenant, localization)
         {
             _loginExtendRepository = loginExtendRepository;
         }
@@ -214,7 +196,6 @@ namespace Lean.Hbt.Application.Services.Audit
                 loginExtend = new HbtLoginEnvLog
                 {
                     UserId = request.UserId,
-                    TenantId = request.TenantId ?? 0,
                     Id = request.Id,
                     LoginType = request.LoginType,
                     LoginStatus = 1, // 1表示在线
@@ -296,9 +277,6 @@ namespace Lean.Hbt.Application.Services.Audit
             if (query.UserId.HasValue)
                 exp.And(x => x.UserId == query.UserId.Value);
 
-            if (query.TenantId.HasValue)
-                exp.And(x => x.TenantId == query.TenantId.Value);
-
             if (query.LoginType.HasValue)
                 exp.And(x => x.LoginType == query.LoginType.Value);
 
@@ -314,4 +292,4 @@ namespace Lean.Hbt.Application.Services.Audit
             return exp.ToExpression();
         }
     }
-} 
+}

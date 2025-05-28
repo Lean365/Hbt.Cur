@@ -8,7 +8,6 @@
 //===================================================================
 
 using Lean.Hbt.Domain.Entities.Core;
-using Lean.Hbt.Domain.IServices.Extensions;
 
 namespace Lean.Hbt.Infrastructure.Data.Seeds;
 
@@ -110,7 +109,6 @@ public class HbtDbSeedGeneratorDictData
             var existingDictData = await _dictDataRepository.GetFirstAsync(x => x.DictType == dictData.DictType && x.DictValue == dictData.DictValue);
             if (existingDictData == null)
             {
-                dictData.TenantId = tenantId;
                 dictData.CreateBy = "Hbt365";
                 dictData.CreateTime = DateTime.Now;
                 dictData.UpdateBy = "Hbt365";
@@ -119,8 +117,7 @@ public class HbtDbSeedGeneratorDictData
                 insertCount++;
             }
             else
-            {   
-                existingDictData.TenantId = tenantId;
+            {
                 existingDictData.DictLabel = dictData.DictLabel;
                 existingDictData.OrderNum = dictData.OrderNum;
                 existingDictData.Status = dictData.Status;

@@ -32,13 +32,15 @@ namespace Lean.Hbt.Application.Services.Core
         /// <param name="logger">日志接口</param>
         /// <param name="httpContextAccessor">HTTP上下文访问器</param>
         /// <param name="currentUser">当前用户服务</param>
+        /// <param name="currentTenant">当前租户服务</param>
         /// <param name="localization">本地化服务</param>
         public HbtLanguageService(
             IHbtRepository<HbtLanguage> languageRepository,
             IHbtLogger logger,
             IHttpContextAccessor httpContextAccessor,
             IHbtCurrentUser currentUser,
-            IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
+        IHbtCurrentTenant currentTenant,
+        IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, currentTenant, localization)
         {
             _languageRepository = languageRepository ?? throw new ArgumentNullException(nameof(languageRepository));
         }
@@ -53,6 +55,7 @@ namespace Lean.Hbt.Application.Services.Core
                 .AndIF(!string.IsNullOrEmpty(query.LangName), x => x.LangName.Contains(query.LangName!))
                 .AndIF(query.Status != -1, x => x.Status == query.Status)
                 .AndIF(query.IsDefault != -1, x => x.IsDefault == query.IsDefault)
+                .AndIF(query.IsBuiltin != -1, x => x.IsBuiltin == query.IsBuiltin)
                 .ToExpression();
         }
 
@@ -150,7 +153,6 @@ namespace Lean.Hbt.Application.Services.Core
         /// <returns>是否成功</returns>
         public async Task<bool> BatchDeleteAsync(long[] LanguageIds)
         {
-            if (LanguageIds == null || LanguageIds.Length == 0) return false;
             return await _languageRepository.DeleteRangeAsync(LanguageIds.Cast<object>().ToList()) > 0;
         }
 
@@ -223,6 +225,16 @@ namespace Lean.Hbt.Application.Services.Core
 
             language.Status = input.Status;
             return await _languageRepository.UpdateAsync(language) > 0;
+        }
+
+        /// <summary>
+        /// 获取语言选项列表
+        /// </summary>
+        /// <returns>语言选项列表</returns>
+        public async Task<List<HbtLanguageOptionDto>> GetOptionsAsync()
+        {
+            var list = await _languageRepository.GetListAsync(x => x.Status == 0 && x.IsDeleted == 0);
+            return list.Adapt<List<HbtLanguageOptionDto>>();
         }
     }
 }

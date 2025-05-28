@@ -7,18 +7,25 @@
 // 描述    : JWT令牌处理器实现
 //===================================================================
 
+#nullable enable
+
+using System;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
-using Lean.Hbt.Common.Exceptions;
-using Lean.Hbt.Common.Options;
-using Lean.Hbt.Domain.Entities.Identity;
-using Lean.Hbt.Domain.IServices.Security;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Lean.Hbt.Common.Exceptions;
+using Lean.Hbt.Common.Options;
+using Lean.Hbt.Common.Constants;
+using Lean.Hbt.Domain.Entities.Identity;
+using Lean.Hbt.Domain.IServices.Extensions;
+using Lean.Hbt.Domain.IServices.Security;
 
 namespace Lean.Hbt.Infrastructure.Authentication
 {
@@ -32,49 +39,34 @@ namespace Lean.Hbt.Infrastructure.Authentication
     public class HbtJwtHandler : IHbtJwtHandler
     {
         /// <summary>
-        /// 配置接口
-        /// </summary>
-        private readonly IConfiguration _configuration;
-
-        private readonly IHbtLocalizationService _localizationService;
-        private readonly IHbtRepository<HbtUser> _userRepository;
-
-        /// <summary>
         /// 日志服务
         /// </summary>
         protected readonly IHbtLogger _logger;
 
         private readonly HbtJwtOptions _jwtOptions;
-        private readonly IMemoryCache _memoryCache;
         private readonly IDistributedCache? _distributedCache;
         private readonly bool _useDistributedCache;
+        private readonly IHbtRepository<HbtUserTenant> _userTenantRepository;
 
         /// <summary>
         /// 构造函数
         /// </summary>
         /// <param name="configuration">配置接口</param>
-        /// <param name="localizationService">本地化服务</param>
-        /// <param name="userRepository">用户仓储</param>
         /// <param name="logger">日志接口</param>
         /// <param name="jwtOptions">JWT配置</param>
-        /// <param name="memoryCache">内存缓存接口</param>
+        /// <param name="userTenantRepository">用户租户仓库接口</param>
         /// <param name="distributedCache">分布式缓存接口</param>
         public HbtJwtHandler(
             IConfiguration configuration,
-            IHbtLocalizationService localizationService,
-            IHbtRepository<HbtUser> userRepository,
             IHbtLogger logger,
             IOptions<HbtJwtOptions> jwtOptions,
-            IMemoryCache memoryCache,
+            IHbtRepository<HbtUserTenant> userTenantRepository,
             IDistributedCache? distributedCache = null)
         {
-            _configuration = configuration;
-            _localizationService = localizationService;
-            _userRepository = userRepository;
             _logger = logger;
             _jwtOptions = jwtOptions.Value;
-            _memoryCache = memoryCache;
             _distributedCache = distributedCache;
+            _userTenantRepository = userTenantRepository;
             _useDistributedCache = _distributedCache != null && configuration.GetValue<bool>("UseDistributedCache", false);
         }
 
@@ -106,48 +98,47 @@ namespace Lean.Hbt.Infrastructure.Authentication
                     new Claim("unm", user.UserName),               // 用户名
                     new Claim("nnm", user.NickName ?? string.Empty), // 昵称
                     new Claim("enm", user.EnglishName ?? string.Empty), // 英文名
-                    new Claim("tid", user.TenantId.ToString()),    // 租户ID
+                    new Claim("tid", tenant.Id.ToString()),        // 租户ID
                     new Claim("tnm", tenant.TenantName),           // 租户名称
                     new Claim("jti", Guid.NewGuid().ToString()),   // JWT ID
                     new Claim("typ", user.UserType.ToString()),    // 用户类型
                     new Claim("adm", (user.UserType == 2).ToString()) // 管理员标记
                 };
 
-                // 添加角色和权限
-                if (roles?.Any() == true)
+                // 添加角色声明
+                if (roles != null && roles.Length > 0)
                 {
-                    // 只添加第一个角色，其他角色通过权限控制
-                    claims.Add(new Claim("rol", roles[0]));        // 主要角色
+                    claims.AddRange(roles.Select(role => new Claim("rol", role)));
                 }
 
-                if (permissions?.Any() == true)
+                // 添加权限声明
+                if (permissions != null && permissions.Length > 0)
                 {
-                    // 生成权限缓存key
-                    var permissionKey = $"pms:{user.Id}:{Guid.NewGuid():N}";
-                    var expiration = TimeSpan.FromMinutes(_jwtOptions.ExpirationMinutes);
-
-                    if (_useDistributedCache && _distributedCache != null)
-                    {
-                        // 使用分布式缓存(Redis)
-                        var permissionsJson = JsonSerializer.Serialize(permissions);
-                        var permissionsBytes = Encoding.UTF8.GetBytes(permissionsJson);
-                        var options = new DistributedCacheEntryOptions
-                        {
-                            AbsoluteExpirationRelativeToNow = expiration
-                        };
-                        await _distributedCache.SetAsync(permissionKey, permissionsBytes, options);
-                    }
-                    else
-                    {
-                        // 使用内存缓存
-                        var cacheOptions = new MemoryCacheEntryOptions()
-                            .SetAbsoluteExpiration(expiration);
-                        _memoryCache.Set(permissionKey, permissions, cacheOptions);
-                    }
-
-                    // JWT中只存储权限的引用key
-                    claims.Add(new Claim("pms_key", permissionKey));
+                    claims.AddRange(permissions.Select(permission => new Claim("pms", permission)));
                 }
+
+                // 验证租户信息
+                if (tenant == null || tenant.Id <= 0)
+                {
+                    _logger.Error("生成访问令牌失败：租户信息无效");
+                    throw new HbtException("租户信息无效", HbtConstants.ErrorCodes.InvalidTenant);
+                }
+
+                // 验证用户租户关系
+                var userTenant = await _userTenantRepository.GetFirstAsync(x => x.UserId == user.Id && x.TenantId == tenant.Id);
+                if (userTenant == null)
+                {
+                    _logger.Error("生成访问令牌失败：用户不属于指定租户");
+                    throw new HbtException("用户不属于指定租户", HbtConstants.ErrorCodes.InvalidTenant);
+                }
+
+                if (userTenant.Status != 0)
+                {
+                    _logger.Error("生成访问令牌失败：用户在当前租户中已被禁用");
+                    throw new HbtException("用户在当前租户中已被禁用", HbtConstants.ErrorCodes.UserDisabled);
+                }
+
+                _logger.Info("JWT Claims: {@Claims}", claims.Select(c => new { c.Type, c.Value }));
 
                 var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.SecretKey));
                 var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -159,8 +150,16 @@ namespace Lean.Hbt.Infrastructure.Authentication
                     expires: DateTime.UtcNow.AddMinutes(_jwtOptions.ExpirationMinutes),
                     signingCredentials: credentials);
 
-                var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
-                _logger.Info("访问令牌生成成功: Length={Length}", tokenString?.Length ?? 0);
+                // 使用自定义的JwtSecurityTokenHandler
+                var handler = new JwtSecurityTokenHandler
+                {
+                    MapInboundClaims = false
+                };
+
+                var tokenString = handler.WriteToken(token);
+                _logger.Info("访问令牌生成成功: Length={Length}, Claims={@Claims}", 
+                    tokenString?.Length ?? 0, 
+                    claims.Select(c => new { c.Type, c.Value }));
 
                 if (string.IsNullOrEmpty(tokenString))
                 {
@@ -202,7 +201,13 @@ namespace Lean.Hbt.Infrastructure.Authentication
                     ValidateAudience = true,
                     ValidAudience = _jwtOptions.Audience,
                     ValidateLifetime = true,
-                    ClockSkew = TimeSpan.Zero
+                    ClockSkew = TimeSpan.Zero,
+                    NameClaimType = "unm",
+                    RoleClaimType = "rol",
+                    RequireExpirationTime = true,
+                    RequireSignedTokens = true,
+                    ValidateTokenReplay = true,
+                    RequireAudience = true
                 };
 
                 var principal = tokenHandler.ValidateToken(token, validationParameters, out var validatedToken);
@@ -211,26 +216,32 @@ namespace Lean.Hbt.Infrastructure.Authentication
                 var userId = principal.FindFirst("uid")?.Value;
                 if (string.IsNullOrEmpty(userId))
                 {
-                    throw new SecurityTokenException("Token missing required claim: uid");
+                    _logger.Warn("Token验证失败: 缺少用户ID声明");
+                    return Task.FromResult(false);
                 }
 
                 var userName = principal.FindFirst("unm")?.Value;
                 if (string.IsNullOrEmpty(userName))
                 {
-                    throw new SecurityTokenException("Token missing required claim: unm");
+                    _logger.Warn("Token验证失败: 缺少用户名声明");
+                    return Task.FromResult(false);
                 }
 
                 var tenantId = principal.FindFirst("tid")?.Value;
                 if (string.IsNullOrEmpty(tenantId))
                 {
-                    throw new SecurityTokenException("Token missing required claim: tid");
+                    _logger.Warn("Token验证失败: 缺少租户ID声明");
+                    return Task.FromResult(false);
                 }
+
+                _logger.Info("Token验证成功: UserId={UserId}, UserName={UserName}, TenantId={TenantId}",
+                    userId, userName, tenantId);
 
                 return Task.FromResult(true);
             }
             catch (Exception ex)
             {
-                _logger.Error("验证访问令牌时发生错误: {Message}", ex.Message);
+                _logger.Error("Token验证失败: {Message}", ex.Message);
                 return Task.FromResult(false);
             }
         }

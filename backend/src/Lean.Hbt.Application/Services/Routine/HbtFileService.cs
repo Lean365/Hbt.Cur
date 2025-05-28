@@ -49,6 +49,7 @@ namespace Lean.Hbt.Application.Services.Routine
         /// <param name="fileRepository">文件仓储</param>
         /// <param name="httpContextAccessor">HTTP上下文访问器</param>
         /// <param name="currentUser">当前用户服务</param>
+        /// <param name="currentTenant">当前租户服务</param>
         /// <param name="localization">本地化服务</param>
         /// <param name="webHostEnvironment">Web主机环境</param>
         public HbtFileService(
@@ -56,8 +57,9 @@ namespace Lean.Hbt.Application.Services.Routine
             IHbtRepository<HbtFile> fileRepository,
             IHttpContextAccessor httpContextAccessor,
             IHbtCurrentUser currentUser,
+            IHbtCurrentTenant currentTenant,
             IHbtLocalizationService localization,
-            IWebHostEnvironment webHostEnvironment) : base(logger, httpContextAccessor, currentUser, localization)
+            IWebHostEnvironment webHostEnvironment) : base(logger, httpContextAccessor, currentUser, currentTenant, localization)
         {
             _fileRepository = fileRepository;
             _webHostEnvironment = webHostEnvironment;

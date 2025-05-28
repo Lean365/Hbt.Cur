@@ -25,13 +25,17 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// <summary>
         /// 构造函数
         /// <param name="workflowNodeService">工作流节点服务</param>
-        /// <param name="localization">本地化服务</param>
         /// <param name="logger">日志服务</param>
+        /// <param name="currentUser">当前用户服务</param>
+        /// <param name="currentTenant">当前租户服务</param>
+        /// <param name="localization">本地化服务</param>
         /// </summary>
         public HbtWorkflowNodeController(
             IHbtWorkflowNodeService workflowNodeService,
-                        IHbtLocalizationService localization,
-            IHbtLogger logger) : base(localization, logger)
+            IHbtLogger logger,
+            IHbtCurrentUser currentUser,
+            IHbtCurrentTenant currentTenant,
+            IHbtLocalizationService localization) : base(logger, currentUser, currentTenant, localization)
         {
             _workflowNodeService = workflowNodeService;
         }

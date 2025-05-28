@@ -1,4 +1,4 @@
-import type { Menu } from '@/types/identity/menu'
+import type { HbtMenu } from '@/types/identity/menu'
 import type { MenuProps } from 'ant-design-vue'
 import * as Icons from '@ant-design/icons-vue'
 import { h } from 'vue'
@@ -40,7 +40,7 @@ function getIcon(iconName: string | undefined) {
  * @param menus 后端菜单数据
  * @returns Ant Design Vue菜单数据
  */
-export function transformMenu(menus: Menu[]): MenuProps['items'] {
+export function transformMenu(menus: HbtMenu[]): MenuProps['items'] {
   return menus
     .map(menu => {
       // 跳过按钮类型的菜单
@@ -84,10 +84,10 @@ export function transformMenu(menus: Menu[]): MenuProps['items'] {
  * @param menus 菜单数据
  * @returns 权限标识列表
  */
-export function extractPermissions(menus: Menu[]): string[] {
+export function extractPermissions(menus: HbtMenu[]): string[] {
   const perms: string[] = []
 
-  const extract = (items: Menu[]) => {
+  const extract = (items: HbtMenu[]) => {
     items.forEach(item => {
       if (item.perms) {
         perms.push(...item.perms.split(',').map((p: string) => p.trim()))

@@ -14,7 +14,6 @@ namespace Lean.Hbt.Domain.Entities.Core
     /// 字典数据实体
     /// </summary>
     [SugarTable("hbt_core_dict_data", "字典数据表")]
-    [SugarIndex("ix_tenant_dict_type", nameof(TenantId), OrderByType.Asc)]
     public class HbtDictData : HbtBaseEntity
     {
         /// <summary>
@@ -51,13 +50,7 @@ namespace Lean.Hbt.Domain.Entities.Core
         /// 翻译键
         /// </summary>
         [SugarColumn(ColumnName = "trans_key", ColumnDescription = "翻译键", Length = 100, ColumnDataType = "nvarchar", IsNullable = true)]
-        public string? TransKey { get; set; }
-
-        /// <summary>
-        /// 排序号
-        /// </summary>
-        [SugarColumn(ColumnName = "order_num", ColumnDescription = "排序号", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
-        public int OrderNum { get; set; } = 0;
+        public string? TransKey { get; set; }        
 
         /// <summary>
         /// CSS类名
@@ -78,21 +71,11 @@ namespace Lean.Hbt.Domain.Entities.Core
         public int Status { get; set; } = 0;
 
         /// <summary>
-        /// 租户ID
+        /// 排序号
         /// </summary>
-        [SugarColumn(ColumnName = "tenant_id", ColumnDescription = "租户ID", ColumnDataType = "bigint", IsNullable = false)]
-        public long TenantId { get; set; }
+        [SugarColumn(ColumnName = "order_num", ColumnDescription = "排序号", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
+        public int OrderNum { get; set; } = 0;       
 
-        /// <summary>
-        /// 构造函数
-        /// </summary>
-        public HbtDictData()
-        {
-            DictType = string.Empty;
-            DictLabel = string.Empty;
-            DictValue = string.Empty;
-            OrderNum = 0;
-            Status = 0;
-        }
+
     }
 }

@@ -32,20 +32,19 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// 构造函数
         /// </summary>
         /// <param name="menuService">菜单服务</param>
-        /// <param name="localization">本地化服务</param>
-        /// <param name="tenantContext">租户上下文</param>
         /// <param name="logger">日志服务</param>
         /// <param name="currentUser">用户上下文</param>
+        /// <param name="tenantContext">租户上下文</param>
+        /// <param name="localization">本地化服务</param>
         public HbtMenuController(
             IHbtMenuService menuService,
-            IHbtCurrentTenant tenantContext,
+            IHbtLogger logger,
             IHbtCurrentUser currentUser,
-                                    IHbtLocalizationService localization,
-            IHbtLogger logger) : base(localization, logger)
+            IHbtCurrentTenant tenantContext,
+            IHbtLocalizationService localization) : base(logger, currentUser, tenantContext, localization)
         {
             _menuService = menuService;
             _currentTenant = tenantContext;
-
             _currentUser = currentUser;
         }
 
@@ -82,6 +81,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <returns>菜单ID</returns>
         [HttpPost]
         [HbtPerm("identity:menu:create")]
+        [HbtLog("创建菜单")]
         public async Task<IActionResult> CreateAsync([FromBody] HbtMenuCreateDto input)
         {
             var result = await _menuService.CreateAsync(input);
@@ -95,6 +95,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <returns>是否成功</returns>
         [HttpPut]
         [HbtPerm("identity:menu:update")]
+        [HbtLog("更新菜单")]
         public async Task<IActionResult> UpdateAsync([FromBody] HbtMenuUpdateDto input)
         {
             var result = await _menuService.UpdateAsync(input);
@@ -108,6 +109,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <returns>是否成功</returns>
         [HttpDelete("{menuId}")]
         [HbtPerm("identity:menu:delete")]
+        [HbtLog("删除菜单")]
         public async Task<IActionResult> DeleteAsync(long menuId)
         {
             var result = await _menuService.DeleteAsync(menuId);
@@ -121,6 +123,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <returns>是否成功</returns>
         [HttpDelete("batch")]
         [HbtPerm("identity:menu:delete")]
+        [HbtLog("批量删除菜单")]
         public async Task<IActionResult> BatchDeleteAsync([FromBody] long[] menuIds)
         {
             var result = await _menuService.BatchDeleteAsync(menuIds);
@@ -135,6 +138,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <returns>导入结果</returns>
         [HttpPost("import")]
         [HbtPerm("identity:menu:import")]
+        [HbtLog("导入菜单数据")]
         public async Task<IActionResult> ImportAsync(IFormFile file, [FromQuery] string sheetName = "Sheet1")
         {
             using var stream = file.OpenReadStream();
@@ -180,6 +184,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HbtPerm("identity:menu:update")]
+        [HbtLog("更新菜单状态")]
         public async Task<IActionResult> UpdateStatusAsync(long menuId, [FromQuery] int status)
         {
             var input = new HbtMenuStatusDto
@@ -199,6 +204,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <returns>是否成功</returns>
         [HttpPut("{menuId}/order")]
         [HbtPerm("identity:menu:update")]
+        [HbtLog("更新菜单排序")]
         public async Task<IActionResult> UpdateOrderAsync(long menuId, [FromQuery] int orderNum)
         {
             var input = new HbtMenuOrderDto

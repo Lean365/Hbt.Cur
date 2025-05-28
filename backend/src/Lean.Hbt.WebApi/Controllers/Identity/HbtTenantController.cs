@@ -2,18 +2,19 @@
 // 项目名 : Lean.Hbt
 // 文件名 : HbtTenantController.cs
 // 创建者 : Lean365
-// 创建时间: 2024-01-17 19:15
+// 创建时间: 2024-01-20
 // 版本号 : V0.0.1
 // 描述   : 租户控制器
 //===================================================================
 
-using Lean.Hbt.Application.Dtos.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Lean.Hbt.Application.Services.Identity;
+using Lean.Hbt.Application.Dtos.Identity;
 
 namespace Lean.Hbt.WebApi.Controllers.Identity;
 
 /// <summary>
-/// 租户管理
+/// 租户控制器
 /// </summary>
 [Route("api/[controller]", Name = "租户")]
 [ApiController]
@@ -26,11 +27,16 @@ public class HbtTenantController : HbtBaseController
     /// 构造函数
     /// </summary>
     /// <param name="tenantService">租户服务</param>
-    /// <param name="localization">本地化服务</param>
     /// <param name="logger">日志服务</param>
-    public HbtTenantController(IHbtTenantService tenantService,
-                                IHbtLocalizationService localization,
-            IHbtLogger logger) : base(localization, logger)
+    /// <param name="currentUser">当前用户服务</param>
+    /// <param name="currentTenant">当前租户服务</param>
+    /// <param name="localization">本地化服务</param>
+    public HbtTenantController(
+        IHbtTenantService tenantService,
+        IHbtLogger logger,
+        IHbtCurrentUser currentUser,
+        IHbtCurrentTenant currentTenant,
+        IHbtLocalizationService localization) : base(logger, currentUser, currentTenant, localization)
     {
         _tenantService = tenantService;
     }
@@ -68,6 +74,7 @@ public class HbtTenantController : HbtBaseController
     /// <returns>租户ID</returns>
     [HttpPost]
     [HbtPerm("identity:tenant:create")]
+    [HbtLog("创建租户")]
     public async Task<IActionResult> CreateAsync([FromBody] HbtTenantCreateDto input)
     {
         var result = await _tenantService.CreateAsync(input);
@@ -81,6 +88,7 @@ public class HbtTenantController : HbtBaseController
     /// <returns>是否成功</returns>
     [HttpPut]
     [HbtPerm("identity:tenant:update")]
+    [HbtLog("更新租户")]
     public async Task<IActionResult> UpdateAsync([FromBody] HbtTenantUpdateDto input)
     {
         var result = await _tenantService.UpdateAsync(input);
@@ -94,6 +102,7 @@ public class HbtTenantController : HbtBaseController
     /// <returns>是否成功</returns>
     [HttpDelete("{id}")]
     [HbtPerm("identity:tenant:delete")]
+    [HbtLog("删除租户")]
     public async Task<IActionResult> DeleteAsync(long id)
     {
         var result = await _tenantService.DeleteAsync(id);
@@ -107,6 +116,7 @@ public class HbtTenantController : HbtBaseController
     /// <returns>是否成功</returns>
     [HttpDelete("batch")]
     [HbtPerm("identity:tenant:delete")]
+    [HbtLog("批量删除租户")]
     public async Task<bool> BatchDeleteAsync([FromBody] long[] ids)
     {
         return await _tenantService.BatchDeleteAsync(ids);
@@ -119,6 +129,7 @@ public class HbtTenantController : HbtBaseController
     /// <returns>导入结果</returns>
     [HttpPost("import")]
     [HbtPerm("identity:tenant:import")]
+    [HbtLog("导入租户数据")]
     public async Task<(int success, int fail)> ImportAsync(IFormFile file)
     {
         using var stream = file.OpenReadStream();
@@ -158,6 +169,7 @@ public class HbtTenantController : HbtBaseController
     /// <returns>更新后的租户状态信息</returns>
     [HttpPut("{id}/status/{status}")]
     [HbtPerm("identity:tenant:update")]
+    [HbtLog("更新租户状态")]
     public async Task<HbtTenantStatusDto> UpdateStatus(long id, int status)
     {
         return await _tenantService.UpdateStatusAsync(id, status);
@@ -173,5 +185,18 @@ public class HbtTenantController : HbtBaseController
     {
         var result = await _tenantService.GetOptionsAsync();
         return Ok(HbtApiResult.Success(result));
+    }
+
+    /// <summary>
+    /// 测试数据库连接
+    /// </summary>
+    /// <param name="connectionInfo">数据库连接信息</param>
+    /// <returns>连接测试结果</returns>
+    [HttpPost("test-connection")]
+    [HbtLog("测试数据库连接")]
+    public async Task<HbtApiResult<bool>> TestDbConnection([FromBody] HbtDbConnectDto connectionInfo)
+    {
+        var result = await _tenantService.TestDbConnectionAsync(connectionInfo);
+        return HbtApiResult<bool>.Success(result);
     }
 }

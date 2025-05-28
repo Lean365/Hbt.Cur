@@ -27,23 +27,25 @@ namespace Lean.Hbt.WebApi.Controllers.SignalR
     public class HbtOnlineUserController : HbtBaseController
     {
         private readonly IHbtOnlineUserService _onlineUserService;
-        private readonly IHbtCurrentUser _currentUser;
+
 
         /// <summary>
         /// 构造函数
         /// </summary>
         /// <param name="onlineUserService">在线用户服务</param>
-        /// <param name="localization">本地化服务</param>
         /// <param name="currentUser">当前用户服务</param>
+        /// <param name="currentTenant">当前租户服务</param>
+        /// <param name="localization">本地化服务</param>
         /// <param name="logger">日志服务</param>
         public HbtOnlineUserController(
-            IHbtCurrentUser currentUser,
             IHbtOnlineUserService onlineUserService,
-                        IHbtLocalizationService localization,
-            IHbtLogger logger) : base(localization, logger)
+            IHbtCurrentUser currentUser,
+            IHbtCurrentTenant currentTenant,
+            IHbtLocalizationService localization,
+            IHbtLogger logger) : base(logger, currentUser, currentTenant, localization)
         {
             _onlineUserService = onlineUserService;
-            _currentUser = currentUser;
+  
         }
 
         /// <summary>

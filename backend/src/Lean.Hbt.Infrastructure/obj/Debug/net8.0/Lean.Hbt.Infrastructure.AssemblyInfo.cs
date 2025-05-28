@@ -16,7 +16,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCopyrightAttribute("Copyright © 2025 Hbt365")]
 [assembly: System.Reflection.AssemblyDescriptionAttribute("黑冰台业务系统")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("0.1.4")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("0.1.4+6e372a7826a8ce491198a7de614daa39653f6b93")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("0.1.4+50b6af433edc0887380a1920a24a7fcbb1e6cb3a")]
 [assembly: System.Reflection.AssemblyProductAttribute("黑冰台")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Lean.Hbt.Infrastructure")]
 [assembly: System.Reflection.AssemblyVersionAttribute("0.1.4")]

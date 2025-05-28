@@ -69,17 +69,7 @@ namespace Lean.Hbt.Domain.Entities.Workflow
         /// </summary>
         [SugarColumn(ColumnName = "end_time", ColumnDescription = "结束时间", ColumnDataType = "datetime", IsNullable = true)]
         public DateTime? EndTime { get; set; }
-        /// <summary>
-        /// 租户ID
-        /// </summary>
-        [SugarColumn(ColumnName = "tenant_id", ColumnDescription = "租户ID", ColumnDataType = "bigint", IsNullable = false)]
-        public long TenantId { get; set; }
 
-        /// <summary>
-        /// 租户
-        /// </summary>
-        [Navigate(NavigateType.OneToOne, nameof(TenantId))]
-        public HbtTenant? Tenant { get; set; }
 
         /// <summary>
         /// 工作流定义

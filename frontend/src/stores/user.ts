@@ -1,195 +1,222 @@
 import { defineStore } from 'pinia'
 import type { MenuProps } from 'ant-design-vue'
-import type { LoginParams, LoginResultData, UserInfo } from '@/types/identity/auth.d'
-import { login, logout as userLogout, getInfo, checkLogin } from '@/api/identity/auth'
-import { getToken, setToken, removeToken, setRefreshToken, removeRefreshToken } from '@/utils/auth'
-import { useMenuStore } from './menu'
-import { useDictStore } from './dict'
-import i18n from '@/locales'
-import { getDeviceInfo } from '@/utils/device'
-import request from '@/utils/request'
-import { SignalRService } from '@/utils/SignalR/service'
-
-const { t } = i18n.global
+import type { UserInfo, LoginResultData } from '@/types/identity/auth.d'
+import { login as userLogin, logout as userLogout, getInfo as fetchUserInfo } from '@/api/identity/auth'
+import { removeToken, removeRefreshToken, setToken, setRefreshToken, getToken } from '@/utils/auth'
+import { ref, computed } from 'vue'
+import axios from 'axios'
 
 // 扩展UserInfo类型以包含额外的字段
 export interface UserInfoResponse extends UserInfo {
   menus?: MenuProps['items']
-  roles: string[]
-  permissions: string[]
 }
 
-export const useUserStore = defineStore('user', {
-  state: () => ({
-    token: getToken(),
-    refreshToken: '',
-    tokenExpireTime: 0,
-    userInfo: null as UserInfoResponse | null,
-    permissions: [] as string[],
-    roles: [] as string[],
-    needCaptcha: false, // 添加验证码状态
-    lastLoginTime: null as Date | null, // 添加最后登录时间
-    loginFailCount: 0 // 添加登录失败次数
-  }),
-  
-  actions: {
-    // 设置是否需要验证码
-    setNeedCaptcha(value: boolean) {
-      this.needCaptcha = value
-    },
+export const useUserStore = defineStore('user', () => {
+  // 用户信息
+  const userInfo = ref<UserInfoResponse>()
+  // 当前租户ID
+  const currentTenantId = ref<number>(0)
+  // 是否需要验证码
+  const needCaptcha = ref<boolean>(false)
+  // 最后登录时间
+  const lastLoginTime = ref<string>('')
+  // 登录失败次数
+  const loginFailCount = ref<number>(0)
+  // 用户信息是否已加载
+  const isUserInfoLoaded = ref<boolean>(false)
 
-    // 记录登录时间
-    recordLoginTime() {
-      this.lastLoginTime = new Date()
-      console.log('[Login] 记录登录时间:', this.lastLoginTime)
-    },
-
-    // 重置登录失败次数
-    resetLoginFailCount() {
-      this.loginFailCount = 0
-      console.log('[Login] 重置登录失败次数')
-    },
-
-    // 增加登录失败次数
-    incrementLoginFailCount() {
-      this.loginFailCount++
-      console.log('[Login] 登录失败次数:', this.loginFailCount)
-    },
-
-    // 登录
-    async login(loginParams: LoginParams) {
-      try {
-        console.log('[UserStore] 开始登录流程')
-        
-        // 1. 检查登录状态
-        const { data: checkResult } = await checkLogin(loginParams)
-        console.log('[UserStore] 登录状态检查结果:', checkResult)
-        
-        if (!checkResult.data.canLogin) {
-          throw new Error('当前设备不允许登录')
-        }
-        
-        // 2. 执行登录
-        const { data: result } = await login(loginParams)
-        console.log('[UserStore] 登录响应:', result)
-        
-        // 3. 保存token和用户信息
-        if (result.code === 200 && result.data) {
-          const loginData = result.data
-          
-          // 设置token
-          if (loginData.accessToken) {
-            setToken(loginData.accessToken)
-            this.token = loginData.accessToken
-            console.log('[UserStore] Token设置成功:', loginData.accessToken)
-          } else {
-            console.warn('[UserStore] 登录响应中没有找到accessToken字段')
-          }
-
-          // 设置刷新token
-          if (loginData.refreshToken) {
-            setRefreshToken(loginData.refreshToken)
-            this.refreshToken = loginData.refreshToken
-            console.log('[UserStore] 刷新Token设置成功:', loginData.refreshToken)
-          } else {
-            console.warn('[UserStore] 登录响应中没有找到refreshToken字段')
-          }
-
-          // 设置过期时间
-          if (loginData.expiresIn) {
-            this.tokenExpireTime = Date.now() + loginData.expiresIn * 1000
-            console.log('[UserStore] Token过期时间设置成功:', new Date(this.tokenExpireTime).toLocaleString())
-          } else {
-            console.warn('[UserStore] 登录响应中没有找到expiresIn字段')
-          }
-          
-          // 设置用户信息
-          if (loginData.userInfo) {
-            this.userInfo = loginData.userInfo as UserInfoResponse
-            this.permissions = Array.isArray(loginData.userInfo.permissions) ? loginData.userInfo.permissions : []
-            this.roles = Array.isArray(loginData.userInfo.roles) ? loginData.userInfo.roles : []
-          } else {
-            console.warn('[UserStore] 登录响应中没有找到userInfo字段')
-          }
-          
-          console.log('[UserStore] 登录成功，用户信息:', {
-            token: this.token,
-            userInfo: this.userInfo,
-            permissions: this.permissions,
-            roles: this.roles
-          })
-
-          // 4. 获取最新的用户信息（包含菜单等）
-          await this.getUserInfo()
-          
-          return result
-        } else {
-          throw new Error(result.msg || '登录失败')
-        }
-      } catch (error) {
-        console.error('[UserStore] 登录失败:', error)
-        this.loginFailCount++
-        throw error
+  // 获取用户信息
+  const getUserInfo = async (forceRefresh = false) => {
+    try {
+      const token = getToken()
+      if (!token) {
+        console.log('[User] 未找到Token，跳过获取用户信息')
+        return null
       }
-    },
 
-    // 获取用户信息
-    async getUserInfo() {
-      try {
-        console.log('[UserStore] 开始获取用户信息')
-        const { data: response } = await getInfo()
-        
-        if (response.code === 200 && response.data) {
-          const { permissions = [], roles = [], ...rest } = response.data
-          this.userInfo = { ...this.userInfo, ...rest, roles, permissions } as UserInfoResponse
-          this.permissions = permissions
-          this.roles = roles
-          
-          console.log('[UserStore] 获取用户信息成功:', {
-            userInfo: this.userInfo,
-            permissions: this.permissions,
-            roles: this.roles
-          })
-        } else {
-          throw new Error(response.msg || '获取用户信息失败')
-        }
-      } catch (error) {
-        console.error('[UserStore] 获取用户信息失败:', error)
-        throw error
+      // 如果不是强制刷新，且有缓存数据，则使用缓存
+      if (!forceRefresh && isUserInfoLoaded.value && userInfo.value) {
+        console.log('[User] 使用缓存用户信息')
+        return userInfo.value
       }
-    },
 
-    async logout() {
-      try {
-        // 停止 SignalR 连接
-        const signalRService = SignalRService.getInstance()
-        await signalRService.stop()
+      console.log('[User] 开始获取用户信息')
+      const { data: response } = await fetchUserInfo()
+      if (response.code === 200) {
+        const userData = response.data as UserInfoResponse
         
-        // 调用登出 API
-        await userLogout()
+        // 验证租户ID
+        if (!userData.tenantId || userData.tenantId <= 0) {
+          console.error('[User] 用户租户ID无效:', userData.tenantId)
+          throw new Error('用户租户ID无效')
+        }
         
-        // 清除本地存储
+        userInfo.value = userData
+        isUserInfoLoaded.value = true
+        
+        // 设置租户ID
+        setCurrentTenantId(userData.tenantId)
+        
+        console.log('[User] 用户信息获取成功:', {
+          用户ID: userInfo.value.userId,
+          用户名: userInfo.value.userName,
+          昵称: userInfo.value.nickName,
+          租户ID: userInfo.value.tenantId,
+          角色数: userInfo.value.roles?.length || 0,
+          权限数: userInfo.value.permissions?.length || 0
+        })
+        
+        return userInfo.value
+      }
+      throw new Error(response.msg || '获取用户信息失败')
+    } catch (error) {
+      console.error('[User] 获取用户信息失败:', error)
+      // 只有在强制刷新（登录）时才清除token
+      if (forceRefresh) {
+        console.log('[User] 登录时获取用户信息失败，清除token')
         removeToken()
-        this.token = ''
-        this.userInfo = null
-        this.roles = []
-        this.permissions = []
-      } catch (error) {
-        console.error('登出失败:', error)
-        throw error
+        removeRefreshToken()
       }
-    },
-
-    // 初始化 SignalR 连接
-    async initSignalR() {
-      try {
-        const signalRService = SignalRService.getInstance()
-        await signalRService.start()
-        console.log('[UserStore] SignalR 连接初始化成功')
-      } catch (error) {
-        console.error('[UserStore] SignalR 连接初始化失败:', error)
-        throw error
-      }
+      return null
     }
+  }
+
+  // 获取当前租户ID
+  const getCurrentTenantId = (): number => {
+    return userInfo.value?.tenantId ?? 0
+  }
+
+  // 设置当前租户ID
+  const setCurrentTenantId = (tenantId: number) => {
+    if (!tenantId || tenantId <= 0) {
+      console.error('[User] 无效的租户ID:', tenantId)
+      throw new Error('无效的租户ID')
+    }
+    
+    if (userInfo.value) {
+      userInfo.value.tenantId = tenantId
+    }
+    
+    // 更新请求头
+    axios.defaults.headers.common['X-Tenant-Id'] = tenantId.toString()
+    
+    console.log('[User] 租户ID设置完成:', {
+      tenantId,
+      headers: axios.defaults.headers.common
+    })
+  }
+
+  // 设置是否需要验证码
+  const setNeedCaptcha = (value: boolean) => {
+    needCaptcha.value = value
+  }
+
+  // 记录登录时间
+  const recordLoginTime = () => {
+    const now = new Date().toISOString()
+    lastLoginTime.value = now
+    localStorage.setItem('lastLoginTime', now)
+  }
+
+  // 重置登录失败次数
+  const resetLoginFailCount = () => {
+    loginFailCount.value = 0
+    localStorage.removeItem('loginFailCount')
+  }
+
+  // 增加登录失败次数
+  const incrementLoginFailCount = () => {
+    loginFailCount.value++
+    localStorage.setItem('loginFailCount', loginFailCount.value.toString())
+    // 如果失败次数达到阈值，需要验证码
+    if (loginFailCount.value >= 3) {
+      setNeedCaptcha(true)
+    }
+  }
+
+  // 登录
+  const login = async (loginData: any) => {
+    try {
+      // 登录前清除所有缓存
+      clearUserInfo()
+      
+      const { data: response } = await userLogin(loginData)
+      if (response.code === 200) {
+        const loginResult = response.data as LoginResultData
+        console.log('[User] 登录成功，开始获取最新用户信息')
+        
+        // 保存token
+        setToken(loginResult.accessToken)
+        setRefreshToken(loginResult.refreshToken)
+        
+        // 强制从后端获取最新用户信息
+        const userInfo = await getUserInfo(true)
+        if (!userInfo) {
+          throw new Error('获取用户信息失败')
+        }
+        
+        // 记录登录时间
+        recordLoginTime()
+        // 重置登录失败次数
+        resetLoginFailCount()
+        
+        return response
+      }
+      // 登录失败，增加失败次数
+      incrementLoginFailCount()
+      throw new Error(response.msg || '登录失败')
+    } catch (error) {
+      console.error('[User] 登录失败:', error)
+      // 登录失败时清除所有数据
+      clearUserInfo()
+      removeToken()
+      removeRefreshToken()
+      throw error
+    }
+  }
+
+  // 清除用户信息
+  const clearUserInfo = () => {
+    userInfo.value = undefined
+    isUserInfoLoaded.value = false
+    currentTenantId.value = 0
+  }
+
+  // 登出
+  const logout = async () => {
+    try {
+      await userLogout()
+      // 清除用户信息
+      clearUserInfo()
+      // 清除 token
+      removeToken()
+      removeRefreshToken()
+      // 清除登录时间
+      lastLoginTime.value = ''
+      // 重置登录失败次数
+      resetLoginFailCount()
+    } catch (error) {
+      console.error('登出失败:', error)
+    }
+  }
+
+  return {
+    userInfo,
+    currentTenantId,
+    needCaptcha,
+    lastLoginTime,
+    loginFailCount,
+    isUserInfoLoaded,
+    getUserInfo,
+    getCurrentTenantId,
+    setCurrentTenantId,
+    setNeedCaptcha,
+    recordLoginTime,
+    resetLoginFailCount,
+    incrementLoginFailCount,
+    login,
+    logout,
+    clearUserInfo,
+    permissions: computed(() => userInfo.value?.permissions || [])
   }
 }) 

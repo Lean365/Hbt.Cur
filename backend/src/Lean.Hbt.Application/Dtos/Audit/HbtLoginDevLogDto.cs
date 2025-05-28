@@ -22,18 +22,13 @@ namespace Lean.Hbt.Application.Dtos.Audit
         /// ID
         /// </summary>
         [AdaptMember("Id")]
-        public long Id { get; set; }
+        public long LoginDevLogId { get; set; }
 
         /// <summary>
         /// 用户ID
         /// </summary>
         [Required(ErrorMessage = "用户ID不能为空")]
         public long UserId { get; set; }
-
-        /// <summary>
-        /// 租户ID
-        /// </summary>
-        public long? TenantId { get; set; }
 
         /// <summary>
         /// 设备类型

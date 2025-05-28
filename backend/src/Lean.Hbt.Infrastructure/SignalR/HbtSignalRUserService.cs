@@ -94,7 +94,7 @@ namespace Lean.Hbt.Infrastructure.SignalR
                     LastActivity = DateTime.Now,
                     LastHeartbeat = DateTime.Now,
                     OnlineStatus = device.OnlineStatus,
-                    TenantId = device.TenantId,
+
                     GroupId = device.GroupId,
                     ClientIp = device.IpAddress,
                     UserAgent = device.UserAgent
@@ -152,7 +152,7 @@ namespace Lean.Hbt.Infrastructure.SignalR
                     LastActivity = u.LastActivity,
                     LastHeartbeat = u.LastHeartbeat,
                     OnlineStatus = u.OnlineStatus,
-                    TenantId = u.TenantId,
+
                     GroupId = u.GroupId,
                     IpAddress = u.ClientIp,
                     UserAgent = u.UserAgent
@@ -399,7 +399,7 @@ namespace Lean.Hbt.Infrastructure.SignalR
             try
             {
                 var exp = Expressionable.Create<HbtOnlineUser>();
-                exp.And(u => u.TenantId == tenantId && u.OnlineStatus == 0);
+                exp.And(u => u.OnlineStatus == 0);
 
                 var users = await _repository.GetListAsync(exp.ToExpression());
                 return users.Where(u => !string.IsNullOrEmpty(u.ConnectionId))

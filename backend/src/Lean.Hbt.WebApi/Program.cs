@@ -16,6 +16,8 @@ using Lean.Hbt.Infrastructure.Services;
 using Lean.Hbt.Infrastructure.Services.Identity;
 using Lean.Hbt.Infrastructure.SignalR.Cache;
 using Lean.Hbt.WebApi.Middlewares;
+using Lean.Hbt.WebApi.Extensions;
+using Lean.Hbt.Application.Services.Audit;
 using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http.Features;
@@ -185,11 +187,14 @@ try
     // 配置验证码选项
     builder.Services.Configure<HbtCaptchaOptions>(builder.Configuration.GetSection("Captcha"));
 
-    // 添加基础设施服务
-    builder.Services.AddInfrastructure(builder.Configuration);
-
     // 注册当前用户服务
     builder.Services.AddScoped<IHbtCurrentUser, HbtCurrentUser>();
+
+    // 注册当前租户服务
+    builder.Services.AddScoped<IHbtCurrentTenant, HbtCurrentTenant>();
+
+    // 添加基础设施服务
+    builder.Services.AddInfrastructure(builder.Configuration);
 
     // 添加领域服务
     builder.Services.AddDomainServices();
@@ -223,6 +228,52 @@ try
                 ValidateTokenReplay = true,
                 RequireAudience = true,
                 TokenDecryptionKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.SecretKey))
+            };
+
+            // 添加自定义的声明类型映射
+            options.MapInboundClaims = false;
+
+            // 添加 JWT 事件处理
+            options.Events = new JwtBearerEvents
+            {
+                OnTokenValidated = context =>
+                {
+                    var logger = context.HttpContext.RequestServices.GetRequiredService<IHbtLogger>();
+                    var claims = context.Principal?.Claims.ToList();
+                    logger.Info("JWT认证成功，所有声明: {@Claims}", claims?.Select(c => new { c.Type, c.Value }));
+                    
+                    var tenantId = context.Principal?.FindFirst("tid")?.Value;
+                    var userName = context.Principal?.FindFirst("unm")?.Value;
+                    
+                    if (string.IsNullOrEmpty(tenantId))
+                    {
+                        logger.Warn("JWT认证失败: 未找到租户ID声明");
+                        context.Fail("未找到租户ID声明");
+                        return Task.CompletedTask;
+                    }
+
+                    logger.Info("JWT认证成功: UserId={UserId}, UserName={UserName}, TenantId={TenantId}",
+                        context.Principal?.FindFirst("uid")?.Value,
+                        userName,
+                        tenantId);
+                    return Task.CompletedTask;
+                },
+                OnAuthenticationFailed = context =>
+                {
+                    var logger = context.HttpContext.RequestServices.GetRequiredService<IHbtLogger>();
+                    logger.Error("JWT认证失败: {Message}, Exception: {Exception}", 
+                        context.Exception.Message,
+                        context.Exception);
+                    return Task.CompletedTask;
+                },
+                OnMessageReceived = context =>
+                {
+                    var logger = context.HttpContext.RequestServices.GetRequiredService<IHbtLogger>();
+                    logger.Info("收到JWT认证请求: Path={Path}, Token={Token}",
+                        context.Request.Path,
+                        context.Token?.Substring(0, Math.Min(20, context.Token?.Length ?? 0)));
+                    return Task.CompletedTask;
+                }
             };
         });
 
@@ -351,6 +402,9 @@ try
         .AddViewLocalization()
         .AddDataAnnotationsLocalization();
 
+    // 注册租户审计日志服务
+    builder.Services.AddScoped<IHbtTenantLogService, HbtTenantLogService>();
+
     var app = builder.Build();
 
     // 初始化IP位置查询工具
@@ -423,7 +477,7 @@ try
     logger.Info("静态文件中间件已启用");
 
     // 6. CSRF防护中间件（防止跨站请求伪造攻击）
-     app.UseHbtCsrf();
+    app.UseHbtCsrf();
     logger.Info("CSRF防护已启用");
 
     // 7. HTTPS重定向中间件（如果启用HTTPS）
@@ -446,13 +500,33 @@ try
     app.UseAuthentication();
     app.UseAuthorization();
 
-    // 12. 添加权限中间件
+    // 12. 添加租户中间件
+    app.Use((RequestDelegate next) => async (HttpContext context) =>
+    {
+        using var scope = app.Services.CreateScope();
+        var middleware = ActivatorUtilities.CreateInstance<HbtTenantMiddleware>(
+            scope.ServiceProvider,
+            next);
+        await middleware.InvokeAsync(context);
+    });
+
+    // 13. 添加权限中间件
     app.UseHbtPerm();
 
-    // 13. 添加本地化中间件
+    // 14. 添加本地化中间件
     app.UseHbtLocalization();
 
-    // 14. 注册所有控制器路由和SignalR Hub
+    // 15. 添加租户审计日志中间件
+    app.Use((RequestDelegate next) => async (HttpContext context) =>
+    {
+        using var scope = app.Services.CreateScope();
+        var middleware = ActivatorUtilities.CreateInstance<HbtTenantLogMiddleware>(
+            scope.ServiceProvider,
+            next);
+        await middleware.InvokeAsync(context);
+    });
+
+    // 16. 注册所有控制器路由和SignalR Hub
     app.MapControllers();
     app.UseHbtSignalR();
 

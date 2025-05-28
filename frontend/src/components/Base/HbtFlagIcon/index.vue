@@ -41,13 +41,18 @@ import type { SelectValue, DefaultOptionType } from 'ant-design-vue/es/select'
 import 'flag-icons/css/flag-icons.min.css'
 import { useI18n } from 'vue-i18n'
 import countries from 'i18n-iso-countries'
+import languages from '@cospired/i18n-iso-languages'
 import zh from 'i18n-iso-countries/langs/zh.json'
 import en from 'i18n-iso-countries/langs/en.json'
+import zhLang from '@cospired/i18n-iso-languages/langs/zh.json'
+import enLang from '@cospired/i18n-iso-languages/langs/en.json'
 import countryData from 'flag-icons/country.json'
 
 // 注册语言
 countries.registerLocale(zh)
 countries.registerLocale(en)
+languages.registerLocale(zhLang)
+languages.registerLocale(enLang)
 
 const { t, locale } = useI18n()
 
@@ -72,6 +77,7 @@ interface Country {
   name: string
   nameEn: string
   nameShort: string
+  langName: string
 }
 
 interface CountryInfo {
@@ -93,11 +99,14 @@ const countryCodes = countries.getAlpha2Codes()
 const countriesList = ref<Country[]>(
   Object.keys(countryCodes).map(code => {
     const country = countryDataTyped.find(c => c.code.toLowerCase() === code.toLowerCase())
+    const langCode = code.toLowerCase()
+    const langName = languages.getName(langCode, locale.value)
     return {
       code,
       name: countries.getName(code, 'zh') || code,
       nameEn: countries.getName(code, 'en') || code,
-      nameShort: country?.name || code
+      nameShort: country?.name || code,
+      langName: langName || ''
     }
   })
 )
@@ -118,11 +127,12 @@ watch(locale, (newLocale) => {
 const options = computed(() => {
   return countriesList.value.map(country => ({
     value: country.code,
-    label: `${country.nameEn} (${country.name}) [${country.nameShort}]`,
+    label: `${country.nameEn} (${country.name}) [${country.nameShort}] ${country.langName ? `- ${country.langName}` : ''}`,
     code: country.code,
     name: country.name,
     nameEn: country.nameEn,
-    nameShort: country.nameShort
+    nameShort: country.nameShort,
+    langName: country.langName
   }))
 })
 
@@ -133,7 +143,8 @@ const filterOption = (input: string, option: DefaultOptionType) => {
     (option.name as string).toLowerCase().includes(searchText) ||
     (option.nameEn as string).toLowerCase().includes(searchText) ||
     (option.nameShort as string).toLowerCase().includes(searchText) ||
-    (option.code as string).toLowerCase().includes(searchText)
+    (option.code as string).toLowerCase().includes(searchText) ||
+    (option.langName as string).toLowerCase().includes(searchText)
   )
 }
 

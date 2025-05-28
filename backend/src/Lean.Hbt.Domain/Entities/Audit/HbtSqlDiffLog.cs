@@ -15,7 +15,6 @@ namespace Lean.Hbt.Domain.Entities.Audit
     /// SqlSugar差异日志实体
     /// </summary>
     [SugarTable("hbt_audit_diff_log", "差异日志")]
-    [SugarIndex("ix_tenant_dbdiff", nameof(TenantId), OrderByType.Asc)]
     public class HbtSqlDiffLog : HbtBaseEntity
     {
         /// <summary>
@@ -71,11 +70,5 @@ namespace Lean.Hbt.Domain.Entities.Audit
         /// </summary>
         [SugarColumn(ColumnName = "sql_parameters", ColumnDescription = "SQL参数", Length = -1, ColumnDataType = "nvarchar", IsNullable = true)]
         public string? SqlParameters { get; set; }
-
-        /// <summary>
-        /// 租户ID
-        /// </summary>
-        [SugarColumn(ColumnName = "tenant_id", ColumnDescription = "租户ID", ColumnDataType = "bigint", IsNullable = true)]
-        public long? TenantId { get; set; }
     }
 }

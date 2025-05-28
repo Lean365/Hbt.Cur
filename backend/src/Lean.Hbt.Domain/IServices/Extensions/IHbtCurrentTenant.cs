@@ -7,6 +7,8 @@
 // 描述   : 当前租户接口
 //===================================================================
 
+#nullable enable
+
 namespace Lean.Hbt.Domain.IServices.Extensions;
 
 /// <summary>
@@ -23,4 +25,15 @@ public interface IHbtCurrentTenant
     /// 获取当前租户名称
     /// </summary>
     string TenantName { get; }
+
+    /// <summary>
+    /// 设置当前租户ID
+    /// </summary>
+    /// <param name="tenantId">租户ID</param>
+    void SetTenantId(long tenantId);
+
+    /// <summary>
+    /// 清除当前租户信息
+    /// </summary>
+    void Clear();
 }

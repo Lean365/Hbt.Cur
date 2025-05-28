@@ -14,7 +14,6 @@ namespace Lean.Hbt.Domain.Entities.Core
     /// 系统配置实体
     /// </summary>
     [SugarTable("hbt_core_config", "系统配置表")]
-    [SugarIndex("ix_tenant_config", nameof(TenantId), OrderByType.Asc)]
     [SugarIndex("ix_name_config", nameof(ConfigName), OrderByType.Asc)]
     public class HbtConfig : HbtBaseEntity
     {
@@ -53,11 +52,6 @@ namespace Lean.Hbt.Domain.Entities.Core
         /// </summary>
         [SugarColumn(ColumnName = "status", ColumnDescription = "状态", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
         public int Status { get; set; } = 0;
-        /// <summary>
-        /// 租户ID
-        /// </summary>
-        [SugarColumn(ColumnName = "tenant_id", ColumnDescription = "租户ID", ColumnDataType = "bigint", IsNullable = false)]
-        public long TenantId { get; set; }
 
         /// <summary>
         /// 排序

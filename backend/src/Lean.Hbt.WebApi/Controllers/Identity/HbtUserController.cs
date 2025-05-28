@@ -30,11 +30,16 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// 构造函数
         /// </summary>
         /// <param name="userService">用户服务</param>
-        /// <param name="localization">本地化服务</param>
         /// <param name="logger">日志服务</param>
-        public HbtUserController(IHbtUserService userService,
-            IHbtLocalizationService localization,
-            IHbtLogger logger) : base(localization, logger)
+        /// <param name="currentUser">当前用户服务</param>
+        /// <param name="currentTenant">当前租户服务</param>
+        /// <param name="localization">本地化服务</param>
+        public HbtUserController(
+            IHbtUserService userService,
+            IHbtLogger logger,
+            IHbtCurrentUser currentUser,
+            IHbtCurrentTenant currentTenant,
+            IHbtLocalizationService localization) : base(logger, currentUser, currentTenant, localization)
         {
             _userService = userService;
         }
@@ -71,6 +76,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <param name="input">创建对象</param>
         /// <returns>用户ID</returns>
         [HttpPost]
+        [HbtLog("创建用户")]
         [HbtPerm("identity:user:create")]
         public async Task<IActionResult> CreateAsync([FromBody] HbtUserCreateDto input)
         {
@@ -84,6 +90,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <param name="input">更新对象</param>
         /// <returns>是否成功</returns>
         [HttpPut]
+        [HbtLog("更新用户")]
         [HbtPerm("identity:user:update")]
         public async Task<IActionResult> UpdateAsync([FromBody] HbtUserUpdateDto input)
         {
@@ -97,6 +104,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <param name="userId">用户ID</param>
         /// <returns>是否成功</returns>
         [HttpDelete("{userId}")]
+        [HbtLog("删除用户")]
         [HbtPerm("identity:user:delete")]
         public async Task<IActionResult> DeleteAsync(long userId)
         {

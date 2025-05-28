@@ -14,9 +14,9 @@ import type {
   HbtLanguageQuery,
   HbtLanguageCreate,
   HbtLanguageUpdate,
+  HbtLanguageOptionDto,
   HbtLanguageStatus
 } from '@/types/core/language'
-import type { AxiosResponse } from 'axios'
 
 /**
  * 获取语言分页列表
@@ -146,7 +146,7 @@ export function getHbtLanguageTemplate() {
  * @param status 状态
  * @returns 是否成功
  */
-export function updateHbtLanguageStatus(languageId: number, status: number) {
+export function updateHbtLanguageStatus(languageId: number, status: HbtLanguageStatus) {
   return request<HbtApiResponse<boolean>>({
     url: `/api/HbtLanguage/${languageId}/status`,
     method: 'put',
@@ -155,12 +155,12 @@ export function updateHbtLanguageStatus(languageId: number, status: number) {
 }
 
 /**
- * 获取支持的语言列表
- * @returns 语言列表
+ * 获取语言选项列表
+ * @returns 语言选项列表
  */
-export function getSupportedLanguages(): Promise<AxiosResponse<HbtApiResponse<HbtLanguage[]>>> {
-  return request({
-    url: '/api/HbtLanguage/supported',
+export function getLanguageOptions() {
+  return request<HbtApiResponse<HbtLanguage[]>>({
+    url: '/api/HbtLanguage/options',
     method: 'get'
   })
 } 

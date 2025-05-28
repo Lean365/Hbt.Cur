@@ -93,4 +93,10 @@ public interface IHbtTenantService
     /// <returns>更新后的租户状态信息</returns>
     Task<HbtTenantStatusDto> UpdateStatusAsync(long id, int status);
 
+    /// <summary>
+    /// 测试数据库连接
+    /// </summary>
+    /// <param name="connectionInfo">数据库连接信息</param>
+    /// <returns>连接测试结果</returns>
+    Task<bool> TestDbConnectionAsync(HbtDbConnectDto connectionInfo);
 }

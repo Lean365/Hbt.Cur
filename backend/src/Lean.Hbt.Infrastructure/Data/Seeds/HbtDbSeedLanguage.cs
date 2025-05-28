@@ -136,7 +136,7 @@ public class HbtDbSeedLanguage
                 OrderNum = 9,
                 Status = 0,
                 IsDefault = 0,
-                IsBuiltin = 1,               
+                IsBuiltin = 1,
 
             }
         };
@@ -146,12 +146,12 @@ public class HbtDbSeedLanguage
             var existingLanguage = await _languageRepository.GetFirstAsync(l => l.LangCode == language.LangCode);
             if (existingLanguage == null)
             {
-                language.TenantId = systemTenantId;
+
                 language.CreateBy = "Hbt365";
                 language.CreateTime = DateTime.Now;
                 language.UpdateBy = "Hbt365";
                 language.UpdateTime = DateTime.Now;
-                
+
                 await _languageRepository.CreateAsync(language);
                 insertCount++;
                 _logger.Info($"[创建] 语言 '{language.LangName}' 创建成功");
@@ -163,12 +163,12 @@ public class HbtDbSeedLanguage
                 existingLanguage.IsBuiltin = language.IsBuiltin;
                 existingLanguage.OrderNum = language.OrderNum;
                 existingLanguage.Status = language.Status;
-                existingLanguage.TenantId = systemTenantId;
+
                 existingLanguage.Remark = language.Remark;
-                existingLanguage.CreateBy = language.CreateBy;
-                existingLanguage.CreateTime = language.CreateTime;
-                existingLanguage.UpdateBy = "Hbt365";
-                existingLanguage.UpdateTime = DateTime.Now;
+                language.CreateBy = "Hbt365";
+                language.CreateTime = DateTime.Now;
+                language.UpdateBy = "Hbt365";
+                language.UpdateTime = DateTime.Now;
 
                 await _languageRepository.UpdateAsync(existingLanguage);
                 updateCount++;

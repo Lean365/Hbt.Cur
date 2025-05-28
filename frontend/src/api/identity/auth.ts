@@ -1,5 +1,6 @@
 import request from '@/utils/request'
 import type { AxiosResponse } from 'axios'
+import type { HbtApiResponse } from '@/types/common'
 import type { 
   LoginParams, 
   LoginResultData, 
@@ -9,9 +10,10 @@ import type {
   CaptchaResult,
   LockoutStatus,
   LoginCheckResult,
-  LoginCheckResultData
+  LoginCheckResultData,
+  HbtSignalRDevice,
+  HbtSignalREnvironment
 } from '@/types/identity/auth'
-import type { HbtApiResponse } from '@/types/common'
 import type { UserInfoResponse } from '@/stores/user'
 import { getToken } from '@/utils/auth'
 
@@ -20,10 +22,40 @@ import { getToken } from '@/utils/auth'
  * @param data 登录参数
  */
 export function login(data: LoginParams): Promise<AxiosResponse<HbtApiResponse<LoginResultData>>> {
-  return request({
+  console.log('[Auth] 开始登录:', {
+    用户名: data.userName,
+    租户ID: data.tenantId,
+    登录类型: data.loginType,
+    登录来源: data.loginSource,
+    设备信息: data.deviceInfo,
+    环境信息: data.environmentInfo
+  })
+  return request<HbtApiResponse<LoginResultData>>({
     url: '/api/HbtAuth/login',
     method: 'post',
-    data
+    data,
+    headers: {
+      'Cache-Control': 'no-cache',
+      'Pragma': 'no-cache'
+    }
+  }).then(response => {
+    console.log('[Auth] 登录响应:', {
+      状态码: response.status,
+      状态文本: response.statusText,
+      响应头: response.headers,
+      响应数据: response.data
+    })
+    return response
+  }).catch(error => {
+    console.error('[Auth] 登录失败:', {
+      错误信息: error.message,
+      错误代码: error.code,
+      请求配置: error.config,
+      响应数据: error.response?.data,
+      响应状态: error.response?.status,
+      响应头: error.response?.headers
+    })
+    throw error
   })
 }
 
@@ -32,10 +64,37 @@ export function login(data: LoginParams): Promise<AxiosResponse<HbtApiResponse<L
  * @param username 用户名
  */
 export function getSalt(username: string): Promise<AxiosResponse<HbtApiResponse<SaltResponse>>> {
-  return request({
+  console.log('[Auth] 开始获取盐值:', username)
+  return request<HbtApiResponse<SaltResponse>>({
     url: '/api/HbtAuth/salt',
     method: 'get',
-    params: { username }
+    params: { username },
+    headers: {
+      'Cache-Control': 'no-cache',
+      'Pragma': 'no-cache'
+    },
+    validateStatus: function (status) {
+      console.log('[Auth] 盐值请求状态码:', status)
+      return status >= 200 && status < 300
+    }
+  }).then(response => {
+    console.log('[Auth] 获取盐值响应:', {
+      状态码: response.status,
+      状态文本: response.statusText,
+      响应头: response.headers,
+      响应数据: response.data
+    })
+    return response
+  }).catch(error => {
+    console.error('[Auth] 获取盐值失败:', {
+      错误信息: error.message,
+      错误代码: error.code,
+      请求配置: error.config,
+      响应数据: error.response?.data,
+      响应状态: error.response?.status,
+      响应头: error.response?.headers
+    })
+    throw error
   })
 }
 
@@ -99,10 +158,33 @@ export function verifyCaptcha(data: { token: string; offset: number }): Promise<
  * 检查账号锁定状态
  * @param username 用户名
  */
-export function checkAccountLockout(username: string): Promise<AxiosResponse<HbtApiResponse<LockoutStatus>>> {
-  return request({
-    url: `/api/HbtAuth/lockout/${username}`,
-    method: 'get'
+export function checkAccountLockout(userName: string): Promise<AxiosResponse<HbtApiResponse<LockoutStatus>>> {
+  console.log('[Auth] 检查账号锁定状态:', userName)
+  return request<HbtApiResponse<LockoutStatus>>({
+    url: `/api/HbtAuth/lockout/${userName}`,
+    method: 'get',
+    headers: {
+      'Cache-Control': 'no-cache',
+      'Pragma': 'no-cache'
+    }
+  }).then(response => {
+    console.log('[Auth] 账号锁定状态响应:', {
+      状态码: response.status,
+      状态文本: response.statusText,
+      响应头: response.headers,
+      响应数据: response.data
+    })
+    return response
+  }).catch(error => {
+    console.error('[Auth] 检查账号锁定状态失败:', {
+      错误信息: error.message,
+      错误代码: error.code,
+      请求配置: error.config,
+      响应数据: error.response?.data,
+      响应状态: error.response?.status,
+      响应头: error.response?.headers
+    })
+    throw error
   })
 }
 

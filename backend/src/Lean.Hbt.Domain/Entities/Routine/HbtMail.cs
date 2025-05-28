@@ -111,16 +111,6 @@ namespace Lean.Hbt.Domain.Entities.Routine
         [SugarColumn(ColumnName = "mail_last_read_time", ColumnDescription = "最后阅读时间", IsNullable = true, ColumnDataType = "datetime")]
         public DateTime? MailLastReadTime { get; set; }
 
-        /// <summary>
-        /// 租户ID
-        /// </summary>
-        [SugarColumn(ColumnName = "tenant_id", ColumnDescription = "租户ID", ColumnDataType = "bigint", IsNullable = false)]
-        public long TenantId { get; set; }
 
-        /// <summary>
-        /// 租户
-        /// </summary>
-        [Navigate(NavigateType.OneToOne, nameof(TenantId))]
-        public HbtTenant? Tenant { get; set; }
     }
 }

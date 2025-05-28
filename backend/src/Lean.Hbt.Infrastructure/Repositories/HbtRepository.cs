@@ -26,6 +26,7 @@ namespace Lean.Hbt.Infrastructure.Repositories
         private readonly SqlSugarScope _db;
         private readonly SimpleClient<TEntity> _entities;
         private readonly IHbtCurrentUser _currentUser;
+        private readonly IHbtCurrentTenant _currentTenant;
 
         /// <summary>
         /// 日志服务
@@ -37,15 +38,16 @@ namespace Lean.Hbt.Infrastructure.Repositories
         /// </summary>
         /// <param name="db">SqlSugar客户端</param>
         /// <param name="currentUser">当前用户服务</param>
+        /// <param name="currentTenant">当前租户服务</param>
         /// <param name="logger">日志服务</param>
         public HbtRepository(SqlSugarScope db, IHbtCurrentUser currentUser,
-            IHbtLogger logger
-
-            )
+            IHbtCurrentTenant currentTenant,
+            IHbtLogger logger)
         {
             _db = db;
             _entities = _db.GetSimpleClient<TEntity>();
             _currentUser = currentUser;
+            _currentTenant = currentTenant;
             _logger = logger;
         }
 
@@ -60,12 +62,30 @@ namespace Lean.Hbt.Infrastructure.Repositories
         public SimpleClient<TEntity> SimpleClient => _entities;
 
         /// <summary>
+        /// 应用租户过滤
+        /// </summary>
+        private ISugarQueryable<TEntity> ApplyTenantFilter(ISugarQueryable<TEntity> query)
+        {
+            // 如果实体实现了ITenantEntity接口，且租户ID不为-1（租户功能已启用），则添加租户过滤条件
+            if (typeof(ITenantEntity).IsAssignableFrom(typeof(TEntity)))
+            {
+                var tenantId = _currentTenant.TenantId;
+                if (tenantId != -1) // 租户功能已启用
+                {
+                    query = query.Where("tenant_id = @tenantId", new { tenantId });
+                }
+            }
+            return query;
+        }
+
+        /// <summary>
         /// 获取查询对象
         /// </summary>
         /// <returns>返回ISugarQueryable查询对象</returns>
         public ISugarQueryable<TEntity> AsQueryable()
         {
-            return _db.Queryable<TEntity>();
+            var query = _db.Queryable<TEntity>();
+            return ApplyTenantFilter(query);
         }
 
         /// <summary>
@@ -82,6 +102,9 @@ namespace Lean.Hbt.Infrastructure.Repositories
             {
                 query = query.Where("is_deleted = 0");
             }
+
+            // 应用租户过滤
+            query = ApplyTenantFilter(query);
 
             return await query.InSingleAsync(id);
         }
@@ -101,6 +124,9 @@ namespace Lean.Hbt.Infrastructure.Repositories
                 query = query.Where("is_deleted = 0");
             }
 
+            // 应用租户过滤
+            query = ApplyTenantFilter(query);
+
             return await query.Where(condition).FirstAsync();
         }
 
@@ -118,6 +144,9 @@ namespace Lean.Hbt.Infrastructure.Repositories
             {
                 query = query.Where("is_deleted = 0");
             }
+
+            // 应用租户过滤
+            query = ApplyTenantFilter(query);
 
             if (condition != null)
             {
@@ -150,6 +179,9 @@ namespace Lean.Hbt.Infrastructure.Repositories
             {
                 query = query.Where("is_deleted = 0");
             }
+
+            // 应用租户过滤
+            query = ApplyTenantFilter(query);
 
             if (condition != null)
             {
@@ -250,9 +282,15 @@ namespace Lean.Hbt.Infrastructure.Repositories
             if (entity is HbtBaseEntity baseEntity)
             {
                 baseEntity.CreateTime = DateTime.Now;
-                baseEntity.CreateBy = _currentUser.UserName ?? "Hbt365";
+                if (string.IsNullOrEmpty(baseEntity.CreateBy))
+                {
+                    baseEntity.CreateBy = _currentUser.UserName ?? "Hbt365";
+                }
+                _logger.Info($"[CreateAsync] 实体类型: {typeof(TEntity).Name}, CreateBy: '{baseEntity.CreateBy}'");
             }
-            return await _db.Insertable(entity).ExecuteCommandAsync();
+            var result = await _db.Insertable(entity).ExecuteCommandAsync();
+
+            return result;
         }
 
         /// <summary>
@@ -270,7 +308,10 @@ namespace Lean.Hbt.Infrastructure.Repositories
                 if (entity is HbtBaseEntity baseEntity)
                 {
                     baseEntity.CreateTime = now;
-                    baseEntity.CreateBy = userName;
+                    if (string.IsNullOrEmpty(baseEntity.CreateBy))
+                    {
+                        baseEntity.CreateBy = userName;
+                    }
                 }
             }
 
@@ -295,7 +336,10 @@ namespace Lean.Hbt.Infrastructure.Repositories
             if (entity is HbtBaseEntity baseEntity)
             {
                 baseEntity.UpdateTime = DateTime.Now;
-                baseEntity.UpdateBy = _currentUser.UserName ?? "Hbt365";
+                if (string.IsNullOrEmpty(baseEntity.UpdateBy))
+                {
+                    baseEntity.UpdateBy = _currentUser.UserName ?? "Hbt365";
+                }
             }
             return await _db.Updateable(entity).ExecuteCommandAsync();
         }
@@ -315,7 +359,10 @@ namespace Lean.Hbt.Infrastructure.Repositories
                 if (entity is HbtBaseEntity baseEntity)
                 {
                     baseEntity.UpdateTime = now;
-                    baseEntity.UpdateBy = userName;
+                    if (string.IsNullOrEmpty(baseEntity.UpdateBy))
+                    {
+                        baseEntity.UpdateBy = userName;
+                    }
                 }
             }
 
@@ -355,11 +402,33 @@ namespace Lean.Hbt.Infrastructure.Repositories
         /// <returns>返回受影响的行数</returns>
         public async Task<int> DeleteAsync(TEntity entity)
         {
+            // 检查是否有Status字段
+            var statusProperty = typeof(TEntity).GetProperty("Status");
+            if (statusProperty != null)
+            {
+                // 更新Status为1
+                statusProperty.SetValue(entity, 1);
+                var updateByProperty = typeof(TEntity).GetProperty("UpdateBy");
+                var updateTimeProperty = typeof(TEntity).GetProperty("UpdateTime");
+                if (updateByProperty != null && string.IsNullOrEmpty(updateByProperty.GetValue(entity)?.ToString()))
+                {
+                    updateByProperty.SetValue(entity, _currentUser.UserName ?? "Hbt365");
+                }
+                if (updateTimeProperty != null)
+                {
+                    updateTimeProperty.SetValue(entity, DateTime.Now);
+                }
+            }
+
+            // 设置删除标记
             if (entity is HbtBaseEntity baseEntity)
             {
                 baseEntity.IsDeleted = 1;
                 baseEntity.DeleteTime = DateTime.Now;
-                baseEntity.DeleteBy = _currentUser.UserName ?? "Hbt365";
+                if (string.IsNullOrEmpty(baseEntity.DeleteBy))
+                {
+                    baseEntity.DeleteBy = _currentUser.UserName ?? "Hbt365";
+                }
             }
             return await _db.Updateable(entity).ExecuteCommandAsync();
         }
@@ -395,13 +464,36 @@ namespace Lean.Hbt.Infrastructure.Repositories
             var now = DateTime.Now;
             var userName = _currentUser.UserName ?? "Hbt365";
 
+            // 检查是否有Status字段
+            var statusProperty = typeof(TEntity).GetProperty("Status");
+            var updateByProperty = typeof(TEntity).GetProperty("UpdateBy");
+            var updateTimeProperty = typeof(TEntity).GetProperty("UpdateTime");
+
             foreach (var entity in entities)
             {
+                // 更新Status为1
+                if (statusProperty != null)
+                {
+                    statusProperty.SetValue(entity, 1);
+                    if (updateByProperty != null && string.IsNullOrEmpty(updateByProperty.GetValue(entity)?.ToString()))
+                    {
+                        updateByProperty.SetValue(entity, userName);
+                    }
+                    if (updateTimeProperty != null)
+                    {
+                        updateTimeProperty.SetValue(entity, now);
+                    }
+                }
+
+                // 设置删除标记
                 if (entity is HbtBaseEntity baseEntity)
                 {
                     baseEntity.IsDeleted = 1;
                     baseEntity.DeleteTime = now;
-                    baseEntity.DeleteBy = userName;
+                    if (string.IsNullOrEmpty(baseEntity.DeleteBy))
+                    {
+                        baseEntity.DeleteBy = userName;
+                    }
                 }
             }
             return await _db.Updateable(entities).ExecuteCommandAsync();
@@ -415,20 +507,6 @@ namespace Lean.Hbt.Infrastructure.Repositories
             var roles = await _db.Queryable<HbtUserRole>()
                 .LeftJoin<HbtRole>((ur, r) => ur.RoleId == r.Id)
                 .Where(ur => ur.UserId == userId)
-                .Select((ur, r) => r.RoleKey)
-                .ToListAsync() ?? new List<string>();
-
-            return roles.Where(r => !string.IsNullOrEmpty(r)).ToList();
-        }
-
-        /// <summary>
-        /// 获取用户角色列表(带租户过滤)
-        /// </summary>
-        public virtual async Task<List<string>> GetUserRolesAsync(long userId, long tenantId)
-        {
-            var roles = await _db.Queryable<HbtUserRole>()
-                .LeftJoin<HbtRole>((ur, r) => ur.RoleId == r.Id)
-                .Where(ur => ur.UserId == userId && ur.TenantId == tenantId)
                 .Select((ur, r) => r.RoleKey)
                 .ToListAsync() ?? new List<string>();
 
@@ -462,25 +540,64 @@ namespace Lean.Hbt.Infrastructure.Repositories
         }
 
         /// <summary>
-        /// 获取用户权限列表(带租户过滤)
+        /// 获取用户租户列表
         /// </summary>
-        public virtual async Task<List<string>> GetUserPermissionsAsync(long userId, long tenantId)
+        public virtual async Task<List<long>> GetUserTenantsAsync(long userId)
         {
-            var permissionStrings = await _db.Queryable<HbtUserRole>()
-                .LeftJoin<HbtRole>((ur, r) => ur.RoleId == r.Id)
-                .LeftJoin<HbtRoleMenu>((ur, r, rm) => r.Id == rm.RoleId)
-                .LeftJoin<HbtMenu>((ur, r, rm, m) => rm.MenuId == m.Id)
-                .Where(ur => ur.UserId == userId && ur.TenantId == tenantId)
-                .Select((ur, r, rm, m) => new { Perms = m.Perms })
-                .MergeTable()
-                .Where(x => x.Perms != null && x.Perms != string.Empty)
-                .Select(x => x.Perms)
-                .ToListAsync() ?? new List<string>();
+            _logger.Info("[租户仓储] 开始查询用户租户: UserId={UserId}", userId);
 
-            return permissionStrings
-                .SelectMany(perms => perms.Split(',', StringSplitOptions.RemoveEmptyEntries))
-                .Distinct()
-                .ToList();
+            var tenantIds = await _db.Queryable<HbtUserTenant>()
+                .Where(ut => ut.UserId == userId && ut.IsDeleted == 0)
+                .Select(ut => ut.TenantId)
+                .ToListAsync() ?? new List<long>();
+
+            return tenantIds;
         }
+
+        /// <summary>
+        /// 获取用户岗位列表
+        /// </summary>
+        public virtual async Task<List<long>> GetUserPostsAsync(long userId)
+        {
+            _logger.Info("[岗位仓储] 开始查询用户岗位: UserId={UserId}", userId);
+
+            var postIds = await _db.Queryable<HbtUserPost>()
+                .Where(up => up.UserId == userId && up.IsDeleted == 0)
+                .Select(up => up.PostId)
+                .ToListAsync() ?? new List<long>();
+
+            return postIds;
+        }
+
+        /// <summary>
+        /// 获取用户部门列表
+        /// </summary>
+        public virtual async Task<List<long>> GetUserDeptsAsync(long userId)
+        {
+            _logger.Info("[部门仓储] 开始查询用户部门: UserId={UserId}", userId);
+
+            var deptIds = await _db.Queryable<HbtUserDept>()
+                .Where(ud => ud.UserId == userId && ud.IsDeleted == 0)
+                .Select(ud => ud.DeptId)
+                .ToListAsync() ?? new List<long>();
+
+            return deptIds;
+        }
+
+        /// <summary>
+        /// 获取角色菜单列表
+        /// </summary>
+        public virtual async Task<List<long>> GetRoleMenusAsync(long roleId)
+        {
+            _logger.Info("[菜单仓储] 开始查询角色菜单: RoleId={RoleId}", roleId);
+
+            var menuIds = await _db.Queryable<HbtRoleMenu>()
+                .Where(rm => rm.RoleId == roleId && rm.IsDeleted == 0)
+                .Select(rm => rm.MenuId)
+                .ToListAsync() ?? new List<long>();
+
+            return menuIds;
+        }
+
     }
 }

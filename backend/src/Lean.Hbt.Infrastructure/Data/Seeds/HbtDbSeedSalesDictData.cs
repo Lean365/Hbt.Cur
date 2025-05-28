@@ -8,7 +8,6 @@
 //===================================================================
 
 using Lean.Hbt.Domain.Entities.Core;
-using Lean.Hbt.Domain.IServices.Extensions;
 
 namespace Lean.Hbt.Infrastructure.Data.Seeds;
 
@@ -49,7 +48,7 @@ public class HbtDbSeedSalesDictData
                 DictValue = "STD",
                 OrderNum = 1,
                 Status = 0,
-                
+
                 CssClass = 1,
                 ListClass = 1,
                 Remark = "标准销售订单类型",
@@ -65,7 +64,7 @@ public class HbtDbSeedSalesDictData
                 DictValue = "CONSIGN",
                 OrderNum = 2,
                 Status = 0,
-                
+
                 CssClass = 2,
                 ListClass = 2,
                 Remark = "寄售销售订单类型",
@@ -81,7 +80,7 @@ public class HbtDbSeedSalesDictData
                 DictValue = "RETURN",
                 OrderNum = 3,
                 Status = 0,
-                
+
                 CssClass = 3,
                 ListClass = 3,
                 Remark = "退货销售订单类型",
@@ -99,7 +98,7 @@ public class HbtDbSeedSalesDictData
                 DictValue = "DRAFT",
                 OrderNum = 1,
                 Status = 0,
-                
+
                 CssClass = 1,
                 ListClass = 1,
                 Remark = "销售订单草稿状态",
@@ -115,7 +114,7 @@ public class HbtDbSeedSalesDictData
                 DictValue = "PENDING",
                 OrderNum = 2,
                 Status = 0,
-                
+
                 CssClass = 2,
                 ListClass = 2,
                 Remark = "销售订单待审批状态",
@@ -131,7 +130,7 @@ public class HbtDbSeedSalesDictData
                 DictValue = "APPROVED",
                 OrderNum = 3,
                 Status = 0,
-                
+
                 CssClass = 3,
                 ListClass = 3,
                 Remark = "销售订单已审批状态",
@@ -147,7 +146,7 @@ public class HbtDbSeedSalesDictData
                 DictValue = "SHIPPED",
                 OrderNum = 4,
                 Status = 0,
-                
+
                 CssClass = 4,
                 ListClass = 4,
                 Remark = "销售订单已发货状态",
@@ -163,7 +162,7 @@ public class HbtDbSeedSalesDictData
                 DictValue = "CLOSED",
                 OrderNum = 5,
                 Status = 0,
-                
+
                 CssClass = 5,
                 ListClass = 5,
                 Remark = "销售订单已关闭状态",
@@ -181,7 +180,7 @@ public class HbtDbSeedSalesDictData
                 DictValue = "DOM",
                 OrderNum = 1,
                 Status = 0,
-                
+
                 CssClass = 1,
                 ListClass = 1,
                 Remark = "国内销售组织",
@@ -197,7 +196,7 @@ public class HbtDbSeedSalesDictData
                 DictValue = "EXP",
                 OrderNum = 2,
                 Status = 0,
-                
+
                 CssClass = 2,
                 ListClass = 2,
                 Remark = "出口销售组织",
@@ -213,7 +212,7 @@ public class HbtDbSeedSalesDictData
                 DictValue = "ECO",
                 OrderNum = 3,
                 Status = 0,
-                
+
                 CssClass = 3,
                 ListClass = 3,
                 Remark = "电商销售组织",
@@ -231,7 +230,7 @@ public class HbtDbSeedSalesDictData
                 DictValue = "DIRECT",
                 OrderNum = 1,
                 Status = 0,
-                
+
                 CssClass = 1,
                 ListClass = 1,
                 Remark = "直销渠道",
@@ -247,7 +246,7 @@ public class HbtDbSeedSalesDictData
                 DictValue = "DEALER",
                 OrderNum = 2,
                 Status = 0,
-                
+
                 CssClass = 2,
                 ListClass = 2,
                 Remark = "经销商渠道",
@@ -263,7 +262,7 @@ public class HbtDbSeedSalesDictData
                 DictValue = "RETAIL",
                 OrderNum = 3,
                 Status = 0,
-                
+
                 CssClass = 3,
                 ListClass = 3,
                 Remark = "零售商渠道",
@@ -281,7 +280,7 @@ public class HbtDbSeedSalesDictData
                 DictValue = "NORMAL",
                 OrderNum = 1,
                 Status = 0,
-                
+
                 CssClass = 1,
                 ListClass = 1,
                 Remark = "常规销售类型",
@@ -297,7 +296,7 @@ public class HbtDbSeedSalesDictData
                 DictValue = "PROMO",
                 OrderNum = 2,
                 Status = 0,
-                
+
                 CssClass = 2,
                 ListClass = 2,
                 Remark = "促销销售类型",
@@ -313,7 +312,7 @@ public class HbtDbSeedSalesDictData
                 DictValue = "SAMPLE",
                 OrderNum = 3,
                 Status = 0,
-                
+
                 CssClass = 3,
                 ListClass = 3,
                 Remark = "样品销售类型",
@@ -331,7 +330,7 @@ public class HbtDbSeedSalesDictData
                 DictValue = "CASH",
                 OrderNum = 1,
                 Status = 0,
-                
+
                 CssClass = 1,
                 ListClass = 1,
                 Remark = "现金折扣销售条件",
@@ -347,7 +346,7 @@ public class HbtDbSeedSalesDictData
                 DictValue = "QTY",
                 OrderNum = 2,
                 Status = 0,
-                
+
                 CssClass = 2,
                 ListClass = 2,
                 Remark = "数量折扣销售条件",
@@ -363,7 +362,7 @@ public class HbtDbSeedSalesDictData
                 DictValue = "SPECIAL",
                 OrderNum = 3,
                 Status = 0,
-                
+
                 CssClass = 3,
                 ListClass = 3,
                 Remark = "特殊价格销售条件",
@@ -381,7 +380,7 @@ public class HbtDbSeedSalesDictData
                 DictValue = "YEAR",
                 OrderNum = 1,
                 Status = 0,
-                
+
                 CssClass = 1,
                 ListClass = 1,
                 Remark = "年度销售计划",
@@ -397,7 +396,7 @@ public class HbtDbSeedSalesDictData
                 DictValue = "QUARTER",
                 OrderNum = 2,
                 Status = 0,
-                
+
                 CssClass = 2,
                 ListClass = 2,
                 Remark = "季度销售计划",
@@ -413,7 +412,7 @@ public class HbtDbSeedSalesDictData
                 DictValue = "MONTH",
                 OrderNum = 3,
                 Status = 0,
-                
+
                 CssClass = 3,
                 ListClass = 3,
                 Remark = "月度销售计划",
@@ -431,7 +430,7 @@ public class HbtDbSeedSalesDictData
                 DictValue = "PROD",
                 OrderNum = 1,
                 Status = 0,
-                
+
                 CssClass = 1,
                 ListClass = 1,
                 Remark = "生产物料客户",
@@ -447,7 +446,7 @@ public class HbtDbSeedSalesDictData
                 DictValue = "TRADE",
                 OrderNum = 2,
                 Status = 0,
-                
+
                 CssClass = 2,
                 ListClass = 2,
                 Remark = "贸易客户",
@@ -463,7 +462,7 @@ public class HbtDbSeedSalesDictData
                 DictValue = "RETAIL",
                 OrderNum = 3,
                 Status = 0,
-                
+
                 CssClass = 3,
                 ListClass = 3,
                 Remark = "零售客户",
@@ -481,7 +480,7 @@ public class HbtDbSeedSalesDictData
                 DictValue = "STRATEGIC",
                 OrderNum = 1,
                 Status = 0,
-                
+
                 CssClass = 1,
                 ListClass = 1,
                 Remark = "战略客户等级",
@@ -497,7 +496,7 @@ public class HbtDbSeedSalesDictData
                 DictValue = "IMPORTANT",
                 OrderNum = 2,
                 Status = 0,
-                
+
                 CssClass = 2,
                 ListClass = 2,
                 Remark = "重要客户等级",
@@ -513,7 +512,7 @@ public class HbtDbSeedSalesDictData
                 DictValue = "NORMAL",
                 OrderNum = 3,
                 Status = 0,
-                
+
                 CssClass = 3,
                 ListClass = 3,
                 Remark = "普通客户等级",
@@ -531,7 +530,7 @@ public class HbtDbSeedSalesDictData
                 DictValue = "POTENTIAL",
                 OrderNum = 1,
                 Status = 0,
-                
+
                 CssClass = 1,
                 ListClass = 1,
                 Remark = "潜在客户状态",
@@ -547,7 +546,7 @@ public class HbtDbSeedSalesDictData
                 DictValue = "ACTIVE",
                 OrderNum = 2,
                 Status = 0,
-                
+
                 CssClass = 2,
                 ListClass = 2,
                 Remark = "活跃客户状态",
@@ -563,7 +562,7 @@ public class HbtDbSeedSalesDictData
                 DictValue = "DORMANT",
                 OrderNum = 3,
                 Status = 0,
-                
+
                 CssClass = 3,
                 ListClass = 3,
                 Remark = "休眠客户状态",
@@ -579,7 +578,7 @@ public class HbtDbSeedSalesDictData
                 DictValue = "BLACKLIST",
                 OrderNum = 4,
                 Status = 0,
-                
+
                 CssClass = 4,
                 ListClass = 4,
                 Remark = "黑名单客户状态",
@@ -595,6 +594,7 @@ public class HbtDbSeedSalesDictData
             var existingDictData = await _dictDataRepository.GetFirstAsync(d => d.DictType == dictData.DictType && d.DictValue == dictData.DictValue);
             if (existingDictData == null)
             {
+
                 await _dictDataRepository.CreateAsync(dictData);
                 insertCount++;
                 _logger.Info($"[创建] 销售字典数据 '{dictData.DictLabel}' 创建成功");
@@ -608,7 +608,6 @@ public class HbtDbSeedSalesDictData
                 existingDictData.CssClass = dictData.CssClass;
                 existingDictData.ListClass = dictData.ListClass;
                 existingDictData.Status = dictData.Status;
-                existingDictData.TenantId = dictData.TenantId;
                 existingDictData.Remark = dictData.Remark;
                 existingDictData.CreateBy = dictData.CreateBy;
                 existingDictData.CreateTime = dictData.CreateTime;
@@ -623,4 +622,4 @@ public class HbtDbSeedSalesDictData
 
         return (insertCount, updateCount);
     }
-} 
+}

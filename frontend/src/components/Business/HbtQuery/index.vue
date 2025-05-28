@@ -18,6 +18,7 @@
       :layout="layout"
       @finish="handleFinish"
       class="hbt-query"
+      v-show="show"
     >
       <a-row :gutter="24">
         <!-- 查询字段 -->
@@ -217,6 +218,7 @@ interface Props {
   labelCol?: object // 标签布局
   wrapperCol?: object // 输入框布局
   buttonSpace?: number // 按钮间距
+  show?: boolean // 控制显示/隐藏
 }
 
 // === 属性定义 ===
@@ -229,11 +231,12 @@ const props = withDefaults(defineProps<Props>(), {
   layout: 'horizontal',
   labelCol: () => ({ span: 8 }),
   wrapperCol: () => ({ span: 16 }),
-  buttonSpace: 8
+  buttonSpace: 8,
+  show: false
 })
 
 // === 事件定义 ===
-const emit = defineEmits(['search', 'reset'])
+const emit = defineEmits(['search', 'reset', 'update:show'])
 
 // === 表单相关 ===
 const formRef = ref<FormInstance>()
@@ -285,6 +288,13 @@ const handleReset = () => {
 const toggleCollapse = () => {
   collapsed.value = !collapsed.value
 }
+
+// 暴露方法给父组件
+defineExpose({
+  toggleCollapse,
+  handleReset,
+  handleFinish
+})
 </script>
 
 <style lang="less" scoped>

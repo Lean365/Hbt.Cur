@@ -20,7 +20,6 @@ namespace Lean.Hbt.Domain.Entities.Identity
     /// </remarks>
     [SugarTable("hbt_identity_dept", "部门表")]
     [SugarIndex("ix_dept_name", nameof(DeptName), OrderByType.Asc)]
-    [SugarIndex("ix_tenant_dept", nameof(TenantId), OrderByType.Asc)]
     public class HbtDept : HbtBaseEntity
     {
         /// <summary>
@@ -70,18 +69,6 @@ namespace Lean.Hbt.Domain.Entities.Identity
         /// </summary>
         [SugarColumn(ColumnName = "status", ColumnDescription = "部门状态", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
         public int Status { get; set; } = 0;
-
-        /// <summary>
-        /// 租户ID
-        /// </summary>
-        [SugarColumn(ColumnName = "tenant_id", ColumnDescription = "租户ID", ColumnDataType = "bigint", IsNullable = false)]
-        public long TenantId { get; set; }
-
-        /// <summary>
-        /// 租户
-        /// </summary>
-        [Navigate(NavigateType.OneToOne, nameof(TenantId))]
-        public HbtTenant? Tenant { get; set; }
 
         /// <summary>
         /// 角色部门关联

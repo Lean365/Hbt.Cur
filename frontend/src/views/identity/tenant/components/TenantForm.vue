@@ -48,7 +48,7 @@
         </a-col>
         <a-col :span="24">
           <a-form-item name="dbConnection" :label="t('identity.tenant.fields.dbConnection.label')">
-            <hbt-select v-model:value="formData.dbConnection" dict-type="sys_db_connection" :placeholder="t('identity.tenant.fields.dbConnection.placeholder')" style="width: 100%" />
+            <db-connection v-model="formData.dbConnection" />
           </a-form-item>
         </a-col>
         <a-col :span="24">
@@ -117,6 +117,7 @@ import type { Rule } from 'ant-design-vue/es/form'
 import type { HbtTenantCreate } from '@/types/identity/tenant'
 import { getTenant, createTenant, updateTenant } from '@/api/identity/tenant'
 import dayjs from 'dayjs'
+import DbConnection from './DbConnection.vue'
 
 const { t } = useI18n()
 

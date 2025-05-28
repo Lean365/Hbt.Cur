@@ -7,20 +7,17 @@
 // 描述    : 审计日志实现
 //===================================================================
 
+using System.Text.Json;
 using Lean.Hbt.Domain.Entities.Audit;
-using Lean.Hbt.Domain.IServices.Extensions;
 using Lean.Hbt.Infrastructure.Data.Contexts;
 using Microsoft.AspNetCore.Http;
-using System.Text.Json;
-using SqlSugar;
-using Lean.Hbt.Domain.IServices.Extensions;
 
 namespace Lean.Hbt.Infrastructure.Security;
 
 /// <summary>
 /// 日志记录器实现
 /// </summary>
-public class HbtLogManager : 
+public class HbtLogManager :
     IHbtLogManager,
     IHbtSqlDiffLogManager,
     IHbtOperLogManager,
@@ -84,7 +81,7 @@ public class HbtLogManager :
             // 新增类操作 - 信息级别
             "create" or "insert" or "add" => 1,
             // 修改类操作 - 警告级别
-            "update" or "modify" or "edit" or"alter" => 2,
+            "update" or "modify" or "edit" or "alter" => 2,
             // 删除类操作 - 高危级别
             "delete" or "remove" or "drop" => 3,
             // 异常情况 - 错误级别
@@ -132,7 +129,7 @@ public class HbtLogManager :
             }),
             ExecuteSql = executeSql,
             SqlParameters = sqlParameters,
-            TenantId = _currentUser.TenantId,
+
             CreateBy = _currentUser.UserName,
             CreateTime = DateTime.Now
         };
@@ -166,7 +163,7 @@ public class HbtLogManager :
             LogLevel = success ? GetLogLevel(operationType) : 4, // 失败时使用错误级别
             UserId = _currentUser.UserId,
             UserName = _currentUser.UserName,
-            TenantId = _currentUser.TenantId,
+
             TableName = tableName,
             OperationType = operationType,
             BusinessKey = businessKey,
@@ -205,7 +202,7 @@ public class HbtLogManager :
             LogLevel = 4, // 异常统一使用错误级别
             UserId = _currentUser.UserId,
             UserName = _currentUser.UserName,
-            TenantId = _currentUser.TenantId,
+
             Method = method ?? _httpContextAccessor.HttpContext?.Request.Path ?? "Unknown",
             Parameters = parameters,
             ExceptionType = ex.GetType().FullName ?? "Unknown",

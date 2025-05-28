@@ -507,7 +507,6 @@ public class HbtDbSeedDept
             var existingDept = await _deptRepository.GetFirstAsync(d => d.Id == dept.Id);
             if (existingDept == null)
             {
-                dept.TenantId = systemTenantId;
                 dept.CreateBy = "Hbt365";
                 dept.CreateTime = DateTime.Now;
                 dept.UpdateBy = "Hbt365";
@@ -525,7 +524,8 @@ public class HbtDbSeedDept
                 existingDept.Phone = dept.Phone;
                 existingDept.Email = dept.Email;
                 existingDept.Status = dept.Status;
-                existingDept.TenantId = systemTenantId;
+                existingDept.CreateBy = "Hbt365";
+                existingDept.CreateTime = DateTime.Now;
                 existingDept.UpdateBy = "Hbt365";
                 existingDept.UpdateTime = DateTime.Now;
 

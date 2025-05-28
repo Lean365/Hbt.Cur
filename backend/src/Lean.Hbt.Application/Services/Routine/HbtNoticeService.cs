@@ -41,6 +41,7 @@ namespace Lean.Hbt.Application.Services.Routine
         /// <param name="signalRClient">SignalR客户端</param>
         /// <param name="httpContextAccessor">HTTP上下文访问器</param>
         /// <param name="currentUser">当前用户服务</param>
+        /// <param name="currentTenant">当前租户服务</param>
         /// <param name="localization">本地化服务</param>
         public HbtNoticeService(
             IHbtLogger logger,
@@ -48,7 +49,8 @@ namespace Lean.Hbt.Application.Services.Routine
             IHbtSignalRClient signalRClient,
             IHttpContextAccessor httpContextAccessor,
             IHbtCurrentUser currentUser,
-            IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
+            IHbtCurrentTenant currentTenant,
+            IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, currentTenant, localization)
         {
             _repository = repository;
             _signalRClient = signalRClient;

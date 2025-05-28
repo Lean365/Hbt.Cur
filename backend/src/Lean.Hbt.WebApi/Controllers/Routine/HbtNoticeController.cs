@@ -22,23 +22,25 @@ namespace Lean.Hbt.WebApi.Controllers.Routine
     public class HbtNoticeController : HbtBaseController
     {
         private readonly IHbtNoticeService _noticeService;
-        private readonly IHbtCurrentUser _currentUser;
+ 
 
         /// <summary>
         /// 构造函数
         /// </summary>
         /// <param name="noticeService">通知服务</param>
-        /// <param name="localization">本地化服务</param>
-        /// <param name="currentUser">当前用户服务</param>
         /// <param name="logger">日志服务</param>
+        /// <param name="currentUser">当前用户服务</param>
+        /// <param name="currentTenant">当前租户服务</param>
+        /// <param name="localization">本地化服务</param>
         public HbtNoticeController(
             IHbtNoticeService noticeService,
+            IHbtLogger logger,
             IHbtCurrentUser currentUser,
-                                    IHbtLocalizationService localization,
-            IHbtLogger logger) : base(localization, logger)
+            IHbtCurrentTenant currentTenant,
+            IHbtLocalizationService localization) : base(logger, currentUser, currentTenant, localization)
         {
             _noticeService = noticeService;
-            _currentUser = currentUser;
+
         }
 
         /// <summary>

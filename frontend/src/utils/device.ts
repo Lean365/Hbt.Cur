@@ -171,7 +171,11 @@ export async function getDeviceInfo(): Promise<HbtSignalRDevice> {
     resolution: `${window.screen.width}x${window.screen.height}`,
     deviceMemory: String((navigator as any).deviceMemory || 'unknown'),
     webGLRenderer: getWebGLRenderer(),
-    deviceFingerprint: fingerprint
+    deviceFingerprint: fingerprint,
+    environment: {
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      language: navigator.language
+    }
   }
   
   // 缓存设备信息

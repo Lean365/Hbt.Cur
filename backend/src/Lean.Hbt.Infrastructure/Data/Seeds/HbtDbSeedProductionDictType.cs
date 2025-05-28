@@ -152,7 +152,7 @@ public class HbtDbSeedProductionDictType
             var existingDictType = await _dictTypeRepository.GetFirstAsync(x => x.DictType == dictType.DictType);
             if (existingDictType == null)
             {
-                dictType.TenantId = tenantId;
+                
                 dictType.CreateBy = "Hbt365";
                 dictType.CreateTime = DateTime.Now;
                 dictType.UpdateBy = "Hbt365";
@@ -162,7 +162,7 @@ public class HbtDbSeedProductionDictType
             }
             else
             {
-                dictType.TenantId = tenantId;
+                
                 existingDictType.DictName = dictType.DictName;
                 existingDictType.OrderNum = dictType.OrderNum;
                 existingDictType.Status = dictType.Status;

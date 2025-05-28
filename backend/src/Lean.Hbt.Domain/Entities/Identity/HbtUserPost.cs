@@ -7,6 +7,8 @@
 // 描述    : 用户岗位关联实体类
 //===================================================================
 
+using SqlSugar;
+
 namespace Lean.Hbt.Domain.Entities.Identity
 {
     /// <summary>
@@ -16,7 +18,7 @@ namespace Lean.Hbt.Domain.Entities.Identity
     /// 创建者: Lean365
     /// 创建时间: 2024-01-16
     /// </remarks>
-    [SugarTable("hbt_identity_user_post", "用户岗位")]
+    [SugarTable("hbt_identity_user_post", TableDescription = "用户岗位关联表")]
     [SugarIndex("ix_user_post", nameof(UserId), OrderByType.Asc, nameof(PostId), OrderByType.Asc, true)]
     public class HbtUserPost : HbtBaseEntity
     {
@@ -31,18 +33,6 @@ namespace Lean.Hbt.Domain.Entities.Identity
         /// </summary>
         [SugarColumn(ColumnName = "post_id", ColumnDescription = "岗位ID", ColumnDataType = "bigint", IsNullable = false)]
         public long PostId { get; set; }
-
-        /// <summary>
-        /// 租户ID
-        /// </summary>
-        [SugarColumn(ColumnName = "tenant_id", ColumnDescription = "租户ID", ColumnDataType = "bigint", IsNullable = false)]
-        public long TenantId { get; set; }
-
-        /// <summary>
-        /// 租户导航属性
-        /// </summary>
-        [Navigate(NavigateType.OneToOne, nameof(TenantId))]
-        public HbtTenant? Tenant { get; set; }
 
         /// <summary>
         /// 用户导航属性

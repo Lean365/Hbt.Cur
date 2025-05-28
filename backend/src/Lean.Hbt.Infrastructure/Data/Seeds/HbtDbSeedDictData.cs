@@ -3503,6 +3503,38 @@ public class HbtDbSeedDictData
                 UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
+
+            // 翻译模块类型
+            new HbtDictData
+            {
+                DictLabel = "前端",
+                DictValue = "frontend",
+                DictType = "sys_translation_module",
+                OrderNum = 1,
+                CssClass = null,
+                ListClass = null,
+                Status = 0,
+                Remark = "前端模块",
+                CreateBy = "Hbt365",
+                CreateTime = DateTime.Now,
+                UpdateBy = "Hbt365",
+                UpdateTime = DateTime.Now
+            },
+            new HbtDictData
+            {
+                DictLabel = "后端",
+                DictValue = "backend",
+                DictType = "sys_translation_module",
+                OrderNum = 2,
+                CssClass = null,
+                ListClass = null,
+                Status = 0,
+                Remark = "后端模块",
+                CreateBy = "Hbt365",
+                CreateTime = DateTime.Now,
+                UpdateBy = "Hbt365",
+                UpdateTime = DateTime.Now
+            }
         };
 
         foreach (var dictData in defaultDictData)
@@ -3510,7 +3542,6 @@ public class HbtDbSeedDictData
             var existingDictData = await _dictDataRepository.GetFirstAsync(d => d.DictType == dictData.DictType && d.DictValue == dictData.DictValue);
             if (existingDictData == null)
             {
-                dictData.TenantId = tenantId;
                 dictData.CreateBy = "Hbt365";
                 dictData.CreateTime = DateTime.Now;
                 dictData.UpdateBy = "Hbt365";
@@ -3529,10 +3560,9 @@ public class HbtDbSeedDictData
                 existingDictData.CssClass = dictData.CssClass;
                 existingDictData.ListClass = dictData.ListClass;
                 existingDictData.Status = dictData.Status;
-                existingDictData.TenantId = tenantId;
                 existingDictData.Remark = dictData.Remark;
-                existingDictData.CreateBy = dictData.CreateBy;
-                existingDictData.CreateTime = dictData.CreateTime;
+                existingDictData.CreateBy = "Hbt365";
+                existingDictData.CreateTime = DateTime.Now;
                 existingDictData.UpdateBy = "Hbt365";
                 existingDictData.UpdateTime = DateTime.Now;
 

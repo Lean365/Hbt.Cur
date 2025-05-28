@@ -15,7 +15,6 @@ namespace Lean.Hbt.Domain.Entities.Audit
     /// 操作日志实体
     /// </summary>
     [SugarTable("hbt_audit_oper_log", "操作日志")]
-    [SugarIndex("ix_tenant_oper", nameof(TenantId), OrderByType.Asc)]
     public class HbtOperLog : HbtBaseEntity
     {
         /// <summary>
@@ -29,12 +28,6 @@ namespace Lean.Hbt.Domain.Entities.Audit
         /// </summary>
         [SugarColumn(ColumnName = "user_id", ColumnDescription = "用户ID", ColumnDataType = "bigint", IsNullable = false)]
         public long UserId { get; set; }
-
-        /// <summary>
-        /// 租户ID
-        /// </summary>
-        [SugarColumn(ColumnName = "tenant_id", ColumnDescription = "租户ID", ColumnDataType = "bigint", IsNullable = true)]
-        public long? TenantId { get; set; }
 
         /// <summary>
         /// 用户名
@@ -85,15 +78,16 @@ namespace Lean.Hbt.Domain.Entities.Audit
         public string? Location { get; set; }
 
         /// <summary>
+        /// 错误消息
+        /// </summary>
+        [SugarColumn(ColumnName = "error_msg", ColumnDescription = "错误消息", Length = -1, ColumnDataType = "nvarchar", IsNullable = true)]
+        public string? ErrorMsg { get; set; }
+        
+        /// <summary>
         /// 操作状态（0正常 1异常）
         /// </summary>
         [SugarColumn(ColumnName = "status", ColumnDescription = "操作状态", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
         public int Status { get; set; } = 0;
 
-        /// <summary>
-        /// 错误消息
-        /// </summary>
-        [SugarColumn(ColumnName = "error_msg", ColumnDescription = "错误消息", Length = -1, ColumnDataType = "nvarchar", IsNullable = true)]
-        public string? ErrorMsg { get; set; }
     }
 }

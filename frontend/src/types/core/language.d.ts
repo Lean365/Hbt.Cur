@@ -96,4 +96,20 @@ export enum HbtLanguageStatus {
 /**
  * 语言分页结果
  */
-export type HbtLanguagePageResult = HbtPagedResult<HbtLanguage> 
+export type HbtLanguagePageResult = HbtPagedResult<HbtLanguage>
+
+/**
+ * 语言选项DTO
+ */
+export interface HbtLanguageOptionDto {
+  /** 语言ID */
+  languageId: number
+  /** 语言代码 */
+  langCode: string
+  /** 语言名称 */
+  langName: string
+  /** 语言图标 */
+  langIcon?: string
+  /** 是否默认 */
+  isDefault: number
+} 

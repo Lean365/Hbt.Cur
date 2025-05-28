@@ -9,7 +9,6 @@
 
 using System.Linq.Expressions;
 using Lean.Hbt.Domain.Entities.Identity;
-using Lean.Hbt.Domain.IServices.Extensions;
 
 namespace Lean.Hbt.Infrastructure.Data.Seeds;
 
@@ -42,7 +41,7 @@ public class HbtDbSeedMenu
         var menuNameToId = new Dictionary<string, long>();
 
         // 1. 初始化顶级菜单
-        var (topInsertCount, topUpdateCount) = await InitializeTopMenusAsync(menuNameToId,systemTenantId);
+        var (topInsertCount, topUpdateCount) = await InitializeTopMenusAsync(menuNameToId, systemTenantId);
         insertCount += topInsertCount;
         updateCount += topUpdateCount;
 
@@ -90,7 +89,7 @@ public class HbtDbSeedMenu
             Status = 0,
             Perms = "",
             Icon = "FileTextOutlined",
-            
+
             Remark = "日常办公目录",
             CreateBy = "Hbt365",
             CreateTime = DateTime.Now,
@@ -113,7 +112,7 @@ public class HbtDbSeedMenu
             Status = 0,
             Perms = "",
             Icon = "AccountBookOutlined",
-            
+
             Remark = "财务管理目录",
             CreateBy = "Hbt365",
             CreateTime = DateTime.Now,
@@ -136,7 +135,7 @@ public class HbtDbSeedMenu
             Status = 0,
             Perms = "",
             Icon = "ClusterOutlined",
-            
+
             Remark = "后勤管理目录",
             CreateBy = "Hbt365",
             CreateTime = DateTime.Now,
@@ -159,7 +158,7 @@ public class HbtDbSeedMenu
             Status = 0,
             Perms = "",
             Icon = "DeploymentUnitOutlined",
-            
+
             Remark = "工作流程目录",
             CreateBy = "Hbt365",
             CreateTime = DateTime.Now,
@@ -182,7 +181,7 @@ public class HbtDbSeedMenu
             Status = 0,
             Perms = "",
             Icon = "UserOutlined",
-            
+
             Remark = "身份认证目录",
             CreateBy = "Hbt365",
             CreateTime = DateTime.Now,
@@ -205,7 +204,7 @@ public class HbtDbSeedMenu
             Status = 0,
             Perms = "",
             Icon = "SettingOutlined",
-            
+
             Remark = "系统管理目录",
             CreateBy = "Hbt365",
             CreateTime = DateTime.Now,
@@ -228,7 +227,7 @@ public class HbtDbSeedMenu
             Status = 0,
             Perms = "",
             Icon = "CodeOutlined",
-            
+
             Remark = "代码生成目录",
             CreateBy = "Hbt365",
             CreateTime = DateTime.Now,
@@ -251,7 +250,7 @@ public class HbtDbSeedMenu
             Status = 0,
             Perms = "",
             Icon = "AuditOutlined",
-            
+
             Remark = "审计日志目录",
             CreateBy = "Hbt365",
             CreateTime = DateTime.Now,
@@ -274,7 +273,7 @@ public class HbtDbSeedMenu
             Status = 0,
             Perms = "",
             Icon = "DashboardOutlined",
-            
+
             Remark = "实时监控目录",
             CreateBy = "Hbt365",
             CreateTime = DateTime.Now,
@@ -285,7 +284,6 @@ public class HbtDbSeedMenu
 
         foreach (var menu in topMenus)
         {
-            menu.TenantId = systemTenantId;
             menu.CreateBy = "Hbt365";
             menu.CreateTime = DateTime.Now;
             menu.UpdateBy = "Hbt365";
@@ -316,7 +314,6 @@ public class HbtDbSeedMenu
             var financeSubMenus = GetFinanceSubMenus(financeMenu.Id, systemTenantId);
             foreach (var menu in financeSubMenus)
             {
-                menu.TenantId = systemTenantId;
                 menu.CreateBy = "Hbt365";
                 menu.CreateTime = DateTime.Now;
                 menu.UpdateBy = "Hbt365";
@@ -337,7 +334,6 @@ public class HbtDbSeedMenu
             var logisticsSubMenus = GetLogisticsSubMenus(logisticsMenu.Id, systemTenantId);
             foreach (var menu in logisticsSubMenus)
             {
-                menu.TenantId = systemTenantId;
                 menu.CreateBy = "Hbt365";
                 menu.CreateTime = DateTime.Now;
                 menu.UpdateBy = "Hbt365";
@@ -510,7 +506,7 @@ public class HbtDbSeedMenu
 
         foreach (var menu in subMenus)
         {
-            menu.TenantId = systemTenantId;
+
             menu.CreateBy = "Hbt365";
             menu.CreateTime = DateTime.Now;
             menu.UpdateBy = "Hbt365";
@@ -546,7 +542,6 @@ public class HbtDbSeedMenu
                 foreach (var button in buttons)
                 {
                     button.ParentId = menu.Id; // 使用数据库中的菜单ID
-                    button.TenantId = systemTenantId;
                     button.CreateBy = "Hbt365";
                     button.CreateTime = DateTime.Now;
                     button.UpdateBy = "Hbt365";
@@ -602,7 +597,7 @@ public class HbtDbSeedMenu
         existingMenu.Status = menu.Status;
         existingMenu.Perms = menu.Perms;
         existingMenu.Icon = menu.Icon;
-        existingMenu.TenantId = menu.TenantId;
+
         existingMenu.Remark = menu.Remark;
         existingMenu.UpdateBy = "Hbt365";
         existingMenu.UpdateTime = DateTime.Now;
@@ -685,7 +680,7 @@ public class HbtDbSeedMenu
                 Status = 0,
                 Perms = "identity:user:list",
                 Icon = "UserOutlined",
-                
+
                 Remark = "用户管理菜单",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -708,7 +703,7 @@ public class HbtDbSeedMenu
                 Status = 0,
                 Perms = "identity:role:list",
                 Icon = "TeamOutlined",
-                
+
                 Remark = "角色管理菜单",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -731,7 +726,7 @@ public class HbtDbSeedMenu
                 Status = 0,
                 Perms = "identity:menu:list",
                 Icon = "MenuOutlined",
-                
+
                 Remark = "菜单管理菜单",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -754,7 +749,7 @@ public class HbtDbSeedMenu
                 Status = 0,
                 Perms = "identity:dept:list",
                 Icon = "ApartmentOutlined",
-                
+
                 Remark = "部门管理菜单",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -777,7 +772,7 @@ public class HbtDbSeedMenu
                 Status = 0,
                 Perms = "identity:post:list",
                 Icon = "IdcardOutlined",
-                
+
                 Remark = "岗位管理菜单",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -800,7 +795,7 @@ public class HbtDbSeedMenu
                 Status = 0,
                 Perms = "identity:tenant:list",
                 Icon = "ShopOutlined",
-                
+
                 Remark = "租户管理菜单",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -903,7 +898,7 @@ public class HbtDbSeedMenu
                 Status = 0,
                 Perms = "audit:server:list",
                 Icon = "DashboardOutlined",
-                
+
                 Remark = "服务器监控菜单",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -1024,7 +1019,7 @@ public class HbtDbSeedMenu
                 Status = 0,
                 Perms = "signalr:online:list",
                 Icon = "TeamOutlined",
-                
+
                 Remark = "在线用户菜单",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -1047,7 +1042,7 @@ public class HbtDbSeedMenu
                 Status = 0,
                 Perms = "signalr:message:list",
                 Icon = "MessageOutlined",
-                
+
                 Remark = "在线消息菜单",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -1080,7 +1075,7 @@ public class HbtDbSeedMenu
                 Status = 0,
                 Perms = "generator:table:list",
                 Icon = "TableOutlined",
-                
+
                 Remark = "数据库表管理菜单",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -1103,7 +1098,7 @@ public class HbtDbSeedMenu
                 Status = 0,
                 Perms = "generator:tableDefine:list",
                 Icon = "TableOutlined",
-                
+
                 Remark = "数据库表定义管理菜单",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -1126,7 +1121,7 @@ public class HbtDbSeedMenu
                 Status = 0,
                 Perms = "generator:template:list",
                 Icon = "FileTextOutlined",
-                
+
                 Remark = "代码模板管理菜单",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -1149,7 +1144,7 @@ public class HbtDbSeedMenu
                 Status = 0,
                 Perms = "generator:config:list",
                 Icon = "SettingOutlined",
-                
+
                 Remark = "生成配置管理菜单",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -1172,7 +1167,7 @@ public class HbtDbSeedMenu
                 Status = 0,
                 Perms = "generator:api:list",
                 Icon = "ApiOutlined",
-                
+
                 Remark = "API文档管理菜单",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -1205,7 +1200,7 @@ public class HbtDbSeedMenu
             Status = 0,
             Perms = "routine:file:list",
             Icon = "FileOutlined",
-            
+
             Remark = "文件管理菜单",
             CreateBy = "Hbt365",
             CreateTime = DateTime.Now,
@@ -1228,7 +1223,7 @@ public class HbtDbSeedMenu
             Status = 0,
             Perms = "routine:mail:list",
             Icon = "MailOutlined",
-            
+
             Remark = "邮件管理菜单",
             CreateBy = "Hbt365",
             CreateTime = DateTime.Now,
@@ -1251,7 +1246,7 @@ public class HbtDbSeedMenu
             Status = 0,
             Perms = "routine:mailTmpl:list",
             Icon = "FileTextOutlined",
-            
+
             Remark = "邮件模板菜单",
             CreateBy = "Hbt365",
             CreateTime = DateTime.Now,
@@ -1274,7 +1269,7 @@ public class HbtDbSeedMenu
             Status = 0,
             Perms = "routine:notice:list",
             Icon = "NotificationOutlined",
-            
+
             Remark = "通知公告菜单",
             CreateBy = "Hbt365",
             CreateTime = DateTime.Now,
@@ -1297,7 +1292,7 @@ public class HbtDbSeedMenu
             Status = 0,
             Perms = "routine:quartz:list",
             Icon = "CheckSquareOutlined",
-            
+
             Remark = "工作任务菜单",
             CreateBy = "Hbt365",
             CreateTime = DateTime.Now,
@@ -1320,7 +1315,7 @@ public class HbtDbSeedMenu
             Status = 0,
             Perms = "routine:schedule:list",
             Icon = "CalendarOutlined",
-            
+
             Remark = "日程管理菜单",
             CreateBy = "Hbt365",
             CreateTime = DateTime.Now,
@@ -1336,7 +1331,7 @@ public class HbtDbSeedMenu
     private List<HbtMenu> GetFinanceSubMenus(long parentId, long systemTenantId)
     {
         var menus = new List<HbtMenu>();
-        
+
         // 1. 管理会计目录
         var managementMenu = new HbtMenu
         {
@@ -1354,7 +1349,7 @@ public class HbtDbSeedMenu
             Status = 0,
             Perms = "",
             Icon = "FundOutlined",
-            
+
             Remark = "管理会计子目录",  // 修改为子目录
             CreateBy = "Hbt365",
             CreateTime = DateTime.Now,
@@ -1380,7 +1375,7 @@ public class HbtDbSeedMenu
             Status = 0,
             Perms = "",
             Icon = "ControlOutlined",
-            
+
             Remark = "控制会计子目录",  // 已经是子目录
             CreateBy = "Hbt365",
             CreateTime = DateTime.Now,
@@ -1605,7 +1600,7 @@ public class HbtDbSeedMenu
                 Status = 0,
                 Perms = "",
                 Icon = "InboxOutlined",
-                
+
                 Remark = "物料管理目录",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -1628,7 +1623,7 @@ public class HbtDbSeedMenu
                 Status = 0,
                 Perms = "",
                 Icon = "ExperimentOutlined",
-                
+
                 Remark = "生产管理目录",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -1651,7 +1646,7 @@ public class HbtDbSeedMenu
                 Status = 0,
                 Perms = "",
                 Icon = "ShoppingCartOutlined",
-                
+
                 Remark = "销售管理目录",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -1674,7 +1669,7 @@ public class HbtDbSeedMenu
                 Status = 0,
                 Perms = "",
                 Icon = "SafetyCertificateOutlined",
-                
+
                 Remark = "质量管理目录",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -1697,7 +1692,7 @@ public class HbtDbSeedMenu
                 Status = 0,
                 Perms = "",
                 Icon = "ToolOutlined",
-                
+
                 Remark = "设备管理目录",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -1720,7 +1715,7 @@ public class HbtDbSeedMenu
                 Status = 0,
                 Perms = "",
                 Icon = "CustomerServiceOutlined",
-                
+
                 Remark = "客服管理目录",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -1743,7 +1738,7 @@ public class HbtDbSeedMenu
                 Status = 0,
                 Perms = "",
                 Icon = "WarningOutlined",
-                
+
                 Remark = "客诉管理目录",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -1766,7 +1761,7 @@ public class HbtDbSeedMenu
                 Status = 0,
                 Perms = "",
                 Icon = "ProjectOutlined",
-                
+
                 Remark = "项目管理目录",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -2433,12 +2428,12 @@ public class HbtDbSeedMenu
         var buttonPerms = new[] { "query", "create", "update", "delete", "detail", "preview", "print", "import", "export", "template", "audit", "revoke" };
 
         // 通用按钮
-        var buttonIdNames = new[] { "查询", "新增", "修改", "删除", "详情", "预览", "打印", "导入", "导出", "导入模板", "审计", "撤消" ,"授权","分配","重置密码","变更密码"};
-        var buttonIdPerms = new[] { "query", "create", "update", "delete", "detail", "preview", "print", "import", "export", "template", "audit", "revoke" ,"authorize","allocate","resetpwd","changepwd"};
+        var buttonIdNames = new[] { "查询", "新增", "修改", "删除", "详情", "预览", "打印", "导入", "导出", "导入模板", "审计", "撤消", "授权", "分配", "重置密码", "变更密码" };
+        var buttonIdPerms = new[] { "query", "create", "update", "delete", "detail", "preview", "print", "import", "export", "template", "audit", "revoke", "authorize", "allocate", "resetpwd", "changepwd" };
 
         // 代码生成按钮
         var buttonGenNames = new[] { "查询", "新增", "修改", "删除", "生成代码", "预览代码", "下载代码", "同步数据库", "导入", "导出", "字段", "表", "数据库" };
-        var buttonGenPerms = new[] { "query", "create", "update", "delete", "generate", "preview", "download", "sync", "import", "export","columns","tables","databases" };
+        var buttonGenPerms = new[] { "query", "create", "update", "delete", "generate", "preview", "download", "sync", "import", "export", "columns", "tables", "databases" };
 
         // 工作流按钮
         var buttonFlowNames = new[] { "查询", "新增", "修改", "删除", "发布", "停用", "挂起", "恢复", "转办", "委托", "退回", "终止", "导入", "导出", "打印" };
@@ -2512,7 +2507,7 @@ public class HbtDbSeedMenu
                 MenuType = 2,
                 Perms = $"{modulePrefix}:{menuPerm}:{perms[i]}", // 使用三级结构
                 Icon = string.Empty,
-                
+
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
                 UpdateBy = "Hbt365",

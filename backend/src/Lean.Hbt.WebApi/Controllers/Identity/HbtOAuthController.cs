@@ -15,25 +15,33 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         private readonly IHbtOAuthService _oauthService;
         private readonly IHbtIdentitySessionManager _sessionManager;
         private readonly IHbtRepository<HbtUser> _userRepository;
+        private readonly IHbtRepository<HbtUserTenant> _userTenantRepository;
 
         /// <summary>
         /// 构造函数
         /// <param name="oauthService">OAuth服务</param>
         /// <param name="sessionManager">会话管理器</param>
         /// <param name="userRepository">用户仓储</param>
-        /// <param name="localization">本地化</param>
+        /// <param name="userTenantRepository">用户租户仓储</param>
         /// <param name="logger">日志</param>
+        /// <param name="currentUser">当前用户</param>
+        /// <param name="currentTenant">当前租户</param>
+        /// <param name="localization">本地化</param>
         /// </summary>
         public HbtOAuthController(
             IHbtOAuthService oauthService,
             IHbtIdentitySessionManager sessionManager,
             IHbtRepository<HbtUser> userRepository,
-                        IHbtLocalizationService localization,
-            IHbtLogger logger) : base(localization, logger)
+            IHbtRepository<HbtUserTenant> userTenantRepository,
+            IHbtLogger logger,
+            IHbtCurrentUser currentUser,
+            IHbtCurrentTenant currentTenant,
+            IHbtLocalizationService localization) : base(logger, currentUser, currentTenant, localization)
         {
             _oauthService = oauthService;
             _sessionManager = sessionManager;
             _userRepository = userRepository;
+            _userTenantRepository = userTenantRepository;
         }
 
         /// <summary>
@@ -117,9 +125,25 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
                 return NotFound("用户不存在");
             }
 
-            // 更新用户的租户ID
-            user.TenantId = tenantId;
-            await _userRepository.UpdateAsync(user);
+            // 检查用户是否已经关联到该租户
+            var userTenant = await _userTenantRepository.GetFirstAsync(x => x.UserId == user.Id && x.TenantId == tenantId);
+            if (userTenant == null)
+            {
+                // 创建用户租户关联
+                userTenant = new HbtUserTenant
+                {
+                    UserId = user.Id,
+                    TenantId = tenantId,
+                    Status = 0, // 正常状态
+                    CreateTime = DateTime.Now,
+                    CreateBy = user.Id.ToString()
+                };
+                await _userTenantRepository.CreateAsync(userTenant);
+            }
+            else if (userTenant.Status != 0)
+            {
+                return BadRequest("用户在当前租户中已被禁用");
+            }
 
             // 创建会话
             var sessionId = await _sessionManager.CreateSessionAsync(

@@ -14,7 +14,6 @@ namespace Lean.Hbt.Domain.Entities.Core
     /// 字典类型实体
     /// </summary>
     [SugarTable("hbt_core_dict_type", "字典类型表")]
-    [SugarIndex("ix_tenant_dict_type", nameof(TenantId), OrderByType.Asc)]
     public class HbtDictType : HbtBaseEntity
     {
         /// <summary>
@@ -48,21 +47,15 @@ namespace Lean.Hbt.Domain.Entities.Core
         public string? SqlScript { get; set; }
 
         /// <summary>
-        /// 排序
-        /// </summary>
-        [SugarColumn(ColumnName = "order_num", ColumnDescription = "排序", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
-        public int OrderNum { get; set; } = 0;
-
-        /// <summary>
         /// 状态（0正常 1停用）
         /// </summary>
         [SugarColumn(ColumnName = "status", ColumnDescription = "状态", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
         public int Status { get; set; } = 0;
 
         /// <summary>
-        /// 租户ID
+        /// 排序
         /// </summary>
-        [SugarColumn(ColumnName = "tenant_id", ColumnDescription = "租户ID", ColumnDataType = "bigint", IsNullable = false)]
-        public long TenantId { get; set; }
+        [SugarColumn(ColumnName = "order_num", ColumnDescription = "排序", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
+        public int OrderNum { get; set; } = 0;        
     }
 }

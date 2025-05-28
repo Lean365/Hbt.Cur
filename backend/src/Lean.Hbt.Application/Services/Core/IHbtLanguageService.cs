@@ -87,5 +87,11 @@ namespace Lean.Hbt.Application.Services.Core
         /// <param name="input">状态更新对象</param>
         /// <returns>是否成功</returns>
         Task<bool> UpdateStatusAsync(HbtLanguageStatusDto input);
+
+        /// <summary>
+        /// 获取语言选项列表
+        /// </summary>
+        /// <returns>语言选项列表</returns>
+        Task<List<HbtLanguageOptionDto>> GetOptionsAsync();
     }
 }

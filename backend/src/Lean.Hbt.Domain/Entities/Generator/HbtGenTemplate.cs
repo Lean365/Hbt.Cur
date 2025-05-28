@@ -19,7 +19,6 @@ namespace Lean.Hbt.Domain.Entities.Generator;
 /// </summary>
 [SugarTable("hbt_generator_template", "代码生成模板表")]
 [SugarIndex("ix_gen_template_name", nameof(TemplateName), OrderByType.Asc, true)]
-[SugarIndex("ix_gen_template_tenant", nameof(TenantId), OrderByType.Asc, nameof(TemplateName), OrderByType.Asc, true)]
 public class HbtGenTemplate : HbtBaseEntity
 {
     #region 基本信息
@@ -97,20 +96,4 @@ public class HbtGenTemplate : HbtBaseEntity
     public int Status { get; set; } = 0;
 
     #endregion 状态信息
-
-    #region 系统信息
-
-    /// <summary>
-    /// 租户ID
-    /// </summary>
-            [SugarColumn(ColumnName = "tenant_id", ColumnDescription = "租户ID", ColumnDataType = "bigint", IsNullable = false)]
-   public long TenantId { get; set; }
-
-    /// <summary>
-    /// 租户
-    /// </summary>
-    [Navigate(NavigateType.OneToOne, nameof(TenantId))]
-    public HbtTenant? Tenant { get; set; }
-
-    #endregion 系统信息
 }

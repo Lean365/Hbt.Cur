@@ -29,6 +29,7 @@ namespace Lean.Hbt.Application.Services.Identity
         private readonly IHbtRepository<HbtUserRole> _userRoleRepository;
         private readonly IHbtRepository<HbtUserPost> _userPostRepository;
         private readonly IHbtRepository<HbtUserDept> _userDeptRepository;
+        private readonly IHbtRepository<HbtUserTenant> _userTenantRepository;
         private readonly IHbtPasswordPolicy _passwordPolicy;
         private readonly IHbtRepository<HbtTenant> _tenantRepository;
 
@@ -41,16 +42,19 @@ namespace Lean.Hbt.Application.Services.Identity
             IHbtRepository<HbtUserRole> userRoleRepository,
             IHbtRepository<HbtUserPost> userPostRepository,
             IHbtRepository<HbtUserDept> userDeptRepository,
+            IHbtRepository<HbtUserTenant> userTenantRepository,
             IHbtPasswordPolicy passwordPolicy,
             IHbtRepository<HbtTenant> tenantRepository,
             IHbtCurrentUser currentUser,
             IHttpContextAccessor httpContextAccessor,
-            IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
+            IHbtCurrentTenant currentTenant,
+            IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, currentTenant, localization)
         {
             _userRepository = userRepository;
             _userRoleRepository = userRoleRepository;
             _userPostRepository = userPostRepository;
             _userDeptRepository = userDeptRepository;
+            _userTenantRepository = userTenantRepository;
             _passwordPolicy = passwordPolicy;
             _tenantRepository = tenantRepository;
         }
@@ -952,6 +956,98 @@ namespace Lean.Hbt.Application.Services.Identity
             catch (Exception ex)
             {
                 _logger.Error($"分配用户岗位失败: {ex.Message}", ex);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// 分配用户租户
+        /// </summary>
+        /// <param name="userId">用户ID</param>
+        /// <param name="tenantIds">租户ID列表</param>
+        /// <returns>是否成功</returns>
+        public async Task<bool> AllocateUserTenantsAsync(long userId, long[] tenantIds)
+        {
+            try
+            {
+                _logger.Info($"开始分配用户租户 - 用户ID: {userId}, 租户IDs: {string.Join(",", tenantIds)}");
+
+                // 1. 获取用户现有关联的租户（包括已删除的）
+                var existingTenants = await _userTenantRepository.GetListAsync(ut => ut.UserId == userId);
+                _logger.Info($"用户现有关联租户数量: {existingTenants.Count}");
+
+                // 2. 找出需要标记删除的关联（在现有关联中但不在新的租户列表中）
+                var tenantsToDelete = existingTenants.Where(ut => !tenantIds.Contains(ut.TenantId)).ToList();
+                if (tenantsToDelete.Any())
+                {
+                    _logger.Info($"需要标记删除的租户关联数量: {tenantsToDelete.Count}, 租户IDs: {string.Join(",", tenantsToDelete.Select(d => d.TenantId))}");
+                    foreach (var tenant in tenantsToDelete)
+                    {
+                        // 先更新状态为禁用
+                        tenant.Status = 1; // 1 表示禁用状态
+                        tenant.UpdateBy = _currentUser.UserName;
+                        tenant.UpdateTime = DateTime.Now;
+                        await _userTenantRepository.UpdateAsync(tenant);
+
+                        // 然后再标记删除
+                        tenant.IsDeleted = 1; // 1 表示已删除
+                        tenant.DeleteBy = _currentUser.UserName;
+                        tenant.DeleteTime = DateTime.Now;
+                        await _userTenantRepository.UpdateAsync(tenant);
+                    }
+                    _logger.Info("租户关联状态更新和删除标记完成");
+                }
+
+                // 3. 处理需要恢复的关联（在新的租户列表中且已存在但被标记为删除）
+                var tenantsToRestore = existingTenants.Where(ut => tenantIds.Contains(ut.TenantId) && ut.IsDeleted == 1).ToList();
+                if (tenantsToRestore.Any())
+                {
+                    _logger.Info($"需要恢复的租户关联数量: {tenantsToRestore.Count}, 租户IDs: {string.Join(",", tenantsToRestore.Select(d => d.TenantId))}");
+                    foreach (var tenant in tenantsToRestore)
+                    {
+                        // 先恢复状态为正常
+                        tenant.Status = 0; // 0 表示正常状态
+                        tenant.UpdateBy = _currentUser.UserName;
+                        tenant.UpdateTime = DateTime.Now;
+                        await _userTenantRepository.UpdateAsync(tenant);
+
+                        // 然后取消删除标记
+                        tenant.IsDeleted = 0; // 0 表示未删除
+                        tenant.DeleteBy = null;
+                        tenant.DeleteTime = null;
+                        await _userTenantRepository.UpdateAsync(tenant);
+                    }
+                    _logger.Info("租户关联状态恢复和删除标记取消完成");
+                }
+
+                // 4. 找出需要新增的关联（在新的租户列表中且不存在任何记录）
+                var existingTenantIds = existingTenants.Select(ut => ut.TenantId).ToList();
+                var tenantsToAdd = tenantIds.Where(tenantId => !existingTenantIds.Contains(tenantId))
+                    .Select(tenantId => new HbtUserTenant
+                    {
+                        UserId = userId,
+                        TenantId = tenantId,
+                        Status = 0, // 0 表示正常状态
+                        IsDeleted = 0, // 0 表示未删除
+                        CreateBy = _currentUser.UserName,
+                        CreateTime = DateTime.Now,
+                        UpdateBy = _currentUser.UserName,
+                        UpdateTime = DateTime.Now
+                    }).ToList();
+
+                if (tenantsToAdd.Any())
+                {
+                    _logger.Info($"需要新增的租户关联数量: {tenantsToAdd.Count}, 租户IDs: {string.Join(",", tenantsToAdd.Select(d => d.TenantId))}");
+                    await _userTenantRepository.CreateRangeAsync(tenantsToAdd);
+                    _logger.Info("租户关联新增完成");
+                }
+
+                _logger.Info("用户租户分配完成");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error($"分配用户租户失败: {ex.Message}", ex);
                 throw;
             }
         }

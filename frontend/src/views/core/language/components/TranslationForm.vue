@@ -1,46 +1,66 @@
 <template>
   <hbt-modal
     :title="translationId ? t('common.title.edit') : t('common.title.create')"
-   :open="open"
-    width="600px"
+    :open="open"
+    width="800px"
     @cancel="handleCancel"
   >
     <a-form
       ref="formRef"
       :model="form"
       :rules="rules"
-      :label-col="{ span: 6 }"
-      :wrapper-col="{ span: 18 }"
+      :label-col="{ span: 4 }"
+      :wrapper-col="{ span: 20 }"
     >
       <a-form-item :label="t('core.translation.fields.moduleName.label')" name="moduleName">
-        <a-input v-model:value="form.moduleName" :placeholder="t('core.translation.fields.moduleName.placeholder')" />
+        <hbt-select
+          v-model:value="form.moduleName"
+          type="radio"
+          :show-all="false"
+          :placeholder="t('core.translation.fields.moduleName.placeholder')"
+          :disabled="!!props.transKey"
+          dict-type="sys_translation_module"
+        />
       </a-form-item>
       <a-form-item :label="t('core.translation.fields.transKey.label')" name="transKey">
-        <a-input v-model:value="form.transKey" :placeholder="t('core.translation.fields.transKey.placeholder')" />
-      </a-form-item>
-      <a-form-item :label="t('core.translation.fields.transValue.label')" name="transValue">
-        <a-textarea
-          v-model:value="form.transValue"
-          :rows="3"
-          :placeholder="t('core.translation.fields.transValue.placeholder')"
+        <a-input 
+          v-model:value="form.transKey" 
+          :placeholder="t('core.translation.fields.transKey.placeholder')"
+          :disabled="!!props.transKey"
         />
-      </a-form-item>
-      <a-form-item :label="t('core.translation.fields.orderNum.label')" name="orderNum">
-        <a-input-number v-model:value="form.orderNum" :min="0" :max="999" style="width: 100%" />
       </a-form-item>
       <a-form-item :label="t('core.translation.fields.status.label')" name="status">
-        <a-radio-group v-model:value="form.status">
-          <a-radio :value="0">{{ t('common.status.enabled') }}</a-radio>
-          <a-radio :value="1">{{ t('common.status.disabled') }}</a-radio>
-        </a-radio-group>
-      </a-form-item>
-      <a-form-item :label="t('core.translation.fields.remark.label')" name="remark">
-        <a-textarea
-          v-model:value="form.remark"
-          :rows="2"
-          :placeholder="t('core.translation.fields.remark.placeholder')"
+        <hbt-select
+          v-model:value="form.status"
+          type="radio"
+          :show-all="false"
+          :placeholder="t('core.translation.fields.status.placeholder')"
+          dict-type="sys_yes_no"
         />
       </a-form-item>
+
+      <!-- 语言翻译列表 -->
+      <div class="translation-list">
+        <h3 class="section-title">{{ t('core.translation.title') }}</h3>
+        <div v-for="lang in languageList" :key="lang.langCode" class="translation-item">
+          <a-form-item
+            :label="lang.langName + ' (' + lang.langCode + ')'"
+            :name="['translations', lang.langCode, 'transValue']"
+            :rules="[
+              { 
+                required: ['en-US', 'zh-CN'].includes(lang.langCode), 
+                message: t('core.translation.fields.transValue.validation.required') 
+              }
+            ]"
+          >
+            <a-textarea
+              v-model:value="form.translations[lang.langCode].transValue"
+              :rows="2"
+              :placeholder="t('core.translation.fields.transValue.placeholder')"
+            />
+          </a-form-item>
+        </div>
+      </div>
     </a-form>
     <template #footer>
       <div class="dialog-footer">
@@ -59,13 +79,21 @@ import { useI18n } from 'vue-i18n'
 import { message } from 'ant-design-vue'
 import type { FormInstance } from 'ant-design-vue'
 import type { Rule } from 'ant-design-vue/es/form'
-import type { HbtTranslation } from '@/types/core/translation'
-import { getHbtTranslation, createHbtTranslation, updateHbtTranslation } from '@/api/core/translation'
+import type { HbtTransposedData, HbtTranslationLang, HbtTranslationCreate, HbtTranslationUpdate } from '@/types/core/translation'
+import { 
+  getHbtTransposedDetail, 
+  createHbtTransposed, 
+  updateHbtTransposed, 
+  getHbtTranslationList,
+  createHbtTranslation,
+  updateHbtTranslation
+} from '@/api/core/translation'
+import { getLanguageOptions } from '@/api/core/language'
 
 const props = defineProps<{
   open: boolean
   translationId?: number
-  langCode: string
+  transKey?: string
 }>()
 
 const emit = defineEmits(['update:open', 'success'])
@@ -73,53 +101,111 @@ const emit = defineEmits(['update:open', 'success'])
 const { t } = useI18n()
 const formRef = ref<FormInstance>()
 const loading = ref(false)
-const dialogVisible = ref(true)
+const languageList = ref<{ langCode: string, langName: string }[]>([])
 
-const form = reactive<HbtTranslation>({
-  translationId: 0,
-  langCode: props.langCode,
-  moduleName: '',
+const form = reactive<HbtTransposedData>({
   transKey: '',
-  transValue: '',
-  orderNum: 0,
+  moduleName: 'frontend',
   status: 0,
   remark: '',
-  createTime: '',
-  updateTime: '',
   createBy: '',
+  createTime: '',
   updateBy: '',
-  isDeleted: 0
+  updateTime: '',
+  translations: {}
 })
 
-const rules: Partial<Record<keyof HbtTranslation, Rule[]>> = {
+const rules: Record<string, Rule[]> = {
   moduleName: [
-    { required: true, type: 'string', message: t('core.translation.fields.moduleName.validation.required'), trigger: 'blur' },
-    { type: 'string', min: 2, max: 50, message: t('core.translation.fields.moduleName.validation.length'), trigger: 'blur' }
+    { required: true, message: t('core.translation.fields.moduleName.validation.required'), trigger: 'blur' },
+    { min: 2, max: 50, message: t('core.translation.fields.moduleName.validation.length'), trigger: 'blur' }
   ],
   transKey: [
-    { required: true, type: 'string', message: t('core.translation.fields.transKey.validation.required'), trigger: 'blur' },
-    { type: 'string', min: 2, max: 100, message: t('core.translation.fields.transKey.validation.length'), trigger: 'blur' }
-  ],
-  transValue: [
-    { required: true, type: 'string', message: t('corion.fields.trafields.nsValue.va.validation.ridation.required'), trigger: 'blur' }
-  ],
-  orderNum: [
-    { required: true, type: 'number', message: t('corion.fields.ordfields.erNum.va.validation.ridation.required'), trigger: 'blur' }
+    { required: true, message: t('core.translation.fields.transKey.validation.required'), trigger: 'blur' },
+    { min: 2, max: 100, message: t('core.translation.fields.transKey.validation.length'), trigger: 'blur' }
   ],
   status: [
-    { required: true, type: 'number', message: t('core.translation.fields.status.validation.required'), trigger: 'change' }
+    { required: true, message: t('core.translation.fields.status.validation.required'), trigger: 'change' }
   ]
 }
 
+const loadLanguages = async () => {
+  try {
+    const res = await getLanguageOptions()
+    console.log('支持的语言列表响应:', res)
+    if (res.data.code === 200) {
+      if (!res.data.data?.length) {
+        console.warn('支持的语言列表为空')
+        message.warning(t('core.language.message.noLanguages'))
+        return
+      }
+      languageList.value = res.data.data
+      console.log('设置的语言列表:', languageList.value)
+      // 初始化 translations
+      form.translations = {}
+      languageList.value.forEach(lang => {
+        form.translations[lang.langCode] = {
+          translationId: 0,
+          langCode: lang.langCode,
+          transValue: '',
+          status: 0
+        }
+      })
+      console.log('初始化的翻译数据:', form.translations)
+    } else {
+      console.error('获取支持的语言列表失败:', res.data.msg)
+      message.error(res.data.msg || t('common.failed'))
+    }
+  } catch (error) {
+    console.error('加载支持的语言列表出错:', error)
+    message.error(t('common.failed'))
+  }
+}
+
+// 监听表单字段变化，自动更新备注
+watch(
+  [
+    () => form.moduleName,
+    () => form.transKey,
+    () => form.translations
+  ],
+  () => {
+    const translations = Object.values(form.translations)
+      .map(t => t.transValue)
+      .filter(v => v)
+      .map(v => `(${v})`)
+      .join(', ')
+    
+    form.remark = [
+      form.moduleName,
+      form.transKey,
+      translations
+    ].filter(Boolean).join(', ')
+  },
+  { deep: true }
+)
+
 // 获取翻译详情
-const getDetail = async () => {
-  if (!props.translationId) return
+const getDetail = async (transKey: string) => {
+  if (!transKey) return
   
   try {
     loading.value = true
-    const res = await getHbtTranslation(props.translationId)
+    const res = await getHbtTransposedDetail(transKey)
     if (res.data.code === 200) {
       Object.assign(form, res.data.data)
+      // 初始化时也更新一次备注
+      const translations = Object.values(form.translations)
+        .map(t => t.transValue)
+        .filter(v => v)
+        .map(v => `(${v})`)
+        .join(', ')
+      
+      form.remark = [
+        form.moduleName,
+        form.transKey,
+        translations
+      ].filter(Boolean).join(', ')
     } else {
       message.error(res.data.msg || t('common.failed'))
     }
@@ -131,6 +217,20 @@ const getDetail = async () => {
   }
 }
 
+// 重置表单
+const resetForm = () => {
+  form.transKey = ''
+  form.moduleName = 'frontend'
+  form.status = 0
+  form.remark = ''
+  form.createBy = ''
+  form.createTime = ''
+  form.updateBy = ''
+  form.updateTime = ''
+  form.translations = {}
+  formRef.value?.resetFields()
+}
+
 // 提交表单
 const handleSubmit = async () => {
   if (!formRef.value) return
@@ -139,22 +239,36 @@ const handleSubmit = async () => {
     await formRef.value.validate()
     loading.value = true
     
-    const data = {
-      ...form,
-      langCode: props.langCode,
-      id: form.translationId
+    // 生成备注内容
+    const translationValues = Object.values(form.translations)
+      .map(t => t.transValue)
+      .filter(v => v)
+      .map(v => `(${v})`)
+      .join(', ')
+    
+    form.remark = [
+      form.moduleName,
+      form.transKey,
+      translationValues
+    ].filter(Boolean).join(', ')
+    
+    // 直接使用完整的 transKey
+    const submitData = {
+      ...form
     }
     
-    const res = props.translationId
-      ? await updateHbtTranslation(data)
-      : await createHbtTranslation(data)
-      
-    if (res.data.code === 200) {
+    // 使用转置翻译 API
+    const response = props.transKey
+      ? await updateHbtTransposed(submitData)
+      : await createHbtTransposed(submitData)
+    
+    if (response.data.code === 200) {
       message.success(t('common.message.saveSuccess'))
       emit('success')
+      resetForm()
       handleCancel()
     } else {
-      message.error(res.data.msg || t('common.message.saveFailed'))
+      message.error(response.data.msg || t('common.message.saveFailed'))
     }
   } catch (error) {
     console.error('保存失败:', error)
@@ -166,24 +280,46 @@ const handleSubmit = async () => {
 
 // 取消
 const handleCancel = () => {
+  resetForm()
   emit('update:open', false)
-  //emit('update:open', false)
 }
 
 // 监听对话框可见性变化
 watch(() => props.open, (val) => {
-  if (val && props.translationId) {
-    getDetail()
+  if (val) {
+    loadLanguages()
+    if (props.transKey) {
+      console.log('对话框打开，transKey:', props.transKey)
+      getDetail(props.transKey)
+    }
   }
 })
 
-// 初始化
-if (props.translationId) {
-  getDetail()
-}
+// 监听 transKey 变化
+watch(() => props.transKey, (val) => {
+  if (val && props.open) {
+    console.log('transKey 变化:', val)
+    getDetail(val)
+  }
+})
 </script>
 
 <style lang="less" scoped>
+.translation-list {
+  margin-top: 24px;
+  padding: 0 24px;
+
+  .section-title {
+    margin-bottom: 16px;
+    font-size: 16px;
+    font-weight: 500;
+  }
+
+  .translation-item {
+    margin-bottom: 16px;
+  }
+}
+
 .dialog-footer {
   display: flex;
   justify-content: flex-end;

@@ -30,6 +30,23 @@
           <hbt-locale />
           <hbt-memorial />
           <hbt-theme />
+          <!-- 租户切换 -->
+          <a-dropdown v-model:open="tenantOpen" :trigger="['click']">
+            <div class="tenant-switch" @click="handleTenantClick">
+              <span class="tenant-name">{{ currentTenant?.label || t('common.tenant.select') }}</span>
+              <down-outlined />
+            </div>
+            <template #overlay>
+              <a-menu v-model:selectedKeys="selectedTenantKeys" @click="handleTenantSelect">
+                <a-menu-item v-for="tenant in tenantList" :key="tenant.value">
+                  <template #icon>
+                    <check-outlined v-if="tenant.value === currentTenant?.value" />
+                  </template>
+                  {{ tenant.label }}
+                </a-menu-item>
+              </a-menu>
+            </template>
+          </a-dropdown>
           <a-dropdown :trigger="['click']" placement="bottom" class="user-dropdown">
             <div class="user-info">
               <a-avatar :size="32" :src="avatarUrl">
@@ -69,7 +86,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
@@ -82,9 +99,15 @@ import {
   LogoutOutlined,
   ReloadOutlined,
   ClearOutlined,
-  KeyOutlined
+  KeyOutlined,
+  DownOutlined,
+  CheckOutlined
 } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
+import UserDropdown from './UserDropdown.vue'
+import { getTenantOptions } from '@/api/identity/tenant'
+import type { HbtTenantOption } from '@/types/identity/tenant'
+import type { MenuInfo } from 'ant-design-vue/es/menu/src/interface'
 
 const { t } = useI18n()
 const router = useRouter()
@@ -204,26 +227,73 @@ const handleClearCache = () => {
 }
 
 // 处理退出登录
-const handleLogout = () => {
-  Modal.confirm({
-    title: t('header.user.logout'),
-    content: t('header.logout.confirm'),
-    okText: t('common.button.confirm'),
-    cancelText: t('common.button.cancel'),
-    onOk: async () => {
-      try {
-        await userStore.logout()
-        router.push('/login')
-      } catch (error) {
-        console.error('退出登录失败:', error)
-        message.error(t('header.user.logoutFailed'))
-      }
-    }
-  })
+const handleLogout = async () => {
+  try {
+    await userStore.logout()
+    // 跳转到登录页
+    router.push('/login')
+  } catch (error) {
+    console.error('退出登录失败:', error)
+    message.error(t('header.user.logoutFailed'))
+  }
 }
 
 // 计算头像URL
 const avatarUrl = computed(() => userStore.userInfo?.avatar || '')
+
+// 租户切换相关
+const tenantOpen = ref(false)
+const tenantList = ref<HbtTenantOption[]>([])
+const selectedTenantKeys = ref<string[]>([])
+const currentTenant = ref<HbtTenantOption | null>(null)
+
+// 获取租户列表
+const fetchTenantList = async () => {
+  try {
+    const { data } = await getTenantOptions()
+    if (data.code === 200 && Array.isArray(data.data)) {
+      tenantList.value = data.data
+      // 设置当前选中的租户
+      const currentTenantId = userStore.getCurrentTenantId()
+      const foundTenant = tenantList.value.find(t => t.value === currentTenantId)
+      currentTenant.value = foundTenant || null
+      if (currentTenant.value) {
+        selectedTenantKeys.value = [currentTenant.value.value.toString()]
+      }
+    }
+  } catch (error) {
+    console.error('获取租户列表失败:', error)
+  }
+}
+
+// 处理租户点击
+const handleTenantClick = () => {
+  if (tenantList.value.length === 0) {
+    fetchTenantList()
+  }
+}
+
+// 处理租户选择
+const handleTenantSelect = async (info: MenuInfo) => {
+  const tenantId = parseInt(info.key as string)
+  if (tenantId === currentTenant.value?.value) {
+    return
+  }
+
+  try {
+    await userStore.setCurrentTenantId(tenantId)
+    message.success(t('common.tenant.switchSuccess'))
+    // 刷新页面以应用新的租户设置
+    window.location.reload()
+  } catch (error) {
+    console.error('切换租户失败:', error)
+    message.error(t('common.tenant.switchFailed'))
+  }
+}
+
+onMounted(() => {
+  fetchTenantList()
+})
 </script>
 
 <style lang="less" scoped>
@@ -341,6 +411,26 @@ const avatarUrl = computed(() => userStore.userInfo?.avatar || '')
         padding-right: 16px;
       }
     }
+  }
+}
+
+.tenant-switch {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  padding: 0 12px;
+  height: 100%;
+  
+  &:hover {
+    background: rgba(0, 0, 0, 0.025);
+  }
+
+  .tenant-name {
+    margin-right: 8px;
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 }
 </style> 

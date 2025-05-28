@@ -28,6 +28,31 @@ namespace Lean.Hbt.Application.Services.Audit
     {
         private readonly IHbtRepository<HbtSqlDiffLog> _sqlDiffLogRepository;
 
+
+
+        /// <summary>
+        /// 构造函数
+        /// </summary>
+        /// <param name="logger">日志记录器</param>
+        /// <param name="sqlDiffLogRepository">差异日志仓储</param>
+        /// <param name="httpContextAccessor">HTTP上下文访问器</param>
+        /// <param name="currentUser">当前用户服务</param>
+        /// <param name="currentTenant">当前租户服务</param>
+        /// <param name="localization">本地化服务</param>
+        public HbtSqlDiffLogService(
+            IHbtRepository<HbtSqlDiffLog> sqlDiffLogRepository,
+            IHbtLogger logger,
+            IHttpContextAccessor httpContextAccessor,
+            IHbtCurrentUser currentUser,
+        IHbtCurrentTenant currentTenant,
+        IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, currentTenant, localization)
+        {
+            _sqlDiffLogRepository = sqlDiffLogRepository ?? throw new ArgumentNullException(nameof(sqlDiffLogRepository));
+        }
+
+        /// <summary>
+        /// 构建查询条件
+        /// </summary>
         private Expression<Func<HbtSqlDiffLog, bool>> KpSqlDiffLogQueryExpression(HbtSqlDiffLogQueryDto query)
         {
             return Expressionable.Create<HbtSqlDiffLog>()
@@ -38,24 +63,6 @@ namespace Lean.Hbt.Application.Services.Audit
                 .AndIF(query.EndTime.HasValue, x => x.CreateTime <= query.EndTime.Value)
                 .ToExpression();
         }
-
-        /// <summary>
-        /// 构造函数
-        /// </summary>
-        /// <param name="logger">日志记录器</param>
-        /// <param name="sqlDiffLogRepository">差异日志仓储</param>
-        /// <param name="currentUser">当前用户服务</param>
-        /// <param name="localization">本地化服务</param>
-        public HbtSqlDiffLogService(
-            IHbtRepository<HbtSqlDiffLog> sqlDiffLogRepository,
-            IHbtLogger logger,
-            IHttpContextAccessor httpContextAccessor,
-            IHbtCurrentUser currentUser,
-            IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
-        {
-            _sqlDiffLogRepository = sqlDiffLogRepository ?? throw new ArgumentNullException(nameof(sqlDiffLogRepository));
-        }
-
         /// <summary>
         /// 获取SQL差异日志分页列表
         /// </summary>

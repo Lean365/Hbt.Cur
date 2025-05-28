@@ -579,7 +579,7 @@ public class HbtDbSeedPurchaseDictData
             var existingDictData = await _dictDataRepository.GetFirstAsync(d => d.DictType == dictData.DictType && d.DictValue == dictData.DictValue);
             if (existingDictData == null)
             {
-                dictData.TenantId = tenantId;
+                
                 dictData.CreateBy = "Hbt365";
                 dictData.CreateTime = DateTime.Now;
                 dictData.UpdateBy = "Hbt365";
@@ -597,7 +597,7 @@ public class HbtDbSeedPurchaseDictData
                 existingDictData.CssClass = dictData.CssClass;
                 existingDictData.ListClass = dictData.ListClass;
                 existingDictData.Status = dictData.Status;
-                existingDictData.TenantId = tenantId;
+                
                 existingDictData.Remark = dictData.Remark;
                 existingDictData.CreateBy = dictData.CreateBy;
                 existingDictData.CreateTime = dictData.CreateTime;

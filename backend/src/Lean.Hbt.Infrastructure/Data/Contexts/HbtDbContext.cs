@@ -15,6 +15,9 @@ using Lean.Hbt.Domain.Entities.Generator;
 using Lean.Hbt.Domain.IServices.Extensions;
 using Lean.Hbt.Infrastructure.Services.Identity;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.DependencyInjection;
+using SqlSugar;
+using System.Reflection;
 
 namespace Lean.Hbt.Infrastructure.Data.Contexts
 {
@@ -90,14 +93,28 @@ namespace Lean.Hbt.Infrastructure.Data.Contexts
         private readonly IHbtLogger _logger;
 
         /// <summary>
+        /// 服务提供器
+        /// </summary>
+        private readonly IServiceProvider _serviceProvider;
+
+        /// <summary>
+        /// 当前租户
+        /// </summary>
+        private readonly IHbtCurrentTenant _currentTenant;
+
+        /// <summary>
         /// 构造函数
         /// </summary>
         /// <param name="options">数据库连接配置选项</param>
         /// <param name="logger">日志记录器</param>
         /// <param name="currentUser">当前用户信息</param>
-        public HbtDbContext(IOptions<ConnectionConfig> options, IHbtLogger logger, IHbtCurrentUser currentUser)
+        /// <param name="serviceProvider">服务提供器</param>
+        /// <param name="currentTenant">当前租户</param>
+        public HbtDbContext(IOptions<ConnectionConfig> options, IHbtLogger logger, IHbtCurrentUser currentUser, IServiceProvider serviceProvider, IHbtCurrentTenant currentTenant)
         {
             _logger = logger;
+            _serviceProvider = serviceProvider;
+            _currentTenant = currentTenant;
 
             var config = options.Value;
             if (string.IsNullOrEmpty(config.ConnectionString))
@@ -152,8 +169,7 @@ namespace Lean.Hbt.Infrastructure.Data.Contexts
             _client.QueryFilter.AddTableFilter<HbtBaseEntity>(it => it.IsDeleted == 0);
 
             // 初始化租户过滤器
-            AddTenantFilter();
-            SetTenantId();
+            ConfigureTenantFilter();
         }
 
         /// <summary>
@@ -295,33 +311,9 @@ namespace Lean.Hbt.Infrastructure.Data.Contexts
         }
 
         /// <summary>
-        /// 设置租户ID
-        /// 在插入数据时自动设置租户ID
+        /// 配置租户过滤器
         /// </summary>
-        private void SetTenantId()
-        {
-            var currentTenantId = HbtCurrentTenant.CurrentTenantId;
-            if (currentTenantId.HasValue)
-            {
-                _client.Aop.DataExecuting = (oldValue, entityInfo) =>
-                {
-                    if (entityInfo.EntityColumnInfo.IsPrimarykey)
-                        return;
-
-                    var entity = entityInfo.EntityValue as IHbtTenantEntity;
-                    if (entity != null && entityInfo.OperationType == DataFilterType.InsertByObject)
-                    {
-                        entity.TenantId = currentTenantId.Value;
-                    }
-                };
-            }
-        }
-
-        /// <summary>
-        /// 添加租户过滤器
-        /// 为所有实现了IHbtTenantEntity接口的实体添加租户过滤
-        /// </summary>
-        private void AddTenantFilter()
+        private void ConfigureTenantFilter()
         {
             // 获取所有实现了 IHbtTenantEntity 接口的实体类型
             var tenantEntities = AppDomain.CurrentDomain.GetAssemblies()
@@ -332,7 +324,8 @@ namespace Lean.Hbt.Infrastructure.Data.Contexts
             // 为每个实体类型添加租户过滤器
             foreach (var entityType in tenantEntities)
             {
-                _client.QueryFilter.AddTableFilter<IHbtTenantEntity>(it => it.TenantId == HbtCurrentTenant.CurrentTenantId);
+                var tenantId = _currentTenant.TenantId;
+                _client.QueryFilter.AddTableFilter<IHbtTenantEntity>(it => it.TenantId == tenantId);
             }
         }
     }

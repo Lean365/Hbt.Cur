@@ -47,6 +47,15 @@ namespace Lean.Hbt.Infrastructure.Security.Attributes
         /// 日志标题
         /// </summary>
         public string? Title { get; set; }
+
+        /// <summary>
+        /// 构造函数
+        /// </summary>
+        /// <param name="title">日志标题</param>
+        public HbtLogAttribute(string title)
+        {
+            Title = title;
+        }
     }
 
     /// <summary>

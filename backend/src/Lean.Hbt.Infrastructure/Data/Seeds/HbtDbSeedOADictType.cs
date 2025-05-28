@@ -8,7 +8,6 @@
 //===================================================================
 
 using Lean.Hbt.Domain.Entities.Core;
-using Lean.Hbt.Domain.IServices.Extensions;
 
 namespace Lean.Hbt.Infrastructure.Data.Seeds;
 
@@ -48,7 +47,7 @@ public class HbtDbSeedOADictType
                 DictType = "sys_meeting_type",
                 OrderNum = 1,
                 Status = 0,
-                
+
                 Remark = "会议类型字典",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -61,7 +60,7 @@ public class HbtDbSeedOADictType
                 DictType = "sys_meeting_status",
                 OrderNum = 2,
                 Status = 0,
-                
+
                 Remark = "会议状态字典",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -76,7 +75,7 @@ public class HbtDbSeedOADictType
                 DictType = "sys_vehicle_type",
                 OrderNum = 3,
                 Status = 0,
-                
+
                 Remark = "车辆类型字典",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -89,7 +88,7 @@ public class HbtDbSeedOADictType
                 DictType = "sys_vehicle_status",
                 OrderNum = 4,
                 Status = 0,
-                
+
                 Remark = "车辆状态字典",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -104,7 +103,7 @@ public class HbtDbSeedOADictType
                 DictType = "sys_schedule_type",
                 OrderNum = 5,
                 Status = 0,
-                
+
                 Remark = "日程类型字典",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -117,7 +116,7 @@ public class HbtDbSeedOADictType
                 DictType = "sys_schedule_priority",
                 OrderNum = 6,
                 Status = 0,
-                
+
                 Remark = "日程优先级字典",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -132,7 +131,7 @@ public class HbtDbSeedOADictType
                 DictType = "sys_knowledge_category",
                 OrderNum = 7,
                 Status = 0,
-                
+
                 Remark = "知识分类字典",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -145,7 +144,7 @@ public class HbtDbSeedOADictType
                 DictType = "sys_knowledge_permission",
                 OrderNum = 8,
                 Status = 0,
-                
+
                 Remark = "知识权限字典",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -160,7 +159,7 @@ public class HbtDbSeedOADictType
                 DictType = "sys_contact_group",
                 OrderNum = 9,
                 Status = 0,
-                
+
                 Remark = "联系人分组字典",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -175,7 +174,7 @@ public class HbtDbSeedOADictType
                 DictType = "sys_collaboration_type",
                 OrderNum = 10,
                 Status = 0,
-                
+
                 Remark = "协作类型字典",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -188,7 +187,7 @@ public class HbtDbSeedOADictType
                 DictType = "sys_collaboration_status",
                 OrderNum = 11,
                 Status = 0,
-                
+
                 Remark = "协作状态字典",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -202,7 +201,7 @@ public class HbtDbSeedOADictType
             var existingDictType = await _dictTypeRepository.GetFirstAsync(x => x.DictType == dictType.DictType);
             if (existingDictType == null)
             {
-                dictType.TenantId = tenantId;
+
                 dictType.CreateBy = "Hbt365";
                 dictType.CreateTime = DateTime.Now;
                 dictType.UpdateBy = "Hbt365";
@@ -218,7 +217,7 @@ public class HbtDbSeedOADictType
                 existingDictType.Remark = dictType.Remark;
                 existingDictType.UpdateBy = dictType.UpdateBy;
                 existingDictType.UpdateTime = dictType.UpdateTime;
-                existingDictType.TenantId = tenantId;
+
                 await _dictTypeRepository.UpdateAsync(existingDictType);
                 updateCount++;
             }
@@ -226,4 +225,4 @@ public class HbtDbSeedOADictType
 
         return (insertCount, updateCount);
     }
-} 
+}

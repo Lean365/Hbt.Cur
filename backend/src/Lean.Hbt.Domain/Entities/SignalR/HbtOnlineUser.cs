@@ -1,3 +1,7 @@
+#nullable enable
+
+using SqlSugar;
+
 //===================================================================
 // 项目名 : Lean.Hbt
 // 文件名 : HbtOnlineUser.cs
@@ -6,8 +10,6 @@
 // 版本号 : V1.0.0
 // 描述    : 在线用户实体
 //===================================================================
-
-using SqlSugar;
 
 namespace Lean.Hbt.Domain.Entities.SignalR
 {
@@ -19,15 +21,9 @@ namespace Lean.Hbt.Domain.Entities.SignalR
     /// 创建时间: 2024-01-20
     /// </remarks>
     [SugarTable("hbt_signalr_user", "在线用户表")]
-    [SugarIndex("ix_tenant_user", nameof(TenantId), OrderByType.Asc, nameof(UserId), OrderByType.Asc, nameof(ConnectionId), OrderByType.Asc, nameof(DeviceId), OrderByType.Asc, true)]
+    [SugarIndex("ix_user_connection", nameof(UserId), OrderByType.Asc, nameof(ConnectionId), OrderByType.Asc, nameof(DeviceId), OrderByType.Asc, true)]
     public class HbtOnlineUser : HbtBaseEntity
     {
-        /// <summary>
-        /// 租户ID
-        /// </summary>
-        [SugarColumn(ColumnName = "tenant_id", ColumnDescription = "租户ID", ColumnDataType = "bigint", IsNullable = false)]
-        public long TenantId { get; set; }
-
         /// <summary>
         /// 用户ID
         /// </summary>

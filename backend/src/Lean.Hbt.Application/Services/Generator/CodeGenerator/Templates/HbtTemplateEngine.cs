@@ -8,11 +8,8 @@
 //===================================================================
 
 using Lean.Hbt.Application.Services.Generator.CodeGenerator.Models;
-using Lean.Hbt.Domain.IServices.Extensions;
 using Scriban;
 using Scriban.Runtime;
-using Scriban.Syntax;
-using Scriban.Parsing;
 
 namespace Lean.Hbt.Application.Services.Generator.CodeGenerator.Templates;
 
@@ -67,15 +64,15 @@ public class HbtTemplateEngine : IHbtTemplateEngine
     private void InitializeTemplatePathMap()
     {
         _templatePathMap = new Dictionary<string, Dictionary<string, string>>();
-        
+
         // 获取所有模板文件
         var templateFiles = Directory.GetFiles(_templateRoot, "*.scriban", SearchOption.AllDirectories);
-        
+
         // 按类别分组
         foreach (var file in templateFiles)
         {
             var relativePath = Path.GetRelativePath(_templateRoot, file).Replace("\\", "/");
-            
+
             // 判断模板类别
             string category = "";
             if (relativePath.Contains("/Crud/")) category = "crud";
@@ -304,7 +301,6 @@ public class HbtTemplateEngine : IHbtTemplateEngine
         tableObject["front_tpl"] = model.Table.FrontTpl;
         tableObject["front_style"] = model.Table.FrontStyle;
         tableObject["btn_style"] = model.Table.BtnStyle;
-        tableObject["options"] = model.Table.Options;
         tableObject["status"] = model.Table.Status;
         scriptObject["table"] = tableObject;
 
@@ -1103,29 +1099,29 @@ public class HbtTemplateEngine : IHbtTemplateEngine
                 _logger.Error($"当前模板映射表内容: {string.Join(", ", _templatePathMap.Select(kv => $"{kv.Key}: [{string.Join(", ", kv.Value.Select(t => $"{t.Key}={t.Value}"))}]"))}");
                 throw new HbtTemplateException($"不支持的模板类别或名称: {category}/{name}");
             }
-            
+
             var templatePath = Path.Combine(_templateRoot, relPath);
             _logger.Debug($"模板文件路径: {templatePath},表名:{model.Table.TableName}");
-            
+
             if (!File.Exists(templatePath))
             {
                 _logger.Error($"模板文件不存在,路径:{templatePath},表名:{model.Table.TableName}");
                 throw new HbtTemplateException($"模板文件不存在: {templatePath}");
             }
-            
+
             var content = File.ReadAllText(templatePath);
             if (string.IsNullOrEmpty(content))
             {
                 _logger.Error($"模板内容为空,路径:{templatePath},表名:{model.Table.TableName}");
                 throw new HbtTemplateException($"模板内容为空: {templatePath}");
             }
-            
+
             if (!content.Contains("{{") || !content.Contains("}}"))
             {
                 _logger.Error($"模板内容格式不正确,路径:{templatePath},表名:{model.Table.TableName}");
                 throw new HbtTemplateException($"模板内容格式不正确: {templatePath}");
             }
-            
+
             _logger.Debug($"从文件系统获取模板成功,路径:{templatePath},表名:{model.Table.TableName},内容长度:{content.Length}");
             return content;
         }

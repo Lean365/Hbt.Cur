@@ -143,3 +143,15 @@ export function getTenantOptions() {
   })
 }
 
+/**
+ * 测试数据库连接
+ * @param data 数据库连接信息
+ */
+export function testDbConnection(data: any) {
+  return request({
+    url: '/api/identity/tenant/test-connection',
+    method: 'post',
+    data
+  })
+}
+

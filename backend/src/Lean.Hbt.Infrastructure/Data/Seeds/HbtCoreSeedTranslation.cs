@@ -7,9 +7,7 @@
 // 描述   : 日志本地化资源种子
 //===================================================================
 
-using Lean.Hbt.Common.Utils;
 using Lean.Hbt.Domain.Entities.Core;
-using Lean.Hbt.Domain.IServices.Extensions;
 using Lean.Hbt.Infrastructure.Data.Contexts;
 
 namespace Lean.Hbt.Infrastructure.Data.Seeds;
@@ -30,7 +28,7 @@ public class HbtCoreSeedTranslation
     /// <param name="logger">日志记录器</param>
     /// <param name="translationRepository">翻译仓储</param>
     public HbtCoreSeedTranslation(
-        HbtDbContext context, 
+        HbtDbContext context,
         IHbtLogger logger,
         IHbtRepository<HbtTranslation> translationRepository)
     {
@@ -114,13 +112,12 @@ public class HbtCoreSeedTranslation
 
         foreach (var translation in translations)
         {
-            var existingTranslation = await _translationRepository.GetFirstAsync(t => 
+            var existingTranslation = await _translationRepository.GetFirstAsync(t =>
                 t.LangCode == translation.LangCode && t.TransKey == translation.TransKey);
 
             if (existingTranslation == null)
             {
                 // 统一处理审计字段和租户
-                translation.TenantId = tenantId;
                 translation.CreateBy = "Hbt365";
                 translation.CreateTime = DateTime.Now;
                 translation.UpdateBy = "Hbt365";
@@ -133,7 +130,6 @@ public class HbtCoreSeedTranslation
             else
             {
                 existingTranslation.TransValue = translation.TransValue;
-                existingTranslation.TenantId = tenantId;
                 existingTranslation.UpdateBy = "Hbt365";
                 existingTranslation.UpdateTime = DateTime.Now;
 

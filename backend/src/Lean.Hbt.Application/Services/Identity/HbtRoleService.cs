@@ -8,9 +8,6 @@
 //===================================================================
 
 using System.Linq.Expressions;
-using Lean.Hbt.Application.Dtos.Identity;
-using Lean.Hbt.Domain.Entities.Identity;
-using Lean.Hbt.Domain.IServices.Extensions;
 using Microsoft.AspNetCore.Http;
 
 namespace Lean.Hbt.Application.Services.Identity
@@ -29,7 +26,7 @@ namespace Lean.Hbt.Application.Services.Identity
 
         // 用户角色仓储接口
         private readonly IHbtRepository<HbtUserRole> _userRoleRepository;
-        
+
 
         // 角色菜单仓储接口
         private readonly IHbtRepository<HbtRoleMenu> _roleMenuRepository;
@@ -47,6 +44,7 @@ namespace Lean.Hbt.Application.Services.Identity
         /// <param name="roleDeptRepository">角色部门仓库</param>
         /// <param name="httpContextAccessor">HTTP上下文访问器</param>
         /// <param name="currentUser">当前用户服务</param>
+        /// <param name="currentTenant">当前租户服务</param>
         /// <param name="localization">本地化服务</param>
         public HbtRoleService(
             IHbtLogger logger,
@@ -56,7 +54,8 @@ namespace Lean.Hbt.Application.Services.Identity
             IHbtRepository<HbtRoleDept> roleDeptRepository,
             IHttpContextAccessor httpContextAccessor,
             IHbtCurrentUser currentUser,
-            IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
+            IHbtCurrentTenant currentTenant,
+            IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, currentTenant, localization)
         {
             _roleRepository = roleRepository;
             _userRoleRepository = userRoleRepository;
@@ -130,6 +129,9 @@ namespace Lean.Hbt.Application.Services.Identity
         {
             var role = await _roleRepository.GetByIdAsync(input.RoleId)
                 ?? throw new HbtException(L("Identity.Role.NotFound", input.RoleId));
+
+            // 验证租户
+            // ValidateTenantId(role.TenantId);
 
             // 验证角色名称是否已存在
             if (role.RoleName != input.RoleName)
@@ -301,7 +303,7 @@ namespace Lean.Hbt.Application.Services.Identity
                 {
                     Label = r.RoleName,
                     Value = r.Id,
-                    
+
                 })
                 .ToListAsync();
             return roles;

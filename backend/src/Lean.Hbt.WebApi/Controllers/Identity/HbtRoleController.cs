@@ -32,11 +32,16 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// 构造函数
         /// </summary>
         /// <param name="roleService">角色服务</param>
-        /// <param name="localization">本地化服务</param>
         /// <param name="logger">日志服务</param>
-        public HbtRoleController(IHbtRoleService roleService,
-                                    IHbtLocalizationService localization,
-            IHbtLogger logger) : base(localization, logger)
+        /// <param name="currentUser">当前用户服务</param>
+        /// <param name="currentTenant">当前租户服务</param>
+        /// <param name="localization">本地化服务</param>
+        public HbtRoleController(
+            IHbtRoleService roleService,
+            IHbtLogger logger,
+            IHbtCurrentUser currentUser,
+            IHbtCurrentTenant currentTenant,
+            IHbtLocalizationService localization) : base(logger, currentUser, currentTenant, localization)
         {
             _roleService = roleService;
         }
@@ -74,6 +79,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <returns>角色ID</returns>
         [HttpPost]
         [HbtPerm("identity:role:create")]
+        [HbtLog("创建角色")]
         public async Task<IActionResult> CreateAsync([FromBody] HbtRoleCreateDto input)
         {
             var result = await _roleService.CreateAsync(input);
@@ -87,6 +93,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <returns>是否成功</returns>
         [HttpPut]
         [HbtPerm("identity:role:update")]
+        [HbtLog("更新角色")]
         public async Task<IActionResult> UpdateAsync([FromBody] HbtRoleUpdateDto input)
         {
             var result = await _roleService.UpdateAsync(input);
@@ -100,6 +107,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <returns>是否成功</returns>
         [HttpDelete("{roleId}")]
         [HbtPerm("identity:role:delete")]
+        [HbtLog("删除角色")]
         public async Task<IActionResult> DeleteAsync(long roleId)
         {
             var result = await _roleService.DeleteAsync(roleId);
@@ -112,6 +120,8 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <param name="roleIds">角色ID集合</param>
         /// <returns>是否成功</returns>
         [HttpDelete("batch")]
+        [HbtPerm("identity:role:delete")]
+        [HbtLog("批量删除角色")]
         public async Task<IActionResult> BatchDeleteAsync([FromBody] long[] roleIds)
         {
             var result = await _roleService.BatchDeleteAsync(roleIds);
@@ -124,6 +134,8 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <param name="file">Excel文件</param>
         /// <returns>导入结果</returns>
         [HttpPost("import")]
+        [HbtPerm("identity:role:import")]
+        [HbtLog("导入角色数据")]
         public async Task<IActionResult> ImportAsync(IFormFile file)
         {
             using var stream = file.OpenReadStream();
@@ -137,6 +149,8 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <param name="query">查询条件</param>
         /// <returns>Excel文件</returns>
         [HttpGet("export")]
+        [HbtPerm("identity:role:export")]
+        [HbtLog("导出角色数据")]
         public async Task<IActionResult> ExportAsync([FromQuery] HbtRoleQueryDto query)
         {
             var (fileName, content) = await _roleService.ExportAsync(query, "Sheet1");
@@ -148,6 +162,8 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// </summary>
         /// <returns>Excel模板文件</returns>
         [HttpGet("template")]
+        [HbtPerm("identity:role:export")]
+        [HbtLog("获取角色导入模板")]
         public async Task<IActionResult> GetTemplateAsync()
         {
             var (fileName, content) = await _roleService.GetTemplateAsync("Sheet1");
@@ -161,6 +177,8 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <param name="status">状态</param>
         /// <returns>是否成功</returns>
         [HttpPut("{roleId}/status")]
+        [HbtPerm("identity:role:update")]
+        [HbtLog("更新角色状态")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -221,6 +239,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <returns>是否成功</returns>
         [HttpPut("{roleId}/menus")]
         [HbtPerm("identity:role:allocate")]
+        [HbtLog("分配角色菜单")]
         public async Task<IActionResult> AllocateRoleMenusAsync(long roleId, [FromBody] long[] menuIds)
         {
             var result = await _roleService.AllocateRoleMenusAsync(roleId, menuIds);
@@ -235,6 +254,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <returns>是否成功</returns>
         [HttpPut("{roleId}/users")]
         [HbtPerm("identity:role:allocate")]
+        [HbtLog("分配角色用户")]
         public async Task<IActionResult> AllocateRoleUsersAsync(long roleId, [FromBody] long[] userIds)
         {
             var result = await _roleService.AllocateRoleUsersAsync(roleId, userIds);
@@ -249,6 +269,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <returns>是否成功</returns>
         [HttpPut("{roleId}/depts")]
         [HbtPerm("identity:role:allocate")]
+        [HbtLog("分配角色部门")]
         public async Task<IActionResult> AllocateRoleDeptsAsync(long roleId, [FromBody] long[] deptIds)
         {
             var result = await _roleService.AllocateRoleDeptsAsync(roleId, deptIds);

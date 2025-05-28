@@ -533,7 +533,16 @@ router.beforeEach(async (to, from, next) => {
   try {
     // 初始化用户信息
     if (!userStore.userInfo) {
-      await userStore.getUserInfo()
+      // 登录时强制刷新用户信息，刷新页面时使用缓存
+      const isLogin = from.path === '/login'
+      const userInfo = await userStore.getUserInfo(isLogin)
+      
+      // 只有在登录时获取用户信息失败才跳转到登录页
+      if (!userInfo && isLogin) {
+        console.warn('[路由] 登录时获取用户信息失败，跳转到登录页')
+        next({ path: '/login', query: { redirect: to.fullPath } })
+        return
+      }
     }
 
     // 检查是否需要初始化菜单和动态路由
@@ -543,7 +552,17 @@ router.beforeEach(async (to, from, next) => {
 
     if (needInitRoutes) {
       console.log('[路由] 需要初始化路由')
-      const menus = await menuStore.reloadMenus(router)
+      // 登录时强制刷新菜单，刷新页面时使用缓存
+      const isLogin = from.path === '/login'
+      const menus = await menuStore.reloadMenus(router, isLogin)
+      
+      // 只有在登录时菜单加载失败才跳转到登录页
+      if (!menus && isLogin) {
+        console.warn('[路由] 登录时菜单加载失败，跳转到登录页')
+        next({ path: '/login', query: { redirect: to.fullPath } })
+        return
+      }
+      
       if (!menus || menus.length === 0) {
         console.warn('[路由] 菜单列表为空，跳过注册')
         next()

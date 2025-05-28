@@ -141,11 +141,23 @@ public class HbtUserInfoDto
     {
         UserName = string.Empty;
         NickName = string.Empty;
+        FullName = string.Empty;
+        RealName = string.Empty;
         TenantName = string.Empty;
         EnglishName = string.Empty;
         Roles = new List<string>();
         Permissions = new List<string>();
     }
+
+    /// <summary>
+    /// 租户ID
+    /// </summary>
+    public long TenantId { get; set; }
+
+    /// <summary>
+    /// 租户名称
+    /// </summary>
+    public string TenantName { get; set; }
 
     /// <summary>
     /// 用户ID
@@ -164,6 +176,16 @@ public class HbtUserInfoDto
     public string NickName { get; set; }
 
     /// <summary>
+    /// 全名
+    /// </summary>
+    public string FullName { get; set; }
+
+    /// <summary>
+    /// 真实姓名
+    /// </summary>
+    public string RealName { get; set; }
+
+    /// <summary>
     /// 英文名称
     /// </summary>
     public string EnglishName { get; set; }
@@ -172,16 +194,6 @@ public class HbtUserInfoDto
     /// 用户类型
     /// </summary>
     public int UserType { get; set; }
-
-    /// <summary>
-    /// 租户ID
-    /// </summary>
-    public long TenantId { get; set; }
-
-    /// <summary>
-    /// 租户名称
-    /// </summary>
-    public string TenantName { get; set; }
 
     /// <summary>
     /// 角色列表

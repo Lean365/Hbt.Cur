@@ -27,6 +27,7 @@
               class="login-input"
               :options="tenantList"
               :suffixIcon="h(ApartmentOutlined)"
+              @change="(value) => loginForm.tenantId = Number(value)"
             />
           </a-form-item>
           <a-form-item name="userName">
@@ -190,26 +191,14 @@ const tenantList = ref<{ value: number; label: string }[]>([])
 
 // 获取租户列表
 const loadTenantList = async () => {
-  try {
-    const { data: res } = await getTenantOptions()
-    console.log('[租户列表] API响应:', res)
-    if (res.code === 200 && Array.isArray(res.data)) {
-      tenantList.value = res.data.map(item => ({
-        value: item.value,
-        label: item.label
-      }))
-      console.log('[租户列表] 加载成功:', tenantList.value)
-      // 如果是admin用户，自动选择默认租户
-      if (loginForm.value.userName.toLowerCase() === 'admin') {
-        loginForm.value.tenantId = 1
-      }
-    }
-  } catch (error) {
-    console.error('[租户列表] 加载失败:', error)
-    // 加载失败时添加默认租户
-    // tenantList.value = [
-    //   { value: 1, label: '系统租户' }
-    // ]
+  const { data: res } = await getTenantOptions()
+  console.log('[租户列表] API响应:', res)
+  if (res.code === 200 && Array.isArray(res.data)) {
+    tenantList.value = res.data.map(item => ({
+      value: item.value,
+      label: item.label
+    }))
+    console.log('[租户列表] 加载成功:', tenantList.value)
   }
 }
 
@@ -261,10 +250,7 @@ const resetFailedAttempts = (username: string) => {
 // 监听用户名变化
 const handleUserNameChange = (e: Event) => {
   const value = (e.target as HTMLInputElement).value;
-  // 如果是admin用户，自动设置租户ID为0
-  if (value.toLowerCase() === 'admin') {
-    loginForm.value.tenantId = 1;
-  }
+  // 不再自动设置租户ID
 }
 
 // 在文件顶部添加 isAdmin 变量定义
@@ -274,6 +260,20 @@ const isAdmin = computed(() => loginForm.value.userName.toLowerCase() === SPECIA
 const handleLogin = async () => {
   try {
     loading.value = true
+    
+    // 验证表单
+    if (!loginForm.value.userName) {
+      message.error(t('identity.auth.login.form.usernameRequired'))
+      loading.value = false
+      return
+    }
+    
+    // 确保租户ID已设置
+    if (!loginForm.value.tenantId) {
+      message.error(t('identity.auth.login.form.tenantIdRequired'))
+      loading.value = false
+      return
+    }
     
     // 验证凭证
     const isValid = await validateCredentials()
@@ -307,7 +307,7 @@ const handleLogin = async () => {
     console.log('[登录] 环境信息:', environmentInfo)
     
     const loginParams: LoginParams = {
-      tenantId: loginForm.value.tenantId,
+      tenantId: Number(loginForm.value.tenantId), // 确保租户ID是数字类型
       userName: loginForm.value.userName,
       password: hashedPassword,
       captchaToken: loginForm.value.captchaToken,
@@ -317,43 +317,7 @@ const handleLogin = async () => {
       loginType: 0, // 密码登录
       loginSource: 0, // Web登录
       deviceInfo: deviceInfo,
-      environmentInfo: {
-        tenantId: loginForm.value.tenantId,
-        userId: 0,
-        deviceId: 0,
-        environmentId: environmentInfo.environmentId,
-        loginType: 0,
-        loginSource: 0,
-        loginStatus: 0,
-        loginProvider: 0,
-        providerKey: '',
-        providerDisplayName: '',
-        networkType: environmentInfo.networkType,
-        timeZone: environmentInfo.timeZone,
-        language: environmentInfo.language,
-        isVpn: environmentInfo.isVpn,
-        isProxy: environmentInfo.isProxy,
-        status: 0,
-        firstLoginTime: environmentInfo.firstLoginTime,
-        firstLoginIp: '',
-        firstLoginLocation: '',
-        firstLoginDeviceId: '',
-        firstLoginDeviceType: 0,
-        firstLoginBrowser: 0,
-        firstLoginOs: 0,
-        lastLoginTime: environmentInfo.lastLoginTime,
-        lastLoginIp: '',
-        lastLoginLocation: '',
-        lastLoginDeviceId: '',
-        lastLoginDeviceType: 0,
-        lastLoginBrowser: 0,
-        lastLoginOs: 0,
-        lastOfflineTime: '',
-        todayOnlinePeriods: 0,
-        loginCount: 0,
-        continuousLoginDays: 0,
-        environmentFingerprint: environmentInfo.environmentFingerprint
-      }
+      environmentInfo: environmentInfo
     }
     
     console.log('[登录] 构建的登录参数:', loginParams)
@@ -394,9 +358,17 @@ const handleLoginSuccess = async () => {
     await nextTick()
     console.log('[登录成功] 准备跳转到首页')
     
-    // 跳转到首页
-    const result = await router.push('/home')
-    console.log('[登录成功] 跳转结果:', result)
+    // 获取重定向地址
+    const redirect = route.query.redirect as string
+    const targetPath = redirect || '/home'
+    
+    // 如果当前路径不是目标路径，则进行跳转
+    if (route.path !== targetPath) {
+      await router.push(targetPath)
+      console.log('[登录成功] 跳转到:', targetPath)
+    } else {
+      console.log('[登录成功] 已在目标页面，无需跳转')
+    }
   } catch (error) {
     console.error('[登录成功] 处理登录成功流程失败:', error)
     message.error('登录成功，但初始化失败，请刷新页面重试')

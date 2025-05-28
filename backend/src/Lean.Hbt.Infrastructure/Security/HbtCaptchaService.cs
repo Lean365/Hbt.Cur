@@ -32,6 +32,14 @@ public class HbtCaptchaService : HbtBaseService, IHbtCaptchaService
     /// <summary>
     /// 初始化验证码服务
     /// </summary>
+    /// <param name="cache">分布式缓存</param>
+    /// <param name="options">验证码选项</param>
+    /// <param name="webHostEnvironment">Web主机环境</param>
+    /// <param name="logger">日志记录器</param>
+    /// <param name="httpContextAccessor">HTTP上下文访问器</param>
+    /// <param name="currentUser">当前用户服务</param>
+    /// <param name="currentTenant">当前租户服务</param>
+    /// <param name="localization">本地化服务</param>
     public HbtCaptchaService(
         IDistributedCache cache,
         IOptions<HbtCaptchaOptions> options,
@@ -39,7 +47,8 @@ public class HbtCaptchaService : HbtBaseService, IHbtCaptchaService
         IHbtLogger logger,
         IHttpContextAccessor httpContextAccessor,
         IHbtCurrentUser currentUser,
-        IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
+        IHbtCurrentTenant currentTenant,
+        IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, currentTenant, localization)
     {
         _logger.Info("开始构造验证码服务...");
 

@@ -24,7 +24,8 @@ namespace Lean.Hbt.Domain.Entities
         /// <summary>
         /// 创建者
         /// </summary>
-        [SugarColumn(ColumnName = "create_by", ColumnDescription = "创建者", Length = 50, ColumnDataType = "nvarchar", IsNullable = false, DefaultValue = "")]
+        [Required(ErrorMessage = "创建者不能为空")]
+        [SugarColumn(ColumnName = "create_by", ColumnDescription = "创建者", Length = 50, ColumnDataType = "nvarchar", IsNullable = false)]
         public string CreateBy { get; set; } = string.Empty;
 
         /// <summary>

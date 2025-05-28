@@ -171,7 +171,7 @@ const dictStore = useDictStore()
 
 // === 状态定义 ===
 const loading = ref(false)
-const showSearch = ref(true)
+const showSearch = ref(false)
 const tableData = ref<HbtConfig[]>([])
 const selectedRowKeys = ref<string[]>([])
 const selectedConfigId = ref<number>()
@@ -448,14 +448,14 @@ const handleColumnSettingChange = (checkedValue: Array<string | number | boolean
   localStorage.setItem('configColumnSettings', JSON.stringify(settings))
 }
 
-// 切换搜索
-const toggleSearch = () => {
-  showSearch.value = !showSearch.value
+// 切换搜索显示
+const toggleSearch = (visible: boolean) => {
+  showSearch.value = visible
 }
 
 // 切换全屏
-const toggleFullscreen = () => {
-  // TODO: 实现全屏切换
+const toggleFullscreen = (isFullscreen: boolean) => {
+  console.log('切换全屏状态:', isFullscreen)
 }
 
 // 新增

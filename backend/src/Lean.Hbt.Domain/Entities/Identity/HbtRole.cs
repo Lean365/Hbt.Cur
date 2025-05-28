@@ -16,7 +16,6 @@ namespace Lean.Hbt.Domain.Entities.Identity
     /// </summary>
     [SugarTable("hbt_identity_role", "角色表")]
     [SugarIndex("ix_role_key", nameof(RoleKey), OrderByType.Asc, true)]
-    [SugarIndex("ix_tenant_role", nameof(TenantId), OrderByType.Asc, nameof(RoleName), OrderByType.Asc, true)]
     public class HbtRole : HbtBaseEntity
     {
         /// <summary>
@@ -54,18 +53,6 @@ namespace Lean.Hbt.Domain.Entities.Identity
         /// </summary>
         [SugarColumn(ColumnName = "status", ColumnDescription = "角色状态", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
         public int Status { get; set; } = 0;
-
-        /// <summary>
-        /// 租户ID
-        /// </summary>
-        [SugarColumn(ColumnName = "tenant_id", ColumnDescription = "租户ID", ColumnDataType = "bigint", IsNullable = false)]
-        public long TenantId { get; set; }
-
-        /// <summary>
-        /// 租户
-        /// </summary>
-        [Navigate(NavigateType.OneToOne, nameof(TenantId))]
-        public HbtTenant? Tenant { get; set; }
 
         /// <summary>
         /// 角色菜单关联

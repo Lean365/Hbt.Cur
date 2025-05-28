@@ -61,6 +61,6 @@ public interface IHbtAuthService
     /// 根据用户名获取用户信息
     /// </summary>
     /// <param name="username">用户名</param>
-    /// <returns>用户信息</returns>
-    Task<HbtUser?> GetUserByUsernameAsync(string username);
+    /// <returns>用户信息及其租户信息</returns>
+    Task<(HbtUser User, List<HbtUserTenant> UserTenants)?> GetUserByUsernameAsync(string username);
 } 

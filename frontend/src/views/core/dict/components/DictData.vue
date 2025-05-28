@@ -16,6 +16,15 @@
     append-to-body
     destroy-on-close
   >
+    <!-- 查询表单 -->
+    <hbt-query
+      v-model:show="showSearch"
+      :loading="loading"
+      :query-fields="queryFields"
+      @search="handleQuery"
+      @reset="handleReset"
+    />
+
     <!-- 工具栏 -->
     <hbt-toolbar
       :show-add="true"
@@ -179,7 +188,33 @@ const formTitle = ref('')
 const detailVisible = ref(false)
 const total = ref(0)
 const dialogVisible = ref(props.visible)
-const showSearch = ref(true)
+const showSearch = ref(false)
+
+// === 查询字段配置 ===
+const queryFields = [
+  {
+    type: 'input' as const,
+    name: 'dictLabel',
+    label: t('core.dict.dictDatas.table.columns.dictLabel'),
+    placeholder: t('core.dict.dictDatas.table.columns.dictLabel')
+  },
+  {
+    type: 'input' as const,
+    name: 'dictValue',
+    label: t('core.dict.dictDatas.table.columns.dictValue'),
+    placeholder: t('core.dict.dictDatas.table.columns.dictValue')
+  },
+  {
+    type: 'select' as const,
+    name: 'status',
+    label: t('core.dict.dictDatas.table.columns.status'),
+    placeholder: t('core.dict.dictDatas.table.columns.status'),
+    props: {
+      dictType: 'sys_normal_disable',
+      type: 'radio'
+    }
+  }
+]
 
 // 列设置相关
 const columnSettingVisible = ref(false)
@@ -603,19 +638,32 @@ const handleColumnSetting = () => {
   columnSettingVisible.value = true
 }
 
-// 切换搜索
-const toggleSearch = () => {
-  showSearch.value = !showSearch.value
+// 切换搜索显示
+const toggleSearch = (visible: boolean) => {
+  showSearch.value = visible
 }
 
 // 切换全屏
-const toggleFullscreen = () => {
-  const element = document.documentElement
-  if (document.fullscreenElement) {
-    document.exitFullscreen()
-  } else {
-    element.requestFullscreen()
+const toggleFullscreen = (isFullscreen: boolean) => {
+  console.log('切换全屏状态:', isFullscreen)
+}
+
+// 查询
+const handleQuery = () => {
+  fetchData()
+}
+
+// 重置
+const handleReset = () => {
+  queryParams.value = {
+    pageIndex: 1,
+    pageSize: 10,
+    dictType: props.dictType?.dictType || '',
+    status: undefined,
+    orderByColumn: undefined,
+    orderType: undefined
   }
+  fetchData()
 }
 </script>
 

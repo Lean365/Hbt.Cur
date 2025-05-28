@@ -115,6 +115,12 @@ namespace Lean.Hbt.Application.Dtos.Core
         public string? TransKey { get; set; }
 
         /// <summary>
+        /// 翻译值
+        /// </summary>
+        [MaxLength(500, ErrorMessage = "翻译值长度不能超过500个字符")]
+        public string? TransValue { get; set; }
+
+        /// <summary>
         /// 模块名称
         /// </summary>
         [MaxLength(100, ErrorMessage = "模块名称长度不能超过100个字符")]
@@ -309,5 +315,116 @@ namespace Lean.Hbt.Application.Dtos.Core
         /// </summary>
         [Required(ErrorMessage = "状态不能为空")]
         public int Status { get; set; }
+    }
+
+    /// <summary>
+    /// 转置后的翻译数据DTO
+    /// </summary>
+    public class HbtTransposedDto
+    {
+        /// <summary>
+        /// 翻译键
+        /// </summary>
+        public string TransKey { get; set; } = string.Empty;
+
+        /// <summary>
+        /// 模块名称
+        /// </summary>
+        public string ModuleName { get; set; } = string.Empty;
+
+        /// <summary>
+        /// 排序号
+        /// </summary>
+        public int OrderNum { get; set; }
+
+        /// <summary>
+        /// 状态（0正常 1停用）
+        /// </summary>
+        public int Status { get; set; }
+
+        /// <summary>
+        /// 备注
+        /// </summary>
+        public string Remark { get; set; }
+
+        /// <summary>
+        /// 创建者
+        /// </summary>
+        public string CreateBy { get; set; }
+
+        /// <summary>
+        /// 创建时间
+        /// </summary>
+        public string CreateTime { get; set; }
+
+        /// <summary>
+        /// 更新者
+        /// </summary>
+        public string UpdateBy { get; set; }
+
+        /// <summary>
+        /// 更新时间
+        /// </summary>
+        public string UpdateTime { get; set; }
+
+        /// <summary>
+        /// 各语言的翻译信息
+        /// </summary>
+        public Dictionary<string, HbtTranslationLangDto> Translations { get; set; } = new Dictionary<string, HbtTranslationLangDto>();
+    }
+
+    /// <summary>
+    /// 翻译语言DTO
+    /// </summary>
+    public class HbtTranslationLangDto
+    {
+        /// <summary>
+        /// 翻译ID
+        /// </summary>
+        public long TranslationId { get; set; }
+
+        /// <summary>
+        /// 语言代码
+        /// </summary>
+        public string LangCode { get; set; }
+
+        /// <summary>
+        /// 翻译值
+        /// </summary>
+        public string TransValue { get; set; }
+
+        /// <summary>
+        /// 状态（0正常 1停用）
+        /// </summary>
+        public int Status { get; set; }
+    }
+
+    /// <summary>
+    /// 转置查询DTO
+    /// </summary>
+    public class HbtTransposedQueryDto : HbtPagedQuery
+    {
+        /// <summary>
+        /// 翻译键
+        /// </summary>
+        [MaxLength(200, ErrorMessage = "翻译键长度不能超过200个字符")]
+        public string? TransKey { get; set; }
+
+        /// <summary>
+        /// 翻译值
+        /// </summary>
+        [MaxLength(500, ErrorMessage = "翻译值长度不能超过500个字符")]
+        public string? TransValue { get; set; }
+
+        /// <summary>
+        /// 模块名称
+        /// </summary>
+        [MaxLength(100, ErrorMessage = "模块名称长度不能超过100个字符")]
+        public string? ModuleName { get; set; }
+
+        /// <summary>
+        /// 状态（0正常 1停用）
+        /// </summary>
+        public int? Status { get; set; }
     }
 }

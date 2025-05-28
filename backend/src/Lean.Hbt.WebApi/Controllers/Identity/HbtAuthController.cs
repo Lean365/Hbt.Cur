@@ -14,6 +14,7 @@ using Lean.Hbt.Application.Dtos.Identity;
 using Lean.Hbt.Application.Services.Identity;
 using Lean.Hbt.Common.Constants;
 using Lean.Hbt.Common.Options;
+using Lean.Hbt.Domain.Entities.Identity;
 using Lean.Hbt.Domain.Entities.SignalR;
 using Lean.Hbt.Domain.IServices.Security;
 using Lean.Hbt.Domain.IServices.SignalR;
@@ -44,6 +45,8 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         private readonly IHbtRepository<HbtOnlineUser> _onlineUserRepository;
         private readonly IHbtDeviceIdGenerator _deviceIdGenerator;
         private readonly IOptions<HbtJwtOptions> _jwtOptions;
+        private readonly IHbtRepository<HbtTenant> _tenantRepository;
+        private readonly IHbtRepository<HbtUserTenant> _userTenantRepository;
 
         /// <summary>
         /// 构造函数
@@ -55,8 +58,12 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <param name="onlineUserRepository">在线用户仓库</param>
         /// <param name="deviceIdGenerator">设备ID生成器</param>
         /// <param name="jwtOptions">JWT配置</param>
-        /// <param name="localization">本地化服务</param>
         /// <param name="logger">日志服务</param>
+        /// <param name="currentUser">当前用户服务</param>
+        /// <param name="currentTenant">当前租户服务</param>
+        /// <param name="localization">本地化服务</param>
+        /// <param name="tenantRepository">租户仓库</param>
+        /// <param name="userTenantRepository">用户租户仓库</param>
         /// </summary>
         public HbtAuthController(
             IHbtLoginPolicy loginPolicy,
@@ -67,8 +74,12 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
             IHbtRepository<HbtOnlineUser> onlineUserRepository,
             IHbtDeviceIdGenerator deviceIdGenerator,
             IOptions<HbtJwtOptions> jwtOptions,
-                        IHbtLocalizationService localization,
-            IHbtLogger logger) : base(localization, logger)
+            IHbtLogger logger,
+            IHbtCurrentUser currentUser,
+            IHbtCurrentTenant currentTenant,
+            IHbtLocalizationService localization,
+            IHbtRepository<HbtTenant> tenantRepository,
+            IHbtRepository<HbtUserTenant> userTenantRepository) : base(logger, currentUser, currentTenant, localization)
         {
             _loginPolicy = loginPolicy;
             _singleSignOnService = singleSignOnService;
@@ -78,6 +89,8 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
             _onlineUserRepository = onlineUserRepository;
             _deviceIdGenerator = deviceIdGenerator;
             _jwtOptions = jwtOptions;
+            _tenantRepository = tenantRepository;
+            _userTenantRepository = userTenantRepository;
         }
 
         /// <summary>
@@ -94,12 +107,14 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
                 _logger.Info("[登录检查] 开始检查用户登录状态: {Username}", loginDto.UserName);
 
                 // 获取用户信息
-                var user = await _loginService.GetUserByUsernameAsync(loginDto.UserName);
-                if (user == null)
+                var userResult = await _loginService.GetUserByUsernameAsync(loginDto.UserName);
+                if (userResult == null)
                 {
                     _logger.Info("[登录检查] 用户不存在，允许登录");
                     return Success(new { canLogin = true, existingDeviceInfo = (string?)null });
                 }
+
+                var (user, _) = userResult.Value;
 
                 // 检查单点登录状态
                 var (canLogin, existingDeviceInfo) = await _singleSignOnService.CheckLoginAsync(
@@ -165,14 +180,40 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
                 }
 
                 // 获取用户信息
-                var user = await _loginService.GetUserByUsernameAsync(loginDto.UserName);
-                if (user == null)
+                var userResult = await _loginService.GetUserByUsernameAsync(loginDto.UserName);
+                if (userResult == null)
                 {
                     _logger.Warn("[登录] 用户不存在: {UserName}", loginDto.UserName);
                     return Ok(new HbtApiResult
                     {
                         Code = int.Parse(HbtConstants.ErrorCodes.NotFound),
                         Msg = _localization.L("User.NotFound")
+                    });
+                }
+
+                var (user, userTenants) = userResult.Value;
+
+                // 验证用户租户信息
+                var userTenant = userTenants.FirstOrDefault(x => x.TenantId == loginDto.TenantId);
+                if (userTenant == null)
+                {
+                    _logger.Warn("[登录] 用户不属于指定租户: UserId={UserId}, TenantId={TenantId}",
+                        user.Id, loginDto.TenantId);
+                    return Ok(new HbtApiResult
+                    {
+                        Code = int.Parse(HbtConstants.ErrorCodes.UserNotBelongToTenant),
+                        Msg = _localization.L("Identity.Tenant.UserNotBelong")
+                    });
+                }
+
+                if (userTenant.Status != 0)
+                {
+                    _logger.Warn("[登录] 用户在当前租户中已被禁用: UserId={UserId}, TenantId={TenantId}",
+                        user.Id, loginDto.TenantId);
+                    return Ok(new HbtApiResult
+                    {
+                        Code = int.Parse(HbtConstants.ErrorCodes.UserDisabled),
+                        Msg = _localization.L("Identity.Tenant.UserDisabled")
                     });
                 }
 
@@ -191,7 +232,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
 
                 loginDto.DeviceInfo.DeviceId = deviceId;
                 loginDto.DeviceInfo.DeviceToken = connectionId;
-                loginDto.DeviceInfo.TenantId = user.TenantId;
+                loginDto.DeviceInfo.TenantId = loginDto.TenantId;
 
                 // 验证登录信息
                 var loginResult = await _loginService.LoginAsync(loginDto);
@@ -251,14 +292,30 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// </summary>
         /// <returns>用户信息</returns>
         [HttpGet("info")]
-        [Authorize]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetUserInfo()
         {
+            _logger.Info("[用户信息] 开始获取用户信息");
+            
+            // 记录所有声明
+            var claims = HttpContext.User.Claims.ToList();
+            _logger.Info("[用户信息] 当前用户的所有声明: {@Claims}", claims.Select(c => new { c.Type, c.Value }));
+            
             var userId = HttpContext.User.FindFirst("uid")?.Value;
+            var tenantId = HttpContext.User.FindFirst("tid")?.Value;
+            
+            _logger.Info("[用户信息] 用户ID: {UserId}, 租户ID: {TenantId}", userId, tenantId);
+            
             if (string.IsNullOrEmpty(userId))
             {
                 _logger.Warn("[用户信息] 未找到用户ID");
                 return Unauthorized(new { code = HbtConstants.ErrorCodes.Unauthorized, msg = "未登录" });
+            }
+
+            if (string.IsNullOrEmpty(tenantId))
+            {
+                _logger.Warn("[用户信息] 未找到租户ID");
+                return Unauthorized(new { code = HbtConstants.ErrorCodes.Unauthorized, msg = "租户信息无效" });
             }
 
             _logger.Info("[用户信息] 开始获取用户信息: UserId={UserId}", userId);
@@ -411,9 +468,17 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         [AllowAnonymous]
         public async Task<HbtApiResult<int>> GetLockoutRemainingSecondsAsync(string username)
         {
-            _logger.Info("正在获取用户账户锁定剩余时间: {Username}", username);
-            var remainingSeconds = await _loginPolicy.GetLockoutRemainingSecondsAsync(username);
-            return HbtApiResult<int>.Success(remainingSeconds);
+            try
+            {
+                _logger.Info("正在获取用户账户锁定剩余时间: {Username}", username);
+                var remainingSeconds = await _loginPolicy.GetLockoutRemainingSecondsAsync(username);
+                return HbtApiResult<int>.Success(remainingSeconds);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error("获取账户锁定剩余时间失败: {Message}", ex.Message);
+                return HbtApiResult<int>.Error("获取账户锁定剩余时间失败");
+            }
         }
     }
 }

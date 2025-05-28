@@ -30,11 +30,16 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// 构造函数
         /// </summary>
         /// <param name="deptService">部门服务</param>
-        /// <param name="localization">本地化服务</param>
         /// <param name="logger">日志服务</param>
-        public HbtDeptController(IHbtDeptService deptService,
-                                    IHbtLocalizationService localization,
-            IHbtLogger logger) : base(localization, logger)
+        /// <param name="currentUser">当前用户服务</param>
+        /// <param name="currentTenant">当前租户服务</param>
+        /// <param name="localization">本地化服务</param>
+        public HbtDeptController(
+            IHbtDeptService deptService,
+            IHbtLogger logger,
+            IHbtCurrentUser currentUser,
+            IHbtCurrentTenant currentTenant,
+            IHbtLocalizationService localization) : base(logger, currentUser, currentTenant, localization)
         {
             _deptService = deptService;
         }
@@ -72,6 +77,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <returns>部门ID</returns>
         [HttpPost]
         [HbtPerm("identity:dept:create")]
+        [HbtLog("创建部门")]
         public async Task<IActionResult> CreateAsync([FromBody] HbtDeptCreateDto input)
         {
             var result = await _deptService.CreateAsync(input);
@@ -85,6 +91,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <returns>是否成功</returns>
         [HttpPut]
         [HbtPerm("identity:dept:update")]
+        [HbtLog("更新部门")]
         public async Task<IActionResult> UpdateAsync([FromBody] HbtDeptUpdateDto input)
         {
             var result = await _deptService.UpdateAsync(input);
@@ -98,6 +105,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <returns>是否成功</returns>
         [HttpDelete("{deptId}")]
         [HbtPerm("identity:dept:delete")]
+        [HbtLog("删除部门")]
         public async Task<IActionResult> DeleteAsync(long deptId)
         {
             var result = await _deptService.DeleteAsync(deptId);
@@ -110,6 +118,8 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <param name="deptIds">部门ID集合</param>
         /// <returns>是否成功</returns>
         [HttpDelete("batch")]
+        [HbtPerm("identity:dept:delete")]
+        [HbtLog("批量删除部门")]
         public async Task<IActionResult> BatchDeleteAsync([FromBody] long[] deptIds)
         {
             var result = await _deptService.BatchDeleteAsync(deptIds);
@@ -124,6 +134,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <returns>导入结果</returns>
         [HttpPost("import")]
         [HbtPerm("identity:dept:import")]
+        [HbtLog("导入部门数据")]
         public async Task<IActionResult> ImportAsync(IFormFile file, [FromQuery] string sheetName = "Sheet1")
         {
             if (file == null || file.Length == 0)
@@ -141,6 +152,8 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <param name="sheetName">工作表名称</param>
         /// <returns>导出的Excel文件</returns>
         [HttpPost("export")]
+        [HbtPerm("identity:dept:export")]
+        [HbtLog("导出部门数据")]
         public async Task<IActionResult> ExportAsync([FromQuery] HbtDeptQueryDto query, [FromQuery] string sheetName = "部门信息")
         {
             var (fileName, content) = await _deptService.ExportAsync(query, sheetName);
@@ -153,6 +166,8 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <param name="sheetName">工作表名称</param>
         /// <returns>Excel模板文件</returns>
         [HttpGet("template")]
+        [HbtPerm("identity:dept:export")]
+        [HbtLog("获取部门导入模板")]
         public async Task<IActionResult> GenerateTemplateAsync([FromQuery] string sheetName = "部门导入模板")
         {
             var (fileName, content) = await _deptService.GenerateTemplateAsync(sheetName);
@@ -178,6 +193,8 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <param name="status">状态</param>
         /// <returns>是否成功</returns>
         [HttpPut("{deptId}/status")]
+        [HbtPerm("identity:dept:update")]
+        [HbtLog("更新部门状态")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

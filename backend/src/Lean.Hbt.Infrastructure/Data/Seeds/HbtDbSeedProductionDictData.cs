@@ -94,7 +94,7 @@ public class HbtDbSeedProductionDictData
             var existingDictData = await _dictDataRepository.GetFirstAsync(x => x.DictType == dictData.DictType && x.DictValue == dictData.DictValue);
             if (existingDictData == null)
             {
-                dictData.TenantId = tenantId;
+                
                 dictData.CreateBy = "Hbt365";
                 dictData.CreateTime = DateTime.Now;
                 dictData.UpdateBy = "Hbt365";
@@ -104,7 +104,7 @@ public class HbtDbSeedProductionDictData
             }
             else
             {
-                dictData.TenantId = tenantId;
+                
                 existingDictData.DictLabel = dictData.DictLabel;
                 existingDictData.OrderNum = dictData.OrderNum;
                 existingDictData.Status = dictData.Status;

@@ -8,7 +8,6 @@
 //===================================================================
 
 using Lean.Hbt.Domain.Entities.Core;
-using Lean.Hbt.Common.Exceptions;
 
 namespace Lean.Hbt.Infrastructure.Data.Seeds;
 
@@ -197,12 +196,11 @@ public class HbtDbSeedTranslation
 
             if (existingTranslation == null)
             {
-                translation.TenantId = tenantId;
                 translation.CreateBy = "Hbt365";
                 translation.CreateTime = DateTime.Now;
                 translation.UpdateBy = "Hbt365";
                 translation.UpdateTime = DateTime.Now;
-                
+
                 await _translationRepository.CreateAsync(translation);
                 insertCount++;
                 _logger.Info($"[创建] 翻译 '{translation.TransKey}' ({translation.LangCode}) 创建成功");
@@ -214,8 +212,6 @@ public class HbtDbSeedTranslation
                 existingTranslation.TransValue = translation.TransValue;
                 existingTranslation.ModuleName = translation.ModuleName;
                 existingTranslation.Status = 0;
-                
-                existingTranslation.TenantId = tenantId;
                 existingTranslation.UpdateBy = "Hbt365";
                 existingTranslation.UpdateTime = DateTime.Now;
 

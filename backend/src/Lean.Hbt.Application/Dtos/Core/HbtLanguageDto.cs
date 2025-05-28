@@ -142,6 +142,11 @@ namespace Lean.Hbt.Application.Dtos.Core
         /// 状态（0正常 1停用）
         /// </summary>
         public int? Status { get; set; }
+
+        /// <summary>
+        /// 语言内置（0否 1是）
+        /// </summary>
+        public int? IsBuiltin { get; set; }
     }
 
     /// <summary>
@@ -358,5 +363,26 @@ namespace Lean.Hbt.Application.Dtos.Core
         /// </summary>
         [Required(ErrorMessage = "状态不能为空")]
         public int Status { get; set; }
+    }
+
+    /// <summary>
+    /// 语言选项DTO
+    /// </summary>
+    public class HbtLanguageOptionDto
+    {
+        /// <summary>
+        /// 语言代码
+        /// </summary>
+        public string LangCode { get; set; } = string.Empty;
+
+        /// <summary>
+        /// 语言名称
+        /// </summary>
+        public string LangName { get; set; } = string.Empty;
+
+        /// <summary>
+        /// 语言图标    
+        /// </summary>
+        public string LangIcon { get; set; } = string.Empty;
     }
 } 

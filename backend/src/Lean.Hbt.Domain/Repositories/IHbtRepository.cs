@@ -166,31 +166,40 @@ namespace Lean.Hbt.Domain.Repositories
         /// <summary>
         /// 获取用户角色列表
         /// </summary>
-        /// <param name="userId">用户ID</param>
-        /// <returns>角色列表</returns>
         Task<List<string>> GetUserRolesAsync(long userId);
-
-        /// <summary>
-        /// 获取用户角色列表(带租户过滤)
-        /// </summary>
-        /// <param name="userId">用户ID</param>
-        /// <param name="tenantId">租户ID</param>
-        /// <returns>角色列表</returns>
-        Task<List<string>> GetUserRolesAsync(long userId, long tenantId);
 
         /// <summary>
         /// 获取用户权限列表
         /// </summary>
-        /// <param name="userId">用户ID</param>
-        /// <returns>权限列表</returns>
         Task<List<string>> GetUserPermissionsAsync(long userId);
 
         /// <summary>
-        /// 获取用户权限列表(带租户过滤)
+        /// 获取用户租户列表
         /// </summary>
         /// <param name="userId">用户ID</param>
-        /// <param name="tenantId">租户ID</param>
-        /// <returns>权限列表</returns>
-        Task<List<string>> GetUserPermissionsAsync(long userId, long tenantId);
+        /// <returns>租户ID列表</returns>
+        Task<List<long>> GetUserTenantsAsync(long userId);
+
+        /// <summary>
+        /// 获取用户岗位列表
+        /// </summary>
+        /// <param name="userId">用户ID</param>
+        /// <returns>岗位ID列表</returns>
+        Task<List<long>> GetUserPostsAsync(long userId);
+
+        /// <summary>
+        /// 获取用户部门列表
+        /// </summary>
+        /// <param name="userId">用户ID</param>
+        /// <returns>部门ID列表</returns>
+        Task<List<long>> GetUserDeptsAsync(long userId);
+
+        /// <summary>
+        /// 获取角色菜单列表
+        /// </summary>
+        /// <param name="roleId">角色ID</param>
+        /// <returns>菜单ID列表</returns>
+        Task<List<long>> GetRoleMenusAsync(long roleId);
+
     }
 }

@@ -8,7 +8,6 @@
 //===================================================================
 
 using Lean.Hbt.Domain.Entities.Core;
-using Lean.Hbt.Domain.IServices.Extensions;
 
 namespace Lean.Hbt.Infrastructure.Data.Seeds;
 
@@ -47,7 +46,7 @@ public class HbtDbSeedIndDictType
                 DictType = "sys_industry_type",
                 OrderNum = 1,
                 Status = 0,
-                
+
                 Remark = "国民经济行业分类字典",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -61,7 +60,7 @@ public class HbtDbSeedIndDictType
             var existingDictType = await _dictTypeRepository.GetFirstAsync(d => d.DictType == dictType.DictType);
             if (existingDictType == null)
             {
-                dictType.TenantId = tenantId;
+
                 dictType.CreateBy = "Hbt365";
                 dictType.CreateTime = DateTime.Now;
                 dictType.UpdateBy = "Hbt365";
@@ -77,7 +76,7 @@ public class HbtDbSeedIndDictType
                 existingDictType.IsBuiltin = dictType.IsBuiltin;
                 existingDictType.OrderNum = dictType.OrderNum;
                 existingDictType.Status = dictType.Status;
-                existingDictType.TenantId = tenantId;
+
                 existingDictType.Remark = dictType.Remark;
                 existingDictType.CreateBy = dictType.CreateBy;
                 existingDictType.CreateTime = dictType.CreateTime;
@@ -92,4 +91,4 @@ public class HbtDbSeedIndDictType
 
         return (insertCount, updateCount);
     }
-} 
+}

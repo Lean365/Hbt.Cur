@@ -92,16 +92,6 @@ namespace Lean.Hbt.Domain.Entities.Routine
         /// </summary>
         [SugarColumn(ColumnName = "inspection_expiry_date", ColumnDescription = "年检到期日期", IsNullable = true, ColumnDataType = "datetime", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
         public DateTime? InspectionExpiryDate { get; set; }
-        /// <summary>
-        /// 租户ID
-        /// </summary>
-        [SugarColumn(ColumnName = "tenant_id", ColumnDescription = "租户ID", ColumnDataType = "bigint", IsNullable = false)]
-        public long TenantId { get; set; }
 
-        /// <summary>
-        /// 租户
-        /// </summary>
-        [Navigate(NavigateType.OneToOne, nameof(TenantId))]
-        public HbtTenant? Tenant { get; set; }
     }
 }

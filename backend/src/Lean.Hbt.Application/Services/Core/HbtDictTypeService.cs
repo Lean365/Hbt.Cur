@@ -35,13 +35,21 @@ namespace Lean.Hbt.Application.Services.Core
         /// <summary>
         /// 构造函数
         /// </summary>
+        /// <param name="dictTypeRepository">字典类型仓储</param>
+        /// <param name="dictDataRepository">字典数据仓储</param>
+        /// <param name="logger">日志服务</param>
+        /// <param name="httpContextAccessor">HTTP上下文访问器</param>
+        /// <param name="currentUser">当前用户服务</param>
+        /// <param name="currentTenant">当前租户服务</param>
+        /// <param name="localization">本地化服务</param>
         public HbtDictTypeService(
             IHbtRepository<HbtDictType> dictTypeRepository,
             IHbtRepository<HbtDictData> dictDataRepository,
             IHbtLogger logger,
             IHttpContextAccessor httpContextAccessor,
             IHbtCurrentUser currentUser,
-            IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
+        IHbtCurrentTenant currentTenant,
+        IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, currentTenant, localization)
         {
             _dictTypeRepository = dictTypeRepository ?? throw new ArgumentNullException(nameof(dictTypeRepository));
             _dictDataRepository = dictDataRepository ?? throw new ArgumentNullException(nameof(dictDataRepository));

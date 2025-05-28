@@ -302,7 +302,6 @@ public class HbtDbSeedRole
             var existingRole = await _roleRepository.GetFirstAsync(r => r.RoleKey == role.RoleKey);
             if (existingRole == null)
             {
-                role.TenantId = systemTenantId;
                 role.CreateBy = "Hbt365";
                 role.CreateTime = DateTime.Now;
                 role.UpdateBy = "Hbt365";
@@ -316,7 +315,6 @@ public class HbtDbSeedRole
                 existingRole.RoleName = role.RoleName;
                 existingRole.OrderNum = role.OrderNum;
                 existingRole.Status = role.Status;
-                existingRole.TenantId = systemTenantId;
                 existingRole.Remark = role.Remark;
                 existingRole.UpdateBy = "Hbt365";
                 existingRole.UpdateTime = DateTime.Now;

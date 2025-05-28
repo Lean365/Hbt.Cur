@@ -29,11 +29,5 @@ namespace Lean.Hbt.Domain.IServices.Extensions
         /// 重新加载翻译数据
         /// </summary>
         Task ReloadAsync();
-
-        /// <summary>
-        /// 获取支持的语言列表
-        /// </summary>
-        /// <returns>支持的语言代码列表</returns>
-        Task<IEnumerable<string>> GetSupportedLanguagesAsync();
     }
 } 

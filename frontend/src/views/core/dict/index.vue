@@ -12,6 +12,7 @@
 
       <!-- 查询表单 -->
       <hbt-query
+        v-model:show="showSearch"
         :loading="dictTypeLoading"
         :query-fields="queryFields"
         @search="handleQuery"
@@ -40,7 +41,7 @@
         @export="handleExportDictType"
         @refresh="fetchDictTypeList"
         @column-setting="handleColumnSetting"
-        @toggle-search="toggleSearch"
+        @toggle-search="handleSearchClick"
         @toggle-fullscreen="toggleFullscreen"
       />
 
@@ -165,7 +166,7 @@ import DictData from './components/DictData.vue'
 const { t } = useI18n()
 
 // 查询区域显示状态
-const showSearch = ref(true)
+const showSearch = ref(false)
 
 // === 字典类型状态定义 ===
 const dictTypeLoading = ref(false)
@@ -388,19 +389,22 @@ const handleColumnSetting = () => {
   columnSettingVisible.value = true
 }
 
-// 切换搜索
-const toggleSearch = () => {
-  showSearch.value = !showSearch.value
+// 切换搜索显示
+const toggleSearch = (visible: boolean) => {
+  showSearch.value = visible
+  if (!visible) {
+    handleResetDictType()
+  }
+}
+
+// 监听搜索按钮点击
+const handleSearchClick = () => {
+  toggleSearch(!showSearch.value)
 }
 
 // 切换全屏
-const toggleFullscreen = () => {
-  const element = document.documentElement
-  if (document.fullscreenElement) {
-    document.exitFullscreen()
-  } else {
-    element.requestFullscreen()
-  }
+const toggleFullscreen = (isFullscreen: boolean) => {
+  console.log('切换全屏状态:', isFullscreen)
 }
 
 // === 字典类型方法定义 ===

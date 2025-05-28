@@ -25,13 +25,17 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// <summary>
         /// 构造函数
         /// <param name="workflowTaskService">工作流任务服务</param>
+        /// <param name="currentUser">当前用户服务</param>
+        /// <param name="currentTenant">当前租户服务</param>
         /// <param name="localization">本地化服务</param>
         /// <param name="logger">日志服务</param>
         /// </summary>
         public HbtWorkflowTaskController(
             IHbtWorkflowTaskService workflowTaskService,
-                        IHbtLocalizationService localization,
-            IHbtLogger logger) : base(localization, logger)
+            IHbtCurrentUser currentUser,
+            IHbtCurrentTenant currentTenant,
+            IHbtLocalizationService localization,
+            IHbtLogger logger) : base(logger, currentUser, currentTenant, localization)
         {
             _workflowTaskService = workflowTaskService;
         }

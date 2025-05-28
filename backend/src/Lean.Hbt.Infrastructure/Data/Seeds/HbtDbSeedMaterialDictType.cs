@@ -8,7 +8,6 @@
 //===================================================================
 
 using Lean.Hbt.Domain.Entities.Core;
-using Lean.Hbt.Domain.IServices.Extensions;
 
 namespace Lean.Hbt.Infrastructure.Data.Seeds;
 
@@ -47,7 +46,7 @@ public class HbtDbSeedMaterialDictType
                 DictType = "sys_material_type",
                 OrderNum = 1,
                 Status = 0,
-                
+
                 Remark = "物料类型字典",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -60,7 +59,7 @@ public class HbtDbSeedMaterialDictType
                 DictType = "sys_material_group",
                 OrderNum = 2,
                 Status = 0,
-                
+
                 Remark = "物料组字典",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -73,7 +72,7 @@ public class HbtDbSeedMaterialDictType
                 DictType = "sys_material_category",
                 OrderNum = 3,
                 Status = 0,
-                
+
                 Remark = "物料分类字典",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -86,7 +85,7 @@ public class HbtDbSeedMaterialDictType
                 DictType = "sys_material_status",
                 OrderNum = 4,
                 Status = 0,
-                
+
                 Remark = "物料状态字典",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -99,7 +98,7 @@ public class HbtDbSeedMaterialDictType
                 DictType = "sys_material_source",
                 OrderNum = 5,
                 Status = 0,
-                
+
                 Remark = "物料来源字典",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -112,7 +111,7 @@ public class HbtDbSeedMaterialDictType
                 DictType = "sys_material_valuation",
                 OrderNum = 6,
                 Status = 0,
-                
+
                 Remark = "物料计价方式字典",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -125,7 +124,7 @@ public class HbtDbSeedMaterialDictType
                 DictType = "sys_material_batch",
                 OrderNum = 7,
                 Status = 0,
-                
+
                 Remark = "物料批次管理字典",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -138,7 +137,7 @@ public class HbtDbSeedMaterialDictType
                 DictType = "sys_material_serial",
                 OrderNum = 8,
                 Status = 0,
-                
+
                 Remark = "物料序列号管理字典",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -151,7 +150,7 @@ public class HbtDbSeedMaterialDictType
                 DictType = "sys_material_stock",
                 OrderNum = 9,
                 Status = 0,
-                
+
                 Remark = "物料库存管理字典",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -164,7 +163,7 @@ public class HbtDbSeedMaterialDictType
                 DictType = "sys_material_cost",
                 OrderNum = 10,
                 Status = 0,
-                
+
                 Remark = "物料成本核算字典",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
@@ -178,7 +177,7 @@ public class HbtDbSeedMaterialDictType
             var existingDictType = await _dictTypeRepository.GetFirstAsync(d => d.DictType == dictType.DictType);
             if (existingDictType == null)
             {
-                dictType.TenantId = tenantId;
+
                 dictType.CreateBy = "Hbt365";
                 dictType.CreateTime = DateTime.Now;
                 dictType.UpdateBy = "Hbt365";
@@ -194,7 +193,6 @@ public class HbtDbSeedMaterialDictType
                 existingDictType.IsBuiltin = dictType.IsBuiltin;
                 existingDictType.OrderNum = dictType.OrderNum;
                 existingDictType.Status = dictType.Status;
-                existingDictType.TenantId = tenantId;
                 existingDictType.Remark = dictType.Remark;
                 existingDictType.CreateBy = dictType.CreateBy;
                 existingDictType.CreateTime = dictType.CreateTime;

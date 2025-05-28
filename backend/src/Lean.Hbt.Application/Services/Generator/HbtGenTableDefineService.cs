@@ -9,18 +9,8 @@
 // 描述   : 代码生成表定义服务实现
 //===================================================================
 
-using Lean.Hbt.Application.Dtos.Generator;
-using Lean.Hbt.Common.Models;
-using Lean.Hbt.Domain.Entities.Generator;
-using Lean.Hbt.Domain.Repositories;
-using Lean.Hbt.Domain.Utils;
 using Microsoft.AspNetCore.Http;
-using SqlSugar;
-using System.Linq.Expressions;
-using System.Text;
 using Scriban;
-using Lean.Hbt.Domain.IServices.Extensions;
-using Lean.Hbt.Common.Exceptions;
 
 namespace Lean.Hbt.Application.Services.Generator;
 
@@ -36,14 +26,22 @@ public class HbtGenTableDefineService : HbtBaseService, IHbtGenTableDefineServic
     /// <summary>
     /// 构造函数
     /// </summary>
+    /// <param name="tableDefineRepository">表定义仓储</param>
+    /// <param name="columnDefineRepository">列定义仓储</param>
+    /// <param name="logger">日志服务</param>
+    /// <param name="httpContextAccessor">HTTP上下文访问器</param>
+    /// <param name="currentUser">当前用户服务</param>
+    /// <param name="currentTenant">当前租户服务</param>
+    /// <param name="localization">本地化服务</param>
     public HbtGenTableDefineService(
         IHbtRepository<HbtGenTableDefine> tableDefineRepository,
         IHbtRepository<HbtGenColumnDefine> columnDefineRepository,
         IHbtLogger logger,
         IHttpContextAccessor httpContextAccessor,
         IHbtCurrentUser currentUser,
+        IHbtCurrentTenant currentTenant,
         IHbtLocalizationService localization,
-        ISqlSugarClient db) : base(logger, httpContextAccessor, currentUser, localization)
+        ISqlSugarClient db) : base(logger, httpContextAccessor, currentUser, currentTenant, localization)
     {
         _tableDefineRepository = tableDefineRepository ?? throw new ArgumentNullException(nameof(tableDefineRepository));
         _columnDefineRepository = columnDefineRepository ?? throw new ArgumentNullException(nameof(columnDefineRepository));
@@ -64,7 +62,7 @@ public class HbtGenTableDefineService : HbtBaseService, IHbtGenTableDefineServic
             return null;
 
         var dto = table.Adapt<HbtGenTableDefineDto>();
-        
+
         // 获取列定义
         var columns = await _columnDefineRepository.GetListAsync(x => x.TableId == id);
         dto.Columns = columns.Adapt<List<HbtGenColumnDefineDto>>();
@@ -234,41 +232,15 @@ public class HbtGenTableDefineService : HbtBaseService, IHbtGenTableDefineServic
             DatabaseName = input.DatabaseName,
             TableName = input.TableName,
             TableComment = input.TableComment,
-            ClassName = input.ClassName,
-            Namespace = input.Namespace,
-            BaseNamespace = input.BaseNamespace,
-            CsharpTypeName = input.CsharpTypeName,
-            ParentTableName = input.ParentTableName,
-            ParentTableFkName = input.ParentTableFkName,
-            TemplateType = input.TemplateType,
-            ModuleName = input.ModuleName,
-            BusinessName = input.BusinessName,
-            FunctionName = input.FunctionName,
             Author = input.Author,
-            GenMode = input.GenMode,
-            GenPath = input.GenPath,
-            Options = input.Options,
-            Fields = input.Columns.Select(c => new HbtGenColumnDefine
+            Columns = input.Columns.Select(c => new HbtGenColumnDefine
             {
                 ColumnName = c.ColumnName,
                 ColumnComment = c.ColumnComment,
                 DbColumnType = c.DbColumnType,
-                CsharpType = c.CsharpType,
-                CsharpColumn = c.CsharpColumn,
-                CsharpLength = Convert.ToInt32(c.CsharpLength),
-                CsharpDecimalDigits = Convert.ToInt32(c.CsharpDecimalDigits),
                 IsIncrement = Convert.ToInt32(c.IsIncrement),
                 IsPrimaryKey = Convert.ToInt32(c.IsPrimaryKey),
                 IsRequired = Convert.ToInt32(c.IsRequired),
-                IsInsert = Convert.ToInt32(c.IsInsert),
-                IsEdit = Convert.ToInt32(c.IsEdit),
-                IsList = Convert.ToInt32(c.IsList),
-                IsQuery = Convert.ToInt32(c.IsQuery),
-                QueryType = c.QueryType,
-                IsSort = Convert.ToInt32(c.IsSort),
-                IsExport = Convert.ToInt32(c.IsExport),
-                DisplayType = c.DisplayType,
-                DictType = c.DictType,
                 OrderNum = Convert.ToInt32(c.OrderNum)
             }).ToList()
         };

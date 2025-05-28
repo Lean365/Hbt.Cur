@@ -16,9 +16,14 @@ namespace Lean.Hbt.Domain.Entities.Core
     /// 翻译实体
     /// </summary>
     [SugarTable("hbt_core_translation", "翻译表")]
-    [SugarIndex("ix_tenant_translation", nameof(TenantId), OrderByType.Asc)]
     public class HbtTranslation : HbtBaseEntity
     {
+        /// <summary>
+        /// 模块名称
+        /// </summary>
+        [SugarColumn(ColumnName = "module_name", ColumnDescription = "模块名称", Length = 100, ColumnDataType = "nvarchar", IsNullable = false)]
+        public string ModuleName { get; set; } = string.Empty;
+
         /// <summary>
         /// 语言代码
         /// </summary>
@@ -36,36 +41,18 @@ namespace Lean.Hbt.Domain.Entities.Core
         /// </summary>
         [SugarColumn(ColumnName = "trans_value", ColumnDescription = "翻译值", Length = -1, ColumnDataType = "nvarchar", IsNullable = false)]
         public string TransValue { get; set; } = string.Empty;
-
-        /// <summary>
-        /// 模块名称
-        /// </summary>
-        [SugarColumn(ColumnName = "module_name", ColumnDescription = "模块名称", Length = 100, ColumnDataType = "nvarchar", IsNullable = false)]
-        public string ModuleName { get; set; } = string.Empty;
-
-        /// <summary>
-        /// 排序号
-        /// </summary>
-        [SugarColumn(ColumnName = "order_num", ColumnDescription = "排序号", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
-        public int OrderNum { get; set; } = 0;
-
+        
         /// <summary>
         /// 状态（0正常 1停用）
         /// </summary>
         [SugarColumn(ColumnName = "status", ColumnDescription = "状态", ColumnDataType = "int", IsNullable = false)]
         public int Status { get; set; } = 0;
-
+                
         /// <summary>
-        /// 租户ID
+        /// 排序号
         /// </summary>
-        [SugarColumn(ColumnName = "tenant_id", ColumnDescription = "租户ID", ColumnDataType = "bigint", IsNullable = false)]
-        public long TenantId { get; set; }
-
-        /// <summary>
-        /// 租户导航属性
-        /// </summary>
-        [Navigate(NavigateType.OneToOne, nameof(TenantId))]
-        public HbtTenant? Tenant { get; set; }
+        [SugarColumn(ColumnName = "order_num", ColumnDescription = "排序号", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
+        public int OrderNum { get; set; } = 0;
 
 
     }

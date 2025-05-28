@@ -8,7 +8,6 @@
 //===================================================================
 
 using Lean.Hbt.Domain.Entities.Core;
-using Lean.Hbt.Domain.IServices.Extensions;
 
 namespace Lean.Hbt.Infrastructure.Data.Seeds;
 
@@ -135,8 +134,7 @@ public class HbtDbSeedConfig
                 config.CreateTime = DateTime.Now;
                 config.UpdateBy = "Hbt365";
                 config.UpdateTime = DateTime.Now;
-                config.TenantId = tenantId;
-                
+
                 await _configRepository.CreateAsync(config);
                 insertCount++;
                 _logger.Info($"[创建] 配置 '{config.ConfigName}' 创建成功");
@@ -149,7 +147,6 @@ public class HbtDbSeedConfig
                 existingConfig.IsBuiltin = config.IsBuiltin;
                 existingConfig.OrderNum = config.OrderNum;
                 existingConfig.Status = config.Status;
-                existingConfig.TenantId = tenantId;
                 existingConfig.Remark = config.Remark;
                 existingConfig.UpdateBy = "Hbt365";
                 existingConfig.UpdateTime = DateTime.Now;

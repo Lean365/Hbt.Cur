@@ -250,7 +250,7 @@ const handleFullscreenChange = () => {
 }
 
 // === 搜索栏显示状态 ===
-const searchVisible = ref(true)
+const searchVisible = ref(false)
 
 const toggleSearch = () => {
   searchVisible.value = !searchVisible.value

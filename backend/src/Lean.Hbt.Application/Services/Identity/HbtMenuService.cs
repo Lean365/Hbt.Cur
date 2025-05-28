@@ -57,7 +57,8 @@ namespace Lean.Hbt.Application.Services.Identity
             IHbtRepository<HbtUser> userRepository,
             IHttpContextAccessor httpContextAccessor,
             IHbtCurrentUser currentUser,
-            IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
+        IHbtCurrentTenant currentTenant,
+        IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, currentTenant, localization)
         {
             _menuRepository = menuRepository;
             _roleMenuRepository = roleMenuRepository;

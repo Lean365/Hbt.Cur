@@ -193,4 +193,42 @@ export function getHbtTransposedData(query: HbtTranslationQuery) {
     method: 'get',
     params: query
   })
+}
+
+/**
+ * 获取转置后的翻译详情
+ * @param transKey 翻译键
+ * @returns 转置后的翻译详情
+ */
+export function getHbtTransposedDetail(transKey: string) {
+  return request<HbtApiResponse<HbtTransposedData>>({
+    url: `/api/HbtTranslation/transposed/${transKey}`,
+    method: 'get'
+  })
+}
+
+/**
+ * 创建转置翻译数据
+ * @param data 转置数据创建对象
+ * @returns 是否成功
+ */
+export function createHbtTransposed(data: HbtTransposedData) {
+  return request<HbtApiResponse<boolean>>({
+    url: '/api/HbtTranslation/transposed',
+    method: 'post',
+    data
+  })
+}
+
+/**
+ * 更新转置翻译数据
+ * @param data 转置数据更新对象
+ * @returns 是否成功
+ */
+export function updateHbtTransposed(data: HbtTransposedData) {
+  return request<HbtApiResponse<boolean>>({
+    url: '/api/HbtTranslation/transposed',
+    method: 'put',
+    data
+  })
 } 

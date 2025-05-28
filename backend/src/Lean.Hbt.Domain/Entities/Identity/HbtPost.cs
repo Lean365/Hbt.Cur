@@ -16,7 +16,6 @@ namespace Lean.Hbt.Domain.Entities.Identity
     /// </summary>
     [SugarTable("hbt_identity_post", "岗位表")]
     [SugarIndex("ix_post_code", nameof(PostCode), OrderByType.Asc)]
-    [SugarIndex("ix_tenant_post", nameof(TenantId), OrderByType.Asc)]
     public class HbtPost : HbtBaseEntity
     {
         /// <summary>
@@ -54,18 +53,6 @@ namespace Lean.Hbt.Domain.Entities.Identity
         /// </summary>
         [SugarColumn(ColumnName = "status", ColumnDescription = "岗位状态", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
         public int Status { get; set; } = 0;
-
-        /// <summary>
-        /// 租户ID
-        /// </summary>
-        [SugarColumn(ColumnName = "tenant_id", ColumnDescription = "租户ID", ColumnDataType = "bigint", IsNullable = false)]
-        public long TenantId { get; set; }
-
-        /// <summary>
-        /// 租户
-        /// </summary>
-        [Navigate(NavigateType.OneToOne, nameof(TenantId))]
-        public HbtTenant? Tenant { get; set; }
 
         /// <summary>
         /// 用户岗位关联

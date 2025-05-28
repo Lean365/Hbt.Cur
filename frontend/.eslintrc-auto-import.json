@@ -336,6 +336,7 @@
     "SupportedLocale": true,
     "createRef": true,
     "Slot": true,
-    "Slots": true
+    "Slots": true,
+    "useTranslationStore": true
   }
 }

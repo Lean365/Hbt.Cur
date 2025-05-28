@@ -640,7 +640,7 @@ public class HbtDbSeedPost
             if (existingPost == null)
             {
                 // 统一处理租户和审计字段
-                post.TenantId = tenantId;
+
                 post.CreateBy = "Hbt365";
                 post.CreateTime = DateTime.Now;
                 post.UpdateBy = "Hbt365";
@@ -656,9 +656,9 @@ public class HbtDbSeedPost
                 existingPost.OrderNum = post.OrderNum;
                 existingPost.Status = post.Status;
                 existingPost.Remark = post.Remark;
-                
+
                 // 统一处理租户和审计字段
-                existingPost.TenantId = tenantId;
+
                 existingPost.UpdateBy = "Hbt365";
                 existingPost.UpdateTime = DateTime.Now;
 

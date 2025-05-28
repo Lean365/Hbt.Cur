@@ -16,6 +16,7 @@
   "dependencies": {
     "@ant-design/icons-vue": "^7.0.1",
     "@ckpack/vue-color": "^1.6.0",
+    "@cospired/i18n-iso-languages": "^4.2.0",
     "@microsoft/signalr": "^8.0.7",
     "@types/highlight.js": "^10.1.0",
     "@vueuse/components": "^13.1.0",

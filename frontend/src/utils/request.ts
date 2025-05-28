@@ -2,6 +2,7 @@ import axios from 'axios'
 import type { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'
 import { getToken } from '@/utils/auth'
 import { useUserStore } from '@/stores/user'
+import { message } from 'ant-design-vue'
 
 // 创建axios实例
 const service: AxiosInstance = axios.create({
@@ -33,69 +34,45 @@ export function getCsrfToken(): string | null {
 
 // 请求拦截器
 service.interceptors.request.use(
-  (config) => {
+  config => {
     console.log('=== 请求拦截器开始 ===')
-    console.log('请求配置:', {
-      url: config.url,
-      method: config.method,
-      params: config.params,
-      data: config.data,
-      headers: config.headers
-    })
+    console.log('请求配置:', config)
 
-    // 获取 CSRF Token
+    // 获取CSRF令牌
     const csrfToken = getCsrfToken()
     if (csrfToken) {
       console.log('[CSRF] 从cookie中获取到完整令牌:', csrfToken)
       config.headers['X-CSRF-TOKEN'] = csrfToken
-      console.log('CSRF Token: 存在')
+      console.log('[CSRF] 从cookie中设置CSRF令牌')
     }
 
-    // 获取认证 Token
+    // 获取Token
     const token = getToken()
     if (token) {
+      console.log('[Auth] 获取到Token:', token)
       config.headers['Authorization'] = `Bearer ${token}`
-      console.log('Authorization Token: 存在')
+      console.log('[Request] 设置Authorization Token')
     }
 
-    // 处理文件上传
-    if (config.data instanceof FormData) {
-      console.log('[Request] 文件上传请求:', {
-        url: config.url,
-        method: config.method,
-        headers: config.headers,
-        data: config.data
-      })
-
-      // 验证 FormData 内容
-      console.log('[Request] FormData 内容详情:')
-      for (const [key, value] of config.data.entries()) {
-        console.log(`- ${key}:`, value)
-        if (value instanceof File) {
-          console.log(`  文件详情:`, {
-            name: value.name,
-            size: value.size,
-            type: value.type,
-            lastModified: value.lastModified
-          })
-        }
-      }
-
-      // 设置文件上传超时时间
-      config.timeout = 60000
-
-      // 删除 Content-Type 头，让浏览器自动设置正确的 boundary
-      delete config.headers['Content-Type']
-
-      // 添加 X-Requested-With 头
-      config.headers['X-Requested-With'] = 'XMLHttpRequest'
+    // 获取租户ID
+    const userStore = useUserStore()
+    const tenantId = userStore.getCurrentTenantId()
+    if (tenantId > 0) {
+      config.headers['X-Tenant-Id'] = tenantId.toString()
+      console.log('[Request] 设置租户ID:', tenantId)
     }
 
+    // 确保请求头中包含必要的字段
+    config.headers['Accept'] = 'application/json, text/plain, */*'
+    config.headers['Cache-Control'] = 'no-cache'
+    config.headers['Pragma'] = 'no-cache'
+
+    console.log('[Request] 最终请求头:', config.headers)
     console.log('=== 请求拦截器结束 ===')
     return config
   },
-  (error) => {
-    console.error('请求拦截器错误:', error)
+  error => {
+    console.error('[Request] 请求拦截器错误:', error)
     return Promise.reject(error)
   }
 )

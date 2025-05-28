@@ -113,6 +113,27 @@ namespace Lean.Hbt.Application.Services.Core
         /// </summary>
         /// <param name="query">查询条件</param>
         /// <returns>转置后的翻译数据,包含分页信息</returns>
-        Task<HbtPagedResult<Dictionary<string, string>>> GetTransposedDataAsync(HbtTranslationQueryDto query);
+        Task<HbtPagedResult<HbtTransposedDto>> GetTransposedDataAsync(HbtTransposedQueryDto query);
+
+        /// <summary>
+        /// 获取转置后的翻译详情
+        /// </summary>
+        /// <param name="transKey">翻译键</param>
+        /// <returns>转置后的翻译详情</returns>
+        Task<HbtTransposedDto> GetTransposedDetailAsync(string transKey);
+
+        /// <summary>
+        /// 创建转置翻译数据
+        /// </summary>
+        /// <param name="input">转置数据创建对象</param>
+        /// <returns>是否成功</returns>
+        Task<bool> CreateTransposedAsync(HbtTransposedDto input);
+
+        /// <summary>
+        /// 更新转置翻译数据
+        /// </summary>
+        /// <param name="input">转置数据更新对象</param>
+        /// <returns>是否成功</returns>
+        Task<bool> UpdateTransposedAsync(HbtTransposedDto input);
     }
 } 

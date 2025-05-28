@@ -80,7 +80,7 @@ export const getConnectionHeaders = async (): Promise<Record<string, string>> =>
     'X-Resolution': deviceInfo.resolution || '',
     'X-Location': deviceInfo.location || '',
     'X-Language': navigator.language || '',
-    'X-Timezone': deviceInfo.timeZone || '',
+    'X-Timezone': deviceInfo.environment?.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone || '',
     'X-User-Agent': navigator.userAgent,
     'X-Device-Fingerprint': deviceInfo.deviceFingerprint || ''
   }
@@ -96,24 +96,46 @@ export const createHubConnection = async (): Promise<HubConnection> => {
             throw new Error('无法获取设备ID');
         }
 
+        const token = await getToken();
+        if (!token) {
+            throw new Error('未找到访问令牌');
+        }
+
+        // 获取 CSRF 令牌
+        const csrfToken = document.cookie.split(';')
+            .find(cookie => cookie.trim().startsWith('XSRF-TOKEN='))
+            ?.split('=')[1];
+        
+        if (csrfToken) {
+            console.log('[SignalR] 获取到 CSRF 令牌');
+        }
+
         const connection = new HubConnectionBuilder()
-            .withUrl(`${signalRConfig.baseUrl}?deviceInfo=${JSON.stringify(deviceInfo)}`, {
-                accessTokenFactory: async () => {
-                    const token = await getToken();
-                    if (!token) {
-                        throw new Error('未找到访问令牌');
-                    }
-                    return token;
-                },
+            .withUrl(`${signalRConfig.baseUrl}`, {
                 skipNegotiation: false,
                 transport: signalRConfig.transport,
                 withCredentials: true,
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest',
-                    'Access-Control-Allow-Origin': '*'
+                    'Content-Type': 'application/json',
+                    'X-Device-Info': encodeURIComponent(JSON.stringify(deviceInfo)),
+                    'Authorization': `Bearer ${token}`,
+                    'X-CSRF-TOKEN': csrfToken ? decodeURIComponent(csrfToken) : ''
                 }
             })
-            .withAutomaticReconnect(retryPolicy)
+            .withAutomaticReconnect({
+                nextRetryDelayInMilliseconds: (retryContext) => {
+                    if (retryContext.previousRetryCount >= retryPolicy.maxRetries) {
+                        return null;
+                    }
+                    const delay = Math.min(
+                        retryPolicy.baseDelay * Math.pow(2, retryContext.previousRetryCount),
+                        retryPolicy.maxDelay
+                    );
+                    console.log(`[SignalR] 第 ${retryContext.previousRetryCount + 1} 次重试,延迟 ${delay}ms`);
+                    return delay;
+                }
+            })
             .configureLogging(customLogger)
             .build();
 

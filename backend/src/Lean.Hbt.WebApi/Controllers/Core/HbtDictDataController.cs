@@ -33,10 +33,13 @@ namespace Lean.Hbt.WebApi.Controllers.Core
         /// <param name="dictDataService">字典数据服务</param>
         /// <param name="localization">本地化服务</param>
         /// <param name="logger">日志服务</param>
+        /// <param name="currentUser">当前用户服务</param>
+        /// <param name="currentTenant">当前租户服务</param>
         public HbtDictDataController(IHbtDictDataService dictDataService,
-        
-        IHbtLocalizationService localization,
-        IHbtLogger logger) : base(localization, logger)
+            IHbtCurrentUser currentUser,
+            IHbtCurrentTenant currentTenant,
+            IHbtLocalizationService localization,
+            IHbtLogger logger) : base(logger, currentUser, currentTenant, localization)
         {
             _dictDataService = dictDataService;
         }

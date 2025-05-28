@@ -26,23 +26,25 @@ namespace Lean.Hbt.WebApi.Controllers.Routine
     public class HbtMailController : HbtBaseController
     {
         private readonly IHbtMailService _mailService;
-        private readonly IHbtCurrentUser _currentUser;
+
 
         /// <summary>
         /// 构造函数
         /// </summary>
         /// <param name="mailService">邮件服务</param>
-        /// <param name="localization">本地化服务</param>
-        /// <param name="currentUser">当前用户服务</param>
         /// <param name="logger">日志服务</param>
+        /// <param name="currentUser">当前用户服务</param>
+        /// <param name="currentTenant">当前租户服务</param>
+        /// <param name="localization">本地化服务</param>
         public HbtMailController(
-            IHbtCurrentUser currentUser,
             IHbtMailService mailService,
-                        IHbtLocalizationService localization,
-            IHbtLogger logger) : base(localization, logger)
+            IHbtLogger logger,
+            IHbtCurrentUser currentUser,
+            IHbtCurrentTenant currentTenant,
+            IHbtLocalizationService localization) : base(logger, currentUser, currentTenant, localization)
         {
             _mailService = mailService;
-            _currentUser = currentUser;
+
         }
 
         /// <summary>

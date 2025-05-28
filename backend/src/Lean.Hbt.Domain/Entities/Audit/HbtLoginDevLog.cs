@@ -15,7 +15,7 @@ namespace Lean.Hbt.Domain.Entities.Audit
     /// 登录设备日志实体
     /// </summary>
     [SugarTable("hbt_audit_login_dev_log", "登录设备")]
-    [SugarIndex("ix_device_tenant_user", nameof(TenantId), OrderByType.Asc, nameof(UserId), OrderByType.Asc, nameof(DeviceId), OrderByType.Asc, true)]
+    [SugarIndex("ix_device_user", nameof(UserId), OrderByType.Asc, nameof(DeviceId), OrderByType.Asc, true)]
     public class HbtLoginDevLog : HbtBaseEntity
     {
         /// <summary>
@@ -23,12 +23,6 @@ namespace Lean.Hbt.Domain.Entities.Audit
         /// </summary>
         [SugarColumn(ColumnName = "user_id", ColumnDescription = "用户ID", ColumnDataType = "bigint", IsNullable = false)]
         public long UserId { get; set; }
-
-        /// <summary>
-        /// 租户ID
-        /// </summary>
-        [SugarColumn(ColumnName = "tenant_id", ColumnDescription = "租户ID", ColumnDataType = "bigint", IsNullable = true)]
-        public long? TenantId { get; set; }
 
         /// <summary>
         /// 设备标识

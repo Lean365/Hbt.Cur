@@ -50,6 +50,14 @@ export default {
             length: '模块名称长度必须在2-100个字符之间'
           }
         },
+        status: {
+          label: '状态',
+          placeholder: '请选择状态',
+          validation: {
+            required: '状态不能为空'
+            
+          }
+        },
         remark: {
           label: '备注',
           placeholder: '请输入备注',

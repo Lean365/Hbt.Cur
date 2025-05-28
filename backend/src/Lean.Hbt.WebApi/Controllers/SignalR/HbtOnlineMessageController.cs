@@ -30,11 +30,16 @@ namespace Lean.Hbt.WebApi.Controllers.SignalR
         /// 构造函数
         /// </summary>
         /// <param name="onlineMessageService">在线消息服务</param>
-        /// <param name="localization">本地化服务</param>
         /// <param name="logger">日志服务</param>
-        public HbtOnlineMessageController(IHbtOnlineMessageService onlineMessageService,
-                                    IHbtLocalizationService localization,
-            IHbtLogger logger) : base(localization, logger)
+        /// <param name="currentUser">当前用户服务</param>
+        /// <param name="currentTenant">当前租户服务</param>
+        /// <param name="localization">本地化服务</param>
+        public HbtOnlineMessageController(
+            IHbtOnlineMessageService onlineMessageService,
+            IHbtLogger logger,
+            IHbtCurrentUser currentUser,
+            IHbtCurrentTenant currentTenant,
+            IHbtLocalizationService localization) : base(logger, currentUser, currentTenant, localization)
         {
             _onlineMessageService = onlineMessageService;
         }

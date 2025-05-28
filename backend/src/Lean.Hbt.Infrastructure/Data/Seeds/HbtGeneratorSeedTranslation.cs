@@ -7,11 +7,7 @@
 // 描述   : 代码生成器本地化资源种子
 //===================================================================
 
-using Lean.Hbt.Common.Utils;
 using Lean.Hbt.Domain.Entities.Core;
-using Lean.Hbt.Domain.IServices.Extensions;
-using Lean.Hbt.Infrastructure.Data.Contexts;
-using Lean.Hbt.Domain.IServices;
 
 namespace Lean.Hbt.Infrastructure.Data.Seeds;
 
@@ -93,25 +89,25 @@ public class HbtGeneratorSeedTranslation
 
         foreach (var translation in translations)
         {
-            var existingTranslation = await _translationRepository.GetFirstAsync(x => 
-                x.LangCode == translation.LangCode && 
+            var existingTranslation = await _translationRepository.GetFirstAsync(x =>
+                x.LangCode == translation.LangCode &&
                 x.TransKey == translation.TransKey);
 
             if (existingTranslation == null)
             {
-                translation.TenantId = tenantId;
+
                 translation.CreateBy = "Hbt365";
                 translation.CreateTime = DateTime.Now;
                 translation.UpdateBy = "Hbt365";
                 translation.UpdateTime = DateTime.Now;
-                
+
                 await _translationRepository.CreateAsync(translation);
                 insertCount++;
             }
             else
             {
                 existingTranslation.TransValue = translation.TransValue;
-                existingTranslation.TenantId = tenantId;
+
                 existingTranslation.UpdateBy = "Hbt365";
                 existingTranslation.UpdateTime = DateTime.Now;
                 await _translationRepository.UpdateAsync(existingTranslation);
@@ -121,4 +117,4 @@ public class HbtGeneratorSeedTranslation
 
         return (insertCount, updateCount);
     }
-} 
+}
