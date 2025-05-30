@@ -12,7 +12,7 @@
     <!-- 工具栏 -->
     <hbt-toolbar
       v-model:show-search="showSearch"
-      :selected-count="selectedKeys.length"
+      :selected-count="selectedRowKeys.length"
       :show-select-count="true"
       :show-add="true"
       :show-edit="true"
@@ -24,8 +24,8 @@
       :delete-permission="['identity:post:delete']"
       :export-permission="['identity:post:export']"
       :import-permission="['identity:post:import']"
-      :disabled-edit="selectedKeys.length !== 1"
-      :disabled-delete="selectedKeys.length === 0"
+      :disabled-edit="selectedRowKeys.length !== 1"
+      :disabled-delete="selectedRowKeys.length === 0"
       @add="handleAdd"
       @edit="handleEditSelected"
       @delete="handleBatchDelete"
@@ -41,8 +41,8 @@
       <template #extra>
         <a-button
           type="primary"
-          :disabled="selectedKeys.length !== 1"
-          @click="handleAssignUser({ postId: selectedKeys[0] })"
+          :disabled="selectedRowKeys.length !== 1"
+          @click="handleAssignUser({ postId: selectedRowKeys[0] })"
         >
           <template #icon><team-outlined /></template>
           分配用户
@@ -56,14 +56,13 @@
       :data-source="list"
       :loading="loading"
       :pagination="false"
-      :row-selection="{
-        selectedRowKeys: selectedKeys,
-        onChange: onSelectChange
-      }"
+      :scroll="{ x: 600, y: 'calc(100vh - 500px)' }"
       row-key="postId"
-      size="middle"
-      bordered
-      :scroll="{ x: 1200, y: 'calc(100vh - 300px)' }"
+      v-model:selectedRowKeys="selectedRowKeys"
+      :row-selection="{
+        type: 'checkbox',
+        columnWidth: 60
+      }"
       @change="onTableChange"
     >
       <template #bodyCell="{ column, record }">
@@ -213,7 +212,7 @@ const list = ref<HbtPost[]>([])
 const total = ref(0)
 
 // 选中的岗位ID
-const selectedKeys = ref<(string | number)[]>([])
+const selectedRowKeys = ref<(string | number)[]>([])
 
 // 表单弹窗显示状态
 const formVisible = ref(false)
@@ -258,51 +257,37 @@ const columns: TableColumnsType = [
     ellipsis: true
   },
   {
-    title: t('identity.user.table.columns.remark'),
+    title: t('common.table.columns.remark'),
     dataIndex: 'remark',
     key: 'remark',
     width: 120,
     ellipsis: true
   },
   {
-    title: t('identity.user.table.columns.createBy'),
+    title: t('common.table.columns.createBy'),
     dataIndex: 'createBy',
     key: 'createBy',
     width: 120,
     ellipsis: true
   },
   {
-    title: t('identity.user.table.columns.createTime'),
+    title: t('common.table.columns.createTime'),
     dataIndex: 'createTime',
     key: 'createTime',
     width: 180,
     ellipsis: true
   },
   {
-    title: t('identity.user.table.columns.updateBy'),
+    title: t('common.table.columns.updateBy'),
     dataIndex: 'updateBy',
     key: 'updateBy',
     width: 120,
     ellipsis: true
   },
   {
-    title: t('identity.user.table.columns.updateTime'),
+    title: t('common.table.columns.updateTime'),
     dataIndex: 'updateTime',
     key: 'updateTime',
-    width: 180,
-    ellipsis: true
-  },
-  {
-    title: t('identity.user.table.columns.deleteBy'),
-    dataIndex: 'deleteBy',
-    key: 'deleteBy',
-    width: 120,
-    ellipsis: true
-  },
-  {
-    title: t('identity.user.table.columns.deleteTime'),
-    dataIndex: 'deleteTime',
-    key: 'deleteTime',
     width: 180,
     ellipsis: true
   },
@@ -347,7 +332,7 @@ const getList = async () => {
 // 处理查询
 const handleQuery = () => {
   queryParams.value.pageIndex = 1
-  selectedKeys.value = []
+  selectedRowKeys.value = []
   getList()
 }
 
@@ -370,11 +355,6 @@ const onTableChange = (pagination: TablePaginationConfig) => {
   getList()
 }
 
-// 处理选择变化
-const onSelectChange = (keys: (string | number)[], _: HbtPost[]) => {
-  selectedKeys.value = keys
-}
-
 // 分页处理
 const handlePageChange = (page: number) => {
   queryParams.value.pageIndex = page
@@ -395,7 +375,7 @@ const handleAdd = () => {
 
 // 处理编辑选中项
 const handleEditSelected = () => {
-  const postId = selectedKeys.value[0]
+  const postId = selectedRowKeys.value[0]
   formTitle.value = t('identity.post.dialog.update')
   formPostId.value = Number(postId)
   formVisible.value = true
@@ -428,13 +408,13 @@ const handleDelete = async (record: Record<string, any>) => {
 const handleBatchDelete = () => {
   Modal.confirm({
     title: t('common.delete.confirm'),
-    content: t('common.delete.message', { count: selectedKeys.value.length }),
+    content: t('common.delete.message', { count: selectedRowKeys.value.length }),
     async onOk() {
       try {
-        const res = await batchDeletePost(selectedKeys.value.map(id => Number(id)))
+        const res = await batchDeletePost(selectedRowKeys.value.map(id => Number(id)))
         if (res.data.code === 200) {
           message.success(t('common.delete.success'))
-          selectedKeys.value = []
+          selectedRowKeys.value = []
           getList()
         } else {
           message.error(res.data.msg || t('common.delete.failed'))

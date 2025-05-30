@@ -23,7 +23,8 @@ public class HbtGenTableDto
     /// <summary>
     /// 主键
     /// </summary>
-    public long Id { get; set; }
+    [AdaptMember("Id")]
+    public long GenTableId { get; set; }
 
     /// <summary>
     /// 数据库名称
@@ -246,10 +247,7 @@ public class HbtGenTableDto
 
     #region 系统信息
 
-    /// <summary>
-    /// 租户ID
-    /// </summary>
-    public long TenantId { get; set; }
+
 
     /// <summary>
     /// 列信息
@@ -515,233 +513,14 @@ public class HbtGenTableCreateDto
 /// <summary>
 /// 代码生成表更新DTO
 /// </summary>
-public class HbtGenTableUpdateDto
+public class HbtGenTableUpdateDto : HbtGenTableCreateDto
 {
-    #region 基本信息
-
     /// <summary>
     /// 主键
     /// </summary>
-    public long Id { get; set; }
-
-    /// <summary>
-    /// 数据库名称
-    /// </summary>
-    public string DatabaseName { get; set; } = string.Empty;
-
-    /// <summary>
-    /// 表名
-    /// </summary>
-    public string TableName { get; set; } = string.Empty;
-
-    /// <summary>
-    /// 表描述
-    /// </summary>
-    public string TableComment { get; set; } = string.Empty;
-
-    /// <summary>
-    /// 关联父表名
-    /// </summary>
-    public string? SubTableName { get; set; }
-
-    /// <summary>
-    /// 本表关联父表的外键名
-    /// </summary>
-    public string? SubTableFkName { get; set; }
-
-    /// <summary>
-    /// 树编码字段
-    /// </summary>
-    public string TreeCode { get; set; } = string.Empty;
-
-    /// <summary>
-    /// 树名称字段
-    /// </summary>
-    public string TreeName { get; set; } = string.Empty;
-
-    /// <summary>
-    /// 树父编码字段
-    /// </summary>
-    public string TreeParentCode { get; set; } = string.Empty;
-
-    #endregion
-
-    #region 类型信息
-
-    /// <summary>
-    /// 使用的模板（crud单表操作 tree树表操作 sub主子表操作）
-    /// </summary>
-    public string TplCategory { get; set; } = "crud";
-
-    /// <summary>
-    /// 基本命名空间前缀
-    /// </summary>
-    public string BaseNamespace { get; set; } = string.Empty;
-
-    /// <summary>
-    /// 实体命名空间
-    /// </summary>
-    public string EntityNamespace { get; set; } = string.Empty;
-
-    /// <summary>
-    /// 实体类名
-    /// </summary>
-    public string EntityClassName { get; set; } = string.Empty;
-
-    /// <summary>
-    /// 对象命名空间
-    /// </summary>
-    public string DtoNamespace { get; set; } = string.Empty;
-
-    /// <summary>
-    /// 对象类型
-    /// </summary>
-    public string DtoType { get; set; } = string.Empty;
-
-    /// <summary>
-    /// 对象类名
-    /// </summary>
-    public string DtoClassName { get; set; } = string.Empty;
-
-    /// <summary>
-    /// 服务命名空间
-    /// </summary>
-    public string ServiceNamespace { get; set; } = string.Empty;
-
-    /// <summary>
-    /// 服务接口类名称
-    /// </summary>
-    public string IServiceClassName { get; set; } = string.Empty;
-
-    /// <summary>
-    /// 服务类名称
-    /// </summary>
-    public string ServiceClassName { get; set; } = string.Empty;
-
-    /// <summary>
-    /// 仓储接口命名空间
-    /// </summary>
-    public string IRepositoryNamespace { get; set; } = string.Empty;
-
-    /// <summary>
-    /// 仓储命名空间
-    /// </summary>
-    public string RepositoryNamespace { get; set; } = string.Empty;
-
-    /// <summary>
-    /// 仓储接口类名称
-    /// </summary>
-    public string IRepositoryClassName { get; set; } = string.Empty;
-
-    /// <summary>
-    /// 仓储类名称
-    /// </summary>
-    public string RepositoryClassName { get; set; } = string.Empty;
-
-    /// <summary>
-    /// 控制器命名空间
-    /// </summary>
-    public string ControllerNamespace { get; set; } = string.Empty;
-
-    /// <summary>
-    /// 控制器类名称
-    /// </summary>
-    public string ControllerClassName { get; set; } = string.Empty;
-
-    #endregion
-
-    #region 生成配置信息
-
-    /// <summary>
-    /// 生成模块名
-    /// </summary>
-    public string ModuleName { get; set; } = string.Empty;
-
-    /// <summary>
-    /// 生成业务名
-    /// </summary>
-    public string BusinessName { get; set; } = string.Empty;
-
-    /// <summary>
-    /// 生成功能名
-    /// </summary>
-    public string FunctionName { get; set; } = string.Empty;
-
-    /// <summary>
-    /// 生成作者名
-    /// </summary>
-    public string Author { get; set; } = string.Empty;
-
-    #endregion
-
-    #region 生成选项
-
-    /// <summary>
-    /// 生成代码方式（0zip压缩包 1自定义路径）
-    /// </summary>
-    public string GenType { get; set; } = "0";
-
-    /// <summary>
-    /// 代码生成存放位置
-    /// </summary>
-    public string GenPath { get; set; } = "/";
-
-    /// <summary>
-    /// 上级菜单ID
-    /// </summary>
-    public long ParentMenuId { get; set; }
-
-    /// <summary>
-    /// 排序类型
-    /// </summary>
-    public string SortType { get; set; } = "asc";
-
-    /// <summary>
-    /// 排序字段
-    /// </summary>
-    public string SortField { get; set; } = string.Empty;
-
-    /// <summary>
-    /// 权限前缀
-    /// </summary>
-    public string PermsPrefix { get; set; } = string.Empty;
-
-    /// <summary>
-    /// 自动生成菜单
-    /// </summary>
-    public int GenerateMenu { get; set; }
-
-    /// <summary>
-    /// 前端模板 1、element ui 2、element plus
-    /// </summary>
-    public int FrontTpl { get; set; } = 2;
-
-    /// <summary>
-    /// 前端样式 12,24
-    /// </summary>
-    public int FrontStyle { get; set; } = 24;
-
-    /// <summary>
-    /// 操作按钮样式
-    /// </summary>
-    public int BtnStyle { get; set; } = 1;
-
-    /// <summary>
-    /// 代码生成选项
-    /// </summary>
-    public CodeOptions? Options { get; set; }
-
-    /// <summary>
-    /// 状态（0：停用，1：正常）
-    /// </summary>
-    public int Status { get; set; } = 1;
-
-    #endregion
-
-    /// <summary>
-    /// 列信息
-    /// </summary>
-    public List<HbtGenColumnDto> Columns { get; set; } = new();
+    [Required(ErrorMessage = "主键ID不能为空")]
+    [AdaptMember("Id")]
+    public long GenTableId { get; set; }
 }
 
 /// <summary>

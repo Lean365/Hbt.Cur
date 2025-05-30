@@ -53,6 +53,7 @@ namespace Lean.Hbt.Infrastructure.Extensions
             services.AddScoped<IHbtGenConfigService, HbtGenConfigService>();
             services.AddScoped<IHbtCodeGeneratorService, HbtCodeGeneratorService>();
             services.AddScoped<IHbtTemplateEngine, HbtTemplateEngine>();
+            services.AddScoped<IHbtGenTemplateService, HbtGenTemplateService>();
 
             return services;
         }

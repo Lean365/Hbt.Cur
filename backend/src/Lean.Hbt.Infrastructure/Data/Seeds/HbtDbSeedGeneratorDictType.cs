@@ -55,15 +55,16 @@ public class HbtDbSeedGeneratorDictType
         var generatorDictTypes = new List<HbtDictType>
         {
             SetCommonProperties(new HbtDictType { DictName = "数据库类型", DictType = "gen_db_type", OrderNum = 0, Status = 0,  Remark = "代码生成数据库类型" }),
-            SetCommonProperties(new HbtDictType { DictName = "生成模板", DictType = "gen_template_type", OrderNum = 1, Status = 0,  Remark = "代码生成模板类型" }),
-            SetCommonProperties(new HbtDictType { DictName = "前端模板", DictType = "gen_frontend_type", OrderNum = 2, Status = 0,  Remark = "前端模板类型" }),
-            SetCommonProperties(new HbtDictType { DictName = "生成模块", DictType = "gen_module_name", OrderNum = 3, Status = 0,  Remark = "代码生成模块名称" }),
-            SetCommonProperties(new HbtDictType { DictName = "前端布局", DictType = "gen_frontend_style", OrderNum = 4, Status = 0,  Remark = "前端页面布局" }),
-            SetCommonProperties(new HbtDictType { DictName = "按钮样式", DictType = "gen_button_style", OrderNum = 5, Status = 0,  Remark = "按钮样式类型" }),
-            SetCommonProperties(new HbtDictType { DictName = "生成方式", DictType = "gen_type", OrderNum = 6, Status = 0,  Remark = "代码生成方式" }),
-            SetCommonProperties(new HbtDictType { DictName = "生成功能", DictType = "gen_function", OrderNum = 7, Status = 0,  Remark = "代码生成功能" }),
-            SetCommonProperties(new HbtDictType { DictName = "树表配置", DictType = "gen_tree_config", OrderNum = 8, Status = 0,  Remark = "树表配置" }),
-            SetCommonProperties(new HbtDictType { DictName = "主子表配置", DictType = "gen_sub_config", OrderNum = 9, Status = 0,  Remark = "主子表配置" })
+            SetCommonProperties(new HbtDictType { DictName = "模板类型", DictType = "gen_tpl_type", OrderNum = 1, Status = 0,  Remark = "代码生成模板类型（0使用wwwroot/Generator/*.scriban模板 1使用HbtGenTemplate数据表中的模板）" }),
+            SetCommonProperties(new HbtDictType { DictName = "生成模板", DictType = "gen_template_type", OrderNum = 2, Status = 0,  Remark = "代码生成模板类型" }),
+            SetCommonProperties(new HbtDictType { DictName = "前端模板", DictType = "gen_frontend_type", OrderNum = 3, Status = 0,  Remark = "前端模板类型" }),
+            SetCommonProperties(new HbtDictType { DictName = "生成模块", DictType = "gen_module_name", OrderNum = 4, Status = 0,  Remark = "代码生成模块名称" }),
+            SetCommonProperties(new HbtDictType { DictName = "前端布局", DictType = "gen_frontend_style", OrderNum = 5, Status = 0,  Remark = "前端页面布局" }),
+            SetCommonProperties(new HbtDictType { DictName = "按钮样式", DictType = "gen_button_style", OrderNum = 6, Status = 0,  Remark = "按钮样式类型" }),
+            SetCommonProperties(new HbtDictType { DictName = "生成方式", DictType = "gen_type", OrderNum = 7, Status = 0,  Remark = "代码生成方式" }),
+            SetCommonProperties(new HbtDictType { DictName = "生成功能", DictType = "gen_function", OrderNum = 8, Status = 0,  Remark = "代码生成功能" }),
+            SetCommonProperties(new HbtDictType { DictName = "树表配置", DictType = "gen_tree_config", OrderNum = 9, Status = 0,  Remark = "树表配置" }),
+            SetCommonProperties(new HbtDictType { DictName = "主子表配置", DictType = "gen_sub_config", OrderNum = 10, Status = 0,  Remark = "主子表配置" })
         };
 
         foreach (var dictType in generatorDictTypes)

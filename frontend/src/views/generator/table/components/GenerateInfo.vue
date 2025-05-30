@@ -4,12 +4,23 @@
       ref="formRef"
       :model="formData"
       :rules="rules"
-      :label-col="{ span: 6 }"
+      :label-col="{ span: 4 }"
       :wrapper-col="{ span: 18 }"
     >
       <!-- 基本信息 -->
       <a-form-item label="基本信息" name="basicInfo">
         <a-row :gutter="16">
+          <a-col :span="12">
+            <a-form-item label="模板类型" name="tplType">
+              <hbt-select
+                v-model:value="formData.tplType"
+                dict-type="gen_tpl_type"
+                type="radio"
+                :show-all="false"
+                placeholder="请选择模板类型"
+              />
+            </a-form-item>
+          </a-col>
           <a-col :span="12">
             <a-form-item label="生成模板" name="tplCategory">
               <hbt-select
@@ -22,6 +33,8 @@
               />
             </a-form-item>
           </a-col>
+        </a-row>
+        <a-row :gutter="16">
           <a-col :span="12">
             <a-form-item label="前端类型" name="frontendType">
               <hbt-select
@@ -33,19 +46,19 @@
               />
             </a-form-item>
           </a-col>
-        </a-row>
-        <a-row :gutter="16">
           <a-col :span="12">
             <a-form-item label="前端布局" name="frontStyle">
-              <a-input-number
+              <hbt-select
                 v-model:value="formData.frontStyle"
-                :min="1"
-                :max="24"
-                style="width: 100%"
-                placeholder="请输入列数"
+                dict-type="gen_frontend_style"
+                placeholder="请选择前端布局"
+                type="radio"
+                :show-all="false"
               />
             </a-form-item>
           </a-col>
+        </a-row>
+        <a-row :gutter="16">
           <a-col :span="12">
             <a-form-item label="按钮样式" name="buttonStyle">
               <hbt-select
@@ -57,8 +70,6 @@
               />
             </a-form-item>
           </a-col>
-        </a-row>
-        <a-row :gutter="16">
           <a-col :span="12">
             <a-form-item label="生成方式" name="genType">
               <hbt-select
@@ -70,7 +81,9 @@
               />
             </a-form-item>
           </a-col>
-          <a-col :span="12">
+        </a-row>
+        <a-row :gutter="16">
+          <a-col :span="24">
             <a-form-item label="生成功能" name="options">
               <hbt-select
                 v-model:value="selectedOptions"
@@ -154,23 +167,29 @@
             </a-form-item>
           </a-col>
           <a-col :span="12">
-            <a-form-item label="排序" name="sortField">
+            <a-form-item label="排序" name="sortConfig">
               <a-row :gutter="16">
                 <a-col :span="12">
-                  <a-input-number
-                    v-model:value="formData.sortField"
-                    :min="0"
-                    style="width: 100%"
-                  />
+                  <a-form-item name="sortField" no-style>
+                    <a-input-number
+                      v-model:value="formData.sortField"
+                      :min="0"
+                      style="width: 100%"
+                      placeholder="排序字段"
+                    />
+                  </a-form-item>
                 </a-col>
                 <a-col :span="12">
-                  <a-select
-                    v-model:value="formData.sortType"
-                    style="width: 100%"
-                  >
-                    <a-select-option value="asc">升序</a-select-option>
-                    <a-select-option value="desc">降序</a-select-option>
-                  </a-select>
+                  <a-form-item name="sortType" no-style>
+                    <a-select
+                      v-model:value="formData.sortType"
+                      style="width: 100%"
+                      placeholder="排序方式"
+                    >
+                      <a-select-option value="asc">升序</a-select-option>
+                      <a-select-option value="desc">降序</a-select-option>
+                    </a-select>
+                  </a-form-item>
                 </a-col>
               </a-row>
             </a-form-item>
@@ -190,7 +209,7 @@
         </a-row>
         <a-row :gutter="16">
           <a-col :span="12">
-            <a-form-item label="生成路径" name="genPath" v-if="formData.genType === 'path'">
+            <a-form-item label="生成路径" name="genPath" v-if="formData.genType === '0'">
               <a-input v-model:value="formData.genPath" placeholder="请输入生成路径" />
             </a-form-item>
           </a-col>
@@ -207,7 +226,7 @@ import type { Rule } from 'ant-design-vue/es/form'
 import type { CheckboxValueType } from 'ant-design-vue/es/checkbox/interface'
 import type { SelectValue } from 'ant-design-vue/es/select'
 import type { HbtGenTable, CodeOptions } from '@/types/generator/genTable'
-import type { Menu } from '@/types/identity/menu'
+import type { HbtMenu } from '@/types/identity/menu'
 import { getMenuList } from '@/api/identity/menu'
 import { getTable, getTableList } from '@/api/generator/genTable'
 import {
@@ -247,160 +266,11 @@ const treeOptions = ref<number[]>([])
 // 主子表选项
 const subOptions = ref<number[]>([])
 
-interface DictOption {
-  label: string
-  value: string
-}
-
-// 字典选项
-// const templateOptions = ref<DictOption[]>([])
-// const frontendOptions = ref<DictOption[]>([])
-// const frontendStyleOptions = ref<DictOption[]>([])
-// const buttonStyleOptions = ref<DictOption[]>([])
-// const genTypeOptions = ref<DictOption[]>([])
-// const genFunctionOptions = ref<DictOption[]>([])
-// const treeConfigOptions = ref<DictOption[]>([])
-// const subConfigOptions = ref<DictOption[]>([])
-
-// 获取字典数据
-// const getDictOptions = async () => {
-//   try {
-//     // 获取生成模板选项
-//     const templateRes = await getDictData('gen_template_type')
-//     templateOptions.value = templateRes.data.map((item: any) => ({
-//       label: item.dictLabel,
-//       value: item.dictValue
-//     }))
-//
-//     // 获取前端模板选项
-//     const frontendRes = await getDictData('gen_frontend_type')
-//     frontendOptions.value = frontendRes.data.map((item: any) => ({
-//       label: item.dictLabel,
-//       value: item.dictValue
-//     }))
-//
-//     // 获取前端布局选项
-//     const frontendStyleRes = await getDictData('gen_frontend_style')
-//     frontendStyleOptions.value = frontendStyleRes.data.map((item: any) => ({
-//       label: item.dictLabel,
-//       value: item.dictValue
-//     }))
-//
-//     // 获取按钮样式选项
-//     const buttonStyleRes = await getDictData('gen_button_style')
-//     buttonStyleOptions.value = buttonStyleRes.data.map((item: any) => ({
-//       label: item.dictLabel,
-//       value: item.dictValue
-//     }))
-//
-//     // 获取生成方式选项
-//     const genTypeRes = await getDictData('gen_type')
-//     genTypeOptions.value = genTypeRes.data.map((item: any) => ({
-//       label: item.dictLabel,
-//       value: item.dictValue
-//     }))
-//
-//     // 获取生成功能选项
-//     const genFunctionRes = await getDictData('gen_function')
-//     genFunctionOptions.value = genFunctionRes.data.map((item: any) => ({
-//       label: item.dictLabel,
-//       value: item.dictValue
-//     }))
-//
-//     // 获取树表配置选项
-//     const treeConfigRes = await getDictData('gen_tree_config')
-//     treeConfigOptions.value = treeConfigRes.data.map((item: any) => ({
-//       label: item.dictLabel,
-//       value: item.dictValue
-//     }))
-//
-//     // 获取主子表配置选项
-//     const subConfigRes = await getDictData('gen_sub_config')
-//     subConfigOptions.value = subConfigRes.data.map((item: any) => ({
-//       label: item.dictLabel,
-//       value: item.dictValue
-//     }))
-//   } catch (error) {
-//     console.error('获取字典数据失败:', error)
-//   }
-// }
-
-// 表单数据
-const formData = reactive<HbtGenTable>({
-  id: 0,
-  createBy: '',
-  createTime: '',
-  updateBy: '',
-  updateTime: '',
-  deleteBy: '',
-  deleteTime: '',
-  isDeleted: 0,
-  remark: '',
-  databaseName: '',
-  tableName: '',
-  tableComment: '',
-  baseNamespace: '',
-  tplCategory: 'crud',
-  subTableName: '',
-  subTableFkName: '',
-  treeCode: '',
-  treeName: '',
-  treeParentCode: '',
-  moduleName: '',
-  businessName: '',
-  functionName: '',
-  author: '',
-  genType: '0',
-  genPath: '/',
-  parentMenuId: 0,
-  sortField: '',
-  sortType: 'asc',
-  permsPrefix: '',
-  generateMenu: 1,
-  frontTpl: 1,
-  btnStyle: 1,
-  frontStyle: 24,
-  status: 1,
-  entityClassName: '',
-  entityNamespace: '',
-  dtoType: [],
-  dtoNamespace: '',
-  dtoClassName: '',
-  serviceNamespace: '',
-  iServiceClassName: '',
-  serviceClassName: '',
-  iRepositoryNamespace: '',
-  iRepositoryClassName: '',
-  repositoryNamespace: '',
-  repositoryClassName: '',
-  controllerNamespace: '',
-  controllerClassName: '',
-  options: {
-    isSqlDiff: 0,
-    isSnowflakeId: 0,
-    isRepository: 0,
-    crudGroup: [1, 2, 3, 4]
-  },
-  columns: [],
-  subTable: undefined,
-  tenantId: 0
-})
-
-// 菜单选项
-const menuOptions = ref<Menu[]>([])
-
 // 添加新的响应式变量
 const columnOptions = ref<{ label: string; value: string }[]>([])
 const tableOptions = ref<{ label: string; value: string }[]>([])
 const subColumnOptions = ref<{ label: string; value: string }[]>([])
-
-// 默认选项
-const defaultOptions: CodeOptions = {
-  isSqlDiff: 0,
-  isSnowflakeId: 0,
-  isRepository: 0,
-  crudGroup: [1, 2, 3, 4]
-}
+const menuOptions = ref<HbtMenu[]>([])
 
 // 表单校验规则
 const rules: Record<string, Rule[]> = {
@@ -411,25 +281,69 @@ const rules: Record<string, Rule[]> = {
   tplCategory: [{ required: true, message: '请选择生成类型', trigger: 'change' }]
 }
 
-// 处理生成方式变化
-const handleGenModeChange = (e: any) => {
-  if (e.target.value === 1) {
-    // 全场景生成时，自动选中所有选项
-    selectedOptions.value = [1, 2, 3, 4, 5, 6, 7, 8]
-    formData.options = {
-      ...defaultOptions,
-      crudGroup: selectedOptions.value
-    }
-  } else {
-    // 自定义生成时，清空选项
-    selectedOptions.value = []
-    formData.options = {
-      ...defaultOptions,
-      crudGroup: []
-    }
-  }
-  emit('update:modelValue', formData)
+// 5.3 默认选项
+const defaultOptions: CodeOptions = {
+  isSqlDiff: 1,
+  isSnowflakeId: 1,
+  isRepository: 0,
+  crudGroup: [1, 2, 3, 4, 5, 6, 7, 8] // 默认选中所有基础操作
 }
+
+// 表单数据
+const formData = reactive<Omit<HbtGenTable, 'options'> & { options: CodeOptions }>({
+  genTableId: 0,
+  databaseName: '',
+  tableName: '',
+  tableComment: '',
+  subTableName: '',
+  subTableFkName: '',
+  treeCode: '',
+  treeName: '',
+  treeParentCode: '',
+  tplType: '0',
+  tplCategory: 'crud',
+  baseNamespace: '',
+  entityNamespace: '',
+  entityClassName: '',
+  dtoNamespace: '',
+  dtoClassName: '',
+  dtoType: '',
+  serviceNamespace: '',
+  iServiceClassName: '',
+  serviceClassName: '',
+  iRepositoryNamespace: '',
+  iRepositoryClassName: '',
+  repositoryNamespace: '',
+  repositoryClassName: '',
+  controllerNamespace: '',
+  controllerClassName: '',
+  moduleName: '',
+  businessName: '',
+  functionName: '',
+  author: '',
+  genType: '0',
+  genPath: '/',
+  parentMenuId: 0,
+  generateMenu: 1,
+  sortType: 'asc',
+  sortField: '',
+  permsPrefix: '',
+  frontTpl: 2,
+  frontStyle: 24,
+  btnStyle: 1,
+  status: 0,
+  columns: [],
+  subTable: undefined,
+  options: defaultOptions,
+  createBy: '',
+  createTime: '',
+  updateBy: '',
+  updateTime: '',
+  deleteBy: '',
+  deleteTime: '',
+  isDeleted: 0,
+  remark: ''
+})
 
 // 监听表单数据变化
 watch(
@@ -438,42 +352,21 @@ watch(
     if (newVal) {
       Object.assign(formData, newVal)
       // 设置选中的功能
-      selectedOptions.value = formData.options?.crudGroup || []
+      selectedOptions.value = formData.options?.crudGroup || defaultOptions.crudGroup
     }
   },
   { deep: true, immediate: true }
 )
 
-// 监听本地数据变化
-watch(
-  () => formData,
-  (newVal) => {
-    // 确保 options 对象存在
-    if (!newVal.options) {
-      newVal.options = {
-        ...defaultOptions,
-        crudGroup: selectedOptions.value
-      }
-    } else {
-      newVal.options = {
-        ...defaultOptions,
-        crudGroup: selectedOptions.value
-      }
-    }
-    emit('update:modelValue', newVal)
-  },
-  { deep: true }
-)
-
-// 监听生成类型变化
+// 7.2 监听生成类型变化
 watch(() => formData.tplCategory, (newVal) => {
   // 更新选中的选项
   if (newVal === 'tree') {
-    selectedOptions.value = [5, 6, 7] // 树表操作
+    selectedOptions.value = [5, 6, 7] // 树表操作：详情、预览、打印
   } else if (newVal === 'sub') {
     selectedOptions.value = [8] // 主子表操作
   } else {
-    selectedOptions.value = [1, 2, 3, 4] // 基础操作
+    selectedOptions.value = [1, 2, 3, 4, 5, 6, 7, 8] // 基础操作：新增、修改、删除、导入、模板、导出、详情、预览、打印
   }
   // 更新表单选项
   formData.options = {

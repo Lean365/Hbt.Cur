@@ -1,15 +1,20 @@
 import request from '@/utils/request';
-import type { HbtGenTemplate } from '@/types/generator/genTemplate';
-import type { HbtApiResponse } from '@/types/common';
+import type { HbtApiResponse, HbtPagedResult } from '@/types/common';
+import type { 
+  HbtGenTemplateQuery, 
+  HbtGenTemplate,
+  HbtGenTemplateCreate,
+  HbtGenTemplateUpdate
+} from '@/types/generator/genTemplate';
 
 /**
- * 获取代码生成模板列表
+ * 获取代码生成模板分页列表
  */
-export function getPagedList(params: HbtGenTemplate) {
-  return request<HbtApiResponse<HbtGenTemplate[]>>({
+export function getGenTemplateList(query: HbtGenTemplateQuery) {
+  return request<HbtApiResponse<HbtPagedResult<HbtGenTemplate>>>({
     url: '/api/HbtGenTemplate/list',
     method: 'get',
-    params
+    params: query
   });
 }
 
@@ -26,8 +31,8 @@ export function getGenTemplate(id: number) {
 /**
  * 创建代码生成模板
  */
-export function createGenTemplate(data: HbtGenTemplate) {
-  return request<HbtApiResponse<HbtGenTemplate>>({
+export function createGenTemplate(data: HbtGenTemplateCreate) {
+  return request({
     url: '/api/HbtGenTemplate',
     method: 'post',
     data
@@ -37,9 +42,9 @@ export function createGenTemplate(data: HbtGenTemplate) {
 /**
  * 更新代码生成模板
  */
-export function updateGenTemplate(id: number, data: HbtGenTemplate) {
-  return request<HbtApiResponse<HbtGenTemplate>>({
-    url: `/api/HbtGenTemplate/${id}`,
+export function updateGenTemplate(data: HbtGenTemplateUpdate) {
+  return request({
+    url: '/api/HbtGenTemplate',
     method: 'put',
     data
   });
@@ -49,38 +54,57 @@ export function updateGenTemplate(id: number, data: HbtGenTemplate) {
  * 删除代码生成模板
  */
 export function deleteGenTemplate(id: number) {
-  return request<HbtApiResponse<boolean>>({
+  return request({
     url: `/api/HbtGenTemplate/${id}`,
     method: 'delete'
   });
 }
 
 /**
- * 生成代码
+ * 批量删除代码生成模板
  */
-export function generateGenTemplate(id: number) {
-  return request<HbtApiResponse<boolean>>({
-    url: `/api/HbtGenTemplate/${id}/generate`,
-    method: 'post'
+export function batchDeleteGenTemplate(ids: number[]) {
+  return request({
+    url: '/api/HbtGenTemplate/batch',
+    method: 'delete',
+    data: ids
   });
 }
 
 /**
- * 预览代码
+ * 导出代码生成模板数据
  */
-export function previewGenTemplate(id: number) {
-  return request<HbtApiResponse<Record<string, string>>>({
-    url: `/api/HbtGenTemplate/${id}/preview`,
-    method: 'get'
+export function exportGenTemplate(query: HbtGenTemplateQuery) {
+  return request({
+    url: '/api/HbtGenTemplate/export',
+    method: 'get',
+    params: query,
+    responseType: 'blob'
   });
 }
 
 /**
- * 下载代码
+ * 导入代码生成模板数据
  */
-export function downloadGenTemplate(id: number) {
-  return request<Blob>({
-    url: `/api/HbtGenTemplate/${id}/download`,
+export function importGenTemplate(file: File) {
+  const formData = new FormData();
+  formData.append('file', file);
+  return request<HbtApiResponse<{ success: number; fail: number }>>({
+    url: '/api/HbtGenTemplate/import',
+    method: 'post',
+    data: formData,
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  });
+}
+
+/**
+ * 下载代码生成模板导入模板
+ */
+export function downloadTemplate() {
+  return request({
+    url: '/api/HbtGenTemplate/template',
     method: 'get',
     responseType: 'blob'
   });

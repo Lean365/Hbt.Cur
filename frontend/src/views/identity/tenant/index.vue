@@ -12,7 +12,7 @@
     <!-- 工具栏 -->
     <hbt-toolbar
       v-model:show-search="showSearch"
-      :selected-count="selectedKeys.length"
+      :selected-count="selectedRowKeys.length"
       :show-select-count="true"
       :show-add="true"
       :show-edit="true"
@@ -24,8 +24,8 @@
       :delete-permission="['identity:tenant:delete']"
       :export-permission="['identity:tenant:export']"
       :import-permission="['identity:tenant:import']"
-      :disabled-edit="selectedKeys.length !== 1"
-      :disabled-delete="selectedKeys.length === 0"
+      :disabled-edit="selectedRowKeys.length !== 1"
+      :disabled-delete="selectedRowKeys.length === 0"
       @add="handleAdd"
       @edit="handleEditSelected"
       @delete="handleBatchDelete"
@@ -44,14 +44,14 @@
       :data-source="list"
       :loading="loading"
       :pagination="false"
+      :scroll="{ x: 600, y: 'calc(100vh - 500px)' }"
+      row-key="tenantId"
+      v-model:selectedRowKeys="selectedRowKeys"
       :row-selection="{
-        selectedRowKeys: selectedKeys,
-        onChange: onSelectChange
+        type: 'checkbox',
+        columnWidth: 60
       }"
-      row-key="id"
-      size="middle"
-      bordered
-      :scroll="{ x: 1200, y: 'calc(100vh - 300px)' }"
+      @change="onTableChange"
     >
       <template #bodyCell="{ column, record }">
         <!-- 状态 -->
@@ -198,7 +198,7 @@ const loading = ref(false)
 const list = ref<HbtTenant[]>([])
 
 // 选中的租户ID
-const selectedKeys = ref<(string | number)[]>([])
+const selectedRowKeys = ref<(string | number)[]>([])
 
 // 表单弹窗显示状态
 const formVisible = ref(false)
@@ -453,7 +453,7 @@ const getList = async () => {
 // 处理查询
 const handleQuery = () => {
   queryParams.value.pageIndex = 1
-  selectedKeys.value = []
+  selectedRowKeys.value = []
   getList()
 }
 
@@ -471,9 +471,11 @@ const handleReset = () => {
   getList()
 }
 
-// 处理选择变化
-const onSelectChange = (keys: (string | number)[], _: HbtTenant[]) => {
-  selectedKeys.value = keys
+// 处理表格变化
+const onTableChange = (pagination: TablePaginationConfig) => {
+  queryParams.value.pageIndex = pagination.current || 1
+  queryParams.value.pageSize = pagination.pageSize || 10
+  getList()
 }
 
 // 处理新增
@@ -485,7 +487,7 @@ const handleAdd = () => {
 
 // 处理编辑选中项
 const handleEditSelected = () => {
-  const tenantId = selectedKeys.value[0]
+  const tenantId = selectedRowKeys.value[0]
   formTitle.value = t('identity.tenant.actions.update')
   formTenantId.value = Number(tenantId)
   formVisible.value = true
@@ -518,13 +520,13 @@ const handleDelete = async (record: Record<string, any>) => {
 const handleBatchDelete = () => {
   Modal.confirm({
     title: t('common.delete.confirm'),
-    content: t('common.delete.message', { count: selectedKeys.value.length }),
+    content: t('common.delete.message', { count: selectedRowKeys.value.length }),
     async onOk() {
       try {
-        const { data } = await batchDeleteTenant(selectedKeys.value.map(id => Number(id)))
+        const { data } = await batchDeleteTenant(selectedRowKeys.value.map(id => Number(id)))
         if (data.code === 200) {
           message.success(t('common.delete.success'))
-          selectedKeys.value = []
+          selectedRowKeys.value = []
           getList()
         } else {
           message.error(data.msg || t('common.delete.failed'))

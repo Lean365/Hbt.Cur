@@ -38,7 +38,8 @@ public class HbtGenConfigDto
     /// <summary>
     /// 主键ID
     /// </summary>
-    public long ConfigId { get; set; }
+    [AdaptMember("Id")]
+    public long GenConfigId { get; set; }
 
     /// <summary>
     /// 配置名称
@@ -114,10 +115,7 @@ public class HbtGenConfigDto
     [Range(0, 1, ErrorMessage = "状态必须是0或1")]
     public int Status { get; set; } = 0;
 
-    /// <summary>
-    /// 租户ID
-    /// </summary>
-    public long? TenantId { get; set; }
+
 
     /// <summary>
     /// 创建人
@@ -278,10 +276,7 @@ public class HbtGenConfigCreateDto
     [Range(0, 1, ErrorMessage = "状态必须是0或1")]
     public int Status { get; set; } = 0;
 
-    /// <summary>
-    /// 租户ID
-    /// </summary>
-    public long? TenantId { get; set; }
+
 }
 
 /// <summary>
@@ -293,7 +288,8 @@ public class HbtGenConfigUpdateDto : HbtGenConfigCreateDto
     /// 主键ID
     /// </summary>
     [Required(ErrorMessage = "主键ID不能为空")]
-    public long ConfigId { get; set; }
+    [AdaptMember("Id")]
+    public long GenConfigId { get; set; }
 }
 
 /// <summary>
@@ -390,10 +386,7 @@ public class HbtGenConfigImportDto
     [Range(0, 1, ErrorMessage = "状态必须是0或1")]
     public int Status { get; set; } = 0;
 
-    /// <summary>
-    /// 租户ID
-    /// </summary>
-    public long? TenantId { get; set; }
+
 }
 
 /// <summary>
@@ -490,10 +483,7 @@ public class HbtGenConfigExportDto
     [Range(0, 1, ErrorMessage = "状态必须是0或1")]
     public int Status { get; set; } = 0;
 
-    /// <summary>
-    /// 租户ID
-    /// </summary>
-    public long? TenantId { get; set; }
+
 
     /// <summary>
     /// 备注
@@ -595,8 +585,5 @@ public class HbtGenConfigTemplateDto
     [Range(0, 1, ErrorMessage = "状态必须是0或1")]
     public int Status { get; set; } = 0;
 
-    /// <summary>
-    /// 租户ID
-    /// </summary>
-    public long? TenantId { get; set; }
+
 }

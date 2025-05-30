@@ -126,12 +126,12 @@ public class HbtGenConfigService : HbtBaseService, IHbtGenConfigService
     /// <returns>更新后的配置信息</returns>
     public async Task<HbtGenConfigDto> UpdateAsync(HbtGenConfigUpdateDto input)
     {
-        var config = await _configRepository.GetByIdAsync(input.ConfigId)
-            ?? throw new HbtException(L("Generator.Config.NotFound", input.ConfigId));
+        var config = await _configRepository.GetByIdAsync(input.GenConfigId)
+            ?? throw new HbtException(L("Generator.Config.NotFound", input.GenConfigId));
 
         // 验证字段是否已存在
         if (config.GenConfigName != input.GenConfigName)
-            await HbtValidateUtils.ValidateFieldExistsAsync(_configRepository, "GenConfigName", input.GenConfigName, input.ConfigId);
+            await HbtValidateUtils.ValidateFieldExistsAsync(_configRepository, "GenConfigName", input.GenConfigName, input.GenConfigId);
 
         input.Adapt(config);
         var result = await _configRepository.UpdateAsync(config);

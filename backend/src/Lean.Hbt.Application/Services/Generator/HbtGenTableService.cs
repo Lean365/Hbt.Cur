@@ -145,12 +145,12 @@ public class HbtGenTableService : HbtBaseService, IHbtGenTableService
     /// <returns>更新后的表信息</returns>
     public async Task<HbtGenTableDto> UpdateAsync(HbtGenTableUpdateDto input)
     {
-        var table = await _tableRepository.GetByIdAsync(input.Id);
+        var table = await _tableRepository.GetByIdAsync(input.GenTableId);
         if (table == null)
-            throw new HbtException(L("Generator.Table.NotFound", input.Id));
+            throw new HbtException(L("Generator.Table.NotFound", input.GenTableId));
 
         // 检查表名是否已存在
-        await HbtValidateUtils.ValidateFieldExistsAsync(_tableRepository, nameof(HbtGenTable.TableName), input.TableName, input.Id);
+        await HbtValidateUtils.ValidateFieldExistsAsync(_tableRepository, nameof(HbtGenTable.TableName), input.TableName, input.GenTableId);
 
         // 更新表信息
         input.Adapt(table);
@@ -160,7 +160,7 @@ public class HbtGenTableService : HbtBaseService, IHbtGenTableService
         if (input.Columns != null && input.Columns.Any())
         {
             // 删除旧的列信息
-            var oldColumns = await _columnRepository.GetListAsync(x => x.TableId == input.Id);
+            var oldColumns = await _columnRepository.GetListAsync(x => x.TableId == input.GenTableId);
             foreach (var column in oldColumns)
             {
                 await _columnRepository.DeleteAsync(column.Id);
@@ -170,12 +170,12 @@ public class HbtGenTableService : HbtBaseService, IHbtGenTableService
             var columns = input.Columns.Adapt<List<HbtGenColumn>>();
             foreach (var column in columns)
             {
-                column.TableId = input.Id;
+                column.TableId = input.GenTableId;
                 await _columnRepository.CreateAsync(column);
             }
         }
 
-        return await GetByIdAsync(input.Id) ?? throw new HbtException(L("Generator.Table.UpdateFailed"));
+        return await GetByIdAsync(input.GenTableId) ?? throw new HbtException(L("Generator.Table.UpdateFailed"));
     }
 
     /// <summary>

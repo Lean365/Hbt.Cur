@@ -44,7 +44,7 @@ export function createPost(data: HbtPostCreate) {
 /**
  * 更新岗位
  */
-export function updatePost(data: HbtPost) {
+export function updatePost(data: HbtPostUpdate) {
   return request({
     url: '/api/HbtPost',
     method: 'put',

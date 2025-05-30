@@ -1,11 +1,11 @@
 import request from '@/utils/request';
-import type { HbtGenConfig, HbtGenConfigQuery, HbtGenConfigPageResult } from '@/types/generator/genConfig';
 import type { HbtApiResponse } from '@/types/common';
+import type { HbtGenConfig, HbtGenConfigCreate, HbtGenConfigUpdate, HbtGenConfigQuery, HbtGenConfigPageResult } from '@/types/generator/genConfig';
 
 /**
  * 获取代码生成配置列表
  */
-export function getPagedList(params: HbtGenConfigQuery) {
+export function getGenConfigList(params: HbtGenConfigQuery) {
   return request<HbtApiResponse<HbtGenConfigPageResult>>({
     url: '/api/HbtGenConfig/list',
     method: 'get',
@@ -26,7 +26,7 @@ export function getGenConfig(id: number) {
 /**
  * 创建代码生成配置
  */
-export function createGenConfig(data: HbtGenConfig) {
+export function createGenConfig(data: HbtGenConfigCreate) {
   return request<HbtApiResponse<HbtGenConfig>>({
     url: '/api/HbtGenConfig',
     method: 'post',
@@ -37,7 +37,7 @@ export function createGenConfig(data: HbtGenConfig) {
 /**
  * 更新代码生成配置
  */
-export function updateGenConfig(id: number, data: HbtGenConfig) {
+export function updateGenConfig(id: number, data: HbtGenConfigUpdate) {
   return request<HbtApiResponse<HbtGenConfig>>({
     url: `/api/HbtGenConfig/${id}`,
     method: 'put',
@@ -56,41 +56,51 @@ export function deleteGenConfig(id: number) {
 }
 
 /**
- * 生成代码
+ * 批量删除代码生成配置
  */
-export function generateGenConfig(id: number) {
+export function batchDeleteGenConfig(ids: number[]) {
   return request<HbtApiResponse<boolean>>({
-    url: `/api/HbtGenConfig/${id}/generate`,
-    method: 'post'
+    url: '/api/HbtGenConfig/batch',
+    method: 'delete',
+    data: ids
   });
 }
 
 /**
- * 预览代码
+ * 导出代码生成配置
  */
-export function previewGenConfig(id: number) {
-  return request<HbtApiResponse<Record<string, string>>>({
-    url: `/api/HbtGenConfig/${id}/preview`,
-    method: 'get'
+export function exportGenConfig(params: HbtGenConfigQuery) {
+  return request<HbtApiResponse<Blob>>({
+    url: '/api/HbtGenConfig/export',
+    method: 'get',
+    params,
+    responseType: 'blob'
   });
 }
 
 /**
- * 下载代码
+ * 下载导入模板
  */
-export function downloadGenConfig(id: number) {
-  return request<Blob>({
-    url: `/api/HbtGenConfig/${id}/download`,
+export function downloadTemplate() {
+  return request<HbtApiResponse<Blob>>({
+    url: '/api/HbtGenConfig/template',
     method: 'get',
     responseType: 'blob'
   });
 }
 
-/** 批量删除生成配置 */
-export function batchDeleteGenConfig(ids: number[]) {
-  return request({
-    url: '/api/HbtGenConfig/batch',
-    method: 'delete',
-    data: { ids }
+/**
+ * 导入代码生成配置
+ */
+export function importGenConfig(file: File) {
+  const formData = new FormData();
+  formData.append('file', file);
+  return request<HbtApiResponse<{ success: number; fail: number }>>({
+    url: '/api/HbtGenConfig/import',
+    method: 'post',
+    data: formData,
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
   });
 } 

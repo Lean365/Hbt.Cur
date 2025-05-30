@@ -10,11 +10,11 @@
 import type { HbtBaseEntity, HbtPagedQuery, HbtPagedResult } from '@/types/common'
 
 /**
- * 代码生成模板实体
+ * 代码生成模板对象
  */
 export interface HbtGenTemplate extends HbtBaseEntity {
   /** 模板ID */
-  id: number
+  genTemplateId: number
   /** 模板名称 */
   templateName: string
   /** 模板类型（1：后端代码，2：前端代码，3：SQL代码） */
@@ -31,8 +31,7 @@ export interface HbtGenTemplate extends HbtBaseEntity {
   genRule: number
   /** 排序号 */
   orderNum: number
-  /** 备注 */
-  remark?: string
+
   /** 状态（0：停用，1：正常） */
   status: number
 }
@@ -49,12 +48,14 @@ export interface HbtGenTemplateQuery extends HbtPagedQuery {
   templateCategory?: number
   /** 状态 */
   status?: number
-  /** 日期范围 */
-  dateRange?: [string, string]
+  /** 开始时间 */
+  beginTime?: string
+  /** 结束时间 */
+  endTime?: string
 }
 
 /**
- * 代码生成模板创建参数
+ * 创建代码生成模板参数
  */
 export interface HbtGenTemplateCreate {
   /** 模板名称 */
@@ -80,29 +81,60 @@ export interface HbtGenTemplateCreate {
 }
 
 /**
- * 代码生成模板更新参数
+ * 更新代码生成模板参数
  */
 export interface HbtGenTemplateUpdate extends HbtGenTemplateCreate {
   /** 模板ID */
-  id: number
+  genTemplateId: number
+}
+
+/**
+ * 代码生成模板模板
+ */
+export interface HbtGenTemplateTemplate {
+  templateName: string
+  templateType: string
+  templateCategory: string
+  fileName: string
+  content: string
+  genPath: string
+  genRule: string
+  orderNum: string
+  remark: string
+  status: string
 }
 
 /**
  * 代码生成模板导入参数
  */
 export interface HbtGenTemplateImport {
-  /** 文件对象 */
-  file: File
-  /** 工作表名称 */
-  sheetName?: string
+  templateName: string
+  templateType: number
+  templateCategory: number
+  fileName: string
+  content: string
+  genPath: string
+  genRule: number
+  orderNum: number
+  status: number
+  remark?: string
 }
 
 /**
  * 代码生成模板导出参数
  */
-export interface HbtGenTemplateExport extends HbtGenTemplateQuery {
-  /** 工作表名称 */
-  sheetName?: string
+export interface HbtGenTemplateExport {
+  templateName: string
+  templateType: number
+  templateCategory: number
+  fileName: string
+  content: string
+  genPath: string
+  genRule: number
+  orderNum: number
+  status: number
+  remark?: string
+  createTime: string
 }
 
 /**

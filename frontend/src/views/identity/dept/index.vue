@@ -63,7 +63,7 @@
       row-key="deptId"
       size="middle"
       bordered
-      :scroll="{ x: 1200, y: 'calc(100vh - 300px)' }"
+      :scroll="{ x: 600, y: 'calc(100vh - 500px)' }"
       :virtual="true"
       :lazy="true"
       @expand="onExpand"

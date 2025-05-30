@@ -40,7 +40,7 @@
       :data-source="tableData"
       :columns="columns.filter(col => columnSettings[col.key])"
       :pagination="false"
-      :scroll="{ x: 'max-content' }"
+      :scroll="{ x: 600, y: 'calc(100vh - 500px)' }"
       :default-height="594"
       row-key="userId"
       v-model:selectedRowKeys="selectedRowKeys"

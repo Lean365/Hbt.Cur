@@ -152,10 +152,7 @@ public class HbtGenColumnDto
     /// </summary>
     public int OrderNum { get; set; }
 
-    /// <summary>
-    /// 租户ID
-    /// </summary>
-    public long TenantId { get; set; }
+
 }
 
 /// <summary>
@@ -320,10 +317,7 @@ public class HbtGenColumnCreateDto
     /// </summary>
     public int OrderNum { get; set; }
 
-    /// <summary>
-    /// 租户ID
-    /// </summary>
-    public long TenantId { get; set; }
+
 }
 
 /// <summary>

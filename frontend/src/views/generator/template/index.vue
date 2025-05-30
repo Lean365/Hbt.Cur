@@ -1,74 +1,87 @@
 <template>
   <div class="template-container">
-    <!-- 查询区域 -->
+    <!-- 搜索区域 -->
     <hbt-query
-      v-show="showSearch"
-      :model="queryParams"
+      v-model:show="showSearch"
       :query-fields="queryFields"
       @search="handleQuery"
-      @reset="resetQuery"
-    />
+      @reset="handleReset"
+    >
+    </hbt-query>
 
     <!-- 工具栏 -->
     <hbt-toolbar
+      v-model:show-search="showSearch"
+      :selected-count="selectedRowKeys.length"
+      :show-select-count="true"
       :show-add="true"
-      :add-permission="['generator:template:create']"
       :show-edit="true"
-      :edit-permission="['generator:template:update']"
       :show-delete="true"
+      :show-export="true"
+      :show-import="true"
+      :add-permission="['generator:template:create']"
+      :edit-permission="['generator:template:update']"
       :delete-permission="['generator:template:delete']"
+      :export-permission="['generator:template:export']"
+      :import-permission="['generator:template:import']"
       :disabled-edit="selectedRowKeys.length !== 1"
       :disabled-delete="selectedRowKeys.length === 0"
       @add="handleAdd"
       @edit="handleEditSelected"
       @delete="handleBatchDelete"
+      @export="handleExport"
+      @import="handleImport"
+      @template="handleTemplate"
       @refresh="fetchData"
-      @column-setting="handleColumnSettingChange"
+      @column-setting="handleColumnSetting"
       @toggle-search="toggleSearch"
       @toggle-fullscreen="toggleFullscreen"
-    />
+    >
+    </hbt-toolbar>
 
     <!-- 数据表格 -->
     <hbt-table
-      :loading="loading"
+      :columns="columns.filter(col => col.key && columnSettings[col.key])"
       :data-source="tableData"
-      :columns="columns.filter(col => columnSettings[col.key])"
-      :pagination="{
-        total: total,
-        current: queryParams.pageIndex,
-        pageSize: queryParams.pageSize,
-        showSizeChanger: true,
-        showQuickJumper: true,
-        showTotal: (total: number) => `共 ${total} 条`
-      }"
-      :row-key="(record: HbtGenTemplateDto) => String(record.id)"
+      :loading="loading"
+      :pagination="false"
+      :scroll="{ x: 1200, y: 'calc(100vh - 300px)' }"
+      row-key="genTemplateId"
       v-model:selectedRowKeys="selectedRowKeys"
       :row-selection="{
         type: 'checkbox',
         columnWidth: 60
       }"
-      :scroll="{ x: 1200 }"     
-      @change="handleTableChange"
-      @row-click="handleRowClick"
+      @change="onTableChange"
     >
       <!-- 操作列 -->
       <template #bodyCell="{ column, record }">
         <template v-if="column.key === 'action'">
-          <a-space>
-            <a @click="handleEdit(record)" v-hasPermi="['generator:template:update']">修改</a>
-            <a-divider type="vertical" />
-            <a-popconfirm
-              title="确定要删除该模板吗？"
-              @confirm="handleDelete(record)"
-              ok-text="确定"
-              cancel-text="取消"
-            >
-              <a class="text-danger" v-hasPermi="['generator:template:delete']">删除</a>
-            </a-popconfirm>
-          </a-space>
+          <hbt-operation
+            :record="record"
+            :show-edit="true"
+            :show-delete="true"
+            :edit-permission="['generator:template:update']"
+            :delete-permission="['generator:template:delete']"
+            size="small"
+            @edit="handleEdit"
+            @delete="handleDelete"
+          />
         </template>
       </template>
     </hbt-table>
+
+    <!-- 分页组件 -->
+    <hbt-pagination
+      v-model:current="queryParams.pageIndex"
+      v-model:pageSize="queryParams.pageSize"
+      :total="total"
+      :show-size-changer="true"
+      :show-quick-jumper="true"
+      :show-total="(total: number, range: [number, number]) => h('span', null, `共 ${total} 条`)"
+      @change="handlePageChange"
+      @showSizeChange="handleSizeChange"
+    />
 
     <!-- 添加/修改模板对话框 -->
     <template-form
@@ -76,6 +89,7 @@
       :title="formTitle"
       :template-id="selectedTemplateId"
       @success="handleSuccess"
+      @cancel="formVisible = false"
     />
 
     <!-- 列设置抽屉 -->
@@ -92,7 +106,7 @@
         class="column-setting-group"
       >
         <div v-for="col in defaultColumns" :key="col.key" class="column-setting-item">
-          <a-checkbox :value="col.key">{{ col.title }}</a-checkbox>
+          <a-checkbox :value="col.key" :disabled="col.key === 'action'">{{ col.title }}</a-checkbox>
         </div>
       </a-checkbox-group>
     </a-drawer>
@@ -100,77 +114,169 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive, onMounted } from 'vue'
-import { message } from 'ant-design-vue'
+import { ref, reactive, onMounted, computed, nextTick } from 'vue'
+import { message, Modal } from 'ant-design-vue'
 import type { TablePaginationConfig } from 'ant-design-vue'
 import type { QueryField } from '@/types/components/query'
-import type { HbtGenTemplateDto } from '@/types/generator/template'
+import type { HbtGenTemplate, HbtGenTemplateQuery } from '@/types/generator/genTemplate'
 import { 
-  getPagedList, 
+  getGenTemplateList, 
   getGenTemplate,
   createGenTemplate, 
   updateGenTemplate, 
-  deleteGenTemplate
+  deleteGenTemplate,
+  batchDeleteGenTemplate,
+  exportGenTemplate,
+  downloadTemplate,
+  importGenTemplate
 } from '@/api/generator/genTemplate'
 import TemplateForm from './components/TemplateForm.vue'
 
+const { t } = useI18n()
+
+// 查询区域显示状态
+const showSearch = ref(true)
 
 // 查询字段定义
 const queryFields: QueryField[] = [
   {
     name: 'templateName',
-    label: '模板名称',
+    label: t('generator.template.fields.templateName.label'),
     type: 'input',
-    placeholder: '请输入模板名称'
+    props: {
+      placeholder: t('generator.template.fields.templateName.placeholder'),
+      allowClear: true
+    }
   },
   {
-    name: 'fileName',
-    label: '文件名',
-    type: 'input',
-    placeholder: '请输入文件名'
+    name: 'templateType',
+    label: t('generator.template.fields.templateType.label'),
+    type: 'select',
+    props: {
+      options: [
+        { label: '后端代码', value: 1 },
+        { label: '前端代码', value: 2 },
+        { label: 'SQL代码', value: 3 }
+      ],
+      allowClear: true
+    }
+  },
+  {
+    name: 'templateCategory',
+    label: t('generator.template.fields.templateCategory.label'),
+    type: 'select',
+    props: {
+      options: [
+        { label: '实体类', value: 1 },
+        { label: '控制器', value: 2 },
+        { label: '服务层', value: 3 },
+        { label: '数据访问层', value: 4 },
+        { label: '视图', value: 5 },
+        { label: 'API', value: 6 },
+        { label: '其他', value: 7 }
+      ],
+      allowClear: true
+    }
+  },
+  {
+    name: 'status',
+    label: t('generator.template.fields.status.label'),
+    type: 'select',
+    props: {
+      dictType: 'sys_normal_disable',
+      type: 'radio',
+      showAll: true
+    }
   }
 ]
 
 // 表格列定义
 const columns = [
   {
-    title: '模板名称',
+    title: t('generator.template.fields.genTemplateId.label'),
+    dataIndex: 'genTemplateId',
+    key: 'genTemplateId',
+    width: 120,
+    ellipsis: true
+  },
+  {
+    title: t('generator.template.fields.templateName.label'),
     dataIndex: 'templateName',
     key: 'templateName',
     width: 120,
     ellipsis: true
   },
   {
-    title: '文件名',
+    title: t('generator.template.fields.fileName.label'),
     dataIndex: 'fileName',
     key: 'fileName',
     width: 120,
     ellipsis: true
   },
   {
-    title: '创建时间',
-    dataIndex: 'createTime',
-    key: 'createTime',
-    width: 180
+    title: t('generator.template.fields.templateType.label'),
+    dataIndex: 'templateType',
+    key: 'templateType',
+    width: 100,
+    ellipsis: true
   },
   {
-    title: '更新时间',
-    dataIndex: 'updateTime',
-    key: 'updateTime',
-    width: 180
+    title: t('generator.template.fields.templateCategory.label'),
+    dataIndex: 'templateCategory',
+    key: 'templateCategory',
+    width: 100,
+    ellipsis: true
   },
   {
-    title: '备注',
+    title: t('generator.template.fields.status.label'),
+    dataIndex: 'status',
+    key: 'status',
+    width: 100,
+    ellipsis: true
+  },
+  {
+    title: t('common.table.columns.remark'),
     dataIndex: 'remark',
     key: 'remark',
     width: 120,
     ellipsis: true
   },
   {
-    title: '操作',
-    key: 'action',
+    title: t('common.table.columns.createBy'),
+    dataIndex: 'createBy',
+    key: 'createBy',
+    width: 120,
+    ellipsis: true
+  },
+  {
+    title: t('common.table.columns.createTime'),
+    dataIndex: 'createTime',
+    key: 'createTime',
     width: 180,
-    fixed: 'right'
+    ellipsis: true
+  },
+  {
+    title: t('common.table.columns.updateBy'),
+    dataIndex: 'updateBy',
+    key: 'updateBy',
+    width: 120,
+    ellipsis: true
+  },
+  {
+    title: t('common.table.columns.updateTime'),
+    dataIndex: 'updateTime',
+    key: 'updateTime',
+    width: 180,
+    ellipsis: true
+  },
+  {
+    title: t('common.table.header.operation'),
+    dataIndex: 'action',
+    key: 'action',
+    width: 150,
+    fixed: 'right',
+    align: 'center',
+    ellipsis: true
   }
 ]
 
@@ -181,32 +287,79 @@ const defaultColumns = columns.map(col => ({
 }))
 
 // 列设置状态
-const columnSettings = reactive(
-  defaultColumns.reduce((acc, col) => {
-    acc[col.key] = true
-    return acc
-  }, {} as Record<string, boolean>)
-)
+const columnSettings = ref<Record<string, boolean>>({})
+
+// 初始化列设置
+const initColumnSettings = () => {
+  // 每次刷新页面时清除localStorage
+  localStorage.removeItem('templateColumnSettings')
+
+  // 初始化所有列为false
+  columnSettings.value = Object.fromEntries(defaultColumns.map(col => [col.key, false]))
+
+  // 获取前9列（不包含操作列）
+  const firstNineColumns = defaultColumns.filter(col => col.key !== 'action').slice(0, 9)
+
+  // 设置前9列为true
+  firstNineColumns.forEach(col => {
+    if (col.key) {
+      columnSettings.value[col.key] = true
+    }
+  })
+
+  // 确保操作列显示
+  columnSettings.value['action'] = true
+}
+
+/** 列设置变更 */
+const handleColumnSettingChange = (checkedValue: Array<string | number | boolean>) => {
+  const settings: Record<string, boolean> = {}
+  defaultColumns.forEach(col => {
+    // 操作列始终为true
+    if (col.key === 'action') {
+      settings[col.key] = true
+    } else if (col.key) {
+      settings[col.key] = checkedValue.includes(col.key)
+    }
+  })
+  columnSettings.value = settings
+  localStorage.setItem('templateColumnSettings', JSON.stringify(settings))
+}
+
+/** 列设置 */
+const handleColumnSetting = () => {
+  columnSettingVisible.value = true
+}
 
 // 状态定义
 const loading = ref(false)
-const tableData = ref<HbtGenTemplateDto[]>([])
+const tableData = ref<HbtGenTemplate[]>([])
 const total = ref(0)
-const queryParams = reactive({
+const queryParams = ref<HbtGenTemplateQuery>({
   pageIndex: 1,
   pageSize: 10,
   templateName: undefined,
-  fileName: undefined
+  templateType: undefined,
+  templateCategory: undefined,
+  status: -1
 })
-const selectedRowKeys = ref<string[]>([])
+const selectedRowKeys = ref<(string | number)[]>([])
 const selectedTemplateId = ref<number>()
 const formVisible = ref(false)
 const formTitle = ref('')
 const columnSettingVisible = ref(false)
-const showSearch = ref(true)
+
+// 选中的模板ID
+const selectedKeys = ref<(string | number)[]>([])
+
+// 处理选择变化
+const onSelectChange = (keys: (string | number)[], _: HbtGenTemplate[]) => {
+  selectedKeys.value = keys
+}
 
 // 生命周期钩子
 onMounted(() => {
+  initColumnSettings()
   fetchData()
 })
 
@@ -214,10 +367,21 @@ onMounted(() => {
 const fetchData = async () => {
   loading.value = true
   try {
-    const res = await getPagedList(queryParams)
-    if (res.data) {
-      tableData.value = res.data
-      total.value = res.data.length
+    const res = await getGenTemplateList(queryParams.value)
+    if (res.data.code === 200) {
+      console.log('[模板管理] 获取数据:', res.data.data.rows)
+      tableData.value = res.data.data.rows
+      total.value = res.data.data.totalNum
+    } else {
+      message.error(res.data.msg || t('common.failed'))
+    }
+  } catch (error: any) {
+    console.error('[模板管理] 获取模板列表出错:', error)
+    if (error.response?.status === 401) {
+      message.error('登录已过期，请重新登录')
+      window.location.href = '/login'
+    } else {
+      message.error(t('common.failed'))
     }
   } finally {
     loading.value = false
@@ -226,87 +390,116 @@ const fetchData = async () => {
 
 /** 搜索按钮操作 */
 const handleQuery = () => {
-  queryParams.pageIndex = 1
+  queryParams.value.pageIndex = 1
+  selectedRowKeys.value = []
   fetchData()
 }
 
 /** 重置按钮操作 */
-const resetQuery = () => {
-  queryParams.templateName = undefined
-  queryParams.fileName = undefined
-  queryParams.pageIndex = 1
+const handleReset = () => {
+  queryParams.value = {
+    pageIndex: 1,
+    pageSize: 10,
+    templateName: undefined,
+    templateType: undefined,
+    templateCategory: undefined,
+    status: -1
+  }
   fetchData()
 }
 
 /** 表格变化事件 */
-const handleTableChange = (pagination: TablePaginationConfig) => {
-  queryParams.pageIndex = pagination.current || 1
-  queryParams.pageSize = pagination.pageSize || 10
+const onTableChange = (pagination: TablePaginationConfig) => {
+  queryParams.value.pageIndex = pagination.current || 1
+  queryParams.value.pageSize = pagination.pageSize || 10
+  fetchData()
+}
+
+/** 页码变化事件 */
+const handlePageChange = (page: number) => {
+  queryParams.value.pageIndex = page
+  fetchData()
+}
+
+/** 每页条数变化事件 */
+const handleSizeChange = (pageSize: number) => {
+  queryParams.value.pageSize = pageSize
+  queryParams.value.pageIndex = 1
   fetchData()
 }
 
 /** 行点击事件 */
-const handleRowClick = (record: HbtGenTemplateDto) => {
-  selectedTemplateId.value = record.id
+const handleRowClick = (record: HbtGenTemplate) => {
+  selectedTemplateId.value = record.genTemplateId
 }
 
 /** 新增按钮操作 */
 const handleAdd = () => {
   selectedTemplateId.value = undefined
-  formTitle.value = '新增代码模板'
+  formTitle.value = t('generator.template.dialog.create')
   formVisible.value = true
 }
 
 /** 编辑选中行 */
 const handleEditSelected = () => {
   if (selectedRowKeys.value.length !== 1) {
-    message.warning('请选择一条记录')
+    message.warning(t('common.select.one'))
     return
   }
-  selectedTemplateId.value = Number(selectedRowKeys.value[0])
-  formTitle.value = '修改代码模板'
+  const id = Number(selectedRowKeys.value[0])
+  console.log('[模板管理] 编辑选中行, id:', id)
+  if (!id) {
+    message.error(t('common.invalid.id'))
+    return
+  }
+  selectedTemplateId.value = id
+  formTitle.value = t('generator.template.dialog.update')
   formVisible.value = true
 }
 
 /** 编辑按钮操作 */
-const handleEdit = (record: HbtGenTemplateDto) => {
-  selectedTemplateId.value = record.id
-  formTitle.value = '修改代码模板'
-  formVisible.value = true
+const handleEdit = (record: HbtGenTemplate) => {
+  console.log('[模板管理] 编辑按钮点击, record:', record)
+  if (!record.genTemplateId) {
+    message.error(t('common.invalid.id'))
+    return
+  }
+  selectedTemplateId.value = record.genTemplateId
+  formTitle.value = t('generator.template.dialog.update')
+  // 确保在设置 ID 后再显示表单
+  nextTick(() => {
+    formVisible.value = true
+  })
 }
 
 /** 删除按钮操作 */
-const handleDelete = async (record: HbtGenTemplateDto) => {
-  if (!record.id) return
+const handleDelete = async (record: HbtGenTemplate) => {
+  if (!record.genTemplateId) return
   try {
-    await deleteGenTemplate(record.id)
-    message.success('删除成功')
+    await deleteGenTemplate(record.genTemplateId)
+    message.success(t('common.delete.success'))
     fetchData()
   } catch (error) {
-    message.error('删除失败')
+    message.error(t('common.delete.failed'))
   }
 }
 
 /** 批量删除按钮操作 */
-const handleBatchDelete = async () => {
-  if (!selectedRowKeys.value.length) {
-    message.warning('请选择要删除的记录')
-    return
-  }
-  try {
-    await Promise.all(selectedRowKeys.value.map(id => deleteGenTemplate(Number(id))))
-    message.success('批量删除成功')
-    selectedRowKeys.value = []
-    fetchData()
-  } catch (error) {
-    message.error('批量删除失败')
-  }
-}
-
-/** 列设置变更 */
-const handleColumnSettingChange = (checkedValues: any[]) => {
-  Object.keys(columnSettings).forEach(key => {
-    columnSettings[key] = checkedValues.includes(key)
+const handleBatchDelete = () => {
+  Modal.confirm({
+    title: t('common.delete.confirm'),
+    content: t('common.delete.message', { count: selectedRowKeys.value.length }),
+    async onOk() {
+      try {
+        await batchDeleteGenTemplate(selectedRowKeys.value.map(Number))
+        message.success(t('common.delete.success'))
+        selectedRowKeys.value = []
+        fetchData()
+      } catch (error) {
+        console.error(error)
+        message.error(t('common.delete.failed'))
+      }
+    }
   })
 }
 
@@ -324,18 +517,103 @@ const toggleFullscreen = () => {
 const handleSuccess = () => {
   fetchData()
 }
+
+/** 处理导出 */
+const handleExport = async () => {
+  try {
+    const res = await exportGenTemplate(queryParams.value)
+    if (res.data.code === 200) {
+      message.success(t('common.export.success'))
+    } else {
+      message.error(res.data.msg || t('common.export.failed'))
+    }
+  } catch (error: any) {
+    console.error(error)
+    if (error.response?.status === 500) {
+      message.error(t('common.export.failed'))
+    } else {
+      message.error(error.response?.data?.msg || t('common.export.failed'))
+    }
+  }
+}
+
+/** 处理下载模板 */
+const handleTemplate = async () => {
+  try {
+    const res = await downloadTemplate()
+    const link = document.createElement('a')
+    link.href = window.URL.createObjectURL(new Blob([res.data]))
+    link.download = `模板导入模板_${new Date().getTime()}.xlsx`
+    link.click()
+    window.URL.revokeObjectURL(link.href)
+  } catch (error: any) {
+    console.error('下载模板失败:', error)
+    message.error(error.message || t('common.template.failed'))
+  }
+}
+
+/** 处理导入 */
+const handleImport = async () => {
+  try {
+    const input = document.createElement('input')
+    input.type = 'file'
+    input.accept = '.xlsx,.xls'
+    input.onchange = async (e: Event) => {
+      const file = (e.target as HTMLInputElement).files?.[0]
+      if (!file) return
+      const res = await importGenTemplate(file)
+      const { success = 0, fail = 0 } = (res.data as any).Data || {}
+      console.log(
+        'fail:',
+        (res.data as any).Data?.fail,
+        'success:',
+        (res.data as any).Data?.success
+      )
+
+      if (success > 0 && fail === 0) {
+        message.success(`导入成功${success}条，全部成功！`)
+      } else if (success > 0 && fail > 0) {
+        message.warning(`导入成功${success}条，失败${fail}条`)
+      } else if (success === 0 && fail > 0) {
+        message.error(`全部导入失败，共${fail}条`)
+      } else {
+        message.info('未读取到任何数据')
+      }
+      if (success > 0) fetchData()
+    }
+    input.click()
+  } catch (error: any) {
+    console.error('导入失败:', error)
+    message.error(error.message || t('common.import.failed'))
+  }
+}
 </script>
 
 <style lang="less" scoped>
 .template-container {
   padding: 16px;
+  background-color: #fff;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  .ant-table-wrapper {
+    flex: 1;
+  }
 }
+
 .column-setting-group {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
+
 .column-setting-item {
-  padding: 4px 0;
+  padding: 8px;
+  border-bottom: 1px solid var(--ant-color-split);
+
+  &:last-child {
+    border-bottom: none;
+  }
 }
 </style> 

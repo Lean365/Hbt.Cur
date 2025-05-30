@@ -14,49 +14,17 @@ import type { HbtGenColumn } from './genColumn'
  * 代码生成数据库表
  */
 export interface HbtGenTable extends HbtBaseEntity {
+  /** 主键ID */
+  genTableId: number
   /** 数据库名称 */
   databaseName: string
   /** 表名 */
   tableName: string
   /** 表描述 */
   tableComment: string
-  /** 实体类名 */
-  entityClassName: string
-  /** 实体命名空间 */
-  entityNamespace: string
-  /** 基本命名空间前缀 */
-  baseNamespace: string
-  /** DTO类型 */
-  dtoType: string[]
-  /** DTO命名空间 */
-  dtoNamespace: string
-  /** DTO类名 */
-  dtoClassName: string
-  /** 服务命名空间 */
-  serviceNamespace: string
-  /** 服务接口类名 */
-  iServiceClassName: string
-  /** 服务类名 */
-  serviceClassName: string
-  /** 仓储接口命名空间 */
-  iRepositoryNamespace: string
-  /** 仓储接口类名 */
-  iRepositoryClassName: string
-  /** 仓储命名空间 */
-  repositoryNamespace: string
-  /** 仓储类名 */
-  repositoryClassName: string
-  /** 控制器命名空间 */
-  controllerNamespace: string
-  /** 控制器类名 */
-  controllerClassName: string
-  /** 模板类型 */
-  tplType: string
-  /** 使用的模板 */
-  tplCategory: string
-  /** 关联子表名 */
+  /** 关联父表名 */
   subTableName?: string
-  /** 本表关联子表的外键名 */
+  /** 本表关联父表的外键名 */
   subTableFkName?: string
   /** 树编码字段 */
   treeCode: string
@@ -64,44 +32,76 @@ export interface HbtGenTable extends HbtBaseEntity {
   treeName: string
   /** 树父编码字段 */
   treeParentCode: string
-  /** 模块名称 */
+  /** 模板类型（0使用wwwroot/Generator/*.scriban模板 1使用HbtGenTemplate数据表中的模板） */
+  tplType: string
+  /** 使用的模板（crud单表操作 tree树表操作 sub主子表操作） */
+  tplCategory: string
+  /** 基本命名空间前缀 */
+  baseNamespace: string
+  /** 实体命名空间 */
+  entityNamespace: string
+  /** 实体类名 */
+  entityClassName: string
+  /** 对象命名空间 */
+  dtoNamespace: string
+  /** 对象类名 */
+  dtoClassName: string
+  /** 对象类型 */
+  dtoType: string
+  /** 服务命名空间 */
+  serviceNamespace: string
+  /** 服务接口类名称 */
+  iServiceClassName: string
+  /** 服务类名称 */
+  serviceClassName: string
+  /** 仓储接口命名空间 */
+  iRepositoryNamespace: string
+  /** 仓储接口类名称 */
+  iRepositoryClassName: string
+  /** 仓储命名空间 */
+  repositoryNamespace: string
+  /** 仓储类名称 */
+  repositoryClassName: string
+  /** 控制器命名空间 */
+  controllerNamespace: string
+  /** 控制器类名称 */
+  controllerClassName: string
+  /** 生成模块名 */
   moduleName: string
-  /** 业务名称 */
+  /** 生成业务名 */
   businessName: string
-  /** 功能名称 */
+  /** 生成功能名 */
   functionName: string
-  /** 作者名称 */
+  /** 生成作者名 */
   author: string
-  /** 生成代码方式 */
+  /** 生成代码方式（0zip压缩包 1自定义路径） */
   genType: string
-  /** 存放位置 */
+  /** 代码生成存放位置 */
   genPath: string
   /** 上级菜单ID */
   parentMenuId: number
+  /** 自动生成菜单 */
+  generateMenu: number
   /** 排序类型 */
   sortType: string
   /** 排序字段 */
   sortField: string
   /** 权限前缀 */
   permsPrefix: string
-  /** 是否生成菜单 */
-  generateMenu: number
-  /** 前端模板 */
+  /** 前端模板 1、element ui 2、element plus */
   frontTpl: number
-  /** 按钮样式 */
-  btnStyle: number
-  /** 前端样式 */
+  /** 前端样式 12,24 */
   frontStyle: number
-  /** 状态（0：停用，1：正常） */
+  /** 操作按钮样式 */
+  btnStyle: number
+  /** 状态 */
   status: number
-  /** 基础选项 */
-  options: CodeOptions
-  /** 字段列表 */
+  /** 代码生成列 */
   columns?: HbtGenColumn[]
   /** 子表信息 */
   subTable?: HbtGenTable
-  /** 租户ID */
-  tenantId: number
+  /** 代码生成选项 */
+  options?: CodeOptions
 }
 
 /**
@@ -114,7 +114,7 @@ export interface CodeOptions {
   isSnowflakeId: number
   /** 是否生成仓储层 */
   isRepository: number
-  /** CRUD组 */
+  /** CRUD功能组 */
   crudGroup: number[]
 }
 
@@ -138,43 +138,9 @@ export interface HbtGenTableCreate {
   tableName: string
   /** 表描述 */
   tableComment: string
-  /** 实体类名 */
-  entityClassName: string
-  /** 实体命名空间 */
-  entityNamespace: string
-  /** 基本命名空间前缀 */
-  baseNamespace: string
-  /** DTO类型 */
-  dtoType: string[]
-  /** DTO命名空间 */
-  dtoNamespace: string
-  /** DTO类名 */
-  dtoClassName: string
-  /** 服务命名空间 */
-  serviceNamespace: string
-  /** 服务接口类名 */
-  iServiceClassName: string
-  /** 服务类名 */
-  serviceClassName: string
-  /** 仓储接口命名空间 */
-  iRepositoryNamespace: string
-  /** 仓储接口类名 */
-  iRepositoryClassName: string
-  /** 仓储命名空间 */
-  repositoryNamespace: string
-  /** 仓储类名 */
-  repositoryClassName: string
-  /** 控制器命名空间 */
-  controllerNamespace: string
-  /** 控制器类名 */
-  controllerClassName: string
-  /** 模板类型 */
-  tplType: string
-  /** 使用的模板 */
-  tplCategory: string
-  /** 关联子表名 */
+  /** 关联父表名 */
   subTableName?: string
-  /** 本表关联子表的外键名 */
+  /** 本表关联父表的外键名 */
   subTableFkName?: string
   /** 树编码字段 */
   treeCode: string
@@ -182,40 +148,74 @@ export interface HbtGenTableCreate {
   treeName: string
   /** 树父编码字段 */
   treeParentCode: string
-  /** 模块名称 */
+  /** 模板类型（0使用wwwroot/Generator/*.scriban模板 1使用HbtGenTemplate数据表中的模板） */
+  tplType: string
+  /** 使用的模板（crud单表操作 tree树表操作 sub主子表操作） */
+  tplCategory: string
+  /** 基本命名空间前缀 */
+  baseNamespace: string
+  /** 实体命名空间 */
+  entityNamespace: string
+  /** 实体类名 */
+  entityClassName: string
+  /** 对象命名空间 */
+  dtoNamespace: string
+  /** 对象类名 */
+  dtoClassName: string
+  /** 对象类型 */
+  dtoType: string
+  /** 服务命名空间 */
+  serviceNamespace: string
+  /** 服务接口类名称 */
+  iServiceClassName: string
+  /** 服务类名称 */
+  serviceClassName: string
+  /** 仓储接口命名空间 */
+  iRepositoryNamespace: string
+  /** 仓储接口类名称 */
+  iRepositoryClassName: string
+  /** 仓储命名空间 */
+  repositoryNamespace: string
+  /** 仓储类名称 */
+  repositoryClassName: string
+  /** 控制器命名空间 */
+  controllerNamespace: string
+  /** 控制器类名称 */
+  controllerClassName: string
+  /** 生成模块名 */
   moduleName: string
-  /** 业务名称 */
+  /** 生成业务名 */
   businessName: string
-  /** 功能名称 */
+  /** 生成功能名 */
   functionName: string
-  /** 作者名称 */
+  /** 生成作者名 */
   author: string
-  /** 生成代码方式 */
+  /** 生成代码方式（0zip压缩包 1自定义路径） */
   genType: string
-  /** 存放位置 */
+  /** 代码生成存放位置 */
   genPath: string
   /** 上级菜单ID */
   parentMenuId: number
+  /** 自动生成菜单 */
+  generateMenu: number
   /** 排序类型 */
   sortType: string
   /** 排序字段 */
   sortField: string
   /** 权限前缀 */
   permsPrefix: string
-  /** 是否生成菜单 */
-  generateMenu: number
-  /** 前端模板 */
+  /** 前端模板 1、element ui 2、element plus */
   frontTpl: number
-  /** 按钮样式 */
-  btnStyle: number
-  /** 前端样式 */
+  /** 前端样式 12,24 */
   frontStyle: number
-  /** 状态（0：停用，1：正常） */
+  /** 操作按钮样式 */
+  btnStyle: number
+  /** 状态 */
   status: number
-  /** 基础选项 */
-  options: CodeOptions
-  /** 字段列表 */
+  /** 代码生成列 */
   columns?: HbtGenColumn[]
+  /** 代码生成选项 */
+  options?: CodeOptions
 }
 
 /**
@@ -254,46 +254,9 @@ export interface HbtGenTableImport {
   tableName: string
   /** 表描述 */
   tableComment: string
-    /** 基本命名空间前缀 */
-    baseNamespace: string
-      /** 实体命名空间 */
-  entityNamespace: string
-  /** 实体类名 */
-  entityClassName: string
-
-
-
-  /** DTO命名空间 */
-  dtoNamespace: string
-  /** DTO类名 */
-  dtoClassName: string
-    /** DTO类型 */
-    dtoType: string[]
-  /** 服务命名空间 */
-  serviceNamespace: string
-  /** 服务接口类名 */
-  iServiceClassName: string
-  /** 服务类名 */
-  serviceClassName: string
-  /** 仓储接口命名空间 */
-  iRepositoryNamespace: string
-  /** 仓储接口类名 */
-  iRepositoryClassName: string
-  /** 仓储命名空间 */
-  repositoryNamespace: string
-  /** 仓储类名 */
-  repositoryClassName: string
-  /** 控制器命名空间 */
-  controllerNamespace: string
-  /** 控制器类名 */
-  controllerClassName: string
-  /** 模板类型 */
-  tplType: string
-  /** 使用的模板 */
-  tplCategory: string
-  /** 关联子表名 */
+  /** 关联父表名 */
   subTableName?: string
-  /** 本表关联子表的外键名 */
+  /** 本表关联父表的外键名 */
   subTableFkName?: string
   /** 树编码字段 */
   treeCode: string
@@ -301,38 +264,74 @@ export interface HbtGenTableImport {
   treeName: string
   /** 树父编码字段 */
   treeParentCode: string
-  /** 模块名称 */
+  /** 模板类型（0使用wwwroot/Generator/*.scriban模板 1使用HbtGenTemplate数据表中的模板） */
+  tplType: string
+  /** 使用的模板（crud单表操作 tree树表操作 sub主子表操作） */
+  tplCategory: string
+  /** 基本命名空间前缀 */
+  baseNamespace: string
+  /** 实体命名空间 */
+  entityNamespace: string
+  /** 实体类名 */
+  entityClassName: string
+  /** 对象命名空间 */
+  dtoNamespace: string
+  /** 对象类名 */
+  dtoClassName: string
+  /** 对象类型 */
+  dtoType: string
+  /** 服务命名空间 */
+  serviceNamespace: string
+  /** 服务接口类名称 */
+  iServiceClassName: string
+  /** 服务类名称 */
+  serviceClassName: string
+  /** 仓储接口命名空间 */
+  iRepositoryNamespace: string
+  /** 仓储接口类名称 */
+  iRepositoryClassName: string
+  /** 仓储命名空间 */
+  repositoryNamespace: string
+  /** 仓储类名称 */
+  repositoryClassName: string
+  /** 控制器命名空间 */
+  controllerNamespace: string
+  /** 控制器类名称 */
+  controllerClassName: string
+  /** 生成模块名 */
   moduleName: string
-  /** 业务名称 */
+  /** 生成业务名 */
   businessName: string
-  /** 功能名称 */
+  /** 生成功能名 */
   functionName: string
-  /** 作者名称 */
+  /** 生成作者名 */
   author: string
-  /** 生成代码方式 */
+  /** 生成代码方式（0zip压缩包 1自定义路径） */
   genType: string
-  /** 存放位置 */
+  /** 代码生成存放位置 */
   genPath: string
   /** 上级菜单ID */
   parentMenuId: number
+  /** 自动生成菜单 */
+  generateMenu: number
   /** 排序类型 */
   sortType: string
   /** 排序字段 */
   sortField: string
   /** 权限前缀 */
   permsPrefix: string
-  /** 是否生成菜单 */
-  generateMenu: number
-  /** 前端模板 */
+  /** 前端模板 1、element ui 2、element plus */
   frontTpl: number
-  /** 按钮样式 */
-  btnStyle: number
-  /** 前端样式 */
+  /** 前端样式 12,24 */
   frontStyle: number
-  /** 状态（0：停用，1：正常） */
+  /** 操作按钮样式 */
+  btnStyle: number
+  /** 状态 */
   status: number
-  /** 基础选项 */
-  options: CodeOptions
+  /** 代码生成列 */
+  columns?: HbtGenColumn[]
+  /** 代码生成选项 */
+  options?: CodeOptions
 }
 
 /**

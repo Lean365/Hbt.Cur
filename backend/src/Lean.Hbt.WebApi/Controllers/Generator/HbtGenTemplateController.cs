@@ -182,7 +182,7 @@ namespace Lean.Hbt.WebApi.Controllers.Generator
         {
             var input = new HbtGenTemplateStatusDto
             {
-                TemplateId = templateId,
+                GenTemplateId = templateId,
                 Status = status
             };
             var result = await _templateService.UpdateStatusAsync(input);

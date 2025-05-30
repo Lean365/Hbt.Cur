@@ -61,7 +61,7 @@
       :columns="columns"
       :pagination="false"
       :scroll="{ x: 1000 }"
-      :row-key="(record: HbtGenTable) => String(record.id)"
+      :row-key="(record: HbtGenTable) => String(record.genTableId)"
       v-model:selectedRowKeys="selectedRowKeys"
       :row-selection="{
         type: 'checkbox',
@@ -636,15 +636,15 @@ const handleTableChange = (pag: TablePaginationConfig) => {
 // 行点击
 const handleRowClick = (record: HbtGenTable) => {
   console.log('handleRowClick - 记录:', record)
-  if (!record.id || typeof record.id !== 'number') {
+  if (!record.genTableId || typeof record.genTableId !== 'number') {
     console.error('handleRowClick - 记录缺少有效的 id:', record)
     message.error(t('common.message.invalidRecord'))
     return
   }
   
-  const tableId = Number(record.id)
+  const tableId = Number(record.genTableId)
   if (isNaN(tableId)) {
-    console.error('handleRowClick - id 转换为数字失败:', record.id)
+    console.error('handleRowClick - id 转换为数字失败:', record.genTableId)
     message.error(t('common.message.invalidRecord'))
     return
   }
@@ -703,7 +703,7 @@ const handleEditSelected = () => {
     message.warning(t('common.message.selectOneRecord'))
     return
   }
-  const record = tableData.value.find(item => String(item.id) === selectedRowKeys.value[0])
+  const record = tableData.value.find(item => String(item.genTableId) === selectedRowKeys.value[0])
   if (record) {
     handleEdit(record)
   }
@@ -711,7 +711,7 @@ const handleEditSelected = () => {
 
 // 编辑
 const handleEdit = (record: HbtGenTable) => {
-  selectedTableId.value = record.id
+  selectedTableId.value = record.genTableId
   formTitle.value = t('common.title.edit')
   formVisible.value = true
 }
@@ -719,15 +719,15 @@ const handleEdit = (record: HbtGenTable) => {
 // 查看
 const handleView = (record: HbtGenTable) => {
   console.log('handleView - 记录:', record)
-  if (!record.id || typeof record.id !== 'number') {
+  if (!record.genTableId || typeof record.genTableId !== 'number') {
     console.error('handleView - 记录缺少有效的 id:', record)
     message.error(t('common.message.invalidRecord'))
     return
   }
   
-  const tableId = Number(record.id)
+  const tableId = Number(record.genTableId)
   if (isNaN(tableId)) {
-    console.error('handleView - id 转换为数字失败:', record.id)
+    console.error('handleView - id 转换为数字失败:', record.genTableId)
     message.error(t('common.message.invalidRecord'))
     return
   }
@@ -749,7 +749,7 @@ const handleDetailClose = () => {
 // 删除
 const handleDelete = async (record: HbtGenTable) => {
   try {
-    const res = await deleteTable(record.id)
+    const res = await deleteTable(record.genTableId)
     if (res.data.code === 200) {
       message.success(t('common.message.deleteSuccess'))
       fetchData()
@@ -857,7 +857,7 @@ const handleTemplate = async () => {
     loading.value = true
     const res = await getTableDefineTemplate()
     if (res.data) {
-      const blob = res.data.data
+      const blob = res.data
       const url = window.URL.createObjectURL(blob)
       const link = document.createElement('a')
       link.href = url
@@ -881,7 +881,7 @@ const handleTemplate = async () => {
 // 生成代码
 const handleGenerate = async (record: HbtGenTable) => {
   try {
-    const res = await generateCode(record.id)
+    const res = await generateCode(record.genTableId)
     if (res.data.code === 200) {
       message.success(t('common.message.generateSuccess'))
     } else {
@@ -896,7 +896,7 @@ const handleGenerate = async (record: HbtGenTable) => {
 // 同步表结构
 const handleSync = async (record: HbtGenTable) => {
   try {
-    const res = await syncTable(record.id)
+    const res = await syncTable(record.genTableId)
     if (res.data.code === 200) {
       message.success(t('common.message.syncSuccess'))
       fetchData()

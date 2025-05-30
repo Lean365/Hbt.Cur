@@ -88,14 +88,18 @@ public class HbtDbSeedGeneratorDictData
             SetCommonProperties(new HbtDictData { DictType = "gen_db_type", DictLabel = "MongoDB", DictValue = "32", OrderNum = 33, Status = 0, CssClass = 33, ListClass = 33, Remark = "MongoDB Database" }),
             SetCommonProperties(new HbtDictData { DictType = "gen_db_type", DictLabel = "Custom", DictValue = "900", OrderNum = 34, Status = 0, CssClass = 34, ListClass = 34, Remark = "Custom Database" }),
 
+            // 模板类型
+            SetCommonProperties(new HbtDictData { DictType = "gen_tpl_type", DictLabel = "Scriban", DictValue = "0", OrderNum = 1, Status = 0, CssClass = 1, ListClass = 1, Remark = "使用wwwroot/Generator/*.scriban模板" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_tpl_type", DictLabel = "数据库", DictValue = "1", OrderNum = 2, Status = 0, CssClass = 2, ListClass = 2, Remark = "使用HbtGenTemplate数据表中的模板" }),
+
             // 生成模板
-            SetCommonProperties(new HbtDictData { DictType = "gen_template_type", DictLabel = "单表（增删改查）", DictValue = "crud", OrderNum = 1, Status = 0,  CssClass = 1, ListClass = 1, Remark = "单表（增删改查）" }),
-            SetCommonProperties(new HbtDictData { DictType = "gen_template_type", DictLabel = "树表（增删改查）", DictValue = "tree", OrderNum = 2, Status = 0,  CssClass = 2, ListClass = 2, Remark = "树表（增删改查）" }),
-            SetCommonProperties(new HbtDictData { DictType = "gen_template_type", DictLabel = "主子表（增删改查）", DictValue = "sub", OrderNum = 3, Status = 0,  CssClass = 3, ListClass = 3, Remark = "主子表（增删改查）" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_template_type", DictLabel = "单表", DictValue = "crud", OrderNum = 1, Status = 0,  CssClass = 1, ListClass = 1, Remark = "单表（增删改查）" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_template_type", DictLabel = "树表", DictValue = "tree", OrderNum = 2, Status = 0,  CssClass = 2, ListClass = 2, Remark = "树表（增删改查）" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_template_type", DictLabel = "主子表", DictValue = "sub", OrderNum = 3, Status = 0,  CssClass = 3, ListClass = 3, Remark = "主子表（增删改查）" }),
 
             // 前端模板
-            SetCommonProperties(new HbtDictData { DictType = "gen_frontend_type", DictLabel = "Element Plus", DictValue = "element-plus", OrderNum = 1, Status = 0,  CssClass = 1, ListClass = 1, Remark = "Element Plus前端模板" }),
-            SetCommonProperties(new HbtDictData { DictType = "gen_frontend_type", DictLabel = "Ant Design Vue", DictValue = "ant-design-vue", OrderNum = 2, Status = 0,  CssClass = 2, ListClass = 2, Remark = "Ant Design Vue前端模板" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_frontend_type", DictLabel = "Element Plus", DictValue = "1", OrderNum = 1, Status = 0,  CssClass = 1, ListClass = 1, Remark = "Element Plus前端模板" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_frontend_type", DictLabel = "Ant Design Vue", DictValue = "2", OrderNum = 2, Status = 0,  CssClass = 2, ListClass = 2, Remark = "Ant Design Vue前端模板" }),
 
             // 生成模块
             SetCommonProperties(new HbtDictData { DictType = "gen_module_name", DictLabel = "Audit日志审计", DictValue = "Audit", OrderNum = 1, Status = 0,  CssClass = 1, ListClass = 1, Remark = "Audit日志审计模块" }),
@@ -109,12 +113,12 @@ public class HbtDbSeedGeneratorDictData
             SetCommonProperties(new HbtDictData { DictType = "gen_module_name", DictLabel = "Logistics后勤管理", DictValue = "Logistics", OrderNum = 9, Status = 0,  CssClass = 9, ListClass = 9, Remark = "Logistics后勤管理模块" }),
 
             // 前端布局
-            SetCommonProperties(new HbtDictData { DictType = "gen_frontend_style", DictLabel = "一行一列", DictValue = "single", OrderNum = 1, Status = 0,  CssClass = 1, ListClass = 1, Remark = "一行一列布局" }),
-            SetCommonProperties(new HbtDictData { DictType = "gen_frontend_style", DictLabel = "一行两列", DictValue = "double", OrderNum = 2, Status = 0,  CssClass = 2, ListClass = 2, Remark = "一行两列布局" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_frontend_style", DictLabel = "一行一列", DictValue = "12", OrderNum = 1, Status = 0,  CssClass = 1, ListClass = 1, Remark = "一行一列布局" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_frontend_style", DictLabel = "一行两列", DictValue = "24", OrderNum = 2, Status = 0,  CssClass = 2, ListClass = 2, Remark = "一行两列布局" }),
 
             // 按钮样式
-            SetCommonProperties(new HbtDictData { DictType = "gen_button_style", DictLabel = "默认样式", DictValue = "default", OrderNum = 1, Status = 0,  CssClass = 1, ListClass = 1, Remark = "默认按钮样式" }),
-            SetCommonProperties(new HbtDictData { DictType = "gen_button_style", DictLabel = "自定义样式", DictValue = "custom", OrderNum = 2, Status = 0,  CssClass = 2, ListClass = 2, Remark = "自定义按钮样式" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_button_style", DictLabel = "默认样式", DictValue = "1", OrderNum = 1, Status = 0,  CssClass = 1, ListClass = 1, Remark = "默认按钮样式" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_button_style", DictLabel = "自定义样式", DictValue = "2", OrderNum = 2, Status = 0,  CssClass = 2, ListClass = 2, Remark = "自定义按钮样式" }),
 
             // 生成方式
             SetCommonProperties(new HbtDictData { DictType = "gen_type", DictLabel = "自定义路径", DictValue = "0", OrderNum = 1, Status = 0,  CssClass = 1, ListClass = 1, Remark = "自定义生成路径" }),
@@ -124,10 +128,13 @@ public class HbtDbSeedGeneratorDictData
             SetCommonProperties(new HbtDictData { DictType = "gen_function", DictLabel = "新增", DictValue = "add", OrderNum = 1, Status = 0,  CssClass = 1, ListClass = 1, Remark = "新增功能" }),
             SetCommonProperties(new HbtDictData { DictType = "gen_function", DictLabel = "修改", DictValue = "update", OrderNum = 2, Status = 0,  CssClass = 2, ListClass = 2, Remark = "修改功能" }),
             SetCommonProperties(new HbtDictData { DictType = "gen_function", DictLabel = "删除", DictValue = "delete", OrderNum = 3, Status = 0,  CssClass = 3, ListClass = 3, Remark = "删除功能" }),
-            SetCommonProperties(new HbtDictData { DictType = "gen_function", DictLabel = "导出", DictValue = "export", OrderNum = 4, Status = 0,  CssClass = 4, ListClass = 4, Remark = "导出功能" }),
-            SetCommonProperties(new HbtDictData { DictType = "gen_function", DictLabel = "详情", DictValue = "detail", OrderNum = 5, Status = 0,  CssClass = 5, ListClass = 5, Remark = "详情功能" }),
-            SetCommonProperties(new HbtDictData { DictType = "gen_function", DictLabel = "预览", DictValue = "preview", OrderNum = 6, Status = 0,  CssClass = 6, ListClass = 6, Remark = "预览功能" }),
-            SetCommonProperties(new HbtDictData { DictType = "gen_function", DictLabel = "打印", DictValue = "print", OrderNum = 7, Status = 0,  CssClass = 7, ListClass = 7, Remark = "打印功能" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_function", DictLabel = "批量删除", DictValue = "batchDelete", OrderNum = 4, Status = 0,  CssClass = 4, ListClass = 4, Remark = "批量删除功能" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_function", DictLabel = "导入", DictValue = "import", OrderNum = 5, Status = 0,  CssClass = 5, ListClass = 5, Remark = "导入功能" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_function", DictLabel = "模板", DictValue = "template", OrderNum = 6, Status = 0,  CssClass = 6, ListClass = 6, Remark = "模板功能" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_function", DictLabel = "导出", DictValue = "export", OrderNum = 7, Status = 0,  CssClass = 7, ListClass = 7, Remark = "导出功能" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_function", DictLabel = "详情", DictValue = "detail", OrderNum = 8, Status = 0,  CssClass = 8, ListClass = 8, Remark = "详情功能" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_function", DictLabel = "预览", DictValue = "preview", OrderNum = 9, Status = 0,  CssClass = 9, ListClass = 9, Remark = "预览功能" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_function", DictLabel = "打印", DictValue = "print", OrderNum = 10, Status = 0,  CssClass = 10, ListClass = 10, Remark = "打印功能" }),
 
             // 树表配置
             SetCommonProperties(new HbtDictData { DictType = "gen_tree_config", DictLabel = "树编码字段", DictValue = "treeCode", OrderNum = 1, Status = 0,  CssClass = 1, ListClass = 1, Remark = "树编码字段" }),
