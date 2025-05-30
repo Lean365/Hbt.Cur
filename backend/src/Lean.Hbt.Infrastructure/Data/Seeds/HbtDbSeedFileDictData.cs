@@ -33,7 +33,7 @@ public class HbtDbSeedFileDictData
     /// <summary>
     /// 初始化文件相关字典数据
     /// </summary>
-    public async Task<(int, int)> InitializeFileDictDataAsync(long tenantId)
+    public async Task<(int, int)> InitializeFileDictDataAsync()
     {
         int insertCount = 0;
         int updateCount = 0;

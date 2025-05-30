@@ -31,7 +31,7 @@ public class HbtDbSeedGenTemplate
     /// <summary>
     /// 初始化代码生成模板数据
     /// </summary>
-    public async Task<(int insertCount, int updateCount)> InitializeGenTemplateAsync(long tenantId)
+    public async Task<(int insertCount, int updateCount)> InitializeGenTemplateAsync()
     {
         var seedData = GetSeedData();
         var insertCount = 0;

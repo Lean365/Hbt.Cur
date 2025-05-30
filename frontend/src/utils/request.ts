@@ -16,6 +16,11 @@ const service: AxiosInstance = axios.create({
   }
 })
 
+// Token过期时间配置（单位：毫秒）
+const ACCESS_TOKEN_EXPIRE_TIME = 30 * 60 * 1000 // 30分钟
+const REFRESH_TOKEN_EXPIRE_TIME = 7 * 24 * 60 * 60 * 1000 // 7天
+const TOKEN_REFRESH_THRESHOLD = 5 * 60 * 1000 // 5分钟内过期时刷新
+
 // 从 cookie 中获取 CSRF 令牌
 export function getCsrfToken(): string | null {
   const cookies = document.cookie.split(';')
@@ -49,7 +54,7 @@ service.interceptors.request.use(
     // 获取Token
     const token = getToken()
     if (token) {
-      console.log('[Auth] 获取到Token:', token)
+      //console.log('[Auth] 获取到Token:', token)
       config.headers['Authorization'] = `Bearer ${token}`
       console.log('[Request] 设置Authorization Token')
     }
@@ -67,7 +72,7 @@ service.interceptors.request.use(
     config.headers['Cache-Control'] = 'no-cache'
     config.headers['Pragma'] = 'no-cache'
 
-    console.log('[Request] 最终请求头:', config.headers)
+    //console.log('[Request] 最终请求头:', config.headers)
     console.log('=== 请求拦截器结束 ===')
     return config
   },
@@ -110,14 +115,14 @@ service.interceptors.response.use(
     const { data: res } = response
     
     // 记录原始响应
-    console.log(`[Response] 原始响应:`, {
-      url: response.config.url,
-      method: response.config.method,
-      status: response.status,
-      statusText: response.statusText,
-      headers: response.headers,
-      data: res
-    })
+    // console.log(`[Response] 原始响应:`, {
+    //   url: response.config.url,
+    //   method: response.config.method,
+    //   status: response.status,
+    //   statusText: response.statusText,
+    //   headers: response.headers,
+    //   data: res
+    // })
     
     // 如果是文件上传响应，直接返回
     if (response.config.data instanceof FormData) {
@@ -156,6 +161,28 @@ service.interceptors.response.use(
     
     // 处理业务状态码
     if (normalizedData.code === 200) {
+      // 检查token是否即将过期
+      const token = getToken()
+      if (token) {
+        try {
+          // 安全地解析JWT token
+          const base64Url = token.split('.')[1]
+          const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/')
+          const tokenData = JSON.parse(decodeURIComponent(escape(atob(base64))))
+          const expireTime = tokenData.exp * 1000 // 转换为毫秒
+          const now = Date.now()
+          
+          // 如果token将在5分钟内过期，刷新token
+          if (expireTime - now < TOKEN_REFRESH_THRESHOLD) {
+            console.log('[Auth] Access Token即将过期，准备刷新')
+            const userStore = useUserStore()
+            userStore.logout() // 暂时使用logout，后续可改为refreshToken
+          }
+        } catch (e) {
+          console.error('[Auth] Token解析失败:', e)
+        }
+      }
+      
       response.data = normalizedData
       return response
     }
@@ -208,7 +235,13 @@ service.interceptors.response.use(
       switch (status) {
         case 401: // 未授权
           const userStore = useUserStore()
-          userStore.logout()
+          // 检查是否是token过期
+          if (data?.code === 401 && data?.msg?.includes('token expired')) {
+            console.log('[Auth] Token已过期，准备登出')
+            userStore.logout()
+          } else {
+            userStore.logout()
+          }
           break
         case 403: // 禁止访问
           console.error('[Response] 禁止访问')

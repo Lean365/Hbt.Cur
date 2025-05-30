@@ -296,16 +296,16 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         public async Task<IActionResult> GetUserInfo()
         {
             _logger.Info("[用户信息] 开始获取用户信息");
-            
+
             // 记录所有声明
             var claims = HttpContext.User.Claims.ToList();
-            _logger.Info("[用户信息] 当前用户的所有声明: {@Claims}", claims.Select(c => new { c.Type, c.Value }));
-            
+            //_logger.Info("[用户信息] 当前用户的所有声明: {@Claims}", claims.Select(c => new { c.Type, c.Value }));
+
             var userId = HttpContext.User.FindFirst("uid")?.Value;
             var tenantId = HttpContext.User.FindFirst("tid")?.Value;
-            
+
             _logger.Info("[用户信息] 用户ID: {UserId}, 租户ID: {TenantId}", userId, tenantId);
-            
+
             if (string.IsNullOrEmpty(userId))
             {
                 _logger.Warn("[用户信息] 未找到用户ID");
@@ -318,9 +318,9 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
                 return Unauthorized(new { code = HbtConstants.ErrorCodes.Unauthorized, msg = "租户信息无效" });
             }
 
-            _logger.Info("[用户信息] 开始获取用户信息: UserId={UserId}", userId);
+            // _logger.Info("[用户信息] 开始获取用户信息: UserId={UserId}", userId);
             var result = await _loginService.GetUserInfoAsync(long.Parse(userId));
-            _logger.Info("[用户信息] 获取成功: UserId={UserId}", userId);
+            // _logger.Info("[用户信息] 获取成功: UserId={UserId}", userId);
             return Success(result);
         }
 

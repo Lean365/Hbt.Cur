@@ -66,23 +66,31 @@ public class HbtDbSeedRelation
     /// <summary>
     /// 初始化所有关联关系数据
     /// </summary>
-    public async Task<(int, int)> InitializeRelationsAsync(long tenantId)
+    public async Task<(int, int)> InitializeRelationsAsync()
     {
         int insertCount = 0;
         int updateCount = 0;
 
+        // 获取默认租户
+        var defaultTenant = await _tenantRepository.GetFirstAsync(t => t.IsDefault == 1 && t.IsDeleted == 0);
+        if (defaultTenant == null)
+        {
+            _logger.Error("未找到默认租户，无法初始化用户租户关联关系");
+            return (0, 0);
+        }
+
         // 初始化用户租户关联关系
-        var (userTenantInsert, userTenantUpdate) = await InitializeUserTenantRelationsAsync(tenantId);
+        var (userTenantInsert, userTenantUpdate) = await InitializeUserTenantRelationsAsync(defaultTenant.Id);
         insertCount += userTenantInsert;
         updateCount += userTenantUpdate;
 
         // 初始化管理员关联关系
-        var (adminInsert, adminUpdate) = await InitializeAdminRelationsAsync(tenantId);
+        var (adminInsert, adminUpdate) = await InitializeAdminRelationsAsync();
         insertCount += adminInsert;
         updateCount += adminUpdate;
 
         // 初始化所有用户关联关系
-        var (userInsertCount, userUpdateCount) = await InitializeUserRelationsAsync(tenantId);
+        var (userInsertCount, userUpdateCount) = await InitializeUserRelationsAsync();
         insertCount += userInsertCount;
         updateCount += userUpdateCount;
 
@@ -92,7 +100,7 @@ public class HbtDbSeedRelation
     /// <summary>
     /// 初始化管理员关联关系数据
     /// </summary>
-    private async Task<(int, int)> InitializeAdminRelationsAsync(long tenantId)
+    private async Task<(int, int)> InitializeAdminRelationsAsync()
     {
         int insertCount = 0;
         int updateCount = 0;
@@ -115,12 +123,10 @@ public class HbtDbSeedRelation
 
         if (userRole == null)
         {
-
             await _userRoleRepository.CreateAsync(new HbtUserRole
             {
                 UserId = adminUser.Id,
                 RoleId = adminRole.Id,
-
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
                 UpdateBy = "Hbt365",
@@ -128,6 +134,14 @@ public class HbtDbSeedRelation
             });
             insertCount++;
             _logger.Info($"[创建] 用户角色关联 - 用户:{adminUser.UserName}, 角色:{adminRole.RoleName}");
+        }
+        else
+        {
+            userRole.UpdateBy = "Hbt365";
+            userRole.UpdateTime = DateTime.Now;
+            await _userRoleRepository.UpdateAsync(userRole);
+            updateCount++;
+            _logger.Info($"[更新] 用户角色关联 - 用户:{adminUser.UserName}, 角色:{adminRole.RoleName}");
         }
 
         // 3. 初始化用户-岗位关联
@@ -140,7 +154,6 @@ public class HbtDbSeedRelation
             {
                 UserId = adminUser.Id,
                 PostId = gmPost.Id,
-
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
                 UpdateBy = "Hbt365",
@@ -148,6 +161,14 @@ public class HbtDbSeedRelation
             });
             insertCount++;
             _logger.Info($"[创建] 用户岗位关联 - 用户:{adminUser.UserName}, 岗位:{gmPost.PostName}");
+        }
+        else
+        {
+            userPost.UpdateBy = "Hbt365";
+            userPost.UpdateTime = DateTime.Now;
+            await _userPostRepository.UpdateAsync(userPost);
+            updateCount++;
+            _logger.Info($"[更新] 用户岗位关联 - 用户:{adminUser.UserName}, 岗位:{gmPost.PostName}");
         }
 
         // 4. 初始化用户-部门关联
@@ -160,7 +181,6 @@ public class HbtDbSeedRelation
             {
                 UserId = adminUser.Id,
                 DeptId = rootDept.Id,
-
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
                 UpdateBy = "Hbt365",
@@ -168,6 +188,14 @@ public class HbtDbSeedRelation
             });
             insertCount++;
             _logger.Info($"[创建] 用户部门关联 - 用户:{adminUser.UserName}, 部门:{rootDept.DeptName}");
+        }
+        else
+        {
+            userDept.UpdateBy = "Hbt365";
+            userDept.UpdateTime = DateTime.Now;
+            await _userDeptRepository.UpdateAsync(userDept);
+            updateCount++;
+            _logger.Info($"[更新] 用户部门关联 - 用户:{adminUser.UserName}, 部门:{rootDept.DeptName}");
         }
 
         // 5. 初始化角色-菜单关联
@@ -183,7 +211,6 @@ public class HbtDbSeedRelation
                 {
                     RoleId = adminRole.Id,
                     MenuId = menu.Id,
-
                     CreateBy = "Hbt365",
                     CreateTime = DateTime.Now,
                     UpdateBy = "Hbt365",
@@ -191,6 +218,14 @@ public class HbtDbSeedRelation
                 });
                 insertCount++;
                 _logger.Info($"[创建] 角色菜单关联 - 角色:{adminRole.RoleName}, 菜单:{menu.MenuName}");
+            }
+            else
+            {
+                roleMenu.UpdateBy = "Hbt365";
+                roleMenu.UpdateTime = DateTime.Now;
+                await _roleMenuRepository.UpdateAsync(roleMenu);
+                updateCount++;
+                _logger.Info($"[更新] 角色菜单关联 - 角色:{adminRole.RoleName}, 菜单:{menu.MenuName}");
             }
         }
 
@@ -207,7 +242,6 @@ public class HbtDbSeedRelation
                 {
                     RoleId = adminRole.Id,
                     DeptId = dept.Id,
-
                     CreateBy = "Hbt365",
                     CreateTime = DateTime.Now,
                     UpdateBy = "Hbt365",
@@ -215,6 +249,14 @@ public class HbtDbSeedRelation
                 });
                 insertCount++;
                 _logger.Info($"[创建] 角色部门关联 - 角色:{adminRole.RoleName}, 部门:{dept.DeptName}");
+            }
+            else
+            {
+                roleDept.UpdateBy = "Hbt365";
+                roleDept.UpdateTime = DateTime.Now;
+                await _roleDeptRepository.UpdateAsync(roleDept);
+                updateCount++;
+                _logger.Info($"[更新] 角色部门关联 - 角色:{adminRole.RoleName}, 部门:{dept.DeptName}");
             }
         }
 
@@ -224,14 +266,14 @@ public class HbtDbSeedRelation
     /// <summary>
     /// 初始化其他用户关联关系数据
     /// </summary>
-    private async Task<(int, int)> InitializeUserRelationsAsync(long tenantId)
+    private async Task<(int, int)> InitializeUserRelationsAsync()
     {
         int insertCount = 0;
         int updateCount = 0;
         long nextId = 1;
 
         // 获取所有用户、角色、部门、岗位和菜单
-        var userTenants = await _userTenantRepository.GetListAsync(ut => ut.IsDeleted == 0 && ut.TenantId == tenantId);
+        var userTenants = await _userTenantRepository.GetListAsync(ut => ut.IsDeleted == 0 );
         var userIds = userTenants.Select(ut => ut.UserId).ToList();
         var allUsers = (await _userRepository.GetListAsync(u => u.IsDeleted == 0 && u.UserName != "admin" && userIds.Contains(u.Id))).Take(100).ToList();
         var allRoles = await _roleRepository.GetListAsync(r => r.IsDeleted == 0);
@@ -305,7 +347,6 @@ public class HbtDbSeedRelation
                 {
                     RoleId = role.Id,
                     DeptId = dept.Id,
-
                     CreateBy = "Hbt365",
                     CreateTime = DateTime.Now,
                     UpdateBy = "Hbt365",
@@ -390,7 +431,6 @@ public class HbtDbSeedRelation
                 {
                     RoleId = role.Id,
                     MenuId = menu.Id,
-
                     CreateBy = "Hbt365",
                     CreateTime = DateTime.Now,
                     UpdateBy = "Hbt365",
@@ -416,26 +456,34 @@ public class HbtDbSeedRelation
             var role = allRoles.FirstOrDefault(r => r.RoleKey == "system_admin"); // 默认关联系统管理员角色
             if (role != null)
             {
-                var userRole = new HbtUserRole
-                {
-                    Id = nextId++,
-                    UserId = user.Id,
-                    RoleId = role.Id,
-
-                    CreateBy = "Hbt365",
-                    CreateTime = DateTime.Now,
-                    UpdateBy = "Hbt365",
-                    UpdateTime = DateTime.Now
-                };
-
                 var existingUserRole = await _userRoleRepository.GetFirstAsync(ur =>
-                    ur.UserId == userRole.UserId);
+                    ur.UserId == user.Id);
 
                 if (existingUserRole == null)
                 {
+                    var userRole = new HbtUserRole
+                    {
+                        Id = nextId++,
+                        UserId = user.Id,
+                        RoleId = role.Id,
+                        CreateBy = "Hbt365",
+                        CreateTime = DateTime.Now,
+                        UpdateBy = "Hbt365",
+                        UpdateTime = DateTime.Now
+                    };
+
                     await _userRoleRepository.CreateAsync(userRole);
                     insertCount++;
                     _logger.Info($"[创建] 用户角色关联 - 用户:{user.UserName}, 角色:{role.RoleName}");
+                }
+                else
+                {
+                    existingUserRole.RoleId = role.Id;
+                    existingUserRole.UpdateBy = "Hbt365";
+                    existingUserRole.UpdateTime = DateTime.Now;
+                    await _userRoleRepository.UpdateAsync(existingUserRole);
+                    updateCount++;
+                    _logger.Info($"[更新] 用户角色关联 - 用户:{user.UserName}, 角色:{role.RoleName}");
                 }
 
                 // 3.2 创建用户-部门关联（一个用户一个部门，根据角色分配）
@@ -499,26 +547,34 @@ public class HbtDbSeedRelation
                 var dept = depts.FirstOrDefault();
                 if (dept != null)
                 {
-                    var userDept = new HbtUserDept
-                    {
-                        Id = nextId++,
-                        UserId = user.Id,
-                        DeptId = dept.Id,
-
-                        CreateBy = "Hbt365",
-                        CreateTime = DateTime.Now,
-                        UpdateBy = "Hbt365",
-                        UpdateTime = DateTime.Now
-                    };
-
                     var existingUserDept = await _userDeptRepository.GetFirstAsync(ud =>
-                        ud.UserId == userDept.UserId);
+                        ud.UserId == user.Id);
 
                     if (existingUserDept == null)
                     {
+                        var userDept = new HbtUserDept
+                        {
+                            Id = nextId++,
+                            UserId = user.Id,
+                            DeptId = dept.Id,
+                            CreateBy = "Hbt365",
+                            CreateTime = DateTime.Now,
+                            UpdateBy = "Hbt365",
+                            UpdateTime = DateTime.Now
+                        };
+
                         await _userDeptRepository.CreateAsync(userDept);
                         insertCount++;
                         _logger.Info($"[创建] 用户部门关联 - 用户:{user.UserName}, 部门:{dept.DeptName}");
+                    }
+                    else
+                    {
+                        existingUserDept.DeptId = dept.Id;
+                        existingUserDept.UpdateBy = "Hbt365";
+                        existingUserDept.UpdateTime = DateTime.Now;
+                        await _userDeptRepository.UpdateAsync(existingUserDept);
+                        updateCount++;
+                        _logger.Info($"[更新] 用户部门关联 - 用户:{user.UserName}, 部门:{dept.DeptName}");
                     }
                 }
             }
@@ -527,26 +583,34 @@ public class HbtDbSeedRelation
             var post = allPosts.FirstOrDefault(p => p.PostName.Contains("管理")); // 默认关联管理岗位
             if (post != null)
             {
-                var userPost = new HbtUserPost
-                {
-                    Id = nextId++,
-                    UserId = user.Id,
-                    PostId = post.Id,
-
-                    CreateBy = "Hbt365",
-                    CreateTime = DateTime.Now,
-                    UpdateBy = "Hbt365",
-                    UpdateTime = DateTime.Now
-                };
-
                 var existingUserPost = await _userPostRepository.GetFirstAsync(up =>
-                    up.UserId == userPost.UserId);
+                    up.UserId == user.Id);
 
                 if (existingUserPost == null)
                 {
+                    var userPost = new HbtUserPost
+                    {
+                        Id = nextId++,
+                        UserId = user.Id,
+                        PostId = post.Id,
+                        CreateBy = "Hbt365",
+                        CreateTime = DateTime.Now,
+                        UpdateBy = "Hbt365",
+                        UpdateTime = DateTime.Now
+                    };
+
                     await _userPostRepository.CreateAsync(userPost);
                     insertCount++;
                     _logger.Info($"[创建] 用户岗位关联 - 用户:{user.UserName}, 岗位:{post.PostName}");
+                }
+                else
+                {
+                    existingUserPost.PostId = post.Id;
+                    existingUserPost.UpdateBy = "Hbt365";
+                    existingUserPost.UpdateTime = DateTime.Now;
+                    await _userPostRepository.UpdateAsync(existingUserPost);
+                    updateCount++;
+                    _logger.Info($"[更新] 用户岗位关联 - 用户:{user.UserName}, 岗位:{post.PostName}");
                 }
             }
         }
@@ -562,122 +626,68 @@ public class HbtDbSeedRelation
         int insertCount = 0;
         int updateCount = 0;
 
-        try
+        // 获取所有用户和租户
+        var users = await _userRepository.GetListAsync(u => u.IsDeleted == 0);
+        var allTenants = await _tenantRepository.GetListAsync(t => t.IsDeleted == 0);
+        var existingRelations = await _userTenantRepository.GetListAsync(ut => ut.IsDeleted == 0);
+
+        foreach (var user in users)
         {
-            // 获取所有用户
-            var allUsers = await _userRepository.GetListAsync(u => u.IsDeleted == 0);
-            if (!allUsers.Any())
+            if (user.UserName == "admin")
             {
-                _logger.Info("未找到任何用户，跳过用户租户关联初始化");
-                return (0, 0);
-            }
-
-            // 获取所有租户
-            var allTenants = await _tenantRepository.GetListAsync(t => t.IsDeleted == 0);
-            if (!allTenants.Any())
-            {
-                _logger.Info("未找到任何租户，跳过用户租户关联初始化");
-                return (0, 0);
-            }
-
-            foreach (var user in allUsers)
-            {
-                // 如果是 admin 用户，关联到所有租户
-                if (user.UserName == "admin")
+                // admin用户关联到所有租户
+                foreach (var tenant in allTenants)
                 {
-                    foreach (var tenant in allTenants)
+                    var existingRelation = existingRelations.FirstOrDefault(ut => 
+                        ut.UserId == user.Id && ut.TenantId == tenant.Id);
+                    
+                    if (existingRelation == null)
                     {
-                        // 检查用户租户关联是否存在
-                        var existingUserTenant = await _userTenantRepository.GetFirstAsync(ut =>
-                            ut.UserId == user.Id && ut.TenantId == tenant.Id);
-
-                        if (existingUserTenant == null)
-                        {
-                            // 创建新的用户租户关联
-                            var userTenant = new HbtUserTenant
-                            {
-                                UserId = user.Id,
-                                TenantId = tenant.Id,
-                                IsDefault = tenant.IsDefault == 1 ? 1 : 0,
-                                Status = 0,
-                                CreateBy = "Hbt365",
-                                CreateTime = DateTime.Now,
-                                UpdateBy = "Hbt365",
-                                UpdateTime = DateTime.Now
-                            };
-
-                            await _userTenantRepository.CreateAsync(userTenant);
-                            insertCount++;
-                            _logger.Info($"[创建] 用户租户关联 - 用户:{user.UserName}, 租户:{tenant.TenantName}");
-                        }
-                        else
-                        {
-                            // 更新现有用户租户关联
-                            existingUserTenant.IsDefault = tenant.IsDefault == 1 ? 1 : 0;
-                            existingUserTenant.Status = 0;
-                            existingUserTenant.UpdateBy  = "Hbt365";
-                            existingUserTenant.UpdateTime = DateTime.Now;
-
-                            await _userTenantRepository.UpdateAsync(existingUserTenant);
-                            updateCount++;
-                            _logger.Info($"[更新] 用户租户关联 - 用户:{user.UserName}, 租户:{tenant.TenantName}");
-                        }
-                    }
-                }
-                else
-                {
-                    // 其他用户只关联到指定租户
-                    var tenant = await _tenantRepository.GetFirstAsync(t => t.Id == tenantId && t.IsDeleted == 0);
-                    if (tenant == null)
-                    {
-                        _logger.Info($"未找到租户ID为{tenantId}的租户，跳过用户租户关联初始化");
-                        continue;
-                    }
-
-                    // 检查用户租户关联是否存在
-                    var existingUserTenant = await _userTenantRepository.GetFirstAsync(ut =>
-                        ut.UserId == user.Id && ut.TenantId == tenantId);
-
-                    if (existingUserTenant == null)
-                    {
-                        // 创建新的用户租户关联
-                        var userTenant = new HbtUserTenant
+                        var userTenantRelation = new HbtUserTenant
                         {
                             UserId = user.Id,
-                            TenantId = tenantId,
-                            IsDefault = tenant.IsDefault == 1 ? 1 : 0,
-                            Status = 0,
-                            CreateBy = "Hbt365",
+                            TenantId = tenant.Id,
                             CreateTime = DateTime.Now,
-                            UpdateBy = "Hbt365",
                             UpdateTime = DateTime.Now
                         };
-
-                        await _userTenantRepository.CreateAsync(userTenant);
+                        await _userTenantRepository.CreateAsync(userTenantRelation);
                         insertCount++;
-                        _logger.Info($"[创建] 用户租户关联 - 用户:{user.UserName}, 租户:{tenant.TenantName}");
                     }
                     else
                     {
-                        // 更新现有用户租户关联
-                        existingUserTenant.IsDefault = tenant.IsDefault == 1 ? 1 : 0;
-                        existingUserTenant.Status = 0;
-                        existingUserTenant.UpdateBy  = "Hbt365";
-                        existingUserTenant.UpdateTime = DateTime.Now;
-
-                        await _userTenantRepository.UpdateAsync(existingUserTenant);
+                        existingRelation.UpdateTime = DateTime.Now;
+                        await _userTenantRepository.UpdateAsync(existingRelation);
                         updateCount++;
-                        _logger.Info($"[更新] 用户租户关联 - 用户:{user.UserName}, 租户:{tenant.TenantName}");
                     }
                 }
             }
+            else
+            {
+                // 其他用户只关联到指定租户
+                var existingRelation = existingRelations.FirstOrDefault(ut => 
+                    ut.UserId == user.Id && ut.TenantId == tenantId);
+                
+                if (existingRelation == null)
+                {
+                    var userTenantRelation = new HbtUserTenant
+                    {
+                        UserId = user.Id,
+                        TenantId = tenantId,
+                        CreateTime = DateTime.Now,
+                        UpdateTime = DateTime.Now
+                    };
+                    await _userTenantRepository.CreateAsync(userTenantRelation);
+                    insertCount++;
+                }
+                else
+                {
+                    existingRelation.UpdateTime = DateTime.Now;
+                    await _userTenantRepository.UpdateAsync(existingRelation);
+                    updateCount++;
+                }
+            }
+        }
 
-            return (insertCount, updateCount);
-        }
-        catch (Exception ex)
-        {
-            _logger.Error("初始化用户租户关联数据时发生错误: {0}", ex.Message, ex);
-            throw;
-        }
+        return (insertCount, updateCount);
     }
 }

@@ -34,7 +34,7 @@ public class HbtDbSeedOADictData
     /// <summary>
     /// 初始化OA相关字典数据
     /// </summary>
-    public async Task<(int, int)> InitializeOADictDataAsync(long tenantId)
+    public async Task<(int, int)> InitializeOADictDataAsync()
     {
         int insertCount = 0;
         int updateCount = 0;

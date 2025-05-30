@@ -35,6 +35,7 @@ namespace Lean.Hbt.Infrastructure.SignalR
         private readonly IHbtRepository<HbtOnlineUser> _repository;
         private readonly IHubContext<HbtSignalRHub> _hubContext;
         private readonly IConfiguration _configuration;
+        private readonly SignalRConfig _signalRConfig;
         private static readonly SemaphoreSlim _connectionLock = new SemaphoreSlim(1, 1);
 
         /// <summary>
@@ -59,6 +60,7 @@ namespace Lean.Hbt.Infrastructure.SignalR
             _repository = repository;
             _hubContext = hubContext;
             _configuration = configuration;
+            _signalRConfig = _configuration.GetSection("SignalR").Get<SignalRConfig>();
         }
 
         /// <summary>
@@ -71,15 +73,36 @@ namespace Lean.Hbt.Infrastructure.SignalR
                 _logger.Info("新连接建立 - 连接ID: {ConnectionId}", Context.ConnectionId);
 
                 // 获取设备信息
-                var deviceInfo = Context.GetHttpContext()?.Request.Query["deviceInfo"].ToString();
-                if (string.IsNullOrEmpty(deviceInfo))
+                var httpContext = Context.GetHttpContext();
+                if (httpContext == null)
                 {
-                    _logger.Warn("未找到设备信息");
+                    _logger.Warn("无法获取HTTP上下文");
+                    return;
+                }
+
+                var deviceInfo = new HbtSignalRDevice
+                {
+                    DeviceId = httpContext.Request.Headers["X-Device-Id"].ToString(),
+                    DeviceName = httpContext.Request.Headers["X-Device-Name"].ToString(),
+                    DeviceType = Enum.TryParse<HbtDeviceType>(httpContext.Request.Headers["X-Device-Type"].ToString(), out var deviceType) ? deviceType : HbtDeviceType.Other,
+                    DeviceModel = httpContext.Request.Headers["X-Device-Model"].ToString(),
+                    OsType = int.TryParse(httpContext.Request.Headers["X-OS-Type"].ToString(), out var osType) ? osType : 0,
+                    OsVersion = httpContext.Request.Headers["X-OS-Version"].ToString(),
+                    BrowserType = int.TryParse(httpContext.Request.Headers["X-Browser-Type"].ToString(), out var browserType) ? browserType : 0,
+                    BrowserVersion = httpContext.Request.Headers["X-Browser-Version"].ToString(),
+                    Resolution = httpContext.Request.Headers["X-Resolution"].ToString(),
+                    Location = httpContext.Request.Headers["X-Location"].ToString(),
+                    DeviceFingerprint = httpContext.Request.Headers["X-Device-Fingerprint"].ToString()
+                };
+
+                if (string.IsNullOrEmpty(deviceInfo.DeviceId))
+                {
+                    _logger.Warn("未找到设备ID");
                     return;
                 }
 
                 // 获取访问令牌
-                var accessToken = Context.GetHttpContext()?.Request.Query["access_token"].ToString();
+                var accessToken = httpContext.Request.Headers["Authorization"].ToString()?.Replace("Bearer ", "");
                 if (string.IsNullOrEmpty(accessToken))
                 {
                     _logger.Warn("未找到访问令牌");
@@ -96,11 +119,28 @@ namespace Lean.Hbt.Infrastructure.SignalR
                     return;
                 }
 
-                _logger.Info("用户 {UserId} 正在连接，设备信息: {DeviceInfo}", userId, deviceInfo);
+                _logger.Info("用户 {UserId} 正在连接，设备信息: {DeviceInfo}", userId, JsonSerializer.Serialize(deviceInfo));
 
                 // 使用与登录时相同的设备ID生成方法
-                var (deviceId, _) = _deviceIdGenerator.GenerateIds(deviceInfo, userId);
+                var (deviceId, _) = _deviceIdGenerator.GenerateIds(JsonSerializer.Serialize(deviceInfo), userId);
                 _logger.Info("生成的设备ID: {DeviceId}", deviceId);
+
+                // 检查用户设备数量限制
+                var userDevices = _userService.GetUserDevices(userId);
+                if (userDevices.Count >= _signalRConfig.UserManagement.MaxDevicesPerUser)
+                {
+                    if (_signalRConfig.UserManagement.KickoutOldSession)
+                    {
+                        // 踢出最早的设备
+                        var oldestDevice = userDevices.OrderBy(d => d.LastActivity).First();
+                        await DisconnectClientAsync(oldestDevice.ConnectionId);
+                    }
+                    else
+                    {
+                        _logger.Warn("用户 {UserId} 已达到最大设备数量限制", userId);
+                        return;
+                    }
+                }
 
                 // 检查用户是否已存在
                 HbtOnlineUser? existingUser = null;
@@ -136,8 +176,7 @@ namespace Lean.Hbt.Infrastructure.SignalR
                         LastActivity = DateTime.Now,
                         LastHeartbeat = DateTime.Now,
                         OnlineStatus = 0,
-
-                        GroupId = 1,   // 设置默认组ID为1
+                        GroupId = _signalRConfig.UserManagement.DefaultGroupId,
                         ClientIp = Context.GetHttpContext()?.Connection?.RemoteIpAddress?.ToString(),
                         UserAgent = Context.GetHttpContext()?.Request.Headers["User-Agent"].ToString()
                     };
@@ -154,8 +193,7 @@ namespace Lean.Hbt.Infrastructure.SignalR
                     LastActivity = DateTime.Now,
                     LastHeartbeat = DateTime.Now,
                     OnlineStatus = 0,
-
-                    GroupId = 0,
+                    GroupId = _signalRConfig.DeviceManagement.DefaultGroupId,
                     IpAddress = Context.GetHttpContext()?.Connection?.RemoteIpAddress?.ToString(),
                     UserAgent = Context.GetHttpContext()?.Request.Headers["User-Agent"].ToString()
                 };
@@ -515,5 +553,75 @@ namespace Lean.Hbt.Infrastructure.SignalR
             }
             return null;
         }
+    }
+
+    // 添加配置类
+    public class SignalRConfig
+    {
+        public bool EnableDetailedErrors { get; set; }
+        public int ClientTimeoutInterval { get; set; }
+        public int KeepAliveInterval { get; set; }
+        public int HandshakeTimeout { get; set; }
+        public int MaximumReceiveMessageSize { get; set; }
+        public int StreamBufferCapacity { get; set; }
+        public bool EnableMessagePack { get; set; }
+        public TransportConfig Transport { get; set; }
+        public AuthenticationConfig Authentication { get; set; }
+        public UserManagementConfig UserManagement { get; set; }
+        public DeviceManagementConfig DeviceManagement { get; set; }
+    }
+
+    public class TransportConfig
+    {
+        public WebSocketConfig WebSockets { get; set; }
+        public ServerSentEventsConfig ServerSentEvents { get; set; }
+        public LongPollingConfig LongPolling { get; set; }
+    }
+
+    public class WebSocketConfig
+    {
+        public int CloseTimeout { get; set; }
+        public string SubProtocol { get; set; }
+    }
+
+    public class ServerSentEventsConfig
+    {
+        public int ClientTimeoutInterval { get; set; }
+    }
+
+    public class LongPollingConfig
+    {
+        public int PollTimeout { get; set; }
+    }
+
+    public class AuthenticationConfig
+    {
+        public bool RequireAuthentication { get; set; }
+        public TokenValidationConfig TokenValidation { get; set; }
+    }
+
+    public class TokenValidationConfig
+    {
+        public bool ValidateIssuer { get; set; }
+        public bool ValidateAudience { get; set; }
+        public bool ValidateLifetime { get; set; }
+        public bool ValidateIssuerSigningKey { get; set; }
+    }
+
+    public class UserManagementConfig
+    {
+        public int MaxDevicesPerUser { get; set; }
+        public bool AllowMultipleConnections { get; set; }
+        public bool KickoutOldSession { get; set; }
+        public bool NotifyKickout { get; set; }
+        public int DefaultGroupId { get; set; }
+    }
+
+    public class DeviceManagementConfig
+    {
+        public bool EnableDeviceTracking { get; set; }
+        public int MaxDevicesPerUser { get; set; }
+        public int DeviceTimeoutMinutes { get; set; }
+        public int DefaultGroupId { get; set; }
     }
 }

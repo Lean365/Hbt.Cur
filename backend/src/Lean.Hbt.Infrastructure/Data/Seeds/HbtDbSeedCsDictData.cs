@@ -33,7 +33,7 @@ public class HbtDbSeedCsDictData
     /// <summary>
     /// 初始化客户服务和项目管理相关字典数据
     /// </summary>
-    public async Task<(int, int)> InitializeCustomerServiceDictDataAsync(long tenantId)
+    public async Task<(int, int)> InitializeCustomerServiceDictDataAsync()
     {
         int insertCount = 0;
         int updateCount = 0;
@@ -137,7 +137,7 @@ public class HbtDbSeedCsDictData
     /// <summary>
     /// 初始化客户服务字典数据
     /// </summary>
-    public async Task<(int insertCount, int updateCount)> InitializeCsDictDataAsync(long tenantId)
+    public async Task<(int insertCount, int updateCount)> InitializeCsDictDataAsync()
     {
         var dictDataList = new List<HbtDictData>
         {

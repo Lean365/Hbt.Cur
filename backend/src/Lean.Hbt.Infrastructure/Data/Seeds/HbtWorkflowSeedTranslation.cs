@@ -34,7 +34,7 @@ public class HbtWorkflowSeedTranslation
     /// <summary>
     /// 初始化工作流本地化资源
     /// </summary>
-    public async Task<(int insertCount, int updateCount)> InitializeWorkflowTranslationAsync(long tenantId)
+    public async Task<(int insertCount, int updateCount)> InitializeWorkflowTranslationAsync()
     {
         var defaultTranslations = new List<HbtTranslation>
         {

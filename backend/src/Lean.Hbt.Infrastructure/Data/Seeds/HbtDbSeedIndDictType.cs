@@ -33,7 +33,7 @@ public class HbtDbSeedIndDictType
     /// <summary>
     /// 初始化国民经济行业分类字典类型数据
     /// </summary>
-    public async Task<(int, int)> InitializeIndDictTypeAsync(long tenantId)
+    public async Task<(int, int)> InitializeIndDictTypeAsync()
     {
         int insertCount = 0;
         int updateCount = 0;

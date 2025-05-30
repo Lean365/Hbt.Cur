@@ -219,6 +219,7 @@ interface Props {
   wrapperCol?: object // 输入框布局
   buttonSpace?: number // 按钮间距
   show?: boolean // 控制显示/隐藏
+  model?: Record<string, any> // 表单模型
 }
 
 // === 属性定义 ===
@@ -254,17 +255,35 @@ function getDefaultValue(field: QueryField) {
   return ''
 }
 
-// === 监听器 ===
+// === 初始化表单状态 ===
+const initFormState = () => {
+  props.queryFields.forEach((field) => {
+    if (field.type === 'dateRange') {
+      formState[field.name] = []
+    } else {
+      formState[field.name] = undefined
+    }
+  })
+}
+
+// === 初始化表单 ===
+initFormState()
+
+// === 监听 model 变化，更新表单状态 ===
 watch(
-  () => props.queryFields,
-  (fields) => {
-    fields.forEach((field) => {
-      if (!(field.name in formState)) {
-        formState[field.name] = getDefaultValue(field)
-      }
-    })
+  () => props.model,
+  (newModel) => {
+    if (newModel) {
+      props.queryFields.forEach((field) => {
+        if (field.type === 'dateRange') {
+          formState[field.name] = newModel[field.name] || []
+        } else {
+          formState[field.name] = newModel[field.name]
+        }
+      })
+    }
   },
-  { immediate: true }
+  { immediate: true, deep: true }
 )
 
 // === 事件处理 ===

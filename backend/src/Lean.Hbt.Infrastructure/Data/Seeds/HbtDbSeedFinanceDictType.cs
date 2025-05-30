@@ -33,7 +33,7 @@ public class HbtDbSeedFinanceDictType
     /// <summary>
     /// 初始化财务相关字典类型数据
     /// </summary>
-    public async Task<(int, int)> InitializeFinanceDictTypeAsync(long tenantId)
+    public async Task<(int, int)> InitializeFinanceDictTypeAsync()
     {
         int insertCount = 0;
         int updateCount = 0;

@@ -33,7 +33,7 @@ public class HbtDbSeedDictType
     /// <summary>
     /// 初始化字典类型数据
     /// </summary>
-    public async Task<(int, int)> InitializeDictTypeAsync(long tenantId)
+    public async Task<(int, int)> InitializeDictTypeAsync()
     {
         int insertCount = 0;
         int updateCount = 0;
@@ -672,6 +672,18 @@ public class HbtDbSeedDictType
                 Status = 0,
 
                 Remark = "翻译模块类型字典",
+                CreateBy = "Hbt365",
+                CreateTime = DateTime.Now,
+                UpdateBy = "Hbt365",
+                UpdateTime = DateTime.Now
+            },
+            new HbtDictType
+            {
+                DictName = "表前缀类型",
+                DictType = "gen_table_prefix",
+                OrderNum = 50,
+                Status = 0,
+                Remark = "数据表前缀类型字典",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
                 UpdateBy = "Hbt365",

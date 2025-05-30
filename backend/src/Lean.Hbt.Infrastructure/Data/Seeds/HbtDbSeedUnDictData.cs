@@ -34,7 +34,7 @@ public class HbtDbSeedUnDictData
     /// <summary>
     /// 初始化字典数据
     /// </summary>
-    public async Task<(int, int)> InitializeDictDataAsync(long tenantId)
+    public async Task<(int, int)> InitializeDictDataAsync()
     {
         int insertCount = 0;
         int updateCount = 0;

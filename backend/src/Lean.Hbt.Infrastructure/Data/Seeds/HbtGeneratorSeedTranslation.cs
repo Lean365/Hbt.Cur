@@ -33,7 +33,7 @@ public class HbtGeneratorSeedTranslation
     /// <summary>
     /// 初始化代码生成器本地化资源
     /// </summary>
-    public async Task<(int insertCount, int updateCount)> InitializeGeneratorTranslationAsync(long tenantId)
+    public async Task<(int insertCount, int updateCount)> InitializeGeneratorTranslationAsync()
     {
         int insertCount = 0;
         int updateCount = 0;

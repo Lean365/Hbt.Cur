@@ -40,7 +40,7 @@ public class HbtIdentitySeedTranslation
     /// <summary>
     /// 初始化Identity本地化资源
     /// </summary>
-    public async Task<(int insertCount, int updateCount)> InitializeIdentityTranslationAsync(long tenantId)
+    public async Task<(int insertCount, int updateCount)> InitializeIdentityTranslationAsync()
     {
         int insertCount = 0;
         int updateCount = 0;

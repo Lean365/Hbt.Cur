@@ -33,7 +33,7 @@ public class HbtDbSeedOADictType
     /// <summary>
     /// 初始化OA相关字典类型数据
     /// </summary>
-    public async Task<(int, int)> InitializeOADictTypeAsync(long tenantId)
+    public async Task<(int, int)> InitializeOADictTypeAsync()
     {
         int insertCount = 0;
         int updateCount = 0;

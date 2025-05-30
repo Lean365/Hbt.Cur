@@ -1,16 +1,23 @@
 <template>
-  <a-dropdown v-model:open="open" :trigger="['click']">
-    <div class="tenant-switch" @click="handleClick">
-      <span class="tenant-name">{{ currentTenant?.label || t('common.tenant.select') }}</span>
-      <down-outlined />
-    </div>
+  <a-dropdown :trigger="['hover']" placement="bottom" class="tenant-dropdown">
+    <a-button type="text" :loading="loading">
+      <template #icon>
+        <shop-outlined v-if="!loading" />
+      </template>
+    </a-button>
     <template #overlay>
-      <a-menu v-model:selectedKeys="selectedKeys" @click="handleSelect">
+      <a-menu @click="({ key }) => handleTenantChange(Number(key))">
         <a-menu-item v-for="tenant in tenantList" :key="tenant.value">
           <template #icon>
-            <check-outlined v-if="tenant.value === currentTenant?.value" />
+            <check-outlined v-if="currentTenantId === tenant.value" />
           </template>
-          {{ tenant.label }}
+          <span :class="{ 'current-tenant': currentTenantId === tenant.value }">
+            {{ tenant.label }}
+          </span>
+        </a-menu-item>
+        <a-menu-divider v-if="tenantList.length === 0" />
+        <a-menu-item v-if="tenantList.length === 0" disabled>
+          {{ loading ? t('common.loading') : t('common.noData') }}
         </a-menu-item>
       </a-menu>
     </template>
@@ -21,55 +28,41 @@
 import { ref, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { message } from 'ant-design-vue'
-import { DownOutlined, CheckOutlined } from '@ant-design/icons-vue'
+import { ShopOutlined, CheckOutlined } from '@ant-design/icons-vue'
 import { getTenantOptions } from '@/api/identity/tenant'
 import { useUserStore } from '@/stores/user'
 import type { HbtTenantOption } from '@/types/identity/tenant'
-import type { MenuInfo } from 'ant-design-vue/es/menu/src/interface'
 
 const { t } = useI18n()
 const userStore = useUserStore()
-
-// 下拉菜单状态
-const open = ref(false)
-const selectedKeys = ref<string[]>([])
-
-// 租户列表
+const loading = ref(false)
 const tenantList = ref<HbtTenantOption[]>([])
-const currentTenant = ref<HbtTenantOption>()
+const currentTenantId = ref<number>()
 
 // 获取租户列表
 const getTenantList = async () => {
+  loading.value = true
   try {
     const { data } = await getTenantOptions()
     if (data.code === 200 && Array.isArray(data.data)) {
       tenantList.value = data.data
       // 设置当前租户
-      const currentTenantId = userStore.getCurrentTenantId()
-      currentTenant.value = tenantList.value.find(t => t.value === currentTenantId)
-      if (currentTenant.value) {
-        selectedKeys.value = [currentTenant.value.value.toString()]
-      }
+      currentTenantId.value = userStore.getCurrentTenantId()
     }
   } catch (error) {
     console.error('[租户切换] 获取租户列表失败:', error)
     message.error(t('common.failed'))
+  } finally {
+    loading.value = false
   }
 }
 
-// 处理点击
-const handleClick = () => {
-  if (tenantList.value.length === 0) {
-    getTenantList()
-  }
-}
-
-// 处理选择
-const handleSelect = async (info: MenuInfo) => {
+// 处理租户切换
+const handleTenantChange = async (tenantId: number) => {
+  if (loading.value || tenantId === currentTenantId.value) return
+  
+  loading.value = true
   try {
-    const tenantId = parseInt(info.key as string)
-    // 更新当前租户
-    currentTenant.value = tenantList.value.find(t => t.value === tenantId)
     // 更新用户Store中的租户ID
     await userStore.setCurrentTenantId(tenantId)
     message.success(t('common.tenant.switch.success'))
@@ -78,6 +71,8 @@ const handleSelect = async (info: MenuInfo) => {
   } catch (error) {
     console.error('[租户切换] 切换租户失败:', error)
     message.error(t('common.tenant.switch.failed'))
+  } finally {
+    loading.value = false
   }
 }
 
@@ -87,23 +82,37 @@ onMounted(() => {
 </script>
 
 <style lang="less" scoped>
-.tenant-switch {
+.tenant-dropdown {
   display: flex;
   align-items: center;
-  cursor: pointer;
-  padding: 0 12px;
-  height: 100%;
-  
-  &:hover {
-    background: rgba(0, 0, 0, 0.025);
-  }
+  justify-content: center;
+}
 
-  .tenant-name {
-    margin-right: 8px;
-    max-width: 120px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
+:deep(.ant-dropdown-trigger) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+:deep(.ant-btn) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
+  width: 32px;
+  padding: 0;
+}
+
+:deep(.anticon) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  line-height: 1;
+}
+
+.current-tenant {
+  font-weight: 500;
+  color: #1890ff;
 }
 </style> 

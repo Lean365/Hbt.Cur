@@ -33,7 +33,7 @@ public class HbtDbSeedPost
     /// <summary>
     /// 初始化岗位数据
     /// </summary>
-    public async Task<(int, int)> InitializePostAsync(long tenantId)
+    public async Task<(int, int)> InitializePostAsync()
     {
         int insertCount = 0;
         int updateCount = 0;

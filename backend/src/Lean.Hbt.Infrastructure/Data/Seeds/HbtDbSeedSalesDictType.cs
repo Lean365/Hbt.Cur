@@ -33,7 +33,7 @@ public class HbtDbSeedSalesDictType
     /// <summary>
     /// 初始化销售相关字典类型数据
     /// </summary>
-    public async Task<(int, int)> InitializeSalesDictTypeAsync(long tenantId)
+    public async Task<(int, int)> InitializeSalesDictTypeAsync()
     {
         int insertCount = 0;
         int updateCount = 0;

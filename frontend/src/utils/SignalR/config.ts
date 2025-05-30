@@ -5,13 +5,22 @@ import { message } from 'ant-design-vue'
 
 // SignalR 全局配置
 export const signalRConfig = {
-  logLevel: LogLevel.Debug,
+  logLevel: LogLevel.Information,
   reconnectInterval: 5000,
   maxRetries: 5,
-  heartbeatInterval: 30000,
-  heartbeatTimeout: 10000,
+  heartbeatInterval: 15000,  // 与后端 KeepAliveInterval 匹配
+  heartbeatTimeout: 60000,   // 与后端 ClientTimeoutInterval 匹配
   baseUrl: `${import.meta.env.VITE_API_BASE_URL}/signalr/hbthub`,
-  transport: HttpTransportType.WebSockets | HttpTransportType.ServerSentEvents | HttpTransportType.LongPolling
+  transport: HttpTransportType.LongPolling, // 首先使用 LongPolling
+  debug: import.meta.env.DEV, // 仅在开发环境启用调试
+  skipNegotiation: false,    // 允许协商过程
+  serverTimeoutInMilliseconds: 30000, // 服务器超时时间
+  keepAliveIntervalInMilliseconds: 15000, // 保持连接活跃的间隔
+  maximumReceiveMessageSize: 10485760, // 10MB，与后端 MaximumReceiveMessageSize 匹配
+  streamBufferCapacity: 10,  // 与后端 StreamBufferCapacity 匹配
+  handshakeTimeout: 15000,   // 与后端 HandshakeTimeout 匹配
+  closeTimeout: 5000,        // 与后端 WebSockets.CloseTimeout 匹配
+  enableDetailedErrors: import.meta.env.DEV // 仅在开发环境启用详细错误
 }
 
 // 重试策略配置
@@ -101,26 +110,30 @@ export const createHubConnection = async (): Promise<HubConnection> => {
             throw new Error('未找到访问令牌');
         }
 
-        // 获取 CSRF 令牌
-        const csrfToken = document.cookie.split(';')
-            .find(cookie => cookie.trim().startsWith('XSRF-TOKEN='))
-            ?.split('=')[1];
-        
-        if (csrfToken) {
-            console.log('[SignalR] 获取到 CSRF 令牌');
-        }
+        const url = signalRConfig.baseUrl;
+        console.log('[SignalR] 连接URL:', url);
 
         const connection = new HubConnectionBuilder()
-            .withUrl(`${signalRConfig.baseUrl}`, {
-                skipNegotiation: false,
+            .withUrl(url, {
                 transport: signalRConfig.transport,
                 withCredentials: true,
+                skipNegotiation: signalRConfig.skipNegotiation,
+                accessTokenFactory: () => token,
                 headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'Content-Type': 'application/json',
-                    'X-Device-Info': encodeURIComponent(JSON.stringify(deviceInfo)),
-                    'Authorization': `Bearer ${token}`,
-                    'X-CSRF-TOKEN': csrfToken ? decodeURIComponent(csrfToken) : ''
+                    'X-Device-Id': deviceInfo.deviceId || '',
+                    'X-Device-Name': deviceInfo.deviceName || '',
+                    'X-Device-Type': (deviceInfo.deviceType || 0).toString(),
+                    'X-Device-Model': deviceInfo.deviceModel || '',
+                    'X-OS-Type': (deviceInfo.osType || 0).toString(),
+                    'X-OS-Version': deviceInfo.osVersion || '',
+                    'X-Browser-Type': (deviceInfo.browserType || 0).toString(),
+                    'X-Browser-Version': deviceInfo.browserVersion || '',
+                    'X-Resolution': deviceInfo.resolution || '',
+                    'X-Location': deviceInfo.location || '',
+                    'X-Language': navigator.language || '',
+                    'X-Timezone': deviceInfo.environment?.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone || '',
+                    'X-User-Agent': navigator.userAgent,
+                    'X-Device-Fingerprint': deviceInfo.deviceFingerprint || ''
                 }
             })
             .withAutomaticReconnect({
@@ -137,27 +150,29 @@ export const createHubConnection = async (): Promise<HubConnection> => {
                 }
             })
             .configureLogging(customLogger)
+            .withServerTimeout(signalRConfig.serverTimeoutInMilliseconds)
+            .withKeepAliveInterval(signalRConfig.keepAliveIntervalInMilliseconds)
             .build();
 
         // 设置连接事件处理
         connection.onclose((error) => {
-            console.error('SignalR连接已关闭:', error);
+            console.error('[SignalR] 连接已关闭:', error);
             message.error('连接已断开，正在尝试重新连接...');
         });
 
         connection.onreconnecting((error) => {
-            console.warn('SignalR正在重新连接:', error);
+            console.warn('[SignalR] 正在重新连接:', error);
             message.warning('正在重新连接...');
         });
 
         connection.onreconnected((connectionId) => {
-            console.log('SignalR重新连接成功:', connectionId);
+            console.log('[SignalR] 重新连接成功:', connectionId);
             message.success('重新连接成功');
         });
 
         return connection;
     } catch (error) {
-        console.error('创建SignalR连接失败:', error);
+        console.error('[SignalR] 创建连接失败:', error);
         throw error;
     }
 };

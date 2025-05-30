@@ -33,7 +33,7 @@ public class HbtDbSeedNatureDictType
     /// <summary>
     /// 初始化企业性质字典类型数据
     /// </summary>
-    public async Task<(int, int)> InitializeNatureDictTypeAsync(long tenantId)
+    public async Task<(int, int)> InitializeNatureDictTypeAsync()
     {
         int insertCount = 0;
         int updateCount = 0;

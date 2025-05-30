@@ -19,6 +19,7 @@ using System.Text.Json;
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 using Lean.Hbt.Common.Options;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http.Connections;
 
 namespace Lean.Hbt.Infrastructure.Extensions
 {
@@ -32,25 +33,36 @@ namespace Lean.Hbt.Infrastructure.Extensions
         /// </summary>
         public static IServiceCollection AddHbtSignalR(this IServiceCollection services, IConfiguration configuration)
         {
+            // 获取SignalR配置
+            var signalRConfig = configuration.GetSection("SignalR").Get<SignalRConfig>();
+
             // 配置SignalR日志
             services.AddLogging(logging =>
             {
-                logging.AddFilter("Microsoft.AspNetCore.SignalR", LogLevel.Debug);
-                logging.AddFilter("Microsoft.AspNetCore.Http.Connections", LogLevel.Debug);
+                logging.AddFilter("Microsoft.AspNetCore.SignalR", 
+                    signalRConfig.EnableDetailedErrors ? LogLevel.Debug : LogLevel.Information);
+                logging.AddFilter("Microsoft.AspNetCore.Http.Connections", 
+                    signalRConfig.EnableDetailedErrors ? LogLevel.Debug : LogLevel.Information);
             });
 
             // 配置SignalR
             services.AddSignalR(options =>
             {
-                options.EnableDetailedErrors = true;
-                options.MaximumReceiveMessageSize = 1024 * 1024 * 10; // 10MB
-                options.HandshakeTimeout = TimeSpan.FromSeconds(15);
-                options.KeepAliveInterval = TimeSpan.FromSeconds(15);
-                options.ClientTimeoutInterval = TimeSpan.FromSeconds(30);
+                // 基本设置
+                options.EnableDetailedErrors = signalRConfig.EnableDetailedErrors;
+                options.MaximumReceiveMessageSize = signalRConfig.MaximumReceiveMessageSize;
+                options.HandshakeTimeout = TimeSpan.FromSeconds(signalRConfig.HandshakeTimeout);
+                options.KeepAliveInterval = TimeSpan.FromSeconds(signalRConfig.KeepAliveInterval);
+                options.ClientTimeoutInterval = TimeSpan.FromSeconds(signalRConfig.ClientTimeoutInterval);
+                options.StreamBufferCapacity = signalRConfig.StreamBufferCapacity;
             })
             .AddHubOptions<HbtSignalRHub>(options =>
             {
-                // Hub 特定的配置可以放在这里
+                options.EnableDetailedErrors = signalRConfig.EnableDetailedErrors;
+                options.MaximumReceiveMessageSize = signalRConfig.MaximumReceiveMessageSize;
+                options.HandshakeTimeout = TimeSpan.FromSeconds(signalRConfig.HandshakeTimeout);
+                options.KeepAliveInterval = TimeSpan.FromSeconds(signalRConfig.KeepAliveInterval);
+                options.ClientTimeoutInterval = TimeSpan.FromSeconds(signalRConfig.ClientTimeoutInterval);
             })
             .AddJsonProtocol(options =>
             {
@@ -81,7 +93,8 @@ namespace Lean.Hbt.Infrastructure.Extensions
                         var path = context.HttpContext.Request.Path;
                         if (path.StartsWithSegments("/signalr/hbthub"))
                         {
-                            var accessToken = context.Request.Query["access_token"].ToString();
+                            // 从请求头中获取 token
+                            var accessToken = context.Request.Headers["Authorization"].ToString()?.Replace("Bearer ", "");
                             if (!string.IsNullOrEmpty(accessToken))
                             {
                                 context.Token = accessToken;
@@ -93,7 +106,7 @@ namespace Lean.Hbt.Infrastructure.Extensions
                             else
                             {
                                 var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<HbtSignalRHub>>();
-                                logger.LogWarning("SignalR 连接认证失败: 未提供 access_token 参数");
+                                logger.LogWarning("SignalR 连接认证失败: 未提供 Authorization 头");
                             }
                         }
                         return Task.CompletedTask;
@@ -123,9 +136,17 @@ namespace Lean.Hbt.Infrastructure.Extensions
         /// </summary>
         public static IApplicationBuilder UseHbtSignalR(this IApplicationBuilder app)
         {
+            var configuration = app.ApplicationServices.GetRequiredService<IConfiguration>();
+            var signalRConfig = configuration.GetSection("SignalR").Get<SignalRConfig>();
+
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapHub<HbtSignalRHub>("/signalr/hbthub");
+                endpoints.MapHub<HbtSignalRHub>("/signalr/hbthub", options =>
+                {
+                    options.CloseOnAuthenticationExpiration = signalRConfig.Authentication.RequireAuthentication;
+                    options.ApplicationMaxBufferSize = signalRConfig.MaximumReceiveMessageSize;
+                    options.TransportMaxBufferSize = signalRConfig.MaximumReceiveMessageSize;
+                });
             });
 
             return app;

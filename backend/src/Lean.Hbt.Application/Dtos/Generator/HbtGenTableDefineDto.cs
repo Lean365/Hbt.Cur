@@ -3,10 +3,10 @@
 //===================================================================
 // 项目名 : Lean.Hbt
 // 文件名 : HbtGenTableDefineDto.cs
-// 创建者 : Lean365
+// 创建者 : Claude
 // 创建时间: 2024-03-24
 // 版本号 : V0.0.1
-// 描述    : 代码生成表定义DTO
+// 描述   : 代码生成表定义DTO
 //===================================================================
 
 using System.ComponentModel.DataAnnotations;
@@ -23,29 +23,31 @@ public class HbtGenTableDefineDto
     /// </summary>
     public HbtGenTableDefineDto()
     {
+        ConnectionString = string.Empty;
         DatabaseName = string.Empty;
         TableName = string.Empty;
         TableComment = string.Empty;
-        ClassName = string.Empty;
-        Namespace = string.Empty;
-        BaseNamespace = string.Empty;
-        CsharpTypeName = string.Empty;
-        ModuleName = string.Empty;
-        BusinessName = string.Empty;
-        FunctionName = string.Empty;
         Author = string.Empty;
-        GenPath = string.Empty;
-        CreateBy = string.Empty;
-        UpdateBy = string.Empty;
         Columns = new List<HbtGenColumnDefineDto>();
     }
 
     /// <summary>
     /// 主键ID
     /// </summary>
-    public long Id { get; set; }
+    [AdaptMember("Id")]
+    public long GenTableDefineId { get; set; }
 
-    #region 基本信息
+    /// <summary>
+    /// 数据库类型（0：SqlServer，1：MySQL，2：PostgreSQL，3：Oracle，4：SQLite）
+    /// </summary>
+    public int DbType { get; set; }
+
+    /// <summary>
+    /// 连接字符串
+    /// </summary>
+    [Required(ErrorMessage = "连接字符串不能为空")]
+    [StringLength(500, ErrorMessage = "连接字符串长度不能超过500个字符")]
+    public string ConnectionString { get; set; }
 
     /// <summary>
     /// 数据库名称
@@ -68,144 +70,12 @@ public class HbtGenTableDefineDto
     [StringLength(200, ErrorMessage = "表描述长度不能超过200个字符")]
     public string TableComment { get; set; }
 
-    #endregion 基本信息
-
-    #region 类型信息
-
     /// <summary>
-    /// 实体类名
+    /// 作者
     /// </summary>
-    [Required(ErrorMessage = "实体类名不能为空")]
-    [StringLength(100, ErrorMessage = "实体类名长度不能超过100个字符")]
-    public string ClassName { get; set; }
-
-    /// <summary>
-    /// 命名空间
-    /// </summary>
-    [Required(ErrorMessage = "命名空间不能为空")]
-    [StringLength(200, ErrorMessage = "命名空间长度不能超过200个字符")]
-    public string Namespace { get; set; }
-
-    /// <summary>
-    /// 基本命名空间前缀
-    /// </summary>
-    [Required(ErrorMessage = "命名前缀不能为空")]
-    [StringLength(100, ErrorMessage = "命名前缀长度不能超过100个字符")]
-    public string BaseNamespace { get; set; }
-
-    /// <summary>
-    /// C#类名
-    /// </summary>
-    [Required(ErrorMessage = "C#类名不能为空")]
-    [StringLength(100, ErrorMessage = "C#类名长度不能超过100个字符")]
-    public string CsharpTypeName { get; set; }
-
-    #endregion 类型信息
-
-    #region 关联信息
-
-    /// <summary>
-    /// 关联父表名
-    /// </summary>
-    [StringLength(100, ErrorMessage = "关联父表长度不能超过100个字符")]
-    public string? ParentTableName { get; set; }
-
-    /// <summary>
-    /// 本表关联父表的外键名
-    /// </summary>
-    [StringLength(100, ErrorMessage = "关联外键长度不能超过100个字符")]
-    public string? ParentTableFkName { get; set; }
-
-    #endregion 关联信息
-
-    #region 生成配置信息
-
-    /// <summary>
-    /// 使用的模板
-    /// </summary>
-    [Required(ErrorMessage = "使用模板不能为空")]
-    public int TemplateType { get; set; } = 1;
-
-    /// <summary>
-    /// 生成模块名
-    /// </summary>
-    [Required(ErrorMessage = "模块名称不能为空")]
-    [StringLength(50, ErrorMessage = "模块名称长度不能超过50个字符")]
-    public string ModuleName { get; set; }
-
-    /// <summary>
-    /// 生成业务名
-    /// </summary>
-    [Required(ErrorMessage = "业务名称不能为空")]
-    [StringLength(50, ErrorMessage = "业务名称长度不能超过50个字符")]
-    public string BusinessName { get; set; }
-
-    /// <summary>
-    /// 生成功能名
-    /// </summary>
-    [Required(ErrorMessage = "功能名称不能为空")]
-    [StringLength(50, ErrorMessage = "功能名称长度不能超过50个字符")]
-    public string FunctionName { get; set; }
-
-    /// <summary>
-    /// 生成作者名
-    /// </summary>
-    [Required(ErrorMessage = "作者名称不能为空")]
-    [StringLength(50, ErrorMessage = "作者名称长度不能超过50个字符")]
+    [Required(ErrorMessage = "作者不能为空")]
+    [StringLength(50, ErrorMessage = "作者长度不能超过50个字符")]
     public string Author { get; set; }
-
-    #endregion 生成配置信息
-
-    #region 生成选项
-
-    /// <summary>
-    /// 生成代码方式
-    /// </summary>
-    [Required(ErrorMessage = "生成方式不能为空")]
-    public int GenMode { get; set; } = 0;
-
-    /// <summary>
-    /// 代码生成存放位置
-    /// </summary>
-    [Required(ErrorMessage = "存放位置不能为空")]
-    [StringLength(200, ErrorMessage = "存放位置长度不能超过200个字符")]
-    public string GenPath { get; set; }
-
-    /// <summary>
-    /// 其他生成选项
-    /// </summary>
-    public string? Options { get; set; }
-
-    #endregion 生成选项
-
-    #region 系统信息
-
-    /// <summary>
-    /// 租户ID
-    /// </summary>
-    public long TenantId { get; set; }
-
-    /// <summary>
-    /// 创建人
-    /// </summary>
-    public string CreateBy { get; set; }
-
-    /// <summary>
-    /// 创建时间
-    /// </summary>
-    public DateTime CreateTime { get; set; }
-
-    /// <summary>
-    /// 更新人
-    /// </summary>
-    public string UpdateBy { get; set; }
-
-    /// <summary>
-    /// 更新时间
-    /// </summary>
-    public DateTime? UpdateTime { get; set; }
-
-    #endregion 系统信息
 
     /// <summary>
     /// 字段定义列表
@@ -229,16 +99,6 @@ public class HbtGenTableDefineQueryDto : HbtPagedQuery
     /// </summary>
     [StringLength(200, ErrorMessage = "表描述长度不能超过200个字符")]
     public string? TableComment { get; set; }
-
-    /// <summary>
-    /// 开始时间
-    /// </summary>
-    public DateTime? BeginTime { get; set; }
-
-    /// <summary>
-    /// 结束时间
-    /// </summary>
-    public DateTime? EndTime { get; set; }
 }
 
 /// <summary>
@@ -251,22 +111,25 @@ public class HbtGenTableDefineCreateDto
     /// </summary>
     public HbtGenTableDefineCreateDto()
     {
+        ConnectionString = string.Empty;
         DatabaseName = string.Empty;
         TableName = string.Empty;
         TableComment = string.Empty;
-        ClassName = string.Empty;
-        Namespace = string.Empty;
-        BaseNamespace = string.Empty;
-        CsharpTypeName = string.Empty;
-        ModuleName = string.Empty;
-        BusinessName = string.Empty;
-        FunctionName = string.Empty;
         Author = string.Empty;
-        GenPath = string.Empty;
         Columns = new List<HbtGenColumnDefineDto>();
     }
 
-    #region 基本信息
+    /// <summary>
+    /// 数据库类型（0：SqlServer，1：MySQL，2：PostgreSQL，3：Oracle，4：SQLite）
+    /// </summary>
+    public int DbType { get; set; }
+
+    /// <summary>
+    /// 连接字符串
+    /// </summary>
+    [Required(ErrorMessage = "连接字符串不能为空")]
+    [StringLength(500, ErrorMessage = "连接字符串长度不能超过500个字符")]
+    public string ConnectionString { get; set; }
 
     /// <summary>
     /// 数据库名称
@@ -289,115 +152,12 @@ public class HbtGenTableDefineCreateDto
     [StringLength(200, ErrorMessage = "表描述长度不能超过200个字符")]
     public string TableComment { get; set; }
 
-    #endregion 基本信息
-
-    #region 类型信息
-
     /// <summary>
-    /// 实体类名
+    /// 作者
     /// </summary>
-    [Required(ErrorMessage = "实体类名不能为空")]
-    [StringLength(100, ErrorMessage = "实体类名长度不能超过100个字符")]
-    public string ClassName { get; set; }
-
-    /// <summary>
-    /// 命名空间
-    /// </summary>
-    [Required(ErrorMessage = "命名空间不能为空")]
-    [StringLength(200, ErrorMessage = "命名空间长度不能超过200个字符")]
-    public string Namespace { get; set; }
-
-    /// <summary>
-    /// 基本命名空间前缀
-    /// </summary>
-    [Required(ErrorMessage = "命名前缀不能为空")]
-    [StringLength(100, ErrorMessage = "命名前缀长度不能超过100个字符")]
-    public string BaseNamespace { get; set; }
-
-    /// <summary>
-    /// C#类名
-    /// </summary>
-    [Required(ErrorMessage = "C#类名不能为空")]
-    [StringLength(100, ErrorMessage = "C#类名长度不能超过100个字符")]
-    public string CsharpTypeName { get; set; }
-
-    #endregion 类型信息
-
-    #region 关联信息
-
-    /// <summary>
-    /// 关联父表名
-    /// </summary>
-    [StringLength(100, ErrorMessage = "关联父表长度不能超过100个字符")]
-    public string? ParentTableName { get; set; }
-
-    /// <summary>
-    /// 本表关联父表的外键名
-    /// </summary>
-    [StringLength(100, ErrorMessage = "关联外键长度不能超过100个字符")]
-    public string? ParentTableFkName { get; set; }
-
-    #endregion 关联信息
-
-    #region 生成配置信息
-
-    /// <summary>
-    /// 使用的模板
-    /// </summary>
-    [Required(ErrorMessage = "使用模板不能为空")]
-    public int TemplateType { get; set; } = 1;
-
-    /// <summary>
-    /// 生成模块名
-    /// </summary>
-    [Required(ErrorMessage = "模块名称不能为空")]
-    [StringLength(50, ErrorMessage = "模块名称长度不能超过50个字符")]
-    public string ModuleName { get; set; }
-
-    /// <summary>
-    /// 生成业务名
-    /// </summary>
-    [Required(ErrorMessage = "业务名称不能为空")]
-    [StringLength(50, ErrorMessage = "业务名称长度不能超过50个字符")]
-    public string BusinessName { get; set; }
-
-    /// <summary>
-    /// 生成功能名
-    /// </summary>
-    [Required(ErrorMessage = "功能名称不能为空")]
-    [StringLength(50, ErrorMessage = "功能名称长度不能超过50个字符")]
-    public string FunctionName { get; set; }
-
-    /// <summary>
-    /// 生成作者名
-    /// </summary>
-    [Required(ErrorMessage = "作者名称不能为空")]
-    [StringLength(50, ErrorMessage = "作者名称长度不能超过50个字符")]
+    [Required(ErrorMessage = "作者不能为空")]
+    [StringLength(50, ErrorMessage = "作者长度不能超过50个字符")]
     public string Author { get; set; }
-
-    #endregion 生成配置信息
-
-    #region 生成选项
-
-    /// <summary>
-    /// 生成代码方式
-    /// </summary>
-    [Required(ErrorMessage = "生成方式不能为空")]
-    public int GenMode { get; set; } = 0;
-
-    /// <summary>
-    /// 代码生成存放位置
-    /// </summary>
-    [Required(ErrorMessage = "存放位置不能为空")]
-    [StringLength(200, ErrorMessage = "存放位置长度不能超过200个字符")]
-    public string GenPath { get; set; }
-
-    /// <summary>
-    /// 其他生成选项
-    /// </summary>
-    public string? Options { get; set; }
-
-    #endregion 生成选项
 
     /// <summary>
     /// 字段定义列表
@@ -414,7 +174,8 @@ public class HbtGenTableDefineUpdateDto : HbtGenTableDefineCreateDto
     /// 主键ID
     /// </summary>
     [Required(ErrorMessage = "主键不能为空")]
-    public long Id { get; set; }
+    [AdaptMember("Id")]
+    public long GenTableDefineId { get; set; }
 }
 
 /// <summary>
@@ -427,125 +188,53 @@ public class HbtGenTableDefineImportDto
     /// </summary>
     public HbtGenTableDefineImportDto()
     {
+        ConnectionString = string.Empty;
         DatabaseName = string.Empty;
         TableName = string.Empty;
         TableComment = string.Empty;
-        ClassName = string.Empty;
-        Namespace = string.Empty;
-        BaseNamespace = string.Empty;
-        CsharpTypeName = string.Empty;
-        ModuleName = string.Empty;
-        BusinessName = string.Empty;
-        FunctionName = string.Empty;
         Author = string.Empty;
-        GenPath = string.Empty;
         Columns = new List<HbtGenColumnDefineDto>();
     }
 
-    #region 基本信息
+    /// <summary>
+    /// 数据库类型（0：SqlServer，1：MySQL，2：PostgreSQL，3：Oracle，4：SQLite）
+    /// </summary>
+    public int DbType { get; set; }
+
+    /// <summary>
+    /// 连接字符串
+    /// </summary>
+    [Required(ErrorMessage = "连接字符串不能为空")]
+    [StringLength(500, ErrorMessage = "连接字符串长度不能超过500个字符")]
+    public string ConnectionString { get; set; }
 
     /// <summary>
     /// 数据库名称
     /// </summary>
+    [Required(ErrorMessage = "数据库名称不能为空")]
+    [StringLength(100, ErrorMessage = "数据库名称长度不能超过100个字符")]
     public string DatabaseName { get; set; }
 
     /// <summary>
     /// 表名
     /// </summary>
+    [Required(ErrorMessage = "表名不能为空")]
+    [StringLength(100, ErrorMessage = "表名长度不能超过100个字符")]
     public string TableName { get; set; }
 
     /// <summary>
     /// 表描述
     /// </summary>
+    [Required(ErrorMessage = "表描述不能为空")]
+    [StringLength(200, ErrorMessage = "表描述长度不能超过200个字符")]
     public string TableComment { get; set; }
 
-    #endregion 基本信息
-
-    #region 类型信息
-
     /// <summary>
-    /// 实体类名
+    /// 作者
     /// </summary>
-    public string ClassName { get; set; }
-
-    /// <summary>
-    /// 命名空间
-    /// </summary>
-    public string Namespace { get; set; }
-
-    /// <summary>
-    /// 基本命名空间前缀
-    /// </summary>
-    public string BaseNamespace { get; set; }
-
-    /// <summary>
-    /// C#类名
-    /// </summary>
-    public string CsharpTypeName { get; set; }
-
-    #endregion 类型信息
-
-    #region 关联信息
-
-    /// <summary>
-    /// 关联父表名
-    /// </summary>
-    public string? ParentTableName { get; set; }
-
-    /// <summary>
-    /// 本表关联父表的外键名
-    /// </summary>
-    public string? ParentTableFkName { get; set; }
-
-    #endregion 关联信息
-
-    #region 生成配置信息
-
-    /// <summary>
-    /// 使用的模板
-    /// </summary>
-    public int TemplateType { get; set; } = 1;
-
-    /// <summary>
-    /// 生成模块名
-    /// </summary>
-    public string ModuleName { get; set; }
-
-    /// <summary>
-    /// 生成业务名
-    /// </summary>
-    public string BusinessName { get; set; }
-
-    /// <summary>
-    /// 生成功能名
-    /// </summary>
-    public string FunctionName { get; set; }
-
-    /// <summary>
-    /// 生成作者名
-    /// </summary>
+    [Required(ErrorMessage = "作者不能为空")]
+    [StringLength(50, ErrorMessage = "作者长度不能超过50个字符")]
     public string Author { get; set; }
-
-    #endregion 生成配置信息
-
-    #region 生成选项
-
-    /// <summary>
-    /// 生成代码方式
-    /// </summary>
-    public int GenMode { get; set; } = 0;
-
-    /// <summary>
-    /// 代码生成存放位置
-    /// </summary>
-    public string GenPath { get; set; }
-
-    /// <summary>
-    /// 其他生成选项
-    /// </summary>
-    public string? Options { get; set; }
-
-    #endregion 生成选项
 
     /// <summary>
     /// 字段定义列表
@@ -563,151 +252,53 @@ public class HbtGenTableDefineExportDto
     /// </summary>
     public HbtGenTableDefineExportDto()
     {
+        ConnectionString = string.Empty;
         DatabaseName = string.Empty;
         TableName = string.Empty;
         TableComment = string.Empty;
-        ClassName = string.Empty;
-        Namespace = string.Empty;
-        BaseNamespace = string.Empty;
-        CsharpTypeName = string.Empty;
-        ModuleName = string.Empty;
-        BusinessName = string.Empty;
-        FunctionName = string.Empty;
         Author = string.Empty;
-        GenPath = string.Empty;
-        CreateBy = string.Empty;
-        UpdateBy = string.Empty;
         Columns = new List<HbtGenColumnDefineDto>();
     }
 
-    #region 基本信息
+    /// <summary>
+    /// 数据库类型（0：SqlServer，1：MySQL，2：PostgreSQL，3：Oracle，4：SQLite）
+    /// </summary>
+    public int DbType { get; set; }
+
+    /// <summary>
+    /// 连接字符串
+    /// </summary>
+    [Required(ErrorMessage = "连接字符串不能为空")]
+    [StringLength(500, ErrorMessage = "连接字符串长度不能超过500个字符")]
+    public string ConnectionString { get; set; }
 
     /// <summary>
     /// 数据库名称
     /// </summary>
+    [Required(ErrorMessage = "数据库名称不能为空")]
+    [StringLength(100, ErrorMessage = "数据库名称长度不能超过100个字符")]
     public string DatabaseName { get; set; }
 
     /// <summary>
     /// 表名
     /// </summary>
+    [Required(ErrorMessage = "表名不能为空")]
+    [StringLength(100, ErrorMessage = "表名长度不能超过100个字符")]
     public string TableName { get; set; }
 
     /// <summary>
     /// 表描述
     /// </summary>
+    [Required(ErrorMessage = "表描述不能为空")]
+    [StringLength(200, ErrorMessage = "表描述长度不能超过200个字符")]
     public string TableComment { get; set; }
 
-    #endregion 基本信息
-
-    #region 类型信息
-
     /// <summary>
-    /// 实体类名
+    /// 作者
     /// </summary>
-    public string ClassName { get; set; }
-
-    /// <summary>
-    /// 命名空间
-    /// </summary>
-    public string Namespace { get; set; }
-
-    /// <summary>
-    /// 基本命名空间前缀
-    /// </summary>
-    public string BaseNamespace { get; set; }
-
-    /// <summary>
-    /// C#类名
-    /// </summary>
-    public string CsharpTypeName { get; set; }
-
-    #endregion 类型信息
-
-    #region 关联信息
-
-    /// <summary>
-    /// 关联父表名
-    /// </summary>
-    public string? ParentTableName { get; set; }
-
-    /// <summary>
-    /// 本表关联父表的外键名
-    /// </summary>
-    public string? ParentTableFkName { get; set; }
-
-    #endregion 关联信息
-
-    #region 生成配置信息
-
-    /// <summary>
-    /// 使用的模板
-    /// </summary>
-    public int TemplateType { get; set; }
-
-    /// <summary>
-    /// 生成模块名
-    /// </summary>
-    public string ModuleName { get; set; }
-
-    /// <summary>
-    /// 生成业务名
-    /// </summary>
-    public string BusinessName { get; set; }
-
-    /// <summary>
-    /// 生成功能名
-    /// </summary>
-    public string FunctionName { get; set; }
-
-    /// <summary>
-    /// 生成作者名
-    /// </summary>
+    [Required(ErrorMessage = "作者不能为空")]
+    [StringLength(50, ErrorMessage = "作者长度不能超过50个字符")]
     public string Author { get; set; }
-
-    #endregion 生成配置信息
-
-    #region 生成选项
-
-    /// <summary>
-    /// 生成代码方式
-    /// </summary>
-    public int GenMode { get; set; }
-
-    /// <summary>
-    /// 代码生成存放位置
-    /// </summary>
-    public string GenPath { get; set; }
-
-    /// <summary>
-    /// 其他生成选项
-    /// </summary>
-    public string? Options { get; set; }
-
-    #endregion 生成选项
-
-    #region 系统信息
-
-    /// <summary>
-    /// 创建时间
-    /// </summary>
-    public DateTime CreateTime { get; set; }
-
-    /// <summary>
-    /// 更新时间
-    /// </summary>
-    public DateTime? UpdateTime { get; set; }
-
-    /// <summary>
-    /// 创建人
-    /// </summary>
-    public string CreateBy { get; set; }
-
-    /// <summary>
-    /// 更新人
-    /// </summary>
-    public string UpdateBy { get; set; }
-
-    #endregion 系统信息
 
     /// <summary>
     /// 字段定义列表
@@ -725,130 +316,85 @@ public class HbtGenTableDefineTemplateDto
     /// </summary>
     public HbtGenTableDefineTemplateDto()
     {
+        ConnectionString = string.Empty;
         DatabaseName = string.Empty;
         TableName = string.Empty;
         TableComment = string.Empty;
-        ClassName = string.Empty;
-        Namespace = string.Empty;
-        BaseNamespace = string.Empty;
-        CsharpTypeName = string.Empty;
-        ModuleName = string.Empty;
-        BusinessName = string.Empty;
-        FunctionName = string.Empty;
         Author = string.Empty;
-        GenPath = string.Empty;
-        GenMode = "0";
-        TemplateType = "1";
         Columns = new List<HbtGenColumnDefineTemplateDto>();
     }
 
-    #region 基本信息
+    /// <summary>
+    /// 数据库类型（0：SqlServer，1：MySQL，2：PostgreSQL，3：Oracle，4：SQLite）
+    /// </summary>
+    public int DbType { get; set; }
+
+    /// <summary>
+    /// 连接字符串
+    /// </summary>
+    [Required(ErrorMessage = "连接字符串不能为空")]
+    [StringLength(500, ErrorMessage = "连接字符串长度不能超过500个字符")]
+    public string ConnectionString { get; set; }
 
     /// <summary>
     /// 数据库名称
     /// </summary>
+    [Required(ErrorMessage = "数据库名称不能为空")]
+    [StringLength(100, ErrorMessage = "数据库名称长度不能超过100个字符")]
     public string DatabaseName { get; set; }
 
     /// <summary>
     /// 表名
     /// </summary>
+    [Required(ErrorMessage = "表名不能为空")]
+    [StringLength(100, ErrorMessage = "表名长度不能超过100个字符")]
     public string TableName { get; set; }
 
     /// <summary>
     /// 表描述
     /// </summary>
+    [Required(ErrorMessage = "表描述不能为空")]
+    [StringLength(200, ErrorMessage = "表描述长度不能超过200个字符")]
     public string TableComment { get; set; }
 
-    #endregion 基本信息
-
-    #region 类型信息
-
     /// <summary>
-    /// 实体类名
+    /// 作者
     /// </summary>
-    public string ClassName { get; set; }
-
-    /// <summary>
-    /// 命名空间
-    /// </summary>
-    public string Namespace { get; set; }
-
-    /// <summary>
-    /// 基本命名空间前缀
-    /// </summary>
-    public string BaseNamespace { get; set; }
-
-    /// <summary>
-    /// C#类名
-    /// </summary>
-    public string CsharpTypeName { get; set; }
-
-    #endregion 类型信息
-
-    #region 关联信息
-
-    /// <summary>
-    /// 关联父表名
-    /// </summary>
-    public string? ParentTableName { get; set; }
-
-    /// <summary>
-    /// 本表关联父表的外键名
-    /// </summary>
-    public string? ParentTableFkName { get; set; }
-
-    #endregion 关联信息
-
-    #region 生成配置信息
-
-    /// <summary>
-    /// 使用的模板
-    /// </summary>
-    public string TemplateType { get; set; }
-
-    /// <summary>
-    /// 生成模块名
-    /// </summary>
-    public string ModuleName { get; set; }
-
-    /// <summary>
-    /// 生成业务名
-    /// </summary>
-    public string BusinessName { get; set; }
-
-    /// <summary>
-    /// 生成功能名
-    /// </summary>
-    public string FunctionName { get; set; }
-
-    /// <summary>
-    /// 生成作者名
-    /// </summary>
+    [Required(ErrorMessage = "作者不能为空")]
+    [StringLength(50, ErrorMessage = "作者长度不能超过50个字符")]
     public string Author { get; set; }
-
-    #endregion 生成配置信息
-
-    #region 生成选项
-
-    /// <summary>
-    /// 生成代码方式
-    /// </summary>
-    public string GenMode { get; set; }
-
-    /// <summary>
-    /// 代码生成存放位置
-    /// </summary>
-    public string GenPath { get; set; }
-
-    /// <summary>
-    /// 其他生成选项
-    /// </summary>
-    public string? Options { get; set; }
-
-    #endregion 生成选项
 
     /// <summary>
     /// 字段定义列表
     /// </summary>
     public List<HbtGenColumnDefineTemplateDto> Columns { get; set; }
+}
+
+/// <summary>
+/// 代码生成表定义初始化DTO
+/// </summary>
+public class HbtGenTableDefineInitializeDto
+{
+    /// <summary>
+    /// 表定义ID
+    /// </summary>
+    [Required(ErrorMessage = "表定义ID不能为空")]
+    public long GenTableDefineId { get; set; }
+
+    /// <summary>
+    /// 数据库类型
+    /// </summary>
+    public int DbType { get; set; }
+
+    /// <summary>
+    /// 连接字符串
+    /// </summary>
+    [Required(ErrorMessage = "连接字符串不能为空")]
+    public string ConnectionString { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 数据库名称
+    /// </summary>
+    [Required(ErrorMessage = "数据库名称不能为空")]
+    public string DatabaseName { get; set; } = string.Empty;
 }

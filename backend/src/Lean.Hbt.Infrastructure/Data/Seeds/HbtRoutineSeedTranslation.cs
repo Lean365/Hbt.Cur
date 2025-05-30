@@ -34,7 +34,7 @@ public class HbtRoutineSeedTranslation
     /// <summary>
     /// 初始化定时任务本地化资源
     /// </summary>
-    public async Task<(int insertCount, int updateCount)> InitializeRoutineTranslationAsync(long tenantId)
+    public async Task<(int insertCount, int updateCount)> InitializeRoutineTranslationAsync()
     {
         var defaultTranslations = new List<HbtTranslation>
         {

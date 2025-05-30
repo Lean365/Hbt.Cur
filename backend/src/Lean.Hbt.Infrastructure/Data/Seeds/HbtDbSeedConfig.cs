@@ -33,7 +33,7 @@ public class HbtDbSeedConfig
     /// <summary>
     /// 初始化配置数据
     /// </summary>
-    public async Task<(int, int)> InitializeConfigAsync(long tenantId)
+    public async Task<(int, int)> InitializeConfigAsync()
     {
         int insertCount = 0;
         int updateCount = 0;

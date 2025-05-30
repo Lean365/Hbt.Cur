@@ -33,7 +33,7 @@ public class HbtDbSeedDictData
     /// <summary>
     /// 初始化字典数据
     /// </summary>
-    public async Task<(int, int)> InitializeDictDataAsync(long tenantId)
+    public async Task<(int, int)> InitializeDictDataAsync()
     {
         int insertCount = 0;
         int updateCount = 0;
@@ -3530,6 +3530,23 @@ public class HbtDbSeedDictData
                 ListClass = null,
                 Status = 0,
                 Remark = "后端模块",
+                CreateBy = "Hbt365",
+                CreateTime = DateTime.Now,
+                UpdateBy = "Hbt365",
+                UpdateTime = DateTime.Now
+            },
+
+            // 表前缀类型
+            new HbtDictData
+            {
+                DictLabel = "Hbt",
+                DictValue = "Hbt",
+                DictType = "gen_table_prefix",
+                OrderNum = 1,
+                CssClass = 1,
+                ListClass = 1,
+                Status = 0,
+                Remark = "Hbt表前缀",
                 CreateBy = "Hbt365",
                 CreateTime = DateTime.Now,
                 UpdateBy = "Hbt365",

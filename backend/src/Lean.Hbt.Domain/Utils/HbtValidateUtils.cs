@@ -81,7 +81,44 @@ namespace Lean.Hbt.Domain.Utils
                     continue;
 
                 var property = Expression.Property(parameter, field.Key);
-                var constant = Expression.Constant(field.Value);
+                var propertyType = property.Type;
+                
+                // 根据属性类型转换值
+                object convertedValue;
+                if (propertyType == typeof(long))
+                {
+                    convertedValue = long.Parse(field.Value);
+                }
+                else if (propertyType == typeof(int))
+                {
+                    convertedValue = int.Parse(field.Value);
+                }
+                else if (propertyType == typeof(decimal))
+                {
+                    convertedValue = decimal.Parse(field.Value);
+                }
+                else if (propertyType == typeof(double))
+                {
+                    convertedValue = double.Parse(field.Value);
+                }
+                else if (propertyType == typeof(float))
+                {
+                    convertedValue = float.Parse(field.Value);
+                }
+                else if (propertyType == typeof(bool))
+                {
+                    convertedValue = bool.Parse(field.Value);
+                }
+                else if (propertyType == typeof(DateTime))
+                {
+                    convertedValue = DateTime.Parse(field.Value);
+                }
+                else
+                {
+                    convertedValue = field.Value;
+                }
+
+                var constant = Expression.Constant(convertedValue, propertyType);
                 var equals = Expression.Equal(property, constant);
                 var lambda = Expression.Lambda<Func<T, bool>>(equals, parameter);
                 exp.And(lambda);

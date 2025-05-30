@@ -32,9 +32,8 @@ public class HbtDbSeedRole
 
     /// <summary>
     /// 初始化角色数据
-    /// </summary>
-    /// <param name="systemTenantId">系统租户ID</param>
-    public async Task<(int, int)> InitializeRoleAsync(long systemTenantId)
+    /// </summary> 
+    public async Task<(int, int)> InitializeRoleAsync()
     {
         int insertCount = 0;
         int updateCount = 0;

@@ -33,7 +33,7 @@ public class HbtDbSeedLanguage
     /// <summary>
     /// 初始化语言数据
     /// </summary>
-    public async Task<(int, int)> InitializeLanguageAsync(long systemTenantId)
+    public async Task<(int, int)> InitializeLanguageAsync()
     {
         int insertCount = 0;
         int updateCount = 0;

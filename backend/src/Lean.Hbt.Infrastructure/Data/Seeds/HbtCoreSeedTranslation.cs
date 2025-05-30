@@ -40,7 +40,7 @@ public class HbtCoreSeedTranslation
     /// <summary>
     /// 初始化日志本地化资源
     /// </summary>
-    public async Task<(int insertCount, int updateCount)> InitializeCoreTranslationAsync(long tenantId)
+    public async Task<(int insertCount, int updateCount)> InitializeCoreTranslationAsync()
     {
         var defaultTranslations = new List<HbtTranslation>
         {
@@ -102,10 +102,10 @@ public class HbtCoreSeedTranslation
             new HbtTranslation { LangCode = "ja-JP", TransKey = "Core.Error.NetworkError", TransValue = "ネットワークエラー", ModuleName = "Audit", Status = 0 }
         };
 
-        return await CreateTranslationsAsync(defaultTranslations, tenantId);
+        return await CreateTranslationsAsync(defaultTranslations );
     }
 
-    private async Task<(int insertCount, int updateCount)> CreateTranslationsAsync(List<HbtTranslation> translations, long tenantId)
+    private async Task<(int insertCount, int updateCount)> CreateTranslationsAsync(List<HbtTranslation> translations )
     {
         int insertCount = 0;
         int updateCount = 0;

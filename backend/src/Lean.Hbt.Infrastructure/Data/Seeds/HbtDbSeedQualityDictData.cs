@@ -34,7 +34,7 @@ public class HbtDbSeedQualityDictData
     /// <summary>
     /// 初始化质量相关字典数据
     /// </summary>
-    public async Task<(int, int)> InitializeQualityDictDataAsync(long tenantId)
+    public async Task<(int, int)> InitializeQualityDictDataAsync()
     {
         int insertCount = 0;
         int updateCount = 0;

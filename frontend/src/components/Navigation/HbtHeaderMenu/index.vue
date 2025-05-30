@@ -14,6 +14,7 @@ import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import type { MenuProps } from 'ant-design-vue'
+import type { SelectInfo } from 'ant-design-vue/es/menu/src/interface'
 import { useThemeStore } from '@/stores/theme'
 import {
   DashboardOutlined,
@@ -76,8 +77,8 @@ const menuItems = computed<MenuProps['items']>(() => [
 ])
 
 // 处理菜单选择
-const handleSelect = ({ key }: { key: string }) => {
-  router.push(`/${key}`)
+const handleSelect = (info: SelectInfo) => {
+  router.push(`/${info.key}`)
 }
 </script>
 

@@ -9,23 +9,17 @@
 
 #nullable enable
 
-using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
 using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
+using Lean.Hbt.Common.Constants;
+using Lean.Hbt.Common.Exceptions;
+using Lean.Hbt.Common.Options;
+using Lean.Hbt.Domain.Entities.Identity;
+using Lean.Hbt.Domain.IServices.Security;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using Lean.Hbt.Common.Exceptions;
-using Lean.Hbt.Common.Options;
-using Lean.Hbt.Common.Constants;
-using Lean.Hbt.Domain.Entities.Identity;
-using Lean.Hbt.Domain.IServices.Extensions;
-using Lean.Hbt.Domain.IServices.Security;
 
 namespace Lean.Hbt.Infrastructure.Authentication
 {
@@ -77,14 +71,14 @@ namespace Lean.Hbt.Infrastructure.Authentication
         {
             try
             {
-                _logger.Info("开始生成访问令牌，JWT配置信息: {@JwtConfig}", new
-                {
-                    SecretKeyLength = _jwtOptions?.SecretKey?.Length ?? 0,
-                    Issuer = _jwtOptions?.Issuer,
-                    Audience = _jwtOptions?.Audience,
-                    ExpirationMinutes = _jwtOptions?.ExpirationMinutes,
-                    UseDistributedCache = _useDistributedCache
-                });
+                //_logger.Info("开始生成访问令牌，JWT配置信息: {@JwtConfig}", new
+                //{
+                //    SecretKeyLength = _jwtOptions?.SecretKey?.Length ?? 0,
+                //    Issuer = _jwtOptions?.Issuer,
+                //    Audience = _jwtOptions?.Audience,
+                //    ExpirationMinutes = _jwtOptions?.ExpirationMinutes,
+                //    UseDistributedCache = _useDistributedCache
+                //});
 
                 if (string.IsNullOrEmpty(_jwtOptions?.SecretKey))
                 {
@@ -138,7 +132,7 @@ namespace Lean.Hbt.Infrastructure.Authentication
                     throw new HbtException("用户在当前租户中已被禁用", HbtConstants.ErrorCodes.UserDisabled);
                 }
 
-                _logger.Info("JWT Claims: {@Claims}", claims.Select(c => new { c.Type, c.Value }));
+                //_logger.Info("JWT Claims: {@Claims}", claims.Select(c => new { c.Type, c.Value }));
 
                 var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.SecretKey));
                 var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -157,8 +151,8 @@ namespace Lean.Hbt.Infrastructure.Authentication
                 };
 
                 var tokenString = handler.WriteToken(token);
-                _logger.Info("访问令牌生成成功: Length={Length}, Claims={@Claims}", 
-                    tokenString?.Length ?? 0, 
+                _logger.Info("访问令牌生成成功: Length={Length}}",
+                    tokenString?.Length ?? 0,
                     claims.Select(c => new { c.Type, c.Value }));
 
                 if (string.IsNullOrEmpty(tokenString))

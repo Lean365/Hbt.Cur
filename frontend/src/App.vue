@@ -199,17 +199,6 @@ watch(isMemorialMode, (newValue) => {
 // 监听 WebSocket 状态变化
 watch(() => wsStore.error, handleWebSocketError)
 watch(() => wsStore.connected, handleWebSocketConnection)
-
-// 监听用户信息变化，初始化 SignalR
-watch(() => userStore.userInfo, async (newUser) => {
-  if (newUser && userStore.token) {
-    try {
-      await userStore.initSignalR()
-    } catch (error) {
-      console.error('[App] SignalR 初始化失败:', error)
-    }
-  }
-}, { immediate: true })
 </script>
 
 <style lang="less">

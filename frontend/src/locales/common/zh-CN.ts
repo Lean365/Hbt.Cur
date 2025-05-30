@@ -208,6 +208,7 @@ export default {
 
       // === 系统功能按钮 ===
       generate: '生成',      // @btn-generate-color
+
       refresh: '刷新',       // @btn-refresh-color
       info: '信息',          // @btn-info-color
       log: '日志',           // @btn-log-color
@@ -234,6 +235,7 @@ export default {
       share: '分享',         // @btn-share-color
       lock: '锁定',          // @btn-lock-color
       sync: '同步',          // @btn-sync-color
+      initialize: '初始化',   // @btn-initialize-color
       expand: '展开',        // @btn-expand-color
       collapse: '收起',      // @btn-collapse-color
       approve: '同意',       // @btn-approve-color

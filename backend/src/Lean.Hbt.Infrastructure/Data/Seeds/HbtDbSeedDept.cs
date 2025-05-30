@@ -33,7 +33,7 @@ public class HbtDbSeedDept
     /// <summary>
     /// 初始化部门数据
     /// </summary>
-    public async Task<(int, int)> InitializeDeptAsync(long systemTenantId)
+    public async Task<(int, int)> InitializeDeptAsync()
     {
         int insertCount = 0;
         int updateCount = 0;

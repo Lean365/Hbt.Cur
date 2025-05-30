@@ -44,16 +44,16 @@ export function formatMenuToRoutes(menus: HbtMenu[]): RouteRecordRaw[] {
 
       // 处理子路由
       if (menu.children && menu.children.length > 0) {
-        console.log('[路由] 处理子菜单:', {
-          父菜单: menu.menuName,
-          父路径: route.path,
-          子菜单数量: menu.children.length,
-          子菜单: menu.children.map(child => ({
-            名称: child.menuName,
-            路径: child.path,
-            组件: child.component
-          }))
-        })
+        // console.log('[路由] 处理子菜单:', {
+        //   父菜单: menu.menuName,
+        //   父路径: route.path,
+        //   子菜单数量: menu.children.length,
+        //   子菜单: menu.children.map(child => ({
+        //     名称: child.menuName,
+        //     路径: child.path,
+        //     组件: child.component
+        //   }))
+        // })
 
         // 处理子路由
         route.children = menu.children.map((child: HbtMenu) => {
@@ -142,15 +142,15 @@ export function formatMenuToRoutes(menus: HbtMenu[]): RouteRecordRaw[] {
           const firstChild = route.children[0]
           route.redirect = `${route.path}/${firstChild.path}`
           
-          console.log('[路由] 设置重定向:', {
-            从: route.path,
-            到: route.redirect,
-            第一个子路由: {
-              名称: firstChild.meta?.title || firstChild.name || '未命名路由',
-              路径: firstChild.path,
-              完整路径: route.redirect
-            }
-          })
+          // console.log('[路由] 设置重定向:', {
+          //   从: route.path,
+          //   到: route.redirect,
+          //   第一个子路由: {
+          //     名称: firstChild.meta?.title || firstChild.name || '未命名路由',
+          //     路径: firstChild.path,
+          //     完整路径: route.redirect
+          //   }
+          // })
         }
       }
 
@@ -237,15 +237,15 @@ export const registerDynamicRoutes = async (router: Router, menus: HbtMenu[]) =>
     for (const route of routes) {
       try {
         router.addRoute(route)
-        console.log('[路由] 添加路由成功:', {
-          路径: route.path,
-          名称: route.name,
-          子路由: route.children?.map(child => ({
-            路径: child.path,
-            名称: child.name,
-            完整路径: `${route.path}/${child.path}`
-          }))
-        })
+        // console.log('[路由] 添加路由成功:', {
+        //   路径: route.path,
+        //   名称: route.name,
+        //   子路由: route.children?.map(child => ({
+        //     路径: child.path,
+        //     名称: child.name,
+        //     完整路径: `${route.path}/${child.path}`
+        //   }))
+        // })
       } catch (error) {
         console.error('[路由] 添加路由失败:', {
           路径: route.path,

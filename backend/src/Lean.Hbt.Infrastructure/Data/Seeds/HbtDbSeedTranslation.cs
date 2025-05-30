@@ -33,7 +33,7 @@ public class HbtDbSeedTranslation
     /// <summary>
     /// 初始化翻译数据
     /// </summary>
-    public async Task<(int, int)> InitializeTranslationAsync(long tenantId)
+    public async Task<(int, int)> InitializeTranslationAsync()
     {
         int insertCount = 0;
         int updateCount = 0;

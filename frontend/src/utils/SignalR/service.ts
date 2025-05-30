@@ -351,7 +351,47 @@ export class SignalRService {
 
       while (retryCount < maxRetries) {
         try {
+          // 验证设备信息
+          const deviceInfo = await getDeviceInfo()
+          if (!deviceInfo.deviceId) {
+            throw new Error('设备信息不完整，无法建立连接')
+          }
+
           await this.connection.start()
+          
+          // 等待连接状态稳定
+          let stateCheckCount = 0
+          const maxStateChecks = 10
+          const stateCheckDelay = 500 // 0.5秒
+
+          while (stateCheckCount < maxStateChecks) {
+            if (this.connection.state === 'Connected') {
+              const connectionId = this.connection.connectionId
+              if (connectionId) {
+                console.log('[SignalR] 连接状态稳定，当前连接ID:', connectionId)
+                this.isConnected = true
+                this.isInitialized = true
+                this.lastConnectionId = connectionId
+                
+                // 启动心跳检测
+                this.heartbeat = startHeartbeat(this.connection)
+                
+                console.log('[SignalR] 连接建立成功，连接ID:', connectionId)
+                this.emit('Connected', connectionId)
+                return
+              }
+            }
+            
+            stateCheckCount++
+            console.log(`[SignalR] 等待连接状态稳定，当前状态: ${this.connection.state}, 第 ${stateCheckCount} 次检查`)
+            
+            if (stateCheckCount >= maxStateChecks) {
+              throw new Error('连接状态检查超时')
+            }
+            
+            await new Promise(resolve => setTimeout(resolve, stateCheckDelay))
+          }
+          
           break
         } catch (error) {
           retryCount++
@@ -364,61 +404,6 @@ export class SignalRService {
           console.log(`[SignalR] 等待 ${retryDelay}ms 后重试...`)
           await new Promise(resolve => setTimeout(resolve, retryDelay))
         }
-      }
-      
-      // 等待连接状态稳定
-      let stateCheckCount = 0
-      const maxStateChecks = 10
-      const stateCheckDelay = 500 // 0.5秒
-
-      while (stateCheckCount < maxStateChecks) {
-        if (this.connection.state === 'Connected') {
-          break
-        }
-        
-        stateCheckCount++
-        console.log(`[SignalR] 等待连接状态稳定，当前状态: ${this.connection.state}, 第 ${stateCheckCount} 次检查`)
-        
-        if (stateCheckCount >= maxStateChecks) {
-          throw new Error('连接状态检查超时')
-        }
-        
-        await new Promise(resolve => setTimeout(resolve, stateCheckDelay))
-      }
-
-      this.isConnected = true
-      this.isInitialized = true
-
-      // 立即获取连接ID
-      const connectionId = this.connection.connectionId
-      console.log('[SignalR] 连接状态稳定，当前连接ID:', connectionId)
-
-      // 启动心跳检测
-      this.heartbeat = startHeartbeat(this.connection)
-      
-      console.log('[SignalR] 连接建立成功，连接ID:', connectionId)
-      this.emit('Connected', connectionId)
-
-      // 添加重试机制，定期检查连接ID
-      let idCheckCount = 0
-      const maxIdChecks = 5
-      const idCheckDelay = 500 // 0.5秒
-
-      while (idCheckCount < maxIdChecks) {
-        if (this.connection?.connectionId) {
-          console.log('[SignalR] 连接ID已可用:', this.connection.connectionId)
-          break
-        }
-        
-        idCheckCount++
-        console.log(`[SignalR] 第 ${idCheckCount} 次检查连接ID，当前连接ID:`, this.connection?.connectionId)
-        
-        if (idCheckCount >= maxIdChecks) {
-          console.warn('[SignalR] 连接ID检查超时，可能存在问题')
-          break
-        }
-        
-        await new Promise(resolve => setTimeout(resolve, idCheckDelay))
       }
     } catch (error) {
       console.error('[SignalR] 连接建立失败:', error)
@@ -476,6 +461,20 @@ export class SignalRService {
       console.log('[SignalR] 通知发送成功:', notification)
     } catch (error) {
       console.error('[SignalR] 通知发送失败:', error)
+      throw error
+    }
+  }
+
+  // 调用服务器方法
+  async invoke(methodName: string, ...args: any[]): Promise<any> {
+    if (!this.connection) {
+      throw new Error('SignalR connection not established')
+    }
+    
+    try {
+      return await this.connection.invoke(methodName, ...args)
+    } catch (error) {
+      console.error(`[SignalR] 调用方法 ${methodName} 失败:`, error)
       throw error
     }
   }

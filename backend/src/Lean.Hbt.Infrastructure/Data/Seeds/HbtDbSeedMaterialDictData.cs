@@ -33,7 +33,7 @@ public class HbtDbSeedMaterialDictData
     /// <summary>
     /// 初始化物料相关字典数据
     /// </summary>
-    public async Task<(int, int)> InitializeMaterialDictDataAsync(long tenantId)
+    public async Task<(int, int)> InitializeMaterialDictDataAsync()
     {
         int insertCount = 0;
         int updateCount = 0;

@@ -33,7 +33,7 @@ public class HbtDbSeedQualityDictType
     /// <summary>
     /// 初始化质量相关字典类型数据
     /// </summary>
-    public async Task<(int, int)> InitializeQualityDictTypeAsync(long tenantId)
+    public async Task<(int, int)> InitializeQualityDictTypeAsync()
     {
         int insertCount = 0;
         int updateCount = 0;

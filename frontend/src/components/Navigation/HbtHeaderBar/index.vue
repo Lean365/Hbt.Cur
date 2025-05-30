@@ -26,58 +26,13 @@
           <hbt-font-size />
           <hbt-full-screen />
           <hbt-notification-center />
-          <hbt-online-users :open="false" />
+          <hbt-online-users v-model:open="isOnlineUsersOpen" />
           <hbt-locale />
           <hbt-memorial />
           <hbt-theme />
           <!-- 租户切换 -->
-          <a-dropdown v-model:open="tenantOpen" :trigger="['click']">
-            <div class="tenant-switch" @click="handleTenantClick">
-              <span class="tenant-name">{{ currentTenant?.label || t('common.tenant.select') }}</span>
-              <down-outlined />
-            </div>
-            <template #overlay>
-              <a-menu v-model:selectedKeys="selectedTenantKeys" @click="handleTenantSelect">
-                <a-menu-item v-for="tenant in tenantList" :key="tenant.value">
-                  <template #icon>
-                    <check-outlined v-if="tenant.value === currentTenant?.value" />
-                  </template>
-                  {{ tenant.label }}
-                </a-menu-item>
-              </a-menu>
-            </template>
-          </a-dropdown>
-          <a-dropdown :trigger="['click']" placement="bottom" class="user-dropdown">
-            <div class="user-info">
-              <a-avatar :size="32" :src="avatarUrl">
-                <template #icon>
-                  <user-outlined />
-                </template>
-              </a-avatar>
-              <!-- <span class="username">{{ userStore.userInfo?.nickName || userStore.userInfo?.englishName || userStore.userInfo?.userName }}</span> -->
-            </div>
-            <template #overlay>
-              <a-menu class="user-menu">
-                <a-menu-item key="profile" @click="handleProfile">
-                  <template #icon><user-outlined /></template>
-                  <span>{{ t('header.user.profile') }}</span>
-                </a-menu-item>
-                <a-menu-item key="change-password" @click="handleChangePassword">
-                  <template #icon><key-outlined /></template>
-                  <span>{{ t('header.user.changePassword') }}</span>
-                </a-menu-item>
-                <a-menu-item key="clear-cache" @click="handleClearCache">
-                  <template #icon><clear-outlined /></template>
-                  <span>{{ t('header.user.clearCache') }}</span>
-                </a-menu-item>
-                <a-menu-divider />
-                <a-menu-item key="logout" @click="handleLogout">
-                  <template #icon><logout-outlined /></template>
-                  <span>{{ t('header.user.logout') }}</span>
-                </a-menu-item>
-              </a-menu>
-            </template>
-          </a-dropdown>
+          <hbt-tenant />
+          <hbt-header-user />
           <hbt-setting />
         </a-space>
       </div>
@@ -99,20 +54,17 @@ import {
   LogoutOutlined,
   ReloadOutlined,
   ClearOutlined,
-  KeyOutlined,
-  DownOutlined,
-  CheckOutlined
+  KeyOutlined
 } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
 import UserDropdown from './UserDropdown.vue'
-import { getTenantOptions } from '@/api/identity/tenant'
-import type { HbtTenantOption } from '@/types/identity/tenant'
 import type { MenuInfo } from 'ant-design-vue/es/menu/src/interface'
 
 const { t } = useI18n()
 const router = useRouter()
 const userStore = useUserStore()
 const isRefreshing = ref(false)
+const isOnlineUsersOpen = ref(false)
 
 // Props
 interface Props {
@@ -240,60 +192,6 @@ const handleLogout = async () => {
 
 // 计算头像URL
 const avatarUrl = computed(() => userStore.userInfo?.avatar || '')
-
-// 租户切换相关
-const tenantOpen = ref(false)
-const tenantList = ref<HbtTenantOption[]>([])
-const selectedTenantKeys = ref<string[]>([])
-const currentTenant = ref<HbtTenantOption | null>(null)
-
-// 获取租户列表
-const fetchTenantList = async () => {
-  try {
-    const { data } = await getTenantOptions()
-    if (data.code === 200 && Array.isArray(data.data)) {
-      tenantList.value = data.data
-      // 设置当前选中的租户
-      const currentTenantId = userStore.getCurrentTenantId()
-      const foundTenant = tenantList.value.find(t => t.value === currentTenantId)
-      currentTenant.value = foundTenant || null
-      if (currentTenant.value) {
-        selectedTenantKeys.value = [currentTenant.value.value.toString()]
-      }
-    }
-  } catch (error) {
-    console.error('获取租户列表失败:', error)
-  }
-}
-
-// 处理租户点击
-const handleTenantClick = () => {
-  if (tenantList.value.length === 0) {
-    fetchTenantList()
-  }
-}
-
-// 处理租户选择
-const handleTenantSelect = async (info: MenuInfo) => {
-  const tenantId = parseInt(info.key as string)
-  if (tenantId === currentTenant.value?.value) {
-    return
-  }
-
-  try {
-    await userStore.setCurrentTenantId(tenantId)
-    message.success(t('common.tenant.switchSuccess'))
-    // 刷新页面以应用新的租户设置
-    window.location.reload()
-  } catch (error) {
-    console.error('切换租户失败:', error)
-    message.error(t('common.tenant.switchFailed'))
-  }
-}
-
-onMounted(() => {
-  fetchTenantList()
-})
 </script>
 
 <style lang="less" scoped>

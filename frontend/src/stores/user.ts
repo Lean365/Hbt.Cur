@@ -63,7 +63,8 @@ export const useUserStore = defineStore('user', () => {
           昵称: userInfo.value.nickName,
           租户ID: userInfo.value.tenantId,
           角色数: userInfo.value.roles?.length || 0,
-          权限数: userInfo.value.permissions?.length || 0
+          权限数: userInfo.value.permissions?.length || 0,
+          头像: userInfo.value.avatar || '未设置'
         })
         
         return userInfo.value

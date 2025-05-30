@@ -47,13 +47,14 @@ public class HbtDbSeedGeneratorDictType
     /// <summary>
     /// 初始化代码生成器字典类型
     /// </summary>
-    public async Task<(int, int)> InitializeGeneratorDictTypeAsync(long tenantId)
+    public async Task<(int, int)> InitializeGeneratorDictTypeAsync()
     {
         int insertCount = 0;
         int updateCount = 0;
 
         var generatorDictTypes = new List<HbtDictType>
         {
+            SetCommonProperties(new HbtDictType { DictName = "数据库类型", DictType = "gen_db_type", OrderNum = 0, Status = 0,  Remark = "代码生成数据库类型" }),
             SetCommonProperties(new HbtDictType { DictName = "生成模板", DictType = "gen_template_type", OrderNum = 1, Status = 0,  Remark = "代码生成模板类型" }),
             SetCommonProperties(new HbtDictType { DictName = "前端模板", DictType = "gen_frontend_type", OrderNum = 2, Status = 0,  Remark = "前端模板类型" }),
             SetCommonProperties(new HbtDictType { DictName = "生成模块", DictType = "gen_module_name", OrderNum = 3, Status = 0,  Remark = "代码生成模块名称" }),

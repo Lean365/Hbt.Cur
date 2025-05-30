@@ -145,6 +145,7 @@ public class HbtUserInfoDto
         RealName = string.Empty;
         TenantName = string.Empty;
         EnglishName = string.Empty;
+        Avatar = string.Empty;
         Roles = new List<string>();
         Permissions = new List<string>();
     }
@@ -189,6 +190,11 @@ public class HbtUserInfoDto
     /// 英文名称
     /// </summary>
     public string EnglishName { get; set; }
+
+    /// <summary>
+    /// 头像
+    /// </summary>
+    public string Avatar { get; set; }
 
     /// <summary>
     /// 用户类型

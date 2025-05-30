@@ -9,8 +9,19 @@
 
 <template>
   <div class="hbt-operation" :class="{ 'hbt-operation--vertical': direction === 'vertical' }">
-    <!-- 基础操作按钮 -->
-    <a-tooltip v-if="showView" :title="t('common.actions.view')">
+    <!-- 基础操作按钮组 -->
+    <a-tooltip v-if="showSaveButton" :title="t('common.actions.save')">
+      <a-button
+        :type="buttonType"
+        :size="size"
+        @click="handleSave"
+        class="hbt-btn-save"
+      >
+        <template #icon><save-outlined /></template>
+      </a-button>
+    </a-tooltip>
+
+    <a-tooltip v-if="showViewButton" :title="t('common.actions.view')">
       <a-button 
         :type="buttonType"
         :size="size"
@@ -21,7 +32,7 @@
       </a-button>
     </a-tooltip>
 
-    <a-tooltip v-if="showEdit" :title="t('common.actions.edit')">
+    <a-tooltip v-if="showEditButton" :title="t('common.actions.edit')">
       <a-button
         :type="buttonType"
         :size="size"
@@ -32,7 +43,7 @@
       </a-button>
     </a-tooltip>
 
-    <a-tooltip v-if="showImport" :title="t('common.actions.import')">
+    <a-tooltip v-if="showImportButton" :title="t('common.actions.import')">
       <a-button
         :type="buttonType"
         :size="size"
@@ -43,7 +54,7 @@
       </a-button>
     </a-tooltip>
 
-    <a-tooltip v-if="showExport" :title="t('common.actions.export')">
+    <a-tooltip v-if="showExportButton" :title="t('common.actions.export')">
       <a-button
         :type="buttonType"
         :size="size"
@@ -55,7 +66,7 @@
     </a-tooltip>
 
     <a-popconfirm
-      v-if="showDelete"
+      v-if="showDeleteButton"
       :title="t('common.message.deleteConfirm')"
       @confirm="handleDelete"
     >
@@ -71,7 +82,7 @@
       </a-tooltip>
     </a-popconfirm>
 
-    <a-tooltip v-if="showCopy" :title="t('common.actions.copy')">
+    <a-tooltip v-if="showCopyButton" :title="t('common.actions.copy')">
       <a-button
         :type="buttonType"
         :size="size"
@@ -83,7 +94,7 @@
     </a-tooltip>
 
     <!-- 工作流按钮组 -->
-    <a-tooltip v-if="showStartFlow" :title="t('common.actions.startFlow')">
+    <a-tooltip v-if="showStartFlowButton" :title="t('common.actions.startFlow')">
       <a-button
         :type="buttonType"
         :size="size"
@@ -94,7 +105,7 @@
       </a-button>
     </a-tooltip>
 
-    <a-tooltip v-if="showEndFlow" :title="t('common.actions.endFlow')">
+    <a-tooltip v-if="showEndFlowButton" :title="t('common.actions.endFlow')">
       <a-button
         :type="buttonType"
         :size="size"
@@ -105,7 +116,7 @@
       </a-button>
     </a-tooltip>
 
-    <a-tooltip v-if="showAudit" :title="t('common.actions.audit')">
+    <a-tooltip v-if="showAuditButton" :title="t('common.actions.audit')">
       <a-button
         :type="buttonType"
         :size="size"
@@ -116,7 +127,7 @@
       </a-button>
     </a-tooltip>
 
-    <a-tooltip v-if="showRevoke" :title="t('common.actions.revoke')">
+    <a-tooltip v-if="showRevokeButton" :title="t('common.actions.revoke')">
       <a-button
         :type="buttonType"
         :size="size"
@@ -128,7 +139,7 @@
     </a-tooltip>
 
     <!-- 授权按钮组 -->
-    <a-tooltip v-if="showAuthorize" :title="t('common.actions.authorize')">
+    <a-tooltip v-if="showAuthorizeButton" :title="t('common.actions.authorize')">
       <a-button
         :type="buttonType"
         :size="size"
@@ -139,7 +150,7 @@
       </a-button>
     </a-tooltip>
 
-    <a-tooltip v-if="showAssignUser" :title="t('common.actions.assign')">
+    <a-tooltip v-if="showAssignUserButton" :title="t('common.actions.assign')">
       <a-button
         :type="buttonType"
         :size="size"
@@ -151,7 +162,7 @@
     </a-tooltip>
 
     <!-- 代码生成按钮组 -->
-    <a-tooltip v-if="showGenerate" :title="t('common.actions.generate')">
+    <a-tooltip v-if="showGenerateButton" :title="t('common.actions.generate')">
       <a-button
         :type="buttonType"
         :size="size"
@@ -162,7 +173,7 @@
       </a-button>
     </a-tooltip>
 
-    <a-tooltip v-if="showSync" :title="t('common.actions.sync')">
+    <a-tooltip v-if="showSyncButton" :title="t('common.actions.sync')">
       <a-button
         :type="buttonType"
         :size="size"
@@ -173,56 +184,146 @@
       </a-button>
     </a-tooltip>
 
-    <!-- 更多操作下拉菜单 -->
-    <a-dropdown v-if="hasMoreActions">
-      <a-tooltip :title="t('common.actions.more')">
-        <a-button :type="buttonType" :size="size" class="hbt-btn-more">
-          <template #icon><more-outlined /></template>
-        </a-button>
-      </a-tooltip>
-      <template #overlay>
-        <a-menu>
-          <!-- 数据操作组 -->
-          <a-menu-item-group :title="t('common.actions.dataOperations')">
-            <a-menu-item v-if="showSort" @click="handleSort" class="hbt-btn-sort">
-              <sort-ascending-outlined />{{ t('common.actions.sort') }}
-            </a-menu-item>
-            <a-menu-item v-if="showPreview" @click="handlePreview" class="hbt-btn-preview">
-              <eye-outlined />{{ t('common.actions.preview') }}
-            </a-menu-item>
-          </a-menu-item-group>
+    <!-- 初始化按钮组 -->
+    <a-tooltip v-if="showInitializeButton" :title="t('common.actions.initialize')">
+      <a-button
+        :type="buttonType"
+        :size="size"
+        @click="handleInitialize"
+        class="hbt-btn-initialize"
+      >
+        <template #icon><thunderbolt-outlined /></template>
+      </a-button>
+    </a-tooltip>
 
-          <!-- 工作流操作组 -->
-          <a-menu-item-group :title="t('common.actions.workflowOperations')">
-            <a-menu-item v-if="showTransfer" @click="handleTransfer" class="hbt-btn-transfer">
-              <swap-outlined />{{ t('common.actions.transfer') }}
-            </a-menu-item>
-            <a-menu-item v-if="showDelegate" @click="handleDelegate" class="hbt-btn-delegate">
-              <user-switch-outlined />{{ t('common.actions.delegate') }}
-            </a-menu-item>
-            <a-menu-item v-if="showUrge" @click="handleUrge" class="hbt-btn-urge">
-              <clock-circle-outlined />{{ t('common.actions.urge') }}
-            </a-menu-item>
-          </a-menu-item-group>
+    <!-- 开始按钮组 -->
+    <a-tooltip v-if="showStartButton" :title="t('common.actions.start')">
+      <a-button
+        :type="buttonType"
+        :size="size"
+        @click="handleStart"
+        class="hbt-btn-start"
+      >
+        <template #icon><play-circle-outlined /></template>
+      </a-button>
+    </a-tooltip>
 
-          <!-- 系统操作组 -->
-          <a-menu-item-group :title="t('common.actions.systemOperations')">
-            <a-menu-item v-if="showExport" @click="handleExport" class="hbt-btn-export">
-              <export-outlined />{{ t('common.actions.export') }}
-            </a-menu-item>
-            <a-menu-item v-if="showPrint" @click="handlePrint" class="hbt-btn-print">
-              <printer-outlined />{{ t('common.actions.print') }}
-            </a-menu-item>
-            <a-menu-item v-if="showLog" @click="handleLog" class="hbt-btn-log">
-              <file-text-outlined />{{ t('common.actions.log') }}
-            </a-menu-item>
-          </a-menu-item-group>
-        </a-menu>
-      </template>
-    </a-dropdown>
+    <!-- 结束按钮组 -->
+    <a-tooltip v-if="showEndButton" :title="t('common.actions.end')">
+      <a-button
+        :type="buttonType"
+        :size="size"
+        @click="handleEnd"
+        class="hbt-btn-end"
+      >
+        <template #icon><stop-outlined /></template>
+      </a-button>
+    </a-tooltip>
+
+    <!-- 运行按钮组 -->
+    <a-tooltip v-if="showRunButton" :title="t('common.actions.run')">
+      <a-button
+        :type="buttonType"
+        :size="size"
+        @click="handleRun"
+        class="hbt-btn-run"
+      >
+        <template #icon><thunderbolt-outlined /></template>
+      </a-button>
+    </a-tooltip>
+
+    <!-- 停止按钮组 -->
+    <a-tooltip v-if="showStopButton" :title="t('common.actions.stop')">
+      <a-button
+        :type="buttonType"
+        :size="size"
+        @click="handleStop"
+        class="hbt-btn-stop"
+      >
+        <template #icon><pause-circle-outlined /></template>
+      </a-button>
+    </a-tooltip>
+
+    <!-- 更多操作按钮组 -->
+    <a-tooltip v-if="showSortButton" :title="t('common.actions.sort')">
+      <a-button
+        :type="buttonType"
+        :size="size"
+        @click="handleSort"
+        class="hbt-btn-sort"
+      >
+        <template #icon><sort-ascending-outlined /></template>
+      </a-button>
+    </a-tooltip>
+
+    <a-tooltip v-if="showPreviewButton" :title="t('common.actions.preview')">
+      <a-button
+        :type="buttonType"
+        :size="size"
+        @click="handlePreview"
+        class="hbt-btn-preview"
+      >
+        <template #icon><eye-outlined /></template>
+      </a-button>
+    </a-tooltip>
+
+    <a-tooltip v-if="showTransferButton" :title="t('common.actions.transfer')">
+      <a-button
+        :type="buttonType"
+        :size="size"
+        @click="handleTransfer"
+        class="hbt-btn-transfer"
+      >
+        <template #icon><swap-outlined /></template>
+      </a-button>
+    </a-tooltip>
+
+    <a-tooltip v-if="showDelegateButton" :title="t('common.actions.delegate')">
+      <a-button
+        :type="buttonType"
+        :size="size"
+        @click="handleDelegate"
+        class="hbt-btn-delegate"
+      >
+        <template #icon><user-switch-outlined /></template>
+      </a-button>
+    </a-tooltip>
+
+    <a-tooltip v-if="showUrgeButton" :title="t('common.actions.urge')">
+      <a-button
+        :type="buttonType"
+        :size="size"
+        @click="handleUrge"
+        class="hbt-btn-urge"
+      >
+        <template #icon><clock-circle-outlined /></template>
+      </a-button>
+    </a-tooltip>
+
+    <a-tooltip v-if="showPrintButton" :title="t('common.actions.print')">
+      <a-button
+        :type="buttonType"
+        :size="size"
+        @click="handlePrint"
+        class="hbt-btn-print"
+      >
+        <template #icon><printer-outlined /></template>
+      </a-button>
+    </a-tooltip>
+
+    <a-tooltip v-if="showLogButton" :title="t('common.actions.log')">
+      <a-button
+        :type="buttonType"
+        :size="size"
+        @click="handleLog"
+        class="hbt-btn-log"
+      >
+        <template #icon><file-text-outlined /></template>
+      </a-button>
+    </a-tooltip>
 
     <!-- 在线管理按钮组 -->
-    <a-tooltip v-if="showOnlineStatus" :title="t('common.actions.onlineStatus')">
+    <a-tooltip v-if="showOnlineStatusButton" :title="t('common.actions.onlineStatus')">
       <a-button
         :type="buttonType"
         :size="size"
@@ -233,7 +334,7 @@
       </a-button>
     </a-tooltip>
 
-    <a-tooltip v-if="showLoginHistory" :title="t('common.actions.loginHistory')">
+    <a-tooltip v-if="showLoginHistoryButton" :title="t('common.actions.loginHistory')">
       <a-button
         :type="buttonType"
         :size="size"
@@ -245,7 +346,7 @@
     </a-tooltip>
 
     <a-popconfirm
-      v-if="showForceOffline"
+      v-if="showForceOfflineButton"
       :title="t('common.message.forceOfflineConfirm')"
       @confirm="handleForceOffline"
     >
@@ -262,7 +363,7 @@
     </a-popconfirm>
 
     <!-- 邮件操作按钮组 -->
-    <a-tooltip v-if="showSendMail" :title="t('common.actions.sendMail')">
+    <a-tooltip v-if="showSendMailButton" :title="t('common.actions.sendMail')">
       <a-button
         :type="buttonType"
         :size="size"
@@ -273,7 +374,7 @@
       </a-button>
     </a-tooltip>
 
-    <a-tooltip v-if="showViewMail" :title="t('common.actions.viewMail')">
+    <a-tooltip v-if="showViewMailButton" :title="t('common.actions.viewMail')">
       <a-button
         :type="buttonType"
         :size="size"
@@ -284,7 +385,7 @@
       </a-button>
     </a-tooltip>
 
-    <a-tooltip v-if="showMailTemplate" :title="t('common.actions.mailTemplate')">
+    <a-tooltip v-if="showMailTemplateButton" :title="t('common.actions.mailTemplate')">
       <a-button
         :type="buttonType"
         :size="size"
@@ -296,7 +397,7 @@
     </a-tooltip>
 
     <!-- 通知操作按钮组 -->
-    <a-tooltip v-if="showSendNotification" :title="t('common.actions.sendNotification')">
+    <a-tooltip v-if="showSendNotificationButton" :title="t('common.actions.sendNotification')">
       <a-button
         :type="buttonType"
         :size="size"
@@ -307,7 +408,7 @@
       </a-button>
     </a-tooltip>
 
-    <a-tooltip v-if="showViewNotification" :title="t('common.actions.viewNotification')">
+    <a-tooltip v-if="showViewNotificationButton" :title="t('common.actions.viewNotification')">
       <a-button
         :type="buttonType"
         :size="size"
@@ -318,7 +419,7 @@
       </a-button>
     </a-tooltip>
 
-    <a-tooltip v-if="showNotificationSetting" :title="t('common.actions.notificationSetting')">
+    <a-tooltip v-if="showNotificationSettingButton" :title="t('common.actions.notificationSetting')">
       <a-button
         :type="buttonType"
         :size="size"
@@ -330,7 +431,7 @@
     </a-tooltip>
 
     <!-- 消息操作按钮组 -->
-    <a-tooltip v-if="showSendMessage" :title="t('common.actions.sendMessage')">
+    <a-tooltip v-if="showSendMessageButton" :title="t('common.actions.sendMessage')">
       <a-button
         :type="buttonType"
         :size="size"
@@ -341,7 +442,7 @@
       </a-button>
     </a-tooltip>
 
-    <a-tooltip v-if="showViewMessage" :title="t('common.actions.viewMessage')">
+    <a-tooltip v-if="showViewMessageButton" :title="t('common.actions.viewMessage')">
       <a-button
         :type="buttonType"
         :size="size"
@@ -352,7 +453,7 @@
       </a-button>
     </a-tooltip>
 
-    <a-tooltip v-if="showMessageSetting" :title="t('common.actions.messageSetting')">
+    <a-tooltip v-if="showMessageSettingButton" :title="t('common.actions.messageSetting')">
       <a-button
         :type="buttonType"
         :size="size"
@@ -371,7 +472,9 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useUserStore } from '@/stores/user'
 import {
+  SaveOutlined,
   EyeOutlined,
   EditOutlined,
   DeleteOutlined,
@@ -402,97 +505,192 @@ import {
   NotificationOutlined,
   SettingOutlined,
   MessageOutlined,
-  SendOutlined
+  SendOutlined,
+  ReloadOutlined,
+  ThunderboltOutlined,
+  PauseCircleOutlined
 } from '@ant-design/icons-vue'
+
 
 const { t } = useI18n()
 
 // === 类型定义 ===
 interface Props {
-  record?: any // 数据记录
-  showView?: boolean // 是否显示查看按钮
-  showEdit?: boolean // 是否显示编辑按钮
-  showDelete?: boolean // 是否显示删除按钮
-  showCopy?: boolean // 是否显示复制按钮
-  showImport?: boolean // 是否显示导入按钮
-  showExport?: boolean // 是否显示导出按钮
-  showStartFlow?: boolean // 是否显示开始流程按钮
-  showEndFlow?: boolean // 是否显示结束流程按钮
-  showAudit?: boolean // 是否显示审核按钮
-  showRevoke?: boolean // 是否显示撤销按钮
-  showPrint?: boolean // 是否显示打印按钮
-  showLog?: boolean // 是否显示日志按钮
-  showAuthorize?: boolean // 是否显示授权按钮
-  showAssignUser?: boolean // 是否显示分配用户按钮
-  showGenerate?: boolean // 是否显示代码生成按钮
-  showSync?: boolean // 是否显示同步按钮
-  showSort?: boolean // 是否显示排序按钮
-  showPreview?: boolean // 是否显示预览按钮
-  showTransfer?: boolean // 是否显示转移按钮
-  showDelegate?: boolean // 是否显示委托按钮
-  showUrge?: boolean // 是否显示催办按钮
-  showForceOffline?: boolean // 是否显示强制下线按钮
-  showOnlineStatus?: boolean // 是否显示在线状态按钮
-  showLoginHistory?: boolean // 是否显示登录历史按钮
-  showSendMail?: boolean // 是否显示发送邮件按钮
-  showViewMail?: boolean // 是否显示查看邮件按钮
-  showMailTemplate?: boolean // 是否显示邮件模板按钮
-  showSendNotification?: boolean // 是否显示发送通知按钮
-  showViewNotification?: boolean // 是否显示查看通知按钮
-  showNotificationSetting?: boolean // 是否显示通知设置按钮
-  showSendMessage?: boolean // 是否显示发送消息按钮
-  showViewMessage?: boolean // 是否显示查看消息按钮
-  showMessageSetting?: boolean // 是否显示消息设置按钮
-  buttonType?: 'link' | 'text' | 'default' | 'primary' | 'dashed' // 按钮类型
-  size?: 'small' | 'middle' | 'large' // 按钮大小
-  showText?: boolean // 是否显示按钮文本
-  direction?: 'horizontal' | 'vertical' // 按钮排列方向
+  record?: any
+  showSave?: boolean
+  savePermission?: string[]
+  showView?: boolean
+  viewPermission?: string[]
+  showEdit?: boolean
+  editPermission?: string[]
+  showDelete?: boolean
+  deletePermission?: string[]
+  showCopy?: boolean
+  copyPermission?: string[]
+  showImport?: boolean
+  importPermission?: string[]
+  showExport?: boolean
+  exportPermission?: string[]
+  showStartFlow?: boolean
+  startFlowPermission?: string[]
+  showEndFlow?: boolean
+  endFlowPermission?: string[]
+  showAudit?: boolean
+  auditPermission?: string[]
+  showRevoke?: boolean
+  revokePermission?: string[]
+  showPrint?: boolean
+  printPermission?: string[]
+  showLog?: boolean
+  logPermission?: string[]
+  showAuthorize?: boolean
+  authorizePermission?: string[]
+  showAssignUser?: boolean
+  assignUserPermission?: string[]
+  showGenerate?: boolean
+  generatePermission?: string[]
+  showSync?: boolean
+  syncPermission?: string[]
+  showSort?: boolean
+  sortPermission?: string[]
+  showPreview?: boolean
+  previewPermission?: string[]
+  showTransfer?: boolean
+  transferPermission?: string[]
+  showDelegate?: boolean
+  delegatePermission?: string[]
+  showUrge?: boolean
+  urgePermission?: string[]
+  showForceOffline?: boolean
+  forceOfflinePermission?: string[]
+  showOnlineStatus?: boolean
+  onlineStatusPermission?: string[]
+  showLoginHistory?: boolean
+  loginHistoryPermission?: string[]
+  showSendMail?: boolean
+  sendMailPermission?: string[]
+  showViewMail?: boolean
+  viewMailPermission?: string[]
+  showMailTemplate?: boolean
+  mailTemplatePermission?: string[]
+  showSendNotification?: boolean
+  sendNotificationPermission?: string[]
+  showViewNotification?: boolean
+  viewNotificationPermission?: string[]
+  showNotificationSetting?: boolean
+  notificationSettingPermission?: string[]
+  showSendMessage?: boolean
+  sendMessagePermission?: string[]
+  showViewMessage?: boolean
+  viewMessagePermission?: string[]
+  showMessageSetting?: boolean
+  messageSettingPermission?: string[]
+  buttonType?: 'link' | 'text' | 'default' | 'primary' | 'dashed'
+  size?: 'small' | 'middle' | 'large'
+  showText?: boolean
+  direction?: 'horizontal' | 'vertical'
+  showInitialize?: boolean
+  initializePermission?: string[]
+  showStart?: boolean
+  startPermission?: string[]
+  showEnd?: boolean
+  endPermission?: string[]
+  showRun?: boolean
+  runPermission?: string[]
+  showStop?: boolean
+  stopPermission?: string[]
 }
 
 // === 属性定义 ===
 const props = withDefaults(defineProps<Props>(), {
   record: undefined,
+  showSave: false,
+  savePermission: () => [],
   showView: false,
+  viewPermission: () => [],
   showEdit: false,
+  editPermission: () => [],
   showDelete: false,
+  deletePermission: () => [],
   showCopy: false,
+  copyPermission: () => [],
   showImport: false,
+  importPermission: () => [],
   showExport: false,
+  exportPermission: () => [],
   showStartFlow: false,
+  startFlowPermission: () => [],
   showEndFlow: false,
+  endFlowPermission: () => [],
   showAudit: false,
+  auditPermission: () => [],
   showRevoke: false,
+  revokePermission: () => [],
   showPrint: false,
+  printPermission: () => [],
   showLog: false,
+  logPermission: () => [],
   showAuthorize: false,
+  authorizePermission: () => [],
   showAssignUser: false,
+  assignUserPermission: () => [],
   showGenerate: false,
+  generatePermission: () => [],
   showSync: false,
+  syncPermission: () => [],
   showSort: false,
+  sortPermission: () => [],
   showPreview: false,
+  previewPermission: () => [],
   showTransfer: false,
+  transferPermission: () => [],
   showDelegate: false,
+  delegatePermission: () => [],
   showUrge: false,
+  urgePermission: () => [],
   showForceOffline: false,
+  forceOfflinePermission: () => [],
   showOnlineStatus: false,
+  onlineStatusPermission: () => [],
   showLoginHistory: false,
+  loginHistoryPermission: () => [],
   showSendMail: false,
+  sendMailPermission: () => [],
   showViewMail: false,
+  viewMailPermission: () => [],
   showMailTemplate: false,
+  mailTemplatePermission: () => [],
   showSendNotification: false,
+  sendNotificationPermission: () => [],
   showViewNotification: false,
+  viewNotificationPermission: () => [],
   showNotificationSetting: false,
+  notificationSettingPermission: () => [],
   showSendMessage: false,
+  sendMessagePermission: () => [],
   showViewMessage: false,
+  viewMessagePermission: () => [],
   showMessageSetting: false,
+  messageSettingPermission: () => [],
   buttonType: 'link',
   size: 'middle',
   showText: true,
-  direction: 'horizontal'
+  direction: 'horizontal',
+  showInitialize: false,
+  initializePermission: () => [],
+  showStart: false,
+  startPermission: () => [],
+  showEnd: false,
+  endPermission: () => [],
+  showRun: false,
+  runPermission: () => [],
+  showStop: false,
+  stopPermission: () => []
 })
 
 // === 事件定义 ===
 const emit = defineEmits([
+  'save',
   'view',
   'edit',
   'delete',
@@ -525,22 +723,254 @@ const emit = defineEmits([
   'notification-setting',
   'send-message',
   'view-message',
-  'message-setting'
+  'message-setting',
+  'initialize',
+  'start',
+  'end',
+  'run',
+  'stop'
 ])
 
-// === 计算属性 ===
-const hasMoreActions = computed(() => {
-  return props.showSort ||
-         props.showPreview ||
-         props.showTransfer ||
-         props.showDelegate ||
-         props.showUrge ||
-         props.showExport ||
-         props.showPrint ||
-         props.showLog
+// === 权限验证方法 ===
+const userStore = useUserStore()
+
+// === 计算属性：根据权限判断是否显示按钮 ===
+const showSaveButton = computed(() => {
+  if (!props.showSave) return false
+  if (!props.savePermission?.length) return false
+  return props.savePermission.some(permission => userStore.permissions.includes(permission))
+})
+
+const showViewButton = computed(() => {
+  if (!props.showView) return false
+  if (!props.viewPermission?.length) return false
+  return props.viewPermission.some(permission => userStore.permissions.includes(permission))
+})
+
+const showEditButton = computed(() => {
+  if (!props.showEdit) return false
+  if (!props.editPermission?.length) return false
+  return props.editPermission.some(permission => userStore.permissions.includes(permission))
+})
+
+const showDeleteButton = computed(() => {
+  if (!props.showDelete) return false
+  if (!props.deletePermission?.length) return false
+  return props.deletePermission.some(permission => userStore.permissions.includes(permission))
+})
+
+const showCopyButton = computed(() => {
+  if (!props.showCopy) return false
+  if (!props.copyPermission?.length) return false
+  return props.copyPermission.some(permission => userStore.permissions.includes(permission))
+})
+
+const showImportButton = computed(() => {
+  if (!props.showImport) return false
+  if (!props.importPermission?.length) return false
+  return props.importPermission.some(permission => userStore.permissions.includes(permission))
+})
+
+const showExportButton = computed(() => {
+  if (!props.showExport) return false
+  if (!props.exportPermission?.length) return false
+  return props.exportPermission.some(permission => userStore.permissions.includes(permission))
+})
+
+const showStartFlowButton = computed(() => {
+  if (!props.showStartFlow) return false
+  if (!props.startFlowPermission?.length) return false
+  return props.startFlowPermission.some(permission => userStore.permissions.includes(permission))
+})
+
+const showEndFlowButton = computed(() => {
+  if (!props.showEndFlow) return false
+  if (!props.endFlowPermission?.length) return false
+  return props.endFlowPermission.some(permission => userStore.permissions.includes(permission))
+})
+
+const showAuditButton = computed(() => {
+  if (!props.showAudit) return false
+  if (!props.auditPermission?.length) return false
+  return props.auditPermission.some(permission => userStore.permissions.includes(permission))
+})
+
+const showRevokeButton = computed(() => {
+  if (!props.showRevoke) return false
+  if (!props.revokePermission?.length) return false
+  return props.revokePermission.some(permission => userStore.permissions.includes(permission))
+})
+
+const showPrintButton = computed(() => {
+  if (!props.showPrint) return false
+  if (!props.printPermission?.length) return false
+  return props.printPermission.some(permission => userStore.permissions.includes(permission))
+})
+
+const showLogButton = computed(() => {
+  if (!props.showLog) return false
+  if (!props.logPermission?.length) return false
+  return props.logPermission.some(permission => userStore.permissions.includes(permission))
+})
+
+const showAuthorizeButton = computed(() => {
+  if (!props.showAuthorize) return false
+  if (!props.authorizePermission?.length) return false
+  return props.authorizePermission.some(permission => userStore.permissions.includes(permission))
+})
+
+const showAssignUserButton = computed(() => {
+  if (!props.showAssignUser) return false
+  if (!props.assignUserPermission?.length) return false
+  return props.assignUserPermission.some(permission => userStore.permissions.includes(permission))
+})
+
+const showGenerateButton = computed(() => {
+  if (!props.showGenerate) return false
+  if (!props.generatePermission?.length) return false
+  return props.generatePermission.some(permission => userStore.permissions.includes(permission))
+})
+
+const showSyncButton = computed(() => {
+  if (!props.showSync) return false
+  if (!props.syncPermission?.length) return false
+  return props.syncPermission.some(permission => userStore.permissions.includes(permission))
+})
+
+const showSortButton = computed(() => {
+  if (!props.showSort) return false
+  if (!props.sortPermission?.length) return false
+  return props.sortPermission.some(permission => userStore.permissions.includes(permission))
+})
+
+const showPreviewButton = computed(() => {
+  if (!props.showPreview) return false
+  if (!props.previewPermission?.length) return false
+  return props.previewPermission.some(permission => userStore.permissions.includes(permission))
+})
+
+const showTransferButton = computed(() => {
+  if (!props.showTransfer) return false
+  if (!props.transferPermission?.length) return false
+  return props.transferPermission.some(permission => userStore.permissions.includes(permission))
+})
+
+const showDelegateButton = computed(() => {
+  if (!props.showDelegate) return false
+  if (!props.delegatePermission?.length) return false
+  return props.delegatePermission.some(permission => userStore.permissions.includes(permission))
+})
+
+const showUrgeButton = computed(() => {
+  if (!props.showUrge) return false
+  if (!props.urgePermission?.length) return false
+  return props.urgePermission.some(permission => userStore.permissions.includes(permission))
+})
+
+const showForceOfflineButton = computed(() => {
+  if (!props.showForceOffline) return false
+  if (!props.forceOfflinePermission?.length) return false
+  return props.forceOfflinePermission.some(permission => userStore.permissions.includes(permission))
+})
+
+const showOnlineStatusButton = computed(() => {
+  if (!props.showOnlineStatus) return false
+  if (!props.onlineStatusPermission?.length) return false
+  return props.onlineStatusPermission.some(permission => userStore.permissions.includes(permission))
+})
+
+const showLoginHistoryButton = computed(() => {
+  if (!props.showLoginHistory) return false
+  if (!props.loginHistoryPermission?.length) return false
+  return props.loginHistoryPermission.some(permission => userStore.permissions.includes(permission))
+})
+
+const showSendMailButton = computed(() => {
+  if (!props.showSendMail) return false
+  if (!props.sendMailPermission?.length) return false
+  return props.sendMailPermission.some(permission => userStore.permissions.includes(permission))
+})
+
+const showViewMailButton = computed(() => {
+  if (!props.showViewMail) return false
+  if (!props.viewMailPermission?.length) return false
+  return props.viewMailPermission.some(permission => userStore.permissions.includes(permission))
+})
+
+const showMailTemplateButton = computed(() => {
+  if (!props.showMailTemplate) return false
+  if (!props.mailTemplatePermission?.length) return false
+  return props.mailTemplatePermission.some(permission => userStore.permissions.includes(permission))
+})
+
+const showSendNotificationButton = computed(() => {
+  if (!props.showSendNotification) return false
+  if (!props.sendNotificationPermission?.length) return false
+  return props.sendNotificationPermission.some(permission => userStore.permissions.includes(permission))
+})
+
+const showViewNotificationButton = computed(() => {
+  if (!props.showViewNotification) return false
+  if (!props.viewNotificationPermission?.length) return false
+  return props.viewNotificationPermission.some(permission => userStore.permissions.includes(permission))
+})
+
+const showNotificationSettingButton = computed(() => {
+  if (!props.showNotificationSetting) return false
+  if (!props.notificationSettingPermission?.length) return false
+  return props.notificationSettingPermission.some(permission => userStore.permissions.includes(permission))
+})
+
+const showSendMessageButton = computed(() => {
+  if (!props.showSendMessage) return false
+  if (!props.sendMessagePermission?.length) return false
+  return props.sendMessagePermission.some(permission => userStore.permissions.includes(permission))
+})
+
+const showViewMessageButton = computed(() => {
+  if (!props.showViewMessage) return false
+  if (!props.viewMessagePermission?.length) return false
+  return props.viewMessagePermission.some(permission => userStore.permissions.includes(permission))
+})
+
+const showMessageSettingButton = computed(() => {
+  if (!props.showMessageSetting) return false
+  if (!props.messageSettingPermission?.length) return false
+  return props.messageSettingPermission.some(permission => userStore.permissions.includes(permission))
+})
+
+const showInitializeButton = computed(() => {
+  if (!props.showInitialize) return false
+  if (!props.initializePermission?.length) return false
+  return props.initializePermission.some(permission => userStore.permissions.includes(permission))
+})
+
+const showStartButton = computed(() => {
+  if (!props.showStart) return false
+  if (!props.startPermission?.length) return false
+  return props.startPermission.some(permission => userStore.permissions.includes(permission))
+})
+
+const showEndButton = computed(() => {
+  if (!props.showEnd) return false
+  if (!props.endPermission?.length) return false
+  return props.endPermission.some(permission => userStore.permissions.includes(permission))
+})
+
+const showRunButton = computed(() => {
+  if (!props.showRun) return false
+  if (!props.runPermission?.length) return false
+  return props.runPermission.some(permission => userStore.permissions.includes(permission))
+})
+
+const showStopButton = computed(() => {
+  if (!props.showStop) return false
+  if (!props.stopPermission?.length) return false
+  return props.stopPermission.some(permission => userStore.permissions.includes(permission))
 })
 
 // === 事件处理 ===
+const handleSave = () => emit('save', props.record)
 const handleView = () => emit('view', props.record)
 const handleEdit = () => emit('edit', props.record)
 const handleDelete = () => emit('delete', props.record)
@@ -574,6 +1004,11 @@ const handleNotificationSetting = () => emit('notification-setting', props.recor
 const handleSendMessage = () => emit('send-message', props.record)
 const handleViewMessage = () => emit('view-message', props.record)
 const handleMessageSetting = () => emit('message-setting', props.record)
+const handleInitialize = () => emit('initialize', props.record)
+const handleStart = () => emit('start', props.record)
+const handleEnd = () => emit('end', props.record)
+const handleRun = () => emit('run', props.record)
+const handleStop = () => emit('stop', props.record)
 </script>
 
 <style lang="less" scoped>

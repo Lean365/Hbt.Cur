@@ -33,7 +33,7 @@ public class HbtDbSeedUnDictType
     /// <summary>
     /// 初始化字典类型数据
     /// </summary>
-    public async Task<(int, int)> InitializeDocTypeDictTypeAsync(long tenantId)
+    public async Task<(int, int)> InitializeDocTypeDictTypeAsync()
     {
         int insertCount = 0;
         int updateCount = 0;

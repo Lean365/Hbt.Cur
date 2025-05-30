@@ -33,7 +33,7 @@ public class HbtDbSeedHrDictData
     /// <summary>
     /// 初始化人力资源相关字典数据
     /// </summary>
-    public async Task<(int, int)> InitializeHrDictDataAsync(long tenantId)
+    public async Task<(int, int)> InitializeHrDictDataAsync()
     {
         int insertCount = 0;
         int updateCount = 0;

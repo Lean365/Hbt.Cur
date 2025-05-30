@@ -45,13 +45,49 @@ public class HbtDbSeedGeneratorDictData
     /// <summary>
     /// 初始化代码生成器字典数据
     /// </summary>
-    public async Task<(int, int)> InitializeGeneratorDictDataAsync(long tenantId)
+    public async Task<(int, int)> InitializeGeneratorDictDataAsync()
     {
         int insertCount = 0;
         int updateCount = 0;
 
         var generatorDictData = new List<HbtDictData>
         {
+            // 数据库类型
+            SetCommonProperties(new HbtDictData { DictType = "gen_db_type", DictLabel = "MySQL", DictValue = "0", OrderNum = 1, Status = 0, CssClass = 1, ListClass = 1, Remark = "MySQL Database" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_db_type", DictLabel = "SqlServer", DictValue = "1", OrderNum = 2, Status = 0, CssClass = 2, ListClass = 2, Remark = "Microsoft SQL Server" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_db_type", DictLabel = "SQLite", DictValue = "2", OrderNum = 3, Status = 0, CssClass = 3, ListClass = 3, Remark = "SQLite Database" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_db_type", DictLabel = "Oracle", DictValue = "3", OrderNum = 4, Status = 0, CssClass = 4, ListClass = 4, Remark = "Oracle Database" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_db_type", DictLabel = "PostgreSQL", DictValue = "4", OrderNum = 5, Status = 0, CssClass = 5, ListClass = 5, Remark = "PostgreSQL Database" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_db_type", DictLabel = "达梦", DictValue = "5", OrderNum = 6, Status = 0, CssClass = 6, ListClass = 6, Remark = "DM Database" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_db_type", DictLabel = "Kdbndp", DictValue = "6", OrderNum = 7, Status = 0, CssClass = 7, ListClass = 7, Remark = "Kdbndp Database" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_db_type", DictLabel = "Oscar", DictValue = "7", OrderNum = 8, Status = 0, CssClass = 8, ListClass = 8, Remark = "Oscar Database" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_db_type", DictLabel = "MySQL Connector", DictValue = "8", OrderNum = 9, Status = 0, CssClass = 9, ListClass = 9, Remark = "MySQL Connector" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_db_type", DictLabel = "Access", DictValue = "9", OrderNum = 10, Status = 0, CssClass = 10, ListClass = 10, Remark = "Microsoft Access" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_db_type", DictLabel = "OpenGauss", DictValue = "10", OrderNum = 11, Status = 0, CssClass = 11, ListClass = 11, Remark = "OpenGauss Database" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_db_type", DictLabel = "QuestDB", DictValue = "11", OrderNum = 12, Status = 0, CssClass = 12, ListClass = 12, Remark = "QuestDB Database" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_db_type", DictLabel = "HG", DictValue = "12", OrderNum = 13, Status = 0, CssClass = 13, ListClass = 13, Remark = "HG Database" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_db_type", DictLabel = "ClickHouse", DictValue = "13", OrderNum = 14, Status = 0, CssClass = 14, ListClass = 14, Remark = "ClickHouse Database" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_db_type", DictLabel = "GBase", DictValue = "14", OrderNum = 15, Status = 0, CssClass = 15, ListClass = 15, Remark = "GBase Database" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_db_type", DictLabel = "ODBC", DictValue = "15", OrderNum = 16, Status = 0, CssClass = 16, ListClass = 16, Remark = "ODBC Database" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_db_type", DictLabel = "OceanBase For Oracle", DictValue = "16", OrderNum = 17, Status = 0, CssClass = 17, ListClass = 17, Remark = "OceanBase For Oracle" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_db_type", DictLabel = "TDengine", DictValue = "17", OrderNum = 18, Status = 0, CssClass = 18, ListClass = 18, Remark = "TDengine Database" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_db_type", DictLabel = "GaussDB", DictValue = "18", OrderNum = 19, Status = 0, CssClass = 19, ListClass = 19, Remark = "GaussDB Database" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_db_type", DictLabel = "OceanBase", DictValue = "19", OrderNum = 20, Status = 0, CssClass = 20, ListClass = 20, Remark = "OceanBase Database" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_db_type", DictLabel = "TiDB", DictValue = "20", OrderNum = 21, Status = 0, CssClass = 21, ListClass = 21, Remark = "TiDB Database" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_db_type", DictLabel = "Vastbase", DictValue = "21", OrderNum = 22, Status = 0, CssClass = 22, ListClass = 22, Remark = "Vastbase Database" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_db_type", DictLabel = "PolarDB", DictValue = "22", OrderNum = 23, Status = 0, CssClass = 23, ListClass = 23, Remark = "PolarDB Database" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_db_type", DictLabel = "Doris", DictValue = "23", OrderNum = 24, Status = 0, CssClass = 24, ListClass = 24, Remark = "Doris Database" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_db_type", DictLabel = "Xugu", DictValue = "24", OrderNum = 25, Status = 0, CssClass = 25, ListClass = 25, Remark = "Xugu Database" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_db_type", DictLabel = "GoldenDB", DictValue = "25", OrderNum = 26, Status = 0, CssClass = 26, ListClass = 26, Remark = "GoldenDB Database" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_db_type", DictLabel = "TDSQL For PG ODBC", DictValue = "26", OrderNum = 27, Status = 0, CssClass = 27, ListClass = 27, Remark = "TDSQL For PG ODBC" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_db_type", DictLabel = "TDSQL", DictValue = "27", OrderNum = 28, Status = 0, CssClass = 28, ListClass = 28, Remark = "TDSQL Database" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_db_type", DictLabel = "HANA", DictValue = "28", OrderNum = 29, Status = 0, CssClass = 29, ListClass = 29, Remark = "SAP HANA Database" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_db_type", DictLabel = "DB2", DictValue = "29", OrderNum = 30, Status = 0, CssClass = 30, ListClass = 30, Remark = "IBM DB2 Database" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_db_type", DictLabel = "GaussDB Native", DictValue = "30", OrderNum = 31, Status = 0, CssClass = 31, ListClass = 31, Remark = "GaussDB Native" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_db_type", DictLabel = "DuckDB", DictValue = "31", OrderNum = 32, Status = 0, CssClass = 32, ListClass = 32, Remark = "DuckDB Database" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_db_type", DictLabel = "MongoDB", DictValue = "32", OrderNum = 33, Status = 0, CssClass = 33, ListClass = 33, Remark = "MongoDB Database" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_db_type", DictLabel = "Custom", DictValue = "900", OrderNum = 34, Status = 0, CssClass = 34, ListClass = 34, Remark = "Custom Database" }),
+
             // 生成模板
             SetCommonProperties(new HbtDictData { DictType = "gen_template_type", DictLabel = "单表（增删改查）", DictValue = "crud", OrderNum = 1, Status = 0,  CssClass = 1, ListClass = 1, Remark = "单表（增删改查）" }),
             SetCommonProperties(new HbtDictData { DictType = "gen_template_type", DictLabel = "树表（增删改查）", DictValue = "tree", OrderNum = 2, Status = 0,  CssClass = 2, ListClass = 2, Remark = "树表（增删改查）" }),
@@ -62,15 +98,15 @@ public class HbtDbSeedGeneratorDictData
             SetCommonProperties(new HbtDictData { DictType = "gen_frontend_type", DictLabel = "Ant Design Vue", DictValue = "ant-design-vue", OrderNum = 2, Status = 0,  CssClass = 2, ListClass = 2, Remark = "Ant Design Vue前端模板" }),
 
             // 生成模块
-            SetCommonProperties(new HbtDictData { DictType = "gen_module_name", DictLabel = "Audit日志审计", DictValue = "audit", OrderNum = 1, Status = 0,  CssClass = 1, ListClass = 1, Remark = "Audit日志审计模块" }),
-            SetCommonProperties(new HbtDictData { DictType = "gen_module_name", DictLabel = "Core系统功能", DictValue = "core", OrderNum = 2, Status = 0,  CssClass = 2, ListClass = 2, Remark = "Core系统功能模块" }),
-            SetCommonProperties(new HbtDictData { DictType = "gen_module_name", DictLabel = "Generator代码生成", DictValue = "generator", OrderNum = 3, Status = 0,  CssClass = 3, ListClass = 3, Remark = "Generator代码生成模块" }),
-            SetCommonProperties(new HbtDictData { DictType = "gen_module_name", DictLabel = "Identity身份认证", DictValue = "identity", OrderNum = 4, Status = 0,  CssClass = 4, ListClass = 4, Remark = "Identity身份认证模块" }),
-            SetCommonProperties(new HbtDictData { DictType = "gen_module_name", DictLabel = "Routine日常事务", DictValue = "routine", OrderNum = 5, Status = 0,  CssClass = 5, ListClass = 5, Remark = "Routine日常事务模块" }),
-            SetCommonProperties(new HbtDictData { DictType = "gen_module_name", DictLabel = "SignalR在线管理", DictValue = "signalr", OrderNum = 6, Status = 0,  CssClass = 6, ListClass = 6, Remark = "SignalR在线管理模块" }),
-            SetCommonProperties(new HbtDictData { DictType = "gen_module_name", DictLabel = "Workflow工作流", DictValue = "workflow", OrderNum = 7, Status = 0,  CssClass = 7, ListClass = 7, Remark = "Workflow工作流模块" }),
-            SetCommonProperties(new HbtDictData { DictType = "gen_module_name", DictLabel = "Finance财务管理", DictValue = "finance", OrderNum = 8, Status = 0,  CssClass = 8, ListClass = 8, Remark = "Finance财务管理模块" }),
-            SetCommonProperties(new HbtDictData { DictType = "gen_module_name", DictLabel = "Logistics后勤管理", DictValue = "logistics", OrderNum = 9, Status = 0,  CssClass = 9, ListClass = 9, Remark = "Logistics后勤管理模块" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_module_name", DictLabel = "Audit日志审计", DictValue = "Audit", OrderNum = 1, Status = 0,  CssClass = 1, ListClass = 1, Remark = "Audit日志审计模块" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_module_name", DictLabel = "Core系统功能", DictValue = "Core", OrderNum = 2, Status = 0,  CssClass = 2, ListClass = 2, Remark = "Core系统功能模块" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_module_name", DictLabel = "Generator代码生成", DictValue = "Generator", OrderNum = 3, Status = 0,  CssClass = 3, ListClass = 3, Remark = "Generator代码生成模块" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_module_name", DictLabel = "Identity身份认证", DictValue = "Identity", OrderNum = 4, Status = 0,  CssClass = 4, ListClass = 4, Remark = "Identity身份认证模块" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_module_name", DictLabel = "Routine日常事务", DictValue = "Routine", OrderNum = 5, Status = 0,  CssClass = 5, ListClass = 5, Remark = "Routine日常事务模块" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_module_name", DictLabel = "SignalR在线管理", DictValue = "SignalR", OrderNum = 6, Status = 0,  CssClass = 6, ListClass = 6, Remark = "SignalR在线管理模块" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_module_name", DictLabel = "Workflow工作流", DictValue = "Workflow", OrderNum = 7, Status = 0,  CssClass = 7, ListClass = 7, Remark = "Workflow工作流模块" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_module_name", DictLabel = "Finance财务管理", DictValue = "Finance", OrderNum = 8, Status = 0,  CssClass = 8, ListClass = 8, Remark = "Finance财务管理模块" }),
+            SetCommonProperties(new HbtDictData { DictType = "gen_module_name", DictLabel = "Logistics后勤管理", DictValue = "Logistics", OrderNum = 9, Status = 0,  CssClass = 9, ListClass = 9, Remark = "Logistics后勤管理模块" }),
 
             // 前端布局
             SetCommonProperties(new HbtDictData { DictType = "gen_frontend_style", DictLabel = "一行一列", DictValue = "single", OrderNum = 1, Status = 0,  CssClass = 1, ListClass = 1, Remark = "一行一列布局" }),
@@ -118,9 +154,14 @@ public class HbtDbSeedGeneratorDictData
             }
             else
             {
+                // 更新所有字段
+                existingDictData.DictType = dictData.DictType;
                 existingDictData.DictLabel = dictData.DictLabel;
+                existingDictData.DictValue = dictData.DictValue;
                 existingDictData.OrderNum = dictData.OrderNum;
                 existingDictData.Status = dictData.Status;
+                existingDictData.CssClass = dictData.CssClass;
+                existingDictData.ListClass = dictData.ListClass;
                 existingDictData.Remark = dictData.Remark;
                 existingDictData.UpdateBy = dictData.UpdateBy;
                 existingDictData.UpdateTime = dictData.UpdateTime;

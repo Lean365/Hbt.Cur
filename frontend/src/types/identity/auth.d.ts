@@ -51,7 +51,11 @@ export interface UserInfo {
   /** 权限列表 */
   permissions: string[]
   /** 头像 */
-  avatar?: string
+  avatar: string
+  /** 全名 */
+  fullName: string
+  /** 真实姓名 */
+  realName: string
 }
 
 /**

@@ -17,14 +17,10 @@
       :edit-permission="['generator:tabledefine:update']"
       :show-delete="true"
       :delete-permission="['generator:tabledefine:delete']"
-      :show-sync="true"
-      :sync-permission="['generator:tabledefine:sync']"
       :show-import="true"
       :import-permission="['generator:tabledefine:import']"
       :show-export="true"
       :export-permission="['generator:tabledefine:export']"
-      :show-initialize="true"
-      :initialize-permission="['generator:tabledefine:initialize']"
       :disabled-edit="selectedRowKeys.length !== 1"
       :disabled-delete="selectedRowKeys.length === 0"
       :disabled-sync="selectedRowKeys.length !== 1"
@@ -32,8 +28,8 @@
       @add="handleAdd"
       @edit="handleEditSelected"
       @delete="handleBatchDelete"
-      @sync="handleSync"
       @import="handleImport"
+      @template="handleTemplate"
       @export="handleExport"
       @initialize="handleInitialize"
       @refresh="fetchData"
@@ -47,21 +43,53 @@
       :columns="columns"
       :data-source="tableData"
       :loading="loading"
-      :pagination="pagination"
-      :row-selection="rowSelection"
+      :pagination="false"
+      row-key="genTableDefineId"
+      v-model:selectedRowKeys="selectedRowKeys"
+      :row-selection="{
+        type: 'checkbox',
+        columnWidth: 60
+      }"
       @change="handleTableChange"
     >
       <template #bodyCell="{ column, record }">
-        <template v-if="column.key === 'action'">
-          <a-space>
-            <a-button type="link" @click="handleEdit(record)">编辑</a-button>
-            <a-button type="link" @click="handleDelete(record)">删除</a-button>
-            <a-button type="link" @click="handleSync(record)">同步</a-button>
-            <a-button type="link" @click="handleInitialize(record)">初始化</a-button>
-          </a-space>
+        <template v-if="column.key === 'tableName'">
+          <a @click="handleOpenColumn(record)">{{ record.tableName }}</a>
+        </template>
+        <template v-else-if="column.key === 'dbType'">
+          <hbt-dict-tag dict-type="gen_db_type" :value="record.dbType" />
+        </template>
+        <template v-else-if="column.key === 'action'">
+          <hbt-operation
+            :record="record"
+            :show-edit="true"
+            :edit-permission="['generator:tabledefine:update']"
+            :show-delete="true"
+            :delete-permission="['generator:tabledefine:delete']"
+            :show-sync="true"
+            :sync-permission="['generator:tabledefine:sync']"
+            :show-initialize="true"
+            :initialize-permission="['generator:tabledefine:initialize']"
+            @edit="handleEdit"
+            @delete="handleDelete"
+            @sync="handleSync"
+            @initialize="handleInitialize"
+          />
         </template>
       </template>
     </hbt-table>
+
+    <!-- 分页 -->
+    <hbt-pagination
+      v-model:current="queryParams.pageIndex"
+      v-model:pageSize="queryParams.pageSize"
+      :total="total"
+      :show-size-changer="true"
+      :show-quick-jumper="true"
+      :show-total="(total: number, range: [number, number]) => h('span', null, `共 ${total} 条`)"
+      @change="handlePageChange"
+      @showSizeChange="handleSizeChange"
+    />
 
     <!-- 代码生成表定义表单对话框 -->
     <table-define-form
@@ -73,7 +101,7 @@
 
     <!-- 列设置抽屉 -->
     <a-drawer
-      :visible="columnSettingVisible"
+      v-model:open="columnSettingVisible"
       title="列设置"
       placement="right"
       width="300"
@@ -84,20 +112,25 @@
         @change="handleColumnSettingChange"
         class="column-setting-group"
       >
-        <div v-for="col in defaultColumns" :key="col.key" class="column-setting-item">
-          <a-checkbox :value="col.key">{{ col.title }}</a-checkbox>
+        <div v-for="col in columns" :key="col.key" class="column-setting-item">
+          <a-checkbox :value="col.key" :disabled="col.key === 'action'">{{ col.title }}</a-checkbox>
         </div>
       </a-checkbox-group>
     </a-drawer>
+
+    <!-- 列定义弹窗 -->
+    <gen-column-define
+      v-model:open="columnDrawerVisible"
+      :table-id="currentTableId || 0"
+    />
   </div>
 </template>
 
 <script lang="ts" setup>
 import { ref, reactive, onMounted } from 'vue'
-import { message, Modal } from 'ant-design-vue'
-import type { TablePaginationConfig } from 'ant-design-vue/es/table/interface'
-import type { HbtGenTableDefine, HbtGenTableDefineQuery, HbtGenTableDefinePageResult } from '@/types/generator/genTableDefine'
-import type { QueryField } from '@/types/components/query'
+import { message, Modal, TablePaginationConfig } from 'ant-design-vue'
+import { useI18n } from 'vue-i18n'
+import type { HbtGenTableDefine, HbtGenTableDefineQuery, HbtGenTableDefineImport, HbtGenTableDefineCreate } from '@/types/generator/genTableDefine'
 import {
   getTableDefineList,
   deleteTableDefine,
@@ -106,9 +139,21 @@ import {
   exportTableDefine,
   getTableDefineTemplate,
   syncTableDefine,
-  initializeTableDefine
+  initializeTableDefine,
 } from '@/api/generator/genTableDefine'
+import type { QueryField } from '@/types/components/query'
 import TableDefineForm from './components/TableDefineForm.vue'
+import GenColumnDefine from './components/GenColumnDefine.vue'
+import {
+  PlusOutlined,
+  UploadOutlined,
+  DownloadOutlined,
+  FileOutlined,
+  DeleteOutlined
+} from '@ant-design/icons-vue'
+
+
+const { t } = useI18n()
 
 /** 生成类型选项 */
 const genTypeOptions = [
@@ -178,7 +223,7 @@ const columns = [
     ellipsis: true
   },
   {
-    title: '表注释',
+    title: '表描述',
     dataIndex: 'tableComment',
     key: 'tableComment',
     width: 120,
@@ -192,77 +237,77 @@ const columns = [
     ellipsis: true
   },
   {
-    title: '表类型',
-    dataIndex: 'tableType',
-    key: 'tableType',
-    width: 100,
-    customRender: ({ text }: { text: number }) => {
-      return text === 1 ? '普通表' : '视图'
-    }
+    title: '数据库类型',
+    dataIndex: 'dbType',
+    key: 'dbType',
+    width: 100
   },
   {
-    title: '表引擎',
-    dataIndex: 'engine',
-    key: 'engine',
+    title: '作者',
+    dataIndex: 'author',
+    key: 'author',
     width: 100,
     ellipsis: true
   },
   {
-    title: '字符集',
-    dataIndex: 'charset',
-    key: 'charset',
-    width: 100,
-    ellipsis: true
-  },
-  {
-    title: '排序规则',
-    dataIndex: 'collation',
-    key: 'collation',
+    title: t('identity.user.table.columns.remark'),
+    dataIndex: 'remark',
+    key: 'remark',
     width: 120,
     ellipsis: true
   },
   {
-    title: '状态',
-    dataIndex: 'status',
-    key: 'status',
-    width: 80,
-    customRender: ({ text }: { text: number }) => {
-      return text === 1 ? '正常' : '停用'
-    }
+    title: t('identity.user.table.columns.createBy'),
+    dataIndex: 'createBy',
+    key: 'createBy',
+    width: 120,
+    ellipsis: true
   },
   {
-    title: '创建时间',
+    title: t('identity.user.table.columns.createTime'),
     dataIndex: 'createTime',
     key: 'createTime',
-    width: 180
+    width: 180,
+    ellipsis: true
   },
   {
-    title: '更新时间',
+    title: t('identity.user.table.columns.updateBy'),
+    dataIndex: 'updateBy',
+    key: 'updateBy',
+    width: 120,
+    ellipsis: true
+  },
+  {
+    title: t('identity.user.table.columns.updateTime'),
     dataIndex: 'updateTime',
     key: 'updateTime',
-    width: 180
+    width: 180,
+    ellipsis: true
   },
   {
-    title: '操作',
+    title: t('identity.user.table.columns.deleteBy'),
+    dataIndex: 'deleteBy',
+    key: 'deleteBy',
+    width: 120,
+    ellipsis: true
+  },
+  {
+    title: t('identity.user.table.columns.deleteTime'),
+    dataIndex: 'deleteTime',
+    key: 'deleteTime',
+    width: 180,
+    ellipsis: true
+  },
+  {
+    title: t('common.table.header.operation'),
+    dataIndex: 'action',
     key: 'action',
-    width: 240,
-    fixed: 'right'
+    width: 150,
+    fixed: 'right',
+    align: 'center',
+    ellipsis: true
   }
 ]
-
-// 默认列设置
-const defaultColumns = columns.map(col => ({
-  key: col.key,
-  title: col.title
-}))
-
-// 列设置状态
-const columnSettings = reactive(
-  defaultColumns.reduce((acc, col) => {
-    acc[col.key] = true
-    return acc
-  }, {} as Record<string, boolean>)
-)
 
 // 状态定义
 const loading = ref(false)
@@ -273,261 +318,337 @@ const queryParams = reactive<HbtGenTableDefineQuery>({
   pageSize: 10,
   tableName: '',
   tableComment: '',
-  beginTime: undefined,
-  endTime: undefined
+  dateRange: undefined
 })
-const selectedRowKeys = ref<string[]>([])
+const selectedRowKeys = ref<(string | number)[]>([])
 const selectedTableId = ref<number>()
 const formVisible = ref(false)
 const formTitle = ref('')
 const columnSettingVisible = ref(false)
 const showSearch = ref(true)
-const pagination = reactive<TablePaginationConfig>({
-  total: 0,
-  current: 1,
-  pageSize: 10,
-  showSizeChanger: true,
-  showQuickJumper: true,
-  showTotal: (total: number) => `共 ${total} 条`
-})
-const rowSelection = ref({
-  type: 'checkbox' as const,
-  columnWidth: 60
-})
+
+// 列定义相关
+const columnDrawerVisible = ref(false)
+const currentTableId = ref<number>()
+
+// 列设置相关
+const columnSettings = ref<Record<string, boolean>>({})
 
 // 生命周期钩子
 onMounted(() => {
   fetchData()
+  initColumnSettings()
 })
 
 /** 获取表格数据 */
 const fetchData = async () => {
   loading.value = true
   try {
-    const res = await getTableDefineList({
-      ...queryParams,
-      pageIndex: queryParams.pageIndex,
-      pageSize: queryParams.pageSize
-    })
-    if (res.data) {
-      tableData.value = res.data.rows
-      pagination.total = res.data.totalNum
+    console.log('查询参数:', queryParams)
+    const res = await getTableDefineList(queryParams)
+    if (res.data.code === 200) {
+      tableData.value = res.data.data.rows
+      total.value = res.data.data.totalNum
+    } else {
+      message.error(res.data.msg || t('common.failed'))
     }
-  } finally {
-    loading.value = false
+  } catch (error) {
+    console.error(error)
+    message.error(t('common.failed'))
   }
+  loading.value = false
 }
 
-/** 搜索按钮操作 */
-const handleQuery = () => {
+/** 查询方法 */
+const handleQuery = (values?: Partial<HbtGenTableDefineQuery>) => {
+  if (values) {
+    Object.assign(queryParams, values)
+  }
   queryParams.pageIndex = 1
   fetchData()
 }
 
-/** 重置按钮操作 */
+/** 重置查询 */
 const resetQuery = () => {
-  queryParams.tableName = ''
-  queryParams.tableComment = ''
-  queryParams.beginTime = undefined
-  queryParams.endTime = undefined
+  Object.assign(queryParams, {
+    pageIndex: 1,
+    pageSize: 10,
+    tableName: '',
+    tableComment: '',
+    dateRange: undefined
+  })
   fetchData()
 }
 
-/** 表格变化事件 */
-const handleTableChange = (pag: TablePaginationConfig) => {
-  queryParams.pageIndex = pag.current ?? 1
-  queryParams.pageSize = pag.pageSize ?? 10
+/** 表格变化 */
+const handleTableChange = (pagination: TablePaginationConfig) => {
+  queryParams.pageIndex = pagination.current ?? 1
+  queryParams.pageSize = pagination.pageSize ?? 10
   fetchData()
 }
 
-/** 行点击事件 */
-const handleRowClick = (record: HbtGenTableDefine) => {
-  selectedTableId.value = record.id
-}
-
-/** 新增按钮操作 */
+/** 处理新增 */
 const handleAdd = () => {
+  formTitle.value = t('common.add')
   selectedTableId.value = undefined
-  formTitle.value = '新增代码生成表定义'
   formVisible.value = true
 }
 
-/** 编辑选中行 */
-const handleEditSelected = () => {
-  if (selectedRowKeys.value.length !== 1) {
-    message.warning('请选择一条记录')
-    return
-  }
-  selectedTableId.value = Number(selectedRowKeys.value[0])
-  formTitle.value = '修改代码生成表定义'
-  formVisible.value = true
-}
-
-/** 编辑按钮操作 */
+/** 处理编辑 */
 const handleEdit = (record: HbtGenTableDefine) => {
-  selectedTableId.value = record.id
-  formTitle.value = '修改代码生成表定义'
+  formTitle.value = t('common.edit')
+  selectedTableId.value = record.genTableDefineId
   formVisible.value = true
 }
 
-/** 删除按钮操作 */
+/** 处理删除 */
 const handleDelete = async (record: HbtGenTableDefine) => {
-  Modal.confirm({
-    title: '确认删除',
-    content: `是否确认删除表名为"${record.tableName}"的数据项？`,
-    async onOk() {
-      try {
-        await deleteTableDefine(record.id)
-        message.success('删除成功')
-        if (tableData.value.length === 1 && queryParams.pageIndex > 1) {
-          queryParams.pageIndex--
-        }
-        fetchData()
-      } catch (error) {
-        message.error('删除失败')
-      }
+  try {
+    const res = await deleteTableDefine(record.genTableDefineId)
+    if (res.data.code === 200) {
+      message.success(t('common.delete.success'))
+      fetchData()
+    } else {
+      message.error(res.data.msg || t('common.delete.failed'))
     }
-  })
-}
-
-/** 批量删除按钮操作 */
-const handleBatchDelete = async () => {
-  if (selectedRowKeys.value.length === 0) {
-    message.warning('请选择要删除的数据')
-    return
+  } catch (error) {
+    console.error(error)
+    message.error(t('common.delete.failed'))
   }
-  Modal.confirm({
-    title: '确认删除',
-    content: `是否确认删除选中的${selectedRowKeys.value.length}条数据？`,
-    async onOk() {
-      try {
-        await batchDeleteTableDefine(selectedRowKeys.value.map(id => Number(id)))
-        message.success('删除成功')
-        if (tableData.value.length === selectedRowKeys.value.length && queryParams.pageIndex > 1) {
-          queryParams.pageIndex--
-        }
-        selectedRowKeys.value = []
-        fetchData()
-      } catch (error) {
-        message.error('删除失败')
-      }
-    }
-  })
 }
 
-/** 同步按钮操作 */
-const handleSync = async (record: HbtGenTableDefine) => {
-  Modal.confirm({
-    title: '确认同步',
-    content: '是否确认同步表结构？',
-    async onOk() {
-      try {
-        await syncTableDefine(record.id)
-        message.success('同步成功')
-        fetchData()
-      } catch (error) {
-        message.error('同步失败')
-      }
-    }
-  })
-}
-
-/** 初始化按钮操作 */
-const handleInitialize = async (record: HbtGenTableDefine) => {
-  Modal.confirm({
-    title: '确认初始化',
-    content: `是否确认初始化表名为"${record.tableName}"的表结构？`,
-    async onOk() {
-      try {
-        await initializeTableDefine(record)
-        message.success('初始化成功')
-        fetchData()
-      } catch (error) {
-        message.error('初始化失败')
-      }
-    }
-  })
-}
-
-/** 导入按钮操作 */
+/** 处理导入 */
 const handleImport = async () => {
   try {
-    const res = await getTableDefineTemplate()
-    const blob = res.data.data
-    const link = document.createElement('a')
-    link.href = window.URL.createObjectURL(blob)
-    link.download = '代码生成表定义导入模板.xlsx'
-    link.click()
-    window.URL.revokeObjectURL(link.href)
-    message.success('下载模板成功')
-  } catch (error) {
-    message.error('下载模板失败')
+    const input = document.createElement('input')
+    input.type = 'file'
+    input.accept = '.xlsx,.xls'
+    input.onchange = async (e: Event) => {
+      const file = (e.target as HTMLInputElement).files?.[0]
+      if (!file) return
+      const res = await importTableDefine(file)
+      const { success = 0, fail = 0 } = (res.data as any).Data || {}
+      console.log(
+        'fail:',
+        (res.data as any).Data?.fail,
+        'success:',
+        (res.data as any).Data?.success
+      )
+
+      if (success > 0 && fail === 0) {
+        message.success(`导入成功${success}条，全部成功！`)
+      } else if (success > 0 && fail > 0) {
+        message.warning(`导入成功${success}条，失败${fail}条`)
+      } else if (success === 0 && fail > 0) {
+        message.error(`全部导入失败，共${fail}条`)
+      } else {
+        message.info('未读取到任何数据')
+      }
+      if (success > 0) fetchData()
+    }
+    input.click()
+  } catch (error: any) {
+    console.error('导入失败:', error)
+    message.error(error.message || t('common.import.failed'))
   }
 }
 
-/** 导出按钮操作 */
+/** 处理导出 */
 const handleExport = async () => {
   try {
     const res = await exportTableDefine()
-    const blob = res.data.data
+    const blob = res.data
     const link = document.createElement('a')
     link.href = window.URL.createObjectURL(blob)
     link.download = `代码生成表定义_${new Date().toLocaleString()}.xlsx`
     link.click()
     window.URL.revokeObjectURL(link.href)
-    message.success('导出成功')
+    message.success(t('common.export.success'))
   } catch (error) {
-    message.error('导出失败')
+    console.error(error)
+    message.error(t('common.export.failed'))
   }
 }
 
-/** 列设置变更 */
-const handleColumnSetting = () => {
-  columnSettingVisible.value = true
-}
-
-/** 列设置确认 */
-const handleColumnSettingChange = (checkedValues: any[]) => {
-  Object.keys(columnSettings).forEach(key => {
-    columnSettings[key] = checkedValues.includes(key)
-  })
-}
-
-/** 切换搜索区域显示状态 */
-const toggleSearch = () => {
-  showSearch.value = !showSearch.value
-}
-
-/** 切换全屏显示状态 */
-const toggleFullscreen = () => {
-  const element = document.documentElement
-  if (document.fullscreenElement) {
-    document.exitFullscreen()
-  } else {
-    element.requestFullscreen()
-  }
-}
-
-/** 表单提交成功回调 */
+/** 处理表单提交成功 */
 const handleSuccess = () => {
   formVisible.value = false
   fetchData()
 }
+
+/** 编辑选中记录 */
+const handleEditSelected = () => {
+  if (selectedRowKeys.value.length !== 1) {
+    message.warning(t('common.selectOne'))
+    return
+  }
+
+  const record = tableData.value.find(item => String(item.genTableDefineId) === String(selectedRowKeys.value[0]))
+  if (record) {
+    formTitle.value = t('common.edit')
+    selectedTableId.value = record.genTableDefineId
+    formVisible.value = true
+  }
+}
+
+/** 批量删除 */
+const handleBatchDelete = async () => {
+  if (!selectedRowKeys.value.length) {
+    message.warning(t('common.selectAtLeastOne'))
+    return
+  }
+
+  try {
+    const results = await Promise.all(selectedRowKeys.value.map(id => deleteTableDefine(Number(id))))
+    const hasError = results.some(res => res.data.code !== 200)
+    if (!hasError) {
+      message.success(t('common.delete.success'))
+      selectedRowKeys.value = []
+      fetchData()
+    } else {
+      message.error(t('common.delete.failed'))
+    }
+  } catch (error) {
+    console.error(error)
+    message.error(t('common.delete.failed'))
+  }
+}
+
+/** 处理同步 */
+const handleSync = async (record: HbtGenTableDefine) => {
+  try {
+    const res = await syncTableDefine(record.genTableDefineId)
+    if (res.data.code === 200) {
+      message.success(t('common.sync.success'))
+      fetchData()
+    } else {
+      message.error(res.data.msg || t('common.sync.failed'))
+    }
+  } catch (error) {
+    console.error(error)
+    message.error(t('common.sync.failed'))
+  }
+}
+
+/** 处理初始化 */
+const handleInitialize = async (record: HbtGenTableDefine) => {
+  try {
+    const res = await initializeTableDefine(record as unknown as HbtGenTableDefineCreate)
+    if (res.data.code === 200) {
+      message.success(t('common.initialize.success'))
+      fetchData()
+    } else {
+      message.error(res.data.msg || t('common.initialize.failed'))
+    }
+  } catch (error) {
+    console.error(error)
+    message.error(t('common.initialize.failed'))
+  }
+}
+
+/** 初始化列设置 */
+const initColumnSettings = () => {
+  // 每次刷新页面时清除localStorage
+  localStorage.removeItem('tableDefineColumnSettings')
+
+  // 初始化所有列为false
+  columnSettings.value = Object.fromEntries(columns.map(col => [col.key, false]))
+
+  // 获取前9列（不包含操作列）
+  const firstNineColumns = columns.filter(col => col.key !== 'action').slice(0, 9)
+
+  // 设置前9列为true
+  firstNineColumns.forEach(col => {
+    columnSettings.value[col.key] = true
+  })
+
+  // 确保操作列显示
+  columnSettings.value['action'] = true
+}
+
+/** 处理列设置变更 */
+const handleColumnSettingChange = (checkedValue: Array<string | number | boolean>) => {
+  const settings: Record<string, boolean> = {}
+  columns.forEach(col => {
+    // 操作列始终为true
+    if (col.key === 'action') {
+      settings[col.key] = true
+    } else {
+      settings[col.key] = checkedValue.includes(col.key)
+    }
+  })
+  columnSettings.value = settings
+  localStorage.setItem('tableDefineColumnSettings', JSON.stringify(settings))
+}
+
+/** 列设置 */
+const handleColumnSetting = () => {
+  columnSettingVisible.value = true
+}
+
+/** 切换搜索区域显示状态 */
+const toggleSearch = (visible: boolean) => {
+  showSearch.value = visible
+}
+
+/** 切换全屏显示状态 */
+const toggleFullscreen = (isFullscreen: boolean) => {
+  console.log('切换全屏状态:', isFullscreen)
+}
+
+// 打开列定义
+const handleOpenColumn = (record: HbtGenTableDefine) => {
+  currentTableId.value = record.genTableDefineId
+  columnDrawerVisible.value = true
+}
+
+// 处理下载模板
+const handleTemplate = async () => {
+  try {
+    const res = await getTableDefineTemplate()
+    const link = document.createElement('a')
+    link.href = window.URL.createObjectURL(new Blob([res.data]))
+    link.download = `表定义导入模板_${new Date().getTime()}.xlsx`
+    link.click()
+    window.URL.revokeObjectURL(link.href)
+  } catch (error: any) {
+    console.error('下载模板失败:', error)
+    message.error(error.message || t('common.template.failed'))
+  }
+}
+
+/** 处理页码变化 */
+const handlePageChange = (page: number) => {
+  queryParams.pageIndex = page
+  fetchData()
+}
+
+/** 处理每页条数变化 */
+const handleSizeChange = (size: number) => {
+  queryParams.pageSize = size
+  fetchData()
+}
+
 </script>
 
 <style lang="less" scoped>
 .table-define-container {
   padding: 16px;
   background-color: #fff;
-  
-  .column-setting-group {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-  
-  .column-setting-item {
-    padding: 4px 0;
+}
+
+.column-setting-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.column-setting-item {
+  padding: 8px;
+  border-bottom: 1px solid var(--ant-color-split);
+
+  &:last-child {
+    border-bottom: none;
   }
 }
 </style> 

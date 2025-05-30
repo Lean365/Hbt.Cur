@@ -33,7 +33,7 @@ public class HbtDbSeedEquipmentDictData
     /// <summary>
     /// 初始化设备相关字典数据
     /// </summary>
-    public async Task<(int, int)> InitializeEquipmentDictDataAsync(long tenantId)
+    public async Task<(int, int)> InitializeEquipmentDictDataAsync()
     {
         int insertCount = 0;
         int updateCount = 0;

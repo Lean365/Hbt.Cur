@@ -1,5 +1,5 @@
 <template>
-  <a-dropdown :trigger="['click']" placement="bottom" class="locale-dropdown">
+  <a-dropdown :trigger="['hover']" placement="bottom" class="locale-dropdown">
     <a-button type="text" :loading="loading">
       <template #icon>
         <translation-outlined v-if="!loading" />

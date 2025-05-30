@@ -35,7 +35,7 @@ public class HbtLogsSeedTranslation
     /// <summary>
     /// 初始化日志本地化资源
     /// </summary>
-    public async Task<(int insertCount, int updateCount)> InitializeLogsTranslationAsync(long tenantId)
+    public async Task<(int insertCount, int updateCount)> InitializeLogsTranslationAsync()
     {
         int insertCount = 0;
         int updateCount = 0;

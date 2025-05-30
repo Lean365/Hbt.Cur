@@ -40,7 +40,7 @@ public class HbtDbSeedUser
     /// <summary>
     /// 初始化系统预设用户（admin、dev_admin、developer、tester、user）
     /// </summary>
-    public async Task<(int, int)> InitializeSystemUsersAsync(long systemTenantId)
+    public async Task<(int, int)> InitializeSystemUsersAsync()
     {
         int insertCount = 0;
         int updateCount = 0;
@@ -119,7 +119,7 @@ public class HbtDbSeedUser
     /// <summary>
     /// 初始化批量普通用户（user1~userN）
     /// </summary>
-    public async Task<(int, int)> InitializeBatchUsersAsync(long systemTenantId, int totalCount = 1000)
+    public async Task<(int, int)> InitializeBatchUsersAsync( int totalCount = 1000)
     {
         int insertCount = 0;
         int updateCount = 0;
@@ -246,10 +246,10 @@ public class HbtDbSeedUser
     /// <summary>
     /// 初始化用户数据（入口）
     /// </summary>
-    public async Task<(int, int)> InitializeUserAsync(long systemTenantId)
+    public async Task<(int, int)> InitializeUserAsync()
     {
-        var (sysInsert, sysUpdate) = await InitializeSystemUsersAsync(systemTenantId);
-        var (batchInsert, batchUpdate) = await InitializeBatchUsersAsync(systemTenantId);
+        var (sysInsert, sysUpdate) = await InitializeSystemUsersAsync();
+        var (batchInsert, batchUpdate) = await InitializeBatchUsersAsync();
         return (sysInsert + batchInsert, sysUpdate + batchUpdate);
     }
 }

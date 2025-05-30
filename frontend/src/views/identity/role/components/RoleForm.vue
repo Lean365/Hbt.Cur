@@ -97,7 +97,7 @@ import { useI18n } from 'vue-i18n'
 import { message } from 'ant-design-vue'
 import type { FormInstance, Rule } from 'ant-design-vue/es/form'
 import type { TreeDataItem, DataNode } from 'ant-design-vue/es/tree'
-import type { HbtRole, HbtRoleUpdate } from '@/types/identity/role'
+import type { HbtRole, HbtRoleUpdate, HbtRoleCreate } from '@/types/identity/role'
 
 import { getRole, createRole, updateRole } from '@/api/identity/role'
 import { getCurrentUserMenus } from '@/api/identity/menu'
@@ -193,11 +193,11 @@ const transformMenuToTreeData = (menus: HbtMenu[]): DataNode[] => {
 const getMenuTree = async () => {
   try {
     const res = await getCurrentUserMenus()
-    if (res.data.code === 200) {
-      menuTree.value = transformMenuToTreeData(res.data.data)
+    if (res.code === 200) {
+      menuTree.value = transformMenuToTreeData(res.data)
     } else {
       console.error('获取菜单树失败:', res)
-      message.error(res.data.msg || '获取菜单树失败')
+      message.error(res.msg || '获取菜单树失败')
     }
   } catch (error) {
     console.error('获取菜单树出错:', error)
@@ -302,7 +302,21 @@ const handleSubmit = () => {
     try {
       submitLoading.value = true
       if (props.roleId) {
-        const res = await updateRole(formState.value as HbtRole)
+        // 构造更新数据
+        const updateData: HbtRoleUpdate = {
+          roleId: props.roleId,
+          roleName: formState.value.roleName || '',
+          roleKey: formState.value.roleKey || '',
+          orderNum: formState.value.orderNum || 0,
+          dataScope: formState.value.dataScope || 1,
+          status: formState.value.status || 0,
+          tenantId: formState.value.tenantId || 0,
+          userCount: formState.value.userCount || 0,
+          remark: formState.value.remark,
+          menuIds: formState.value.menuIds || [],
+          deptIds: formState.value.deptIds || []
+        }
+        const res = await updateRole(updateData)
         if (res.data.code === 200) {
           message.success(t('common.update.success'))
           emit('update:visible', false)
@@ -311,7 +325,20 @@ const handleSubmit = () => {
           message.error(res.data.msg || t('common.update.failed'))
         }
       } else {
-        const res = await createRole(formState.value as HbtRole)
+        // 构造创建数据
+        const createData: HbtRoleCreate = {
+          roleName: formState.value.roleName || '',
+          roleKey: formState.value.roleKey || '',
+          orderNum: formState.value.orderNum || 0,
+          dataScope: formState.value.dataScope || 1,
+          status: formState.value.status || 0,
+          tenantId: formState.value.tenantId || 0,
+          userCount: formState.value.userCount || 0,
+          remark: formState.value.remark,
+          menuIds: formState.value.menuIds || [],
+          deptIds: formState.value.deptIds || []
+        }
+        const res = await createRole(createData)
         if (res.data.code === 200) {
           message.success(t('common.create.success'))
           emit('update:visible', false)

@@ -324,7 +324,7 @@ public class HbtAuthService : HbtBaseService, IHbtAuthService
                     FullName = user.FullName ?? string.Empty,
                     RealName = user.RealName ?? string.Empty,
                     UserType = user.UserType,
-
+                    Avatar = user.Avatar ?? string.Empty,
                     Roles = roles,
                     Permissions = permissions
                 }
@@ -396,6 +396,7 @@ public class HbtAuthService : HbtBaseService, IHbtAuthService
                 UserType = user.UserType,
                 TenantId = tenant.Id,
                 TenantName = tenant.TenantName,
+                Avatar = user.Avatar ?? string.Empty,
                 Roles = roles,
                 Permissions = permissions
             }
@@ -524,6 +525,7 @@ public class HbtAuthService : HbtBaseService, IHbtAuthService
             UserType = user.UserType,
             TenantId = userTenant.TenantId,
             TenantName = tenant.TenantName,
+            Avatar = user.Avatar ?? string.Empty,
             Roles = roles,
             Permissions = permissions
         };

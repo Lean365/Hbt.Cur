@@ -34,7 +34,7 @@ public class HbtSignalRSeedTranslation
     /// <summary>
     /// 初始化SignalR本地化资源
     /// </summary>
-    public async Task<(int insertCount, int updateCount)> InitializeSignalRTranslationAsync(long tenantId)
+    public async Task<(int insertCount, int updateCount)> InitializeSignalRTranslationAsync()
     {
         var defaultTranslations = new List<HbtTranslation>
         {
