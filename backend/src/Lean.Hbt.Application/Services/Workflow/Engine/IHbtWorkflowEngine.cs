@@ -9,10 +9,6 @@
 // 描述    : 工作流引擎接口
 //===================================================================
 
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Lean.Hbt.Application.Dtos.Workflow;
-
 namespace Lean.Hbt.Application.Services.Workflow.Engine
 {
     /// <summary>
@@ -57,7 +53,7 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine
         /// <param name="nodeId">节点ID</param>
         /// <param name="variables">节点变量</param>
         /// <returns>节点执行结果</returns>
-        Task<HbtWorkflowNodeResult> ExecuteNodeAsync(long instanceId, long nodeId, Dictionary<string, object>? variables = null);
+        Task<HbtNodeResult> ExecuteNodeAsync(long instanceId, long nodeId, Dictionary<string, object>? variables = null);
 
         /// <summary>
         /// 执行工作流转换
@@ -66,21 +62,21 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine
         /// <param name="transitionId">转换ID</param>
         /// <param name="variables">转换变量</param>
         /// <returns>转换执行结果</returns>
-        Task<HbtWorkflowTransitionResult> ExecuteTransitionAsync(long instanceId, long transitionId, Dictionary<string, object>? variables = null);
+        Task<HbtTransitionResult> ExecuteTransitionAsync(long instanceId, long transitionId, Dictionary<string, object>? variables = null);
 
         /// <summary>
         /// 获取工作流实例状态
         /// </summary>
         /// <param name="instanceId">工作流实例ID</param>
         /// <returns>工作流实例状态</returns>
-        Task<HbtWorkflowInstanceStatusDto> GetStatusAsync(long instanceId);
+        Task<HbtInstanceStatusDto> GetStatusAsync(long instanceId);
 
         /// <summary>
         /// 获取工作流实例可用转换列表
         /// </summary>
         /// <param name="instanceId">工作流实例ID</param>
         /// <returns>可用转换列表</returns>
-        Task<List<HbtWorkflowTransitionDto>> GetAvailableTransitionsAsync(long instanceId);
+        Task<List<HbtTransitionDto>> GetAvailableTransitionsAsync(long instanceId);
 
         /// <summary>
         /// 获取工作流实例变量
@@ -98,4 +94,4 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine
         /// <param name="nodeId">节点ID(可选)</param>
         Task SetVariablesAsync(long instanceId, Dictionary<string, object> variables, long? nodeId = null);
     }
-} 
+}

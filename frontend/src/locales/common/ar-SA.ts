@@ -293,11 +293,29 @@ export default {
       note: 'تعليمات الاستيراد',
       tips: 'يرجى اتباع تنسيق قالب الاستيراد بدقة، وإلا قد يفشل الاستيراد',
       format: 'يدعم فقط ملفات Excel!',
-      size: 'لا يمكن أن يتجاوز حجم الملف 2 ميجابايت!',
+      size: 'لا يمكن أن يتجاوز حجم الملف {size} ميجابايت!',
       total: 'إجمالي السجلات',
       success: 'عدد النجاح',
       failed: 'عدد الفشل',
-      message: 'سبب الفشل'
+      message: 'سبب الفشل',
+      dragText: 'انقر أو اسحب الملف إلى هذه المنطقة للتحميل',
+      dragHint: 'يدعم ملفات Excel بتنسيق .xlsx',
+      sheetName: 'يرجى التأكد من أن اسم ورقة ملف Excel هو: {sheetName}',
+      allSuccess: 'استيراد ناجح {count} سجل، كلها ناجحة!',
+      partialSuccess: 'استيراد ناجح {success} سجل، فشل {fail} سجل',
+      allFailed: 'فشل جميع الاستيراد، إجمالي {count} سجل',
+      noData: 'لم يتم قراءة البيانات',
+      empty: 'الملف فارغ، لا يمكن التحميل',
+      importFailed: 'فشل الاستيراد',
+      templateFileName: 'Import_Template_{time}.xlsx',
+      limits: {
+        title: 'قيود الاستيراد',
+        fileCount: 'حد عدد الملفات: {count} ملف',
+        fileSize: 'حد حجم الملف: {size} ميجابايت',
+        recordCount: 'حد عدد السجلات: {count} سجل',
+        fileFormat: 'تنسيق الملف: يدعم تنسيق .xlsx فقط'
+      },
+      recordLimit: 'عدد سجلات الاستيراد ({actual} سجل) يتجاوز الحد ({max} سجل)، يرجى الاستيراد على دفعات'
     },
 
     // التحميل

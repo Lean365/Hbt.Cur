@@ -288,16 +288,34 @@ export default {
       title: 'Import Data',
       file: 'Select File',
       select: 'Select File',
-      template: 'Download Template',
+      template: 'Template',
       download: 'Download Template',
-      note: 'Import Instructions',
+      note: 'Instructions',
       tips: 'Please strictly follow the import template format, otherwise import may fail',
       format: 'Only Excel files are supported!',
-      size: 'File size cannot exceed 2MB!',
+      size: 'File size cannot exceed {size}MB!',
       total: 'Total Records',
       success: 'Success Count',
       failed: 'Failed Count',
-      message: 'Failure Reason'
+      message: 'Failure Reason',
+      dragText: 'Click or drag file to this area to upload',
+      dragHint: 'Support .xlsx format Excel files',
+      sheetName: 'Please ensure the Excel file sheet name is: {sheetName}',
+      allSuccess: 'Import successful {count} records, all successful!',
+      partialSuccess: 'Import successful {success} records, failed {fail} records',
+      allFailed: 'All import failed, total {count} records',
+      noData: 'No data read',
+      empty: 'File is empty, cannot upload',
+      importFailed: 'Import failed',
+      templateFileName: 'Import_Template_{time}.xlsx',
+      limits: {
+        title: 'Import Limits',
+        fileCount: 'File count limit: {count} file',
+        fileSize: 'File size limit: {size}MB',
+        recordCount: 'Record count limit: {count} records',
+        fileFormat: 'File format: Only .xlsx format supported'
+      },
+      recordLimit: 'Import record count ({actual} records) exceeds limit ({max} records), please import in batches'
     },
 
     // Upload

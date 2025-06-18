@@ -1,10 +1,10 @@
 <template>
-  <a-tag v-if="finalLabel" :class="['hbt-dict-tag', tagClass]">{{ finalLabel }}</a-tag>
-  <a-tag v-else color="default" class="hbt-dict-tag">{{ t('common.unknown') }}</a-tag>
+  <a-tag v-if="hasValue" :class="['hbt-dict-tag', tagClass]">{{ finalLabel }}</a-tag>
+  <a-tag v-else color="default" class="hbt-dict-tag">{{ t('common.error.unknown') }}</a-tag>
 </template>
 
 <script lang="ts" setup>
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useDictStore } from '@/stores/dict'
 import '@/assets/styles/dict-tag.less'
@@ -27,11 +27,21 @@ const props = withDefaults(defineProps<Props>(), {
 // 使用字典Hook
 const dictStore = useDictStore()
 
+// 判断是否有值
+const hasValue = computed(() => {
+  const result = props.value !== undefined && props.value !== null && String(props.value).trim() !== ''
+  //console.log(`[HbtDictTag] 字典[${props.dictType}]值[${props.value}]是否有值:`, result)
+  return result
+})
+
 // 计算最终显示的标签
 const finalLabel = computed(() => {
-  const label = dictStore.getDictLabel(props.dictType, Number(props.value))
+  if (!hasValue.value) return ''
+  const label = dictStore.getDictLabel(props.dictType, props.value)
+  //console.log(`[HbtDictTag] 字典[${props.dictType}]值[${props.value}]获取到的标签:`, label)
   if (props.useI18n) {
-    const transKey = dictStore.getDictTransKey(props.dictType, Number(props.value))
+    const transKey = dictStore.getDictTransKey(props.dictType, props.value)
+    //console.log(`[HbtDictTag] 字典[${props.dictType}]值[${props.value}]国际化key:`, transKey)
     return transKey ? t(transKey) : label
   }
   return label
@@ -39,16 +49,25 @@ const finalLabel = computed(() => {
 
 // 计算标签样式类
 const tagClass = computed(() => {
-  const baseClass = dictStore.getDictClass(props.dictType, Number(props.value))
+  if (!hasValue.value) return ''
+  const baseClass = dictStore.getDictClass(props.dictType, props.value)
+  //console.log(`[HbtDictTag] 字典[${props.dictType}]值[${props.value}]获取到的样式类:`, baseClass)
   return baseClass ? `hbt-dict-tag-${baseClass}` : ''
 })
 
+// 监听字典类型和值的变化
+watch(() => [props.dictType, props.value], ([newType, newValue]) => {
+  // console.log(`[HbtDictTag] 字典类型或值发生变化:`, {
+  //   dictType: newType,
+  //   value: newValue,
+  //   valueType: typeof newValue
+  // })
+}, { immediate: true })
+
 onMounted(() => {
   if (props.dictType) {
+    //console.log(`[HbtDictTag] 组件挂载，加载字典[${props.dictType}]`)
     dictStore.loadDict(props.dictType)
   }
 })
-
-const dictClass = computed(() => props.dictType ? dictStore.getDictClass(props.dictType, props.value) : '')
-const dictLabel = computed(() => props.dictType ? dictStore.getDictLabel(props.dictType, props.value) : props.value)
 </script> 

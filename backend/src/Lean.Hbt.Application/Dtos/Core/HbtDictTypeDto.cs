@@ -193,11 +193,6 @@ namespace Lean.Hbt.Application.Dtos.Core
 
         public int Status { get; set; }
 
-        /// <summary>
-        /// 租户ID
-        /// </summary>
-
-        public long TenantId { get; set; }
 
         /// <summary>
         /// 备注

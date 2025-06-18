@@ -186,7 +186,7 @@ public class HbtGenTableDto
     /// <summary>
     /// 生成代码方式（0zip压缩包 1自定义路径）
     /// </summary>
-    public string GenType { get; set; } = "0";
+    public string GenMethod { get; set; } = "0";
 
     /// <summary>
     /// 代码生成存放位置
@@ -239,9 +239,49 @@ public class HbtGenTableDto
     public CodeOptions? Options { get; set; }
 
     /// <summary>
-    /// 状态（0：停用，1：正常）
+    /// 是否已生成代码（0：未生成，1：已生成）
     /// </summary>
-    public int Status { get; set; } = 1;
+    public int IsGenCode { get; set; } = 0;
+
+    /// <summary>
+    /// 备注
+    /// </summary>
+    public string? Remark { get; set; }
+
+    /// <summary>
+    /// 创建者
+    /// </summary>
+    public string? CreateBy { get; set; }
+
+    /// <summary>
+    /// 创建时间
+    /// </summary>
+    public DateTime CreateTime { get; set; }
+
+    /// <summary>
+    /// 更新者
+    /// </summary>
+    public string? UpdateBy { get; set; }
+
+    /// <summary>
+    /// 更新时间
+    /// </summary>
+    public DateTime? UpdateTime { get; set; }
+
+    /// <summary>
+    /// 是否删除（0未删除 1已删除）
+    /// </summary>
+    public int IsDeleted { get; set; }
+
+    /// <summary>
+    /// 删除者
+    /// </summary>
+    public string? DeleteBy { get; set; }
+
+    /// <summary>
+    /// 删除时间
+    /// </summary>
+    public DateTime? DeleteTime { get; set; }
 
     #endregion
 
@@ -445,7 +485,7 @@ public class HbtGenTableCreateDto
     /// <summary>
     /// 生成代码方式（0zip压缩包 1自定义路径）
     /// </summary>
-    public string GenType { get; set; } = "0";
+    public string GenMethod { get; set; } = "0";
 
     /// <summary>
     /// 代码生成存放位置
@@ -498,9 +538,15 @@ public class HbtGenTableCreateDto
     public CodeOptions? Options { get; set; }
 
     /// <summary>
-    /// 状态（0：停用，1：正常）
+    /// 是否已生成代码（0：未生成，1：已生成）
     /// </summary>
-    public int Status { get; set; } = 1;
+    public int IsGenCode { get; set; } = 0;
+
+    /// <summary>
+    /// 备注
+    /// </summary>
+    [StringLength(500, ErrorMessage = "备注长度不能超过500个字符")]
+    public string? Remark { get; set; }
 
     #endregion
 
@@ -690,7 +736,7 @@ public class HbtGenTableImportDto
     /// <summary>
     /// 生成代码方式（0zip压缩包 1自定义路径）
     /// </summary>
-    public string GenType { get; set; } = "0";
+    public string GenMethod { get; set; } = "0";
 
     /// <summary>
     /// 代码生成存放位置
@@ -743,9 +789,9 @@ public class HbtGenTableImportDto
     public CodeOptions? Options { get; set; }
 
     /// <summary>
-    /// 状态（0：停用，1：正常）
+    /// 是否已生成代码（0：未生成，1：已生成）
     /// </summary>
-    public int Status { get; set; } = 1;
+    public int IsGenCode { get; set; } = 0;
 
     #endregion
 
@@ -753,6 +799,14 @@ public class HbtGenTableImportDto
     /// 列信息
     /// </summary>
     public List<HbtGenColumnDto> Columns { get; set; } = new();
+}
+
+/// <summary>
+/// 代码生成表模板DTO
+/// </summary>
+public class HbtGenTableTemplateDto
+{
+
 }
 
 /// <summary>
@@ -922,7 +976,7 @@ public class HbtGenTableExportDto
     /// <summary>
     /// 生成代码方式（0zip压缩包 1自定义路径）
     /// </summary>
-    public string GenType { get; set; } = "0";
+    public string GenMethod { get; set; } = "0";
 
     /// <summary>
     /// 代码生成存放位置
@@ -975,9 +1029,9 @@ public class HbtGenTableExportDto
     public CodeOptions? Options { get; set; }
 
     /// <summary>
-    /// 状态（0：停用，1：正常）
+    /// 是否已生成代码（0：未生成，1：已生成）
     /// </summary>
-    public int Status { get; set; } = 1;
+    public int IsGenCode { get; set; } = 0;
 
     #endregion
 

@@ -70,7 +70,8 @@ namespace Lean.Hbt.Application.Dtos.Core
         /// 排序
         /// </summary>
         public int OrderNum { get; set; } = 0;
-                /// <summary>
+
+        /// <summary>
         /// 备注
         /// </summary>
         public string? Remark { get; set; }
@@ -167,7 +168,7 @@ namespace Lean.Hbt.Application.Dtos.Core
     /// <summary>
     /// 系统配置创建DTO
     /// </summary>
-    public class HbtConfigCreateDto : HbtBaseEntity
+    public class HbtConfigCreateDto 
     {
         /// <summary>
         /// 构造函数
@@ -210,15 +211,16 @@ namespace Lean.Hbt.Application.Dtos.Core
         /// </summary>
         public int IsEncrypted { get; set; } = 0;
 
-        /// <summary>
-        /// 租户ID
-        /// </summary>
-       public long TenantId { get; set; }
 
         /// <summary>
         /// 排序
         /// </summary>
         public int OrderNum { get; set; } = 0;
+
+        /// <summary>
+        /// 备注
+        /// </summary>
+        public string? Remark { get; set; }
     }
 
     /// <summary>

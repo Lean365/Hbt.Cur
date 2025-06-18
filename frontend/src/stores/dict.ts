@@ -26,19 +26,34 @@ export const useDictStore = defineStore('dict', () => {
   }
 
   const getDictLabel = (type: string, value: number | string): string => {
-    const option = getDictOptions(type).find(item => item.value === Number(value))
+    if (value === undefined || value === null || value === '') {
+      //console.log(`[字典Store] 字典[${type}]值[${value}]为空`)
+      return ''
+    }
+    const options = getDictOptions(type)
+    //console.log(`[字典Store] 字典[${type}]选项:`, options)
+    const option = options.find(item => {
+      const itemValue = String(item.value)
+      const searchValue = String(value)
+      //console.log(`[字典Store] 字典[${type}]比较值:`, { itemValue, searchValue, isMatch: itemValue === searchValue })
+      return itemValue === searchValue
+    })
+    //console.log(`[字典Store] 字典[${type}]值[${value}]匹配结果:`, option)
     return option?.label || String(value)
   }
 
   const getDictTransKey = (type: string, value: number | string): string => {
-    const option = getDictOptions(type).find(item => item.value === Number(value))
-    return option?.transKey || String(value)
+    const options = getDictOptions(type)
+    const option = options.find(item => String(item.value) === String(value))
+    return option?.transKey || ''
   }
 
   const getDictClass = (type: string, value: number | string): string => {
-    const option = getDictOptions(type).find(item => item.value === Number(value))
+    const options = getDictOptions(type)
+    const option = options.find(item => String(item.value) === String(value))
+    
     // 将数字映射为样式类名，根据 dict-tag.less 中的所有样式类型
-    const numberToClass: Record<number, string> = {
+    const numberToClass: Record<number | string, string> = {
       // 基础样式
       0: 'default',
       1: 'primary',
@@ -108,16 +123,28 @@ export const useDictStore = defineStore('dict', () => {
       58: 'task-delegated',
       59: 'task-transferred'
     }
-    return option?.cssClass ? numberToClass[Number(option.cssClass)] || option.cssClass : ''
+
+    if (!option?.cssClass) return ''
+    
+    // 如果 cssClass 是数字，使用映射表
+    const cssClass = String(option.cssClass)
+    if (/^\d+$/.test(cssClass)) {
+      return numberToClass[cssClass] || cssClass
+    }
+    
+    // 如果 cssClass 是字符串，直接返回
+    return cssClass
   }
 
   const getDictExtLabel = (type: string, value: number | string): string => {
-    const option = getDictOptions(type).find(item => item.value === Number(value))
+    const options = getDictOptions(type)
+    const option = options.find(item => String(item.value) === String(value))
     return option?.extLabel || ''
   }
 
   const getDictExtValue = (type: string, value: number | string): number | string | undefined => {
-    const option = getDictOptions(type).find(item => item.value === value)
+    const options = getDictOptions(type)
+    const option = options.find(item => String(item.value) === String(value))
     return option?.extValue
   }
 
@@ -140,23 +167,22 @@ export const useDictStore = defineStore('dict', () => {
           const dictDataList = response.data.data
           const options = dictDataList.map(item => ({
             label: item.dictLabel,
-            value: /^\d+$/.test(item.dictValue) ? Number(item.dictValue) : item.dictValue,
-            cssClass: item.cssClass,
+            value: String(item.dictValue),  // 确保值始终是字符串
+            cssClass: String(item.cssClass),  // 确保 cssClass 始终是字符串
             listClass: item.listClass,
             extLabel: item.extLabel,
-            extValue: (item.extValue !== undefined && item.extValue !== null && /^\d+$/.test(item.extValue)) ? Number(item.extValue) : item.extValue || '',
+            extValue: item.extValue,
             transKey: item.transKey,
             disabled: item.status === 1
           }))
           dictCache.value.set(type, options)
-          console.log(`[字典Store] 字典[${type}]加载成功，共${options.length}条数据`)
+          //console.log(`[字典Store] 字典[${type}]加载成功，数据:`, options)
         } else {
           console.warn(`[字典Store] 字典[${type}]返回数据为空`)
           dictCache.value.set(type, [])
         }
       } catch (error) {
         console.error(`[字典Store] 字典[${type}]加载失败:`, error)
-        // 设置空数组作为默认值
         dictCache.value.set(type, [])
         throw error
       }

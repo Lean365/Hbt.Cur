@@ -7,15 +7,14 @@
 // 描述    : 服务集合扩展
 //===================================================================
 
-using Lean.Hbt.Application.Services.Core;
 using Lean.Hbt.Application.Services.Audit;
+using Lean.Hbt.Application.Services.Core;
 using Lean.Hbt.Application.Services.Extensions;
 using Lean.Hbt.Application.Services.Identity;
 using Lean.Hbt.Application.Services.Routine;
 using Lean.Hbt.Application.Services.SignalR;
 using Lean.Hbt.Common.Options;
 using Lean.Hbt.Domain.Data;
-using Lean.Hbt.Domain.IServices.Extensions;
 using Lean.Hbt.Domain.IServices.Caching;
 using Lean.Hbt.Domain.IServices.Security;
 using Lean.Hbt.Infrastructure.Authentication;
@@ -28,30 +27,13 @@ using Lean.Hbt.Infrastructure.Security.Filters;
 using Lean.Hbt.Infrastructure.Services;
 using Lean.Hbt.Infrastructure.Services.Identity;
 using Lean.Hbt.Infrastructure.Services.Local;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Lean.Hbt.Domain.IServices.Extensions;
-using NLog;
-using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Hosting;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
-using Microsoft.Extensions.Logging;
-using SqlSugar;
-using Lean.Hbt.Common.Extensions;
-using Lean.Hbt.Common.Utils;
 using Newtonsoft.Json;
+using NLog;
 
 // 添加代码生成相关服务的命名空间
-using Lean.Hbt.Application.Services.Generator;
-using Lean.Hbt.Application.Services.Generator.CodeGenerator;
-using Castle.DynamicProxy;
 
 namespace Lean.Hbt.Infrastructure.Extensions
 {
@@ -444,7 +426,7 @@ namespace Lean.Hbt.Infrastructure.Extensions
                     // 配置全局过滤器
                     db.QueryFilter.AddTableFilter<HbtBaseEntity>(it => it.IsDeleted == 0);
                 });
-                
+
                 return scope;
             });
             services.AddSingleton<ISqlSugarClient>(sp => sp.GetRequiredService<SqlSugarScope>());

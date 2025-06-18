@@ -45,7 +45,7 @@
                 <a-input
                   v-if="field.type === 'input'"
                   v-model:value="formState[field.name]"
-                  :placeholder="field.placeholder || t('common.form.placeholder.input')"
+                  :placeholder="field.placeholder || t('components.query.input.placeholder')"
                   :allowClear="true"
                   :maxLength="field.maxLength"
                   :disabled="field.disabled"
@@ -55,7 +55,7 @@
                 <hbt-select
                   v-else-if="field.type === 'select'"
                   v-model:value="formState[field.name]"
-                  :placeholder="field.placeholder || t('common.form.placeholder.select')"
+                  :placeholder="field.placeholder || t('components.query.select.placeholder')"
                   v-bind="field.props"
                   :allow-clear="true"
                   :mode="field.mode"
@@ -66,7 +66,7 @@
                 <a-date-picker
                   v-else-if="field.type === 'date'"
                   v-model:value="formState[field.name]"
-                  :placeholder="field.placeholder || t('common.form.placeholder.date')"
+                  :placeholder="field.placeholder || t('components.query.date.placeholder')"
                   :format="field.format || 'YYYY-MM-DD'"
                   :allowClear="true"
                   :disabled="field.disabled"
@@ -77,8 +77,8 @@
                   v-else-if="field.type === 'dateRange'"
                   v-model:value="formState[field.name]"
                   :placeholder="[
-                    field.placeholder?.[0] || t('common.datetime.startDate'),
-                    field.placeholder?.[1] || t('common.datetime.endDate')
+                    field.placeholder?.[0] || t('components.query.date.start'),
+                    field.placeholder?.[1] || t('components.query.date.end')
                   ]"
                   :format="field.format || 'YYYY-MM-DD'"
                   :allowClear="true"
@@ -118,7 +118,7 @@
                   v-else-if="field.type === 'cascader'"
                   v-model:value="formState[field.name]"
                   :options="field.options"
-                  :placeholder="field.placeholder || t('common.form.placeholder.select')"
+                  :placeholder="field.placeholder || t('components.query.select.placeholder')"
                   :allowClear="true"
                   :disabled="field.disabled"
                 />
@@ -143,13 +143,13 @@
               :loading="loading"
             >
               <template #icon><search-outlined /></template>
-              {{ t('query.search') }}
+              {{ t('components.query.search') }}
             </a-button>
             
             <!-- 重置按钮 -->
             <a-button @click="handleReset">
               <template #icon><redo-outlined /></template>
-              {{ t('query.reset') }}
+              {{ t('components.query.reset') }}
             </a-button>
             
             <!-- 展开/收起按钮 -->
@@ -158,7 +158,7 @@
               type="link"
               @click="toggleCollapse"
             >
-              {{ collapsed ? t('query.expand') : t('query.collapse') }}
+              {{ collapsed ? t('components.query.expand') : t('components.query.collapse') }}
               <template #icon>
                 <down-outlined :class="{ 'expanded': !collapsed }" />
               </template>
@@ -288,10 +288,12 @@ watch(
 
 // === 事件处理 ===
 const handleFinish = (values: any) => {
-  // 过滤掉 undefined，保证有默认值
+  // 过滤掉 undefined 值
   const result: Record<string, any> = {}
-  props.queryFields.forEach(field => {
-    result[field.name] = values[field.name] !== undefined ? values[field.name] : getDefaultValue(field)
+  Object.entries(values).forEach(([key, value]) => {
+    if (value !== undefined) {
+      result[key] = value
+    }
   })
   emit('search', result)
 }

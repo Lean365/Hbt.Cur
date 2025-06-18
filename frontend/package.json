@@ -1,6 +1,6 @@
 {
   "name": "lean-hbt-frontend",
-  "version": "1.0.0",
+  "version": "0.1.5",
   "private": true,
   "type": "module",
   "scripts": {
@@ -17,6 +17,11 @@
     "@ant-design/icons-vue": "^7.0.1",
     "@ckpack/vue-color": "^1.6.0",
     "@cospired/i18n-iso-languages": "^4.2.0",
+    "@form-create/ant-design-vue": "^3.2.25",
+    "@form-create/antd-designer": "^3.2.11",
+    "@logicflow/core": "^2.0.13",
+    "@logicflow/extension": "^2.0.18",
+    "@logicflow/vue-node-registry": "^1.0.15",
     "@microsoft/signalr": "^8.0.7",
     "@types/highlight.js": "^10.1.0",
     "@vueuse/components": "^13.1.0",

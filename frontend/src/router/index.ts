@@ -8,6 +8,7 @@ import { message } from 'ant-design-vue'
 import i18n from '@/locales'
 import { filterAsyncRoutes } from '@/utils/route'
 import type { HbtRouteRecordRaw } from '@/types/route'
+import { initAutoLogout, clearAutoLogout } from '@/utils/autoLogout'
 
 interface HbtRouteMeta {
   title: string
@@ -510,12 +511,14 @@ router.beforeEach(async (to, from, next) => {
 
   // 不需要登录的页面直接放行
   if (to.meta.requiresAuth === false) {
+    clearAutoLogout() // 清理自动登出
     next()
     return
   }
 
   // 未登录时跳转到登录页
   if (!token) {
+    clearAutoLogout() // 清理自动登出
     if (to.path !== '/login') {
       next({ path: '/login', query: { redirect: to.fullPath } })
     } else {
@@ -544,6 +547,9 @@ router.beforeEach(async (to, from, next) => {
         return
       }
     }
+
+    // 初始化自动登出
+    initAutoLogout(userStore)
 
     // 检查是否需要初始化菜单和动态路由
     const needInitRoutes =

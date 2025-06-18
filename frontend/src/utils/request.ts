@@ -17,8 +17,8 @@ const service: AxiosInstance = axios.create({
 })
 
 // Token过期时间配置（单位：毫秒）
-const ACCESS_TOKEN_EXPIRE_TIME = 30 * 60 * 1000 // 30分钟
-const REFRESH_TOKEN_EXPIRE_TIME = 7 * 24 * 60 * 60 * 1000 // 7天
+const ACCESS_TOKEN_EXPIRE_TIME = 30 * 60 * 1000 // 30分钟，与后端JWT令牌过期时间保持一致
+const REFRESH_TOKEN_EXPIRE_TIME = 7 * 24 * 60 * 60 * 1000 // 7天，与后端刷新令牌过期时间保持一致
 const TOKEN_REFRESH_THRESHOLD = 5 * 60 * 1000 // 5分钟内过期时刷新
 
 // 从 cookie 中获取 CSRF 令牌
@@ -176,8 +176,25 @@ service.interceptors.response.use(
           if (expireTime - now < TOKEN_REFRESH_THRESHOLD) {
             console.log('[Auth] Access Token即将过期，准备刷新')
             const userStore = useUserStore()
-            userStore.logout() // 暂时使用logout，后续可改为refreshToken
+            // 检查是否在刷新令牌的有效期内
+            if (now - tokenData.iat * 1000 < REFRESH_TOKEN_EXPIRE_TIME) {
+              userStore.refreshToken() // 刷新token
+            } else {
+              userStore.logout() // 刷新令牌已过期，执行登出
+            }
           }
+
+          // 检查token是否已过期
+          if (expireTime - now <= 0) {
+            console.log('[Auth] Access Token已过期')
+            const userStore = useUserStore()
+            userStore.logout(false)
+            return Promise.reject(new Error('令牌已过期，请重新登录'))
+          }
+
+          // 记录token剩余有效期
+          const remainingTime = expireTime - now
+          console.log(`[Auth] Token剩余有效期: ${Math.floor(remainingTime / 1000 / 60)}分钟，总有效期: ${Math.floor(ACCESS_TOKEN_EXPIRE_TIME / 1000 / 60)}分钟`)
         } catch (e) {
           console.error('[Auth] Token解析失败:', e)
         }
@@ -192,7 +209,7 @@ service.interceptors.response.use(
       case 401: // 未授权
       case 403: // 禁止访问
         const userStore = useUserStore()
-        userStore.logout()
+        userStore.logout(false)
         break
       case 500: // 服务器错误
         console.error('[Response] 服务器错误:', normalizedData.msg)

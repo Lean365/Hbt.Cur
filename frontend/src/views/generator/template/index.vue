@@ -3,6 +3,7 @@
     <!-- 搜索区域 -->
     <hbt-query
       v-model:show="showSearch"
+            :model="queryParams"
       :query-fields="queryFields"
       @search="handleQuery"
       @reset="handleReset"
@@ -141,46 +142,46 @@ const showSearch = ref(true)
 const queryFields: QueryField[] = [
   {
     name: 'templateName',
-    label: t('generator.template.fields.templateName.label'),
+    label: t('generator.template.fields.templateName'),
     type: 'input',
     props: {
-      placeholder: t('generator.template.fields.templateName.placeholder'),
+      placeholder: t('generator.template.placeholder.templateName'),
       allowClear: true
     }
   },
   {
-    name: 'templateType',
-    label: t('generator.template.fields.templateType.label'),
+    name: 'templateOrmType',
+    label: t('generator.template.fields.templateOrmType'),
     type: 'select',
     props: {
-      options: [
-        { label: '后端代码', value: 1 },
-        { label: '前端代码', value: 2 },
-        { label: 'SQL代码', value: 3 }
-      ],
-      allowClear: true
+      dictType: 'gen_orm_framework',
+
+      showAll: true
+    }
+  },
+  {
+    name: 'templateCodeType',
+    label: t('generator.template.fields.templateCodeType'),
+    type: 'select',
+    props: {
+      dictType: 'gen_code_type',
+
+      showAll: true
     }
   },
   {
     name: 'templateCategory',
-    label: t('generator.template.fields.templateCategory.label'),
+    label: t('generator.template.fields.templateCategory'),
     type: 'select',
     props: {
-      options: [
-        { label: '实体类', value: 1 },
-        { label: '控制器', value: 2 },
-        { label: '服务层', value: 3 },
-        { label: '数据访问层', value: 4 },
-        { label: '视图', value: 5 },
-        { label: 'API', value: 6 },
-        { label: '其他', value: 7 }
-      ],
-      allowClear: true
+      dictType: 'gen_template_category',
+
+      showAll: true
     }
   },
   {
     name: 'status',
-    label: t('generator.template.fields.status.label'),
+    label: t('generator.template.fields.status'),
     type: 'select',
     props: {
       dictType: 'sys_normal_disable',
@@ -193,84 +194,91 @@ const queryFields: QueryField[] = [
 // 表格列定义
 const columns = [
   {
-    title: t('generator.template.fields.genTemplateId.label'),
+    title: t('table.columns.id'),
     dataIndex: 'genTemplateId',
     key: 'genTemplateId',
     width: 120,
     ellipsis: true
   },
   {
-    title: t('generator.template.fields.templateName.label'),
+    title: t('generator.template.fields.templateName'),
     dataIndex: 'templateName',
     key: 'templateName',
     width: 120,
     ellipsis: true
   },
   {
-    title: t('generator.template.fields.fileName.label'),
+    title: t('generator.template.fields.fileName'),
     dataIndex: 'fileName',
     key: 'fileName',
     width: 120,
     ellipsis: true
   },
   {
-    title: t('generator.template.fields.templateType.label'),
-    dataIndex: 'templateType',
-    key: 'templateType',
+    title: t('generator.template.fields.templateOrmType'),
+    dataIndex: 'templateOrmType',
+    key: 'templateOrmType',
+    width: 100,
+    ellipsis: true
+  },
+    {
+    title: t('generator.template.fields.templateCodeType'),
+    dataIndex: 'templateCodeType',
+    key: 'templateCodeType',
     width: 100,
     ellipsis: true
   },
   {
-    title: t('generator.template.fields.templateCategory.label'),
+    title: t('generator.template.fields.templateCategory'),
     dataIndex: 'templateCategory',
     key: 'templateCategory',
     width: 100,
     ellipsis: true
   },
   {
-    title: t('generator.template.fields.status.label'),
+    title: t('generator.template.fields.status'),
     dataIndex: 'status',
     key: 'status',
     width: 100,
     ellipsis: true
   },
   {
-    title: t('common.table.columns.remark'),
+    title: t('table.columns.remark'),
     dataIndex: 'remark',
     key: 'remark',
     width: 120,
     ellipsis: true
   },
   {
-    title: t('common.table.columns.createBy'),
+    title: t('table.columns.createBy'),
     dataIndex: 'createBy',
     key: 'createBy',
     width: 120,
     ellipsis: true
   },
   {
-    title: t('common.table.columns.createTime'),
+    title: t('table.columns.createTime'),
     dataIndex: 'createTime',
     key: 'createTime',
     width: 180,
     ellipsis: true
   },
   {
-    title: t('common.table.columns.updateBy'),
+    title: t('table.columns.updateBy'),
     dataIndex: 'updateBy',
     key: 'updateBy',
     width: 120,
     ellipsis: true
   },
   {
-    title: t('common.table.columns.updateTime'),
+    title: t('table.columns.updateTime'),
     dataIndex: 'updateTime',
     key: 'updateTime',
     width: 180,
     ellipsis: true
   },
   {
-    title: t('common.table.header.operation'),
+    title: t('table.columns.operation'),
     dataIndex: 'action',
     key: 'action',
     width: 150,
@@ -339,7 +347,8 @@ const queryParams = ref<HbtGenTemplateQuery>({
   pageIndex: 1,
   pageSize: 10,
   templateName: undefined,
-  templateType: undefined,
+  templateOrmType: undefined,
+  templateCodeType: undefined,
   templateCategory: undefined,
   status: -1
 })
@@ -367,13 +376,16 @@ onMounted(() => {
 const fetchData = async () => {
   loading.value = true
   try {
+    console.log('查询参数:', {
+      ...queryParams.value
+    })
     const res = await getGenTemplateList(queryParams.value)
     if (res.data.code === 200) {
       console.log('[模板管理] 获取数据:', res.data.data.rows)
       tableData.value = res.data.data.rows
       total.value = res.data.data.totalNum
     } else {
-      message.error(res.data.msg || t('common.failed'))
+      message.error(res.data.msg || t('failed'))
     }
   } catch (error: any) {
     console.error('[模板管理] 获取模板列表出错:', error)
@@ -381,7 +393,7 @@ const fetchData = async () => {
       message.error('登录已过期，请重新登录')
       window.location.href = '/login'
     } else {
-      message.error(t('common.failed'))
+      message.error(t('failed'))
     }
   } finally {
     loading.value = false
@@ -389,7 +401,10 @@ const fetchData = async () => {
 }
 
 /** 搜索按钮操作 */
-const handleQuery = () => {
+const handleQuery = (values: any) => {
+  if (values) {
+    Object.assign(queryParams.value, values)
+  }
   queryParams.value.pageIndex = 1
   selectedRowKeys.value = []
   fetchData()
@@ -401,7 +416,8 @@ const handleReset = () => {
     pageIndex: 1,
     pageSize: 10,
     templateName: undefined,
-    templateType: undefined,
+    templateOrmType: undefined,
+    templateCodeType: undefined,
     templateCategory: undefined,
     status: -1
   }
@@ -443,13 +459,13 @@ const handleAdd = () => {
 /** 编辑选中行 */
 const handleEditSelected = () => {
   if (selectedRowKeys.value.length !== 1) {
-    message.warning(t('common.select.one'))
+    message.warning(t('select.one'))
     return
   }
   const id = Number(selectedRowKeys.value[0])
   console.log('[模板管理] 编辑选中行, id:', id)
   if (!id) {
-    message.error(t('common.invalid.id'))
+    message.error(t('invalid.id'))
     return
   }
   selectedTemplateId.value = id
@@ -461,7 +477,7 @@ const handleEditSelected = () => {
 const handleEdit = (record: HbtGenTemplate) => {
   console.log('[模板管理] 编辑按钮点击, record:', record)
   if (!record.genTemplateId) {
-    message.error(t('common.invalid.id'))
+    message.error(t('invalid.id'))
     return
   }
   selectedTemplateId.value = record.genTemplateId
@@ -477,27 +493,27 @@ const handleDelete = async (record: HbtGenTemplate) => {
   if (!record.genTemplateId) return
   try {
     await deleteGenTemplate(record.genTemplateId)
-    message.success(t('common.delete.success'))
+    message.success(t('delete.success'))
     fetchData()
   } catch (error) {
-    message.error(t('common.delete.failed'))
+    message.error(t('delete.failed'))
   }
 }
 
 /** 批量删除按钮操作 */
 const handleBatchDelete = () => {
   Modal.confirm({
-    title: t('common.delete.confirm'),
-    content: t('common.delete.message', { count: selectedRowKeys.value.length }),
+    title: t('delete.confirm'),
+    content: t('delete.message', { count: selectedRowKeys.value.length }),
     async onOk() {
       try {
         await batchDeleteGenTemplate(selectedRowKeys.value.map(Number))
-        message.success(t('common.delete.success'))
+        message.success(t('delete.success'))
         selectedRowKeys.value = []
         fetchData()
       } catch (error) {
         console.error(error)
-        message.error(t('common.delete.failed'))
+        message.error(t('delete.failed'))
       }
     }
   })
@@ -523,16 +539,16 @@ const handleExport = async () => {
   try {
     const res = await exportGenTemplate(queryParams.value)
     if (res.data.code === 200) {
-      message.success(t('common.export.success'))
+      message.success(t('export.success'))
     } else {
-      message.error(res.data.msg || t('common.export.failed'))
+      message.error(res.data.msg || t('export.failed'))
     }
   } catch (error: any) {
     console.error(error)
     if (error.response?.status === 500) {
-      message.error(t('common.export.failed'))
+      message.error(t('export.failed'))
     } else {
-      message.error(error.response?.data?.msg || t('common.export.failed'))
+      message.error(error.response?.data?.msg || t('export.failed'))
     }
   }
 }
@@ -548,7 +564,7 @@ const handleTemplate = async () => {
     window.URL.revokeObjectURL(link.href)
   } catch (error: any) {
     console.error('下载模板失败:', error)
-    message.error(error.message || t('common.template.failed'))
+    message.error(error.message || t('template.failed'))
   }
 }
 
@@ -584,7 +600,7 @@ const handleImport = async () => {
     input.click()
   } catch (error: any) {
     console.error('导入失败:', error)
-    message.error(error.message || t('common.import.failed'))
+    message.error(error.message || t('import.failed'))
   }
 }
 </script>

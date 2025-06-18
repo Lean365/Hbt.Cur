@@ -158,7 +158,7 @@ import { ref, computed, onMounted, h } from 'vue'
 import { UploadOutlined } from '@ant-design/icons-vue'
 import { useDictStore } from '@/stores/dict'
 import { useRouter } from 'vue-router'
-import type { HbtWorkflowVariable, HbtWorkflowVariableQuery } from '@/types/workflow/workflowVariable'
+import type { HbtWorkflowVariable, HbtWorkflowVariableQuery } from '@/types/workflow/variable'
 import type { QueryField } from '@/types/components/query'
 import type { TablePaginationConfig } from 'ant-design-vue'
 import { 
@@ -168,7 +168,7 @@ import {
   importWorkflowVariable, 
   exportWorkflowVariable, 
   getWorkflowVariableTemplate 
-} from '@/api/workflow/workflowVariable'
+} from '@/api/workflow/variable'
 import WorkflowVariableForm from './components/WorkflowVariableForm.vue'
 
 const { t } = useI18n()

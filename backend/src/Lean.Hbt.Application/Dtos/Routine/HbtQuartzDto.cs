@@ -131,9 +131,44 @@ namespace Lean.Hbt.Application.Dtos.Routine
         public int TaskStatus { get; set; }
 
         /// <summary>
+        /// 备注
+        /// </summary>
+        public string? Remark { get; set; }
+
+        /// <summary>
+        /// 创建者
+        /// </summary>
+        public string? CreateBy { get; set; }
+
+        /// <summary>
         /// 创建时间
         /// </summary>
         public DateTime CreateTime { get; set; }
+
+        /// <summary>
+        /// 更新者
+        /// </summary>
+        public string? UpdateBy { get; set; }
+
+        /// <summary>
+        /// 更新时间
+        /// </summary>
+        public DateTime? UpdateTime { get; set; }
+
+        /// <summary>
+        /// 是否删除（0未删除 1已删除）
+        /// </summary>
+        public int IsDeleted { get; set; }
+
+        /// <summary>
+        /// 删除者
+        /// </summary>
+        public string? DeleteBy { get; set; }
+
+        /// <summary>
+        /// 删除时间
+        /// </summary>
+        public DateTime? DeleteTime { get; set; }
     }
 
     /// <summary>
@@ -298,6 +333,12 @@ namespace Lean.Hbt.Application.Dtos.Routine
         /// 状态（0停用 1启用）
         /// </summary>
         public int TaskStatus { get; set; }
+
+        /// <summary>
+        /// 备注
+        /// </summary>
+        [MaxLength(255, ErrorMessage = "备注长度不能超过255个字符")]
+        public string? Remark { get; set; }
     }
 
     /// <summary>

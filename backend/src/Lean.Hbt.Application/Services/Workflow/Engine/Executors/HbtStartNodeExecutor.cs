@@ -20,7 +20,7 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine.Executors
     /// <summary>
     /// 开始节点执行器
     /// </summary>
-    public class HbtStartNodeExecutor : HbtWorkflowNodeExecutorBase
+    public class HbtStartNodeExecutor : HbtNodeExecutorBase
     {
         /// <summary>
         /// 构造函数
@@ -37,9 +37,9 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine.Executors
         /// <summary>
         /// 执行节点
         /// </summary>
-        protected override Task<HbtWorkflowNodeResult> ExecuteInternalAsync(
-            HbtWorkflowInstance instance,
-            HbtWorkflowNode node,
+        protected override Task<HbtNodeResult> ExecuteInternalAsync(
+            HbtInstance instance,
+            HbtNode node,
             Dictionary<string, object>? variables = null)
         {
             // 开始节点不需要特殊处理，直接返回成功

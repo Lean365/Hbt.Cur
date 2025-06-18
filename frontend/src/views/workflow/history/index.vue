@@ -13,30 +13,27 @@
     <hbt-toolbar
       :show-delete="true"
       :delete-permission="['workflow:history:delete']"
-      :show-import="true"
-      :import-permission="['workflow:history:import']"
       :show-export="true"
       :export-permission="['workflow:history:export']"
       :disabled-delete="selectedRowKeys.length === 0"
       @delete="handleBatchDelete"
-      @import="handleImport"
-      @template="handleTemplate"
       @export="handleExport"
       @refresh="fetchData"
       @column-setting="handleColumnSetting"
       @toggle-search="toggleSearch"
       @toggle-fullscreen="toggleFullscreen"
-    />
+    >
+    </hbt-toolbar>
 
     <!-- 数据表格 -->
     <hbt-table
       :loading="loading"
       :data-source="tableData"
-      :columns="columns"
+      :columns="visibleColumns"
       :pagination="false"
       :scroll="{ x: 'max-content' }"
       :default-height="594"
-      :row-key="(record: HbtWorkflowHistory) => String(record.id)"
+      :row-key="(record: HbtHistory) => String(record.historyId)"
       v-model:selectedRowKeys="selectedRowKeys"
       :row-selection="{
         type: 'checkbox',
@@ -57,7 +54,7 @@
         </template>
 
         <!-- 操作列 -->
-        <template v-if="column.key === 'action'">
+        <template v-if="column.key === 'operation'">
           <hbt-operation
             :record="record"
             :show-delete="true"
@@ -84,35 +81,16 @@
       @showSizeChange="handleSizeChange"
     />
 
-    <!-- 导入对话框 -->
-    <a-modal
-      v-model:visible="importVisible"
-      title="导入工作流历史记录"
-      @ok="handleImportSubmit"
-      @cancel="handleImportCancel"
-    >
-      <a-upload
-        :file-list="fileList"
-        :before-upload="beforeUpload"
-        :customRequest="customRequest"
-      >
-        <a-button>
-          <upload-outlined />
-          点击上传
-        </a-button>
-      </a-upload>
-      <template #footer>
-        <a-button key="back" @click="handleImportCancel">取消</a-button>
-        <a-button key="submit" type="primary" :loading="importLoading" @click="handleImportSubmit">
-          确定
-        </a-button>
-      </template>
-    </a-modal>
+    <!-- 查看详情 -->
+    <history-detail
+      v-model:open="detailVisible"
+      :history-id="selectedHistoryId"
+    />
 
     <!-- 列设置抽屉 -->
     <a-drawer
-      :visible="columnSettingVisible"
-      title="列设置"
+      :open="columnSettingVisible"
+      :title="t('common.columnSetting')"
       placement="right"
       width="300"
       @close="columnSettingVisible = false"
@@ -123,26 +101,10 @@
         class="column-setting-group"
       >
         <div v-for="col in defaultColumns" :key="col.key" class="column-setting-item">
-          <a-checkbox :value="col.key">{{ col.title }}</a-checkbox>
+          <a-checkbox :value="col.key" :disabled="col.key === 'operation'">{{ col.title }}</a-checkbox>
         </div>
       </a-checkbox-group>
     </a-drawer>
-
-    <!-- 新增/编辑表单 -->
-    <workflow-history-form
-      v-model:open="formVisible"
-      :title="formTitle"
-      :history-id="selectedHistoryId"
-      @success="handleSuccess"
-    />
-
-    <!-- 查看详情 -->
-    <a-modal
-      v-model:open="detailVisible"
-      title="工作流历史记录详情"
-    >
-      <!-- 工作流历史记录详情内容 -->
-    </a-modal>
   </div>
 </template>
 
@@ -150,13 +112,14 @@
 import { useI18n } from 'vue-i18n'
 import { message } from 'ant-design-vue'
 import { ref, computed, onMounted, h } from 'vue'
-import { UploadOutlined } from '@ant-design/icons-vue'
 import { useDictStore } from '@/stores/dict'
 import { useRouter } from 'vue-router'
-import type { HbtWorkflowHistory, HbtWorkflowHistoryQuery } from '@/types/workflow/workflowHistory'
+import type { HbtHistory, HbtHistoryQuery } from '@/types/workflow/history'
 import type { QueryField } from '@/types/components/query'
 import type { TablePaginationConfig } from 'ant-design-vue'
-import { getWorkflowHistoryList, deleteWorkflowHistory, batchDeleteWorkflowHistory, importWorkflowHistory, exportWorkflowHistory, getWorkflowHistoryTemplate } from '@/api/workflow/workflowHistory'
+import { getWorkflowHistoryList, deleteWorkflowHistory, batchDeleteWorkflowHistory, exportWorkflowHistory, getWorkflowHistoryTemplate } from '@/api/workflow/history'
+import HistoryDetail from './components/HistoryDetail.vue'
+
 
 const { t } = useI18n()
 const dictStore = useDictStore()
@@ -165,134 +128,177 @@ const router = useRouter()
 // 表格列定义
 const columns = [
   {
-    title: t('workflow.history.workflowInstanceId'),
-    dataIndex: 'workflowInstanceId',
-    key: 'workflowInstanceId',
+    title: t('table.columns.id'),
+    dataIndex: 'historyId',
+    key: 'historyId',
     width: 200
   },
   {
-    title: t('workflow.history.nodeId'),
+    title: t('workflow.history.fields.instanceId'),
+    dataIndex: 'instanceId',
+    key: 'instanceId',
+    width: 200
+  },
+  {
+    title: t('workflow.history.fields.nodeId'),
     dataIndex: 'nodeId',
     key: 'nodeId',
-    width: 200
+    width: 150
   },
   {
-    title: t('workflow.history.operationType'),
+    title: t('workflow.history.fields.operationType'),
     dataIndex: 'operationType',
     key: 'operationType',
     width: 150
   },
   {
-    title: t('workflow.history.operatorName'),
+    title: t('workflow.history.fields.operatorName'),
     dataIndex: 'operatorName',
     key: 'operatorName',
     width: 150
   },
   {
-    title: t('workflow.history.operationResult'),
+    title: t('workflow.history.fields.operationResult'),
     dataIndex: 'operationResult',
     key: 'operationResult',
     width: 150
   },
   {
-    title: t('workflow.history.operationTime'),
+    title: t('workflow.history.fields.operationTime'),
     dataIndex: 'operationTime',
     key: 'operationTime',
     width: 180
   },
   {
-    title: t('common.action'),
+    title: t('workflow.history.fields.operationComment'),
+    dataIndex: 'operationComment',
+    key: 'operationComment',
+    width: 200,
+    ellipsis: true
+  },
+  {
+    title: t('table.columns.createBy'),
+    dataIndex: 'createBy',
+    key: 'createBy',
+    width: 120,
+    ellipsis: true
+  },
+  {
+    title: t('table.columns.createTime'),
+    dataIndex: 'createTime',
+    key: 'createTime',
+    width: 180,
+    ellipsis: true
+  },
+  {
+    title: t('table.columns.updateBy'),
+    dataIndex: 'updateBy',
+    key: 'updateBy',
+    width: 120,
+    ellipsis: true
+  },
+  {
+    title: t('table.columns.updateTime'),
+    dataIndex: 'updateTime',
+    key: 'updateTime',
+    width: 180,
+    ellipsis: true
+  },
+  {
+    title: t('table.columns.operation'),
+    dataIndex: 'action',
     key: 'action',
+    width: 150,
     fixed: 'right',
-    width: 200
+    align: 'center',
+    ellipsis: true
   }
 ]
 
 // 查询字段定义
 const queryFields: QueryField[] = [
   {
-    name: 'workflowInstanceId',
-    label: t('workflow.history.fields.workflowInstanceId.label'),
+    name: 'instanceId',
+    label: t('workflow.history.fields.instanceId'),
     type: 'input' as const
   },
   {
     name: 'nodeId',
-    label: t('workflow.history.fields.nodeId.label'),
+    label: t('workflow.history.fields.nodeId'),
     type: 'input' as const
   },
   {
     name: 'operationType',
-    label: t('workflow.history.fields.operationType.label'),
+    label: t('workflow.history.fields.operationType'),
     type: 'select' as const,
     props: {
       dictType: 'workflow_operation_type',
-      type: 'radio'
+      type: 'select'
     }
   },
   {
     name: 'operatorName',
-    label: t('workflow.history.fields.operatorName.label'),
+    label: t('workflow.history.fields.operatorName'),
     type: 'input' as const
   },
   {
     name: 'operationResult',
-    label: t('workflow.history.fields.operationResult.label'),
+    label: t('workflow.history.fields.operationResult'),
     type: 'select' as const,
     props: {
       dictType: 'workflow_operation_result',
-      type: 'radio'
+      type: 'select'
     }
   }
 ]
 
 // 查询参数
-const queryParams = ref<HbtWorkflowHistoryQuery>({
+const queryParams = ref<HbtHistoryQuery>({
   pageIndex: 1,
   pageSize: 10,
-  workflowInstanceId: undefined,
+  instanceId: undefined,
   nodeId: undefined,
   operationType: undefined,
   operatorName: undefined,
-  operationResult: undefined
+  operationResult: undefined,
+  startTime: undefined,
+  endTime: undefined
 })
 
 // 表格相关
 const loading = ref(false)
 const total = ref(0)
-const tableData = ref<HbtWorkflowHistory[]>([])
+const tableData = ref<HbtHistory[]>([])
 const selectedRowKeys = ref<(string | number)[]>([])
 const showSearch = ref(true)
-
-// 导入相关
-const importVisible = ref(false)
-const importLoading = ref(false)
-const fileList = ref<any[]>([])
-
-// 列设置相关
 const columnSettingVisible = ref(false)
-const defaultColumns = columns
-const columnSettings = ref<Record<string, boolean>>({})
-
-// 新增/编辑表单相关
-const formVisible = ref(false)
-const formTitle = ref('')
-const selectedHistoryId = ref('')
-
-// 查看详情相关
+const isFullscreen = ref(false)
 const detailVisible = ref(false)
+const selectedHistoryId = ref<number>(0)
+
+// 列设置
+const columnSettings = ref<Record<string, boolean>>({})
+const defaultColumns = columns
+
+// 可见列
+const visibleColumns = computed(() => {
+  return columns.filter(col => columnSettings.value[col.key])
+})
 
 // 获取表格数据
 const fetchData = async () => {
   loading.value = true
   try {
     const res = await getWorkflowHistoryList(queryParams.value)
-    if (res.data) {
-      tableData.value = res.data.data.rows || []
-      total.value = res.data.data.totalNum || 0
+    if (res.data.code === 200) {
+      tableData.value = res.data.data.items
+      total.value = res.data.data.total
+    } else {
+      message.error(res.data.msg || t('common.failed'))
     }
   } catch (error) {
-    console.error('获取工作流历史列表失败:', error)
-    message.error('获取工作流历史列表失败')
+    console.error('获取历史记录失败:', error)
+    message.error(t('common.failed'))
   } finally {
     loading.value = false
   }
@@ -309,11 +315,13 @@ const resetQuery = () => {
   queryParams.value = {
     pageIndex: 1,
     pageSize: 10,
-    workflowInstanceId: undefined,
+    instanceId: undefined,
     nodeId: undefined,
     operationType: undefined,
     operatorName: undefined,
-    operationResult: undefined
+    operationResult: undefined,
+    startTime: undefined,
+    endTime: undefined
   }
   fetchData()
 }
@@ -326,9 +334,9 @@ const handleTableChange = (pagination: TablePaginationConfig) => {
 }
 
 // 处理删除
-const handleDelete = async (record: HbtWorkflowHistory) => {
+const handleDelete = async (record: HbtHistory) => {
   try {
-    const res = await deleteWorkflowHistory(Number(record.id))
+    const res = await deleteWorkflowHistory(record.historyId)
     if (res.data.code === 200) {
       message.success(t('common.delete.success'))
       fetchData()
@@ -336,23 +344,8 @@ const handleDelete = async (record: HbtWorkflowHistory) => {
       message.error(res.data.msg || t('common.delete.failed'))
     }
   } catch (error) {
-    console.error(error)
+    console.error('删除历史记录失败:', error)
     message.error(t('common.delete.failed'))
-  }
-}
-
-// 处理导出
-const handleExport = async () => {
-  try {
-    const res = await exportWorkflowHistory(queryParams.value)
-    if (res.data.code === 200) {
-      message.success(t('common.export.success'))
-    } else {
-      message.error(res.data.msg || t('common.export.failed'))
-    }
-  } catch (error) {
-    console.error(error)
-    message.error(t('common.export.failed'))
   }
 }
 
@@ -368,23 +361,21 @@ const toggleFullscreen = (isFullscreen: boolean) => {
 
 // 批量删除
 const handleBatchDelete = async () => {
-  if (!selectedRowKeys.value.length) {
-    message.warning(t('common.selectAtLeastOne'))
+  if (selectedRowKeys.value.length === 0) {
+    message.warning(t('common.pleaseSelect'))
     return
   }
-
   try {
-    const results = await Promise.all(selectedRowKeys.value.map(id => deleteWorkflowHistory(Number(id))))
-    const hasError = results.some(res => res.data.code !== 200)
-    if (!hasError) {
+    const res = await batchDeleteWorkflowHistory(selectedRowKeys.value.map(key => Number(key)))
+    if (res.data.code === 200) {
       message.success(t('common.delete.success'))
       selectedRowKeys.value = []
       fetchData()
     } else {
-      message.error(t('common.delete.failed'))
+      message.error(res.data.msg || t('common.delete.failed'))
     }
   } catch (error) {
-    console.error(error)
+    console.error('批量删除历史记录失败:', error)
     message.error(t('common.delete.failed'))
   }
 }
@@ -398,94 +389,26 @@ const handleColumnSetting = () => {
 const handleColumnSettingChange = (checkedValue: Array<string | number | boolean>) => {
   const settings: Record<string, boolean> = {}
   defaultColumns.forEach(col => {
-    settings[col.key] = checkedValue.includes(col.key)
+    // 操作列始终为true
+    if (col.key === 'operation') {
+      settings[col.key] = true
+    } else {
+      settings[col.key] = checkedValue.includes(col.key)
+    }
   })
   columnSettings.value = settings
   localStorage.setItem('workflowHistoryColumnSettings', JSON.stringify(settings))
 }
 
 // 处理行点击
-const handleRowClick = (record: HbtWorkflowHistory) => {
+const handleRowClick = (record: HbtHistory) => {
   console.log('行点击:', record)
 }
 
 // 处理查看
-const handleView = (record: HbtWorkflowHistory) => {
-  router.push(`/workflow/history/detail/${record.id}`)
-}
-
-// 处理导入
-const handleImport = () => {
-  importVisible.value = true
-}
-
-// 处理下载模板
-const handleTemplate = async () => {
-  try {
-    const res = await getWorkflowHistoryTemplate()
-    if (res.data.code === 200) {
-      message.success(t('common.download.success'))
-    } else {
-      message.error(res.data.msg || t('common.download.failed'))
-    }
-  } catch (error) {
-    console.error(error)
-    message.error(t('common.download.failed'))
-  }
-}
-
-// 处理导入提交
-const handleImportSubmit = async () => {
-  if (!fileList.value.length) {
-    message.warning(t('common.upload.selectFile'))
-    return
-  }
-
-  importLoading.value = true
-  try {
-    const res = await importWorkflowHistory(fileList.value[0], 'Sheet1')
-    if (res.data.code === 200) {
-      message.success(t('common.import.success'))
-      importVisible.value = false
-      fileList.value = []
-      fetchData()
-    } else {
-      message.error(res.data.msg || t('common.import.failed'))
-    }
-  } catch (error) {
-    console.error(error)
-    message.error(t('common.import.failed'))
-  }
-  importLoading.value = false
-}
-
-// 处理导入取消
-const handleImportCancel = () => {
-  importVisible.value = false
-  fileList.value = []
-}
-
-// 上传前处理
-const beforeUpload = (file: any) => {
-  const isExcel = file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' || 
-                  file.type === 'application/vnd.ms-excel'
-  if (!isExcel) {
-    message.error(t('common.upload.excelOnly'))
-    return false
-  }
-  const isLt2M = file.size / 1024 / 1024 < 2
-  if (!isLt2M) {
-    message.error(t('common.upload.sizeLimit'))
-    return false
-  }
-  fileList.value = [file]
-  return false
-}
-
-// 自定义上传
-const customRequest = (options: any) => {
-  const { file } = options
-  fileList.value = [file]
+const handleView = (record: HbtHistory) => {
+  selectedHistoryId.value = record.historyId
+  detailVisible.value = true
 }
 
 // 分页处理
@@ -499,10 +422,77 @@ const handleSizeChange = (size: number) => {
   fetchData()
 }
 
-// 处理新增/编辑成功
+// 初始化列设置
+const initColumnSettings = () => {
+  // 每次刷新页面时清除localStorage
+  localStorage.removeItem('workflowHistoryColumnSettings')
+
+  // 初始化所有列为false
+  columnSettings.value = Object.fromEntries(defaultColumns.map(col => [col.key, false]))
+
+  // 获取前9列（不包含操作列）
+  const firstNineColumns = defaultColumns.filter(col => col.key !== 'operation').slice(0, 9)
+
+  // 设置前9列为true
+  firstNineColumns.forEach(col => {
+    columnSettings.value[col.key] = true
+  })
+
+  // 确保操作列显示
+  columnSettings.value['operation'] = true
+}
+
+// 处理新增
+const handleAdd = () => {
+  // 历史记录不需要新增功能
+}
+
+// 处理编辑选中
+const handleEditSelected = () => {
+  // 历史记录不需要编辑功能
+}
+
+// 处理成功
 const handleSuccess = () => {
-  message.success(t('common.save.success'))
-  fetchData()
+  // 历史记录不需要表单提交
+}
+
+// 处理导出
+const handleExport = async () => {
+  try {
+    const res = await exportWorkflowHistory({
+      ...queryParams.value
+    })
+    // 动态获取文件名
+    const disposition =
+      res.headers && (res.headers['content-disposition'] || res.headers['Content-Disposition'])
+    let fileName = ''
+    if (disposition) {
+      // 优先匹配 filename*（带中文）
+      let match = disposition.match(/filename\*=UTF-8''([^;]+)/)
+      if (match && match[1]) {
+        fileName = decodeURIComponent(match[1])
+      } else {
+        // 再匹配 filename
+        match = disposition.match(/filename="?([^";]+)"?/)
+        if (match && match[1]) {
+          fileName = match[1]
+        }
+      }
+    }
+    if (!fileName) {
+      fileName = `工作流历史_${new Date().getTime()}.xlsx`
+    }
+    const link = document.createElement('a')
+    link.href = window.URL.createObjectURL(res.data)
+    link.download = fileName
+    link.click()
+    window.URL.revokeObjectURL(link.href)
+    message.success(t('common.export.success'))
+  } catch (error: any) {
+    console.error('导出失败:', error)
+    message.error(error.message || t('common.export.failed'))
+  }
 }
 
 onMounted(() => {
@@ -513,16 +503,6 @@ onMounted(() => {
   // 加载表格数据
   fetchData()
 })
-
-// 初始化列设置
-const initColumnSettings = () => {
-  const savedSettings = localStorage.getItem('workflowHistoryColumnSettings')
-  if (savedSettings) {
-    columnSettings.value = JSON.parse(savedSettings)
-  } else {
-    columnSettings.value = Object.fromEntries(defaultColumns.map(col => [col.key, true]))
-  }
-}
 </script>
 
 <style lang="less" scoped>
@@ -534,15 +514,12 @@ const initColumnSettings = () => {
 .column-setting-group {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
 }
 
 .column-setting-item {
-  padding: 8px;
-  border-bottom: 1px solid var(--ant-color-split);
-  
-  &:last-child {
-    border-bottom: none;
-  }
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 </style> 

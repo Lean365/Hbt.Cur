@@ -250,56 +250,42 @@ const columns = [
     ellipsis: true
   },
   {
-    title: t('identity.user.table.columns.remark'),
+    title: t('table.columns.remark'),
     dataIndex: 'remark',
     key: 'remark',
     width: 120,
     ellipsis: true
   },
   {
-    title: t('identity.user.table.columns.createBy'),
+    title: t('table.columns.createBy'),
     dataIndex: 'createBy',
     key: 'createBy',
     width: 120,
     ellipsis: true
   },
   {
-    title: t('identity.user.table.columns.createTime'),
+    title: t('table.columns.createTime'),
     dataIndex: 'createTime',
     key: 'createTime',
     width: 180,
     ellipsis: true
   },
   {
-    title: t('identity.user.table.columns.updateBy'),
+    title: t('table.columns.updateBy'),
     dataIndex: 'updateBy',
     key: 'updateBy',
     width: 120,
     ellipsis: true
   },
   {
-    title: t('identity.user.table.columns.updateTime'),
+    title: t('table.columns.updateTime'),
     dataIndex: 'updateTime',
     key: 'updateTime',
     width: 180,
     ellipsis: true
   },
   {
-    title: t('identity.user.table.columns.deleteBy'),
-    dataIndex: 'deleteBy',
-    key: 'deleteBy',
-    width: 120,
-    ellipsis: true
-  },
-  {
-    title: t('identity.user.table.columns.deleteTime'),
-    dataIndex: 'deleteTime',
-    key: 'deleteTime',
-    width: 180,
-    ellipsis: true
-  },
-  {
-    title: t('common.table.header.operation'),
+    title: t('table.columns.operation'),
     dataIndex: 'action',
     key: 'action',
     width: 150,

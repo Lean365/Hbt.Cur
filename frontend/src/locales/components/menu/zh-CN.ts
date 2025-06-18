@@ -20,7 +20,7 @@ export default {
       index: '关于Hbt'
     },
     core: {
-      _self: '系统管理',
+      _self: '核心管理',
       config: '系统配置',
       language: '语言管理',
       dict: '字典管理',
@@ -49,6 +49,7 @@ export default {
     },
     workflow: {
       _self: '工作流程',
+      form: '表单管理',
       definition: '流程定义',
       instance: '流程实例',
       task: '工作任务',
@@ -57,15 +58,14 @@ export default {
       history: '流程历史'
     },
     signalr: {
-      _self: '实时监控',
-      server: '服务监控',
+      _self: '实时通信',
       online: '在线用户',
       message: '在线消息'
     },
     generator: {
       _self: '代码生成',
       table: '数据库表',
-      tableDefine: '自定义表',
+      tableDefine: '表列定义',
       template: '代码模板',
       config: '生成配置',
       api: '接口文档'

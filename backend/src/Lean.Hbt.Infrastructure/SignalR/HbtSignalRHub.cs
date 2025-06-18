@@ -555,73 +555,190 @@ namespace Lean.Hbt.Infrastructure.SignalR
         }
     }
 
-    // 添加配置类
+    /// <summary>
+    /// SignalR配置
+    /// </summary>
     public class SignalRConfig
     {
+        /// <summary>
+        /// 是否启用详细错误
+        /// </summary>
         public bool EnableDetailedErrors { get; set; }
+        /// <summary>
+        /// 客户端超时时间
+        /// </summary>
         public int ClientTimeoutInterval { get; set; }
+        /// <summary>
+        /// 心跳间隔
+        /// </summary>
         public int KeepAliveInterval { get; set; }
+        /// <summary>
+        /// 握手超时时间
+        /// </summary>
         public int HandshakeTimeout { get; set; }
-        public int MaximumReceiveMessageSize { get; set; }
+        /// <summary>
+        /// 流缓冲区容量
+        /// </summary>
         public int StreamBufferCapacity { get; set; }
+        /// <summary>
+        /// 最大接收消息大小（字节）
+        /// </summary>
+        public int MaximumReceiveMessageSize { get; set; }
+        /// <summary>
+        /// 是否启用MessagePack
+        /// </summary>
         public bool EnableMessagePack { get; set; }
-        public TransportConfig Transport { get; set; }
-        public AuthenticationConfig Authentication { get; set; }
-        public UserManagementConfig UserManagement { get; set; }
-        public DeviceManagementConfig DeviceManagement { get; set; }
+        /// <summary>
+        /// 传输配置
+        /// </summary>
+        public TransportConfig? Transport { get; set; }
+        /// <summary>
+        /// 认证配置
+        /// </summary>
+        public AuthenticationConfig? Authentication { get; set; }
+        /// <summary>
+        /// 用户管理配置
+        /// </summary>
+        public UserManagementConfig? UserManagement { get; set; }
+        /// <summary>
+        /// 设备管理配置
+        /// </summary>
+        public DeviceManagementConfig? DeviceManagement { get; set; }
     }
 
+    /// <summary>
+    /// 传输配置
+    /// </summary>
     public class TransportConfig
     {
-        public WebSocketConfig WebSockets { get; set; }
-        public ServerSentEventsConfig ServerSentEvents { get; set; }
-        public LongPollingConfig LongPolling { get; set; }
+        /// <summary>
+        /// WebSocket配置
+        /// </summary>
+        public WebSocketConfig? WebSockets { get; set; }
+        /// <summary>
+        /// ServerSentEvents配置
+        /// </summary>
+        public ServerSentEventsConfig? ServerSentEvents { get; set; }
+        /// <summary>
+        /// LongPolling配置
+        /// </summary>
+        public LongPollingConfig? LongPolling { get; set; }
     }
 
+    /// <summary>
+    /// WebSocket配置
+    /// </summary>
     public class WebSocketConfig
     {
+        /// <summary>
+        /// 关闭超时时间
+        /// </summary>
         public int CloseTimeout { get; set; }
-        public string SubProtocol { get; set; }
+        /// <summary>
+        /// 子协议
+        /// </summary>
+        public string? SubProtocol { get; set; }
     }
 
+    /// <summary>
+    /// ServerSentEvents配置
+    /// </summary>
     public class ServerSentEventsConfig
     {
+        /// <summary>
+        /// 客户端超时时间
+        /// </summary>
         public int ClientTimeoutInterval { get; set; }
     }
 
+    /// <summary>
+    /// LongPolling配置
+    /// </summary>
     public class LongPollingConfig
     {
+        /// <summary>
+        /// 轮询超时时间
+        /// </summary>
         public int PollTimeout { get; set; }
     }
 
+    /// <summary>
+    /// 认证配置
+    /// </summary>
     public class AuthenticationConfig
     {
+        /// <summary>
+        /// 是否需要认证
+        /// </summary>
         public bool RequireAuthentication { get; set; }
-        public TokenValidationConfig TokenValidation { get; set; }
+        /// <summary>
+        /// 令牌验证配置
+        /// </summary>
+        public TokenValidationConfig? TokenValidation { get; set; }
     }
 
+    /// <summary>
+    /// 令牌验证配置
+    /// </summary>
     public class TokenValidationConfig
     {
+        /// <summary>
+        /// 是否验证发行者
+        /// </summary>
         public bool ValidateIssuer { get; set; }
+        /// <summary>
+        /// 是否验证受众
+        /// </summary>
         public bool ValidateAudience { get; set; }
-        public bool ValidateLifetime { get; set; }
+        /// <summary>
+        /// 是否验证签名密钥
+        /// </summary>
         public bool ValidateIssuerSigningKey { get; set; }
     }
 
+    /// <summary>
+    /// 用户管理配置
+    /// </summary>
     public class UserManagementConfig
     {
-        public int MaxDevicesPerUser { get; set; }
+        /// <summary>
+        /// 每个用户最大设备数
+        /// </summary>
+            public int MaxDevicesPerUser { get; set; }
+        /// <summary>
+        /// 是否允许多连接
+        /// </summary>
         public bool AllowMultipleConnections { get; set; }
+        /// <summary>
+        /// 是否踢出旧会话
+        /// </summary>
         public bool KickoutOldSession { get; set; }
-        public bool NotifyKickout { get; set; }
+        /// <summary>
+        /// 默认分组ID
+        /// </summary>
         public int DefaultGroupId { get; set; }
     }
 
+    /// <summary>
+    /// 设备管理配置
+    /// </summary>
     public class DeviceManagementConfig
     {
+        /// <summary>
+        /// 是否启用设备跟踪
+        /// </summary>
         public bool EnableDeviceTracking { get; set; }
+        /// <summary>
+        /// 每个用户最大设备数
+        /// </summary>
         public int MaxDevicesPerUser { get; set; }
+        /// <summary>
+        /// 设备超时时间
+        /// </summary>
         public int DeviceTimeoutMinutes { get; set; }
+        /// <summary>
+        /// 默认分组ID
+        /// </summary>
         public int DefaultGroupId { get; set; }
     }
 }

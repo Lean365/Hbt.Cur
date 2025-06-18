@@ -69,11 +69,11 @@ public class HbtDbSeedGenConfig
                 existingConfig.GenConfigName = config.GenConfigName;
                 existingConfig.Author = config.Author;
                 existingConfig.ModuleName = config.ModuleName;
-                existingConfig.PackageName = config.PackageName;
+                existingConfig.ProjectName = config.ProjectName;
                 existingConfig.BusinessName = config.BusinessName;
                 existingConfig.FunctionName = config.FunctionName;
-                existingConfig.GenType = config.GenType;
-                existingConfig.GenTemplateType = config.GenTemplateType;
+                existingConfig.GenMethod = config.GenMethod;
+                existingConfig.GenTplType = config.GenTplType;
                 existingConfig.GenPath = config.GenPath;
                 existingConfig.Options = config.Options;
                 existingConfig.Status = config.Status;
@@ -94,20 +94,19 @@ public class HbtDbSeedGenConfig
     /// </summary>
     private static IEnumerable<HbtGenConfig> GetSeedData()
     {
-        var projectPath = GetCurrentProjectPath();
-
         return new List<HbtGenConfig>
         {
             new HbtGenConfig
             {
                 GenConfigName = "Default",
-                Author = "Lean365",
+                Author = "Hbt365",
+                
+                ProjectName = "Lean.Hbt",
                 ModuleName = "Core",
-                PackageName = "Lean.Hbt",
-                BusinessName = "Default",
-                FunctionName = "Default",
-                GenType = 0,
-                GenTemplateType = 0, // 使用wwwroot/Generator/*.scriban模板
+                BusinessName = "HbtCore",
+                FunctionName = "HbtCore",
+                GenMethod = 0, //0，自定义路径，1，压缩包下载
+                GenTplType = 0, // 使用wwwroot/Generator/*.scriban模板
                 GenPath = "src/Lean.Hbt.WebApi/src",
                 Options = JsonSerializer.Serialize(new Dictionary<string, object>
                 {
@@ -125,13 +124,13 @@ public class HbtDbSeedGenConfig
             new HbtGenConfig
             {
                 GenConfigName = "CustomTemplate",
-                Author = "Lean365",
+                Author = "Hbt365",                
+                ProjectName = "Lean.Hbt",
                 ModuleName = "Core",
-                PackageName = "Lean.Hbt",
-                BusinessName = "Custom",
-                FunctionName = "Custom",
-                GenType = 2,
-                GenTemplateType = 1, // 使用HbtGenTemplate表中的模板
+                BusinessName = "HbtCore",
+                FunctionName = "HbtCore",
+                GenMethod =0, //0，自定义路径，1，压缩包下载
+                GenTplType = 1, // 使用HbtGenTemplate表中的模板
                 GenPath = "src/Lean.Hbt.WebApi",
                 Options = JsonSerializer.Serialize(new Dictionary<string, object>
                 {

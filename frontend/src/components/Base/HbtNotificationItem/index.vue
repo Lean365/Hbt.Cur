@@ -41,12 +41,8 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { BellOutlined, ScheduleOutlined, MessageOutlined, DeleteOutlined, EyeOutlined } from '@ant-design/icons-vue'
 import type { NotificationItem } from '@/types/settings'
-import dayjs from 'dayjs'
-import relativeTime from 'dayjs/plugin/relativeTime'
-import 'dayjs/locale/zh-cn'
-
-dayjs.extend(relativeTime)
-dayjs.locale('zh-cn')
+import { formatDistanceToNow } from 'date-fns'
+import { zhCN } from 'date-fns/locale'
 
 const { t } = useI18n()
 
@@ -81,7 +77,7 @@ const toggleReadStatus = () => {
 
 // 格式化时间
 const formatTime = (time: string) => {
-  return dayjs(time).fromNow()
+  return formatDistanceToNow(new Date(time), { addSuffix: true, locale: zhCN })
 }
 
 // 格式化消息内容

@@ -293,11 +293,29 @@ export default {
       note: '가져오기 설명',
       tips: '가져오기 템플릿 형식을 엄격히 따르세요. 그렇지 않으면 가져오기가 실패할 수 있습니다',
       format: 'Excel 파일만 지원됩니다!',
-      size: '파일 크기는 2MB를 초과할 수 없습니다!',
+      size: '파일 크기는 {size}MB를 초과할 수 없습니다!',
       total: '전체 레코드 수',
       success: '성공 수',
       failed: '실패 수',
-      message: '실패 이유'
+      message: '실패 이유',
+      dragText: '클릭하거나 파일을 이 영역으로 드래그하여 업로드',
+      dragHint: '.xlsx 형식의 Excel 파일을 지원합니다',
+      sheetName: 'Excel 파일의 시트 이름이 다음인지 확인하세요: {sheetName}',
+      allSuccess: '가져오기 성공 {count} 레코드, 모두 성공!',
+      partialSuccess: '가져오기 성공 {success} 레코드, 실패 {fail} 레코드',
+      allFailed: '모든 가져오기 실패, 총 {count} 레코드',
+      noData: '데이터가 읽히지 않았습니다',
+      empty: '파일이 비어 있습니다, 업로드할 수 없습니다',
+      importFailed: '가져오기에 실패했습니다',
+      templateFileName: 'Import_Template_{time}.xlsx',
+      limits: {
+        title: '가져오기 제한',
+        fileCount: '파일 개수 제한: {count}개 파일',
+        fileSize: '파일 크기 제한: {size}MB',
+        recordCount: '레코드 수 제한: {count}개',
+        fileFormat: '파일 형식: .xlsx 형식만 지원'
+      },
+      recordLimit: '가져올 레코드 수({actual} 레코드)가 제한({max} 레코드)을 초과합니다. 배치로 가져오세요'
     },
 
     // 업로드

@@ -1,7 +1,7 @@
 import { useUserStore } from '@/stores/user'
 import { message } from 'ant-design-vue'
 
-// 30分钟无操作自动登出
+// 与后端JWT令牌过期时间保持一致（30分钟）
 const INACTIVITY_TIMEOUT = 30 * 60 * 1000
 
 let inactivityTimer: NodeJS.Timeout | null = null

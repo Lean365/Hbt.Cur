@@ -288,16 +288,34 @@ export default {
       title: 'データインポート',
       file: 'ファイル選択',
       select: 'ファイルを選択',
-      template: 'テンプレートダウンロード',
+      template: 'テンプレート',
       download: 'テンプレートをダウンロード',
       note: 'インポート説明',
       tips: 'インポートテンプレートの形式に厳密に従ってください。そうしないとインポートに失敗する可能性があります',
       format: 'Excelファイルのみ対応しています！',
-      size: 'ファイルサイズは2MB以下にしてください！',
+      size: 'ファイルサイズは{size}MB以下にしてください！',
       total: '総レコード数',
       success: '成功数',
       failed: '失敗数',
-      message: '失敗理由'
+      message: '失敗理由',
+      dragText: 'クリックまたはファイルをこのエリアにドラッグしてアップロード',
+      dragHint: '.xlsx形式のExcelファイルをサポート',
+      sheetName: 'Excelファイルのシート名が以下であることを確認してください：{sheetName}',
+      allSuccess: 'インポート成功{count}レコード、すべて成功！',
+      partialSuccess: 'インポート成功{success}レコード、失敗{fail}レコード',
+      allFailed: 'すべてのインポートが失敗、総{count}レコード',
+      noData: 'データが読み取られませんでした',
+      empty: 'ファイルが空です、アップロードできません',
+      importFailed: 'インポートに失敗しました',
+      templateFileName: 'Import_Template_{time}.xlsx',
+      limits: {
+        title: 'インポート制限',
+        fileCount: 'ファイル数制限：{count}ファイル',
+        fileSize: 'ファイルサイズ制限：{size}MB',
+        recordCount: 'レコード数制限：{count}件',
+        fileFormat: 'ファイル形式：.xlsx形式のみ対応'
+      },
+      recordLimit: 'インポートするレコード数（{actual}レコード）が制限（{max}レコード）を超えています。バッチでインポートしてください'
     },
 
     // アップロード

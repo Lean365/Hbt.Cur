@@ -1,8 +1,5 @@
 #nullable enable
 
-using SqlSugar;
-using Lean.Hbt.Domain.Entities.Identity;
-
 //===================================================================
 // 项目名 : Lean.Hbt
 // 文件名 : HbtCostCenter.cs
@@ -22,21 +19,11 @@ namespace Lean.Hbt.Domain.Entities.Finance.Controlling
     /// 创建者: Lean365
     /// 创建时间: 2024-03-07
     /// </remarks>
-    [SugarTable("hbt_cost_center", "成本中心表")]
-    [SugarIndex("ix_tenant_cost_center", nameof(TenantId), OrderByType.Asc, nameof(CostCenterCode), OrderByType.Asc, true)]
+    [SugarTable("hbt_controlling_cost_center", "成本中心表")]
+    [SugarIndex("ix_cost_center_code", nameof(CostCenterCode), OrderByType.Asc, true)]
     public class HbtCostCenter : HbtBaseEntity
     {
-        /// <summary>
-        /// 租户ID
-        /// </summary>
-        [SugarColumn(ColumnName = "tenant_id", ColumnDescription = "租户ID", ColumnDataType = "bigint", IsNullable = false)]
-        public long TenantId { get; set; }
 
-        /// <summary>
-        /// 租户
-        /// </summary>
-        [Navigate(NavigateType.OneToOne, nameof(TenantId))]
-        public HbtTenant? Tenant { get; set; }
 
         /// <summary>
         /// 成本中心编码
@@ -92,10 +79,6 @@ namespace Lean.Hbt.Domain.Entities.Finance.Controlling
         [SugarColumn(ColumnName = "status", ColumnDescription = "状态", ColumnDataType = "int", IsNullable = false)]
         public int Status { get; set; }
 
-        /// <summary>
-        /// 备注
-        /// </summary>
-        [SugarColumn(ColumnName = "remark", ColumnDescription = "备注", Length = 500, ColumnDataType = "nvarchar", IsNullable = true)]
-        public string? Remark { get; set; }
+
     }
-} 
+}

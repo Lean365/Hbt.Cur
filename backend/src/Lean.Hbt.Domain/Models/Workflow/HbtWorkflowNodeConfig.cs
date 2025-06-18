@@ -2,7 +2,7 @@
 
 //===================================================================
 // 项目名 : Lean.Hbt
-// 文件名 : HbtWorkflowNodeConfig.cs
+// 文件名 : HbtNodeConfig.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-23 12:00
 // 版本号 : V1.0.0
@@ -16,7 +16,7 @@ namespace Lean.Hbt.Domain.Models.Workflow
     /// <summary>
     /// 工作流节点配置
     /// </summary>
-    public class HbtWorkflowNodeConfig
+    public class HbtNodeConfig
     {
         /// <summary>
         /// 审批人类型

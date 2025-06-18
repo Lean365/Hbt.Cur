@@ -20,7 +20,7 @@ export default {
       index: 'Hbt 소개'
     },
     core: {
-      _self: '시스템 관리',
+      _self: '코어 관리',
       config: '시스템 설정',
       language: '언어 관리',
       dict: '사전 관리'
@@ -46,6 +46,7 @@ export default {
     },
     workflow: {
       _self: '워크플로우',
+      form: '양식',
       definition: '프로세스 정의',
       instance: '프로세스 인스턴스',
       task: '작업',
@@ -54,10 +55,9 @@ export default {
       history: '프로세스 이력'
     },
     signalr: {
-      _self: '실시간 모니터링',
-      server: '서버 모니터링',
-      online: '온라인 사용자',
-      message: '온라인 메시지'
+      _self: '실시간',
+      online: '사용자',
+      message: '메시지'
     },
     generator: {
       _self: '코드 생성',

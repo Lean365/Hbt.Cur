@@ -165,6 +165,8 @@ const handleErrorClose = () => {
 
 // 组件挂载时连接 WebSocket
 onMounted(async () => {
+  console.log('🚀🚀🚀 [App] onMounted 开始执行 🚀🚀🚀')
+  
   const dictStore = useDictStore()
   dictStore.clearCache()
   themeStore.initTheme()
@@ -172,6 +174,8 @@ onMounted(async () => {
   document.documentElement.style.colorScheme = isDark.value ? 'dark' : 'light'
   initAutoLogout(userStore)
   wsStore.connect()
+  
+  console.log('[App] onMounted 执行完成')
 })
 
 onUnmounted(() => {

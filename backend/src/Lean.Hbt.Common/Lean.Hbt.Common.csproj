@@ -7,20 +7,20 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="EPPlus" Version="8.0.3" />
+    <PackageReference Include="EPPlus" Version="8.0.5" />
     <PackageReference Include="LibreHardwareMonitorLib" Version="0.9.4" />
     <PackageReference Include="Microsoft.Diagnostics.NETCore.Client" Version="0.2.607501" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="FluentValidation" Version="12.0.0" />
-    <PackageReference Include="SqlSugarCore" Version="5.1.4.193" />
+    <PackageReference Include="SqlSugarCore" Version="5.1.4.195" />
     <PackageReference Include="IP2Region.Net" Version="2.0.2" />
     <PackageReference Include="System.ServiceProcess.ServiceController" Version="8.0.0" />
-    <PackageReference Include="MailKit" Version="4.12.0" />
+    <PackageReference Include="MailKit" Version="4.12.1" />
     <PackageReference Include="MimeKit" Version="4.12.0" />
     <PackageReference Include="Quartz" Version="3.14.0" />
     <PackageReference Include="Quartz.Extensions.DependencyInjection" Version="3.14.0" />
     <PackageReference Include="Quartz.Extensions.Hosting" Version="3.14.0" />
-    <PackageReference Include="NLog" Version="5.4.0" />
+    <PackageReference Include="NLog" Version="5.5.0" />
     <PackageReference Include="FluentFTP" Version="52.1.0" />
   </ItemGroup>
 

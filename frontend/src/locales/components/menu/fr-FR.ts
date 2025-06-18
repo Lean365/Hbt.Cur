@@ -46,6 +46,7 @@ export default {
     },
     workflow: {
       _self: 'Workflow',
+      form: 'Formulaire',
       definition: 'Définition du processus',
       instance: 'Instance du processus',
       task: 'Tâche',
@@ -54,10 +55,9 @@ export default {
       history: 'Historique du processus'
     },
     signalr: {
-      _self: 'Surveillance en temps réel',
-      server: 'Surveillance du serveur',
-      online: 'Utilisateurs en ligne',
-      message: 'Messages en ligne'
+      _self: 'Tiempo real',
+      online: 'Utilisateurs',
+      message: 'Messages'
     },
     generator: {
       _self: 'Génération de code',

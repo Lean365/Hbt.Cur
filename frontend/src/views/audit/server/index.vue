@@ -4,24 +4,24 @@
     <a-card :bordered="false" class="monitor-card">
       <template #title>
         <div class="card-title">
-          <span>{{ t('realtime.server.title') }}</span>
+          <span>{{ t('audit.server.title') }}</span>
           <a-button type="primary" @click="refreshData" class="refresh-btn">
             <template #icon><ReloadOutlined /></template>
-            {{ t('realtime.server.refresh') }}
+            {{ t('audit.server.refresh') }}
           </a-button>
         </div>
       </template>
 
       <a-tabs v-model:activeKey="activeTab">
         <!-- 资源使用 -->
-        <a-tab-pane :key="'resource'" :tab="t('realtime.server.resource.title')">
+        <a-tab-pane :key="'resource'" :tab="t('audit.server.resource.title')">
           <div class="tab-content">
             <a-row :gutter="16">
               <!-- CPU使用率 -->
               <a-col :span="8">
                 <div class="resource-usage-item">
                   <div class="usage-header">
-                    <span class="usage-name">{{ t('realtime.server.resource.cpu') }}</span>
+                    <span class="usage-name">{{ t('audit.server.resource.cpu') }}</span>
                   </div>
                   <a-progress
                     type="dashboard"
@@ -36,7 +36,7 @@
               <a-col :span="8">
                 <div class="resource-usage-item">
                   <div class="usage-header">
-                    <span class="usage-name">{{ t('realtime.server.resource.memory') }}</span>
+                    <span class="usage-name">{{ t('audit.server.resource.memory') }}</span>
                   </div>
                   <a-progress
                     type="dashboard"
@@ -72,28 +72,28 @@
         </a-tab-pane>
 
         <!-- 系统信息 -->
-        <a-tab-pane :key="'system'" :tab="t('realtime.server.system.title')">
+        <a-tab-pane :key="'system'" :tab="t('audit.server.system.title')">
           <div class="tab-content">
-            <a-descriptions :column="3">
-              <a-descriptions-item :label="t('realtime.server.system.os')">
+            <a-descriptions :column="1">
+              <a-descriptions-item :label="t('audit.server.system.os')">
                 {{ serverInfo?.osName || '-' }}
               </a-descriptions-item>
-              <a-descriptions-item :label="t('realtime.server.system.architecture')">
+              <a-descriptions-item :label="t('audit.server.system.architecture')">
                 {{ serverInfo?.osArchitecture || '-' }}
               </a-descriptions-item>
-              <a-descriptions-item :label="t('realtime.server.system.version')">
+              <a-descriptions-item :label="t('audit.server.system.version')">
                 {{ serverInfo?.osVersion || '-' }}
               </a-descriptions-item>
-              <a-descriptions-item :label="t('realtime.server.system.processor.name')">
+              <a-descriptions-item :label="t('audit.server.system.processor.name')">
                 {{ serverInfo?.processorName || '-' }}
               </a-descriptions-item>
-              <a-descriptions-item :label="t('realtime.server.system.processor.count')">
-                {{ serverInfo?.processorCount || 0 }} {{ t('realtime.server.system.processor.unit') }}
+              <a-descriptions-item :label="t('audit.server.system.processor.count')">
+                {{ serverInfo?.processorCount || 0 }} {{ t('audit.server.system.processor.unit') }}
               </a-descriptions-item>
-              <a-descriptions-item :label="t('realtime.server.system.startup.time')">
+              <a-descriptions-item :label="t('audit.server.system.startup.time')">
                 {{ serverInfo?.systemStartTime ? formatDateTime(serverInfo.systemStartTime) : '-' }}
               </a-descriptions-item>
-              <a-descriptions-item :label="t('realtime.server.system.startup.uptime')">
+              <a-descriptions-item :label="t('audit.server.system.startup.uptime')">
                 {{ formatUptime(serverInfo?.systemUptime || 0) }}
               </a-descriptions-item>
             </a-descriptions>
@@ -101,17 +101,17 @@
         </a-tab-pane>
 
         <!-- .NET运行时信息 -->
-        <a-tab-pane :key="'dotnet'" :tab="t('realtime.server.dotnet.title')">
+        <a-tab-pane :key="'dotnet'" :tab="t('audit.server.dotnet.title')">
           <div class="tab-content">
-            <a-descriptions :column="2">
-              <a-descriptions-item :label="t('realtime.server.dotnet.runtime.version')">
+            <a-descriptions :column="1">
+              <a-descriptions-item :label="t('audit.server.dotnet.runtime.version')">
                 <span class="version-text">.NET</span>
                 <span class="version-number">{{ (serverInfo?.dotNetRuntimeVersion || '').replace('.NET ', '') }}</span>
               </a-descriptions-item>
-              <a-descriptions-item :label="t('realtime.server.dotnet.clr.version')">
+              <a-descriptions-item :label="t('audit.server.dotnet.clr.version')">
                 {{ serverInfo?.clrVersion || '-' }}
               </a-descriptions-item>
-              <a-descriptions-item :label="t('realtime.server.dotnet.runtime.directory')" :span="2">
+              <a-descriptions-item :label="t('audit.server.dotnet.runtime.directory')" :span="2">
                 <a-tooltip :title="serverInfo?.dotNetRuntimeDirectory || ''">
                   <span class="ellipsis-text">{{ serverInfo?.dotNetRuntimeDirectory || '-' }}</span>
                 </a-tooltip>
@@ -121,7 +121,7 @@
         </a-tab-pane>
 
         <!-- 网络信息 -->
-        <a-tab-pane :key="'network'" :tab="t('realtime.server.network.title')">
+        <a-tab-pane :key="'network'" :tab="t('audit.server.network.title')">
           <div class="tab-content">
             <a-table
               :columns="networkColumns"
@@ -329,32 +329,32 @@ const updateCharts = () => {
 // 表格列定义
 const networkColumns = [
   {
-    title: t('realtime.server.network.adapter'),
+    title: t('audit.server.network.adapter'),
     dataIndex: 'adapterName',
     key: 'adapterName'
   },
   {
-    title: t('realtime.server.network.mac'),
+    title: t('audit.server.network.mac'),
     dataIndex: 'macAddress',
     key: 'macAddress'
   },
   {
-    title: t('realtime.server.network.ip.address'),
+    title: t('audit.server.network.ip.address'),
     dataIndex: 'ipAddress',
     key: 'ipAddress'
   },
   {
-    title: t('realtime.server.network.ip.location'),
+    title: t('audit.server.network.ip.location'),
     dataIndex: 'ipLocation',
     key: 'ipLocation'
   },
   {
-    title: t('realtime.server.network.rate.send'),
+    title: t('audit.server.network.rate.send'),
     dataIndex: 'sendRate',
     key: 'sendRate'
   },
   {
-    title: t('realtime.server.network.rate.receive'),
+    title: t('audit.server.network.rate.receive'),
     dataIndex: 'receiveRate',
     key: 'receiveRate'
   }
@@ -406,9 +406,9 @@ const refreshData = async () => {
       networkInfo.value = networkRes.data.data
     }
     updateCharts()
-    message.success(t('realtime.server.refreshResult.success'))
+    message.success(t('audit.server.refreshResult.success'))
   } catch (error) {
-    message.error(t('realtime.server.refreshResult.failed'))
+    message.error(t('audit.server.refreshResult.failed'))
   } finally {
     loading.value = false
   }

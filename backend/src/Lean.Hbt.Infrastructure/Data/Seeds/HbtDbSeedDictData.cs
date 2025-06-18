@@ -3511,8 +3511,8 @@ public class HbtDbSeedDictData
                 DictValue = "frontend",
                 DictType = "sys_translation_module",
                 OrderNum = 1,
-                CssClass = null,
-                ListClass = null,
+                CssClass = 60,
+                ListClass = 60,
                 Status = 0,
                 Remark = "前端模块",
                 CreateBy = "Hbt365",
@@ -3526,8 +3526,8 @@ public class HbtDbSeedDictData
                 DictValue = "backend",
                 DictType = "sys_translation_module",
                 OrderNum = 2,
-                CssClass = null,
-                ListClass = null,
+                CssClass = 61,
+                ListClass = 61,
                 Status = 0,
                 Remark = "后端模块",
                 CreateBy = "Hbt365",
@@ -3536,22 +3536,6 @@ public class HbtDbSeedDictData
                 UpdateTime = DateTime.Now
             },
 
-            // 表前缀类型
-            new HbtDictData
-            {
-                DictLabel = "Hbt",
-                DictValue = "Hbt",
-                DictType = "gen_table_prefix",
-                OrderNum = 1,
-                CssClass = 1,
-                ListClass = 1,
-                Status = 0,
-                Remark = "Hbt表前缀",
-                CreateBy = "Hbt365",
-                CreateTime = DateTime.Now,
-                UpdateBy = "Hbt365",
-                UpdateTime = DateTime.Now
-            }
         };
 
         foreach (var dictData in defaultDictData)

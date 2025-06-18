@@ -119,7 +119,7 @@ public class HbtDbSeedUser
     /// <summary>
     /// 初始化批量普通用户（user1~userN）
     /// </summary>
-    public async Task<(int, int)> InitializeBatchUsersAsync( int totalCount = 1000)
+    public async Task<(int, int)> InitializeBatchUsersAsync(int totalCount = 10)
     {
         int insertCount = 0;
         int updateCount = 0;
@@ -128,7 +128,9 @@ public class HbtDbSeedUser
         var now = DateTime.Now;
         var batchSize = 1000;
         var totalBatches = (int)Math.Ceiling((double)totalCount / batchSize);
-        var existingUsers = await _userRepository.GetListAsync(u => u.UserName.StartsWith("user") && u.UserName != "user");
+        
+        // 获取所有已存在的用户
+        var existingUsers = await _userRepository.GetListAsync(u => u.UserName.StartsWith("hbt"));
         var existingUserDict = existingUsers.ToDictionary(u => u.UserName, u => u);
         var existingPhones = existingUsers.Select(u => u.PhoneNumber).ToHashSet();
 
@@ -145,11 +147,12 @@ public class HbtDbSeedUser
 
             for (int i = startIndex; i <= endIndex; i++)
             {
-                var userName = $"user{i}";
+                var userName = $"hbt{i}";
                 var phoneNumber = $"{13810000000 + i:D11}";
 
                 if (existingUserDict.TryGetValue(userName, out var existingUser))
                 {
+                    // 更新已存在的用户
                     existingUser.NickName = $"普通用户{i}";
                     existingUser.RealName = $"普通用户{i}";
                     existingUser.FullName = $"普通用户{i}";
@@ -165,8 +168,6 @@ public class HbtDbSeedUser
                     existingUser.ErrorLimit = 0;
                     existingUser.LoginCount = 0;
 
-                    // 统一处理租户和审计字段
-
                     existingUser.UpdateBy = "Hbt365";
                     existingUser.UpdateTime = now;
 
@@ -174,6 +175,7 @@ public class HbtDbSeedUser
                 }
                 else if (!existingPhones.Contains(phoneNumber))
                 {
+                    // 创建新用户
                     var (hash, salt, iterations) = HbtPasswordUtils.CreateHash(defaultPassword);
                     var newUser = new HbtUser
                     {

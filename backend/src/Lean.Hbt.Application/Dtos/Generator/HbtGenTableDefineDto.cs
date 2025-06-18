@@ -71,11 +71,56 @@ public class HbtGenTableDefineDto
     public string TableComment { get; set; }
 
     /// <summary>
+    /// 是否生成数据表（0：未生成，1：已生成）
+    /// </summary>
+    public int IsGenTable { get; set; } = 0;
+
+    /// <summary>
     /// 作者
     /// </summary>
     [Required(ErrorMessage = "作者不能为空")]
     [StringLength(50, ErrorMessage = "作者长度不能超过50个字符")]
     public string Author { get; set; }
+
+        /// <summary>
+        /// 备注
+        /// </summary>
+        public string? Remark { get; set; }
+
+        /// <summary>
+        /// 创建者
+        /// </summary>
+        public string? CreateBy { get; set; }
+
+        /// <summary>
+        /// 创建时间
+        /// </summary>
+        public DateTime CreateTime { get; set; }
+
+        /// <summary>
+        /// 更新者
+        /// </summary>
+        public string? UpdateBy { get; set; }
+
+        /// <summary>
+        /// 更新时间
+        /// </summary>
+        public DateTime? UpdateTime { get; set; }
+
+        /// <summary>
+        /// 是否删除（0未删除 1已删除）
+        /// </summary>
+        public int IsDeleted { get; set; }
+
+        /// <summary>
+        /// 删除者
+        /// </summary>
+        public string? DeleteBy { get; set; }
+
+        /// <summary>
+        /// 删除时间
+        /// </summary>
+        public DateTime? DeleteTime { get; set; }    
 
     /// <summary>
     /// 字段定义列表
@@ -99,6 +144,11 @@ public class HbtGenTableDefineQueryDto : HbtPagedQuery
     /// </summary>
     [StringLength(200, ErrorMessage = "表描述长度不能超过200个字符")]
     public string? TableComment { get; set; }
+
+    /// <summary>
+    /// 是否生成数据表（0：未生成，1：已生成）
+    /// </summary>
+    public int? IsGenTable { get; set; }
 }
 
 /// <summary>
@@ -158,6 +208,12 @@ public class HbtGenTableDefineCreateDto
     [Required(ErrorMessage = "作者不能为空")]
     [StringLength(50, ErrorMessage = "作者长度不能超过50个字符")]
     public string Author { get; set; }
+
+    /// <summary>
+    /// 备注
+    /// </summary>
+    [StringLength(200, ErrorMessage = "备注长度不能超过200个字符")]
+    public string? Remark { get; set; }
 
     /// <summary>
     /// 字段定义列表
@@ -230,6 +286,11 @@ public class HbtGenTableDefineImportDto
     public string TableComment { get; set; }
 
     /// <summary>
+    /// 是否生成数据表（0：未生成，1：已生成）
+    /// </summary>
+    public int IsGenTable { get; set; } = 0;
+
+    /// <summary>
     /// 作者
     /// </summary>
     [Required(ErrorMessage = "作者不能为空")]
@@ -294,6 +355,11 @@ public class HbtGenTableDefineExportDto
     public string TableComment { get; set; }
 
     /// <summary>
+    /// 是否生成数据表（0：未生成，1：已生成）
+    /// </summary>
+    public int IsGenTable { get; set; } = 0;
+
+    /// <summary>
     /// 作者
     /// </summary>
     [Required(ErrorMessage = "作者不能为空")]
@@ -356,6 +422,11 @@ public class HbtGenTableDefineTemplateDto
     [Required(ErrorMessage = "表描述不能为空")]
     [StringLength(200, ErrorMessage = "表描述长度不能超过200个字符")]
     public string TableComment { get; set; }
+
+    /// <summary>
+    /// 是否生成数据表（0：未生成，1：已生成）
+    /// </summary>
+    public int IsGenTable { get; set; } = 0;
 
     /// <summary>
     /// 作者

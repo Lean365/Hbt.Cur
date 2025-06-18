@@ -22,15 +22,15 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine.Executors
     /// <summary>
     /// 结束节点执行器
     /// </summary>
-    public class HbtEndNodeExecutor : HbtWorkflowNodeExecutorBase
+    public class HbtEndNodeExecutor : HbtNodeExecutorBase
     {
-        private readonly IHbtRepository<HbtWorkflowInstance> _instanceRepository;
+        private readonly IHbtRepository<HbtInstance> _instanceRepository;
 
         /// <summary>
         /// 构造函数
         /// </summary>
         public HbtEndNodeExecutor(
-            IHbtRepository<HbtWorkflowInstance> instanceRepository,
+            IHbtRepository<HbtInstance> instanceRepository,
             IHbtLogger logger) : base(logger)
         {
             _instanceRepository = instanceRepository;
@@ -44,9 +44,9 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine.Executors
         /// <summary>
         /// 执行结束节点
         /// </summary>
-        protected override async Task<HbtWorkflowNodeResult> ExecuteInternalAsync(
-            HbtWorkflowInstance instance,
-            HbtWorkflowNode node,
+        protected override async Task<HbtNodeResult> ExecuteInternalAsync(
+            HbtInstance instance,
+            HbtNode node,
             Dictionary<string, object>? variables = null)
         {
             try
@@ -59,12 +59,12 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine.Executors
                 await _instanceRepository.UpdateAsync(instance);
 
                 _logger.Info($"工作流实例[{instance.Id}]已完成");
-                return new HbtWorkflowNodeResult { Success = true };
+                return new HbtNodeResult { Success = true };
             }
             catch (Exception ex)
             {
                 _logger.Error($"执行结束节点失败: {ex.Message}", ex);
-                return new HbtWorkflowNodeResult { Success = false, ErrorMessage = ex.Message };
+                return new HbtNodeResult { Success = false, ErrorMessage = ex.Message };
             }
         }
     }

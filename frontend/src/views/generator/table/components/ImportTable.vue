@@ -26,7 +26,10 @@
       :columns="columns"
       :data-source="dbTableList"
       :loading="tableLoading"
+      :row-key="(record: HbtGenTable) => String(record.genTableId)"
       :row-selection="{
+        type: 'checkbox',
+        columnWidth: 60,
         onChange: handleSelectionChange
       }"
       :scroll="{ y: 400 }"
@@ -113,6 +116,8 @@ const databaseList = ref<string[]>([])
 const dbTableList = ref<HbtGenTable[]>([])
 // 选中的表
 const selectedTables = ref<HbtGenTable[]>([])
+// 选中的行键值
+const selectedRowKeys = ref<(string | number)[]>([])
 // 表单状态
 const formState = reactive({
   databaseName: ''
@@ -209,63 +214,69 @@ const fetchTableList = async (databaseName: string) => {
     }))
     
     // 更新表格数据
-    dbTableList.value = pageData.map((item) => ({
-      id: 0,
-      createBy: '',
-      createTime: new Date().toISOString(),
-      isDeleted: 0,
-      tableId: 0,
-      databaseName: databaseName,
-      tableName: item.tableName,
-      tableComment: item.tableComment,
-      entityClassName: '',
-      entityNamespace: '',
-      baseNamespace: '',
-      dtoType: [],
-      dtoNamespace: '',
-      dtoClassName: '',
-      serviceNamespace: '',
-      iServiceClassName: '',
-      serviceClassName: '',
-      iRepositoryNamespace: '',
-      iRepositoryClassName: '',
-      repositoryNamespace: '',
-      repositoryClassName: '',
-      controllerNamespace: '',
-      controllerClassName: '',
-      tplType: '0',
-      tplCategory: 'crud',
-      treeCode: '',
-      treeName: '',
-      treeParentCode: '',
-      moduleName: '',
-      businessName: '',
-      functionName: '',
-      author: '',
-      genType: '0',
-      genPath: '',
-      parentMenuId: 0,
-      sortType: 'asc',
-      sortField: '',
-      permsPrefix: '',
-      generateMenu: 1,
-      frontTpl: 1,
-      btnStyle: 1,
-      colNum: 24,
-      status: 1,
-      frontStyle: 1,
-      options: {
-        enableLog: 1,
-        useSnowflakeId: 1,
-        generateRepo: 0,
-        checkedBtn: [1, 2, 3, 4, 5, 6, 7, 8],
-        isSqlDiff: 0,
-        isSnowflakeId: 1,
-        isRepository: 0,
-        crudGroup: []
-      },
-      tenantId: 0
-    }))
+    dbTableList.value = pageData.map((item) => {
+      // 使用 tableName 的哈希值作为 genTableId
+      const hash = item.tableName.split('').reduce((acc, char) => {
+        return ((acc << 5) - acc) + char.charCodeAt(0) | 0
+      }, 0)
+      
+      return {
+        genTableId: Math.abs(hash),
+        databaseName: databaseName,
+        tableName: item.tableName,
+        tableComment: item.tableComment,
+        createBy: '',
+        createTime: new Date().toISOString(),
+        isDeleted: 0,
+        entityClassName: '',
+        entityNamespace: '',
+        baseNamespace: '',
+        dtoType: '',
+        dtoNamespace: '',
+        dtoClassName: '',
+        serviceNamespace: '',
+        iServiceClassName: '',
+        serviceClassName: '',
+        iRepositoryNamespace: '',
+        iRepositoryClassName: '',
+        repositoryNamespace: '',
+        repositoryClassName: '',
+        controllerNamespace: '',
+        controllerClassName: '',
+        tplType: '0',
+        tplCategory: 'crud',
+        treeCode: '',
+        treeName: '',
+        treeParentCode: '',
+        moduleName: '',
+        businessName: '',
+        functionName: '',
+        author: '',
+        genType: '0',
+        genPath: '',
+        parentMenuId: 0,
+        sortType: 'asc',
+        sortField: '',
+        permsPrefix: '',
+        generateMenu: 1,
+        frontTpl: 1,
+        btnStyle: 1,
+        colNum: 24,
+        status: 1,
+        frontStyle: 1,
+        options: {
+          enableLog: 1,
+          useSnowflakeId: 1,
+          generateRepo: 0,
+          checkedBtn: [1, 2, 3, 4, 5, 6, 7, 8],
+          isSqlDiff: 0,
+          isSnowflakeId: 1,
+          isRepository: 0,
+          crudGroup: []
+        },
+        tenantId: 0
+      }
+    })
     
     console.log('更新后的表格数据:', dbTableList.value)
   } catch (error: any) {

@@ -10,6 +10,7 @@
 //===================================================================
 
 namespace Lean.Hbt.Application.Services.Generator;
+using Lean.Hbt.Application.Dtos.Generator;
 
 /// <summary>
 /// 代码生成配置服务接口
@@ -87,6 +88,21 @@ public interface IHbtGenConfigService
     /// <param name="sheetName">工作表名称</param>
     /// <returns>Excel模板文件字节数组</returns>
     Task<(string fileName, byte[] content)> GetTemplateAsync(string sheetName = "Sheet1");
+
+    /// <summary>
+    /// 更新生成配置状态
+    /// </summary>
+    /// <param name="input">状态更新参数</param>
+    /// <returns>是否更新成功</returns>
+    Task<bool> UpdateStatusAsync(HbtGenConfigStatusDto input);    
+
+    /// <summary>
+    /// 获取生成配置选项列表（用于下拉选择）
+    /// </summary>
+    /// <returns>生成配置选项列表</returns>
+    Task<List<HbtSelectOption>> GetOptionsAsync();
+
+
 
     #endregion 配置操作
 }

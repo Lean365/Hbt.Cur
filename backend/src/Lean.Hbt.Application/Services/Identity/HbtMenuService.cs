@@ -30,8 +30,6 @@ namespace Lean.Hbt.Application.Services.Identity
         // 用户角色仓储接口
         private readonly IHbtRepository<HbtUserRole> _userRoleRepository;
 
-        // 角色仓储接口
-        private readonly IHbtRepository<HbtRole> _roleRepository;
 
         // 用户仓储接口
         private readonly IHbtRepository<HbtUser> _userRepository;
@@ -43,17 +41,16 @@ namespace Lean.Hbt.Application.Services.Identity
         /// <param name="menuRepository">菜单仓库</param>
         /// <param name="roleMenuRepository">角色菜单仓库</param>
         /// <param name="userRoleRepository">用户角色仓库</param>
-        /// <param name="roleRepository">角色仓库</param>
         /// <param name="userRepository">用户仓库</param>
         /// <param name="httpContextAccessor">HTTP上下文访问器</param>
         /// <param name="currentUser">当前用户服务</param>
+        /// <param name="currentTenant">当前租户服务</param>
         /// <param name="localization">本地化服务</param>
         public HbtMenuService(
             IHbtLogger logger,
             IHbtRepository<HbtMenu> menuRepository,
             IHbtRepository<HbtRoleMenu> roleMenuRepository,
             IHbtRepository<HbtUserRole> userRoleRepository,
-            IHbtRepository<HbtRole> roleRepository,
             IHbtRepository<HbtUser> userRepository,
             IHttpContextAccessor httpContextAccessor,
             IHbtCurrentUser currentUser,
@@ -63,7 +60,7 @@ namespace Lean.Hbt.Application.Services.Identity
             _menuRepository = menuRepository;
             _roleMenuRepository = roleMenuRepository;
             _userRoleRepository = userRoleRepository;
-            _roleRepository = roleRepository;
+
             _userRepository = userRepository;
         }
 

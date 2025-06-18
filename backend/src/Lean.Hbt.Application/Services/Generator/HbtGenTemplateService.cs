@@ -45,34 +45,6 @@ public class HbtGenTemplateService : HbtBaseService, IHbtGenTemplateService
     #region 基础操作
 
     /// <summary>
-    /// 根据ID获取模板信息
-    /// </summary>
-    /// <param name="id">模板ID</param>
-    /// <returns>模板信息</returns>
-    public async Task<HbtGenTemplateDto?> GetByIdAsync(long id)
-    {
-        var template = await _templateRepository.GetByIdAsync(id);
-        if (template == null)
-        {
-            return null;
-        }
-
-        return template.Adapt<HbtGenTemplateDto>();
-    }
-
-    /// <summary>
-    /// 构建查询条件
-    /// </summary>
-    private Expression<Func<HbtGenTemplate, bool>> HbtGenTemplateQueryExpression(HbtGenTemplateQueryDto query)
-    {
-        return Expressionable.Create<HbtGenTemplate>()
-            .AndIF(!string.IsNullOrEmpty(query.TemplateName), x => x.TemplateName.Contains(query.TemplateName!))
-            .AndIF(query.TemplateType.HasValue, x => x.TemplateType == query.TemplateType.Value)
-            .AndIF(query.Status.HasValue && query.Status.Value != -1, x => x.Status == query.Status.Value)
-            .ToExpression();
-    }
-
-    /// <summary>
     /// 获取分页模板列表
     /// </summary>
     /// <param name="input">查询参数</param>
@@ -80,7 +52,7 @@ public class HbtGenTemplateService : HbtBaseService, IHbtGenTemplateService
     public async Task<HbtPagedResult<HbtGenTemplateDto>> GetListAsync(HbtGenTemplateQueryDto input)
     {
         // 使用独立的查询表达式方法
-        var exp = HbtGenTemplateQueryExpression(input);
+        var exp = QueryExpression(input);
 
         // 执行分页查询
         var result = await _templateRepository.GetPagedListAsync(
@@ -98,6 +70,22 @@ public class HbtGenTemplateService : HbtBaseService, IHbtGenTemplateService
             PageIndex = result.PageIndex,
             PageSize = result.PageSize
         };
+    }
+    
+    /// <summary>
+    /// 根据ID获取模板信息
+    /// </summary>
+    /// <param name="id">模板ID</param>
+    /// <returns>模板信息</returns>
+    public async Task<HbtGenTemplateDto?> GetByIdAsync(long id)
+    {
+        var template = await _templateRepository.GetByIdAsync(id);
+        if (template == null)
+        {
+            return null;
+        }
+
+        return template.Adapt<HbtGenTemplateDto>();
     }
 
     /// <summary>
@@ -252,7 +240,8 @@ public class HbtGenTemplateService : HbtBaseService, IHbtGenTemplateService
         }
         catch (Exception ex)
         {
-            throw new HbtException("导入模板失败");
+            _logger.Error(L("GenTemplate.Import.Failed"), ex);
+            throw new HbtException(L("GenTemplate.Import.Failed"), ex);
         }
     }
 
@@ -287,4 +276,18 @@ public class HbtGenTemplateService : HbtBaseService, IHbtGenTemplateService
     }
 
     #endregion 模板操作
+
+    /// <summary>
+    /// 构建查询条件
+    /// </summary>
+    private Expression<Func<HbtGenTemplate, bool>> QueryExpression(HbtGenTemplateQueryDto query)
+    {
+        return Expressionable.Create<HbtGenTemplate>()
+            .AndIF(!string.IsNullOrEmpty(query.TemplateName), x => x.TemplateName.Contains(query.TemplateName!))
+            .AndIF(query.TemplateCodeType.HasValue, x => x.TemplateCodeType == query.TemplateCodeType.Value)
+            .AndIF(query.TemplateOrmType.HasValue, x => x.TemplateOrmType == query.TemplateOrmType.Value)
+            .AndIF(query.TemplateCategory.HasValue, x => x.TemplateCategory == query.TemplateCategory.Value)
+            .AndIF(query.Status.HasValue && query.Status.Value != -1, x => x.Status == query.Status.Value)
+            .ToExpression();
+    }    
 }

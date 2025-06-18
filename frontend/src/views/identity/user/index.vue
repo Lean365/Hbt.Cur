@@ -26,7 +26,6 @@
       @edit="handleEditSelected"
       @delete="handleBatchDelete"
       @import="handleImport"
-      @template="handleTemplate"
       @export="handleExport"
       @refresh="fetchData"
       @column-setting="handleColumnSetting"
@@ -236,6 +235,18 @@
       @success="handleSuccess"
     />
 
+    <!-- 导入对话框 -->
+    <hbt-import-dialog
+      v-model:open="importVisible"
+      :upload-method="handleImportUpload"
+      :template-method="handleDownloadTemplate"
+      template-file-name="用户导入模板.xlsx"
+      :tips="'请确保Excel文件包含必要的用户信息字段,\n如用户名,昵称,邮箱,手机号,性别,用户类型,状态等信息'"
+      @success="handleImportSuccess"
+      :show-template="true"
+      :template-permission="['identity:user:template']"
+    />
+
     <!-- 列设置抽屉 -->
     <a-drawer
       :visible="columnSettingVisible"
@@ -282,6 +293,7 @@ import ResetPwdForm from './components/ResetPwdForm.vue'
 import RoleAllocate from './components/RoleAllocate.vue'
 import DeptAllocate from './components/DeptAllocate.vue'
 import PostAllocate from './components/PostAllocate.vue'
+
 
 const { t } = useI18n()
 const dictStore = useDictStore()
@@ -562,6 +574,9 @@ const deptDialogVisible = ref(false)
 // 岗位分配弹窗
 const postDialogVisible = ref(false)
 
+// 导入对话框
+const importVisible = ref(false)
+
 // 列设置相关
 const columnSettingVisible = ref(false)
 const defaultColumns = columns
@@ -833,54 +848,51 @@ const handleResetPwdSuccess = () => {
 }
 
 // 处理导入
-const handleImport = async () => {
-  try {
-    const input = document.createElement('input')
-    input.type = 'file'
-    input.accept = '.xlsx,.xls'
-    input.onchange = async (e: Event) => {
-      const file = (e.target as HTMLInputElement).files?.[0]
-      if (!file) return
-      const res = await importUser(file)
-      const { success = 0, fail = 0 } = (res.data as any).Data || {}
-      console.log(
-        'fail:',
-        (res.data as any).Data?.fail,
-        'success:',
-        (res.data as any).Data?.success
-      )
+const handleImport = () => {
+  importVisible.value = true
+}
 
-      if (success > 0 && fail === 0) {
-        message.success(`导入成功${success}条，全部成功！`)
-      } else if (success > 0 && fail > 0) {
-        message.warning(`导入成功${success}条，失败${fail}条`)
-      } else if (success === 0 && fail > 0) {
-        message.error(`全部导入失败，共${fail}条`)
-      } else {
-        message.info('未读取到任何数据')
+// 处理导入上传
+const handleImportUpload = async (file: File) => {
+  try {
+    const res = await importUser(file)
+    console.log('导入响应数据:', res)
+    console.log('res.data:', res.data)
+    console.log('res.data.Data:', (res.data as any).Data)
+    
+    // 根据其他页面的模式，使用 (res.data as any).Data
+    const { success = 0, fail = 0 } = (res.data as any).Data || {}
+    
+    // 将数据结构转换为组件期望的格式，使用正确的大写字段名
+    return {
+      code: res.data.Code,
+      msg: res.data.Msg,
+      data: {
+        success,
+        fail
       }
-      if (success > 0) fetchData()
     }
-    input.click()
   } catch (error: any) {
     console.error('导入失败:', error)
-    message.error(error.message || t('common.import.failed'))
+    throw error
   }
 }
 
 // 处理下载模板
-const handleTemplate = async () => {
+const handleDownloadTemplate = async () => {
   try {
     const res = await getTemplate()
-    const link = document.createElement('a')
-    link.href = window.URL.createObjectURL(new Blob([res.data]))
-    link.download = `用户导入模板_${new Date().getTime()}.xlsx`
-    link.click()
-    window.URL.revokeObjectURL(link.href)
+    return res.data
   } catch (error: any) {
     console.error('下载模板失败:', error)
-    message.error(error.message || t('common.template.failed'))
+    throw error
   }
+}
+
+// 处理导入成功
+const handleImportSuccess = () => {
+  //message.success(t('common.import.success'))
+  fetchData()
 }
 
 // 处理授权

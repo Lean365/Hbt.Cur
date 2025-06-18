@@ -312,7 +312,7 @@ public class HbtGenTableDefineService : HbtBaseService, IHbtGenTableDefineServic
     {
         try
         {
-            var list = await _tableDefineRepository.GetListAsync(HbtGenTableDefineQueryExpression(query));
+            var list = await _tableDefineRepository.GetListAsync(QueryExpression(query));
             var exportList = list.Adapt<List<HbtGenTableDefineExportDto>>();
             return await HbtExcelHelper.ExportAsync(exportList, sheetName, "表定义数据");
         }
@@ -690,7 +690,7 @@ public class HbtGenTableDefineService : HbtBaseService, IHbtGenTableDefineServic
     /// <summary>
     /// 构建表定义查询条件
     /// </summary>
-    private Expression<Func<HbtGenTableDefine, bool>> HbtGenTableDefineQueryExpression(HbtGenTableDefineQueryDto query)
+    private Expression<Func<HbtGenTableDefine, bool>> QueryExpression(HbtGenTableDefineQueryDto query)
     {
         var exp = Expressionable.Create<HbtGenTableDefine>();
 

@@ -57,6 +57,12 @@ public class HbtGenTableDefine : HbtBaseEntity
     public string Author { get; set; } = string.Empty;
 
     /// <summary>
+    /// 是否生成数据表（0：未生成，1：已生成）
+    /// </summary>
+    [SugarColumn(ColumnName = "is_gen_table", ColumnDescription = "生成数据表", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
+    public int IsGenTable { get; set; } = 0;
+
+    /// <summary>
     /// 字段定义列表
     /// </summary>
     [Navigate(NavigateType.OneToMany, nameof(HbtGenColumnDefine.TableId))]

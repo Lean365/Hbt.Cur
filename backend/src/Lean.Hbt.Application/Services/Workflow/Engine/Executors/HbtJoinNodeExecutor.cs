@@ -23,17 +23,17 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine.Executors
     /// <summary>
     /// 汇聚节点执行器
     /// </summary>
-    public class HbtJoinNodeExecutor : HbtWorkflowNodeExecutorBase
+    public class HbtJoinNodeExecutor : HbtNodeExecutorBase
     {
-        private readonly IHbtRepository<HbtWorkflowTransition> _transitionRepository;
-        private readonly IHbtRepository<HbtWorkflowParallelBranch> _parallelBranchRepository;
+        private readonly IHbtRepository<HbtTransition> _transitionRepository;
+        private readonly IHbtRepository<HbtParallelBranch> _parallelBranchRepository;
 
         /// <summary>
         /// 构造函数
         /// </summary>
         public HbtJoinNodeExecutor(
-            IHbtRepository<HbtWorkflowTransition> transitionRepository,
-            IHbtRepository<HbtWorkflowParallelBranch> parallelBranchRepository,
+            IHbtRepository<HbtTransition> transitionRepository,
+            IHbtRepository<HbtParallelBranch> parallelBranchRepository,
             IHbtLogger logger) : base(logger)
         {
             _transitionRepository = transitionRepository;
@@ -48,9 +48,9 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine.Executors
         /// <summary>
         /// 执行节点
         /// </summary>
-        protected override async Task<HbtWorkflowNodeResult> ExecuteInternalAsync(
-            HbtWorkflowInstance instance,
-            HbtWorkflowNode node,
+        protected override async Task<HbtNodeResult> ExecuteInternalAsync(
+            HbtInstance instance,
+            HbtNode node,
             Dictionary<string, object>? variables = null)
         {
             // 获取所有进入该节点的转换
@@ -65,11 +65,11 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine.Executors
 
             // 获取并行分支状态
             var branches = await _parallelBranchRepository.GetListAsync(x =>
-                x.WorkflowInstanceId == instance.Id &&
+                x.InstanceId == instance.Id &&
                 x.ParallelNodeId == parallelNodeId);
 
             // 检查所有分支是否都已完成
-            if (branches.Any(x => !x.IsCompleted))
+            if (branches.Any(x => x.IsCompleted == 0))
             {
                 return CreateFailureResult("存在未完成的并行分支");
             }

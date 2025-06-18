@@ -677,18 +677,7 @@ public class HbtDbSeedDictType
                 UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
             },
-            new HbtDictType
-            {
-                DictName = "表前缀类型",
-                DictType = "gen_table_prefix",
-                OrderNum = 50,
-                Status = 0,
-                Remark = "数据表前缀类型字典",
-                CreateBy = "Hbt365",
-                CreateTime = DateTime.Now,
-                UpdateBy = "Hbt365",
-                UpdateTime = DateTime.Now
-            }
+
         };
 
         foreach (var dictType in defaultDictTypes)

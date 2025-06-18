@@ -38,8 +38,8 @@ import { message } from 'ant-design-vue'
 import { ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useDictStore } from '@/stores/dict'
-import type { HbtWorkflowTask } from '@/types/workflow/workflowTask'
-import { getWorkflowTask } from '@/api/workflow/workflowTask'
+import type { HbtWorkflowTask } from '@/types/workflow/task'
+import { getWorkflowTask } from '@/api/workflow/task'
 
 const { t } = useI18n()
 const dictStore = useDictStore()

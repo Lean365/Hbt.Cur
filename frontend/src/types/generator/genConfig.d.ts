@@ -19,18 +19,18 @@ export interface HbtGenConfig extends HbtBaseEntity {
   genConfigName: string
   /** 作者 */
   author: string
+  /** 项目名称 */
+  projectName: string
   /** 模块名 */
   moduleName: string
-  /** 包名 */
-  packageName: string
   /** 业务名 */
   businessName: string
   /** 功能名 */
   functionName: string
-  /** 生成类型 */
-  genType: number
-  /** 模板选用方式（0：使用wwwroot/Generator/*.scriban模板，1：使用HbtGenTemplate表中的模板） */
-  genTemplateType: number
+  /** 生成方式 */
+  genMethod: number
+  /** 模板类型（0：使用wwwroot/Generator/*.scriban模板，1：使用HbtGenTemplate表中的模板） */
+  genTplType: number
   /** 生成路径 */
   genPath: string
   /** 选项配置 */
@@ -45,22 +45,17 @@ export interface HbtGenConfig extends HbtBaseEntity {
 export interface HbtGenConfigQuery extends HbtPagedQuery {
   /** 配置名称 */
   genConfigName?: string
-  /** 作者 */
-  author?: string
+
+  /** 项目名称 */
+  projectName?: string
   /** 模块名 */
   moduleName?: string
   /** 包名 */
-  packageName?: string
-  /** 业务名 */
   businessName?: string
   /** 功能名 */
   functionName?: string
-  /** 生成类型 */
-  genType?: number
-  /** 模板选用方式 */
-  genTemplateType?: number
-  /** 生成路径 */
-  genPath?: string
+  /** 生成方式 */
+  genMethod?: number
   /** 状态 */
   status?: number
   /** 日期范围 */
@@ -75,18 +70,18 @@ export interface HbtGenConfigCreate {
   genConfigName: string
   /** 作者 */
   author: string
+  /** 项目名称 */
+  projectName: string
   /** 模块名 */
   moduleName: string
-  /** 包名 */
-  packageName: string
   /** 业务名 */
   businessName: string
   /** 功能名 */
   functionName: string
-  /** 生成类型 */
-  genType: number
-  /** 模板选用方式 */
-  genTemplateType: number
+  /** 生成方式 */
+  genMethod: number
+  /** 模板类型 */
+  genTplType: number
   /** 生成路径 */
   genPath: string
   /** 选项配置 */
@@ -113,16 +108,16 @@ export interface HbtGenConfigTemplate {
   author: string
   /** 模块名 */
   moduleName: string
-  /** 包名 */
-  packageName: string
+  /** 项目名称 */
+  projectName: string
   /** 业务名 */
   businessName: string
   /** 功能名 */
   functionName: string
-  /** 生成类型 */
-  genType: string
-  /** 模板选用方式 */
-  genTemplateType: string
+  /** 生成方式 */
+  genMethod: string
+  /** 模板类型 */
+  genTplType: string
   /** 生成路径 */
   genPath: string
   /** 选项配置 */
@@ -141,16 +136,16 @@ export interface HbtGenConfigImport {
   author: string
   /** 模块名 */
   moduleName: string
-  /** 包名 */
-  packageName: string
+  /** 项目名称 */
+  projectName: string
   /** 业务名 */
   businessName: string
   /** 功能名 */
   functionName: string
-  /** 生成类型 */
-  genType: number
-  /** 模板选用方式 */
-  genTemplateType: number
+  /** 生成方式 */
+  genMethod: number
+  /** 模板类型 */
+  genTplType: number
   /** 生成路径 */
   genPath: string
   /** 选项配置 */
@@ -169,16 +164,16 @@ export interface HbtGenConfigExport {
   author: string
   /** 模块名 */
   moduleName: string
-  /** 包名 */
-  packageName: string
+  /** 项目名称 */
+  projectName: string
   /** 业务名 */
   businessName: string
   /** 功能名 */
   functionName: string
-  /** 生成类型 */
-  genType: number
-  /** 模板选用方式 */
-  genTemplateType: number
+  /** 生成方式 */
+  genMethod: number
+  /** 模板类型 */
+  genTplType: number
   /** 生成路径 */
   genPath: string
   /** 选项配置 */

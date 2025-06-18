@@ -47,8 +47,8 @@ import { ref, reactive, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { message } from 'ant-design-vue'
 import type { FormInstance } from 'ant-design-vue'
-import { getWorkflowVariable, createWorkflowVariable, updateWorkflowVariable } from '@/api/workflow/workflowVariable'
-import type { HbtWorkflowVariableCreate, HbtWorkflowVariableUpdate } from '@/types/workflow/workflowVariable'
+import { getWorkflowVariable, createWorkflowVariable, updateWorkflowVariable } from '@/api/workflow/variable'
+import type { HbtWorkflowVariableCreate, HbtWorkflowVariableUpdate } from '@/types/workflow/variable'
 import type { Rule } from 'ant-design-vue/es/form'
 
 const props = defineProps<{

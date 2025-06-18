@@ -11,13 +11,20 @@
 
     <!-- 工具栏 -->
     <hbt-toolbar
+      :show-add="true"
+      :add-permission="['workflow:node:create']"
+      :show-edit="true"
+      :edit-permission="['workflow:node:update']"
       :show-delete="true"
       :delete-permission="['workflow:node:delete']"
       :show-import="true"
       :import-permission="['workflow:node:import']"
       :show-export="true"
       :export-permission="['workflow:node:export']"
+      :disabled-edit="selectedRowKeys.length !== 1"
       :disabled-delete="selectedRowKeys.length === 0"
+      @add="handleAdd"
+      @edit="handleEditSelected"
       @delete="handleBatchDelete"
       @import="handleImport"
       @template="handleTemplate"
@@ -26,17 +33,18 @@
       @column-setting="handleColumnSetting"
       @toggle-search="toggleSearch"
       @toggle-fullscreen="toggleFullscreen"
-    />
+    >
+    </hbt-toolbar>
 
     <!-- 数据表格 -->
     <hbt-table
       :loading="loading"
       :data-source="tableData"
-      :columns="columns"
+      :columns="visibleColumns"
       :pagination="false"
       :scroll="{ x: 'max-content' }"
       :default-height="594"
-      :row-key="(record: HbtWorkflowNode) => String(record.id)"
+      :row-key="(record: HbtNode) => String(record.nodeId)"
       v-model:selectedRowKeys="selectedRowKeys"
       :row-selection="{
         type: 'checkbox',
@@ -45,8 +53,13 @@
       @change="handleTableChange"
       @row-click="handleRowClick"
     >
-      <!-- 状态列 -->
+      <!-- 节点类型列 -->
       <template #bodyCell="{ column, record }">
+        <template v-if="column.dataIndex === 'nodeType'">
+          <hbt-dict-tag dict-type="workflow_node_type" :value="record.nodeType" />
+        </template>
+      
+        <!-- 状态列 -->
         <template v-if="column.dataIndex === 'status'">
           <hbt-dict-tag dict-type="workflow_node_status" :value="record.status" />
         </template>
@@ -55,16 +68,16 @@
         <template v-if="column.key === 'action'">
           <hbt-operation
             :record="record"
+            :show-edit="true"
+            :edit-permission="['workflow:node:update']"
             :show-delete="true"
             :delete-permission="['workflow:node:delete']"
             :show-view="true"
             :view-permission="['workflow:node:query']"
-            :show-edit="true"
-            :edit-permission="['workflow:node:update']"
             size="small"
+            @edit="handleEdit"
             @delete="handleDelete"
             @view="handleView"
-            @edit="handleEdit"
           />
         </template>
       </template>
@@ -82,35 +95,25 @@
       @showSizeChange="handleSizeChange"
     />
 
-    <!-- 导入对话框 -->
-    <a-modal
-      v-model:visible="importVisible"
-      title="导入工作流节点"
-      @ok="handleImportSubmit"
-      @cancel="handleImportCancel"
-    >
-      <a-upload
-        :file-list="fileList"
-        :before-upload="beforeUpload"
-        :customRequest="customRequest"
-      >
-        <a-button>
-          <upload-outlined />
-          点击上传
-        </a-button>
-      </a-upload>
-      <template #footer>
-        <a-button key="back" @click="handleImportCancel">取消</a-button>
-        <a-button key="submit" type="primary" :loading="importLoading" @click="handleImportSubmit">
-          确定
-        </a-button>
-      </template>
-    </a-modal>
+    <!-- 节点表单对话框 -->
+    <node-form
+      v-model:open="formVisible"
+      :title="formTitle"
+      :node-id="selectedNodeId"
+      @success="handleSuccess"
+    />
+
+    <!-- 节点详情对话框 -->
+    <node-detail
+      v-model:open="detailVisible"
+      :node-id="selectedNodeId"
+      @update:open="handleDetailClose"
+    />
 
     <!-- 列设置抽屉 -->
     <a-drawer
-      :visible="columnSettingVisible"
-      title="列设置"
+      :open="columnSettingVisible"
+      :title="t('common.columnSetting')"
       placement="right"
       width="300"
       @close="columnSettingVisible = false"
@@ -121,26 +124,10 @@
         class="column-setting-group"
       >
         <div v-for="col in defaultColumns" :key="col.key" class="column-setting-item">
-          <a-checkbox :value="col.key">{{ col.title }}</a-checkbox>
+          <a-checkbox :value="col.key" :disabled="col.key === 'action'">{{ col.title }}</a-checkbox>
         </div>
       </a-checkbox-group>
     </a-drawer>
-
-    <!-- 工作流节点表单对话框 -->
-    <workflow-node-form
-      v-model:open="formVisible"
-      :title="formTitle"
-      :workflow-node-id="selectedWorkflowNodeId"
-      @success="handleSuccess"
-    />
-
-    <!-- 工作流节点详情对话框 -->
-    <a-modal
-      v-model:visible="detailVisible"
-      title="工作流节点详情"
-    >
-      <!-- 工作流节点详情内容 -->
-    </a-modal>
   </div>
 </template>
 
@@ -151,17 +138,12 @@ import { ref, computed, onMounted, h } from 'vue'
 import { UploadOutlined } from '@ant-design/icons-vue'
 import { useDictStore } from '@/stores/dict'
 import { useRouter } from 'vue-router'
-import type { HbtWorkflowNode, HbtWorkflowNodeQuery } from '@/types/workflow/workflowNode'
+import type { HbtNode, HbtNodeQuery } from '@/types/workflow/node'
 import type { QueryField } from '@/types/components/query'
 import type { TablePaginationConfig } from 'ant-design-vue'
-import { 
-  getWorkflowNodeList, 
-  deleteWorkflowNode, 
-  batchDeleteWorkflowNode, 
-  importWorkflowNode, 
-  exportWorkflowNode, 
-  getWorkflowNodeTemplate
-} from '@/api/workflow/workflowNode'
+import { getWorkflowNodeList, getWorkflowNode, createWorkflowNode, updateWorkflowNode, deleteWorkflowNode, batchDeleteWorkflowNode, importWorkflowNode, exportWorkflowNode, getWorkflowNodeTemplate } from '@/api/workflow/node'
+import NodeForm from './components/NodeForm.vue'
+import NodeDetail from './components/NodeDetail.vue'
 
 const { t } = useI18n()
 const dictStore = useDictStore()
@@ -170,40 +152,110 @@ const router = useRouter()
 // 表格列定义
 const columns = [
   {
-    title: t('workflow.node.nodeName'),
+    title: t('table.columns.id'),
+    dataIndex: 'nodeId',
+    key: 'nodeId',
+    width: 200
+  },
+  {
+    title: t('workflow.node.fields.nodeName'),
     dataIndex: 'nodeName',
     key: 'nodeName',
     width: 200
   },
   {
-    title: t('workflow.node.nodeType'),
+    title: t('workflow.node.fields.nodeType'),
     dataIndex: 'nodeType',
     key: 'nodeType',
     width: 150
   },
   {
-    title: t('workflow.node.nodeConfig'),
-    dataIndex: 'nodeConfig',
-    key: 'nodeConfig',
-    width: 300
-  },
-  {
-    title: t('workflow.node.status'),
-    dataIndex: 'status',
-    key: 'status',
+    title: t('workflow.node.fields.definitionId'),
+    dataIndex: 'definitionId',
+    key: 'definitionId',
     width: 150
   },
   {
-    title: t('workflow.node.remark'),
-    dataIndex: 'remark',
-    key: 'remark',
-    width: 200
+    title: t('workflow.node.fields.parentNodeId'),
+    dataIndex: 'parentNodeId',
+    key: 'parentNodeId',
+    width: 150
   },
   {
-    title: t('common.action'),
+    title: t('workflow.node.fields.nodeConfig'),
+    dataIndex: 'nodeConfig',
+    key: 'nodeConfig',
+    width: 150,
+    ellipsis: true,
+    tooltip: true
+  },
+  {
+    title: t('workflow.node.fields.status'),
+    dataIndex: 'status',
+    key: 'status',
+    width: 100
+  },
+  {
+    title: t('workflow.node.fields.startTime'),
+    dataIndex: 'startTime',
+    key: 'startTime',
+    width: 180
+  },
+  {
+    title: t('workflow.node.fields.endTime'),
+    dataIndex: 'endTime',
+    key: 'endTime',
+    width: 180
+  },
+  {
+    title: t('workflow.node.fields.orderNum'),
+    dataIndex: 'orderNum',
+    key: 'orderNum',
+    width: 100
+  },
+  {
+    title: t('table.columns.remark'),
+    dataIndex: 'remark',
+    key: 'remark',
+    width: 120,
+    ellipsis: true
+  },
+  {
+    title: t('table.columns.createBy'),
+    dataIndex: 'createBy',
+    key: 'createBy',
+    width: 120,
+    ellipsis: true
+  },
+  {
+    title: t('table.columns.createTime'),
+    dataIndex: 'createTime',
+    key: 'createTime',
+    width: 180,
+    ellipsis: true
+  },
+  {
+    title: t('table.columns.updateBy'),
+    dataIndex: 'updateBy',
+    key: 'updateBy',
+    width: 120,
+    ellipsis: true
+  },
+  {
+    title: t('table.columns.updateTime'),
+    dataIndex: 'updateTime',
+    key: 'updateTime',
+    width: 180,
+    ellipsis: true
+  },
+  {
+    title: t('table.columns.operation'),
+    dataIndex: 'action',
     key: 'action',
+    width: 150,
     fixed: 'right',
-    width: 200
+    align: 'center',
+    ellipsis: true
   }
 ]
 
@@ -211,79 +263,82 @@ const columns = [
 const queryFields: QueryField[] = [
   {
     name: 'nodeName',
-    label: t('workflow.node.fields.nodeName.label'),
+    label: t('workflow.node.fields.nodeName'),
     type: 'input' as const
   },
   {
     name: 'nodeType',
-    label: t('workflow.node.fields.nodeType.label'),
+    label: t('workflow.node.fields.nodeType'),
     type: 'select' as const,
     props: {
       dictType: 'workflow_node_type',
-      type: 'radio'
+      type: 'select'
     }
   },
   {
     name: 'status',
-    label: t('workflow.node.fields.status.label'),
+    label: t('workflow.node.fields.status'),
     type: 'select' as const,
     props: {
       dictType: 'workflow_node_status',
-      type: 'radio'
+      type: 'select'
     }
   }
 ]
 
 // 查询参数
-const queryParams = ref<HbtWorkflowNodeQuery>({
+const queryParams = ref<HbtNodeQuery>({
   pageIndex: 1,
   pageSize: 10,
-  nodeName: undefined,
-  nodeType: undefined
+  nodeName: '',
+  nodeType: undefined,
+  status: undefined,
+  startTime: undefined,
+  endTime: undefined
 })
 
-// 表格相关
+// 表格数据
+const tableData = ref<HbtNode[]>([])
 const loading = ref(false)
 const total = ref(0)
-const tableData = ref<HbtWorkflowNode[]>([])
-const selectedRowKeys = ref<(string | number)[]>([])
-const showSearch = ref(true)
-
-// 导入相关
-const importVisible = ref(false)
-const importLoading = ref(false)
-const fileList = ref<any[]>([])
-
-// 列设置相关
-const columnSettingVisible = ref(false)
-const defaultColumns = columns
-const columnSettings = ref<Record<string, boolean>>({})
-
-// 弹窗控制相关
+const selectedRowKeys = ref<string[]>([])
+const selectedNodeId = ref<number>(0)
 const formVisible = ref(false)
 const formTitle = ref('')
-const selectedWorkflowNodeId = ref<number | undefined>(undefined)
 const detailVisible = ref(false)
+const showSearch = ref(true)
+const columnSettingVisible = ref(false)
+const isFullscreen = ref(false)
 
-// 获取表格数据
+// 列设置
+const columnSettings = ref<Record<string, boolean>>({})
+const defaultColumns = columns
+
+// 可见列
+const visibleColumns = computed(() => {
+  return columns.filter(col => columnSettings.value[col.key])
+})
+
+// 获取数据
 const fetchData = async () => {
-  loading.value = true
   try {
+    loading.value = true
     const res = await getWorkflowNodeList(queryParams.value)
     if (res.data.code === 200) {
       tableData.value = res.data.data.rows
-      total.value = res.data.data.totalNum
+      total.value = res.data.data.total
     } else {
       message.error(res.data.msg || t('common.failed'))
     }
   } catch (error) {
-    console.error(error)
+    console.error('获取节点列表失败:', error)
     message.error(t('common.failed'))
+  } finally {
+    loading.value = false
   }
-  loading.value = false
 }
 
-// 查询方法
+// 查询
 const handleQuery = () => {
   queryParams.value.pageIndex = 1
   fetchData()
@@ -294,81 +349,207 @@ const resetQuery = () => {
   queryParams.value = {
     pageIndex: 1,
     pageSize: 10,
-    nodeName: undefined,
-    nodeType: undefined
+    nodeName: '',
+    nodeType: undefined,
+    status: undefined,
+    startTime: undefined,
+    endTime: undefined
   }
   fetchData()
 }
 
-// 表格变化
-const handleTableChange = (pagination: TablePaginationConfig) => {
-  queryParams.value.pageIndex = pagination.current ?? 1
-  queryParams.value.pageSize = pagination.pageSize ?? 10
-  fetchData()
+// 新增
+const handleAdd = () => {
+  selectedNodeId.value = 0
+  formTitle.value = t('workflow.node.actions.add')
+  formVisible.value = true
 }
 
-// 处理删除
-const handleDelete = async (record: HbtWorkflowNode) => {
+// 编辑选中
+const handleEditSelected = () => {
+  if (selectedRowKeys.value.length !== 1) {
+    message.warning(t('common.pleaseSelectOne'))
+    return
+  }
+  const record = tableData.value.find(item => item.nodeId === Number(selectedRowKeys.value[0]))
+  if (record) {
+    handleEdit(record)
+  }
+}
+
+// 编辑
+const handleEdit = (record: HbtNode) => {
+  selectedNodeId.value = record.nodeId
+  formTitle.value = t('workflow.node.actions.edit')
+  formVisible.value = true
+}
+
+// 查看详情
+const handleView = (record: HbtNode) => {
+  selectedNodeId.value = record.nodeId
+  detailVisible.value = true
+}
+
+// 关闭详情
+const handleDetailClose = (value: boolean) => {
+  if (!value) {
+    selectedNodeId.value = 0
+  }
+}
+
+// 关闭表单
+const handleFormClose = (value: boolean) => {
+  if (!value) {
+    selectedNodeId.value = 0
+  }
+}
+
+// 删除
+const handleDelete = async (record: HbtNode) => {
   try {
-    const res = await deleteWorkflowNode(Number(record.id))
+    const res = await deleteWorkflowNode(record.nodeId)
     if (res.data.code === 200) {
-      message.success(t('common.delete.success'))
+      message.success(t('common.success'))
       fetchData()
     } else {
-      message.error(res.data.msg || t('common.delete.failed'))
+      message.error(res.data.msg || t('common.failed'))
     }
   } catch (error) {
-    console.error(error)
-    message.error(t('common.delete.failed'))
+    console.error('删除节点失败:', error)
+    message.error(t('common.failed'))
   }
-}
-
-// 处理导出
-const handleExport = async () => {
-  try {
-    const res = await exportWorkflowNode(queryParams.value)
-    if (res.data.code === 200) {
-      message.success(t('common.export.success'))
-    } else {
-      message.error(res.data.msg || t('common.export.failed'))
-    }
-  } catch (error) {
-    console.error(error)
-    message.error(t('common.export.failed'))
-  }
-}
-
-// 切换搜索显示
-const toggleSearch = (visible: boolean) => {
-  showSearch.value = visible
-}
-
-// 切换全屏
-const toggleFullscreen = (isFullscreen: boolean) => {
-  console.log('切换全屏状态:', isFullscreen)
 }
 
 // 批量删除
 const handleBatchDelete = async () => {
-  if (!selectedRowKeys.value.length) {
-    message.warning(t('common.selectAtLeastOne'))
+  if (selectedRowKeys.value.length === 0) {
+    message.warning(t('common.pleaseSelect'))
     return
   }
-
   try {
-    const results = await Promise.all(selectedRowKeys.value.map(id => deleteWorkflowNode(Number(id))))
-    const hasError = results.some(res => res.data.code !== 200)
-    if (!hasError) {
-      message.success(t('common.delete.success'))
+    const res = await batchDeleteWorkflowNode(selectedRowKeys.value.map(key => Number(key)))
+    if (res.data.code === 200) {
+      message.success(t('common.success'))
       selectedRowKeys.value = []
       fetchData()
     } else {
-      message.error(t('common.delete.failed'))
+      message.error(res.data.msg || t('common.failed'))
     }
   } catch (error) {
-    console.error(error)
-    message.error(t('common.delete.failed'))
+    console.error('批量删除节点失败:', error)
+    message.error(t('common.failed'))
   }
+}
+
+// 导入
+const handleImport = () => {
+  // TODO: 实现导入功能
+}
+
+// 导出
+const handleExport = async () => {
+  try {
+    const res = await exportWorkflowNode(queryParams.value)
+    if (res.data.code === 200) {
+      // TODO: 处理文件下载
+    } else {
+      message.error(res.data.msg || t('common.failed'))
+    }
+  } catch (error) {
+    console.error('导出节点失败:', error)
+    message.error(t('common.failed'))
+  }
+}
+
+// 下载模板
+const handleTemplate = async () => {
+  try {
+    const res = await getWorkflowNodeTemplate()
+    if (res.data.code === 200) {
+      // TODO: 处理文件下载
+    } else {
+      message.error(res.data.msg || t('common.failed'))
+    }
+  } catch (error) {
+    console.error('下载模板失败:', error)
+    message.error(t('common.failed'))
+  }
+}
+
+// 表格变化
+const handleTableChange = (pagination: TablePaginationConfig) => {
+  queryParams.value.pageIndex = pagination.current || 1
+  queryParams.value.pageSize = pagination.pageSize || 10
+  fetchData()
+}
+
+// 行点击
+const handleRowClick = (record: HbtNode) => {
+  // TODO: 实现行点击功能
+}
+
+// 页码变化
+const handlePageChange = (page: number) => {
+  queryParams.value.pageIndex = page
+  fetchData()
+}
+
+// 每页条数变化
+const handleSizeChange = (size: number) => {
+  queryParams.value.pageSize = size
+  queryParams.value.pageIndex = 1
+  fetchData()
+}
+
+// 列设置变化
+const handleColumnSettingChange = (checkedValue: Array<string | number | boolean>) => {
+  const settings: Record<string, boolean> = {}
+  defaultColumns.forEach(col => {
+    // 操作列始终为true
+    if (col.key === 'action') {
+      settings[col.key] = true
+    } else {
+      settings[col.key] = checkedValue.includes(col.key)
+    }
+  })
+  columnSettings.value = settings
+  localStorage.setItem('workflow_node_columns', JSON.stringify(settings))
+}
+
+// 切换搜索
+const toggleSearch = () => {
+  showSearch.value = !showSearch.value
+}
+
+// 切换全屏
+const toggleFullscreen = () => {
+  isFullscreen.value = !isFullscreen.value
+}
+
+// 成功回调
+const handleSuccess = () => {
+  fetchData()
+  formVisible.value = false
+}
+
+// 初始化列设置
+const initColumnSettings = () => {
+  // 每次刷新页面时清除localStorage
+  localStorage.removeItem('workflow_node_columns')
+
+  // 初始化所有列为false
+  columnSettings.value = Object.fromEntries(defaultColumns.map(col => [col.key, false]))
+
+  // 获取前9列（不包含操作列）
+  const firstNineColumns = defaultColumns.filter(col => col.key !== 'action').slice(0, 9)
+
+  // 设置前9列为true
+  firstNineColumns.forEach(col => {
+    columnSettings.value[col.key] = true
+  })
+
+  // 确保操作列显示
+  columnSettings.value['action'] = true
 }
 
 // 列设置
@@ -376,165 +557,17 @@ const handleColumnSetting = () => {
   columnSettingVisible.value = true
 }
 
-// 处理列设置变更
-const handleColumnSettingChange = (checkedValue: Array<string | number | boolean>) => {
-  const settings: Record<string, boolean> = {}
-  defaultColumns.forEach(col => {
-    settings[col.key] = checkedValue.includes(col.key)
-  })
-  columnSettings.value = settings
-  localStorage.setItem('workflowNodeColumnSettings', JSON.stringify(settings))
-}
-
-// 处理行点击
-const handleRowClick = (record: HbtWorkflowNode) => {
-  console.log('行点击:', record)
-}
-
-// 处理新增
-const handleAdd = () => {
-  selectedWorkflowNodeId.value = undefined
-  formTitle.value = t('common.title.create')
-  formVisible.value = true
-}
-
-// 处理编辑
-const handleEdit = (record: HbtWorkflowNode) => {
-  selectedWorkflowNodeId.value = record.id
-  formTitle.value = t('common.title.edit')
-  formVisible.value = true
-}
-
-// 处理选中编辑
-const handleEditSelected = () => {
-  if (selectedRowKeys.value.length === 1) {
-    selectedWorkflowNodeId.value = selectedRowKeys.value[0] as number
-    formTitle.value = t('common.title.edit')
-    formVisible.value = true
-  }
-}
-
-// 处理查看
-const handleView = (record: HbtWorkflowNode) => {
-  selectedWorkflowNodeId.value = record.id
-  detailVisible.value = true
-}
-
-// 处理表单提交成功
-const handleSuccess = () => {
-  formVisible.value = false
-  fetchData()
-}
-
-// 处理导入
-const handleImport = () => {
-  importVisible.value = true
-}
-
-// 处理下载模板
-const handleTemplate = async () => {
-  try {
-    const res = await getWorkflowNodeTemplate()
-    if (res.data.code === 200) {
-      message.success(t('common.download.success'))
-    } else {
-      message.error(res.data.msg || t('common.download.failed'))
-    }
-  } catch (error) {
-    console.error(error)
-    message.error(t('common.download.failed'))
-  }
-}
-
-// 处理导入提交
-const handleImportSubmit = async () => {
-  if (!fileList.value.length) {
-    message.warning(t('common.upload.selectFile'))
-    return
-  }
-
-  importLoading.value = true
-  try {
-    const res = await importWorkflowNode(fileList.value[0])
-    if (res.data.code === 200) {
-      message.success(t('common.import.success'))
-      importVisible.value = false
-      fileList.value = []
-      fetchData()
-    } else {
-      message.error(res.data.msg || t('common.import.failed'))
-    }
-  } catch (error) {
-    console.error(error)
-    message.error(t('common.import.failed'))
-  }
-  importLoading.value = false
-}
-
-// 处理导入取消
-const handleImportCancel = () => {
-  importVisible.value = false
-  fileList.value = []
-}
-
-// 上传前处理
-const beforeUpload = (file: any) => {
-  const isExcel = file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' || 
-                  file.type === 'application/vnd.ms-excel'
-  if (!isExcel) {
-    message.error(t('common.upload.excelOnly'))
-    return false
-  }
-  const isLt2M = file.size / 1024 / 1024 < 2
-  if (!isLt2M) {
-    message.error(t('common.upload.sizeLimit'))
-    return false
-  }
-  fileList.value = [file]
-  return false
-}
-
-// 自定义上传
-const customRequest = (options: any) => {
-  const { file } = options
-  fileList.value = [file]
-}
-
-// 分页处理
-const handlePageChange = (page: number) => {
-  queryParams.value.pageIndex = page
-  fetchData()
-}
-
-const handleSizeChange = (size: number) => {
-  queryParams.value.pageSize = size
-  fetchData()
-}
-
 onMounted(() => {
-  // 加载字典数据
-  dictStore.loadDicts(['workflow_node_status', 'workflow_node_type'])
-  // 初始化列设置
   initColumnSettings()
-  // 加载表格数据
   fetchData()
 })
-
-// 初始化列设置
-const initColumnSettings = () => {
-  const savedSettings = localStorage.getItem('workflowNodeColumnSettings')
-  if (savedSettings) {
-    columnSettings.value = JSON.parse(savedSettings)
-  } else {
-    columnSettings.value = Object.fromEntries(defaultColumns.map(col => [col.key, true]))
-  }
-}
 </script>
 
 <style lang="less" scoped>
 .workflow-node-container {
-  height: 100%;
+  padding: 24px;
   background-color: #fff;
+  border-radius: 2px;
 }
 
 .column-setting-group {
@@ -544,11 +577,8 @@ const initColumnSettings = () => {
 }
 
 .column-setting-item {
-  padding: 8px;
-  border-bottom: 1px solid var(--ant-color-split);
-  
-  &:last-child {
-    border-bottom: none;
-  }
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 </style> 

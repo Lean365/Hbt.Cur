@@ -1,5 +1,3 @@
-using Lean.Hbt.Domain.Entities.Generator;
-
 namespace Lean.Hbt.Application.Services.Generator.CodeGenerator.Models;
 
 /// <summary>
@@ -10,32 +8,32 @@ public class HbtGeneratorModel
     /// <summary>
     /// 表信息
     /// </summary>
-    public HbtGenTable Table { get; set; }
+    public HbtGenTable? Table { get; set; }
 
     /// <summary>
     /// 生成配置
     /// </summary>
-    public HbtCodeGenerationConfig Config { get; set; }
+    public HbtCodeGenerationConfig? Config { get; set; }
 
     /// <summary>
     /// 生成选项
     /// </summary>
-    public HbtGeneratorOptions Options { get; set; }
+    public HbtGeneratorOptions? Options { get; set; }
 
     /// <summary>
     /// 模板信息
     /// </summary>
-    public HbtGenTemplate Template { get; set; }
+    public HbtGenTemplate? Template { get; set; }
 
     /// <summary>
     /// 列信息
     /// </summary>
-    public List<HbtGenColumn> Columns { get; set; }
+    public List<HbtGenColumn>? Columns { get; set; }
 
     /// <summary>
     /// DTO类型
     /// </summary>
-    public string DtoType { get; set; }
+    public string? DtoType { get; set; }
 }
 
 /// <summary>
@@ -46,27 +44,27 @@ public class HbtGeneratorOptions
     /// <summary>
     /// 作者
     /// </summary>
-    public string Author { get; set; }
+    public string? Author { get; set; }
 
     /// <summary>
     /// 模块名称
     /// </summary>
-    public string ModuleName { get; set; }
+    public string? ModuleName { get; set; }
 
     /// <summary>
-    /// 包名称
+    /// 项目名称
     /// </summary>
-    public string PackageName { get; set; }
+    public string? ProjectName { get; set; }
 
     /// <summary>
     /// 基础命名空间
     /// </summary>
-    public string BaseNamespace { get; set; }
+    public string? BaseNamespace { get; set; }
 
     /// <summary>
     /// 生成路径
     /// </summary>
-    public string GenPath { get; set; }
+    public string? GenPath { get; set; }
 
     /// <summary>
     /// 是否生成控制器

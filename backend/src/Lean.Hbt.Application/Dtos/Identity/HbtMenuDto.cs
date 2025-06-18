@@ -280,11 +280,6 @@ namespace Lean.Hbt.Application.Dtos.Identity
         public string? Icon { get; set; }
 
         /// <summary>
-        /// 租户ID
-        /// </summary>
-        public long TenantId { get; set; }
-
-        /// <summary>
         /// 是否缓存
         /// </summary>
         public int IsCache { get; set; }

@@ -25,7 +25,6 @@ public class HbtGenTemplateDto
     {
         TemplateName = string.Empty;
         TemplateContent = string.Empty;
-        GenPath = string.Empty;
         FileName = string.Empty;
         CreateBy = string.Empty;
         UpdateBy = string.Empty;
@@ -45,28 +44,34 @@ public class HbtGenTemplateDto
     public string TemplateName { get; set; }
 
     /// <summary>
-    /// 模板类型
+    /// ORM框架类型
     /// </summary>
-    [Required(ErrorMessage = "模板类型不能为空")]
-    public int TemplateType { get; set; } = 1;
+    [Required(ErrorMessage = "ORM框架类型不能为空")]
+    public int TemplateOrmType { get; set; }
+
+    /// <summary>
+    /// 生成模板分类
+    /// </summary>
+    [Required(ErrorMessage = "生成模板分类不能为空")]
+    public int TemplateCodeType { get; set; }
 
     /// <summary>
     /// 模板分类
     /// </summary>
     [Required(ErrorMessage = "模板分类不能为空")]
-    public int TemplateCategory { get; set; } = 1;
+    public int TemplateCategory { get; set; }
 
     /// <summary>
     /// 编程语言
     /// </summary>
     [Required(ErrorMessage = "编程语言不能为空")]
-    public int TemplateLanguage { get; set; } = 1;
+    public int TemplateLanguage { get; set; }
 
     /// <summary>
     /// 版本号
     /// </summary>
     [Required(ErrorMessage = "版本号不能为空")]
-    public int TemplateVersion { get; set; } = 1;
+    public int TemplateVersion { get; set; }
 
     /// <summary>
     /// 模板内容
@@ -75,50 +80,57 @@ public class HbtGenTemplateDto
     public string TemplateContent { get; set; }
 
     /// <summary>
-    /// 生成路径
+    /// 生成配置名称
     /// </summary>
-    [Required(ErrorMessage = "生成路径不能为空")]
-    [StringLength(200, ErrorMessage = "生成路径长度不能超过200个字符")]
-    public string GenPath { get; set; }
+    [Required(ErrorMessage = "文件名称不能为空")]
+    [StringLength(100, ErrorMessage = "文件名称长度不能超过100个字符")]
+    public string FileName { get; set; } = string.Empty;
 
     /// <summary>
-    /// 文件名
-    /// </summary>
-    [Required(ErrorMessage = "文件名不能为空")]
-    [StringLength(100, ErrorMessage = "文件名长度不能超过100个字符")]
-    public string FileName { get; set; }
-
-    /// <summary>
-    /// 状态（0：停用，1：正常）
+    /// 状态（0：正常，1：停用）
     /// </summary>
     [Required(ErrorMessage = "状态不能为空")]
-    public int Status { get; set; } = 1;
+    public int Status { get; set; } = 0;
 
     /// <summary>
     /// 备注
     /// </summary>
-    [StringLength(500, ErrorMessage = "备注长度不能超过500个字符")]
     public string? Remark { get; set; }
 
     /// <summary>
-    /// 创建人
+    /// 创建者
     /// </summary>
-    public string CreateBy { get; set; }
+    public string? CreateBy { get; set; }
 
     /// <summary>
     /// 创建时间
     /// </summary>
-    public DateTime? CreateTime { get; set; }
+    public DateTime CreateTime { get; set; }
 
     /// <summary>
-    /// 更新人
+    /// 更新者
     /// </summary>
-    public string UpdateBy { get; set; }
+    public string? UpdateBy { get; set; }
 
     /// <summary>
     /// 更新时间
     /// </summary>
     public DateTime? UpdateTime { get; set; }
+
+    /// <summary>
+    /// 是否删除（0未删除 1已删除）
+    /// </summary>
+    public int IsDeleted { get; set; }
+
+    /// <summary>
+    /// 删除者
+    /// </summary>
+    public string? DeleteBy { get; set; }
+
+    /// <summary>
+    /// 删除时间
+    /// </summary>
+    public DateTime? DeleteTime { get; set; }
 }
 
 /// <summary>
@@ -133,9 +145,19 @@ public class HbtGenTemplateQueryDto : HbtPagedQuery
     public string? TemplateName { get; set; }
 
     /// <summary>
-    /// 模板类型
+    /// ORM框架类型
     /// </summary>
-    public int? TemplateType { get; set; }
+    public int? TemplateOrmType { get; set; }
+
+    /// <summary>
+    /// 生成模板分类
+    /// </summary>
+    public int? TemplateCodeType { get; set; }
+
+    /// <summary>
+    /// 模板分类
+    /// </summary>
+    public int? TemplateCategory { get; set; }
 
     /// <summary>
     /// 状态
@@ -165,7 +187,6 @@ public class HbtGenTemplateCreateDto
     {
         TemplateName = string.Empty;
         TemplateContent = string.Empty;
-        GenPath = string.Empty;
         FileName = string.Empty;
     }
 
@@ -177,28 +198,34 @@ public class HbtGenTemplateCreateDto
     public string TemplateName { get; set; }
 
     /// <summary>
-    /// 模板类型
+    /// ORM框架类型
     /// </summary>
-    [Required(ErrorMessage = "模板类型不能为空")]
-    public int TemplateType { get; set; } = 1;
+    [Required(ErrorMessage = "ORM框架类型不能为空")]
+    public int TemplateOrmType { get; set; }
+
+    /// <summary>
+    /// 生成模板分类
+    /// </summary>
+    [Required(ErrorMessage = "生成模板分类不能为空")]
+    public int TemplateCodeType { get; set; }
 
     /// <summary>
     /// 模板分类
     /// </summary>
     [Required(ErrorMessage = "模板分类不能为空")]
-    public int TemplateCategory { get; set; } = 1;
+    public int TemplateCategory { get; set; }
 
     /// <summary>
     /// 编程语言
     /// </summary>
     [Required(ErrorMessage = "编程语言不能为空")]
-    public int TemplateLanguage { get; set; } = 1;
+    public int TemplateLanguage { get; set; }
 
     /// <summary>
     /// 版本号
     /// </summary>
     [Required(ErrorMessage = "版本号不能为空")]
-    public int TemplateVersion { get; set; } = 1;
+    public int TemplateVersion { get; set; }
 
     /// <summary>
     /// 模板内容
@@ -207,30 +234,23 @@ public class HbtGenTemplateCreateDto
     public string TemplateContent { get; set; }
 
     /// <summary>
-    /// 生成路径
+    /// 生成配置名称
     /// </summary>
-    [Required(ErrorMessage = "生成路径不能为空")]
-    [StringLength(200, ErrorMessage = "生成路径长度不能超过200个字符")]
-    public string GenPath { get; set; }
+    [Required(ErrorMessage = "文件名称不能为空")]
+    [StringLength(100, ErrorMessage = "文件名称长度不能超过100个字符")]
+    public string FileName { get; set; } = string.Empty;
 
     /// <summary>
-    /// 文件名
+    /// 状态（0：正常，1：停用）
     /// </summary>
-    [Required(ErrorMessage = "文件名不能为空")]
-    [StringLength(100, ErrorMessage = "文件名长度不能超过100个字符")]
-    public string FileName { get; set; }
+    [Required(ErrorMessage = "状态不能为空")]
+    public int Status { get; set; } = 0;
 
     /// <summary>
     /// 备注
     /// </summary>
     [StringLength(500, ErrorMessage = "备注长度不能超过500个字符")]
     public string? Remark { get; set; }
-
-    /// <summary>
-    /// 状态（0：停用，1：正常）
-    /// </summary>
-    [Required(ErrorMessage = "状态不能为空")]
-    public int Status { get; set; } = 1;
 }
 
 /// <summary>
@@ -258,65 +278,62 @@ public class HbtGenTemplateImportDto
     {
         TemplateName = string.Empty;
         TemplateContent = string.Empty;
-        GenPath = string.Empty;
         FileName = string.Empty;
-        Templates = new List<HbtGenTemplateImportDto>();
     }
+
 
     /// <summary>
     /// 模板名称
     /// </summary>
+
     public string TemplateName { get; set; }
 
     /// <summary>
-    /// 模板类型
+    /// ORM框架类型
     /// </summary>
-    public int TemplateType { get; set; } = 1;
+
+    public int TemplateOrmType { get; set; }
+
+    /// <summary>
+    /// 生成模板分类
+    /// </summary>
+    public int TemplateCodeType { get; set; }
 
     /// <summary>
     /// 模板分类
     /// </summary>
-    public int TemplateCategory { get; set; } = 1;
+
+    public int TemplateCategory { get; set; } 
 
     /// <summary>
     /// 编程语言
     /// </summary>
-    public int TemplateLanguage { get; set; } = 1;
+
+    public int TemplateLanguage { get; set; } 
 
     /// <summary>
     /// 版本号
     /// </summary>
-    public int TemplateVersion { get; set; } = 1;
+
+    public int TemplateVersion { get; set; } 
 
     /// <summary>
     /// 模板内容
     /// </summary>
+
     public string TemplateContent { get; set; }
 
     /// <summary>
-    /// 生成路径
+    /// 生成配置名称
     /// </summary>
-    public string GenPath { get; set; }
+
+    public string FileName { get; set; } 
 
     /// <summary>
-    /// 文件名
+    /// 状态（0：正常，1：停用）
     /// </summary>
-    public string FileName { get; set; }
 
-    /// <summary>
-    /// 备注
-    /// </summary>
-    public string? Remark { get; set; }
-
-    /// <summary>
-    /// 状态（0：停用，1：正常）
-    /// </summary>
-    public int Status { get; set; } = 1;
-
-    /// <summary>
-    /// 导入的模板列表
-    /// </summary>
-    public List<HbtGenTemplateImportDto> Templates { get; set; }
+    public int Status { get; set; }
 }
 
 /// <summary>
@@ -331,10 +348,7 @@ public class HbtGenTemplateExportDto
     {
         TemplateName = string.Empty;
         TemplateContent = string.Empty;
-        GenPath = string.Empty;
         FileName = string.Empty;
-        CreateBy = string.Empty;
-        UpdateBy = string.Empty;
     }
 
     /// <summary>
@@ -346,72 +360,56 @@ public class HbtGenTemplateExportDto
     /// <summary>
     /// 模板名称
     /// </summary>
+
     public string TemplateName { get; set; }
 
     /// <summary>
-    /// 模板类型
+    /// ORM框架类型
     /// </summary>
-    public int TemplateType { get; set; }
+
+    public int TemplateOrmType { get; set; }
+
+    /// <summary>
+    /// 生成模板分类
+    /// </summary>
+
+    public int TemplateCodeType { get; set; }
 
     /// <summary>
     /// 模板分类
     /// </summary>
-    public int TemplateCategory { get; set; }
+
+    public int TemplateCategory { get; set; } 
 
     /// <summary>
     /// 编程语言
     /// </summary>
-    public int TemplateLanguage { get; set; }
+
+    public int TemplateLanguage { get; set; } 
 
     /// <summary>
     /// 版本号
     /// </summary>
-    public int TemplateVersion { get; set; }
+
+    public int TemplateVersion { get; set; } 
 
     /// <summary>
     /// 模板内容
     /// </summary>
+
     public string TemplateContent { get; set; }
 
     /// <summary>
-    /// 生成路径
+    /// 生成配置名称
     /// </summary>
-    public string GenPath { get; set; }
+
+    public string FileName { get; set; } 
 
     /// <summary>
-    /// 文件名
+    /// 状态（0：正常，1：停用）
     /// </summary>
-    public string FileName { get; set; }
 
-    /// <summary>
-    /// 备注
-    /// </summary>
-    public string? Remark { get; set; }
-
-    /// <summary>
-    /// 状态（0：停用，1：正常）
-    /// </summary>
     public int Status { get; set; }
-
-    /// <summary>
-    /// 创建时间
-    /// </summary>
-    public DateTime CreateTime { get; set; }
-
-    /// <summary>
-    /// 更新时间
-    /// </summary>
-    public DateTime? UpdateTime { get; set; }
-
-    /// <summary>
-    /// 创建人
-    /// </summary>
-    public string CreateBy { get; set; }
-
-    /// <summary>
-    /// 更新人
-    /// </summary>
-    public string UpdateBy { get; set; }
 }
 
 /// <summary>
@@ -426,60 +424,62 @@ public class HbtGenTemplateTemplateDto
     {
         TemplateName = string.Empty;
         TemplateContent = string.Empty;
-        GenPath = string.Empty;
         FileName = string.Empty;
-        Status = "1";
     }
 
     /// <summary>
     /// 模板名称
     /// </summary>
+
     public string TemplateName { get; set; }
 
     /// <summary>
-    /// 模板类型
+    /// ORM框架类型
     /// </summary>
-    public int TemplateType { get; set; } = 1;
+
+    public int TemplateOrmType { get; set; }
+
+    /// <summary>
+    /// 生成模板分类
+    /// </summary>
+
+    public int TemplateCodeType { get; set; }
 
     /// <summary>
     /// 模板分类
     /// </summary>
-    public int TemplateCategory { get; set; } = 1;
+
+    public int TemplateCategory { get; set; } 
 
     /// <summary>
     /// 编程语言
     /// </summary>
-    public int TemplateLanguage { get; set; } = 1;
+
+    public int TemplateLanguage { get; set; } 
 
     /// <summary>
     /// 版本号
     /// </summary>
-    public int TemplateVersion { get; set; } = 1;
+
+    public int TemplateVersion { get; set; } 
 
     /// <summary>
     /// 模板内容
     /// </summary>
+
     public string TemplateContent { get; set; }
 
     /// <summary>
-    /// 生成路径
+    /// 生成配置名称
     /// </summary>
-    public string GenPath { get; set; }
+
+    public string FileName { get; set; } 
 
     /// <summary>
-    /// 文件名
+    /// 状态（0：正常，1：停用）
     /// </summary>
-    public string FileName { get; set; }
 
-    /// <summary>
-    /// 备注
-    /// </summary>
-    public string? Remark { get; set; }
-
-    /// <summary>
-    /// 状态（0：停用，1：正常）
-    /// </summary>
-    public string Status { get; set; }
+    public int Status { get; set; }
 }
 
 /// <summary>

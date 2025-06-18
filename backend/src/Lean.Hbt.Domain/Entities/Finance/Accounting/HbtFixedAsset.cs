@@ -1,8 +1,5 @@
 #nullable enable
 
-using SqlSugar;
-using Lean.Hbt.Domain.Entities.Identity;
-
 //===================================================================
 // 项目名 : Lean.Hbt
 // 文件名 : HbtFixedAsset.cs
@@ -22,21 +19,11 @@ namespace Lean.Hbt.Domain.Entities.Finance.Accounting
     /// 创建者: Lean365
     /// 创建时间: 2024-03-07
     /// </remarks>
-    [SugarTable("hbt_fixed_asset", "固定资产表")]
-    [SugarIndex("ix_tenant_asset", nameof(TenantId), OrderByType.Asc, nameof(AssetCode), OrderByType.Asc, true)]
+    [SugarTable("hbt_accounting_fixed_asset", "固定资产表")]
+    [SugarIndex("ix_asset_code", nameof(AssetCode), OrderByType.Asc, true)]
     public class HbtFixedAsset : HbtBaseEntity
     {
-        /// <summary>
-        /// 租户ID
-        /// </summary>
-        [SugarColumn(ColumnName = "tenant_id", ColumnDescription = "租户ID", ColumnDataType = "bigint", IsNullable = false)]
-        public long TenantId { get; set; }
 
-        /// <summary>
-        /// 租户
-        /// </summary>
-        [Navigate(NavigateType.OneToOne, nameof(TenantId))]
-        public HbtTenant? Tenant { get; set; }
 
         /// <summary>
         /// 资产编码
@@ -143,13 +130,9 @@ namespace Lean.Hbt.Domain.Entities.Finance.Accounting
         /// <summary>
         /// 资产状态(0=闲置 1=在用 2=维修 3=报废)
         /// </summary>
-        [SugarColumn(ColumnName = "asset_status", ColumnDescription = "资产状态", ColumnDataType = "int", IsNullable = false)]
-        public int AssetStatus { get; set; }
+        [SugarColumn(ColumnName = "status", ColumnDescription = "资产状态", ColumnDataType = "int", IsNullable = false)]
+        public int Status { get; set; }
 
-        /// <summary>
-        /// 备注
-        /// </summary>
-        [SugarColumn(ColumnName = "remark", ColumnDescription = "备注", Length = 500, ColumnDataType = "nvarchar", IsNullable = true)]
-        public string? Remark { get; set; }
+
     }
-} 
+}

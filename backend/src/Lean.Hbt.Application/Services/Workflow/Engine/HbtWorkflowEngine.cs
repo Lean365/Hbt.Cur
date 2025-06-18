@@ -2,22 +2,13 @@
 
 //===================================================================
 // 项目名 : Lean.Hbt
-// 文件名 : HbtWorkflowEngine.cs
+// 文件名 : HbtEngine.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-23 12:00
 // 版本号 : V1.0.0
 // 描述    : 工作流引擎实现
 //===================================================================
 
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Linq;
-using Lean.Hbt.Application.Dtos.Workflow;
-using Lean.Hbt.Common.Enums;
-using Lean.Hbt.Domain.Entities.Workflow;
-using Lean.Hbt.Domain.Repositories;
-using Mapster;
 using Lean.Hbt.Application.Services.Workflow.Engine.Executors;
 using Lean.Hbt.Application.Services.Workflow.Engine.Expressions;
 using Lean.Hbt.Domain.Data;
@@ -30,28 +21,28 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine
     public class HbtWorkflowEngine : IHbtWorkflowEngine
     {
         private readonly IHbtDbContext _dbContext;
-        private readonly IHbtRepository<HbtWorkflowInstance> _instanceRepository;
-        private readonly IHbtRepository<HbtWorkflowNode> _nodeRepository;
-        private readonly IHbtRepository<HbtWorkflowTransition> _transitionRepository;
-        private readonly IHbtRepository<HbtWorkflowVariable> _variableRepository;
-        private readonly IHbtRepository<HbtWorkflowDefinition> _definitionRepository;
-        private readonly IEnumerable<IHbtWorkflowNodeExecutor> _nodeExecutors;
-        private readonly IHbtRepository<HbtWorkflowParallelBranch> _parallelBranchRepository;
-        private readonly IHbtWorkflowExpressionEngine _expressionEngine;
+        private readonly IHbtRepository<HbtInstance> _instanceRepository;
+        private readonly IHbtRepository<HbtNode> _nodeRepository;
+        private readonly IHbtRepository<HbtTransition> _transitionRepository;
+        private readonly IHbtRepository<HbtVariable> _variableRepository;
+        private readonly IHbtRepository<HbtDefinition> _definitionRepository;
+        private readonly IEnumerable<IHbtNodeExecutor> _nodeExecutors;
+        private readonly IHbtRepository<HbtParallelBranch> _parallelBranchRepository;
+        private readonly IHbtExpressionEngine _expressionEngine;
 
         /// <summary>
         /// 构造函数
         /// </summary>
         public HbtWorkflowEngine(
             IHbtDbContext dbContext,
-            IHbtRepository<HbtWorkflowInstance> instanceRepository,
-            IHbtRepository<HbtWorkflowNode> nodeRepository,
-            IHbtRepository<HbtWorkflowTransition> transitionRepository,
-            IHbtRepository<HbtWorkflowVariable> variableRepository,
-            IHbtRepository<HbtWorkflowDefinition> definitionRepository,
-            IEnumerable<IHbtWorkflowNodeExecutor> nodeExecutors,
-            IHbtRepository<HbtWorkflowParallelBranch> parallelBranchRepository,
-            IHbtWorkflowExpressionEngine expressionEngine)
+            IHbtRepository<HbtInstance> instanceRepository,
+            IHbtRepository<HbtNode> nodeRepository,
+            IHbtRepository<HbtTransition> transitionRepository,
+            IHbtRepository<HbtVariable> variableRepository,
+            IHbtRepository<HbtDefinition> definitionRepository,
+            IEnumerable<IHbtNodeExecutor> nodeExecutors,
+            IHbtRepository<HbtParallelBranch> parallelBranchRepository,
+            IHbtExpressionEngine expressionEngine)
         {
             _dbContext = dbContext;
             _instanceRepository = instanceRepository;
@@ -79,8 +70,8 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine
                 }
 
                 // 获取开始节点
-                var startNode = await _nodeRepository.GetFirstAsync(x => 
-                    x.WorkflowDefinitionId == definitionId && 
+                var startNode = await _nodeRepository.GetFirstAsync(x =>
+                    x.DefinitionId == definitionId &&
                     x.NodeType == 1); // 1 表示开始节点
 
                 if (startNode == null)
@@ -89,10 +80,10 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine
                 }
 
                 // 创建工作流实例
-                var instance = new HbtWorkflowInstance
+                var instance = new HbtInstance
                 {
-                    WorkflowDefinitionId = definitionId,
-                    WorkflowTitle = title,
+                    DefinitionId = definitionId,
+                    InstanceName = title,
                     InitiatorId = initiatorId,
                     CurrentNodeId = startNode.Id,
                     FormData = formData,
@@ -182,7 +173,7 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine
         }
 
         /// <inheritdoc/>
-        public async Task<HbtWorkflowNodeResult> ExecuteNodeAsync(long instanceId, long nodeId, Dictionary<string, object>? variables = null)
+        public async Task<HbtNodeResult> ExecuteNodeAsync(long instanceId, long nodeId, Dictionary<string, object>? variables = null)
         {
             // 获取实例
             var instance = await _instanceRepository.GetByIdAsync(instanceId);
@@ -230,7 +221,7 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine
         }
 
         /// <inheritdoc/>
-        public async Task<HbtWorkflowTransitionResult> ExecuteTransitionAsync(long instanceId, long transitionId, Dictionary<string, object>? variables = null)
+        public async Task<HbtTransitionResult> ExecuteTransitionAsync(long instanceId, long transitionId, Dictionary<string, object>? variables = null)
         {
             try
             {
@@ -285,7 +276,7 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine
                 }
 
                 _dbContext.CommitTran();
-                return new HbtWorkflowTransitionResult { Success = true };
+                return new HbtTransitionResult { Success = true };
             }
             catch (Exception)
             {
@@ -295,7 +286,7 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine
         }
 
         /// <inheritdoc/>
-        public async Task<HbtWorkflowInstanceStatusDto> GetStatusAsync(long instanceId)
+        public async Task<HbtInstanceStatusDto> GetStatusAsync(long instanceId)
         {
             var instance = await _instanceRepository.GetByIdAsync(instanceId);
             if (instance == null)
@@ -305,19 +296,19 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine
 
             var currentNode = await _nodeRepository.GetByIdAsync(instance.CurrentNodeId);
 
-            return new HbtWorkflowInstanceStatusDto
+            return new HbtInstanceStatusDto
             {
-                WorkflowInstanceId = instance.Id,
+                InstanceId = instance.Id,
                 Status = instance.Status,
                 CurrentNodeId = instance.CurrentNodeId,
                 CurrentNodeName = currentNode?.NodeName ?? string.Empty,
                 AvailableOperations = GetAvailableOperations(instance),
-                StatusDescription = instance.Status
+
             };
         }
 
         /// <inheritdoc/>
-        public async Task<List<HbtWorkflowTransitionDto>> GetAvailableTransitionsAsync(long instanceId)
+        public async Task<List<HbtTransitionDto>> GetAvailableTransitionsAsync(long instanceId)
         {
             var instance = await _instanceRepository.GetByIdAsync(instanceId);
             if (instance == null)
@@ -327,11 +318,11 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine
 
             if (instance.Status != 1)
             {
-                return new List<HbtWorkflowTransitionDto>();
+                return new List<HbtTransitionDto>();
             }
 
             var transitions = await _transitionRepository.GetListAsync(x => x.SourceNodeId == instance.CurrentNodeId);
-            return transitions.Adapt<List<HbtWorkflowTransitionDto>>();
+            return transitions.Adapt<List<HbtTransitionDto>>();
         }
 
         /// <inheritdoc/>
@@ -341,7 +332,7 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine
 
             // 获取实例级变量
             var instanceVariables = await _variableRepository.GetListAsync(x =>
-                x.WorkflowInstanceId == instanceId &&
+                x.InstanceId == instanceId &&
                 x.Scope == 1); // 1 表示全局范围
 
             foreach (var variable in instanceVariables)
@@ -353,7 +344,7 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine
             if (nodeId.HasValue)
             {
                 var nodeVariables = await _variableRepository.GetListAsync(x =>
-                    x.WorkflowInstanceId == instanceId &&
+                    x.InstanceId == instanceId &&
                     x.NodeId == nodeId &&
                     x.Scope == 2); // 2 表示节点范围
 
@@ -371,9 +362,9 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine
         {
             foreach (var kvp in variables)
             {
-                var variable = new HbtWorkflowVariable
+                var variable = new HbtVariable
                 {
-                    WorkflowInstanceId = instanceId,
+                    InstanceId = instanceId,
                     NodeId = nodeId,
                     VariableName = kvp.Key,
                     VariableValue = kvp.Value.ToString() ?? string.Empty,
@@ -388,9 +379,9 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine
         {
             foreach (var kvp in variables)
             {
-                var variable = new HbtWorkflowVariable
+                var variable = new HbtVariable
                 {
-                    WorkflowInstanceId = instanceId,
+                    InstanceId = instanceId,
                     NodeId = nodeId,
                     VariableName = kvp.Key,
                     VariableValue = kvp.Value.ToString() ?? string.Empty,
@@ -401,7 +392,7 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine
             }
         }
 
-        private List<string> GetAvailableOperations(HbtWorkflowInstance instance)
+        private List<string> GetAvailableOperations(HbtInstance instance)
         {
             var operations = new List<string>();
 

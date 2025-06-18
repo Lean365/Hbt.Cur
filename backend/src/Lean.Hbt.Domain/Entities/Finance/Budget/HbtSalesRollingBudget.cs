@@ -1,8 +1,5 @@
 #nullable enable
 
-using SqlSugar;
-using Lean.Hbt.Domain.Entities.Identity;
-
 //===================================================================
 // 项目名 : Lean.Hbt
 // 文件名 : HbtSalesRollingBudget.cs
@@ -22,21 +19,10 @@ namespace Lean.Hbt.Domain.Entities.Finance.Budget
     /// 创建者: Lean365
     /// 创建时间: 2024-03-07
     /// </remarks>
-    [SugarTable("hbt_sales_rolling_budget", "销售滚动预算表")]
-    [SugarIndex("ix_tenant_sales_rolling", nameof(TenantId), OrderByType.Asc, nameof(BudgetYear), OrderByType.Asc, nameof(BudgetMonth), OrderByType.Asc, true)]
+    [SugarTable("hbt_budget_sales_rolling", "销售滚动预算表")]
+    [SugarIndex("ix_sales_rolling_budget_year_month", nameof(BudgetYear), OrderByType.Asc, nameof(BudgetMonth), OrderByType.Asc, true)]
     public class HbtSalesRollingBudget : HbtBaseEntity
     {
-        /// <summary>
-        /// 租户ID
-        /// </summary>
-        [SugarColumn(ColumnName = "tenant_id", ColumnDescription = "租户ID", ColumnDataType = "bigint", IsNullable = false)]
-        public long TenantId { get; set; }
-
-        /// <summary>
-        /// 租户
-        /// </summary>
-        [Navigate(NavigateType.OneToOne, nameof(TenantId))]
-        public HbtTenant? Tenant { get; set; }
 
         /// <summary>
         /// 预算年度
@@ -149,13 +135,9 @@ namespace Lean.Hbt.Domain.Entities.Finance.Budget
         /// <summary>
         /// 预算状态(0=草稿 1=已提交 2=已审核 3=已批准)
         /// </summary>
-        [SugarColumn(ColumnName = "budget_status", ColumnDescription = "预算状态", ColumnDataType = "int", IsNullable = false)]
-        public int BudgetStatus { get; set; }
+        [SugarColumn(ColumnName = "status", ColumnDescription = "预算状态", ColumnDataType = "int", IsNullable = false)]
+        public int Status { get; set; }
 
-        /// <summary>
-        /// 备注
-        /// </summary>
-        [SugarColumn(ColumnName = "remark", ColumnDescription = "备注", Length = 500, ColumnDataType = "nvarchar", IsNullable = true)]
-        public string? Remark { get; set; }
+
     }
-} 
+}

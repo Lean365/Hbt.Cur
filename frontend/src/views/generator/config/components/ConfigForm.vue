@@ -14,51 +14,57 @@
       :label-col="{ span: 4 }"
       :wrapper-col="{ span: 19 }"
     >
-      <a-form-item label="配置名称" name="genConfigName">
-        <a-input v-model:value="formData.genConfigName" placeholder="请输入配置名称" />
+      <a-form-item :label="t('generator.config.fields.genConfigName')" name="genConfigName">
+        <a-input v-model:value="formData.genConfigName" :placeholder="t('generator.config.placeholder.genConfigName')" />
       </a-form-item>
-      <a-form-item label="作者" name="author">
-        <a-input v-model:value="formData.author" placeholder="请输入作者" />
+      <a-form-item :label="t('generator.config.fields.author')" name="author">
+        <a-input v-model:value="formData.author" :placeholder="t('generator.config.placeholder.author')" disabled />
       </a-form-item>
-      <a-form-item label="模块名" name="moduleName">
-        <a-input v-model:value="formData.moduleName" placeholder="请输入模块名" />
+      <a-form-item :label="t('generator.config.fields.projectName')" name="projectName">
+        <hbt-select v-model:value="formData.projectName" dict-type="gen_project_name" type="radio" 
+        :show-all="false" :placeholder="t('generator.config.placeholder.projectName')" style="width: 100%" />
       </a-form-item>
-      <a-form-item label="包名" name="packageName">
-        <a-input v-model:value="formData.packageName" placeholder="请输入包名" />
+      <a-form-item :label="t('generator.config.fields.moduleName')" name="moduleName">
+        <hbt-select v-model:value="formData.moduleName" dict-type="gen_module_name" type="radio" 
+        :show-all="false" :placeholder="t('generator.config.placeholder.moduleName')" style="width: 100%" />
       </a-form-item>
-      <a-form-item label="业务名" name="businessName">
-        <a-input v-model:value="formData.businessName" placeholder="请输入业务名" />
+      <a-form-item :label="t('generator.config.fields.businessName')" name="businessName">
+        <a-input 
+          v-model:value="formData.businessName" 
+          :placeholder="t('generator.config.placeholder.businessName')"
+          @input="handleBusinessNameInput"
+          :maxLength="20"
+        />
       </a-form-item>
-      <a-form-item label="功能名" name="functionName">
-        <a-input v-model:value="formData.functionName" placeholder="请输入功能名" />
+      <a-form-item :label="t('generator.config.fields.functionName')" name="functionName">
+        <a-input 
+          v-model:value="formData.functionName" 
+          :placeholder="t('generator.config.placeholder.functionName')"
+          @input="handleFunctionNameInput"
+          :maxLength="20"
+        />
       </a-form-item>
-      <a-form-item label="生成类型" name="genType">
-        <a-select v-model:value="formData.genType" placeholder="请选择生成类型">
-          <a-select-option :value="0">生成类型1</a-select-option>
-          <a-select-option :value="1">生成类型2</a-select-option>
-        </a-select>
+      <a-form-item :label="t('generator.config.fields.genMethod')" name="genMethod">
+        <hbt-select v-model:value="formData.genMethod" dict-type="gen_method" type="radio" 
+        :show-all="false" :placeholder="t('generator.config.placeholder.genMethod')" style="width: 100%" />
       </a-form-item>
-      <a-form-item label="模板选用方式" name="genTemplateType">
-        <a-select v-model:value="formData.genTemplateType" placeholder="请选择模板选用方式">
-          <a-select-option :value="0">使用wwwroot/Generator/*.scriban模板</a-select-option>
-          <a-select-option :value="1">使用HbtGenTemplate表中的模板</a-select-option>
-        </a-select>
+      <a-form-item :label="t('generator.config.fields.genTplType')" name="genTplType">
+        <hbt-select v-model:value="formData.genTplType" dict-type="gen_tpl_type" type="radio" 
+        :show-all="false" :placeholder="t('generator.config.placeholder.genTplType')" style="width: 100%" />
       </a-form-item>
-      <a-form-item label="生成路径" name="genPath">
-        <a-input v-model:value="formData.genPath" placeholder="请输入生成路径" />
+      <a-form-item v-if="formData.genMethod === 0" :label="t('generator.config.fields.genPath')" name="genPath">
+        <a-input v-model:value="formData.genPath" :placeholder="t('generator.config.placeholder.genPath')" />
       </a-form-item>
-      <a-form-item label="选项配置" name="options">
+      <a-form-item :label="t('generator.config.fields.options')" name="options">
         <a-textarea
           v-model:value="formData.options"
           :rows="4"
-          placeholder="请输入选项配置"
+          :placeholder="t('generator.config.placeholder.options')"
         />
       </a-form-item>
-      <a-form-item label="状态" name="status">
-        <a-select v-model:value="formData.status" placeholder="请选择状态">
-          <a-select-option :value="0">正常</a-select-option>
-          <a-select-option :value="1">停用</a-select-option>
-        </a-select>
+      <a-form-item :label="t('generator.config.fields.status')" name="status">
+        <hbt-select v-model:value="formData.status" dict-type="sys_normal_disable" type="radio" 
+        :show-all="false" :placeholder="t('generator.config.placeholder.status')" style="width: 100%" />
       </a-form-item>
     </a-form>
   </hbt-modal>
@@ -71,7 +77,10 @@ import type { FormInstance } from 'ant-design-vue'
 import type { Rule } from 'ant-design-vue/es/form'
 import { getGenConfig, createGenConfig, updateGenConfig } from '@/api/generator/genConfig'
 import type { HbtGenConfig, HbtGenConfigCreate, HbtGenConfigUpdate } from '@/types/generator/genConfig'
-
+import { useI18n } from 'vue-i18n'
+import { useUserStore } from '@/stores/user'
+import { useDictStore } from '@/stores/dict'
+const { t } = useI18n()
 const props = defineProps<{
   open: boolean
   title: string
@@ -95,32 +104,68 @@ const formRef = ref<FormInstance>()
 // 加载状态
 const loading = ref(false)
 
-// 表单数据
+const userStore = useUserStore()
+const dictStore = useDictStore()
+console.log(userStore.userInfo)
 const formData = reactive<HbtGenConfigCreate>({
   genConfigName: '',
   author: '',
-  moduleName: '',
-  packageName: '',
+  projectName: 'Lean.Hbt',
+  moduleName: 'Core',
   businessName: '',
   functionName: '',
-  genType: 0,
-  genTemplateType: 0,
+  genMethod: 0,
+  genTplType: 0,
   genPath: '',
-  status: 0,
-  options: ''
+  options: '',
+  status: 0
 })
 
 // 表单验证规则
 const rules: Record<string, Rule[]> = {
-  genConfigName: [{ required: true, message: '请输入配置名称', trigger: 'blur' }],
-  author: [{ required: true, message: '请输入作者', trigger: 'blur' }],
-  moduleName: [{ required: true, message: '请输入模块名称', trigger: 'blur' }],
-  packageName: [{ required: true, message: '请输入包名', trigger: 'blur' }],
-  businessName: [{ required: true, message: '请输入业务名称', trigger: 'blur' }],
-  functionName: [{ required: true, message: '请输入功能名称', trigger: 'blur' }],
-  genType: [{ required: true, message: '请选择生成类型', trigger: 'change' }],
-  genTemplateType: [{ required: true, message: '请选择模板类型', trigger: 'change' }],
-  genPath: [{ required: true, message: '请输入生成路径', trigger: 'blur' }]
+  genConfigName: [{ required: true, message: t('generator.config.placeholder.genConfigName'), trigger: 'blur' }],
+  author: [{ required: true, message: t('generator.config.placeholder.author'), trigger: 'blur' }],
+  moduleName: [{ required: true, message: t('generator.config.placeholder.moduleName'), trigger: 'blur' }],
+  projectName: [{ required: true, message: t('generator.config.placeholder.projectName'), trigger: 'blur' }],
+  businessName: [
+    { required: true, message: t('generator.config.placeholder.businessName'), trigger: 'blur' },
+    { 
+      pattern: /^[A-Z][a-zA-Z]{3,19}$/, 
+      message: t('generator.config.validation.pascalCase'), 
+      trigger: 'blur' 
+    }
+  ],
+  functionName: [
+    { required: true, message: t('generator.config.placeholder.functionName'), trigger: 'blur' },
+    { 
+      pattern: /^[A-Z][a-zA-Z]{3,19}$/, 
+      message: t('generator.config.validation.pascalCase'), 
+      trigger: 'blur' 
+    }
+  ],
+  genMethod: [{ required: true, message: t('generator.config.placeholder.genMethod'), trigger: 'change' }],
+  genTplType: [{ required: true, message: t('generator.config.placeholder.genTplType'), trigger: 'change' }],
+  genPath: [{ required: true, message: t('generator.config.placeholder.genPath'), trigger: 'blur' }]
+}
+
+// 处理业务名称输入
+const handleBusinessNameInput = (e: Event) => {
+  const input = e.target as HTMLInputElement
+  let value = input.value.replace(/[^a-zA-Z]/g, '') // 只保留字母
+  if (value.length > 0) {
+    value = value.charAt(0).toUpperCase() + value.slice(1) // 首字母转大写
+  }
+  formData.businessName = value
+}
+
+// 处理功能名称输入
+const handleFunctionNameInput = (e: Event) => {
+  const input = e.target as HTMLInputElement
+  let value = input.value.replace(/[^a-zA-Z]/g, '') // 只保留字母
+  if (value.length > 0) {
+    value = value.charAt(0).toUpperCase() + value.slice(1) // 首字母转大写
+  }
+  formData.functionName = value
 }
 
 // 监听配置ID变化
@@ -137,11 +182,11 @@ watch(
             genConfigName: configData.genConfigName,
             author: configData.author,
             moduleName: configData.moduleName,
-            packageName: configData.packageName,
+            projectName: configData.projectName,
             businessName: configData.businessName,
             functionName: configData.functionName,
-            genType: configData.genType,
-            genTemplateType: configData.genTemplateType,
+            genMethod: configData.genMethod,
+            genTplType: configData.genTplType,
             genPath: configData.genPath,
             status: configData.status,
             options: configData.options
@@ -159,12 +204,12 @@ watch(
       Object.assign(formData, {
         genConfigName: '',
         author: '',
-        moduleName: '',
-        packageName: '',
+        moduleName: 'Core',
+        projectName: 'Lean.Hbt',
         businessName: '',
         functionName: '',
-        genType: 0,
-        genTemplateType: 0,
+        genMethod: 0,
+        genTplType: 0,
         genPath: '',
         status: 0,
         options: ''
@@ -182,24 +227,10 @@ const handleOk = async () => {
   try {
     loading.value = true
     if (props.configId) {
-      const updateData: HbtGenConfigUpdate = {
-        genConfigId: props.configId,
-        genConfigName: formData.genConfigName,
-        author: formData.author,
-        moduleName: formData.moduleName,
-        packageName: formData.packageName,
-        businessName: formData.businessName,
-        functionName: formData.functionName,
-        genType: formData.genType,
-        genTemplateType: formData.genTemplateType,
-        genPath: formData.genPath,
-        status: formData.status,
-        options: formData.options
-      }
-      await updateGenConfig(props.configId, updateData)
+      await updateGenConfig(props.configId, formData as any)
       message.success('更新成功')
     } else {
-      await createGenConfig(formData)
+      await createGenConfig(formData as any)
       message.success('创建成功')
     }
     emit('success')
@@ -231,7 +262,11 @@ const fetchData = async () => {
 }
 
 onMounted(() => {
-  fetchData()
+  if (props.configId) {
+    fetchData()
+  } else {
+    formData.author = userStore.userInfo?.userName || ''
+  }
 })
 
 defineExpose({

@@ -293,11 +293,29 @@ export default {
       note: 'Instructions d\'Importation',
       tips: 'Veuillez suivre strictement le format du modèle d\'importation, sinon l\'importation peut échouer',
       format: 'Seuls les fichiers Excel sont supportés !',
-      size: 'La taille du fichier ne peut pas dépasser 2MB !',
+      size: 'La taille du fichier ne peut pas dépasser {size}MB !',
       total: 'Total des Enregistrements',
       success: 'Nombre de Succès',
       failed: 'Nombre d\'Échecs',
-      message: 'Raison de l\'Échec'
+      message: 'Raison de l\'Échec',
+      dragText: 'Cliquez ou glissez le fichier dans cette zone pour télécharger',
+      dragHint: 'Prend en charge les fichiers Excel au format .xlsx',
+      sheetName: 'Veuillez vous assurer que le nom de la feuille du fichier Excel est : {sheetName}',
+      allSuccess: 'Importation réussie {count} enregistrements, tous réussis !',
+      partialSuccess: 'Importation réussie {success} enregistrements, échoué {fail} enregistrements',
+      allFailed: 'Toute l\'importation a échoué, total {count} enregistrements',
+      noData: 'Aucune donnée lue',
+      empty: 'Le fichier est vide, impossible de télécharger',
+      importFailed: 'L\'importation a échoué',
+      templateFileName: 'Import_Template_{time}.xlsx',
+      limits: {
+        title: 'Limites d\'importation',
+        fileCount: 'Limite de nombre de fichiers : {count} fichier',
+        fileSize: 'Limite de taille de fichier : {size}MB',
+        recordCount: 'Limite de nombre d\'enregistrements : {count} enregistrements',
+        fileFormat: 'Format de fichier : Seul le format .xlsx est pris en charge'
+      },
+      recordLimit: 'Le nombre d\'enregistrements à importer ({actual} enregistrements) dépasse la limite ({max} enregistrements), veuillez importer par lots'
     },
 
     // Téléchargement

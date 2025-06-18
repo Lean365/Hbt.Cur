@@ -1,13 +1,9 @@
 using System.IO.Compression;
-using System.Linq.Expressions;
+using System.Text.Json;
 using Lean.Hbt.Application.Services.Generator.CodeGenerator.Models;
 using Lean.Hbt.Application.Services.Generator.CodeGenerator.Templates;
-using Lean.Hbt.Domain.IServices.Extensions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
-using Lean.Hbt.Domain.Entities.Generator;
-using Lean.Hbt.Domain.Repositories;
-using System.Text.Json;
 
 namespace Lean.Hbt.Application.Services.Generator.CodeGenerator;
 
@@ -64,7 +60,7 @@ public class HbtCodeGeneratorService : IHbtCodeGeneratorService
             _logger.Info($"开始生成代码,表名:{table.TableName}");
 
             // 获取表信息
-            var genTable = await _tableRepository.GetFirstAsync(x => x.TableName == table.TableName && x.Status == 0);
+            var genTable = await _tableRepository.GetFirstAsync(x => x.TableName == table.TableName && x.IsGenCode == 0);
             if (genTable == null)
             {
                 _logger.Error($"未找到表 {table.TableName} 的生成信息");
@@ -89,7 +85,7 @@ public class HbtCodeGeneratorService : IHbtCodeGeneratorService
 
             // 获取模板列表
             List<HbtGenTemplate> templates;
-            if (config.GenTemplateType == 0)
+            if (config.GenTplType == 0)
             {
                 // 使用 wwwroot/Generator/*.scriban 模板
                 var templatePath = Path.Combine(_webHostEnvironment.WebRootPath, "Generator");
@@ -135,8 +131,8 @@ public class HbtCodeGeneratorService : IHbtCodeGeneratorService
                 {
                     Author = config.Author,
                     ModuleName = config.ModuleName,
-                    PackageName = config.PackageName,
-                    BaseNamespace = config.PackageName,
+                    ProjectName = config.ProjectName,
+                    BaseNamespace = config.ProjectName,
                     GenPath = config.GenPath,
                     Templates = templates.ToList()
                 },
@@ -148,8 +144,8 @@ public class HbtCodeGeneratorService : IHbtCodeGeneratorService
             {
                 Author = config.Author,
                 ModuleName = config.ModuleName,
-                PackageName = config.PackageName,
-                BaseNamespace = config.PackageName,
+                ProjectName = config.ProjectName,
+                BaseNamespace = config.ProjectName,
                 GenPath = config.GenPath,
                 GenerateController = true,
                 GenerateService = true,
@@ -238,7 +234,7 @@ public class HbtCodeGeneratorService : IHbtCodeGeneratorService
             _logger.Info($"开始预览代码,表名:{table.TableName}");
 
             // 获取表信息
-            var genTable = await _tableRepository.GetFirstAsync(x => x.TableName == table.TableName && x.Status == 0);
+            var genTable = await _tableRepository.GetFirstAsync(x => x.TableName == table.TableName && x.IsGenCode == 0);
             if (genTable == null)
             {
                 _logger.Error($"未找到表 {table.TableName} 的生成信息");
@@ -263,7 +259,7 @@ public class HbtCodeGeneratorService : IHbtCodeGeneratorService
 
             // 获取模板列表
             List<HbtGenTemplate> templates;
-            if (config.GenTemplateType == 0)
+            if (config.GenTplType == 0)
             {
                 // 使用 wwwroot/Generator/*.scriban 模板
                 var templatePath = Path.Combine(_webHostEnvironment.WebRootPath, "Generator");
@@ -309,8 +305,8 @@ public class HbtCodeGeneratorService : IHbtCodeGeneratorService
                 {
                     Author = config.Author,
                     ModuleName = config.ModuleName,
-                    PackageName = config.PackageName,
-                    BaseNamespace = config.PackageName,
+                    ProjectName = config.ProjectName,
+                    BaseNamespace = config.ProjectName,
                     GenPath = config.GenPath,
                     Templates = templates.ToList()
                 },
@@ -322,8 +318,8 @@ public class HbtCodeGeneratorService : IHbtCodeGeneratorService
             {
                 Author = config.Author,
                 ModuleName = config.ModuleName,
-                PackageName = config.PackageName,
-                BaseNamespace = config.PackageName,
+                ProjectName = config.ProjectName,
+                BaseNamespace = config.ProjectName,
                 GenPath = config.GenPath,
                 GenerateController = true,
                 GenerateService = true,
@@ -419,7 +415,7 @@ public class HbtCodeGeneratorService : IHbtCodeGeneratorService
             _logger.Info($"开始下载代码,表名:{table.TableName}");
 
             // 获取表信息
-            var genTable = await _tableRepository.GetFirstAsync(x => x.TableName == table.TableName && x.Status == 0);
+            var genTable = await _tableRepository.GetFirstAsync(x => x.TableName == table.TableName && x.IsGenCode == 0);
             if (genTable == null)
             {
                 _logger.Error($"未找到表 {table.TableName} 的生成信息");
@@ -444,7 +440,7 @@ public class HbtCodeGeneratorService : IHbtCodeGeneratorService
 
             // 获取模板列表
             List<HbtGenTemplate> templates;
-            if (config.GenTemplateType == 0)
+            if (config.GenTplType == 0)
             {
                 // 使用 wwwroot/Generator/*.scriban 模板
                 var templatePath = Path.Combine(_webHostEnvironment.WebRootPath, "Generator");
@@ -490,8 +486,8 @@ public class HbtCodeGeneratorService : IHbtCodeGeneratorService
                 {
                     Author = config.Author,
                     ModuleName = config.ModuleName,
-                    PackageName = config.PackageName,
-                    BaseNamespace = config.PackageName,
+                    ProjectName = config.ProjectName,
+                    BaseNamespace = config.ProjectName,
                     GenPath = config.GenPath,
                     Templates = templates.ToList()
                 },
@@ -503,8 +499,8 @@ public class HbtCodeGeneratorService : IHbtCodeGeneratorService
             {
                 Author = config.Author,
                 ModuleName = config.ModuleName,
-                PackageName = config.PackageName,
-                BaseNamespace = config.PackageName,
+                ProjectName = config.ProjectName,
+                BaseNamespace = config.ProjectName,
                 GenPath = config.GenPath,
                 GenerateController = true,
                 GenerateService = true,
@@ -581,9 +577,9 @@ public class HbtCodeGeneratorService : IHbtCodeGeneratorService
                     // 获取文件路径信息
                     var (directory, fileName) = GetFilePathInfo(template.TemplateName, model);
                     var filePath = Path.Combine(directory, fileName);
-                    
+
                     _logger.Info($"生成文件路径: {filePath}");
-                    
+
                     if (!Directory.Exists(directory))
                     {
                         Directory.CreateDirectory(directory);
@@ -639,9 +635,13 @@ public class HbtCodeGeneratorService : IHbtCodeGeneratorService
             var templates = model.Config.Templates;
             if (model.Table.TplType == "1")
             {
-                // 数据库模板，按类别过滤
+                // 数据库模板，根据模板类型和类别过滤
                 templates = templates.Where(t =>
-                    t.TemplateCategory.ToString().Equals(model.Table.TplCategory, StringComparison.OrdinalIgnoreCase)).ToList();
+                    t.TemplateCodeType == (model.Table.TplType == "1" ? 1 : 0) && // 1: 后端代码, 0: 前端代码
+                    t.TemplateCategory.ToString() == model.Table.TplCategory &&   // 模板类别
+                    t.TemplateOrmType == 1 &&                                     // Entity Framework Core
+                    t.Status == 0                                                 // 正常状态
+                ).ToList();
             }
 
             if (!templates.Any())
@@ -670,9 +670,9 @@ public class HbtCodeGeneratorService : IHbtCodeGeneratorService
             };
 
             // 按顺序生成后端代码
-            var backendTemplates = templates.Where(t => !t.TemplateName.Contains("vue") && 
-                                                      !t.TemplateName.Contains("api") && 
-                                                      !t.TemplateName.Contains("types") && 
+            var backendTemplates = templates.Where(t => !t.TemplateName.Contains("vue") &&
+                                                      !t.TemplateName.Contains("api") &&
+                                                      !t.TemplateName.Contains("types") &&
                                                       !t.TemplateName.Contains("locales"))
                                           .OrderBy(t => backendOrder.GetValueOrDefault(t.TemplateName, 999));
 
@@ -687,9 +687,9 @@ public class HbtCodeGeneratorService : IHbtCodeGeneratorService
                 // 获取文件路径信息
                 var (directory, fileName) = GetFilePathInfo(template.TemplateName, model);
                 var filePath = Path.Combine(directory, fileName);
-                
+
                 _logger.Info($"生成后端文件路径: {filePath}");
-                
+
                 if (!Directory.Exists(directory))
                 {
                     Directory.CreateDirectory(directory);
@@ -701,9 +701,9 @@ public class HbtCodeGeneratorService : IHbtCodeGeneratorService
             }
 
             // 按顺序生成前端代码
-            var frontendTemplates = templates.Where(t => t.TemplateName.Contains("vue") || 
-                                                       t.TemplateName.Contains("api") || 
-                                                       t.TemplateName.Contains("types") || 
+            var frontendTemplates = templates.Where(t => t.TemplateName.Contains("vue") ||
+                                                       t.TemplateName.Contains("api") ||
+                                                       t.TemplateName.Contains("types") ||
                                                        t.TemplateName.Contains("locales"))
                                            .OrderBy(t => frontendOrder.GetValueOrDefault(t.TemplateName.ToLower(), 999));
 
@@ -718,9 +718,9 @@ public class HbtCodeGeneratorService : IHbtCodeGeneratorService
                 // 获取文件路径信息
                 var (directory, fileName) = GetFilePathInfo(template.TemplateName, model);
                 var filePath = Path.Combine(directory, fileName);
-                
+
                 _logger.Info($"生成前端文件路径: {filePath}");
-                
+
                 if (!Directory.Exists(directory))
                 {
                     Directory.CreateDirectory(directory);
@@ -750,16 +750,16 @@ public class HbtCodeGeneratorService : IHbtCodeGeneratorService
 
         // 获取模板名称（不含扩展名）
         var templateName = Path.GetFileNameWithoutExtension(templateFilePath);
-        
+
         // 判断类型
         string type = model.Table.TplCategory?.ToLower() ?? "crud";
-        
+
         // 判断是前端还是后端
         bool isBackend = true;  // 默认后端
         bool isFrontend = false;
 
         // 根据模板名称判断类型
-        if (templateName.Contains("vue") || templateName.Contains("api") || 
+        if (templateName.Contains("vue") || templateName.Contains("api") ||
             templateName.Contains("types") || templateName.Contains("locales"))
         {
             isBackend = false;

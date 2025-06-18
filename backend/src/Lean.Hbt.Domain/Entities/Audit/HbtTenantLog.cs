@@ -35,13 +35,13 @@ public class HbtTenantLog : HbtBaseEntity
     /// <summary>
     /// 操作类型
     /// </summary>
-    [SugarColumn(ColumnName = "action", ColumnDescription = "操作类型", Length = 50, ColumnDataType = "nvarchar", IsNullable = false)]
+    [SugarColumn(ColumnName = "action", ColumnDescription = "操作类型", Length = -1, ColumnDataType = "nvarchar", IsNullable = false)]
     public string Action { get; set; } = string.Empty;
 
     /// <summary>
     /// 操作详情
     /// </summary>
-    [SugarColumn(ColumnName = "details", ColumnDescription = "操作详情", Length = 500, ColumnDataType = "nvarchar", IsNullable = true)]
+    [SugarColumn(ColumnName = "details", ColumnDescription = "操作详情", Length = -1, ColumnDataType = "nvarchar", IsNullable = true)]
     public string? Details { get; set; }
 
     /// <summary>

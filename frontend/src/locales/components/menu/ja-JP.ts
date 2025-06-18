@@ -20,7 +20,7 @@ export default {
       index: 'Hbtについて'
     },
     core: {
-      _self: 'システム管理',
+      _self: 'コア管理',
       config: 'システム設定',
       language: '言語管理',
       dict: '辞書管理'
@@ -46,6 +46,7 @@ export default {
     },
     workflow: {
       _self: 'ワークフロー',
+      form: 'フォーム',
       definition: 'プロセス定義',
       instance: 'プロセスインスタンス',
       task: 'タスク',
@@ -54,15 +55,14 @@ export default {
       history: 'プロセス履歴'
     },
     signalr: {
-      _self: 'リアルタイムモニタリング',
-      server: 'サーバーモニタリング',
-      online: 'オンラインユーザー',
-      message: 'オンラインメッセージ'
+      _self: 'リアルタイム通信',
+      online: 'ユーザー',
+      message: 'メッセージ'
     },
     generator: {
       _self: 'コード生成',
       table: 'データベーステーブル',
-      tableDefine: 'カスタムテーブル',
+      tableDefine: 'テーブル列定義',
       template: 'コードテンプレート',
       config: '生成設定',
       api: 'APIドキュメント'

@@ -203,12 +203,6 @@ namespace Lean.Hbt.Application.Dtos.Core
         /// </summary>
         public int IsDefault { get; set; }
 
-        /// <summary>
-        /// 租户ID
-        /// </summary>
-        [Required(ErrorMessage = "租户ID不能为空")]
-        [Range(0, 9999, ErrorMessage = "租户ID必须在0-9999之间")]
-        public long TenantId { get; set; }
 
         /// <summary>
         /// 语言内置（0否 1是）

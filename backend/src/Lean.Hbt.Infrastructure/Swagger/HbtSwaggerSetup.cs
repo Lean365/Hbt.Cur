@@ -56,13 +56,13 @@ namespace Lean.Hbt.Infrastructure.Swagger
                                     "5. 文件上传请使用 multipart/form-data",
                         Contact = new OpenApiContact
                         {
-                            Name = "Lean365",
+                            Name = "👨‍💻 Lean365",
                             Email = "support@lean365.com",
                             Url = new Uri("https://www.lean365.com")
                         },
                         License = new OpenApiLicense
                         {
-                            Name = "MIT License",
+                            Name = "📄 MIT License",
                             Url = new Uri("https://opensource.org/licenses/MIT")
                         }
                     });
@@ -149,7 +149,7 @@ namespace Lean.Hbt.Infrastructure.Swagger
         {
             app.UseSwagger(c =>
             {
-                c.SerializeAsV2 = false;
+                c.OpenApiVersion = Microsoft.OpenApi.OpenApiSpecVersion.OpenApi3_0;
                 c.RouteTemplate = "swagger/{documentName}/swagger.json";
             });
             

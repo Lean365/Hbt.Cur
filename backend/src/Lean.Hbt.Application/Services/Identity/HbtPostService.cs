@@ -37,31 +37,12 @@ namespace Lean.Hbt.Application.Services.Identity
         }
 
         /// <summary>
-        /// 构建岗位查询条件
-        /// </summary>
-        private Expression<Func<HbtPost, bool>> HbtPostQueryExpression(HbtPostQueryDto query)
-        {
-            var exp = Expressionable.Create<HbtPost>();
-
-            if (!string.IsNullOrEmpty(query.PostName))
-                exp.And(x => x.PostName.Contains(query.PostName));
-
-            if (!string.IsNullOrEmpty(query.PostCode))
-                exp.And(x => x.PostCode.Contains(query.PostCode));
-
-            if (query.Status.HasValue && query.Status.Value != -1)
-                exp.And(x => x.Status == query.Status.Value);
-
-            return exp.ToExpression();
-        }
-
-        /// <summary>
         /// 获取岗位分页列表
         /// </summary>
         public async Task<HbtPagedResult<HbtPostDto>> GetListAsync(HbtPostQueryDto query)
         {
             var result = await _postRepository.GetPagedListAsync(
-                HbtPostQueryExpression(query),
+                QueryExpression(query),
                 query.PageIndex,
                 query.PageSize,
                 x => x.OrderNum,
@@ -235,7 +216,7 @@ namespace Lean.Hbt.Application.Services.Identity
         {
             try
             {
-                var list = await _postRepository.GetListAsync(HbtPostQueryExpression(query));
+                var list = await _postRepository.GetListAsync(QueryExpression(query));
                 var exportList = list.Adapt<List<HbtPostExportDto>>();
                 return await HbtExcelHelper.ExportAsync(exportList, sheetName, "岗位数据");
             }
@@ -354,5 +335,27 @@ namespace Lean.Hbt.Application.Services.Identity
             return await _userPostRepository.DeleteAsync((HbtUserPost up) =>
                 up.PostId == postId && userIds.Contains(up.UserId)) > 0;
         }
+
+        
+
+        /// <summary>
+        /// 构建岗位查询条件
+        /// </summary>
+        private Expression<Func<HbtPost, bool>> QueryExpression(HbtPostQueryDto query)
+        {
+            var exp = Expressionable.Create<HbtPost>();
+
+            if (!string.IsNullOrEmpty(query.PostName))
+                exp.And(x => x.PostName.Contains(query.PostName));
+
+            if (!string.IsNullOrEmpty(query.PostCode))
+                exp.And(x => x.PostCode.Contains(query.PostCode));
+
+            if (query.Status.HasValue && query.Status.Value != -1)
+                exp.And(x => x.Status == query.Status.Value);
+
+            return exp.ToExpression();
+        }    
+    
     }
 }

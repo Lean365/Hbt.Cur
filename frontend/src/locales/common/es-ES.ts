@@ -288,16 +288,34 @@ export default {
       title: 'Importar Datos',
       file: 'Seleccionar Archivo',
       select: 'Seleccionar Archivo',
-      template: 'Descargar Plantilla',
+      template: 'Plantilla',
       download: 'Descargar Plantilla',
-      note: 'Instrucciones de Importación',
+      note: 'Instrucciones',
       tips: 'Por favor siga estrictamente el formato de la plantilla de importación, de lo contrario la importación puede fallar',
       format: '¡Solo se admiten archivos Excel!',
-      size: '¡El tamaño del archivo no puede exceder 2MB!',
+      size: '¡El tamaño del archivo no puede exceder {size}MB!',
       total: 'Registros Totales',
       success: 'Cantidad de Éxitos',
       failed: 'Cantidad de Fallos',
-      message: 'Razón del Fallo'
+      message: 'Razón del Fallo',
+      dragText: 'Haga clic o arrastre el archivo a esta área para cargar',
+      dragHint: 'Soporta archivos Excel en formato .xlsx',
+      sheetName: 'Por favor asegúrese de que el nombre de la hoja del archivo Excel sea: {sheetName}',
+      allSuccess: '¡Importación exitosa {count} registros, todos exitosos!',
+      partialSuccess: 'Importación exitosa {success} registros, fallidos {fail} registros',
+      allFailed: 'Toda la importación falló, total {count} registros',
+      noData: 'No se leyeron datos',
+      empty: 'El archivo está vacío, no se puede cargar',
+      importFailed: 'La importación falló',
+      templateFileName: 'Import_Template_{time}.xlsx',
+      limits: {
+        title: 'Límites de Importación',
+        fileCount: 'Límite de archivos: {count} archivo',
+        fileSize: 'Límite de tamaño de archivo: {size}MB',
+        recordCount: 'Límite de registros: {count} registros',
+        fileFormat: 'Formato de archivo: Solo se admite formato .xlsx'
+      },
+      recordLimit: 'La cantidad de registros para importar ({actual} registros) excede el límite ({max} registros), por favor importe en lotes'
     },
 
     // Carga

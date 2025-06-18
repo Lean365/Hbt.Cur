@@ -52,6 +52,23 @@ public class HbtGenTableService : HbtBaseService, IHbtGenTableService
     #region 基础操作
 
     /// <summary>
+    /// 获取分页表列表
+    /// </summary>
+    /// <param name="input">查询参数</param>
+    /// <returns>分页结果</returns>
+    public async Task<HbtPagedResult<HbtGenTableDto>> GetListAsync(HbtGenTableQueryDto input)
+    {
+        var result = await _tableRepository.GetPagedListAsync(
+            QueryExpression(input),
+            input.PageIndex,
+            input.PageSize,
+            x => x.CreateTime,
+            OrderByType.Desc);
+
+        return result.Adapt<HbtPagedResult<HbtGenTableDto>>();
+    }
+
+    /// <summary>
     /// 根据ID获取表信息
     /// </summary>
     /// <param name="id">表ID</param>
@@ -69,34 +86,6 @@ public class HbtGenTableService : HbtBaseService, IHbtGenTableService
         dto.Columns = columns.Adapt<List<HbtGenColumnDto>>();
 
         return dto;
-    }
-
-    /// <summary>
-    /// 构建查询条件
-    /// </summary>
-    private Expression<Func<HbtGenTable, bool>> HbtGenTableQueryExpression(HbtGenTableQueryDto input)
-    {
-        return Expressionable.Create<HbtGenTable>()
-            .AndIF(!string.IsNullOrEmpty(input.TableName), x => x.TableName.Contains(input.TableName))
-            .AndIF(!string.IsNullOrEmpty(input.TableComment), x => x.TableComment.Contains(input.TableComment))
-            .ToExpression();
-    }
-
-    /// <summary>
-    /// 获取分页表列表
-    /// </summary>
-    /// <param name="input">查询参数</param>
-    /// <returns>分页结果</returns>
-    public async Task<HbtPagedResult<HbtGenTableDto>> GetListAsync(HbtGenTableQueryDto input)
-    {
-        var result = await _tableRepository.GetPagedListAsync(
-            HbtGenTableQueryExpression(input),
-            input.PageIndex,
-            input.PageSize,
-            x => x.CreateTime,
-            OrderByType.Desc);
-
-        return result.Adapt<HbtPagedResult<HbtGenTableDto>>();
     }
 
     /// <summary>
@@ -253,7 +242,7 @@ public class HbtGenTableService : HbtBaseService, IHbtGenTableService
                 existingTable.BusinessName = input.BusinessName;
                 existingTable.FunctionName = input.FunctionName;
                 existingTable.Author = input.Author;
-                existingTable.GenType = input.GenType;
+                existingTable.GenMethod = input.GenMethod;
                 existingTable.GenPath = input.GenPath;
                 existingTable.ParentMenuId = input.ParentMenuId;
                 existingTable.SortType = input.SortType;
@@ -263,7 +252,7 @@ public class HbtGenTableService : HbtBaseService, IHbtGenTableService
                 existingTable.FrontTpl = input.FrontTpl;
                 existingTable.BtnStyle = input.BtnStyle;
                 existingTable.FrontStyle = input.FrontStyle;
-                existingTable.Status = input.Status;
+                existingTable.IsGenCode = input.IsGenCode;
 
 
                 // 获取并创建新的列信息
@@ -412,7 +401,7 @@ public class HbtGenTableService : HbtBaseService, IHbtGenTableService
                 table.BusinessName = input.BusinessName;
                 table.FunctionName = input.FunctionName;
                 table.Author = input.Author;
-                table.GenType = input.GenType;
+                table.GenMethod = input.GenMethod;
                 table.GenPath = input.GenPath;
                 table.ParentMenuId = input.ParentMenuId;
                 table.SortType = input.SortType;
@@ -422,7 +411,7 @@ public class HbtGenTableService : HbtBaseService, IHbtGenTableService
                 table.FrontTpl = input.FrontTpl;
                 table.BtnStyle = input.BtnStyle;
                 table.FrontStyle = input.FrontStyle;
-                table.Status = input.Status;
+                table.IsGenCode = input.IsGenCode;
 
 
                 _logger.Info($"开始获取列信息：{input.TableName}");
@@ -606,7 +595,7 @@ public class HbtGenTableService : HbtBaseService, IHbtGenTableService
                 table.BusinessName = HbtNamingHelper.GetBusinessName(tableName);
                 table.FunctionName = tableInfo.Description;
                 table.Author = "Lean365";
-                table.GenType = "0";
+                table.GenMethod = "0";
                 table.GenPath = "/";
                 table.ParentMenuId = 0;
                 table.SortType = "asc";
@@ -616,7 +605,7 @@ public class HbtGenTableService : HbtBaseService, IHbtGenTableService
                 table.FrontTpl = 2;
                 table.BtnStyle = 1;
                 table.FrontStyle = 24;
-                table.Status = 0;
+                table.IsGenCode = 0;
 
 
                 await _tableRepository.UpdateAsync(table);
@@ -673,7 +662,7 @@ public class HbtGenTableService : HbtBaseService, IHbtGenTableService
                 table.BusinessName = HbtNamingHelper.GetBusinessName(tableName);
                 table.FunctionName = tableInfo.Description;
                 table.Author = "Lean365";
-                table.GenType = "0";
+                table.GenMethod = "0";
                 table.GenPath = "/";
                 table.ParentMenuId = 0;
                 table.SortType = "asc";
@@ -683,7 +672,7 @@ public class HbtGenTableService : HbtBaseService, IHbtGenTableService
                 table.FrontTpl = 2;
                 table.BtnStyle = 1;
                 table.FrontStyle = 24;
-                table.Status = 0;
+                table.IsGenCode = 0;
 
 
                 await _tableRepository.CreateAsync(table);
@@ -874,4 +863,15 @@ public class HbtGenTableService : HbtBaseService, IHbtGenTableService
     }
 
     #endregion
+
+    /// <summary>
+    /// 构建查询条件
+    /// </summary>
+    private Expression<Func<HbtGenTable, bool>> QueryExpression(HbtGenTableQueryDto input)
+    {
+        return Expressionable.Create<HbtGenTable>()
+            .AndIF(!string.IsNullOrEmpty(input.TableName), x => x.TableName.Contains(input.TableName))
+            .AndIF(!string.IsNullOrEmpty(input.TableComment), x => x.TableComment.Contains(input.TableComment))
+            .ToExpression();
+    }
 }

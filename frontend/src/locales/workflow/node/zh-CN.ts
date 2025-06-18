@@ -2,90 +2,75 @@ export default {
   workflow: {
     node: {
       title: '工作流节点',
-      list: {
-        title: '工作流节点列表',
-        search: {
-          name: '节点名称',
-          nodeType: '节点类型',
-          workflowDefinitionId: '工作流定义'
-        },
-        table: {
-          name: '节点名称',
-          nodeType: '节点类型',
-          description: '描述',
-          createTime: '创建时间',
-          updateTime: '更新时间',
-          actions: '操作'
-        },
-        actions: {
-          create: '新建',
-          edit: '编辑',
-          delete: '删除',
-          view: '查看',
-          export: '导出',
-          import: '导入',
-          refresh: '刷新'
-        },
-        nodeType: {
-          start: '开始节点',
-          end: '结束节点',
-          task: '任务节点',
-          condition: '条件节点',
-          parallel: '并行节点',
-          join: '合并节点'
-        }
+      fields: {
+        instanceId: '实例ID',
+        nodeId: '节点ID',
+        nodeName: '节点名称',
+        nodeType: '节点类型',
+        definitionId: '定义ID',
+        parentNodeId: '父节点ID',
+        nodeConfig: '节点配置',
+        status: '状态',
+        startTime: '开始时间',
+        endTime: '结束时间',
+        orderNum: '排序',
       },
-      form: {
-        title: {
-          create: '新建工作流节点',
-          edit: '编辑工作流节点'
-        },
-        fields: {
-          name: '节点名称',
-          nodeType: '节点类型',
-          description: '描述',
-          workflowDefinitionId: '工作流定义',
-          config: '节点配置'
-        },
-        rules: {
-          name: {
+      placeholder: {
+        instanceId: '请输入实例ID',
+        nodeId: '请输入节点ID',
+        nodeName: '请输入节点名称',
+        nodeType: '请选择节点类型',
+        definitionId: '请输入定义ID',
+        parentNodeId: '请输入父节点ID',
+        nodeConfig: '请输入节点配置',
+        status: '请选择状态',
+        startTime: '请输入开始时间',
+        endTime: '请输入结束时间',
+        orderNum: '请输入排序',
+        remark: '请输入备注',
+        validation: {
+          instanceId: {
+            required: '请输入实例ID',
+          },
+          nodeId: {
+            required: '请输入节点ID',
+          },
+          nodeName: {
             required: '请输入节点名称',
-            max: '节点名称不能超过50个字符'
+            length: '节点名称长度必须在2-50个字符之间',
+            pattern: '节点名称只能包含中文、英文、数字、下划线和横线',
           },
           nodeType: {
-            required: '请选择节点类型'
+            required: '请选择节点类型',
           },
-          workflowDefinitionId: {
-            required: '请选择工作流定义'
-          }
+          definitionId: {
+            required: '请输入定义ID',
+          },
+          parentNodeId: {
+            required: '请输入父节点ID',
+          },
+          nodeConfig: {
+            required: '请输入节点配置',
+            length: '节点配置长度必须在2-20000个字符之间',
+          },
+          status: {
+            required: '请选择状态',
+          },
+          startTime: {
+            required: '请输入开始时间',
+          },
+          endTime: {
+            required: '请输入结束时间',
+          },
+          orderNum: {
+            required: '请输入排序',
+          },
+          remark: {
+            required: '请输入备注',
+            length: '备注长度必须在2-200个字符之间',
+          },
         },
-        buttons: {
-          submit: '提交',
-          cancel: '取消'
-        }
       },
-      detail: {
-        title: '工作流节点详情',
-        basic: {
-          title: '基本信息',
-          name: '节点名称',
-          nodeType: '节点类型',
-          description: '描述',
-          workflowDefinitionId: '工作流定义',
-          createTime: '创建时间',
-          updateTime: '更新时间'
-        },
-        config: {
-          title: '节点配置',
-          taskId: '任务ID',
-          condition: '条件表达式',
-          parallelNodes: '并行节点'
-        },
-        actions: {
-          edit: '编辑',
-          back: '返回'
-        }
-      }
-    }
-  }
-} 
+    },
+  },
+}

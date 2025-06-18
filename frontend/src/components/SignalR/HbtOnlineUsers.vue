@@ -61,14 +61,10 @@ import { signalRService } from '@/utils/SignalR/service'
 import { TeamOutlined } from '@ant-design/icons-vue'
 import { useUserStore } from '@/stores/user'
 import { message } from 'ant-design-vue'
-import dayjs from 'dayjs'
-import relativeTime from 'dayjs/plugin/relativeTime'
-import 'dayjs/locale/zh-cn'
+import { formatDistanceToNow } from 'date-fns'
+import { zhCN } from 'date-fns/locale'
 import { getOnlineUserList } from '@/api/signalr/onlineUser'
 import type { HbtOnlineUserQueryParams, HbtOnlineUserDto } from '@/types/signalr/onlineUser'
-
-dayjs.extend(relativeTime)
-dayjs.locale('zh-cn')
 
 interface OnlineUser {
   userId: number
@@ -183,7 +179,7 @@ const handleUserActivityUpdate = (userId: number, lastActiveTime: string) => {
 
 // 格式化最后活动时间
 const formatLastActiveTime = (time: string) => {
-  return dayjs(time).fromNow()
+  return formatDistanceToNow(new Date(time), { addSuffix: true, locale: zhCN })
 }
 
 // 获取用户状态文本

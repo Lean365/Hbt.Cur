@@ -21,6 +21,7 @@ global using Lean.Hbt.Application.Dtos.SignalR;
 global using Lean.Hbt.Application.Dtos.Workflow;
 global using Lean.Hbt.Common.Exceptions;
 global using Lean.Hbt.Common.Helpers;
+global using Lean.Hbt.Common.Enums;
 // 项目依赖
 global using Lean.Hbt.Common.Models;
 global using Lean.Hbt.Domain.Entities;
@@ -36,5 +37,6 @@ global using Lean.Hbt.Domain.Repositories;
 global using Lean.Hbt.Domain.Utils;
 global using Mapster;
 global using SqlSugar;
+global using System.Linq.Expressions;
 
 // Microsoft 扩展

@@ -46,6 +46,7 @@ export default {
     },
     workflow: {
       _self: 'سير العمل',
+      form: 'إدارة النماذج',
       definition: 'تعريف العملية',
       instance: 'مثيل العملية',
       task: 'المهمة',
@@ -54,10 +55,9 @@ export default {
       history: 'تاريخ العملية'
     },
     signalr: {
-      _self: 'المراقبة في الوقت الفعلي',
-      server: 'مراقبة الخادم',
-      online: 'المستخدمون المتصلون',
-      message: 'الرسائل المتصلة'
+      _self: 'الوقت الفعلي',
+      online: 'المستخدمون',
+      message: 'الرسائل'
     },
     generator: {
       _self: 'إنشاء الكود',

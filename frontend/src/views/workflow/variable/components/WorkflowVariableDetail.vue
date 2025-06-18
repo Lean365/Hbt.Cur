@@ -48,8 +48,8 @@
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { message } from 'ant-design-vue'
-import type { HbtWorkflowVariable } from '@/types/workflow/workflowVariable'
-import { getWorkflowVariable } from '@/api/workflow/workflowVariable'
+import type { HbtWorkflowVariable } from '@/types/workflow/variable'
+import { getWorkflowVariable } from '@/api/workflow/variable'
 
 const route = useRoute()
 const router = useRouter()

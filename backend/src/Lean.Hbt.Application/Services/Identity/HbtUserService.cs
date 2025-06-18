@@ -31,7 +31,6 @@ namespace Lean.Hbt.Application.Services.Identity
         private readonly IHbtRepository<HbtUserDept> _userDeptRepository;
         private readonly IHbtRepository<HbtUserTenant> _userTenantRepository;
         private readonly IHbtPasswordPolicy _passwordPolicy;
-        private readonly IHbtRepository<HbtTenant> _tenantRepository;
 
         /// <summary>
         /// 构造函数
@@ -44,7 +43,6 @@ namespace Lean.Hbt.Application.Services.Identity
             IHbtRepository<HbtUserDept> userDeptRepository,
             IHbtRepository<HbtUserTenant> userTenantRepository,
             IHbtPasswordPolicy passwordPolicy,
-            IHbtRepository<HbtTenant> tenantRepository,
             IHbtCurrentUser currentUser,
             IHttpContextAccessor httpContextAccessor,
             IHbtCurrentTenant currentTenant,
@@ -56,7 +54,6 @@ namespace Lean.Hbt.Application.Services.Identity
             _userDeptRepository = userDeptRepository;
             _userTenantRepository = userTenantRepository;
             _passwordPolicy = passwordPolicy;
-            _tenantRepository = tenantRepository;
         }
 
         /// <summary>
@@ -128,15 +125,6 @@ namespace Lean.Hbt.Application.Services.Identity
             if (string.IsNullOrEmpty(input.UserName))
                 throw new HbtException(L("Identity.User.Username.Required"));
 
-            // 验证租户是否存在且有效
-            //var tenant = await _tenantRepository.GetByIdAsync(input.TenantId);
-            var tenant = await _tenantRepository.GetFirstAsync(x => x.Id == input.TenantId);
-            if (tenant == null)
-                throw new HbtException(L("Identity.Tenant.NotFound"));
-
-            if (tenant.Status != 0)
-                throw new HbtException(L("Identity.Tenant.Disabled"));
-
             // 验证字段是否已存在
             await HbtValidateUtils.ValidateFieldExistsAsync(_userRepository, "UserName", input.UserName);
             await HbtValidateUtils.ValidateFieldExistsAsync(_userRepository, "PhoneNumber", input.PhoneNumber);
@@ -204,6 +192,24 @@ namespace Lean.Hbt.Application.Services.Identity
                 }).ToList();
 
                 await _userDeptRepository.CreateRangeAsync(userDepts);
+            }
+
+            // 添加用户租户关联
+            if (input.TenantIds != null && input.TenantIds.Any())
+            {
+                var userTenants = input.TenantIds.Select(tenantId => new HbtUserTenant
+                {
+                    UserId = user.Id,
+                    TenantId = tenantId,
+                    Status = 0,
+                    IsDeleted = 0,
+                    CreateBy = _currentUser.UserName,
+                    CreateTime = DateTime.Now,
+                    UpdateBy = _currentUser.UserName,
+                    UpdateTime = DateTime.Now
+                }).ToList();
+
+                await _userTenantRepository.CreateRangeAsync(userTenants);
             }
 
             _logger.Info(L("Common.AddSuccess"));

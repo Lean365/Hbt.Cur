@@ -1,0 +1,63 @@
+#nullable enable
+
+//===================================================================
+// 项目名 : Lean.Hbt
+// 文件名 : HbtTransition.cs
+// 创建者 : Lean365
+// 创建时间: 2024-01-23 12:00
+// 版本号 : V1.0.0
+// 描述    : 工作流转换实体
+//===================================================================
+
+namespace Lean.Hbt.Domain.Entities.Workflow
+{
+    /// <summary>
+    /// 工作流转换实体
+    /// </summary>
+    [SugarTable("hbt_workflow_transition", "工作流转换表")]
+    public class HbtTransition : HbtBaseEntity
+    {
+        /// <summary>
+        /// 源节点ID
+        /// </summary>
+        [SugarColumn(ColumnName = "source_node_id", ColumnDescription = "源节点ID", ColumnDataType = "bigint", IsNullable = false)]
+        public long SourceNodeId { get; set; }
+
+        /// <summary>
+        /// 目标节点ID
+        /// </summary>
+        [SugarColumn(ColumnName = "target_node_id", ColumnDescription = "目标节点ID", ColumnDataType = "bigint", IsNullable = false)]
+        public long TargetNodeId { get; set; }
+
+        /// <summary>
+        /// 转换条件(JSON格式)
+        /// </summary>
+        [SugarColumn(ColumnName = "condition", ColumnDescription = "转换条件", ColumnDataType = "text", IsNullable = true)]
+        public string? Condition { get; set; }
+
+        /// <summary>
+        /// 工作流定义ID
+        /// </summary>
+        [SugarColumn(ColumnName = "workflow_definition_id", ColumnDescription = "工作流定义ID", ColumnDataType = "bigint", IsNullable = false)]
+        public long DefinitionId { get; set; }
+
+
+        /// <summary>
+        /// 源节点
+        /// </summary>
+        [Navigate(NavigateType.OneToOne, nameof(SourceNodeId))]
+        public HbtNode? SourceNode { get; set; }
+
+        /// <summary>
+        /// 目标节点
+        /// </summary>
+        [Navigate(NavigateType.OneToOne, nameof(TargetNodeId))]
+        public HbtNode? TargetNode { get; set; }
+
+        /// <summary>
+        /// 工作流定义
+        /// </summary>
+        [Navigate(NavigateType.OneToOne, nameof(DefinitionId))]
+        public HbtDefinition? WorkflowDefinition { get; set; }
+    }
+}

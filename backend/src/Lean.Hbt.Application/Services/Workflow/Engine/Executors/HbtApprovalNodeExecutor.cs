@@ -9,35 +9,27 @@
 // 描述    : 审批节点执行器
 //===================================================================
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Text.Json;
-using Lean.Hbt.Common.Enums;
-using Lean.Hbt.Domain.Entities.Workflow;
-using Lean.Hbt.Domain.Models.Workflow;
-using Lean.Hbt.Domain.Repositories;
 using Lean.Hbt.Application.Services.Workflow.Engine.Resolvers;
-using Lean.Hbt.Domain.IServices.Extensions;
+using Lean.Hbt.Domain.Models.Workflow;
 
 namespace Lean.Hbt.Application.Services.Workflow.Engine.Executors
 {
     /// <summary>
     /// 审批节点执行器
     /// </summary>
-    public class HbtApprovalNodeExecutor : HbtWorkflowNodeExecutorBase
+    public class HbtApprovalNodeExecutor : HbtNodeExecutorBase
     {
-        private readonly IHbtRepository<HbtWorkflowTask> _taskRepository;
-        private readonly IHbtWorkflowApproverResolver _approverResolver;
+        private readonly IHbtRepository<HbtProcessTask> _taskRepository;
+        private readonly IHbtApproverResolver _approverResolver;
 
         /// <summary>
         /// 构造函数
         /// </summary>
         public HbtApprovalNodeExecutor(
             IHbtLogger logger,
-            IHbtRepository<HbtWorkflowTask> taskRepository,
-            IHbtWorkflowApproverResolver approverResolver) 
+            IHbtRepository<HbtProcessTask> taskRepository,
+            IHbtApproverResolver approverResolver)
             : base(logger)
         {
             _taskRepository = taskRepository;
@@ -52,9 +44,9 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine.Executors
         /// <summary>
         /// 执行审批节点
         /// </summary>
-        protected override async Task<HbtWorkflowNodeResult> ExecuteInternalAsync(
-            HbtWorkflowInstance instance,
-            HbtWorkflowNode node,
+        protected override async Task<HbtNodeResult> ExecuteInternalAsync(
+            HbtInstance instance,
+            HbtNode node,
             Dictionary<string, object>? variables = null)
         {
             try
@@ -62,7 +54,7 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine.Executors
                 _logger.Info($"开始执行审批节点: 实例ID={instance.Id}, 节点ID={node.Id}");
 
                 // 解析节点配置
-                var config = JsonSerializer.Deserialize<HbtWorkflowNodeConfig>(node.NodeConfig);
+                var config = JsonSerializer.Deserialize<HbtNodeConfig>(node.NodeConfig);
                 if (config == null)
                 {
                     var error = $"节点配置无效: 节点ID={node.Id}";
@@ -84,9 +76,9 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine.Executors
                 // 创建审批任务
                 foreach (var approverId in approvers)
                 {
-                    var task = new HbtWorkflowTask
+                    var task = new HbtProcessTask
                     {
-                        WorkflowInstanceId = instance.Id,
+                        InstanceId = instance.Id,
                         NodeId = node.Id,
                         AssigneeId = approverId,
                         TaskType = 2, // 2 表示审批任务
@@ -115,4 +107,4 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine.Executors
             }
         }
     }
-} 
+}

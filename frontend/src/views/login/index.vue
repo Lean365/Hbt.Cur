@@ -127,6 +127,8 @@ import { getTenantOptions } from '@/api/identity/tenant'
 import { PasswordEncryptor } from '@/utils/crypto'
 import { useUserStore } from '@/stores/user'
 import { useMenuStore } from '@/stores/menu'
+import { useAppStore } from '@/stores/app'
+import { useTranslationStore } from '@/stores/translation'
 import { useI18n } from 'vue-i18n'
 import { message } from 'ant-design-vue'
 import { ref, reactive, onMounted, onUnmounted, nextTick, watch, computed, h } from 'vue'
@@ -143,6 +145,8 @@ const router = useRouter()
 const route = useRoute()
 const userStore = useUserStore()
 const menuStore = useMenuStore()
+const appStore = useAppStore()
+const translationStore = useTranslationStore()
 
 // 表单引用
 const loginFormRef = ref<FormInstance>()
@@ -335,44 +339,41 @@ const handleLogin = async () => {
   }
 }
 
-// 处理登录成功
+// 登录成功处理
 const handleLoginSuccess = async () => {
+  console.log('[登录成功] 开始处理登录成功流程')
+  
+  // 记录登录时间
+  await userStore.recordLoginTime()
+  console.log('[登录成功] 记录登录时间完成')
+  
+  // 重置失败次数
+  await userStore.resetLoginFailCount()
+  console.log('[登录成功] 重置失败次数完成')
+  
+  // 开始加载菜单
+  console.log('[登录成功] 开始加载菜单')
+  await menuStore.reloadMenus(router)
+  console.log('[登录成功] 菜单加载完成')
+  
+  // 等待路由更新完成
+  console.log('[登录成功] 等待路由更新完成')
+  await nextTick()
+  
+  // 初始化翻译
   try {
-    console.log('[登录成功] 开始处理登录成功流程')
-    
-    // 记录登录时间
-    await userStore.recordLoginTime()
-    console.log('[登录成功] 记录登录时间完成')
-    
-    // 重置失败次数
-    await userStore.resetLoginFailCount()
-    console.log('[登录成功] 重置失败次数完成')
-    
-    // 开始加载菜单
-    console.log('[登录成功] 开始加载菜单')
-    await menuStore.reloadMenus(router)
-    console.log('[登录成功] 菜单加载完成')
-    
-    // 等待路由更新完成
-    console.log('[登录成功] 等待路由更新完成')
-    await nextTick()
-    console.log('[登录成功] 准备跳转到首页')
-    
-    // 获取重定向地址
-    const redirect = route.query.redirect as string
-    const targetPath = redirect || '/home'
-    
-    // 如果当前路径不是目标路径，则进行跳转
-    if (route.path !== targetPath) {
-      await router.push(targetPath)
-      console.log('[登录成功] 跳转到:', targetPath)
-    } else {
-      console.log('[登录成功] 已在目标页面，无需跳转')
-    }
+    console.log('[登录成功] 开始初始化翻译')
+    await translationStore.initializeTranslations(appStore.language)
+    console.log('[登录成功] 翻译初始化完成')
   } catch (error) {
-    console.error('[登录成功] 处理登录成功流程失败:', error)
-    message.error('登录成功，但初始化失败，请刷新页面重试')
+    console.error('[登录成功] 翻译初始化失败:', error)
   }
+  
+  // 准备跳转到首页
+  console.log('[登录成功] 准备跳转到首页')
+  const targetPath = route.query.redirect as string || '/home'
+  router.push(targetPath)
+  console.log('[登录成功] 跳转到:', targetPath)
 }
 
 // 处理登录错误

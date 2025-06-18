@@ -52,6 +52,20 @@
     >
       <!-- 操作列 -->
       <template #bodyCell="{ column, record }">
+
+        <!-- 生成方式列 -->
+        <template v-if="column.dataIndex === 'genMethod'">
+          <hbt-dict-tag :value="record.genMethod" dict-type="gen_method" />
+        </template>
+        <!-- 模板类型列 -->
+        <template v-if="column.dataIndex === 'genTplType'">
+          <hbt-dict-tag :value="record.genTplType" dict-type="gen_tpl_type" />
+        </template>
+        <!-- 状态列 -->
+        <template v-if="column.dataIndex === 'status'">
+          <hbt-dict-tag :value="record.status" dict-type="sys_normal_disable" />
+        </template>
+        <!-- 操作列 -->
         <template v-if="column.key === 'action'">
           <hbt-operation
             :record="record"
@@ -133,152 +147,170 @@ const { t } = useI18n()
 const queryFields: QueryField[] = [
   {
     name: 'genConfigName',
-    label: '配置名称',
-    type: 'input',
-    placeholder: '请输入配置名称'
+    label: t('generator.config.fields.genConfigName'),
+
+    type: 'input' as const
   },
   {
-    name: 'author',
-    label: '作者',
-    type: 'input',
-    placeholder: '请输入作者'
+    name: 'projectName',
+    label: t('generator.config.fields.projectName'),
+    type: 'input' as const
   },
   {
     name: 'moduleName',
-    label: '模块名',
-    type: 'input',
-    placeholder: '请输入模块名'
-  },
-  {
-    name: 'packageName',
-    label: '包名',
-    type: 'input',
-    placeholder: '请输入包名'
+    label: t('generator.config.fields.moduleName'),
+    type: 'input' as const
   },
   {
     name: 'businessName',
-    label: '业务名',
-    type: 'input',
-    placeholder: '请输入业务名'
+    label: t('generator.config.fields.businessName'),
+    type: 'input' as const
   },
   {
     name: 'functionName',
-    label: '功能名',
-    type: 'input',
-    placeholder: '请输入功能名'
+    label: t('generator.config.fields.functionName'),
+    type: 'input' as const
   },
   {
-    name: 'genType',
-    label: '生成类型',
-    type: 'select',
-    placeholder: '请选择生成类型'
-  },
-  {
-    name: 'genTemplateType',
-    label: '模板选用方式',
-    type: 'select',
-    placeholder: '请选择模板选用方式'
-  },
-  {
-    name: 'genPath',
-    label: '生成路径',
-    type: 'input',
-    placeholder: '请输入生成路径'
+    name: 'genMethod',
+    label: t('generator.config.fields.genMethod'),
+    type: 'select' as const,
+    props: {
+      dictType: 'gen_method',
+      type: 'radio',
+      showAll: true
+    }
   },
   {
     name: 'status',
-    label: '状态',
-    type: 'select',
-    placeholder: '请选择状态'
+    label: t('generator.config.fields.status'),
+    type: 'select' as const,
+    props: {
+      dictType: 'sys_normal_disable',
+      type: 'radio',
+      showAll: true
+    }
   },
   {
     name: 'dateRange',
-    label: '创建时间',
-    type: 'dateRange',
-    placeholder: '请选择时间范围'
+    label: t('generator.config.fields.dateRange'),
+    type: 'dateRange' as const
   }
 ]
 
 // 表格列定义
 const columns = [
   {
-    title: '配置名称',
+    title: t('generator.config.fields.genConfigName'),
     dataIndex: 'genConfigName',
     key: 'genConfigName',
     width: 120,
     ellipsis: true
   },
   {
-    title: '作者',
+    title: t('generator.config.fields.author'),
     dataIndex: 'author',
     key: 'author',
     width: 100,
     ellipsis: true
   },
   {
-    title: '模块名',
+    title: t('generator.config.fields.projectName'),
+    dataIndex: 'projectName',
+    key: 'projectName',
+    width: 150,
+    ellipsis: true
+  },
+  {
+    title: t('generator.config.fields.moduleName'),
     dataIndex: 'moduleName',
     key: 'moduleName',
     width: 120,
     ellipsis: true
   },
+
   {
-    title: '包名',
-    dataIndex: 'packageName',
-    key: 'packageName',
-    width: 150,
-    ellipsis: true
-  },
-  {
-    title: '业务名',
+    title: t('generator.config.fields.businessName'),
     dataIndex: 'businessName',
     key: 'businessName',
     width: 120,
     ellipsis: true
   },
   {
-    title: '功能名',
+    title: t('generator.config.fields.functionName'),
     dataIndex: 'functionName',
     key: 'functionName',
     width: 120,
     ellipsis: true
   },
   {
-    title: '生成类型',
-    dataIndex: 'genType',
-    key: 'genType',
+    title: t('generator.config.fields.genMethod'),
+    dataIndex: 'genMethod',
+    key: 'genMethod',
     width: 100
   },
   {
-    title: '模板选用方式',
-    dataIndex: 'genTemplateType',
-    key: 'genTemplateType',
+    title: t('generator.config.fields.genTplType'),
+    dataIndex: 'genTplType',
+    key: 'genTplType',
     width: 150
   },
   {
-    title: '生成路径',
+    title: t('generator.config.fields.genPath'),
     dataIndex: 'genPath',
     key: 'genPath',
     width: 200,
     ellipsis: true
   },
   {
-    title: '状态',
+    title: t('generator.config.fields.status'),
     dataIndex: 'status',
     key: 'status',
     width: 100
   },
   {
-    title: '创建时间',
-    dataIndex: 'createTime',
-    key: 'createTime',
-    width: 180
+    title: t('table.columns.remark'),
+    dataIndex: 'remark',
+    key: 'remark',
+    width: 120,
+    ellipsis: true
   },
   {
-    title: '操作',
-    key: 'action',
+    title: t('table.columns.createBy'),
+    dataIndex: 'createBy',
+    key: 'createBy',
+    width: 120,
+    ellipsis: true
+  },
+  {
+    title: t('table.columns.createTime'),
+    dataIndex: 'createTime',
+    key: 'createTime',
     width: 180,
-    fixed: 'right'
+    ellipsis: true
+  },
+  {
+    title: t('table.columns.updateBy'),
+    dataIndex: 'updateBy',
+    key: 'updateBy',
+    width: 120,
+    ellipsis: true
+  },
+  {
+    title: t('table.columns.updateTime'),
+    dataIndex: 'updateTime',
+    key: 'updateTime',
+    width: 180,
+    ellipsis: true
+  },
+  {
+    title: t('table.columns.operation'),
+    dataIndex: 'action',
+    key: 'action',
+    width: 150,
+    fixed: 'right',
+    align: 'center',
+    ellipsis: true
   }
 ]
 
@@ -304,15 +336,12 @@ const queryParams = ref<HbtGenConfigQuery>({
   pageIndex: 1,
   pageSize: 10,
   genConfigName: '',
-  author: '',
   moduleName: '',
-  packageName: '',
+  projectName: '',
   businessName: '',
   functionName: '',
-  genType: undefined,
-  genTemplateType: undefined,
-  genPath: '',
-  status: undefined,
+  genMethod: -1,
+  status: -1,
   dateRange: undefined
 })
 const selectedRowKeys = ref<(string | number)[]>([])
@@ -331,6 +360,9 @@ onMounted(() => {
 const fetchData = async () => {
   loading.value = true
   try {
+    console.log('查询参数:', {
+      ...queryParams.value
+    })
     const res = await getGenConfigList(queryParams.value)
     if (res.data.code === 200) {
       tableData.value = res.data.data.rows
@@ -347,7 +379,10 @@ const fetchData = async () => {
 }
 
 /** 搜索按钮操作 */
-const handleQuery = () => {
+const handleQuery = (values?: any) => {
+  if (values) {
+    Object.assign(queryParams.value, values)
+  }
   queryParams.value.pageIndex = 1
   selectedRowKeys.value = []
   fetchData()
@@ -359,15 +394,12 @@ const resetQuery = () => {
     pageIndex: 1,
     pageSize: 10,
     genConfigName: '',
-    author: '',
     moduleName: '',
-    packageName: '',
+    projectName: '',
     businessName: '',
     functionName: '',
-    genType: undefined,
-    genTemplateType: undefined,
-    genPath: '',
-    status: undefined,
+    genMethod: -1,
+    status: -1,
     dateRange: undefined
   }
   selectedRowKeys.value = []

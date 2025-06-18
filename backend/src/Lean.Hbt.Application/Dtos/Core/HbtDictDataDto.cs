@@ -234,15 +234,15 @@ namespace Lean.Hbt.Application.Dtos.Core
         public int? ListClass { get; set; }
 
         /// <summary>
-        /// 备注
-        /// </summary>
-        [MaxLength(500, ErrorMessage = "备注长度不能超过500个字符")]
-        public string? Remark { get; set; }
-
-        /// <summary>
         /// 状态（0正常 1停用）
         /// </summary>
         public int Status { get; set; } = 0;
+
+        /// <summary>
+        /// 备注
+        /// </summary>
+        [MaxLength(500, ErrorMessage = "备注长度不能超过500个字符")]
+        public string? Remark { get; set; }        
     }
 
     /// <summary>

@@ -27,63 +27,63 @@ public class HbtGenConfig : HbtBaseEntity
     /// 配置名称
     /// </summary>
     [SugarColumn(ColumnName = "gen_config_name", ColumnDescription = "配置名称", Length = 100, ColumnDataType = "nvarchar", IsNullable = false, DefaultValue = "")]
-    public string GenConfigName { get; set; } = string.Empty;
+    public string? GenConfigName { get; set; } 
 
     /// <summary>
     /// 作者
     /// </summary>
     [SugarColumn(ColumnName = "author", ColumnDescription = "作者", Length = 50, ColumnDataType = "nvarchar", IsNullable = false, DefaultValue = "")]
-    public string Author { get; set; } = string.Empty;
+    public string? Author { get; set; }
 
     #endregion
 
     #region 模块配置
 
     /// <summary>
+    /// 项目名称
+    /// </summary>
+    [SugarColumn(ColumnName = "project_name", ColumnDescription = "项目名称", Length = 50, ColumnDataType = "nvarchar", IsNullable = false, DefaultValue = "")]
+    public string? ProjectName { get; set; } 
+
+    /// <summary>
     /// 模块名
     /// </summary>
     [SugarColumn(ColumnName = "module_name", ColumnDescription = "模块名", Length = 50, ColumnDataType = "nvarchar", IsNullable = false, DefaultValue = "")]
-    public string ModuleName { get; set; } = string.Empty;
-
-    /// <summary>
-    /// 包名
-    /// </summary>
-    [SugarColumn(ColumnName = "package_name", ColumnDescription = "包名", Length = 100, ColumnDataType = "nvarchar", IsNullable = false, DefaultValue = "")]
-    public string PackageName { get; set; } = string.Empty;
+    public string? ModuleName { get; set; } 
 
     /// <summary>
     /// 业务名
     /// </summary>
     [SugarColumn(ColumnName = "business_name", ColumnDescription = "业务名", Length = 50, ColumnDataType = "nvarchar", IsNullable = false, DefaultValue = "")]
-    public string BusinessName { get; set; } = string.Empty;
+    public string? BusinessName { get; set; } 
 
     /// <summary>
     /// 功能名
     /// </summary>
     [SugarColumn(ColumnName = "function_name", ColumnDescription = "功能名", Length = 50, ColumnDataType = "nvarchar", IsNullable = false, DefaultValue = "")]
-    public string FunctionName { get; set; } = string.Empty;
+    public string? FunctionName { get; set; } 
 
     #endregion
 
     #region 生成配置
 
     /// <summary>
-    /// 生成类型
+    /// 生成代码方式（0zip压缩包 1自定义路径）)
     /// </summary>
-    [SugarColumn(ColumnName = "gen_type", ColumnDescription = "生成类型", ColumnDataType = "int", IsNullable = false, DefaultValue = "1")]
-    public int GenType { get; set; } = 1;
+    [SugarColumn(ColumnName = "gen_method", ColumnDescription = "生成方式", ColumnDataType = "int", IsNullable = false, DefaultValue = "1")]
+    public int GenMethod { get; set; }
 
     /// <summary>
-    /// 模板选用方式（0：使用wwwroot/Generator/*.scriban模板，1：使用HbtGenTemplate表中的模板）
+    /// 模板类型（0：使用wwwroot/Generator/*.scriban模板，1：使用HbtGenTemplate表中的模板）
     /// </summary>
-    [SugarColumn(ColumnName = "gen_template_type", ColumnDescription = "模板选用方式（0：使用wwwroot/Generator/*.scriban模板，1：使用HbtGenTemplate表中的模板）", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
-    public int GenTemplateType { get; set; } = 0;
+    [SugarColumn(ColumnName = "gen_tpl_type", ColumnDescription = "模板类型", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
+    public int GenTplType { get; set; }
 
     /// <summary>
     /// 生成路径
     /// </summary>
     [SugarColumn(ColumnName = "gen_path", ColumnDescription = "生成路径", Length = 200, ColumnDataType = "nvarchar", IsNullable = false, DefaultValue = "")]
-    public string GenPath { get; set; } = string.Empty;
+    public string? GenPath { get; set; } 
 
     /// <summary>
     /// 选项配置
@@ -94,8 +94,8 @@ public class HbtGenConfig : HbtBaseEntity
     /// <summary>
     /// 状态（0正常 1停用）
     /// </summary>
-    [SugarColumn(ColumnName = "status", ColumnDescription = "状态（0正常 1停用）", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
-    public int Status { get; set; } = 0;
+    [SugarColumn(ColumnName = "status", ColumnDescription = "状态", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
+    public int Status { get; set; }
 
     #endregion
 }

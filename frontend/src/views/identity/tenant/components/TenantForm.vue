@@ -116,6 +116,7 @@ import { message } from 'ant-design-vue'
 import type { Rule } from 'ant-design-vue/es/form'
 import type { HbtTenantCreate } from '@/types/identity/tenant'
 import { getTenant, createTenant, updateTenant } from '@/api/identity/tenant'
+import { addYears, subDays, format } from 'date-fns'
 import dayjs from 'dayjs'
 import DbConnection from './DbConnection.vue'
 
@@ -155,8 +156,8 @@ const formData = ref<Partial<HbtTenantCreate>>({
   licenseEndTime: dayjs().add(1, 'year').subtract(1, 'day'),
   maxUserCount: 9,
   expireTime: dayjs().add(1, 'year').subtract(1, 'day'),
-  status:1,
-  isDefault:0
+  status: 1,
+  isDefault: 0
 })
 
 // 校验规则
@@ -231,6 +232,9 @@ watch(
           if (data.licenseEndTime) {
             data.licenseEndTime = dayjs(data.licenseEndTime)
           }
+          if (data.expireTime) {
+            data.expireTime = dayjs(data.expireTime)
+          }
           formData.value = data
         } else {
           message.error(res.data.msg || t('common.failed'))
@@ -276,6 +280,9 @@ const handleOk = async () => {
     }
     if (data.licenseEndTime) {
       data.licenseEndTime = dayjs(data.licenseEndTime).format('YYYY-MM-DD HH:mm:ss')
+    }
+    if (data.expireTime) {
+      data.expireTime = dayjs(data.expireTime).format('YYYY-MM-DD HH:mm:ss')
     }
     let res
     if (!props.tenantId) {

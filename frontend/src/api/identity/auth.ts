@@ -234,4 +234,16 @@ export function checkLogin(data: LoginParams): Promise<AxiosResponse<HbtApiRespo
     method: 'post',
     data: loginDto
   })
+}
+
+/**
+ * 刷新用户令牌
+ * @param refreshToken 刷新令牌
+ */
+export function refreshUserToken(refreshToken: string): Promise<AxiosResponse<HbtApiResponse<LoginResultData>>> {
+  return request({
+    url: '/api/HbtAuth/refresh-token',
+    method: 'post',
+    data: { refreshToken }
+  })
 } 

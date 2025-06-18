@@ -46,6 +46,7 @@ export default {
     },
     workflow: {
       _self: 'Flujo de trabajo',
+      form: 'Formulario',
       definition: 'Definición del proceso',
       instance: 'Instancia del proceso',
       task: 'Tarea',
@@ -54,15 +55,14 @@ export default {
       history: 'Historial del proceso'
     },
     signalr: {
-      _self: 'Monitorización en tiempo real',
-      server: 'Monitorización del servidor',
-      online: 'Usuarios en línea',
-      message: 'Mensajes en línea'
+      _self: 'Tiempo real',
+      online: 'Usuarios',
+      message: 'Mensajes'
     },
     generator: {
       _self: 'Generación de código',
       table: 'Tabla de base de datos',
-      tableDefine: 'Tabla personalizada',
+      tableDefine: 'Columna de tabla',
       template: 'Plantilla de código',
       config: 'Configuración de generación',
       api: 'Documentación API'

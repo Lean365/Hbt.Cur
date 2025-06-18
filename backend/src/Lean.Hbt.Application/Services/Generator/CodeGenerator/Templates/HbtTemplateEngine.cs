@@ -291,7 +291,7 @@ public class HbtTemplateEngine : IHbtTemplateEngine
         tableObject["business_name"] = model.Table.BusinessName;
         tableObject["function_name"] = model.Table.FunctionName;
         tableObject["author"] = model.Table.Author;
-        tableObject["gen_type"] = model.Table.GenType;
+        tableObject["gen_method"] = model.Table.GenMethod;
         tableObject["gen_path"] = model.Table.GenPath;
         tableObject["parent_menu_id"] = model.Table.ParentMenuId;
         tableObject["generate_menu"] = model.Table.GenerateMenu;
@@ -301,7 +301,7 @@ public class HbtTemplateEngine : IHbtTemplateEngine
         tableObject["front_tpl"] = model.Table.FrontTpl;
         tableObject["front_style"] = model.Table.FrontStyle;
         tableObject["btn_style"] = model.Table.BtnStyle;
-        tableObject["status"] = model.Table.Status;
+        tableObject["status"] = model.Table.IsGenCode;
         scriptObject["table"] = tableObject;
 
         // 添加列信息

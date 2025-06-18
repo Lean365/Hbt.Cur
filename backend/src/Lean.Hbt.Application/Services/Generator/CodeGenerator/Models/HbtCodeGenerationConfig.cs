@@ -39,9 +39,9 @@ public class HbtCodeGenerationConfig
     public string? ModuleName { get; set; }
 
     /// <summary>
-    /// 包名称
+    /// 项目名称
     /// </summary>
-    public string? PackageName { get; set; }
+    public string? ProjectName { get; set; }
 
     /// <summary>
     /// 基础命名空间
@@ -97,16 +97,16 @@ public class HbtCodeGenerationConfig
     public static HbtCodeGenerationConfig FromConfiguration(IConfiguration configuration, IWebHostEnvironment webHostEnvironment)
     {
         var config = new HbtCodeGenerationConfig(webHostEnvironment);
-        
+
         // 绑定配置
         configuration.GetSection("CodeGeneration").Bind(config, options => options.BindNonPublicProperties = true);
-        
+
         // 设置TemplatePaths的WebHostEnvironment
         if (config.TemplatePaths != null)
         {
             config.TemplatePaths.WebHostEnvironment = webHostEnvironment;
         }
-        
+
         return config;
     }
 }

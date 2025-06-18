@@ -55,11 +55,11 @@ public class HbtDbSeedGenTemplate
             else
             {
                 existingTemplate.TemplateName = template.TemplateName;
-                existingTemplate.TemplateType = template.TemplateType;
+                existingTemplate.TemplateCodeType = template.TemplateCodeType;
+                existingTemplate.TemplateOrmType = template.TemplateOrmType;
                 existingTemplate.TemplateCategory = template.TemplateCategory;
                 existingTemplate.TemplateLanguage = template.TemplateLanguage;
                 existingTemplate.TemplateVersion = template.TemplateVersion;
-                existingTemplate.FileName = template.FileName;
                 existingTemplate.TemplateContent = template.TemplateContent;
                 existingTemplate.UpdateBy = "Hbt365";
                 existingTemplate.UpdateTime = DateTime.Now;
@@ -80,14 +80,15 @@ public class HbtDbSeedGenTemplate
     {
         return new List<HbtGenTemplate>
         {
+            // 1. 实体类
             new HbtGenTemplate
             {
                 TemplateName = "Entity",
-                TemplateType = 0,
+                TemplateCodeType = 1,
                 TemplateCategory = 1,
                 TemplateLanguage = 1,
+                TemplateOrmType = 3,
                 TemplateVersion = 1,
-                FileName = "{{className}}.cs",
                 TemplateContent = @"using SqlSugar;
 using System.ComponentModel.DataAnnotations;
 
@@ -108,19 +109,19 @@ namespace {{base_namespace}}.Domain.Entities.{{module_name}}
         {{end}}
     }
 }",
-                CreateBy = "Hbt365",
-                CreateTime = DateTime.Now,
-                UpdateBy = "Hbt365",
-                UpdateTime = DateTime.Now
+                FileName = "{{className}}.cs",
+                Status = 0
             },
+
+            // 2. 数据传输对象
             new HbtGenTemplate
             {
                 TemplateName = "Dto",
-                TemplateType = 1,
-                TemplateCategory = 1,
+                TemplateCodeType = 1,
+                TemplateCategory = 2,
                 TemplateLanguage = 1,
+                TemplateOrmType = 3,
                 TemplateVersion = 1,
-                FileName = "{{className}}Dto.cs",
                 TemplateContent = @"using System.ComponentModel.DataAnnotations;
 
 namespace {{base_namespace}}.Domain.Dtos.{{module_name}}
@@ -139,19 +140,71 @@ namespace {{base_namespace}}.Domain.Dtos.{{module_name}}
         {{end}}
     }
 }",
-                CreateBy = "Hbt365",
-                CreateTime = DateTime.Now,
-                UpdateBy = "Hbt365",
-                UpdateTime = DateTime.Now
+                FileName = "{{className}}Dto.cs",
+                Status = 0
             },
+
+            // 3. 仓储接口
+            new HbtGenTemplate
+            {
+                TemplateName = "IRepository",
+                TemplateCodeType = 1,
+                TemplateCategory = 3,
+                TemplateLanguage = 1,
+                TemplateOrmType = 3,
+                TemplateVersion = 1,
+                TemplateContent = @"using {{base_namespace}}.Domain.Entities.{{module_name}};
+
+namespace {{base_namespace}}.Domain.IRepositories.{{module_name}}
+{
+    /// <summary>
+    /// {{table_comment}}仓储接口
+    /// </summary>
+    public interface I{{className}}Repository : IHbtRepository<{{className}}>
+    {
+    }
+}",
+                FileName = "I{{className}}Repository.cs",
+                Status = 0
+            },
+
+            // 4. 仓储实现
+            new HbtGenTemplate
+            {
+                TemplateName = "Repository",
+                TemplateCodeType = 1,
+                TemplateCategory = 4,
+                TemplateLanguage = 1,
+                TemplateOrmType = 3,
+                TemplateVersion = 1,
+                TemplateContent = @"using {{base_namespace}}.Domain.Entities.{{module_name}};
+using {{base_namespace}}.Domain.IRepositories.{{module_name}};
+
+namespace {{base_namespace}}.Infrastructure.Repositories.{{module_name}}
+{
+    /// <summary>
+    /// {{table_comment}}仓储实现
+    /// </summary>
+    public class {{className}}Repository : HbtRepository<{{className}}>, I{{className}}Repository
+    {
+        public {{className}}Repository(IHbtDbContext dbContext) : base(dbContext)
+        {
+        }
+    }
+}",
+                FileName = "{{className}}Repository.cs",
+                Status = 0
+            },
+
+            // 5. 服务接口
             new HbtGenTemplate
             {
                 TemplateName = "IService",
-                TemplateType = 2,
-                TemplateCategory = 1,
+                TemplateCodeType = 1,
+                TemplateCategory = 5,
                 TemplateLanguage = 1,
+                TemplateOrmType = 3,
                 TemplateVersion = 1,
-                FileName = "I{{className}}Service.cs",
                 TemplateContent = @"using {{base_namespace}}.Domain.Dtos.{{module_name}};
 using {{base_namespace}}.Domain.Entities.{{module_name}};
 
@@ -188,19 +241,19 @@ namespace {{base_namespace}}.Domain.IServices.{{module_name}}
         Task DeleteAsync(long id);
     }
 }",
-                CreateBy = "Hbt365",
-                CreateTime = DateTime.Now,
-                UpdateBy = "Hbt365",
-                UpdateTime = DateTime.Now
+                FileName = "I{{className}}Service.cs",
+                Status = 0
             },
+
+            // 6. 服务实现
             new HbtGenTemplate
             {
                 TemplateName = "Service",
-                TemplateType = 3,
-                TemplateCategory = 1,
+                TemplateCodeType = 1,
+                TemplateCategory = 6,
                 TemplateLanguage = 1,
+                TemplateOrmType = 3,
                 TemplateVersion = 1,
-                FileName = "{{className}}Service.cs",
                 TemplateContent = @"using {{base_namespace}}.Domain.Dtos.{{module_name}};
 using {{base_namespace}}.Domain.Entities.{{module_name}};
 using {{base_namespace}}.Domain.IServices.{{module_name}};
@@ -308,224 +361,19 @@ namespace {{base_namespace}}.Infrastructure.Services.{{module_name}}
         }
     }
 }",
-                CreateBy = "Hbt365",
-                CreateTime = DateTime.Now,
-                UpdateBy = "Hbt365",
-                UpdateTime = DateTime.Now
+                FileName = "{{className}}Service.cs",
+                Status = 0
             },
-            new HbtGenTemplate
-            {
-                TemplateName = "IRepository",
-                TemplateType = 5,
-                TemplateCategory = 1,
-                TemplateLanguage = 1,
-                TemplateVersion = 1,
-                FileName = "I{{className}}Repository.cs",
-                TemplateContent = @"using {{base_namespace}}.Domain.Entities.{{module_name}};
 
-namespace {{base_namespace}}.Domain.IRepositories.{{module_name}}
-{
-    /// <summary>
-    /// {{table_comment}}仓储接口
-    /// </summary>
-    public interface I{{className}}Repository : IHbtRepository<{{className}}>
-    {
-    }
-}",
-                CreateBy = "Hbt365",
-                CreateTime = DateTime.Now,
-                UpdateBy = "Hbt365",
-                UpdateTime = DateTime.Now
-            },
-            new HbtGenTemplate
-            {
-                TemplateName = "Repository",
-                TemplateType = 6,
-                TemplateCategory = 1,
-                TemplateLanguage = 1,
-                TemplateVersion = 1,
-                FileName = "{{className}}Repository.cs",
-                TemplateContent = @"using {{base_namespace}}.Domain.Entities.{{module_name}};
-using {{base_namespace}}.Domain.IRepositories.{{module_name}};
-
-namespace {{base_namespace}}.Infrastructure.Repositories.{{module_name}}
-{
-    /// <summary>
-    /// {{table_comment}}仓储实现
-    /// </summary>
-    public class {{className}}Repository : HbtRepository<{{className}}>, I{{className}}Repository
-    {
-        public {{className}}Repository(IHbtDbContext dbContext) : base(dbContext)
-        {
-        }
-    }
-}",
-                CreateBy = "Hbt365",
-                CreateTime = DateTime.Now,
-                UpdateBy = "Hbt365",
-                UpdateTime = DateTime.Now
-            },
-            new HbtGenTemplate
-            {
-                TemplateName = "api.ts",
-                TemplateType = 7,
-                TemplateCategory = 2,
-                TemplateLanguage = 2,
-                TemplateVersion = 1,
-                FileName = "api.ts",
-                TemplateContent = @"import request from '@/utils/request';
-import type { {{className}}Dto } from './type';
-
-export function getList() {
-  return request.get<{{className}}Dto[]>('/api/{{table_name}}');
-}
-
-export function getInfo(id: number) {
-  return request.get<{{className}}Dto>(`/api/{{table_name}}/${id}`);
-}
-
-export function create(data: {{className}}Dto) {
-  return request.post('/api/{{table_name}}', data);
-}
-
-export function update(data: {{className}}Dto) {
-  return request.put('/api/{{table_name}}', data);
-}
-
-export function remove(id: number) {
-  return request.delete(`/api/{{table_name}}/${id}`);
-}",
-                CreateBy = "Hbt365",
-                CreateTime = DateTime.Now,
-                UpdateBy = "Hbt365",
-                UpdateTime = DateTime.Now
-            },
-            new HbtGenTemplate
-            {
-                TemplateName = "type.d.ts",
-                TemplateType = 8,
-                TemplateCategory = 2,
-                TemplateLanguage = 2,
-                TemplateVersion = 1,
-                FileName = "type.d.ts",
-                TemplateContent = @"export interface {{className}}Dto {
-  {{for column in columns}}
-  /** {{column.column_comment}} */
-  {{column.property_name}}: {{column.ts_type}};
-  {{end}}
-}",
-                CreateBy = "Hbt365",
-                CreateTime = DateTime.Now,
-                UpdateBy = "Hbt365",
-                UpdateTime = DateTime.Now
-            },
-            new HbtGenTemplate
-            {
-                TemplateName = "index.vue",
-                TemplateType = 9,
-                TemplateCategory = 2,
-                TemplateLanguage = 5,
-                TemplateVersion = 1,
-                FileName = "index.vue",
-                TemplateContent = @"<template>
-  <div class='{{table_name}}-manage'>
-    <ManageForm />
-  </div>
-</template>
-<script setup lang='ts'>
-import ManageForm from './components/ManageForm.vue';
-</script>
-<style scoped>
-.{{table_name}}-manage {
-  padding: 16px;
-}
-</style>",
-                CreateBy = "Hbt365",
-                CreateTime = DateTime.Now,
-                UpdateBy = "Hbt365",
-                UpdateTime = DateTime.Now
-            },
-            new HbtGenTemplate
-            {
-                TemplateName = "ManageForm.vue",
-                TemplateType = 10,
-                TemplateCategory = 2,
-                TemplateLanguage = 5,
-                TemplateVersion = 1,
-                FileName = "components/ManageForm.vue",
-                TemplateContent = @"<template>
-  <el-form :model='form'>
-    <!-- 动态生成表单项 -->
-    {{for column in columns}}
-    <el-form-item label='{{column.column_comment}}'>
-      <el-input v-model='form.{{column.property_name}}' />
-    </el-form-item>
-    {{end}}
-  </el-form>
-</template>
-<script setup lang='ts'>
-import { ref } from 'vue';
-import type { {{className}}Dto } from '../type';
-
-const form = ref<{{className}}Dto>({});
-</script>
-<style scoped>
-</style>",
-                CreateBy = "Hbt365",
-                CreateTime = DateTime.Now,
-                UpdateBy = "Hbt365",
-                UpdateTime = DateTime.Now
-            },
-            new HbtGenTemplate
-            {
-                TemplateName = "zh-CN.ts",
-                TemplateType = 11,
-                TemplateCategory = 3,
-                TemplateLanguage = 2,
-                TemplateVersion = 1,
-                FileName = "locales/zh-CN.ts",
-                TemplateContent = @"export default {
-  title: '{{table_comment}}管理',
-  fields: {
-    {{for column in columns}}
-    {{column.property_name}}: '{{column.column_comment}}',
-    {{end}}
-  }
-};",
-                CreateBy = "Hbt365",
-                CreateTime = DateTime.Now,
-                UpdateBy = "Hbt365",
-                UpdateTime = DateTime.Now
-            },
-            new HbtGenTemplate
-            {
-                TemplateName = "en-US.ts",
-                TemplateType = 12,
-                TemplateCategory = 3,
-                TemplateLanguage = 2,
-                TemplateVersion = 1,
-                FileName = "locales/en-US.ts",
-                TemplateContent = @"export default {
-  title: '{{table_comment}} Management',
-  fields: {
-    {{for column in columns}}
-    {{column.property_name}}: '{{column.column_comment}}',
-    {{end}}
-  }
-};",
-                CreateBy = "Hbt365",
-                CreateTime = DateTime.Now,
-                UpdateBy = "Hbt365",
-                UpdateTime = DateTime.Now
-            },
+            // 7. 控制器
             new HbtGenTemplate
             {
                 TemplateName = "Controller",
-                TemplateType = 4,
-                TemplateCategory = 1,
+                TemplateCodeType = 1,
+                TemplateCategory = 7,
                 TemplateLanguage = 1,
+                TemplateOrmType = 3,
                 TemplateVersion = 1,
-                FileName = "{{className}}Controller.cs",
                 TemplateContent = @"using {{base_namespace}}.Domain.Dtos.{{module_name}};
 using {{base_namespace}}.Domain.IServices.{{module_name}};
 using Microsoft.AspNetCore.Mvc;
@@ -642,10 +490,287 @@ namespace {{base_namespace}}.Web.Controllers.{{module_name}}
         }
     }
 }",
-                CreateBy = "Hbt365",
-                CreateTime = DateTime.Now,
-                UpdateBy = "Hbt365",
-                UpdateTime = DateTime.Now
+                FileName = "{{className}}Controller.cs",
+                Status = 0
+            },
+
+            // 8. API
+            new HbtGenTemplate
+            {
+                TemplateName = "api.ts",
+                TemplateCodeType = 0,
+                TemplateCategory = 8,
+                TemplateLanguage = 2,
+                TemplateOrmType = 3,
+                TemplateVersion = 1,
+                TemplateContent = @"import request from '@/utils/request';
+import type { {{className}}Dto } from './type';
+
+export function getList() {
+  return request.get<{{className}}Dto[]>('/api/{{table_name}}');
+}
+
+export function getInfo(id: number) {
+  return request.get<{{className}}Dto>(`/api/{{table_name}}/${id}`);
+}
+
+export function create(data: {{className}}Dto) {
+  return request.post('/api/{{table_name}}', data);
+}
+
+export function update(data: {{className}}Dto) {
+  return request.put('/api/{{table_name}}', data);
+}
+
+export function remove(id: number) {
+  return request.delete(`/api/{{table_name}}/${id}`);
+}",
+                FileName = "{{className}}.ts",
+                Status = 0
+            },
+
+            // 9. 类型
+            new HbtGenTemplate
+            {
+                TemplateName = "type.d.ts",
+                TemplateCodeType = 0,
+                TemplateCategory = 9,
+                TemplateLanguage = 2,
+                TemplateOrmType = 3,
+                TemplateVersion = 1,
+                TemplateContent = @"export interface {{className}}Dto {
+  {{for column in columns}}
+  /** {{column.column_comment}} */
+  {{column.property_name}}: {{column.ts_type}};
+  {{end}}
+}",
+                FileName = "{{className}}.d.ts",
+                Status = 0
+            },
+
+            // 10. 视图
+            new HbtGenTemplate
+            {
+                TemplateName = "index.vue",
+                TemplateCodeType = 0,
+                TemplateCategory = 10,
+                TemplateLanguage = 5,
+                TemplateOrmType = 3,
+                TemplateVersion = 1,
+                TemplateContent = @"<template>
+  <div class='{{table_name}}-manage'>
+    <ManageForm />
+  </div>
+</template>
+<script setup lang='ts'>
+import ManageForm from './components/ManageForm.vue';
+</script>
+<style scoped>
+.{{table_name}}-manage {
+  padding: 16px;
+}
+</style>",
+                FileName = "index.vue",
+                Status = 0
+            },
+
+            // 11. 表单组件
+            new HbtGenTemplate
+            {
+                TemplateName = "ManageForm.vue",
+                TemplateCodeType = 0,
+                TemplateCategory = 11,
+                TemplateLanguage = 5,
+                TemplateOrmType = 3,
+                TemplateVersion = 1,
+                TemplateContent = @"<template>
+  <el-form :model='form'>
+    <!-- 动态生成表单项 -->
+    {{for column in columns}}
+    <el-form-item label='{{column.column_comment}}'>
+      <el-input v-model='form.{{column.property_name}}' />
+    </el-form-item>
+    {{end}}
+  </el-form>
+</template>
+<script setup lang='ts'>
+import { ref } from 'vue';
+import type { {{className}}Dto } from '../type';
+
+const form = ref<{{className}}Dto>({});
+</script>
+<style scoped>
+</style>",
+                FileName = "components/{{className}}Form.vue",
+                Status = 0
+            },
+
+            // 12. 翻译
+            new HbtGenTemplate
+            {
+                TemplateName = "Translate",
+                TemplateCodeType = 0,
+                TemplateCategory = 12,
+                TemplateLanguage = 2,
+                TemplateOrmType = 3,
+                TemplateVersion = 1,
+                TemplateContent = @"-- 翻译SQL
+INSERT INTO hbt_core_translation (module_name, lang_code, trans_key, trans_value, status, order_num, create_by, create_time, update_by, update_time)
+VALUES 
+-- 简体中文
+('{{module_name}}', 'zh-CN', '{{module_name}}.{{className}}', '{{table_comment}}', 0, 0, 'admin', GETDATE(), 'admin', GETDATE()),
+{{for column in columns}}
+('{{module_name}}', 'zh-CN', '{{module_name}}.{{className}}.{{column.column_name}}', '{{column.column_comment}}', 0, 0, 'admin', GETDATE(), 'admin', GETDATE()),
+{{if column.csharp_type == 'string' && column.is_required == 1}}
+('{{module_name}}', 'zh-CN', '{{module_name}}.{{className}}.{{column.column_name}}.placeholder', '请输入{{column.column_comment}}', 0, 0, 'admin', GETDATE(), 'admin', GETDATE()),
+('{{module_name}}', 'zh-CN', '{{module_name}}.{{className}}.{{column.column_name}}.validation.required', '{{column.column_comment}}不能为空', 0, 0, 'admin', GETDATE(), 'admin', GETDATE()),
+{{if column.csharp_length > 0}}
+('{{module_name}}', 'zh-CN', '{{module_name}}.{{className}}.{{column.column_name}}.validation.length', '{{column.column_comment}}长度不能超过{{column.csharp_length}}个字符', 0, 0, 'admin', GETDATE(), 'admin', GETDATE()),
+{{end}}
+{{end}}
+{{end}},
+
+-- 英文
+('{{module_name}}', 'en-US', '{{module_name}}.{{className}}', '{{table_comment}}', 0, 0, 'admin', GETDATE(), 'admin', GETDATE()),
+{{for column in columns}}
+('{{module_name}}', 'en-US', '{{module_name}}.{{className}}.{{column.column_name}}', '{{column.column_comment}}', 0, 0, 'admin', GETDATE(), 'admin', GETDATE()),
+{{if column.csharp_type == 'string' && column.is_required == 1}}
+('{{module_name}}', 'en-US', '{{module_name}}.{{className}}.{{column.column_name}}.placeholder', 'Please enter {{column.column_comment}}', 0, 0, 'admin', GETDATE(), 'admin', GETDATE()),
+('{{module_name}}', 'en-US', '{{module_name}}.{{className}}.{{column.column_name}}.validation.required', '{{column.column_comment}} is required', 0, 0, 'admin', GETDATE(), 'admin', GETDATE()),
+{{if column.csharp_length > 0}}
+('{{module_name}}', 'en-US', '{{module_name}}.{{className}}.{{column.column_name}}.validation.length', '{{column.column_comment}} length cannot exceed {{column.csharp_length}} characters', 0, 0, 'admin', GETDATE(), 'admin', GETDATE()),
+{{end}}
+{{end}}
+{{end}},
+
+-- 日语
+('{{module_name}}', 'ja-JP', '{{module_name}}.{{className}}', '{{table_comment}}', 0, 0, 'admin', GETDATE(), 'admin', GETDATE()),
+{{for column in columns}}
+('{{module_name}}', 'ja-JP', '{{module_name}}.{{className}}.{{column.column_name}}', '{{column.column_comment}}', 0, 0, 'admin', GETDATE(), 'admin', GETDATE()),
+{{if column.csharp_type == 'string' && column.is_required == 1}}
+('{{module_name}}', 'ja-JP', '{{module_name}}.{{className}}.{{column.column_name}}.placeholder', '{{column.column_comment}}を入力してください', 0, 0, 'admin', GETDATE(), 'admin', GETDATE()),
+('{{module_name}}', 'ja-JP', '{{module_name}}.{{className}}.{{column.column_name}}.validation.required', '{{column.column_comment}}は必須です', 0, 0, 'admin', GETDATE(), 'admin', GETDATE()),
+{{if column.csharp_length > 0}}
+('{{module_name}}', 'ja-JP', '{{module_name}}.{{className}}.{{column.column_name}}.validation.length', '{{column.column_comment}}の長さは{{column.csharp_length}}文字を超えることはできません', 0, 0, 'admin', GETDATE(), 'admin', GETDATE()),
+{{end}}
+{{end}}
+{{end}},
+
+-- 韩语
+('{{module_name}}', 'ko-KR', '{{module_name}}.{{className}}', '{{table_comment}}', 0, 0, 'admin', GETDATE(), 'admin', GETDATE()),
+{{for column in columns}}
+('{{module_name}}', 'ko-KR', '{{module_name}}.{{className}}.{{column.column_name}}', '{{column.column_comment}}', 0, 0, 'admin', GETDATE(), 'admin', GETDATE()),
+{{if column.csharp_type == 'string' && column.is_required == 1}}
+('{{module_name}}', 'ko-KR', '{{module_name}}.{{className}}.{{column.column_name}}.placeholder', '{{column.column_comment}}을(를) 입력하세요', 0, 0, 'admin', GETDATE(), 'admin', GETDATE()),
+('{{module_name}}', 'ko-KR', '{{module_name}}.{{className}}.{{column.column_name}}.validation.required', '{{column.column_comment}}은(는) 필수입니다', 0, 0, 'admin', GETDATE(), 'admin', GETDATE()),
+{{if column.csharp_length > 0}}
+('{{module_name}}', 'ko-KR', '{{module_name}}.{{className}}.{{column.column_name}}.validation.length', '{{column.column_comment}} 길이는 {{column.csharp_length}}자를 초과할 수 없습니다', 0, 0, 'admin', GETDATE(), 'admin', GETDATE()),
+{{end}}
+{{end}}
+{{end}},
+
+-- 繁体中文
+('{{module_name}}', 'zh-TW', '{{module_name}}.{{className}}', '{{table_comment}}', 0, 0, 'admin', GETDATE(), 'admin', GETDATE()),
+{{for column in columns}}
+('{{module_name}}', 'zh-TW', '{{module_name}}.{{className}}.{{column.column_name}}', '{{column.column_comment}}', 0, 0, 'admin', GETDATE(), 'admin', GETDATE()),
+{{if column.csharp_type == 'string' && column.is_required == 1}}
+('{{module_name}}', 'zh-TW', '{{module_name}}.{{className}}.{{column.column_name}}.placeholder', '請輸入{{column.column_comment}}', 0, 0, 'admin', GETDATE(), 'admin', GETDATE()),
+('{{module_name}}', 'zh-TW', '{{module_name}}.{{className}}.{{column.column_name}}.validation.required', '{{column.column_comment}}不能為空', 0, 0, 'admin', GETDATE(), 'admin', GETDATE()),
+{{if column.csharp_length > 0}}
+('{{module_name}}', 'zh-TW', '{{module_name}}.{{className}}.{{column.column_name}}.validation.length', '{{column.column_comment}}長度不能超過{{column.csharp_length}}個字符', 0, 0, 'admin', GETDATE(), 'admin', GETDATE()),
+{{end}}
+{{end}}
+{{end}},
+
+-- 阿拉伯语
+('{{module_name}}', 'ar-SA', '{{module_name}}.{{className}}', '{{table_comment}}', 0, 0, 'admin', GETDATE(), 'admin', GETDATE()),
+{{for column in columns}}
+('{{module_name}}', 'ar-SA', '{{module_name}}.{{className}}.{{column.column_name}}', '{{column.column_comment}}', 0, 0, 'admin', GETDATE(), 'admin', GETDATE()),
+{{if column.csharp_type == 'string' && column.is_required == 1}}
+('{{module_name}}', 'ar-SA', '{{module_name}}.{{className}}.{{column.column_name}}.placeholder', 'الرجاء إدخال {{column.column_comment}}', 0, 0, 'admin', GETDATE(), 'admin', GETDATE()),
+('{{module_name}}', 'ar-SA', '{{module_name}}.{{className}}.{{column.column_name}}.validation.required', '{{column.column_comment}} مطلوب', 0, 0, 'admin', GETDATE(), 'admin', GETDATE()),
+{{if column.csharp_length > 0}}
+('{{module_name}}', 'ar-SA', '{{module_name}}.{{className}}.{{column.column_name}}.validation.length', 'لا يمكن أن يتجاوز طول {{column.column_comment}} {{column.csharp_length}} حرفًا', 0, 0, 'admin', GETDATE(), 'admin', GETDATE()),
+{{end}}
+{{end}}
+{{end}},
+
+-- 法语
+('{{module_name}}', 'fr-FR', '{{module_name}}.{{className}}', '{{table_comment}}', 0, 0, 'admin', GETDATE(), 'admin', GETDATE()),
+{{for column in columns}}
+('{{module_name}}', 'fr-FR', '{{module_name}}.{{className}}.{{column.column_name}}', '{{column.column_comment}}', 0, 0, 'admin', GETDATE(), 'admin', GETDATE()),
+{{if column.csharp_type == 'string' && column.is_required == 1}}
+('{{module_name}}', 'fr-FR', '{{module_name}}.{{className}}.{{column.column_name}}.placeholder', 'Veuillez saisir {{column.column_comment}}', 0, 0, 'admin', GETDATE(), 'admin', GETDATE()),
+('{{module_name}}', 'fr-FR', '{{module_name}}.{{className}}.{{column.column_name}}.validation.required', '{{column.column_comment}} est requis', 0, 0, 'admin', GETDATE(), 'admin', GETDATE()),
+{{if column.csharp_length > 0}}
+('{{module_name}}', 'fr-FR', '{{module_name}}.{{className}}.{{column.column_name}}.validation.length', 'La longueur de {{column.column_comment}} ne peut pas dépasser {{column.csharp_length}} caractères', 0, 0, 'admin', GETDATE(), 'admin', GETDATE()),
+{{end}}
+{{end}}
+{{end}},
+
+-- 西班牙语
+('{{module_name}}', 'es-ES', '{{module_name}}.{{className}}', '{{table_comment}}', 0, 0, 'admin', GETDATE(), 'admin', GETDATE()),
+{{for column in columns}}
+('{{module_name}}', 'es-ES', '{{module_name}}.{{className}}.{{column.column_name}}', '{{column.column_comment}}', 0, 0, 'admin', GETDATE(), 'admin', GETDATE()),
+{{if column.csharp_type == 'string' && column.is_required == 1}}
+('{{module_name}}', 'es-ES', '{{module_name}}.{{className}}.{{column.column_name}}.placeholder', 'Por favor ingrese {{column.column_comment}}', 0, 0, 'admin', GETDATE(), 'admin', GETDATE()),
+('{{module_name}}', 'es-ES', '{{module_name}}.{{className}}.{{column.column_name}}.validation.required', '{{column.column_comment}} es requerido', 0, 0, 'admin', GETDATE(), 'admin', GETDATE()),
+{{if column.csharp_length > 0}}
+('{{module_name}}', 'es-ES', '{{module_name}}.{{className}}.{{column.column_name}}.validation.length', 'La longitud de {{column.column_comment}} no puede exceder {{column.csharp_length}} caracteres', 0, 0, 'admin', GETDATE(), 'admin', GETDATE()),
+{{end}}
+{{end}}
+{{end}},
+
+-- 俄语
+('{{module_name}}', 'ru-RU', '{{module_name}}.{{className}}', '{{table_comment}}', 0, 0, 'admin', GETDATE(), 'admin', GETDATE()),
+{{for column in columns}}
+('{{module_name}}', 'ru-RU', '{{module_name}}.{{className}}.{{column.column_name}}', '{{column.column_comment}}', 0, 0, 'admin', GETDATE(), 'admin', GETDATE()),
+{{if column.csharp_type == 'string' && column.is_required == 1}}
+('{{module_name}}', 'ru-RU', '{{module_name}}.{{className}}.{{column.column_name}}.placeholder', 'Пожалуйста, введите {{column.column_comment}}', 0, 0, 'admin', GETDATE(), 'admin', GETDATE()),
+('{{module_name}}', 'ru-RU', '{{module_name}}.{{className}}.{{column.column_name}}.validation.required', '{{column.column_comment}} обязательно', 0, 0, 'admin', GETDATE(), 'admin', GETDATE()),
+{{if column.csharp_length > 0}}
+('{{module_name}}', 'ru-RU', '{{module_name}}.{{className}}.{{column.column_name}}.validation.length', 'Длина {{column.column_comment}} не может превышать {{column.csharp_length}} символов', 0, 0, 'admin', GETDATE(), 'admin', GETDATE()),
+{{end}}
+{{end}}
+{{end}};",
+                FileName = "{{className}}Trans.sql",
+                Status = 0
+            },
+
+            // 13. 菜单
+            new HbtGenTemplate
+            {
+                TemplateName = "Menu",
+                TemplateCodeType = 0,
+                TemplateCategory = 13,
+                TemplateLanguage = 2,
+                TemplateOrmType = 3,
+                TemplateVersion = 1,
+                TemplateContent = @"-- 菜单SQL
+INSERT INTO hbt_identity_menu (menu_name, trans_key, icon, parent_id, order_num, path, component, query_params, is_external, is_cache, menu_type, visible, perms, status, create_by, create_time, update_by, update_time, remark)
+VALUES 
+('{{table_comment}}管理', 'menu.{{module_name}}.{{table_name}}', 'FileTextOutlined', {{table_parentmenuid}}, 1, '{{table_name}}', '{{module_name}}/{{table_name}}/index', null, 0, 0, 1, 0, '{{module_name}}:{{table_name}}:list', 0, 'admin', GETDATE(), 'admin', GETDATE(), '{{table_comment}}管理菜单');
+
+-- 按钮父菜单ID
+SELECT @parentId := LAST_INSERT_ID();
+
+-- 按钮 SQL
+INSERT INTO hbt_identity_menu (menu_name, trans_key, parent_id, order_num, path, component, query_params, is_external, is_cache, menu_type, visible, perms, status, create_by, create_time, update_by, update_time, remark)
+VALUES 
+('{{table_comment}}查询', 'button.query', @parentId, 1, '#', '', null, 0, 0, 2, 0, '{{module_name}}:{{table_name}}:query', 0, 'admin', GETDATE(), 'admin', GETDATE(), ''),
+('{{table_comment}}新增', 'button.create', @parentId, 2, '#', '', null, 0, 0, 2, 0, '{{module_name}}:{{table_name}}:create', 0, 'admin', GETDATE(), 'admin', GETDATE(), ''),
+('{{table_comment}}修改', 'button.update', @parentId, 3, '#', '', null, 0, 0, 2, 0, '{{module_name}}:{{table_name}}:update', 0, 'admin', GETDATE(), 'admin', GETDATE(), ''),
+('{{table_comment}}删除', 'button.delete', @parentId, 4, '#', '', null, 0, 0, 2, 0, '{{module_name}}:{{table_name}}:delete', 0, 'admin', GETDATE(), 'admin', GETDATE(), ''),
+('{{table_comment}}详情', 'button.detail', @parentId, 5, '#', '', null, 0, 0, 2, 0, '{{module_name}}:{{table_name}}:detail', 0, 'admin', GETDATE(), 'admin', GETDATE(), ''),
+('{{table_comment}}预览', 'button.preview', @parentId, 6, '#', '', null, 0, 0, 2, 0, '{{module_name}}:{{table_name}}:preview', 0, 'admin', GETDATE(), 'admin', GETDATE(), ''),
+('{{table_comment}}打印', 'button.print', @parentId, 7, '#', '', null, 0, 0, 2, 0, '{{module_name}}:{{table_name}}:print', 0, 'admin', GETDATE(), 'admin', GETDATE(), ''),
+('{{table_comment}}导入', 'button.import', @parentId, 8, '#', '', null, 0, 0, 2, 0, '{{module_name}}:{{table_name}}:import', 0, 'admin', GETDATE(), 'admin', GETDATE(), ''),
+('{{table_comment}}导出', 'button.export', @parentId, 9, '#', '', null, 0, 0, 2, 0, '{{module_name}}:{{table_name}}:export', 0, 'admin', GETDATE(), 'admin', GETDATE(), ''),
+('{{table_comment}}模板', 'button.template', @parentId, 10, '#', '', null, 0, 0, 2, 0, '{{module_name}}:{{table_name}}:template', 0, 'admin', GETDATE(), 'admin', GETDATE(), ''),
+('{{table_comment}}审核', 'button.audit', @parentId, 11, '#', '', null, 0, 0, 2, 0, '{{module_name}}:{{table_name}}:audit', 0, 'admin', GETDATE(), 'admin', GETDATE(), ''),
+('{{table_comment}}撤销', 'button.revoke', @parentId, 12, '#', '', null, 0, 0, 2, 0, '{{module_name}}:{{table_name}}:revoke', 0, 'admin', GETDATE(), 'admin', GETDATE(), '');",
+                FileName = "{{className}}Menu.sql",
+                Status = 0
             }
         };
     }

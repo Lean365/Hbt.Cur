@@ -316,6 +316,10 @@ const handleChange = (value: SelectValue, option: DefaultOptionType | DefaultOpt
         convertedValue = -1;
       }
       break;
+    case 'select':
+      // 对于select类型，直接使用值
+      convertedValue = value;
+      break;
     default:
       convertedValue = value;
   }

@@ -75,7 +75,7 @@ export interface HbtGenTable extends HbtBaseEntity {
   /** 生成作者名 */
   author: string
   /** 生成代码方式（0zip压缩包 1自定义路径） */
-  genType: string
+  genMethod: string
   /** 代码生成存放位置 */
   genPath: string
   /** 上级菜单ID */
@@ -191,7 +191,7 @@ export interface HbtGenTableCreate {
   /** 生成作者名 */
   author: string
   /** 生成代码方式（0zip压缩包 1自定义路径） */
-  genType: string
+  genMethod: string
   /** 代码生成存放位置 */
   genPath: string
   /** 上级菜单ID */
@@ -307,7 +307,7 @@ export interface HbtGenTableImport {
   /** 生成作者名 */
   author: string
   /** 生成代码方式（0zip压缩包 1自定义路径） */
-  genType: string
+  genMethod: string
   /** 代码生成存放位置 */
   genPath: string
   /** 上级菜单ID */

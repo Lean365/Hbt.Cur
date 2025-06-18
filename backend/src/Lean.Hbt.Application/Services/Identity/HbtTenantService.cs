@@ -46,24 +46,6 @@ public class HbtTenantService : HbtBaseService, IHbtTenantService
         _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
     }
 
-    /// <summary>
-    /// 构建租户查询条件
-    /// </summary>
-    private Expression<Func<HbtTenant, bool>> HbtTenantQueryExpression(HbtTenantQueryDto query)
-    {
-        var exp = Expressionable.Create<HbtTenant>();
-
-        if (!string.IsNullOrEmpty(query.TenantName))
-            exp.And(x => x.TenantName.Contains(query.TenantName));
-
-        if (!string.IsNullOrEmpty(query.TenantCode))
-            exp.And(x => x.TenantCode.Contains(query.TenantCode));
-
-        if (query.Status.HasValue)
-            exp.And(x => x.Status == query.Status.Value);
-
-        return exp.ToExpression();
-    }
 
     /// <summary>
     /// 获取租户分页列表
@@ -72,7 +54,7 @@ public class HbtTenantService : HbtBaseService, IHbtTenantService
     /// <returns>返回分页结果</returns>
     public async Task<HbtPagedResult<HbtTenantDto>> GetListAsync(HbtTenantQueryDto query)
     {
-        var exp = HbtTenantQueryExpression(query);
+        var exp = QueryExpression(query);
 
         var result = await _repository.GetPagedListAsync(
             exp,
@@ -248,7 +230,7 @@ public class HbtTenantService : HbtBaseService, IHbtTenantService
     {
         try
         {
-            var list = await _repository.GetListAsync(HbtTenantQueryExpression(query));
+            var list = await _repository.GetListAsync(QueryExpression(query));
             var exportList = list.Adapt<List<HbtTenantExportDto>>();
             return await HbtExcelHelper.ExportAsync(exportList, sheetName, "租户数据");
         }
@@ -495,5 +477,25 @@ public class HbtTenantService : HbtBaseService, IHbtTenantService
             _logger.Error($"获取租户用户列表失败: {ex.Message}", ex);
             throw;
         }
+
     }
+    /// <summary>
+    /// 构建租户查询条件
+    /// </summary>
+    private Expression<Func<HbtTenant, bool>> QueryExpression(HbtTenantQueryDto query)
+    {
+        var exp = Expressionable.Create<HbtTenant>();
+
+        if (!string.IsNullOrEmpty(query.TenantName))
+            exp.And(x => x.TenantName.Contains(query.TenantName));
+
+        if (!string.IsNullOrEmpty(query.TenantCode))
+            exp.And(x => x.TenantCode.Contains(query.TenantCode));
+
+        if (query.Status.HasValue)
+            exp.And(x => x.Status == query.Status.Value);
+
+        return exp.ToExpression();
+    }
+
 }

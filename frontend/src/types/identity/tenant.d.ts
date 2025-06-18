@@ -13,7 +13,7 @@ export interface HbtTenant extends HbtBaseEntity {
   contactEmail: string;
   address?: string;
   license?: string;
-  expireTime?: string;
+  expireTime?: string | Dayjs;
   status: number;
   isDefault: number;
   dbConnection: string;
@@ -42,16 +42,14 @@ export interface HbtTenantQuery extends HbtPagedQuery {
  * 创建租户参数
  */
 export interface HbtTenantCreate {
+  tenantId?: number;
   tenantName: string;
   tenantCode: string;
   contactUser: string;
   contactPhone: string;
   contactEmail: string;
   address?: string;
-  license: string;
-  expireTime: string | Dayjs;
-  status: number;
-  isDefault: number;
+  license?: string;
   dbConnection: string;
   domain: string;
   logoUrl?: string;
@@ -59,6 +57,9 @@ export interface HbtTenantCreate {
   licenseStartTime?: string | Dayjs;
   licenseEndTime?: string | Dayjs;
   maxUserCount: number;
+  expireTime: string | Dayjs;
+  status: number;
+  isDefault: number;
 }
 
 /**
@@ -130,21 +131,25 @@ export type HbtTenantPageResult = HbtPagedResult<HbtTenant>
  */
 export interface HbtTenantDto {
   tenantId: number;
-  tenantNo: number;
   tenantName: string;
   tenantCode: string;
-  contactPerson: string;
+  contactUser: string;
   contactPhone: string;
   contactEmail: string;
-  address: string;
+  address?: string;
+  license?: string;
+  dbConnection: string;
   domain: string;
-  logoUrl: string;
-  theme: string;
-  licenseStartTime?: string;
-  licenseEndTime?: string;
+  logoUrl?: string;
+  theme?: string;
+  licenseStartTime?: string | Date;
+  licenseEndTime?: string | Date;
   maxUserCount: number;
+  expireTime: string | Date;
   status: number;
+  isDefault: number;
   createTime: string;
+  updateTime: string;
 }
 
 /**

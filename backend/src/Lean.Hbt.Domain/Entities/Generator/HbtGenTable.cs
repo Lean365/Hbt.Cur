@@ -211,8 +211,8 @@ public class HbtGenTable : HbtBaseEntity
     /// <summary>
     /// 生成代码方式（0zip压缩包 1自定义路径）
     /// </summary>
-    [SugarColumn(ColumnName = "gen_type", ColumnDescription = "生成方式", Length = 1, ColumnDataType = "nvarchar", IsNullable = false, DefaultValue = "0")]
-    public string GenType { get; set; } = "0";
+    [SugarColumn(ColumnName = "gen_method", ColumnDescription = "生成方式", Length = 1, ColumnDataType = "nvarchar", IsNullable = false, DefaultValue = "0")]
+    public string GenMethod { get; set; } = "0";
 
     /// <summary>
     /// 代码生成存放位置
@@ -270,10 +270,10 @@ public class HbtGenTable : HbtBaseEntity
     public int BtnStyle { get; set; } = 1;
 
     /// <summary>
-    /// 状态
+    /// 是否已生成代码（0：未生成，1：已生成）
     /// </summary>
-    [SugarColumn(ColumnName = "status", ColumnDescription = "状态", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
-    public int Status { get; set; } = 0;
+    [SugarColumn(ColumnName = "is_gen_code", ColumnDescription = "生成代码", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
+    public int IsGenCode { get; set; } = 0;
 
     #endregion
 

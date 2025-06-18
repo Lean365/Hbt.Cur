@@ -49,8 +49,8 @@ import { message } from 'ant-design-vue'
 import type { FormInstance } from 'ant-design-vue'
 import type { Rule } from 'ant-design-vue/es/form'
 import { useDictStore } from '@/stores/dict'
-import { getWorkflowTask, createWorkflowTask, updateWorkflowTask } from '@/api/workflow/workflowTask'
-import type { HbtWorkflowTask, HbtWorkflowTaskCreate, HbtWorkflowTaskUpdate } from '@/types/workflow/workflowTask'
+import { getWorkflowTask, createWorkflowTask, updateWorkflowTask } from '@/api/workflow/task'
+import type { HbtWorkflowTask, HbtWorkflowTaskCreate, HbtWorkflowTaskUpdate } from '@/types/workflow/task'
 
 const props = defineProps<{
   open: boolean

@@ -214,7 +214,7 @@ const handleCopy = (iconName: string) => {
       
       .usage-item {
         padding: 16px;
-        background-color: #fafafa;
+        //background-color: #fafafa;
         border-radius: 4px;
         
         .usage-title {
@@ -225,7 +225,7 @@ const handleCopy = (iconName: string) => {
         code {
           display: block;
           padding: 8px;
-          background-color: #f5f5f5;
+          //background-color: #f5f5f5;
           border-radius: 4px;
           font-family: monospace;
         }

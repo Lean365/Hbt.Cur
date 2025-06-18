@@ -1,10 +1,11 @@
 import { defineStore } from 'pinia'
 import type { MenuProps } from 'ant-design-vue'
 import type { UserInfo, LoginResultData } from '@/types/identity/auth.d'
-import { login as userLogin, logout as userLogout, getInfo as fetchUserInfo } from '@/api/identity/auth'
-import { removeToken, removeRefreshToken, setToken, setRefreshToken, getToken } from '@/utils/auth'
+import { login as userLogin, logout as userLogout, getInfo as fetchUserInfo, refreshUserToken } from '@/api/identity/auth'
+import { removeToken, removeRefreshToken, setToken, setRefreshToken, getToken, getRefreshToken } from '@/utils/auth'
 import { ref, computed } from 'vue'
 import axios from 'axios'
+import { clearAutoLogout } from '@/utils/autoLogout'
 
 // 扩展UserInfo类型以包含额外的字段
 export interface UserInfoResponse extends UserInfo {
@@ -184,9 +185,11 @@ export const useUserStore = defineStore('user', () => {
   }
 
   // 登出
-  const logout = async () => {
+  const logout = async (callApi = true) => {
     try {
-      await userLogout()
+      if (callApi) {
+        await userLogout()
+      }
       // 清除用户信息
       clearUserInfo()
       // 清除 token
@@ -196,8 +199,44 @@ export const useUserStore = defineStore('user', () => {
       lastLoginTime.value = ''
       // 重置登录失败次数
       resetLoginFailCount()
+      // 清理自动登出
+      clearAutoLogout()
     } catch (error) {
       console.error('登出失败:', error)
+      // 即使 API 调用失败，也要清除本地状态
+      clearUserInfo()
+      removeToken()
+      removeRefreshToken()
+      lastLoginTime.value = ''
+      resetLoginFailCount()
+      clearAutoLogout()
+    }
+  }
+
+  // 刷新Token
+  const refreshToken = async () => {
+    try {
+      const refreshToken = getRefreshToken()
+      if (!refreshToken) {
+        throw new Error('刷新令牌不存在')
+      }
+
+      const { data: response } = await refreshUserToken(refreshToken)
+      if (response.code === 200) {
+        const loginResult = response.data as LoginResultData
+        // 保存新token
+        setToken(loginResult.accessToken)
+        setRefreshToken(loginResult.refreshToken)
+        return true
+      }
+      throw new Error(response.msg || '刷新令牌失败')
+    } catch (error) {
+      console.error('[User] 刷新令牌失败:', error)
+      // 刷新失败时清除所有数据
+      clearUserInfo()
+      removeToken()
+      removeRefreshToken()
+      throw error
     }
   }
 
@@ -217,7 +256,9 @@ export const useUserStore = defineStore('user', () => {
     incrementLoginFailCount,
     login,
     logout,
+    refreshToken,
     clearUserInfo,
-    permissions: computed(() => userInfo.value?.permissions || [])
+    permissions: computed(() => userInfo.value?.permissions || []),
+    roles: computed(() => userInfo.value?.roles || [])
   }
 }) 

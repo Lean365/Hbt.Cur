@@ -17,23 +17,23 @@ export interface HbtGenTemplate extends HbtBaseEntity {
   genTemplateId: number
   /** 模板名称 */
   templateName: string
-  /** 模板类型（1：后端代码，2：前端代码，3：SQL代码） */
-  templateType: number
+  /** ORM框架类型（1：Entity Framework Core，2：Dapper，3：SqlSugar，4：MyBatis，5：Hibernate，6：SQLAlchemy，7：TypeORM，8：Prisma，9：Eloquent，10：其他） */
+  templateOrmType: number
+  /** 生成模板分类（1：后端代码，2：前端代码，3：SQL代码） */
+  templateCodeType: number
   /** 模板分类（1：实体类，2：控制器，3：服务层，4：数据访问层，5：视图，6：API，7：其他） */
   templateCategory: number
-  /** 模板文件名 */
-  fileName: string
+  /** 编程语言（1：C#，2：Java，3：Python，4：JavaScript，5：Go，6：PHP，7：Ruby，8：Swift，9：Kotlin，10：TypeScript） */
+  templateLanguage: number
+  /** 版本号 */
+  templateVersion: number
   /** 模板内容 */
-  content: string
-  /** 生成路径 */
-  genPath: string
-  /** 生成规则（1：覆盖，2：增量） */
-  genRule: number
-  /** 排序号 */
-  orderNum: number
-
+  templateContent: string
+  /** 文件名 */
+  fileName: string
   /** 状态（0：停用，1：正常） */
   status: number
+
 }
 
 /**
@@ -42,10 +42,16 @@ export interface HbtGenTemplate extends HbtBaseEntity {
 export interface HbtGenTemplateQuery extends HbtPagedQuery {
   /** 模板名称 */
   templateName?: string
-  /** 模板类型 */
-  templateType?: number
+  /** ORM框架类型 */
+  templateOrmType?: number
+  /** 生成模板分类 */
+  templateCodeType?: number
   /** 模板分类 */
   templateCategory?: number
+  /** 编程语言 */
+  templateLanguage?: number
+  /** 文件名 */
+  fileName?: string
   /** 状态 */
   status?: number
   /** 开始时间 */
@@ -60,24 +66,25 @@ export interface HbtGenTemplateQuery extends HbtPagedQuery {
 export interface HbtGenTemplateCreate {
   /** 模板名称 */
   templateName: string
-  /** 模板类型 */
-  templateType: number
-  /** 模板分类 */
+  /** ORM框架类型（1：Entity Framework Core，2：Dapper，3：SqlSugar，4：MyBatis，5：Hibernate，6：SQLAlchemy，7：TypeORM，8：Prisma，9：Eloquent，10：其他） */
+  templateOrmType: number
+  /** 生成模板分类（1：后端代码，2：前端代码，3：SQL代码） */
+  templateCodeType: number
+  /** 模板分类（1：实体类，2：控制器，3：服务层，4：数据访问层，5：视图，6：API，7：其他） */
   templateCategory: number
-  /** 模板文件名 */
-  fileName: string
+  /** 编程语言（1：C#，2：Java，3：Python，4：JavaScript，5：Go，6：PHP，7：Ruby，8：Swift，9：Kotlin，10：TypeScript） */
+  templateLanguage: number
+  /** 版本号 */
+  templateVersion: number
   /** 模板内容 */
-  content: string
-  /** 生成路径 */
-  genPath: string
-  /** 生成规则 */
-  genRule: number
-  /** 排序号 */
-  orderNum: number
+  templateContent: string
+  /** 文件名 */
+  fileName: string
+  /** 状态（0：停用，1：正常） */
+  status: number
   /** 备注 */
   remark?: string
-  /** 状态 */
-  status: number
+
 }
 
 /**
@@ -92,49 +99,72 @@ export interface HbtGenTemplateUpdate extends HbtGenTemplateCreate {
  * 代码生成模板模板
  */
 export interface HbtGenTemplateTemplate {
+  /** 模板名称 */
   templateName: string
-  templateType: string
-  templateCategory: string
+  /** ORM框架类型（1：Entity Framework Core，2：Dapper，3：SqlSugar，4：MyBatis，5：Hibernate，6：SQLAlchemy，7：TypeORM，8：Prisma，9：Eloquent，10：其他） */
+  templateOrmType: number
+  /** 生成模板分类（1：后端代码，2：前端代码，3：SQL代码） */
+  templateCodeType: number
+  /** 模板分类（1：实体类，2：控制器，3：服务层，4：数据访问层，5：视图，6：API，7：其他） */
+  templateCategory: number
+  /** 编程语言（1：C#，2：Java，3：Python，4：JavaScript，5：Go，6：PHP，7：Ruby，8：Swift，9：Kotlin，10：TypeScript） */
+  templateLanguage: number
+  /** 版本号 */
+  templateVersion: number
+  /** 模板内容 */
+  templateContent: string
+  /** 文件名 */
   fileName: string
-  content: string
-  genPath: string
-  genRule: string
-  orderNum: string
-  remark: string
-  status: string
+  /** 状态（0：停用，1：正常） */
+  status: number
 }
 
 /**
  * 代码生成模板导入参数
  */
 export interface HbtGenTemplateImport {
+  /** 模板名称 */
   templateName: string
-  templateType: number
+  /** ORM框架类型（1：Entity Framework Core，2：Dapper，3：SqlSugar，4：MyBatis，5：Hibernate，6：SQLAlchemy，7：TypeORM，8：Prisma，9：Eloquent，10：其他） */
+  templateOrmType: number
+  /** 生成模板分类（1：后端代码，2：前端代码，3：SQL代码） */
+  templateCodeType: number
+  /** 模板分类（1：实体类，2：控制器，3：服务层，4：数据访问层，5：视图，6：API，7：其他） */
   templateCategory: number
+  /** 编程语言（1：C#，2：Java，3：Python，4：JavaScript，5：Go，6：PHP，7：Ruby，8：Swift，9：Kotlin，10：TypeScript） */
+  templateLanguage: number
+  /** 版本号 */
+  templateVersion: number
+  /** 模板内容 */
+  templateContent: string
+  /** 文件名 */
   fileName: string
-  content: string
-  genPath: string
-  genRule: number
-  orderNum: number
+  /** 状态（0：停用，1：正常） */
   status: number
-  remark?: string
 }
 
 /**
  * 代码生成模板导出参数
  */
 export interface HbtGenTemplateExport {
+  /** 模板名称 */
   templateName: string
-  templateType: number
+  /** ORM框架类型（1：Entity Framework Core，2：Dapper，3：SqlSugar，4：MyBatis，5：Hibernate，6：SQLAlchemy，7：TypeORM，8：Prisma，9：Eloquent，10：其他） */
+  templateOrmType: number
+  /** 生成模板分类（1：后端代码，2：前端代码，3：SQL代码） */
+  templateCodeType: number
+  /** 模板分类（1：实体类，2：控制器，3：服务层，4：数据访问层，5：视图，6：API，7：其他） */
   templateCategory: number
+  /** 编程语言（1：C#，2：Java，3：Python，4：JavaScript，5：Go，6：PHP，7：Ruby，8：Swift，9：Kotlin，10：TypeScript） */
+  templateLanguage: number
+  /** 版本号 */
+  templateVersion: number
+  /** 模板内容 */
+  templateContent: string
+  /** 文件名 */
   fileName: string
-  content: string
-  genPath: string
-  genRule: number
-  orderNum: number
+  /** 状态（0：停用，1：正常） */
   status: number
-  remark?: string
-  createTime: string
 }
 
 /**

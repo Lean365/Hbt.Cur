@@ -22,21 +22,11 @@ namespace Lean.Hbt.Domain.Entities.Finance.Budget
     /// 创建者: Lean365
     /// 创建时间: 2024-03-07
     /// </remarks>
-    [SugarTable("hbt_sales_budget", "销售预算表")]
-    [SugarIndex("ix_tenant_sales_budget", nameof(TenantId), OrderByType.Asc, nameof(BudgetYear), OrderByType.Asc, nameof(BudgetMonth), OrderByType.Asc, true)]
+    [SugarTable("hbt_budget_sales", "销售预算表")]
+    [SugarIndex("ix_sales_budget_year_month", nameof(BudgetYear), OrderByType.Asc, nameof(BudgetMonth), OrderByType.Asc, true)]
     public class HbtSalesBudget : HbtBaseEntity
     {
-        /// <summary>
-        /// 租户ID
-        /// </summary>
-        [SugarColumn(ColumnName = "tenant_id", ColumnDescription = "租户ID", ColumnDataType = "bigint", IsNullable = false)]
-        public long TenantId { get; set; }
 
-        /// <summary>
-        /// 租户
-        /// </summary>
-        [Navigate(NavigateType.OneToOne, nameof(TenantId))]
-        public HbtTenant? Tenant { get; set; }
 
         /// <summary>
         /// 预算年度

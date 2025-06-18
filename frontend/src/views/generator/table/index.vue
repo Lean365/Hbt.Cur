@@ -30,7 +30,7 @@
 
     <!-- 工具栏 -->
     <hbt-toolbar
-      :show-add="true"
+      :show-add="false"
       :add-permission="['generator:table:create']"
       :show-edit="true"
       :edit-permission="['generator:table:update']"
@@ -213,352 +213,334 @@ const queryFields = computed<QueryField[]>(() => [
 const defaultColumns = [
   {
     title: 'ID',
-    dataIndex: 'id',
+    dataIndex: 'genTableId',
     key: 'id',
     width: 80,
     fixed: 'left',
   },
   {
-    title: t('generator.table.databaseName'),
+    title: t('generator.table.fields.databaseName'),
     dataIndex: 'databaseName',
     key: 'databaseName',
     width: 150,
     ellipsis: true
   },
   {
-    title: t('generator.table.tableName'),
+    title: t('generator.table.fields.tableName'),
     dataIndex: 'tableName',
     key: 'tableName',
     width: 150,
     ellipsis: true
   },
   {
-    title: t('generator.table.tableComment'),
+    title: t('generator.table.fields.tableComment'),
     dataIndex: 'tableComment',
     key: 'tableComment',
     width: 150,
     ellipsis: true
   },
   {
-    title: t('generator.table.baseNamespace'),
+    title: t('generator.table.fields.baseNamespace'),
     dataIndex: 'baseNamespace',
     key: 'baseNamespace',
     width: 200,
     ellipsis: true
   },
   {
-    title: t('generator.table.entityNamespace'),
+    title: t('generator.table.fields.entityNamespace'),
     dataIndex: 'entityNamespace',
     key: 'entityNamespace',
     width: 200,
     ellipsis: true
   },
   {
-    title: t('generator.table.entityClassName'),
+    title: t('generator.table.fields.entityClassName'),
     dataIndex: 'entityClassName',
     key: 'entityClassName',
     width: 150,
     ellipsis: true
   },
   {
-    title: t('generator.table.dtoNamespace'),
+    title: t('generator.table.fields.dtoNamespace'),
     dataIndex: 'dtoNamespace',
     key: 'dtoNamespace',
     width: 200,
     ellipsis: true
   },
   {
-    title: t('generator.table.dtoClassName'),
+    title: t('generator.table.fields.dtoClassName'),
     dataIndex: 'dtoClassName',
     key: 'dtoClassName',
     width: 150,
     ellipsis: true
   },
   {
-    title: t('generator.table.dtoType'),
+    title: t('generator.table.fields.dtoType'),
     dataIndex: 'dtoType',
     key: 'dtoType',
     width: 200,
     ellipsis: true
   },
   {
-    title: t('generator.table.serviceNamespace'),
+    title: t('generator.table.fields.serviceNamespace'),
     dataIndex: 'serviceNamespace',
     key: 'serviceNamespace',
     width: 200,
     ellipsis: true
   },
   {
-    title: t('generator.table.iServiceClassName'),
+    title: t('generator.table.fields.iServiceClassName'),
     dataIndex: 'iServiceClassName',
     key: 'iServiceClassName',
     width: 150,
     ellipsis: true
   },
   {
-    title: t('generator.table.serviceClassName'),
+    title: t('generator.table.fields.serviceClassName'),
     dataIndex: 'serviceClassName',
     key: 'serviceClassName',
     width: 150,
     ellipsis: true
   },
   {
-    title: t('generator.table.iRepositoryNamespace'),
+    title: t('generator.table.fields.iRepositoryNamespace'),
     dataIndex: 'iRepositoryNamespace',
     key: 'iRepositoryNamespace',
     width: 200,
     ellipsis: true
   },
   {
-    title: t('generator.table.iRepositoryClassName'),
+    title: t('generator.table.fields.iRepositoryClassName'),
     dataIndex: 'iRepositoryClassName',
     key: 'iRepositoryClassName',
     width: 150,
     ellipsis: true
   },
   {
-    title: t('generator.table.repositoryNamespace'),
+    title: t('generator.table.fields.repositoryNamespace'),
     dataIndex: 'repositoryNamespace',
     key: 'repositoryNamespace',
     width: 200,
     ellipsis: true
   },
   {
-    title: t('generator.table.repositoryClassName'),
+    title: t('generator.table.fields.repositoryClassName'),
     dataIndex: 'repositoryClassName',
     key: 'repositoryClassName',
     width: 150,
     ellipsis: true
   },
   {
-    title: t('generator.table.controllerNamespace'),
+    title: t('generator.table.fields.controllerNamespace'),
     dataIndex: 'controllerNamespace',
     key: 'controllerNamespace',
     width: 200,
     ellipsis: true
   },
   {
-    title: t('generator.table.controllerClassName'),
+    title: t('generator.table.fields.controllerClassName'),
     dataIndex: 'controllerClassName',
     key: 'controllerClassName',
     width: 150,
     ellipsis: true
   },
   {
-    title: t('generator.table.tplType'),
+    title: t('generator.table.fields.tplType'),
     dataIndex: 'tplType',
     key: 'tplType',
     width: 120,
     ellipsis: true
   },
   {
-    title: t('generator.table.tplCategory'),
+    title: t('generator.table.fields.tplCategory'),
     dataIndex: 'tplCategory',
     key: 'tplCategory',
     width: 120,
     ellipsis: true
   },
   {
-    title: t('generator.table.subTableName'),
+    title: t('generator.table.fields.subTableName'),
     dataIndex: 'subTableName',
     key: 'subTableName',
     width: 150,
     ellipsis: true
   },
   {
-    title: t('generator.table.subTableFkName'),
+    title: t('generator.table.fields.subTableFkName'),
     dataIndex: 'subTableFkName',
     key: 'subTableFkName',
     width: 150,
     ellipsis: true
   },
   {
-    title: t('generator.table.treeCode'),
+    title: t('generator.table.fields.treeCode'),
     dataIndex: 'treeCode',
     key: 'treeCode',
     width: 120,
     ellipsis: true
   },
   {
-    title: t('generator.table.treeName'),
+    title: t('generator.table.fields.treeName'),
     dataIndex: 'treeName',
     key: 'treeName',
     width: 120,
     ellipsis: true
   },
   {
-    title: t('generator.table.treeParentCode'),
+    title: t('generator.table.fields.treeParentCode'),
     dataIndex: 'treeParentCode',
     key: 'treeParentCode',
     width: 120,
     ellipsis: true
   },
   {
-    title: t('generator.table.moduleName'),
+    title: t('generator.table.fields.moduleName'),
     dataIndex: 'moduleName',
     key: 'moduleName',
     width: 120,
     ellipsis: true
   },
   {
-    title: t('generator.table.businessName'),
+    title: t('generator.table.fields.businessName'),
     dataIndex: 'businessName',
     key: 'businessName',
     width: 120,
     ellipsis: true
   },
   {
-    title: t('generator.table.functionName'),
+    title: t('generator.table.fields.functionName'),
     dataIndex: 'functionName',
     key: 'functionName',
     width: 120,
     ellipsis: true
   },
   {
-    title: t('generator.table.author'),
+    title: t('generator.table.fields.author'),
     dataIndex: 'author',
     key: 'author',
     width: 100,
     ellipsis: true
   },
   {
-    title: t('generator.table.genType'),
-    dataIndex: 'genType',
-    key: 'genType',
+    title: t('generator.table.fields.genMethod'),
+    dataIndex: 'genMethod',
+    key: 'genMethod',
     width: 100,
     ellipsis: true
   },
   {
-    title: t('generator.table.genPath'),
+    title: t('generator.table.fields.genPath'),
     dataIndex: 'genPath',
     key: 'genPath',
     width: 200,
     ellipsis: true
   },
   {
-    title: t('generator.table.parentMenuId'),
-    dataIndex: 'parentMenuId',
-    key: 'parentMenuId',
+    title: t('generator.table.fields.ParentMenuId'),
+    dataIndex: 'ParentMenuId',
+    key: 'ParentMenuId',
     width: 100,
     ellipsis: true
   },
   {
-    title: t('generator.table.sortType'),
+    title: t('generator.table.fields.sortType'),
     dataIndex: 'sortType',
     key: 'sortType',
     width: 100,
     ellipsis: true
   },
   {
-    title: t('generator.table.sortField'),
+    title: t('generator.table.fields.sortField'),
     dataIndex: 'sortField',
     key: 'sortField',
     width: 100,
     ellipsis: true
   },
   {
-    title: t('generator.table.permsPrefix'),
+    title: t('generator.table.fields.permsPrefix'),
     dataIndex: 'permsPrefix',
     key: 'permsPrefix',
     width: 150,
     ellipsis: true
   },
   {
-    title: t('generator.table.generateMenu'),
+    title: t('generator.table.fields.generateMenu'),
     dataIndex: 'generateMenu',
     key: 'generateMenu',
     width: 100,
     ellipsis: true
   },
   {
-    title: t('generator.table.frontTpl'),
+    title: t('generator.table.fields.frontTpl'),
     dataIndex: 'frontTpl',
     key: 'frontTpl',
     width: 100,
     ellipsis: true
   },
   {
-    title: t('generator.table.btnStyle'),
+    title: t('generator.table.fields.btnStyle'),
     dataIndex: 'btnStyle',
     key: 'btnStyle',
     width: 100,
     ellipsis: true
   },
   {
-    title: t('generator.table.frontStyle'),
+    title: t('generator.table.fields.frontStyle'),
     dataIndex: 'frontStyle',
     key: 'frontStyle',
     width: 100,
     ellipsis: true
   },
   {
-    title: t('generator.table.status'),
-    dataIndex: 'status',
-    key: 'status',
+    title: t('generator.table.fields.isGenCode'),
+    dataIndex: 'isGenCode',
+    key: 'isGenCode',
     width: 100,
     ellipsis: true
   },
   {
-    title: t('generator.table.remark'),
+    title: t('table.columns.remark'),
     dataIndex: 'remark',
     key: 'remark',
-    width: 150,
+    width: 120,
     ellipsis: true
   },
   {
-    title: t('generator.table.tenantId'),
-    dataIndex: 'tenantId',
-    key: 'tenantId',
-    width: 100,
-    ellipsis: true
-  },
-  {
-    title: t('generator.table.options'),
-    dataIndex: 'options',
-    key: 'options',
-    width: 150,
-    ellipsis: true
-  },
-  {
-    title: t('generator.table.createBy'),
+    title: t('table.columns.createBy'),
     dataIndex: 'createBy',
     key: 'createBy',
-    width: 100,
+    width: 120,
     ellipsis: true
   },
   {
-    title: t('generator.table.createTime'),
+    title: t('table.columns.createTime'),
     dataIndex: 'createTime',
     key: 'createTime',
     width: 180,
-    sorter: true
-  },
-  {
-    title: t('generator.table.updateBy'),
-    dataIndex: 'updateBy',
-    key: 'updateBy',
-    width: 100,
     ellipsis: true
   },
   {
-    title: t('generator.table.updateTime'),
+    title: t('table.columns.updateBy'),
+    dataIndex: 'updateBy',
+    key: 'updateBy',
+    width: 120,
+    ellipsis: true
+  },
+  {
+    title: t('table.columns.updateTime'),
     dataIndex: 'updateTime',
     key: 'updateTime',
     width: 180,
-    sorter: true
-  },
-  {
-    title: t('generator.table.isDeleted'),
-    dataIndex: 'isDeleted',
-    key: 'isDeleted',
-    width: 100,
     ellipsis: true
   },
   {
-    title: t('common.table.header.operation'),
+    title: t('table.columns.operation'),
+    dataIndex: 'action',
     key: 'action',
-    width: 180,
-    fixed: 'right'
+    width: 150,
+    fixed: 'right',
+    align: 'center',
+    ellipsis: true
   }
 ]
 
@@ -578,13 +560,13 @@ const fetchData = async () => {
     if (res.data.code === 200) {
       // 检查数据是否包含必要的字段
       const validData = res.data.data.rows.map((item: any) => {
-        if (!item.id || typeof item.id !== 'number') {
+        if (!item.genTableId || typeof item.genTableId !== 'number') {
           console.error('记录缺少有效的 id:', item)
           return null
         }
         return {
           ...item,
-          id: Number(item.id) // 确保 id 是数字类型
+          genTableId: Number(item.genTableId) // 确保 id 是数字类型
         }
       }).filter(Boolean)
       

@@ -2,7 +2,7 @@
 
 //===================================================================
 // 项目名 : Lean.Hbt
-// 文件名 : HbtWorkflowResults.cs
+// 文件名 : HbtResults.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-23 12:00
 // 版本号 : V1.0.0
@@ -16,7 +16,7 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine
     /// <summary>
     /// 工作流节点执行结果
     /// </summary>
-    public class HbtWorkflowNodeResult
+    public class HbtNodeResult
     {
         /// <summary>
         /// 是否执行成功
@@ -37,7 +37,7 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine
     /// <summary>
     /// 工作流转换执行结果
     /// </summary>
-    public class HbtWorkflowTransitionResult
+    public class HbtTransitionResult
     {
         /// <summary>
         /// 是否执行成功

@@ -2,97 +2,75 @@ export default {
   workflow: {
     instance: {
       title: '工作流实例',
-      list: {
-        title: '工作流实例列表',
-        search: {
-          name: '工作流名称',
-          key: '工作流标识',
-          version: '版本号',
-          status: '状态',
-          startTime: '开始时间',
-          endTime: '结束时间'
-        },
-        table: {
-          name: '工作流名称',
-          key: '工作流标识',
-          version: '版本号',
-          status: '状态',
-          startTime: '开始时间',
-          endTime: '结束时间',
-          duration: '持续时间',
-          actions: '操作'
-        },
-        actions: {
-          view: '查看',
-          delete: '删除',
-          terminate: '终止',
-          export: '导出',
-          import: '导入',
-          refresh: '刷新'
-        },
-        status: {
-          running: '运行中',
-          completed: '已完成',
-          terminated: '已终止',
-          failed: '已失败'
-        }
+      fields: {
+        instanceId: '实例ID',
+        instanceName: '实例名称',
+        businessKey: '业务主键',
+        definitionId: '流程ID',
+        currentNodeId: '当前节点ID',
+        initiatorId: '发起人',
+        formData: '表单数据',
+        status: '状态',
+        startTime: '开始时间',
+        endTime: '结束时间',
+        remark: '备注',        
       },
-      form: {
-        title: {
-          create: '新建工作流实例',
-          import: '导入工作流实例'
-        },
-        fields: {
-          workflowDefinitionId: '工作流定义',
-          variables: '变量配置'
-        },
-        rules: {
-          workflowDefinitionId: {
-            required: '请选择工作流定义'
+      placeholder: {
+        instanceName: '实例名称',
+        businessKey: '业务主键',
+        definitionId: '流程ID',
+        currentNodeId: '当前节点ID',
+        initiatorId: '发起人',
+        formData: '表单数据',
+        status: '状态',
+        startTime: '开始时间',
+        endTime: '结束时间',
+        remark: '备注',    
+        validation: {
+          instanceName: {
+            required: '请输入实例名称',
+            length: '实例名称长度必须在2-50个字符之间',
+            pattern: '实例名称只能包含中文、英文、数字、下划线和横线'
+          },
+          businessKey: {
+            required: '请输入业务主键',
+            length: '业务主键长度必须在2-50个字符之间',
+            pattern: '业务主键只能包含中文、英文、数字、下划线和横线'
+          },
+          definitionId: {
+            required: '请输入流程ID',
+            length: '流程ID长度必须在2-50个字符之间',
+            pattern: '流程ID只能包含中文、英文、数字、下划线和横线'
+          },
+          currentNodeId: {
+            required: '请输入当前节点ID',
+            length: '当前节点ID长度必须在2-50个字符之间',
+            pattern: '当前节点ID只能包含中文、英文、数字、下划线和横线'
+          },
+          initiatorId: {
+            required: '请选择发起人',
+          },
+          formData: {
+            required: '请输入表单数据',
+            length: '表单数据长度必须在2-20000个字符之间',
+            pattern: '表单数据只能包含中文、英文、数字、下划线和横线'
+          },
+          status: {
+            required: '请选择状态',
+          },
+          startTime: {
+            required: '请选择开始时间',
+          },
+          endTime: {
+            required: '请选择结束时间',
+          },
+          remark: {
+            required: '请输入备注',
+            length: '备注长度必须在2-200个字符之间',
           }
-        },
-        buttons: {
-          submit: '提交',
-          cancel: '取消'
-        }
-      },
-      detail: {
-        title: '工作流实例详情',
-        basic: {
-          title: '基本信息',
-          name: '工作流名称',
-          key: '工作流标识',
-          version: '版本号',
-          status: '状态',
-          startTime: '开始时间',
-          endTime: '结束时间',
-          duration: '持续时间'
-        },
-        nodes: {
-          title: '节点信息',
-          name: '节点名称',
-          type: '节点类型',
-          status: '状态',
-          startTime: '开始时间',
-          endTime: '结束时间',
-          duration: '持续时间',
-          input: '输入',
-          output: '输出',
-          error: '错误'
-        },
-        actions: {
-          back: '返回'
-        }
-      },
-      terminate: {
-        title: '终止工作流实例',
-        confirm: '确定要终止此工作流实例吗？',
-        reason: '终止原因',
-        buttons: {
-          submit: '提交',
-          cancel: '取消'
         }
       }
     }
   }
-} 
+}
+ 

@@ -257,47 +257,55 @@ namespace Lean.Hbt.Infrastructure.Data.Contexts
                 // 3.创建/更新表
                 foreach (var entityType in entityTypes)
                 {
-                    var tableName = _client.EntityMaintenance.GetTableName(entityType);
-                    var entityInfo = _client.EntityMaintenance.GetEntityInfo(entityType);
-
-                    // 检查表是否存在
-                    var isTableExists = await Task.Run(() => _client.DbMaintenance.IsAnyTable(tableName));
-                    if (!isTableExists)
+                    try
                     {
-                        _logger.Info($"[表结构] 新建表 {tableName}");
-                        await Task.Run(() => _client.CodeFirst.InitTables(entityType));
-                        continue;
-                    }
+                        var tableName = _client.EntityMaintenance.GetTableName(entityType);
+                        var entityInfo = _client.EntityMaintenance.GetEntityInfo(entityType);
 
-                    // 获取数据库中的列信息
-                    var dbColumns = await Task.Run(() => _client.DbMaintenance.GetColumnInfosByTableName(tableName));
-                    // 获取实体中的列信息
-                    var entityColumns = entityInfo.Columns;
-
-                    // 比较列差异
-                    var shouldUpdate = false;
-                    foreach (var entityColumn in entityColumns)
-                    {
-                        var dbColumn = dbColumns.FirstOrDefault(x => x.DbColumnName.Equals(entityColumn.DbColumnName, StringComparison.OrdinalIgnoreCase));
-                        if (dbColumn == null)
+                        // 检查表是否存在
+                        var isTableExists = await Task.Run(() => _client.DbMaintenance.IsAnyTable(tableName));
+                        if (!isTableExists)
                         {
-                            shouldUpdate = true;
-                            break;
+                            _logger.Info($"[表结构] 新建表 {tableName}");
+                            await Task.Run(() => _client.CodeFirst.InitTables(entityType));
+                            continue;
                         }
 
-                        if (entityColumn.IsNullable != dbColumn.IsNullable ||
-                            (entityColumn.Length > 0 && entityColumn.Length != dbColumn.Length))
+                        // 获取数据库中的列信息
+                        var dbColumns = await Task.Run(() => _client.DbMaintenance.GetColumnInfosByTableName(tableName));
+                        // 获取实体中的列信息
+                        var entityColumns = entityInfo.Columns;
+
+                        // 比较列差异
+                        var shouldUpdate = false;
+                        foreach (var entityColumn in entityColumns)
                         {
-                            shouldUpdate = true;
-                            break;
+                            var dbColumn = dbColumns.FirstOrDefault(x => x.DbColumnName.Equals(entityColumn.DbColumnName, StringComparison.OrdinalIgnoreCase));
+                            if (dbColumn == null)
+                            {
+                                shouldUpdate = true;
+                                break;
+                            }
+
+                            if (entityColumn.IsNullable != dbColumn.IsNullable ||
+                                (entityColumn.Length > 0 && entityColumn.Length != dbColumn.Length))
+                            {
+                                shouldUpdate = true;
+                                break;
+                            }
+                        }
+
+                        // 更新表结构
+                        if (shouldUpdate)
+                        {
+                            _logger.Info($"[表结构] 更新表 {tableName}");
+                            await Task.Run(() => _client.CodeFirst.InitTables(entityType));
                         }
                     }
-
-                    // 更新表结构
-                    if (shouldUpdate)
+                    catch (Exception ex)
                     {
-                        _logger.Info($"[表结构] 更新表 {tableName}");
-                        await Task.Run(() => _client.CodeFirst.InitTables(entityType));
+                        _logger.Error($"处理表 {entityType.Name} 时发生错误", ex);
+                        throw;
                     }
                 }
 

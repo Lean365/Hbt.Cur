@@ -1,24 +1,48 @@
-//===================================================================
-// 项目名 : Lean.Hbt
-// 文件名 : ImportDialog/index.vue
-// 创建者 : Claude
-// 创建时间: 2024-03-27
-// 版本号 : v1.0.0
-// 描述    : 通用导入对话框组件
-//===================================================================
+<!--
+===================================================================
+项目名 : Lean.Hbt
+文件名 : ImportDialog/index.vue
+创建者 : Claude
+创建时间: 2024-03-27
+版本号 : v1.0.0
+描述    : 通用导入对话框组件
+
+使用示例:
+<hbt-import-dialog
+  v-model:open="importVisible"
+  :upload-method="handleImportUpload"
+  :template-method="handleDownloadTemplate"
+  template-file-name="用户导入模板.xlsx"
+  :tips="'请确保Excel文件包含必要的用户信息字段,\n如用户名,昵称,邮箱,手机号,性别,用户类型,状态'"
+  :show-template="true"
+  :template-permission="['identity:user:import:template']"
+  @success="handleImportSuccess"
+/>
+
+换行支持:
+1. 使用 \n 换行: "第一行\n第二行"
+2. 使用 \\n 转义换行: "第一行\\n第二行"  
+3. 使用 <br> 标签: "第一行<br>第二行"
+4. 使用 <br/> 标签: "第一行<br/>第二行"
+===================================================================
+-->
 
 <template>
   <a-modal
+    :open="visible"
     :title="t('common.import.title')"
-    :open="open"
+    :width="700"
+    :footer="null"
+    :maskClosable="false"
+    :draggable="true"
     :confirm-loading="loading"
     @update:open="handleVisibleChange"
     @ok="handleSubmit"
   >
-    <a-form :label-col="{ span: 4 }" :wrapper-col="{ span: 19 }">
+    <a-form :label-col="{ span: 6 }" :wrapper-col="{ span: 18 }">
       <!-- 文件上传 -->
       <a-form-item :label="t('common.import.file')">
-        <a-upload
+        <a-upload-dragger
           :accept="accept"
           :show-upload-list="true"
           :before-upload="handleBeforeUpload"
@@ -27,35 +51,65 @@
           :maxCount="1"
           @change="handleChange"
         >
-          <a-button>
+          <p class="ant-upload-drag-icon">
             <upload-outlined />
-            {{ t('common.import.select') }}
-          </a-button>
-        </a-upload>
+          </p>
+          <p class="ant-upload-text">{{ t('common.import.dragText') }}</p>
+          <p class="ant-upload-hint">{{ t('common.import.dragHint') }}</p>
+        </a-upload-dragger>
       </a-form-item>
 
       <!-- 下载模板 -->
       <a-form-item :label="t('common.import.template')" v-if="templateFileName">
-        <a @click="handleDownloadTemplate">
-          <download-outlined />
-          {{ t('common.import.download') }}
-        </a>
+        <div v-if="props.showTemplate" v-hasPermi="props.templatePermission">
+          <a-button 
+            class="hbt-btn-import"
+            size="small"
+            :loading="loading"
+            @click="handleDownloadTemplate"
+          >
+            <template #icon>
+              <download-outlined />
+            </template>
+            {{ t('common.import.download') }}
+          </a-button>
+        </div>
       </a-form-item>
 
       <!-- 导入说明 -->
       <a-form-item :label="t('common.import.note')" v-if="tips || sheetName">
         <a-alert
           v-if="tips"
-          :message="tips"
           type="info"
           show-icon
-        />
+        >
+          <template #message>
+            <div v-html="formatTips(tips)"></div>
+          </template>
+        </a-alert>
         <div class="mt-2" v-if="sheetName">
           <a-alert
-            :message="`请确保 Excel 文件的 sheet 名称为：${sheetName}`"
+            :message="t('common.import.sheetName', { sheetName })"
             type="warning"
             show-icon
           />
+        </div>
+        <!-- 导入限制 -->
+        <div class="mt-2">
+          <a-alert
+            :message="t('common.import.limits.title')"
+            type="warning"
+            show-icon
+          >
+            <template #description>
+              <div>
+                <div>{{ t('common.import.limits.fileCount', { count: 1 }) }}</div>
+                <div>{{ t('common.import.limits.fileSize', { size: props.maxSize }) }}</div>
+                <div>{{ t('common.import.limits.recordCount', { count: props.maxRecords }) }}</div>
+                <div>{{ t('common.import.limits.fileFormat') }}</div>
+              </div>
+            </template>
+          </a-alert>
         </div>
       </a-form-item>
     </a-form>
@@ -82,7 +136,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { message } from 'ant-design-vue'
 import { UploadOutlined, DownloadOutlined } from '@ant-design/icons-vue'
@@ -111,22 +165,30 @@ interface Props {
   sheetName?: string
   /** 文件大小限制(MB) */
   maxSize?: number
+  /** 记录数限制 */
+  maxRecords?: number
   /** 导入说明 */
   tips?: string
   /** 是否自动关闭 */
   autoClose?: boolean
+  /** 是否显示模板下载按钮 */
+  showTemplate?: boolean
+  /** 模板下载权限数组，为空数组时不显示下载按钮 */
+  templatePermission?: string[]
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  accept: '.xlsx,.xls',
-  maxSize: 2,
-  autoClose: true
+  accept: '.xlsx',
+  maxSize: 10,
+  maxRecords: 1000,
+  autoClose: true,
+  showTemplate: true,
+  templatePermission: () => []
 })
 
-const emit = defineEmits<{
-  (e: 'update:open', open: boolean): void
-  (e: 'success'): void
-}>()
+const emit = defineEmits(['update:open'])
+
+const visible = computed(() => props.open)
 
 const { t } = useI18n()
 
@@ -156,23 +218,42 @@ const handleChange = (info: UploadChangeParam) => {
     loading.value = false
     const response = info.file.response
     if (response.code === 200) {
+      const success = response.data.success || 0
+      const fail = response.data.fail || 0
+      
       importResult.value = {
-        total: (response.data.success || 0) + (response.data.fail || 0),
-        success: response.data.success || 0,
-        failed: response.data.fail || 0,
+        total: success + fail,
+        success,
+        failed: fail,
         message: response.msg
       }
-      message.success(t('common.import.success'))
-      emit('success')
+      
+      // 检查记录数限制
+      if (success + fail > props.maxRecords) {
+        message.warning(t('common.import.recordLimit', { max: props.maxRecords, actual: success + fail }))
+      }
+      
+      console.log('importResult.value:', importResult.value.success)
+      // 根据导入结果显示不同的提示信息
+      if (success > 0 && fail === 0) {
+        message.success(t('common.import.allSuccess', { count: success }))
+      } else if (success > 0 && fail > 0) {
+        message.warning(t('common.import.partialSuccess', { success, fail }))
+      } else if (success === 0 && fail > 0) {
+        message.error(t('common.import.allFailed', { count: fail }))
+      } else {
+        message.info(t('common.import.noData'))
+      }
+      
       if (props.autoClose) {
         handleVisibleChange(false)
       }
     } else {
-      message.error(response.msg || t('common.import.failed'))
+      message.error(response.msg || t('common.import.importFailed'))
     }
   } else if (info.file.status === 'error') {
     loading.value = false
-    message.error(info.file.response?.msg || t('common.import.failed'))
+    message.error(info.file.response?.msg || t('common.import.importFailed'))
   }
 }
 
@@ -204,7 +285,7 @@ const handleCustomRequest = async (options: any) => {
     if (response?.code === 200) {
       onSuccess(response)
     } else {
-      onError(new Error(response?.msg || t('common.import.failed')))
+      onError(new Error(response?.msg || t('common.import.importFailed')))
     }
   } catch (error: any) {
     console.error('[上传文件] 上传失败:', error)
@@ -221,8 +302,7 @@ const handleBeforeUpload = (file: File) => {
   }
 
   // 检查文件类型
-  const isExcel = file.type === 'application/vnd.ms-excel' || 
-    file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+  const isExcel = file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
   if (!isExcel) {
     message.error(t('common.import.format'))
     return false
@@ -246,7 +326,7 @@ const handleDownloadTemplate = async () => {
     const url = window.URL.createObjectURL(blob)
     const link = document.createElement('a')
     link.href = url
-    link.download = props.templateFileName || `导入模板_${new Date().getTime()}.xlsx`
+    link.download = props.templateFileName || t('common.import.templateFileName', { time: new Date().getTime() })
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
@@ -281,26 +361,55 @@ const handleSubmit = async () => {
     
     // 处理响应
     if (response.code === 200) {
+      const success = response.data.success || 0
+      const fail = response.data.fail || 0
+      
       importResult.value = {
-        total: (response.data.success || 0) + (response.data.fail || 0),
-        success: response.data.success || 0,
-        failed: response.data.fail || 0,
+        total: success + fail,
+        success,
+        failed: fail,
         message: response.msg
       }
-      message.success(t('common.import.success'))
-      emit('success')
+      
+      // 检查记录数限制
+      if (success + fail > props.maxRecords) {
+        message.warning(t('common.import.recordLimit', { max: props.maxRecords, actual: success + fail }))
+      }
+      
+      // 根据导入结果显示不同的提示信息
+      if (success > 0 && fail === 0) {
+        message.success(t('common.import.allSuccess', { count: success }))
+      } else if (success > 0 && fail > 0) {
+        message.warning(t('common.import.partialSuccess', { success, fail }))
+      } else if (success === 0 && fail > 0) {
+        message.error(t('common.import.allFailed', { count: fail }))
+      } else {
+        message.info(t('common.import.noData'))
+      }
+      
       if (props.autoClose) {
         handleVisibleChange(false)
       }
     } else {
-      message.error(response.msg || t('common.import.failed'))
+      message.error(response.msg || t('common.import.importFailed'))
     }
   } catch (error: any) {
     console.error('提交失败:', error)
-    message.error(error.response?.data?.msg || error.message || t('common.import.failed'))
+    message.error(error.response?.data?.msg || error.message || t('common.import.importFailed'))
   } finally {
     loading.value = false
   }
+}
+
+// 格式化导入说明
+const formatTips = (tips: string | undefined) => {
+  if (!tips) return ''
+  
+  // 处理多种换行方式
+  return tips
+    .replace(/\\n/g, '<br>')  // 处理转义的换行符
+    .replace(/\n/g, '<br>')   // 处理普通换行符
+    .replace(/<br\s*\/?>/gi, '<br>')  // 统一br标签格式
 }
 </script>
 
@@ -312,5 +421,137 @@ const handleSubmit = async () => {
 
 :deep(.ant-descriptions-item-label) {
   width: 100px;
+}
+
+// 确保表单标签有足够的宽度
+:deep(.ant-form-item-label) {
+  min-width: 140px;
+  text-align: right;
+  padding-right: 12px;
+  flex-shrink: 0; // 防止标签被压缩
+  
+  // 对于长标签文本，确保不被截断
+  .ant-form-item-required {
+    white-space: nowrap;
+    overflow: visible; // 允许文本溢出显示
+    text-overflow: clip; // 不显示省略号
+  }
+  
+  // 确保标签文本完整显示
+  label {
+    white-space: nowrap;
+    overflow: visible;
+    text-overflow: clip;
+    font-weight: 500;
+  }
+}
+
+// 确保表单内容区域有足够的空间
+:deep(.ant-form-item-control) {
+  flex: 1;
+  min-width: 0; // 允许内容区域收缩
+  margin-left: 0; // 移除默认的左边距
+}
+
+// 优化表单行布局
+:deep(.ant-form-item) {
+  margin-bottom: 24px;
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+// 优化上传区域样式
+:deep(.ant-upload-dragger) {
+  width: 100%;
+  min-height: 120px;
+}
+
+// 优化警告框样式
+:deep(.ant-alert) {
+  margin-bottom: 8px;
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+  
+  // 确保tips中的换行正确显示
+  .ant-alert-message {
+    white-space: pre-line;
+    line-height: 1.6;
+    
+    // 支持HTML内容的换行
+    div {
+      white-space: pre-line;
+      line-height: 1.6;
+    }
+  }
+}
+
+// 优化下载模板按钮样式
+:deep(.ant-btn) {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  
+  .anticon {
+    font-size: 14px;
+  }
+}
+
+// 确保模态框内容有足够的空间
+:deep(.ant-modal-body) {
+  padding: 24px;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+// 优化描述列表样式
+:deep(.ant-descriptions) {
+  .ant-descriptions-item-label {
+    font-weight: 500;
+    color: rgba(0, 0, 0, 0.85);
+  }
+  
+  .ant-descriptions-item-content {
+    color: rgba(0, 0, 0, 0.65);
+  }
+}
+
+// 响应式设计：在小屏幕上调整布局
+@media (max-width: 768px) {
+  :deep(.ant-form-item-label) {
+    min-width: 100px;
+    text-align: left;
+    padding-right: 0;
+    padding-bottom: 4px;
+  }
+  
+  :deep(.ant-form-item-control) {
+    margin-left: 0;
+  }
+}
+
+// 支持从右到左的语言（如阿拉伯语）
+[dir="rtl"] {
+  :deep(.ant-form-item-label) {
+    text-align: right;
+    padding-right: 0;
+    padding-left: 12px;
+  }
+  
+  :deep(.ant-form-item-control) {
+    margin-right: 0;
+    margin-left: 0;
+  }
+  
+  :deep(.ant-upload-dragger) {
+    text-align: right;
+  }
+  
+  :deep(.ant-alert) {
+    text-align: right;
+  }
 }
 </style> 

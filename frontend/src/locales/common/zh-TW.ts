@@ -293,11 +293,29 @@ export default {
       note: '匯入說明',
       tips: '請嚴格遵循匯入範本格式，否則匯入可能失敗',
       format: '僅支援 Excel 檔案！',
-      size: '檔案大小不能超過 2MB！',
+      size: '檔案大小不能超過{size}MB！',
       total: '總筆數',
       success: '成功筆數',
       failed: '失敗筆數',
-      message: '失敗原因'
+      message: '失敗原因',
+      dragText: '點擊或拖曳檔案到此區域上傳',
+      dragHint: '支援 .xlsx 格式的 Excel 檔案',
+      sheetName: '請確保 Excel 檔案的 sheet 名稱為：{sheetName}',
+      allSuccess: '匯入成功{count}筆，全部成功！',
+      partialSuccess: '匯入成功{success}筆，失敗{fail}筆',
+      allFailed: '全部匯入失敗，共{count}筆',
+      noData: '未讀取到任何資料',
+      empty: '檔案為空，無法上傳',
+      importFailed: '匯入失敗',
+      templateFileName: '匯入範本_{time}.xlsx',
+      limits: {
+        title: '匯入限制',
+        fileCount: '檔案個數限制：{count}個檔案',
+        fileSize: '檔案大小限制：{size}MB',
+        recordCount: '記錄數限制：{count}筆',
+        fileFormat: '檔案格式：僅支援 .xlsx 格式'
+      },
+      recordLimit: '匯入記錄數({actual}筆)超過限制({max}筆)，建議分批匯入'
     },
 
     // 上傳

@@ -97,6 +97,46 @@ public class HbtGenColumnDefineDto
     /// 排序
     /// </summary>
     public int OrderNum { get; set; }
+
+        /// <summary>
+        /// 备注
+        /// </summary>
+        public string? Remark { get; set; }
+
+        /// <summary>
+        /// 创建者
+        /// </summary>
+        public string? CreateBy { get; set; }
+
+        /// <summary>
+        /// 创建时间
+        /// </summary>
+        public DateTime CreateTime { get; set; }
+
+        /// <summary>
+        /// 更新者
+        /// </summary>
+        public string? UpdateBy { get; set; }
+
+        /// <summary>
+        /// 更新时间
+        /// </summary>
+        public DateTime? UpdateTime { get; set; }
+
+        /// <summary>
+        /// 是否删除（0未删除 1已删除）
+        /// </summary>
+        public int IsDeleted { get; set; }
+
+        /// <summary>
+        /// 删除者
+        /// </summary>
+        public string? DeleteBy { get; set; }
+
+        /// <summary>
+        /// 删除时间
+        /// </summary>
+        public DateTime? DeleteTime { get; set; }    
 }
 
 /// <summary>
@@ -200,6 +240,13 @@ public class HbtGenColumnDefineCreateDto
     /// 排序
     /// </summary>
     public int OrderNum { get; set; }
+
+    /// <summary>
+    /// 备注
+    /// </summary>
+    [StringLength(200, ErrorMessage = "备注长度不能超过200个字符")]
+    public string? Remark { get; set; }
+
 }
 
 /// <summary>

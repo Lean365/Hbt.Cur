@@ -1,8 +1,5 @@
 #nullable enable
 
-using SqlSugar;
-using Lean.Hbt.Domain.Entities.Identity;
-
 //===================================================================
 // 项目名 : Lean.Hbt
 // 文件名 : HbtBank.cs
@@ -22,21 +19,10 @@ namespace Lean.Hbt.Domain.Entities.Finance.Accounting
     /// 创建者: Lean365
     /// 创建时间: 2024-03-07
     /// </remarks>
-    [SugarTable("hbt_bank", "银行表")]
-    [SugarIndex("ix_tenant_bank", nameof(TenantId), OrderByType.Asc, nameof(BankCode), OrderByType.Asc, true)]
+    [SugarTable("hbt_accounting_bank", "银行表")]
+    [SugarIndex("ix_bank_code", nameof(BankCode), OrderByType.Asc, true)]
     public class HbtBank : HbtBaseEntity
     {
-        /// <summary>
-        /// 租户ID
-        /// </summary>
-        [SugarColumn(ColumnName = "tenant_id", ColumnDescription = "租户ID", ColumnDataType = "bigint", IsNullable = false)]
-        public long TenantId { get; set; }
-
-        /// <summary>
-        /// 租户
-        /// </summary>
-        [Navigate(NavigateType.OneToOne, nameof(TenantId))]
-        public HbtTenant? Tenant { get; set; }
 
         /// <summary>
         /// 银行编码
@@ -116,10 +102,6 @@ namespace Lean.Hbt.Domain.Entities.Finance.Accounting
         [SugarColumn(ColumnName = "status", ColumnDescription = "状态", ColumnDataType = "int", IsNullable = false)]
         public int Status { get; set; }
 
-        /// <summary>
-        /// 备注
-        /// </summary>
-        [SugarColumn(ColumnName = "remark", ColumnDescription = "备注", Length = 500, ColumnDataType = "nvarchar", IsNullable = true)]
-        public string? Remark { get; set; }
+
     }
-} 
+}

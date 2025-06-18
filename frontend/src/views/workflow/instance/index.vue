@@ -11,13 +11,20 @@
 
     <!-- 工具栏 -->
     <hbt-toolbar
+      :show-add="true"
+      :add-permission="['workflow:instance:create']"
+      :show-edit="true"
+      :edit-permission="['workflow:instance:update']"
       :show-delete="true"
       :delete-permission="['workflow:instance:delete']"
       :show-import="true"
       :import-permission="['workflow:instance:import']"
       :show-export="true"
       :export-permission="['workflow:instance:export']"
+      :disabled-edit="selectedRowKeys.length !== 1"
       :disabled-delete="selectedRowKeys.length === 0"
+      @add="handleAdd"
+      @edit="handleEditSelected"
       @delete="handleBatchDelete"
       @import="handleImport"
       @template="handleTemplate"
@@ -32,11 +39,11 @@
     <hbt-table
       :loading="loading"
       :data-source="tableData"
-      :columns="columns"
+      :columns="visibleColumns"
       :pagination="false"
       :scroll="{ x: 'max-content' }"
       :default-height="594"
-      :row-key="(record: HbtWorkflowInstance) => String(record.id)"
+      :row-key="(record: HbtInstance) => String(record.instanceId)"
       v-model:selectedRowKeys="selectedRowKeys"
       :row-selection="{
         type: 'checkbox',
@@ -55,17 +62,20 @@
         <template v-if="column.key === 'action'">
           <hbt-operation
             :record="record"
+            :show-edit="true"
+            :edit-permission="['workflow:instance:update']"
             :show-delete="true"
             :delete-permission="['workflow:instance:delete']"
             :show-view="true"
             :view-permission="['workflow:instance:query']"
-            :show-submit="record.status === 0"
+            :show-submit="true"
             :submit-permission="['workflow:instance:submit']"
-            :show-withdraw="record.status === 1"
+            :show-withdraw="true"
             :withdraw-permission="['workflow:instance:withdraw']"
-            :show-terminate="record.status === 1"
+            :show-terminate="true"
             :terminate-permission="['workflow:instance:terminate']"
             size="small"
+            @edit="handleEdit"
             @delete="handleDelete"
             @view="handleView"
             @submit="handleSubmit"
@@ -88,30 +98,19 @@
       @showSizeChange="handleSizeChange"
     />
 
-    <!-- 导入对话框 -->
-    <a-modal
-      v-model:open="importVisible"
-      title="导入工作流实例"
-      @ok="handleImportSubmit"
-      @cancel="handleImportCancel"
-    >
-      <a-upload
-        :file-list="fileList"
-        :before-upload="beforeUpload"
-        :customRequest="customRequest"
-      >
-        <a-button>
-          <upload-outlined />
-          点击上传
-        </a-button>
-      </a-upload>
-      <template #footer>
-        <a-button key="back" @click="handleImportCancel">取消</a-button>
-        <a-button key="submit" type="primary" :loading="importLoading" @click="handleImportSubmit">
-          确定
-        </a-button>
-      </template>
-    </a-modal>
+    <!-- 新增/编辑表单 -->
+    <instance-form
+      v-model:open="formVisible"
+      :title="formTitle"
+      :instance-id="selectedInstanceId"
+      @success="handleSuccess"
+    />
+
+    <!-- 查看详情 -->
+    <instance-detail
+      v-model:open="detailVisible"
+      :instance-id="selectedInstanceId"
+    />
 
     <!-- 终止对话框 -->
     <a-modal
@@ -130,7 +129,7 @@
     <!-- 列设置抽屉 -->
     <a-drawer
       :open="columnSettingVisible"
-      title="列设置"
+      :title="t('common.columnSetting')"
       placement="right"
       width="300"
       @close="columnSettingVisible = false"
@@ -141,26 +140,10 @@
         class="column-setting-group"
       >
         <div v-for="col in defaultColumns" :key="col.key" class="column-setting-item">
-          <a-checkbox :value="col.key">{{ col.title }}</a-checkbox>
+          <a-checkbox :value="col.key" :disabled="col.key === 'action'">{{ col.title }}</a-checkbox>
         </div>
       </a-checkbox-group>
     </a-drawer>
-
-    <!-- 新增/编辑表单 -->
-    <workflow-instance-form
-      v-model:visible="formVisible"
-      :title="formTitle"
-      :instance-id="selectedInstanceId"
-      @success="handleSuccess"
-    />
-
-    <!-- 查看详情 -->
-    <a-modal
-      v-model:open="detailVisible"
-      title="工作流实例详情"
-    >
-      <!-- 工作流实例详情内容 -->
-    </a-modal>
   </div>
 </template>
 
@@ -171,7 +154,7 @@ import { ref, computed, onMounted, h } from 'vue'
 import { UploadOutlined } from '@ant-design/icons-vue'
 import { useDictStore } from '@/stores/dict'
 import { useRouter } from 'vue-router'
-import type { HbtWorkflowInstance, HbtWorkflowInstanceQuery } from '@/types/workflow/workflowInstance'
+import type { HbtInstance, HbtInstanceQuery } from '@/types/workflow/instance'
 import type { QueryField } from '@/types/components/query'
 import type { TablePaginationConfig } from 'ant-design-vue'
 import { 
@@ -184,7 +167,9 @@ import {
   submitWorkflowInstance,
   withdrawWorkflowInstance,
   terminateWorkflowInstance
-} from '@/api/workflow/workflowInstance'
+} from '@/api/workflow/instance'
+import InstanceForm from './components/InstanceForm.vue'
+import InstanceDetail from './components/InstanceDetail.vue'
 
 const { t } = useI18n()
 const dictStore = useDictStore()
@@ -193,43 +178,43 @@ const router = useRouter()
 // 表格列定义
 const columns = [
   {
-    title: t('workflow.instance.workflowDefinitionId'),
-    dataIndex: 'workflowDefinitionId',
-    key: 'workflowDefinitionId',
+    title: t('workflow.instance.fields.instanceName'),
+    dataIndex: 'instanceName',
+    key: 'instanceName',
     width: 200
   },
   {
-    title: t('workflow.instance.workflowTitle'),
-    dataIndex: 'workflowTitle',
-    key: 'workflowTitle',
+    title: t('workflow.instance.fields.businessKey'),
+    dataIndex: 'businessKey',
+    key: 'businessKey',
     width: 200
   },
   {
-    title: t('workflow.instance.currentNodeId'),
+    title: t('workflow.instance.fields.currentNodeId'),
     dataIndex: 'currentNodeId',
     key: 'currentNodeId',
     width: 200
   },
   {
-    title: t('workflow.instance.initiatorId'),
+    title: t('workflow.instance.fields.initiatorId'),
     dataIndex: 'initiatorId',
     key: 'initiatorId',
     width: 150
   },
   {
-    title: t('workflow.instance.status'),
+    title: t('workflow.instance.fields.status'),
     dataIndex: 'status',
     key: 'status',
     width: 150
   },
   {
-    title: t('workflow.instance.startTime'),
+    title: t('workflow.instance.fields.startTime'),
     dataIndex: 'startTime',
     key: 'startTime',
     width: 180
   },
   {
-    title: t('workflow.instance.endTime'),
+    title: t('workflow.instance.fields.endTime'),
     dataIndex: 'endTime',
     key: 'endTime',
     width: 180
@@ -245,28 +230,28 @@ const columns = [
 // 查询字段定义
 const queryFields: QueryField[] = [
   {
-    name: 'workflowDefinitionId',
-    label: t('workflow.instance.fields.workflowDefinitionId.label'),
+    name: 'instanceName',
+    label: t('workflow.instance.fields.instanceName'),
     type: 'input' as const
   },
   {
-    name: 'workflowTitle',
-    label: t('workflow.instance.fields.workflowTitle.label'),
+    name: 'businessKey',
+    label: t('workflow.instance.fields.businessKey'),
     type: 'input' as const
   },
   {
     name: 'currentNodeId',
-    label: t('workflow.instance.fields.currentNodeId.label'),
+    label: t('workflow.instance.fields.currentNodeId'),
     type: 'input' as const
   },
   {
     name: 'initiatorId',
-    label: t('workflow.instance.fields.initiatorId.label'),
+    label: t('workflow.instance.fields.initiatorId'),
     type: 'input' as const
   },
   {
     name: 'status',
-    label: t('workflow.instance.fields.status.label'),
+    label: t('workflow.instance.fields.status'),
     type: 'select' as const,
     props: {
       dictType: 'workflow_instance_status',
@@ -275,17 +260,17 @@ const queryFields: QueryField[] = [
   },
   {
     name: 'startTime',
-    label: t('workflow.instance.fields.startTime.label'),
+    label: t('workflow.instance.fields.startTime'),
     type: 'dateRange' as const
   }
 ]
 
 // 查询参数
-const queryParams = ref<HbtWorkflowInstanceQuery>({
+const queryParams = ref<HbtInstanceQuery>({
   pageIndex: 1,
   pageSize: 10,
-  workflowDefinitionId: undefined,
-  workflowTitle: undefined,
+  definitionId: undefined,
+  instanceName: undefined,
   currentNodeId: undefined,
   initiatorId: undefined,
   status: undefined,
@@ -296,14 +281,12 @@ const queryParams = ref<HbtWorkflowInstanceQuery>({
 // 表格相关
 const loading = ref(false)
 const total = ref(0)
-const tableData = ref<HbtWorkflowInstance[]>([])
+const tableData = ref<HbtInstance[]>([])
 const selectedRowKeys = ref<(string | number)[]>([])
 const showSearch = ref(true)
 
 // 导入相关
-const importVisible = ref(false)
 const importLoading = ref(false)
-const fileList = ref<any[]>([])
 
 // 终止相关
 const terminateVisible = ref(false)
@@ -321,6 +304,9 @@ const terminateRules = {
 const columnSettingVisible = ref(false)
 const defaultColumns = columns
 const columnSettings = ref<Record<string, boolean>>({})
+const visibleColumns = computed(() => {
+  return defaultColumns.filter(col => columnSettings.value[col.key])
+})
 
 // 弹窗控制相关
 const formVisible = ref(false)
@@ -356,8 +342,8 @@ const resetQuery = () => {
   queryParams.value = {
     pageIndex: 1,
     pageSize: 10,
-    workflowDefinitionId: undefined,
-    workflowTitle: undefined,
+    definitionId: undefined,
+    instanceName: undefined,
     currentNodeId: undefined,
     initiatorId: undefined,
     status: undefined,
@@ -375,9 +361,9 @@ const handleTableChange = (pagination: TablePaginationConfig) => {
 }
 
 // 处理删除
-const handleDelete = async (record: HbtWorkflowInstance) => {
+const handleDelete = async (record: HbtInstance) => {
   try {
-    const res = await deleteWorkflowInstance(Number(record.id))
+    const res = await deleteWorkflowInstance(Number(record.instanceId))
     if (res.data.code === 200) {
       message.success(t('common.delete.success'))
       fetchData()
@@ -393,15 +379,38 @@ const handleDelete = async (record: HbtWorkflowInstance) => {
 // 处理导出
 const handleExport = async () => {
   try {
-    const res = await exportWorkflowInstance(queryParams.value)
-    if (res.data.code === 200) {
-      message.success(t('common.export.success'))
-    } else {
-      message.error(res.data.msg || t('common.export.failed'))
+    const res = await exportWorkflowInstance({
+      ...queryParams.value
+    })
+    // 动态获取文件名
+    const disposition =
+      res.headers && (res.headers['content-disposition'] || res.headers['Content-Disposition'])
+    let fileName = ''
+    if (disposition) {
+      // 优先匹配 filename*（带中文）
+      let match = disposition.match(/filename\*=UTF-8''([^;]+)/)
+      if (match && match[1]) {
+        fileName = decodeURIComponent(match[1])
+      } else {
+        // 再匹配 filename
+        match = disposition.match(/filename="?([^";]+)"?/)
+        if (match && match[1]) {
+          fileName = match[1]
+        }
+      }
     }
-  } catch (error) {
-    console.error(error)
-    message.error(t('common.export.failed'))
+    if (!fileName) {
+      fileName = `工作流实例_${new Date().getTime()}.xlsx`
+    }
+    const link = document.createElement('a')
+    link.href = window.URL.createObjectURL(res.data)
+    link.download = fileName
+    link.click()
+    window.URL.revokeObjectURL(link.href)
+    message.success(t('common.export.success'))
+  } catch (error: any) {
+    console.error('导出失败:', error)
+    message.error(error.message || t('common.export.failed'))
   }
 }
 
@@ -443,31 +452,56 @@ const handleColumnSetting = () => {
   columnSettingVisible.value = true
 }
 
+// 初始化列设置
+const initColumnSettings = () => {
+  // 每次刷新页面时清除localStorage
+  localStorage.removeItem('workflowInstanceColumnSettings')
+
+  // 初始化所有列为false
+  columnSettings.value = Object.fromEntries(defaultColumns.map(col => [col.key, false]))
+
+  // 获取前9列（不包含操作列）
+  const firstNineColumns = defaultColumns.filter(col => col.key !== 'action').slice(0, 9)
+
+  // 设置前9列为true
+  firstNineColumns.forEach(col => {
+    columnSettings.value[col.key] = true
+  })
+
+  // 确保操作列显示
+  columnSettings.value['action'] = true
+}
+
 // 处理列设置变更
 const handleColumnSettingChange = (checkedValue: Array<string | number | boolean>) => {
   const settings: Record<string, boolean> = {}
   defaultColumns.forEach(col => {
-    settings[col.key] = checkedValue.includes(col.key)
+    // 操作列始终为true
+    if (col.key === 'action') {
+      settings[col.key] = true
+    } else {
+      settings[col.key] = checkedValue.includes(col.key)
+    }
   })
   columnSettings.value = settings
   localStorage.setItem('workflowInstanceColumnSettings', JSON.stringify(settings))
 }
 
 // 处理行点击
-const handleRowClick = (record: HbtWorkflowInstance) => {
+const handleRowClick = (record: HbtInstance) => {
   console.log('行点击:', record)
 }
 
 // 处理查看
-const handleView = (record: HbtWorkflowInstance) => {
-  selectedInstanceId.value = record.id
+const handleView = (record: HbtInstance) => {
+  selectedInstanceId.value = record.instanceId
   detailVisible.value = true
 }
 
 // 处理提交
-const handleSubmit = async (record: HbtWorkflowInstance) => {
+const handleSubmit = async (record: HbtInstance) => {
   try {
-    const res = await submitWorkflowInstance(Number(record.id))
+    const res = await submitWorkflowInstance(Number(record.instanceId))
     if (res.data.code === 200) {
       message.success(t('workflow.instance.submit.success'))
       fetchData()
@@ -481,9 +515,9 @@ const handleSubmit = async (record: HbtWorkflowInstance) => {
 }
 
 // 处理撤回
-const handleWithdraw = async (record: HbtWorkflowInstance) => {
+const handleWithdraw = async (record: HbtInstance) => {
   try {
-    const res = await withdrawWorkflowInstance(Number(record.id))
+    const res = await withdrawWorkflowInstance(Number(record.instanceId))
     if (res.data.code === 200) {
       message.success(t('workflow.instance.withdraw.success'))
       fetchData()
@@ -497,8 +531,8 @@ const handleWithdraw = async (record: HbtWorkflowInstance) => {
 }
 
 // 处理终止
-const handleTerminate = (record: HbtWorkflowInstance) => {
-  terminateForm.value.id = Number(record.id)
+const handleTerminate = (record: HbtInstance) => {
+  terminateForm.value.id = Number(record.instanceId)
   terminateVisible.value = true
 }
 
@@ -538,77 +572,49 @@ const handleTerminateCancel = () => {
 }
 
 // 处理导入
-const handleImport = () => {
-  importVisible.value = true
+const handleImport = async () => {
+  try {
+    const input = document.createElement('input')
+    input.type = 'file'
+    input.accept = '.xlsx,.xls'
+    input.onchange = async (e: Event) => {
+      const file = (e.target as HTMLInputElement).files?.[0]
+      if (!file) return
+      importLoading.value = true
+      try {
+        const res = await importWorkflowInstance(file)
+        if (res.data.code === 200) {
+          message.success('导入成功')
+          await fetchData()
+        } else {
+          message.error(res.data.msg || '导入失败')
+        }
+      } catch (error) {
+        message.error('导入失败')
+      } finally {
+        importLoading.value = false
+      }
+    }
+    input.click()
+  } catch (error: any) {
+    console.error('导入失败:', error)
+    message.error(error.message || t('common.import.failed'))
+  }
 }
 
 // 处理下载模板
 const handleTemplate = async () => {
   try {
     const res = await getWorkflowInstanceTemplate()
-    if (res.data.code === 200) {
-      message.success(t('common.download.success'))
-    } else {
-      message.error(res.data.msg || t('common.download.failed'))
-    }
-  } catch (error) {
-    console.error(error)
-    message.error(t('common.download.failed'))
+    const link = document.createElement('a')
+    link.href = window.URL.createObjectURL(new Blob([res.data]))
+    link.download = `工作流实例导入模板_${new Date().getTime()}.xlsx`
+    link.click()
+    window.URL.revokeObjectURL(link.href)
+  } catch (error: any) {
+    console.error('下载模板失败:', error)
+    message.error(error.message || t('common.template.failed'))
   }
-}
-
-// 处理导入提交
-const handleImportSubmit = async () => {
-  if (!fileList.value.length) {
-    message.warning(t('common.upload.selectFile'))
-    return
-  }
-
-  importLoading.value = true
-  try {
-    const res = await importWorkflowInstance(fileList.value[0])
-    if (res.data.code === 200) {
-      message.success(t('common.import.success'))
-      importVisible.value = false
-      fileList.value = []
-      fetchData()
-    } else {
-      message.error(res.data.msg || t('common.import.failed'))
-    }
-  } catch (error) {
-    console.error(error)
-    message.error(t('common.import.failed'))
-  }
-  importLoading.value = false
-}
-
-// 处理导入取消
-const handleImportCancel = () => {
-  importVisible.value = false
-  fileList.value = []
-}
-
-// 上传前处理
-const beforeUpload = (file: any) => {
-  const isExcel = file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' || 
-                  file.type === 'application/vnd.ms-excel'
-  if (!isExcel) {
-    message.error(t('common.upload.excelOnly'))
-    return false
-  }
-  const isLt2M = file.size / 1024 / 1024 < 2
-  if (!isLt2M) {
-    message.error(t('common.upload.sizeLimit'))
-    return false
-  }
-  fileList.value = [file]
-  return false
-}
-
-// 自定义上传
-const customRequest = (options: any) => {
-  const { file } = options
-  fileList.value = [file]
 }
 
 // 处理页面变化
@@ -634,8 +640,8 @@ const handleAdd = () => {
 }
 
 // 处理编辑
-const handleEdit = (record: HbtWorkflowInstance) => {
-  selectedInstanceId.value = record.id
+const handleEdit = (record: HbtInstance) => {
+  selectedInstanceId.value = record.instanceId
   formTitle.value = t('common.title.edit')
   formVisible.value = true
 }
@@ -652,6 +658,7 @@ const handleEditSelected = () => {
 // 处理表单提交成功
 const handleSuccess = () => {
   formVisible.value = false
+  selectedInstanceId.value = undefined
   fetchData()
 }
 
@@ -663,16 +670,6 @@ onMounted(() => {
   // 加载表格数据
   fetchData()
 })
-
-// 初始化列设置
-const initColumnSettings = () => {
-  const savedSettings = localStorage.getItem('workflowInstanceColumnSettings')
-  if (savedSettings) {
-    columnSettings.value = JSON.parse(savedSettings)
-  } else {
-    columnSettings.value = Object.fromEntries(defaultColumns.map(col => [col.key, true]))
-  }
-}
 </script>
 
 <style lang="less" scoped>

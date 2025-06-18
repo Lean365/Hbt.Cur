@@ -21,17 +21,17 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine.Executors
     /// <summary>
     /// 分支节点执行器
     /// </summary>
-    public class HbtBranchNodeExecutor : HbtWorkflowNodeExecutorBase
+    public class HbtBranchNodeExecutor : HbtNodeExecutorBase
     {
-        private readonly IHbtRepository<HbtWorkflowTransition> _transitionRepository;
-        private readonly IHbtWorkflowExpressionEngine _expressionEngine;
+        private readonly IHbtRepository<HbtTransition> _transitionRepository;
+        private readonly IHbtExpressionEngine _expressionEngine;
 
         /// <summary>
         /// 构造函数
         /// </summary>
         public HbtBranchNodeExecutor(
-            IHbtRepository<HbtWorkflowTransition> transitionRepository,
-            IHbtWorkflowExpressionEngine expressionEngine,
+            IHbtRepository<HbtTransition> transitionRepository,
+            IHbtExpressionEngine expressionEngine,
             IHbtLogger logger) : base(logger)
         {
             _transitionRepository = transitionRepository;
@@ -46,9 +46,9 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine.Executors
         /// <summary>
         /// 执行节点
         /// </summary>
-        protected override async Task<HbtWorkflowNodeResult> ExecuteInternalAsync(
-            HbtWorkflowInstance instance,
-            HbtWorkflowNode node,
+        protected override async Task<HbtNodeResult> ExecuteInternalAsync(
+            HbtInstance instance,
+            HbtNode node,
             Dictionary<string, object>? variables = null)
         {
             // 获取所有可用的转换
@@ -59,7 +59,7 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine.Executors
             }
 
             // 解析节点配置
-            var config = JsonSerializer.Deserialize<HbtWorkflowNodeConfig>(node.NodeConfig);
+            var config = JsonSerializer.Deserialize<HbtNodeConfig>(node.NodeConfig);
             if (config == null)
             {
                 return CreateFailureResult("分支节点配置无效");

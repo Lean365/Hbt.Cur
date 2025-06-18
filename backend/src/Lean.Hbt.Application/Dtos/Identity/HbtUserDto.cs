@@ -365,12 +365,6 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// </summary>
         public int Status { get; set; }
 
-        /// <summary>
-        /// 租户ID
-        /// </summary>
-        [Required(ErrorMessage = "租户ID不能为空")]
-        [Range(0, 9999, ErrorMessage = "租户ID必须在0-9999之间")]
-        public long TenantId { get; set; }
 
         /// <summary>
         /// 部门ID
@@ -393,6 +387,12 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// </summary>
         public List<long> DeptIds { get; set; }
 
+
+        /// <summary>
+        /// 租户ID列表
+        /// </summary>
+        public long[]? TenantIds { get; set; }
+
         /// <summary>
         /// 备注
         /// </summary>
@@ -407,7 +407,7 @@ namespace Lean.Hbt.Application.Dtos.Identity
     /// 创建者: Lean365
     /// 创建时间: 2024-01-17
     /// </remarks>
-    public class HbtUserUpdateDto: HbtUserCreateDto
+    public class HbtUserUpdateDto : HbtUserCreateDto
     {
 
         /// <summary>
@@ -498,7 +498,7 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// 头像
         /// </summary>
         public string Avatar { get; set; } = string.Empty;
-        
+
         /// <summary>
         /// 状态（0正常 1停用）
         /// </summary>
@@ -666,13 +666,15 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// </summary>
         public string FullName { get; set; } = string.Empty;
 
+        /// <summary>
+        /// 英文名称
         /// </summary>
         public string EnglishName { get; set; }
 
         /// <summary>
         /// 用户类型(0=系统用户,1=普通用户)
         /// </summary>
-        public int UserType { get; set; } 
+        public int UserType { get; set; }
 
 
         /// <summary>
@@ -694,11 +696,11 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// 头像
         /// </summary>
         public string Avatar { get; set; } = string.Empty;
-        
+
         /// <summary>
         /// 状态（0正常 1停用）
         /// </summary>
-        public int Status { get; set; } 
+        public int Status { get; set; }
 
         /// <summary>
         /// 备注

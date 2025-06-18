@@ -23,17 +23,17 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine.Executors
     /// <summary>
     /// 并行节点执行器
     /// </summary>
-    public class HbtParallelNodeExecutor : HbtWorkflowNodeExecutorBase
+    public class HbtParallelNodeExecutor : HbtNodeExecutorBase
     {
-        private readonly IHbtRepository<HbtWorkflowTransition> _transitionRepository;
-        private readonly IHbtRepository<HbtWorkflowParallelBranch> _parallelBranchRepository;
+        private readonly IHbtRepository<HbtTransition> _transitionRepository;
+        private readonly IHbtRepository<HbtParallelBranch> _parallelBranchRepository;
 
         /// <summary>
         /// 构造函数
         /// </summary>
         public HbtParallelNodeExecutor(
-            IHbtRepository<HbtWorkflowTransition> transitionRepository,
-            IHbtRepository<HbtWorkflowParallelBranch> parallelBranchRepository,
+            IHbtRepository<HbtTransition> transitionRepository,
+            IHbtRepository<HbtParallelBranch> parallelBranchRepository,
             IHbtLogger logger) : base(logger)
         {
             _transitionRepository = transitionRepository;
@@ -48,9 +48,9 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine.Executors
         /// <summary>
         /// 执行节点
         /// </summary>
-        protected override async Task<HbtWorkflowNodeResult> ExecuteInternalAsync(
-            HbtWorkflowInstance instance,
-            HbtWorkflowNode node,
+        protected override async Task<HbtNodeResult> ExecuteInternalAsync(
+            HbtInstance instance,
+            HbtNode node,
             Dictionary<string, object>? variables = null)
         {
             // 获取所有并行分支
@@ -63,12 +63,12 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine.Executors
             // 创建并行分支状态记录
             foreach (var transition in transitions)
             {
-                var branch = new HbtWorkflowParallelBranch
+                var branch = new HbtParallelBranch
                 {
-                    WorkflowInstanceId = instance.Id,
+                    InstanceId = instance.Id,
                     ParallelNodeId = node.Id,
                     BranchTransitionId = transition.Id,
-                    IsCompleted = false
+                    IsCompleted = 0
                 };
 
                 await _parallelBranchRepository.CreateAsync(branch);

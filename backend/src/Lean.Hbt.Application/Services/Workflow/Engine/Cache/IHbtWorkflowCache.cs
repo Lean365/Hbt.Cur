@@ -9,10 +9,6 @@
 // 描述    : 工作流缓存接口
 //===================================================================
 
-using System;
-using System.Threading.Tasks;
-using Lean.Hbt.Domain.Entities.Workflow;
-
 namespace Lean.Hbt.Application.Services.Workflow.Engine.Cache
 {
     /// <summary>
@@ -23,12 +19,12 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine.Cache
         /// <summary>
         /// 获取工作流节点
         /// </summary>
-        Task<HbtWorkflowNode?> GetNodeAsync(long nodeId);
+        Task<HbtNode?> GetNodeAsync(long nodeId);
 
         /// <summary>
         /// 设置工作流节点缓存
         /// </summary>
-        Task SetNodeAsync(HbtWorkflowNode node, TimeSpan? expiry = null);
+        Task SetNodeAsync(HbtNode node, TimeSpan? expiry = null);
 
         /// <summary>
         /// 移除工作流节点缓存
@@ -38,12 +34,12 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine.Cache
         /// <summary>
         /// 获取工作流定义
         /// </summary>
-        Task<HbtWorkflowDefinition?> GetDefinitionAsync(long definitionId);
+        Task<HbtDefinition?> GetDefinitionAsync(long definitionId);
 
         /// <summary>
         /// 设置工作流定义缓存
         /// </summary>
-        Task SetDefinitionAsync(HbtWorkflowDefinition definition, TimeSpan? expiry = null);
+        Task SetDefinitionAsync(HbtDefinition definition, TimeSpan? expiry = null);
 
         /// <summary>
         /// 移除工作流定义缓存
@@ -53,16 +49,16 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine.Cache
         /// <summary>
         /// 获取工作流实例
         /// </summary>
-        Task<HbtWorkflowInstance?> GetInstanceAsync(long instanceId);
+        Task<HbtInstance?> GetInstanceAsync(long instanceId);
 
         /// <summary>
         /// 设置工作流实例缓存
         /// </summary>
-        Task SetInstanceAsync(HbtWorkflowInstance instance, TimeSpan? expiry = null);
+        Task SetInstanceAsync(HbtInstance instance, TimeSpan? expiry = null);
 
         /// <summary>
         /// 移除工作流实例缓存
         /// </summary>
         Task RemoveInstanceAsync(long instanceId);
     }
-} 
+}

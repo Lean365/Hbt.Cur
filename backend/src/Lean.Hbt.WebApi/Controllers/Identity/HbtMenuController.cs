@@ -25,8 +25,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
     public class HbtMenuController : HbtBaseController
     {
         private readonly IHbtMenuService _menuService;
-        private readonly IHbtCurrentTenant _currentTenant;
-        private readonly IHbtCurrentUser _currentUser;
+
 
         /// <summary>
         /// 构造函数
@@ -44,8 +43,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
             IHbtLocalizationService localization) : base(logger, currentUser, tenantContext, localization)
         {
             _menuService = menuService;
-            _currentTenant = tenantContext;
-            _currentUser = currentUser;
+
         }
 
         /// <summary>

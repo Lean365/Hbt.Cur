@@ -138,11 +138,29 @@ export default {
       note: '导入说明',
       tips: '请严格按照导入模板的格式填写数据，否则可能导致导入失败',
       format: '仅支持导入Excel文件！',
-      size: '文件大小不能超过2MB！',
+      size: '文件大小不能超过{size}MB！',
       total: '总记录数',
       success: '成功数',
       failed: '失败数',
-      message: '失败原因'
+      message: '失败原因',
+      dragText: '点击或拖拽文件到此区域上传',
+      dragHint: '支持 .xlsx 格式的 Excel 文件',
+      sheetName: '请确保 Excel 文件的 sheet 名称为：{sheetName}',
+      allSuccess: '导入成功{count}条，全部成功！',
+      partialSuccess: '导入成功{success}条，失败{fail}条',
+      allFailed: '全部导入失败，共{count}条',
+      noData: '未读取到任何数据',
+      empty: '文件为空，无法上传',
+      importFailed: '导入失败',
+      templateFileName: '导入模板_{time}.xlsx',
+      limits: {
+        title: '导入限制',
+        fileCount: '文件个数限制：{count}个文件',
+        fileSize: '文件大小限制：{size}MB',
+        recordCount: '记录数限制：{count}条',
+        fileFormat: '文件格式：仅支持 .xlsx 格式'
+      },
+      recordLimit: '导入记录数({actual}条)超过限制({max}条)，建议分批导入'
     },
 
     // 上传

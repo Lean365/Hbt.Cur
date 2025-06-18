@@ -14,7 +14,7 @@
       :label-col="{ span: 6 }"
       :wrapper-col="{ span: 16 }"
     >
-      <a-form-item label="数据库类型" name="dbType">
+      <a-form-item :label="t('generator.tableDefine.dbType')" name="dbType">
         <hbt-select
           v-model:value="formData.dbType"
           dict-type="gen_db_type"
@@ -22,33 +22,33 @@
           @change="handleDbTypeChange"
         />
       </a-form-item>
-      <a-form-item label="连接参数">
+      <a-form-item :label="t('generator.tableDefine.connectionString')">
         <a-row :gutter="16">
           <a-col :span="8">
-            <a-form-item label="服务器" name="server">
+            <a-form-item :label="t('generator.tableDefine.server')" name="server">
               <a-input
                 v-model:value="connectionParams.server"
-                placeholder="服务器"
+                :placeholder="t('generator.tableDefine.fields.server.placeholder')"
                 @change="updateConnectionString"
               />
             </a-form-item>
           </a-col>
           <a-col :span="8">
-            <a-form-item label="端口" name="port">
+            <a-form-item :label="t('generator.tableDefine.port')" name="port">
               <a-input
                 v-model:value="connectionParams.port"
-                placeholder="端口"
+                :placeholder="t('generator.tableDefine.fields.port.placeholder')"
                 @change="updateConnectionString"
               />
             </a-form-item>
           </a-col>
           <a-col :span="8">
-            <a-form-item label="数据库" name="databaseName">
+            <a-form-item :label="t('generator.tableDefine.databaseName')" name="databaseName">
               <a-select
                 v-model:value="formData.databaseName"
                 :loading="loading"
                 @change="handleDatabaseChange"
-                placeholder="请选择数据库"
+                :placeholder="t('generator.tableDefine.fields.databaseName.placeholder')"
               >
                 <a-select-option v-for="db in databaseList" :key="db" :value="db">
                   {{ db }}
@@ -59,20 +59,20 @@
         </a-row>
         <a-row :gutter="16">
           <a-col :span="12">
-            <a-form-item label="用户名" name="userId">
+            <a-form-item :label="t('generator.tableDefine.userId')" name="userId">
               <a-input
                 v-model:value="connectionParams.userId"
-                placeholder="用户名"
+                :placeholder="t('generator.tableDefine.fields.userId.placeholder')"
                 autocomplete="username"
                 @change="updateConnectionString"
               />
             </a-form-item>
           </a-col>
           <a-col :span="12">
-            <a-form-item label="密码" name="password">
+            <a-form-item :label="t('generator.tableDefine.password')" name="password">
               <a-input
                 v-model:value="connectionParams.password"
-                placeholder="密码"
+                :placeholder="t('generator.tableDefine.fields.password.placeholder')"
                 type="password"
                 autocomplete="current-password"
                 @change="updateConnectionString"
@@ -81,18 +81,18 @@
           </a-col>
         </a-row>
       </a-form-item>
-      <a-form-item label="连接字符串" name="connectionString">
+      <a-form-item :label="t('generator.tableDefine.connectionString')" name="connectionString">
         <a-textarea
           v-model:value="formData.connectionString"
-          placeholder="连接字符串"
+          :placeholder="t('generator.tableDefine.fields.connectionString.placeholder')"
           :auto-size="{ minRows: 2, maxRows: 6 }"
           readonly
         />
       </a-form-item>
-      <a-form-item label="表名">
+      <a-form-item :label="t('generator.tableDefine.tableName')">
         <a-row :gutter="16">
           <a-col :span="12">
-            <a-form-item label="表前缀" name="tablePrefix">
+            <a-form-item :label="t('generator.tableDefine.tablePrefix')" name="tablePrefix">
               <hbt-select
                 v-model:value="formData.tablePrefix"
                 dict-type="gen_table_prefix"
@@ -102,7 +102,7 @@
             </a-form-item>
           </a-col>
           <a-col :span="12">
-            <a-form-item label="模块名称" name="tableNameFirst">
+            <a-form-item :label="t('generator.tableDefine.tableNameFirst')" name="tableNameFirst">
               <hbt-select
                 v-model:value="formData.tableNameFirst"
                 dict-type="gen_module_name"
@@ -114,7 +114,7 @@
         </a-row>
         <a-row :gutter="16" style="margin-top: 8px;">
           <a-col :span="12">
-            <a-form-item label="表名2" name="tableNameSecond">
+            <a-form-item :label="t('generator.tableDefine.tableNameSecond')" name="tableNameSecond">
               <a-input
                 v-model:value="formData.tableNameSecond"
                 :placeholder="t('generator.tableDefine.fields.tableNameSecond.placeholder')"
@@ -124,7 +124,7 @@
             </a-form-item>
           </a-col>
           <a-col :span="12">
-            <a-form-item label="表名3" name="tableNameThird">
+            <a-form-item :label="t('generator.tableDefine.tableNameThird')" name="tableNameThird">
               <a-input
                 v-model:value="formData.tableNameThird"
                 :placeholder="t('generator.tableDefine.fields.tableNameThird.placeholder')"
@@ -206,7 +206,7 @@ const formData = reactive<HbtGenTableDefineCreate>({
   connectionString: '',
   databaseName: '',
   tablePrefix: 'Hbt',
-  tableNameFirst: 'identity',
+  tableNameFirst: 'Identity',
   tableNameSecond: '',
   tableNameThird: '',
   tableName: '',

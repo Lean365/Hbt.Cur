@@ -10,12 +10,6 @@
 //===================================================================
 
 using System.Linq.Expressions;
-using Lean.Hbt.Application.Dtos.Generator;
-using Lean.Hbt.Domain.Entities.Generator;
-using Lean.Hbt.Domain.IServices.Extensions;
-using Lean.Hbt.Domain.Repositories;
-using Lean.Hbt.Common.Exceptions;
-using Lean.Hbt.Common.Utils;
 using Microsoft.AspNetCore.Http;
 
 namespace Lean.Hbt.Application.Services.Generator;
@@ -52,20 +46,6 @@ public class HbtGenConfigService : HbtBaseService, IHbtGenConfigService
     }
 
     /// <summary>
-    /// 构建查询条件
-    /// </summary>
-    private Expression<Func<HbtGenConfig, bool>> HbtGenConfigQueryExpression(HbtGenConfigQueryDto query)
-    {
-        return Expressionable.Create<HbtGenConfig>()
-            .AndIF(!string.IsNullOrEmpty(query.GenConfigName), x => x.GenConfigName.Contains(query.GenConfigName!))
-            .AndIF(!string.IsNullOrEmpty(query.ModuleName), x => x.ModuleName.Contains(query.ModuleName!))
-            .AndIF(!string.IsNullOrEmpty(query.BusinessName), x => x.BusinessName.Contains(query.BusinessName!))
-            .AndIF(query.GenType.HasValue, x => x.GenType == query.GenType.Value)
-            .AndIF(query.Status.HasValue, x => x.Status == query.Status.Value)
-            .ToExpression();
-    }
-
-    /// <summary>
     /// 获取配置分页列表
     /// </summary>
     /// <param name="query">查询条件</param>
@@ -75,7 +55,7 @@ public class HbtGenConfigService : HbtBaseService, IHbtGenConfigService
         query ??= new HbtGenConfigQueryDto();
 
         var result = await _configRepository.GetPagedListAsync(
-            HbtGenConfigQueryExpression(query),
+            QueryExpression(query),
             query.PageIndex,
             query.PageSize,
             x => x.Id,
@@ -166,6 +146,20 @@ public class HbtGenConfigService : HbtBaseService, IHbtGenConfigService
     }
 
     /// <summary>
+    /// 更新生成配置状态
+    /// </summary>
+    /// <param name="input">状态更新参数</param>
+    /// <returns>是否更新成功</returns>
+    public async Task<bool> UpdateStatusAsync(HbtGenConfigStatusDto input)
+    {
+        var config = await _configRepository.GetByIdAsync(input.GenConfigId)
+            ?? throw new HbtException(L("Generator.Config.NotFound", input.GenConfigId));
+        config.Status = input.Status;
+        var result = await _configRepository.UpdateAsync(config);
+        return result > 0;
+    }
+
+    /// <summary>
     /// 导入配置
     /// </summary>
     /// <param name="fileStream">Excel文件流</param>
@@ -206,7 +200,7 @@ public class HbtGenConfigService : HbtBaseService, IHbtGenConfigService
     {
         try
         {
-            var list = await _configRepository.GetListAsync(HbtGenConfigQueryExpression(query));
+            var list = await _configRepository.GetListAsync(QueryExpression(query));
             return await HbtExcelHelper.ExportAsync(list.Adapt<List<HbtGenConfigDto>>(), sheetName, L("Generator.Config.ExportTitle"));
         }
         catch (Exception ex)
@@ -225,4 +219,36 @@ public class HbtGenConfigService : HbtBaseService, IHbtGenConfigService
     {
         return await HbtExcelHelper.GenerateTemplateAsync<HbtGenConfigDto>(sheetName);
     }
+
+
+    /// <summary>
+    /// 获取生成配置选项列表（用于下拉选择）
+    /// </summary>
+    /// <returns>生成配置选项列表</returns>
+    public async Task<List<HbtSelectOption>> GetOptionsAsync()
+    {
+        var configs = await _configRepository.GetListAsync(_ => true);
+        return configs.Select(c => new HbtSelectOption
+        {
+            Label = c.GenConfigName,
+            Value = c.Id
+        }).ToList();
+    }
+
+    /// <summary>
+    /// 构建查询条件
+    /// </summary>
+    private Expression<Func<HbtGenConfig, bool>> QueryExpression(HbtGenConfigQueryDto query)
+    {
+        return Expressionable.Create<HbtGenConfig>()
+            .AndIF(!string.IsNullOrEmpty(query.GenConfigName), x => x.GenConfigName.Contains(query.GenConfigName!))
+            .AndIF(!string.IsNullOrEmpty(query.ProjectName), x => x.ProjectName.Contains(query.ProjectName!))
+            .AndIF(!string.IsNullOrEmpty(query.ModuleName), x => x.ModuleName.Contains(query.ModuleName!))
+            .AndIF(!string.IsNullOrEmpty(query.BusinessName), x => x.BusinessName.Contains(query.BusinessName!))
+            .AndIF(!string.IsNullOrEmpty(query.FunctionName), x => x.FunctionName.Contains(query.FunctionName!))
+            .AndIF(query.GenMethod.HasValue && query.GenMethod.Value != -1, x => x.GenMethod == query.GenMethod.Value)
+            .AndIF(query.Status.HasValue && query.Status.Value != -1, x => x.Status == query.Status.Value)
+            .ToExpression();
+    }
+
 }

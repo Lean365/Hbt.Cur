@@ -1,9 +1,20 @@
-import dayjs from 'dayjs'
+import { format } from 'date-fns'
 
-export function formatDateTime(date: Date | string, format = 'YYYY-MM-DD HH:mm:ss'): string {
-  return dayjs(date).format(format)
+/**
+ * 格式化日期时间
+ * @param date 日期对象或日期字符串
+ * @param formatStr 格式化字符串，默认为 'yyyy-MM-dd HH:mm:ss'
+ * @returns 格式化后的日期字符串
+ */
+export function formatDateTime(date: Date | string, formatStr = 'yyyy-MM-dd HH:mm:ss'): string {
+  return format(new Date(date), formatStr)
 }
 
+/**
+ * 格式化文件大小
+ * @param bytes 文件大小（字节）
+ * @returns 格式化后的文件大小字符串
+ */
 export function formatFileSize(bytes: number): string {
   if (bytes === 0) return '0 B'
   const k = 1024
@@ -12,6 +23,11 @@ export function formatFileSize(bytes: number): string {
   return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`
 }
 
+/**
+ * 格式化时长
+ * @param minutes 分钟数
+ * @returns 格式化后的时长字符串
+ */
 export function formatDuration(minutes: number): string {
   const days = Math.floor(minutes / (24 * 60))
   const hours = Math.floor((minutes % (24 * 60)) / 60)

@@ -10,6 +10,9 @@
 import { createApp, watch } from 'vue'
 import { createPinia } from 'pinia'
 import Antd from 'ant-design-vue'
+import FcDesigner from '@form-create/antd-designer'
+import LogicFlow from "@logicflow/core";
+import { BpmnElement, Snapshot, Control, Menu, SelectionSelect, DndPanel } from '@logicflow/extension'
 import 'ant-design-vue/dist/reset.css'
 import App from './App.vue'
 import router from './router'
@@ -36,9 +39,21 @@ async function bootstrap() {
     const appStore = useAppStore()
     const settingStore = useSettingStore()
     
+    // 初始化应用设置（包括语言设置）
+    await appStore.initialize()
+    
     // 注册 Ant Design Vue
     app.use(Antd)
 
+    app.use(FcDesigner)
+    app.use(FcDesigner.formCreate)
+    // 全局使用 每一个lf实例都具备 Control
+    LogicFlow.use(BpmnElement)
+    LogicFlow.use(Snapshot)
+    LogicFlow.use(Control)
+    LogicFlow.use(Menu)
+    LogicFlow.use(SelectionSelect)
+    LogicFlow.use(DndPanel)
     // 设置图标
     setupIcons(app)
 
@@ -54,7 +69,6 @@ async function bootstrap() {
     // 如果有token，预加载用户信息和菜单
     const token = getToken()
     if (token) {
-      console.log('[应用] 检测到token，开始预加载用户信息和菜单')
       try {
         // 获取 store 实例
         const userStore = useUserStore()
@@ -64,7 +78,6 @@ async function bootstrap() {
         await userStore.getUserInfo()
         
         // 加载菜单并注册路由
-        console.log('[应用] 开始加载菜单')
         const menus = await menuStore.reloadMenus(router)
         if (menus && menus.length > 0) {
           console.log('[应用] 菜单加载完成，路由注册完成')
