@@ -346,9 +346,14 @@ public class HbtAuthService : HbtBaseService, IHbtAuthService
     /// </summary>
     public async Task<HbtLoginResultDto> RefreshTokenAsync(string refreshToken)
     {
-        // 1. 验证刷新令牌
+        if (string.IsNullOrEmpty(refreshToken))
+        {
+            throw new HbtException(L("Identity.Auth.InvalidRefreshToken"));
+        }
+
+        // 1. 验证刷新令牌 - 使用异步方法
         var cacheKey = $"refresh_token:{refreshToken}";
-        var userId = _cache.Get<string>(cacheKey);
+        var userId = await _cache.GetAsync<string>(cacheKey);
         if (string.IsNullOrEmpty(userId))
             throw new HbtException(L("Identity.Auth.InvalidRefreshToken"));
 
@@ -374,10 +379,10 @@ public class HbtAuthService : HbtBaseService, IHbtAuthService
         var accessToken = await _jwtHandler.GenerateAccessTokenAsync(user, tenant, roles.ToArray(), permissions.ToArray());
         var newRefreshToken = await _jwtHandler.GenerateRefreshTokenAsync();
 
-        // 6. 更新缓存
-        await _cache.RemoveAsync(cacheKey);
+        // 6. 更新缓存 - 先设置新令牌，再删除旧令牌，避免竞态条件
         var newCacheKey = $"refresh_token:{newRefreshToken}";
         await _cache.SetAsync(newCacheKey, userId, TimeSpan.FromDays(_jwtOptions.RefreshTokenExpirationDays));
+        await _cache.RemoveAsync(cacheKey);
 
         // 7. 返回登录结果
         return new HbtLoginResultDto

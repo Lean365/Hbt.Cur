@@ -15,8 +15,8 @@
       :label-col="{ span: 4 }"
       :wrapper-col="{ span: 20 }"
     >
-      <a-form-item label="任务标题" name="taskTitle">
-        <a-input v-model:value="formState.taskTitle" placeholder="请输入任务标题" />
+      <a-form-item label="任务名称" name="taskName">
+        <a-input v-model:value="formState.taskName" placeholder="请输入任务名称" />
       </a-form-item>
       <a-form-item label="任务类型" name="taskType">
         <a-select v-model:value="formState.taskType" placeholder="请选择任务类型">
@@ -50,7 +50,7 @@ import type { FormInstance } from 'ant-design-vue'
 import type { Rule } from 'ant-design-vue/es/form'
 import { useDictStore } from '@/stores/dict'
 import { getWorkflowTask, createWorkflowTask, updateWorkflowTask } from '@/api/workflow/task'
-import type { HbtWorkflowTask, HbtWorkflowTaskCreate, HbtWorkflowTaskUpdate } from '@/types/workflow/task'
+import type { HbtTask, HbtTaskCreate, HbtTaskUpdate } from '@/types/workflow/task'
 
 const props = defineProps<{
   open: boolean
@@ -74,10 +74,10 @@ const formRef = ref<FormInstance>()
 const loading = ref(false)
 
 // 表单状态
-const formState = reactive<HbtWorkflowTaskCreate>({
-  workflowInstanceId: 0,
+const formState = reactive<HbtTaskCreate>({
+  instanceId: 0,
   nodeId: 0,
-  taskTitle: '',
+  taskName: '',
   taskType: 0,
   status: 0,
   assigneeId: undefined,
@@ -111,9 +111,9 @@ const getDetail = async (id: number) => {
     const res = await getWorkflowTask(id)
     if (res.data.code === 200) {
       const data = res.data.data
-      formState.workflowInstanceId = data.workflowInstanceId
+      formState.instanceId = data.instanceId
       formState.nodeId = data.nodeId
-      formState.taskTitle = data.taskTitle
+      formState.taskName = data.taskName
       formState.taskType = data.taskType
       formState.status = data.status
       formState.assigneeId = data.assigneeId
@@ -132,9 +132,9 @@ watch(() => props.taskId, (newVal) => {
   if (newVal) {
     getDetail(newVal)
   } else {
-    formState.workflowInstanceId = 0
+    formState.instanceId = 0
     formState.nodeId = 0
-    formState.taskTitle = ''
+    formState.taskName = ''
     formState.taskType = 0
     formState.status = 0
     formState.assigneeId = undefined
@@ -147,10 +147,10 @@ const handleSubmit = async () => {
   try {
     await formRef.value?.validate()
     loading.value = true
-    const data: HbtWorkflowTaskCreate = {
-      workflowInstanceId: formState.workflowInstanceId,
+    const data: HbtTaskCreate = {
+      instanceId: formState.instanceId,
       nodeId: formState.nodeId,
-      taskTitle: formState.taskTitle,
+      taskName: formState.taskName,
       taskType: formState.taskType,
       status: formState.status,
       assigneeId: formState.assigneeId,
@@ -158,9 +158,9 @@ const handleSubmit = async () => {
     }
     let res
     if (props.taskId) {
-      const updateData: HbtWorkflowTaskUpdate = {
+      const updateData: HbtTaskUpdate = {
         ...data,
-        id: String(props.taskId)
+        taskId: props.taskId
       }
       res = await updateWorkflowTask(updateData)
     } else {

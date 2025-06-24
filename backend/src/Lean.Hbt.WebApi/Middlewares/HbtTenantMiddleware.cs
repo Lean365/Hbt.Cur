@@ -52,6 +52,14 @@ public class HbtTenantMiddleware
         {
             _logger.LogInformation("[租户中间件] 开始处理请求: {Path}", context.Request.Path);
 
+            // 检查连接状态
+            if (context.RequestAborted.IsCancellationRequested)
+            {
+                _logger.LogDebug("[租户中间件] 请求已取消，跳过处理");
+                await _next(context);
+                return;
+            }
+
             // 如果租户功能未启用，直接跳过处理
             if (!_tenantEnabled)
             {
@@ -87,10 +95,15 @@ public class HbtTenantMiddleware
 
             await _next(context);
         }
+        catch (OperationCanceledException)
+        {
+            // 请求被取消，这是正常情况，不需要记录错误
+            _logger.LogDebug("[租户中间件] 请求被客户端取消");
+        }
         catch (Exception ex)
         {
             _logger.LogError(ex, "[租户中间件] 处理请求时发生错误");
-            throw;
+            // 不要重新抛出异常，避免影响正常请求处理
         }
     }
 }

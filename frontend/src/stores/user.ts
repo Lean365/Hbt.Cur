@@ -5,7 +5,7 @@ import { login as userLogin, logout as userLogout, getInfo as fetchUserInfo, ref
 import { removeToken, removeRefreshToken, setToken, setRefreshToken, getToken, getRefreshToken } from '@/utils/auth'
 import { ref, computed } from 'vue'
 import axios from 'axios'
-import { clearAutoLogout } from '@/utils/autoLogout'
+import { clearAutoLogout, initAutoLogout } from '@/utils/autoLogout'
 
 // 扩展UserInfo类型以包含额外的字段
 export interface UserInfoResponse extends UserInfo {
@@ -25,6 +25,8 @@ export const useUserStore = defineStore('user', () => {
   const loginFailCount = ref<number>(0)
   // 用户信息是否已加载
   const isUserInfoLoaded = ref<boolean>(false)
+  // 防止并发刷新
+  const isRefreshing = ref<boolean>(false)
 
   // 获取用户信息
   const getUserInfo = async (forceRefresh = false) => {
@@ -162,6 +164,9 @@ export const useUserStore = defineStore('user', () => {
         // 重置登录失败次数
         resetLoginFailCount()
         
+        // 重新初始化自动登出
+        initAutoLogout(useUserStore())
+        
         return response
       }
       // 登录失败，增加失败次数
@@ -215,18 +220,32 @@ export const useUserStore = defineStore('user', () => {
 
   // 刷新Token
   const refreshToken = async () => {
+    // 防止并发刷新
+    if (isRefreshing.value) {
+      console.log('[User] Token正在刷新中，等待完成')
+      // 等待刷新完成
+      while (isRefreshing.value) {
+        await new Promise(resolve => setTimeout(resolve, 100))
+      }
+      return true
+    }
+
+    isRefreshing.value = true
+    
     try {
       const refreshToken = getRefreshToken()
       if (!refreshToken) {
         throw new Error('刷新令牌不存在')
       }
 
+      console.log('[User] 开始刷新Token')
       const { data: response } = await refreshUserToken(refreshToken)
       if (response.code === 200) {
         const loginResult = response.data as LoginResultData
         // 保存新token
         setToken(loginResult.accessToken)
         setRefreshToken(loginResult.refreshToken)
+        console.log('[User] Token刷新成功')
         return true
       }
       throw new Error(response.msg || '刷新令牌失败')
@@ -237,6 +256,8 @@ export const useUserStore = defineStore('user', () => {
       removeToken()
       removeRefreshToken()
       throw error
+    } finally {
+      isRefreshing.value = false
     }
   }
 

@@ -15,7 +15,7 @@ export interface HbtTask extends HbtBaseEntity {
   taskId: number
   instanceId: number
   nodeId: number
-  taskTitle: string
+  taskName: string
   taskType: number
   status: number
   assigneeId?: number
@@ -34,7 +34,7 @@ export interface HbtTask extends HbtBaseEntity {
 export interface HbtTaskQuery extends HbtPagedQuery {
   instanceId?: number
   nodeId?: number
-  taskTitle?: string
+  taskName?: string
   taskType?: number
   status?: number
   assigneeId?: number
@@ -47,7 +47,7 @@ export interface HbtTaskQuery extends HbtPagedQuery {
 export interface HbtTaskCreate {
   instanceId: number
   nodeId: number
-  taskTitle: string
+  taskName: string
   taskType: number
   status: number
   assigneeId?: number
@@ -81,7 +81,7 @@ export interface HbtTaskStatus {
 export interface HbtTaskImport {
   instanceId: number
   nodeId: number
-  taskTitle: string
+  taskName: string
   taskType: number
   status: number
   assigneeId?: number
@@ -99,7 +99,7 @@ export interface HbtTaskImport {
 export interface HbtTaskExport extends HbtTaskQuery {
   instanceId: number
   nodeId: number
-  taskTitle: string
+  taskName: string
   taskType: number
   status: number
   assigneeId?: number
@@ -117,7 +117,7 @@ export interface HbtTaskExport extends HbtTaskQuery {
 export interface HbtTaskTemplate {
   instanceId: number
   nodeId: number
-  taskTitle: string
+  taskName: string
   taskType: number
   status: number
   assigneeId?: number

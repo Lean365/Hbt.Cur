@@ -43,7 +43,7 @@
       :pagination="false"
       :scroll="{ x: 'max-content' }"
       :default-height="594"
-      :row-key="(record: HbtWorkflowTask) => String(record.id)"
+      :row-key="(record: HbtTask) => String(record.taskId)"
       v-model:selectedRowKeys="selectedRowKeys"
       :row-selection="{
         type: 'checkbox',
@@ -158,7 +158,7 @@ import { ref, computed, onMounted, h } from 'vue'
 import { UploadOutlined } from '@ant-design/icons-vue'
 import { useDictStore } from '@/stores/dict'
 import { useRouter } from 'vue-router'
-import type { HbtWorkflowTask, HbtWorkflowTaskQuery } from '@/types/workflow/task'
+import type { HbtTask, HbtTaskQuery } from '@/types/workflow/task'
 import type { QueryField } from '@/types/components/query'
 import type { TablePaginationConfig } from 'ant-design-vue'
 import { 
@@ -178,40 +178,139 @@ const router = useRouter()
 // 表格列定义
 const columns = [
   {
-    title: t('workflow.task.taskName'),
+    title: t('workflow.task.fields.taskId'),
+    dataIndex: 'taskId',
+    key: 'taskId',
+    width: 100
+  },
+  {
+    title: t('workflow.task.fields.instanceId'),
+    dataIndex: 'instanceId',
+    key: 'instanceId',
+    width: 100
+  },
+  {
+    title: t('workflow.task.fields.nodeId'),
+    dataIndex: 'nodeId',
+    key: 'nodeId',
+    width: 100
+  },
+  {
+    title: t('workflow.task.fields.taskName'),
     dataIndex: 'taskName',
     key: 'taskName',
     width: 200
   },
   {
-    title: t('workflow.task.taskType'),
+    title: t('workflow.task.fields.taskType'),
     dataIndex: 'taskType',
     key: 'taskType',
     width: 150
   },
+
   {
-    title: t('workflow.task.taskConfig'),
-    dataIndex: 'taskConfig',
-    key: 'taskConfig',
-    width: 300
-  },
-  {
-    title: t('workflow.task.status'),
+    title: t('workflow.task.fields.status'),
     dataIndex: 'status',
     key: 'status',
     width: 150
   },
   {
-    title: t('workflow.task.remark'),
-    dataIndex: 'remark',
-    key: 'remark',
+    title: t('workflow.task.fields.comment'),
+    dataIndex: 'comment',
+    key: 'comment',
+    width: 300
+  },
+  {
+    title: t('workflow.task.fields.assigneeId'),
+    dataIndex: 'assigneeId',
+    key: 'assigneeId',
     width: 200
   },
   {
-    title: t('common.action'),
-    key: 'action',
-    fixed: 'right',
+    title: t('workflow.task.fields.result'),
+    dataIndex: 'result',
+    key: 'result',
+    width: 150
+  },
+  {
+    title: t('workflow.task.fields.completeTime'),
+    dataIndex: 'completeTime',
+    key: 'completeTime',
     width: 200
+  },
+  {
+    title: t('workflow.task.fields.dueTime'),
+    dataIndex: 'dueTime',
+    key: 'dueTime',
+    width: 200
+  },
+  {
+    title: t('workflow.task.fields.reminderTime'),
+    dataIndex: 'reminderTime',
+    key: 'reminderTime',
+    width: 200
+  },
+  {
+    title: t('workflow.task.fields.priority'),
+    dataIndex: 'priority',
+    key: 'priority',
+    width: 150
+  },
+  {
+    title: t('workflow.task.fields.workflowInstance'),
+    dataIndex: 'workflowInstance',
+    key: 'workflowInstance',
+    width: 200
+  },
+  {
+    title: t('workflow.task.fields.node'),
+    dataIndex: 'node',
+    key: 'node',
+    width: 200
+  },
+  {
+    title: t('table.columns.remark'),
+    dataIndex: 'remark',
+    key: 'remark',
+    width: 120,
+    ellipsis: true
+  },
+  {
+    title: t('table.columns.createBy'),
+    dataIndex: 'createBy',
+    key: 'createBy',
+    width: 120,
+    ellipsis: true
+  },
+  {
+    title: t('table.columns.createTime'),
+    dataIndex: 'createTime',
+    key: 'createTime',
+    width: 180,
+    ellipsis: true
+  },
+  {
+    title: t('table.columns.updateBy'),
+    dataIndex: 'updateBy',
+    key: 'updateBy',
+    width: 120,
+    ellipsis: true
+  },
+  {
+    title: t('table.columns.updateTime'),
+    dataIndex: 'updateTime',
+    key: 'updateTime',
+    width: 180,
+    ellipsis: true
+  },
+  {
+    title: t('table.columns.operation'),
+    dataIndex: 'action',
+    key: 'action',
+    width: 150,
+    fixed: 'right',
+    align: 'center',
+    ellipsis: true
   }
 ]
 
@@ -219,34 +318,34 @@ const columns = [
 const queryFields: QueryField[] = [
   {
     name: 'taskName',
-    label: t('workflow.task.fields.taskName.label'),
+    label: t('workflow.task.fields.taskName'),
     type: 'input' as const
   },
   {
     name: 'taskType',
-    label: t('workflow.task.fields.taskType.label'),
+    label: t('workflow.task.fields.taskType'),
     type: 'select' as const,
     props: {
       dictType: 'workflow_task_type',
-      type: 'radio'
+      //type: 'radio'
     }
   },
   {
     name: 'status',
-    label: t('workflow.task.fields.status.label'),
+    label: t('workflow.task.fields.status'),
     type: 'select' as const,
     props: {
       dictType: 'workflow_task_status',
-      type: 'radio'
+      //type: 'radio'
     }
   }
 ]
 
 // 查询参数
-const queryParams = ref<HbtWorkflowTaskQuery>({
+const queryParams = ref<HbtTaskQuery>({
   pageIndex: 1,
   pageSize: 10,
-  taskTitle: undefined,
+  taskName: undefined,
   taskType: undefined,
   status: undefined
 })
@@ -254,7 +353,7 @@ const queryParams = ref<HbtWorkflowTaskQuery>({
 // 表格相关
 const loading = ref(false)
 const total = ref(0)
-const tableData = ref<HbtWorkflowTask[]>([])
+const tableData = ref<HbtTask[]>([])
 const selectedRowKeys = ref<(string | number)[]>([])
 const showSearch = ref(true)
 
@@ -303,7 +402,7 @@ const resetQuery = () => {
   queryParams.value = {
     pageIndex: 1,
     pageSize: 10,
-    taskTitle: undefined,
+    taskName: undefined,
     taskType: undefined,
     status: undefined
   }
@@ -318,9 +417,9 @@ const handleTableChange = (pagination: TablePaginationConfig) => {
 }
 
 // 处理删除
-const handleDelete = async (record: HbtWorkflowTask) => {
+const handleDelete = async (record: HbtTask) => {
   try {
-    const res = await deleteWorkflowTask(Number(record.id))
+    const res = await deleteWorkflowTask(Number(record.taskId))
     if (res.data.code === 200) {
       message.success(t('common.delete.success'))
       fetchData()
@@ -397,7 +496,7 @@ const handleColumnSettingChange = (checkedValue: Array<string | number | boolean
 }
 
 // 处理行点击
-const handleRowClick = (record: HbtWorkflowTask) => {
+const handleRowClick = (record: HbtTask) => {
   console.log('行点击:', record)
 }
 
@@ -409,8 +508,8 @@ const handleAdd = () => {
 }
 
 // 处理编辑
-const handleEdit = (record: HbtWorkflowTask) => {
-  selectedWorkflowTaskId.value = record.id
+const handleEdit = (record: HbtTask) => {
+  selectedWorkflowTaskId.value = record.taskId
   formTitle.value = t('common.title.edit')
   formVisible.value = true
 }
@@ -425,8 +524,8 @@ const handleEditSelected = () => {
 }
 
 // 处理查看
-const handleView = (record: HbtWorkflowTask) => {
-  selectedWorkflowTaskId.value = record.id
+const handleView = (record: HbtTask) => {
+  selectedWorkflowTaskId.value = record.taskId
   detailVisible.value = true
 }
 

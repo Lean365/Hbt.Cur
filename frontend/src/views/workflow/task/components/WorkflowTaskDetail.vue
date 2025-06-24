@@ -4,7 +4,7 @@
     <a-card title="基本信息" class="info-card">
       <a-descriptions :column="2">
         <a-descriptions-item label="任务名称">
-          {{ taskData.taskTitle }}
+          {{ taskData.taskName }}
         </a-descriptions-item>
         <a-descriptions-item label="任务类型">
           <hbt-dict-tag dict-type="workflow_task_type" :value="taskData.taskType" />
@@ -38,7 +38,7 @@ import { message } from 'ant-design-vue'
 import { ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useDictStore } from '@/stores/dict'
-import type { HbtWorkflowTask } from '@/types/workflow/task'
+import type { HbtTask } from '@/types/workflow/task'
 import { getWorkflowTask } from '@/api/workflow/task'
 
 const { t } = useI18n()
@@ -47,7 +47,7 @@ const router = useRouter()
 const route = useRoute()
 
 // 任务数据
-const taskData = ref<HbtWorkflowTask>({} as HbtWorkflowTask)
+const taskData = ref<HbtTask>({} as HbtTask)
 
 // 获取任务详情
 const fetchTaskDetail = async () => {

@@ -12,7 +12,7 @@ import type {
 // 获取工作流任务列表
 export function getWorkflowTaskList(params: HbtTaskQuery) {
   return request<HbtApiResponse<HbtTaskPagedResult>>({
-    url: '/api/HbtTask/list',
+    url: '/api/HbtProcessTask/list',
     method: 'get',
     params
   })
@@ -21,7 +21,7 @@ export function getWorkflowTaskList(params: HbtTaskQuery) {
 // 获取工作流任务详情
 export function getWorkflowTask(id: number) {
   return request<HbtApiResponse<HbtTask>>({
-    url: `/api/HbtTask/${id}`,
+    url: `/api/HbtProcessTask/${id}`,
     method: 'get'
   })
 }
@@ -29,7 +29,7 @@ export function getWorkflowTask(id: number) {
 // 创建工作流任务
 export function createWorkflowTask(data: HbtTaskCreate) {
   return request<HbtApiResponse<any>>({
-    url: '/api/HbtTask',
+    url: '/api/HbtProcessTask',
     method: 'post',
     data
   })
@@ -38,7 +38,7 @@ export function createWorkflowTask(data: HbtTaskCreate) {
 // 更新工作流任务
 export function updateWorkflowTask(data: HbtTaskUpdate) {
   return request<HbtApiResponse<any>>({
-    url: '/api/HbtTask',
+    url: '/api/HbtProcessTask',
     method: 'put',
     data
   })
@@ -47,7 +47,7 @@ export function updateWorkflowTask(data: HbtTaskUpdate) {
 // 删除工作流任务
 export function deleteWorkflowTask(id: number) {
   return request<HbtApiResponse<any>>({
-    url: `/api/HbtTask/${id}`,
+    url: `/api/HbtProcessTask/${id}`,
     method: 'delete'
   })
 }
@@ -55,7 +55,7 @@ export function deleteWorkflowTask(id: number) {
 // 批量删除工作流任务
 export function batchDeleteWorkflowTask(ids: number[]) {
   return request<HbtApiResponse<any>>({
-    url: '/api/HbtTask/batch',
+    url: '/api/HbtProcessTask/batch',
     method: 'delete',
     data: ids
   })
@@ -66,7 +66,7 @@ export function importWorkflowTask(file: File, sheetName: string = 'Sheet1') {
   const formData = new FormData()
   formData.append('file', file)
   return request<HbtApiResponse<any>>({
-    url: '/api/HbtTask/import',
+    url: '/api/HbtProcessTask/import',
     method: 'post',
     data: formData,
     params: { sheetName },
@@ -79,7 +79,7 @@ export function importWorkflowTask(file: File, sheetName: string = 'Sheet1') {
 // 导出工作流任务
 export function exportWorkflowTask(params: HbtTaskQuery, sheetName: string = 'Sheet1') {
   return request({
-    url: '/api/HbtTask/export',
+    url: '/api/HbtProcessTask/export',
     method: 'get',
     params: { ...params, sheetName },
     responseType: 'blob'
@@ -89,7 +89,7 @@ export function exportWorkflowTask(params: HbtTaskQuery, sheetName: string = 'Sh
 // 获取工作流任务导入模板
 export function getWorkflowTaskTemplate(sheetName: string = 'Sheet1') {
   return request({
-    url: '/api/HbtTask/template',
+    url: '/api/HbtProcessTask/template',
     method: 'get',
     params: { sheetName },
     responseType: 'blob'
@@ -99,7 +99,7 @@ export function getWorkflowTaskTemplate(sheetName: string = 'Sheet1') {
 // 更新工作流任务状态
 export function updateWorkflowTaskStatus(id: number, data: HbtTaskStatus) {
   return request<HbtApiResponse<any>>({
-    url: `/api/HbtTask/${id}/status`,
+    url: `/api/HbtProcessTask/${id}/status`,
     method: 'put',
     data
   })
@@ -108,7 +108,7 @@ export function updateWorkflowTaskStatus(id: number, data: HbtTaskStatus) {
 // 完成工作流任务
 export function completeWorkflowTask(id: number, result: string, comment: string) {
   return request<HbtApiResponse<any>>({
-    url: `/api/HbtTask/${id}/complete`,
+    url: `/api/HbtProcessTask/${id}/complete`,
     method: 'post',
     params: { result, comment }
   })
@@ -117,7 +117,7 @@ export function completeWorkflowTask(id: number, result: string, comment: string
 // 转办工作流任务
 export function transferWorkflowTask(id: number, assigneeId: number, comment: string) {
   return request<HbtApiResponse<any>>({
-    url: `/api/HbtTask/${id}/transfer`,
+    url: `/api/HbtProcessTask/${id}/transfer`,
     method: 'post',
     params: { assigneeId, comment }
   })
@@ -126,7 +126,7 @@ export function transferWorkflowTask(id: number, assigneeId: number, comment: st
 // 退回工作流任务
 export function rejectWorkflowTask(id: number, comment: string) {
   return request<HbtApiResponse<any>>({
-    url: `/api/HbtTask/${id}/reject`,
+    url: `/api/HbtProcessTask/${id}/reject`,
     method: 'post',
     params: { comment }
   })
@@ -135,7 +135,7 @@ export function rejectWorkflowTask(id: number, comment: string) {
 // 撤销工作流任务
 export function cancelWorkflowTask(id: number, comment: string) {
   return request<HbtApiResponse<any>>({
-    url: `/api/HbtTask/${id}/cancel`,
+    url: `/api/HbtProcessTask/${id}/cancel`,
     method: 'post',
     params: { comment }
   })

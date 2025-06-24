@@ -77,7 +77,7 @@ try
     {
         options.Limits.KeepAliveTimeout = TimeSpan.FromMinutes(2);
         options.Limits.RequestHeadersTimeout = TimeSpan.FromMinutes(1);
-        options.Limits.MaxRequestHeadersTotalSize = 32768; // 32KB
+        options.Limits.MaxRequestHeadersTotalSize = 65536; // 64KB (从32KB增加到64KB)
         options.Limits.MaxRequestLineSize = 8192; // 8KB
     });
 
@@ -85,7 +85,7 @@ try
     {
         options.Limits.KeepAliveTimeout = TimeSpan.FromMinutes(2);
         options.Limits.RequestHeadersTimeout = TimeSpan.FromMinutes(1);
-        options.Limits.MaxRequestHeadersTotalSize = 32768; // 32KB
+        options.Limits.MaxRequestHeadersTotalSize = 65536; // 64KB (从32KB增加到64KB)
         options.Limits.MaxRequestLineSize = 8192; // 8KB
     });
 

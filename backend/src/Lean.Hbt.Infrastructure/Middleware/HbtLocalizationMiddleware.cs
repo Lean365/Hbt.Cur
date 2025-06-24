@@ -47,6 +47,13 @@ public class HbtLocalizationMiddleware
     {
         try
         {
+            // 检查连接状态
+            if (context.RequestAborted.IsCancellationRequested)
+            {
+                await _next(context);
+                return;
+            }
+
             // 检查是否需要设置语言
             if (!ShouldSetLanguage(context))
             {
@@ -78,9 +85,15 @@ public class HbtLocalizationMiddleware
                 localizationService.SetLanguage(DEFAULT_LANGUAGE);
             }
         }
+        catch (OperationCanceledException)
+        {
+            // 请求被取消，这是正常情况
+            _logger.Debug("请求被客户端取消");
+        }
         catch (Exception ex)
         {
             _logger.Error("本地化中间件执行失败", ex.Message);
+            // 不要重新抛出异常，避免影响正常请求处理
         }
 
         await _next(context);

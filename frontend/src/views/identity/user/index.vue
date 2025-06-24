@@ -865,8 +865,8 @@ const handleImportUpload = async (file: File) => {
     
     // 将数据结构转换为组件期望的格式，使用正确的大写字段名
     return {
-      code: res.data.Code,
-      msg: res.data.Msg,
+      code: res.data.code,
+      msg: res.data.msg,
       data: {
         success,
         fail

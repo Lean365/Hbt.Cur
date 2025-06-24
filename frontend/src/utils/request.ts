@@ -178,9 +178,13 @@ service.interceptors.response.use(
             const userStore = useUserStore()
             // 检查是否在刷新令牌的有效期内
             if (now - tokenData.iat * 1000 < REFRESH_TOKEN_EXPIRE_TIME) {
-              userStore.refreshToken() // 刷新token
+              // 异步刷新token，避免阻塞响应
+              userStore.refreshToken().catch(error => {
+                console.error('[Auth] Token刷新失败:', error)
+              })
             } else {
-              userStore.logout() // 刷新令牌已过期，执行登出
+              console.log('[Auth] 刷新令牌已过期，执行登出')
+              userStore.logout(false)
             }
           }
 

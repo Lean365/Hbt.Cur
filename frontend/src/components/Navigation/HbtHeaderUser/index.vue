@@ -1,38 +1,47 @@
 <template>
-  <a-dropdown :trigger="['hover']" placement="bottom" class="user-dropdown">
-    <div class="user-info">
-      <a-avatar :size="32" :src="avatarUrl">
-        <template #icon>
-          <component :is="userIcon" />
-        </template>
-      </a-avatar>
-    </div>
-    <template #overlay>
-      <a-menu class="user-menu">
-        <a-menu-item key="profile" @click="handleProfile">
-          <template #icon><user-outlined /></template>
-          <span>{{ t('header.user.profile') }}</span>
-        </a-menu-item>
-        <a-menu-item key="change-password" @click="handleChangePassword">
-          <template #icon><key-outlined /></template>
-          <span>{{ t('header.user.changePassword') }}</span>
-        </a-menu-item>
-        <a-menu-item key="clear-cache" @click="handleClearCache">
-          <template #icon><clear-outlined /></template>
-          <span>{{ t('header.user.clearCache') }}</span>
-        </a-menu-item>
-        <a-menu-divider />
-        <a-menu-item key="logout" @click="handleLogout">
-          <template #icon><logout-outlined /></template>
-          <span>{{ t('header.user.logout') }}</span>
-        </a-menu-item>
-      </a-menu>
-    </template>
-  </a-dropdown>
+  <div>
+    <a-dropdown :trigger="['hover']" placement="bottom" class="user-dropdown">
+      <div class="user-info">
+        <a-avatar :size="32" :src="avatarUrl">
+          <template #icon>
+            <component :is="userIcon" />
+          </template>
+        </a-avatar>
+      </div>
+      <template #overlay>
+        <a-menu class="user-menu">
+          <a-menu-item key="profile" @click="handleProfile">
+            <template #icon><user-outlined /></template>
+            <span>{{ t('header.user.profile') }}</span>
+          </a-menu-item>
+          <a-menu-item key="change-password" @click="handleChangePassword">
+            <template #icon><key-outlined /></template>
+            <span>{{ t('header.user.changePassword') }}</span>
+          </a-menu-item>
+          <a-menu-item key="clear-cache" @click="handleClearCache">
+            <template #icon><clear-outlined /></template>
+            <span>{{ t('header.user.clearCache') }}</span>
+          </a-menu-item>
+          <a-menu-item v-if="isDev" key="auto-logout-test" @click="() => { showAutoLogoutTest = true; console.log('点击菜单，showAutoLogoutTest', showAutoLogoutTest) }">
+            <template #icon><key-outlined /></template>
+            <span>自动登出测试</span>
+          </a-menu-item>
+          <a-menu-divider />
+          <a-menu-item key="logout" @click="handleLogout">
+            <template #icon><logout-outlined /></template>
+            <span>{{ t('header.user.logout') }}</span>
+          </a-menu-item>
+        </a-menu>
+      </template>
+    </a-dropdown>
+    
+    <!-- 将抽屉组件放在外部，确保能正确渲染 -->
+    <HbtAutoLogoutTest v-if="isDev" :visible="showAutoLogoutTest" @close="() => { showAutoLogoutTest = false; console.log('关闭弹窗', showAutoLogoutTest) }" />
+  </div>
 </template>
 
 <script lang="ts" setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { Modal, message } from 'ant-design-vue'
@@ -43,10 +52,16 @@ import {
   KeyOutlined
 } from '@ant-design/icons-vue'
 import { useUserStore } from '@/stores/user'
+import HbtAutoLogoutTest from '@/components/Business/HbtAutoLogoutTest/index.vue'
 
 const { t } = useI18n()
 const router = useRouter()
 const userStore = useUserStore()
+
+// 仅在开发环境显示
+const isDev = computed(() => import.meta.env.DEV)
+// 控制自动登出测试抽屉显示
+const showAutoLogoutTest = ref(false)
 
 // 计算头像URL
 const avatarUrl = computed(() => {

@@ -65,15 +65,27 @@ public class HbtTenantLogMiddleware
                 return;
             }
 
+            // 检查连接状态
+            if (context.RequestAborted.IsCancellationRequested)
+            {
+                await _next(context);
+                return;
+            }
+
             // 记录日志
             await RecordLogAsync(context);
 
             await _next(context);
         }
+        catch (OperationCanceledException)
+        {
+            // 请求被取消，这是正常情况，不需要记录错误
+            _logger.LogDebug("请求被客户端取消");
+        }
         catch (Exception ex)
         {
             _logger.LogError(ex, "租户日志中间件发生错误");
-            throw;
+            // 不要重新抛出异常，避免影响正常请求处理
         }
     }
 
@@ -160,20 +172,39 @@ public class HbtTenantLogMiddleware
     {
         try
         {
+            // 检查连接是否已关闭
+            if (context.RequestAborted.IsCancellationRequested)
+            {
+                return null;
+            }
+
             if (context.Request.ContentLength == null || context.Request.ContentLength == 0)
             {
                 return null;
             }
 
+            // 只记录较小的请求体，避免性能问题
+            if (context.Request.ContentLength > 10240) // 10KB
+            {
+                return "[请求体过大，已跳过]";
+            }
+
             context.Request.EnableBuffering();
+            
             using var reader = new StreamReader(context.Request.Body, leaveOpen: true);
             var body = await reader.ReadToEndAsync();
             context.Request.Body.Position = 0;
 
             return body;
         }
-        catch
+        catch (OperationCanceledException)
         {
+            // 请求被取消，这是正常情况
+            return null;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogDebug("获取请求详情失败: {Message}", ex.Message);
             return null;
         }
     }

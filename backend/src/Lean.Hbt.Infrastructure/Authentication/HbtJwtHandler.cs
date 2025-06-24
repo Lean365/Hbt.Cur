@@ -71,45 +71,42 @@ namespace Lean.Hbt.Infrastructure.Authentication
         {
             try
             {
-                //_logger.Info("开始生成访问令牌，JWT配置信息: {@JwtConfig}", new
-                //{
-                //    SecretKeyLength = _jwtOptions?.SecretKey?.Length ?? 0,
-                //    Issuer = _jwtOptions?.Issuer,
-                //    Audience = _jwtOptions?.Audience,
-                //    ExpirationMinutes = _jwtOptions?.ExpirationMinutes,
-                //    UseDistributedCache = _useDistributedCache
-                //});
-
                 if (string.IsNullOrEmpty(_jwtOptions?.SecretKey))
                 {
                     _logger.Error("JWT SecretKey 未配置");
                     throw new HbtException("JWT配置错误：SecretKey未配置", "JWT_CONFIG_ERROR");
                 }
 
+                // 优化：只保留核心声明，减少Token大小
                 var claims = new List<Claim>
                 {
                     new Claim("uid", user.Id.ToString()),          // 用户ID
                     new Claim("unm", user.UserName),               // 用户名
-                    new Claim("nnm", user.NickName ?? string.Empty), // 昵称
-                    new Claim("enm", user.EnglishName ?? string.Empty), // 英文名
+                    new Claim("nme", user.NickName),               // 昵称
                     new Claim("tid", tenant.Id.ToString()),        // 租户ID
-                    new Claim("tnm", tenant.TenantName),           // 租户名称
                     new Claim("jti", Guid.NewGuid().ToString()),   // JWT ID
                     new Claim("typ", user.UserType.ToString()),    // 用户类型
-                    new Claim("adm", (user.UserType == 2).ToString()) // 管理员标记
+                    new Claim("iat", DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64) // 签发时间
                 };
 
-                // 添加角色声明
-                if (roles != null && roles.Length > 0)
+                // 优化：只添加管理员标记，不添加所有角色和权限
+                if (user.UserType == 2) // 管理员
                 {
-                    claims.AddRange(roles.Select(role => new Claim("rol", role)));
+                    claims.Add(new Claim("adm", "true"));
                 }
 
-                // 添加权限声明
-                if (permissions != null && permissions.Length > 0)
+                // 优化：只添加最重要的角色（如Hbt365超级管理员）
+                if (roles != null && roles.Length > 0)
                 {
-                    claims.AddRange(permissions.Select(permission => new Claim("pms", permission)));
+                    var importantRoles = roles.Where(r => r == "Hbt365" || r.StartsWith("Admin")).Take(3).ToArray();
+                    if (importantRoles.Length > 0)
+                    {
+                        claims.AddRange(importantRoles.Select(role => new Claim("rol", role)));
+                    }
                 }
+
+                // 优化：不将权限列表添加到Token中，改为在用户信息接口中获取
+                // 这样可以大大减少Token的大小
 
                 // 验证租户信息
                 if (tenant == null || tenant.Id <= 0)
@@ -132,8 +129,6 @@ namespace Lean.Hbt.Infrastructure.Authentication
                     throw new HbtException("用户在当前租户中已被禁用", HbtConstants.ErrorCodes.UserDisabled);
                 }
 
-                //_logger.Info("JWT Claims: {@Claims}", claims.Select(c => new { c.Type, c.Value }));
-
                 var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.SecretKey));
                 var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
@@ -151,9 +146,9 @@ namespace Lean.Hbt.Infrastructure.Authentication
                 };
 
                 var tokenString = handler.WriteToken(token);
-                _logger.Info("访问令牌生成成功: Length={Length}}",
+                _logger.Info("访问令牌生成成功: Length={Length}, ClaimsCount={ClaimsCount}",
                     tokenString?.Length ?? 0,
-                    claims.Select(c => new { c.Type, c.Value }));
+                    claims.Count);
 
                 if (string.IsNullOrEmpty(tokenString))
                 {
