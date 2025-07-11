@@ -4,7 +4,7 @@
 // 创建者 : Lean365
 // 创建时间: 2024-01-23 12:00
 // 版本号 : V1.0.0
-// 描述    : 工作流表单服务实现
+// 描述    : 工作流表单服务实现 - 使用仓储工厂模式
 //===================================================================
 using Microsoft.AspNetCore.Http;
 
@@ -13,28 +13,32 @@ namespace Lean.Hbt.Application.Services.Workflow
     /// <summary>
     /// 工作流表单服务实现类
     /// </summary>
+    /// <remarks>
+    /// 更新: 2024-12-19 - 使用仓储工厂模式支持多库
+    /// </remarks>
     public class HbtFormService : HbtBaseService, IHbtFormService
     {
-        private readonly IHbtRepository<HbtForm> _formRepository;
+        private readonly IHbtRepositoryFactory _repositoryFactory;
+
+        private IHbtRepository<HbtForm> FormRepository => _repositoryFactory.GetWorkflowRepository<HbtForm>();
+        private IHbtRepository<HbtDefinition> DefinitionRepository => _repositoryFactory.GetWorkflowRepository<HbtDefinition>();
 
         /// <summary>
         /// 构造函数
         /// </summary>
         /// <param name="logger">日志服务</param>
-        /// <param name="formRepository">表单仓储接口</param>
+        /// <param name="repositoryFactory">仓储工厂</param>
         /// <param name="httpContextAccessor">HTTP上下文访问器</param>
         /// <param name="currentUser">当前用户服务</param>
-        /// <param name="currentTenant">当前租户服务</param>
         /// <param name="localization">本地化服务</param>
         public HbtFormService(
             IHbtLogger logger,
-            IHbtRepository<HbtForm> formRepository,
+            IHbtRepositoryFactory repositoryFactory,
             IHttpContextAccessor httpContextAccessor,
             IHbtCurrentUser currentUser,
-            IHbtCurrentTenant currentTenant,
-            IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, currentTenant, localization)
+            IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
         {
-            _formRepository = formRepository;
+            _repositoryFactory = repositoryFactory ?? throw new ArgumentNullException(nameof(repositoryFactory));
         }
 
         /// <summary>
@@ -45,14 +49,26 @@ namespace Lean.Hbt.Application.Services.Workflow
         public async Task<HbtPagedResult<HbtFormDto>> GetListAsync(HbtFormQueryDto query)
         {
             var exp = QueryExpression(query);
-            var result = await _formRepository.GetPagedListAsync(exp, query?.PageIndex ?? 1, query?.PageSize ?? 10, x => x.CreateTime, OrderByType.Desc);
+            var result = await FormRepository.GetPagedListAsync(exp, query?.PageIndex ?? 1, query?.PageSize ?? 10, x => x.CreateTime, OrderByType.Desc);
+
+            var forms = result.Rows.Adapt<List<HbtFormDto>>();
+            
+            // 填充工作流定义名称
+            foreach (var form in forms)
+            {
+                if (form.DefinitionId.HasValue && form.DefinitionId.Value > 0)
+                {
+                    var definition = await DefinitionRepository.GetByIdAsync(form.DefinitionId.Value);
+                    form.DefinitionName = definition?.WorkflowName;
+                }
+            }
 
             return new HbtPagedResult<HbtFormDto>
             {
                 TotalNum = result.TotalNum,
                 PageIndex = query?.PageIndex ?? 1,
                 PageSize = query?.PageSize ?? 10,
-                Rows = result.Rows.Adapt<List<HbtFormDto>>()
+                Rows = forms
             };
         }
 
@@ -63,11 +79,20 @@ namespace Lean.Hbt.Application.Services.Workflow
         /// <returns>表单详情</returns>
         public async Task<HbtFormDto> GetByIdAsync(long id)
         {
-            var form = await _formRepository.GetByIdAsync(id);
+            var form = await FormRepository.GetByIdAsync(id);
             if (form == null)
                 throw new HbtException(L("WorkflowForm.NotFound"));
 
-            return form.Adapt<HbtFormDto>();
+            var formDto = form.Adapt<HbtFormDto>();
+            
+            // 填充工作流定义名称
+            if (formDto.DefinitionId.HasValue && formDto.DefinitionId.Value > 0)
+            {
+                var definition = await DefinitionRepository.GetByIdAsync(formDto.DefinitionId.Value);
+                formDto.DefinitionName = definition?.WorkflowName;
+            }
+
+            return formDto;
         }
 
         /// <summary>
@@ -80,10 +105,10 @@ namespace Lean.Hbt.Application.Services.Workflow
             if (input == null)
                 throw new ArgumentNullException(nameof(input));
 
-            await HbtValidateUtils.ValidateFieldExistsAsync(_formRepository, "FormName", input.FormName);
+            await HbtValidateUtils.ValidateFieldExistsAsync(FormRepository, "FormName", input.FormName);
 
             var form = input.Adapt<HbtForm>();
-            var result = await _formRepository.CreateAsync(form);
+            var result = await FormRepository.CreateAsync(form);
             if (result <= 0)
                 throw new HbtException(L("WorkflowForm.Create.Failed"));
 
@@ -101,15 +126,15 @@ namespace Lean.Hbt.Application.Services.Workflow
             if (input == null)
                 throw new ArgumentNullException(nameof(input));
 
-            var form = await _formRepository.GetByIdAsync(input.FormId);
+            var form = await FormRepository.GetByIdAsync(input.FormId);
             if (form == null)
                 throw new HbtException(L("WorkflowForm.NotFound"));
 
             if (form.FormName != input.FormName)
-                await HbtValidateUtils.ValidateFieldExistsAsync(_formRepository, "FormName", input.FormName);
+                await HbtValidateUtils.ValidateFieldExistsAsync(FormRepository, "FormName", input.FormName);
 
             input.Adapt(form);
-            var result = await _formRepository.UpdateAsync(form);
+            var result = await FormRepository.UpdateAsync(form);
             if (result <= 0)
                 throw new HbtException(L("WorkflowForm.Update.Failed"));
 
@@ -124,11 +149,11 @@ namespace Lean.Hbt.Application.Services.Workflow
         /// <returns>是否成功</returns>
         public async Task<bool> DeleteAsync(long id)
         {
-            var form = await _formRepository.GetByIdAsync(id);
+            var form = await FormRepository.GetByIdAsync(id);
             if (form == null)
                 throw new HbtException(L("WorkflowForm.NotFound"));
 
-            var result = await _formRepository.DeleteAsync(form);
+            var result = await FormRepository.DeleteAsync(form);
             if (result <= 0)
                 throw new HbtException(L("WorkflowForm.Delete.Failed"));
 
@@ -149,7 +174,7 @@ namespace Lean.Hbt.Application.Services.Workflow
             var exp = Expressionable.Create<HbtForm>();
             exp = exp.And(x => ids.Contains(x.Id));
 
-            var result = await _formRepository.DeleteAsync(exp.ToExpression());
+            var result = await FormRepository.DeleteAsync(exp.ToExpression());
             if (result <= 0)
                 throw new HbtException(L("WorkflowForm.BatchDelete.Failed"));
 
@@ -175,15 +200,18 @@ namespace Lean.Hbt.Application.Services.Workflow
                     try
                     {
                         var form = item.Adapt<HbtForm>();
-                        var insertResult = await _formRepository.CreateAsync(form);
-                        if (insertResult > 0)
+                        form.CreateTime = DateTime.Now;
+                        form.CreateBy = _currentUser.UserName;
+
+                        var result = await FormRepository.CreateAsync(form);
+                        if (result > 0)
                             success++;
                         else
                             fail++;
                     }
                     catch (Exception ex)
                     {
-                        _logger.Error(L("WorkflowForm.Import.Failed", item.FormName), ex);
+                        _logger.Warn($"导入工作流表单失败: {ex.Message}");
                         fail++;
                     }
                 }
@@ -192,8 +220,8 @@ namespace Lean.Hbt.Application.Services.Workflow
             }
             catch (Exception ex)
             {
-                _logger.Error(L("WorkflowForm.Import.Failed"), ex);
-                throw new HbtException(L("WorkflowForm.Import.Failed"), ex);
+                _logger.Error("导入工作流表单数据失败", ex);
+                throw new HbtException("导入工作流表单数据失败");
             }
         }
 
@@ -202,43 +230,27 @@ namespace Lean.Hbt.Application.Services.Workflow
         /// </summary>
         /// <param name="query">查询条件</param>
         /// <param name="sheetName">工作表名称</param>
-        /// <returns>Excel文件字节数组</returns>
+        /// <returns>返回导出结果</returns>
         public async Task<(string fileName, byte[] content)> ExportAsync(HbtFormQueryDto query, string sheetName = "Sheet1")
         {
-            try
-            {
-                var exp = QueryExpression(query);
-                var list = await _formRepository.GetListAsync(exp);
-                var exportList = list.Adapt<List<HbtFormExportDto>>();
-                return await HbtExcelHelper.ExportAsync(exportList, sheetName, "工作流表单数据");
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(L("WorkflowForm.Export.Failed"), ex);
-                throw new HbtException(L("WorkflowForm.Export.Failed"), ex);
-            }
+            var exp = QueryExpression(query);
+            var forms = await FormRepository.GetListAsync(exp);
+            var exportList = forms.Adapt<List<HbtFormExportDto>>();
+            return await HbtExcelHelper.ExportAsync(exportList, sheetName, "工作流表单数据");
         }
 
         /// <summary>
-        /// 获取工作流表单导入模板
+        /// 获取导入模板
         /// </summary>
         /// <param name="sheetName">工作表名称</param>
-        /// <returns>Excel模板文件字节数组</returns>
+        /// <returns>返回模板文件</returns>
         public async Task<(string fileName, byte[] content)> GetTemplateAsync(string sheetName = "Sheet1")
         {
-            try
-            {
-                return await HbtExcelHelper.GenerateTemplateAsync<HbtFormImportDto>(sheetName);
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(L("WorkflowForm.Template.Failed"), ex);
-                throw new HbtException(L("WorkflowForm.Template.Failed"), ex);
-            }
+            return await HbtExcelHelper.GenerateTemplateAsync<HbtFormImportDto>(sheetName);
         }
 
         /// <summary>
-        /// 获取指定工作流定义下的所有表单
+        /// 根据工作流定义获取表单列表
         /// </summary>
         /// <param name="definitionId">工作流定义ID</param>
         /// <returns>表单列表</returns>
@@ -247,49 +259,57 @@ namespace Lean.Hbt.Application.Services.Workflow
             var exp = Expressionable.Create<HbtForm>();
             exp = exp.And(x => x.DefinitionId == definitionId);
 
-            var list = await _formRepository.GetListAsync(exp.ToExpression());
-            return list.Adapt<List<HbtFormDto>>();
+            var forms = await FormRepository.GetListAsync(exp.ToExpression());
+            return forms.Adapt<List<HbtFormDto>>();
         }
 
         /// <summary>
-        /// 修改表单状态
+        /// 更改表单状态
         /// </summary>
         /// <param name="id">表单ID</param>
         /// <param name="status">新状态</param>
         /// <returns>是否成功</returns>
         public async Task<bool> ChangeStatusAsync(long id, int status)
         {
-            var form = await _formRepository.GetByIdAsync(id);
+            var form = await FormRepository.GetByIdAsync(id);
             if (form == null)
                 throw new HbtException(L("WorkflowForm.NotFound"));
 
             form.Status = status;
-            var result = await _formRepository.UpdateAsync(form);
+            form.UpdateTime = DateTime.Now;
+            form.UpdateBy = _currentUser.UserName;
+
+            var result = await FormRepository.UpdateAsync(form);
             if (result <= 0)
                 throw new HbtException(L("WorkflowForm.ChangeStatus.Failed"));
 
-            _logger.Info(L("WorkflowForm.ChangedStatus.Success", id));
+            _logger.Info(L("WorkflowForm.StatusChanged.Success", id, status));
             return true;
         }
 
         /// <summary>
         /// 获取表单选项列表
         /// </summary>
-        /// <returns>表单选项列表</returns>
+        /// <returns>选项列表</returns>
         public async Task<List<HbtSelectOption>> GetOptionsAsync()
         {
-            var forms = await _formRepository.AsQueryable()
-                .Where(f => f.Status == 5) // 只获取已批准状态的表单
-                .OrderBy(f => f.Id)
-                .Select(f => new HbtSelectOption
-                {
-                    Label = f.FormName,
-                    Value = f.Id,
-                })
-                .ToListAsync();
-            return forms;
+            var exp = Expressionable.Create<HbtForm>();
+            exp = exp.And(x => x.Status == 1); // 只获取启用的表单
+
+            var forms = await FormRepository.GetListAsync(exp.ToExpression());
+            
+            return forms.Select(x => new HbtSelectOption
+            {
+                Value = x.Id.ToString(),
+                Label = x.FormName
+            }).ToList();
         }
 
+        /// <summary>
+        /// 构建查询表达式
+        /// </summary>
+        /// <param name="query">查询条件</param>
+        /// <returns>查询表达式</returns>
         private Expression<Func<HbtForm, bool>> QueryExpression(HbtFormQueryDto query)
         {
             var exp = Expressionable.Create<HbtForm>();
@@ -297,10 +317,102 @@ namespace Lean.Hbt.Application.Services.Workflow
             if (!string.IsNullOrEmpty(query?.FormName))
                 exp = exp.And(x => x.FormName.Contains(query.FormName));
 
+            if (query?.DefinitionId.HasValue == true)
+                exp = exp.And(x => x.DefinitionId == query.DefinitionId.Value);
+
             if (query?.Status.HasValue == true)
                 exp = exp.And(x => x.Status == query.Status.Value);
 
             return exp.ToExpression();
+        }
+
+        /// <summary>
+        /// 获取当前用户的表单
+        /// </summary>
+        /// <param name="status">状态筛选</param>
+        /// <param name="limit">限制数量</param>
+        /// <returns>当前用户的表单列表</returns>
+        public async Task<List<HbtFormDto>> GetCurrentUserFormsAsync(int? status = null, int limit = 20)
+        {
+            var exp = Expressionable.Create<HbtForm>();
+            
+            if (status.HasValue)
+                exp = exp.And(x => x.Status == status.Value);
+
+            var forms = await FormRepository.GetListAsync(exp.ToExpression());
+            var result = forms.Take(limit).Adapt<List<HbtFormDto>>();
+            
+            // 填充工作流定义名称
+            foreach (var form in result)
+            {
+                if (form.DefinitionId.HasValue && form.DefinitionId.Value > 0)
+                {
+                    var definition = await DefinitionRepository.GetByIdAsync(form.DefinitionId.Value);
+                    form.DefinitionName = definition?.WorkflowName;
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// 获取当前用户创建的表单
+        /// </summary>
+        /// <param name="status">状态筛选</param>
+        /// <param name="limit">限制数量</param>
+        /// <returns>当前用户创建的表单列表</returns>
+        public async Task<List<HbtFormDto>> GetCurrentUserCreatedFormsAsync(int? status = null, int limit = 20)
+        {
+            var exp = Expressionable.Create<HbtForm>();
+            exp = exp.And(x => x.CreateBy == _currentUser.UserName);
+            
+            if (status.HasValue)
+                exp = exp.And(x => x.Status == status.Value);
+
+            var forms = await FormRepository.GetListAsync(exp.ToExpression());
+            var result = forms.Take(limit).Adapt<List<HbtFormDto>>();
+            
+            // 填充工作流定义名称
+            foreach (var form in result)
+            {
+                if (form.DefinitionId.HasValue && form.DefinitionId.Value > 0)
+                {
+                    var definition = await DefinitionRepository.GetByIdAsync(form.DefinitionId.Value);
+                    form.DefinitionName = definition?.WorkflowName;
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// 获取当前用户可访问的表单
+        /// </summary>
+        /// <param name="status">状态筛选</param>
+        /// <param name="limit">限制数量</param>
+        /// <returns>当前用户可访问的表单列表</returns>
+        public async Task<List<HbtFormDto>> GetCurrentUserAccessibleFormsAsync(int? status = null, int limit = 20)
+        {
+            var exp = Expressionable.Create<HbtForm>();
+            exp = exp.And(x => x.Status == 1); // 只获取启用的表单
+            
+            if (status.HasValue)
+                exp = exp.And(x => x.Status == status.Value);
+
+            var forms = await FormRepository.GetListAsync(exp.ToExpression());
+            var result = forms.Take(limit).Adapt<List<HbtFormDto>>();
+            
+            // 填充工作流定义名称
+            foreach (var form in result)
+            {
+                if (form.DefinitionId.HasValue && form.DefinitionId.Value > 0)
+                {
+                    var definition = await DefinitionRepository.GetByIdAsync(form.DefinitionId.Value);
+                    form.DefinitionName = definition?.WorkflowName;
+                }
+            }
+
+            return result;
         }
     }
 }

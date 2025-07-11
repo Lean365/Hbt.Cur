@@ -11,23 +11,12 @@
 
     <!-- 工具栏 -->
     <hbt-toolbar
-      :show-add="true"
-      :add-permission="['workflow:task:create']"
-      :show-edit="true"
-      :edit-permission="['workflow:task:update']"
-      :show-delete="true"
-      :delete-permission="['workflow:task:delete']"
-      :show-import="true"
-      :import-permission="['workflow:task:import']"
+      :show-add="false"
+      :show-edit="false"
+      :show-delete="false"
+      :show-import="false"
       :show-export="true"
       :export-permission="['workflow:task:export']"
-      :disabled-delete="selectedRowKeys.length === 0"
-      :disabled-edit="selectedRowKeys.length !== 1"
-      @add="handleAdd"
-      @edit="handleEditSelected"
-      @delete="handleBatchDelete"
-      @import="handleImport"
-      @template="handleTemplate"
       @export="handleExport"
       @refresh="fetchData"
       @column-setting="handleColumnSetting"
@@ -43,7 +32,7 @@
       :pagination="false"
       :scroll="{ x: 'max-content' }"
       :default-height="594"
-      :row-key="(record: HbtTask) => String(record.taskId)"
+      :row-key="(record: HbtTask) => String(record.processTaskId)"
       v-model:selectedRowKeys="selectedRowKeys"
       :row-selection="{
         type: 'checkbox',
@@ -57,21 +46,35 @@
         <template v-if="column.dataIndex === 'status'">
           <hbt-dict-tag dict-type="workflow_task_status" :value="record.status" />
         </template>
+        
+        <template v-if="column.dataIndex === 'taskType'">
+          <hbt-dict-tag dict-type="workflow_task_type" :value="record.taskType" />
+        </template>
+        
+        <template v-if="column.dataIndex === 'priority'">
+          <hbt-dict-tag dict-type="workflow_task_priority" :value="record.priority || 0" />
+        </template>
 
         <!-- 操作列 -->
         <template v-if="column.key === 'action'">
           <hbt-operation
             :record="record"
-            :show-delete="true"
-            :delete-permission="['workflow:task:delete']"
             :show-view="true"
             :view-permission="['workflow:task:query']"
-            :show-edit="true"
-            :edit-permission="['workflow:task:update']"
+            :show-approve="OPERABLE_STATUS.includes(record.status)"
+            :approve-permission="['workflow:task:approve']"
+            :show-reject="OPERABLE_STATUS.includes(record.status)"
+            :reject-permission="['workflow:task:reject']"
+            :show-transfer="OPERABLE_STATUS.includes(record.status)"
+            :transfer-permission="['workflow:task:transfer']"
+            :show-revoke="OPERABLE_STATUS.includes(record.status)"
+            :revoke-permission="['workflow:task:update']"
             size="small"
-            @delete="handleDelete"
             @view="handleView"
-            @edit="handleEdit"
+            @approve="handleApprove"
+            @reject="handleReject"
+            @transfer="handleTransfer"
+            @revoke="handleCancel"
           />
         </template>
       </template>
@@ -89,14 +92,6 @@
       @showSizeChange="handleSizeChange"
     />
 
-    <!-- 新增/编辑表单 -->
-    <workflow-task-form
-      v-model:open="formVisible"
-      :title="formTitle"
-      :task-id="selectedWorkflowTaskId"
-      @success="handleSuccess"
-    />
-
     <!-- 查看详情 -->
     <a-modal
       v-model:open="detailVisible"
@@ -105,30 +100,30 @@
       <!-- 工作流任务详情内容 -->
     </a-modal>
 
-    <!-- 导入对话框 -->
-    <a-modal
-      v-model:open="importVisible"
-      title="导入工作流任务"
-      @ok="handleImportSubmit"
-      @cancel="handleImportCancel"
-    >
-      <a-upload
-        :file-list="fileList"
-        :before-upload="beforeUpload"
-        :customRequest="customRequest"
-      >
-        <a-button>
-          <upload-outlined />
-          点击上传
-        </a-button>
-      </a-upload>
-      <template #footer>
-        <a-button key="back" @click="handleImportCancel">取消</a-button>
-        <a-button key="submit" type="primary" :loading="importLoading" @click="handleImportSubmit">
-          确定
-        </a-button>
-      </template>
-    </a-modal>
+    <!-- 审批组件 -->
+    <workflow-approve
+      v-model:open="approveVisible"
+      :task-id="selectedWorkflowTaskId"
+      @success="handleSuccess"
+    />
+
+    <workflow-reject
+      v-model:open="rejectVisible"
+      :task-id="selectedWorkflowTaskId"
+      @success="handleSuccess"
+    />
+
+    <workflow-transfer
+      v-model:open="transferVisible"
+      :task-id="selectedWorkflowTaskId"
+      @success="handleSuccess"
+    />
+
+    <workflow-cancel
+      v-model:open="cancelVisible"
+      :task-id="selectedWorkflowTaskId"
+      @success="handleSuccess"
+    />
 
     <!-- 列设置抽屉 -->
     <a-drawer
@@ -155,7 +150,6 @@
 import { useI18n } from 'vue-i18n'
 import { message } from 'ant-design-vue'
 import { ref, computed, onMounted, h } from 'vue'
-import { UploadOutlined } from '@ant-design/icons-vue'
 import { useDictStore } from '@/stores/dict'
 import { useRouter } from 'vue-router'
 import type { HbtTask, HbtTaskQuery } from '@/types/workflow/task'
@@ -163,37 +157,67 @@ import type { QueryField } from '@/types/components/query'
 import type { TablePaginationConfig } from 'ant-design-vue'
 import { 
   getWorkflowTaskList, 
-  deleteWorkflowTask, 
-  batchDeleteWorkflowTask, 
-  importWorkflowTask, 
   exportWorkflowTask, 
   getWorkflowTaskTemplate
 } from '@/api/workflow/task'
-import WorkflowTaskForm from './components/WorkflowTaskForm.vue'
+import WorkflowApprove from './components/WorkflowApprove.vue'
+import WorkflowReject from './components/WorkflowReject.vue'
+import WorkflowTransfer from './components/WorkflowTransfer.vue'
+import WorkflowCancel from './components/WorkflowCancel.vue'
 
 const { t } = useI18n()
 const dictStore = useDictStore()
 const router = useRouter()
 
+// 任务状态常量定义
+const TASK_STATUS = {
+  PENDING: 0,      // 待处理
+  PROCESSING: 1,   // 处理中
+  APPROVED: 2,     // 已同意
+  REJECTED: 3,     // 已拒绝
+  RETURNED: 4,     // 已退回
+  TRANSFERRED: 5,  // 已转办
+  CANCELLED: 6     // 已取消
+} as const
+
+// 可操作任务的状态（只有待处理和处理中的任务可以操作）
+const OPERABLE_STATUS = [TASK_STATUS.PENDING, TASK_STATUS.PROCESSING]
+
+// 状态验证辅助方法
+const isTaskOperable = (status: number): boolean => OPERABLE_STATUS.includes(status as any)
+
+const getStatusText = (status: number): string => {
+  switch (status) {
+    case TASK_STATUS.PENDING: return '待处理'
+    case TASK_STATUS.PROCESSING: return '处理中'
+    case TASK_STATUS.APPROVED: return '已同意'
+    case TASK_STATUS.REJECTED: return '已拒绝'
+    case TASK_STATUS.RETURNED: return '已退回'
+    case TASK_STATUS.TRANSFERRED: return '已转办'
+    case TASK_STATUS.CANCELLED: return '已取消'
+    default: return '未知状态'
+  }
+}
+
 // 表格列定义
 const columns = [
   {
-    title: t('workflow.task.fields.taskId'),
-    dataIndex: 'taskId',
-    key: 'taskId',
+    title: t('workflow.task.fields.processTaskId'),
+    dataIndex: 'processTaskId',
+    key: 'processTaskId',
     width: 100
   },
   {
-    title: t('workflow.task.fields.instanceId'),
-    dataIndex: 'instanceId',
-    key: 'instanceId',
-    width: 100
+    title: t('workflow.task.fields.instanceName'),
+    dataIndex: 'instanceName',
+    key: 'instanceName',
+    width: 200
   },
   {
-    title: t('workflow.task.fields.nodeId'),
-    dataIndex: 'nodeId',
-    key: 'nodeId',
-    width: 100
+    title: t('workflow.task.fields.nodeName'),
+    dataIndex: 'nodeName',
+    key: 'nodeName',
+    width: 200
   },
   {
     title: t('workflow.task.fields.taskName'),
@@ -207,7 +231,12 @@ const columns = [
     key: 'taskType',
     width: 150
   },
-
+  {
+    title: t('workflow.task.fields.assigneeName'),
+    dataIndex: 'assigneeName',
+    key: 'assigneeName',
+    width: 200
+  },
   {
     title: t('workflow.task.fields.status'),
     dataIndex: 'status',
@@ -219,18 +248,6 @@ const columns = [
     dataIndex: 'comment',
     key: 'comment',
     width: 300
-  },
-  {
-    title: t('workflow.task.fields.assigneeId'),
-    dataIndex: 'assigneeId',
-    key: 'assigneeId',
-    width: 200
-  },
-  {
-    title: t('workflow.task.fields.result'),
-    dataIndex: 'result',
-    key: 'result',
-    width: 150
   },
   {
     title: t('workflow.task.fields.completeTime'),
@@ -255,18 +272,6 @@ const columns = [
     dataIndex: 'priority',
     key: 'priority',
     width: 150
-  },
-  {
-    title: t('workflow.task.fields.workflowInstance'),
-    dataIndex: 'workflowInstance',
-    key: 'workflowInstance',
-    width: 200
-  },
-  {
-    title: t('workflow.task.fields.node'),
-    dataIndex: 'node',
-    key: 'node',
-    width: 200
   },
   {
     title: t('table.columns.remark'),
@@ -357,21 +362,18 @@ const tableData = ref<HbtTask[]>([])
 const selectedRowKeys = ref<(string | number)[]>([])
 const showSearch = ref(true)
 
-// 导入相关
-const importVisible = ref(false)
-const importLoading = ref(false)
-const fileList = ref<any[]>([])
-
 // 列设置相关
 const columnSettingVisible = ref(false)
 const defaultColumns = columns
 const columnSettings = ref<Record<string, boolean>>({})
 
 // 弹窗控制相关
-const formVisible = ref(false)
-const formTitle = ref('')
 const selectedWorkflowTaskId = ref<number | undefined>(undefined)
 const detailVisible = ref(false)
+const approveVisible = ref(false)
+const rejectVisible = ref(false)
+const transferVisible = ref(false)
+const cancelVisible = ref(false)
 
 // 获取表格数据
 const fetchData = async () => {
@@ -416,22 +418,6 @@ const handleTableChange = (pagination: TablePaginationConfig) => {
   fetchData()
 }
 
-// 处理删除
-const handleDelete = async (record: HbtTask) => {
-  try {
-    const res = await deleteWorkflowTask(Number(record.taskId))
-    if (res.data.code === 200) {
-      message.success(t('common.delete.success'))
-      fetchData()
-    } else {
-      message.error(res.data.msg || t('common.delete.failed'))
-    }
-  } catch (error) {
-    console.error(error)
-    message.error(t('common.delete.failed'))
-  }
-}
-
 // 处理导出
 const handleExport = async () => {
   try {
@@ -457,29 +443,6 @@ const toggleFullscreen = (isFullscreen: boolean) => {
   console.log('切换全屏状态:', isFullscreen)
 }
 
-// 批量删除
-const handleBatchDelete = async () => {
-  if (!selectedRowKeys.value.length) {
-    message.warning(t('common.selectAtLeastOne'))
-    return
-  }
-
-  try {
-    const results = await Promise.all(selectedRowKeys.value.map(id => deleteWorkflowTask(Number(id))))
-    const hasError = results.some(res => res.data.code !== 200)
-    if (!hasError) {
-      message.success(t('common.delete.success'))
-      selectedRowKeys.value = []
-      fetchData()
-    } else {
-      message.error(t('common.delete.failed'))
-    }
-  } catch (error) {
-    console.error(error)
-    message.error(t('common.delete.failed'))
-  }
-}
-
 // 列设置
 const handleColumnSetting = () => {
   columnSettingVisible.value = true
@@ -500,107 +463,50 @@ const handleRowClick = (record: HbtTask) => {
   console.log('行点击:', record)
 }
 
-// 处理新增
-const handleAdd = () => {
-  selectedWorkflowTaskId.value = undefined
-  formTitle.value = t('common.title.create')
-  formVisible.value = true
-}
-
-// 处理编辑
-const handleEdit = (record: HbtTask) => {
-  selectedWorkflowTaskId.value = record.taskId
-  formTitle.value = t('common.title.edit')
-  formVisible.value = true
-}
-
-// 处理选中编辑
-const handleEditSelected = () => {
-  if (selectedRowKeys.value.length === 1) {
-    selectedWorkflowTaskId.value = selectedRowKeys.value[0] as number
-    formTitle.value = t('common.title.edit')
-    formVisible.value = true
-  }
-}
-
 // 处理查看
 const handleView = (record: HbtTask) => {
-  selectedWorkflowTaskId.value = record.taskId
+  selectedWorkflowTaskId.value = record.processTaskId
   detailVisible.value = true
 }
 
-// 处理导入
-const handleImport = () => {
-  importVisible.value = true
-}
-
-// 处理下载模板
-const handleTemplate = async () => {
-  try {
-    const res = await getWorkflowTaskTemplate()
-    if (res.data.code === 200) {
-      message.success(t('common.download.success'))
-    } else {
-      message.error(res.data.msg || t('common.download.failed'))
-    }
-  } catch (error) {
-    console.error(error)
-    message.error(t('common.download.failed'))
-  }
-}
-
-// 处理导入提交
-const handleImportSubmit = async () => {
-  if (!fileList.value.length) {
-    message.warning(t('common.upload.selectFile'))
+// 处理同意
+const handleApprove = (record: HbtTask) => {
+  if (!isTaskOperable(record.status)) {
+    message.warning(`任务状态为"${getStatusText(record.status)}"，无法进行操作`)
     return
   }
-
-  importLoading.value = true
-  try {
-    const res = await importWorkflowTask(fileList.value[0])
-    if (res.data.code === 200) {
-      message.success(t('common.import.success'))
-      importVisible.value = false
-      fileList.value = []
-      fetchData()
-    } else {
-      message.error(res.data.msg || t('common.import.failed'))
-    }
-  } catch (error) {
-    console.error(error)
-    message.error(t('common.import.failed'))
-  }
-  importLoading.value = false
+  approveVisible.value = true
+  selectedWorkflowTaskId.value = record.processTaskId
 }
 
-// 处理导入取消
-const handleImportCancel = () => {
-  importVisible.value = false
-  fileList.value = []
+// 处理拒绝
+const handleReject = (record: HbtTask) => {
+  if (!isTaskOperable(record.status)) {
+    message.warning(`任务状态为"${getStatusText(record.status)}"，无法进行操作`)
+    return
+  }
+  rejectVisible.value = true
+  selectedWorkflowTaskId.value = record.processTaskId
 }
 
-// 上传前处理
-const beforeUpload = (file: any) => {
-  const isExcel = file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' || 
-                  file.type === 'application/vnd.ms-excel'
-  if (!isExcel) {
-    message.error(t('common.upload.excelOnly'))
-    return false
+// 处理转办
+const handleTransfer = (record: HbtTask) => {
+  if (!isTaskOperable(record.status)) {
+    message.warning(`任务状态为"${getStatusText(record.status)}"，无法进行操作`)
+    return
   }
-  const isLt2M = file.size / 1024 / 1024 < 2
-  if (!isLt2M) {
-    message.error(t('common.upload.sizeLimit'))
-    return false
-  }
-  fileList.value = [file]
-  return false
+  transferVisible.value = true
+  selectedWorkflowTaskId.value = record.processTaskId
 }
 
-// 自定义上传
-const customRequest = (options: any) => {
-  const { file } = options
-  fileList.value = [file]
+// 处理撤销
+const handleCancel = (record: HbtTask) => {
+  if (!isTaskOperable(record.status)) {
+    message.warning(`任务状态为"${getStatusText(record.status)}"，无法进行操作`)
+    return
+  }
+  cancelVisible.value = true
+  selectedWorkflowTaskId.value = record.processTaskId
 }
 
 // 分页处理
@@ -616,13 +522,12 @@ const handleSizeChange = (size: number) => {
 
 // 处理表单提交成功
 const handleSuccess = () => {
-  formVisible.value = false
   fetchData()
 }
 
 onMounted(() => {
   // 加载字典数据
-  dictStore.loadDicts(['workflow_task_status', 'workflow_task_type'])
+  dictStore.loadDicts(['workflow_task_status', 'workflow_task_type', 'workflow_task_priority'])
   // 初始化列设置
   initColumnSettings()
   // 加载表格数据

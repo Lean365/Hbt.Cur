@@ -21,6 +21,12 @@ namespace Lean.Hbt.Domain.Entities
         [SugarColumn(IsPrimaryKey = true, IsIdentity = true, ColumnName = "id", ColumnDescription = "主键", ColumnDataType = "bigint", IsNullable = false)]
         public long Id { get; set; }
 
+                /// <summary>
+        /// 备注
+        /// </summary>
+        [SugarColumn(ColumnName = "remark", ColumnDescription = "备注", Length = 500, ColumnDataType = "nvarchar", IsNullable = true)]
+        public string? Remark { get; set; }
+
         /// <summary>
         /// 创建者
         /// </summary>
@@ -64,10 +70,6 @@ namespace Lean.Hbt.Domain.Entities
         [SugarColumn(ColumnName = "delete_time", ColumnDescription = "删除时间", ColumnDataType = "datetime", IsNullable = true)]
         public DateTime? DeleteTime { get; set; }
 
-        /// <summary>
-        /// 备注
-        /// </summary>
-        [SugarColumn(ColumnName = "remark", ColumnDescription = "备注", Length = 500, ColumnDataType = "nvarchar", IsNullable = true)]
-        public string? Remark { get; set; }
+
     }
 }

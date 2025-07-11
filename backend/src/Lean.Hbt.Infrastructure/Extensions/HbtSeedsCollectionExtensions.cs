@@ -1,5 +1,10 @@
 using Lean.Hbt.Infrastructure.Data.Seeds;
-using Microsoft.Extensions.DependencyInjection;
+using Lean.Hbt.Infrastructure.Data.Seeds.Auth;
+using Lean.Hbt.Infrastructure.Data.Seeds.Biz;
+using Lean.Hbt.Infrastructure.Data.Seeds.Biz.Dict;
+using Lean.Hbt.Infrastructure.Data.Seeds.Biz.Translation;
+using Lean.Hbt.Infrastructure.Data.Seeds.Generator;
+using Lean.Hbt.Infrastructure.Data.Seeds.Workflow;
 
 namespace Lean.Hbt.Infrastructure.Extensions;
 
@@ -16,13 +21,13 @@ public static class HbtSeedsCollectionExtensions
     public static IServiceCollection AddHbtSeeds(this IServiceCollection services)
     {
         // 注册种子数据服务
-        services.AddScoped<HbtDbSeedTenant>();
-        services.AddScoped<HbtDbSeedRole>();
-        services.AddScoped<HbtDbSeedUser>();
+        services.AddScoped<HbtDbSeedIdentityTenant>();
+        services.AddScoped<HbtDbSeedIdentityRole>();
+        services.AddScoped<HbtDbSeedIdentityUser>();
         services.AddScoped<HbtDbSeedMenu>();
         services.AddScoped<HbtDbSeedLanguage>();
-        services.AddScoped<HbtDbSeedDept>();
-        services.AddScoped<HbtDbSeedPost>();
+        services.AddScoped<HbtDbSeedIdentityDept>();
+        services.AddScoped<HbtDbSeedIdentityPost>();
         services.AddScoped<HbtDbSeedConfig>();
         services.AddScoped<HbtDbSeedDictType>();
         services.AddScoped<HbtDbSeedDictData>();
@@ -58,17 +63,27 @@ public static class HbtSeedsCollectionExtensions
         services.AddScoped<HbtDbSeedGenTemplate>();
         services.AddScoped<HbtDbSeedWorkflowDictType>();
         services.AddScoped<HbtDbSeedWorkflowDictData>();
-        services.AddScoped<HbtDbSeedForm>();
-        services.AddScoped<HbtDbSeedDefinition>();
-        services.AddScoped<HbtDbSeedInstance>();
-        services.AddScoped<HbtDbSeedNode>();
-        services.AddScoped<HbtDbSeedTask>();
-        services.AddScoped<HbtDbSeedVariable>();        
-        services.AddScoped<HbtDbSeedRelation>();
+        services.AddScoped<HbtDbSeedIdentityRelation>();
+        services.AddScoped<HbtDbSeedWorkflowCoordinator>();
+        services.AddScoped<HbtDbSeedTranslationCoordinator>();
+        services.AddScoped<HbtDbSeedDictCoordinator>();
+
+        // HRM种子数据服务
+
+        services.AddScoped<HbtDbSeedHrmDepartment>();
+        services.AddScoped<HbtDbSeedHrmPosition>();
+        services.AddScoped<HbtDbSeedHrmEmployee>();
+        services.AddScoped<HbtDbSeedHrm>();
+
+        // 注册多库种子数据服务
+        services.AddScoped<HbtAuthDbSeed>();
+        services.AddScoped<HbtGeneratorDbSeed>();
+        services.AddScoped<HbtWorkflowDbSeed>();
+        services.AddScoped<HbtBusinessDbSeed>();
 
         // 最后注册主种子服务
         services.AddScoped<HbtDbSeed>();
 
         return services;
     }
-} 
+}

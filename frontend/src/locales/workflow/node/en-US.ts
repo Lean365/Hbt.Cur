@@ -1,6 +1,21 @@
 export default {
   workflow: {
     node: {
+      fields: {
+        instanceId: 'Instance ID',
+        nodeId: 'Node ID',
+        nodeName: 'Node Name',
+        nodeType: 'Node Type',
+        definitionId: 'Definition ID',
+        definitionName: 'Definition Name',
+        parentNodeId: 'Parent Node ID',
+        parentNodeName: 'Parent Node Name',
+        nodeConfig: 'Node Config',
+        status: 'Status',
+        startTime: 'Start Time',
+        endTime: 'End Time',
+        orderNum: 'Order',
+      },
       title: 'Workflow Node',
       list: {
         title: 'Workflow Node List',

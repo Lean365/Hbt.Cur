@@ -8,7 +8,7 @@
 //===================================================================
 
 using System.Collections.Concurrent;
-using Lean.Hbt.Domain.Entities.Core;
+using Lean.Hbt.Domain.Entities.Routine.Core;
 
 namespace Lean.Hbt.Infrastructure.Services
 {

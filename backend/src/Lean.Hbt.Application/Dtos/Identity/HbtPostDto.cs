@@ -64,10 +64,6 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// </summary>
         public int Status { get; set; }
 
-        /// <summary>
-        /// 租户ID
-        /// </summary>
-        public long TenantId { get; set; }
 
         /// <summary>
         /// 备注
@@ -207,7 +203,7 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// <summary>
         /// 主键
         /// </summary>
-        [Required(ErrorMessage = "岗位ID不能为空")]
+        [AdaptMember("Id")]
         public long PostId { get; set; }
     }
 
@@ -376,7 +372,7 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// <summary>
         /// 岗位ID
         /// </summary>
-        [Required(ErrorMessage = "岗位ID不能为空")]
+        [AdaptMember("Id")]
         public long PostId { get; set; }
 
         /// <summary>

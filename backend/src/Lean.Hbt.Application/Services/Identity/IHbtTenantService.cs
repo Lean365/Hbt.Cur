@@ -63,6 +63,20 @@ public interface IHbtTenantService
     Task<List<HbtSelectOption>> GetOptionsAsync();
 
     /// <summary>
+    /// 根据用户名获取租户选项列表
+    /// </summary>
+    /// <param name="userName">用户名</param>
+    /// <returns>租户选项列表</returns>
+    Task<List<HbtSelectOption>> GetOptionsByUserNameAsync(string userName);
+
+    /// <summary>
+    /// 根据用户ID获取租户选项列表
+    /// </summary>
+    /// <param name="userId">用户ID</param>
+    /// <returns>租户选项列表</returns>
+    Task<List<HbtSelectOption>> GetOptionsByUserIdAsync(long userId);
+
+    /// <summary>
     /// 导入租户数据
     /// </summary>
     /// <param name="fileStream">Excel文件流</param>
@@ -94,9 +108,9 @@ public interface IHbtTenantService
     Task<HbtTenantStatusDto> UpdateStatusAsync(long id, int status);
 
     /// <summary>
-    /// 测试数据库连接
+    /// 获取用户关联的租户列表
     /// </summary>
-    /// <param name="connectionInfo">数据库连接信息</param>
-    /// <returns>连接测试结果</returns>
-    Task<bool> TestDbConnectionAsync(HbtDbConnectDto connectionInfo);
+    /// <param name="userId">用户ID</param>
+    /// <returns>用户租户列表</returns>
+    Task<List<HbtUserTenantDto>> GetUserTenantsAsync(long userId);
 }

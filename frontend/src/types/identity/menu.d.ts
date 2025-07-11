@@ -19,12 +19,12 @@ export enum HbtMenuType {
 export interface HbtMenu extends HbtBaseEntity {
   /** 菜单ID */
   menuId: number
-  /** 租户ID */
-  tenantId: number
   /** 菜单名称 */
   menuName: string
   /** 翻译Key */
   transKey?: string
+  /** 菜单图标 */
+  icon?: string
   /** 父菜单ID */
   parentId: number
   /** 显示顺序 */
@@ -43,12 +43,10 @@ export interface HbtMenu extends HbtBaseEntity {
   menuType: number
   /** 菜单状态（0显示 1隐藏） */
   visible: number
+  /** 权限标识 */
+  perms?: string  
   /** 菜单状态（0正常 1停用） */
   status: number
-  /** 权限标识 */
-  perms?: string
-  /** 菜单图标 */
-  icon?: string
   /** 子菜单 */
   children?: HbtMenu[]
 }
@@ -125,8 +123,6 @@ export interface HbtMenuCreate {
   icon?: string
   /** 备注 */
   remark?: string
-  /** 租户ID */
-  tenantId: number
 }
 
 /**

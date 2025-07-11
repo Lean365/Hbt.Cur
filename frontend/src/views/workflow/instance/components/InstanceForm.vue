@@ -48,7 +48,7 @@
         </a-form>
       </a-tab-pane>
       <a-tab-pane key="2" :tab="t('workflow.instance.tabs.designer')">
-        <hbt-workflow-config v-model:value="formState.workflowConfig" />
+        <hbt-flow  v-model:value="formState.workflowConfig" />
       </a-tab-pane>
     </a-tabs>
   </hbt-modal>

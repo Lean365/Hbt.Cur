@@ -78,8 +78,7 @@ namespace Lean.Hbt.Application.Services.Workflow.Jobs
                 await dbContext.Client.Updateable<HbtProcessTask>()
                     .SetColumns(t => new HbtProcessTask
                     {
-                        Status = 3, // 已完成
-                        Result = 1, // 1 表示成功
+                        Status = 2, // 已同意
                         UpdateTime = DateTime.Now
                     })
                     .Where(t => t.Id == workflowTask.Id)
@@ -90,10 +89,13 @@ namespace Lean.Hbt.Application.Services.Workflow.Jobs
                 {
                     InstanceId = task.InstanceId,
                     NodeId = task.NodeId,
-                    OperationType = 4, // 延迟执行
+                    OperationType = 2, // 延迟执行
                     OperationResult = 1, // 成功
                     OperationComment = "延迟执行成功",
-                    OperationTime = DateTime.Now
+                    CreateBy = "System",
+                    CreateTime = DateTime.Now,
+                    UpdateBy = "System",
+                    UpdateTime = DateTime.Now
                 };
 
                 await dbContext.Client.Insertable(history).ExecuteCommandAsync();
@@ -109,7 +111,6 @@ namespace Lean.Hbt.Application.Services.Workflow.Jobs
                     .SetColumns(t => new HbtProcessTask
                     {
                         Status = 4, // 已失败
-                        Result = 2, // 2 表示失败
                         UpdateTime = DateTime.Now
                     })
                     .Where(t => t.Id == workflowTask.Id)
@@ -120,10 +121,13 @@ namespace Lean.Hbt.Application.Services.Workflow.Jobs
                 {
                     InstanceId = task.InstanceId,
                     NodeId = task.NodeId,
-                    OperationType = 4, // 延迟执行
+                    OperationType = 2, // 延迟执行
                     OperationResult = 2, // 失败
                     OperationComment = $"延迟执行失败: {ex.Message}",
-                    OperationTime = DateTime.Now
+                    CreateBy = "System",
+                    CreateTime = DateTime.Now,
+                    UpdateBy = "System",
+                    UpdateTime = DateTime.Now
                 };
 
                 await dbContext.Client.Insertable(history).ExecuteCommandAsync();

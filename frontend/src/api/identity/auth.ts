@@ -24,7 +24,6 @@ import { getToken } from '@/utils/auth'
 export function login(data: LoginParams): Promise<AxiosResponse<HbtApiResponse<LoginResultData>>> {
   console.log('[Auth] 开始登录:', {
     用户名: data.userName,
-    租户ID: data.tenantId,
     登录类型: data.loginType,
     登录来源: data.loginSource,
     设备信息: data.deviceInfo,
@@ -118,7 +117,7 @@ export function refreshToken(refreshToken: string): Promise<AxiosResponse<HbtApi
   return request({
     url: '/api/HbtAuth/refresh-token',
     method: 'post',
-    data: { refreshToken }
+    data: refreshToken
   })
 }
 
@@ -217,7 +216,6 @@ export function unlockUser(username: string): Promise<AxiosResponse<HbtApiRespon
 export function checkLogin(data: LoginParams): Promise<AxiosResponse<HbtApiResponse<LoginCheckResultData>>> {
   // 构建符合HbtAuthDto的参数
   const loginDto = {
-    tenantId: data.tenantId,
     userName: data.userName,
     password: data.password,
     captchaToken: data.captchaToken,
@@ -244,6 +242,6 @@ export function refreshUserToken(refreshToken: string): Promise<AxiosResponse<Hb
   return request({
     url: '/api/HbtAuth/refresh-token',
     method: 'post',
-    data: { refreshToken }
+    data: refreshToken
   })
 } 

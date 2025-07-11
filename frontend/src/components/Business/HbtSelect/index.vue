@@ -264,7 +264,7 @@ const innerValue = computed({
     const opts = displayOptions.value;
     const value = props.value;
     
-    console.log('[HbtSelect] get value:', value, 'options:', opts);
+    //console.log('[HbtSelect] get value:', value, 'options:', opts);
     
     // 如果选项还没有加载完成，返回原始值
     if (opts.length === 0 && (props.options || props.dictType)) {

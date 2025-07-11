@@ -4,6 +4,7 @@ export default {
     auth: {
       login: {
         title: 'ログイン',
+        tenantId: 'テナント設定',
         username: 'ユーザー名',
         password: 'パスワード',
         rememberMe: 'ログイン情報を保存',
@@ -27,7 +28,8 @@ export default {
         otherLogin: 'その他のログイン方法',
         form: {
           usernameRequired: 'ユーザー名を入力してください',
-          passwordRequired: 'パスワードを入力してください'
+          passwordRequired: 'パスワードを入力してください',
+          tenantIdRequired: 'テナント設定を選択してください'
         }
       },
       register: {

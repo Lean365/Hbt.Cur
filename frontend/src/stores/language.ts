@@ -22,7 +22,7 @@ export const useLanguageStore = defineStore('language', () => {
     loading.value = true
     try {
       const { data: response } = await getLanguageOptions()
-      console.log('[Language] 获取语言列表响应:', response)
+      //console.log('[Language] 获取语言列表响应:', response)
 
       if (response.code === 200 && Array.isArray(response.data)) {
         languageList.value = response.data
@@ -32,7 +32,7 @@ export const useLanguageStore = defineStore('language', () => {
             langIcon: lang.langIcon
           }))
           .filter((lang: Language) => SUPPORTED_LOCALES.includes(lang.langCode))
-        console.log('[Language] 语言列表更新成功:', languageList.value)
+        //console.log('[Language] 语言列表更新成功:', languageList.value)
       } else {
         throw new Error('响应格式不正确')
       }

@@ -114,5 +114,111 @@ namespace Lean.Hbt.Application.Services.Workflow
         /// <param name="reason">终止原因</param>
         /// <returns>是否成功</returns>
         Task<bool> TerminateAsync(long id, string reason);
+
+        /// <summary>
+        /// 获取工作流实例选项列表
+        /// </summary>
+        /// <returns>工作流实例选项列表</returns>
+        Task<List<HbtSelectOption>> GetOptionsAsync();
+
+        /// <summary>
+        /// 获取当前用户的工作流实例
+        /// </summary>
+        /// <param name="status">状态筛选</param>
+        /// <param name="limit">限制数量</param>
+        /// <returns>当前用户的工作流实例列表</returns>
+        Task<List<HbtInstanceDto>> GetCurrentUserInstancesAsync(int? status = null, int limit = 20);
+
+        /// <summary>
+        /// 获取当前用户发起的工作流实例
+        /// </summary>
+        /// <param name="status">状态筛选</param>
+        /// <param name="limit">限制数量</param>
+        /// <returns>当前用户发起的工作流实例列表</returns>
+        Task<List<HbtInstanceDto>> GetCurrentUserInitiatedInstancesAsync(int? status = null, int limit = 20);
+
+        /// <summary>
+        /// 获取当前用户参与的工作流实例
+        /// </summary>
+        /// <param name="status">状态筛选</param>
+        /// <param name="limit">限制数量</param>
+        /// <returns>当前用户参与的工作流实例列表</returns>
+        Task<List<HbtInstanceDto>> GetCurrentUserParticipatedInstancesAsync(int? status = null, int limit = 20);
+
+        /// <summary>
+        /// 启动工作流实例
+        /// </summary>
+        /// <param name="input">启动参数</param>
+        /// <returns>工作流实例ID</returns>
+        Task<long> StartWorkflowAsync(HbtWorkflowStartDto input);
+
+        /// <summary>
+        /// 暂停工作流实例
+        /// </summary>
+        /// <param name="instanceId">工作流实例ID</param>
+        /// <returns>操作结果</returns>
+        Task<bool> SuspendWorkflowAsync(long instanceId);
+
+        /// <summary>
+        /// 恢复工作流实例
+        /// </summary>
+        /// <param name="instanceId">工作流实例ID</param>
+        /// <returns>操作结果</returns>
+        Task<bool> ResumeWorkflowAsync(long instanceId);
+
+        /// <summary>
+        /// 获取工作流实例状态
+        /// </summary>
+        /// <param name="instanceId">工作流实例ID</param>
+        /// <returns>工作流实例状态</returns>
+        Task<object> GetWorkflowStatusAsync(long instanceId);
+
+        /// <summary>
+        /// 获取可用转换
+        /// </summary>
+        /// <param name="instanceId">工作流实例ID</param>
+        /// <returns>可用转换列表</returns>
+        Task<List<object>> GetAvailableTransitionsAsync(long instanceId);
+
+        /// <summary>
+        /// 执行工作流转换
+        /// </summary>
+        /// <param name="input">转换执行参数</param>
+        /// <returns>转换结果</returns>
+        Task<bool> ExecuteTransitionAsync(HbtTransitionExecuteDto input);
+
+        /// <summary>
+        /// 获取工作流仪表盘统计数据
+        /// </summary>
+        /// <returns>仪表盘统计数据</returns>
+        Task<object> GetDashboardStatsAsync();
+
+        /// <summary>
+        /// 获取最近活动
+        /// </summary>
+        /// <returns>最近活动列表</returns>
+        Task<List<object>> GetRecentActivitiesAsync();
+
+        /// <summary>
+        /// 获取用户流程实例
+        /// </summary>
+        /// <param name="userId">用户ID</param>
+        /// <param name="status">状态筛选</param>
+        /// <returns>用户流程实例列表</returns>
+        Task<List<HbtInstanceDto>> GetUserWorkflowsAsync(long userId, int? status = null);
+
+        /// <summary>
+        /// 获取用户发起的流程实例
+        /// </summary>
+        /// <param name="userId">用户ID</param>
+        /// <returns>用户发起的流程实例列表</returns>
+        Task<List<HbtInstanceDto>> GetUserInitiatedWorkflowsAsync(long userId);
+
+        /// <summary>
+        /// 获取用户参与的流程实例
+        /// </summary>
+        /// <param name="userId">用户ID</param>
+        /// <returns>用户参与的流程实例列表</returns>
+        Task<List<HbtInstanceDto>> GetUserParticipatedWorkflowsAsync(long userId);
     }
 } 

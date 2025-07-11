@@ -165,7 +165,7 @@ const refreshStatus = () => {
 const updateTokenInfo = () => {
   if (typeof window !== 'undefined' && (window as any).HbtAutoLogout) {
     const tokenInfoData = (window as any).HbtAutoLogout.getTokenInfo()
-    console.log('[HbtAutoLogoutTest] Token信息:', tokenInfoData)
+    // 移除频繁的日志输出，只在开发环境且手动触发时输出
     tokenInfo.value = tokenInfoData
   }
 }
@@ -253,10 +253,10 @@ let statusInterval: NodeJS.Timeout | null = null
 onMounted(() => {
   refreshStatus()
   
-  // 每5秒更新一次状态
+  // 每30秒更新一次状态，减少不必要的更新
   statusInterval = setInterval(() => {
     refreshStatus()
-  }, 5000)
+  }, 30000)
 })
 
 onUnmounted(() => {

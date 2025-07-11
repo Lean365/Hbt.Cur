@@ -30,13 +30,17 @@
           <a-card :bordered="false" class="portal-card todo-card flex-card" style="margin-top:16px;">
             <a-tabs v-model:activeKey="activeTodoTab" size="large">
               <a-tab-pane v-for="tab in todoTabs" :key="tab.key" :tab="t(tab.label)">
-                <a-list :data-source="todoList[tab.key].slice(0,5)" :pagination="false">
+                <a-list :data-source="todoList[tab.key]" :pagination="false" :loading="loadingTodos">
                   <template #renderItem="{ item }">
                     <a-list-item>
                       <span class="todo-title">{{ item.title }}</span>
                       <span class="todo-type">{{ item.type }}</span>
+                      <span class="todo-priority" v-if="item.priority" :class="`priority-${item.priority}`">{{ item.priority }}</span>
                       <span class="todo-date">{{ item.date }}</span>
                     </a-list-item>
+                  </template>
+                  <template #default>
+                    <a-empty description="暂无数据" />
                   </template>
                 </a-list>
                 <div class="todo-pagination">
@@ -136,11 +140,16 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useUserStore } from '@/stores/user'
+import { getUserTaskStatusStats, getUserTodoList, getUserUrgeList } from '@/api/workflow/task'
 import { FileTextOutlined, FileExcelOutlined, FileImageOutlined, FilePptOutlined, FileZipOutlined, FileWordOutlined, VideoCameraOutlined } from '@ant-design/icons-vue'
 
 const { t } = useI18n()
+const userStore = useUserStore()
+const currentUser = computed(() => userStore.userInfo)
+
 const activeNewsTab = ref('company')
 const newsTabs = [
   { key: 'company', label: t('home.newstab.company.title') },
@@ -186,51 +195,164 @@ const newsData: { [key: string]: { title: string; date: string }[] } = {
     { title: t('home.newstab.rule.rule5'), date: '2019-06-04' }
   ]
 }
-const activeTodoTab = ref('todo')
+
+// 待办相关数据
+const activeTodoTab = ref('pending')
 const todoTabs = [
-  { key: 'todo', label: t('home.todotab.myTodo.title') },
-  { key: 'wait', label: t('home.todotab.myWait.title') },
-  { key: 'done', label: t('home.todotab.myDone.title') },
-  { key: 'read', label: t('home.todotab.myRead.title') },
-  { key: 'urge', label: t('home.todotab.myUrge.title') }
+  { key: 'pending', label: '待处理', status: 0 }, // 未处理状态
+  { key: 'processing', label: '处理中', status: 1 }, // 处理中状态
+  { key: 'completed', label: '已完成', status: 2 }, // 已完成状态
+  { key: 'overdue', label: '已逾期', urgeType: 'overdue' }, // 已逾期任务
+  { key: 'dueSoon', label: '即将到期', urgeType: 'duesoon' }, // 即将到期任务
+  { key: 'highPriority', label: '高优先级', urgeType: 'highpriority' } // 高优先级任务
 ]
-const todoList: { [key: string]: { title: string; type: string; date: string }[] } = {
-  todo: [
-    { title: t('home.todotab.myTodo.todo1'), type: t('home.todotab.todo.todoType1'), date: '2019-05-08' },
-    { title: t('home.todotab.myTodo.todo2'), type: t('home.todotab.todo.todoType2'), date: '2019-05-08' },
-    { title: t('home.todotab.myTodo.todo3'), type: t('home.todotab.todo.todoType1'), date: '2019-05-08' },
-    { title: t('home.todotab.myTodo.todo4'), type: t('home.todotab.todo.todoType2'), date: '2019-05-08' },
-    { title: t('home.todotab.myTodo.todo5'), type: t('home.todotab.todo.todoType1'), date: '2019-05-08' }
-  ],
-  wait: [
-    { title: t('home.todotab.myWait.wait1'), type: t('home.todotab.todo.todoType2'), date: '2019-05-08' },
-    { title: t('home.todotab.myWait.wait2'), type: t('home.todotab.todo.todoType1'), date: '2019-05-08' },
-    { title: t('home.todotab.myWait.wait3'), type: t('home.todotab.todo.todoType2'), date: '2019-05-08' },
-    { title: t('home.todotab.myWait.wait4'), type: t('home.todotab.todo.todoType1'), date: '2019-05-08' },
-    { title: t('home.todotab.myWait.wait5'), type: t('home.todotab.todo.todoType2'), date: '2019-05-08' }
-  ],
-  done: [
-    { title: t('home.todotab.myDone.done1'), type: t('home.todotab.todo.todoType2'), date: '2019-05-08' },
-    { title: t('home.todotab.myDone.done2'), type: t('home.todotab.todo.todoType1'), date: '2019-05-08' },
-    { title: t('home.todotab.myDone.done3'), type: t('home.todotab.todo.todoType2'), date: '2019-05-08' },
-    { title: t('home.todotab.myDone.done4'), type: t('home.todotab.todo.todoType1'), date: '2019-05-08' },
-    { title: t('home.todotab.myDone.done5'), type: t('home.todotab.todo.todoType2'), date: '2019-05-08' }
-  ],
-  read: [
-    { title: t('home.todotab.myRead.read1'), type: t('home.todotab.todo.todoType2'), date: '2019-05-08' },
-    { title: t('home.todotab.myRead.read2'), type: t('home.todotab.todo.todoType1'), date: '2019-05-08' },
-    { title: t('home.todotab.myRead.read3'), type: t('home.todotab.todo.todoType2'), date: '2019-05-08' },
-    { title: t('home.todotab.myRead.read4'), type: t('home.todotab.todo.todoType1'), date: '2019-05-08' },
-    { title: t('home.todotab.myRead.read5'), type: t('home.todotab.todo.todoType2'), date: '2019-05-08' }
-  ],
-  urge: [
-    { title: t('home.todotab.myUrge.urge1'), type: t('home.todotab.todo.todoType2'), date: '2019-05-08' }, 
-    { title: t('home.todotab.myUrge.urge2'), type: t('home.todotab.todo.todoType1'), date: '2019-05-08' },
-    { title: t('home.todotab.myUrge.urge3'), type: t('home.todotab.todo.todoType2'), date: '2019-05-08' },
-    { title: t('home.todotab.myUrge.urge4'), type: t('home.todotab.todo.todoType1'), date: '2019-05-08' },
-    { title: t('home.todotab.myUrge.urge5'), type: t('home.todotab.todo.todoType2'), date: '2019-05-08' }
-  ]
+
+const todoList = ref<{ [key: string]: { title: string; type: string; date: string; priority?: string }[] }>({
+  pending: [],
+  processing: [],
+  completed: [],
+  overdue: [],
+  dueSoon: [],
+  highPriority: []
+})
+
+const todoStats = ref({
+  pendingCount: 0,
+  processingCount: 0,
+  completedCount: 0,
+  overdueCount: 0,
+  dueSoonCount: 0,
+  highPriorityCount: 0,
+  totalCount: 0
+})
+
+const loadingTodos = ref(false)
+
+// 获取用户待办数据
+const loadUserTodos = async () => {
+  if (!currentUser.value?.userId) return
+  
+  loadingTodos.value = true
+  try {
+    // 获取待办统计
+    const statsRes = await getUserTaskStatusStats(currentUser.value.userId)
+    if (statsRes.data.code === 200) {
+      const stats = statsRes.data.data
+      todoStats.value = {
+        pendingCount: stats.todoCount,
+        processingCount: stats.waitCount,
+        completedCount: stats.doneCount,
+        overdueCount: stats.overdueCount,
+        dueSoonCount: stats.dueSoonCount,
+        highPriorityCount: stats.highPriorityCount,
+        totalCount: stats.totalCount
+      }
+    }
+
+    // 获取各状态待办列表
+    const [pendingRes, processingRes, completedRes, overdueRes, dueSoonRes, highPriorityRes] = await Promise.all([
+      getUserTodoList(currentUser.value.userId, 0, 5), // 待处理
+      getUserTodoList(currentUser.value.userId, 1, 5), // 处理中
+      getUserTodoList(currentUser.value.userId, 2, 5), // 已完成
+      getUserUrgeList(currentUser.value.userId, 'overdue', 5), // 已逾期
+      getUserUrgeList(currentUser.value.userId, 'duesoon', 5), // 即将到期
+      getUserUrgeList(currentUser.value.userId, 'highpriority', 5) // 高优先级
+    ])
+
+    // 转换数据格式
+    if (pendingRes.data.code === 200) {
+      todoList.value.pending = pendingRes.data.data.map((item: any) => ({
+        title: item.taskName,
+        type: getTaskTypeText(item.taskType),
+        date: formatDate(item.createTime),
+        priority: getPriorityText(item.priority)
+      }))
+    }
+
+    if (processingRes.data.code === 200) {
+      todoList.value.processing = processingRes.data.data.map((item: any) => ({
+        title: item.taskName,
+        type: getTaskTypeText(item.taskType),
+        date: formatDate(item.createTime),
+        priority: getPriorityText(item.priority)
+      }))
+    }
+
+    if (completedRes.data.code === 200) {
+      todoList.value.completed = completedRes.data.data.map((item: any) => ({
+        title: item.taskName,
+        type: getTaskTypeText(item.taskType),
+        date: formatDate(item.completeTime || item.createTime),
+        priority: getPriorityText(item.priority)
+      }))
+    }
+
+    if (overdueRes.data.code === 200) {
+      todoList.value.overdue = overdueRes.data.data.map((item: any) => ({
+        title: item.taskName,
+        type: getTaskTypeText(item.taskType),
+        date: formatDate(item.dueTime),
+        priority: getPriorityText(item.priority)
+      }))
+    }
+
+    if (dueSoonRes.data.code === 200) {
+      todoList.value.dueSoon = dueSoonRes.data.data.map((item: any) => ({
+        title: item.taskName,
+        type: getTaskTypeText(item.taskType),
+        date: formatDate(item.dueTime),
+        priority: getPriorityText(item.priority)
+      }))
+    }
+
+    if (highPriorityRes.data.code === 200) {
+      todoList.value.highPriority = highPriorityRes.data.data.map((item: any) => ({
+        title: item.taskName,
+        type: getTaskTypeText(item.taskType),
+        date: formatDate(item.createTime),
+        priority: getPriorityText(item.priority)
+      }))
+    }
+  } catch (error) {
+    console.error('获取用户待办失败:', error)
+  } finally {
+    loadingTodos.value = false
+  }
 }
+
+// 获取任务类型文本
+const getTaskTypeText = (taskType: number) => {
+  switch (taskType) {
+    case 1: return '审批'
+    case 2: return '会签'
+    case 3: return '通知'
+    case 4: return '填写'
+    default: return '其他'
+  }
+}
+
+// 获取优先级文本
+const getPriorityText = (priority: number) => {
+  switch (priority) {
+    case 0: return '低'
+    case 1: return '中'
+    case 2: return '高'
+    default: return '低'
+  }
+}
+
+// 格式化日期
+const formatDate = (dateStr: string) => {
+  if (!dateStr) return ''
+  const date = new Date(dateStr)
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
+}
+
+// 页面加载时获取数据
+onMounted(() => {
+  loadUserTodos()
+})
+
 const activeFileTab = ref('file')
 const fileList: { [key: string]: { icon: any; title: string; date: string }[] } = {
   file: [
@@ -384,6 +506,10 @@ const carList = [
   margin-right: 8px;
   white-space: nowrap;
 }
+.todo-priority {
+  margin-right: 8px;
+  white-space: nowrap;
+}
 .todo-date {
   font-size: 12px;
   white-space: nowrap;
@@ -391,6 +517,18 @@ const carList = [
 .todo-pagination {
   margin-top: 8px;
   text-align: right;
+}
+.priority-高 {
+  color: #ff4d4f;
+  font-weight: bold;
+}
+.priority-中 {
+  color: #faad14;
+  font-weight: bold;
+}
+.priority-低 {
+  color: #52c41a;
+  font-weight: bold;
 }
 .card-header {
   display: flex;

@@ -364,12 +364,18 @@ export default {
       batchEdit: 'Пакетное редактирование',  // @btn-batch-edit-color
       batchUpdate: 'Пакетное обновление', // @btn-batch-update-color
 
-      // === Кнопки управления статусом ===
-      audit: 'Проверка',         // @btn-audit-color
-      revoke: 'Отменить',       // @btn-revoke-color
-      stop: 'Остановить',          // @btn-stop-color
-      run: 'Запустить',          // @btn-run-color
-      force: 'Принудительно',          // @btn-forced-color
+      // === Кнопки операций состояния ===
+      audit: 'Проверка',     // @btn-audit-color
+      revoke: 'Отозвать',    // @btn-revoke-color
+      stop: 'Остановить',    // @btn-stop-color
+      run: 'Запустить',      // @btn-run-color
+      force: 'Принудительно', // @btn-forced-color
+      start: 'Запустить',    // @btn-start-color
+      suspend: 'Приостановить', // @btn-suspend-color
+      resume: 'Возобновить', // @btn-resume-color
+      submit: 'Отправить',   // @btn-submit-color
+      withdraw: 'Отозвать',  // @btn-withdraw-color
+      terminate: 'Завершить', // @btn-terminate-color
 
       // === Системные кнопки ===
       generate: 'Сгенерировать',      // @btn-generate-color

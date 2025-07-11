@@ -58,7 +58,7 @@ const theme = computed(() => themeStore.isDarkMode ? 'dark' : 'light')
 <style lang="less" scoped>
 .basic-layout {
   min-height: 100vh;
-  background-color: var(--ant-color-bg-layout);
+  //background-color: var(--ant-color-bg-layout);
 
   .sider {
     position: fixed;
@@ -109,7 +109,7 @@ const theme = computed(() => themeStore.isDarkMode ? 'dark' : 'light')
   .main-container {
     margin-left: 240px;
     transition: all 0.3s;
-    background-color: var(--ant-color-bg-layout);
+    //background-color: var(--ant-color-bg-layout);
 
     &.collapsed {
       margin-left: 48px;
@@ -121,7 +121,7 @@ const theme = computed(() => themeStore.isDarkMode ? 'dark' : 'light')
       margin-top: 64px;
       display: flex;
       flex-direction: column;
-      background-color: var(--ant-color-bg-layout);
+      //background-color: var(--ant-color-bg-layout);
 
       .breadcrumb {
         padding: 16px 24px;
@@ -131,7 +131,7 @@ const theme = computed(() => themeStore.isDarkMode ? 'dark' : 'light')
       .content {
         flex: 1;
         padding: 24px;
-        background-color: var(--ant-color-bg-layout);
+        //background-color: var(--ant-color-bg-layout);
       }
     }
   }

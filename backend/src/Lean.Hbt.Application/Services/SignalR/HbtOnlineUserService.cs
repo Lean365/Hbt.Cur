@@ -7,20 +7,8 @@
 // 描述    : 在线用户服务实现
 //===================================================================
 
-using System;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using System.Linq.Expressions;
-using Microsoft.AspNetCore.Http;
-using Lean.Hbt.Common.Models;
-using Lean.Hbt.Domain.Entities.SignalR;
-using Lean.Hbt.Application.Dtos.SignalR;
-using Lean.Hbt.Common.Exceptions;
-using Lean.Hbt.Common.Helpers;
-using Lean.Hbt.Domain.Repositories;
-using SqlSugar;
-using Mapster;
 using Lean.Hbt.Domain.IServices.SignalR;
+using Microsoft.AspNetCore.Http;
 
 namespace Lean.Hbt.Application.Services.SignalR;
 
@@ -33,28 +21,29 @@ namespace Lean.Hbt.Application.Services.SignalR;
 /// </remarks>
 public class HbtOnlineUserService : HbtBaseService, IHbtOnlineUserService
 {
-    private readonly IHbtRepository<HbtOnlineUser> _repository;
+    private readonly IHbtRepositoryFactory _repositoryFactory;
     private readonly IHbtSignalRUserService _signalRUserService;
+
+    private IHbtRepository<HbtOnlineUser> Repository => _repositoryFactory.GetAuthRepository<HbtOnlineUser>();
 
     /// <summary>
     /// 构造函数
     /// </summary>
     /// <param name="logger">日志服务</param>
-    /// <param name="repository">在线用户仓储</param>
+    /// <param name="repositoryFactory">仓储工厂</param>
     /// <param name="httpContextAccessor">HTTP上下文访问器</param>
+    /// <param name="signalRUserService">SignalR用户服务</param>
     /// <param name="currentUser">当前用户服务</param>
-    /// <param name="currentTenant">当前租户服务</param>
     /// <param name="localization">本地化服务</param>
     public HbtOnlineUserService(
         IHbtLogger logger,
-        IHbtRepository<HbtOnlineUser> repository,
+        IHbtRepositoryFactory repositoryFactory,
         IHttpContextAccessor httpContextAccessor,
         IHbtSignalRUserService signalRUserService,
         IHbtCurrentUser currentUser,
-        IHbtCurrentTenant currentTenant,
-        IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, currentTenant, localization)
+        IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
     {
-        _repository = repository;
+        _repositoryFactory = repositoryFactory ?? throw new ArgumentNullException(nameof(repositoryFactory));
         _signalRUserService = signalRUserService;
     }
 
@@ -68,10 +57,10 @@ public class HbtOnlineUserService : HbtBaseService, IHbtOnlineUserService
         try
         {
             // 1.构建查询条件
-            var exp = KpUserQueryExpression(query);
+            var exp = QueryExpression(query);
 
             // 2.查询数据
-            var result = await _repository.GetPagedListAsync(
+            var result = await Repository.GetPagedListAsync(
                 exp,
                 query.PageIndex,
                 query.PageSize,
@@ -118,7 +107,7 @@ public class HbtOnlineUserService : HbtBaseService, IHbtOnlineUserService
             if (query.OnlineStatus.HasValue)
                 exp = exp.And(u => u.OnlineStatus == query.OnlineStatus.Value);
 
-            var list = await _repository.GetListAsync(exp.ToExpression());
+            var list = await Repository.GetListAsync(exp.ToExpression());
             return await HbtExcelHelper.ExportAsync(list.Adapt<List<HbtOnlineUserExportDto>>(), sheetName, L("User.ExportTitle"));
         }
         catch (Exception ex)
@@ -135,7 +124,7 @@ public class HbtOnlineUserService : HbtBaseService, IHbtOnlineUserService
     {
         try
         {
-            var user = await _repository.GetByIdAsync(id);
+            var user = await Repository.GetByIdAsync(id);
             if (user == null)
                 throw new HbtException(L("User.NotFound", id));
 
@@ -159,7 +148,7 @@ public class HbtOnlineUserService : HbtBaseService, IHbtOnlineUserService
             user.LastActivity = DateTime.Now;
             user.OnlineStatus = 0; // 设置为在线状态
             user.ClientIp = _httpContextAccessor.HttpContext?.Connection?.RemoteIpAddress?.ToString();
-            var result = await _repository.CreateAsync(user);
+            var result = await Repository.CreateAsync(user);
             if (result <= 0)
                 throw new HbtException(L("User.SaveFailed"));
 
@@ -179,11 +168,11 @@ public class HbtOnlineUserService : HbtBaseService, IHbtOnlineUserService
     {
         try
         {
-            var user = await _repository.GetByIdAsync(id);
+            var user = await Repository.GetByIdAsync(id);
             if (user == null)
                 throw new HbtException(L("User.NotFound", id));
 
-            var result = await _repository.DeleteAsync(id);
+            var result = await Repository.DeleteAsync(id);
             if (result <= 0)
                 throw new HbtException(L("User.DeleteFailed"));
 
@@ -207,7 +196,7 @@ public class HbtOnlineUserService : HbtBaseService, IHbtOnlineUserService
             var exp = Expressionable.Create<HbtOnlineUser>();
             exp.And(u => u.LastActivity < expiredTime && u.OnlineStatus == 0);
 
-            return await _repository.DeleteAsync(exp.ToExpression());
+            return await Repository.DeleteAsync(exp.ToExpression());
         }
         catch (Exception ex)
         {
@@ -223,14 +212,14 @@ public class HbtOnlineUserService : HbtBaseService, IHbtOnlineUserService
     {
         try
         {
-            var user = await _repository.GetByIdAsync(id);
+            var user = await Repository.GetByIdAsync(id);
             if (user == null)
                 throw new HbtException(L("User.NotFound", id));
 
             user.LastActivity = DateTime.Now;
             user.OnlineStatus = 0; // 设置为在线状态
             user.ClientIp = _httpContextAccessor.HttpContext?.Connection?.RemoteIpAddress?.ToString();
-            var result = await _repository.UpdateAsync(user);
+            var result = await Repository.UpdateAsync(user);
             if (result <= 0)
                 throw new HbtException(L("User.UpdateFailed"));
 
@@ -250,14 +239,14 @@ public class HbtOnlineUserService : HbtBaseService, IHbtOnlineUserService
     {
         try
         {
-            var user = await _repository.GetByIdAsync(id);
+            var user = await Repository.GetByIdAsync(id);
             if (user == null)
                 throw new HbtException(L("User.NotFound", id));
 
             user.LastActivity = DateTime.Now;
             user.OnlineStatus = 1; // 设置为离线状态
             user.ClientIp = _httpContextAccessor.HttpContext?.Connection?.RemoteIpAddress?.ToString();
-            var result = await _repository.UpdateAsync(user);
+            var result = await Repository.UpdateAsync(user);
             if (result <= 0)
                 throw new HbtException(L("User.ForceOfflineFailed"));
 
@@ -275,7 +264,7 @@ public class HbtOnlineUserService : HbtBaseService, IHbtOnlineUserService
     /// </summary>
     public async Task<List<string>> GetConnectionIdsAsync(long userId)
     {
-        var users = await _repository.GetListAsync(u => u.UserId == userId);
+        var users = await Repository.GetListAsync(u => u.UserId == userId);
         return users.Select(u => u.ConnectionId).ToList();
     }
 
@@ -284,7 +273,7 @@ public class HbtOnlineUserService : HbtBaseService, IHbtOnlineUserService
     /// </summary>
     public async Task<List<string>> GetGroupConnectionIdsAsync(long groupId)
     {
-        var users = await _repository.GetListAsync(u => u.GroupId == groupId);
+        var users = await Repository.GetListAsync(u => u.GroupId == groupId);
         return users.Select(u => u.ConnectionId).ToList();
     }
 
@@ -296,7 +285,7 @@ public class HbtOnlineUserService : HbtBaseService, IHbtOnlineUserService
         var exp = Expressionable.Create<HbtOnlineUser>();
         exp = exp.And(u => u.ConnectionId == connectionId);
 
-        var user = await _repository.GetFirstAsync(exp.ToExpression());
+        var user = await Repository.GetFirstAsync(exp.ToExpression());
         return user?.Adapt<HbtOnlineUserDto>();
     }
 
@@ -307,7 +296,7 @@ public class HbtOnlineUserService : HbtBaseService, IHbtOnlineUserService
     {
         // 由于DTO和实体字段相同，直接使用相同的lambda表达式
         var exp = predicate.Compile();
-        var users = await _repository.GetListAsync();
+        var users = await Repository.GetListAsync();
         var dtos = users.Select(x => x.Adapt<HbtOnlineUserDto>());
         return dtos.FirstOrDefault(exp);
     }
@@ -321,7 +310,7 @@ public class HbtOnlineUserService : HbtBaseService, IHbtOnlineUserService
         user.LastActivity = DateTime.Now;
         user.OnlineStatus = 0; // 设置为在线状态
         user.ClientIp = _httpContextAccessor.HttpContext?.Connection?.RemoteIpAddress?.ToString();
-        return await _repository.UpdateAsync(user) > 0;
+        return await Repository.UpdateAsync(user) > 0;
     }
 
     /// <summary>
@@ -329,7 +318,7 @@ public class HbtOnlineUserService : HbtBaseService, IHbtOnlineUserService
     /// </summary>
     public async Task<List<HbtOnlineUserDto>> GetAllAsync()
     {
-        var users = await _repository.GetListAsync();
+        var users = await Repository.GetListAsync();
         return users.Select(x => x.Adapt<HbtOnlineUserDto>()).ToList();
     }
 
@@ -338,7 +327,7 @@ public class HbtOnlineUserService : HbtBaseService, IHbtOnlineUserService
     /// </summary>
     public async Task<int> UpdateHeartbeatAsync()
     {
-        var users = await _repository.GetListAsync();
+        var users = await Repository.GetListAsync();
         if (!users.Any()) return 0;
 
         foreach (var user in users)
@@ -350,7 +339,7 @@ public class HbtOnlineUserService : HbtBaseService, IHbtOnlineUserService
             user.UpdateTime = DateTime.Now;
         }
 
-        return await _repository.UpdateRangeAsync(users);
+        return await Repository.UpdateRangeAsync(users);
     }
 
     /// <summary>
@@ -364,7 +353,7 @@ public class HbtOnlineUserService : HbtBaseService, IHbtOnlineUserService
             user.LastActivity = DateTime.Now;
             user.OnlineStatus = 0; // 设置为在线状态
             user.ClientIp = _httpContextAccessor.HttpContext?.Connection?.RemoteIpAddress?.ToString();
-            var result = await _repository.CreateAsync(user);
+            var result = await Repository.CreateAsync(user);
             return result > 0;
         }
         catch (Exception ex)
@@ -378,13 +367,13 @@ public class HbtOnlineUserService : HbtBaseService, IHbtOnlineUserService
     /// 删除在线用户
     /// </summary>
     public async Task<bool> DeleteOnlineUserAsync(string connectionId, string deleteBy)
-        {
+    {
         try
         {
             var exp = Expressionable.Create<HbtOnlineUser>();
             exp.And(u => u.ConnectionId == connectionId);
 
-            var user = await _repository.GetFirstAsync(exp.ToExpression());
+            var user = await Repository.GetFirstAsync(exp.ToExpression());
             if (user != null)
             {
                 _logger.Info("正在强制用户下线: ConnectionId={ConnectionId}, UserId={UserId}", connectionId, user.UserId);
@@ -409,7 +398,7 @@ public class HbtOnlineUserService : HbtBaseService, IHbtOnlineUserService
                     user.ClientIp = _httpContextAccessor.HttpContext?.Connection?.RemoteIpAddress?.ToString();
                     user.IsDeleted = 1;//管理员强制下线，删除标记
                     user.Remark = "被" + deleteBy + "要求强制下线";
-                    await _repository.UpdateAsync(user);
+                    await Repository.UpdateAsync(user);
                     _logger.Info("已更新用户状态为离线: ConnectionId={ConnectionId}", connectionId);
                 }
                 catch (Exception ex)
@@ -440,10 +429,10 @@ public class HbtOnlineUserService : HbtBaseService, IHbtOnlineUserService
             throw;
         }
     }
-        /// <summary>
+    /// <summary>
     /// 构建在线用户查询表达式
     /// </summary>
-    private Expression<Func<HbtOnlineUser, bool>> KpUserQueryExpression(HbtOnlineUserQueryDto query)
+    private Expression<Func<HbtOnlineUser, bool>> QueryExpression(HbtOnlineUserQueryDto query)
     {
         var exp = Expressionable.Create<HbtOnlineUser>();
 

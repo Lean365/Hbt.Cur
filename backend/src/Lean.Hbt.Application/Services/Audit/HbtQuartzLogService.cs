@@ -9,11 +9,6 @@
 // 描述    : 定时任务日志服务实现
 //===================================================================
 
-using System.Linq.Expressions;
-using Lean.Hbt.Application.Dtos.Audit;
-using Lean.Hbt.Domain.Entities.Audit;
-using Lean.Hbt.Domain.IServices.Extensions;
-using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Http;
 
 namespace Lean.Hbt.Application.Services.Audit
@@ -27,40 +22,25 @@ namespace Lean.Hbt.Application.Services.Audit
     /// </remarks>
     public class HbtQuartzLogService : HbtBaseService, IHbtQuartzLogService
     {
-        private readonly IHbtRepository<HbtQuartzLog> _quartzLogRepository;
+        private readonly IHbtRepositoryFactory _repositoryFactory;
+        private IHbtRepository<HbtQuartzLog> QuartzLogRepository => _repositoryFactory.GetAuthRepository<HbtQuartzLog>();
 
         /// <summary>
         /// 构造函数
         /// </summary>
-        /// <param name="quartzLogRepository">定时任务日志仓储</param>
+        /// <param name="repositoryFactory">定时任务日志仓储</param>
         /// <param name="logger">日志服务</param>
         /// <param name="httpContextAccessor">HTTP上下文访问器</param>
         /// <param name="currentUser">当前用户服务</param>
-        /// <param name="currentTenant">当前租户服务</param>
         /// <param name="localization">本地化服务</param>
         public HbtQuartzLogService(
-            IHbtRepository<HbtQuartzLog> quartzLogRepository,
+            IHbtRepositoryFactory repositoryFactory,
             IHbtLogger logger,
             IHttpContextAccessor httpContextAccessor,
             IHbtCurrentUser currentUser,
-            IHbtCurrentTenant currentTenant,
-            IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, currentTenant, localization)
+            IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
         {
-            _quartzLogRepository = quartzLogRepository ?? throw new ArgumentNullException(nameof(quartzLogRepository));
-        }
-
-        /// <summary>
-        /// 构建查询条件
-        /// </summary>
-        private Expression<Func<HbtQuartzLog, bool>> KpQuartzLogQueryExpression(HbtQuartzLogQueryDto query)
-        {
-            return Expressionable.Create<HbtQuartzLog>()
-                .AndIF(!string.IsNullOrEmpty(query.LogTaskName), x => x.LogTaskName.Contains(query.LogTaskName!))
-                .AndIF(!string.IsNullOrEmpty(query.LogGroupName), x => x.LogGroupName.Contains(query.LogGroupName!))
-                .AndIF(query.LogStatus.HasValue, x => x.LogStatus == query.LogStatus.Value)
-                .AndIF(query.BeginTime.HasValue, x => x.CreateTime >= query.BeginTime.Value)
-                .AndIF(query.EndTime.HasValue, x => x.CreateTime <= query.EndTime.Value)
-                .ToExpression();
+            _repositoryFactory = repositoryFactory ?? throw new ArgumentNullException(nameof(repositoryFactory));
         }
 
         /// <summary>
@@ -72,8 +52,8 @@ namespace Lean.Hbt.Application.Services.Audit
         {
             query ??= new HbtQuartzLogQueryDto();
 
-            var result = await _quartzLogRepository.GetPagedListAsync(
-                KpQuartzLogQueryExpression(query),
+            var result = await QuartzLogRepository.GetPagedListAsync(
+                QueryExpression(query),
                 query.PageIndex,
                 query.PageSize,
                 x => x.CreateTime,
@@ -95,7 +75,7 @@ namespace Lean.Hbt.Application.Services.Audit
         /// <returns>返回定时任务日志详情</returns>
         public async Task<HbtQuartzLogDto> GetByIdAsync(long logId)
         {
-            var log = await _quartzLogRepository.GetByIdAsync(logId);
+            var log = await QuartzLogRepository.GetByIdAsync(logId);
             return log == null ? throw new HbtException(L("Audit.QuartzLog.NotFound", logId)) : log.Adapt<HbtQuartzLogDto>();
         }
 
@@ -109,7 +89,7 @@ namespace Lean.Hbt.Application.Services.Audit
         {
             try
             {
-                var list = await _quartzLogRepository.GetListAsync(KpQuartzLogQueryExpression(query));
+                var list = await QuartzLogRepository.GetListAsync(QueryExpression(query));
                 return await HbtExcelHelper.ExportAsync(list.Adapt<List<HbtQuartzLogExportDto>>(), sheetName, L("Audit.QuartzLog.ExportTitle"));
             }
             catch (Exception ex)
@@ -127,7 +107,7 @@ namespace Lean.Hbt.Application.Services.Audit
         {
             try
             {
-                var result = await _quartzLogRepository.DeleteAsync((Expression<Func<HbtQuartzLog, bool>>)(x => true));
+                var result = await QuartzLogRepository.DeleteAsync((Expression<Func<HbtQuartzLog, bool>>)(x => true));
                 return result > 0;
             }
             catch (Exception ex)
@@ -135,6 +115,20 @@ namespace Lean.Hbt.Application.Services.Audit
                 _logger.Error(L("Audit.QuartzLog.ClearFailed", ex.Message), ex);
                 throw new HbtException(L("Audit.QuartzLog.ClearFailed"));
             }
+
+        }
+        /// <summary>
+        /// 构建查询条件
+        /// </summary>
+        private Expression<Func<HbtQuartzLog, bool>> QueryExpression(HbtQuartzLogQueryDto query)
+        {
+            return Expressionable.Create<HbtQuartzLog>()
+                .AndIF(!string.IsNullOrEmpty(query.QuartzName), x => x.QuartzName.Contains(query.QuartzName!))
+                .AndIF(!string.IsNullOrEmpty(query.QuartzGroupName), x => x.QuartzGroupName.Contains(query.QuartzGroupName!))
+                .AndIF(query.Status.HasValue, x => x.Status == query.Status.Value)
+                .AndIF(query.BeginTime.HasValue, x => x.CreateTime >= query.BeginTime.Value)
+                .AndIF(query.EndTime.HasValue, x => x.CreateTime <= query.EndTime.Value)
+                .ToExpression();
         }
     }
 }

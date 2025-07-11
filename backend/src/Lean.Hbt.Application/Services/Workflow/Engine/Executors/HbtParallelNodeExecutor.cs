@@ -34,7 +34,8 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine.Executors
         public HbtParallelNodeExecutor(
             IHbtRepository<HbtTransition> transitionRepository,
             IHbtRepository<HbtParallelBranch> parallelBranchRepository,
-            IHbtLogger logger) : base(logger)
+            IHbtLogger logger,
+            IHbtRepository<HbtNodeTemplate> nodeTemplateRepository) : base(logger, nodeTemplateRepository)
         {
             _transitionRepository = transitionRepository;
             _parallelBranchRepository = parallelBranchRepository;
@@ -54,7 +55,7 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine.Executors
             Dictionary<string, object>? variables = null)
         {
             // 获取所有并行分支
-            var transitions = await _transitionRepository.GetListAsync(x => x.SourceNodeId == node.Id);
+            var transitions = await _transitionRepository.GetListAsync(x => x.SourceActivityId == node.NodeTemplateId);
             if (!transitions.Any())
             {
                 return CreateFailureResult("并行节点没有配置分支转换");

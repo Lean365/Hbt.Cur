@@ -1,3 +1,4 @@
+import { CiCircleFilled } from "@ant-design/icons-vue";
 import { countReset } from "node:console";
 
 export default {
@@ -19,12 +20,7 @@ export default {
       terms: '服务条款',
       index: '关于Hbt'
     },
-    core: {
-      _self: '核心管理',
-      config: '系统配置',
-      language: '语言管理',
-      dict: '字典管理',
-    },
+
     identity: {
       _self: '身份认证',
       user: '用户管理',
@@ -49,6 +45,8 @@ export default {
     },
     workflow: {
       _self: '工作流程',
+      overview: '流程总览',
+      my: '我的流程',
       form: '表单管理',
       definition: '流程定义',
       instance: '流程实例',
@@ -72,6 +70,88 @@ export default {
     },
     routine: {
       _self: '日常办公',
+      core: {
+        _self: '基础服务',
+        numberrule: '编码规则',
+        config: '系统配置',
+        language: '语言管理',
+        dict: '字典管理',
+      },
+      contract: {
+        _self: '合同管理',
+        template:{
+          _self: '合同模板',
+          manage: '模板管理',
+          category: '模板分类',
+        },
+        draft: {
+          _self: '合同起草',
+          apply: '起草申请',
+          my: '我的起草',
+        },
+        approval: {
+          _self: '合同审批',
+          pending: '合同审批',
+          approved: '已审批',
+          record: '审批记录',
+        },
+        execution: {
+          _self: '合同执行',
+          track: '执行跟踪',
+          change: '变更管理',
+          payment: '付款管理',
+        },
+        archive: {
+          _self: '合同归档',
+          manage: '归档管理',
+          query: '查询统计',
+        },
+      },
+      project: {
+        _self: '项目管理',
+        info:{
+          _self: '项目信息',
+          list: '项目列表',
+        },
+        plan:{
+          _self: '项目计划',
+          request: '计划请求',
+          gantt: '项目甘特图',
+        },
+        task:{
+          _self: '项目任务',
+          assign: '任务分配',
+          track: '任务跟踪',
+          board: '任务看板',
+        },
+        resource:{
+          _self: '项目资源',
+          personnel: '人员管理',
+          equipment: '设备管理',
+          budget: '预算管理',
+        },
+        monitor:{
+          _self: '项目监控',
+          progress: '进度监控',
+          quality: '质量监控',
+          risk: '风险监控',
+        },
+      },
+      quartz: {
+        _self: '任务调度',
+        job: {
+          _self: '任务管理',
+          config: '任务配置',
+          list: '任务列表',
+          status: '任务状态',
+        },
+        schedule: {
+          _self: '任务调度',
+          config: '调度配置',
+          monitor: '调度监控',
+          stats: '调度统计',
+        },
+      },
       schedule: {
         _self: '日程管理',
         myschedule: '我的日程',
@@ -79,10 +159,16 @@ export default {
       },
       car: {
         _self: '用车管理',
-        info: '车辆信息',
+        my: '我的用车',
+        
         application: '用车申请',
         dashboard: '用车看板',
-        maintenance: '车辆保养',
+        management:{
+          _self: '车管管理',
+          info: '车辆信息',
+          maintenance: '车辆保养',
+        }
+
       },
       email: {
         _self: '邮件管理',
@@ -168,6 +254,16 @@ export default {
     },
     file:{
       _self: '文件管理',
+      news:{
+        _self: '新闻管理',
+        list: '新闻列表',
+      },
+      regulation:{
+        _self: '规章制度',
+        publish: '发布',
+        signoff: '签收',
+        list: '规章制度',
+      },
       daily: {
         _self: '日常文件',
         list: '文件列表',
@@ -235,9 +331,9 @@ export default {
 
     },
   },
-    finance: {
+  accounting: {
       _self: '会计核算',
-      accounting: {
+      financial: {
         _self: '管理会计',
         company: "公司信息",
         account: '会计科目',
@@ -369,24 +465,55 @@ export default {
           _self: 'OPH管理',
           workshop1: {
             _self: '制一课',
-            output: '生产日报',
-            defect: '生产不良',
-            worktime: '生产工数',
+            epp: 'EPP生产',
+            oph: '生产OPH',
+            modify: '生产改修',
+            rework: '生产返工',
+            eppDefect: 'EPP不良',
+            productionDefect: '生产不良',
+            modifyDefect: '改修不良',
+            reworkDefect: '返工不良',
+            eppWorktime: 'EPP工数',
+            productionWorktime: '生产工数',
+            modifyWorktime: '修改工数',
+            reworkWorktime: '返工工数',
             productionReport: '生产报表',
             defectSummary: '不良集计',
             worktimeReport: '工时报表'
           },
           workshop2: {
             _self: '制二课',
-            output: '生产日报',
-            inspection: '检查记录',
-            repair: '修理记录',
-            worktime: '生产工数',
+            epp: 'EPP生产',
+            oph: '生产OPH',
+            modify: '生产改修',
+            rework: '生产返工',
+            eppInspection: 'EPP检查',
+            productionInspection: '生产检查',
+            modifyInspection: '改修检查',
+            reworkInspection: '返工检查',
+            eppRepair: 'EPP修理',
+            productionRepair: '生产修理',
+            modifyRepair: '改修修理',
+            reworkRepair: '返工修理',
+            eppWorktime: 'EPP工数',
+            productionWorktime: '生产工数',
+            modifyWorktime: '修改工数',
+            reworkWorktime: '返工工数',
             productionReport: '生产报表',
-            inspectionReport: '检查报表',
-            repairReport: '修理报表',
+            defectSummary: '不良集计',
             worktimeReport: '工时报表'
           }
+        },
+        sop: {
+          _self: 'SOP管理',
+          workshop1: '制一课',
+          workshop2: '制二课',
+        },
+        techcontact: {
+          _self: '技联管理',
+          epp: 'EPP联络',
+          engineering: '工程设变',
+          external: '外部联络',
         }
 
       },
@@ -416,61 +543,105 @@ export default {
       },
       service: {
         _self: '客户服务',
-        item: '服务项目',
-        contract: '服务合同',
-        request: '服务请求',
-        workorder: '服务工单',
-        timesheet: '工时记录',
-        consumption: '物料消耗',
-        outsourcing: '外协服务'
-
-      },
-      complaint: {
-        _self: '客诉管理',
-        notice: '质量通知单',
-        mark: '客诉明细',
-        analysis: '原因分析',
-        corrective: '纠正措施',
-        return: '退换货执行',
-        followUp: '跟进处理'
-      }
+        cs: {
+          _self: '客户服务',
+          item: '服务项目',
+          contract: '服务合同',
+          request: '服务请求',
+          workorder: '服务工单',
+        },
+        cc: {
+          _self: '客诉管理',
+          notice: '质量通知单',
+          mark: '客诉明细',
+          analysis: '原因分析',
+          corrective: '纠正措施',
+          return: '退换货执行',
+          followUp: '跟进处理'
+        }
     },
-    humanResources: {
-      _self: '人力资源管理',
-      employeeManagement: {
-        _self: '员工管理',
-        employeeMaster: '员工主数据',
-        attendance: '考勤管理',
-        leave: '请假管理',
-        payroll: '薪资管理',
-        contractManagement: '合同管理' // 新增合同管理
+  },
+    hrm: {
+      _self: '人力资源',
+      attendance: {
+        _self: '考勤管理',
+        record: '考勤记录',
+        holiday: '假期管理',
+        overtime: '加班管理',
+        compensatory: '调休管理',
       },
-      recruitment: {
-        _self: '招聘管理',
-        jobPosting: '职位发布',
-        candidateManagement: '候选人管理',
-        interviewScheduling: '面试安排',
-        offerManagement: '录用管理'
+      benefit: {
+        _self: '福利管理',
+        project: '福利项目',
+        employee: '员工福利',
       },
-      training: {
-        _self: '培训管理',
-        trainingPlan: '培训计划',
-        trainingExecution: '培训执行',
-        trainingEvaluation: '培训评估'
+      employee: {
+        _self: '人员管理',
+        info: '人员信息',
+        contracttype: '合同类型',
+        contract: '合同管理',
+        promotion: '晋升管理',
+        promotionhistory: '晋升历史',
+        resignation: '离职管理',
+        transfer: '人员列表',
+        transferhistory: '调岗历史',
+      },
+      leave: {
+        _self: '请假管理',
+        type: '请假类型',
+        employee: '员工请假',
+      },
+      organization: {
+        _self: '组织管理',
+        positioncategory: '职位类别',
+        company: '公司信息',
+        department: '部门信息',
+        position: '岗位信息',
       },
       performance: {
         _self: '绩效管理',
-        goalSetting: '目标设定',
-        performanceReview: '绩效评估',
-        feedback: '反馈管理'
+        assessmentitem: '考核项目',
+        assessment: '绩效考核',
       },
-      reporting: {
-        _self: '人力资源报表',
-        employeeReports: '员工报表',
-        attendanceReports: '考勤报表',
-        payrollReports: '薪资报表',
-        performanceReports: '绩效报表'
+      recruitment: {
+        _self: '招聘管理',
+        application: '职位申请',
+        posting: '职位发布',
+        candidate: '候选人管理',
+        interview: '面试管理',
+      },
+      salary: {
+        _self: '薪资管理',
+        employee: '员工薪资',
+        housing: '公积金',
+        housinglevel: '社保',
+        tax: '税务管理',
+        taxlevel: '个税等级',
+        structure: '薪资结构',
+        social: '社保',
+        socialbase: '社保基数',
+      },
+      training: {
+        _self: '培训管理',
+        category: '培训类别',
+        course: '培训课程',
+        record: '员工培训',
+      },
+      report: {
+        _self: '报表管理',
+        employeeinfo: '人员信息',
+        resignation: '离职报表',
+        transfer: '调岗报表',
+        promotion: '晋升报表',
+        training: '培训报表',
+        salary: '薪资报表',
+        performance: '绩效报表',
+        attendance: '考勤报表',
+        benefit: '福利报表',
+        recruitment: '招聘报表',
       }
     }
-  }
+
 }
+}
+

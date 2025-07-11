@@ -365,11 +365,17 @@ export default {
       batchUpdate: 'Mettre à Jour par Lots', // @btn-batch-update-color
 
       // === Boutons d\'Opération d\'État ===
-      audit: 'Auditer',         // @btn-audit-color
-      revoke: 'Révoquer',       // @btn-revoke-color
-      stop: 'Arrêter',          // @btn-stop-color
-      run: 'Exécuter',          // @btn-run-color
-      force: 'Forcer',          // @btn-forced-color
+      audit: 'Auditer',      // @btn-audit-color
+      revoke: 'Révoquer',    // @btn-revoke-color
+      stop: 'Arrêter',       // @btn-stop-color
+      run: 'Exécuter',       // @btn-run-color
+      force: 'Forcer',       // @btn-forced-color
+      start: 'Démarrer',     // @btn-start-color
+      suspend: 'Suspendre',  // @btn-suspend-color
+      resume: 'Reprendre',   // @btn-resume-color
+      submit: 'Soumettre',   // @btn-submit-color
+      withdraw: 'Retirer',   // @btn-withdraw-color
+      terminate: 'Terminer',  // @btn-terminate-color
 
       // === Boutons de Fonction Système ===
       generate: 'Générer',      // @btn-generate-color

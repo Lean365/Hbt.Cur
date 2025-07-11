@@ -47,15 +47,6 @@ namespace Lean.Hbt.Application.Services.SignalR
         Task<bool> NotifyAllAsync(string message, int messageType = 0);
 
         /// <summary>
-        /// 通知指定租户的所有用户
-        /// </summary>
-        /// <param name="tenantId">租户ID</param>
-        /// <param name="message">消息内容</param>
-        /// <param name="messageType">消息类型</param>
-        /// <returns>是否发送成功</returns>
-        Task<bool> NotifyTenantAsync(long tenantId, string message, int messageType = 0);
-
-        /// <summary>
         /// 通知角色
         /// </summary>
         Task<bool> NotifyRoleAsync(long roleId, string message, int messageType = 0);

@@ -15,9 +15,8 @@ namespace Lean.Hbt.Domain.IServices.Extensions
     /// <remarks>
     /// 提供当前用户信息的访问，包括：
     /// 1. 用户基本信息（ID、名称、类型等）
-    /// 2. 租户信息
-    /// 3. 角色和权限
-    /// 4. 认证状态
+    /// 2. 角色和权限
+    /// 3. 认证状态
     /// </remarks>
     public interface IHbtCurrentUser
     {
@@ -46,15 +45,7 @@ namespace Lean.Hbt.Domain.IServices.Extensions
         /// </summary>
         int UserType { get; }
 
-        /// <summary>
-        /// 租户ID
-        /// </summary>
-        long TenantId { get; }
 
-        /// <summary>
-        /// 租户名称
-        /// </summary>
-        string TenantName { get; }
 
         /// <summary>
         /// 用户角色列表

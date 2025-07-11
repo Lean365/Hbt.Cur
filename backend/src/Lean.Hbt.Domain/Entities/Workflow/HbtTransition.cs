@@ -15,19 +15,22 @@ namespace Lean.Hbt.Domain.Entities.Workflow
     /// 工作流转换实体
     /// </summary>
     [SugarTable("hbt_workflow_transition", "工作流转换表")]
+    [SugarIndex("ix_workflow_transition_definition", nameof(DefinitionId), OrderByType.Asc)]
+    [SugarIndex("ix_workflow_transition_source", nameof(SourceActivityId), OrderByType.Asc)]
+    [SugarIndex("ix_workflow_transition_target", nameof(TargetActivityId), OrderByType.Asc)]
     public class HbtTransition : HbtBaseEntity
     {
         /// <summary>
-        /// 源节点ID
+        /// 源活动ID
         /// </summary>
-        [SugarColumn(ColumnName = "source_node_id", ColumnDescription = "源节点ID", ColumnDataType = "bigint", IsNullable = false)]
-        public long SourceNodeId { get; set; }
+        [SugarColumn(ColumnName = "source_activity_id", ColumnDescription = "源活动ID", ColumnDataType = "bigint", IsNullable = false)]
+        public long SourceActivityId { get; set; }
 
         /// <summary>
-        /// 目标节点ID
+        /// 目标活动ID
         /// </summary>
-        [SugarColumn(ColumnName = "target_node_id", ColumnDescription = "目标节点ID", ColumnDataType = "bigint", IsNullable = false)]
-        public long TargetNodeId { get; set; }
+        [SugarColumn(ColumnName = "target_activity_id", ColumnDescription = "目标活动ID", ColumnDataType = "bigint", IsNullable = false)]
+        public long TargetActivityId { get; set; }
 
         /// <summary>
         /// 转换条件(JSON格式)
@@ -41,23 +44,40 @@ namespace Lean.Hbt.Domain.Entities.Workflow
         [SugarColumn(ColumnName = "workflow_definition_id", ColumnDescription = "工作流定义ID", ColumnDataType = "bigint", IsNullable = false)]
         public long DefinitionId { get; set; }
 
+        /// <summary>
+        /// 转换名称
+        /// </summary>
+        [SugarColumn(ColumnName = "transition_name", ColumnDescription = "转换名称", Length = 100, ColumnDataType = "nvarchar", IsNullable = true)]
+        public string? TransitionName { get; set; }
 
         /// <summary>
-        /// 源节点
+        /// 转换类型(1=自动 2=手动 3=条件)
         /// </summary>
-        [Navigate(NavigateType.OneToOne, nameof(SourceNodeId))]
-        public HbtNode? SourceNode { get; set; }
+        [SugarColumn(ColumnName = "transition_type", ColumnDescription = "转换类型", ColumnDataType = "int", IsNullable = false, DefaultValue = "1")]
+        public int TransitionType { get; set; } = 1;
 
         /// <summary>
-        /// 目标节点
+        /// 源活动
         /// </summary>
-        [Navigate(NavigateType.OneToOne, nameof(TargetNodeId))]
-        public HbtNode? TargetNode { get; set; }
+        [Navigate(NavigateType.OneToOne, nameof(SourceActivityId))]
+        public HbtActivity? SourceActivity { get; set; }
+
+        /// <summary>
+        /// 目标活动
+        /// </summary>
+        [Navigate(NavigateType.OneToOne, nameof(TargetActivityId))]
+        public HbtActivity? TargetActivity { get; set; }
 
         /// <summary>
         /// 工作流定义
         /// </summary>
         [Navigate(NavigateType.OneToOne, nameof(DefinitionId))]
         public HbtDefinition? WorkflowDefinition { get; set; }
+
+        /// <summary>
+        /// 并行分支列表
+        /// </summary>
+        [Navigate(NavigateType.OneToMany, nameof(HbtParallelBranch.BranchTransitionId))]
+        public List<HbtParallelBranch>? ParallelBranches { get; set; }
     }
 }

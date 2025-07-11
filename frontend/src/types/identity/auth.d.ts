@@ -4,8 +4,6 @@ import type { HbtBaseEntity, HbtPagedQuery, HbtPagedResult, HbtApiResponse } fro
  * 登录参数
  */
 export interface LoginParams {
-  /** 租户ID */
-  tenantId: number;  // 对应C#的long
   /** 用户名 */
   userName: string;
   /** 密码 */
@@ -42,10 +40,6 @@ export interface UserInfo {
   englishName: string
   /** 用户类型 */
   userType: number
-  /** 租户ID */
-  tenantId: number
-  /** 租户名称 */
-  tenantName: string
   /** 角色列表 */
   roles: string[]
   /** 权限列表 */
@@ -59,7 +53,7 @@ export interface UserInfo {
 }
 
 /**
- * 登录响应数据
+ * 登录结果数据
  */
 export interface LoginResultData {
   /** 访问令牌 */
@@ -180,8 +174,6 @@ export interface LoginCheckResult {
  * 设备信息
  */
 export interface HbtSignalRDevice {
-  /** 租户ID */
-  tenantId: number;
   /** 用户ID */
   userId: number;
   /** 用户组ID */
@@ -237,105 +229,72 @@ export interface HbtSignalRDevice {
  * 环境信息
  */
 export interface HbtSignalREnvironment {
-
-    /** 租户ID */
-    tenantId: number;
     /** 用户ID */
     userId: number;
-
     /** 设备ID */
     deviceId: number;
   /** 环境ID */
   environmentId?: string;
-
   /** 登录类型 */
   loginType: number;
-
   /** 登录来源 */
   loginSource: number;
-
   /** 登录状态 */
   loginStatus: number;
-
   /** 登录提供者 */
   loginProvider: number;
-
   /** 登录提供者密钥 */
   providerKey: string;  
-
   /** 登录提供者显示名称 */
   providerDisplayName: string;  
   /** 网络类型 */
   networkType?: number;
-
   /** 时区 */
   timeZone?: string;
-
   /** 语言 */
   language?: string;
-
   /** 是否VPN（0-否，1-是） */
   isVpn?: number;
   /** 是否代理（0-否，1-是） */
   isProxy?: number;
-
   /** 状态 */
   status?: number;
-
   /** 首次登录时间 */
   firstLoginTime?: string;
-
   /** 首次登录IP */
   firstLoginIp?: string;
-
   /** 首次登录位置 */
   firstLoginLocation  ?: string;
-
   /** 首次登录设备ID */
   firstLoginDeviceId?: string;
-
   /** 首次登录设备类型 */
   firstLoginDeviceType?: number;
-
   /** 首次登录浏览器 */
   firstLoginBrowser?: number;
-
   /** 首次登录操作系统 */
   firstLoginOs?: number;
-
   /** 最后登录时间 */
   lastLoginTime?: string;
-
   /** 最后登录IP */
   lastLoginIp?: string;
-
   /** 最后登录位置 */
   lastLoginLocation?: string;
-
   /** 最后登录设备ID */
   lastLoginDeviceId?: string;
-
   /** 最后登录设备类型 */
   lastLoginDeviceType?: number;
-
   /** 最后登录浏览器 */
   lastLoginBrowser?: number;
-
   /** 最后登录操作系统 */
   lastLoginOs?: number;
-
   /** 最后离线时间 */
   lastOfflineTime?: string;
-
   /** 今日在线时长 */
   todayOnlinePeriods?: number;
-
   /** 总登录次数 */
   loginCount?: number;
-  
   /** 连续登录天数 */
   continuousLoginDays?: number;  
-  
     /** 设备指纹 */
     environmentFingerprint?: string;
 }

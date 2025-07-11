@@ -4,6 +4,7 @@ export default {
     auth: {
       login: {
         title: 'Connexion',
+        tenantId: 'Configuration du locataire',
         username: 'Nom d\'utilisateur',
         password: 'Mot de passe',
         rememberMe: 'Se souvenir de moi',
@@ -27,7 +28,8 @@ export default {
         otherLogin: 'Autres méthodes de connexion',
         form: {
           usernameRequired: 'Veuillez entrer votre nom d\'utilisateur',
-          passwordRequired: 'Veuillez entrer votre mot de passe'
+          passwordRequired: 'Veuillez entrer votre mot de passe',
+          tenantIdRequired: 'Veuillez sélectionner la configuration du locataire'
         }
       },
       register: {

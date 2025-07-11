@@ -7,17 +7,14 @@
 // 描述: 用户数据传输对象
 //===================================================================
 
-using System.ComponentModel.DataAnnotations;
+using System;
+using System.Collections.Generic;
 
 namespace Lean.Hbt.Application.Dtos.Identity
 {
     /// <summary>
-    /// 用户基础DTO
+    /// 用户基础DTO（与HbtUser实体字段严格对应）
     /// </summary>
-    /// <remarks>
-    /// 创建者: Lean365
-    /// 创建时间: 2024-01-17
-    /// </remarks>
     public class HbtUserDto
     {
         /// <summary>
@@ -27,26 +24,21 @@ namespace Lean.Hbt.Application.Dtos.Identity
         {
             UserName = string.Empty;
             NickName = string.Empty;
-            RealName = string.Empty;
             FullName = string.Empty;
+            RealName = string.Empty;
             EnglishName = string.Empty;
-            PhoneNumber = string.Empty;
+            Password = string.Empty;
+            Salt = string.Empty;
             Email = string.Empty;
+            PhoneNumber = string.Empty;
             Avatar = string.Empty;
-            TenantName = string.Empty;
-            Roles = new List<string>();
-            Permissions = new List<string>();
-            RoleIds = new List<long>();
-            PostIds = new List<long>();
-            DeptIds = new List<long>();
-            Remark = string.Empty;
-            CreateBy = string.Empty;
-            UpdateBy = string.Empty;
-            DeleteBy = string.Empty;
+            LockReason = string.Empty;
         }
 
+
+
         /// <summary>
-        /// ID
+        /// 用户ID（适配字段）
         /// </summary>
         [AdaptMember("Id")]
         public long UserId { get; set; }
@@ -62,20 +54,19 @@ namespace Lean.Hbt.Application.Dtos.Identity
         public string NickName { get; set; } = string.Empty;
 
         /// <summary>
-        /// 真实姓名
-        /// </summary>
-        public string RealName { get; set; } = string.Empty;
-
-        /// <summary>
         /// 全名
         /// </summary>
         public string FullName { get; set; } = string.Empty;
 
         /// <summary>
+        /// 真实姓名
+        /// </summary>
+        public string RealName { get; set; } = string.Empty;
+
+        /// <summary>
         /// 英文名称
         /// </summary>
         public string EnglishName { get; set; } = string.Empty;
-
 
         /// <summary>
         /// 用户类型（0系统用户 1普通用户 2管理员 3OAuth用户）
@@ -83,15 +74,29 @@ namespace Lean.Hbt.Application.Dtos.Identity
         public int UserType { get; set; }
 
         /// <summary>
-        /// 邮箱
+        /// 密码
         /// </summary>
-        [MaxLength(50, ErrorMessage = "邮箱长度不能超过50个字符")]
-        public string? Email { get; set; }
+        public string Password { get; set; } = string.Empty;
 
         /// <summary>
-        /// 手机号码
+        /// 盐值
         /// </summary>
-        public string? PhoneNumber { get; set; }
+        public string Salt { get; set; } = string.Empty;
+
+        /// <summary>
+        /// 密码迭代次数
+        /// </summary>
+        public int Iterations { get; set; }
+
+        /// <summary>
+        /// 邮箱
+        /// </summary>
+        public string Email { get; set; } = string.Empty;
+
+        /// <summary>
+        /// 手机号
+        /// </summary>
+        public string PhoneNumber { get; set; } = string.Empty;
 
         /// <summary>
         /// 性别（0未知 1男 2女）
@@ -109,94 +114,74 @@ namespace Lean.Hbt.Application.Dtos.Identity
         public int Status { get; set; }
 
         /// <summary>
-        /// 租户ID
+        /// 最后修改密码时间
         /// </summary>
-        public long TenantId { get; set; }
+        public DateTime? LastPasswordChangeTime { get; set; }
 
         /// <summary>
-        /// 租户名称
+        /// 锁定结束时间
         /// </summary>
-        public string TenantName { get; set; }
+        public DateTime? LockEndTime { get; set; }
 
         /// <summary>
-        /// 角色列表
+        /// 锁定原因
         /// </summary>
-        public List<string> Roles { get; set; }
+        public string? LockReason { get; set; }
 
         /// <summary>
-        /// 权限列表
+        /// 是否锁定（0否 1是）
         /// </summary>
-        public List<string> Permissions { get; set; }
+        public int IsLock { get; set; }
 
         /// <summary>
-        /// 锁定状态（0正常 1临时锁定30分钟 2永久锁定需要人工干预）
+        /// 错误次数限制
         /// </summary>
-        public int IsLock { get; set; } = 0;
-
-        /// <summary>
-        /// 错误次数限制（0是3次 1是5次）
-        /// </summary>
-        public int ErrorLimit { get; set; } = 0;
+        public int ErrorLimit { get; set; }
 
         /// <summary>
         /// 登录次数
         /// </summary>
-        public int LoginCount { get; set; } = 0;
+        public int LoginCount { get; set; }
 
         /// <summary>
         /// 角色ID列表
         /// </summary>
-        public List<long> RoleIds { get; set; }
+        public List<long> RoleIds { get; set; } = new List<long>();
 
         /// <summary>
         /// 岗位ID列表
         /// </summary>
-        public List<long> PostIds { get; set; }
+        public List<long> PostIds { get; set; } = new List<long>();
 
         /// <summary>
         /// 部门ID列表
         /// </summary>
-        public List<long> DeptIds { get; set; }
+        public List<long> DeptIds { get; set; } = new List<long>();
 
         /// <summary>
-        /// 备注
+        /// 租户配置ID列表
         /// </summary>
-        public string? Remark { get; set; }
+        public List<string> ConfigIds { get; set; } = new List<string>();
 
         /// <summary>
-        /// 创建者
+        /// 用户租户关联列表
         /// </summary>
-        public string? CreateBy { get; set; }
+        public List<HbtUserTenantDto>? UserTenants { get; set; }
 
         /// <summary>
-        /// 创建时间
+        /// 用户角色关联列表
         /// </summary>
-        public DateTime CreateTime { get; set; }
+        public List<HbtUserRoleDto>? UserRoles { get; set; }
 
         /// <summary>
-        /// 更新者
+        /// 用户部门关联列表
         /// </summary>
-        public string? UpdateBy { get; set; }
+        public List<HbtUserDeptDto>? UserDepts { get; set; }
 
         /// <summary>
-        /// 更新时间
+        /// 用户岗位关联列表
         /// </summary>
-        public DateTime? UpdateTime { get; set; }
-
-        /// <summary>
-        /// 是否删除（0未删除 1已删除）
-        /// </summary>
-        public int IsDeleted { get; set; }
-
-        /// <summary>
-        /// 删除者
-        /// </summary>
-        public string? DeleteBy { get; set; }
-
-        /// <summary>
-        /// 删除时间
-        /// </summary>
-        public DateTime? DeleteTime { get; set; }
+        public List<HbtUserPostDto>? UserPosts { get; set; }
     }
 
     /// <summary>
@@ -221,25 +206,25 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// <summary>
         /// 用户名
         /// </summary>
-        [MaxLength(30, ErrorMessage = "用户名长度不能超过30个字符")]
+ 
         public string? UserName { get; set; }
 
         /// <summary>
         /// 昵称
         /// </summary>
-        [MaxLength(30, ErrorMessage = "昵称长度不能超过30个字符")]
+
         public string? NickName { get; set; }
 
         /// <summary>
         /// 手机号码
         /// </summary>
-        [MaxLength(11, ErrorMessage = "手机号码长度不能超过11个字符")]
+
         public string? PhoneNumber { get; set; }
 
         /// <summary>
         /// 邮箱
         /// </summary>
-        [MaxLength(50, ErrorMessage = "邮箱长度不能超过50个字符")]
+
         public string? Email { get; set; }
 
         /// <summary>
@@ -295,40 +280,31 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// <summary>
         /// 用户名
         /// </summary>
-        [Required(ErrorMessage = "用户名不能为空")]
-        [MaxLength(30, ErrorMessage = "用户名长度不能超过30个字符")]
         public string UserName { get; set; } = string.Empty;
 
         /// <summary>
         /// 昵称
         /// </summary>
-        [Required(ErrorMessage = "昵称不能为空")]
-        [MaxLength(30, ErrorMessage = "昵称长度不能超过30个字符")]
         public string NickName { get; set; } = string.Empty;
 
         /// <summary>
         /// 密码
         /// </summary>
-        [MinLength(6, ErrorMessage = "密码长度不能少于6个字符")]
-        [MaxLength(20, ErrorMessage = "密码长度不能超过20个字符")]
         public string Password { get; set; } = string.Empty;
 
         /// <summary>
         /// 真实姓名
         /// </summary>
-        [MaxLength(50, ErrorMessage = "真实姓名长度不能超过50个字符")]
         public string RealName { get; set; } = string.Empty;
 
         /// <summary>
         /// 全名
         /// </summary>
-        [MaxLength(50, ErrorMessage = "全名长度不能超过50个字符")]
         public string FullName { get; set; } = string.Empty;
 
         /// <summary>
         /// 英文名称
         /// </summary>
-        [MaxLength(50, ErrorMessage = "英文名称长度不能超过50个字符")]
         public string EnglishName { get; set; } = string.Empty;
 
         /// <summary>
@@ -339,15 +315,12 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// <summary>
         /// 邮箱
         /// </summary>
-        [MaxLength(50, ErrorMessage = "邮箱长度不能超过50个字符")]
-        public string? Email { get; set; }
+        public string Email { get; set; } = string.Empty;
 
         /// <summary>
         /// 手机号码
         /// </summary>
-        [MaxLength(11, ErrorMessage = "手机号码长度不能超过11个字符")]
-        [RegularExpression(@"^1[3-9]\d{9}$", ErrorMessage = "手机号码格式不正确")]
-        public string? PhoneNumber { get; set; }
+        public string PhoneNumber { get; set; } = string.Empty;
 
         /// <summary>
         /// 性别（0未知 1男 2女）
@@ -357,7 +330,6 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// <summary>
         /// 头像
         /// </summary>
-        [MaxLength(100, ErrorMessage = "头像地址长度不能超过100个字符")]
         public string? Avatar { get; set; }
 
         /// <summary>
@@ -369,7 +341,6 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// <summary>
         /// 部门ID
         /// </summary>
-        [Required(ErrorMessage = "部门不能为空")]
         public long DeptId { get; set; }
 
         /// <summary>
@@ -387,16 +358,14 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// </summary>
         public List<long> DeptIds { get; set; }
 
-
         /// <summary>
-        /// 租户ID列表
+        /// 租户配置ID列表
         /// </summary>
-        public long[]? TenantIds { get; set; }
+        public string[]? ConfigIds { get; set; }
 
         /// <summary>
         /// 备注
         /// </summary>
-        [MaxLength(500, ErrorMessage = "备注长度不能超过500个字符")]
         public string? Remark { get; set; }
     }
 
@@ -413,8 +382,7 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// <summary>
         /// 用户ID
         /// </summary>
-        [Required(ErrorMessage = "用户ID不能为空")]
-        [Range(1, long.MaxValue, ErrorMessage = "用户ID必须大于0")]
+        [AdaptMember("Id")]
         public long UserId { get; set; }
 
 
@@ -442,12 +410,13 @@ namespace Lean.Hbt.Application.Dtos.Identity
             PhoneNumber = string.Empty;
             Email = string.Empty;
             Avatar = string.Empty;
+            ConfigId = string.Empty;
             Remark = string.Empty;
         }
         /// <summary>
-        /// 租户ID
+        /// 租户配置ID
         /// </summary>
-        public long TenantId { get; set; }
+        public string ConfigId { get; set; } = string.Empty;
 
         /// <summary>
         /// 用户名
@@ -639,12 +608,13 @@ namespace Lean.Hbt.Application.Dtos.Identity
             PhoneNumber = string.Empty;
             Email = string.Empty;
             Avatar = string.Empty;
+            ConfigId = string.Empty;
             Remark = string.Empty;
         }
         /// <summary>
-        /// 租户ID
+        /// 租户配置ID
         /// </summary>
-        public long TenantId { get; set; }
+        public string ConfigId { get; set; } = string.Empty;
 
         /// <summary>
         /// 用户名
@@ -727,13 +697,12 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// <summary>
         /// ID
         /// </summary>
-        [Required(ErrorMessage = "用户ID不能为空")]
+        [AdaptMember("Id")]
         public long UserId { get; set; }
 
         /// <summary>
         /// 状态（0正常 1停用）
         /// </summary>
-        [Required(ErrorMessage = "状态不能为空")]
         public int Status { get; set; }
     }
 
@@ -757,15 +726,12 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// <summary>
         /// 用户ID
         /// </summary>
-        [Required(ErrorMessage = "用户ID不能为空")]
+        [AdaptMember("Id")]
         public long UserId { get; set; }
 
         /// <summary>
         /// 新密码
         /// </summary>
-        [Required(ErrorMessage = "新密码不能为空")]
-        [MinLength(6, ErrorMessage = "新密码长度不能少于6个字符")]
-        [MaxLength(20, ErrorMessage = "新密码长度不能超过20个字符")]
         public string Password { get; set; } = string.Empty;
     }
 
@@ -790,21 +756,17 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// <summary>
         /// 用户ID
         /// </summary>
-        [Required(ErrorMessage = "用户ID不能为空")]
+        [AdaptMember("Id")]
         public long UserId { get; set; }
 
         /// <summary>
         /// 旧密码
         /// </summary>
-        [Required(ErrorMessage = "旧密码不能为空")]
         public string OldPassword { get; set; } = string.Empty;
 
         /// <summary>
         /// 新密码
         /// </summary>
-        [Required(ErrorMessage = "新密码不能为空")]
-        [MinLength(6, ErrorMessage = "新密码长度不能少于6个字符")]
-        [MaxLength(20, ErrorMessage = "新密码长度不能超过20个字符")]
         public string NewPassword { get; set; } = string.Empty;
     }
 
@@ -827,26 +789,22 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// <summary>
         /// 用户ID
         /// </summary>
-        [Required(ErrorMessage = "用户ID不能为空")]
+        [AdaptMember("Id")]
         public long UserId { get; set; }
 
         /// <summary>
         /// 锁定状态（0正常 1临时锁定30分钟 2永久锁定需要人工干预）
         /// </summary>
-        [Required(ErrorMessage = "锁定状态不能为空")]
         public int IsLock { get; set; }
 
         /// <summary>
         /// 错误次数限制（0是3次 1是5次）
         /// </summary>
-        [Required(ErrorMessage = "错误次数限制不能为空")]
         public int ErrorLimit { get; set; }
 
         /// <summary>
         /// 备注
         /// </summary>
-        [Required(ErrorMessage = "备注不能为空")]
-        [MaxLength(500, ErrorMessage = "备注长度不能超过500个字符")]
         public string? Remark { get; set; } = string.Empty;
     }
 }

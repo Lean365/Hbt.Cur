@@ -23,26 +23,25 @@ namespace Lean.Hbt.Application.Services.Generator;
 /// </remarks>
 public class HbtGenConfigService : HbtBaseService, IHbtGenConfigService
 {
-    private readonly IHbtRepository<HbtGenConfig> _configRepository;
+    private readonly IHbtRepositoryFactory _repositoryFactory;
+    private IHbtRepository<HbtGenConfig> ConfigRepository => _repositoryFactory.GetAuthRepository<HbtGenConfig>();
 
     /// <summary>
     /// 构造函数
     /// </summary>
-    /// <param name="configRepository">配置仓储</param>
+    /// <param name="repositoryFactory">配置仓储</param>
     /// <param name="logger">日志服务</param>
     /// <param name="httpContextAccessor">HTTP上下文访问器</param>
     /// <param name="currentUser">当前用户服务</param>
-    /// <param name="currentTenant">当前租户服务</param>
     /// <param name="localization">本地化服务</param>
     public HbtGenConfigService(
-        IHbtRepository<HbtGenConfig> configRepository,
+        IHbtRepositoryFactory repositoryFactory,
         IHbtLogger logger,
         IHttpContextAccessor httpContextAccessor,
         IHbtCurrentUser currentUser,
-        IHbtCurrentTenant currentTenant,
-        IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, currentTenant, localization)
+        IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
     {
-        _configRepository = configRepository ?? throw new ArgumentNullException(nameof(configRepository));
+        _repositoryFactory = repositoryFactory ?? throw new ArgumentNullException(nameof(repositoryFactory));
     }
 
     /// <summary>
@@ -54,7 +53,7 @@ public class HbtGenConfigService : HbtBaseService, IHbtGenConfigService
     {
         query ??= new HbtGenConfigQueryDto();
 
-        var result = await _configRepository.GetPagedListAsync(
+        var result = await ConfigRepository.GetPagedListAsync(
             QueryExpression(query),
             query.PageIndex,
             query.PageSize,
@@ -77,7 +76,7 @@ public class HbtGenConfigService : HbtBaseService, IHbtGenConfigService
     /// <returns>配置详情</returns>
     public async Task<HbtGenConfigDto?> GetByIdAsync(long id)
     {
-        var config = await _configRepository.GetByIdAsync(id);
+        var config = await ConfigRepository.GetByIdAsync(id);
         return config?.Adapt<HbtGenConfigDto>();
     }
 
@@ -89,10 +88,10 @@ public class HbtGenConfigService : HbtBaseService, IHbtGenConfigService
     public async Task<HbtGenConfigDto> CreateAsync(HbtGenConfigCreateDto input)
     {
         // 验证字段是否已存在
-        await HbtValidateUtils.ValidateFieldExistsAsync(_configRepository, "GenConfigName", input.GenConfigName);
+        await HbtValidateUtils.ValidateFieldExistsAsync(ConfigRepository, "GenConfigName", input.GenConfigName);
 
         var config = input.Adapt<HbtGenConfig>();
-        var result = await _configRepository.CreateAsync(config);
+        var result = await ConfigRepository.CreateAsync(config);
         if (result <= 0)
             throw new HbtException(L("Generator.Config.CreateFailed"));
 
@@ -106,15 +105,15 @@ public class HbtGenConfigService : HbtBaseService, IHbtGenConfigService
     /// <returns>更新后的配置信息</returns>
     public async Task<HbtGenConfigDto> UpdateAsync(HbtGenConfigUpdateDto input)
     {
-        var config = await _configRepository.GetByIdAsync(input.GenConfigId)
+        var config = await ConfigRepository.GetByIdAsync(input.GenConfigId)
             ?? throw new HbtException(L("Generator.Config.NotFound", input.GenConfigId));
 
         // 验证字段是否已存在
         if (config.GenConfigName != input.GenConfigName)
-            await HbtValidateUtils.ValidateFieldExistsAsync(_configRepository, "GenConfigName", input.GenConfigName, input.GenConfigId);
+            await HbtValidateUtils.ValidateFieldExistsAsync(ConfigRepository, "GenConfigName", input.GenConfigName, input.GenConfigId);
 
         input.Adapt(config);
-        var result = await _configRepository.UpdateAsync(config);
+        var result = await ConfigRepository.UpdateAsync(config);
         if (result <= 0)
             throw new HbtException(L("Generator.Config.UpdateFailed"));
 
@@ -128,10 +127,10 @@ public class HbtGenConfigService : HbtBaseService, IHbtGenConfigService
     /// <returns>是否成功</returns>
     public async Task<bool> DeleteAsync(long id)
     {
-        var config = await _configRepository.GetByIdAsync(id)
+        var config = await ConfigRepository.GetByIdAsync(id)
             ?? throw new HbtException(L("Generator.Config.NotFound", id));
 
-        return await _configRepository.DeleteAsync(id) > 0;
+        return await ConfigRepository.DeleteAsync(id) > 0;
     }
 
     /// <summary>
@@ -142,7 +141,7 @@ public class HbtGenConfigService : HbtBaseService, IHbtGenConfigService
     public async Task<bool> BatchDeleteAsync(long[] ids)
     {
         if (ids == null || ids.Length == 0) return false;
-        return await _configRepository.DeleteRangeAsync(ids.Cast<object>().ToList()) > 0;
+        return await ConfigRepository.DeleteRangeAsync(ids.Cast<object>().ToList()) > 0;
     }
 
     /// <summary>
@@ -152,10 +151,10 @@ public class HbtGenConfigService : HbtBaseService, IHbtGenConfigService
     /// <returns>是否更新成功</returns>
     public async Task<bool> UpdateStatusAsync(HbtGenConfigStatusDto input)
     {
-        var config = await _configRepository.GetByIdAsync(input.GenConfigId)
+        var config = await ConfigRepository.GetByIdAsync(input.GenConfigId)
             ?? throw new HbtException(L("Generator.Config.NotFound", input.GenConfigId));
         config.Status = input.Status;
-        var result = await _configRepository.UpdateAsync(config);
+        var result = await ConfigRepository.UpdateAsync(config);
         return result > 0;
     }
 
@@ -176,9 +175,9 @@ public class HbtGenConfigService : HbtBaseService, IHbtGenConfigService
             try
             {
                 // 验证字段是否已存在
-                await HbtValidateUtils.ValidateFieldExistsAsync(_configRepository, "GenConfigName", config.GenConfigName);
+                await HbtValidateUtils.ValidateFieldExistsAsync(ConfigRepository, "GenConfigName", config.GenConfigName);
 
-                await _configRepository.CreateAsync(config.Adapt<HbtGenConfig>());
+                await ConfigRepository.CreateAsync(config.Adapt<HbtGenConfig>());
                 success++;
             }
             catch
@@ -200,7 +199,7 @@ public class HbtGenConfigService : HbtBaseService, IHbtGenConfigService
     {
         try
         {
-            var list = await _configRepository.GetListAsync(QueryExpression(query));
+            var list = await ConfigRepository.GetListAsync(QueryExpression(query));
             return await HbtExcelHelper.ExportAsync(list.Adapt<List<HbtGenConfigDto>>(), sheetName, L("Generator.Config.ExportTitle"));
         }
         catch (Exception ex)
@@ -227,7 +226,7 @@ public class HbtGenConfigService : HbtBaseService, IHbtGenConfigService
     /// <returns>生成配置选项列表</returns>
     public async Task<List<HbtSelectOption>> GetOptionsAsync()
     {
-        var configs = await _configRepository.GetListAsync(_ => true);
+        var configs = await ConfigRepository.GetListAsync(_ => true);
         return configs.Select(c => new HbtSelectOption
         {
             Label = c.GenConfigName,

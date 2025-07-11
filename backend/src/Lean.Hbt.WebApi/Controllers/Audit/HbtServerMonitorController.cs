@@ -28,14 +28,12 @@ public class HbtServerMonitorController : HbtBaseController
     /// <param name="serverMonitorService">服务器监控服务</param>
     /// <param name="logger">日志服务</param>
     /// <param name="currentUser">当前用户服务</param>
-    /// <param name="currentTenant">当前租户服务</param>
     /// <param name="localization">本地化服务</param>
     public HbtServerMonitorController(
         IHbtServerMonitorService serverMonitorService,
         IHbtLogger logger,
         IHbtCurrentUser currentUser,
-        IHbtCurrentTenant currentTenant,
-        IHbtLocalizationService localization) : base(logger, currentUser, currentTenant, localization)
+        IHbtLocalizationService localization) : base(logger, currentUser, localization)
     {
         _serverMonitorService = serverMonitorService;
     }

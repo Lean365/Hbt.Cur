@@ -26,16 +26,14 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// 构造函数
         /// <param name="workflowTaskService">工作流任务服务</param>
         /// <param name="currentUser">当前用户服务</param>
-        /// <param name="currentTenant">当前租户服务</param>
         /// <param name="localization">本地化服务</param>
         /// <param name="logger">日志服务</param>
         /// </summary>
         public HbtProcessTaskController(
             IHbtProcessTaskService workflowTaskService,
             IHbtCurrentUser currentUser,
-            IHbtCurrentTenant currentTenant,
             IHbtLocalizationService localization,
-            IHbtLogger logger) : base(logger, currentUser, currentTenant, localization)
+            IHbtLogger logger) : base(logger, currentUser, localization)
         {
             _workflowTaskService = workflowTaskService;
         }
@@ -162,9 +160,9 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// </summary>
         [HttpPost("{id}/complete")]
         [HbtPerm("workflow:task:update")]
-        public async Task<IActionResult> CompleteAsync(long id, [FromQuery] int result, [FromQuery] string comment)
+        public async Task<IActionResult> CompleteAsync(long id, [FromBody] HbtTaskCompleteDto input)
         {
-            var success = await _workflowTaskService.CompleteAsync(id, result, comment);
+            var success = await _workflowTaskService.CompleteAsync(id, input.Comment);
             return Success(success);
         }
 
@@ -176,6 +174,17 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         public async Task<IActionResult> TransferAsync(long id, [FromQuery] long assigneeId, [FromQuery] string comment)
         {
             var success = await _workflowTaskService.TransferAsync(id, assigneeId, comment);
+            return Success(success);
+        }
+
+        /// <summary>
+        /// 同意工作流任务
+        /// </summary>
+        [HttpPost("{id}/approve")]
+        [HbtPerm("workflow:task:approve")]
+        public async Task<IActionResult> ApproveAsync(long id, [FromQuery] string comment)
+        {
+            var success = await _workflowTaskService.ApproveTaskAsync(id, comment);
             return Success(success);
         }
 
@@ -199,6 +208,82 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         {
             var success = await _workflowTaskService.CancelAsync(id, comment);
             return Success(success);
+        }
+
+        /// <summary>
+        /// 获取用户任务状态统计（基于Status状态统计）
+        /// </summary>
+        [HttpGet("user-status-stats/{userId}")]
+        [HbtPerm("workflow:task:query")]
+        public async Task<IActionResult> GetUserTaskStatusStatsAsync(long userId)
+        {
+            try
+            {
+                var stats = await _workflowTaskService.GetUserTaskStatusStatsAsync(userId);
+                return Success(stats, "获取用户任务状态统计成功");
+            }
+            catch (Exception ex)
+            {
+                _logger.Error($"获取用户任务状态统计失败: {ex.Message}", ex);
+                return Error($"获取用户任务状态统计失败: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// 获取用户任务结果统计（基于Result结果统计）
+        /// </summary>
+        [HttpGet("user-result-stats/{userId}")]
+        [HbtPerm("workflow:task:query")]
+        public async Task<IActionResult> GetUserTaskResultStatsAsync(long userId)
+        {
+            try
+            {
+                var stats = await _workflowTaskService.GetUserTaskResultStatsAsync(userId);
+                return Success(stats, "获取用户任务结果统计成功");
+            }
+            catch (Exception ex)
+            {
+                _logger.Error($"获取用户任务结果统计失败: {ex.Message}", ex);
+                return Error($"获取用户任务结果统计失败: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// 获取用户待办列表
+        /// </summary>
+        [HttpGet("user-todos/{userId}")]
+        [HbtPerm("workflow:task:query")]
+        public async Task<IActionResult> GetUserTodoListAsync(long userId, [FromQuery] int? status = null, [FromQuery] int limit = 5)
+        {
+            try
+            {
+                var todos = await _workflowTaskService.GetUserTodoListAsync(userId, status, limit);
+                return Success(todos, "获取用户待办列表成功");
+            }
+            catch (Exception ex)
+            {
+                _logger.Error($"获取用户待办列表失败: {ex.Message}", ex);
+                return Error($"获取用户待办列表失败: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// 获取用户催办任务列表
+        /// </summary>
+        [HttpGet("user-urge/{userId}")]
+        [HbtPerm("workflow:task:query")]
+        public async Task<IActionResult> GetUserUrgeListAsync(long userId, [FromQuery] string urgeType = "overdue", [FromQuery] int limit = 5)
+        {
+            try
+            {
+                var urgeList = await _workflowTaskService.GetUserUrgeListAsync(userId, urgeType, limit);
+                return Success(urgeList, "获取用户催办任务列表成功");
+            }
+            catch (Exception ex)
+            {
+                _logger.Error($"获取用户催办任务列表失败: {ex.Message}", ex);
+                return Error($"获取用户催办任务列表失败: {ex.Message}");
+            }
         }
     }
 }

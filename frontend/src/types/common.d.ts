@@ -2,7 +2,7 @@
  * 基础实体类型
  */
 export interface HbtBaseEntity {
-  /** 创建者 */
+   /** 创建者 */
   createBy: string;
   /** 创建时间 */
   createTime: string;

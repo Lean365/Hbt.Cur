@@ -4,10 +4,11 @@
 // 创建者 : Lean365
 // 创建时间: 2024-01-20 16:30
 // 版本号 : V0.0.1
-// 描述   : 岗位服务实现
+// 描述   : 岗位服务实现 - 使用仓储工厂模式
 //===================================================================
 
 using System.Linq.Expressions;
+using Lean.Hbt.Domain.Repositories;
 using Microsoft.AspNetCore.Http;
 
 namespace Lean.Hbt.Application.Services.Identity
@@ -15,25 +16,29 @@ namespace Lean.Hbt.Application.Services.Identity
     /// <summary>
     /// 岗位服务实现
     /// </summary>
+    /// <remarks>
+    /// 创建者: Lean365
+    /// 创建时间: 2024-01-20
+    /// 更新: 2024-12-19 - 使用仓储工厂模式支持多库
+    /// </remarks>
     public class HbtPostService : HbtBaseService, IHbtPostService
     {
-        private readonly IHbtRepository<HbtPost> _postRepository;
-        private readonly IHbtRepository<HbtUserPost> _userPostRepository;
+        private readonly IHbtRepositoryFactory _repositoryFactory;
+
+        private IHbtRepository<HbtPost> PostRepository => _repositoryFactory.GetAuthRepository<HbtPost>();
+        private IHbtRepository<HbtUserPost> UserPostRepository => _repositoryFactory.GetAuthRepository<HbtUserPost>();
 
         /// <summary>
         /// 构造函数
         /// </summary>
         public HbtPostService(
-            IHbtRepository<HbtPost> postRepository,
-            IHbtRepository<HbtUserPost> userPostRepository,
             IHbtLogger logger,
+            IHbtRepositoryFactory repositoryFactory,
             IHttpContextAccessor httpContextAccessor,
             IHbtCurrentUser currentUser,
-        IHbtCurrentTenant currentTenant,
-        IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, currentTenant, localization)
+            IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
         {
-            _postRepository = postRepository;
-            _userPostRepository = userPostRepository;
+            _repositoryFactory = repositoryFactory ?? throw new ArgumentNullException(nameof(repositoryFactory));
         }
 
         /// <summary>
@@ -41,7 +46,7 @@ namespace Lean.Hbt.Application.Services.Identity
         /// </summary>
         public async Task<HbtPagedResult<HbtPostDto>> GetListAsync(HbtPostQueryDto query)
         {
-            var result = await _postRepository.GetPagedListAsync(
+            var result = await PostRepository.GetPagedListAsync(
                 QueryExpression(query),
                 query.PageIndex,
                 query.PageSize,
@@ -62,7 +67,7 @@ namespace Lean.Hbt.Application.Services.Identity
         /// </summary>
         public async Task<HbtPostDto> GetByIdAsync(long id)
         {
-            var post = await _postRepository.GetByIdAsync(id);
+            var post = await PostRepository.GetByIdAsync(id);
             if (post == null)
                 throw new HbtException(L("Identity.Post.NotFound"));
 
@@ -74,12 +79,13 @@ namespace Lean.Hbt.Application.Services.Identity
         /// </summary>
         public async Task<long> CreateAsync(HbtPostCreateDto input)
         {
+            
             // 验证字段是否已存在
-            await HbtValidateUtils.ValidateFieldExistsAsync(_postRepository, "PostCode", input.PostCode);
-            await HbtValidateUtils.ValidateFieldExistsAsync(_postRepository, "PostName", input.PostName);
+            await HbtValidateUtils.ValidateFieldExistsAsync(PostRepository, "PostCode", input.PostCode);
+            await HbtValidateUtils.ValidateFieldExistsAsync(PostRepository, "PostName", input.PostName);
 
             var post = input.Adapt<HbtPost>();
-            var result = await _postRepository.CreateAsync(post);
+            var result = await PostRepository.CreateAsync(post);
             if (result > 0)
                 _logger.Info(L("Common.AddSuccess"));
 
@@ -91,17 +97,17 @@ namespace Lean.Hbt.Application.Services.Identity
         /// </summary>
         public async Task<bool> UpdateAsync(HbtPostUpdateDto input)
         {
-            var post = await _postRepository.GetByIdAsync(input.PostId)
+            var post = await PostRepository.GetByIdAsync(input.PostId)
                 ?? throw new HbtException(L("Identity.Post.NotFound"));
 
             // 验证字段是否已存在
             if (post.PostCode != input.PostCode)
-                await HbtValidateUtils.ValidateFieldExistsAsync(_postRepository, "PostCode", input.PostCode, input.PostId);
+                await HbtValidateUtils.ValidateFieldExistsAsync(PostRepository, "PostCode", input.PostCode, input.PostId);
             if (post.PostName != input.PostName)
-                await HbtValidateUtils.ValidateFieldExistsAsync(_postRepository, "PostName", input.PostName, input.PostId);
+                await HbtValidateUtils.ValidateFieldExistsAsync(PostRepository, "PostName", input.PostName, input.PostId);
 
             input.Adapt(post);
-            return await _postRepository.UpdateAsync(post) > 0;
+            return await PostRepository.UpdateAsync(post) > 0;
         }
 
         /// <summary>
@@ -109,14 +115,16 @@ namespace Lean.Hbt.Application.Services.Identity
         /// </summary>
         public async Task<bool> DeleteAsync(long id)
         {
-            var post = await _postRepository.GetByIdAsync(id)
+            var userPostRepository = _repositoryFactory.GetAuthRepository<HbtUserPost>();
+            
+            var post = await PostRepository.GetByIdAsync(id)
                 ?? throw new HbtException(L("Identity.Post.NotFound"));
 
             // 检查是否有用户关联
-            if (await _userPostRepository.AsQueryable().AnyAsync(x => x.PostId == id))
+            if (await UserPostRepository.AsQueryable().AnyAsync(x => x.PostId == id))
                 throw new HbtException(L("Identity.Post.DeleteFailed"));
 
-            return await _postRepository.DeleteAsync(post) > 0;
+            return await PostRepository.DeleteAsync(post) > 0;
         }
 
         /// <summary>
@@ -127,11 +135,13 @@ namespace Lean.Hbt.Application.Services.Identity
             if (postIds == null || postIds.Length == 0)
                 throw new HbtException(L("Identity.Post.SelectRequired"));
 
+            var userPostRepository = _repositoryFactory.GetAuthRepository<HbtUserPost>();
+
             // 检查是否有用户关联
-            if (await _userPostRepository.AsQueryable().AnyAsync(up => postIds.Contains(up.PostId)))
+            if (await UserPostRepository.AsQueryable().AnyAsync(up => postIds.Contains(up.PostId)))
                 throw new HbtException(L("Identity.Post.HasUsers"));
 
-            return await _postRepository.DeleteRangeAsync(postIds.Cast<object>().ToList()) > 0;
+            return await PostRepository.DeleteRangeAsync(postIds.Cast<object>().ToList()) > 0;
         }
 
         /// <summary>
@@ -140,7 +150,7 @@ namespace Lean.Hbt.Application.Services.Identity
         /// <returns>岗位选项列表</returns>
         public async Task<List<HbtSelectOption>> GetOptionsAsync()
         {
-            var posts = await _postRepository.AsQueryable()
+            var posts = await PostRepository.AsQueryable()
                 .Where(p => p.Status == 0)  // 只获取正常状态的岗位
                 .OrderBy(p => p.OrderNum)
                 .Select(p => new HbtSelectOption
@@ -160,6 +170,7 @@ namespace Lean.Hbt.Application.Services.Identity
         {
             try
             {
+                var postRepository = _repositoryFactory.GetAuthRepository<HbtPost>();
                 var posts = await HbtExcelHelper.ImportAsync<HbtPostImportDto>(fileStream, sheetName);
                 if (!posts.Any())
                     return new List<HbtPostImportDto>();
@@ -174,14 +185,14 @@ namespace Lean.Hbt.Application.Services.Identity
                             continue;
                         }
 
-                        await HbtValidateUtils.ValidateFieldExistsAsync(_postRepository, "PostCode", post.PostCode);
-                        await HbtValidateUtils.ValidateFieldExistsAsync(_postRepository, "PostName", post.PostName);
+                        await HbtValidateUtils.ValidateFieldExistsAsync(PostRepository, "PostCode", post.PostCode);
+                        await HbtValidateUtils.ValidateFieldExistsAsync(PostRepository, "PostName", post.PostName);
 
                         var entity = post.Adapt<HbtPost>();
                         entity.CreateTime = DateTime.Now;
                         entity.CreateBy = "system"; // TODO: 从当前用户上下文获取
 
-                        await _postRepository.CreateAsync(entity);
+                        await PostRepository.CreateAsync(entity);
                     }
                     catch (Exception ex)
                     {
@@ -216,7 +227,8 @@ namespace Lean.Hbt.Application.Services.Identity
         {
             try
             {
-                var list = await _postRepository.GetListAsync(QueryExpression(query));
+                var postRepository = _repositoryFactory.GetAuthRepository<HbtPost>();
+                var list = await postRepository.GetListAsync(QueryExpression(query));
                 var exportList = list.Adapt<List<HbtPostExportDto>>();
                 return await HbtExcelHelper.ExportAsync(exportList, sheetName, "岗位数据");
             }
@@ -232,12 +244,12 @@ namespace Lean.Hbt.Application.Services.Identity
         /// </summary>
         public async Task<bool> UpdateStatusAsync(HbtPostStatusDto input)
         {
-            var post = await _postRepository.GetByIdAsync(input.PostId);
+            var post = await PostRepository.GetByIdAsync(input.PostId);
             if (post == null)
                 throw new HbtException(L("Identity.Post.NotFound"));
 
             post.Status = input.Status;
-            var result = await _postRepository.UpdateAsync(post);
+            var result = await PostRepository.UpdateAsync(post);
             return result > 0;
         }
 
@@ -248,11 +260,13 @@ namespace Lean.Hbt.Application.Services.Identity
         /// <returns>岗位用户列表</returns>
         public async Task<HbtUserPostDto> GetPostUsersAsync(long postId)
         {
-            var post = await _postRepository.GetByIdAsync(postId)
+            var userRepository = _repositoryFactory.GetAuthRepository<HbtUser>();
+            
+            var post = await PostRepository.GetByIdAsync(postId)
                 ?? throw new HbtException(L("Identity.Post.NotFound"));
 
             // 获取已分配的用户
-            var assignedUsers = await _userPostRepository.AsQueryable()
+            var assignedUsers = await UserPostRepository.AsQueryable()
                 .LeftJoin<HbtUser>((up, u) => up.UserId == u.Id)
                 .Where(up => up.PostId == postId)
                 .Select((up, u) => new HbtUserDto
@@ -266,7 +280,7 @@ namespace Lean.Hbt.Application.Services.Identity
                 .ToListAsync();
 
             // 获取所有可选用户（未分配的用户）
-            var optionalUsers = await _userPostRepository.AsQueryable()
+            var optionalUsers = await UserPostRepository.AsQueryable()
                 .RightJoin<HbtUser>((up, u) => up.UserId == u.Id)
                 .Where((up, u) => up.PostId != postId || up.PostId == null)
                 .Select((up, u) => new HbtUserDto
@@ -295,11 +309,13 @@ namespace Lean.Hbt.Application.Services.Identity
         /// <returns>是否成功</returns>
         public async Task<bool> AssignPostUsersAsync(long postId, long[] userIds)
         {
-            var post = await _postRepository.GetByIdAsync(postId)
+            var userPostRepository = _repositoryFactory.GetAuthRepository<HbtUserPost>();
+            
+            var post = await PostRepository.GetByIdAsync(postId)
                 ?? throw new HbtException(L("Identity.Post.NotFound"));
 
             // 获取已分配的用户
-            var existingUserPosts = await _userPostRepository.AsQueryable()
+            var existingUserPosts = await userPostRepository.AsQueryable()
                 .Where(up => up.PostId == postId)
                 .ToListAsync();
 
@@ -317,7 +333,7 @@ namespace Lean.Hbt.Application.Services.Identity
                 CreateBy = _currentUser.UserName
             }).ToList();
 
-            return await _userPostRepository.CreateRangeAsync(userPosts) > 0;
+            return await userPostRepository.CreateRangeAsync(userPosts) > 0;
         }
 
         /// <summary>
@@ -328,15 +344,15 @@ namespace Lean.Hbt.Application.Services.Identity
         /// <returns>是否成功</returns>
         public async Task<bool> RemovePostUsersAsync(long postId, long[] userIds)
         {
-            var post = await _postRepository.GetByIdAsync(postId)
+            var userPostRepository = _repositoryFactory.GetAuthRepository<HbtUserPost>();
+            
+            var post = await PostRepository.GetByIdAsync(postId)
                 ?? throw new HbtException(L("Identity.Post.NotFound"));
 
             // 删除用户岗位关联
-            return await _userPostRepository.DeleteAsync((HbtUserPost up) =>
+            return await userPostRepository.DeleteAsync((HbtUserPost up) =>
                 up.PostId == postId && userIds.Contains(up.UserId)) > 0;
         }
-
-        
 
         /// <summary>
         /// 构建岗位查询条件
@@ -358,4 +374,4 @@ namespace Lean.Hbt.Application.Services.Identity
         }    
     
     }
-}
+} 

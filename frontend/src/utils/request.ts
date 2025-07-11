@@ -29,7 +29,7 @@ export function getCsrfToken(): string | null {
     if (name === 'XSRF-TOKEN') {
       // 对 Cookie 中的 Token 进行 URL 解码
       const decodedValue = decodeURIComponent(value)
-      console.log('[CSRF] 从cookie中获取到完整令牌:', decodedValue)
+      //console.log('[CSRF] 从cookie中获取到完整令牌:', decodedValue)
       return decodedValue
     }
   }
@@ -40,15 +40,15 @@ export function getCsrfToken(): string | null {
 // 请求拦截器
 service.interceptors.request.use(
   config => {
-    console.log('=== 请求拦截器开始 ===')
-    console.log('请求配置:', config)
+    //console.log('=== 请求拦截器开始 ===')
+    //console.log('请求配置:', config)
 
     // 获取CSRF令牌
     const csrfToken = getCsrfToken()
     if (csrfToken) {
-      console.log('[CSRF] 从cookie中获取到完整令牌:', csrfToken)
+      //console.log('[CSRF] 从cookie中获取到完整令牌:', csrfToken)
       config.headers['X-CSRF-TOKEN'] = csrfToken
-      console.log('[CSRF] 从cookie中设置CSRF令牌')
+      //console.log('[CSRF] 从cookie中设置CSRF令牌')
     }
 
     // 获取Token
@@ -56,16 +56,15 @@ service.interceptors.request.use(
     if (token) {
       //console.log('[Auth] 获取到Token:', token)
       config.headers['Authorization'] = `Bearer ${token}`
-      console.log('[Request] 设置Authorization Token')
+      //console.log('[Request] 设置Authorization Token')
     }
-
-    // 获取租户ID
-    const userStore = useUserStore()
-    const tenantId = userStore.getCurrentTenantId()
-    if (tenantId > 0) {
-      config.headers['X-Tenant-Id'] = tenantId.toString()
-      console.log('[Request] 设置租户ID:', tenantId)
-    }
+    
+    // 记录完整的请求信息
+    console.log('[Request] 请求信息:', {
+      url: config.url,
+      method: config.method,
+      hasToken: !!getToken()
+    })
 
     // 确保请求头中包含必要的字段
     config.headers['Accept'] = 'application/json, text/plain, */*'
@@ -73,7 +72,7 @@ service.interceptors.request.use(
     config.headers['Pragma'] = 'no-cache'
 
     //console.log('[Request] 最终请求头:', config.headers)
-    console.log('=== 请求拦截器结束 ===')
+    //console.log('=== 请求拦截器结束 ===')
     return config
   },
   error => {
@@ -157,7 +156,7 @@ service.interceptors.response.use(
     
     // 转换为统一的小驼峰格式
     const normalizedData = normalizeKeys(res)
-    console.log(`[Response] 转换后数据:`, normalizedData)
+    //console.log(`[Response] 转换后数据:`, normalizedData)
     
     // 处理业务状态码
     if (normalizedData.code === 200) {
@@ -183,14 +182,14 @@ service.interceptors.response.use(
                 console.error('[Auth] Token刷新失败:', error)
               })
             } else {
-              console.log('[Auth] 刷新令牌已过期，执行登出')
+              //console.log('[Auth] 刷新令牌已过期，执行登出')
               userStore.logout(false)
             }
           }
 
           // 检查token是否已过期
           if (expireTime - now <= 0) {
-            console.log('[Auth] Access Token已过期')
+            //console.log('[Auth] Access Token已过期')
             const userStore = useUserStore()
             userStore.logout(false)
             return Promise.reject(new Error('令牌已过期，请重新登录'))
@@ -198,7 +197,7 @@ service.interceptors.response.use(
 
           // 记录token剩余有效期
           const remainingTime = expireTime - now
-          console.log(`[Auth] Token剩余有效期: ${Math.floor(remainingTime / 1000 / 60)}分钟，总有效期: ${Math.floor(ACCESS_TOKEN_EXPIRE_TIME / 1000 / 60)}分钟`)
+          //console.log(`[Auth] Token剩余有效期: ${Math.floor(remainingTime / 1000 / 60)}分钟，总有效期: ${Math.floor(ACCESS_TOKEN_EXPIRE_TIME / 1000 / 60)}分钟`)
         } catch (e) {
           console.error('[Auth] Token解析失败:', e)
         }
@@ -211,13 +210,26 @@ service.interceptors.response.use(
     // 处理特定的业务状态码
     switch (normalizedData.code) {
       case 401: // 未授权
-      case 403: // 禁止访问
+        console.error('[Response] 未授权:', normalizedData.msg)
         const userStore = useUserStore()
         userStore.logout(false)
+        break
+      case 403: // 禁止访问
+        console.error('[Response] 禁止访问:', normalizedData.msg)
+        const userStore2 = useUserStore()
+        userStore2.logout(false)
         break
       case 500: // 服务器错误
         console.error('[Response] 服务器错误:', normalizedData.msg)
         break
+      default:
+        if (normalizedData.code !== 200) {
+          console.error('[Response] 业务错误:', {
+            code: normalizedData.code,
+            message: normalizedData.msg,
+            data: normalizedData.data
+          })
+        }
     }
     
     return Promise.reject(normalizedData)
@@ -261,20 +273,27 @@ service.interceptors.response.use(
             console.log('[Auth] Token已过期，准备登出')
             userStore.logout()
           } else {
+            console.log('[Auth] 未授权，准备登出')
             userStore.logout()
           }
           break
         case 403: // 禁止访问
-          console.error('[Response] 禁止访问')
+          console.error('[Response] 禁止访问:', data?.msg || '权限不足')
+          const userStore2 = useUserStore()
+          userStore2.logout()
           break
         case 404: // 未找到
-          console.error('[Response] 接口不存在')
+          console.error('[Response] 接口不存在:', error.config?.url)
           break
         case 500: // 服务器错误
-          console.error('[Response] 服务器错误')
+          console.error('[Response] 服务器错误:', data?.msg || '服务器内部错误')
           break
         default:
-          console.error(`[Response] HTTP错误 ${status}:`, data)
+          console.error(`[Response] HTTP错误 ${status}:`, {
+            url: error.config?.url,
+            message: data?.msg || '未知错误',
+            data: data
+          })
       }
     } else if (error.request) {
       // 请求已发出但没有收到响应

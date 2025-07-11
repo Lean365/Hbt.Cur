@@ -5,8 +5,6 @@ import type { HbtLoginEnvLog } from './loginEnvLog'
 
 /** 设备信息 */
 export interface HbtDeviceInfo {
-  /** 租户ID */
-  tenantId?: number
   /** 设备ID */
   deviceId?: string
   /** 设备令牌（后端生成的唯一标识） */
@@ -89,8 +87,7 @@ export interface HbtLoginLog extends HbtBaseEntity {
   logLevel: number
   /** 用户ID */
   userId: number
-  /** 租户ID */
-  tenantId?: number
+
   /** 用户名 */
   userName: string
   /** IP地址 */
@@ -131,8 +128,7 @@ export interface HbtLoginLogCreate {
   logLevel: number
   /** 用户ID */
   userId: number
-  /** 租户ID */
-  tenantId?: number
+
   /** 用户名 */
   userName: string
   /** IP地址 */
@@ -204,8 +200,7 @@ export interface HbtLoginLogDto {
   loginLogId: number
   /** 用户ID */
   userId: number
-  /** 租户ID */
-  tenantId?: number
+
   /** 用户名 */
   userName: string
   /** IP地址 */

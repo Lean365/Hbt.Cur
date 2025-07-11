@@ -9,6 +9,7 @@
 
 using SqlSugar;
 using System.Data;
+using System.Threading.Tasks;
 
 namespace Lean.Hbt.Domain.Data;
 
@@ -21,6 +22,11 @@ public interface IHbtDbContext
     /// 获取SqlSugar客户端
     /// </summary>
     SqlSugarScope Client { get; }
+
+    /// <summary>
+    /// 获取Ado对象
+    /// </summary>
+    IAdo Ado { get; }
 
     /// <summary>
     /// 开启事务
@@ -42,4 +48,6 @@ public interface IHbtDbContext
     /// </summary>
     /// <returns>数据库连接</returns>
     IDbConnection GetConnection();
+
+
 } 

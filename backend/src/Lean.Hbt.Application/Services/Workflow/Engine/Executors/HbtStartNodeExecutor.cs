@@ -25,7 +25,7 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine.Executors
         /// <summary>
         /// 构造函数
         /// </summary>
-        public HbtStartNodeExecutor(IHbtLogger logger) : base(logger)
+        public HbtStartNodeExecutor(IHbtLogger logger, IHbtRepository<HbtNodeTemplate> nodeTemplateRepository) : base(logger, nodeTemplateRepository)
         {
         }
 

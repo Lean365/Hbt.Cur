@@ -224,3 +224,13 @@ export function allocateUserPosts(userId: number, postIds: number[]) {
     data: postIds
   })
 }
+
+/**
+ * 获取用户选项列表
+ */
+export function getUserOptions() {
+  return request<HbtApiResponse<{ label: string; value: number }[]>>({
+    url: '/api/HbtUser/options',
+    method: 'get'
+  })
+}

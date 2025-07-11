@@ -38,10 +38,7 @@ public class HbtBaseService
     /// 本地化服务
     /// </summary>
     protected readonly IHbtLocalizationService _localization;
-    /// <summary>
-    /// 当前租户服务
-    /// </summary>
-    protected readonly IHbtCurrentTenant _currentTenant;
+
 
     /// <summary>
     /// 构造函数
@@ -49,48 +46,29 @@ public class HbtBaseService
     /// <param name="logger">日志服务</param>
     /// <param name="httpContextAccessor">HTTP上下文访问器</param>
     /// <param name="currentUser">当前用户服务</param>
-    /// <param name="currentTenant">当前租户服务</param>
+
     /// <param name="localization">本地化服务</param>
     public HbtBaseService(
         IHbtLogger logger, 
         IHttpContextAccessor httpContextAccessor,
         IHbtCurrentUser currentUser,
-        IHbtCurrentTenant currentTenant,
+
         IHbtLocalizationService localization)
     {
         ArgumentNullException.ThrowIfNull(logger);
         ArgumentNullException.ThrowIfNull(httpContextAccessor);
         ArgumentNullException.ThrowIfNull(currentUser);
-        ArgumentNullException.ThrowIfNull(currentTenant);
+
         ArgumentNullException.ThrowIfNull(localization);
 
         _logger = logger;
         _httpContextAccessor = httpContextAccessor;
         _currentUser = currentUser;
-        _currentTenant = currentTenant;
+
         _localization = localization;
     }
 
-    /// <summary>
-    /// 获取当前租户ID
-    /// </summary>
-    protected long CurrentTenantId => _currentTenant.TenantId;
 
-    /// <summary>
-    /// 获取当前租户名称
-    /// </summary>
-    protected string CurrentTenantName => _currentTenant.TenantName;
-
-    /// <summary>
-    /// 验证当前租户ID是否匹配
-    /// </summary>
-    /// <param name="tenantId">要验证的租户ID</param>
-    /// <exception cref="HbtException">当租户ID不匹配时抛出异常</exception>
-    protected void ValidateTenantId(long tenantId)
-    {
-        if (CurrentTenantId != tenantId)
-            throw new HbtException(L("Identity.Tenant.Mismatch"), "403");
-    }
 
     /// <summary>
     /// 获取本地化字符串

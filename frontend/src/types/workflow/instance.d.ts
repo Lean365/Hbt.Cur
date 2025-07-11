@@ -14,8 +14,11 @@ export interface HbtInstance extends HbtBaseEntity {
   instanceName: string
   businessKey: string
   definitionId: number
+  definitionName: string
   currentNodeId: number
+  currentNodeName: string
   initiatorId: number
+  initiatorName: string
   formData: string
   status: number
   startTime: string

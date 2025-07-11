@@ -11,35 +11,34 @@
 
 namespace Lean.Hbt.Application.Services.Generator;
 using System.Linq.Expressions;
-using SqlSugar;
 using Lean.Hbt.Domain.IServices.Extensions;
 using Microsoft.AspNetCore.Http;
+using SqlSugar;
 
 /// <summary>
 /// 代码生成模板服务实现
 /// </summary>
 public class HbtGenTemplateService : HbtBaseService, IHbtGenTemplateService
 {
-    private readonly IHbtRepository<HbtGenTemplate> _templateRepository;
+    private readonly IHbtRepositoryFactory _repositoryFactory;
+    private IHbtRepository<HbtGenTemplate> TemplateRepository => _repositoryFactory.GetAuthRepository<HbtGenTemplate>();
 
     /// <summary>
     /// 构造函数
     /// </summary>
-    /// <param name="templateRepository">模板仓储</param>
+    /// <param name="repositoryFactory">模板仓储</param>
     /// <param name="logger">日志服务</param>
     /// <param name="httpContextAccessor">HTTP上下文访问器</param>
     /// <param name="currentUser">当前用户服务</param>
-    /// <param name="currentTenant">当前租户服务</param>
     /// <param name="localization">本地化服务</param>
     public HbtGenTemplateService(
-        IHbtRepository<HbtGenTemplate> templateRepository,
+        IHbtRepositoryFactory repositoryFactory,
         IHbtLogger logger,
         IHttpContextAccessor httpContextAccessor,
         IHbtCurrentUser currentUser,
-        IHbtCurrentTenant currentTenant,
-        IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, currentTenant, localization)
+        IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
     {
-        _templateRepository = templateRepository;
+        _repositoryFactory = repositoryFactory ?? throw new ArgumentNullException(nameof(repositoryFactory));
     }
 
     #region 基础操作
@@ -55,7 +54,7 @@ public class HbtGenTemplateService : HbtBaseService, IHbtGenTemplateService
         var exp = QueryExpression(input);
 
         // 执行分页查询
-        var result = await _templateRepository.GetPagedListAsync(
+        var result = await TemplateRepository.GetPagedListAsync(
             exp,
             input.PageIndex,
             input.PageSize,
@@ -71,7 +70,7 @@ public class HbtGenTemplateService : HbtBaseService, IHbtGenTemplateService
             PageSize = result.PageSize
         };
     }
-    
+
     /// <summary>
     /// 根据ID获取模板信息
     /// </summary>
@@ -79,7 +78,7 @@ public class HbtGenTemplateService : HbtBaseService, IHbtGenTemplateService
     /// <returns>模板信息</returns>
     public async Task<HbtGenTemplateDto?> GetByIdAsync(long id)
     {
-        var template = await _templateRepository.GetByIdAsync(id);
+        var template = await TemplateRepository.GetByIdAsync(id);
         if (template == null)
         {
             return null;
@@ -96,10 +95,10 @@ public class HbtGenTemplateService : HbtBaseService, IHbtGenTemplateService
     public async Task<HbtGenTemplateDto> CreateAsync(HbtGenTemplateCreateDto input)
     {
         // 验证字段是否已存在
-        await HbtValidateUtils.ValidateFieldExistsAsync(_templateRepository, "TemplateName", input.TemplateName);
+        await HbtValidateUtils.ValidateFieldExistsAsync(TemplateRepository, "TemplateName", input.TemplateName);
 
         var template = input.Adapt<HbtGenTemplate>();
-        var result = await _templateRepository.CreateAsync(template);
+        var result = await TemplateRepository.CreateAsync(template);
         if (result <= 0)
         {
             throw new HbtException(L("GenTemplate.CreateFailed"));
@@ -115,17 +114,17 @@ public class HbtGenTemplateService : HbtBaseService, IHbtGenTemplateService
     /// <returns>更新后的模板信息</returns>
     public async Task<HbtGenTemplateDto> UpdateAsync(HbtGenTemplateUpdateDto input)
     {
-        var template = await _templateRepository.GetByIdAsync(input.GenTemplateId)
+        var template = await TemplateRepository.GetByIdAsync(input.GenTemplateId)
             ?? throw new HbtException(L("GenTemplate.NotFound", input.GenTemplateId));
 
         // 验证字段是否已存在
         if (template.TemplateName != input.TemplateName)
         {
-            await HbtValidateUtils.ValidateFieldExistsAsync(_templateRepository, "TemplateName", input.TemplateName, input.GenTemplateId);
+            await HbtValidateUtils.ValidateFieldExistsAsync(TemplateRepository, "TemplateName", input.TemplateName, input.GenTemplateId);
         }
 
         input.Adapt(template);
-        var result = await _templateRepository.UpdateAsync(template);
+        var result = await TemplateRepository.UpdateAsync(template);
         if (result <= 0)
         {
             throw new HbtException(L("GenTemplate.UpdateFailed"));
@@ -141,13 +140,13 @@ public class HbtGenTemplateService : HbtBaseService, IHbtGenTemplateService
     /// <returns>是否删除成功</returns>
     public async Task<bool> DeleteAsync(long id)
     {
-        var template = await _templateRepository.GetByIdAsync(id);
+        var template = await TemplateRepository.GetByIdAsync(id);
         if (template == null)
         {
             throw new HbtException($"模板[{id}]不存在");
         }
 
-        return await _templateRepository.DeleteAsync(template) > 0;
+        return await TemplateRepository.DeleteAsync(template) > 0;
     }
 
     /// <summary>
@@ -160,7 +159,7 @@ public class HbtGenTemplateService : HbtBaseService, IHbtGenTemplateService
         if (ids == null || !ids.Any())
             throw new HbtException(L("GenTemplate.BatchDelete.Empty"));
 
-        return await _templateRepository.DeleteRangeAsync(ids.Cast<object>().ToList()) > 0;
+        return await TemplateRepository.DeleteRangeAsync(ids.Cast<object>().ToList()) > 0;
     }
 
     /// <summary>
@@ -170,14 +169,14 @@ public class HbtGenTemplateService : HbtBaseService, IHbtGenTemplateService
     /// <returns>是否成功</returns>
     public async Task<bool> UpdateStatusAsync(HbtGenTemplateStatusDto input)
     {
-        var template = await _templateRepository.GetByIdAsync(input.GenTemplateId)
+        var template = await TemplateRepository.GetByIdAsync(input.GenTemplateId)
             ?? throw new HbtException(L("GenTemplate.NotFound", input.GenTemplateId));
 
         template.Status = input.Status;
         template.UpdateBy = _currentUser.UserName;
         template.UpdateTime = DateTime.Now;
 
-        return await _templateRepository.UpdateAsync(template) > 0;
+        return await TemplateRepository.UpdateAsync(template) > 0;
     }
 
     #endregion 基础操作
@@ -208,7 +207,7 @@ public class HbtGenTemplateService : HbtBaseService, IHbtGenTemplateService
                 try
                 {
                     // 验证模板名称是否已存在
-                    var existTemplate = await _templateRepository.GetFirstAsync(x => x.TemplateName == template.TemplateName);
+                    var existTemplate = await TemplateRepository.GetFirstAsync(x => x.TemplateName == template.TemplateName);
                     if (existTemplate != null)
                     {
                         fail++;
@@ -220,7 +219,7 @@ public class HbtGenTemplateService : HbtBaseService, IHbtGenTemplateService
                     template.UpdateBy = _currentUser.UserName;
                     template.UpdateTime = DateTime.Now;
 
-                    var result = await _templateRepository.CreateAsync(template);
+                    var result = await TemplateRepository.CreateAsync(template);
                     if (result > 0)
                     {
                         success++;
@@ -289,5 +288,5 @@ public class HbtGenTemplateService : HbtBaseService, IHbtGenTemplateService
             .AndIF(query.TemplateCategory.HasValue, x => x.TemplateCategory == query.TemplateCategory.Value)
             .AndIF(query.Status.HasValue && query.Status.Value != -1, x => x.Status == query.Status.Value)
             .ToExpression();
-    }    
+    }
 }

@@ -1,92 +1,26 @@
 export default {
   workflow: {
     task: {
-      title: 'Workflow Task',
-      list: {
-        title: 'Workflow Task List',
-        search: {
-          name: 'Task Name',
-          type: 'Task Type',
-          status: 'Status',
-          startTime: 'Start Time',
-          endTime: 'End Time'
-        },
-        table: {
-          name: 'Task Name',
-          type: 'Task Type',
-          status: 'Status',
-          startTime: 'Start Time',
-          endTime: 'End Time',
-          duration: 'Duration',
-          actions: 'Actions'
-        },
-        actions: {
-          view: 'View',
-          edit: 'Edit',
-          delete: 'Delete',
-          refresh: 'Refresh'
-        },
-        status: {
-          running: 'Running',
-          completed: 'Completed',
-          terminated: 'Terminated',
-          failed: 'Failed'
-        }
-      },
-      form: {
-        title: {
-          create: 'Create Workflow Task',
-          edit: 'Edit Workflow Task'
-        },
-        fields: {
-          name: 'Task Name',
-          type: 'Task Type',
-          description: 'Description',
-          input: 'Input',
-          output: 'Output',
-          error: 'Error'
-        },
-        rules: {
-          name: {
-            required: 'Please enter task name'
-          },
-          type: {
-            required: 'Please select task type'
-          }
-        },
-        buttons: {
-          submit: 'Submit',
-          cancel: 'Cancel'
-        }
-      },
-      detail: {
-        title: 'Workflow Task Detail',
-        basic: {
-          title: 'Basic Information',
-          name: 'Task Name',
-          type: 'Task Type',
-          description: 'Description',
-          status: 'Status',
-          startTime: 'Start Time',
-          endTime: 'End Time',
-          duration: 'Duration'
-        },
-        input: {
-          title: 'Input Information',
-          value: 'Input Value'
-        },
-        output: {
-          title: 'Output Information',
-          value: 'Output Value'
-        },
-        error: {
-          title: 'Error Information',
-          message: 'Error Message',
-          stackTrace: 'Stack Trace'
-        },
-        actions: {
-          back: 'Back'
-        }
+      fields: {
+      processTaskId: '任务ID',
+      instanceId: '实例ID',
+      instanceName: '实例名称',
+      nodeId: '节点ID',
+      nodeName: '节点名称',
+      title: '工作流任务',
+      taskName: '任务名称',
+      taskType: '任务类型',
+      status: '任务状态',
+      assigneeId: '处理人ID',
+      assigneeName: '处理人',
+      comment: '处理意见',
+      result: '处理结果',
+      completeTime: '完成时间',
+      dueTime: '到期时间',
+      reminderTime: '提醒时间',
+      priority: '优先级',
+      workflowInstance: '工作流实例',
+      node: '节点',
       }
     }
   }

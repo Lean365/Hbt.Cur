@@ -365,11 +365,17 @@ export default {
       batchUpdate: 'Actualizar por Lotes', // @btn-batch-update-color
 
       // === Botones de Operación de Estado ===
-      audit: 'Auditar',        // @btn-audit-color
-      revoke: 'Revocar',       // @btn-revoke-color
-      stop: 'Detener',         // @btn-stop-color
-      run: 'Ejecutar',         // @btn-run-color
-      force: 'Forzar',         // @btn-forced-color
+      audit: 'Auditar',      // @btn-audit-color
+      revoke: 'Revocar',     // @btn-revoke-color
+      stop: 'Detener',       // @btn-stop-color
+      run: 'Ejecutar',       // @btn-run-color
+      force: 'Forzar',       // @btn-forced-color
+      start: 'Iniciar',      // @btn-start-color
+      suspend: 'Suspender',  // @btn-suspend-color
+      resume: 'Reanudar',    // @btn-resume-color
+      submit: 'Enviar',      // @btn-submit-color
+      withdraw: 'Retirar',   // @btn-withdraw-color
+      terminate: 'Terminar',  // @btn-terminate-color
 
       // === Botones de Función del Sistema ===
       generate: 'Generar',     // @btn-generate-color

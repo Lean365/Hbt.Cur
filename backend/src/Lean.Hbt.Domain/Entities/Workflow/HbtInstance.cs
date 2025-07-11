@@ -18,6 +18,10 @@ namespace Lean.Hbt.Domain.Entities.Workflow
     /// </remarks>
     [SugarTable("hbt_workflow_instance", "工作流实例表")]
     [SugarIndex("ix_workflow_instance_definition", nameof(DefinitionId), OrderByType.Asc)]
+    [SugarIndex("ix_workflow_instance_business_key", nameof(BusinessKey), OrderByType.Asc, true)]
+    [SugarIndex("ix_workflow_instance_status", nameof(Status), OrderByType.Asc)]
+    [SugarIndex("ix_workflow_instance_initiator", nameof(InitiatorId), OrderByType.Asc)]
+    [SugarIndex("ix_workflow_instance_start_time", nameof(StartTime), OrderByType.Desc)]
     public class HbtInstance : HbtBaseEntity
     {
         /// <summary>
@@ -41,8 +45,8 @@ namespace Lean.Hbt.Domain.Entities.Workflow
         /// <summary>
         /// 当前节点ID
         /// </summary>
-        [SugarColumn(ColumnName = "current_node_id", ColumnDescription = "当前节点ID", ColumnDataType = "bigint", IsNullable = false)]
-        public long CurrentNodeId { get; set; }
+        [SugarColumn(ColumnName = "current_node_id", ColumnDescription = "当前节点ID", ColumnDataType = "bigint", IsNullable = true)]
+        public long? CurrentNodeId { get; set; }
 
         /// <summary>
         /// 发起人ID
@@ -53,11 +57,11 @@ namespace Lean.Hbt.Domain.Entities.Workflow
         /// <summary>
         /// 表单数据(JSON格式)
         /// </summary>
-        [SugarColumn(ColumnName = "form_data", ColumnDescription = "表单数据(JSON格式)", ColumnDataType = "text", IsNullable = false)]
+        [SugarColumn(ColumnName = "form_data", ColumnDescription = "表单数据(JSON格式)", ColumnDataType = "text", IsNullable = true)]
         public string? FormData { get; set; }
 
         /// <summary>
-        /// 实例状态(0:未开始 1:进行中 2:已完成 3:已取消)
+        /// 实例状态(0:未开始 1:进行中 2:已完成 3:已终止 4:已挂起)
         /// </summary>
         [SugarColumn(ColumnName = "status", ColumnDescription = "实例状态", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
         public int Status { get; set; }
@@ -75,6 +79,13 @@ namespace Lean.Hbt.Domain.Entities.Workflow
         public DateTime? EndTime { get; set; }
 
         /// <summary>
+        /// 优先级(1=低 2=中 3=高 4=紧急)
+        /// </summary>
+        [SugarColumn(ColumnName = "priority", ColumnDescription = "优先级", ColumnDataType = "int", IsNullable = false, DefaultValue = "2")]
+        public int Priority { get; set; } = 2;
+
+
+        /// <summary>
         /// 工作流定义
         /// </summary>
         [Navigate(NavigateType.OneToOne, nameof(DefinitionId))]
@@ -85,5 +96,23 @@ namespace Lean.Hbt.Domain.Entities.Workflow
         /// </summary>
         [Navigate(NavigateType.OneToOne, nameof(CurrentNodeId))]
         public HbtNode? CurrentNode { get; set; }
+
+        /// <summary>
+        /// 工作流节点列表
+        /// </summary>
+        [Navigate(NavigateType.OneToMany, nameof(HbtNode.InstanceId))]
+        public List<HbtNode>? WorkflowNodes { get; set; }
+
+        /// <summary>
+        /// 工作流历史记录列表
+        /// </summary>
+        [Navigate(NavigateType.OneToMany, nameof(HbtHistory.InstanceId))]
+        public List<HbtHistory>? WorkflowHistories { get; set; }
+
+        /// <summary>
+        /// 工作流任务列表
+        /// </summary>
+        [Navigate(NavigateType.OneToMany, nameof(HbtProcessTask.InstanceId))]
+        public List<HbtProcessTask>? ProcessTasks { get; set; }
     }
 }

@@ -161,10 +161,6 @@ namespace Lean.Hbt.Application.Dtos.Audit
         /// </summary>
         public long? UserId { get; set; }
 
-        /// <summary>
-        /// 租户ID
-        /// </summary>
-        public long? TenantId { get; set; }
 
         /// <summary>
         /// 设备ID
@@ -210,10 +206,6 @@ namespace Lean.Hbt.Application.Dtos.Audit
         [Required(ErrorMessage = "用户ID不能为空")]
         public long UserId { get; set; }
 
-        /// <summary>
-        /// 租户ID
-        /// </summary>
-        public long? TenantId { get; set; }
 
         /// <summary>
         /// 设备类型
@@ -279,11 +271,6 @@ namespace Lean.Hbt.Application.Dtos.Audit
         /// </summary>
         [Required(ErrorMessage = "用户ID不能为空")]
         public long UserId { get; set; }
-
-        /// <summary>
-        /// 租户ID
-        /// </summary>
-        public long? TenantId { get; set; }
 
         /// <summary>
         /// 设备类型
@@ -375,10 +362,6 @@ namespace Lean.Hbt.Application.Dtos.Audit
         /// </summary>
         public long? UserId { get; set; }
 
-        /// <summary>
-        /// 租户ID
-        /// </summary>
-        public long? TenantId { get; set; }
 
         /// <summary>
         /// 设备类型

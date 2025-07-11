@@ -10,11 +10,8 @@ export interface HbtHistory extends HbtBaseEntity {
   instanceId: number
   nodeId: number
   operationType: number
-  operatorId: number
-  operatorName: string
   operationResult?: number
   operationComment?: string
-  operationTime: string
   workflowInstance?: HbtInstance
   node?: HbtNode
 }
@@ -24,8 +21,6 @@ export interface HbtHistoryQuery extends HbtPagedQuery {
   instanceId?: number
   nodeId?: number
   operationType?: string
-  operatorId?: number
-  operatorName?: string
   operationResult?: number
   startTime?: string
   endTime?: string
@@ -35,11 +30,8 @@ export interface HbtHistoryCreate {
   instanceId: number
   nodeId: number
   operationType: number
-  operatorId: number
-  operatorName: string
   operationResult?: number
   operationComment?: string
-  operationTime: string
 }
 
 /** 工作流历史记录更新参数 */
@@ -58,11 +50,8 @@ export interface HbtHistoryImport {
   instanceId: number
   nodeId: number
   operationType: number
-  operatorId: number
-  operatorName: string
   operationResult?: number
   operationComment?: string
-  operationTime: string
 }
 
 /** 工作流历史记录导出参数 */
@@ -70,11 +59,8 @@ export interface HbtHistoryExport extends HbtHistoryQuery {
   instanceId: number
   nodeId: number
   operationType: number
-  operatorId: number
-  operatorName: string
   operationResult?: number
   operationComment?: string
-  operationTime: string
 }
 
 /** 工作流历史记录模板参数 */
@@ -82,11 +68,8 @@ export interface HbtHistoryTemplate {
   instanceId: number
   nodeId: number
   operationType: number
-  operatorId: number
-  operatorName: string
   operationResult?: number
   operationComment?: string
-  operationTime: string
 }
 
 /** 工作流历史记录分页结果 */

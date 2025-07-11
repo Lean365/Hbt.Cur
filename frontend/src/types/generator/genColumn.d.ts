@@ -57,8 +57,6 @@ export interface HbtGenColumn extends HbtBaseEntity {
   dictType: string
   /** 排序 */
   orderNum: number
-  /** 租户ID */
-  tenantId: number
 }
 
 /**
@@ -121,8 +119,7 @@ export interface HbtGenColumnCreate {
   dictType: string
   /** 排序 */
   orderNum: number
-  /** 租户ID */
-  tenantId: number
+
 }
 
 /**

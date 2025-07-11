@@ -47,7 +47,7 @@ namespace Lean.Hbt.Domain.Entities.Workflow
         public int TaskType { get; set; }
 
         /// <summary>
-        /// 任务状态（0:未处理 1:处理中 2:已完成 3:已取消）
+        /// 任务状态（0:待处理 1:处理中 2:已同意 3:已拒绝 4:已退回 5:已转办 6:已取消）
         /// </summary>
         [SugarColumn(ColumnName = "status", ColumnDescription = "任务状态", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
         public int Status { get; set; }
@@ -63,12 +63,6 @@ namespace Lean.Hbt.Domain.Entities.Workflow
         /// </summary>
         [SugarColumn(ColumnName = "task_comment", ColumnDescription = "处理意见", Length = 500, ColumnDataType = "nvarchar", IsNullable = true)]
         public string? Comment { get; set; }
-
-        /// <summary>
-        /// 处理结果(0:未处理 1:同意 2:拒绝)
-        /// </summary>
-        [SugarColumn(ColumnName = "task_result", ColumnDescription = "处理结果", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
-        public int Result { get; set; }
 
         /// <summary>
         /// 完成时间

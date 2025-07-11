@@ -9,13 +9,13 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, watch, h } from 'vue'
+import { ref, computed, watch, h, type VNode } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter, type RouteRecordRaw } from 'vue-router'
 import type { MenuProps } from 'ant-design-vue'
 import type { MenuInfo } from 'ant-design-vue/lib/menu/src/interface'
 import { useMenuStore } from '@/stores/menu'
-import type { Menu } from '@/types/identity/menu'
+import type { HbtMenu } from '@/types/identity/menu'
 import { HbtMenuType } from '@/types/common'
 import * as Icons from '@ant-design/icons-vue'
 import {  handleRouteNavigation } from '@/router'
@@ -32,6 +32,30 @@ const openKeys = ref<string[]>([])
 // 图标映射
 const iconMap = Icons
 
+// 安全的图标获取函数
+const getSafeIcon = (iconName: string | undefined) => {
+  if (!iconName) {
+    return undefined
+  }
+
+  // 尝试直接使用图标名称
+  const IconComponent = (iconMap as any)[iconName]
+  if (IconComponent) {
+    return () => h(IconComponent)
+  }
+
+  // 如果没找到，尝试添加 Outlined 后缀
+  const outlinedIconName = iconName.endsWith('Outlined') ? iconName : `${iconName}Outlined`
+  const OutlinedIconComponent = (iconMap as any)[outlinedIconName]
+  if (OutlinedIconComponent) {
+    return () => h(OutlinedIconComponent)
+  }
+
+  // 如果还是没找到，返回默认图标
+  console.warn(`[菜单图标] 图标未找到: ${iconName}，使用默认图标`)
+  return () => h(iconMap.MenuOutlined)
+}
+
 interface MenuItemType {
   key: string
   icon?: () => VNode
@@ -40,7 +64,7 @@ interface MenuItemType {
 }
 
 // 查找指定路径的菜单项
-const findMenuByPath = (menus: Menu[] | undefined, path: string): Menu | undefined => {
+const findMenuByPath = (menus: HbtMenu[] | undefined, path: string): HbtMenu | undefined => {
   if (!menus) return undefined
 
   for (const menu of menus) {
@@ -62,7 +86,7 @@ const processBaseMenu = (child: RouteRecordRaw) => {
 
   return {
     key: child.path.startsWith('/') ? child.path : `/${child.path}`,
-    icon: meta.icon ? () => h(iconMap[meta.icon as keyof typeof iconMap]) : undefined,
+    icon: meta.icon ? getSafeIcon(meta.icon) : undefined,
     label: t(meta.title as string)
   }
 }
@@ -76,7 +100,7 @@ const processSubMenus = (child: RouteRecordRaw) => {
 
   return {
     key: parentPath,
-    icon: meta.icon ? () => h(iconMap[meta.icon as keyof typeof iconMap]) : undefined,
+    icon: meta.icon ? getSafeIcon(meta.icon) : undefined,
     label: t(meta.title as string),
     children: child.children.map((subChild: RouteRecordRaw) => {
       const subMeta = subChild.meta
@@ -85,7 +109,7 @@ const processSubMenus = (child: RouteRecordRaw) => {
         : `${parentPath}/${subChild.path}`
       return {
         key: childPath,
-        icon: subMeta?.icon ? () => h(iconMap[subMeta.icon as keyof typeof iconMap]) : undefined,
+        icon: subMeta?.icon ? getSafeIcon(subMeta.icon) : undefined,
         label: t((subMeta?.title as string) || '')
       }
     })
@@ -93,7 +117,7 @@ const processSubMenus = (child: RouteRecordRaw) => {
 }
 
 // 处理动态菜单项
-const processMenuItem = (menu: Menu, parentPath: string = ''): MenuItemType => {
+const processMenuItem = (menu: HbtMenu, parentPath: string = ''): MenuItemType => {
   // 确保menu对象存在
   if (!menu) {
     console.warn('[菜单组件] 无效的菜单项')
@@ -130,13 +154,13 @@ const processMenuItem = (menu: Menu, parentPath: string = ''): MenuItemType => {
   // 构建菜单项
   const result: MenuItemType = {
     key: fullPath,
-    icon: menu.icon ? () => h(iconMap[menu.icon as keyof typeof iconMap]) : undefined,
+    icon: menu.icon ? getSafeIcon(menu.icon) : undefined,
     label: menu.transKey ? t(menu.transKey) : menu.menuName
   }
 
   // 处理子菜单
   if (menu.children?.length) {
-    result.children = menu.children.map(child => processMenuItem(child, fullPath)).filter(Boolean)
+    result.children = menu.children.map((child: HbtMenu) => processMenuItem(child, fullPath)).filter(Boolean)
   }
 
   return result
@@ -234,7 +258,7 @@ watch(
 )
 
 // 查找菜单项
-const findMenuItem = (menus: Menu[] | undefined, key: string): Menu | undefined => {
+const findMenuItem = (menus: HbtMenu[] | undefined, key: string): HbtMenu | undefined => {
   if (!menus) {
     console.log('[菜单查找] 菜单列表为空')
     return undefined
@@ -255,7 +279,7 @@ const findMenuItem = (menus: Menu[] | undefined, key: string): Menu | undefined 
   // })
 
   // 递归查找菜单项
-  const findMenuWithKey = (menu: Menu, parentPath: string = ''): Menu | undefined => {
+  const findMenuWithKey = (menu: HbtMenu, parentPath: string = ''): HbtMenu | undefined => {
     // 处理路径
     const menuPath = menu.path || ''
     let fullPath = ''

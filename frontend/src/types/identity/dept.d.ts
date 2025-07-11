@@ -6,8 +6,6 @@ import type { HbtBaseEntity, HbtPagedQuery, HbtPagedResult } from '@/types/commo
 export interface HbtDept extends HbtBaseEntity {
   /** 部门ID */
   deptId: number
-  /** 租户ID */
-  tenantId: number
   /** 部门名称 */
   deptName: string
   /** 父部门ID */
@@ -59,8 +57,6 @@ export interface HbtDeptCreate {
   userCount: number
   /** 部门状态（0正常 1停用） */
   status: number
-  /** 租户ID */
-  tenantId: number
   /** 备注 */
   remark?: string
 }
@@ -220,7 +216,6 @@ export interface HbtUserDeptDto {
  * 部门信息
  */
 export interface DeptInfo extends HbtBaseEntity {
-  tenantId?: number;
   deptName: string;
   parentId: number;
   orderNum: number;

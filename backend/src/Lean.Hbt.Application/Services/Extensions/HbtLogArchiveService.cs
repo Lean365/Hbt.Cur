@@ -2,7 +2,8 @@ using System.IO.Compression;
 using System.Linq.Expressions;
 using Lean.Hbt.Common.Options;
 using Lean.Hbt.Domain.Entities.Audit;
-using Lean.Hbt.Domain.Entities.Core;
+using Lean.Hbt.Domain.Entities.Routine.Core;
+using Lean.Hbt.Domain.Repositories;
 using Microsoft.Extensions.Options;
 
 namespace Lean.Hbt.Application.Services.Extensions
@@ -13,47 +14,56 @@ namespace Lean.Hbt.Application.Services.Extensions
     public class HbtLogArchiveService : IHbtLogArchiveService
     {
         private readonly IOptions<HbtLogArchiveOptions> _defaultOptions;
-        private readonly IHbtRepository<HbtConfig> _configRepository;
-        private readonly IHbtRepository<HbtOperLog> _operLogRepository;
-        private readonly IHbtRepository<HbtLoginLog> _loginLogRepository;
-        private readonly IHbtRepository<HbtExceptionLog> _exceptionLogRepository;
-        private readonly IHbtRepository<HbtSqlDiffLog> _dbDiffLogRepository;
+        private readonly IHbtRepositoryFactory _repositoryFactory;
         private readonly IHbtLogger _logger;
 
         /// <summary>
         /// 构造函数
         /// </summary>
         /// <param name="defaultOptions"></param>
-        /// <param name="configRepository"></param>
-        /// <param name="operLogRepository"></param>
-        /// <param name="loginLogRepository"></param>
-        /// <param name="exceptionLogRepository"></param>
-        /// <param name="dbDiffLogRepository"></param>
+        /// <param name="repositoryFactory"></param>
         /// <param name="logger"></param>
         public HbtLogArchiveService(
             IOptions<HbtLogArchiveOptions> defaultOptions,
-            IHbtRepository<HbtConfig> configRepository,
-            IHbtRepository<HbtOperLog> operLogRepository,
-            IHbtRepository<HbtLoginLog> loginLogRepository,
-            IHbtRepository<HbtExceptionLog> exceptionLogRepository,
-            IHbtRepository<HbtSqlDiffLog> dbDiffLogRepository,
+            IHbtRepositoryFactory repositoryFactory,
             IHbtLogger logger)
         {
             _defaultOptions = defaultOptions;
-            _configRepository = configRepository;
-            _operLogRepository = operLogRepository;
-            _loginLogRepository = loginLogRepository;
-            _exceptionLogRepository = exceptionLogRepository;
-            _dbDiffLogRepository = dbDiffLogRepository;
+            _repositoryFactory = repositoryFactory ?? throw new ArgumentNullException(nameof(repositoryFactory));
             _logger = logger;
         }
+
+        /// <summary>
+        /// 获取配置仓储
+        /// </summary>
+        private IHbtRepository<HbtConfig> ConfigRepository => _repositoryFactory.GetAuthRepository<HbtConfig>();
+
+        /// <summary>
+        /// 获取操作日志仓储
+        /// </summary>
+        private IHbtRepository<HbtOperLog> OperLogRepository => _repositoryFactory.GetAuthRepository<HbtOperLog>();
+
+        /// <summary>
+        /// 获取登录日志仓储
+        /// </summary>
+        private IHbtRepository<HbtLoginLog> LoginLogRepository => _repositoryFactory.GetAuthRepository<HbtLoginLog>();
+
+        /// <summary>
+        /// 获取异常日志仓储
+        /// </summary>
+        private IHbtRepository<HbtExceptionLog> ExceptionLogRepository => _repositoryFactory.GetAuthRepository<HbtExceptionLog>();
+
+        /// <summary>
+        /// 获取数据库差异日志仓储
+        /// </summary>
+        private IHbtRepository<HbtSqlDiffLog> SqlDiffLogRepository => _repositoryFactory.GetAuthRepository<HbtSqlDiffLog>();
 
         /// <summary>
         /// 获取日志归档配置
         /// </summary>
         public async Task<HbtLogArchiveOptions> GetConfigAsync()
         {
-            var configs = await _configRepository.GetListAsync(c => c.ConfigKey.StartsWith("log.archive."));
+            var configs = await ConfigRepository.GetListAsync(c => c.ConfigKey.StartsWith("log.archive."));
             if (configs == null || !configs.Any())
                 return _defaultOptions.Value;
 
@@ -89,10 +99,10 @@ namespace Lean.Hbt.Application.Services.Extensions
 
             using (var archive = ZipFile.Open(archiveFile, ZipArchiveMode.Create))
             {
-                await ArchiveLogTable(archive, "hbt_oper_log.json", _operLogRepository, archiveDate, options.BatchSize);
-                await ArchiveLogTable(archive, "hbt_login_log.json", _loginLogRepository, archiveDate, options.BatchSize);
-                await ArchiveLogTable(archive, "hbt_exception_log.json", _exceptionLogRepository, archiveDate, options.BatchSize);
-                await ArchiveLogTable(archive, "hbt_dbdiff_log.json", _dbDiffLogRepository, archiveDate, options.BatchSize);
+                await ArchiveLogTable(archive, "hbt_oper_log.json", OperLogRepository, archiveDate, options.BatchSize);
+                await ArchiveLogTable(archive, "hbt_login_log.json", LoginLogRepository, archiveDate, options.BatchSize);
+                await ArchiveLogTable(archive, "hbt_exception_log.json", ExceptionLogRepository, archiveDate, options.BatchSize);
+                await ArchiveLogTable(archive, "hbt_dbdiff_log.json", SqlDiffLogRepository, archiveDate, options.BatchSize);
             }
 
             _logger.Info($"日志归档完成: {archiveFile}");

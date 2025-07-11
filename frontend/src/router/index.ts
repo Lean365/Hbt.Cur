@@ -548,8 +548,8 @@ router.beforeEach(async (to, from, next) => {
       }
     }
 
-    // 初始化自动登出
-    initAutoLogout(userStore)
+    // 自动登出功能已在 App.vue 中初始化，这里不需要重复初始化
+    // initAutoLogout(userStore)
 
     // 检查是否需要初始化菜单和动态路由
     const needInitRoutes =

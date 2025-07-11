@@ -6,7 +6,6 @@ import type { HbtBaseEntity, HbtPagedQuery, HbtPagedResult } from '@/types/commo
 export interface HbtLoginEnvLog extends HbtBaseEntity {
   loginEnvLogId: number;
   userId: number;
-  tenantId: number;
   deviceId: string;
   environmentId: string;
   loginType: number;
@@ -40,7 +39,6 @@ export interface HbtLoginEnvLog extends HbtBaseEntity {
  */
 export interface HbtLoginEnvLogQuery extends HbtPagedQuery {
   userId?: number;
-  tenantId?: number;
   deviceId?: string;
   environmentId?: string;
   loginType?: number;
@@ -56,7 +54,6 @@ export interface HbtLoginEnvLogQuery extends HbtPagedQuery {
  */
 export interface HbtLoginEnvLogCreate {
   userId: number;
-  tenantId: number;
   deviceId: string;
   environmentId: string;
   loginType: number;
@@ -96,8 +93,7 @@ export interface HbtLoginEnvLogUpdate extends HbtLoginEnvLogCreate {
  * 登录环境日志模板
  */
 export interface HbtLoginEnvLogTemplate {
-  userId: string;
-  tenantId: string;
+  userId: number;
   deviceId: string;
   environmentId: string;
   loginType: string;
@@ -131,7 +127,6 @@ export interface HbtLoginEnvLogTemplate {
  */
 export interface HbtLoginEnvLogImport {
   userId: number;
-  tenantId: number;
   deviceId: string;
   environmentId: string;
   loginType: number;
@@ -165,7 +160,6 @@ export interface HbtLoginEnvLogImport {
  */
 export interface HbtLoginEnvLogExport {
   userId: number;
-  tenantId: number;
   deviceId: string;
   environmentId: string;
   loginType: number;
@@ -206,7 +200,6 @@ export type HbtLoginEnvLogPageResult = HbtPagedResult<HbtLoginEnvLog>
 export interface HbtLoginEnvLogDto {
   loginEnvLogId: number;
   userId: number;
-  tenantId: number;
   deviceId: string;
   environmentId: string;
   loginType: number;

@@ -46,13 +46,13 @@ namespace Lean.Hbt.Infrastructure.Security
         /// <returns>异步任务</returns>
         public async Task InvokeAsync(HttpContext context)
         {
-            _logger.Info("[权限中间件] 开始处理请求: {Path}", context.Request.Path);
+            _logger.Debug("[权限中间件] 开始处理请求: {Path}", context.Request.Path);
 
             // 获取当前请求的Endpoint
             var endpoint = context.GetEndpoint();
             if (endpoint == null)
             {
-                _logger.Info("[权限中间件] 未找到Endpoint,跳过权限验证");
+                _logger.Debug("[权限中间件] 未找到Endpoint,跳过权限验证");
                 await _next(context);
                 return;
             }
@@ -61,7 +61,7 @@ namespace Lean.Hbt.Infrastructure.Security
             var allowAnonymous = endpoint.Metadata.GetMetadata<AllowAnonymousAttribute>();
             if (allowAnonymous != null)
             {
-                _logger.Info("[权限中间件] 发现AllowAnonymous特性,完全跳过权限验证");
+                _logger.Debug("[权限中间件] 发现AllowAnonymous特性,完全跳过权限验证");
                 await _next(context);
                 return;
             }
@@ -70,7 +70,7 @@ namespace Lean.Hbt.Infrastructure.Security
             var permAttribute = endpoint.Metadata.GetMetadata<HbtPermAttribute>();
             if (permAttribute == null)
             {
-                _logger.Info("[权限中间件] 未找到权限特性,跳过权限验证");
+                _logger.Debug("[权限中间件] 未找到权限特性,跳过权限验证");
                 await _next(context);
                 return;
             }
@@ -84,7 +84,7 @@ namespace Lean.Hbt.Infrastructure.Security
                 return;
             }
 
-            _logger.Info("[权限中间件] 需要的权限: {Permission}", permAttribute.Permission);
+            _logger.Debug("[权限中间件] 需要的权限: {Permission}", permAttribute.Permission);
 
             // 仅从Claims中获取用户ID
             var userIdClaim = context.User.Claims.FirstOrDefault(c => c.Type == "uid");
@@ -106,11 +106,11 @@ namespace Lean.Hbt.Infrastructure.Security
 
             var isAdmin = context.User.Claims.Any(c => c.Type == "adm" && c.Value == "true");
 
-            _logger.Info("[权限中间件] 用户信息: UserId={UserId}, IsAdmin={IsAdmin}", userId, isAdmin);
+            _logger.Debug("[权限中间件] 用户信息: UserId={UserId}, IsAdmin={IsAdmin}", userId, isAdmin);
 
             if (isAdmin)
             {
-                _logger.Info("[权限中间件] 用户是管理员，自动通过权限验证");
+                _logger.Debug("[权限中间件] 用户是管理员，自动通过权限验证");
                 await _next(context);
                 return;
             }

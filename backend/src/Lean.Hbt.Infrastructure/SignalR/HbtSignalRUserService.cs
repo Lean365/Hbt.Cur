@@ -389,29 +389,7 @@ namespace Lean.Hbt.Infrastructure.SignalR
             }
         }
 
-        /// <summary>
-        /// 获取租户组在线用户列表
-        /// </summary>
-        /// <param name="tenantId"></param>
-        /// <returns></returns>
-        public async Task<List<string>> GetGroupConnectionIdsAsync(long tenantId)
-        {
-            try
-            {
-                var exp = Expressionable.Create<HbtOnlineUser>();
-                exp.And(u => u.OnlineStatus == 0);
 
-                var users = await _repository.GetListAsync(exp.ToExpression());
-                return users.Where(u => !string.IsNullOrEmpty(u.ConnectionId))
-                    .Select(u => u.ConnectionId!)
-                    .ToList();
-            }
-            catch (Exception ex)
-            {
-                _logger.Error("获取租户组连接ID列表时发生错误: TenantId={TenantId}", tenantId, ex.Message, ex.Message);
-                throw;
-            }
-        }
 
         /// <summary>
         /// 更新用户最后活动时间

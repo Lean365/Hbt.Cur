@@ -14,22 +14,14 @@
       <!-- 右侧登录卡片 -->
       <a-card class="login-card" :bordered="false">
         <h2 class="login-title">{{ t('identity.auth.login.title') }}</h2>
+        
+        <!-- 登录表单 -->
         <a-form
           :model="loginForm"
           :rules="loginRules"
           ref="loginFormRef"
           @finish="handleLogin"
         >
-          <a-form-item name="tenantId">
-            <a-select
-              v-model:value="loginForm.tenantId"
-              :placeholder="t('identity.auth.login.tenantId')"
-              class="login-input"
-              :options="tenantList"
-              :suffixIcon="h(ApartmentOutlined)"
-              @change="(value) => loginForm.tenantId = Number(value)"
-            />
-          </a-form-item>
           <a-form-item name="userName">
             <a-input
               v-model:value="loginForm.userName"
@@ -39,7 +31,7 @@
               @change="handleUserNameChange"
             >
               <template #prefix>
-                <user-outlined />
+                <user-outlined v-icon-random="'login-user'" />
               </template>
             </a-input>
           </a-form-item>
@@ -51,7 +43,7 @@
               autocomplete="current-password"
             >
               <template #prefix>
-                <lock-outlined />
+                <lock-outlined v-icon-random="'login-password'" />
               </template>
             </a-input-password>
           </a-form-item>
@@ -88,7 +80,7 @@
               @click="handleOAuthLogin('github')"
             >
               <template #icon>
-                <GithubOutlined />
+                <GithubOutlined v-icon-random="'login-github'" />
               </template>
               GitHub
             </a-button>
@@ -123,7 +115,6 @@ import { HbtDeviceType, HbtOsType, HbtBrowserType } from '@/types/audit/loginDev
 
 // API和组件导入
 import { getSalt, checkAccountLockout } from '@/api/identity/auth'
-import { getTenantOptions } from '@/api/identity/tenant'
 import { PasswordEncryptor } from '@/utils/crypto'
 import { useUserStore } from '@/stores/user'
 import { useMenuStore } from '@/stores/menu'
@@ -138,6 +129,7 @@ import { getEnvironmentInfo } from '@/utils/environment'
 import { LOGIN_POLICY, LOGIN_STORAGE_KEYS, SPECIAL_USERS } from '@/types/identity/auth'
 import { registerDynamicRoutes } from '@/router'
 import { ApartmentOutlined, UserOutlined, LockOutlined, GithubOutlined } from '@ant-design/icons-vue'
+import { setIconRandomColor } from '@/utils/iconColor'
 
 
 const { t } = useI18n()
@@ -154,7 +146,6 @@ const captchaRef = ref()
 
 // 登录表单数据
 const loginForm = ref({
-  tenantId: 1,
   userName: 'admin',
   password: '123456',
   captchaToken: '',
@@ -165,19 +156,19 @@ const loginForm = ref({
 })
 
 // 表单验证规则
-const loginRules: Record<string, RuleObject[]> = {
-  tenantId: [
-    { required: true, type: 'number', message: t('identity.auth.login.form.tenantIdRequired'), trigger: 'blur' }
-  ],
-  userName: [
-    { required: true, type: 'string', message: t('identity.auth.login.form.usernameRequired'), trigger: 'blur' },
-    { type: 'string', min: 3, max: 50, message: t('identity.auth.login.form.usernameLength'), trigger: 'blur' }
-  ],
-  password: [
-    { required: true, type: 'string', message: t('identity.auth.login.form.passwordRequired'), trigger: 'blur' },
-    { type: 'string', min: 6, max: 100, message: t('identity.auth.login.form.passwordLength'), trigger: 'blur' }
-  ]
-}
+const loginRules = computed(() => {
+  const rules: Record<string, RuleObject[]> = {
+    userName: [
+      { required: true, type: 'string', message: t('identity.auth.login.form.usernameRequired'), trigger: 'blur' },
+      { type: 'string', min: 3, max: 50, message: t('identity.auth.login.form.usernameLength'), trigger: 'blur' }
+    ],
+    password: [
+      { required: true, type: 'string', message: t('identity.auth.login.form.passwordRequired'), trigger: 'blur' },
+      { type: 'string', min: 6, max: 100, message: t('identity.auth.login.form.passwordLength'), trigger: 'blur' }
+    ]
+  }
+  return rules
+})
 
 // 是否显示验证码
 const showCaptcha = ref(false)
@@ -190,20 +181,10 @@ const loading = ref(false)
 const captchaVerified = ref(false)
 const captchaParams = ref<{ token: string; xOffset: number } | null>(null)
 
-// 租户列表
-const tenantList = ref<{ value: number; label: string }[]>([])
-
-// 获取租户列表
-const loadTenantList = async () => {
-  const { data: res } = await getTenantOptions()
-  console.log('[租户列表] API响应:', res)
-  if (res.code === 200 && Array.isArray(res.data)) {
-    tenantList.value = res.data.map(item => ({
-      value: item.value,
-      label: item.label
-    }))
-    console.log('[租户列表] 加载成功:', tenantList.value)
-  }
+// 监听用户名变化
+const handleUserNameChange = async (e: Event) => {
+  const value = (e.target as HTMLInputElement).value;
+  console.log('[用户名变化] 用户名:', value)
 }
 
 // 检查是否需要验证码（5分钟内重复登录）
@@ -251,12 +232,6 @@ const resetFailedAttempts = (username: string) => {
   localStorage.setItem(LOGIN_STORAGE_KEYS.FAILED_ATTEMPTS, JSON.stringify(attempts))
 }
 
-// 监听用户名变化
-const handleUserNameChange = (e: Event) => {
-  const value = (e.target as HTMLInputElement).value;
-  // 不再自动设置租户ID
-}
-
 // 在文件顶部添加 isAdmin 变量定义
 const isAdmin = computed(() => loginForm.value.userName.toLowerCase() === SPECIAL_USERS.ADMIN)
 
@@ -264,17 +239,11 @@ const isAdmin = computed(() => loginForm.value.userName.toLowerCase() === SPECIA
 const handleLogin = async () => {
   try {
     loading.value = true
+    console.log('[登录] 开始登录流程')
     
     // 验证表单
     if (!loginForm.value.userName) {
       message.error(t('identity.auth.login.form.usernameRequired'))
-      loading.value = false
-      return
-    }
-    
-    // 确保租户ID已设置
-    if (!loginForm.value.tenantId) {
-      message.error(t('identity.auth.login.form.tenantIdRequired'))
       loading.value = false
       return
     }
@@ -287,11 +256,14 @@ const handleLogin = async () => {
     }
     
     // 1. 获取盐值
+    console.log('[登录] 开始获取盐值')
     const { data: saltResponse } = await getSalt(loginForm.value.userName)
     if (!saltResponse || !saltResponse.data?.salt) {
       message.error(t('identity.auth.login.error.getSalt'))
+      loading.value = false
       return
     }
+    console.log('[登录] 盐值获取成功')
 
     // 2. 使用盐值加密密码
     const hashedPassword = PasswordEncryptor.hashPassword(
@@ -305,13 +277,13 @@ const handleLogin = async () => {
     const environmentInfo = await getEnvironmentInfo()
 
     // 4. 构建登录参数
-    console.log('[登录] 表单数据:', loginForm.value)
-    console.log('[登录] 加密后的密码:', hashedPassword)
-    console.log('[登录] 设备信息:', deviceInfo)
-    console.log('[登录] 环境信息:', environmentInfo)
+    console.log('[登录] 构建登录参数:', {
+      用户名: loginForm.value.userName,
+      设备信息: deviceInfo,
+      环境信息: environmentInfo
+    })
     
     const loginParams: LoginParams = {
-      tenantId: Number(loginForm.value.tenantId), // 确保租户ID是数字类型
       userName: loginForm.value.userName,
       password: hashedPassword,
       captchaToken: loginForm.value.captchaToken,
@@ -327,13 +299,34 @@ const handleLogin = async () => {
     console.log('[登录] 构建的登录参数:', loginParams)
 
     // 5. 发起登录请求
+    console.log('[登录] 开始调用登录API')
     await userStore.login(loginParams)
+    console.log('[登录] 登录API调用成功')
+    
     message.success(t('identity.auth.login.success'))
+    
     // 登录成功后的处理
     await handleLoginSuccess()
   } catch (error: any) {
     console.error('[登录] 失败:', error)
-    message.error(error.message || t('identity.auth.login.error.unknown'))
+    
+    // 改进错误处理
+    let errorMessage = error.message || t('identity.auth.login.error.unknown')
+    
+    // 处理特定的错误类型
+    if (error.response?.data?.msg) {
+      errorMessage = error.response.data.msg
+    } else if (error.response?.status === 401) {
+      errorMessage = '用户名或密码错误'
+    } else if (error.response?.status === 403) {
+      errorMessage = '用户已被禁用或权限不足'
+    } else if (error.response?.status === 404) {
+      errorMessage = '用户不存在'
+    } else if (error.response?.status >= 500) {
+      errorMessage = '服务器错误，请稍后重试'
+    }
+    
+    message.error(errorMessage)
   } finally {
     loading.value = false
   }
@@ -489,24 +482,32 @@ const initEnvironmentInfo = async () => {
 
 // 在组件挂载时初始化设备信息
 onMounted(async () => {
-  await initDeviceInfo()
-  await initEnvironmentInfo()
-  await loadTenantList()
-  
-  // 清理登录状态
-  resetFailedAttempts(loginForm.value.userName)
-  showCaptcha.value = false
-  userStore.setNeedCaptcha(false)
+  try {
+    console.log('[登录页面] 开始初始化')
+    
+    // 初始化设备信息
+    console.log('[登录页面] 初始化设备信息')
+    await initDeviceInfo()
+    await initEnvironmentInfo()
 
-  // 如果之前记住了用户名，自动填充
-  const lastUsername = localStorage.getItem('lastUsername')
-  if (lastUsername) {
-    loginForm.value.userName = lastUsername
-    rememberMe.value = true
-    // 如果是admin用户，自动设置租户ID为0
-    if (lastUsername.toLowerCase() === 'admin') {
-      loginForm.value.tenantId = 1
+    // 清理登录状态
+    console.log('[登录页面] 清理登录状态')
+    resetFailedAttempts(loginForm.value.userName)
+    showCaptcha.value = false
+    userStore.setNeedCaptcha(false)
+
+    // 如果之前记住了用户名，自动填充
+    const lastUsername = localStorage.getItem('lastUsername')
+    if (lastUsername) {
+      console.log('[登录页面] 恢复上次登录的用户名:', lastUsername)
+      loginForm.value.userName = lastUsername
+      rememberMe.value = true
     }
+    
+    console.log('[登录页面] 初始化完成')
+  } catch (error) {
+    console.error('[登录页面初始化] 失败:', error)
+    message.error('页面初始化失败，请刷新重试')
   }
 })
 
@@ -526,7 +527,7 @@ watch(showCaptcha, async (newValue) => {
 
 // 组件卸载时清理定时器和状态
 onUnmounted(() => {
-  // 移除这些变量的引用，因为它们不存在
+  // 清理工作
 })
 
 const handleLockoutCheck = async (username: string) => {
@@ -681,6 +682,18 @@ const handleLockoutCheck = async (username: string) => {
 
 }
 
+// 登录页面图标样式优化
+:deep(.ant-input-prefix),
+:deep(.ant-select-suffix) {
+  .anticon {
+    transition: all 0.3s ease;
+    
+    &:hover {
+      transform: scale(1.1);
+    }
+  }
+}
+
 .login-button {
   width: 100%;
   height: 40px;
@@ -774,5 +787,18 @@ const handleLockoutCheck = async (username: string) => {
 :deep(.ant-modal-body) {
   padding: 24px;
   background: var(--ant-color-bg-container);
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.loading-text {
+  margin-top: 16px;
+  color: var(--ant-color-text-secondary);
 }
 </style> 

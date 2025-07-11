@@ -21,36 +21,33 @@ namespace Lean.Hbt.Application.Services.Generator;
 /// </summary>
 public class HbtGenTableDefineService : HbtBaseService, IHbtGenTableDefineService
 {
-    private readonly IHbtRepository<HbtGenTableDefine> _tableDefineRepository;
-    private readonly IHbtRepository<HbtGenColumnDefine> _columnDefineRepository;
+    private readonly IHbtRepositoryFactory _repositoryFactory;
     private readonly ISqlSugarClient _db;
     private readonly IWebHostEnvironment _webHostEnvironment;
+
+    private IHbtRepository<HbtGenTableDefine> TableDefineRepository => _repositoryFactory.GetAuthRepository<HbtGenTableDefine>();
+    private IHbtRepository<HbtGenColumnDefine> ColumnDefineRepository => _repositoryFactory.GetAuthRepository<HbtGenColumnDefine>();
 
     /// <summary>
     /// 构造函数
     /// </summary>
-    /// <param name="tableDefineRepository">表定义仓储</param>
-    /// <param name="columnDefineRepository">列定义仓储</param>
+    /// <param name="repositoryFactory">表定义仓储</param>
     /// <param name="logger">日志服务</param>
     /// <param name="httpContextAccessor">HTTP上下文访问器</param>
     /// <param name="currentUser">当前用户服务</param>
-    /// <param name="currentTenant">当前租户服务</param>
     /// <param name="localization">本地化服务</param>
     /// <param name="db">数据库客户端</param>
     /// <param name="webHostEnvironment">Web主机环境</param>
     public HbtGenTableDefineService(
-        IHbtRepository<HbtGenTableDefine> tableDefineRepository,
-        IHbtRepository<HbtGenColumnDefine> columnDefineRepository,
+        IHbtRepositoryFactory repositoryFactory,
         IHbtLogger logger,
         IHttpContextAccessor httpContextAccessor,
         IHbtCurrentUser currentUser,
-        IHbtCurrentTenant currentTenant,
         IHbtLocalizationService localization,
         ISqlSugarClient db,
-        IWebHostEnvironment webHostEnvironment) : base(logger, httpContextAccessor, currentUser, currentTenant, localization)
+        IWebHostEnvironment webHostEnvironment) : base(logger, httpContextAccessor, currentUser, localization)
     {
-        _tableDefineRepository = tableDefineRepository ?? throw new ArgumentNullException(nameof(tableDefineRepository));
-        _columnDefineRepository = columnDefineRepository ?? throw new ArgumentNullException(nameof(columnDefineRepository));
+        _repositoryFactory = repositoryFactory ?? throw new ArgumentNullException(nameof(repositoryFactory));
         _db = db ?? throw new ArgumentNullException(nameof(db));
         _webHostEnvironment = webHostEnvironment ?? throw new ArgumentNullException(nameof(webHostEnvironment));
     }
@@ -64,14 +61,14 @@ public class HbtGenTableDefineService : HbtBaseService, IHbtGenTableDefineServic
     /// <returns>表定义信息</returns>
     public async Task<HbtGenTableDefineDto?> GetTableByIdAsync(long id)
     {
-        var table = await _tableDefineRepository.GetByIdAsync(id);
+        var table = await TableDefineRepository.GetByIdAsync(id);
         if (table == null)
             return null;
 
         var dto = table.Adapt<HbtGenTableDefineDto>();
 
         // 获取列定义
-        var columns = await _columnDefineRepository.GetListAsync(x => x.TableId == id);
+        var columns = await ColumnDefineRepository.GetListAsync(x => x.TableId == id);
         dto.Columns = columns.Adapt<List<HbtGenColumnDefineDto>>();
 
         return dto;
@@ -92,7 +89,7 @@ public class HbtGenTableDefineService : HbtBaseService, IHbtGenTableDefineServic
         if (!string.IsNullOrEmpty(input.TableComment))
             exp = exp.And(x => x.TableComment.Contains(input.TableComment));
 
-        var result = await _tableDefineRepository.GetPagedListAsync(
+        var result = await TableDefineRepository.GetPagedListAsync(
             exp.ToExpression(),
             input.PageIndex,
             input.PageSize,
@@ -104,7 +101,7 @@ public class HbtGenTableDefineService : HbtBaseService, IHbtGenTableDefineServic
         // 获取列定义
         foreach (var dto in dtos)
         {
-            var columns = await _columnDefineRepository.GetListAsync(x => x.TableId == dto.GenTableDefineId);
+            var columns = await ColumnDefineRepository.GetListAsync(x => x.TableId == dto.GenTableDefineId);
             dto.Columns = columns.Adapt<List<HbtGenColumnDefineDto>>();
         }
 
@@ -125,15 +122,15 @@ public class HbtGenTableDefineService : HbtBaseService, IHbtGenTableDefineServic
     public async Task<HbtGenTableDefineDto> CreateTableAsync(HbtGenTableDefineCreateDto input)
     {
         // 检查表名是否已存在
-        await HbtValidateUtils.ValidateFieldExistsAsync(_tableDefineRepository, nameof(HbtGenTableDefine.TableName), input.TableName);
+        await HbtValidateUtils.ValidateFieldExistsAsync(TableDefineRepository, nameof(HbtGenTableDefine.TableName), input.TableName);
 
         var entity = input.Adapt<HbtGenTableDefine>();
 
         // 创建表定义
-        await _tableDefineRepository.CreateAsync(entity);
+        await TableDefineRepository.CreateAsync(entity);
 
         // 根据表名查询获取新建表的ID
-        var createdTable = await _tableDefineRepository.GetFirstAsync(x => x.TableName == input.TableName);
+        var createdTable = await TableDefineRepository.GetFirstAsync(x => x.TableName == input.TableName);
         if (createdTable == null || createdTable.Id <= 0)
         {
             throw new HbtException(L("Generator.TableDefine.CreateFailed"));
@@ -146,7 +143,7 @@ public class HbtGenTableDefineService : HbtBaseService, IHbtGenTableDefineServic
             foreach (var column in columns)
             {
                 column.TableId = createdTable.Id;
-                await _columnDefineRepository.CreateAsync(column);
+                await ColumnDefineRepository.CreateAsync(column);
             }
         }
 
@@ -167,25 +164,25 @@ public class HbtGenTableDefineService : HbtBaseService, IHbtGenTableDefineServic
     /// <returns>更新后的表定义信息</returns>
     public async Task<HbtGenTableDefineDto> UpdateTableAsync(HbtGenTableDefineUpdateDto input)
     {
-        var table = await _tableDefineRepository.GetByIdAsync(input.GenTableDefineId);
+        var table = await TableDefineRepository.GetByIdAsync(input.GenTableDefineId);
         if (table == null)
             throw new HbtException(L("Generator.TableDefine.NotFound", input.GenTableDefineId));
 
         // 检查表名是否已存在
-        await HbtValidateUtils.ValidateFieldExistsAsync(_tableDefineRepository, nameof(HbtGenTableDefine.TableName), input.TableName, input.GenTableDefineId);
+        await HbtValidateUtils.ValidateFieldExistsAsync(TableDefineRepository, nameof(HbtGenTableDefine.TableName), input.TableName, input.GenTableDefineId);
 
         // 更新表定义
         input.Adapt(table);
-        await _tableDefineRepository.UpdateAsync(table);
+        await TableDefineRepository.UpdateAsync(table);
 
         // 更新列定义
         if (input.Columns != null && input.Columns.Any())
         {
             // 删除旧的列定义
-            var oldColumns = await _columnDefineRepository.GetListAsync(x => x.TableId == input.GenTableDefineId);
+            var oldColumns = await ColumnDefineRepository.GetListAsync(x => x.TableId == input.GenTableDefineId);
             foreach (var column in oldColumns)
             {
-                await _columnDefineRepository.DeleteAsync(column.Id);
+                await ColumnDefineRepository.DeleteAsync(column.Id);
             }
 
             // 创建新的列定义
@@ -193,7 +190,7 @@ public class HbtGenTableDefineService : HbtBaseService, IHbtGenTableDefineServic
             foreach (var column in columns)
             {
                 column.TableId = input.GenTableDefineId;
-                await _columnDefineRepository.CreateAsync(column);
+                await ColumnDefineRepository.CreateAsync(column);
             }
         }
 
@@ -208,13 +205,13 @@ public class HbtGenTableDefineService : HbtBaseService, IHbtGenTableDefineServic
     public async Task<bool> DeleteTableAsync(long id)
     {
         // 删除表定义
-        await _tableDefineRepository.DeleteAsync(id);
+        await TableDefineRepository.DeleteAsync(id);
 
         // 删除关联的列定义
-        var columns = await _columnDefineRepository.GetListAsync(x => x.TableId == id);
+        var columns = await ColumnDefineRepository.GetListAsync(x => x.TableId == id);
         foreach (var column in columns)
         {
-            await _columnDefineRepository.DeleteAsync(column.Id);
+            await ColumnDefineRepository.DeleteAsync(column.Id);
         }
 
         return true;
@@ -266,13 +263,13 @@ public class HbtGenTableDefineService : HbtBaseService, IHbtGenTableDefineServic
                     }
 
                     // 检查表名是否已存在
-                    await HbtValidateUtils.ValidateFieldExistsAsync(_tableDefineRepository, nameof(HbtGenTableDefine.TableName), table.TableName);
+                    await HbtValidateUtils.ValidateFieldExistsAsync(TableDefineRepository, nameof(HbtGenTableDefine.TableName), table.TableName);
 
                     var entity = table.Adapt<HbtGenTableDefine>();
                     entity.CreateTime = DateTime.Now;
                     entity.CreateBy = _currentUser.UserName;
 
-                    await _tableDefineRepository.CreateAsync(entity);
+                    await TableDefineRepository.CreateAsync(entity);
                     success++;
                 }
                 catch (Exception ex)
@@ -312,7 +309,7 @@ public class HbtGenTableDefineService : HbtBaseService, IHbtGenTableDefineServic
     {
         try
         {
-            var list = await _tableDefineRepository.GetListAsync(QueryExpression(query));
+            var list = await TableDefineRepository.GetListAsync(QueryExpression(query));
             var exportList = list.Adapt<List<HbtGenTableDefineExportDto>>();
             return await HbtExcelHelper.ExportAsync(exportList, sheetName, "表定义数据");
         }
@@ -350,7 +347,7 @@ public class HbtGenTableDefineService : HbtBaseService, IHbtGenTableDefineServic
             }
 
             // 2. 检查表定义是否存在
-            var existingTable = await _tableDefineRepository.GetByIdAsync(input.GenTableDefineId);
+            var existingTable = await TableDefineRepository.GetByIdAsync(input.GenTableDefineId);
             if (existingTable == null)
             {
                 throw new HbtException(L("Generator.TableDefine.NotFound", input.GenTableDefineId));
@@ -440,7 +437,7 @@ public class HbtGenTableDefineService : HbtBaseService, IHbtGenTableDefineServic
     /// <returns>是否同步成功</returns>
     public async Task<bool> SyncTableAsync(long id)
     {
-        var table = await _tableDefineRepository.GetByIdAsync(id);
+        var table = await TableDefineRepository.GetByIdAsync(id);
         if (table == null)
             return false;
 
@@ -452,10 +449,10 @@ public class HbtGenTableDefineService : HbtBaseService, IHbtGenTableDefineServic
                 return false;
 
             // 删除旧的列定义
-            var oldColumns = await _columnDefineRepository.GetListAsync(x => x.TableId == id);
+            var oldColumns = await ColumnDefineRepository.GetListAsync(x => x.TableId == id);
             foreach (var column in oldColumns)
             {
-                await _columnDefineRepository.DeleteAsync(column.Id);
+                await ColumnDefineRepository.DeleteAsync(column.Id);
             }
 
             // 创建新的列定义
@@ -469,7 +466,7 @@ public class HbtGenTableDefineService : HbtBaseService, IHbtGenTableDefineServic
                     DbColumnType = dbColumn.DataType
                 };
 
-                await _columnDefineRepository.CreateAsync(column);
+                await ColumnDefineRepository.CreateAsync(column);
             }
 
             return true;
@@ -503,7 +500,7 @@ public class HbtGenTableDefineService : HbtBaseService, IHbtGenTableDefineServic
         if (!string.IsNullOrEmpty(query.ColumnComment))
             exp.And(x => x.ColumnComment.Contains(query.ColumnComment));
 
-        var result = await _columnDefineRepository.GetPagedListAsync(
+        var result = await ColumnDefineRepository.GetPagedListAsync(
             exp.ToExpression(),
             query.PageIndex,
             query.PageSize,
@@ -527,7 +524,7 @@ public class HbtGenTableDefineService : HbtBaseService, IHbtGenTableDefineServic
     public async Task<HbtGenColumnDefineDto> CreateColumnAsync(HbtGenColumnDefineCreateDto input)
     {
         // 检查表是否存在
-        var table = await _tableDefineRepository.GetByIdAsync(input.TableId);
+        var table = await TableDefineRepository.GetByIdAsync(input.TableId);
         if (table == null)
             throw new HbtException(L("Generator.TableDefine.NotFound", input.TableId));
 
@@ -537,13 +534,13 @@ public class HbtGenTableDefineService : HbtBaseService, IHbtGenTableDefineServic
             { "TableId", input.TableId.ToString() },
             { "ColumnName", input.ColumnName }
         };
-        await HbtValidateUtils.ValidateFieldsExistsAsync(_columnDefineRepository, fieldValues);
+        await HbtValidateUtils.ValidateFieldsExistsAsync(ColumnDefineRepository, fieldValues);
 
         var entity = input.Adapt<HbtGenColumnDefine>();
         entity.CreateTime = DateTime.Now;
         entity.CreateBy = _currentUser.UserName;
 
-        await _columnDefineRepository.CreateAsync(entity);
+        await ColumnDefineRepository.CreateAsync(entity);
         return entity.Adapt<HbtGenColumnDefineDto>();
     }
 
@@ -554,7 +551,7 @@ public class HbtGenTableDefineService : HbtBaseService, IHbtGenTableDefineServic
     /// <returns>更新后的列定义信息</returns>
     public async Task<HbtGenColumnDefineDto> UpdateColumnAsync(HbtGenColumnDefineUpdateDto input)
     {
-        var column = await _columnDefineRepository.GetByIdAsync(input.GenColumnDefineId);
+        var column = await ColumnDefineRepository.GetByIdAsync(input.GenColumnDefineId);
         if (column == null)
             throw new HbtException(L("Generator.ColumnDefine.NotFound", input.GenColumnDefineId));
 
@@ -564,13 +561,13 @@ public class HbtGenTableDefineService : HbtBaseService, IHbtGenTableDefineServic
             { "TableId", column.TableId.ToString() },
             { "ColumnName", input.ColumnName }
         };
-        await HbtValidateUtils.ValidateFieldsExistsAsync(_columnDefineRepository, fieldValues, input.GenColumnDefineId);
+        await HbtValidateUtils.ValidateFieldsExistsAsync(ColumnDefineRepository, fieldValues, input.GenColumnDefineId);
 
         input.Adapt(column);
         column.UpdateTime = DateTime.Now;
         column.UpdateBy = _currentUser.UserName;
 
-        await _columnDefineRepository.UpdateAsync(column);
+        await ColumnDefineRepository.UpdateAsync(column);
         return column.Adapt<HbtGenColumnDefineDto>();
     }
 
@@ -581,11 +578,11 @@ public class HbtGenTableDefineService : HbtBaseService, IHbtGenTableDefineServic
     /// <returns>是否删除成功</returns>
     public async Task<bool> DeleteColumnAsync(long id)
     {
-        var column = await _columnDefineRepository.GetByIdAsync(id);
+        var column = await ColumnDefineRepository.GetByIdAsync(id);
         if (column == null)
             return false;
 
-        await _columnDefineRepository.DeleteAsync(id);
+        await ColumnDefineRepository.DeleteAsync(id);
         return true;
     }
 
@@ -634,7 +631,7 @@ public class HbtGenTableDefineService : HbtBaseService, IHbtGenTableDefineServic
                     entity.CreateTime = DateTime.Now;
                     entity.CreateBy = _currentUser.UserName;
 
-                    await _columnDefineRepository.CreateAsync(entity);
+                    await ColumnDefineRepository.CreateAsync(entity);
                     success++;
                 }
                 catch (Exception ex)
@@ -674,7 +671,7 @@ public class HbtGenTableDefineService : HbtBaseService, IHbtGenTableDefineServic
     {
         try
         {
-            var list = await _columnDefineRepository.GetListAsync(x => x.TableId == tableId);
+            var list = await ColumnDefineRepository.GetListAsync(x => x.TableId == tableId);
             var exportList = list.Adapt<List<HbtGenColumnDefineExportDto>>();
             return await HbtExcelHelper.ExportAsync(exportList, sheetName, "列定义数据");
         }

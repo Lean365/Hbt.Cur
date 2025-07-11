@@ -35,15 +35,13 @@ public class HbtGenTableController : HbtBaseController
     /// <param name="codeGeneratorService">代码生成服务</param>
     /// <param name="logger">日志服务</param>
     /// <param name="currentUser">当前用户服务</param>
-    /// <param name="currentTenant">当前租户服务</param>
     /// <param name="localization">本地化服务</param>
     public HbtGenTableController(
         IHbtGenTableService genTableService,
         IHbtCodeGeneratorService codeGeneratorService,
         IHbtLogger logger,
         IHbtCurrentUser currentUser,
-        IHbtCurrentTenant currentTenant,
-        IHbtLocalizationService localization) : base(logger, currentUser, currentTenant, localization)
+        IHbtLocalizationService localization) : base(logger, currentUser, localization)
     {
         _genTableService = genTableService;
         _codeGeneratorService = codeGeneratorService;

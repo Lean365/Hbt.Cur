@@ -29,14 +29,12 @@ public class HbtTenantController : HbtBaseController
     /// <param name="tenantService">租户服务</param>
     /// <param name="logger">日志服务</param>
     /// <param name="currentUser">当前用户服务</param>
-    /// <param name="currentTenant">当前租户服务</param>
     /// <param name="localization">本地化服务</param>
     public HbtTenantController(
         IHbtTenantService tenantService,
         IHbtLogger logger,
         IHbtCurrentUser currentUser,
-        IHbtCurrentTenant currentTenant,
-        IHbtLocalizationService localization) : base(logger, currentUser, currentTenant, localization)
+        IHbtLocalizationService localization) : base(logger, currentUser, localization)
     {
         _tenantService = tenantService;
     }
@@ -183,20 +181,95 @@ public class HbtTenantController : HbtBaseController
     [AllowAnonymous]
     public async Task<IActionResult> GetOptionsAsync()
     {
-        var result = await _tenantService.GetOptionsAsync();
-        return Ok(HbtApiResult.Success(result));
+        try
+        {
+            _logger.Info("[租户控制器] 开始获取租户选项列表");
+            var result = await _tenantService.GetOptionsAsync();
+            _logger.Info("[租户控制器] 租户选项列表获取成功，共 {Count} 个租户", result.Count);
+            return Ok(HbtApiResult.Success(result));
+        }
+        catch (Exception ex)
+        {
+            _logger.Error("[租户控制器] 获取租户选项列表失败: {Message}", ex.Message);
+            return BadRequest(HbtApiResult.Error($"获取租户选项列表失败: {ex.Message}"));
+        }
     }
 
     /// <summary>
-    /// 测试数据库连接
+    /// 根据用户名获取租户选项列表
     /// </summary>
-    /// <param name="connectionInfo">数据库连接信息</param>
-    /// <returns>连接测试结果</returns>
-    [HttpPost("test-connection")]
-    [HbtLog("测试数据库连接")]
-    public async Task<HbtApiResult<bool>> TestDbConnection([FromBody] HbtDbConnectDto connectionInfo)
+    /// <param name="userName">用户名</param>
+    /// <returns>租户选项列表</returns>
+    [HttpGet("options/by-username/{userName}")]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetOptionsByUserNameAsync(string userName)
     {
-        var result = await _tenantService.TestDbConnectionAsync(connectionInfo);
-        return HbtApiResult<bool>.Success(result);
+        try
+        {
+            if (string.IsNullOrEmpty(userName))
+            {
+                return BadRequest(HbtApiResult.Error("用户名不能为空"));
+            }
+
+            var result = await _tenantService.GetOptionsByUserNameAsync(userName);
+            return Ok(HbtApiResult.Success(result));
+        }
+        catch (Exception ex)
+        {
+            _logger.Error($"根据用户名获取租户选项列表失败: {ex.Message}");
+            return BadRequest(HbtApiResult.Error($"获取租户选项列表失败: {ex.Message}"));
+        }
+    }
+
+    /// <summary>
+    /// 根据用户ID获取租户选项列表
+    /// </summary>
+    /// <param name="userId">用户ID</param>
+    /// <returns>租户选项列表</returns>
+    [HttpGet("options/by-userid/{userId}")]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetOptionsByUserIdAsync(long userId)
+    {
+        try
+        {
+            if (userId <= 0)
+            {
+                return BadRequest(HbtApiResult.Error("用户ID无效"));
+            }
+
+            var result = await _tenantService.GetOptionsByUserIdAsync(userId);
+            return Ok(HbtApiResult.Success(result));
+        }
+        catch (Exception ex)
+        {
+            _logger.Error($"根据用户ID获取租户选项列表失败: {ex.Message}");
+            return BadRequest(HbtApiResult.Error($"获取租户选项列表失败: {ex.Message}"));
+        }
+    }
+
+    /// <summary>
+    /// 获取当前用户的租户选项列表
+    /// </summary>
+    /// <returns>租户选项列表</returns>
+    [HttpGet("options/current-user")]
+    [HbtPerm("identity:tenant:query")]
+    public async Task<IActionResult> GetOptionsForCurrentUserAsync()
+    {
+        try
+        {
+            var currentUserId = _currentUser.UserId;
+            if (currentUserId <= 0)
+            {
+                return BadRequest(HbtApiResult.Error("当前用户ID无效"));
+            }
+
+            var result = await _tenantService.GetOptionsByUserIdAsync(currentUserId);
+            return Ok(HbtApiResult.Success(result));
+        }
+        catch (Exception ex)
+        {
+            _logger.Error($"获取当前用户租户选项列表失败: {ex.Message}");
+            return BadRequest(HbtApiResult.Error($"获取租户选项列表失败: {ex.Message}"));
+        }
     }
 }

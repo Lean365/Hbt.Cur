@@ -16,6 +16,7 @@ export interface HbtDefinition extends HbtBaseEntity {
   workflowCategory?: string
   workflowVersion: string
   formId?: number
+  formName?: string
   workflowConfig?: string
   status: number
   workflowNodes?: HbtNode[]
@@ -42,7 +43,7 @@ export interface HbtDefinitionCreate {
   /** 表单配置 */
   formId: number
   /** 工作流配置 */
-  workflowConfig: string
+  workflowConfig: any
   /** 状态（0正常 1停用） */
   status: number
   /** 备注 */

@@ -9,7 +9,7 @@
 // 描述    : 工作流活动实体
 //===================================================================
 
-namespace Lean.Hbt.Domain.Entities.Workflow.Engine
+namespace Lean.Hbt.Domain.Entities.Workflow
 {
     /// <summary>
     /// 工作流活动实体
@@ -20,6 +20,7 @@ namespace Lean.Hbt.Domain.Entities.Workflow.Engine
     /// </remarks>
     [SugarTable("hbt_workflow_activity", "工作流活动表")]
     [SugarIndex("ix_workflow_activity_definition", nameof(DefinitionId), OrderByType.Asc)]
+    [SugarIndex("ix_workflow_activity_node_template", nameof(NodeTemplateId), OrderByType.Asc)]
     public class HbtActivity : HbtBaseEntity
     {
         /// <summary>
@@ -49,9 +50,33 @@ namespace Lean.Hbt.Domain.Entities.Workflow.Engine
         public long DefinitionId { get; set; }
 
         /// <summary>
+        /// 关联的节点模板ID
+        /// </summary>
+        [SugarColumn(ColumnName = "node_template_id", ColumnDescription = "节点模板ID", ColumnDataType = "bigint", IsNullable = true)]
+        public long? NodeTemplateId { get; set; }
+
+        /// <summary>
         /// 工作流定义
         /// </summary>
         [Navigate(NavigateType.OneToOne, nameof(DefinitionId))]
         public virtual HbtDefinition? WorkflowDefinition { get; set; }
+
+        /// <summary>
+        /// 关联的节点模板
+        /// </summary>
+        [Navigate(NavigateType.OneToOne, nameof(NodeTemplateId))]
+        public virtual HbtNodeTemplate? NodeTemplate { get; set; }
+
+        /// <summary>
+        /// 出站转换列表
+        /// </summary>
+        [Navigate(NavigateType.OneToMany, nameof(HbtTransition.SourceActivityId))]
+        public List<HbtTransition>? OutgoingTransitions { get; set; }
+
+        /// <summary>
+        /// 入站转换列表
+        /// </summary>
+        [Navigate(NavigateType.OneToMany, nameof(HbtTransition.TargetActivityId))]
+        public List<HbtTransition>? IncomingTransitions { get; set; }
     }
 }

@@ -163,5 +163,37 @@ namespace Lean.Hbt.Application.Services.Identity
         /// <param name="postIds">岗位ID列表</param>
         /// <returns>是否成功</returns>
         Task<bool> AllocateUserPostsAsync(long userId, long[] postIds);
+
+        /// <summary>
+        /// 分配用户租户
+        /// </summary>
+        /// <param name="userId">用户ID</param>
+        /// <param name="configIds">租户配置ID列表</param>
+        /// <returns>是否成功</returns>
+        Task<bool> AllocateUserTenantsAsync(long userId, string[] configIds);
+
+        /// <summary>
+        /// 获取用户在指定租户中的信息
+        /// </summary>
+        /// <param name="userId">用户ID</param>
+        /// <param name="configId">租户配置ID</param>
+        /// <returns>用户信息</returns>
+        Task<HbtUserDto?> GetUserInTenantAsync(long userId, string configId);
+
+        /// <summary>
+        /// 更新用户在指定租户中的信息
+        /// </summary>
+        /// <param name="userId">用户ID</param>
+        /// <param name="configId">租户配置ID</param>
+        /// <param name="input">用户更新信息</param>
+        /// <returns>是否成功</returns>
+        Task<bool> UpdateUserInTenantAsync(long userId, string configId, HbtUserUpdateDto input);
+
+        /// <summary>
+        /// 跨租户更新用户信息
+        /// </summary>
+        /// <param name="input">用户更新信息</param>
+        /// <returns>是否成功</returns>
+        Task<bool> UpdateUserAcrossTenantsAsync(HbtUserUpdateDto input);
     }
 }

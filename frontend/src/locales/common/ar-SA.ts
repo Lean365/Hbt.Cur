@@ -365,11 +365,17 @@ export default {
       batchUpdate: 'تحديث متعدد', // @btn-batch-update-color
 
       // === أزرار عمليات الحالة ===
-      audit: 'تدقيق',         // @btn-audit-color
-      revoke: 'إلغاء',        // @btn-revoke-color
-      stop: 'إيقاف',          // @btn-stop-color
-      run: 'تشغيل',           // @btn-run-color
-      force: 'إجبار',         // @btn-forced-color
+      audit: 'تدقيق',        // @btn-audit-color
+      revoke: 'إلغاء',       // @btn-revoke-color
+      stop: 'إيقاف',         // @btn-stop-color
+      run: 'تشغيل',          // @btn-run-color
+      force: 'إجبار',        // @btn-forced-color
+      start: 'بدء',          // @btn-start-color
+      suspend: 'تعليق',      // @btn-suspend-color
+      resume: 'استئناف',     // @btn-resume-color
+      submit: 'إرسال',       // @btn-submit-color
+      withdraw: 'سحب',       // @btn-withdraw-color
+      terminate: 'إنهاء',     // @btn-terminate-color
 
       // === أزرار وظائف النظام ===
       generate: 'توليد',      // @btn-generate-color

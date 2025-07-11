@@ -16,6 +16,8 @@ namespace Lean.Hbt.Domain.Entities.Workflow
     /// </summary>
     [SugarTable("hbt_workflow_parallel_branch", "工作流并行分支状态表")]
     [SugarIndex("ix_workflow_parallel_branch_instance", nameof(InstanceId), OrderByType.Asc)]
+    [SugarIndex("ix_workflow_parallel_branch_node", nameof(ParallelNodeId), OrderByType.Asc)]
+    [SugarIndex("ix_workflow_parallel_branch_transition", nameof(BranchTransitionId), OrderByType.Asc)]
     public class HbtParallelBranch : HbtBaseEntity
     {
         /// <summary>
@@ -37,6 +39,18 @@ namespace Lean.Hbt.Domain.Entities.Workflow
         public long BranchTransitionId { get; set; }
 
         /// <summary>
+        /// 关联的节点模板ID
+        /// </summary>
+        [SugarColumn(ColumnName = "node_template_id", ColumnDescription = "节点模板ID", ColumnDataType = "bigint", IsNullable = true)]
+        public long? NodeTemplateId { get; set; }
+
+        /// <summary>
+        /// 分支名称
+        /// </summary>
+        [SugarColumn(ColumnName = "branch_name", ColumnDescription = "分支名称", Length = 100, ColumnDataType = "nvarchar", IsNullable = true)]
+        public string? BranchName { get; set; }
+
+        /// <summary>
         /// 是否完成(0:未完成 1:已完成 )
         /// </summary>
         [SugarColumn(ColumnName = "is_completed", ColumnDescription = "是否完成", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
@@ -47,7 +61,6 @@ namespace Lean.Hbt.Domain.Entities.Workflow
         /// </summary>
         [SugarColumn(ColumnName = "complete_time", ColumnDescription = "完成时间", ColumnDataType = "datetime", IsNullable = true)]
         public DateTime? CompleteTime { get; set; }
-
 
         /// <summary>
         /// 工作流实例
@@ -66,5 +79,11 @@ namespace Lean.Hbt.Domain.Entities.Workflow
         /// </summary>
         [Navigate(NavigateType.OneToOne, nameof(BranchTransitionId))]
         public HbtTransition? BranchTransition { get; set; }
+
+        /// <summary>
+        /// 关联的节点模板
+        /// </summary>
+        [Navigate(NavigateType.OneToOne, nameof(NodeTemplateId))]
+        public HbtNodeTemplate? NodeTemplate { get; set; }
     }
 }

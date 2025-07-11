@@ -2,19 +2,15 @@
 // 项目名 : Lean.Hbt
 // 文件名 : HbtTenantDto.cs
 // 创建者 : Lean365
-// 创建时间: 2024-01-17 18:00
+// 创建时间: 2024-01-17 19:15
 // 版本号 : V0.0.1
-// 描述   : 租户数据传输对象
+// 描述   : 租户传输对象
 //===================================================================
-
-using System.ComponentModel.DataAnnotations;
 
 namespace Lean.Hbt.Application.Dtos.Identity;
 
-
-
 /// <summary>
-/// 租户基础传输对象
+/// 租户传输对象
 /// </summary>
 public class HbtTenantDto
 {
@@ -29,6 +25,8 @@ public class HbtTenantDto
         ContactPhone = string.Empty;
         ContactEmail = string.Empty;
         Address = string.Empty;
+        LicenseType = string.Empty;
+        LicenseKey = string.Empty;
         Domain = string.Empty;
         LogoUrl = string.Empty;
         Theme = string.Empty;
@@ -36,7 +34,7 @@ public class HbtTenantDto
         CreateBy = string.Empty;
         UpdateBy = string.Empty;
         DeleteBy = string.Empty;
-
+        ConfigId = string.Empty;
     }
 
     /// <summary>
@@ -45,68 +43,78 @@ public class HbtTenantDto
     [AdaptMember("Id")]
     public long TenantId { get; set; }
 
+    /// <summary>
+    /// ConfigId（多库唯一标识）
+    /// </summary>
+    public string ConfigId { get; set; }
 
     /// <summary>
     /// 租户名称
     /// </summary>
-    [Required]
     public string TenantName { get; set; }
 
     /// <summary>
     /// 租户编码
     /// </summary>
-    [Required]
     public string TenantCode { get; set; }
 
     /// <summary>
     /// 联系人
     /// </summary>
-    [Required]
     public string ContactUser { get; set; }
 
     /// <summary>
     /// 联系电话
     /// </summary>
-    [Required]
     public string ContactPhone { get; set; }
 
     /// <summary>
     /// 联系邮箱
     /// </summary>
-    [Required]
     public string ContactEmail { get; set; }
 
     /// <summary>
-    /// 租户地址
+    /// 联系地址
     /// </summary>
-    [Required]
-    public string Address { get; set; }
+    public string? Address { get; set; }
+
+    /// <summary>
+    /// 许可证类型
+    /// </summary>
+    public string? LicenseType { get; set; }
+
+    /// <summary>
+    /// 许可注册码
+    /// </summary>
+    public string? LicenseKey { get; set; }
+
+    /// <summary>
+    /// 过期时间
+    /// </summary>
+    public DateTime? ExpireTime { get; set; }
 
     /// <summary>
     /// 租户域名
     /// </summary>
-    [Required]
     public string Domain { get; set; }
 
     /// <summary>
     /// 租户Logo
     /// </summary>
-    [Required]
-    public string LogoUrl { get; set; }
+    public string? LogoUrl { get; set; }
 
     /// <summary>
     /// 租户主题
     /// </summary>
-    [Required]
-    public string Theme { get; set; }
+    public string? Theme { get; set; }
 
     /// <summary>
-    /// 授权开始时间
+    /// 许可证开始时间
     /// </summary>
     public DateTime? LicenseStartTime { get; set; }
 
     /// <summary>
-    /// 授权结束时间
+    /// 许可证结束时间
     /// </summary>
     public DateTime? LicenseEndTime { get; set; }
 
@@ -143,12 +151,12 @@ public class HbtTenantDto
     /// <summary>
     /// 更新人
     /// </summary>
-    public string UpdateBy { get; set;  }
+    public string UpdateBy { get; set; }
 
-        /// <summary>
+    /// <summary>
     /// 是否删除
     /// </summary>
-    public int IsDeleted { get; set; } 
+    public int IsDeleted { get; set; }
 
     /// <summary>
     /// 删除时间
@@ -158,8 +166,7 @@ public class HbtTenantDto
     /// <summary>
     /// 删除人
     /// </summary>
-    public string? DeleteBy { get; set; }    
-    
+    public string? DeleteBy { get; set; }
 }
 
 /// <summary>
@@ -167,6 +174,23 @@ public class HbtTenantDto
 /// </summary>
 public class HbtTenantQueryDto : HbtPagedQuery
 {
+    /// <summary>
+    /// 构造函数
+    /// </summary>
+    public HbtTenantQueryDto()
+    {
+        TenantCode = string.Empty;
+        TenantName = string.Empty;
+        ContactUser = string.Empty;
+        ContactPhone = string.Empty;
+        ConfigId = string.Empty;
+    }
+
+    /// <summary>
+    /// ConfigId（多库唯一标识）
+    /// </summary>
+    public string ConfigId { get; set; }
+
     /// <summary>
     /// 租户编码
     /// </summary>
@@ -191,6 +215,16 @@ public class HbtTenantQueryDto : HbtPagedQuery
     /// 状态
     /// </summary>
     public int? Status { get; set; }
+
+    /// <summary>
+    /// 开始时间
+    /// </summary>
+    public DateTime? BeginTime { get; set; }
+
+    /// <summary>
+    /// 结束时间
+    /// </summary>
+    public DateTime? EndTime { get; set; }
 }
 
 /// <summary>
@@ -203,107 +237,104 @@ public class HbtTenantCreateDto
     /// </summary>
     public HbtTenantCreateDto()
     {
-
         TenantName = string.Empty;
         TenantCode = string.Empty;
         ContactUser = string.Empty;
         ContactPhone = string.Empty;
         ContactEmail = string.Empty;
         Address = string.Empty;
+        LicenseType = string.Empty;
+        LicenseKey = string.Empty;
         Domain = string.Empty;
-        DbConnection = string.Empty;
         LogoUrl = string.Empty;
         Theme = string.Empty;
+        ConfigId = string.Empty;
     }
+
+    /// <summary>
+    /// ConfigId（多库唯一标识）
+    /// </summary>
+    public string ConfigId { get; set; }
 
     /// <summary>
     /// 租户名称
     /// </summary>
-    [Required(ErrorMessage = "租户名称不能为空")]
-    [MaxLength(50, ErrorMessage = "租户名称长度不能超过50个字符")]
     public string TenantName { get; set; }
 
     /// <summary>
     /// 租户编码
     /// </summary>
-    [Required(ErrorMessage = "租户编码不能为空")]
-    [MaxLength(50, ErrorMessage = "租户编码长度不能超过50个字符")]
     public string TenantCode { get; set; }
 
     /// <summary>
     /// 联系人
     /// </summary>
-    [Required(ErrorMessage = "联系人不能为空")]
-    [MaxLength(20, ErrorMessage = "联系人长度不能超过20个字符")]
     public string ContactUser { get; set; }
 
     /// <summary>
     /// 联系电话
     /// </summary>
-    [Required(ErrorMessage = "联系电话不能为空")]
-    [MaxLength(20, ErrorMessage = "联系电话长度不能超过20个字符")]
     public string ContactPhone { get; set; }
 
     /// <summary>
     /// 联系邮箱
     /// </summary>
-    [Required(ErrorMessage = "联系邮箱不能为空")]
-    [MaxLength(50, ErrorMessage = "联系邮箱长度不能超过50个字符")]
-    [EmailAddress(ErrorMessage = "联系邮箱格式不正确")]
     public string ContactEmail { get; set; }
 
     /// <summary>
-    /// 租户地址
+    /// 联系地址
     /// </summary>
-    [MaxLength(200, ErrorMessage = "租户地址长度不能超过200个字符")]
-    public string Address { get; set; }
+    public string? Address { get; set; }
 
     /// <summary>
-    /// 数据库连接字符串
+    /// 许可证类型
     /// </summary>
-    [Required(ErrorMessage = "数据库连接字符串不能为空")]
-    [MaxLength(500, ErrorMessage = "数据库连接字符串长度不能超过500个字符")]
-    public string DbConnection { get; set; }
+    public string? LicenseType { get; set; }
+
+    /// <summary>
+    /// 许可注册码
+    /// </summary>
+    public string? LicenseKey { get; set; }
+
+    /// <summary>
+    /// 过期时间
+    /// </summary>
+    public DateTime? ExpireTime { get; set; }
 
     /// <summary>
     /// 租户域名
     /// </summary>
-    [MaxLength(100, ErrorMessage = "租户域名长度不能超过100个字符")]
     public string Domain { get; set; }
 
     /// <summary>
     /// 租户Logo
     /// </summary>
-    [MaxLength(200, ErrorMessage = "租户Logo长度不能超过200个字符")]
-    public string LogoUrl { get; set; }
+    public string? LogoUrl { get; set; }
 
     /// <summary>
     /// 租户主题
     /// </summary>
-    [MaxLength(50, ErrorMessage = "租户主题长度不能超过50个字符")]
-    public string Theme { get; set; }
+    public string? Theme { get; set; }
 
     /// <summary>
-    /// 授权开始时间
+    /// 许可证开始时间
     /// </summary>
     public DateTime? LicenseStartTime { get; set; }
 
     /// <summary>
-    /// 授权结束时间
+    /// 许可证结束时间
     /// </summary>
     public DateTime? LicenseEndTime { get; set; }
 
     /// <summary>
     /// 最大用户数
     /// </summary>
-    [Range(1, int.MaxValue, ErrorMessage = "最大用户数必须大于0")]
     public int MaxUserCount { get; set; }
 
     /// <summary>
-    /// 备注
+    /// 状态
     /// </summary>
-    [MaxLength(200, ErrorMessage = "备注长度不能超过200个字符")]
-    public string? Remark { get; set; }
+    public int Status { get; set; }
 }
 
 /// <summary>
@@ -314,77 +345,42 @@ public class HbtTenantUpdateDto : HbtTenantCreateDto
     /// <summary>
     /// 租户ID
     /// </summary>
-    [Required(ErrorMessage = "租户ID不能为空")]
-    [AdaptMember("Id")]
     public long TenantId { get; set; }
 }
 
 /// <summary>
-/// 租户导出传输对象
+/// 租户状态传输对象
 /// </summary>
-public class HbtTenantExportDto
+public class HbtTenantStatusDto
 {
     /// <summary>
     /// 构造函数
     /// </summary>
-    public HbtTenantExportDto()
+    public HbtTenantStatusDto()
     {
-
-        TenantName = string.Empty;
-        TenantCode = string.Empty;
-        ContactUser = string.Empty;
-        ContactPhone = string.Empty;
-        ContactEmail = string.Empty;
-        Address = string.Empty;
-        Domain = string.Empty;
+        StatusName = string.Empty;
+        ConfigId = string.Empty;
     }
 
     /// <summary>
-    /// 租户名称
+    /// ConfigId（多库唯一标识）
     /// </summary>
-    public string TenantName { get; set; }
+    public string ConfigId { get; set; }
 
     /// <summary>
-    /// 租户编码
+    /// 租户ID
     /// </summary>
-    public string TenantCode { get; set; }
+    public long TenantId { get; set; }
 
     /// <summary>
-    /// 联系人
+    /// 状态
     /// </summary>
-    public string ContactUser { get; set; }
+    public int Status { get; set; }
 
     /// <summary>
-    /// 联系电话
+    /// 状态名称
     /// </summary>
-    public string ContactPhone { get; set; }
-
-    /// <summary>
-    /// 联系邮箱
-    /// </summary>
-    public string ContactEmail { get; set; }
-
-    /// <summary>
-    /// 租户地址
-    /// </summary>
-    public string Address { get; set; }
-
-    /// <summary>
-    /// 租户域名
-    /// </summary>
-    public string Domain { get; set; }
-
-    /// <summary>
-    /// 创建时间
-    /// </summary>
-    public DateTime CreateTime { get; set; }
-
-    /// <summary>
-    /// 创建人
-    /// </summary>
-    public string CreateBy { get; set; }
-    
-
+    public string StatusName { get; set; }
 }
 
 /// <summary>
@@ -403,13 +399,20 @@ public class HbtTenantTemplateDto
         ContactPhone = string.Empty;
         ContactEmail = string.Empty;
         Address = string.Empty;
+        LicenseType = string.Empty;
+        LicenseKey = string.Empty;
         Domain = string.Empty;
         Theme = string.Empty;
         LicenseStartTime = string.Empty;
         LicenseEndTime = string.Empty;
         MaxUserCount = string.Empty;
+        ConfigId = string.Empty;
     }
 
+    /// <summary>
+    /// ConfigId（多库唯一标识）
+    /// </summary>
+    public string ConfigId { get; set; }
 
     /// <summary>
     /// 租户编码
@@ -437,9 +440,19 @@ public class HbtTenantTemplateDto
     public string ContactEmail { get; set; }
 
     /// <summary>
-    /// 租户地址
+    /// 联系地址
     /// </summary>
     public string Address { get; set; }
+
+    /// <summary>
+    /// 许可证类型
+    /// </summary>
+    public string LicenseType { get; set; }
+
+    /// <summary>
+    /// 许可注册码
+    /// </summary>
+    public string LicenseKey { get; set; }
 
     /// <summary>
     /// 租户域名
@@ -452,12 +465,12 @@ public class HbtTenantTemplateDto
     public string Theme { get; set; }
 
     /// <summary>
-    /// 授权开始时间
+    /// 许可证开始时间
     /// </summary>
     public string LicenseStartTime { get; set; }
 
     /// <summary>
-    /// 授权结束时间
+    /// 许可证结束时间
     /// </summary>
     public string LicenseEndTime { get; set; }
 
@@ -465,11 +478,6 @@ public class HbtTenantTemplateDto
     /// 最大用户数
     /// </summary>
     public string MaxUserCount { get; set; }
-
-    /// <summary>
-    /// 备注
-    /// </summary>
-    public string? Remark { get; set; }
 }
 
 /// <summary>
@@ -477,98 +485,148 @@ public class HbtTenantTemplateDto
 /// </summary>
 public class HbtTenantImportDto
 {
+    /// <summary>
+    /// 构造函数
+    /// </summary>
+    public HbtTenantImportDto()
+    {
+        TenantName = string.Empty;
+        TenantCode = string.Empty;
+        ContactUser = string.Empty;
+        ContactPhone = string.Empty;
+        ContactEmail = string.Empty;
+        Address = string.Empty;
+        LicenseType = string.Empty;
+        LicenseKey = string.Empty;
+        Domain = string.Empty;
+        ConfigId = string.Empty;
+    }
+
+    /// <summary>
+    /// ConfigId（多库唯一标识）
+    /// </summary>
+    public string ConfigId { get; set; }
 
     /// <summary>
     /// 租户名称
     /// </summary>
-    [Description("租户名称")]
-    public string TenantName { get; set; } = string.Empty;
+    public string TenantName { get; set; }
 
     /// <summary>
     /// 租户编码
     /// </summary>
-    [Description("租户编码")]
-    public string TenantCode { get; set; } = string.Empty;
+    public string TenantCode { get; set; }
 
     /// <summary>
     /// 联系人
     /// </summary>
-    [Description("联系人")]
     public string? ContactUser { get; set; }
 
     /// <summary>
     /// 联系电话
     /// </summary>
-    [Description("联系电话")]
     public string? ContactPhone { get; set; }
 
     /// <summary>
     /// 联系邮箱
     /// </summary>
-    [Description("联系邮箱")]
     public string? ContactEmail { get; set; }
 
     /// <summary>
-    /// 域名
+    /// 联系地址
     /// </summary>
-    [Description("域名")]
-    public string? Domain { get; set; }
-
-    /// <summary>
-    /// 地址
-    /// </summary>
-    [Description("地址")]
     public string? Address { get; set; }
 
     /// <summary>
-    /// Logo地址
+    /// 许可证类型
     /// </summary>
-    [Description("Logo地址")]
-    public string? LogoUrl { get; set; }
+    public string? LicenseType { get; set; }
 
     /// <summary>
-    /// 主题
+    /// 许可注册码
     /// </summary>
-    [Description("主题")]
-    public string? Theme { get; set; }
+    public string? LicenseKey { get; set; }
 
     /// <summary>
-    /// 许可证开始时间
+    /// 租户域名
     /// </summary>
-    [Description("许可证开始时间")]
-    public DateTime? LicenseStartTime { get; set; }
-
-    /// <summary>
-    /// 许可证结束时间
-    /// </summary>
-    [Description("许可证结束时间")]
-    public DateTime? LicenseEndTime { get; set; }
-
-    /// <summary>
-    /// 最大用户数
-    /// </summary>
-    [Description("最大用户数")]
-    public int? MaxUserCount { get; set; }
-
-    /// <summary>
-    /// 备注
-    /// </summary>
-    [Description("备注")]
-    public string? Remark { get; set; }
+    public string? Domain { get; set; }
 }
+
 /// <summary>
-/// 租户状态传输对象
+/// 租户导出传输对象
 /// </summary>
-public class HbtTenantStatusDto
+public class HbtTenantExportDto
 {
     /// <summary>
-    /// 租户ID
+    /// 构造函数
     /// </summary>
-    [AdaptMember("Id")]
-    public long TenantId { get; set; }
+    public HbtTenantExportDto()
+    {
+        TenantName = string.Empty;
+        TenantCode = string.Empty;
+        ContactUser = string.Empty;
+        ContactPhone = string.Empty;
+        ContactEmail = string.Empty;
+        Address = string.Empty;
+        LicenseType = string.Empty;
+        LicenseKey = string.Empty;
+        Domain = string.Empty;
+        ConfigId = string.Empty;
+    }
 
     /// <summary>
-    /// 状态
+    /// ConfigId（多库唯一标识）
     /// </summary>
-    public int Status { get; set; }
+    public string ConfigId { get; set; }
+
+    /// <summary>
+    /// 租户名称
+    /// </summary>
+    public string TenantName { get; set; }
+
+    /// <summary>
+    /// 租户编码
+    /// </summary>
+    public string TenantCode { get; set; }
+
+    /// <summary>
+    /// 联系人
+    /// </summary>
+    public string ContactUser { get; set; }
+
+    /// <summary>
+    /// 联系电话
+    /// </summary>
+    public string ContactPhone { get; set; }
+
+    /// <summary>
+    /// 联系邮箱
+    /// </summary>
+    public string ContactEmail { get; set; }
+
+    /// <summary>
+    /// 联系地址
+    /// </summary>
+    public string Address { get; set; }
+
+    /// <summary>
+    /// 许可证类型
+    /// </summary>
+    public string LicenseType { get; set; }
+
+    /// <summary>
+    /// 许可注册码
+    /// </summary>
+    public string LicenseKey { get; set; }
+
+    /// <summary>
+    /// 租户域名
+    /// </summary>
+    public string Domain { get; set; }
+
+    /// <summary>
+    /// 创建时间
+    /// </summary>
+    public DateTime CreateTime { get; set; }
 }

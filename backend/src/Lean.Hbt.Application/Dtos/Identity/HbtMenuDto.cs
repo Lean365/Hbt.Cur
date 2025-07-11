@@ -216,7 +216,7 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// <summary>
         /// 菜单名称
         /// </summary>
-        [Required(ErrorMessage = "菜单名称不能为空")]
+
         public string MenuName { get; set; }
 
         /// <summary>

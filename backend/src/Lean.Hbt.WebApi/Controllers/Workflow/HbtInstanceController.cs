@@ -26,16 +26,14 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// 构造函数
         /// <param name="workflowInstanceService">工作流实例服务</param>
         /// <param name="currentUser">当前用户服务</param>
-        /// <param name="currentTenant">当前租户服务</param>
         /// <param name="localization">本地化服务</param>
         /// <param name="logger">日志服务</param>
         /// </summary>
         public HbtInstanceController(
             IHbtInstanceService workflowInstanceService,
             IHbtCurrentUser currentUser,
-            IHbtCurrentTenant currentTenant,
             IHbtLocalizationService localization,
-            IHbtLogger logger) : base(logger, currentUser, currentTenant, localization)
+            IHbtLogger logger) : base(logger, currentUser, localization)
         {
             _workflowInstanceService = workflowInstanceService;
         }

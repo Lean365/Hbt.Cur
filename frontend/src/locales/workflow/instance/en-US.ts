@@ -1,6 +1,22 @@
 export default {
   workflow: {
     instance: {
+      fields: {
+        instanceId: 'Instance ID',
+        instanceName: 'Instance Name',
+        businessKey: 'Business Key',
+        definitionId: 'Definition ID',
+        definitionName: 'Definition Name',
+        currentNodeId: 'Current Node ID',
+        currentNodeName: 'Current Node Name',
+        initiatorId: 'Initiator ID',
+        initiatorName: 'Initiator',
+        formData: 'Form Data',
+        status: 'Status',
+        startTime: 'Start Time',
+        endTime: 'End Time',
+        remark: 'Remark',
+      },
       title: 'Workflow Instance',
       list: {
         title: 'Workflow Instance List',

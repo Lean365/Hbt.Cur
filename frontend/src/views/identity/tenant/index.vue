@@ -40,7 +40,7 @@
 
     <!-- 数据表格 -->
     <hbt-table
-      :columns="columns.filter(col => col.key && columnSettings[col.key])"
+      :columns="columns.filter((col: any) => col.key && columnSettings[col.key])"
       :data-source="list"
       :loading="loading"
       :pagination="false"
@@ -266,21 +266,9 @@ const columns: TableColumnsType = [
     width: 100
   },
   {
-    title: t('identity.tenant.fields.status.label'),
+    title: t('identity.tenant.table.columns.status'),
     dataIndex: 'status',
     key: 'status',
-    width: 100
-  },
-  {
-    title: t('identity.tenant.fields.isDefault.label'),
-    dataIndex: 'isDefault',
-    key: 'isDefault',
-    width: 100
-  },
-  {
-    title: t('identity.tenant.fields.dbConnection.label'),
-    dataIndex: 'dbConnection',
-    key: 'dbConnection',
     width: 100
   },
   {

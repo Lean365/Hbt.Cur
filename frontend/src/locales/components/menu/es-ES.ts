@@ -1,499 +1,475 @@
-import { countReset } from "node:console";
-
 export default {
   menu: {
     home: 'Inicio',
     dashboard: {
-      title: 'Panel de control',
-      workplace: 'Espacio de trabajo',
+      title: 'Panel de Control',
+      workplace: 'Espacio de Trabajo',
       analysis: 'Análisis',
-      monitor: 'Monitorización'
+      monitor: 'Monitor'
     },
     components: {
       title: 'Componentes',
       icons: 'Iconos'
     },
     about: {
-      title: 'Acerca de',
-      privacy: 'Política de privacidad',
-      terms: 'Términos de uso',
+      title: 'Acerca de Nosotros',
+      privacy: 'Política de Privacidad',
+      terms: 'Términos de Servicio',
       index: 'Acerca de Hbt'
     },
     core: {
-      _self: 'Gestión del sistema',
-      config: 'Configuración del sistema',
-      language: 'Gestión de idiomas',
-      dict: 'Gestión de diccionarios'
+      _self: 'Gestión Central',
+      config: 'Configuración del Sistema',
+      language: 'Gestión de Idioma',
+      dict: 'Gestión de Diccionario',
     },
     identity: {
-      _self: 'Autenticación',
-      user: 'Gestión de usuarios',
-      role: 'Gestión de roles',
-      dept: 'Gestión de departamentos',
-      post: 'Gestión de puestos',
-      menu: 'Gestión de menús',
-      tenant: 'Gestión de inquilinos',
-      oauth: 'Gestión OAuth'
+      _self: 'Autenticación de Identidad',
+      user: 'Gestión de Usuarios',
+      role: 'Gestión de Roles',
+      dept: 'Gestión de Departamentos',
+      post: 'Gestión de Puestos',
+      menu: 'Gestión de Menús',
+      tenant: 'Gestión de Inquilinos',
+      oauth: 'Gestión OAuth',
+      profile: 'Información Personal',
+      changePassword: 'Cambiar Contraseña'
     },
     audit: {
-      _self: 'Auditoría',
-      operlog: 'Registro de operaciones',
-      loginlog: 'Registro de inicio de sesión',
-      sqldifflog: 'Registro de diferencias de base de datos',
-      exceptionlog: 'Registro de excepciones',
-      auditlog: 'Registro de auditoría',
-      quartzlog: 'Registro de tareas'
+      _self: 'Registros de Auditoría',
+      operlog: 'Registro de Operaciones',
+      loginlog: 'Registro de Inicio de Sesión',
+      sqldifflog: 'Registro de Diferencias',
+      exceptionlog: 'Registro de Excepciones',
+      auditlog: 'Registro de Auditoría',
+      quartzlog: 'Registro de Tareas',
+      server: 'Monitor del Servidor'
     },
     workflow: {
-      _self: 'Flujo de trabajo',
-      form: 'Formulario',
-      definition: 'Definición del proceso',
-      instance: 'Instancia del proceso',
-      task: 'Tarea',
-      node: 'Nodo del proceso',
-      variable: 'Variable del proceso',
-      history: 'Historial del proceso'
+      _self: 'Flujo de Trabajo',
+      overview: 'Vista General del Proceso',
+      my: 'Mis Procesos',
+      form: 'Gestión de Formularios',
+      definition: 'Definición del Proceso',
+      instance: 'Instancia del Proceso',
+      task: 'Tareas de Trabajo',
+      node: 'Nodo del Proceso',
+      variable: 'Variables del Proceso',
+      history: 'Historial del Proceso'
     },
     signalr: {
-      _self: 'Tiempo real',
-      online: 'Usuarios',
-      message: 'Mensajes'
+      _self: 'Comunicación en Tiempo Real',
+      online: 'Usuarios en Línea',
+      message: 'Mensajes en Línea'
     },
     generator: {
-      _self: 'Generación de código',
-      table: 'Tabla de base de datos',
-      tableDefine: 'Columna de tabla',
-      template: 'Plantilla de código',
-      config: 'Configuración de generación',
-      api: 'Documentación API'
+      _self: 'Generador de Código',
+      table: 'Tablas de Base de Datos',
+      tableDefine: 'Definición de Columnas de Tabla',
+      template: 'Plantillas de Código',
+      config: 'Configuración de Generación',
+      api: 'Documentación de API'
     },
     routine: {
-      _self: 'Tareas diarias',
-      vehicle: {
-        _self: 'Gestión de vehículos',
-        vehicleMaster: {
-          _self: 'Datos principales de vehículos',
-          vehicleInfo: 'Información de vehículos',
-          driverInfo: 'Información de conductores',
-          maintenance: 'Mantenimiento de vehículos'
-        },
-        vehicleBooking: {
-          _self: 'Reserva de vehículos',
-          newBooking: 'Nueva reserva',
-          bookingList: 'Lista de reservas',
-          bookingApproval: 'Aprobación de reservas'
-        },
-        vehicleDispatch: {
-          _self: 'Despacho de vehículos',
-          dispatchPlan: 'Plan de despacho',
-          realTimeTracking: 'Seguimiento en tiempo real',
-          dispatchHistory: 'Historial de despachos'
-        },
-        vehicleReporting: {
-          _self: 'Informes de vehículos',
-          usageReport: 'Informe de uso',
-          costReport: 'Informe de costos',
-          maintenanceReport: 'Informe de mantenimiento'
-        }
+      _self: 'Oficina Diaria',
+      schedule: {
+        _self: 'Gestión de Horarios',
+        myschedule: 'Mi Horario',
+        dashboard: 'Panel de Horarios',
       },
-      file: 'Gestión de archivos',
-      mail: 'Gestión de correos',
-      mailTmpl: 'Plantilla de correo',
+      car: {
+        _self: 'Gestión de Vehículos',
+        info: 'Información del Vehículo',
+        application: 'Solicitud de Vehículo',
+        dashboard: 'Panel de Vehículos',
+        maintenance: 'Mantenimiento del Vehículo',
+      },
+      email: {
+        _self: 'Gestión de Correo Electrónico',
+        inbox: 'Bandeja de Entrada',
+        drafts: 'Borradores',
+        sent: 'Enviados',
+        trash: 'Papelera',
+        template: 'Plantillas de Correo',        
+      },
       meeting: {
-        _self: 'Gestión de reuniones',
-        meetingRoom: {
-          _self: 'Gestión de salas de reuniones',
-          roomInfo: 'Información de sala',
-          roomBooking: 'Reserva de sala',
-          roomSchedule: 'Programación de sala'
-        },
-        meetingPlan: {
-          _self: 'Planificación de reuniones',
-          newMeeting: 'Nueva reunión',
-          meetingList: 'Lista de reuniones',
-          meetingApproval: 'Aprobación de reuniones'
-        },
-        meetingExecution: {
-          _self: 'Ejecución de reuniones',
-          attendance: 'Asistencia',
-          minutes: 'Acta',
-          followUp: 'Seguimiento'
-        },
-        meetingReporting: {
-          _self: 'Informes de reuniones',
-          meetingReport: 'Informe de reunión',
-          attendanceReport: 'Informe de asistencia',
-          costReport: 'Informe de costos'
-        }
+        _self: 'Gestión de Reuniones',
+        room: 'Salas de Reuniones',
+        mymeeting: 'Mis Reuniones',
+        booking: 'Reserva de Reuniones',
+        dashboard: 'Panel de Reuniones',
       },
-      notice: 'Avisos',
-      schedule: 'Gestión de horarios',
-      quartz: 'Tarea'
+      notice: { 
+        _self: 'Notificaciones y Anuncios',
+        message: {
+          _self: 'Gestión de Mensajes',
+          mymessages: 'Mis Mensajes',
+          list: 'Panel de Mensajes',
+        },
+        announcement: {
+          _self: 'Gestión de Anuncios',
+          signoff: 'Firmar Anuncios',
+          list: 'Lista de Anuncios',
+        },
+        notification: {
+          _self: 'Gestión de Notificaciones',
+          ack: 'Notificaciones Leídas',
+          list: 'Lista de Notificaciones',
+        },
+      },
+      hr: {
+        _self: 'RRHH y Asistencia',
+        recruitment: {
+          _self: 'Gestión de Reclutamiento',
+          apply: 'Solicitud de Reclutamiento',
+          approval: 'Aprobación de Reclutamiento',
+          list: 'Lista de Reclutamiento',
+
+        },
+        transfer: {
+          _self: 'Gestión de Transferencias',
+          apply: 'Solicitud de Transferencia',
+          approval: 'Aprobación de Transferencia',
+          list: 'Lista de Transferencias',
+        },
+        leave: {
+          _self: 'Gestión de Permisos',
+          apply: 'Solicitud de Permiso',
+          approval: 'Aprobación de Permiso',
+          list: 'Lista de Permisos',
+        },
+        trip: {
+          _self: 'Gestión de Viajes de Negocios',
+          apply: 'Solicitud de Viaje',
+          approval: 'Aprobación de Viaje',
+          list: 'Lista de Viajes',
+        },
+        overtime: {
+          _self: 'Gestión de Horas Extras',
+          apply: 'Solicitud de Horas Extras',
+          approval: 'Aprobación de Horas Extras',
+          list: 'Lista de Horas Extras',
+      },
     },
-    finance: {
-      _self: 'Finanzas',
-      management: {
-        _self: 'Contabilidad de gestión',
-        cost: {
-          _self: 'Gestión de costos',
-          costFactors: 'Tipos de costos',
-          costCenter: 'Centro de costos',
-          profitCenter: 'Centro de beneficios',
-          productCost: 'Costo de productos',
-          activityType: 'Tipo de actividad',
-          internalOrder: 'Orden interna'
-        },
-        planning: {
-          _self: 'Gestión de planificación',
-          costPlanning: 'Planificación de costos',
-          profitPlanning: 'Planificación de beneficios',
-          budgetControl: 'Control presupuestario'
-        },
-        reporting: {
-          _self: 'Informes y análisis',
-          costReports: 'Informes de costos',
-          profitReports: 'Informes de beneficios',
-          varianceAnalysis: 'Análisis de variaciones'
-        }
+    expense:{
+      _self: 'Gestión de Gastos',
+      daily: {
+        _self: 'Gastos Diarios',
+        apply: 'Solicitud de Gasto',
+        approve: 'Aprobación de Gasto',
+        list: 'Lista de Gastos',
       },
-      financial: {
-        _self: 'Contabilidad financiera',
-        generalLedger: {
-          _self: 'Libro mayor',
-          account: 'Cuenta',
-          accountType: 'Tipo de cuenta',
-          journalEntry: 'Asiento contable',
-          reconciliation: 'Conciliación',
-          closing: 'Cierre'
-        },
-        accountsReceivable: {
-          _self: 'Cuentas por cobrar',
-          customer: 'Gestión de clientes',
-          invoice: 'Factura de cliente',
-          payment: 'Pago de cliente',
-          creditControl: 'Control de crédito'
-        },
-        accountsPayable: {
-          _self: 'Cuentas por pagar',
-          supplier: 'Gestión de proveedores',
-          invoice: 'Factura de proveedor',
-          payment: 'Pago a proveedor',
-          agingReport: 'Análisis de vencimientos'
-        },
-        assetAccounting: {
-          _self: 'Contabilidad de activos',
-          assets: 'Activos fijos',
-          depreciation: 'Gestión de depreciación',
-          assetTransfer: 'Transferencia de activos',
-          assetRetirement: 'Retiro de activos'
-        },
-        tax: {
-          _self: 'Gestión de impuestos',
-          taxCodes: 'Gestión de códigos fiscales',
-          taxReporting: 'Declaración de impuestos',
-          taxPayments: 'Pagos de impuestos'
-        },
-        financialReporting: {
-          _self: 'Informes financieros',
-          balanceSheet: 'Balance general',
-          profitAndLoss: 'Estado de resultados',
-          cashFlow: 'Estado de flujo de efectivo'
-        }
+      travel: {
+        _self: 'Gastos de Viaje',
+        apply: 'Solicitud de Gasto de Viaje',
+        approve: 'Aprobación de Gasto de Viaje',
+        list: 'Lista de Gastos de Viaje',
+      },
+    },
+    file:{
+      _self: 'Gestión de Archivos',
+      daily: {
+        _self: 'Archivos Diarios',
+        list: 'Lista de Archivos',
+      },
+      iso: {
+        _self: 'Archivos ISO',
+        version: 'Versión',
+        signoff: 'Firma',
+        list: 'Archivos ISO',
+      },
+      document: { 
+        _self: 'Gestión de Documentos',
+        version: 'Versión',
+        signoff: 'Firma',
+        list: 'Lista de Documentos',
+      },
+    },
+    officesupplies:{
+      _self: 'Suministros de Oficina',
+      inventory:{
+        _self: 'Gestión de Inventario',
+        requisition: 'Gestión de Requisiciones',
+        inbound: 'Gestión de Entrada',
+        stocktaking: 'Gestión de Inventario',
+      },
+      usage:{
+        _self: 'Gestión de Uso',
+        apply: 'Solicitud de Uso',
+        approve: 'Aprobación de Uso',
+        receive: 'Registro de Uso',
       }
     },
+    book:{
+      _self: 'Gestión de Libros',
+      inventory:{
+        _self: 'Gestión de Inventario',
+        requisition: 'Gestión de Requisiciones',
+        inbound: 'Gestión de Entrada',
+        list: 'Lista de Libros',
+        stocktaking: 'Gestión de Inventario',
+      },
+      usage:{
+        _self: 'Gestión de Uso',
+        card: 'Tarjeta de Biblioteca',
+        borrow: 'Prestar',
+        return: 'Devolver',
+      }
+
+    },
+    medical:{
+      _self: 'Gestión Médica',
+      medicine:{
+        _self: 'Gestión de Inventario',
+        requisition: 'Gestión de Requisiciones',
+        inbound: 'Gestión de Entrada',
+        list: 'Lista de Medicamentos',
+        stocktaking: 'Gestión de Inventario',
+      },
+      usage:{
+        _self: 'Gestión de Uso',
+        archive: 'Archivo',
+        receive: 'Recibo de Medicamentos',
+        cost: 'Costo',
+      }
+
+    },
+  },
+  accounting: {
+      _self: 'Contabilidad',
+      financial: {
+        _self: 'Contabilidad de Gestión',
+        company: "Información de la Empresa",
+        account: 'Cuentas Contables',
+        companyaccount: 'Cuentas de la Empresa',
+        ledger: 'Libro Mayor',
+        payable: 'Cuentas por Pagar',
+        receivable: 'Cuentas por Cobrar',
+        fixedasset: 'Activos Fijos',
+        bank: 'Información Bancaria',
+
+      },
+      controlling: {
+        _self: 'Contabilidad de Control',
+        costelement: 'Elementos de Costo',
+        costcenter: 'Centros de Costo',
+        profitcenter: 'Centros de Beneficio',
+        accountsReceivable: 'Cuentas por Cobrar',
+        accountsPayable: 'Cuentas por Pagar',
+        assetAccounting: 'Contabilidad de Activos',
+        tax: 'Gestión de Impuestos',
+        financialReporting: 'Informes Financieros'      
+    },
+    budget:{
+      _self: 'Presupuesto Integral',
+        formulation: {
+          _self: 'Formulación del Presupuesto',
+          sales: {
+            _self: 'Presupuesto de Ventas',
+            cost: 'Costo de Ventas',
+            rolling: 'Ventas Rodantes',
+          },
+          production: {
+            _self: 'Presupuesto de Producción',
+            auxiliary: 'Materiales Auxiliares de Producción',
+            labor: 'Mano de Obra de Producción',
+            manufacturing: 'Manufactura',
+          },
+          cost: {
+            _self: 'Presupuesto de Costos',
+            directmaterial: 'Materiales Directos',
+            directlabor: 'Mano de Obra Directa',
+            indirectlabor: 'Mano de Obra Indirecta',
+            manufacturing: 'Gastos de Manufactura',
+          },
+          expense: {
+            _self: 'Presupuesto de Gastos',
+            sales: 'Gastos de Ventas',
+            management: 'Gastos de Administración',
+            financial: 'Gastos Financieros',
+          },
+          financial: {
+            _self: 'Presupuesto Financiero',
+            cashflow: 'Flujo de Caja',
+            balancesheet: 'Balance General',
+            income: 'Estado de Resultados',
+          },
+        },
+        control: {
+          _self: 'Control de Presupuesto',
+          dashboard: 'Panel de Presupuesto',
+          approval: 'Aprobación de Presupuesto',
+        },   
+  },
+},
     logistics: {
-      _self: 'Logística',
+      _self: 'Gestión Logística',
       equipment: {
-        _self: 'Gestión de equipos',
-        equipmentMaster: 'Datos principales de equipos',
-        maintenancePlanning: {
-          _self: 'Planificación de mantenimiento',
-          preventiveMaintenance: 'Mantenimiento preventivo',
-          maintenanceTaskList: 'Lista de tareas de mantenimiento',
-          scheduling: 'Programación de mantenimiento'
-        },
-        maintenanceExecution: {
-          _self: 'Ejecución de mantenimiento',
-          workOrder: 'Orden de trabajo',
-          confirmation: 'Confirmación de mantenimiento',
-          breakdownMaintenance: 'Mantenimiento por avería'
-        },
-        maintenanceReporting: {
-          _self: 'Informes de mantenimiento',
-          equipmentReports: 'Informes de equipos',
-          maintenanceHistory: 'Historial de mantenimiento',
-          performanceAnalysis: 'Análisis de rendimiento'
-        },
-        sparePartsManagement: {
-          _self: 'Gestión de repuestos',
-          sparePartsInventory: 'Inventario de repuestos',
-          sparePartsProcurement: 'Adquisición de repuestos',
-          sparePartsUsage: 'Uso de repuestos'
-        }
+        _self: 'Gestión de Equipos',
+        data: 'Datos Maestros de Equipos',
+        location: 'Ubicación de Equipos',
+        material: 'Asociación de Materiales',
+        workorder: 'Orden de Trabajo'
+
       },
       material: {
-        _self: 'Gestión de materiales',
-        materialMaster: 'Datos principales de materiales',
-        materialCategory: 'Categoría de material',
-        materialUnit: 'Unidad de material',
-        materialStock: {
-          _self: 'Stock de materiales',
-          stockOverview: 'Vista general de stock',
-          stockIn: 'Entrada de stock',
-          stockOut: 'Salida de stock',
-          stockTransfer: 'Transferencia de stock',
-          stockAdjustment: 'Ajuste de stock',
-          stockCheck: 'Verificación de stock'
+        _self: 'Gestión de Materiales',
+        material:{
+          _self: 'Gestión de Materiales',
+          material: 'Datos Maestros de Materiales',
+          plant: 'Información de Planta',
+          master: 'Datos de Materiales',
+          plantmaster: 'Materiales de Planta',
+          vendor: 'Información del Vendedor',
+          supplier: 'Información del Proveedor',
         },
-        purchase: {
-          _self: 'Compras',
-          purchaseRequisition: 'Solicitud de compra',
-          purchaseOrder: 'Orden de compra',
-          purchaseOrderDetail: 'Detalle de orden de compra',
-          supplier: 'Gestión de proveedores'
+        purchase:{
+          _self: 'Gestión de Compras',
+          vendor: 'Información del Vendedor',
+          supplier: 'Información del Proveedor',
+          price: 'Precio de Compra',
+          requisition: 'Requisición de Compra',
+          order: 'Orden de Compra',
+
         },
-        inventoryManagement: {
-          _self: 'Gestión de inventario',
-          goodsReceipt: 'Recepción de mercancías',
-          goodsIssue: 'Emisión de mercancías',
-          transferPosting: 'Transferencia',
-          stockOverview: 'Vista general de stock'
-        },
-        valuation: {
-          _self: 'Valuación',
-          priceControl: 'Control de precios',
-          standardPrice: 'Precio estándar',
-          movingAveragePrice: 'Precio promedio móvil'
-        },
-        reporting: {
-          _self: 'Informes y análisis',
-          stockReports: 'Informes de stock',
-          purchaseReports: 'Informes de compras',
-          inventoryReports: 'Informes de inventario'
-        }
+
+
+
       },
       production: {
-        _self: 'Gestión de producción',
-        bom: 'Lista de materiales',
-        routing: 'Ruta de fabricación',
-        workOrder: {
-          _self: 'Orden de fabricación',
-          create: 'Creación de orden',
-          manage: 'Gestión de orden',
-          release: 'Liberación de orden',
-          complete: 'Cierre de orden'
+        _self: 'Gestión de Producción',
+        bom: 'Lista de Materiales',
+        change: {
+          _self: 'Cambio de Diseño',
+          implementation: 'Implementación del Cambio',
+          techcontact: 'Contacto Técnico',
+          material: 'Confirmación de Materiales',
+          query: 'Consulta de Cambio',
+          oldproduct: 'Control de Productos Antiguos',
+          sop: 'Confirmación SOP',
+          batch: 'Lote de Entrada',
+          input: {
+            _self: 'Entrada de Cambio',
+            gijutsu: 'Departamento Técnico',
+            seikan: 'Departamento de Gestión de Producción',
+            koubai: 'Departamento de Compras',
+            uketsuke: 'Departamento de Recepción',
+            bukan: 'Departamento de Gestión',
+            seizou2: 'Departamento de Producción 2',
+            seizou1: 'Departamento de Producción 1',
+            hinkan: 'Departamento de Control de Calidad',
+            seizougijutsu: 'Departamento de Tecnología de Producción',
+  
+          }
         },
-        capacityPlanning: {
-          _self: 'Planificación de capacidad',
-          workCenter: 'Centro de trabajo',
-          capacityEvaluation: 'Evaluación de capacidad',
-          capacityLeveling: 'Nivelación de capacidad'
-        },
-        productionScheduling: {
-          _self: 'Programación de producción',
-          schedule: 'Programación',
-          reschedule: 'Reprogramación'
-        },
-        productionExecution: {
-          _self: 'Ejecución de producción',
-          confirm: 'Confirmación de producción',
-          goodsIssue: 'Emisión de materiales',
-          goodsReceipt: 'Recepción de productos'
-        },
-        productionReporting: {
-          _self: 'Informes de producción',
-          orderReports: 'Informes de órdenes',
-          capacityReports: 'Informes de capacidad',
-          efficiencyReports: 'Informes de eficiencia'
-        },
-        qualityManagement: {
-          _self: 'Gestión de calidad',
-          inspectionLot: 'Lote de inspección',
-          resultsRecording: 'Registro de resultados',
-          defectRecording: 'Registro de defectos'
+        workcenter: 'Centro de Trabajo',
+        order: 'Orden de Producción',
+        kanban: 'Kanban',
+        oph:{
+          _self: 'Gestión OPH',
+          workshop1: {
+            _self: 'Departamento de Producción 1',
+            output: 'Reporte Diario de Producción',
+            defect: 'Defectos de Producción',
+            worktime: 'Tiempo de Trabajo de Producción',
+            productionReport: 'Reporte de Producción',
+            defectSummary: 'Resumen de Defectos',
+            worktimeReport: 'Reporte de Tiempo de Trabajo'
+          },
+          workshop2: {
+            _self: 'Departamento de Producción 2',
+            output: 'Reporte Diario de Producción',
+            inspection: 'Registros de Inspección',
+            repair: 'Registros de Reparación',
+            worktime: 'Tiempo de Trabajo de Producción',
+            productionReport: 'Reporte de Producción',
+            inspectionReport: 'Reporte de Inspección',
+            repairReport: 'Reporte de Reparación',
+            worktimeReport: 'Reporte de Tiempo de Trabajo'
+          }
         }
+
       },
       project: {
-        _self: 'Gestión de proyectos',
-        projectMaster: {
-          _self: 'Datos principales del proyecto',
-          projectDefinition: 'Definición del proyecto',
-          projectStructure: 'Estructura del proyecto',
-          projectTeam: 'Equipo del proyecto',
-          projectCalendar: 'Calendario del proyecto'
-        },
-        projectPlanning: {
-          _self: 'Planificación del proyecto',
-          workBreakdown: 'Estructura de desglose del trabajo',
-          scheduling: 'Programación',
-          resourcePlanning: 'Planificación de recursos',
-          costPlanning: 'Planificación de costos'
-        },
-        projectExecution: {
-          _self: 'Ejecución del proyecto',
-          taskManagement: 'Gestión de tareas',
-          progressTracking: 'Seguimiento de progreso',
-          resourceManagement: 'Gestión de recursos',
-          costControl: 'Control de costos'
-        },
-        projectMonitoring: {
-          _self: 'Monitoreo del proyecto',
-          progressReports: 'Informes de progreso',
-          resourceReports: 'Informes de recursos',
-          costReports: 'Informes de costos',
-          riskManagement: 'Gestión de riesgos'
-        },
-        projectClosure: {
-          _self: 'Cierre del proyecto',
-          finalReport: 'Informe final',
-          lessonsLearned: 'Lecciones aprendidas',
-          projectArchive: 'Archivo del proyecto'
-        }
+        _self: 'Gestión de Proyectos',
+        define: 'Definición del Proyecto',
+        cost: 'Planificación de Costos',
+        resource: 'Planificación de Recursos',
+        schedule: 'Planificación de Cronograma',
+
       },
       quality: {
-        _self: 'Gestión de calidad',
-        inspection: {
-          _self: 'Gestión de inspecciones',
-          inspectionLot: 'Lote de inspección',
-          resultsRecording: 'Registro de resultados',
-          defectRecording: 'Registro de defectos',
-          usageDecision: 'Decisión de uso'
-        },
-        qualityPlanning: {
-          _self: 'Planificación de calidad',
-          inspectionPlan: 'Plan de inspección',
-          qualityInfoRecord: 'Registro de información de calidad',
-          samplingProcedure: 'Procedimiento de muestreo'
-        },
-        qualityControl: {
-          _self: 'Control de calidad',
-          controlChart: 'Gráfico de control',
-          qualityNotifications: 'Notificaciones de calidad',
-          correctiveActions: 'Acciones correctivas'
-        },
-        qualityReporting: {
-          _self: 'Informes de calidad',
-          inspectionReports: 'Informes de inspección',
-          defectReports: 'Informes de defectos',
-          qualityAnalysis: 'Análisis de calidad'
-        }
+        _self: 'Gestión de Calidad',
+        item: 'Elementos de Inspección',
+        receiving: 'Inspección de Entrada',
+        process: 'Inspección de Proceso',
+        storage: 'Inspección de Almacenamiento',
+        return: 'Inspección de Devolución',
+  
       },
       sales: {
-        _self: 'Ventas',
-        customer: {
-          _self: 'Gestión de clientes',
-          client: 'Cliente',
-          customers: 'Lista de clientes',
-          creditControl: 'Control de crédito'
-        },
-        order: {
-          _self: 'Gestión de pedidos',
-          order: 'Pedido de venta',
-          orderDetail: 'Detalle de pedido',
-          orderTracking: 'Seguimiento de pedido'
-        },
-        delivery: {
-          _self: 'Gestión de entregas',
-          delivery: 'Albarán',
-          deliveryDetail: 'Detalle de entrega',
-          shipping: 'Gestión de envíos'
-        },
-        billing: {
-          _self: 'Facturación',
-          invoice: 'Gestión de facturas',
-          invoiceDetail: 'Detalle de factura',
-          payment: 'Gestión de pagos'
-        },
-        reporting: {
-          _self: 'Informes y análisis',
-          salesReports: 'Informes de ventas',
-          performanceAnalysis: 'Análisis de rendimiento'
-        }
+        _self: 'Gestión de Ventas',
+        customer: 'Información del Cliente',
+        client: 'Información del Cliente',
+        price: 'Precio de Venta',
+        order: 'Orden de Venta',
       },
       service: {
-        _self: 'Servicio',
-        serviceOrder: {
-          _self: 'Orden de servicio',
-          create: 'Creación de orden',
-          manage: 'Gestión de orden',
-          complete: 'Cierre de orden',
-          cancel: 'Cancelación de orden'
-        },
-        serviceContract: {
-          _self: 'Contrato de servicio',
-          create: 'Creación de contrato',
-          manage: 'Gestión de contrato',
-          renew: 'Renovación de contrato',
-          terminate: 'Terminación de contrato'
-        },
-        customerInteraction: {
-          _self: 'Interacción con clientes',
-          inquiries: 'Consultas de clientes',
-          complaints: 'Reclamaciones',
-          feedback: 'Retroalimentación'
-        },
-        serviceExecution: {
-          _self: 'Ejecución del servicio',
-          schedule: 'Programación',
-          dispatch: 'Despacho',
-          execution: 'Ejecución',
-          confirmation: 'Confirmación'
-        },
-        serviceReporting: {
-          _self: 'Informes de servicio',
-          orderReports: 'Informes de órdenes',
-          contractReports: 'Informes de contratos',
-          performanceReports: 'Informes de rendimiento'
-        }
+        _self: 'Servicio al Cliente',
+        item: 'Elementos de Servicio',
+        contract: 'Contrato de Servicio',
+        request: 'Solicitud de Servicio',
+        workorder: 'Orden de Trabajo de Servicio',
+        timesheet: 'Registros de Tiempo',
+        consumption: 'Consumo de Materiales',
+        outsourcing: 'Servicios de Subcontratación'
+
+      },
+      complaint: {
+        _self: 'Gestión de Quejas de Clientes',
+        notice: 'Aviso de Calidad',
+        mark: 'Detalles de Queja',
+        analysis: 'Análisis de Causa',
+        corrective: 'Acciones Correctivas',
+        return: 'Ejecución de Devolución',
+        followUp: 'Seguimiento'
       }
     },
     humanResources: {
-      _self: 'Recursos humanos',
-      employee: {
-        _self: 'Gestión de empleados',
-        employeeInfo: 'Información de empleado',
-        employeeProfile: 'Perfil de empleado',
-        employeeContract: 'Contrato de empleado',
-        employeeAttendance: 'Asistencia de empleado',
-        employeeLeave: 'Permisos de empleado',
-        employeePerformance: 'Rendimiento de empleado'
+      _self: 'Gestión de Recursos Humanos',
+      employeeManagement: {
+        _self: 'Gestión de Empleados',
+        employeeMaster: 'Datos Maestros de Empleados',
+        attendance: 'Gestión de Asistencia',
+        leave: 'Gestión de Permisos',
+        payroll: 'Gestión de Nómina',
+        contractManagement: 'Gestión de Contratos'
       },
       recruitment: {
-        _self: 'Gestión de reclutamiento',
-        jobPosting: 'Publicación de empleo',
-        candidate: 'Gestión de candidatos',
-        interview: 'Gestión de entrevistas',
-        offer: 'Gestión de ofertas',
-        onboarding: 'Incorporación'
+        _self: 'Gestión de Reclutamiento',
+        jobPosting: 'Publicación de Empleos',
+        candidateManagement: 'Gestión de Candidatos',
+        interviewScheduling: 'Programación de Entrevistas',
+        offerManagement: 'Gestión de Ofertas'
       },
       training: {
-        _self: 'Gestión de capacitación',
-        trainingPlan: 'Plan de capacitación',
-        trainingCourse: 'Curso de capacitación',
-        trainingRecord: 'Registro de capacitación',
-        trainingEvaluation: 'Evaluación de capacitación'
+        _self: 'Gestión de Capacitación',
+        trainingPlan: 'Plan de Capacitación',
+        trainingExecution: 'Ejecución de Capacitación',
+        trainingEvaluation: 'Evaluación de Capacitación'
       },
       performance: {
-        _self: 'Gestión de rendimiento',
-        performancePlan: 'Plan de rendimiento',
-        performanceAppraisal: 'Evaluación de rendimiento',
-        performanceReview: 'Revisión de rendimiento',
-        performanceImprovement: 'Mejora de rendimiento'
-      },
-      compensation: {
-        _self: 'Gestión de compensación',
-        salary: 'Gestión de salarios',
-        bonus: 'Gestión de bonos',
-        benefits: 'Gestión de beneficios',
-        payroll: 'Nómina'
+        _self: 'Gestión de Rendimiento',
+        goalSetting: 'Establecimiento de Objetivos',
+        performanceReview: 'Revisión de Rendimiento',
+        feedback: 'Gestión de Retroalimentación'
       },
       reporting: {
-        _self: 'Informes y análisis',
-        employeeReports: 'Informes de empleados',
-        recruitmentReports: 'Informes de reclutamiento',
-        trainingReports: 'Informes de capacitación',
-        performanceReports: 'Informes de rendimiento',
-        compensationReports: 'Informes de compensación'
+        _self: 'Informes de RRHH',
+        employeeReports: 'Informes de Empleados',
+        attendanceReports: 'Informes de Asistencia',
+        payrollReports: 'Informes de Nómina',
+        performanceReports: 'Informes de Rendimiento'
       }
     }
   }

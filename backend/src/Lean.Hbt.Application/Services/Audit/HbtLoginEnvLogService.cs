@@ -23,27 +23,25 @@ namespace Lean.Hbt.Application.Services.Audit
     /// </remarks>
     public class HbtLoginEnvLogService : HbtBaseService, IHbtLoginEnvLogService
     {
-        // 登录环境日志仓储接口
-        private readonly IHbtRepository<HbtLoginEnvLog> _loginExtendRepository;
+        private readonly IHbtRepositoryFactory _repositoryFactory;
+        private IHbtRepository<HbtLoginEnvLog> LoginExtendRepository => _repositoryFactory.GetAuthRepository<HbtLoginEnvLog>();
 
         /// <summary>
         /// 构造函数，注入依赖服务
         /// </summary>
         /// <param name="logger">日志记录器</param>
-        /// <param name="loginExtendRepository">登录环境日志仓库</param>
+        /// <param name="repositoryFactory">仓储工厂</param>
         /// <param name="httpContextAccessor">HTTP上下文访问器</param>
         /// <param name="currentUser">当前用户服务</param>
-        /// <param name="currentTenant">当前租户服务</param>
         /// <param name="localization">本地化服务</param>
         public HbtLoginEnvLogService(
             IHbtLogger logger,
-            IHbtRepository<HbtLoginEnvLog> loginExtendRepository,
+            IHbtRepositoryFactory repositoryFactory,
             IHttpContextAccessor httpContextAccessor,
             IHbtCurrentUser currentUser,
-            IHbtCurrentTenant currentTenant,
-            IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, currentTenant, localization)
+            IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
         {
-            _loginExtendRepository = loginExtendRepository;
+            _repositoryFactory = repositoryFactory;
         }
 
         /// <summary>
@@ -51,9 +49,9 @@ namespace Lean.Hbt.Application.Services.Audit
         /// </summary>
         public async Task<HbtPagedResult<HbtLoginEnvLogDto>> GetListAsync(HbtLoginEnvLogQueryDto query)
         {
-            var exp = HbtLoginEnvLogQueryExpression(query);
+            var exp = QueryExpression(query);
 
-            var result = await _loginExtendRepository.GetPagedListAsync(
+            var result = await LoginExtendRepository.GetPagedListAsync(
                 exp,
                 query.PageIndex,
                 query.PageSize,
@@ -77,7 +75,7 @@ namespace Lean.Hbt.Application.Services.Audit
         /// <exception cref="HbtException">当登录环境日志不存在时抛出异常</exception>
         public async Task<HbtLoginEnvLogDto> GetByIdAsync(long loginExtendId)
         {
-            var loginExtend = await _loginExtendRepository.GetByIdAsync(loginExtendId);
+            var loginExtend = await LoginExtendRepository.GetByIdAsync(loginExtendId);
             if (loginExtend == null)
                 throw new HbtException(L("Identity.LoginExtend.NotFound", loginExtendId));
 
@@ -92,10 +90,10 @@ namespace Lean.Hbt.Application.Services.Audit
         public async Task<long> CreateAsync(HbtLoginEnvLogCreateDto input)
         {
             // 验证用户ID是否已存在
-            await HbtValidateUtils.ValidateFieldExistsAsync(_loginExtendRepository, "UserId", input.UserId.ToString());
+            await HbtValidateUtils.ValidateFieldExistsAsync(LoginExtendRepository, "UserId", input.UserId.ToString());
 
             var loginExtend = input.Adapt<HbtLoginEnvLog>();
-            return await _loginExtendRepository.CreateAsync(loginExtend) > 0 ? loginExtend.Id : throw new HbtException(L("Identity.LoginExtend.CreateFailed"));
+            return await LoginExtendRepository.CreateAsync(loginExtend) > 0 ? loginExtend.Id : throw new HbtException(L("Identity.LoginExtend.CreateFailed"));
         }
 
         /// <summary>
@@ -105,11 +103,11 @@ namespace Lean.Hbt.Application.Services.Audit
         /// <returns>是否成功</returns>
         public async Task<bool> UpdateAsync(HbtLoginEnvLogUpdateDto input)
         {
-            var loginExtend = await _loginExtendRepository.GetByIdAsync(input.Id)
+            var loginExtend = await LoginExtendRepository.GetByIdAsync(input.Id)
                 ?? throw new HbtException(L("Identity.LoginExtend.NotFound", input.Id));
 
             input.Adapt(loginExtend);
-            return await _loginExtendRepository.UpdateAsync(loginExtend) > 0;
+            return await LoginExtendRepository.UpdateAsync(loginExtend) > 0;
         }
 
         /// <summary>
@@ -117,7 +115,7 @@ namespace Lean.Hbt.Application.Services.Audit
         /// </summary>
         public async Task<HbtLoginEnvLogDto> UpdateOnlinePeriodAsync(HbtLoginEnvLogOnlinePeriodUpdateDto request)
         {
-            var loginExtend = await _loginExtendRepository.GetFirstAsync(
+            var loginExtend = await LoginExtendRepository.GetFirstAsync(
                 x => x.UserId == request.UserId);
             if (loginExtend == null)
             {
@@ -125,7 +123,7 @@ namespace Lean.Hbt.Application.Services.Audit
             }
 
             loginExtend.TodayOnlinePeriods = request.OnlinePeriod;
-            await _loginExtendRepository.UpdateAsync(loginExtend);
+            await LoginExtendRepository.UpdateAsync(loginExtend);
 
             return loginExtend.Adapt<HbtLoginEnvLogDto>();
         }
@@ -148,11 +146,11 @@ namespace Lean.Hbt.Application.Services.Audit
         /// <returns>是否成功</returns>
         public async Task<bool> UpdateStatusAsync(HbtLoginEnvLogStatusDto input)
         {
-            var loginExtend = await _loginExtendRepository.GetByIdAsync(input.LoginId)
+            var loginExtend = await LoginExtendRepository.GetByIdAsync(input.LoginId)
                 ?? throw new HbtException(L("Identity.LoginExtend.NotFound", input.LoginId));
 
             input.Adapt(loginExtend);
-            return await _loginExtendRepository.UpdateAsync(loginExtend) > 0;
+            return await LoginExtendRepository.UpdateAsync(loginExtend) > 0;
         }
 
         /// <summary>
@@ -162,10 +160,10 @@ namespace Lean.Hbt.Application.Services.Audit
         /// <returns>是否成功</returns>
         public async Task<bool> DeleteAsync(long loginExtendId)
         {
-            var loginExtend = await _loginExtendRepository.GetByIdAsync(loginExtendId)
+            var loginExtend = await LoginExtendRepository.GetByIdAsync(loginExtendId)
                 ?? throw new HbtException(L("Identity.LoginExtend.NotFound", loginExtendId));
 
-            return await _loginExtendRepository.DeleteAsync(loginExtendId) > 0;
+            return await LoginExtendRepository.DeleteAsync(loginExtendId) > 0;
         }
 
         /// <summary>
@@ -178,7 +176,7 @@ namespace Lean.Hbt.Application.Services.Audit
             if (loginExtendIds == null || loginExtendIds.Length == 0)
                 throw new HbtException(L("Identity.LoginExtend.SelectRequired"));
 
-            return await _loginExtendRepository.DeleteRangeAsync(loginExtendIds.Cast<object>().ToList()) > 0;
+            return await LoginExtendRepository.DeleteRangeAsync(loginExtendIds.Cast<object>().ToList()) > 0;
         }
 
         /// <summary>
@@ -187,7 +185,7 @@ namespace Lean.Hbt.Application.Services.Audit
         public async Task<HbtLoginEnvLogDto> UpdateLoginInfoAsync(HbtLoginEnvLogUpdateDto request)
         {
             var now = DateTime.Now;
-            var loginExtend = await _loginExtendRepository.GetFirstAsync(x =>
+            var loginExtend = await LoginExtendRepository.GetFirstAsync(x =>
                 x.UserId == request.UserId &&
                 x.Id == request.Id);
 
@@ -202,7 +200,7 @@ namespace Lean.Hbt.Application.Services.Audit
                     LastLoginTime = now
                 };
 
-                await _loginExtendRepository.CreateAsync(loginExtend);
+                await LoginExtendRepository.CreateAsync(loginExtend);
             }
             else
             {
@@ -210,7 +208,7 @@ namespace Lean.Hbt.Application.Services.Audit
                 loginExtend.LoginStatus = 1; // 1表示在线
                 loginExtend.LastLoginTime = now;
 
-                await _loginExtendRepository.UpdateAsync(loginExtend);
+                await LoginExtendRepository.UpdateAsync(loginExtend);
             }
 
             return loginExtend.Adapt<HbtLoginEnvLogDto>();
@@ -221,7 +219,7 @@ namespace Lean.Hbt.Application.Services.Audit
         /// </summary>
         public async Task<HbtLoginEnvLogDto> UpdateOfflineInfoAsync(long userId)
         {
-            var loginExtend = await _loginExtendRepository.GetFirstAsync(x => x.UserId == userId);
+            var loginExtend = await LoginExtendRepository.GetFirstAsync(x => x.UserId == userId);
             if (loginExtend == null)
             {
                 throw new InvalidOperationException($"用户{userId}的登录环境日志信息不存在");
@@ -230,7 +228,7 @@ namespace Lean.Hbt.Application.Services.Audit
             loginExtend.LoginStatus = 0; // 0表示离线
             loginExtend.LastOfflineTime = DateTime.Now;
 
-            await _loginExtendRepository.UpdateAsync(loginExtend);
+            await LoginExtendRepository.UpdateAsync(loginExtend);
             return loginExtend.Adapt<HbtLoginEnvLogDto>();
         }
 
@@ -239,7 +237,7 @@ namespace Lean.Hbt.Application.Services.Audit
         /// </summary>
         public async Task<HbtLoginEnvLogDto?> GetByUserIdAndLoginExtendIdAsync(long userId, long loginExtendId)
         {
-            var loginExtend = await _loginExtendRepository.GetFirstAsync(
+            var loginExtend = await LoginExtendRepository.GetFirstAsync(
                 x => x.UserId == userId && x.Id == loginExtendId);
             return loginExtend?.Adapt<HbtLoginEnvLogDto>();
         }
@@ -249,7 +247,7 @@ namespace Lean.Hbt.Application.Services.Audit
         /// </summary>
         public async Task<HbtLoginEnvLogDto?> GetByUserIdAsync(long userId)
         {
-            var loginExtend = await _loginExtendRepository.GetFirstAsync(x => x.UserId == userId);
+            var loginExtend = await LoginExtendRepository.GetFirstAsync(x => x.UserId == userId);
             return loginExtend?.Adapt<HbtLoginEnvLogDto>();
         }
 
@@ -258,19 +256,19 @@ namespace Lean.Hbt.Application.Services.Audit
         /// </summary>
         public async Task<bool> ClearAllUserSessionsAsync()
         {
-            var loginExtends = await _loginExtendRepository.GetListAsync(x => x.LoginStatus == 1); // 1表示在线
+            var loginExtends = await LoginExtendRepository.GetListAsync(x => x.LoginStatus == 1); // 1表示在线
             foreach (var loginExtend in loginExtends)
             {
                 loginExtend.LoginStatus = 0; // 0表示离线
                 loginExtend.LastOfflineTime = DateTime.Now;
             }
-            return await _loginExtendRepository.UpdateRangeAsync(loginExtends) > 0;
+            return await LoginExtendRepository.UpdateRangeAsync(loginExtends) > 0;
         }
 
         /// <summary>
         /// 构建登录环境日志信息查询条件
         /// </summary>
-        private Expression<Func<HbtLoginEnvLog, bool>> HbtLoginEnvLogQueryExpression(HbtLoginEnvLogQueryDto query)
+        private Expression<Func<HbtLoginEnvLog, bool>> QueryExpression(HbtLoginEnvLogQueryDto query)
         {
             var exp = Expressionable.Create<HbtLoginEnvLog>();
 

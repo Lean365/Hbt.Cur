@@ -16,7 +16,6 @@ export interface HbtExceptionLogDto extends HbtBaseEntity {
   exceptionLogId: number
   logLevel: number
   userId: number
-  tenantId?: number
   userName: string
   method: string
   parameters?: string
@@ -45,7 +44,6 @@ export interface HbtExceptionLogExportDto {
   exceptionLogId: number
   logLevel: number
   userId: number
-  tenantId?: number
   userName: string
   method: string
   parameters?: string

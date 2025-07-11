@@ -23,12 +23,10 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// </summary>
         public HbtHistoryDto()
         {
-            WorkflowHistoryId = 0;
+            HistoryId = 0;
             InstanceId = 0;
-            WorkflowNodeId = 0;
+            NodeId = 0;
             OperationType = 0;
-            OperatorId = 0;
-            OperatorName = string.Empty;
             OperationResult = 0;
             OperationComment = string.Empty;
             Remark = string.Empty;
@@ -40,7 +38,7 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// 历史ID
         /// </summary>
         [AdaptMember("Id")]
-        public long WorkflowHistoryId { get; set; }
+        public long HistoryId { get; set; }
 
         /// <summary>
         /// 工作流实例ID
@@ -50,22 +48,13 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 工作流节点ID
         /// </summary>
-        public long WorkflowNodeId { get; set; }
+        public long NodeId { get; set; }
 
         /// <summary>
         /// 操作类型
         /// </summary>
         public int OperationType { get; set; }
 
-        /// <summary>
-        /// 操作人ID
-        /// </summary>
-        public long OperatorId { get; set; }
-
-        /// <summary>
-        /// 操作人名称
-        /// </summary>
-        public string OperatorName { get; set; }
 
         /// <summary>
         /// 操作结果
@@ -135,7 +124,7 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 工作流节点ID
         /// </summary>
-        public long? WorkflowNodeId { get; set; }
+        public long? NodeId { get; set; }
 
         /// <summary>
         /// 操作类型
@@ -143,9 +132,9 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         public int? OperationType { get; set; }
 
         /// <summary>
-        /// 操作人ID
+        /// 创建者
         /// </summary>
-        public long? OperatorId { get; set; }
+        public string? CreateBy { get; set; }
 
         /// <summary>
         /// 开始时间
@@ -175,17 +164,13 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 工作流节点ID
         /// </summary>
-        public long WorkflowNodeId { get; set; }
+        public long NodeId { get; set; }
 
         /// <summary>
         /// 操作类型
         /// </summary>
         public int OperationType { get; set; }
 
-        /// <summary>
-        /// 操作人ID
-        /// </summary>
-        public long OperatorId { get; set; }
 
         /// <summary>
         /// 操作结果
@@ -210,28 +195,13 @@ namespace Lean.Hbt.Application.Dtos.Workflow
     /// 创建者: Lean365
     /// 创建时间: 2024-01-23
     /// </remarks>
-    public class HbtHistoryUpdateDto
+    public class HbtHistoryUpdateDto : HbtHistoryCreateDto
     {
         /// <summary>
         /// 历史ID
         /// </summary>
         [AdaptMember("Id")]
-        public long WorkflowHistoryId { get; set; }
-
-        /// <summary>
-        /// 操作结果
-        /// </summary>
-        public string? OperationResult { get; set; }
-
-        /// <summary>
-        /// 操作意见
-        /// </summary>
-        public string? OperationComment { get; set; }
-
-        /// <summary>
-        /// 备注
-        /// </summary>
-        public string? Remark { get; set; }
+        public long HistoryId { get; set; }
     }
 
     /// <summary>
@@ -251,17 +221,13 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 工作流节点ID
         /// </summary>
-        public long WorkflowNodeId { get; set; }
+        public long NodeId { get; set; }
 
         /// <summary>
         /// 操作类型
         /// </summary>
         public string? OperationType { get; set; }
 
-        /// <summary>
-        /// 操作人ID
-        /// </summary>
-        public long OperatorId { get; set; }
 
         /// <summary>
         /// 操作结果
@@ -296,17 +262,13 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 工作流节点ID
         /// </summary>
-        public long WorkflowNodeId { get; set; }
+        public long NodeId { get; set; }
 
         /// <summary>
         /// 操作类型
         /// </summary>
         public string? OperationType { get; set; }
 
-        /// <summary>
-        /// 操作人ID
-        /// </summary>
-        public long OperatorId { get; set; }
 
         /// <summary>
         /// 操作人名称

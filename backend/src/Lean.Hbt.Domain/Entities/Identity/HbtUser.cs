@@ -30,33 +30,8 @@ namespace Lean.Hbt.Domain.Entities.Identity
         /// 用户名
         /// </summary>
         [SugarColumn(ColumnName = "user_name", ColumnDescription = "用户名", Length = 50, ColumnDataType = "nvarchar", IsNullable = false)]
-        [Required(ErrorMessage = "用户名不能为空")]
-        [MaxLength(50, ErrorMessage = "用户名长度不能超过50个字符")]
+
         public string UserName { get; set; } = string.Empty;
-
-        /// <summary>
-        /// 昵称
-        /// </summary>
-        [SugarColumn(ColumnName = "nick_name", ColumnDescription = "昵称", Length = 50, ColumnDataType = "nvarchar", IsNullable = true)]
-        public string? NickName { get; set; }
-
-        /// <summary>
-        /// 全名
-        /// </summary>
-        [SugarColumn(ColumnName = "full_name", ColumnDescription = "全名", Length = 100, ColumnDataType = "nvarchar", IsNullable = true)]
-        public string? FullName { get; set; }
-
-        /// <summary>
-        /// 真实姓名
-        /// </summary>
-        [SugarColumn(ColumnName = "real_name", ColumnDescription = "真实姓名", Length = 50, ColumnDataType = "nvarchar", IsNullable = true)]
-        public string? RealName { get; set; }
-
-        /// <summary>
-        /// 英文名称
-        /// </summary>
-        [SugarColumn(ColumnName = "english_name", ColumnDescription = "英文名称", Length = 50, ColumnDataType = "nvarchar", IsNullable = true)]
-        public string? EnglishName { get; set; }
 
         /// <summary>
         /// 用户类型（0系统用户 1普通用户 2管理员 3OAuth用户）
@@ -68,14 +43,14 @@ namespace Lean.Hbt.Domain.Entities.Identity
         /// 密码
         /// </summary>
         [SugarColumn(ColumnName = "password", ColumnDescription = "密码", Length = 100, ColumnDataType = "nvarchar", IsNullable = false)]
-        [Required(ErrorMessage = "密码不能为空")]
+
         public string Password { get; set; } = string.Empty;
 
         /// <summary>
         /// 盐值
         /// </summary>
         [SugarColumn(ColumnName = "salt", ColumnDescription = "盐值", Length = 50, ColumnDataType = "nvarchar", IsNullable = false)]
-        [Required(ErrorMessage = "盐值不能为空")]
+
         public string Salt { get; set; } = string.Empty;
 
         /// <summary>
@@ -85,18 +60,40 @@ namespace Lean.Hbt.Domain.Entities.Identity
         public int Iterations { get; set; } = 10000;
 
         /// <summary>
+        /// 昵称
+        /// </summary>
+        [SugarColumn(ColumnName = "nick_name", ColumnDescription = "昵称", Length = 50, ColumnDataType = "nvarchar", IsNullable = false)]
+        public string NickName { get; set; } = string.Empty;
+
+        /// <summary>
+        /// 英文名称
+        /// </summary>
+        [SugarColumn(ColumnName = "english_name", ColumnDescription = "英文名称", Length = 50, ColumnDataType = "nvarchar", IsNullable = false)]
+        public string EnglishName { get; set; } = string.Empty;
+
+        /// <summary>
+        /// 真实姓名
+        /// </summary>
+        [SugarColumn(ColumnName = "real_name", ColumnDescription = "真实姓名", Length = 50, ColumnDataType = "nvarchar", IsNullable = false)]
+        public string RealName { get; set; } = string.Empty;
+
+        /// <summary>
+        /// 全名
+        /// </summary>
+        [SugarColumn(ColumnName = "full_name", ColumnDescription = "全名", Length = 100, ColumnDataType = "nvarchar", IsNullable = false)]
+        public string FullName { get; set; } = string.Empty;        
+
+        /// <summary>
         /// 邮箱
         /// </summary>
-        [SugarColumn(ColumnName = "email", ColumnDescription = "邮箱", Length = 50, ColumnDataType = "nvarchar", IsNullable = true)]
-        [EmailAddress(ErrorMessage = "邮箱格式不正确")]
-        public string? Email { get; set; }
+        [SugarColumn(ColumnName = "email", ColumnDescription = "邮箱", Length = 50, ColumnDataType = "nvarchar", IsNullable = false)]
+        public string Email { get; set; } = string.Empty;
 
         /// <summary>
         /// 手机号
         /// </summary>
-        [SugarColumn(ColumnName = "phone_number", ColumnDescription = "手机号", Length = 11, ColumnDataType = "nvarchar", IsNullable = true)]
-        [Phone(ErrorMessage = "手机号格式不正确")]
-        public string? PhoneNumber { get; set; }
+        [SugarColumn(ColumnName = "phone_number", ColumnDescription = "手机号", Length = 11, ColumnDataType = "nvarchar", IsNullable = false)]
+        public string PhoneNumber { get; set; } = string.Empty;
 
         /// <summary>
         /// 性别（0未知 1男 2女）
@@ -109,6 +106,7 @@ namespace Lean.Hbt.Domain.Entities.Identity
         /// </summary>
         [SugarColumn(ColumnName = "avatar", ColumnDescription = "头像", Length = 200, ColumnDataType = "nvarchar", IsNullable = true)]
         public string? Avatar { get; set; }
+
 
         /// <summary>
         /// 状态（0正常 1停用）
@@ -150,6 +148,8 @@ namespace Lean.Hbt.Domain.Entities.Identity
         /// </summary>
         [SugarColumn(ColumnName = "login_count", ColumnDescription = "登录次数", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
         public int LoginCount { get; set; } = 0;        
+
+
 
         /// <summary>
         /// 用户租户关联列表

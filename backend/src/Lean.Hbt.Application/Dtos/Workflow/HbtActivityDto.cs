@@ -59,6 +59,41 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         public long DefinitionId { get; set; }
 
         /// <summary>
+        /// 工作流定义名称
+        /// </summary>
+        public string? DefinitionName { get; set; }
+
+        /// <summary>
+        /// 关联的节点模板ID
+        /// </summary>
+        public long? NodeTemplateId { get; set; }
+
+        /// <summary>
+        /// 关联的节点模板名称
+        /// </summary>
+        public string? NodeTemplateName { get; set; }
+
+        /// <summary>
+        /// 工作流定义
+        /// </summary>
+        public HbtDefinitionDto? WorkflowDefinition { get; set; }
+
+        /// <summary>
+        /// 关联的节点模板
+        /// </summary>
+        public HbtNodeTemplateDto? NodeTemplate { get; set; }
+
+        /// <summary>
+        /// 出站转换列表
+        /// </summary>
+        public List<HbtTransitionDto>? OutgoingTransitions { get; set; }
+
+        /// <summary>
+        /// 入站转换列表
+        /// </summary>
+        public List<HbtTransitionDto>? IncomingTransitions { get; set; }
+
+        /// <summary>
         /// 备注
         /// </summary>
         public string? Remark { get; set; }
@@ -102,7 +137,7 @@ namespace Lean.Hbt.Application.Dtos.Workflow
     /// <summary>
     /// 工作流活动查询DTO
     /// </summary>
-    public class HbtActivityQueryDto
+    public class HbtActivityQueryDto : HbtPagedQuery
     {
         /// <summary>
         /// 工作流定义ID
@@ -120,14 +155,59 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         public int? ActivityType { get; set; }
 
         /// <summary>
-        /// 页码
+        /// 节点模板ID
         /// </summary>
-        public int PageIndex { get; set; } = 1;
+        public long? NodeTemplateId { get; set; }
+    }
+
+    /// <summary>
+    /// 工作流活动创建DTO
+    /// </summary>
+    public class HbtActivityCreateDto
+    {
+        /// <summary>
+        /// 活动名称
+        /// </summary>
+        [Required]
+        [MaxLength(50)]
+        public string Name { get; set; } = string.Empty;
 
         /// <summary>
-        /// 每页记录数
+        /// 活动类型
         /// </summary>
-        public int PageSize { get; set; } = 10;
+        public int ActivityType { get; set; }
+
+        /// <summary>
+        /// 活动配置(JSON)
+        /// </summary>
+        public string? Configuration { get; set; }
+
+        /// <summary>
+        /// 工作流定义ID
+        /// </summary>
+        public long DefinitionId { get; set; }
+
+        /// <summary>
+        /// 关联的节点模板ID
+        /// </summary>
+        public long? NodeTemplateId { get; set; }
+
+        /// <summary>
+        /// 备注
+        /// </summary>
+        public string? Remark { get; set; }
+    }
+
+    /// <summary>
+    /// 工作流活动更新DTO
+    /// </summary>
+    public class HbtActivityUpdateDto : HbtActivityCreateDto
+    {
+        /// <summary>
+        /// 主键
+        /// </summary>
+        [AdaptMember("Id")]
+        public long ActivityId { get; set; }
     }
 
     /// <summary>
@@ -156,6 +236,11 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         public string? Configuration { get; set; }
 
         /// <summary>
+        /// 关联的节点模板ID
+        /// </summary>
+        public long? NodeTemplateId { get; set; }
+
+        /// <summary>
         /// 备注
         /// </summary>
         public string? Remark { get; set; }
@@ -180,6 +265,11 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// 活动类型
         /// </summary>
         public string ActivityTypeName { get; set; } = string.Empty;
+
+        /// <summary>
+        /// 关联的节点模板名称
+        /// </summary>
+        public string? NodeTemplateName { get; set; }
 
         /// <summary>
         /// 活动配置(JSON)

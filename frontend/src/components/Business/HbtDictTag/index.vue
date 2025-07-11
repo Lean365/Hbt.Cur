@@ -7,7 +7,7 @@
 import { computed, onMounted, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useDictStore } from '@/stores/dict'
-import '@/assets/styles/dict-tag.less'
+import '@/assets/styles/components/dict-tag.less'
 
 const { t } = useI18n()
 

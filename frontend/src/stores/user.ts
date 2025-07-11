@@ -15,8 +15,6 @@ export interface UserInfoResponse extends UserInfo {
 export const useUserStore = defineStore('user', () => {
   // 用户信息
   const userInfo = ref<UserInfoResponse>()
-  // 当前租户ID
-  const currentTenantId = ref<number>(0)
   // 是否需要验证码
   const needCaptcha = ref<boolean>(false)
   // 最后登录时间
@@ -45,26 +43,18 @@ export const useUserStore = defineStore('user', () => {
 
       console.log('[User] 开始获取用户信息')
       const { data: response } = await fetchUserInfo()
+      console.log('[User] 用户信息API响应:', response)
+      
       if (response.code === 200) {
         const userData = response.data as UserInfoResponse
         
-        // 验证租户ID
-        if (!userData.tenantId || userData.tenantId <= 0) {
-          console.error('[User] 用户租户ID无效:', userData.tenantId)
-          throw new Error('用户租户ID无效')
-        }
-        
         userInfo.value = userData
         isUserInfoLoaded.value = true
-        
-        // 设置租户ID
-        setCurrentTenantId(userData.tenantId)
         
         console.log('[User] 用户信息获取成功:', {
           用户ID: userInfo.value.userId,
           用户名: userInfo.value.userName,
           昵称: userInfo.value.nickName,
-          租户ID: userInfo.value.tenantId,
           角色数: userInfo.value.roles?.length || 0,
           权限数: userInfo.value.permissions?.length || 0,
           头像: userInfo.value.avatar || '未设置'
@@ -72,6 +62,8 @@ export const useUserStore = defineStore('user', () => {
         
         return userInfo.value
       }
+      
+      console.error('[User] 用户信息API返回错误:', response.msg)
       throw new Error(response.msg || '获取用户信息失败')
     } catch (error) {
       console.error('[User] 获取用户信息失败:', error)
@@ -83,31 +75,6 @@ export const useUserStore = defineStore('user', () => {
       }
       return null
     }
-  }
-
-  // 获取当前租户ID
-  const getCurrentTenantId = (): number => {
-    return userInfo.value?.tenantId ?? 0
-  }
-
-  // 设置当前租户ID
-  const setCurrentTenantId = (tenantId: number) => {
-    if (!tenantId || tenantId <= 0) {
-      console.error('[User] 无效的租户ID:', tenantId)
-      throw new Error('无效的租户ID')
-    }
-    
-    if (userInfo.value) {
-      userInfo.value.tenantId = tenantId
-    }
-    
-    // 更新请求头
-    axios.defaults.headers.common['X-Tenant-Id'] = tenantId.toString()
-    
-    console.log('[User] 租户ID设置完成:', {
-      tenantId,
-      headers: axios.defaults.headers.common
-    })
   }
 
   // 设置是否需要验证码
@@ -141,10 +108,16 @@ export const useUserStore = defineStore('user', () => {
   // 登录
   const login = async (loginData: any) => {
     try {
+      console.log('[User] 开始登录流程:', {
+        用户名: loginData.userName
+      })
+      
       // 登录前清除所有缓存
       clearUserInfo()
       
       const { data: response } = await userLogin(loginData)
+      console.log('[User] 登录API响应:', response)
+      
       if (response.code === 200) {
         const loginResult = response.data as LoginResultData
         console.log('[User] 登录成功，开始获取最新用户信息')
@@ -164,11 +137,14 @@ export const useUserStore = defineStore('user', () => {
         // 重置登录失败次数
         resetLoginFailCount()
         
-        // 重新初始化自动登出
-        initAutoLogout(useUserStore())
+        console.log('[User] 登录流程完成:', {
+          用户ID: userInfo.userId,
+          用户名: userInfo.userName
+        })
         
         return response
       }
+      
       // 登录失败，增加失败次数
       incrementLoginFailCount()
       throw new Error(response.msg || '登录失败')
@@ -186,7 +162,6 @@ export const useUserStore = defineStore('user', () => {
   const clearUserInfo = () => {
     userInfo.value = undefined
     isUserInfoLoaded.value = false
-    currentTenantId.value = 0
   }
 
   // 登出
@@ -235,11 +210,13 @@ export const useUserStore = defineStore('user', () => {
     try {
       const refreshToken = getRefreshToken()
       if (!refreshToken) {
+        console.error('[User] 刷新令牌不存在')
         throw new Error('刷新令牌不存在')
       }
 
-      console.log('[User] 开始刷新Token')
+      console.log('[User] 开始刷新Token，刷新令牌长度:', refreshToken.length)
       const { data: response } = await refreshUserToken(refreshToken)
+      
       if (response.code === 200) {
         const loginResult = response.data as LoginResultData
         // 保存新token
@@ -248,13 +225,34 @@ export const useUserStore = defineStore('user', () => {
         console.log('[User] Token刷新成功')
         return true
       }
-      throw new Error(response.msg || '刷新令牌失败')
-    } catch (error) {
+      
+      // 处理具体的错误情况
+      if (response.code === 401) {
+        console.error('[User] 刷新令牌已过期或无效')
+        throw new Error('刷新令牌已过期，请重新登录')
+      } else if (response.code === 403) {
+        console.error('[User] 用户权限不足')
+        throw new Error('用户权限不足')
+      } else {
+        console.error('[User] 刷新令牌失败:', response.msg)
+        throw new Error(response.msg || '刷新令牌失败')
+      }
+    } catch (error: any) {
       console.error('[User] 刷新令牌失败:', error)
-      // 刷新失败时清除所有数据
-      clearUserInfo()
-      removeToken()
-      removeRefreshToken()
+      
+      // 根据错误类型决定是否清除数据
+      if (error.message?.includes('刷新令牌已过期') || 
+          error.message?.includes('无效') ||
+          error.message?.includes('不存在') ||
+          error.response?.status === 401 ||
+          error.response?.status === 403) {
+        // 刷新令牌相关错误，清除所有数据
+        console.log('[User] 刷新令牌错误，清除所有认证数据')
+        clearUserInfo()
+        removeToken()
+        removeRefreshToken()
+      }
+      
       throw error
     } finally {
       isRefreshing.value = false
@@ -263,14 +261,11 @@ export const useUserStore = defineStore('user', () => {
 
   return {
     userInfo,
-    currentTenantId,
     needCaptcha,
     lastLoginTime,
     loginFailCount,
     isUserInfoLoaded,
     getUserInfo,
-    getCurrentTenantId,
-    setCurrentTenantId,
     setNeedCaptcha,
     recordLoginTime,
     resetLoginFailCount,

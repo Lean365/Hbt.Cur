@@ -32,14 +32,12 @@ namespace Lean.Hbt.WebApi.Controllers.Audit
         /// <param name="loginExtendService">登录环境日志信息服务</param>
         /// <param name="logger">日志服务</param>
         /// <param name="currentUser">当前用户服务</param>
-        /// <param name="currentTenant">当前租户服务</param>
         /// <param name="localization">本地化服务</param>
         public HbtLoginEnvLogController(
             IHbtLoginEnvLogService loginExtendService,
             IHbtLogger logger,
             IHbtCurrentUser currentUser,
-            IHbtCurrentTenant currentTenant,
-            IHbtLocalizationService localization) : base(logger, currentUser, currentTenant, localization)
+            IHbtLocalizationService localization) : base(logger, currentUser, localization)
         {
             _loginExtendService = loginExtendService;
         }

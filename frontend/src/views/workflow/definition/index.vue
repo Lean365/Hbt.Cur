@@ -349,7 +349,7 @@ const handleTableChange = (pagination: TablePaginationConfig) => {
 // 新增
 const handleAdd = () => {
   selectedWorkflowDefinitionId.value = 0
-  formTitle.value = t('workflow.definition.actions.add')
+  formTitle.value = t('workflow.definition.actions.create')
   formVisible.value = true
 }
 

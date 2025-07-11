@@ -23,7 +23,7 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// </summary>
         public HbtScheduledTaskDto()
         {
-            WorkflowScheduledTaskId = 0;
+            ScheduledTaskId = 0;
             InstanceId = 0;
             NodeId = 0;
             TaskType = 0;
@@ -40,7 +40,7 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// 任务ID
         /// </summary>
         [AdaptMember("Id")]
-        public long WorkflowScheduledTaskId { get; set; }
+        public long ScheduledTaskId { get; set; }
 
         /// <summary>
         /// 工作流实例ID
@@ -140,6 +140,16 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// 删除时间
         /// </summary>
         public DateTime? DeleteTime { get; set; }        
+
+        /// <summary>
+        /// 工作流实例
+        /// </summary>
+        public HbtInstanceDto? WorkflowInstance { get; set; }
+
+        /// <summary>
+        /// 工作流节点
+        /// </summary>
+        public HbtNodeDto? Node { get; set; }
     }
 /// <summary>
 /// 工作流定时任务查询DTO
@@ -174,7 +184,7 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 工作流实例ID
         /// </summary>
-        public long WorkflowScheduledTaskId { get; set; }
+        public long ScheduledTaskId { get; set; }
     }
     /// <summary>
     /// 工作流定时任务更新DTO

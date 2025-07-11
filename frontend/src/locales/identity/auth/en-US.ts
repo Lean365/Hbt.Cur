@@ -3,6 +3,7 @@ export default {
     auth: {
       login: {
         title: 'Login',
+        tenantId: 'Tenant Config',
         username: 'Username',
         password: 'Password',
         rememberMe: 'Remember me',
@@ -28,7 +29,8 @@ export default {
         otherLogin: 'Other login methods',
         form: {
           usernameRequired: 'Please enter your username',
-          passwordRequired: 'Please enter your password'
+          passwordRequired: 'Please enter your password',
+          tenantIdRequired: 'Please select tenant config'
         }
       },
       register: {

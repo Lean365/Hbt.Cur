@@ -26,12 +26,19 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine.Executors
         protected readonly IHbtLogger _logger;
 
         /// <summary>
+        /// 节点模板仓储
+        /// </summary>
+        protected readonly IHbtRepository<HbtNodeTemplate> _nodeTemplateRepository;
+
+        /// <summary>
         /// 构造函数
         /// </summary>
         /// <param name="logger"></param>
-        protected HbtNodeExecutorBase(IHbtLogger logger)
+        /// <param name="nodeTemplateRepository"></param>
+        protected HbtNodeExecutorBase(IHbtLogger logger, IHbtRepository<HbtNodeTemplate> nodeTemplateRepository)
         {
             _logger = logger;
+            _nodeTemplateRepository = nodeTemplateRepository;
         }
 
         /// <summary>
@@ -57,12 +64,16 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine.Executors
         {
             try
             {
-                _logger.Info($"开始执行节点: 实例ID={instance.Id}, 节点ID={node.Id}, 节点类型={node.NodeType}");
+                // 获取节点类型
+                var nodeTemplate = await _nodeTemplateRepository.GetByIdAsync(node.NodeTemplateId);
+                var nodeType = nodeTemplate?.NodeType ?? 0;
+                
+                _logger.Info($"开始执行节点: 实例ID={instance.Id}, 节点ID={node.Id}, 节点类型={nodeType}");
 
                 // 验证节点类型
-                if (!CanHandle(node.NodeType))
+                if (!CanHandle(nodeType))
                 {
-                    var error = $"节点类型不匹配: 期望={NodeType}, 实际={node.NodeType}";
+                    var error = $"节点类型不匹配: 期望={NodeType}, 实际={nodeType}";
                     _logger.Error(error);
                     return CreateFailureResult(error);
                 }

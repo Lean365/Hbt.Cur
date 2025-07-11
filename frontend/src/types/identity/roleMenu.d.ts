@@ -1,12 +1,13 @@
 import type { HbtBaseEntity } from '@/types/common'
 
 /**
- * 角色菜单关联对象
+ * 角色菜单关联
  */
-export interface RoleMenu extends HbtBaseEntity {
+export interface HbtRoleMenu extends HbtBaseEntity {
+  /** 角色ID */
   roleId: number
+  /** 菜单ID */
   menuId: number
-  tenantId: number
 }
 
 /**

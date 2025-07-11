@@ -30,10 +30,6 @@ namespace Lean.Hbt.Application.Dtos.Audit
         [Required(ErrorMessage = "用户ID不能为空")]
         public long UserId { get; set; }
 
-        /// <summary>
-        /// 租户ID
-        /// </summary>
-        public long? TenantId { get; set; }
 
         /// <summary>
         /// 角色ID
@@ -229,10 +225,6 @@ namespace Lean.Hbt.Application.Dtos.Audit
         /// </summary>
         public long? UserId { get; set; }
 
-        /// <summary>
-        /// 租户ID
-        /// </summary>
-        public long? TenantId { get; set; }
 
         /// <summary>
         /// 登录类型（0普通 1短信 2邮箱 3微信 4QQ 5GitHub）
@@ -286,11 +278,6 @@ namespace Lean.Hbt.Application.Dtos.Audit
         /// </summary>
         [Required(ErrorMessage = "用户ID不能为空")]
         public long UserId { get; set; }
-
-        /// <summary>
-        /// 租户ID
-        /// </summary>
-        public long? TenantId { get; set; }
 
         /// <summary>
         /// 角色ID
@@ -397,10 +384,6 @@ namespace Lean.Hbt.Application.Dtos.Audit
         [Required(ErrorMessage = "用户ID不能为空")]
         public long UserId { get; set; }
 
-        /// <summary>
-        /// 租户ID
-        /// </summary>
-        public long? TenantId { get; set; }
 
         /// <summary>
         /// 角色ID
@@ -519,10 +502,6 @@ namespace Lean.Hbt.Application.Dtos.Audit
         /// </summary>
         public long? UserId { get; set; }
 
-        /// <summary>
-        /// 租户ID
-        /// </summary>
-        public long? TenantId { get; set; }
 
         /// <summary>
         /// 登录类型（0普通 1短信 2邮箱 3微信 4QQ 5GitHub）

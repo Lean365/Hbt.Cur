@@ -1,92 +1,26 @@
 export default {
   workflow: {
     task: {
-      title: 'Задача Рабочего Процесса',
-      list: {
-        title: 'Список Задач Рабочего Процесса',
-        search: {
-          name: 'Название Задачи',
-          type: 'Тип Задачи',
-          status: 'Статус',
-          startTime: 'Время Начала',
-          endTime: 'Время Окончания'
-        },
-        table: {
-          name: 'Название Задачи',
-          type: 'Тип Задачи',
-          status: 'Статус',
-          startTime: 'Время Начала',
-          endTime: 'Время Окончания',
-          duration: 'Длительность',
-          actions: 'Действия'
-        },
-        actions: {
-          view: 'Просмотр',
-          edit: 'Редактировать',
-          delete: 'Удалить',
-          refresh: 'Обновить'
-        },
-        status: {
-          running: 'Выполняется',
-          completed: 'Завершено',
-          terminated: 'Прервано',
-          failed: 'Ошибка'
-        }
-      },
-      form: {
-        title: {
-          create: 'Создание Задачи Рабочего Процесса',
-          edit: 'Редактирование Задачи Рабочего Процесса'
-        },
-        fields: {
-          name: 'Название Задачи',
-          type: 'Тип Задачи',
-          description: 'Описание',
-          input: 'Входные Данные',
-          output: 'Выходные Данные',
-          error: 'Ошибка'
-        },
-        rules: {
-          name: {
-            required: 'Введите название задачи'
-          },
-          type: {
-            required: 'Выберите тип задачи'
-          }
-        },
-        buttons: {
-          submit: 'Отправить',
-          cancel: 'Отмена'
-        }
-      },
-      detail: {
-        title: 'Детали Задачи Рабочего Процесса',
-        basic: {
-          title: 'Основная Информация',
-          name: 'Название Задачи',
-          type: 'Тип Задачи',
-          description: 'Описание',
-          status: 'Статус',
-          startTime: 'Время Начала',
-          endTime: 'Время Окончания',
-          duration: 'Длительность'
-        },
-        input: {
-          title: 'Входные Данные',
-          value: 'Значение'
-        },
-        output: {
-          title: 'Выходные Данные',
-          value: 'Значение'
-        },
-        error: {
-          title: 'Информация об Ошибке',
-          message: 'Сообщение об Ошибке',
-          stackTrace: 'Стек Вызовов'
-        },
-        actions: {
-          back: 'Назад'
-        }
+      fields: {
+      processTaskId: '任务ID',
+      instanceId: '实例ID',
+      instanceName: '实例名称',
+      nodeId: '节点ID',
+      nodeName: '节点名称',
+      title: '工作流任务',
+      taskName: '任务名称',
+      taskType: '任务类型',
+      status: '任务状态',
+      assigneeId: '处理人ID',
+      assigneeName: '处理人',
+      comment: '处理意见',
+      result: '处理结果',
+      completeTime: '完成时间',
+      dueTime: '到期时间',
+      reminderTime: '提醒时间',
+      priority: '优先级',
+      workflowInstance: '工作流实例',
+      node: '节点',
       }
     }
   }

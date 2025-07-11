@@ -152,22 +152,10 @@ const columns = [
     width: 150
   },
   {
-    title: t('workflow.history.fields.operatorName'),
-    dataIndex: 'operatorName',
-    key: 'operatorName',
-    width: 150
-  },
-  {
     title: t('workflow.history.fields.operationResult'),
     dataIndex: 'operationResult',
     key: 'operationResult',
     width: 150
-  },
-  {
-    title: t('workflow.history.fields.operationTime'),
-    dataIndex: 'operationTime',
-    key: 'operationTime',
-    width: 180
   },
   {
     title: t('workflow.history.fields.operationComment'),
@@ -237,11 +225,6 @@ const queryFields: QueryField[] = [
     }
   },
   {
-    name: 'operatorName',
-    label: t('workflow.history.fields.operatorName'),
-    type: 'input' as const
-  },
-  {
     name: 'operationResult',
     label: t('workflow.history.fields.operationResult'),
     type: 'select' as const,
@@ -259,7 +242,6 @@ const queryParams = ref<HbtHistoryQuery>({
   instanceId: undefined,
   nodeId: undefined,
   operationType: undefined,
-  operatorName: undefined,
   operationResult: undefined,
   startTime: undefined,
   endTime: undefined
@@ -318,7 +300,6 @@ const resetQuery = () => {
     instanceId: undefined,
     nodeId: undefined,
     operationType: undefined,
-    operatorName: undefined,
     operationResult: undefined,
     startTime: undefined,
     endTime: undefined

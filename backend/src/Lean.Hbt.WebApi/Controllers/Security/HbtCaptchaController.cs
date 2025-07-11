@@ -19,14 +19,12 @@ public class HbtCaptchaController : HbtBaseController
     /// <param name="captchaService">验证码服务</param>
     /// <param name="logger">日志服务</param>
     /// <param name="currentUser">当前用户服务</param>
-    /// <param name="currentTenant">当前租户服务</param>
     /// <param name="localization">本地化服务</param>
     public HbtCaptchaController(
         IHbtCaptchaService captchaService,
         IHbtLogger logger,
         IHbtCurrentUser currentUser,
-        IHbtCurrentTenant currentTenant,
-        IHbtLocalizationService localization) : base(logger, currentUser, currentTenant, localization)
+        IHbtLocalizationService localization) : base(logger, currentUser, localization)
     {
         _captchaService = captchaService;
         _logger.Info("验证码控制器已创建");

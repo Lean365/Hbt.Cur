@@ -129,10 +129,19 @@ export function terminateWorkflowInstance(id: number) {
   })
 }
 
+// 启动工作流实例
+export function startWorkflowInstance(data: any) {
+  return request<HbtApiResponse<any>>({
+    url: '/api/HbtWorkflow/start',
+    method: 'post',
+    data
+  })
+}
+
 // 暂停工作流实例
 export function suspendWorkflowInstance(id: number) {
   return request<HbtApiResponse<any>>({
-    url: `/api/HbtInstance/${id}/suspend`,
+    url: `/api/HbtWorkflow/suspend/${id}`,
     method: 'post'
   })
 }
@@ -140,7 +149,7 @@ export function suspendWorkflowInstance(id: number) {
 // 恢复工作流实例
 export function resumeWorkflowInstance(id: number) {
   return request<HbtApiResponse<any>>({
-    url: `/api/HbtInstance/${id}/resume`,
+    url: `/api/HbtWorkflow/resume/${id}`,
     method: 'post'
   })
 } 

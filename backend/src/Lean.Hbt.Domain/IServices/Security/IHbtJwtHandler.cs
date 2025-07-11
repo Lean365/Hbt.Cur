@@ -12,11 +12,10 @@ public interface IHbtJwtHandler
     /// 生成访问令牌
     /// </summary>
     /// <param name="user">用户信息</param>
-    /// <param name="tenant">租户信息</param>
     /// <param name="roles">角色列表</param>
     /// <param name="permissions">权限列表</param>
     /// <returns>访问令牌</returns>
-    Task<string> GenerateAccessTokenAsync(HbtUser user, HbtTenant tenant, string[] roles, string[] permissions);
+    Task<string> GenerateAccessTokenAsync(HbtUser user, string[] roles, string[] permissions);
 
     /// <summary>
     /// 生成刷新令牌

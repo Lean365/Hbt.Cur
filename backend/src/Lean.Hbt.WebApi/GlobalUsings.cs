@@ -18,3 +18,39 @@ global using Lean.Hbt.Infrastructure.Security.Attributes;
 global using Microsoft.AspNetCore.Authorization;
 global using Microsoft.AspNetCore.Mvc;
 
+global using Lean.Hbt.Domain.Entities.Routine.Contract;
+global using Lean.Hbt.Domain.Entities.Routine.Metting;
+global using Lean.Hbt.Domain.Entities.Routine.Document;
+global using Lean.Hbt.Domain.Entities.Routine.Notice;
+global using Lean.Hbt.Domain.Entities.Routine.Email;
+global using Lean.Hbt.Domain.Entities.Routine.Quartz;
+global using Lean.Hbt.Domain.Entities.Routine.Project;
+global using Lean.Hbt.Domain.Entities.Routine.Schedule;
+global using Lean.Hbt.Domain.Entities.Routine.Vehicle;
+
+global using Lean.Hbt.Application.Dtos.Routine.Contract;
+global using Lean.Hbt.Application.Dtos.Routine.Metting;
+global using Lean.Hbt.Application.Dtos.Routine.Quartz;
+global using Lean.Hbt.Application.Dtos.Routine.Document;
+global using Lean.Hbt.Application.Dtos.Routine.Notice;
+global using Lean.Hbt.Application.Dtos.Routine.Email;
+global using Lean.Hbt.Application.Dtos.Routine.Project;
+global using Lean.Hbt.Application.Dtos.Routine.Schedule;
+global using Lean.Hbt.Application.Dtos.Routine.Vehicle;
+
+global using Lean.Hbt.Application.Services.Routine.Contract;
+global using Lean.Hbt.Application.Services.Routine.Metting;
+global using Lean.Hbt.Application.Services.Routine.Project;
+global using Lean.Hbt.Application.Services.Routine.Schedule;
+global using Lean.Hbt.Application.Services.Routine.Vehicle;
+global using Lean.Hbt.Application.Services.Routine.Quartz;
+global using Lean.Hbt.Application.Services.Routine.Document;
+global using Lean.Hbt.Application.Services.Routine.Notice;
+global using Lean.Hbt.Application.Services.Routine.Email;
+
+
+
+
+
+
+

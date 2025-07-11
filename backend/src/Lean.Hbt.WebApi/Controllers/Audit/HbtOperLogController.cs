@@ -32,14 +32,12 @@ namespace Lean.Hbt.WebApi.Controllers.Audit
         /// <param name="operLogService">操作日志服务</param>
         /// <param name="logger">日志服务</param>
         /// <param name="currentUser">当前用户服务</param>
-        /// <param name="currentTenant">当前租户服务</param>
         /// <param name="localization">本地化服务</param>
         public HbtOperLogController(
             IHbtOperLogService operLogService,
             IHbtLogger logger,
             IHbtCurrentUser currentUser,
-            IHbtCurrentTenant currentTenant,
-            IHbtLocalizationService localization) : base(logger, currentUser, currentTenant, localization)
+            IHbtLocalizationService localization) : base(logger, currentUser, localization)
         {
             _operLogService = operLogService;
         }

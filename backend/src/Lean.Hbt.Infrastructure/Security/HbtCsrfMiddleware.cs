@@ -60,12 +60,12 @@ namespace Lean.Hbt.Infrastructure.Security
         /// <returns>处理结果</returns>
         public async Task InvokeAsync(HttpContext context)
         {
-            _logger.Info("[CSRF] Processing request: {Method} {Path}", context.Request.Method, context.Request.Path);
+            _logger.Debug("[CSRF] Processing request: {Method} {Path}", context.Request.Method, context.Request.Path);
 
             // 1. 检查是否需要跳过CSRF验证
             if (ShouldSkipCsrfCheck(context))
             {
-                _logger.Info("[CSRF] Skipping CSRF check");
+                _logger.Debug("[CSRF] Skipping CSRF check");
                 await _next(context);
                 return;
             }
@@ -82,7 +82,7 @@ namespace Lean.Hbt.Infrastructure.Security
                     // 生成新的CSRF Token
                     var token = GenerateCsrfToken();
 
-                    _logger.Info("[CSRF] Setting CSRF token cookie: {Token}", token);
+                    _logger.Debug("[CSRF] Setting CSRF token cookie: {Token}", token);
 
                     // 设置Cookie
                     context.Response.Cookies.Append(CsrfTokenCookie, token, GetCookieOptions(context));
@@ -93,13 +93,13 @@ namespace Lean.Hbt.Infrastructure.Security
                     // 缓存Token
                     await CacheTokenAsync(token);
 
-                    _logger.Info("[CSRF] Generated new CSRF token: {Token}", token);
+                    _logger.Debug("[CSRF] Generated new CSRF token: {Token}", token);
                 }
                 else
                 {
                     // 如果已有Token，刷新缓存时间
                     await CacheTokenAsync(cookieToken);
-                    _logger.Info("[CSRF] Refreshed existing CSRF token: {Token}", cookieToken);
+                    _logger.Debug("[CSRF] Refreshed existing CSRF token: {Token}", cookieToken);
                 }
 
                 await _next(context);
@@ -109,8 +109,8 @@ namespace Lean.Hbt.Infrastructure.Security
             // 4. 处理非GET请求
             var requestToken = context.Request.Headers[CsrfTokenHeader].ToString();
 
-            _logger.Info("[CSRF] Request Token: {Token}", requestToken);
-            _logger.Info("[CSRF] Cookie Token: {Token}", cookieToken);
+            _logger.Debug("[CSRF] Request Token: {Token}", requestToken);
+            _logger.Debug("[CSRF] Cookie Token: {Token}", cookieToken);
 
             if (string.IsNullOrEmpty(requestToken) || string.IsNullOrEmpty(cookieToken))
             {
@@ -165,7 +165,7 @@ namespace Lean.Hbt.Infrastructure.Security
             try
             {
                 var cacheKey = $"csrf:token:{token}";
-                _logger.Info("[CSRF] 开始缓存Token: {Key}", cacheKey);
+                _logger.Debug("[CSRF] 开始缓存Token: {Key}", cacheKey);
 
                 await _cache.SetStringAsync(
                     cacheKey,
@@ -178,7 +178,7 @@ namespace Lean.Hbt.Infrastructure.Security
 
                 // 验证Token是否成功缓存
                 var cachedValue = await _cache.GetStringAsync(cacheKey);
-                _logger.Info("[CSRF] Token缓存结果: {Value}", cachedValue);
+                _logger.Debug("[CSRF] Token缓存结果: {Value}", cachedValue);
             }
             catch (Exception ex)
             {
@@ -191,30 +191,30 @@ namespace Lean.Hbt.Infrastructure.Security
         {
             var path = context.Request.Path.Value?.ToLower();
             var method = context.Request.Method;
-            _logger.Info("[CSRF] Checking path: {Method} {Path}", method, path);
+            _logger.Debug("[CSRF] Checking path: {Method} {Path}", method, path);
 
             // 如果路径为空，不跳过验证
             if (string.IsNullOrEmpty(path))
             {
-                _logger.Info("[CSRF] Path is empty, not skipping");
+                _logger.Debug("[CSRF] Path is empty, not skipping");
                 return false;
             }
 
             // 处理查询参数
             var pathWithoutQuery = path.Split('?')[0];
-            _logger.Info("[CSRF] Path without query: {Path}", pathWithoutQuery);
+            _logger.Debug("[CSRF] Path without query: {Path}", pathWithoutQuery);
 
             // 1. 检查是否是SignalR请求
             if (pathWithoutQuery.StartsWith("/signalr"))
             {
-                _logger.Info("[CSRF] Skipping SignalR path: {Path}", pathWithoutQuery);
+                _logger.Debug("[CSRF] Skipping SignalR path: {Path}", pathWithoutQuery);
                 return true;
             }
 
             // 2. 检查是否是OPTIONS请求
             if (method.Equals("OPTIONS", StringComparison.OrdinalIgnoreCase))
             {
-                _logger.Info("[CSRF] Skipping OPTIONS request");
+                _logger.Debug("[CSRF] Skipping OPTIONS request");
                 return true;
             }
 
@@ -235,12 +235,12 @@ namespace Lean.Hbt.Infrastructure.Security
             {
                 if (pathWithoutQuery.StartsWith(skipPath, StringComparison.OrdinalIgnoreCase))
                 {
-                    _logger.Info("[CSRF] Skipping path: {Path} matches pattern: {Pattern}", pathWithoutQuery, skipPath);
+                    _logger.Debug("[CSRF] Skipping path: {Path} matches pattern: {Pattern}", pathWithoutQuery, skipPath);
                     return true;
                 }
             }
 
-            _logger.Info("[CSRF] Path requires CSRF validation: {Path}", pathWithoutQuery);
+            _logger.Debug("[CSRF] Path requires CSRF validation: {Path}", pathWithoutQuery);
             return false;
         }
 

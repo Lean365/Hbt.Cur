@@ -19,8 +19,6 @@ export interface HbtOperLogDto extends HbtBaseEntity {
   logLevel: number
   /** 用户ID */
   userId: number
-  /** 租户ID */
-  tenantId?: number
   /** 用户名 */
   userName: string
   /** 操作类型 */
@@ -70,7 +68,6 @@ export interface HbtOperLogExportDto {
   operLogId: number
   logLevel: number
   userId: number
-  tenantId?: number
   userName: string
   operationType: string
   tableName: string

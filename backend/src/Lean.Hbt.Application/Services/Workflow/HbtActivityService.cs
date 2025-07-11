@@ -6,14 +6,14 @@
 // 创建者 : Lean365
 // 创建时间: 2024-01-23 12:00
 // 版本号 : V1.0.0
-// 描述    : 工作流活动服务实现
+// 描述    : 工作流活动服务实现 - 使用仓储工厂模式
 //===================================================================
 
 using Microsoft.AspNetCore.Http;
 using System.IO;
 using System.Linq.Expressions;
 using Lean.Hbt.Application.Dtos.Workflow;
-using Lean.Hbt.Domain.Entities.Workflow.Engine;
+using Lean.Hbt.Domain.Entities.Workflow;
 using Lean.Hbt.Common.Utils;
 using Lean.Hbt.Domain.Repositories;
 using Mapster;
@@ -35,32 +35,30 @@ namespace Lean.Hbt.Application.Services.Workflow
     /// 3. 创建新的工作流活动
     /// 4. 更新现有工作流活动
     /// 5. 删除工作流活动
+    /// 更新: 2024-12-19 - 使用仓储工厂模式支持多库
     /// </remarks>
     public class HbtActivityService : HbtBaseService, IHbtActivityService
     {
-        /// <summary>
-        /// 工作流活动仓储接口
-        /// </summary>
-        private readonly IHbtRepository<HbtActivity> _activityRepository;
+        private readonly IHbtRepositoryFactory _repositoryFactory;
+
+        private IHbtRepository<HbtActivity> ActivityRepository => _repositoryFactory.GetWorkflowRepository<HbtActivity>();
 
         /// <summary>
         /// 构造函数
         /// </summary>
         /// <param name="logger">日志记录器</param>
-        /// <param name="activityRepository">工作流活动仓储接口</param>
+        /// <param name="repositoryFactory">仓储工厂</param>
         /// <param name="httpContextAccessor">HTTP上下文访问器</param>
         /// <param name="currentUser">当前用户服务</param>
-        /// <param name="currentTenant">当前租户服务</param>
         /// <param name="localization">本地化服务</param>
         public HbtActivityService(
             IHbtLogger logger,
-            IHbtRepository<HbtActivity> activityRepository,
+            IHbtRepositoryFactory repositoryFactory,
             IHttpContextAccessor httpContextAccessor,
             IHbtCurrentUser currentUser,
-            IHbtCurrentTenant currentTenant,
-            IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, currentTenant, localization)
+            IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
         {
-            _activityRepository = activityRepository;
+            _repositoryFactory = repositoryFactory ?? throw new ArgumentNullException(nameof(repositoryFactory));
         }
 
         /// <summary>
@@ -79,7 +77,7 @@ namespace Lean.Hbt.Application.Services.Workflow
             exp = exp.And(x => x.DefinitionId == DefinitionId);
 
             // 使用分页查询获取数据，设置较大的页面大小以获取全部数据
-            var result = await _activityRepository.GetPagedListAsync(exp.ToExpression(), 1, int.MaxValue, x => x.Id, OrderByType.Asc);
+            var result = await ActivityRepository.GetPagedListAsync(exp.ToExpression(), 1, int.MaxValue, x => x.Id, OrderByType.Asc);
             return result.Rows.Adapt<List<HbtActivityDto>>();
         }
 
@@ -94,7 +92,7 @@ namespace Lean.Hbt.Application.Services.Workflow
         /// </remarks>
         public async Task<HbtActivityDto> GetByIdAsync(long id)
         {
-            var activity = await _activityRepository.GetByIdAsync(id);
+            var activity = await ActivityRepository.GetByIdAsync(id);
             return activity.Adapt<HbtActivityDto>();
         }
 
@@ -111,7 +109,7 @@ namespace Lean.Hbt.Application.Services.Workflow
         public async Task<long> CreateAsync(HbtActivityDto input)
         {
             var activity = input.Adapt<HbtActivity>();
-            await _activityRepository.CreateAsync(activity);
+            await ActivityRepository.CreateAsync(activity);
             return activity.Id;
         }
 
@@ -127,9 +125,9 @@ namespace Lean.Hbt.Application.Services.Workflow
         /// </remarks>
         public async Task UpdateAsync(long id, HbtActivityDto input)
         {
-            var activity = await _activityRepository.GetByIdAsync(id);
+            var activity = await ActivityRepository.GetByIdAsync(id);
             input.Adapt(activity);
-            await _activityRepository.UpdateAsync(activity);
+            await ActivityRepository.UpdateAsync(activity);
         }
 
         /// <summary>
@@ -141,7 +139,7 @@ namespace Lean.Hbt.Application.Services.Workflow
         /// </remarks>
         public async Task DeleteAsync(long id)
         {
-            await _activityRepository.DeleteAsync(id);
+            await ActivityRepository.DeleteAsync(id);
         }
 
         /// <summary>
@@ -173,7 +171,7 @@ namespace Lean.Hbt.Application.Services.Workflow
                         entity.CreateTime = DateTime.Now;
                         entity.CreateBy = _currentUser.UserName;
 
-                        var result = await _activityRepository.CreateAsync(entity);
+                        var result = await ActivityRepository.CreateAsync(entity);
                         if (result > 0)
                             success++;
                         else
@@ -200,17 +198,20 @@ namespace Lean.Hbt.Application.Services.Workflow
         /// </summary>
         public async Task<(string fileName, byte[] content)> ExportAsync(HbtActivityQueryDto query, string sheetName = "Sheet1")
         {
+            // 创建查询表达式
             var exp = Expressionable.Create<HbtActivity>();
-            if (query.DefinitionId.HasValue)
-                exp.And(x => x.DefinitionId == query.DefinitionId);
-            if (!string.IsNullOrEmpty(query.ActivityName))
-                exp.And(x => x.Name.Contains(query.ActivityName));
-            if (query.ActivityType.HasValue)
-                exp.And(x => x.ActivityType == query.ActivityType);
+            if (query?.DefinitionId > 0)
+                exp = exp.And(x => x.DefinitionId == query.DefinitionId);
+            if (!string.IsNullOrEmpty(query?.ActivityName))
+                exp = exp.And(x => x.Name.Contains(query.ActivityName));
+            if (query?.ActivityType.HasValue == true)
+                exp = exp.And(x => x.ActivityType == query.ActivityType.Value);
 
-            var list = await _activityRepository.GetListAsync(exp.ToExpression());
-            var exportList = list.Adapt<List<HbtActivityExportDto>>();
-            return await HbtExcelHelper.ExportAsync(exportList, sheetName, "工作流活动数据");
+            // 获取所有数据用于导出
+            var activities = await ActivityRepository.GetListAsync(exp.ToExpression());
+            var dtos = activities.Adapt<List<HbtActivityExportDto>>();
+
+            return await HbtExcelHelper.ExportAsync(dtos, sheetName, "工作流活动数据");
         }
     }
 } 

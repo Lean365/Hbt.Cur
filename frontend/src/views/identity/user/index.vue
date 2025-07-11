@@ -71,7 +71,7 @@
 
         <!-- 性别列 -->
         <template v-if="column.dataIndex === 'gender'">
-          <hbt-dict-tag dict-type="sys_gender" :value="record.gender" />
+          <hbt-dict-tag dict-type="sys_user_type" :value="record.gender" />
         </template>
 
         <!-- 状态列 -->

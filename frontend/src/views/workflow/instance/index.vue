@@ -68,6 +68,12 @@
             :delete-permission="['workflow:instance:delete']"
             :show-view="true"
             :view-permission="['workflow:instance:query']"
+            :show-start="record.status === 0"
+            :start-permission="['workflow:instance:start']"
+            :show-suspend="record.status === 1"
+            :suspend-permission="['workflow:instance:suspend']"
+            :show-resume="record.status === 3"
+            :resume-permission="['workflow:instance:resume']"
             :show-submit="true"
             :submit-permission="['workflow:instance:submit']"
             :show-withdraw="true"
@@ -78,6 +84,9 @@
             @edit="handleEdit"
             @delete="handleDelete"
             @view="handleView"
+            @start="handleStart"
+            @suspend="handleSuspend"
+            @resume="handleResume"
             @submit="handleSubmit"
             @withdraw="handleWithdraw"
             @terminate="handleTerminate"
@@ -157,16 +166,22 @@ import { useRouter } from 'vue-router'
 import type { HbtInstance, HbtInstanceQuery } from '@/types/workflow/instance'
 import type { QueryField } from '@/types/components/query'
 import type { TablePaginationConfig } from 'ant-design-vue'
-import { 
-  getWorkflowInstanceList, 
-  deleteWorkflowInstance, 
-  batchDeleteWorkflowInstance, 
-  importWorkflowInstance, 
-  exportWorkflowInstance, 
+import {
+  getWorkflowInstanceList,
+  getWorkflowInstance,
+  createWorkflowInstance,
+  updateWorkflowInstance,
+  deleteWorkflowInstance,
+  batchDeleteWorkflowInstance,
+  importWorkflowInstance,
+  exportWorkflowInstance,
   getWorkflowInstanceTemplate,
   submitWorkflowInstance,
   withdrawWorkflowInstance,
-  terminateWorkflowInstance
+  terminateWorkflowInstance,
+  startWorkflowInstance,
+  suspendWorkflowInstance,
+  resumeWorkflowInstance
 } from '@/api/workflow/instance'
 import InstanceForm from './components/InstanceForm.vue'
 import InstanceDetail from './components/InstanceDetail.vue'
@@ -220,10 +235,48 @@ const columns = [
     width: 180
   },
   {
-    title: t('common.action'),
+    title: t('table.columns.remark'),
+    dataIndex: 'remark',
+    key: 'remark',
+    width: 120,
+    ellipsis: true
+  },
+  {
+    title: t('table.columns.createBy'),
+    dataIndex: 'createBy',
+    key: 'createBy',
+    width: 120,
+    ellipsis: true
+  },
+  {
+    title: t('table.columns.createTime'),
+    dataIndex: 'createTime',
+    key: 'createTime',
+    width: 180,
+    ellipsis: true
+  },
+  {
+    title: t('table.columns.updateBy'),
+    dataIndex: 'updateBy',
+    key: 'updateBy',
+    width: 120,
+    ellipsis: true
+  },
+  {
+    title: t('table.columns.updateTime'),
+    dataIndex: 'updateTime',
+    key: 'updateTime',
+    width: 180,
+    ellipsis: true
+  },
+  {
+    title: t('table.columns.operation'),
+    dataIndex: 'action',
     key: 'action',
+    width: 150,
     fixed: 'right',
-    width: 200
+    align: 'center',
+    ellipsis: true
   }
 ]
 
@@ -660,6 +713,59 @@ const handleSuccess = () => {
   formVisible.value = false
   selectedInstanceId.value = undefined
   fetchData()
+}
+
+// 处理启动
+const handleStart = async (record: HbtInstance) => {
+  try {
+    const res = await startWorkflowInstance({
+      definitionId: record.definitionId,
+      title: record.instanceName,
+      initiatorId: record.initiatorId,
+      formData: record.formData
+    })
+    if (res.data.code === 200) {
+      message.success(t('workflow.instance.start.success'))
+      fetchData()
+    } else {
+      message.error(res.data.msg || t('workflow.instance.start.failed'))
+    }
+  } catch (error) {
+    console.error(error)
+    message.error(t('workflow.instance.start.failed'))
+  }
+}
+
+// 处理暂停
+const handleSuspend = async (record: HbtInstance) => {
+  try {
+    const res = await suspendWorkflowInstance(Number(record.instanceId))
+    if (res.data.code === 200) {
+      message.success(t('workflow.instance.suspend.success'))
+      fetchData()
+    } else {
+      message.error(res.data.msg || t('workflow.instance.suspend.failed'))
+    }
+  } catch (error) {
+    console.error(error)
+    message.error(t('workflow.instance.suspend.failed'))
+  }
+}
+
+// 处理恢复
+const handleResume = async (record: HbtInstance) => {
+  try {
+    const res = await resumeWorkflowInstance(Number(record.instanceId))
+    if (res.data.code === 200) {
+      message.success(t('workflow.instance.resume.success'))
+      fetchData()
+    } else {
+      message.error(res.data.msg || t('workflow.instance.resume.failed'))
+    }
+  } catch (error) {
+    console.error(error)
+    message.error(t('workflow.instance.resume.failed'))
+  }
 }
 
 onMounted(() => {

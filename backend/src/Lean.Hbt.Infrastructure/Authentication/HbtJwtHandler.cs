@@ -40,7 +40,7 @@ namespace Lean.Hbt.Infrastructure.Authentication
         private readonly HbtJwtOptions _jwtOptions;
         private readonly IDistributedCache? _distributedCache;
         private readonly bool _useDistributedCache;
-        private readonly IHbtRepository<HbtUserTenant> _userTenantRepository;
+
 
         /// <summary>
         /// 构造函数
@@ -48,26 +48,23 @@ namespace Lean.Hbt.Infrastructure.Authentication
         /// <param name="configuration">配置接口</param>
         /// <param name="logger">日志接口</param>
         /// <param name="jwtOptions">JWT配置</param>
-        /// <param name="userTenantRepository">用户租户仓库接口</param>
         /// <param name="distributedCache">分布式缓存接口</param>
         public HbtJwtHandler(
             IConfiguration configuration,
             IHbtLogger logger,
             IOptions<HbtJwtOptions> jwtOptions,
-            IHbtRepository<HbtUserTenant> userTenantRepository,
             IDistributedCache? distributedCache = null)
         {
             _logger = logger;
             _jwtOptions = jwtOptions.Value;
             _distributedCache = distributedCache;
-            _userTenantRepository = userTenantRepository;
             _useDistributedCache = _distributedCache != null && configuration.GetValue<bool>("UseDistributedCache", false);
         }
 
         /// <summary>
         /// 生成访问令牌
         /// </summary>
-        public async Task<string> GenerateAccessTokenAsync(HbtUser user, HbtTenant tenant, string[] roles, string[] permissions)
+        public async Task<string> GenerateAccessTokenAsync(HbtUser user, string[] roles, string[] permissions)
         {
             try
             {
@@ -83,7 +80,7 @@ namespace Lean.Hbt.Infrastructure.Authentication
                     new Claim("uid", user.Id.ToString()),          // 用户ID
                     new Claim("unm", user.UserName),               // 用户名
                     new Claim("nme", user.NickName),               // 昵称
-                    new Claim("tid", tenant.Id.ToString()),        // 租户ID
+                    new Claim("avt", user.Avatar ?? ""),           // 头像
                     new Claim("jti", Guid.NewGuid().ToString()),   // JWT ID
                     new Claim("typ", user.UserType.ToString()),    // 用户类型
                     new Claim("iat", DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64) // 签发时间
@@ -108,27 +105,6 @@ namespace Lean.Hbt.Infrastructure.Authentication
                 // 优化：不将权限列表添加到Token中，改为在用户信息接口中获取
                 // 这样可以大大减少Token的大小
 
-                // 验证租户信息
-                if (tenant == null || tenant.Id <= 0)
-                {
-                    _logger.Error("生成访问令牌失败：租户信息无效");
-                    throw new HbtException("租户信息无效", HbtConstants.ErrorCodes.InvalidTenant);
-                }
-
-                // 验证用户租户关系
-                var userTenant = await _userTenantRepository.GetFirstAsync(x => x.UserId == user.Id && x.TenantId == tenant.Id);
-                if (userTenant == null)
-                {
-                    _logger.Error("生成访问令牌失败：用户不属于指定租户");
-                    throw new HbtException("用户不属于指定租户", HbtConstants.ErrorCodes.InvalidTenant);
-                }
-
-                if (userTenant.Status != 0)
-                {
-                    _logger.Error("生成访问令牌失败：用户在当前租户中已被禁用");
-                    throw new HbtException("用户在当前租户中已被禁用", HbtConstants.ErrorCodes.UserDisabled);
-                }
-
                 var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.SecretKey));
                 var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
@@ -146,21 +122,16 @@ namespace Lean.Hbt.Infrastructure.Authentication
                 };
 
                 var tokenString = handler.WriteToken(token);
-                _logger.Info("访问令牌生成成功: Length={Length}, ClaimsCount={ClaimsCount}",
-                    tokenString?.Length ?? 0,
-                    claims.Count);
 
-                if (string.IsNullOrEmpty(tokenString))
-                {
-                    throw new HbtException("生成访问令牌失败：令牌为空", "JWT_GENERATE_ERROR");
-                }
+                _logger.Info("生成访问令牌成功: UserId={UserId}, UserName={UserName}",
+                    user.Id, user.UserName);
 
                 return tokenString;
             }
             catch (Exception ex)
             {
-                _logger.Error("生成访问令牌时发生错误: {Message}", ex.Message);
-                throw new HbtException("生成访问令牌失败", "JWT_GENERATE_ERROR", ex);
+                _logger.Error("生成访问令牌失败: UserId={UserId}, Error={Error}", user.Id, ex.Message);
+                throw;
             }
         }
 
@@ -216,15 +187,8 @@ namespace Lean.Hbt.Infrastructure.Authentication
                     return Task.FromResult(false);
                 }
 
-                var tenantId = principal.FindFirst("tid")?.Value;
-                if (string.IsNullOrEmpty(tenantId))
-                {
-                    _logger.Warn("Token验证失败: 缺少租户ID声明");
-                    return Task.FromResult(false);
-                }
-
-                _logger.Info("Token验证成功: UserId={UserId}, UserName={UserName}, TenantId={TenantId}",
-                    userId, userName, tenantId);
+                _logger.Info("Token验证成功: UserId={UserId}, UserName={UserName}",
+                    userId, userName);
 
                 return Task.FromResult(true);
             }

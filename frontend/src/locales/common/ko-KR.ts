@@ -366,10 +366,16 @@ export default {
 
       // === 상태 작업 버튼 ===
       audit: '감사',         // @btn-audit-color
-      revoke: '취소',       // @btn-revoke-color
+      revoke: '취소',        // @btn-revoke-color
       stop: '중지',          // @btn-stop-color
-      run: '실행',          // @btn-run-color
-      force: '강제',          // @btn-forced-color
+      run: '실행',           // @btn-run-color
+      force: '강제',         // @btn-forced-color
+      start: '시작',         // @btn-start-color
+      suspend: '일시정지',    // @btn-suspend-color
+      resume: '재개',        // @btn-resume-color
+      submit: '제출',        // @btn-submit-color
+      withdraw: '철회',      // @btn-withdraw-color
+      terminate: '종료',      // @btn-terminate-color
 
       // === 시스템 기능 버튼 ===
       generate: '생성',      // @btn-generate-color

@@ -12,15 +12,18 @@ import type { HbtNode } from './node'
  * 工作流任务数据传输对象
  */
 export interface HbtTask extends HbtBaseEntity {
-  taskId: number
+  processTaskId: number
+  taskId?: number // 前端兼容字段，映射到processTaskId
   instanceId: number
+  instanceName: string
   nodeId: number
+  nodeName: string
   taskName: string
   taskType: number
   status: number
   assigneeId?: number
+  assigneeName: string
   comment?: string
-  result?: string
   completeTime?: string
   dueTime?: string
   reminderTime?: string
@@ -64,14 +67,14 @@ export interface HbtTaskCreate {
  * 工作流任务更新参数
  */
 export interface HbtTaskUpdate extends HbtTaskCreate {
-  taskId: number
+  processTaskId: number
 }
 
 /**
  * 工作流任务状态更新参数
  */
 export interface HbtTaskStatus {
-  taskId: number
+  processTaskId: number
   status: number
 }
 

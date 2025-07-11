@@ -46,14 +46,29 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         public long DefinitionId { get; set; }
 
         /// <summary>
+        /// 工作流定义名称
+        /// </summary>
+        public string DefinitionName { get; set; } = string.Empty;
+
+        /// <summary>
         /// 当前节点ID
         /// </summary>
         public long CurrentNodeId { get; set; }
 
         /// <summary>
+        /// 当前节点名称
+        /// </summary>
+        public string CurrentNodeName { get; set; } = string.Empty;
+
+        /// <summary>
         /// 发起人ID
         /// </summary>
         public long InitiatorId { get; set; }
+
+        /// <summary>
+        /// 发起人姓名
+        /// </summary>
+        public string InitiatorName { get; set; } = string.Empty;
 
         /// <summary>
         /// 表单数据(JSON格式)

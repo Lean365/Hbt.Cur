@@ -37,9 +37,6 @@ export interface HbtDictData extends HbtBaseEntity {
   extValue?: string
   /** 翻译键 */
   transKey?: string
-  /** 租户ID */
-  tenantId: number
-
 }
 
 /**
@@ -80,8 +77,6 @@ export interface HbtDictDataCreate {
     listClass?: string
     /** 状态（0正常 1停用） */
     status: number
-    /** 租户ID */
-    tenantId: number
     /** 备注 */
     remark?: string
 }

@@ -30,15 +30,13 @@ namespace Lean.Hbt.Application.Services.Workflow
         /// <param name="dbContext">数据库上下文</param>
         /// <param name="httpContextAccessor">HTTP上下文访问器</param>
         /// <param name="currentUser">当前用户服务</param>
-        /// <param name="currentTenant">当前租户服务</param>
         /// <param name="localization">本地化服务</param>
         public HbtScheduledTaskService(
             IHbtLogger logger,
             IHbtDbContext dbContext,
             IHttpContextAccessor httpContextAccessor,
             IHbtCurrentUser currentUser,
-            IHbtCurrentTenant currentTenant,
-            IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, currentTenant, localization)
+            IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
         {
             _dbContext = dbContext;
         }
@@ -212,12 +210,13 @@ namespace Lean.Hbt.Application.Services.Workflow
                 var tasks = await _dbContext.Client.Queryable<HbtScheduledTask>()
                     .LeftJoin<HbtInstance>((t, i) => t.InstanceId == i.Id)
                     .LeftJoin<HbtNode>((t, i, n) => t.NodeId == n.Id)
+                    .LeftJoin<HbtNodeTemplate>((t, i, n, nt) => n.NodeTemplateId == nt.Id)
                     .Where(t => t.Status == 0 && t.ScheduledTime <= DateTime.Now) // 待处理
                     .OrderBy(t => t.ScheduledTime)
                     .Take(batchSize)
-                    .Select((t, i, n) => new HbtScheduledTaskDto
+                    .Select((t, i, n, nt) => new HbtScheduledTaskDto
                     {
-                        WorkflowScheduledTaskId = t.Id,
+                        ScheduledTaskId = t.Id,
                         InstanceId = t.InstanceId,
                         NodeId = t.NodeId,
                         TaskType = t.TaskType,
@@ -229,7 +228,7 @@ namespace Lean.Hbt.Application.Services.Workflow
                         ErrorMessage = t.ErrorMessage,
                         TaskParameters = t.TaskParameters,
                         InstanceName = i.InstanceName,
-                        NodeName = n.NodeName
+                        NodeName = nt.NodeName
                     })
                     .ToListAsync();
 

@@ -101,5 +101,29 @@ namespace Lean.Hbt.Application.Services.Workflow
         /// </summary>
         /// <returns>表单选项列表</returns>
         Task<List<HbtSelectOption>> GetOptionsAsync();
+
+        /// <summary>
+        /// 获取当前用户的表单
+        /// </summary>
+        /// <param name="status">状态筛选</param>
+        /// <param name="limit">限制数量</param>
+        /// <returns>当前用户的表单列表</returns>
+        Task<List<HbtFormDto>> GetCurrentUserFormsAsync(int? status = null, int limit = 20);
+
+        /// <summary>
+        /// 获取当前用户创建的表单
+        /// </summary>
+        /// <param name="status">状态筛选</param>
+        /// <param name="limit">限制数量</param>
+        /// <returns>当前用户创建的表单列表</returns>
+        Task<List<HbtFormDto>> GetCurrentUserCreatedFormsAsync(int? status = null, int limit = 20);
+
+        /// <summary>
+        /// 获取当前用户可访问的表单
+        /// </summary>
+        /// <param name="status">状态筛选</param>
+        /// <param name="limit">限制数量</param>
+        /// <returns>当前用户可访问的表单列表</returns>
+        Task<List<HbtFormDto>> GetCurrentUserAccessibleFormsAsync(int? status = null, int limit = 20);
     }
 }

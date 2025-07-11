@@ -27,15 +27,13 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         /// <param name="workflowDefinitionService">工作流定义服务</param>
         /// <param name="logger">日志服务</param>
         /// <param name="currentUser">当前用户服务</param>
-        /// <param name="currentTenant">当前租户服务</param>
         /// <param name="localization">本地化服务</param>
         /// </summary>
         public HbtDefinitionController(
             IHbtDefinitionService workflowDefinitionService,
             IHbtLogger logger,
             IHbtCurrentUser currentUser,
-            IHbtCurrentTenant currentTenant,
-            IHbtLocalizationService localization) : base(logger, currentUser, currentTenant, localization)
+            IHbtLocalizationService localization) : base(logger, currentUser, localization)
         {
             _workflowDefinitionService = workflowDefinitionService;
         }
@@ -169,6 +167,19 @@ namespace Lean.Hbt.WebApi.Controllers.Workflow
         {
             var newVersion = await _workflowDefinitionService.UpgradeVersionAsync(id);
             return Ok(new { version = newVersion });
+        }
+
+        /// <summary>
+        /// 获取工作流定义选项列表
+        /// </summary>
+        /// <param name="includeDisabled">是否包含已停用的定义</param>
+        /// <returns>工作流定义选项列表</returns>
+        [HttpGet("options")]
+        [HbtPerm("workflow:definition:query")]
+        public async Task<IActionResult> GetOptionsAsync([FromQuery] bool includeDisabled = false)
+        {
+            var result = await _workflowDefinitionService.GetOptionsAsync(includeDisabled);
+            return Success(result);
         }
     }
 }

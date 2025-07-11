@@ -30,8 +30,6 @@
           <hbt-locale />
           <hbt-memorial />
           <hbt-theme />
-          <!-- 租户切换 -->
-          <hbt-tenant />
           <hbt-header-user />
           <hbt-setting />
         </a-space>

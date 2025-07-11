@@ -19,12 +19,6 @@ namespace Lean.Hbt.Common.Models;
 public class HbtSignalRDevice
 {
     /// <summary>
-    /// 租户ID
-    /// </summary>
-    [JsonPropertyName("tenantId")]
-    public long TenantId { get; set; }
-
-    /// <summary>
     /// 用户ID
     /// </summary>
     [JsonPropertyName("userId")]

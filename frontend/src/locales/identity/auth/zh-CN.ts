@@ -3,7 +3,7 @@ export default {
     auth: {
       login: {
         title: '登录',
-        tenantNo: '租户',
+        tenantId: '租户配置',
         username: '用户名',
         password: '密码',
         rememberMe: '记住密码',
@@ -30,7 +30,8 @@ export default {
         otherLogin: '其他登录方式',
         form: {
           usernameRequired: '请输入用户名',
-          passwordRequired: '请输入密码'
+          passwordRequired: '请输入密码',
+          tenantIdRequired: '请选择租户配置'
         }
       },
       register: {

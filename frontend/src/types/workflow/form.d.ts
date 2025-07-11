@@ -16,6 +16,7 @@ export interface HbtForm extends HbtBaseEntity {
   formCategory: number
   status: number
   definitionId?: number
+  definitionName?: string
 }
 
 /**

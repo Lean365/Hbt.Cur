@@ -3,6 +3,7 @@ export default {
     auth: {
       login: {
         title: 'Iniciar sesión',
+        tenantId: 'Configuración del inquilino',
         username: 'Nombre de usuario',
         password: 'Contraseña',
         rememberMe: 'Recordarme',
@@ -26,7 +27,8 @@ export default {
         otherLogin: 'Otros métodos de inicio de sesión',
         form: {
           usernameRequired: 'Por favor ingrese su nombre de usuario',
-          passwordRequired: 'Por favor ingrese su contraseña'
+          passwordRequired: 'Por favor ingrese su contraseña',
+          tenantIdRequired: 'Por favor seleccione la configuración del inquilino'
         }
       },
       register: {

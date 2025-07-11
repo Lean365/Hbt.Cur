@@ -4,10 +4,11 @@
 // 创建者 : Lean365
 // 创建时间: 2024-01-20 16:30
 // 版本号 : V0.0.1
-// 描述   : 菜单服务实现
+// 描述   : 菜单服务实现 - 使用仓储工厂模式
 //===================================================================
 
 using System.Linq.Expressions;
+using Lean.Hbt.Domain.Repositories;
 using Microsoft.AspNetCore.Http;
 
 namespace Lean.Hbt.Application.Services.Identity
@@ -18,52 +19,34 @@ namespace Lean.Hbt.Application.Services.Identity
     /// <remarks>
     /// 创建者: Lean365
     /// 创建时间: 2024-01-20
+    /// 更新: 2024-12-19 - 使用仓储工厂模式支持多库
     /// </remarks>
     public class HbtMenuService : HbtBaseService, IHbtMenuService
     {
-        // 菜单仓储接口
-        private readonly IHbtRepository<HbtMenu> _menuRepository;
+        private readonly IHbtRepositoryFactory _repositoryFactory;
 
-        // 角色菜单仓储接口
-        private readonly IHbtRepository<HbtRoleMenu> _roleMenuRepository;
-
-        // 用户角色仓储接口
-        private readonly IHbtRepository<HbtUserRole> _userRoleRepository;
-
-
-        // 用户仓储接口
-        private readonly IHbtRepository<HbtUser> _userRepository;
+        private IHbtRepository<HbtMenu> MenuRepository => _repositoryFactory.GetAuthRepository<HbtMenu>();
+        private IHbtRepository<HbtRoleMenu> RoleMenuRepository => _repositoryFactory.GetAuthRepository<HbtRoleMenu>();
+        private IHbtRepository<HbtUserRole> UserRoleRepository => _repositoryFactory.GetAuthRepository<HbtUserRole>();
+        private IHbtRepository<HbtUser> UserRepository => _repositoryFactory.GetAuthRepository<HbtUser>();
 
         /// <summary>
         /// 构造函数，注入依赖服务
         /// </summary>
         /// <param name="logger">日志记录器</param>
-        /// <param name="menuRepository">菜单仓库</param>
-        /// <param name="roleMenuRepository">角色菜单仓库</param>
-        /// <param name="userRoleRepository">用户角色仓库</param>
-        /// <param name="userRepository">用户仓库</param>
+        /// <param name="repositoryFactory">仓储工厂</param>
         /// <param name="httpContextAccessor">HTTP上下文访问器</param>
         /// <param name="currentUser">当前用户服务</param>
-        /// <param name="currentTenant">当前租户服务</param>
         /// <param name="localization">本地化服务</param>
         public HbtMenuService(
             IHbtLogger logger,
-            IHbtRepository<HbtMenu> menuRepository,
-            IHbtRepository<HbtRoleMenu> roleMenuRepository,
-            IHbtRepository<HbtUserRole> userRoleRepository,
-            IHbtRepository<HbtUser> userRepository,
+            IHbtRepositoryFactory repositoryFactory,
             IHttpContextAccessor httpContextAccessor,
             IHbtCurrentUser currentUser,
-        IHbtCurrentTenant currentTenant,
-        IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, currentTenant, localization)
+            IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
         {
-            _menuRepository = menuRepository;
-            _roleMenuRepository = roleMenuRepository;
-            _userRoleRepository = userRoleRepository;
-
-            _userRepository = userRepository;
+            _repositoryFactory = repositoryFactory ?? throw new ArgumentNullException(nameof(repositoryFactory));
         }
-
 
         /// <summary>
         /// 获取菜单分页列表
@@ -74,7 +57,7 @@ namespace Lean.Hbt.Application.Services.Identity
         {
             var exp = QueryExpression(query);
 
-            var result = await _menuRepository.GetPagedListAsync(
+            var result = await MenuRepository.GetPagedListAsync(
                 exp,
                 query.PageIndex,
                 query.PageSize,
@@ -98,7 +81,7 @@ namespace Lean.Hbt.Application.Services.Identity
         /// <exception cref="HbtException">当菜单不存在时抛出异常</exception>
         public async Task<HbtMenuDto> GetByIdAsync(long menuId)
         {
-            var menu = await _menuRepository.GetByIdAsync(menuId);
+            var menu = await MenuRepository.GetByIdAsync(menuId);
             if (menu == null)
                 throw new HbtException(L("Identity.Menu.NotFound", menuId));
 
@@ -117,7 +100,7 @@ namespace Lean.Hbt.Application.Services.Identity
                 _logger.Info($"[菜单服务] 开始创建菜单: MenuName={input.MenuName}");
 
                 // 验证菜单名称是否已存在
-                var existsMenu = await _menuRepository.AsQueryable()
+                var existsMenu = await MenuRepository.AsQueryable()
                     .Where(m => m.MenuName == input.MenuName)
                     .FirstAsync();
 
@@ -130,7 +113,7 @@ namespace Lean.Hbt.Application.Services.Identity
                 // 验证翻译键是否已存在
                 if (!string.IsNullOrEmpty(input.TransKey))
                 {
-                    var existsTransKey = await _menuRepository.AsQueryable()
+                    var existsTransKey = await MenuRepository.AsQueryable()
                         .Where(m => m.TransKey == input.TransKey)
                         .FirstAsync();
 
@@ -142,35 +125,35 @@ namespace Lean.Hbt.Application.Services.Identity
                 }
 
                 var menu = input.Adapt<HbtMenu>();
-                var result = await _menuRepository.CreateAsync(menu);
+                var result = await MenuRepository.CreateAsync(menu);
 
                 if (result > 0)
                 {
                     _logger.Info($"[菜单服务] 菜单创建成功: MenuId={menu.Id}, MenuName={menu.MenuName}");
 
                     // 根据菜单名称获取新创建的菜单ID
-                    var newMenu = await _menuRepository.AsQueryable()
+                    var newMenu = await MenuRepository.AsQueryable()
                         .Where(m => m.MenuName == input.MenuName)
                         .FirstAsync();
 
                     if (newMenu != null)
                     {
                         // 获取 admin 用户ID
-                        var adminUser = await _userRepository.AsQueryable()
+                        var adminUser = await UserRepository.AsQueryable()
                             .Where(u => u.UserName == "admin")
                             .FirstAsync();
 
                         if (adminUser != null)
                         {
                             // 获取 admin 用户的角色ID
-                            var adminUserRole = await _userRoleRepository.AsQueryable()
+                            var adminUserRole = await UserRoleRepository.AsQueryable()
                                 .Where(ur => ur.UserId == adminUser.Id)
                                 .FirstAsync();
 
                             if (adminUserRole != null)
                             {
                                 // 检查角色菜单关联是否存在
-                                var existingRoleMenu = await _roleMenuRepository.AsQueryable()
+                                var existingRoleMenu = await RoleMenuRepository.AsQueryable()
                                     .Where(rm => rm.RoleId == adminUserRole.RoleId && rm.MenuId == newMenu.Id)
                                     .FirstAsync();
 
@@ -178,7 +161,7 @@ namespace Lean.Hbt.Application.Services.Identity
                                 {
                                     // 更新现有的角色菜单关联
                                     existingRoleMenu.UpdateTime = DateTime.Now;
-                                    await _roleMenuRepository.UpdateAsync(existingRoleMenu);
+                                    await RoleMenuRepository.UpdateAsync(existingRoleMenu);
                                     _logger.Info($"[菜单服务] 更新角色菜单关联: RoleId={adminUserRole.RoleId}, MenuId={newMenu.Id}");
                                 }
                                 else
@@ -190,7 +173,7 @@ namespace Lean.Hbt.Application.Services.Identity
                                         MenuId = newMenu.Id,
                                         CreateTime = DateTime.Now
                                     };
-                                    await _roleMenuRepository.CreateAsync(roleMenu);
+                                    await RoleMenuRepository.CreateAsync(roleMenu);
                                     _logger.Info($"[菜单服务] 创建角色菜单关联: RoleId={adminUserRole.RoleId}, MenuId={newMenu.Id}");
                                 }
                             }
@@ -220,16 +203,16 @@ namespace Lean.Hbt.Application.Services.Identity
         /// <returns>是否成功</returns>
         public async Task<bool> UpdateAsync(HbtMenuUpdateDto input)
         {
-            var menu = await _menuRepository.GetByIdAsync(input.MenuId)
+            var menu = await MenuRepository.GetByIdAsync(input.MenuId)
                 ?? throw new HbtException(L("Identity.Menu.NotFound", input.MenuId));
 
             // 验证菜单名称是否已存在
             if (menu.MenuName != input.MenuName)
-                await HbtValidateUtils.ValidateFieldExistsAsync(_menuRepository, "MenuName", input.MenuName);
+                await HbtValidateUtils.ValidateFieldExistsAsync(MenuRepository, "MenuName", input.MenuName);
 
             // 验证翻译键是否已存在
             if (!string.IsNullOrEmpty(input.TransKey) && menu.TransKey != input.TransKey)
-                await HbtValidateUtils.ValidateFieldExistsAsync(_menuRepository, "TransKey", input.TransKey);
+                await HbtValidateUtils.ValidateFieldExistsAsync(MenuRepository, "TransKey", input.TransKey);
 
             // 检查是否存在循环引用
             if (input.ParentId != null && input.ParentId == input.MenuId)
@@ -238,39 +221,39 @@ namespace Lean.Hbt.Application.Services.Identity
             // 检查父菜单是否存在
             if (input.ParentId > 0)
             {
-                var parentMenu = await _menuRepository.GetByIdAsync(input.ParentId.Value);
+                var parentMenu = await MenuRepository.GetByIdAsync(input.ParentId.Value);
                 if (parentMenu == null)
                     throw new HbtException(L("Identity.Menu.ParentNotFound"));
             }
 
             input.Adapt(menu);
-            var result = await _menuRepository.UpdateAsync(menu);
+            var result = await MenuRepository.UpdateAsync(menu);
 
             if (result > 0)
             {
                 // 根据菜单名称获取更新的菜单ID
-                var updatedMenu = await _menuRepository.AsQueryable()
+                var updatedMenu = await MenuRepository.AsQueryable()
                     .Where(m => m.MenuName == input.MenuName)
                     .FirstAsync();
 
                 if (updatedMenu != null)
                 {
                     // 获取 admin 用户ID
-                    var adminUser = await _userRepository.AsQueryable()
+                    var adminUser = await UserRepository.AsQueryable()
                         .Where(u => u.UserName == "admin")
                         .FirstAsync();
 
                     if (adminUser != null)
                     {
                         // 获取 admin 用户的角色ID
-                        var adminUserRole = await _userRoleRepository.AsQueryable()
+                        var adminUserRole = await UserRoleRepository.AsQueryable()
                             .Where(ur => ur.UserId == adminUser.Id)
                             .FirstAsync();
 
                         if (adminUserRole != null)
                         {
                             // 检查角色菜单关联是否存在
-                            var existingRoleMenu = await _roleMenuRepository.AsQueryable()
+                            var existingRoleMenu = await RoleMenuRepository.AsQueryable()
                                 .Where(rm => rm.RoleId == adminUserRole.RoleId && rm.MenuId == updatedMenu.Id)
                                 .FirstAsync();
 
@@ -278,7 +261,7 @@ namespace Lean.Hbt.Application.Services.Identity
                             {
                                 // 更新现有的角色菜单关联
                                 existingRoleMenu.UpdateTime = DateTime.Now;
-                                await _roleMenuRepository.UpdateAsync(existingRoleMenu);
+                                await RoleMenuRepository.UpdateAsync(existingRoleMenu);
                             }
                             else
                             {
@@ -289,7 +272,7 @@ namespace Lean.Hbt.Application.Services.Identity
                                     MenuId = updatedMenu.Id,
                                     CreateTime = DateTime.Now
                                 };
-                                await _roleMenuRepository.CreateAsync(roleMenu);
+                                await RoleMenuRepository.CreateAsync(roleMenu);
                             }
                         }
                     }
@@ -310,11 +293,11 @@ namespace Lean.Hbt.Application.Services.Identity
             {
                 _logger.Info($"[菜单服务] 开始删除菜单: MenuId={menuId}");
 
-                var menu = await _menuRepository.GetByIdAsync(menuId)
+                var menu = await MenuRepository.GetByIdAsync(menuId)
                     ?? throw new HbtException(L("Identity.Menu.NotFound", menuId));
 
                 // 检查是否有子菜单
-                var hasChildren = await _menuRepository.AsQueryable().AnyAsync(x => x.ParentId == menuId);
+                var hasChildren = await MenuRepository.AsQueryable().AnyAsync(x => x.ParentId == menuId);
                 if (hasChildren)
                 {
                     _logger.Warn($"[菜单服务] 删除失败：菜单存在子菜单: MenuId={menuId}");
@@ -324,21 +307,21 @@ namespace Lean.Hbt.Application.Services.Identity
                 // 更新菜单状态和可见性
                 menu.Status = 1; // 停用状态
                 menu.Visible = 1; // 隐藏
-                await _menuRepository.UpdateAsync(menu);
+                await MenuRepository.UpdateAsync(menu);
                 _logger.Info($"[菜单服务] 已更新菜单状态和可见性: MenuId={menuId}, Status=1(停用), Visible=1(隐藏)");
 
                 // 删除菜单及其关联数据
-                var roleMenus = await _roleMenuRepository.AsQueryable()
+                var roleMenus = await RoleMenuRepository.AsQueryable()
                     .Where(x => x.MenuId == menuId)
                     .ToListAsync();
 
                 foreach (var roleMenu in roleMenus)
                 {
-                    await _roleMenuRepository.DeleteAsync(roleMenu.Id);
+                    await RoleMenuRepository.DeleteAsync(roleMenu.Id);
                 }
                 _logger.Info($"[菜单服务] 已删除角色菜单关联: MenuId={menuId}");
 
-                var result = await _menuRepository.DeleteAsync(menuId);
+                var result = await MenuRepository.DeleteAsync(menuId);
                 if (result > 0)
                 {
                     _logger.Info($"[菜单服务] 菜单删除成功: MenuId={menuId}, MenuName={menu.MenuName}");
@@ -379,7 +362,7 @@ namespace Lean.Hbt.Application.Services.Identity
                 // 检查是否有子菜单
                 foreach (var menuId in menuIds)
                 {
-                    var hasChildren = await _menuRepository.AsQueryable().AnyAsync(x => x.ParentId == menuId);
+                    var hasChildren = await MenuRepository.AsQueryable().AnyAsync(x => x.ParentId == menuId);
                     if (hasChildren)
                     {
                         _logger.Warn($"[菜单服务] 批量删除失败：菜单存在子菜单: MenuId={menuId}");
@@ -388,7 +371,7 @@ namespace Lean.Hbt.Application.Services.Identity
                 }
 
                 // 更新菜单状态和可见性
-                var menus = await _menuRepository.AsQueryable()
+                var menus = await MenuRepository.AsQueryable()
                     .Where(x => menuIds.Contains(x.Id))
                     .ToListAsync();
 
@@ -396,22 +379,22 @@ namespace Lean.Hbt.Application.Services.Identity
                 {
                     menu.Status = 1; // 停用状态
                     menu.Visible = 1; // 隐藏
-                    await _menuRepository.UpdateAsync(menu);
+                    await MenuRepository.UpdateAsync(menu);
                 }
                 _logger.Info($"[菜单服务] 已更新菜单状态和可见性: MenuIds={string.Join(",", menuIds)}, Status=1(停用), Visible=1(隐藏)");
 
                 // 删除菜单及其关联数据
-                var roleMenus = await _roleMenuRepository.AsQueryable()
+                var roleMenus = await RoleMenuRepository.AsQueryable()
                     .Where(x => menuIds.Contains(x.MenuId))
                     .ToListAsync();
 
                 foreach (var roleMenu in roleMenus)
                 {
-                    await _roleMenuRepository.DeleteAsync(roleMenu.Id);
+                    await RoleMenuRepository.DeleteAsync(roleMenu.Id);
                 }
                 _logger.Info($"[菜单服务] 已删除角色菜单关联: MenuIds={string.Join(",", menuIds)}");
 
-                var result = await _menuRepository.DeleteRangeAsync(menuIds.Cast<object>().ToList());
+                var result = await MenuRepository.DeleteRangeAsync(menuIds.Cast<object>().ToList());
                 if (result > 0)
                 {
                     _logger.Info($"[菜单服务] 批量删除菜单成功: MenuIds={string.Join(",", menuIds)}");
@@ -457,7 +440,7 @@ namespace Lean.Hbt.Application.Services.Identity
                         menu.CreateTime = DateTime.Now;
                         menu.Status = 0;
 
-                        await _menuRepository.CreateAsync(menu);
+                        await MenuRepository.CreateAsync(menu);
                         success++;
                     }
                     catch (Exception ex)
@@ -486,7 +469,7 @@ namespace Lean.Hbt.Application.Services.Identity
         {
             try
             {
-                var list = await _menuRepository.GetListAsync(QueryExpression(query));
+                var list = await MenuRepository.GetListAsync(QueryExpression(query));
                 var exportList = list.Adapt<List<HbtMenuExportDto>>();
                 return await HbtExcelHelper.ExportAsync(exportList, sheetName, "菜单数据");
             }
@@ -512,7 +495,7 @@ namespace Lean.Hbt.Application.Services.Identity
         /// <returns>菜单选项列表</returns>
         public async Task<List<HbtSelectOption>> GetOptionsAsync()
         {
-            var menus = await _menuRepository.AsQueryable()
+            var menus = await MenuRepository.AsQueryable()
                 .Where(m => m.Status == 0)  // 只获取正常状态的菜单
                 .OrderBy(m => m.OrderNum)
                 .Select(m => new HbtSelectOption
@@ -532,11 +515,11 @@ namespace Lean.Hbt.Application.Services.Identity
         /// <returns>是否成功</returns>
         public async Task<bool> UpdateStatusAsync(HbtMenuStatusDto input)
         {
-            var menu = await _menuRepository.GetByIdAsync(input.MenuId)
+            var menu = await MenuRepository.GetByIdAsync(input.MenuId)
                 ?? throw new HbtException(L("Identity.Menu.NotFound", input.MenuId));
 
             input.Adapt(menu);
-            return await _menuRepository.UpdateAsync(menu) > 0;
+            return await MenuRepository.UpdateAsync(menu) > 0;
         }
 
         /// <summary>
@@ -546,11 +529,11 @@ namespace Lean.Hbt.Application.Services.Identity
         /// <returns>是否成功</returns>
         public async Task<bool> UpdateOrderAsync(HbtMenuOrderDto input)
         {
-            var menu = await _menuRepository.GetByIdAsync(input.MenuId)
+            var menu = await MenuRepository.GetByIdAsync(input.MenuId)
                 ?? throw new HbtException(L("Identity.Menu.NotFound", input.MenuId));
 
             input.Adapt(menu);
-            return await _menuRepository.UpdateAsync(menu) > 0;
+            return await MenuRepository.UpdateAsync(menu) > 0;
         }
 
         /// <summary>
@@ -564,7 +547,7 @@ namespace Lean.Hbt.Application.Services.Identity
                 _logger.Info("[菜单服务] 开始获取菜单树");
 
                 // 获取所有菜单
-                var queryable = _menuRepository.AsQueryable()
+                var queryable = MenuRepository.AsQueryable()
                     .OrderBy(m => m.OrderNum);
 
                 // 应用查询条件
@@ -587,7 +570,7 @@ namespace Lean.Hbt.Application.Services.Identity
                     // 递归获取所有子菜单
                     while (true)
                     {
-                        var childMenus = await _menuRepository.AsQueryable()
+                        var childMenus = await MenuRepository.AsQueryable()
                             .Where(m => matchedMenuIds.Contains(m.ParentId))
                             .ToListAsync();
 
@@ -600,7 +583,7 @@ namespace Lean.Hbt.Application.Services.Identity
                     // 获取所有相关的菜单
                     if (childMenuIds.Any())
                     {
-                        var allRelatedMenus = await _menuRepository.AsQueryable()
+                        var allRelatedMenus = await MenuRepository.AsQueryable()
                             .Where(m => childMenuIds.Contains(m.Id))
                             .ToListAsync();
                         menus.AddRange(allRelatedMenus);
@@ -692,7 +675,7 @@ namespace Lean.Hbt.Application.Services.Identity
                 _logger.Info($"[菜单服务] 开始获取用户菜单: UserId={userId}");
 
                 // 获取用户的角色ID列表
-                var roleIdsQuery = _userRoleRepository.AsQueryable()
+                var roleIdsQuery = UserRoleRepository.AsQueryable()
                     .Where(ur => ur.UserId == userId)
                     .Select(ur => ur.RoleId);
 
@@ -707,7 +690,7 @@ namespace Lean.Hbt.Application.Services.Identity
                 }
 
                 // 获取角色的菜单ID列表
-                var menuIdsQuery = _roleMenuRepository.AsQueryable()
+                var menuIdsQuery = RoleMenuRepository.AsQueryable()
                     .Where(rm => roleIds.Contains(rm.RoleId))
                     .Select(rm => rm.MenuId)
                     .Distinct();
@@ -721,7 +704,7 @@ namespace Lean.Hbt.Application.Services.Identity
                 }
 
                 // 获取菜单列表 - 过滤掉按钮类型(MenuType=2)的菜单
-                var menusQuery = _menuRepository.AsQueryable()
+                var menusQuery = MenuRepository.AsQueryable()
                     .Where(m => menuIds.Contains(m.Id) && m.Status == 0 && m.MenuType != 2)
                     .OrderBy(m => m.OrderNum);
 
@@ -762,4 +745,4 @@ namespace Lean.Hbt.Application.Services.Identity
             return exp.ToExpression();
         }
     }
-}
+} 

@@ -22,8 +22,8 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         public HbtTransitionDto()
         {
             TransitionId = 0;
-            SourceNodeId = 0;
-            TargetNodeId = 0;
+            SourceActivityId = 0;
+            TargetActivityId = 0;
             Condition = string.Empty;
             DefinitionId = 0;
         }
@@ -35,14 +35,24 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         public long TransitionId { get; set; }
 
         /// <summary>
-        /// 源节点ID
+        /// 源活动ID
         /// </summary>
-        public long SourceNodeId { get; set; }
+        public long SourceActivityId { get; set; }
 
         /// <summary>
-        /// 目标节点ID
+        /// 源活动名称
         /// </summary>
-        public long TargetNodeId { get; set; }
+        public string SourceActivityName { get; set; } = string.Empty;
+
+        /// <summary>
+        /// 目标活动ID
+        /// </summary>
+        public long TargetActivityId { get; set; }
+
+        /// <summary>
+        /// 目标活动名称
+        /// </summary>
+        public string TargetActivityName { get; set; } = string.Empty;
 
         /// <summary>
         /// 转换条件(JSON)
@@ -53,6 +63,42 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// 工作流定义ID
         /// </summary>
         public long DefinitionId { get; set; }
+
+        /// <summary>
+        /// 工作流定义名称
+        /// </summary>
+        public string DefinitionName { get; set; } = string.Empty;
+
+        /// <summary>
+        /// 转换名称
+        /// </summary>
+        public string? TransitionName { get; set; }
+
+        /// <summary>
+        /// 转换类型(1=自动 2=手动 3=条件)
+        /// </summary>
+        public int TransitionType { get; set; } = 1;
+
+        /// <summary>
+        /// 源活动
+        /// </summary>
+        public HbtActivityDto? SourceActivity { get; set; }
+
+        /// <summary>
+        /// 目标活动
+        /// </summary>
+        public HbtActivityDto? TargetActivity { get; set; }
+
+        /// <summary>
+        /// 工作流定义
+        /// </summary>
+        public HbtDefinitionDto? WorkflowDefinition { get; set; }
+
+        /// <summary>
+        /// 并行分支列表
+        /// </summary>
+        public List<HbtParallelBranchDto>? ParallelBranches { get; set; }
+
         /// <summary>
         /// 备注
         /// </summary>
@@ -93,6 +139,7 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// </summary>
         public DateTime? DeleteTime { get; set; }
     }
+
     /// <summary>
     /// 工作流转换查询DTO
     /// </summary>
@@ -104,10 +151,11 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         public long DefinitionId { get; set; }
 
         /// <summary>
-        /// 源节点ID
+        /// 源活动ID
         /// </summary>
-        public long SourceNodeId { get; set; }
+        public long SourceActivityId { get; set; }
     }
+
     /// <summary>
     /// 工作流转换创建DTO
     /// </summary>
@@ -117,19 +165,33 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// 工作流定义ID
         /// </summary>
         public long DefinitionId { get; set; }
+
         /// <summary>
-        /// 源节点ID
+        /// 源活动ID
         /// </summary>
-        public long SourceNodeId { get; set; }
+        public long SourceActivityId { get; set; }
+
         /// <summary>
-        /// 目标节点ID  
+        /// 目标活动ID  
         /// </summary>
-        public long TargetNodeId { get; set; }
+        public long TargetActivityId { get; set; }
+
         /// <summary>
         /// 转换条件(JSON)
         /// </summary>
         public string? Condition { get; set; }
+
+        /// <summary>
+        /// 转换名称
+        /// </summary>
+        public string? TransitionName { get; set; }
+
+        /// <summary>
+        /// 转换类型(1=自动 2=手动 3=条件)
+        /// </summary>
+        public int TransitionType { get; set; } = 1;
     }
+
     /// <summary>
     /// 工作流转换更新DTO
     /// </summary>
@@ -141,17 +203,19 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         [AdaptMember("Id")]
         public long TransitionId { get; set; }
     }
+
     /// <summary>
     /// 工作流转换删除DTO
     /// </summary>
     public class HbtTransitionDeleteDto
     {
         /// <summary>
-        /// 工作流定义ID
+        /// 主键
         /// </summary>
         [AdaptMember("Id")]
         public long TransitionId { get; set; }
     }
+
     /// <summary>
     /// 工作流转换导入DTO
     /// </summary>
@@ -162,6 +226,7 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// </summary>
         public long DefinitionId { get; set; }
     }
+
     /// <summary>
     /// 工作流转换导出DTO
     /// </summary>
@@ -172,8 +237,9 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// </summary>
         public long DefinitionId { get; set; }
     }
+
     /// <summary>
-    /// 工作流转换查询DTO
+    /// 工作流转换模板DTO
     /// </summary>
     public class HbtTransitionTemplateDto
     {
@@ -181,13 +247,36 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// 工作流定义ID
         /// </summary>
         public long DefinitionId { get; set; }
+
         /// <summary>
-        /// 源节点ID
+        /// 源活动ID
         /// </summary>
-        public long SourceNodeId { get; set; }
+        public long SourceActivityId { get; set; }
+
         /// <summary>
-        /// 目标节点ID
+        /// 目标活动ID
         /// </summary>
-        public long TargetNodeId { get; set; }
+        public long TargetActivityId { get; set; }
+    }
+
+    /// <summary>
+    /// 工作流转换执行DTO
+    /// </summary>
+    public class HbtTransitionExecuteDto
+    {
+        /// <summary>
+        /// 工作流实例ID
+        /// </summary>
+        public long InstanceId { get; set; }
+
+        /// <summary>
+        /// 转换ID
+        /// </summary>
+        public long TransitionId { get; set; }
+
+        /// <summary>
+        /// 工作流变量
+        /// </summary>
+        public Dictionary<string, object>? Variables { get; set; }
     }
 }

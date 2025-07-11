@@ -9,10 +9,6 @@
 // 描述    : 差异日志服务实现
 //===================================================================
 
-using System.Linq.Expressions;
-using Lean.Hbt.Application.Dtos.Audit;
-using Lean.Hbt.Domain.Entities.Audit;
-using Lean.Hbt.Domain.IServices.Extensions;
 using Microsoft.AspNetCore.Http;
 
 namespace Lean.Hbt.Application.Services.Audit
@@ -26,43 +22,28 @@ namespace Lean.Hbt.Application.Services.Audit
     /// </remarks>
     public class HbtSqlDiffLogService : HbtBaseService, IHbtSqlDiffLogService
     {
-        private readonly IHbtRepository<HbtSqlDiffLog> _sqlDiffLogRepository;
-
-
+        private readonly IHbtRepositoryFactory _repositoryFactory;
+        private IHbtRepository<HbtSqlDiffLog> SqlDiffLogRepository => _repositoryFactory.GetAuthRepository<HbtSqlDiffLog>();
 
         /// <summary>
         /// 构造函数
         /// </summary>
         /// <param name="logger">日志记录器</param>
-        /// <param name="sqlDiffLogRepository">差异日志仓储</param>
+        /// <param name="repositoryFactory">差异日志仓储</param>
         /// <param name="httpContextAccessor">HTTP上下文访问器</param>
         /// <param name="currentUser">当前用户服务</param>
-        /// <param name="currentTenant">当前租户服务</param>
         /// <param name="localization">本地化服务</param>
         public HbtSqlDiffLogService(
-            IHbtRepository<HbtSqlDiffLog> sqlDiffLogRepository,
+            IHbtRepositoryFactory repositoryFactory,
             IHbtLogger logger,
             IHttpContextAccessor httpContextAccessor,
             IHbtCurrentUser currentUser,
-        IHbtCurrentTenant currentTenant,
-        IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, currentTenant, localization)
+            IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
         {
-            _sqlDiffLogRepository = sqlDiffLogRepository ?? throw new ArgumentNullException(nameof(sqlDiffLogRepository));
+            _repositoryFactory = repositoryFactory ?? throw new ArgumentNullException(nameof(repositoryFactory));
         }
 
-        /// <summary>
-        /// 构建查询条件
-        /// </summary>
-        private Expression<Func<HbtSqlDiffLog, bool>> KpSqlDiffLogQueryExpression(HbtSqlDiffLogQueryDto query)
-        {
-            return Expressionable.Create<HbtSqlDiffLog>()
-                .AndIF(!string.IsNullOrEmpty(query.TableName), x => x.TableName.Contains(query.TableName))
-                .AndIF(!string.IsNullOrEmpty(query.DiffType), x => x.DiffType.Contains(query.DiffType))
-                .AndIF(!string.IsNullOrEmpty(query.BusinessName), x => x.BusinessName.Contains(query.BusinessName))
-                .AndIF(query.StartTime.HasValue, x => x.CreateTime >= query.StartTime.Value)
-                .AndIF(query.EndTime.HasValue, x => x.CreateTime <= query.EndTime.Value)
-                .ToExpression();
-        }
+
         /// <summary>
         /// 获取SQL差异日志分页列表
         /// </summary>
@@ -72,8 +53,8 @@ namespace Lean.Hbt.Application.Services.Audit
         {
             query ??= new HbtSqlDiffLogQueryDto();
 
-            var result = await _sqlDiffLogRepository.GetPagedListAsync(
-                KpSqlDiffLogQueryExpression(query),
+            var result = await SqlDiffLogRepository.GetPagedListAsync(
+                QueryExpression(query),
                 query.PageIndex,
                 query.PageSize,
                 x => x.CreateTime,
@@ -95,7 +76,7 @@ namespace Lean.Hbt.Application.Services.Audit
         /// <returns>返回SQL差异日志详情</returns>
         public async Task<HbtSqlDiffLogDto> GetByIdAsync(long logId)
         {
-            var log = await _sqlDiffLogRepository.GetByIdAsync(logId);
+            var log = await SqlDiffLogRepository.GetByIdAsync(logId);
             return log == null ? throw new HbtException(L("Audit.SqlDiffLog.NotFound", logId)) : log.Adapt<HbtSqlDiffLogDto>();
         }
 
@@ -109,7 +90,7 @@ namespace Lean.Hbt.Application.Services.Audit
         {
             try
             {
-                var list = await _sqlDiffLogRepository.GetListAsync(KpSqlDiffLogQueryExpression(query));
+                var list = await SqlDiffLogRepository.GetListAsync(QueryExpression(query));
                 return await HbtExcelHelper.ExportAsync(list.Adapt<List<HbtSqlDiffLogExportDto>>(), sheetName, L("Audit.SqlDiffLog.ExportTitle"));
             }
             catch (Exception ex)
@@ -127,7 +108,7 @@ namespace Lean.Hbt.Application.Services.Audit
         {
             try
             {
-                var result = await _sqlDiffLogRepository.DeleteAsync((Expression<Func<HbtSqlDiffLog, bool>>)(x => true));
+                var result = await SqlDiffLogRepository.DeleteAsync((Expression<Func<HbtSqlDiffLog, bool>>)(x => true));
                 return result > 0;
             }
             catch (Exception ex)
@@ -135,6 +116,19 @@ namespace Lean.Hbt.Application.Services.Audit
                 _logger.Error(L("Audit.SqlDiffLog.ClearFailed", ex.Message), ex);
                 throw new HbtException(L("Audit.SqlDiffLog.ClearFailed"));
             }
+        }
+        /// <summary>
+        /// 构建查询条件
+        /// </summary>
+        private Expression<Func<HbtSqlDiffLog, bool>> QueryExpression(HbtSqlDiffLogQueryDto query)
+        {
+            return Expressionable.Create<HbtSqlDiffLog>()
+                .AndIF(!string.IsNullOrEmpty(query.TableName), x => x.TableName.Contains(query.TableName))
+                .AndIF(!string.IsNullOrEmpty(query.DiffType), x => x.DiffType.Contains(query.DiffType))
+                .AndIF(!string.IsNullOrEmpty(query.BusinessName), x => x.BusinessName.Contains(query.BusinessName))
+                .AndIF(query.StartTime.HasValue, x => x.CreateTime >= query.StartTime.Value)
+                .AndIF(query.EndTime.HasValue, x => x.CreateTime <= query.EndTime.Value)
+                .ToExpression();
         }
     }
 }

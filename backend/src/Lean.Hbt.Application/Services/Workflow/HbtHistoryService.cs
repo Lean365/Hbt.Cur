@@ -4,7 +4,7 @@
 // 创建者 : Lean365
 // 创建时间: 2024-01-23 12:00
 // 版本号 : V1.0.0
-// 描述   : 工作流历史服务实现类
+// 描述   : 工作流历史服务实现类 - 使用仓储工厂模式
 //===================================================================
 
 #nullable enable
@@ -29,29 +29,30 @@ namespace Lean.Hbt.Application.Services.Workflow
     /// <remarks>
     /// 创建者: Lean365
     /// 创建时间: 2024-01-23
+    /// 更新: 2024-12-19 - 使用仓储工厂模式支持多库
     /// </remarks>
     public class HbtHistoryService : HbtBaseService, IHbtHistoryService
     {
-        private readonly IHbtRepository<HbtHistory> _historyRepository;
+        private readonly IHbtRepositoryFactory _repositoryFactory;
+
+        private IHbtRepository<HbtHistory> HistoryRepository => _repositoryFactory.GetWorkflowRepository<HbtHistory>();
 
         /// <summary>
         /// 构造函数
         /// </summary>
         /// <param name="logger">日志服务</param>
-        /// <param name="historyRepository">工作流历史仓储接口</param>
+        /// <param name="repositoryFactory">仓储工厂</param>
         /// <param name="httpContextAccessor">HTTP上下文访问器</param>
         /// <param name="currentUser">当前用户服务</param>
-        /// <param name="currentTenant">当前租户服务</param>
         /// <param name="localization">本地化服务</param>
         public HbtHistoryService(
             IHbtLogger logger,
-            IHbtRepository<HbtHistory> historyRepository,
+            IHbtRepositoryFactory repositoryFactory,
             IHttpContextAccessor httpContextAccessor,
             IHbtCurrentUser currentUser,
-            IHbtCurrentTenant currentTenant,
-            IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, currentTenant, localization)
+            IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
         {
-            _historyRepository = historyRepository;
+            _repositoryFactory = repositoryFactory ?? throw new ArgumentNullException(nameof(repositoryFactory));
         }
 
         /// <summary>
@@ -61,18 +62,9 @@ namespace Lean.Hbt.Application.Services.Workflow
         /// <returns>分页结果</returns>
         public async Task<HbtPagedResult<HbtHistoryDto>> GetListAsync(HbtHistoryQueryDto query)
         {
-            var exp = Expressionable.Create<HbtHistory>();
+            var exp = QueryExpression(query);
 
-            if (query?.InstanceId.HasValue == true)
-                exp.And(x => x.InstanceId == query.InstanceId.Value);
-
-            if (query?.WorkflowNodeId.HasValue == true)
-                exp.And(x => x.NodeId == query.WorkflowNodeId.Value);
-
-            if (query?.OperatorId.HasValue == true)
-                exp.And(x => x.OperatorId == query.OperatorId.Value);
-
-            var result = await _historyRepository.GetPagedListAsync(exp.ToExpression(), query?.PageIndex ?? 1, query?.PageSize ?? 10, x => x.Id, OrderByType.Asc);
+            var result = await HistoryRepository.GetPagedListAsync(exp, query?.PageIndex ?? 1, query?.PageSize ?? 10, x => x.Id, OrderByType.Asc);
 
             return new HbtPagedResult<HbtHistoryDto>
             {
@@ -90,7 +82,7 @@ namespace Lean.Hbt.Application.Services.Workflow
         /// <returns>工作流历史详情</returns>
         public async Task<HbtHistoryDto> GetByIdAsync(long id)
         {
-            var history = await _historyRepository.GetByIdAsync(id);
+            var history = await HistoryRepository.GetByIdAsync(id);
             if (history == null)
                 throw new HbtException(L("WorkflowHistory.NotFound"));
 
@@ -110,16 +102,18 @@ namespace Lean.Hbt.Application.Services.Workflow
             var history = new HbtHistory
             {
                 InstanceId = input.InstanceId,
-                NodeId = input.WorkflowNodeId,
-                OperatorId = input.OperatorId,
+                NodeId = input.NodeId,
                 OperationType = (int)input.OperationType,
-                OperationTime = DateTime.Now,
                 OperationResult = input.OperationResult != null ? (int?)Enum.Parse<int>(input.OperationResult) : null,
                 OperationComment = input.OperationComment ?? string.Empty,
-                Remark = input.Remark ?? string.Empty
+                Remark = input.Remark ?? string.Empty,
+                CreateBy = "Hbt365",
+                CreateTime = DateTime.Now,
+                UpdateBy = "Hbt365",
+                UpdateTime = DateTime.Now
             };
 
-            var result = await _historyRepository.CreateAsync(history);
+            var result = await HistoryRepository.CreateAsync(history);
             if (result <= 0)
                 throw new HbtException(L("WorkflowHistory.Create.Failed"));
 
@@ -137,7 +131,7 @@ namespace Lean.Hbt.Application.Services.Workflow
             if (input == null)
                 throw new ArgumentNullException(nameof(input));
 
-            var history = await _historyRepository.GetByIdAsync(input.WorkflowHistoryId);
+            var history = await HistoryRepository.GetByIdAsync(input.HistoryId);
             if (history == null)
                 throw new HbtException(L("WorkflowHistory.NotFound"));
 
@@ -145,7 +139,7 @@ namespace Lean.Hbt.Application.Services.Workflow
             history.OperationComment = input.OperationComment ?? string.Empty;
             history.Remark = input.Remark ?? string.Empty;
 
-            var result = await _historyRepository.UpdateAsync(history);
+            var result = await HistoryRepository.UpdateAsync(history);
             if (result <= 0)
                 throw new HbtException(L("WorkflowHistory.Update.Failed"));
 
@@ -160,11 +154,11 @@ namespace Lean.Hbt.Application.Services.Workflow
         /// <returns>是否成功</returns>
         public async Task<bool> DeleteAsync(long id)
         {
-            var history = await _historyRepository.GetByIdAsync(id);
+            var history = await HistoryRepository.GetByIdAsync(id);
             if (history == null)
                 throw new HbtException(L("WorkflowHistory.NotFound"));
 
-            var result = await _historyRepository.DeleteAsync(history);
+            var result = await HistoryRepository.DeleteAsync(history);
             if (result <= 0)
                 throw new HbtException(L("WorkflowHistory.Delete.Failed"));
 
@@ -183,7 +177,7 @@ namespace Lean.Hbt.Application.Services.Workflow
                 throw new ArgumentNullException(nameof(ids));
 
             Expression<Func<HbtHistory, bool>> predicate = x => ids.Contains(x.Id);
-            var result = await _historyRepository.DeleteAsync(predicate);
+            var result = await HistoryRepository.DeleteAsync(predicate);
             if (result <= 0)
                 throw new HbtException(L("WorkflowHistory.BatchDelete.Failed"));
 
@@ -209,15 +203,18 @@ namespace Lean.Hbt.Application.Services.Workflow
                     try
                     {
                         var history = item.Adapt<HbtHistory>();
-                        var insertResult = await _historyRepository.CreateAsync(history);
-                        if (insertResult > 0)
+                        history.CreateTime = DateTime.Now;
+                        history.CreateBy = _currentUser.UserName;
+
+                        var result = await HistoryRepository.CreateAsync(history);
+                        if (result > 0)
                             success++;
                         else
                             fail++;
                     }
                     catch (Exception ex)
                     {
-                        _logger.Error(L("WorkflowHistory.Import.Failed"), ex);
+                        _logger.Warn($"导入工作流历史失败: {ex.Message}");
                         fail++;
                     }
                 }
@@ -226,99 +223,121 @@ namespace Lean.Hbt.Application.Services.Workflow
             }
             catch (Exception ex)
             {
-                _logger.Error(L("WorkflowHistory.Import.Failed"), ex);
-                throw new HbtException(L("WorkflowHistory.Import.Failed"), ex);
+                _logger.Error("导入工作流历史数据失败", ex);
+                throw new HbtException("导入工作流历史数据失败");
             }
         }
 
         /// <summary>
-        /// 导出工作流历史记录
+        /// 导出工作流历史数据
         /// </summary>
         /// <param name="query">查询条件</param>
         /// <param name="sheetName">工作表名称</param>
-        /// <returns>导出数据</returns>
+        /// <returns>返回导出结果</returns>
         public async Task<(string fileName, byte[] content)> ExportAsync(HbtHistoryQueryDto query, string sheetName = "Sheet1")
         {
-            try
-            {
-                var exp = Expressionable.Create<HbtHistory>();
-                if (query?.InstanceId.HasValue == true)
-                    exp.And(x => x.InstanceId == query.InstanceId.Value);
-                if (query?.WorkflowNodeId.HasValue == true)
-                    exp.And(x => x.NodeId == query.WorkflowNodeId.Value);
-                if (query?.OperatorId.HasValue == true)
-                    exp.And(x => x.OperatorId == query.OperatorId.Value);
-
-                var list = await _historyRepository.GetListAsync(exp.ToExpression());
-                var exportList = list.Adapt<List<HbtHistoryExportDto>>();
-                return await HbtExcelHelper.ExportAsync(exportList, sheetName, "工作流历史数据");
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(L("WorkflowHistory.Export.Failed"), ex);
-                throw new HbtException(L("WorkflowHistory.Export.Failed"), ex);
-            }
+            var exp = QueryExpression(query);
+            var histories = await HistoryRepository.GetListAsync(exp);
+            var exportList = histories.Adapt<List<HbtHistoryExportDto>>();
+            return await HbtExcelHelper.ExportAsync(exportList, sheetName, "工作流历史数据");
         }
 
         /// <summary>
         /// 获取导入模板
         /// </summary>
         /// <param name="sheetName">工作表名称</param>
-        /// <returns>Excel模板文件</returns>
+        /// <returns>返回模板文件</returns>
         public async Task<(string fileName, byte[] content)> GetTemplateAsync(string sheetName = "Sheet1")
         {
             return await HbtExcelHelper.GenerateTemplateAsync<HbtHistoryImportDto>(sheetName);
         }
 
         /// <summary>
-        /// 获取工作流实例的历史记录
+        /// 根据工作流实例获取历史记录
         /// </summary>
         /// <param name="InstanceId">工作流实例ID</param>
         /// <returns>历史记录列表</returns>
         public async Task<List<HbtHistoryDto>> GetHistoriesByWorkflowInstanceAsync(long InstanceId)
         {
-            var list = await _historyRepository.GetListAsync(x => x.InstanceId == InstanceId);
-            return list.Adapt<List<HbtHistoryDto>>();
+            var exp = Expressionable.Create<HbtHistory>();
+            exp = exp.And(x => x.InstanceId == InstanceId);
+
+            var histories = await HistoryRepository.GetListAsync(exp.ToExpression());
+            return histories.Adapt<List<HbtHistoryDto>>();
         }
 
         /// <summary>
-        /// 获取工作流节点的历史记录
+        /// 根据工作流节点获取历史记录
         /// </summary>
-        /// <param name="workflowNodeId">工作流节点ID</param>
+        /// <param name="NodeId">工作流节点ID</param>
         /// <returns>历史记录列表</returns>
-        public async Task<List<HbtHistoryDto>> GetHistoriesByWorkflowNodeAsync(long workflowNodeId)
+        public async Task<List<HbtHistoryDto>> GetHistoriesByWorkflowNodeAsync(long NodeId)
         {
-            var list = await _historyRepository.GetListAsync(x => x.NodeId == workflowNodeId);
-            return list.Adapt<List<HbtHistoryDto>>();
+            var exp = Expressionable.Create<HbtHistory>();
+            exp = exp.And(x => x.NodeId == NodeId);
+
+            var histories = await HistoryRepository.GetListAsync(exp.ToExpression());
+            return histories.Adapt<List<HbtHistoryDto>>();
         }
 
         /// <summary>
-        /// 获取用户的操作历史记录
+        /// 根据操作人获取历史记录
         /// </summary>
-        /// <param name="operatorId">操作人ID</param>
+        /// <param name="CreateBy">操作人ID</param>
         /// <returns>历史记录列表</returns>
-        public async Task<List<HbtHistoryDto>> GetHistoriesByOperatorAsync(long operatorId)
+        public async Task<List<HbtHistoryDto>> GetHistoriesByOperatorAsync(long CreateBy)
         {
-            var list = await _historyRepository.GetListAsync(x => x.OperatorId == operatorId);
-            return list.Adapt<List<HbtHistoryDto>>();
+            var exp = Expressionable.Create<HbtHistory>();
+            exp = exp.And(x => x.CreateBy == CreateBy.ToString());
+
+            var histories = await HistoryRepository.GetListAsync(exp.ToExpression());
+            return histories.Adapt<List<HbtHistoryDto>>();
         }
 
         /// <summary>
         /// 清理历史记录
         /// </summary>
         /// <param name="days">保留天数</param>
-        /// <returns>清理数量</returns>
+        /// <returns>清理的记录数</returns>
         public async Task<int> CleanupHistoriesAsync(int days)
         {
-            if (days <= 0)
-                throw new ArgumentException("Days must be greater than 0", nameof(days));
-
             var cutoffDate = DateTime.Now.AddDays(-days);
-            Expression<Func<HbtHistory, bool>> predicate = x => x.OperationTime < cutoffDate;
-            var result = await _historyRepository.DeleteAsync(predicate);
+            var exp = Expressionable.Create<HbtHistory>();
+            exp = exp.And(x => x.CreateTime < cutoffDate);
 
-            _logger.Info(L("WorkflowHistory.Cleanup.Success", result));
+            var result = await HistoryRepository.DeleteAsync(exp.ToExpression());
+            _logger.Info(L("WorkflowHistory.Cleanup.Success", result, days));
             return result;
+        }
+
+        /// <summary>
+        /// 构建查询表达式
+        /// </summary>
+        /// <param name="query">查询条件</param>
+        /// <returns>查询表达式</returns>
+        private Expression<Func<HbtHistory, bool>> QueryExpression(HbtHistoryQueryDto query)
+        {
+            var exp = Expressionable.Create<HbtHistory>();
+
+            if (query?.InstanceId.HasValue == true)
+                exp = exp.And(x => x.InstanceId == query.InstanceId.Value);
+
+            if (query?.NodeId.HasValue == true)
+                exp = exp.And(x => x.NodeId == query.NodeId.Value);
+
+            if (query?.OperationType.HasValue == true)
+                exp = exp.And(x => x.OperationType == (int)query.OperationType.Value);
+
+            if (!string.IsNullOrEmpty(query?.CreateBy))
+                exp = exp.And(x => x.CreateBy == query.CreateBy);
+
+            if (query?.StartTime.HasValue == true)
+                exp = exp.And(x => x.CreateTime >= query.StartTime.Value);
+
+            if (query?.EndTime.HasValue == true)
+                exp = exp.And(x => x.CreateTime <= query.EndTime.Value);
+
+            return exp.ToExpression();
         }
     }
 }

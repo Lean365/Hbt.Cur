@@ -58,7 +58,6 @@ export enum HbtBrowserType {
 export interface HbtLoginDevLog extends HbtBaseEntity {
   loginDevLogId: number;
   userId: number;
-  tenantId?: number;
   deviceId: string;
   deviceType: number;
   deviceName?: string;
@@ -75,7 +74,6 @@ export interface HbtLoginDevLog extends HbtBaseEntity {
  */
 export interface HbtLoginDevLogQuery extends HbtPagedQuery {
   userId?: number;
-  tenantId?: number;
   deviceId?: string;
   deviceType?: number;
   deviceName?: string;
@@ -90,7 +88,6 @@ export interface HbtLoginDevLogQuery extends HbtPagedQuery {
  */
 export interface HbtLoginDevLogCreate {
   userId: number;
-  tenantId?: number;
   deviceId: string;
   deviceType: number;
   deviceName?: string;
@@ -169,7 +166,6 @@ export type HbtLoginDevLogPageResult = HbtPagedResult<HbtLoginDevLog>
 export interface HbtLoginDevLogDto {
   loginDevLogId: number;
   userId: number;
-  tenantId?: number;
   deviceType: number;
   deviceId: string;
   deviceToken?: string;

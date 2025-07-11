@@ -144,14 +144,32 @@ export function getTenantOptions() {
 }
 
 /**
- * 测试数据库连接
- * @param data 数据库连接信息
+ * 根据用户名获取租户选项列表
  */
-export function testDbConnection(data: any) {
-  return request({
-    url: '/api/identity/tenant/test-connection',
-    method: 'post',
-    data
+export function getTenantOptionsByUserName(userName: string) {
+  return request<HbtApiResponse<HbtTenantOption[]>>({
+    url: `/api/HbtTenant/options/by-username/${userName}`,
+    method: 'get'
+  })
+}
+
+/**
+ * 根据用户ID获取租户选项列表
+ */
+export function getTenantOptionsByUserId(userId: number) {
+  return request<HbtApiResponse<HbtTenantOption[]>>({
+    url: `/api/HbtTenant/options/by-userid/${userId}`,
+    method: 'get'
+  })
+}
+
+/**
+ * 获取当前用户的租户选项列表
+ */
+export function getTenantOptionsForCurrentUser() {
+  return request<HbtApiResponse<HbtTenantOption[]>>({
+    url: '/api/HbtTenant/options/current-user',
+    method: 'get'
   })
 }
 

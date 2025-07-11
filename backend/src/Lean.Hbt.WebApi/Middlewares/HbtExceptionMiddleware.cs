@@ -90,7 +90,6 @@ namespace Lean.Hbt.WebApi.Middlewares
             var queryString = context.Request.QueryString.ToString();
             var user = context.User.Identity?.Name ?? "Anonymous";
             var userId = context.User.FindFirst("uid")?.Value ?? "0";
-            var tenantId = context.User.FindFirst("tid")?.Value ?? "0";
 
             // 记录详细日志
             if (response.Code == 500)
@@ -102,7 +101,7 @@ namespace Lean.Hbt.WebApi.Middlewares
                     "请求路径: {RequestPath}\n" +
                     "请求方法: {RequestMethod}\n" +
                     "查询参数: {QueryString}\n" +
-                    "用户信息: {User} (ID: {UserId}, Tenant: {TenantId})\n" +
+                    "用户信息: {User} (ID: {UserId})\n" +
                     "内部异常: {InnerException}",
                     exception.GetType().FullName,
                     exception.Message,
@@ -112,7 +111,6 @@ namespace Lean.Hbt.WebApi.Middlewares
                     queryString,
                     user,
                     userId,
-                    tenantId,
                     exception.InnerException?.Message ?? "None"
                 );
             }
@@ -124,15 +122,14 @@ namespace Lean.Hbt.WebApi.Middlewares
                     "请求路径: {RequestPath}\n" +
                     "请求方法: {RequestMethod}\n" +
                     "查询参数: {QueryString}\n" +
-                    "用户信息: {User} (ID: {UserId}, Tenant: {TenantId})",
+                    "用户信息: {User} (ID: {UserId})",
                     response.Msg,
                     response.Code,
                     requestPath,
                     requestMethod,
                     queryString,
                     user,
-                    userId,
-                    tenantId
+                    userId
                 );
             }
 

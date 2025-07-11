@@ -11,15 +11,15 @@ import { createApp, watch } from 'vue'
 import { createPinia } from 'pinia'
 import Antd from 'ant-design-vue'
 import FcDesigner from '@form-create/antd-designer'
-import LogicFlow from "@logicflow/core";
-import { BpmnElement, Snapshot, Control, Menu, SelectionSelect, DndPanel } from '@logicflow/extension'
 import 'ant-design-vue/dist/reset.css'
+import '@/assets/styles/components/icon.less'
 import App from './App.vue'
 import router from './router'
 import i18n from './locales'
 import { useAppStore } from '@/stores/app'
 import { useSettingStore } from '@/stores/settings'
 import { setupPermission } from './directives/permission'
+import { setupIconColor } from './directives/iconColor'
 import setupIcons from '@/utils/icons'
 import { useUserStore } from './stores/user'
 import { useMenuStore } from './stores/menu'
@@ -47,13 +47,8 @@ async function bootstrap() {
 
     app.use(FcDesigner)
     app.use(FcDesigner.formCreate)
-    // 全局使用 每一个lf实例都具备 Control
-    LogicFlow.use(BpmnElement)
-    LogicFlow.use(Snapshot)
-    LogicFlow.use(Control)
-    LogicFlow.use(Menu)
-    LogicFlow.use(SelectionSelect)
-    LogicFlow.use(DndPanel)
+
+
     // 设置图标
     setupIcons(app)
 
@@ -65,6 +60,9 @@ async function bootstrap() {
 
     // 注册权限指令
     setupPermission(app)
+    
+    // 注册图标颜色指令
+    setupIconColor(app)
 
     // 如果有token，预加载用户信息和菜单
     const token = getToken()

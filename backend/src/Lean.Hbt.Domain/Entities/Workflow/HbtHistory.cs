@@ -38,18 +38,6 @@ namespace Lean.Hbt.Domain.Entities.Workflow
         public int OperationType { get; set; }
 
         /// <summary>
-        /// 操作人ID
-        /// </summary>
-        [SugarColumn(ColumnName = "operator_id", ColumnDescription = "操作人ID", ColumnDataType = "bigint", IsNullable = false)]
-        public long OperatorId { get; set; }
-
-        /// <summary>
-        /// 操作人名称
-        /// </summary>
-        [SugarColumn(ColumnName = "operator_name", ColumnDescription = "操作人名称", Length = 50, ColumnDataType = "nvarchar", IsNullable = false)]
-        public string? OperatorName { get; set; }
-
-        /// <summary>
         /// 操作结果(1:同意 2:拒绝 3:转交 4:退回)
         /// </summary>
         [SugarColumn(ColumnName = "operation_result", ColumnDescription = "操作结果", ColumnDataType = "int", IsNullable = true)]
@@ -60,12 +48,6 @@ namespace Lean.Hbt.Domain.Entities.Workflow
         /// </summary>
         [SugarColumn(ColumnName = "operation_comment", ColumnDescription = "操作意见", Length = 500, ColumnDataType = "nvarchar", IsNullable = true)]
         public string? OperationComment { get; set; }
-
-        /// <summary>
-        /// 操作时间
-        /// </summary>
-        [SugarColumn(ColumnName = "operation_time", ColumnDescription = "操作时间", ColumnDataType = "datetime", IsNullable = false)]
-        public DateTime OperationTime { get; set; }
 
         /// <summary>
         /// 工作流实例

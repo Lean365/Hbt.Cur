@@ -1,6 +1,6 @@
 //===================================================================
 // 项目名 : Lean.Hbt
-// 文件名 : HbtLoginDto.cs
+// 文件名 : HbtAuthDto.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-22 14:30
 // 版本号 : V1.0.0
@@ -23,24 +23,17 @@ namespace Lean.Hbt.Application.Dtos.Identity;
 /// </remarks>
 public class HbtAuthDto
 {
-    /// <summary>
-    /// 租户ID
-    /// </summary>
-    [Required(ErrorMessage = "租户ID不能为空")]
-    public long TenantId { get; set; }
 
     /// <summary>
     /// 用户名
     /// </summary>
-    [Required(ErrorMessage = "用户名不能为空")]
-    [MaxLength(50, ErrorMessage = "用户名长度不能超过50个字符")]
+
     public string UserName { get; set; } = string.Empty;
 
     /// <summary>
     /// 密码
     /// </summary>
-    [Required(ErrorMessage = "密码不能为空")]
-    [MaxLength(100, ErrorMessage = "密码长度不能超过100个字符")]
+
     public string Password { get; set; } = string.Empty;
 
     /// <summary>
@@ -71,7 +64,7 @@ public class HbtAuthDto
     /// <summary>
     /// 登录来源
     /// </summary>
-    [Required(ErrorMessage = "登录来源不能为空")]
+
     public int LoginSource { get; set; }
 
     /// <summary>
@@ -143,22 +136,13 @@ public class HbtUserInfoDto
         NickName = string.Empty;
         FullName = string.Empty;
         RealName = string.Empty;
-        TenantName = string.Empty;
         EnglishName = string.Empty;
         Avatar = string.Empty;
         Roles = new List<string>();
         Permissions = new List<string>();
     }
 
-    /// <summary>
-    /// 租户ID
-    /// </summary>
-    public long TenantId { get; set; }
 
-    /// <summary>
-    /// 租户名称
-    /// </summary>
-    public string TenantName { get; set; }
 
     /// <summary>
     /// 用户ID

@@ -34,18 +34,16 @@ namespace Lean.Hbt.WebApi.Controllers.SignalR
         /// </summary>
         /// <param name="onlineUserService">在线用户服务</param>
         /// <param name="currentUser">当前用户服务</param>
-        /// <param name="currentTenant">当前租户服务</param>
         /// <param name="localization">本地化服务</param>
         /// <param name="logger">日志服务</param>
         public HbtOnlineUserController(
             IHbtOnlineUserService onlineUserService,
             IHbtCurrentUser currentUser,
-            IHbtCurrentTenant currentTenant,
             IHbtLocalizationService localization,
-            IHbtLogger logger) : base(logger, currentUser, currentTenant, localization)
+            IHbtLogger logger) : base(logger, currentUser, localization)
         {
             _onlineUserService = onlineUserService;
-  
+
         }
 
         /// <summary>
@@ -59,9 +57,6 @@ namespace Lean.Hbt.WebApi.Controllers.SignalR
         {
             // 确保查询对象不为空
             query ??= new HbtOnlineUserQueryDto();
-
-            // 使用当前用户的租户ID
-            //query.TenantId = _currentUser.TenantId;
 
             // 设置默认分页参数
             if (query.PageIndex <= 0) query.PageIndex = 1;

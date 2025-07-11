@@ -4,10 +4,11 @@
 // 创建者 : Lean365
 // 创建时间: 2024-01-17 19:15
 // 版本号 : V0.0.1
-// 描述   : 租户服务实现
+// 描述   : 租户服务实现 - 使用仓储工厂模式
 //===================================================================
 
 using System.Linq.Expressions;
+using Lean.Hbt.Domain.Repositories;
 using Microsoft.AspNetCore.Http;
 using SqlSugar;
 using System.Data;
@@ -21,31 +22,39 @@ namespace Lean.Hbt.Application.Services.Identity;
 /// <remarks>
 /// 创建者: Lean365
 /// 创建时间: 2024-01-20
+/// 更新: 2024-12-19 - 使用仓储工厂模式支持多库
 /// </remarks>
 public class HbtTenantService : HbtBaseService, IHbtTenantService
 {
-    private readonly IHbtRepository<HbtTenant> _repository;
-    private readonly IHbtRepository<HbtUserTenant> _userTenantRepository;
-    private readonly IHbtRepository<HbtUser> _userRepository;
+    private readonly IHbtRepositoryFactory _repositoryFactory;
 
     /// <summary>
     /// 构造函数
     /// </summary>
     public HbtTenantService(
-        IHbtRepository<HbtTenant> repository,
-        IHbtRepository<HbtUserTenant> userTenantRepository,
-        IHbtRepository<HbtUser> userRepository,
         IHbtLogger logger,
+        IHbtRepositoryFactory repositoryFactory,
         IHttpContextAccessor httpContextAccessor,
         IHbtCurrentUser currentUser,
-        IHbtCurrentTenant currentTenant,
-        IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, currentTenant, localization)
+        IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
     {
-        _repository = repository ?? throw new ArgumentNullException(nameof(repository));
-        _userTenantRepository = userTenantRepository ?? throw new ArgumentNullException(nameof(userTenantRepository));
-        _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
+        _repositoryFactory = repositoryFactory ?? throw new ArgumentNullException(nameof(repositoryFactory));
     }
 
+    /// <summary>
+    /// 获取租户仓储
+    /// </summary>
+    private IHbtRepository<HbtTenant> TenantRepository => _repositoryFactory.GetAuthRepository<HbtTenant>();
+
+    /// <summary>
+    /// 获取用户仓储
+    /// </summary>
+    private IHbtRepository<HbtUser> UserRepository => _repositoryFactory.GetAuthRepository<HbtUser>();
+
+    /// <summary>
+    /// 获取用户租户关联仓储
+    /// </summary>
+    private IHbtRepository<HbtUserTenant> UserTenantRepository => _repositoryFactory.GetAuthRepository<HbtUserTenant>();
 
     /// <summary>
     /// 获取租户分页列表
@@ -56,7 +65,7 @@ public class HbtTenantService : HbtBaseService, IHbtTenantService
     {
         var exp = QueryExpression(query);
 
-        var result = await _repository.GetPagedListAsync(
+        var result = await TenantRepository.GetPagedListAsync(
             exp,
             query.PageIndex,
             query.PageSize,
@@ -79,7 +88,7 @@ public class HbtTenantService : HbtBaseService, IHbtTenantService
     /// <returns>返回租户详情</returns>
     public async Task<HbtTenantDto> GetByIdAsync(long id)
     {
-        var tenant = await _repository.GetByIdAsync(id);
+        var tenant = await TenantRepository.GetByIdAsync(id);
         if (tenant == null)
             throw new HbtException(L("Common.NotExists"));
 
@@ -93,13 +102,14 @@ public class HbtTenantService : HbtBaseService, IHbtTenantService
     /// <returns>返回新创建的租户ID</returns>
     public async Task<long> CreateAsync(HbtTenantCreateDto input)
     {
+        
         // 验证字段是否已存在
-        await HbtValidateUtils.ValidateFieldExistsAsync(_repository, "TenantName", input.TenantName);
-        await HbtValidateUtils.ValidateFieldExistsAsync(_repository, "TenantCode", input.TenantCode);
-        await HbtValidateUtils.ValidateFieldExistsAsync(_repository, "ContactEmail", input.ContactEmail);
+        await HbtValidateUtils.ValidateFieldExistsAsync(TenantRepository, "TenantName", input.TenantName);
+        await HbtValidateUtils.ValidateFieldExistsAsync(TenantRepository, "TenantCode", input.TenantCode);
+        await HbtValidateUtils.ValidateFieldExistsAsync(TenantRepository, "ContactEmail", input.ContactEmail);
 
         var tenant = input.Adapt<HbtTenant>();
-        var result = await _repository.CreateAsync(tenant);
+        var result = await TenantRepository.CreateAsync(tenant);
         if (result > 0)
             _logger.Info(L("Common.AddSuccess"));
 
@@ -113,19 +123,19 @@ public class HbtTenantService : HbtBaseService, IHbtTenantService
     /// <returns>返回是否更新成功</returns>
     public async Task<bool> UpdateAsync(HbtTenantUpdateDto input)
     {
-        var tenant = await _repository.GetByIdAsync(input.TenantId)
+        var tenant = await TenantRepository.GetByIdAsync(input.TenantId)
             ?? throw new HbtException(L("Common.NotExists"));
 
         // 验证字段是否已存在
         if (tenant.TenantName != input.TenantName)
-            await HbtValidateUtils.ValidateFieldExistsAsync(_repository, "TenantName", input.TenantName, input.TenantId);
+            await HbtValidateUtils.ValidateFieldExistsAsync(TenantRepository, "TenantName", input.TenantName, input.TenantId);
         if (tenant.TenantCode != input.TenantCode)
-            await HbtValidateUtils.ValidateFieldExistsAsync(_repository, "TenantCode", input.TenantCode, input.TenantId);
+            await HbtValidateUtils.ValidateFieldExistsAsync(TenantRepository, "TenantCode", input.TenantCode, input.TenantId);
         if (tenant.ContactEmail != input.ContactEmail)
-            await HbtValidateUtils.ValidateFieldExistsAsync(_repository, "ContactEmail", input.ContactEmail, input.TenantId);
+            await HbtValidateUtils.ValidateFieldExistsAsync(TenantRepository, "ContactEmail", input.ContactEmail, input.TenantId);
 
         input.Adapt(tenant);
-        return await _repository.UpdateAsync(tenant) > 0;
+        return await TenantRepository.UpdateAsync(tenant) > 0;
     }
 
     /// <summary>
@@ -135,10 +145,10 @@ public class HbtTenantService : HbtBaseService, IHbtTenantService
     /// <returns>返回是否删除成功</returns>
     public async Task<bool> DeleteAsync(long id)
     {
-        var tenant = await _repository.GetByIdAsync(id)
+        var tenant = await TenantRepository.GetByIdAsync(id)
             ?? throw new HbtException(L("Common.NotExists"));
 
-        return await _repository.DeleteAsync(tenant) > 0;
+        return await TenantRepository.DeleteAsync(tenant) > 0;
     }
 
     /// <summary>
@@ -151,7 +161,7 @@ public class HbtTenantService : HbtBaseService, IHbtTenantService
         if (tenantIds == null || tenantIds.Length == 0)
             throw new HbtException("请选择要删除的租户");
 
-        return await _repository.DeleteRangeAsync(tenantIds.Cast<object>().ToList()) > 0;
+        return await TenantRepository.DeleteRangeAsync(tenantIds.Cast<object>().ToList()) > 0;
     }
 
     /// <summary>
@@ -191,14 +201,14 @@ public class HbtTenantService : HbtBaseService, IHbtTenantService
                         continue;
                     }
 
-                    await HbtValidateUtils.ValidateFieldExistsAsync(_repository, "TenantName", tenant.TenantName);
-                    await HbtValidateUtils.ValidateFieldExistsAsync(_repository, "TenantCode", tenant.TenantCode);
+                    await HbtValidateUtils.ValidateFieldExistsAsync(TenantRepository, "TenantName", tenant.TenantName);
+                    await HbtValidateUtils.ValidateFieldExistsAsync(TenantRepository, "TenantCode", tenant.TenantCode);
 
                     var entity = tenant.Adapt<HbtTenant>();
                     entity.CreateTime = DateTime.Now;
                     entity.CreateBy = "system";
 
-                    var result = await _repository.CreateAsync(entity);
+                    var result = await TenantRepository.CreateAsync(entity);
                     if (result > 0)
                         success++;
                     else
@@ -230,7 +240,7 @@ public class HbtTenantService : HbtBaseService, IHbtTenantService
     {
         try
         {
-            var list = await _repository.GetListAsync(QueryExpression(query));
+            var list = await TenantRepository.GetListAsync(QueryExpression(query));
             var exportList = list.Adapt<List<HbtTenantExportDto>>();
             return await HbtExcelHelper.ExportAsync(exportList, sheetName, "租户数据");
         }
@@ -249,12 +259,12 @@ public class HbtTenantService : HbtBaseService, IHbtTenantService
     /// <returns>更新后的租户状态信息</returns>
     public async Task<HbtTenantStatusDto> UpdateStatusAsync(long id, int status)
     {
-        var tenant = await _repository.GetByIdAsync(id);
+        var tenant = await TenantRepository.GetByIdAsync(id);
         if (tenant == null)
             throw new HbtException(L("Common.NotExists"));
 
         tenant.Status = status;
-        var result = await _repository.UpdateAsync(tenant);
+        var result = await TenantRepository.UpdateAsync(tenant);
         if (result <= 0)
             throw new HbtException(L("Common.UpdateFailed"));
 
@@ -271,77 +281,154 @@ public class HbtTenantService : HbtBaseService, IHbtTenantService
     /// <returns>租户选项列表</returns>
     public async Task<List<HbtSelectOption>> GetOptionsAsync()
     {
-        var tenants = await _repository.AsQueryable()
-            .Where(t => t.Status == 0)  // 只获取正常状态的租户
-            .OrderBy(t => t.Id)
-            .Select(t => new HbtSelectOption
-            {
-                Label = t.TenantName,
-                Value = t.Id,
-            })
-            .ToListAsync();
-        return tenants;
-    }
-
-    /// <summary>
-    /// 测试数据库连接
-    /// </summary>
-    /// <param name="connectionInfo">数据库连接信息</param>
-    /// <returns>连接测试结果</returns>
-    public async Task<bool> TestDbConnectionAsync(HbtDbConnectDto connectionInfo)
-    {
         try
         {
-            // 构建连接字符串
-            var connectionString = BuildConnectionString(connectionInfo);
+            _logger.Info("[租户服务] 开始获取租户选项列表");
             
-            // 创建 SqlSugar 连接配置
-            var dbType = connectionInfo.DbType.ToLower() switch
+            // 在登录前获取租户列表时，需要查询所有租户
+            // 这里直接使用数据库查询，不应用租户过滤，因为此时还没有租户上下文
+            var tenants = await TenantRepository.SqlSugarClient.Queryable<HbtTenant>()
+                .Where(t => t.IsDeleted == 0 && t.Status == 0)
+                .ToListAsync();
+            
+            var options = tenants.Select(t => new HbtSelectOption
             {
-                "mysql" or "mariadb" or "tidb" or "oceanbase" => SqlSugar.DbType.MySql,
-                "sqlserver" => SqlSugar.DbType.SqlServer,
-                "postgresql" or "gaussdb" or "opengauss" => SqlSugar.DbType.PostgreSQL,
-                "oracle" => SqlSugar.DbType.Oracle,
-                "sqlite" => SqlSugar.DbType.Sqlite,
-                "dm" => SqlSugar.DbType.Dm,
-                "kingbasees" => SqlSugar.DbType.PostgreSQL,
-                _ => throw new HbtException($"不支持的数据库类型: {connectionInfo.DbType}")
-            };
-
-            // 创建 SqlSugar 连接
-            using var db = new SqlSugarClient(new ConnectionConfig()
-            {
-                ConnectionString = connectionString,
-                DbType = dbType,
-                IsAutoCloseConnection = true
-            });
-
-            // 测试连接
-            return await Task.FromResult(db.Ado.IsValidConnection());
+                Label = t.TenantName,
+                Value = t.ConfigId
+            }).ToList();
+            
+            _logger.Info("[租户服务] 租户选项列表获取成功，共 {Count} 个租户", options.Count);
+            return options;
         }
         catch (Exception ex)
         {
-            _logger.Error($"测试数据库连接失败: {ex.Message}", ex);
-            throw new HbtException($"测试数据库连接失败: {ex.Message}");
+            _logger.Error("[租户服务] 获取租户选项列表失败: {Message}", ex.Message);
+            throw new HbtException($"获取租户选项列表失败: {ex.Message}");
         }
     }
 
     /// <summary>
-    /// 构建数据库连接字符串
+    /// 根据用户名获取租户选项列表
     /// </summary>
-    private static string BuildConnectionString(HbtDbConnectDto info)
+    /// <param name="userName">用户名</param>
+    /// <returns>租户选项列表</returns>
+    public async Task<List<HbtSelectOption>> GetOptionsByUserNameAsync(string userName)
     {
-        return info.DbType.ToLower() switch
+        try
         {
-            "mysql" or "mariadb" or "tidb" or "oceanbase" => $"Server={info.Host};Port={info.Port};Database={info.Database};User={info.Username};Password={info.Password};{info.Options}",
-            "sqlserver" => $"Server={info.Host},{info.Port};Database={info.Database};User Id={info.Username};Password={info.Password};{info.Options}",
-            "postgresql" or "gaussdb" or "opengauss" => $"Host={info.Host};Port={info.Port};Database={info.Database};Username={info.Username};Password={info.Password};{info.Options}",
-            "oracle" => $"Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST={info.Host})(PORT={info.Port}))(CONNECT_DATA=(SERVICE_NAME={info.Database})));User Id={info.Username};Password={info.Password};{info.Options}",
-            "sqlite" => $"Data Source={info.Database};Version=3;{info.Options}",
-            "dm" => $"Server={info.Host};Port={info.Port};Database={info.Database};User={info.Username};Password={info.Password};{info.Options}",
-            "kingbasees" => $"Server={info.Host};Port={info.Port};Database={info.Database};User={info.Username};Password={info.Password};{info.Options}",
-            _ => throw new HbtException($"不支持的数据库类型: {info.DbType}")
-        };
+            _logger.Info($"根据用户名获取租户选项列表 - 用户名: {userName}");
+
+            if (string.IsNullOrEmpty(userName))
+            {
+                _logger.Warn("用户名不能为空");
+                return new List<HbtSelectOption>();
+            }
+
+            // 1. 根据用户名查找用户
+            var user = await UserRepository.GetFirstAsync(u => u.UserName == userName && u.IsDeleted == 0);
+            if (user == null)
+            {
+                _logger.Warn($"未找到用户: {userName}");
+                return new List<HbtSelectOption>();
+            }
+
+            // 2. 获取用户关联的租户
+            var userTenants = await UserTenantRepository.GetListAsync(ut => 
+                ut.UserId == user.Id && 
+                ut.IsDeleted == 0); // 只获取正常状态的关联
+
+            if (!userTenants.Any())
+            {
+                _logger.Info($"用户 {userName} 没有关联的租户");
+                return new List<HbtSelectOption>();
+            }
+
+            // 3. 获取租户详细信息
+            var configIds = userTenants.Select(ut => ut.ConfigId).Where(c => !string.IsNullOrEmpty(c)).ToList();
+            var tenants = await TenantRepository.SqlSugarClient.Queryable<HbtTenant>()
+                .Where(t => 
+                    configIds.Contains(t.ConfigId) && 
+                    t.IsDeleted == 0 && 
+                    t.Status == 0) // 只获取正常状态的租户
+                .ToListAsync();
+
+            // 4. 转换为选项列表
+            var options = tenants.Select(t => new HbtSelectOption
+            {
+                Label = t.TenantName,
+                Value = t.ConfigId
+            }).ToList();
+
+            _logger.Info($"用户 {userName} 的租户选项列表获取成功，共 {options.Count} 个租户");
+            return options;
+        }
+        catch (Exception ex)
+        {
+            _logger.Error($"根据用户名获取租户选项列表失败: {ex.Message}", ex);
+            throw new HbtException($"获取租户选项列表失败: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// 根据用户ID获取租户选项列表
+    /// </summary>
+    /// <param name="userId">用户ID</param>
+    /// <returns>租户选项列表</returns>
+    public async Task<List<HbtSelectOption>> GetOptionsByUserIdAsync(long userId)
+    {
+        try
+        {
+            _logger.Info($"根据用户ID获取租户选项列表 - 用户ID: {userId}");
+
+            if (userId <= 0)
+            {
+                _logger.Warn("用户ID无效");
+                return new List<HbtSelectOption>();
+            }
+
+            // 1. 验证用户是否存在
+            var user = await UserRepository.GetByIdAsync(userId);
+            if (user == null || user.IsDeleted == 1)
+            {
+                _logger.Warn($"未找到用户或用户已删除: {userId}");
+                return new List<HbtSelectOption>();
+            }
+
+            // 2. 获取用户关联的租户
+            var userTenants = await UserTenantRepository.GetListAsync(ut => 
+                ut.UserId == userId && 
+                ut.IsDeleted == 0); // 只获取未删除的关联
+
+            if (!userTenants.Any())
+            {
+                _logger.Info($"用户ID {userId} 没有关联的租户");
+                return new List<HbtSelectOption>();
+            }
+
+            // 3. 获取租户详细信息
+            var configIds = userTenants.Select(ut => ut.ConfigId).Where(c => !string.IsNullOrEmpty(c)).ToList();
+            var tenants = await TenantRepository.SqlSugarClient.Queryable<HbtTenant>()
+                .Where(t => 
+                    configIds.Contains(t.ConfigId) && 
+                    t.IsDeleted == 0 && 
+                    t.Status == 0) // 只获取正常状态的租户
+                .ToListAsync();
+
+            // 4. 转换为选项列表
+            var options = tenants.Select(t => new HbtSelectOption
+            {
+                Label = t.TenantName,
+                Value = t.ConfigId
+            }).ToList();
+
+            _logger.Info($"用户ID {userId} 的租户选项列表获取成功，共 {options.Count} 个租户");
+            return options;
+        }
+        catch (Exception ex)
+        {
+            _logger.Error($"根据用户ID获取租户选项列表失败: {ex.Message}");
+            throw new HbtException($"获取租户选项列表失败: {ex.Message}");
+        }
     }
 
     /// <summary>
@@ -356,15 +443,14 @@ public class HbtTenantService : HbtBaseService, IHbtTenantService
         {
             _logger.Info($"开始分配租户用户 - 租户ID: {tenantId}, 用户IDs: {string.Join(",", userIds)}");
 
-            // 1. 验证租户是否存在且状态正常
-            var tenant = await _repository.GetByIdAsync(tenantId);
+            var tenant = await TenantRepository.GetByIdAsync(tenantId);
             if (tenant == null)
                 throw new HbtException(L("Identity.Tenant.NotFound"));
             if (tenant.Status != 0)
                 throw new HbtException(L("Identity.Tenant.Disabled"));
 
             // 2. 获取租户现有关联的用户（包括已删除的）
-            var existingUsers = await _userTenantRepository.GetListAsync(ut => ut.TenantId == tenantId);
+            var existingUsers = await UserTenantRepository.GetListAsync(ut => ut.ConfigId == tenant.ConfigId);
             _logger.Info($"租户现有关联用户数量: {existingUsers.Count}");
 
             // 3. 找出需要标记删除的关联（在现有关联中但不在新的用户列表中）
@@ -374,17 +460,11 @@ public class HbtTenantService : HbtBaseService, IHbtTenantService
                 _logger.Info($"需要标记删除的用户关联数量: {usersToDelete.Count}, 用户IDs: {string.Join(",", usersToDelete.Select(d => d.UserId))}");
                 foreach (var user in usersToDelete)
                 {
-                    // 先更新状态为禁用
-                    user.Status = 1; // 1 表示禁用状态
-                    user.UpdateBy = _currentUser.UserName;
-                    user.UpdateTime = DateTime.Now;
-                    await _userTenantRepository.UpdateAsync(user);
-
-                    // 然后再标记删除
+                    // 标记删除
                     user.IsDeleted = 1; // 1 表示已删除
                     user.DeleteBy = _currentUser.UserName;
                     user.DeleteTime = DateTime.Now;
-                    await _userTenantRepository.UpdateAsync(user);
+                    await UserTenantRepository.UpdateAsync(user);
                 }
                 _logger.Info("用户关联状态更新和删除标记完成");
             }
@@ -396,17 +476,11 @@ public class HbtTenantService : HbtBaseService, IHbtTenantService
                 _logger.Info($"需要恢复的用户关联数量: {usersToRestore.Count}, 用户IDs: {string.Join(",", usersToRestore.Select(d => d.UserId))}");
                 foreach (var user in usersToRestore)
                 {
-                    // 先恢复状态为正常
-                    user.Status = 0; // 0 表示正常状态
-                    user.UpdateBy = _currentUser.UserName;
-                    user.UpdateTime = DateTime.Now;
-                    await _userTenantRepository.UpdateAsync(user);
-
-                    // 然后取消删除标记
+                    // 取消删除标记
                     user.IsDeleted = 0; // 0 表示未删除
                     user.DeleteBy = null;
                     user.DeleteTime = null;
-                    await _userTenantRepository.UpdateAsync(user);
+                    await UserTenantRepository.UpdateAsync(user);
                 }
                 _logger.Info("用户关联状态恢复和删除标记取消完成");
             }
@@ -417,8 +491,7 @@ public class HbtTenantService : HbtBaseService, IHbtTenantService
                 .Select(userId => new HbtUserTenant
                 {
                     UserId = userId,
-                    TenantId = tenantId,
-                    Status = 0, // 0 表示正常状态
+                    ConfigId = tenant.ConfigId,
                     IsDeleted = 0, // 0 表示未删除
                     CreateBy = _currentUser.UserName,
                     CreateTime = DateTime.Now,
@@ -429,7 +502,7 @@ public class HbtTenantService : HbtBaseService, IHbtTenantService
             if (usersToAdd.Any())
             {
                 _logger.Info($"需要新增的用户关联数量: {usersToAdd.Count}, 用户IDs: {string.Join(",", usersToAdd.Select(d => d.UserId))}");
-                await _userTenantRepository.CreateRangeAsync(usersToAdd);
+                await UserTenantRepository.CreateRangeAsync(usersToAdd);
                 _logger.Info("用户关联新增完成");
             }
 
@@ -454,20 +527,19 @@ public class HbtTenantService : HbtBaseService, IHbtTenantService
         {
             _logger.Info($"获取租户用户列表 - 租户ID: {tenantId}");
 
-            // 1. 验证租户是否存在
-            var tenant = await _repository.GetByIdAsync(tenantId);
+            var tenant = await TenantRepository.GetByIdAsync(tenantId);
             if (tenant == null)
                 throw new HbtException(L("Identity.Tenant.NotFound"));
 
             // 2. 获取租户下的所有用户（包括已删除的）
-            var userTenants = await _userTenantRepository.GetListAsync(ut => ut.TenantId == tenantId);
+            var userTenants = await UserTenantRepository.GetListAsync(ut => ut.ConfigId == tenant.ConfigId);
 
             if (!userTenants.Any())
                 return new List<HbtUserDto>();
 
             // 3. 获取用户详细信息
             var userIds = userTenants.Select(ut => ut.UserId).ToList();
-            var users = await _userRepository.GetListAsync(u => userIds.Contains(u.Id));
+            var users = await UserRepository.GetListAsync(u => userIds.Contains(u.Id));
 
             // 4. 转换为DTO并返回
             return users.Adapt<List<HbtUserDto>>();
@@ -477,8 +549,70 @@ public class HbtTenantService : HbtBaseService, IHbtTenantService
             _logger.Error($"获取租户用户列表失败: {ex.Message}", ex);
             throw;
         }
-
     }
+
+    /// <summary>
+    /// 获取用户关联的租户列表
+    /// </summary>
+    /// <param name="userId">用户ID</param>
+    /// <returns>用户租户列表</returns>
+    public async Task<List<HbtUserTenantDto>> GetUserTenantsAsync(long userId)
+    {
+        try
+        {
+            _logger.Info($"获取用户租户列表 - 用户ID: {userId}");
+
+            var user = await UserRepository.GetByIdAsync(userId);
+            if (user == null)
+                throw new HbtException(L("Identity.User.NotFound"));
+
+            // 2. 获取用户关联的租户
+            var userTenants = await UserTenantRepository.GetListAsync(ut => 
+                ut.UserId == userId && 
+                ut.IsDeleted == 0); // 只获取未删除的关联
+
+            if (!userTenants.Any())
+                return new List<HbtUserTenantDto>();
+
+            // 3. 获取租户详细信息
+            var configIds = userTenants.Select(ut => ut.ConfigId).Where(c => !string.IsNullOrEmpty(c)).ToList();
+            var tenants = await TenantRepository.GetListAsync(t => 
+                configIds.Contains(t.ConfigId) && 
+                t.IsDeleted == 0 && 
+                t.Status == 0); // 只获取正常状态的租户
+
+            // 4. 转换为DTO并返回
+            var result = new List<HbtUserTenantDto>();
+            foreach (var userTenant in userTenants)
+            {
+                var tenant = tenants.FirstOrDefault(t => t.ConfigId == userTenant.ConfigId);
+                if (tenant != null)
+                {
+                    result.Add(new HbtUserTenantDto
+                    {
+                        UserTenantId = userTenant.Id,
+                        UserId = userTenant.UserId,
+                        ConfigId = userTenant.ConfigId,
+                        CreateTime = userTenant.CreateTime,
+                        CreateBy = userTenant.CreateBy,
+                        UpdateTime = userTenant.UpdateTime,
+                        UpdateBy = userTenant.UpdateBy,
+                        Remark = userTenant.Remark,
+                        TenantName = tenant.TenantName
+                    });
+                }
+            }
+
+            _logger.Info($"用户ID {userId} 的租户列表获取成功，共 {result.Count} 个租户");
+            return result;
+        }
+        catch (Exception ex)
+        {
+            _logger.Error($"获取用户租户列表失败: {ex.Message}", ex);
+            throw;
+        }
+    }
+
     /// <summary>
     /// 构建租户查询条件
     /// </summary>
@@ -497,5 +631,4 @@ public class HbtTenantService : HbtBaseService, IHbtTenantService
 
         return exp.ToExpression();
     }
-
 }

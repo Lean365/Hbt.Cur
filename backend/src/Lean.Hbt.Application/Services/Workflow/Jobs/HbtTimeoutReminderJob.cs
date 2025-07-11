@@ -72,29 +72,35 @@ namespace Lean.Hbt.Application.Services.Workflow.Jobs
                 {
                     InstanceId = task.InstanceId,
                     NodeId = task.NodeId,
-                    OperationType = 1, // 超时提醒
+                    OperationType = 2, // 超时提醒
                     OperationResult = 1, // 成功
-                    OperationComment = "已发送超时提醒",
-                    OperationTime = DateTime.Now
+                    OperationComment = "超时提醒发送成功",
+                    CreateBy = "System",
+                    CreateTime = DateTime.Now,
+                    UpdateBy = "System",
+                    UpdateTime = DateTime.Now
                 };
 
                 await dbContext.Client.Insertable(history).ExecuteCommandAsync();
 
-                _logger.Info($"工作流任务[{workflowTask.Id}]已发送超时提醒");
+                _logger.Info($"工作流任务[{workflowTask.Id}]超时提醒发送成功");
             }
             catch (Exception ex)
             {
-                _logger.Error($"工作流任务[{workflowTask.Id}]发送超时提醒失败: {ex.Message}", ex);
+                _logger.Error($"工作流任务[{workflowTask.Id}]超时提醒发送失败: {ex.Message}", ex);
 
                 // 记录操作历史
                 var history = new HbtHistory
                 {
                     InstanceId = task.InstanceId,
                     NodeId = task.NodeId,
-                    OperationType = 1, // 超时提醒
+                    OperationType = 2, // 超时提醒
                     OperationResult = 2, // 失败
-                    OperationComment = $"发送超时提醒失败: {ex.Message}",
-                    OperationTime = DateTime.Now
+                    OperationComment = $"超时提醒发送失败: {ex.Message}",
+                    CreateBy = "System",
+                    CreateTime = DateTime.Now,
+                    UpdateBy = "System",
+                    UpdateTime = DateTime.Now
                 };
 
                 await dbContext.Client.Insertable(history).ExecuteCommandAsync();

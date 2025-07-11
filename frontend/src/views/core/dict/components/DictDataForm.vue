@@ -132,17 +132,6 @@
       </a-form-item>
 
       <a-form-item
-        :label="t('core.dict.dictDatas.fields.tenantId.label')"
-        name="tenantId"
-      >
-        <a-input
-          v-model:value="formData.tenantId"
-          :placeholder="t('core.dict.dictDatas.fields.tenantId.placeholder')"
-          disabled
-        />
-      </a-form-item>
-
-      <a-form-item
         :label="t('core.dict.dictDatas.fields.remark.label')"
         name="remark"
       >
@@ -171,8 +160,6 @@ import type { FormInstance } from 'ant-design-vue'
 import type { Rule } from 'ant-design-vue/es/form'
 import type { HbtDictData, HbtDictDataCreate, HbtDictDataUpdate } from '@/types/core/dictData'
 import { getHbtDictData, createHbtDictData, updateHbtDictData } from '@/api/core/dictData'
-import { useUserStore } from '@/stores/user'
-import { useRouter } from 'vue-router'
 
 const props = defineProps({
   open: {
@@ -196,20 +183,6 @@ const props = defineProps({
 const emit = defineEmits(['update:open', 'success'])
 
 const { t } = useI18n()
-const userStore = useUserStore()
-const router = useRouter()
-
-// 获取租户ID
-const getTenantId = () => {
-  const tenantId = userStore.userInfo?.tenantId
-  if (!tenantId) {
-    message.error(t('common.message.sessionExpired'))
-    userStore.logout()
-    router.push('/login')
-    return
-  }
-  return tenantId
-}
 
 // === 状态定义 ===
 const loading = ref(false)
@@ -230,7 +203,6 @@ const formData = reactive<HbtDictDataCreate>({
   extLabel: '',
   extValue: '',
   transKey: '',
-  tenantId: getTenantId()!,
   remark: ''
 })
 
@@ -323,7 +295,6 @@ const resetForm = () => {
     extLabel: '',
     extValue: '',
     transKey: '',
-    tenantId: getTenantId()!,
     remark: ''
   })
 }

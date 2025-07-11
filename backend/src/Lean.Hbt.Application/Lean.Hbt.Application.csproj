@@ -19,6 +19,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Dtos\Routine\新文件夹\**" />
+    <EmbeddedResource Remove="Dtos\Routine\新文件夹\**" />
+    <None Remove="Dtos\Routine\新文件夹\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Remove="C:\Users\Davis.Cheng\.nuget\packages\system.diagnostics.diagnosticsource\9.0.3\contentFiles\any\net8.0\ILLink\ILLink.Descriptors.LibraryBuild.xml" />
   </ItemGroup>
 

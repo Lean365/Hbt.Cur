@@ -366,10 +366,16 @@ export default {
 
       // === 狀態操作按鈕 ===
       audit: '審核',         // @btn-audit-color
-      revoke: '撤銷',       // @btn-revoke-color
+      revoke: '撤銷',        // @btn-revoke-color
       stop: '停止',          // @btn-stop-color
-      run: '執行',          // @btn-run-color
-      force: '強制',          // @btn-forced-color
+      run: '運行',           // @btn-run-color
+      force: '強制',         // @btn-forced-color
+      start: '啟動',         // @btn-start-color
+      suspend: '暫停',       // @btn-suspend-color
+      resume: '恢復',        // @btn-resume-color
+      submit: '提交',        // @btn-submit-color
+      withdraw: '撤回',      // @btn-withdraw-color
+      terminate: '終止',      // @btn-terminate-color
 
       // === 系統功能按鈕 ===
       generate: '產生',      // @btn-generate-color

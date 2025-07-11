@@ -9,11 +9,6 @@
 // 描述    : 操作日志服务实现
 //===================================================================
 
-using System.Linq.Expressions;
-using Lean.Hbt.Application.Dtos.Audit;
-using Lean.Hbt.Domain.Entities.Audit;
-using Lean.Hbt.Domain.IServices.Extensions;
-using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Http;
 
 namespace Lean.Hbt.Application.Services.Audit
@@ -27,43 +22,26 @@ namespace Lean.Hbt.Application.Services.Audit
     /// </remarks>
     public class HbtOperLogService : HbtBaseService, IHbtOperLogService
     {
-        private readonly IHbtRepository<HbtOperLog> _operLogRepository;
+        private readonly IHbtRepositoryFactory _repositoryFactory;
+        private IHbtRepository<HbtOperLog> OperLogRepository => _repositoryFactory.GetAuthRepository<HbtOperLog>();
 
         /// <summary>
         /// 构造函数
         /// </summary>
-        /// <param name="operLogRepository">操作日志仓储</param>
+        /// <param name="repositoryFactory">操作日志仓储</param>
         /// <param name="logger">日志服务</param>
         /// <param name="httpContextAccessor">HTTP上下文访问器</param>
         /// <param name="currentUser">当前用户服务</param>
-        /// <param name="currentTenant">当前租户服务</param>
         /// <param name="localization">本地化服务</param>
         public HbtOperLogService(
-            IHbtRepository<HbtOperLog> operLogRepository,
+            IHbtRepositoryFactory repositoryFactory,
             IHbtLogger logger,
             IHttpContextAccessor httpContextAccessor,
             IHbtCurrentUser currentUser,
-            IHbtCurrentTenant currentTenant,
-            IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, currentTenant, localization)
+            IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
         {
-            _operLogRepository = operLogRepository ?? throw new ArgumentNullException(nameof(operLogRepository));
+            _repositoryFactory = repositoryFactory ?? throw new ArgumentNullException(nameof(repositoryFactory));
 
-        }
-
-        /// <summary>
-        /// 构建查询条件
-        /// </summary>
-        private Expression<Func<HbtOperLog, bool>> KpOperLogQueryExpression(HbtOperLogQueryDto query)
-        {
-            return Expressionable.Create<HbtOperLog>()
-                .AndIF(!string.IsNullOrEmpty(query.UserName), x => x.UserName.Contains(query.UserName!))
-                .AndIF(!string.IsNullOrEmpty(query.OperationType), x => x.OperationType.Contains(query.OperationType!))
-                .AndIF(!string.IsNullOrEmpty(query.TableName), x => x.TableName.Contains(query.TableName!))
-                .AndIF(!string.IsNullOrEmpty(query.IpAddress), x => x.IpAddress.Contains(query.IpAddress!))
-                .AndIF(query.Status.HasValue, x => x.Status == query.Status.Value)
-                .AndIF(query.StartTime.HasValue, x => x.CreateTime >= query.StartTime.Value)
-                .AndIF(query.EndTime.HasValue, x => x.CreateTime <= query.EndTime.Value)
-                .ToExpression();
         }
 
         /// <summary>
@@ -75,8 +53,8 @@ namespace Lean.Hbt.Application.Services.Audit
         {
             query ??= new HbtOperLogQueryDto();
 
-            var result = await _operLogRepository.GetPagedListAsync(
-                KpOperLogQueryExpression(query),
+            var result = await OperLogRepository.GetPagedListAsync(
+                QueryExpression(query),
                 query.PageIndex,
                 query.PageSize,
                 x => x.CreateTime,
@@ -98,7 +76,7 @@ namespace Lean.Hbt.Application.Services.Audit
         /// <returns>返回操作日志详情</returns>
         public async Task<HbtOperLogDto> GetByIdAsync(long logId)
         {
-            var log = await _operLogRepository.GetByIdAsync(logId);
+            var log = await OperLogRepository.GetByIdAsync(logId);
             return log == null ? throw new HbtException(L("Audit.OperLog.NotFound", logId)) : log.Adapt<HbtOperLogDto>();
         }
 
@@ -112,7 +90,7 @@ namespace Lean.Hbt.Application.Services.Audit
         {
             try
             {
-                var list = await _operLogRepository.GetListAsync(KpOperLogQueryExpression(query));
+                var list = await OperLogRepository.GetListAsync(QueryExpression(query));
                 return await HbtExcelHelper.ExportAsync(list.Adapt<List<HbtOperLogExportDto>>(), sheetName, L("Audit.OperLog.ExportTitle"));
             }
             catch (Exception ex)
@@ -130,7 +108,7 @@ namespace Lean.Hbt.Application.Services.Audit
         {
             try
             {
-                var result = await _operLogRepository.DeleteAsync((Expression<Func<HbtOperLog, bool>>)(x => true));
+                var result = await OperLogRepository.DeleteAsync((Expression<Func<HbtOperLog, bool>>)(x => true));
                 return result > 0;
             }
             catch (Exception ex)
@@ -138,6 +116,21 @@ namespace Lean.Hbt.Application.Services.Audit
                 _logger.Error(L("Audit.OperLog.ClearFailed", ex.Message), ex);
                 throw new HbtException(L("Audit.OperLog.ClearFailed"));
             }
+        }
+        /// <summary>
+        /// 构建查询条件
+        /// </summary>
+        private Expression<Func<HbtOperLog, bool>> QueryExpression(HbtOperLogQueryDto query)
+        {
+            return Expressionable.Create<HbtOperLog>()
+                .AndIF(!string.IsNullOrEmpty(query.OperModule), x => x.OperModule.Contains(query.OperModule!))
+                .AndIF(!string.IsNullOrEmpty(query.OperType), x => x.OperType.Contains(query.OperType!))
+                .AndIF(!string.IsNullOrEmpty(query.OperTableName), x => x.OperTableName.Contains(query.OperTableName!))
+                .AndIF(!string.IsNullOrEmpty(query.OperIpAddress), x => x.OperIpAddress.Contains(query.OperIpAddress!))
+                .AndIF(query.OperStatus.HasValue, x => x.OperStatus == query.OperStatus.Value)
+                .AndIF(query.StartTime.HasValue, x => x.CreateTime >= query.StartTime.Value)
+                .AndIF(query.EndTime.HasValue, x => x.CreateTime <= query.EndTime.Value)
+                .ToExpression();
         }
     }
 }

@@ -13,7 +13,6 @@
       />
     </div>
     <div class="right">
-      <hbt-tenant class="tenant-switch" />
       <user-dropdown />
     </div>
   </div>
@@ -23,7 +22,6 @@
 import { ref } from 'vue'
 import { MenuUnfoldOutlined, MenuFoldOutlined } from '@ant-design/icons-vue'
 import UserDropdown from './UserDropdown.vue'
-import HbtTenant from '@/components/Base/HbtTenant/index.vue'
 
 const collapsed = ref(false)
 
@@ -61,10 +59,6 @@ const toggleCollapsed = () => {
     display: flex;
     align-items: center;
     gap: 16px;
-
-    .tenant-switch {
-      height: 100%;
-    }
   }
 }
 </style> 

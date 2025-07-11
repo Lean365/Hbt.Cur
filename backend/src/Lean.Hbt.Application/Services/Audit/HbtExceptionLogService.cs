@@ -23,32 +23,31 @@ namespace Lean.Hbt.Application.Services.Audit
     /// </remarks>
     public class HbtExceptionLogService : HbtBaseService, IHbtExceptionLogService
     {
-        private readonly IHbtRepository<HbtExceptionLog> _exceptionLogRepository;
+        private readonly IHbtRepositoryFactory _repositoryFactory;
+        private IHbtRepository<HbtExceptionLog> ExceptionLogRepository => _repositoryFactory.GetAuthRepository<HbtExceptionLog>();
 
         /// <summary>
         /// 构造函数
         /// </summary>
-        /// <param name="exceptionLogRepository">异常日志仓储</param>
+        /// <param name="repositoryFactory">仓储工厂</param>
         /// <param name="logger">日志服务</param>
         /// <param name="httpContextAccessor">HTTP上下文访问器</param>
         /// <param name="currentUser">当前用户服务</param>
-        /// <param name="currentTenant">当前租户服务</param>
         /// <param name="localization">本地化服务</param>
         public HbtExceptionLogService(
-            IHbtRepository<HbtExceptionLog> exceptionLogRepository,
+            IHbtRepositoryFactory repositoryFactory,
             IHbtLogger logger,
             IHttpContextAccessor httpContextAccessor,
             IHbtCurrentUser currentUser,
-            IHbtCurrentTenant currentTenant,
-            IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, currentTenant, localization)
+            IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
         {
-            _exceptionLogRepository = exceptionLogRepository ?? throw new ArgumentNullException(nameof(exceptionLogRepository));
+            _repositoryFactory = repositoryFactory ?? throw new ArgumentNullException(nameof(repositoryFactory));
         }
 
         /// <summary>
         /// 构建查询条件
         /// </summary>
-        private Expression<Func<HbtExceptionLog, bool>> KpExceptionLogQueryExpression(HbtExceptionLogQueryDto query)
+        private Expression<Func<HbtExceptionLog, bool>> QueryExpression(HbtExceptionLogQueryDto query)
         {
             return Expressionable.Create<HbtExceptionLog>()
                 .AndIF(!string.IsNullOrEmpty(query.UserName), x => x.UserName.Contains(query.UserName!))
@@ -68,8 +67,8 @@ namespace Lean.Hbt.Application.Services.Audit
         {
             query ??= new HbtExceptionLogQueryDto();
 
-            var result = await _exceptionLogRepository.GetPagedListAsync(
-                KpExceptionLogQueryExpression(query),
+            var result = await ExceptionLogRepository.GetPagedListAsync(
+                QueryExpression(query),
                 query.PageIndex,
                 query.PageSize,
                 x => x.CreateTime,
@@ -91,7 +90,7 @@ namespace Lean.Hbt.Application.Services.Audit
         /// <returns>返回异常日志详情</returns>
         public async Task<HbtExceptionLogDto> GetByIdAsync(long logId)
         {
-            var log = await _exceptionLogRepository.GetByIdAsync(logId);
+            var log = await ExceptionLogRepository.GetByIdAsync(logId);
             return log == null ? throw new HbtException(L("Audit.ExceptionLog.NotFound", logId)) : log.Adapt<HbtExceptionLogDto>();
         }
 
@@ -105,7 +104,7 @@ namespace Lean.Hbt.Application.Services.Audit
         {
             try
             {
-                var list = await _exceptionLogRepository.GetListAsync(KpExceptionLogQueryExpression(query));
+                var list = await ExceptionLogRepository.GetListAsync(QueryExpression(query));
                 return await HbtExcelHelper.ExportAsync(list.Adapt<List<HbtExceptionLogExportDto>>(), sheetName, L("Audit.ExceptionLog.ExportTitle"));
             }
             catch (Exception ex)
@@ -123,7 +122,7 @@ namespace Lean.Hbt.Application.Services.Audit
         {
             try
             {
-                var result = await _exceptionLogRepository.DeleteAsync((Expression<Func<HbtExceptionLog, bool>>)(x => true));
+                var result = await ExceptionLogRepository.DeleteAsync((Expression<Func<HbtExceptionLog, bool>>)(x => true));
                 return result > 0;
             }
             catch (Exception ex)

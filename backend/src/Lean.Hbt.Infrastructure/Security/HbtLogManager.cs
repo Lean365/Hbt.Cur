@@ -160,19 +160,16 @@ public class HbtLogManager :
     {
         var log = new HbtOperLog
         {
-            LogLevel = success ? GetLogLevel(operationType) : 4, // 失败时使用错误级别
-            UserId = _currentUser.UserId,
-            UserName = _currentUser.UserName,
-
-            TableName = tableName,
-            OperationType = operationType,
-            BusinessKey = businessKey,
-            RequestMethod = _httpContextAccessor.HttpContext?.Request.Method ?? "Unknown",
-            RequestParam = requestParam,
-            IpAddress = GetClientIpAddress(),
-            Location = location,
-            Status = success ? 0 : 1,
-            ErrorMsg = errorMsg,
+            OperModule = tableName,
+            OperType = operationType,
+            OperTableName = tableName,
+            OperBusinessKey = businessKey,
+            OperRequestMethod = _httpContextAccessor.HttpContext?.Request.Method ?? "Unknown",
+            OperRequestParam = requestParam,
+            OperIpAddress = GetClientIpAddress(),
+            OperLocation = location,
+            OperStatus = success ? 0 : 1,
+            OperErrorMsg = errorMsg,
             CreateBy = _currentUser.UserName,
             CreateTime = DateTime.Now
         };

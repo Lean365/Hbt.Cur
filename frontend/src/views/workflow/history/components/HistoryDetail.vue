@@ -17,14 +17,8 @@
         <a-descriptions-item :label="t('workflow.history.fields.operationType')">
           <hbt-dict-tag dict-type="workflow_operation_type" :value="detail.operationType" />
         </a-descriptions-item>
-        <a-descriptions-item :label="t('workflow.history.fields.operatorName')">
-          {{ detail.operatorName }}
-        </a-descriptions-item>
         <a-descriptions-item :label="t('workflow.history.fields.operationResult')">
           <hbt-dict-tag dict-type="workflow_operation_result" :value="detail.operationResult ?? 0" />
-        </a-descriptions-item>
-        <a-descriptions-item :label="t('workflow.history.fields.operationTime')">
-          {{ detail.operationTime }}
         </a-descriptions-item>
         <a-descriptions-item :label="t('workflow.history.fields.operationComment')" :span="2">
           {{ detail.operationComment }}
@@ -80,11 +74,8 @@ const detail = ref<HbtHistory>({
   instanceId: 0,
   nodeId: 0,
   operationType: 0,
-  operatorId: 0,
-  operatorName: '',
   operationResult: 0,
   operationComment: '',
-  operationTime: '',
   createBy: '',
   createTime: '',
   updateBy: '',

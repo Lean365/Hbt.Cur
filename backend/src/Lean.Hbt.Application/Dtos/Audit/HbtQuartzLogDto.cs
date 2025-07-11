@@ -21,69 +21,80 @@ namespace Lean.Hbt.Application.Dtos.Audit
         /// </summary>
         public HbtQuartzLogDto()
         {
-            LogTaskName = string.Empty;
-            LogGroupName = string.Empty;
-            LogExecuteParams = string.Empty;
-            LogErrorInfo = string.Empty;
-            LogExecuteIp = string.Empty;
-            LogExecuteHost = string.Empty;
+            QuartzName = string.Empty;
+            QuartzGroupName = string.Empty;
+            QuartzExecuteParams = string.Empty;
+            QuartzExecuteMessage = string.Empty;
+            QuartzErrorInfo = string.Empty;
+            QuartzExecuteIp = string.Empty;
+            QuartzExecuteHost = string.Empty;
         }
 
         /// <summary>
         /// ID
         /// </summary>
         [AdaptMember("Id")]
-        public long LogId { get; set; }
+        public long QuartzLogId { get; set; }
 
         /// <summary>
         /// 任务ID
         /// </summary>
-        public long LogTaskId { get; set; }
+        public long QuartzId { get; set; }
 
         /// <summary>
         /// 任务名称
         /// </summary>
-        public string LogTaskName { get; set; }
+        public string QuartzName { get; set; }
 
         /// <summary>
         /// 任务组名
         /// </summary>
-        public string LogGroupName { get; set; }
+        public string QuartzGroupName { get; set; }
+
+        /// <summary>
+        /// 任务类型（1.程序集 2.网络请求 3.SQL语句）
+        /// </summary>
+        public int QuartzType { get; set; }
 
         /// <summary>
         /// 执行时间
         /// </summary>
-        public DateTime LogExecuteTime { get; set; }
+        public DateTime QuartzExecuteTime { get; set; }
 
         /// <summary>
         /// 执行耗时（毫秒）
         /// </summary>
-        public long LogExecuteDuration { get; set; }
+        public long QuartzExecuteDuration { get; set; }
 
         /// <summary>
         /// 执行参数
         /// </summary>
-        public string LogExecuteParams { get; set; }
+        public string QuartzExecuteParams { get; set; }
 
         /// <summary>
         /// 执行状态（0失败 1成功）
         /// </summary>
-        public int LogStatus { get; set; }
+        public int Status { get; set; }
+
+        /// <summary>
+        /// 执行消息
+        /// </summary>
+        public string QuartzExecuteMessage { get; set; }
 
         /// <summary>
         /// 错误信息
         /// </summary>
-        public string LogErrorInfo { get; set; }
+        public string QuartzErrorInfo { get; set; }
 
         /// <summary>
         /// 执行机器IP
         /// </summary>
-        public string LogExecuteIp { get; set; }
+        public string QuartzExecuteIp { get; set; }
 
         /// <summary>
         /// 执行机器名
         /// </summary>
-        public string LogExecuteHost { get; set; }
+        public string QuartzExecuteHost { get; set; }
 
         /// <summary>
         /// 备注
@@ -136,26 +147,26 @@ namespace Lean.Hbt.Application.Dtos.Audit
         /// </summary>
         public HbtQuartzLogQueryDto()
         {
-            LogTaskName = string.Empty;
-            LogGroupName = string.Empty;
+            QuartzName = string.Empty;
+            QuartzGroupName = string.Empty;
         }
 
         /// <summary>
         /// 任务名称
         /// </summary>
         [MaxLength(100, ErrorMessage = "任务名称长度不能超过100个字符")]
-        public string LogTaskName { get; set; }
+        public string QuartzName { get; set; }
 
         /// <summary>
         /// 任务组名
         /// </summary>
         [MaxLength(50, ErrorMessage = "任务组名长度不能超过50个字符")]
-        public string LogGroupName { get; set; }
+        public string QuartzGroupName { get; set; }
 
         /// <summary>
         /// 执行状态（0失败 1成功）
         /// </summary>
-        public int? LogStatus { get; set; }
+        public int? Status { get; set; }
 
         /// <summary>
         /// 开始时间
@@ -178,58 +189,64 @@ namespace Lean.Hbt.Application.Dtos.Audit
         /// </summary>
         public HbtQuartzLogExportDto()
         {
-            LogTaskName = string.Empty;
-            LogGroupName = string.Empty;
-            LogExecuteParams = string.Empty;
-            LogErrorInfo = string.Empty;
-            LogExecuteIp = string.Empty;
-            LogExecuteHost = string.Empty;
+            QuartzName = string.Empty;
+            QuartzGroupName = string.Empty;
+            QuartzExecuteParams = string.Empty;
+            QuartzExecuteMessage = string.Empty;
+            QuartzErrorInfo = string.Empty;
+            QuartzExecuteIp = string.Empty;
+            QuartzExecuteHost = string.Empty;
         }
 
         /// <summary>
         /// 任务名称
         /// </summary>
-        public string LogTaskName { get; set; }
+        public string QuartzName { get; set; }
 
         /// <summary>
         /// 任务组名
         /// </summary>
-        public string LogGroupName { get; set; }
+        public string QuartzGroupName { get; set; }
 
         /// <summary>
         /// 执行时间
         /// </summary>
-        public DateTime LogExecuteTime { get; set; }
+        public DateTime QuartzExecuteTime { get; set; }
 
         /// <summary>
         /// 执行耗时（毫秒）
         /// </summary>
-        public long LogExecuteDuration { get; set; }
+        public long QuartzExecuteDuration { get; set; }
 
         /// <summary>
         /// 执行参数
         /// </summary>
-        public string LogExecuteParams { get; set; }
+        public string QuartzExecuteParams { get; set; }
 
         /// <summary>
         /// 执行状态（0失败 1成功）
         /// </summary>
-        public int LogStatus { get; set; }
+        public int Status { get; set; }
+
+        /// <summary>
+        /// 执行消息
+        /// </summary>
+        public string QuartzExecuteMessage { get; set; }
 
         /// <summary>
         /// 错误信息
         /// </summary>
-        public string LogErrorInfo { get; set; }
+        public string QuartzErrorInfo { get; set; }
 
         /// <summary>
         /// 执行机器IP
         /// </summary>
-        public string LogExecuteIp { get; set; }
+        public string QuartzExecuteIp { get; set; }
 
         /// <summary>
         /// 执行机器名
         /// </summary>
-        public string LogExecuteHost { get; set; }
+        public string QuartzExecuteHost { get; set; }
 
         /// <summary>
         /// 创建时间

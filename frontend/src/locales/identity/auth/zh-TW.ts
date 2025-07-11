@@ -3,6 +3,7 @@ export default {
     auth: {
       login: {
         title: '登入',
+        tenantId: '租戶配置',
         username: '使用者名稱',
         password: '密碼',
         rememberMe: '記住密碼',
@@ -26,7 +27,8 @@ export default {
         otherLogin: '其他登入方式',
         form: {
           usernameRequired: '請輸入使用者名稱',
-          passwordRequired: '請輸入密碼'
+          passwordRequired: '請輸入密碼',
+          tenantIdRequired: '請選擇租戶配置'
         }
       },
       register: {

@@ -23,12 +23,13 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// </summary>
         public HbtVariableDto()
         {
-            WorkflowVariableId = 0;
+            VariableId = 0;
             InstanceId = 0;
             VariableName = string.Empty;
-            VariableValue = string.Empty;
             VariableType = string.Empty;
-            VariableScope = string.Empty;
+            VariableValue = string.Empty;
+            Scope = 0;
+            NodeId = null;
             Remark = string.Empty;
             CreateBy = string.Empty;
             CreateTime = DateTime.Now;
@@ -40,7 +41,7 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// 变量ID
         /// </summary>
         [AdaptMember("Id")]
-        public long WorkflowVariableId { get; set; }
+        public long VariableId { get; set; }
 
         /// <summary>
         /// 工作流实例ID
@@ -48,29 +49,29 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         public long InstanceId { get; set; }
 
         /// <summary>
-        /// 工作流节点ID
-        /// </summary>
-        public long? WorkflowNodeId { get; set; }
-
-        /// <summary>
         /// 变量名称
         /// </summary>
         public string VariableName { get; set; }
 
         /// <summary>
-        /// 变量值
-        /// </summary>
-        public string VariableValue { get; set; }
-
-        /// <summary>
-        /// 变量类型
+        /// 变量类型(string/int/decimal/datetime/bool)
         /// </summary>
         public string VariableType { get; set; }
 
         /// <summary>
-        /// 变量作用域
+        /// 变量值(JSON格式)
         /// </summary>
-        public string VariableScope { get; set; }
+        public string VariableValue { get; set; }
+
+        /// <summary>
+        /// 变量作用域(0:全局 1:节点)
+        /// </summary>
+        public int Scope { get; set; }
+
+        /// <summary>
+        /// 节点ID(作用域为节点时必填)
+        /// </summary>
+        public long? NodeId { get; set; }
 
         /// <summary>
         /// 备注
@@ -111,6 +112,16 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// 删除时间
         /// </summary>
         public DateTime? DeleteTime { get; set; }
+
+        /// <summary>
+        /// 工作流实例
+        /// </summary>
+        public HbtInstanceDto? WorkflowInstance { get; set; }
+
+        /// <summary>
+        /// 节点
+        /// </summary>
+        public HbtNodeDto? Node { get; set; }
     }
 
     /// <summary>
@@ -123,6 +134,11 @@ namespace Lean.Hbt.Application.Dtos.Workflow
     public class HbtVariableQueryDto : HbtPagedQuery
     {
         /// <summary>
+        /// 工作流实例ID
+        /// </summary>
+        public long? InstanceId { get; set; }
+
+        /// <summary>
         /// 变量名称
         /// </summary>
         public string? VariableName { get; set; }
@@ -130,12 +146,17 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 变量类型
         /// </summary>
-        public int? VariableType { get; set; }
+        public string? VariableType { get; set; }
 
         /// <summary>
-        /// 变量作用域
+        /// 变量作用域(0:全局 1:节点)
         /// </summary>
-        public int? VariableScope { get; set; }
+        public int? Scope { get; set; }
+
+        /// <summary>
+        /// 节点ID
+        /// </summary>
+        public long? NodeId { get; set; }
 
         /// <summary>
         /// 创建时间开始
@@ -158,14 +179,23 @@ namespace Lean.Hbt.Application.Dtos.Workflow
     public class HbtVariableCreateDto
     {
         /// <summary>
+        /// 构造函数
+        /// </summary>
+        public HbtVariableCreateDto()
+        {
+            InstanceId = 0;
+            VariableName = string.Empty;
+            VariableType = string.Empty;
+            VariableValue = string.Empty;
+            Scope = 0;
+            NodeId = null;
+            Remark = string.Empty;
+        }
+
+        /// <summary>
         /// 工作流实例ID
         /// </summary>
         public long InstanceId { get; set; }
-
-        /// <summary>
-        /// 工作流节点ID
-        /// </summary>
-        public long? WorkflowNodeId { get; set; }
 
         /// <summary>
         /// 变量名称
@@ -173,19 +203,24 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         public string VariableName { get; set; }
 
         /// <summary>
-        /// 变量值
-        /// </summary>
-        public string VariableValue { get; set; }
-
-        /// <summary>
-        /// 变量类型
+        /// 变量类型(string/int/decimal/datetime/bool)
         /// </summary>
         public string VariableType { get; set; }
 
         /// <summary>
-        /// 变量作用域
+        /// 变量值(JSON格式)
         /// </summary>
-        public string VariableScope { get; set; }
+        public string VariableValue { get; set; }
+
+        /// <summary>
+        /// 变量作用域(0:全局 1:节点)
+        /// </summary>
+        public int Scope { get; set; }
+
+        /// <summary>
+        /// 节点ID(作用域为节点时必填)
+        /// </summary>
+        public long? NodeId { get; set; }
 
         /// <summary>
         /// 备注
@@ -200,23 +235,21 @@ namespace Lean.Hbt.Application.Dtos.Workflow
     /// 创建者: Lean365
     /// 创建时间: 2024-01-23
     /// </remarks>
-    public class HbtVariableUpdateDto
+    public class HbtVariableUpdateDto : HbtVariableCreateDto
     {
+        /// <summary>
+        /// 构造函数
+        /// </summary>
+        public HbtVariableUpdateDto()
+        {
+            VariableId = 0;
+        }
+
         /// <summary>
         /// 变量ID
         /// </summary>
         [AdaptMember("Id")]
-        public long WorkflowVariableId { get; set; }
-
-        /// <summary>
-        /// 变量值
-        /// </summary>
-        public string VariableValue { get; set; }
-
-        /// <summary>
-        /// 备注
-        /// </summary>
-        public string? Remark { get; set; }
+        public long VariableId { get; set; }
     }
 
     /// <summary>
@@ -229,14 +262,23 @@ namespace Lean.Hbt.Application.Dtos.Workflow
     public class HbtVariableImportDto
     {
         /// <summary>
+        /// 构造函数
+        /// </summary>
+        public HbtVariableImportDto()
+        {
+            InstanceId = 0;
+            VariableName = string.Empty;
+            VariableType = string.Empty;
+            VariableValue = string.Empty;
+            Scope = 0;
+            NodeId = null;
+            Remark = string.Empty;
+        }
+
+        /// <summary>
         /// 工作流实例ID
         /// </summary>
         public long InstanceId { get; set; }
-
-        /// <summary>
-        /// 工作流节点ID
-        /// </summary>
-        public long? WorkflowNodeId { get; set; }
 
         /// <summary>
         /// 变量名称
@@ -244,19 +286,24 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         public string? VariableName { get; set; }
 
         /// <summary>
-        /// 变量值
-        /// </summary>
-        public string? VariableValue { get; set; }
-
-        /// <summary>
-        /// 变量类型
+        /// 变量类型(string/int/decimal/datetime/bool)
         /// </summary>
         public string? VariableType { get; set; }
 
         /// <summary>
-        /// 变量作用域
+        /// 变量值(JSON格式)
         /// </summary>
-        public string? VariableScope { get; set; }
+        public string? VariableValue { get; set; }
+
+        /// <summary>
+        /// 变量作用域(0:全局 1:节点)
+        /// </summary>
+        public int? Scope { get; set; }
+
+        /// <summary>
+        /// 节点ID(作用域为节点时必填)
+        /// </summary>
+        public long? NodeId { get; set; }
 
         /// <summary>
         /// 备注
@@ -273,6 +320,20 @@ namespace Lean.Hbt.Application.Dtos.Workflow
     /// </remarks>
     public class HbtVariableExportDto
     {
+        /// <summary>
+        /// 构造函数
+        /// </summary>
+        public HbtVariableExportDto()
+        {
+            VariableName = string.Empty;
+            VariableValue = string.Empty;
+            VariableTypeName = string.Empty;
+            ScopeName = string.Empty;
+            Remark = string.Empty;
+            CreateBy = string.Empty;
+            CreateTime = DateTime.Now;
+        }
+
         /// <summary>
         /// 变量名称
         /// </summary>
@@ -291,7 +352,7 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 变量作用域
         /// </summary>
-        public string? VariableScopeName { get; set; }
+        public string? ScopeName { get; set; }
 
         /// <summary>
         /// 备注
@@ -319,19 +380,30 @@ namespace Lean.Hbt.Application.Dtos.Workflow
     public class HbtVariableTemplateDto
     {
         /// <summary>
+        /// 构造函数
+        /// </summary>
+        public HbtVariableTemplateDto()
+        {
+            VariableName = string.Empty;
+            VariableType = string.Empty;
+            Scope = 0;
+            Remark = string.Empty;
+        }
+
+        /// <summary>
         /// 变量名称
         /// </summary>
         public string? VariableName { get; set; }
 
         /// <summary>
-        /// 变量类型
+        /// 变量类型(string/int/decimal/datetime/bool)
         /// </summary>
         public string? VariableType { get; set; }
 
         /// <summary>
-        /// 变量作用域
+        /// 变量作用域(0:全局 1:节点)
         /// </summary>
-        public string? VariableScope { get; set; }
+        public int? Scope { get; set; }
 
         /// <summary>
         /// 备注

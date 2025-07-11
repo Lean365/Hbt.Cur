@@ -7,11 +7,7 @@
 // 描述   : 登录日志数据传输对象
 //===================================================================
 
-using System;
 using System.ComponentModel.DataAnnotations;
-using Lean.Hbt.Common.Models;
-using Lean.Hbt.Common.Enums;
-using Mapster;
 
 namespace Lean.Hbt.Application.Dtos.Audit
 {
@@ -46,11 +42,6 @@ namespace Lean.Hbt.Application.Dtos.Audit
         /// 用户ID
         /// </summary>
         public long UserId { get; set; }
-
-        /// <summary>
-        /// 租户ID
-        /// </summary>
-        public long? TenantId { get; set; }
 
         /// <summary>
         /// 用户名
@@ -340,4 +331,4 @@ namespace Lean.Hbt.Application.Dtos.Audit
         /// </summary>
         public DateTime CreateTime { get; set; }
     }
-} 
+}

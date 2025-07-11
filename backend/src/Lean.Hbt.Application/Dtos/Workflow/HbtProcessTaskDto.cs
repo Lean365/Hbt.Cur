@@ -24,14 +24,13 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// </summary>
         public HbtProcessTaskDto()
         {
-            WorkflowTaskId = 0;
+            ProcessTaskId = 0;
             InstanceId = 0;
-            WorkflowNodeId = 0;
+            NodeId = 0;
             TaskType = 0;
             AssigneeId = 0;
             AssigneeName = string.Empty;
             Status = 0;
-            TaskResult = 0;
             Comment = string.Empty;
             Remark = string.Empty;
             CreateBy = string.Empty;
@@ -44,7 +43,12 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// 任务ID
         /// </summary>
         [AdaptMember("Id")]
-        public long WorkflowTaskId { get; set; }
+        public long ProcessTaskId { get; set; }
+
+        /// <summary>
+        /// 任务ID（前端兼容字段）
+        /// </summary>
+        public long taskId => ProcessTaskId;
 
         /// <summary>
         /// 工作流实例ID
@@ -52,9 +56,19 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         public long InstanceId { get; set; }
 
         /// <summary>
+        /// 工作流实例名称
+        /// </summary>
+        public string InstanceName { get; set; } = string.Empty;
+
+        /// <summary>
         /// 工作流节点ID
         /// </summary>
-        public long WorkflowNodeId { get; set; }
+        public long NodeId { get; set; }
+
+        /// <summary>
+        /// 工作流节点名称
+        /// </summary>
+        public string NodeName { get; set; } = string.Empty;
 
         /// <summary>
         /// 任务类型
@@ -76,10 +90,6 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// </summary>
         public int Status { get; set; }
 
-        /// <summary>
-        /// 任务结果
-        /// </summary>
-        public int TaskResult { get; set; }
 
         /// <summary>
         /// 处理意见
@@ -110,6 +120,16 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// 修改时间
         /// </summary>
         public DateTime? UpdateTime { get; set; }
+
+        /// <summary>
+        /// 工作流实例
+        /// </summary>
+        public HbtInstanceDto? WorkflowInstance { get; set; }
+
+        /// <summary>
+        /// 工作流节点
+        /// </summary>
+        public HbtNodeDto? Node { get; set; }
     }
 
     /// <summary>
@@ -129,7 +149,7 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 工作流节点ID
         /// </summary>
-        public long? WorkflowNodeId { get; set; }
+        public long? NodeId { get; set; }
 
         /// <summary>
         /// 任务类型
@@ -174,7 +194,7 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 工作流节点ID
         /// </summary>
-        public long WorkflowNodeId { get; set; }
+        public long NodeId { get; set; }
 
         /// <summary>
         /// 任务类型
@@ -199,33 +219,24 @@ namespace Lean.Hbt.Application.Dtos.Workflow
     /// 创建者: Lean365
     /// 创建时间: 2024-01-23
     /// </remarks>
-    public class HbtProcessTaskUpdateDto
+    public class HbtProcessTaskUpdateDto : HbtTaskCreateDto
     {
         /// <summary>
         /// 任务ID
         /// </summary>
         [AdaptMember("Id")]
-        public long WorkflowTaskId { get; set; }
+        public long ProcessTaskId { get; set; }
 
         /// <summary>
         /// 任务状态
         /// </summary>
         public int Status { get; set; }
 
-        /// <summary>
-        /// 处理结果
-        /// </summary>
-        public int? Result { get; set; }
 
         /// <summary>
         /// 处理意见
         /// </summary>
         public string? Comment { get; set; }
-
-        /// <summary>
-        /// 备注
-        /// </summary>
-        public string? Remark { get; set; }
     }
 
     /// <summary>
@@ -254,7 +265,7 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 工作流节点ID
         /// </summary>
-        public long WorkflowNodeId { get; set; }
+        public long NodeId { get; set; }
 
         /// <summary>
         /// 任务类型
@@ -296,10 +307,7 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// </summary>
         public int Status { get; set; }
 
-        /// <summary>
-        /// 处理结果
-        /// </summary>
-        public string? Result { get; set; }
+
 
         /// <summary>
         /// 处理意见
@@ -350,21 +358,29 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 任务ID
         /// </summary>
-        public long WorkflowTaskId { get; set; }
+        public long ProcessTaskId { get; set; }
 
         /// <summary>
         /// 任务状态
         /// </summary>
         public int Status { get; set; }
 
-        /// <summary>
-        /// 处理结果
-        /// </summary>
-        public string? Result { get; set; }
+
 
         /// <summary>
         /// 处理意见
         /// </summary>
         public string? Comment { get; set; }
+    }
+
+    /// <summary>
+    /// 工作流任务完成DTO
+    /// </summary>
+    public class HbtTaskCompleteDto
+    {
+        /// <summary>
+        /// 处理意见
+        /// </summary>
+        public string Comment { get; set; } = string.Empty;
     }
 }

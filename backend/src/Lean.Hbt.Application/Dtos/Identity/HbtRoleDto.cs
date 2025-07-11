@@ -71,10 +71,6 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// </summary>
         public int Status { get; set; }
 
-        /// <summary>
-        /// 租户ID
-        /// </summary>
-        public long TenantId { get; set; }
 
         /// <summary>
         /// 备注
@@ -139,13 +135,13 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// <summary>
         /// 角色名称
         /// </summary>
-        [MaxLength(50, ErrorMessage = "角色名称长度不能超过50个字符")]
+
         public string? RoleName { get; set; }
 
         /// <summary>
         /// 角色标识
         /// </summary>
-        [MaxLength(100, ErrorMessage = "角色标识长度不能超过100个字符")]
+
         public string? RoleKey { get; set; }
 
         /// <summary>
@@ -166,29 +162,25 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// <summary>
         /// 角色编码
         /// </summary>
-        [Required(ErrorMessage = "角色编码不能为空")]
-        [MaxLength(50, ErrorMessage = "角色编码长度不能超过50个字符")]
+
         public string RoleCode { get; set; } = string.Empty;
 
         /// <summary>
         /// 角色名称
         /// </summary>
-        [Required(ErrorMessage = "角色名称不能为空")]
-        [MaxLength(50, ErrorMessage = "角色名称长度不能超过50个字符")]
+
         public string RoleName { get; set; } = string.Empty;
 
         /// <summary>
         /// 角色标识
         /// </summary>
-        [Required(ErrorMessage = "角色标识不能为空")]
-        [MaxLength(100, ErrorMessage = "角色标识长度不能超过100个字符")]
+
         public string RoleKey { get; set; } = string.Empty;
 
         /// <summary>
         /// 排序号
         /// </summary>
-        [Required(ErrorMessage = "排序号不能为空")]
-        [Range(0, 9999, ErrorMessage = "排序号必须在0-9999之间")]
+
         public int OrderNum { get; set; }
 
         /// <summary>
@@ -210,7 +202,7 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// <summary>
         /// 备注
         /// </summary>
-        [MaxLength(500, ErrorMessage = "备注长度不能超过500个字符")]
+
         public string? Remark { get; set; }
 
         /// <summary>
@@ -236,7 +228,7 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// <summary>
         /// ID
         /// </summary>
-        [Required(ErrorMessage = "角色ID不能为空")]
+        [AdaptMember("Id")]
         public long RoleId { get; set; }
     }
 
@@ -302,13 +294,13 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// <summary>
         /// ID
         /// </summary>
-        [Required(ErrorMessage = "角色ID不能为空")]
+        [AdaptMember("Id")]
         public long RoleId { get; set; }
 
         /// <summary>
         /// 状态（0正常 1停用）
         /// </summary>
-        [Required(ErrorMessage = "状态不能为空")]
+
         public int Status { get; set; }
     }
 

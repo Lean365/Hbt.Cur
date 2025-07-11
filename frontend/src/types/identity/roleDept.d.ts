@@ -1,12 +1,13 @@
 import type { HbtBaseEntity } from '@/types/common'
 
 /**
- * 角色部门关联对象
+ * 角色部门关联
  */
-export interface RoleDept extends HbtBaseEntity {
+export interface HbtRoleDept extends HbtBaseEntity {
+  /** 角色ID */
   roleId: number
+  /** 部门ID */
   deptId: number
-  tenantId: number
 }
 
 /**

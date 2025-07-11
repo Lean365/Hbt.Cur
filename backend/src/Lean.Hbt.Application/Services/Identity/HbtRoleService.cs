@@ -4,10 +4,9 @@
 // 创建者 : Lean365
 // 创建时间: 2024-01-20 16:30
 // 版本号 : V0.0.1
-// 描述   : 角色服务实现
+// 描述   : 角色服务实现 - 使用仓储工厂模式
 //===================================================================
 
-using System.Linq.Expressions;
 using Microsoft.AspNetCore.Http;
 
 namespace Lean.Hbt.Application.Services.Identity
@@ -18,50 +17,49 @@ namespace Lean.Hbt.Application.Services.Identity
     /// <remarks>
     /// 创建者: Lean365
     /// 创建时间: 2024-01-20
+    /// 更新: 2024-12-19 - 使用仓储工厂模式支持多库
     /// </remarks>
     public class HbtRoleService : HbtBaseService, IHbtRoleService
     {
-        // 角色仓储接口
-        private readonly IHbtRepository<HbtRole> _roleRepository;
-
-        // 用户角色仓储接口
-        private readonly IHbtRepository<HbtUserRole> _userRoleRepository;
-
-
-        // 角色菜单仓储接口
-        private readonly IHbtRepository<HbtRoleMenu> _roleMenuRepository;
-
-        // 角色部门仓储接口
-        private readonly IHbtRepository<HbtRoleDept> _roleDeptRepository;
+        private readonly IHbtRepositoryFactory _repositoryFactory;
 
         /// <summary>
         /// 构造函数，注入依赖服务
         /// </summary>
         /// <param name="logger">日志记录器</param>
-        /// <param name="roleRepository">角色仓库</param>
-        /// <param name="userRoleRepository">用户角色仓库</param>
-        /// <param name="roleMenuRepository">角色菜单仓库</param>
-        /// <param name="roleDeptRepository">角色部门仓库</param>
+        /// <param name="repositoryFactory">仓储工厂</param>
         /// <param name="httpContextAccessor">HTTP上下文访问器</param>
         /// <param name="currentUser">当前用户服务</param>
-        /// <param name="currentTenant">当前租户服务</param>
         /// <param name="localization">本地化服务</param>
         public HbtRoleService(
             IHbtLogger logger,
-            IHbtRepository<HbtRole> roleRepository,
-            IHbtRepository<HbtUserRole> userRoleRepository,
-            IHbtRepository<HbtRoleMenu> roleMenuRepository,
-            IHbtRepository<HbtRoleDept> roleDeptRepository,
+            IHbtRepositoryFactory repositoryFactory,
             IHttpContextAccessor httpContextAccessor,
             IHbtCurrentUser currentUser,
-            IHbtCurrentTenant currentTenant,
-            IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, currentTenant, localization)
+            IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
         {
-            _roleRepository = roleRepository;
-            _userRoleRepository = userRoleRepository;
-            _roleMenuRepository = roleMenuRepository;
-            _roleDeptRepository = roleDeptRepository;
+            _repositoryFactory = repositoryFactory ?? throw new ArgumentNullException(nameof(repositoryFactory));
         }
+
+        /// <summary>
+        /// 获取角色仓储
+        /// </summary>
+        private IHbtRepository<HbtRole> RoleRepository => _repositoryFactory.GetAuthRepository<HbtRole>();
+
+        /// <summary>
+        /// 获取用户角色关联仓储
+        /// </summary>
+        private IHbtRepository<HbtUserRole> UserRoleRepository => _repositoryFactory.GetAuthRepository<HbtUserRole>();
+
+        /// <summary>
+        /// 获取角色菜单关联仓储
+        /// </summary>
+        private IHbtRepository<HbtRoleMenu> RoleMenuRepository => _repositoryFactory.GetAuthRepository<HbtRoleMenu>();
+
+        /// <summary>
+        /// 获取角色部门关联仓储
+        /// </summary>
+        private IHbtRepository<HbtRoleDept> RoleDeptRepository => _repositoryFactory.GetAuthRepository<HbtRoleDept>();
 
         /// <summary>
         /// 获取角色分页列表
@@ -72,7 +70,7 @@ namespace Lean.Hbt.Application.Services.Identity
         {
             var exp = QueryExpression(query);
 
-            var result = await _roleRepository.GetPagedListAsync(
+            var result = await RoleRepository.GetPagedListAsync(
                 exp,
                 query.PageIndex,
                 query.PageSize,
@@ -96,7 +94,7 @@ namespace Lean.Hbt.Application.Services.Identity
         /// <exception cref="HbtException">当角色不存在时抛出异常</exception>
         public async Task<HbtRoleDto> GetByIdAsync(long roleId)
         {
-            var role = await _roleRepository.GetByIdAsync(roleId);
+            var role = await RoleRepository.GetByIdAsync(roleId);
             if (role == null)
                 throw new HbtException(L("Identity.Role.NotFound", roleId));
 
@@ -110,14 +108,15 @@ namespace Lean.Hbt.Application.Services.Identity
         /// <returns>角色ID</returns>
         public async Task<long> CreateAsync(HbtRoleCreateDto input)
         {
+
             // 验证角色名称是否已存在
-            await HbtValidateUtils.ValidateFieldExistsAsync(_roleRepository, "RoleName", input.RoleName);
+            await HbtValidateUtils.ValidateFieldExistsAsync(RoleRepository, "RoleName", input.RoleName);
 
             // 验证角色编码是否已存在
-            await HbtValidateUtils.ValidateFieldExistsAsync(_roleRepository, "RoleKey", input.RoleKey);
+            await HbtValidateUtils.ValidateFieldExistsAsync(RoleRepository, "RoleKey", input.RoleKey);
 
             var role = input.Adapt<HbtRole>();
-            return await _roleRepository.CreateAsync(role) > 0 ? role.Id : throw new HbtException(L("Identity.Role.CreateFailed"));
+            return await RoleRepository.CreateAsync(role) > 0 ? role.Id : throw new HbtException(L("Identity.Role.CreateFailed"));
         }
 
         /// <summary>
@@ -127,22 +126,19 @@ namespace Lean.Hbt.Application.Services.Identity
         /// <returns>是否成功</returns>
         public async Task<bool> UpdateAsync(HbtRoleUpdateDto input)
         {
-            var role = await _roleRepository.GetByIdAsync(input.RoleId)
+            var role = await RoleRepository.GetByIdAsync(input.RoleId)
                 ?? throw new HbtException(L("Identity.Role.NotFound", input.RoleId));
-
-            // 验证租户
-            // ValidateTenantId(role.TenantId);
 
             // 验证角色名称是否已存在
             if (role.RoleName != input.RoleName)
-                await HbtValidateUtils.ValidateFieldExistsAsync(_roleRepository, "RoleName", input.RoleName, input.RoleId);
+                await HbtValidateUtils.ValidateFieldExistsAsync(RoleRepository, "RoleName", input.RoleName, input.RoleId);
 
             // 验证角色编码是否已存在
             if (role.RoleKey != input.RoleKey)
-                await HbtValidateUtils.ValidateFieldExistsAsync(_roleRepository, "RoleKey", input.RoleKey, input.RoleId);
+                await HbtValidateUtils.ValidateFieldExistsAsync(RoleRepository, "RoleKey", input.RoleKey, input.RoleId);
 
             input.Adapt(role);
-            return await _roleRepository.UpdateAsync(role) > 0;
+            return await RoleRepository.UpdateAsync(role) > 0;
         }
 
         /// <summary>
@@ -152,7 +148,7 @@ namespace Lean.Hbt.Application.Services.Identity
         /// <returns>是否成功</returns>
         public async Task<bool> DeleteAsync(long roleId)
         {
-            var role = await _roleRepository.GetByIdAsync(roleId)
+            var role = await RoleRepository.GetByIdAsync(roleId)
                 ?? throw new HbtException(L("Identity.Role.NotFound", roleId));
 
             // 禁止删除admin相关角色
@@ -160,13 +156,13 @@ namespace Lean.Hbt.Application.Services.Identity
                 throw new HbtException("超级管理员角色不可删除！");
 
             // 检查是否有用户关联
-            var hasUsers = await _userRoleRepository.AsQueryable().AnyAsync(x => x.RoleId == roleId);
+            var hasUsers = await UserRoleRepository.AsQueryable().AnyAsync(x => x.RoleId == roleId);
             if (hasUsers)
                 throw new HbtException(L("Identity.Role.HasUsers"));
 
             // 删除角色及其关联数据
-            await _roleMenuRepository.DeleteAsync((Expression<Func<HbtRoleMenu, bool>>)(x => x.RoleId == roleId));
-            return await _roleRepository.DeleteAsync(roleId) > 0;
+            await RoleMenuRepository.DeleteAsync((Expression<Func<HbtRoleMenu, bool>>)(x => x.RoleId == roleId));
+            return await RoleRepository.DeleteAsync(roleId) > 0;
         }
 
         /// <summary>
@@ -181,19 +177,19 @@ namespace Lean.Hbt.Application.Services.Identity
 
             foreach (var roleId in roleIds)
             {
-                var role = await _roleRepository.GetByIdAsync(roleId);
+                var role = await RoleRepository.GetByIdAsync(roleId);
                 if (role == null) continue;
                 // 禁止删除admin相关角色
                 if (role.RoleKey == "admin" || role.RoleKey == "system_admin")
                     throw new HbtException($"超级管理员角色不可删除！(ID: {roleId})");
-                var hasUsers = await _userRoleRepository.AsQueryable().AnyAsync(x => x.RoleId == roleId);
+                var hasUsers = await UserRoleRepository.AsQueryable().AnyAsync(x => x.RoleId == roleId);
                 if (hasUsers)
                     throw new HbtException(L("Identity.Role.HasUsersWithId", roleId));
             }
 
             // 删除角色及其关联数据
-            await _roleMenuRepository.DeleteAsync((Expression<Func<HbtRoleMenu, bool>>)(x => roleIds.Contains(x.RoleId)));
-            return await _roleRepository.DeleteRangeAsync(roleIds.Cast<object>().ToList()) > 0;
+            await RoleMenuRepository.DeleteAsync((Expression<Func<HbtRoleMenu, bool>>)(x => roleIds.Contains(x.RoleId)));
+            return await RoleRepository.DeleteRangeAsync(roleIds.Cast<object>().ToList()) > 0;
         }
 
         /// <summary>
@@ -232,11 +228,11 @@ namespace Lean.Hbt.Application.Services.Identity
                         role.Status = 0;
 
                         // 验证角色名称是否已存在
-                        await HbtValidateUtils.ValidateFieldExistsAsync(_roleRepository, "RoleName", role.RoleName);
+                        await HbtValidateUtils.ValidateFieldExistsAsync(RoleRepository, "RoleName", role.RoleName);
                         // 验证角色编码是否已存在
-                        await HbtValidateUtils.ValidateFieldExistsAsync(_roleRepository, "RoleKey", role.RoleKey);
+                        await HbtValidateUtils.ValidateFieldExistsAsync(RoleRepository, "RoleKey", role.RoleKey);
 
-                        await _roleRepository.CreateAsync(role);
+                        await RoleRepository.CreateAsync(role);
                         success++;
                     }
                     catch (Exception ex)
@@ -265,7 +261,7 @@ namespace Lean.Hbt.Application.Services.Identity
         {
             try
             {
-                var list = await _roleRepository.GetListAsync(QueryExpression(query));
+                var list = await RoleRepository.GetListAsync(QueryExpression(query));
                 var exportList = list.Adapt<List<HbtRoleExportDto>>();
                 return await HbtExcelHelper.ExportAsync(exportList, sheetName, "角色数据");
             }
@@ -283,11 +279,11 @@ namespace Lean.Hbt.Application.Services.Identity
         /// <returns>是否成功</returns>
         public async Task<bool> UpdateStatusAsync(HbtRoleStatusDto input)
         {
-            var role = await _roleRepository.GetByIdAsync(input.RoleId)
+            var role = await RoleRepository.GetByIdAsync(input.RoleId)
                 ?? throw new HbtException(L("Identity.Role.NotFound", input.RoleId));
 
             input.Adapt(role);
-            return await _roleRepository.UpdateAsync(role) > 0;
+            return await RoleRepository.UpdateAsync(role) > 0;
         }
 
         /// <summary>
@@ -296,7 +292,7 @@ namespace Lean.Hbt.Application.Services.Identity
         /// <returns>角色选项列表</returns>
         public async Task<List<HbtSelectOption>> GetOptionsAsync()
         {
-            var roles = await _roleRepository.AsQueryable()
+            var roles = await RoleRepository.AsQueryable()
                 .Where(r => r.Status == 0)  // 只获取正常状态的角色
                 .OrderBy(r => r.OrderNum)
                 .Select(r => new HbtSelectOption
@@ -316,7 +312,7 @@ namespace Lean.Hbt.Application.Services.Identity
         /// <returns>部门列表</returns>
         public async Task<List<HbtRoleDeptDto>> GetRoleDeptIdsAsync(long roleId)
         {
-            var roleDepts = await _roleDeptRepository.GetListAsync(rd => rd.RoleId == roleId && rd.IsDeleted == 0);
+            var roleDepts = await RoleDeptRepository.GetListAsync(rd => rd.RoleId == roleId && rd.IsDeleted == 0);
             return roleDepts.Adapt<List<HbtRoleDeptDto>>();
         }
 
@@ -327,10 +323,10 @@ namespace Lean.Hbt.Application.Services.Identity
         /// <returns>菜单列表</returns>
         public async Task<List<HbtRoleMenuDto>> GetRoleMenuIdsAsync(long roleId)
         {
-            var roleMenus = await _roleMenuRepository.GetListAsync(rm => rm.RoleId == roleId && rm.IsDeleted == 0);
+            var roleMenus = await RoleMenuRepository.GetListAsync(rm => rm.RoleId == roleId && rm.IsDeleted == 0);
             return roleMenus.Select(rm => new HbtRoleMenuDto
             {
-                Id = rm.Id,
+                RoleMenuId = rm.Id,
                 RoleId = rm.RoleId,
                 MenuId = rm.MenuId,
                 CreateTime = rm.CreateTime,
@@ -351,7 +347,7 @@ namespace Lean.Hbt.Application.Services.Identity
                 _logger.Info($"开始分配角色菜单 - 角色ID: {roleId}, 菜单IDs: {string.Join(",", menuIds)}");
 
                 // 1. 获取角色现有关联的菜单（包括已删除的）
-                var existingMenus = await _roleMenuRepository.GetListAsync(rm => rm.RoleId == roleId);
+                var existingMenus = await RoleMenuRepository.GetListAsync(rm => rm.RoleId == roleId);
                 _logger.Info($"角色现有关联菜单数量: {existingMenus.Count}");
 
                 // 2. 找出需要标记删除的关联（在现有关联中但不在新的菜单列表中）
@@ -366,7 +362,7 @@ namespace Lean.Hbt.Application.Services.Identity
                         menu.DeleteTime = DateTime.Now;
                         menu.UpdateBy = _currentUser.UserName;
                         menu.UpdateTime = DateTime.Now;
-                        await _roleMenuRepository.UpdateAsync(menu);
+                        await RoleMenuRepository.UpdateAsync(menu);
                     }
                     _logger.Info("菜单关联标记删除完成");
                 }
@@ -383,7 +379,7 @@ namespace Lean.Hbt.Application.Services.Identity
                         menu.DeleteTime = null;
                         menu.UpdateBy = _currentUser.UserName;
                         menu.UpdateTime = DateTime.Now;
-                        await _roleMenuRepository.UpdateAsync(menu);
+                        await RoleMenuRepository.UpdateAsync(menu);
                     }
                     _logger.Info("菜单关联恢复完成");
                 }
@@ -405,7 +401,7 @@ namespace Lean.Hbt.Application.Services.Identity
                 if (menusToAdd.Any())
                 {
                     _logger.Info($"需要新增的菜单关联数量: {menusToAdd.Count}, 菜单IDs: {string.Join(",", menusToAdd.Select(d => d.MenuId))}");
-                    await _roleMenuRepository.CreateRangeAsync(menusToAdd);
+                    await RoleMenuRepository.CreateRangeAsync(menusToAdd);
                     _logger.Info("菜单关联新增完成");
                 }
 
@@ -432,7 +428,7 @@ namespace Lean.Hbt.Application.Services.Identity
                 _logger.Info($"开始分配角色用户 - 角色ID: {roleId}, 用户IDs: {string.Join(",", userIds)}");
 
                 // 1. 获取角色现有关联的用户（包括已删除的）
-                var existingUsers = await _userRoleRepository.GetListAsync(ur => ur.RoleId == roleId);
+                var existingUsers = await UserRoleRepository.GetListAsync(ur => ur.RoleId == roleId);
                 _logger.Info($"角色现有关联用户数量: {existingUsers.Count}");
 
                 // 2. 找出需要标记删除的关联（在现有关联中但不在新的用户列表中）
@@ -447,7 +443,7 @@ namespace Lean.Hbt.Application.Services.Identity
                         user.DeleteTime = DateTime.Now;
                         user.UpdateBy = _currentUser.UserName;
                         user.UpdateTime = DateTime.Now;
-                        await _userRoleRepository.UpdateAsync(user);
+                        await UserRoleRepository.UpdateAsync(user);
                     }
                     _logger.Info("用户关联标记删除完成");
                 }
@@ -464,7 +460,7 @@ namespace Lean.Hbt.Application.Services.Identity
                         user.DeleteTime = null;
                         user.UpdateBy = _currentUser.UserName;
                         user.UpdateTime = DateTime.Now;
-                        await _userRoleRepository.UpdateAsync(user);
+                        await UserRoleRepository.UpdateAsync(user);
                     }
                     _logger.Info("用户关联恢复完成");
                 }
@@ -486,7 +482,7 @@ namespace Lean.Hbt.Application.Services.Identity
                 if (usersToAdd.Any())
                 {
                     _logger.Info($"需要新增的用户关联数量: {usersToAdd.Count}, 用户IDs: {string.Join(",", usersToAdd.Select(d => d.UserId))}");
-                    await _userRoleRepository.CreateRangeAsync(usersToAdd);
+                    await UserRoleRepository.CreateRangeAsync(usersToAdd);
                     _logger.Info("用户关联新增完成");
                 }
 
@@ -513,7 +509,7 @@ namespace Lean.Hbt.Application.Services.Identity
                 _logger.Info($"开始分配角色部门 - 角色ID: {roleId}, 部门IDs: {string.Join(",", deptIds)}");
 
                 // 1. 获取角色现有关联的部门（包括已删除的）
-                var existingDepts = await _roleDeptRepository.GetListAsync(rd => rd.RoleId == roleId);
+                var existingDepts = await RoleDeptRepository.GetListAsync(rd => rd.RoleId == roleId);
                 _logger.Info($"角色现有关联部门数量: {existingDepts.Count}");
 
                 // 2. 找出需要标记删除的关联（在现有关联中但不在新的部门列表中）
@@ -527,7 +523,7 @@ namespace Lean.Hbt.Application.Services.Identity
                         dept.DeleteTime = DateTime.Now;
                         dept.UpdateBy = _currentUser.UserName;
                         dept.UpdateTime = DateTime.Now;
-                        await _roleDeptRepository.UpdateAsync(dept);
+                        await RoleDeptRepository.UpdateAsync(dept);
                     }
                 }
 
@@ -542,7 +538,7 @@ namespace Lean.Hbt.Application.Services.Identity
                         dept.DeleteTime = null;
                         dept.UpdateBy = _currentUser.UserName;
                         dept.UpdateTime = DateTime.Now;
-                        await _roleDeptRepository.UpdateAsync(dept);
+                        await RoleDeptRepository.UpdateAsync(dept);
                     }
                 }
 
@@ -561,7 +557,7 @@ namespace Lean.Hbt.Application.Services.Identity
                     }).ToList();
                 if (deptsToAdd.Any())
                 {
-                    await _roleDeptRepository.CreateRangeAsync(deptsToAdd);
+                    await RoleDeptRepository.CreateRangeAsync(deptsToAdd);
                 }
 
                 _logger.Info("角色部门分配完成");

@@ -32,12 +32,7 @@ public class HbtOnlineMessageDto
         ReadTime = DateTime.Now;
     }
 
-    /// <summary>
-    /// 租户ID
-    /// </summary>
-    [Required(ErrorMessage = "租户ID不能为空")]
-    [Range(1, long.MaxValue, ErrorMessage = "租户ID必须大于0")]
-    public long TenantId { get; set; }
+
 
     /// <summary>
     /// 发送者ID
@@ -78,45 +73,45 @@ public class HbtOnlineMessageDto
     /// </summary>
     public DateTime ReadTime { get; set; }
 
-        /// <summary>
-        /// 备注
-        /// </summary>
-        public string? Remark { get; set; }
+    /// <summary>
+    /// 备注
+    /// </summary>
+    public string? Remark { get; set; }
 
-        /// <summary>
-        /// 创建者
-        /// </summary>
-        public string? CreateBy { get; set; }
+    /// <summary>
+    /// 创建者
+    /// </summary>
+    public string? CreateBy { get; set; }
 
-        /// <summary>
-        /// 创建时间
-        /// </summary>
-        public DateTime CreateTime { get; set; }
+    /// <summary>
+    /// 创建时间
+    /// </summary>
+    public DateTime CreateTime { get; set; }
 
-        /// <summary>
-        /// 更新者
-        /// </summary>
-        public string? UpdateBy { get; set; }
+    /// <summary>
+    /// 更新者
+    /// </summary>
+    public string? UpdateBy { get; set; }
 
-        /// <summary>
-        /// 更新时间
-        /// </summary>
-        public DateTime? UpdateTime { get; set; }
+    /// <summary>
+    /// 更新时间
+    /// </summary>
+    public DateTime? UpdateTime { get; set; }
 
-        /// <summary>
-        /// 是否删除（0未删除 1已删除）
-        /// </summary>
-        public int IsDeleted { get; set; }
+    /// <summary>
+    /// 是否删除（0未删除 1已删除）
+    /// </summary>
+    public int IsDeleted { get; set; }
 
-        /// <summary>
-        /// 删除者
-        /// </summary>
-        public string? DeleteBy { get; set; }
+    /// <summary>
+    /// 删除者
+    /// </summary>
+    public string? DeleteBy { get; set; }
 
-        /// <summary>
-        /// 删除时间
-        /// </summary>
-        public DateTime? DeleteTime { get; set; }    
+    /// <summary>
+    /// 删除时间
+    /// </summary>
+    public DateTime? DeleteTime { get; set; }
 }
 
 /// <summary>
@@ -189,12 +184,7 @@ public class HbtOnlineMessageCreateDto
         IsRead = 0;
     }
 
-    /// <summary>
-    /// 租户ID
-    /// </summary>
-    [Required(ErrorMessage = "租户ID不能为空")]
-    [Range(1, long.MaxValue, ErrorMessage = "租户ID必须大于0")]
-    public long TenantId { get; set; }
+
 
     /// <summary>
     /// 发送者ID
@@ -265,10 +255,7 @@ public class HbtOnlineMessageExportDto
         ReadTime = DateTime.Now;
     }
 
-    /// <summary>
-    /// 租户ID
-    /// </summary>
-    public long TenantId { get; set; }
+
 
     /// <summary>
     /// 发送者ID

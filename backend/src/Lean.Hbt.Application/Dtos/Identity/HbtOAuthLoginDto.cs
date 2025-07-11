@@ -47,9 +47,5 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// </summary>
         public string? Email { get; set; }
 
-        /// <summary>
-        /// 是否需要选择租户
-        /// </summary>
-        public bool NeedSelectTenant { get; set; }
     }
-} 
+}

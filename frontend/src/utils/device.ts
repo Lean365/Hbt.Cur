@@ -154,7 +154,6 @@ export async function getDeviceInfo(): Promise<HbtSignalRDevice> {
   
   // 收集完整的设备信息
   const deviceInfo: HbtSignalRDevice = {
-    tenantId: 1,
     userId: 0,
     groupId: 0,
     lastActivity: new Date().toISOString(),

@@ -20,6 +20,8 @@ namespace Lean.Hbt.Domain.Entities.Workflow
     /// </remarks>
     [SugarTable("hbt_workflow_definition", "工作流定义表")]
     [SugarIndex("ix_workflow_name", nameof(WorkflowName), OrderByType.Asc, true)]
+    [SugarIndex("ix_workflow_category", nameof(WorkflowCategory), OrderByType.Asc)]
+    [SugarIndex("ix_workflow_status", nameof(Status), OrderByType.Asc)]
     public class HbtDefinition : HbtBaseEntity
     {
         /// <summary>
@@ -37,7 +39,7 @@ namespace Lean.Hbt.Domain.Entities.Workflow
         /// <summary>
         /// 工作流版本
         /// </summary>
-        [SugarColumn(ColumnName = "workflow_version", ColumnDescription = "流程版本",Length =1, ColumnDataType = "nvarchar", IsNullable = false)]
+        [SugarColumn(ColumnName = "workflow_version", ColumnDescription = "流程版本",Length = 20, ColumnDataType = "nvarchar", IsNullable = false)]
         public string? WorkflowVersion { get; set; }
 
         /// <summary>
@@ -56,14 +58,20 @@ namespace Lean.Hbt.Domain.Entities.Workflow
         /// <summary>
         /// 状态(0=草稿 1=已发布 2=已停用)
         /// </summary>
-        [SugarColumn(ColumnName = "status", ColumnDescription = "状态", ColumnDataType = "int", IsNullable = false)]
+        [SugarColumn(ColumnName = "status", ColumnDescription = "状态", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
         public int Status { get; set; }
 
         /// <summary>
-        /// 流程节点列表
+        /// 流程描述
         /// </summary>
-        [Navigate(NavigateType.OneToMany, nameof(HbtNode.DefinitionId))]
-        public List<HbtNode>? WorkflowNodes { get; set; }
+        [SugarColumn(ColumnName = "workflow_desc", ColumnDescription = "流程描述", Length = 500, ColumnDataType = "nvarchar", IsNullable = true)]
+        public string? WorkflowDesc { get; set; }
+
+        /// <summary>
+        /// 流程节点模板列表
+        /// </summary>
+        [Navigate(NavigateType.OneToMany, nameof(HbtNodeTemplate.DefinitionId))]
+        public List<HbtNodeTemplate>? NodeTemplates { get; set; }
 
         /// <summary>
         /// 关联表单列表
@@ -71,6 +79,22 @@ namespace Lean.Hbt.Domain.Entities.Workflow
         [Navigate(NavigateType.OneToMany, nameof(HbtForm.DefinitionId))]
         public List<HbtForm>? Forms { get; set; }
 
+        /// <summary>
+        /// 工作流实例列表
+        /// </summary>
+        [Navigate(NavigateType.OneToMany, nameof(HbtInstance.DefinitionId))]
+        public List<HbtInstance>? WorkflowInstances { get; set; }
 
+        /// <summary>
+        /// 工作流活动列表
+        /// </summary>
+        [Navigate(NavigateType.OneToMany, nameof(HbtActivity.DefinitionId))]
+        public List<HbtActivity>? WorkflowActivities { get; set; }
+
+        /// <summary>
+        /// 工作流转换列表
+        /// </summary>
+        [Navigate(NavigateType.OneToMany, nameof(HbtTransition.DefinitionId))]
+        public List<HbtTransition>? WorkflowTransitions { get; set; }
     }
 }

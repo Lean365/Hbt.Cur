@@ -29,8 +29,7 @@ export interface HbtDictType extends HbtBaseEntity {
   orderNum: number
   /** 状态（0正常 1停用） */
   status: number
-  /** 租户ID */
-  tenantId: number
+
 }
 
 /**
@@ -67,8 +66,6 @@ export interface HbtDictTypeCreate {
   orderNum: number
   /** 状态（0正常 1停用） */
   status: number
-  /** 租户ID */
-  tenantId: number
   /** 备注 */
   remark?: string
 }

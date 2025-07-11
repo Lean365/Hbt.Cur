@@ -1,92 +1,26 @@
 export default {
   workflow: {
     task: {
-      title: 'ワークフロータスク',
-      list: {
-        title: 'ワークフロータスク一覧',
-        search: {
-          name: 'タスク名',
-          type: 'タスクタイプ',
-          status: 'ステータス',
-          startTime: '開始時間',
-          endTime: '終了時間'
-        },
-        table: {
-          name: 'タスク名',
-          type: 'タスクタイプ',
-          status: 'ステータス',
-          startTime: '開始時間',
-          endTime: '終了時間',
-          duration: '実行時間',
-          actions: '操作'
-        },
-        actions: {
-          view: '表示',
-          edit: '編集',
-          delete: '削除',
-          refresh: '更新'
-        },
-        status: {
-          running: '実行中',
-          completed: '完了',
-          terminated: '終了',
-          failed: '失敗'
-        }
-      },
-      form: {
-        title: {
-          create: 'ワークフロータスク作成',
-          edit: 'ワークフロータスク編集'
-        },
-        fields: {
-          name: 'タスク名',
-          type: 'タスクタイプ',
-          description: '説明',
-          input: '入力',
-          output: '出力',
-          error: 'エラー'
-        },
-        rules: {
-          name: {
-            required: 'タスク名を入力してください'
-          },
-          type: {
-            required: 'タスクタイプを選択してください'
-          }
-        },
-        buttons: {
-          submit: '送信',
-          cancel: 'キャンセル'
-        }
-      },
-      detail: {
-        title: 'ワークフロータスク詳細',
-        basic: {
-          title: '基本情報',
-          name: 'タスク名',
-          type: 'タスクタイプ',
-          description: '説明',
-          status: 'ステータス',
-          startTime: '開始時間',
-          endTime: '終了時間',
-          duration: '実行時間'
-        },
-        input: {
-          title: '入力情報',
-          value: '入力値'
-        },
-        output: {
-          title: '出力情報',
-          value: '出力値'
-        },
-        error: {
-          title: 'エラー情報',
-          message: 'エラーメッセージ',
-          stackTrace: 'スタックトレース'
-        },
-        actions: {
-          back: '戻る'
-        }
+      fields: {
+      processTaskId: '任务ID',
+      instanceId: '实例ID',
+      instanceName: '实例名称',
+      nodeId: '节点ID',
+      nodeName: '节点名称',
+      title: '工作流任务',
+      taskName: '任务名称',
+      taskType: '任务类型',
+      status: '任务状态',
+      assigneeId: '处理人ID',
+      assigneeName: '处理人',
+      comment: '处理意见',
+      result: '处理结果',
+      completeTime: '完成时间',
+      dueTime: '到期时间',
+      reminderTime: '提醒时间',
+      priority: '优先级',
+      workflowInstance: '工作流实例',
+      node: '节点',
       }
     }
   }

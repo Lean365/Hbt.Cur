@@ -9,7 +9,7 @@ const REFRESH_TOKEN_KEY = 'refresh_token'
 export function getToken(): string | null {
   const token = localStorage.getItem(TOKEN_KEY)
   if (token) {
-    console.log('[Auth] 获取到Token:', token.substring(0, 20) + '...')
+    //console.log('[Auth] 获取到Token:', token.substring(0, 20) + '...')
     // 设置 axios 默认请求头
     axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
     return token
@@ -30,10 +30,10 @@ export function setToken(token: string): void {
     localStorage.setItem(TOKEN_KEY, token)
     // 设置 axios 默认请求头
     axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
-    console.log('[Auth] Token设置成功:', {
-      token: token.substring(0, 20) + '...',
-      header: `Bearer ${token.substring(0, 20)}...`
-    })
+    // console.log('[Auth] Token设置成功:', {
+    //   token: token.substring(0, 20) + '...',
+    //   header: `Bearer ${token.substring(0, 20)}...`
+    // })
   } catch (error) {
     console.error('[Auth] Token设置失败:', error)
   }
@@ -47,7 +47,7 @@ export function removeToken(): void {
     localStorage.removeItem(TOKEN_KEY)
     // 删除 axios 默认请求头
     delete axios.defaults.headers.common['Authorization']
-    console.log('[Auth] Token已移除')
+    //console.log('[Auth] Token已移除')
   } catch (error) {
     console.error('[Auth] Token移除失败:', error)
   }
@@ -59,7 +59,7 @@ export function removeToken(): void {
 export function getRefreshToken(): string | null {
   const token = localStorage.getItem(REFRESH_TOKEN_KEY)
   if (token) {
-    console.log('[Auth] 获取到刷新Token:', token.substring(0, 20) + '...')
+    //console.log('[Auth] 获取到刷新Token:', token.substring(0, 20) + '...')
     return token
   }
   console.log('[Auth] 未找到刷新Token')
@@ -76,7 +76,7 @@ export function setRefreshToken(token: string): void {
   }
   try {
     localStorage.setItem(REFRESH_TOKEN_KEY, token)
-    console.log('[Auth] 刷新Token设置成功:', token.substring(0, 20) + '...')
+    //console.log('[Auth] 刷新Token设置成功:', token.substring(0, 20) + '...')
   } catch (error) {
     console.error('[Auth] 刷新Token设置失败:', error)
   }
@@ -88,7 +88,7 @@ export function setRefreshToken(token: string): void {
 export function removeRefreshToken(): void {
   try {
     localStorage.removeItem(REFRESH_TOKEN_KEY)
-    console.log('[Auth] 刷新Token已移除')
+    //console.log('[Auth] 刷新Token已移除')
   } catch (error) {
     console.error('[Auth] 刷新Token移除失败:', error)
   }

@@ -21,6 +21,9 @@ namespace Lean.Hbt.Domain.Entities.Workflow
     /// </remarks>
     [SugarTable("hbt_workflow_node", "工作流节点表")]
     [SugarIndex("ix_workflow_node_instance", nameof(InstanceId), OrderByType.Asc)]
+    [SugarIndex("ix_workflow_node_parent", nameof(ParentNodeId), OrderByType.Asc)]
+    [SugarIndex("ix_workflow_node_status", nameof(Status), OrderByType.Asc)]
+    [SugarIndex("ix_workflow_node_template", nameof(NodeTemplateId), OrderByType.Asc)]
     public class HbtNode : HbtBaseEntity
     {
         /// <summary>
@@ -30,22 +33,10 @@ namespace Lean.Hbt.Domain.Entities.Workflow
         public long InstanceId { get; set; }
 
         /// <summary>
-        /// 节点名称
+        /// 对应的节点模板ID
         /// </summary>
-        [SugarColumn(ColumnName = "node_name", ColumnDescription = "节点名称", ColumnDataType = "nvarchar", Length = 100, IsNullable = false)]
-        public string? NodeName { get; set; }
-
-        /// <summary>
-        /// 节点类型
-        /// </summary>
-        [SugarColumn(ColumnName = "node_type", ColumnDescription = "节点类型", ColumnDataType = "int", IsNullable = false)]
-        public int NodeType { get; set; }
-
-        /// <summary>
-        /// 工作流定义ID
-        /// </summary>
-        [SugarColumn(ColumnName = "workflow_definition_id", ColumnDescription = "工作流定义ID", ColumnDataType = "bigint", IsNullable = false)]
-        public long DefinitionId { get; set; }
+        [SugarColumn(ColumnName = "node_template_id", ColumnDescription = "节点模板ID", ColumnDataType = "bigint", IsNullable = false)]
+        public long NodeTemplateId { get; set; }
 
         /// <summary>
         /// 父节点ID
@@ -54,13 +45,7 @@ namespace Lean.Hbt.Domain.Entities.Workflow
         public long? ParentNodeId { get; set; }
 
         /// <summary>
-        /// 节点配置
-        /// </summary>
-        [SugarColumn(ColumnName = "node_config", ColumnDescription = "节点配置", ColumnDataType = "text", IsNullable = false)]
-        public string ?NodeConfig { get; set; }
-
-        /// <summary>
-        /// 状态(0:未开始 1:进行中 2:已完成 3:已取消)
+        /// 状态(0:未开始 1:进行中 2:已完成 3:已取消 4:已跳过)
         /// </summary>
         [SugarColumn(ColumnName = "status", ColumnDescription = "状态", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
         public int Status { get; set; }
@@ -78,21 +63,47 @@ namespace Lean.Hbt.Domain.Entities.Workflow
         public DateTime? EndTime { get; set; }
 
         /// <summary>
-        /// 排序号
+        /// 节点结果(JSON格式)
+        /// 包含：审批结果、条件判断结果等
         /// </summary>
-        [SugarColumn(ColumnName = "order_num", ColumnDescription = "排序号", ColumnDataType = "int", IsNullable = false)]
+        [SugarColumn(ColumnName = "node_result", ColumnDescription = "节点结果", ColumnDataType = "text", IsNullable = true)]
+        public string? NodeResult { get; set; }
+
+        /// <summary>
+        /// 运行时配置(JSON格式)
+        /// 可以覆盖模板配置，用于运行时调整
+        /// </summary>
+        [SugarColumn(ColumnName = "runtime_config", ColumnDescription = "运行时配置", ColumnDataType = "text", IsNullable = true)]
+        public string? RuntimeConfig { get; set; }
+
+        /// <summary>
+        /// 排序
+        /// </summary>
+        [SugarColumn(ColumnName = "order_num", ColumnDescription = "排序", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
         public int OrderNum { get; set; }
 
         /// <summary>
-        /// 工作流定义
+        /// 工作流实例
         /// </summary>
-        [Navigate(NavigateType.OneToOne, nameof(DefinitionId))]
-        public HbtDefinition? WorkflowDefinition { get; set; }
+        [Navigate(NavigateType.OneToOne, nameof(InstanceId))]
+        public HbtInstance? WorkflowInstance { get; set; }
+
+        /// <summary>
+        /// 节点模板
+        /// </summary>
+        [Navigate(NavigateType.OneToOne, nameof(NodeTemplateId))]
+        public HbtNodeTemplate? NodeTemplate { get; set; }
 
         /// <summary>
         /// 子节点列表
         /// </summary>
         [Navigate(NavigateType.OneToMany, nameof(ParentNodeId))]
         public List<HbtNode>? ChildNodes { get; set; }
+
+        /// <summary>
+        /// 工作流任务列表
+        /// </summary>
+        [Navigate(NavigateType.OneToMany, nameof(HbtProcessTask.NodeId))]
+        public List<HbtProcessTask>? ProcessTasks { get; set; }
     }
 }

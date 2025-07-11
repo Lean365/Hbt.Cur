@@ -106,11 +106,11 @@ export function updateWorkflowTaskStatus(id: number, data: HbtTaskStatus) {
 }
 
 // 完成工作流任务
-export function completeWorkflowTask(id: number, result: string, comment: string) {
+export function completeWorkflowTask(id: number, result: number, comment: string) {
   return request<HbtApiResponse<any>>({
     url: `/api/HbtProcessTask/${id}/complete`,
     method: 'post',
-    params: { result, comment }
+    data: { result, comment }
   })
 }
 
@@ -120,6 +120,15 @@ export function transferWorkflowTask(id: number, assigneeId: number, comment: st
     url: `/api/HbtProcessTask/${id}/transfer`,
     method: 'post',
     params: { assigneeId, comment }
+  })
+}
+
+// 同意工作流任务
+export function approveWorkflowTask(id: number, comment: string) {
+  return request<HbtApiResponse<any>>({
+    url: `/api/HbtProcessTask/${id}/approve`,
+    method: 'post',
+    params: { comment }
   })
 }
 
@@ -138,5 +147,39 @@ export function cancelWorkflowTask(id: number, comment: string) {
     url: `/api/HbtProcessTask/${id}/cancel`,
     method: 'post',
     params: { comment }
+  })
+}
+
+// 获取用户任务状态统计
+export function getUserTaskStatusStats(userId: number) {
+  return request<HbtApiResponse<any>>({
+    url: `/api/HbtProcessTask/user-status-stats/${userId}`,
+    method: 'get'
+  })
+}
+
+// 获取用户任务结果统计
+export function getUserTaskResultStats(userId: number) {
+  return request<HbtApiResponse<any>>({
+    url: `/api/HbtProcessTask/user-result-stats/${userId}`,
+    method: 'get'
+  })
+}
+
+// 获取用户待办列表
+export function getUserTodoList(userId: number, status?: number, limit: number = 5) {
+  return request<HbtApiResponse<any[]>>({
+    url: `/api/HbtProcessTask/user-todos/${userId}`,
+    method: 'get',
+    params: { status, limit }
+  })
+}
+
+// 获取用户催办任务列表
+export function getUserUrgeList(userId: number, urgeType: string = 'overdue', limit: number = 5) {
+  return request<HbtApiResponse<any[]>>({
+    url: `/api/HbtProcessTask/user-urge/${userId}`,
+    method: 'get',
+    params: { urgeType, limit }
   })
 } 

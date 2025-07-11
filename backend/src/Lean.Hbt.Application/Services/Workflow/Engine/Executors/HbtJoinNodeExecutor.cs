@@ -34,7 +34,8 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine.Executors
         public HbtJoinNodeExecutor(
             IHbtRepository<HbtTransition> transitionRepository,
             IHbtRepository<HbtParallelBranch> parallelBranchRepository,
-            IHbtLogger logger) : base(logger)
+            IHbtLogger logger,
+            IHbtRepository<HbtNodeTemplate> nodeTemplateRepository) : base(logger, nodeTemplateRepository)
         {
             _transitionRepository = transitionRepository;
             _parallelBranchRepository = parallelBranchRepository;
@@ -54,14 +55,15 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine.Executors
             Dictionary<string, object>? variables = null)
         {
             // 获取所有进入该节点的转换
-            var incomingTransitions = await _transitionRepository.GetListAsync(x => x.TargetNodeId == node.Id);
+            // 需要通过节点的NodeTemplateId找到关联的活动，然后查找转换
+            var incomingTransitions = await _transitionRepository.GetListAsync(x => x.TargetActivityId == node.NodeTemplateId);
             if (!incomingTransitions.Any())
             {
                 return CreateFailureResult("汇聚节点没有配置进入转换");
             }
 
             // 获取对应的并行节点
-            var parallelNodeId = incomingTransitions.First().SourceNodeId;
+            var parallelNodeId = incomingTransitions.First().SourceActivityId;
 
             // 获取并行分支状态
             var branches = await _parallelBranchRepository.GetListAsync(x =>

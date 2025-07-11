@@ -3,6 +3,7 @@ export default {
     auth: {
       login: {
         title: 'Вход',
+        tenantId: 'Конфигурация арендатора',
         username: 'Имя пользователя',
         password: 'Пароль',
         rememberMe: 'Запомнить меня',
@@ -26,7 +27,8 @@ export default {
         otherLogin: 'Другие способы входа',
         form: {
           usernameRequired: 'Пожалуйста, введите имя пользователя',
-          passwordRequired: 'Пожалуйста, введите пароль'
+          passwordRequired: 'Пожалуйста, введите пароль',
+          tenantIdRequired: 'Пожалуйста, выберите конфигурацию арендатора'
         }
       },
       register: {

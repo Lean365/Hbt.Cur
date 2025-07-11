@@ -1,29 +1,27 @@
-import { countReset } from "node:console";
-
 export default {
   menu: {
     home: 'الرئيسية',
     dashboard: {
       title: 'لوحة التحكم',
       workplace: 'مساحة العمل',
-      analysis: 'التحليل',
-      monitor: 'المراقبة'
+      analysis: 'منصة التحليل',
+      monitor: 'منصة المراقبة'
     },
     components: {
       title: 'المكونات',
       icons: 'الأيقونات'
     },
     about: {
-      title: 'حول',
+      title: 'معلومات عنا',
       privacy: 'سياسة الخصوصية',
-      terms: 'شروط الاستخدام',
-      index: 'حول Hbt'
+      terms: 'شروط الخدمة',
+      index: 'عن Hbt'
     },
     core: {
-      _self: 'إدارة النظام',
+      _self: 'الإدارة الأساسية',
       config: 'إعدادات النظام',
-      language: 'إدارة اللغات',
-      dict: 'إدارة القواميس'
+      language: 'إدارة اللغة',
+      dict: 'إدارة القاموس',
     },
     identity: {
       _self: 'المصادقة',
@@ -33,467 +31,445 @@ export default {
       post: 'إدارة المناصب',
       menu: 'إدارة القوائم',
       tenant: 'إدارة المستأجرين',
-      oauth: 'إدارة OAuth'
+      oauth: 'إدارة OAuth',
+      profile: 'المعلومات الشخصية',
+      changePassword: 'تغيير كلمة المرور'
     },
     audit: {
-      _self: 'التدقيق',
+      _self: 'سجلات التدقيق',
       operlog: 'سجل العمليات',
       loginlog: 'سجل تسجيل الدخول',
-      sqldifflog: 'سجل اختلافات قاعدة البيانات',
+      sqldifflog: 'سجل الاختلافات',
       exceptionlog: 'سجل الاستثناءات',
       auditlog: 'سجل التدقيق',
-      quartzlog: 'سجل المهام'
+      quartzlog: 'سجل المهام',
+      server: 'مراقبة الخادم'
     },
     workflow: {
       _self: 'سير العمل',
+      overview: 'نظرة عامة على العملية',
+      my: 'عملياتي',
       form: 'إدارة النماذج',
       definition: 'تعريف العملية',
       instance: 'مثيل العملية',
-      task: 'المهمة',
+      task: 'مهام العمل',
       node: 'عقدة العملية',
-      variable: 'متغير العملية',
+      variable: 'متغيرات العملية',
       history: 'تاريخ العملية'
     },
     signalr: {
-      _self: 'الوقت الفعلي',
-      online: 'المستخدمون',
-      message: 'الرسائل'
+      _self: 'الاتصال المباشر',
+      online: 'المستخدمون المتصلون',
+      message: 'الرسائل المباشرة'
     },
     generator: {
-      _self: 'إنشاء الكود',
-      table: 'جدول قاعدة البيانات',
-      tableDefine: 'جدول مخصص',
-      template: 'قالب الكود',
-      config: 'إعدادات الإنشاء',
-      api: 'توثيق API'
+      _self: 'مولد الكود',
+      table: 'جداول قاعدة البيانات',
+      tableDefine: 'تعريف أعمدة الجدول',
+      template: 'قوالب الكود',
+      config: 'إعدادات التوليد',
+      api: 'وثائق API'
     },
     routine: {
-      _self: 'المهام اليومية',
-      vehicle: {
-        _self: 'إدارة المركبات',
-        vehicleMaster: {
-          _self: 'البيانات الرئيسية للمركبات',
-          vehicleInfo: 'معلومات المركبة',
-          driverInfo: 'معلومات السائق',
-          maintenance: 'صيانة المركبة'
-        },
-        vehicleBooking: {
-          _self: 'حجز المركبات',
-          newBooking: 'حجز جديد',
-          bookingList: 'قائمة الحجوزات',
-          bookingApproval: 'موافقة الحجز'
-        },
-        vehicleDispatch: {
-          _self: 'إرسال المركبات',
-          dispatchPlan: 'خطة الإرسال',
-          realTimeTracking: 'التتبع المباشر',
-          dispatchHistory: 'سجل الإرسال'
-        },
-        vehicleReporting: {
-          _self: 'تقارير المركبات',
-          usageReport: 'تقرير الاستخدام',
-          costReport: 'تقرير التكاليف',
-          maintenanceReport: 'تقرير الصيانة'
-        }
+      _self: 'المكتب اليومي',
+      schedule: {
+        _self: 'إدارة الجدول',
+        myschedule: 'جدولي',
+        dashboard: 'لوحة الجدول',
       },
-      file: 'إدارة الملفات',
-      mail: 'إدارة البريد',
-      mailTmpl: 'قالب البريد',
+      car: {
+        _self: 'إدارة السيارات',
+        info: 'معلومات السيارة',
+        application: 'طلب السيارة',
+        dashboard: 'لوحة السيارات',
+        maintenance: 'صيانة السيارة',
+      },
+      email: {
+        _self: 'إدارة البريد الإلكتروني',
+        inbox: 'صندوق الوارد',
+        drafts: 'المسودات',
+        sent: 'المرسل',
+        trash: 'سلة المحذوفات',
+        template: 'قوالب البريد الإلكتروني',        
+      },
       meeting: {
         _self: 'إدارة الاجتماعات',
-        meetingRoom: {
-          _self: 'إدارة قاعات الاجتماعات',
-          roomInfo: 'معلومات القاعة',
-          roomBooking: 'حجز القاعة',
-          roomSchedule: 'جدولة القاعة'
-        },
-        meetingPlan: {
-          _self: 'تخطيط الاجتماعات',
-          newMeeting: 'اجتماع جديد',
-          meetingList: 'قائمة الاجتماعات',
-          meetingApproval: 'موافقة الاجتماع'
-        },
-        meetingExecution: {
-          _self: 'تنفيذ الاجتماعات',
-          attendance: 'الحضور',
-          minutes: 'محضر الاجتماع',
-          followUp: 'المتابعة'
-        },
-        meetingReporting: {
-          _self: 'تقارير الاجتماعات',
-          meetingReport: 'تقرير الاجتماع',
-          attendanceReport: 'تقرير الحضور',
-          costReport: 'تقرير التكاليف'
-        }
+        room: 'غرف الاجتماعات',
+        mymeeting: 'اجتماعاتي',
+        booking: 'حجز الاجتماعات',
+        dashboard: 'لوحة الاجتماعات',
       },
-      notice: 'الإشعارات',
-      schedule: 'إدارة الجداول',
-      quartz: 'المهمة'
+      notice: { 
+        _self: 'الإشعارات والإعلانات',
+        message: {
+          _self: 'إدارة الرسائل',
+          mymessages: 'رسائلي',
+          list: 'لوحة الرسائل',
+        },
+        announcement: {
+          _self: 'إدارة الإعلانات',
+          signoff: 'توقيع الإعلانات',
+          list: 'قائمة الإعلانات',
+        },
+        notification: {
+          _self: 'إدارة الإشعارات',
+          ack: 'الإشعارات المقروءة',
+          list: 'قائمة الإشعارات',
+        },
+      },
+      hr: {
+        _self: 'الموارد البشرية والحضور',
+        recruitment: {
+          _self: 'إدارة التوظيف',
+          apply: 'طلب التوظيف',
+          approval: 'موافقة التوظيف',
+          list: 'قائمة التوظيف',
+
+        },
+        transfer: {
+          _self: 'إدارة النقل',
+          apply: 'طلب النقل',
+          approval: 'موافقة النقل',
+          list: 'قائمة النقل',
+        },
+        leave: {
+          _self: 'إدارة الإجازات',
+          apply: 'طلب الإجازة',
+          approval: 'موافقة الإجازة',
+          list: 'قائمة الإجازات',
+        },
+        trip: {
+          _self: 'إدارة السفر',
+          apply: 'طلب السفر',
+          approval: 'موافقة السفر',
+          list: 'قائمة السفر',
+        },
+        overtime: {
+          _self: 'إدارة العمل الإضافي',
+          apply: 'طلب العمل الإضافي',
+          approval: 'موافقة العمل الإضافي',
+          list: 'قائمة العمل الإضافي',
+      },
     },
-    finance: {
-      _self: 'المالية',
-      management: {
-        _self: 'المحاسبة الإدارية',
-        cost: {
-          _self: 'إدارة التكاليف',
-          costFactors: 'أنواع التكاليف',
-          costCenter: 'مركز التكلفة',
-          profitCenter: 'مركز الربح',
-          productCost: 'تكلفة المنتج',
-          activityType: 'نوع النشاط',
-          internalOrder: 'الطلب الداخلي'
-        },
-        planning: {
-          _self: 'إدارة التخطيط',
-          costPlanning: 'تخطيط التكاليف',
-          profitPlanning: 'تخطيط الأرباح',
-          budgetControl: 'التحكم في الميزانية'
-        },
-        reporting: {
-          _self: 'التقارير والتحليل',
-          costReports: 'تقارير التكاليف',
-          profitReports: 'تقارير الأرباح',
-          varianceAnalysis: 'تحليل الانحرافات'
-        }
+    expense:{
+      _self: 'إدارة المصاريف',
+      daily: {
+        _self: 'المصاريف اليومية',
+        apply: 'طلب المصاريف',
+        approve: 'موافقة المصاريف',
+        list: 'قائمة المصاريف',
       },
-      financial: {
-        _self: 'المحاسبة المالية',
-        generalLedger: {
-          _self: 'دفتر الأستاذ العام',
-          account: 'الحساب',
-          accountType: 'نوع الحساب',
-          journalEntry: 'قيد اليومية',
-          reconciliation: 'التسوية',
-          closing: 'الإقفال'
-        },
-        accountsReceivable: {
-          _self: 'الحسابات المدينة',
-          customer: 'إدارة العملاء',
-          invoice: 'فاتورة العميل',
-          payment: 'دفعة العميل',
-          creditControl: 'التحكم في الائتمان'
-        },
-        accountsPayable: {
-          _self: 'الحسابات الدائنة',
-          supplier: 'إدارة الموردين',
-          invoice: 'فاتورة المورد',
-          payment: 'دفعة المورد',
-          agingReport: 'تحليل المبالغ المستحقة'
-        },
-        assetAccounting: {
-          _self: 'محاسبة الأصول',
-          assets: 'الأصول الثابتة',
-          depreciation: 'إدارة الإهلاك',
-          assetTransfer: 'نقل الأصول',
-          assetRetirement: 'تصفية الأصول'
-        },
-        tax: {
-          _self: 'إدارة الضرائب',
-          taxCodes: 'إدارة الرموز الضريبية',
-          taxReporting: 'الإقرار الضريبي',
-          taxPayments: 'مدفوعات الضرائب'
-        },
-        financialReporting: {
-          _self: 'التقارير المالية',
-          balanceSheet: 'الميزانية العمومية',
-          profitAndLoss: 'قائمة الدخل',
-          cashFlow: 'قائمة التدفق النقدي'
-        }
+      travel: {
+        _self: 'مصاريف السفر',
+        apply: 'طلب مصاريف السفر',
+        approve: 'موافقة مصاريف السفر',
+        list: 'قائمة مصاريف السفر',
+      },
+    },
+    file:{
+      _self: 'إدارة الملفات',
+      daily: {
+        _self: 'الملفات اليومية',
+        list: 'قائمة الملفات',
+      },
+      iso: {
+        _self: 'ملفات ISO',
+        version: 'الإصدار',
+        signoff: 'التوقيع',
+        list: 'ملفات ISO',
+      },
+      document: { 
+        _self: 'إدارة الوثائق',
+        version: 'الإصدار',
+        signoff: 'التوقيع',
+        list: 'قائمة الوثائق',
+      },
+    },
+    officesupplies:{
+      _self: 'المستلزمات المكتبية',
+      inventory:{
+        _self: 'إدارة المخزون',
+        requisition: 'إدارة الطلبات',
+        inbound: 'إدارة الوارد',
+        stocktaking: 'إدارة الجرد',
+      },
+      usage:{
+        _self: 'إدارة الاستخدام',
+        apply: 'طلب الاستخدام',
+        approve: 'موافقة الاستخدام',
+        receive: 'سجل الاستخدام',
       }
     },
+    book:{
+      _self: 'إدارة الكتب',
+      inventory:{
+        _self: 'إدارة المخزون',
+        requisition: 'إدارة الطلبات',
+        inbound: 'إدارة الوارد',
+        list: 'قائمة الكتب',
+        stocktaking: 'إدارة الجرد',
+      },
+      usage:{
+        _self: 'إدارة الاستخدام',
+        card: 'بطاقة الإعارة',
+        borrow: 'الإعارة',
+        return: 'الإرجاع',
+      }
+
+    },
+    medical:{
+      _self: 'الإدارة الطبية',
+      medicine:{
+        _self: 'إدارة المخزون',
+        requisition: 'إدارة الطلبات',
+        inbound: 'إدارة الوارد',
+        list: 'قائمة الأدوية',
+        stocktaking: 'إدارة الجرد',
+      },
+      usage:{
+        _self: 'إدارة الاستخدام',
+        archive: 'الأرشيف',
+        receive: 'استلام الدواء',
+        cost: 'التكلفة',
+      }
+
+    },
+  },
+  accounting: {
+      _self: 'المحاسبة',
+      financial: {
+        _self: 'المحاسبة الإدارية',
+        company: "معلومات الشركة",
+        account: 'الحسابات المحاسبية',
+        companyaccount: 'حسابات الشركة',
+        ledger: 'الدفتر العام',
+        payable: 'المدينون',
+        receivable: 'الذمم المدينة',
+        fixedasset: 'الأصول الثابتة',
+        bank: 'معلومات البنك',
+
+      },
+      controlling: {
+        _self: 'المحاسبة الرقابية',
+        costelement: 'عناصر التكلفة',
+        costcenter: 'مراكز التكلفة',
+        profitcenter: 'مراكز الربح',
+        accountsReceivable: 'الذمم المدينة',
+        accountsPayable: 'المدينون',
+        assetAccounting: 'محاسبة الأصول',
+        tax: 'إدارة الضرائب',
+        financialReporting: 'التقارير المالية'      
+    },
+    budget:{
+      _self: 'الميزانية الشاملة',
+        formulation: {
+          _self: 'إعداد الميزانية',
+          sales: {
+            _self: 'ميزانية المبيعات',
+            cost: 'تكلفة المبيعات',
+            rolling: 'المبيعات المتداولة',
+          },
+          production: {
+            _self: 'ميزانية الإنتاج',
+            auxiliary: 'المواد المساعدة للإنتاج',
+            labor: 'العمالة الإنتاجية',
+            manufacturing: 'التصنيع',
+          },
+          cost: {
+            _self: 'ميزانية التكلفة',
+            directmaterial: 'المواد المباشرة',
+            directlabor: 'العمالة المباشرة',
+            indirectlabor: 'العمالة غير المباشرة',
+            manufacturing: 'مصاريف التصنيع',
+          },
+          expense: {
+            _self: 'ميزانية المصاريف',
+            sales: 'مصاريف المبيعات',
+            management: 'مصاريف الإدارة',
+            financial: 'المصاريف المالية',
+          },
+          financial: {
+            _self: 'الميزانية المالية',
+            cashflow: 'التدفق النقدي',
+            balancesheet: 'الميزانية العمومية',
+            income: 'قائمة الدخل',
+          },
+        },
+        control: {
+          _self: 'التحكم في الميزانية',
+          dashboard: 'لوحة الميزانية',
+          approval: 'موافقة الميزانية',
+        },   
+  },
+},
     logistics: {
-      _self: 'اللوجستيات',
+      _self: 'إدارة اللوجستيات',
       equipment: {
         _self: 'إدارة المعدات',
-        equipmentMaster: 'البيانات الرئيسية للمعدات',
-        maintenancePlanning: {
-          _self: 'تخطيط الصيانة',
-          preventiveMaintenance: 'الصيانة الوقائية',
-          maintenanceTaskList: 'قائمة مهام الصيانة',
-          scheduling: 'جدولة الصيانة'
-        },
-        maintenanceExecution: {
-          _self: 'تنفيذ الصيانة',
-          workOrder: 'أمر العمل',
-          confirmation: 'تأكيد الصيانة',
-          breakdownMaintenance: 'صيانة الأعطال'
-        },
-        maintenanceReporting: {
-          _self: 'تقارير الصيانة',
-          equipmentReports: 'تقارير المعدات',
-          maintenanceHistory: 'سجل الصيانة',
-          performanceAnalysis: 'تحليل الأداء'
-        },
-        sparePartsManagement: {
-          _self: 'إدارة قطع الغيار',
-          sparePartsInventory: 'مخزون قطع الغيار',
-          sparePartsProcurement: 'شراء قطع الغيار',
-          sparePartsUsage: 'استخدام قطع الغيار'
-        }
+        data: 'البيانات الرئيسية للمعدات',
+        location: 'موقع المعدات',
+        material: 'ارتباط المواد',
+        workorder: 'أمر العمل'
+
       },
       material: {
         _self: 'إدارة المواد',
-        materialMaster: 'البيانات الرئيسية للمواد',
-        materialCategory: 'فئة المادة',
-        materialUnit: 'وحدة المادة',
-        materialStock: {
-          _self: 'مخزون المواد',
-          stockOverview: 'نظرة عامة على المخزون',
-          stockIn: 'دخول المخزون',
-          stockOut: 'خروج المخزون',
-          stockTransfer: 'نقل المخزون',
-          stockAdjustment: 'تعديل المخزون',
-          stockCheck: 'فحص المخزون'
+        material:{
+          _self: 'إدارة المواد',
+          material: 'البيانات الرئيسية للمواد',
+          plant: 'معلومات المصنع',
+          master: 'بيانات المواد',
+          plantmaster: 'مواد المصنع',
+          vendor: 'معلومات البائع',
+          supplier: 'معلومات المورد',
         },
-        purchase: {
-          _self: 'المشتريات',
-          purchaseRequisition: 'طلب الشراء',
-          purchaseOrder: 'أمر الشراء',
-          purchaseOrderDetail: 'تفاصيل أمر الشراء',
-          supplier: 'إدارة الموردين'
+        purchase:{
+          _self: 'إدارة المشتريات',
+          vendor: 'معلومات البائع',
+          supplier: 'معلومات المورد',
+          price: 'سعر الشراء',
+          requisition: 'طلب الشراء',
+          order: 'أمر الشراء',
+
         },
-        inventoryManagement: {
-          _self: 'إدارة المخزون',
-          goodsReceipt: 'استلام البضائع',
-          goodsIssue: 'إصدار البضائع',
-          transferPosting: 'النقل',
-          stockOverview: 'نظرة عامة على المخزون'
-        },
-        valuation: {
-          _self: 'التقييم',
-          priceControl: 'التحكم في الأسعار',
-          standardPrice: 'السعر القياسي',
-          movingAveragePrice: 'متوسط السعر المتحرك'
-        },
-        reporting: {
-          _self: 'التقارير والتحليل',
-          stockReports: 'تقارير المخزون',
-          purchaseReports: 'تقارير المشتريات',
-          inventoryReports: 'تقارير المخزون'
-        }
+
+
+
       },
       production: {
         _self: 'إدارة الإنتاج',
         bom: 'قائمة المواد',
-        routing: 'مسار التصنيع',
-        workOrder: {
-          _self: 'أمر التصنيع',
-          create: 'إنشاء الأمر',
-          manage: 'إدارة الأمر',
-          release: 'إصدار الأمر',
-          complete: 'إكمال الأمر'
+        change: {
+          _self: 'تغيير التصميم',
+          implementation: 'تنفيذ التغيير',
+          techcontact: 'الاتصال التقني',
+          material: 'تأكيد المواد',
+          query: 'استعلام التغيير',
+          oldproduct: 'التحكم في المنتجات القديمة',
+          sop: 'تأكيد SOP',
+          batch: 'دفعة الإدخال',
+          input: {
+            _self: 'إدخال التغيير',
+            gijutsu: 'قسم التقنية',
+            seikan: 'قسم إدارة الإنتاج',
+            koubai: 'قسم المشتريات',
+            uketsuke: 'قسم الاستقبال',
+            bukan: 'قسم الإدارة',
+            seizou2: 'قسم الإنتاج الثاني',
+            seizou1: 'قسم الإنتاج الأول',
+            hinkan: 'قسم مراقبة الجودة',
+            seizougijutsu: 'قسم تقنية الإنتاج',
+  
+          }
         },
-        capacityPlanning: {
-          _self: 'تخطيط الطاقة الإنتاجية',
-          workCenter: 'مركز العمل',
-          capacityEvaluation: 'تقييم الطاقة الإنتاجية',
-          capacityLeveling: 'تسوية الطاقة الإنتاجية'
-        },
-        productionScheduling: {
-          _self: 'جدولة الإنتاج',
-          schedule: 'الجدولة',
-          reschedule: 'إعادة الجدولة'
-        },
-        productionExecution: {
-          _self: 'تنفيذ الإنتاج',
-          confirm: 'تأكيد الإنتاج',
-          goodsIssue: 'إصدار المواد',
-          goodsReceipt: 'استلام المنتجات'
-        },
-        productionReporting: {
-          _self: 'تقارير الإنتاج',
-          orderReports: 'تقارير الأوامر',
-          capacityReports: 'تقارير الطاقة الإنتاجية',
-          efficiencyReports: 'تقارير الكفاءة'
-        },
-        qualityManagement: {
-          _self: 'إدارة الجودة',
-          inspectionLot: 'دفعة الفحص',
-          resultsRecording: 'تسجيل النتائج',
-          defectRecording: 'تسجيل العيوب'
+        workcenter: 'مركز العمل',
+        order: 'أمر الإنتاج',
+        kanban: 'الكانبان',
+        oph:{
+          _self: 'إدارة OPH',
+          workshop1: {
+            _self: 'قسم الإنتاج الأول',
+            output: 'التقرير اليومي للإنتاج',
+            defect: 'عيوب الإنتاج',
+            worktime: 'وقت العمل الإنتاجي',
+            productionReport: 'تقرير الإنتاج',
+            defectSummary: 'ملخص العيوب',
+            worktimeReport: 'تقرير وقت العمل'
+          },
+          workshop2: {
+            _self: 'قسم الإنتاج الثاني',
+            output: 'التقرير اليومي للإنتاج',
+            inspection: 'سجل الفحص',
+            repair: 'سجل الإصلاح',
+            worktime: 'وقت العمل الإنتاجي',
+            productionReport: 'تقرير الإنتاج',
+            inspectionReport: 'تقرير الفحص',
+            repairReport: 'تقرير الإصلاح',
+            worktimeReport: 'تقرير وقت العمل'
+          }
         }
+
       },
       project: {
         _self: 'إدارة المشاريع',
-        projectMaster: {
-          _self: 'البيانات الرئيسية للمشروع',
-          projectDefinition: 'تعريف المشروع',
-          projectStructure: 'هيكل المشروع',
-          projectTeam: 'فريق المشروع',
-          projectCalendar: 'تقويم المشروع'
-        },
-        projectPlanning: {
-          _self: 'تخطيط المشروع',
-          workBreakdown: 'هيكل تقسيم العمل',
-          scheduling: 'الجدولة',
-          resourcePlanning: 'تخطيط الموارد',
-          costPlanning: 'تخطيط التكاليف'
-        },
-        projectExecution: {
-          _self: 'تنفيذ المشروع',
-          taskManagement: 'إدارة المهام',
-          progressTracking: 'تتبع التقدم',
-          resourceManagement: 'إدارة الموارد',
-          costControl: 'التحكم في التكاليف'
-        },
-        projectMonitoring: {
-          _self: 'مراقبة المشروع',
-          progressReports: 'تقارير التقدم',
-          resourceReports: 'تقارير الموارد',
-          costReports: 'تقارير التكاليف',
-          riskManagement: 'إدارة المخاطر'
-        },
-        projectClosure: {
-          _self: 'إغلاق المشروع',
-          finalReport: 'التقرير النهائي',
-          lessonsLearned: 'الدروس المستفادة',
-          projectArchive: 'أرشيف المشروع'
-        }
+        define: 'تعريف المشروع',
+        cost: 'خطة التكلفة',
+        resource: 'خطة الموارد',
+        schedule: 'خطة الجدول',
+
       },
       quality: {
         _self: 'إدارة الجودة',
-        inspection: {
-          _self: 'إدارة الفحص',
-          inspectionLot: 'دفعة الفحص',
-          resultsRecording: 'تسجيل النتائج',
-          defectRecording: 'تسجيل العيوب',
-          usageDecision: 'قرار الاستخدام'
-        },
-        qualityPlanning: {
-          _self: 'تخطيط الجودة',
-          inspectionPlan: 'خطة الفحص',
-          qualityInfoRecord: 'سجل معلومات الجودة',
-          samplingProcedure: 'إجراء أخذ العينات'
-        },
-        qualityControl: {
-          _self: 'مراقبة الجودة',
-          controlChart: 'مخطط المراقبة',
-          qualityNotifications: 'إشعارات الجودة',
-          correctiveActions: 'الإجراءات التصحيحية'
-        },
-        qualityReporting: {
-          _self: 'تقارير الجودة',
-          inspectionReports: 'تقارير الفحص',
-          defectReports: 'تقارير العيوب',
-          qualityAnalysis: 'تحليل الجودة'
-        }
+        item: 'عناصر الفحص',
+        receiving: 'فحص المواد الواردة',
+        process: 'فحص العملية',
+        storage: 'فحص التخزين',
+        return: 'فحص الإرجاع',
+  
       },
       sales: {
-        _self: 'المبيعات',
-        customer: {
-          _self: 'إدارة العملاء',
-          client: 'العميل',
-          customers: 'قائمة العملاء',
-          creditControl: 'التحكم في الائتمان'
-        },
-        order: {
-          _self: 'إدارة الطلبات',
-          order: 'طلب المبيعات',
-          orderDetail: 'تفاصيل الطلب',
-          orderTracking: 'تتبع الطلب'
-        },
-        delivery: {
-          _self: 'إدارة التسليم',
-          delivery: 'إذن التسليم',
-          deliveryDetail: 'تفاصيل التسليم',
-          shipping: 'إدارة الشحن'
-        },
-        billing: {
-          _self: 'الفواتير',
-          invoice: 'إدارة الفواتير',
-          invoiceDetail: 'تفاصيل الفاتورة',
-          payment: 'إدارة المدفوعات'
-        },
-        reporting: {
-          _self: 'التقارير والتحليل',
-          salesReports: 'تقارير المبيعات',
-          performanceAnalysis: 'تحليل الأداء'
-        }
+        _self: 'إدارة المبيعات',
+        customer: 'معلومات العميل',
+        client: 'معلومات العميل',
+        price: 'سعر المبيعات',
+        order: 'أمر المبيعات',
       },
       service: {
-        _self: 'الخدمة',
-        serviceOrder: {
-          _self: 'أمر الخدمة',
-          create: 'إنشاء الأمر',
-          manage: 'إدارة الأمر',
-          complete: 'إكمال الأمر',
-          cancel: 'إلغاء الأمر'
-        },
-        serviceContract: {
-          _self: 'عقد الخدمة',
-          create: 'إنشاء العقد',
-          manage: 'إدارة العقد',
-          renew: 'تجديد العقد',
-          terminate: 'إنهاء العقد'
-        },
-        customerInteraction: {
-          _self: 'تفاعل العملاء',
-          inquiries: 'استفسارات العملاء',
-          complaints: 'الشكاوى',
-          feedback: 'التغذية الراجعة'
-        },
-        serviceExecution: {
-          _self: 'تنفيذ الخدمة',
-          schedule: 'الجدولة',
-          dispatch: 'الإرسال',
-          execution: 'التنفيذ',
-          confirmation: 'التأكيد'
-        },
-        serviceReporting: {
-          _self: 'تقارير الخدمة',
-          orderReports: 'تقارير الأوامر',
-          contractReports: 'تقارير العقود',
-          performanceReports: 'تقارير الأداء'
-        }
+        _self: 'خدمة العملاء',
+        item: 'عناصر الخدمة',
+        contract: 'عقد الخدمة',
+        request: 'طلب الخدمة',
+        workorder: 'أمر عمل الخدمة',
+        timesheet: 'سجل الوقت',
+        consumption: 'استهلاك المواد',
+        outsourcing: 'الخدمات الخارجية'
+
+      },
+      complaint: {
+        _self: 'إدارة شكاوى العملاء',
+        notice: 'إشعار الجودة',
+        mark: 'تفاصيل شكوى العميل',
+        analysis: 'تحليل السبب',
+        corrective: 'الإجراءات التصحيحية',
+        return: 'تنفيذ الإرجاع',
+        followUp: 'المتابعة'
       }
     },
     humanResources: {
-      _self: 'الموارد البشرية',
-      employee: {
+      _self: 'إدارة الموارد البشرية',
+      employeeManagement: {
         _self: 'إدارة الموظفين',
-        employeeInfo: 'معلومات الموظف',
-        employeeProfile: 'ملف الموظف',
-        employeeContract: 'عقد الموظف',
-        employeeAttendance: 'حضور الموظف',
-        employeeLeave: 'إجازات الموظف',
-        employeePerformance: 'أداء الموظف'
+        employeeMaster: 'البيانات الرئيسية للموظفين',
+        attendance: 'إدارة الحضور',
+        leave: 'إدارة الإجازات',
+        payroll: 'إدارة الرواتب',
+        contractManagement: 'إدارة العقود'
       },
       recruitment: {
         _self: 'إدارة التوظيف',
-        jobPosting: 'نشر الوظيفة',
-        candidate: 'إدارة المرشحين',
-        interview: 'إدارة المقابلات',
-        offer: 'إدارة العروض',
-        onboarding: 'الانضمام'
+        jobPosting: 'نشر الوظائف',
+        candidateManagement: 'إدارة المرشحين',
+        interviewScheduling: 'جدولة المقابلات',
+        offerManagement: 'إدارة العروض'
       },
       training: {
         _self: 'إدارة التدريب',
         trainingPlan: 'خطة التدريب',
-        trainingCourse: 'دورة التدريب',
-        trainingRecord: 'سجل التدريب',
+        trainingExecution: 'تنفيذ التدريب',
         trainingEvaluation: 'تقييم التدريب'
       },
       performance: {
         _self: 'إدارة الأداء',
-        performancePlan: 'خطة الأداء',
-        performanceAppraisal: 'تقييم الأداء',
-        performanceReview: 'مراجعة الأداء',
-        performanceImprovement: 'تحسين الأداء'
-      },
-      compensation: {
-        _self: 'إدارة التعويضات',
-        salary: 'إدارة الرواتب',
-        bonus: 'إدارة المكافآت',
-        benefits: 'إدارة المزايا',
-        payroll: 'كشف الرواتب'
+        goalSetting: 'تحديد الأهداف',
+        performanceReview: 'تقييم الأداء',
+        feedback: 'إدارة التغذية الراجعة'
       },
       reporting: {
-        _self: 'التقارير والتحليل',
+        _self: 'تقارير الموارد البشرية',
         employeeReports: 'تقارير الموظفين',
-        recruitmentReports: 'تقارير التوظيف',
-        trainingReports: 'تقارير التدريب',
-        performanceReports: 'تقارير الأداء',
-        compensationReports: 'تقارير التعويضات'
+        attendanceReports: 'تقارير الحضور',
+        payrollReports: 'تقارير الرواتب',
+        performanceReports: 'تقارير الأداء'
       }
     }
   }

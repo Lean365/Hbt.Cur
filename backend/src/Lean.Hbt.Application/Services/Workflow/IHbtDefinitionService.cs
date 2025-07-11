@@ -102,5 +102,36 @@ namespace Lean.Hbt.Application.Services.Workflow
         /// <param name="id">工作流定义ID</param>
         /// <returns>升级后的版本号</returns>
         Task<string> UpgradeVersionAsync(long id);
+
+        /// <summary>
+        /// 获取工作流定义选项列表
+        /// </summary>
+        /// <param name="includeDisabled">是否包含已停用的定义</param>
+        /// <returns>工作流定义选项列表</returns>
+        Task<List<HbtSelectOption>> GetOptionsAsync(bool includeDisabled = false);
+
+        /// <summary>
+        /// 获取当前用户的工作流定义
+        /// </summary>
+        /// <param name="status">状态筛选</param>
+        /// <param name="limit">限制数量</param>
+        /// <returns>当前用户的工作流定义列表</returns>
+        Task<List<HbtDefinitionDto>> GetCurrentUserDefinitionsAsync(int? status = null, int limit = 20);
+
+        /// <summary>
+        /// 获取当前用户创建的工作流定义
+        /// </summary>
+        /// <param name="status">状态筛选</param>
+        /// <param name="limit">限制数量</param>
+        /// <returns>当前用户创建的工作流定义列表</returns>
+        Task<List<HbtDefinitionDto>> GetCurrentUserCreatedDefinitionsAsync(int? status = null, int limit = 20);
+
+        /// <summary>
+        /// 获取当前用户可访问的工作流定义
+        /// </summary>
+        /// <param name="status">状态筛选</param>
+        /// <param name="limit">限制数量</param>
+        /// <returns>当前用户可访问的工作流定义列表</returns>
+        Task<List<HbtDefinitionDto>> GetCurrentUserAccessibleDefinitionsAsync(int? status = null, int limit = 20);
     }
 } 

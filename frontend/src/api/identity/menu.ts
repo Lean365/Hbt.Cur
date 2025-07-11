@@ -12,7 +12,6 @@ import type {
   HbtMenuExport,
   HbtMenuTreeQuery
 } from '@/types/identity/menu'
-import { useUserStore } from '@/stores/user'
 import { getToken } from '@/utils/auth'
 
 // 获取菜单分页列表
@@ -130,15 +129,11 @@ export function updateMenuOrder(data: HbtMenuOrder) {
 // 获取当前用户菜单权限
 export function getCurrentUserMenus(): Promise<HbtApiResponse<HbtMenu[]>> {
   console.log('[Menu API] 开始获取当前用户菜单')
-  const userStore = useUserStore()
-  const tenantId = userStore.getCurrentTenantId()
   const token = getToken()
   
   console.log('[Menu API] 当前状态:', {
-    租户ID: tenantId,
     是否有Token: !!token,
-    Token长度: token?.length,
-    用户信息: userStore.userInfo
+    Token长度: token?.length
   })
   
   if (!token) {
@@ -146,25 +141,12 @@ export function getCurrentUserMenus(): Promise<HbtApiResponse<HbtMenu[]>> {
     return Promise.reject(new Error('未找到Token'))
   }
   
-  if (!tenantId || tenantId <= 0) {
-    console.error('[Menu API] 未找到有效的租户ID，尝试重新获取用户信息')
-    return userStore.getUserInfo().then(() => {
-      const newTenantId = userStore.getCurrentTenantId()
-      if (!newTenantId || newTenantId <= 0) {
-        throw new Error('未找到有效的租户ID')
-      }
-      return getCurrentUserMenus()
-    })
-  }
-  
   return request<HbtApiResponse<HbtMenu[]>>({
     url: '/api/HbtMenu/current',
     method: 'get',
     headers: {
       'Cache-Control': 'no-cache',
-      'Pragma': 'no-cache',
-      'X-Tenant-Id': tenantId.toString(),
-      'Authorization': `Bearer ${token}`
+      'Pragma': 'no-cache'
     },
     validateStatus: function (status): boolean {
       console.log('[Menu API] 响应状态码:', status)

@@ -22,6 +22,7 @@ namespace Lean.Hbt.Application.Dtos.Workflow
             FormName = string.Empty;
             FormDesc = string.Empty;
             FormConfig = string.Empty;
+            FormVersion = string.Empty;
             CreateBy = string.Empty;
             UpdateBy = string.Empty;
             DeleteBy = string.Empty;
@@ -51,6 +52,10 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// 关联的工作流定义ID
         /// </summary>
         public long? DefinitionId { get; set; }
+        /// <summary>
+        /// 关联的工作流定义名称
+        /// </summary>
+        public string? DefinitionName { get; set; }
         /// <summary>
         /// 表单版本
         /// </summary>

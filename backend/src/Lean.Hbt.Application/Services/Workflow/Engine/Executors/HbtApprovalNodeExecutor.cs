@@ -29,8 +29,9 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine.Executors
         public HbtApprovalNodeExecutor(
             IHbtLogger logger,
             IHbtRepository<HbtProcessTask> taskRepository,
-            IHbtApproverResolver approverResolver)
-            : base(logger)
+            IHbtApproverResolver approverResolver,
+            IHbtRepository<HbtNodeTemplate> nodeTemplateRepository)
+            : base(logger, nodeTemplateRepository)
         {
             _taskRepository = taskRepository;
             _approverResolver = approverResolver;
@@ -54,7 +55,8 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine.Executors
                 _logger.Info($"开始执行审批节点: 实例ID={instance.Id}, 节点ID={node.Id}");
 
                 // 解析节点配置
-                var config = JsonSerializer.Deserialize<HbtNodeConfig>(node.NodeConfig);
+                var nodeTemplate = await _nodeTemplateRepository.GetByIdAsync(node.NodeTemplateId);
+                var config = JsonSerializer.Deserialize<HbtNodeConfig>(nodeTemplate?.NodeConfig ?? "{}");
                 if (config == null)
                 {
                     var error = $"节点配置无效: 节点ID={node.Id}";

@@ -47,11 +47,6 @@
           </a-form-item>
         </a-col>
         <a-col :span="24">
-          <a-form-item name="dbConnection" :label="t('identity.tenant.fields.dbConnection.label')">
-            <db-connection v-model="formData.dbConnection" />
-          </a-form-item>
-        </a-col>
-        <a-col :span="24">
           <a-form-item name="domain" :label="t('identity.tenant.fields.domain.label')">
             <hbt-select v-model:value="formData.domain" dict-type="sys_domain" :placeholder="t('identity.tenant.fields.domain.placeholder')" style="width: 100%" />
           </a-form-item>
@@ -68,8 +63,14 @@
         </a-col>
 
         <a-col :span="24">
-          <a-form-item name="license" :label="t('identity.tenant.fields.license.label')">
-            <hbt-select v-model:value="formData.license" dict-type="sys_license" :placeholder="t('identity.tenant.fields.license.placeholder')" style="width: 100%" />
+          <a-form-item name="licenseType" :label="t('identity.tenant.form.licenseType')">
+            <hbt-select v-model:value="formData.licenseType" dict-type="sys_license" :placeholder="t('identity.tenant.placeholder.licenseType')" style="width: 100%" />
+          </a-form-item>
+        </a-col>
+
+        <a-col :span="24">
+          <a-form-item name="licenseKey" :label="t('identity.tenant.form.licenseKey')">
+            <a-input v-model:value="formData.licenseKey" :placeholder="t('identity.tenant.placeholder.licenseKey')" allow-clear />
           </a-form-item>
         </a-col>
 
@@ -98,11 +99,6 @@
             <hbt-select v-model:value="formData.status" dict-type="sys_normal_disable" type="radio" :show-all="false" :placeholder="t('identity.tenant.fields.status.placeholder')" style="width: 100%" />
           </a-form-item>
         </a-col>
-        <a-col :span="12">
-          <a-form-item name="isDefault" :label="t('identity.tenant.fields.isDefault.label')">
-            <hbt-select v-model:value="formData.isDefault" dict-type="sys_yes_no" type="radio" :show-all="false" :placeholder="t('identity.tenant.fields.isDefault.placeholder')" style="width: 100%" />
-          </a-form-item>
-        </a-col>
       </a-row>
     </a-form>
   </hbt-modal>
@@ -118,7 +114,6 @@ import type { HbtTenantCreate } from '@/types/identity/tenant'
 import { getTenant, createTenant, updateTenant } from '@/api/identity/tenant'
 import { addYears, subDays, format } from 'date-fns'
 import dayjs from 'dayjs'
-import DbConnection from './DbConnection.vue'
 
 const { t } = useI18n()
 
@@ -147,8 +142,8 @@ const formData = ref<Partial<HbtTenantCreate>>({
   contactPhone: '',
   contactEmail: '',
   address: '',
-  license: '',
-  dbConnection: '',
+  licenseType: '',
+  licenseKey: '',
   domain: '',
   logoUrl: '',
   theme: '',
@@ -156,8 +151,7 @@ const formData = ref<Partial<HbtTenantCreate>>({
   licenseEndTime: dayjs().add(1, 'year').subtract(1, 'day'),
   maxUserCount: 9,
   expireTime: dayjs().add(1, 'year').subtract(1, 'day'),
-  status: 1,
-  isDefault: 0
+  status: 1
 })
 
 // 校验规则
@@ -183,10 +177,6 @@ const rules: Record<string, Rule[]> = {
     { max: 50, message: t('identity.tenant.fields.contactEmail.validation.maxLength') },
     { type: 'email', message: t('identity.tenant.fields.contactEmail.validation.format') }
   ],
-  dbConnection: [
-    { required: true, message: t('identity.tenant.fields.dbConnection.validation.required'), trigger: 'blur' },
-    { max: 100, message: t('identity.tenant.fields.dbConnection.validation.maxLength') }
-  ],
   domain: [
     { required: true, message: t('identity.tenant.fields.domain.validation.required'), trigger: 'blur' },
     { max: 100, message: t('identity.tenant.fields.domain.validation.maxLength') }
@@ -202,17 +192,16 @@ const resetForm = () => {
     contactPhone: '',
     contactEmail: '',
     address: '',
-    dbConnection: '',
     domain: '',
     logoUrl: '',
     theme: '',
-    license: '',
+    licenseType: '',
+    licenseKey: '',
     licenseStartTime: dayjs(),
     licenseEndTime: dayjs().add(1, 'year').subtract(1, 'day'),
     maxUserCount: 9,
     expireTime: dayjs().add(1, 'year').subtract(1, 'day'),
-    status: 1,
-    isDefault: 1
+    status: 1
   }
   formRef.value?.resetFields()
 }

@@ -14,6 +14,7 @@ export default {
         formVersion: '表单版本',
         formConfig: '表单配置',
         definitionId: '流程ID',
+        definitionName: '流程名称',
         status: '状态',
         remark: '备注',
       },
@@ -23,6 +24,7 @@ export default {
         formCategory: '请选择表单分类',
         formVersion: '请选择表单版本',
         formConfig: '请输入表单配置',
+        definitionName: '请选择流程名称',
         status: '请选择状态',
         remark: '请输入备注',
         validation: {

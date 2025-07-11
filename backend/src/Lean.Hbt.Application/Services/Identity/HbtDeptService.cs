@@ -4,12 +4,13 @@
 // 创建者 : Lean365
 // 创建时间: 2024-01-20 16:30
 // 版本号 : V0.0.1
-// 描述   : 部门服务实现
+// 描述   : 部门服务实现 - 使用仓储工厂模式
 //===================================================================
 
 using System.Linq.Expressions;
 using Lean.Hbt.Application.Dtos.Identity;
 using Lean.Hbt.Domain.Entities.Identity;
+using Lean.Hbt.Domain.Repositories;
 using Microsoft.AspNetCore.Http;
 
 namespace Lean.Hbt.Application.Services.Identity
@@ -20,11 +21,13 @@ namespace Lean.Hbt.Application.Services.Identity
     /// <remarks>
     /// 创建者: Lean365
     /// 创建时间: 2024-01-20
+    /// 更新: 2024-12-19 - 使用仓储工厂模式支持多库
     /// </remarks>
     public class HbtDeptService : HbtBaseService, IHbtDeptService
     {
-        private readonly IHbtRepository<HbtDept> _deptRepository;
-        private readonly IHbtRepository<HbtUser> _userRepository;
+        private readonly IHbtRepositoryFactory _repositoryFactory;
+
+        private IHbtRepository<HbtDept> DeptRepository => _repositoryFactory.GetAuthRepository<HbtDept>();
 
         /// <summary>
         /// 构造函数
@@ -32,17 +35,12 @@ namespace Lean.Hbt.Application.Services.Identity
         public HbtDeptService(
             IHbtLogger logger,
             IHttpContextAccessor httpContextAccessor,
-            IHbtRepository<HbtDept> deptRepository,
-            IHbtRepository<HbtUser> userRepository,
+            IHbtRepositoryFactory repositoryFactory,
             IHbtCurrentUser currentUser,
-        IHbtCurrentTenant currentTenant,
-        IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, currentTenant, localization)
+            IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
         {
-            _deptRepository = deptRepository;
-            _userRepository = userRepository;
+            _repositoryFactory = repositoryFactory ?? throw new ArgumentNullException(nameof(repositoryFactory));
         }
-
-
 
         /// <summary>
         /// 获取部门分页列表
@@ -51,7 +49,7 @@ namespace Lean.Hbt.Application.Services.Identity
         {
             var exp = QueryExpression(query);
 
-            var result = await _deptRepository.GetPagedListAsync(
+            var result = await DeptRepository.GetPagedListAsync(
                 exp,
                 query.PageIndex,
                 query.PageSize,
@@ -72,8 +70,9 @@ namespace Lean.Hbt.Application.Services.Identity
         /// </summary>
         public async Task<List<HbtDeptDto>> GetTreeAsync(HbtDeptQueryDto query)
         {
+            
             // 1. 查询所有部门
-            var allDepts = await _deptRepository.AsQueryable()
+            var allDepts = await DeptRepository.AsQueryable()
                 .OrderBy(d => d.OrderNum)
                 .ToListAsync();
 
@@ -126,7 +125,7 @@ namespace Lean.Hbt.Application.Services.Identity
         /// </summary>
         public async Task<HbtDeptDto> GetByIdAsync(long deptId)
         {
-            var dept = await _deptRepository.GetFirstAsync(x => x.Id == deptId);
+            var dept = await DeptRepository.GetFirstAsync(x => x.Id == deptId);
             if (dept == null)
                 throw new HbtException("Identity.Dept.NotFound", deptId.ToString());
             return dept.Adapt<HbtDeptDto>();
@@ -141,7 +140,7 @@ namespace Lean.Hbt.Application.Services.Identity
             dept.CreateTime = DateTime.Now;
             dept.Status = 1;
 
-            await _deptRepository.CreateAsync(dept);
+            await DeptRepository.CreateAsync(dept);
             return dept.Id;
         }
 
@@ -150,7 +149,7 @@ namespace Lean.Hbt.Application.Services.Identity
         /// </summary>
         public async Task<bool> UpdateAsync(HbtDeptUpdateDto request)
         {
-            var dept = await _deptRepository.GetFirstAsync(x => x.Id == request.DeptId);
+            var dept = await DeptRepository.GetFirstAsync(x => x.Id == request.DeptId);
             if (dept == null)
             {
                 throw new InvalidOperationException($"Identity.Dept.Operation.UpdateFailed: {request.DeptId}");
@@ -159,7 +158,7 @@ namespace Lean.Hbt.Application.Services.Identity
             request.Adapt(dept);
             dept.UpdateTime = DateTime.Now;
 
-            return await _deptRepository.UpdateAsync(dept) > 0;
+            return await DeptRepository.UpdateAsync(dept) > 0;
         }
 
         /// <summary>
@@ -167,13 +166,13 @@ namespace Lean.Hbt.Application.Services.Identity
         /// </summary>
         public async Task<bool> DeleteAsync(long deptId)
         {
-            var dept = await _deptRepository.GetFirstAsync(x => x.Id == deptId);
+            var dept = await DeptRepository.GetFirstAsync(x => x.Id == deptId);
             if (dept == null)
             {
                 throw new InvalidOperationException($"Identity.Dept.Operation.DeleteFailed: {deptId}");
             }
 
-            return await _deptRepository.DeleteAsync(dept) > 0;
+            return await DeptRepository.DeleteAsync(dept) > 0;
         }
 
         /// <summary>
@@ -181,15 +180,16 @@ namespace Lean.Hbt.Application.Services.Identity
         /// </summary>
         public async Task<bool> BatchDeleteAsync(long[] deptIds)
         {
+            
             // 1.检查是否存在子部门
-            var hasChildren = await _deptRepository.AsQueryable()
+            var hasChildren = await DeptRepository.AsQueryable()
                 .AnyAsync(d => deptIds.Contains(d.ParentId == 0 ? 0 : d.ParentId));
             if (hasChildren)
                 throw new HbtException("Identity.Dept.HasChildren");
 
             // 2.批量删除
             Expression<Func<HbtDept, bool>> condition = d => deptIds.Contains(d.Id);
-            var result = await _deptRepository.DeleteAsync(condition);
+            var result = await DeptRepository.DeleteAsync(condition);
             return result > 0;
         }
 
@@ -215,7 +215,7 @@ namespace Lean.Hbt.Application.Services.Identity
                         dept.CreateTime = DateTime.Now;
                         dept.Status = 0;
 
-                        await _deptRepository.CreateAsync(dept);
+                        await DeptRepository.CreateAsync(dept);
                         success++;
                     }
                     catch (Exception ex)
@@ -227,7 +227,7 @@ namespace Lean.Hbt.Application.Services.Identity
 
                 return (success, fail);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 _logger.Error("Identity.Dept.Log.ImportDataFailed");
                 throw new HbtException("Identity.Dept.ImportFailed");
@@ -241,11 +241,11 @@ namespace Lean.Hbt.Application.Services.Identity
         {
             try
             {
-                var list = await _deptRepository.GetListAsync(QueryExpression(query));
+                var list = await DeptRepository.GetListAsync(QueryExpression(query));
                 var exportList = list.Adapt<List<HbtDeptExportDto>>();
                 return await HbtExcelHelper.ExportAsync(exportList, sheetName, "部门数据");
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 _logger.Error("Identity.Dept.Log.ExportDataFailed");
                 throw new HbtException("Identity.Dept.ExportFailed");
@@ -267,14 +267,14 @@ namespace Lean.Hbt.Application.Services.Identity
         /// </summary>
         public async Task<bool> UpdateStatusAsync(long id, int status)
         {
-            var entity = await _deptRepository.GetByIdAsync(id);
+            var entity = await DeptRepository.GetByIdAsync(id);
             if (entity == null)
             {
                 return false;
             }
 
             entity.Status = status;
-            await _deptRepository.UpdateAsync(entity);
+            await DeptRepository.UpdateAsync(entity);
             return true;
         }
 
@@ -284,7 +284,7 @@ namespace Lean.Hbt.Application.Services.Identity
         /// <returns>部门选项列表</returns>
         public async Task<List<HbtSelectOption>> GetOptionsAsync()
         {
-            var depts = await _deptRepository.GetListAsync(x => x.Status == 0);
+            var depts = await DeptRepository.GetListAsync(x => x.Status == 0);
             return depts.Select(x => new HbtSelectOption
             {
                 Label = x.DeptName,
@@ -298,6 +298,93 @@ namespace Lean.Hbt.Application.Services.Identity
         public async Task<(string fileName, byte[] content)> GenerateTemplateAsync(string sheetName = "HbtDept")
         {
             return await HbtExcelHelper.GenerateTemplateAsync<HbtDeptImportDto>(sheetName);
+        }
+
+        /// <summary>
+        /// 分配部门用户
+        /// </summary>
+        /// <param name="deptId">部门ID</param>
+        /// <param name="userIds">用户ID数组</param>
+        /// <returns>是否分配成功</returns>
+        public async Task<bool> AllocateDeptUsersAsync(long deptId, long[] userIds)
+        {
+            try
+            {
+                _logger.Info($"开始分配部门用户 - 部门ID: {deptId}, 用户IDs: {string.Join(",", userIds)}");
+
+                // 1. 验证部门是否存在且状态正常
+                var dept = await DeptRepository.GetByIdAsync(deptId);
+                if (dept == null)
+                    throw new HbtException(L("Identity.Dept.NotFound"));
+                if (dept.Status != 0)
+                    throw new HbtException(L("Identity.Dept.Disabled"));
+
+                // 2. 获取部门现有关联的用户（包括已删除的）
+                var userDeptRepository = _repositoryFactory.GetAuthRepository<HbtUserDept>();
+                var existingUsers = await userDeptRepository.GetListAsync(ud => ud.DeptId == deptId);
+                _logger.Info($"部门现有关联用户数量: {existingUsers.Count}");
+
+                // 3. 找出需要标记删除的关联（在现有关联中但不在新的用户列表中）
+                var usersToDelete = existingUsers.Where(ud => !userIds.Contains(ud.UserId)).ToList();
+                if (usersToDelete.Any())
+                {
+                    _logger.Info($"需要标记删除的用户关联数量: {usersToDelete.Count}, 用户IDs: {string.Join(",", usersToDelete.Select(d => d.UserId))}");
+                    foreach (var user in usersToDelete)
+                    {
+                        // 标记删除
+                        user.IsDeleted = 1; // 1 表示已删除
+                        user.DeleteBy = _currentUser.UserName;
+                        user.DeleteTime = DateTime.Now;
+                        await userDeptRepository.UpdateAsync(user);
+                    }
+                    _logger.Info("用户关联状态更新和删除标记完成");
+                }
+
+                // 4. 处理需要恢复的关联（在新的用户列表中且已存在但被标记为删除）
+                var usersToRestore = existingUsers.Where(ud => userIds.Contains(ud.UserId) && ud.IsDeleted == 1).ToList();
+                if (usersToRestore.Any())
+                {
+                    _logger.Info($"需要恢复的用户关联数量: {usersToRestore.Count}, 用户IDs: {string.Join(",", usersToRestore.Select(d => d.UserId))}");
+                    foreach (var user in usersToRestore)
+                    {
+                        // 取消删除标记
+                        user.IsDeleted = 0; // 0 表示未删除
+                        user.DeleteBy = null;
+                        user.DeleteTime = null;
+                        await userDeptRepository.UpdateAsync(user);
+                    }
+                    _logger.Info("用户关联状态恢复和删除标记取消完成");
+                }
+
+                // 5. 找出需要新增的关联（在新的用户列表中且不存在任何记录）
+                var existingUserIds = existingUsers.Select(ud => ud.UserId).ToList();
+                var usersToAdd = userIds.Where(userId => !existingUserIds.Contains(userId))
+                    .Select(userId => new HbtUserDept
+                    {
+                        UserId = userId,
+                        DeptId = deptId,
+                        IsDeleted = 0, // 0 表示未删除
+                        CreateBy = _currentUser.UserName,
+                        CreateTime = DateTime.Now,
+                        UpdateBy = _currentUser.UserName,
+                        UpdateTime = DateTime.Now
+                    }).ToList();
+
+                if (usersToAdd.Any())
+                {
+                    _logger.Info($"需要新增的用户关联数量: {usersToAdd.Count}, 用户IDs: {string.Join(",", usersToAdd.Select(d => d.UserId))}");
+                    await userDeptRepository.CreateRangeAsync(usersToAdd);
+                    _logger.Info("用户关联新增完成");
+                }
+
+                _logger.Info("部门用户分配完成");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error($"分配部门用户失败: {ex.Message}", ex);
+                throw;
+            }
         }
 
         /// <summary>
@@ -321,7 +408,8 @@ namespace Lean.Hbt.Application.Services.Identity
         /// </summary>
         private async Task<bool> HasCircularReference(long deptId, long parentId)
         {
-            var parent = await _deptRepository.GetByIdAsync(parentId);
+            var deptRepository = _repositoryFactory.GetAuthRepository<HbtDept>();
+            var parent = await deptRepository.GetByIdAsync(parentId);
             while (parent != null)
             {
                 if (parent.Id == deptId)
@@ -330,7 +418,7 @@ namespace Lean.Hbt.Application.Services.Identity
                 if (parent.ParentId == 0)
                     break;
 
-                parent = await _deptRepository.GetByIdAsync(parent.ParentId);
+                parent = await deptRepository.GetByIdAsync(parent.ParentId);
             }
 
             return false;
@@ -351,4 +439,4 @@ namespace Lean.Hbt.Application.Services.Identity
             return exp.ToExpression();
         }
     }
-}
+} 

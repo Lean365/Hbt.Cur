@@ -4,7 +4,7 @@
 // 创建者 : Lean365
 // 创建时间: 2024-01-23 12:00
 // 版本号 : V1.0.0
-// 描述   : 工作流定义服务实现类
+// 描述   : 工作流定义服务实现类 - 使用仓储工厂模式
 //===================================================================
 
 #nullable enable
@@ -37,32 +37,32 @@ namespace Lean.Hbt.Application.Services.Workflow
     /// 2. 支持工作流定义的导入导出功能
     /// 3. 实现工作流定义的版本管理
     /// 4. 提供工作流定义的启用/禁用功能
+    /// 更新: 2024-12-19 - 使用仓储工厂模式支持多库
     /// </remarks>
     public class HbtDefinitionService : HbtBaseService, IHbtDefinitionService
     {
-        private readonly IHbtRepository<HbtDefinition> _definitionRepository;
+        private readonly IHbtRepositoryFactory _repositoryFactory;
 
+        private IHbtRepository<HbtDefinition> DefinitionRepository => _repositoryFactory.GetWorkflowRepository<HbtDefinition>();
+        private IHbtRepository<HbtForm> FormRepository => _repositoryFactory.GetWorkflowRepository<HbtForm>();
 
         /// <summary>
         /// 构造函数，注入所需依赖
         /// </summary>
         /// <param name="logger">日志服务</param>
-        /// <param name="definitionRepository">工作流定义仓储接口</param>
+        /// <param name="repositoryFactory">仓储工厂</param>
         /// <param name="httpContextAccessor">HTTP上下文访问器</param>
         /// <param name="currentUser">当前用户服务</param>
-        /// <param name="currentTenant">当前租户服务</param>
         /// <param name="localization">本地化服务</param>
         public HbtDefinitionService(
             IHbtLogger logger,
-            IHbtRepository<HbtDefinition> definitionRepository,
+            IHbtRepositoryFactory repositoryFactory,
             IHttpContextAccessor httpContextAccessor,
             IHbtCurrentUser currentUser,
-            IHbtCurrentTenant currentTenant,
             IHbtLocalizationService localization
-                     ) : base(logger, httpContextAccessor, currentUser, currentTenant, localization)
+                     ) : base(logger, httpContextAccessor, currentUser, localization)
         {
-            _definitionRepository = definitionRepository;
-
+            _repositoryFactory = repositoryFactory ?? throw new ArgumentNullException(nameof(repositoryFactory));
         }
 
         /// <summary>
@@ -79,19 +79,31 @@ namespace Lean.Hbt.Application.Services.Workflow
         {
             var exp = QueryExpression(query);
 
-            var result = await _definitionRepository.GetPagedListAsync(
+            var result = await DefinitionRepository.GetPagedListAsync(
                 exp,
                 query?.PageIndex ?? 1,
                 query?.PageSize ?? 10,
                 x => x.Id,
                 OrderByType.Asc);
 
+            var definitions = result.Rows.Adapt<List<HbtDefinitionDto>>();
+            
+            // 填充表单名称
+            foreach (var definition in definitions)
+            {
+                if (definition.FormId > 0)
+                {
+                    var form = await FormRepository.GetByIdAsync(definition.FormId);
+                    definition.FormName = form?.FormName;
+                }
+            }
+
             return new HbtPagedResult<HbtDefinitionDto>
             {
                 TotalNum = result.TotalNum,
                 PageIndex = query?.PageIndex ?? 1,
                 PageSize = query?.PageSize ?? 10,
-                Rows = result.Rows.Adapt<List<HbtDefinitionDto>>()
+                Rows = definitions
             };
         }
 
@@ -103,11 +115,20 @@ namespace Lean.Hbt.Application.Services.Workflow
         /// <exception cref="HbtException">当工作流定义不存在时抛出异常</exception>
         public async Task<HbtDefinitionDto> GetByIdAsync(long id)
         {
-            var definition = await _definitionRepository.GetByIdAsync(id);
+            var definition = await DefinitionRepository.GetByIdAsync(id);
             if (definition == null)
                 throw new HbtException(L("WorkflowDefinition.NotFound"));
 
-            return definition.Adapt<HbtDefinitionDto>();
+            var definitionDto = definition.Adapt<HbtDefinitionDto>();
+            
+            // 填充表单名称
+            if (definitionDto.FormId > 0)
+            {
+                var form = await FormRepository.GetByIdAsync(definitionDto.FormId);
+                definitionDto.FormName = form?.FormName;
+            }
+
+            return definitionDto;
         }
 
         /// <summary>
@@ -123,7 +144,7 @@ namespace Lean.Hbt.Application.Services.Workflow
                 throw new ArgumentNullException(nameof(input));
 
             // 检查名称是否已存在
-            var exists = await _definitionRepository.GetFirstAsync(x => x.WorkflowName == input.WorkflowName);
+            var exists = await DefinitionRepository.GetFirstAsync(x => x.WorkflowName == input.WorkflowName);
             if (exists != null)
                 throw new HbtException(L("WorkflowDefinition.NameExists"));
 
@@ -131,7 +152,7 @@ namespace Lean.Hbt.Application.Services.Workflow
             definition.WorkflowVersion = "A"; // 新建定义默认版本为A
             definition.Status = 0; // 0 表示草稿状态
 
-            var result = await _definitionRepository.CreateAsync(definition);
+            var result = await DefinitionRepository.CreateAsync(definition);
             if (result <= 0)
                 throw new HbtException(L("WorkflowDefinition.Create.Failed"));
 
@@ -151,17 +172,17 @@ namespace Lean.Hbt.Application.Services.Workflow
             if (input == null)
                 throw new ArgumentNullException(nameof(input));
 
-            var definition = await _definitionRepository.GetByIdAsync(input.DefinitionId);
+            var definition = await DefinitionRepository.GetByIdAsync(input.DefinitionId);
             if (definition == null)
                 throw new HbtException(L("WorkflowDefinition.NotFound"));
 
             // 检查名称是否已被其他定义使用
-            var exists = await _definitionRepository.GetFirstAsync(x => x.WorkflowName == input.WorkflowName && x.Id != input.DefinitionId);
+            var exists = await DefinitionRepository.GetFirstAsync(x => x.WorkflowName == input.WorkflowName && x.Id != input.DefinitionId);
             if (exists != null)
                 throw new HbtException(L("WorkflowDefinition.NameExists"));
 
             input.Adapt(definition);
-            var result = await _definitionRepository.UpdateAsync(definition);
+            var result = await DefinitionRepository.UpdateAsync(definition);
             if (result <= 0)
                 throw new HbtException(L("WorkflowDefinition.Update.Failed"));
 
@@ -177,15 +198,11 @@ namespace Lean.Hbt.Application.Services.Workflow
         /// <exception cref="HbtException">当工作流定义不存在或删除失败时抛出异常</exception>
         public async Task<bool> DeleteAsync(long id)
         {
-            var definition = await _definitionRepository.GetByIdAsync(id);
+            var definition = await DefinitionRepository.GetByIdAsync(id);
             if (definition == null)
                 throw new HbtException(L("WorkflowDefinition.NotFound"));
 
-            // 检查工作流定义是否处于活动状态
-            if (definition.Status == 1) // 1 表示已发布状态
-                throw new HbtException(L("WorkflowDefinition.CannotDeleteActive"));
-
-            var result = await _definitionRepository.DeleteAsync(definition);
+            var result = await DefinitionRepository.DeleteAsync(definition);
             if (result <= 0)
                 throw new HbtException(L("WorkflowDefinition.Delete.Failed"));
 
@@ -198,22 +215,17 @@ namespace Lean.Hbt.Application.Services.Workflow
         /// </summary>
         /// <param name="ids">要删除的工作流定义ID数组</param>
         /// <returns>删除是否成功</returns>
-        /// <exception cref="ArgumentNullException">当输入ID数组为空时抛出异常</exception>
+        /// <exception cref="ArgumentNullException">当输入参数为空时抛出异常</exception>
         /// <exception cref="HbtException">当批量删除失败时抛出异常</exception>
         public async Task<bool> BatchDeleteAsync(long[] ids)
         {
             if (ids == null || ids.Length == 0)
                 throw new ArgumentNullException(nameof(ids));
 
-            // 检查是否有活动状态的定义
-            var activeDefinitions = await _definitionRepository.GetListAsync(x => ids.Contains(x.Id) && x.Status == 1); // 1 表示已发布状态
-            if (activeDefinitions.Any())
-                throw new HbtException(L("WorkflowDefinition.CannotDeleteActive"));
-
             var exp = Expressionable.Create<HbtDefinition>();
             exp = exp.And(x => ids.Contains(x.Id));
 
-            var result = await _definitionRepository.DeleteAsync(exp.ToExpression());
+            var result = await DefinitionRepository.DeleteAsync(exp.ToExpression());
             if (result <= 0)
                 throw new HbtException(L("WorkflowDefinition.BatchDelete.Failed"));
 
@@ -224,32 +236,33 @@ namespace Lean.Hbt.Application.Services.Workflow
         /// <summary>
         /// 导入工作流定义数据
         /// </summary>
+        /// <param name="stream">Excel文件流</param>
+        /// <param name="sheetName">工作表名称</param>
+        /// <returns>返回导入结果(success:成功数量,fail:失败数量)</returns>
         public async Task<(int success, int fail)> ImportAsync(Stream stream, string sheetName = "Sheet1")
         {
             try
             {
                 var importDefinitions = await HbtExcelHelper.ImportAsync<HbtDefinitionImportDto>(stream, sheetName);
-                var success = 0;
-                var fail = 0;
+                int success = 0, fail = 0;
 
                 foreach (var item in importDefinitions)
                 {
                     try
                     {
                         var definition = item.Adapt<HbtDefinition>();
-                        var insertResult = await _definitionRepository.CreateAsync(definition);
-                        if (insertResult > 0)
-                        {
+                        definition.CreateTime = DateTime.Now;
+                        definition.CreateBy = _currentUser.UserName;
+
+                        var result = await DefinitionRepository.CreateAsync(definition);
+                        if (result > 0)
                             success++;
-                        }
                         else
-                        {
                             fail++;
-                        }
                     }
                     catch (Exception ex)
                     {
-                        _logger.Error(L("WorkflowDefinition.Import.Failed"), ex);
+                        _logger.Warn($"导入工作流定义失败: {ex.Message}");
                         fail++;
                     }
                 }
@@ -258,34 +271,30 @@ namespace Lean.Hbt.Application.Services.Workflow
             }
             catch (Exception ex)
             {
-                _logger.Error(L("WorkflowDefinition.Import.Failed"), ex);
-                throw new HbtException(L("WorkflowDefinition.Import.Failed"), ex);
+                _logger.Error("导入工作流定义数据失败", ex);
+                throw new HbtException("导入工作流定义数据失败");
             }
         }
 
         /// <summary>
         /// 导出工作流定义数据
         /// </summary>
+        /// <param name="query">查询条件</param>
+        /// <param name="sheetName">工作表名称</param>
+        /// <returns>返回导出结果</returns>
         public async Task<(string fileName, byte[] content)> ExportAsync(HbtDefinitionQueryDto query, string sheetName = "Sheet1")
         {
-            try
-            {
-                var data = await GetListAsync(query);
-                var result = await HbtExcelHelper.ExportAsync(data.Rows, sheetName);
-                return (result.fileName, result.content);
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(L("WorkflowDefinition.Export.Failed"), ex);
-                throw new HbtException(L("WorkflowDefinition.Export.Failed"), ex);
-            }
+            var exp = QueryExpression(query);
+            var definitions = await DefinitionRepository.GetListAsync(exp);
+            var exportList = definitions.Adapt<List<HbtDefinitionExportDto>>();
+            return await HbtExcelHelper.ExportAsync(exportList, sheetName, "工作流定义数据");
         }
 
         /// <summary>
         /// 获取导入模板
         /// </summary>
         /// <param name="sheetName">工作表名称</param>
-        /// <returns>Excel模板文件</returns>
+        /// <returns>返回模板文件</returns>
         public async Task<(string fileName, byte[] content)> GetTemplateAsync(string sheetName = "Sheet1")
         {
             return await HbtExcelHelper.GenerateTemplateAsync<HbtDefinitionImportDto>(sheetName);
@@ -294,21 +303,26 @@ namespace Lean.Hbt.Application.Services.Workflow
         /// <summary>
         /// 更新工作流定义状态
         /// </summary>
-        /// <param name="input">状态更新信息</param>
+        /// <param name="input">状态更新DTO</param>
         /// <returns>更新是否成功</returns>
-        /// <exception cref="HbtException">当工作流定义不存在或更新失败时抛出异常</exception>
         public async Task<bool> UpdateStatusAsync(HbtDefinitionStatusDto input)
         {
-            var definition = await _definitionRepository.GetByIdAsync(input.DefinitionId);
+            if (input == null)
+                throw new ArgumentNullException(nameof(input));
+
+            var definition = await DefinitionRepository.GetByIdAsync(input.DefinitionId);
             if (definition == null)
                 throw new HbtException(L("WorkflowDefinition.NotFound"));
 
             definition.Status = input.Status;
-            var result = await _definitionRepository.UpdateAsync(definition);
+            definition.UpdateTime = DateTime.Now;
+            definition.UpdateBy = _currentUser.UserName;
+
+            var result = await DefinitionRepository.UpdateAsync(definition);
             if (result <= 0)
                 throw new HbtException(L("WorkflowDefinition.UpdateStatus.Failed"));
 
-            _logger.Info(L("WorkflowDefinition.UpdatedStatus.Success", definition.Id));
+            _logger.Info(L("WorkflowDefinition.StatusUpdated.Success", definition.Id, input.Status));
             return true;
         }
 
@@ -316,31 +330,44 @@ namespace Lean.Hbt.Application.Services.Workflow
         /// 升级工作流定义版本
         /// </summary>
         /// <param name="id">工作流定义ID</param>
-        /// <returns>升级后的版本号</returns>
-        /// <exception cref="HbtException">当工作流定义不存在或升级失败时抛出异常</exception>
+        /// <returns>新版本号</returns>
         public async Task<string> UpgradeVersionAsync(long id)
         {
-            var definition = await _definitionRepository.GetByIdAsync(id);
+            var definition = await DefinitionRepository.GetByIdAsync(id);
             if (definition == null)
                 throw new HbtException(L("WorkflowDefinition.NotFound"));
 
-            // 获取当前版本
-            var currentVersion = definition.WorkflowVersion ?? "A";
-            
-            // 升级版本号
-            var newVersion = GetNextVersion(currentVersion);
-            
-            // 更新版本号
+            var newVersion = GetNextVersion(definition.WorkflowVersion);
             definition.WorkflowVersion = newVersion;
-            definition.UpdateBy = _currentUser.UserName;
             definition.UpdateTime = DateTime.Now;
+            definition.UpdateBy = _currentUser.UserName;
 
-            var result = await _definitionRepository.UpdateAsync(definition);
+            var result = await DefinitionRepository.UpdateAsync(definition);
             if (result <= 0)
                 throw new HbtException(L("WorkflowDefinition.UpgradeVersion.Failed"));
 
-            _logger.Info(L("WorkflowDefinition.UpgradeVersion.Success", definition.Id, newVersion));
+            _logger.Info(L("WorkflowDefinition.VersionUpgraded.Success", definition.Id, newVersion));
             return newVersion;
+        }
+
+        /// <summary>
+        /// 获取工作流定义选项列表
+        /// </summary>
+        /// <param name="includeDisabled">是否包含禁用的定义</param>
+        /// <returns>选项列表</returns>
+        public async Task<List<HbtSelectOption>> GetOptionsAsync(bool includeDisabled = false)
+        {
+            var exp = Expressionable.Create<HbtDefinition>();
+            if (!includeDisabled)
+                exp = exp.And(x => x.Status == 1); // 只获取启用的定义
+
+            var definitions = await DefinitionRepository.GetListAsync(exp.ToExpression());
+            
+            return definitions.Select(x => new HbtSelectOption
+            {
+                Value = x.Id.ToString(),
+                Label = $"{x.WorkflowName} (v{x.WorkflowVersion})"
+            }).ToList();
         }
 
         /// <summary>
@@ -353,30 +380,38 @@ namespace Lean.Hbt.Application.Services.Workflow
             if (string.IsNullOrEmpty(currentVersion))
                 return "A";
 
-            // 确保版本号是单个字符
-            if (currentVersion.Length > 1)
-                currentVersion = currentVersion[0].ToString();
-
-            // 获取当前字符的ASCII码
-            int ascii = currentVersion[0];
-            
-            // 检查是否是有效的字母
-            if (ascii < 65 || ascii > 90) // A-Z的ASCII码范围是65-90
-                return "A";
-
-            // 获取下一个字母
-            char nextChar = (char)(ascii + 1);
-            
-            // 如果超出Z，则从A重新开始
-            if (nextChar > 'Z')
-                nextChar = 'A';
-
-            return nextChar.ToString();
+            // 简单的版本升级逻辑：A -> B -> C -> ... -> Z -> AA -> AB -> ...
+            if (currentVersion.Length == 1)
+            {
+                var nextChar = (char)(currentVersion[0] + 1);
+                if (nextChar > 'Z')
+                    return "AA";
+                return nextChar.ToString();
+            }
+            else
+            {
+                // 处理多字符版本号
+                var lastChar = currentVersion[currentVersion.Length - 1];
+                var nextChar = (char)(lastChar + 1);
+                if (nextChar > 'Z')
+                {
+                    // 需要进位
+                    var prefix = currentVersion.Substring(0, currentVersion.Length - 1);
+                    var nextPrefix = GetNextVersion(prefix);
+                    return nextPrefix + "A";
+                }
+                else
+                {
+                    return currentVersion.Substring(0, currentVersion.Length - 1) + nextChar;
+                }
+            }
         }
 
         /// <summary>
         /// 构建查询表达式
         /// </summary>
+        /// <param name="query">查询条件</param>
+        /// <returns>查询表达式</returns>
         private Expression<Func<HbtDefinition, bool>> QueryExpression(HbtDefinitionQueryDto query)
         {
             var exp = Expressionable.Create<HbtDefinition>();
@@ -391,6 +426,95 @@ namespace Lean.Hbt.Application.Services.Workflow
                 exp = exp.And(x => x.Status == query.WorkflowStatus.Value);
 
             return exp.ToExpression();
+        }
+
+        /// <summary>
+        /// 获取当前用户的工作流定义
+        /// </summary>
+        /// <param name="status">状态筛选</param>
+        /// <param name="limit">限制数量</param>
+        /// <returns>当前用户的工作流定义列表</returns>
+        public async Task<List<HbtDefinitionDto>> GetCurrentUserDefinitionsAsync(int? status = null, int limit = 20)
+        {
+            var exp = Expressionable.Create<HbtDefinition>();
+            
+            if (status.HasValue)
+                exp = exp.And(x => x.Status == status.Value);
+
+            var definitions = await DefinitionRepository.GetListAsync(exp.ToExpression());
+            var result = definitions.Take(limit).Adapt<List<HbtDefinitionDto>>();
+            
+            // 填充表单名称
+            foreach (var definition in result)
+            {
+                if (definition.FormId > 0)
+                {
+                    var form = await FormRepository.GetByIdAsync(definition.FormId);
+                    definition.FormName = form?.FormName;
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// 获取当前用户创建的工作流定义
+        /// </summary>
+        /// <param name="status">状态筛选</param>
+        /// <param name="limit">限制数量</param>
+        /// <returns>当前用户创建的工作流定义列表</returns>
+        public async Task<List<HbtDefinitionDto>> GetCurrentUserCreatedDefinitionsAsync(int? status = null, int limit = 20)
+        {
+            var exp = Expressionable.Create<HbtDefinition>();
+            exp = exp.And(x => x.CreateBy == _currentUser.UserName);
+            
+            if (status.HasValue)
+                exp = exp.And(x => x.Status == status.Value);
+
+            var definitions = await DefinitionRepository.GetListAsync(exp.ToExpression());
+            var result = definitions.Take(limit).Adapt<List<HbtDefinitionDto>>();
+            
+            // 填充表单名称
+            foreach (var definition in result)
+            {
+                if (definition.FormId > 0)
+                {
+                    var form = await FormRepository.GetByIdAsync(definition.FormId);
+                    definition.FormName = form?.FormName;
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// 获取当前用户可访问的工作流定义
+        /// </summary>
+        /// <param name="status">状态筛选</param>
+        /// <param name="limit">限制数量</param>
+        /// <returns>当前用户可访问的工作流定义列表</returns>
+        public async Task<List<HbtDefinitionDto>> GetCurrentUserAccessibleDefinitionsAsync(int? status = null, int limit = 20)
+        {
+            var exp = Expressionable.Create<HbtDefinition>();
+            exp = exp.And(x => x.Status == 1); // 只获取启用的定义
+            
+            if (status.HasValue)
+                exp = exp.And(x => x.Status == status.Value);
+
+            var definitions = await DefinitionRepository.GetListAsync(exp.ToExpression());
+            var result = definitions.Take(limit).Adapt<List<HbtDefinitionDto>>();
+            
+            // 填充表单名称
+            foreach (var definition in result)
+            {
+                if (definition.FormId > 0)
+                {
+                    var form = await FormRepository.GetByIdAsync(definition.FormId);
+                    definition.FormName = form?.FormName;
+                }
+            }
+
+            return result;
         }
     }
 }

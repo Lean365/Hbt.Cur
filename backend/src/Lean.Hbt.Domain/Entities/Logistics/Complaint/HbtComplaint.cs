@@ -1,3 +1,15 @@
+#nullable enable
+
+//===================================================================
+// 项目名 : Lean.Hbt
+// 文件名 : HbtComplaint.cs
+// 创建者 : Lean365
+// 创建时间: 2024-03-07
+// 版本号 : V1.0.0
+// 描述    : 核心客诉主表实体类 (基于SAP QM质量管理)
+// 版权    : Copyright © 2024 Lean365. All rights reserved.
+//===================================================================
+
 using SqlSugar;
 using System;
 using System.ComponentModel.DataAnnotations;
@@ -5,59 +17,190 @@ using System.ComponentModel.DataAnnotations;
 namespace Lean.Hbt.Domain.Entities.Logistics.Complaint
 {
     /// <summary>
-    /// 核心客诉主表
+    /// 核心客诉主表实体类 (基于SAP QM质量管理)
     /// </summary>
-    [SugarTable("hbt_logistics_complaint", "核心客诉主表")]
-    [SugarIndex("ix_complaint_code", nameof(Qmnum), OrderByType.Asc, true)]
+    /// <remarks>
+    /// 创建者: Lean365
+    /// 创建时间: 2024-03-07
+    /// 参考: SAP QM 质量管理模块
+    /// </remarks>
+    [SugarTable("hbt_logistics_complaint", "核心客诉")]
+    [SugarIndex("ix_complaint_code", nameof(ComplaintCode), OrderByType.Asc, true)]
+    [SugarIndex("ix_company_plant", nameof(CompanyCode), OrderByType.Asc, nameof(PlantCode), OrderByType.Asc, false)]
     public class HbtComplaint : HbtBaseEntity
     {
-        /// <summary>集团</summary>
-        [SugarColumn(ColumnName = "mandt", ColumnDescription = "集团", Length = 6, ColumnDataType = "nvarchar", IsNullable = false)]
-        public string? Mandt { get; set; }
-        /// <summary>投诉通知编号</summary>
-        [SugarColumn(ColumnName = "qmnum", ColumnDescription = "投诉通知编号", Length = 20, ColumnDataType = "nvarchar", IsNullable = false)]
-        public string? Qmnum { get; set; }
-        /// <summary>投诉通知类型</summary>
-        [SugarColumn(ColumnName = "qmart", ColumnDescription = "投诉通知类型", Length = 8, ColumnDataType = "nvarchar", IsNullable = true)]
-        public string? Qmart { get; set; }
-        /// <summary>状态</summary>
-        [SugarColumn(ColumnName = "status", ColumnDescription = "状态", Length = 8, ColumnDataType = "nvarchar", IsNullable = true)]
-        public string? Status { get; set; }
-        /// <summary>创建日期</summary>
-        [SugarColumn(ColumnName = "erdat", ColumnDescription = "创建日期", ColumnDataType = "date", IsNullable = true)]
-        public DateTime? Erdat { get; set; }
-        /// <summary>创建人</summary>
-        [SugarColumn(ColumnName = "ernam", ColumnDescription = "创建人", Length = 12, ColumnDataType = "nvarchar", IsNullable = true)]
-        public string? Ernam { get; set; }
-        /// <summary>投诉项目编号</summary>
-        [SugarColumn(ColumnName = "fepos", ColumnDescription = "投诉项目编号", Length = 8, ColumnDataType = "nvarchar", IsNullable = true)]
-        public string? Fepos { get; set; }
-        /// <summary>投诉项目描述</summary>
-        [SugarColumn(ColumnName = "fetxt", ColumnDescription = "投诉项目描述", Length = 70, ColumnDataType = "nvarchar", IsNullable = true)]
-        public string? Fetxt { get; set; }
-        /// <summary>投诉原因编号</summary>
-        [SugarColumn(ColumnName = "grund", ColumnDescription = "投诉原因编号", Length = 8, ColumnDataType = "nvarchar", IsNullable = true)]
-        public string? Grund { get; set; }
-        /// <summary>投诉原因描述</summary>
-        [SugarColumn(ColumnName = "grundtxt", ColumnDescription = "投诉原因描述", Length = 70, ColumnDataType = "nvarchar", IsNullable = true)]
-        public string? Grundtxt { get; set; }
-        /// <summary>投诉状态历史</summary>
-        [SugarColumn(ColumnName = "status_history", ColumnDescription = "投诉状态历史", Length = 200, ColumnDataType = "nvarchar", IsNullable = true)]
-        public string? StatusHistory { get; set; }
-        /// <summary>修改日期</summary>
-        [SugarColumn(ColumnName = "aedat", ColumnDescription = "修改日期", ColumnDataType = "date", IsNullable = true)]
-        public DateTime? Aedat { get; set; }
-        /// <summary>修改人</summary>
-        [SugarColumn(ColumnName = "aenam", ColumnDescription = "修改人", Length = 12, ColumnDataType = "nvarchar", IsNullable = true)]
-        public string? Aenam { get; set; }
-        /// <summary>删除标志</summary>
-        [SugarColumn(ColumnName = "loekz", ColumnDescription = "删除标志", Length = 1, ColumnDataType = "nvarchar", IsNullable = true)]
-        public string? Loekz { get; set; }
-        /// <summary>删除日期</summary>
-        [SugarColumn(ColumnName = "lodat", ColumnDescription = "删除日期", ColumnDataType = "date", IsNullable = true)]
-        public DateTime? Lodat { get; set; }
-        /// <summary>删除人</summary>
-        [SugarColumn(ColumnName = "lousr", ColumnDescription = "删除人", Length = 12, ColumnDataType = "nvarchar", IsNullable = true)]
-        public string? Lousr { get; set; }
+        /// <summary>
+        /// 公司代码
+        /// </summary>
+        [SugarColumn(ColumnName = "company_code", ColumnDescription = "公司代码", Length = 10, ColumnDataType = "nvarchar", IsNullable = false)]
+        public string CompanyCode { get; set; } = string.Empty;
+
+        /// <summary>
+        /// 工厂代码
+        /// </summary>
+        [SugarColumn(ColumnName = "plant_code", ColumnDescription = "工厂代码", Length = 8, ColumnDataType = "nvarchar", IsNullable = false)]
+        public string PlantCode { get; set; } = string.Empty;
+
+        /// <summary>
+        /// 客诉编号
+        /// </summary>
+        [SugarColumn(ColumnName = "complaint_code", ColumnDescription = "客诉编号", Length = 20, ColumnDataType = "nvarchar", IsNullable = false)]
+        public string ComplaintCode { get; set; } = string.Empty;
+
+        /// <summary>
+        /// 客诉类型(1=产品质量 2=服务质量 3=交付问题 4=包装问题 5=其他)
+        /// </summary>
+        [SugarColumn(ColumnName = "complaint_type", ColumnDescription = "客诉类型", ColumnDataType = "int", IsNullable = false)]
+        public int ComplaintType { get; set; }
+
+        /// <summary>
+        /// 客诉类型名称
+        /// </summary>
+        [SugarColumn(ColumnName = "complaint_type_name", ColumnDescription = "客诉类型名称", Length = 50, ColumnDataType = "nvarchar", IsNullable = true)]
+        public string? ComplaintTypeName { get; set; }
+
+        /// <summary>
+        /// 客诉级别(1=轻微 2=一般 3=严重 4=重大)
+        /// </summary>
+        [SugarColumn(ColumnName = "complaint_level", ColumnDescription = "客诉级别", ColumnDataType = "int", IsNullable = false)]
+        public int ComplaintLevel { get; set; }
+
+        /// <summary>
+        /// 客诉级别名称
+        /// </summary>
+        [SugarColumn(ColumnName = "complaint_level_name", ColumnDescription = "客诉级别名称", Length = 20, ColumnDataType = "nvarchar", IsNullable = true)]
+        public string? ComplaintLevelName { get; set; }
+
+        /// <summary>
+        /// 客诉标题
+        /// </summary>
+        [SugarColumn(ColumnName = "complaint_title", ColumnDescription = "客诉标题", Length = 200, ColumnDataType = "nvarchar", IsNullable = false)]
+        public string ComplaintTitle { get; set; } = string.Empty;
+
+        /// <summary>
+        /// 客诉描述
+        /// </summary>
+        [SugarColumn(ColumnName = "complaint_description", ColumnDescription = "客诉描述", Length = 1000, ColumnDataType = "nvarchar", IsNullable = true)]
+        public string? ComplaintDescription { get; set; }
+
+        /// <summary>
+        /// 客户编码
+        /// </summary>
+        [SugarColumn(ColumnName = "customer_code", ColumnDescription = "客户编码", Length = 20, ColumnDataType = "nvarchar", IsNullable = true)]
+        public string? CustomerCode { get; set; }
+
+        /// <summary>
+        /// 客户名称
+        /// </summary>
+        [SugarColumn(ColumnName = "customer_name", ColumnDescription = "客户名称", Length = 100, ColumnDataType = "nvarchar", IsNullable = true)]
+        public string? CustomerName { get; set; }
+
+        /// <summary>
+        /// 联系人
+        /// </summary>
+        [SugarColumn(ColumnName = "contact_person", ColumnDescription = "联系人", Length = 50, ColumnDataType = "nvarchar", IsNullable = true)]
+        public string? ContactPerson { get; set; }
+
+        /// <summary>
+        /// 联系电话
+        /// </summary>
+        [SugarColumn(ColumnName = "contact_phone", ColumnDescription = "联系电话", Length = 20, ColumnDataType = "nvarchar", IsNullable = true)]
+        public string? ContactPhone { get; set; }
+
+        /// <summary>
+        /// 联系邮箱
+        /// </summary>
+        [SugarColumn(ColumnName = "contact_email", ColumnDescription = "联系邮箱", Length = 100, ColumnDataType = "nvarchar", IsNullable = true)]
+        public string? ContactEmail { get; set; }
+
+        /// <summary>
+        /// 客诉发生日期
+        /// </summary>
+        [SugarColumn(ColumnName = "complaint_date", ColumnDescription = "客诉发生日期", ColumnDataType = "date", IsNullable = true)]
+        public DateTime? ComplaintDate { get; set; }
+
+        /// <summary>
+        /// 客诉接收日期
+        /// </summary>
+        [SugarColumn(ColumnName = "receive_date", ColumnDescription = "客诉接收日期", ColumnDataType = "date", IsNullable = true)]
+        public DateTime? ReceiveDate { get; set; }
+
+        /// <summary>
+        /// 客诉处理截止日期
+        /// </summary>
+        [SugarColumn(ColumnName = "deadline_date", ColumnDescription = "客诉处理截止日期", ColumnDataType = "date", IsNullable = true)]
+        public DateTime? DeadlineDate { get; set; }
+
+        /// <summary>
+        /// 客诉状态(0=待处理 1=处理中 2=已完成 3=已关闭 4=已取消)
+        /// </summary>
+        [SugarColumn(ColumnName = "complaint_status", ColumnDescription = "客诉状态", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
+        public int ComplaintStatus { get; set; } = 0;
+
+        /// <summary>
+        /// 客诉状态名称
+        /// </summary>
+        [SugarColumn(ColumnName = "complaint_status_name", ColumnDescription = "客诉状态名称", Length = 20, ColumnDataType = "nvarchar", IsNullable = true)]
+        public string? ComplaintStatusName { get; set; }
+
+        /// <summary>
+        /// 处理优先级(1=低 2=中 3=高 4=紧急)
+        /// </summary>
+        [SugarColumn(ColumnName = "priority", ColumnDescription = "处理优先级", ColumnDataType = "int", IsNullable = false, DefaultValue = "2")]
+        public int Priority { get; set; } = 2;
+
+        /// <summary>
+        /// 处理优先级名称
+        /// </summary>
+        [SugarColumn(ColumnName = "priority_name", ColumnDescription = "处理优先级名称", Length = 20, ColumnDataType = "nvarchar", IsNullable = true)]
+        public string? PriorityName { get; set; }
+
+        /// <summary>
+        /// 客诉来源(1=电话 2=邮件 3=现场 4=系统 5=其他)
+        /// </summary>
+        [SugarColumn(ColumnName = "complaint_source", ColumnDescription = "客诉来源", ColumnDataType = "int", IsNullable = false, DefaultValue = "1")]
+        public int ComplaintSource { get; set; } = 1;
+
+        /// <summary>
+        /// 客诉来源名称
+        /// </summary>
+        [SugarColumn(ColumnName = "complaint_source_name", ColumnDescription = "客诉来源名称", Length = 20, ColumnDataType = "nvarchar", IsNullable = true)]
+        public string? ComplaintSourceName { get; set; }
+
+        /// <summary>
+        /// 是否重复客诉
+        /// </summary>
+        [SugarColumn(ColumnName = "is_repeat", ColumnDescription = "是否重复客诉", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
+        public int IsRepeat { get; set; } = 0;
+
+        /// <summary>
+        /// 原客诉编号
+        /// </summary>
+        [SugarColumn(ColumnName = "original_complaint_code", ColumnDescription = "原客诉编号", Length = 20, ColumnDataType = "nvarchar", IsNullable = true)]
+        public string? OriginalComplaintCode { get; set; }
+
+        /// <summary>
+        /// 客诉金额
+        /// </summary>
+        [SugarColumn(ColumnName = "complaint_amount", ColumnDescription = "客诉金额", ColumnDataType = "decimal(18,2)", IsNullable = false, DefaultValue = "0")]
+        public decimal ComplaintAmount { get; set; } = 0;
+
+        /// <summary>
+        /// 币种
+        /// </summary>
+        [SugarColumn(ColumnName = "currency", ColumnDescription = "币种", Length = 3, ColumnDataType = "nvarchar", IsNullable = false, DefaultValue = "CNY")]
+        public string Currency { get; set; } = "CNY";
+
+        /// <summary>
+        /// 排序号
+        /// </summary>
+        [SugarColumn(ColumnName = "order_num", ColumnDescription = "排序号", ColumnDataType = "int", IsNullable = false)]
+        public int OrderNum { get; set; }
+
+        /// <summary>
+        /// 状态(0=停用 1=正常)
+        /// </summary>
+        [SugarColumn(ColumnName = "status", ColumnDescription = "状态", ColumnDataType = "int", IsNullable = false)]
+        public int Status { get; set; }
     }
 } 

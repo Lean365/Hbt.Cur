@@ -34,15 +34,13 @@ namespace Lean.Hbt.Application.Services.Workflow
         /// <param name="logger">日志服务</param>
         /// <param name="httpContextAccessor">HTTP上下文访问器</param>
         /// <param name="currentUser">当前用户服务</param>
-        /// <param name="currentTenant">当前租户服务</param>
         /// <param name="localization">本地化服务</param>
         public HbtScheduler(
             IServiceProvider serviceProvider,
             IHbtLogger logger,
             IHttpContextAccessor httpContextAccessor,
             IHbtCurrentUser currentUser,
-            IHbtCurrentTenant currentTenant,
-            IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, currentTenant, localization)
+            IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
         {
             _serviceProvider = serviceProvider;
         }
@@ -259,7 +257,7 @@ namespace Lean.Hbt.Application.Services.Workflow
                         // 调度任务
                         var taskEntity = new Domain.Entities.Workflow.HbtScheduledTask
                         {
-                            Id = task.WorkflowScheduledTaskId,
+                            Id = task.ScheduledTaskId,
                             InstanceId = task.InstanceId,
                             NodeId = task.NodeId,
                             TaskType = task.TaskType,
@@ -267,11 +265,11 @@ namespace Lean.Hbt.Application.Services.Workflow
                             TaskParameters = task.TaskParameters
                         };
 
-                        await scheduler.ScheduleJobAsync(task.WorkflowScheduledTaskId, task.TaskType, task.ScheduledTime);
+                        await scheduler.ScheduleJobAsync(task.ScheduledTaskId, task.TaskType, task.ScheduledTime);
                     }
                     catch (Exception ex)
                     {
-                        _logger.Error($"调度任务{task.WorkflowScheduledTaskId}失败", ex);
+                        _logger.Error($"调度任务{task.ScheduledTaskId}失败", ex);
                     }
                 }
             }

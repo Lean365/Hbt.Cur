@@ -4,6 +4,7 @@ export default {
     auth: {
       login: {
         title: '로그인',
+        tenantId: '테넌트 설정',
         username: '사용자 이름',
         password: '비밀번호',
         rememberMe: '로그인 정보 저장',
@@ -27,7 +28,8 @@ export default {
         otherLogin: '다른 로그인 방법',
         form: {
           usernameRequired: '사용자 이름을 입력하세요',
-          passwordRequired: '비밀번호를 입력하세요'
+          passwordRequired: '비밀번호를 입력하세요',
+          tenantIdRequired: '테넌트 설정을 선택하세요'
         }
       },
       register: {

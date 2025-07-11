@@ -21,6 +21,12 @@ namespace Lean.Hbt.Domain.Entities.Identity;
 public class HbtTenant : HbtBaseEntity
 {
     /// <summary>
+    /// 租户配置
+    /// </summary>
+    [SugarColumn(ColumnName = "config_id", ColumnDescription = "租户配置", ColumnDataType = "nvarchar", IsNullable = false)]
+    public string ConfigId { get; set; } = string.Empty;
+
+    /// <summary>
     /// 租户名称
     /// </summary>
     [SugarColumn(ColumnName = "tenant_name", ColumnDescription = "租户名称", Length = 50, ColumnDataType = "nvarchar", IsNullable = false)]
@@ -57,10 +63,16 @@ public class HbtTenant : HbtBaseEntity
     public string? Address { get; set; }
 
     /// <summary>
-    /// 许可证
+    /// 许可证类型
     /// </summary>
-    [SugarColumn(ColumnName = "license", ColumnDescription = "许可证", Length = 100, ColumnDataType = "nvarchar", IsNullable = true)]
-    public string? License { get; set; }
+    [SugarColumn(ColumnName = "license_type", ColumnDescription = "许可证类型", Length = 100, ColumnDataType = "nvarchar", IsNullable = true)]
+    public string? LicenseType { get; set; }
+
+    /// <summary>
+    /// 许可注册码
+    /// </summary>
+    [SugarColumn(ColumnName = "license_key", ColumnDescription = "许可注册码", Length = 200, ColumnDataType = "nvarchar", IsNullable = true)]
+    public string? LicenseKey { get; set; }
 
     /// <summary>
     /// 最大用户数
@@ -87,28 +99,10 @@ public class HbtTenant : HbtBaseEntity
     public DateTime? LicenseEndTime { get; set; }
 
     /// <summary>
-    /// 是否默认（0否 1是）
-    /// </summary>
-    [SugarColumn(ColumnName = "is_default", ColumnDescription = "是否默认", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
-    public int IsDefault { get; set; } = 0;
-
-    /// <summary>
-    /// 数据库连接字符串
-    /// </summary>
-    [SugarColumn(ColumnName = "db_connection", ColumnDescription = "数据库连接字符串", Length = 500, ColumnDataType = "nvarchar", IsNullable = false)]
-    public string DbConnection { get; set; } = string.Empty;
-
-    /// <summary>
     /// 租户域名
     /// </summary>
     [SugarColumn(ColumnName = "domain", ColumnDescription = "租户域名", Length = 100, ColumnDataType = "nvarchar", IsNullable = false)]
     public string Domain { get; set; } = string.Empty;
-
-    /// <summary>
-    /// 租户状态（0正常 1停用）
-    /// </summary>
-    [SugarColumn(ColumnName = "status", ColumnDescription = "租户状态", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
-    public int Status { get; set; } = 0;
 
     /// <summary>
     /// 租户Logo
@@ -122,9 +116,19 @@ public class HbtTenant : HbtBaseEntity
     [SugarColumn(ColumnName = "theme", ColumnDescription = "租户主题", Length = 50, ColumnDataType = "nvarchar", IsNullable = true)]
     public string? Theme { get; set; }
 
+
+
+    /// <summary>
+    /// 租户状态（0正常 1停用）
+    /// </summary>
+    [SugarColumn(ColumnName = "status", ColumnDescription = "租户状态", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
+    public int Status { get; set; } = 0;
+
+
+
     /// <summary>
     /// 用户租户关联列表
     /// </summary>
-    [Navigate(NavigateType.OneToMany, nameof(HbtUserTenant.TenantId))]
+    [Navigate(NavigateType.OneToMany, nameof(HbtUserTenant.ConfigId))]
     public List<HbtUserTenant>? UserTenants { get; set; }
 }

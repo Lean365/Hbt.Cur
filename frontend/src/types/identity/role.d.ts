@@ -1,13 +1,11 @@
 import type { HbtBaseEntity, HbtPagedQuery, HbtPagedResult } from '@/types/common'
 
 /**
- * 角色对象
+ * 角色实体
  */
 export interface HbtRole extends HbtBaseEntity {
   /** 角色ID */
   roleId: number
-  /** 租户ID */
-  tenantId: number
   /** 角色名称 */
   roleName: string
   /** 角色标识 */
@@ -15,16 +13,47 @@ export interface HbtRole extends HbtBaseEntity {
   /** 排序号 */
   orderNum: number
   /** 数据范围（1：全部数据权限 2：自定数据权限 3：本部门数据权限 4：本部门及以下数据权限 5：仅本人数据权限） */
-  dataScope: number;
+  dataScope: number
   /** 用户数 */
-  userCount: number;
-  /** 状态（0正常 1停用） */
-  status: number;
+  userCount: number
+  /** 角色状态（0正常 1停用） */
+  status: number
+}
 
+/**
+ * 角色创建参数
+ */
+export interface HbtRoleCreate {
+  /** 角色ID */
+  roleId: number
+  /** 角色编码 */
+  roleCode: string
+  /** 角色名称 */
+  roleName: string
+  /** 角色标识 */
+  roleKey: string
+  /** 排序号 */
+  orderNum: number
+  /** 数据范围（1：全部数据权限 2：自定数据权限 3：本部门数据权限 4：本部门及以下数据权限 5：仅本人数据权限） */
+  dataScope: number
+  /** 用户数 */
+  userCount: number
+  /** 状态（0正常 1停用） */
+  status: number
+  /** 备注 */
+  remark?: string
   /** 菜单ID列表 */
-  menuIds?: number[];
+  menuIds?: number[]
   /** 部门ID列表 */
-  deptIds?: number[];
+  deptIds?: number[]
+}
+
+/**
+ * 角色更新参数
+ */
+export interface HbtRoleUpdate extends HbtRoleCreate {
+  /** 角色ID */
+  roleId: number
 }
 
 /**
@@ -32,77 +61,26 @@ export interface HbtRole extends HbtBaseEntity {
  */
 export interface HbtRoleQuery extends HbtPagedQuery {
   /** 角色名称 */
-  roleName?: string;
+  roleName?: string
   /** 角色标识 */
-  roleKey?: string;
+  roleKey?: string
   /** 状态（0正常 1停用） */
-  status?: number;
+  status?: number
 }
 
 /**
- * 创建角色参数
+ * 角色分页结果
  */
-export interface HbtRoleCreate {
-  /** 角色名称 */
-  roleName: string;
-  /** 角色标识 */
-  roleKey: string;
-  /** 排序号 */
-  orderNum: number;
-  /** 数据范围（1：全部数据权限 2：自定数据权限 3：本部门数据权限 4：本部门及以下数据权限 5：仅本人数据权限） */
-  dataScope: number;
-  /** 用户数 */
-  userCount: number;
-  /** 状态（0正常 1停用） */
-  status: number;
-  /** 租户ID */
-  tenantId: number;
-  /** 备注 */
-  remark?: string;
-  /** 菜单ID列表 */
-  menuIds?: number[];
-  /** 部门ID列表 */
-  deptIds?: number[];
-}
-
-/**
- * 更新角色参数
- */
-export interface HbtRoleUpdate extends HbtRoleCreate {
-  /** 角色ID */
-  roleId: number;
-}
+export interface HbtRolePagedResult extends HbtPagedResult<HbtRole> {}
 
 /**
  * 角色状态更新参数
  */
 export interface HbtRoleStatus {
   /** 角色ID */
-  roleId: number;
+  roleId: number
   /** 状态（0正常 1停用） */
-  status: number;
-}
-
-/**
- * 角色导入模板
- */
-export interface HbtRoleTemplate {
-  /** 角色名称 */
-  roleName: string;
-  /** 角色标识 */
-  roleKey: string;
-  /** 排序号 */
-  orderNum: string;
-  /** 数据范围 */
-  dataScope: string;
-  /** 状态 */
-  status: string;
-  /** 备注 */
-  remark: string;
-  /** 菜单名称列表 */
-  menuNames: string;
-  /** 部门名称列表 */
-  deptNames: string;
+  status: number
 }
 
 /**
@@ -110,21 +88,31 @@ export interface HbtRoleTemplate {
  */
 export interface HbtRoleImport {
   /** 角色名称 */
-  roleName: string;
+  roleName: string
   /** 角色标识 */
-  roleKey: string;
+  roleKey: string
   /** 排序号 */
-  orderNum: number;
+  orderNum: number
   /** 数据范围（1：全部数据权限 2：自定数据权限 3：本部门数据权限 4：本部门及以下数据权限 5：仅本人数据权限） */
-  dataScope: number;
+  dataScope: string
   /** 状态（0正常 1停用） */
-  status: number;
-  /** 备注 */
-  remark?: string;
-  /** 菜单名称列表 */
-  menuNames?: string;
-  /** 部门名称列表 */
-  deptNames?: string;
+  status: number
+}
+
+/**
+ * 角色导入模板
+ */
+export interface HbtRoleTemplate {
+  /** 角色名称 */
+  roleName: string
+  /** 角色标识 */
+  roleKey: string
+  /** 排序号 */
+  orderNum: number
+  /** 数据范围（1：全部数据权限 2：自定数据权限 3：本部门数据权限 4：本部门及以下数据权限 5：仅本人数据权限） */
+  dataScope: number
+  /** 状态（0正常 1停用） */
+  status: number
 }
 
 /**
@@ -132,60 +120,57 @@ export interface HbtRoleImport {
  */
 export interface HbtRoleExport {
   /** 角色名称 */
-  roleName: string;
+  roleName: string
   /** 角色标识 */
-  roleKey: string;
+  roleKey: string
   /** 排序号 */
-  orderNum: number;
-  /** 数据范围 */
-  dataScope: number;
-  /** 用户数 */
-  userCount: number;
-  /** 状态 */
-  status: number;
-  /** 备注 */
-  remark: string;
+  orderNum: number
+  /** 数据范围（1：全部数据权限 2：自定数据权限 3：本部门数据权限 4：本部门及以下数据权限 5：仅本人数据权限） */
+  dataScope: number
+  /** 状态（0正常 1停用） */
+  status: number
   /** 创建时间 */
-  createTime: string;
+  createTime: string
 }
-
-/**
- * 角色分页结果
- */
-export type HbtRolePageResult = HbtPagedResult<HbtRole>
 
 /**
  * 角色DTO
  */
 export interface HbtRoleDto {
   /** 角色ID */
-  roleId: number;
+  roleId: number
   /** 角色名称 */
-  roleName: string;
+  roleName: string
   /** 角色标识 */
-  roleKey: string;
+  roleKey: string
   /** 排序号 */
-  orderNum: number;
-  /** 数据范围 */
-  dataScope: number;
+  orderNum: number
+  /** 数据范围（1：全部数据权限 2：自定数据权限 3：本部门数据权限 4：本部门及以下数据权限 5：仅本人数据权限） */
+  dataScope: number
   /** 用户数 */
-  userCount: number;
-  /** 状态 */
-  status: number;
+  userCount: number
+  /** 状态（0正常 1停用） */
+  status: number
   /** 备注 */
-  remark: string;
+  remark?: string
   /** 创建时间 */
-  createTime: string;
+  createTime: string
   /** 创建者 */
-  createBy: string;
+  createBy: string
   /** 更新时间 */
-  updateTime: string;
+  updateTime: string
   /** 更新者 */
-  updateBy: string;
+  updateBy: string
+  /** 是否删除 */
+  isDeleted: number
+  /** 删除时间 */
+  deleteTime: string
+  /** 删除者 */
+  deleteBy: string
   /** 菜单ID列表 */
-  menuIds: number[];
+  menuIds?: number[]
   /** 部门ID列表 */
-  deptIds: number[];
+  deptIds?: number[]
 }
 
 /**

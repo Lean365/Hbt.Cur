@@ -2,14 +2,17 @@ export default {
   workflow: {
     task: {
       fields: {
-      taskId: '任务ID',
+      processTaskId: '任务ID',
       instanceId: '实例ID',
+      instanceName: '实例名称',
       nodeId: '节点ID',
+      nodeName: '节点名称',
       title: '工作流任务',
       taskName: '任务名称',
       taskType: '任务类型',
       status: '任务状态',
-      assigneeId: '处理人',
+      assigneeId: '处理人ID',
+      assigneeName: '处理人',
       comment: '处理意见',
       result: '处理结果',
       completeTime: '完成时间',

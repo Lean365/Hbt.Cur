@@ -29,8 +29,6 @@ export interface HbtLanguage extends HbtBaseEntity {
   isDefault: number
   /** 状态(0=禁用,1=启用) */
   status: number
-  /** 租户ID */
-  tenantId: number
 }
 
 /**

@@ -223,6 +223,12 @@ export default {
       stop: '停止',          // @btn-stop-color
       run: '运行',           // @btn-run-color
       force: '强制',         // @btn-forced-color
+      start: '开始',         // @btn-start-color
+      suspend: '暂停',       // @btn-suspend-color
+      resume: '恢复',        // @btn-resume-color
+      submit: '提交',        // @btn-submit-color
+      withdraw: '撤回',      // @btn-withdraw-color
+      terminate: '终止',     // @btn-terminate-color
 
       // === 系统功能按钮 ===
       generate: '生成',      // @btn-generate-color
@@ -256,7 +262,7 @@ export default {
       initialize: '初始化',   // @btn-initialize-color
       expand: '展开',        // @btn-expand-color
       collapse: '收起',      // @btn-collapse-color
-      approve: '同意',       // @btn-approve-color
+      approve: '审批',       // @btn-approve-color
       reject: '拒绝',        // @btn-reject-color
       comment: '评论',       // @btn-comment-color
       attach: '附件',        // @btn-attach-color
@@ -277,9 +283,11 @@ export default {
 
       // === 工作流按钮 ===
       startFlow: '启动流程',  // @btn-start-flow-color
+      pauseFlow: '暂停流程',  // @btn-pause-flow-color
+      resumeFlow: '恢复流程',  // @btn-resume-flow-color
+      forceEndFlow: '强制结束', // @btn-force-end-flow-color
       endFlow: '结束流程',    // @btn-end-flow-color
       suspendFlow: '暂停流程', // @btn-suspend-flow-color
-      resumeFlow: '恢复流程',  // @btn-resume-flow-color
       transfer: '转办',       // @btn-transfer-color
       delegate: '委托',       // @btn-delegate-color
       notify: '通知',        // @btn-notify-color
@@ -328,7 +336,11 @@ export default {
       optimize: '优化',      // @btn-optimize-color
       monitor: '监控',       // @btn-monitor-color
       diagnose: '诊断',      // @btn-diagnose-color
-      maintain: '维护'       // @btn-maintain-color
+      maintain: '维护',       // @btn-maintain-color
+
+      // === 通用按钮 ===
+
+      send: '发送'
     },
 
     // ==================== 结果与消息 ====================

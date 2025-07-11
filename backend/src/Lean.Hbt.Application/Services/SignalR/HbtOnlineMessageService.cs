@@ -32,26 +32,25 @@ namespace Lean.Hbt.Application.Services.SignalR;
 /// </remarks>
 public class HbtOnlineMessageService : HbtBaseService, IHbtOnlineMessageService
 {
-    private readonly IHbtRepository<HbtOnlineMessage> _repository;
+    private readonly IHbtRepositoryFactory _repositoryFactory;
+    private IHbtRepository<HbtOnlineMessage> Repository => _repositoryFactory.GetAuthRepository<HbtOnlineMessage>();
 
     /// <summary>
     /// 构造函数
     /// </summary>
     /// <param name="logger">日志服务</param>
-    /// <param name="repository">在线消息仓储</param>
+    /// <param name="repositoryFactory">在线消息仓储工厂</param>
     /// <param name="httpContextAccessor">HTTP上下文访问器</param>
     /// <param name="currentUser">当前用户服务</param>
-    /// <param name="currentTenant">当前租户服务</param>
     /// <param name="localization">本地化服务</param>
     public HbtOnlineMessageService(
         IHbtLogger logger,
-        IHbtRepository<HbtOnlineMessage> repository,
+        IHbtRepositoryFactory repositoryFactory,
         IHttpContextAccessor httpContextAccessor,
         IHbtCurrentUser currentUser,
-        IHbtCurrentTenant currentTenant,
-        IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, currentTenant, localization)
+        IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
     {
-        _repository = repository;
+        _repositoryFactory = repositoryFactory ?? throw new ArgumentNullException(nameof(repositoryFactory));
     }
 
     /// <summary>
@@ -62,8 +61,8 @@ public class HbtOnlineMessageService : HbtBaseService, IHbtOnlineMessageService
         try
         {
             // 查询数据
-            var result = await _repository.GetPagedListAsync(
-                KpMessageQueryExpression(query),
+            var result = await Repository.GetPagedListAsync(
+                QueryExpression(query),
                 query.PageIndex,
                 query.PageSize,
                 x => x.Id,
@@ -91,7 +90,7 @@ public class HbtOnlineMessageService : HbtBaseService, IHbtOnlineMessageService
     public async Task<List<HbtOnlineMessageExportDto>> GetExportDataAsync(HbtOnlineMessageQueryDto query)
     {
         // 查询数据
-        var messages = await _repository.GetListAsync(KpMessageQueryExpression(query));
+        var messages = await Repository.GetListAsync(QueryExpression(query));
 
         // 转换并返回
         return messages.Adapt<List<HbtOnlineMessageExportDto>>();
@@ -107,7 +106,7 @@ public class HbtOnlineMessageService : HbtBaseService, IHbtOnlineMessageService
     {
         try
         {
-            var list = await _repository.GetListAsync(KpMessageQueryExpression(query));
+            var list = await Repository.GetListAsync(QueryExpression(query));
             return await HbtExcelHelper.ExportAsync(list.Adapt<List<HbtOnlineMessageExportDto>>(), sheetName, L("Message.ExportTitle"));
         }
         catch (Exception ex)
@@ -124,7 +123,7 @@ public class HbtOnlineMessageService : HbtBaseService, IHbtOnlineMessageService
     {
         try
         {
-            var message = await _repository.GetByIdAsync(id);
+            var message = await Repository.GetByIdAsync(id);
             if (message == null)
                 throw new HbtException(L("Message.NotFound", id));
 
@@ -146,7 +145,7 @@ public class HbtOnlineMessageService : HbtBaseService, IHbtOnlineMessageService
         {
             var message = input.Adapt<HbtOnlineMessage>();
             message.CreateTime = DateTime.Now;
-            var result = await _repository.CreateAsync(message);
+            var result = await Repository.CreateAsync(message);
             if (result <= 0)
                 throw new HbtException(L("Message.SaveFailed"));
 
@@ -166,11 +165,11 @@ public class HbtOnlineMessageService : HbtBaseService, IHbtOnlineMessageService
     {
         try
         {
-            var message = await _repository.GetByIdAsync(id);
+            var message = await Repository.GetByIdAsync(id);
             if (message == null)
                 throw new HbtException(L("Message.NotFound", id));
 
-            var result = await _repository.DeleteAsync(id);
+            var result = await Repository.DeleteAsync(id);
             if (result <= 0)
                 throw new HbtException(L("Message.DeleteFailed"));
 
@@ -194,7 +193,7 @@ public class HbtOnlineMessageService : HbtBaseService, IHbtOnlineMessageService
             var exp = Expressionable.Create<HbtOnlineMessage>();
             exp.And(m => m.CreateTime < expiredTime);
 
-            return await _repository.DeleteAsync(exp.ToExpression());
+            return await Repository.DeleteAsync(exp.ToExpression());
         }
         catch (Exception ex)
         {
@@ -210,13 +209,13 @@ public class HbtOnlineMessageService : HbtBaseService, IHbtOnlineMessageService
     {
         try
         {
-            var message = await _repository.GetByIdAsync(id);
+            var message = await Repository.GetByIdAsync(id);
             if (message == null)
                 throw new HbtException(L("Message.NotFound", id));
 
             message.IsRead = 1;
             message.ReadTime = DateTime.Now;
-            var result = await _repository.UpdateAsync(message);
+            var result = await Repository.UpdateAsync(message);
             if (result <= 0)
                 throw new HbtException(L("Message.MarkReadFailed"));
 
@@ -239,7 +238,7 @@ public class HbtOnlineMessageService : HbtBaseService, IHbtOnlineMessageService
             var exp = Expressionable.Create<HbtOnlineMessage>();
             exp.And(m => m.ReceiverId == userId && m.IsRead == 0);
 
-            var messages = await _repository.GetListAsync(exp.ToExpression());
+            var messages = await Repository.GetListAsync(exp.ToExpression());
             if (!messages.Any())
                 return 0;
 
@@ -249,7 +248,7 @@ public class HbtOnlineMessageService : HbtBaseService, IHbtOnlineMessageService
                 message.ReadTime = DateTime.Now;
             }
 
-            return await _repository.UpdateRangeAsync(messages);
+            return await Repository.UpdateRangeAsync(messages);
         }
         catch (Exception ex)
         {
@@ -265,13 +264,13 @@ public class HbtOnlineMessageService : HbtBaseService, IHbtOnlineMessageService
     {
         try
         {
-            var message = await _repository.GetByIdAsync(id);
+            var message = await Repository.GetByIdAsync(id);
             if (message == null)
                 throw new HbtException(L("Message.NotFound", id));
 
             message.IsRead = 0;
             message.ReadTime = null;
-            var result = await _repository.UpdateAsync(message);
+            var result = await Repository.UpdateAsync(message);
             if (result <= 0)
                 throw new HbtException(L("Message.MarkUnreadFailed"));
 
@@ -294,7 +293,7 @@ public class HbtOnlineMessageService : HbtBaseService, IHbtOnlineMessageService
             var exp = Expressionable.Create<HbtOnlineMessage>();
             exp.And(m => m.ReceiverId == userId && m.IsRead == 1);
 
-            var messages = await _repository.GetListAsync(exp.ToExpression());
+            var messages = await Repository.GetListAsync(exp.ToExpression());
             if (!messages.Any())
                 return 0;
 
@@ -304,7 +303,7 @@ public class HbtOnlineMessageService : HbtBaseService, IHbtOnlineMessageService
                 message.ReadTime = null;
             }
 
-            return await _repository.UpdateRangeAsync(messages);
+            return await Repository.UpdateRangeAsync(messages);
         }
         catch (Exception ex)
         {
@@ -313,7 +312,7 @@ public class HbtOnlineMessageService : HbtBaseService, IHbtOnlineMessageService
         }
     }
 
-    private Expression<Func<HbtOnlineMessage, bool>> KpMessageQueryExpression(HbtOnlineMessageQueryDto query)
+    private Expression<Func<HbtOnlineMessage, bool>> QueryExpression(HbtOnlineMessageQueryDto query)
     {
         return Expressionable.Create<HbtOnlineMessage>()
             .AndIF(query.SenderId.HasValue, x => x.SenderId == query.SenderId.Value)

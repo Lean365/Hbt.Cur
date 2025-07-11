@@ -12,6 +12,7 @@
 using System.Linq.Expressions;
 using Lean.Hbt.Common.Utils;
 using Lean.Hbt.Domain.IServices.Security;
+using Lean.Hbt.Domain.Repositories;
 using Microsoft.AspNetCore.Http;
 
 namespace Lean.Hbt.Application.Services.Identity
@@ -25,11 +26,7 @@ namespace Lean.Hbt.Application.Services.Identity
     /// </remarks>
     public class HbtUserService : HbtBaseService, IHbtUserService
     {
-        private readonly IHbtRepository<HbtUser> _userRepository;
-        private readonly IHbtRepository<HbtUserRole> _userRoleRepository;
-        private readonly IHbtRepository<HbtUserPost> _userPostRepository;
-        private readonly IHbtRepository<HbtUserDept> _userDeptRepository;
-        private readonly IHbtRepository<HbtUserTenant> _userTenantRepository;
+        private readonly IHbtRepositoryFactory _repositoryFactory;
         private readonly IHbtPasswordPolicy _passwordPolicy;
 
         /// <summary>
@@ -37,24 +34,40 @@ namespace Lean.Hbt.Application.Services.Identity
         /// </summary>
         public HbtUserService(
             IHbtLogger logger,
-            IHbtRepository<HbtUser> userRepository,
-            IHbtRepository<HbtUserRole> userRoleRepository,
-            IHbtRepository<HbtUserPost> userPostRepository,
-            IHbtRepository<HbtUserDept> userDeptRepository,
-            IHbtRepository<HbtUserTenant> userTenantRepository,
+            IHbtRepositoryFactory repositoryFactory,
             IHbtPasswordPolicy passwordPolicy,
             IHbtCurrentUser currentUser,
             IHttpContextAccessor httpContextAccessor,
-            IHbtCurrentTenant currentTenant,
-            IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, currentTenant, localization)
+            IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
         {
-            _userRepository = userRepository;
-            _userRoleRepository = userRoleRepository;
-            _userPostRepository = userPostRepository;
-            _userDeptRepository = userDeptRepository;
-            _userTenantRepository = userTenantRepository;
-            _passwordPolicy = passwordPolicy;
+            _repositoryFactory = repositoryFactory ?? throw new ArgumentNullException(nameof(repositoryFactory));
+            _passwordPolicy = passwordPolicy ?? throw new ArgumentNullException(nameof(passwordPolicy));
         }
+
+        /// <summary>
+        /// 获取用户仓储
+        /// </summary>
+        private IHbtRepository<HbtUser> UserRepository => _repositoryFactory.GetAuthRepository<HbtUser>();
+
+        /// <summary>
+        /// 获取用户角色仓储
+        /// </summary>
+        private IHbtRepository<HbtUserRole> UserRoleRepository => _repositoryFactory.GetAuthRepository<HbtUserRole>();
+
+        /// <summary>
+        /// 获取用户岗位仓储
+        /// </summary>
+        private IHbtRepository<HbtUserPost> UserPostRepository => _repositoryFactory.GetAuthRepository<HbtUserPost>();
+
+        /// <summary>
+        /// 获取用户部门仓储
+        /// </summary>
+        private IHbtRepository<HbtUserDept> UserDeptRepository => _repositoryFactory.GetAuthRepository<HbtUserDept>();
+
+        /// <summary>
+        /// 获取用户租户仓储
+        /// </summary>
+        private IHbtRepository<HbtUserTenant> UserTenantRepository => _repositoryFactory.GetAuthRepository<HbtUserTenant>();
 
         /// <summary>
         /// 获取用户分页列表
@@ -65,7 +78,7 @@ namespace Lean.Hbt.Application.Services.Identity
         {
             var exp = QueryExpression(query);
 
-            var result = await _userRepository.GetPagedListAsync(
+            var result = await UserRepository.GetPagedListAsync(
                 exp,
                 query.PageIndex,
                 query.PageSize,
@@ -88,20 +101,20 @@ namespace Lean.Hbt.Application.Services.Identity
         /// <returns>返回用户详情</returns>
         public async Task<HbtUserDto> GetByIdAsync(long userId)
         {
-            var user = await _userRepository.GetByIdAsync(userId);
+            var user = await UserRepository.GetByIdAsync(userId);
             if (user == null)
                 throw new HbtException(L("Identity.User.NotFound"));
 
             // 获取用户角色
-            var userRoles = await _userRoleRepository.GetListAsync(ur => ur.UserId == userId);
+            var userRoles = await UserRoleRepository.GetListAsync(ur => ur.UserId == userId);
             var roleIds = userRoles.Select(ur => ur.RoleId).ToList();
 
             // 获取用户岗位
-            var userPosts = await _userPostRepository.GetListAsync(up => up.UserId == userId);
+            var userPosts = await UserPostRepository.GetListAsync(up => up.UserId == userId);
             var postIds = userPosts.Select(up => up.PostId).ToList();
 
             // 获取用户部门
-            var userDepts = await _userDeptRepository.GetListAsync(ud => ud.UserId == userId);
+            var userDepts = await UserDeptRepository.GetListAsync(ud => ud.UserId == userId);
             var deptIds = userDepts.Select(ud => ud.DeptId).ToList();
 
             var userDto = user.Adapt<HbtUserDto>();
@@ -126,9 +139,9 @@ namespace Lean.Hbt.Application.Services.Identity
                 throw new HbtException(L("Identity.User.Username.Required"));
 
             // 验证字段是否已存在
-            await HbtValidateUtils.ValidateFieldExistsAsync(_userRepository, "UserName", input.UserName);
-            await HbtValidateUtils.ValidateFieldExistsAsync(_userRepository, "PhoneNumber", input.PhoneNumber);
-            await HbtValidateUtils.ValidateFieldExistsAsync(_userRepository, "Email", input.Email);
+            await HbtValidateUtils.ValidateFieldExistsAsync(UserRepository, "UserName", input.UserName);
+            await HbtValidateUtils.ValidateFieldExistsAsync(UserRepository, "PhoneNumber", input.PhoneNumber);
+            await HbtValidateUtils.ValidateFieldExistsAsync(UserRepository, "Email", input.Email);
 
             // 使用默认密码或验证用户提供的密码
             var password = string.IsNullOrEmpty(input.Password) ? _passwordPolicy.DefaultPassword : input.Password;
@@ -148,7 +161,7 @@ namespace Lean.Hbt.Application.Services.Identity
             user.CreateBy = _currentUser.UserName;
             user.CreateTime = DateTime.Now;
 
-            var result = await _userRepository.CreateAsync(user);
+            var result = await UserRepository.CreateAsync(user);
             if (result <= 0)
                 throw new HbtException(L("Common.AddFailed"));
 
@@ -163,7 +176,7 @@ namespace Lean.Hbt.Application.Services.Identity
                     CreateTime = DateTime.Now
                 }).ToList();
 
-                await _userRoleRepository.CreateRangeAsync(userRoles);
+                await UserRoleRepository.CreateRangeAsync(userRoles);
             }
 
             // 添加用户岗位关联
@@ -177,7 +190,7 @@ namespace Lean.Hbt.Application.Services.Identity
                     CreateTime = DateTime.Now
                 }).ToList();
 
-                await _userPostRepository.CreateRangeAsync(userPosts);
+                await UserPostRepository.CreateRangeAsync(userPosts);
             }
 
             // 添加用户部门关联
@@ -191,17 +204,16 @@ namespace Lean.Hbt.Application.Services.Identity
                     CreateTime = DateTime.Now
                 }).ToList();
 
-                await _userDeptRepository.CreateRangeAsync(userDepts);
+                await UserDeptRepository.CreateRangeAsync(userDepts);
             }
 
             // 添加用户租户关联
-            if (input.TenantIds != null && input.TenantIds.Any())
+            if (input.ConfigIds != null && input.ConfigIds.Any())
             {
-                var userTenants = input.TenantIds.Select(tenantId => new HbtUserTenant
+                var userTenants = input.ConfigIds.Select(configId => new HbtUserTenant
                 {
                     UserId = user.Id,
-                    TenantId = tenantId,
-                    Status = 0,
+                    ConfigId = configId,
                     IsDeleted = 0,
                     CreateBy = _currentUser.UserName,
                     CreateTime = DateTime.Now,
@@ -209,7 +221,7 @@ namespace Lean.Hbt.Application.Services.Identity
                     UpdateTime = DateTime.Now
                 }).ToList();
 
-                await _userTenantRepository.CreateRangeAsync(userTenants);
+                await UserTenantRepository.CreateRangeAsync(userTenants);
             }
 
             _logger.Info(L("Common.AddSuccess"));
@@ -226,16 +238,16 @@ namespace Lean.Hbt.Application.Services.Identity
             if (input == null)
                 throw new ArgumentNullException(nameof(input));
 
-            var user = await _userRepository.GetByIdAsync(input.UserId)
+            var user = await UserRepository.GetByIdAsync(input.UserId)
                 ?? throw new HbtException(L("Identity.User.NotFound"));
 
             // 验证字段是否已存在（排除当前用户）
             if (user.NickName != input.NickName)
-                await HbtValidateUtils.ValidateFieldExistsAsync(_userRepository, "NickName", input.NickName, input.UserId);
+                await HbtValidateUtils.ValidateFieldExistsAsync(UserRepository, "NickName", input.NickName, input.UserId);
             if (user.PhoneNumber != input.PhoneNumber)
-                await HbtValidateUtils.ValidateFieldExistsAsync(_userRepository, "PhoneNumber", input.PhoneNumber, input.UserId);
+                await HbtValidateUtils.ValidateFieldExistsAsync(UserRepository, "PhoneNumber", input.PhoneNumber, input.UserId);
             if (user.Email != input.Email)
-                await HbtValidateUtils.ValidateFieldExistsAsync(_userRepository, "Email", input.Email, input.UserId);
+                await HbtValidateUtils.ValidateFieldExistsAsync(UserRepository, "Email", input.Email, input.UserId);
 
             // 更新用户基本信息
             user.NickName = input.NickName;
@@ -248,17 +260,17 @@ namespace Lean.Hbt.Application.Services.Identity
             user.UpdateBy = _currentUser.UserName;
             user.UpdateTime = DateTime.Now;
 
-            var result = await _userRepository.UpdateAsync(user);
+            var result = await UserRepository.UpdateAsync(user);
             if (result <= 0)
                 throw new HbtException(L("Common.UpdateFailed"));
 
             // 更新用户角色关联
             if (input.RoleIds != null)
             {
-                var userRoles = await _userRoleRepository.GetListAsync(ur => ur.UserId == user.Id);
+                var userRoles = await UserRoleRepository.GetListAsync(ur => ur.UserId == user.Id);
                 if (userRoles.Any())
                 {
-                    await _userRoleRepository.DeleteRangeAsync(userRoles);
+                    await UserRoleRepository.DeleteRangeAsync(userRoles);
                 }
                 if (input.RoleIds.Any())
                 {
@@ -276,7 +288,7 @@ namespace Lean.Hbt.Application.Services.Identity
                             CreateTime = DateTime.Now
                         }).ToList();
 
-                        await _userRoleRepository.CreateRangeAsync(newUserRoles);
+                        await UserRoleRepository.CreateRangeAsync(newUserRoles);
                     }
                 }
             }
@@ -284,10 +296,10 @@ namespace Lean.Hbt.Application.Services.Identity
             // 更新用户岗位关联
             if (input.PostIds != null)
             {
-                var userPosts = await _userPostRepository.GetListAsync(up => up.UserId == user.Id);
+                var userPosts = await UserPostRepository.GetListAsync(up => up.UserId == user.Id);
                 if (userPosts.Any())
                 {
-                    await _userPostRepository.DeleteRangeAsync(userPosts);
+                    await UserPostRepository.DeleteRangeAsync(userPosts);
                 }
                 if (input.PostIds.Any())
                 {
@@ -305,7 +317,7 @@ namespace Lean.Hbt.Application.Services.Identity
                             CreateTime = DateTime.Now
                         }).ToList();
 
-                        await _userPostRepository.CreateRangeAsync(newUserPosts);
+                        await UserPostRepository.CreateRangeAsync(newUserPosts);
                     }
                 }
             }
@@ -313,10 +325,10 @@ namespace Lean.Hbt.Application.Services.Identity
             // 更新用户部门关联
             if (input.DeptIds != null)
             {
-                var userDepts = await _userDeptRepository.GetListAsync(ud => ud.UserId == user.Id);
+                var userDepts = await UserDeptRepository.GetListAsync(ud => ud.UserId == user.Id);
                 if (userDepts.Any())
                 {
-                    await _userDeptRepository.DeleteRangeAsync(userDepts);
+                    await UserDeptRepository.DeleteRangeAsync(userDepts);
                 }
                 if (input.DeptIds.Any())
                 {
@@ -334,7 +346,7 @@ namespace Lean.Hbt.Application.Services.Identity
                             CreateTime = DateTime.Now
                         }).ToList();
 
-                        await _userDeptRepository.CreateRangeAsync(newUserDepts);
+                        await UserDeptRepository.CreateRangeAsync(newUserDepts);
                     }
                 }
             }
@@ -350,7 +362,7 @@ namespace Lean.Hbt.Application.Services.Identity
         /// <returns>返回是否删除成功</returns>
         public async Task<bool> DeleteAsync(long userId)
         {
-            var user = await _userRepository.GetByIdAsync(userId)
+            var user = await UserRepository.GetByIdAsync(userId)
                 ?? throw new HbtException(L("Identity.User.NotFound"));
 
             // 禁止删除admin用户
@@ -361,31 +373,38 @@ namespace Lean.Hbt.Application.Services.Identity
             user.Status = 1;
             user.UpdateBy = _currentUser.UserName;
             user.UpdateTime = DateTime.Now;
-            await _userRepository.UpdateAsync(user);
+            await UserRepository.UpdateAsync(user);
 
             // 删除用户角色关联
-            var userRoleIds = (await _userRoleRepository.GetListAsync(ur => ur.UserId == userId)).Select(ur => ur.Id).ToList();
+            var userRoleIds = (await UserRoleRepository.GetListAsync(ur => ur.UserId == userId)).Select(ur => ur.Id).ToList();
             foreach (var id in userRoleIds)
             {
-                await _userRoleRepository.DeleteAsync(id);
+                await UserRoleRepository.DeleteAsync(id);
             }
 
             // 删除用户岗位关联
-            var userPostIds = (await _userPostRepository.GetListAsync(up => up.UserId == userId)).Select(up => up.Id).ToList();
+            var userPostIds = (await UserPostRepository.GetListAsync(up => up.UserId == userId)).Select(up => up.Id).ToList();
             foreach (var id in userPostIds)
             {
-                await _userPostRepository.DeleteAsync(id);
+                await UserPostRepository.DeleteAsync(id);
             }
 
             // 删除用户部门关联
-            var userDeptIds = (await _userDeptRepository.GetListAsync(ud => ud.UserId == userId)).Select(ud => ud.Id).ToList();
+            var userDeptIds = (await UserDeptRepository.GetListAsync(ud => ud.UserId == userId)).Select(ud => ud.Id).ToList();
             foreach (var id in userDeptIds)
             {
-                await _userDeptRepository.DeleteAsync(id);
+                await UserDeptRepository.DeleteAsync(id);
+            }
+
+            // 删除用户租户关联
+            var userTenantIds = (await UserTenantRepository.GetListAsync(ut => ut.UserId == userId)).Select(ut => ut.Id).ToList();
+            foreach (var id in userTenantIds)
+            {
+                await UserTenantRepository.DeleteAsync(id);
             }
 
             // 删除用户
-            var result = await _userRepository.DeleteAsync(user);
+            var result = await UserRepository.DeleteAsync(user);
             if (result <= 0)
                 throw new HbtException(L("Common.DeleteFailed"));
 
@@ -404,7 +423,7 @@ namespace Lean.Hbt.Application.Services.Identity
 
             foreach (var userId in userIds)
             {
-                var user = await _userRepository.GetByIdAsync(userId);
+                var user = await UserRepository.GetByIdAsync(userId);
                 if (user == null) continue;
                 // 禁止删除admin用户
                 if (user.UserName == "admin")
@@ -412,26 +431,29 @@ namespace Lean.Hbt.Application.Services.Identity
             }
 
             // 更新用户状态为停用
-            var users = await _userRepository.GetListAsync(u => userIds.Contains(u.Id));
+            var users = await UserRepository.GetListAsync(u => userIds.Contains(u.Id));
             foreach (var user in users)
             {
                 user.Status = 1;
                 user.UpdateBy = _currentUser.UserName;
                 user.UpdateTime = DateTime.Now;
             }
-            await _userRepository.UpdateRangeAsync(users);
+            await UserRepository.UpdateRangeAsync(users);
 
             // 删除用户角色关联
-            await _userRoleRepository.DeleteAsync((HbtUserRole ur) => userIds.Contains(ur.UserId));
+            await UserRoleRepository.DeleteAsync((HbtUserRole ur) => userIds.Contains(ur.UserId));
 
             // 删除用户岗位关联
-            await _userPostRepository.DeleteAsync((HbtUserPost up) => userIds.Contains(up.UserId));
+            await UserPostRepository.DeleteAsync((HbtUserPost up) => userIds.Contains(up.UserId));
 
             // 删除用户部门关联
-            await _userDeptRepository.DeleteAsync((HbtUserDept ud) => userIds.Contains(ud.UserId));
+            await UserDeptRepository.DeleteAsync((HbtUserDept ud) => userIds.Contains(ud.UserId));
+
+            // 删除用户租户关联
+            await UserTenantRepository.DeleteAsync((HbtUserTenant ut) => userIds.Contains(ut.UserId));
 
             // 删除用户
-            return await _userRepository.DeleteRangeAsync(userIds.Cast<object>().ToList()) > 0;
+            return await UserRepository.DeleteRangeAsync(userIds.Cast<object>().ToList()) > 0;
         }
 
         /// <summary>
@@ -472,11 +494,11 @@ namespace Lean.Hbt.Application.Services.Identity
                         }
 
                         // 校验用户名是否已存在
-                        await HbtValidateUtils.ValidateFieldExistsAsync(_userRepository, "UserName", user.UserName);
+                        await HbtValidateUtils.ValidateFieldExistsAsync(UserRepository, "UserName", user.UserName);
                         // 校验手机号是否已存在
-                        await HbtValidateUtils.ValidateFieldExistsAsync(_userRepository, "PhoneNumber", user.PhoneNumber);
+                        await HbtValidateUtils.ValidateFieldExistsAsync(UserRepository, "PhoneNumber", user.PhoneNumber);
                         // 校验邮箱是否已存在
-                        await HbtValidateUtils.ValidateFieldExistsAsync(_userRepository, "Email", user.Email);
+                        await HbtValidateUtils.ValidateFieldExistsAsync(UserRepository, "Email", user.Email);
                         string ss = _passwordPolicy.DefaultPassword;
                         var entity = user.Adapt<HbtUser>();
                         var (hash, salt, iterations) = HbtPasswordUtils.CreateHash(_passwordPolicy.DefaultPassword);
@@ -487,7 +509,7 @@ namespace Lean.Hbt.Application.Services.Identity
                         entity.CreateBy = _currentUser.UserName;
                         entity.Status = 0;
 
-                        var result = await _userRepository.CreateAsync(entity);
+                        var result = await UserRepository.CreateAsync(entity);
                         if (result > 0)
                             success++;
                         else
@@ -517,7 +539,7 @@ namespace Lean.Hbt.Application.Services.Identity
         /// <returns>Excel文件或zip文件</returns>
         public async Task<(string fileName, byte[] content)> ExportAsync(HbtUserQueryDto query, string sheetName = "Sheet1")
         {
-            var list = await _userRepository.GetListAsync(QueryExpression(query));
+            var list = await UserRepository.GetListAsync(QueryExpression(query));
             var exportList = list.Adapt<List<HbtUserExportDto>>();
             return await HbtExcelHelper.ExportAsync(exportList, sheetName, "用户数据");
         }
@@ -532,7 +554,7 @@ namespace Lean.Hbt.Application.Services.Identity
             if (input == null)
                 throw new ArgumentNullException(nameof(input));
 
-            var user = await _userRepository.GetByIdAsync(input.UserId);
+            var user = await UserRepository.GetByIdAsync(input.UserId);
             if (user == null)
                 throw new HbtException(L("Identity.User.NotFound"));
 
@@ -540,7 +562,7 @@ namespace Lean.Hbt.Application.Services.Identity
             user.UpdateBy = _currentUser.UserName;
             user.UpdateTime = DateTime.Now;
 
-            var result = await _userRepository.UpdateAsync(user);
+            var result = await UserRepository.UpdateAsync(user);
             if (result <= 0)
                 throw new HbtException(L("Common.UpdateFailed"));
 
@@ -557,7 +579,7 @@ namespace Lean.Hbt.Application.Services.Identity
             if (input == null)
                 throw new ArgumentNullException(nameof(input));
 
-            var user = await _userRepository.GetByIdAsync(input.UserId);
+            var user = await UserRepository.GetByIdAsync(input.UserId);
             if (user == null)
                 throw new HbtException(L("Identity.User.NotFound"));
 
@@ -575,7 +597,7 @@ namespace Lean.Hbt.Application.Services.Identity
             user.UpdateBy = _currentUser.UserName;
             user.UpdateTime = DateTime.Now;
 
-            var result = await _userRepository.UpdateAsync(user);
+            var result = await UserRepository.UpdateAsync(user);
             if (result <= 0)
                 throw new HbtException(L("Common.UpdateFailed"));
 
@@ -592,7 +614,7 @@ namespace Lean.Hbt.Application.Services.Identity
             if (input == null)
                 throw new ArgumentNullException(nameof(input));
 
-            var user = await _userRepository.GetByIdAsync(input.UserId);
+            var user = await UserRepository.GetByIdAsync(input.UserId);
             if (user == null)
                 throw new HbtException(L("Identity.User.NotFound"));
 
@@ -611,7 +633,7 @@ namespace Lean.Hbt.Application.Services.Identity
             user.UpdateBy = _currentUser.UserName;
             user.UpdateTime = DateTime.Now;
 
-            var result = await _userRepository.UpdateAsync(user);
+            var result = await UserRepository.UpdateAsync(user);
             if (result <= 0)
                 throw new HbtException(L("Common.UpdateFailed"));
 
@@ -628,7 +650,7 @@ namespace Lean.Hbt.Application.Services.Identity
             if (input == null)
                 throw new ArgumentNullException(nameof(input));
 
-            var user = await _userRepository.GetByIdAsync(input.UserId);
+            var user = await UserRepository.GetByIdAsync(input.UserId);
             if (user == null)
                 throw new HbtException(L("Identity.User.NotFound"));
 
@@ -637,7 +659,7 @@ namespace Lean.Hbt.Application.Services.Identity
             user.UpdateBy = _currentUser.UserName;
             user.UpdateTime = DateTime.Now;
 
-            var result = await _userRepository.UpdateAsync(user);
+            var result = await UserRepository.UpdateAsync(user);
             if (result <= 0)
                 throw new HbtException(L("Common.UpdateFailed"));
 
@@ -651,7 +673,7 @@ namespace Lean.Hbt.Application.Services.Identity
         /// <returns>返回用户信息</returns>
         public async Task<HbtUserDto> GetUserByNameAsync(string userName)
         {
-            var user = await _userRepository.GetFirstAsync(u => u.UserName == userName);
+            var user = await UserRepository.GetFirstAsync(u => u.UserName == userName);
             if (user == null)
                 throw new HbtException(L("Identity.User.NotFound"));
 
@@ -665,7 +687,7 @@ namespace Lean.Hbt.Application.Services.Identity
         /// <returns>返回用户信息</returns>
         public async Task<HbtUserDto> GetUserByPhoneAsync(string phoneNumber)
         {
-            var user = await _userRepository.GetFirstAsync(u => u.PhoneNumber == phoneNumber);
+            var user = await UserRepository.GetFirstAsync(u => u.PhoneNumber == phoneNumber);
             if (user == null)
                 throw new HbtException(L("Identity.User.NotFound"));
 
@@ -678,7 +700,7 @@ namespace Lean.Hbt.Application.Services.Identity
         /// <returns>用户选项列表</returns>
         public async Task<List<HbtSelectOption>> GetOptionsAsync()
         {
-            var users = await _userRepository.AsQueryable()
+            var users = await UserRepository.AsQueryable()
                 .Where(u => u.Status == 0)  // 只获取正常状态的用户
                 .OrderBy(u => u.Id)
                 .Select(u => new HbtSelectOption
@@ -697,7 +719,7 @@ namespace Lean.Hbt.Application.Services.Identity
         /// <returns>角色列表</returns>
         public async Task<List<HbtUserRoleDto>> GetUserRoleIdsAsync(long userId)
         {
-            var userRoles = await _userRoleRepository.GetListAsync(ur => ur.UserId == userId && ur.IsDeleted == 0);
+            var userRoles = await UserRoleRepository.GetListAsync(ur => ur.UserId == userId && ur.IsDeleted == 0);
             return userRoles.Adapt<List<HbtUserRoleDto>>();
         }
 
@@ -708,7 +730,7 @@ namespace Lean.Hbt.Application.Services.Identity
         /// <returns>部门列表</returns>
         public async Task<List<HbtUserDeptDto>> GetUserDeptIdsAsync(long userId)
         {
-            var userDepts = await _userDeptRepository.GetListAsync(ud => ud.UserId == userId && ud.IsDeleted == 0);
+            var userDepts = await UserDeptRepository.GetListAsync(ud => ud.UserId == userId && ud.IsDeleted == 0);
             return userDepts.Adapt<List<HbtUserDeptDto>>();
         }
 
@@ -719,7 +741,7 @@ namespace Lean.Hbt.Application.Services.Identity
         /// <returns>岗位列表</returns>
         public async Task<List<HbtUserPostDto>> GetUserPostIdsAsync(long userId)
         {
-            var userPosts = await _userPostRepository.GetListAsync(up => up.UserId == userId && up.IsDeleted == 0);
+            var userPosts = await UserPostRepository.GetListAsync(up => up.UserId == userId && up.IsDeleted == 0);
             return userPosts.Adapt<List<HbtUserPostDto>>();
         }
 
@@ -736,7 +758,7 @@ namespace Lean.Hbt.Application.Services.Identity
                 _logger.Info($"开始分配用户角色 - 用户ID: {userId}, 角色IDs: {string.Join(",", roleIds)}");
 
                 // 1. 获取用户现有关联的角色（包括已删除的）
-                var existingRoles = await _userRoleRepository.GetListAsync(ur => ur.UserId == userId);
+                var existingRoles = await UserRoleRepository.GetListAsync(ur => ur.UserId == userId);
                 _logger.Info($"用户现有关联角色数量: {existingRoles.Count}");
 
                 // 2. 找出需要标记删除的关联（在现有关联中但不在新的角色列表中）
@@ -751,7 +773,7 @@ namespace Lean.Hbt.Application.Services.Identity
                         role.DeleteTime = DateTime.Now;
                         role.UpdateBy = _currentUser.UserName;
                         role.UpdateTime = DateTime.Now;
-                        await _userRoleRepository.UpdateAsync(role);
+                        await UserRoleRepository.UpdateAsync(role);
                     }
                     _logger.Info("角色关联标记删除完成");
                 }
@@ -768,7 +790,7 @@ namespace Lean.Hbt.Application.Services.Identity
                         role.DeleteTime = null;
                         role.UpdateBy = _currentUser.UserName;
                         role.UpdateTime = DateTime.Now;
-                        await _userRoleRepository.UpdateAsync(role);
+                        await UserRoleRepository.UpdateAsync(role);
                     }
                     _logger.Info("角色关联恢复完成");
                 }
@@ -790,7 +812,7 @@ namespace Lean.Hbt.Application.Services.Identity
                 if (rolesToAdd.Any())
                 {
                     _logger.Info($"需要新增的角色关联数量: {rolesToAdd.Count}, 角色IDs: {string.Join(",", rolesToAdd.Select(d => d.RoleId))}");
-                    await _userRoleRepository.CreateRangeAsync(rolesToAdd);
+                    await UserRoleRepository.CreateRangeAsync(rolesToAdd);
                     _logger.Info("角色关联新增完成");
                 }
 
@@ -817,7 +839,7 @@ namespace Lean.Hbt.Application.Services.Identity
                 _logger.Info($"开始分配用户部门 - 用户ID: {userId}, 部门IDs: {string.Join(",", deptIds)}");
 
                 // 1. 获取用户现有关联的部门（包括已删除的）
-                var existingDepts = await _userDeptRepository.GetListAsync(ud => ud.UserId == userId);
+                var existingDepts = await UserDeptRepository.GetListAsync(ud => ud.UserId == userId);
                 _logger.Info($"用户现有关联部门数量: {existingDepts.Count}");
 
                 // 2. 找出需要标记删除的关联（在现有关联中但不在新的部门列表中）
@@ -832,7 +854,7 @@ namespace Lean.Hbt.Application.Services.Identity
                         dept.DeleteTime = DateTime.Now;
                         dept.UpdateBy = _currentUser.UserName;
                         dept.UpdateTime = DateTime.Now;
-                        await _userDeptRepository.UpdateAsync(dept);
+                        await UserDeptRepository.UpdateAsync(dept);
                     }
                     _logger.Info("部门关联标记删除完成");
                 }
@@ -849,7 +871,7 @@ namespace Lean.Hbt.Application.Services.Identity
                         dept.DeleteTime = null;
                         dept.UpdateBy = _currentUser.UserName;
                         dept.UpdateTime = DateTime.Now;
-                        await _userDeptRepository.UpdateAsync(dept);
+                        await UserDeptRepository.UpdateAsync(dept);
                     }
                     _logger.Info("部门关联恢复完成");
                 }
@@ -871,7 +893,7 @@ namespace Lean.Hbt.Application.Services.Identity
                 if (deptsToAdd.Any())
                 {
                     _logger.Info($"需要新增的部门关联数量: {deptsToAdd.Count}, 部门IDs: {string.Join(",", deptsToAdd.Select(d => d.DeptId))}");
-                    await _userDeptRepository.CreateRangeAsync(deptsToAdd);
+                    await UserDeptRepository.CreateRangeAsync(deptsToAdd);
                     _logger.Info("部门关联新增完成");
                 }
 
@@ -898,7 +920,7 @@ namespace Lean.Hbt.Application.Services.Identity
                 _logger.Info($"开始分配用户岗位 - 用户ID: {userId}, 岗位IDs: {string.Join(",", postIds)}");
 
                 // 1. 获取用户现有关联的岗位（包括已删除的）
-                var existingPosts = await _userPostRepository.GetListAsync(up => up.UserId == userId);
+                var existingPosts = await UserPostRepository.GetListAsync(up => up.UserId == userId);
                 _logger.Info($"用户现有关联岗位数量: {existingPosts.Count}");
 
                 // 2. 找出需要标记删除的关联（在现有关联中但不在新的岗位列表中）
@@ -913,7 +935,7 @@ namespace Lean.Hbt.Application.Services.Identity
                         post.DeleteTime = DateTime.Now;
                         post.UpdateBy = _currentUser.UserName;
                         post.UpdateTime = DateTime.Now;
-                        await _userPostRepository.UpdateAsync(post);
+                        await UserPostRepository.UpdateAsync(post);
                     }
                     _logger.Info("岗位关联标记删除完成");
                 }
@@ -930,7 +952,7 @@ namespace Lean.Hbt.Application.Services.Identity
                         post.DeleteTime = null;
                         post.UpdateBy = _currentUser.UserName;
                         post.UpdateTime = DateTime.Now;
-                        await _userPostRepository.UpdateAsync(post);
+                        await UserPostRepository.UpdateAsync(post);
                     }
                     _logger.Info("岗位关联恢复完成");
                 }
@@ -952,7 +974,7 @@ namespace Lean.Hbt.Application.Services.Identity
                 if (postsToAdd.Any())
                 {
                     _logger.Info($"需要新增的岗位关联数量: {postsToAdd.Count}, 岗位IDs: {string.Join(",", postsToAdd.Select(d => d.PostId))}");
-                    await _userPostRepository.CreateRangeAsync(postsToAdd);
+                    await UserPostRepository.CreateRangeAsync(postsToAdd);
                     _logger.Info("岗位关联新增完成");
                 }
 
@@ -970,70 +992,57 @@ namespace Lean.Hbt.Application.Services.Identity
         /// 分配用户租户
         /// </summary>
         /// <param name="userId">用户ID</param>
-        /// <param name="tenantIds">租户ID列表</param>
+        /// <param name="configIds">租户配置ID列表</param>
         /// <returns>是否成功</returns>
-        public async Task<bool> AllocateUserTenantsAsync(long userId, long[] tenantIds)
+        public async Task<bool> AllocateUserTenantsAsync(long userId, string[] configIds)
         {
             try
             {
-                _logger.Info($"开始分配用户租户 - 用户ID: {userId}, 租户IDs: {string.Join(",", tenantIds)}");
+                _logger.Info($"开始分配用户租户 - 用户ID: {userId}, 配置IDs: {string.Join(",", configIds)}");
 
                 // 1. 获取用户现有关联的租户（包括已删除的）
-                var existingTenants = await _userTenantRepository.GetListAsync(ut => ut.UserId == userId);
+                var existingTenants = await UserTenantRepository.GetListAsync(ut => ut.UserId == userId);
                 _logger.Info($"用户现有关联租户数量: {existingTenants.Count}");
 
                 // 2. 找出需要标记删除的关联（在现有关联中但不在新的租户列表中）
-                var tenantsToDelete = existingTenants.Where(ut => !tenantIds.Contains(ut.TenantId)).ToList();
+                var tenantsToDelete = existingTenants.Where(ut => !configIds.Contains(ut.ConfigId)).ToList();
                 if (tenantsToDelete.Any())
                 {
-                    _logger.Info($"需要标记删除的租户关联数量: {tenantsToDelete.Count}, 租户IDs: {string.Join(",", tenantsToDelete.Select(d => d.TenantId))}");
+                    _logger.Info($"需要标记删除的租户关联数量: {tenantsToDelete.Count}, 配置IDs: {string.Join(",", tenantsToDelete.Select(d => d.ConfigId))}");
                     foreach (var tenant in tenantsToDelete)
                     {
-                        // 先更新状态为禁用
-                        tenant.Status = 1; // 1 表示禁用状态
-                        tenant.UpdateBy = _currentUser.UserName;
-                        tenant.UpdateTime = DateTime.Now;
-                        await _userTenantRepository.UpdateAsync(tenant);
-
-                        // 然后再标记删除
+                        // 标记删除
                         tenant.IsDeleted = 1; // 1 表示已删除
                         tenant.DeleteBy = _currentUser.UserName;
                         tenant.DeleteTime = DateTime.Now;
-                        await _userTenantRepository.UpdateAsync(tenant);
+                        await UserTenantRepository.UpdateAsync(tenant);
                     }
-                    _logger.Info("租户关联状态更新和删除标记完成");
+                    _logger.Info("租户关联删除标记完成");
                 }
 
                 // 3. 处理需要恢复的关联（在新的租户列表中且已存在但被标记为删除）
-                var tenantsToRestore = existingTenants.Where(ut => tenantIds.Contains(ut.TenantId) && ut.IsDeleted == 1).ToList();
+                var tenantsToRestore = existingTenants.Where(ut => configIds.Contains(ut.ConfigId) && ut.IsDeleted == 1).ToList();
                 if (tenantsToRestore.Any())
                 {
-                    _logger.Info($"需要恢复的租户关联数量: {tenantsToRestore.Count}, 租户IDs: {string.Join(",", tenantsToRestore.Select(d => d.TenantId))}");
+                    _logger.Info($"需要恢复的租户关联数量: {tenantsToRestore.Count}, 配置IDs: {string.Join(",", tenantsToRestore.Select(d => d.ConfigId))}");
                     foreach (var tenant in tenantsToRestore)
                     {
-                        // 先恢复状态为正常
-                        tenant.Status = 0; // 0 表示正常状态
-                        tenant.UpdateBy = _currentUser.UserName;
-                        tenant.UpdateTime = DateTime.Now;
-                        await _userTenantRepository.UpdateAsync(tenant);
-
-                        // 然后取消删除标记
+                        // 取消删除标记
                         tenant.IsDeleted = 0; // 0 表示未删除
                         tenant.DeleteBy = null;
                         tenant.DeleteTime = null;
-                        await _userTenantRepository.UpdateAsync(tenant);
+                        await UserTenantRepository.UpdateAsync(tenant);
                     }
-                    _logger.Info("租户关联状态恢复和删除标记取消完成");
+                    _logger.Info("租户关联删除标记取消完成");
                 }
 
                 // 4. 找出需要新增的关联（在新的租户列表中且不存在任何记录）
-                var existingTenantIds = existingTenants.Select(ut => ut.TenantId).ToList();
-                var tenantsToAdd = tenantIds.Where(tenantId => !existingTenantIds.Contains(tenantId))
-                    .Select(tenantId => new HbtUserTenant
+                var existingTenantIds = existingTenants.Select(ut => ut.ConfigId).ToList();
+                var tenantsToAdd = configIds.Where(configId => !existingTenantIds.Contains(configId))
+                    .Select(configId => new HbtUserTenant
                     {
                         UserId = userId,
-                        TenantId = tenantId,
-                        Status = 0, // 0 表示正常状态
+                        ConfigId = configId,
                         IsDeleted = 0, // 0 表示未删除
                         CreateBy = _currentUser.UserName,
                         CreateTime = DateTime.Now,
@@ -1043,8 +1052,8 @@ namespace Lean.Hbt.Application.Services.Identity
 
                 if (tenantsToAdd.Any())
                 {
-                    _logger.Info($"需要新增的租户关联数量: {tenantsToAdd.Count}, 租户IDs: {string.Join(",", tenantsToAdd.Select(d => d.TenantId))}");
-                    await _userTenantRepository.CreateRangeAsync(tenantsToAdd);
+                    _logger.Info($"需要新增的租户关联数量: {tenantsToAdd.Count}, 配置IDs: {string.Join(",", tenantsToAdd.Select(d => d.ConfigId))}");
+                    await UserTenantRepository.CreateRangeAsync(tenantsToAdd);
                     _logger.Info("租户关联新增完成");
                 }
 
@@ -1057,6 +1066,226 @@ namespace Lean.Hbt.Application.Services.Identity
                 throw;
             }
         }
+
+        /// <summary>
+        /// 跨租户更新用户信息（同步到所有相关租户）
+        /// </summary>
+        /// <param name="input">用户更新信息</param>
+        /// <returns>是否成功</returns>
+        public async Task<bool> UpdateUserAcrossTenantsAsync(HbtUserUpdateDto input)
+        {
+            try
+            {
+                _logger.Info($"开始跨租户更新用户信息 - 用户ID: {input.UserId}");
+
+                // 1. 更新认证数据库中的用户信息
+                var user = await UserRepository.GetByIdAsync(input.UserId)
+                    ?? throw new HbtException(L("Identity.User.NotFound", input.UserId));
+
+                // 验证字段是否已存在
+                if (user.UserName != input.UserName)
+                    await HbtValidateUtils.ValidateFieldExistsAsync(UserRepository, "UserName", input.UserName, input.UserId);
+                if (user.Email != input.Email)
+                    await HbtValidateUtils.ValidateFieldExistsAsync(UserRepository, "Email", input.Email, input.UserId);
+                if (user.PhoneNumber != input.PhoneNumber)
+                    await HbtValidateUtils.ValidateFieldExistsAsync(UserRepository, "PhoneNumber", input.PhoneNumber, input.UserId);
+
+                // 更新用户信息
+                input.Adapt(user);
+                var updateResult = await UserRepository.UpdateAsync(user) > 0;
+
+                if (!updateResult)
+                {
+                    _logger.Error($"更新认证数据库用户信息失败 - 用户ID: {input.UserId}");
+                    return false;
+                }
+
+                // 2. 获取用户关联的所有租户
+                var userTenants = await UserTenantRepository.GetListAsync(ut => ut.UserId == input.UserId);
+                var tenantIds = userTenants.Select(ut => ut.ConfigId).ToList();
+
+                _logger.Info($"用户关联的租户数量: {tenantIds.Count}");
+
+                // 3. 同步更新到所有租户数据库
+                var syncResults = new List<bool>();
+                foreach (var tenantId in tenantIds)
+                {
+                    try
+                    {
+                        var syncResult = await SyncUserToTenantAsync(input.UserId, tenantId);
+                        syncResults.Add(syncResult);
+                        
+                        if (syncResult)
+                        {
+                            _logger.Info($"成功同步用户信息到租户 {tenantId}");
+                        }
+                        else
+                        {
+                            _logger.Warn($"同步用户信息到租户 {tenantId} 失败");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.Error($"同步用户信息到租户 {tenantId} 时发生异常: {ex.Message}");
+                        syncResults.Add(false);
+                    }
+                }
+
+                // 4. 记录同步结果
+                var successCount = syncResults.Count(r => r);
+                var failCount = syncResults.Count(r => !r);
+
+                _logger.Info($"跨租户用户信息更新完成 - 成功: {successCount}, 失败: {failCount}");
+
+                return updateResult;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error($"跨租户更新用户信息失败 - 用户ID: {input.UserId}, 错误: {ex.Message}");
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// 同步用户信息到指定租户数据库
+        /// </summary>
+        /// <param name="userId">用户ID</param>
+        /// <param name="configId">租户配置ID</param>
+        /// <returns>是否成功</returns>
+        private async Task<bool> SyncUserToTenantAsync(long userId, string configId)
+        {
+            try
+            {
+                _logger.Info($"开始同步用户信息到租户 - 用户ID: {userId}, 配置ID: {configId}");
+
+                // 检查用户租户关联是否已存在
+                var userTenant = await UserTenantRepository.GetFirstAsync(ut => ut.UserId == userId && ut.ConfigId == configId);
+                if (userTenant == null)
+                {
+                    // 创建用户租户关联
+                    userTenant = new HbtUserTenant
+                    {
+                        UserId = userId,
+                        ConfigId = configId,
+                        IsDeleted = 0,
+                        CreateBy = _currentUser.UserName ?? "System",
+                        CreateTime = DateTime.Now,
+                        UpdateBy = _currentUser.UserName ?? "System",
+                        UpdateTime = DateTime.Now
+                    };
+
+                    var createResult = await UserTenantRepository.CreateAsync(userTenant);
+                    return createResult > 0;
+                }
+                else
+                {
+                    // 更新用户租户关联
+                    userTenant.UpdateTime = DateTime.Now;
+                    userTenant.UpdateBy = _currentUser.UserName ?? "System";
+
+                    var updateResult = await UserTenantRepository.UpdateAsync(userTenant);
+                    return updateResult > 0;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error($"同步用户信息到租户 {configId} 失败 - 用户ID: {userId}, 错误: {ex.Message}");
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 获取用户在指定租户中的信息
+        /// </summary>
+        /// <param name="userId">用户ID</param>
+        /// <param name="configId">租户配置ID</param>
+        /// <returns>用户信息</returns>
+        public async Task<HbtUserDto?> GetUserInTenantAsync(long userId, string configId)
+        {
+            try
+            {
+                // 检查用户租户关联是否存在
+                var userTenant = await UserTenantRepository.GetFirstAsync(ut => ut.UserId == userId && ut.ConfigId == configId);
+                if (userTenant == null)
+                {
+                    _logger.Warn($"用户与租户关联不存在 - 用户ID: {userId}, 配置ID: {configId}");
+                    return null;
+                }
+
+                // 获取用户信息
+                var user = await UserRepository.GetByIdAsync(userId);
+                if (user == null)
+                {
+                    _logger.Warn($"用户不存在 - 用户ID: {userId}");
+                    return null;
+                }
+
+                var userDto = user.Adapt<HbtUserDto>();
+                return userDto;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error($"获取用户在租户中的信息失败 - 用户ID: {userId}, 配置ID: {configId}, 错误: {ex.Message}");
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// 更新用户在指定租户中的信息
+        /// </summary>
+        /// <param name="userId">用户ID</param>
+        /// <param name="configId">租户配置ID</param>
+        /// <param name="input">用户更新信息</param>
+        /// <returns>是否成功</returns>
+        public async Task<bool> UpdateUserInTenantAsync(long userId, string configId, HbtUserUpdateDto input)
+        {
+            try
+            {
+                _logger.Info($"开始更新用户在租户中的信息 - 用户ID: {userId}, 配置ID: {configId}");
+
+                // 检查用户租户关联是否存在
+                var userTenant = await UserTenantRepository.GetFirstAsync(ut => ut.UserId == userId && ut.ConfigId == configId);
+                if (userTenant == null)
+                {
+                    _logger.Warn($"用户与租户关联不存在 - 用户ID: {userId}, 配置ID: {configId}");
+                    return false;
+                }
+
+                // 获取用户信息
+                var user = await UserRepository.GetByIdAsync(userId);
+                if (user == null)
+                {
+                    _logger.Warn($"用户不存在 - 用户ID: {userId}");
+                    return false;
+                }
+
+                // 更新用户信息
+                user.UserName = input.UserName;
+                user.NickName = input.NickName;
+                user.Email = input.Email;
+                user.PhoneNumber = input.PhoneNumber;
+                user.Avatar = input.Avatar;
+                user.Status = input.Status;
+                user.UpdateTime = DateTime.Now;
+                user.UpdateBy = _currentUser.UserName ?? "System";
+
+                var updateResult = await UserRepository.UpdateAsync(user);
+
+                if (updateResult > 0)
+                {
+                    _logger.Info($"成功更新用户信息 - 用户ID: {userId}, 配置ID: {configId}");
+                }
+
+                return updateResult > 0;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error($"更新用户信息失败 - 用户ID: {userId}, 配置ID: {configId}, 错误: {ex.Message}");
+                return false;
+            }
+        }
+
+
 
         /// <summary>
         /// 构建用户查询条件

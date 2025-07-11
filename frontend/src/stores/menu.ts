@@ -28,17 +28,17 @@ export const useMenuStore = defineStore('menu', () => {
     try {
       const token = getToken()
       if (!token) {
-        console.log('[菜单] 未登录，跳过菜单加载')
+       // console.log('[菜单] 未登录，跳过菜单加载')
         return []
       }
 
       // 如果不是强制刷新，且有缓存数据，则使用缓存
       if (!forceRefresh && isMenuLoaded.value && rawMenuList.value?.length) {
-        console.log('[菜单] 使用缓存菜单数据')
+        //console.log('[菜单] 使用缓存菜单数据')
         return rawMenuList.value
       }
 
-      console.log('[菜单] 开始加载菜单数据')
+      //console.log('[菜单] 开始加载菜单数据')
       const response = await getCurrentUserMenus()
       if (response.code === 200) {
         const menuData = response.data as HbtMenu[]
@@ -66,15 +66,15 @@ export const useMenuStore = defineStore('menu', () => {
         menuList.value = validMenus
         isMenuLoaded.value = true
 
-        console.log('[菜单] 菜单加载成功:', {
-          菜单数量: validMenus.length,
-          顶级菜单: validMenus.map(m => ({
-            ID: m.menuId,
-            名称: m.menuName,
-            类型: m.menuType,
-            路径: m.path
-          }))
-        })
+        // console.log('[菜单] 菜单加载成功:', {
+        //   菜单数量: validMenus.length,
+        //   顶级菜单: validMenus.map(m => ({
+        //     ID: m.menuId,
+        //     名称: m.menuName,
+        //     类型: m.menuType,
+        //     路径: m.path
+        //   }))
+        //})
 
         return validMenus
       }
@@ -91,7 +91,7 @@ export const useMenuStore = defineStore('menu', () => {
   }
 
   const clearMenus = () => {
-    console.log('[菜单] 清除菜单数据')
+    //console.log('[菜单] 清除菜单数据')
     rawMenuList.value = []
     menuList.value = []
     isMenuLoaded.value = false
@@ -101,7 +101,7 @@ export const useMenuStore = defineStore('menu', () => {
 
   const reloadMenus = async (router: Router, forceRefresh = false) => {
     try {
-      console.log('[菜单] 开始重新加载菜单')
+      //console.log('[菜单] 开始重新加载菜单')
       const menus = await loadUserMenus(forceRefresh)
       
       if (!menus || menus.length === 0) {

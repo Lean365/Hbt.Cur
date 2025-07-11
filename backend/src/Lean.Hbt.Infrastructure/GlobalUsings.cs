@@ -20,6 +20,16 @@ global using Lean.Hbt.Domain.Repositories;
 global using Lean.Hbt.Domain.Interfaces;
 global using Lean.Hbt.Infrastructure.Repositories;
 
+global using Lean.Hbt.Application.Services.Routine.Contract;
+global using Lean.Hbt.Application.Services.Routine.Metting;
+global using Lean.Hbt.Application.Services.Routine.Project;
+global using Lean.Hbt.Application.Services.Routine.Schedule;
+global using Lean.Hbt.Application.Services.Routine.Vehicle;
+global using Lean.Hbt.Application.Services.Routine.Quartz;
+global using Lean.Hbt.Application.Services.Routine.Document;
+global using Lean.Hbt.Application.Services.Routine.Notice;
+global using Lean.Hbt.Application.Services.Routine.Email;
+
 // Microsoft 扩展
 global using Microsoft.Extensions.Configuration;
 global using Microsoft.Extensions.DependencyInjection;

@@ -3,6 +3,7 @@ export default {
     auth: {
       login: {
         title: 'تسجيل الدخول',
+        tenantId: 'إعدادات المستأجر',
         username: 'اسم المستخدم',
         password: 'كلمة المرور',
         rememberMe: 'تذكرني',
@@ -26,7 +27,8 @@ export default {
         otherLogin: 'طرق تسجيل دخول أخرى',
         form: {
           usernameRequired: 'الرجاء إدخال اسم المستخدم',
-          passwordRequired: 'الرجاء إدخال كلمة المرور'
+          passwordRequired: 'الرجاء إدخال كلمة المرور',
+          tenantIdRequired: 'الرجاء اختيار إعدادات المستأجر'
         }
       },
       register: {

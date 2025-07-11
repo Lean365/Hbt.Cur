@@ -1,12 +1,22 @@
 export default {
   workflow: {
+
     definition: {
       title: '工作流定义',
+      actions: {
+        create: '创建',
+        edit: '编辑',
+      },
+      tabs: {
+        definition: '流程定义',
+        instance: '流程实例',
+      },
       fields: {
         workflowName: '流程名称',
         workflowCategory: '流程分类',
         workflowVersion: '流程版本',
         fromId: '表单ID',
+        formName: '表单名称',
         workflowConfig: '流程配置',
         status: '状态',
       },
@@ -15,6 +25,7 @@ export default {
         workflowCategory: '请输入流程分类',
         workflowVersion: '请选择流程版本',
         formId: '请选择表单ID',
+        formName: '请选择表单名称',
         workflowConfig: '请输入流程配置',
         status: '请选择状态',
       },

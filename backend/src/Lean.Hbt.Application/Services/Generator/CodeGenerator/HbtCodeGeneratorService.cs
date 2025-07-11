@@ -12,41 +12,29 @@ namespace Lean.Hbt.Application.Services.Generator.CodeGenerator;
 /// </summary>
 public class HbtCodeGeneratorService : IHbtCodeGeneratorService
 {
+    private readonly IHbtRepositoryFactory _repositoryFactory;
     private readonly IHbtTemplateEngine _templateEngine;
     private readonly IHbtLogger _logger;
-    private readonly IHbtRepository<HbtGenTable> _tableRepository;
-    private readonly IHbtRepository<HbtGenColumn> _columnRepository;
-    private readonly IHbtRepository<HbtGenConfig> _configRepository;
-    private readonly IHbtRepository<HbtGenTemplate> _templateRepository;
     private readonly IWebHostEnvironment _webHostEnvironment;
+
+    private IHbtRepository<HbtGenTable> TableRepository => _repositoryFactory.GetAuthRepository<HbtGenTable>();
+    private IHbtRepository<HbtGenColumn> ColumnRepository => _repositoryFactory.GetAuthRepository<HbtGenColumn>();
+    private IHbtRepository<HbtGenConfig> ConfigRepository => _repositoryFactory.GetAuthRepository<HbtGenConfig>();
+    private IHbtRepository<HbtGenTemplate> TemplateRepository => _repositoryFactory.GetAuthRepository<HbtGenTemplate>();
 
     /// <summary>
     /// 构造函数
     /// </summary>
-    /// <param name="templateEngine"> 模板引擎</param>
-    /// <param name="logger"> 日志</param>
-    /// <param name="configuration"> 配置</param>
-    /// <param name="webHostEnvironment"> WebHost环境</param>
-    /// <param name="tableRepository"> 表仓储</param>
-    /// <param name="columnRepository"> 列仓储</param>
-    /// <param name="configRepository"> 配置仓储</param>
-    /// <param name="templateRepository"> 模板仓储</param>
     public HbtCodeGeneratorService(
+        IHbtRepositoryFactory repositoryFactory,
         IHbtTemplateEngine templateEngine,
         IHbtLogger logger,
         IConfiguration configuration,
-        IWebHostEnvironment webHostEnvironment,
-        IHbtRepository<HbtGenTable> tableRepository,
-        IHbtRepository<HbtGenColumn> columnRepository,
-        IHbtRepository<HbtGenConfig> configRepository,
-        IHbtRepository<HbtGenTemplate> templateRepository)
+        IWebHostEnvironment webHostEnvironment)
     {
+        _repositoryFactory = repositoryFactory ?? throw new ArgumentNullException(nameof(repositoryFactory));
         _templateEngine = templateEngine;
         _logger = logger;
-        _tableRepository = tableRepository;
-        _columnRepository = columnRepository;
-        _configRepository = configRepository;
-        _templateRepository = templateRepository;
         _webHostEnvironment = webHostEnvironment;
     }
 
@@ -60,7 +48,7 @@ public class HbtCodeGeneratorService : IHbtCodeGeneratorService
             _logger.Info($"开始生成代码,表名:{table.TableName}");
 
             // 获取表信息
-            var genTable = await _tableRepository.GetFirstAsync(x => x.TableName == table.TableName && x.IsGenCode == 0);
+            var genTable = await TableRepository.GetFirstAsync(x => x.TableName == table.TableName && x.IsGenCode == 0);
             if (genTable == null)
             {
                 _logger.Error($"未找到表 {table.TableName} 的生成信息");
@@ -68,7 +56,7 @@ public class HbtCodeGeneratorService : IHbtCodeGeneratorService
             }
 
             // 获取列信息
-            var columns = await _columnRepository.GetListAsync(x => x.TableId == genTable.Id);
+            var columns = await ColumnRepository.GetListAsync(x => x.TableId == genTable.Id);
             if (columns == null || !columns.Any())
             {
                 _logger.Error($"未找到表 {table.TableName} 的列信息");
@@ -76,7 +64,7 @@ public class HbtCodeGeneratorService : IHbtCodeGeneratorService
             }
 
             // 获取生成配置
-            var config = await _configRepository.GetFirstAsync(x => x.Status == 0);
+            var config = await ConfigRepository.GetFirstAsync(x => x.Status == 0);
             if (config == null)
             {
                 _logger.Error("未找到可用的代码生成配置");
@@ -114,7 +102,7 @@ public class HbtCodeGeneratorService : IHbtCodeGeneratorService
             else
             {
                 // 使用 HbtGenTemplate 表中的模板
-                templates = await _templateRepository.GetListAsync(x => x.Status == 0);
+                templates = await TemplateRepository.GetListAsync(x => x.Status == 0);
                 if (templates == null || !templates.Any())
                 {
                     _logger.Error("未找到可用的代码生成模板");
@@ -234,7 +222,7 @@ public class HbtCodeGeneratorService : IHbtCodeGeneratorService
             _logger.Info($"开始预览代码,表名:{table.TableName}");
 
             // 获取表信息
-            var genTable = await _tableRepository.GetFirstAsync(x => x.TableName == table.TableName && x.IsGenCode == 0);
+            var genTable = await TableRepository.GetFirstAsync(x => x.TableName == table.TableName && x.IsGenCode == 0);
             if (genTable == null)
             {
                 _logger.Error($"未找到表 {table.TableName} 的生成信息");
@@ -242,7 +230,7 @@ public class HbtCodeGeneratorService : IHbtCodeGeneratorService
             }
 
             // 获取列信息
-            var columns = await _columnRepository.GetListAsync(x => x.TableId == genTable.Id);
+            var columns = await ColumnRepository.GetListAsync(x => x.TableId == genTable.Id);
             if (columns == null || !columns.Any())
             {
                 _logger.Error($"未找到表 {table.TableName} 的列信息");
@@ -250,7 +238,7 @@ public class HbtCodeGeneratorService : IHbtCodeGeneratorService
             }
 
             // 获取生成配置
-            var config = await _configRepository.GetFirstAsync(x => x.Status == 0);
+            var config = await ConfigRepository.GetFirstAsync(x => x.Status == 0);
             if (config == null)
             {
                 _logger.Error("未找到可用的代码生成配置");
@@ -288,7 +276,7 @@ public class HbtCodeGeneratorService : IHbtCodeGeneratorService
             else
             {
                 // 使用 HbtGenTemplate 表中的模板
-                templates = await _templateRepository.GetListAsync(x => x.Status == 0);
+                templates = await TemplateRepository.GetListAsync(x => x.Status == 0);
                 if (templates == null || !templates.Any())
                 {
                     _logger.Error("未找到可用的代码生成模板");
@@ -415,7 +403,7 @@ public class HbtCodeGeneratorService : IHbtCodeGeneratorService
             _logger.Info($"开始下载代码,表名:{table.TableName}");
 
             // 获取表信息
-            var genTable = await _tableRepository.GetFirstAsync(x => x.TableName == table.TableName && x.IsGenCode == 0);
+            var genTable = await TableRepository.GetFirstAsync(x => x.TableName == table.TableName && x.IsGenCode == 0);
             if (genTable == null)
             {
                 _logger.Error($"未找到表 {table.TableName} 的生成信息");
@@ -423,7 +411,7 @@ public class HbtCodeGeneratorService : IHbtCodeGeneratorService
             }
 
             // 获取列信息
-            var columns = await _columnRepository.GetListAsync(x => x.TableId == genTable.Id);
+            var columns = await ColumnRepository.GetListAsync(x => x.TableId == genTable.Id);
             if (columns == null || !columns.Any())
             {
                 _logger.Error($"未找到表 {table.TableName} 的列信息");
@@ -431,7 +419,7 @@ public class HbtCodeGeneratorService : IHbtCodeGeneratorService
             }
 
             // 获取生成配置
-            var config = await _configRepository.GetFirstAsync(x => x.Status == 0);
+            var config = await ConfigRepository.GetFirstAsync(x => x.Status == 0);
             if (config == null)
             {
                 _logger.Error("未找到可用的代码生成配置");
@@ -469,7 +457,7 @@ public class HbtCodeGeneratorService : IHbtCodeGeneratorService
             else
             {
                 // 使用 HbtGenTemplate 表中的模板
-                templates = await _templateRepository.GetListAsync(x => x.Status == 0);
+                templates = await TemplateRepository.GetListAsync(x => x.Status == 0);
                 if (templates == null || !templates.Any())
                 {
                     _logger.Error("未找到可用的代码生成模板");

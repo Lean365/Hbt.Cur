@@ -100,11 +100,10 @@ namespace Lean.Hbt.Application.Services.Workflow
         /// <summary>
         /// 完成工作流任务
         /// </summary>
-        /// <param name="id">任务ID</param>
-        /// <param name="result">处理结果</param>
-        /// <param name="comment">处理意见</param>
-        /// <returns>是否成功</returns>
-        Task<bool> CompleteAsync(long id, int result, string comment);
+        /// <param name="id">工作流任务ID</param>
+        /// <param name="comment">完成说明</param>
+        /// <returns>完成是否成功</returns>
+        Task<bool> CompleteAsync(long id, string comment);
 
         /// <summary>
         /// 转办工作流任务
@@ -150,5 +149,37 @@ namespace Lean.Hbt.Application.Services.Workflow
         /// 获取指定处理人的工作流任务列表
         /// </summary>
         Task<List<HbtProcessTaskDto>> GetTasksByAssigneeAsync(long assigneeId);
+
+        /// <summary>
+        /// 获取用户任务状态统计（基于Status状态统计）
+        /// </summary>
+        /// <param name="userId">用户ID</param>
+        /// <returns>任务状态统计数据</returns>
+        Task<HbtTaskStatusStatsDto> GetUserTaskStatusStatsAsync(long userId);
+
+        /// <summary>
+        /// 获取用户任务结果统计（基于Result结果统计）
+        /// </summary>
+        /// <param name="userId">用户ID</param>
+        /// <returns>任务结果统计数据</returns>
+        Task<HbtTaskResultStatsDto> GetUserTaskResultStatsAsync(long userId);
+
+        /// <summary>
+        /// 获取用户待办列表
+        /// </summary>
+        /// <param name="userId">用户ID</param>
+        /// <param name="status">状态筛选</param>
+        /// <param name="limit">限制数量</param>
+        /// <returns>待办列表</returns>
+        Task<List<HbtProcessTaskDto>> GetUserTodoListAsync(long userId, int? status = null, int limit = 5);
+
+        /// <summary>
+        /// 获取用户催办任务列表
+        /// </summary>
+        /// <param name="userId">用户ID</param>
+        /// <param name="urgeType">催办类型（overdue=已逾期, dueSoon=即将到期, highPriority=高优先级）</param>
+        /// <param name="limit">限制数量</param>
+        /// <returns>催办任务列表</returns>
+        Task<List<HbtProcessTaskDto>> GetUserUrgeListAsync(long userId, string urgeType = "overdue", int limit = 5);
     }
 } 

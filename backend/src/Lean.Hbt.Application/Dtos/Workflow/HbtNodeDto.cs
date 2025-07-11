@@ -43,9 +43,19 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         public long NodeId { get; set; }
 
         /// <summary>
+        /// 节点模板ID
+        /// </summary>
+        public long NodeTemplateId { get; set; }
+
+        /// <summary>
         /// 工作流定义ID
         /// </summary>
         public long DefinitionId { get; set; }
+
+        /// <summary>
+        /// 工作流定义名称
+        /// </summary>
+        public string DefinitionName { get; set; } = string.Empty;
 
         /// <summary>
         /// 节点名称
@@ -61,6 +71,11 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// 父节点ID
         /// </summary>
         public long? ParentNodeId { get; set; }
+
+        /// <summary>
+        /// 父节点名称
+        /// </summary>
+        public string ParentNodeName { get; set; } = string.Empty;
 
         /// <summary>
         /// 节点配置
@@ -309,40 +324,5 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// 创建时间
         /// </summary>
         public DateTime CreateTime { get; set; }
-    }
-
-    /// <summary>
-    /// 工作流节点模板DTO
-    /// </summary>
-    /// <remarks>
-    /// 创建者: Lean365
-    /// 创建时间: 2024-01-23
-    /// </remarks>
-    public class HbtNodeTemplateDto
-    {
-        /// <summary>
-        /// 工作流定义ID
-        /// </summary>
-        public long DefinitionId { get; set; }
-
-        /// <summary>
-        /// 节点名称
-        /// </summary>
-        public string? NodeName { get; set; }
-
-        /// <summary>
-        /// 节点类型
-        /// </summary>
-        public string? NodeTypeName { get; set; }
-
-        /// <summary>
-        /// 父节点ID
-        /// </summary>
-        public long? ParentNodeId { get; set; }
-
-        /// <summary>
-        /// 节点排序
-        /// </summary>
-        public int OrderNum { get; set; }
     }
 }

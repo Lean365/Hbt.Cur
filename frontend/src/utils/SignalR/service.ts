@@ -14,33 +14,33 @@ const { t } = i18n.global
 // 事件处理器类型定义
 type EventHandler = (...args: any[]) => void
 
-// 系统配置接口定义
-interface SystemConfig {
+// 租户配置接口定义
+interface TenantConfig {
   singleSignOn: {
     enabled: boolean;  // 是否启用单点登录
   };
   // 其他配置项...
 }
 
-// 默认系统配置
-const DEFAULT_CONFIG: SystemConfig = {
+// 默认租户配置
+const DEFAULT_CONFIG: TenantConfig = {
   singleSignOn: {
     enabled: false // 默认为多点登录
   }
 };
 
 // 全局配置对象
-let globalConfig: SystemConfig = DEFAULT_CONFIG;
+let globalConfig: TenantConfig = DEFAULT_CONFIG;
 
-// 初始化系统配置
-export async function initSystemConfig() {
+// 初始化租户配置
+export async function initTenantConfig() {
   try {
-    // 从后端获取系统配置
-    const response = await axios.get('/api/admin/config')
-    globalConfig = response.data
-    console.log('[SignalR] 系统配置已加载:', globalConfig)
+    // 从后端获取租户配置
+    const response = await axios.get('/api/HbtAuth/tenant-config')
+    globalConfig = response.data.data
+    console.log('[SignalR] 租户配置已加载:', globalConfig)
   } catch (error) {
-    console.error('[SignalR] 获取系统配置失败，使用默认配置:', error)
+    console.error('[SignalR] 获取租户配置失败，使用默认配置:', error)
     globalConfig = DEFAULT_CONFIG
   }
 }

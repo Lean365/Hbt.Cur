@@ -20,7 +20,8 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// <summary>
         /// 主键ID
         /// </summary>
-        public long Id { get; set; }
+        [AdaptMember("Id")]
+        public long UserRoleId { get; set; }
 
         /// <summary>
         /// 用户ID
@@ -32,10 +33,7 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// </summary>
         public long RoleId { get; set; }
 
-        /// <summary>
-        /// 租户ID
-        /// </summary>
-        public long TenantId { get; set; }
+
 
         /// <summary>
         /// 创建时间
@@ -72,10 +70,7 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// </summary>
         public string? RoleName { get; set; }
 
-        /// <summary>
-        /// 租户名称（导航属性）
-        /// </summary>
-        public string? TenantName { get; set; }
+
 
         /// <summary>
         /// 角色ID集合（用于批量操作）

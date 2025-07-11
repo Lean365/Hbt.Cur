@@ -32,7 +32,8 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine.Executors
         public HbtBranchNodeExecutor(
             IHbtRepository<HbtTransition> transitionRepository,
             IHbtExpressionEngine expressionEngine,
-            IHbtLogger logger) : base(logger)
+            IHbtLogger logger,
+            IHbtRepository<HbtNodeTemplate> nodeTemplateRepository) : base(logger, nodeTemplateRepository)
         {
             _transitionRepository = transitionRepository;
             _expressionEngine = expressionEngine;
@@ -52,14 +53,15 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine.Executors
             Dictionary<string, object>? variables = null)
         {
             // 获取所有可用的转换
-            var transitions = await _transitionRepository.GetListAsync(x => x.SourceNodeId == node.Id);
+            var transitions = await _transitionRepository.GetListAsync(x => x.SourceActivityId == node.NodeTemplateId);
             if (!transitions.Any())
             {
                 return CreateFailureResult("分支节点没有配置转换");
             }
 
             // 解析节点配置
-            var config = JsonSerializer.Deserialize<HbtNodeConfig>(node.NodeConfig);
+            var nodeTemplate = await _nodeTemplateRepository.GetByIdAsync(node.NodeTemplateId);
+            var config = JsonSerializer.Deserialize<HbtNodeConfig>(nodeTemplate?.NodeConfig ?? "{}");
             if (config == null)
             {
                 return CreateFailureResult("分支节点配置无效");

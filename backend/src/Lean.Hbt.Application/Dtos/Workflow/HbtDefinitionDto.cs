@@ -30,6 +30,11 @@ namespace Lean.Hbt.Application.Dtos.Workflow
             WorkflowVersion = "A";
             WorkflowConfig = string.Empty;
             WorkflowNodes = new List<HbtNodeDto>();
+            NodeTemplates = new List<HbtNodeTemplateDto>();
+            Forms = new List<HbtFormDto>();
+            WorkflowInstances = new List<HbtInstanceDto>();
+            WorkflowActivities = new List<HbtActivityDto>();
+            WorkflowTransitions = new List<HbtTransitionDto>();
             Remark = string.Empty;
             CreateBy = string.Empty;
             CreateTime = DateTime.Now;
@@ -67,6 +72,11 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         public int FormId { get; set; }
 
         /// <summary>
+        /// 表单名称
+        /// </summary>
+        public string? FormName { get; set; }
+
+        /// <summary>
         /// 工作流配置
         /// </summary>
         public string WorkflowConfig { get; set; }
@@ -80,6 +90,31 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// 工作流节点列表
         /// </summary>
         public List<HbtNodeDto> WorkflowNodes { get; set; }
+
+        /// <summary>
+        /// 流程节点模板列表
+        /// </summary>
+        public List<HbtNodeTemplateDto>? NodeTemplates { get; set; }
+
+        /// <summary>
+        /// 关联表单列表
+        /// </summary>
+        public List<HbtFormDto>? Forms { get; set; }
+
+        /// <summary>
+        /// 工作流实例列表
+        /// </summary>
+        public List<HbtInstanceDto>? WorkflowInstances { get; set; }
+
+        /// <summary>
+        /// 工作流活动列表
+        /// </summary>
+        public List<HbtActivityDto>? WorkflowActivities { get; set; }
+
+        /// <summary>
+        /// 工作流转换列表
+        /// </summary>
+        public List<HbtTransitionDto>? WorkflowTransitions { get; set; }
 
         /// <summary>
         /// 备注
@@ -190,6 +225,16 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// 工作流节点列表
         /// </summary>
         public List<HbtNodeCreateDto>? WorkflowNodes { get; set; }
+
+        /// <summary>
+        /// 工作流活动列表
+        /// </summary>
+        public List<HbtActivityCreateDto>? WorkflowActivities { get; set; }
+
+        /// <summary>
+        /// 工作流转换列表
+        /// </summary>
+        public List<HbtTransitionCreateDto>? WorkflowTransitions { get; set; }
 
         /// <summary>
         /// 备注

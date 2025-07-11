@@ -365,60 +365,67 @@ export default {
       batchUpdate: 'Batch Update', // @btn-batch-update-color
 
       // === Status Operation Buttons ===
-      audit: 'Audit',       // @btn-audit-color
-      revoke: 'Revoke',     // @btn-revoke-color
-      stop: 'Stop',         // @btn-stop-color
-      run: 'Run',           // @btn-run-color
-      force: 'Force',       // @btn-forced-color
+      audit: 'Audit',        // @btn-audit-color
+      revoke: 'Revoke',      // @btn-revoke-color
+      stop: 'Stop',          // @btn-stop-color
+      run: 'Run',            // @btn-run-color
+      force: 'Force',        // @btn-forced-color
+      start: 'Start',        // @btn-start-color
+      suspend: 'Suspend',    // @btn-suspend-color
+      resume: 'Resume',      // @btn-resume-color
+      submit: 'Submit',      // @btn-submit-color
+      withdraw: 'Withdraw',  // @btn-withdraw-color
+      terminate: 'Terminate', // @btn-terminate-color
 
       // === System Function Buttons ===
-      generate: 'Generate', // @btn-generate-color
-      refresh: 'Refresh',   // @btn-refresh-color
-      info: 'Info',         // @btn-info-color
-      log: 'Log',           // @btn-log-color
-      chat: 'Message',      // @btn-chat-color
-      copy: 'Copy',         // @btn-copy-color
-      execute: 'Execute',   // @btn-execute-color
+      generate: 'Generate',  // @btn-generate-color
+      refresh: 'Refresh',    // @btn-refresh-color
+      info: 'Info',          // @btn-info-color
+      log: 'Log',            // @btn-log-color
+      chat: 'Chat',          // @btn-chat-color
+      copy: 'Copy',          // @btn-copy-color
+      execute: 'Execute',    // @btn-execute-color
       resetPwd: 'Reset Password', // @btn-reset-pwd-color
-      open: 'Open',         // @btn-open-color
-      close: 'Close',       // @btn-close-color
-      more: 'More',         // @btn-more-color
-      density: 'Density',   // @btn-density-color
-      columnSetting: 'Column Settings', // @btn-column-setting-color
+      open: 'Open',          // @btn-open-color
+      close: 'Close',        // @btn-close-color
+      more: 'More',          // @btn-more-color
+      density: 'Density',    // @btn-density-color
+      columnSetting: 'Column Setting', // @btn-column-setting-color
 
       // === Extended Function Buttons ===
-      search: 'Search',     // @btn-search-color
-      filter: 'Filter',     // @btn-filter-color
-      sort: 'Sort',         // @btn-sort-color
-      config: 'Configure',  // @btn-config-color
-      save: 'Save',         // @btn-save-color
-      cancel: 'Cancel',     // @btn-cancel-color
-      upload: 'Upload',     // @btn-upload-color
-      print: 'Print',       // @btn-print-color
-      help: 'Help',         // @btn-help-color
-      share: 'Share',       // @btn-share-color
-      lock: 'Lock',         // @btn-lock-color
-      sync: 'Sync',         // @btn-sync-color
-      expand: 'Expand',     // @btn-expand-color
-      collapse: 'Collapse', // @btn-collapse-color
-      approve: 'Approve',   // @btn-approve-color
-      reject: 'Reject',     // @btn-reject-color
-      comment: 'Comment',   // @btn-comment-color
-      attach: 'Attachment', // @btn-attach-color
+      search: 'Search',      // @btn-search-color
+      filter: 'Filter',      // @btn-filter-color
+      sort: 'Sort',          // @btn-sort-color
+      config: 'Config',      // @btn-config-color
+      save: 'Save',          // @btn-save-color
+      cancel: 'Cancel',      // @btn-cancel-color
+      upload: 'Upload',      // @btn-upload-color
+      print: 'Print',        // @btn-print-color
+      help: 'Help',          // @btn-help-color
+      share: 'Share',        // @btn-share-color
+      lock: 'Lock',          // @btn-lock-color
+      sync: 'Sync',          // @btn-sync-color
+      initialize: 'Initialize', // @btn-initialize-color
+      expand: 'Expand',      // @btn-expand-color
+      collapse: 'Collapse',  // @btn-collapse-color
+      approve: 'Approve',    // @btn-approve-color
+      reject: 'Reject',      // @btn-reject-color
+      comment: 'Comment',    // @btn-comment-color
+      attach: 'Attach',      // @btn-attach-color
 
       // === Language Support Buttons ===
       translate: 'Translate', // @btn-translate-color
-      langSwitch: 'Switch Language', // @btn-lang-switch-color
-      dict: 'Dictionary',   // @btn-dict-color
+      langSwitch: 'Language Switch', // @btn-lang-switch-color
+      dict: 'Dictionary',    // @btn-dict-color
 
       // === Data Analysis Buttons ===
-      analyze: 'Analyze',   // @btn-analyze-color
-      chart: 'Chart',       // @btn-chart-color
-      report: 'Report',     // @btn-report-color
+      analyze: 'Analyze',    // @btn-analyze-color
+      chart: 'Chart',        // @btn-chart-color
+      report: 'Report',      // @btn-report-color
       dashboard: 'Dashboard', // @btn-dashboard-color
       statistics: 'Statistics', // @btn-statistics-color
-      forecast: 'Forecast', // @btn-forecast-color
-      compare: 'Compare',   // @btn-compare-color
+      forecast: 'Forecast',  // @btn-forecast-color
+      compare: 'Compare',    // @btn-compare-color
 
       // === Workflow Buttons ===
       startFlow: 'Start Flow', // @btn-start-flow-color
@@ -430,50 +437,7 @@ export default {
       notify: 'Notify',          // @btn-notify-color
       urge: 'Urge',              // @btn-urge-color
       sign: 'Sign',              // @btn-sign-color
-      countersign: 'Countersign', // @btn-countersign-color
-
-      // === Mobile-specific Buttons ===
-      scan: 'Scan',              // @btn-scan-color
-      location: 'Location',      // @btn-location-color
-      call: 'Call',              // @btn-call-color
-      photo: 'Take Photo',       // @btn-photo-color
-      voice: 'Voice',            // @btn-voice-color
-      faceId: 'Face ID',         // @btn-face-id-color
-      fingerPrint: 'Fingerprint', // @btn-finger-print-color
-
-      // === Social Collaboration Buttons ===
-      follow: 'Follow',          // @btn-follow-color
-      collect: 'Collect',        // @btn-collect-color
-      like: 'Like',              // @btn-like-color
-      forward: 'Forward',        // @btn-forward-color
-      at: '@',                   // @btn-at-color
-      group: 'Group',            // @btn-group-color
-      team: 'Team',              // @btn-team-color
-
-      // === Security Authentication Buttons ===
-      verifyCode: 'Verify Code', // @btn-verify-code-color
-      bind: 'Bind',              // @btn-bind-color
-      unbind: 'Unbind',          // @btn-unbind-color
-      authorize: 'Authorize',    // @btn-authorize-color
-      deauthorize: 'Deauthorize', // @btn-deauthorize-color
-
-      // === Advanced Function Buttons ===
-      version: 'Version',        // @btn-version-color
-      history: 'History',        // @btn-history-color
-      restore: 'Restore',        // @btn-restore-color
-      archive: 'Archive',        // @btn-archive-color
-      unarchive: 'Unarchive',    // @btn-unarchive-color
-      merge: 'Merge',            // @btn-merge-color
-      split: 'Split',            // @btn-split-color
-
-      // === System Management Buttons ===
-      backup: 'Backup',          // @btn-backup-color
-      restoreSys: 'System Restore', // @btn-restore-sys-color
-      clean: 'Clean',            // @btn-clean-color
-      optimize: 'Optimize',      // @btn-optimize-color
-      monitor: 'Monitor',        // @btn-monitor-color
-      diagnose: 'Diagnose',      // @btn-diagnose-color
-      maintain: 'Maintain'       // @btn-maintain-color
+      countersign: 'Countersign' // @btn-countersign-color
     },
 
     // ==================== Results and Messages ====================

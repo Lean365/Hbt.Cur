@@ -33,14 +33,12 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <param name="menuService">菜单服务</param>
         /// <param name="logger">日志服务</param>
         /// <param name="currentUser">用户上下文</param>
-        /// <param name="tenantContext">租户上下文</param>
         /// <param name="localization">本地化服务</param>
         public HbtMenuController(
             IHbtMenuService menuService,
             IHbtLogger logger,
             IHbtCurrentUser currentUser,
-            IHbtCurrentTenant tenantContext,
-            IHbtLocalizationService localization) : base(logger, currentUser, tenantContext, localization)
+            IHbtLocalizationService localization) : base(logger, currentUser, localization)
         {
             _menuService = menuService;
 

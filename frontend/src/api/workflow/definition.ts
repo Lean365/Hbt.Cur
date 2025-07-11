@@ -8,6 +8,7 @@ import type {
   HbtDefinitionStatus,
   HbtDefinitionPagedResult
 } from '@/types/workflow/definition'
+import type { HbtSelectOption } from '@/types/common'
 
 // 获取工作流定义列表
 export function getWorkflowDefinitionList(params: HbtDefinitionQuery) {
@@ -102,5 +103,14 @@ export function updateWorkflowDefinitionStatus(id: number, data: HbtDefinitionSt
     url: `/api/HbtDefinition/${id}/status`,
     method: 'put',
     data
+  })
+}
+
+// 获取工作流定义选项列表
+export function getWorkflowDefinitionOptions(includeDisabled: boolean = false) {
+  return request<HbtApiResponse<HbtSelectOption[]>>({
+    url: '/api/HbtDefinition/options',
+    method: 'get',
+    params: { includeDisabled }
   })
 } 

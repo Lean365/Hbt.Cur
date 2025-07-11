@@ -17,7 +17,7 @@ namespace Lean.Hbt.Domain.Entities.Identity;
 /// 用户租户关联实体
 /// </summary>
 [SugarTable("hbt_identity_user_tenant", TableDescription = "用户租户关联表")]
-[SugarIndex("ix_user_tenant", nameof(UserId), OrderByType.Asc, nameof(TenantId), OrderByType.Asc, true)]
+[SugarIndex("ix_user_tenant", nameof(UserId), OrderByType.Asc, nameof(ConfigId), OrderByType.Asc, true)]
 public class HbtUserTenant : HbtBaseEntity
 {
     /// <summary>
@@ -27,22 +27,10 @@ public class HbtUserTenant : HbtBaseEntity
     public long UserId { get; set; }
 
     /// <summary>
-    /// 租户ID
+    /// 租户配置ID
     /// </summary>
-    [SugarColumn(ColumnName = "tenant_id", ColumnDescription = "租户ID", ColumnDataType = "bigint", IsNullable = false)]
-    public long TenantId { get; set; }
-
-    /// <summary>
-    /// 是否默认租户（0否 1是）
-    /// </summary>
-    [SugarColumn(ColumnName = "is_default", ColumnDescription = "是否默认租户", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
-    public int IsDefault { get; set; } = 0;
-
-    /// <summary>
-    /// 在该租户中的状态（0正常 1停用）
-    /// </summary>
-    [SugarColumn(ColumnName = "status", ColumnDescription = "状态", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
-    public int Status { get; set; } = 0;
+    [SugarColumn(ColumnName = "config_id", ColumnDescription = "配置ID", Length = 50, ColumnDataType = "nvarchar", IsNullable = true)]
+    public string? ConfigId { get; set; }
 
     /// <summary>
     /// 用户导航属性
@@ -53,6 +41,6 @@ public class HbtUserTenant : HbtBaseEntity
     /// <summary>
     /// 租户导航属性
     /// </summary>
-    [Navigate(NavigateType.OneToOne, nameof(TenantId))]
+    [Navigate(NavigateType.OneToOne, nameof(ConfigId))]
     public HbtTenant? Tenant { get; set; }
 } 

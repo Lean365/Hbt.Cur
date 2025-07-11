@@ -20,7 +20,8 @@ namespace Lean.Hbt.Application.Dtos.Identity
         /// <summary>
         /// 主键ID
         /// </summary>
-        public long Id { get; set; }
+        [AdaptMember("Id")]
+        public long RoleMenuId { get; set; }
 
         /// <summary>
         /// 角色ID

@@ -16,13 +16,14 @@ export interface HbtNode extends HbtBaseEntity {
   nodeName: string
   nodeType: number
   definitionId: number
+  definitionName: string
   parentNodeId?: number
+  parentNodeName: string
   nodeConfig: string
   orderNum: number
   status: number
   startTime: string
   endTime: string
-  orderNum: number
   workflowDefinition?: HbtDefinition
   childNodes?: HbtNode[]
 }

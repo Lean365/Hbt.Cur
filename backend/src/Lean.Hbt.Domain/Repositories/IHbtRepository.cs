@@ -93,6 +93,13 @@ namespace Lean.Hbt.Domain.Repositories
             int pageSize = 20,
             List<(Expression<Func<TEntity, object>> Expression, OrderByType Type)>? orderByExpressions = null);
 
+        /// <summary>
+        /// 获取符合条件的实体数量（异步）
+        /// </summary>
+        /// <param name="condition">查询条件</param>
+        /// <returns>数量</returns>
+        Task<int> GetCountAsync(Expression<Func<TEntity, bool>>? condition = null);
+
         #endregion
 
         #region 新增操作
@@ -148,6 +155,13 @@ namespace Lean.Hbt.Domain.Repositories
         Task<int> DeleteAsync(TEntity entity);
 
         /// <summary>
+        /// 根据条件删除
+        /// </summary>
+        /// <param name="condition">删除条件</param>
+        /// <returns>影响行数</returns>
+        Task<int> DeleteAsync(Expression<Func<TEntity, bool>> condition);
+
+        /// <summary>
         /// 批量删除
         /// </summary>
         /// <param name="ids">主键列表</param>
@@ -173,12 +187,7 @@ namespace Lean.Hbt.Domain.Repositories
         /// </summary>
         Task<List<string>> GetUserPermissionsAsync(long userId);
 
-        /// <summary>
-        /// 获取用户租户列表
-        /// </summary>
-        /// <param name="userId">用户ID</param>
-        /// <returns>租户ID列表</returns>
-        Task<List<long>> GetUserTenantsAsync(long userId);
+
 
         /// <summary>
         /// 获取用户岗位列表
@@ -200,6 +209,13 @@ namespace Lean.Hbt.Domain.Repositories
         /// <param name="roleId">角色ID</param>
         /// <returns>菜单ID列表</returns>
         Task<List<long>> GetRoleMenusAsync(long roleId);
+
+        /// <summary>
+        /// 获取用户租户列表
+        /// </summary>
+        /// <param name="userId">用户ID</param>
+        /// <returns>租户配置ID列表</returns>
+        Task<List<string>> GetUserTenantsAsync(long userId);
 
     }
 }

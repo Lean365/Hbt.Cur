@@ -23,11 +23,10 @@ namespace Lean.Hbt.Infrastructure.Services.Identity
     /// 用于获取当前登录用户的相关信息，包括：
     /// 1. 用户ID
     /// 2. 用户名
-    /// 3. 租户ID
-    /// 4. 认证状态
-    /// 5. 用户类型
-    /// 6. 英文名称
-    /// 7. 角色和权限
+    /// 3. 认证状态
+    /// 4. 用户类型
+    /// 5. 英文名称
+    /// 6. 角色和权限
     /// </remarks>
     public class HbtCurrentUser : IHbtCurrentUser
     {
@@ -102,33 +101,7 @@ namespace Lean.Hbt.Infrastructure.Services.Identity
             }
         }
 
-        /// <summary>
-        /// 获取当前租户ID
-        /// </summary>
-        public long TenantId
-        {
-            get
-            {
-                var tenantIdClaim = _httpContextAccessor.HttpContext?.User.FindFirst("tid");
-                if (tenantIdClaim == null)
-                {
-                    _logger.LogWarning("未找到租户ID声明，请确保用户已正确登录并包含租户信息");
-                    throw new HbtException("未找到租户信息，请重新登录", HbtConstants.ErrorCodes.Unauthorized);
-                }
-                return long.Parse(tenantIdClaim.Value);
-            }
-        }
 
-        /// <summary>
-        /// 获取当前租户名称
-        /// </summary>
-        public string TenantName
-        {
-            get
-            {
-                return _httpContextAccessor.HttpContext?.User.FindFirst("tnm")?.Value ?? string.Empty;
-            }
-        }
 
         /// <summary>
         /// 获取当前用户角色列表

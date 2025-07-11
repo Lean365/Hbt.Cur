@@ -38,7 +38,6 @@ public class HbtCaptchaService : HbtBaseService, IHbtCaptchaService
     /// <param name="logger">日志记录器</param>
     /// <param name="httpContextAccessor">HTTP上下文访问器</param>
     /// <param name="currentUser">当前用户服务</param>
-    /// <param name="currentTenant">当前租户服务</param>
     /// <param name="localization">本地化服务</param>
     public HbtCaptchaService(
         IDistributedCache cache,
@@ -46,9 +45,8 @@ public class HbtCaptchaService : HbtBaseService, IHbtCaptchaService
         IWebHostEnvironment webHostEnvironment,
         IHbtLogger logger,
         IHttpContextAccessor httpContextAccessor,
-        IHbtCurrentUser currentUser,
-        IHbtCurrentTenant currentTenant,
-        IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, currentTenant, localization)
+        IHbtCurrentUser currentUser,         
+        IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
     {
         _logger.Info("开始构造验证码服务...");
 

@@ -11,12 +11,12 @@
 
 using Lean;
 using Lean.Hbt.Common.Options;
-using Lean.Hbt.Domain.Entities.Core;
 using Lean.Hbt.Domain.Entities.Audit;
 using Lean.Hbt.Domain.IServices.Extensions;
 using Lean.Hbt.Domain.Repositories;
 using Microsoft.Extensions.Options;
 using System.Linq.Expressions;
+using Lean.Hbt.Domain.Entities.Routine.Core;
 
 namespace Lean.Hbt.Application.Services.Extensions
 {
@@ -25,29 +25,23 @@ namespace Lean.Hbt.Application.Services.Extensions
     /// </summary>
     public class HbtLogCleanupService : IHbtLogCleanupService
     {
-        private readonly IHbtRepository<HbtOperLog> _operLogRepository;
-        private readonly IHbtRepository<HbtLoginLog> _loginLogRepository;
-        private readonly IHbtRepository<HbtExceptionLog> _exceptionLogRepository;
-        private readonly IHbtRepository<HbtSqlDiffLog> _dbDiffLogRepository;
-        private readonly IHbtRepository<HbtConfig> _sysConfigRepository;
+        private readonly IHbtRepositoryFactory _repositoryFactory;
         private readonly HbtLogCleanupOptions _defaultOptions;
+
+        private IHbtRepository<HbtOperLog> OperLogRepository => _repositoryFactory.GetAuthRepository<HbtOperLog>();
+        private IHbtRepository<HbtLoginLog> LoginLogRepository => _repositoryFactory.GetAuthRepository<HbtLoginLog>();
+        private IHbtRepository<HbtExceptionLog> ExceptionLogRepository => _repositoryFactory.GetAuthRepository<HbtExceptionLog>();
+        private IHbtRepository<HbtSqlDiffLog> DbDiffLogRepository => _repositoryFactory.GetAuthRepository<HbtSqlDiffLog>();
+        private IHbtRepository<HbtConfig> SysConfigRepository => _repositoryFactory.GetAuthRepository<HbtConfig>();
 
         /// <summary>
         /// 构造函数
         /// </summary>
         public HbtLogCleanupService(
-            IHbtRepository<HbtOperLog> operLogRepository,
-            IHbtRepository<HbtLoginLog> loginLogRepository,
-            IHbtRepository<HbtExceptionLog> exceptionLogRepository,
-            IHbtRepository<HbtSqlDiffLog> dbDiffLogRepository,
-            IHbtRepository<HbtConfig> sysConfigRepository,
+            IHbtRepositoryFactory repositoryFactory,
             IOptions<HbtLogCleanupOptions> options)
         {
-            _operLogRepository = operLogRepository;
-            _loginLogRepository = loginLogRepository;
-            _exceptionLogRepository = exceptionLogRepository;
-            _dbDiffLogRepository = dbDiffLogRepository;
-            _sysConfigRepository = sysConfigRepository;
+            _repositoryFactory = repositoryFactory;
             _defaultOptions = options.Value;
         }
 
@@ -56,7 +50,7 @@ namespace Lean.Hbt.Application.Services.Extensions
         /// </summary>
         public async Task<HbtLogCleanupOptions> GetConfigAsync()
         {
-            var configs = await _sysConfigRepository.GetListAsync();
+            var configs = await SysConfigRepository.GetListAsync();
             var options = new HbtLogCleanupOptions();
 
             // 从系统配置中获取配置值，如果不存在则使用默认值
@@ -114,10 +108,10 @@ namespace Lean.Hbt.Application.Services.Extensions
         {
             while (true)
             {
-                var logs = await _operLogRepository.GetListAsync(l => l.CreateTime < beforeTime);
+                var logs = await OperLogRepository.GetListAsync(l => l.CreateTime < beforeTime);
                 if (!logs.Any()) break;
 
-                await _operLogRepository.DeleteAsync(logs.Take(batchSize).ToList());
+                await OperLogRepository.DeleteAsync(logs.Take(batchSize).ToList());
             }
         }
 
@@ -125,10 +119,10 @@ namespace Lean.Hbt.Application.Services.Extensions
         {
             while (true)
             {
-                var logs = await _loginLogRepository.GetListAsync(l => l.CreateTime < beforeTime);
+                var logs = await LoginLogRepository.GetListAsync(l => l.CreateTime < beforeTime);
                 if (!logs.Any()) break;
 
-                await _loginLogRepository.DeleteAsync(logs.Take(batchSize).ToList());
+                await LoginLogRepository.DeleteAsync(logs.Take(batchSize).ToList());
             }
         }
 
@@ -136,10 +130,10 @@ namespace Lean.Hbt.Application.Services.Extensions
         {
             while (true)
             {
-                var logs = await _exceptionLogRepository.GetListAsync(l => l.CreateTime < beforeTime);
+                var logs = await ExceptionLogRepository.GetListAsync(l => l.CreateTime < beforeTime);
                 if (!logs.Any()) break;
 
-                await _exceptionLogRepository.DeleteAsync(logs.Take(batchSize).ToList());
+                await ExceptionLogRepository.DeleteAsync(logs.Take(batchSize).ToList());
             }
         }
 
@@ -147,10 +141,10 @@ namespace Lean.Hbt.Application.Services.Extensions
         {
             while (true)
             {
-                var logs = await _dbDiffLogRepository.GetListAsync(l => l.CreateTime < beforeTime);
+                var logs = await DbDiffLogRepository.GetListAsync(l => l.CreateTime < beforeTime);
                 if (!logs.Any()) break;
 
-                await _dbDiffLogRepository.DeleteAsync(logs.Take(batchSize).ToList());
+                await DbDiffLogRepository.DeleteAsync(logs.Take(batchSize).ToList());
             }
         }
     }

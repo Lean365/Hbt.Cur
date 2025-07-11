@@ -24,27 +24,25 @@ namespace Lean.Hbt.Application.Services.Audit
     /// </remarks>
     public class HbtLoginDevLogService : HbtBaseService, IHbtLoginDevLogService
     {
-        // 登录设备仓储接口
-        private readonly IHbtRepository<HbtLoginDevLog> _deviceExtendRepository;
+        private readonly IHbtRepositoryFactory _repositoryFactory;
+        private IHbtRepository<HbtLoginDevLog> DeviceExtendRepository => _repositoryFactory.GetAuthRepository<HbtLoginDevLog>();
 
         /// <summary>
         /// 构造函数，注入依赖服务
         /// </summary>
         /// <param name="logger">日志记录器</param>
-        /// <param name="deviceExtendRepository">登录设备仓库</param>
+        /// <param name="repositoryFactory">仓储工厂</param>
         /// <param name="httpContextAccessor">HTTP上下文访问器</param>
         /// <param name="currentUser">当前用户服务</param>
-        /// <param name="currentTenant">当前租户服务</param>
         /// <param name="localization">本地化服务</param>
         public HbtLoginDevLogService(
             IHbtLogger logger,
-            IHbtRepository<HbtLoginDevLog> deviceExtendRepository,
+            IHbtRepositoryFactory repositoryFactory,
             IHttpContextAccessor httpContextAccessor,
             IHbtCurrentUser currentUser,
-            IHbtCurrentTenant currentTenant,
-            IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, currentTenant, localization)
+            IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
         {
-            _deviceExtendRepository = deviceExtendRepository;
+            _repositoryFactory = repositoryFactory;
         }
 
         /// <summary>
@@ -52,9 +50,9 @@ namespace Lean.Hbt.Application.Services.Audit
         /// </summary>
         public async Task<HbtPagedResult<HbtLoginDevLogDto>> GetListAsync(HbtLoginDevLogQueryDto query)
         {
-            var exp = HbtLoginDevLogQueryExpression(query);
+            var exp = QueryExpression(query);
 
-            var result = await _deviceExtendRepository.GetPagedListAsync(
+            var result = await DeviceExtendRepository.GetPagedListAsync(
                 exp,
                 query.PageIndex,
                 query.PageSize,
@@ -78,7 +76,7 @@ namespace Lean.Hbt.Application.Services.Audit
         /// <exception cref="HbtException">当登录设备不存在时抛出异常</exception>
         public async Task<HbtLoginDevLogDto> GetByIdAsync(long deviceId)
         {
-            var deviceExtend = await _deviceExtendRepository.GetByIdAsync(deviceId);
+            var deviceExtend = await DeviceExtendRepository.GetByIdAsync(deviceId);
             if (deviceExtend == null)
                 throw new HbtException(L("Identity.DeviceExtend.NotFound", deviceId));
 
@@ -93,10 +91,10 @@ namespace Lean.Hbt.Application.Services.Audit
         public async Task<string> CreateAsync(HbtLoginDevLogCreateDto input)
         {
             // 验证设备ID是否已存在
-            await HbtValidateUtils.ValidateFieldExistsAsync(_deviceExtendRepository, "DeviceId", input.DeviceId);
+            await HbtValidateUtils.ValidateFieldExistsAsync(DeviceExtendRepository, "DeviceId", input.DeviceId);
 
             var deviceExtend = input.Adapt<HbtLoginDevLog>();
-            return await _deviceExtendRepository.CreateAsync(deviceExtend) > 0 ? deviceExtend.DeviceId : throw new HbtException(L("Identity.DeviceExtend.CreateFailed"));
+            return await DeviceExtendRepository.CreateAsync(deviceExtend) > 0 ? deviceExtend.DeviceId : throw new HbtException(L("Identity.DeviceExtend.CreateFailed"));
         }
 
         /// <summary>
@@ -106,11 +104,11 @@ namespace Lean.Hbt.Application.Services.Audit
         /// <returns>是否成功</returns>
         public async Task<bool> UpdateAsync(HbtLoginDevLogUpdateDto input)
         {
-            var deviceExtend = await _deviceExtendRepository.GetByIdAsync(input.DeviceId)
+            var deviceExtend = await DeviceExtendRepository.GetByIdAsync(input.DeviceId)
                 ?? throw new HbtException(L("Identity.DeviceExtend.NotFound", input.DeviceId));
 
             input.Adapt(deviceExtend);
-            return await _deviceExtendRepository.UpdateAsync(deviceExtend) > 0;
+            return await DeviceExtendRepository.UpdateAsync(deviceExtend) > 0;
         }
 
         /// <summary>
@@ -118,7 +116,7 @@ namespace Lean.Hbt.Application.Services.Audit
         /// </summary>
         public async Task<HbtLoginDevLogDto> UpdateOnlinePeriodAsync(HbtDeviceOnlinePeriodUpdateDto request)
         {
-            var deviceExtend = await _deviceExtendRepository.GetFirstAsync(
+            var deviceExtend = await DeviceExtendRepository.GetFirstAsync(
                 x => x.UserId == request.UserId && x.DeviceId == request.DeviceId);
             if (deviceExtend == null)
             {
@@ -126,7 +124,7 @@ namespace Lean.Hbt.Application.Services.Audit
             }
 
             deviceExtend.TodayOnlinePeriods = request.OnlinePeriod;
-            await _deviceExtendRepository.UpdateAsync(deviceExtend);
+            await DeviceExtendRepository.UpdateAsync(deviceExtend);
 
             return deviceExtend.Adapt<HbtLoginDevLogDto>();
         }
@@ -149,11 +147,11 @@ namespace Lean.Hbt.Application.Services.Audit
         /// <returns>是否成功</returns>
         public async Task<bool> UpdateStatusAsync(HbtLoginDevLogStatusDto input)
         {
-            var deviceExtend = await _deviceExtendRepository.GetByIdAsync(input.DeviceId)
+            var deviceExtend = await DeviceExtendRepository.GetByIdAsync(input.DeviceId)
                 ?? throw new HbtException(L("Identity.DeviceExtend.NotFound", input.DeviceId));
 
             input.Adapt(deviceExtend);
-            return await _deviceExtendRepository.UpdateAsync(deviceExtend) > 0;
+            return await DeviceExtendRepository.UpdateAsync(deviceExtend) > 0;
         }
 
         /// <summary>
@@ -163,10 +161,10 @@ namespace Lean.Hbt.Application.Services.Audit
         /// <returns>是否成功</returns>
         public async Task<bool> DeleteAsync(long deviceId)
         {
-            var deviceExtend = await _deviceExtendRepository.GetByIdAsync(deviceId)
+            var deviceExtend = await DeviceExtendRepository.GetByIdAsync(deviceId)
                 ?? throw new HbtException(L("Identity.DeviceExtend.NotFound", deviceId));
 
-            return await _deviceExtendRepository.DeleteAsync(deviceId) > 0;
+            return await DeviceExtendRepository.DeleteAsync(deviceId) > 0;
         }
 
         /// <summary>
@@ -179,7 +177,7 @@ namespace Lean.Hbt.Application.Services.Audit
             if (deviceIds == null || deviceIds.Length == 0)
                 throw new HbtException(L("Identity.DeviceExtend.SelectRequired"));
 
-            return await _deviceExtendRepository.DeleteRangeAsync(deviceIds.Cast<object>().ToList()) > 0;
+            return await DeviceExtendRepository.DeleteRangeAsync(deviceIds.Cast<object>().ToList()) > 0;
         }
 
         /// <summary>
@@ -188,7 +186,7 @@ namespace Lean.Hbt.Application.Services.Audit
         public async Task<HbtLoginDevLogDto> UpdateDeviceInfoAsync(HbtLoginDevLogUpdateDto request)
         {
             var now = DateTime.Now;
-            var deviceExtend = await _deviceExtendRepository.GetFirstAsync(x =>
+            var deviceExtend = await DeviceExtendRepository.GetFirstAsync(x =>
                 x.UserId == request.UserId &&
                 x.DeviceId == request.DeviceId);
 
@@ -204,7 +202,7 @@ namespace Lean.Hbt.Application.Services.Audit
                     LastOnlineTime = now
                 };
 
-                await _deviceExtendRepository.CreateAsync(deviceExtend);
+                await DeviceExtendRepository.CreateAsync(deviceExtend);
             }
             else
             {
@@ -213,7 +211,7 @@ namespace Lean.Hbt.Application.Services.Audit
                 deviceExtend.DeviceStatus = (int)HbtDeviceStatus.Online;
                 deviceExtend.LastOnlineTime = now;
 
-                await _deviceExtendRepository.UpdateAsync(deviceExtend);
+                await DeviceExtendRepository.UpdateAsync(deviceExtend);
             }
 
             return deviceExtend.Adapt<HbtLoginDevLogDto>();
@@ -224,7 +222,7 @@ namespace Lean.Hbt.Application.Services.Audit
         /// </summary>
         public async Task<HbtLoginDevLogDto> UpdateOfflineInfoAsync(long userId, string deviceId)
         {
-            var deviceExtend = await _deviceExtendRepository.GetFirstAsync(x =>
+            var deviceExtend = await DeviceExtendRepository.GetFirstAsync(x =>
                 x.UserId == userId &&
                 x.DeviceId == deviceId);
 
@@ -237,7 +235,7 @@ namespace Lean.Hbt.Application.Services.Audit
             deviceExtend.DeviceStatus = (int)HbtDeviceStatus.Offline;
             deviceExtend.LastOfflineTime = DateTime.Now;
 
-            await _deviceExtendRepository.UpdateAsync(deviceExtend);
+            await DeviceExtendRepository.UpdateAsync(deviceExtend);
             return deviceExtend.Adapt<HbtLoginDevLogDto>();
         }
 
@@ -246,7 +244,7 @@ namespace Lean.Hbt.Application.Services.Audit
         /// </summary>
         public async Task<HbtLoginDevLogDto?> GetByUserIdAndDeviceIdAsync(long userId, string deviceId)
         {
-            var deviceExtend = await _deviceExtendRepository.GetFirstAsync(
+            var deviceExtend = await DeviceExtendRepository.GetFirstAsync(
                 x => x.UserId == userId && x.DeviceId == deviceId);
             return deviceExtend?.Adapt<HbtLoginDevLogDto>();
         }
@@ -256,14 +254,14 @@ namespace Lean.Hbt.Application.Services.Audit
         /// </summary>
         public async Task<List<HbtLoginDevLogDto>> GetByUserIdAsync(long userId)
         {
-            var deviceExtends = await _deviceExtendRepository.GetListAsync(x => x.UserId == userId);
+            var deviceExtends = await DeviceExtendRepository.GetListAsync(x => x.UserId == userId);
             return deviceExtends.Adapt<List<HbtLoginDevLogDto>>();
         }
 
         /// <summary>
         /// 构建登录设备日志查询条件
         /// </summary>
-        private Expression<Func<HbtLoginDevLog, bool>> HbtLoginDevLogQueryExpression(HbtLoginDevLogQueryDto query)
+        private Expression<Func<HbtLoginDevLog, bool>> QueryExpression(HbtLoginDevLogQueryDto query)
         {
             var exp = Expressionable.Create<HbtLoginDevLog>();
 

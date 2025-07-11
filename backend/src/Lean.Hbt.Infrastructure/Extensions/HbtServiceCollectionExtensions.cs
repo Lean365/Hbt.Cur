@@ -75,9 +75,11 @@ namespace Lean.Hbt.Infrastructure.Extensions
         /// <returns>服务集合</returns>
         public static IServiceCollection AddDomainServices(this IServiceCollection services)
         {
+             // 添加仓储工厂 - 支持多库模式
+            services.AddScoped<IHbtRepositoryFactory, HbtRepositoryFactory>();           
             // 添加仓储服务 - 用于数据访问
             services.AddScoped(typeof(IHbtRepository<>), typeof(HbtRepository<>));
-
+            
             // 添加领域服务
             services.AddSecurityServices();     // 安全服务
             services.AddCacheServices();        // 缓存服务
@@ -222,8 +224,7 @@ namespace Lean.Hbt.Infrastructure.Extensions
             services.AddScoped<IHbtPostService, HbtPostService>();          // 岗位管理
             services.AddScoped<IHbtMenuService, HbtMenuService>();          // 菜单管理
 
-            // 租户管理
-            services.AddScoped<IHbtTenantService, HbtTenantService>();      // 租户服务
+
 
             return services;
         }
@@ -282,6 +283,11 @@ namespace Lean.Hbt.Infrastructure.Extensions
         /// 2. 邮件服务 - 邮件发送和模板
         /// 3. 文件服务 - 文件上传和管理
         /// 4. 通知服务 - 系统通知管理
+        /// 5. 合同服务 - 合同管理
+        /// 6. 会议服务 - 会议管理
+        /// 7. 项目服务 - 项目管理
+        /// 8. 日程服务 - 日程管理
+        /// 9. 用车服务 - 用车管理
         /// </remarks>
         /// <param name="services">服务集合</param>
         /// <returns>服务集合</returns>
@@ -300,6 +306,24 @@ namespace Lean.Hbt.Infrastructure.Extensions
 
             // 通知服务
             services.AddScoped<IHbtNoticeService, HbtNoticeService>();          // 通知服务
+
+            // 单号规则服务
+            services.AddScoped<IHbtNumberRuleService, HbtNumberRuleService>();  // 单号规则服务
+
+            // 合同管理服务
+            services.AddScoped<IHbtContractService, HbtContractService>();      // 合同服务
+
+            // 会议管理服务
+            services.AddScoped<IHbtMeetingService, HbtMeetingService>();        // 会议服务
+
+            // 项目管理服务
+            services.AddScoped<IHbtProjectService, HbtProjectService>();        // 项目服务
+
+            // 日程管理服务
+            services.AddScoped<IHbtScheduleService, HbtScheduleService>();      // 日程服务
+
+            // 用车管理服务
+            services.AddScoped<IHbtVehicleService, HbtVehicleService>();        // 用车服务
 
             return services;
         }
@@ -323,24 +347,94 @@ namespace Lean.Hbt.Infrastructure.Extensions
             // 添加 HttpClient 工厂
             services.AddHttpClient();
 
-            // 配置数据库 - 只在这里注册一次
-            var connectionString = configuration.GetConnectionString("Default")
-                ?? throw new ArgumentException("数据库连接字符串不能为空");
-
+            // 配置数据库
             var dbConfig = configuration.GetSection("Database").Get<HbtDbOptions>()
                 ?? throw new ArgumentException("数据库配置节点不能为空");
+
+            // 注册 HbtDbOptions - 绑定 Database 节点
+            services.Configure<HbtDbOptions>(options =>
+            {
+                // 绑定 Database 节点
+                configuration.GetSection("Database").Bind(options);
+            });
+
+            // 注册多数据库上下文
+            var authConnectionString = configuration.GetConnectionString("AuthDB");
+            var businessConnectionString = configuration.GetConnectionString("BusinessDB");
+            var workflowConnectionString = configuration.GetConnectionString("WorkflowDB");
+            var generatorConnectionString = configuration.GetConnectionString("GeneratorDB");
+
+            // 注册认证数据库上下文
+            if (!string.IsNullOrEmpty(authConnectionString))
+            {
+                services.AddScoped<HbtAuthDbContext>(sp => new HbtAuthDbContext(
+                    authConnectionString,
+                    sp.GetRequiredService<IOptions<HbtDbOptions>>(),
+                    sp.GetRequiredService<IHbtLogger>(),
+                    sp.GetRequiredService<IHbtCurrentUser>(),
+                    sp.GetRequiredService<IServiceProvider>(),
+                    sp.GetRequiredService<IConfiguration>()
+                ));
+                services.AddScoped<IHbtAuthDbContext>(sp => sp.GetRequiredService<HbtAuthDbContext>());
+            }
+
+            // 注册业务数据库上下文
+            if (!string.IsNullOrEmpty(businessConnectionString))
+            {
+                services.AddScoped<HbtBusinessDbContext>(sp => new HbtBusinessDbContext(
+                    businessConnectionString,
+                    sp.GetRequiredService<IOptions<HbtDbOptions>>(),
+                    sp.GetRequiredService<IHbtLogger>(),
+                    sp.GetRequiredService<IHbtCurrentUser>(),
+                    sp.GetRequiredService<IServiceProvider>(),
+                    sp.GetRequiredService<IConfiguration>()
+                ));
+                services.AddScoped<IHbtBusinessDbContext>(sp => sp.GetRequiredService<HbtBusinessDbContext>());
+            }
+
+            // 注册工作流数据库上下文
+            if (!string.IsNullOrEmpty(workflowConnectionString))
+            {
+                services.AddScoped<HbtWorkflowDbContext>(sp => new HbtWorkflowDbContext(
+                    workflowConnectionString,
+                    sp.GetRequiredService<IOptions<HbtDbOptions>>(),
+                    sp.GetRequiredService<IHbtLogger>(),
+                    sp.GetRequiredService<IHbtCurrentUser>(),
+                    sp.GetRequiredService<IServiceProvider>(),
+                    sp.GetRequiredService<IConfiguration>()
+                ));
+                services.AddScoped<IHbtWorkflowDbContext>(sp => sp.GetRequiredService<HbtWorkflowDbContext>());
+            }
+
+            // 注册代码生成数据库上下文
+            if (!string.IsNullOrEmpty(generatorConnectionString))
+            {
+                services.AddScoped<HbtGeneratorDbContext>(sp => new HbtGeneratorDbContext(
+                    generatorConnectionString,
+                    sp.GetRequiredService<IOptions<HbtDbOptions>>(),
+                    sp.GetRequiredService<IHbtLogger>(),
+                    sp.GetRequiredService<IHbtCurrentUser>(),
+                    sp.GetRequiredService<IServiceProvider>(),
+                    sp.GetRequiredService<IConfiguration>()
+                ));
+                services.AddScoped<IHbtGeneratorDbContext>(sp => sp.GetRequiredService<HbtGeneratorDbContext>());
+            }
+
+            // 使用业务数据库作为默认数据库配置
+            var defaultConnectionString = businessConnectionString ?? authConnectionString
+                ?? throw new ArgumentException("至少需要配置一个数据库连接字符串");
 
             // 注册数据库配置
             services.Configure<ConnectionConfig>(options =>
             {
-                options.ConnectionString = connectionString;
+                options.ConnectionString = defaultConnectionString;
                 options.DbType = dbConfig.DbType;
-                options.IsAutoCloseConnection = true;
+                options.IsAutoCloseConnection = dbConfig.IsAutoCloseConnection;
                 options.InitKeyType = InitKeyType.Attribute;
             });
 
             // 配置SqlSugar
-            services.AddSingleton<SqlSugarScope>(sp =>
+            services.AddScoped<SqlSugarScope>(sp =>
             {
                 var logger = sp.GetRequiredService<IHbtLogger>();
                 var options = sp.GetRequiredService<IOptions<ConnectionConfig>>();
@@ -429,15 +523,24 @@ namespace Lean.Hbt.Infrastructure.Extensions
 
                 return scope;
             });
-            services.AddSingleton<ISqlSugarClient>(sp => sp.GetRequiredService<SqlSugarScope>());
+            services.AddScoped<ISqlSugarClient>(sp => sp.GetRequiredService<SqlSugarScope>());
 
             // 数据库上下文 - 只注册一次
-            services.AddScoped<HbtDbContext>();
-            services.AddScoped<IHbtDbContext, HbtDbContext>();
+            services.AddScoped<HbtDbContext>(sp =>
+            {
+                var options = sp.GetRequiredService<IOptions<ConnectionConfig>>();
+                var dbOptions = sp.GetRequiredService<IOptions<HbtDbOptions>>();
+                var logger = sp.GetRequiredService<IHbtLogger>();
+                var currentUser = sp.GetRequiredService<IHbtCurrentUser>();
+                var serviceProvider = sp.GetRequiredService<IServiceProvider>();
+                var configuration = sp.GetRequiredService<IConfiguration>();
+                
+                return new HbtDbContext(options, dbOptions, logger, currentUser, serviceProvider, configuration);
+            });
+            services.AddScoped<IHbtDbContext, HbtDbContext>(sp => sp.GetRequiredService<HbtDbContext>());
 
             // 其他基础设施服务
             services.AddScoped<IHbtCurrentUser, HbtCurrentUser>();
-            services.AddScoped<IHbtCurrentTenant, HbtCurrentTenant>();
 
             return services;
         }

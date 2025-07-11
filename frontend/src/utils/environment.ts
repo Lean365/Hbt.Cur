@@ -216,7 +216,6 @@ export const getEnvironmentInfo = async (): Promise<HbtSignalREnvironment> => {
   const now = new Date().toISOString();
 
   return {
-    tenantId: 1,
     userId: 0,
     deviceId: 0,
     environmentId: fingerprint,

@@ -12,7 +12,6 @@ export interface HbtSqlDiffLogDto extends HbtBaseEntity {
   diffFields?: string
   executeSql?: string
   sqlParameters?: string
-  tenantId?: number
 }
 
 /** SQL差异日志查询参数 */
@@ -37,7 +36,6 @@ export interface HbtSqlDiffLogExportDto {
   diffFields?: string
   executeSql?: string
   sqlParameters?: string
-  tenantId?: number
   createTime: string
   createBy: string
   updateTime: string

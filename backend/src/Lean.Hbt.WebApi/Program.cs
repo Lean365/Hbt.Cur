@@ -16,7 +16,6 @@ using Lean.Hbt.Infrastructure.Services;
 using Lean.Hbt.Infrastructure.Services.Identity;
 using Lean.Hbt.Infrastructure.SignalR.Cache;
 using Lean.Hbt.WebApi.Middlewares;
-using Lean.Hbt.WebApi.Extensions;
 using Lean.Hbt.Application.Services.Audit;
 using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -190,9 +189,6 @@ try
     // 注册当前用户服务
     builder.Services.AddScoped<IHbtCurrentUser, HbtCurrentUser>();
 
-    // 注册当前租户服务
-    builder.Services.AddScoped<IHbtCurrentTenant, HbtCurrentTenant>();
-
     // 添加基础设施服务
     builder.Services.AddInfrastructure(builder.Configuration);
 
@@ -242,20 +238,11 @@ try
                     var claims = context.Principal?.Claims.ToList();
                     logger.Info("JWT认证成功，所有声明: {@Claims}", claims?.Select(c => new { c.Type, c.Value }));
                     
-                    var tenantId = context.Principal?.FindFirst("tid")?.Value;
                     var userName = context.Principal?.FindFirst("unm")?.Value;
                     
-                    if (string.IsNullOrEmpty(tenantId))
-                    {
-                        logger.Warn("JWT认证失败: 未找到租户ID声明");
-                        context.Fail("未找到租户ID声明");
-                        return Task.CompletedTask;
-                    }
-
-                    logger.Info("JWT认证成功: UserId={UserId}, UserName={UserName}, TenantId={TenantId}",
+                    logger.Info("JWT认证成功: UserId={UserId}, UserName={UserName}",
                         context.Principal?.FindFirst("uid")?.Value,
-                        userName,
-                        tenantId);
+                        userName);
                     return Task.CompletedTask;
                 },
                 OnAuthenticationFailed = context =>
@@ -402,52 +389,17 @@ try
         .AddViewLocalization()
         .AddDataAnnotationsLocalization();
 
-    // 注册租户审计日志服务
-    builder.Services.AddScoped<IHbtTenantLogService, HbtTenantLogService>();
+    // 租户审计日志服务已移除
 
     var app = builder.Build();
 
     // 初始化IP位置查询工具
     HbtIpLocationUtils.SetWebHostEnvironment(app.Environment);
 
-    // 初始化数据库和种子数据
-    if (dbConfig.Init.InitDatabase || dbConfig.Init.InitSeedData)
-    {
-        using var scope = app.Services.CreateScope();
-        var dbContext = scope.ServiceProvider.GetRequiredService<HbtDbContext>();
-
-        if (dbConfig.Init.InitDatabase)
-        {
-            // 检查数据库配置
-            var connectionConfigOptions = scope.ServiceProvider.GetRequiredService<IOptions<ConnectionConfig>>();
-            if (string.IsNullOrEmpty(connectionConfigOptions.Value.ConnectionString))
-            {
-                throw new InvalidOperationException("数据库连接字符串不能为空");
-            }
-
-            await dbContext.InitializeAsync();
-            logger.Info("数据库初始化完成");
-        }
-
-        if (dbConfig.Init.InitSeedData)
-        {
-            var dbSeed = scope.ServiceProvider.GetRequiredService<HbtDbSeed>();
-            await dbSeed.InitializeAsync();
-            logger.Info("种子数据初始化完成");
-        }
-
-        // 执行系统重启清理
-        var systemRestartService = scope.ServiceProvider.GetRequiredService<IHbtRestartService>();
-        var result = await systemRestartService.ExecuteRestartCleanupAsync();
-        if (result)
-        {
-            logger.Info("系统重启清理完成");
-        }
-        else
-        {
-            logger.Warn("系统重启清理失败");
-        }
-    }
+    // 初始化所有系统组件（数据库、种子数据、系统清理）
+    using var scope = app.Services.CreateScope();
+    var hbtLogger = scope.ServiceProvider.GetRequiredService<IHbtLogger>();
+    await app.InitializeAllAsync(dbConfig, builder.Configuration, hbtLogger);
 
     // 配置HTTP请求管道
     if (app.Environment.IsDevelopment() && serverConfig.EnableSwagger)
@@ -501,14 +453,6 @@ try
     app.UseAuthorization();
 
     // 12. 添加租户中间件
-    app.Use((RequestDelegate next) => async (HttpContext context) =>
-    {
-        using var scope = app.Services.CreateScope();
-        var middleware = ActivatorUtilities.CreateInstance<HbtTenantMiddleware>(
-            scope.ServiceProvider,
-            next);
-        await middleware.InvokeAsync(context);
-    });
 
     // 13. 添加权限中间件
     app.UseHbtPerm();
@@ -516,15 +460,7 @@ try
     // 14. 添加本地化中间件
     app.UseHbtLocalization();
 
-    // 15. 添加租户审计日志中间件
-    app.Use((RequestDelegate next) => async (HttpContext context) =>
-    {
-        using var scope = app.Services.CreateScope();
-        var middleware = ActivatorUtilities.CreateInstance<HbtTenantLogMiddleware>(
-            scope.ServiceProvider,
-            next);
-        await middleware.InvokeAsync(context);
-    });
+    // 15. 租户审计日志中间件已移除
 
     // 16. 注册所有控制器路由和SignalR Hub
     app.MapControllers();

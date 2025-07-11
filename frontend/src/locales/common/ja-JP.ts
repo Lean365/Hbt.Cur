@@ -366,10 +366,16 @@ export default {
 
       // === 状態操作ボタン ===
       audit: '審査',         // @btn-audit-color
-      revoke: '取り消し',       // @btn-revoke-color
+      revoke: '取り消し',     // @btn-revoke-color
       stop: '停止',          // @btn-stop-color
-      run: '実行',          // @btn-run-color
-      force: '強制',          // @btn-forced-color
+      run: '実行',           // @btn-run-color
+      force: '強制',         // @btn-forced-color
+      start: '開始',         // @btn-start-color
+      suspend: '一時停止',    // @btn-suspend-color
+      resume: '再開',        // @btn-resume-color
+      submit: '提出',        // @btn-submit-color
+      withdraw: '撤回',      // @btn-withdraw-color
+      terminate: '終了',      // @btn-terminate-color
 
       // === システム機能ボタン ===
       generate: '生成',      // @btn-generate-color
