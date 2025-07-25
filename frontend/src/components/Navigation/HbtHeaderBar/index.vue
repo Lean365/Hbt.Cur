@@ -29,9 +29,8 @@
           <hbt-online-users v-model:open="isOnlineUsersOpen" />
           <hbt-locale />
           <hbt-memorial />
-          <hbt-theme />
           <hbt-header-user />
-          <hbt-setting />
+          <hbt-theme />
         </a-space>
       </div>
     </div>

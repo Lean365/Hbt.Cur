@@ -2,111 +2,117 @@
 
 //===================================================================
 // 项目名 : Lean.Hbt
-// 文件名 : ApprovalNodeExecutor.cs
-// 创建者 : Lean365
-// 创建时间: 2024-01-23 12:00
-// 版本号 : V1.0.0
-// 描述    : 审批节点执行器
+// 文件名 : HbtApprovalNodeExecutor.cs
+// 创建者 : Claude
+// 创建时间: 2024-12-01
+// 版本号 : V0.0.1
+// 描述    : 工作流审批节点执行器
 //===================================================================
 
-using System.Text.Json;
+using Lean.Hbt.Application.Services.Workflow.Engine;
 using Lean.Hbt.Application.Services.Workflow.Engine.Resolvers;
-using Lean.Hbt.Domain.Models.Workflow;
+using Lean.Hbt.Domain.IServices;
+using System.Text.Json;
 
 namespace Lean.Hbt.Application.Services.Workflow.Engine.Executors
 {
     /// <summary>
-    /// 审批节点执行器
+    /// 工作流审批节点执行器
     /// </summary>
     public class HbtApprovalNodeExecutor : HbtNodeExecutorBase
     {
-        private readonly IHbtRepository<HbtProcessTask> _taskRepository;
-        private readonly IHbtApproverResolver _approverResolver;
-
         /// <summary>
         /// 构造函数
         /// </summary>
+        /// <param name="logger">日志服务</param>
+        /// <param name="currentUser">当前用户服务</param>
+        /// <param name="approverResolver">审批人解析器</param>
         public HbtApprovalNodeExecutor(
             IHbtLogger logger,
-            IHbtRepository<HbtProcessTask> taskRepository,
-            IHbtApproverResolver approverResolver,
-            IHbtRepository<HbtNodeTemplate> nodeTemplateRepository)
-            : base(logger, nodeTemplateRepository)
+            IHbtCurrentUser currentUser,
+            IHbtApproverResolver approverResolver) : base(logger, currentUser, approverResolver)
         {
-            _taskRepository = taskRepository;
-            _approverResolver = approverResolver;
         }
 
-        /// <summary>
-        /// 节点类型
-        /// </summary>
-        protected override int NodeType => 2; // 2 表示审批节点
+        /// <inheritdoc/>
+        public override bool CanHandle(string nodeType)
+        {
+            return nodeType.Equals("approval", StringComparison.OrdinalIgnoreCase);
+        }
 
-        /// <summary>
-        /// 执行审批节点
-        /// </summary>
-        protected override async Task<HbtNodeResult> ExecuteInternalAsync(
-            HbtInstance instance,
-            HbtNode node,
+        /// <inheritdoc/>
+        public override string GetNodeTypeDescription(string nodeType)
+        {
+            return "审批节点";
+        }
+
+        /// <inheritdoc/>
+        public override async Task<HbtApproveResult> ExecuteAsync(
+            long instanceId,
+            string nodeId,
+            string nodeType,
+            string? nodeConfig,
             Dictionary<string, object>? variables = null)
         {
             try
             {
-                _logger.Info($"开始执行审批节点: 实例ID={instance.Id}, 节点ID={node.Id}");
+                LogNodeExecution(instanceId, nodeId, "开始执行审批节点");
 
                 // 解析节点配置
-                var nodeTemplate = await _nodeTemplateRepository.GetByIdAsync(node.NodeTemplateId);
-                var config = JsonSerializer.Deserialize<HbtNodeConfig>(nodeTemplate?.NodeConfig ?? "{}");
+                var config = ParseConfig<ApprovalNodeConfig>(nodeConfig);
                 if (config == null)
                 {
-                    var error = $"节点配置无效: 节点ID={node.Id}";
-                    _logger.Error(error);
+                    var error = "审批节点配置无效";
+                    LogNodeError(instanceId, nodeId, new InvalidOperationException(error));
                     return CreateFailureResult(error);
                 }
 
                 // 解析审批人
-                _logger.Info($"开始解析审批人: 审批类型={config.ApproverType}");
-                var approvers = await _approverResolver.ResolveApproversAsync(instance, node, config);
+                var approvers = await _approverResolver.ResolveApproversAsync(
+                    instanceId, nodeId, config.ApproverType, config.ApproverConfig, variables);
+
                 if (!approvers.Any())
                 {
                     var error = "未找到有效的审批人";
-                    _logger.Error(error);
+                    LogNodeError(instanceId, nodeId, new InvalidOperationException(error));
                     return CreateFailureResult(error);
                 }
-                _logger.Info($"成功解析审批人: 数量={approvers.Count}");
 
-                // 创建审批任务
-                foreach (var approverId in approvers)
-                {
-                    var task = new HbtProcessTask
-                    {
-                        InstanceId = instance.Id,
-                        NodeId = node.Id,
-                        AssigneeId = approverId,
-                        TaskType = 2, // 2 表示审批任务
-                        Status = 0, // 0 表示待处理状态
-                        CreateTime = DateTime.Now
-                    };
+                LogNodeExecution(instanceId, nodeId, $"成功解析审批人，数量：{approvers.Count}");
 
-                    await _taskRepository.CreateAsync(task);
-                    _logger.Info($"已创建审批任务: 任务ID={task.Id}, 审批人ID={approverId}");
-                }
-
-                _logger.Info($"审批节点执行完成: 实例ID={instance.Id}, 节点ID={node.Id}");
-                return CreateSuccessResult();
-            }
-            catch (JsonException ex)
-            {
-                var error = $"节点配置解析失败: {ex.Message}";
-                _logger.Error(error, ex);
-                return CreateFailureResult(error);
+                // 审批节点需要等待审批，所以返回等待状态
+                LogNodeExecution(instanceId, nodeId, "审批节点执行完成，等待审批");
+                return CreateSuccessResult(
+                    nextNodeId: null, // 审批节点不自动流转到下一个节点
+                    nextNodeName: null,
+                    workflowStatus: 1); // 1 表示运行中
             }
             catch (Exception ex)
             {
-                var error = $"审批节点执行异常: {ex.Message}";
-                _logger.Error(error, ex);
-                return CreateFailureResult(error);
+                LogNodeError(instanceId, nodeId, ex);
+                return CreateFailureResult($"审批节点执行失败: {ex.Message}");
             }
+        }
+
+        /// <summary>
+        /// 审批节点配置
+        /// </summary>
+        private class ApprovalNodeConfig
+        {
+            /// <summary>
+            /// 审批人类型
+            /// </summary>
+            public int ApproverType { get; set; }
+
+            /// <summary>
+            /// 审批人配置
+            /// </summary>
+            public string? ApproverConfig { get; set; }
+
+            /// <summary>
+            /// 是否需要所有审批人同意
+            /// </summary>
+            public bool RequireAllApproval { get; set; } = true;
         }
     }
 }

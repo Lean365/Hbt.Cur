@@ -3,7 +3,7 @@
 // 文件名 : HbtNumberGeneratorService.cs
 // 创建者 : Lean365
 // 创建时间: 2024-03-07 16:30
-// 版本号 : V1.0.0
+// 版本号 : V0.0.1
 // 描述   : 通用单号生成器服务实现
 //===================================================================
 
@@ -35,27 +35,35 @@ namespace Lean.Hbt.Application.Services.Core
     /// </remarks>
     public class HbtNumberGeneratorService : HbtBaseService, IHbtNumberGeneratorService
     {
-        private readonly IHbtRepository<HbtNumberRule> _numberRuleRepository;
+        /// <summary>
+        /// 仓储工厂
+        /// </summary>
+        protected readonly IHbtRepositoryFactory _repositoryFactory;
         private readonly IHbtDbContext _dbContext;
+
+        /// <summary>
+        /// 获取单号规则仓储
+        /// </summary>
+        private IHbtRepository<HbtNumberRule> NumberRuleRepository => _repositoryFactory.GetBusinessRepository<HbtNumberRule>();
 
         /// <summary>
         /// 构造函数
         /// </summary>
-        /// <param name="logger">日志记录器</param>
-        /// <param name="numberRuleRepository">单号规则仓储</param>
+        /// <param name="repositoryFactory">仓储工厂</param>
+        /// <param name="logger">日志服务</param>
         /// <param name="dbContext">数据库上下文</param>
         /// <param name="httpContextAccessor">HTTP上下文访问器</param>
         /// <param name="currentUser">当前用户服务</param>
         /// <param name="localization">本地化服务</param>
         public HbtNumberGeneratorService(
+            IHbtRepositoryFactory repositoryFactory,
             IHbtLogger logger,
-            IHbtRepository<HbtNumberRule> numberRuleRepository,
             IHbtDbContext dbContext,
             IHttpContextAccessor httpContextAccessor,
             IHbtCurrentUser currentUser,
             IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
         {
-            _numberRuleRepository = numberRuleRepository;
+            _repositoryFactory = repositoryFactory ?? throw new ArgumentNullException(nameof(repositoryFactory));
             _dbContext = dbContext;
         }
 
@@ -98,14 +106,14 @@ namespace Lean.Hbt.Application.Services.Core
             numberRule.UsageCount++;
 
             // 更新规则
-            var ruleEntity = await _numberRuleRepository.GetByIdAsync(numberRule.NumberRuleId);
+            var ruleEntity = await NumberRuleRepository.GetByIdAsync(numberRule.NumberRuleId);
             if (ruleEntity != null)
             {
                 ruleEntity.CurrentSequence = numberRule.CurrentSequence;
                 ruleEntity.LastResetDate = numberRule.LastResetDate;
                 ruleEntity.LastUsedTime = numberRule.LastUsedTime;
                 ruleEntity.UsageCount = numberRule.UsageCount;
-                await _numberRuleRepository.UpdateAsync(ruleEntity);
+                await NumberRuleRepository.UpdateAsync(ruleEntity);
             }
 
             // 生成单号
@@ -164,7 +172,7 @@ namespace Lean.Hbt.Application.Services.Core
         /// <returns>规则信息</returns>
         public async Task<HbtNumberRuleDto> GetRuleAsync(string numberRuleCode, string companyCode)
         {
-            var numberRule = await _numberRuleRepository.GetFirstAsync(x => 
+            var numberRule = await NumberRuleRepository.GetFirstAsync(x => 
                 x.CompanyCode == companyCode && 
                 x.NumberRuleCode == numberRuleCode &&
                 x.Status == 0);

@@ -446,6 +446,8 @@ export interface HbtUserForm {
   englishName: string
   /** 用户类型（0系统用户 1普通用户 2管理员 3OAuth用户） */
   userType: number
+  /** 密码 */
+  password?: string
   /** 邮箱 */
   email?: string
   /** 手机号码 */

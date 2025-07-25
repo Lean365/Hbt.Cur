@@ -3,29 +3,14 @@
 // 文件名 : HbtVehicleService.cs
 // 创建者 : Lean365
 // 创建时间: 2024-03-07 16:30
-// 版本号 : V1.0.0
+// 版本号 : V0.0.1
 // 描述   : 用车服务实现
 //===================================================================
 
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using System.Linq.Expressions;
-using System.IO;
-using Lean.Hbt.Common.Models;
-using Lean.Hbt.Domain.Entities.Routine;
-using Lean.Hbt.Application.Dtos.Routine;
-using Lean.Hbt.Common.Exceptions;
-using Lean.Hbt.Common.Helpers;
-using Lean.Hbt.Domain.Repositories;
-using SqlSugar;
-using Mapster;
-using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Http;
-using Lean.Hbt.Common.Utils;
-using Lean.Hbt.Domain.Utils;
-using Lean.Hbt.Common.Constants;
+using Lean.Hbt.Domain.IServices.SignalR;
+using Lean.Hbt.Common.Models;
+using Lean.Hbt.Common.Enums;
 
 namespace Lean.Hbt.Application.Services.Routine.Vehicle
 {
@@ -38,24 +23,36 @@ namespace Lean.Hbt.Application.Services.Routine.Vehicle
     /// </remarks>
     public class HbtVehicleService : HbtBaseService, IHbtVehicleService
     {
-        private readonly IHbtRepository<HbtVehicle> _vehicleRepository;
+        /// <summary>
+        /// 仓储工厂
+        /// </summary>
+        protected readonly IHbtRepositoryFactory _repositoryFactory;
+        private readonly IHbtSignalRClient _signalRClient;
+
+        /// <summary>
+        /// 获取车辆仓储
+        /// </summary>
+        private IHbtRepository<HbtVehicle> VehicleRepository => _repositoryFactory.GetBusinessRepository<HbtVehicle>();
 
         /// <summary>
         /// 构造函数
         /// </summary>
-        /// <param name="logger">日志记录器</param>
-        /// <param name="vehicleRepository">用车仓储</param>
+        /// <param name="repositoryFactory">仓储工厂</param>
+        /// <param name="logger">日志服务</param>
+        /// <param name="signalRClient">SignalR客户端</param>
         /// <param name="httpContextAccessor">HTTP上下文访问器</param>
         /// <param name="currentUser">当前用户服务</param>
         /// <param name="localization">本地化服务</param>
         public HbtVehicleService(
+            IHbtRepositoryFactory repositoryFactory,
             IHbtLogger logger,
-            IHbtRepository<HbtVehicle> vehicleRepository,
+            IHbtSignalRClient signalRClient,
             IHttpContextAccessor httpContextAccessor,
             IHbtCurrentUser currentUser,
             IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
         {
-            _vehicleRepository = vehicleRepository;
+            _repositoryFactory = repositoryFactory ?? throw new ArgumentNullException(nameof(repositoryFactory));
+            _signalRClient = signalRClient;
         }
 
         /// <summary>
@@ -70,7 +67,7 @@ namespace Lean.Hbt.Application.Services.Routine.Vehicle
             var predicate = QueryExpression(query);
             _logger.Info("生成的查询表达式：{@Predicate}", predicate);
 
-            var result = await _vehicleRepository.GetPagedListAsync(
+            var result = await VehicleRepository.GetPagedListAsync(
                 predicate,
                 query?.PageIndex ?? 1,
                 query?.PageSize ?? 10,
@@ -112,7 +109,7 @@ namespace Lean.Hbt.Application.Services.Routine.Vehicle
         /// <returns>返回用车详情</returns>
         public async Task<HbtVehicleDto> GetByIdAsync(long vehicleId)
         {
-            var vehicle = await _vehicleRepository.GetByIdAsync(vehicleId);
+            var vehicle = await VehicleRepository.GetByIdAsync(vehicleId);
             if (vehicle == null)
                 throw new HbtException(L("Vehicle.NotFound", vehicleId));
 
@@ -127,7 +124,21 @@ namespace Lean.Hbt.Application.Services.Routine.Vehicle
         public async Task<long> CreateAsync(HbtVehicleCreateDto input)
         {
             var vehicle = input.Adapt<HbtVehicle>();
-            var result = await _vehicleRepository.CreateAsync(vehicle);
+            var result = await VehicleRepository.CreateAsync(vehicle);
+            
+            if (result > 0)
+            {
+                // 发送实时通知
+                await _signalRClient.ReceiveBroadcast(new HbtRealTimeNotification
+                {
+                    Type = HbtMessageType.System,
+                    Title = L("Vehicle.Created"),
+                    Content = L("Vehicle.CreatedContent", vehicle.PlateNumber),
+                    Timestamp = DateTime.Now,
+                    Data = vehicle
+                });
+            }
+            
             return result;
         }
 
@@ -138,12 +149,26 @@ namespace Lean.Hbt.Application.Services.Routine.Vehicle
         /// <returns>返回是否成功</returns>
         public async Task<bool> UpdateAsync(HbtVehicleUpdateDto input)
         {
-            var vehicle = await _vehicleRepository.GetByIdAsync(input.VehicleId);
+            var vehicle = await VehicleRepository.GetByIdAsync(input.VehicleId);
             if (vehicle == null)
                 throw new HbtException(L("Vehicle.NotFound", input.VehicleId));
 
             input.Adapt(vehicle);
-            var result = await _vehicleRepository.UpdateAsync(vehicle);
+            var result = await VehicleRepository.UpdateAsync(vehicle);
+            
+            if (result > 0)
+            {
+                // 发送实时通知
+                await _signalRClient.ReceiveBroadcast(new HbtRealTimeNotification
+                {
+                    Type = HbtMessageType.System,
+                    Title = L("Vehicle.Updated"),
+                    Content = L("Vehicle.UpdatedContent", vehicle.PlateNumber),
+                    Timestamp = DateTime.Now,
+                    Data = vehicle
+                });
+            }
+            
             return result > 0;
         }
 
@@ -154,11 +179,25 @@ namespace Lean.Hbt.Application.Services.Routine.Vehicle
         /// <returns>返回是否成功</returns>
         public async Task<bool> DeleteAsync(long vehicleId)
         {
-            var vehicle = await _vehicleRepository.GetByIdAsync(vehicleId);
+            var vehicle = await VehicleRepository.GetByIdAsync(vehicleId);
             if (vehicle == null)
                 throw new HbtException(L("Vehicle.NotFound", vehicleId));
 
-            var result = await _vehicleRepository.DeleteAsync(vehicle);
+            var result = await VehicleRepository.DeleteAsync(vehicle);
+            
+            if (result > 0)
+            {
+                // 发送实时通知
+                await _signalRClient.ReceiveBroadcast(new HbtRealTimeNotification
+                {
+                    Type = HbtMessageType.System,
+                    Title = L("Vehicle.Deleted"),
+                    Content = L("Vehicle.DeletedContent", vehicle.PlateNumber),
+                    Timestamp = DateTime.Now,
+                    Data = vehicle
+                });
+            }
+            
             return result > 0;
         }
 
@@ -172,11 +211,11 @@ namespace Lean.Hbt.Application.Services.Routine.Vehicle
             if (vehicleIds == null || vehicleIds.Length == 0)
                 throw new HbtException(L("Vehicle.SelectToDelete"));
 
-            var vehicles = await _vehicleRepository.GetListAsync(x => vehicleIds.Contains(x.Id));
+            var vehicles = await VehicleRepository.GetListAsync(x => vehicleIds.Contains(x.Id));
             if (!vehicles.Any())
                 throw new HbtException(L("Vehicle.NotFound"));
 
-            var result = await _vehicleRepository.DeleteAsync(vehicles);
+            var result = await VehicleRepository.DeleteAsync(vehicles);
             return result > 0;
         }
 
@@ -200,7 +239,7 @@ namespace Lean.Hbt.Application.Services.Routine.Vehicle
                 try
                 {
                     var vehicle = dto.Adapt<HbtVehicle>();
-                    await _vehicleRepository.CreateAsync(vehicle);
+                    await VehicleRepository.CreateAsync(vehicle);
                     success++;
                 }
                 catch (Exception ex)
@@ -223,7 +262,7 @@ namespace Lean.Hbt.Application.Services.Routine.Vehicle
         {
             var predicate = QueryExpression(query);
 
-            var vehicles = await _vehicleRepository.AsQueryable()
+            var vehicles = await VehicleRepository.AsQueryable()
                 .Where(predicate)
                 .OrderBy(x => x.Id)
                 .ToListAsync();
@@ -278,4 +317,4 @@ namespace Lean.Hbt.Application.Services.Routine.Vehicle
             return exp.ToExpression();
         }
     }
-} 
+}

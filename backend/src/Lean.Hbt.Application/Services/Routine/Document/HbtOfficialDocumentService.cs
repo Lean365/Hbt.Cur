@@ -4,8 +4,8 @@
 // 项目名 : Lean.Hbt
 // 文件名 : HbtOfficialDocumentService.cs
 // 创建者 : Lean365
-// 创建时间: 2024-06-09
-// 版本号 : V1.0.0
+// 创建时间: 2024-01-01
+// 版本号 : V0.0.1
 // 描述    : 公文文档服务实现
 //===================================================================
 
@@ -24,29 +24,37 @@ namespace Lean.Hbt.Application.Services.Routine.Document
     /// </summary>
     /// <remarks>
     /// 创建者: Lean365
-    /// 创建时间: 2024-06-09
+    /// 创建时间: 2024-01-01
     /// </remarks>
     public class HbtOfficialDocumentService : HbtBaseService, IHbtOfficialDocumentService
     {
-        private readonly IHbtRepository<HbtOfficialDocument> _officialDocumentRepository;
+        /// <summary>
+        /// 仓储工厂
+        /// </summary>
+        protected readonly IHbtRepositoryFactory _repositoryFactory;
 
         /// <summary>
         /// 构造函数
         /// </summary>
-        /// <param name="officialDocumentRepository">公文文档仓储</param>
+        /// <param name="repositoryFactory">仓储工厂</param>
         /// <param name="logger">日志服务</param>
         /// <param name="httpContextAccessor">HTTP上下文访问器</param>
         /// <param name="currentUser">当前用户服务</param>
         /// <param name="localization">本地化服务</param>
         public HbtOfficialDocumentService(
-            IHbtRepository<HbtOfficialDocument> officialDocumentRepository,
+            IHbtRepositoryFactory repositoryFactory,
             IHbtLogger logger,
             IHttpContextAccessor httpContextAccessor,
             IHbtCurrentUser currentUser,
             IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
         {
-            _officialDocumentRepository = officialDocumentRepository ?? throw new ArgumentNullException(nameof(officialDocumentRepository));
+            _repositoryFactory = repositoryFactory ?? throw new ArgumentNullException(nameof(repositoryFactory));
         }
+
+        /// <summary>
+        /// 获取公文文档仓储
+        /// </summary>
+        private IHbtRepository<HbtOfficialDocument> OfficialDocumentRepository => _repositoryFactory.GetBusinessRepository<HbtOfficialDocument>();
 
         /// <summary>
         /// 构建查询条件
@@ -59,7 +67,7 @@ namespace Lean.Hbt.Application.Services.Routine.Document
                 .AndIF(!string.IsNullOrEmpty(query.IssuingDepartment), x => x.IssuingDepartment!.Contains(query.IssuingDepartment!))
                 .AndIF(query.DocumentType != -1, x => x.DocumentType == query.DocumentType)
                 .AndIF(query.DocumentLevel != -1, x => x.DocumentLevel == query.DocumentLevel)
-                .AndIF(query.DocumentStatus != -1, x => x.DocumentStatus == query.DocumentStatus)
+                .AndIF(query.Status.HasValue, x => x.Status == query.Status!.Value)
                 .ToExpression();
         }
 
@@ -72,9 +80,9 @@ namespace Lean.Hbt.Application.Services.Routine.Document
         {
             query ??= new HbtOfficialDocumentQueryDto();
 
-            _logger.Info($"查询公文文档列表，参数：DocumentTitle={query.DocumentTitle}, DocumentNumber={query.DocumentNumber}, IssuingDepartment={query.IssuingDepartment}, DocumentType={query.DocumentType}, DocumentLevel={query.DocumentLevel}, DocumentStatus={query.DocumentStatus}");
+            _logger.Info($"查询公文文档列表，参数：DocumentTitle={query.DocumentTitle}, DocumentNumber={query.DocumentNumber}, IssuingDepartment={query.IssuingDepartment}, DocumentType={query.DocumentType}, DocumentLevel={query.DocumentLevel}, Status={query.Status}");
 
-            var result = await _officialDocumentRepository.GetPagedListAsync(
+            var result = await OfficialDocumentRepository.GetPagedListAsync(
                 OfficialDocumentQueryExpression(query),
                 query.PageIndex,
                 query.PageSize,
@@ -99,7 +107,7 @@ namespace Lean.Hbt.Application.Services.Routine.Document
         /// <returns>公文文档详情</returns>
         public async Task<HbtOfficialDocumentDto> GetByIdAsync(long id)
         {
-            var document = await _officialDocumentRepository.GetByIdAsync(id);
+            var document = await OfficialDocumentRepository.GetByIdAsync(id);
             return document == null ? throw new HbtException(L("Routine.OfficialDocument.NotFound", id)) : document.Adapt<HbtOfficialDocumentDto>();
         }
 
@@ -111,11 +119,11 @@ namespace Lean.Hbt.Application.Services.Routine.Document
         public async Task<long> CreateAsync(HbtOfficialDocumentCreateDto input)
         {
             // 验证字段是否已存在
-            await HbtValidateUtils.ValidateFieldExistsAsync(_officialDocumentRepository, "DocumentTitle", input.DocumentTitle);
-            await HbtValidateUtils.ValidateFieldExistsAsync(_officialDocumentRepository, "DocumentNumber", input.DocumentNumber);
+            await HbtValidateUtils.ValidateFieldExistsAsync(OfficialDocumentRepository, "DocumentTitle", input.DocumentTitle);
+            await HbtValidateUtils.ValidateFieldExistsAsync(OfficialDocumentRepository, "DocumentNumber", input.DocumentNumber);
 
             var document = input.Adapt<HbtOfficialDocument>();
-            return await _officialDocumentRepository.CreateAsync(document) > 0 ? document.Id : throw new HbtException(L("Routine.OfficialDocument.CreateFailed"));
+            return await OfficialDocumentRepository.CreateAsync(document) > 0 ? document.Id : throw new HbtException(L("Routine.OfficialDocument.CreateFailed"));
         }
 
         /// <summary>
@@ -125,17 +133,17 @@ namespace Lean.Hbt.Application.Services.Routine.Document
         /// <returns>是否成功</returns>
         public async Task<bool> UpdateAsync(HbtOfficialDocumentUpdateDto input)
         {
-            var document = await _officialDocumentRepository.GetByIdAsync(input.DocumentId)
-                ?? throw new HbtException(L("Routine.OfficialDocument.NotFound", input.DocumentId));
+            var document = await OfficialDocumentRepository.GetByIdAsync(input.OfficialDocumentId)
+                ?? throw new HbtException(L("Routine.OfficialDocument.NotFound", input.OfficialDocumentId));
 
             // 验证字段是否已存在
             if (document.DocumentTitle != input.DocumentTitle)
-                await HbtValidateUtils.ValidateFieldExistsAsync(_officialDocumentRepository, "DocumentTitle", input.DocumentTitle, input.DocumentId);
+                await HbtValidateUtils.ValidateFieldExistsAsync(OfficialDocumentRepository, "DocumentTitle", input.DocumentTitle, input.OfficialDocumentId);
             if (document.DocumentNumber != input.DocumentNumber)
-                await HbtValidateUtils.ValidateFieldExistsAsync(_officialDocumentRepository, "DocumentNumber", input.DocumentNumber, input.DocumentId);
+                await HbtValidateUtils.ValidateFieldExistsAsync(OfficialDocumentRepository, "DocumentNumber", input.DocumentNumber, input.OfficialDocumentId);
 
             input.Adapt(document);
-            return await _officialDocumentRepository.UpdateAsync(document) > 0;
+            return await OfficialDocumentRepository.UpdateAsync(document) > 0;
         }
 
         /// <summary>
@@ -145,10 +153,10 @@ namespace Lean.Hbt.Application.Services.Routine.Document
         /// <returns>是否成功</returns>
         public async Task<bool> DeleteAsync(long id)
         {
-            var document = await _officialDocumentRepository.GetByIdAsync(id)
+            var document = await OfficialDocumentRepository.GetByIdAsync(id)
                 ?? throw new HbtException(L("Routine.OfficialDocument.NotFound", id));
 
-            return await _officialDocumentRepository.DeleteAsync(id) > 0;
+            return await OfficialDocumentRepository.DeleteAsync(id) > 0;
         }
 
         /// <summary>
@@ -159,7 +167,7 @@ namespace Lean.Hbt.Application.Services.Routine.Document
         public async Task<bool> BatchDeleteAsync(long[] documentIds)
         {
             if (documentIds == null || documentIds.Length == 0) return false;
-            return await _officialDocumentRepository.DeleteRangeAsync(documentIds.Cast<object>().ToList()) > 0;
+            return await OfficialDocumentRepository.DeleteRangeAsync(documentIds.Cast<object>().ToList()) > 0;
         }
 
         /// <summary>
@@ -169,12 +177,12 @@ namespace Lean.Hbt.Application.Services.Routine.Document
         /// <returns>树形结构</returns>
         public async Task<List<HbtOfficialDocumentDto>> GetTreeAsync(long? parentId = null)
         {
-            var documents = await _officialDocumentRepository.GetListAsync(x => x.ParentId == parentId);
+            var documents = await OfficialDocumentRepository.GetListAsync(x => x.ParentId == parentId);
             var documentDtos = documents.Adapt<List<HbtOfficialDocumentDto>>();
 
             foreach (var documentDto in documentDtos)
             {
-                documentDto.Children = await GetTreeAsync(documentDto.Id);
+                documentDto.Children = await GetTreeAsync(documentDto.OfficialDocumentId);
             }
 
             return documentDtos;
@@ -207,11 +215,11 @@ namespace Lean.Hbt.Application.Services.Routine.Document
                     _logger.Info($"正在处理公文文档：{document.DocumentTitle} (Number: {document.DocumentNumber})");
                     
                     // 验证字段是否已存在
-                    await HbtValidateUtils.ValidateFieldExistsAsync(_officialDocumentRepository, "DocumentTitle", document.DocumentTitle);
-                    await HbtValidateUtils.ValidateFieldExistsAsync(_officialDocumentRepository, "DocumentNumber", document.DocumentNumber);
+                    await HbtValidateUtils.ValidateFieldExistsAsync(OfficialDocumentRepository, "DocumentTitle", document.DocumentTitle);
+                    await HbtValidateUtils.ValidateFieldExistsAsync(OfficialDocumentRepository, "DocumentNumber", document.DocumentNumber);
 
                     var documentEntity = document.Adapt<HbtOfficialDocument>();
-                    await _officialDocumentRepository.CreateAsync(documentEntity);
+                    await OfficialDocumentRepository.CreateAsync(documentEntity);
                     success++;
                     
                     _logger.Info($"成功导入公文文档：{document.DocumentTitle}");
@@ -235,7 +243,7 @@ namespace Lean.Hbt.Application.Services.Routine.Document
         /// <returns>Excel文件字节数组</returns>
         public async Task<(string fileName, byte[] content)> ExportAsync(HbtOfficialDocumentQueryDto query, string sheetName = "HbtOfficialDocument")
         {
-            var documents = await _officialDocumentRepository.GetListAsync(OfficialDocumentQueryExpression(query));
+            var documents = await OfficialDocumentRepository.GetListAsync(OfficialDocumentQueryExpression(query));
             var exportData = documents.Adapt<List<HbtOfficialDocumentExportDto>>();
             var result = await HbtExcelHelper.ExportAsync(exportData, sheetName);
             return (result.fileName, result.content);
@@ -258,7 +266,7 @@ namespace Lean.Hbt.Application.Services.Routine.Document
         /// </summary>
         /// <param name="requestId">请求ID</param>
         /// <returns>更新结果</returns>
-        public async Task<HbtApiResult<bool>> ProcessRequestCompletionAsync(long requestId)
+        public Task<HbtApiResult<bool>> ProcessRequestCompletionAsync(long requestId)
         {
             try
             {
@@ -270,12 +278,12 @@ namespace Lean.Hbt.Application.Services.Routine.Document
                 // 3. 发送通知等
                 
                 _logger.Info($"成功处理公文文档请求审批完成，请求ID：{requestId}");
-                return new HbtApiResult<bool> { Code = 200, Data = true };
+                return Task.FromResult(new HbtApiResult<bool> { Code = 200, Data = true });
             }
             catch (Exception ex)
             {
                 _logger.Error($"处理公文文档请求审批完成失败，请求ID：{requestId}，错误：{ex.Message}");
-                return new HbtApiResult<bool> { Code = 500, Msg = ex.Message };
+                return Task.FromResult(new HbtApiResult<bool> { Code = 500, Msg = ex.Message });
             }
         }
 

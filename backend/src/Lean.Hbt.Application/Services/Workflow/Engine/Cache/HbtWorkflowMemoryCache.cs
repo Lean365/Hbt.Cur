@@ -5,11 +5,12 @@
 // 文件名 : WorkflowMemoryCache.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-23 12:00
-// 版本号 : V1.0.0
+// 版本号 : V0.0.1
 // 描述    : 工作流内存缓存实现
 //===================================================================
 
 using Microsoft.Extensions.Caching.Memory;
+using Lean.Hbt.Domain.Entities.Workflow;
 
 namespace Lean.Hbt.Application.Services.Workflow.Engine.Cache
 {
@@ -43,26 +44,26 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine.Cache
         /// <summary>
         /// 获取工作流节点
         /// </summary>
-        public Task<HbtNode?> GetNodeAsync(long nodeId)
+        public Task<HbtScheme?> GetNodeAsync(long nodeId)
         {
             try
             {
                 var key = GetNodeKey(nodeId);
-                var node = _cache.Get<HbtNode>(key);
+                var node = _cache.Get<HbtScheme>(key);
                 _logger.Debug($"从缓存获取节点: {key}, 结果: {(node != null ? "命中" : "未命中")}");
                 return Task.FromResult(node);
             }
             catch (Exception ex)
             {
                 _logger.Error($"获取节点缓存失败: {nodeId}", ex);
-                return Task.FromResult<HbtNode?>(null);
+                return Task.FromResult<HbtScheme?>(null);
             }
         }
 
         /// <summary>
         /// 设置工作流节点缓存
         /// </summary>
-        public Task SetNodeAsync(HbtNode node, TimeSpan? expiry = null)
+        public Task SetNodeAsync(HbtScheme node, TimeSpan? expiry = null)
         {
             try
             {
@@ -102,26 +103,26 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine.Cache
         /// <summary>
         /// 获取工作流定义
         /// </summary>
-        public Task<HbtDefinition?> GetDefinitionAsync(long definitionId)
+        public Task<HbtScheme?> GetDefinitionAsync(long definitionId)
         {
             try
             {
                 var key = GetDefinitionKey(definitionId);
-                var definition = _cache.Get<HbtDefinition>(key);
+                var definition = _cache.Get<HbtScheme>(key);
                 _logger.Debug($"从缓存获取定义: {key}, 结果: {(definition != null ? "命中" : "未命中")}");
                 return Task.FromResult(definition);
             }
             catch (Exception ex)
             {
                 _logger.Error($"获取定义缓存失败: {definitionId}", ex);
-                return Task.FromResult<HbtDefinition?>(null);
+                return Task.FromResult<HbtScheme?>(null);
             }
         }
 
         /// <summary>
         /// 设置工作流定义缓存
         /// </summary>
-        public Task SetDefinitionAsync(HbtDefinition definition, TimeSpan? expiry = null)
+        public Task SetDefinitionAsync(HbtScheme definition, TimeSpan? expiry = null)
         {
             try
             {

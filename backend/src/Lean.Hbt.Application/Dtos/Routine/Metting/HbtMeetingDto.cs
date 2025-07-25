@@ -3,7 +3,7 @@
 // 文件名 : HbtMeetingDto.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-26 14:30
-// 版本号 : V1.0.0
+// 版本号 : V0.0.1
 // 描述   : 会议数据传输对象
 //===================================================================
 
@@ -186,6 +186,11 @@ namespace Lean.Hbt.Application.Dtos.Routine.Metting
         /// 结束时间
         /// </summary>
         public DateTime? EndTime { get; set; }
+
+        /// <summary>
+        /// 参与者（用于查询我参与的会议）
+        /// </summary>
+        public string? Participant { get; set; }
     }
 
     /// <summary>

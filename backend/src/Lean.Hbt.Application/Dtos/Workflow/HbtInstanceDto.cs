@@ -1,16 +1,19 @@
 //===================================================================
-// 项目名 : Lean.Hbt
-// 文件名 : HbtInstanceDto.cs
-// 创建者 : Lean365
-// 创建时间: 2024-01-23 12:00
-// 版本号 : V1.0.0
-// 描述    : 工作流实例数据传输对象
+// 项目名: Lean.Hbt.Application
+// 文件名: HbtInstanceDto.cs
+// 创建者: Claude
+// 创建时间: 2024-12-01
+// 版本号: V0.0.1
+// 描述: 工作流实例数据传输对象
 //===================================================================
+
+using System;
+using System.Collections.Generic;
 
 namespace Lean.Hbt.Application.Dtos.Workflow
 {
     /// <summary>
-    /// 工作流实例DTO
+    /// 工作流实例基础DTO（与HbtInstance实体字段严格对应）
     /// </summary>
     public class HbtInstanceDto
     {
@@ -19,46 +22,30 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// </summary>
         public HbtInstanceDto()
         {
-            InstanceName = string.Empty;
-            BusinessKey = string.Empty;
-            FormData = string.Empty;
+            InstanceTitle = string.Empty;
+            CreateBy = string.Empty;
         }
 
         /// <summary>
-        /// 实例ID
+        /// 主键ID
         /// </summary>
         [AdaptMember("Id")]
         public long InstanceId { get; set; }
 
         /// <summary>
-        /// 实例名称
+        /// 流程定义ID
         /// </summary>
-        public string InstanceName { get; set; }
+        public long SchemeId { get; set; }
+
+        /// <summary>
+        /// 实例标题
+        /// </summary>
+        public string InstanceTitle { get; set; } = string.Empty;
 
         /// <summary>
         /// 业务键
         /// </summary>
-        public string BusinessKey { get; set; }
-
-        /// <summary>
-        /// 工作流定义ID
-        /// </summary>
-        public long DefinitionId { get; set; }
-
-        /// <summary>
-        /// 工作流定义名称
-        /// </summary>
-        public string DefinitionName { get; set; } = string.Empty;
-
-        /// <summary>
-        /// 当前节点ID
-        /// </summary>
-        public long CurrentNodeId { get; set; }
-
-        /// <summary>
-        /// 当前节点名称
-        /// </summary>
-        public string CurrentNodeName { get; set; } = string.Empty;
+        public string? BusinessKey { get; set; }
 
         /// <summary>
         /// 发起人ID
@@ -66,29 +53,44 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         public long InitiatorId { get; set; }
 
         /// <summary>
-        /// 发起人姓名
+        /// 当前节点ID
         /// </summary>
-        public string InitiatorName { get; set; } = string.Empty;
+        public string? CurrentNodeId { get; set; }
 
         /// <summary>
-        /// 表单数据(JSON格式)
+        /// 当前节点名称
         /// </summary>
-        public string FormData { get; set; }
+        public string? CurrentNodeName { get; set; }
 
         /// <summary>
-        /// 实例状态
+        /// 状态(0:草稿 1:运行中 2:已完成 3:已暂停 4:已终止)
         /// </summary>
         public int Status { get; set; }
 
         /// <summary>
+        /// 优先级(1:低 2:普通 3:高 4:紧急 5:特急)
+        /// </summary>
+        public int Priority { get; set; }
+
+        /// <summary>
+        /// 紧急程度(1:普通 2:加急 3:特急)
+        /// </summary>
+        public int Urgency { get; set; }
+
+        /// <summary>
         /// 开始时间
         /// </summary>
-        public DateTime StartTime { get; set; }
+        public DateTime? StartTime { get; set; }
 
         /// <summary>
         /// 结束时间
         /// </summary>
         public DateTime? EndTime { get; set; }
+
+        /// <summary>
+        /// 流程变量(JSON格式)
+        /// </summary>
+        public string? Variables { get; set; }
 
         /// <summary>
         /// 备注
@@ -98,7 +100,7 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// <summary>
         /// 创建者
         /// </summary>
-        public string? CreateBy { get; set; }
+        public string CreateBy { get; set; } = string.Empty;
 
         /// <summary>
         /// 创建时间
@@ -134,10 +136,6 @@ namespace Lean.Hbt.Application.Dtos.Workflow
     /// <summary>
     /// 工作流实例查询DTO
     /// </summary>
-    /// <remarks>
-    /// 创建者: Lean365
-    /// 创建时间: 2024-01-23
-    /// </remarks>
     public class HbtInstanceQueryDto : HbtPagedQuery
     {
         /// <summary>
@@ -145,37 +143,49 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// </summary>
         public HbtInstanceQueryDto()
         {
-            InstanceName = string.Empty;
+            InstanceTitle = string.Empty;
+            BusinessKey = string.Empty;
         }
 
         /// <summary>
-        /// 实例名称
+        /// 实例标题
         /// </summary>
-        public string InstanceName { get; set; }
+        public string? InstanceTitle { get; set; }
 
         /// <summary>
-        /// 实例状态
+        /// 业务键
+        /// </summary>
+        public string? BusinessKey { get; set; }
+
+        /// <summary>
+        /// 流程定义ID
+        /// </summary>
+        public long? SchemeId { get; set; }
+
+        /// <summary>
+        /// 发起人ID
+        /// </summary>
+        public long? InitiatorId { get; set; }
+
+        /// <summary>
+        /// 状态
         /// </summary>
         public int? Status { get; set; }
 
         /// <summary>
-        /// 开始时间
+        /// 优先级
         /// </summary>
-        public DateTime? StartTime { get; set; }
+        public int? Priority { get; set; }
 
         /// <summary>
-        /// 结束时间
+        /// 紧急程度
         /// </summary>
-        public DateTime? EndTime { get; set; }
+        public int? Urgency { get; set; }
     }
 
     /// <summary>
     /// 工作流实例创建DTO
     /// </summary>
-    /// <remarks>
-    /// 创建者: Lean365
-    /// 创建时间: 2024-01-23
-    /// </remarks>
     public class HbtInstanceCreateDto
     {
         /// <summary>
@@ -183,30 +193,23 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// </summary>
         public HbtInstanceCreateDto()
         {
-            InstanceName = string.Empty;
-            BusinessKey = string.Empty;
-            FormData = string.Empty;
+            InstanceTitle = string.Empty;
         }
 
         /// <summary>
-        /// 实例名称
+        /// 流程定义ID
         /// </summary>
-        public string InstanceName { get; set; }
+        public long SchemeId { get; set; }
+
+        /// <summary>
+        /// 实例标题
+        /// </summary>
+        public string InstanceTitle { get; set; } = string.Empty;
 
         /// <summary>
         /// 业务键
         /// </summary>
-        public string BusinessKey { get; set; }
-
-        /// <summary>
-        /// 工作流定义ID
-        /// </summary>
-        public long DefinitionId { get; set; }
-
-        /// <summary>
-        /// 当前节点ID
-        /// </summary>
-        public long CurrentNodeId { get; set; }
+        public string? BusinessKey { get; set; }
 
         /// <summary>
         /// 发起人ID
@@ -214,9 +217,19 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         public long InitiatorId { get; set; }
 
         /// <summary>
-        /// 表单数据(JSON格式)
+        /// 优先级(1:低 2:普通 3:高 4:紧急 5:特急)
         /// </summary>
-        public string FormData { get; set; }
+        public int Priority { get; set; }
+
+        /// <summary>
+        /// 紧急程度(1:普通 2:加急 3:特急)
+        /// </summary>
+        public int Urgency { get; set; }
+
+        /// <summary>
+        /// 流程变量(JSON格式)
+        /// </summary>
+        public string? Variables { get; set; }
 
         /// <summary>
         /// 备注
@@ -227,26 +240,25 @@ namespace Lean.Hbt.Application.Dtos.Workflow
     /// <summary>
     /// 工作流实例更新DTO
     /// </summary>
-    /// <remarks>
-    /// 创建者: Lean365
-    /// 创建时间: 2024-01-23
-    /// </remarks>
     public class HbtInstanceUpdateDto : HbtInstanceCreateDto
     {
         /// <summary>
-        /// 实例状态
+        /// 构造函数
+        /// </summary>
+        public HbtInstanceUpdateDto() : base()
+        {
+        }
+
+        /// <summary>
+        /// 主键ID
         /// </summary>
         [AdaptMember("Id")]
-        public int InstanceId { get; set; }
+        public long InstanceId { get; set; }
     }
 
     /// <summary>
     /// 工作流实例状态DTO
     /// </summary>
-    /// <remarks>
-    /// 创建者: Lean365
-    /// 创建时间: 2024-01-23
-    /// </remarks>
     public class HbtInstanceStatusDto
     {
         /// <summary>
@@ -254,105 +266,57 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// </summary>
         public HbtInstanceStatusDto()
         {
-            CurrentNodeName = string.Empty;
-            AvailableOperations = new List<string>();
-            CurrentHandlers = new List<string>();
         }
 
         /// <summary>
-        /// 实例ID
+        /// 主键ID
         /// </summary>
         [AdaptMember("Id")]
         public long InstanceId { get; set; }
 
         /// <summary>
-        /// 实例状态
+        /// 状态(0:草稿 1:运行中 2:已完成 3:已暂停 4:已终止)
         /// </summary>
         public int Status { get; set; }
-
-        /// <summary>
-        /// 当前节点ID
-        /// </summary>
-        public long CurrentNodeId { get; set; }
-
-        /// <summary>
-        /// 当前节点名称
-        /// </summary>
-        public string CurrentNodeName { get; set; }
-
-        /// <summary>
-        /// 可用操作列表
-        /// </summary>
-        public List<string> AvailableOperations { get; set; }
-
-        /// <summary>
-        /// 当前处理人列表
-        /// </summary>
-        public List<string> CurrentHandlers { get; set; }
     }
 
     /// <summary>
-    /// 工作流实例导入DTO
+    /// 工作流启动DTO
     /// </summary>
-    /// <remarks>
-    /// 创建者: Lean365
-    /// 创建时间: 2024-01-23
-    /// </remarks>
-    public class HbtInstanceImportDto
+    public class HbtInstanceStartDto
     {
         /// <summary>
         /// 构造函数
         /// </summary>
-        public HbtInstanceImportDto()
+        public HbtInstanceStartDto()
         {
-            InstanceName = string.Empty;
-            BusinessKey = string.Empty;
-            FormData = string.Empty;
+            InstanceTitle = string.Empty;
         }
 
         /// <summary>
-        /// 实例名称
+        /// 流程定义ID
         /// </summary>
-        public string InstanceName { get; set; }
+        public long SchemeId { get; set; }
+
+        /// <summary>
+        /// 实例标题
+        /// </summary>
+        public string InstanceTitle { get; set; } = string.Empty;
 
         /// <summary>
         /// 业务键
         /// </summary>
-        public string BusinessKey { get; set; }
+        public string? BusinessKey { get; set; }
 
         /// <summary>
-        /// 工作流定义ID
+        /// 流程变量(JSON格式)
         /// </summary>
-        public long DefinitionId { get; set; }
-
-        /// <summary>
-        /// 当前节点ID
-        /// </summary>
-        public long CurrentNodeId { get; set; }
-
-        /// <summary>
-        /// 发起人ID
-        /// </summary>
-        public long InitiatorId { get; set; }
-
-        /// <summary>
-        /// 表单数据(JSON格式)
-        /// </summary>
-        public string FormData { get; set; }
-
-        /// <summary>
-        /// 备注
-        /// </summary>
-        public string? Remark { get; set; }
+        public string? Variables { get; set; }
     }
 
     /// <summary>
     /// 工作流实例模板DTO
     /// </summary>
-    /// <remarks>
-    /// 创建者: Lean365
-    /// 创建时间: 2024-01-23
-    /// </remarks>
     public class HbtInstanceTemplateDto
     {
         /// <summary>
@@ -360,30 +324,23 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// </summary>
         public HbtInstanceTemplateDto()
         {
-            InstanceName = string.Empty;
-            BusinessKey = string.Empty;
-            FormData = string.Empty;
+            InstanceTitle = string.Empty;
         }
 
         /// <summary>
-        /// 实例名称
+        /// 流程定义ID
         /// </summary>
-        public string InstanceName { get; set; }
+        public long SchemeId { get; set; }
+
+        /// <summary>
+        /// 实例标题
+        /// </summary>
+        public string InstanceTitle { get; set; } = string.Empty;
 
         /// <summary>
         /// 业务键
         /// </summary>
-        public string BusinessKey { get; set; }
-
-        /// <summary>
-        /// 工作流定义ID
-        /// </summary>
-        public long DefinitionId { get; set; }
-
-        /// <summary>
-        /// 当前节点ID
-        /// </summary>
-        public long CurrentNodeId { get; set; }
+        public string? BusinessKey { get; set; }
 
         /// <summary>
         /// 发起人ID
@@ -391,24 +348,53 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         public long InitiatorId { get; set; }
 
         /// <summary>
-        /// 表单数据(JSON格式)
+        /// 流程变量(JSON格式)
         /// </summary>
-        public string FormData { get; set; }
+        public string? Variables { get; set; }
+    }
+
+    /// <summary>
+    /// 工作流实例导入DTO
+    /// </summary>
+    public class HbtInstanceImportDto
+    {
+        /// <summary>
+        /// 构造函数
+        /// </summary>
+        public HbtInstanceImportDto()
+        {
+            InstanceTitle = string.Empty;
+        }
 
         /// <summary>
-        /// 备注
+        /// 流程定义ID
         /// </summary>
-        public string? Remark { get; set; }
+        public long SchemeId { get; set; }
 
+        /// <summary>
+        /// 实例标题
+        /// </summary>
+        public string InstanceTitle { get; set; } = string.Empty;
+
+        /// <summary>
+        /// 业务键
+        /// </summary>
+        public string? BusinessKey { get; set; }
+
+        /// <summary>
+        /// 发起人ID
+        /// </summary>
+        public long InitiatorId { get; set; }
+
+        /// <summary>
+        /// 流程变量(JSON格式)
+        /// </summary>
+        public string? Variables { get; set; }
     }
 
     /// <summary>
     /// 工作流实例导出DTO
     /// </summary>
-    /// <remarks>
-    /// 创建者: Lean365
-    /// 创建时间: 2024-01-23
-    /// </remarks>
     public class HbtInstanceExportDto
     {
         /// <summary>
@@ -416,32 +402,20 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         /// </summary>
         public HbtInstanceExportDto()
         {
-            InstanceName = string.Empty;
+            InstanceTitle = string.Empty;
             BusinessKey = string.Empty;
-            FormData = string.Empty;
-            InitiatorName = string.Empty;
-            CurrentNodeName = string.Empty;
+            Status = string.Empty;
         }
 
         /// <summary>
-        /// 实例名称
+        /// 实例标题
         /// </summary>
-        public string InstanceName { get; set; }
+        public string InstanceTitle { get; set; } = string.Empty;
 
         /// <summary>
         /// 业务键
         /// </summary>
-        public string BusinessKey { get; set; }
-
-        /// <summary>
-        /// 工作流定义ID
-        /// </summary>
-        public long DefinitionId { get; set; }
-
-        /// <summary>
-        /// 当前节点ID
-        /// </summary>
-        public long CurrentNodeId { get; set; }
+        public string BusinessKey { get; set; } = string.Empty;
 
         /// <summary>
         /// 发起人ID
@@ -449,33 +423,33 @@ namespace Lean.Hbt.Application.Dtos.Workflow
         public long InitiatorId { get; set; }
 
         /// <summary>
-        /// 发起人名称
+        /// 状态
         /// </summary>
-        public string InitiatorName { get; set; }
+        public string Status { get; set; } = string.Empty;
 
         /// <summary>
-        /// 当前节点名称
+        /// 优先级
         /// </summary>
-        public string CurrentNodeName { get; set; }
+        public string Priority { get; set; } = string.Empty;
 
         /// <summary>
-        /// 表单数据(JSON格式)
+        /// 紧急程度
         /// </summary>
-        public string FormData { get; set; }
-
-        /// <summary>
-        /// 实例状态
-        /// </summary>
-        public int Status { get; set; }
+        public string Urgency { get; set; } = string.Empty;
 
         /// <summary>
         /// 开始时间
         /// </summary>
-        public DateTime StartTime { get; set; }
+        public DateTime? StartTime { get; set; }
 
         /// <summary>
         /// 结束时间
         /// </summary>
         public DateTime? EndTime { get; set; }
+
+        /// <summary>
+        /// 创建时间
+        /// </summary>
+        public DateTime CreateTime { get; set; }
     }
-}
+} 

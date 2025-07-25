@@ -608,7 +608,7 @@ const handleImport = async () => {
 <style lang="less" scoped>
 .template-container {
   padding: 16px;
-  background-color: #fff;
+  background-color: var(--ant-color-bg-container);
   height: 100%;
   display: flex;
   flex-direction: column;

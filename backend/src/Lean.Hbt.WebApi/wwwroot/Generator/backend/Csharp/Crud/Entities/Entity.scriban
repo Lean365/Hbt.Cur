@@ -9,12 +9,6 @@
 // 描述    : {{ table.comment }}实体
 //===================================================================
 
-using System;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel;
-using Lean.Hbt.Common.Enums;
-using Lean.Hbt.Common.Models;
-using System.Collections.Generic;
 using SqlSugar;
 
 namespace {{ table.entity_namespace }};
@@ -47,13 +41,7 @@ public class {{ table.entity_class_name }}:HbtBaseEntity
     /// <summary>
     /// {{ column.column_comment }}
     /// </summary>
-    {{~ if column.is_required == 1 ~}}
-    [Required(ErrorMessage = "{{ column.column_comment }}不能为空")]
-    {{~ end ~}}
-    {{~ if column.csharp_type == "string" ~}}
-    [MaxLength({{ column.length }}, ErrorMessage = "{{ column.column_comment }}长度不能超过{{ column.length }}个字符")]
-    {{~ end ~}}
-    [SugarColumn(ColumnName = "{{ column.column_name }}", IsPrimaryKey = {{~ if column.is_primary_key == 1 ~}}true{{~ else ~}}false{{~ end ~}}, IsIdentity = {{~ if column.is_identity == 1 ~}}true{{~ else ~}}false{{~ end ~}})]
+    [SugarColumn(ColumnName = "{{ column.column_name }}", ColumnDescription = "{{ column.column_comment }}", {{~ if column.csharp_type == "string" ~}}Length = {{ column.length }}, ColumnDataType = "nvarchar"{{~ else if column.csharp_type == "decimal" ~}}Length = {{ column.length }}, DecimalDigits = {{ column.decimal_places }}, ColumnDataType = "decimal"{{~ else ~}}ColumnDataType = "{{ column.db_type }}"{{~ end ~}}, IsNullable = {{~ if column.is_required == 1 ~}}false{{~ else ~}}true{{~ end ~}}{{~ if column.is_primary_key == 1 ~}}, IsPrimaryKey = true{{~ end ~}}{{~ if column.is_identity == 1 ~}}, IsIdentity = true{{~ end ~}}{{~ if column.default_value != "" ~}}, DefaultValue = "{{ column.default_value }}"{{~ end ~}})]
     public {{ column.csharp_type }}{{~ if column.is_required == 0 ~}}{{~ if column.csharp_type == "string" ~}} ?{{~ end ~}}{{~ end ~}}{{~ ' ' ~}}  {{ column.property_name }} { get; set; }
     {{~ end ~}}
 }

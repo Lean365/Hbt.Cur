@@ -620,7 +620,7 @@ const handleSizeChange = (size: number) => {
 <style lang="less" scoped>
 .table-define-container {
   padding: 16px;
-  background-color: #fff;
+  background-color: var(--ant-color-bg-container);
 }
 
 .column-setting-group {

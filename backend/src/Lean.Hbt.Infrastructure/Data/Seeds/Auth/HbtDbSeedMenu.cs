@@ -10,6 +10,7 @@
 using System.Linq.Expressions;
 using Lean.Hbt.Domain.Entities.Identity;
 using Lean.Hbt.Infrastructure.Data.Seeds.Biz;
+using Lean.Hbt.Infrastructure.Data.Seeds.Auth;
 using Lean.Hbt.Domain.Repositories;
 
 namespace Lean.Hbt.Infrastructure.Data.Seeds.Auth;
@@ -18,11 +19,11 @@ namespace Lean.Hbt.Infrastructure.Data.Seeds.Auth;
 /// 菜单数据初始化主类
 /// </summary>
 /// <remarks>
-/// 更新: 2024-12-19 - 使用仓储工厂模式支持多库
+/// 更新: 2024-12-01 - 使用仓储工厂模式支持多库
 /// </remarks>
 public class HbtDbSeedMenu
 {
-    private readonly IHbtRepositoryFactory _repositoryFactory;
+    protected readonly IHbtRepositoryFactory _repositoryFactory;
     private readonly IHbtLogger _logger;
 
     private IHbtRepository<HbtMenu> MenuRepository => _repositoryFactory.GetAuthRepository<HbtMenu>();
@@ -167,7 +168,7 @@ public class HbtDbSeedMenu
             new HbtMenu
             {
                 MenuName = "人力资源",
-                TransKey = "menu.hrm._self",
+                TransKey = "menu.human._self",
                 ParentId = 0,
                 OrderNum = 4,
                 Path = "hrm",
@@ -296,6 +297,28 @@ public class HbtDbSeedMenu
                 CreateTime = DateTime.Now,
                 UpdateBy = "Hbt365",
                 UpdateTime = DateTime.Now
+            },
+            new HbtMenu
+            {
+                MenuName = "广告管理",
+                TransKey = "menu.advertisement._self",
+                ParentId = 0,
+                OrderNum = 10,
+                Path = "advertisement",
+                Component = "",
+                QueryParams = null,
+                IsExternal = 0,
+                IsCache = 0,
+                MenuType = 0,
+                Visible = 0,
+                Status = 0,
+                Perms = "",
+                Icon = "PictureOutlined",
+                Remark = "广告管理目录",
+                CreateBy = "Hbt365",
+                CreateTime = DateTime.Now,
+                UpdateBy = "Hbt365",
+                UpdateTime = DateTime.Now
             }
         };
 
@@ -385,7 +408,7 @@ public class HbtDbSeedMenu
         var workflowMenu = await MenuRepository.GetFirstAsync(m => m.MenuName == "工作流程" && m.ParentId == 0);
         if (workflowMenu != null)
         {
-            var workflowSubMenus = HbtDbSeedWorkflowMenu.GetWorkflowThirdMenus(workflowMenu.Id);
+            var workflowSubMenus = HbtDbSeedWorkflowMenu.GetWorkflowSecondLevelMenus(workflowMenu.Id);
             foreach (var menu in workflowSubMenus)
             {
                 menu.CreateBy = "Hbt365";
@@ -472,6 +495,23 @@ public class HbtDbSeedMenu
         {
             var realtimeSubMenus = HbtDbSeedSignalRMenu.GetSignalrThirdMenus(realtimeMenu.Id);
             foreach (var menu in realtimeSubMenus)
+            {
+                menu.CreateBy = "Hbt365";
+                menu.CreateTime = DateTime.Now;
+                menu.UpdateBy = "Hbt365";
+                menu.UpdateTime = DateTime.Now;
+                var (isNew, savedMenu) = await CreateOrUpdateMenuAsync(menu, false);
+                menuNameToId[menu.MenuName] = savedMenu.Id;
+                if (isNew) insertCount++; else updateCount++;
+            }
+        }
+
+        // 10. 广告管理二级目录
+        var advertisementMenu = await MenuRepository.GetFirstAsync(m => m.MenuName == "广告管理" && m.ParentId == 0);
+        if (advertisementMenu != null)
+        {
+            var advertisementSubMenus = HbtDbSeedAdvertisementMenu.GetAdvertisementSecondMenus(advertisementMenu.Id);
+            foreach (var menu in advertisementSubMenus)
             {
                 menu.CreateBy = "Hbt365";
                 menu.CreateTime = DateTime.Now;
@@ -597,6 +637,14 @@ public class HbtDbSeedMenu
         var routineMenu = await MenuRepository.GetFirstAsync(m => m.MenuName == "日常办公" && m.ParentId == 0);
         if (routineMenu != null)
         {
+            // 新闻管理下的三级菜单
+            var newsMenu = await MenuRepository.GetFirstAsync(m => m.MenuName == "新闻管理" && m.ParentId == routineMenu.Id);
+            if (newsMenu != null)
+            {
+                var newsSubMenus = HbtDbSeedRoutineMenu.GetRoutineNewsThirdMenus(newsMenu.Id);
+                thirdLevelMenus.AddRange(newsSubMenus);
+            }
+
             // 办公用品下的三级目录
             var officeSuppliesMenu = await MenuRepository.GetFirstAsync(m => m.MenuName == "办公用品" && m.ParentId == routineMenu.Id);
             if (officeSuppliesMenu != null)
@@ -613,13 +661,7 @@ public class HbtDbSeedMenu
                 thirdLevelMenus.AddRange(fileSubMenus);
             }
 
-            // 费用管理下的三级目录
-            var expenseMenu = await MenuRepository.GetFirstAsync(m => m.MenuName == "费用管理" && m.ParentId == routineMenu.Id);
-            if (expenseMenu != null)
-            {
-                var expenseSubMenus = HbtDbSeedRoutineMenu.GetRoutineExpenseThirdLevelMenus(expenseMenu.Id);
-                thirdLevelMenus.AddRange(expenseSubMenus);
-            }
+
 
             // 公告通知下的三级目录
             var noticeMenu = await MenuRepository.GetFirstAsync(m => m.MenuName == "公告通知" && m.ParentId == routineMenu.Id);
@@ -637,13 +679,7 @@ public class HbtDbSeedMenu
                 thirdLevelMenus.AddRange(medicalSubMenus);
             }
 
-            // 人事考勤下的三级目录
-            var hrMenu = await MenuRepository.GetFirstAsync(m => m.MenuName == "人事考勤" && m.ParentId == routineMenu.Id);
-            if (hrMenu != null)
-            {
-                var hrSubMenus = HbtDbSeedRoutineMenu.GetRoutineHrThirdLevelMenus(hrMenu.Id);
-                thirdLevelMenus.AddRange(hrSubMenus);
-            }
+
 
             // 图书管理下的三级目录
             var bookMenu = await MenuRepository.GetFirstAsync(m => m.MenuName == "图书管理" && m.ParentId == routineMenu.Id);
@@ -711,7 +747,7 @@ public class HbtDbSeedMenu
             var qualityMenu = await MenuRepository.GetFirstAsync(m => m.MenuName == "质量管理" && m.ParentId == logisticsMenu.Id);
             if (qualityMenu != null)
             {
-                var qualitySubMenus = HbtDbSeedLogisticsMenu.GetQualityThirdMenus(qualityMenu.Id);
+                var qualitySubMenus = HbtDbSeedLogisticsMenu.GetQualityThirdLevelMenus(qualityMenu.Id);
                 thirdLevelMenus.AddRange(qualitySubMenus);
             }
 
@@ -947,6 +983,8 @@ public class HbtDbSeedMenu
                 }
             }
 
+
+
             // 4. 邮件管理下的三级菜单
             var emailMenu = await MenuRepository.GetFirstAsync(m => m.MenuName == "邮件管理" && m.ParentId == routineMenu.Id);
             if (emailMenu != null)
@@ -1080,7 +1118,7 @@ public class HbtDbSeedMenu
             var productionMenu = await MenuRepository.GetFirstAsync(m => m.MenuName == "生产管理" && m.ParentId == logisticsMenu.Id);
             if (productionMenu != null)
             {
-                var productionSubMenus = HbtDbSeedLogisticsMenu.GetProductionThirdMenus(productionMenu.Id);
+                var productionSubMenus = HbtDbSeedLogisticsMenu.GetProductionThirdLevelMenus(productionMenu.Id);
                 foreach (var menu in productionSubMenus)
                 {
                     menu.CreateBy = "Hbt365";
@@ -1114,7 +1152,7 @@ public class HbtDbSeedMenu
             var qualityMenu = await MenuRepository.GetFirstAsync(m => m.MenuName == "质量管理" && m.ParentId == logisticsMenu.Id);
             if (qualityMenu != null)
             {
-                var qualitySubMenus = HbtDbSeedLogisticsMenu.GetQualityThirdMenus(qualityMenu.Id);
+                var qualitySubMenus = HbtDbSeedLogisticsMenu.GetQualityThirdLevelMenus(qualityMenu.Id);
                 foreach (var menu in qualitySubMenus)
                 {
                     menu.CreateBy = "Hbt365";
@@ -1144,12 +1182,27 @@ public class HbtDbSeedMenu
                 }
             }
 
-
-
-
+            // 文件管理下的三级菜单
+            var fileMenu = await MenuRepository.GetFirstAsync(m => m.MenuName == "文件管理" && m.ParentId == routineMenu.Id);
+            if (fileMenu != null)
+            {
+                var fileSubMenus = HbtDbSeedRoutineMenu.GetRoutineFileThirdMenus(fileMenu.Id);
+                foreach (var menu in fileSubMenus)
+                {
+                    menu.CreateBy = "Hbt365";
+                    menu.CreateTime = DateTime.Now;
+                    menu.UpdateBy = "Hbt365";
+                    menu.UpdateTime = DateTime.Now;
+                    var (isNew, savedMenu) = await CreateOrUpdateMenuAsync(menu, false);
+                    menuNameToId[menu.MenuName] = savedMenu.Id;
+                    if (isNew) insertCount++; else updateCount++;
+                }
+            }
 
             // 项目管理下的三级菜单 - 已移除，项目管理功能已整合到其他模块
         }
+
+
 
         return (insertCount, updateCount);
     }
@@ -1213,16 +1266,16 @@ public class HbtDbSeedMenu
             var fileMenu = await MenuRepository.GetFirstAsync(m => m.MenuName == "文件管理" && m.ParentId == routineMenu.Id);
             if (fileMenu != null)
             {
-                // 日常文件下的四级子菜单
-                var dailyFileMenu = await MenuRepository.GetFirstAsync(m => m.MenuName == "日常" && m.ParentId == fileMenu.Id);
-                if (dailyFileMenu != null)
+                // 规章制度下的四级子菜单
+                var regulationMenu = await MenuRepository.GetFirstAsync(m => m.MenuName == "规章制度" && m.ParentId == fileMenu.Id);
+                if (regulationMenu != null)
                 {
-                    var dailyFileSubMenus = HbtDbSeedRoutineMenu.GetRoutineDailyFileFourthMenus(dailyFileMenu.Id);
-                    fourthLevelMenus.AddRange(dailyFileSubMenus);
+                    var regulationSubMenus = HbtDbSeedRoutineMenu.GetRoutineRegulationFourthMenus(regulationMenu.Id);
+                    fourthLevelMenus.AddRange(regulationSubMenus);
                 }
 
                 // ISO文件下的四级子菜单
-                var isoFileMenu = await MenuRepository.GetFirstAsync(m => m.MenuName == "ISO" && m.ParentId == fileMenu.Id);
+                var isoFileMenu = await MenuRepository.GetFirstAsync(m => m.MenuName == "ISO文件" && m.ParentId == fileMenu.Id);
                 if (isoFileMenu != null)
                 {
                     var isoFileSubMenus = HbtDbSeedRoutineMenu.GetRoutineIsoFileFourthMenus(isoFileMenu.Id);
@@ -1230,7 +1283,7 @@ public class HbtDbSeedMenu
                 }
 
                 // 公文文件下的四级子菜单
-                var documentFileMenu = await MenuRepository.GetFirstAsync(m => m.MenuName == "公文" && m.ParentId == fileMenu.Id);
+                var documentFileMenu = await MenuRepository.GetFirstAsync(m => m.MenuName == "公文文件" && m.ParentId == fileMenu.Id);
                 if (documentFileMenu != null)
                 {
                     var documentFileSubMenus = HbtDbSeedRoutineMenu.GetRoutineDocumentFileFourthMenus(documentFileMenu.Id);
@@ -1238,26 +1291,7 @@ public class HbtDbSeedMenu
                 }
             }
 
-            // 费用管理下的四级子菜单
-            var expenseMenu = await MenuRepository.GetFirstAsync(m => m.MenuName == "费用管理" && m.ParentId == routineMenu.Id);
-            if (expenseMenu != null)
-            {
-                // 日常费用下的四级子菜单
-                var dailyExpenseMenu = await MenuRepository.GetFirstAsync(m => m.MenuName == "日常费用" && m.ParentId == expenseMenu.Id);
-                if (dailyExpenseMenu != null)
-                {
-                    var dailyExpenseSubMenus = HbtDbSeedRoutineMenu.GetRoutineDailyExpenseFourthMenus(dailyExpenseMenu.Id);
-                    fourthLevelMenus.AddRange(dailyExpenseSubMenus);
-                }
 
-                // 出差费用下的四级子菜单
-                var travelExpenseMenu = await MenuRepository.GetFirstAsync(m => m.MenuName == "出差费用" && m.ParentId == expenseMenu.Id);
-                if (travelExpenseMenu != null)
-                {
-                    var travelExpenseSubMenus = HbtDbSeedRoutineMenu.GetRoutineTravelExpenseFourthMenus(travelExpenseMenu.Id);
-                    fourthLevelMenus.AddRange(travelExpenseSubMenus);
-                }
-            }
 
             // 公告通知下的四级子菜单
             var noticeMenu = await MenuRepository.GetFirstAsync(m => m.MenuName == "公告通知" && m.ParentId == routineMenu.Id);
@@ -1309,77 +1343,18 @@ public class HbtDbSeedMenu
                 }
             }
 
-            // 人事考勤下的四级子菜单
-            var hrMenu = await MenuRepository.GetFirstAsync(m => m.MenuName == "人事考勤" && m.ParentId == routineMenu.Id);
-            if (hrMenu != null)
-            {
-                // 招聘下的四级子菜单
-                var recruitmentMenu = await MenuRepository.GetFirstAsync(m => m.MenuName == "招聘" && m.ParentId == hrMenu.Id);
-                if (recruitmentMenu != null)
-                {
-                    var recruitmentSubMenus = HbtDbSeedRoutineMenu.GetRoutineRecruitmentFourthMenus(recruitmentMenu.Id);
-                    fourthLevelMenus.AddRange(recruitmentSubMenus);
-                }
 
-                // 调岗下的四级子菜单
-                var transferMenu = await MenuRepository.GetFirstAsync(m => m.MenuName == "调岗" && m.ParentId == hrMenu.Id);
-                if (transferMenu != null)
-                {
-                    var transferSubMenus = HbtDbSeedRoutineMenu.GetRoutineTransferFourthMenus(transferMenu.Id);
-                    fourthLevelMenus.AddRange(transferSubMenus);
-                }
-
-                // 加班下的四级子菜单
-                var overtimeMenu = await MenuRepository.GetFirstAsync(m => m.MenuName == "加班" && m.ParentId == hrMenu.Id);
-                if (overtimeMenu != null)
-                {
-                    var overtimeSubMenus = HbtDbSeedRoutineMenu.GetRoutineOvertimeFourthMenus(overtimeMenu.Id);
-                    fourthLevelMenus.AddRange(overtimeSubMenus);
-                }
-
-                // 请假下的四级子菜单
-                var leaveMenu = await MenuRepository.GetFirstAsync(m => m.MenuName == "请假" && m.ParentId == hrMenu.Id);
-                if (leaveMenu != null)
-                {
-                    var leaveSubMenus = HbtDbSeedRoutineMenu.GetRoutineLeaveFourthMenus(leaveMenu.Id);
-                    fourthLevelMenus.AddRange(leaveSubMenus);
-                }
-
-                // 出差下的四级子菜单
-                var tripMenu = await MenuRepository.GetFirstAsync(m => m.MenuName == "出差" && m.ParentId == hrMenu.Id);
-                if (tripMenu != null)
-                {
-                    var tripSubMenus = HbtDbSeedRoutineMenu.GetRoutineBusinessTripFourthMenus(tripMenu.Id);
-                    fourthLevelMenus.AddRange(tripSubMenus);
-                }
-            }
 
             // 文件管理下的四级子菜单 - 新增菜单
             var fileMenuForFourth = await MenuRepository.GetFirstAsync(m => m.MenuName == "文件管理" && m.ParentId == routineMenu.Id);
             if (fileMenuForFourth != null)
             {
-                // 新闻管理下的四级子菜单
-                var newsMenu = await MenuRepository.GetFirstAsync(m => m.MenuName == "新闻管理" && m.ParentId == fileMenuForFourth.Id);
-                if (newsMenu != null)
-                {
-                    var newsSubMenus = HbtDbSeedRoutineMenu.GetRoutineNewsFourthMenus(newsMenu.Id);
-                    fourthLevelMenus.AddRange(newsSubMenus);
-                }
-
                 // 规章制度下的四级子菜单
                 var regulationMenu = await MenuRepository.GetFirstAsync(m => m.MenuName == "规章制度" && m.ParentId == fileMenuForFourth.Id);
                 if (regulationMenu != null)
                 {
                     var regulationSubMenus = HbtDbSeedRoutineMenu.GetRoutineRegulationFourthMenus(regulationMenu.Id);
                     fourthLevelMenus.AddRange(regulationSubMenus);
-                }
-
-                // 日常文件下的四级子菜单
-                var dailyFileMenu = await MenuRepository.GetFirstAsync(m => m.MenuName == "日常文件" && m.ParentId == fileMenuForFourth.Id);
-                if (dailyFileMenu != null)
-                {
-                    var dailyFileSubMenus = HbtDbSeedRoutineMenu.GetRoutineDailyFileFourthMenus(dailyFileMenu.Id);
-                    fourthLevelMenus.AddRange(dailyFileSubMenus);
                 }
 
                 // ISO文件下的四级子菜单
@@ -1399,129 +1374,13 @@ public class HbtDbSeedMenu
                 }
             }
 
-            // 合同管理下的四级子菜单
-            var contractMenuForFourth = await MenuRepository.GetFirstAsync(m => m.MenuName == "合同管理" && m.ParentId == routineMenu.Id);
-            if (contractMenuForFourth != null)
-            {
-                // 合同模板下的四级子菜单
-                var contractTemplateMenu = await MenuRepository.GetFirstAsync(m => m.MenuName == "合同模板" && m.ParentId == contractMenuForFourth.Id);
-                if (contractTemplateMenu != null)
-                {
-                    var contractTemplateSubMenus = HbtDbSeedRoutineMenu.GetRoutineContractTemplateFourthMenus(contractTemplateMenu.Id);
-                    fourthLevelMenus.AddRange(contractTemplateSubMenus);
-                }
 
-                // 合同起草下的四级子菜单
-                var contractDraftMenu = await MenuRepository.GetFirstAsync(m => m.MenuName == "合同起草" && m.ParentId == contractMenuForFourth.Id);
-                if (contractDraftMenu != null)
-                {
-                    var contractDraftSubMenus = HbtDbSeedRoutineMenu.GetRoutineContractDraftFourthMenus(contractDraftMenu.Id);
-                    fourthLevelMenus.AddRange(contractDraftSubMenus);
-                }
 
-                // 合同审批下的四级子菜单
-                var contractApprovalMenu = await MenuRepository.GetFirstAsync(m => m.MenuName == "合同审批" && m.ParentId == contractMenuForFourth.Id);
-                if (contractApprovalMenu != null)
-                {
-                    var contractApprovalSubMenus = HbtDbSeedRoutineMenu.GetRoutineContractApprovalFourthMenus(contractApprovalMenu.Id);
-                    fourthLevelMenus.AddRange(contractApprovalSubMenus);
-                }
 
-                // 合同执行下的四级子菜单
-                var contractExecutionMenu = await MenuRepository.GetFirstAsync(m => m.MenuName == "合同执行" && m.ParentId == contractMenuForFourth.Id);
-                if (contractExecutionMenu != null)
-                {
-                    var contractExecutionSubMenus = HbtDbSeedRoutineMenu.GetRoutineContractExecutionFourthMenus(contractExecutionMenu.Id);
-                    fourthLevelMenus.AddRange(contractExecutionSubMenus);
-                }
 
-                // 合同归档下的四级子菜单
-                var contractArchiveMenu = await MenuRepository.GetFirstAsync(m => m.MenuName == "合同归档" && m.ParentId == contractMenuForFourth.Id);
-                if (contractArchiveMenu != null)
-                {
-                    var contractArchiveSubMenus = HbtDbSeedRoutineMenu.GetRoutineContractArchiveFourthMenus(contractArchiveMenu.Id);
-                    fourthLevelMenus.AddRange(contractArchiveSubMenus);
-                }
-            }
 
-            // 项目管理下的四级子菜单
-            var projectMenuForFourth = await MenuRepository.GetFirstAsync(m => m.MenuName == "项目管理" && m.ParentId == routineMenu.Id);
-            if (projectMenuForFourth != null)
-            {
-                // 项目信息下的四级子菜单
-                var projectInfoMenu = await MenuRepository.GetFirstAsync(m => m.MenuName == "项目信息" && m.ParentId == projectMenuForFourth.Id);
-                if (projectInfoMenu != null)
-                {
-                    var projectInfoSubMenus = HbtDbSeedRoutineMenu.GetRoutineProjectInfoFourthMenus(projectInfoMenu.Id);
-                    fourthLevelMenus.AddRange(projectInfoSubMenus);
-                }
 
-                // 项目计划下的四级子菜单
-                var projectPlanMenu = await MenuRepository.GetFirstAsync(m => m.MenuName == "项目计划" && m.ParentId == projectMenuForFourth.Id);
-                if (projectPlanMenu != null)
-                {
-                    var projectPlanSubMenus = HbtDbSeedRoutineMenu.GetRoutineProjectPlanFourthMenus(projectPlanMenu.Id);
-                    fourthLevelMenus.AddRange(projectPlanSubMenus);
-                }
 
-                // 项目任务下的四级子菜单
-                var projectTaskMenu = await MenuRepository.GetFirstAsync(m => m.MenuName == "项目任务" && m.ParentId == projectMenuForFourth.Id);
-                if (projectTaskMenu != null)
-                {
-                    var projectTaskSubMenus = HbtDbSeedRoutineMenu.GetRoutineProjectTaskFourthMenus(projectTaskMenu.Id);
-                    fourthLevelMenus.AddRange(projectTaskSubMenus);
-                }
-
-                // 项目资源下的四级子菜单
-                var projectResourceMenu = await MenuRepository.GetFirstAsync(m => m.MenuName == "项目资源" && m.ParentId == projectMenuForFourth.Id);
-                if (projectResourceMenu != null)
-                {
-                    var projectResourceSubMenus = HbtDbSeedRoutineMenu.GetRoutineProjectResourceFourthMenus(projectResourceMenu.Id);
-                    fourthLevelMenus.AddRange(projectResourceSubMenus);
-                }
-
-                // 项目监控下的四级子菜单
-                var projectMonitorMenu = await MenuRepository.GetFirstAsync(m => m.MenuName == "项目监控" && m.ParentId == projectMenuForFourth.Id);
-                if (projectMonitorMenu != null)
-                {
-                    var projectMonitorSubMenus = HbtDbSeedRoutineMenu.GetRoutineProjectMonitorFourthMenus(projectMonitorMenu.Id);
-                    fourthLevelMenus.AddRange(projectMonitorSubMenus);
-                }
-            }
-
-            // 任务管理下的四级子菜单
-            var quartzMenuForFourth = await MenuRepository.GetFirstAsync(m => m.MenuName == "任务管理" && m.ParentId == routineMenu.Id);
-            if (quartzMenuForFourth != null)
-            {
-                // 定时任务下的四级子菜单
-                var quartzJobMenu = await MenuRepository.GetFirstAsync(m => m.MenuName == "定时任务" && m.ParentId == quartzMenuForFourth.Id);
-                if (quartzJobMenu != null)
-                {
-                    var quartzJobSubMenus = HbtDbSeedRoutineMenu.GetRoutineQuartzJobFourthMenus(quartzJobMenu.Id);
-                    fourthLevelMenus.AddRange(quartzJobSubMenus);
-                }
-
-                // 任务调度下的四级子菜单
-                var quartzScheduleMenu = await MenuRepository.GetFirstAsync(m => m.MenuName == "任务调度" && m.ParentId == quartzMenuForFourth.Id);
-                if (quartzScheduleMenu != null)
-                {
-                    var quartzScheduleSubMenus = HbtDbSeedRoutineMenu.GetRoutineQuartzScheduleFourthMenus(quartzScheduleMenu.Id);
-                    fourthLevelMenus.AddRange(quartzScheduleSubMenus);
-                }
-            }
-
-            // 用车管理下的四级子菜单
-            var carMenuForFourth = await MenuRepository.GetFirstAsync(m => m.MenuName == "用车管理" && m.ParentId == routineMenu.Id);
-            if (carMenuForFourth != null)
-            {
-                // 车管管理下的四级子菜单
-                var carManagementMenu = await MenuRepository.GetFirstAsync(m => m.MenuName == "车管管理" && m.ParentId == carMenuForFourth.Id);
-                if (carManagementMenu != null)
-                {
-                    var carManagementSubMenus = HbtDbSeedRoutineMenu.GetRoutineCarManagementFourthMenus(carManagementMenu.Id);
-                    fourthLevelMenus.AddRange(carManagementSubMenus);
-                }
-            }
         }
 
         // 2. 财务核算下的四级子菜单
@@ -1558,20 +1417,44 @@ public class HbtDbSeedMenu
             var materialMenu = await MenuRepository.GetFirstAsync(m => m.MenuName == "物料管理" && m.ParentId == logisticsMenuForFourth.Id);
             if (materialMenu != null)
             {
-                // 物料目录下的四级子菜单
-                var materialSubMenu = await MenuRepository.GetFirstAsync(m => m.MenuName == "物料目录" && m.ParentId == materialMenu.Id);
+                // 物料信息下的四级子菜单
+                var materialSubMenu = await MenuRepository.GetFirstAsync(m => m.MenuName == "物料信息" && m.ParentId == materialMenu.Id);
                 if (materialSubMenu != null)
                 {
                     var materialMaterialSubMenus = HbtDbSeedLogisticsMenu.GetMaterialMaterialFourthMenus(materialSubMenu.Id);
                     fourthLevelMenus.AddRange(materialMaterialSubMenus);
                 }
 
-                // 采购目录下的四级子菜单
-                var purchaseSubMenu = await MenuRepository.GetFirstAsync(m => m.MenuName == "采购目录" && m.ParentId == materialMenu.Id);
+                // 采购管理下的四级子菜单
+                var purchaseSubMenu = await MenuRepository.GetFirstAsync(m => m.MenuName == "采购管理" && m.ParentId == materialMenu.Id);
                 if (purchaseSubMenu != null)
                 {
                     var materialPurchaseSubMenus = HbtDbSeedLogisticsMenu.GetMaterialPurchaseFourthMenus(purchaseSubMenu.Id);
                     fourthLevelMenus.AddRange(materialPurchaseSubMenus);
+                }
+
+                // 样品管理下的四级子菜单
+                var sampleSubMenu = await MenuRepository.GetFirstAsync(m => m.MenuName == "样品管理" && m.ParentId == materialMenu.Id);
+                if (sampleSubMenu != null)
+                {
+                    var materialSampleSubMenus = HbtDbSeedLogisticsMenu.GetMaterialSampleFourthMenus(sampleSubMenu.Id);
+                    fourthLevelMenus.AddRange(materialSampleSubMenus);
+                }
+
+                // 图纸管理下的四级子菜单
+                var drawingSubMenu = await MenuRepository.GetFirstAsync(m => m.MenuName == "图纸管理" && m.ParentId == materialMenu.Id);
+                if (drawingSubMenu != null)
+                {
+                    var materialDrawingSubMenus = HbtDbSeedLogisticsMenu.GetMaterialDrawingFourthMenus(drawingSubMenu.Id);
+                    fourthLevelMenus.AddRange(materialDrawingSubMenus);
+                }
+
+                // 客供品管理下的四级子菜单
+                var customerSubMenu = await MenuRepository.GetFirstAsync(m => m.MenuName == "客供品管理" && m.ParentId == materialMenu.Id);
+                if (customerSubMenu != null)
+                {
+                    var materialCustomerSubMenus = HbtDbSeedLogisticsMenu.GetMaterialCustomerFourthMenus(customerSubMenu.Id);
+                    fourthLevelMenus.AddRange(materialCustomerSubMenus);
                 }
             }
 
@@ -1579,6 +1462,14 @@ public class HbtDbSeedMenu
             var productionMenu = await MenuRepository.GetFirstAsync(m => m.MenuName == "生产管理" && m.ParentId == logisticsMenuForFourth.Id);
             if (productionMenu != null)
             {
+                // 基础数据下的四级子菜单
+                var productionBasicMenu = await MenuRepository.GetFirstAsync(m => m.MenuName == "基础数据" && m.ParentId == productionMenu.Id);
+                if (productionBasicMenu != null)
+                {
+                    var productionBasicSubMenus = HbtDbSeedLogisticsMenu.GetProductionBasicFourthMenus(productionBasicMenu.Id);
+                    fourthLevelMenus.AddRange(productionBasicSubMenus);
+                }
+
                 // 设计变更下的四级子菜单
                 var productionChangeMenu = await MenuRepository.GetFirstAsync(m => m.MenuName == "设计变更" && m.ParentId == productionMenu.Id);
                 if (productionChangeMenu != null)
@@ -1612,6 +1503,53 @@ public class HbtDbSeedMenu
                 }
             }
 
+            // 质量管理下的四级子菜单
+            var qualityMenu = await MenuRepository.GetFirstAsync(m => m.MenuName == "质量管理" && m.ParentId == logisticsMenuForFourth.Id);
+            if (qualityMenu != null)
+            {
+                // 基础数据下的四级子菜单
+                var qualityBasicMenu = await MenuRepository.GetFirstAsync(m => m.MenuName == "基础数据" && m.ParentId == qualityMenu.Id);
+                if (qualityBasicMenu != null)
+                {
+                    var qualityBasicSubMenus = HbtDbSeedLogisticsMenu.GetQualityBasicFourthMenus(qualityBasicMenu.Id);
+                    fourthLevelMenus.AddRange(qualityBasicSubMenus);
+                }
+
+                // 质量检验下的四级子菜单
+                var qualityInspectionMenu = await MenuRepository.GetFirstAsync(m => m.MenuName == "质量检验" && m.ParentId == qualityMenu.Id);
+                if (qualityInspectionMenu != null)
+                {
+                    var qualityInspectionSubMenus = HbtDbSeedLogisticsMenu.GetQualityInspectionFourthMenus(qualityInspectionMenu.Id);
+                    fourthLevelMenus.AddRange(qualityInspectionSubMenus);
+                }
+
+                // 质量追溯下的四级子菜单
+                var qualityTraceMenu = await MenuRepository.GetFirstAsync(m => m.MenuName == "质量追溯" && m.ParentId == qualityMenu.Id);
+                if (qualityTraceMenu != null)
+                {
+                    var qualityTraceSubMenus = HbtDbSeedLogisticsMenu.GetQualityTraceFourthMenus(qualityTraceMenu.Id);
+                    fourthLevelMenus.AddRange(qualityTraceSubMenus);
+                }
+
+                // 质量成本下的四级子菜单
+                var qualityCostMenu = await MenuRepository.GetFirstAsync(m => m.MenuName == "质量成本" && m.ParentId == qualityMenu.Id);
+                if (qualityCostMenu != null)
+                {
+                    var qualityCostSubMenus = HbtDbSeedLogisticsMenu.GetQualityCostFourthMenus(qualityCostMenu.Id);
+                    fourthLevelMenus.AddRange(qualityCostSubMenus);
+                }
+
+                // 检验计划下的四级子菜单
+                var qualityPlanMenu = await MenuRepository.GetFirstAsync(m => m.MenuName == "检验计划" && m.ParentId == qualityMenu.Id);
+                if (qualityPlanMenu != null)
+                {
+                    var qualityPlanSubMenus = HbtDbSeedLogisticsMenu.GetQualityPlanFourthMenus(qualityPlanMenu.Id);
+                    fourthLevelMenus.AddRange(qualityPlanSubMenus);
+                }
+            }
+
+
+
             // 设备管理下的四级子菜单
             var equipmentMenu = await MenuRepository.GetFirstAsync(m => m.MenuName == "设备管理" && m.ParentId == logisticsMenuForFourth.Id);
             if (equipmentMenu != null)
@@ -1631,6 +1569,27 @@ public class HbtDbSeedMenu
                     var equipmentMaintenanceSubMenus = HbtDbSeedLogisticsMenu.GetEquipmentMaintenanceFourthMenus(equipmentMaintenanceMenu.Id);
                     fourthLevelMenus.AddRange(equipmentMaintenanceSubMenus);
                 }
+            }
+        }
+
+        // 4. 工作流程下的四级子菜单
+        var workflowMenu = await MenuRepository.GetFirstAsync(m => m.MenuName == "工作流程" && m.ParentId == 0);
+        if (workflowMenu != null)
+        {
+            // 流程引擎下的四级子菜单
+            var engineMenu = await MenuRepository.GetFirstAsync(m => m.MenuName == "流程引擎" && m.ParentId == workflowMenu.Id);
+            if (engineMenu != null)
+            {
+                var engineSubMenus = HbtDbSeedWorkflowMenu.GetWorkflowEngineThirdMenus(engineMenu.Id);
+                fourthLevelMenus.AddRange(engineSubMenus);
+            }
+
+            // 流程管理下的四级子菜单
+            var manageMenu = await MenuRepository.GetFirstAsync(m => m.MenuName == "流程管理" && m.ParentId == workflowMenu.Id);
+            if (manageMenu != null)
+            {
+                var manageSubMenus = HbtDbSeedWorkflowMenu.GetWorkflowManageThirdMenus(manageMenu.Id);
+                fourthLevelMenus.AddRange(manageSubMenus);
             }
         }
 
@@ -1708,7 +1667,7 @@ public class HbtDbSeedMenu
                 var ophMenu = await MenuRepository.GetFirstAsync(m => m.MenuName == "制造管理" && m.ParentId == productionMenu.Id);
                 if (ophMenu != null)
                 {
-                    var ophSubMenus = HbtDbSeedLogisticsMenu.GetProductionOphFourthLevelMenus(ophMenu.Id);
+                    var ophSubMenus = HbtDbSeedLogisticsMenu.GetProductionOutputFourthLevelMenus(ophMenu.Id);
                     fourthLevelMenus.AddRange(ophSubMenus);
                 }
 
@@ -1734,7 +1693,7 @@ public class HbtDbSeedMenu
             if (serviceMenu != null)
             {
                 // 服务管理下的四级目录
-                var serviceServiceMenu = await MenuRepository.GetFirstAsync(m => m.MenuName == "服务管理" && m.ParentId == serviceMenu.Id);
+                var serviceServiceMenu = await MenuRepository.GetFirstAsync(m => m.MenuName == "客户服务" && m.ParentId == serviceMenu.Id);
                 if (serviceServiceMenu != null)
                 {
                     var serviceServiceSubMenus = HbtDbSeedLogisticsMenu.GetServiceCustomerServiceFourthMenus(serviceServiceMenu.Id);
@@ -1924,7 +1883,7 @@ public class HbtDbSeedMenu
                     var workshop1Menu = await MenuRepository.GetFirstAsync(m => m.MenuName == "制一课" && m.ParentId == ophMenu.Id);
                     if (workshop1Menu != null)
                     {
-                        var workshop1SubMenus = HbtDbSeedLogisticsMenu.GetProductionOphWorkshop1FifthMenus(workshop1Menu.Id);
+                        var workshop1SubMenus = HbtDbSeedLogisticsMenu.GetProductionOutputWorkshop1FifthLevelMenus(workshop1Menu.Id);
                         fifthMenus.AddRange(workshop1SubMenus);
                     }
 
@@ -1932,41 +1891,14 @@ public class HbtDbSeedMenu
                     var workshop2Menu = await MenuRepository.GetFirstAsync(m => m.MenuName == "制二课" && m.ParentId == ophMenu.Id);
                     if (workshop2Menu != null)
                     {
-                        var workshop2SubMenus = HbtDbSeedLogisticsMenu.GetProductionOphWorkshop2FifthMenus(workshop2Menu.Id);
+                        var workshop2SubMenus = HbtDbSeedLogisticsMenu.GetProductionOutputWorkshop2FifthLevelMenus(workshop2Menu.Id);
                         fifthMenus.AddRange(workshop2SubMenus);
                     }
                 }
             }
         }
 
-        // 后勤管理
-        var logisticsMenuForFifth = await MenuRepository.GetFirstAsync(m => m.MenuName == "后勤管理" && m.ParentId == 0);
-        if (logisticsMenuForFifth != null)
-        {
-            var productionMenu = await MenuRepository.GetFirstAsync(m => m.MenuName == "生产管理" && m.ParentId == logisticsMenuForFifth.Id);
-            if (productionMenu != null)
-            {
-                var productionOphMenu = await MenuRepository.GetFirstAsync(m => m.MenuName == "制造管理" && m.ParentId == productionMenu.Id);
-                if (productionOphMenu != null)
-                {
-                    // 制一课下的五级菜单
-                    var workshop1Menu = await MenuRepository.GetFirstAsync(m => m.MenuName == "制一课" && m.ParentId == productionOphMenu.Id);
-                    if (workshop1Menu != null)
-                    {
-                        var workshop1SubMenus = HbtDbSeedLogisticsMenu.GetProductionOphWorkshop1FifthMenus(workshop1Menu.Id);
-                        fifthMenus.AddRange(workshop1SubMenus);
-                    }
 
-                    // 制二课下的五级菜单
-                    var workshop2Menu = await MenuRepository.GetFirstAsync(m => m.MenuName == "制二课" && m.ParentId == productionOphMenu.Id);
-                    if (workshop2Menu != null)
-                    {
-                        var workshop2SubMenus = HbtDbSeedLogisticsMenu.GetProductionOphWorkshop2FifthMenus(workshop2Menu.Id);
-                        fifthMenus.AddRange(workshop2SubMenus);
-                    }
-                }
-            }
-        }
 
         // 处理所有五级菜单
         foreach (var menu in fifthMenus)
@@ -1988,14 +1920,98 @@ public class HbtDbSeedMenu
     /// <summary>
     /// 初始化六级菜单
     /// </summary>
-    private Task<(int, int)> InitializeSixthMenusAsync(Dictionary<string, long> menuNameToId)
+    private async Task<(int, int)> InitializeSixthMenusAsync(Dictionary<string, long> menuNameToId)
     {
         int insertCount = 0;
         int updateCount = 0;
+        var sixthMenus = new List<HbtMenu>();
 
-        // 财务核算模块没有六级菜单，此方法留空或移除相关逻辑
+        // 后勤管理
+        var logisticsMenu = await MenuRepository.GetFirstAsync(m => m.MenuName == "后勤管理" && m.ParentId == 0);
+        if (logisticsMenu != null)
+        {
+            var productionMenu = await MenuRepository.GetFirstAsync(m => m.MenuName == "生产管理" && m.ParentId == logisticsMenu.Id);
+            if (productionMenu != null)
+            {
+                var ophMenu = await MenuRepository.GetFirstAsync(m => m.MenuName == "制造管理" && m.ParentId == productionMenu.Id);
+                if (ophMenu != null)
+                {
+                    // 制一课下的六级菜单
+                    var workshop1Menu = await MenuRepository.GetFirstAsync(m => m.MenuName == "制一课" && m.ParentId == ophMenu.Id);
+                    if (workshop1Menu != null)
+                    {
+                        // 制一课OPH下的六级菜单
+                        var workshop1OphMenu = await MenuRepository.GetFirstAsync(m => m.MenuName == "OPH" && m.ParentId == workshop1Menu.Id);
+                        if (workshop1OphMenu != null)
+                        {
+                            var workshop1OphSubMenus = HbtDbSeedLogisticsMenu.GetProductionOutputWorkshop1OutputSixthMenus(workshop1OphMenu.Id);
+                            sixthMenus.AddRange(workshop1OphSubMenus);
+                        }
 
-        return Task.FromResult((insertCount, updateCount));
+                        // 制一课不良下的六级菜单
+                        var workshop1DefectMenu = await MenuRepository.GetFirstAsync(m => m.MenuName == "不良" && m.ParentId == workshop1Menu.Id);
+                        if (workshop1DefectMenu != null)
+                        {
+                            var workshop1DefectSubMenus = HbtDbSeedLogisticsMenu.GetProductionOutputWorkshop1DefectSixthMenus(workshop1DefectMenu.Id);
+                            sixthMenus.AddRange(workshop1DefectSubMenus);
+                        }
+
+                        // 制一课工数下的六级菜单
+                        var workshop1WorktimeMenu = await MenuRepository.GetFirstAsync(m => m.MenuName == "工数" && m.ParentId == workshop1Menu.Id);
+                        if (workshop1WorktimeMenu != null)
+                        {
+                            var workshop1WorktimeSubMenus = HbtDbSeedLogisticsMenu.GetProductionOutputWorkshop1WorktimeSixthMenus(workshop1WorktimeMenu.Id);
+                            sixthMenus.AddRange(workshop1WorktimeSubMenus);
+                        }
+                    }
+
+                    // 制二课下的六级菜单
+                    var workshop2Menu = await MenuRepository.GetFirstAsync(m => m.MenuName == "制二课" && m.ParentId == ophMenu.Id);
+                    if (workshop2Menu != null)
+                    {
+                        // 制二课OPH下的六级菜单
+                        var workshop2OphMenu = await MenuRepository.GetFirstAsync(m => m.MenuName == "OPH" && m.ParentId == workshop2Menu.Id);
+                        if (workshop2OphMenu != null)
+                        {
+                            var workshop2OphSubMenus = HbtDbSeedLogisticsMenu.GetProductionOutputWorkshop2OutputSixthMenus(workshop2OphMenu.Id);
+                            sixthMenus.AddRange(workshop2OphSubMenus);
+                        }
+
+                        // 制二课不良下的六级菜单
+                        var workshop2DefectMenu = await MenuRepository.GetFirstAsync(m => m.MenuName == "不良" && m.ParentId == workshop2Menu.Id);
+                        if (workshop2DefectMenu != null)
+                        {
+                            var workshop2DefectSubMenus = HbtDbSeedLogisticsMenu.GetProductionOutputWorkshop2DefectSixthMenus(workshop2DefectMenu.Id);
+                            sixthMenus.AddRange(workshop2DefectSubMenus);
+                        }
+
+                        // 制二课工数下的六级菜单
+                        var workshop2WorktimeMenu = await MenuRepository.GetFirstAsync(m => m.MenuName == "工数" && m.ParentId == workshop2Menu.Id);
+                        if (workshop2WorktimeMenu != null)
+                        {
+                            var workshop2WorktimeSubMenus = HbtDbSeedLogisticsMenu.GetProductionOutputWorkshop2WorktimeSixthMenus(workshop2WorktimeMenu.Id);
+                            sixthMenus.AddRange(workshop2WorktimeSubMenus);
+                        }
+                    }
+                }
+            }
+        }
+
+        // 处理所有六级菜单
+        foreach (var menu in sixthMenus)
+        {
+            menu.CreateBy = "Hbt365";
+            menu.CreateTime = DateTime.Now;
+            menu.UpdateBy = "Hbt365";
+            menu.UpdateTime = DateTime.Now;
+            var (isNew, savedMenu) = await CreateOrUpdateMenuAsync(menu, false);
+            menuNameToId[menu.MenuName] = savedMenu.Id;
+
+            if (isNew) insertCount++;
+            else updateCount++;
+        }
+
+        return (insertCount, updateCount);
     }
 
     /// <summary>
@@ -2271,9 +2287,22 @@ public class HbtDbSeedMenu
         };
 
         // 从菜单的权限标识中获取菜单标识
-        var menuPerm = menu.Perms?.Split(':').Length > 1
-            ? menu.Perms.Split(':')[1].ToLower()
-            : string.Empty;
+        // 使用Range语法截取第一个冒号和最后一个冒号之间的字符串
+        var menuPerm = string.Empty;
+        if (!string.IsNullOrEmpty(menu.Perms))
+        {
+            var parts = menu.Perms.Split(':');
+            if (parts.Length > 2)
+            {
+                // 截取第一个冒号之后到最后一个冒号之前的部分
+                menuPerm = string.Join(":", parts[1..^1]).ToLower();
+            }
+            else if (parts.Length == 2)
+            {
+                // 只有一个冒号的情况，取第一部分
+                menuPerm = parts[0].ToLower();
+            }
+        }
 
         string[] names;
         string[] perms;

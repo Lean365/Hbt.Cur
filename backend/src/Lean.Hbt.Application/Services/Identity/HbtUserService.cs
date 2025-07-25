@@ -9,10 +9,8 @@
 
 #nullable enable
 
-using System.Linq.Expressions;
 using Lean.Hbt.Common.Utils;
 using Lean.Hbt.Domain.IServices.Security;
-using Lean.Hbt.Domain.Repositories;
 using Microsoft.AspNetCore.Http;
 
 namespace Lean.Hbt.Application.Services.Identity
@@ -26,7 +24,10 @@ namespace Lean.Hbt.Application.Services.Identity
     /// </remarks>
     public class HbtUserService : HbtBaseService, IHbtUserService
     {
-        private readonly IHbtRepositoryFactory _repositoryFactory;
+        /// <summary>
+        /// 仓储工厂
+        /// </summary>
+        protected readonly IHbtRepositoryFactory _repositoryFactory;
         private readonly IHbtPasswordPolicy _passwordPolicy;
 
         /// <summary>
@@ -1114,7 +1115,7 @@ namespace Lean.Hbt.Application.Services.Identity
                     {
                         var syncResult = await SyncUserToTenantAsync(input.UserId, tenantId);
                         syncResults.Add(syncResult);
-                        
+
                         if (syncResult)
                         {
                             _logger.Info($"成功同步用户信息到租户 {tenantId}");

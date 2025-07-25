@@ -17,11 +17,14 @@ namespace Lean.Hbt.Application.Services.Identity
     /// <remarks>
     /// 创建者: Lean365
     /// 创建时间: 2024-01-20
-    /// 更新: 2024-12-19 - 使用仓储工厂模式支持多库
+    /// 更新: 2024-12-01 - 使用仓储工厂模式支持多库
     /// </remarks>
     public class HbtRoleService : HbtBaseService, IHbtRoleService
     {
-        private readonly IHbtRepositoryFactory _repositoryFactory;
+        /// <summary>
+        /// 仓储工厂
+        /// </summary>
+        protected readonly IHbtRepositoryFactory _repositoryFactory;
 
         /// <summary>
         /// 构造函数，注入依赖服务

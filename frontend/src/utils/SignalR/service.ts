@@ -1,49 +1,12 @@
-import { HubConnection, HubConnectionState } from '@microsoft/signalr'
+import { HubConnection } from '@microsoft/signalr'
 import { createHubConnection, startHeartbeat, handleConnectionError } from './config'
 import { getToken, removeToken } from '@/utils/auth'
 import { useUserStore } from '@/stores/user'
-import { message } from 'ant-design-vue'
-import i18n from '@/locales'
-import { LogLevel, customLogger } from '@/utils/logger'
-import axios from 'axios'
-import { nextTick } from 'vue'
 import { getDeviceInfo } from '@/utils/device'
-
-const { t } = i18n.global
+import { maskConnectionId } from '@/utils/mask'
 
 // 事件处理器类型定义
 type EventHandler = (...args: any[]) => void
-
-// 租户配置接口定义
-interface TenantConfig {
-  singleSignOn: {
-    enabled: boolean;  // 是否启用单点登录
-  };
-  // 其他配置项...
-}
-
-// 默认租户配置
-const DEFAULT_CONFIG: TenantConfig = {
-  singleSignOn: {
-    enabled: false // 默认为多点登录
-  }
-};
-
-// 全局配置对象
-let globalConfig: TenantConfig = DEFAULT_CONFIG;
-
-// 初始化租户配置
-export async function initTenantConfig() {
-  try {
-    // 从后端获取租户配置
-    const response = await axios.get('/api/HbtAuth/tenant-config')
-    globalConfig = response.data.data
-    console.log('[SignalR] 租户配置已加载:', globalConfig)
-  } catch (error) {
-    console.error('[SignalR] 获取租户配置失败，使用默认配置:', error)
-    globalConfig = DEFAULT_CONFIG
-  }
-}
 
 // SignalR服务类
 export class SignalRService {
@@ -57,22 +20,8 @@ export class SignalRService {
   private heartbeat: any = null
   // 是否正在连接中
   private connecting: boolean = false
-  // 是否已初始化
-  private isInitialized: boolean = false
-  // 是否正在启动
-  private isStarting: boolean = false
   // 是否已连接
   private isConnected: boolean = false
-  // 重试次数
-  private retryCount: number = 0
-  // 最大重试次数
-  private maxRetries: number = 5
-  // 上次连接ID
-  private lastConnectionId: string | null = null
-  // 连接检查定时器
-  private connectionCheckInterval: NodeJS.Timeout | null = null
-  // 用户状态存储
-  private userStore: any
 
   // 私有构造函数，确保单例模式
   private constructor() {
@@ -99,8 +48,6 @@ export class SignalRService {
   resetConnectionState() {
     console.log('[SignalR] 重置连接状态')
     this.connecting = false
-    this.isInitialized = false
-    this.isStarting = false
     if (this.heartbeat) {
       this.heartbeat.stop()
       this.heartbeat = null
@@ -109,7 +56,6 @@ export class SignalRService {
       this.connection.stop()
       this.connection = null
     }
-    this.retryCount = 0
     this.isConnected = false
   }
 
@@ -231,7 +177,7 @@ export class SignalRService {
 
     // 重连成功事件
     this.connection.onreconnected((connectionId) => {
-      console.log('[SignalR] 重连成功，新连接ID:', connectionId)
+      console.log('[SignalR] 重连成功，新连接ID:', connectionId ? maskConnectionId(connectionId) : '未知')
       this.isConnected = true
       this.emit('Reconnected', connectionId)
     })
@@ -342,7 +288,7 @@ export class SignalRService {
       this.registerConnectionHandlers()
 
       // 启动连接
-      console.log('[SignalR] 开始启动连接，当前连接ID:', this.connection.connectionId)
+      console.log('[SignalR] 开始启动连接，当前连接ID:', this.connection.connectionId ? maskConnectionId(this.connection.connectionId) : '未知')
       
       // 添加重试机制
       let retryCount = 0
@@ -368,15 +314,13 @@ export class SignalRService {
             if (this.connection.state === 'Connected') {
               const connectionId = this.connection.connectionId
               if (connectionId) {
-                console.log('[SignalR] 连接状态稳定，当前连接ID:', connectionId)
+                console.log('[SignalR] 连接状态稳定，当前连接ID:', maskConnectionId(connectionId))
                 this.isConnected = true
-                this.isInitialized = true
-                this.lastConnectionId = connectionId
                 
                 // 启动心跳检测
                 this.heartbeat = startHeartbeat(this.connection)
                 
-                console.log('[SignalR] 连接建立成功，连接ID:', connectionId)
+                console.log('[SignalR] 连接建立成功，连接ID:', maskConnectionId(connectionId))
                 this.emit('Connected', connectionId)
                 return
               }
@@ -436,7 +380,7 @@ export class SignalRService {
       console.log('准备发送消息:', {
         userId: data.userId,
         content: data.content,
-        connectionId: this.connection.connectionId,
+        connectionId: this.connection.connectionId ? maskConnectionId(this.connection.connectionId) : '未知',
         connectionState: this.connection.state,
         currentUser: useUserStore().userInfo
       });
@@ -488,7 +432,7 @@ export class SignalRService {
       if (typeof message === 'string') {
         // 检查是否是连接成功消息
         if (message === '连接成功') {
-          console.log('[SignalR] 收到连接成功消息，当前连接ID:', this.connection?.connectionId)
+          console.log('[SignalR] 收到连接成功消息，当前连接ID:', this.connection?.connectionId ? maskConnectionId(this.connection.connectionId) : '未知')
           return
         }
         
@@ -504,9 +448,9 @@ export class SignalRService {
       if (message && typeof message === 'object') {
         // 处理连接成功消息
         if (message.type === 'connection' && message.status === 'success') {
-          console.log('[SignalR] 收到连接成功消息，当前连接ID:', message.connectionId)
+          console.log('[SignalR] 收到连接成功消息，当前连接ID:', message.connectionId ? maskConnectionId(message.connectionId) : '未知')
           if (this.connection) {
-            console.log('[SignalR] 连接ID已更新:', message.connectionId)
+            console.log('[SignalR] 连接ID已更新:', message.connectionId ? maskConnectionId(message.connectionId) : '未知')
           }
           return
         }

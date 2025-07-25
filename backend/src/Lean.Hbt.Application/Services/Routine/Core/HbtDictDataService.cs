@@ -27,28 +27,37 @@ namespace Lean.Hbt.Application.Services.Core
     /// </remarks>
     public class HbtDictDataService : HbtBaseService, IHbtDictDataService
     {
-        private readonly IHbtRepository<HbtDictData> _dictDataRepository;
-        private readonly IHbtRepository<HbtDictType> _dictTypeRepository;
+        /// <summary>
+        /// 仓储工厂
+        /// </summary>
+        protected readonly IHbtRepositoryFactory _repositoryFactory;
+
+        /// <summary>
+        /// 获取字典数据仓储
+        /// </summary>
+        private IHbtRepository<HbtDictData> DictDataRepository => _repositoryFactory.GetBusinessRepository<HbtDictData>();
+
+        /// <summary>
+        /// 获取字典类型仓储
+        /// </summary>
+        private IHbtRepository<HbtDictType> DictTypeRepository => _repositoryFactory.GetBusinessRepository<HbtDictType>();
 
         /// <summary>
         /// 构造函数
         /// </summary>
-        /// <param name="dictDataRepository">字典数据仓储</param>
-        /// <param name="dictTypeRepository">字典类型仓储</param>
+        /// <param name="repositoryFactory">仓储工厂</param>
         /// <param name="logger">日志服务</param>
         /// <param name="httpContextAccessor">HTTP上下文访问器</param>
         /// <param name="currentUser">当前用户服务</param>
         /// <param name="localization">本地化服务</param>
         public HbtDictDataService(
-            IHbtRepository<HbtDictData> dictDataRepository,
-            IHbtRepository<HbtDictType> dictTypeRepository,
+            IHbtRepositoryFactory repositoryFactory,
             IHbtLogger logger,
             IHttpContextAccessor httpContextAccessor,
             IHbtCurrentUser currentUser,
             IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
         {
-            _dictDataRepository = dictDataRepository ?? throw new ArgumentNullException(nameof(dictDataRepository));
-            _dictTypeRepository = dictTypeRepository ?? throw new ArgumentNullException(nameof(dictTypeRepository));
+            _repositoryFactory = repositoryFactory ?? throw new ArgumentNullException(nameof(repositoryFactory));
         }
 
         /// <summary>
@@ -73,7 +82,7 @@ namespace Lean.Hbt.Application.Services.Core
         {
             query ??= new HbtDictDataQueryDto();
 
-            var result = await _dictDataRepository.GetPagedListAsync(
+            var result = await DictDataRepository.GetPagedListAsync(
                 KpDictDataQueryExpression(query),
                 query.PageIndex,
                 query.PageSize,
@@ -96,7 +105,7 @@ namespace Lean.Hbt.Application.Services.Core
         /// <returns>字典数据详情</returns>
         public async Task<HbtDictDataDto> GetByIdAsync(long dictDataId)
         {
-            var dictData = await _dictDataRepository.GetByIdAsync(dictDataId);
+            var dictData = await DictDataRepository.GetByIdAsync(dictDataId);
             return dictData == null ? throw new HbtException(L("Core.DictData.NotFound", dictDataId)) : dictData.Adapt<HbtDictDataDto>();
         }
 
@@ -108,12 +117,12 @@ namespace Lean.Hbt.Application.Services.Core
         public async Task<long> CreateAsync(HbtDictDataCreateDto input)
         {
             // 验证字段是否已存在
-            await HbtValidateUtils.ValidateFieldExistsAsync(_dictDataRepository, "DictType", input.DictType);
-            await HbtValidateUtils.ValidateFieldExistsAsync(_dictDataRepository, "DictLabel", input.DictLabel);
-            await HbtValidateUtils.ValidateFieldExistsAsync(_dictDataRepository, "DictValue", input.DictValue);
+            await HbtValidateUtils.ValidateFieldExistsAsync(DictDataRepository, "DictType", input.DictType);
+            await HbtValidateUtils.ValidateFieldExistsAsync(DictDataRepository, "DictLabel", input.DictLabel);
+            await HbtValidateUtils.ValidateFieldExistsAsync(DictDataRepository, "DictValue", input.DictValue);
 
             var dictData = input.Adapt<HbtDictData>();
-            return await _dictDataRepository.CreateAsync(dictData) > 0 ? dictData.Id : throw new HbtException(L("Core.DictData.CreateFailed"));
+            return await DictDataRepository.CreateAsync(dictData) > 0 ? dictData.Id : throw new HbtException(L("Core.DictData.CreateFailed"));
         }
 
         /// <summary>
@@ -123,19 +132,19 @@ namespace Lean.Hbt.Application.Services.Core
         /// <returns>是否成功</returns>
         public async Task<bool> UpdateAsync(HbtDictDataUpdateDto input)
         {
-            var dictData = await _dictDataRepository.GetByIdAsync(input.DictDataId)
+            var dictData = await DictDataRepository.GetByIdAsync(input.DictDataId)
                 ?? throw new HbtException(L("Core.DictData.NotFound", input.DictDataId));
 
             // 验证字段是否已存在
             if (dictData.DictType != input.DictType)
-                await HbtValidateUtils.ValidateFieldExistsAsync(_dictDataRepository, "DictType", input.DictType, input.DictDataId);
+                await HbtValidateUtils.ValidateFieldExistsAsync(DictDataRepository, "DictType", input.DictType, input.DictDataId);
             if (dictData.DictLabel != input.DictLabel)
-                await HbtValidateUtils.ValidateFieldExistsAsync(_dictDataRepository, "DictLabel", input.DictLabel, input.DictDataId);
+                await HbtValidateUtils.ValidateFieldExistsAsync(DictDataRepository, "DictLabel", input.DictLabel, input.DictDataId);
             if (dictData.DictValue != input.DictValue)
-                await HbtValidateUtils.ValidateFieldExistsAsync(_dictDataRepository, "DictValue", input.DictValue, input.DictDataId);
+                await HbtValidateUtils.ValidateFieldExistsAsync(DictDataRepository, "DictValue", input.DictValue, input.DictDataId);
 
             input.Adapt(dictData);
-            return await _dictDataRepository.UpdateAsync(dictData) > 0;
+            return await DictDataRepository.UpdateAsync(dictData) > 0;
         }
 
         /// <summary>
@@ -145,13 +154,13 @@ namespace Lean.Hbt.Application.Services.Core
         /// <returns>是否成功</returns>
         public async Task<bool> DeleteAsync(long dictDataId)
         {
-            var dictData = await _dictDataRepository.GetByIdAsync(dictDataId)
+            var dictData = await DictDataRepository.GetByIdAsync(dictDataId)
                 ?? throw new HbtException(L("Core.DictData.NotFound", dictDataId));
 
             if (await CheckBuiltinData(dictDataId))
                 throw new HbtException(L("Core.DictData.CannotDeleteBuiltin"));
 
-            return await _dictDataRepository.DeleteAsync(dictDataId) > 0;
+            return await DictDataRepository.DeleteAsync(dictDataId) > 0;
         }
 
         /// <summary>
@@ -162,7 +171,7 @@ namespace Lean.Hbt.Application.Services.Core
         public async Task<bool> BatchDeleteAsync(long[] dictDataIds)
         {
             if (dictDataIds == null || dictDataIds.Length == 0) return false;
-            return await _dictDataRepository.DeleteRangeAsync(dictDataIds.Cast<object>().ToList()) > 0;
+            return await DictDataRepository.DeleteRangeAsync(dictDataIds.Cast<object>().ToList()) > 0;
         }
 
         /// <summary>
@@ -182,11 +191,11 @@ namespace Lean.Hbt.Application.Services.Core
                 try
                 {
                     // 验证字段是否已存在
-                    await HbtValidateUtils.ValidateFieldExistsAsync(_dictDataRepository, "DictType", dictData.DictType);
-                    await HbtValidateUtils.ValidateFieldExistsAsync(_dictDataRepository, "DictLabel", dictData.DictLabel);
-                    await HbtValidateUtils.ValidateFieldExistsAsync(_dictDataRepository, "DictValue", dictData.DictValue);
+                    await HbtValidateUtils.ValidateFieldExistsAsync(DictDataRepository, "DictType", dictData.DictType);
+                    await HbtValidateUtils.ValidateFieldExistsAsync(DictDataRepository, "DictLabel", dictData.DictLabel);
+                    await HbtValidateUtils.ValidateFieldExistsAsync(DictDataRepository, "DictValue", dictData.DictValue);
 
-                    await _dictDataRepository.CreateAsync(dictData.Adapt<HbtDictData>());
+                    await DictDataRepository.CreateAsync(dictData.Adapt<HbtDictData>());
                     success++;
                 }
                 catch
@@ -208,7 +217,7 @@ namespace Lean.Hbt.Application.Services.Core
         {
             try
             {
-                var list = await _dictDataRepository.GetListAsync(KpDictDataQueryExpression(query));
+                var list = await DictDataRepository.GetListAsync(KpDictDataQueryExpression(query));
                 return await HbtExcelHelper.ExportAsync(list.Adapt<List<HbtDictDataDto>>(), sheetName, L("Core.DictData.ExportTitle"));
             }
             catch (Exception ex)
@@ -235,11 +244,11 @@ namespace Lean.Hbt.Application.Services.Core
         /// <returns>是否成功</returns>
         public async Task<bool> UpdateStatusAsync(HbtDictDataStatusDto input)
         {
-            var dictData = await _dictDataRepository.GetByIdAsync(input.DictDataId)
+            var dictData = await DictDataRepository.GetByIdAsync(input.DictDataId)
                 ?? throw new HbtException(L("Core.DictData.NotFound", input.DictDataId));
 
             dictData.Status = input.Status;
-            return await _dictDataRepository.UpdateAsync(dictData) > 0;
+            return await DictDataRepository.UpdateAsync(dictData) > 0;
         }
 
         /// <summary>
@@ -249,7 +258,7 @@ namespace Lean.Hbt.Application.Services.Core
         /// <returns>字典数据选项列表</returns>
         public async Task<List<HbtDictDataDto>> GetOptionsAsync(string dictType)
         {
-            var result = await _dictDataRepository.GetListAsync(x => x.DictType == dictType && x.Status == 0);
+            var result = await DictDataRepository.GetListAsync(x => x.DictType == dictType && x.Status == 0);
             return result.OrderBy(x => x.OrderNum).Adapt<List<HbtDictDataDto>>();
         }
 
@@ -262,7 +271,7 @@ namespace Lean.Hbt.Application.Services.Core
         /// <returns>是否存在</returns>
         public async Task<bool> CheckDictDataExists(string dictType, string dictValue, long? excludeId = null)
         {
-            var result = await _dictDataRepository.GetListAsync(x => x.DictType == dictType && x.Status == 0);
+            var result = await DictDataRepository.GetListAsync(x => x.DictType == dictType && x.Status == 0);
             return result.Any(x => x.DictValue == dictValue && x.Id != (excludeId ?? 0));
         }
 
@@ -273,10 +282,10 @@ namespace Lean.Hbt.Application.Services.Core
         /// <returns>是否为内置数据</returns>
         public async Task<bool> CheckBuiltinData(long id)
         {
-            var dictData = await _dictDataRepository.GetByIdAsync(id);
+            var dictData = await DictDataRepository.GetByIdAsync(id);
             if (dictData == null) return false;
 
-            var dictType = await _dictTypeRepository.GetFirstAsync(x => x.DictType == dictData.DictType);
+            var dictType = await DictTypeRepository.GetFirstAsync(x => x.DictType == dictData.DictType);
             return dictType != null && dictType.IsBuiltin == 1; // 1表示内置
         }
 
@@ -287,7 +296,7 @@ namespace Lean.Hbt.Application.Services.Core
         /// <returns>字典数据列表</returns>
         public async Task<List<HbtDictDataDto>> GetListByDictTypeAsync(string dictType)
         {
-            var result = await _dictDataRepository.GetListAsync(x => x.DictType == dictType && x.Status == 0);
+            var result = await DictDataRepository.GetListAsync(x => x.DictType == dictType && x.Status == 0);
             return result.OrderBy(x => x.OrderNum).Adapt<List<HbtDictDataDto>>();
         }
 
@@ -297,7 +306,7 @@ namespace Lean.Hbt.Application.Services.Core
         /// <returns>字典数据列表</returns>
         public async Task<List<HbtDictDataDto>> GetListAsync()
         {
-            var result = await _dictDataRepository.GetListAsync(x => x.Status == 0);
+            var result = await DictDataRepository.GetListAsync(x => x.Status == 0);
             return result.OrderBy(x => x.OrderNum).Adapt<List<HbtDictDataDto>>();
         }
     }

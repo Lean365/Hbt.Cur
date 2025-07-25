@@ -209,6 +209,30 @@ public class HbtGenTable : HbtBaseEntity
     #region 生成选项
 
     /// <summary>
+    /// 生成功能（查询，新增，更新，删除，模板，导入，导出的按钮编号）
+    /// </summary>
+    [SugarColumn(ColumnName = "gen_function", ColumnDescription = "生成功能", Length = 200, ColumnDataType = "nvarchar", IsNullable = false, DefaultValue = "1,2,3,4,5,6,7")]
+    public string GenFunction { get; set; } = "1,2,3,4,5,6,7";
+
+    /// <summary>
+    /// 是否启用SQL差异
+    /// </summary>
+    [SugarColumn(ColumnName = "is_sql_diff", ColumnDescription = "是否启用SQL差异", ColumnDataType = "int", IsNullable = false, DefaultValue = "1")]
+    public int IsSqlDiff { get; set; } = 1;
+
+    /// <summary>
+    /// 是否使用雪花id
+    /// </summary>
+    [SugarColumn(ColumnName = "is_snowflake_id", ColumnDescription = "是否使用雪花id", ColumnDataType = "int", IsNullable = false, DefaultValue = "1")]
+    public int IsSnowflakeId { get; set; } = 1;
+
+    /// <summary>
+    /// 是否生成仓储层
+    /// </summary>
+    [SugarColumn(ColumnName = "is_repository", ColumnDescription = "是否生成仓储层", ColumnDataType = "int", IsNullable = false, DefaultValue = "1")]
+    public int IsRepository { get; set; } = 1;
+
+    /// <summary>
     /// 生成代码方式（0zip压缩包 1自定义路径）
     /// </summary>
     [SugarColumn(ColumnName = "gen_method", ColumnDescription = "生成方式", Length = 1, ColumnDataType = "nvarchar", IsNullable = false, DefaultValue = "0")]
@@ -291,37 +315,5 @@ public class HbtGenTable : HbtBaseEntity
     [SugarColumn(IsIgnore = true)]
     public HbtGenTable? SubTable { get; set; }
 
-    /// <summary>
-    /// 代码生成选项
-    /// </summary>
-    [SugarColumn(IsIgnore = true)]
-    public CodeOptions? CodeOptions { get; set; }
-
     #endregion
-}
-
-/// <summary>
-/// 代码生成选项
-/// </summary>
-public class CodeOptions
-{
-    /// <summary>
-    /// 是否启用SQL差异
-    /// </summary>
-    public int IsSqlDiff { get; set; } = 1;
-
-    /// <summary>
-    /// 是否使用雪花id
-    /// </summary>
-    public int IsSnowflakeId { get; set; } = 1;
-
-    /// <summary>
-    /// 是否生成仓储层
-    /// </summary>
-    public int IsRepository { get; set; }
-
-    /// <summary>
-    /// CRUD功能组
-    /// </summary>
-    public int[] CrudGroup { get; set; } = new int[] { 1, 2, 3, 4, 5, 6, 7, 8 };
 } 

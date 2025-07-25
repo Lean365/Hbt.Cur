@@ -129,9 +129,6 @@ public class {{ table.dto_class_name | string.replace "Dto" "" }}QueryDto : HbtP
     /// <summary>
     /// {{ column.column_comment }}
     /// </summary>
-    {{~ if column.csharp_type == "string" ~}}
-    [MaxLength({{ column.length }}, ErrorMessage = "{{ column.column_comment }}长度不能超过{{ column.length }}个字符")]
-    {{~ end ~}}
     public {{ column.csharp_type }}{{~ if column.is_required == 0 ~}}{{~ if column.csharp_type == "string" ~}} ?{{~ end ~}}{{~ end ~}}{{~ ' ' ~}}  {{ column.property_name }} { get; set; }
     {{~ end ~}}
     {{~ end ~}}
@@ -165,19 +162,12 @@ public class {{ table.dto_class_name | string.replace "Dto" "" }}CreateDto
     /// <summary>
     /// {{ column.column_comment }}
     /// </summary>
-    {{~ if column.is_required == 1 ~}}
-    [Required(ErrorMessage = "{{ column.column_comment }}不能为空")]
-    {{~ end ~}}
-    {{~ if column.csharp_type == "string" ~}}
-    [MaxLength({{ column.length }}, ErrorMessage = "{{ column.column_comment }}长度不能超过{{ column.length }}个字符")]
-    {{~ end ~}}
     public {{ column.csharp_type }}{{~ if column.is_required == 0 ~}}{{~ if column.csharp_type == "string" ~}} ?{{~ end ~}}{{~ end ~}}{{~ ' ' ~}}  {{ column.property_name }} { get; set; }
     {{~ end ~}}
 
     /// <summary>
     /// 备注
     /// </summary>
-    [MaxLength(500, ErrorMessage = "备注长度不能超过500个字符")]
     public string? Remark { get; set; }
 }
 {{~ end ~}}
@@ -194,7 +184,6 @@ public class {{ table.dto_class_name | string.replace "Dto" "" }}UpdateDto : {{ 
     /// <summary>
     /// ID
     /// </summary>
-    [Required(ErrorMessage = "ID不能为空")]
     [AdaptMember("Id")]
     public long {{ table.entity_class_name | string.replace "Hbt" "" }}Id { get; set; }
 }
@@ -212,12 +201,11 @@ public class {{ table.dto_class_name | string.replace "Dto" "" }}DeleteDto
     /// <summary>
     /// ID
     /// </summary>
-    [Required(ErrorMessage = "ID不能为空")]
     [AdaptMember("Id")]
     public long {{ table.entity_class_name | string.replace "Hbt" "" }}Id { get; set; }
 }
 {{~ end ~}}
-{{~ if type == "TplDto" ~}}
+{{~ if type == "TemplateDto" ~}}
 /// <summary>
 /// {{ table.comment }}模板DTO
 /// </summary>
@@ -225,12 +213,12 @@ public class {{ table.dto_class_name | string.replace "Dto" "" }}DeleteDto
 /// 创建者: Lean365
 /// 创建时间: {{ date }}
 /// </remarks>
-public class {{ table.dto_class_name | string.replace "Dto" "" }}TplDto
+public class {{ table.dto_class_name | string.replace "Dto" "" }}TemplateDto
 {
     /// <summary>
     /// 构造函数
     /// </summary>
-    public {{ table.dto_class_name | string.replace "Dto" "" }}TplDto()
+    public {{ table.dto_class_name | string.replace "Dto" "" }}TemplateDto()
     {
         {{~ for column in table.columns ~}}
         {{~ if column.csharp_type == "string" ~}}
@@ -280,19 +268,12 @@ public class {{ table.dto_class_name | string.replace "Dto" "" }}ImportDto
     /// <summary>
     /// {{ column.column_comment }}
     /// </summary>
-    {{~ if column.is_required == 1 ~}}
-    [Required(ErrorMessage = "{{ column.column_comment }}不能为空")]
-    {{~ end ~}}
-    {{~ if column.csharp_type == "string" ~}}
-    [MaxLength({{ column.length }}, ErrorMessage = "{{ column.column_comment }}长度不能超过{{ column.length }}个字符")]
-    {{~ end ~}}
     public {{ column.csharp_type }}{{~ if column.is_required == 0 ~}}{{~ if column.csharp_type == "string" ~}} ?{{~ end ~}}{{~ end ~}}{{~ ' ' ~}}  {{ column.property_name }} { get; set; }
     {{~ end ~}}
 
     /// <summary>
     /// 备注
     /// </summary>
-    [MaxLength(500, ErrorMessage = "备注长度不能超过500个字符")]
     public string? Remark { get; set; }
 }
 {{~ end ~}}
@@ -329,14 +310,12 @@ public class {{ table.dto_class_name | string.replace "Dto" "" }}StatusDto
     /// <summary>
     /// ID
     /// </summary>
-    [Required(ErrorMessage = "ID不能为空")]
     [AdaptMember("Id")]
     public long {{ table.entity_class_name | string.replace "Hbt" "" }}Id { get; set; }
 
     /// <summary>
     /// 状态（0正常 1停用）
     /// </summary>
-    [Required(ErrorMessage = "状态不能为空")]
     public int Status { get; set; }
 }
 {{~ end ~}}
@@ -353,14 +332,12 @@ public class {{ table.dto_class_name | string.replace "Dto" "" }}SortDto
     /// <summary>
     /// ID
     /// </summary>
-    [Required(ErrorMessage = "ID不能为空")]
     [AdaptMember("Id")]
     public long {{ table.entity_class_name | string.replace "Hbt" "" }}Id { get; set; }
 
     /// <summary>
     /// 排序号
     /// </summary>
-    [Required(ErrorMessage = "排序号不能为空")]
     public int Sort { get; set; }
 }
 {{~ end ~}}
@@ -377,20 +354,17 @@ public class {{ table.dto_class_name | string.replace "Dto" "" }}AuditDto
     /// <summary>
     /// ID
     /// </summary>
-    [Required(ErrorMessage = "ID不能为空")]
     [AdaptMember("Id")]
     public long {{ table.entity_class_name | string.replace "Hbt" "" }}Id { get; set; }
 
     /// <summary>
     /// 审核状态（0待审核 1通过 2拒绝）
     /// </summary>
-    [Required(ErrorMessage = "审核状态不能为空")]
     public int AuditStatus { get; set; }
 
     /// <summary>
     /// 审核意见
     /// </summary>
-    [MaxLength(500, ErrorMessage = "审核意见长度不能超过500个字符")]
     public string? AuditRemark { get; set; }
 }
 {{~ end ~}}

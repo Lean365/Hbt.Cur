@@ -119,7 +119,7 @@
                 v-model:value="formData.tableNameSecond"
                 :placeholder="t('generator.tableDefine.fields.tableNameSecond.placeholder')"
                 :disabled="!!props.tableId"
-                @input="(e) => handleTableNameInput(e, 'tableNameSecond')"
+                @input="(e: Event) => handleTableNameInput(e, 'tableNameSecond')"
               />
             </a-form-item>
           </a-col>
@@ -129,7 +129,7 @@
                 v-model:value="formData.tableNameThird"
                 :placeholder="t('generator.tableDefine.fields.tableNameThird.placeholder')"
                 :disabled="!!props.tableId"
-                @input="(e) => handleTableNameInput(e, 'tableNameThird')"
+                @input="(e: Event) => handleTableNameInput(e, 'tableNameThird')"
               />
             </a-form-item>
           </a-col>
@@ -163,7 +163,7 @@ import { getTableDefineInfo, createTableDefine, updateTableDefine } from '@/api/
 import { useUserStore } from '@/stores/user'
 import { getDatabasesByDb } from '@/api/generator/genTable'
 import type { SelectValue } from 'ant-design-vue/es/select'
-import HbtSelect from '@/components/Business/HbtSelect/index.vue'
+
 
 const { t } = useI18n()
 

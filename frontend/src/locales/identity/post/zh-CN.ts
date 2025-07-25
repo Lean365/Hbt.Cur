@@ -22,9 +22,17 @@ export default {
             length: '岗位名称长度必须在2-20个字符之间'
           }
         },
-        postSort: {
-          label: '显示顺序',
-          placeholder: '请输入显示顺序'
+        rank: {
+          label: '职级',
+          placeholder: '请输入职级'
+        },
+        userCount: {
+          label: '用户数量',
+          placeholder: '请输入用户数量'
+        },
+        orderNum: {
+          label: '排序号',
+          placeholder: '请输入排序号'
         },
         status: {
           label: '状态',
@@ -34,11 +42,6 @@ export default {
             disabled: '禁用'
           }
         },
-        description: {
-          label: '备注',
-          placeholder: '请输入备注'
-        },
-        createTime: '创建时间'
       },
       actions: {
         add: '新增岗位',

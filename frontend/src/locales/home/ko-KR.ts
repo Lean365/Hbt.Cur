@@ -108,6 +108,10 @@ export default {
         urge4: '촉구4',
         urge5: '촉구5',
       },
+      processing: '처리 중',
+      overdue: '기한 초과',
+      dueSoon: '기한 임박',
+      highPriority: '높은 우선순위',
     },
     filetab: {
       myFile: {

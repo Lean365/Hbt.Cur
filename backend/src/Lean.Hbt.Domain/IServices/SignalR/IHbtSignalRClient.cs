@@ -3,7 +3,7 @@
 // 文件名 : IHbtSignalRClient.cs
 // 创建者 : Lean365
 // 创建时间: 2024-03-07 16:30
-// 版本号 : V1.0.0
+// 版本号 : V0.0.1
 // 描述   : SignalR相关接口定义
 //===================================================================
 
@@ -85,6 +85,121 @@ namespace Lean.Hbt.Domain.IServices.SignalR
         /// </summary>
         /// <param name="message">通知消息</param>
         Task ForceOffline(string message);
+
+        /// <summary>
+        /// 接收日程提醒
+        /// </summary>
+        Task ReceiveScheduleReminder(HbtRealTimeNotification notification);
+
+        /// <summary>
+        /// 接收会议通知
+        /// </summary>
+        Task ReceiveMeetingNotification(HbtRealTimeNotification notification);
+
+        /// <summary>
+        /// 接收用车通知
+        /// </summary>
+        Task ReceiveVehicleNotification(HbtRealTimeNotification notification);
+
+        /// <summary>
+        /// 接收ISO文档通知
+        /// </summary>
+        Task ReceiveIsoDocumentNotification(HbtRealTimeNotification notification);
+
+        /// <summary>
+        /// 接收日程状态更新
+        /// </summary>
+        Task ReceiveScheduleStatusUpdate(HbtRealTimeNotification notification);
+
+        /// <summary>
+        /// 接收会议状态更新
+        /// </summary>
+        Task ReceiveMeetingStatusUpdate(HbtRealTimeNotification notification);
+
+        /// <summary>
+        /// 接收用车状态更新
+        /// </summary>
+        Task ReceiveVehicleStatusUpdate(HbtRealTimeNotification notification);
+
+        /// <summary>
+        /// 接收ISO文档状态更新
+        /// </summary>
+        Task ReceiveIsoDocumentStatusUpdate(HbtRealTimeNotification notification);
+
+        /// <summary>
+        /// 接收邮件发送通知
+        /// </summary>
+        Task ReceiveMailSent(HbtRealTimeNotification notification);
+
+        /// <summary>
+        /// 接收邮件接收通知
+        /// </summary>
+        Task ReceiveMailReceived(HbtRealTimeNotification notification);
+
+        /// <summary>
+        /// 接收邮件状态更新
+        /// </summary>
+        Task ReceiveMailStatusUpdate(HbtRealTimeNotification notification);
+
+        /// <summary>
+        /// 接收消息发送通知
+        /// </summary>
+        Task ReceiveMessageSent(HbtRealTimeNotification notification);
+
+        /// <summary>
+        /// 接收消息接收通知
+        /// </summary>
+        Task ReceiveMessageReceived(HbtRealTimeNotification notification);
+
+        /// <summary>
+        /// 接收消息状态更新
+        /// </summary>
+        Task ReceiveMessageStatusUpdate(HbtRealTimeNotification notification);
+
+        /// <summary>
+        /// 接收通知公告发布通知
+        /// </summary>
+        Task ReceiveNoticePublished(HbtRealTimeNotification notification);
+
+        /// <summary>
+        /// 接收通知公告更新通知
+        /// </summary>
+        Task ReceiveNoticeUpdated(HbtRealTimeNotification notification);
+
+        /// <summary>
+        /// 接收通知公告状态更新
+        /// </summary>
+        Task ReceiveNoticeStatusUpdate(HbtRealTimeNotification notification);
+
+        /// <summary>
+        /// 接收通知公告阅读通知
+        /// </summary>
+        Task ReceiveNoticeRead(HbtRealTimeNotification notification);
+
+        /// <summary>
+        /// 接收通知公告未读提醒
+        /// </summary>
+        Task ReceiveNoticeUnread(HbtRealTimeNotification notification);
+
+        /// <summary>
+        /// 接收邮件模板更新通知
+        /// </summary>
+        Task ReceiveMailTemplateUpdate(HbtRealTimeNotification notification);
+
+        /// <summary>
+        /// 接收邮件发送失败通知
+        /// </summary>
+        Task ReceiveMailSendFailed(HbtRealTimeNotification notification);
+
+        /// <summary>
+        /// 接收消息发送失败通知
+        /// </summary>
+        Task ReceiveMessageSendFailed(HbtRealTimeNotification notification);
+
+        /// <summary>
+        /// 接收通知公告发布失败通知
+        /// </summary>
+        Task ReceiveNoticePublishFailed(HbtRealTimeNotification notification);
     }
 
     /// <summary>
@@ -171,6 +286,41 @@ namespace Lean.Hbt.Domain.IServices.SignalR
         /// 获取通知接收者列表
         /// </summary>
         Task<List<string>> GetNoticeReceivers(long userId);
+
+        /// <summary>
+        /// 获取ISO文档接收者列表
+        /// </summary>
+        Task<List<string>> GetIsoDocumentReceivers(long userId);
+
+        /// <summary>
+        /// 获取会议通知接收者列表
+        /// </summary>
+        Task<List<string>> GetMeetingReceivers(long userId);
+
+        /// <summary>
+        /// 获取用车通知接收者列表
+        /// </summary>
+        Task<List<string>> GetVehicleReceivers(long userId);
+
+        /// <summary>
+        /// 获取Quartz任务通知接收者列表
+        /// </summary>
+        Task<List<string>> GetQuartzReceivers(long userId);
+
+        /// <summary>
+        /// 获取项目通知接收者列表
+        /// </summary>
+        Task<List<string>> GetProjectReceivers(long userId);
+
+        /// <summary>
+        /// 获取合同通知接收者列表
+        /// </summary>
+        Task<List<string>> GetContractReceivers(long userId);
+
+        /// <summary>
+        /// 获取设变通知接收者列表
+        /// </summary>
+        Task<List<string>> GetChangeRequestReceivers(long userId);
 
         /// <summary>
         /// 添加用户设备

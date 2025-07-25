@@ -1,192 +1,338 @@
 //===================================================================
 // 项目名 : Lean.Hbt
 // 文件名 : HbtInstanceController.cs
-// 创建者 : Lean365
-// 创建时间: 2024-01-23 12:00
-// 版本号 : V1.0.0
-// 描述   : 工作流实例控制器
+// 创建者 : Claude
+// 创建时间: 2024-12-01
+// 版本号 : V0.0.1
+// 描述    : 工作流实例控制器
 //===================================================================
 
 using Lean.Hbt.Application.Dtos.Workflow;
 using Lean.Hbt.Application.Services.Workflow;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
-namespace Lean.Hbt.WebApi.Controllers.Workflow
+namespace Lean.Hbt.WebApi.Controllers.Workflow;
+
+/// <summary>
+/// 工作流实例控制器
+/// </summary>
+[ApiController]
+[Route("api/[controller]", Name = "工作流实例")]
+[ApiModule("workflow", "工作流管理")]
+[Authorize]
+public class HbtInstanceController : HbtBaseController
 {
-    /// <summary>
-    /// 工作流实例控制器
-    /// </summary>
-    [Route("api/[controller]", Name = "工作流实例")]
-    [ApiController]
-    [ApiModule("workflow", "工作流")]
-    public class HbtInstanceController : HbtBaseController
+    private readonly IHbtInstanceService _instanceService;
+
+    public HbtInstanceController(IHbtInstanceService instanceService, 
+    IHbtLogger logger, 
+    IHbtCurrentUser currentUser, 
+    IHbtLocalizationService localizationService) : 
+    base(logger, currentUser, localizationService)
     {
-        private readonly IHbtInstanceService _workflowInstanceService;
+        _instanceService = instanceService ?? throw new ArgumentNullException(nameof(instanceService));
+    }
 
-        /// <summary>
-        /// 构造函数
-        /// <param name="workflowInstanceService">工作流实例服务</param>
-        /// <param name="currentUser">当前用户服务</param>
-        /// <param name="localization">本地化服务</param>
-        /// <param name="logger">日志服务</param>
-        /// </summary>
-        public HbtInstanceController(
-            IHbtInstanceService workflowInstanceService,
-            IHbtCurrentUser currentUser,
-            IHbtLocalizationService localization,
-            IHbtLogger logger) : base(logger, currentUser, localization)
+    /// <summary>
+    /// 获取工作流实例列表
+    /// </summary>
+    /// <param name="query">查询条件</param>
+    /// <returns>分页结果</returns>
+    [HttpGet("list")]
+    [HbtPerm("workflow:manage:instance:list")]
+    public async Task<IActionResult> GetListAsync([FromQuery] HbtInstanceQueryDto query)
+    {
+        try
         {
-            _workflowInstanceService = workflowInstanceService;
-        }
-
-        /// <summary>
-        /// 获取工作流实例分页列表
-        /// </summary>
-        [HttpGet("list")]
-        [HbtPerm("workflow:instance:list")]
-        public async Task<IActionResult> GetListAsync([FromQuery] HbtInstanceQueryDto query)
-        {
-            var result = await _workflowInstanceService.GetListAsync(query);
+            var result = await _instanceService.GetListAsync(query);
             return Success(result);
         }
-
-        /// <summary>
-        /// 获取工作流实例详情
-        /// </summary>
-        [HttpGet("{id}")]
-        [HbtPerm("workflow:instance:query")]
-        public async Task<IActionResult> GetByIdAsync(long id)
+        catch (Exception ex)
         {
-            var result = await _workflowInstanceService.GetByIdAsync(id);
+            return Error(ex.Message);
+        }
+    }
+
+    /// <summary>
+    /// 根据ID获取工作流实例
+    /// </summary>
+    /// <param name="id">工作流实例ID</param>
+    /// <returns>工作流实例</returns>
+    [HttpGet("{id}")]
+    [HbtPerm("workflow:manage:instance:query")]
+    public async Task<IActionResult> GetByIdAsync(long id)
+    {
+        try
+        {
+            var result = await _instanceService.GetByIdAsync(id);
+            if (result == null)
+                return Error("工作流实例不存在");
+
             return Success(result);
         }
-
-        /// <summary>
-        /// 创建工作流实例
-        /// </summary>
-        [HttpPost]
-        [HbtPerm("workflow:instance:create")]
-        public async Task<IActionResult> CreateAsync([FromBody] HbtInstanceCreateDto input)
+        catch (Exception ex)
         {
-            var result = await _workflowInstanceService.CreateAsync(input);
+            return Error(ex.Message);
+        }
+    }
+
+    /// <summary>
+    /// 根据业务键获取工作流实例
+    /// </summary>
+    /// <param name="businessKey">业务键</param>
+    /// <returns>工作流实例</returns>
+    [HttpGet("business/{businessKey}")]
+    [HbtPerm("workflow:manage:instance:query")]
+    public async Task<IActionResult> GetByBusinessKeyAsync(string businessKey)
+    {
+        try
+        {
+            var result = await _instanceService.GetByBusinessKeyAsync(businessKey);
+            if (result == null)
+                return Error("工作流实例不存在");
+
             return Success(result);
         }
-
-        /// <summary>
-        /// 更新工作流实例
-        /// </summary>
-        [HttpPut]
-        [HbtPerm("workflow:instance:update")]
-        public async Task<IActionResult> UpdateAsync([FromBody] HbtInstanceUpdateDto input)
+        catch (Exception ex)
         {
-            var result = await _workflowInstanceService.UpdateAsync(input);
+            return Error(ex.Message);
+        }
+    }
+
+    /// <summary>
+    /// 创建工作流实例
+    /// </summary>
+    /// <param name="input">工作流实例创建DTO</param>
+    /// <returns>工作流实例ID</returns>
+    [HttpPost]
+    [HbtPerm("workflow:manage:instance:create")]
+    public async Task<IActionResult> CreateAsync([FromBody] HbtInstanceCreateDto input)
+    {
+        try
+        {
+            if (input == null)
+                return Error("请求参数不能为空");
+
+            var id = await _instanceService.CreateAsync(input);
+            return Success(id, "工作流实例创建成功");
+        }
+        catch (Exception ex)
+        {
+            return Error(ex.Message);
+        }
+    }
+
+    /// <summary>
+    /// 更新工作流实例
+    /// </summary>
+    /// <param name="input">工作流实例更新DTO</param>
+    /// <returns>是否成功</returns>
+    [HttpPut]
+    [HbtPerm("workflow:manage:instance:update")]
+    public async Task<IActionResult> UpdateAsync([FromBody] HbtInstanceUpdateDto input)
+    {
+        try
+        {
+            if (input == null)
+                return Error("请求参数不能为空");
+
+            var result = await _instanceService.UpdateAsync(input.InstanceId, input);
+            if (result)
+                return Success(true, "工作流实例更新成功");
+            else
+                return Error("工作流实例不存在");
+        }
+        catch (Exception ex)
+        {
+            return Error(ex.Message);
+        }
+    }
+
+    /// <summary>
+    /// 删除工作流实例
+    /// </summary>
+    /// <param name="id">工作流实例ID</param>
+    /// <returns>是否成功</returns>
+    [HttpDelete("{id}")]
+    [HbtPerm("workflow:manage:instance:delete")]
+    public async Task<IActionResult> DeleteAsync(long id)
+    {
+        try
+        {
+            var result = await _instanceService.DeleteAsync(id);
+            if (result)
+                return Success(true, "工作流实例删除成功");
+            else
+                return Error("工作流实例不存在");
+        }
+        catch (Exception ex)
+        {
+            return Error(ex.Message);
+        }
+    }
+
+    /// <summary>
+    /// 批量删除工作流实例
+    /// </summary>
+    /// <param name="ids">工作流实例ID数组</param>
+    /// <returns>是否成功</returns>
+    [HttpDelete("batch")]
+    [HbtPerm("workflow:manage:instance:delete")]
+    public async Task<IActionResult> BatchDeleteAsync([FromBody] long[] ids)
+    {
+        try
+        {
+            if (ids == null || ids.Length == 0)
+                return Error("请选择要删除的工作流实例");
+
+            var result = await _instanceService.BatchDeleteAsync(ids);
+            if (result)
+                return Success(true, "批量删除工作流实例成功");
+            else
+                return Error("批量删除工作流实例失败");
+        }
+        catch (Exception ex)
+        {
+            return Error(ex.Message);
+        }
+    }
+
+    /// <summary>
+    /// 更新工作流实例状态
+    /// </summary>
+    /// <param name="id">工作流实例ID</param>
+    /// <param name="status">新状态</param>
+    /// <param name="reason">原因</param>
+    /// <returns>是否成功</returns>
+    [HttpPut("{id}/status")]
+    [HbtPerm("workflow:manage:instance:update")]
+    public async Task<IActionResult> UpdateStatusAsync(long id, [FromQuery] int status, [FromQuery] string? reason = null)
+    {
+        try
+        {
+            var result = await _instanceService.UpdateStatusAsync(id, status, reason);
+            if (result)
+                return Success(true, "工作流实例状态更新成功");
+            else
+                return Error("工作流实例不存在");
+        }
+        catch (Exception ex)
+        {
+            return Error(ex.Message);
+        }
+    }
+
+    /// <summary>
+    /// 设置工作流实例变量
+    /// </summary>
+    /// <param name="id">工作流实例ID</param>
+    /// <param name="variables">变量字典</param>
+    /// <returns>是否成功</returns>
+    [HttpPut("{id}/variables")]
+    [HbtPerm("workflow:manage:instance:update")]
+    public async Task<IActionResult> SetVariablesAsync(long id, [FromBody] Dictionary<string, object> variables)
+    {
+        try
+        {
+            if (variables == null)
+                return Error("变量不能为空");
+
+            var result = await _instanceService.SetVariablesAsync(id, variables);
+            if (result)
+                return Success(true, "工作流实例变量设置成功");
+            else
+                return Error("工作流实例不存在");
+        }
+        catch (Exception ex)
+        {
+            return Error(ex.Message);
+        }
+    }
+
+    /// <summary>
+    /// 获取我的工作流实例列表
+    /// </summary>
+    /// <param name="query">查询条件</param>
+    /// <returns>分页结果</returns>
+    [HttpGet("my")]
+    [HbtPerm("workflow:manage:instance:list")]
+    public async Task<IActionResult> GetMyInstancesAsync([FromQuery] HbtInstanceQueryDto query)
+    {
+        try
+        {
+            var result = await _instanceService.GetMyInstancesAsync(_currentUser.UserId, query);
             return Success(result);
         }
-
-        /// <summary>
-        /// 删除工作流实例
-        /// </summary>
-        [HttpDelete("{id}")]
-        [HbtPerm("workflow:instance:delete")]
-        public async Task<IActionResult> DeleteAsync(long id)
+        catch (Exception ex)
         {
-            var result = await _workflowInstanceService.DeleteAsync(id);
-            return Success(result);
+            return Error(ex.Message);
         }
+    }
 
-        /// <summary>
-        /// 批量删除工作流实例
-        /// </summary>
-        [HttpDelete("batch")]
-        [HbtPerm("workflow:instance:delete")]
-        public async Task<IActionResult> BatchDeleteAsync([FromBody] long[] ids)
+    /// <summary>
+    /// 获取导入模板
+    /// </summary>
+    /// <param name="sheetName">工作表名称</param>
+    /// <returns>Excel模板文件</returns>
+    [HttpGet("template")]
+    [HbtPerm("workflow:manage:instance:import")]
+    public async Task<IActionResult> GetTemplateAsync([FromQuery] string sheetName = "Sheet1")
+    {
+        try
         {
-            var result = await _workflowInstanceService.BatchDeleteAsync(ids);
-            return Success(result);
+            var (fileName, content) = await _instanceService.GetTemplateAsync(sheetName);
+            return File(content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
         }
-
-        /// <summary>
-        /// 导入工作流实例数据
-        /// </summary>
-        [HttpPost("import")]
-        [HbtPerm("workflow:instance:import")]
-        public async Task<IActionResult> ImportAsync(IFormFile file)
+        catch (Exception ex)
         {
+            return BadRequest(ex.Message);
+        }
+    }
+
+    /// <summary>
+    /// 导入工作流实例数据
+    /// </summary>
+    /// <param name="file">Excel文件</param>
+    /// <param name="sheetName">工作表名称</param>
+    /// <returns>导入结果</returns>
+    [HttpPost("import")]
+    [HbtPerm("workflow:manage:instance:import")]
+    public async Task<IActionResult> ImportAsync(IFormFile file, [FromQuery] string sheetName = "Sheet1")
+    {
+        try
+        {
+            if (file == null || file.Length == 0)
+                return Error("请选择要导入的文件");
+
             using var stream = file.OpenReadStream();
-            var (success, fail) = await _workflowInstanceService.ImportAsync(stream, "Sheet1");
-            return Success(new { success, fail }, _localization.L("Instance.Import.Success"));
+            var result = await _instanceService.ImportAsync(stream, sheetName);
+            return Success(result, $"导入完成，成功：{result.success}，失败：{result.fail}");
         }
-
-        /// <summary>
-        /// 导出工作流实例数据
-        /// </summary>
-        [HttpGet("export")]
-        [HbtPerm("workflow:instance:export")]
-        public async Task<IActionResult> ExportAsync([FromQuery] HbtInstanceQueryDto query)
+        catch (Exception ex)
         {
-            var result = await _workflowInstanceService.ExportAsync(query, "Sheet1");
-            var contentType = result.fileName.EndsWith(".zip", StringComparison.OrdinalIgnoreCase)
-                ? "application/zip"
-                : "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-            // 只在 filename* 用 UTF-8 编码，filename 用 ASCII
-            var safeFileName = System.Text.Encoding.ASCII.GetString(System.Text.Encoding.ASCII.GetBytes(result.fileName));
-            Response.Headers["Content-Disposition"] = $"attachment; filename*=UTF-8''{Uri.EscapeDataString(result.fileName)}";
-            return File(result.content, contentType, result.fileName);
+            return Error(ex.Message);
         }
+    }
 
-        /// <summary>
-        /// 获取导入模板
-        /// </summary>
-        [HttpGet("template")]
-        [HbtPerm("workflow:instance:query")]
-        public async Task<IActionResult> GetTemplateAsync()
+    /// <summary>
+    /// 导出工作流实例数据
+    /// </summary>
+    /// <param name="query">查询条件</param>
+    /// <param name="sheetName">工作表名称</param>
+    /// <returns>Excel文件</returns>
+    [HttpGet("export")]
+    [HbtPerm("workflow:manage:instance:export")]
+    public async Task<IActionResult> ExportAsync([FromQuery] HbtInstanceQueryDto query, [FromQuery] string sheetName = "Sheet1")
+    {
+        try
         {
-            var result = await _workflowInstanceService.GetTemplateAsync();
-            return File(result.content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", result.fileName);
+            var (fileName, content) = await _instanceService.ExportAsync(query, sheetName);
+            return File(content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
         }
-
-        /// <summary>
-        /// 更新工作流实例状态
-        /// </summary>
-        [HttpPut("{id}/status")]
-        [HbtPerm("workflow:instance:update")]
-        public async Task<IActionResult> UpdateStatusAsync(long id, [FromBody] HbtInstanceStatusDto input)
+        catch (Exception ex)
         {
-            input.InstanceId = id;
-            var result = await _workflowInstanceService.UpdateStatusAsync(input);
-            return Success(result);
-        }
-
-        /// <summary>
-        /// 提交工作流实例
-        /// </summary>
-        [HttpPost("{id}/submit")]
-        [HbtPerm("workflow:instance:submit")]
-        public async Task<IActionResult> SubmitAsync(long id)
-        {
-            var result = await _workflowInstanceService.SubmitAsync(id);
-            return Success(result);
-        }
-
-        /// <summary>
-        /// 撤回工作流实例
-        /// </summary>
-        [HttpPost("{id}/withdraw")]
-        [HbtPerm("workflow:instance:withdraw")]
-        public async Task<IActionResult> WithdrawAsync(long id)
-        {
-            var result = await _workflowInstanceService.WithdrawAsync(id);
-            return Success(result);
-        }
-
-        /// <summary>
-        /// 终止工作流实例
-        /// </summary>
-        [HttpPost("{id}/terminate")]
-        [HbtPerm("workflow:instance:terminate")]
-        public async Task<IActionResult> TerminateAsync(long id, [FromQuery] string reason)
-        {
-            var result = await _workflowInstanceService.TerminateAsync(id, reason);
-            return Success(result);
+            return BadRequest(ex.Message);
         }
     }
 }

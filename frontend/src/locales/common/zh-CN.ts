@@ -346,8 +346,6 @@ export default {
     // ==================== 结果与消息 ====================
     // 结果状态
     result: {
-      success: '操作成功',
-      failed: '操作失败',
       warning: '警告',
       info: '提示',
       error: '错误'
@@ -393,6 +391,12 @@ export default {
       },
       loadFailed: '加载失败'
     },
+
+
+
+    // 通用操作
+    selectOne: '请选择一条记录',
+    selectAtLeastOne: '请至少选择一条记录',
 
     // ==================== 组件文本 ====================
     // 标签页
@@ -446,7 +450,14 @@ export default {
       view: '查看'
     }
   },
-
+  tabs:{
+    closeOthers: '关闭其他',
+    closeRight: '关闭右侧',
+    closeAll: '关闭所有',
+    // 标签页限制提示
+    maxTabsReached: '标签页数量已达上限({count})，请先关闭一些标签页再打开新页面。您可以使用标签页右侧的下拉菜单快速关闭多个标签页。',
+    tabsTruncated: '检测到{total}个标签页，已自动保留前{count}个标签页'
+  },
   // ==================== 选择器组件 ====================
   select: {
     loadMore: '加载更多',

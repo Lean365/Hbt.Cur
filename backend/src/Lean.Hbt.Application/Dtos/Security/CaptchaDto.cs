@@ -85,6 +85,17 @@ public class BehaviorDataDto
 }
 
 /// <summary>
+/// 行为验证请求
+/// </summary>
+public class BehaviorValidateDto
+{
+    /// <summary>
+    /// 验证令牌
+    /// </summary>
+    public string? Token { get; set; }
+}
+
+/// <summary>
 /// 验证结果
 /// </summary>
 public class CaptchaResultDto
@@ -98,4 +109,77 @@ public class CaptchaResultDto
     /// 错误消息
     /// </summary>
     public string? Message { get; set; }
+}
+
+/// <summary>
+/// 验证码配置DTO
+/// </summary>
+public class CaptchaConfigDto
+{
+    /// <summary>
+    /// 验证码类型
+    /// </summary>
+    public string Type { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 滑块验证码配置
+    /// </summary>
+    public SliderConfigDto Slider { get; set; } = new();
+
+    /// <summary>
+    /// 行为验证配置
+    /// </summary>
+    public BehaviorConfigDto Behavior { get; set; } = new();
+}
+
+/// <summary>
+/// 滑块验证码配置DTO
+/// </summary>
+public class SliderConfigDto
+{
+    /// <summary>
+    /// 背景图片宽度
+    /// </summary>
+    public int Width { get; set; }
+
+    /// <summary>
+    /// 背景图片高度
+    /// </summary>
+    public int Height { get; set; }
+
+    /// <summary>
+    /// 滑块宽度
+    /// </summary>
+    public int SliderWidth { get; set; }
+
+    /// <summary>
+    /// 验证容差(像素)
+    /// </summary>
+    public int Tolerance { get; set; }
+
+    /// <summary>
+    /// 缓存过期时间(分钟)
+    /// </summary>
+    public int ExpirationMinutes { get; set; }
+}
+
+/// <summary>
+/// 行为验证配置DTO
+/// </summary>
+public class BehaviorConfigDto
+{
+    /// <summary>
+    /// 验证通过的最低分数
+    /// </summary>
+    public double ScoreThreshold { get; set; }
+
+    /// <summary>
+    /// 行为数据缓存时间(分钟)
+    /// </summary>
+    public int DataExpirationMinutes { get; set; }
+
+    /// <summary>
+    /// 是否启用机器学习模型
+    /// </summary>
+    public bool EnableMachineLearning { get; set; }
 }

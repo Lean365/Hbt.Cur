@@ -3,7 +3,7 @@
 // 文件名 : GlobalUsings.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-22 09:30
-// 版本号 : V1.0.0
+// 版本号 : V0.0.1
 // 描述    : 基础设施层全局 Using 声明
 //===================================================================
 
@@ -29,6 +29,7 @@ global using Lean.Hbt.Application.Services.Routine.Quartz;
 global using Lean.Hbt.Application.Services.Routine.Document;
 global using Lean.Hbt.Application.Services.Routine.Notice;
 global using Lean.Hbt.Application.Services.Routine.Email;
+global using Lean.Hbt.Application.Services.Routine.News;
 
 // Microsoft 扩展
 global using Microsoft.Extensions.Configuration;

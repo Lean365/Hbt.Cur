@@ -584,6 +584,15 @@ export default {
     }
   },
 
+  tabs: {
+    closeOthers: 'Cerrar Otros',
+    closeRight: 'Cerrar Derecha',
+    closeAll: 'Cerrar Todo',
+    // Mensajes de límite de pestañas
+    maxTabsReached: 'Límite de pestañas alcanzado ({count}), por favor cierre algunas pestañas antes de abrir nuevas páginas. Puede usar el menú desplegable en el lado derecho de las pestañas para cerrar rápidamente múltiples pestañas.',
+    tabsTruncated: 'Se detectaron {total} pestañas, automáticamente se mantuvieron las primeras {count} pestañas'
+  },
+
   // ==================== Componente Selector ====================
   select: {
     loadMore: 'Cargar Más',

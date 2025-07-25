@@ -3,7 +3,7 @@
 // 文件名 : HbtScheduleDto.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-26 14:30
-// 版本号 : V1.0.0
+// 版本号 : V0.0.1
 // 描述   : 日程数据传输对象
 //===================================================================
 
@@ -173,6 +173,11 @@ namespace Lean.Hbt.Application.Dtos.Routine.Schedule
         /// 结束时间
         /// </summary>
         public DateTime? EndTime { get; set; }
+
+        /// <summary>
+        /// 创建者（用于当前用户日程过滤）
+        /// </summary>
+        public string? CreateBy { get; set; }
     }
 
     /// <summary>

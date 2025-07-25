@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-import type { HbtUserQuery, HbtUser, HbtUserStatus,HbtUserPassword, HbtUserResetPwd, HbtUserUpdate, HbtUserCreate, HbtUserRoleDto, HbtUserDeptDto, HbtUserPostDto } from '@/types/identity/user'
+import type { HbtUserQuery, HbtUser, HbtUserStatus, HbtUserPasswordReset, HbtUserUpdate, HbtUserCreate, HbtUserRoleDto, HbtUserDeptDto, HbtUserPostDto } from '@/types/identity/user'
 import type { HbtPagedResult } from '@/types/common'
 import type { HbtApiResponse } from '@/types/common'
 import { useUserStore } from '@/stores/user'
@@ -102,7 +102,7 @@ export function updateUserStatus(data: HbtUserStatus) {
 }
 
 // 重置密码
-export function resetPassword(data: HbtUserResetPwd) {
+export function resetPassword(data: HbtUserPasswordReset) {
   return request<boolean>({
     url: '/api/HbtUser/reset-password',
     method: 'put',
@@ -111,7 +111,7 @@ export function resetPassword(data: HbtUserResetPwd) {
 }
 
 // 修改密码
-export function changePassword(data: HbtUserPassword) {
+export function changePassword(data: { oldPassword: string; newPassword: string }) {
   return request<boolean>({
     url: '/api/HbtUser/change-password',
     method: 'put',
@@ -232,5 +232,29 @@ export function getUserOptions() {
   return request<HbtApiResponse<{ label: string; value: number }[]>>({
     url: '/api/HbtUser/options',
     method: 'get'
+  })
+}
+
+/**
+ * 获取用户租户列表
+ * @param userId 用户ID
+ */
+export function getUserTenants(userId: number) {
+  return request<HbtApiResponse<any[]>>({
+    url: `/api/HbtUser/${userId}/tenants`,
+    method: 'get'
+  })
+}
+
+/**
+ * 分配用户租户
+ * @param userId 用户ID
+ * @param configIds 租户配置ID列表
+ */
+export function allocateUserTenants(userId: number, configIds: string[]) {
+  return request<HbtApiResponse<boolean>>({
+    url: `/api/HbtUser/${userId}/tenants`,
+    method: 'put',
+    data: configIds
   })
 }

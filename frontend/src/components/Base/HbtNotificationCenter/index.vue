@@ -129,14 +129,15 @@ import { notification } from 'ant-design-vue'
 import HbtNotificationItem from '../HbtNotificationItem/index.vue'
 
 import { signalRService } from '@/utils/SignalR/service'
-import { MessageType, type HbtOnlineMessageDto } from '@/types/signalr/onlineMessage'
+import { MessageType, type HbtOnlineMessage } from '@/types/signalr/onlineMessage'
 import type { NotificationItem as NotificationItemType } from '@/types/settings'
 import { getOnlineMessageList, deleteOnlineMessage, markMessageAsRead, markAllMessagesAsRead, markMessageAsUnread, markAllMessagesAsUnread } from '@/api/signalr/onlineMessage'
-import { getMailList, markMailAsRead } from '@/api/routine/mail'
-import { getNoticeList, markNoticeAsRead } from '@/api/routine/notice'
+import { getMailList, markMailAsRead } from '@/api/routine/email/mail'
+import { getNoticeList, markNoticeAsRead } from '@/api/routine/notice/notice'
 import { useUserStore } from '@/stores/user'
-import type { HbtMailDto } from '@/types/routine/mail'
-import type { HbtNoticeDto } from '@/types/routine/notice'
+import { getToken } from '@/utils/auth'
+import type { HbtMail } from '@/types/routine/email/mail'
+import type { HbtNotice } from '@/types/routine/notice/notice'
 
 const { t } = useI18n()
 const userStore = useUserStore()
@@ -196,10 +197,10 @@ const settings = ref({
 type NotificationType = 'online' | 'mail' | 'notice'
 
 // 将消息转换为统一的通知项格式
-const convertToNotificationItem = (message: HbtOnlineMessageDto | HbtMailDto | HbtNoticeDto, type: NotificationType): NotificationItemType => {
+const convertToNotificationItem = (message: HbtOnlineMessage | HbtMail | HbtNotice, type: NotificationType): NotificationItemType => {
   switch (type) {
     case 'online':
-      const onlineMessage = message as HbtOnlineMessageDto
+      const onlineMessage = message as HbtOnlineMessage
       return {
         id: `online_${onlineMessage.messageId}`,
         title: onlineMessage.messageType,
@@ -209,17 +210,17 @@ const convertToNotificationItem = (message: HbtOnlineMessageDto | HbtMailDto | H
         type: 'system'
       }
     case 'mail':
-      const mailMessage = message as HbtMailDto
+      const mailMessage = message as HbtMail
       return {
         id: `mail_${mailMessage.mailId}`,
         title: mailMessage.mailSubject,
         content: mailMessage.mailBody,
-        createTime: mailMessage.createTime?.toISOString() || new Date().toISOString(),
+        createTime: mailMessage.createTime || new Date().toISOString(),
         status: mailMessage.mailStatus === 0 ? 'unread' : 'read',
         type: 'message'
       }
     case 'notice':
-      const noticeMessage = message as HbtNoticeDto
+      const noticeMessage = message as HbtNotice
       return {
         id: `notice_${noticeMessage.noticeId}`,
         title: noticeMessage.noticeTitle,
@@ -242,6 +243,17 @@ const loadNotifications = async () => {
 
   const loadWithRetry = async () => {
     try {
+      // 检查用户是否已登录
+      const userStore = useUserStore()
+      const hasUserInfo = userStore.userInfo !== undefined && userStore.userInfo !== null
+      const hasToken = getToken() !== null
+      
+      // 如果用户信息不存在且Token也不存在，则跳过加载
+      if (!hasUserInfo && !hasToken) {
+        console.log('[通知中心] 用户未登录且Token不存在，跳过加载消息')
+        return
+      }
+
       // 并行加载所有类型的消息
       const [onlineMessages, mailMessages, noticeMessages] = await Promise.all([
         getOnlineMessageList({ pageIndex: 1, pageSize: 10 }),
@@ -254,7 +266,7 @@ const loadNotifications = async () => {
 
       // 处理在线消息
       if (onlineMessages?.data?.code === 200 && onlineMessages?.data?.data?.rows?.length > 0) {
-        onlineMessages.data.data.rows.forEach((msg: HbtOnlineMessageDto) => {
+        onlineMessages.data.data.rows.forEach((msg: HbtOnlineMessage) => {
           const item = convertToNotificationItem(msg, 'online')
           messageMap.set(item.id, item)
         })
@@ -262,7 +274,7 @@ const loadNotifications = async () => {
 
       // 处理邮件
       if (mailMessages?.data?.code === 200 && mailMessages?.data?.data?.rows?.length > 0) {
-        mailMessages.data.data.rows.forEach((msg: HbtMailDto) => {
+        mailMessages.data.data.rows.forEach((msg: HbtMail) => {
           const item = convertToNotificationItem(msg, 'mail')
           messageMap.set(item.id, item)
         })
@@ -270,7 +282,7 @@ const loadNotifications = async () => {
 
       // 处理通知
       if (noticeMessages?.data?.code === 200 && noticeMessages?.data?.data?.rows?.length > 0) {
-        noticeMessages.data.data.rows.forEach((msg: HbtNoticeDto) => {
+        noticeMessages.data.data.rows.forEach((msg: any) => {
           const item = convertToNotificationItem(msg, 'notice')
           messageMap.set(item.id, item)
         })
@@ -297,12 +309,22 @@ const loadNotifications = async () => {
         maxRetries
       })
 
+      // 如果是401未授权错误或403禁止访问错误，不进行重试
+      if (error?.response?.status === 401 || error?.response?.status === 403) {
+        console.log('[通知中心] 用户未授权或禁止访问，停止重试')
+        return
+      }
+
+      // 如果是网络错误或其他错误，且还有重试次数，则重试
       if (retryCount < maxRetries) {
         retryCount++
+        console.log(`[通知中心] 重试加载消息 (${retryCount}/${maxRetries})`)
         await new Promise(resolve => setTimeout(resolve, 1000))
         return loadWithRetry()
       }
-      throw error
+      
+      // 重试次数用完，记录错误但不抛出异常
+      console.error('[通知中心] 加载消息最终失败，已达到最大重试次数')
     }
   }
 
@@ -335,7 +357,7 @@ const loadMore = async () => {
 
     // 处理在线消息
     if (onlineMessages?.data?.code === 200 && onlineMessages?.data?.data?.rows?.length > 0) {
-      onlineMessages.data.data.rows.forEach((msg: HbtOnlineMessageDto) => {
+              onlineMessages.data.data.rows.forEach((msg: any) => {
         const item = convertToNotificationItem(msg, 'online')
         messageMap.set(item.id, item)
       })
@@ -343,7 +365,7 @@ const loadMore = async () => {
 
     // 处理邮件
     if (mailMessages?.data?.code === 200 && mailMessages?.data?.data?.rows?.length > 0) {
-      mailMessages.data.data.rows.forEach((msg: HbtMailDto) => {
+              mailMessages.data.data.rows.forEach((msg: any) => {
         const item = convertToNotificationItem(msg, 'mail')
         messageMap.set(item.id, item)
       })
@@ -351,7 +373,7 @@ const loadMore = async () => {
 
     // 处理通知
     if (noticeMessages?.data?.code === 200 && noticeMessages?.data?.data?.rows?.length > 0) {
-      noticeMessages.data.data.rows.forEach((msg: HbtNoticeDto) => {
+              noticeMessages.data.data.rows.forEach((msg: any) => {
         const item = convertToNotificationItem(msg, 'notice')
         messageMap.set(item.id, item)
       })

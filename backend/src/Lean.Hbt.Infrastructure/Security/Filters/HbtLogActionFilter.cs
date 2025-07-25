@@ -70,13 +70,13 @@ public class HbtLogActionFilter : IAsyncActionFilter
     private async Task LogOperationAsync(ActionExecutingContext context, HbtLogAttribute logAttr, bool success, string? errorMsg = null)
     {
         var tableName = GetTableName(context);
-        var operationType = GetOperationType(context);
+        var OperType = GetOperType(context);
         var businessKey = GetBusinessKey(context);
         var requestParam = GetRequestParam(context);
 
         await _logManager.LogOperationAsync(
             tableName: tableName,
-            operationType: operationType,
+            OperType: OperType,
             businessKey: businessKey,
             requestParam: requestParam,
             success: success,
@@ -97,7 +97,7 @@ public class HbtLogActionFilter : IAsyncActionFilter
     /// <summary>
     /// 获取操作类型
     /// </summary>
-    private string GetOperationType(ActionExecutingContext context)
+    private string GetOperType(ActionExecutingContext context)
     {
         var methodName = context.ActionDescriptor.RouteValues["action"]?.ToLower() ?? string.Empty;
         if (methodName.StartsWith("create") || methodName.StartsWith("add"))

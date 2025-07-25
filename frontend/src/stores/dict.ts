@@ -1,7 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { getHbtDictDataByType } from '@/api/core/dictData'
-import type { HbtDictData } from '@/types/core/dictData'
+import { getHbtDictDataByType } from '@/api/routine/core/dictData'
 
 export interface DictOption {
   label: string
@@ -27,18 +26,14 @@ export const useDictStore = defineStore('dict', () => {
 
   const getDictLabel = (type: string, value: number | string): string => {
     if (value === undefined || value === null || value === '') {
-      //console.log(`[字典Store] 字典[${type}]值[${value}]为空`)
       return ''
     }
     const options = getDictOptions(type)
-    //console.log(`[字典Store] 字典[${type}]选项:`, options)
     const option = options.find(item => {
       const itemValue = String(item.value)
       const searchValue = String(value)
-      //console.log(`[字典Store] 字典[${type}]比较值:`, { itemValue, searchValue, isMatch: itemValue === searchValue })
       return itemValue === searchValue
     })
-    //console.log(`[字典Store] 字典[${type}]值[${value}]匹配结果:`, option)
     return option?.label || String(value)
   }
 
@@ -176,9 +171,7 @@ export const useDictStore = defineStore('dict', () => {
             disabled: item.status === 1
           }))
           dictCache.value.set(type, options)
-          //console.log(`[字典Store] 字典[${type}]加载成功，数据:`, options)
         } else {
-          console.warn(`[字典Store] 字典[${type}]返回数据为空`)
           dictCache.value.set(type, [])
         }
       } catch (error) {

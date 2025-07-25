@@ -3,7 +3,7 @@
 // 文件名 : IHbtMeetingService.cs
 // 创建者 : Lean365
 // 创建时间: 2024-03-07 16:30
-// 版本号 : V1.0.0
+// 版本号 : V0.0.1
 // 描述   : 会议服务接口
 //===================================================================
 
@@ -88,5 +88,19 @@ namespace Lean.Hbt.Application.Services.Routine
         /// <param name="sheetName">工作表名称</param>
         /// <returns>Excel文件字节数组</returns>
         Task<(string fileName, byte[] content)> GetTemplateAsync(string sheetName = "会议信息");
+
+        /// <summary>
+        /// 获取指定用户主持的会议状态统计
+        /// </summary>
+        /// <param name="host">主持人</param>
+        /// <returns>状态-数量字典</returns>
+        Task<Dictionary<int, int>> GetHostedMeetingStatisticsAsync(string host);
+
+        /// <summary>
+        /// 获取指定用户参与的会议状态统计
+        /// </summary>
+        /// <param name="participant">参与者</param>
+        /// <returns>状态-数量字典</returns>
+        Task<Dictionary<int, int>> GetParticipatedMeetingStatisticsAsync(string participant);
     }
 } 

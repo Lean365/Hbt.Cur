@@ -1,11 +1,14 @@
 <template>
-  <a-menu
-    v-model:selectedKeys="selectedKeys"
-    v-model:openKeys="openKeys"
-    mode="inline"
-    :items="menuItems"
-    @click="handleMenuClick"
-  />
+  <div class="menu-wrapper">
+    <a-menu
+      v-model:selectedKeys="selectedKeys"
+      v-model:openKeys="openKeys"
+      mode="inline"
+      :theme="theme"
+      :items="menuItems"
+      @click="handleMenuClick"
+    />
+  </div>
 </template>
 
 <script lang="ts" setup>
@@ -15,6 +18,8 @@ import { useRoute, useRouter, type RouteRecordRaw } from 'vue-router'
 import type { MenuProps } from 'ant-design-vue'
 import type { MenuInfo } from 'ant-design-vue/lib/menu/src/interface'
 import { useMenuStore } from '@/stores/menu'
+import { useThemeStore } from '@/stores/theme'
+import { useConfigStore } from '@/stores/config'
 import type { HbtMenu } from '@/types/identity/menu'
 import { HbtMenuType } from '@/types/common'
 import * as Icons from '@ant-design/icons-vue'
@@ -24,10 +29,25 @@ const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
 const menuStore = useMenuStore()
+const themeStore = useThemeStore()
+const configStore = useConfigStore()
+
+// 主题计算属性
+const theme = computed(() => themeStore.isDarkMode ? 'dark' : 'light')
 
 // 响应式状态
 const selectedKeys = ref<string[]>([])
 const openKeys = ref<string[]>([])
+
+// 监听主题变化，确保菜单能够正确响应主题切换
+watch(() => themeStore.isDarkMode, (newValue) => {
+  console.log('[HbtSiderMenu] 主题模式变化:', newValue ? 'dark' : 'light')
+}, { immediate: true })
+
+// 监听侧边栏颜色变化
+watch(() => configStore.currentSidebarColor, (newColor) => {
+  console.log('[HbtSiderMenu] 侧边栏颜色变化:', newColor)
+}, { immediate: true })
 
 // 图标映射
 const iconMap = Icons
@@ -52,7 +72,6 @@ const getSafeIcon = (iconName: string | undefined) => {
   }
 
   // 如果还是没找到，返回默认图标
-  console.warn(`[菜单图标] 图标未找到: ${iconName}，使用默认图标`)
   return () => h(iconMap.MenuOutlined)
 }
 
@@ -120,7 +139,6 @@ const processSubMenus = (child: RouteRecordRaw) => {
 const processMenuItem = (menu: HbtMenu, parentPath: string = ''): MenuItemType => {
   // 确保menu对象存在
   if (!menu) {
-    console.warn('[菜单组件] 无效的菜单项')
     return {
       key: parentPath || '/',
       label: '未命名菜单'
@@ -132,24 +150,26 @@ const processMenuItem = (menu: HbtMenu, parentPath: string = ''): MenuItemType =
   let fullPath = ''
 
   if (menu.menuType === HbtMenuType.Directory) {
-    // 目录类型使用原始路径
+    // 目录类型：如果是子目录，需要包含父路径
+    if (parentPath) {
+      const relativePath = menuPath.startsWith('/') ? menuPath.slice(1) : menuPath
+      fullPath = `${parentPath}/${relativePath}`.replace(/\/+/g, '/')
+    } else {
+      // 顶级目录：直接使用路径
     fullPath = menuPath.startsWith('/') ? menuPath : `/${menuPath}`
-  } else if (parentPath) {
-    // 子菜单使用相对路径，需要和父路径组合
+    }
+  } else {
+    // 页面类型：需要包含完整的父路径
     const relativePath = menuPath.startsWith('/') ? menuPath.slice(1) : menuPath
+    if (parentPath) {
     fullPath = `${parentPath}/${relativePath}`.replace(/\/+/g, '/')
   } else {
-    // 顶层菜单使用完整路径
-    fullPath = menuPath.startsWith('/') ? menuPath : `/${menuPath}`
+      // 顶级页面：直接使用路径
+      fullPath = `/${relativePath}`
+    }
   }
 
-  // console.log('[菜单组件] 处理菜单项:', {
-  //   菜单名称: menu.menuName,
-  //   菜单类型: menu.menuType,
-  //   原始路径: menuPath,
-  //   父级路径: parentPath,
-  //   完整路径: fullPath
-  // })
+
 
   // 构建菜单项
   const result: MenuItemType = {
@@ -169,16 +189,10 @@ const processMenuItem = (menu: HbtMenu, parentPath: string = ''): MenuItemType =
 // 菜单配置
 const menuItems = computed<MenuProps['items']>(() => {
   if (menuStore.isLoading) {
-    console.log('[菜单组件] 菜单加载中')
     return []
   }
 
-  // 调试日志：检查菜单数据
-  // console.log('[菜单组件] 菜单数据:', {
-  //   原始菜单列表: menuStore.rawMenuList,
-  //   处理后菜单列表: menuStore.menuList,
-  //   加载状态: menuStore.isLoading
-  // })
+
 
   // 获取根路由
   const rootRoute = router.getRoutes().find(route => route.path === '/')
@@ -202,13 +216,6 @@ const menuItems = computed<MenuProps['items']>(() => {
   // 合并所有菜单：主页/仪表盘/组件 + 动态菜单 + About菜单
   const allMenus = [...baseMenus, ...dynamicMenus, ...aboutMenu]
 
-  // console.log('[菜单组件] 构建菜单项:', {
-  //   基础菜单: baseMenus,
-  //   动态菜单: dynamicMenus,
-  //   关于菜单: aboutMenu,
-  //   所有菜单: allMenus
-  // })
-
   return allMenus
 })
 
@@ -217,11 +224,6 @@ watch(
   () => route.path,
   path => {
     const normalizedPath = path.startsWith('/') ? path : `/${path}`
-    // console.log('[菜单组件] 路由变化:', {
-    //   path: normalizedPath,
-    //   selectedKeys: selectedKeys.value,
-    //   openKeys: openKeys.value
-    // })
 
     // 设置选中的菜单项
     selectedKeys.value = [normalizedPath]
@@ -245,38 +247,16 @@ watch(
   { immediate: true }
 )
 
-// 监听菜单数据变化
-watch(
-  () => menuStore.menuList,
-  newMenuList => {
-    console.log('[菜单组件] 菜单数据变化:', {
-      hasData: !!newMenuList,
-      length: newMenuList?.length
-    })
-  },
-  { immediate: true }
-)
+
 
 // 查找菜单项
 const findMenuItem = (menus: HbtMenu[] | undefined, key: string): HbtMenu | undefined => {
   if (!menus) {
-    console.log('[菜单查找] 菜单列表为空')
     return undefined
   }
 
   // 标准化查找的key
   const normalizedKey = key.replace(/\/+/g, '/')
-
-  // console.log('[菜单查找] 开始查找菜单项:', {
-  //   查找的Key: normalizedKey,
-  //   菜单列表长度: menus.length,
-  //   菜单列表: menus.map(m => ({
-  //     ID: m.menuId,
-  //     名称: m.menuName,
-  //     路径: m.path,
-  //     类型: m.menuType
-  //   }))
-  // })
 
   // 递归查找菜单项
   const findMenuWithKey = (menu: HbtMenu, parentPath: string = ''): HbtMenu | undefined => {
@@ -285,32 +265,29 @@ const findMenuItem = (menus: HbtMenu[] | undefined, key: string): HbtMenu | unde
     let fullPath = ''
 
     if (menu.menuType === HbtMenuType.Directory) {
-      // 目录类型使用完整路径
+      // 目录类型：如果是子目录，需要包含父路径
+      if (parentPath) {
+        const relativePath = menuPath.startsWith('/') ? menuPath.slice(1) : menuPath
+        fullPath = `${parentPath}/${relativePath}`.replace(/\/+/g, '/')
+      } else {
+        // 顶级目录：直接使用路径
       fullPath = menuPath.startsWith('/') ? menuPath : `/${menuPath}`
+      }
     } else {
-      // 子菜单使用相对路径,需要考虑父路径
+      // 页面类型：需要包含完整的父路径
       const relativePath = menuPath.startsWith('/') ? menuPath.slice(1) : menuPath
-      fullPath = parentPath
-        ? `${parentPath}/${relativePath}`.replace(/\/+/g, '/')
-        : `/${relativePath}`
+      if (parentPath) {
+        fullPath = `${parentPath}/${relativePath}`.replace(/\/+/g, '/')
+      } else {
+        // 顶级页面：直接使用路径
+        fullPath = `/${relativePath}`
+      }
     }
 
     // 规范化路径
     fullPath = fullPath.replace(/\/+/g, '/')
 
-    // console.log('[菜单查找] 检查菜单项:', {
-    //   菜单ID: menu.menuId,
-    //   菜单名称: menu.menuName,
-    //   菜单类型: menu.menuType,
-    //   原始路径: menuPath,
-    //   父级路径: parentPath,
-    //   完整路径: fullPath,
-    //   查找的Key: normalizedKey,
-    //   匹配结果: fullPath === normalizedKey
-    // })
-
     if (fullPath === normalizedKey) {
-      console.log('[菜单查找] 找到匹配的菜单项:', menu)
       return menu
     }
 
@@ -319,11 +296,6 @@ const findMenuItem = (menus: HbtMenu[] | undefined, key: string): HbtMenu | unde
       for (const child of menu.children) {
         const found = findMenuWithKey(child, fullPath)
         if (found) {
-          console.log('[菜单查找] 在子菜单中找到匹配项:', {
-            父菜单: menu.menuName,
-            子菜单: found.menuName,
-            菜单路径: fullPath
-          })
           return found
         }
       }
@@ -338,7 +310,6 @@ const findMenuItem = (menus: HbtMenu[] | undefined, key: string): HbtMenu | unde
     if (found) return found
   }
 
-  console.log('[菜单查找] 未找到匹配的菜单项:', normalizedKey)
   return undefined
 }
 
@@ -349,3 +320,53 @@ const handleMenuClick = async ({ key }: MenuInfo) => {
   }
 }
 </script>
+
+<style lang="less" scoped>
+// 确保侧边栏菜单能够正确响应主题变化
+:deep(.ant-menu) {
+  // 继承父容器的背景色
+  background-color: inherit;
+  
+  // 确保菜单项在主题切换时能够正确显示
+  .ant-menu-item,
+  .ant-menu-submenu {
+    transition: all 0.3s ease;
+    
+    &:hover {
+      background-color: var(--ant-primary-1);
+    }
+    
+    &.ant-menu-item-selected {
+      background-color: var(--ant-primary-color);
+      color: var(--ant-color-white);
+    }
+  }
+  
+  // 优化菜单项内边距，让内容更贴近左边界
+  .ant-menu-item {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+  
+  .ant-menu-submenu-title {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+  
+  // 子菜单项保持适当的缩进
+  .ant-menu-sub .ant-menu-item {
+    padding-left: 24px !important;
+  }
+  
+  .ant-menu-sub .ant-menu-submenu-title {
+    padding-left: 24px !important;
+  }
+}
+
+// 菜单包装器样式 - 根据内容自动调整
+.menu-wrapper {
+  width: 100%;
+  padding: 0;
+  margin: 0;
+}
+</style>

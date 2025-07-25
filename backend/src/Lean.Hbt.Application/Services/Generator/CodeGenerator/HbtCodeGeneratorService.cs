@@ -12,7 +12,10 @@ namespace Lean.Hbt.Application.Services.Generator.CodeGenerator;
 /// </summary>
 public class HbtCodeGeneratorService : IHbtCodeGeneratorService
 {
-    private readonly IHbtRepositoryFactory _repositoryFactory;
+    /// <summary>
+    /// 仓储工厂
+    /// </summary>
+    protected readonly IHbtRepositoryFactory _repositoryFactory;
     private readonly IHbtTemplateEngine _templateEngine;
     private readonly IHbtLogger _logger;
     private readonly IWebHostEnvironment _webHostEnvironment;
@@ -143,7 +146,11 @@ public class HbtCodeGeneratorService : IHbtCodeGeneratorService
                 GenerateFrontend = true,
                 GenerateApiDoc = true,
                 IsTree = genTable.TplCategory == "tree",
-                IsMasterDetail = genTable.TplCategory == "sub"
+                IsMasterDetail = genTable.TplCategory == "sub",
+                GenFunction = genTable.GenFunction,
+                IsSqlDiff = genTable.IsSqlDiff,
+                IsSnowflakeId = genTable.IsSnowflakeId,
+                IsRepository = genTable.IsRepository
             };
 
             // 解析选项配置
@@ -188,6 +195,23 @@ public class HbtCodeGeneratorService : IHbtCodeGeneratorService
                     if (optionsDict.ContainsKey("generateApiDoc"))
                     {
                         options.GenerateApiDoc = Convert.ToBoolean(optionsDict["generateApiDoc"]);
+                    }
+                    // 设置新增的生成选项
+                    if (optionsDict.ContainsKey("genFunction"))
+                    {
+                        options.GenFunction = optionsDict["genFunction"]?.ToString() ?? "1,2,3,4,5,6,7";
+                    }
+                    if (optionsDict.ContainsKey("isSqlDiff"))
+                    {
+                        options.IsSqlDiff = Convert.ToInt32(optionsDict["isSqlDiff"]);
+                    }
+                    if (optionsDict.ContainsKey("isSnowflakeId"))
+                    {
+                        options.IsSnowflakeId = Convert.ToInt32(optionsDict["isSnowflakeId"]);
+                    }
+                    if (optionsDict.ContainsKey("isRepository"))
+                    {
+                        options.IsRepository = Convert.ToInt32(optionsDict["isRepository"]);
                     }
                 }
             }

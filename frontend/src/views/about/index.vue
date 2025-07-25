@@ -49,8 +49,9 @@
 
         <a-typography-title :level="3">版本信息</a-typography-title>
         <a-descriptions :column="2">
-          <a-descriptions-item label="当前版本">v1.0.0</a-descriptions-item>
-          <a-descriptions-item label="发布日期">2024-02-19</a-descriptions-item>
+          <a-descriptions-item label="当前版本">v{{ versionInfo.version }}</a-descriptions-item>
+          <a-descriptions-item label="应用名称">{{ versionInfo.name }}</a-descriptions-item>
+          <a-descriptions-item label="构建时间">{{ versionInfo.buildTime }}</a-descriptions-item>
           <a-descriptions-item label="授权协议">MIT License</a-descriptions-item>
           <a-descriptions-item label="技术支持">support@lean365.com</a-descriptions-item>
         </a-descriptions>
@@ -76,11 +77,15 @@
 </template>
 
 <script lang="ts" setup>
+import { computed } from 'vue'
+import { getVersionInfo } from '@/utils/version'
 import {
   GithubOutlined,
   GlobalOutlined,
   BookOutlined
 } from '@ant-design/icons-vue'
+
+const versionInfo = computed(() => getVersionInfo())
 
 defineOptions({
   name: 'About'

@@ -2,108 +2,130 @@
 
 //===================================================================
 // 项目名 : Lean.Hbt
-// 文件名 : BranchNodeExecutor.cs
-// 创建者 : Lean365
-// 创建时间: 2024-01-23 12:00
-// 版本号 : V1.0.0
-// 描述    : 分支节点执行器
+// 文件名 : HbtBranchNodeExecutor.cs
+// 创建者 : Claude
+// 创建时间: 2024-12-01
+// 版本号 : V0.0.1
+// 描述    : 工作流分支节点执行器
 //===================================================================
 
-using System.Text.Json;
+using Lean.Hbt.Application.Services.Workflow.Engine;
 using Lean.Hbt.Application.Services.Workflow.Engine.Expressions;
-using Lean.Hbt.Domain.Entities.Workflow;
-using Lean.Hbt.Domain.IServices.Extensions;
-using Lean.Hbt.Domain.Models.Workflow;
-using Lean.Hbt.Domain.Repositories;
+using Lean.Hbt.Application.Services.Workflow.Engine.Resolvers;
+using Lean.Hbt.Domain.IServices;
+using System.Text.Json;
 
 namespace Lean.Hbt.Application.Services.Workflow.Engine.Executors
 {
     /// <summary>
-    /// 分支节点执行器
+    /// 工作流分支节点执行器
     /// </summary>
     public class HbtBranchNodeExecutor : HbtNodeExecutorBase
     {
-        private readonly IHbtRepository<HbtTransition> _transitionRepository;
+        /// <summary>
+        /// 表达式引擎
+        /// </summary>
         private readonly IHbtExpressionEngine _expressionEngine;
 
         /// <summary>
         /// 构造函数
         /// </summary>
+        /// <param name="logger">日志服务</param>
+        /// <param name="currentUser">当前用户服务</param>
+        /// <param name="approverResolver">审批人解析器</param>
+        /// <param name="expressionEngine">表达式引擎</param>
         public HbtBranchNodeExecutor(
-            IHbtRepository<HbtTransition> transitionRepository,
-            IHbtExpressionEngine expressionEngine,
             IHbtLogger logger,
-            IHbtRepository<HbtNodeTemplate> nodeTemplateRepository) : base(logger, nodeTemplateRepository)
+            IHbtCurrentUser currentUser,
+            IHbtApproverResolver approverResolver,
+            IHbtExpressionEngine expressionEngine) : base(logger, currentUser, approverResolver)
         {
-            _transitionRepository = transitionRepository;
-            _expressionEngine = expressionEngine;
+            _expressionEngine = expressionEngine ?? throw new ArgumentNullException(nameof(expressionEngine));
         }
 
-        /// <summary>
-        /// 节点类型
-        /// </summary>
-        protected override int NodeType => 3; // 3 表示分支节点
+        /// <inheritdoc/>
+        public override bool CanHandle(string nodeType)
+        {
+            return nodeType.Equals("branch", StringComparison.OrdinalIgnoreCase);
+        }
 
-        /// <summary>
-        /// 执行节点
-        /// </summary>
-        protected override async Task<HbtNodeResult> ExecuteInternalAsync(
-            HbtInstance instance,
-            HbtNode node,
+        /// <inheritdoc/>
+        public override string GetNodeTypeDescription(string nodeType)
+        {
+            return "分支节点";
+        }
+
+        /// <inheritdoc/>
+        public override async Task<HbtApproveResult> ExecuteAsync(
+            long instanceId,
+            string nodeId,
+            string nodeType,
+            string? nodeConfig,
             Dictionary<string, object>? variables = null)
         {
-            // 获取所有可用的转换
-            var transitions = await _transitionRepository.GetListAsync(x => x.SourceActivityId == node.NodeTemplateId);
-            if (!transitions.Any())
+            try
             {
-                return CreateFailureResult("分支节点没有配置转换");
-            }
+                LogNodeExecution(instanceId, nodeId, "开始执行分支节点");
 
-            // 解析节点配置
-            var nodeTemplate = await _nodeTemplateRepository.GetByIdAsync(node.NodeTemplateId);
-            var config = JsonSerializer.Deserialize<HbtNodeConfig>(nodeTemplate?.NodeConfig ?? "{}");
-            if (config == null)
-            {
-                return CreateFailureResult("分支节点配置无效");
-            }
-
-            // 获取满足条件的转换
-            var availableTransitions = new List<long>();
-            foreach (var transition in transitions)
-            {
-                if (string.IsNullOrEmpty(transition.Condition))
+                // 解析节点配置
+                var config = ParseConfig<BranchNodeConfig>(nodeConfig);
+                if (config == null)
                 {
-                    // 如果没有条件,作为默认分支
-                    availableTransitions.Add(transition.Id);
-                    continue;
+                    var error = "分支节点配置无效";
+                    LogNodeError(instanceId, nodeId, new InvalidOperationException(error));
+                    return CreateFailureResult(error);
                 }
 
                 // 执行条件表达式
-                var conditionMet = await _expressionEngine.EvaluateAsync(transition.Condition, variables);
-                if (conditionMet)
+                if (!string.IsNullOrEmpty(config.Condition))
                 {
-                    availableTransitions.Add(transition.Id);
-
-                    // 如果不是多分支模式,找到第一个满足条件的分支后就退出
-                    if (!config.AllowMultipleBranches)
+                    var conditionMet = await _expressionEngine.EvaluateAsync(config.Condition, variables);
+                    if (!conditionMet)
                     {
-                        break;
+                        var error = "分支条件不满足";
+                        LogNodeExecution(instanceId, nodeId, error);
+                        return CreateFailureResult(error);
                     }
                 }
+
+                // 分支节点执行成功，返回下一个节点信息
+                LogNodeExecution(instanceId, nodeId, "分支节点执行完成");
+                return CreateSuccessResult(
+                    nextNodeId: config.NextNodeId,
+                    nextNodeName: config.NextNodeName,
+                    workflowStatus: 1); // 1 表示运行中
             }
-
-            if (!availableTransitions.Any())
+            catch (Exception ex)
             {
-                return CreateFailureResult("没有满足条件的分支");
+                LogNodeError(instanceId, nodeId, ex);
+                return CreateFailureResult($"分支节点执行失败: {ex.Message}");
             }
+        }
 
-            // 返回成功结果,包含所有可用的转换ID
-            var outputVariables = new Dictionary<string, object>
-            {
-                { "AvailableTransitions", availableTransitions }
-            };
+        /// <summary>
+        /// 分支节点配置
+        /// </summary>
+        private class BranchNodeConfig
+        {
+            /// <summary>
+            /// 分支条件
+            /// </summary>
+            public string? Condition { get; set; }
 
-            return CreateSuccessResult(outputVariables);
+            /// <summary>
+            /// 下一个节点ID
+            /// </summary>
+            public string? NextNodeId { get; set; }
+
+            /// <summary>
+            /// 下一个节点名称
+            /// </summary>
+            public string? NextNodeName { get; set; }
+
+            /// <summary>
+            /// 是否允许多分支
+            /// </summary>
+            public bool AllowMultipleBranches { get; set; } = false;
         }
     }
 }

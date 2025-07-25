@@ -1,11 +1,11 @@
 import { defineStore } from 'pinia'
 import type { MenuProps } from 'ant-design-vue'
 import type { UserInfo, LoginResultData } from '@/types/identity/auth.d'
-import { login as userLogin, logout as userLogout, getInfo as fetchUserInfo, refreshUserToken } from '@/api/identity/auth'
+import { login as userLogin, logout as userLogout, getInfo as fetchUserInfo, refreshUserToken } from '@/api/identity/auth/auth'
 import { removeToken, removeRefreshToken, setToken, setRefreshToken, getToken, getRefreshToken } from '@/utils/auth'
 import { ref, computed } from 'vue'
-import axios from 'axios'
-import { clearAutoLogout, initAutoLogout } from '@/utils/autoLogout'
+import { clearAutoLogout } from '@/utils/autoLogout'
+import { maskName } from '@/utils/mask'
 
 // 扩展UserInfo类型以包含额外的字段
 export interface UserInfoResponse extends UserInfo {
@@ -31,19 +31,15 @@ export const useUserStore = defineStore('user', () => {
     try {
       const token = getToken()
       if (!token) {
-        console.log('[User] 未找到Token，跳过获取用户信息')
         return null
       }
 
       // 如果不是强制刷新，且有缓存数据，则使用缓存
       if (!forceRefresh && isUserInfoLoaded.value && userInfo.value) {
-        console.log('[User] 使用缓存用户信息')
         return userInfo.value
       }
 
-      console.log('[User] 开始获取用户信息')
       const { data: response } = await fetchUserInfo()
-      console.log('[User] 用户信息API响应:', response)
       
       if (response.code === 200) {
         const userData = response.data as UserInfoResponse
@@ -51,25 +47,14 @@ export const useUserStore = defineStore('user', () => {
         userInfo.value = userData
         isUserInfoLoaded.value = true
         
-        console.log('[User] 用户信息获取成功:', {
-          用户ID: userInfo.value.userId,
-          用户名: userInfo.value.userName,
-          昵称: userInfo.value.nickName,
-          角色数: userInfo.value.roles?.length || 0,
-          权限数: userInfo.value.permissions?.length || 0,
-          头像: userInfo.value.avatar || '未设置'
-        })
-        
         return userInfo.value
       }
       
-      console.error('[User] 用户信息API返回错误:', response.msg)
       throw new Error(response.msg || '获取用户信息失败')
     } catch (error) {
       console.error('[User] 获取用户信息失败:', error)
       // 只有在强制刷新（登录）时才清除token
       if (forceRefresh) {
-        console.log('[User] 登录时获取用户信息失败，清除token')
         removeToken()
         removeRefreshToken()
       }
@@ -108,19 +93,13 @@ export const useUserStore = defineStore('user', () => {
   // 登录
   const login = async (loginData: any) => {
     try {
-      console.log('[User] 开始登录流程:', {
-        用户名: loginData.userName
-      })
-      
       // 登录前清除所有缓存
       clearUserInfo()
       
       const { data: response } = await userLogin(loginData)
-      console.log('[User] 登录API响应:', response)
       
       if (response.code === 200) {
         const loginResult = response.data as LoginResultData
-        console.log('[User] 登录成功，开始获取最新用户信息')
         
         // 保存token
         setToken(loginResult.accessToken)
@@ -136,11 +115,6 @@ export const useUserStore = defineStore('user', () => {
         recordLoginTime()
         // 重置登录失败次数
         resetLoginFailCount()
-        
-        console.log('[User] 登录流程完成:', {
-          用户ID: userInfo.userId,
-          用户名: userInfo.userName
-        })
         
         return response
       }
@@ -197,7 +171,6 @@ export const useUserStore = defineStore('user', () => {
   const refreshToken = async () => {
     // 防止并发刷新
     if (isRefreshing.value) {
-      console.log('[User] Token正在刷新中，等待完成')
       // 等待刷新完成
       while (isRefreshing.value) {
         await new Promise(resolve => setTimeout(resolve, 100))
@@ -210,11 +183,9 @@ export const useUserStore = defineStore('user', () => {
     try {
       const refreshToken = getRefreshToken()
       if (!refreshToken) {
-        console.error('[User] 刷新令牌不存在')
         throw new Error('刷新令牌不存在')
       }
 
-      console.log('[User] 开始刷新Token，刷新令牌长度:', refreshToken.length)
       const { data: response } = await refreshUserToken(refreshToken)
       
       if (response.code === 200) {
@@ -222,19 +193,15 @@ export const useUserStore = defineStore('user', () => {
         // 保存新token
         setToken(loginResult.accessToken)
         setRefreshToken(loginResult.refreshToken)
-        console.log('[User] Token刷新成功')
         return true
       }
       
       // 处理具体的错误情况
       if (response.code === 401) {
-        console.error('[User] 刷新令牌已过期或无效')
         throw new Error('刷新令牌已过期，请重新登录')
       } else if (response.code === 403) {
-        console.error('[User] 用户权限不足')
         throw new Error('用户权限不足')
       } else {
-        console.error('[User] 刷新令牌失败:', response.msg)
         throw new Error(response.msg || '刷新令牌失败')
       }
     } catch (error: any) {
@@ -244,10 +211,8 @@ export const useUserStore = defineStore('user', () => {
       if (error.message?.includes('刷新令牌已过期') || 
           error.message?.includes('无效') ||
           error.message?.includes('不存在') ||
-          error.response?.status === 401 ||
-          error.response?.status === 403) {
+          error.response?.status === 401) {
         // 刷新令牌相关错误，清除所有数据
-        console.log('[User] 刷新令牌错误，清除所有认证数据')
         clearUserInfo()
         removeToken()
         removeRefreshToken()

@@ -17,7 +17,7 @@ namespace Lean.Hbt.Infrastructure.Data.Seeds;
 /// </summary>
 public class HbtDbSeedIdentityRole
 {
-    private readonly IHbtRepositoryFactory _repositoryFactory;
+    protected readonly IHbtRepositoryFactory _repositoryFactory;
     private readonly IHbtLogger _logger;
 
     private IHbtRepository<HbtRole> RoleRepository => _repositoryFactory.GetAuthRepository<HbtRole>();

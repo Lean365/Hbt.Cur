@@ -184,6 +184,26 @@ public class HbtGenTableDto
     #region 生成选项
 
     /// <summary>
+    /// 生成功能（查询，新增，更新，删除，模板，导入，导出的按钮编号）
+    /// </summary>
+    public string GenFunction { get; set; } = "1,2,3,4,5,6,7";
+
+    /// <summary>
+    /// 是否启用SQL差异
+    /// </summary>
+    public int IsSqlDiff { get; set; } = 1;
+
+    /// <summary>
+    /// 是否使用雪花id
+    /// </summary>
+    public int IsSnowflakeId { get; set; } = 1;
+
+    /// <summary>
+    /// 是否生成仓储层
+    /// </summary>
+    public int IsRepository { get; set; } = 1;
+
+    /// <summary>
     /// 生成代码方式（0zip压缩包 1自定义路径）
     /// </summary>
     public string GenMethod { get; set; } = "0";
@@ -232,11 +252,6 @@ public class HbtGenTableDto
     /// 操作按钮样式
     /// </summary>
     public int BtnStyle { get; set; } = 1;
-
-    /// <summary>
-    /// 代码生成选项
-    /// </summary>
-    public CodeOptions? Options { get; set; }
 
     /// <summary>
     /// 是否已生成代码（0：未生成，1：已生成）
@@ -483,6 +498,26 @@ public class HbtGenTableCreateDto
     #region 生成选项
 
     /// <summary>
+    /// 生成功能（查询，新增，更新，删除，模板，导入，导出的按钮编号）
+    /// </summary>
+    public string GenFunction { get; set; } = "1,2,3,4,5,6,7";
+
+    /// <summary>
+    /// 是否启用SQL差异
+    /// </summary>
+    public int IsSqlDiff { get; set; } = 1;
+
+    /// <summary>
+    /// 是否使用雪花id
+    /// </summary>
+    public int IsSnowflakeId { get; set; } = 1;
+
+    /// <summary>
+    /// 是否生成仓储层
+    /// </summary>
+    public int IsRepository { get; set; } = 1;
+
+    /// <summary>
     /// 生成代码方式（0zip压缩包 1自定义路径）
     /// </summary>
     public string GenMethod { get; set; } = "0";
@@ -531,11 +566,6 @@ public class HbtGenTableCreateDto
     /// 操作按钮样式
     /// </summary>
     public int BtnStyle { get; set; } = 1;
-
-    /// <summary>
-    /// 代码生成选项
-    /// </summary>
-    public CodeOptions? Options { get; set; }
 
     /// <summary>
     /// 是否已生成代码（0：未生成，1：已生成）
@@ -734,6 +764,26 @@ public class HbtGenTableImportDto
     #region 生成选项
 
     /// <summary>
+    /// 生成功能（查询，新增，更新，删除，模板，导入，导出的按钮编号）
+    /// </summary>
+    public string GenFunction { get; set; } = "1,2,3,4,5,6,7";
+
+    /// <summary>
+    /// 是否启用SQL差异
+    /// </summary>
+    public int IsSqlDiff { get; set; } = 1;
+
+    /// <summary>
+    /// 是否使用雪花id
+    /// </summary>
+    public int IsSnowflakeId { get; set; } = 1;
+
+    /// <summary>
+    /// 是否生成仓储层
+    /// </summary>
+    public int IsRepository { get; set; } = 1;
+
+    /// <summary>
     /// 生成代码方式（0zip压缩包 1自定义路径）
     /// </summary>
     public string GenMethod { get; set; } = "0";
@@ -782,11 +832,6 @@ public class HbtGenTableImportDto
     /// 操作按钮样式
     /// </summary>
     public int BtnStyle { get; set; } = 1;
-
-    /// <summary>
-    /// 代码生成选项
-    /// </summary>
-    public CodeOptions? Options { get; set; }
 
     /// <summary>
     /// 是否已生成代码（0：未生成，1：已生成）
@@ -974,6 +1019,26 @@ public class HbtGenTableExportDto
     #region 生成选项
 
     /// <summary>
+    /// 生成功能（查询，新增，更新，删除，模板，导入，导出的按钮编号）
+    /// </summary>
+    public string GenFunction { get; set; } = "1,2,3,4,5,6,7";
+
+    /// <summary>
+    /// 是否启用SQL差异
+    /// </summary>
+    public int IsSqlDiff { get; set; } = 1;
+
+    /// <summary>
+    /// 是否使用雪花id
+    /// </summary>
+    public int IsSnowflakeId { get; set; } = 1;
+
+    /// <summary>
+    /// 是否生成仓储层
+    /// </summary>
+    public int IsRepository { get; set; } = 1;
+
+    /// <summary>
     /// 生成代码方式（0zip压缩包 1自定义路径）
     /// </summary>
     public string GenMethod { get; set; } = "0";
@@ -1022,11 +1087,6 @@ public class HbtGenTableExportDto
     /// 操作按钮样式
     /// </summary>
     public int BtnStyle { get; set; } = 1;
-
-    /// <summary>
-    /// 代码生成选项
-    /// </summary>
-    public CodeOptions? Options { get; set; }
 
     /// <summary>
     /// 是否已生成代码（0：未生成，1：已生成）

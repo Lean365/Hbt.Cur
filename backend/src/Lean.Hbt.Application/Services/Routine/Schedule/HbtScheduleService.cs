@@ -3,7 +3,7 @@
 // 文件名 : HbtScheduleService.cs
 // 创建者 : Lean365
 // 创建时间: 2024-03-07 16:30
-// 版本号 : V1.0.0
+// 版本号 : V0.0.1
 // 描述   : 日程服务实现
 //===================================================================
 
@@ -26,6 +26,8 @@ using Microsoft.AspNetCore.Http;
 using Lean.Hbt.Common.Utils;
 using Lean.Hbt.Domain.Utils;
 using Lean.Hbt.Common.Constants;
+using Lean.Hbt.Domain.IServices.SignalR;
+using Lean.Hbt.Common.Enums;
 
 namespace Lean.Hbt.Application.Services.Routine.Schedule
 {
@@ -38,24 +40,36 @@ namespace Lean.Hbt.Application.Services.Routine.Schedule
     /// </remarks>
     public class HbtScheduleService : HbtBaseService, IHbtScheduleService
     {
-        private readonly IHbtRepository<HbtSchedule> _scheduleRepository;
+        /// <summary>
+        /// 仓储工厂
+        /// </summary>
+        protected readonly IHbtRepositoryFactory _repositoryFactory;
+        private readonly IHbtSignalRClient _signalRClient;
+
+        /// <summary>
+        /// 获取日程仓储
+        /// </summary>
+        private IHbtRepository<HbtSchedule> ScheduleRepository => _repositoryFactory.GetBusinessRepository<HbtSchedule>();
 
         /// <summary>
         /// 构造函数
         /// </summary>
-        /// <param name="logger">日志记录器</param>
-        /// <param name="scheduleRepository">日程仓储</param>
+        /// <param name="repositoryFactory">仓储工厂</param>
+        /// <param name="logger">日志服务</param>
+        /// <param name="signalRClient">SignalR客户端</param>
         /// <param name="httpContextAccessor">HTTP上下文访问器</param>
         /// <param name="currentUser">当前用户服务</param>
         /// <param name="localization">本地化服务</param>
         public HbtScheduleService(
+            IHbtRepositoryFactory repositoryFactory,
             IHbtLogger logger,
-            IHbtRepository<HbtSchedule> scheduleRepository,
+            IHbtSignalRClient signalRClient,
             IHttpContextAccessor httpContextAccessor,
             IHbtCurrentUser currentUser,
             IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
         {
-            _scheduleRepository = scheduleRepository;
+            _repositoryFactory = repositoryFactory ?? throw new ArgumentNullException(nameof(repositoryFactory));
+            _signalRClient = signalRClient;
         }
 
         /// <summary>
@@ -70,7 +84,7 @@ namespace Lean.Hbt.Application.Services.Routine.Schedule
             var predicate = QueryExpression(query);
             _logger.Info("生成的查询表达式：{@Predicate}", predicate);
 
-            var result = await _scheduleRepository.GetPagedListAsync(
+            var result = await ScheduleRepository.GetPagedListAsync(
                 predicate,
                 query?.PageIndex ?? 1,
                 query?.PageSize ?? 10,
@@ -112,7 +126,7 @@ namespace Lean.Hbt.Application.Services.Routine.Schedule
         /// <returns>返回日程详情</returns>
         public async Task<HbtScheduleDto> GetByIdAsync(long scheduleId)
         {
-            var schedule = await _scheduleRepository.GetByIdAsync(scheduleId);
+            var schedule = await ScheduleRepository.GetByIdAsync(scheduleId);
             if (schedule == null)
                 throw new HbtException(L("Schedule.NotFound", scheduleId));
 
@@ -127,7 +141,21 @@ namespace Lean.Hbt.Application.Services.Routine.Schedule
         public async Task<long> CreateAsync(HbtScheduleCreateDto input)
         {
             var schedule = input.Adapt<HbtSchedule>();
-            var result = await _scheduleRepository.CreateAsync(schedule);
+            var result = await ScheduleRepository.CreateAsync(schedule);
+            
+            if (result > 0)
+            {
+                // 发送实时通知
+                await _signalRClient.ReceiveBroadcast(new HbtRealTimeNotification
+                {
+                    Type = HbtMessageType.System,
+                    Title = L("Schedule.Created"),
+                    Content = L("Schedule.CreatedContent", schedule.Title),
+                    Timestamp = DateTime.Now,
+                    Data = schedule
+                });
+            }
+            
             return result;
         }
 
@@ -138,12 +166,26 @@ namespace Lean.Hbt.Application.Services.Routine.Schedule
         /// <returns>返回是否成功</returns>
         public async Task<bool> UpdateAsync(HbtScheduleUpdateDto input)
         {
-            var schedule = await _scheduleRepository.GetByIdAsync(input.ScheduleId);
+            var schedule = await ScheduleRepository.GetByIdAsync(input.ScheduleId);
             if (schedule == null)
                 throw new HbtException(L("Schedule.NotFound", input.ScheduleId));
 
             input.Adapt(schedule);
-            var result = await _scheduleRepository.UpdateAsync(schedule);
+            var result = await ScheduleRepository.UpdateAsync(schedule);
+            
+            if (result > 0)
+            {
+                // 发送实时通知
+                await _signalRClient.ReceiveBroadcast(new HbtRealTimeNotification
+                {
+                    Type = HbtMessageType.System,
+                    Title = L("Schedule.Updated"),
+                    Content = L("Schedule.UpdatedContent", schedule.Title),
+                    Timestamp = DateTime.Now,
+                    Data = schedule
+                });
+            }
+            
             return result > 0;
         }
 
@@ -154,11 +196,25 @@ namespace Lean.Hbt.Application.Services.Routine.Schedule
         /// <returns>返回是否成功</returns>
         public async Task<bool> DeleteAsync(long scheduleId)
         {
-            var schedule = await _scheduleRepository.GetByIdAsync(scheduleId);
+            var schedule = await ScheduleRepository.GetByIdAsync(scheduleId);
             if (schedule == null)
                 throw new HbtException(L("Schedule.NotFound", scheduleId));
 
-            var result = await _scheduleRepository.DeleteAsync(schedule);
+            var result = await ScheduleRepository.DeleteAsync(schedule);
+            
+            if (result > 0)
+            {
+                // 发送实时通知
+                await _signalRClient.ReceiveBroadcast(new HbtRealTimeNotification
+                {
+                    Type = HbtMessageType.System,
+                    Title = L("Schedule.Deleted"),
+                    Content = L("Schedule.DeletedContent", schedule.Title),
+                    Timestamp = DateTime.Now,
+                    Data = schedule
+                });
+            }
+            
             return result > 0;
         }
 
@@ -172,11 +228,11 @@ namespace Lean.Hbt.Application.Services.Routine.Schedule
             if (scheduleIds == null || scheduleIds.Length == 0)
                 throw new HbtException(L("Schedule.SelectToDelete"));
 
-            var schedules = await _scheduleRepository.GetListAsync(x => scheduleIds.Contains(x.Id));
+            var schedules = await ScheduleRepository.GetListAsync(x => scheduleIds.Contains(x.Id));
             if (!schedules.Any())
                 throw new HbtException(L("Schedule.NotFound"));
 
-            var result = await _scheduleRepository.DeleteAsync(schedules);
+            var result = await ScheduleRepository.DeleteAsync(schedules);
             return result > 0;
         }
 
@@ -200,7 +256,7 @@ namespace Lean.Hbt.Application.Services.Routine.Schedule
                 try
                 {
                     var schedule = dto.Adapt<HbtSchedule>();
-                    await _scheduleRepository.CreateAsync(schedule);
+                    await ScheduleRepository.CreateAsync(schedule);
                     success++;
                 }
                 catch (Exception ex)
@@ -223,7 +279,7 @@ namespace Lean.Hbt.Application.Services.Routine.Schedule
         {
             var predicate = QueryExpression(query);
 
-            var schedules = await _scheduleRepository.AsQueryable()
+            var schedules = await ScheduleRepository.AsQueryable()
                 .Where(predicate)
                 .OrderBy(x => x.Id)
                 .ToListAsync();
@@ -241,6 +297,25 @@ namespace Lean.Hbt.Application.Services.Routine.Schedule
         {
             var template = new List<HbtScheduleTemplateDto>();
             return await HbtExcelHelper.ExportAsync(template, sheetName);
+        }
+
+        /// <summary>
+        /// 获取指定用户的日程状态统计
+        /// </summary>
+        /// <param name="createBy">创建者</param>
+        /// <returns>状态-数量字典</returns>
+        public async Task<Dictionary<int, int>> GetStatusStatisticsAsync(string createBy)
+        {
+            if (string.IsNullOrEmpty(createBy))
+                throw new ArgumentNullException(nameof(createBy));
+
+            var stats = await ScheduleRepository.AsQueryable()
+                .Where(x => x.CreateBy == createBy)
+                .GroupBy(x => x.Status)
+                .Select(x => new { Status = x.Status, Count = SqlFunc.AggregateCount(x.Status) })
+                .ToListAsync();
+
+            return stats.ToDictionary(x => x.Status, x => x.Count);
         }
 
         /// <summary>
@@ -271,6 +346,9 @@ namespace Lean.Hbt.Application.Services.Routine.Schedule
 
                 if (query.EndTime.HasValue)
                     exp = exp.And(x => x.EndTime <= query.EndTime.Value);
+
+                if (!string.IsNullOrEmpty(query.CreateBy))
+                    exp = exp.And(x => x.CreateBy == query.CreateBy);
             }
 
             return exp.ToExpression();

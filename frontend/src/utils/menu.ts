@@ -28,10 +28,7 @@ function getIcon(iconName: string | undefined) {
     return () => h(OutlinedIconComponent)
   }
 
-  // console.warn(`[菜单图标] 图标未找到:`, {
-  //   原始图标: iconName,
-  //   带后缀图标: outlinedIconName
-  // })
+
   return () => h(Icons.MenuOutlined)
 }
 
@@ -48,14 +45,7 @@ export function transformMenu(menus: HbtMenu[]): MenuProps['items'] {
         return null
       }
 
-      // console.log('[菜单转换] 处理菜单项:', {
-      //   路径: menu.path,
-      //   名称: menu.menuName,
-      //   类型: menu.menuType,
-      //   图标: menu.icon,
-      //   子菜单数量: menu.children?.length,
-      //   原始数据: menu
-      // })
+
 
       // 处理路径，确保以/开头
       const path = menu.path?.startsWith('/') ? menu.path : `/${menu.path || ''}`

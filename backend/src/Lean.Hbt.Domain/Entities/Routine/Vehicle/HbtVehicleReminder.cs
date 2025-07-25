@@ -3,7 +3,7 @@
 // 文件名 : HbtVehicleReminder.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-26 14:30
-// 版本号 : V1.0.0
+// 版本号 : V0.0.1
 // 描述   : 车辆提醒管理实体
 //===================================================================
 
@@ -28,7 +28,7 @@ namespace Lean.Hbt.Domain.Entities.Routine.Vehicle
         /// <summary>
         /// 提醒类型（0：保险到期，1：年检到期，2：维保到期，3：油费不足，4：其他）
         /// </summary>
-        [SugarColumn(ColumnName = "reminder_type", ColumnDescription = "提醒类型（0：保险到期，1：年检到期，2：维保到期，3：油费不足，4：其他）", IsNullable = false, DefaultValue = "0", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
+        [SugarColumn(ColumnName = "reminder_type", ColumnDescription = "提醒类型", IsNullable = false, DefaultValue = "0", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
         public int ReminderType { get; set; }
 
         /// <summary>
@@ -46,7 +46,7 @@ namespace Lean.Hbt.Domain.Entities.Routine.Vehicle
         /// <summary>
         /// 提醒状态（0：未提醒，1：已提醒，2：已处理，3：已忽略）
         /// </summary>
-        [SugarColumn(ColumnName = "status", ColumnDescription = "提醒状态（0：未提醒，1：已提醒，2：已处理，3：已忽略）", IsNullable = false, DefaultValue = "0", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
+        [SugarColumn(ColumnName = "status", ColumnDescription = "提醒状态", IsNullable = false, DefaultValue = "0", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
         public int Status { get; set; }
 
         /// <summary>
@@ -70,13 +70,13 @@ namespace Lean.Hbt.Domain.Entities.Routine.Vehicle
         /// <summary>
         /// 提醒级别（0：低，1：中，2：高，3：紧急）
         /// </summary>
-        [SugarColumn(ColumnName = "priority_level", ColumnDescription = "提醒级别（0：低，1：中，2：高，3：紧急）", IsNullable = false, DefaultValue = "1", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
+        [SugarColumn(ColumnName = "priority_level", ColumnDescription = "提醒级别", IsNullable = false, DefaultValue = "1", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
         public int PriorityLevel { get; set; }
 
         /// <summary>
         /// 提醒方式（0：系统消息，1：邮件，2：短信，3：微信，4：全部）
         /// </summary>
-        [SugarColumn(ColumnName = "reminder_method", ColumnDescription = "提醒方式（0：系统消息，1：邮件，2：短信，3：微信，4：全部）", IsNullable = false, DefaultValue = "0", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
+        [SugarColumn(ColumnName = "reminder_method", ColumnDescription = "提醒方式", IsNullable = false, DefaultValue = "0", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
         public int ReminderMethod { get; set; }
 
         /// <summary>
@@ -118,7 +118,7 @@ namespace Lean.Hbt.Domain.Entities.Routine.Vehicle
         /// <summary>
         /// 提醒间隔（小时）
         /// </summary>
-        [SugarColumn(ColumnName = "remind_interval", ColumnDescription = "提醒间隔（小时）", IsNullable = false, DefaultValue = "24", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
+        [SugarColumn(ColumnName = "remind_interval", ColumnDescription = "提醒间隔", IsNullable = false, DefaultValue = "24", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
         public int RemindInterval { get; set; }
 
         /// <summary>
@@ -190,13 +190,13 @@ namespace Lean.Hbt.Domain.Entities.Routine.Vehicle
         /// <summary>
         /// 是否重复提醒（0：否，1：是）
         /// </summary>
-        [SugarColumn(ColumnName = "is_repeat", ColumnDescription = "是否重复提醒（0：否，1：是）", IsNullable = false, DefaultValue = "0", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
+        [SugarColumn(ColumnName = "is_repeat", ColumnDescription = "是否重复提醒", IsNullable = false, DefaultValue = "0", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
         public int IsRepeat { get; set; }
 
         /// <summary>
         /// 重复周期（天）
         /// </summary>
-        [SugarColumn(ColumnName = "repeat_cycle", ColumnDescription = "重复周期（天）", IsNullable = true, ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
+        [SugarColumn(ColumnName = "repeat_cycle", ColumnDescription = "重复周期", IsNullable = true, ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
         public int? RepeatCycle { get; set; }
 
         /// <summary>

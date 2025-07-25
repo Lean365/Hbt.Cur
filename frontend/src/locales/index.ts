@@ -132,13 +132,12 @@ const messages = locales.reduce<Messages>((acc, locale) => {
   return acc
 }, {})
 
-// 更新 i18n 实例的消息
-i18n.global.setLocaleMessage('zh-CN', messages['zh-CN'])
-i18n.global.setLocaleMessage('en-US', messages['en-US'])
-// 添加其他语言的消息
+// 更新 i18n 实例的消息 - 为所有语言设置消息
 locales.forEach(locale => {
-  if (locale !== 'zh-CN' && locale !== 'en-US') {
+  if (messages[locale]) {
     i18n.global.setLocaleMessage(locale, messages[locale])
+  } else {
+    console.warn(`No messages found for locale: ${locale}`)
   }
 })
 

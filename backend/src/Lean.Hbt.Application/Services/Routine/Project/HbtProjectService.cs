@@ -3,7 +3,7 @@
 // 文件名 : HbtProjectService.cs
 // 创建者 : Lean365
 // 创建时间: 2024-03-07 16:30
-// 版本号 : V1.0.0
+// 版本号 : V0.0.1
 // 描述   : 项目服务实现
 //===================================================================
 
@@ -26,6 +26,8 @@ using Microsoft.AspNetCore.Http;
 using Lean.Hbt.Common.Utils;
 using Lean.Hbt.Domain.Utils;
 using Lean.Hbt.Common.Constants;
+using Lean.Hbt.Domain.IServices.SignalR;
+using Lean.Hbt.Common.Enums;
 
 namespace Lean.Hbt.Application.Services.Routine.Project
 {
@@ -38,24 +40,36 @@ namespace Lean.Hbt.Application.Services.Routine.Project
     /// </remarks>
     public class HbtProjectService : HbtBaseService, IHbtProjectService
     {
-        private readonly IHbtRepository<HbtProject> _projectRepository;
+        /// <summary>
+        /// 仓储工厂
+        /// </summary>
+        protected readonly IHbtRepositoryFactory _repositoryFactory;
+        private readonly IHbtSignalRClient _signalRClient;
+
+        /// <summary>
+        /// 获取项目仓储
+        /// </summary>
+        private IHbtRepository<HbtProject> ProjectRepository => _repositoryFactory.GetBusinessRepository<HbtProject>();
 
         /// <summary>
         /// 构造函数
         /// </summary>
-        /// <param name="logger">日志记录器</param>
-        /// <param name="projectRepository">项目仓储</param>
+        /// <param name="repositoryFactory">仓储工厂</param>
+        /// <param name="logger">日志服务</param>
+        /// <param name="signalRClient">SignalR客户端</param>
         /// <param name="httpContextAccessor">HTTP上下文访问器</param>
         /// <param name="currentUser">当前用户服务</param>
         /// <param name="localization">本地化服务</param>
         public HbtProjectService(
+            IHbtRepositoryFactory repositoryFactory,
             IHbtLogger logger,
-            IHbtRepository<HbtProject> projectRepository,
+            IHbtSignalRClient signalRClient,
             IHttpContextAccessor httpContextAccessor,
             IHbtCurrentUser currentUser,
             IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
         {
-            _projectRepository = projectRepository;
+            _repositoryFactory = repositoryFactory ?? throw new ArgumentNullException(nameof(repositoryFactory));
+            _signalRClient = signalRClient;
         }
 
         /// <summary>
@@ -70,7 +84,7 @@ namespace Lean.Hbt.Application.Services.Routine.Project
             var predicate = QueryExpression(query);
             _logger.Info("生成的查询表达式：{@Predicate}", predicate);
 
-            var result = await _projectRepository.GetPagedListAsync(
+            var result = await ProjectRepository.GetPagedListAsync(
                 predicate,
                 query?.PageIndex ?? 1,
                 query?.PageSize ?? 10,
@@ -112,7 +126,7 @@ namespace Lean.Hbt.Application.Services.Routine.Project
         /// <returns>返回项目详情</returns>
         public async Task<HbtProjectDto> GetByIdAsync(long projectId)
         {
-            var project = await _projectRepository.GetByIdAsync(projectId);
+            var project = await ProjectRepository.GetByIdAsync(projectId);
             if (project == null)
                 throw new HbtException(L("Project.NotFound", projectId));
 
@@ -127,7 +141,21 @@ namespace Lean.Hbt.Application.Services.Routine.Project
         public async Task<long> CreateAsync(HbtProjectCreateDto input)
         {
             var project = input.Adapt<HbtProject>();
-            var result = await _projectRepository.CreateAsync(project);
+            var result = await ProjectRepository.CreateAsync(project);
+            
+            if (result > 0)
+            {
+                // 发送实时通知
+                await _signalRClient.ReceiveBroadcast(new HbtRealTimeNotification
+                {
+                    Type = HbtMessageType.System,
+                    Title = L("Project.Created"),
+                    Content = L("Project.CreatedContent", project.ProjectName),
+                    Timestamp = DateTime.Now,
+                    Data = project
+                });
+            }
+            
             return result;
         }
 
@@ -138,12 +166,26 @@ namespace Lean.Hbt.Application.Services.Routine.Project
         /// <returns>返回是否成功</returns>
         public async Task<bool> UpdateAsync(HbtProjectUpdateDto input)
         {
-            var project = await _projectRepository.GetByIdAsync(input.ProjectId);
+            var project = await ProjectRepository.GetByIdAsync(input.ProjectId);
             if (project == null)
                 throw new HbtException(L("Project.NotFound", input.ProjectId));
 
             input.Adapt(project);
-            var result = await _projectRepository.UpdateAsync(project);
+            var result = await ProjectRepository.UpdateAsync(project);
+            
+            if (result > 0)
+            {
+                // 发送实时通知
+                await _signalRClient.ReceiveBroadcast(new HbtRealTimeNotification
+                {
+                    Type = HbtMessageType.System,
+                    Title = L("Project.Updated"),
+                    Content = L("Project.UpdatedContent", project.ProjectName),
+                    Timestamp = DateTime.Now,
+                    Data = project
+                });
+            }
+            
             return result > 0;
         }
 
@@ -154,11 +196,25 @@ namespace Lean.Hbt.Application.Services.Routine.Project
         /// <returns>返回是否成功</returns>
         public async Task<bool> DeleteAsync(long projectId)
         {
-            var project = await _projectRepository.GetByIdAsync(projectId);
+            var project = await ProjectRepository.GetByIdAsync(projectId);
             if (project == null)
                 throw new HbtException(L("Project.NotFound", projectId));
 
-            var result = await _projectRepository.DeleteAsync(project);
+            var result = await ProjectRepository.DeleteAsync(project);
+            
+            if (result > 0)
+            {
+                // 发送实时通知
+                await _signalRClient.ReceiveBroadcast(new HbtRealTimeNotification
+                {
+                    Type = HbtMessageType.System,
+                    Title = L("Project.Deleted"),
+                    Content = L("Project.DeletedContent", project.ProjectName),
+                    Timestamp = DateTime.Now,
+                    Data = project
+                });
+            }
+            
             return result > 0;
         }
 
@@ -172,11 +228,11 @@ namespace Lean.Hbt.Application.Services.Routine.Project
             if (projectIds == null || projectIds.Length == 0)
                 throw new HbtException(L("Project.SelectToDelete"));
 
-            var projects = await _projectRepository.GetListAsync(x => projectIds.Contains(x.Id));
+            var projects = await ProjectRepository.GetListAsync(x => projectIds.Contains(x.Id));
             if (!projects.Any())
                 throw new HbtException(L("Project.NotFound"));
 
-            var result = await _projectRepository.DeleteAsync(projects);
+            var result = await ProjectRepository.DeleteAsync(projects);
             return result > 0;
         }
 
@@ -200,7 +256,7 @@ namespace Lean.Hbt.Application.Services.Routine.Project
                 try
                 {
                     var project = dto.Adapt<HbtProject>();
-                    await _projectRepository.CreateAsync(project);
+                    await ProjectRepository.CreateAsync(project);
                     success++;
                 }
                 catch (Exception ex)
@@ -223,7 +279,7 @@ namespace Lean.Hbt.Application.Services.Routine.Project
         {
             var predicate = QueryExpression(query);
 
-            var projects = await _projectRepository.AsQueryable()
+            var projects = await ProjectRepository.AsQueryable()
                 .Where(predicate)
                 .OrderBy(x => x.Id)
                 .ToListAsync();
@@ -283,9 +339,33 @@ namespace Lean.Hbt.Application.Services.Routine.Project
 
                 if (query.EndTime.HasValue)
                     exp = exp.And(x => x.CreateTime <= query.EndTime.Value);
+
+                if (!string.IsNullOrEmpty(query.Participant))
+                    exp = exp.And(x => x.ProjectManager == query.Participant || 
+                                     (x.ProjectTeam != null && x.ProjectTeam.Contains(query.Participant)));
             }
 
             return exp.ToExpression();
+        }
+
+        /// <summary>
+        /// 获取指定用户参与的项目状态统计
+        /// </summary>
+        /// <param name="participant">参与者</param>
+        /// <returns>状态-数量字典</returns>
+        public async Task<Dictionary<int, int>> GetParticipantProjectStatisticsAsync(string participant)
+        {
+            if (string.IsNullOrEmpty(participant))
+                throw new ArgumentNullException(nameof(participant));
+
+            var stats = await ProjectRepository.AsQueryable()
+                .Where(x => x.ProjectManager == participant || 
+                           (x.ProjectTeam != null && x.ProjectTeam.Contains(participant)))
+                .GroupBy(x => x.ProjectStatus)
+                .Select(x => new { Status = x.ProjectStatus, Count = SqlFunc.AggregateCount(x.ProjectStatus) })
+                .ToListAsync();
+
+            return stats.ToDictionary(x => x.Status, x => x.Count);
         }
     }
 } 

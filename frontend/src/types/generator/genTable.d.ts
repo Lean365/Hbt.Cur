@@ -47,7 +47,7 @@ export interface HbtGenTable extends HbtBaseEntity {
   /** 对象类名 */
   dtoClassName: string
   /** 对象类型 */
-  dtoType: string
+  dtoType: string | string[]
   /** 服务命名空间 */
   serviceNamespace: string
   /** 服务接口类名称 */
@@ -74,6 +74,14 @@ export interface HbtGenTable extends HbtBaseEntity {
   functionName: string
   /** 生成作者名 */
   author: string
+  /** 生成功能（查询，新增，更新，删除，模板，导入，导出的按钮编号） */
+  genFunction: string
+  /** 是否启用SQL差异 */
+  isSqlDiff: number
+  /** 是否使用雪花id */
+  isSnowflakeId: number
+  /** 是否生成仓储层 */
+  isRepository: number
   /** 生成代码方式（0zip压缩包 1自定义路径） */
   genMethod: string
   /** 代码生成存放位置 */
@@ -100,22 +108,6 @@ export interface HbtGenTable extends HbtBaseEntity {
   columns?: HbtGenColumn[]
   /** 子表信息 */
   subTable?: HbtGenTable
-  /** 代码生成选项 */
-  options?: CodeOptions
-}
-
-/**
- * 代码生成选项
- */
-export interface CodeOptions {
-  /** 是否启用SQL差异 */
-  isSqlDiff: number
-  /** 是否使用雪花id */
-  isSnowflakeId: number
-  /** 是否生成仓储层 */
-  isRepository: number
-  /** CRUD功能组 */
-  crudGroup: number[]
 }
 
 /**
@@ -163,7 +155,7 @@ export interface HbtGenTableCreate {
   /** 对象类名 */
   dtoClassName: string
   /** 对象类型 */
-  dtoType: string
+  dtoType: string | string[]
   /** 服务命名空间 */
   serviceNamespace: string
   /** 服务接口类名称 */
@@ -190,6 +182,14 @@ export interface HbtGenTableCreate {
   functionName: string
   /** 生成作者名 */
   author: string
+  /** 生成功能（查询，新增，更新，删除，模板，导入，导出的按钮编号） */
+  genFunction: string
+  /** 是否启用SQL差异 */
+  isSqlDiff: number
+  /** 是否使用雪花id */
+  isSnowflakeId: number
+  /** 是否生成仓储层 */
+  isRepository: number
   /** 生成代码方式（0zip压缩包 1自定义路径） */
   genMethod: string
   /** 代码生成存放位置 */
@@ -214,8 +214,6 @@ export interface HbtGenTableCreate {
   status: number
   /** 代码生成列 */
   columns?: HbtGenColumn[]
-  /** 代码生成选项 */
-  options?: CodeOptions
 }
 
 /**
@@ -223,7 +221,7 @@ export interface HbtGenTableCreate {
  */
 export interface HbtGenTableUpdate extends HbtGenTableCreate {
   /** 表ID */
-  id: number
+  genTableId: number
 }
 
 /**
@@ -239,7 +237,7 @@ export interface HbtGenTableBatchDelete {
  */
 export interface HbtGenTableStatusUpdate {
   /** 表ID */
-  id: number
+  genTableId: number
   /** 状态（0：停用，1：正常） */
   status: number
 }
@@ -279,7 +277,7 @@ export interface HbtGenTableImport {
   /** 对象类名 */
   dtoClassName: string
   /** 对象类型 */
-  dtoType: string
+  dtoType: string | string[]
   /** 服务命名空间 */
   serviceNamespace: string
   /** 服务接口类名称 */
@@ -306,6 +304,14 @@ export interface HbtGenTableImport {
   functionName: string
   /** 生成作者名 */
   author: string
+  /** 生成功能（查询，新增，更新，删除，模板，导入，导出的按钮编号） */
+  genFunction: string
+  /** 是否启用SQL差异 */
+  isSqlDiff: number
+  /** 是否使用雪花id */
+  isSnowflakeId: number
+  /** 是否生成仓储层 */
+  isRepository: number
   /** 生成代码方式（0zip压缩包 1自定义路径） */
   genMethod: string
   /** 代码生成存放位置 */
@@ -330,8 +336,6 @@ export interface HbtGenTableImport {
   status: number
   /** 代码生成列 */
   columns?: HbtGenColumn[]
-  /** 代码生成选项 */
-  options?: CodeOptions
 }
 
 /**

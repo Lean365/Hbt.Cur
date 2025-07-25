@@ -111,7 +111,7 @@ const handleCancel = () => {
 
 <style scoped>
 .menu-tabs {
-  background: #fff;
+  background: var(--ant-color-bg-container);
   padding: 16px;
 }
 

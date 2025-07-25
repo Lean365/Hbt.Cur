@@ -3,7 +3,7 @@
 // 文件名 : HbtMailTplService.cs
 // 创建者 : Lean365
 // 创建时间: 2024-03-07 16:30
-// 版本号 : V1.0.0
+// 版本号 : V0.0.1
 // 描述   : 邮件模板服务实现
 //===================================================================
 
@@ -20,6 +20,8 @@ using Lean.Hbt.Common.Helpers;
 using Lean.Hbt.Domain.Repositories;
 using SqlSugar;
 using Mapster;
+using System.IO;
+using System.Linq;
 
 namespace Lean.Hbt.Application.Services.Routine.Email
 {
@@ -28,24 +30,32 @@ namespace Lean.Hbt.Application.Services.Routine.Email
     /// </summary>
     public class HbtMailTplService : HbtBaseService, IHbtMailTplService
     {
-        private readonly IHbtRepository<HbtMailTpl> _tmplRepository;
+        /// <summary>
+        /// 仓储工厂
+        /// </summary>
+        protected readonly IHbtRepositoryFactory _repositoryFactory;
+
+        /// <summary>
+        /// 获取邮件模板仓储
+        /// </summary>
+        private IHbtRepository<HbtMailTpl> MailTplRepository => _repositoryFactory.GetBusinessRepository<HbtMailTpl>();
 
         /// <summary>
         /// 构造函数
         /// </summary>
-        /// <param name="logger">日志记录器</param>
-        /// <param name="tmplRepository">模板仓储</param>
+        /// <param name="repositoryFactory">仓储工厂</param>
+        /// <param name="logger">日志服务</param>
         /// <param name="httpContextAccessor">HTTP上下文访问器</param>
         /// <param name="currentUser">当前用户服务</param>
         /// <param name="localization">本地化服务</param>
         public HbtMailTplService(
+            IHbtRepositoryFactory repositoryFactory,
             IHbtLogger logger,
-            IHbtRepository<HbtMailTpl> tmplRepository,
             IHttpContextAccessor httpContextAccessor,
             IHbtCurrentUser currentUser,
             IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
         {
-            _tmplRepository = tmplRepository;
+            _repositoryFactory = repositoryFactory ?? throw new ArgumentNullException(nameof(repositoryFactory));
         }
 
         /// <summary>
@@ -55,14 +65,14 @@ namespace Lean.Hbt.Application.Services.Routine.Email
         {
             var exp = Expressionable.Create<HbtMailTpl>();
 
-            if (!string.IsNullOrEmpty(query.TmplName))
-                exp.And(x => x.TmplName.Contains(query.TmplName));
+            if (!string.IsNullOrEmpty(query.MailTplName))
+                exp.And(x => x.MailTplName.Contains(query.MailTplName));
 
-            if (!string.IsNullOrEmpty(query.TmplCode))
-                exp.And(x => x.TmplCode.Contains(query.TmplCode));
+            if (!string.IsNullOrEmpty(query.MailTplCode))
+                exp.And(x => x.MailTplCode.Contains(query.MailTplCode));
 
-            if (query.TmplStatus.HasValue)
-                exp.And(x => x.TmplStatus == query.TmplStatus.Value);
+            if (query.Status.HasValue)
+                exp.And(x => x.Status == query.Status.Value);
 
             if (query.StartTime.HasValue)
                 exp.And(x => x.CreateTime >= query.StartTime.Value);
@@ -70,7 +80,10 @@ namespace Lean.Hbt.Application.Services.Routine.Email
             if (query.EndTime.HasValue)
                 exp.And(x => x.CreateTime <= query.EndTime.Value);
 
-            var result = await _tmplRepository.GetPagedListAsync(
+            if (!string.IsNullOrEmpty(query.CreateBy))
+                exp.And(x => x.CreateBy == query.CreateBy);
+
+            var result = await MailTplRepository.GetPagedListAsync(
                 exp.ToExpression(),
                 query.PageIndex,
                 query.PageSize,
@@ -89,11 +102,11 @@ namespace Lean.Hbt.Application.Services.Routine.Email
         /// <summary>
         /// 获取邮件模板详情
         /// </summary>
-        public async Task<HbtMailTplDto> GetByIdAsync(long tmplId)
+        public async Task<HbtMailTplDto> GetByIdAsync(long mailTplId)
         {
-            var tmpl = await _tmplRepository.GetByIdAsync(tmplId);
+            var tmpl = await MailTplRepository.GetByIdAsync(mailTplId);
             if (tmpl == null)
-                throw new HbtException(L("MailTmpl.NotFound", tmplId));
+                throw new HbtException(L("MailTmpl.NotFound", mailTplId));
 
             return tmpl.Adapt<HbtMailTplDto>();
         }
@@ -107,11 +120,11 @@ namespace Lean.Hbt.Application.Services.Routine.Email
             tmpl.CreateTime = DateTime.Now;
 
             // 验证模板编码是否已存在
-            var existingTmpl = await _tmplRepository.GetFirstAsync(x => x.TmplCode == input.TmplCode);
+            var existingTmpl = await MailTplRepository.GetFirstAsync(x => x.MailTplCode == input.MailTplCode);
             if (existingTmpl != null)
-                throw new HbtException(L("MailTmpl.CodeExists", input.TmplCode));
+                throw new HbtException(L("MailTmpl.CodeExists", input.MailTplCode));
 
-            var result = await _tmplRepository.CreateAsync(tmpl);
+            var result = await MailTplRepository.CreateAsync(tmpl);
             if (result <= 0)
                 throw new HbtException(L("MailTmpl.CreateFailed"));
 
@@ -121,46 +134,46 @@ namespace Lean.Hbt.Application.Services.Routine.Email
         /// <summary>
         /// 更新邮件模板
         /// </summary>
-        public async Task<bool> UpdateAsync(long tmplId, HbtMailTplDto input)
+        public async Task<bool> UpdateAsync(long mailTplId, HbtMailTplDto input)
         {
-            var tmpl = await _tmplRepository.GetByIdAsync(tmplId);
+            var tmpl = await MailTplRepository.GetByIdAsync(mailTplId);
             if (tmpl == null)
-                throw new HbtException(L("MailTmpl.NotFound", tmplId));
+                throw new HbtException(L("MailTmpl.NotFound", mailTplId));
 
             // 验证模板编码是否已存在
-            var existingTmpl = await _tmplRepository.GetFirstAsync(x => x.TmplCode == input.TmplCode && x.Id != tmplId);
+            var existingTmpl = await MailTplRepository.GetFirstAsync(x => x.MailTplCode == input.MailTplCode && x.Id != mailTplId);
             if (existingTmpl != null)
-                throw new HbtException(L("MailTmpl.CodeExists", input.TmplCode));
+                throw new HbtException(L("MailTmpl.CodeExists", input.MailTplCode));
 
             input.Adapt(tmpl);
-            var result = await _tmplRepository.UpdateAsync(tmpl);
+            var result = await MailTplRepository.UpdateAsync(tmpl);
             return result > 0;
         }
 
         /// <summary>
         /// 删除邮件模板
         /// </summary>
-        public async Task<bool> DeleteAsync(long tmplId)
+        public async Task<bool> DeleteAsync(long mailTplId)
         {
-            var tmpl = await _tmplRepository.GetByIdAsync(tmplId);
+            var tmpl = await MailTplRepository.GetByIdAsync(mailTplId);
             if (tmpl == null)
-                throw new HbtException(L("MailTmpl.NotFound", tmplId));
+                throw new HbtException(L("MailTmpl.NotFound", mailTplId));
 
-            var result = await _tmplRepository.DeleteAsync(tmplId);
+            var result = await MailTplRepository.DeleteAsync(mailTplId);
             return result > 0;
         }
 
         /// <summary>
         /// 批量删除邮件模板
         /// </summary>
-        public async Task<bool> BatchDeleteAsync(long[] tmplIds)
+        public async Task<bool> BatchDeleteAsync(long[] mailTplIds)
         {
-            if (tmplIds == null || tmplIds.Length == 0)
+            if (mailTplIds == null || mailTplIds.Length == 0)
                 throw new HbtException(L("MailTmpl.SelectToDelete"));
 
-            foreach (var tmplId in tmplIds)
+            foreach (var mailTplId in mailTplIds)
             {
-                await DeleteAsync(tmplId);
+                await DeleteAsync(mailTplId);
             }
             return true;
         }
@@ -172,7 +185,7 @@ namespace Lean.Hbt.Application.Services.Routine.Email
         {
             try
             {
-                var list = await _tmplRepository.GetListAsync(KpMailTmplQueryExpression(query));
+                var list = await MailTplRepository.GetListAsync(MailTplQueryExpression(query));
                 return await HbtExcelHelper.ExportAsync(list.Adapt<List<HbtMailTplExportDto>>(), sheetName, L("MailTmpl.ExportTitle"));
             }
             catch (Exception ex)
@@ -182,15 +195,88 @@ namespace Lean.Hbt.Application.Services.Routine.Email
             }
         }
 
-        private Expression<Func<HbtMailTpl, bool>> KpMailTmplQueryExpression(HbtMailTplQueryDto query)
+        /// <summary>
+        /// 导入邮件模板数据
+        /// </summary>
+        /// <param name="fileStream">Excel文件流</param>
+        /// <param name="sheetName">工作表名称</param>
+        /// <returns>导入结果</returns>
+        public async Task<(int success, int fail)> ImportAsync(Stream fileStream, string sheetName = "邮件模板数据")
+        {
+            try
+            {
+                var list = await HbtExcelHelper.ImportAsync<HbtMailTplImportDto>(fileStream, sheetName);
+                if (list == null || !list.Any())
+                    return (0, 0);
+                int success = 0, fail = 0;
+                foreach (var item in list)
+                {
+                    try
+                    {
+                        // 校验模板编码唯一
+                        var exists = await MailTplRepository.GetFirstAsync(x => x.MailTplCode == item.MailTplCode);
+                        if (exists != null)
+                        {
+                            fail++;
+                            continue;
+                        }
+                        var entity = item.Adapt<HbtMailTpl>();
+                        entity.CreateTime = DateTime.Now;
+                        await MailTplRepository.CreateAsync(entity);
+                        success++;
+                    }
+                    catch
+                    {
+                        fail++;
+                    }
+                }
+                return (success, fail);
+            }
+            catch
+            {
+                return (0, 0);
+            }
+        }
+
+        /// <summary>
+        /// 获取邮件模板导入模板
+        /// </summary>
+        /// <param name="sheetName">工作表名称</param>
+        /// <returns>Excel模板文件</returns>
+        public async Task<(string fileName, byte[] content)> GetTemplateAsync(string sheetName = "邮件模板数据")
+        {
+            return await HbtExcelHelper.GenerateTemplateAsync<HbtMailTplTemplateDto>(sheetName);
+        }
+
+        private Expression<Func<HbtMailTpl, bool>> MailTplQueryExpression(HbtMailTplQueryDto query)
         {
             return Expressionable.Create<HbtMailTpl>()
-                .AndIF(!string.IsNullOrEmpty(query.TmplName), x => x.TmplName.Contains(query.TmplName))
-                .AndIF(!string.IsNullOrEmpty(query.TmplCode), x => x.TmplCode.Contains(query.TmplCode))
-                .AndIF(query.TmplStatus.HasValue, x => x.TmplStatus == query.TmplStatus.Value)
+                .AndIF(!string.IsNullOrEmpty(query.MailTplName), x => x.MailTplName.Contains(query.MailTplName))
+                .AndIF(!string.IsNullOrEmpty(query.MailTplCode), x => x.MailTplCode.Contains(query.MailTplCode))
+                .AndIF(query.Status.HasValue, x => x.Status == query.Status.Value)
                 .AndIF(query.StartTime.HasValue, x => x.CreateTime >= query.StartTime.Value)
                 .AndIF(query.EndTime.HasValue, x => x.CreateTime <= query.EndTime.Value)
+                .AndIF(!string.IsNullOrEmpty(query.CreateBy), x => x.CreateBy == query.CreateBy)
                 .ToExpression();
+        }
+
+        /// <summary>
+        /// 获取指定用户的邮件模板状态统计
+        /// </summary>
+        /// <param name="createBy">创建者</param>
+        /// <returns>状态-数量字典</returns>
+        public async Task<Dictionary<int, int>> GetStatusStatisticsAsync(string createBy)
+        {
+            if (string.IsNullOrEmpty(createBy))
+                throw new ArgumentNullException(nameof(createBy));
+
+            var stats = await MailTplRepository.AsQueryable()
+                .Where(x => x.CreateBy == createBy)
+                .GroupBy(x => x.Status)
+                .Select(x => new { Status = x.Status, Count = SqlFunc.AggregateCount(x.Status) })
+                .ToListAsync();
+
+            return stats.ToDictionary(x => x.Status, x => x.Count);
         }
     }
 } 

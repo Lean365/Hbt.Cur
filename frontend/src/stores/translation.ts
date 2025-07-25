@@ -1,7 +1,6 @@
 import { defineStore } from 'pinia'
-import { getHbtTranslationsByModule, getHbtTranslationValue } from '@/api/core/translation'
-import type { HbtTranslation } from '@/types/core/translation'
-import type { HbtApiResponse } from '@/types/common'
+import { getHbtTranslationsByModule, getHbtTranslationValue } from '@/api/routine/core/translation'
+import type { HbtTranslation } from '@/types/routine/core/translation'
 
 export const useTranslationStore = defineStore('translation', {
   state: () => ({
@@ -14,15 +13,12 @@ export const useTranslationStore = defineStore('translation', {
   actions: {
     // 初始化翻译 - 启动时调用
     async initializeTranslations(langCode: string) {
-      console.log(`[Translation] 开始初始化翻译，语言: ${langCode}`)
-      
       // 重置初始化状态，确保每次都能重新加载
       this.initialized = false
       this.translations.clear()
       
       try {
         this.loading = true
-        console.log('[Translation] 开始初始化翻译...')
         
         // 并行加载常用模块的翻译
         const promises = this.commonModules.map(module => 
@@ -31,7 +27,6 @@ export const useTranslationStore = defineStore('translation', {
         
         await Promise.all(promises)
         this.initialized = true
-        console.log('[Translation] 翻译初始化完成')
       } catch (error) {
         console.error('[Translation] 翻译初始化失败:', error)
         // 即使失败也要标记为已初始化，避免重复尝试
@@ -44,9 +39,7 @@ export const useTranslationStore = defineStore('translation', {
     // 加载指定模块的翻译
     async loadModuleTranslations(module: string, langCode: string) {
       try {
-        console.log(`[Translation] 加载模块翻译: ${module}, 语言: ${langCode}`)
         const response = await getHbtTranslationsByModule(langCode, module)
-        console.log(`[Translation] 模块 ${module} API响应:`, response)
         
         if (response.data) {
           const moduleMap = new Map<string, string>()
@@ -64,11 +57,9 @@ export const useTranslationStore = defineStore('translation', {
             if (Array.isArray(dataField)) {
               translations = dataField
             } else {
-              console.warn(`[Translation] 模块 ${module} response.data.data 不是数组:`, dataField)
               return
             }
           } else {
-            console.warn(`[Translation] 模块 ${module} 返回的数据格式不正确:`, response.data)
             return
           }
           
@@ -81,18 +72,11 @@ export const useTranslationStore = defineStore('translation', {
               
               if (transKey && transValue) {
                 moduleMap.set(transKey, transValue)
-              } else {
-                console.warn(`[Translation] 模块 ${module} 跳过无效的翻译项:`, item)
               }
-            } else {
-              console.warn(`[Translation] 模块 ${module} 跳过无效的翻译项:`, item)
             }
           })
           
           this.translations.set(module, moduleMap)
-          console.log(`[Translation] 模块 ${module} 翻译加载完成，共 ${moduleMap.size} 条`)
-        } else {
-          console.warn(`[Translation] 模块 ${module} 没有返回数据`)
         }
       } catch (error) {
         console.error(`[Translation] 加载模块 ${module} 翻译失败:`, error)
@@ -105,7 +89,6 @@ export const useTranslationStore = defineStore('translation', {
       // 解析翻译键，格式：module.submodule.key
       const parts = key.split('.')
       if (parts.length < 2) {
-        console.warn('[Translation] 无效的翻译键格式:', key)
         return key
       }
 
@@ -120,7 +103,6 @@ export const useTranslationStore = defineStore('translation', {
 
       // 如果缓存中没有，从服务器获取
       try {
-        console.log(`[Translation] 获取单个翻译: ${transKey}`)
         const response = await getHbtTranslationValue(langCode, transKey)
         if (response.data) {
           const value = (response.data as unknown) as string
@@ -141,14 +123,12 @@ export const useTranslationStore = defineStore('translation', {
     // 清除指定模块的翻译缓存
     clearModuleCache(module: string) {
       this.translations.delete(module)
-      console.log(`[Translation] 清除模块缓存: ${module}`)
     },
 
     // 清除所有翻译缓存
     clearAllCache() {
       this.translations.clear()
       this.initialized = false
-      console.log('[Translation] 清除所有翻译缓存')
     },
 
     // 检查模块是否已加载

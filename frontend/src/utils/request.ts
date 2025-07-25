@@ -51,12 +51,17 @@ service.interceptors.request.use(
       //console.log('[CSRF] 从cookie中设置CSRF令牌')
     }
 
-    // 获取Token
-    const token = getToken()
-    if (token) {
-      //console.log('[Auth] 获取到Token:', token)
-      config.headers['Authorization'] = `Bearer ${token}`
-      //console.log('[Request] 设置Authorization Token')
+    // 获取Token（除非明确跳过）
+    const skipAuth = (config as any).skipAuth
+    if (!skipAuth) {
+      const token = getToken()
+      if (token) {
+        //console.log('[Auth] 获取到Token:', token)
+        config.headers['Authorization'] = `Bearer ${token}`
+        //console.log('[Request] 设置Authorization Token')
+      }
+    } else {
+      console.log('[Request] 跳过Authorization头设置')
     }
     
     // 记录完整的请求信息
@@ -211,13 +216,27 @@ service.interceptors.response.use(
     switch (normalizedData.code) {
       case 401: // 未授权
         console.error('[Response] 未授权:', normalizedData.msg)
+        // 避免无限循环：只有在用户已登录时才执行登出
         const userStore = useUserStore()
-        userStore.logout(false)
+        const hasUserInfo1 = userStore.userInfo !== undefined && userStore.userInfo !== null
+        const hasToken1 = getToken() !== null
+        
+        if (hasUserInfo1 || hasToken1) {
+          userStore.logout(false)
+        }
         break
       case 403: // 禁止访问
         console.error('[Response] 禁止访问:', normalizedData.msg)
+        // 对于Token刷新接口的403错误，不自动登出
+        // 注意：这里无法直接获取URL，但业务状态码403通常不会来自Token刷新接口
+        // 避免无限循环：只有在用户已登录时才执行登出
         const userStore2 = useUserStore()
-        userStore2.logout(false)
+        const hasUserInfo2 = userStore2.userInfo !== undefined && userStore2.userInfo !== null
+        const hasToken2 = getToken() !== null
+        
+        if (hasUserInfo2 || hasToken2) {
+          userStore2.logout(false)
+        }
         break
       case 500: // 服务器错误
         console.error('[Response] 服务器错误:', normalizedData.msg)
@@ -267,20 +286,34 @@ service.interceptors.response.use(
       
       switch (status) {
         case 401: // 未授权
+          // 避免无限循环：只有在用户已登录时才执行登出
           const userStore = useUserStore()
-          // 检查是否是token过期
-          if (data?.code === 401 && data?.msg?.includes('token expired')) {
-            console.log('[Auth] Token已过期，准备登出')
-            userStore.logout()
-          } else {
+          const hasUserInfo = userStore.userInfo !== undefined && userStore.userInfo !== null
+          const hasToken = getToken() !== null
+          
+          if (hasUserInfo || hasToken) {
             console.log('[Auth] 未授权，准备登出')
             userStore.logout()
+          } else {
+            console.log('[Auth] 用户未登录，忽略401错误')
           }
           break
         case 403: // 禁止访问
           console.error('[Response] 禁止访问:', data?.msg || '权限不足')
-          const userStore2 = useUserStore()
-          userStore2.logout()
+          // 对于验证码相关接口和Token刷新接口，不自动登出
+          if (error.config?.url?.includes('/api/HbtCaptcha/') || 
+              error.config?.url?.includes('/api/HbtAuth/refresh-token')) {
+            console.log('[Response] 验证码接口或Token刷新接口403错误，不执行登出操作')
+          } else {
+            // 避免无限循环：只有在用户已登录时才执行登出
+            const userStore2 = useUserStore()
+            const hasUserInfo = userStore2.userInfo !== undefined && userStore2.userInfo !== null
+            const hasToken = getToken() !== null
+            
+            if (hasUserInfo || hasToken) {
+              userStore2.logout()
+            }
+          }
           break
         case 404: // 未找到
           console.error('[Response] 接口不存在:', error.config?.url)

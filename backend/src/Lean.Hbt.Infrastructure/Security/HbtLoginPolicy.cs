@@ -35,7 +35,13 @@ namespace Lean.Hbt.Infrastructure.Security
         /// </summary>
         protected readonly IHbtLogger _logger;
 
-        private readonly IHbtRepository<HbtUser> _userRepository;
+        protected readonly IHbtRepositoryFactory _repositoryFactory;
+
+        /// <summary>
+        /// 获取用户仓储
+        /// </summary>
+        private IHbtRepository<HbtUser> UserRepository => _repositoryFactory.GetAuthRepository<HbtUser>();
+
         private readonly HbtLoginPolicyOptions _options;
 
         // 缓存键前缀
@@ -48,15 +54,15 @@ namespace Lean.Hbt.Infrastructure.Security
         /// 构造函数
         /// </summary>
         public HbtLoginPolicy(
-            IMemoryCache cache,
-            IHbtRepository<HbtUser> userRepository,
+            IHbtRepositoryFactory repositoryFactory,
             IHbtLogger logger,
-            IOptions<HbtLoginPolicyOptions> options)
+            IOptions<HbtLoginPolicyOptions> options,
+            IMemoryCache cache)
         {
-            _cache = cache;
+            _repositoryFactory = repositoryFactory ?? throw new ArgumentNullException(nameof(repositoryFactory));
             _logger = logger;
-            _userRepository = userRepository;
             _options = options.Value;
+            _cache = cache ?? throw new ArgumentNullException(nameof(cache));
         }
 
         /// <summary>
@@ -82,7 +88,7 @@ namespace Lean.Hbt.Infrastructure.Security
             bool needCaptcha = false;
 
             // 1. 检查用户是否存在且是否被永久锁定
-            var user = await _userRepository.GetFirstAsync(u => u.UserName == username);
+            var user = await UserRepository.GetFirstAsync(u => u.UserName == username);
             if (user != null && user.IsLock == 2) // IsLock=2表示永久锁定
             {
                 _logger.Warn("[登录策略] 用户 {Username} 已被永久锁定，需要管理员解锁", username);
@@ -128,7 +134,7 @@ namespace Lean.Hbt.Infrastructure.Security
                     {
                         user.IsLock = 2; // 设置永久锁定
                         user.LoginCount = failedAttempts;
-                        await _userRepository.UpdateAsync(user);
+                        await UserRepository.UpdateAsync(user);
                         _logger.Warn("[登录策略] 用户 {Username} 已被永久锁定", username);
                         return (false, null);
                     }
@@ -189,7 +195,7 @@ namespace Lean.Hbt.Infrastructure.Security
             else
             {
                 // 普通用户：更新数据库中的失败记录
-                var user = await _userRepository.GetFirstAsync(u => u.UserName == username);
+                var user = await UserRepository.GetFirstAsync(u => u.UserName == username);
                 if (user != null)
                 {
                     if (currentAttempts >= maxAttempts)
@@ -197,14 +203,14 @@ namespace Lean.Hbt.Infrastructure.Security
                         // 达到最大失败次数，设置永久锁定
                         user.IsLock = 2;
                         user.LoginCount = currentAttempts;
-                        await _userRepository.UpdateAsync(user);
+                        await UserRepository.UpdateAsync(user);
                         _logger.Warn("[登录策略] 用户 {Username} 已被永久锁定", username);
                     }
                     else
                     {
                         // 更新失败次数
                         user.LoginCount = currentAttempts;
-                        await _userRepository.UpdateAsync(user);
+                        await UserRepository.UpdateAsync(user);
                     }
                 }
             }
@@ -237,7 +243,7 @@ namespace Lean.Hbt.Infrastructure.Security
             _cache.Set(lastLoginKey, DateTime.UtcNow, TimeSpan.FromMinutes(_options.RepeatLoginMinutes));
 
             // 更新用户状态
-            var user = await _userRepository.GetFirstAsync(u => u.UserName == username);
+            var user = await UserRepository.GetFirstAsync(u => u.UserName == username);
             if (user != null)
             {
                 user.LoginCount = 0; // 重置登录失败次数
@@ -245,7 +251,7 @@ namespace Lean.Hbt.Infrastructure.Security
                 {
                     user.IsLock = 0;
                 }
-                await _userRepository.UpdateAsync(user);
+                await UserRepository.UpdateAsync(user);
             }
 
             _logger.Info("[登录策略] 用户 {Username} 登录成功，清除所有限制", username);

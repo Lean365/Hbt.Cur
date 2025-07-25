@@ -2,7 +2,7 @@
 // 项目名 : Lean.Hbt
 // 文件名 : HbtInitializeCollectionExtensions.cs
 // 创建者 : Claude
-// 创建时间: 2024-12-19
+// 创建时间: 2024-12-01
 // 版本号 : V0.0.1
 // 描述   : 数据库和种子数据初始化扩展类
 //===================================================================
@@ -48,11 +48,11 @@ public static class HbtInitializeCollectionExtensions
         // 1. 初始化认证数据库
         try
         {
-            var authDbContext = scope.ServiceProvider.GetService<HbtAuthDbContext>();
-            if (authDbContext != null)
+            var IdentityDBContext = scope.ServiceProvider.GetService<HbtIdentityDBContext>();
+            if (IdentityDBContext != null)
             {
                 logger.Info("开始初始化认证数据库...");
-                await authDbContext.InitializeAsync();
+                await IdentityDBContext.InitializeAsync();
                 logger.Info("认证数据库初始化完成");
             }
             else
@@ -155,11 +155,11 @@ public static class HbtInitializeCollectionExtensions
         // 1. 初始化认证数据库种子数据
         try
         {
-            var authDbSeed = scope.ServiceProvider.GetService<HbtAuthDbSeed>();
-            if (authDbSeed != null)
+            var IdentityDBSeed = scope.ServiceProvider.GetService<HbtIdentityDBSeed>();
+            if (IdentityDBSeed != null)
             {
                 logger.Info("开始初始化认证数据库种子数据...");
-                await authDbSeed.InitializeAsync();
+                await IdentityDBSeed.InitializeAsync();
                 logger.Info("认证数据库种子数据初始化完成");
             }
             else

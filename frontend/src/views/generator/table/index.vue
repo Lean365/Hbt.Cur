@@ -903,7 +903,7 @@ onMounted(() => {
 <style lang="less" scoped>
 .table-container {
   padding: 24px;
-  background-color: #fff;
+  background-color: var(--ant-color-bg-container);
 }
 
 .column-setting-group {

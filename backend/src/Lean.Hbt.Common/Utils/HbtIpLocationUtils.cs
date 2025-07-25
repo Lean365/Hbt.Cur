@@ -30,7 +30,8 @@ namespace Lean.Hbt.Common.Utils;
 public static class HbtIpLocationUtils
 {
     private static Searcher? _searcher;
-    private static readonly Regex _ipRegex = new(@"^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$", RegexOptions.Compiled);
+    private static readonly Regex _ipv4Regex = new(@"^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$", RegexOptions.Compiled);
+    private static readonly Regex _ipv6Regex = new(@"^(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$|^::1$|^::$", RegexOptions.Compiled);
     private static IWebHostEnvironment? _webHostEnvironment;
 
     /// <summary>
@@ -85,7 +86,8 @@ public static class HbtIpLocationUtils
         if (ipAddress == "::1" || ipAddress == "127.0.0.1")
             return "本地";
 
-        if (!_ipRegex.IsMatch(ipAddress))
+        // 检查IPv4和IPv6格式
+        if (!_ipv4Regex.IsMatch(ipAddress) && !_ipv6Regex.IsMatch(ipAddress))
             return "Unknown Location";
 
         try

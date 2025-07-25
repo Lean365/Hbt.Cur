@@ -49,7 +49,7 @@ const loading = ref(false)
 
 // 表单数据
 const formData = ref<HbtGenTable>({
-  id: 0,
+  genTableId: 0,
   createBy: '',
   createTime: '',
   updateBy: '',
@@ -62,6 +62,7 @@ const formData = ref<HbtGenTable>({
   tableName: '',
   tableComment: '',
   baseNamespace: '',
+  tplType: '0',
   tplCategory: 'crud',
   subTableName: undefined,
   subTableFkName: undefined,
@@ -72,7 +73,7 @@ const formData = ref<HbtGenTable>({
   businessName: '',
   functionName: '',
   author: '',
-  genType: '0',
+  genMethod: '0',
   genPath: '',
   parentMenuId: 0,
   sortType: 'asc',
@@ -97,15 +98,12 @@ const formData = ref<HbtGenTable>({
   repositoryClassName: '',
   controllerNamespace: '',
   controllerClassName: '',
-  options: {
-    isSqlDiff: 1,
-    isSnowflakeId: 1,
-    isRepository: 0,
-    crudGroup: [1, 2, 3, 4, 5, 6, 7, 8]
-  },
+  genFunction: '1,2,3,4,5,6,7',
+  isSqlDiff: 1,
+  isSnowflakeId: 1,
+  isRepository: 1,
   columns: [],
-  subTable: undefined,
-  tenantId: 0
+  subTable: undefined
 })
 
 // 表单校验规则
@@ -133,7 +131,7 @@ watch(() => props.id, async (newVal) => {
   if (!newVal || typeof newVal !== 'number' || isNaN(newVal)) {
     console.log('TableForm - id 无效，等待有效值')
     formData.value = {
-      id: 0,
+      genTableId: 0,
       createBy: '',
       createTime: '',
       updateBy: '',
@@ -146,6 +144,7 @@ watch(() => props.id, async (newVal) => {
       tableName: '',
       tableComment: '',
       baseNamespace: '',
+      tplType: '0',
       tplCategory: 'crud',
       subTableName: undefined,
       subTableFkName: undefined,
@@ -156,7 +155,7 @@ watch(() => props.id, async (newVal) => {
       businessName: '',
       functionName: '',
       author: '',
-      genType: '0',
+      genMethod: '0',
       genPath: '',
       parentMenuId: 0,
       sortType: 'asc',
@@ -181,15 +180,12 @@ watch(() => props.id, async (newVal) => {
       repositoryClassName: '',
       controllerNamespace: '',
       controllerClassName: '',
-      options: {
-        isSqlDiff: 1,
-        isSnowflakeId: 1,
-        isRepository: 0,
-        crudGroup: [1, 2, 3, 4, 5, 6, 7, 8]
-      },
+      genFunction: '1,2,3,4,5,6,7',
+      isSqlDiff: 1,
+      isSnowflakeId: 1,
+      isRepository: 1,
       columns: [],
-      subTable: undefined,
-      tenantId: 0
+      subTable: undefined
     } as HbtGenTable
     return
   }
@@ -217,11 +213,11 @@ watch(() => props.id, async (newVal) => {
     // 确保所有必需字段都有值，并设置正确的tableId
     formData.value = {
       ...res.data.data,
-      id: res.data.data.id || 0,
+      id: res.data.data.genTableId || 0,
       genPath: res.data.data.genPath || '',
       columns: res.data.data.columns?.map(column => ({
         ...column,
-        tableId: res.data.data.id // 确保每个列都设置了正确的tableId
+        tableId: res.data.data.genTableId // 确保每个列都设置了正确的tableId
       })) || []
     } as HbtGenTable
     console.log('TableForm - 设置表单数据:', formData.value)
@@ -252,11 +248,12 @@ const handleSubmit = async () => {
     
     const api = props.id ? updateTable : createTable
     const data = {
-      id: formData.value.id,
+      genTableId: formData.value.genTableId,
       databaseName: formData.value.databaseName,
       tableName: formData.value.tableName,
       tableComment: formData.value.tableComment,
       baseNamespace: formData.value.baseNamespace,
+      tplType: formData.value.tplType,
       tplCategory: formData.value.tplCategory,
       subTableName: formData.value.subTableName,
       subTableFkName: formData.value.subTableFkName,
@@ -267,7 +264,7 @@ const handleSubmit = async () => {
       businessName: formData.value.businessName,
       functionName: formData.value.functionName,
       author: formData.value.author,
-      genType: formData.value.genType,
+      genMethod: formData.value.genMethod,
       genPath: formData.value.genPath,
       parentMenuId: formData.value.parentMenuId,
       sortType: formData.value.sortType,
@@ -292,13 +289,15 @@ const handleSubmit = async () => {
       repositoryClassName: formData.value.repositoryClassName,
       controllerNamespace: formData.value.controllerNamespace,
       controllerClassName: formData.value.controllerClassName,
-      options: formData.value.options,
+      genFunction: formData.value.genFunction,
+      isSqlDiff: formData.value.isSqlDiff,
+      isSnowflakeId: formData.value.isSnowflakeId,
+      isRepository: formData.value.isRepository,
       columns: formData.value.columns?.map(column => ({
         ...column,
-        tableId: formData.value.id
+        tableId: formData.value.genTableId
       })),
       subTable: formData.value.subTable,
-      tenantId: formData.value.tenantId || 0,
       createBy: formData.value.createBy || '',
       createTime: formData.value.createTime || '',
       isDeleted: formData.value.isDeleted || 0
@@ -318,7 +317,7 @@ const handleSubmit = async () => {
 
 const resetForm = () => {
   formData.value = {
-    id: 0,
+    genTableId: 0,
     createBy: '',
     createTime: '',
     updateBy: '',
@@ -331,6 +330,7 @@ const resetForm = () => {
     tableName: '',
     tableComment: '',
     baseNamespace: '',
+    tplType: '0',
     tplCategory: 'crud',
     subTableName: undefined,
     subTableFkName: undefined,
@@ -341,7 +341,7 @@ const resetForm = () => {
     businessName: '',
     functionName: '',
     author: '',
-    genType: '0',
+    genMethod: '0',
     genPath: '',
     parentMenuId: 0,
     sortType: 'asc',
@@ -366,15 +366,12 @@ const resetForm = () => {
     repositoryClassName: '',
     controllerNamespace: '',
     controllerClassName: '',
-    options: {
-      isSqlDiff: 1,
-      isSnowflakeId: 1,
-      isRepository: 0,
-      crudGroup: [1, 2, 3, 4, 5, 6, 7, 8]
-    },
+    genFunction: '1,2,3,4,5,6,7',
+    isSqlDiff: 1,
+    isSnowflakeId: 1,
+    isRepository: 1,
     columns: [],
-    subTable: undefined,
-    tenantId: 0
+    subTable: undefined
   }
 }
 </script>

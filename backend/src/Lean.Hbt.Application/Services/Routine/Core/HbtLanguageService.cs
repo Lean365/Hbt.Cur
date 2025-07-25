@@ -25,24 +25,32 @@ namespace Lean.Hbt.Application.Services.Core
     /// </remarks>
     public class HbtLanguageService : HbtBaseService, IHbtLanguageService
     {
-        private readonly IHbtRepository<HbtLanguage> _languageRepository;
+        /// <summary>
+        /// 仓储工厂
+        /// </summary>
+        protected readonly IHbtRepositoryFactory _repositoryFactory;
+
+        /// <summary>
+        /// 获取语言仓储
+        /// </summary>
+        private IHbtRepository<HbtLanguage> LanguageRepository => _repositoryFactory.GetBusinessRepository<HbtLanguage>();
 
         /// <summary>
         /// 构造函数
         /// </summary>
-        /// <param name="languageRepository">语言仓储</param>
-        /// <param name="logger">日志接口</param>
+        /// <param name="repositoryFactory">仓储工厂</param>
+        /// <param name="logger">日志服务</param>
         /// <param name="httpContextAccessor">HTTP上下文访问器</param>
         /// <param name="currentUser">当前用户服务</param>
         /// <param name="localization">本地化服务</param>
         public HbtLanguageService(
-            IHbtRepository<HbtLanguage> languageRepository,
+            IHbtRepositoryFactory repositoryFactory,
             IHbtLogger logger,
             IHttpContextAccessor httpContextAccessor,
             IHbtCurrentUser currentUser,
             IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
         {
-            _languageRepository = languageRepository ?? throw new ArgumentNullException(nameof(languageRepository));
+            _repositoryFactory = repositoryFactory ?? throw new ArgumentNullException(nameof(repositoryFactory));
         }
 
         /// <summary>
@@ -68,7 +76,7 @@ namespace Lean.Hbt.Application.Services.Core
         {
             query ??= new HbtLanguageQueryDto();
 
-            var result = await _languageRepository.GetPagedListAsync(
+            var result = await LanguageRepository.GetPagedListAsync(
                 KpLanguageQueryExpression(query),
                 query.PageIndex,
                 query.PageSize,
@@ -91,7 +99,7 @@ namespace Lean.Hbt.Application.Services.Core
         /// <returns>语言详情</returns>
         public async Task<HbtLanguageDto> GetByIdAsync(long LanguageId)
         {
-            var language = await _languageRepository.GetByIdAsync(LanguageId);
+            var language = await LanguageRepository.GetByIdAsync(LanguageId);
             return language == null ? throw new HbtException(L("Core.Language.NotFound", LanguageId)) : language.Adapt<HbtLanguageDto>();
         }
 
@@ -103,12 +111,12 @@ namespace Lean.Hbt.Application.Services.Core
         public async Task<long> CreateAsync(HbtLanguageCreateDto input)
         {
             // 验证字段是否已存在
-            await HbtValidateUtils.ValidateFieldExistsAsync(_languageRepository, "LangCode", input.LangCode);
-            await HbtValidateUtils.ValidateFieldExistsAsync(_languageRepository, "LangName", input.LangName);
-            await HbtValidateUtils.ValidateFieldExistsAsync(_languageRepository, "LangIcon", input.LangIcon);
+            await HbtValidateUtils.ValidateFieldExistsAsync(LanguageRepository, "LangCode", input.LangCode);
+            await HbtValidateUtils.ValidateFieldExistsAsync(LanguageRepository, "LangName", input.LangName);
+            await HbtValidateUtils.ValidateFieldExistsAsync(LanguageRepository, "LangIcon", input.LangIcon);
 
             var language = input.Adapt<HbtLanguage>();
-            return await _languageRepository.CreateAsync(language) > 0 ? language.Id : throw new HbtException(L("Core.Language.CreateFailed"));
+            return await LanguageRepository.CreateAsync(language) > 0 ? language.Id : throw new HbtException(L("Core.Language.CreateFailed"));
         }
 
         /// <summary>
@@ -118,19 +126,19 @@ namespace Lean.Hbt.Application.Services.Core
         /// <returns>是否成功</returns>
         public async Task<bool> UpdateAsync(HbtLanguageUpdateDto input)
         {
-            var language = await _languageRepository.GetByIdAsync(input.LanguageId)
+            var language = await LanguageRepository.GetByIdAsync(input.LanguageId)
                 ?? throw new HbtException(L("Core.Language.NotFound", input.LanguageId));
 
             // 验证字段是否已存在
             if (language.LangCode != input.LangCode)
-                await HbtValidateUtils.ValidateFieldExistsAsync(_languageRepository, "LangCode", input.LangCode, input.LanguageId);
+                await HbtValidateUtils.ValidateFieldExistsAsync(LanguageRepository, "LangCode", input.LangCode, input.LanguageId);
             if (language.LangName != input.LangName)
-                await HbtValidateUtils.ValidateFieldExistsAsync(_languageRepository, "LangName", input.LangName, input.LanguageId);
+                await HbtValidateUtils.ValidateFieldExistsAsync(LanguageRepository, "LangName", input.LangName, input.LanguageId);
             if (language.LangIcon != input.LangIcon)
-                await HbtValidateUtils.ValidateFieldExistsAsync(_languageRepository, "LangIcon", input.LangIcon, input.LanguageId);
+                await HbtValidateUtils.ValidateFieldExistsAsync(LanguageRepository, "LangIcon", input.LangIcon, input.LanguageId);
 
             input.Adapt(language);
-            return await _languageRepository.UpdateAsync(language) > 0;
+            return await LanguageRepository.UpdateAsync(language) > 0;
         }
 
         /// <summary>
@@ -140,10 +148,10 @@ namespace Lean.Hbt.Application.Services.Core
         /// <returns>是否成功</returns>
         public async Task<bool> DeleteAsync(long LanguageId)
         {
-            var language = await _languageRepository.GetByIdAsync(LanguageId)
+            var language = await LanguageRepository.GetByIdAsync(LanguageId)
                 ?? throw new HbtException($"语言不存在: {LanguageId}");
 
-            return await _languageRepository.DeleteAsync(LanguageId) > 0;
+            return await LanguageRepository.DeleteAsync(LanguageId) > 0;
         }
 
         /// <summary>
@@ -153,7 +161,7 @@ namespace Lean.Hbt.Application.Services.Core
         /// <returns>是否成功</returns>
         public async Task<bool> BatchDeleteAsync(long[] LanguageIds)
         {
-            return await _languageRepository.DeleteRangeAsync(LanguageIds.Cast<object>().ToList()) > 0;
+            return await LanguageRepository.DeleteRangeAsync(LanguageIds.Cast<object>().ToList()) > 0;
         }
 
         /// <summary>
@@ -173,11 +181,11 @@ namespace Lean.Hbt.Application.Services.Core
                 try
                 {
                     // 验证字段是否已存在
-                    await HbtValidateUtils.ValidateFieldExistsAsync(_languageRepository, "LangCode", language.LangCode);
-                    await HbtValidateUtils.ValidateFieldExistsAsync(_languageRepository, "LangName", language.LangName);
-                    await HbtValidateUtils.ValidateFieldExistsAsync(_languageRepository, "LangIcon", language.LangIcon);
+                    await HbtValidateUtils.ValidateFieldExistsAsync(LanguageRepository, "LangCode", language.LangCode);
+                    await HbtValidateUtils.ValidateFieldExistsAsync(LanguageRepository, "LangName", language.LangName);
+                    await HbtValidateUtils.ValidateFieldExistsAsync(LanguageRepository, "LangIcon", language.LangIcon);
 
-                    await _languageRepository.CreateAsync(language.Adapt<HbtLanguage>());
+                    await LanguageRepository.CreateAsync(language.Adapt<HbtLanguage>());
                     success++;
                 }
                 catch (Exception ex)
@@ -198,7 +206,7 @@ namespace Lean.Hbt.Application.Services.Core
         /// <returns>包含文件名和内容的元组</returns>
         public async Task<(string fileName, byte[] content)> ExportAsync(HbtLanguageQueryDto query, string sheetName = "HbtLanguage")
         {
-            var list = await _languageRepository.GetListAsync(KpLanguageQueryExpression(query));
+            var list = await LanguageRepository.GetListAsync(KpLanguageQueryExpression(query));
             var (fileName, content) = await HbtExcelHelper.ExportAsync(list.Adapt<List<HbtLanguageDto>>(), sheetName, L("Core.Language.ExportTitle"));
             return (fileName, content);
         }
@@ -220,11 +228,11 @@ namespace Lean.Hbt.Application.Services.Core
         /// <returns>是否成功</returns>
         public async Task<bool> UpdateStatusAsync(HbtLanguageStatusDto input)
         {
-            var language = await _languageRepository.GetByIdAsync(input.LanguageId)
+            var language = await LanguageRepository.GetByIdAsync(input.LanguageId)
                 ?? throw new HbtException(L("Core.Language.NotFound", input.LanguageId));
 
             language.Status = input.Status;
-            return await _languageRepository.UpdateAsync(language) > 0;
+            return await LanguageRepository.UpdateAsync(language) > 0;
         }
 
         /// <summary>
@@ -233,7 +241,7 @@ namespace Lean.Hbt.Application.Services.Core
         /// <returns>语言选项列表</returns>
         public async Task<List<HbtLanguageOptionDto>> GetOptionsAsync()
         {
-            var list = await _languageRepository.GetListAsync(x => x.Status == 0 && x.IsDeleted == 0);
+            var list = await LanguageRepository.GetListAsync(x => x.Status == 0 && x.IsDeleted == 0);
             return list.Adapt<List<HbtLanguageOptionDto>>();
         }
     }

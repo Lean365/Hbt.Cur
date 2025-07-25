@@ -11,7 +11,7 @@
     <div class="error-content">
       <a-result status="404">
         <template #icon>
-          <ErrorAnimation type="404" />
+          <ExclamationCircleOutlined style="font-size: 120px; color: #ff4d4f;" />
         </template>
         <template #title>
           <h2>{{ t('error.404.title') }}</h2>
@@ -32,7 +32,7 @@
 <script lang="ts" setup>
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
-
+import { ExclamationCircleOutlined } from '@ant-design/icons-vue'
 
 const { t } = useI18n()
 const router = useRouter()

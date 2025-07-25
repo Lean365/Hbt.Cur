@@ -3,22 +3,20 @@
 // 文件名 : HbtLoginService.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-22 14:30
-// 版本号 : V1.0.0
+// 版本号 : V0.0.1
 // 描述    : 登录服务实现 - 使用仓储工厂模式
 //===================================================================
 
+using System.Net;
 using System.Text.Json;
 using Lean.Hbt.Common.Constants;
-using Lean.Hbt.Common.Enums;
 using Lean.Hbt.Common.Options;
 using Lean.Hbt.Common.Utils;
 using Lean.Hbt.Domain.IServices.Caching;
 using Lean.Hbt.Domain.IServices.Security;
-using Lean.Hbt.Domain.Repositories;
-using Lean.Hbt.Application.Services.Audit;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 
 namespace Lean.Hbt.Application.Services.Identity;
 
@@ -28,11 +26,14 @@ namespace Lean.Hbt.Application.Services.Identity;
 /// <remarks>
 /// 创建者: Lean365
 /// 创建时间: 2024-01-22
-/// 更新: 2024-12-19 - 使用仓储工厂模式支持多库
+/// 更新: 2024-12-01 - 使用仓储工厂模式支持多库
 /// </remarks>
 public class HbtAuthService : HbtBaseService, IHbtAuthService
 {
-    private readonly IHbtRepositoryFactory _repositoryFactory;
+    /// <summary>
+    /// 仓储工厂
+    /// </summary>
+    protected readonly IHbtRepositoryFactory _repositoryFactory;
     private readonly IHbtCaptchaService _captchaService;
     private readonly IHbtJwtHandler _jwtHandler;
     private readonly IHbtMemoryCache _cache;
@@ -137,7 +138,7 @@ public class HbtAuthService : HbtBaseService, IHbtAuthService
                     LoginType = HbtLoginType.Password,
                     LoginStatus = HbtLoginStatus.Failed,
                     LoginTime = DateTime.Now,
-                    IpAddress = loginDto.DeviceInfo?.IpAddress ?? _httpContextAccessor.HttpContext?.Connection.RemoteIpAddress?.ToString() ?? "0.0.0.0",
+                    IpAddress = GetClientIpAddress(),
                     UserAgent = _httpContextAccessor.HttpContext?.Request.Headers["User-Agent"].ToString(),
                     DeviceInfo = loginDto.DeviceInfo,
                     LoginSuccess = 0,
@@ -171,7 +172,7 @@ public class HbtAuthService : HbtBaseService, IHbtAuthService
                         LoginType = HbtLoginType.Password,
                         LoginStatus = HbtLoginStatus.Failed,
                         LoginTime = DateTime.Now,
-                        IpAddress = loginDto.DeviceInfo?.IpAddress ?? _httpContextAccessor.HttpContext?.Connection.RemoteIpAddress?.ToString() ?? "0.0.0.0",
+                        IpAddress = GetClientIpAddress(),
                         UserAgent = _httpContextAccessor.HttpContext?.Request.Headers["User-Agent"].ToString(),
                         DeviceInfo = loginDto.DeviceInfo,
                         LoginSuccess = 0,
@@ -234,7 +235,7 @@ public class HbtAuthService : HbtBaseService, IHbtAuthService
             // 第十三步：记录环境日志
             // 记录用户的登录环境信息
             _logger.Info(L("Identity.Auth.ProcessLoginInfo"));
-            var loginEnvLog = await LoginEnvLogAsync(user.Id, loginDto.DeviceInfo, DateTime.Now, !isPageRefresh, environmentId);
+            var loginEnvLog = await LoginEnvLogAsync(user.Id, loginDto.DeviceInfo, DateTime.Now, !isPageRefresh, environmentId, deviceId);
             _logger.Info(L("Identity.Auth.LoginInfoProcessed"));
 
             _logger.Info(L("Identity.Auth.LoginSuccess", user.Id, user.UserName));
@@ -311,7 +312,7 @@ public class HbtAuthService : HbtBaseService, IHbtAuthService
         // 1. 验证刷新令牌 - 使用异步方法
         var cacheKey = $"refresh_token:{refreshToken}";
         _logger.Info("尝试从缓存获取刷新令牌: CacheKey={CacheKey}", cacheKey);
-        
+
         var userId = await _cache.GetAsync<string>(cacheKey);
         if (string.IsNullOrEmpty(userId))
         {
@@ -340,14 +341,14 @@ public class HbtAuthService : HbtBaseService, IHbtAuthService
         var roles = await UserRepository.GetUserRolesAsync(user.Id);
         var permissions = await UserRepository.GetUserPermissionsAsync(user.Id);
 
-        _logger.Info("获取用户角色和权限完成: RolesCount={RolesCount}, PermissionsCount={PermissionsCount}", 
+        _logger.Info("获取用户角色和权限完成: RolesCount={RolesCount}, PermissionsCount={PermissionsCount}",
             roles.Count, permissions.Count);
 
         // 5. 生成新令牌
-        var accessToken = await _jwtHandler.GenerateAccessTokenAsync(user,  roles.ToArray(), permissions.ToArray());
+        var accessToken = await _jwtHandler.GenerateAccessTokenAsync(user, roles.ToArray(), permissions.ToArray());
         var newRefreshToken = await _jwtHandler.GenerateRefreshTokenAsync();
 
-        _logger.Info("新令牌生成完成: AccessTokenLength={AccessTokenLength}, NewRefreshToken={NewRefreshToken}", 
+        _logger.Info("新令牌生成完成: AccessTokenLength={AccessTokenLength}, NewRefreshToken={NewRefreshToken}",
             accessToken.Length, newRefreshToken.Substring(0, Math.Min(10, newRefreshToken.Length)) + "...");
 
         // 6. 更新缓存 - 先设置新令牌，再删除旧令牌，避免竞态条件
@@ -536,7 +537,6 @@ public class HbtAuthService : HbtBaseService, IHbtAuthService
             loginExtend = new HbtLoginEnvLog
             {
                 UserId = userId,
-                DeviceId = deviceExtendId,
                 EnvironmentId = loginExtendId,
                 LoginCount = 1,
                 LoginStatus = (int)HbtLoginStatus.Failed,
@@ -573,6 +573,25 @@ public class HbtAuthService : HbtBaseService, IHbtAuthService
     {
         _logger.Info("创建新的登录日志: UserId={0}", userId);
         HbtLoginLog loginLog;
+        // 获取IP地址和位置信息
+        var backendIpAddress = GetClientIpAddress();
+        var frontendIpAddress = deviceInfo.IpAddress;
+
+        // 智能选择IP地址：优先使用前端获取的公网IP，否则使用后端IP
+        var finalIpAddress = !string.IsNullOrEmpty(frontendIpAddress) &&
+                            frontendIpAddress != "unknown" &&
+                            frontendIpAddress != "0.0.0.0" &&
+                            frontendIpAddress != "localhost" &&
+                            !frontendIpAddress.Contains("127.0.0.1") &&
+                            !IsPrivateIp(frontendIpAddress) // 如果是公网IP，优先使用
+                            ? frontendIpAddress : backendIpAddress;
+
+        // 优先使用前端位置信息，否则根据IP获取
+        var finalLocation = !string.IsNullOrEmpty(deviceInfo.Location) &&
+                           deviceInfo.Location != "unknown"
+                           ? deviceInfo.Location
+                           : await HbtIpLocationUtils.GetLocationAsync(finalIpAddress);
+
         loginLog = new HbtLoginLog
         {
             UserId = userId,
@@ -580,8 +599,8 @@ public class HbtAuthService : HbtBaseService, IHbtAuthService
             LoginType = HbtLoginType.Password,
             LoginStatus = HbtLoginStatus.Success,
             LoginTime = now,
-            IpAddress = deviceInfo.IpAddress ?? "未知",
-            Location = await HbtIpLocationUtils.GetLocationAsync(deviceInfo.IpAddress),
+            IpAddress = finalIpAddress,
+            Location = finalLocation,
             UserAgent = _httpContextAccessor.HttpContext?.Request.Headers["User-Agent"].ToString(),
             DeviceInfo = deviceInfo,
             DeviceId = deviceId?.ToString(),
@@ -605,7 +624,7 @@ public class HbtAuthService : HbtBaseService, IHbtAuthService
     /// <summary>
     /// 处理登录环境日志信息（新增或更新）
     /// </summary>
-    private async Task<HbtLoginEnvLog> LoginEnvLogAsync(long userId, HbtSignalRDevice deviceInfo, DateTime now, bool incrementLoginCount = true, string environmentId = "")
+    private async Task<HbtLoginEnvLog> LoginEnvLogAsync(long userId, HbtSignalRDevice deviceInfo, DateTime now, bool incrementLoginCount = true, string environmentId = "", string deviceId = "")
     {
         // 获取用户名
         var user = await UserRepository.GetByIdAsync(userId);
@@ -617,25 +636,43 @@ public class HbtAuthService : HbtBaseService, IHbtAuthService
         if (loginExtend == null)
         {
             _logger.Info("创建新的登录环境日志信息: UserId={0}", userId);
+            // 获取IP地址和位置信息
+            var backendIpAddress = GetClientIpAddress();
+            var frontendIpAddress = deviceInfo.IpAddress;
+
+            // 智能选择IP地址：优先使用前端获取的公网IP，否则使用后端IP
+            var finalIpAddress = !string.IsNullOrEmpty(frontendIpAddress) &&
+                                frontendIpAddress != "unknown" &&
+                                frontendIpAddress != "0.0.0.0" &&
+                                frontendIpAddress != "localhost" &&
+                                !frontendIpAddress.Contains("127.0.0.1") &&
+                                !IsPrivateIp(frontendIpAddress) // 如果是公网IP，优先使用
+                                ? frontendIpAddress : backendIpAddress;
+
+            // 优先使用前端位置信息，否则根据IP获取
+            var finalLocation = !string.IsNullOrEmpty(deviceInfo.Location) &&
+                               deviceInfo.Location != "unknown"
+                               ? deviceInfo.Location
+                               : await HbtIpLocationUtils.GetLocationAsync(finalIpAddress);
+
             loginExtend = new HbtLoginEnvLog
             {
                 UserId = userId,
-                DeviceId = deviceInfo.DeviceId ?? "unknown",
                 EnvironmentId = environmentId ?? "unknown",
                 LoginCount = 1,
                 LoginStatus = (int)HbtLoginStatus.Success,
                 LoginType = (int)HbtLoginType.Password,
                 FirstLoginTime = now,
-                FirstLoginIp = deviceInfo.IpAddress ?? "unknown",
-                FirstLoginLocation = deviceInfo.Location ?? "unknown",
-                FirstLoginDeviceId = deviceInfo.DeviceId ?? "unknown",
+                FirstLoginIp = finalIpAddress,
+                FirstLoginLocation = finalLocation,
+                FirstLoginDeviceId = !string.IsNullOrEmpty(deviceId) ? deviceId : (deviceInfo.DeviceId ?? "unknown"),
                 FirstLoginDeviceType = (int)deviceInfo.DeviceType,
                 FirstLoginBrowser = (int)deviceInfo.BrowserType,
                 FirstLoginOs = (int)deviceInfo.OsType,
                 LastLoginTime = now,
-                LastLoginIp = deviceInfo.IpAddress ?? "unknown",
-                LastLoginLocation = deviceInfo.Location ?? "unknown",
-                LastLoginDeviceId = deviceInfo.DeviceId ?? "unknown",
+                LastLoginIp = finalIpAddress,
+                LastLoginLocation = finalLocation,
+                LastLoginDeviceId = !string.IsNullOrEmpty(deviceId) ? deviceId : (deviceInfo.DeviceId ?? "unknown"),
                 LastLoginDeviceType = (int)deviceInfo.DeviceType,
                 LastLoginBrowser = (int)deviceInfo.BrowserType,
                 LastLoginOs = (int)deviceInfo.OsType,
@@ -666,12 +703,31 @@ public class HbtAuthService : HbtBaseService, IHbtAuthService
                 _logger.Info("页面刷新，不增加登录次数: UserId={0}", userId);
             }
 
+            // 获取IP地址和位置信息
+            var backendIpAddress = GetClientIpAddress();
+            var frontendIpAddress = deviceInfo.IpAddress;
+
+            // 智能选择IP地址：优先使用前端获取的公网IP，否则使用后端IP
+            var finalIpAddress = !string.IsNullOrEmpty(frontendIpAddress) &&
+                                frontendIpAddress != "unknown" &&
+                                frontendIpAddress != "0.0.0.0" &&
+                                frontendIpAddress != "localhost" &&
+                                !frontendIpAddress.Contains("127.0.0.1") &&
+                                !IsPrivateIp(frontendIpAddress) // 如果是公网IP，优先使用
+                                ? frontendIpAddress : backendIpAddress;
+
+            // 优先使用前端位置信息，否则根据IP获取
+            var finalLocation = !string.IsNullOrEmpty(deviceInfo.Location) &&
+                               deviceInfo.Location != "unknown"
+                               ? deviceInfo.Location
+                               : await HbtIpLocationUtils.GetLocationAsync(finalIpAddress);
+
             loginExtend.LoginStatus = (int)HbtLoginStatus.Success;
             loginExtend.LoginType = (int)HbtLoginType.Password;
             loginExtend.LastLoginTime = now;
-            loginExtend.LastLoginIp = deviceInfo.IpAddress ?? "unknown";
-            loginExtend.LastLoginLocation = deviceInfo.Location ?? "unknown";
-            loginExtend.LastLoginDeviceId = deviceInfo.DeviceId ?? "unknown";
+            loginExtend.LastLoginIp = finalIpAddress;
+            loginExtend.LastLoginLocation = finalLocation;
+            loginExtend.LastLoginDeviceId = !string.IsNullOrEmpty(deviceId) ? deviceId : (deviceInfo.DeviceId ?? "unknown");
             loginExtend.LastLoginDeviceType = (int)deviceInfo.DeviceType;
             loginExtend.LastLoginBrowser = (int)deviceInfo.BrowserType;
             loginExtend.LastLoginOs = (int)deviceInfo.OsType;
@@ -720,7 +776,7 @@ public class HbtAuthService : HbtBaseService, IHbtAuthService
             deviceId = $"web_{userId}_{DateTime.Now:yyyyMMddHHmmss}";
             _logger.Warn("设备ID为空，生成默认设备ID: {DeviceId}", deviceId);
         }
-        
+
         if (string.IsNullOrEmpty(connectionId))
         {
             connectionId = $"conn_{userId}_{DateTime.Now:yyyyMMddHHmmss}";
@@ -788,6 +844,44 @@ public class HbtAuthService : HbtBaseService, IHbtAuthService
         return user;
     }
     /// <summary>
+    /// 判断是否为内网IP地址
+    /// </summary>
+    /// <param name="ipAddress">IP地址</param>
+    /// <returns></returns>
+    private bool IsPrivateIp(string ipAddress)
+    {
+        if (string.IsNullOrEmpty(ipAddress))
+            return false;
+
+        // 处理IPv6回环地址
+        if (ipAddress == "::1")
+            return true;
+
+        if (!System.Net.IPAddress.TryParse(ipAddress, out var ip))
+            return false;
+
+        // 检查是否为回环地址
+        if (IPAddress.IsLoopback(ip))
+            return true;
+
+        var bytes = ip.GetAddressBytes();
+
+        // 10.0.0.0 - 10.255.255.255
+        if (bytes[0] == 10) return true;
+
+        // 172.16.0.0 - 172.31.255.255
+        if (bytes[0] == 172 && bytes[1] >= 16 && bytes[1] <= 31) return true;
+
+        // 192.168.0.0 - 192.168.255.255
+        if (bytes[0] == 192 && bytes[1] == 168) return true;
+
+        // 127.0.0.0 - 127.255.255.255 (回环地址)
+        if (bytes[0] == 127) return true;
+
+        return false;
+    }
+
+    /// <summary>
     /// 获取客户端IP地址
     /// </summary>
     /// <returns></returns>
@@ -795,28 +889,89 @@ public class HbtAuthService : HbtBaseService, IHbtAuthService
     {
         var httpContext = _httpContextAccessor.HttpContext;
         if (httpContext == null)
+        {
+            _logger.Warn("HTTP上下文为空，返回默认IP");
             return L("Identity.Device.DefaultIP");
+        }
 
         // 优先从X-Forwarded-For获取
         var forwardedFor = httpContext.Request.Headers["X-Forwarded-For"].ToString();
         if (!string.IsNullOrEmpty(forwardedFor))
         {
+            _logger.Debug("从X-Forwarded-For获取IP: {ForwardedFor}", forwardedFor);
             // 取第一个IP（最原始的客户端IP）
             var ips = forwardedFor.Split(',', StringSplitOptions.RemoveEmptyEntries);
             if (ips.Length > 0)
-                return ips[0].Trim();
+            {
+                var ip = ips[0].Trim();
+                _logger.Debug("解析X-Forwarded-For第一个IP: {IP}", ip);
+                // 处理IPv6地址
+                if (ip == "::1")
+                {
+                    _logger.Debug("检测到IPv6回环地址::1，转换为127.0.0.1");
+                    return "127.0.0.1";
+                }
+                return ip;
+            }
         }
 
         // 其次从X-Real-IP获取
         var realIp = httpContext.Request.Headers["X-Real-IP"].ToString();
         if (!string.IsNullOrEmpty(realIp))
+        {
+            _logger.Debug("从X-Real-IP获取IP: {RealIP}", realIp);
+            // 处理IPv6地址
+            if (realIp == "::1")
+            {
+                _logger.Debug("检测到IPv6回环地址::1，转换为127.0.0.1");
+                return "127.0.0.1";
+            }
             return realIp;
+        }
 
         // 最后从RemoteIpAddress获取
         var remoteIp = httpContext.Connection.RemoteIpAddress?.ToString();
         if (!string.IsNullOrEmpty(remoteIp))
-            return remoteIp;
+        {
+            _logger.Debug("从RemoteIpAddress获取IP: {RemoteIP}", remoteIp);
+            // 处理IPv6地址
+            if (remoteIp == "::1")
+            {
+                _logger.Debug("检测到IPv6回环地址::1，尝试获取本机内网IP");
+                var localIp = HbtLocalIpUtils.GetPreferredLocalIpAddress();
+                if (!string.IsNullOrEmpty(localIp))
+                {
+                    _logger.Debug("获取到本机内网IP: {LocalIP}", localIp);
+                    return localIp;
+                }
+                _logger.Debug("未获取到本机内网IP，转换为127.0.0.1");
+                return "127.0.0.1";
+            }
 
+            // 如果是127.0.0.1，也尝试获取本机内网IP
+            if (remoteIp == "127.0.0.1")
+            {
+                _logger.Debug("检测到IPv4回环地址127.0.0.1，尝试获取本机内网IP");
+                var localIp = HbtLocalIpUtils.GetPreferredLocalIpAddress();
+                if (!string.IsNullOrEmpty(localIp))
+                {
+                    _logger.Debug("获取到本机内网IP: {LocalIP}", localIp);
+                    return localIp;
+                }
+            }
+
+            return remoteIp;
+        }
+
+        _logger.Warn("无法获取客户端IP，尝试获取本机内网IP");
+        var fallbackLocalIp = HbtLocalIpUtils.GetPreferredLocalIpAddress();
+        if (!string.IsNullOrEmpty(fallbackLocalIp))
+        {
+            _logger.Debug("获取到本机内网IP作为备选: {LocalIP}", fallbackLocalIp);
+            return fallbackLocalIp;
+        }
+
+        _logger.Warn("无法获取任何IP地址，返回默认IP");
         return L("Identity.Device.DefaultIP");
     }
-} 
+}

@@ -3,7 +3,7 @@
 // 文件名 : HbtConstants.cs 
 // 创建者 : Lean365
 // 创建时间: 2024-02-18 02:30
-// 版本号 : V1.0.0
+// 版本号 : V0.0.1
 // 描述    : 常量定义
 //===================================================================
 
@@ -84,9 +84,19 @@ namespace Lean.Hbt.Common.Constants
             public const string InvalidCaptcha = "1001";
 
             /// <summary>
+            /// 无效参数
+            /// </summary>
+            public const string InvalidParameter = "1002";
+
+            /// <summary>
+            /// 用户不存在
+            /// </summary>
+            public const string UserNotFound = "1003";
+
+            /// <summary>
             /// 用户不属于租户
             /// </summary>
-            public const string UserNotBelongToTenant = "1003";
+            public const string UserNotBelongToTenant = "1004";
         }
 
         /// <summary>

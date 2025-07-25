@@ -25,28 +25,37 @@ namespace Lean.Hbt.Application.Services.Core
     /// </remarks>
     public class HbtTranslationService : HbtBaseService, IHbtTranslationService
     {
-        private readonly IHbtRepository<HbtTranslation> _translationRepository;
-        private readonly IHbtRepository<HbtLanguage> _languageRepository;
+        /// <summary>
+        /// 仓储工厂
+        /// </summary>
+        protected readonly IHbtRepositoryFactory _repositoryFactory;
+
+        /// <summary>
+        /// 获取翻译仓储
+        /// </summary>
+        private IHbtRepository<HbtTranslation> TranslationRepository => _repositoryFactory.GetBusinessRepository<HbtTranslation>();
+
+        /// <summary>
+        /// 获取语言仓储
+        /// </summary>
+        private IHbtRepository<HbtLanguage> LanguageRepository => _repositoryFactory.GetBusinessRepository<HbtLanguage>();
 
         /// <summary>
         /// 构造函数
         /// </summary>
-        /// <param name="translationRepository">翻译仓储</param>
-        /// <param name="languageRepository">语言仓储</param>
+        /// <param name="repositoryFactory">仓储工厂</param>
         /// <param name="logger">日志服务</param>
         /// <param name="httpContextAccessor">HTTP上下文访问器</param>
         /// <param name="currentUser">当前用户服务</param>
         /// <param name="localization">本地化服务</param>
         public HbtTranslationService(
-            IHbtRepository<HbtTranslation> translationRepository,
-            IHbtRepository<HbtLanguage> languageRepository,
+            IHbtRepositoryFactory repositoryFactory,
             IHbtLogger logger,
             IHttpContextAccessor httpContextAccessor,
             IHbtCurrentUser currentUser,
             IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
         {
-            _translationRepository = translationRepository ?? throw new ArgumentNullException(nameof(translationRepository));
-            _languageRepository = languageRepository ?? throw new ArgumentNullException(nameof(languageRepository));
+            _repositoryFactory = repositoryFactory ?? throw new ArgumentNullException(nameof(repositoryFactory));
         }
 
         /// <summary>
@@ -72,7 +81,7 @@ namespace Lean.Hbt.Application.Services.Core
         {
             query ??= new HbtTranslationQueryDto();
 
-            var result = await _translationRepository.GetPagedListAsync(
+            var result = await TranslationRepository.GetPagedListAsync(
                 KpTranslationQueryExpression(query),
                 query.PageIndex,
                 query.PageSize,
@@ -95,7 +104,7 @@ namespace Lean.Hbt.Application.Services.Core
         /// <returns>翻译详情</returns>
         public async Task<HbtTranslationDto> GetByIdAsync(long TranslationId)
         {
-            var translation = await _translationRepository.GetByIdAsync(TranslationId);
+            var translation = await TranslationRepository.GetByIdAsync(TranslationId);
             return translation == null ? throw new HbtException(L("Core.Translation.NotFound", TranslationId)) : translation.Adapt<HbtTranslationDto>();
         }
 
@@ -112,12 +121,12 @@ namespace Lean.Hbt.Application.Services.Core
                 { "LangCode", input.LangCode },
                 { "TransKey", input.TransKey }
             };
-            await HbtValidateUtils.ValidateFieldsExistsAsync(_translationRepository, fieldValues);
+            await HbtValidateUtils.ValidateFieldsExistsAsync(TranslationRepository, fieldValues);
 
             var translation = input.Adapt<HbtTranslation>();
             translation.Status = 0; // 0表示正常状态
 
-            return await _translationRepository.CreateAsync(translation) > 0 ? translation.Id : throw new HbtException(L("Core.Translation.CreateFailed"));
+            return await TranslationRepository.CreateAsync(translation) > 0 ? translation.Id : throw new HbtException(L("Core.Translation.CreateFailed"));
         }
 
         /// <summary>
@@ -127,7 +136,7 @@ namespace Lean.Hbt.Application.Services.Core
         /// <returns>是否成功</returns>
         public async Task<bool> UpdateAsync(HbtTranslationUpdateDto input)
         {
-            var translation = await _translationRepository.GetByIdAsync(input.TranslationId)
+            var translation = await TranslationRepository.GetByIdAsync(input.TranslationId)
                 ?? throw new HbtException(L("Core.Translation.NotFound", input.TranslationId));
 
             // 验证字段组合是否已存在
@@ -138,11 +147,11 @@ namespace Lean.Hbt.Application.Services.Core
                     { "LangCode", input.LangCode },
                     { "TransKey", input.TransKey }
                 };
-                await HbtValidateUtils.ValidateFieldsExistsAsync(_translationRepository, fieldValues, input.TranslationId);
+                await HbtValidateUtils.ValidateFieldsExistsAsync(TranslationRepository, fieldValues, input.TranslationId);
             }
 
             input.Adapt(translation);
-            return await _translationRepository.UpdateAsync(translation) > 0;
+            return await TranslationRepository.UpdateAsync(translation) > 0;
         }
 
         /// <summary>
@@ -152,10 +161,10 @@ namespace Lean.Hbt.Application.Services.Core
         /// <returns>是否成功</returns>
         public async Task<bool> DeleteAsync(long TranslationId)
         {
-            var translation = await _translationRepository.GetByIdAsync(TranslationId)
+            var translation = await TranslationRepository.GetByIdAsync(TranslationId)
                 ?? throw new HbtException(L("Core.Translation.NotFound", TranslationId));
 
-            return await _translationRepository.DeleteAsync(TranslationId) > 0;
+            return await TranslationRepository.DeleteAsync(TranslationId) > 0;
         }
 
         /// <summary>
@@ -166,7 +175,7 @@ namespace Lean.Hbt.Application.Services.Core
         public async Task<bool> BatchDeleteAsync(long[] TranslationIds)
         {
             if (TranslationIds == null || TranslationIds.Length == 0) return false;
-            return await _translationRepository.DeleteRangeAsync(TranslationIds.Cast<object>().ToList()) > 0;
+            return await TranslationRepository.DeleteRangeAsync(TranslationIds.Cast<object>().ToList()) > 0;
         }
 
         /// <summary>
@@ -191,9 +200,9 @@ namespace Lean.Hbt.Application.Services.Core
                         { "LangCode", translation.LangCode },
                         { "TransKey", translation.TransKey }
                     };
-                    await HbtValidateUtils.ValidateFieldsExistsAsync(_translationRepository, fieldValues);
+                    await HbtValidateUtils.ValidateFieldsExistsAsync(TranslationRepository, fieldValues);
 
-                    await _translationRepository.CreateAsync(translation.Adapt<HbtTranslation>());
+                    await TranslationRepository.CreateAsync(translation.Adapt<HbtTranslation>());
                     success++;
                 }
                 catch (Exception ex)
@@ -214,7 +223,7 @@ namespace Lean.Hbt.Application.Services.Core
         /// <returns>包含文件名和内容的元组</returns>
         public async Task<(string fileName, byte[] content)> ExportAsync(HbtTranslationQueryDto query, string sheetName = "Translation")
         {
-            var list = await _translationRepository.GetListAsync(KpTranslationQueryExpression(query));
+            var list = await TranslationRepository.GetListAsync(KpTranslationQueryExpression(query));
             return await HbtExcelHelper.ExportAsync(list.Adapt<List<HbtTranslationDto>>(), sheetName, L("Core.Translation.ExportTitle"));
         }
 
@@ -235,11 +244,11 @@ namespace Lean.Hbt.Application.Services.Core
         /// <returns>是否成功</returns>
         public async Task<bool> UpdateStatusAsync(HbtTranslationStatusDto input)
         {
-            var translation = await _translationRepository.GetByIdAsync(input.TranslationId)
+            var translation = await TranslationRepository.GetByIdAsync(input.TranslationId)
                 ?? throw new HbtException(L("Core.Translation.NotFound", input.TranslationId));
 
             translation.Status = input.Status;
-            return await _translationRepository.UpdateAsync(translation) > 0;
+            return await TranslationRepository.UpdateAsync(translation) > 0;
         }
 
         /// <summary>
@@ -250,7 +259,7 @@ namespace Lean.Hbt.Application.Services.Core
         /// <returns>翻译值</returns>
         public async Task<string> GetTransValueAsync(string langCode, string transKey)
         {
-            var translation = await _translationRepository.GetFirstAsync(x => x.LangCode == langCode && x.TransKey == transKey);
+            var translation = await TranslationRepository.GetFirstAsync(x => x.LangCode == langCode && x.TransKey == transKey);
             return translation?.TransValue ?? string.Empty;
         }
 
@@ -262,7 +271,7 @@ namespace Lean.Hbt.Application.Services.Core
         /// <returns>翻译列表</returns>
         public async Task<List<HbtTranslationDto>> GetListByModuleAsync(string langCode, string moduleName)
         {
-            var list = await _translationRepository.GetListAsync(x => x.LangCode == langCode && x.ModuleName == moduleName);
+            var list = await TranslationRepository.GetListAsync(x => x.LangCode == langCode && x.ModuleName == moduleName);
             return list.Adapt<List<HbtTranslationDto>>();
         }
 
@@ -274,7 +283,7 @@ namespace Lean.Hbt.Application.Services.Core
         public async Task<HbtPagedResult<HbtTransposedDto>> GetTransposedDataAsync(HbtTransposedQueryDto query)
         {
             // 1. 获取所有启用的语言代码
-            var languages = await _languageRepository.GetListAsync(x => x.Status == 0);
+            var languages = await LanguageRepository.GetListAsync(x => x.Status == 0);
             var langCodes = languages.Select(x => x.LangCode).ToList();
             _logger.Info($"获取到的语言代码列表: {string.Join(", ", langCodes)}");
 
@@ -287,7 +296,7 @@ namespace Lean.Hbt.Application.Services.Core
                 .ToExpression();
 
             // 3. 获取所有翻译键并分页
-            var allTranslations = await _translationRepository.GetListAsync(exp);
+            var allTranslations = await TranslationRepository.GetListAsync(exp);
             _logger.Info($"查询到的翻译数据数量: {allTranslations.Count}");
             var transKeys = allTranslations.Select(x => x.TransKey).Distinct().ToList();
             _logger.Info($"翻译键数量: {transKeys.Count}");
@@ -349,11 +358,11 @@ namespace Lean.Hbt.Application.Services.Core
             }
 
             // 1. 获取所有启用的语言代码
-            var languages = await _languageRepository.GetListAsync(x => x.Status == 0);
+            var languages = await LanguageRepository.GetListAsync(x => x.Status == 0);
             var langCodes = languages.Select(x => x.LangCode).ToList();
 
             // 2. 获取指定翻译键的所有翻译
-            var translations = await _translationRepository.GetListAsync(x => x.TransKey == transKey);
+            var translations = await TranslationRepository.GetListAsync(x => x.TransKey == transKey);
             if (!translations.Any())
             {
                 throw new HbtException(L("Core.Translation.NotFound", transKey));
@@ -406,7 +415,7 @@ namespace Lean.Hbt.Application.Services.Core
             try
             {
                 // 获取所有启用的语言
-                var languages = await _languageRepository.GetListAsync(x => x.Status == 0);
+                var languages = await LanguageRepository.GetListAsync(x => x.Status == 0);
                 var langCodes = languages.Select(x => x.LangCode).ToList();
 
                 // 验证每个语言的翻译数据
@@ -420,7 +429,7 @@ namespace Lean.Hbt.Application.Services.Core
                             { "LangCode", langCode },
                             { "TransKey", input.TransKey }
                         };
-                        await HbtValidateUtils.ValidateFieldsExistsAsync(_translationRepository, fieldValues);
+                        await HbtValidateUtils.ValidateFieldsExistsAsync(TranslationRepository, fieldValues);
 
                         // 创建翻译记录，不管 TransValue 是否有值
                         var translationEntity = new HbtTranslation
@@ -435,7 +444,7 @@ namespace Lean.Hbt.Application.Services.Core
                             CreateTime = DateTime.Now
                         };
 
-                        await _translationRepository.CreateAsync(translationEntity);
+                        await TranslationRepository.CreateAsync(translationEntity);
                     }
                 }
 
@@ -463,7 +472,7 @@ namespace Lean.Hbt.Application.Services.Core
             try
             {
                 // 获取所有启用的语言
-                var languages = await _languageRepository.GetListAsync(x => x.Status == 0);
+                var languages = await LanguageRepository.GetListAsync(x => x.Status == 0);
 
                 // 处理每个语言的翻译
                 foreach (var language in languages)
@@ -472,7 +481,7 @@ namespace Lean.Hbt.Application.Services.Core
                     if (input.Translations.TryGetValue(langCode, out var translation))
                     {
                         // 根据 LangCode 和 TransKey 查询已存在的翻译记录
-                        var existingTranslation = await _translationRepository.GetFirstAsync(x => 
+                        var existingTranslation = await TranslationRepository.GetFirstAsync(x => 
                             x.LangCode == langCode && x.TransKey == input.TransKey);
 
                         if (existingTranslation != null)
@@ -483,7 +492,7 @@ namespace Lean.Hbt.Application.Services.Core
                             existingTranslation.Remark = input.Remark;
                             existingTranslation.UpdateBy = _currentUser.UserName;
                             existingTranslation.UpdateTime = DateTime.Now;
-                            await _translationRepository.UpdateAsync(existingTranslation);
+                            await TranslationRepository.UpdateAsync(existingTranslation);
                         }
                         else
                         {
@@ -500,7 +509,7 @@ namespace Lean.Hbt.Application.Services.Core
                                 CreateTime = DateTime.Now
                             };
 
-                            await _translationRepository.CreateAsync(newTranslation);
+                            await TranslationRepository.CreateAsync(newTranslation);
                         }
                     }
                 }

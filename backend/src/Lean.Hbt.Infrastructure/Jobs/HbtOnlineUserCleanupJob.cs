@@ -3,11 +3,12 @@
 // 文件名 : HbtOnlineUserCleanupJob.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-20 16:30
-// 版本号 : V1.0.0
-// 描述    : 在线用户清理任务
+// 版本号 : V0.0.1
+// 描述    : 在线用户清理任务 - 使用仓储工厂模式
 //===================================================================
 
 using Lean.Hbt.Domain.Entities.SignalR;
+using Lean.Hbt.Domain.Repositories;
 using Quartz;
 
 namespace Lean.Hbt.Infrastructure.Jobs
@@ -21,11 +22,12 @@ namespace Lean.Hbt.Infrastructure.Jobs
     /// 1. 检测超过5分钟未更新心跳的用户
     /// 2. 将这些用户标记为离线状态
     /// 3. 更新用户的最后活动时间
+    /// 更新: 2024-12-01 - 使用仓储工厂模式支持多库
     /// </remarks>
     [DisallowConcurrentExecution] // 禁止并发执行
     public class HbtOnlineUserCleanupJob : IJob
     {
-        private readonly IHbtRepository<HbtOnlineUser> _repository;
+        protected readonly IHbtRepositoryFactory _repositoryFactory;
 
         /// <summary>
         /// 日志服务
@@ -33,15 +35,20 @@ namespace Lean.Hbt.Infrastructure.Jobs
         protected readonly IHbtLogger _logger;
 
         /// <summary>
+        /// 获取在线用户仓储
+        /// </summary>
+        private IHbtRepository<HbtOnlineUser> Repository => _repositoryFactory.GetAuthRepository<HbtOnlineUser>();
+
+        /// <summary>
         /// 构造函数
         /// </summary>
-        /// <param name="repository">在线用户仓储接口</param>
+        /// <param name="repositoryFactory">仓储工厂</param>
         /// <param name="logger">日志记录器</param>
         public HbtOnlineUserCleanupJob(
-            IHbtRepository<HbtOnlineUser> repository,
+            IHbtRepositoryFactory repositoryFactory,
             IHbtLogger logger)
         {
-            _repository = repository;
+            _repositoryFactory = repositoryFactory ?? throw new ArgumentNullException(nameof(repositoryFactory));
             _logger = logger;
         }
 
@@ -58,7 +65,7 @@ namespace Lean.Hbt.Infrastructure.Jobs
 
                 // 获取超过5分钟未更新心跳的用户
                 var timeout = DateTime.Now.AddMinutes(-5);
-                var timeoutUsers = await _repository.GetListAsync(
+                var timeoutUsers = await Repository.GetListAsync(
                     u => u.OnlineStatus == 0 && u.LastHeartbeat < timeout
                 );
 
@@ -77,7 +84,7 @@ namespace Lean.Hbt.Infrastructure.Jobs
                             user.UpdateBy = "Hbt365";
                             user.UpdateTime = now;
                         }
-                        await _repository.UpdateRangeAsync(timeoutUsers);
+                        await Repository.UpdateRangeAsync(timeoutUsers);
 
                         _logger.Info("成功清理{Count}个超时用户", timeoutUsers.Count);
 

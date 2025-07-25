@@ -6,10 +6,6 @@ export default {
         deptId: {
           label: '部门ID'
         },
-        parentId: {
-          label: '上级部门',
-          placeholder: '请选择上级部门'
-        },
         deptName: {
           label: '部门名称',
           placeholder: '请输入部门名称',
@@ -18,6 +14,10 @@ export default {
             length: '部门名称长度必须在2-20个字符之间'
           }
         },
+        parentId: {
+          label: '上级部门',
+          placeholder: '请选择上级部门'
+        },        
         orderNum: {
           label: '显示顺序',
           placeholder: '请输入显示顺序'
@@ -34,6 +34,10 @@ export default {
           label: '邮箱',
           placeholder: '请输入邮箱'
         },
+        userCount: {
+          label: '用户数量',
+          placeholder: '请输入用户数量'
+        },
         status: {
           label: '状态',
           placeholder: '请选择状态',
@@ -42,7 +46,6 @@ export default {
             disabled: '禁用'
           }
         },
-        createTime: '创建时间'
       },
       actions: {
         add: '新增部门',

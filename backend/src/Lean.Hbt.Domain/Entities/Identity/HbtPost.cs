@@ -37,16 +37,16 @@ namespace Lean.Hbt.Domain.Entities.Identity
         public int Rank { get; set; } = 0;
 
         /// <summary>
-        /// 显示顺序
-        /// </summary>
-        [SugarColumn(ColumnName = "order_num", ColumnDescription = "显示顺序", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
-        public int OrderNum { get; set; } = 0;
-
-        /// <summary>
         /// 用户数
         /// </summary>
         [SugarColumn(ColumnName = "user_count", ColumnDescription = "用户数", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
         public int UserCount { get; set; } = 0;
+
+        /// <summary>
+        /// 显示顺序
+        /// </summary>
+        [SugarColumn(ColumnName = "order_num", ColumnDescription = "显示顺序", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
+        public int OrderNum { get; set; } = 0;
 
         /// <summary>
         /// 岗位状态（0正常 1停用）

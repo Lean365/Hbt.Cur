@@ -19,11 +19,11 @@ namespace Lean.Hbt.Application.Services.Generator;
 /// </summary>
 public class HbtGenTableService : HbtBaseService, IHbtGenTableService
 {
-    private readonly IHbtRepositoryFactory _repositoryFactory;
+    protected readonly IHbtRepositoryFactory _repositoryFactory;
     private readonly ISqlSugarClient _db;
 
-    private IHbtRepository<HbtGenTable> TableRepository => _repositoryFactory.GetAuthRepository<HbtGenTable>();
-    private IHbtRepository<HbtGenColumn> ColumnRepository => _repositoryFactory.GetAuthRepository<HbtGenColumn>();
+    private IHbtRepository<HbtGenTable> TableRepository => _repositoryFactory.GetGeneratorRepository<HbtGenTable>();
+    private IHbtRepository<HbtGenColumn> ColumnRepository => _repositoryFactory.GetGeneratorRepository<HbtGenColumn>();
 
     /// <summary>
     /// 构造函数

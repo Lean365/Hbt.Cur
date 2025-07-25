@@ -2,154 +2,177 @@
 
 //===================================================================
 // 项目名 : Lean.Hbt
-// 文件名 : HbtEngine.cs
-// 创建者 : Lean365
-// 创建时间: 2024-01-23 12:00
-// 版本号 : V1.0.0
-// 描述    : 工作流引擎实现
+// 文件名 : HbtWorkflowEngine.cs
+// 创建者 : Claude
+// 创建时间: 2024-12-01
+// 版本号 : V0.0.1
+// 描述    : 工作流引擎实现 - 基于简化后的实体结构
 //===================================================================
 
-using Lean.Hbt.Application.Services.Workflow.Engine.Executors;
-using Lean.Hbt.Application.Services.Workflow.Engine.Expressions;
-using Lean.Hbt.Domain.Data;
+using System.Text.Json;
+using Microsoft.AspNetCore.Http;
+using Lean.Hbt.Common.Helpers;
+using SqlSugar;
 
 namespace Lean.Hbt.Application.Services.Workflow.Engine
 {
     /// <summary>
     /// 工作流引擎实现
     /// </summary>
+    /// <remarks>
+    /// 创建者: Claude
+    /// 创建时间: 2024-12-01
+    /// 功能说明:
+    /// 1. 提供工作流实例的启动、暂停、恢复、终止等操作
+    /// 2. 支持工作流审批和流转
+    /// 3. 实现工作流变量的管理
+    /// 4. 提供工作流状态查询和历史记录
+    /// 基于简化后的实体结构实现
+    /// </remarks>
     public class HbtWorkflowEngine : IHbtWorkflowEngine
     {
+
+        /// <summary>
+        /// 仓储工厂
+        /// </summary>
+        protected readonly IHbtRepositoryFactory _repositoryFactory;
+
+        /// <summary>
+        /// 数据库上下文
+        /// </summary>
         private readonly IHbtDbContext _dbContext;
-        private readonly IHbtRepository<HbtInstance> _instanceRepository;
-        private readonly IHbtRepository<HbtNode> _nodeRepository;
-        private readonly IHbtRepository<HbtNodeTemplate> _nodeTemplateRepository;
-        private readonly IHbtRepository<HbtTransition> _transitionRepository;
-        private readonly IHbtRepository<HbtVariable> _variableRepository;
-        private readonly IHbtRepository<HbtDefinition> _definitionRepository;
-        private readonly IEnumerable<IHbtNodeExecutor> _nodeExecutors;
-        private readonly IHbtRepository<HbtParallelBranch> _parallelBranchRepository;
-        private readonly IHbtExpressionEngine _expressionEngine;
-        private readonly IHbtRepository<HbtActivity> _activityRepository;
-        private readonly IHbtRepository<HbtHistory> _historyRepository;
+
+        /// <summary>
+        /// 日志
+        /// </summary>
         private readonly IHbtLogger _logger;
+
+        /// <summary>
+        /// 当前用户
+        /// </summary>
+        private readonly IHbtCurrentUser _currentUser;
+
+        /// <summary>
+        /// 获取实例仓储
+        /// </summary>
+        private IHbtRepository<HbtInstance> InstanceRepository => _repositoryFactory.GetWorkflowRepository<HbtInstance>();
+
+        /// <summary>
+        /// 获取方案仓储
+        /// </summary>
+        private IHbtRepository<HbtScheme> SchemeRepository => _repositoryFactory.GetWorkflowRepository<HbtScheme>();
+
+        /// <summary>
+        /// 获取操作记录仓储
+        /// </summary>
+        private IHbtRepository<HbtInstanceOper> OperRepository => _repositoryFactory.GetWorkflowRepository<HbtInstanceOper>();
+
+        /// <summary>
+        /// 获取流转历史仓储
+        /// </summary>
+        private IHbtRepository<HbtInstanceTrans> TransRepository => _repositoryFactory.GetWorkflowRepository<HbtInstanceTrans>();
+
+
 
         /// <summary>
         /// 构造函数
         /// </summary>
+        /// <param name="dbContext">数据库上下文</param>
+        /// <param name="repositoryFactory">仓储工厂</param>
+        /// <param name="logger">日志服务</param>
+        /// <param name="currentUser">当前用户服务</param>
         public HbtWorkflowEngine(
             IHbtDbContext dbContext,
-            IHbtRepository<HbtInstance> instanceRepository,
-            IHbtRepository<HbtNode> nodeRepository,
-            IHbtRepository<HbtNodeTemplate> nodeTemplateRepository,
-            IHbtRepository<HbtTransition> transitionRepository,
-            IHbtRepository<HbtVariable> variableRepository,
-            IHbtRepository<HbtDefinition> definitionRepository,
-            IEnumerable<IHbtNodeExecutor> nodeExecutors,
-            IHbtRepository<HbtParallelBranch> parallelBranchRepository,
-            IHbtExpressionEngine expressionEngine,
-            IHbtRepository<HbtActivity> activityRepository,
-            IHbtRepository<HbtHistory> historyRepository,
-            IHbtLogger logger)
+            IHbtRepositoryFactory repositoryFactory,
+            IHbtLogger logger,
+            IHbtCurrentUser currentUser)
         {
             _dbContext = dbContext;
-            _instanceRepository = instanceRepository;
-            _nodeRepository = nodeRepository;
-            _nodeTemplateRepository = nodeTemplateRepository;
-            _transitionRepository = transitionRepository;
-            _variableRepository = variableRepository;
-            _definitionRepository = definitionRepository;
-            _nodeExecutors = nodeExecutors;
-            _parallelBranchRepository = parallelBranchRepository;
-            _expressionEngine = expressionEngine;
-            _activityRepository = activityRepository;
-            _historyRepository = historyRepository;
+            _repositoryFactory = repositoryFactory ?? throw new ArgumentNullException(nameof(repositoryFactory));
             _logger = logger;
+            _currentUser = currentUser;
         }
 
-        /// <inheritdoc/>
-        public async Task<long> StartAsync(long definitionId, string title, long initiatorId, string formData, Dictionary<string, object>? variables = null)
+        /// <summary>
+        /// 启动工作流实例
+        /// </summary>
+        /// <param name="dto">工作流启动信息</param>
+        /// <returns>新创建的工作流实例ID</returns>
+        /// <exception cref="InvalidOperationException">当工作流方案不存在、未发布或配置无效时抛出</exception>
+        public async Task<long> StartAsync(HbtWorkflowStartDto dto)
         {
             _dbContext.BeginTran();
             try
             {
-                // 获取工作流定义
-                var definition = await _definitionRepository.GetByIdAsync(definitionId);
-                if (definition == null)
+                // 获取工作流方案
+                var scheme = await SchemeRepository.GetByIdAsync(dto.SchemeId);
+                if (scheme == null)
                 {
-                    throw new InvalidOperationException("工作流定义不存在");
+                    throw new InvalidOperationException("工作流方案不存在");
                 }
 
-                if (definition.Status != 1) // 1 表示已发布
+                if (scheme.Status != 1) // 1 表示已发布
                 {
-                    throw new InvalidOperationException("工作流定义未发布，无法启动");
+                    throw new InvalidOperationException("工作流方案未发布，无法启动");
+                }
+
+                // 解析工作流配置
+                var workflowConfig = JsonSerializer.Deserialize<WorkflowConfigModel>(scheme.SchemeConfig);
+                if (workflowConfig == null || !workflowConfig.Nodes.Any())
+                {
+                    throw new InvalidOperationException("工作流配置无效");
+                }
+
+                // 获取开始节点
+                var startNode = workflowConfig.Nodes.FirstOrDefault(x => x.Type == "start");
+                if (startNode == null)
+                {
+                    throw new InvalidOperationException("工作流配置中未找到开始节点");
                 }
 
                 // 创建工作流实例
                 var instance = new HbtInstance
                 {
-                    DefinitionId = definitionId,
-                    InstanceName = title,
-                    BusinessKey = Guid.NewGuid().ToString(), // 生成业务键
-                    InitiatorId = initiatorId,
-                    FormData = formData,
+                    SchemeId = dto.SchemeId,
+                    InstanceTitle = dto.InstanceTitle,
+                    BusinessKey = dto.BusinessKey ?? Guid.NewGuid().ToString(),
+                    InitiatorId = dto.InitiatorId,
+                    CurrentNodeId = startNode.Id,
+                    CurrentNodeName = startNode.Name,
                     Status = 1, // 1 表示运行中
-                    StartTime = DateTime.Now
+                    StartTime = DateTime.Now,
+                    Variables = dto.Variables
                 };
 
-                await _instanceRepository.CreateAsync(instance);
-
-                // 从workflowConfig创建节点
-                var nodes = await CreateNodesFromWorkflowConfigAsync(definition, instance.Id);
-                if (!nodes.Any())
-                {
-                    throw new InvalidOperationException("无法从工作流配置创建节点");
-                }
-
-                // 获取开始节点
-                var startNode = nodes.FirstOrDefault(x => {
-                    var nodeTemplate = _nodeTemplateRepository.GetByIdAsync(x.NodeTemplateId).Result;
-                    return nodeTemplate?.NodeType == 1; // 1 表示开始节点
-                });
-                if (startNode == null)
-                {
-                    throw new InvalidOperationException("工作流定义中未找到开始节点");
-                }
-
-                // 更新实例的当前节点
-                instance.CurrentNodeId = startNode.Id;
-                await _instanceRepository.UpdateAsync(instance);
-
-                // 保存变量
-                if (variables != null)
-                {
-                    await SaveVariablesAsync(instance.Id, variables);
-                }
+                await InstanceRepository.CreateAsync(instance);
 
                 // 记录工作流启动历史
-                await CreateHistoryRecordAsync(instance.Id, startNode.Id, 1, initiatorId, 1, "工作流启动");
+                await CreateTransRecordAsync(instance.Id, "", startNode.Id, startNode.Name, 1, "工作流启动");
 
-                // 执行开始节点
-                var result = await ExecuteNodeAsync(instance.Id, startNode.Id);
-                if (!result.Success)
-                {
-                    throw new InvalidOperationException($"执行开始节点失败: {result.ErrorMessage}");
-                }
+                // 记录开始节点操作
+                await CreateOperRecordAsync(instance.Id, startNode.Id, startNode.Name, 1, dto.InitiatorId, "工作流启动", null);
 
                 _dbContext.CommitTran();
+                _logger.Info($"工作流实例启动成功，ID: {instance.Id}, 方案: {scheme.SchemeName}");
                 return instance.Id;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 _dbContext.RollbackTran();
+                _logger.Error($"工作流实例启动失败: {ex.Message}", ex);
                 throw;
             }
         }
 
-        /// <inheritdoc/>
-        public async Task SuspendAsync(long instanceId)
+        /// <summary>
+        /// 暂停工作流实例
+        /// </summary>
+        /// <param name="instanceId">工作流实例ID</param>
+        /// <param name="reason">暂停原因</param>
+        /// <exception cref="InvalidOperationException">当工作流实例不存在或状态不允许暂停时抛出</exception>
+        public async Task SuspendAsync(long instanceId, string reason = "手动暂停")
         {
-            var instance = await _instanceRepository.GetByIdAsync(instanceId);
+            var instance = await InstanceRepository.GetByIdAsync(instanceId);
             if (instance == null)
             {
                 throw new InvalidOperationException("工作流实例不存在");
@@ -160,639 +183,651 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine
                 throw new InvalidOperationException("只有运行中的工作流实例才能暂停");
             }
 
-            instance.Status = 3; // 3 表示已挂起
-            await _instanceRepository.UpdateAsync(instance);
+            instance.Status = 3; // 3 表示已暂停
+            await InstanceRepository.UpdateAsync(instance);
 
             // 记录工作流暂停历史
-            var currentNodeId = instance.CurrentNodeId ?? 0;
-            await CreateHistoryRecordAsync(instanceId, currentNodeId, 6, instance.InitiatorId, null, "工作流暂停");
+            await CreateTransRecordAsync(instanceId, instance.CurrentNodeId ?? "", "", "", 3, reason);
+            await CreateOperRecordAsync(instanceId, instance.CurrentNodeId ?? "", instance.CurrentNodeName ?? "", 6, _currentUser.UserId, reason, null);
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// 恢复工作流实例
+        /// </summary>
+        /// <param name="instanceId">工作流实例ID</param>
+        /// <exception cref="InvalidOperationException">当工作流实例不存在或状态不允许恢复时抛出</exception>
         public async Task ResumeAsync(long instanceId)
         {
-            var instance = await _instanceRepository.GetByIdAsync(instanceId);
+            var instance = await InstanceRepository.GetByIdAsync(instanceId);
             if (instance == null)
             {
                 throw new InvalidOperationException("工作流实例不存在");
             }
 
-            if (instance.Status != 3) // 3 表示已挂起
+            if (instance.Status != 3) // 3 表示已暂停
             {
                 throw new InvalidOperationException("只有已暂停的工作流实例才能恢复");
             }
 
             instance.Status = 1; // 1 表示运行中
-            await _instanceRepository.UpdateAsync(instance);
+            await InstanceRepository.UpdateAsync(instance);
 
             // 记录工作流恢复历史
-            var currentNodeId = instance.CurrentNodeId ?? 0;
-            await CreateHistoryRecordAsync(instanceId, currentNodeId, 7, instance.InitiatorId, null, "工作流恢复");
+            await CreateTransRecordAsync(instanceId, "", instance.CurrentNodeId ?? "", instance.CurrentNodeName ?? "", 1, "工作流恢复");
+            await CreateOperRecordAsync(instanceId, instance.CurrentNodeId ?? "", instance.CurrentNodeName ?? "", 7, _currentUser.UserId, "工作流恢复", null);
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// 终止工作流实例
+        /// </summary>
+        /// <param name="instanceId">工作流实例ID</param>
+        /// <param name="reason">终止原因</param>
+        /// <exception cref="InvalidOperationException">当工作流实例不存在或状态不允许终止时抛出</exception>
         public async Task TerminateAsync(long instanceId, string reason)
         {
-            var instance = await _instanceRepository.GetByIdAsync(instanceId);
+            var instance = await InstanceRepository.GetByIdAsync(instanceId);
             if (instance == null)
             {
                 throw new InvalidOperationException("工作流实例不存在");
             }
 
-            if (instance.Status != 1 && instance.Status != 3) // 1 表示运行中, 3 表示已挂起
+            if (instance.Status != 1 && instance.Status != 3) // 1 表示运行中, 3 表示已暂停
             {
                 throw new InvalidOperationException("只有运行中或已暂停的工作流实例才能终止");
             }
 
             instance.Status = 4; // 4 表示已终止
             instance.EndTime = DateTime.Now;
-            instance.Remark = reason;
-            await _instanceRepository.UpdateAsync(instance);
+            await InstanceRepository.UpdateAsync(instance);
 
-            // 记录工作流手动终止历史
-            var currentNodeId = instance.CurrentNodeId ?? 0;
-            await CreateHistoryRecordAsync(instanceId, currentNodeId, 5, instance.InitiatorId, 2, $"工作流手动终止: {reason}");
+            // 记录工作流终止历史
+            await CreateTransRecordAsync(instanceId, instance.CurrentNodeId ?? "", "", "", 4, reason);
+            await CreateOperRecordAsync(instanceId, instance.CurrentNodeId ?? "", instance.CurrentNodeName ?? "", 8, _currentUser.UserId, reason, null);
         }
 
-        /// <inheritdoc/>
-        public async Task<HbtNodeResult> ExecuteNodeAsync(long instanceId, long nodeId, Dictionary<string, object>? variables = null)
+        /// <summary>
+        /// 审批工作流
+        /// </summary>
+        /// <param name="dto">审批信息</param>
+        /// <returns>审批是否成功</returns>
+        /// <exception cref="InvalidOperationException">当工作流实例不存在、状态不允许审批或操作类型不支持时抛出</exception>
+        public async Task<bool> ApproveAsync(HbtWorkflowApproveDto dto)
         {
-            // 获取实例
-            var instance = await _instanceRepository.GetByIdAsync(instanceId);
-            if (instance == null)
-            {
-                throw new InvalidOperationException("工作流实例不存在");
-            }
-
-            // 检查实例状态
-            if (instance.Status != 1) // 1 表示运行中
-            {
-                throw new InvalidOperationException("工作流实例状态不正确");
-            }
-
-            // 获取节点
-            var node = await _nodeRepository.GetByIdAsync(nodeId);
-            if (node == null)
-            {
-                throw new InvalidOperationException("工作流节点不存在");
-            }
-
-            // 保存变量
-            if (variables != null)
-            {
-                await SaveVariablesAsync(instanceId, variables, nodeId);
-            }
-
-            // 查找合适的执行器
-            var nodeTemplate = await _nodeTemplateRepository.GetByIdAsync(node.NodeTemplateId);
-            if (nodeTemplate == null)
-            {
-                throw new InvalidOperationException("节点模板不存在");
-            }
-            
-            var executor = _nodeExecutors.FirstOrDefault(x => x.CanHandle(nodeTemplate.NodeType));
-            if (executor == null)
-            {
-                throw new InvalidOperationException($"未找到节点类型 {nodeTemplate.NodeType} 的执行器");
-            }
-
-            // 记录节点开始执行历史
-            await CreateHistoryRecordAsync(instanceId, nodeId, 2, instance.InitiatorId, null, $"开始执行节点: {nodeTemplate.NodeName}");
-
-            // 执行节点
-            var result = await executor.ExecuteAsync(instance, node, variables);
-
-            // 记录节点执行结果历史
-            var operationResult = result.Success ? 1 : 2; // 1=成功, 2=失败
-            var operationComment = result.Success ? $"节点执行成功: {nodeTemplate.NodeName}" : $"节点执行失败: {nodeTemplate.NodeName} - {result.ErrorMessage}";
-            await CreateHistoryRecordAsync(instanceId, nodeId, 2, instance.InitiatorId, operationResult, operationComment);
-
-            // 如果执行成功且有输出变量，保存输出变量
-            if (result.Success && result.OutputVariables != null)
-            {
-                await SaveVariablesAsync(instanceId, result.OutputVariables, nodeId);
-            }
-
-            return result;
-        }
-
-        /// <inheritdoc/>
-        public async Task<HbtTransitionResult> ExecuteTransitionAsync(long instanceId, long transitionId, Dictionary<string, object>? variables = null)
-        {
+            _dbContext.BeginTran();
             try
             {
-                _dbContext.BeginTran();
-
-                // 获取实例
-                var instance = await _instanceRepository.GetByIdAsync(instanceId);
+                var instance = await InstanceRepository.GetByIdAsync(dto.InstanceId);
                 if (instance == null)
                 {
                     throw new InvalidOperationException("工作流实例不存在");
                 }
 
-                // 检查实例状态
                 if (instance.Status != 1) // 1 表示运行中
                 {
-                    throw new InvalidOperationException("工作流实例状态不正确");
+                    throw new InvalidOperationException("只有运行中的工作流实例才能审批");
                 }
 
-                // 获取转换
-                var transition = await _transitionRepository.GetByIdAsync(transitionId);
-                if (transition == null)
+                if (instance.CurrentNodeId != dto.NodeId)
                 {
-                    throw new InvalidOperationException("工作流转换不存在");
+                    throw new InvalidOperationException("当前节点不匹配");
                 }
 
-                // 检查转换是否属于当前实例的工作流定义
-                if (transition.DefinitionId != instance.DefinitionId)
+                // 获取工作流方案
+                var scheme = await SchemeRepository.GetByIdAsync(instance.SchemeId);
+                if (scheme == null)
                 {
-                    throw new InvalidOperationException("转换不属于当前工作流实例");
+                    throw new InvalidOperationException("工作流方案不存在");
                 }
 
-                // 获取源活动和目标活动
-                var sourceActivity = await _activityRepository.GetByIdAsync(transition.SourceActivityId);
-                var targetActivity = await _activityRepository.GetByIdAsync(transition.TargetActivityId);
-                if (sourceActivity == null || targetActivity == null)
+                // 解析工作流配置
+                var workflowConfig = JsonSerializer.Deserialize<WorkflowConfigModel>(scheme.SchemeConfig);
+                if (workflowConfig == null)
                 {
-                    throw new InvalidOperationException("转换的源活动或目标活动不存在");
+                    throw new InvalidOperationException("工作流配置无效");
                 }
 
-                // 查找对应的节点
-                var sourceNode = await _nodeRepository.GetFirstAsync(x => x.NodeTemplateId == sourceActivity.NodeTemplateId && x.InstanceId == instanceId);
-                var targetNode = await _nodeRepository.GetFirstAsync(x => x.NodeTemplateId == targetActivity.NodeTemplateId && x.InstanceId == instanceId);
-                if (sourceNode == null || targetNode == null)
+                // 记录操作
+                await CreateOperRecordAsync(dto.InstanceId, dto.NodeId, instance.CurrentNodeName ?? "", dto.OperType, _currentUser.UserId, dto.OperOpinion, dto.OperData);
+
+                // 根据操作类型处理
+                switch (dto.OperType)
                 {
-                    throw new InvalidOperationException("转换的源节点或目标节点不存在");
-                }
-
-                // 检查源节点是否为当前节点
-                if (sourceNode.Id != instance.CurrentNodeId)
-                {
-                    throw new InvalidOperationException("转换的源节点不是当前节点");
-                }
-
-                // 记录转换开始历史
-                await CreateHistoryRecordAsync(instanceId, sourceNode.Id, 8, instance.InitiatorId, null, $"开始执行转换: {sourceActivity.Name} -> {targetActivity.Name}");
-
-                // 更新实例的当前节点
-                instance.CurrentNodeId = targetNode.Id;
-                await _instanceRepository.UpdateAsync(instance);
-
-                // 保存变量
-                if (variables != null)
-                {
-                    await SaveVariablesAsync(instanceId, variables, targetNode.Id);
-                }
-
-                // 记录转换完成历史
-                await CreateHistoryRecordAsync(instanceId, targetNode.Id, 8, instance.InitiatorId, 1, $"转换执行完成: {sourceActivity.Name} -> {targetActivity.Name}");
-
-                // 执行目标节点
-                var result = await ExecuteNodeAsync(instanceId, targetNode.Id);
-                if (!result.Success)
-                {
-                    throw new InvalidOperationException($"执行目标节点失败: {result.ErrorMessage}");
+                    case 1: // 同意
+                        await ProcessApproveAsync(instance, workflowConfig, dto);
+                        break;
+                    case 2: // 拒绝
+                        await ProcessRejectAsync(instance, dto);
+                        break;
+                    case 3: // 退回
+                        await ProcessReturnAsync(instance, workflowConfig, dto);
+                        break;
+                    case 4: // 转办
+                        await ProcessTransferAsync(instance, dto);
+                        break;
+                    case 5: // 委托
+                        await ProcessDelegateAsync(instance, dto);
+                        break;
+                    default:
+                        throw new InvalidOperationException("不支持的操作类型");
                 }
 
                 _dbContext.CommitTran();
-                return new HbtTransitionResult { Success = true };
+                return true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 _dbContext.RollbackTran();
+                _logger.Error($"工作流审批失败: {ex.Message}", ex);
                 throw;
             }
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// 获取工作流实例状态
+        /// </summary>
+        /// <param name="instanceId">工作流实例ID</param>
+        /// <returns>工作流实例状态信息</returns>
+        /// <exception cref="InvalidOperationException">当工作流实例不存在时抛出</exception>
         public async Task<HbtInstanceStatusDto> GetStatusAsync(long instanceId)
         {
-            var instance = await _instanceRepository.GetByIdAsync(instanceId);
+            var instance = await InstanceRepository.GetByIdAsync(instanceId);
             if (instance == null)
             {
                 throw new InvalidOperationException("工作流实例不存在");
-            }
-
-            var currentNode = await _nodeRepository.GetByIdAsync(instance.CurrentNodeId);
-            
-            // 获取节点名称，通过NodeTemplate关联获取
-            string currentNodeName = string.Empty;
-            if (currentNode != null)
-            {
-                var nodeTemplate = await _nodeTemplateRepository.GetByIdAsync(currentNode.NodeTemplateId);
-                currentNodeName = nodeTemplate?.NodeName ?? string.Empty;
             }
 
             return new HbtInstanceStatusDto
             {
                 InstanceId = instance.Id,
-                Status = instance.Status,
-                CurrentNodeId = instance.CurrentNodeId ?? 0,
-                CurrentNodeName = currentNodeName,
-                AvailableOperations = GetAvailableOperations(instance),
+                Status = instance.Status
             };
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// 获取可用的流转选项
+        /// </summary>
+        /// <param name="instanceId">工作流实例ID</param>
+        /// <returns>可用的流转选项列表</returns>
+        /// <exception cref="InvalidOperationException">当工作流实例不存在时抛出</exception>
         public async Task<List<HbtTransitionDto>> GetAvailableTransitionsAsync(long instanceId)
         {
-            var instance = await _instanceRepository.GetByIdAsync(instanceId);
+            var instance = await InstanceRepository.GetByIdAsync(instanceId);
             if (instance == null)
             {
                 throw new InvalidOperationException("工作流实例不存在");
             }
 
-            if (instance.Status != 1)
+            if (instance.Status != 1) // 1 表示运行中
             {
                 return new List<HbtTransitionDto>();
             }
 
-            // 获取当前节点
-            var currentNode = await _nodeRepository.GetByIdAsync(instance.CurrentNodeId);
+            // 获取工作流方案
+            var scheme = await SchemeRepository.GetByIdAsync(instance.SchemeId);
+            if (scheme == null)
+            {
+                return new List<HbtTransitionDto>();
+            }
+
+            // 解析工作流配置
+            var workflowConfig = JsonSerializer.Deserialize<WorkflowConfigModel>(scheme.SchemeConfig);
+            if (workflowConfig == null)
+            {
+                return new List<HbtTransitionDto>();
+            }
+
+            // 获取当前节点的可用转换
+            var transitions = new List<HbtTransitionDto>();
+            var currentEdges = workflowConfig.Edges.Where(e => e.Source == instance.CurrentNodeId).ToList();
+
+            foreach (var edge in currentEdges)
+            {
+                var targetNode = workflowConfig.Nodes.FirstOrDefault(n => n.Id == edge.Target);
+                if (targetNode != null)
+                {
+                    transitions.Add(new HbtTransitionDto
+                    {
+                        InstanceTransId = edge.Id,
+                        InstanceId = instance.Id,
+                        StartNodeId = instance.CurrentNodeId ?? "",
+                        StartNodeName = instance.CurrentNodeName ?? "",
+                        ToNodeId = targetNode.Id,
+                        ToNodeName = targetNode.Name,
+                        TransState = 1,
+                        IsFinish = 0,
+                        TransTime = DateTime.Now
+                    });
+                }
+            }
+
+            return transitions;
+        }
+
+        /// <summary>
+        /// 获取当前节点信息
+        /// </summary>
+        /// <param name="instanceId">工作流实例ID</param>
+        /// <returns>当前节点信息，如果不存在则返回null</returns>
+        public async Task<HbtNodeDto?> GetCurrentNodeAsync(long instanceId)
+        {
+            var instance = await InstanceRepository.GetByIdAsync(instanceId);
+            if (instance == null || string.IsNullOrEmpty(instance.CurrentNodeId))
+            {
+                return null;
+            }
+
+            // 获取工作流方案
+            var scheme = await SchemeRepository.GetByIdAsync(instance.SchemeId);
+            if (scheme == null)
+            {
+                return null;
+            }
+
+            // 解析工作流配置
+            var workflowConfig = JsonSerializer.Deserialize<WorkflowConfigModel>(scheme.SchemeConfig);
+            if (workflowConfig == null)
+            {
+                return null;
+            }
+
+            // 查找当前节点
+            var currentNode = workflowConfig.Nodes.FirstOrDefault(n => n.Id == instance.CurrentNodeId);
             if (currentNode == null)
             {
-                return new List<HbtTransitionDto>();
+                return null;
             }
 
-            // 通过当前节点的NodeTemplateId查找相关的转换
-            // 需要先找到与当前节点模板关联的活动
-            var activities = await _activityRepository.GetListAsync(x => x.NodeTemplateId == currentNode.NodeTemplateId);
-            if (!activities.Any())
+            return new HbtNodeDto
             {
-                return new List<HbtTransitionDto>();
-            }
-
-            // 通过活动ID查找转换
-            var activityIds = activities.Select(x => x.Id).ToList();
-            var transitions = await _transitionRepository.GetListAsync(x => activityIds.Contains(x.SourceActivityId));
-            return transitions.Adapt<List<HbtTransitionDto>>();
-        }
-
-        /// <inheritdoc/>
-        public async Task<Dictionary<string, object>> GetVariablesAsync(long instanceId, long? nodeId = null)
-        {
-            var variables = new Dictionary<string, object>();
-
-            // 获取实例级变量
-            var instanceVariables = await _variableRepository.GetListAsync(x =>
-                x.InstanceId == instanceId &&
-                x.Scope == 1); // 1 表示全局范围
-
-            foreach (var variable in instanceVariables)
-            {
-                variables[variable.VariableName] = variable.VariableValue;
-            }
-
-            // 获取节点级变量
-            if (nodeId.HasValue)
-            {
-                var nodeVariables = await _variableRepository.GetListAsync(x =>
-                    x.InstanceId == instanceId &&
-                    x.NodeId == nodeId &&
-                    x.Scope == 2); // 2 表示节点范围
-
-                foreach (var variable in nodeVariables)
-                {
-                    variables[variable.VariableName] = variable.VariableValue;
-                }
-            }
-
-            return variables;
-        }
-
-        /// <inheritdoc/>
-        public async Task SetVariablesAsync(long instanceId, Dictionary<string, object> variables, long? nodeId = null)
-        {
-            foreach (var kvp in variables)
-            {
-                var variable = new HbtVariable
-                {
-                    InstanceId = instanceId,
-                    NodeId = nodeId,
-                    VariableName = kvp.Key,
-                    VariableValue = kvp.Value.ToString() ?? string.Empty,
-                    Scope = nodeId.HasValue ? 2 : 1
-                };
-
-                await _variableRepository.CreateAsync(variable);
-            }
-        }
-
-        private async Task SaveVariablesAsync(long instanceId, Dictionary<string, object> variables, long? nodeId = null)
-        {
-            foreach (var kvp in variables)
-            {
-                var variable = new HbtVariable
-                {
-                    InstanceId = instanceId,
-                    NodeId = nodeId,
-                    VariableName = kvp.Key,
-                    VariableValue = kvp.Value.ToString() ?? string.Empty,
-                    Scope = nodeId.HasValue ? 2 : 1
-                };
-
-                await _variableRepository.CreateAsync(variable);
-            }
-        }
-
-        private List<string> GetAvailableOperations(HbtInstance instance)
-        {
-            var operations = new List<string>();
-
-            switch (instance.Status)
-            {
-                case 1: // 1 表示运行中
-                    operations.Add("suspend");
-                    operations.Add("terminate");
-                    break;
-
-                case 3: // 3 表示已挂起
-                    operations.Add("resume");
-                    operations.Add("terminate");
-                    break;
-
-                case 0: // 0 表示草稿
-                    operations.Add("submit");
-                    operations.Add("delete");
-                    break;
-            }
-
-            return operations;
+                NodeId = currentNode.Id,
+                NodeName = currentNode.Name,
+                NodeType = currentNode.Type,
+                NodeConfig = currentNode.Config?.ToString(),
+                ApproverType = currentNode.ApproverType ?? 1,
+                ApproverConfig = currentNode.ApproverConfig?.ToString()
+            };
         }
 
         /// <summary>
-        /// 更新工作流实例状态
+        /// 获取工作流变量
         /// </summary>
-        private async Task UpdateInstanceStatusAsync(long instanceId, int status)
+        /// <param name="instanceId">工作流实例ID</param>
+        /// <returns>工作流变量字典</returns>
+        /// <exception cref="InvalidOperationException">当工作流实例不存在时抛出</exception>
+        public async Task<Dictionary<string, object>> GetVariablesAsync(long instanceId)
         {
-            var instance = await _instanceRepository.GetByIdAsync(instanceId);
-            if (instance != null)
+            var instance = await InstanceRepository.GetByIdAsync(instanceId);
+            if (instance == null)
             {
-                instance.Status = status;
-                await _instanceRepository.UpdateAsync(instance);
+                throw new InvalidOperationException("工作流实例不存在");
+            }
+
+            if (string.IsNullOrEmpty(instance.Variables))
+            {
+                return new Dictionary<string, object>();
+            }
+
+            try
+            {
+                return JsonSerializer.Deserialize<Dictionary<string, object>>(instance.Variables) ?? new Dictionary<string, object>();
+            }
+            catch
+            {
+                return new Dictionary<string, object>();
             }
         }
 
         /// <summary>
-        /// 从工作流配置创建节点
+        /// 设置工作流变量
         /// </summary>
-        private async Task<List<HbtNode>> CreateNodesFromWorkflowConfigAsync(HbtDefinition definition, long instanceId)
+        /// <param name="instanceId">工作流实例ID</param>
+        /// <param name="variables">变量字典</param>
+        /// <exception cref="InvalidOperationException">当工作流实例不存在时抛出</exception>
+        public async Task SetVariablesAsync(long instanceId, Dictionary<string, object> variables)
         {
-            var nodes = new List<HbtNode>();
+            var instance = await InstanceRepository.GetByIdAsync(instanceId);
+            if (instance == null)
+            {
+                throw new InvalidOperationException("工作流实例不存在");
+            }
+
+            instance.Variables = JsonSerializer.Serialize(variables);
+            await InstanceRepository.UpdateAsync(instance);
+        }
+
+        /// <summary>
+        /// 获取工作流历史记录
+        /// </summary>
+        /// <param name="instanceId">工作流实例ID</param>
+        /// <returns>流转历史记录列表</returns>
+        public async Task<List<HbtInstanceTransDto>> GetHistoryAsync(long instanceId)
+        {
+            var list = await TransRepository.GetListAsync(x => x.InstanceId == instanceId);
+            return list.Adapt<List<HbtInstanceTransDto>>();
+        }
+
+        /// <summary>
+        /// 获取工作流操作记录
+        /// </summary>
+        /// <param name="instanceId">工作流实例ID</param>
+        /// <returns>操作记录列表</returns>
+        public async Task<List<HbtInstanceOperDto>> GetOperationsAsync(long instanceId)
+        {
+            var list = await OperRepository.GetListAsync(x => x.InstanceId == instanceId);
+            return list.Adapt<List<HbtInstanceOperDto>>();
+        }
+
+        /// <summary>
+        /// 获取转换历史列表
+        /// </summary>
+        /// <param name="query">查询条件</param>
+        /// <returns>转换历史列表</returns>
+        public async Task<HbtPagedResult<HbtTransitionDto>> GetTransitionListAsync(HbtTransitionQueryDto query)
+        {
+            var list = await TransRepository.GetListAsync(x => 
+                (query.InstanceId == null || x.InstanceId == query.InstanceId) &&
+                (string.IsNullOrEmpty(query.StartNodeId) || x.StartNodeId.Contains(query.StartNodeId)) &&
+                (string.IsNullOrEmpty(query.ToNodeId) || x.ToNodeId.Contains(query.ToNodeId)) &&
+                (query.TransState == null || x.TransState == query.TransState) &&
+                (query.IsFinish == null || x.IsFinish == query.IsFinish)
+            );
             
-            if (string.IsNullOrEmpty(definition.WorkflowConfig))
+            var total = list.Count;
+            var pagedList = list.Skip((query.PageIndex - 1) * query.PageSize).Take(query.PageSize).ToList();
+            
+            var dtoList = pagedList.Adapt<List<HbtTransitionDto>>();
+            
+            return new HbtPagedResult<HbtTransitionDto>
             {
-                throw new InvalidOperationException("工作流配置为空");
+                TotalNum = total,
+                Rows = dtoList
+            };
+        }
+
+        /// <summary>
+        /// 获取转换历史详情
+        /// </summary>
+        /// <param name="transitionId">转换ID</param>
+        /// <returns>转换历史详情</returns>
+        public async Task<HbtTransitionDto?> GetTransitionAsync(string transitionId)
+        {
+            var trans = await TransRepository.GetFirstAsync(x => x.Id.ToString() == transitionId);
+            return trans?.Adapt<HbtTransitionDto>();
+        }
+
+        #region 私有方法
+
+        /// <summary>
+        /// 处理同意操作
+        /// </summary>
+        /// <param name="instance">工作流实例</param>
+        /// <param name="workflowConfig">工作流配置</param>
+        /// <param name="dto">审批信息</param>
+        /// <returns>异步任务</returns>
+        private async Task ProcessApproveAsync(HbtInstance instance, WorkflowConfigModel workflowConfig, HbtWorkflowApproveDto dto)
+        {
+            // 获取当前节点的出边
+            var edges = workflowConfig.Edges.Where(e => e.Source == instance.CurrentNodeId).ToList();
+            if (!edges.Any())
+            {
+                // 没有出边，说明是结束节点
+                instance.Status = 2; // 2 表示已完成
+                instance.EndTime = DateTime.Now;
+                instance.CurrentNodeId = null;
+                instance.CurrentNodeName = null;
+                await InstanceRepository.UpdateAsync(instance);
+
+                await CreateTransRecordAsync(instance.Id, instance.CurrentNodeId ?? "", "", "", 2, "工作流完成");
+                return;
             }
 
-            try
+            // 获取下一个节点（这里简化处理，取第一个出边）
+            var nextEdge = edges.First();
+            var nextNode = workflowConfig.Nodes.FirstOrDefault(n => n.Id == nextEdge.Target);
+            if (nextNode == null)
             {
-                // 解析workflowConfig
-                var config = System.Text.Json.JsonSerializer.Deserialize<WorkflowConfigModel>(definition.WorkflowConfig);
-                if (config?.Nodes == null || !config.Nodes.Any())
-                {
-                    throw new InvalidOperationException("工作流配置中未找到节点信息");
-                }
-
-                // 创建节点映射，用于处理父子关系
-                var nodeMap = new Dictionary<string, HbtNode>();
-
-                // 第一遍：创建所有节点
-                foreach (var nodeData in config.Nodes)
-                {
-                    // 根据配置创建或查找对应的节点模板
-                    var nodeTemplateId = await GetOrCreateNodeTemplateFromConfigAsync(definition.Id, nodeData);
-                    
-                    var node = new HbtNode
-                    {
-                        InstanceId = instanceId,
-                        NodeTemplateId = nodeTemplateId,
-                        Status = 0, // 0 表示未开始
-                        CreateTime = DateTime.Now
-                    };
-
-                    await _nodeRepository.CreateAsync(node);
-                    nodeMap[nodeData.Id] = node;
-                    nodes.Add(node);
-                }
-
-                // 第二遍：处理父子关系
-                foreach (var nodeData in config.Nodes)
-                {
-                    if (nodeMap.TryGetValue(nodeData.Id, out HbtNode? node) && node != null)
-                    {
-                        // 根据边的信息确定父子关系
-                        var parentNodeId = GetParentNodeIdFromEdges(config.Edges, nodeData.Id.ToString());
-                        if (!string.IsNullOrEmpty(parentNodeId))
-                        {
-                            HbtNode? parentNode = null;
-                            if (nodeMap.TryGetValue(parentNodeId, out parentNode) && parentNode != null)
-                            {
-                                node.ParentNodeId = parentNode.Id;
-                                await _nodeRepository.UpdateAsync(node);
-                            }
-                        }
-                    }
-                }
-
-                return nodes;
+                throw new InvalidOperationException("无法找到下一个节点");
             }
-            catch (Exception ex)
+
+            // 更新实例状态
+            instance.CurrentNodeId = nextNode.Id;
+            instance.CurrentNodeName = nextNode.Name;
+            await InstanceRepository.UpdateAsync(instance);
+
+            // 记录流转历史
+            await CreateTransRecordAsync(instance.Id, dto.NodeId, nextNode.Id, nextNode.Name, 1, "节点流转");
+
+            // 如果是结束节点，完成工作流
+            if (nextNode.Type == "end")
             {
-                throw new InvalidOperationException($"解析工作流配置失败: {ex.Message}");
+                instance.Status = 2; // 2 表示已完成
+                instance.EndTime = DateTime.Now;
+                await InstanceRepository.UpdateAsync(instance);
             }
         }
 
         /// <summary>
-        /// 根据配置获取或创建节点模板
+        /// 处理拒绝操作
         /// </summary>
-        private async Task<long> GetOrCreateNodeTemplateFromConfigAsync(long definitionId, dynamic nodeData)
+        /// <param name="instance">工作流实例</param>
+        /// <param name="dto">审批信息</param>
+        /// <returns>异步任务</returns>
+        private async Task ProcessRejectAsync(HbtInstance instance, HbtWorkflowApproveDto dto)
         {
-            try
+            instance.Status = 4; // 4 表示已终止
+            instance.EndTime = DateTime.Now;
+            await InstanceRepository.UpdateAsync(instance);
+
+            await CreateTransRecordAsync(instance.Id, dto.NodeId, "", "", 4, "工作流被拒绝");
+        }
+
+        /// <summary>
+        /// 处理退回操作
+        /// </summary>
+        /// <param name="instance">工作流实例</param>
+        /// <param name="workflowConfig">工作流配置</param>
+        /// <param name="dto">审批信息</param>
+        /// <returns>异步任务</returns>
+        private async Task ProcessReturnAsync(HbtInstance instance, WorkflowConfigModel workflowConfig, HbtWorkflowApproveDto dto)
+        {
+            // 这里简化处理，退回到上一个节点
+            // 实际应用中需要根据业务逻辑确定退回目标
+            var edges = workflowConfig.Edges.Where(e => e.Target == instance.CurrentNodeId).ToList();
+            if (edges.Any())
             {
-                var nodeName = GetNodeNameFromConfig(nodeData);
-                var nodeType = GetNodeTypeFromConfig(nodeData);
-                
-                // 查找是否已存在相同的节点模板
-                // 将动态变量提取到表达式树外部
-                var nodeNameValue = nodeName;
-                var nodeTypeValue = nodeType;
-                var definitionIdValue = definitionId;
-                
-                // 先获取所有模板，然后在内存中过滤
-                var allTemplates = await _nodeTemplateRepository.GetListAsync(x => x.DefinitionId == definitionIdValue);
-                var existingTemplate = allTemplates.FirstOrDefault(x => 
-                    x.NodeName == nodeNameValue && 
-                    x.NodeType == nodeTypeValue);
-                
-                if (existingTemplate != null)
+                var prevEdge = edges.First();
+                var prevNode = workflowConfig.Nodes.FirstOrDefault(n => n.Id == prevEdge.Source);
+                if (prevNode != null)
                 {
-                    return existingTemplate.Id;
+                    instance.CurrentNodeId = prevNode.Id;
+                    instance.CurrentNodeName = prevNode.Name;
+                    await InstanceRepository.UpdateAsync(instance);
+
+                    await CreateTransRecordAsync(instance.Id, dto.NodeId, prevNode.Id, prevNode.Name, 3, "节点退回");
                 }
-                
-                // 创建新的节点模板
-                var nodeConfigJson = System.Text.Json.JsonSerializer.Serialize(nodeData);
-                var nodeTemplate = new HbtNodeTemplate
-                {
-                    NodeName = nodeName,
-                    NodeType = nodeType,
-                    DefinitionId = definitionId,
-                    NodeConfig = nodeConfigJson,
-                    OrderNum = 1,
-                    IsEnabled = true
-                };
-                
-                await _nodeTemplateRepository.CreateAsync(nodeTemplate);
-                return nodeTemplate.Id;
-            }
-            catch
-            {
-                // 如果出错，返回默认节点模板ID
-                return 1;
             }
         }
 
         /// <summary>
-        /// 从节点配置中获取节点名称
+        /// 处理转办操作
         /// </summary>
-        private string GetNodeNameFromConfig(dynamic nodeData)
+        /// <param name="instance">工作流实例</param>
+        /// <param name="dto">审批信息</param>
+        /// <returns>异步任务</returns>
+        private async Task ProcessTransferAsync(HbtInstance instance, HbtWorkflowApproveDto dto)
         {
-            try
-            {
-                // 尝试从不同位置获取节点名称
-                if (nodeData.attrs?.label?.text != null)
-                    return nodeData.attrs.label.text.ToString();
-                
-                if (nodeData.data?.name != null)
-                    return nodeData.data.name.ToString();
-                
-                if (nodeData.data?.label != null)
-                    return nodeData.data.label.ToString();
-                
-                // 根据节点类型返回默认名称
-                var nodeType = GetNodeTypeFromConfig(nodeData);
-                return nodeType switch
-                {
-                    1 => "开始节点",
-                    2 => "任务节点", 
-                    3 => "网关节点",
-                    4 => "并行节点",
-                    5 => "结束节点",
-                    _ => "未知节点"
-                };
-            }
-            catch
-            {
-                return "节点";
-            }
+            // 转办操作，当前节点保持不变，但操作人变为目标用户
+            // 这里需要根据具体业务逻辑实现
+            await CreateTransRecordAsync(instance.Id, dto.NodeId, dto.NodeId, instance.CurrentNodeName ?? "", 5, $"转办给用户{dto.TargetUserId}");
         }
 
         /// <summary>
-        /// 从节点配置中获取节点类型
+        /// 处理委托操作
         /// </summary>
-        private int GetNodeTypeFromConfig(dynamic nodeData)
+        /// <param name="instance">工作流实例</param>
+        /// <param name="dto">审批信息</param>
+        /// <returns>异步任务</returns>
+        private async Task ProcessDelegateAsync(HbtInstance instance, HbtWorkflowApproveDto dto)
         {
-            try
-            {
-                // 根据节点形状和属性判断类型
-                var shape = nodeData.shape?.ToString()?.ToLower();
-                var fill = nodeData.attrs?.body?.fill?.ToString()?.ToLower();
-                
-                // 开始节点：圆形，绿色填充
-                if (shape == "circle" && fill == "#52c41a")
-                    return 1;
-                
-                // 结束节点：圆形，红色填充
-                if (shape == "circle" && fill == "#ff4d4f")
-                    return 5;
-                
-                // 网关节点：多边形
-                if (shape == "polygon")
-                    return 3;
-                
-                // 任务节点：矩形
-                if (shape == "rect")
-                    return 2;
-                
-                // 默认返回任务节点
-                return 2;
-            }
-            catch
-            {
-                return 2; // 默认任务节点
-            }
+            // 委托操作，当前节点保持不变，但操作人变为目标用户
+            // 这里需要根据具体业务逻辑实现
+            await CreateTransRecordAsync(instance.Id, dto.NodeId, dto.NodeId, instance.CurrentNodeName ?? "", 6, $"委托给用户{dto.TargetUserId}");
         }
 
         /// <summary>
-        /// 从边的信息中获取父节点ID
+        /// 创建流转历史记录
         /// </summary>
-        private string GetParentNodeIdFromEdges(dynamic edges, string nodeId)
+        /// <param name="instanceId">工作流实例ID</param>
+        /// <param name="fromNodeId">源节点ID</param>
+        /// <param name="toNodeId">目标节点ID</param>
+        /// <param name="toNodeName">目标节点名称</param>
+        /// <param name="transType">流转类型</param>
+        /// <param name="remark">备注</param>
+        /// <returns>异步任务</returns>
+        private async Task CreateTransRecordAsync(long instanceId, string fromNodeId, string toNodeId, string toNodeName, int transType, string remark)
         {
-            try
+            var trans = new HbtInstanceTrans
             {
-                if (edges == null) return null;
-                
-                foreach (var edge in edges)
-                {
-                    if (edge.target?.cell == nodeId)
-                    {
-                        return edge.source?.cell?.ToString();
-                    }
-                }
-                return null;
-            }
-            catch
-            {
-                return null;
-            }
+                InstanceId = instanceId,
+                StartNodeId = fromNodeId,
+                StartNodeType = 1, // 默认类型
+                StartNodeName = fromNodeId, // 简化处理
+                ToNodeId = toNodeId,
+                ToNodeType = 1, // 默认类型
+                ToNodeName = toNodeName,
+                TransState = 1, // 1 表示成功
+                IsFinish = string.IsNullOrEmpty(toNodeId) ? 1 :0, // 如果没有目标节点，表示完成
+                TransTime = DateTime.Now
+            };
+
+            await TransRepository.CreateAsync(trans);
         }
+
+        /// <summary>
+        /// 创建操作记录
+        /// </summary>
+        /// <param name="instanceId">工作流实例ID</param>
+        /// <param name="nodeId">节点ID</param>
+        /// <param name="nodeName">节点名称</param>
+        /// <param name="operType">操作类型</param>
+        /// <param name="operatorId">操作人ID</param>
+        /// <param name="operOpinion">操作意见</param>
+        /// <param name="operData">操作数据</param>
+        /// <returns>异步任务</returns>
+        private async Task CreateOperRecordAsync(long instanceId, string nodeId, string nodeName, int operType, long operatorId, string operOpinion, string? operData)
+        {
+            var oper = new HbtInstanceOper
+            {
+                InstanceId = instanceId,
+                NodeId = nodeId,
+                NodeName = nodeName,
+                OperType = operType,
+                OperatorId = operatorId,
+                OperatorName = _currentUser.UserName,
+                OperOpinion = operOpinion,
+                OperData = operData
+            };
+
+            await OperRepository.CreateAsync(oper);
+        }
+
+        #endregion
+
+        #region 内部类
 
         /// <summary>
         /// 工作流配置模型
         /// </summary>
         private class WorkflowConfigModel
         {
+            /// <summary>
+            /// 版本号
+            /// </summary>
             public string Version { get; set; } = string.Empty;
-            public string Timestamp { get; set; } = string.Empty;
-            public List<dynamic> Nodes { get; set; } = new();
-            public List<dynamic> Edges { get; set; } = new();
-            public dynamic Metadata { get; set; }
+
+            /// <summary>
+            /// 节点列表
+            /// </summary>
+            public List<WorkflowNode> Nodes { get; set; } = new();
+
+            /// <summary>
+            /// 边列表
+            /// </summary>
+            public List<WorkflowEdge> Edges { get; set; } = new();
         }
 
         /// <summary>
-        /// 创建历史记录
+        /// 工作流节点
         /// </summary>
-        /// <param name="instanceId">实例ID</param>
-        /// <param name="nodeId">节点ID</param>
-        /// <param name="operationType">操作类型</param>
-        /// <param name="operatorId">操作人ID</param>
-        /// <param name="operationResult">操作结果</param>
-        /// <param name="operationComment">操作意见</param>
-        private async Task CreateHistoryRecordAsync(long instanceId, long nodeId, int operationType, long operatorId, int? operationResult = null, string? operationComment = null)
+        private class WorkflowNode
         {
-            try
-            {
-                var history = new HbtHistory
-                {
-                    InstanceId = instanceId,
-                    NodeId = nodeId,
-                    OperationType = operationType,
-                    OperationResult = operationResult,
-                    OperationComment = operationComment ?? string.Empty,
-                    CreateBy = "Hbt365",
-                    CreateTime = DateTime.Now,
-                    UpdateBy = "Hbt365",
-                    UpdateTime = DateTime.Now
-                };
+            /// <summary>
+            /// 节点ID
+            /// </summary>
+            public string Id { get; set; } = string.Empty;
 
-                await _historyRepository.CreateAsync(history);
-                _logger.Info($"创建历史记录成功: 实例ID={instanceId}, 节点ID={nodeId}, 操作类型={operationType}");
-            }
-            catch (Exception ex)
-            {
-                _logger.Error($"创建历史记录失败: {ex.Message}", ex);
-                // 历史记录创建失败不应该影响主流程，所以只记录日志，不抛出异常
-            }
+            /// <summary>
+            /// 节点名称
+            /// </summary>
+            public string Name { get; set; } = string.Empty;
+
+            /// <summary>
+            /// 节点类型
+            /// </summary>
+            public string Type { get; set; } = string.Empty;
+
+            /// <summary>
+            /// 节点配置
+            /// </summary>
+            public object? Config { get; set; }
+
+            /// <summary>
+            /// 审批人类型
+            /// </summary>
+            public int? ApproverType { get; set; }
+
+            /// <summary>
+            /// 审批人配置
+            /// </summary>
+            public object? ApproverConfig { get; set; }
         }
+
+        /// <summary>
+        /// 工作流边
+        /// </summary>
+        private class WorkflowEdge
+        {
+            /// <summary>
+            /// 边ID
+            /// </summary>
+            public string Id { get; set; } = string.Empty;
+
+            /// <summary>
+            /// 源节点ID
+            /// </summary>
+            public string Source { get; set; } = string.Empty;
+
+            /// <summary>
+            /// 目标节点ID
+            /// </summary>
+            public string Target { get; set; } = string.Empty;
+
+            /// <summary>
+            /// 边标签
+            /// </summary>
+            public string? Label { get; set; }
+
+            /// <summary>
+            /// 边类型
+            /// </summary>
+            public string Type { get; set; } = "manual";
+
+            /// <summary>
+            /// 转换条件
+            /// </summary>
+            public string? Condition { get; set; }
+        }
+
+        #endregion
     }
 }

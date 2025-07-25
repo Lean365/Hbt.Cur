@@ -48,11 +48,10 @@ import { message } from 'ant-design-vue'
 import { useI18n } from 'vue-i18n'
 import type { HbtGenTable } from '@/types/generator/genTable'
 import type { HbtGenColumn } from '@/types/generator/genColumn'
-import type { HbtDictType } from '@/types/core/dictType'
-import { getHbtDictTypeList } from '@/api/core/dictType'
+import type { HbtDictType } from '@/types/routine/core/dictType'
+import { getHbtDictTypeList } from '@/api/routine/core/dictType'
 import { getTableColumnsByDb } from '@/api/generator/genTable'
-import HbtTable from '@/components/Business/HbtTable/index.vue'
-import HbtPagination from '@/components/Business/HbtPagination/index.vue'
+
 
 const { t } = useI18n()
 

@@ -1,23 +1,23 @@
 <template>
   <div class="flow-root">
     <div class="flow-canvas-wrap">
-      <div class="node-palette">
+      <div v-if="!readonly" class="node-palette">
         <a-tooltip title="开始" placement="right">
           <div 
             class="palette-item" 
             :class="{ 'disabled': nodeStatus.hasStart }"
-            @mousedown="e => startDrag('start', e)"
+            @mousedown="e => { console.log('[流程设计器] 开始节点mousedown事件'); startDrag('start', e) }"
           >
             <span class="palette-icon start-icon"></span>
           </div>
         </a-tooltip>
         <a-tooltip title="任务" placement="right">
-          <div class="palette-item" @mousedown="e => startDrag('task', e)">
+          <div class="palette-item" @mousedown="e => { console.log('[流程设计器] 任务节点mousedown事件'); startDrag('task', e) }">
             <span class="palette-icon task-icon"></span>
           </div>
         </a-tooltip>
         <a-tooltip title="网关" placement="right">
-          <div class="palette-item" @mousedown="e => startDrag('gateway', e)">
+          <div class="palette-item" @mousedown="e => { console.log('[流程设计器] 网关节点mousedown事件'); startDrag('gateway', e) }">
             <span class="palette-icon gateway-icon"></span>
           </div>
         </a-tooltip>
@@ -25,7 +25,7 @@
           <div 
             class="palette-item" 
             :class="{ 'disabled': nodeStatus.hasEnd }"
-            @mousedown="e => startDrag('end', e)"
+            @mousedown="e => { console.log('[流程设计器] 结束节点mousedown事件'); startDrag('end', e) }"
           >
             <span class="palette-icon end-icon"></span>
           </div>
@@ -33,12 +33,13 @@
       </div>
       <div id="container" class="flow-canvas"></div>
       <NodePropertyPanel
+        v-if="!readonly"
         :visible="propertyPanelVisible"
         :node="selectedNode"
         :onSave="handleNodePropertySave"
         :onCancel="handleNodePropertyCancel"
       />
-      <div class="canvas-ops-panel">
+      <div v-if="!readonly" class="canvas-ops-panel">
         <a-tooltip title="导入" placement="left">
           <button class="ops-btn" @click="handleImport">
             <span class="ops-icon import-icon"></span>
@@ -66,7 +67,7 @@
         </a-tooltip>
       </div>
       <div
-        v-if="contextMenu.visible"
+        v-if="contextMenu.visible && !readonly"
         class="context-menu"
         :style="{ left: contextMenu.x + 'px', top: contextMenu.y + 'px' }"
         @contextmenu.prevent
@@ -94,7 +95,8 @@ import { message } from 'ant-design-vue'
 const props = defineProps({
   value: { type: Object, default: () => ({}) },
   width: { type: Number, default: 1600 },
-  height: { type: Number, default: 800 }
+  height: { type: Number, default: 800 },
+  readonly: { type: Boolean, default: false }
 })
 
 const emit = defineEmits(['update:value'])
@@ -127,12 +129,23 @@ const localConfig = ref(props.value || {})
 
 // 监听父传入的 value，变化时同步到本地
 watch(() => props.value, (val) => {
+  console.log('[流程设计器] 检测到value变化:', val)
   if (val && JSON.stringify(val) !== JSON.stringify(localConfig.value)) {
+    console.log('[流程设计器] value内容发生变化，更新本地配置')
     localConfig.value = val
     // 如果有初始数据，加载到画布
     if (graph && val.nodes && val.edges) {
+      console.log('[流程设计器] 重新加载工作流数据')
       loadWorkflowData(val)
+    } else {
+      console.log('[流程设计器] 数据不完整，无法加载:', { 
+        hasGraph: !!graph, 
+        hasNodes: !!(val && val.nodes), 
+        hasEdges: !!(val && val.edges) 
+      })
     }
+  } else {
+    console.log('[流程设计器] value未发生变化或为空')
   }
 }, { deep: true })
 
@@ -414,7 +427,12 @@ const nodeTemplates = {
 }
 
 function startDrag(type, e) {
-  if (!graph || !dnd) return
+  console.log('[流程设计器] 开始拖拽:', type, 'readonly:', props.readonly, 'graph:', !!graph, 'dnd:', !!dnd)
+  
+  if (!graph || props.readonly) {
+    console.log('[流程设计器] 拖拽被阻止: graph不存在或只读模式')
+    return
+  }
 
   // 唯一性校验：开始和结束节点只能有一个
   if (type === 'start' || type === 'end') {
@@ -438,15 +456,37 @@ function startDrag(type, e) {
   }
 
   const config = nodeTemplates[type]
-  if (!config) return
+  if (!config) {
+    console.log('[流程设计器] 节点模板不存在:', type)
+    return
+  }
+  
   const node = graph.createNode(config)
+  console.log('[流程设计器] 创建节点:', node.id)
+  
+  // 如果Dnd插件存在，使用拖拽；否则直接添加到画布
+  if (dnd) {
+    console.log('[流程设计器] 使用Dnd拖拽')
   dnd.start(node, e)
+  } else {
+    console.log('[流程设计器] Dnd插件不存在，直接添加到画布')
+    // 直接添加到画布中心位置
+    const container = graph.container
+    const rect = container.getBoundingClientRect()
+    const x = e.clientX - rect.left
+    const y = e.clientY - rect.top
+    console.log('[流程设计器] 计算的位置:', { x, y, clientX: e.clientX, clientY: e.clientY, rect })
+    node.position(x, y)
+    graph.addNode(node)
+  }
   
   // 更新节点状态
   checkNodeStatus()
 }
 
 function handleImport() {
+  if (props.readonly) return
+  
   // 创建文件输入元素
   const input = document.createElement('input')
   input.type = 'file'
@@ -485,14 +525,39 @@ function handleImport() {
         // 导入边
         if (data.edges && Array.isArray(data.edges)) {
           data.edges.forEach(edgeData => {
-            graph.addEdge({
+            const edgeConfig = {
               id: edgeData.id,
               source: edgeData.source,
               target: edgeData.target,
               sourcePort: edgeData.sourcePort,
               targetPort: edgeData.targetPort,
               attrs: edgeData.attrs || {}
-            })
+            }
+            
+            // 如果有锚点信息，使用锚点；否则使用默认锚点
+            if (edgeData.sourceAnchor && edgeData.targetAnchor) {
+              edgeConfig.sourceAnchor = edgeData.sourceAnchor
+              edgeConfig.targetAnchor = edgeData.targetAnchor
+            } else if (!edgeData.sourcePort && !edgeData.targetPort) {
+              edgeConfig.sourceAnchor = 'right'
+              edgeConfig.targetAnchor = 'left'
+            }
+            
+            try {
+              graph.addEdge(edgeConfig)
+            } catch (error) {
+              console.error('导入边失败:', edgeConfig, error)
+              // 如果添加失败，尝试使用默认配置
+              const fallbackConfig = {
+                id: edgeData.id,
+                source: edgeData.source,
+                target: edgeData.target,
+                sourceAnchor: 'right',
+                targetAnchor: 'left',
+                attrs: edgeData.attrs || {}
+              }
+              graph.addEdge(fallbackConfig)
+            }
           })
         }
         
@@ -527,27 +592,62 @@ function handleExport() {
   
   try {
     // 获取所有节点
-    const nodeData = nodes.map(node => ({
+    const nodeData = nodes.map(node => {
+      try {
+        return {
       id: node.id,
       shape: node.shape,
-      x: node.getPosition().x,
-      y: node.getPosition().y,
-      width: node.getSize().width,
-      height: node.getSize().height,
-      attrs: node.getAttrs(),
-      ports: node.getPorts(),
-      data: node.getData()
-    }))
+          x: node.getPosition ? node.getPosition().x : 0,
+          y: node.getPosition ? node.getPosition().y : 0,
+          width: node.getSize ? node.getSize().width : 100,
+          height: node.getSize ? node.getSize().height : 40,
+          attrs: node.getAttrs ? node.getAttrs() : {},
+          ports: node.getPorts ? node.getPorts() : {},
+          data: node.getData ? node.getData() : {}
+        }
+      } catch (error) {
+        console.error('[流程设计器] 导出节点数据失败:', node, error)
+        return {
+          id: node.id,
+          shape: node.shape || 'rect',
+          x: 0,
+          y: 0,
+          width: 100,
+          height: 40,
+          attrs: {},
+          ports: {},
+          data: {}
+        }
+      }
+    })
     
     // 获取所有边
-    const edges = graph.getEdges().map(edge => ({
+    const edges = graph.getEdges().map(edge => {
+      try {
+        return {
       id: edge.id,
       source: edge.getSource(),
       target: edge.getTarget(),
-      sourcePort: edge.getSourcePortId(),
-      targetPort: edge.getTargetPortId(),
-      attrs: edge.getAttrs()
-    }))
+          sourcePort: edge.getSourcePortId ? edge.getSourcePortId() : null,
+          targetPort: edge.getTargetPortId ? edge.getTargetPortId() : null,
+          sourceAnchor: edge.getSourceAnchor ? edge.getSourceAnchor() : null,
+          targetAnchor: edge.getTargetAnchor ? edge.getTargetAnchor() : null,
+          attrs: edge.getAttrs ? edge.getAttrs() : {}
+        }
+      } catch (error) {
+        console.error('[流程设计器] 导出边数据失败:', edge, error)
+        return {
+          id: edge.id,
+          source: edge.getSource ? edge.getSource() : null,
+          target: edge.getTarget ? edge.getTarget() : null,
+          sourcePort: null,
+          targetPort: null,
+          sourceAnchor: null,
+          targetAnchor: null,
+          attrs: {}
+        }
+      }
+    })
     
     // 构建导出数据
     const exportData = {
@@ -587,13 +687,13 @@ function handleExport() {
 }
 
 function handleZoomIn() {
-  if (graph) graph.zoom(0.1)
+  if (graph && !props.readonly) graph.zoom(0.1)
 }
 function handleZoomOut() {
-  if (graph) graph.zoom(-0.1)
+  if (graph && !props.readonly) graph.zoom(-0.1)
 }
 function handleReset() {
-  if (graph) {
+  if (graph && !props.readonly) {
     // 清空画布
     graph.clearCells()
     // 重置缩放
@@ -606,6 +706,7 @@ function handleReset() {
 }
 
 function deleteEdge() {
+  if (props.readonly) return
   if (contextMenu.value.target && graph) {
     graph.removeEdge(contextMenu.value.target)
   }
@@ -613,6 +714,7 @@ function deleteEdge() {
   updateWorkflowConfig()
 }
 function deleteNode() {
+  if (props.readonly) return
   if (contextMenu.value.target && graph) {
     graph.removeNode(contextMenu.value.target)
     // 更新节点状态
@@ -622,6 +724,7 @@ function deleteNode() {
   updateWorkflowConfig()
 }
 function showNodeProps() {
+  if (props.readonly) return
   const node = contextMenu.value.target
   selectedNode.value = {
     nodeId: node.id,
@@ -637,6 +740,7 @@ function closeContextMenu() {
 }
 
 function handleNodePropertySave(data) {
+  if (props.readonly) return
   if (graph && data && data.nodeId) {
     const node = graph.getCellById(data.nodeId)
     if (node) {
@@ -697,6 +801,7 @@ function createDefaultWorkflow() {
   })
 
   // 创建边：开始 → 任务1 → 网关1 → 任务2 → 网关2 → 结束
+  try {
   graph.addEdge({
     source: startNode.id,
     target: taskNode1.id,
@@ -739,6 +844,9 @@ function createDefaultWorkflow() {
     sourcePort: 'bottom',
     targetPort: 'end-in'
   })
+  } catch (error) {
+    console.error('创建默认流程边失败:', error)
+  }
 
   // 更新节点状态
   checkNodeStatus()
@@ -751,26 +859,61 @@ const exportCurrentWorkflowData = () => {
   const nodes = graph.getNodes()
   const edges = graph.getEdges()
   
-  const nodeData = nodes.map(node => ({
+  const nodeData = nodes.map(node => {
+    try {
+      return {
     id: node.id,
     shape: node.shape,
-    x: node.getPosition().x,
-    y: node.getPosition().y,
-    width: node.getSize().width,
-    height: node.getSize().height,
-    attrs: node.getAttrs(),
-    ports: node.getPorts(),
-    data: node.getData()
-  }))
+        x: node.getPosition ? node.getPosition().x : 0,
+        y: node.getPosition ? node.getPosition().y : 0,
+        width: node.getSize ? node.getSize().width : 100,
+        height: node.getSize ? node.getSize().height : 40,
+        attrs: node.getAttrs ? node.getAttrs() : {},
+        ports: node.getPorts ? node.getPorts() : {},
+        data: node.getData ? node.getData() : {}
+      }
+    } catch (error) {
+      console.error('[流程设计器] 导出节点数据失败:', node, error)
+      return {
+        id: node.id,
+        shape: node.shape || 'rect',
+        x: 0,
+        y: 0,
+        width: 100,
+        height: 40,
+        attrs: {},
+        ports: {},
+        data: {}
+      }
+    }
+  })
   
-  const edgeData = edges.map(edge => ({
+  const edgeData = edges.map(edge => {
+    try {
+      return {
     id: edge.id,
     source: edge.getSource(),
     target: edge.getTarget(),
-    sourcePort: edge.getSourcePortId(),
-    targetPort: edge.getTargetPortId(),
-    attrs: edge.getAttrs()
-  }))
+        sourcePort: edge.getSourcePortId ? edge.getSourcePortId() : null,
+        targetPort: edge.getTargetPortId ? edge.getTargetPortId() : null,
+        sourceAnchor: edge.getSourceAnchor ? edge.getSourceAnchor() : null,
+        targetAnchor: edge.getTargetAnchor ? edge.getTargetAnchor() : null,
+        attrs: edge.getAttrs ? edge.getAttrs() : {}
+      }
+    } catch (error) {
+      console.error('[流程设计器] 导出边数据失败:', edge, error)
+      return {
+        id: edge.id,
+        source: edge.getSource ? edge.getSource() : null,
+        target: edge.getTarget ? edge.getTarget() : null,
+        sourcePort: null,
+        targetPort: null,
+        sourceAnchor: null,
+        targetAnchor: null,
+        attrs: {}
+      }
+    }
+  })
   
   return {
     version: '1.0',
@@ -794,8 +937,9 @@ const loadWorkflowData = (data) => {
   
   // 导入节点
   if (data.nodes && Array.isArray(data.nodes)) {
+    console.log('[流程设计器] 开始加载节点:', data.nodes.length)
     data.nodes.forEach(nodeData => {
-      graph.addNode({
+      const nodeConfig = {
         id: nodeData.id,
         shape: nodeData.shape,
         x: nodeData.x,
@@ -805,21 +949,77 @@ const loadWorkflowData = (data) => {
         attrs: nodeData.attrs,
         ports: nodeData.ports,
         data: nodeData.data || {}
-      })
+      }
+      console.log('[流程设计器] 加载节点配置:', nodeConfig)
+      graph.addNode(nodeConfig)
     })
   }
   
   // 导入边
   if (data.edges && Array.isArray(data.edges)) {
     data.edges.forEach(edgeData => {
-      graph.addEdge({
+      const edgeConfig = {
         id: edgeData.id,
         source: edgeData.source,
         target: edgeData.target,
-        sourcePort: edgeData.sourcePort,
-        targetPort: edgeData.targetPort,
         attrs: edgeData.attrs || {}
+      }
+      
+      // 如果有标签信息，添加到边配置中
+      if (edgeData.labels) {
+        edgeConfig.labels = edgeData.labels
+      }
+      
+      // 设置源端口和锚点
+      if (edgeData.sourcePort) {
+        edgeConfig.sourcePort = edgeData.sourcePort
+      }
+      if (edgeData.sourceAnchor) {
+        edgeConfig.sourceAnchor = edgeData.sourceAnchor
+      }
+      
+      // 设置目标端口和锚点
+      if (edgeData.targetPort) {
+        edgeConfig.targetPort = edgeData.targetPort
+      }
+      if (edgeData.targetAnchor) {
+        edgeConfig.targetAnchor = edgeData.targetAnchor
+      }
+      
+      // 如果既没有端口也没有锚点，使用默认锚点
+      if (!edgeData.sourcePort && !edgeData.sourceAnchor) {
+        edgeConfig.sourceAnchor = 'right'
+      }
+      if (!edgeData.targetPort && !edgeData.targetAnchor) {
+        edgeConfig.targetAnchor = 'left'
+      }
+      
+      console.log('[流程设计器] 加载边配置:', {
+        id: edgeConfig.id,
+        source: edgeConfig.source,
+        target: edgeConfig.target,
+        sourcePort: edgeConfig.sourcePort,
+        targetPort: edgeConfig.targetPort,
+        sourceAnchor: edgeConfig.sourceAnchor,
+        targetAnchor: edgeConfig.targetAnchor,
+        attrs: edgeConfig.attrs
       })
+      
+      try {
+        graph.addEdge(edgeConfig)
+      } catch (error) {
+        console.error('[流程设计器] 添加边失败:', edgeConfig, error)
+        // 如果添加失败，尝试使用默认配置
+        const fallbackConfig = {
+          id: edgeData.id,
+          source: edgeData.source,
+          target: edgeData.target,
+          sourceAnchor: 'right',
+          targetAnchor: 'left',
+          attrs: edgeData.attrs || {}
+        }
+        graph.addEdge(fallbackConfig)
+      }
     })
   }
   
@@ -829,23 +1029,29 @@ const loadWorkflowData = (data) => {
 
 // 更新工作流配置并同步到父组件
 const updateWorkflowConfig = () => {
+  try {
   const data = exportCurrentWorkflowData()
   localConfig.value = data
   emit('update:value', data)
+  } catch (error) {
+    console.error('[流程设计器] 更新工作流配置失败:', error)
+  }
 }
 
 onMounted(() => {
+  console.log('[流程设计器] 开始初始化Graph, readonly:', props.readonly)
+  
   graph = new Graph({
     container: document.getElementById('container'),
     autoResize: true,
     background: { color: '#f5f6fa' },
     grid: { size: 10, visible: true, type: 'dot' },
-    panning: true,
-    mousewheel: true,
-    connecting: {
+    panning: !props.readonly,
+    mousewheel: !props.readonly,
+    connecting: props.readonly ? false : {
       sourceAnchor: 'right',
       targetAnchor: 'left',
-      connectionPoint: 'anchor',
+      connectionPoint: 'boundary',
       allowBlank: false,
       allowLoop: false,
       highlight: true,
@@ -856,9 +1062,70 @@ onMounted(() => {
           padding: 10
         }
       }
+    },
+    // 确保节点可以移动
+    interacting: {
+      nodeMovable: !props.readonly,
+      edgeMovable: !props.readonly,
+      edgeLabelMovable: !props.readonly,
+      magnetConnectable: !props.readonly,
+      magnetAdsorbed: !props.readonly
+    },
+    // 确保拖拽功能正常
+    embedding: {
+      enabled: false
+    },
+    // 确保选择功能正常
+    selecting: {
+      enabled: !props.readonly,
+      multiple: true,
+      rubberband: true,
+      movable: true,
+      showNodeSelectionBox: true
     }
   })
+  
+  console.log('[流程设计器] Graph初始化完成:', !!graph)
+  
+  // 初始化拖拽插件
   dnd = new Dnd({ target: graph })
+  console.log('[流程设计器] Dnd插件初始化完成:', !!dnd)
+  
+  // 添加拖拽事件监听器用于调试
+  if (dnd) {
+    dnd.on('drag:start', (args) => {
+      console.log('[流程设计器] 拖拽开始:', args)
+    })
+    dnd.on('drag:move', (args) => {
+      console.log('[流程设计器] 拖拽移动:', args)
+    })
+    dnd.on('drag:end', (args) => {
+      console.log('[流程设计器] 拖拽结束:', args)
+    })
+  }
+  
+  // 添加节点移动事件监听器
+  graph.on('node:moved', (args) => {
+    console.log('[流程设计器] 节点移动:', args)
+  })
+  
+  // 添加节点添加事件监听器
+  graph.on('node:added', (args) => {
+    console.log('[流程设计器] 节点添加:', args)
+  })
+  
+  // 添加拖拽相关事件监听器
+  graph.on('node:dragstart', (args) => {
+    console.log('[流程设计器] 节点拖拽开始:', args)
+  })
+  
+  graph.on('node:drag', (args) => {
+    console.log('[流程设计器] 节点拖拽中:', args)
+  })
+  
+  graph.on('node:dragend', (args) => {
+    console.log('[流程设计器] 节点拖拽结束:', args)
+  })
 
   // 初始化节点状态
   checkNodeStatus()
@@ -866,37 +1133,58 @@ onMounted(() => {
   // 监听节点变化
   graph.on('node:added', () => {
     checkNodeStatus()
-    updateWorkflowConfig()
+    // 延迟更新配置，避免频繁调用
+    if (!props.readonly) {
+      setTimeout(() => updateWorkflowConfig(), 100)
+    }
   })
   
   graph.on('node:removed', () => {
     checkNodeStatus()
-    updateWorkflowConfig()
+    // 延迟更新配置，避免频繁调用
+    if (!props.readonly) {
+      setTimeout(() => updateWorkflowConfig(), 100)
+    }
   })
 
   // 监听边变化
   graph.on('edge:connected', () => {
-    updateWorkflowConfig()
+    if (!props.readonly) {
+      setTimeout(() => updateWorkflowConfig(), 100)
+    }
   })
 
   graph.on('edge:disconnected', () => {
-    updateWorkflowConfig()
+    if (!props.readonly) {
+      setTimeout(() => updateWorkflowConfig(), 100)
+    }
   })
 
-  // 监听节点移动
+  // 监听节点移动 - 使用防抖
+  let moveTimeout = null
   graph.on('node:moved', () => {
-    updateWorkflowConfig()
+    if (!props.readonly) {
+      if (moveTimeout) {
+        clearTimeout(moveTimeout)
+      }
+      moveTimeout = setTimeout(() => updateWorkflowConfig(), 200)
+    }
   })
 
   // 如果有初始数据，加载到画布
   if (props.value && props.value.nodes && props.value.edges) {
+    console.log('[流程设计器] 检测到初始数据，加载工作流:', props.value)
     loadWorkflowData(props.value)
-  } else {
-    // 创建默认流程
+  } else if (!props.readonly) {
+    // 只在非只读模式下且没有初始数据时创建默认流程
+    console.log('[流程设计器] 没有初始数据，创建默认流程')
     createDefaultWorkflow()
+  } else {
+    console.log('[流程设计器] 只读模式且没有初始数据，不创建任何内容')
   }
 
   // 右键连接线弹菜单
+  if (!props.readonly) {
   graph.on('edge:contextmenu', ({ edge, e }) => {
     e.preventDefault()
     contextMenu.value = {
@@ -920,13 +1208,14 @@ onMounted(() => {
   })
   // 点击其它区域关闭菜单
   document.addEventListener('click', closeContextMenu)
+  }
 })
 </script>
 
 <style scoped>
 .flow-root {
-  width: 100vw;
-  height: 100vh;
+  width: v-bind('props.readonly ? props.width + "px" : "100vw"');
+  height: v-bind('props.readonly ? props.height + "px" : "100vh"');
   display: flex;
   align-items: stretch;
   justify-content: flex-start;
@@ -934,10 +1223,10 @@ onMounted(() => {
 }
 .flow-canvas-wrap {
   flex: 1;
-  min-width: 400px;
-  min-height: 400px;
-  max-width: 100vw;
-  max-height: 100vh;
+  min-width: v-bind('props.readonly ? "400px" : "400px"');
+  min-height: v-bind('props.readonly ? "300px" : "400px"');
+  max-width: v-bind('props.readonly ? "100%" : "100vw"');
+  max-height: v-bind('props.readonly ? "100%" : "100vh"');
   display: flex;
   align-items: center;
   justify-content: center;

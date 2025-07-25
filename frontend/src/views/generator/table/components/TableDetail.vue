@@ -47,8 +47,8 @@
       <a-descriptions-item :label="t('generator.table.author')">
         {{ tableInfo?.author }}
       </a-descriptions-item>
-      <a-descriptions-item :label="t('generator.table.genType')">
-        {{ tableInfo?.genType }}
+      <a-descriptions-item :label="t('generator.table.genMethod')">
+        {{ tableInfo?.genMethod }}
       </a-descriptions-item>
       <a-descriptions-item :label="t('generator.table.genPath')">
         {{ tableInfo?.genPath }}
@@ -125,20 +125,17 @@
       <a-descriptions-item :label="t('generator.table.remark')">
         {{ tableInfo?.remark }}
       </a-descriptions-item>
-      <a-descriptions-item :label="t('generator.table.tenantId')">
-        {{ tableInfo?.tenantId }}
+      <a-descriptions-item :label="t('generator.table.isSqlDiff')">
+        {{ tableInfo?.isSqlDiff }}
       </a-descriptions-item>
-      <a-descriptions-item :label="t('generator.table.options.isSqlDiff')">
-        {{ tableInfo?.options?.isSqlDiff }}
+      <a-descriptions-item :label="t('generator.table.isSnowflakeId')">
+        {{ tableInfo?.isSnowflakeId }}
       </a-descriptions-item>
-      <a-descriptions-item :label="t('generator.table.options.isSnowflakeId')">
-        {{ tableInfo?.options?.isSnowflakeId }}
+      <a-descriptions-item :label="t('generator.table.isRepository')">
+        {{ tableInfo?.isRepository }}
       </a-descriptions-item>
-      <a-descriptions-item :label="t('generator.table.options.isRepository')">
-        {{ tableInfo?.options?.isRepository }}
-      </a-descriptions-item>
-      <a-descriptions-item :label="t('generator.table.options.crudGroup')">
-        {{ tableInfo?.options?.crudGroup?.join(', ') }}
+      <a-descriptions-item :label="t('generator.table.genFunction')">
+        {{ tableInfo?.genFunction }}
       </a-descriptions-item>
     </a-descriptions>
 
@@ -360,7 +357,7 @@ async function loadTableData(id: number) {
 
     // 设置表信息
     tableInfo.value = {
-      id: res.data.data.id || 0,
+      genTableId: res.data.data.genTableId || 0,
       createBy: res.data.data.createBy || '',
       createTime: res.data.data.createTime || '',
       updateBy: res.data.data.updateBy || '',
@@ -373,6 +370,7 @@ async function loadTableData(id: number) {
       tableName: res.data.data.tableName || '',
       tableComment: res.data.data.tableComment || '',
       baseNamespace: res.data.data.baseNamespace || '',
+      tplType: res.data.data.tplType || '0',
       tplCategory: res.data.data.tplCategory || 'crud',
       subTableName: res.data.data.subTableName || undefined,
       subTableFkName: res.data.data.subTableFkName || undefined,
@@ -383,7 +381,7 @@ async function loadTableData(id: number) {
       businessName: res.data.data.businessName || '',
       functionName: res.data.data.functionName || '',
       author: res.data.data.author || '',
-      genType: res.data.data.genType || '0',
+      genMethod: res.data.data.genMethod || '0',
       genPath: res.data.data.genPath || '',
       parentMenuId: res.data.data.parentMenuId || 0,
       sortType: res.data.data.sortType || 'asc',
@@ -408,15 +406,12 @@ async function loadTableData(id: number) {
       repositoryClassName: res.data.data.repositoryClassName || '',
       controllerNamespace: res.data.data.controllerNamespace || '',
       controllerClassName: res.data.data.controllerClassName || '',
-      options: {
-        isSqlDiff: res.data.data.options?.isSqlDiff || 1,
-        isSnowflakeId: res.data.data.options?.isSnowflakeId || 1,
-        isRepository: res.data.data.options?.isRepository || 0,
-        crudGroup: Array.isArray(res.data.data.options?.crudGroup) ? res.data.data.options.crudGroup : [1, 2, 3, 4, 5, 6, 7, 8]
-      },
+      genFunction: res.data.data.genFunction || '1,2,3,4,5,6,7',
+      isSqlDiff: res.data.data.isSqlDiff || 1,
+      isSnowflakeId: res.data.data.isSnowflakeId || 1,
+      isRepository: res.data.data.isRepository || 1,
       columns: res.data.data.columns || [],
-      subTable: res.data.data.subTable || undefined,
-      tenantId: res.data.data.tenantId || 0
+      subTable: res.data.data.subTable || undefined
     }
     console.log('TableDetail - 设置表信息:', tableInfo.value)
 
@@ -458,7 +453,7 @@ async function loadTableData(id: number) {
       columnList.value = columnRes.data.data.map((column: HbtGenColumn): HbtGenColumn => {
         console.log('TableDetail - 处理列数据:', column)
         return {
-          id: column.id || 0,
+          genColumnId: column.genColumnId || 0,
           createBy: column.createBy || '',
           createTime: column.createTime || '',
           isDeleted: column.isDeleted || 0,
@@ -488,8 +483,8 @@ async function loadTableData(id: number) {
           isExport: column.isExport || 0,
           displayType: column.displayType || 'input',
           dictType: column.dictType || '',
-          orderNum: column.orderNum || 0,
-          tenantId: column.tenantId || 0
+          orderNum: column.orderNum || 0
+
         }
       })
       console.log('TableDetail - 处理后的列数据:', columnList.value)

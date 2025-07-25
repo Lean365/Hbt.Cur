@@ -2,7 +2,7 @@
 // 项目名 : Lean.Hbt
 // 文件名 : HbtRepositoryFactory.cs
 // 创建者 : Lean365
-// 创建时间: 2024-12-19
+// 创建时间: 2024-12-01
 // 版本号 : V0.0.1
 // 描述   : 仓储工厂实现类 - 支持多库模式
 //===================================================================
@@ -37,10 +37,10 @@ public class HbtRepositoryFactory : IHbtRepositoryFactory
     /// <returns>认证数据库仓储</returns>
     public IHbtRepository<TEntity> GetAuthRepository<TEntity>() where TEntity : class, new()
     {
-        var authDbContext = _serviceProvider.GetRequiredService<HbtAuthDbContext>();
+        var IdentityDBContext = _serviceProvider.GetRequiredService<HbtIdentityDBContext>();
         var currentUser = _serviceProvider.GetRequiredService<IHbtCurrentUser>();
         var logger = _serviceProvider.GetRequiredService<IHbtLogger>();
-        return new HbtRepository<TEntity>(authDbContext.Client, currentUser, logger);
+        return new HbtRepository<TEntity>(IdentityDBContext.Client, currentUser, logger);
     }
 
     /// <summary>

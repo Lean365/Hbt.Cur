@@ -4,8 +4,8 @@
 // 项目名 : Lean.Hbt
 // 文件名 : HbtFileService.cs
 // 创建者 : Lean365
-// 创建时间: 2024-06-09
-// 版本号 : V1.0.0
+// 创建时间: 2024-01-01
+// 版本号 : V0.0.1
 // 描述    : 文件服务实现
 //===================================================================
 
@@ -24,28 +24,36 @@ namespace Lean.Hbt.Application.Services.Routine.Document
     /// </summary>
     /// <remarks>
     /// 创建者: Lean365
-    /// 创建时间: 2024-06-09
+    /// 创建时间: 2024-01-01
     /// </remarks>
     public class HbtFileService : HbtBaseService, IHbtFileService
     {
-        private readonly IHbtRepository<HbtFile> _fileRepository;
+        /// <summary>
+        /// 仓储工厂
+        /// </summary>
+        protected readonly IHbtRepositoryFactory _repositoryFactory;
+
+        /// <summary>
+        /// 获取文件仓储
+        /// </summary>
+        private IHbtRepository<HbtFile> FileRepository => _repositoryFactory.GetBusinessRepository<HbtFile>();
 
         /// <summary>
         /// 构造函数
         /// </summary>
-        /// <param name="fileRepository">文件仓储</param>
+        /// <param name="repositoryFactory">仓储工厂</param>
         /// <param name="logger">日志服务</param>
         /// <param name="httpContextAccessor">HTTP上下文访问器</param>
         /// <param name="currentUser">当前用户服务</param>
         /// <param name="localization">本地化服务</param>
         public HbtFileService(
-            IHbtRepository<HbtFile> fileRepository,
+            IHbtRepositoryFactory repositoryFactory,
             IHbtLogger logger,
             IHttpContextAccessor httpContextAccessor,
             IHbtCurrentUser currentUser,
             IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
         {
-            _fileRepository = fileRepository ?? throw new ArgumentNullException(nameof(fileRepository));
+            _repositoryFactory = repositoryFactory ?? throw new ArgumentNullException(nameof(repositoryFactory));
         }
 
         /// <summary>
@@ -58,7 +66,7 @@ namespace Lean.Hbt.Application.Services.Routine.Document
                 .AndIF(!string.IsNullOrEmpty(query.FileName), x => x.FileName!.Contains(query.FileName!))
                 .AndIF(!string.IsNullOrEmpty(query.FileType), x => x.FileType!.Contains(query.FileType!))
                 .AndIF(query.FileStorageType != -1, x => x.FileStorageType == query.FileStorageType)
-                .AndIF(query.FileStatus != -1, x => x.FileStatus == query.FileStatus)
+                .AndIF(query.Status != -1, x => x.Status == query.Status)
                 .ToExpression();
         }
 
@@ -71,9 +79,9 @@ namespace Lean.Hbt.Application.Services.Routine.Document
         {
             query ??= new HbtFileQueryDto();
 
-            _logger.Info($"查询文件列表，参数：FileOriginalName={query.FileOriginalName}, FileName={query.FileName}, FileType={query.FileType}, FileStorageType={query.FileStorageType}, FileStatus={query.FileStatus}");
+            _logger.Info($"查询文件列表，参数：FileOriginalName={query.FileOriginalName}, FileName={query.FileName}, FileType={query.FileType}, FileStorageType={query.FileStorageType}, Status={query.Status}");
 
-            var result = await _fileRepository.GetPagedListAsync(
+            var result = await FileRepository.GetPagedListAsync(
                 FileQueryExpression(query),
                 query.PageIndex,
                 query.PageSize,
@@ -98,7 +106,7 @@ namespace Lean.Hbt.Application.Services.Routine.Document
         /// <returns>文件详情</returns>
         public async Task<HbtFileDto> GetByIdAsync(long id)
         {
-            var file = await _fileRepository.GetByIdAsync(id);
+            var file = await FileRepository.GetByIdAsync(id);
             return file == null ? throw new HbtException(L("Routine.File.NotFound", id)) : file.Adapt<HbtFileDto>();
         }
 
@@ -110,10 +118,10 @@ namespace Lean.Hbt.Application.Services.Routine.Document
         public async Task<long> CreateAsync(HbtFileCreateDto input)
         {
             // 验证字段是否已存在
-            await HbtValidateUtils.ValidateFieldExistsAsync(_fileRepository, "FileName", input.FileName);
+            await HbtValidateUtils.ValidateFieldExistsAsync(FileRepository, "FileName", input.FileName);
 
             var file = input.Adapt<HbtFile>();
-            return await _fileRepository.CreateAsync(file) > 0 ? file.Id : throw new HbtException(L("Routine.File.CreateFailed"));
+            return await FileRepository.CreateAsync(file) > 0 ? file.Id : throw new HbtException(L("Routine.File.CreateFailed"));
         }
 
         /// <summary>
@@ -123,15 +131,15 @@ namespace Lean.Hbt.Application.Services.Routine.Document
         /// <returns>是否成功</returns>
         public async Task<bool> UpdateAsync(HbtFileUpdateDto input)
         {
-            var file = await _fileRepository.GetByIdAsync(input.FileId)
+            var file = await FileRepository.GetByIdAsync(input.FileId)
                 ?? throw new HbtException(L("Routine.File.NotFound", input.FileId));
 
             // 验证字段是否已存在
             if (file.FileName != input.FileName)
-                await HbtValidateUtils.ValidateFieldExistsAsync(_fileRepository, "FileName", input.FileName, input.FileId);
+                await HbtValidateUtils.ValidateFieldExistsAsync(FileRepository, "FileName", input.FileName, input.FileId);
 
             input.Adapt(file);
-            return await _fileRepository.UpdateAsync(file) > 0;
+            return await FileRepository.UpdateAsync(file) > 0;
         }
 
         /// <summary>
@@ -141,10 +149,10 @@ namespace Lean.Hbt.Application.Services.Routine.Document
         /// <returns>是否成功</returns>
         public async Task<bool> DeleteAsync(long id)
         {
-            var file = await _fileRepository.GetByIdAsync(id)
+            var file = await FileRepository.GetByIdAsync(id)
                 ?? throw new HbtException(L("Routine.File.NotFound", id));
 
-            return await _fileRepository.DeleteAsync(id) > 0;
+            return await FileRepository.DeleteAsync(id) > 0;
         }
 
         /// <summary>
@@ -155,7 +163,7 @@ namespace Lean.Hbt.Application.Services.Routine.Document
         public async Task<bool> BatchDeleteAsync(long[] fileIds)
         {
             if (fileIds == null || fileIds.Length == 0) return false;
-            return await _fileRepository.DeleteRangeAsync(fileIds.Cast<object>().ToList()) > 0;
+            return await FileRepository.DeleteRangeAsync(fileIds.Cast<object>().ToList()) > 0;
         }
 
         /// <summary>
@@ -185,10 +193,10 @@ namespace Lean.Hbt.Application.Services.Routine.Document
                     _logger.Info($"正在处理文件：{file.FileName}");
                     
                     // 验证字段是否已存在
-                    await HbtValidateUtils.ValidateFieldExistsAsync(_fileRepository, "FileName", file.FileName);
+                    await HbtValidateUtils.ValidateFieldExistsAsync(FileRepository, "FileName", file.FileName);
 
                     var fileEntity = file.Adapt<HbtFile>();
-                    await _fileRepository.CreateAsync(fileEntity);
+                    await FileRepository.CreateAsync(fileEntity);
                     success++;
                     
                     _logger.Info($"成功导入文件：{file.FileName}");
@@ -212,7 +220,7 @@ namespace Lean.Hbt.Application.Services.Routine.Document
         /// <returns>返回导出的Excel文件名</returns>
         public async Task<(string fileName, byte[] content)> ExportAsync(HbtFileQueryDto query, string sheetName = "HbtFile")
         {
-            var files = await _fileRepository.GetListAsync(FileQueryExpression(query));
+            var files = await FileRepository.GetListAsync(FileQueryExpression(query));
             var exportData = files.Adapt<List<HbtFileExportDto>>();
             var result = await HbtExcelHelper.ExportAsync(exportData, sheetName);
             return (result.fileName, result.content);
@@ -235,13 +243,13 @@ namespace Lean.Hbt.Application.Services.Routine.Document
         /// </summary>
         /// <param name="input">状态更新对象</param>
         /// <returns>是否成功</returns>
-        public async Task<bool> UpdateStatusAsync(HbtFileStatusDto input)
+        public async Task<bool> UpdateStatusAsync(HbtStatusDto input)
         {
-            var file = await _fileRepository.GetByIdAsync(input.FileId)
+            var file = await FileRepository.GetByIdAsync(input.FileId)
                 ?? throw new HbtException(L("Routine.File.NotFound", input.FileId));
 
-            file.FileStatus = input.FileStatus;
-            return await _fileRepository.UpdateAsync(file) > 0;
+            file.Status = input.Status;
+            return await FileRepository.UpdateAsync(file) > 0;
         }
     }
 } 

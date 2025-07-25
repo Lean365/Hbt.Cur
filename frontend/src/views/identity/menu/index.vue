@@ -49,7 +49,7 @@
     <!-- 数据表格 -->
     <hbt-tree-table
       ref="treeTableRef"
-      :columns="columns.filter(col => col.key && columnSettings[col.key])"
+      :columns="columns.filter((col: any) => col.key && columnSettings[col.key])"
       :data-source="list"
       :loading="loading"
       :row-selection="{
@@ -927,7 +927,7 @@ onMounted(() => {
   :deep(.ant-table-wrapper) {
     flex: 1;
     margin-top: 16px;
-    background-color: #fff;
+    background-color: var(--ant-color-bg-container);
 
     .ant-spin-nested-loading {
       height: 100%;

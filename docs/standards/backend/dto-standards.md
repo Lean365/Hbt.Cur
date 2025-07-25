@@ -16,6 +16,7 @@
   - 查询DTO: `HbtXxxQueryDto`
   - 创建DTO: `HbtXxxCreateDto`
   - 更新DTO: `HbtXxxUpdateDto`
+  - 删除DTO: `HbtXxxDeleteDto`
   - 导入DTO: `HbtXxxImportDto`
   - 导出DTO: `HbtXxxExportDto`
   - 模板DTO: `HbtXxxTemplateDto`

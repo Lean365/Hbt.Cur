@@ -3,13 +3,13 @@
 //===================================================================
 // 项目名 : Lean.Hbt
 // 文件名 : IHbtNodeExecutor.cs
-// 创建者 : Lean365
-// 创建时间: 2024-01-23 12:00
-// 版本号 : V1.0.0
+// 创建者 : Claude
+// 创建时间: 2024-12-01
+// 版本号 : V0.0.1
 // 描述    : 工作流节点执行器接口
 //===================================================================
 
-using Lean.Hbt.Domain.Entities.Workflow;
+using Lean.Hbt.Application.Services.Workflow.Engine;
 
 namespace Lean.Hbt.Application.Services.Workflow.Engine.Executors
 {
@@ -21,13 +21,17 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine.Executors
         /// <summary>
         /// 执行节点
         /// </summary>
-        /// <param name="instance">工作流实例</param>
-        /// <param name="node">当前节点</param>
-        /// <param name="variables">节点变量</param>
+        /// <param name="instanceId">工作流实例ID</param>
+        /// <param name="nodeId">节点ID</param>
+        /// <param name="nodeType">节点类型</param>
+        /// <param name="nodeConfig">节点配置(JSON格式)</param>
+        /// <param name="variables">工作流变量</param>
         /// <returns>节点执行结果</returns>
-        Task<HbtNodeResult> ExecuteAsync(
-            HbtInstance instance,
-            HbtNode node,
+        Task<HbtApproveResult> ExecuteAsync(
+            long instanceId,
+            string nodeId,
+            string nodeType,
+            string? nodeConfig,
             Dictionary<string, object>? variables = null);
 
         /// <summary>
@@ -35,6 +39,13 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine.Executors
         /// </summary>
         /// <param name="nodeType">节点类型</param>
         /// <returns>是否可以处理</returns>
-        bool CanHandle(int nodeType);
+        bool CanHandle(string nodeType);
+
+        /// <summary>
+        /// 获取节点类型描述
+        /// </summary>
+        /// <param name="nodeType">节点类型</param>
+        /// <returns>类型描述</returns>
+        string GetNodeTypeDescription(string nodeType);
     }
 }

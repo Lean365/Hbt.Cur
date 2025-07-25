@@ -4,8 +4,8 @@
 // 项目名 : Lean.Hbt
 // 文件名 : HbtRegulationService.cs
 // 创建者 : Lean365
-// 创建时间: 2024-06-09
-// 版本号 : V1.0.0
+// 创建时间: 2024-01-01
+// 版本号 : V0.0.1
 // 描述    : 规章制度服务实现
 //===================================================================
 
@@ -24,29 +24,37 @@ namespace Lean.Hbt.Application.Services.Routine.Document.Regulations
     /// </summary>
     /// <remarks>
     /// 创建者: Lean365
-    /// 创建时间: 2024-06-09
+    /// 创建时间: 2024-01-01
     /// </remarks>
     public class HbtRegulationService : HbtBaseService, IHbtRegulationService
     {
-        private readonly IHbtRepository<HbtRegulation> _regulationRepository;
+        /// <summary>
+        /// 仓储工厂
+        /// </summary>
+        protected readonly IHbtRepositoryFactory _repositoryFactory;
 
         /// <summary>
         /// 构造函数
         /// </summary>
-        /// <param name="regulationRepository">规章制度仓储</param>
+        /// <param name="repositoryFactory">仓储工厂</param>
         /// <param name="logger">日志服务</param>
         /// <param name="httpContextAccessor">HTTP上下文访问器</param>
         /// <param name="currentUser">当前用户服务</param>
         /// <param name="localization">本地化服务</param>
         public HbtRegulationService(
-            IHbtRepository<HbtRegulation> regulationRepository,
+            IHbtRepositoryFactory repositoryFactory,
             IHbtLogger logger,
             IHttpContextAccessor httpContextAccessor,
             IHbtCurrentUser currentUser,
             IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
         {
-            _regulationRepository = regulationRepository ?? throw new ArgumentNullException(nameof(regulationRepository));
+            _repositoryFactory = repositoryFactory ?? throw new ArgumentNullException(nameof(repositoryFactory));
         }
+
+        /// <summary>
+        /// 获取规章制度仓储
+        /// </summary>
+        private IHbtRepository<HbtRegulation> RegulationRepository => _repositoryFactory.GetBusinessRepository<HbtRegulation>();
 
         /// <summary>
         /// 构建查询条件
@@ -56,10 +64,10 @@ namespace Lean.Hbt.Application.Services.Routine.Document.Regulations
             return Expressionable.Create<HbtRegulation>()
                 .AndIF(!string.IsNullOrEmpty(query.RegulationTitle), x => x.RegulationTitle!.Contains(query.RegulationTitle!))
                 .AndIF(!string.IsNullOrEmpty(query.RegulationCode), x => x.RegulationCode!.Contains(query.RegulationCode!))
-                .AndIF(!string.IsNullOrEmpty(query.IssuingDepartment), x => x.IssuingDepartment!.Contains(query.IssuingDepartment!))
+                .AndIF(!string.IsNullOrEmpty(query.PublishDepartment), x => x.PublishDepartment!.Contains(query.PublishDepartment!))
                 .AndIF(query.RegulationType != -1, x => x.RegulationType == query.RegulationType)
                 .AndIF(query.RegulationLevel != -1, x => x.RegulationLevel == query.RegulationLevel)
-                .AndIF(query.RegulationStatus != -1, x => x.RegulationStatus == query.RegulationStatus)
+                .AndIF(query.Status.HasValue, x => x.Status == query.Status!.Value)
                 .ToExpression();
         }
 
@@ -72,9 +80,9 @@ namespace Lean.Hbt.Application.Services.Routine.Document.Regulations
         {
             query ??= new HbtRegulationQueryDto();
 
-            _logger.Info($"查询规章制度列表，参数：RegulationTitle={query.RegulationTitle}, RegulationCode={query.RegulationCode}, IssuingDepartment={query.IssuingDepartment}, RegulationType={query.RegulationType}, RegulationLevel={query.RegulationLevel}, RegulationStatus={query.RegulationStatus}");
+            _logger.Info($"查询规章制度列表，参数：RegulationTitle={query.RegulationTitle}, RegulationCode={query.RegulationCode}, PublishDepartment={query.PublishDepartment}, RegulationType={query.RegulationType}, RegulationLevel={query.RegulationLevel}, Status={query.Status}");
 
-            var result = await _regulationRepository.GetPagedListAsync(
+            var result = await RegulationRepository.GetPagedListAsync(
                 RegulationQueryExpression(query),
                 query.PageIndex,
                 query.PageSize,
@@ -99,7 +107,7 @@ namespace Lean.Hbt.Application.Services.Routine.Document.Regulations
         /// <returns>规章制度详情</returns>
         public async Task<HbtRegulationDto> GetByIdAsync(long id)
         {
-            var regulation = await _regulationRepository.GetByIdAsync(id);
+            var regulation = await RegulationRepository.GetByIdAsync(id);
             return regulation == null ? throw new HbtException(L("Routine.Regulation.NotFound", id)) : regulation.Adapt<HbtRegulationDto>();
         }
 
@@ -111,11 +119,11 @@ namespace Lean.Hbt.Application.Services.Routine.Document.Regulations
         public async Task<long> CreateAsync(HbtRegulationCreateDto input)
         {
             // 验证字段是否已存在
-            await HbtValidateUtils.ValidateFieldExistsAsync(_regulationRepository, "RegulationTitle", input.RegulationTitle);
-            await HbtValidateUtils.ValidateFieldExistsAsync(_regulationRepository, "RegulationCode", input.RegulationCode);
+            await HbtValidateUtils.ValidateFieldExistsAsync(RegulationRepository, "RegulationTitle", input.RegulationTitle);
+            await HbtValidateUtils.ValidateFieldExistsAsync(RegulationRepository, "RegulationCode", input.RegulationCode);
 
             var regulation = input.Adapt<HbtRegulation>();
-            return await _regulationRepository.CreateAsync(regulation) > 0 ? regulation.Id : throw new HbtException(L("Routine.Regulation.CreateFailed"));
+            return await RegulationRepository.CreateAsync(regulation) > 0 ? regulation.Id : throw new HbtException(L("Routine.Regulation.CreateFailed"));
         }
 
         /// <summary>
@@ -125,17 +133,17 @@ namespace Lean.Hbt.Application.Services.Routine.Document.Regulations
         /// <returns>是否成功</returns>
         public async Task<bool> UpdateAsync(HbtRegulationUpdateDto input)
         {
-            var regulation = await _regulationRepository.GetByIdAsync(input.RegulationId)
+            var regulation = await RegulationRepository.GetByIdAsync(input.RegulationId)
                 ?? throw new HbtException(L("Routine.Regulation.NotFound", input.RegulationId));
 
             // 验证字段是否已存在
             if (regulation.RegulationTitle != input.RegulationTitle)
-                await HbtValidateUtils.ValidateFieldExistsAsync(_regulationRepository, "RegulationTitle", input.RegulationTitle, input.RegulationId);
+                await HbtValidateUtils.ValidateFieldExistsAsync(RegulationRepository, "RegulationTitle", input.RegulationTitle, input.RegulationId);
             if (regulation.RegulationCode != input.RegulationCode)
-                await HbtValidateUtils.ValidateFieldExistsAsync(_regulationRepository, "RegulationCode", input.RegulationCode, input.RegulationId);
+                await HbtValidateUtils.ValidateFieldExistsAsync(RegulationRepository, "RegulationCode", input.RegulationCode, input.RegulationId);
 
             input.Adapt(regulation);
-            return await _regulationRepository.UpdateAsync(regulation) > 0;
+            return await RegulationRepository.UpdateAsync(regulation) > 0;
         }
 
         /// <summary>
@@ -145,10 +153,10 @@ namespace Lean.Hbt.Application.Services.Routine.Document.Regulations
         /// <returns>是否成功</returns>
         public async Task<bool> DeleteAsync(long id)
         {
-            var regulation = await _regulationRepository.GetByIdAsync(id)
+            var regulation = await RegulationRepository.GetByIdAsync(id)
                 ?? throw new HbtException(L("Routine.Regulation.NotFound", id));
 
-            return await _regulationRepository.DeleteAsync(id) > 0;
+            return await RegulationRepository.DeleteAsync(id) > 0;
         }
 
         /// <summary>
@@ -159,7 +167,7 @@ namespace Lean.Hbt.Application.Services.Routine.Document.Regulations
         public async Task<bool> BatchDeleteAsync(long[] regulationIds)
         {
             if (regulationIds == null || regulationIds.Length == 0) return false;
-            return await _regulationRepository.DeleteRangeAsync(regulationIds.Cast<object>().ToList()) > 0;
+            return await RegulationRepository.DeleteRangeAsync(regulationIds.Cast<object>().ToList()) > 0;
         }
 
         /// <summary>
@@ -169,12 +177,12 @@ namespace Lean.Hbt.Application.Services.Routine.Document.Regulations
         /// <returns>树形结构</returns>
         public async Task<List<HbtRegulationDto>> GetTreeAsync(long? parentId = null)
         {
-            var regulations = await _regulationRepository.GetListAsync(x => x.ParentId == parentId);
+            var regulations = await RegulationRepository.GetListAsync(x => x.ParentId == parentId);
             var regulationDtos = regulations.Adapt<List<HbtRegulationDto>>();
 
             foreach (var regulationDto in regulationDtos)
             {
-                regulationDto.Children = await GetTreeAsync(regulationDto.Id);
+                regulationDto.Children = await GetTreeAsync(regulationDto.RegulationId);
             }
 
             return regulationDtos;
@@ -207,11 +215,11 @@ namespace Lean.Hbt.Application.Services.Routine.Document.Regulations
                     _logger.Info($"正在处理规章制度：{regulation.RegulationTitle} (Code: {regulation.RegulationCode})");
                     
                     // 验证字段是否已存在
-                    await HbtValidateUtils.ValidateFieldExistsAsync(_regulationRepository, "RegulationTitle", regulation.RegulationTitle);
-                    await HbtValidateUtils.ValidateFieldExistsAsync(_regulationRepository, "RegulationCode", regulation.RegulationCode);
+                    await HbtValidateUtils.ValidateFieldExistsAsync(RegulationRepository, "RegulationTitle", regulation.RegulationTitle);
+                    await HbtValidateUtils.ValidateFieldExistsAsync(RegulationRepository, "RegulationCode", regulation.RegulationCode);
 
                     var regulationEntity = regulation.Adapt<HbtRegulation>();
-                    await _regulationRepository.CreateAsync(regulationEntity);
+                    await RegulationRepository.CreateAsync(regulationEntity);
                     success++;
                     
                     _logger.Info($"成功导入规章制度：{regulation.RegulationTitle}");
@@ -235,7 +243,7 @@ namespace Lean.Hbt.Application.Services.Routine.Document.Regulations
         /// <returns>Excel文件字节数组</returns>
         public async Task<(string fileName, byte[] content)> ExportAsync(HbtRegulationQueryDto query, string sheetName = "HbtRegulation")
         {
-            var regulations = await _regulationRepository.GetListAsync(RegulationQueryExpression(query));
+            var regulations = await RegulationRepository.GetListAsync(RegulationQueryExpression(query));
             var exportData = regulations.Adapt<List<HbtRegulationExportDto>>();
             var result = await HbtExcelHelper.ExportAsync(exportData, sheetName);
             return (result.fileName, result.content);

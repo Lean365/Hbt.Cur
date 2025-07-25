@@ -1,180 +1,311 @@
 //===================================================================
 // 项目名 : Lean.Hbt
 // 文件名 : HbtFormController.cs
-// 创建者 : Lean365
-// 创建时间: 2024-01-23 12:00
-// 版本号 : V1.0.0
-// 描述   : 工作流表单控制器
+// 创建者 : Claude
+// 创建时间: 2024-12-01
+// 版本号 : V0.0.1
+// 描述    : 表单控制器
 //===================================================================
 
 using Lean.Hbt.Application.Dtos.Workflow;
 using Lean.Hbt.Application.Services.Workflow;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
-namespace Lean.Hbt.WebApi.Controllers.Workflow
+namespace Lean.Hbt.WebApi.Controllers.Workflow;
+
+/// <summary>
+/// 表单控制器
+/// </summary>
+[ApiController]
+[Route("api/[controller]", Name = "工作流表单")]
+[ApiModule("workflow", "工作流管理")]
+[Authorize]
+public class HbtFormController : HbtBaseController
 {
-    /// <summary>
-    /// 工作流表单控制器
-    /// </summary>
-    [Route("api/[controller]", Name = "工作流表单")]
-    [ApiController]
-    [ApiModule("workflow", "工作流")]
-    public class HbtFormController : HbtBaseController
+    private readonly IHbtFormService _formService;
+
+    public HbtFormController(IHbtFormService formService, 
+    IHbtLogger logger, 
+    IHbtCurrentUser currentUser, 
+    IHbtLocalizationService localizationService) : 
+    base(logger, currentUser, localizationService)
     {
-        private readonly IHbtFormService _workflowFormService;
+        _formService = formService ?? throw new ArgumentNullException(nameof(formService));
+    }
 
-        /// <summary>
-        /// 构造函数
-        /// <param name="workflowFormService">工作流表单服务</param>
-        /// <param name="logger">日志服务</param>
-        /// <param name="currentUser">当前用户服务</param>
-        /// <param name="localization">本地化服务</param>
-        /// </summary>
-        public HbtFormController(
-            IHbtFormService workflowFormService,
-            IHbtLogger logger,
-            IHbtCurrentUser currentUser,
-            IHbtLocalizationService localization) : base(logger, currentUser, localization)
+    /// <summary>
+    /// 获取表单定义列表
+    /// </summary>
+    /// <param name="query">查询条件</param>
+    /// <returns>分页结果</returns>
+    [HttpGet("list")]
+    [HbtPerm("workflow:manage:form:list")]
+    public async Task<IActionResult> GetListAsync([FromQuery] HbtFormQueryDto query)
+    {
+        try
         {
-            _workflowFormService = workflowFormService;
-        }
-
-        /// <summary>
-        /// 获取工作流表单分页列表
-        /// </summary>
-        [HttpGet("list")]
-        [HbtPerm("workflow:form:list")]
-        public async Task<IActionResult> GetListAsync([FromQuery] HbtFormQueryDto query)
-        {
-            var result = await _workflowFormService.GetListAsync(query);
+            var result = await _formService.GetListAsync(query);
             return Success(result);
         }
-
-        /// <summary>
-        /// 获取工作流表单详情
-        /// </summary>
-        [HttpGet("{id}")]
-        [HbtPerm("workflow:form:query")]
-        public async Task<IActionResult> GetByIdAsync(long id)
+        catch (Exception ex)
         {
-            var result = await _workflowFormService.GetByIdAsync(id);
-            return Success(result);
-        }
-
-        /// <summary>
-        /// 创建工作流表单
-        /// </summary>
-        [HttpPost]
-        [HbtPerm("workflow:form:create")]
-        public async Task<IActionResult> CreateAsync([FromBody] HbtFormCreateDto input)
-        {
-            var result = await _workflowFormService.CreateAsync(input);
-            return Success(result);
-        }
-
-        /// <summary>
-        /// 更新工作流表单
-        /// </summary>
-        [HttpPut]
-        [HbtPerm("workflow:form:update")]
-        public async Task<IActionResult> UpdateAsync([FromBody] HbtFormUpdateDto input)
-        {
-            var result = await _workflowFormService.UpdateAsync(input);
-            return Success(result);
-        }
-
-        /// <summary>
-        /// 删除工作流表单
-        /// </summary>
-        [HttpDelete("{id}")]
-        [HbtPerm("workflow:form:delete")]
-        public async Task<IActionResult> DeleteAsync(long id)
-        {
-            var result = await _workflowFormService.DeleteAsync(id);
-            return Success(result);
-        }
-
-        /// <summary>
-        /// 批量删除工作流表单
-        /// </summary>
-        [HttpDelete("batch")]
-        [HbtPerm("workflow:form:delete")]
-        public async Task<IActionResult> BatchDeleteAsync([FromBody] long[] ids)
-        {
-            var result = await _workflowFormService.BatchDeleteAsync(ids);
-            return Success(result);
-        }
-
-        /// <summary>
-        /// 导入工作流表单数据
-        /// </summary>
-        [HttpPost("import")]
-        [HbtPerm("workflow:form:import")]
-        public async Task<IActionResult> ImportAsync(IFormFile file)
-        {
-            using var stream = file.OpenReadStream();
-            var (success, fail) = await _workflowFormService.ImportAsync(stream, "Sheet1");
-            return Success(new { success, fail }, _localization.L("Form.Import.Success"));
-        }
-
-        /// <summary>
-        /// 导出工作流表单数据
-        /// </summary>
-        [HttpGet("export")]
-        [HbtPerm("workflow:form:export")]
-        public async Task<IActionResult> ExportAsync([FromQuery] HbtFormQueryDto query)
-        {
-            var result = await _workflowFormService.ExportAsync(query, "Sheet1");
-            var contentType = result.fileName.EndsWith(".zip", StringComparison.OrdinalIgnoreCase)
-                ? "application/zip"
-                : "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-            // 只在 filename* 用 UTF-8 编码，filename 用 ASCII
-            var safeFileName = System.Text.Encoding.ASCII.GetString(System.Text.Encoding.ASCII.GetBytes(result.fileName));
-            Response.Headers["Content-Disposition"] = $"attachment; filename*=UTF-8''{Uri.EscapeDataString(result.fileName)}";
-            return File(result.content, contentType, result.fileName);
-        }
-
-        /// <summary>
-        /// 获取导入模板
-        /// </summary>
-        [HttpGet("template")]
-        [HbtPerm("workflow:form:query")]
-        public async Task<IActionResult> GetTemplateAsync()
-        {
-            var result = await _workflowFormService.GetTemplateAsync();
-            return File(result.content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", result.fileName);
-        }
-
-        /// <summary>
-        /// 获取工作流定义的所有表单
-        /// </summary>
-        [HttpGet("definition/{definitionId}")]
-        [HbtPerm("workflow:form:query")]
-        public async Task<IActionResult> GetFormsByWorkflowDefinitionAsync(long definitionId)
-        {
-            var result = await _workflowFormService.GetFormsByWorkflowDefinitionAsync(definitionId);
-            return Success(result);
-        }
-
-        /// <summary>
-        /// 修改表单状态
-        /// </summary>
-        [HttpPut("{id}/status")]
-        [HbtPerm("workflow:form:update")]
-        public async Task<IActionResult> ChangeStatusAsync(long id, [FromQuery] int status)
-        {
-            var result = await _workflowFormService.ChangeStatusAsync(id, status);
-            return Success(result);
-        }
-
-        /// <summary>
-        /// 获取表单选项列表
-        /// </summary>
-        [HttpGet("options")]
-        [AllowAnonymous]
-        public async Task<IActionResult> GetOptionsAsync()
-        {
-            var result = await _workflowFormService.GetOptionsAsync();
-            return Success(result);
+            return Error(ex.Message);
         }
     }
-} 
+
+    /// <summary>
+    /// 根据ID获取表单定义
+    /// </summary>
+    /// <param name="id">表单定义ID</param>
+    /// <returns>表单定义</returns>
+    [HttpGet("{id}")]
+    [HbtPerm("workflow:manage:form:query")]
+    public async Task<IActionResult> GetByIdAsync(long id)
+    {
+        try
+        {
+            var result = await _formService.GetByIdAsync(id);
+            if (result == null)
+                return Error("表单定义不存在");
+
+            return Success(result);
+        }
+        catch (Exception ex)
+        {
+            return Error(ex.Message);
+        }
+    }
+
+    /// <summary>
+    /// 根据键获取表单定义
+    /// </summary>
+    /// <param name="formKey">表单键</param>
+    /// <returns>表单定义</returns>
+    [HttpGet("key/{formKey}")]
+    [HbtPerm("workflow:manage:form:query")]
+    public async Task<IActionResult> GetByKeyAsync(string formKey)
+    {
+        try
+        {
+            var result = await _formService.GetByKeyAsync(formKey);
+            if (result == null)
+                return Error("表单定义不存在");
+
+            return Success(result);
+        }
+        catch (Exception ex)
+        {
+            return Error(ex.Message);
+        }
+    }
+
+    /// <summary>
+    /// 创建表单定义
+    /// </summary>
+    /// <param name="input">表单定义创建DTO</param>
+    /// <returns>表单定义ID</returns>
+    [HttpPost]
+    [HbtPerm("workflow:manage:form:create")]
+    public async Task<IActionResult> CreateAsync([FromBody] HbtFormCreateDto input)
+    {
+        try
+        {
+            if (input == null)
+                return Error("请求参数不能为空");
+
+            var id = await _formService.CreateAsync(input);
+            return Success(id, "表单定义创建成功");
+        }
+        catch (Exception ex)
+        {
+            return Error(ex.Message);
+        }
+    }
+
+    /// <summary>
+    /// 更新表单定义
+    /// </summary>
+    /// <param name="input">表单定义更新DTO</param>
+    /// <returns>是否成功</returns>
+    [HttpPut]
+    [HbtPerm("workflow:manage:form:update")]
+    public async Task<IActionResult> UpdateAsync([FromBody] HbtFormUpdateDto input)
+    {
+        try
+        {
+            if (input == null)
+                return Error("请求参数不能为空");
+
+            var result = await _formService.UpdateAsync(input.FormId, input);
+            if (result)
+                return Success(true, "表单定义更新成功");
+            else
+                return Error("表单定义不存在");
+        }
+        catch (Exception ex)
+        {
+            return Error(ex.Message);
+        }
+    }
+
+    /// <summary>
+    /// 删除表单定义
+    /// </summary>
+    /// <param name="id">表单定义ID</param>
+    /// <returns>是否成功</returns>
+    [HttpDelete("{id}")]
+    [HbtPerm("workflow:manage:form:delete")]
+    public async Task<IActionResult> DeleteAsync(long id)
+    {
+        try
+        {
+            var result = await _formService.DeleteAsync(id);
+            if (result)
+                return Success(true, "表单定义删除成功");
+            else
+                return Error("表单定义不存在");
+        }
+        catch (Exception ex)
+        {
+            return Error(ex.Message);
+        }
+    }
+
+    /// <summary>
+    /// 批量删除表单定义
+    /// </summary>
+    /// <param name="ids">表单定义ID数组</param>
+    /// <returns>是否成功</returns>
+    [HttpDelete("batch")]
+    [HbtPerm("workflow:manage:form:delete")]
+    public async Task<IActionResult> BatchDeleteAsync([FromBody] long[] ids)
+    {
+        try
+        {
+            if (ids == null || ids.Length == 0)
+                return Error("请选择要删除的表单定义");
+
+            var result = await _formService.BatchDeleteAsync(ids);
+            if (result)
+                return Success(true, "批量删除表单定义成功");
+            else
+                return Error("批量删除表单定义失败");
+        }
+        catch (Exception ex)
+        {
+            return Error(ex.Message);
+        }
+    }
+
+    /// <summary>
+    /// 更新表单状态
+    /// </summary>
+    /// <param name="id">表单定义ID</param>
+    /// <param name="status">新状态</param>
+    /// <returns>是否成功</returns>
+    [HttpPut("{id}/status")]
+    [HbtPerm("workflow:manage:form:update")]
+    public async Task<IActionResult> UpdateStatusAsync(long id, [FromQuery] int status)
+    {
+        try
+        {
+            var result = await _formService.UpdateStatusAsync(id, status);
+            if (result)
+                return Success(true, "表单状态更新成功");
+            else
+                return Error("表单定义不存在");
+        }
+        catch (Exception ex)
+        {
+            return Error(ex.Message);
+        }
+    }
+
+    /// <summary>
+    /// 获取我的表单列表
+    /// </summary>
+    /// <param name="userId">用户ID</param>
+    /// <param name="query">查询条件</param>
+    /// <returns>分页结果</returns>
+    [HttpGet("my/{userId}")]
+    [HbtPerm("workflow:manage:form:list")]
+    public async Task<IActionResult> GetMyFormsAsync(long userId, [FromQuery] HbtFormQueryDto query)
+    {
+        try
+        {
+            var result = await _formService.GetMyFormsAsync(userId, query);
+            return Success(result);
+        }
+        catch (Exception ex)
+        {
+            return Error(ex.Message);
+        }
+    }
+
+    /// <summary>
+    /// 获取导入模板
+    /// </summary>
+    /// <param name="sheetName">工作表名称</param>
+    /// <returns>Excel模板文件</returns>
+    [HttpGet("template")]
+    [HbtPerm("workflow:manage:form:import")]
+    public async Task<IActionResult> GetTemplateAsync([FromQuery] string sheetName = "Sheet1")
+    {
+        try
+        {
+            var (fileName, content) = await _formService.GetTemplateAsync(sheetName);
+            return File(content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
+    /// <summary>
+    /// 导入表单数据
+    /// </summary>
+    /// <param name="file">Excel文件</param>
+    /// <param name="sheetName">工作表名称</param>
+    /// <returns>导入结果</returns>
+    [HttpPost("import")]
+    [HbtPerm("workflow:manage:form:import")]
+    public async Task<IActionResult> ImportAsync(IFormFile file, [FromQuery] string sheetName = "Sheet1")
+    {
+        try
+        {
+            if (file == null || file.Length == 0)
+                return Error("请选择要导入的文件");
+
+            using var stream = file.OpenReadStream();
+            var result = await _formService.ImportAsync(stream, sheetName);
+            return Success(result, $"导入完成，成功：{result.success}，失败：{result.fail}");
+        }
+        catch (Exception ex)
+        {
+            return Error(ex.Message);
+        }
+    }
+
+    /// <summary>
+    /// 导出表单数据
+    /// </summary>
+    /// <param name="query">查询条件</param>
+    /// <param name="sheetName">工作表名称</param>
+    /// <returns>Excel文件</returns>
+    [HttpGet("export")]
+    [HbtPerm("workflow:manage:form:export")]
+    public async Task<IActionResult> ExportAsync([FromQuery] HbtFormQueryDto query, [FromQuery] string sheetName = "Sheet1")
+    {
+        try
+        {
+            var (fileName, content) = await _formService.ExportAsync(query, sheetName);
+            return File(content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+}

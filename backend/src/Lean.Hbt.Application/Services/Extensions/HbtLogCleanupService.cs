@@ -25,7 +25,10 @@ namespace Lean.Hbt.Application.Services.Extensions
     /// </summary>
     public class HbtLogCleanupService : IHbtLogCleanupService
     {
-        private readonly IHbtRepositoryFactory _repositoryFactory;
+        /// <summary>
+        /// 仓储工厂
+        /// </summary>
+        protected readonly IHbtRepositoryFactory _repositoryFactory;
         private readonly HbtLogCleanupOptions _defaultOptions;
 
         private IHbtRepository<HbtOperLog> OperLogRepository => _repositoryFactory.GetAuthRepository<HbtOperLog>();

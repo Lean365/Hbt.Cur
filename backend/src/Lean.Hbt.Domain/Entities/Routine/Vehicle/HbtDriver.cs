@@ -3,7 +3,7 @@
 // 文件名 : HbtDriver.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-26 14:30
-// 版本号 : V1.0.0
+// 版本号 : V0.0.1
 // 描述   : 驾驶员管理实体
 //===================================================================
 
@@ -55,7 +55,7 @@ namespace Lean.Hbt.Domain.Entities.Routine.Vehicle
         /// <summary>
         /// 驾驶员状态（0：在职，1：离职，2：休假，3：停职，4：其他）
         /// </summary>
-        [SugarColumn(ColumnName = "status", ColumnDescription = "驾驶员状态（0：在职，1：离职，2：休假，3：停职，4：其他）", IsNullable = false, DefaultValue = "0", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
+        [SugarColumn(ColumnName = "status", ColumnDescription = "驾驶员状态", IsNullable = false, DefaultValue = "0", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
         public int Status { get; set; }
 
         /// <summary>
@@ -67,7 +67,7 @@ namespace Lean.Hbt.Domain.Entities.Routine.Vehicle
         /// <summary>
         /// 驾驶证类型（0：A1，1：A2，2：A3，3：B1，4：B2，5：C1，6：C2，7：D，8：E，9：F，10：M，11：N，12：P）
         /// </summary>
-        [SugarColumn(ColumnName = "license_type", ColumnDescription = "驾驶证类型（0：A1，1：A2，2：A3，3：B1，4：B2，5：C1，6：C2，7：D，8：E，9：F，10：M，11：N，12：P）", IsNullable = false, DefaultValue = "5", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
+        [SugarColumn(ColumnName = "license_type", ColumnDescription = "驾驶证类型", IsNullable = false, DefaultValue = "5", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
         public int LicenseType { get; set; }
 
         /// <summary>
@@ -91,7 +91,7 @@ namespace Lean.Hbt.Domain.Entities.Routine.Vehicle
         /// <summary>
         /// 驾驶证状态（0：正常，1：即将到期，2：已过期，3：被吊销，4：被注销）
         /// </summary>
-        [SugarColumn(ColumnName = "license_status", ColumnDescription = "驾驶证状态（0：正常，1：即将到期，2：已过期，3：被吊销，4：被注销）", IsNullable = false, DefaultValue = "0", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
+        [SugarColumn(ColumnName = "license_status", ColumnDescription = "驾驶证状态", IsNullable = false, DefaultValue = "0", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
         public int LicenseStatus { get; set; }
 
         /// <summary>
@@ -115,7 +115,7 @@ namespace Lean.Hbt.Domain.Entities.Routine.Vehicle
         /// <summary>
         /// 性别（0：男，1：女）
         /// </summary>
-        [SugarColumn(ColumnName = "gender", ColumnDescription = "性别（0：男，1：女）", IsNullable = false, DefaultValue = "0", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
+        [SugarColumn(ColumnName = "gender", ColumnDescription = "性别", IsNullable = false, DefaultValue = "0", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
         public int Gender { get; set; }
 
         /// <summary>
@@ -169,13 +169,13 @@ namespace Lean.Hbt.Domain.Entities.Routine.Vehicle
         /// <summary>
         /// 驾龄（年）
         /// </summary>
-        [SugarColumn(ColumnName = "driving_years", ColumnDescription = "驾龄（年）", IsNullable = true, ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
+        [SugarColumn(ColumnName = "driving_years", ColumnDescription = "驾龄", IsNullable = true, ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
         public int? DrivingYears { get; set; }
 
         /// <summary>
         /// 驾驶经验（0：新手，1：一般，2：熟练，3：专家）
         /// </summary>
-        [SugarColumn(ColumnName = "driving_experience", ColumnDescription = "驾驶经验（0：新手，1：一般，2：熟练，3：专家）", IsNullable = false, DefaultValue = "1", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
+        [SugarColumn(ColumnName = "driving_experience", ColumnDescription = "驾驶经验", IsNullable = false, DefaultValue = "1", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
         public int DrivingExperience { get; set; }
 
         /// <summary>
@@ -187,25 +187,25 @@ namespace Lean.Hbt.Domain.Entities.Routine.Vehicle
         /// <summary>
         /// 驾驶技能评分（1-10分）
         /// </summary>
-        [SugarColumn(ColumnName = "driving_skill_score", ColumnDescription = "驾驶技能评分（1-10分）", IsNullable = true, ColumnDataType = "decimal(3,1)", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
+        [SugarColumn(ColumnName = "driving_skill_score", ColumnDescription = "驾驶技能评分", IsNullable = true, ColumnDataType = "decimal(3,1)", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
         public decimal? DrivingSkillScore { get; set; }
 
         /// <summary>
         /// 安全驾驶评分（1-10分）
         /// </summary>
-        [SugarColumn(ColumnName = "safety_score", ColumnDescription = "安全驾驶评分（1-10分）", IsNullable = true, ColumnDataType = "decimal(3,1)", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
+        [SugarColumn(ColumnName = "safety_score", ColumnDescription = "安全驾驶评分", IsNullable = true, ColumnDataType = "decimal(3,1)", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
         public decimal? SafetyScore { get; set; }
 
         /// <summary>
         /// 服务态度评分（1-10分）
         /// </summary>
-        [SugarColumn(ColumnName = "service_score", ColumnDescription = "服务态度评分（1-10分）", IsNullable = true, ColumnDataType = "decimal(3,1)", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
+        [SugarColumn(ColumnName = "service_score", ColumnDescription = "服务态度评分", IsNullable = true, ColumnDataType = "decimal(3,1)", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
         public decimal? ServiceScore { get; set; }
 
         /// <summary>
         /// 综合评分（1-10分）
         /// </summary>
-        [SugarColumn(ColumnName = "overall_score", ColumnDescription = "综合评分（1-10分）", IsNullable = true, ColumnDataType = "decimal(3,1)", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
+        [SugarColumn(ColumnName = "overall_score", ColumnDescription = "综合评分", IsNullable = true, ColumnDataType = "decimal(3,1)", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
         public decimal? OverallScore { get; set; }
 
         /// <summary>
@@ -235,25 +235,25 @@ namespace Lean.Hbt.Domain.Entities.Routine.Vehicle
         /// <summary>
         /// 是否专职司机（0：否，1：是）
         /// </summary>
-        [SugarColumn(ColumnName = "is_full_time", ColumnDescription = "是否专职司机（0：否，1：是）", IsNullable = false, DefaultValue = "0", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
+        [SugarColumn(ColumnName = "is_full_time", ColumnDescription = "是否专职司机", IsNullable = false, DefaultValue = "0", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
         public int IsFullTime { get; set; }
 
         /// <summary>
         /// 是否可驾驶危险品车辆（0：否，1：是）
         /// </summary>
-        [SugarColumn(ColumnName = "can_drive_hazardous", ColumnDescription = "是否可驾驶危险品车辆（0：否，1：是）", IsNullable = false, DefaultValue = "0", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
+        [SugarColumn(ColumnName = "can_drive_hazardous", ColumnDescription = "是否可驾驶危险品车辆", IsNullable = false, DefaultValue = "0", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
         public int CanDriveHazardous { get; set; }
 
         /// <summary>
         /// 是否可驾驶大型车辆（0：否，1：是）
         /// </summary>
-        [SugarColumn(ColumnName = "can_drive_large", ColumnDescription = "是否可驾驶大型车辆（0：否，1：是）", IsNullable = false, DefaultValue = "0", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
+        [SugarColumn(ColumnName = "can_drive_large", ColumnDescription = "是否可驾驶大型车辆", IsNullable = false, DefaultValue = "0", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
         public int CanDriveLarge { get; set; }
 
         /// <summary>
         /// 是否可驾驶客车（0：否，1：是）
         /// </summary>
-        [SugarColumn(ColumnName = "can_drive_passenger", ColumnDescription = "是否可驾驶客车（0：否，1：是）", IsNullable = false, DefaultValue = "0", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
+        [SugarColumn(ColumnName = "can_drive_passenger", ColumnDescription = "是否可驾驶客车", IsNullable = false, DefaultValue = "0", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
         public int CanDrivePassenger { get; set; }
 
         /// <summary>
@@ -265,31 +265,31 @@ namespace Lean.Hbt.Domain.Entities.Routine.Vehicle
         /// <summary>
         /// 工作时间（0：白班，1：夜班，2：全天，3：灵活）
         /// </summary>
-        [SugarColumn(ColumnName = "work_schedule", ColumnDescription = "工作时间（0：白班，1：夜班，2：全天，3：灵活）", IsNullable = false, DefaultValue = "0", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
+        [SugarColumn(ColumnName = "work_schedule", ColumnDescription = "工作时间", IsNullable = false, DefaultValue = "0", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
         public int WorkSchedule { get; set; }
 
         /// <summary>
         /// 基本工资（元/月）
         /// </summary>
-        [SugarColumn(ColumnName = "base_salary", ColumnDescription = "基本工资（元/月）", IsNullable = true, ColumnDataType = "decimal(18,2)", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
+        [SugarColumn(ColumnName = "base_salary", ColumnDescription = "基本工资", IsNullable = true, ColumnDataType = "decimal(18,2)", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
         public decimal? BaseSalary { get; set; }
 
         /// <summary>
         /// 绩效工资（元/月）
         /// </summary>
-        [SugarColumn(ColumnName = "performance_salary", ColumnDescription = "绩效工资（元/月）", IsNullable = true, ColumnDataType = "decimal(18,2)", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
+        [SugarColumn(ColumnName = "performance_salary", ColumnDescription = "绩效工资", IsNullable = true, ColumnDataType = "decimal(18,2)", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
         public decimal? PerformanceSalary { get; set; }
 
         /// <summary>
         /// 津贴（元/月）
         /// </summary>
-        [SugarColumn(ColumnName = "allowance", ColumnDescription = "津贴（元/月）", IsNullable = true, ColumnDataType = "decimal(18,2)", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
+        [SugarColumn(ColumnName = "allowance", ColumnDescription = "津贴", IsNullable = true, ColumnDataType = "decimal(18,2)", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
         public decimal? Allowance { get; set; }
 
         /// <summary>
         /// 总工资（元/月）
         /// </summary>
-        [SugarColumn(ColumnName = "total_salary", ColumnDescription = "总工资（元/月）", IsNullable = true, ColumnDataType = "decimal(18,2)", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
+        [SugarColumn(ColumnName = "total_salary", ColumnDescription = "总工资", IsNullable = true, ColumnDataType = "decimal(18,2)", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
         public decimal? TotalSalary { get; set; }
 
         /// <summary>

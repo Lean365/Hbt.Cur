@@ -83,7 +83,7 @@ public class HbtCaptchaService : HbtBaseService, IHbtCaptchaService
         using var holeImage = await Image.LoadAsync<Rgba32>(holePath);
         using var sliderImage = await Image.LoadAsync<Rgba32>(sliderPath);
 
-        // 随机选择一张背景图片
+        // 随机选择一张背景图片tl
         var backgroundFiles = Directory.GetFiles(_backgroundImagesPath, $"*{_options.Slider.BackgroundImages.FileExtension}");
         if (backgroundFiles.Length == 0)
         {
@@ -98,16 +98,19 @@ public class HbtCaptchaService : HbtBaseService, IHbtCaptchaService
         var targetHeight = _options.Slider.Height; // 150px
         bgImage.Mutate(x => x.Resize(targetWidth, targetHeight));
 
-        // 使用模板图片的原始尺寸
-        var sliderSize = 48; // 滑块的实际尺寸
+        // 使用配置中的滑块尺寸
+        var sliderSize = _options.Slider.SliderWidth; // 滑块的实际尺寸
 
-        // 计算有效的X坐标范围（确保滑块不会超出背景图片）
-        var minX = sliderSize * 2; // 留出左边距，避免太靠左
-        var maxX = targetWidth - sliderSize * 3; // 留出右边距
+        // 计算有效的X坐标范围（hole在背景图片内的位置）
+        var minX = 0; // hole可以在背景图片的最左端
+        var maxX = targetWidth - sliderSize; // 最大位置为背景宽度减去滑块宽度
 
-        // 生成随机的X坐标，Y坐标固定在中间位置
+        // 生成随机的hole位置，Y坐标固定在中间位置
         var xPos = random.Next(minX, maxX);
         var yPos = (targetHeight - sliderSize) / 2;
+
+        _logger.Info("生成滑块验证码 - 背景尺寸: {Width}x{Height}, 滑块尺寸: {SliderSize}, hole位置范围: {MinX}-{MaxX}, hole位置: ({X}, {Y})",
+            targetWidth, targetHeight, sliderSize, minX, maxX, xPos, yPos);
 
         // 创建一个新的背景图副本，用于应用挖空效果
         using var processedBgImage = bgImage.Clone();
@@ -196,7 +199,7 @@ public class HbtCaptchaService : HbtBaseService, IHbtCaptchaService
         var isValid = difference <= _options.Slider.Tolerance;
 
         _logger.Info(
-            "验证详情 - 期望位置: {ExpectedX}, 实际位置: {ActualX}, 差值: {Difference}, 容差: {Tolerance}, 结果: {Result}",
+            "验证详情 - hole位置: {HoleX}, 滑块在背景图片内位置: {SliderX}, 差值: {Difference}, 容差: {Tolerance}, 结果: {Result}",
             cacheData.X,
             xOffset,
             difference,
@@ -322,10 +325,18 @@ public class HbtCaptchaService : HbtBaseService, IHbtCaptchaService
 
         var score = 0.0;
 
+        // 基础分数：只要有操作就给基础分
+        score += 0.2;
+
         // 1. 检查操作时长是否合理
         if (data.Duration >= 500 && data.Duration <= 5000)
         {
             score += 0.3;
+        }
+        else if (data.Duration > 0 && data.Duration < 10000)
+        {
+            // 放宽时长限制，给部分分数
+            score += 0.1;
         }
 
         // 2. 分析鼠标轨迹
@@ -337,12 +348,20 @@ public class HbtCaptchaService : HbtBaseService, IHbtCaptchaService
             var smoothScore = CalculateTrackSmoothness(data.MouseTrack);
             score += smoothScore * 0.2;
         }
-
-        // 3. 分析按键间隔
-        if (data.KeyIntervals.Count >= 2)
+        else if (data.MouseTrack.Count >= 5)
         {
+            // 降低轨迹点数要求，给部分分数
             score += 0.2;
         }
+
+        // 3. 分析按键间隔（可选，不影响主要验证）
+        if (data.KeyIntervals.Count >= 2)
+        {
+            score += 0.1;
+        }
+
+        _logger.Debug("行为验证分数计算: 基础分=0.2, 时长={Duration}ms, 轨迹点数={TrackCount}, 最终分数={Score}", 
+            data.Duration, data.MouseTrack.Count, score);
 
         return Math.Min(score, 1.0);
     }

@@ -3,7 +3,7 @@
 // 文件名 : HbtSignalRUserService.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-24 10:00
-// 版本号 : V1.0.0
+// 版本号 : V0.0.1
 // 描述    : SignalR用户服务实现
 //===================================================================
 
@@ -26,25 +26,29 @@ namespace Lean.Hbt.Infrastructure.SignalR
         /// 日志服务
         /// </summary>
         protected readonly IHbtLogger _logger;
-
-        private readonly IHbtRepository<HbtOnlineUser> _repository;
+        /// <summary>
+        /// 仓储工厂
+        /// </summary>
+        protected readonly IHbtRepositoryFactory _repositoryFactory;
         private static readonly ConcurrentDictionary<string, List<HbtSignalRDevice>> _userDevices = new();
+
+        private IHbtRepository<HbtOnlineUser> Repository => _repositoryFactory.GetAuthRepository<HbtOnlineUser>();
 
         /// <summary>
         /// 构造函数
         /// </summary>
         /// <param name="hubContext"></param>
         /// <param name="logger"></param>
-        /// <param name="repository"></param>
+        /// <param name="repositoryFactory"></param>
         public HbtSignalRUserService(
             IHubContext<HbtSignalRHub> hubContext,
             IHbtLogger logger,
 
-            IHbtRepository<HbtOnlineUser> repository)
+            IHbtRepositoryFactory repositoryFactory)
         {
             _hubContext = hubContext;
             _logger = logger;
-            _repository = repository;
+            _repositoryFactory = repositoryFactory;
         }
 
         /// <summary>
@@ -137,7 +141,7 @@ namespace Lean.Hbt.Infrastructure.SignalR
             // 如果内存中没有，从数据库查询
             var exp = Expressionable.Create<HbtOnlineUser>();
             exp.And(u => u.UserId == long.Parse(userId) && u.OnlineStatus == 0);
-            var onlineUsers = _repository.GetListAsync(exp.ToExpression()).Result;
+            var onlineUsers = Repository.GetListAsync(exp.ToExpression()).Result;
 
             if (onlineUsers != null && onlineUsers.Any())
             {
@@ -260,7 +264,7 @@ namespace Lean.Hbt.Infrastructure.SignalR
                 var exp = Expressionable.Create<HbtOnlineUser>();
                 exp.And(u => u.UserId == user.UserId && u.DeviceId == user.DeviceId);
 
-                var existingUser = await _repository.GetFirstAsync(exp.ToExpression());
+                var existingUser = await Repository.GetFirstAsync(exp.ToExpression());
                 if (existingUser != null)
                 {
                     // 更新现有记录
@@ -270,11 +274,11 @@ namespace Lean.Hbt.Infrastructure.SignalR
                     existingUser.OnlineStatus = user.OnlineStatus;
                     existingUser.ClientIp = user.ClientIp;
                     existingUser.UserAgent = user.UserAgent;
-                    await _repository.UpdateAsync(existingUser);
+                    await Repository.UpdateAsync(existingUser);
                 }
                 else
                 {
-                    await _repository.CreateAsync(user);
+                    await Repository.CreateAsync(user);
                 }
             }
             catch (Exception ex)
@@ -295,7 +299,7 @@ namespace Lean.Hbt.Infrastructure.SignalR
             {
                 var exp = Expressionable.Create<HbtOnlineUser>();
                 exp.And(u => u.ConnectionId == connectionId);
-                return await _repository.GetFirstAsync(exp.ToExpression()) ?? throw new Exception($"未找到连接ID为 {connectionId} 的在线用户");
+                return await Repository.GetFirstAsync(exp.ToExpression()) ?? throw new Exception($"未找到连接ID为 {connectionId} 的在线用户");
             }
             catch (Exception)
             {
@@ -314,7 +318,7 @@ namespace Lean.Hbt.Infrastructure.SignalR
                 var exp = Expressionable.Create<HbtOnlineUser>();
                 exp.And(u => u.UserId == userId && u.DeviceId == deviceId);
 
-                return await _repository.GetFirstAsync(exp.ToExpression()) ?? throw new Exception($"未找到用户ID为 {userId} 设备ID为 {deviceId} 的在线用户");
+                return await Repository.GetFirstAsync(exp.ToExpression()) ?? throw new Exception($"未找到用户ID为 {userId} 设备ID为 {deviceId} 的在线用户");
             }
             catch (Exception)
             {
@@ -335,7 +339,7 @@ namespace Lean.Hbt.Infrastructure.SignalR
                 var exp = Expressionable.Create<HbtOnlineUser>();
                 exp.And(u => u.ConnectionId == connectionId);
 
-                var user = await _repository.GetFirstAsync(exp.ToExpression());
+                var user = await Repository.GetFirstAsync(exp.ToExpression());
                 return user?.DeviceId ?? string.Empty;
             }
             catch (Exception ex)
@@ -354,7 +358,7 @@ namespace Lean.Hbt.Infrastructure.SignalR
             {
                 var exp = Expressionable.Create<HbtOnlineUser>();
                 exp.And(u => u.ConnectionId == connectionId);
-                var result = await _repository.DeleteAsync(exp.ToExpression());
+                var result = await Repository.DeleteAsync(exp.ToExpression());
                 return result > 0;
             }
             catch (Exception ex)
@@ -377,7 +381,7 @@ namespace Lean.Hbt.Infrastructure.SignalR
                 exp.And(u => u.UserId == userId && u.OnlineStatus == 0); // 0表示在线状态
                 exp.And(u => u.LastActivity > DateTime.Now.AddMinutes(-5)); // 只返回5分钟内有活动的连接
 
-                var users = await _repository.GetListAsync(exp.ToExpression());
+                var users = await Repository.GetListAsync(exp.ToExpression());
                 return users.Where(u => !string.IsNullOrEmpty(u.ConnectionId))
                     .Select(u => u.ConnectionId!)
                     .ToList();
@@ -403,11 +407,11 @@ namespace Lean.Hbt.Infrastructure.SignalR
                 var exp = Expressionable.Create<HbtOnlineUser>();
                 exp.And(u => u.ConnectionId == connectionId);
 
-                var user = await _repository.GetFirstAsync(exp.ToExpression());
+                var user = await Repository.GetFirstAsync(exp.ToExpression());
                 if (user != null)
                 {
                     user.LastActivity = DateTime.Now;
-                    await _repository.UpdateAsync(user);
+                    await Repository.UpdateAsync(user);
                 }
             }
             catch (Exception ex)
@@ -430,7 +434,7 @@ namespace Lean.Hbt.Infrastructure.SignalR
                 exp.And(u => u.UserId == userId && u.OnlineStatus == 0);
                 exp.And(u => u.LastActivity > DateTime.Now.AddMinutes(-5));
 
-                var users = await _repository.GetListAsync(exp.ToExpression());
+                var users = await Repository.GetListAsync(exp.ToExpression());
                 return users.Where(u => !string.IsNullOrEmpty(u.ConnectionId))
                     .Select(u => u.ConnectionId!)
                     .ToList();
@@ -455,7 +459,7 @@ namespace Lean.Hbt.Infrastructure.SignalR
                 exp.And(u => u.UserId == userId && u.OnlineStatus == 0);
                 exp.And(u => u.LastActivity > DateTime.Now.AddMinutes(-5));
 
-                var users = await _repository.GetListAsync(exp.ToExpression());
+                var users = await Repository.GetListAsync(exp.ToExpression());
                 return users.Where(u => !string.IsNullOrEmpty(u.ConnectionId))
                     .Select(u => u.ConnectionId!)
                     .ToList();
@@ -463,6 +467,181 @@ namespace Lean.Hbt.Infrastructure.SignalR
             catch (Exception ex)
             {
                 _logger.Error("获取通知接收者列表时发生错误: UserId={UserId}", userId, ex.Message, ex.Message);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// 获取ISO文档接收者列表
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public async Task<List<string>> GetIsoDocumentReceivers(long userId)
+        {
+            try
+            {
+                var exp = Expressionable.Create<HbtOnlineUser>();
+                exp.And(u => u.UserId == userId && u.OnlineStatus == 0);
+                exp.And(u => u.LastActivity > DateTime.Now.AddMinutes(-5));
+
+                var users = await Repository.GetListAsync(exp.ToExpression());
+                return users.Where(u => !string.IsNullOrEmpty(u.ConnectionId))
+                    .Select(u => u.ConnectionId!)
+                    .ToList();
+            }
+            catch (Exception ex)
+            {
+                _logger.Error("获取ISO文档接收者列表时发生错误: UserId={UserId}", userId, ex.Message);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// 获取会议通知接收者列表
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public async Task<List<string>> GetMeetingReceivers(long userId)
+        {
+            try
+            {
+                var exp = Expressionable.Create<HbtOnlineUser>();
+                exp.And(u => u.UserId == userId && u.OnlineStatus == 0);
+                exp.And(u => u.LastActivity > DateTime.Now.AddMinutes(-5));
+
+                var users = await Repository.GetListAsync(exp.ToExpression());
+                return users.Where(u => !string.IsNullOrEmpty(u.ConnectionId))
+                    .Select(u => u.ConnectionId!)
+                    .ToList();
+            }
+            catch (Exception ex)
+            {
+                _logger.Error("获取会议通知接收者列表时发生错误: UserId={UserId}", userId, ex.Message);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// 获取用车通知接收者列表
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public async Task<List<string>> GetVehicleReceivers(long userId)
+        {
+            try
+            {
+                var exp = Expressionable.Create<HbtOnlineUser>();
+                exp.And(u => u.UserId == userId && u.OnlineStatus == 0);
+                exp.And(u => u.LastActivity > DateTime.Now.AddMinutes(-5));
+
+                var users = await Repository.GetListAsync(exp.ToExpression());
+                return users.Where(u => !string.IsNullOrEmpty(u.ConnectionId))
+                    .Select(u => u.ConnectionId!)
+                    .ToList();
+            }
+            catch (Exception ex)
+            {
+                _logger.Error("获取用车通知接收者列表时发生错误: UserId={UserId}", userId, ex.Message);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// 获取Quartz任务通知接收者列表
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public async Task<List<string>> GetQuartzReceivers(long userId)
+        {
+            try
+            {
+                var exp = Expressionable.Create<HbtOnlineUser>();
+                exp.And(u => u.UserId == userId && u.OnlineStatus == 0);
+                exp.And(u => u.LastActivity > DateTime.Now.AddMinutes(-5));
+
+                var users = await Repository.GetListAsync(exp.ToExpression());
+                return users.Where(u => !string.IsNullOrEmpty(u.ConnectionId))
+                    .Select(u => u.ConnectionId!)
+                    .ToList();
+            }
+            catch (Exception ex)
+            {
+                _logger.Error("获取Quartz任务通知接收者列表时发生错误: UserId={UserId}", userId, ex.Message);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// 获取项目通知接收者列表
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public async Task<List<string>> GetProjectReceivers(long userId)
+        {
+            try
+            {
+                var exp = Expressionable.Create<HbtOnlineUser>();
+                exp.And(u => u.UserId == userId && u.OnlineStatus == 0);
+                exp.And(u => u.LastActivity > DateTime.Now.AddMinutes(-5));
+
+                var users = await Repository.GetListAsync(exp.ToExpression());
+                return users.Where(u => !string.IsNullOrEmpty(u.ConnectionId))
+                    .Select(u => u.ConnectionId!)
+                    .ToList();
+            }
+            catch (Exception ex)
+            {
+                _logger.Error("获取项目通知接收者列表时发生错误: UserId={UserId}", userId, ex.Message);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// 获取合同通知接收者列表
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public async Task<List<string>> GetContractReceivers(long userId)
+        {
+            try
+            {
+                var exp = Expressionable.Create<HbtOnlineUser>();
+                exp.And(u => u.UserId == userId && u.OnlineStatus == 0);
+                exp.And(u => u.LastActivity > DateTime.Now.AddMinutes(-5));
+
+                var users = await Repository.GetListAsync(exp.ToExpression());
+                return users.Where(u => !string.IsNullOrEmpty(u.ConnectionId))
+                    .Select(u => u.ConnectionId!)
+                    .ToList();
+            }
+            catch (Exception ex)
+            {
+                _logger.Error("获取合同通知接收者列表时发生错误: UserId={UserId}", userId, ex.Message);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// 获取设变通知接收者列表
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public async Task<List<string>> GetChangeRequestReceivers(long userId)
+        {
+            try
+            {
+                var exp = Expressionable.Create<HbtOnlineUser>();
+                exp.And(u => u.UserId == userId && u.OnlineStatus == 0);
+                exp.And(u => u.LastActivity > DateTime.Now.AddMinutes(-5));
+
+                var users = await Repository.GetListAsync(exp.ToExpression());
+                return users.Where(u => !string.IsNullOrEmpty(u.ConnectionId))
+                    .Select(u => u.ConnectionId!)
+                    .ToList();
+            }
+            catch (Exception ex)
+            {
+                _logger.Error("获取设变通知接收者列表时发生错误: UserId={UserId}", userId, ex.Message);
                 throw;
             }
         }

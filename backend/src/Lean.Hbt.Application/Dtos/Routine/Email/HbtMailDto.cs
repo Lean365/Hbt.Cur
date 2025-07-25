@@ -3,7 +3,7 @@
 // 文件名 : HbtMailDto.cs
 // 创建者 : Lean365
 // 创建时间: 2024-03-07 16:30
-// 版本号 : V1.0.0
+// 版本号 : V0.0.1
 // 描述   : 邮件数据传输对象
 //===================================================================
 
@@ -135,9 +135,16 @@ namespace Lean.Hbt.Application.Dtos.Routine.Email
         /// </summary>
         public HbtMailQueryDto()
         {
+            MailFrom = string.Empty;
             MailTo = string.Empty;
             MailSubject = string.Empty;
         }
+
+        /// <summary>
+        /// 发件人
+        /// </summary>
+        [MaxLength(255, ErrorMessage = "发件人长度不能超过255个字符")]
+        public string? MailFrom { get; set; }
 
         /// <summary>
         /// 收件人
@@ -165,6 +172,11 @@ namespace Lean.Hbt.Application.Dtos.Routine.Email
         /// 结束时间
         /// </summary>
         public DateTime? EndTime { get; set; }
+
+        /// <summary>
+        /// 创建者（用于当前用户邮件过滤）
+        /// </summary>
+        public string? CreateBy { get; set; }
     }
 
     /// <summary>

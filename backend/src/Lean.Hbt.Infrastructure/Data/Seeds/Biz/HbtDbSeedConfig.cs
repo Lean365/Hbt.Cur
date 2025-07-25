@@ -17,7 +17,7 @@ namespace Lean.Hbt.Infrastructure.Data.Seeds.Biz;
 /// </summary>
 public class HbtDbSeedConfig
 {
-    private readonly IHbtRepositoryFactory _repositoryFactory;
+    protected readonly IHbtRepositoryFactory _repositoryFactory;
     private readonly IHbtLogger _logger;
 
     private IHbtRepository<HbtConfig> ConfigRepository => _repositoryFactory.GetBusinessRepository<HbtConfig>();

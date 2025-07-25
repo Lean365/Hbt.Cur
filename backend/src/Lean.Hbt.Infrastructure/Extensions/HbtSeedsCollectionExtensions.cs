@@ -76,7 +76,7 @@ public static class HbtSeedsCollectionExtensions
         services.AddScoped<HbtDbSeedHrm>();
 
         // 注册多库种子数据服务
-        services.AddScoped<HbtAuthDbSeed>();
+        services.AddScoped<HbtIdentityDBSeed>();
         services.AddScoped<HbtGeneratorDbSeed>();
         services.AddScoped<HbtWorkflowDbSeed>();
         services.AddScoped<HbtBusinessDbSeed>();

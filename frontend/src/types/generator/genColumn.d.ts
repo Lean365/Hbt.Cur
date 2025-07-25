@@ -15,6 +15,8 @@ import type { HbtBaseEntity, HbtPagedQuery, HbtPagedResult } from '@/types/commo
 export interface HbtGenColumn extends HbtBaseEntity {
   /** 表ID */
   tableId: number
+  /** 列ID */
+  genColumnId: number
   /** 列名 */
   columnName: string
   /** 列注释 */
@@ -127,7 +129,7 @@ export interface HbtGenColumnCreate {
  */
 export interface HbtGenColumnUpdate extends HbtGenColumnCreate {
   /** 列ID */
-  id: number
+  genColumnId: number
 }
 
 /**
@@ -149,6 +151,10 @@ export type HbtGenColumnPageResult = HbtPagedResult<HbtGenColumn>
  * 数据库表列信息
  */
 export interface HbtGenTableColumnInfo {
+  /** 表ID */
+  tableId: number
+  /** 列ID */
+  genColumnId: number
   /** 列名 */
   dbColumnName: string
   /** 数据类型 */

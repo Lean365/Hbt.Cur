@@ -1,12 +1,13 @@
 <template>
   <div class="login-container">
     <hbt-header-login />
+
     <div class="login-content">
       <!-- 左侧品牌展示卡片 -->
       <a-card class="brand-card" :bordered="false">
         <div class="brand-content">
-          <img src="@/assets/images/logo.svg" alt="Logo" class="brand-logo" />
-          <h1 class="brand-title">Lean.Hbt</h1>
+          <img :src="defaultConfig.logo.src" :alt="defaultConfig.logo.alt" class="brand-logo" />
+          <h1 class="brand-title">{{ defaultConfig.title }}</h1>
           <p class="brand-slogan">{{ t('common.system.slogan') }}</p>
         </div>
       </a-card>
@@ -15,76 +16,104 @@
       <a-card class="login-card" :bordered="false">
         <h2 class="login-title">{{ t('identity.auth.login.title') }}</h2>
         
-        <!-- 登录表单 -->
-        <a-form
-          :model="loginForm"
-          :rules="loginRules"
-          ref="loginFormRef"
-          @finish="handleLogin"
+
+        
+        <a-tabs 
+          v-model:activeKey="activeTabKey" 
+          class="login-tabs"
+          style="width: 100%; margin-bottom: 20px;"
+          @change="handleTabChange"
         >
-          <a-form-item name="userName">
-            <a-input
-              v-model:value="loginForm.userName"
-              :placeholder="t('identity.auth.login.username')"
-              class="login-input"
-              autocomplete="username"
-              @change="handleUserNameChange"
-            >
-              <template #prefix>
-                <user-outlined v-icon-random="'login-user'" />
-              </template>
-            </a-input>
-          </a-form-item>
-          <a-form-item name="password">
-            <a-input-password
-              v-model:value="loginForm.password"
-              :placeholder="t('identity.auth.login.password')"
-              class="login-input"
-              autocomplete="current-password"
-            >
-              <template #prefix>
-                <lock-outlined v-icon-random="'login-password'" />
-              </template>
-            </a-input-password>
-          </a-form-item>
-          <a-form-item>
-            <a-button
-              type="primary"
-              html-type="submit"
-              class="login-button"
-              :loading="loading"
-              block
-            >
-              {{ t('identity.auth.login.submit') }}
-            </a-button>
-          </a-form-item>
-        </a-form>
-        <div class="login-options">
-          <a-checkbox
-            v-model:checked="rememberMe"
-            class="remember-me"
+          <a-tab-pane 
+            v-for="tab in loginTabs" 
+            :key="tab.key" 
+            :tab="tab.label"
           >
-            {{ t('identity.auth.login.rememberMe') }}
-          </a-checkbox>
-          <a class="forgot-password" @click="handleForgotPassword">
-            {{ t('identity.auth.login.forgotPassword') }}
-          </a>
-        </div>
-        <div class="other-login">
-          <div class="divider">
-            <span>{{ t('identity.auth.login.otherLogin') }}</span>
-          </div>
-          <div class="oauth-buttons">
-            <a-button
-              type="link"
-              @click="handleOAuthLogin('github')"
+            <!-- Tab内容会在下面的条件渲染中处理 -->
+          </a-tab-pane>
+        </a-tabs>
+        
+
+        
+        <!-- 密码登录表单 -->
+        <div v-if="activeTabKey === 'password'" class="login-form-container">
+          <a-form
+            :model="loginForm"
+            :rules="loginRules"
+            ref="loginFormRef"
+            @finish="handleLogin"
+          >
+            <a-form-item name="userName">
+              <a-input
+                v-model:value="loginForm.userName"
+                :placeholder="t('identity.auth.login.username')"
+                class="login-input"
+                autocomplete="username"
+                @change="handleUserNameChange"
+              >
+                <template #prefix>
+                  <user-outlined v-icon-random="'login-user'" />
+                </template>
+              </a-input>
+            </a-form-item>
+            <a-form-item name="password">
+              <a-input-password
+                v-model:value="loginForm.password"
+                :placeholder="t('identity.auth.login.password')"
+                class="login-input"
+                autocomplete="current-password"
+              >
+                <template #prefix>
+                  <lock-outlined v-icon-random="'login-password'" />
+                </template>
+              </a-input-password>
+            </a-form-item>
+            <a-form-item>
+              <a-button
+                type="primary"
+                html-type="submit"
+                class="login-button"
+                :loading="loading"
+                block
+              >
+                {{ t('identity.auth.login.submit') }}
+              </a-button>
+            </a-form-item>
+          </a-form>
+          <div class="login-options">
+            <a-checkbox
+              v-model:checked="rememberMe"
+              class="remember-me"
             >
-              <template #icon>
-                <GithubOutlined v-icon-random="'login-github'" />
-              </template>
-              GitHub
-            </a-button>
+              {{ t('identity.auth.login.rememberMe') }}
+            </a-checkbox>
+            <a class="forgot-password" @click="showPasswordRecovery">
+              {{ t('identity.auth.login.forgotPassword') }}
+            </a>
           </div>
+        </div>
+
+        <!-- 短信登录组件 -->
+        <div v-if="activeTabKey === 'sms' || activeTabKey === 'smsAuth' || activeTabKey === 'SmsAuth'" class="login-form-container">
+          <SmsLogin />
+        </div>
+
+        <!-- 二维码登录组件 -->
+        <div v-if="activeTabKey === 'qrcode' || activeTabKey === 'qrCode' || activeTabKey === 'qrCodeAuth' || activeTabKey === 'QrCodeAuth'" class="login-form-container">
+          <QrCodeLogin :options="getQrCodeOptions()" />
+        </div>
+
+        <!-- 第三方登录组件 -->
+        <div v-if="activeTabKey === 'oauth' || activeTabKey === 'thirdParty' || activeTabKey === 'OAuth' || activeTabKey === 'oauthAuth'" class="login-form-container">
+          <OAuthLogin :providers="getOAuthProviders()" />
+        </div>
+        
+        <!-- 注册链接（根据配置显示/隐藏） -->
+        <div class="register-link" v-if="configStore.showRegister">
+          <span>{{ t('identity.auth.login.noAccount') }}</span>
+          <a @click="handleShowRegisterModal">
+            {{ t('identity.auth.login.registerNow') }}
+          </a>
         </div>
       </a-card>
     </div>
@@ -100,9 +129,50 @@
       centered
     >
       <div class="captcha-modal-content">
-        <hbt-slider-captcha ref="captchaRef" @success="handleCaptchaSuccess" @error="handleCaptchaError" />
+        <component
+          :is="captchaType === 'Behavior' ? 'HbtBehaviorCaptcha' : 'HbtSliderCaptcha'"
+          ref="captchaRef"
+          @success="handleCaptchaSuccess"
+          @error="handleCaptchaError"
+        />
       </div>
     </a-modal>
+
+    <!-- 找回密码弹窗 -->
+    <hbt-modal
+      :open="showPasswordRecoveryModal"
+      :title="t('identity.auth.passwordRecovery.title')"
+      :footer="false"
+      :mask-closable="false"
+      :width="600"
+      :centered="true"
+      @update:open="handlePasswordRecoveryCancel"
+      @cancel="handlePasswordRecoveryCancel"
+    >
+      <UserRecovery
+        ref="passwordRecoveryRef"
+        @switch-to-login="handleSwitchToLogin"
+        @recovery-success="handleRecoverySuccess"
+      />
+    </hbt-modal>
+
+    <!-- 注册弹窗 -->
+    <hbt-modal
+      :open="showRegisterModal"
+      :title="t('identity.auth.register.title')"
+      :footer="false"
+      :mask-closable="false"
+      :width="600"
+      :centered="true"
+      @update:open="handleRegisterModalCancel"
+      @cancel="handleRegisterModalCancel"
+    >
+      <UserRegistration
+        ref="userRegistrationRef"
+        @switch-to-login="handleRegisterModalCancel"
+        @registration-success="handleRegisterSuccess"
+      />
+    </hbt-modal>
   </div>
 </template>
 
@@ -111,25 +181,31 @@
 import type { FormInstance } from 'ant-design-vue'
 import type { RuleObject } from 'ant-design-vue/es/form'
 import type { LoginParams } from '@/types/identity/auth'
-import { HbtDeviceType, HbtOsType, HbtBrowserType } from '@/types/audit/loginDevLog'
 
 // API和组件导入
-import { getSalt, checkAccountLockout } from '@/api/identity/auth'
+import { getSalt, checkAccountLockout } from '@/api/identity/auth/auth'
+import { getCaptchaConfig } from '@/api/security/captcha'
+import { getEnabledLoginMethods } from '@/api/identity/auth/loginMethod'
 import { PasswordEncryptor } from '@/utils/crypto'
 import { useUserStore } from '@/stores/user'
 import { useMenuStore } from '@/stores/menu'
 import { useAppStore } from '@/stores/app'
 import { useTranslationStore } from '@/stores/translation'
+import { useConfigStore } from '@/stores/config'
 import { useI18n } from 'vue-i18n'
 import { message } from 'ant-design-vue'
-import { ref, reactive, onMounted, onUnmounted, nextTick, watch, computed, h } from 'vue'
+import { ref,  onMounted, onUnmounted, nextTick, watch, computed, h } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { getDeviceInfo } from '@/utils/device'
 import { getEnvironmentInfo } from '@/utils/environment'
+import { getClientIpAddress } from '@/utils/ip'
 import { LOGIN_POLICY, LOGIN_STORAGE_KEYS, SPECIAL_USERS } from '@/types/identity/auth'
-import { registerDynamicRoutes } from '@/router'
-import { ApartmentOutlined, UserOutlined, LockOutlined, GithubOutlined } from '@ant-design/icons-vue'
-import { setIconRandomColor } from '@/utils/iconColor'
+import { getDefaultAppConfig } from '@/setting'
+import UserRecovery from '@/views/login/components/UserRecovery.vue'
+import UserRegistration from '@/views/login/components/UserRegistration.vue'
+import SmsLogin from '@/views/login/components/SmsLogin.vue'
+import QrCodeLogin from '@/views/login/components/QrCodeLogin.vue'
+import OAuthLogin from '@/views/login/components/OAuthLogin.vue'
 
 
 const { t } = useI18n()
@@ -139,6 +215,10 @@ const userStore = useUserStore()
 const menuStore = useMenuStore()
 const appStore = useAppStore()
 const translationStore = useTranslationStore()
+const configStore = useConfigStore()
+
+// 获取 setting.ts 的默认配置
+const defaultConfig = computed(() => getDefaultAppConfig(false))
 
 // 表单引用
 const loginFormRef = ref<FormInstance>()
@@ -176,15 +256,110 @@ const showCaptcha = ref(false)
 const rememberMe = ref(false)
 // 加载状态
 const loading = ref(false)
+// 是否显示找回密码弹窗
+const showPasswordRecoveryModal = ref(false)
+// 是否显示注册弹窗
+const showRegisterModal = ref(false)
 
 // 验证码状态
 const captchaVerified = ref(false)
 const captchaParams = ref<{ token: string; xOffset: number } | null>(null)
 
+// 组件引用
+const passwordRecoveryRef = ref()
+const userRegistrationRef = ref()
+
+// 登录方式相关变量
+const activeTabKey = ref('password')
+const loginTabs = ref<any[]>([])
+const enabledLoginMethods = ref<any[]>([])
+
+// 验证码类型（完全由后端配置）
+const captchaType = ref<'Slider' | 'Behavior'>('Slider')
+
+// 获取后端验证码配置
+const loadCaptchaConfig = async () => {
+  try {
+    const { data } = await getCaptchaConfig('login')
+    
+    // 检查数据结构：data.data 是实际的配置数据
+    const configData = data.data || data
+    if (configData && configData.type) {
+      captchaType.value = configData.type as 'Slider' | 'Behavior'
+    } else {
+      message.error('获取验证码配置失败')
+    }
+  } catch (error) {
+    console.error('[验证码配置] 获取后端验证码配置失败:', error)
+    message.error('获取验证码配置失败')
+  }
+}
+
+// 加载登录方式配置
+const loadLoginMethods = async () => {
+  try {
+    const response: any = await getEnabledLoginMethods()
+    
+    let loginMethods: any[] = []
+
+    if (Array.isArray(response?.data)) {
+      loginMethods = response.data
+    } else if (Array.isArray(response?.data?.data)) {
+      loginMethods = response.data.data
+    } else if (Array.isArray(response)) {
+      loginMethods = response
+    } else {
+      loginMethods = []
+    }
+
+    enabledLoginMethods.value = loginMethods
+
+    // 构建tabs配置
+    const tabs = []
+    for (const method of enabledLoginMethods.value) {
+      if (method && method.key && method.name) {
+        tabs.push({
+          key: method.key,
+          label: method.name,
+          children: null
+        })
+      }
+    }
+    loginTabs.value = tabs
+  } catch (error) {
+    enabledLoginMethods.value = []
+    loginTabs.value = []
+    console.error('[登录方式] 获取后端登录方式配置失败:', error)
+    message.error('获取登录方式配置失败')
+  }
+}
+
+// 处理tab切换
+const handleTabChange = (key: string | number) => {
+  activeTabKey.value = key as string
+}
+
+// 获取OAuth提供商列表
+const getOAuthProviders = () => {
+  const oauthMethod = enabledLoginMethods.value.find(method => method.key === 'oauth')
+  if (oauthMethod && oauthMethod.providers) {
+    return oauthMethod.providers
+  }
+  return []
+}
+
+// 获取二维码选项列表
+const getQrCodeOptions = () => {
+  const qrCodeMethod = enabledLoginMethods.value.find(method => method.key === 'qrcode')
+  if (qrCodeMethod && qrCodeMethod.options) {
+    return qrCodeMethod.options
+  }
+  return []
+}
+
 // 监听用户名变化
 const handleUserNameChange = async (e: Event) => {
   const value = (e.target as HTMLInputElement).value;
-  console.log('[用户名变化] 用户名:', value)
 }
 
 // 检查是否需要验证码（5分钟内重复登录）
@@ -195,17 +370,8 @@ const checkNeedCaptcha = () => {
     const timeDiff = currentTime - parseInt(lastLoginTime)
     const minutesDiff = timeDiff / (1000 * 60)
     
-    console.log('[验证码策略] 时间检查:', {
-      lastLoginTime: new Date(parseInt(lastLoginTime)).toLocaleString(),
-      currentTime: new Date(currentTime).toLocaleString(),
-      timeDiff: `${timeDiff}ms`,
-      minutesDiff: `${minutesDiff.toFixed(2)}分钟`,
-      requireCaptcha: minutesDiff <= LOGIN_POLICY.CAPTCHA.REQUIRED_MINUTES
-    })
-    
     return minutesDiff <= LOGIN_POLICY.CAPTCHA.REQUIRED_MINUTES
   }
-  console.log('[验证码策略] 未找到上次登录时间记录')
   return false
 }
 
@@ -239,7 +405,6 @@ const isAdmin = computed(() => loginForm.value.userName.toLowerCase() === SPECIA
 const handleLogin = async () => {
   try {
     loading.value = true
-    console.log('[登录] 开始登录流程')
     
     // 验证表单
     if (!loginForm.value.userName) {
@@ -256,14 +421,12 @@ const handleLogin = async () => {
     }
     
     // 1. 获取盐值
-    console.log('[登录] 开始获取盐值')
     const { data: saltResponse } = await getSalt(loginForm.value.userName)
     if (!saltResponse || !saltResponse.data?.salt) {
       message.error(t('identity.auth.login.error.getSalt'))
       loading.value = false
       return
     }
-    console.log('[登录] 盐值获取成功')
 
     // 2. 使用盐值加密密码
     const hashedPassword = PasswordEncryptor.hashPassword(
@@ -272,36 +435,26 @@ const handleLogin = async () => {
       saltResponse.data.iterations || 100000
     )
 
-    // 3. 获取设备信息和环境信息
+    // 3. 获取设备信息、环境信息和IP地址
     const deviceInfo = await getDeviceInfo()
     const environmentInfo = await getEnvironmentInfo()
-
-    // 4. 构建登录参数
-    console.log('[登录] 构建登录参数:', {
-      用户名: loginForm.value.userName,
-      设备信息: deviceInfo,
-      环境信息: environmentInfo
-    })
+    const clientIp = await getClientIpAddress()
     
     const loginParams: LoginParams = {
       userName: loginForm.value.userName,
       password: hashedPassword,
       captchaToken: loginForm.value.captchaToken,
       captchaOffset: loginForm.value.captchaOffset,
-      ipAddress: window.location.hostname,
+      ipAddress: clientIp, // 使用前端获取的IP地址
       userAgent: navigator.userAgent,
       loginType: 0, // 密码登录
       loginSource: 0, // Web登录
       deviceInfo: deviceInfo,
       environmentInfo: environmentInfo
     }
-    
-    console.log('[登录] 构建的登录参数:', loginParams)
 
     // 5. 发起登录请求
-    console.log('[登录] 开始调用登录API')
     await userStore.login(loginParams)
-    console.log('[登录] 登录API调用成功')
     
     message.success(t('identity.auth.login.success'))
     
@@ -334,39 +487,28 @@ const handleLogin = async () => {
 
 // 登录成功处理
 const handleLoginSuccess = async () => {
-  console.log('[登录成功] 开始处理登录成功流程')
-  
   // 记录登录时间
   await userStore.recordLoginTime()
-  console.log('[登录成功] 记录登录时间完成')
   
   // 重置失败次数
   await userStore.resetLoginFailCount()
-  console.log('[登录成功] 重置失败次数完成')
   
   // 开始加载菜单
-  console.log('[登录成功] 开始加载菜单')
   await menuStore.reloadMenus(router)
-  console.log('[登录成功] 菜单加载完成')
   
   // 等待路由更新完成
-  console.log('[登录成功] 等待路由更新完成')
   await nextTick()
   
   // 初始化翻译
   try {
-    console.log('[登录成功] 开始初始化翻译')
     await translationStore.initializeTranslations(appStore.language)
-    console.log('[登录成功] 翻译初始化完成')
   } catch (error) {
     console.error('[登录成功] 翻译初始化失败:', error)
   }
   
   // 准备跳转到首页
-  console.log('[登录成功] 准备跳转到首页')
   const targetPath = route.query.redirect as string || '/home'
   router.push(targetPath)
-  console.log('[登录成功] 跳转到:', targetPath)
 }
 
 // 处理登录错误
@@ -439,21 +581,97 @@ const validateCredentials = async () => {
 
 // 处理验证码成功
 const handleCaptchaSuccess = (params: { token: string; xOffset: number }) => {
-  captchaVerified.value = true
-  captchaParams.value = params
-  handleLogin()
+  try {
+    // 验证参数
+    if (!params || !params.token) {
+      message.error('验证码参数无效')
+      return
+    }
+    
+    captchaVerified.value = true
+    captchaParams.value = params
+    
+    handleLogin()
+  } catch (error) {
+    console.error('[登录验证码成功] 处理验证码成功回调时出错:', error)
+    message.error('验证码处理失败，请重试')
+    captchaVerified.value = false
+    captchaParams.value = null
+  }
 }
 
 // 处理验证码错误
 const handleCaptchaError = (error: string) => {
-  captchaVerified.value = false
-  captchaParams.value = null
-  message.error(t('identity.auth.captcha.error'))
+  try {
+    captchaVerified.value = false
+    captchaParams.value = null
+    message.error(t('identity.auth.captcha.error'))
+  } catch (err) {
+    console.error('[登录验证码错误] 处理验证码错误回调时出错:', err)
+    message.error('验证码错误处理失败')
+  }
 }
 
-// 处理忘记密码
+// 显示找回密码弹窗
+const showPasswordRecovery = () => {
+  showPasswordRecoveryModal.value = true
+}
+
+// 处理找回密码弹窗取消
+const handlePasswordRecoveryCancel = () => {
+  showPasswordRecoveryModal.value = false
+  // 重置找回密码组件状态
+  if (passwordRecoveryRef.value?.resetAllStates) {
+    passwordRecoveryRef.value.resetAllStates()
+  }
+}
+
+// 处理切换到登录
+const handleSwitchToLogin = () => {
+  showPasswordRecoveryModal.value = false
+  // 重置找回密码组件状态
+  if (passwordRecoveryRef.value?.resetAllStates) {
+    passwordRecoveryRef.value.resetAllStates()
+  }
+}
+
+// 处理找回密码成功
+const handleRecoverySuccess = (userName: string) => {
+  showPasswordRecoveryModal.value = false
+  // 重置找回密码组件状态
+  if (passwordRecoveryRef.value?.resetAllStates) {
+    passwordRecoveryRef.value.resetAllStates()
+  }
+  message.success(t('identity.auth.passwordRecovery.successMessage', { userName }))
+}
+
+// 显示注册弹窗
+const handleShowRegisterModal = () => {
+  showRegisterModal.value = true
+}
+
+// 处理注册弹窗取消
+const handleRegisterModalCancel = () => {
+  showRegisterModal.value = false
+  // 重置注册组件状态
+  if (userRegistrationRef.value?.resetAllStates) {
+    userRegistrationRef.value.resetAllStates()
+  }
+}
+
+// 处理注册成功
+const handleRegisterSuccess = (userName: string) => {
+  showRegisterModal.value = false
+  // 重置注册组件状态
+  if (userRegistrationRef.value?.resetAllStates) {
+    userRegistrationRef.value.resetAllStates()
+  }
+  message.success(t('identity.auth.register.successMessage', { userName }))
+}
+
+// 处理忘记密码（保留原有函数名以兼容）
 const handleForgotPassword = () => {
-  message.info(t('identity.auth.login.notAvailable', { feature: t('identity.auth.login.form.forgot') }))
+  showPasswordRecovery()
 }
 
 // 处理OAuth登录
@@ -483,15 +701,20 @@ const initEnvironmentInfo = async () => {
 // 在组件挂载时初始化设备信息
 onMounted(async () => {
   try {
-    console.log('[登录页面] 开始初始化')
+    // 初始化配置
+    await configStore.initialize()
+    
+    // 加载后端验证码配置
+    await loadCaptchaConfig()
+    
+    // 加载登录方式配置
+    await loadLoginMethods()
     
     // 初始化设备信息
-    console.log('[登录页面] 初始化设备信息')
     await initDeviceInfo()
     await initEnvironmentInfo()
 
     // 清理登录状态
-    console.log('[登录页面] 清理登录状态')
     resetFailedAttempts(loginForm.value.userName)
     showCaptcha.value = false
     userStore.setNeedCaptcha(false)
@@ -499,12 +722,9 @@ onMounted(async () => {
     // 如果之前记住了用户名，自动填充
     const lastUsername = localStorage.getItem('lastUsername')
     if (lastUsername) {
-      console.log('[登录页面] 恢复上次登录的用户名:', lastUsername)
       loginForm.value.userName = lastUsername
       rememberMe.value = true
     }
-    
-    console.log('[登录页面] 初始化完成')
   } catch (error) {
     console.error('[登录页面初始化] 失败:', error)
     message.error('页面初始化失败，请刷新重试')
@@ -515,7 +735,6 @@ onMounted(async () => {
 watch(showCaptcha, async (newValue) => {
   if (newValue && captchaRef.value) {
     await nextTick()
-    console.log('[验证码] 监听到显示状态变化，开始初始化')
     try {
       await captchaRef.value.initCaptcha()
     } catch (error) {
@@ -714,6 +933,21 @@ const handleLockoutCheck = async (username: string) => {
   .forgot-password {
     color: var(--ant-color-primary);
 
+    &:hover {
+      color: var(--ant-color-primary-hover);
+    }
+  }
+}
+
+.register-link {
+  text-align: center;
+  margin: 16px 0;
+  color: var(--ant-color-text-secondary);
+  
+  a {
+    color: var(--ant-color-primary);
+    margin-left: 4px;
+    
     &:hover {
       color: var(--ant-color-primary-hover);
     }

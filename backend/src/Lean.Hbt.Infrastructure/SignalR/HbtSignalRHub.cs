@@ -3,7 +3,7 @@
 // 文件名 : HbtSignalRHub.cs
 // 创建者 : Lean365
 // 创建时间: 2024-03-07 16:30
-// 版本号 : V1.0.0
+// 版本号 : V0.0.1
 // 描述   : SignalR集线器
 //===================================================================
 
@@ -32,11 +32,16 @@ namespace Lean.Hbt.Infrastructure.SignalR
         private readonly IHbtSignalRCacheService _cacheService;
         private readonly IHbtSingleSignOnService _singleSignOnService;
         private readonly IHbtDeviceIdGenerator _deviceIdGenerator;
-        private readonly IHbtRepository<HbtOnlineUser> _repository;
+        /// <summary>
+        /// 仓储工厂
+        /// </summary>
+        protected readonly IHbtRepositoryFactory _repositoryFactory;
         private readonly IHubContext<HbtSignalRHub> _hubContext;
         private readonly IConfiguration _configuration;
         private readonly SignalRConfig _signalRConfig;
         private static readonly SemaphoreSlim _connectionLock = new SemaphoreSlim(1, 1);
+
+        private IHbtRepository<HbtOnlineUser> Repository => _repositoryFactory.GetAuthRepository<HbtOnlineUser>();
 
         /// <summary>
         /// 构造函数
@@ -48,7 +53,7 @@ namespace Lean.Hbt.Infrastructure.SignalR
             IHbtSignalRCacheService cacheService,
             IHbtSingleSignOnService singleSignOnService,
             IHbtDeviceIdGenerator deviceIdGenerator,
-            IHbtRepository<HbtOnlineUser> repository,
+            IHbtRepositoryFactory repositoryFactory,
             IHubContext<HbtSignalRHub> hubContext,
             IConfiguration configuration)
         {
@@ -57,7 +62,7 @@ namespace Lean.Hbt.Infrastructure.SignalR
             _cacheService = cacheService;
             _singleSignOnService = singleSignOnService;
             _deviceIdGenerator = deviceIdGenerator;
-            _repository = repository;
+            _repositoryFactory = repositoryFactory;
             _hubContext = hubContext;
             _configuration = configuration;
             _signalRConfig = _configuration.GetSection("SignalR").Get<SignalRConfig>();
@@ -465,6 +470,463 @@ namespace Lean.Hbt.Infrastructure.SignalR
         }
 
         /// <summary>
+        /// 发送日程提醒
+        /// </summary>
+        public async Task SendScheduleReminder(long scheduleId, string title, string content, List<long> userIds)
+        {
+            var notification = new HbtRealTimeNotification
+            {
+                Type = HbtMessageType.ScheduleReminder,
+                Title = title,
+                Content = content,
+                Timestamp = DateTime.Now,
+                Data = new { scheduleId, title, content }
+            };
+
+            foreach (var userId in userIds)
+            {
+                await Clients.User(userId.ToString()).ReceiveScheduleReminder(notification);
+            }
+        }
+
+        /// <summary>
+        /// 发送会议通知
+        /// </summary>
+        public async Task SendMeetingNotification(long meetingId, string title, string content, List<long> participantIds)
+        {
+            var notification = new HbtRealTimeNotification
+            {
+                Type = HbtMessageType.MeetingNotification,
+                Title = title,
+                Content = content,
+                Timestamp = DateTime.Now,
+                Data = new { meetingId, title, content }
+            };
+
+            foreach (var userId in participantIds)
+            {
+                await Clients.User(userId.ToString()).ReceiveMeetingNotification(notification);
+            }
+        }
+
+        /// <summary>
+        /// 发送用车通知
+        /// </summary>
+        public async Task SendVehicleNotification(long vehicleBookingId, string title, string content, List<long> userIds)
+        {
+            var notification = new HbtRealTimeNotification
+            {
+                Type = HbtMessageType.VehicleNotification,
+                Title = title,
+                Content = content,
+                Timestamp = DateTime.Now,
+                Data = new { vehicleBookingId, title, content }
+            };
+
+            foreach (var userId in userIds)
+            {
+                await Clients.User(userId.ToString()).ReceiveVehicleNotification(notification);
+            }
+        }
+
+        /// <summary>
+        /// 发送ISO文档通知
+        /// </summary>
+        public async Task SendIsoDocumentNotification(long isoDocumentId, string title, string content, List<long> userIds)
+        {
+            var notification = new HbtRealTimeNotification
+            {
+                Type = HbtMessageType.IsoDocumentNotification,
+                Title = title,
+                Content = content,
+                Timestamp = DateTime.Now,
+                Data = new { isoDocumentId, title, content }
+            };
+
+            foreach (var userId in userIds)
+            {
+                await Clients.User(userId.ToString()).ReceiveIsoDocumentNotification(notification);
+            }
+        }
+
+        /// <summary>
+        /// 发送日程状态更新
+        /// </summary>
+        public async Task SendScheduleStatusUpdate(long scheduleId, string status, string message, List<long> userIds)
+        {
+            var notification = new HbtRealTimeNotification
+            {
+                Type = HbtMessageType.ScheduleStatusUpdate,
+                Title = "日程状态更新",
+                Content = $"日程 {scheduleId} {status}: {message}",
+                Timestamp = DateTime.Now,
+                Data = new { scheduleId, status, message }
+            };
+
+            foreach (var userId in userIds)
+            {
+                await Clients.User(userId.ToString()).ReceiveScheduleStatusUpdate(notification);
+            }
+        }
+
+        /// <summary>
+        /// 发送会议状态更新
+        /// </summary>
+        public async Task SendMeetingStatusUpdate(long meetingId, string status, string message, List<long> participantIds)
+        {
+            var notification = new HbtRealTimeNotification
+            {
+                Type = HbtMessageType.MeetingStatusUpdate,
+                Title = "会议状态更新",
+                Content = $"会议 {meetingId} {status}: {message}",
+                Timestamp = DateTime.Now,
+                Data = new { meetingId, status, message }
+            };
+
+            foreach (var userId in participantIds)
+            {
+                await Clients.User(userId.ToString()).ReceiveMeetingStatusUpdate(notification);
+            }
+        }
+
+        /// <summary>
+        /// 发送用车状态更新
+        /// </summary>
+        public async Task SendVehicleStatusUpdate(long vehicleBookingId, string status, string message, List<long> userIds)
+        {
+            var notification = new HbtRealTimeNotification
+            {
+                Type = HbtMessageType.VehicleStatusUpdate,
+                Title = "用车状态更新",
+                Content = $"用车预约 {vehicleBookingId} {status}: {message}",
+                Timestamp = DateTime.Now,
+                Data = new { vehicleBookingId, status, message }
+            };
+
+            foreach (var userId in userIds)
+            {
+                await Clients.User(userId.ToString()).ReceiveVehicleStatusUpdate(notification);
+            }
+        }
+
+        /// <summary>
+        /// 发送ISO文档状态更新
+        /// </summary>
+        public async Task SendIsoDocumentStatusUpdate(long isoDocumentId, string status, string message, List<long> userIds)
+        {
+            var notification = new HbtRealTimeNotification
+            {
+                Type = HbtMessageType.IsoDocumentStatusUpdate,
+                Title = "ISO文档状态更新",
+                Content = $"ISO文档 {isoDocumentId} {status}: {message}",
+                Timestamp = DateTime.Now,
+                Data = new { isoDocumentId, status, message }
+            };
+
+            foreach (var userId in userIds)
+            {
+                await Clients.User(userId.ToString()).ReceiveIsoDocumentStatusUpdate(notification);
+            }
+        }
+
+        /// <summary>
+        /// 发送邮件发送通知
+        /// </summary>
+        public async Task SendMailSent(long mailId, string title, string content, List<long> userIds)
+        {
+            var notification = new HbtRealTimeNotification
+            {
+                Type = HbtMessageType.MailSent,
+                Title = "邮件发送通知",
+                Content = $"邮件已发送: {title}",
+                Timestamp = DateTime.Now,
+                Data = new { mailId, title, content }
+            };
+
+            foreach (var userId in userIds)
+            {
+                await Clients.User(userId.ToString()).ReceiveMailSent(notification);
+            }
+        }
+
+        /// <summary>
+        /// 发送邮件接收通知
+        /// </summary>
+        public async Task SendMailReceived(long mailId, string title, string content, List<long> userIds)
+        {
+            var notification = new HbtRealTimeNotification
+            {
+                Type = HbtMessageType.MailReceived,
+                Title = "新邮件通知",
+                Content = $"收到新邮件: {title}",
+                Timestamp = DateTime.Now,
+                Data = new { mailId, title, content }
+            };
+
+            foreach (var userId in userIds)
+            {
+                await Clients.User(userId.ToString()).ReceiveMailReceived(notification);
+            }
+        }
+
+        /// <summary>
+        /// 发送邮件状态更新
+        /// </summary>
+        public async Task SendMailStatusUpdate(long mailId, string status, string message, List<long> userIds)
+        {
+            var notification = new HbtRealTimeNotification
+            {
+                Type = HbtMessageType.MailStatusUpdate,
+                Title = "邮件状态更新",
+                Content = $"邮件 {mailId} {status}: {message}",
+                Timestamp = DateTime.Now,
+                Data = new { mailId, status, message }
+            };
+
+            foreach (var userId in userIds)
+            {
+                await Clients.User(userId.ToString()).ReceiveMailStatusUpdate(notification);
+            }
+        }
+
+        /// <summary>
+        /// 发送消息发送通知
+        /// </summary>
+        public async Task SendMessageSent(long messageId, string title, string content, List<long> userIds)
+        {
+            var notification = new HbtRealTimeNotification
+            {
+                Type = HbtMessageType.MessageSent,
+                Title = "消息发送通知",
+                Content = $"消息已发送: {title}",
+                Timestamp = DateTime.Now,
+                Data = new { messageId, title, content }
+            };
+
+            foreach (var userId in userIds)
+            {
+                await Clients.User(userId.ToString()).ReceiveMessageSent(notification);
+            }
+        }
+
+        /// <summary>
+        /// 发送消息接收通知
+        /// </summary>
+        public async Task SendMessageReceived(long messageId, string title, string content, List<long> userIds)
+        {
+            var notification = new HbtRealTimeNotification
+            {
+                Type = HbtMessageType.MessageReceived,
+                Title = "新消息通知",
+                Content = $"收到新消息: {title}",
+                Timestamp = DateTime.Now,
+                Data = new { messageId, title, content }
+            };
+
+            foreach (var userId in userIds)
+            {
+                await Clients.User(userId.ToString()).ReceiveMessageReceived(notification);
+            }
+        }
+
+        /// <summary>
+        /// 发送消息状态更新
+        /// </summary>
+        public async Task SendMessageStatusUpdate(long messageId, string status, string message, List<long> userIds)
+        {
+            var notification = new HbtRealTimeNotification
+            {
+                Type = HbtMessageType.MessageStatusUpdate,
+                Title = "消息状态更新",
+                Content = $"消息 {messageId} {status}: {message}",
+                Timestamp = DateTime.Now,
+                Data = new { messageId, status, message }
+            };
+
+            foreach (var userId in userIds)
+            {
+                await Clients.User(userId.ToString()).ReceiveMessageStatusUpdate(notification);
+            }
+        }
+
+        /// <summary>
+        /// 发送通知公告发布通知
+        /// </summary>
+        public async Task SendNoticePublished(long noticeId, string title, string content, List<long> userIds)
+        {
+            var notification = new HbtRealTimeNotification
+            {
+                Type = HbtMessageType.NoticePublished,
+                Title = "通知公告发布",
+                Content = $"新通知公告: {title}",
+                Timestamp = DateTime.Now,
+                Data = new { noticeId, title, content }
+            };
+
+            foreach (var userId in userIds)
+            {
+                await Clients.User(userId.ToString()).ReceiveNoticePublished(notification);
+            }
+        }
+
+        /// <summary>
+        /// 发送通知公告更新通知
+        /// </summary>
+        public async Task SendNoticeUpdated(long noticeId, string title, string content, List<long> userIds)
+        {
+            var notification = new HbtRealTimeNotification
+            {
+                Type = HbtMessageType.NoticeUpdated,
+                Title = "通知公告更新",
+                Content = $"通知公告已更新: {title}",
+                Timestamp = DateTime.Now,
+                Data = new { noticeId, title, content }
+            };
+
+            foreach (var userId in userIds)
+            {
+                await Clients.User(userId.ToString()).ReceiveNoticeUpdated(notification);
+            }
+        }
+
+        /// <summary>
+        /// 发送通知公告状态更新
+        /// </summary>
+        public async Task SendNoticeStatusUpdate(long noticeId, string status, string message, List<long> userIds)
+        {
+            var notification = new HbtRealTimeNotification
+            {
+                Type = HbtMessageType.NoticeStatusUpdate,
+                Title = "通知公告状态更新",
+                Content = $"通知公告 {noticeId} {status}: {message}",
+                Timestamp = DateTime.Now,
+                Data = new { noticeId, status, message }
+            };
+
+            foreach (var userId in userIds)
+            {
+                await Clients.User(userId.ToString()).ReceiveNoticeStatusUpdate(notification);
+            }
+        }
+
+        /// <summary>
+        /// 发送通知公告阅读通知
+        /// </summary>
+        public async Task SendNoticeRead(long noticeId, long userId, bool isRead)
+        {
+            var notification = new HbtRealTimeNotification
+            {
+                Type = HbtMessageType.NoticeRead,
+                Title = "通知公告阅读状态",
+                Content = $"通知公告 {noticeId} 已{(isRead ? "读" : "未读")}",
+                Timestamp = DateTime.Now,
+                Data = new { noticeId, userId, isRead }
+            };
+
+            await Clients.User(userId.ToString()).ReceiveNoticeRead(notification);
+        }
+
+        /// <summary>
+        /// 发送通知公告未读提醒
+        /// </summary>
+        public async Task SendNoticeUnread(long noticeId, string title, List<long> userIds)
+        {
+            var notification = new HbtRealTimeNotification
+            {
+                Type = HbtMessageType.NoticeUnread,
+                Title = "未读通知提醒",
+                Content = $"您有未读通知: {title}",
+                Timestamp = DateTime.Now,
+                Data = new { noticeId, title }
+            };
+
+            foreach (var userId in userIds)
+            {
+                await Clients.User(userId.ToString()).ReceiveNoticeUnread(notification);
+            }
+        }
+
+        /// <summary>
+        /// 发送邮件模板更新通知
+        /// </summary>
+        public async Task SendMailTemplateUpdate(long templateId, string templateName, List<long> userIds)
+        {
+            var notification = new HbtRealTimeNotification
+            {
+                Type = HbtMessageType.MailTemplateUpdate,
+                Title = "邮件模板更新",
+                Content = $"邮件模板已更新: {templateName}",
+                Timestamp = DateTime.Now,
+                Data = new { templateId, templateName }
+            };
+
+            foreach (var userId in userIds)
+            {
+                await Clients.User(userId.ToString()).ReceiveMailTemplateUpdate(notification);
+            }
+        }
+
+        /// <summary>
+        /// 发送邮件发送失败通知
+        /// </summary>
+        public async Task SendMailSendFailed(long mailId, string errorMessage, List<long> userIds)
+        {
+            var notification = new HbtRealTimeNotification
+            {
+                Type = HbtMessageType.MailSendFailed,
+                Title = "邮件发送失败",
+                Content = $"邮件发送失败: {errorMessage}",
+                Timestamp = DateTime.Now,
+                Data = new { mailId, errorMessage }
+            };
+
+            foreach (var userId in userIds)
+            {
+                await Clients.User(userId.ToString()).ReceiveMailSendFailed(notification);
+            }
+        }
+
+        /// <summary>
+        /// 发送消息发送失败通知
+        /// </summary>
+        public async Task SendMessageSendFailed(long messageId, string errorMessage, List<long> userIds)
+        {
+            var notification = new HbtRealTimeNotification
+            {
+                Type = HbtMessageType.MessageSendFailed,
+                Title = "消息发送失败",
+                Content = $"消息发送失败: {errorMessage}",
+                Timestamp = DateTime.Now,
+                Data = new { messageId, errorMessage }
+            };
+
+            foreach (var userId in userIds)
+            {
+                await Clients.User(userId.ToString()).ReceiveMessageSendFailed(notification);
+            }
+        }
+
+        /// <summary>
+        /// 发送通知公告发布失败通知
+        /// </summary>
+        public async Task SendNoticePublishFailed(long noticeId, string errorMessage, List<long> userIds)
+        {
+            var notification = new HbtRealTimeNotification
+            {
+                Type = HbtMessageType.NoticePublishFailed,
+                Title = "通知公告发布失败",
+                Content = $"通知公告发布失败: {errorMessage}",
+                Timestamp = DateTime.Now,
+                Data = new { noticeId, errorMessage }
+            };
+
+            foreach (var userId in userIds)
+            {
+                await Clients.User(userId.ToString()).ReceiveNoticePublishFailed(notification);
+            }
+        }
+
+        /// <summary>
         /// 发送心跳
         /// </summary>
         public async Task SendHeartbeat()
@@ -704,7 +1166,7 @@ namespace Lean.Hbt.Infrastructure.SignalR
         /// <summary>
         /// 每个用户最大设备数
         /// </summary>
-            public int MaxDevicesPerUser { get; set; }
+        public int MaxDevicesPerUser { get; set; }
         /// <summary>
         /// 是否允许多连接
         /// </summary>

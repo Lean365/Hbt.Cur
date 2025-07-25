@@ -108,6 +108,10 @@ export default {
         urge4: '督促4',
         urge5: '督促5',
       },
+      processing: '処理中',
+      overdue: '期限切れ',
+      dueSoon: '期限間近',
+      highPriority: '高優先度',
     },
     filetab: {
       myFile: {

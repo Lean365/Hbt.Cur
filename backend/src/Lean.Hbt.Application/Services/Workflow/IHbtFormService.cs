@@ -1,129 +1,107 @@
 //===================================================================
 // 项目名 : Lean.Hbt
-// 文件名 : HbtActivityService.cs
-// 创建者 : Lean365
-// 创建时间: 2024-01-23 12:00
-// 版本号 : V1.0.0
-// 描述    : 工作流表单服务接口
+// 文件名 : IHbtFormService.cs
+// 创建者 : Claude
+// 创建时间: 2024-12-01
+// 版本号 : V0.0.1
+// 描述    : 表单服务接口
 //===================================================================
-using System.IO;
+
 using Lean.Hbt.Application.Dtos.Workflow;
 
-namespace Lean.Hbt.Application.Services.Workflow
+namespace Lean.Hbt.Application.Services.Workflow;
+
+/// <summary>
+/// 表单服务接口
+/// </summary>
+public interface IHbtFormService
 {
     /// <summary>
-    /// 工作流表单服务接口
+    /// 获取表单定义列表
     /// </summary>
-    public interface IHbtFormService
-    {
-        /// <summary>
-        /// 获取工作流表单分页列表
-        /// </summary>
-        /// <param name="query">查询条件</param>
-        /// <returns>分页结果</returns>
-        Task<HbtPagedResult<HbtFormDto>> GetListAsync(HbtFormQueryDto query);
+    /// <param name="query">查询条件</param>
+    /// <returns>分页结果</returns>
+    Task<HbtPagedResult<HbtFormDto>> GetListAsync(HbtFormQueryDto query);
 
-        /// <summary>
-        /// 获取工作流表单详情
-        /// </summary>
-        /// <param name="id">表单ID</param>
-        /// <returns>表单详情</returns>
-        Task<HbtFormDto> GetByIdAsync(long id);
+    /// <summary>
+    /// 根据ID获取表单定义
+    /// </summary>
+    /// <param name="id">表单定义ID</param>
+    /// <returns>表单定义</returns>
+    Task<HbtFormDto?> GetByIdAsync(long id);
 
-        /// <summary>
-        /// 创建工作流表单
-        /// </summary>
-        /// <param name="input">创建信息</param>
-        /// <returns>新创建的表单ID</returns>
-        Task<long> CreateAsync(HbtFormCreateDto input);
+    /// <summary>
+    /// 根据键获取表单定义
+    /// </summary>
+    /// <param name="formKey">表单键</param>
+    /// <returns>表单定义</returns>
+    Task<HbtFormDto?> GetByKeyAsync(string formKey);
 
-        /// <summary>
-        /// 更新工作流表单
-        /// </summary>
-        /// <param name="input">更新信息</param>
-        /// <returns>是否成功</returns>
-        Task<bool> UpdateAsync(HbtFormUpdateDto input);
+    /// <summary>
+    /// 创建表单定义
+    /// </summary>
+    /// <param name="dto">表单定义创建DTO</param>
+    /// <returns>表单定义ID</returns>
+    Task<long> CreateAsync(HbtFormCreateDto dto);
 
-        /// <summary>
-        /// 删除工作流表单
-        /// </summary>
-        /// <param name="id">表单ID</param>
-        /// <returns>是否成功</returns>
-        Task<bool> DeleteAsync(long id);
+    /// <summary>
+    /// 更新表单定义
+    /// </summary>
+    /// <param name="id">表单定义ID</param>
+    /// <param name="dto">表单定义更新DTO</param>
+    /// <returns>是否成功</returns>
+    Task<bool> UpdateAsync(long id, HbtFormUpdateDto dto);
 
-        /// <summary>
-        /// 批量删除工作流表单
-        /// </summary>
-        /// <param name="ids">表单ID数组</param>
-        /// <returns>是否成功</returns>
-        Task<bool> BatchDeleteAsync(long[] ids);
+    /// <summary>
+    /// 删除表单定义
+    /// </summary>
+    /// <param name="id">表单定义ID</param>
+    /// <returns>是否成功</returns>
+    Task<bool> DeleteAsync(long id);
 
-        /// <summary>
-        /// 导入工作流表单数据
-        /// </summary>
-        /// <param name="fileStream">Excel文件流</param>
-        /// <param name="sheetName">工作表名称</param>
-        /// <returns>返回导入结果(success:成功数量,fail:失败数量)</returns>
-        Task<(int success, int fail)> ImportAsync(Stream fileStream, string sheetName = "Sheet1");
+    /// <summary>
+    /// 批量删除表单定义
+    /// </summary>
+    /// <param name="ids">表单定义ID数组</param>
+    /// <returns>是否全部成功</returns>
+    Task<bool> BatchDeleteAsync(long[] ids);
 
-        /// <summary>
-        /// 导出工作流表单数据
-        /// </summary>
-        /// <param name="query">查询条件</param>
-        /// <param name="sheetName">工作表名称</param>
-        /// <returns>Excel文件字节数组</returns>
-        Task<(string fileName, byte[] content)> ExportAsync(HbtFormQueryDto query, string sheetName = "Sheet1");
+    /// <summary>
+    /// 更新表单状态
+    /// </summary>
+    /// <param name="id">表单定义ID</param>
+    /// <param name="status">新状态</param>
+    /// <returns>是否成功</returns>
+    Task<bool> UpdateStatusAsync(long id, int status);
 
-        /// <summary>
-        /// 获取工作流表单导入模板
-        /// </summary>
-        /// <param name="sheetName">工作表名称</param>
-        /// <returns>Excel模板文件字节数组</returns>
-        Task<(string fileName, byte[] content)> GetTemplateAsync(string sheetName = "Sheet1");
+    /// <summary>
+    /// 获取我的表单列表
+    /// </summary>
+    /// <param name="userId">用户ID</param>
+    /// <param name="query">查询条件</param>
+    /// <returns>分页结果</returns>
+    Task<HbtPagedResult<HbtFormDto>> GetMyFormsAsync(long userId, HbtFormQueryDto query);
 
-        /// <summary>
-        /// 获取指定工作流定义下的所有表单
-        /// </summary>
-        /// <param name="definitionId">工作流定义ID</param>
-        /// <returns>表单列表</returns>
-        Task<List<HbtFormDto>> GetFormsByWorkflowDefinitionAsync(long definitionId);
+    /// <summary>
+    /// 获取导入模板
+    /// </summary>
+    /// <param name="sheetName">工作表名称</param>
+    /// <returns>Excel模板文件</returns>
+    Task<(string fileName, byte[] content)> GetTemplateAsync(string sheetName = "Sheet1");
 
-        /// <summary>
-        /// 修改表单状态
-        /// </summary>
-        /// <param name="id">表单ID</param>
-        /// <param name="status">新状态</param>
-        /// <returns>是否成功</returns>
-        Task<bool> ChangeStatusAsync(long id, int status);
+    /// <summary>
+    /// 导入表单数据
+    /// </summary>
+    /// <param name="fileStream">Excel文件流</param>
+    /// <param name="sheetName">工作表名称</param>
+    /// <returns>导入结果</returns>
+    Task<(int success, int fail)> ImportAsync(Stream fileStream, string sheetName = "Sheet1");
 
-        /// <summary>
-        /// 获取表单选项列表
-        /// </summary>
-        /// <returns>表单选项列表</returns>
-        Task<List<HbtSelectOption>> GetOptionsAsync();
-
-        /// <summary>
-        /// 获取当前用户的表单
-        /// </summary>
-        /// <param name="status">状态筛选</param>
-        /// <param name="limit">限制数量</param>
-        /// <returns>当前用户的表单列表</returns>
-        Task<List<HbtFormDto>> GetCurrentUserFormsAsync(int? status = null, int limit = 20);
-
-        /// <summary>
-        /// 获取当前用户创建的表单
-        /// </summary>
-        /// <param name="status">状态筛选</param>
-        /// <param name="limit">限制数量</param>
-        /// <returns>当前用户创建的表单列表</returns>
-        Task<List<HbtFormDto>> GetCurrentUserCreatedFormsAsync(int? status = null, int limit = 20);
-
-        /// <summary>
-        /// 获取当前用户可访问的表单
-        /// </summary>
-        /// <param name="status">状态筛选</param>
-        /// <param name="limit">限制数量</param>
-        /// <returns>当前用户可访问的表单列表</returns>
-        Task<List<HbtFormDto>> GetCurrentUserAccessibleFormsAsync(int? status = null, int limit = 20);
-    }
-}
+    /// <summary>
+    /// 导出表单数据
+    /// </summary>
+    /// <param name="query">查询条件</param>
+    /// <param name="sheetName">工作表名称</param>
+    /// <returns>Excel文件</returns>
+    Task<(string fileName, byte[] content)> ExportAsync(HbtFormQueryDto query, string sheetName = "Sheet1");
+} 

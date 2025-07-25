@@ -22,9 +22,17 @@ export default {
             length: '角色标识长度必须在2-100个字符之间'
           }
         },
-        roleSort: {
-          label: '显示顺序',
-          placeholder: '请输入显示顺序'
+        orderNum: {
+          label: '排序号',
+          placeholder: '请输入排序号'
+        },
+        dataScope: {
+          label: '数据范围',
+          placeholder: '请选择数据范围'
+        },
+        userCount: {
+          label: '用户数量',
+          placeholder: '请输入用户数量'
         },
         status: {
           label: '状态',
@@ -34,24 +42,6 @@ export default {
             disabled: '禁用'
           }
         },
-        description: {
-          label: '备注',
-          placeholder: '请输入备注'
-        },
-        createTime: '创建时间',
-        menuPermission: {
-          label: '菜单权限',
-          selectAll: '全选/全不选'
-        },
-        dataScope: {
-          label: '数据权限',
-          options: {
-            all: '全部数据权限',
-            custom: '自定义数据权限',
-            dept: '本部门数据权限',
-            deptAndChild: '本部门及以下数据权限',
-            self: '仅本人数据权限'
-          }
         }
       },
       actions: {
@@ -69,4 +59,3 @@ export default {
       }
     }
   }
-} 

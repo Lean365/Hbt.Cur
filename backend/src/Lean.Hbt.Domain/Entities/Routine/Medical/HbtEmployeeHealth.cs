@@ -7,8 +7,8 @@ using Lean.Hbt.Domain.Entities.Identity;
 // 项目名 : Lean.Hbt
 // 文件名 : HbtEmployeeHealthRecord.cs
 // 创建者 : Lean365
-// 创建时间: 2024-12-19
-// 版本号 : V1.0.0
+// 创建时间: 2024-12-01
+// 版本号 : V0.0.1
 // 描述    : 员工健康档案实体类
 // 版权    : Copyright © 2024 Lean365. All rights reserved.
 //===================================================================
@@ -20,7 +20,7 @@ namespace Lean.Hbt.Domain.Entities.Routine.Medical
     /// </summary>
     /// <remarks>
     /// 创建者: Lean365
-    /// 创建时间: 2024-12-19
+    /// 创建时间: 2024-12-01
     /// 说明: 记录员工的基本健康信息，适用于企业内部医务管理
     /// </remarks>
     [SugarTable("hbt_routine_medical_employee_health", "员工健康档案")]

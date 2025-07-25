@@ -108,6 +108,10 @@ export default {
         urge4: 'Urgente 4',
         urge5: 'Urgente 5',
       },
+      processing: 'Procesando',
+      overdue: 'Vencido',
+      dueSoon: 'Próximo a vencer',
+      highPriority: 'Alta prioridad',
     },
     filetab: {
       myFile: {

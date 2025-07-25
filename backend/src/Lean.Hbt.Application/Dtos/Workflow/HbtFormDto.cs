@@ -1,93 +1,125 @@
 //===================================================================
-// 项目名 : Lean.Hbt
-// 文件名 : HbtFormDto.cs
-// 创建者 : Lean365
-// 创建时间: 2024-01-23 12:00
-// 版本号 : V1.0.0
-// 描述    : 工作流表单数据传输对象
+// 项目名: Lean.Hbt.Application
+// 文件名: HbtFormDto.cs
+// 创建者: Claude
+// 创建时间: 2024-12-01
+// 版本号: V0.0.1
+// 描述: 表单数据传输对象
 //===================================================================
+
+using System;
+using System.Collections.Generic;
 
 namespace Lean.Hbt.Application.Dtos.Workflow
 {
     /// <summary>
-    /// 工作流表单基础DTO
+    /// 表单基础DTO（与HbtForm实体字段严格对应）
     /// </summary>
     public class HbtFormDto
     {
         /// <summary>
-        /// 构造函数，初始化string类型字段
+        /// 构造函数
         /// </summary>
         public HbtFormDto()
         {
+            FormKey = string.Empty;
             FormName = string.Empty;
-            FormDesc = string.Empty;
+            Version = "1.0";
             FormConfig = string.Empty;
-            FormVersion = string.Empty;
             CreateBy = string.Empty;
-            UpdateBy = string.Empty;
-            DeleteBy = string.Empty;
         }
+
         /// <summary>
-        /// 表单ID
+        /// 主键ID
         /// </summary>
         [AdaptMember("Id")]
         public long FormId { get; set; }
+
+        /// <summary>
+        /// 表单键
+        /// </summary>
+        public string FormKey { get; set; } = string.Empty;
+
         /// <summary>
         /// 表单名称
         /// </summary>
-        public string FormName { get; set; }
+        public string FormName { get; set; } = string.Empty;
+
         /// <summary>
-        /// 表单描述
+        /// 表单类型(1:请假申请 2:报销申请 3:采购申请 4:合同审批 5:其他)
         /// </summary>
-        public string? FormDesc { get; set; }
+        public int FormType { get; set; }
+
         /// <summary>
-        /// 表单分类
+        /// 表单分类(1:人事类 2:财务类 3:采购类 4:合同类 5:其他)
         /// </summary>
         public int FormCategory { get; set; }
-        /// <summary>
-        /// 表单配置
-        /// </summary>
-        public string FormConfig { get; set; }
-        /// <summary>
-        /// 关联的工作流定义ID
-        /// </summary>
-        public long? DefinitionId { get; set; }
-        /// <summary>
-        /// 关联的工作流定义名称
-        /// </summary>
-        public string? DefinitionName { get; set; }
+
         /// <summary>
         /// 表单版本
         /// </summary>
-        public string FormVersion { get; set; }
+        public string Version { get; set; } = "1.0";
+
         /// <summary>
-        /// 状态
+        /// 表单配置(JSON格式)
+        /// </summary>
+        public string FormConfig { get; set; } = string.Empty;
+
+        /// <summary>
+        /// 工作流实例ID
+        /// </summary>
+        public long? InstanceId { get; set; }
+
+        /// <summary>
+        /// 表单数据(JSON格式)
+        /// </summary>
+        public string? FormData { get; set; }
+
+        /// <summary>
+        /// 状态(0:草稿 1:已发布 2:已作废)
         /// </summary>
         public int Status { get; set; }
+
+        /// <summary>
+        /// 描述
+        /// </summary>
+        public string? Description { get; set; }
+
+        /// <summary>
+        /// 备注
+        /// </summary>
+        public string? Remark { get; set; }
+
         /// <summary>
         /// 创建者
         /// </summary>
-        public string? CreateBy { get; set; }
+        public string CreateBy { get; set; } = string.Empty;
+
         /// <summary>
         /// 创建时间
         /// </summary>
         public DateTime CreateTime { get; set; }
+
         /// <summary>
         /// 更新者
         /// </summary>
         public string? UpdateBy { get; set; }
+
         /// <summary>
         /// 更新时间
         /// </summary>
         public DateTime? UpdateTime { get; set; }
+
         /// <summary>
-        /// 是否删除
+        /// 是否删除（0未删除 1已删除）
         /// </summary>
         public int IsDeleted { get; set; }
+
         /// <summary>
         /// 删除者
         /// </summary>
         public string? DeleteBy { get; set; }
+
         /// <summary>
         /// 删除时间
         /// </summary>
@@ -95,88 +127,111 @@ namespace Lean.Hbt.Application.Dtos.Workflow
     }
 
     /// <summary>
-    /// 工作流表单查询DTO
+    /// 表单查询DTO
     /// </summary>
     public class HbtFormQueryDto : HbtPagedQuery
     {
         /// <summary>
-        /// 构造函数，初始化string类型字段
+        /// 构造函数
         /// </summary>
         public HbtFormQueryDto()
         {
+            FormKey = string.Empty;
             FormName = string.Empty;
         }
+
         /// <summary>
-        /// 关联的工作流定义ID
+        /// 表单键
         /// </summary>
-        public long? DefinitionId { get; set; }
+        public string? FormKey { get; set; }
+
         /// <summary>
         /// 表单名称
         /// </summary>
         public string? FormName { get; set; }
+
+        /// <summary>
+        /// 表单类型
+        /// </summary>
+        public int? FormType { get; set; }
+
         /// <summary>
         /// 表单分类
         /// </summary>
         public int? FormCategory { get; set; }
+
+        /// <summary>
+        /// 工作流实例ID
+        /// </summary>
+        public long? InstanceId { get; set; }
+
         /// <summary>
         /// 状态
         /// </summary>
         public int? Status { get; set; }
-        /// <summary>
-        /// 开始时间
-        /// </summary>
-        public DateTime? StartTime { get; set; }
-        /// <summary>
-        /// 结束时间
-        /// </summary>
-        public DateTime? EndTime { get; set; }
     }
 
     /// <summary>
-    /// 工作流表单创建DTO
+    /// 表单创建DTO
     /// </summary>
     public class HbtFormCreateDto
     {
         /// <summary>
-        /// 构造函数，初始化string类型字段
+        /// 构造函数
         /// </summary>
         public HbtFormCreateDto()
         {
-            FormCategory = 0;
-            FormVersion = string.Empty;
+            FormKey = string.Empty;
             FormName = string.Empty;
-            FormDesc = string.Empty;
+            Version = "1.0";
             FormConfig = string.Empty;
-            Remark = string.Empty;
         }
+
+        /// <summary>
+        /// 表单键
+        /// </summary>
+        public string FormKey { get; set; } = string.Empty;
+
         /// <summary>
         /// 表单名称
         /// </summary>
-        public string FormName { get; set; }
+        public string FormName { get; set; } = string.Empty;
+
         /// <summary>
-        /// 表单描述
+        /// 表单类型(1:请假申请 2:报销申请 3:采购申请 4:合同审批 5:其他)
         /// </summary>
-        public string? FormDesc { get; set; }
+        public int FormType { get; set; }
+
         /// <summary>
-        /// 表单分类
+        /// 表单分类(1:人事类 2:财务类 3:采购类 4:合同类 5:其他)
         /// </summary>
         public int FormCategory { get; set; }
-        /// <summary>
-        /// 表单配置
-        /// </summary>
-        public string FormConfig { get; set; }
-        /// <summary>
-        /// 关联的工作流定义ID
-        /// </summary>
-        public long? DefinitionId { get; set; }
+
         /// <summary>
         /// 表单版本
         /// </summary>
-        public string FormVersion { get; set; }
+        public string Version { get; set; } = "1.0";
+
         /// <summary>
-        /// 状态
+        /// 表单配置(JSON格式)
         /// </summary>
-        public int Status { get; set; }
+        public string FormConfig { get; set; } = string.Empty;
+
+        /// <summary>
+        /// 工作流实例ID
+        /// </summary>
+        public long? InstanceId { get; set; }
+
+        /// <summary>
+        /// 表单数据(JSON格式)
+        /// </summary>
+        public string? FormData { get; set; }
+
+        /// <summary>
+        /// 描述
+        /// </summary>
+        public string? Description { get; set; }
+
         /// <summary>
         /// 备注
         /// </summary>
@@ -184,149 +239,189 @@ namespace Lean.Hbt.Application.Dtos.Workflow
     }
 
     /// <summary>
-    /// 工作流表单更新DTO
+    /// 表单更新DTO
     /// </summary>
     public class HbtFormUpdateDto : HbtFormCreateDto
     {
         /// <summary>
-        /// 表单ID
+        /// 构造函数
+        /// </summary>
+        public HbtFormUpdateDto() : base()
+        {
+        }
+
+        /// <summary>
+        /// 主键ID
         /// </summary>
         [AdaptMember("Id")]
         public long FormId { get; set; }
     }
 
     /// <summary>
-    /// 工作流表单导入DTO
+    /// 表单状态DTO
     /// </summary>
-    public class HbtFormImportDto
+    public class HbtFormStatusDto
     {
         /// <summary>
-        /// 构造函数，初始化string类型字段
+        /// 构造函数
         /// </summary>
-        public HbtFormImportDto()
+        public HbtFormStatusDto()
         {
-            FormName = string.Empty;
-            FormDesc = string.Empty;
-            FormConfig = string.Empty;
-            FormVersion = string.Empty;
         }
+
         /// <summary>
-        /// 表单名称
+        /// 主键ID
         /// </summary>
-        public string FormName { get; set; }
+        [AdaptMember("Id")]
+        public long FormId { get; set; }
+
         /// <summary>
-        /// 表单描述
-        /// </summary>
-        public string? FormDesc { get; set; }
-        /// <summary>
-        /// 表单分类
-        /// </summary>
-        public int FormCategory { get; set; }
-        /// <summary>
-        /// 表单配置
-        /// </summary>
-        public string FormConfig { get; set; }
-        /// <summary>
-        /// 表单版本
-        /// </summary>
-        public string FormVersion { get; set; }
-        /// <summary>
-        /// 关联的工作流定义ID
-        /// </summary>
-        public long? DefinitionId { get; set; }
-        /// <summary>
-        /// 状态
+        /// 状态(0:草稿 1:已发布 2:已作废)
         /// </summary>
         public int Status { get; set; }
     }
 
     /// <summary>
-    /// 工作流表单导出DTO
-    /// </summary>
-    public class HbtFormExportDto
-    {
-        /// <summary>
-        /// 构造函数，初始化string类型字段
-        /// </summary>
-        public HbtFormExportDto()
-        {
-            FormName = string.Empty;
-            FormDesc = string.Empty;
-            FormConfig = string.Empty;
-
-        }
-        /// <summary>
-        /// 表单名称
-        /// </summary>
-        public string FormName { get; set; }
-        /// <summary>
-        /// 表单描述
-        /// </summary>
-        public string? FormDesc { get; set; }
-        /// <summary>
-        /// 表单分类
-        /// </summary>
-        public int FormCategory { get; set; }
-        /// <summary>
-        /// 表单配置
-        /// </summary>
-        public string FormConfig { get; set; }
-        /// <summary>
-        /// 表单版本
-        /// </summary>
-        public string FormVersion { get; set; }
-        /// <summary>
-        /// 关联的工作流定义ID
-        /// </summary>
-        public long? DefinitionId { get; set; }
-        /// <summary>
-        /// 状态
-        /// </summary>
-        public int Status { get; set; }
-
-    }
-
-    /// <summary>
-    /// 工作流表单模板DTO
+    /// 表单模板DTO
     /// </summary>
     public class HbtFormTemplateDto
     {
         /// <summary>
-        /// 构造函数，初始化string类型字段
+        /// 构造函数
         /// </summary>
         public HbtFormTemplateDto()
         {
-            FormName = "示例表单";
-            FormDesc = "这是一个表单模板";
-            FormConfig = "{}";
+            FormKey = string.Empty;
+            FormName = string.Empty;
+            Version = "1.0";
+            FormConfig = string.Empty;
+            Description = string.Empty;
         }
+
+        /// <summary>
+        /// 表单键
+        /// </summary>
+        public string FormKey { get; set; } = string.Empty;
+
         /// <summary>
         /// 表单名称
         /// </summary>
-        public string FormName { get; set; }
-        /// <summary>
-        /// 表单描述
-        /// </summary>
-        public string? FormDesc { get; set; }
-        /// <summary>
-        /// 表单分类
-        /// </summary>
-        public int FormCategory { get; set; }
-        /// <summary>
-        /// 表单配置
-        /// </summary>
-        public string FormConfig { get; set; }
+        public string FormName { get; set; } = string.Empty;
+
         /// <summary>
         /// 表单版本
         /// </summary>
-        public string FormVersion { get; set; }
+        public string Version { get; set; } = "1.0";
+
         /// <summary>
-        /// 关联的工作流定义ID
+        /// 表单配置(JSON格式)
         /// </summary>
-        public long? DefinitionId { get; set; } 
+        public string FormConfig { get; set; } = string.Empty;
+
+        /// <summary>
+        /// 描述
+        /// </summary>
+        public string? Description { get; set; } = string.Empty;
+    }
+
+    /// <summary>
+    /// 表单导入DTO
+    /// </summary>
+    public class HbtFormImportDto
+    {
+        /// <summary>
+        /// 构造函数
+        /// </summary>
+        public HbtFormImportDto()
+        {
+            FormKey = string.Empty;
+            FormName = string.Empty;
+            Version = "1.0";
+            FormConfig = string.Empty;
+            Description = string.Empty;
+        }
+
+        /// <summary>
+        /// 表单键
+        /// </summary>
+        public string FormKey { get; set; } = string.Empty;
+
+        /// <summary>
+        /// 表单名称
+        /// </summary>
+        public string FormName { get; set; } = string.Empty;
+
+        /// <summary>
+        /// 表单版本
+        /// </summary>
+        public string Version { get; set; } = "1.0";
+
+        /// <summary>
+        /// 表单配置(JSON格式)
+        /// </summary>
+        public string FormConfig { get; set; } = string.Empty;
+
+        /// <summary>
+        /// 描述
+        /// </summary>
+        public string? Description { get; set; } = string.Empty;
+    }
+
+    /// <summary>
+    /// 表单导出DTO
+    /// </summary>
+    public class HbtFormExportDto
+    {
+        /// <summary>
+        /// 构造函数
+        /// </summary>
+        public HbtFormExportDto()
+        {
+            FormKey = string.Empty;
+            FormName = string.Empty;
+            Version = string.Empty;
+            Status = string.Empty;
+            Description = string.Empty;
+        }
+
+        /// <summary>
+        /// 表单键
+        /// </summary>
+        public string FormKey { get; set; } = string.Empty;
+
+        /// <summary>
+        /// 表单名称
+        /// </summary>
+        public string FormName { get; set; } = string.Empty;
+
+        /// <summary>
+        /// 表单类型
+        /// </summary>
+        public string FormType { get; set; } = string.Empty;
+
+        /// <summary>
+        /// 表单分类
+        /// </summary>
+        public string FormCategory { get; set; } = string.Empty;
+
+        /// <summary>
+        /// 表单版本
+        /// </summary>
+        public string Version { get; set; } = string.Empty;
+
         /// <summary>
         /// 状态
         /// </summary>
-        public int Status { get; set; } = 0;
+        public string Status { get; set; } = string.Empty;
+
+        /// <summary>
+        /// 描述
+        /// </summary>
+        public string Description { get; set; } = string.Empty;
+
+        /// <summary>
+        /// 创建时间
+        /// </summary>
+        public DateTime CreateTime { get; set; }
     }
-} 
+}

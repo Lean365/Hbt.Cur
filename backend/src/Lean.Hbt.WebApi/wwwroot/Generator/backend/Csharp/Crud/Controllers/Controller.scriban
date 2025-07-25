@@ -26,17 +26,25 @@ namespace {{ table.controller_namespace }};
 /// 创建者: Lean365
 /// 创建时间: {{ date }}
 /// </remarks>
+[Route("api/[controller]", Name = "{{ table.comment }}")]
 [ApiController]
-[Route("api/[controller]")]
-public class {{ table.controller_class_name }} : ControllerBase
+[ApiModule("{{ table.module_name }}", "{{ table.module_comment }}")]
+public class {{ table.controller_class_name }} : HbtBaseController
 {
     private readonly {{ table.iservice_class_name }} _service;
 
     /// <summary>
     /// 构造函数
     /// </summary>
-    /// <param name="service">服务</param>
-    public {{ table.controller_class_name }}({{ table.iservice_class_name }} service)
+    /// <param name="service">{{ table.comment }}服务</param>
+    /// <param name="logger">日志服务</param>
+    /// <param name="currentUser">当前用户服务</param>
+    /// <param name="localization">本地化服务</param>
+    public {{ table.controller_class_name }}(
+        {{ table.iservice_class_name }} service,
+        IHbtLogger logger,
+        IHbtCurrentUser currentUser,
+        IHbtLocalizationService localization) : base(logger, currentUser, localization)
     {
         _service = service;
     }
@@ -47,9 +55,11 @@ public class {{ table.controller_class_name }} : ControllerBase
     /// <param name="query">查询参数</param>
     /// <returns>分页数据</returns>
     [HttpGet("list")]
-    public async Task<HbtPagedResult<{{ table.dto_class_name }}>> GetListAsync([FromQuery] {{ table.dto_class_name }}QueryDto query)
+    [HbtPerm("{{ table.module_name }}:{{ table.table_name }}:list")]
+    public async Task<IActionResult> GetListAsync([FromQuery] {{ table.dto_class_name | string.replace "Dto" "" }}QueryDto query)
     {
-        return await _service.GetListAsync(query);
+        var result = await _service.GetListAsync(query);
+        return Success(result);
     }
 
     /// <summary>
@@ -58,111 +68,144 @@ public class {{ table.controller_class_name }} : ControllerBase
     /// <param name="id">主键</param>
     /// <returns>详情数据</returns>
     [HttpGet("{id}")]
-    public async Task<{{ table.dto_class_name }}> GetInfoAsync(long id)
+    [HbtPerm("{{ table.module_name }}:{{ table.table_name }}:query")]
+    public async Task<IActionResult> GetInfoAsync(long id)
     {
-        return await _service.GetInfoAsync(id);
+        var result = await _service.GetInfoAsync(id);
+        return Success(result);
     }
 
+    {{~ if table.is_create == 1 ~}}
     /// <summary>
     /// 创建{{ table.comment }}
     /// </summary>
     /// <param name="input">创建参数</param>
     /// <returns>主键</returns>
     [HttpPost]
-    public async Task<long> CreateAsync([FromBody] {{ table.dto_class_name }}CreateDto input)
+    [HbtPerm("{{ table.module_name }}:{{ table.table_name }}:add")]
+    public async Task<IActionResult> CreateAsync([FromBody] {{ table.dto_class_name | string.replace "Dto" "" }}CreateDto input)
     {
-        return await _service.CreateAsync(input);
+        var result = await _service.CreateAsync(input);
+        return Success(result);
     }
+    {{~ end ~}}
 
+    {{~ if table.is_edit == 1 ~}}
     /// <summary>
     /// 更新{{ table.comment }}
     /// </summary>
     /// <param name="input">更新参数</param>
     /// <returns>是否成功</returns>
     [HttpPut]
-    public async Task<bool> UpdateAsync([FromBody] {{ table.dto_class_name }}UpdateDto input)
+    [HbtPerm("{{ table.module_name }}:{{ table.table_name }}:edit")]
+    public async Task<IActionResult> UpdateAsync([FromBody] {{ table.dto_class_name | string.replace "Dto" "" }}UpdateDto input)
     {
-        return await _service.UpdateAsync(input);
+        var result = await _service.UpdateAsync(input);
+        return Success(result);
     }
+    {{~ end ~}}
 
+    {{~ if table.is_remove == 1 ~}}
     /// <summary>
     /// 删除{{ table.comment }}
     /// </summary>
     /// <param name="input">删除参数</param>
     /// <returns>是否成功</returns>
     [HttpDelete]
-    public async Task<bool> DeleteAsync([FromBody] {{ table.dto_class_name }}DeleteDto input)
+    [HbtPerm("{{ table.module_name }}:{{ table.table_name }}:remove")]
+    public async Task<IActionResult> DeleteAsync([FromBody] {{ table.dto_class_name | string.replace "Dto" "" }}DeleteDto input)
     {
-        return await _service.DeleteAsync(input);
+        var result = await _service.DeleteAsync(input);
+        return Success(result);
     }
+    {{~ end ~}}
 
+    {{~ if table.is_import == 1 ~}}
     /// <summary>
     /// 导入{{ table.comment }}
     /// </summary>
     /// <param name="input">导入参数</param>
     /// <returns>是否成功</returns>
     [HttpPost("import")]
-    public async Task<bool> ImportAsync([FromBody] List<{{ table.dto_class_name }}ImportDto> input)
+    [HbtPerm("{{ table.module_name }}:{{ table.table_name }}:import")]
+    public async Task<IActionResult> ImportAsync([FromBody] List<{{ table.dto_class_name | string.replace "Dto" "" }}ImportDto> input)
     {
-        return await _service.ImportAsync(input);
+        var result = await _service.ImportAsync(input);
+        return Success(result);
     }
+    {{~ end ~}}
 
+    {{~ if table.is_export == 1 ~}}
     /// <summary>
     /// 导出{{ table.comment }}
     /// </summary>
     /// <param name="query">查询条件</param>
-    /// <returns>Excel文件或zip文件</returns>
+    /// <returns>导出数据</returns>
     [HttpGet("export")]
-    public async Task<IActionResult> ExportAsync([FromQuery] {{ table.dto_class_name }}QueryDto query)
+    [HbtPerm("{{ table.module_name }}:{{ table.table_name }}:export")]
+    public async Task<IActionResult> ExportAsync([FromQuery] {{ table.dto_class_name | string.replace "Dto" "" }}QueryDto query)
     {
         var result = await _service.ExportAsync(query);
-        var contentType = result.fileName.EndsWith(".zip", StringComparison.OrdinalIgnoreCase)
-            ? "application/zip"
-            : "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-        Response.Headers["Content-Disposition"] = $"attachment; filename*=UTF-8''{Uri.EscapeDataString(result.fileName)}";
-        return File(result.content, contentType, result.fileName);
+        return Success(result);
     }
+    {{~ end ~}}
 
+    {{~ if table.is_template == 1 ~}}
     /// <summary>
     /// 获取{{ table.comment }}模板
     /// </summary>
     /// <returns>模板数据</returns>
-    [HttpGet("tpl")]
-    public async Task<List<{{ table.dto_class_name }}TplDto>> GetTplAsync()
+    [HttpGet("template")]
+    [HbtPerm("{{ table.module_name }}:{{ table.table_name }}:template")]
+    public async Task<IActionResult> GetTemplateAsync()
     {
-        return await _service.GetTplAsync();
+        var result = await _service.GetTemplateAsync();
+        return Success(result);
     }
+    {{~ end ~}}
 
+    {{~ if table.is_status == 1 ~}}
     /// <summary>
     /// 更新{{ table.comment }}状态
     /// </summary>
     /// <param name="input">状态参数</param>
     /// <returns>是否成功</returns>
     [HttpPut("status")]
-    public async Task<bool> UpdateStatusAsync([FromBody] {{ table.dto_class_name }}StatusDto input)
+    [HbtPerm("{{ table.module_name }}:{{ table.table_name }}:edit")]
+    public async Task<IActionResult> UpdateStatusAsync([FromBody] {{ table.dto_class_name | string.replace "Dto" "" }}StatusDto input)
     {
-        return await _service.UpdateStatusAsync(input);
+        var result = await _service.UpdateStatusAsync(input);
+        return Success(result);
     }
+    {{~ end ~}}
 
+    {{~ if table.is_sort == 1 ~}}
     /// <summary>
     /// 更新{{ table.comment }}排序
     /// </summary>
     /// <param name="input">排序参数</param>
     /// <returns>是否成功</returns>
     [HttpPut("sort")]
-    public async Task<bool> UpdateSortAsync([FromBody] {{ table.dto_class_name }}SortDto input)
+    [HbtPerm("{{ table.module_name }}:{{ table.table_name }}:edit")]
+    public async Task<IActionResult> UpdateSortAsync([FromBody] {{ table.dto_class_name | string.replace "Dto" "" }}SortDto input)
     {
-        return await _service.UpdateSortAsync(input);
+        var result = await _service.UpdateSortAsync(input);
+        return Success(result);
     }
+    {{~ end ~}}
 
+    {{~ if table.is_audit == 1 ~}}
     /// <summary>
     /// 审核{{ table.comment }}
     /// </summary>
     /// <param name="input">审核参数</param>
     /// <returns>是否成功</returns>
     [HttpPut("audit")]
-    public async Task<bool> AuditAsync([FromBody] {{ table.dto_class_name }}AuditDto input)
+    [HbtPerm("{{ table.module_name }}:{{ table.table_name }}:audit")]
+    public async Task<IActionResult> AuditAsync([FromBody] {{ table.dto_class_name | string.replace "Dto" "" }}AuditDto input)
     {
-        return await _service.AuditAsync(input);
+        var result = await _service.AuditAsync(input);
+        return Success(result);
     }
+    {{~ end ~}}
 } 

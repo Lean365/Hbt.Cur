@@ -3,7 +3,7 @@
 // 文件名 : HbtMeeting.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-26 14:30
-// 版本号 : V1.0.0
+// 版本号 : V0.0.1
 // 描述   : 会议管理实体
 //===================================================================
 
@@ -48,25 +48,25 @@ namespace Lean.Hbt.Domain.Entities.Routine.Metting
         /// <summary>
         /// 会议类型（0：普通会议，1：重要会议，2：紧急会议）
         /// </summary>
-        [SugarColumn(ColumnName = "meeting_type", ColumnDescription = "会议类型（0：普通会议，1：重要会议，2：紧急会议）", IsNullable = false, DefaultValue = "0", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
+        [SugarColumn(ColumnName = "meeting_type", ColumnDescription = "会议类型", IsNullable = false, DefaultValue = "0", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
         public int MeetingType { get; set; }
 
         /// <summary>
         /// 会议状态（0：未开始，1：进行中，2：已完成，3：已取消）
         /// </summary>
-        [SugarColumn(ColumnName = "status", ColumnDescription = "会议状态（0：未开始，1：进行中，2：已完成，3：已取消）", IsNullable = false, DefaultValue = "0", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
+        [SugarColumn(ColumnName = "status", ColumnDescription = "会议状态", IsNullable = false, DefaultValue = "0", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
         public int Status { get; set; }
 
         /// <summary>
         /// 是否全天（0：否，1：是）
         /// </summary>
-        [SugarColumn(ColumnName = "is_all_day", ColumnDescription = "是否全天（0：否，1：是）", IsNullable = false, DefaultValue = "0", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
+        [SugarColumn(ColumnName = "is_all_day", ColumnDescription = "是否全天", IsNullable = false, DefaultValue = "0", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
         public int IsAllDay { get; set; }
 
         /// <summary>
         /// 提醒时间（分钟）
         /// </summary>
-        [SugarColumn(ColumnName = "remind_minutes", ColumnDescription = "提醒时间（分钟）", IsNullable = true, ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
+        [SugarColumn(ColumnName = "remind_minutes", ColumnDescription = "提醒时间", IsNullable = true, ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
         public int? RemindMinutes { get; set; }
 
         /// <summary>
@@ -96,7 +96,7 @@ namespace Lean.Hbt.Domain.Entities.Routine.Metting
         /// <summary>
         /// 是否需要签到（0：否，1：是）
         /// </summary>
-        [SugarColumn(ColumnName = "need_sign_in", ColumnDescription = "是否需要签到（0：否，1：是）", IsNullable = false, DefaultValue = "0", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
+        [SugarColumn(ColumnName = "need_sign_in", ColumnDescription = "是否需要签到", IsNullable = false, DefaultValue = "0", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
         public int NeedSignIn { get; set; }
 
     }

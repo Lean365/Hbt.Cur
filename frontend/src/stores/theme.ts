@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { theme } from 'ant-design-vue'
+import { useConfigStore } from './config'
 
 interface ThemeState {
   isDarkMode: boolean
@@ -16,9 +17,25 @@ export const useThemeStore = defineStore('theme', () => {
     if (savedTheme === 'dark') {
       isDarkMode.value = true
     }
-    const savedColor = localStorage.getItem('primaryColor')
-    if (savedColor) {
-      primaryColor.value = savedColor
+    
+    // 优先从configStore读取主色调设置
+    try {
+      const configStore = useConfigStore()
+      if (configStore.currentPrimaryColor) {
+        primaryColor.value = configStore.currentPrimaryColor
+      } else {
+        // 如果configStore中没有，则从localStorage读取
+        const savedColor = localStorage.getItem('primaryColor')
+        if (savedColor) {
+          primaryColor.value = savedColor
+        }
+      }
+    } catch (error) {
+      // 如果configStore还未初始化，则从localStorage读取
+      const savedColor = localStorage.getItem('primaryColor')
+      if (savedColor) {
+        primaryColor.value = savedColor
+      }
     }
   }
 
@@ -38,11 +55,25 @@ export const useThemeStore = defineStore('theme', () => {
     }
   }
 
+  // 同步configStore中的主色调设置
+  const syncPrimaryColorFromConfig = () => {
+    try {
+      const configStore = useConfigStore()
+      if (configStore.currentPrimaryColor && configStore.currentPrimaryColor !== primaryColor.value) {
+        primaryColor.value = configStore.currentPrimaryColor
+        localStorage.setItem('primaryColor', configStore.currentPrimaryColor)
+      }
+    } catch (error) {
+      console.warn('无法同步configStore中的主色调设置:', error)
+    }
+  }
+
   return {
     isDarkMode,
     primaryColor,
     initTheme,
     toggleTheme,
-    updateTheme
+    updateTheme,
+    syncPrimaryColorFromConfig
   }
 })

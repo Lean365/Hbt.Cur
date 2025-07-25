@@ -29,9 +29,14 @@ public class HbtRestartService : IHbtRestartService
     protected readonly IHbtLogger _logger;
 
     private readonly HbtRestartOptions _options;
-    private readonly IHbtRepository<HbtOnlineUser> _onlineUserRepository;
+    protected readonly IHbtRepositoryFactory _repositoryFactory;
     private readonly IConnectionMultiplexer? _redisConnection;
-    private readonly HbtCacheOptions _cacheOptions;
+    private readonly IOptions<HbtCacheOptions> _cacheOptions;
+
+    /// <summary>
+    /// 获取在线用户仓储
+    /// </summary>
+    private IHbtRepository<HbtOnlineUser> OnlineUserRepository => _repositoryFactory.GetAuthRepository<HbtOnlineUser>();
 
     /// <summary>
     /// 构造函数
@@ -41,24 +46,23 @@ public class HbtRestartService : IHbtRestartService
     /// <param name="logger">日志服务</param>
     /// <param name="options">系统重启选项</param>
     /// <param name="cacheOptions">缓存选项</param>
-    /// <param name="onlineUserRepository">在线用户仓储</param>
+    /// <param name="repositoryFactory">仓储工厂</param>
     /// <param name="redisConnection">Redis连接</param>
     public HbtRestartService(
         IHbtLoginEnvLogService loginExtendService,
         IDistributedCache cache,
         IHbtLogger logger,
-
         IOptions<HbtRestartOptions> options,
         IOptions<HbtCacheOptions> cacheOptions,
-        IHbtRepository<HbtOnlineUser> onlineUserRepository,
+        IHbtRepositoryFactory repositoryFactory,
         IConnectionMultiplexer? redisConnection = null)
     {
         _loginExtendService = loginExtendService;
         _cache = cache;
         _logger = logger;
         _options = options.Value;
-        _cacheOptions = cacheOptions.Value;
-        _onlineUserRepository = onlineUserRepository;
+        _cacheOptions = cacheOptions;
+        _repositoryFactory = repositoryFactory ?? throw new ArgumentNullException(nameof(repositoryFactory));
         _redisConnection = redisConnection;
     }
 
@@ -147,7 +151,7 @@ public class HbtRestartService : IHbtRestartService
             var exp = Expressionable.Create<HbtOnlineUser>();
             exp.And(u => u.OnlineStatus == 0); // 0表示在线状态
 
-            var onlineUsers = await _onlineUserRepository.GetListAsync(exp.ToExpression());
+            var onlineUsers = await OnlineUserRepository.GetListAsync(exp.ToExpression());
             if (onlineUsers.Any())
             {
                 foreach (var user in onlineUsers)
@@ -155,7 +159,7 @@ public class HbtRestartService : IHbtRestartService
                     user.OnlineStatus = 1; // 1表示离线状态
                     user.LastActivity = DateTime.Now;
                 }
-                await _onlineUserRepository.UpdateRangeAsync(onlineUsers);
+                await OnlineUserRepository.UpdateRangeAsync(onlineUsers);
                 _logger.Info("已更新{Count}个在线用户状态为离线", onlineUsers.Count);
             }
 
@@ -181,14 +185,14 @@ public class HbtRestartService : IHbtRestartService
     {
         try
         {
-            if (_cacheOptions.Provider == CacheProviderType.Redis && _redisConnection != null)
+            if (_cacheOptions.Value.Provider == CacheProviderType.Redis && _redisConnection != null)
             {
                 // 使用Redis直接清理缓存
-                var server = _redisConnection.GetServer(_cacheOptions.Redis.ConnectionString);
-                var db = _redisConnection.GetDatabase(_cacheOptions.Redis.DefaultDatabase);
+                var server = _redisConnection.GetServer(_cacheOptions.Value.Redis.ConnectionString);
+                var db = _redisConnection.GetDatabase(_cacheOptions.Value.Redis.DefaultDatabase);
 
                 // 清理所有系统相关的缓存
-                var keys = server.Keys(pattern: $"{_cacheOptions.Redis.InstanceName}*").ToArray();
+                var keys = server.Keys(pattern: $"{_cacheOptions.Value.Redis.InstanceName}*").ToArray();
                 if (keys.Any())
                 {
                     await db.KeyDeleteAsync(keys);
@@ -226,7 +230,7 @@ public class HbtRestartService : IHbtRestartService
             // 1. 清理在线用户表
             var exp = Expressionable.Create<HbtOnlineUser>();
             exp.And(u => u.OnlineStatus == 0); // 0表示在线状态
-            var onlineUsers = await _onlineUserRepository.GetListAsync(exp.ToExpression());
+            var onlineUsers = await OnlineUserRepository.GetListAsync(exp.ToExpression());
 
             if (onlineUsers.Any())
             {
@@ -235,18 +239,18 @@ public class HbtRestartService : IHbtRestartService
                     user.OnlineStatus = 1; // 1表示离线状态
                     user.LastActivity = DateTime.Now;
                 }
-                await _onlineUserRepository.UpdateRangeAsync(onlineUsers);
+                await OnlineUserRepository.UpdateRangeAsync(onlineUsers);
                 _logger.Info("已更新{Count}个在线用户状态为离线", onlineUsers.Count);
             }
 
             // 2. 清理 Redis 中的 SignalR 连接信息
-            if (_cacheOptions.Provider == CacheProviderType.Redis && _redisConnection != null)
+            if (_cacheOptions.Value.Provider == CacheProviderType.Redis && _redisConnection != null)
             {
-                var server = _redisConnection.GetServer(_cacheOptions.Redis.ConnectionString);
-                var db = _redisConnection.GetDatabase(_cacheOptions.Redis.DefaultDatabase);
+                var server = _redisConnection.GetServer(_cacheOptions.Value.Redis.ConnectionString);
+                var db = _redisConnection.GetDatabase(_cacheOptions.Value.Redis.DefaultDatabase);
 
                 // 清理所有 SignalR 相关的缓存
-                var keys = server.Keys(pattern: $"{_cacheOptions.Redis.InstanceName}signalr:*").ToArray();
+                var keys = server.Keys(pattern: $"{_cacheOptions.Value.Redis.InstanceName}signalr:*").ToArray();
                 if (keys.Any())
                 {
                     await db.KeyDeleteAsync(keys);

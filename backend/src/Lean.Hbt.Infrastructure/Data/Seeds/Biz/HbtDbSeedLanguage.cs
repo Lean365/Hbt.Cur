@@ -17,7 +17,7 @@ namespace Lean.Hbt.Infrastructure.Data.Seeds.Biz;
 /// </summary>
 public class HbtDbSeedLanguage
 {
-    private readonly IHbtRepositoryFactory _repositoryFactory;
+    protected readonly IHbtRepositoryFactory _repositoryFactory;
     private readonly IHbtLogger _logger;
 
     private IHbtRepository<HbtLanguage> LanguageRepository => _repositoryFactory.GetBusinessRepository<HbtLanguage>();

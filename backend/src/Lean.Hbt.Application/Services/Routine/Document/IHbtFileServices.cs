@@ -2,8 +2,8 @@
 // 项目名 : Lean.Hbt
 // 文件名 : IHbtFileService.cs
 // 创建者 : Lean365
-// 创建时间: 2024-06-09
-// 版本号 : V1.0.0
+// 创建时间: 2024-01-01
+// 版本号 : V0.0.1
 // 描述   : 文件服务接口
 //===================================================================
 
@@ -16,7 +16,7 @@ namespace Lean.Hbt.Application.Services.Routine.Document
     /// </summary>
     /// <remarks>
     /// 创建者: Lean365
-    /// 创建时间: 2024-06-09
+    /// 创建时间: 2024-01-01
     /// </remarks>
     public interface IHbtFileService
     {
@@ -90,6 +90,6 @@ namespace Lean.Hbt.Application.Services.Routine.Document
         /// </summary>
         /// <param name="input">状态更新对象</param>
         /// <returns>是否成功</returns>
-        Task<bool> UpdateStatusAsync(HbtFileStatusDto input);
+        Task<bool> UpdateStatusAsync(HbtStatusDto input);
     }
 } 

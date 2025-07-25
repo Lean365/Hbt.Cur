@@ -9,7 +9,6 @@
 // 描述    : 生成配置服务实现类
 //===================================================================
 
-using System.Linq.Expressions;
 using Microsoft.AspNetCore.Http;
 
 namespace Lean.Hbt.Application.Services.Generator;
@@ -23,8 +22,11 @@ namespace Lean.Hbt.Application.Services.Generator;
 /// </remarks>
 public class HbtGenConfigService : HbtBaseService, IHbtGenConfigService
 {
-    private readonly IHbtRepositoryFactory _repositoryFactory;
-    private IHbtRepository<HbtGenConfig> ConfigRepository => _repositoryFactory.GetAuthRepository<HbtGenConfig>();
+    /// <summary>
+    /// 工厂仓储
+    /// </summary>
+    protected readonly IHbtRepositoryFactory _repositoryFactory;
+    private IHbtRepository<HbtGenConfig> ConfigRepository => _repositoryFactory.GetGeneratorRepository<HbtGenConfig>();
 
     /// <summary>
     /// 构造函数

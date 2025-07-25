@@ -3,15 +3,9 @@
 // 文件名 : IHbtVehicleService.cs
 // 创建者 : Lean365
 // 创建时间: 2024-03-07 16:30
-// 版本号 : V1.0.0
+// 版本号 : V0.0.1
 // 描述   : 用车服务接口
 //===================================================================
-
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using System.IO;
-using Lean.Hbt.Common.Models;
-using Lean.Hbt.Application.Dtos.Routine;
 
 namespace Lean.Hbt.Application.Services.Routine.Vehicle
 {
@@ -89,4 +83,4 @@ namespace Lean.Hbt.Application.Services.Routine.Vehicle
         /// <returns>Excel文件字节数组</returns>
         Task<(string fileName, byte[] content)> GetTemplateAsync(string sheetName = "用车信息");
     }
-} 
+}

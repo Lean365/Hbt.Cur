@@ -153,8 +153,8 @@
 import { ref, reactive, watch, onMounted } from 'vue'
 import type { HbtGenTable } from '@/types/generator/genTable'
 import type { HbtGenColumn } from '@/types/generator/genColumn'
-import type { HbtDictType } from '@/types/core/dictType'
-import { getHbtDictTypeList } from '@/api/core/dictType'
+import type { HbtDictType } from '@/types/routine/core/dictType'
+import { getHbtDictTypeList } from '@/api/routine/core/dictType'
 import { getColumns } from '@/api/generator/genTable'
 
 const props = defineProps<{

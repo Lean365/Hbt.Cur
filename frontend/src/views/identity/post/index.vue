@@ -52,7 +52,7 @@
 
     <!-- 数据表格 -->
     <hbt-table
-      :columns="columns.filter(col => col.key && columnSettings[col.key])"
+      :columns="columns.filter((col: any) => col.key && columnSettings[col.key])"
       :data-source="list"
       :loading="loading"
       :pagination="false"
@@ -584,7 +584,7 @@ onMounted(() => {
 <style lang="less" scoped>
 .post-container {
   padding: 16px;
-  background-color: #fff;
+  background-color: var(--ant-color-bg-container);
   height: 100%;
   display: flex;
   flex-direction: column;

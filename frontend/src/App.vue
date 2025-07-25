@@ -10,7 +10,9 @@
         @retry="handleRetry"
         @close="handleErrorClose"
       />
-      <router-view></router-view>
+      <HbtWatermark>
+        <router-view></router-view>
+      </HbtWatermark>
     </div>
   </a-config-provider>
 </template>
@@ -35,9 +37,7 @@ import zhTW from 'ant-design-vue/es/locale/zh_TW'
 import { initAutoLogout, clearAutoLogout } from '@/utils/autoLogout'
 import { useDictStore } from '@/stores/dict'
 import { useWebSocketStore } from '@/stores/websocket'
-import HbtErrorAlert from '@/components/Business/HbtErrorAlert/index.vue'
 import { useUserStore } from '@/stores/user'
-
 
 const themeStore = useThemeStore()
 const memorialStore = useMemorialStore()
@@ -68,8 +68,18 @@ const currentAntdLocale = ref(localeMap[appStore.language as keyof typeof locale
 const antdLocale = computed(() => currentAntdLocale.value)
 
 // 监听语言变化，更新 Ant Design Vue 的语言包
-watch(() => appStore.language, (newLocale) => {
+watch(() => appStore.language, async (newLocale) => {
   currentAntdLocale.value = localeMap[newLocale as keyof typeof localeMap] || zhCN
+  
+  // 等待下一个tick，确保语言切换生效
+  await nextTick()
+  
+  // 触发全局强制重新渲染事件
+  window.dispatchEvent(new CustomEvent('force-rerender', {
+    detail: { language: newLocale }
+  }))
+  
+  console.log('[App] 语言切换完成，已触发页面重新渲染')
 })
 
 // 计算主题配置
@@ -81,7 +91,10 @@ const themeConfig = computed(() => {
     algorithm: isDarkMode ? theme.darkAlgorithm : theme.defaultAlgorithm,
     token: {
       ...memorialTheme,
-      colorPrimary: memorialTheme.colorPrimary || themeStore.primaryColor,
+      // 优先使用用户设置的主色调，只有在纪念模式下才使用纪念主题的主色调
+      colorPrimary: memorialStore.isMemorialMode && memorialTheme.colorPrimary 
+        ? memorialTheme.colorPrimary 
+        : themeStore.primaryColor,
       borderRadius: 6,
       // 添加更多全局 token
       wireframe: false, // 线框模式
@@ -164,10 +177,8 @@ const handleErrorClose = () => {
   showError.value = false
 }
 
-// 组件挂载时连接 WebSocket
+// 组件挂载时初始化
 onMounted(async () => {
-  console.log('🚀🚀🚀 [App] onMounted 开始执行 🚀🚀🚀')
-  
   const dictStore = useDictStore()
   dictStore.clearCache()
   themeStore.initTheme()
@@ -175,8 +186,6 @@ onMounted(async () => {
   document.documentElement.style.colorScheme = isDark.value ? 'dark' : 'light'
   initAutoLogout(userStore)
   wsStore.connect()
-  
-  console.log('[App] onMounted 执行完成')
 })
 
 onUnmounted(() => {

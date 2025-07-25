@@ -74,9 +74,9 @@ public class HbtLogManager :
     /// <summary>
     /// 获取日志级别
     /// </summary>
-    private int GetLogLevel(string operationType)
+    private int GetLogLevel(string OperType)
     {
-        return operationType.ToLower() switch
+        return OperType.ToLower() switch
         {
             // 新增类操作 - 信息级别
             "create" or "insert" or "add" => 1,
@@ -151,7 +151,7 @@ public class HbtLogManager :
     /// </summary>
     public async Task LogOperationAsync(
         string tableName,
-        string operationType,
+        string OperType,
         string businessKey,
         string? requestParam = null,
         string? location = null,
@@ -161,7 +161,7 @@ public class HbtLogManager :
         var log = new HbtOperLog
         {
             OperModule = tableName,
-            OperType = operationType,
+            OperType = OperType,
             OperTableName = tableName,
             OperBusinessKey = businessKey,
             OperRequestMethod = _httpContextAccessor.HttpContext?.Request.Method ?? "Unknown",
@@ -177,7 +177,7 @@ public class HbtLogManager :
         try
         {
             await _context.Client.Insertable(log).ExecuteCommandAsync();
-            _logger.Info($"记录操作日志成功: {_currentUser.UserName} 在 {tableName} 执行了 {operationType} 操作");
+            _logger.Info($"记录操作日志成功: {_currentUser.UserName} 在 {tableName} 执行了 {OperType} 操作");
         }
         catch (Exception ex)
         {

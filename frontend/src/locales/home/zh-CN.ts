@@ -108,6 +108,10 @@ export default {
         urge4: '催办4',
         urge5: '催办5',
       },
+      processing: '处理中',
+      overdue: '已逾期',
+      dueSoon: '即将到期',
+      highPriority: '高优先级',
     },
     filetab: {
       myFile: {

@@ -49,7 +49,7 @@
     <!-- 数据表格 -->
     <hbt-tree-table
       ref="treeTableRef"
-      :columns="columns.filter(col => col.key && columnSettings[col.key])"
+      :columns="columns.filter((col: any) => col.key && columnSettings[col.key])"
       :data-source="deptList"
       :loading="loading"
       :pagination="false"
@@ -660,7 +660,7 @@ defineExpose({
 <style lang="less" scoped>
 .dept-container {
   padding: 16px;
-  background-color: #fff;
+  background-color: var(--ant-color-bg-container);
   height: 100%;
   display: flex;
   flex-direction: column;

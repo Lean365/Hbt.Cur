@@ -7,7 +7,7 @@
 // 描述   : HRM职位数据初始化类 - 使用仓储工厂模式
 //===================================================================
 
-using Lean.Hbt.Domain.Entities.Hrm.Organization;
+using Lean.Hbt.Domain.Entities.Human.Organization;
 using Lean.Hbt.Domain.Repositories;
 
 namespace Lean.Hbt.Infrastructure.Data.Seeds.Biz;
@@ -17,7 +17,7 @@ namespace Lean.Hbt.Infrastructure.Data.Seeds.Biz;
 /// </summary>
 public class HbtDbSeedHrmPosition
 {
-    private readonly IHbtRepositoryFactory _repositoryFactory;
+    protected readonly IHbtRepositoryFactory _repositoryFactory;
     private readonly IHbtLogger _logger;
 
     private IHbtRepository<HbtPosition> PositionRepository => _repositoryFactory.GetBusinessRepository<HbtPosition>();

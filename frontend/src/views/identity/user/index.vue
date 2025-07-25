@@ -37,7 +37,7 @@
     <hbt-table
       :loading="loading"
       :data-source="tableData"
-      :columns="columns.filter(col => columnSettings[col.key])"
+      :columns="columns.filter((col: any) => columnSettings[col.key])"
       :pagination="false"
       :scroll="{ x: 600, y: 'calc(100vh - 500px)' }"
       :default-height="594"
@@ -80,7 +80,7 @@
             :checked="record.status === 0"
             checked-children="正常"
             un-checked-children="停用"
-            @change="val => handleStatusChange(record, !!val)"
+            @change="(val: any) => handleStatusChange(record, !!val)"
             :loading="record.statusLoading"
             :disabled="record.userName === 'admin'"
           />
@@ -176,6 +176,17 @@
                         <template #icon><solution-outlined /></template>
                       </a-button>
                     </a-tooltip>
+                    <a-tooltip :title="t('identity.user.allocateTenant')">
+                      <a-button
+                        v-hasPermi="['identity:user:allocate']"
+                        type="default"
+                        size="small"
+                        class="hbt-btn-tenant"
+                        @click.stop="handleAllocateTenant(record)"
+                      >
+                        <template #icon><apartment-outlined /></template>
+                      </a-button>
+                    </a-tooltip>
                   </a-menu>
                 </template>
               </a-dropdown>
@@ -235,6 +246,14 @@
       @success="handleSuccess"
     />
 
+    <!-- 租户分配对话框 -->
+    <tenant-allocate
+      v-if="tenantDialogVisible && selectedUserId !== undefined"
+      v-model:visible="tenantDialogVisible"
+      :user-id="selectedUserId"
+      @success="handleSuccess"
+    />
+
     <!-- 导入对话框 -->
     <hbt-import-dialog
       v-model:open="importVisible"
@@ -276,6 +295,13 @@ import type { TablePaginationConfig } from 'ant-design-vue'
 import { useDictStore } from '@/stores/dict'
 import type { HbtUser, HbtUserQuery } from '@/types/identity/user'
 import type { QueryField } from '@/types/components/query'
+import { 
+  DownOutlined, 
+  KeyOutlined, 
+  TeamOutlined, 
+  SolutionOutlined,
+  ApartmentOutlined
+} from '@ant-design/icons-vue'
 import {
   getUserList,
   deleteUser,
@@ -293,6 +319,7 @@ import ResetPwdForm from './components/ResetPwdForm.vue'
 import RoleAllocate from './components/RoleAllocate.vue'
 import DeptAllocate from './components/DeptAllocate.vue'
 import PostAllocate from './components/PostAllocate.vue'
+import TenantAllocate from './components/TenantAllocate.vue'
 
 
 const { t } = useI18n()
@@ -574,6 +601,9 @@ const deptDialogVisible = ref(false)
 // 岗位分配弹窗
 const postDialogVisible = ref(false)
 
+// 租户分配弹窗
+const tenantDialogVisible = ref(false)
+
 // 导入对话框
 const importVisible = ref(false)
 
@@ -827,7 +857,7 @@ const handleRowClick = (record: HbtUser) => {
 // 处理重置密码
 const handleResetPassword = (record: HbtUser) => {
   // 这里假设有resetPassword API，传递userId和默认密码
-  resetPassword({ userId: record.userId, password: 'Hbt@123852' })
+  resetPassword({ userId: record.userId, newPassword: 'Hbt@123852' })
     .then(res => {
       if (res) {
         message.success(t('identity.user.messages.resetPasswordSuccess'))
@@ -913,6 +943,12 @@ const handleAllocatePost = (record: HbtUser) => {
   postDialogVisible.value = true
 }
 
+// 处理分配租户
+const handleAllocateTenant = (record: HbtUser) => {
+  selectedUserId.value = record.userId
+  tenantDialogVisible.value = true
+}
+
 // 分页处理
 const handlePageChange = (page: number) => {
   queryParams.value.pageIndex = page
@@ -957,7 +993,6 @@ onMounted(() => {
 <style lang="less" scoped>
 .user-container {
   height: 100%;
-  background-color: #fff;
 }
 
 .column-setting-group {

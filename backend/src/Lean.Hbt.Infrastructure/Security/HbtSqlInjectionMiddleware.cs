@@ -3,7 +3,7 @@
 // 文件名 : HbtSqlInjectionMiddleware.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-22 16:00
-// 版本号 : V1.0.0
+// 版本号 : V0.0.1
 // 描述    : SQL注入防护中间件
 //===================================================================
 
@@ -115,7 +115,9 @@ namespace Lean.Hbt.Infrastructure.Security
             if (path != null && (
                 path.Contains("/login") ||
                 path.Contains("/auth") ||
-                path.Contains("/token")))
+                path.Contains("/token") ||
+                path.Contains("/hbtcaptcha") ||
+                path.Contains("/hbtloginmethod")))
             {
                 return true;
             }

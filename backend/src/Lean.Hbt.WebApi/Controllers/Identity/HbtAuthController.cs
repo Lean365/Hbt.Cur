@@ -3,11 +3,12 @@
 // 文件名 : HbtAuthController.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-22 14:30
-// 版本号 : V1.0.0
+// 版本号 : V0.0.1
 // 描述    : 基础认证控制器
 //===================================================================
 
 using System.ComponentModel;
+using System.IO;
 using System.Security.Cryptography;
 using System.Text.Json;
 using Lean.Hbt.Application.Dtos.Identity;
@@ -42,11 +43,20 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         private readonly IHbtSignalRUserService _signalRUserService;
         private readonly IHbtUserService _userService;
         private readonly IHbtAuthService _loginService;
-        private readonly IHbtRepository<HbtOnlineUser> _onlineUserRepository;
-        private readonly IHbtRepository<HbtUser> _userRepository;
+        protected readonly IHbtRepositoryFactory _repositoryFactory;
         private readonly IHbtDeviceIdGenerator _deviceIdGenerator;
         private readonly IOptions<HbtJwtOptions> _jwtOptions;
         private readonly IConfiguration _configuration;
+
+        /// <summary>
+        /// 获取在线用户仓储
+        /// </summary>
+        private IHbtRepository<HbtOnlineUser> OnlineUserRepository => _repositoryFactory.GetAuthRepository<HbtOnlineUser>();
+
+        /// <summary>
+        /// 获取用户仓储
+        /// </summary>
+        private IHbtRepository<HbtUser> UserRepository => _repositoryFactory.GetAuthRepository<HbtUser>();
 
         /// <summary>
         /// 构造函数
@@ -55,7 +65,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <param name="signalRUserService">SignalR用户服务</param>
         /// <param name="userService">用户服务</param>
         /// <param name="loginService">登录服务</param>
-        /// <param name="onlineUserRepository">在线用户仓库</param>
+        /// <param name="repositoryFactory">仓储工厂</param>
         /// <param name="deviceIdGenerator">设备ID生成器</param>
         /// <param name="jwtOptions">JWT配置</param>
         /// <param name="logger">日志服务</param>
@@ -69,8 +79,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
             IHbtSignalRUserService signalRUserService,
             IHbtUserService userService,
             IHbtAuthService loginService,
-            IHbtRepository<HbtOnlineUser> onlineUserRepository,
-            IHbtRepository<HbtUser> userRepository,
+            IHbtRepositoryFactory repositoryFactory,
             IHbtDeviceIdGenerator deviceIdGenerator,
             IOptions<HbtJwtOptions> jwtOptions,
             IHbtLogger logger,
@@ -83,8 +92,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
             _signalRUserService = signalRUserService;
             _userService = userService;
             _loginService = loginService;
-            _onlineUserRepository = onlineUserRepository;
-            _userRepository = userRepository;
+            _repositoryFactory = repositoryFactory ?? throw new ArgumentNullException(nameof(repositoryFactory));
             _deviceIdGenerator = deviceIdGenerator;
             _jwtOptions = jwtOptions;
             _configuration = configuration;
@@ -106,7 +114,7 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
                 _logger.Info("[登录检查] 开始检查用户登录状态: {Username}", loginDto.UserName);
 
                 // 获取用户信息
-                var user = await _userRepository.GetFirstAsync(u => u.UserName == loginDto.UserName);
+                var user = await UserRepository.GetFirstAsync(u => u.UserName == loginDto.UserName);
                 
                 // 生成随机盐值（无论用户是否存在，都返回盐值以防止恶意攻击）
                 var randomSalt = GenerateRandomSalt();
@@ -273,10 +281,23 @@ namespace Lean.Hbt.WebApi.Controllers.Identity
         /// <returns>新的访问令牌</returns>
         [HttpPost("refresh-token")]
         [AllowAnonymous]
-        public async Task<IActionResult> RefreshToken([FromBody] string refreshToken)
+        public async Task<IActionResult> RefreshToken()
         {
             try
             {
+                // 直接从请求体中读取字符串
+                using var reader = new StreamReader(HttpContext.Request.Body);
+                var refreshToken = await reader.ReadToEndAsync();
+
+                if (string.IsNullOrEmpty(refreshToken))
+                {
+                    _logger.Warn("[刷新令牌] 刷新令牌为空");
+                    return Error("刷新令牌不能为空", 400);
+                }
+
+                _logger.Info("[刷新令牌] 开始刷新令牌: Token={Token}", 
+                    refreshToken.Substring(0, Math.Min(10, refreshToken.Length)) + "...");
+
                 var result = await _loginService.RefreshTokenAsync(refreshToken);
                 return Success(result);
             }

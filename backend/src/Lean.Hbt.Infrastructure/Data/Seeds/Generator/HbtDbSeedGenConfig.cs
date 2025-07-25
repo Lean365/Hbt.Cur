@@ -17,11 +17,11 @@ namespace Lean.Hbt.Infrastructure.Data.Seeds.Generator;
 /// 代码生成配置种子数据
 /// </summary>
 /// <remarks>
-/// 更新: 2024-12-19 - 使用仓储工厂模式支持多库
+/// 更新: 2024-12-01 - 使用仓储工厂模式支持多库
 /// </remarks>
 public class HbtDbSeedGenConfig
 {
-    private readonly IHbtRepositoryFactory _repositoryFactory;
+    protected readonly IHbtRepositoryFactory _repositoryFactory;
     private readonly IHbtLogger _logger;
 
     private IHbtRepository<HbtGenConfig> GenConfigRepository => _repositoryFactory.GetGeneratorRepository<HbtGenConfig>();

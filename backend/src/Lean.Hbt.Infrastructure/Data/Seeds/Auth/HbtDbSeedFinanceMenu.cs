@@ -115,7 +115,7 @@ public class HbtDbSeedFinanceMenu
     /// </summary>
     public static List<HbtMenu> GetExpenseBudgetFifthMenus(long parentId) => new List<HbtMenu> {
         new HbtMenu { MenuName = "销售费用", TransKey = "menu.accounting.budget.formulation.expense.sales", ParentId = parentId, OrderNum = 1, Path = "sales", Component = "accounting/budget/formulation/expense/sales/index", MenuType = 1, Perms = "accounting:budget:formulation:expense:sales:list", Icon = "ShoppingCartOutlined", Remark = "销售费用预算" },
-        new HbtMenu { MenuName = "管理费用", TransKey = "menu.accounting.budget.formulation.expense.management", ParentId = parentId, OrderNum = 2, Path = "management", Component = "accounting/budget/formulation/expense/management/index", MenuType = 1, Perms = "accounting:budget:formulation:expense:management:list", Icon = "SettingOutlined", Remark = "管理费用预算" },
+        new HbtMenu { MenuName = "管理费用", TransKey = "menu.accounting.budget.formulation.expense.manage", ParentId = parentId, OrderNum = 2, Path = "manage", Component = "accounting/budget/formulation/expense/manage/index", MenuType = 1, Perms = "accounting:budget:formulation:expense:manage:list", Icon = "SettingOutlined", Remark = "管理费用预算" },
         new HbtMenu { MenuName = "财务费用", TransKey = "menu.accounting.budget.formulation.expense.financial", ParentId = parentId, OrderNum = 3, Path = "financial", Component = "accounting/budget/formulation/expense/financial/index", MenuType = 1, Perms = "accounting:budget:formulation:expense:financial:list", Icon = "AccountBookOutlined", Remark = "财务费用预算" }
     };
 

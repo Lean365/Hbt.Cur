@@ -1,34 +1,36 @@
 import request from '@/utils/request'
+import type { HbtFormQuery, HbtForm, HbtFormStatus, HbtFormUpdate, HbtFormCreate } from '@/types/workflow/form'
+import type { HbtPagedResult } from '@/types/common'
 import type { HbtApiResponse } from '@/types/common'
-import type {
-  HbtFormQuery,
-  HbtForm,
-  HbtFormCreate,
-  HbtFormUpdate,
-  HbtFormStatus,
-  HbtFormPagedResult
-} from '@/types/workflow/form'
 
-// 获取表单列表
-export function getFormList(params: HbtFormQuery) {
-  return request<HbtApiResponse<HbtFormPagedResult>>({
+// 获取表单分页列表
+export function getFormList(query: HbtFormQuery) {
+  return request<HbtApiResponse<HbtPagedResult<HbtForm>>>({
     url: '/api/HbtForm/list',
     method: 'get',
-    params
+    params: query
   })
 }
 
 // 获取表单详情
-export function getForm(id: number) {
+export function getFormById(formId: number) {
   return request<HbtApiResponse<HbtForm>>({
-    url: `/api/HbtForm/${id}`,
+    url: `/api/HbtForm/${formId}`,
+    method: 'get'
+  })
+}
+
+// 根据键获取表单定义
+export function getFormByKey(formKey: string) {
+  return request<HbtApiResponse<HbtForm>>({
+    url: `/api/HbtForm/key/${formKey}`,
     method: 'get'
   })
 }
 
 // 创建表单
 export function createForm(data: HbtFormCreate) {
-  return request<HbtApiResponse<any>>({
+  return request<HbtApiResponse<number>>({
     url: '/api/HbtForm',
     method: 'post',
     data
@@ -37,7 +39,7 @@ export function createForm(data: HbtFormCreate) {
 
 // 更新表单
 export function updateForm(data: HbtFormUpdate) {
-  return request<HbtApiResponse<any>>({
+  return request<HbtApiResponse<boolean>>({
     url: '/api/HbtForm',
     method: 'put',
     data
@@ -45,31 +47,30 @@ export function updateForm(data: HbtFormUpdate) {
 }
 
 // 删除表单
-export function deleteForm(id: number) {
-  return request<HbtApiResponse<any>>({
-    url: `/api/HbtForm/${id}`,
+export function deleteForm(formId: number) {
+  return request<HbtApiResponse<boolean>>({
+    url: `/api/HbtForm/${formId}`,
     method: 'delete'
   })
 }
 
 // 批量删除表单
-export function batchDeleteForm(ids: number[]) {
-  return request<HbtApiResponse<any>>({
+export function batchDeleteForm(formIds: number[]) {
+  return request<HbtApiResponse<boolean>>({
     url: '/api/HbtForm/batch',
     method: 'delete',
-    data: ids
+    data: formIds
   })
 }
 
 // 导入表单
-export function importForm(file: File, sheetName: string = 'Sheet1') {
+export function importForm(file: File) {
   const formData = new FormData()
   formData.append('file', file)
-  return request<HbtApiResponse<any>>({
+  return request<HbtApiResponse<{ success: number; fail: number }>>({
     url: '/api/HbtForm/import',
     method: 'post',
     data: formData,
-    params: { sheetName },
     headers: {
       'Content-Type': 'multipart/form-data'
     }
@@ -77,38 +78,40 @@ export function importForm(file: File, sheetName: string = 'Sheet1') {
 }
 
 // 导出表单
-export function exportForm(params: HbtFormQuery, sheetName: string = 'Sheet1') {
-  return request({
+export function exportForm(query: HbtFormQuery) {
+  return request<Blob>({
     url: '/api/HbtForm/export',
     method: 'get',
-    params: { ...params, sheetName },
+    params: query,
     responseType: 'blob'
   })
 }
 
-// 获取表单导入模板
-export function getFormTemplate(sheetName: string = 'Sheet1') {
-  return request({
+// 获取导入模板
+export function getFormTemplate() {
+  return request<Blob>({
     url: '/api/HbtForm/template',
     method: 'get',
-    params: { sheetName },
     responseType: 'blob'
   })
 }
 
 // 更新表单状态
-export function updateFormStatus(id: number, data: HbtFormStatus) {
-  return request<HbtApiResponse<any>>({
-    url: `/api/HbtForm/${id}/status`,
+export function updateFormStatus(data: HbtFormStatus) {
+  return request<HbtApiResponse<boolean>>({
+    url: `/api/HbtForm/${data.formId}/status`,
     method: 'put',
-    data
+    params: {
+      status: data.status
+    }
   })
 }
 
-// 获取表单选项
-export function getFormOptions() {
-  return request<HbtApiResponse<any>>({
-    url: '/api/HbtForm/options',
-    method: 'get'
+// 获取我的表单列表
+export function getMyForms(query: HbtFormQuery) {
+  return request<HbtApiResponse<HbtPagedResult<HbtForm>>>({
+    url: '/api/HbtForm/my',
+    method: 'get',
+    params: query
   })
-} 
+}

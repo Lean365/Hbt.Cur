@@ -64,7 +64,8 @@ import { message } from 'ant-design-vue'
 import { formatDistanceToNow } from 'date-fns'
 import { zhCN } from 'date-fns/locale'
 import { getOnlineUserList } from '@/api/signalr/onlineUser'
-import type { HbtOnlineUserQueryParams, HbtOnlineUserDto } from '@/types/signalr/onlineUser'
+import type { HbtOnlineUserQueryParams, HbtOnlineUser } from '@/types/signalr/onlineUser'
+import { maskName } from '@/utils/mask'
 
 interface OnlineUser {
   userId: number
@@ -103,7 +104,7 @@ watch(isOpen, (newVal) => {
 })
 
 // 将 HbtOnlineUserDto 转换为 OnlineUser
-const convertToOnlineUser = (dto: HbtOnlineUserDto): OnlineUser => {
+const convertToOnlineUser = (dto: HbtOnlineUser): OnlineUser => {
   return {
     userId: dto.userId,
     userName: '', // 暂时使用空字符串
@@ -143,7 +144,12 @@ const refreshOnlineUsers = async () => {
 
 // 处理用户上线
 const handleUserOnline = (user: OnlineUser) => {
-  console.log('[HbtOnlineUsers] 用户上线:', user)
+  console.log('[HbtOnlineUsers] 用户上线:', {
+    userId: user.userId,
+    userName: maskName(user.userName),
+    nickName: maskName(user.nickName),
+    status: user.status
+  })
   const existingUserIndex = onlineUsers.value.findIndex(u => u.userId === user.userId)
   if (existingUserIndex === -1) {
     onlineUsers.value.push(user)
@@ -213,7 +219,12 @@ onMounted(() => {
   signalRService.on('UserStatusUpdate', handleUserStatusUpdate)
   signalRService.on('UserActivityUpdate', handleUserActivityUpdate)
   signalRService.on('OnlineUsersList', (users: OnlineUser[]) => {
-    console.log('[HbtOnlineUsers] 获取在线用户列表:', users)
+    console.log('[HbtOnlineUsers] 获取在线用户列表:', users.map(user => ({
+      userId: user.userId,
+      userName: maskName(user.userName),
+      nickName: maskName(user.nickName),
+      status: user.status
+    })))
     onlineUsers.value = users
   })
 

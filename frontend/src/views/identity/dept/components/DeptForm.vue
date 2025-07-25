@@ -97,7 +97,6 @@ const form = ref<HbtDeptCreate>({
   leader: '',
   phone: '',
   email: '',
-  tenantId: 0,
   status: 0,
   userCount: 0
 })
@@ -134,8 +133,7 @@ const resetForm = () => {
     leader: '',
     phone: '',
     email: '',
-    tenantId: 0,
-    status: 0,
+    status: -1,
     userCount: 0
   }
   formRef.value?.resetFields()

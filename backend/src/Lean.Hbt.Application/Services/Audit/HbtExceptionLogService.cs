@@ -23,7 +23,10 @@ namespace Lean.Hbt.Application.Services.Audit
     /// </remarks>
     public class HbtExceptionLogService : HbtBaseService, IHbtExceptionLogService
     {
-        private readonly IHbtRepositoryFactory _repositoryFactory;
+        /// <summary>
+        /// 仓储工厂
+        /// </summary>
+        protected readonly IHbtRepositoryFactory _repositoryFactory;
         private IHbtRepository<HbtExceptionLog> ExceptionLogRepository => _repositoryFactory.GetAuthRepository<HbtExceptionLog>();
 
         /// <summary>

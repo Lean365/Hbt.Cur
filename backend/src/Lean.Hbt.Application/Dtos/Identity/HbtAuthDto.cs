@@ -3,7 +3,7 @@
 // 文件名 : HbtAuthDto.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-22 14:30
-// 版本号 : V1.0.0
+// 版本号 : V0.0.1
 // 描述    : 登录数据传输对象
 //===================================================================
 
@@ -96,6 +96,11 @@ public class HbtLoginResultDto
         RefreshToken = string.Empty;
         UserInfo = new HbtUserInfoDto();
     }
+
+    /// <summary>
+    /// 是否成功
+    /// </summary>
+    public bool Success { get; set; } = true;
 
     /// <summary>
     /// 访问令牌

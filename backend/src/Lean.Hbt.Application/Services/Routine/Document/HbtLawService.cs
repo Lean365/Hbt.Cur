@@ -4,8 +4,8 @@
 // 项目名 : Lean.Hbt
 // 文件名 : HbtLawService.cs
 // 创建者 : Lean365
-// 创建时间: 2024-06-09
-// 版本号 : V1.0.0
+// 创建时间: 2024-01-01
+// 版本号 : V0.0.1
 // 描述    : 法律法规服务实现
 //===================================================================
 
@@ -14,7 +14,6 @@ using Lean.Hbt.Common.Utils;
 using Lean.Hbt.Domain.IServices.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Http;
-using Lean.Hbt.Domain.Entities.Routine.Document;
 using Lean.Hbt.Application.Dtos.Routine.Document;
 
 namespace Lean.Hbt.Application.Services.Routine.Document
@@ -24,7 +23,7 @@ namespace Lean.Hbt.Application.Services.Routine.Document
     /// </summary>
     /// <remarks>
     /// 创建者: Lean365
-    /// 创建时间: 2024-06-09
+    /// 创建时间: 2024-01-01
     /// </remarks>
     public class HbtLawService : HbtBaseService, IHbtLawService
     {
@@ -59,7 +58,7 @@ namespace Lean.Hbt.Application.Services.Routine.Document
                 .AndIF(!string.IsNullOrEmpty(query.IssuingAuthority), x => x.IssuingAuthority!.Contains(query.IssuingAuthority!))
                 .AndIF(query.LawType != -1, x => x.LawType == query.LawType)
                 .AndIF(query.LawLevel != -1, x => x.LawLevel == query.LawLevel)
-                .AndIF(query.LawStatus != -1, x => x.LawStatus == query.LawStatus)
+                .AndIF(query.Status.HasValue, x => x.Status == query.Status!.Value)
                 .ToExpression();
         }
 
@@ -72,7 +71,7 @@ namespace Lean.Hbt.Application.Services.Routine.Document
         {
             query ??= new HbtLawQueryDto();
 
-            _logger.Info($"查询法律法规列表，参数：LawName={query.LawName}, LawCode={query.LawCode}, IssuingAuthority={query.IssuingAuthority}, LawType={query.LawType}, LawLevel={query.LawLevel}, LawStatus={query.LawStatus}");
+            _logger.Info($"查询法律法规列表，参数：LawName={query.LawName}, LawCode={query.LawCode}, IssuingAuthority={query.IssuingAuthority}, LawType={query.LawType}, LawLevel={query.LawLevel}, Status={query.Status}");
 
             var result = await _lawRepository.GetPagedListAsync(
                 LawQueryExpression(query),
@@ -174,7 +173,7 @@ namespace Lean.Hbt.Application.Services.Routine.Document
 
             foreach (var lawDto in lawDtos)
             {
-                lawDto.Children = await GetTreeAsync(lawDto.Id);
+                lawDto.Children = await GetTreeAsync(lawDto.LawId);
             }
 
             return lawDtos;
@@ -263,7 +262,7 @@ namespace Lean.Hbt.Application.Services.Routine.Document
             var law = await _lawRepository.GetByIdAsync(input.LawId)
                 ?? throw new HbtException(L("Routine.Law.NotFound", input.LawId));
 
-            law.LawStatus = input.LawStatus;
+            law.Status = input.Status;
             return await _lawRepository.UpdateAsync(law) > 0;
         }
 

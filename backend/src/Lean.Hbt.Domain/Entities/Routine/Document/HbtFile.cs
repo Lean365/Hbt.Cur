@@ -8,7 +8,7 @@ using SqlSugar;
 // 文件名 : HbtFile.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-26 14:30
-// 版本号 : V1.0.0
+// 版本号 : V0.0.1
 // 描述   : 文件实体
 //===================================================================
 
@@ -51,15 +51,15 @@ namespace Lean.Hbt.Domain.Entities.Routine.Document
         public string FileType { get; set; } = string.Empty;
 
         /// <summary>
-        /// 文件大小（字节）
+        /// 文件大小。以字节为单位，记录文件的实际大小。
         /// </summary>
-        [SugarColumn(ColumnName = "file_size", ColumnDescription = "文件大小（字节）", IsNullable = false, DefaultValue = "0", ColumnDataType = "bigint", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
+        [SugarColumn(ColumnName = "file_size", ColumnDescription = "文件大小", IsNullable = false, DefaultValue = "0", ColumnDataType = "bigint", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
         public long FileSize { get; set; }
 
         /// <summary>
-        /// 存储类型（0本地 1云存储）
+        /// 存储类型。0=本地，1=云存储。
         /// </summary>
-        [SugarColumn(ColumnName = "file_storage_type", ColumnDescription = "存储类型（0本地 1云存储）", IsNullable = false, DefaultValue = "0", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
+        [SugarColumn(ColumnName = "file_storage_type", ColumnDescription = "存储类型", IsNullable = false, DefaultValue = "0", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
         public int FileStorageType { get; set; }
 
         /// <summary>
@@ -81,10 +81,10 @@ namespace Lean.Hbt.Domain.Entities.Routine.Document
         public string? FileMd5 { get; set; }
 
         /// <summary>
-        /// 状态（0临时 1正式）
+        /// 状态。0=临时，1=正式。
         /// </summary>
-        [SugarColumn(ColumnName = "file_status", ColumnDescription = "状态（0临时 1正式）", IsNullable = false, DefaultValue = "0", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
-        public int FileStatus { get; set; }
+        [SugarColumn(ColumnName = "file_status", ColumnDescription = "状态", IsNullable = false, DefaultValue = "0", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
+        public int Status { get; set; }
 
         /// <summary>
         /// 下载次数

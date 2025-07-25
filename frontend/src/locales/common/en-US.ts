@@ -542,6 +542,15 @@ export default {
     }
   },
 
+  tabs: {
+    closeOthers: 'Close Others',
+    closeRight: 'Close Right',
+    closeAll: 'Close All',
+    // Tab limit messages
+    maxTabsReached: 'Tab limit reached ({count}), please close some tabs before opening new pages. You can use the dropdown menu on the right side of tabs to quickly close multiple tabs.',
+    tabsTruncated: 'Detected {total} tabs, automatically kept the first {count} tabs'
+  },
+
   // ==================== Selector Component ====================
   select: {
     loadMore: 'Load More',

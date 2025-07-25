@@ -3,7 +3,7 @@
 // 文件名 : HbtMeetingBooking.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-26 14:30
-// 版本号 : V1.0.0
+// 版本号 : V0.0.1
 // 描述   : 会议预约管理实体
 //===================================================================
 
@@ -61,13 +61,13 @@ namespace Lean.Hbt.Domain.Entities.Routine.Metting
         /// <summary>
         /// 预约状态（0：待审批，1：已批准，2：已拒绝，3：已取消，4：已完成）
         /// </summary>
-        [SugarColumn(ColumnName = "status", ColumnDescription = "预约状态（0：待审批，1：已批准，2：已拒绝，3：已取消，4：已完成）", IsNullable = false, DefaultValue = "0", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
+        [SugarColumn(ColumnName = "status", ColumnDescription = "预约状态", IsNullable = false, DefaultValue = "0", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
         public int Status { get; set; }
 
         /// <summary>
         /// 预约类型（0：个人预约，1：部门预约，2：公司预约，3：外部预约）
         /// </summary>
-        [SugarColumn(ColumnName = "booking_type", ColumnDescription = "预约类型（0：个人预约，1：部门预约，2：公司预约，3：外部预约）", IsNullable = false, DefaultValue = "0", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
+        [SugarColumn(ColumnName = "booking_type", ColumnDescription = "预约类型", IsNullable = false, DefaultValue = "0", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
         public int BookingType { get; set; }
 
         /// <summary>
@@ -97,7 +97,7 @@ namespace Lean.Hbt.Domain.Entities.Routine.Metting
         /// <summary>
         /// 是否需要设备（0：否，1：是）
         /// </summary>
-        [SugarColumn(ColumnName = "need_equipment", ColumnDescription = "是否需要设备（0：否，1：是）", IsNullable = false, DefaultValue = "0", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
+        [SugarColumn(ColumnName = "need_equipment", ColumnDescription = "是否需要设备", IsNullable = false, DefaultValue = "0", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
         public int NeedEquipment { get; set; }
 
         /// <summary>
@@ -109,7 +109,7 @@ namespace Lean.Hbt.Domain.Entities.Routine.Metting
         /// <summary>
         /// 是否需要茶水服务（0：否，1：是）
         /// </summary>
-        [SugarColumn(ColumnName = "need_tea_service", ColumnDescription = "是否需要茶水服务（0：否，1：是）", IsNullable = false, DefaultValue = "0", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
+        [SugarColumn(ColumnName = "need_tea_service", ColumnDescription = "是否需要茶水服务", IsNullable = false, DefaultValue = "0", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
         public int NeedTeaService { get; set; }
 
         /// <summary>
@@ -193,7 +193,7 @@ namespace Lean.Hbt.Domain.Entities.Routine.Metting
         /// <summary>
         /// 重复预约类型（0：单次，1：每天，2：每周，3：每月）
         /// </summary>
-        [SugarColumn(ColumnName = "repeat_type", ColumnDescription = "重复预约类型（0：单次，1：每天，2：每周，3：每月）", IsNullable = false, DefaultValue = "0", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
+        [SugarColumn(ColumnName = "repeat_type", ColumnDescription = "重复预约类型", IsNullable = false, DefaultValue = "0", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
         public int RepeatType { get; set; }
 
         /// <summary>
@@ -211,13 +211,13 @@ namespace Lean.Hbt.Domain.Entities.Routine.Metting
         /// <summary>
         /// 重复星期（1-7，逗号分隔）
         /// </summary>
-        [SugarColumn(ColumnName = "repeat_weekdays", ColumnDescription = "重复星期（1-7，逗号分隔）", IsNullable = true, DefaultValue = "", ColumnDataType = "nvarchar", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
+        [SugarColumn(ColumnName = "repeat_weekdays", ColumnDescription = "重复星期", IsNullable = true, DefaultValue = "", ColumnDataType = "nvarchar", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
         public string? RepeatWeekdays { get; set; }
 
         /// <summary>
         /// 重复日期（1-31，逗号分隔）
         /// </summary>
-        [SugarColumn(ColumnName = "repeat_days", ColumnDescription = "重复日期（1-31，逗号分隔）", IsNullable = true, DefaultValue = "", ColumnDataType = "nvarchar", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
+        [SugarColumn(ColumnName = "repeat_days", ColumnDescription = "重复日期", IsNullable = true, DefaultValue = "", ColumnDataType = "nvarchar", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
         public string? RepeatDays { get; set; }
     }
 } 

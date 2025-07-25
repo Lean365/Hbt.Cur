@@ -11,7 +11,7 @@ using Lean.Hbt.Domain.Entities.Logistics.Material;
 // 文件名 : HbtSalesPrice.cs
 // 创建者 : Lean365
 // 创建时间: 2024-03-07
-// 版本号 : V1.0.0
+// 版本号 : V0.0.1
 // 描述    : 销售价格实体类
 // 版权    : Copyright © 2024 Lean365. All rights reserved.
 //===================================================================

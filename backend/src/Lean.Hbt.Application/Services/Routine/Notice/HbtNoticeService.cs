@@ -3,7 +3,7 @@
 // 文件名 : HbtNoticeService.cs
 // 创建者 : Lean365
 // 创建时间: 2024-03-07 16:30
-// 版本号 : V1.0.0
+// 版本号 : V0.0.1
 // 描述   : 通知服务实现
 //===================================================================
 
@@ -30,27 +30,35 @@ namespace Lean.Hbt.Application.Services.Routine.Notice
     /// </summary>
     public class HbtNoticeService : HbtBaseService, IHbtNoticeService
     {
-        private readonly IHbtRepository<HbtNotice> _repository;
+        /// <summary>
+        /// 仓储工厂
+        /// </summary>
+        protected readonly IHbtRepositoryFactory _repositoryFactory;
         private readonly IHbtSignalRClient _signalRClient;
+
+        /// <summary>
+        /// 获取通知仓储
+        /// </summary>
+        private IHbtRepository<HbtNotice> NoticeRepository => _repositoryFactory.GetBusinessRepository<HbtNotice>();
 
         /// <summary>
         /// 构造函数
         /// </summary>
-        /// <param name="logger">日志记录器</param>
-        /// <param name="repository">通知仓储</param>
+        /// <param name="repositoryFactory">仓储工厂</param>
+        /// <param name="logger">日志服务</param>
         /// <param name="signalRClient">SignalR客户端</param>
         /// <param name="httpContextAccessor">HTTP上下文访问器</param>
         /// <param name="currentUser">当前用户服务</param>
         /// <param name="localization">本地化服务</param>
         public HbtNoticeService(
+            IHbtRepositoryFactory repositoryFactory,
             IHbtLogger logger,
-            IHbtRepository<HbtNotice> repository,
             IHbtSignalRClient signalRClient,
             IHttpContextAccessor httpContextAccessor,
             IHbtCurrentUser currentUser,
             IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
         {
-            _repository = repository;
+            _repositoryFactory = repositoryFactory ?? throw new ArgumentNullException(nameof(repositoryFactory));
             _signalRClient = signalRClient;
         }
 
@@ -76,7 +84,7 @@ namespace Lean.Hbt.Application.Services.Routine.Notice
             if (query.EndTime.HasValue)
                 exp.And(x => x.CreateTime <= query.EndTime.Value);
 
-            var result = await _repository.GetPagedListAsync(
+            var result = await NoticeRepository.GetPagedListAsync(
                 exp.ToExpression(),
                 query.PageIndex,
                 query.PageSize,
@@ -97,7 +105,7 @@ namespace Lean.Hbt.Application.Services.Routine.Notice
         /// </summary>
         public async Task<HbtNoticeDto> GetByIdAsync(long noticeId)
         {
-            var notice = await _repository.GetByIdAsync(noticeId);
+            var notice = await NoticeRepository.GetByIdAsync(noticeId);
             if (notice == null)
                 throw new HbtException(L("Notice.NotFound", noticeId));
 
@@ -112,7 +120,7 @@ namespace Lean.Hbt.Application.Services.Routine.Notice
             var notice = input.Adapt<HbtNotice>();
             notice.CreateTime = DateTime.Now;
 
-            var result = await _repository.CreateAsync(notice);
+            var result = await NoticeRepository.CreateAsync(notice);
             if (result <= 0)
                 throw new HbtException(L("Notice.CreateFailed"));
 
@@ -124,12 +132,12 @@ namespace Lean.Hbt.Application.Services.Routine.Notice
         /// </summary>
         public async Task<bool> UpdateAsync(long noticeId, HbtNoticeDto input)
         {
-            var notice = await _repository.GetByIdAsync(noticeId);
+            var notice = await NoticeRepository.GetByIdAsync(noticeId);
             if (notice == null)
                 throw new HbtException(L("Notice.NotFound", noticeId));
 
             input.Adapt(notice);
-            var result = await _repository.UpdateAsync(notice);
+            var result = await NoticeRepository.UpdateAsync(notice);
             return result > 0;
         }
 
@@ -138,11 +146,11 @@ namespace Lean.Hbt.Application.Services.Routine.Notice
         /// </summary>
         public async Task<bool> DeleteAsync(long noticeId)
         {
-            var notice = await _repository.GetByIdAsync(noticeId);
+            var notice = await NoticeRepository.GetByIdAsync(noticeId);
             if (notice == null)
                 throw new HbtException(L("Notice.NotFound", noticeId));
 
-            var result = await _repository.DeleteAsync(noticeId);
+            var result = await NoticeRepository.DeleteAsync(noticeId);
             return result > 0;
         }
 
@@ -168,7 +176,7 @@ namespace Lean.Hbt.Application.Services.Routine.Notice
         {
             try
             {
-                var list = await _repository.GetListAsync(KpNoticeQueryExpression(query));
+                var list = await NoticeRepository.GetListAsync(KpNoticeQueryExpression(query));
                 return await HbtExcelHelper.ExportAsync(list.Adapt<List<HbtNoticeExportDto>>(), sheetName, L("Notice.ExportTitle"));
             }
             catch (Exception ex)
@@ -183,14 +191,14 @@ namespace Lean.Hbt.Application.Services.Routine.Notice
         /// </summary>
         public async Task<bool> PublishAsync(long noticeId)
         {
-            var notice = await _repository.GetByIdAsync(noticeId);
+            var notice = await NoticeRepository.GetByIdAsync(noticeId);
             if (notice == null)
                 throw new HbtException(L("Notice.NotFound", noticeId));
 
             notice.NoticeStatus = 1; // 已发布
             notice.NoticePublishTime = DateTime.Now;
 
-            var result = await _repository.UpdateAsync(notice);
+            var result = await NoticeRepository.UpdateAsync(notice);
             return result > 0;
         }
 
@@ -199,13 +207,13 @@ namespace Lean.Hbt.Application.Services.Routine.Notice
         /// </summary>
         public async Task<bool> CloseAsync(long noticeId)
         {
-            var notice = await _repository.GetByIdAsync(noticeId);
+            var notice = await NoticeRepository.GetByIdAsync(noticeId);
             if (notice == null)
                 throw new HbtException(L("Notice.NotFound", noticeId));
 
             notice.NoticeStatus = 2; // 已关闭
 
-            var result = await _repository.UpdateAsync(notice);
+            var result = await NoticeRepository.UpdateAsync(notice);
             return result > 0;
         }
 
@@ -214,7 +222,7 @@ namespace Lean.Hbt.Application.Services.Routine.Notice
         /// </summary>
         public async Task<bool> MarkAsReadAsync(long id)
         {
-            var notice = await _repository.GetByIdAsync(id);
+            var notice = await NoticeRepository.GetByIdAsync(id);
             if (notice == null) return false;
 
             // 更新已读状态
@@ -227,7 +235,7 @@ namespace Lean.Hbt.Application.Services.Routine.Notice
                 notice.NoticeReadCount = readIds.Count;
                 notice.NoticeLastReceiptTime = DateTime.Now;
 
-                await _repository.UpdateAsync(notice);
+                await NoticeRepository.UpdateAsync(notice);
 
                 // 发送已读通知
                 var notification = new HbtRealTimeNotification
@@ -249,7 +257,7 @@ namespace Lean.Hbt.Application.Services.Routine.Notice
         /// </summary>
         public async Task<bool> ConfirmAsync(long noticeId)
         {
-            var notice = await _repository.GetByIdAsync(noticeId);
+            var notice = await NoticeRepository.GetByIdAsync(noticeId);
             if (notice == null)
                 throw new HbtException(L("Notice.NotFound", noticeId));
 
@@ -273,7 +281,7 @@ namespace Lean.Hbt.Application.Services.Routine.Notice
             notice.NoticeConfirmCount = confirmIds.Count;
             notice.NoticeLastReceiptTime = DateTime.Now;
 
-            var result = await _repository.UpdateAsync(notice);
+            var result = await NoticeRepository.UpdateAsync(notice);
             return result > 0;
         }
 
@@ -282,7 +290,7 @@ namespace Lean.Hbt.Application.Services.Routine.Notice
         /// </summary>
         public async Task<int> MarkAllAsReadAsync(long userId)
         {
-            var unreadNotices = await _repository.GetListAsync(n =>
+            var unreadNotices = await NoticeRepository.GetListAsync(n =>
                 string.IsNullOrEmpty(n.NoticeReadIds) ||
                 !n.NoticeReadIds.Split(',', StringSplitOptions.RemoveEmptyEntries)
                     .Select(id => long.Parse(id))
@@ -308,7 +316,7 @@ namespace Lean.Hbt.Application.Services.Routine.Notice
                 }
             }
 
-            var result = await _repository.UpdateRangeAsync(unreadNotices);
+            var result = await NoticeRepository.UpdateRangeAsync(unreadNotices);
             return result;
         }
 
@@ -317,7 +325,7 @@ namespace Lean.Hbt.Application.Services.Routine.Notice
         /// </summary>
         public async Task<bool> MarkAsUnreadAsync(long id)
         {
-            var notice = await _repository.GetByIdAsync(id);
+            var notice = await NoticeRepository.GetByIdAsync(id);
             if (notice == null)
                 return false;
 
@@ -335,7 +343,7 @@ namespace Lean.Hbt.Application.Services.Routine.Notice
             notice.NoticeReadIds = string.Join(",", readIds);
             notice.NoticeReadCount = readIds.Count;
 
-            var result = await _repository.UpdateAsync(notice);
+            var result = await NoticeRepository.UpdateAsync(notice);
             if (result > 0)
             {
                 // 发送实时通知
@@ -359,7 +367,7 @@ namespace Lean.Hbt.Application.Services.Routine.Notice
         /// </summary>
         public async Task<int> MarkAllAsUnreadAsync(long userId)
         {
-            var readNotices = await _repository.GetListAsync(n =>
+            var readNotices = await NoticeRepository.GetListAsync(n =>
                 !string.IsNullOrEmpty(n.NoticeReadIds) &&
                 n.NoticeReadIds.Split(',', StringSplitOptions.RemoveEmptyEntries)
                     .Select(id => long.Parse(id))
@@ -378,7 +386,7 @@ namespace Lean.Hbt.Application.Services.Routine.Notice
                 notice.NoticeReadCount = readIds.Count;
             }
 
-            var result = await _repository.UpdateRangeAsync(readNotices);
+            var result = await NoticeRepository.UpdateRangeAsync(readNotices);
             return result;
         }
 

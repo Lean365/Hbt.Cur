@@ -19,23 +19,29 @@ namespace Lean.Hbt.Infrastructure.Caching
     /// </summary>
     public class HbtCacheConfigManager
     {
+        protected readonly IHbtRepositoryFactory _repositoryFactory;
+        private readonly IHbtLogger _logger;
         private readonly IOptions<HbtCacheOptions> _options;
-        private readonly IHbtRepository<HbtConfig> _configRepository;
         private HbtCacheOptions _currentOptions;
         private readonly object _lock = new object();
         private DateTime _lastUpdateTime;
 
         /// <summary>
+        /// 获取配置仓储
+        /// </summary>
+        private IHbtRepository<HbtConfig> ConfigRepository => _repositoryFactory.GetBusinessRepository<HbtConfig>();
+
+        /// <summary>
         /// 构造函数
         /// </summary>
         public HbtCacheConfigManager(
-            IOptions<HbtCacheOptions> options,
-            IHbtRepository<HbtConfig> configRepository)
+            IHbtRepositoryFactory repositoryFactory,
+            IHbtLogger logger,
+            IOptions<HbtCacheOptions> options)
         {
+            _repositoryFactory = repositoryFactory ?? throw new ArgumentNullException(nameof(repositoryFactory));
+            _logger = logger;
             _options = options;
-            _configRepository = configRepository;
-            _currentOptions = options.Value;
-            _lastUpdateTime = DateTime.MinValue;
         }
 
         /// <summary>
@@ -75,7 +81,7 @@ namespace Lean.Hbt.Infrastructure.Caching
             try
             {
                 // 从数据库获取缓存配置
-                var configs = await _configRepository.GetListAsync(x => x.ConfigKey.StartsWith("Cache:"));
+                var configs = await ConfigRepository.GetListAsync(x => x.ConfigKey.StartsWith("Cache:"));
                 if (configs?.Any() != true)
                 {
                     return;

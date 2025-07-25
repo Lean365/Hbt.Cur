@@ -38,7 +38,7 @@
     <hbt-table
       :loading="loading"
       :data-source="tableData"
-      :columns="columns.filter(col => columnSettings[col.key])"
+      :columns="columns.filter((col: any) => columnSettings[col.key])"
       :pagination="false"
       :scroll="{ x: 600, y: 'calc(100vh - 500px)' }"
       :default-height="594"
@@ -58,7 +58,7 @@
             :checked="record.status === 0"
             checked-children="正常"
             un-checked-children="停用"
-            @change="val => handleStatusChange(record, !!val)"
+            @change="(val: any) => handleStatusChange(record, !!val)"
             :loading="record.statusLoading"
             :disabled="record.roleKey === 'system_admin'"
           />
@@ -610,6 +610,5 @@ onMounted(() => {
 <style lang="less" scoped>
 .role-container {
   padding: 16px;
-  background-color: #fff;
 }
 </style>

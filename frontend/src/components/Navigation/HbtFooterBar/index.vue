@@ -3,6 +3,7 @@
     <div class="footer-content">
       <div class="footer-left">
         <span class="copyright">{{ t('footer.copyright') }}</span>
+        <span class="version" v-if="packageVersion">v{{ packageVersion }}</span>
       </div>
       <div class="footer-right">
         <a-button type="text" href="https://lean365.cn/docs" target="_blank">
@@ -29,6 +30,9 @@
 
 <script lang="ts" setup>
 import { useI18n } from 'vue-i18n'
+import { useConfigStore } from '@/stores/config'
+import { watch, computed } from 'vue'
+import { getAppVersion } from '@/utils/version'
 import {
   BookOutlined,
   SafetyOutlined,
@@ -37,6 +41,18 @@ import {
 } from '@ant-design/icons-vue'
 
 const { t } = useI18n()
+const configStore = useConfigStore()
+
+// 从package.json读取版本信息
+const packageVersion = computed(() => getAppVersion())
+
+// 监听showFooter配置变化
+watch(
+  () => configStore.isShowFooter,
+  (newShowFooter) => {
+    console.log('[HbtFooterBar] showFooter配置变化:', newShowFooter)
+  }
+)
 </script>
 
 <style lang="less" scoped>
@@ -55,9 +71,21 @@ const { t } = useI18n()
 
     .footer-left {
       padding-left: 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      
       .copyright {
         color: var(--ant-color-text-secondary);
         font-size: 14px;
+      }
+      
+      .version {
+        color: var(--ant-color-text-tertiary);
+        font-size: 12px;
+        padding: 2px 6px;
+        background: var(--ant-color-bg-text-hover);
+        border-radius: 4px;
       }
     }
 

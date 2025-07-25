@@ -1,14 +1,11 @@
 #nullable enable
 
-using SqlSugar;
-using Lean.Hbt.Domain.Entities.Identity;
-
 //===================================================================
 // 项目名 : Lean.Hbt
 // 文件名 : HbtLaw.cs
 // 创建者 : Lean365
 // 创建时间: 2024-03-07
-// 版本号 : V1.0.0
+// 版本号 : V0.0.1
 // 描述    : 法律法规实体类（从国家行政机关下载保存）
 // 版权    : Copyright © 2024 Lean365. All rights reserved.
 //===================================================================
@@ -25,7 +22,7 @@ namespace Lean.Hbt.Domain.Entities.Routine.Document
     /// </remarks>
     [SugarTable("hbt_routine_law", "法律法规表")]
     [SugarIndex("ix_law_code", nameof(LawCode), OrderByType.Asc, true)]
-    [SugarIndex("ix_law_status", nameof(LawStatus), OrderByType.Asc, false)]
+    [SugarIndex("ix_law_status", nameof(Status), OrderByType.Asc, false)]
     [SugarIndex("ix_law_type", nameof(LawType), OrderByType.Asc, false)]
     [SugarIndex("ix_law_level", nameof(LawLevel), OrderByType.Asc, false)]
     [SugarIndex("ix_law_parent_id", nameof(ParentId), OrderByType.Asc, false)]
@@ -104,13 +101,7 @@ namespace Lean.Hbt.Domain.Entities.Routine.Document
         [SugarColumn(ColumnName = "is_public", ColumnDescription = "是否公开", ColumnDataType = "int", IsNullable = false, DefaultValue = "1")]
         public int IsPublic { get; set; } = 1;
 
-        /// <summary>是否需要培训(0=否 1=是)</summary>
-        [SugarColumn(ColumnName = "need_training", ColumnDescription = "是否需要培训", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
-        public int NeedTraining { get; set; } = 0;
 
-        /// <summary>是否需要考试(0=否 1=是)</summary>
-        [SugarColumn(ColumnName = "need_exam", ColumnDescription = "是否需要考试", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
-        public int NeedExam { get; set; } = 0;
 
         /// <summary>来源机关</summary>
         [SugarColumn(ColumnName = "source_authority", ColumnDescription = "来源机关", Length = 100, ColumnDataType = "nvarchar", IsNullable = true)]
@@ -156,17 +147,9 @@ namespace Lean.Hbt.Domain.Entities.Routine.Document
         [SugarColumn(ColumnName = "download_count", ColumnDescription = "下载次数", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
         public int DownloadCount { get; set; } = 0;
 
-        /// <summary>法规状态(0=草稿 1=已保存 2=已归档)</summary>
-        [SugarColumn(ColumnName = "law_status", ColumnDescription = "法规状态", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
-        public int LawStatus { get; set; } = 0;
-
-        /// <summary>是否置顶(0=否 1=是)</summary>
-        [SugarColumn(ColumnName = "is_top", ColumnDescription = "是否置顶", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
-        public int IsTop { get; set; } = 0;
-
-        /// <summary>是否推荐(0=否 1=是)</summary>
-        [SugarColumn(ColumnName = "is_recommended", ColumnDescription = "是否推荐", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
-        public int IsRecommended { get; set; } = 0;
+        /// <summary>状态。0=草稿，1=已保存，2=已归档。</summary>
+        [SugarColumn(ColumnName = "law_status", ColumnDescription = "状态", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
+        public int Status { get; set; } = 0;
 
 
 
@@ -184,4 +167,4 @@ namespace Lean.Hbt.Domain.Entities.Routine.Document
         [Navigate(NavigateType.OneToMany, nameof(ParentId))]
         public List<HbtLaw>? Children { get; set; }
     }
-} 
+}

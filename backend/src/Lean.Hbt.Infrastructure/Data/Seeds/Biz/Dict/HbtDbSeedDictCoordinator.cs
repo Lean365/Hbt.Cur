@@ -2,8 +2,8 @@
 // 项目名 : Lean.Hbt
 // 文件名 : HbtDbSeedDictCoordinator.cs
 // 创建者 : Lean365
-// 创建时间: 2024-12-19
-// 版本号 : V1.0.0
+// 创建时间: 2024-12-01
+// 版本号 : V0.0.1
 // 描述   : 字典种子数据协调器 - 使用仓储工厂模式
 //===================================================================
 
@@ -17,7 +17,7 @@ namespace Lean.Hbt.Infrastructure.Data.Seeds.Biz.Dict;
 /// </summary>
 /// <remarks>
 /// 创建者: Lean365
-/// 创建时间: 2024-12-19
+/// 创建时间: 2024-12-01
 /// 功能说明:
 /// 1. 统一管理字典类型和字典数据的初始化
 /// 2. 使用仓储工厂模式支持多库架构
@@ -26,7 +26,7 @@ namespace Lean.Hbt.Infrastructure.Data.Seeds.Biz.Dict;
 /// </remarks>
 public class HbtDbSeedDictCoordinator
 {
-    private readonly IHbtRepositoryFactory _repositoryFactory;
+    protected readonly IHbtRepositoryFactory _repositoryFactory;
     private readonly IHbtLogger _logger;
 
     private IHbtRepository<HbtDictType> DictTypeRepository => _repositoryFactory.GetBusinessRepository<HbtDictType>();

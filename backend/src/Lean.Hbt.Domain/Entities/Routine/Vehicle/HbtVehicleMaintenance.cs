@@ -3,7 +3,7 @@
 // 文件名 : HbtVehicleMaintenance.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-26 14:30
-// 版本号 : V1.0.0
+// 版本号 : V0.0.1
 // 描述   : 车辆维保管理实体
 //===================================================================
 
@@ -31,7 +31,7 @@ namespace Lean.Hbt.Domain.Entities.Routine.Vehicle
         /// <summary>
         /// 维保类型（0：日常保养，1：定期保养，2：维修，3：年检，4：保险，5：其他）
         /// </summary>
-        [SugarColumn(ColumnName = "maintenance_type", ColumnDescription = "维保类型（0：日常保养，1：定期保养，2：维修，3：年检，4：保险，5：其他）", IsNullable = false, DefaultValue = "0", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
+        [SugarColumn(ColumnName = "maintenance_type", ColumnDescription = "维保类型", IsNullable = false, DefaultValue = "0", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
         public int MaintenanceType { get; set; }
 
         /// <summary>
@@ -49,7 +49,7 @@ namespace Lean.Hbt.Domain.Entities.Routine.Vehicle
         /// <summary>
         /// 维保状态（0：计划中，1：进行中，2：已完成，3：已取消）
         /// </summary>
-        [SugarColumn(ColumnName = "status", ColumnDescription = "维保状态（0：计划中，1：进行中，2：已完成，3：已取消）", IsNullable = false, DefaultValue = "0", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
+        [SugarColumn(ColumnName = "status", ColumnDescription = "维保状态", IsNullable = false, DefaultValue = "0", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
         public int Status { get; set; }
 
         /// <summary>
@@ -85,7 +85,7 @@ namespace Lean.Hbt.Domain.Entities.Routine.Vehicle
         /// <summary>
         /// 维保周期（天）
         /// </summary>
-        [SugarColumn(ColumnName = "maintenance_cycle", ColumnDescription = "维保周期（天）", IsNullable = true, ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
+        [SugarColumn(ColumnName = "maintenance_cycle", ColumnDescription = "维保周期", IsNullable = true, ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
         public int? MaintenanceCycle { get; set; }
 
         /// <summary>
@@ -151,7 +151,7 @@ namespace Lean.Hbt.Domain.Entities.Routine.Vehicle
         /// <summary>
         /// 维保质量评价（1-5星）
         /// </summary>
-        [SugarColumn(ColumnName = "quality_rating", ColumnDescription = "维保质量评价（1-5星）", IsNullable = true, ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
+        [SugarColumn(ColumnName = "quality_rating", ColumnDescription = "维保质量评价", IsNullable = true, ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
         public int? QualityRating { get; set; }
 
         /// <summary>
@@ -187,7 +187,7 @@ namespace Lean.Hbt.Domain.Entities.Routine.Vehicle
         /// <summary>
         /// 是否紧急维保（0：否，1：是）
         /// </summary>
-        [SugarColumn(ColumnName = "is_urgent", ColumnDescription = "是否紧急维保（0：否，1：是）", IsNullable = false, DefaultValue = "0", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
+        [SugarColumn(ColumnName = "is_urgent", ColumnDescription = "是否紧急维保", IsNullable = false, DefaultValue = "0", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
         public int IsUrgent { get; set; }
 
         /// <summary>

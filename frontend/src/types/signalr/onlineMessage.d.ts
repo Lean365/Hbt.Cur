@@ -29,7 +29,7 @@ export interface HbtOnlineMessageQueryParams extends HbtPagedQuery {
 }
 
 /** 在线消息数据传输对象 */
-export interface HbtOnlineMessageDto extends HbtBaseEntity {
+export interface HbtOnlineMessage extends HbtBaseEntity {
   /** ID */
   messageId: number | bigint
   /** 消息类型 */
@@ -51,4 +51,4 @@ export interface HbtOnlineMessageDto extends HbtBaseEntity {
 }
 
 /** 在线消息分页结果 */
-export type HbtOnlineMessagePageResult = HbtPagedResult<HbtOnlineMessageDto> 
+export type HbtOnlineMessagePageResult = HbtPagedResult<HbtOnlineMessage> 

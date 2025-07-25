@@ -96,12 +96,23 @@ export const maskPassword = (password: string): string => {
 };
 
 /**
+ * 连接ID脱敏
+ * @param connectionId 连接ID
+ * @returns 脱敏后的连接ID，如：abc123****def456
+ */
+export const maskConnectionId = (connectionId: string): string => {
+  if (!connectionId) return '';
+  if (connectionId.length <= 8) return connectionId;
+  return maskCustom(connectionId, 6, 6);
+};
+
+/**
  * 通用脱敏方法
  * @param value 需要脱敏的值
  * @param type 脱敏类型
  * @returns 脱敏后的值
  */
-export const mask = (value: string, type: 'phone' | 'idCard' | 'bankCard' | 'email' | 'name' | 'address' | 'password'): string => {
+export const mask = (value: string, type: 'phone' | 'idCard' | 'bankCard' | 'email' | 'name' | 'address' | 'password' | 'connectionId'): string => {
   if (!value) return '';
   
   switch (type) {
@@ -119,6 +130,8 @@ export const mask = (value: string, type: 'phone' | 'idCard' | 'bankCard' | 'ema
       return maskAddress(value);
     case 'password':
       return maskPassword(value);
+    case 'connectionId':
+      return maskConnectionId(value);
     default:
       return value;
   }

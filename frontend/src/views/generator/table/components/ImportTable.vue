@@ -76,10 +76,7 @@ import type { HbtGenTable } from '@/types/generator/genTable'
 import { getDatabasesByDb, getTablesByDb, importTable, getTableColumnsByDb, importTableAndColumns } from '@/api/generator/genTable'
 import type { SelectValue } from 'ant-design-vue/es/select'
 import type { DefaultOptionType } from 'ant-design-vue/es/select'
-import HbtTable from '@/components/Business/HbtTable/index.vue'
-import HbtPagination from '@/components/Business/HbtPagination/index.vue'
 import type { TableInfoDto } from '@/types/generator/genTable'
-import HbtOperation from '@/components/Business/HbtOperation/index.vue'
 import ImportColumn from './ImportColumn.vue'
 
 const props = defineProps<{
@@ -252,7 +249,11 @@ const fetchTableList = async (databaseName: string) => {
         businessName: '',
         functionName: '',
         author: '',
-        genType: '0',
+        genFunction: '1,2,3,4,5,6,7,8',
+        isSqlDiff: 0,
+        isSnowflakeId: 1,
+        isRepository: 0,
+        genMethod: '0',
         genPath: '',
         parentMenuId: 0,
         sortType: 'asc',

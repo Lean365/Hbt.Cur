@@ -3,7 +3,7 @@
 // 文件名 : IHbtAuditsLog.cs
 // 创建者 : Lean365
 // 创建时间: 2024-03-05 18:00
-// 版本号 : V1.0.0
+// 版本号 : V0.0.1
 // 描述   : 审计日志接口
 //===================================================================
 
@@ -79,7 +79,7 @@ public interface IHbtOperLogManager
     /// </summary>
     Task LogOperationAsync(
         string tableName,
-        string operationType,
+        string OperType,
         string businessKey,
         string? requestParam = null,
         string? location = null,

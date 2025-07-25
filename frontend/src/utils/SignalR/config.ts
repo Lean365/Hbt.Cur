@@ -2,6 +2,7 @@ import { HubConnection, LogLevel, RetryContext, HubConnectionBuilder, HttpTransp
 import { getToken } from '@/utils/auth'
 import { getDeviceInfo } from '@/utils/device'
 import { message } from 'ant-design-vue'
+import { maskConnectionId } from '@/utils/mask'
 
 // SignalR 全局配置
 export const signalRConfig = {
@@ -166,7 +167,7 @@ export const createHubConnection = async (): Promise<HubConnection> => {
         });
 
         connection.onreconnected((connectionId) => {
-            console.log('[SignalR] 重新连接成功:', connectionId);
+            console.log('[SignalR] 重新连接成功:', connectionId ? maskConnectionId(connectionId) : '未知');
             message.success('重新连接成功');
         });
 

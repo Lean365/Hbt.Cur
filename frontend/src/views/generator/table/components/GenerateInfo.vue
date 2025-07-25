@@ -71,9 +71,9 @@
             </a-form-item>
           </a-col>
           <a-col :span="12">
-            <a-form-item label="生成方式" name="genType">
+            <a-form-item label="生成方式" name="genMethod">
               <hbt-select
-                v-model:value="formData.genType"
+                v-model:value="formData.genMethod"
                 dict-type="gen_type"
                 type="radio"
                 :show-all="false"
@@ -209,7 +209,7 @@
         </a-row>
         <a-row :gutter="16">
           <a-col :span="12">
-            <a-form-item label="生成路径" name="genPath" v-if="formData.genType === '0'">
+            <a-form-item label="生成路径" name="genPath" v-if="formData.genMethod === '0'">
               <a-input v-model:value="formData.genPath" placeholder="请输入生成路径" />
             </a-form-item>
           </a-col>
@@ -321,7 +321,7 @@ const formData = reactive<Omit<HbtGenTable, 'options'> & { options: CodeOptions 
   businessName: '',
   functionName: '',
   author: '',
-  genType: '0',
+  genMethod: '0',
   genPath: '/',
   parentMenuId: 0,
   generateMenu: 1,

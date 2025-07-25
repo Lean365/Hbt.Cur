@@ -3,7 +3,7 @@
 // 文件名 : HbtNumberRuleService.cs
 // 创建者 : Lean365
 // 创建时间: 2024-03-07 16:30
-// 版本号 : V1.0.0
+// 版本号 : V0.0.1
 // 描述   : 单号规则服务实现
 //===================================================================
 
@@ -22,24 +22,32 @@ namespace Lean.Hbt.Application.Services.Core
     /// </remarks>
     public class HbtNumberRuleService : HbtBaseService, IHbtNumberRuleService
     {
-        private readonly IHbtRepository<HbtNumberRule> _numberRuleRepository;
+        /// <summary>
+        /// 仓储工厂
+        /// </summary>
+        protected readonly IHbtRepositoryFactory _repositoryFactory;
+
+        /// <summary>
+        /// 获取单号规则仓储
+        /// </summary>
+        private IHbtRepository<HbtNumberRule> NumberRuleRepository => _repositoryFactory.GetBusinessRepository<HbtNumberRule>();
 
         /// <summary>
         /// 构造函数
         /// </summary>
-        /// <param name="logger">日志记录器</param>
-        /// <param name="numberRuleRepository">单号规则仓储</param>
+        /// <param name="repositoryFactory">仓储工厂</param>
+        /// <param name="logger">日志服务</param>
         /// <param name="httpContextAccessor">HTTP上下文访问器</param>
         /// <param name="currentUser">当前用户服务</param>
         /// <param name="localization">本地化服务</param>
         public HbtNumberRuleService(
+            IHbtRepositoryFactory repositoryFactory,
             IHbtLogger logger,
-            IHbtRepository<HbtNumberRule> numberRuleRepository,
             IHttpContextAccessor httpContextAccessor,
             IHbtCurrentUser currentUser,
             IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
         {
-            _numberRuleRepository = numberRuleRepository;
+            _repositoryFactory = repositoryFactory ?? throw new ArgumentNullException(nameof(repositoryFactory));
         }
 
         /// <summary>
@@ -54,7 +62,7 @@ namespace Lean.Hbt.Application.Services.Core
             var predicate = QueryExpression(query);
             _logger.Info("生成的查询表达式：{@Predicate}", predicate);
 
-            var result = await _numberRuleRepository.GetPagedListAsync(
+            var result = await NumberRuleRepository.GetPagedListAsync(
                 predicate,
                 query?.PageIndex ?? 1,
                 query?.PageSize ?? 10,
@@ -85,7 +93,7 @@ namespace Lean.Hbt.Application.Services.Core
         /// <returns>返回单号规则详情</returns>
         public async Task<HbtNumberRuleDto> GetByIdAsync(long numberRuleId)
         {
-            var numberRule = await _numberRuleRepository.GetByIdAsync(numberRuleId);
+            var numberRule = await NumberRuleRepository.GetByIdAsync(numberRuleId);
             if (numberRule == null)
                 throw new HbtException(L("NumberRule.NotFound", numberRuleId));
 
@@ -100,7 +108,7 @@ namespace Lean.Hbt.Application.Services.Core
         public async Task<long> CreateAsync(HbtNumberRuleCreateDto input)
         {
             // 检查规则编号是否已存在
-            var existingRule = await _numberRuleRepository.GetFirstAsync(x =>
+            var existingRule = await NumberRuleRepository.GetFirstAsync(x =>
                 x.CompanyCode == input.CompanyCode &&
                 x.NumberRuleCode == input.NumberRuleCode);
 
@@ -108,7 +116,7 @@ namespace Lean.Hbt.Application.Services.Core
                 throw new HbtException(L("NumberRule.CodeExists", input.NumberRuleCode));
 
             var numberRule = input.Adapt<HbtNumberRule>();
-            var result = await _numberRuleRepository.CreateAsync(numberRule);
+            var result = await NumberRuleRepository.CreateAsync(numberRule);
             return result;
         }
 
@@ -119,12 +127,12 @@ namespace Lean.Hbt.Application.Services.Core
         /// <returns>返回是否成功</returns>
         public async Task<bool> UpdateAsync(HbtNumberRuleUpdateDto input)
         {
-            var numberRule = await _numberRuleRepository.GetByIdAsync(input.NumberRuleId);
+            var numberRule = await NumberRuleRepository.GetByIdAsync(input.NumberRuleId);
             if (numberRule == null)
                 throw new HbtException(L("NumberRule.NotFound", input.NumberRuleId));
 
             // 检查规则编号是否已被其他记录使用
-            var existingRule = await _numberRuleRepository.GetFirstAsync(x =>
+            var existingRule = await NumberRuleRepository.GetFirstAsync(x =>
                 x.Id != input.NumberRuleId &&
                 x.CompanyCode == input.CompanyCode &&
                 x.NumberRuleCode == input.NumberRuleCode);
@@ -133,7 +141,7 @@ namespace Lean.Hbt.Application.Services.Core
                 throw new HbtException(L("NumberRule.CodeExists", input.NumberRuleCode));
 
             input.Adapt(numberRule);
-            var result = await _numberRuleRepository.UpdateAsync(numberRule);
+            var result = await NumberRuleRepository.UpdateAsync(numberRule);
             return result > 0;
         }
 
@@ -144,11 +152,11 @@ namespace Lean.Hbt.Application.Services.Core
         /// <returns>返回是否成功</returns>
         public async Task<bool> DeleteAsync(long numberRuleId)
         {
-            var numberRule = await _numberRuleRepository.GetByIdAsync(numberRuleId);
+            var numberRule = await NumberRuleRepository.GetByIdAsync(numberRuleId);
             if (numberRule == null)
                 throw new HbtException(L("NumberRule.NotFound", numberRuleId));
 
-            var result = await _numberRuleRepository.DeleteAsync(numberRule);
+            var result = await NumberRuleRepository.DeleteAsync(numberRule);
             return result > 0;
         }
 
@@ -162,11 +170,11 @@ namespace Lean.Hbt.Application.Services.Core
             if (numberRuleIds == null || numberRuleIds.Length == 0)
                 throw new HbtException(L("NumberRule.SelectToDelete"));
 
-            var numberRules = await _numberRuleRepository.GetListAsync(x => numberRuleIds.Contains(x.Id));
+            var numberRules = await NumberRuleRepository.GetListAsync(x => numberRuleIds.Contains(x.Id));
             if (!numberRules.Any())
                 throw new HbtException(L("NumberRule.NotFound"));
 
-            var result = await _numberRuleRepository.DeleteAsync(numberRules);
+            var result = await NumberRuleRepository.DeleteAsync(numberRules);
             return result > 0;
         }
 
@@ -190,7 +198,7 @@ namespace Lean.Hbt.Application.Services.Core
                 try
                 {
                     var numberRule = dto.Adapt<HbtNumberRule>();
-                    await _numberRuleRepository.CreateAsync(numberRule);
+                    await NumberRuleRepository.CreateAsync(numberRule);
                     success++;
                 }
                 catch (Exception ex)
@@ -213,7 +221,7 @@ namespace Lean.Hbt.Application.Services.Core
         {
             var predicate = QueryExpression(query);
 
-            var numberRules = await _numberRuleRepository.AsQueryable()
+            var numberRules = await NumberRuleRepository.AsQueryable()
                 .Where(predicate)
                 .OrderBy(x => x.OrderNum)
                 .ToListAsync();

@@ -15,8 +15,7 @@ import { ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { message } from 'ant-design-vue'
 import { resetPassword } from '@/api/identity/user'
-import type { HbtUserResetPwd } from '@/types/identity/user'
-import { useConfigStore } from '@/stores/config'
+import type { HbtUserPasswordReset } from '@/types/identity/user'
 
 const props = defineProps<{
   visible: boolean
@@ -31,9 +30,12 @@ const emit = defineEmits<{
 const { t } = useI18n()
 const loading = ref(false)
 
+// 使用默认密码，而不是从配置中获取
+const defaultPassword = 'Hbt@123852'
+
 const formData = ref({
   userId: props.userId,
-  password: useConfigStore().userDefault.password // 从配置中获取默认密码
+  password: defaultPassword
 })
 
 const handleOk = async () => {
@@ -45,9 +47,9 @@ const handleOk = async () => {
 
   loading.value = true
   try {
-    const data: HbtUserResetPwd = {
+    const data: HbtUserPasswordReset = {
       userId: userId,
-      password: formData.value.password // 使用从配置中获取的默认密码
+      newPassword: formData.value.password
     }
     await resetPassword(data)
     message.success(t('identity.user.messages.resetPasswordSuccess'))

@@ -3,11 +3,13 @@
 //===================================================================
 // 项目名 : Lean.Hbt
 // 文件名 : IHbtWorkflowEngine.cs
-// 创建者 : Lean365
-// 创建时间: 2024-01-23 12:00
-// 版本号 : V1.0.0
+// 创建者 : Claude
+// 创建时间: 2024-12-01
+// 版本号 : V0.0.1
 // 描述    : 工作流引擎接口
 //===================================================================
+
+using Lean.Hbt.Application.Dtos.Workflow;
 
 namespace Lean.Hbt.Application.Services.Workflow.Engine
 {
@@ -19,19 +21,16 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine
         /// <summary>
         /// 启动工作流实例
         /// </summary>
-        /// <param name="definitionId">工作流定义ID</param>
-        /// <param name="title">工作流标题</param>
-        /// <param name="initiatorId">发起人ID</param>
-        /// <param name="formData">表单数据</param>
-        /// <param name="variables">工作流变量</param>
+        /// <param name="dto">启动参数</param>
         /// <returns>工作流实例ID</returns>
-        Task<long> StartAsync(long definitionId, string title, long initiatorId, string formData, Dictionary<string, object>? variables = null);
+        Task<long> StartAsync(HbtWorkflowStartDto dto);
 
         /// <summary>
         /// 暂停工作流实例
         /// </summary>
         /// <param name="instanceId">工作流实例ID</param>
-        Task SuspendAsync(long instanceId);
+        /// <param name="reason">暂停原因</param>
+        Task SuspendAsync(long instanceId, string reason = "手动暂停");
 
         /// <summary>
         /// 恢复工作流实例
@@ -47,22 +46,11 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine
         Task TerminateAsync(long instanceId, string reason);
 
         /// <summary>
-        /// 执行工作流节点
+        /// 审批工作流
         /// </summary>
-        /// <param name="instanceId">工作流实例ID</param>
-        /// <param name="nodeId">节点ID</param>
-        /// <param name="variables">节点变量</param>
-        /// <returns>节点执行结果</returns>
-        Task<HbtNodeResult> ExecuteNodeAsync(long instanceId, long nodeId, Dictionary<string, object>? variables = null);
-
-        /// <summary>
-        /// 执行工作流转换
-        /// </summary>
-        /// <param name="instanceId">工作流实例ID</param>
-        /// <param name="transitionId">转换ID</param>
-        /// <param name="variables">转换变量</param>
-        /// <returns>转换执行结果</returns>
-        Task<HbtTransitionResult> ExecuteTransitionAsync(long instanceId, long transitionId, Dictionary<string, object>? variables = null);
+        /// <param name="dto">审批参数</param>
+        /// <returns>审批结果</returns>
+        Task<bool> ApproveAsync(HbtWorkflowApproveDto dto);
 
         /// <summary>
         /// 获取工作流实例状态
@@ -79,19 +67,54 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine
         Task<List<HbtTransitionDto>> GetAvailableTransitionsAsync(long instanceId);
 
         /// <summary>
+        /// 获取工作流实例当前节点信息
+        /// </summary>
+        /// <param name="instanceId">工作流实例ID</param>
+        /// <returns>当前节点信息</returns>
+        Task<HbtNodeDto?> GetCurrentNodeAsync(long instanceId);
+
+        /// <summary>
         /// 获取工作流实例变量
         /// </summary>
         /// <param name="instanceId">工作流实例ID</param>
-        /// <param name="nodeId">节点ID(可选)</param>
         /// <returns>工作流变量字典</returns>
-        Task<Dictionary<string, object>> GetVariablesAsync(long instanceId, long? nodeId = null);
+        Task<Dictionary<string, object>> GetVariablesAsync(long instanceId);
 
         /// <summary>
         /// 设置工作流实例变量
         /// </summary>
         /// <param name="instanceId">工作流实例ID</param>
         /// <param name="variables">变量字典</param>
-        /// <param name="nodeId">节点ID(可选)</param>
-        Task SetVariablesAsync(long instanceId, Dictionary<string, object> variables, long? nodeId = null);
+        Task SetVariablesAsync(long instanceId, Dictionary<string, object> variables);
+
+        /// <summary>
+        /// 获取工作流实例流转历史
+        /// </summary>
+        /// <param name="instanceId">工作流实例ID</param>
+        /// <returns>流转历史列表</returns>
+        Task<List<HbtInstanceTransDto>> GetHistoryAsync(long instanceId);
+
+        /// <summary>
+        /// 获取工作流实例操作记录
+        /// </summary>
+        /// <param name="instanceId">工作流实例ID</param>
+        /// <returns>操作记录列表</returns>
+        Task<List<HbtInstanceOperDto>> GetOperationsAsync(long instanceId);
+
+        // 转换历史相关方法
+
+        /// <summary>
+        /// 获取转换历史列表
+        /// </summary>
+        /// <param name="query">查询条件</param>
+        /// <returns>转换历史列表</returns>
+        Task<HbtPagedResult<HbtTransitionDto>> GetTransitionListAsync(HbtTransitionQueryDto query);
+
+        /// <summary>
+        /// 获取转换历史详情
+        /// </summary>
+        /// <param name="transitionId">转换ID</param>
+        /// <returns>转换历史详情</returns>
+        Task<HbtTransitionDto?> GetTransitionAsync(string transitionId);
     }
 }

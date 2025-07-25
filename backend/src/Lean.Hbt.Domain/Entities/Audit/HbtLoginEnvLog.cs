@@ -25,12 +25,6 @@ namespace Lean.Hbt.Domain.Entities.Audit
         public long UserId { get; set; }
 
         /// <summary>
-        /// 设备ID
-        /// </summary>
-        [SugarColumn(ColumnName = "device_id", ColumnDescription = "设备ID", Length = 200, ColumnDataType = "nvarchar", IsNullable = false)]
-        public string DeviceId { get; set; } = string.Empty;
-
-        /// <summary>
         /// 环境ID
         /// </summary>
         [SugarColumn(ColumnName = "environment_id", ColumnDescription = "环境ID", Length = 200, ColumnDataType = "nvarchar", IsNullable = false)]

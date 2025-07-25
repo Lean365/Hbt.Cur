@@ -108,6 +108,10 @@ export default {
         urge4: 'Срочно 4',
         urge5: 'Срочно 5',
       },
+      processing: 'В обработке',
+      overdue: 'Просрочено',
+      dueSoon: 'Скоро срок',
+      highPriority: 'Высокий приоритет',
     },
     filetab: {
       myFile: {

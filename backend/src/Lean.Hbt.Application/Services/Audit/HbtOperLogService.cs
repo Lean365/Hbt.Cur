@@ -22,7 +22,10 @@ namespace Lean.Hbt.Application.Services.Audit
     /// </remarks>
     public class HbtOperLogService : HbtBaseService, IHbtOperLogService
     {
-        private readonly IHbtRepositoryFactory _repositoryFactory;
+        /// <summary>
+        /// 仓储工厂
+        /// </summary>
+        protected readonly IHbtRepositoryFactory _repositoryFactory;
         private IHbtRepository<HbtOperLog> OperLogRepository => _repositoryFactory.GetAuthRepository<HbtOperLog>();
 
         /// <summary>

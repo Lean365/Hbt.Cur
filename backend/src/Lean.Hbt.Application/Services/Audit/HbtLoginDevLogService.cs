@@ -5,7 +5,7 @@
 // 文件名 : HbtLoginDevLogService.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-22 14:30
-// 版本号 : V1.0.0
+// 版本号 : V0.0.1
 // 描述    : 登录设备日志服务实现
 //===================================================================
 
@@ -24,7 +24,10 @@ namespace Lean.Hbt.Application.Services.Audit
     /// </remarks>
     public class HbtLoginDevLogService : HbtBaseService, IHbtLoginDevLogService
     {
-        private readonly IHbtRepositoryFactory _repositoryFactory;
+        /// <summary>
+        /// 仓储工厂
+        /// </summary>
+        protected readonly IHbtRepositoryFactory _repositoryFactory;
         private IHbtRepository<HbtLoginDevLog> DeviceExtendRepository => _repositoryFactory.GetAuthRepository<HbtLoginDevLog>();
 
         /// <summary>

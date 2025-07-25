@@ -8,7 +8,7 @@ using Lean.Hbt.Domain.Entities.Identity;
 // 文件名 : HbtOfficialDocument.cs
 // 创建者 : Lean365
 // 创建时间: 2024-03-07
-// 版本号 : V1.0.0
+// 版本号 : V0.0.1
 // 描述    : 公文文档实体类（树形结构）
 // 版权    : Copyright © 2024 Lean365. All rights reserved.
 //===================================================================
@@ -25,7 +25,7 @@ namespace Lean.Hbt.Domain.Entities.Routine.Document
     /// </remarks>
     [SugarTable("hbt_routine_official_document", "公文文档表")]
     [SugarIndex("ix_official_document_code", nameof(DocumentCode), OrderByType.Asc, true)]
-    [SugarIndex("ix_official_document_status", nameof(DocumentStatus), OrderByType.Asc, false)]
+    [SugarIndex("ix_official_document_status", nameof(Status), OrderByType.Asc, false)]
     [SugarIndex("ix_official_document_type", nameof(DocumentType), OrderByType.Asc, false)]
     [SugarIndex("ix_official_document_level", nameof(DocumentLevel), OrderByType.Asc, false)]
     [SugarIndex("ix_official_document_parent_id", nameof(ParentId), OrderByType.Asc, false)]
@@ -50,10 +50,6 @@ namespace Lean.Hbt.Domain.Entities.Routine.Document
         /// <summary>文档标题</summary>
         [SugarColumn(ColumnName = "document_title", ColumnDescription = "文档标题", Length = 200, ColumnDataType = "nvarchar", IsNullable = false)]
         public string DocumentTitle { get; set; } = string.Empty;
-
-        /// <summary>发文部门</summary>
-        [SugarColumn(ColumnName = "issuing_department", ColumnDescription = "发文部门", Length = 100, ColumnDataType = "nvarchar", IsNullable = true)]
-        public string? IssuingDepartment { get; set; }
 
         /// <summary>文档类型(1=通知 2=公告 3=决定 4=报告 5=请示 6=批复 7=函 8=纪要 9=其他)</summary>
         [SugarColumn(ColumnName = "document_type", ColumnDescription = "文档类型", ColumnDataType = "int", IsNullable = false, DefaultValue = "1")]
@@ -107,21 +103,13 @@ namespace Lean.Hbt.Domain.Entities.Routine.Document
         [SugarColumn(ColumnName = "is_public", ColumnDescription = "是否公开", ColumnDataType = "int", IsNullable = false, DefaultValue = "1")]
         public int IsPublic { get; set; } = 1;
 
-        /// <summary>是否需要培训(0=否 1=是)</summary>
-        [SugarColumn(ColumnName = "need_training", ColumnDescription = "是否需要培训", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
-        public int NeedTraining { get; set; } = 0;
+        /// <summary>发文部门</summary>
+        [SugarColumn(ColumnName = "issuing_department", ColumnDescription = "发文部门", Length = 100, ColumnDataType = "nvarchar", IsNullable = true)]
+        public string? IssuingDepartment { get; set; }
 
-        /// <summary>是否需要考试(0=否 1=是)</summary>
-        [SugarColumn(ColumnName = "need_exam", ColumnDescription = "是否需要考试", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
-        public int NeedExam { get; set; } = 0;
-
-        /// <summary>创建人</summary>
-        [SugarColumn(ColumnName = "creator", ColumnDescription = "创建人", Length = 50, ColumnDataType = "nvarchar", IsNullable = true)]
-        public string? Creator { get; set; }
-
-        /// <summary>创建日期</summary>
-        [SugarColumn(ColumnName = "create_date", ColumnDescription = "创建日期", ColumnDataType = "datetime", IsNullable = true)]
-        public DateTime? CreateDate { get; set; }
+        /// <summary>发文日期</summary>
+        [SugarColumn(ColumnName = "issue_date", ColumnDescription = "发文日期", ColumnDataType = "datetime", IsNullable = true)]
+        public DateTime? IssueDate { get; set; }
 
         /// <summary>发布方式(1=内部发布 2=全员发布 3=指定部门发布)</summary>
         [SugarColumn(ColumnName = "publish_method", ColumnDescription = "发布方式", ColumnDataType = "int", IsNullable = false, DefaultValue = "1")]
@@ -151,17 +139,11 @@ namespace Lean.Hbt.Domain.Entities.Routine.Document
         [SugarColumn(ColumnName = "download_count", ColumnDescription = "下载次数", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
         public int DownloadCount { get; set; } = 0;
 
-        /// <summary>文档状态(0=草稿 1=已发布 2=已作废 3=已归档)</summary>
-        [SugarColumn(ColumnName = "document_status", ColumnDescription = "文档状态", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
-        public int DocumentStatus { get; set; } = 0;
+        /// <summary>状态。0=草稿，1=已发布，2=已作废，3=已归档。</summary>
+        [SugarColumn(ColumnName = "document_status", ColumnDescription = "状态", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
+        public int Status { get; set; } = 0;
 
-        /// <summary>是否置顶(0=否 1=是)</summary>
-        [SugarColumn(ColumnName = "is_top", ColumnDescription = "是否置顶", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
-        public int IsTop { get; set; } = 0;
 
-        /// <summary>是否推荐(0=否 1=是)</summary>
-        [SugarColumn(ColumnName = "is_recommended", ColumnDescription = "是否推荐", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
-        public int IsRecommended { get; set; } = 0;
 
 
 

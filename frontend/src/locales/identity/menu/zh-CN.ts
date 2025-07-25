@@ -2,34 +2,12 @@ export default {
   identity: {
     menu: {
       title: '菜单管理',
-      columns: {
-        menuName: '菜单名称',
-        transKey: '国际化标识',
-        parentId: '上级菜单',
-        orderNum: '排序',
-        path: '路由地址',
-        component: '组件路径',
-        queryParams: '路由参数',
-        isExternal: '是否外链',
-        isCache: '是否缓存',
-        menuType: '菜单类型',
-        visible: '显示状态',
-        status: '状态',
-        perms: '权限标识',
-        icon: '图标',
-        tenantId: '租户ID',
-        id: '主键',
-        createBy: '创建者',
-        createTime: '创建时间',
-        updateBy: '更新者',
-        updateTime: '更新时间',
-        deleteBy: '删除者',
-        deleteTime: '删除时间',
-        isDeleted: '是否删除',
-        remark: '备注',
-        action: '操作'
-      },
+      
+      // 表单字段定义
       fields: {
+        menuId: {
+          label: '菜单ID'
+        },
         menuName: {
           label: '菜单名称',
           placeholder: '请输入菜单名称',
@@ -99,10 +77,7 @@ export default {
         },
         queryParams: {
           label: '路由参数',
-          placeholder: '请输入路由参数',
-          validation: {
-            required: '请输入路由参数'
-          }
+          placeholder: '请输入路由参数'
         },
         isExternal: {
           label: '是否外链',
@@ -122,6 +97,7 @@ export default {
         },
         menuType: {
           label: '菜单类型',
+          placeholder: '请选择菜单类型',
           options: {
             directory: '目录',
             menu: '菜单',
@@ -167,39 +143,29 @@ export default {
           placeholder: '请输入租户ID'
         }
       },
-      dialog: {
-        create: '添加菜单',
-        update: '编辑菜单',
-        delete: '删除菜单'
-      },
-      operation: {
-        add: {
-          title: '添加菜单',
-          success: '添加成功',
-          failed: '添加失败'
-        },
-        edit: {
-          title: '编辑菜单',
-          success: '修改成功',
-          failed: '修改失败'
-        },
-        delete: {
-          title: '删除菜单',
-          confirm: '是否确认删除该菜单?',
-          success: '删除成功',
-          failed: '删除失败'
-        }
-      },
+
+      // 操作按钮
       actions: {
+        create: '创建菜单',
+        edit: '编辑菜单',
+        delete: '删除菜单',
         addDirectory: '添加目录',
         addMenu: '添加菜单',
         addButton: '添加按钮',
         selectType: '请选择菜单类型'
       },
-      types: {
-        directory: '目录',
-        menu: '菜单',
-        button: '按钮'
+
+      // 消息提示
+      messages: {
+        createSuccess: '菜单创建成功',
+        updateSuccess: '菜单更新成功',
+        deleteSuccess: '菜单删除成功',
+        createFailed: '菜单创建失败',
+        updateFailed: '菜单更新失败',
+        deleteFailed: '菜单删除失败',
+        confirmDelete: '是否确认删除该菜单?',
+        noData: '暂无数据',
+        loading: '加载中...'
       }
     }
   }

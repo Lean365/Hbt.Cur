@@ -7,8 +7,8 @@ using Lean.Hbt.Domain.Entities.Identity;
 // 项目名 : Lean.Hbt
 // 文件名 : HbtOfficeSupply.cs
 // 创建者 : Lean365
-// 创建时间: 2024-12-19
-// 版本号 : V1.0.0
+// 创建时间: 2024-12-01
+// 版本号 : V0.0.1
 // 描述    : 办公用品实体类
 // 版权    : Copyright © 2024 Lean365. All rights reserved.
 //===================================================================
@@ -20,7 +20,7 @@ namespace Lean.Hbt.Domain.Entities.Routine.OfficeSupply
     /// </summary>
     /// <remarks>
     /// 创建者: Lean365
-    /// 创建时间: 2024-12-19
+    /// 创建时间: 2024-12-01
     /// 说明: 记录办公用品的基本信息，包括名称、规格、库存、价格等
     /// </remarks>
     [SugarTable("hbt_routine_office_supply", "办公用品")]

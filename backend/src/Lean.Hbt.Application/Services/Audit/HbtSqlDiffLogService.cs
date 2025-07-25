@@ -22,7 +22,10 @@ namespace Lean.Hbt.Application.Services.Audit
     /// </remarks>
     public class HbtSqlDiffLogService : HbtBaseService, IHbtSqlDiffLogService
     {
-        private readonly IHbtRepositoryFactory _repositoryFactory;
+        /// <summary>
+        /// 仓储工厂
+        /// </summary>
+        protected readonly IHbtRepositoryFactory _repositoryFactory;
         private IHbtRepository<HbtSqlDiffLog> SqlDiffLogRepository => _repositoryFactory.GetAuthRepository<HbtSqlDiffLog>();
 
         /// <summary>

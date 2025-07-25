@@ -8,7 +8,7 @@ using Lean.Hbt.Domain.Entities.Identity;
 // 文件名 : HbtPlantMaterial.cs
 // 创建者 : Lean365
 // 创建时间: 2024-03-07
-// 版本号 : V1.0.0
+// 版本号 : V0.0.1
 // 描述    : 工厂物料实体类 (基于SAP MM物料管理)
 // 版权    : Copyright © 2024 Lean365. All rights reserved.
 //===================================================================

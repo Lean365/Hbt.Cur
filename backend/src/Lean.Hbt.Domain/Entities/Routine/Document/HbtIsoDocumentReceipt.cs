@@ -8,7 +8,7 @@ using Lean.Hbt.Domain.Entities.Identity;
 // 文件名 : HbtIsoDocumentReceipt.cs
 // 创建者 : Lean365
 // 创建时间: 2024-03-07
-// 版本号 : V1.0.0
+// 版本号 : V0.0.1
 // 描述    : ISO文档签收实体类
 // 版权    : Copyright © 2024 Lean365. All rights reserved.
 //===================================================================
@@ -135,29 +135,7 @@ namespace Lean.Hbt.Domain.Entities.Routine.Document
         [SugarColumn(ColumnName = "download_device", ColumnDescription = "下载设备", Length = 100, ColumnDataType = "nvarchar", IsNullable = true)]
         public string? DownloadDevice { get; set; }
 
-        /// <summary>是否已收藏(0=未收藏 1=已收藏)</summary>
-        [SugarColumn(ColumnName = "is_favorite", ColumnDescription = "是否已收藏", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
-        public int IsFavorite { get; set; } = 0;
 
-        /// <summary>收藏时间</summary>
-        [SugarColumn(ColumnName = "favorite_time", ColumnDescription = "收藏时间", ColumnDataType = "datetime", IsNullable = true)]
-        public DateTime? FavoriteTime { get; set; }
-
-        /// <summary>是否已转发(0=未转发 1=已转发)</summary>
-        [SugarColumn(ColumnName = "is_forward", ColumnDescription = "是否已转发", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
-        public int IsForward { get; set; } = 0;
-
-        /// <summary>转发时间</summary>
-        [SugarColumn(ColumnName = "forward_time", ColumnDescription = "转发时间", ColumnDataType = "datetime", IsNullable = true)]
-        public DateTime? ForwardTime { get; set; }
-
-        /// <summary>转发对象</summary>
-        [SugarColumn(ColumnName = "forward_targets", ColumnDescription = "转发对象", Length = 500, ColumnDataType = "nvarchar", IsNullable = true)]
-        public string? ForwardTargets { get; set; }
-
-        /// <summary>转发备注</summary>
-        [SugarColumn(ColumnName = "forward_remarks", ColumnDescription = "转发备注", Length = 500, ColumnDataType = "nvarchar", IsNullable = true)]
-        public string? ForwardRemarks { get; set; }
 
         /// <summary>阅读次数</summary>
         [SugarColumn(ColumnName = "read_count", ColumnDescription = "阅读次数", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]

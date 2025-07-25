@@ -17,8 +17,17 @@
         <h3>{{ t('settings.interface') }}</h3>
         
         <a-form layout="vertical">
+          <!-- 主题模式 -->
+          <a-form-item :label="t('settings.themeMode.label')">
+            <a-radio-group v-model:value="settings.themeMode" button-style="solid" @change="handleThemeModeChange">
+              <a-radio-button value="light">{{ t('settings.themeMode.light') }}</a-radio-button>
+              <a-radio-button value="dark">{{ t('settings.themeMode.dark') }}</a-radio-button>
+              <a-radio-button value="auto">{{ t('settings.themeMode.auto') }}</a-radio-button>
+            </a-radio-group>
+          </a-form-item>
+
           <a-form-item :label="t('settings.navMode.label')">
-            <a-radio-group v-model:value="settings.navMode" button-style="solid">
+            <a-radio-group v-model:value="settings.navMode" button-style="solid" @change="handleNavModeChange">
               <a-radio-button value="side">{{ t('settings.navMode.side') }}</a-radio-button>
               <a-radio-button value="top">{{ t('settings.navMode.top') }}</a-radio-button>
               <a-radio-button value="mix">{{ t('settings.navMode.mix') }}</a-radio-button>
@@ -28,12 +37,12 @@
           <a-form-item :label="t('settings.sidebarColor')">
             <div class="color-picker">
               <div 
-                v-for="color in themeColors" 
+                v-for="color in sidebarColors" 
                 :key="color"
                 class="color-block"
                 :class="{ active: settings.sidebarColor === color }"
                 :style="{ backgroundColor: color }"
-                @click="settings.sidebarColor = color"
+                @click="handleSidebarColorChange(color)"
               ></div>
             </div>
           </a-form-item>
@@ -51,10 +60,7 @@
                   class="color-picker-panel"
                   @update:modelValue="handleColorChange"
                   :disableAlpha="true"
-                  :swatches="[
-                    '#E60012', '#8E453F', '#FFB61E', '#45B787', '#2B4490', '#003152', '#9D2933',
-                    '#EF4136', '#F75C2F', '#F6C555', '#7BA23F', '#4C6CB3', '#74325C', '#66327C'
-                  ]"
+                  :swatches="themeColors"
                 />
                 <div class="color-picker-footer">
                   <a-space>
@@ -70,58 +76,62 @@
 
           <a-form-item class="setting-item">
             <span>{{ t('settings.showTabs') }}</span>
-            <a-switch v-model:checked="settings.showTabs" />
+            <a-switch v-model:checked="settings.showTabs" @change="handleSettingChange" />
           </a-form-item>
 
           <a-form-item class="setting-item">
             <span>{{ t('settings.showFooter') }}</span>
-            <a-switch v-model:checked="settings.showFooter" />
+            <a-switch v-model:checked="settings.showFooter" @change="handleSettingChange" />
           </a-form-item>
 
           <a-form-item class="setting-item">
             <span>{{ t('settings.showWatermark') }}</span>
-            <a-switch v-model:checked="settings.showWatermark" />
+            <a-switch v-model:checked="settings.showWatermark" @change="handleSettingChange" />
           </a-form-item>
 
           <a-form-item class="setting-item">
             <span>{{ t('settings.showLogo') }}</span>
-            <a-switch v-model:checked="settings.showLogo" />
+            <a-switch v-model:checked="settings.showLogo" @change="handleSettingChange" />
           </a-form-item>
 
           <a-form-item class="setting-item">
             <span>{{ t('settings.animateTitle') }}</span>
-            <a-switch v-model:checked="settings.animateTitle" />
+            <a-switch v-model:checked="settings.animateTitle" @change="handleSettingChange" />
           </a-form-item>
 
           <a-form-item class="setting-item">
             <span>{{ t('settings.keepTabs') }}</span>
-            <a-switch v-model:checked="settings.keepTabs" />
+            <a-switch v-model:checked="settings.keepTabs" @change="handleSettingChange" />
           </a-form-item>
 
           <a-form-item class="setting-item">
             <span>{{ t('settings.showTabIcon') }}</span>
-            <a-switch v-model:checked="settings.showTabIcon" />
+            <a-switch v-model:checked="settings.showTabIcon" @change="handleSettingChange" />
           </a-form-item>
 
           <a-form-item class="setting-item">
             <span>{{ t('settings.autoHideHeader') }}</span>
-            <a-switch v-model:checked="settings.autoHideHeader" />
+            <a-switch v-model:checked="settings.autoHideHeader" @change="handleSettingChange" />
           </a-form-item>
 
           <a-form-item class="setting-item">
             <span>{{ t('settings.fixedHeader') }}</span>
-            <a-switch v-model:checked="settings.fixedHeader" />
+            <a-switch v-model:checked="settings.fixedHeader" @change="handleSettingChange" />
           </a-form-item>
 
           <a-form-item class="setting-item">
             <span>{{ t('settings.showBreadcrumb') }}</span>
-            <a-switch v-model:checked="settings.showBreadcrumb" />
+            <a-switch v-model:checked="settings.showBreadcrumb" @change="handleSettingChange" />
           </a-form-item>
         </a-form>
       </div>
 
       <div class="settings-footer">
-        <a-space >
+        <a-space>
+          <a-button @click="previewSettings">
+            <template #icon><EyeOutlined /></template>
+            {{ t('settings.preview') }}
+          </a-button>
           <a-button @click="resetSettings">
             <template #icon><ReloadOutlined /></template>
             {{ t('settings.reset') }}
@@ -137,21 +147,28 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive, onMounted, onUnmounted } from 'vue'
+import { ref, reactive, onMounted, onUnmounted, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { SkinOutlined, ReloadOutlined, SaveOutlined } from '@ant-design/icons-vue'
+import { message } from 'ant-design-vue'
+import { SkinOutlined, ReloadOutlined, SaveOutlined, EyeOutlined } from '@ant-design/icons-vue'
 import { Chrome as ChromePicker } from '@ckpack/vue-color'
-import { useAppStore } from '@/stores/app'
+import { useConfigStore } from '@/stores/config'
 import { useThemeStore } from '@/stores/theme'
+import { THEME_COLORS, SIDEBAR_COLORS, getDefaultAppConfig, getDefaultUISettings } from '@/setting'
 
 const { t } = useI18n()
-const appStore = useAppStore()
+const configStore = useConfigStore()
 const themeStore = useThemeStore()
+
+// 主题相关计算属性
+const isDarkMode = computed(() => themeStore.isDarkMode)
+const currentTheme = computed(() => themeStore.isDarkMode ? 'dark' : 'light')
 
 const showDrawer = ref(false)
 const colorPickerRef = ref<HTMLElement | null>(null)
 const showColorPicker = ref(false)
 const settings = reactive({
+  themeMode: 'light' as 'light' | 'dark' | 'auto',
   navMode: 'side' as 'side' | 'top' | 'mix',
   fixedHeader: true,
   showBreadcrumb: true,
@@ -167,114 +184,9 @@ const settings = reactive({
   showTabIcon: true
 })
 
-const themeColors = [
-  // 中国传统色（当前启用7个）
-  '#E60012',  // 中国红，最具代表性的中国传统色，用于喜庆场合
-  '#8E453F',  // 枣红，典雅古朴，体现东方韵味
-  '#FFB61E',  // 藤黄，源自藤黄树的树脂，明亮温暖
-  '#8E8100',  // 蟹壳青，带着一丝黄的青色，体现文人雅致
-  '#45B787',  // 松花绿，取自松树针叶的颜色，清新自然
-  '#2B4490',  // 宝蓝，深邃典雅的蓝色，传统织物常用
-  '#003152',  // 藏蓝，深沉内敛，传统服饰常用
-
-  // 日本传统色（当前启用7个）
-  '#EF4136',  // 红丹 Akani，源自氧化铁，古建筑常用
-  '#BF6766',  // 退红 Taikou，典雅柔和的红色
-  '#F6C555',  // 玉子色 Tamago-iro，如鸡蛋般温暖的黄色
-  '#7BA23F',  // 若竹色 Wakatake-iro，春天竹子的嫩绿色
-  '#4C6CB3',  // 瑠璃色 Ruri-iro，像宝石般的深蓝色
-  '#74325C',  // 古代紫 Kodai-murasaki，古老高贵的紫色
-  '#66327C',  // 江戸紫 Edo-murasaki，江户时代流行的紫色
-
-  /*
-  // 中国传统色（另外23个）
-  '#9D2933',  // 胭脂，古代女性最爱的口红色，温婉娴静
-  '#DC3023',  // 赤，象征生命与热情的大红色
-  '#FF4C00',  // 朱红，最传统的红色颜料，用于宫殿建筑
-  '#F05654',  // 粉红，温柔娇嫩的红色
-  '#C3272B',  // 茜色，似火如霞的红色
-  '#8B6B4E',  // 赭石，古画常用的暖褐色
-  '#B35C44',  // 赤茶，红褐色，体现古朴气息
-  '#B36D61',  // 绾，像绸缎般柔和的红褐色
-  '#D4574E',  // 檀，源自檀木的红褐色，沉稳大气
-  '#ED5736',  // 妃色，华贵优雅的红色
-  '#F35336',  // 彤，似火的红色
-  '#F8ABA6',  // 洋红，明艳动人的红色
-  '#894E3F',  // 栗色，深沉内敛的褐色
-  '#89916B',  // 苔绿，如苔藓般清新的绿色
-  '#9EC1CF',  // 天蓝，清澈明亮的蓝色
-  '#A1AFC9',  // 蓝灰色，含蓄优雅的灰蓝色
-  '#51C4D3',  // 湖蓝，如湖水般清澈的蓝色
-  '#21A675',  // 青碧，介于蓝绿之间的清雅颜色
-  '#126E82',  // 靛青，传统染料颜色，沉稳内敛
-  '#789262',  // 竹青，如竹子般清新雅致
-  '#A3E2C5',  // 青白，清淡素雅的青色
-  '#E0EEE8',  // 素，纯净淡雅的白色
-  '#F0F5E5'   // 草白，带着自然气息的白色
-
-  // 日本传统色（另外23个）
-  '#F75C2F',  // 朱红 Shu-iro，传统建筑常用的明亮红色
-  '#2EA9DF',  // 空色 Sora-iro，晴空的淡蓝色，清澈透明
-  '#0089A7',  // 浅葱色 Asagi-iro，传统浮世绘常用色
-  '#336774',  // 铁色 Tetsu-iro，金属质感的深灰色
-  '#6A4C9C',  // 菫色 Sumire-iro，如堇菜花般的优雅紫色
-  '#B28FCE',  // 藤色 Fuji-iro，如紫藤花般的淡紫色
-  '#E16B8C',  // 牡丹色 Botan-iro，富贵优雅的深粉色
-  '#8B4513',  // 茶色 Cha-iro，温暖沉稳的褐色
-  '#D05A6E',  // 今様色 Imayou-iro，现代感的红色
-  '#DB4D6D',  // 桜色 Sakura-iro，樱花般柔美的粉色
-  '#F596AA',  // 鸨色 Toki-iro，淡雅的粉红色
-  '#FB966E',  // 珊瑚色 Sango-iro，温暖的橙红色
-  '#724938',  // 海老茶 Ebicha-iro，深褐色
-  '#2D6D4B',  // 常盤色 Tokiwa-iro，四季常青的深绿色
-  '#465D4C',  // 青丹 Aooni-iro，深沉的青绿色
-  '#24936E',  // 緑青色 Rokusho-iro，古铜绿色
-  '#86C166',  // 若草色 Wakakusa-iro，新生嫩草的黄绿色
-  '#5B622E',  // 松叶色 Matsuba-iro，松针般的深绿色
-  '#D7C4BB',  // 灰桜色 Haizakura-iro，淡雅的灰粉色
-  '#B4A582',  // 亜麻色 Ama-iro，亚麻般的浅褐色
-  '#7D532C',  // 琥珀色 Kohaku-iro，琥珀般的金褐色
-  '#91989F',  // 錫色 Suzu-iro，锡器般的灰色
-  '#787878'   // 鈍色 Nibi-iro，低调的灰色
-  */
-]
-
-// 添加预设颜色数组
-const presetColors = [
-  // 中国传统色（15个）
-  '#E60012',  // 中国红
-  '#8E453F',  // 枣红
-  '#FFB61E',  // 藤黄
-  '#9D2933',  // 胭脂
-  '#DC3023',  // 赤
-  '#FF4C00',  // 朱红
-  '#F05654',  // 粉红
-  '#C3272B',  // 茜色
-  '#45B787',  // 松花绿
-  '#21A675',  // 青碧
-  '#2B4490',  // 宝蓝
-  '#003152',  // 藏蓝
-  '#126E82',  // 靛青
-  '#789262',  // 竹青
-  '#A3E2C5',  // 青白
-
-  // 日本传统色（15个）
-  '#EF4136',  // 红丹
-  '#F75C2F',  // 朱红
-  '#F6C555',  // 玉子色
-  '#7BA23F',  // 若竹色
-  '#4C6CB3',  // 瑠璃色
-  '#74325C',  // 古代紫
-  '#66327C',  // 江戸紫
-  '#2EA9DF',  // 空色
-  '#0089A7',  // 浅葱色
-  '#6A4C9C',  // 菫色
-  '#B28FCE',  // 藤色
-  '#DB4D6D',  // 桜色
-  '#2D6D4B',  // 常盤色
-  '#86C166',  // 若草色
-  '#5B622E',  // 松叶色
-]
+// 使用从setting.ts导入的颜色预设
+const themeColors = THEME_COLORS
+const sidebarColors = SIDEBAR_COLORS
 
 const tempColor = ref(settings.primaryColor)
 
@@ -287,16 +199,33 @@ const handleClickOutside = (event: MouseEvent) => {
 
 onMounted(() => {
   document.addEventListener('click', handleClickOutside)
-  const savedSettings = appStore.getSettings()
-  if (savedSettings) {
-    // 确保即使有保存的设置，也使用 'side' 作为默认导航模式
-    Object.assign(settings, { ...savedSettings, navMode: 'side' })
-  }
+  
+  // 从configStore读取当前配置到组件
+  const currentSettings = configStore.getUISettings()
+  Object.assign(settings, currentSettings)
+  
+  // 设置临时颜色
   tempColor.value = settings.primaryColor
+  
+  // 应用初始设置
+  applySettingsRealtime()
+  
+  // 设置系统主题监听器
+  setupSystemThemeListener()
+  
+  // 监听Store中的UI设置变化，同步到组件
+  watch(() => configStore.uiSettings, (newSettings) => {
+    Object.assign(settings, newSettings)
+  }, { deep: true })
 })
 
 onUnmounted(() => {
   document.removeEventListener('click', handleClickOutside)
+  
+  // 清理防抖定时器
+  if (debounceTimer) {
+    clearTimeout(debounceTimer)
+  }
 })
 
 const onClose = () => {
@@ -304,23 +233,179 @@ const onClose = () => {
 }
 
 const resetSettings = () => {
-  settings.navMode = 'side'
-  settings.fixedHeader = true
-  settings.showBreadcrumb = true
-  settings.showTabs = true
-  settings.showFooter = true
-  settings.autoHideHeader = false
-  settings.sidebarColor = '#001529'
-  settings.primaryColor = '#1890ff'
-  settings.showWatermark = false
-  settings.showLogo = true
-  settings.animateTitle = false
-  settings.keepTabs = false
-  settings.showTabIcon = true
+  // 重置到浅色主题的默认配置（而不是当前主题的默认配置）
+  const defaultSettings = getDefaultUISettings(false) // 强制使用浅色主题
+  Object.assign(settings, defaultSettings)
+  
+  // 确保重置为浅色主题模式
+  settings.themeMode = 'light'
+  
+  // 重置临时颜色
+  tempColor.value = settings.primaryColor
+  
+  // 应用重置的设置到界面
+  applySettingsRealtime()
+  
+  // 显示重置提示
+  message.success('设置已重置到默认值')
+  
+  console.log('[HbtSetting] 设置已重置到默认值（浅色主题）')
 }
 
 const saveSettings = () => {
-  appStore.saveSettings({
+  // 验证设置
+  if (!validateSettings()) {
+    return
+  }
+  
+  console.log('[HbtSetting] 开始保存设置...')
+  
+  // 应用设置到界面并保存到configStore
+  applySettingsRealtime()
+  
+  // 显示保存成功提示
+  message.success('设置保存成功')
+  
+  // 关闭抽屉
+  showDrawer.value = false
+  
+  console.log('[HbtSetting] 设置保存完成')
+}
+
+const handleColorChange = (color: any) => {
+  const hexColor = color.hex
+  tempColor.value = hexColor
+  settings.primaryColor = hexColor
+  themeStore.updateTheme({ primaryColor: hexColor })
+  // 同步到configStore
+  configStore.setPrimaryColor(hexColor)
+}
+
+// 侧边栏颜色变更处理
+const handleSidebarColorChange = (color: string) => {
+  settings.sidebarColor = color
+  // 实时应用侧边栏颜色
+  configStore.setSidebarColor(color)
+}
+
+const cancelColorPick = () => {
+  tempColor.value = settings.primaryColor
+  showColorPicker.value = false
+}
+
+const confirmColorPick = () => {
+  showColorPicker.value = false
+}
+
+// 主题模式切换处理
+const handleThemeModeChange = (e: any) => {
+  const value = e.target.value as 'light' | 'dark' | 'auto'
+  settings.themeMode = value
+  if (value === 'auto') {
+    // 自动模式：根据系统主题切换
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+    themeStore.updateTheme({ isDarkMode: prefersDark })
+    // 更新配置以匹配主题模式
+    configStore.updateConfigForTheme(prefersDark)
+  } else {
+    // 手动模式：直接设置主题
+    const isDarkMode = value === 'dark'
+    themeStore.updateTheme({ isDarkMode })
+    // 更新配置以匹配主题模式
+    configStore.updateConfigForTheme(isDarkMode)
+  }
+}
+
+// 导航模式切换处理
+const handleNavModeChange = (e: any) => {
+  const value = e.target.value as 'side' | 'top' | 'mix'
+  settings.navMode = value
+  // 实时应用导航模式设置
+  configStore.setNavMode(value)
+}
+
+// 实时应用设置到界面（保存到configStore）
+const applySettingsRealtime = () => {
+  // 应用主题设置
+  let isDarkMode = false
+  if (settings.themeMode === 'auto') {
+    isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+    themeStore.updateTheme({ isDarkMode })
+  } else {
+    isDarkMode = settings.themeMode === 'dark'
+    themeStore.updateTheme({ isDarkMode })
+  }
+
+  // 应用主色调设置
+  themeStore.updateTheme({ primaryColor: settings.primaryColor })
+
+  // 应用UI设置到configStore（会保存到localStorage）
+  configStore.batchUpdateUISettings({
+    themeMode: settings.themeMode,
+    navMode: settings.navMode,
+    showBreadcrumb: settings.showBreadcrumb,
+    showTabs: settings.showTabs,
+    showFooter: settings.showFooter,
+    sidebarColor: settings.sidebarColor,
+    primaryColor: settings.primaryColor,
+    showWatermark: settings.showWatermark,
+    showLogo: settings.showLogo,
+    animateTitle: settings.animateTitle,
+    keepTabs: settings.keepTabs,
+    showTabIcon: settings.showTabIcon
+  })
+
+  // 更新配置以匹配主题模式
+  configStore.updateConfigForTheme(isDarkMode)
+
+  // 同步主色调到themeStore
+  themeStore.syncPrimaryColorFromConfig()
+}
+
+// 防抖定时器
+let debounceTimer: NodeJS.Timeout | null = null
+
+// 设置变更处理
+const handleSettingChange = () => {
+  // 清除之前的定时器
+  if (debounceTimer) {
+    clearTimeout(debounceTimer)
+  }
+  
+  // 设置新的定时器，延迟应用设置
+  debounceTimer = setTimeout(() => {
+    applySettingsRealtime()
+  }, 300)
+}
+
+// 导出设置功能已移除
+
+// 导入导出功能已移除
+
+// 预览设置（临时应用，不保存到configStore）
+const previewSettings = () => {
+  // 验证设置
+  if (!validateSettings()) {
+    return
+  }
+  
+  // 临时应用主题设置
+  let isDarkMode = false
+  if (settings.themeMode === 'auto') {
+    isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+    themeStore.updateTheme({ isDarkMode })
+  } else {
+    isDarkMode = settings.themeMode === 'dark'
+    themeStore.updateTheme({ isDarkMode })
+  }
+
+  // 临时应用主色调设置
+  themeStore.updateTheme({ primaryColor: settings.primaryColor })
+
+  // 临时应用UI设置到configStore（不保存到localStorage）
+  // 直接修改uiSettings.value，不调用saveUISettings
+  Object.assign(configStore.uiSettings, {
+    themeMode: settings.themeMode,
     navMode: settings.navMode,
     fixedHeader: settings.fixedHeader,
     showBreadcrumb: settings.showBreadcrumb,
@@ -335,24 +420,62 @@ const saveSettings = () => {
     keepTabs: settings.keepTabs,
     showTabIcon: settings.showTabIcon
   })
-  themeStore.updateTheme({ primaryColor: settings.primaryColor })
-  showDrawer.value = false
+
+  // 临时更新配置以匹配主题模式（不保存到localStorage）
+  const currentConfig = { ...configStore.config }
+  const newConfig = getDefaultAppConfig(isDarkMode)
+  const newUISettings = getDefaultUISettings(isDarkMode)
+  
+  currentConfig.theme.primaryColor = newConfig.theme.primaryColor
+  Object.assign(configStore.config, currentConfig)
+  
+  // 临时更新UI设置中的侧边栏颜色和主色调
+  configStore.uiSettings.sidebarColor = newUISettings.sidebarColor
+  configStore.uiSettings.primaryColor = newUISettings.primaryColor
+  
+  // 显示预览提示
+  message.success('设置预览已应用，点击保存按钮可永久保存')
 }
 
-const handleColorChange = (color: any) => {
-  const hexColor = color.hex
-  tempColor.value = hexColor
-  settings.primaryColor = hexColor
-  themeStore.updateTheme({ primaryColor: hexColor })
+// 验证设置
+const validateSettings = (): boolean => {
+  // 验证主题模式
+  if (!['light', 'dark', 'auto'].includes(settings.themeMode)) {
+    console.error('无效的主题模式')
+    return false
+  }
+  
+  // 验证导航模式
+  if (!['side', 'top', 'mix'].includes(settings.navMode)) {
+    console.error('无效的导航模式')
+    return false
+  }
+  
+  // 验证颜色值
+  const colorRegex = /^#[0-9A-F]{6}$/i
+  if (!colorRegex.test(settings.primaryColor) || !colorRegex.test(settings.sidebarColor)) {
+    console.error('无效的颜色值')
+    return false
+  }
+  
+  return true
 }
 
-const cancelColorPick = () => {
-  tempColor.value = settings.primaryColor
-  showColorPicker.value = false
-}
-
-const confirmColorPick = () => {
-  showColorPicker.value = false
+// 监听系统主题变化
+const setupSystemThemeListener = () => {
+  const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+  const handleSystemThemeChange = (e: MediaQueryListEvent) => {
+    if (settings.themeMode === 'auto') {
+      themeStore.updateTheme({ isDarkMode: e.matches })
+    }
+  }
+  
+  mediaQuery.addEventListener('change', handleSystemThemeChange)
+  
+  // 清理监听器
+  onUnmounted(() => {
+    mediaQuery.removeEventListener('change', handleSystemThemeChange)
+  })
 }
 </script>
 
@@ -384,7 +507,7 @@ const confirmColorPick = () => {
 
     h3 {
       margin-bottom: 12px;
-      color: rgba(0, 0, 0, 0.88);
+      color: var(--ant-color-text);
       font-weight: 500;
       font-size: 15px;
     }
@@ -394,12 +517,16 @@ const confirmColorPick = () => {
 
       .ant-form-item-label {
         padding-bottom: 4px;
+        
+        label {
+          color: var(--ant-color-text);
+        }
       }
 
       &.setting-item {
         margin: 0;
         padding: 8px 0;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+        border-bottom: 1px solid var(--ant-border-color-split);
 
         &:last-child {
           border-bottom: none;
@@ -409,14 +536,15 @@ const confirmColorPick = () => {
 
     .ant-divider {
       margin: 12px 0;
+      border-color: var(--ant-border-color-split);
     }
   }
 
   .settings-footer {
     padding: 16px 24px;
     text-align: right;
-    border-top: 1px solid rgba(0, 0, 0, 0.06);
-    background: #fff;
+    border-top: 1px solid var(--ant-border-color-split);
+    background: var(--ant-color-bg-container);
 
     :deep(.ant-btn) {
       display: inline-flex;
@@ -471,19 +599,20 @@ const confirmColorPick = () => {
 
 .ant-divider {
   margin: 16px 0;
+  border-color: var(--ant-border-color-split);
 }
 
 .setting-item {
   position: relative;
   padding: 10px 24px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  border-bottom: 1px solid var(--ant-border-color-split);
 
   &:last-child {
     border-bottom: none;
   }
 
   span {
-    color: rgba(0, 0, 0, 0.88);
+    color: var(--ant-color-text);
     font-size: 14px;
   }
 
@@ -502,7 +631,7 @@ const confirmColorPick = () => {
     width: 100%;
     height: 32px;
     border-radius: 6px;
-    border: 1px solid #d9d9d9;
+    border: 1px solid var(--ant-border-color);
     cursor: pointer;
     transition: all 0.3s;
 
@@ -517,9 +646,10 @@ const confirmColorPick = () => {
     left: 0;
     margin-top: 8px;
     z-index: 1000;
-    background: #fff;
+    background: var(--ant-color-bg-container);
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    border: 1px solid var(--ant-border-color-split);
     
     .color-picker-panel {
       padding: 8px;
@@ -528,8 +658,148 @@ const confirmColorPick = () => {
     .color-picker-footer {
       padding: 8px;
       text-align: right;
-      border-top: 1px solid rgba(0, 0, 0, 0.06);
+      border-top: 1px solid var(--ant-border-color-split);
     }
   }
+}
+
+// 暗色主题适配
+[data-theme='dark'] {
+  .settings-content {
+    .settings-section {
+      h3 {
+        color: var(--ant-color-text);
+      }
+    }
+  }
+
+  .setting-item {
+    span {
+      color: var(--ant-color-text);
+    }
+  }
+
+  .color-picker-container {
+    background: var(--ant-color-bg-container);
+    border-color: var(--ant-border-color-split);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  }
+
+  .color-picker-footer {
+    border-top-color: var(--ant-border-color-split);
+  }
+
+  .color-block {
+    &:hover {
+      box-shadow: 0 2px 8px rgba(255, 255, 255, 0.1);
+    }
+
+    &.active {
+      &::after {
+        box-shadow: 0 0 2px rgba(255, 255, 255, 0.5);
+      }
+    }
+  }
+
+  // 暗色主题下的抽屉样式
+  :deep(.ant-drawer) {
+    .ant-drawer-content {
+      background: var(--ant-color-bg-container);
+    }
+
+    .ant-drawer-header {
+      background: var(--ant-color-bg-container);
+      border-bottom-color: var(--ant-border-color-split);
+
+      .ant-drawer-title {
+        color: var(--ant-color-text);
+      }
+    }
+
+    .ant-drawer-body {
+      background: var(--ant-color-bg-container);
+    }
+  }
+
+  // 暗色主题下的表单样式
+  :deep(.ant-form-item-label > label) {
+    color: var(--ant-color-text);
+  }
+}
+
+// 亮色主题适配
+[data-theme='light'] {
+  .settings-content {
+    .settings-section {
+      h3 {
+        color: var(--ant-color-text);
+      }
+    }
+  }
+
+  .setting-item {
+    span {
+      color: var(--ant-color-text);
+    }
+  }
+
+  .color-picker-container {
+    background: var(--ant-color-bg-container);
+    border-color: var(--ant-border-color-split);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  .color-picker-footer {
+    border-top-color: var(--ant-border-color-split);
+  }
+
+  // 亮色主题下的抽屉样式
+  :deep(.ant-drawer) {
+    .ant-drawer-content {
+      background: var(--ant-color-bg-container);
+    }
+
+    .ant-drawer-header {
+      background: var(--ant-color-bg-container);
+      border-bottom-color: var(--ant-border-color-split);
+
+      .ant-drawer-title {
+        color: var(--ant-color-text);
+      }
+    }
+
+    .ant-drawer-body {
+      background: var(--ant-color-bg-container);
+    }
+  }
+
+  // 亮色主题下的表单样式
+  :deep(.ant-form-item-label > label) {
+    color: var(--ant-color-text);
+  }
+}
+
+// 全局主题适配
+:deep(.ant-drawer) {
+  .ant-drawer-content {
+    background: var(--ant-color-bg-container);
+  }
+
+  .ant-drawer-header {
+    background: var(--ant-color-bg-container);
+    border-bottom-color: var(--ant-border-color-split);
+
+    .ant-drawer-title {
+      color: var(--ant-color-text);
+    }
+  }
+
+  .ant-drawer-body {
+    background: var(--ant-color-bg-container);
+  }
+}
+
+:deep(.ant-form-item-label > label) {
+  color: var(--ant-color-text);
 }
 </style> 

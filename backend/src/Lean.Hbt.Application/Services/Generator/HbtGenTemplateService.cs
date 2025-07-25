@@ -20,8 +20,8 @@ using SqlSugar;
 /// </summary>
 public class HbtGenTemplateService : HbtBaseService, IHbtGenTemplateService
 {
-    private readonly IHbtRepositoryFactory _repositoryFactory;
-    private IHbtRepository<HbtGenTemplate> TemplateRepository => _repositoryFactory.GetAuthRepository<HbtGenTemplate>();
+    protected readonly IHbtRepositoryFactory _repositoryFactory;
+    private IHbtRepository<HbtGenTemplate> TemplateRepository => _repositoryFactory.GetGeneratorRepository<HbtGenTemplate>();
 
     /// <summary>
     /// 构造函数

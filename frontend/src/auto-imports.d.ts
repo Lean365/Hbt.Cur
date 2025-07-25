@@ -198,7 +198,6 @@ declare global {
   const useFullscreen: typeof import('@vueuse/core')['useFullscreen']
   const useGamepad: typeof import('@vueuse/core')['useGamepad']
   const useGeolocation: typeof import('@vueuse/core')['useGeolocation']
-  const useHolidayStore: typeof import('./stores/holiday')['useHolidayStore']
   const useI18n: typeof import('vue-i18n')['useI18n']
   const useId: typeof import('vue')['useId']
   const useIdle: typeof import('@vueuse/core')['useIdle']
@@ -259,7 +258,6 @@ declare global {
   const useScroll: typeof import('@vueuse/core')['useScroll']
   const useScrollLock: typeof import('@vueuse/core')['useScrollLock']
   const useSessionStorage: typeof import('@vueuse/core')['useSessionStorage']
-  const useSettingStore: typeof import('./stores/settings')['useSettingStore']
   const useShare: typeof import('@vueuse/core')['useShare']
   const useSlots: typeof import('vue')['useSlots']
   const useSorted: typeof import('@vueuse/core')['useSorted']
@@ -597,7 +595,6 @@ declare module 'vue' {
     readonly useScroll: UnwrapRef<typeof import('@vueuse/core')['useScroll']>
     readonly useScrollLock: UnwrapRef<typeof import('@vueuse/core')['useScrollLock']>
     readonly useSessionStorage: UnwrapRef<typeof import('@vueuse/core')['useSessionStorage']>
-    readonly useSettingStore: UnwrapRef<typeof import('./stores/settings')['useSettingStore']>
     readonly useShare: UnwrapRef<typeof import('@vueuse/core')['useShare']>
     readonly useSlots: UnwrapRef<typeof import('vue')['useSlots']>
     readonly useSorted: UnwrapRef<typeof import('@vueuse/core')['useSorted']>

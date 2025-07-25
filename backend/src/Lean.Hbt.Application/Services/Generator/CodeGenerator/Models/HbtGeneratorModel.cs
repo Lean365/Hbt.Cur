@@ -153,4 +153,28 @@ public class HbtGeneratorOptions
     public string DetailTableKey { get; set; } = string.Empty;
 
     #endregion
+
+    #region 生成功能选项
+
+    /// <summary>
+    /// 生成功能（查询，新增，更新，删除，模板，导入，导出的按钮编号）
+    /// </summary>
+    public string GenFunction { get; set; } = "1,2,3,4,5,6,7";
+
+    /// <summary>
+    /// 是否启用SQL差异
+    /// </summary>
+    public int IsSqlDiff { get; set; } = 1;
+
+    /// <summary>
+    /// 是否使用雪花id
+    /// </summary>
+    public int IsSnowflakeId { get; set; } = 1;
+
+    /// <summary>
+    /// 是否生成仓储层
+    /// </summary>
+    public int IsRepository { get; set; } = 1;
+
+    #endregion
 }

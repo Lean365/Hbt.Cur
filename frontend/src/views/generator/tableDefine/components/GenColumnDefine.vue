@@ -972,7 +972,7 @@ onMounted(() => {
 <style lang="less" scoped>
 .gen-column-define {
   padding: 16px;
-  background-color: #fff;
+  background-color: var(--ant-color-bg-container);
   width: 100%;
   height: 100%;
   display: flex;

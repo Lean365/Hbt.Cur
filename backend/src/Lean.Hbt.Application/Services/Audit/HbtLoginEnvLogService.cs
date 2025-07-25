@@ -5,7 +5,7 @@
 // 文件名 : HbtLoginEnvLogService.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-22 14:30
-// 版本号 : V1.0.0
+// 版本号 : V0.0.1
 // 描述    : 登录环境日志信息服务实现
 //===================================================================
 
@@ -23,7 +23,10 @@ namespace Lean.Hbt.Application.Services.Audit
     /// </remarks>
     public class HbtLoginEnvLogService : HbtBaseService, IHbtLoginEnvLogService
     {
-        private readonly IHbtRepositoryFactory _repositoryFactory;
+        /// <summary>
+        /// 仓储工厂
+        /// </summary>
+        protected readonly IHbtRepositoryFactory _repositoryFactory;
         private IHbtRepository<HbtLoginEnvLog> LoginExtendRepository => _repositoryFactory.GetAuthRepository<HbtLoginEnvLog>();
 
         /// <summary>

@@ -3,7 +3,7 @@
 // 文件名 : HbtMeetingService.cs
 // 创建者 : Lean365
 // 创建时间: 2024-03-07 16:30
-// 版本号 : V1.0.0
+// 版本号 : V0.0.1
 // 描述   : 会议服务实现
 //===================================================================
 
@@ -26,6 +26,8 @@ using Microsoft.AspNetCore.Http;
 using Lean.Hbt.Common.Utils;
 using Lean.Hbt.Domain.Utils;
 using Lean.Hbt.Common.Constants;
+using Lean.Hbt.Domain.IServices.SignalR;
+using Lean.Hbt.Common.Enums;
 
 namespace Lean.Hbt.Application.Services.Routine.Metting
 {
@@ -38,24 +40,36 @@ namespace Lean.Hbt.Application.Services.Routine.Metting
     /// </remarks>
     public class HbtMeetingService : HbtBaseService, IHbtMeetingService
     {
-        private readonly IHbtRepository<HbtMeeting> _meetingRepository;
+        /// <summary>
+        /// 仓储工厂
+        /// </summary>
+        protected readonly IHbtRepositoryFactory _repositoryFactory;
+        private readonly IHbtSignalRClient _signalRClient;
+
+        /// <summary>
+        /// 获取会议仓储
+        /// </summary>
+        private IHbtRepository<HbtMeeting> MeetingRepository => _repositoryFactory.GetBusinessRepository<HbtMeeting>();
 
         /// <summary>
         /// 构造函数
         /// </summary>
-        /// <param name="logger">日志记录器</param>
-        /// <param name="meetingRepository">会议仓储</param>
+        /// <param name="repositoryFactory">仓储工厂</param>
+        /// <param name="logger">日志服务</param>
+        /// <param name="signalRClient">SignalR客户端</param>
         /// <param name="httpContextAccessor">HTTP上下文访问器</param>
         /// <param name="currentUser">当前用户服务</param>
         /// <param name="localization">本地化服务</param>
         public HbtMeetingService(
+            IHbtRepositoryFactory repositoryFactory,
             IHbtLogger logger,
-            IHbtRepository<HbtMeeting> meetingRepository,
+            IHbtSignalRClient signalRClient,
             IHttpContextAccessor httpContextAccessor,
             IHbtCurrentUser currentUser,
             IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
         {
-            _meetingRepository = meetingRepository;
+            _repositoryFactory = repositoryFactory ?? throw new ArgumentNullException(nameof(repositoryFactory));
+            _signalRClient = signalRClient;
         }
 
         /// <summary>
@@ -70,7 +84,7 @@ namespace Lean.Hbt.Application.Services.Routine.Metting
             var predicate = QueryExpression(query);
             _logger.Info("生成的查询表达式：{@Predicate}", predicate);
 
-            var result = await _meetingRepository.GetPagedListAsync(
+            var result = await MeetingRepository.GetPagedListAsync(
                 predicate,
                 query?.PageIndex ?? 1,
                 query?.PageSize ?? 10,
@@ -112,7 +126,7 @@ namespace Lean.Hbt.Application.Services.Routine.Metting
         /// <returns>返回会议详情</returns>
         public async Task<HbtMeetingDto> GetByIdAsync(long meetingId)
         {
-            var meeting = await _meetingRepository.GetByIdAsync(meetingId);
+            var meeting = await MeetingRepository.GetByIdAsync(meetingId);
             if (meeting == null)
                 throw new HbtException(L("Meeting.NotFound", meetingId));
 
@@ -127,7 +141,21 @@ namespace Lean.Hbt.Application.Services.Routine.Metting
         public async Task<long> CreateAsync(HbtMeetingCreateDto input)
         {
             var meeting = input.Adapt<HbtMeeting>();
-            var result = await _meetingRepository.CreateAsync(meeting);
+            var result = await MeetingRepository.CreateAsync(meeting);
+            
+            if (result > 0)
+            {
+                // 发送实时通知
+                await _signalRClient.ReceiveBroadcast(new HbtRealTimeNotification
+                {
+                    Type = HbtMessageType.System,
+                    Title = L("Meeting.Created"),
+                    Content = L("Meeting.CreatedContent", meeting.Title),
+                    Timestamp = DateTime.Now,
+                    Data = meeting
+                });
+            }
+            
             return result;
         }
 
@@ -138,12 +166,26 @@ namespace Lean.Hbt.Application.Services.Routine.Metting
         /// <returns>返回是否成功</returns>
         public async Task<bool> UpdateAsync(HbtMeetingUpdateDto input)
         {
-            var meeting = await _meetingRepository.GetByIdAsync(input.MeetingId);
+            var meeting = await MeetingRepository.GetByIdAsync(input.MeetingId);
             if (meeting == null)
                 throw new HbtException(L("Meeting.NotFound", input.MeetingId));
 
             input.Adapt(meeting);
-            var result = await _meetingRepository.UpdateAsync(meeting);
+            var result = await MeetingRepository.UpdateAsync(meeting);
+            
+            if (result > 0)
+            {
+                // 发送实时通知
+                await _signalRClient.ReceiveBroadcast(new HbtRealTimeNotification
+                {
+                    Type = HbtMessageType.System,
+                    Title = L("Meeting.Updated"),
+                    Content = L("Meeting.UpdatedContent", meeting.Title),
+                    Timestamp = DateTime.Now,
+                    Data = meeting
+                });
+            }
+            
             return result > 0;
         }
 
@@ -154,11 +196,25 @@ namespace Lean.Hbt.Application.Services.Routine.Metting
         /// <returns>返回是否成功</returns>
         public async Task<bool> DeleteAsync(long meetingId)
         {
-            var meeting = await _meetingRepository.GetByIdAsync(meetingId);
+            var meeting = await MeetingRepository.GetByIdAsync(meetingId);
             if (meeting == null)
                 throw new HbtException(L("Meeting.NotFound", meetingId));
 
-            var result = await _meetingRepository.DeleteAsync(meeting);
+            var result = await MeetingRepository.DeleteAsync(meeting);
+            
+            if (result > 0)
+            {
+                // 发送实时通知
+                await _signalRClient.ReceiveBroadcast(new HbtRealTimeNotification
+                {
+                    Type = HbtMessageType.System,
+                    Title = L("Meeting.Deleted"),
+                    Content = L("Meeting.DeletedContent", meeting.Title),
+                    Timestamp = DateTime.Now,
+                    Data = meeting
+                });
+            }
+            
             return result > 0;
         }
 
@@ -172,11 +228,11 @@ namespace Lean.Hbt.Application.Services.Routine.Metting
             if (meetingIds == null || meetingIds.Length == 0)
                 throw new HbtException(L("Meeting.SelectToDelete"));
 
-            var meetings = await _meetingRepository.GetListAsync(x => meetingIds.Contains(x.Id));
+            var meetings = await MeetingRepository.GetListAsync(x => meetingIds.Contains(x.Id));
             if (!meetings.Any())
                 throw new HbtException(L("Meeting.NotFound"));
 
-            var result = await _meetingRepository.DeleteAsync(meetings);
+            var result = await MeetingRepository.DeleteAsync(meetings);
             return result > 0;
         }
 
@@ -200,7 +256,7 @@ namespace Lean.Hbt.Application.Services.Routine.Metting
                 try
                 {
                     var meeting = dto.Adapt<HbtMeeting>();
-                    await _meetingRepository.CreateAsync(meeting);
+                    await MeetingRepository.CreateAsync(meeting);
                     success++;
                 }
                 catch (Exception ex)
@@ -223,7 +279,7 @@ namespace Lean.Hbt.Application.Services.Routine.Metting
         {
             var predicate = QueryExpression(query);
 
-            var meetings = await _meetingRepository.AsQueryable()
+            var meetings = await MeetingRepository.AsQueryable()
                 .Where(predicate)
                 .OrderBy(x => x.Id)
                 .ToListAsync();
@@ -266,17 +322,60 @@ namespace Lean.Hbt.Application.Services.Routine.Metting
                 if (!string.IsNullOrEmpty(query.Location))
                     exp = exp.And(x => x.Location.Contains(query.Location));
 
-                if (!string.IsNullOrEmpty(query.Host))
-                    exp = exp.And(x => x.Host.Contains(query.Host));
-
                 if (query.StartTime.HasValue)
                     exp = exp.And(x => x.StartTime >= query.StartTime.Value);
 
                 if (query.EndTime.HasValue)
                     exp = exp.And(x => x.EndTime <= query.EndTime.Value);
+
+                if (!string.IsNullOrEmpty(query.Host))
+                    exp = exp.And(x => x.Host == query.Host);
+
+                if (!string.IsNullOrEmpty(query.Participant))
+                    exp = exp.And(x => x.Host == query.Participant || 
+                                     (x.Participants != null && x.Participants.Contains(query.Participant)));
             }
 
             return exp.ToExpression();
+        }
+
+        /// <summary>
+        /// 获取指定用户主持的会议状态统计
+        /// </summary>
+        /// <param name="host">主持人</param>
+        /// <returns>状态-数量字典</returns>
+        public async Task<Dictionary<int, int>> GetHostedMeetingStatisticsAsync(string host)
+        {
+            if (string.IsNullOrEmpty(host))
+                throw new ArgumentNullException(nameof(host));
+
+            var stats = await MeetingRepository.AsQueryable()
+                .Where(x => x.Host == host)
+                .GroupBy(x => x.Status)
+                .Select(x => new { Status = x.Status, Count = SqlFunc.AggregateCount(x.Status) })
+                .ToListAsync();
+
+            return stats.ToDictionary(x => x.Status, x => x.Count);
+        }
+
+        /// <summary>
+        /// 获取指定用户参与的会议状态统计
+        /// </summary>
+        /// <param name="participant">参与者</param>
+        /// <returns>状态-数量字典</returns>
+        public async Task<Dictionary<int, int>> GetParticipatedMeetingStatisticsAsync(string participant)
+        {
+            if (string.IsNullOrEmpty(participant))
+                throw new ArgumentNullException(nameof(participant));
+
+            var stats = await MeetingRepository.AsQueryable()
+                .Where(x => x.Host == participant || 
+                           (x.Participants != null && x.Participants.Contains(participant)))
+                .GroupBy(x => x.Status)
+                .Select(x => new { Status = x.Status, Count = SqlFunc.AggregateCount(x.Status) })
+                .ToListAsync();
+
+            return stats.ToDictionary(x => x.Status, x => x.Count);
         }
     }
 } 

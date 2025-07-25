@@ -16,9 +16,9 @@ public class HbtCaptchaOptions
     public int LoginFailExpireMinutes { get; set; } = 30;
 
     /// <summary>
-    /// 验证码类型
+    /// 验证码类型（Slider、Behavior）
     /// </summary>
-    public string Type { get; set; } = "Slider";
+    public string Type { get; set; } = string.Empty;
 
     /// <summary>
     /// 滑块验证码选项
@@ -39,27 +39,27 @@ public class SliderOptions
     /// <summary>
     /// 背景图片宽度
     /// </summary>
-    public int Width { get; set; } = 800;
+    public int Width { get; set; }
 
     /// <summary>
     /// 背景图片高度
     /// </summary>
-    public int Height { get; set; } = 400;
+    public int Height { get; set; }
 
     /// <summary>
     /// 滑块宽度
     /// </summary>
-    public int SliderWidth { get; set; } = 50;
+    public int SliderWidth { get; set; }
 
     /// <summary>
     /// 验证容差(像素)
     /// </summary>
-    public int Tolerance { get; set; } = 10;
+    public int Tolerance { get; set; }
 
     /// <summary>
     /// 缓存过期时间(分钟)
     /// </summary>
-    public int ExpirationMinutes { get; set; } = 5;
+    public int ExpirationMinutes { get; set; }
 
     /// <summary>
     /// 背景图片配置
@@ -117,16 +117,6 @@ public class SlideTemplateOptions
     /// 模板目录路径
     /// </summary>
     public string TemplatePath { get; set; } = "slide/template";
-
-    /// <summary>
-    /// 挖空背景图目录名
-    /// </summary>
-    public string HoleDirectory { get; set; } = "hole";
-
-    /// <summary>
-    /// 滑块图片目录名
-    /// </summary>
-    public string SliderDirectory { get; set; } = "slider";
 
     /// <summary>
     /// 图片组数量

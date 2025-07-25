@@ -2,8 +2,8 @@
 // 项目名 : Lean.Hbt
 // 文件名 : HbtDbSeedTranslationCoordinator.cs
 // 创建者 : Lean365
-// 创建时间: 2024-12-19
-// 版本号 : V1.0.0
+// 创建时间: 2024-12-01
+// 版本号 : V0.0.1
 // 描述   : 翻译种子数据协调器 - 使用仓储工厂模式
 //===================================================================
 
@@ -18,7 +18,7 @@ namespace Lean.Hbt.Infrastructure.Data.Seeds.Biz.Translation;
 /// </summary>
 /// <remarks>
 /// 创建者: Lean365
-/// 创建时间: 2024-12-19
+/// 创建时间: 2024-12-01
 /// 功能说明:
 /// 1. 统一管理所有翻译数据的初始化
 /// 2. 使用仓储工厂模式支持多库架构
@@ -28,7 +28,7 @@ namespace Lean.Hbt.Infrastructure.Data.Seeds.Biz.Translation;
 /// </remarks>
 public class HbtDbSeedTranslationCoordinator
 {
-    private readonly IHbtRepositoryFactory _repositoryFactory;
+    protected readonly IHbtRepositoryFactory _repositoryFactory;
     private readonly IHbtLogger _logger;
 
     private IHbtRepository<HbtTranslation> TranslationRepository => _repositoryFactory.GetBusinessRepository<HbtTranslation>();
@@ -87,6 +87,10 @@ public class HbtDbSeedTranslationCoordinator
             // 8. 初始化核心翻译数据
             var coreTranslations = await InitializeCoreTranslationsAsync();
             result.TranslationResults.Add("Core", coreTranslations);
+
+            // 9. 初始化菜单翻译数据
+            var menuTranslations = await InitializeMenuTranslationsAsync();
+            result.TranslationResults.Add("Menu", menuTranslations);
 
             _logger.Info($"翻译数据初始化完成！翻译数据: {result.GetTotalTranslationCount()} 条");
             return result;
@@ -184,6 +188,17 @@ public class HbtDbSeedTranslationCoordinator
         var coreSeed = new HbtCoreSeedTranslation();
         var translations = coreSeed.GetCoreTranslations();
         return await InitializeTranslationsAsync(translations, "核心翻译数据");
+    }
+
+    /// <summary>
+    /// 初始化菜单翻译数据
+    /// </summary>
+    /// <returns>初始化结果</returns>
+    private async Task<(int insertCount, int updateCount)> InitializeMenuTranslationsAsync()
+    {
+        var menuSeed = new HbtMenuSeedTranslation();
+        var translations = menuSeed.GetMenuTranslations();
+        return await InitializeTranslationsAsync(translations, "菜单翻译数据");
     }
 
     /// <summary>

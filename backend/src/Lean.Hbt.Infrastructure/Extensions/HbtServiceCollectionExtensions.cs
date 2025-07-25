@@ -75,11 +75,11 @@ namespace Lean.Hbt.Infrastructure.Extensions
         /// <returns>服务集合</returns>
         public static IServiceCollection AddDomainServices(this IServiceCollection services)
         {
-             // 添加仓储工厂 - 支持多库模式
-            services.AddScoped<IHbtRepositoryFactory, HbtRepositoryFactory>();           
+            // 添加仓储工厂 - 支持多库模式
+            services.AddScoped<IHbtRepositoryFactory, HbtRepositoryFactory>();
             // 添加仓储服务 - 用于数据访问
             services.AddScoped(typeof(IHbtRepository<>), typeof(HbtRepository<>));
-            
+
             // 添加领域服务
             services.AddSecurityServices();     // 安全服务
             services.AddCacheServices();        // 缓存服务
@@ -112,9 +112,9 @@ namespace Lean.Hbt.Infrastructure.Extensions
             services.AddIdentityServices();    // 身份认证服务
             services.AddAdminServices();       // 管理服务
             services.AddAuditServices();       // 审计服务
-            services.AddRealTimeServices();    // 实时服务
-            services.AddWorkflowServices();    // 工作流服务
-            services.AddRoutineServices();     // 常规业务服务
+            services.AddSignalRServices();    // 实时通信
+            services.AddWorkflowServices(configuration);    // 工作流服务
+            services.AddRoutineServices(configuration);     // 常规业务服务
             services.AddGeneratorServices(configuration, webHostEnvironment);   // 代码生成服务
 
             return services;
@@ -136,6 +136,9 @@ namespace Lean.Hbt.Infrastructure.Extensions
             // 验证服务
             services.AddScoped<IHbtCaptchaService, HbtCaptchaService>();
             services.AddScoped<IHbtOAuthService, HbtOAuthService>();
+
+            // 找回密码服务
+            services.AddScoped<IHbtRecoveryService, HbtRecoveryService>();
 
             return services;
         }
@@ -217,13 +220,17 @@ namespace Lean.Hbt.Infrastructure.Extensions
             services.AddScoped<IHbtJwtHandler, HbtJwtHandler>();            // JWT令牌处理
             services.AddScoped<IHbtDeviceIdGenerator, HbtDeviceIdGenerator>(); // 设备ID生成器
 
+            // 短信和二维码认证服务
+            services.AddScoped<IHbtSmsService, HbtSmsService>();            // 短信服务
+            services.AddScoped<IHbtQrCodeService, HbtQrCodeService>();      // 二维码服务
+
             // 用户和权限管理
             services.AddScoped<IHbtUserService, HbtUserService>();          // 用户管理
             services.AddScoped<IHbtRoleService, HbtRoleService>();          // 角色管理
             services.AddScoped<IHbtDeptService, HbtDeptService>();          // 部门管理
             services.AddScoped<IHbtPostService, HbtPostService>();          // 岗位管理
             services.AddScoped<IHbtMenuService, HbtMenuService>();          // 菜单管理
-
+            services.AddScoped<IHbtTenantService, HbtTenantService>();      // 租户管理
 
 
             return services;
@@ -267,7 +274,7 @@ namespace Lean.Hbt.Infrastructure.Extensions
         /// <summary>
         /// 添加实时服务
         /// </summary>
-        public static IServiceCollection AddRealTimeServices(this IServiceCollection services)
+        public static IServiceCollection AddSignalRServices(this IServiceCollection services)
         {
             services.AddScoped<IHbtOnlineUserService, HbtOnlineUserService>();   // 在线用户服务
             services.AddScoped<IHbtOnlineMessageService, HbtOnlineMessageService>();   // 在线消息服务
@@ -288,10 +295,12 @@ namespace Lean.Hbt.Infrastructure.Extensions
         /// 7. 项目服务 - 项目管理
         /// 8. 日程服务 - 日程管理
         /// 9. 用车服务 - 用车管理
+        /// 10. 新闻服务 - 新闻管理
         /// </remarks>
         /// <param name="services">服务集合</param>
+        /// <param name="configuration">配置</param>
         /// <returns>服务集合</returns>
-        private static IServiceCollection AddRoutineServices(this IServiceCollection services)
+        private static IServiceCollection AddRoutineServices(this IServiceCollection services, IConfiguration configuration)
         {
             // 任务相关服务
             services.AddScoped<IHbtQuartzService, HbtQuartzService>();  // 定时任务服务
@@ -324,6 +333,17 @@ namespace Lean.Hbt.Infrastructure.Extensions
 
             // 用车管理服务
             services.AddScoped<IHbtVehicleService, HbtVehicleService>();        // 用车服务
+
+            // 新闻相关服务
+            services.AddScoped<IHbtNewsService, HbtNewsService>();              // 新闻服务
+            services.AddScoped<IHbtNewsTopicService, HbtNewsTopicService>();    // 新闻话题服务
+            services.AddScoped<IHbtNewsTopicRelationService, HbtNewsTopicRelationService>(); // 新闻话题关系服务
+            services.AddScoped<IHbtNewsCommentService, HbtNewsCommentService>(); // 新闻评论服务
+            services.AddScoped<IHbtNewsLikeService, HbtNewsLikeService>();      // 新闻点赞服务
+            services.AddScoped<IHbtNewsTopicParticipantService, HbtNewsTopicParticipantService>(); // 新闻话题参与者服务
+
+            // 配置选项注册
+            services.Configure<HbtCommentOptions>(configuration.GetSection("Comment"));
 
             return services;
         }
@@ -359,7 +379,7 @@ namespace Lean.Hbt.Infrastructure.Extensions
             });
 
             // 注册多数据库上下文
-            var authConnectionString = configuration.GetConnectionString("AuthDB");
+            var authConnectionString = configuration.GetConnectionString("IdentityDB");
             var businessConnectionString = configuration.GetConnectionString("BusinessDB");
             var workflowConnectionString = configuration.GetConnectionString("WorkflowDB");
             var generatorConnectionString = configuration.GetConnectionString("GeneratorDB");
@@ -367,7 +387,7 @@ namespace Lean.Hbt.Infrastructure.Extensions
             // 注册认证数据库上下文
             if (!string.IsNullOrEmpty(authConnectionString))
             {
-                services.AddScoped<HbtAuthDbContext>(sp => new HbtAuthDbContext(
+                services.AddScoped<HbtIdentityDBContext>(sp => new HbtIdentityDBContext(
                     authConnectionString,
                     sp.GetRequiredService<IOptions<HbtDbOptions>>(),
                     sp.GetRequiredService<IHbtLogger>(),
@@ -375,7 +395,7 @@ namespace Lean.Hbt.Infrastructure.Extensions
                     sp.GetRequiredService<IServiceProvider>(),
                     sp.GetRequiredService<IConfiguration>()
                 ));
-                services.AddScoped<IHbtAuthDbContext>(sp => sp.GetRequiredService<HbtAuthDbContext>());
+                services.AddScoped<IHbtIdentityDBContext>(sp => sp.GetRequiredService<HbtIdentityDBContext>());
             }
 
             // 注册业务数据库上下文
@@ -534,7 +554,7 @@ namespace Lean.Hbt.Infrastructure.Extensions
                 var currentUser = sp.GetRequiredService<IHbtCurrentUser>();
                 var serviceProvider = sp.GetRequiredService<IServiceProvider>();
                 var configuration = sp.GetRequiredService<IConfiguration>();
-                
+
                 return new HbtDbContext(options, dbOptions, logger, currentUser, serviceProvider, configuration);
             });
             services.AddScoped<IHbtDbContext, HbtDbContext>(sp => sp.GetRequiredService<HbtDbContext>());

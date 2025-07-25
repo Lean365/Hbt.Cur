@@ -638,7 +638,6 @@ onMounted(() => {
 <style lang="less" scoped>
 .tenant-container {
   padding: 16px;
-  background-color: #fff;
   height: 100%;
   display: flex;
   flex-direction: column;

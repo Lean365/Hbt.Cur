@@ -3,7 +3,7 @@
 // 文件名 : HbtVehicleRefueling.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-26 14:30
-// 版本号 : V1.0.0
+// 版本号 : V0.0.1
 // 描述   : 车辆加油管理实体
 //===================================================================
 
@@ -62,13 +62,13 @@ namespace Lean.Hbt.Domain.Entities.Routine.Vehicle
         /// <summary>
         /// 加油状态（0：计划中，1：进行中，2：已完成，3：已取消）
         /// </summary>
-        [SugarColumn(ColumnName = "status", ColumnDescription = "加油状态（0：计划中，1：进行中，2：已完成，3：已取消）", IsNullable = false, DefaultValue = "0", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
+        [SugarColumn(ColumnName = "status", ColumnDescription = "加油状态", IsNullable = false, DefaultValue = "0", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
         public int Status { get; set; }
 
         /// <summary>
         /// 加油类型（0：92号汽油，1：95号汽油，2：98号汽油，3：0号柴油，4：-10号柴油，5：-20号柴油，6：其他）
         /// </summary>
-        [SugarColumn(ColumnName = "fuel_type", ColumnDescription = "加油类型（0：92号汽油，1：95号汽油，2：98号汽油，3：0号柴油，4：-10号柴油，5：-20号柴油，6：其他）", IsNullable = false, DefaultValue = "0", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
+        [SugarColumn(ColumnName = "fuel_type", ColumnDescription = "加油类型", IsNullable = false, DefaultValue = "0", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
         public int FuelType { get; set; }
 
         /// <summary>
@@ -86,55 +86,55 @@ namespace Lean.Hbt.Domain.Entities.Routine.Vehicle
         /// <summary>
         /// 加油前油量（升）
         /// </summary>
-        [SugarColumn(ColumnName = "before_fuel_level", ColumnDescription = "加油前油量（升）", IsNullable = true, ColumnDataType = "decimal(18,2)", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
+        [SugarColumn(ColumnName = "before_fuel_level", ColumnDescription = "加油前油量", IsNullable = true, ColumnDataType = "decimal(18,2)", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
         public decimal? BeforeFuelLevel { get; set; }
 
         /// <summary>
         /// 加油后油量（升）
         /// </summary>
-        [SugarColumn(ColumnName = "after_fuel_level", ColumnDescription = "加油后油量（升）", IsNullable = true, ColumnDataType = "decimal(18,2)", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
+        [SugarColumn(ColumnName = "after_fuel_level", ColumnDescription = "加油后油量", IsNullable = true, ColumnDataType = "decimal(18,2)", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
         public decimal? AfterFuelLevel { get; set; }
 
         /// <summary>
         /// 加油量（升）
         /// </summary>
-        [SugarColumn(ColumnName = "refuel_amount", ColumnDescription = "加油量（升）", IsNullable = false, DefaultValue = "0", ColumnDataType = "decimal(18,2)", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
+        [SugarColumn(ColumnName = "refuel_amount", ColumnDescription = "加油量", IsNullable = false, DefaultValue = "0", ColumnDataType = "decimal(18,2)", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
         public decimal RefuelAmount { get; set; }
 
         /// <summary>
         /// 单价（元/升）
         /// </summary>
-        [SugarColumn(ColumnName = "unit_price", ColumnDescription = "单价（元/升）", IsNullable = false, DefaultValue = "0", ColumnDataType = "decimal(18,2)", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
+        [SugarColumn(ColumnName = "unit_price", ColumnDescription = "单价", IsNullable = false, DefaultValue = "0", ColumnDataType = "decimal(18,2)", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
         public decimal UnitPrice { get; set; }
 
         /// <summary>
         /// 总金额（元）
         /// </summary>
-        [SugarColumn(ColumnName = "total_amount", ColumnDescription = "总金额（元）", IsNullable = false, DefaultValue = "0", ColumnDataType = "decimal(18,2)", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
+        [SugarColumn(ColumnName = "total_amount", ColumnDescription = "总金额", IsNullable = false, DefaultValue = "0", ColumnDataType = "decimal(18,2)", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
         public decimal TotalAmount { get; set; }
 
         /// <summary>
         /// 优惠金额（元）
         /// </summary>
-        [SugarColumn(ColumnName = "discount_amount", ColumnDescription = "优惠金额（元）", IsNullable = false, DefaultValue = "0", ColumnDataType = "decimal(18,2)", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
+        [SugarColumn(ColumnName = "discount_amount", ColumnDescription = "优惠金额", IsNullable = false, DefaultValue = "0", ColumnDataType = "decimal(18,2)", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
         public decimal DiscountAmount { get; set; }
 
         /// <summary>
         /// 实付金额（元）
         /// </summary>
-        [SugarColumn(ColumnName = "actual_amount", ColumnDescription = "实付金额（元）", IsNullable = false, DefaultValue = "0", ColumnDataType = "decimal(18,2)", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
+        [SugarColumn(ColumnName = "actual_amount", ColumnDescription = "实付金额", IsNullable = false, DefaultValue = "0", ColumnDataType = "decimal(18,2)", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
         public decimal ActualAmount { get; set; }
 
         /// <summary>
         /// 支付方式（0：现金，1：银行卡，2：微信，3：支付宝，4：油卡，5：其他）
         /// </summary>
-        [SugarColumn(ColumnName = "payment_method", ColumnDescription = "支付方式（0：现金，1：银行卡，2：微信，3：支付宝，4：油卡，5：其他）", IsNullable = false, DefaultValue = "0", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
+        [SugarColumn(ColumnName = "payment_method", ColumnDescription = "支付方式", IsNullable = false, DefaultValue = "0", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
         public int PaymentMethod { get; set; }
 
         /// <summary>
         /// 支付状态（0：未支付，1：已支付，2：已退款）
         /// </summary>
-        [SugarColumn(ColumnName = "payment_status", ColumnDescription = "支付状态（0：未支付，1：已支付，2：已退款）", IsNullable = false, DefaultValue = "0", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
+        [SugarColumn(ColumnName = "payment_status", ColumnDescription = "支付状态", IsNullable = false, DefaultValue = "0", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
         public int PaymentStatus { get; set; }
 
         /// <summary>
@@ -158,13 +158,13 @@ namespace Lean.Hbt.Domain.Entities.Routine.Vehicle
         /// <summary>
         /// 发票金额（元）
         /// </summary>
-        [SugarColumn(ColumnName = "invoice_amount", ColumnDescription = "发票金额（元）", IsNullable = true, ColumnDataType = "decimal(18,2)", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
+        [SugarColumn(ColumnName = "invoice_amount", ColumnDescription = "发票金额", IsNullable = true, ColumnDataType = "decimal(18,2)", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
         public decimal? InvoiceAmount { get; set; }
 
         /// <summary>
         /// 发票状态（0：未开票，1：已开票，2：已作废）
         /// </summary>
-        [SugarColumn(ColumnName = "invoice_status", ColumnDescription = "发票状态（0：未开票，1：已开票，2：已作废）", IsNullable = false, DefaultValue = "0", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
+        [SugarColumn(ColumnName = "invoice_status", ColumnDescription = "发票状态", IsNullable = false, DefaultValue = "0", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
         public int InvoiceStatus { get; set; }
 
         /// <summary>
@@ -200,25 +200,25 @@ namespace Lean.Hbt.Domain.Entities.Routine.Vehicle
         /// <summary>
         /// 是否满油（0：否，1：是）
         /// </summary>
-        [SugarColumn(ColumnName = "is_full_tank", ColumnDescription = "是否满油（0：否，1：是）", IsNullable = false, DefaultValue = "0", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
+        [SugarColumn(ColumnName = "is_full_tank", ColumnDescription = "是否满油", IsNullable = false, DefaultValue = "0", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
         public int IsFullTank { get; set; }
 
         /// <summary>
         /// 油箱容量（升）
         /// </summary>
-        [SugarColumn(ColumnName = "tank_capacity", ColumnDescription = "油箱容量（升）", IsNullable = true, ColumnDataType = "decimal(18,2)", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
+        [SugarColumn(ColumnName = "tank_capacity", ColumnDescription = "油箱容量", IsNullable = true, ColumnDataType = "decimal(18,2)", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
         public decimal? TankCapacity { get; set; }
 
         /// <summary>
         /// 油耗（升/百公里）
         /// </summary>
-        [SugarColumn(ColumnName = "fuel_consumption", ColumnDescription = "油耗（升/百公里）", IsNullable = true, ColumnDataType = "decimal(18,2)", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
+        [SugarColumn(ColumnName = "fuel_consumption", ColumnDescription = "油耗", IsNullable = true, ColumnDataType = "decimal(18,2)", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
         public decimal? FuelConsumption { get; set; }
 
         /// <summary>
         /// 预计续航里程（公里）
         /// </summary>
-        [SugarColumn(ColumnName = "estimated_range", ColumnDescription = "预计续航里程（公里）", IsNullable = true, ColumnDataType = "decimal(18,2)", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
+        [SugarColumn(ColumnName = "estimated_range", ColumnDescription = "预计续航里程", IsNullable = true, ColumnDataType = "decimal(18,2)", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
         public decimal? EstimatedRange { get; set; }
 
         /// <summary>

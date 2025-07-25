@@ -3,7 +3,7 @@
 // 文件名 : HbtContractService.cs
 // 创建者 : Lean365
 // 创建时间: 2024-03-07 16:30
-// 版本号 : V1.0.0
+// 版本号 : V0.0.1
 // 描述   : 合同服务实现
 //===================================================================
 
@@ -38,24 +38,32 @@ namespace Lean.Hbt.Application.Services.Routine.Contract
     /// </remarks>
     public class HbtContractService : HbtBaseService, IHbtContractService
     {
-        private readonly IHbtRepository<HbtContract> _contractRepository;
+        /// <summary>
+        /// 仓储工厂
+        /// </summary>
+        protected readonly IHbtRepositoryFactory _repositoryFactory;
+
+        /// <summary>
+        /// 获取合同仓储
+        /// </summary>
+        private IHbtRepository<HbtContract> ContractRepository => _repositoryFactory.GetBusinessRepository<HbtContract>();
 
         /// <summary>
         /// 构造函数
         /// </summary>
-        /// <param name="logger">日志记录器</param>
-        /// <param name="contractRepository">合同仓储</param>
+        /// <param name="repositoryFactory">仓储工厂</param>
+        /// <param name="logger">日志服务</param>
         /// <param name="httpContextAccessor">HTTP上下文访问器</param>
         /// <param name="currentUser">当前用户服务</param>
         /// <param name="localization">本地化服务</param>
         public HbtContractService(
+            IHbtRepositoryFactory repositoryFactory,
             IHbtLogger logger,
-            IHbtRepository<HbtContract> contractRepository,
             IHttpContextAccessor httpContextAccessor,
             IHbtCurrentUser currentUser,
             IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
         {
-            _contractRepository = contractRepository;
+            _repositoryFactory = repositoryFactory ?? throw new ArgumentNullException(nameof(repositoryFactory));
         }
 
         /// <summary>
@@ -70,7 +78,7 @@ namespace Lean.Hbt.Application.Services.Routine.Contract
             var predicate = QueryExpression(query);
             _logger.Info("生成的查询表达式：{@Predicate}", predicate);
 
-            var result = await _contractRepository.GetPagedListAsync(
+            var result = await ContractRepository.GetPagedListAsync(
                 predicate,
                 query?.PageIndex ?? 1,
                 query?.PageSize ?? 10,
@@ -112,7 +120,7 @@ namespace Lean.Hbt.Application.Services.Routine.Contract
         /// <returns>返回合同详情</returns>
         public async Task<HbtContractDto> GetByIdAsync(long contractId)
         {
-            var contract = await _contractRepository.GetByIdAsync(contractId);
+            var contract = await ContractRepository.GetByIdAsync(contractId);
             if (contract == null)
                 throw new HbtException(L("Contract.NotFound", contractId));
 
@@ -127,7 +135,7 @@ namespace Lean.Hbt.Application.Services.Routine.Contract
         public async Task<long> CreateAsync(HbtContractCreateDto input)
         {
             var contract = input.Adapt<HbtContract>();
-            var result = await _contractRepository.CreateAsync(contract);
+            var result = await ContractRepository.CreateAsync(contract);
             return result;
         }
 
@@ -138,12 +146,12 @@ namespace Lean.Hbt.Application.Services.Routine.Contract
         /// <returns>返回是否成功</returns>
         public async Task<bool> UpdateAsync(HbtContractUpdateDto input)
         {
-            var contract = await _contractRepository.GetByIdAsync(input.ContractId);
+            var contract = await ContractRepository.GetByIdAsync(input.ContractId);
             if (contract == null)
                 throw new HbtException(L("Contract.NotFound", input.ContractId));
 
             input.Adapt(contract);
-            var result = await _contractRepository.UpdateAsync(contract);
+            var result = await ContractRepository.UpdateAsync(contract);
             return result > 0;
         }
 
@@ -154,11 +162,11 @@ namespace Lean.Hbt.Application.Services.Routine.Contract
         /// <returns>返回是否成功</returns>
         public async Task<bool> DeleteAsync(long contractId)
         {
-            var contract = await _contractRepository.GetByIdAsync(contractId);
+            var contract = await ContractRepository.GetByIdAsync(contractId);
             if (contract == null)
                 throw new HbtException(L("Contract.NotFound", contractId));
 
-            var result = await _contractRepository.DeleteAsync(contract);
+            var result = await ContractRepository.DeleteAsync(contract);
             return result > 0;
         }
 
@@ -172,11 +180,11 @@ namespace Lean.Hbt.Application.Services.Routine.Contract
             if (contractIds == null || contractIds.Length == 0)
                 throw new HbtException(L("Contract.SelectToDelete"));
 
-            var contracts = await _contractRepository.GetListAsync(x => contractIds.Contains(x.Id));
+            var contracts = await ContractRepository.GetListAsync(x => contractIds.Contains(x.Id));
             if (!contracts.Any())
                 throw new HbtException(L("Contract.NotFound"));
 
-            var result = await _contractRepository.DeleteAsync(contracts);
+            var result = await ContractRepository.DeleteAsync(contracts);
             return result > 0;
         }
 
@@ -200,7 +208,7 @@ namespace Lean.Hbt.Application.Services.Routine.Contract
                 try
                 {
                     var contract = dto.Adapt<HbtContract>();
-                    await _contractRepository.CreateAsync(contract);
+                    await ContractRepository.CreateAsync(contract);
                     success++;
                 }
                 catch (Exception ex)
@@ -223,7 +231,7 @@ namespace Lean.Hbt.Application.Services.Routine.Contract
         {
             var predicate = QueryExpression(query);
 
-            var contracts = await _contractRepository.AsQueryable()
+            var contracts = await ContractRepository.AsQueryable()
                 .Where(predicate)
                 .OrderBy(x => x.Id)
                 .ToListAsync();

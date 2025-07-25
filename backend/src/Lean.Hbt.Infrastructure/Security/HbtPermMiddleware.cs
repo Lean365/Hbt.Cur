@@ -3,7 +3,7 @@
 // 文件名 : HbtPermMiddleware.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-22 16:00
-// 版本号 : V1.0.0
+// 版本号 : V0.0.1
 // 描述    : 权限中间件
 //===================================================================
 
@@ -47,6 +47,14 @@ namespace Lean.Hbt.Infrastructure.Security
         public async Task InvokeAsync(HttpContext context)
         {
             _logger.Debug("[权限中间件] 开始处理请求: {Path}", context.Request.Path);
+
+            // 跳过验证码相关的请求
+            if (IsCaptchaRequest(context))
+            {
+                _logger.Debug("[权限中间件] 验证码请求，跳过权限验证");
+                await _next(context);
+                return;
+            }
 
             // 获取当前请求的Endpoint
             var endpoint = context.GetEndpoint();
@@ -138,6 +146,17 @@ namespace Lean.Hbt.Infrastructure.Security
             }
 
             await _next(context);
+        }
+
+        /// <summary>
+        /// 检查是否是验证码相关请求
+        /// </summary>
+        /// <param name="context">HTTP上下文</param>
+        /// <returns>是否是验证码请求</returns>
+        private bool IsCaptchaRequest(HttpContext context)
+        {
+            var path = context.Request.Path.Value?.ToLower();
+            return path != null && (path.Contains("/hbtcaptcha/") || path.Contains("/hbtloginmethod/"));
         }
     }
 }

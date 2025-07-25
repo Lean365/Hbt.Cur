@@ -17,330 +17,453 @@ export default {
       terms: 'Terms of Service',
       index: 'About Hbt'
     },
-    core: {
-      _self: 'Core Management',
-      config: 'System Configuration',
-      language: 'Language Management',
-      dict: 'Dictionary Management',
-    },
+
     identity: {
-      _self: 'Identity Authentication',
-      user: 'User Management',
-      role: 'Role Management',
-      dept: 'Department Management',
-      post: 'Position Management',
-      menu: 'Menu Management',
-      tenant: 'Tenant Management',
-      oauth: 'OAuth Management',
-      profile: 'Personal Information',
-      changePassword: 'Change Password'
+      _self: 'Identity',
+      user: 'User ',
+      role: 'Role ',
+      dept: 'Department ',
+      post: 'Position ',
+      menu: 'Menu ',
+      tenant: 'Tenant ',
+      oauth: 'OAuth ',
+      profile: 'Personal',
+      changePassword: 'Change'
     },
     audit: {
-      _self: 'Audit Logs',
-      operlog: 'Operation Log',
-      loginlog: 'Login Log',
-      sqldifflog: 'Difference Log',
-      exceptionlog: 'Exception Log',
-      auditlog: 'Audit Log',
-      quartzlog: 'Task Log',
-      server: 'Server Monitor'
+      _self: 'Logs',
+      operlog: 'Oper',
+      loginlog: 'Login',
+      sqldifflog: 'Difference',
+      exceptionlog: 'Exception',
+      quartzlog: 'Task',
+      server: 'Server'
     },
     workflow: {
       _self: 'Workflow',
-      overview: 'Process Overview',
-      my: 'My Processes',
-      form: 'Form Management',
-      definition: 'Process Definition',
-      instance: 'Process Instance',
-      task: 'Work Tasks',
-      node: 'Process Node',
-      variable: 'Process Variables',
-      history: 'Process History'
+      engine:{
+        _self: 'Engine',
+        monitor: 'Monitor',
+        todo: 'Todo',
+        done: 'Done',
+        signoff: 'Sign-off',
+        execution: 'Execution',
+        designer: 'Designer'
+      },
+      manage:{
+        _self: 'Manage',
+        form: 'Form ',
+        scheme: 'Scheme',
+        instance: 'Instance',
+        oper: 'Oper',
+        trans: 'Trans'
+      }
     },
     signalr: {
-      _self: 'Real-time Communication',
-      online: 'Online Users',
-      message: 'Online Messages'
+      _self: 'Communication',
+      online: 'Users',
+      message: 'Messages'
     },
     generator: {
-      _self: 'Code Generator',
-      table: 'Database Tables',
-      tableDefine: 'Table Column Definition',
-      template: 'Code Templates',
-      config: 'Generation Configuration',
-      api: 'API Documentation'
+      _self: 'Generator',
+      table: 'Tables',
+      tableDefine: 'Definition',
+      template: 'Templates',
+      config: 'Configuration',
+      api: 'APIs'
     },
     routine: {
-      _self: 'Daily Office',
-      schedule: {
-        _self: 'Schedule Management',
-        myschedule: 'My Schedule',
-        dashboard: 'Schedule Dashboard',
+      _self: 'routine',
+      core: {
+        _self: 'Core',
+        numberrule: 'Numbering Rules',
+        config: 'Configuration',
+        language: 'Language ',
+        dict: 'Dictionary '
       },
-      car: {
-        _self: 'Vehicle Management',
-        info: 'Vehicle Information',
+      contract: {
+        _self: 'Contract ',
+        template: {
+          _self: 'Contract Templates',
+          manage: 'Template ',
+          category: 'Template Categories'
+        },
+        draft: {
+          _self: 'Contract Drafting',
+          apply: 'Draft Application',
+          my: 'My Drafts'
+        },
+        approval: {
+          _self: 'Contract Approval',
+          pending: 'Contract Approval',
+          approved: 'Approved',
+          record: 'Approval Records'
+        },
+        execution: {
+          _self: 'Contract Execution',
+          track: 'Execution Tracking',
+          change: 'Change ',
+          payment: 'Payment '
+        },
+        archive: {
+          _self: 'Contract Archive',
+          manage: 'Archive ',
+          query: 'Query Statistics'
+        }
+      },
+      project: {
+        _self: 'Project ',
+        info: {
+          _self: 'Project Information',
+          list: 'Project List'
+        },
+        plan: {
+          _self: 'Project Planning',
+          request: 'Plan Request',
+          gantt: 'Project Gantt Chart'
+        },
+        task: {
+          _self: 'Project Tasks',
+          assign: 'Task Assignment',
+          track: 'Task Tracking',
+          board: 'Task Board'
+        },
+        resource: {
+          _self: 'Project Resources',
+          personnel: 'Personnel ',
+          equipment: 'Equipment ',
+          budget: 'Budget '
+        },
+        monitor: {
+          _self: 'Project Monitoring',
+          progress: 'Progress Monitoring',
+          quality: 'Quality Monitoring',
+          risk: 'Risk Monitoring'
+        }
+      },
+      quartz: {
+        _self: 'Task Scheduling',
+        job: {
+          _self: 'Task ',
+          config: 'Task Configuration',
+          list: 'Task List',
+          status: 'Task Status'
+        },
+        schedule: {
+          _self: 'Task Scheduling',
+          config: 'Schedule Configuration',
+          monitor: 'Schedule Monitor',
+          stats: 'Schedule Statistics'
+        }
+      },
+      schedule: {
+        _self: 'Schedule ',
+        myschedule: 'My Schedule',
+        dashboard: 'Schedule Dashboard'
+      },
+      vehicle: {
+        _self: 'Vehicle ',
+        my: 'My Vehicles',
         application: 'Vehicle Application',
         dashboard: 'Vehicle Dashboard',
-        maintenance: 'Vehicle Maintenance',
+        manage: {
+          _self: 'Vehicle ',
+          info: 'Vehicle Information',
+          maintenance: 'Vehicle Maintenance'
+        }
       },
       email: {
-        _self: 'Email Management',
+        _self: 'Email ',
         inbox: 'Inbox',
         drafts: 'Drafts',
         sent: 'Sent',
         trash: 'Trash',
-        template: 'Email Templates',        
+        template: 'Template'
       },
       meeting: {
-        _self: 'Meeting Management',
+        _self: 'Meeting ',
         room: 'Meeting Rooms',
         mymeeting: 'My Meetings',
         booking: 'Meeting Booking',
-        dashboard: 'Meeting Dashboard',
+        dashboard: 'Meeting Dashboard'
       },
-      notice: { 
+      notice: {
         _self: 'Notifications & Announcements',
         message: {
-          _self: 'Message Management',
+          _self: 'Message ',
           mymessages: 'My Messages',
-          list: 'Message Dashboard',
+          list: 'Message Board'
         },
         announcement: {
-          _self: 'Announcement Management',
+          _self: 'Announcement ',
           signoff: 'Sign Announcements',
-          list: 'Announcement List',
+          list: 'Announcement List'
         },
         notification: {
-          _self: 'Notification Management',
+          _self: 'Notification ',
           ack: 'Read Notifications',
-          list: 'Notification List',
-        },
+          list: 'Notification List'
+        }
       },
       hr: {
-        _self: 'HR & Attendance',
+        _self: 'HR Attendance',
         recruitment: {
-          _self: 'Recruitment Management',
+          _self: 'Recruitment ',
           apply: 'Recruitment Application',
           approval: 'Recruitment Approval',
-          list: 'Recruitment List',
-
+          list: 'Recruitment List'
         },
         transfer: {
-          _self: 'Transfer Management',
+          _self: 'Transfer ',
           apply: 'Transfer Application',
           approval: 'Transfer Approval',
-          list: 'Transfer List',
+          list: 'Transfer List'
         },
         leave: {
-          _self: 'Leave Management',
+          _self: 'Leave ',
           apply: 'Leave Application',
           approval: 'Leave Approval',
-          list: 'Leave List',
+          list: 'Leave List'
         },
         trip: {
-          _self: 'Business Trip Management',
+          _self: 'Business Trip ',
           apply: 'Trip Application',
           approval: 'Trip Approval',
-          list: 'Trip List',
+          list: 'Trip List'
         },
         overtime: {
-          _self: 'Overtime Management',
+          _self: 'Overtime ',
           apply: 'Overtime Application',
           approval: 'Overtime Approval',
-          list: 'Overtime List',
+          list: 'Overtime List'
+        }
       },
-    },
-    expense:{
-      _self: 'Expense Management',
-      daily: {
-        _self: 'Daily Expenses',
-        apply: 'Expense Application',
-        approve: 'Expense Approval',
-        list: 'Expense List',
+      expense: {
+        _self: 'Expense ',
+        daily: {
+          _self: 'Daily Expenses',
+          apply: 'Expense Application',
+          approve: 'Expense Approval',
+          list: 'Expense List'
+        },
+        travel: {
+          _self: 'Travel Expenses',
+          apply: 'Travel Expense Application',
+          approve: 'Travel Expense Approval',
+          list: 'Travel Expense List'
+        }
       },
-      travel: {
-        _self: 'Travel Expenses',
-        apply: 'Travel Expense Application',
-        approve: 'Travel Expense Approval',
-        list: 'Travel Expense List',
+      document: {
+        _self: 'Document ',
+        news: {
+          _self: 'News ',
+        },
+        regulation: {
+          _self: 'Regulation',
+          manage: 'Regulation ',
+          control: 'Control',
+        },
+        file: {
+          _self: 'Daily',
+        },
+        iso: {
+          _self: 'ISO',
+          manage: 'File ',
+          control: 'Control',
+        },
+        official: {
+          _self: 'Official ',
+          manage: 'Document ',
+          issuance: 'Control',
+        },
+        law: {
+          _self: 'Laws',
+        }
       },
-    },
-    file:{
-      _self: 'File Management',
-      daily: {
-        _self: 'Daily Files',
-        list: 'File List',
+      officesupplies: {
+        _self: 'Office Supplies',
+        inventory: {
+          _self: 'Inventory ',
+          requisition: 'Purchase ',
+          inbound: 'Inbound ',
+          stocktaking: 'Stocktaking '
+        },
+        usage: {
+          _self: 'Usage ',
+          apply: 'Usage Application',
+          approve: 'Usage Approval',
+          list: 'Usage Records'
+        }
       },
-      iso: {
-        _self: 'ISO Files',
-        version: 'Version',
-        signoff: 'Sign-off',
-        list: 'ISO Files',
+      book: {
+        _self: 'Book ',
+        inventory: {
+          _self: 'Inventory ',
+          requisition: 'Purchase ',
+          inbound: 'Inbound ',
+          list: 'Book List',
+          stocktaking: 'Stocktaking '
+        },
+        usage: {
+          _self: 'Usage ',
+          card: 'Library Card',
+          borrow: 'Borrow',
+          return: 'Return'
+        }
       },
-      document: { 
-        _self: 'Document Management',
-        version: 'Version',
-        signoff: 'Sign-off',
-        list: 'Document List',
-      },
-    },
-    officesupplies:{
-      _self: 'Office Supplies',
-      inventory:{
-        _self: 'Inventory Management',
-        requisition: 'Requisition Management',
-        inbound: 'Inbound Management',
-        stocktaking: 'Stocktaking Management',
-      },
-      usage:{
-        _self: 'Usage Management',
-        apply: 'Usage Application',
-        approve: 'Usage Approval',
-        receive: 'Usage Record',
+      medical: {
+        _self: 'Medical ',
+        medicine: {
+          _self: 'Inventory ',
+          requisition: 'Purchase ',
+          inbound: 'Inbound ',
+          list: 'Medicine List',
+          stocktaking: 'Stocktaking '
+        },
+        usage: {
+          _self: 'Usage ',
+          archive: 'Archive',
+          receive: 'Receive Medicine',
+          cost: 'Cost'
+        }
       }
     },
-    book:{
-      _self: 'Book Management',
-      inventory:{
-        _self: 'Inventory Management',
-        requisition: 'Requisition Management',
-        inbound: 'Inbound Management',
-        list: 'Book List',
-        stocktaking: 'Stocktaking Management',
-      },
-      usage:{
-        _self: 'Usage Management',
-        card: 'Library Card',
-        borrow: 'Borrow',
-        return: 'Return',
-      }
-
-    },
-    medical:{
-      _self: 'Medical Management',
-      medicine:{
-        _self: 'Inventory Management',
-        requisition: 'Requisition Management',
-        inbound: 'Inbound Management',
-        list: 'Medicine List',
-        stocktaking: 'Stocktaking Management',
-      },
-      usage:{
-        _self: 'Usage Management',
-        archive: 'Archive',
-        receive: 'Medicine Receipt',
-        cost: 'Cost',
-      }
-
-    },
-  },
-  accounting: {
+    accounting: {
       _self: 'Accounting',
       financial: {
-        _self: 'Management Accounting',
-        company: "Company Information",
-        account: 'Accounting Accounts',
+        _self: ' Accounting',
+        company: 'Company Information',
+        account: 'Chart of Accounts',
         companyaccount: 'Company Accounts',
         ledger: 'General Ledger',
         payable: 'Accounts Payable',
         receivable: 'Accounts Receivable',
         fixedasset: 'Fixed Assets',
-        bank: 'Bank Information',
-
+        bank: 'Bank Information'
       },
       controlling: {
-        _self: 'Controlling Accounting',
+        _self: 'Controlling',
         costelement: 'Cost Elements',
         costcenter: 'Cost Centers',
         profitcenter: 'Profit Centers',
         accountsReceivable: 'Accounts Receivable',
         accountsPayable: 'Accounts Payable',
         assetAccounting: 'Asset Accounting',
-        tax: 'Tax Management',
-        financialReporting: 'Financial Reports'      
-    },
-    budget:{
-      _self: 'Comprehensive Budget',
+        tax: 'Tax ',
+        financialReporting: 'Financial Reports'
+      },
+      budget: {
+        _self: 'Comprehensive Budget',
         formulation: {
           _self: 'Budget Formulation',
           sales: {
             _self: 'Sales Budget',
             cost: 'Sales Cost',
-            rolling: 'Sales Rolling',
+            rolling: 'Sales Rolling'
           },
           production: {
             _self: 'Production Budget',
-            auxiliary: 'Production Auxiliary Materials',
+            auxiliary: 'Production Auxiliary',
             labor: 'Production Labor',
-            manufacturing: 'Manufacturing',
+            manufacturing: 'Production Manufacturing'
           },
           cost: {
             _self: 'Cost Budget',
             directmaterial: 'Direct Materials',
             directlabor: 'Direct Labor',
             indirectlabor: 'Indirect Labor',
-            manufacturing: 'Manufacturing Expenses',
+            manufacturing: 'Manufacturing Overhead'
           },
           expense: {
             _self: 'Expense Budget',
             sales: 'Sales Expenses',
-            management: 'Management Expenses',
-            financial: 'Financial Expenses',
+            manage: ' Expenses',
+            financial: 'Financial Expenses'
           },
           financial: {
             _self: 'Financial Budget',
             cashflow: 'Cash Flow',
             balancesheet: 'Balance Sheet',
-            income: 'Income Statement',
-          },
+            income: 'Income Statement'
+          }
         },
         control: {
           _self: 'Budget Control',
           dashboard: 'Budget Dashboard',
-          approval: 'Budget Approval',
-        },   
-  },
-},
+          approval: 'Budget Approval'
+        }
+      }
+    },
     logistics: {
-      _self: 'Logistics Management',
+      _self: 'Logistics ',
       equipment: {
-        _self: 'Equipment Management',
-        data: 'Equipment Master Data',
-        location: 'Equipment Location',
-        material: 'Material Association',
-        workorder: 'Work Order'
-
+        _self: 'Equipment ',
+        master: {
+          _self: 'Equipment Data',
+          list: 'Equipment Information',
+          location: 'Functional Location',
+          material: 'Material Association'
+        },
+        maintenance: {
+          _self: 'Equipment Maintenance',
+          workorder: 'Maintenance Plans',
+          assign: 'Maintenance Assignment',
+          execute: 'Maintenance Execution'
+        }
       },
       material: {
-        _self: 'Material Management',
-        material:{
-          _self: 'Material Management',
-          material: 'Material Master Data',
-          plant: 'Plant Information',
-          master: 'Material Data',
-          plantmaster: 'Plant Materials',
-          vendor: 'Vendor Information',
-          supplier: 'Supplier Information',
+        _self: 'Material ',
+        manage: {
+          _self: 'Material Information',
+          master: 'Group Materials',
+          plant: {
+            _self: 'Plant Information',
+            master: 'Plant Materials'
+          }
         },
-        purchase:{
-          _self: 'Purchase Management',
+        purchase: {
+          _self: 'Purchase ',
           vendor: 'Vendor Information',
           supplier: 'Supplier Information',
-          price: 'Purchase Price',
+          price: 'Purchase Prices',
           requisition: 'Purchase Requisition',
-          order: 'Purchase Order',
-
+          order: 'Purchase Orders'
         },
-
-
-
+        sample:{
+          _self: 'Sample ',
+          component: 'Component Samples',
+          product: 'Product Samples'
+        },
+        drawing: {
+          _self: 'Drawing ',
+          design: 'Drawing ',
+          engineering: 'Drawing Control',
+          gerber: 'Gerber Files',
+          coordinate: 'Coordinate Files',
+          assembly: 'Assembly Drawings',
+          structure: 'Structure Files',
+          impedance: 'Impedance Files',
+          process: 'Process Flow'
+        },
+        csm: {  
+          _self: 'Customer Supplied Items',
+          raw: 'Customer Supplied Materials',
+          good: 'Customer Supplied Products'
+        }
       },
       production: {
-        _self: 'Production Management',
-        bom: 'Bill of Materials',
+        _self: 'Production ',
+        basic: {
+          _self: 'Basic Data',
+          bom: 'Bill of Materials',
+          workcenter: 'Work Centers',   
+          routing: 'Process Routes',
+          order: 'Production Orders',
+          worktime: 'Production Hours',
+          kanban: 'Kanban'
+        },
         change: {
-          _self: 'Design Change',
+          _self: 'Design Changes',
           implementation: 'Change Implementation',
           techcontact: 'Technical Contact',
           material: 'Material Confirmation',
@@ -351,125 +474,239 @@ export default {
           input: {
             _self: 'Change Input',
             gijutsu: 'Technical Department',
-            seikan: 'Production Management Department',
+            seikan: 'Production Control Department',
             koubai: 'Procurement Department',
-            uketsuke: 'Reception Department',
-            bukan: 'Management Department',
+            uketsuke: 'Inspection Department',
+            bukan: 'Department ',
             seizou2: 'Production Department 2',
             seizou1: 'Production Department 1',
             hinkan: 'Quality Control Department',
-            seizougijutsu: 'Production Technology Department',
-  
+            seizougijutsu: 'Production Technology Department'
+          }
+        },       
+        output: {
+          _self: 'Manufacturing ',
+          workshop1:{
+            _self: 'Production Department 1',
+            oph: {
+              _self: 'OPH',
+              epp: 'EPP',
+              production: 'Production',
+              modify: 'Modification',
+              rework: 'Rework'
+            },
+            defect:{
+              _self: 'Defects',
+              epp: 'EPP',
+              production: 'Production',
+              modify: 'Modification',
+              rework: 'Rework'
+            },
+            worktime: {
+              _self: 'Work Hours',
+              epp: 'EPP',
+              production: 'Production',
+              modify: 'Modification',
+              rework: 'Rework'
+            }
+          },
+          workshop2:{
+            _self: 'Production Department 2',
+            oph: {
+              _self: 'OPH',
+              epp: 'EPP',
+              production: 'Production',
+              modify: 'Modification',
+              rework: 'Rework'
+            },
+            defect:{
+              _self: 'Defects',
+              eppInspection: 'EPP Inspection',
+              eppRepair: 'EPP Repair',
+              productionInspection: 'Production Inspection',
+              productionRepair: 'Production Repair',
+              modifyInspection: 'Modification Inspection',
+              modifyRepair: 'Modification Repair',
+              reworkInspection: 'Rework Inspection',
+              reworkRepair: 'Rework Repair'
+            },
+            worktime: {
+              _self: 'Work Hours',
+              epp: 'EPP',
+              production: 'Production',
+              modify: 'Modification',
+              rework: 'Rework'
+            }
           }
         },
-        workcenter: 'Work Center',
-        order: 'Production Order',
-        kanban: 'Kanban',
-        oph:{
-          _self: 'OPH Management',
-          workshop1: {
-            _self: 'Production Department 1',
-            output: 'Daily Production Report',
-            defect: 'Production Defects',
-            worktime: 'Production Work Time',
-            productionReport: 'Production Report',
-            defectSummary: 'Defect Summary',
-            worktimeReport: 'Work Time Report'
-          },
-          workshop2: {
-            _self: 'Production Department 2',
-            output: 'Daily Production Report',
-            inspection: 'Inspection Records',
-            repair: 'Repair Records',
-            worktime: 'Production Work Time',
-            productionReport: 'Production Report',
-            inspectionReport: 'Inspection Report',
-            repairReport: 'Repair Report',
-            worktimeReport: 'Work Time Report'
-          }
+        sop: {
+          _self: 'SOP ',
+          workshop1: 'Production Department 1',
+          workshop2: 'Production Department 2'
+        },
+        techcontact: {
+          _self: 'Technical Contact',
+          epp: 'EPP Contact',
+          engineering: 'Engineering Contact',
+          external: 'External Contact'
         }
-
       },
       project: {
-        _self: 'Project Management',
+        _self: 'Project ',
         define: 'Project Definition',
         cost: 'Cost Planning',
         resource: 'Resource Planning',
-        schedule: 'Schedule Planning',
-
+        schedule: 'Schedule Planning'
       },
       quality: {
-        _self: 'Quality Management',
+        _self: 'Quality ',
+        basic: {
+          _self: 'Basic Data',
+          item: 'Inspection Items',
+          method: 'Inspection Methods',
+          sampling: 'Sampling Plans',
+          defect: 'Defect Categories',
+          rule: 'Judgment Rules',
+          category: 'Quality Categories'
+        },
+        inspection:{
+          _self: 'Inspection ',
+          receiving: 'Receiving Inspection',
+          process: 'Process Inspection',
+          storage: 'Storage Inspection',
+          return: 'Return Inspection'
+        },
+        trace:{
+          _self: 'Traceability ',
+          batch: 'Batch Traceability',
+          corrective: 'Corrective Actions',
+          notification: 'Notifications',
+        },
+        cost:{
+          _self: 'Quality Costs',
+          business:'Quality Business',
+          rework:'Rework Business',
+          scrap:'Scrap Business',
+        },
+        plan: {
+          _self: 'Quality Planning',
+          supplier: 'Supplier Evaluation',
+          customer: 'Customer Survey'
+        },
         item: 'Inspection Items',
-        receiving: 'Incoming Inspection',
+        receiving: 'Receiving Inspection',
         process: 'Process Inspection',
         storage: 'Storage Inspection',
-        return: 'Return Inspection',
-  
+        return: 'Return Inspection'
       },
       sales: {
-        _self: 'Sales Management',
+        _self: 'Sales ',
         customer: 'Customer Information',
         client: 'Client Information',
-        price: 'Sales Price',
-        order: 'Sales Order',
+        price: 'Sales Prices',
+        order: 'Sales Orders'
       },
       service: {
         _self: 'Customer Service',
-        item: 'Service Items',
-        contract: 'Service Contract',
-        request: 'Service Request',
-        workorder: 'Service Work Order',
-        timesheet: 'Time Records',
-        consumption: 'Material Consumption',
-        outsourcing: 'Outsourcing Services'
-
-      },
-      complaint: {
-        _self: 'Customer Complaint Management',
-        notice: 'Quality Notice',
-        mark: 'Complaint Details',
-        analysis: 'Cause Analysis',
-        corrective: 'Corrective Actions',
-        return: 'Return Execution',
-        followUp: 'Follow-up'
+        cs: {
+          _self: 'Customer Service',
+          item: 'Service Items',
+          contract: 'Service Contracts',
+          request: 'Service Requests',
+          workorder: 'Service Work Orders',
+          timesheet: 'Service Hours',
+          consumption: 'Material Consumption',
+          outsourcing: 'Outsourcing Services'
+        },
+        cc: {
+          _self: 'Customer Complaint ',
+          notice: 'Quality Notifications',
+          mark: 'Complaint Details',
+          analysis: 'Root Cause Analysis',
+          corrective: 'Corrective Actions',
+          return: 'Return/Exchange Execution',
+          followUp: 'Follow-up Processing'
+        }
       }
     },
-    humanResources: {
-      _self: 'Human Resources Management',
-      employeeManagement: {
-        _self: 'Employee Management',
-        employeeMaster: 'Employee Master Data',
-        attendance: 'Attendance Management',
-        leave: 'Leave Management',
-        payroll: 'Payroll Management',
-        contractManagement: 'Contract Management'
+    hrm: {
+      _self: 'Human Resources',
+      attendance: {
+        _self: 'Attendance ',
+        record: 'Attendance Records',
+        holiday: 'Holiday ',
+        overtime: 'Overtime ',
+        compensatory: 'Compensatory Time '
       },
-      recruitment: {
-        _self: 'Recruitment Management',
-        jobPosting: 'Job Posting',
-        candidateManagement: 'Candidate Management',
-        interviewScheduling: 'Interview Scheduling',
-        offerManagement: 'Offer Management'
+      benefit: {
+        _self: 'Benefit ',
+        project: 'Benefit Projects',
+        employee: 'Employee Benefits'
       },
-      training: {
-        _self: 'Training Management',
-        trainingPlan: 'Training Plan',
-        trainingExecution: 'Training Execution',
-        trainingEvaluation: 'Training Evaluation'
+      employee: {
+        _self: 'Personnel ',
+        info: 'Personnel Information',
+        contracttype: 'Contract Types',
+        contract: 'Contract ',
+        promotion: 'Promotion ',
+        promotionhistory: 'Promotion History',
+        resignation: 'Resignation ',
+        transfer: 'Personnel List',
+        transferhistory: 'Transfer History'
+      },
+      leave: {
+        _self: 'Leave ',
+        type: 'Leave Types',
+        employee: 'Employee Leave'
+      },
+      organization: {
+        _self: 'Organization ',
+        positioncategory: 'Position Categories',
+        company: 'Company Information',
+        department: 'Department Information',
+        position: 'Position Information'
       },
       performance: {
-        _self: 'Performance Management',
-        goalSetting: 'Goal Setting',
-        performanceReview: 'Performance Review',
-        feedback: 'Feedback Management'
+        _self: 'Performance ',
+        assessmentitem: 'Assessment Items',
+        assessment: 'Performance Assessment'
       },
-      reporting: {
-        _self: 'HR Reports',
-        employeeReports: 'Employee Reports',
-        attendanceReports: 'Attendance Reports',
-        payrollReports: 'Payroll Reports',
-        performanceReports: 'Performance Reports'
+      recruitment: {
+        _self: 'Recruitment ',
+        application: 'Job Applications',
+        posting: 'Job Postings',
+        candidate: 'Candidate ',
+        interview: 'Interview '
+      },
+      salary: {
+        _self: 'Salary ',
+        employee: 'Employee Salaries',
+        housing: 'Housing Fund',
+        housinglevel: 'Social Security',
+        tax: 'Tax ',
+        taxlevel: 'Tax Levels',
+        structure: 'Salary Structure',
+        social: 'Social Security',
+        socialbase: 'Social Security Base'
+      },
+      training: {
+        _self: 'Training ',
+        category: 'Training Categories',
+        course: 'Training Courses',
+        record: 'Employee Training'
+      },
+      report: {
+        _self: 'Report ',
+        employeeinfo: 'Personnel Information',
+        resignation: 'Resignation Reports',
+        transfer: 'Transfer Reports',
+        promotion: 'Promotion Reports',
+        training: 'Training Reports',
+        salary: 'Salary Reports',
+        performance: 'Performance Reports',
+        attendance: 'Attendance Reports',
+        benefit: 'Benefit Reports',
+        recruitment: 'Recruitment Reports'
       }
     }
   }

@@ -3,7 +3,7 @@
 // 文件名 : HbtVehicleBooking.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-26 14:30
-// 版本号 : V1.0.0
+// 版本号 : V0.0.1
 // 描述   : 车辆预约管理实体
 //===================================================================
 
@@ -61,13 +61,13 @@ namespace Lean.Hbt.Domain.Entities.Routine.Vehicle
         /// <summary>
         /// 预约状态（0：待审批，1：已批准，2：已拒绝，3：已取消，4：已完成）
         /// </summary>
-        [SugarColumn(ColumnName = "status", ColumnDescription = "预约状态（0：待审批，1：已批准，2：已拒绝，3：已取消，4：已完成）", IsNullable = false, DefaultValue = "0", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
+        [SugarColumn(ColumnName = "status", ColumnDescription = "预约状态", IsNullable = false, DefaultValue = "0", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
         public int Status { get; set; }
 
         /// <summary>
         /// 预约类型（0：公务用车，1：私人用车，2：紧急用车，3：其他）
         /// </summary>
-        [SugarColumn(ColumnName = "booking_type", ColumnDescription = "预约类型（0：公务用车，1：私人用车，2：紧急用车，3：其他）", IsNullable = false, DefaultValue = "0", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
+        [SugarColumn(ColumnName = "booking_type", ColumnDescription = "预约类型", IsNullable = false, DefaultValue = "0", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
         public int BookingType { get; set; }
 
         /// <summary>
@@ -115,7 +115,7 @@ namespace Lean.Hbt.Domain.Entities.Routine.Vehicle
         /// <summary>
         /// 是否需要司机（0：否，1：是）
         /// </summary>
-        [SugarColumn(ColumnName = "need_driver", ColumnDescription = "是否需要司机（0：否，1：是）", IsNullable = false, DefaultValue = "0", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
+        [SugarColumn(ColumnName = "need_driver", ColumnDescription = "是否需要司机", IsNullable = false, DefaultValue = "0", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
         public int NeedDriver { get; set; }
 
         /// <summary>

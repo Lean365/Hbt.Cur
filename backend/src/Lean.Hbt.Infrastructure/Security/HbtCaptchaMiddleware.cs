@@ -43,6 +43,13 @@ public class HbtCaptchaMiddleware
     /// </summary>
     public async Task InvokeAsync(HttpContext context)
     {
+        // 跳过验证码相关的接口
+        if (IsCaptchaRequest(context))
+        {
+            await _next(context);
+            return;
+        }
+
         // 1. 检查是否需要验证码
         if (await ShouldRequireCaptchaAsync(context))
         {
@@ -99,6 +106,15 @@ public class HbtCaptchaMiddleware
         }
 
         return false;
+    }
+
+    /// <summary>
+    /// 是否是验证码相关请求
+    /// </summary>
+    private bool IsCaptchaRequest(HttpContext context)
+    {
+        var path = context.Request.Path.Value?.ToLower();
+        return path != null && path.Contains("/hbtcaptcha/");
     }
 
     /// <summary>

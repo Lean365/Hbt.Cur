@@ -9,7 +9,7 @@
               <a-tab-pane v-for="tab in newsTabs" :key="tab.key" :tab="t(tab.label)">
                 <div class="news-main no-image-news">
                   <div class="news-list-block" style="width:100%;">
-                    <a-list :data-source="newsData[activeNewsTab].slice(0,5)" :pagination="false">
+                    <a-list :data-source="newsData[activeNewsTab]?.slice(0,5) || []" :pagination="false">
                       <template #renderItem="{ item, index }">
                         <a-list-item>
                           <span class="news-list-index">{{ index + 1 }}</span>
@@ -40,7 +40,7 @@
                     </a-list-item>
                   </template>
                   <template #default>
-                    <a-empty description="暂无数据" />
+                    <a-empty :description="t('common.noData')" />
                   </template>
                 </a-list>
                 <div class="todo-pagination">
@@ -60,7 +60,7 @@
               <a-tab-pane v-for="tab in meetingTabs" :key="tab.key" :tab="t(tab.label)">
                 <div class="news-main no-image-news">
                   <div class="news-list-block" style="width:100%;">
-                    <a-list :data-source="tab.key === 'meeting' ? meetingList.slice(0,5) : carList.slice(0,5)" :pagination="false">
+                    <a-list :data-source="tab.key === 'meeting' ? (meetingList || []).slice(0,5) : (carList || []).slice(0,5)" :pagination="false">
                       <template #renderItem="{ item, index }">
                         <a-list-item>
                           <span class="news-list-index">{{ index + 1 }}</span>
@@ -115,7 +115,7 @@
               <a-tabs v-model:activeKey="activeScheduleTab" size="large">
                 <a-tab-pane v-for="tab in scheduleTabs" :key="tab.key" :tab="t(tab.label)">
                   <div class="schedule-list">
-                    <a-list :data-source="tab.key === 'daily' ? scheduleList.slice(0,5) : weeklyScheduleList.slice(0,5)" :pagination="false">
+                    <a-list :data-source="tab.key === 'daily' ? (scheduleList || []).slice(0,5) : (weeklyScheduleList || []).slice(0,5)" :pagination="false">
                       <template #renderItem="{ item }">
                         <a-list-item>
                           <span class="schedule-dot"></span>
@@ -143,69 +143,98 @@
 import { ref, computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useUserStore } from '@/stores/user'
-import { getUserTaskStatusStats, getUserTodoList, getUserUrgeList } from '@/api/workflow/task'
+import { getMyInstances } from '@/api/workflow/instance'
+import type { HbtInstance, HbtInstanceQuery } from '@/types/workflow/instance'
 import { FileTextOutlined, FileExcelOutlined, FileImageOutlined, FilePptOutlined, FileZipOutlined, FileWordOutlined, VideoCameraOutlined } from '@ant-design/icons-vue'
+import { getNewsList, getHotNews, getRecommendedNews } from '@/api/routine/news/news'
+import { getNoticeList } from '@/api/routine/notice/notice'
+import { getMeetingList, getMyMeetingList } from '@/api/routine/metting/meeting'
+import { getVehicleList } from '@/api/routine/vehicle/vehicle'
+import { getScheduleList, getMyScheduleList } from '@/api/routine/schedule/schedule'
+import { getMailList } from '@/api/routine/email/mail'
 
 const { t } = useI18n()
 const userStore = useUserStore()
 const currentUser = computed(() => userStore.userInfo)
 
 const activeNewsTab = ref('company')
-const newsTabs = [
+const newsTabs = computed(() => [
   { key: 'company', label: t('home.newstab.company.title') },
   { key: 'notice', label: t('home.newstab.notice.title') },
   { key: 'rule', label: t('home.newstab.rule.title') }
-]
+])
 
-const meetingTabs = [
+const meetingTabs = computed(() => [
   { key: 'meeting', label: t('home.meetingtab.meeting.title') },
   { key: 'car', label: t('home.meetingtab.car.title') }
-]
+])
 
-const fileTabs = [
+const fileTabs = computed(() => [
   { key: 'file', label: t('home.filetab.myFile.title') },
   { key: 'cloud', label: t('home.filetab.myCloud.title') }
-]
+])
 
-const scheduleTabs = [
+const scheduleTabs = computed(() => [
   { key: 'daily', label: t('home.scheduletab.dailySchedule.title') },
   { key: 'weekly', label: t('home.scheduletab.weeklySchedule.title') }
-]
+])
 
-const newsData: { [key: string]: { title: string; date: string }[] } = {
-  company: [
-    { title: t('home.newstab.company.new1'), date: '2019-06-04' },
-    { title: t('home.newstab.company.new2'), date: '2019-06-04' },
-    { title: t('home.newstab.company.new3'), date: '2019-06-04' },
-    { title: t('home.newstab.company.new4'), date: '2019-06-04' },
-    { title: t('home.newstab.company.new5'), date: '2019-06-04' },
-  ],
-  notice: [
-    { title: t('home.newstab.notice.notice1'), date: '2019-06-04' },
-    { title: t('home.newstab.notice.notice2'), date: '2019-06-04' },
-    { title: t('home.newstab.notice.notice3'), date: '2019-06-04' },
-    { title: t('home.newstab.notice.notice4'), date: '2019-06-04' },
-    { title: t('home.newstab.notice.notice5'), date: '2019-06-04' }
-  ],
-  rule: [
-    { title: t('home.newstab.rule.rule1'), date: '2019-06-04' },
-    { title: t('home.newstab.rule.rule2'), date: '2019-06-04' },
-    { title: t('home.newstab.rule.rule3'), date: '2019-06-04' },
-    { title: t('home.newstab.rule.rule4'), date: '2019-06-04' },
-    { title: t('home.newstab.rule.rule5'), date: '2019-06-04' }
-  ]
+// 新闻数据
+const newsData = ref<{ [key: string]: { title: string; date: string }[] }>({
+  company: [],
+  notice: [],
+  rule: []
+})
+
+const loadingNews = ref(false)
+
+// 获取新闻数据
+const loadNewsData = async () => {
+  loadingNews.value = true
+  try {
+    // 获取公司新闻
+    const companyNewsRes = await getNewsList({ pageIndex: 1, pageSize: 5 })
+    if (companyNewsRes.data.code === 200) {
+      newsData.value.company = companyNewsRes.data.data.rows.map(item => ({
+        title: item.newsTitle,
+        date: new Date(item.createTime).toLocaleDateString()
+      }))
+    }
+
+    // 获取通知
+    const noticeRes = await getNoticeList({ pageIndex: 1, pageSize: 5 })
+    if (noticeRes.data.code === 200) {
+      newsData.value.notice = noticeRes.data.data.rows.map(item => ({
+        title: item.noticeTitle,
+        date: new Date(item.createTime).toLocaleDateString()
+      }))
+    }
+
+    // 获取制度（使用推荐新闻作为制度）
+    const ruleRes = await getRecommendedNews(5)
+    if (ruleRes.data.code === 200) {
+      newsData.value.rule = ruleRes.data.data.map(item => ({
+        title: item.newsTitle,
+        date: new Date(item.createTime).toLocaleDateString()
+      }))
+    }
+  } catch (error) {
+    console.error('获取新闻数据失败:', error)
+  } finally {
+    loadingNews.value = false
+  }
 }
 
 // 待办相关数据
 const activeTodoTab = ref('pending')
-const todoTabs = [
-  { key: 'pending', label: '待处理', status: 0 }, // 未处理状态
-  { key: 'processing', label: '处理中', status: 1 }, // 处理中状态
-  { key: 'completed', label: '已完成', status: 2 }, // 已完成状态
-  { key: 'overdue', label: '已逾期', urgeType: 'overdue' }, // 已逾期任务
-  { key: 'dueSoon', label: '即将到期', urgeType: 'duesoon' }, // 即将到期任务
-  { key: 'highPriority', label: '高优先级', urgeType: 'highpriority' } // 高优先级任务
-]
+const todoTabs = computed(() => [
+  { key: 'pending', label: t('home.todotab.myWait.title'), status: 0 }, // 未处理状态
+  { key: 'processing', label: t('home.todotab.processing'), status: 1 }, // 处理中状态
+  { key: 'completed', label: t('home.todotab.myDone.title'), status: 2 }, // 已完成状态
+  { key: 'overdue', label: t('home.todotab.overdue'), urgeType: 'overdue' }, // 已逾期任务
+  { key: 'dueSoon', label: t('home.todotab.dueSoon'), urgeType: 'duesoon' }, // 即将到期任务
+  { key: 'highPriority', label: t('home.todotab.highPriority'), urgeType: 'highpriority' } // 高优先级任务
+])
 
 const todoList = ref<{ [key: string]: { title: string; type: string; date: string; priority?: string }[] }>({
   pending: [],
@@ -228,91 +257,62 @@ const todoStats = ref({
 
 const loadingTodos = ref(false)
 
-// 获取用户待办数据
+// 获取用户待办数据（使用真实的工作流API）
 const loadUserTodos = async () => {
   if (!currentUser.value?.userId) return
   
   loadingTodos.value = true
   try {
-    // 获取待办统计
-    const statsRes = await getUserTaskStatusStats(currentUser.value.userId)
-    if (statsRes.data.code === 200) {
-      const stats = statsRes.data.data
-      todoStats.value = {
-        pendingCount: stats.todoCount,
-        processingCount: stats.waitCount,
-        completedCount: stats.doneCount,
-        overdueCount: stats.overdueCount,
-        dueSoonCount: stats.dueSoonCount,
-        highPriorityCount: stats.highPriorityCount,
-        totalCount: stats.totalCount
-      }
+    // 查询参数
+    const query: HbtInstanceQuery = {
+      pageIndex: 1,
+      pageSize: 50
     }
-
-    // 获取各状态待办列表
-    const [pendingRes, processingRes, completedRes, overdueRes, dueSoonRes, highPriorityRes] = await Promise.all([
-      getUserTodoList(currentUser.value.userId, 0, 5), // 待处理
-      getUserTodoList(currentUser.value.userId, 1, 5), // 处理中
-      getUserTodoList(currentUser.value.userId, 2, 5), // 已完成
-      getUserUrgeList(currentUser.value.userId, 'overdue', 5), // 已逾期
-      getUserUrgeList(currentUser.value.userId, 'duesoon', 5), // 即将到期
-      getUserUrgeList(currentUser.value.userId, 'highpriority', 5) // 高优先级
-    ])
-
+    
+    // 获取我的工作流实例
+    const instancesRes = await getMyInstances(query)
+    
+    // 调试日志
+    console.log('工作流API响应:', {
+      instancesRes: instancesRes.data
+    })
+    
+    // 处理工作流实例数据
+    const instancesData = instancesRes.data.code === 200 ? instancesRes.data.data.rows || [] : []
+    
+    console.log('处理后的数据:', {
+      instancesData: instancesData.length
+    })
+    
     // 转换数据格式
-    if (pendingRes.data.code === 200) {
-      todoList.value.pending = pendingRes.data.data.map((item: any) => ({
-        title: item.taskName,
-        type: getTaskTypeText(item.taskType),
-        date: formatDate(item.createTime),
-        priority: getPriorityText(item.priority)
-      }))
+    const convertToTodoItem = (item: HbtInstance) => ({
+      title: item.instanceTitle || `流程实例 ${item.instanceId}`,
+      type: '工作流',
+      date: new Date(item.createTime).toLocaleDateString(),
+      priority: item.priority === 3 ? '高' : item.priority === 2 ? '中' : '低'
+    })
+    
+    // 按状态分类数据
+    todoList.value = {
+      pending: instancesData.filter(item => item.status === 1).slice(0, 5).map(convertToTodoItem), // 运行中
+      processing: instancesData.filter(item => item.status === 1).slice(0, 5).map(convertToTodoItem), // 运行中
+      completed: instancesData.filter(item => item.status === 2).slice(0, 5).map(convertToTodoItem), // 已完成
+      overdue: [], // 暂时为空，后续可根据时间判断
+      dueSoon: [], // 暂时为空，后续可根据时间判断
+      highPriority: instancesData.filter(item => item.priority >= 3).slice(0, 5).map(convertToTodoItem) // 高优先级
     }
-
-    if (processingRes.data.code === 200) {
-      todoList.value.processing = processingRes.data.data.map((item: any) => ({
-        title: item.taskName,
-        type: getTaskTypeText(item.taskType),
-        date: formatDate(item.createTime),
-        priority: getPriorityText(item.priority)
-      }))
+    
+    // 更新统计数据
+    todoStats.value = {
+      pendingCount: instancesData.filter(item => item.status === 1).length, // 运行中
+      processingCount: instancesData.filter(item => item.status === 1).length, // 运行中
+      completedCount: instancesData.filter(item => item.status === 2).length, // 已完成
+      overdueCount: 0, // 暂时为0
+      dueSoonCount: 0, // 暂时为0
+      highPriorityCount: instancesData.filter(item => item.priority >= 3).length, // 高优先级
+      totalCount: instancesData.length
     }
-
-    if (completedRes.data.code === 200) {
-      todoList.value.completed = completedRes.data.data.map((item: any) => ({
-        title: item.taskName,
-        type: getTaskTypeText(item.taskType),
-        date: formatDate(item.completeTime || item.createTime),
-        priority: getPriorityText(item.priority)
-      }))
-    }
-
-    if (overdueRes.data.code === 200) {
-      todoList.value.overdue = overdueRes.data.data.map((item: any) => ({
-        title: item.taskName,
-        type: getTaskTypeText(item.taskType),
-        date: formatDate(item.dueTime),
-        priority: getPriorityText(item.priority)
-      }))
-    }
-
-    if (dueSoonRes.data.code === 200) {
-      todoList.value.dueSoon = dueSoonRes.data.data.map((item: any) => ({
-        title: item.taskName,
-        type: getTaskTypeText(item.taskType),
-        date: formatDate(item.dueTime),
-        priority: getPriorityText(item.priority)
-      }))
-    }
-
-    if (highPriorityRes.data.code === 200) {
-      todoList.value.highPriority = highPriorityRes.data.data.map((item: any) => ({
-        title: item.taskName,
-        type: getTaskTypeText(item.taskType),
-        date: formatDate(item.createTime),
-        priority: getPriorityText(item.priority)
-      }))
-    }
+    
   } catch (error) {
     console.error('获取用户待办失败:', error)
   } finally {
@@ -320,41 +320,18 @@ const loadUserTodos = async () => {
   }
 }
 
-// 获取任务类型文本
-const getTaskTypeText = (taskType: number) => {
-  switch (taskType) {
-    case 1: return '审批'
-    case 2: return '会签'
-    case 3: return '通知'
-    case 4: return '填写'
-    default: return '其他'
-  }
-}
-
-// 获取优先级文本
-const getPriorityText = (priority: number) => {
-  switch (priority) {
-    case 0: return '低'
-    case 1: return '中'
-    case 2: return '高'
-    default: return '低'
-  }
-}
-
-// 格式化日期
-const formatDate = (dateStr: string) => {
-  if (!dateStr) return ''
-  const date = new Date(dateStr)
-  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
-}
-
 // 页面加载时获取数据
 onMounted(() => {
   loadUserTodos()
+  loadNewsData()
+  loadMeetingData()
+  loadVehicleData()
+  loadScheduleData()
+  loadWeeklyScheduleData()
 })
 
 const activeFileTab = ref('file')
-const fileList: { [key: string]: { icon: any; title: string; date: string }[] } = {
+const fileList = computed(() => ({
   file: [
     { icon: FileTextOutlined, title: t('home.filetab.myFile.file1'), date: '2019-05-08' },
     { icon: FileExcelOutlined, title: t('home.filetab.myFile.file2'), date: '2019-05-08' },
@@ -370,37 +347,110 @@ const fileList: { [key: string]: { icon: any; title: string; date: string }[] } 
     { icon: FileImageOutlined, title: t('home.filetab.myCloud.cloud4'), date: '2019-05-08' },
     { icon: FileImageOutlined, title: t('home.filetab.myCloud.cloud5'), date: '2019-05-08' }
   ]
+}))
+// 会议数据
+const meetingList = ref<{ title: string; date: string; time: string; status: string; statusColor: string }[]>([])
+const loadingMeetings = ref(false)
+
+// 获取会议数据
+const loadMeetingData = async () => {
+  loadingMeetings.value = true
+  try {
+    const meetingRes = await getMeetingList({ pageIndex: 1, pageSize: 5 })
+    if (meetingRes.data.code === 200) {
+      meetingList.value = meetingRes.data.data.rows.map(item => ({
+        title: item.meetingTitle,
+        date: new Date(item.startTime).toLocaleDateString(),
+        time: `${new Date(item.startTime).toLocaleTimeString()} - ${new Date(item.endTime).toLocaleTimeString()}`,
+        status: item.meetingStatus === 0 ? 'home.status.wait' : item.meetingStatus === 1 ? 'home.status.agree' : 'home.status.done',
+        statusColor: item.meetingStatus === 0 ? 'orange' : item.meetingStatus === 1 ? 'blue' : 'gray'
+      }))
+    }
+  } catch (error) {
+    console.error('获取会议数据失败:', error)
+  } finally {
+    loadingMeetings.value = false
+  }
 }
-const meetingList = [
-  { title: t('home.meetingtab.meeting.meeting1'), date: '2019-06-03', time: '09:30-10:00', status: 'home.status.agree', statusColor: 'blue' },
-  { title: t('home.meetingtab.meeting.meeting2'), date: '2019-06-03', time: '09:30-10:00', status: 'home.status.wait', statusColor: 'green' },
-  { title: t('home.meetingtab.meeting.meeting3'), date: '2019-06-03', time: '09:30-10:00', status: 'home.status.done', statusColor: 'gray' },
-  { title: t('home.meetingtab.meeting.meeting4'), date: '2019-06-03', time: '09:30-10:00', status: 'home.status.done', statusColor: 'gray' },
-  { title: t('home.meetingtab.meeting.meeting5'), date: '2019-06-03', time: '09:30-10:00', status: 'home.status.done', statusColor: 'gray' }
-]
-const scheduleList = [
-  { title: t('home.scheduletab.dailySchedule.schedule1'), date: '2019-06-03 09:30-10:00' },
-  { title: t('home.scheduletab.dailySchedule.schedule2'), date: '2019-06-03 09:30-10:00' }, 
-  { title: t('home.scheduletab.dailySchedule.schedule3'), date: '2019-06-03 09:30-10:00' },
-  { title: t('home.scheduletab.dailySchedule.schedule4'), date: '2019-06-03 09:30-10:00' },
-  { title: t('home.scheduletab.dailySchedule.schedule5'), date: '2019-06-03 09:30-10:00' }
-]
+// 日程数据
+const scheduleList = ref<{ title: string; date: string }[]>([])
+const loadingSchedules = ref(false)
+
+// 获取日程数据
+const loadScheduleData = async () => {
+  loadingSchedules.value = true
+  try {
+    const scheduleRes = await getMyScheduleList({ pageIndex: 1, pageSize: 5 })
+    if (scheduleRes.data.code === 200) {
+      scheduleList.value = scheduleRes.data.data.rows.map(item => ({
+        title: item.title,
+        date: `${new Date(item.startTime).toLocaleDateString()} ${new Date(item.startTime).toLocaleTimeString()}-${new Date(item.endTime).toLocaleTimeString()}`
+      }))
+    }
+  } catch (error) {
+    console.error('获取日程数据失败:', error)
+  } finally {
+    loadingSchedules.value = false
+  }
+}
 const activeScheduleTab = ref('daily')
-const weeklyScheduleList = [
-  { title: t('home.scheduletab.weeklySchedule.schedule1'), date: '2019-06-03 至 2019-06-09' },
-  { title: t('home.scheduletab.weeklySchedule.schedule2'), date: '2019-06-03 至 2019-06-09' },
-  { title: t('home.scheduletab.weeklySchedule.schedule3'), date: '2019-06-03 至 2019-06-09' },
-  { title: t('home.scheduletab.weeklySchedule.schedule4'), date: '2019-06-03 至 2019-06-09' },
-  { title: t('home.scheduletab.weeklySchedule.schedule5'), date: '2019-06-03 至 2019-06-09' }
-]
+// 周程数据
+const weeklyScheduleList = ref<{ title: string; date: string }[]>([])
+const loadingWeeklySchedules = ref(false)
+
+// 获取周程数据
+const loadWeeklyScheduleData = async () => {
+  loadingWeeklySchedules.value = true
+  try {
+    // 获取本周的日程
+    const now = new Date()
+    const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay()))
+    const endOfWeek = new Date(now.setDate(now.getDate() - now.getDay() + 6))
+    
+    const weeklyRes = await getMyScheduleList({ 
+      pageIndex: 1, 
+      pageSize: 5,
+      startTime: startOfWeek.toISOString(),
+      endTime: endOfWeek.toISOString()
+    })
+    
+    if (weeklyRes.data.code === 200) {
+      weeklyScheduleList.value = weeklyRes.data.data.rows.map(item => ({
+        title: item.title,
+        date: `${new Date(item.startTime).toLocaleDateString()} 至 ${new Date(item.endTime).toLocaleDateString()}`
+      }))
+    }
+  } catch (error) {
+    console.error('获取周程数据失败:', error)
+  } finally {
+    loadingWeeklySchedules.value = false
+  }
+}
 const activeMeetingTab = ref('meeting')
-const carList = [
-  { title: t('home.meetingtab.car.car1'), date: '2019-06-03', time: '09:30-10:00', status: 'home.status.agree', statusColor: 'blue' },
-  { title: t('home.meetingtab.car.car2'), date: '2019-06-03', time: '09:30-10:00', status: 'home.status.wait', statusColor: 'green' },
-  { title: t('home.meetingtab.car.car3'), date: '2019-06-03', time: '09:30-10:00', status: 'home.status.done', statusColor: 'gray' },
-  { title: t('home.meetingtab.car.car4'), date: '2019-06-03', time: '09:30-10:00', status: 'home.status.done', statusColor: 'gray' },
-  { title: t('home.meetingtab.car.car5'), date: '2019-06-03', time: '09:30-10:00', status: 'home.status.done', statusColor: 'gray' }
-]
+// 车辆数据
+const carList = ref<{ title: string; date: string; time: string; status: string; statusColor: string }[]>([])
+const loadingVehicles = ref(false)
+
+// 获取车辆数据
+const loadVehicleData = async () => {
+  loadingVehicles.value = true
+  try {
+    const vehicleRes = await getVehicleList({ pageIndex: 1, pageSize: 5 })
+    if (vehicleRes.data.code === 200) {
+      carList.value = vehicleRes.data.data.rows.map(item => ({
+        title: `${item.brand || ''} ${item.model || ''} (${item.plateNumber})`,
+        date: new Date(item.createTime).toLocaleDateString(),
+        time: '全天',
+        status: item.status === 0 ? 'home.status.wait' : item.status === 1 ? 'home.status.agree' : 'home.status.done',
+        statusColor: item.status === 0 ? 'orange' : item.status === 1 ? 'blue' : 'gray'
+      }))
+    }
+  } catch (error) {
+    console.error('获取车辆数据失败:', error)
+  } finally {
+    loadingVehicles.value = false
+  }
+}
 </script>
 
 <style lang="less" scoped>

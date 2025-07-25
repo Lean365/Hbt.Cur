@@ -3,7 +3,7 @@
 // 文件名 : HbtVehicle.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-26 14:30
-// 版本号 : V1.0.0
+// 版本号 : V0.0.1
 // 描述   : 用车管理实体
 //===================================================================
 
@@ -30,13 +30,13 @@ namespace Lean.Hbt.Domain.Entities.Routine.Vehicle
         /// <summary>
         /// 车辆类型（0：轿车，1：SUV，2：商务车，3：面包车）
         /// </summary>
-        [SugarColumn(ColumnName = "vehicle_type", ColumnDescription = "车辆类型（0：轿车，1：SUV，2：商务车，3：面包车）", IsNullable = false, DefaultValue = "0", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
+        [SugarColumn(ColumnName = "vehicle_type", ColumnDescription = "车辆类型", IsNullable = false, DefaultValue = "0", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
         public int VehicleType { get; set; }
 
         /// <summary>
         /// 车辆状态（0：空闲，1：使用中，2：维修中，3：已报废）
         /// </summary>
-        [SugarColumn(ColumnName = "status", ColumnDescription = "车辆状态（0：空闲，1：使用中，2：维修中，3：已报废）", IsNullable = false, DefaultValue = "0", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
+        [SugarColumn(ColumnName = "status", ColumnDescription = "车辆状态", IsNullable = false, DefaultValue = "0", ColumnDataType = "int", IsOnlyIgnoreUpdate = false, IsOnlyIgnoreInsert = false)]
         public int Status { get; set; }
 
         /// <summary>

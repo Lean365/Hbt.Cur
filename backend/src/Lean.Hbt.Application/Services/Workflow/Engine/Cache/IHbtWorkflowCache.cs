@@ -5,9 +5,11 @@
 // 文件名 : IWorkflowCache.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-23 12:00
-// 版本号 : V1.0.0
+// 版本号 : V0.0.1
 // 描述    : 工作流缓存接口
 //===================================================================
+
+using Lean.Hbt.Domain.Entities.Workflow;
 
 namespace Lean.Hbt.Application.Services.Workflow.Engine.Cache
 {
@@ -19,12 +21,12 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine.Cache
         /// <summary>
         /// 获取工作流节点
         /// </summary>
-        Task<HbtNode?> GetNodeAsync(long nodeId);
+        Task<HbtScheme?> GetNodeAsync(long nodeId);
 
         /// <summary>
         /// 设置工作流节点缓存
         /// </summary>
-        Task SetNodeAsync(HbtNode node, TimeSpan? expiry = null);
+        Task SetNodeAsync(HbtScheme node, TimeSpan? expiry = null);
 
         /// <summary>
         /// 移除工作流节点缓存
@@ -34,12 +36,12 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine.Cache
         /// <summary>
         /// 获取工作流定义
         /// </summary>
-        Task<HbtDefinition?> GetDefinitionAsync(long definitionId);
+        Task<HbtScheme?> GetDefinitionAsync(long definitionId);
 
         /// <summary>
         /// 设置工作流定义缓存
         /// </summary>
-        Task SetDefinitionAsync(HbtDefinition definition, TimeSpan? expiry = null);
+        Task SetDefinitionAsync(HbtScheme definition, TimeSpan? expiry = null);
 
         /// <summary>
         /// 移除工作流定义缓存

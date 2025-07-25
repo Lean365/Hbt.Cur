@@ -41,28 +41,36 @@ public class HbtDbSeedLogisticsMenu
     /// 获取物料管理三级目录列表
     /// </summary>
     public static List<HbtMenu> GetMaterialThirdLevelMenus(long parentId) => new List<HbtMenu> {
-        new HbtMenu { MenuName = "物料管理", TransKey = "menu.logistics.material.manage._self", ParentId = parentId, OrderNum = 1, Path = "material", Component = "", MenuType = 0, Perms = "", Icon = "ClusterOutlined", Remark = "物料管理目录" },
-        new HbtMenu { MenuName = "采购管理", TransKey = "menu.logistics.material.purchase._self", ParentId = parentId, OrderNum = 2, Path = "purchase", Component = "", MenuType = 0, Perms = "", Icon = "ShoppingOutlined", Remark = "采购管理目录" }
+        new HbtMenu { MenuName = "物料信息", TransKey = "menu.logistics.material.manage._self", ParentId = parentId, OrderNum = 1, Path = "material", Component = "", MenuType = 0, Perms = "", Icon = "ClusterOutlined", Remark = "物料信息目录" },
+        new HbtMenu { MenuName = "采购管理", TransKey = "menu.logistics.material.purchase._self", ParentId = parentId, OrderNum = 2, Path = "purchase", Component = "", MenuType = 0, Perms = "", Icon = "ShoppingOutlined", Remark = "采购管理目录" },
+        new HbtMenu { MenuName = "样品管理", TransKey = "menu.logistics.material.sample._self", ParentId = parentId, OrderNum = 3, Path = "sample", Component = "", MenuType = 0, Perms = "", Icon = "ExperimentOutlined", Remark = "样品管理目录" },
+        new HbtMenu { MenuName = "图纸管理", TransKey = "menu.logistics.material.drawing._self", ParentId = parentId, OrderNum = 4, Path = "drawing", Component = "", MenuType = 0, Perms = "", Icon = "FileImageOutlined", Remark = "图纸管理目录" },
+        new HbtMenu { MenuName = "客供品管理", TransKey = "menu.logistics.material.csm._self", ParentId = parentId, OrderNum = 5, Path = "csm", Component = "", MenuType = 0, Perms = "", Icon = "UserOutlined", Remark = "客供品管理目录" }
     };
 
     /// <summary>
     /// 获取生产管理三级目录列表
     /// </summary>
     public static List<HbtMenu> GetProductionThirdLevelMenus(long parentId) => new List<HbtMenu> {
-        new HbtMenu { MenuName = "设计变更", TransKey = "menu.logistics.production.change._self", ParentId = parentId, OrderNum = 1, Path = "change", Component = "", MenuType = 0, Perms = "", Icon = "SwapOutlined", Remark = "设计变更管理目录" },
-        new HbtMenu { MenuName = "制造管理", TransKey = "menu.logistics.production.oph._self", ParentId = parentId, OrderNum = 2, Path = "oph", Component = "", MenuType = 0, Perms = "", Icon = "ClusterOutlined", Remark = "制造管理目录" },
-        new HbtMenu { MenuName = "SOP管理", TransKey = "menu.logistics.production.sop._self", ParentId = parentId, OrderNum = 3, Path = "sop", Component = "", MenuType = 0, Perms = "", Icon = "FileTextOutlined", Remark = "SOP管理目录" },
-        new HbtMenu { MenuName = "技联管理", TransKey = "menu.logistics.production.techcontact._self", ParentId = parentId, OrderNum = 4, Path = "techcontact", Component = "", MenuType = 0, Perms = "", Icon = "MessageOutlined", Remark = "技联管理目录" }
+        new HbtMenu { MenuName = "基础数据", TransKey = "menu.logistics.production.basic._self", ParentId = parentId, OrderNum = 1, Path = "basic", Component = "", MenuType = 0, Perms = "", Icon = "DatabaseOutlined", Remark = "生产管理基础数据目录" },
+        new HbtMenu { MenuName = "设计变更", TransKey = "menu.logistics.production.change._self", ParentId = parentId, OrderNum = 2, Path = "change", Component = "", MenuType = 0, Perms = "", Icon = "SwapOutlined", Remark = "设计变更管理目录" },
+        new HbtMenu { MenuName = "制造管理", TransKey = "menu.logistics.production.output._self", ParentId = parentId, OrderNum = 3, Path = "output", Component = "", MenuType = 0, Perms = "", Icon = "ClusterOutlined", Remark = "制造管理目录" },
+        new HbtMenu { MenuName = "SOP管理", TransKey = "menu.logistics.production.sop._self", ParentId = parentId, OrderNum = 4, Path = "sop", Component = "", MenuType = 0, Perms = "", Icon = "FileTextOutlined", Remark = "SOP管理目录" },
+        new HbtMenu { MenuName = "技联管理", TransKey = "menu.logistics.production.techcontact._self", ParentId = parentId, OrderNum = 5, Path = "techcontact", Component = "", MenuType = 0, Perms = "", Icon = "MessageOutlined", Remark = "技联管理目录" }
     };
+    
     /// <summary>
-    /// 获取生产管理三级菜单列表
+    /// 获取生产管理基础数据四级菜单列表
     /// </summary>
-    public static List<HbtMenu> GetProductionThirdMenus(long parentId) => new List<HbtMenu> {
-        new HbtMenu { MenuName = "物料清单", TransKey = "menu.logistics.production.bom", ParentId = parentId, OrderNum = 1, Path = "bom", Component = "logistics/production/bom/index", MenuType = 1, Perms = "logistics:production:bom:list", Icon = "UnorderedListOutlined", Remark = "物料清单管理" },
-        new HbtMenu { MenuName = "工作中心", TransKey = "menu.logistics.production.workcenter", ParentId = parentId, OrderNum = 2, Path = "workcenter", Component = "logistics/production/workcenter/index", MenuType = 1, Perms = "logistics:production:workcenter:list", Icon = "ClusterOutlined", Remark = "工作中心管理" },
-        new HbtMenu { MenuName = "生产订单", TransKey = "menu.logistics.production.order", ParentId = parentId, OrderNum = 3, Path = "order", Component = "logistics/production/order/index", MenuType = 1, Perms = "logistics:production:order:list", Icon = "FileTextOutlined", Remark = "生产订单管理" },
-        new HbtMenu { MenuName = "看板", TransKey = "menu.logistics.production.kanban", ParentId = parentId, OrderNum = 4, Path = "kanban", Component = "logistics/production/kanban/index", MenuType = 1, Perms = "logistics:production:kanban:list", Icon = "DashboardOutlined", Remark = "看板管理" }
+    public static List<HbtMenu> GetProductionBasicFourthMenus(long parentId) => new List<HbtMenu> {
+        new HbtMenu { MenuName = "物料清单", TransKey = "menu.logistics.production.basic.bom", ParentId = parentId, OrderNum = 1, Path = "bom", Component = "logistics/production/basic/bom/index", MenuType = 1, Perms = "logistics:production:basic:bom:list", Icon = "UnorderedListOutlined", Remark = "物料清单管理" },
+        new HbtMenu { MenuName = "工作中心", TransKey = "menu.logistics.production.basic.workcenter", ParentId = parentId, OrderNum = 2, Path = "workcenter", Component = "logistics/production/basic/workcenter/index", MenuType = 1, Perms = "logistics:production:basic:workcenter:list", Icon = "ClusterOutlined", Remark = "工作中心管理" },
+        new HbtMenu { MenuName = "生产订单", TransKey = "menu.logistics.production.basic.order", ParentId = parentId, OrderNum = 3, Path = "order", Component = "logistics/production/basic/order/index", MenuType = 1, Perms = "logistics:production:basic:order:list", Icon = "FileTextOutlined", Remark = "生产订单管理" },
+        new HbtMenu { MenuName = "生产工时", TransKey = "menu.logistics.production.basic.worktime", ParentId = parentId, OrderNum = 4, Path = "worktime", Component = "logistics/production/basic/worktime/index", MenuType = 1, Perms = "logistics:production:basic:worktime:list", Icon = "FieldTimeOutlined", Remark = "生产工时管理" },
+        new HbtMenu { MenuName = "看板", TransKey = "menu.logistics.production.basic.kanban", ParentId = parentId, OrderNum = 5, Path = "kanban", Component = "logistics/production/basic/kanban/index", MenuType = 1, Perms = "logistics:production:basic:kanban:list", Icon = "DashboardOutlined", Remark = "看板管理" }
     };
+
+
 
     /// <summary>
     /// 获取销售管理三级菜单列表
@@ -75,14 +83,62 @@ public class HbtDbSeedLogisticsMenu
     };
 
     /// <summary>
-    /// 获取质量管理三级菜单列表
+    /// 获取质量管理三级目录列表
     /// </summary>
-    public static List<HbtMenu> GetQualityThirdMenus(long parentId) => new List<HbtMenu> {
-        new HbtMenu { MenuName = "检验项目", TransKey = "menu.logistics.quality.item", ParentId = parentId, OrderNum = 1, Path = "item", Component = "logistics/quality/item/index", MenuType = 1, Perms = "logistics:quality:item:list", Icon = "CheckSquareOutlined", Remark = "检验项目管理" },
-        new HbtMenu { MenuName = "收货检验", TransKey = "menu.logistics.quality.receiving", ParentId = parentId, OrderNum = 2, Path = "receiving", Component = "logistics/quality/receiving/index", MenuType = 1, Perms = "logistics:quality:receiving:list", Icon = "InboxOutlined", Remark = "收货检验管理" },
-        new HbtMenu { MenuName = "过程检验", TransKey = "menu.logistics.quality.process", ParentId = parentId, OrderNum = 3, Path = "process", Component = "logistics/quality/process/index", MenuType = 1, Perms = "logistics:quality:process:list", Icon = "ExperimentOutlined", Remark = "过程检验管理" },
-        new HbtMenu { MenuName = "入库检验", TransKey = "menu.logistics.quality.storage", ParentId = parentId, OrderNum = 4, Path = "storage", Component = "logistics/quality/storage/index", MenuType = 1, Perms = "logistics:quality:storage:list", Icon = "DatabaseOutlined", Remark = "入库检验管理" },
-        new HbtMenu { MenuName = "退货检验", TransKey = "menu.logistics.quality.return", ParentId = parentId, OrderNum = 5, Path = "return", Component = "logistics/quality/return/index", MenuType = 1, Perms = "logistics:quality:return:list", Icon = "RollbackOutlined", Remark = "退货检验管理" }
+    public static List<HbtMenu> GetQualityThirdLevelMenus(long parentId) => new List<HbtMenu> {
+        new HbtMenu { MenuName = "基础数据", TransKey = "menu.logistics.quality.basic._self", ParentId = parentId, OrderNum = 1, Path = "basic", Component = "", MenuType = 0, Perms = "", Icon = "DatabaseOutlined", Remark = "质量管理基础数据目录" },
+        new HbtMenu { MenuName = "质量检验", TransKey = "menu.logistics.quality.inspection._self", ParentId = parentId, OrderNum = 2, Path = "inspection", Component = "", MenuType = 0, Perms = "", Icon = "SearchOutlined", Remark = "质量检验管理目录" },
+        new HbtMenu { MenuName = "质量追溯", TransKey = "menu.logistics.quality.trace._self", ParentId = parentId, OrderNum = 3, Path = "trace", Component = "", MenuType = 0, Perms = "", Icon = "ClusterOutlined", Remark = "质量追溯管理目录" },
+        new HbtMenu { MenuName = "质量成本", TransKey = "menu.logistics.quality.cost._self", ParentId = parentId, OrderNum = 4, Path = "cost", Component = "", MenuType = 0, Perms = "", Icon = "MoneyCollectOutlined", Remark = "质量成本管理目录" },
+        new HbtMenu { MenuName = "检验计划", TransKey = "menu.logistics.quality.plan._self", ParentId = parentId, OrderNum = 5, Path = "plan", Component = "", MenuType = 0, Perms = "", Icon = "CalendarOutlined", Remark = "检验计划管理目录" }
+    };
+
+    /// <summary>
+    /// 获取质量管理基础数据四级菜单列表
+    /// </summary>
+    public static List<HbtMenu> GetQualityBasicFourthMenus(long parentId) => new List<HbtMenu> {
+        new HbtMenu { MenuName = "检验项目", TransKey = "menu.logistics.quality.basic.item", ParentId = parentId, OrderNum = 1, Path = "item", Component = "logistics/quality/basic/item/index", MenuType = 1, Perms = "logistics:quality:basic:item:list", Icon = "CheckSquareOutlined", Remark = "检验项目管理" },
+        new HbtMenu { MenuName = "检验方法", TransKey = "menu.logistics.quality.basic.method", ParentId = parentId, OrderNum = 2, Path = "method", Component = "logistics/quality/basic/method/index", MenuType = 1, Perms = "logistics:quality:basic:method:list", Icon = "ExperimentOutlined", Remark = "检验方法管理" },
+        new HbtMenu { MenuName = "抽样方案", TransKey = "menu.logistics.quality.basic.sampling", ParentId = parentId, OrderNum = 3, Path = "sampling", Component = "logistics/quality/basic/sampling/index", MenuType = 1, Perms = "logistics:quality:basic:sampling:list", Icon = "ClusterOutlined", Remark = "抽样方案管理" },
+        new HbtMenu { MenuName = "缺陷分级", TransKey = "menu.logistics.quality.basic.defect", ParentId = parentId, OrderNum = 4, Path = "defect", Component = "logistics/quality/basic/defect/index", MenuType = 1, Perms = "logistics:quality:basic:defect:list", Icon = "WarningOutlined", Remark = "缺陷分级管理" },
+        new HbtMenu { MenuName = "判定规则", TransKey = "menu.logistics.quality.basic.rule", ParentId = parentId, OrderNum = 5, Path = "rule", Component = "logistics/quality/basic/rule/index", MenuType = 1, Perms = "logistics:quality:basic:rule:list", Icon = "FileTextOutlined", Remark = "判定规则管理" },
+        new HbtMenu { MenuName = "品管类别", TransKey = "menu.logistics.quality.basic.category", ParentId = parentId, OrderNum = 6, Path = "category", Component = "logistics/quality/basic/category/index", MenuType = 1, Perms = "logistics:quality:basic:category:list", Icon = "TagsOutlined", Remark = "品管类别管理" }
+    };
+
+    /// <summary>
+    /// 获取质量检验四级菜单列表
+    /// </summary>
+    public static List<HbtMenu> GetQualityInspectionFourthMenus(long parentId) => new List<HbtMenu> {
+        new HbtMenu { MenuName = "收货检验", TransKey = "menu.logistics.quality.inspection.receiving", ParentId = parentId, OrderNum = 1, Path = "receiving", Component = "logistics/quality/inspection/receiving/index", MenuType = 1, Perms = "logistics:quality:inspection:receiving:list", Icon = "InboxOutlined", Remark = "收货检验管理" },
+        new HbtMenu { MenuName = "过程检验", TransKey = "menu.logistics.quality.inspection.process", ParentId = parentId, OrderNum = 2, Path = "process", Component = "logistics/quality/inspection/process/index", MenuType = 1, Perms = "logistics:quality:inspection:process:list", Icon = "ExperimentOutlined", Remark = "过程检验管理" },
+        new HbtMenu { MenuName = "入库检验", TransKey = "menu.logistics.quality.inspection.storage", ParentId = parentId, OrderNum = 3, Path = "storage", Component = "logistics/quality/inspection/storage/index", MenuType = 1, Perms = "logistics:quality:inspection:storage:list", Icon = "DatabaseOutlined", Remark = "入库检验管理" },
+        new HbtMenu { MenuName = "退货检验", TransKey = "menu.logistics.quality.inspection.return", ParentId = parentId, OrderNum = 4, Path = "return", Component = "logistics/quality/inspection/return/index", MenuType = 1, Perms = "logistics:quality:inspection:return:list", Icon = "RollbackOutlined", Remark = "退货检验管理" }
+    };
+
+    /// <summary>
+    /// 获取质量追溯四级菜单列表
+    /// </summary>
+    public static List<HbtMenu> GetQualityTraceFourthMenus(long parentId) => new List<HbtMenu> {
+        new HbtMenu { MenuName = "批次追溯", TransKey = "menu.logistics.quality.trace.batch", ParentId = parentId, OrderNum = 1, Path = "batch", Component = "logistics/quality/trace/batch/index", MenuType = 1, Perms = "logistics:quality:trace:batch:list", Icon = "ClusterOutlined", Remark = "批次追溯管理" },
+        new HbtMenu { MenuName = "纠正预防", TransKey = "menu.logistics.quality.trace.corrective", ParentId = parentId, OrderNum = 2, Path = "corrective", Component = "logistics/quality/trace/corrective/index", MenuType = 1, Perms = "logistics:quality:trace:corrective:list", Icon = "ToolOutlined", Remark = "纠正预防管理" },
+        new HbtMenu { MenuName = "不合格通知", TransKey = "menu.logistics.quality.trace.notification", ParentId = parentId, OrderNum = 3, Path = "notification", Component = "logistics/quality/trace/notification/index", MenuType = 1, Perms = "logistics:quality:trace:notification:list", Icon = "NotificationOutlined", Remark = "不合格通知管理" }
+    };
+
+    /// <summary>
+    /// 获取质量成本四级菜单列表
+    /// </summary>
+    public static List<HbtMenu> GetQualityCostFourthMenus(long parentId) => new List<HbtMenu> {
+        new HbtMenu { MenuName = "品质业务", TransKey = "menu.logistics.quality.cost.business", ParentId = parentId, OrderNum = 1, Path = "business", Component = "logistics/quality/cost/business/index", MenuType = 1, Perms = "logistics:quality:cost:business:list", Icon = "SafetyCertificateOutlined", Remark = "品质业务管理" },
+        new HbtMenu { MenuName = "返工业务", TransKey = "menu.logistics.quality.cost.rework", ParentId = parentId, OrderNum = 2, Path = "rework", Component = "logistics/quality/cost/rework/index", MenuType = 1, Perms = "logistics:quality:cost:rework:list", Icon = "ReloadOutlined", Remark = "返工业务管理" },
+        new HbtMenu { MenuName = "废弃事故", TransKey = "menu.logistics.quality.cost.scrap", ParentId = parentId, OrderNum = 3, Path = "scrap", Component = "logistics/quality/cost/scrap/index", MenuType = 1, Perms = "logistics:quality:cost:scrap:list", Icon = "DeleteOutlined", Remark = "废弃事故管理" }
+    };
+
+    /// <summary>
+    /// 获取检验计划四级菜单列表
+    /// </summary>
+    public static List<HbtMenu> GetQualityPlanFourthMenus(long parentId) => new List<HbtMenu> {
+        new HbtMenu { MenuName = "供应商评估", TransKey = "menu.logistics.quality.plan.supplier", ParentId = parentId, OrderNum = 1, Path = "supplier", Component = "logistics/quality/plan/supplier/index", MenuType = 1, Perms = "logistics:quality:plan:supplier:list", Icon = "ShopOutlined", Remark = "供应商评估管理" },
+        new HbtMenu { MenuName = "客户调查", TransKey = "menu.logistics.quality.plan.customer", ParentId = parentId, OrderNum = 2, Path = "customer", Component = "logistics/quality/plan/customer/index", MenuType = 1, Perms = "logistics:quality:plan:customer:list", Icon = "UserOutlined", Remark = "客户调查管理" }
     };
 
     /// <summary>
@@ -106,8 +162,8 @@ public class HbtDbSeedLogisticsMenu
     /// 获取物料目录四级菜单列表
     /// </summary>
     public static List<HbtMenu> GetMaterialMaterialFourthMenus(long parentId) => new List<HbtMenu> {
-        new HbtMenu { MenuName = "工厂信息", TransKey = "menu.logistics.material.manage.plant", ParentId = parentId, OrderNum = 1, Path = "plant", Component = "logistics/material/material/plant/index", MenuType = 1, Perms = "logistics:material:material:plant:list", Icon = "ClusterOutlined", Remark = "工厂信息管理" },
-        new HbtMenu { MenuName = "物料信息", TransKey = "menu.logistics.material.manage.master", ParentId = parentId, OrderNum = 2, Path = "master", Component = "logistics/material/material/master/index", MenuType = 1, Perms = "logistics:material:material:master:list", Icon = "InfoCircleOutlined", Remark = "物料信息管理" },
+        new HbtMenu { MenuName = "工厂信息", TransKey = "menu.logistics.material.manage.plant._self", ParentId = parentId, OrderNum = 1, Path = "plant", Component = "logistics/material/material/plant/index", MenuType = 1, Perms = "logistics:material:material:plant:list", Icon = "ClusterOutlined", Remark = "工厂信息管理" },
+        new HbtMenu { MenuName = "集团物料", TransKey = "menu.logistics.material.manage.master", ParentId = parentId, OrderNum = 2, Path = "master", Component = "logistics/material/material/master/index", MenuType = 1, Perms = "logistics:material:material:master:list", Icon = "InfoCircleOutlined", Remark = "集团物料管理" },
         new HbtMenu { MenuName = "工厂物料", TransKey = "menu.logistics.material.manage.plant.master", ParentId = parentId, OrderNum = 3, Path = "plantmaster", Component = "logistics/material/material/plantmaster/index", MenuType = 1, Perms = "logistics:material:material:plantmaster:list", Icon = "ClusterOutlined", Remark = "工厂物料管理" }
     };
 
@@ -120,6 +176,36 @@ public class HbtDbSeedLogisticsMenu
         new HbtMenu { MenuName = "采购价格", TransKey = "menu.logistics.material.purchase.price", ParentId = parentId, OrderNum = 3, Path = "price", Component = "logistics/material/purchase/price/index", MenuType = 1, Perms = "logistics:material:purchase:price:list", Icon = "MoneyCollectOutlined", Remark = "采购价格管理" },
         new HbtMenu { MenuName = "采购申请", TransKey = "menu.logistics.material.purchase.requisition", ParentId = parentId, OrderNum = 4, Path = "requisition", Component = "logistics/material/purchase/requisition/index", MenuType = 1, Perms = "logistics:material:purchase:requisition:list", Icon = "FileAddOutlined", Remark = "采购申请管理" },
         new HbtMenu { MenuName = "采购订单", TransKey = "menu.logistics.material.purchase.order", ParentId = parentId, OrderNum = 5, Path = "order", Component = "logistics/material/purchase/order/index", MenuType = 1, Perms = "logistics:material:purchase:order:list", Icon = "ShoppingOutlined", Remark = "采购订单管理" }
+    };
+
+    /// <summary>
+    /// 获取样品管理四级菜单列表
+    /// </summary>
+    public static List<HbtMenu> GetMaterialSampleFourthMenus(long parentId) => new List<HbtMenu> {
+        new HbtMenu { MenuName = "料件样品", TransKey = "menu.logistics.material.sample.component", ParentId = parentId, OrderNum = 1, Path = "component", Component = "logistics/material/sample/component/index", MenuType = 1, Perms = "logistics:material:sample:component:list", Icon = "ExperimentOutlined", Remark = "料件样品管理" },
+        new HbtMenu { MenuName = "产品样品", TransKey = "menu.logistics.material.sample.product", ParentId = parentId, OrderNum = 2, Path = "product", Component = "logistics/material/sample/product/index", MenuType = 1, Perms = "logistics:material:sample:product:list", Icon = "ExperimentOutlined", Remark = "产品样品管理" }
+    };
+
+    /// <summary>
+    /// 获取图纸管理四级菜单列表
+    /// </summary>
+    public static List<HbtMenu> GetMaterialDrawingFourthMenus(long parentId) => new List<HbtMenu> {
+        new HbtMenu { MenuName = "设计图纸", TransKey = "menu.logistics.material.drawing.design", ParentId = parentId, OrderNum = 1, Path = "design", Component = "logistics/material/drawing/design/index", MenuType = 1, Perms = "logistics:material:drawing:design:list", Icon = "FileImageOutlined", Remark = "设计图纸管理" },
+        new HbtMenu { MenuName = "工程图纸", TransKey = "menu.logistics.material.drawing.engineering", ParentId = parentId, OrderNum = 2, Path = "engineering", Component = "logistics/material/drawing/engineering/index", MenuType = 1, Perms = "logistics:material:drawing:engineering:list", Icon = "FileImageOutlined", Remark = "工程图纸管理" },
+        new HbtMenu { MenuName = "Gerber文件", TransKey = "menu.logistics.material.drawing.gerber", ParentId = parentId, OrderNum = 3, Path = "gerber", Component = "logistics/material/drawing/gerber/index", MenuType = 1, Perms = "logistics:material:drawing:gerber:list", Icon = "FileImageOutlined", Remark = "Gerber文件管理" },
+        new HbtMenu { MenuName = "坐标文件", TransKey = "menu.logistics.material.drawing.coordinate", ParentId = parentId, OrderNum = 4, Path = "coordinate", Component = "logistics/material/drawing/coordinate/index", MenuType = 1, Perms = "logistics:material:drawing:coordinate:list", Icon = "FileImageOutlined", Remark = "坐标文件管理" },
+        new HbtMenu { MenuName = "装配图纸", TransKey = "menu.logistics.material.drawing.assembly", ParentId = parentId, OrderNum = 5, Path = "assembly", Component = "logistics/material/drawing/assembly/index", MenuType = 1, Perms = "logistics:material:drawing:assembly:list", Icon = "FileImageOutlined", Remark = "装配图纸管理" },
+        new HbtMenu { MenuName = "结构文件", TransKey = "menu.logistics.material.drawing.structure", ParentId = parentId, OrderNum = 6, Path = "structure", Component = "logistics/material/drawing/structure/index", MenuType = 1, Perms = "logistics:material:drawing:structure:list", Icon = "FileImageOutlined", Remark = "结构文件管理" },
+        new HbtMenu { MenuName = "阻抗文件", TransKey = "menu.logistics.material.drawing.impedance", ParentId = parentId, OrderNum = 7, Path = "impedance", Component = "logistics/material/drawing/impedance/index", MenuType = 1, Perms = "logistics:material:drawing:impedance:list", Icon = "FileImageOutlined", Remark = "阻抗文件管理" },
+        new HbtMenu { MenuName = "工艺流程", TransKey = "menu.logistics.material.drawing.process", ParentId = parentId, OrderNum = 8, Path = "process", Component = "logistics/material/drawing/process/index", MenuType = 1, Perms = "logistics:material:drawing:process:list", Icon = "FileImageOutlined", Remark = "工艺流程管理" }
+    };
+
+    /// <summary>
+    /// 获取客供品管理四级菜单列表
+    /// </summary>
+    public static List<HbtMenu> GetMaterialCustomerFourthMenus(long parentId) => new List<HbtMenu> {
+        new HbtMenu { MenuName = "raw", TransKey = "menu.logistics.material.csm.raw", ParentId = parentId, OrderNum = 1, Path = "raw", Component = "logistics/material/csm/raw/index", MenuType = 1, Perms = "logistics:material:csm:raw:list", Icon = "ClusterOutlined", Remark = "客供材料管理" },
+        new HbtMenu { MenuName = "good", TransKey = "menu.logistics.material.csm.good", ParentId = parentId, OrderNum = 2, Path = "good", Component = "logistics/material/csm/good/index", MenuType = 1, Perms = "logistics:material:csm:good:list", Icon = "ClusterOutlined", Remark = "客供产品管理" }
     };
 
     /// <summary>
@@ -145,9 +231,91 @@ public class HbtDbSeedLogisticsMenu
     /// <summary>
     /// 获取制造管理四级目录列表
     /// </summary>
-    public static List<HbtMenu> GetProductionOphFourthLevelMenus(long parentId) => new List<HbtMenu> {
-        new HbtMenu { MenuName = "制一课", TransKey = "menu.logistics.production.oph.workshop1._self", ParentId = parentId, OrderNum = 1, Path = "workshop1", Component = "", MenuType = 0, Perms = "", Icon = "ClusterOutlined", Remark = "制一课管理目录" },
-        new HbtMenu { MenuName = "制二课", TransKey = "menu.logistics.production.oph.workshop2._self", ParentId = parentId, OrderNum = 2, Path = "workshop2", Component = "", MenuType = 0, Perms = "", Icon = "ClusterOutlined", Remark = "制二课管理目录" }
+    public static List<HbtMenu> GetProductionOutputFourthLevelMenus(long parentId) => new List<HbtMenu> {
+        new HbtMenu { MenuName = "制一课", TransKey = "menu.logistics.production.output.workshop1._self", ParentId = parentId, OrderNum = 1, Path = "workshop1", Component = "", MenuType = 0, Perms = "", Icon = "ClusterOutlined", Remark = "制一课管理目录" },
+        new HbtMenu { MenuName = "制二课", TransKey = "menu.logistics.production.output.workshop2._self", ParentId = parentId, OrderNum = 2, Path = "workshop2", Component = "", MenuType = 0, Perms = "", Icon = "ClusterOutlined", Remark = "制二课管理目录" }
+    };
+
+    /// <summary>
+    /// 获取制一课五级目录列表
+    /// </summary>
+    public static List<HbtMenu> GetProductionOutputWorkshop1FifthLevelMenus(long parentId) => new List<HbtMenu> {
+        new HbtMenu { MenuName = "OPH", TransKey = "menu.logistics.production.output.workshop1.oph._self", ParentId = parentId, OrderNum = 1, Path = "oph", Component = "", MenuType = 0, Perms = "", Icon = "ClusterOutlined", Remark = "制一课OPH目录" },
+        new HbtMenu { MenuName = "不良", TransKey = "menu.logistics.production.output.workshop1.defect._self", ParentId = parentId, OrderNum = 2, Path = "defect", Component = "", MenuType = 0, Perms = "", Icon = "WarningOutlined", Remark = "制一课不良目录" },
+        new HbtMenu { MenuName = "工数", TransKey = "menu.logistics.production.output.workshop1.worktime._self", ParentId = parentId, OrderNum = 3, Path = "worktime", Component = "", MenuType = 0, Perms = "", Icon = "FieldTimeOutlined", Remark = "制一课工数目录" }
+    };
+
+    /// <summary>
+    /// 获取制二课五级目录列表
+    /// </summary>
+    public static List<HbtMenu> GetProductionOutputWorkshop2FifthLevelMenus(long parentId) => new List<HbtMenu> {
+        new HbtMenu { MenuName = "OPH", TransKey = "menu.logistics.production.output.workshop2.oph._self", ParentId = parentId, OrderNum = 1, Path = "oph", Component = "", MenuType = 0, Perms = "", Icon = "ClusterOutlined", Remark = "制二课OPH目录" },
+        new HbtMenu { MenuName = "不良", TransKey = "menu.logistics.production.output.workshop2.defect._self", ParentId = parentId, OrderNum = 2, Path = "defect", Component = "", MenuType = 0, Perms = "", Icon = "WarningOutlined", Remark = "制二课不良目录" },
+        new HbtMenu { MenuName = "工数", TransKey = "menu.logistics.production.output.workshop2.worktime._self", ParentId = parentId, OrderNum = 3, Path = "worktime", Component = "", MenuType = 0, Perms = "", Icon = "FieldTimeOutlined", Remark = "制二课工数目录" }
+    };
+
+    /// <summary>
+    /// 获取制一课OUTPUT六级菜单列表
+    /// </summary>
+    public static List<HbtMenu> GetProductionOutputWorkshop1OutputSixthMenus(long parentId) => new List<HbtMenu> {
+        new HbtMenu { MenuName = "EPP生产", TransKey = "menu.logistics.production.output.workshop1.oph.epp", ParentId = parentId, OrderNum = 1, Path = "epp", Component = "logistics/production/output/workshop1/oph/epp/index", MenuType = 1, Perms = "logistics:production:output:workshop1:oph:epp:list", Icon = "ClusterOutlined", Remark = "制一课EPP生产管理" },
+        new HbtMenu { MenuName = "生产OPH", TransKey = "menu.logistics.production.output.workshop1.oph.production", ParentId = parentId, OrderNum = 2, Path = "production", Component = "logistics/production/output/workshop1/oph/production/index", MenuType = 1, Perms = "logistics:production:output:workshop1:oph:production:list", Icon = "ClusterOutlined", Remark = "制一课生产OPH管理" },
+        new HbtMenu { MenuName = "改修OPH", TransKey = "menu.logistics.production.output.workshop1.oph.modify", ParentId = parentId, OrderNum = 3, Path = "modify", Component = "logistics/production/output/workshop1/oph/modify/index", MenuType = 1, Perms = "logistics:production:output:workshop1:oph:modify:list", Icon = "ToolOutlined", Remark = "制一课改修OPH管理" },
+        new HbtMenu { MenuName = "返工OPH", TransKey = "menu.logistics.production.output.workshop1.oph.rework", ParentId = parentId, OrderNum = 4, Path = "rework", Component = "logistics/production/output/workshop1/oph/rework/index", MenuType = 1, Perms = "logistics:production:output:workshop1:oph:rework:list", Icon = "ReloadOutlined", Remark = "制一课返工OPH管理" }
+    };
+
+    /// <summary>
+    /// 获取制一课不良六级菜单列表
+    /// </summary>
+    public static List<HbtMenu> GetProductionOutputWorkshop1DefectSixthMenus(long parentId) => new List<HbtMenu> {
+        new HbtMenu { MenuName = "EPP不良", TransKey = "menu.logistics.production.output.workshop1.defect.epp", ParentId = parentId, OrderNum = 1, Path = "epp", Component = "logistics/production/output/workshop1/defect/epp/index", MenuType = 1, Perms = "logistics:production:output:workshop1:defect:epp:list", Icon = "WarningOutlined", Remark = "制一课EPP不良管理" },
+        new HbtMenu { MenuName = "生产不良", TransKey = "menu.logistics.production.output.workshop1.defect.production", ParentId = parentId, OrderNum = 2, Path = "production", Component = "logistics/production/output/workshop1/defect/production/index", MenuType = 1, Perms = "logistics:production:output:workshop1:defect:production:list", Icon = "WarningOutlined", Remark = "制一课生产不良管理" },
+        new HbtMenu { MenuName = "改修不良", TransKey = "menu.logistics.production.output.workshop1.defect.modify", ParentId = parentId, OrderNum = 3, Path = "modify", Component = "logistics/production/output/workshop1/defect/modify/index", MenuType = 1, Perms = "logistics:production:output:workshop1:defect:modify:list", Icon = "WarningOutlined", Remark = "制一课改修不良管理" },
+        new HbtMenu { MenuName = "返工不良", TransKey = "menu.logistics.production.output.workshop1.defect.rework", ParentId = parentId, OrderNum = 4, Path = "rework", Component = "logistics/production/output/workshop1/defect/rework/index", MenuType = 1, Perms = "logistics:production:output:workshop1:defect:rework:list", Icon = "WarningOutlined", Remark = "制一课返工不良管理" }
+    };
+
+    /// <summary>
+    /// 获取制一课工数六级菜单列表
+    /// </summary>
+    public static List<HbtMenu> GetProductionOutputWorkshop1WorktimeSixthMenus(long parentId) => new List<HbtMenu> {
+        new HbtMenu { MenuName = "EPP工数", TransKey = "menu.logistics.production.output.workshop1.worktime.epp", ParentId = parentId, OrderNum = 1, Path = "epp", Component = "logistics/production/output/workshop1/worktime/epp/index", MenuType = 1, Perms = "logistics:production:output:workshop1:worktime:epp:list", Icon = "FieldTimeOutlined", Remark = "制一课EPP工数管理" },
+        new HbtMenu { MenuName = "生产工数", TransKey = "menu.logistics.production.output.workshop1.worktime.production", ParentId = parentId, OrderNum = 2, Path = "production", Component = "logistics/production/output/workshop1/worktime/production/index", MenuType = 1, Perms = "logistics:production:output:workshop1:worktime:production:list", Icon = "FieldTimeOutlined", Remark = "制一课生产工数管理" },
+        new HbtMenu { MenuName = "改修工数", TransKey = "menu.logistics.production.output.workshop1.worktime.modify", ParentId = parentId, OrderNum = 3, Path = "modify", Component = "logistics/production/output/workshop1/worktime/modify/index", MenuType = 1, Perms = "logistics:production:output:workshop1:worktime:modify:list", Icon = "FieldTimeOutlined", Remark = "制一课改修工数管理" },
+        new HbtMenu { MenuName = "返工工数", TransKey = "menu.logistics.production.output.workshop1.worktime.rework", ParentId = parentId, OrderNum = 4, Path = "rework", Component = "logistics/production/output/workshop1/worktime/rework/index", MenuType = 1, Perms = "logistics:production:output:workshop1:worktime:rework:list", Icon = "FieldTimeOutlined", Remark = "制一课返工工数管理" }
+    };
+
+    /// <summary>
+    /// 获取制二课OUTPUT六级菜单列表
+    /// </summary>
+    public static List<HbtMenu> GetProductionOutputWorkshop2OutputSixthMenus(long parentId) => new List<HbtMenu> {
+        new HbtMenu { MenuName = "EPP生产", TransKey = "menu.logistics.production.output.workshop2.oph.epp", ParentId = parentId, OrderNum = 1, Path = "epp", Component = "logistics/production/output/workshop2/oph/epp/index", MenuType = 1, Perms = "logistics:production:output:workshop2:oph:epp:list", Icon = "ClusterOutlined", Remark = "制二课EPP生产管理" },
+        new HbtMenu { MenuName = "生产OPH", TransKey = "menu.logistics.production.output.workshop2.oph.production", ParentId = parentId, OrderNum = 2, Path = "production", Component = "logistics/production/output/workshop2/oph/production/index", MenuType = 1, Perms = "logistics:production:output:workshop2:oph:production:list", Icon = "ClusterOutlined", Remark = "制二课生产OPH管理" },
+        new HbtMenu { MenuName = "改修OPH", TransKey = "menu.logistics.production.output.workshop2.oph.modify", ParentId = parentId, OrderNum = 3, Path = "modify", Component = "logistics/production/output/workshop2/oph/modify/index", MenuType = 1, Perms = "logistics:production:output:workshop2:oph:modify:list", Icon = "ToolOutlined", Remark = "制二课改修OPH管理" },
+        new HbtMenu { MenuName = "返工OPH", TransKey = "menu.logistics.production.output.workshop2.oph.rework", ParentId = parentId, OrderNum = 4, Path = "rework", Component = "logistics/production/output/workshop2/oph/rework/index", MenuType = 1, Perms = "logistics:production:output:workshop2:oph:rework:list", Icon = "ReloadOutlined", Remark = "制二课返工OPH管理" }
+    };
+
+    /// <summary>
+    /// 获取制二课不良六级菜单列表
+    /// </summary>
+    public static List<HbtMenu> GetProductionOutputWorkshop2DefectSixthMenus(long parentId) => new List<HbtMenu> {
+        new HbtMenu { MenuName = "EPP检查", TransKey = "menu.logistics.production.output.workshop2.defect.eppInspection", ParentId = parentId, OrderNum = 1, Path = "eppInspection", Component = "logistics/production/output/workshop2/defect/eppInspection/index", MenuType = 1, Perms = "logistics:production:output:workshop2:defect:eppInspection:list", Icon = "SearchOutlined", Remark = "制二课EPP检查管理" },
+        new HbtMenu { MenuName = "EPP修理", TransKey = "menu.logistics.production.output.workshop2.defect.eppRepair", ParentId = parentId, OrderNum = 2, Path = "eppRepair", Component = "logistics/production/output/workshop2/defect/eppRepair/index", MenuType = 1, Perms = "logistics:production:output:workshop2:defect:eppRepair:list", Icon = "ToolOutlined", Remark = "制二课EPP修理管理" },
+        new HbtMenu { MenuName = "生产检查", TransKey = "menu.logistics.production.output.workshop2.defect.productionInspection", ParentId = parentId, OrderNum = 3, Path = "productionInspection", Component = "logistics/production/output/workshop2/defect/productionInspection/index", MenuType = 1, Perms = "logistics:production:output:workshop2:defect:productionInspection:list", Icon = "SearchOutlined", Remark = "制二课生产检查管理" },
+        new HbtMenu { MenuName = "生产修理", TransKey = "menu.logistics.production.output.workshop2.defect.productionRepair", ParentId = parentId, OrderNum = 4, Path = "productionRepair", Component = "logistics/production/output/workshop2/defect/productionRepair/index", MenuType = 1, Perms = "logistics:production:output:workshop2:defect:productionRepair:list", Icon = "ToolOutlined", Remark = "制二课生产修理管理" },
+        new HbtMenu { MenuName = "改修检查", TransKey = "menu.logistics.production.output.workshop2.defect.modifyInspection", ParentId = parentId, OrderNum = 5, Path = "modifyInspection", Component = "logistics/production/output/workshop2/defect/modifyInspection/index", MenuType = 1, Perms = "logistics:production:output:workshop2:defect:modifyInspection:list", Icon = "SearchOutlined", Remark = "制二课改修检查管理" },
+        new HbtMenu { MenuName = "改修修理", TransKey = "menu.logistics.production.output.workshop2.defect.modifyRepair", ParentId = parentId, OrderNum = 6, Path = "modifyRepair", Component = "logistics/production/output/workshop2/defect/modifyRepair/index", MenuType = 1, Perms = "logistics:production:output:workshop2:defect:modifyRepair:list", Icon = "ToolOutlined", Remark = "制二课改修修理管理" },
+        new HbtMenu { MenuName = "返工检查", TransKey = "menu.logistics.production.output.workshop2.defect.reworkInspection", ParentId = parentId, OrderNum = 7, Path = "reworkInspection", Component = "logistics/production/output/workshop2/defect/reworkInspection/index", MenuType = 1, Perms = "logistics:production:output:workshop2:defect:reworkInspection:list", Icon = "SearchOutlined", Remark = "制二课返工检查管理" },
+        new HbtMenu { MenuName = "返工修理", TransKey = "menu.logistics.production.output.workshop2.defect.reworkRepair", ParentId = parentId, OrderNum = 8, Path = "reworkRepair", Component = "logistics/production/output/workshop2/defect/reworkRepair/index", MenuType = 1, Perms = "logistics:production:output:workshop2:defect:reworkRepair:list", Icon = "ToolOutlined", Remark = "制二课返工修理管理" }
+    };
+
+    /// <summary>
+    /// 获取制二课工数六级菜单列表
+    /// </summary>
+    public static List<HbtMenu> GetProductionOutputWorkshop2WorktimeSixthMenus(long parentId) => new List<HbtMenu> {
+        new HbtMenu { MenuName = "EPP工数", TransKey = "menu.logistics.production.output.workshop2.worktime.epp", ParentId = parentId, OrderNum = 1, Path = "epp", Component = "logistics/production/output/workshop2/worktime/epp/index", MenuType = 1, Perms = "logistics:production:output:workshop2:worktime:epp:list", Icon = "FieldTimeOutlined", Remark = "制二课EPP工数管理" },
+        new HbtMenu { MenuName = "生产工数", TransKey = "menu.logistics.production.output.workshop2.worktime.production", ParentId = parentId, OrderNum = 2, Path = "production", Component = "logistics/production/output/workshop2/worktime/production/index", MenuType = 1, Perms = "logistics:production:output:workshop2:worktime:production:list", Icon = "FieldTimeOutlined", Remark = "制二课生产工数管理" },
+        new HbtMenu { MenuName = "改修工数", TransKey = "menu.logistics.production.output.workshop2.worktime.modify", ParentId = parentId, OrderNum = 3, Path = "modify", Component = "logistics/production/output/workshop2/worktime/modify/index", MenuType = 1, Perms = "logistics:production:output:workshop2:worktime:modify:list", Icon = "FieldTimeOutlined", Remark = "制二课改修工数管理" },
+        new HbtMenu { MenuName = "返工工数", TransKey = "menu.logistics.production.output.workshop2.worktime.rework", ParentId = parentId, OrderNum = 4, Path = "rework", Component = "logistics/production/output/workshop2/worktime/rework/index", MenuType = 1, Perms = "logistics:production:output:workshop2:worktime:rework:list", Icon = "FieldTimeOutlined", Remark = "制二课返工工数管理" }
     };
 
     /// <summary>
@@ -163,52 +331,6 @@ public class HbtDbSeedLogisticsMenu
         new HbtMenu { MenuName = "制一课", TransKey = "menu.logistics.production.change.input.seizou1", ParentId = parentId, OrderNum = 7, Path = "seizou1", Component = "logistics/production/change/input/seizou1/index", MenuType = 1, Perms = "logistics:production:change:input:seizou1:list", Icon = "ClusterOutlined", Remark = "制一课设变录入" },
         new HbtMenu { MenuName = "品管课", TransKey = "menu.logistics.production.change.input.hinkan", ParentId = parentId, OrderNum = 8, Path = "hinkan", Component = "logistics/production/change/input/hinkan/index", MenuType = 1, Perms = "logistics:production:change:input:hinkan:list", Icon = "SafetyCertificateOutlined", Remark = "品管课设变录入" },
         new HbtMenu { MenuName = "制技课", TransKey = "menu.logistics.production.change.input.seizougijutsu", ParentId = parentId, OrderNum = 9, Path = "seizougijutsu", Component = "logistics/production/change/input/seizougijutsu/index", MenuType = 1, Perms = "logistics:production:change:input:seizougijutsu:list", Icon = "ToolOutlined", Remark = "制技课设变录入" }
-    };
-
-    /// <summary>
-    /// 获取制一课五级菜单列表
-    /// </summary>
-    public static List<HbtMenu> GetProductionOphWorkshop1FifthMenus(long parentId) => new List<HbtMenu> {
-        new HbtMenu { MenuName = "EPP生产", TransKey = "menu.logistics.production.oph.workshop1.epp", ParentId = parentId, OrderNum = 1, Path = "epp", Component = "logistics/production/oph/workshop1/epp/index", MenuType = 1, Perms = "logistics:production:oph:workshop1:epp:list", Icon = "ClusterOutlined", Remark = "EPP生产管理" },
-        new HbtMenu { MenuName = "生产OPH", TransKey = "menu.logistics.production.oph.workshop1.oph", ParentId = parentId, OrderNum = 2, Path = "oph", Component = "logistics/production/oph/workshop1/oph/index", MenuType = 1, Perms = "logistics:production:oph:workshop1:oph:list", Icon = "ClusterOutlined", Remark = "生产OPH管理" },
-        new HbtMenu { MenuName = "生产改修", TransKey = "menu.logistics.production.oph.workshop1.modify", ParentId = parentId, OrderNum = 3, Path = "modify", Component = "logistics/production/oph/workshop1/modify/index", MenuType = 1, Perms = "logistics:production:oph:workshop1:modify:list", Icon = "ToolOutlined", Remark = "生产改修管理" },
-        new HbtMenu { MenuName = "生产返工", TransKey = "menu.logistics.production.oph.workshop1.rework", ParentId = parentId, OrderNum = 4, Path = "rework", Component = "logistics/production/oph/workshop1/rework/index", MenuType = 1, Perms = "logistics:production:oph:workshop1:rework:list", Icon = "ReloadOutlined", Remark = "生产返工管理" },
-        new HbtMenu { MenuName = "EPP不良", TransKey = "menu.logistics.production.oph.workshop1.eppDefect", ParentId = parentId, OrderNum = 5, Path = "eppDefect", Component = "logistics/production/oph/workshop1/eppDefect/index", MenuType = 1, Perms = "logistics:production:oph:workshop1:eppDefect:list", Icon = "WarningOutlined", Remark = "EPP不良管理" },
-        new HbtMenu { MenuName = "生产不良", TransKey = "menu.logistics.production.oph.workshop1.productionDefect", ParentId = parentId, OrderNum = 6, Path = "productionDefect", Component = "logistics/production/oph/workshop1/productionDefect/index", MenuType = 1, Perms = "logistics:production:oph:workshop1:productionDefect:list", Icon = "WarningOutlined", Remark = "生产不良管理" },
-        new HbtMenu { MenuName = "改修不良", TransKey = "menu.logistics.production.oph.workshop1.modifyDefect", ParentId = parentId, OrderNum = 7, Path = "modifyDefect", Component = "logistics/production/oph/workshop1/modifyDefect/index", MenuType = 1, Perms = "logistics:production:oph:workshop1:modifyDefect:list", Icon = "WarningOutlined", Remark = "改修不良管理" },
-        new HbtMenu { MenuName = "返工不良", TransKey = "menu.logistics.production.oph.workshop1.reworkDefect", ParentId = parentId, OrderNum = 8, Path = "reworkDefect", Component = "logistics/production/oph/workshop1/reworkDefect/index", MenuType = 1, Perms = "logistics:production:oph:workshop1:reworkDefect:list", Icon = "WarningOutlined", Remark = "返工不良管理" },
-        new HbtMenu { MenuName = "EPP工数", TransKey = "menu.logistics.production.oph.workshop1.eppWorktime", ParentId = parentId, OrderNum = 9, Path = "eppWorktime", Component = "logistics/production/oph/workshop1/eppWorktime/index", MenuType = 1, Perms = "logistics:production:oph:workshop1:eppWorktime:list", Icon = "FieldTimeOutlined", Remark = "EPP工数管理" },
-        new HbtMenu { MenuName = "生产工数", TransKey = "menu.logistics.production.oph.workshop1.productionWorktime", ParentId = parentId, OrderNum = 10, Path = "productionWorktime", Component = "logistics/production/oph/workshop1/productionWorktime/index", MenuType = 1, Perms = "logistics:production:oph:workshop1:productionWorktime:list", Icon = "FieldTimeOutlined", Remark = "生产工数管理" },
-        new HbtMenu { MenuName = "修改工数", TransKey = "menu.logistics.production.oph.workshop1.modifyWorktime", ParentId = parentId, OrderNum = 11, Path = "modifyWorktime", Component = "logistics/production/oph/workshop1/modifyWorktime/index", MenuType = 1, Perms = "logistics:production:oph:workshop1:modifyWorktime:list", Icon = "FieldTimeOutlined", Remark = "修改工数管理" },
-        new HbtMenu { MenuName = "返工工数", TransKey = "menu.logistics.production.oph.workshop1.reworkWorktime", ParentId = parentId, OrderNum = 12, Path = "reworkWorktime", Component = "logistics/production/oph/workshop1/reworkWorktime/index", MenuType = 1, Perms = "logistics:production:oph:workshop1:reworkWorktime:list", Icon = "FieldTimeOutlined", Remark = "返工工数管理" },
-        new HbtMenu { MenuName = "生产报表", TransKey = "menu.logistics.production.oph.workshop1.productionReport", ParentId = parentId, OrderNum = 13, Path = "productionReport", Component = "logistics/production/oph/workshop1/productionReport/index", MenuType = 1, Perms = "logistics:production:oph:workshop1:productionReport:list", Icon = "BarChartOutlined", Remark = "生产报表" },
-        new HbtMenu { MenuName = "不良集计", TransKey = "menu.logistics.production.oph.workshop1.defectSummary", ParentId = parentId, OrderNum = 14, Path = "defectSummary", Component = "logistics/production/oph/workshop1/defectSummary/index", MenuType = 1, Perms = "logistics:production:oph:workshop1:defectSummary:list", Icon = "PieChartOutlined", Remark = "不良集计" },
-        new HbtMenu { MenuName = "工时报表", TransKey = "menu.logistics.production.oph.workshop1.worktimeReport", ParentId = parentId, OrderNum = 15, Path = "worktimeReport", Component = "logistics/production/oph/workshop1/worktimeReport/index", MenuType = 1, Perms = "logistics:production:oph:workshop1:worktimeReport:list", Icon = "ClockCircleOutlined", Remark = "工时报表" }
-    };
-
-    /// <summary>
-    /// 获取制二课五级菜单列表
-    /// </summary>
-    public static List<HbtMenu> GetProductionOphWorkshop2FifthMenus(long parentId) => new List<HbtMenu> {
-        new HbtMenu { MenuName = "EPP生产", TransKey = "menu.logistics.production.oph.workshop2.epp", ParentId = parentId, OrderNum = 1, Path = "epp", Component = "logistics/production/oph/workshop2/epp/index", MenuType = 1, Perms = "logistics:production:oph:workshop2:epp:list", Icon = "ClusterOutlined", Remark = "EPP生产管理" },
-        new HbtMenu { MenuName = "生产OPH", TransKey = "menu.logistics.production.oph.workshop2.oph", ParentId = parentId, OrderNum = 2, Path = "oph", Component = "logistics/production/oph/workshop2/oph/index", MenuType = 1, Perms = "logistics:production:oph:workshop2:oph:list", Icon = "ClusterOutlined", Remark = "生产OPH管理" },
-        new HbtMenu { MenuName = "生产改修", TransKey = "menu.logistics.production.oph.workshop2.modify", ParentId = parentId, OrderNum = 3, Path = "modify", Component = "logistics/production/oph/workshop2/modify/index", MenuType = 1, Perms = "logistics:production:oph:workshop2:modify:list", Icon = "ToolOutlined", Remark = "生产改修管理" },
-        new HbtMenu { MenuName = "生产返工", TransKey = "menu.logistics.production.oph.workshop2.rework", ParentId = parentId, OrderNum = 4, Path = "rework", Component = "logistics/production/oph/workshop2/rework/index", MenuType = 1, Perms = "logistics:production:oph:workshop2:rework:list", Icon = "ReloadOutlined", Remark = "生产返工管理" },
-        new HbtMenu { MenuName = "EPP检查", TransKey = "menu.logistics.production.oph.workshop2.eppInspection", ParentId = parentId, OrderNum = 5, Path = "eppInspection", Component = "logistics/production/oph/workshop2/eppInspection/index", MenuType = 1, Perms = "logistics:production:oph:workshop2:eppInspection:list", Icon = "SearchOutlined", Remark = "EPP检查管理" },
-        new HbtMenu { MenuName = "生产检查", TransKey = "menu.logistics.production.oph.workshop2.productionInspection", ParentId = parentId, OrderNum = 6, Path = "productionInspection", Component = "logistics/production/oph/workshop2/productionInspection/index", MenuType = 1, Perms = "logistics:production:oph:workshop2:productionInspection:list", Icon = "SearchOutlined", Remark = "生产检查管理" },
-        new HbtMenu { MenuName = "改修检查", TransKey = "menu.logistics.production.oph.workshop2.modifyInspection", ParentId = parentId, OrderNum = 7, Path = "modifyInspection", Component = "logistics/production/oph/workshop2/modifyInspection/index", MenuType = 1, Perms = "logistics:production:oph:workshop2:modifyInspection:list", Icon = "SearchOutlined", Remark = "改修检查管理" },
-        new HbtMenu { MenuName = "返工检查", TransKey = "menu.logistics.production.oph.workshop2.reworkInspection", ParentId = parentId, OrderNum = 8, Path = "reworkInspection", Component = "logistics/production/oph/workshop2/reworkInspection/index", MenuType = 1, Perms = "logistics:production:oph:workshop2:reworkInspection:list", Icon = "SearchOutlined", Remark = "返工检查管理" },
-        new HbtMenu { MenuName = "EPP修理", TransKey = "menu.logistics.production.oph.workshop2.eppRepair", ParentId = parentId, OrderNum = 9, Path = "eppRepair", Component = "logistics/production/oph/workshop2/eppRepair/index", MenuType = 1, Perms = "logistics:production:oph:workshop2:eppRepair:list", Icon = "ToolOutlined", Remark = "EPP修理管理" },
-        new HbtMenu { MenuName = "生产修理", TransKey = "menu.logistics.production.oph.workshop2.productionRepair", ParentId = parentId, OrderNum = 10, Path = "productionRepair", Component = "logistics/production/oph/workshop2/productionRepair/index", MenuType = 1, Perms = "logistics:production:oph:workshop2:productionRepair:list", Icon = "ToolOutlined", Remark = "生产修理管理" },
-        new HbtMenu { MenuName = "改修修理", TransKey = "menu.logistics.production.oph.workshop2.modifyRepair", ParentId = parentId, OrderNum = 11, Path = "modifyRepair", Component = "logistics/production/oph/workshop2/modifyRepair/index", MenuType = 1, Perms = "logistics:production:oph:workshop2:modifyRepair:list", Icon = "ToolOutlined", Remark = "改修修理管理" },
-        new HbtMenu { MenuName = "返工修理", TransKey = "menu.logistics.production.oph.workshop2.reworkRepair", ParentId = parentId, OrderNum = 12, Path = "reworkRepair", Component = "logistics/production/oph/workshop2/reworkRepair/index", MenuType = 1, Perms = "logistics:production:oph:workshop2:reworkRepair:list", Icon = "ToolOutlined", Remark = "返工修理管理" },
-        new HbtMenu { MenuName = "EPP工数", TransKey = "menu.logistics.production.oph.workshop2.eppWorktime", ParentId = parentId, OrderNum = 13, Path = "eppWorktime", Component = "logistics/production/oph/workshop2/eppWorktime/index", MenuType = 1, Perms = "logistics:production:oph:workshop2:eppWorktime:list", Icon = "FieldTimeOutlined", Remark = "EPP工数管理" },
-        new HbtMenu { MenuName = "生产工数", TransKey = "menu.logistics.production.oph.workshop2.productionWorktime", ParentId = parentId, OrderNum = 14, Path = "productionWorktime", Component = "logistics/production/oph/workshop2/productionWorktime/index", MenuType = 1, Perms = "logistics:production:oph:workshop2:productionWorktime:list", Icon = "FieldTimeOutlined", Remark = "生产工数管理" },
-        new HbtMenu { MenuName = "修改工数", TransKey = "menu.logistics.production.oph.workshop2.modifyWorktime", ParentId = parentId, OrderNum = 15, Path = "modifyWorktime", Component = "logistics/production/oph/workshop2/modifyWorktime/index", MenuType = 1, Perms = "logistics:production:oph:workshop2:modifyWorktime:list", Icon = "FieldTimeOutlined", Remark = "修改工数管理" },
-        new HbtMenu { MenuName = "返工工数", TransKey = "menu.logistics.production.oph.workshop2.reworkWorktime", ParentId = parentId, OrderNum = 16, Path = "reworkWorktime", Component = "logistics/production/oph/workshop2/reworkWorktime/index", MenuType = 1, Perms = "logistics:production:oph:workshop2:reworkWorktime:list", Icon = "FieldTimeOutlined", Remark = "返工工数管理" },
-        new HbtMenu { MenuName = "生产报表", TransKey = "menu.logistics.production.oph.workshop2.productionReport", ParentId = parentId, OrderNum = 17, Path = "productionReport", Component = "logistics/production/oph/workshop2/productionReport/index", MenuType = 1, Perms = "logistics:production:oph:workshop2:productionReport:list", Icon = "BarChartOutlined", Remark = "生产报表" },
-        new HbtMenu { MenuName = "不良集计", TransKey = "menu.logistics.production.oph.workshop2.defectSummary", ParentId = parentId, OrderNum = 18, Path = "defectSummary", Component = "logistics/production/oph/workshop2/defectSummary/index", MenuType = 1, Perms = "logistics:production:oph:workshop2:defectSummary:list", Icon = "PieChartOutlined", Remark = "不良集计" },
-        new HbtMenu { MenuName = "工时报表", TransKey = "menu.logistics.production.oph.workshop2.worktimeReport", ParentId = parentId, OrderNum = 19, Path = "worktimeReport", Component = "logistics/production/oph/workshop2/worktimeReport/index", MenuType = 1, Perms = "logistics:production:oph:workshop2:worktimeReport:list", Icon = "ClockCircleOutlined", Remark = "工时报表" }
     };
 
     // ==================== 设备管理菜单 ====================

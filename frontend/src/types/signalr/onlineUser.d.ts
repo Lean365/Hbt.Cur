@@ -62,4 +62,4 @@ export interface HbtOnlineUserQueryParams extends HbtPagedQuery {
 }
 
 /** 在线用户分页结果 */
-export type HbtOnlineUserPageResult = HbtPagedResult<HbtOnlineUserDto> 
+export type HbtOnlineUserPageResult = HbtPagedResult<HbtOnlineUser> 

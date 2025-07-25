@@ -7,7 +7,7 @@
 // 描述    : 应用程序入口文件
 //===================================================================
 
-import { createApp, watch } from 'vue'
+import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import Antd from 'ant-design-vue'
 import FcDesigner from '@form-create/antd-designer'
@@ -17,7 +17,7 @@ import App from './App.vue'
 import router from './router'
 import i18n from './locales'
 import { useAppStore } from '@/stores/app'
-import { useSettingStore } from '@/stores/settings'
+import { useConfigStore } from '@/stores/config'
 import { setupPermission } from './directives/permission'
 import { setupIconColor } from './directives/iconColor'
 import setupIcons from '@/utils/icons'
@@ -37,17 +37,16 @@ async function bootstrap() {
     
     // 初始化应用配置
     const appStore = useAppStore()
-    const settingStore = useSettingStore()
+    const configStore = useConfigStore()
     
     // 初始化应用设置（包括语言设置）
     await appStore.initialize()
+    await configStore.initialize()
     
     // 注册 Ant Design Vue
     app.use(Antd)
-
     app.use(FcDesigner)
     app.use(FcDesigner.formCreate)
-
 
     // 设置图标
     setupIcons(app)
@@ -76,12 +75,7 @@ async function bootstrap() {
         await userStore.getUserInfo()
         
         // 加载菜单并注册路由
-        const menus = await menuStore.reloadMenus(router)
-        if (menus && menus.length > 0) {
-          console.log('[应用] 菜单加载完成，路由注册完成')
-        } else {
-          console.warn('[应用] 未加载到菜单数据')
-        }
+        await menuStore.reloadMenus(router)
       } catch (error) {
         console.error('[应用] 预加载失败:', error)
       }
@@ -92,8 +86,6 @@ async function bootstrap() {
 
     // 挂载应用
     app.mount('#app')
-    
-    console.log('[应用] 初始化完成')
   } catch (error) {
     console.error('[应用] 初始化失败:', error)
   }

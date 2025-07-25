@@ -2,8 +2,8 @@
 // 项目名 : Lean.Hbt.Application
 // 文件名 : HbtFileDto.cs
 // 创建者 : Lean365
-// 创建时间: 2024-06-09
-// 版本号 : V1.0.0
+// 创建时间: 2024-01-01
+// 版本号 : V0.0.1
 // 描述   : 文件数据传输对象
 //===================================================================
 
@@ -85,9 +85,9 @@ namespace Lean.Hbt.Application.Dtos.Routine.Document
         public string? FileMd5 { get; set; }
 
         /// <summary>
-        /// 状态（0临时 1正式）
+        /// 状态。文件的状态（0=临时，1=正式）。
         /// </summary>
-        public int FileStatus { get; set; }
+        public int Status { get; set; }
 
         /// <summary>
         /// 下载次数
@@ -178,9 +178,9 @@ namespace Lean.Hbt.Application.Dtos.Routine.Document
         public int FileStorageType { get; set; }
 
         /// <summary>
-        /// 状态（0临时 1正式）
+        /// 状态。文件的状态（0=临时，1=正式）。
         /// </summary>
-        public int FileStatus { get; set; }
+        public int Status { get; set; }
     }
 
     /// <summary>
@@ -254,9 +254,9 @@ namespace Lean.Hbt.Application.Dtos.Routine.Document
         public string? FileMd5 { get; set; }
 
         /// <summary>
-        /// 状态（0临时 1正式）
+        /// 状态。文件的状态（0=临时，1=正式）。
         /// </summary>
-        public int FileStatus { get; set; }
+        public int Status { get; set; }
 
         /// <summary>
         /// 排序
@@ -351,9 +351,9 @@ namespace Lean.Hbt.Application.Dtos.Routine.Document
         public string? FileMd5 { get; set; }
 
         /// <summary>
-        /// 状态（0临时 1正式）
+        /// 状态。文件的状态（0=临时，1=正式）。
         /// </summary>
-        public int FileStatus { get; set; }
+        public int Status { get; set; }
 
         /// <summary>
         /// 下载次数
@@ -443,9 +443,9 @@ namespace Lean.Hbt.Application.Dtos.Routine.Document
         public string? FileMd5 { get; set; }
 
         /// <summary>
-        /// 状态（0临时 1正式）
+        /// 状态。文件的状态（0=临时，1=正式）。
         /// </summary>
-        public int FileStatus { get; set; }
+        public int Status { get; set; }
 
         /// <summary>
         /// 下载次数
@@ -528,9 +528,9 @@ namespace Lean.Hbt.Application.Dtos.Routine.Document
         public string? FileMd5 { get; set; }
 
         /// <summary>
-        /// 状态（0临时 1正式）
+        /// 状态。文件的状态（0=临时，1=正式）。
         /// </summary>
-        public int FileStatus { get; set; }
+        public int Status { get; set; }
 
         /// <summary>
         /// 下载次数
@@ -548,7 +548,7 @@ namespace Lean.Hbt.Application.Dtos.Routine.Document
     /// <summary>
     /// 文件状态DTO
     /// </summary>
-    public class HbtFileStatusDto
+    public class HbtStatusDto
     {
         /// <summary>
         /// 文件ID
@@ -557,8 +557,10 @@ namespace Lean.Hbt.Application.Dtos.Routine.Document
         public long FileId { get; set; }
 
         /// <summary>
-        /// 状态（0临时 1正式）
+        /// 状态。文件的状态（0=临时，1=正式）。
         /// </summary>
-        public int FileStatus { get; set; }
+        public int Status { get; set; }
     }
+
+
 }

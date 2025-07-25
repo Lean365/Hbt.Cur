@@ -4,8 +4,8 @@
 // 项目名 : Lean.Hbt
 // 文件名 : HbtBookCard.cs
 // 创建者 : Lean365
-// 创建时间: 2024-12-19
-// 版本号 : V1.0.0
+// 创建时间: 2024-12-01
+// 版本号 : V0.0.1
 // 描述    : 图书借阅卡实体类
 // 版权    : Copyright © 2024 Lean365. All rights reserved.
 //===================================================================
@@ -17,7 +17,7 @@ namespace Lean.Hbt.Domain.Entities.Routine.Book
     /// </summary>
     /// <remarks>
     /// 创建者: Lean365
-    /// 创建时间: 2024-12-19
+    /// 创建时间: 2024-12-01
     /// 说明: 记录图书借阅卡信息，包括持卡人、卡号、有效期等
     /// </remarks>
     [SugarTable("hbt_routine_book_card", "图书借阅卡")]

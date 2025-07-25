@@ -4,6 +4,7 @@ using Lean.Hbt.Domain.Entities.Identity;
 using Lean.Hbt.Domain.Entities.SignalR;
 using Lean.Hbt.Domain.IServices.Security;
 using Lean.Hbt.Domain.IServices.SignalR;
+using Lean.Hbt.Domain.Repositories;
 using Lean.Hbt.Infrastructure.SignalR;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Options;
@@ -24,8 +25,17 @@ namespace Lean.Hbt.Infrastructure.Security
         private readonly IHbtSignalRClient _signalRClient;
         private readonly HbtSingleSignOnOptions _options;
         private readonly IHubContext<HbtSignalRHub> _hubContext;
-        private readonly IHbtRepository<HbtUser> _userRepository;
-        private readonly IHbtRepository<HbtOnlineUser> _onlineUserRepository;
+        protected readonly IHbtRepositoryFactory _repositoryFactory;
+
+        /// <summary>
+        /// 获取用户仓储
+        /// </summary>
+        private IHbtRepository<HbtUser> UserRepository => _repositoryFactory.GetAuthRepository<HbtUser>();
+
+        /// <summary>
+        /// 获取在线用户仓储
+        /// </summary>
+        private IHbtRepository<HbtOnlineUser> OnlineUserRepository => _repositoryFactory.GetAuthRepository<HbtOnlineUser>();
 
         /// <summary>
         /// 构造函数
@@ -35,24 +45,21 @@ namespace Lean.Hbt.Infrastructure.Security
         /// <param name="signalRClient">SignalR客户端</param>
         /// <param name="options">单点登录配置选项</param>
         /// <param name="hubContext">SignalR hub context</param>
-        /// <param name="userRepository">用户仓库</param>
-        /// <param name="onlineUserRepository">在线用户仓库</param>
+        /// <param name="repositoryFactory">仓储工厂</param>
         public HbtSingleSignOnService(
             IHbtLogger logger,
             IHbtSignalRUserService signalRUserService,
             IHbtSignalRClient signalRClient,
             IOptions<HbtSingleSignOnOptions> options,
             IHubContext<HbtSignalRHub> hubContext,
-            IHbtRepository<HbtUser> userRepository,
-            IHbtRepository<HbtOnlineUser> onlineUserRepository)
+            IHbtRepositoryFactory repositoryFactory)
         {
             _logger = logger;
             _signalRUserService = signalRUserService;
             _signalRClient = signalRClient;
             _options = options.Value;
             _hubContext = hubContext;
-            _userRepository = userRepository;
-            _onlineUserRepository = onlineUserRepository;
+            _repositoryFactory = repositoryFactory ?? throw new ArgumentNullException(nameof(repositoryFactory));
         }
 
         /// <summary>
@@ -177,12 +184,12 @@ namespace Lean.Hbt.Infrastructure.Security
                     // 1. 更新数据库中的在线用户状态
                     var exp = Expressionable.Create<HbtOnlineUser>();
                     exp.And(u => u.UserId == userId && u.DeviceId == oldestDevice.DeviceId);
-                    var oldUser = await _onlineUserRepository.GetFirstAsync(exp.ToExpression());
+                    var oldUser = await OnlineUserRepository.GetFirstAsync(exp.ToExpression());
                     if (oldUser != null)
                     {
                         oldUser.OnlineStatus = 1; // 设置为离线
                         oldUser.LastActivity = DateTime.Now;
-                        await _onlineUserRepository.UpdateAsync(oldUser);
+                        await OnlineUserRepository.UpdateAsync(oldUser);
                     }
 
                     // 2. 从内存中移除设备
@@ -244,7 +251,7 @@ namespace Lean.Hbt.Infrastructure.Security
                 // 删除在线用户记录
                 var exp = Expressionable.Create<HbtOnlineUser>();
                 exp.And(u => u.UserId == long.Parse(userId) && u.ConnectionId == connectionId);
-                await _onlineUserRepository.DeleteAsync(exp.ToExpression());
+                await OnlineUserRepository.DeleteAsync(exp.ToExpression());
 
                 // 清理设备信息
                 var devices = _signalRUserService.GetUserDevices(userId);
@@ -269,7 +276,7 @@ namespace Lean.Hbt.Infrastructure.Security
             var userIdLong = long.Parse(userId);
             var exp = Expressionable.Create<HbtOnlineUser>();
             exp.And(u => u.UserId == userIdLong && u.OnlineStatus == 0 && u.ConnectionId != connectionId);
-            var existingOnlineUsers = await _onlineUserRepository.GetListAsync(exp.ToExpression());
+            var existingOnlineUsers = await OnlineUserRepository.GetListAsync(exp.ToExpression());
             return existingOnlineUsers.Any();
         }
 
@@ -281,7 +288,7 @@ namespace Lean.Hbt.Infrastructure.Security
             var userIdLong = long.Parse(userId);
             var exp = Expressionable.Create<HbtOnlineUser>();
             exp.And(u => u.UserId == userIdLong && u.OnlineStatus == 0);
-            var onlineUsers = await _onlineUserRepository.GetListAsync(exp.ToExpression());
+            var onlineUsers = await OnlineUserRepository.GetListAsync(exp.ToExpression());
             return onlineUsers.Count;
         }
 

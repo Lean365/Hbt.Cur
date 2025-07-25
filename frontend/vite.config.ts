@@ -190,7 +190,7 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
       Components({
         resolvers: [
           AntDesignVueResolver({
-            importStyle: 'less',
+            importStyle: false, // 禁用自动导入样式，避免watermark样式文件不存在的问题
             resolveIcons: true
           })
         ],
@@ -210,6 +210,12 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
         '@': fileURLToPath(new URL('./src', import.meta.url))
       },
       extensions: ['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json', '.d.ts', '.vue']
+    },
+    define: {
+      // 注入版本信息
+      __APP_VERSION__: JSON.stringify(process.env.npm_package_version || '0.0.0'),
+      __APP_NAME__: JSON.stringify(process.env.npm_package_name || 'Lean.Hbt'),
+      __BUILD_TIME__: JSON.stringify(new Date().toISOString())
     },
     optimizeDeps: {
       include: [
@@ -238,7 +244,8 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
         'ant-design-vue/es/input-number/style',
         'ant-design-vue/es/date-picker/style',
         'ant-design-vue/es/input/style',
-        'ant-design-vue/es/pagination/style'
+        'ant-design-vue/es/pagination/style',
+        'ant-design-vue/es/watermark/style'
       ]
     },
     server: {

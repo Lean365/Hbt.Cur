@@ -186,6 +186,11 @@ try
     // 配置验证码选项
     builder.Services.Configure<HbtCaptchaOptions>(builder.Configuration.GetSection("Captcha"));
 
+    // 配置登录相关选项
+    builder.Services.Configure<HbtSmsAuthOptions>(builder.Configuration.GetSection("SmsAuth"));
+    builder.Services.Configure<HbtQrCodeAuthOptions>(builder.Configuration.GetSection("QrCodeAuth"));
+    builder.Services.Configure<HbtOAuthOptions>(builder.Configuration.GetSection("OAuth"));
+
     // 注册当前用户服务
     builder.Services.AddScoped<IHbtCurrentUser, HbtCurrentUser>();
 

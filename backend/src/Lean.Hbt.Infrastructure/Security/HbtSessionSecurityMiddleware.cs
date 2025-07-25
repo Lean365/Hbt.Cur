@@ -3,7 +3,7 @@
 // 文件名 : HbtSessionSecurityMiddleware.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-22 16:00
-// 版本号 : V1.0.0
+// 版本号 : V0.0.1
 // 描述    : 会话安全中间件
 //===================================================================
 
@@ -48,6 +48,13 @@ namespace Lean.Hbt.Infrastructure.Security
         /// <param name="context">HTTP上下文</param>
         public async Task InvokeAsync(HttpContext context)
         {
+            // 跳过验证码相关的请求
+            if (IsCaptchaRequest(context))
+            {
+                await _next(context);
+                return;
+            }
+
             // 1. 获取会话ID和Token
             var sessionId = context.Request.Headers[SessionIdHeader].ToString();
             var sessionToken = context.Request.Headers[SessionTokenHeader].ToString();
@@ -147,6 +154,17 @@ namespace Lean.Hbt.Infrastructure.Security
         private string GetClientInfo(HttpContext context)
         {
             return $"{context.Connection.RemoteIpAddress}|{context.Request.Headers["User-Agent"]}";
+        }
+
+        /// <summary>
+        /// 检查是否是验证码相关请求
+        /// </summary>
+        /// <param name="context">HTTP上下文</param>
+        /// <returns>是否是验证码请求</returns>
+        private bool IsCaptchaRequest(HttpContext context)
+        {
+            var path = context.Request.Path.Value?.ToLower();
+            return path != null && (path.Contains("/hbtcaptcha/") || path.Contains("/hbtloginmethod/"));
         }
     }
 } 

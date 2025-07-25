@@ -14,7 +14,10 @@ namespace Lean.Hbt.Application.Services.Extensions
     public class HbtLogArchiveService : IHbtLogArchiveService
     {
         private readonly IOptions<HbtLogArchiveOptions> _defaultOptions;
-        private readonly IHbtRepositoryFactory _repositoryFactory;
+        /// <summary>
+        /// 仓储工厂
+        /// </summary>
+        protected readonly IHbtRepositoryFactory _repositoryFactory;
         private readonly IHbtLogger _logger;
 
         /// <summary>

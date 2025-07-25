@@ -8,7 +8,7 @@ using Lean.Hbt.Domain.Entities.Identity;
 // 文件名 : HbtRegulation.cs
 // 创建者 : Lean365
 // 创建时间: 2024-03-07
-// 版本号 : V1.0.0
+// 版本号 : V0.0.1
 // 描述    : 内部规章制度实体类（树形结构）
 // 版权    : Copyright © 2024 Lean365. All rights reserved.
 //===================================================================
@@ -25,7 +25,7 @@ namespace Lean.Hbt.Domain.Entities.Routine.Document
     /// </remarks>
     [SugarTable("hbt_routine_regulation", "内部规章制度表")]
     [SugarIndex("ix_regulation_code", nameof(RegulationCode), OrderByType.Asc, true)]
-    [SugarIndex("ix_regulation_status", nameof(RegulationStatus), OrderByType.Asc, false)]
+    [SugarIndex("ix_regulation_status", nameof(Status), OrderByType.Asc, false)]
     [SugarIndex("ix_regulation_type", nameof(RegulationType), OrderByType.Asc, false)]
     [SugarIndex("ix_regulation_level", nameof(RegulationLevel), OrderByType.Asc, false)]
     [SugarIndex("ix_regulation_parent_id", nameof(ParentId), OrderByType.Asc, false)]
@@ -75,14 +75,6 @@ namespace Lean.Hbt.Domain.Entities.Routine.Document
         [SugarColumn(ColumnName = "revision_version", ColumnDescription = "修订版本", Length = 20, ColumnDataType = "nvarchar", IsNullable = true)]
         public string? RevisionVersion { get; set; }
 
-        /// <summary>制定部门</summary>
-        [SugarColumn(ColumnName = "issuing_department", ColumnDescription = "制定部门", Length = 100, ColumnDataType = "nvarchar", IsNullable = true)]
-        public string? IssuingDepartment { get; set; }
-
-        /// <summary>制定日期</summary>
-        [SugarColumn(ColumnName = "issue_date", ColumnDescription = "制定日期", ColumnDataType = "date", IsNullable = true)]
-        public DateTime? IssueDate { get; set; }
-
         /// <summary>生效日期</summary>
         [SugarColumn(ColumnName = "effective_date", ColumnDescription = "生效日期", ColumnDataType = "date", IsNullable = true)]
         public DateTime? EffectiveDate { get; set; }
@@ -95,6 +87,70 @@ namespace Lean.Hbt.Domain.Entities.Routine.Document
         [SugarColumn(ColumnName = "publish_date", ColumnDescription = "发布日期", ColumnDataType = "date", IsNullable = true)]
         public DateTime? PublishDate { get; set; }
 
+        /// <summary>发布部门</summary>
+        [SugarColumn(ColumnName = "publish_department", ColumnDescription = "发布部门", Length = 100, ColumnDataType = "nvarchar", IsNullable = true)]
+        public string? PublishDepartment { get; set; }
+
+        /// <summary>发布方式(1=内部发布 2=全员发布 3=指定部门发布)</summary>
+        [SugarColumn(ColumnName = "publish_method", ColumnDescription = "发布方式", ColumnDataType = "int", IsNullable = false, DefaultValue = "1")]
+        public int PublishMethod { get; set; } = 1;
+
+        /// <summary>发布范围</summary>
+        [SugarColumn(ColumnName = "publish_scope", ColumnDescription = "发布范围", Length = 500, ColumnDataType = "nvarchar", IsNullable = true)]
+        public string? PublishScope { get; set; }
+
+        /// <summary>制定部门</summary>
+        [SugarColumn(ColumnName = "draft_department", ColumnDescription = "制定部门", Length = 100, ColumnDataType = "nvarchar", IsNullable = true)]
+        public string? DraftDepartment { get; set; }
+
+        /// <summary>制定日期</summary>
+        [SugarColumn(ColumnName = "draft_date", ColumnDescription = "制定日期", ColumnDataType = "date", IsNullable = true)]
+        public DateTime? DraftDate { get; set; }
+
+        /// <summary>管理层审核人</summary>
+        [SugarColumn(ColumnName = "management_reviewer", ColumnDescription = "管理层审核人", Length = 50, ColumnDataType = "nvarchar", IsNullable = true)]
+        public string? ManagementReviewer { get; set; }
+
+        /// <summary>管理层审核日期</summary>
+        [SugarColumn(ColumnName = "management_review_date", ColumnDescription = "管理层审核日期", ColumnDataType = "date", IsNullable = true)]
+        public DateTime? ManagementReviewDate { get; set; }
+
+        /// <summary>管理层审核意见</summary>
+        [SugarColumn(ColumnName = "management_review_comment", ColumnDescription = "管理层审核意见", Length = 500, ColumnDataType = "nvarchar", IsNullable = true)]
+        public string? ManagementReviewComment { get; set; }
+
+        /// <summary>职工代表大会表决日期</summary>
+        [SugarColumn(ColumnName = "staff_vote_date", ColumnDescription = "职工代表大会表决日期", ColumnDataType = "date", IsNullable = true)]
+        public DateTime? StaffVoteDate { get; set; }
+
+        /// <summary>职工代表大会表决结果</summary>
+        [SugarColumn(ColumnName = "staff_vote_result", ColumnDescription = "职工代表大会表决结果", Length = 200, ColumnDataType = "nvarchar", IsNullable = true)]
+        public string? StaffVoteResult { get; set; }
+
+        /// <summary>法务合规审核人</summary>
+        [SugarColumn(ColumnName = "legal_reviewer", ColumnDescription = "法务合规审核人", Length = 50, ColumnDataType = "nvarchar", IsNullable = true)]
+        public string? LegalReviewer { get; set; }
+
+        /// <summary>法务合规审核日期</summary>
+        [SugarColumn(ColumnName = "legal_review_date", ColumnDescription = "法务合规审核日期", ColumnDataType = "date", IsNullable = true)]
+        public DateTime? LegalReviewDate { get; set; }
+
+        /// <summary>法务合规审核意见</summary>
+        [SugarColumn(ColumnName = "legal_review_comment", ColumnDescription = "法务合规审核意见", Length = 500, ColumnDataType = "nvarchar", IsNullable = true)]
+        public string? LegalReviewComment { get; set; }
+
+        /// <summary>相关备案部门</summary>
+        [SugarColumn(ColumnName = "filing_department", ColumnDescription = "相关备案部门", Length = 100, ColumnDataType = "nvarchar", IsNullable = true)]
+        public string? FilingDepartment { get; set; }
+
+        /// <summary>备案日期</summary>
+        [SugarColumn(ColumnName = "filing_date", ColumnDescription = "备案日期", ColumnDataType = "date", IsNullable = true)]
+        public DateTime? FilingDate { get; set; }
+
+        /// <summary>备案编号</summary>
+        [SugarColumn(ColumnName = "filing_number", ColumnDescription = "备案编号", Length = 50, ColumnDataType = "nvarchar", IsNullable = true)]
+        public string? FilingNumber { get; set; }
+
         /// <summary>重要程度(1=一般 2=重要 3=非常重要)</summary>
         [SugarColumn(ColumnName = "importance_level", ColumnDescription = "重要程度", ColumnDataType = "int", IsNullable = false, DefaultValue = "2")]
         public int ImportanceLevel { get; set; } = 2;
@@ -106,36 +162,6 @@ namespace Lean.Hbt.Domain.Entities.Routine.Document
         /// <summary>是否公开(0=否 1=是)</summary>
         [SugarColumn(ColumnName = "is_public", ColumnDescription = "是否公开", ColumnDataType = "int", IsNullable = false, DefaultValue = "1")]
         public int IsPublic { get; set; } = 1;
-
-        /// <summary>是否需要培训(0=否 1=是)</summary>
-        [SugarColumn(ColumnName = "need_training", ColumnDescription = "是否需要培训", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
-        public int NeedTraining { get; set; } = 0;
-
-        /// <summary>是否需要考试(0=否 1=是)</summary>
-        [SugarColumn(ColumnName = "need_exam", ColumnDescription = "是否需要考试", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
-        public int NeedExam { get; set; } = 0;
-
-        /// <summary>规章制度制定人</summary>
-        [SugarColumn(ColumnName = "draft_person", ColumnDescription = "规章制度制定人", Length = 50, ColumnDataType = "nvarchar", IsNullable = true)]
-        public string? DraftPerson { get; set; }
-
-        /// <summary>规章制度制定日期</summary>
-        [SugarColumn(ColumnName = "draft_date", ColumnDescription = "规章制度制定日期", ColumnDataType = "datetime", IsNullable = true)]
-        public DateTime? DraftDate { get; set; }
-
-
-
-        /// <summary>发布人</summary>
-        [SugarColumn(ColumnName = "publisher", ColumnDescription = "发布人", Length = 50, ColumnDataType = "nvarchar", IsNullable = true)]
-        public string? Publisher { get; set; }
-
-        /// <summary>发布方式(1=内部发布 2=全员发布 3=指定部门发布)</summary>
-        [SugarColumn(ColumnName = "publish_method", ColumnDescription = "发布方式", ColumnDataType = "int", IsNullable = false, DefaultValue = "1")]
-        public int PublishMethod { get; set; } = 1;
-
-        /// <summary>发布范围</summary>
-        [SugarColumn(ColumnName = "publish_scope", ColumnDescription = "发布范围", Length = 500, ColumnDataType = "nvarchar", IsNullable = true)]
-        public string? PublishScope { get; set; }
 
         /// <summary>相关规章制度</summary>
         [SugarColumn(ColumnName = "related_regulations", ColumnDescription = "相关规章制度", Length = 500, ColumnDataType = "nvarchar", IsNullable = true)]
@@ -157,18 +183,9 @@ namespace Lean.Hbt.Domain.Entities.Routine.Document
         [SugarColumn(ColumnName = "download_count", ColumnDescription = "下载次数", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
         public int DownloadCount { get; set; } = 0;
 
-        /// <summary>规章制度状态(0=草稿 1=已发布 2=已作废 3=已归档)</summary>
-        [SugarColumn(ColumnName = "regulation_status", ColumnDescription = "规章制度状态", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
-        public int RegulationStatus { get; set; } = 0;
-
-        /// <summary>是否置顶(0=否 1=是)</summary>
-        [SugarColumn(ColumnName = "is_top", ColumnDescription = "是否置顶", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
-        public int IsTop { get; set; } = 0;
-
-        /// <summary>是否推荐(0=否 1=是)</summary>
-        [SugarColumn(ColumnName = "is_recommended", ColumnDescription = "是否推荐", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
-        public int IsRecommended { get; set; } = 0;
-
+        /// <summary>状态。规章制度的状态（0=草稿，1=已发布，2=已作废，3=已归档）。</summary>
+        [SugarColumn(ColumnName = "regulation_status", ColumnDescription = "状态", ColumnDataType = "int", IsNullable = false, DefaultValue = "0")]
+        public int Status { get; set; } = 0;
    
 
         /// <summary>

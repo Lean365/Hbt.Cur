@@ -3,7 +3,7 @@
 // 文件名 : HbtCsrfMiddleware.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-22 16:00
-// 版本号 : V1.0.0
+// 版本号 : V0.0.1
 // 描述    : CSRF防护中间件
 //===================================================================
 
@@ -73,33 +73,40 @@ namespace Lean.Hbt.Infrastructure.Security
             // 2. 获取现有的Cookie Token
             var cookieToken = context.Request.Cookies[CsrfTokenCookie];
 
-            // 3. 处理GET请求
+            // 3. 处理GET请求 - 只对需要CSRF保护的接口生成令牌
             if (context.Request.Method == "GET")
             {
-                // 只在没有Cookie Token时生成新的
-                if (string.IsNullOrEmpty(cookieToken))
+                var path = context.Request.Path.Value?.ToLower();
+                var pathWithoutQuery = path?.Split('?')[0] ?? "";
+                
+                // 检查是否是用户信息接口（登录后需要CSRF保护）
+                if (pathWithoutQuery.StartsWith("/api/hbtauth/info", StringComparison.OrdinalIgnoreCase))
                 {
-                    // 生成新的CSRF Token
-                    var token = GenerateCsrfToken();
+                    // 只在没有Cookie Token时生成新的
+                    if (string.IsNullOrEmpty(cookieToken))
+                    {
+                        // 生成新的CSRF Token
+                        var token = GenerateCsrfToken();
 
-                    _logger.Debug("[CSRF] Setting CSRF token cookie: {Token}", token);
+                        _logger.Debug("[CSRF] Setting CSRF token cookie: {Token}", token);
 
-                    // 设置Cookie
-                    context.Response.Cookies.Append(CsrfTokenCookie, token, GetCookieOptions(context));
+                        // 设置Cookie
+                        context.Response.Cookies.Append(CsrfTokenCookie, token, GetCookieOptions(context));
 
-                    // 同时在响应头中返回token
-                    context.Response.Headers.Append(CsrfTokenHeader, token);
+                        // 同时在响应头中返回token
+                        context.Response.Headers.Append(CsrfTokenHeader, token);
 
-                    // 缓存Token
-                    await CacheTokenAsync(token);
+                        // 缓存Token
+                        await CacheTokenAsync(token);
 
-                    _logger.Debug("[CSRF] Generated new CSRF token: {Token}", token);
-                }
-                else
-                {
-                    // 如果已有Token，刷新缓存时间
-                    await CacheTokenAsync(cookieToken);
-                    _logger.Debug("[CSRF] Refreshed existing CSRF token: {Token}", cookieToken);
+                        _logger.Debug("[CSRF] Generated new CSRF token: {Token}", token);
+                    }
+                    else
+                    {
+                        // 如果已有Token，刷新缓存时间
+                        await CacheTokenAsync(cookieToken);
+                        _logger.Debug("[CSRF] Refreshed existing CSRF token: {Token}", cookieToken);
+                    }
                 }
 
                 await _next(context);
@@ -223,9 +230,12 @@ namespace Lean.Hbt.Infrastructure.Security
             {
                 "/api/hbtauth/login",
                 "/api/hbtauth/logout",
+                "/api/hbtauth/refresh-token",  // 添加 refresh-token 路径
                 "/api/hbtauth/check-login",  // 添加 check-login 路径
+                "/api/hbtloginmethod",  // 添加登录方式配置接口
                 "/api/hbtlanguage/options",
                 "/api/hbtonlineuser/force-offline",  // 添加强制下线接口
+                "/api/hbtcaptcha",  // 添加验证码相关接口
                 "/swagger",
                 "/_framework",
                 "/_vs"
@@ -249,8 +259,8 @@ namespace Lean.Hbt.Infrastructure.Security
             return new CookieOptions
             {
                 HttpOnly = false,  // 允许 JavaScript 访问
-                Secure = true,     // 始终使用 HTTPS
-                SameSite = SameSiteMode.None,  // 允许跨站点请求
+                Secure = true,     // 始终使用 HTTPS，确保安全
+                SameSite = SameSiteMode.Strict,  // 最安全的SameSite设置
                 Path = "/",
                 MaxAge = TimeSpan.FromMinutes(_options.CsrfTokenExpirationMinutes),
                 Domain = null // 让浏览器自动设置域名

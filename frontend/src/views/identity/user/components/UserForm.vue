@@ -19,25 +19,6 @@
         >
           <a-row :gutter="16">
             <a-col :span="12">
-              <a-form-item :label="t('identity.user.fields.tenantId.label')" name="tenantId">
-                <template v-if="!props.userId">
-                  <hbt-select
-                    v-model:value="form.tenantId"
-                    :options="tenantOptions"
-                    :placeholder="t('identity.user.fields.tenantId.placeholder')"
-                  />
-                </template>
-                <template v-else>
-                  <a-input-number
-                    v-model:value="form.tenantId"
-                    :placeholder="t('identity.user.fields.tenantId.placeholder')"
-                    style="width: 100%"
-                    :disabled="true"
-                  />
-                </template>
-              </a-form-item>
-            </a-col>
-            <a-col :span="12">
               <a-form-item :label="t('identity.user.fields.userName.label')" name="userName">
                 <a-input
                   v-model:value="form.userName"
@@ -50,9 +31,9 @@
             </a-col>
           </a-row>
 
-          <a-row :gutter="16" v-if="!id">
+          <a-row :gutter="16" v-if="!props.userId">
             <a-col :span="12">
-              <a-form-item :label="t('identity.user.fields.password.label')" name="password" :rules="!!props.userId ? [] : rules.password">
+              <a-form-item :label="t('identity.user.fields.password.label')" name="password">
                 <a-input-password
                   v-model:value="form.password"
                   :placeholder="t('identity.user.fields.password.placeholder')"
@@ -264,8 +245,7 @@ import { getUser, createUser, updateUser } from '@/api/identity/user'
 import { getRoleOptions } from '@/api/identity/role'
 import { getPostOptions } from '@/api/identity/post'
 import { getDeptOptions } from '@/api/identity/dept'
-import { getTenantOptions } from '@/api/identity/tenant'
-import { getSalt } from '@/api/identity/auth'
+import { getSalt } from '@/api/identity/auth/auth'
 
 import { PasswordEncryptor } from '@/utils/crypto'
 import { RegexUtils } from '@/utils/regex'
@@ -291,14 +271,13 @@ const formRef = ref<FormInstance>()
 
 // 表单数据
 const form = reactive<HbtUserForm>({  
-  tenantId: 0,  // 类型要求必须是 number，所以保持为 0
   userName: '',
   nickName: '',
   realName: '',
   fullName: '',
   englishName: '',
   userType: 0,
-  password: 'Hbt@123852',  // 设置默认密码为Hbt@123852
+  password: '',
   email: '',
   phoneNumber: '',
   gender: 0,
@@ -319,32 +298,15 @@ const roleOptions = ref<{ label: string; value: number }[]>([])
 const postOptions = ref<{ label: string; value: number }[]>([])
 // 部门选项
 const deptOptions = ref<{ label: string; value: number }[]>([])
-// 租户选项
-const tenantOptions = ref<{ label: string; value: number }[]>([])
 
 // 表单校验规则
 const rules: Record<string, Rule[]> = {
-  tenantId: [
-    { required: true, message: t('identity.user.fields.tenantId.validation.required') }
-  ],
   userName: [
     { required: true, message: t('identity.user.fields.userName.validation.required') },
     {
       validator: (_, value) => {
         if (value &&!RegexUtils.isValidUsername(value)) {
           return Promise.reject(t('identity.user.fields.userName.validation.format'));
-        }
-        return Promise.resolve();
-      }
-    }
-  ],
-  password: [
-    {
-      validator: (_, value) => {
-        if (!props.userId) {
-          if (!value || value.length < 6 || value.length > 20) {
-            return Promise.reject(t('identity.user.fields.password.validation.format'));
-          }
         }
         return Promise.resolve();
       }
@@ -459,22 +421,14 @@ const getInfo = async (userId: number) => {
 // 获取选项数据
 const fetchOptions = async () => {
   try {
-    const [roles, posts, depts, tenants] = await Promise.all([
+    const [roles, posts, depts] = await Promise.all([
       getRoleOptions(),
       getPostOptions(),
-      getDeptOptions(),
-      getTenantOptions()
+      getDeptOptions()
     ])
     roleOptions.value = roles.data.data
     postOptions.value = posts.data.data
     deptOptions.value = depts.data.data
-    tenantOptions.value = tenants.data.data
-    
-    // 只在第一次初始化时设置默认值
-    if (!isInitialized.value && !props.userId) {
-      form.tenantId = 0
-      isInitialized.value = true
-    }
   } catch (error) {
     console.error('获取选项数据失败:', error)
   }
@@ -501,11 +455,10 @@ const handleSubmit = () => {
         // 更新用户时，只发送必要的字段
         const updateData: HbtUserUpdate = {
           userId: props.userId,
-          tenantId: form.tenantId,
           userName: form.userName,
           nickName: form.nickName,
           userType: form.userType,
-          password: form.password??'',
+          password: '', // 更新时不修改密码
           realName: form.realName,
           fullName: form.fullName,
           englishName: form.englishName,
@@ -514,6 +467,7 @@ const handleSubmit = () => {
           gender: form.gender,
           avatar: form.avatar,
           status: form.status,
+          deptId: form.deptIds.length > 0 ? form.deptIds[0] : 0, // 使用第一个部门ID
           roleIds: form.roleIds.map(id => Number(id)),
           postIds: form.postIds.map(id => Number(id)),
           deptIds: form.deptIds.map(id => Number(id)),
@@ -560,7 +514,26 @@ const handleSubmit = () => {
         }
       } else {
         // 创建用户时，直接传明文密码，不加密
-        const createData = { ...form } as HbtUserCreate
+        const createData: HbtUserCreate = {
+          userId: 0, // 创建时不需要用户ID
+          userName: form.userName,
+          nickName: form.nickName,
+          userType: form.userType,
+          password: 'Hbt@123852', // 设置默认密码
+          realName: form.realName,
+          fullName: form.fullName,
+          englishName: form.englishName,
+          email: form.email,
+          phoneNumber: form.phoneNumber,
+          gender: form.gender,
+          avatar: form.avatar,
+          status: form.status,
+          deptId: form.deptIds.length > 0 ? form.deptIds[0] : 0, // 使用第一个部门ID
+          roleIds: form.roleIds.map(id => Number(id)),
+          postIds: form.postIds.map(id => Number(id)),
+          deptIds: form.deptIds.map(id => Number(id)),
+          remark: form.remark
+        }
         console.log('创建用户数据:', createData)
         try {
           res = await createUser(createData)
@@ -589,13 +562,13 @@ const handleSubmit = () => {
 
 // 重置表单
 const resetForm = () => {  
-  form.tenantId = 0
   form.userName = ''
   form.nickName = ''
   form.realName = ''
   form.fullName = ''
   form.englishName = ''
   form.userType = 0
+  form.password = ''
   form.email = ''
   form.phoneNumber = ''
   form.gender = 0

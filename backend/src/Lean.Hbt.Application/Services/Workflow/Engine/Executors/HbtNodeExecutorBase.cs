@@ -2,16 +2,17 @@
 
 //===================================================================
 // 项目名 : Lean.Hbt
-// 文件名 : WorkflowNodeExecutorBase.cs
-// 创建者 : Lean365
-// 创建时间: 2024-01-23 12:00
-// 版本号 : V1.0.0
+// 文件名 : HbtNodeExecutorBase.cs
+// 创建者 : Claude
+// 创建时间: 2024-12-01
+// 版本号 : V0.0.1
 // 描述    : 工作流节点执行器基类
 //===================================================================
 
-using Lean.Hbt.Common.Enums;
-using Lean.Hbt.Domain.Entities.Workflow;
-using Lean.Hbt.Domain.IServices.Extensions;
+using Lean.Hbt.Application.Services.Workflow.Engine;
+using Lean.Hbt.Application.Services.Workflow.Engine.Resolvers;
+using Lean.Hbt.Domain.IServices;
+using System.Text.Json;
 
 namespace Lean.Hbt.Application.Services.Workflow.Engine.Executors
 {
@@ -24,99 +25,101 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine.Executors
         /// 日志服务
         /// </summary>
         protected readonly IHbtLogger _logger;
-
+        
         /// <summary>
-        /// 节点模板仓储
+        /// 当前用户服务
         /// </summary>
-        protected readonly IHbtRepository<HbtNodeTemplate> _nodeTemplateRepository;
+        protected readonly IHbtCurrentUser _currentUser;
+        
+        /// <summary>
+        /// 审批人解析器
+        /// </summary>
+        protected readonly IHbtApproverResolver _approverResolver;
 
         /// <summary>
         /// 构造函数
         /// </summary>
-        /// <param name="logger"></param>
-        /// <param name="nodeTemplateRepository"></param>
-        protected HbtNodeExecutorBase(IHbtLogger logger, IHbtRepository<HbtNodeTemplate> nodeTemplateRepository)
+        /// <param name="logger">日志服务</param>
+        /// <param name="currentUser">当前用户服务</param>
+        /// <param name="approverResolver">审批人解析器</param>
+        protected HbtNodeExecutorBase(
+            IHbtLogger logger,
+            IHbtCurrentUser currentUser,
+            IHbtApproverResolver approverResolver)
         {
             _logger = logger;
-            _nodeTemplateRepository = nodeTemplateRepository;
+            _currentUser = currentUser;
+            _approverResolver = approverResolver;
         }
 
-        /// <summary>
-        /// 节点类型
-        /// </summary>
-        protected abstract int NodeType { get; }
-
-        /// <summary>
-        /// 执行节点内部逻辑
-        /// </summary>
-        protected abstract Task<HbtNodeResult> ExecuteInternalAsync(
-            HbtInstance instance,
-            HbtNode node,
+        /// <inheritdoc/>
+        public abstract Task<HbtApproveResult> ExecuteAsync(
+            long instanceId,
+            string nodeId,
+            string nodeType,
+            string? nodeConfig,
             Dictionary<string, object>? variables = null);
 
-        /// <summary>
-        /// 执行节点
-        /// </summary>
-        public async Task<HbtNodeResult> ExecuteAsync(
-            HbtInstance instance,
-            HbtNode node,
-            Dictionary<string, object>? variables = null)
-        {
-            try
-            {
-                // 获取节点类型
-                var nodeTemplate = await _nodeTemplateRepository.GetByIdAsync(node.NodeTemplateId);
-                var nodeType = nodeTemplate?.NodeType ?? 0;
-                
-                _logger.Info($"开始执行节点: 实例ID={instance.Id}, 节点ID={node.Id}, 节点类型={nodeType}");
-
-                // 验证节点类型
-                if (!CanHandle(nodeType))
-                {
-                    var error = $"节点类型不匹配: 期望={NodeType}, 实际={nodeType}";
-                    _logger.Error(error);
-                    return CreateFailureResult(error);
-                }
-
-                // 执行具体节点逻辑
-                var result = await ExecuteInternalAsync(instance, node, variables);
-
-                // 记录执行结果
-                if (result.Success)
-                {
-                    _logger.Info($"节点执行成功: 实例ID={instance.Id}, 节点ID={node.Id}");
-                }
-                else
-                {
-                    _logger.Error($"节点执行失败: 实例ID={instance.Id}, 节点ID={node.Id}, 错误={result.ErrorMessage}");
-                }
-
-                return result;
-            }
-            catch (Exception ex)
-            {
-                var error = $"节点执行异常: {ex.Message}";
-                _logger.Error(error, ex);
-                return CreateFailureResult(error);
-            }
-        }
-
+        /// <inheritdoc/>
         /// <summary>
         /// 是否可以处理该类型节点
         /// </summary>
-        public bool CanHandle(int nodeType)
+        /// <param name="nodeType">节点类型</param>
+        /// <returns>是否可以处理</returns>
+        public abstract bool CanHandle(string nodeType);
+
+        /// <inheritdoc/>
+        /// <summary>
+        /// 获取节点类型描述
+        /// </summary>
+        /// <param name="nodeType">节点类型</param>
+        /// <returns>类型描述</returns>
+        public abstract string GetNodeTypeDescription(string nodeType);
+
+        #region 保护方法
+
+        /// <summary>
+        /// 解析节点配置
+        /// </summary>
+        /// <typeparam name="T">配置类型</typeparam>
+        /// <param name="nodeConfig">节点配置JSON</param>
+        /// <returns>配置对象</returns>
+        protected T? ParseConfig<T>(string? nodeConfig) where T : class
         {
-            return nodeType == NodeType;
+            if (string.IsNullOrEmpty(nodeConfig))
+                return null;
+
+            try
+            {
+                return JsonSerializer.Deserialize<T>(nodeConfig);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error($"解析节点配置失败: {ex.Message}", ex);
+                return null;
+            }
         }
 
         /// <summary>
         /// 创建成功结果
         /// </summary>
-        protected HbtNodeResult CreateSuccessResult(Dictionary<string, object>? outputVariables = null)
+        /// <param name="nextNodeId">下一个节点ID</param>
+        /// <param name="nextNodeName">下一个节点名称</param>
+        /// <param name="workflowStatus">工作流状态</param>
+        /// <param name="outputVariables">输出变量</param>
+        /// <returns>执行结果</returns>
+        protected HbtApproveResult CreateSuccessResult(
+            string? nextNodeId = null,
+            string? nextNodeName = null,
+            int workflowStatus = 1,
+            Dictionary<string, object>? outputVariables = null)
         {
-            return new HbtNodeResult
+            return new HbtApproveResult
             {
                 Success = true,
+                NextNodeId = nextNodeId,
+                NextNodeName = nextNodeName,
+                WorkflowStatus = workflowStatus,
                 OutputVariables = outputVariables
             };
         }
@@ -124,13 +127,39 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine.Executors
         /// <summary>
         /// 创建失败结果
         /// </summary>
-        protected HbtNodeResult CreateFailureResult(string errorMessage)
+        /// <param name="errorMessage">错误消息</param>
+        /// <returns>执行结果</returns>
+        protected HbtApproveResult CreateFailureResult(string errorMessage)
         {
-            return new HbtNodeResult
+            return new HbtApproveResult
             {
                 Success = false,
                 ErrorMessage = errorMessage
             };
         }
+
+        /// <summary>
+        /// 记录节点执行日志
+        /// </summary>
+        /// <param name="instanceId">实例ID</param>
+        /// <param name="nodeId">节点ID</param>
+        /// <param name="message">日志消息</param>
+        protected void LogNodeExecution(long instanceId, string nodeId, string message)
+        {
+            _logger.Info($"节点执行 - 实例[{instanceId}] 节点[{nodeId}]: {message}");
+        }
+
+        /// <summary>
+        /// 记录节点执行错误
+        /// </summary>
+        /// <param name="instanceId">实例ID</param>
+        /// <param name="nodeId">节点ID</param>
+        /// <param name="error">错误信息</param>
+        protected void LogNodeError(long instanceId, string nodeId, Exception error)
+        {
+            _logger.Error($"节点执行错误 - 实例[{instanceId}] 节点[{nodeId}]: {error.Message}", error);
+        }
+
+        #endregion
     }
 }

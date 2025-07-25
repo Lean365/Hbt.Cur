@@ -165,6 +165,11 @@ import type { FormInstance } from 'ant-design-vue'
 import type { Rule } from 'ant-design-vue/es/form'
 import type { HbtGenTable } from '@/types/generator/genTable'
 
+// 本地表单数据类型，确保dtoType是数组
+type LocalFormData = Omit<HbtGenTable, 'dtoType'> & {
+  dtoType: string[]
+}
+
 const props = defineProps<{
   modelValue: HbtGenTable
   tableId?: number
@@ -177,10 +182,18 @@ const emit = defineEmits<{
 const formRef = ref<FormInstance>()
 
 // 表单数据
-const formData = reactive<HbtGenTable>({
+const formData = reactive<LocalFormData>({
   ...props.modelValue,
   dtoClassName: typeof props.modelValue.dtoClassName === 'string' ? props.modelValue.dtoClassName : '',
-  dtoType: Array.isArray(props.modelValue.dtoType) ? props.modelValue.dtoType : []
+  dtoType: (() => {
+    if (typeof props.modelValue.dtoType === 'string') {
+      return props.modelValue.dtoType.split(',').filter(Boolean)
+    }
+    if (Array.isArray(props.modelValue.dtoType)) {
+      return props.modelValue.dtoType
+    }
+    return []
+  })()
 })
 
 // 表单校验规则
@@ -210,7 +223,21 @@ watch(
   (newVal) => {
     console.log('BasicInfo - 接收到新的表单数据:', newVal)
     if (newVal) {
-      Object.assign(formData, newVal)
+      // 处理dtoType字段的转换
+      const dtoTypeArray = (() => {
+        if (typeof newVal.dtoType === 'string') {
+          return newVal.dtoType.split(',').filter(Boolean)
+        }
+        if (Array.isArray(newVal.dtoType)) {
+          return newVal.dtoType
+        }
+        return []
+      })()
+      
+      Object.assign(formData, {
+        ...newVal,
+        dtoType: dtoTypeArray
+      })
     }
   },
   { deep: true, immediate: true }
@@ -221,7 +248,12 @@ watch(
   () => formData,
   (newVal) => {
     console.log('BasicInfo - 本地数据变化:', newVal)
-    emit('update:modelValue', newVal)
+    // 将dtoType数组转换为逗号分隔的字符串
+    const dataToEmit: HbtGenTable = {
+      ...newVal,
+      dtoType: newVal.dtoType.join(',')
+    }
+    emit('update:modelValue', dataToEmit)
   },
   { deep: true }
 )

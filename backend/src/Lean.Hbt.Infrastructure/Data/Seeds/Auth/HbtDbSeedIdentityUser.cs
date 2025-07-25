@@ -18,7 +18,7 @@ namespace Lean.Hbt.Infrastructure.Data.Seeds;
 /// </summary>
 public class HbtDbSeedIdentityUser
 {
-    private readonly IHbtRepositoryFactory _repositoryFactory;
+    protected readonly IHbtRepositoryFactory _repositoryFactory;
     private readonly IHbtLogger _logger;
     private readonly IConfiguration _configuration;
 

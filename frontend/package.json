@@ -4,11 +4,13 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "sync-version": "node ../../scripts/sync-version.js",
+    "prebuild": "npm run sync-version",
     "dev": "rimraf .vite src/components.d.ts && vite",
     "dev:en": "cross-env LOCALE=en-US vite --force",
     "dev:zh": "cross-env LOCALE=zh-CN vite --force",
     "dev:debug": "vite --debug --force",
-    "build": "vue-tsc --noEmit && vite build",
+    "build": "npm run sync-version && vue-tsc --noEmit && vite build",
     "preview": "vite preview",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
     "format": "prettier --write src/"

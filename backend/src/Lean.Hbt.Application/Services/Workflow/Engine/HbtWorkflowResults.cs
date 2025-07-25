@@ -2,10 +2,10 @@
 
 //===================================================================
 // 项目名 : Lean.Hbt
-// 文件名 : HbtResults.cs
-// 创建者 : Lean365
-// 创建时间: 2024-01-23 12:00
-// 版本号 : V1.0.0
+// 文件名 : HbtWorkflowResults.cs
+// 创建者 : Claude
+// 创建时间: 2024-12-01
+// 版本号 : V0.0.1
 // 描述    : 工作流执行结果类
 //===================================================================
 
@@ -14,12 +14,12 @@ using System.Collections.Generic;
 namespace Lean.Hbt.Application.Services.Workflow.Engine
 {
     /// <summary>
-    /// 工作流节点执行结果
+    /// 工作流审批结果
     /// </summary>
-    public class HbtNodeResult
+    public class HbtApproveResult
     {
         /// <summary>
-        /// 是否执行成功
+        /// 是否审批成功
         /// </summary>
         public bool Success { get; set; }
 
@@ -27,6 +27,21 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine
         /// 错误消息
         /// </summary>
         public string? ErrorMessage { get; set; }
+
+        /// <summary>
+        /// 下一个节点ID
+        /// </summary>
+        public string? NextNodeId { get; set; }
+
+        /// <summary>
+        /// 下一个节点名称
+        /// </summary>
+        public string? NextNodeName { get; set; }
+
+        /// <summary>
+        /// 工作流状态
+        /// </summary>
+        public int WorkflowStatus { get; set; }
 
         /// <summary>
         /// 输出变量
@@ -35,12 +50,12 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine
     }
 
     /// <summary>
-    /// 工作流转换执行结果
+    /// 工作流启动结果
     /// </summary>
-    public class HbtTransitionResult
+    public class HbtStartResult
     {
         /// <summary>
-        /// 是否执行成功
+        /// 是否启动成功
         /// </summary>
         public bool Success { get; set; }
 
@@ -50,8 +65,49 @@ namespace Lean.Hbt.Application.Services.Workflow.Engine
         public string? ErrorMessage { get; set; }
 
         /// <summary>
-        /// 目标节点ID
+        /// 工作流实例ID
         /// </summary>
-        public long TargetNodeId { get; set; }
+        public long InstanceId { get; set; }
+
+        /// <summary>
+        /// 第一个节点ID
+        /// </summary>
+        public string? FirstNodeId { get; set; }
+
+        /// <summary>
+        /// 第一个节点名称
+        /// </summary>
+        public string? FirstNodeName { get; set; }
+    }
+
+    /// <summary>
+    /// 工作流状态结果
+    /// </summary>
+    public class HbtStatusResult
+    {
+        /// <summary>
+        /// 工作流实例ID
+        /// </summary>
+        public long InstanceId { get; set; }
+
+        /// <summary>
+        /// 工作流状态
+        /// </summary>
+        public int Status { get; set; }
+
+        /// <summary>
+        /// 当前节点ID
+        /// </summary>
+        public string? CurrentNodeId { get; set; }
+
+        /// <summary>
+        /// 当前节点名称
+        /// </summary>
+        public string? CurrentNodeName { get; set; }
+
+        /// <summary>
+        /// 可用操作列表
+        /// </summary>
+        public List<string> AvailableOperations { get; set; } = new();
     }
 }
