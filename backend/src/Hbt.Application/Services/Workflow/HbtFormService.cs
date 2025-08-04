@@ -7,16 +7,16 @@
 // 描述    : 表单服务实现
 //===================================================================
 
-using Hbt.Cur.Application.Dtos.Workflow;
-using Hbt.Cur.Domain.Entities.Workflow;
-using Hbt.Cur.Domain.Repositories;
-using Hbt.Cur.Domain.IServices;
+using Hbt.Application.Dtos.Workflow;
+using Hbt.Domain.Entities.Workflow;
+using Hbt.Domain.Repositories;
+using Hbt.Domain.IServices;
 using Microsoft.AspNetCore.Http;
 using SqlSugar;
 using Mapster;
-using Hbt.Cur.Common.Exceptions;
+using Hbt.Common.Exceptions;
 
-namespace Hbt.Cur.Application.Services.Workflow;
+namespace Hbt.Application.Services.Workflow;
 
 /// <summary>
 /// 表单服务实现

@@ -81,7 +81,7 @@
    {
      "Timestamp": "2024-01-16 12:34:56",
      "Level": "Error",
-     "Logger": "Lean.Hbt.WebApi.Controllers.HbtUserController",
+     "Logger": "Hbt.Cur.WebApi.Controllers.HbtUserController",
      "Message": "用户创建失败",
      "Exception": {
        "Type": "HbtBusinessException",

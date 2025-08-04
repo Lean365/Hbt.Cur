@@ -7,17 +7,17 @@
 // 描述   : 认证数据库上下文
 //===================================================================
 
-using Hbt.Cur.Domain.Data;
-using Hbt.Cur.Domain.Entities.Identity;
-using Hbt.Cur.Domain.Interfaces;
-using Hbt.Cur.Common.Options;
+using Hbt.Domain.Data;
+using Hbt.Domain.Entities.Identity;
+using Hbt.Domain.Interfaces;
+using Hbt.Common.Options;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using SqlSugar;
 using System.Reflection;
 
-namespace Hbt.Cur.Infrastructure.Data.Contexts
+namespace Hbt.Infrastructure.Data.Contexts
 {
     /// <summary>
     /// 认证数据库上下文类
@@ -199,9 +199,9 @@ namespace Hbt.Cur.Infrastructure.Data.Contexts
                 .SelectMany(a => a.GetTypes())
                 .Where(t => t.IsClass && !t.IsAbstract && t.IsPublic &&
                            t.Namespace != null &&
-                           (t.Namespace.StartsWith("Hbt.Cur.Domain.Entities.Audit") ||
-                            t.Namespace.StartsWith("Hbt.Cur.Domain.Entities.Identity") ||
-                            t.Namespace.StartsWith("Hbt.Cur.Domain.Entities.SignalR")) &&
+                           (t.Namespace.StartsWith("Hbt.Domain.Entities.Audit") ||
+                            t.Namespace.StartsWith("Hbt.Domain.Entities.Identity") ||
+                            t.Namespace.StartsWith("Hbt.Domain.Entities.SignalR")) &&
                            t.BaseType == typeof(HbtBaseEntity))
                 .ToArray();
         }

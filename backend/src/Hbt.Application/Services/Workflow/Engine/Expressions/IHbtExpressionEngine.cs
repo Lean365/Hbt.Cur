@@ -9,7 +9,7 @@
 // 描述    : 工作流表达式引擎接口
 //===================================================================
 
-namespace Hbt.Cur.Application.Services.Workflow.Engine.Expressions
+namespace Hbt.Application.Services.Workflow.Engine.Expressions
 {
     /// <summary>
     /// 工作流表达式引擎接口

@@ -9,7 +9,7 @@
 
 #nullable enable
 
-namespace Hbt.Cur.Domain.Entities.Human.Leave;
+namespace Hbt.Domain.Entities.Human.Leave;
 
 /// <summary>
 /// 请假记录实体

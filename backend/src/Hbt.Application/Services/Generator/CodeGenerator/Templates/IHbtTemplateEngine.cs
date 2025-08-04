@@ -1,6 +1,6 @@
-using Hbt.Cur.Application.Services.Generator.CodeGenerator.Models;
+using Hbt.Application.Services.Generator.CodeGenerator.Models;
 
-namespace Hbt.Cur.Application.Services.Generator.CodeGenerator.Templates;
+namespace Hbt.Application.Services.Generator.CodeGenerator.Templates;
 
 /// <summary>
 /// 模板引擎接口

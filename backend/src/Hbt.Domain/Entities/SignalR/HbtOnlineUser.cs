@@ -11,7 +11,7 @@ using SqlSugar;
 // 描述    : 在线用户实体
 //===================================================================
 
-namespace Hbt.Cur.Domain.Entities.SignalR
+namespace Hbt.Domain.Entities.SignalR
 {
     /// <summary>
     /// 在线用户实体

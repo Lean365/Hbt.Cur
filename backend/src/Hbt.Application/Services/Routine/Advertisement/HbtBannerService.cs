@@ -9,19 +9,19 @@
 // 描述   : 横幅广告服务实现
 //===================================================================
 
-using Hbt.Cur.Application.Dtos.Routine.Advertisement;
-using Hbt.Cur.Domain.Repositories;
-using Hbt.Cur.Domain.IServices;
-using Hbt.Cur.Domain.IServices.Extensions;
-using Hbt.Cur.Common.Exceptions;
-using Hbt.Cur.Common.Enums;
+using Hbt.Application.Dtos.Routine.Advertisement;
+using Hbt.Domain.Repositories;
+using Hbt.Domain.IServices;
+using Hbt.Domain.IServices.Extensions;
+using Hbt.Common.Exceptions;
+using Hbt.Common.Enums;
 using Mapster;
 using SqlSugar;
 using System.Linq.Expressions;
 using Microsoft.AspNetCore.Http;
-using Hbt.Cur.Domain.Entities.Routine.Advertisement;
+using Hbt.Domain.Entities.Routine.Advertisement;
 
-namespace Hbt.Cur.Application.Services.Routine.Advertisement
+namespace Hbt.Application.Services.Routine.Advertisement
 {
     /// <summary>
     /// 横幅广告服务实现

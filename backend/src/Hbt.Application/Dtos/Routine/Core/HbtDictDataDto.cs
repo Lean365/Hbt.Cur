@@ -1,5 +1,5 @@
 //===================================================================
-// 项目名 : Hbt.Cur.Application
+// 项目名 : Hbt.Application
 // 文件名 : HbtDictDataDto.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-18 10:00
@@ -9,7 +9,7 @@
 
 using System.ComponentModel.DataAnnotations;
 
-namespace Hbt.Cur.Application.Dtos.Routine.Core
+namespace Hbt.Application.Dtos.Routine.Core
 {
     /// <summary>
     /// 字典数据DTO

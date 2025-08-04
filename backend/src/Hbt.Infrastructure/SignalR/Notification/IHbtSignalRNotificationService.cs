@@ -1,5 +1,5 @@
 //===================================================================
-// 项目名: Hbt.Cur.Application
+// 项目名: Hbt.Application
 // 文件名: IHbtBusinessNotificationService.cs
 // 创建者: Lean365
 // 创建时间: 2024-06-01
@@ -9,7 +9,7 @@
 
 
 //===================================================================
-// 项目名: Hbt.Cur.Application
+// 项目名: Hbt.Application
 // 文件名: IHbtBusinessNotificationService.cs
 // 创建者: Lean365
 // 创建时间: 2024-06-01
@@ -19,7 +19,7 @@
 
 
 //===================================================================
-// 项目名: Hbt.Cur.Application
+// 项目名: Hbt.Application
 // 文件名: IHbtBusinessNotificationService.cs
 // 创建者: Lean365
 // 创建时间: 2024-06-01
@@ -29,7 +29,7 @@
 
 
 //===================================================================
-// 项目名: Hbt.Cur.Application
+// 项目名: Hbt.Application
 // 文件名: IHbtBusinessNotificationService.cs
 // 创建者: Lean365
 // 创建时间: 2024-06-01
@@ -37,9 +37,9 @@
 // 描述: 业务通知服务接口
 //===================================================================
 
-using Hbt.Cur.Common.Models;
+using Hbt.Common.Models;
 
-namespace Hbt.Cur.Infrastructure.SignalR.Notification
+namespace Hbt.Infrastructure.SignalR.Notification
 {
     /// <summary>
     /// 业务通知服务接口

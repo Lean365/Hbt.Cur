@@ -10,9 +10,9 @@
 using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
 using StackExchange.Redis;
-using Hbt.Cur.Domain.IServices.Caching;
+using Hbt.Domain.IServices.Caching;
 
-namespace Hbt.Cur.Infrastructure.Caching
+namespace Hbt.Infrastructure.Caching
 {
     /// <summary>
     /// Redis缓存实现

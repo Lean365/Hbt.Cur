@@ -7,7 +7,7 @@
 // 描述    : 找回密码相关DTO
 //===================================================================
 
-namespace Hbt.Cur.Application.Dtos.Identity
+namespace Hbt.Application.Dtos.Identity
 {
     /// <summary>
     /// 身份验证请求DTO

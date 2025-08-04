@@ -9,9 +9,9 @@
 // 描述    : 工作流引擎接口
 //===================================================================
 
-using Hbt.Cur.Application.Dtos.Workflow;
+using Hbt.Application.Dtos.Workflow;
 
-namespace Hbt.Cur.Application.Services.Workflow.Engine
+namespace Hbt.Application.Services.Workflow.Engine
 {
     /// <summary>
     /// 工作流引擎接口

@@ -10,7 +10,7 @@
 // 版权    : Copyright © 2024 Lean365. All rights reserved.
 //===================================================================
 
-namespace Hbt.Cur.Domain.Entities.Logistics.Complaint
+namespace Hbt.Domain.Entities.Logistics.Complaint
 {
     /// <summary>
     /// 客诉处理子表实体类 (基于SAP QM质量管理)

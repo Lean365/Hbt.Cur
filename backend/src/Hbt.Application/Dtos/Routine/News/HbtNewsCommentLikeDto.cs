@@ -1,7 +1,7 @@
 #nullable enable
 
 //===================================================================
-// 项目名 : Hbt.Cur.Application
+// 项目名 : Hbt.Application
 // 文件名 : HbtNewsCommentLikeDto.cs
 // 创建者 : Claude
 // 创建时间: 2024-12-01
@@ -9,7 +9,7 @@
 // 描述   : 新闻评论点赞数据传输对象
 //===================================================================
 
-namespace Hbt.Cur.Application.Dtos.Routine.News
+namespace Hbt.Application.Dtos.Routine.News
 {
     /// <summary>
     /// 新闻评论点赞基础DTO

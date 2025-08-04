@@ -14,7 +14,7 @@ using System.Collections.Generic;
 using FluentFTP;
 using NLog;
 
-namespace Hbt.Cur.Common.Helpers
+namespace Hbt.Common.Helpers
 {
     /// <summary>
     /// FTP操作帮助类

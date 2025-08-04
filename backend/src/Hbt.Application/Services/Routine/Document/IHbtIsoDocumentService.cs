@@ -17,9 +17,9 @@
 // 描述   : ISO文档服务接口
 //===================================================================
 
-using Hbt.Cur.Application.Dtos.Routine.Document.Iso;
+using Hbt.Application.Dtos.Routine.Document.Iso;
 
-namespace Hbt.Cur.Application.Services.Routine.Document.Regulations
+namespace Hbt.Application.Services.Routine.Document.Regulations
 {
     /// <summary>
     /// ISO文档服务接口

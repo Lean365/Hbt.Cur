@@ -7,13 +7,13 @@
 // 描述   : 本地化扩展方法
 //===================================================================
 
-using Hbt.Cur.Domain.IServices.Extensions;
-using Hbt.Cur.Infrastructure.Services;
-using Hbt.Cur.Infrastructure.Middleware;
+using Hbt.Domain.IServices.Extensions;
+using Hbt.Infrastructure.Services;
+using Hbt.Infrastructure.Middleware;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Hbt.Cur.Infrastructure.Extensions;
+namespace Hbt.Infrastructure.Extensions;
 
 /// <summary>
 /// 本地化扩展方法

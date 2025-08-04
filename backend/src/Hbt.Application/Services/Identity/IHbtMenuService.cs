@@ -10,10 +10,10 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.IO;
-using Hbt.Cur.Common.Models;
-using Hbt.Cur.Application.Dtos.Identity;
+using Hbt.Common.Models;
+using Hbt.Application.Dtos.Identity;
 
-namespace Hbt.Cur.Application.Services.Identity
+namespace Hbt.Application.Services.Identity
 {
     /// <summary>
     /// 菜单服务接口

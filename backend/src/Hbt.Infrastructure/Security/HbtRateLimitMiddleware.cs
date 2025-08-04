@@ -10,7 +10,7 @@
 using System.Collections.Concurrent;
 using Microsoft.AspNetCore.Http;
 
-namespace Hbt.Cur.Infrastructure.Security
+namespace Hbt.Infrastructure.Security
 {
     /// <summary>
     /// 限流中间件,基于令牌桶算法实现

@@ -11,7 +11,7 @@
 
 using System.ComponentModel.DataAnnotations;
 
-namespace Hbt.Cur.Application.Dtos.Audit
+namespace Hbt.Application.Dtos.Audit
 {
     /// <summary>
     /// SqlSugar差异日志基础DTO

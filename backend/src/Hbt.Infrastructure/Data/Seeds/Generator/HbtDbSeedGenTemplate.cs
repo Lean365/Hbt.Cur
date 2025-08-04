@@ -7,10 +7,10 @@
 // 描述    : 代码生成模板种子数据 - 使用仓储工厂模式
 //===================================================================
 
-using Hbt.Cur.Domain.Entities.Generator;
-using Hbt.Cur.Domain.Repositories;
+using Hbt.Domain.Entities.Generator;
+using Hbt.Domain.Repositories;
 
-namespace Hbt.Cur.Infrastructure.Data.Seeds.Generator;
+namespace Hbt.Infrastructure.Data.Seeds.Generator;
 
 /// <summary>
 /// 代码生成模板种子数据

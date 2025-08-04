@@ -11,7 +11,7 @@
 
 using System.ComponentModel.DataAnnotations;
 
-namespace Hbt.Cur.Application.Dtos.Generator;
+namespace Hbt.Application.Dtos.Generator;
 
 /// <summary>
 /// 代码生成表定义DTO

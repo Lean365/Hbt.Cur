@@ -10,14 +10,14 @@
 //===================================================================
 
 using System.Linq.Expressions;
-using Hbt.Cur.Common.Utils;
-using Hbt.Cur.Domain.IServices.Extensions;
+using Hbt.Common.Utils;
+using Hbt.Domain.IServices.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Http;
-using Hbt.Cur.Domain.Entities.Routine.Document;
-using Hbt.Cur.Application.Dtos.Routine.Document;
+using Hbt.Domain.Entities.Routine.Document;
+using Hbt.Application.Dtos.Routine.Document;
 
-namespace Hbt.Cur.Application.Services.Routine.Document
+namespace Hbt.Application.Services.Routine.Document
 {
     /// <summary>
     /// 公文文档服务实现

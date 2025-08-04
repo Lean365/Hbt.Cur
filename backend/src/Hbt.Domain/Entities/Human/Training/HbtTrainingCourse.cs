@@ -9,7 +9,7 @@
 
 #nullable enable
 
-namespace Hbt.Cur.Domain.Entities.Human.Training;
+namespace Hbt.Domain.Entities.Human.Training;
 
 /// <summary>
 /// 培训课程实体

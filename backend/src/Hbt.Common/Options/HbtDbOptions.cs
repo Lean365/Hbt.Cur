@@ -9,7 +9,7 @@
 
 using SqlSugar;
 
-namespace Hbt.Cur.Common.Options;
+namespace Hbt.Common.Options;
 
 /// <summary>
 /// 数据库配置选项

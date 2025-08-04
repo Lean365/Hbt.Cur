@@ -13,6 +13,6 @@ global using System.Collections.Generic;
 global using System.ComponentModel.DataAnnotations;
 global using System.Threading.Tasks;
 // 项目依赖
-global using Hbt.Cur.Common.Enums;
-global using Hbt.Cur.Domain.Repositories;
+global using Hbt.Common.Enums;
+global using Hbt.Domain.Repositories;
 global using SqlSugar;

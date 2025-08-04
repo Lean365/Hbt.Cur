@@ -15,15 +15,15 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using Hbt.Cur.Common.Options;
-using Hbt.Cur.Common.Exceptions;
+using Hbt.Common.Options;
+using Hbt.Common.Exceptions;
 using Microsoft.Extensions.Options;
 using OfficeOpenXml;
 using OfficeOpenXml.DataValidation;
 using System.Xml;
 using NLog;
 
-namespace Hbt.Cur.Common.Helpers
+namespace Hbt.Common.Helpers
 {
     /// <summary>
     /// Excel导入导出帮助类

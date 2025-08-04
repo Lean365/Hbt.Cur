@@ -1,6 +1,6 @@
 using System.Text.RegularExpressions;
 
-namespace Hbt.Cur.Common.Utils
+namespace Hbt.Common.Utils
 {
     /// <summary>
     /// 数据脱敏工具类

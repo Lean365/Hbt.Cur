@@ -8,11 +8,11 @@
 //===================================================================
 
 using Microsoft.AspNetCore.Mvc;
-using Hbt.Cur.Application.Dtos.Identity;
-using Hbt.Cur.Application.Services.Identity;
+using Hbt.Application.Dtos.Identity;
+using Hbt.Application.Services.Identity;
 
 
-namespace Hbt.Cur.WebApi.Controllers.Identity
+namespace Hbt.WebApi.Controllers.Identity
 {
     /// <summary>
     /// 角色控制器

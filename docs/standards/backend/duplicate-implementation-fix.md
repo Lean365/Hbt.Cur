@@ -7,7 +7,7 @@
 ## 发现的问题
 
 ### 1. 二维码服务重复实现
-**文件**: `backend/src/Lean.Hbt.Application/Services/Identity/HbtQrCodeService.cs`
+**文件**: `backend/src/Hbt.Cur.Application/Services/Identity/HbtQrCodeService.cs`
 
 **问题**: 在 `GenerateQrCodeImage()` 方法中重复实现了二维码生成逻辑：
 ```csharp
@@ -25,7 +25,7 @@ return Convert.ToBase64String(imageBytes);
 ```
 
 ### 2. 短信服务重复实现
-**文件**: `backend/src/Lean.Hbt.Application/Services/Identity/HbtSmsService.cs`
+**文件**: `backend/src/Hbt.Cur.Application/Services/Identity/HbtSmsService.cs`
 
 **问题**: 在 `GenerateVerificationCode()` 方法中重复实现了验证码生成逻辑：
 ```csharp

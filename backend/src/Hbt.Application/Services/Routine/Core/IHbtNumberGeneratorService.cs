@@ -8,9 +8,9 @@
 //===================================================================
 
 using System.Threading.Tasks;
-using Hbt.Cur.Application.Dtos.Routine.Core;
+using Hbt.Application.Dtos.Routine.Core;
 
-namespace Hbt.Cur.Application.Services.Core
+namespace Hbt.Application.Services.Core
 {
     /// <summary>
     /// 通用单号生成器服务接口

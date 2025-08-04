@@ -10,7 +10,7 @@
 // 版权    : Copyright © 2024 Lean365. All rights reserved.
 //===================================================================
 
-namespace Hbt.Cur.Domain.Entities.Accounting.Financial
+namespace Hbt.Domain.Entities.Accounting.Financial
 {
     /// <summary>
     /// 固定资产实体类 (基于SAP FI固定资产管理)

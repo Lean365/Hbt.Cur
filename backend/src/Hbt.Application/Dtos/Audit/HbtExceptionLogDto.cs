@@ -9,10 +9,10 @@
 
 using System;
 using System.ComponentModel.DataAnnotations;
-using Hbt.Cur.Common.Models;
+using Hbt.Common.Models;
 using Mapster;
 
-namespace Hbt.Cur.Application.Dtos.Audit
+namespace Hbt.Application.Dtos.Audit
 {
     /// <summary>
     /// 异常日志基础DTO

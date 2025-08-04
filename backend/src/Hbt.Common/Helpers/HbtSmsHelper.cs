@@ -11,7 +11,7 @@ using System.Text.RegularExpressions;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace Hbt.Cur.Common.Helpers;
+namespace Hbt.Common.Helpers;
 
 /// <summary>
 /// 短信验证码帮助类

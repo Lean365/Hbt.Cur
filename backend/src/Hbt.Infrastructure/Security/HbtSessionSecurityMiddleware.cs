@@ -11,9 +11,9 @@ using System.Security.Cryptography;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Options;
-using Hbt.Cur.Common.Options;
+using Hbt.Common.Options;
 
-namespace Hbt.Cur.Infrastructure.Security
+namespace Hbt.Infrastructure.Security
 {
     /// <summary>
     /// 会话安全中间件,用于防止会话劫持

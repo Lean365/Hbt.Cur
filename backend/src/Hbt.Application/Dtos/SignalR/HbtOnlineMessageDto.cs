@@ -1,7 +1,7 @@
 #nullable enable
 
 //===================================================================
-// 项目名: Hbt.Cur.Application
+// 项目名: Hbt.Application
 // 文件名: HbtOnlineMessageDto.cs
 // 创建者: Lean365
 // 创建时间: 2024-01-20
@@ -11,7 +11,7 @@
 
 using System.ComponentModel.DataAnnotations;
 
-namespace Hbt.Cur.Application.Dtos.SignalR;
+namespace Hbt.Application.Dtos.SignalR;
 
 /// <summary>
 /// 在线消息基础DTO

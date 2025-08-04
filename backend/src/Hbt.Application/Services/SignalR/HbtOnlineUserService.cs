@@ -7,10 +7,10 @@
 // 描述    : 在线用户服务实现
 //===================================================================
 
-using Hbt.Cur.Domain.IServices.SignalR;
+using Hbt.Domain.IServices.SignalR;
 using Microsoft.AspNetCore.Http;
 
-namespace Hbt.Cur.Application.Services.SignalR;
+namespace Hbt.Application.Services.SignalR;
 
 /// <summary>
 /// 在线用户服务实现

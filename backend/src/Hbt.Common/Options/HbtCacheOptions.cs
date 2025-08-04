@@ -7,7 +7,7 @@
 // 描述    : 缓存配置选项
 //===================================================================
 
-namespace Hbt.Cur.Common.Options
+namespace Hbt.Common.Options
 {
     /// <summary>
     /// 缓存配置选项

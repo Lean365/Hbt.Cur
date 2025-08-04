@@ -8,9 +8,9 @@
 //===================================================================
 
 using Microsoft.AspNetCore.Builder;
-using Hbt.Cur.Infrastructure.Security;
+using Hbt.Infrastructure.Security;
 
-namespace Hbt.Cur.Infrastructure.Extensions
+namespace Hbt.Infrastructure.Extensions
 {
     /// <summary>
     /// CSRF防护中间件扩展

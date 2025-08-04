@@ -11,7 +11,7 @@
 
 using System.Collections.Generic;
 
-namespace Hbt.Cur.Domain.Models.Workflow
+namespace Hbt.Domain.Models.Workflow
 {
     /// <summary>
     /// 工作流节点配置

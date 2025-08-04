@@ -7,7 +7,7 @@
 // 描述    : 会话配置选项
 //===================================================================
 
-namespace Hbt.Cur.Common.Options;
+namespace Hbt.Common.Options;
 
 /// <summary>
 /// 会话配置选项

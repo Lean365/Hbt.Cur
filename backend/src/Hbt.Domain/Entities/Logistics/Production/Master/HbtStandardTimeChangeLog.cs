@@ -10,7 +10,7 @@
 // 版权    : Copyright © 2024 Lean365. All rights reserved.
 //===================================================================
 
-namespace Hbt.Cur.Domain.Entities.Logistics.Production
+namespace Hbt.Domain.Entities.Logistics.Production
 {
     /// <summary>
     /// 标准工时历史记录实体类

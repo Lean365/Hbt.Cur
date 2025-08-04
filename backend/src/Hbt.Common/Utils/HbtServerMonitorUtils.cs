@@ -13,7 +13,7 @@ using System.Runtime.InteropServices;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
 
-namespace Hbt.Cur.Common.Utils;
+namespace Hbt.Common.Utils;
 
 /// <summary>
 /// 服务器监控工具类

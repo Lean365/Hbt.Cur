@@ -9,10 +9,10 @@
 // 描述   : 代码生成表服务接口
 //===================================================================
 
-using Hbt.Cur.Application.Dtos.Generator;
-using Hbt.Cur.Common.Models;
+using Hbt.Application.Dtos.Generator;
+using Hbt.Common.Models;
 
-namespace Hbt.Cur.Application.Services.Generator;
+namespace Hbt.Application.Services.Generator;
 
 /// <summary>
 /// 代码生成表服务接口

@@ -9,11 +9,11 @@
 
 #nullable enable
 
-using Hbt.Cur.Common.Utils;
-using Hbt.Cur.Domain.IServices.Security;
+using Hbt.Common.Utils;
+using Hbt.Domain.IServices.Security;
 using Microsoft.AspNetCore.Http;
 
-namespace Hbt.Cur.Application.Services.Identity
+namespace Hbt.Application.Services.Identity
 {
     /// <summary>
     /// 用户服务实现类

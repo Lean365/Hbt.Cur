@@ -1,8 +1,8 @@
 using System.Security.Cryptography;
 using System.Text.Json;
-using Hbt.Cur.Application.Services;
-using Hbt.Cur.Common.Options;
-using Hbt.Cur.Domain.IServices.Security;
+using Hbt.Application.Services;
+using Hbt.Common.Options;
+using Hbt.Domain.IServices.Security;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
@@ -14,7 +14,7 @@ using SixLabors.ImageSharp.Processing;
 using Point = SixLabors.ImageSharp.Point;
 using Microsoft.AspNetCore.Http;
 
-namespace Hbt.Cur.Infrastructure.Security;
+namespace Hbt.Infrastructure.Security;
 
 /// <summary>
 /// 验证码服务实现

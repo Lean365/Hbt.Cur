@@ -2,7 +2,7 @@
 
 using SqlSugar;
 
-namespace Hbt.Cur.Domain.Entities.Logistics.Material.Purchase
+namespace Hbt.Domain.Entities.Logistics.Material.Purchase
 {
     /// <summary>
     /// 采购订单变更记录表实体类

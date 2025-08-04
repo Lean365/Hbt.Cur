@@ -10,15 +10,15 @@
 //===================================================================
 
 
-using Hbt.Cur.Common.Options;
-using Hbt.Cur.Domain.Entities.Audit;
-using Hbt.Cur.Domain.IServices.Extensions;
-using Hbt.Cur.Domain.Repositories;
+using Hbt.Common.Options;
+using Hbt.Domain.Entities.Audit;
+using Hbt.Domain.IServices.Extensions;
+using Hbt.Domain.Repositories;
 using Microsoft.Extensions.Options;
 using System.Linq.Expressions;
-using Hbt.Cur.Domain.Entities.Routine.Core;
+using Hbt.Domain.Entities.Routine.Core;
 
-namespace Hbt.Cur.Application.Services.Extensions
+namespace Hbt.Application.Services.Extensions
 {
     /// <summary>
     /// 日志清理服务

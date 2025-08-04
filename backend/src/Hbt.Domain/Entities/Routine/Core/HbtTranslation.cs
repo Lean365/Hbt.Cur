@@ -21,9 +21,9 @@
 // 版本号 : V0.0.1
 // 描述   : 翻译实体
 //===================================================================
-using Hbt.Cur.Domain.Entities.Identity;
+using Hbt.Domain.Entities.Identity;
 
-namespace Hbt.Cur.Domain.Entities.Routine.Core
+namespace Hbt.Domain.Entities.Routine.Core
 {
     /// <summary>
     /// 翻译实体

@@ -12,15 +12,15 @@
 using System.Security.Cryptography;
 using System.Text;
 
-namespace Hbt.Cur.Common.Utils
+namespace Hbt.Common.Utils
 {
     /// <summary>
     /// 加密工具类
     /// </summary>
     public static class HbtEncryptUtils
     {
-        private static readonly string Key = "Hbt.Cur.2024.01"; // 16字节的密钥
-        private static readonly string IV = "Hbt.Cur.Encrypt"; // 16字节的初始化向量
+        private static readonly string Key = "Hbt.2024.01"; // 16字节的密钥
+        private static readonly string IV = "Hbt.Encrypt"; // 16字节的初始化向量
 
         /// <summary>
         /// AES加密

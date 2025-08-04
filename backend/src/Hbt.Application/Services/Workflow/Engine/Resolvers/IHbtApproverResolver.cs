@@ -9,9 +9,9 @@
 // 描述    : 工作流审批人解析器接口
 //===================================================================
 
-using Hbt.Cur.Application.Dtos.Workflow;
+using Hbt.Application.Dtos.Workflow;
 
-namespace Hbt.Cur.Application.Services.Workflow.Engine.Resolvers
+namespace Hbt.Application.Services.Workflow.Engine.Resolvers
 {
     /// <summary>
     /// 工作流审批人解析器接口

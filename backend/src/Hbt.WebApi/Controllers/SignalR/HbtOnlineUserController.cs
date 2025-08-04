@@ -7,11 +7,11 @@
 // 描述   : 在线用户控制器
 //===================================================================
 
-global using Hbt.Cur.Domain.IServices.Extensions;
-using Hbt.Cur.Application.Dtos.SignalR;
-using Hbt.Cur.Application.Services.SignalR;
+global using Hbt.Domain.IServices.Extensions;
+using Hbt.Application.Dtos.SignalR;
+using Hbt.Application.Services.SignalR;
 
-namespace Hbt.Cur.WebApi.Controllers.SignalR
+namespace Hbt.WebApi.Controllers.SignalR
 {
     /// <summary>
     /// 在线用户控制器

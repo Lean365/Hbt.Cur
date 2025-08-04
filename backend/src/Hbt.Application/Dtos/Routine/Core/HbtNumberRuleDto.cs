@@ -2,7 +2,7 @@
 
 using System.ComponentModel.DataAnnotations;
 using System.IO;
-using Hbt.Cur.Common.Models;
+using Hbt.Common.Models;
 
 //===================================================================
 // 项目名 : Lean.Hbt
@@ -14,7 +14,7 @@ using Hbt.Cur.Common.Models;
 // 版权    : Copyright © 2024 Lean365. All rights reserved.
 //===================================================================
 
-namespace Hbt.Cur.Application.Dtos.Routine.Core
+namespace Hbt.Application.Dtos.Routine.Core
 {
     /// <summary>
     /// 单号规则基础DTO

@@ -1,4 +1,4 @@
-﻿# 🎯 黑冰台代码生成管理系统 (Lean.Hbt)
+﻿# 🎯 黑冰台代码生成管理系统 (Hbt.Cur)
 
 ## 📚 目录
 
@@ -120,7 +120,7 @@ graph TB
 ## 📂 项目结构
 
 ```
-Lean.Hbt/
+Hbt.Cur/
 ├── backend/                  # 💻 后端项目
 │   ├── src/                 # 📦 源代码
 │   │   ├── Application/    # 📱 应用层
@@ -350,7 +350,7 @@ Lean.Hbt/
 ### 📥 安装步骤
 ```bash
 # 克隆项目
-git clone https://github.com/Lean365/Lean.Hbt.git
+git clone https://github.com/Lean365/Hbt.Cur.git
 
 # 后端依赖
 cd backend

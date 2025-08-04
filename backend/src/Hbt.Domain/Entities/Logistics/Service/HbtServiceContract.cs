@@ -2,7 +2,7 @@ using SqlSugar;
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace Hbt.Cur.Domain.Entities.Logistics.Service
+namespace Hbt.Domain.Entities.Logistics.Service
 {
     /// <summary>
     /// 服务合同表

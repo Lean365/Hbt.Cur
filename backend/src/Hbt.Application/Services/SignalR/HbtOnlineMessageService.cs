@@ -12,16 +12,16 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using Microsoft.AspNetCore.Http;
-using Hbt.Cur.Common.Models;
-using Hbt.Cur.Domain.Entities.SignalR;
-using Hbt.Cur.Application.Dtos.SignalR;
-using Hbt.Cur.Common.Exceptions;
-using Hbt.Cur.Common.Helpers;
-using Hbt.Cur.Domain.Repositories;
+using Hbt.Common.Models;
+using Hbt.Domain.Entities.SignalR;
+using Hbt.Application.Dtos.SignalR;
+using Hbt.Common.Exceptions;
+using Hbt.Common.Helpers;
+using Hbt.Domain.Repositories;
 using SqlSugar;
 using Mapster;
 
-namespace Hbt.Cur.Application.Services.SignalR;
+namespace Hbt.Application.Services.SignalR;
 
 /// <summary>
 /// 在线消息服务实现

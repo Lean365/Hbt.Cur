@@ -9,7 +9,7 @@
 
 using Microsoft.AspNetCore.Http;
 
-namespace Hbt.Cur.Infrastructure.Middleware;
+namespace Hbt.Infrastructure.Middleware;
 
 /// <summary>
 /// 本地化中间件

@@ -10,11 +10,11 @@
 //===================================================================
 
 using System.Linq.Expressions;
-using Hbt.Cur.Application.Dtos.Routine.Core;
-using Hbt.Cur.Domain.Entities.Routine.Core;
+using Hbt.Application.Dtos.Routine.Core;
+using Hbt.Domain.Entities.Routine.Core;
 using Microsoft.AspNetCore.Http;
 
-namespace Hbt.Cur.Application.Services.Core
+namespace Hbt.Application.Services.Core
 {
     /// <summary>
     /// 语言服务实现类

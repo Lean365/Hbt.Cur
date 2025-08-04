@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Hbt.Cur.Domain.Caching
+namespace Hbt.Domain.Caching
 {
     /// <summary>
     /// 定义HbtRedis缓存接口

@@ -7,9 +7,9 @@
 // 描述    : 表单服务接口
 //===================================================================
 
-using Hbt.Cur.Application.Dtos.Workflow;
+using Hbt.Application.Dtos.Workflow;
 
-namespace Hbt.Cur.Application.Services.Workflow;
+namespace Hbt.Application.Services.Workflow;
 
 /// <summary>
 /// 表单服务接口

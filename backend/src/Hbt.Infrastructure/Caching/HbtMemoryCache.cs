@@ -9,10 +9,10 @@
 
 using System.Collections.Concurrent;
 using System.Text.RegularExpressions;
-using Hbt.Cur.Domain.IServices.Caching;
+using Hbt.Domain.IServices.Caching;
 using Microsoft.Extensions.Caching.Memory;
 
-namespace Hbt.Cur.Infrastructure.Caching
+namespace Hbt.Infrastructure.Caching
 {
     /// <summary>
     /// 内存缓存实现

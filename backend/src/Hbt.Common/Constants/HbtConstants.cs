@@ -7,7 +7,7 @@
 // 描述    : 常量定义
 //===================================================================
 
-namespace Hbt.Cur.Common.Constants
+namespace Hbt.Common.Constants
 {
     /// <summary>
     /// 系统常量

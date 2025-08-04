@@ -8,12 +8,12 @@
 //===================================================================
 
 using System.Text.Json;
-using Hbt.Cur.Domain.IServices.Extensions;
-using Hbt.Cur.Infrastructure.Security.Attributes;
+using Hbt.Domain.IServices.Extensions;
+using Hbt.Infrastructure.Security.Attributes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace Hbt.Cur.Infrastructure.Security.Filters;
+namespace Hbt.Infrastructure.Security.Filters;
 
 /// <summary>
 /// 操作日志过滤器

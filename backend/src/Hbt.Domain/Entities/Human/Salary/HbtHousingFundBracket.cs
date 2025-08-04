@@ -11,7 +11,7 @@
 
 using SqlSugar;
 
-namespace Hbt.Cur.Domain.Entities.Human.Salary;
+namespace Hbt.Domain.Entities.Human.Salary;
 
 /// <summary>
 /// 住房公积金等级

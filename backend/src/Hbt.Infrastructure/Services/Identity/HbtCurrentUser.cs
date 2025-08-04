@@ -8,13 +8,13 @@
 //===================================================================
 
 using System.Security.Claims;
-using Hbt.Cur.Common.Exceptions;
-using Hbt.Cur.Common.Constants;
-using Hbt.Cur.Domain.IServices.Extensions;
+using Hbt.Common.Exceptions;
+using Hbt.Common.Constants;
+using Hbt.Domain.IServices.Extensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
-namespace Hbt.Cur.Infrastructure.Services.Identity
+namespace Hbt.Infrastructure.Services.Identity
 {
     /// <summary>
     /// 当前用户实现类

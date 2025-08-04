@@ -12,18 +12,18 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using Microsoft.AspNetCore.Http;
-using Hbt.Cur.Common.Models;
-using Hbt.Cur.Domain.Entities.Routine;
-using Hbt.Cur.Application.Dtos.Routine;
-using Hbt.Cur.Common.Exceptions;
-using Hbt.Cur.Common.Helpers;
-using Hbt.Cur.Domain.Repositories;
+using Hbt.Common.Models;
+using Hbt.Domain.Entities.Routine;
+using Hbt.Application.Dtos.Routine;
+using Hbt.Common.Exceptions;
+using Hbt.Common.Helpers;
+using Hbt.Domain.Repositories;
 using SqlSugar;
 using Mapster;
 using System.IO;
 using System.Linq;
 
-namespace Hbt.Cur.Application.Services.Routine.Email
+namespace Hbt.Application.Services.Routine.Email
 {
     /// <summary>
     /// 邮件模板服务实现

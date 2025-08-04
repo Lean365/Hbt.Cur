@@ -12,16 +12,16 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using Hbt.Cur.Common.Constants;
-using Hbt.Cur.Common.Exceptions;
-using Hbt.Cur.Common.Options;
-using Hbt.Cur.Domain.Entities.Identity;
-using Hbt.Cur.Domain.IServices.Security;
+using Hbt.Common.Constants;
+using Hbt.Common.Exceptions;
+using Hbt.Common.Options;
+using Hbt.Domain.Entities.Identity;
+using Hbt.Domain.IServices.Security;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
-namespace Hbt.Cur.Infrastructure.Authentication
+namespace Hbt.Infrastructure.Authentication
 {
     /// <summary>
     /// JWT处理器实现

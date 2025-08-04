@@ -10,7 +10,7 @@
 using System;
 using System.Text.Json.Serialization;
 
-namespace Hbt.Cur.Common.Models;
+namespace Hbt.Common.Models;
 
 /// <summary>
 /// SignalR环境信息

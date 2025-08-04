@@ -7,10 +7,10 @@
 // 描述    : 在线消息服务接口
 //===================================================================
 
-using Hbt.Cur.Application.Dtos.SignalR;
-using Hbt.Cur.Common.Models;
+using Hbt.Application.Dtos.SignalR;
+using Hbt.Common.Models;
 
-namespace Hbt.Cur.Application.Services.SignalR;
+namespace Hbt.Application.Services.SignalR;
 
 /// <summary>
 /// 在线消息服务接口

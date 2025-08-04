@@ -7,9 +7,9 @@
 // 描述   : HRM菜单数据初始化类
 //===================================================================
 
-using Hbt.Cur.Domain.Entities.Identity;
+using Hbt.Domain.Entities.Identity;
 
-namespace Hbt.Cur.Infrastructure.Data.Seeds.Biz;
+namespace Hbt.Infrastructure.Data.Seeds.Biz;
 
 /// <summary>
 /// HRM菜单数据初始化类

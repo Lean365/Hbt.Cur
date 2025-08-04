@@ -57,9 +57,9 @@
 // 描述   : 财务相关字典类型种子数据初始化类
 //===================================================================
 
-using Hbt.Cur.Domain.Entities.Routine.Core;
+using Hbt.Domain.Entities.Routine.Core;
 
-namespace Hbt.Cur.Infrastructure.Data.Seeds.Biz.Dict;
+namespace Hbt.Infrastructure.Data.Seeds.Biz.Dict;
 
 /// <summary>
 /// 财务相关字典类型种子数据提供类

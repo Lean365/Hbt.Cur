@@ -11,7 +11,7 @@
 
 using System.ComponentModel.DataAnnotations;
 
-namespace Hbt.Cur.Application.Dtos.Audit
+namespace Hbt.Application.Dtos.Audit
 {
     /// <summary>
     /// 登录设备日志传输对象

@@ -7,26 +7,26 @@
 // 描述    : 服务集合扩展
 //===================================================================
 
-using Hbt.Cur.Application.Services.Audit;
-using Hbt.Cur.Application.Services.Core;
-using Hbt.Cur.Application.Services.Extensions;
-using Hbt.Cur.Application.Services.Identity;
-using Hbt.Cur.Application.Services.Routine;
-using Hbt.Cur.Application.Services.SignalR;
-using Hbt.Cur.Common.Options;
-using Hbt.Cur.Domain.Data;
-using Hbt.Cur.Domain.IServices.Caching;
-using Hbt.Cur.Domain.IServices.Security;
-using Hbt.Cur.Infrastructure.Authentication;
-using Hbt.Cur.Infrastructure.Caching;
-using Hbt.Cur.Infrastructure.Data.Contexts;
-using Hbt.Cur.Infrastructure.Identity;
-using Hbt.Cur.Infrastructure.Logging;
-using Hbt.Cur.Infrastructure.Security;
-using Hbt.Cur.Infrastructure.Security.Filters;
-using Hbt.Cur.Infrastructure.Services;
-using Hbt.Cur.Infrastructure.Services.Identity;
-using Hbt.Cur.Infrastructure.Services.Local;
+using Hbt.Application.Services.Audit;
+using Hbt.Application.Services.Core;
+using Hbt.Application.Services.Extensions;
+using Hbt.Application.Services.Identity;
+using Hbt.Application.Services.Routine;
+using Hbt.Application.Services.SignalR;
+using Hbt.Common.Options;
+using Hbt.Domain.Data;
+using Hbt.Domain.IServices.Caching;
+using Hbt.Domain.IServices.Security;
+using Hbt.Infrastructure.Authentication;
+using Hbt.Infrastructure.Caching;
+using Hbt.Infrastructure.Data.Contexts;
+using Hbt.Infrastructure.Identity;
+using Hbt.Infrastructure.Logging;
+using Hbt.Infrastructure.Security;
+using Hbt.Infrastructure.Security.Filters;
+using Hbt.Infrastructure.Services;
+using Hbt.Infrastructure.Services.Identity;
+using Hbt.Infrastructure.Services.Local;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
@@ -35,7 +35,7 @@ using NLog;
 
 // 添加代码生成相关服务的命名空间
 
-namespace Hbt.Cur.Infrastructure.Extensions
+namespace Hbt.Infrastructure.Extensions
 {
     /// <summary>
     /// 服务集合扩展类

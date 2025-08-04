@@ -9,10 +9,10 @@
 // 描述   : 代码生成模板实体
 //===================================================================
 
-using Hbt.Cur.Domain.Entities.Identity;
+using Hbt.Domain.Entities.Identity;
 using SqlSugar;
 
-namespace Hbt.Cur.Domain.Entities.Generator;
+namespace Hbt.Domain.Entities.Generator;
 
 /// <summary>
 /// 代码生成模板实体

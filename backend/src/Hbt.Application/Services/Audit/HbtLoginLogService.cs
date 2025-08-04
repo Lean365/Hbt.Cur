@@ -14,18 +14,18 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-using Hbt.Cur.Common.Models;
-using Hbt.Cur.Domain.Entities.Audit;
-using Hbt.Cur.Application.Dtos.Audit;
-using Hbt.Cur.Common.Exceptions;
-using Hbt.Cur.Common.Utils;
-using Hbt.Cur.Domain.Repositories;
+using Hbt.Common.Models;
+using Hbt.Domain.Entities.Audit;
+using Hbt.Application.Dtos.Audit;
+using Hbt.Common.Exceptions;
+using Hbt.Common.Utils;
+using Hbt.Domain.Repositories;
 using SqlSugar;
 using Mapster;
-using Hbt.Cur.Domain.IServices.Extensions;
+using Hbt.Domain.IServices.Extensions;
 using Microsoft.AspNetCore.Http;
 
-namespace Hbt.Cur.Application.Services.Audit
+namespace Hbt.Application.Services.Audit
 {
     /// <summary>
     /// 登录日志服务实现

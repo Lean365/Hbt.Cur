@@ -11,18 +11,18 @@ using System.ComponentModel;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text.Json;
-using Hbt.Cur.Application.Dtos.Identity;
-using Hbt.Cur.Application.Services.Identity;
-using Hbt.Cur.Common.Constants;
-using Hbt.Cur.Common.Options;
-using Hbt.Cur.Domain.Entities.Identity;
-using Hbt.Cur.Domain.Entities.SignalR;
-using Hbt.Cur.Domain.IServices.Security;
-using Hbt.Cur.Domain.IServices.SignalR;
-using Hbt.Cur.Domain.Repositories;
+using Hbt.Application.Dtos.Identity;
+using Hbt.Application.Services.Identity;
+using Hbt.Common.Constants;
+using Hbt.Common.Options;
+using Hbt.Domain.Entities.Identity;
+using Hbt.Domain.Entities.SignalR;
+using Hbt.Domain.IServices.Security;
+using Hbt.Domain.IServices.SignalR;
+using Hbt.Domain.Repositories;
 using Microsoft.Extensions.Options;
 
-namespace Hbt.Cur.WebApi.Controllers.Identity
+namespace Hbt.WebApi.Controllers.Identity
 {
     /// <summary>
     /// 基础认证控制器

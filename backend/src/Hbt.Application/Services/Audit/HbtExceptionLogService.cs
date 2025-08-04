@@ -12,7 +12,7 @@
 using System.Linq.Expressions;
 using Microsoft.AspNetCore.Http;
 
-namespace Hbt.Cur.Application.Services.Audit
+namespace Hbt.Application.Services.Audit
 {
     /// <summary>
     /// 异常日志服务实现

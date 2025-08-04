@@ -1,4 +1,4 @@
-namespace Hbt.Cur.Common.Options;
+namespace Hbt.Common.Options;
 
 /// <summary>
 /// 验证码配置选项

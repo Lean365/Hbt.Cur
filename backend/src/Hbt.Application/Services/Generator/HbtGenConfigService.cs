@@ -11,7 +11,7 @@
 
 using Microsoft.AspNetCore.Http;
 
-namespace Hbt.Cur.Application.Services.Generator;
+namespace Hbt.Application.Services.Generator;
 
 /// <summary>
 /// 生成配置服务实现类

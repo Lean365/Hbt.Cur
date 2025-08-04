@@ -9,7 +9,7 @@
 // 描述    : 部门实体类
 //===================================================================
 
-namespace Hbt.Cur.Domain.Entities.Identity
+namespace Hbt.Domain.Entities.Identity
 {
     /// <summary>
     /// 部门实体

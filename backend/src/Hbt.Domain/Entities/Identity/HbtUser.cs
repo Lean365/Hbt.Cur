@@ -11,7 +11,7 @@ using SqlSugar;
 // 版本号 : V.0.0.1
 // 描述    : 用户实体类
 //===================================================================
-namespace Hbt.Cur.Domain.Entities.Identity
+namespace Hbt.Domain.Entities.Identity
 {
     /// <summary>
     /// 用户实体

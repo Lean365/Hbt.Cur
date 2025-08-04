@@ -10,7 +10,7 @@
 // 版权    : Copyright © 2024 Lean365. All rights reserved.
 //===================================================================
 
-namespace Hbt.Cur.Domain.Entities.Logistics.Material
+namespace Hbt.Domain.Entities.Logistics.Material
 {
     /// <summary>
     /// 工厂实体类 (基于SAP MM物料管理)

@@ -12,7 +12,7 @@
 
 using System.Collections.Generic;
 
-namespace Hbt.Cur.Domain.Entities.Accounting.Financial
+namespace Hbt.Domain.Entities.Accounting.Financial
 {
     /// <summary>
     /// 公司科目表实体类 (基于SAP FI公司科目表SKB1)

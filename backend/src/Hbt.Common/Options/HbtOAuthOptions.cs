@@ -7,7 +7,7 @@
 // 描述    : OAuth第三方登录配置选项
 //===================================================================
 
-namespace Hbt.Cur.Common.Options;
+namespace Hbt.Common.Options;
 
 /// <summary>
 /// OAuth第三方登录配置选项

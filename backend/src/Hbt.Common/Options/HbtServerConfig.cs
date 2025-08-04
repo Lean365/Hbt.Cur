@@ -7,7 +7,7 @@
 // 描述    : 服务器配置选项
 //===================================================================
 
-namespace Hbt.Cur.Common.Options
+namespace Hbt.Common.Options
 {
     /// <summary>
     /// 服务器配置

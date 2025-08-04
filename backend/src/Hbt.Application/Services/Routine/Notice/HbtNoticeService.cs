@@ -12,18 +12,18 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using Microsoft.AspNetCore.Http;
-using Hbt.Cur.Common.Models;
-using Hbt.Cur.Domain.Entities.Routine;
-using Hbt.Cur.Application.Dtos.Routine;
-using Hbt.Cur.Common.Exceptions;
-using Hbt.Cur.Common.Helpers;
-using Hbt.Cur.Domain.Repositories;
-using Hbt.Cur.Domain.IServices.SignalR;
-using Hbt.Cur.Common.Enums;
+using Hbt.Common.Models;
+using Hbt.Domain.Entities.Routine;
+using Hbt.Application.Dtos.Routine;
+using Hbt.Common.Exceptions;
+using Hbt.Common.Helpers;
+using Hbt.Domain.Repositories;
+using Hbt.Domain.IServices.SignalR;
+using Hbt.Common.Enums;
 using SqlSugar;
 using Mapster;
 
-namespace Hbt.Cur.Application.Services.Routine.Notice
+namespace Hbt.Application.Services.Routine.Notice
 {
     /// <summary>
     /// 通知服务实现

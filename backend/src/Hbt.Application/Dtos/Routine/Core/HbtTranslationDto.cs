@@ -1,5 +1,5 @@
 //===================================================================
-// 项目名 : Hbt.Cur.Application
+// 项目名 : Hbt.Application
 // 文件名 : HbtTranslationDto.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-22 16:30
@@ -8,7 +8,7 @@
 //===================================================================
 using System.ComponentModel.DataAnnotations;
 
-namespace Hbt.Cur.Application.Dtos.Routine.Core
+namespace Hbt.Application.Dtos.Routine.Core
 {
     /// <summary>
     /// 翻译基础DTO

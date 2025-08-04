@@ -7,11 +7,11 @@
 // 描述   : 规章制度控制器
 //===================================================================
 
-using Hbt.Cur.Application.Dtos.Routine.Document;
-using Hbt.Cur.Application.Services.Routine.Document.Regulations;
+using Hbt.Application.Dtos.Routine.Document;
+using Hbt.Application.Services.Routine.Document.Regulations;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Hbt.Cur.WebApi.Controllers.Routine.Document
+namespace Hbt.WebApi.Controllers.Routine.Document
 {
     /// <summary>
     /// 规章制度控制器

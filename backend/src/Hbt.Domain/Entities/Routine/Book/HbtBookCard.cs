@@ -10,7 +10,7 @@
 // 版权    : Copyright © 2024 Lean365. All rights reserved.
 //===================================================================
 
-namespace Hbt.Cur.Domain.Entities.Routine.Book
+namespace Hbt.Domain.Entities.Routine.Book
 {
     /// <summary>
     /// 图书借阅卡实体类

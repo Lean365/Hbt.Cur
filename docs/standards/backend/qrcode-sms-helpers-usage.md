@@ -161,7 +161,7 @@ string smsContent = HbtSmsHelper.GenerateSmsContent(
     template: "您的验证码是：{code}，有效期{expiration}分钟。【{company}】",
     code: "123456",
     expirationMinutes: 5,
-    companyName: "Lean.Hbt"
+    companyName: "Hbt.Cur"
 );
 ```
 

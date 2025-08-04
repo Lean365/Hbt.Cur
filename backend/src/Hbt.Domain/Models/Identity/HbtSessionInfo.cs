@@ -7,7 +7,7 @@
 // 描述    : 会话信息模型
 //===================================================================
 
-namespace Hbt.Cur.Domain.Models.Identity
+namespace Hbt.Domain.Models.Identity
 {
     /// <summary>
     /// 身份认证会话信息模型

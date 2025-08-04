@@ -1,4 +1,4 @@
-namespace Hbt.Cur.Domain.IServices.Caching
+namespace Hbt.Domain.IServices.Caching
 {
     /// <summary>
     /// Redis缓存接口

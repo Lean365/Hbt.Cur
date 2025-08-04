@@ -9,7 +9,7 @@
 
 using Newtonsoft.Json;
 
-namespace Hbt.Cur.WebApi.Middlewares
+namespace Hbt.WebApi.Middlewares
 {
     /// <summary>
     /// 全局异常处理中间件

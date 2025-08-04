@@ -17,20 +17,20 @@ using System.IO;
 using Microsoft.AspNetCore.Http;
 using Mapster;
 using SqlSugar;
-using Hbt.Cur.Common.Models;
-using Hbt.Cur.Common.Extensions;
-using Hbt.Cur.Common.Exceptions;
-using Hbt.Cur.Common.Utils;
-using Hbt.Cur.Domain.Entities.{{ table.module_name }};
-using Hbt.Cur.Application.Dtos.{{ table.module_name }};
-using Hbt.Cur.Infrastructure.Data.Repositories;
-using Hbt.Cur.Domain.Repositories.{{ table.module_name }};
-using Hbt.Cur.Domain.Dtos.{{ table.module_name }};
-using Hbt.Cur.Domain.Interfaces.{{ table.module_name }};
-using Hbt.Cur.Infrastructure.Exceptions;
+using Hbt.Common.Models;
+using Hbt.Common.Extensions;
+using Hbt.Common.Exceptions;
+using Hbt.Common.Utils;
+using Hbt.Domain.Entities.{{ table.module_name }};
+using Hbt.Application.Dtos.{{ table.module_name }};
+using Hbt.Infrastructure.Data.Repositories;
+using Hbt.Domain.Repositories.{{ table.module_name }};
+using Hbt.Domain.Dtos.{{ table.module_name }};
+using Hbt.Domain.Interfaces.{{ table.module_name }};
+using Hbt.Infrastructure.Exceptions;
 using Microsoft.Extensions.Logging;
 
-namespace Hbt.Cur.Application.Services.{{ table.module_name }};
+namespace Hbt.Application.Services.{{ table.module_name }};
 
 /// <summary>
 /// {{ table.comment }}服务实现类

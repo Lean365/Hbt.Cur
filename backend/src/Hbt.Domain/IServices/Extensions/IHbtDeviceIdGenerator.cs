@@ -1,4 +1,4 @@
-namespace Hbt.Cur.Domain.IServices.Extensions;
+namespace Hbt.Domain.IServices.Extensions;
 
 /// <summary>
 /// 设备ID生成器接口

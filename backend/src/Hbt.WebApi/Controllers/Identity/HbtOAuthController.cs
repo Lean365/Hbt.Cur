@@ -1,10 +1,10 @@
-using Hbt.Cur.Application.Dtos.Identity;
-using Hbt.Cur.Application.Services.Identity;
-using Hbt.Cur.Domain.Entities.Identity;
-using Hbt.Cur.Domain.Repositories;
-using Hbt.Cur.Common.Helpers;
+using Hbt.Application.Dtos.Identity;
+using Hbt.Application.Services.Identity;
+using Hbt.Domain.Entities.Identity;
+using Hbt.Domain.Repositories;
+using Hbt.Common.Helpers;
 
-namespace Hbt.Cur.WebApi.Controllers.Identity
+namespace Hbt.WebApi.Controllers.Identity
 {
     /// <summary>
     /// OAuth认证控制器

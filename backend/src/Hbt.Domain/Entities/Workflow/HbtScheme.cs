@@ -9,7 +9,7 @@
 
 using SqlSugar;
 
-namespace Hbt.Cur.Domain.Entities.Workflow
+namespace Hbt.Domain.Entities.Workflow
 {
     /// <summary>
     /// 工作流定义实体类

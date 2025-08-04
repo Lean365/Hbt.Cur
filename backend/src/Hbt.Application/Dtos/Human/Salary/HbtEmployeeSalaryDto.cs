@@ -1,5 +1,5 @@
 //===================================================================
-// 项目名: Hbt.Cur.Application
+// 项目名: Hbt.Application
 // 文件名: HbtEmployeeSalaryDto.cs
 // 创建者: Lean365
 // 创建时间: 2024-01-17
@@ -9,7 +9,7 @@
 
 using System;
 
-namespace Hbt.Cur.Application.Dtos.Human.Salary
+namespace Hbt.Application.Dtos.Human.Salary
 {
     /// <summary>
     /// 员工薪资基础DTO

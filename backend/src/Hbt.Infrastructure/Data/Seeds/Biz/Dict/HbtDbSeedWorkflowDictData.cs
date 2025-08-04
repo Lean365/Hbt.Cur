@@ -7,9 +7,9 @@
 // 描述   : 工作流字典数据种子数据初始化类
 //===================================================================
 
-using Hbt.Cur.Domain.Entities.Routine.Core;
+using Hbt.Domain.Entities.Routine.Core;
 
-namespace Hbt.Cur.Infrastructure.Data.Seeds.Biz.Dict;
+namespace Hbt.Infrastructure.Data.Seeds.Biz.Dict;
 
 /// <summary>
 /// 工作流字典数据种子数据初始化类

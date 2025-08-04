@@ -1,5 +1,5 @@
 //===================================================================
-// 项目名: Hbt.Cur.Application
+// 项目名: Hbt.Application
 // 文件名: HbtPositionDto.cs
 // 创建者: Lean365
 // 创建时间: 2024-01-17
@@ -10,7 +10,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Hbt.Cur.Application.Dtos.Human.Organization
+namespace Hbt.Application.Dtos.Human.Organization
 {
     /// <summary>
     /// 职位基础DTO

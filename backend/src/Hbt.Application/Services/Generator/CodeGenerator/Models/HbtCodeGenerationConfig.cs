@@ -10,7 +10,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 
-namespace Hbt.Cur.Application.Services.Generator.CodeGenerator.Models;
+namespace Hbt.Application.Services.Generator.CodeGenerator.Models;
 
 /// <summary>
 /// 代码生成配置

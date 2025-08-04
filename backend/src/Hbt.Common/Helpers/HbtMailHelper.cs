@@ -1,5 +1,5 @@
 //===================================================================
-// 项目名 : Hbt.Cur.Common.Helpers
+// 项目名 : Hbt.Common.Helpers
 // 文件名 : HbtMailHelper.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-26 14:30
@@ -7,7 +7,7 @@
 // 描述   : 邮件帮助类
 //===================================================================
 
-using Hbt.Cur.Common.Options;
+using Hbt.Common.Options;
 using MailKit.Net.Smtp;
 using MailKit.Security;
 using Microsoft.Extensions.Options;
@@ -16,7 +16,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Hbt.Cur.Common.Helpers
+namespace Hbt.Common.Helpers
 {
     /// <summary>
     /// 邮件帮助类

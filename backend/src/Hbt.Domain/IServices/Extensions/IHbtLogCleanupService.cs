@@ -23,9 +23,9 @@
 // 描述    : 日志清理服务接口
 //===================================================================
 
-using Hbt.Cur.Common.Options;
+using Hbt.Common.Options;
 
-namespace Hbt.Cur.Domain.IServices.Extensions
+namespace Hbt.Domain.IServices.Extensions
 {
     /// <summary>
     /// 日志清理服务接口

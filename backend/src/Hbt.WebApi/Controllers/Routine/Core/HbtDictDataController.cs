@@ -7,11 +7,11 @@
 // 描述   : 字典数据控制器
 //===================================================================
 
-using Hbt.Cur.Application.Dtos.Routine.Core;
-using Hbt.Cur.Application.Services.Core;
-using Hbt.Cur.Domain.IServices.Extensions;
+using Hbt.Application.Dtos.Routine.Core;
+using Hbt.Application.Services.Core;
+using Hbt.Domain.IServices.Extensions;
 
-namespace Hbt.Cur.WebApi.Controllers.Routine.Core
+namespace Hbt.WebApi.Controllers.Routine.Core
 {
     /// <summary>
     /// 字典数据控制器

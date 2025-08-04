@@ -7,10 +7,10 @@
 // 描述   : 字典类型控制器
 //===================================================================
 
-using Hbt.Cur.Application.Dtos.Routine.Core;
-using Hbt.Cur.Application.Services.Core;
+using Hbt.Application.Dtos.Routine.Core;
+using Hbt.Application.Services.Core;
 
-namespace Hbt.Cur.WebApi.Controllers.Routine.Core
+namespace Hbt.WebApi.Controllers.Routine.Core
 {
     /// <summary>
     /// 字典类型控制器

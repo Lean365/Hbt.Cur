@@ -9,13 +9,13 @@
 // 描述    : 工作流Jobs调度器配置
 //===================================================================
 
-using Hbt.Cur.Common.Options;
-using Hbt.Cur.Domain.IServices;
+using Hbt.Common.Options;
+using Hbt.Domain.IServices;
 using Microsoft.Extensions.Options;
 using Quartz;
 using Quartz.Impl.Matchers;
 
-namespace Hbt.Cur.Application.Services.Workflow.Jobs
+namespace Hbt.Application.Services.Workflow.Jobs
 {
     /// <summary>
     /// 工作流Jobs调度器配置

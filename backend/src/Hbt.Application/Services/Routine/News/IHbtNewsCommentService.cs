@@ -22,7 +22,7 @@
 // 描述    : 新闻评论服务接口
 //===================================================================
 
-namespace Hbt.Cur.Application.Services.Routine.News
+namespace Hbt.Application.Services.Routine.News
 {
     /// <summary>
     /// 新闻评论服务接口

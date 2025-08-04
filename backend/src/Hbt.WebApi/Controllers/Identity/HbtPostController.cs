@@ -7,10 +7,10 @@
 // 描述   : 岗位控制器
 //===================================================================
 
-using Hbt.Cur.Application.Dtos.Identity;
-using Hbt.Cur.Application.Services.Identity;
+using Hbt.Application.Dtos.Identity;
+using Hbt.Application.Services.Identity;
 
-namespace Hbt.Cur.WebApi.Controllers.Identity
+namespace Hbt.WebApi.Controllers.Identity
 {
     /// <summary>
     /// 岗位控制器

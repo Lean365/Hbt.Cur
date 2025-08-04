@@ -7,7 +7,7 @@
 // 描述   : 监控配置选项
 //===================================================================
 
-namespace Hbt.Cur.Common.Options;
+namespace Hbt.Common.Options;
 
 /// <summary>
 /// 监控配置选项

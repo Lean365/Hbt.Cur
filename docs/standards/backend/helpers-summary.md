@@ -7,7 +7,7 @@
 ## 创建的文件
 
 ### 1. QRCoder帮助类
-**文件路径**: `backend/src/Lean.Hbt.Common/Helpers/HbtQrCodeHelper.cs`
+**文件路径**: `backend/src/Hbt.Cur.Common/Helpers/HbtQrCodeHelper.cs`
 
 **功能特性**:
 - ✅ 支持PNG、JPEG、SVG多种格式
@@ -31,7 +31,7 @@
 - `GetQrCodeInfo()` - 获取二维码信息
 
 ### 2. 短信验证码帮助类
-**文件路径**: `backend/src/Lean.Hbt.Common/Helpers/HbtSmsHelper.cs`
+**文件路径**: `backend/src/Hbt.Cur.Common/Helpers/HbtSmsHelper.cs`
 
 **功能特性**:
 - ✅ 多种验证码生成方式（数字、字母数字、加密）
@@ -59,7 +59,7 @@
 - `GenerateTestCode()` - 生成测试验证码
 
 ### 3. 使用示例
-**文件路径**: `backend/src/Lean.Hbt.Common/Helpers/HbtHelperExamples.cs`
+**文件路径**: `backend/src/Hbt.Cur.Common/Helpers/HbtHelperExamples.cs`
 
 **包含示例**:
 - 二维码生成示例
@@ -85,7 +85,7 @@
 - **版本**: 1.4.3
 - **描述**: .NET平台最流行的二维码生成库
 - **特性**: 支持多种格式、高纠错能力、自定义样式
-- **已添加到**: `Lean.Hbt.Common.csproj`
+- **已添加到**: `Hbt.Cur.Common.csproj`
 
 ### 内置功能
 - **加密**: 使用`System.Security.Cryptography`

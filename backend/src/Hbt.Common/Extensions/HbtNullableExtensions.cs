@@ -7,7 +7,7 @@
 // 描述    : 空值处理扩展方法
 //===================================================================
 
-namespace Hbt.Cur.Common.Extensions
+namespace Hbt.Common.Extensions
 {
     /// <summary>
     /// 空值处理扩展方法

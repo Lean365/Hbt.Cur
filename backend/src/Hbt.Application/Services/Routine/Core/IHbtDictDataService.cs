@@ -7,9 +7,9 @@
 // 描述   : 字典数据服务接口
 //===================================================================
 
-using Hbt.Cur.Application.Dtos.Routine.Core;
+using Hbt.Application.Dtos.Routine.Core;
 
-namespace Hbt.Cur.Application.Services.Core
+namespace Hbt.Application.Services.Core
 {
     /// <summary>
     /// 字典数据服务接口

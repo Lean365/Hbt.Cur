@@ -1,7 +1,7 @@
 #nullable enable
 
 //===================================================================
-// 项目名 : Hbt.Cur.Domain.Entities.Routine
+// 项目名 : Hbt.Domain.Entities.Routine
 // 文件名 : HbtNewsComment.cs
 // 创建者 : Claude
 // 创建时间: 2024-12-01
@@ -9,7 +9,7 @@
 // 描述   : 新闻评论实体
 //===================================================================
 
-namespace Hbt.Cur.Domain.Entities.Routine.News
+namespace Hbt.Domain.Entities.Routine.News
 {
     /// <summary>
     /// 新闻评论实体

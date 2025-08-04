@@ -1,7 +1,7 @@
 #nullable enable
 
 using SqlSugar;
-using Hbt.Cur.Domain.Entities.Identity;
+using Hbt.Domain.Entities.Identity;
 
 //===================================================================
 // 项目名 : Lean.Hbt
@@ -13,7 +13,7 @@ using Hbt.Cur.Domain.Entities.Identity;
 // 版权    : Copyright © 2024 Lean365. All rights reserved.
 //===================================================================
 
-namespace Hbt.Cur.Domain.Entities.Accounting.Budget
+namespace Hbt.Domain.Entities.Accounting.Budget
 {
     /// <summary>
     /// 销售预算实体类 (基于SAP FI销售预算管理)

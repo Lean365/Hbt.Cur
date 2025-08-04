@@ -7,13 +7,13 @@
 // 描述   : 定时任务服务实现
 //===================================================================
 
-using Hbt.Cur.Application.Services.Routine.Quartz.Jobs;
-using Hbt.Cur.Domain.IServices.SignalR;
-using Hbt.Cur.Common.Models;
-using Hbt.Cur.Common.Enums;
+using Hbt.Application.Services.Routine.Quartz.Jobs;
+using Hbt.Domain.IServices.SignalR;
+using Hbt.Common.Models;
+using Hbt.Common.Enums;
 using Microsoft.AspNetCore.Http;
 using Quartz;
-namespace Hbt.Cur.Application.Services.Routine.Quartz
+namespace Hbt.Application.Services.Routine.Quartz
 {
     /// <summary>
     /// 定时任务服务实现

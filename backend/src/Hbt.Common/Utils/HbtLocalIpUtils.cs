@@ -12,7 +12,7 @@ using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
 
-namespace Hbt.Cur.Common.Utils;
+namespace Hbt.Common.Utils;
 
 /// <summary>
 /// 本机内网地址获取工具类

@@ -7,9 +7,9 @@
 // 描述    : 二维码服务接口
 //===================================================================
 
-using Hbt.Cur.Application.Dtos.Identity;
+using Hbt.Application.Dtos.Identity;
 
-namespace Hbt.Cur.Application.Services.Identity;
+namespace Hbt.Application.Services.Identity;
 
 /// <summary>
 /// 二维码服务接口

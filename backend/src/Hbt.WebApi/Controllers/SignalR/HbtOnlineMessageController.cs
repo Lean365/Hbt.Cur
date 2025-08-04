@@ -7,10 +7,10 @@
 // 描述   : 在线消息控制器
 //===================================================================
 
-using Hbt.Cur.Application.Dtos.SignalR;
-using Hbt.Cur.Application.Services.SignalR;
+using Hbt.Application.Dtos.SignalR;
+using Hbt.Application.Services.SignalR;
 
-namespace Hbt.Cur.WebApi.Controllers.SignalR
+namespace Hbt.WebApi.Controllers.SignalR
 {
     /// <summary>
     /// 在线消息控制器

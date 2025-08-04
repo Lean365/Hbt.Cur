@@ -9,7 +9,7 @@
 
 using System.Text.Json.Nodes;
 
-namespace Hbt.Cur.Domain.IServices.Extensions;
+namespace Hbt.Domain.IServices.Extensions;
 
 /// <summary>
 /// 基础日志管理接口

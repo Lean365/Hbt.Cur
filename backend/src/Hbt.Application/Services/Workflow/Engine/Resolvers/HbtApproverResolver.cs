@@ -9,10 +9,10 @@
 // 描述    : 工作流审批人解析器实现
 //===================================================================
 
-using Hbt.Cur.Domain.IServices;
+using Hbt.Domain.IServices;
 using System.Text.Json;
 
-namespace Hbt.Cur.Application.Services.Workflow.Engine.Resolvers
+namespace Hbt.Application.Services.Workflow.Engine.Resolvers
 {
     /// <summary>
     /// 工作流审批人解析器实现

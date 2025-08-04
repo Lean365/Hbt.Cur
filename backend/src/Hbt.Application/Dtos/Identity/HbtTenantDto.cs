@@ -7,7 +7,7 @@
 // 描述   : 租户传输对象
 //===================================================================
 
-namespace Hbt.Cur.Application.Dtos.Identity;
+namespace Hbt.Application.Dtos.Identity;
 
 /// <summary>
 /// 租户传输对象

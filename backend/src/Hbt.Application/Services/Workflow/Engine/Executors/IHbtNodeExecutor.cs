@@ -9,9 +9,9 @@
 // 描述    : 工作流节点执行器接口
 //===================================================================
 
-using Hbt.Cur.Application.Services.Workflow.Engine;
+using Hbt.Application.Services.Workflow.Engine;
 
-namespace Hbt.Cur.Application.Services.Workflow.Engine.Executors
+namespace Hbt.Application.Services.Workflow.Engine.Executors
 {
     /// <summary>
     /// 工作流节点执行器接口

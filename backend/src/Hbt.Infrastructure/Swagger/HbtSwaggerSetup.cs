@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
 
-namespace Hbt.Cur.Infrastructure.Swagger
+namespace Hbt.Infrastructure.Swagger
 {
     /// <summary>
     /// Swagger配置类
@@ -115,10 +115,10 @@ namespace Hbt.Cur.Infrastructure.Swagger
                 // 添加XML注释
                 var xmlFiles = new[] 
                 {
-                    "Hbt.Cur.Infrastructure.xml",
-                    "Hbt.Cur.WebApi.xml",
-                    "Hbt.Cur.Application.xml",
-                    "Hbt.Cur.Domain.xml"
+                    "Hbt.Infrastructure.xml",
+                    "Hbt.WebApi.xml",
+                    "Hbt.Application.xml",
+                    "Hbt.Domain.xml"
                 };
 
                 foreach (var xmlFile in xmlFiles)

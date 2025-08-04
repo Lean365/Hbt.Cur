@@ -7,11 +7,11 @@
 // 描述   : 工作流数据库种子数据初始化类
 //===================================================================
 
-using Hbt.Cur.Common.Exceptions;
-using Hbt.Cur.Infrastructure.Data.Contexts;
-using Hbt.Cur.Infrastructure.Data.Seeds.Workflow;
+using Hbt.Common.Exceptions;
+using Hbt.Infrastructure.Data.Contexts;
+using Hbt.Infrastructure.Data.Seeds.Workflow;
 
-namespace Hbt.Cur.Infrastructure.Data.Seeds;
+namespace Hbt.Infrastructure.Data.Seeds;
 
 /// <summary>
 /// 工作流数据库种子数据初始化类

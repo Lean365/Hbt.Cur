@@ -9,9 +9,9 @@
 // 描述    : 登录日志实体
 //===================================================================
 
-using Hbt.Cur.Common.Models;
+using Hbt.Common.Models;
 
-namespace Hbt.Cur.Domain.Entities.Audit
+namespace Hbt.Domain.Entities.Audit
 {
     /// <summary>
     /// 登录日志实体

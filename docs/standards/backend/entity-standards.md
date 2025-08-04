@@ -4,9 +4,9 @@
 
 - 所有实体必须放在Domain层下的Entities目录中
 - 按业务模块分子目录,例如:
-  - `Lean.Hbt.Domain.Entities.Identity` (身份认证模块)
-  - `Lean.Hbt.Domain.Entities.System` (系统管理模块)
-  - `Lean.Hbt.Domain.Entities.Monitor` (监控模块)
+  - `Hbt.Cur.Domain.Entities.Identity` (身份认证模块)
+- `Hbt.Cur.Domain.Entities.System` (系统管理模块)
+- `Hbt.Cur.Domain.Entities.Monitor` (监控模块)
 
 ## 2. 命名规范
 
@@ -20,7 +20,7 @@
 
 ```csharp
 //===================================================================
-// 项目名 : Lean.Hbt 
+// 项目名 : Hbt.Cur 
 // 文件名 : HbtXxx.cs 
 // 创建者 : Lean365
 // 创建时间: 2024-01-16 21:50
@@ -28,7 +28,7 @@
 // 描述    : XXX实体类
 //===================================================================
 
-namespace Lean.Hbt.Domain.Entities
+namespace Hbt.Cur.Domain.Entities
 {
     /// <summary>
     /// XXX实体类

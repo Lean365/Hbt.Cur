@@ -9,11 +9,11 @@
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Hbt.Cur.Common.Models;
-using Hbt.Cur.Application.Dtos.Identity;
+using Hbt.Common.Models;
+using Hbt.Application.Dtos.Identity;
 using System.IO;
 
-namespace Hbt.Cur.Application.Services.Identity
+namespace Hbt.Application.Services.Identity
 {
     /// <summary>
     /// 角色服务接口

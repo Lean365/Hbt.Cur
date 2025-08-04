@@ -7,12 +7,12 @@
 // 描述    : 工作流引擎控制器
 //===================================================================
 
-using Hbt.Cur.Application.Dtos.Workflow;
-using Hbt.Cur.Application.Services.Workflow.Engine;
+using Hbt.Application.Dtos.Workflow;
+using Hbt.Application.Services.Workflow.Engine;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Hbt.Cur.WebApi.Controllers.Workflow;
+namespace Hbt.WebApi.Controllers.Workflow;
 
 /// <summary>
 /// 工作流引擎控制器

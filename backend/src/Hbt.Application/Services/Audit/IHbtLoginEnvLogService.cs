@@ -10,10 +10,10 @@
 //===================================================================
 
 using System.Threading.Tasks;
-using Hbt.Cur.Application.Dtos.Audit;
-using Hbt.Cur.Common.Models;
+using Hbt.Application.Dtos.Audit;
+using Hbt.Common.Models;
 
-namespace Hbt.Cur.Application.Services.Audit
+namespace Hbt.Application.Services.Audit
 {
     /// <summary>
     /// 登录环境日志信息服务接口

@@ -9,7 +9,7 @@
 
 using System.ComponentModel.DataAnnotations;
 
-namespace Hbt.Cur.Application.Dtos.Identity
+namespace Hbt.Application.Dtos.Identity
 {
     /// <summary>
     /// 岗位基础DTO

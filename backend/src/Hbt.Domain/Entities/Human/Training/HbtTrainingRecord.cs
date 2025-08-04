@@ -11,7 +11,7 @@
 
 using SqlSugar;
 
-namespace Hbt.Cur.Domain.Entities.Human.Training;
+namespace Hbt.Domain.Entities.Human.Training;
 
 /// <summary>
 /// 培训记录实体

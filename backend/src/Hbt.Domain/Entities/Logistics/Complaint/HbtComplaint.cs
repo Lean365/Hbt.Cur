@@ -14,7 +14,7 @@ using SqlSugar;
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace Hbt.Cur.Domain.Entities.Logistics.Complaint
+namespace Hbt.Domain.Entities.Logistics.Complaint
 {
     /// <summary>
     /// 核心客诉主表实体类 (基于SAP QM质量管理)

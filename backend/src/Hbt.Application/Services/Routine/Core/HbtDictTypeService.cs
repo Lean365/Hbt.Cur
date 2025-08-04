@@ -11,7 +11,7 @@
 
 using Microsoft.AspNetCore.Http;
 
-namespace Hbt.Cur.Application.Services.Core
+namespace Hbt.Application.Services.Core
 {
     /// <summary>
     /// 字典类型服务实现类

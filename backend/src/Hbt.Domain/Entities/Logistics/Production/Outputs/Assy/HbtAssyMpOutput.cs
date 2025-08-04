@@ -10,7 +10,7 @@
 // 版权    : Copyright © 2024 Lean365. All rights reserved.
 //===================================================================
 
-namespace Hbt.Cur.Domain.Entities.Logistics.Production.Outputs.Assy
+namespace Hbt.Domain.Entities.Logistics.Production.Outputs.Assy
 {
     /// <summary>
     /// 组立日报实体类

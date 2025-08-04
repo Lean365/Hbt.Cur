@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 
-namespace Hbt.Cur.Domain.IServices.Security
+namespace Hbt.Domain.IServices.Security
 {
     /// <summary>
     /// 单点登录服务接口

@@ -10,7 +10,7 @@
 using System.Drawing;
 using QRCoder;
 
-namespace Hbt.Cur.Common.Helpers;
+namespace Hbt.Common.Helpers;
 
 /// <summary>
 /// 二维码生成帮助类

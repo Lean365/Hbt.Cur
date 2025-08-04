@@ -7,11 +7,11 @@
 // 描述   : 仓储工厂实现类 - 支持多库模式
 //===================================================================
 
-using Hbt.Cur.Domain.Repositories;
-using Hbt.Cur.Infrastructure.Data.Contexts;
+using Hbt.Domain.Repositories;
+using Hbt.Infrastructure.Data.Contexts;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Hbt.Cur.Infrastructure.Repositories;
+namespace Hbt.Infrastructure.Repositories;
 
 /// <summary>
 /// 仓储工厂实现类

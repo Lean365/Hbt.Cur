@@ -1,10 +1,10 @@
-using Hbt.Cur.Application.Dtos.Security;
-using Hbt.Cur.Domain.IServices.Security;
-using Hbt.Cur.Common.Options;
-using Hbt.Cur.Common.Models;
+using Hbt.Application.Dtos.Security;
+using Hbt.Domain.IServices.Security;
+using Hbt.Common.Options;
+using Hbt.Common.Models;
 using Microsoft.Extensions.Options;
 
-namespace Hbt.Cur.WebApi.Controllers.Security;
+namespace Hbt.WebApi.Controllers.Security;
 
 /// <summary>
 /// 验证码控制器

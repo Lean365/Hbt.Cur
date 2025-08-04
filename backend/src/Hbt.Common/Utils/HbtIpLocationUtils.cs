@@ -16,7 +16,7 @@ using System.Text.RegularExpressions;
 using System.Diagnostics;
 using System.IO;
 
-namespace Hbt.Cur.Common.Utils;
+namespace Hbt.Common.Utils;
 
 /// <summary>
 /// IP位置查询工具类

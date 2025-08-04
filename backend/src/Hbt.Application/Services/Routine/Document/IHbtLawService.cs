@@ -7,7 +7,7 @@
 // 描述   : 法律法规服务接口
 //===================================================================
 
-namespace Hbt.Cur.Application.Services.Routine.Document
+namespace Hbt.Application.Services.Routine.Document
 {
     /// <summary>
     /// 法律法规服务接口

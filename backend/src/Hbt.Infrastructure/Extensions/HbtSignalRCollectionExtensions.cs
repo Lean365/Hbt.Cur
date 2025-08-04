@@ -1,5 +1,5 @@
 //===================================================================
-// 项目名 : Hbt.Cur.Infrastructure
+// 项目名 : Hbt.Infrastructure
 // 文件名 : HbtSignalRCollectionExtensions.cs
 // 创建者 : Lean365
 // 创建时间: 2024-03-07 16:30
@@ -11,17 +11,17 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Hbt.Cur.Domain.IServices.SignalR;
-using Hbt.Cur.Infrastructure.SignalR;
-using Hbt.Cur.Infrastructure.SignalR.Cache;
+using Hbt.Domain.IServices.SignalR;
+using Hbt.Infrastructure.SignalR;
+using Hbt.Infrastructure.SignalR.Cache;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text.Json;
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
-using Hbt.Cur.Common.Options;
+using Hbt.Common.Options;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http.Connections;
 
-namespace Hbt.Cur.Infrastructure.Extensions
+namespace Hbt.Infrastructure.Extensions
 {
     /// <summary>
     /// SignalR扩展类

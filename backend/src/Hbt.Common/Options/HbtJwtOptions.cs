@@ -7,7 +7,7 @@
 // 描述    : JWT配置选项
 //===================================================================
 
-namespace Hbt.Cur.Common.Options
+namespace Hbt.Common.Options
 {
     /// <summary>
     /// JWT配置选项

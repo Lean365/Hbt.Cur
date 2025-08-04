@@ -7,10 +7,10 @@
 // 描述   : 邮件实体
 //===================================================================
 
-using Hbt.Cur.Domain.Entities.Identity;
+using Hbt.Domain.Entities.Identity;
 using SqlSugar;
 
-namespace Hbt.Cur.Domain.Entities.Routine.Email
+namespace Hbt.Domain.Entities.Routine.Email
 {
     /// <summary>
     /// 邮件实体

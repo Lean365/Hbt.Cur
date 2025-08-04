@@ -7,10 +7,10 @@
 // 描述   : 会议控制器
 //===================================================================
 
-using Hbt.Cur.Application.Dtos.Routine;
-using Hbt.Cur.Application.Services.Routine;
+using Hbt.Application.Dtos.Routine;
+using Hbt.Application.Services.Routine;
 
-namespace Hbt.Cur.WebApi.Controllers.Routine
+namespace Hbt.WebApi.Controllers.Routine
 {
     /// <summary>
     /// 会议控制器

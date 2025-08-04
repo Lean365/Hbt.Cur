@@ -8,11 +8,11 @@
 //===================================================================
 
 using Microsoft.AspNetCore.Http;
-using Hbt.Cur.Domain.IServices.SignalR;
-using Hbt.Cur.Common.Models;
-using Hbt.Cur.Common.Enums;
+using Hbt.Domain.IServices.SignalR;
+using Hbt.Common.Models;
+using Hbt.Common.Enums;
 
-namespace Hbt.Cur.Application.Services.Routine.Vehicle
+namespace Hbt.Application.Services.Routine.Vehicle
 {
     /// <summary>
     /// 用车服务实现

@@ -7,7 +7,7 @@
 // 描述    : 工作流引擎相关DTO类
 //===================================================================
 
-namespace Hbt.Cur.Application.Dtos.Workflow;
+namespace Hbt.Application.Dtos.Workflow;
 
 /// <summary>
 /// 工作流转换DTO

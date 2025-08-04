@@ -1,5 +1,5 @@
 //===================================================================
-// 项目名 : Hbt.Cur.Application
+// 项目名 : Hbt.Application
 // 文件名 : HbtLawDto.cs
 // 创建者 : Lean365
 // 创建时间: 2024-03-07
@@ -7,7 +7,7 @@
 // 描述   : 法律法规数据传输对象
 //===================================================================
 
-namespace Hbt.Cur.Application.Dtos.Routine.Document
+namespace Hbt.Application.Dtos.Routine.Document
 {
     /// <summary>
     /// 法律法规基础DTO

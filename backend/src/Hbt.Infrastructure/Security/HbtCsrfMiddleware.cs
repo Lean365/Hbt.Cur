@@ -8,12 +8,12 @@
 //===================================================================
 
 using System.Security.Cryptography;
-using Hbt.Cur.Common.Options;
+using Hbt.Common.Options;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Options;
 
-namespace Hbt.Cur.Infrastructure.Security
+namespace Hbt.Infrastructure.Security
 {
     /// <summary>
     /// CSRF防护中间件

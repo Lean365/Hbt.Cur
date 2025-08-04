@@ -7,14 +7,14 @@
 // 描述   : 多语言管理控制器
 //===================================================================
 
-using Hbt.Cur.Application.Dtos.Routine.Core;
-using Hbt.Cur.Application.Services.Core;
-using Hbt.Cur.Domain.Entities.Routine.Core;
-using Hbt.Cur.Domain.Repositories;
+using Hbt.Application.Dtos.Routine.Core;
+using Hbt.Application.Services.Core;
+using Hbt.Domain.Entities.Routine.Core;
+using Hbt.Domain.Repositories;
 using Mapster;
 using SqlSugar;
 
-namespace Hbt.Cur.WebApi.Controllers.Routine.Core
+namespace Hbt.WebApi.Controllers.Routine.Core
 {
     /// <summary>
     /// 多语言管理控制器

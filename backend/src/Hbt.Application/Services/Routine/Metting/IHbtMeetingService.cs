@@ -10,10 +10,10 @@
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.IO;
-using Hbt.Cur.Common.Models;
-using Hbt.Cur.Application.Dtos.Routine;
+using Hbt.Common.Models;
+using Hbt.Application.Dtos.Routine;
 
-namespace Hbt.Cur.Application.Services.Routine
+namespace Hbt.Application.Services.Routine
 {
     /// <summary>
     /// 会议服务接口

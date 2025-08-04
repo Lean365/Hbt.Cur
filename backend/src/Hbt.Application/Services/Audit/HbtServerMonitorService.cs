@@ -10,12 +10,12 @@
 //===================================================================
 
 using System.Runtime.InteropServices;
-using Hbt.Cur.Application.Dtos.Audit;
-using Hbt.Cur.Common.Utils;
-using Hbt.Cur.Domain.IServices.Extensions;
+using Hbt.Application.Dtos.Audit;
+using Hbt.Common.Utils;
+using Hbt.Domain.IServices.Extensions;
 using Microsoft.AspNetCore.Http;
 
-namespace Hbt.Cur.Application.Services.Audit;
+namespace Hbt.Application.Services.Audit;
 
 /// <summary>
 /// 服务器监控服务实现

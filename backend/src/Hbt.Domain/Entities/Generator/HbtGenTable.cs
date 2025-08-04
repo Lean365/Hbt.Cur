@@ -10,9 +10,9 @@
 //===================================================================
 
 using SqlSugar;
-using Hbt.Cur.Domain.Entities.Identity;
+using Hbt.Domain.Entities.Identity;
 
-namespace Hbt.Cur.Domain.Entities.Generator;
+namespace Hbt.Domain.Entities.Generator;
 
 /// <summary>
 /// 代码生成表实体

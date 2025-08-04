@@ -7,11 +7,11 @@
 // 描述    : 模板引擎实现，用于代码生成
 //===================================================================
 
-using Hbt.Cur.Application.Services.Generator.CodeGenerator.Models;
+using Hbt.Application.Services.Generator.CodeGenerator.Models;
 using Scriban;
 using Scriban.Runtime;
 
-namespace Hbt.Cur.Application.Services.Generator.CodeGenerator.Templates;
+namespace Hbt.Application.Services.Generator.CodeGenerator.Templates;
 
 /// <summary>
 /// 模板引擎实现

@@ -10,7 +10,7 @@
 //===================================================================
 
 using SqlSugar;
-using Hbt.Cur.Domain.Entities.Identity;
+using Hbt.Domain.Entities.Identity;
 
 namespace {{ base_namespace }}.Domain.Entities.{{ module_name }};
 

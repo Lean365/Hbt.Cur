@@ -9,10 +9,10 @@
 // 描述    : 工作流表达式引擎实现
 //===================================================================
 
-using Hbt.Cur.Domain.IServices;
+using Hbt.Domain.IServices;
 using System.Text.RegularExpressions;
 
-namespace Hbt.Cur.Application.Services.Workflow.Engine.Expressions
+namespace Hbt.Application.Services.Workflow.Engine.Expressions
 {
     /// <summary>
     /// 工作流表达式引擎实现

@@ -10,7 +10,7 @@
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
-namespace Hbt.Cur.Domain.IServices.Extensions
+namespace Hbt.Domain.IServices.Extensions
 {
     /// <summary>
     /// 翻译缓存服务接口

@@ -9,7 +9,7 @@
 // 描述    : 异常日志实体
 //===================================================================
 
-namespace Hbt.Cur.Domain.Entities.Audit
+namespace Hbt.Domain.Entities.Audit
 {
     /// <summary>
     /// 异常日志实体

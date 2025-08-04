@@ -7,7 +7,7 @@
 // 描述    : 登录类型枚举
 //===================================================================
 
-namespace Hbt.Cur.Common.Enums
+namespace Hbt.Common.Enums
 {
     /// <summary>
     /// 登录类型枚举

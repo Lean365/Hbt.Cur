@@ -7,7 +7,7 @@
 // 描述    : 密码策略接口
 //===================================================================
 
-namespace Hbt.Cur.Domain.IServices.Security
+namespace Hbt.Domain.IServices.Security
 {
     /// <summary>
     /// 密码策略接口

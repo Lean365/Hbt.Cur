@@ -11,7 +11,7 @@
 
 using SqlSugar;
 
-namespace Hbt.Cur.Domain.Entities.Routine.Advertisement
+namespace Hbt.Domain.Entities.Routine.Advertisement
 {
     /// <summary>
     /// 覆盖广告实体

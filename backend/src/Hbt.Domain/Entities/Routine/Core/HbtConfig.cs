@@ -10,7 +10,7 @@
 //===================================================================
 
 
-namespace Hbt.Cur.Domain.Entities.Routine.Core
+namespace Hbt.Domain.Entities.Routine.Core
 {
     /// <summary>
     /// 系统配置实体

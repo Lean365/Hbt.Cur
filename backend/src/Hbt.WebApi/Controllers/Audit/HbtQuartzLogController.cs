@@ -1,5 +1,5 @@
 //===================================================================
-// 项目名 : Hbt.Cur.WebApi
+// 项目名 : Hbt.WebApi
 // 文件名 : HbtQuartzLogController.cs
 // 创建者 : Lean365
 // 创建时间: 2024-03-07 16:30
@@ -7,10 +7,10 @@
 // 描述   : 任务日志控制器
 //===================================================================
 
-using Hbt.Cur.Application.Dtos.Audit;
-using Hbt.Cur.Application.Services.Audit;
+using Hbt.Application.Dtos.Audit;
+using Hbt.Application.Services.Audit;
 
-namespace Hbt.Cur.WebApi.Controllers.Audit
+namespace Hbt.WebApi.Controllers.Audit
 {
     /// <summary>
     /// 任务日志控制器

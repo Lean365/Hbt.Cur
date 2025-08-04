@@ -7,7 +7,7 @@
 // 描述   : 租户服务接口
 //===================================================================
 
-namespace Hbt.Cur.Application.Services.Identity;
+namespace Hbt.Application.Services.Identity;
 
 /// <summary>
 /// 租户服务接口

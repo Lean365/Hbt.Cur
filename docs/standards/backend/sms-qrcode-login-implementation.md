@@ -362,7 +362,7 @@ export WECHAT_APP_SECRET="your-wechat-app-secret"
 {
   "Logging": {
     "LogLevel": {
-      "Lean.Hbt.Application.Services.Identity": "Debug"
+      "Hbt.Cur.Application.Services.Identity": "Debug"
     }
   }
 }

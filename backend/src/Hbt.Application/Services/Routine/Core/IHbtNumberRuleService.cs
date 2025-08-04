@@ -10,10 +10,10 @@
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.IO;
-using Hbt.Cur.Common.Models;
-using Hbt.Cur.Application.Dtos.Routine.Core;
+using Hbt.Common.Models;
+using Hbt.Application.Dtos.Routine.Core;
 
-namespace Hbt.Cur.Application.Services.Core
+namespace Hbt.Application.Services.Core
 {
     /// <summary>
     /// 单号规则服务接口

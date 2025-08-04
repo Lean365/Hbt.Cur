@@ -7,7 +7,7 @@
 // 描述    : 缓存工厂接口
 //===================================================================
 
-namespace Hbt.Cur.Domain.IServices.Caching
+namespace Hbt.Domain.IServices.Caching
 {
     /// <summary>
     /// 缓存工厂接口

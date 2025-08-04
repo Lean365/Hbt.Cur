@@ -1,5 +1,5 @@
 //===================================================================
-// 项目名 : Hbt.Cur.Infrastructure
+// 项目名 : Hbt.Infrastructure
 // 文件名 : HbtSignalRHub.cs
 // 创建者 : Lean365
 // 创建时间: 2024-03-07 16:30
@@ -9,14 +9,14 @@
 
 using System.IdentityModel.Tokens.Jwt;
 using System.Text.Json;
-using Hbt.Cur.Common.Enums;
-using Hbt.Cur.Common.Models;
-using Hbt.Cur.Domain.Entities.SignalR;
-using Hbt.Cur.Domain.IServices.Security;
-using Hbt.Cur.Domain.IServices.SignalR;
+using Hbt.Common.Enums;
+using Hbt.Common.Models;
+using Hbt.Domain.Entities.SignalR;
+using Hbt.Domain.IServices.Security;
+using Hbt.Domain.IServices.SignalR;
 using Microsoft.AspNetCore.SignalR;
 
-namespace Hbt.Cur.Infrastructure.SignalR
+namespace Hbt.Infrastructure.SignalR
 {
     /// <summary>
     /// SignalR集线器

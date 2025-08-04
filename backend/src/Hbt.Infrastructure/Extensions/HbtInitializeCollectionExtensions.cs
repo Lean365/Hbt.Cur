@@ -7,10 +7,10 @@
 // 描述   : 数据库和种子数据初始化扩展类
 //===================================================================
 
-using Hbt.Cur.Common.Options;
-using Hbt.Cur.Domain.IServices;
-using Hbt.Cur.Infrastructure.Data.Contexts;
-using Hbt.Cur.Infrastructure.Data.Seeds;
+using Hbt.Common.Options;
+using Hbt.Domain.IServices;
+using Hbt.Infrastructure.Data.Contexts;
+using Hbt.Infrastructure.Data.Seeds;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,7 +18,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using SqlSugar;
 
-namespace Hbt.Cur.Infrastructure.Extensions;
+namespace Hbt.Infrastructure.Extensions;
 
 /// <summary>
 /// 数据库和种子数据初始化扩展类

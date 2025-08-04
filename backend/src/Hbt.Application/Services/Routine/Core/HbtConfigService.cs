@@ -10,15 +10,15 @@
 //===================================================================
 
 using System.Linq.Expressions;
-using Hbt.Cur.Common.Utils;
-using Hbt.Cur.Domain.IServices.Extensions;
-using Hbt.Cur.Domain.Repositories;
+using Hbt.Common.Utils;
+using Hbt.Domain.IServices.Extensions;
+using Hbt.Domain.Repositories;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Http;
-using Hbt.Cur.Domain.Entities.Routine.Core;
-using Hbt.Cur.Application.Dtos.Routine.Core;
+using Hbt.Domain.Entities.Routine.Core;
+using Hbt.Application.Dtos.Routine.Core;
 
-namespace Hbt.Cur.Application.Services.Core
+namespace Hbt.Application.Services.Core
 {
     /// <summary>
     /// 系统配置服务实现

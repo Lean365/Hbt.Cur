@@ -7,18 +7,18 @@
 // 描述    : 工作流服务扩展方法
 //===================================================================
 
-using Hbt.Cur.Application.Services.Workflow;
-using Hbt.Cur.Application.Services.Workflow.Engine;
-using Hbt.Cur.Application.Services.Workflow.Engine.Cache;
-using Hbt.Cur.Application.Services.Workflow.Engine.Executors;
-using Hbt.Cur.Application.Services.Workflow.Engine.Expressions;
-using Hbt.Cur.Application.Services.Workflow.Engine.Resolvers;
-using Hbt.Cur.Application.Services.Workflow.Jobs;
-using Hbt.Cur.Common.Options;
+using Hbt.Application.Services.Workflow;
+using Hbt.Application.Services.Workflow.Engine;
+using Hbt.Application.Services.Workflow.Engine.Cache;
+using Hbt.Application.Services.Workflow.Engine.Executors;
+using Hbt.Application.Services.Workflow.Engine.Expressions;
+using Hbt.Application.Services.Workflow.Engine.Resolvers;
+using Hbt.Application.Services.Workflow.Jobs;
+using Hbt.Common.Options;
 using Microsoft.Extensions.Options;
 using Quartz;
 
-namespace Hbt.Cur.Infrastructure.Extensions
+namespace Hbt.Infrastructure.Extensions
 {
     /// <summary>
     /// 工作流服务扩展方法

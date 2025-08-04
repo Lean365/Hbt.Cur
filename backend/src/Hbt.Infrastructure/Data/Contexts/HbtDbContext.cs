@@ -9,22 +9,22 @@
 // 描述    : 数据库上下文，负责数据库连接和操作的核心类
 //===================================================================
 
-using Hbt.Cur.Domain.Data;
-using Hbt.Cur.Domain.Entities.Audit;
-using Hbt.Cur.Domain.Entities.Generator;
-using Hbt.Cur.Domain.Entities.Identity;
-using Hbt.Cur.Domain.Interfaces;
-using Hbt.Cur.Domain.IServices.Extensions;
-using Hbt.Cur.Infrastructure.Services.Identity;
-using Hbt.Cur.Infrastructure.Data.Seeds;
-using Hbt.Cur.Common.Options;
+using Hbt.Domain.Data;
+using Hbt.Domain.Entities.Audit;
+using Hbt.Domain.Entities.Generator;
+using Hbt.Domain.Entities.Identity;
+using Hbt.Domain.Interfaces;
+using Hbt.Domain.IServices.Extensions;
+using Hbt.Infrastructure.Services.Identity;
+using Hbt.Infrastructure.Data.Seeds;
+using Hbt.Common.Options;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using SqlSugar;
 using System.Reflection;
 
-namespace Hbt.Cur.Infrastructure.Data.Contexts
+namespace Hbt.Infrastructure.Data.Contexts
 {
     /// <summary>
     /// 数据库上下文类
@@ -267,7 +267,7 @@ namespace Hbt.Cur.Infrastructure.Data.Contexts
                 .SelectMany(a => a.GetTypes())
                 .Where(t => t.IsClass && !t.IsAbstract && t.IsPublic &&
                            t.Namespace != null &&
-                           t.Namespace.StartsWith("Hbt.Cur.Domain.Entities") &&
+                           t.Namespace.StartsWith("Hbt.Domain.Entities") &&
                            t.BaseType == typeof(HbtBaseEntity))
                 .OrderBy(t => t == typeof(HbtSqlDiffLog) ? 0 : 1) // 确保日志表首先被创建
                 .ToArray();

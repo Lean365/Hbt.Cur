@@ -1,4 +1,4 @@
-namespace Hbt.Cur.WebApi.Middlewares
+namespace Hbt.WebApi.Middlewares
 {
     /// <summary>
     /// 大小写敏感路由中间件

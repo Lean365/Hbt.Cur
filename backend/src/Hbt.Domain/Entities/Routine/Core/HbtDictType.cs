@@ -10,7 +10,7 @@
 //===================================================================
 
 
-namespace Hbt.Cur.Domain.Entities.Routine.Core
+namespace Hbt.Domain.Entities.Routine.Core
 {
     /// <summary>
     /// 字典类型实体

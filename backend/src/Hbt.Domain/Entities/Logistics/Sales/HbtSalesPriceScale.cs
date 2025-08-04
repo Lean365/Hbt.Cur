@@ -2,7 +2,7 @@
 
 using SqlSugar;
 
-namespace Hbt.Cur.Domain.Entities.Logistics.Sales
+namespace Hbt.Domain.Entities.Logistics.Sales
 {
     /// <summary>
     /// 销售价格分段计价子表实体类

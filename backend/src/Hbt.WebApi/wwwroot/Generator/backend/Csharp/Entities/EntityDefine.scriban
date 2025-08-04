@@ -11,7 +11,7 @@
 
 using SqlSugar;
 
-namespace Hbt.Cur.Domain.Entities;
+namespace Hbt.Domain.Entities;
 
 /// <summary>
 /// {{ table.comment }}

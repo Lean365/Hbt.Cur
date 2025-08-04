@@ -9,7 +9,7 @@
 // 描述   : 代码生成模板服务接口
 //===================================================================
 
-namespace Hbt.Cur.Application.Services.Generator;
+namespace Hbt.Application.Services.Generator;
 
 /// <summary>
 /// 代码生成模板服务接口

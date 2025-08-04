@@ -9,9 +9,9 @@
 // 描述    : {{ table.comment }}服务接口
 //===================================================================
 
-using Hbt.Cur.Application.Dtos.{{ table.module_name }};
+using Hbt.Application.Dtos.{{ table.module_name }};
 
-namespace Hbt.Cur.Application.Services.{{ table.module_name }};
+namespace Hbt.Application.Services.{{ table.module_name }};
 
 /// <summary>
 /// {{ table.comment }}服务接口

@@ -1,4 +1,4 @@
-namespace Hbt.Cur.Domain.IServices.Extensions
+namespace Hbt.Domain.IServices.Extensions
 {
     /// <summary>
     /// 系统重启服务接口

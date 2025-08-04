@@ -1,7 +1,7 @@
 #nullable enable
 
 using SqlSugar;
-using Hbt.Cur.Domain.Entities.Identity;
+using Hbt.Domain.Entities.Identity;
 
 //===================================================================
 // 项目名 : Lean.Hbt
@@ -13,7 +13,7 @@ using Hbt.Cur.Domain.Entities.Identity;
 // 版权    : Copyright © 2024 Lean365. All rights reserved.
 //===================================================================
 
-namespace Hbt.Cur.Domain.Entities.Logistics.Quality.Cost
+namespace Hbt.Domain.Entities.Logistics.Quality.Cost
 {
     /// <summary>
     /// 废弃事故成本子表实体类

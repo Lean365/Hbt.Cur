@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
-using Hbt.Cur.Domain.Entities.Identity;
+using Hbt.Domain.Entities.Identity;
 
-namespace Hbt.Cur.Domain.IServices.Security;
+namespace Hbt.Domain.IServices.Security;
 
 /// <summary>
 /// JWT处理器接口

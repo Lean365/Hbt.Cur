@@ -7,7 +7,7 @@
 // 描述   : 系统重启配置选项
 //===================================================================
 
-namespace Hbt.Cur.Common.Options
+namespace Hbt.Common.Options
 {
     /// <summary>
     /// 系统重启配置选项

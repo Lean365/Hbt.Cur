@@ -1,12 +1,12 @@
 using System.IO.Compression;
 using System.Linq.Expressions;
-using Hbt.Cur.Common.Options;
-using Hbt.Cur.Domain.Entities.Audit;
-using Hbt.Cur.Domain.Entities.Routine.Core;
-using Hbt.Cur.Domain.Repositories;
+using Hbt.Common.Options;
+using Hbt.Domain.Entities.Audit;
+using Hbt.Domain.Entities.Routine.Core;
+using Hbt.Domain.Repositories;
 using Microsoft.Extensions.Options;
 
-namespace Hbt.Cur.Application.Services.Extensions
+namespace Hbt.Application.Services.Extensions
 {
     /// <summary>
     /// 日志归档服务实现类

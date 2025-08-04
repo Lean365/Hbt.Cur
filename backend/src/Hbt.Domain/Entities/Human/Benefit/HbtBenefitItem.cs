@@ -11,7 +11,7 @@
 
 using SqlSugar;
 
-namespace Hbt.Cur.Domain.Entities.Human.Benefit;
+namespace Hbt.Domain.Entities.Human.Benefit;
 
 /// <summary>
 /// 福利项目实体

@@ -7,11 +7,11 @@
 // 描述   : 认证数据库种子数据初始化类
 //===================================================================
 
-using Hbt.Cur.Common.Exceptions;
-using Hbt.Cur.Infrastructure.Data.Contexts;
-using Hbt.Cur.Infrastructure.Data.Seeds.Auth;
+using Hbt.Common.Exceptions;
+using Hbt.Infrastructure.Data.Contexts;
+using Hbt.Infrastructure.Data.Seeds.Auth;
 
-namespace Hbt.Cur.Infrastructure.Data.Seeds;
+namespace Hbt.Infrastructure.Data.Seeds;
 
 /// <summary>
 /// 认证数据库种子数据初始化类

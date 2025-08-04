@@ -2,7 +2,7 @@
 
 using SqlSugar;
 
-namespace Hbt.Cur.Domain.Entities.Logistics.Quality.Master
+namespace Hbt.Domain.Entities.Logistics.Quality.Master
 {
     /// <summary>
     /// 供应商评价（Vendor）实体

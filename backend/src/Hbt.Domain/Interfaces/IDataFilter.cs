@@ -1,7 +1,7 @@
 using System;
 using System.Linq.Expressions;
 
-namespace Hbt.Cur.Domain.Interfaces
+namespace Hbt.Domain.Interfaces
 {
     /// <summary>
     /// 数据过滤器接口

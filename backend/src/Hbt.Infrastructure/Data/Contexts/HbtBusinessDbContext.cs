@@ -7,10 +7,10 @@
 // 描述   : 业务数据库上下文
 //===================================================================
 
-using Hbt.Cur.Common.Options;
+using Hbt.Common.Options;
 using Microsoft.Extensions.Options;
 
-namespace Hbt.Cur.Infrastructure.Data.Contexts
+namespace Hbt.Infrastructure.Data.Contexts
 {
     /// <summary>
     /// 业务数据库上下文类
@@ -192,12 +192,12 @@ namespace Hbt.Cur.Infrastructure.Data.Contexts
                 .SelectMany(a => a.GetTypes())
                 .Where(t => t.IsClass && !t.IsAbstract && t.IsPublic &&
                            t.Namespace != null &&
-                           t.Namespace.StartsWith("Hbt.Cur.Domain.Entities") &&
-                           !t.Namespace.StartsWith("Hbt.Cur.Domain.Entities.Audit") &&
-                           !t.Namespace.StartsWith("Hbt.Cur.Domain.Entities.Identity") &&
-                           !t.Namespace.StartsWith("Hbt.Cur.Domain.Entities.SignalR") &&
-                           !t.Namespace.StartsWith("Hbt.Cur.Domain.Entities.Workflow") &&
-                           !t.Namespace.StartsWith("Hbt.Cur.Domain.Entities.Generator") &&
+                           t.Namespace.StartsWith("Hbt.Domain.Entities") &&
+                           !t.Namespace.StartsWith("Hbt.Domain.Entities.Audit") &&
+                           !t.Namespace.StartsWith("Hbt.Domain.Entities.Identity") &&
+                           !t.Namespace.StartsWith("Hbt.Domain.Entities.SignalR") &&
+                           !t.Namespace.StartsWith("Hbt.Domain.Entities.Workflow") &&
+                           !t.Namespace.StartsWith("Hbt.Domain.Entities.Generator") &&
                            t.BaseType == typeof(HbtBaseEntity))
                 .ToArray();
         }

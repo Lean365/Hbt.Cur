@@ -8,10 +8,10 @@
 //===================================================================
 
 using System.Linq.Expressions;
-using Hbt.Cur.Domain.Repositories;
+using Hbt.Domain.Repositories;
 using Microsoft.AspNetCore.Http;
 
-namespace Hbt.Cur.Application.Services.Identity
+namespace Hbt.Application.Services.Identity
 {
     /// <summary>
     /// 菜单服务实现类

@@ -7,9 +7,9 @@
 // 描述   : 核心翻译数据提供类
 //===================================================================
 
-using Hbt.Cur.Domain.Entities.Routine.Core;
+using Hbt.Domain.Entities.Routine.Core;
 
-namespace Hbt.Cur.Infrastructure.Data.Seeds.Biz.Translation;
+namespace Hbt.Infrastructure.Data.Seeds.Biz.Translation;
 
 /// <summary>
 /// 核心翻译数据提供类

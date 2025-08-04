@@ -7,10 +7,10 @@
 // 描述   : 新闻话题参与者控制器
 //===================================================================
 
-using Hbt.Cur.Application.Dtos.Routine.News;
-using Hbt.Cur.Application.Services.Routine.News;
+using Hbt.Application.Dtos.Routine.News;
+using Hbt.Application.Services.Routine.News;
 
-namespace Hbt.Cur.WebApi.Controllers.Routine.News
+namespace Hbt.WebApi.Controllers.Routine.News
 {
     /// <summary>
     /// 新闻话题参与者控制器

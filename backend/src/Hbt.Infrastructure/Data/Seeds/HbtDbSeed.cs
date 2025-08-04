@@ -7,16 +7,16 @@
 // 描述   : 数据库种子数据初始化类
 //===================================================================
 
-using Hbt.Cur.Common.Exceptions;
-using Hbt.Cur.Infrastructure.Data.Contexts;
-using Hbt.Cur.Infrastructure.Data.Seeds.Auth;
-using Hbt.Cur.Infrastructure.Data.Seeds.Biz;
-using Hbt.Cur.Infrastructure.Data.Seeds.Biz.Dict;
-using Hbt.Cur.Infrastructure.Data.Seeds.Biz.Translation;
-using Hbt.Cur.Infrastructure.Data.Seeds.Generator;
-using Hbt.Cur.Infrastructure.Data.Seeds.Workflow;
+using Hbt.Common.Exceptions;
+using Hbt.Infrastructure.Data.Contexts;
+using Hbt.Infrastructure.Data.Seeds.Auth;
+using Hbt.Infrastructure.Data.Seeds.Biz;
+using Hbt.Infrastructure.Data.Seeds.Biz.Dict;
+using Hbt.Infrastructure.Data.Seeds.Biz.Translation;
+using Hbt.Infrastructure.Data.Seeds.Generator;
+using Hbt.Infrastructure.Data.Seeds.Workflow;
 
-namespace Hbt.Cur.Infrastructure.Data.Seeds;
+namespace Hbt.Infrastructure.Data.Seeds;
 
 /// <summary>
 /// 数据库种子数据初始化类

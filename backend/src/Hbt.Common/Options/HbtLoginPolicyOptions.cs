@@ -7,7 +7,7 @@
 // 描述    : 登录策略配置选项
 //===================================================================
 
-namespace Hbt.Cur.Common.Options
+namespace Hbt.Common.Options
 {
     /// <summary>
     /// 登录策略配置选项

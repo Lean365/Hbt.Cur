@@ -2,9 +2,9 @@ using System;
 using System.Text.Json;
 using System.Security.Cryptography;
 using System.Text;
-using Hbt.Cur.Domain.IServices.Extensions;
+using Hbt.Domain.IServices.Extensions;
 
-namespace Hbt.Cur.Infrastructure.Identity;
+namespace Hbt.Infrastructure.Identity;
 
 /// <summary>
 /// 设备ID生成器实现

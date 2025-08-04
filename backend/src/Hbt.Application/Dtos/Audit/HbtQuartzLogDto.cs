@@ -1,5 +1,5 @@
 //===================================================================
-// 项目名 : Hbt.Cur.Application
+// 项目名 : Hbt.Application
 // 文件名 : HbtQuartzLogDto.cs
 // 创建者 : Lean365
 // 创建时间: 2024-03-07 16:30
@@ -9,7 +9,7 @@
 
 using System.ComponentModel.DataAnnotations;
 
-namespace Hbt.Cur.Application.Dtos.Audit
+namespace Hbt.Application.Dtos.Audit
 {
     /// <summary>
     /// 任务日志基础DTO

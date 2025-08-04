@@ -1,4 +1,4 @@
-namespace Hbt.Cur.Domain.IServices.Security;
+namespace Hbt.Domain.IServices.Security;
 
 /// <summary>
 /// 验证码服务接口

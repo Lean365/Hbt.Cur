@@ -8,10 +8,10 @@
 //===================================================================
 
 using System.Threading.Tasks;
-using Hbt.Cur.Common.Models;
-using Hbt.Cur.Application.Dtos.Routine;
+using Hbt.Common.Models;
+using Hbt.Application.Dtos.Routine;
 
-namespace Hbt.Cur.Application.Services.Routine.Notice
+namespace Hbt.Application.Services.Routine.Notice
 {
     /// <summary>
     /// 通知服务接口

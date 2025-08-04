@@ -1,5 +1,5 @@
 //===================================================================
-// 项目名 : Hbt.Cur.Application
+// 项目名 : Hbt.Application
 // 文件名 : HbtRoleDto.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-16 11:30
@@ -9,7 +9,7 @@
 
 using System.ComponentModel.DataAnnotations;
 
-namespace Hbt.Cur.Application.Dtos.Identity
+namespace Hbt.Application.Dtos.Identity
 {
     /// <summary>
     /// 角色基础DTO

@@ -11,7 +11,7 @@
 
 using SqlSugar;
 
-namespace Hbt.Cur.Domain.Entities.Generator;
+namespace Hbt.Domain.Entities.Generator;
 
 /// <summary>
 /// 代码生成表定义实体

@@ -1,12 +1,12 @@
 using Microsoft.Extensions.Caching.Memory;
-using Hbt.Cur.Domain.IServices.SignalR;
-using Hbt.Cur.Domain.Entities.SignalR;
+using Hbt.Domain.IServices.SignalR;
+using Hbt.Domain.Entities.SignalR;
 using System.Collections.Concurrent;
 using Microsoft.Extensions.Options;
 using System.Threading;
-using Hbt.Cur.Common.Options;
+using Hbt.Common.Options;
 
-namespace Hbt.Cur.Infrastructure.SignalR.Cache
+namespace Hbt.Infrastructure.SignalR.Cache
 {
     /// <summary>
     /// SignalR内存缓存实现

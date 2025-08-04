@@ -7,17 +7,17 @@
 // 描述   : 代码生成数据库上下文
 //===================================================================
 
-using Hbt.Cur.Domain.Data;
-using Hbt.Cur.Domain.Entities.Generator;
-using Hbt.Cur.Domain.Interfaces;
-using Hbt.Cur.Common.Options;
+using Hbt.Domain.Data;
+using Hbt.Domain.Entities.Generator;
+using Hbt.Domain.Interfaces;
+using Hbt.Common.Options;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using SqlSugar;
 using System.Reflection;
 
-namespace Hbt.Cur.Infrastructure.Data.Contexts
+namespace Hbt.Infrastructure.Data.Contexts
 {
     /// <summary>
     /// 代码生成数据库上下文类
@@ -199,7 +199,7 @@ namespace Hbt.Cur.Infrastructure.Data.Contexts
                 .SelectMany(a => a.GetTypes())
                 .Where(t => t.IsClass && !t.IsAbstract && t.IsPublic &&
                            t.Namespace != null &&
-                           t.Namespace.StartsWith("Hbt.Cur.Domain.Entities.Generator") &&
+                           t.Namespace.StartsWith("Hbt.Domain.Entities.Generator") &&
                            t.BaseType == typeof(HbtBaseEntity))
                 .ToArray();
         }

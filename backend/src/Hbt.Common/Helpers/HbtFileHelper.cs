@@ -12,7 +12,7 @@ using System.IO;
 using System.Threading.Tasks;
 using NLog;
 
-namespace Hbt.Cur.Common.Helpers
+namespace Hbt.Common.Helpers
 {
     /// <summary>
     /// 文件操作帮助类

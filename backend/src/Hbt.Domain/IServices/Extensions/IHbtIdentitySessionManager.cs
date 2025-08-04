@@ -9,9 +9,9 @@
 
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using Hbt.Cur.Domain.Models.Identity;
+using Hbt.Domain.Models.Identity;
 
-namespace Hbt.Cur.Domain.IServices.Extensions
+namespace Hbt.Domain.IServices.Extensions
 {
     /// <summary>
     /// 身份认证会话管理接口

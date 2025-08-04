@@ -8,12 +8,12 @@
 //===================================================================
 
 using System.Linq.Expressions;
-using Hbt.Cur.Common.Exceptions;
-using Hbt.Cur.Domain.Repositories;
-using Hbt.Cur.Domain.IServices.Extensions;
+using Hbt.Common.Exceptions;
+using Hbt.Domain.Repositories;
+using Hbt.Domain.IServices.Extensions;
 using SqlSugar;
 
-namespace Hbt.Cur.Domain.Utils
+namespace Hbt.Domain.Utils
 {
     /// <summary>
     /// 通用验证工具类

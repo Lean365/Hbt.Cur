@@ -7,7 +7,7 @@
 // 描述   : 字符串工具类
 //===================================================================
 
-namespace Hbt.Cur.Common.Utils
+namespace Hbt.Common.Utils
 {
     /// <summary>
     /// 字符串工具类

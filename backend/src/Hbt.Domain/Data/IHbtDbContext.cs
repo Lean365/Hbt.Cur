@@ -11,7 +11,7 @@ using SqlSugar;
 using System.Data;
 using System.Threading.Tasks;
 
-namespace Hbt.Cur.Domain.Data;
+namespace Hbt.Domain.Data;
 
 /// <summary>
 /// 数据库上下文接口

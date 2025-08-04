@@ -9,7 +9,7 @@
 // 描述    : SqlSugar差异日志实体
 //===================================================================
 
-namespace Hbt.Cur.Domain.Entities.Audit
+namespace Hbt.Domain.Entities.Audit
 {
     /// <summary>
     /// SqlSugar差异日志实体

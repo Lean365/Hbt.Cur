@@ -11,20 +11,20 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using Hbt.Cur.Common.Models;
-using Hbt.Cur.Common.Exceptions;
-using Hbt.Cur.Domain.Repositories;
+using Hbt.Common.Models;
+using Hbt.Common.Exceptions;
+using Hbt.Domain.Repositories;
 using SqlSugar;
 using Mapster;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Http;
-using Hbt.Cur.Common.Utils;
-using Hbt.Cur.Domain.Utils;
-using Hbt.Cur.Common.Constants;
-using Hbt.Cur.Domain.Entities.Routine.Core;
-using Hbt.Cur.Application.Dtos.Routine.Core;
+using Hbt.Common.Utils;
+using Hbt.Domain.Utils;
+using Hbt.Common.Constants;
+using Hbt.Domain.Entities.Routine.Core;
+using Hbt.Application.Dtos.Routine.Core;
 
-namespace Hbt.Cur.Application.Services.Core
+namespace Hbt.Application.Services.Core
 {
     /// <summary>
     /// 通用单号生成器服务实现

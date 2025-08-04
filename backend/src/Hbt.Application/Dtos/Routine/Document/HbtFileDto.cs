@@ -1,5 +1,5 @@
 //===================================================================
-// 项目名 : Hbt.Cur.Application
+// 项目名 : Hbt.Application
 // 文件名 : HbtFileDto.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-01
@@ -7,7 +7,7 @@
 // 描述   : 文件数据传输对象
 //===================================================================
 
-namespace Hbt.Cur.Application.Dtos.Routine.Document
+namespace Hbt.Application.Dtos.Routine.Document
 {
     /// <summary>
     /// 文件基础DTO

@@ -8,10 +8,10 @@
 //===================================================================
 
 using System.Text.Json;
-using Hbt.Cur.Domain.Entities.Generator;
-using Hbt.Cur.Domain.Repositories;
+using Hbt.Domain.Entities.Generator;
+using Hbt.Domain.Repositories;
 
-namespace Hbt.Cur.Infrastructure.Data.Seeds.Generator;
+namespace Hbt.Infrastructure.Data.Seeds.Generator;
 
 /// <summary>
 /// 代码生成配置种子数据
@@ -113,7 +113,7 @@ public class HbtDbSeedGenConfig
                 FunctionName = "HbtCore",
                 GenMethod = 0, //0，自定义路径，1，压缩包下载
                 GenTplType = 0, // 使用wwwroot/Generator/*.scriban模板
-                GenPath = "src/Hbt.Cur.WebApi/src",
+                GenPath = "src/Hbt.WebApi/src",
                 Options = JsonSerializer.Serialize(new Dictionary<string, object>
                 {
                     { "isSqlDiff", 1 },
@@ -137,7 +137,7 @@ public class HbtDbSeedGenConfig
                 FunctionName = "HbtCore",
                 GenMethod =0, //0，自定义路径，1，压缩包下载
                 GenTplType = 1, // 使用HbtGenTemplate表中的模板
-                GenPath = "src/Hbt.Cur.WebApi",
+                GenPath = "src/Hbt.WebApi",
                 Options = JsonSerializer.Serialize(new Dictionary<string, object>
                 {
                     { "isSqlDiff", 1 },

@@ -1,5 +1,5 @@
 //===================================================================
-// 项目名 : Hbt.Cur.Common
+// 项目名 : Hbt.Common
 // 文件名 : HbtRealTimeNotification.cs
 // 创建者 : Lean365
 // 创建时间: 2024-03-07 16:30
@@ -8,9 +8,9 @@
 //===================================================================
 
 using System;
-using Hbt.Cur.Common.Enums;
+using Hbt.Common.Enums;
 
-namespace Hbt.Cur.Common.Models
+namespace Hbt.Common.Models
 {
     /// <summary>
     /// 实时通知模型

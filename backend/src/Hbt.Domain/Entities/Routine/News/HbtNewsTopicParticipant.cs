@@ -4,7 +4,7 @@
 using SqlSugar;
 
 //===================================================================
-// 项目名 : Hbt.Cur.Domain.Entities.Routine
+// 项目名 : Hbt.Domain.Entities.Routine
 // 文件名 : HbtNewsTopicParticipant.cs
 // 创建者 : Claude
 // 创建时间: 2024-12-01
@@ -12,7 +12,7 @@ using SqlSugar;
 // 描述   : 话题参与者实体
 //===================================================================
 
-namespace Hbt.Cur.Domain.Entities.Routine.News
+namespace Hbt.Domain.Entities.Routine.News
 {
     /// <summary>
     /// 话题参与者实体

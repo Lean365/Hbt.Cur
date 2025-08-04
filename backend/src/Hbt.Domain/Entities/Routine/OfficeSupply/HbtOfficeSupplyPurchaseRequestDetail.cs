@@ -10,7 +10,7 @@
 // 版权    : Copyright © 2024 Lean365. All rights reserved.
 //===================================================================
 
-namespace Hbt.Cur.Domain.Entities.Routine.OfficeSupply
+namespace Hbt.Domain.Entities.Routine.OfficeSupply
 {
     /// <summary>
     /// 办公用品请购申请明细表实体类

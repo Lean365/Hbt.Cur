@@ -11,7 +11,7 @@
 
 using System.Collections.Generic;
 
-namespace Hbt.Cur.Application.Services.Workflow.Engine
+namespace Hbt.Application.Services.Workflow.Engine
 {
     /// <summary>
     /// 工作流审批结果

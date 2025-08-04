@@ -1,6 +1,6 @@
 #nullable enable
 
-namespace Hbt.Cur.Domain.Entities.Logistics.Quality.Improvement
+namespace Hbt.Domain.Entities.Logistics.Quality.Improvement
 {
     /// <summary>
     /// 不合格品明细表

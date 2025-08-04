@@ -5,7 +5,7 @@ using SqlSugar;  // SqlSugar主命名空间
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
-namespace Hbt.Cur.Common.Helpers
+namespace Hbt.Common.Helpers
 {
     /// <summary>
     /// 字符串处理帮助类

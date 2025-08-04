@@ -7,7 +7,7 @@
 // 描述    : 浏览器类型枚举
 //===================================================================
 
-namespace Hbt.Cur.Common.Enums
+namespace Hbt.Common.Enums
 {
     /// <summary>
     /// 浏览器类型枚举

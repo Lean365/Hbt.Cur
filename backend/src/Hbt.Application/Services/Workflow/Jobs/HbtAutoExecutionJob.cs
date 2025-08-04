@@ -10,16 +10,16 @@
 //===================================================================
 
 using System.Text.Json;
-using Hbt.Cur.Application.Services.Workflow;
-using Hbt.Cur.Application.Services.Workflow.Engine;
-using Hbt.Cur.Common.Options;
-using Hbt.Cur.Domain.Entities.Workflow;
-using Hbt.Cur.Domain.IServices;
-using Hbt.Cur.Domain.Repositories;
+using Hbt.Application.Services.Workflow;
+using Hbt.Application.Services.Workflow.Engine;
+using Hbt.Common.Options;
+using Hbt.Domain.Entities.Workflow;
+using Hbt.Domain.IServices;
+using Hbt.Domain.Repositories;
 using Microsoft.Extensions.Options;
 using Quartz;
 
-namespace Hbt.Cur.Application.Services.Workflow.Jobs
+namespace Hbt.Application.Services.Workflow.Jobs
 {
     /// <summary>
     /// 工作流自动执行任务

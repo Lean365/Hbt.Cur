@@ -7,9 +7,9 @@
 // 描述    : SignalR在线客户端接口
 //===================================================================
 
-using Hbt.Cur.Common.Enums;
+using Hbt.Common.Enums;
 
-namespace Hbt.Cur.Application.Services.SignalR
+namespace Hbt.Application.Services.SignalR
 {
     /// <summary>
     /// SignalR在线客户端接口

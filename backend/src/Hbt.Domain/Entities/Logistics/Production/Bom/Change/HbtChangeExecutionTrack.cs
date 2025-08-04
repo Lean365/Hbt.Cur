@@ -2,7 +2,7 @@
 
 using SqlSugar;
 
-namespace Hbt.Cur.Domain.Entities.Logistics.Production.Change
+namespace Hbt.Domain.Entities.Logistics.Production.Change
 {
     /// <summary>
     /// 设变执行跟踪实体（只保留部门、批次、实施、说明）

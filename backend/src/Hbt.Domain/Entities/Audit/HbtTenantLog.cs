@@ -7,9 +7,9 @@
 // ================================================
 
 using SqlSugar;
-using Hbt.Cur.Domain.Entities.Identity;
+using Hbt.Domain.Entities.Identity;
 
-namespace Hbt.Cur.Domain.Entities.Audit;
+namespace Hbt.Domain.Entities.Audit;
 
 /// <summary>
 /// 租户审计日志实体

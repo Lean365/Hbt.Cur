@@ -1,5 +1,5 @@
 //===================================================================
-// 项目名 : Hbt.Cur.Application
+// 项目名 : Hbt.Application
 // 文件名 : HbtScheduleDto.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-26 14:30
@@ -9,7 +9,7 @@
 
 using System.ComponentModel.DataAnnotations;
 
-namespace Hbt.Cur.Application.Dtos.Routine.Schedule
+namespace Hbt.Application.Dtos.Routine.Schedule
 {
     /// <summary>
     /// 日程基础DTO

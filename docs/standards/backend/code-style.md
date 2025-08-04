@@ -18,13 +18,13 @@
 - 按照项目结构组织命名空间
 - 遵循以下模式:
   ```csharp
-  namespace Lean.Hbt.{Layer}.{Module}[.{SubModule}]
+  namespace Hbt.Cur.{Layer}.{Module}[.{SubModule}]
   ```
 - 示例:
   ```csharp
-  namespace Lean.Hbt.Domain.Entities.Identity
-  namespace Lean.Hbt.Application.Services.System
-  namespace Lean.Hbt.Infrastructure.Repositories
+  namespace Hbt.Cur.Domain.Entities.Identity
+namespace Hbt.Cur.Application.Services.System
+namespace Hbt.Cur.Infrastructure.Repositories
   ```
 
 ## 3. 类组织
@@ -70,7 +70,7 @@
 - 文件头格式如下:
   ```csharp
   //===================================================================
-  // 项目名 ：Lean.Hbt.{Layer}
+  // 项目名 ：Hbt.Cur.{Layer}
   // 文件名 ：{FileName}
   // 创建者 ：{Author}
   // 创建时间：{yyyy-MM-dd}

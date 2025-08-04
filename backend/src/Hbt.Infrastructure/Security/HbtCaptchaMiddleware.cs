@@ -1,11 +1,11 @@
 using System.Text.Json;
-using Hbt.Cur.Common.Options;
-using Hbt.Cur.Domain.IServices.Security;
+using Hbt.Common.Options;
+using Hbt.Domain.IServices.Security;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Options;
 
-namespace Hbt.Cur.Infrastructure.Security;
+namespace Hbt.Infrastructure.Security;
 
 /// <summary>
 /// 验证码中间件

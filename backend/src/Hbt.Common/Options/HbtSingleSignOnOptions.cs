@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Hbt.Cur.Common.Options
+namespace Hbt.Common.Options
 {
     /// <summary>
     /// 单点登录配置选项

@@ -7,7 +7,7 @@
 // 描述    : 业务操作类型枚举定义
 //===================================================================
 
-namespace Hbt.Cur.Common.Enums
+namespace Hbt.Common.Enums
 {
     /// <summary>
     /// 业务操作类型枚举

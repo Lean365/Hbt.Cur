@@ -10,9 +10,9 @@
 #nullable enable
 
 using System.ComponentModel.DataAnnotations;
-using Hbt.Cur.Common.Enums;
+using Hbt.Common.Enums;
 
-namespace Hbt.Cur.Application.Dtos.Identity;
+namespace Hbt.Application.Dtos.Identity;
 
 /// <summary>
 /// 生成二维码登录请求DTO

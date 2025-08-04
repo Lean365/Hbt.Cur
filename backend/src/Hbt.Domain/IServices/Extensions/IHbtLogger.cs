@@ -7,7 +7,7 @@
 // 描述    : 日志接口
 //===================================================================
 
-namespace Hbt.Cur.Domain.IServices.Extensions
+namespace Hbt.Domain.IServices.Extensions
 {
     /// <summary>
     /// 日志接口

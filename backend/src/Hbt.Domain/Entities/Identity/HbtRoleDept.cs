@@ -11,7 +11,7 @@
 
 using SqlSugar;
 
-namespace Hbt.Cur.Domain.Entities.Identity;
+namespace Hbt.Domain.Entities.Identity;
 
 /// <summary>
 /// 角色部门关联实体

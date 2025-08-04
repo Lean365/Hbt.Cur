@@ -1,4 +1,4 @@
-namespace Hbt.Cur.Application.Dtos.Security;
+namespace Hbt.Application.Dtos.Security;
 
 /// <summary>
 /// 滑块验证码生成结果

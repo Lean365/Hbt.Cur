@@ -7,10 +7,10 @@
 // 描述   : 异常日志控制器
 //===================================================================
 
-using Hbt.Cur.Application.Dtos.Audit;
-using Hbt.Cur.Application.Services.Audit;
+using Hbt.Application.Dtos.Audit;
+using Hbt.Application.Services.Audit;
 
-namespace Hbt.Cur.WebApi.Controllers.Audit
+namespace Hbt.WebApi.Controllers.Audit
 {
     /// <summary>
     /// 异常日志控制器

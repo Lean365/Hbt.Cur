@@ -1,6 +1,6 @@
-using Hbt.Cur.Domain.Entities.Routine.Core;
+using Hbt.Domain.Entities.Routine.Core;
 
-namespace Hbt.Cur.Infrastructure.Data.Seeds.Biz.Translation;
+namespace Hbt.Infrastructure.Data.Seeds.Biz.Translation;
 
 /// <summary>
 /// 菜单翻译种子数据

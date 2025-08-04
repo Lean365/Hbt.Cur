@@ -7,11 +7,11 @@
 // 描述   : 翻译种子数据协调器 - 使用仓储工厂模式
 //===================================================================
 
-using Hbt.Cur.Domain.Entities.Routine.Core;
-using Hbt.Cur.Domain.Repositories;
-using Hbt.Cur.Infrastructure.Data.Seeds.Biz.Translation;
+using Hbt.Domain.Entities.Routine.Core;
+using Hbt.Domain.Repositories;
+using Hbt.Infrastructure.Data.Seeds.Biz.Translation;
 
-namespace Hbt.Cur.Infrastructure.Data.Seeds.Biz.Translation;
+namespace Hbt.Infrastructure.Data.Seeds.Biz.Translation;
 
 /// <summary>
 /// 翻译种子数据协调器

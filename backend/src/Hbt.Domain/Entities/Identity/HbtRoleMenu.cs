@@ -11,7 +11,7 @@
 
 using SqlSugar;
 
-namespace Hbt.Cur.Domain.Entities.Identity;
+namespace Hbt.Domain.Entities.Identity;
 
 /// <summary>
 /// 角色菜单关联实体

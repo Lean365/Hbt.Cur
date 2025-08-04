@@ -7,15 +7,15 @@
 // 描述    : 工作流实例服务实现
 //===================================================================
 
-using Hbt.Cur.Application.Dtos.Workflow;
-using Hbt.Cur.Domain.Entities.Workflow;
-using Hbt.Cur.Domain.Repositories;
-using Hbt.Cur.Domain.IServices;
+using Hbt.Application.Dtos.Workflow;
+using Hbt.Domain.Entities.Workflow;
+using Hbt.Domain.Repositories;
+using Hbt.Domain.IServices;
 using Microsoft.AspNetCore.Http;
 using SqlSugar;
 using System.Text.Json;
 
-namespace Hbt.Cur.Application.Services.Workflow;
+namespace Hbt.Application.Services.Workflow;
 
 /// <summary>
 /// 工作流实例服务实现

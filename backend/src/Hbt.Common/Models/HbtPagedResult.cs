@@ -9,7 +9,7 @@
 
 using System.Collections.Generic;
 
-namespace Hbt.Cur.Common.Models
+namespace Hbt.Common.Models
 {
     /// <summary>
     /// 分页结果基类

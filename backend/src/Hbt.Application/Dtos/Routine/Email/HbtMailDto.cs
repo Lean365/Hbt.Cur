@@ -9,7 +9,7 @@
 
 using System.ComponentModel.DataAnnotations;
 
-namespace Hbt.Cur.Application.Dtos.Routine.Email
+namespace Hbt.Application.Dtos.Routine.Email
 {
     /// <summary>
     /// 邮件基础DTO

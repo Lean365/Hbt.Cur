@@ -14,7 +14,7 @@ using Scriban;
 // 描述   : 代码生成表定义服务实现
 //===================================================================
 
-namespace Hbt.Cur.Application.Services.Generator;
+namespace Hbt.Application.Services.Generator;
 
 /// <summary>
 /// 代码生成表定义服务实现
@@ -404,7 +404,7 @@ public class HbtGenTableDefineService : HbtBaseService, IHbtGenTableDefineServic
             var resultContent = await template.RenderAsync(templateData);
 
             // 8. 保存文件
-            var modulePath = Path.Combine(_webHostEnvironment.ContentRootPath, "..", "src", "Hbt.Cur.Domain", "Entities");
+            var modulePath = Path.Combine(_webHostEnvironment.ContentRootPath, "..", "src", "Hbt.Domain", "Entities");
             if (!Directory.Exists(modulePath))
             {
                 Directory.CreateDirectory(modulePath);

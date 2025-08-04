@@ -1,7 +1,7 @@
 #nullable enable
 
 //===================================================================
-// 项目名 : Hbt.Cur.WebApi
+// 项目名 : Hbt.WebApi
 // 文件名 : HbtNewsCommentAuditController.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-01
@@ -9,7 +9,7 @@
 // 描述    : 新闻评论审核控制器
 //===================================================================
 
-namespace Hbt.Cur.WebApi.Controllers.Routine.News
+namespace Hbt.WebApi.Controllers.Routine.News
 {
     /// <summary>
     /// 新闻评论审核控制器

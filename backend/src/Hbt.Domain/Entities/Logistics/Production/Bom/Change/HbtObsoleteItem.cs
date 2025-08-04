@@ -2,7 +2,7 @@
 
 using SqlSugar;
 
-namespace Hbt.Cur.Domain.Entities.Logistics.Production
+namespace Hbt.Domain.Entities.Logistics.Production
 {
     /// <summary>
     /// 旧品管理主表实体（基于设变号码控制）

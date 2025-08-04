@@ -8,12 +8,12 @@
 //===================================================================
 
 using System.Collections.Concurrent;
-using Hbt.Cur.Common.Models;
-using Hbt.Cur.Domain.Entities.SignalR;
-using Hbt.Cur.Domain.IServices.SignalR;
+using Hbt.Common.Models;
+using Hbt.Domain.Entities.SignalR;
+using Hbt.Domain.IServices.SignalR;
 using Microsoft.AspNetCore.SignalR;
 
-namespace Hbt.Cur.Infrastructure.SignalR
+namespace Hbt.Infrastructure.SignalR
 {
     /// <summary>
     /// SignalR用户服务

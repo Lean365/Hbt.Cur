@@ -1,5 +1,5 @@
 //===================================================================
-// 项目名 : Hbt.Cur.Domain.Entities.Audit
+// 项目名 : Hbt.Domain.Entities.Audit
 // 文件名 : HbtQuartz.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-26 14:30
@@ -7,9 +7,9 @@
 // 描述   : 定时任务日志实体
 //===================================================================
 
-using Hbt.Cur.Domain.Entities.Routine.Quartz;
+using Hbt.Domain.Entities.Routine.Quartz;
 
-namespace Hbt.Cur.Domain.Entities.Audit
+namespace Hbt.Domain.Entities.Audit
 {
     /// <summary>
     /// 定时任务日志实体

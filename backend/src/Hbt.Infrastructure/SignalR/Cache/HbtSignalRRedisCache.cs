@@ -1,9 +1,9 @@
-using Hbt.Cur.Domain.IServices.SignalR;
-using Hbt.Cur.Domain.Entities.SignalR;
-using Hbt.Cur.Domain.IServices.Caching;
+using Hbt.Domain.IServices.SignalR;
+using Hbt.Domain.Entities.SignalR;
+using Hbt.Domain.IServices.Caching;
 using System.Text.Json;
 
-namespace Hbt.Cur.Infrastructure.SignalR.Cache
+namespace Hbt.Infrastructure.SignalR.Cache
 {
     /// <summary>
     /// SignalR Redis缓存实现

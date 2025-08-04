@@ -12,7 +12,7 @@
 
 using SqlSugar;
 
-namespace Hbt.Cur.Domain.Entities.Accounting.Budget
+namespace Hbt.Domain.Entities.Accounting.Budget
 {
     /// <summary>
     /// 成本预算实体类 (基于SAP CO成本预算管理)

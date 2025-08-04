@@ -8,12 +8,12 @@
 //===================================================================
 
 using System.Linq.Expressions;
-using Hbt.Cur.Domain.Entities.Identity;
-using Hbt.Cur.Infrastructure.Data.Seeds.Biz;
-using Hbt.Cur.Infrastructure.Data.Seeds.Auth;
-using Hbt.Cur.Domain.Repositories;
+using Hbt.Domain.Entities.Identity;
+using Hbt.Infrastructure.Data.Seeds.Biz;
+using Hbt.Infrastructure.Data.Seeds.Auth;
+using Hbt.Domain.Repositories;
 
-namespace Hbt.Cur.Infrastructure.Data.Seeds.Auth;
+namespace Hbt.Infrastructure.Data.Seeds.Auth;
 
 /// <summary>
 /// 菜单数据初始化主类

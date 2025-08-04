@@ -11,7 +11,7 @@ using SqlSugar;
 // 版本号 : V.0.0.1
 // 描述    : OAuth第三方登录账号实体类
 //===================================================================
-namespace Hbt.Cur.Domain.Entities.Identity
+namespace Hbt.Domain.Entities.Identity
 {
     /// <summary>
     /// OAuth第三方登录账号实体

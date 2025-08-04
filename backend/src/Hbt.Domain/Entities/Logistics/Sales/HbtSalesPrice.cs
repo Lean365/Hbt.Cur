@@ -3,8 +3,8 @@
 using SqlSugar;
 using System;
 using System.ComponentModel.DataAnnotations;
-using Hbt.Cur.Domain.Entities.Identity;
-using Hbt.Cur.Domain.Entities.Logistics.Material;
+using Hbt.Domain.Entities.Identity;
+using Hbt.Domain.Entities.Logistics.Material;
 
 //===================================================================
 // 项目名 : Lean.Hbt
@@ -16,7 +16,7 @@ using Hbt.Cur.Domain.Entities.Logistics.Material;
 // 版权    : Copyright © 2024 Lean365. All rights reserved.
 //===================================================================
 
-namespace Hbt.Cur.Domain.Entities.Logistics.Sales
+namespace Hbt.Domain.Entities.Logistics.Sales
 {
     /// <summary>
     /// 销售价格

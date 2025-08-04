@@ -7,10 +7,10 @@
 // 描述   : 关联关系数据初始化类 - 使用仓储工厂模式
 //===================================================================
 
-using Hbt.Cur.Domain.Entities.Identity;
-using Hbt.Cur.Domain.Repositories;
+using Hbt.Domain.Entities.Identity;
+using Hbt.Domain.Repositories;
 
-namespace Hbt.Cur.Infrastructure.Data.Seeds;
+namespace Hbt.Infrastructure.Data.Seeds;
 
 /// <summary>
 /// 关联关系数据初始化类

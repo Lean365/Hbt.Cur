@@ -8,11 +8,11 @@
 //===================================================================
 
 using Microsoft.Extensions.Options;
-using Hbt.Cur.Common.Options;
-using Hbt.Cur.Domain.Repositories;
-using Hbt.Cur.Domain.Entities.Routine.Core;
+using Hbt.Common.Options;
+using Hbt.Domain.Repositories;
+using Hbt.Domain.Entities.Routine.Core;
 
-namespace Hbt.Cur.Infrastructure.Caching
+namespace Hbt.Infrastructure.Caching
 {
     /// <summary>
     /// 缓存配置管理器

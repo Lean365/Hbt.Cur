@@ -7,15 +7,15 @@
 // 描述    : 代码生成服务集合扩展
 //===================================================================
 
-using Hbt.Cur.Application.Services.Generator;
-using Hbt.Cur.Application.Services.Generator.CodeGenerator;
-using Hbt.Cur.Application.Services.Generator.CodeGenerator.Templates;
-using Hbt.Cur.Application.Services.Generator.CodeGenerator.Models;
+using Hbt.Application.Services.Generator;
+using Hbt.Application.Services.Generator.CodeGenerator;
+using Hbt.Application.Services.Generator.CodeGenerator.Templates;
+using Hbt.Application.Services.Generator.CodeGenerator.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Hosting;
 
-namespace Hbt.Cur.Infrastructure.Extensions
+namespace Hbt.Infrastructure.Extensions
 {
     /// <summary>
     /// 代码生成服务集合扩展

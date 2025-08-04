@@ -9,7 +9,7 @@
 
 #nullable enable
 
-namespace Hbt.Cur.Domain.Entities.Human.Benefit;
+namespace Hbt.Domain.Entities.Human.Benefit;
 
 /// <summary>
 /// 员工福利实体

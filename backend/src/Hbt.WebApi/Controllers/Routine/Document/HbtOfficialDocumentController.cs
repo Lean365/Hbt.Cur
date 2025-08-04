@@ -7,11 +7,11 @@
 // 描述   : 公文文档控制器
 //===================================================================
 
-using Hbt.Cur.Application.Dtos.Routine.Document;
-using Hbt.Cur.Application.Services.Routine.Document;
+using Hbt.Application.Dtos.Routine.Document;
+using Hbt.Application.Services.Routine.Document;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Hbt.Cur.WebApi.Controllers.Routine.Document
+namespace Hbt.WebApi.Controllers.Routine.Document
 {
     /// <summary>
     /// 公文文档控制器

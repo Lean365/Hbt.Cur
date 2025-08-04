@@ -9,10 +9,10 @@
 // 描述   : 代码生成表服务实现
 //===================================================================
 
-using Hbt.Cur.Common.Utils;
+using Hbt.Common.Utils;
 using Microsoft.AspNetCore.Http;
 
-namespace Hbt.Cur.Application.Services.Generator;
+namespace Hbt.Application.Services.Generator;
 
 /// <summary>
 /// 代码生成表服务实现

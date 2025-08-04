@@ -10,7 +10,7 @@
 // 版权    : Copyright © 2024 Lean365. All rights reserved.
 //===================================================================
 
-namespace Hbt.Cur.Domain.Entities.Accounting.Budget
+namespace Hbt.Domain.Entities.Accounting.Budget
 {
     /// <summary>
     /// 固定资产滚动预算实体类 (基于SAP FI-AA固定资产滚动预算管理)

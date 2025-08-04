@@ -1,5 +1,5 @@
 //===================================================================
-// 项目名 : Hbt.Cur.Application
+// 项目名 : Hbt.Application
 // 文件名 : HbtConfigDto.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-20 16:30
@@ -7,7 +7,7 @@
 // 描述   : 系统配置数据传输对象
 //===================================================================
 
-namespace Hbt.Cur.Application.Dtos.Routine.Core
+namespace Hbt.Application.Dtos.Routine.Core
 {
     /// <summary>
     /// 系统配置基础DTO

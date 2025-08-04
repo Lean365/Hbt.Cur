@@ -1,5 +1,5 @@
 //===================================================================
-// 项目名: Hbt.Cur.Application
+// 项目名: Hbt.Application
 // 文件名: HbtLeaveDto.cs
 // 创建者: Lean365
 // 创建时间: 2024-01-17
@@ -9,7 +9,7 @@
 
 using System;
 
-namespace Hbt.Cur.Application.Dtos.Human.Leave
+namespace Hbt.Application.Dtos.Human.Leave
 {
     /// <summary>
     /// 请假基础DTO

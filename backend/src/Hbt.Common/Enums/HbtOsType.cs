@@ -7,7 +7,7 @@
 // 描述    : 操作系统类型枚举
 //===================================================================
 
-namespace Hbt.Cur.Common.Enums
+namespace Hbt.Common.Enums
 {
     /// <summary>
     /// 操作系统类型枚举

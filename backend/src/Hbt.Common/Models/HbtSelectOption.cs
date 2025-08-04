@@ -7,7 +7,7 @@
 // 描述   : 下拉选择框选项
 //===================================================================
 
-namespace Hbt.Cur.Common.Models
+namespace Hbt.Common.Models
 {
     /// <summary>
     /// 下拉选择框选项

@@ -9,7 +9,7 @@
 // 描述    : 操作日志实体
 //===================================================================
 
-namespace Hbt.Cur.Domain.Entities.Audit
+namespace Hbt.Domain.Entities.Audit
 {
     /// <summary>
     /// 操作日志实体

@@ -9,7 +9,7 @@
 // 描述    : 岗位实体类
 //===================================================================
 
-namespace Hbt.Cur.Domain.Entities.Identity
+namespace Hbt.Domain.Entities.Identity
 {
     /// <summary>
     /// 岗位实体

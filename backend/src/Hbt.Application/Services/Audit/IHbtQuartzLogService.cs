@@ -1,5 +1,5 @@
 //===================================================================
-// 项目名 : Hbt.Cur.Application 
+// 项目名 : Hbt.Application 
 // 文件名 : IHbtQuartzLogService.cs 
 // 创建者 : Lean365
 // 创建时间: 2024-01-26 14:30
@@ -8,10 +8,10 @@
 //===================================================================
 
 using System.Threading.Tasks;
-using Hbt.Cur.Application.Dtos.Audit;
-using Hbt.Cur.Common.Models;
+using Hbt.Application.Dtos.Audit;
+using Hbt.Common.Models;
 
-namespace Hbt.Cur.Application.Services.Audit
+namespace Hbt.Application.Services.Audit
 {
     /// <summary>
     /// 任务日志服务接口

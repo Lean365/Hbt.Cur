@@ -1,5 +1,5 @@
 //===================================================================
-// 项目名 : Hbt.Cur.Domain.Entities.Routine
+// 项目名 : Hbt.Domain.Entities.Routine
 // 文件名 : HbtMeeting.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-26 14:30
@@ -7,10 +7,10 @@
 // 描述   : 会议管理实体
 //===================================================================
 
-using Hbt.Cur.Domain.Entities.Identity;
+using Hbt.Domain.Entities.Identity;
 using SqlSugar;
 
-namespace Hbt.Cur.Domain.Entities.Routine.Metting
+namespace Hbt.Domain.Entities.Routine.Metting
 {
     /// <summary>
     /// 会议管理实体

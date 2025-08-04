@@ -11,7 +11,7 @@ using System;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
-namespace Hbt.Cur.Domain.IServices.Caching
+namespace Hbt.Domain.IServices.Caching
 {
     /// <summary>
     /// 内存缓存服务接口

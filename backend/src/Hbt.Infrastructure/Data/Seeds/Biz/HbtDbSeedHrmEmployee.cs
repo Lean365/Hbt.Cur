@@ -7,10 +7,10 @@
 // 描述   : HRM员工数据初始化类 - 使用仓储工厂模式
 //===================================================================
 
-using Hbt.Cur.Domain.Entities.Human.Employee;
-using Hbt.Cur.Domain.Repositories;
+using Hbt.Domain.Entities.Human.Employee;
+using Hbt.Domain.Repositories;
 
-namespace Hbt.Cur.Infrastructure.Data.Seeds.Biz;
+namespace Hbt.Infrastructure.Data.Seeds.Biz;
 
 /// <summary>
 /// HRM员工数据初始化类

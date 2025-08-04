@@ -13,7 +13,7 @@
 using SqlSugar;
 using System;
 
-namespace Hbt.Cur.Domain.Entities.Accounting.Controlling
+namespace Hbt.Domain.Entities.Accounting.Controlling
 {
     /// <summary>
     /// 费用签拟单实体类 (基于SAP CO费用管理)

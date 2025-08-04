@@ -7,11 +7,11 @@
 // 描述    : 在线用户清理任务 - 使用仓储工厂模式
 //===================================================================
 
-using Hbt.Cur.Domain.Entities.SignalR;
-using Hbt.Cur.Domain.Repositories;
+using Hbt.Domain.Entities.SignalR;
+using Hbt.Domain.Repositories;
 using Quartz;
 
-namespace Hbt.Cur.Infrastructure.Jobs
+namespace Hbt.Infrastructure.Jobs
 {
     /// <summary>
     /// 在线用户清理任务

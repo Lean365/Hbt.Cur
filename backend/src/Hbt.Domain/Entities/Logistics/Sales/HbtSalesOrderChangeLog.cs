@@ -1,7 +1,7 @@
 #nullable enable
 
 using SqlSugar;
-using Hbt.Cur.Domain.Entities.Identity;
+using Hbt.Domain.Entities.Identity;
 
 //===================================================================
 // 项目名 : Lean.Hbt
@@ -13,7 +13,7 @@ using Hbt.Cur.Domain.Entities.Identity;
 // 版权    : Copyright © 2024 Lean365. All rights reserved.
 //===================================================================
 
-namespace Hbt.Cur.Domain.Entities.Logistics.Sales
+namespace Hbt.Domain.Entities.Logistics.Sales
 {
     /// <summary>
     /// 销售订单变更记录实体类

@@ -9,13 +9,13 @@
 // 描述    : 代码生成表控制器
 //===================================================================
 
-using Hbt.Cur.Application.Dtos.Generator;
-using Hbt.Cur.Application.Services.Generator;
-using Hbt.Cur.Application.Services.Generator.CodeGenerator;
-using Hbt.Cur.Domain.Entities.Generator;
+using Hbt.Application.Dtos.Generator;
+using Hbt.Application.Services.Generator;
+using Hbt.Application.Services.Generator.CodeGenerator;
+using Hbt.Domain.Entities.Generator;
 using Mapster;
 
-namespace Hbt.Cur.WebApi.Controllers.Generator;
+namespace Hbt.WebApi.Controllers.Generator;
 
 /// <summary>
 /// 代码生成表控制器

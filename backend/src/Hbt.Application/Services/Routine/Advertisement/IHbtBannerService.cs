@@ -9,9 +9,9 @@
 // 描述   : 横幅广告服务接口
 //===================================================================
 
-using Hbt.Cur.Application.Dtos.Routine.Advertisement;
+using Hbt.Application.Dtos.Routine.Advertisement;
 
-namespace Hbt.Cur.Application.Services.Routine.Advertisement
+namespace Hbt.Application.Services.Routine.Advertisement
 {
     /// <summary>
     /// 横幅广告服务接口

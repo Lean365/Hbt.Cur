@@ -10,9 +10,9 @@
 //===================================================================
 
 using Microsoft.Extensions.Caching.Memory;
-using Hbt.Cur.Domain.Entities.Workflow;
+using Hbt.Domain.Entities.Workflow;
 
-namespace Hbt.Cur.Application.Services.Workflow.Engine.Cache
+namespace Hbt.Application.Services.Workflow.Engine.Cache
 {
     /// <summary>
     /// 工作流内存缓存实现

@@ -9,10 +9,10 @@
 
 using System.Linq.Expressions;
 using SqlSugar;
-using Hbt.Cur.Common.Models;
-using Hbt.Cur.Domain.Entities.Identity;
+using Hbt.Common.Models;
+using Hbt.Domain.Entities.Identity;
 
-namespace Hbt.Cur.Domain.Repositories
+namespace Hbt.Domain.Repositories
 {
     /// <summary>
     /// 通用仓储接口

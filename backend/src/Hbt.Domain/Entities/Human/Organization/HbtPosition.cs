@@ -9,7 +9,7 @@
 
 #nullable enable
 
-namespace Hbt.Cur.Domain.Entities.Human.Organization;
+namespace Hbt.Domain.Entities.Human.Organization;
 
 /// <summary>
 /// 职位实体

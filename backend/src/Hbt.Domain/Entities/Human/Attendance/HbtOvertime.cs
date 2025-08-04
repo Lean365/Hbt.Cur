@@ -11,7 +11,7 @@
 
 using SqlSugar;
 
-namespace Hbt.Cur.Domain.Entities.Human.Attendance;
+namespace Hbt.Domain.Entities.Human.Attendance;
 
 /// <summary>
 /// 加班记录实体

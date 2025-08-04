@@ -11,7 +11,7 @@ using SqlSugar;
 // 描述    : 在线消息实体
 //===================================================================
 
-namespace Hbt.Cur.Domain.Entities.SignalR
+namespace Hbt.Domain.Entities.SignalR
 {
     /// <summary>
     /// 在线消息实体

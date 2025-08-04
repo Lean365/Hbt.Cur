@@ -7,12 +7,12 @@
 // 描述    : 二维码认证控制器
 //===================================================================
 
-using Hbt.Cur.Application.Dtos.Identity;
-using Hbt.Cur.Application.Services.Identity;
-using Hbt.Cur.Common.Constants;
+using Hbt.Application.Dtos.Identity;
+using Hbt.Application.Services.Identity;
+using Hbt.Common.Constants;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Hbt.Cur.WebApi.Controllers.Identity;
+namespace Hbt.WebApi.Controllers.Identity;
 
 /// <summary>
 /// 二维码认证控制器

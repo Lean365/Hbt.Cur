@@ -7,9 +7,9 @@
 // 描述   : 工作流种子数据协调器 - 使用仓储工厂模式
 //===================================================================
 
-using Hbt.Cur.Domain.Entities.Workflow;
+using Hbt.Domain.Entities.Workflow;
 
-namespace Hbt.Cur.Infrastructure.Data.Seeds.Workflow;
+namespace Hbt.Infrastructure.Data.Seeds.Workflow;
 
 /// <summary>
 /// 工作流种子数据协调器

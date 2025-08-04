@@ -7,7 +7,7 @@
 // 描述   : 邮件模板控制器
 //===================================================================
 
-namespace Hbt.Cur.WebApi.Controllers.Routine.Email
+namespace Hbt.WebApi.Controllers.Routine.Email
 {
     /// <summary>
     /// 邮件模板控制器

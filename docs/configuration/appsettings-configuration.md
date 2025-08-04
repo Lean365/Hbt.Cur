@@ -1,6 +1,6 @@
-# Lean.Hbt 配置文件说明
+# Hbt.Cur 配置文件说明
 
-本文档详细说明了 Lean.Hbt 项目的配置文件结构和各项配置的含义。
+本文档详细说明了 Hbt.Cur 项目的配置文件结构和各项配置的含义。
 
 ## 配置文件结构
 
@@ -311,8 +311,8 @@ export OAUTH__ALIPAY__PUBLIC_KEY="your-alipay-public-key"
 {
   "Logging": {
     "LogLevel": {
-      "Lean.Hbt.Application.Services.Identity": "Debug",
-      "Lean.Hbt.Infrastructure.Security": "Debug"
+      "Hbt.Cur.Application.Services.Identity": "Debug",
+"Hbt.Cur.Infrastructure.Security": "Debug"
     }
   }
 }
@@ -328,7 +328,7 @@ var oauthOptions = serviceProvider.GetRequiredService<IOptions<HbtOAuthOptions>>
 
 ## 总结
 
-本文档详细说明了 Lean.Hbt 项目的认证配置结构。通过合理配置 `SmsAuth`、`QrCodeAuth` 和 `OAuth` 选项，可以实现完整的多种登录方式支持，包括：
+本文档详细说明了 Hbt.Cur 项目的认证配置结构。通过合理配置 `SmsAuth`、`QrCodeAuth` 和 `OAuth` 选项，可以实现完整的多种登录方式支持，包括：
 
 - 传统用户名密码登录
 - 短信验证码登录

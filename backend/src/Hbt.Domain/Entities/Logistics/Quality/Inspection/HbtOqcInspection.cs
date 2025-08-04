@@ -2,7 +2,7 @@
 
 using SqlSugar;
 
-namespace Hbt.Cur.Domain.Entities.Logistics.Quality.Inspection
+namespace Hbt.Domain.Entities.Logistics.Quality.Inspection
 {
     /// <summary>
     /// 出货检验（OQC）实体

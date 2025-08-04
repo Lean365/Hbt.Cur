@@ -1,5 +1,5 @@
 //===================================================================
-// 项目名 : Hbt.Cur.Domain.Entities.Routine
+// 项目名 : Hbt.Domain.Entities.Routine
 // 文件名 : HbtQuartz.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-26 14:30
@@ -7,10 +7,10 @@
 // 描述   : 定时任务实体
 //===================================================================
 
-using Hbt.Cur.Domain.Entities.Identity;
+using Hbt.Domain.Entities.Identity;
 using SqlSugar;
 
-namespace Hbt.Cur.Domain.Entities.Routine.Quartz
+namespace Hbt.Domain.Entities.Routine.Quartz
 {
     /// <summary>
     /// 定时任务实体
@@ -139,7 +139,7 @@ namespace Hbt.Cur.Domain.Entities.Routine.Quartz
         /// 关联的任务日志列表
         /// </summary>
         [SugarColumn(IsIgnore = true)]
-        [Navigate(NavigateType.OneToMany, nameof(Hbt.Cur.Domain.Entities.Audit.HbtQuartzLog.QuartzId))]
-        public List<Hbt.Cur.Domain.Entities.Audit.HbtQuartzLog>? QuartzLogs { get; set; }
+        [Navigate(NavigateType.OneToMany, nameof(Hbt.Domain.Entities.Audit.HbtQuartzLog.QuartzId))]
+        public List<Hbt.Domain.Entities.Audit.HbtQuartzLog>? QuartzLogs { get; set; }
     }
 }

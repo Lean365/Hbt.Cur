@@ -7,9 +7,9 @@
 // 描述   : Identity本地化资源数据提供类
 //===================================================================
 
-using Hbt.Cur.Domain.Entities.Routine.Core;
+using Hbt.Domain.Entities.Routine.Core;
 
-namespace Hbt.Cur.Infrastructure.Data.Seeds.Biz.Translation;
+namespace Hbt.Infrastructure.Data.Seeds.Biz.Translation;
 
 /// <summary>
 /// Identity本地化资源数据提供类

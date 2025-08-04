@@ -7,9 +7,9 @@
 // 描述   : OA相关字典类型种子数据提供类
 //===================================================================
 
-using Hbt.Cur.Domain.Entities.Routine.Core;
+using Hbt.Domain.Entities.Routine.Core;
 
-namespace Hbt.Cur.Infrastructure.Data.Seeds.Biz;
+namespace Hbt.Infrastructure.Data.Seeds.Biz;
 
 /// <summary>
 /// OA相关字典类型种子数据提供类

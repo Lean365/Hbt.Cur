@@ -1,10 +1,10 @@
-using Hbt.Cur.Application.Services.Audit;
-using Hbt.Cur.Common.Options;
-using Hbt.Cur.Domain.Entities.SignalR;
+using Hbt.Application.Services.Audit;
+using Hbt.Common.Options;
+using Hbt.Domain.Entities.SignalR;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Options;
 
-namespace Hbt.Cur.Infrastructure.Services;
+namespace Hbt.Infrastructure.Services;
 
 /// <summary>
 /// 系统重启服务

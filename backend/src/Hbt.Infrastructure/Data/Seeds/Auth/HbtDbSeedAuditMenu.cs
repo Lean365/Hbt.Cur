@@ -17,9 +17,9 @@
 // 描述   : 审计日志菜单数据初始化类
 //===================================================================
 
-using Hbt.Cur.Domain.Entities.Identity;
+using Hbt.Domain.Entities.Identity;
 
-namespace Hbt.Cur.Infrastructure.Data.Seeds.Auth;
+namespace Hbt.Infrastructure.Data.Seeds.Auth;
 
 /// <summary>
 /// 审计日志菜单数据初始化类

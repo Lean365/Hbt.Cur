@@ -11,7 +11,7 @@
 
 using SqlSugar;
 
-namespace Hbt.Cur.Domain.Entities.Human.Recruitment
+namespace Hbt.Domain.Entities.Human.Recruitment
 {
     /// <summary>
     /// 职位发布实体

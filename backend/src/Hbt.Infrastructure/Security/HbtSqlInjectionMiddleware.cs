@@ -8,11 +8,11 @@
 //===================================================================
 
 using System.Text.RegularExpressions;
-using Hbt.Cur.Common.Options;
+using Hbt.Common.Options;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 
-namespace Hbt.Cur.Infrastructure.Security
+namespace Hbt.Infrastructure.Security
 {
     /// <summary>
     /// SQL注入防护中间件

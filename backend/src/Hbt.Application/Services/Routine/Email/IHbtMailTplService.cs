@@ -8,11 +8,11 @@
 //===================================================================
 
 using System.Threading.Tasks;
-using Hbt.Cur.Common.Models;
-using Hbt.Cur.Application.Dtos.Routine;
+using Hbt.Common.Models;
+using Hbt.Application.Dtos.Routine;
 using System.IO;
 
-namespace Hbt.Cur.Application.Services.Routine.Email
+namespace Hbt.Application.Services.Routine.Email
 {
     /// <summary>
     /// 邮件模板服务接口

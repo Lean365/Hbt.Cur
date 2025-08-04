@@ -2,7 +2,7 @@ using SqlSugar;
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace Hbt.Cur.Domain.Entities.Logistics.Purchase
+namespace Hbt.Domain.Entities.Logistics.Purchase
 {
     /// <summary>
     /// 供应商主数据

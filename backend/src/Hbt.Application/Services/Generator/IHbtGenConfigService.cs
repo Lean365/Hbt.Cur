@@ -9,8 +9,8 @@
 // 描述   : 代码生成配置服务接口
 //===================================================================
 
-namespace Hbt.Cur.Application.Services.Generator;
-using Hbt.Cur.Application.Dtos.Generator;
+namespace Hbt.Application.Services.Generator;
+using Hbt.Application.Dtos.Generator;
 
 /// <summary>
 /// 代码生成配置服务接口

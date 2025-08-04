@@ -10,13 +10,13 @@
 //===================================================================
 
 using System.Linq.Expressions;
-using Hbt.Cur.Domain.IServices.Extensions;
+using Hbt.Domain.IServices.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Http;
-using Hbt.Cur.Domain.Entities.Routine.Core;
-using Hbt.Cur.Application.Dtos.Routine.Core;
+using Hbt.Domain.Entities.Routine.Core;
+using Hbt.Application.Dtos.Routine.Core;
 
-namespace Hbt.Cur.Application.Services.Core
+namespace Hbt.Application.Services.Core
 {
     /// <summary>
     /// 字典数据服务实现类

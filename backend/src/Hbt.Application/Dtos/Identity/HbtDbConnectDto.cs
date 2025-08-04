@@ -7,7 +7,7 @@
 // 描述   : 数据库连接信息
 //===================================================================
 
-namespace Hbt.Cur.Application.Dtos.Identity;
+namespace Hbt.Application.Dtos.Identity;
 
 /// <summary>
 /// 数据库连接信息

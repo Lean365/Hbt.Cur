@@ -7,13 +7,13 @@
 // 描述    : 登录限制策略实现
 //===================================================================
 
-using Hbt.Cur.Common.Options;
-using Hbt.Cur.Domain.Entities.Identity;
-using Hbt.Cur.Domain.IServices.Security;
+using Hbt.Common.Options;
+using Hbt.Domain.Entities.Identity;
+using Hbt.Domain.IServices.Security;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 
-namespace Hbt.Cur.Infrastructure.Security
+namespace Hbt.Infrastructure.Security
 {
     /// <summary>
     /// 登录限制策略实现

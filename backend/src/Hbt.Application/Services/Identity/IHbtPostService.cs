@@ -9,10 +9,10 @@
 
 using System.Threading.Tasks;
 using System.IO;
-using Hbt.Cur.Application.Dtos.Identity;
-using Hbt.Cur.Common.Models;
+using Hbt.Application.Dtos.Identity;
+using Hbt.Common.Models;
 
-namespace Hbt.Cur.Application.Services.Identity
+namespace Hbt.Application.Services.Identity
 {
     /// <summary>
     /// 岗位服务接口

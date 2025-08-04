@@ -9,7 +9,7 @@
 
 using SqlSugar;
 
-namespace Hbt.Cur.Domain.Entities.Identity
+namespace Hbt.Domain.Entities.Identity
 {
     /// <summary>
     /// 用户岗位关联实体

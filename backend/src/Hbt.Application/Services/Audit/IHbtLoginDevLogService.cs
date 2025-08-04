@@ -11,10 +11,10 @@
 
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using Hbt.Cur.Common.Models;
-using Hbt.Cur.Application.Dtos.Audit;
+using Hbt.Common.Models;
+using Hbt.Application.Dtos.Audit;
 
-namespace Hbt.Cur.Application.Services.Audit
+namespace Hbt.Application.Services.Audit
 {
     /// <summary>
     /// 登录设备日志服务接口

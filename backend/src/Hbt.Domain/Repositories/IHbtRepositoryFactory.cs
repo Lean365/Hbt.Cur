@@ -7,7 +7,7 @@
 // 描述   : 仓储工厂接口 - 支持多库模式
 //===================================================================
 
-namespace Hbt.Cur.Domain.Repositories;
+namespace Hbt.Domain.Repositories;
 
 /// <summary>
 /// 仓储工厂接口

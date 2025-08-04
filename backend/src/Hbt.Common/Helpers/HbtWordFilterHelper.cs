@@ -12,7 +12,7 @@
 using System.Text;
 using ToolGood.Words;
 
-namespace Hbt.Cur.Common.Helpers
+namespace Hbt.Common.Helpers
 {
     /// <summary>
     /// 敏感词过滤帮助类

@@ -13,7 +13,7 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Distributed;
 
-namespace Hbt.Cur.Infrastructure.Services.Local;
+namespace Hbt.Infrastructure.Services.Local;
 
 /// <summary>
 /// 本地化服务实现

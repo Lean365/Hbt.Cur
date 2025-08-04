@@ -9,7 +9,7 @@
 
 #nullable enable
 
-namespace Hbt.Cur.Domain.Entities.Human.Attendance;
+namespace Hbt.Domain.Entities.Human.Attendance;
 
 /// <summary>
 /// 调休实体

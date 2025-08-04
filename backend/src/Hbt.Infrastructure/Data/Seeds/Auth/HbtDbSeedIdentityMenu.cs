@@ -7,9 +7,9 @@
 // 描述   : 身份认证菜单数据初始化类
 //===================================================================
 
-using Hbt.Cur.Domain.Entities.Identity;
+using Hbt.Domain.Entities.Identity;
 
-namespace Hbt.Cur.Infrastructure.Data.Seeds;
+namespace Hbt.Infrastructure.Data.Seeds;
 
 /// <summary>
 /// 身份认证菜单数据初始化类

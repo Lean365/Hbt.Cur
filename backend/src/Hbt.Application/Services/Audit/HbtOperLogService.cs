@@ -11,7 +11,7 @@
 
 using Microsoft.AspNetCore.Http;
 
-namespace Hbt.Cur.Application.Services.Audit
+namespace Hbt.Application.Services.Audit
 {
     /// <summary>
     /// 操作日志服务实现

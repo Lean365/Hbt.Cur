@@ -1,10 +1,10 @@
-using Hbt.Cur.Common.Options;
-using Hbt.Cur.Domain.IServices.Security;
+using Hbt.Common.Options;
+using Hbt.Domain.IServices.Security;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 
-namespace Hbt.Cur.Infrastructure.Security;
+namespace Hbt.Infrastructure.Security;
 
 /// <summary>
 /// 验证码初始化服务

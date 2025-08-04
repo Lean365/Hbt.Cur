@@ -7,12 +7,12 @@
 // 描述    : 权限中间件
 //===================================================================
 
-using Hbt.Cur.Domain.Entities.Identity;
-using Hbt.Cur.Infrastructure.Security.Attributes;
+using Hbt.Domain.Entities.Identity;
+using Hbt.Infrastructure.Security.Attributes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 
-namespace Hbt.Cur.Infrastructure.Security
+namespace Hbt.Infrastructure.Security
 {
     /// <summary>
     /// 权限中间件,用于验证用户是否拥有访问权限

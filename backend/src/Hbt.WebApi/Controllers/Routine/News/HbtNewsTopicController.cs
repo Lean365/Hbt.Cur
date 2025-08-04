@@ -6,7 +6,7 @@
 // 描述   : 新闻话题控制器
 //===================================================================
 
-namespace Hbt.Cur.WebApi.Controllers.Routine.News
+namespace Hbt.WebApi.Controllers.Routine.News
 {
     /// <summary>
     /// 新闻话题控制器

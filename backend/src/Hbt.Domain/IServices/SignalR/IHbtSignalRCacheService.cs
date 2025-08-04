@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Hbt.Cur.Domain.Entities.SignalR;
+using Hbt.Domain.Entities.SignalR;
 
-namespace Hbt.Cur.Domain.IServices.SignalR
+namespace Hbt.Domain.IServices.SignalR
 {
     /// <summary>
     /// SignalR缓存服务接口

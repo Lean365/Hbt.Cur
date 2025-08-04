@@ -1,11 +1,11 @@
 #nullable enable
 
 
-using Hbt.Cur.Domain.Entities.Identity;
+using Hbt.Domain.Entities.Identity;
 using SqlSugar;
 
 //===================================================================
-// 项目名 : Hbt.Cur.Domain.Entities.Routine
+// 项目名 : Hbt.Domain.Entities.Routine
 // 文件名 : HbtNewsCommentLike.cs
 // 创建者 : Claude
 // 创建时间: 2024-12-01
@@ -13,7 +13,7 @@ using SqlSugar;
 // 描述   : 新闻评论点赞实体
 //===================================================================
 
-namespace Hbt.Cur.Domain.Entities.Routine.News
+namespace Hbt.Domain.Entities.Routine.News
 {
     /// <summary>
     /// 新闻评论点赞实体

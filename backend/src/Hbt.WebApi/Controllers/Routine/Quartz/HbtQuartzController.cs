@@ -7,11 +7,11 @@
 // 描述   : 定时任务控制器
 //===================================================================
 
-using Hbt.Cur.Application.Dtos.Routine;
-using Hbt.Cur.Application.Services.Routine;
-using Hbt.Cur.Domain.IServices.Extensions;
+using Hbt.Application.Dtos.Routine;
+using Hbt.Application.Services.Routine;
+using Hbt.Domain.IServices.Extensions;
 
-namespace Hbt.Cur.WebApi.Controllers.Routine
+namespace Hbt.WebApi.Controllers.Routine
 {
     /// <summary>
     /// 定时任务控制器

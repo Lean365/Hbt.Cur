@@ -10,9 +10,9 @@
 #nullable enable
 
 using System.ComponentModel.DataAnnotations;
-using Hbt.Cur.Common.Enums;
+using Hbt.Common.Enums;
 
-namespace Hbt.Cur.Application.Dtos.Identity;
+namespace Hbt.Application.Dtos.Identity;
 
 /// <summary>
 /// 发送短信验证码请求DTO

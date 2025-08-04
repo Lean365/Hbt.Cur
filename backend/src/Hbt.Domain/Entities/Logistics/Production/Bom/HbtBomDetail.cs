@@ -2,7 +2,7 @@
 
 using SqlSugar;
 
-namespace Hbt.Cur.Domain.Entities.Logistics.Production
+namespace Hbt.Domain.Entities.Logistics.Production
 {
     /// <summary>
     /// BOM组件明细实体（基于SAP BOM创建CS01）

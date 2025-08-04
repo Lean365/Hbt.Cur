@@ -8,22 +8,22 @@
 //===================================================================
 
 using System.Text.Json;
-using Hbt.Cur.Application.Dtos.Identity;
-using Hbt.Cur.Common.Constants;
-using Hbt.Cur.Common.Helpers;
-using Hbt.Cur.Common.Options;
-using Hbt.Cur.Common.Utils;
-using Hbt.Cur.Domain.Entities.Identity;
-using Hbt.Cur.Domain.Entities.SignalR;
-using Hbt.Cur.Domain.IServices.Caching;
-using Hbt.Cur.Domain.IServices.Security;
-using Hbt.Cur.Domain.Repositories;
+using Hbt.Application.Dtos.Identity;
+using Hbt.Common.Constants;
+using Hbt.Common.Helpers;
+using Hbt.Common.Options;
+using Hbt.Common.Utils;
+using Hbt.Domain.Entities.Identity;
+using Hbt.Domain.Entities.SignalR;
+using Hbt.Domain.IServices.Caching;
+using Hbt.Domain.IServices.Security;
+using Hbt.Domain.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using QRCoder;
 
-namespace Hbt.Cur.Application.Services.Identity;
+namespace Hbt.Application.Services.Identity;
 
 /// <summary>
 /// 二维码服务实现

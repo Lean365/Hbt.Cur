@@ -7,22 +7,22 @@
 // 描述    : 找回密码服务实现
 //===================================================================
 
-using Hbt.Cur.Application.Dtos.Identity;
-using Hbt.Cur.Common.Exceptions;
-using Hbt.Cur.Common.Helpers;
-using Hbt.Cur.Common.Options;
-using Hbt.Cur.Common.Utils;
-using Hbt.Cur.Domain.Entities.Identity;
-using Hbt.Cur.Domain.Repositories;
-using Hbt.Cur.Domain.IServices.Security;
-using Hbt.Cur.Domain.IServices.Extensions;
+using Hbt.Application.Dtos.Identity;
+using Hbt.Common.Exceptions;
+using Hbt.Common.Helpers;
+using Hbt.Common.Options;
+using Hbt.Common.Utils;
+using Hbt.Domain.Entities.Identity;
+using Hbt.Domain.Repositories;
+using Hbt.Domain.IServices.Security;
+using Hbt.Domain.IServices.Extensions;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.AspNetCore.Http;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace Hbt.Cur.Application.Services.Identity
+namespace Hbt.Application.Services.Identity
 {
     /// <summary>
     /// 找回密码服务实现

@@ -7,13 +7,13 @@
 // 描述   : 工作流字典类型种子数据初始化类
 //===================================================================
 
-using Hbt.Cur.Domain.Entities.Routine.Core;
-using Hbt.Cur.Domain.IServices;
+using Hbt.Domain.Entities.Routine.Core;
+using Hbt.Domain.IServices;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Hbt.Cur.Infrastructure.Data.Seeds.Biz;
+namespace Hbt.Infrastructure.Data.Seeds.Biz;
 
 /// <summary>
 /// 工作流相关字典类型种子数据提供类

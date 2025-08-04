@@ -1,12 +1,12 @@
-using Hbt.Cur.Infrastructure.Data.Seeds;
-using Hbt.Cur.Infrastructure.Data.Seeds.Auth;
-using Hbt.Cur.Infrastructure.Data.Seeds.Biz;
-using Hbt.Cur.Infrastructure.Data.Seeds.Biz.Dict;
-using Hbt.Cur.Infrastructure.Data.Seeds.Biz.Translation;
-using Hbt.Cur.Infrastructure.Data.Seeds.Generator;
-using Hbt.Cur.Infrastructure.Data.Seeds.Workflow;
+using Hbt.Infrastructure.Data.Seeds;
+using Hbt.Infrastructure.Data.Seeds.Auth;
+using Hbt.Infrastructure.Data.Seeds.Biz;
+using Hbt.Infrastructure.Data.Seeds.Biz.Dict;
+using Hbt.Infrastructure.Data.Seeds.Biz.Translation;
+using Hbt.Infrastructure.Data.Seeds.Generator;
+using Hbt.Infrastructure.Data.Seeds.Workflow;
 
-namespace Hbt.Cur.Infrastructure.Extensions;
+namespace Hbt.Infrastructure.Extensions;
 
 /// <summary>
 /// 种子数据服务集合扩展

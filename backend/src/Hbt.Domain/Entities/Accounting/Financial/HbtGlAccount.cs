@@ -10,7 +10,7 @@
 // 版权    : Copyright © 2024 Lean365. All rights reserved.
 //===================================================================
 
-namespace Hbt.Cur.Domain.Entities.Accounting.Financial
+namespace Hbt.Domain.Entities.Accounting.Financial
 {
     /// <summary>
     /// 总账科目主数据实体类 (基于SAP FI科目主数据SKA1/SKAT)

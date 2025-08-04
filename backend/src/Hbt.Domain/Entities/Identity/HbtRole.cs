@@ -9,7 +9,7 @@
 // 描述    : 角色实体类
 //===================================================================
 
-namespace Hbt.Cur.Domain.Entities.Identity
+namespace Hbt.Domain.Entities.Identity
 {
     /// <summary>
     /// 角色实体

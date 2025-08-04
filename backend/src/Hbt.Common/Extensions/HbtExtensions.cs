@@ -9,9 +9,9 @@
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using Hbt.Cur.Common.Constants;
+using Hbt.Common.Constants;
 
-namespace Hbt.Cur.Common.Extensions
+namespace Hbt.Common.Extensions
 {
     /// <summary>
     /// 系统通用扩展方法

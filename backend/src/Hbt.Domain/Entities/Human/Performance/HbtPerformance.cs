@@ -11,7 +11,7 @@
 
 using SqlSugar;
 
-namespace Hbt.Cur.Domain.Entities.Human.Performance;
+namespace Hbt.Domain.Entities.Human.Performance;
 
 /// <summary>
 /// 绩效考核实体

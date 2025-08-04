@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Hbt.Cur.Application.Dtos.Identity
+namespace Hbt.Application.Dtos.Identity
 {
     /// <summary>
     /// OAuth基础DTO（与HbtOAuth实体字段严格对应）

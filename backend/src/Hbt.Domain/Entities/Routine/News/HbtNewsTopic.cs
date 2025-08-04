@@ -1,12 +1,12 @@
 #nullable enable
 
 
-using Hbt.Cur.Common.Enums;
+using Hbt.Common.Enums;
 using SqlSugar;
 using System.Collections.Generic;
 
 //===================================================================
-// 项目名 : Hbt.Cur.Domain.Entities.Routine
+// 项目名 : Hbt.Domain.Entities.Routine
 // 文件名 : HbtNewsTopic.cs
 // 创建者 : Claude
 // 创建时间: 2024-12-01
@@ -14,7 +14,7 @@ using System.Collections.Generic;
 // 描述   : 新闻话题实体
 //===================================================================
 
-namespace Hbt.Cur.Domain.Entities.Routine.News
+namespace Hbt.Domain.Entities.Routine.News
 {
     /// <summary>
     /// 新闻话题实体

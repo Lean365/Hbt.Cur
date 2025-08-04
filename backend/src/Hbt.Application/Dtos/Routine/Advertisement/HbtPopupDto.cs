@@ -9,7 +9,7 @@
 // 描述   : 弹窗广告DTO
 //===================================================================
 
-namespace Hbt.Cur.Application.Dtos.Routine.Advertisement
+namespace Hbt.Application.Dtos.Routine.Advertisement
 {
     /// <summary>
     /// 弹窗广告DTO

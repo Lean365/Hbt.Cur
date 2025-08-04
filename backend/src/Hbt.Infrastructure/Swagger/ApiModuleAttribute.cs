@@ -9,7 +9,7 @@
 
 using System;
 
-namespace Hbt.Cur.Infrastructure.Swagger
+namespace Hbt.Infrastructure.Swagger
 {
     /// <summary>
     /// API模块特性

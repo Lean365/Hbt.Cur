@@ -11,7 +11,7 @@ using System.Collections;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Hosting;
 
-namespace Hbt.Cur.Infrastructure.Services
+namespace Hbt.Infrastructure.Services
 {
     /// <summary>
     /// 登录策略初始化服务

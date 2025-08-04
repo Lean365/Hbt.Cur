@@ -1,6 +1,6 @@
-using Hbt.Cur.Common.Options;
+using Hbt.Common.Options;
 
-namespace Hbt.Cur.Domain.IServices.Extensions
+namespace Hbt.Domain.IServices.Extensions
 {
     /// <summary>
     /// 日志归档服务接口

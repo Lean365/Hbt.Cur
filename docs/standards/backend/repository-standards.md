@@ -5,14 +5,14 @@
 - 仓储接口必须以`IHbt`开头,以`Repository`结尾
 - 仓储实现类必须以`Hbt`开头,以`Repository`结尾
 - 必须放在正确的命名空间下:
-  - 接口: `Lean.Hbt.Domain.Repositories`
-  - 实现: `Lean.Hbt.Infrastructure.Repositories`
+  - 接口: `Hbt.Cur.Domain.Repositories`
+- 实现: `Hbt.Cur.Infrastructure.Repositories`
 
 ## 2. 通用仓储接口
 
 ```csharp
 //===================================================================
-// 项目名 : Lean.Hbt 
+// 项目名 : Hbt.Cur 
 // 文件名 : IHbtRepository.cs 
 // 创建者 : Lean365
 // 创建时间: 2024-01-16 21:50
@@ -20,7 +20,7 @@
 // 描述    : 通用仓储接口
 //===================================================================
 
-namespace Lean.Hbt.Domain.Repositories
+namespace Hbt.Cur.Domain.Repositories
 {
     /// <summary>
     /// 通用仓储接口
@@ -157,7 +157,7 @@ namespace Lean.Hbt.Domain.Repositories
 
 ```csharp
 //===================================================================
-// 项目名 : Lean.Hbt 
+// 项目名 : Hbt.Cur 
 // 文件名 : HbtRepository.cs 
 // 创建者 : Lean365
 // 创建时间: 2024-01-16 21:50
@@ -165,7 +165,7 @@ namespace Lean.Hbt.Domain.Repositories
 // 描述    : 通用仓储实现
 //===================================================================
 
-namespace Lean.Hbt.Infrastructure.Repositories
+namespace Hbt.Cur.Infrastructure.Repositories
 {
     /// <summary>
     /// 通用仓储实现

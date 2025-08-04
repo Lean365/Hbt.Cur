@@ -1,6 +1,6 @@
 using System;
 
-namespace Hbt.Cur.Common.Options
+namespace Hbt.Common.Options
 {
     /// <summary>
     /// Excel配置选项

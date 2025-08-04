@@ -4,9 +4,9 @@
 
 - 所有控制器必须放在WebApi层下的Controllers目录中
 - 按业务模块分子目录,例如:
-  - `Lean.Hbt.WebApi.Controllers.Identity` (身份认证模块)
-  - `Lean.Hbt.WebApi.Controllers.System` (系统管理模块)
-  - `Lean.Hbt.WebApi.Controllers.Monitor` (监控模块)
+  - `Hbt.Cur.WebApi.Controllers.Identity` (身份认证模块)
+- `Hbt.Cur.WebApi.Controllers.System` (系统管理模块)
+- `Hbt.Cur.WebApi.Controllers.Monitor` (监控模块)
 
 ## 2. 命名规范
 
@@ -20,7 +20,7 @@
 ## 3. 标准示例：用户控制器
 
 ```csharp
-namespace Lean.Hbt.WebApi.Controllers.Identity
+namespace Hbt.Cur.WebApi.Controllers.Identity
 {
     /// <summary>
     /// 用户管理

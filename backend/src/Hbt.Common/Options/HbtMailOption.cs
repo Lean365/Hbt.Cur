@@ -1,5 +1,5 @@
 //===================================================================
-// 项目名 : Hbt.Cur.Common.Options
+// 项目名 : Hbt.Common.Options
 // 文件名 : HbtMailOption.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-26 14:30
@@ -7,7 +7,7 @@
 // 描述   : 邮件配置选项
 //===================================================================
 
-namespace Hbt.Cur.Common.Options
+namespace Hbt.Common.Options
 {
     /// <summary>
     /// 邮件配置选项

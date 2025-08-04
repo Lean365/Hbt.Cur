@@ -10,7 +10,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Quartz;
 
-namespace Hbt.Cur.Application.Services.Routine.Quartz.Jobs
+namespace Hbt.Application.Services.Routine.Quartz.Jobs
 {
     /// <summary>
     /// 定时任务执行器

@@ -9,9 +9,9 @@
 // 描述   : 代码生成模板服务实现
 //===================================================================
 
-namespace Hbt.Cur.Application.Services.Generator;
+namespace Hbt.Application.Services.Generator;
 using System.Linq.Expressions;
-using Hbt.Cur.Domain.IServices.Extensions;
+using Hbt.Domain.IServices.Extensions;
 using Microsoft.AspNetCore.Http;
 using SqlSugar;
 

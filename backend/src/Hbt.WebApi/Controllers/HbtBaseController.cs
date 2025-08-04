@@ -8,10 +8,10 @@
 //===================================================================
 
 using Microsoft.AspNetCore.Mvc;
-using Hbt.Cur.Common.Models;
-using Hbt.Cur.Domain.IServices.Extensions;
+using Hbt.Common.Models;
+using Hbt.Domain.IServices.Extensions;
 
-namespace Hbt.Cur.WebApi.Controllers
+namespace Hbt.WebApi.Controllers
 {
     /// <summary>
     /// 控制器基类

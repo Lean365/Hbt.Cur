@@ -7,9 +7,9 @@
 // 描述   : 操作日志服务接口
 //===================================================================
 
-using Hbt.Cur.Application.Dtos.Audit;
+using Hbt.Application.Dtos.Audit;
 
-namespace Hbt.Cur.Application.Services.Audit
+namespace Hbt.Application.Services.Audit
 {
     /// <summary>
     /// 操作日志服务接口

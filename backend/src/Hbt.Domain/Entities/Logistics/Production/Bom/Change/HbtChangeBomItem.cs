@@ -2,7 +2,7 @@
 
 using SqlSugar;
 
-namespace Hbt.Cur.Domain.Entities.Logistics.Production
+namespace Hbt.Domain.Entities.Logistics.Production
 {
     /// <summary>
     /// BOM物料项变更表（记录HbtBomItem所有字段的变更）

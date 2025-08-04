@@ -17,9 +17,9 @@
 // 描述   : 后勤管理菜单数据初始化类
 //===================================================================
 
-using Hbt.Cur.Domain.Entities.Identity;
+using Hbt.Domain.Entities.Identity;
 
-namespace Hbt.Cur.Infrastructure.Data.Seeds.Auth;
+namespace Hbt.Infrastructure.Data.Seeds.Auth;
 
 /// <summary>
 /// 后勤管理菜单数据初始化类

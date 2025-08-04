@@ -9,7 +9,7 @@
 // 描述    : 新闻话题服务实现
 //===================================================================
 using Microsoft.AspNetCore.Http;
-namespace Hbt.Cur.Application.Services.Routine.News
+namespace Hbt.Application.Services.Routine.News
 {
     /// <summary>
     /// 新闻话题服务实现

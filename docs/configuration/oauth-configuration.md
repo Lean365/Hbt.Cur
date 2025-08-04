@@ -225,7 +225,7 @@ export ALIPAY_PUBLIC_KEY="your-alipay-public-key"
 {
   "Logging": {
     "LogLevel": {
-      "Lean.Hbt.Application.Services.Identity": "Debug"
+      "Hbt.Cur.Application.Services.Identity": "Debug"
     }
   }
 }

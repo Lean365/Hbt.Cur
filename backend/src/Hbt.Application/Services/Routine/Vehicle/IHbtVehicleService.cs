@@ -7,7 +7,7 @@
 // 描述   : 用车服务接口
 //===================================================================
 
-namespace Hbt.Cur.Application.Services.Routine.Vehicle
+namespace Hbt.Application.Services.Routine.Vehicle
 {
     /// <summary>
     /// 用车服务接口

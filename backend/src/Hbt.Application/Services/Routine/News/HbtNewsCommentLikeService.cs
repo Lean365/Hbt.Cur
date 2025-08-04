@@ -10,14 +10,14 @@
 //===================================================================
 
 using System.Linq.Expressions;
-using Hbt.Cur.Common.Utils;
-using Hbt.Cur.Domain.IServices.Extensions;
+using Hbt.Common.Utils;
+using Hbt.Domain.IServices.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Http;
-using Hbt.Cur.Application.Dtos.Routine.Document;
-using Hbt.Cur.Domain.Entities.Routine.News;
+using Hbt.Application.Dtos.Routine.Document;
+using Hbt.Domain.Entities.Routine.News;
 
-namespace Hbt.Cur.Application.Services.Routine.News
+namespace Hbt.Application.Services.Routine.News
 {
     /// <summary>
     /// 新闻评论点赞服务实现

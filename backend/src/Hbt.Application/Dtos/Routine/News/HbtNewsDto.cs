@@ -1,5 +1,5 @@
 //===================================================================
-// 项目名 : Hbt.Cur.Application
+// 项目名 : Hbt.Application
 // 文件名 : HbtNewsDto.cs
 // 创建者 : Claude
 // 创建时间: 2024-12-01
@@ -7,7 +7,7 @@
 // 描述   : 新闻数据传输对象
 //===================================================================
 
-namespace Hbt.Cur.Application.Dtos.Routine.News
+namespace Hbt.Application.Dtos.Routine.News
 {
     /// <summary>
     /// 新闻基础DTO

@@ -7,17 +7,17 @@
 // 描述    : 会话管理实现
 //===================================================================
 
-using Hbt.Cur.Common.Options;
-using Hbt.Cur.Domain.Models.Identity;
-using Hbt.Cur.Domain.Repositories;
+using Hbt.Common.Options;
+using Hbt.Domain.Models.Identity;
+using Hbt.Domain.Repositories;
 using Microsoft.Extensions.Options;
-using Hbt.Cur.Domain.IServices.Extensions;
-using Hbt.Cur.Domain.IServices.SignalR;
-using Hbt.Cur.Domain.IServices.Caching;
-using Hbt.Cur.Domain.Models.SignalR;
-using Hbt.Cur.Domain.Entities.Routine.Core;
+using Hbt.Domain.IServices.Extensions;
+using Hbt.Domain.IServices.SignalR;
+using Hbt.Domain.IServices.Caching;
+using Hbt.Domain.Models.SignalR;
+using Hbt.Domain.Entities.Routine.Core;
 
-namespace Hbt.Cur.Infrastructure.Security
+namespace Hbt.Infrastructure.Security
 {
     /// <summary>
     /// 会话管理实现

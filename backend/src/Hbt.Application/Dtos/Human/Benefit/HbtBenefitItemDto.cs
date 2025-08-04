@@ -11,7 +11,7 @@
 
 using System.ComponentModel.DataAnnotations;
 
-namespace Hbt.Cur.Application.Dtos.Human.Benefit;
+namespace Hbt.Application.Dtos.Human.Benefit;
 
 /// <summary>
 /// 福利项目基础 DTO

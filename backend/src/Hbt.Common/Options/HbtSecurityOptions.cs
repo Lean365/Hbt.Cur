@@ -7,7 +7,7 @@
 // 描述    : 安全配置选项
 //===================================================================
 
-namespace Hbt.Cur.Common.Options;
+namespace Hbt.Common.Options;
 
 /// <summary>
 /// 安全配置选项

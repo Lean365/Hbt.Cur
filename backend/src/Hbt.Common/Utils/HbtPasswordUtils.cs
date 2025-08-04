@@ -10,7 +10,7 @@
 using System.Security.Cryptography;
 using System.Text;
 
-namespace Hbt.Cur.Common.Utils
+namespace Hbt.Common.Utils
 {
     /// <summary>
     /// 密码工具类 - 提供密码加密和验证的基础功能

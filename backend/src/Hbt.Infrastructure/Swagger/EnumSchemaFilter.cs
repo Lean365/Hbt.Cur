@@ -2,7 +2,7 @@ using System.ComponentModel;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace Hbt.Cur.Infrastructure.Swagger
+namespace Hbt.Infrastructure.Swagger
 {
     /// <summary>
     /// 枚举架构过滤器

@@ -10,10 +10,10 @@
 //===================================================================
 
 using System.Linq.Expressions;
-using Hbt.Cur.Common.Enums;
+using Hbt.Common.Enums;
 using Microsoft.AspNetCore.Http;
 
-namespace Hbt.Cur.Application.Services.Audit
+namespace Hbt.Application.Services.Audit
 {
     /// <summary>
     /// 登录设备服务实现类

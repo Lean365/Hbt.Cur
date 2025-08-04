@@ -2,7 +2,7 @@
 
 using SqlSugar;
 
-namespace Hbt.Cur.Domain.Entities.Logistics.Quality.Improvement
+namespace Hbt.Domain.Entities.Logistics.Quality.Improvement
 {
     /// <summary>
     /// 批次追溯明细表

@@ -8,20 +8,20 @@
 //===================================================================
 
 using System.Web;
-using Hbt.Cur.Application.Dtos.Identity;
-using Hbt.Cur.Common.Models;
-using Hbt.Cur.Common.Options;
-using Hbt.Cur.Domain.Entities.Identity;
-using Hbt.Cur.Domain.IServices.Extensions;
-using Hbt.Cur.Domain.IServices.Security;
-using Hbt.Cur.Domain.IServices.Caching;
-using Hbt.Cur.Domain.Repositories;
+using Hbt.Application.Dtos.Identity;
+using Hbt.Common.Models;
+using Hbt.Common.Options;
+using Hbt.Domain.Entities.Identity;
+using Hbt.Domain.IServices.Extensions;
+using Hbt.Domain.IServices.Security;
+using Hbt.Domain.IServices.Caching;
+using Hbt.Domain.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 using SqlSugar;
 
-namespace Hbt.Cur.Application.Services.Identity;
+namespace Hbt.Application.Services.Identity;
 
 /// <summary>
 /// OAuth第三方登录服务实现

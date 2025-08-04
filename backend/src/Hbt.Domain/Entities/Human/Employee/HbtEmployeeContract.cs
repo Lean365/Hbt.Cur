@@ -9,7 +9,7 @@
 
 #nullable enable
 
-namespace Hbt.Cur.Domain.Entities.Human.Employee;
+namespace Hbt.Domain.Entities.Human.Employee;
 
 /// <summary>
 /// 员工合同实体

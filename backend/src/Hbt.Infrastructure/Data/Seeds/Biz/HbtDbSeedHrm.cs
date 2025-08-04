@@ -7,7 +7,7 @@
 // 描述   : HRM数据初始化主类
 //===================================================================
 
-namespace Hbt.Cur.Infrastructure.Data.Seeds.Biz;
+namespace Hbt.Infrastructure.Data.Seeds.Biz;
 
 /// <summary>
 /// HRM数据初始化主类

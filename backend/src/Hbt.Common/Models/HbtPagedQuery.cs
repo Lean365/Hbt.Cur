@@ -9,7 +9,7 @@
 
 using Newtonsoft.Json;
 
-namespace Hbt.Cur.Common.Models
+namespace Hbt.Common.Models
 {
     /// <summary>
     /// 分页查询基类

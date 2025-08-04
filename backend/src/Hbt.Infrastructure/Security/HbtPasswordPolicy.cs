@@ -8,15 +8,15 @@
 //===================================================================
 
 using System.Text.RegularExpressions;
-using Hbt.Cur.Common.Options;
-using Hbt.Cur.Common.Utils;
-using Hbt.Cur.Domain.Entities.Identity;
-using Hbt.Cur.Domain.IServices.Caching;
-using Hbt.Cur.Domain.IServices.Security;
-using Hbt.Cur.Infrastructure.Data.Contexts;
+using Hbt.Common.Options;
+using Hbt.Common.Utils;
+using Hbt.Domain.Entities.Identity;
+using Hbt.Domain.IServices.Caching;
+using Hbt.Domain.IServices.Security;
+using Hbt.Infrastructure.Data.Contexts;
 using Microsoft.Extensions.Options;
 
-namespace Hbt.Cur.Infrastructure.Security
+namespace Hbt.Infrastructure.Security
 {
     /// <summary>
     /// 密码策略实现

@@ -10,13 +10,13 @@
 //===================================================================
 
 using Microsoft.AspNetCore.Mvc;
-using Hbt.Cur.Application.Services.Routine.Advertisement;
-using Hbt.Cur.Application.Dtos.Routine.Advertisement;
-using Hbt.Cur.Common.Models;
-using Hbt.Cur.Common.Enums;
+using Hbt.Application.Services.Routine.Advertisement;
+using Hbt.Application.Dtos.Routine.Advertisement;
+using Hbt.Common.Models;
+using Hbt.Common.Enums;
 using Microsoft.AspNetCore.Authorization;
 
-namespace Hbt.Cur.WebApi.Controllers.Routine.Advertisement
+namespace Hbt.WebApi.Controllers.Routine.Advertisement
 {
     /// <summary>
     /// 横幅广告控制器

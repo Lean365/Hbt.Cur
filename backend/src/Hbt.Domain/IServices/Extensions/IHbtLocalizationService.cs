@@ -9,7 +9,7 @@
 
 using System.Globalization;
 
-namespace Hbt.Cur.Domain.IServices.Extensions;
+namespace Hbt.Domain.IServices.Extensions;
 
 /// <summary>
 /// 本地化服务接口

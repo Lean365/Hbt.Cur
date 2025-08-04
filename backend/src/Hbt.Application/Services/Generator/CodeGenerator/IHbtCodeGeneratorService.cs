@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Hbt.Cur.Domain.Entities.Generator;
+using Hbt.Domain.Entities.Generator;
 
-namespace Hbt.Cur.Application.Services.Generator.CodeGenerator;
+namespace Hbt.Application.Services.Generator.CodeGenerator;
 
 /// <summary>
 /// 代码生成服务接口

@@ -7,12 +7,12 @@
 // 描述    : 登录方式控制器
 //===================================================================
 
-using Hbt.Cur.Common.Options;
+using Hbt.Common.Options;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 
-namespace Hbt.Cur.WebApi.Controllers.Identity;
+namespace Hbt.WebApi.Controllers.Identity;
 
 /// <summary>
 /// 登录方式控制器

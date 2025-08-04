@@ -9,7 +9,7 @@
 // 描述    : 评论配置选项
 //===================================================================
 
-namespace Hbt.Cur.Common.Options
+namespace Hbt.Common.Options
 {
     /// <summary>
     /// 评论配置选项

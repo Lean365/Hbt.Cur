@@ -8,12 +8,12 @@
 //===================================================================
 
 using System.Linq.Expressions;
-using Hbt.Cur.Application.Dtos.Identity;
-using Hbt.Cur.Domain.Entities.Identity;
-using Hbt.Cur.Domain.Repositories;
+using Hbt.Application.Dtos.Identity;
+using Hbt.Domain.Entities.Identity;
+using Hbt.Domain.Repositories;
 using Microsoft.AspNetCore.Http;
 
-namespace Hbt.Cur.Application.Services.Identity
+namespace Hbt.Application.Services.Identity
 {
     /// <summary>
     /// 部门服务实现

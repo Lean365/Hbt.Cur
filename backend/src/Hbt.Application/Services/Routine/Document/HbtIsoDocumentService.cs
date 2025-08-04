@@ -10,17 +10,17 @@
 //===================================================================
 
 using System.Linq.Expressions;
-using Hbt.Cur.Common.Utils;
-using Hbt.Cur.Domain.IServices.Extensions;
-using Hbt.Cur.Domain.IServices.SignalR;
-using Hbt.Cur.Common.Models;
-using Hbt.Cur.Common.Enums;
+using Hbt.Common.Utils;
+using Hbt.Domain.IServices.Extensions;
+using Hbt.Domain.IServices.SignalR;
+using Hbt.Common.Models;
+using Hbt.Common.Enums;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Http;
-using Hbt.Cur.Domain.Entities.Routine.Document;
-using Hbt.Cur.Application.Dtos.Routine.Document.Iso;
+using Hbt.Domain.Entities.Routine.Document;
+using Hbt.Application.Dtos.Routine.Document.Iso;
 
-namespace Hbt.Cur.Application.Services.Routine.Document.Regulations
+namespace Hbt.Application.Services.Routine.Document.Regulations
 {
     /// <summary>
     /// ISO文档服务实现

@@ -7,9 +7,9 @@
 // 描述   : 文件服务接口
 //===================================================================
 
-using Hbt.Cur.Application.Dtos.Routine.Document;
+using Hbt.Application.Dtos.Routine.Document;
 
-namespace Hbt.Cur.Application.Services.Routine.Document
+namespace Hbt.Application.Services.Routine.Document
 {
     /// <summary>
     /// 文件服务接口

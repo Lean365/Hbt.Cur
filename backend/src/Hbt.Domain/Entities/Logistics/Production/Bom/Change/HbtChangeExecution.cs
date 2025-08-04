@@ -2,7 +2,7 @@
 
 using SqlSugar;
 
-namespace Hbt.Cur.Domain.Entities.Logistics.Production.Change
+namespace Hbt.Domain.Entities.Logistics.Production.Change
 {
     /// <summary>
     /// 设计变更计执行主表

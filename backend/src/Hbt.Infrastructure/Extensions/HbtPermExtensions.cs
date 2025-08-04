@@ -7,10 +7,10 @@
 // 描述    : 权限中间件扩展方法
 //===================================================================
 
-using Hbt.Cur.Infrastructure.Security;
+using Hbt.Infrastructure.Security;
 using Microsoft.AspNetCore.Builder;
 
-namespace Hbt.Cur.Infrastructure.Extensions
+namespace Hbt.Infrastructure.Extensions
 {
     /// <summary>
     /// 权限中间件扩展方法

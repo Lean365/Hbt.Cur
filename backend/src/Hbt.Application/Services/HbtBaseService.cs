@@ -9,13 +9,13 @@
 // 描述   : 基础服务实现
 //===================================================================
 
-using Hbt.Cur.Domain.IServices;
-using Hbt.Cur.Domain.IServices.Extensions;
-using Hbt.Cur.Common.Exceptions;
+using Hbt.Domain.IServices;
+using Hbt.Domain.IServices.Extensions;
+using Hbt.Common.Exceptions;
 using Microsoft.AspNetCore.Http;
 using System.Globalization;
 
-namespace Hbt.Cur.Application.Services;
+namespace Hbt.Application.Services;
 
 /// <summary>
 /// 基础服务实现

@@ -8,12 +8,12 @@
 //===================================================================
 
 using System.Linq.Expressions;
-using Hbt.Cur.Common.Models;
-using Hbt.Cur.Domain.Entities.Identity;
-using Hbt.Cur.Domain.Interfaces;
-using Hbt.Cur.Domain.IServices.Extensions;
+using Hbt.Common.Models;
+using Hbt.Domain.Entities.Identity;
+using Hbt.Domain.Interfaces;
+using Hbt.Domain.IServices.Extensions;
 
-namespace Hbt.Cur.Infrastructure.Repositories
+namespace Hbt.Infrastructure.Repositories
 {
     /// <summary>
     /// SqlSugar通用仓储实现

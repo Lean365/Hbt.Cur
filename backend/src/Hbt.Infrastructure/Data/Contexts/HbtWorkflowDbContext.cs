@@ -7,17 +7,17 @@
 // 描述   : 工作流数据库上下文
 //===================================================================
 
-using Hbt.Cur.Domain.Data;
-using Hbt.Cur.Domain.Entities.Workflow;
-using Hbt.Cur.Domain.Interfaces;
-using Hbt.Cur.Common.Options;
+using Hbt.Domain.Data;
+using Hbt.Domain.Entities.Workflow;
+using Hbt.Domain.Interfaces;
+using Hbt.Common.Options;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using SqlSugar;
 using System.Reflection;
 
-namespace Hbt.Cur.Infrastructure.Data.Contexts
+namespace Hbt.Infrastructure.Data.Contexts
 {
     /// <summary>
     /// 工作流数据库上下文类
@@ -199,7 +199,7 @@ namespace Hbt.Cur.Infrastructure.Data.Contexts
                 .SelectMany(a => a.GetTypes())
                 .Where(t => t.IsClass && !t.IsAbstract && t.IsPublic &&
                            t.Namespace != null &&
-                           t.Namespace.StartsWith("Hbt.Cur.Domain.Entities.Workflow") &&
+                           t.Namespace.StartsWith("Hbt.Domain.Entities.Workflow") &&
                            t.BaseType == typeof(HbtBaseEntity))
                 .ToArray();
         }

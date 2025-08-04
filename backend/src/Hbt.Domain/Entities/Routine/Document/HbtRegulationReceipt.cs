@@ -10,7 +10,7 @@
 // 版权    : Copyright © 2024 Lean365. All rights reserved.
 //===================================================================
 
-namespace Hbt.Cur.Domain.Entities.Routine.Document
+namespace Hbt.Domain.Entities.Routine.Document
 {
     /// <summary>
     /// 内部规章制度签收实体类

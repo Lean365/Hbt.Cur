@@ -8,9 +8,9 @@
 //===================================================================
 
 using System.Collections.Concurrent;
-using Hbt.Cur.Domain.Entities.Routine.Core;
+using Hbt.Domain.Entities.Routine.Core;
 
-namespace Hbt.Cur.Infrastructure.Services
+namespace Hbt.Infrastructure.Services
 {
     /// <summary>
     /// 翻译缓存服务实现

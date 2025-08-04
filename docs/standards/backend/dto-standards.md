@@ -4,9 +4,9 @@
 
 - 所有DTO必须放在Application层下的Dtos目录中
 - 按业务模块分子目录,例如:
-  - `Lean.Hbt.Application.Dtos.Identity` (身份认证模块)
-  - `Lean.Hbt.Application.Dtos.System` (系统管理模块)
-  - `Lean.Hbt.Application.Dtos.Monitor` (监控模块)
+  - `Hbt.Cur.Application.Dtos.Identity` (身份认证模块)
+- `Hbt.Cur.Application.Dtos.System` (系统管理模块)
+- `Hbt.Cur.Application.Dtos.Monitor` (监控模块)
 
 ## 2. 命名规范
 
@@ -25,7 +25,7 @@
 
 ```csharp
 //===================================================================
-// 项目名 : Lean.Hbt 
+// 项目名 : Hbt.Cur 
 // 文件名 : HbtXxxDto.cs 
 // 创建者 : Lean365
 // 创建时间: 2024-01-16 21:50
@@ -33,7 +33,7 @@
 // 描述    : XXX数据传输对象
 //===================================================================
 
-namespace Lean.Hbt.Application.Dtos.Identity
+namespace Hbt.Cur.Application.Dtos.Identity
 {
     /// <summary>
     /// XXX数据传输对象
@@ -52,7 +52,7 @@ namespace Lean.Hbt.Application.Dtos.Identity
 ## 4. 标准示例：用户DTO
 
 ```csharp
-namespace Lean.Hbt.Application.Dtos.Identity
+namespace Hbt.Cur.Application.Dtos.Identity
 {
     /// <summary>
     /// 用户基础DTO

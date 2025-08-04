@@ -11,7 +11,7 @@
 
 using System.ComponentModel.DataAnnotations;
 
-namespace Hbt.Cur.Application.Dtos.Human.Recruitment;
+namespace Hbt.Application.Dtos.Human.Recruitment;
 
 /// <summary>
 /// 职位发布基础 DTO

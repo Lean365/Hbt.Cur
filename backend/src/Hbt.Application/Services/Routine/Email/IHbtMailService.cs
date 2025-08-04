@@ -9,10 +9,10 @@
 
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using Hbt.Cur.Common.Models;
-using Hbt.Cur.Application.Dtos.Routine;
+using Hbt.Common.Models;
+using Hbt.Application.Dtos.Routine;
 
-namespace Hbt.Cur.Application.Services.Routine.Email
+namespace Hbt.Application.Services.Routine.Email
 {
     /// <summary>
     /// 邮件服务接口

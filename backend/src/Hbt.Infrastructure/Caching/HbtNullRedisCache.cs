@@ -7,9 +7,9 @@
 // 描述    : Redis缓存空实现
 //===================================================================
 
-using Hbt.Cur.Domain.IServices.Caching;
+using Hbt.Domain.IServices.Caching;
 
-namespace Hbt.Cur.Infrastructure.Caching
+namespace Hbt.Infrastructure.Caching
 {
     /// <summary>
     /// Redis缓存空实现

@@ -1,4 +1,4 @@
-namespace Hbt.Cur.Common.Options
+namespace Hbt.Common.Options
 {
     /// <summary>
     /// 日志归档配置选项

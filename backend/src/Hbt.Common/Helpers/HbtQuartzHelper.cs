@@ -1,5 +1,5 @@
 //===================================================================
-// 项目名 : Hbt.Cur.Common.Helpers
+// 项目名 : Hbt.Common.Helpers
 // 文件名 : HbtQuartzHelper.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-26 14:30
@@ -7,7 +7,7 @@
 // 描述   : 定时任务帮助类
 //===================================================================
 
-using Hbt.Cur.Common.Options;
+using Hbt.Common.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Quartz;
 using Quartz.Impl;
@@ -15,7 +15,7 @@ using System;
 using System.Collections.Specialized;
 using System.Threading.Tasks;
 
-namespace Hbt.Cur.Common.Helpers
+namespace Hbt.Common.Helpers
 {
     /// <summary>
     /// 定时任务帮助类

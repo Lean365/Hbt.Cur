@@ -8,9 +8,9 @@
 //===================================================================
 
 using System;
-using Hbt.Cur.Common.Constants;
+using Hbt.Common.Constants;
 
-namespace Hbt.Cur.Common.Exceptions
+namespace Hbt.Common.Exceptions
 {
     /// <summary>
     /// 自定义异常类

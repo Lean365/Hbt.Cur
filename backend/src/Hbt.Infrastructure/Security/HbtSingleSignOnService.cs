@@ -1,15 +1,15 @@
-using Hbt.Cur.Common.Models;
-using Hbt.Cur.Common.Options;
-using Hbt.Cur.Domain.Entities.Identity;
-using Hbt.Cur.Domain.Entities.SignalR;
-using Hbt.Cur.Domain.IServices.Security;
-using Hbt.Cur.Domain.IServices.SignalR;
-using Hbt.Cur.Domain.Repositories;
-using Hbt.Cur.Infrastructure.SignalR;
+using Hbt.Common.Models;
+using Hbt.Common.Options;
+using Hbt.Domain.Entities.Identity;
+using Hbt.Domain.Entities.SignalR;
+using Hbt.Domain.IServices.Security;
+using Hbt.Domain.IServices.SignalR;
+using Hbt.Domain.Repositories;
+using Hbt.Infrastructure.SignalR;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Options;
 
-namespace Hbt.Cur.Infrastructure.Security
+namespace Hbt.Infrastructure.Security
 {
     /// <summary>
     /// 登录服务实现

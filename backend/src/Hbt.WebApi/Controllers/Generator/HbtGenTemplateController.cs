@@ -7,10 +7,10 @@
 // 描述   : 代码生成模板控制器
 //===================================================================
 
-using Hbt.Cur.Application.Dtos.Generator;
-using Hbt.Cur.Application.Services.Generator;
+using Hbt.Application.Dtos.Generator;
+using Hbt.Application.Services.Generator;
 
-namespace Hbt.Cur.WebApi.Controllers.Generator
+namespace Hbt.WebApi.Controllers.Generator
 {
     /// <summary>
     /// 代码生成模板控制器

@@ -8,10 +8,10 @@
 //===================================================================
 
 using System.Threading.Tasks;
-using Hbt.Cur.Application.Dtos.Identity;
-using Hbt.Cur.Domain.Entities.Identity;
+using Hbt.Application.Dtos.Identity;
+using Hbt.Domain.Entities.Identity;
 
-namespace Hbt.Cur.Application.Services.Identity;
+namespace Hbt.Application.Services.Identity;
 
 /// <summary>
 /// 登录服务接口

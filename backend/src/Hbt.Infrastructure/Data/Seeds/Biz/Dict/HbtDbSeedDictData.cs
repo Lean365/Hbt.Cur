@@ -7,10 +7,10 @@
 // 描述   : 字典数据种子数据初始化类 - 使用仓储工厂模式
 //===================================================================
 
-using Hbt.Cur.Domain.Entities.Routine.Core;
-using Hbt.Cur.Domain.Repositories;
+using Hbt.Domain.Entities.Routine.Core;
+using Hbt.Domain.Repositories;
 
-namespace Hbt.Cur.Infrastructure.Data.Seeds.Biz.Dict;
+namespace Hbt.Infrastructure.Data.Seeds.Biz.Dict;
 
 /// <summary>
 /// 字典数据种子数据提供类

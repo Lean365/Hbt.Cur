@@ -1,5 +1,5 @@
 //===================================================================
-// 项目名 : Hbt.Cur.Domain
+// 项目名 : Hbt.Domain
 // 文件名 : IHbtSignalRClient.cs
 // 创建者 : Lean365
 // 创建时间: 2024-03-07 16:30
@@ -10,11 +10,11 @@
 using System;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using Hbt.Cur.Common.Models;
-using Hbt.Cur.Domain.Entities.SignalR;
-using Hbt.Cur.Common.Enums;
+using Hbt.Common.Models;
+using Hbt.Domain.Entities.SignalR;
+using Hbt.Common.Enums;
 
-namespace Hbt.Cur.Domain.IServices.SignalR
+namespace Hbt.Domain.IServices.SignalR
 {
     /// <summary>
     /// SignalR客户端接口

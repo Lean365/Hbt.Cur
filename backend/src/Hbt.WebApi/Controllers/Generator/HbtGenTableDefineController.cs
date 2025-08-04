@@ -14,13 +14,13 @@ using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
 using Microsoft.AspNetCore.Http;
-using Hbt.Cur.Application.Dtos.Generator;
-using Hbt.Cur.Application.Services.Generator;
-using Hbt.Cur.Common.Models;
-using Hbt.Cur.Infrastructure.Security.Attributes;
-using Hbt.Cur.Domain.IServices.Extensions;
+using Hbt.Application.Dtos.Generator;
+using Hbt.Application.Services.Generator;
+using Hbt.Common.Models;
+using Hbt.Infrastructure.Security.Attributes;
+using Hbt.Domain.IServices.Extensions;
 
-namespace Hbt.Cur.WebApi.Controllers.Generator;
+namespace Hbt.WebApi.Controllers.Generator;
 
 /// <summary>
 /// 代码生成表定义控制器

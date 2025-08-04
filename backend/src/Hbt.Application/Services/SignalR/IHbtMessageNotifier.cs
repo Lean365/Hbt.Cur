@@ -7,9 +7,9 @@
 // 描述    : 消息通知服务接口
 //===================================================================
 
-using Hbt.Cur.Common.Enums;
+using Hbt.Common.Enums;
 
-namespace Hbt.Cur.Application.Services.SignalR
+namespace Hbt.Application.Services.SignalR
 {
     /// <summary>
     /// 消息通知服务接口

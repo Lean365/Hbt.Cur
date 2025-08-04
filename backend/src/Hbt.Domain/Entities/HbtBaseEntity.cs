@@ -8,7 +8,7 @@
 //===================================================================
 
 
-namespace Hbt.Cur.Domain.Entities
+namespace Hbt.Domain.Entities
 {
     /// <summary>
     /// 实体基类

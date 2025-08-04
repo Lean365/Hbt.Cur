@@ -15,7 +15,7 @@ using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Annotations;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace Hbt.Cur.Infrastructure.Swagger
+namespace Hbt.Infrastructure.Swagger
 {
     /// <summary>
     /// Swagger操作过滤器

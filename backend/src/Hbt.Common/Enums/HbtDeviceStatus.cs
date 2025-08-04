@@ -7,7 +7,7 @@
 // 描述    : 设备状态枚举
 //===================================================================
 
-namespace Hbt.Cur.Common.Enums
+namespace Hbt.Common.Enums
 {
     /// <summary>
     /// 设备状态枚举

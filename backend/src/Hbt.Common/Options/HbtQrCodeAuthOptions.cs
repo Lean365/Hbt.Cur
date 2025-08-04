@@ -7,7 +7,7 @@
 // 描述    : 二维码认证配置选项
 //===================================================================
 
-namespace Hbt.Cur.Common.Options;
+namespace Hbt.Common.Options;
 
 /// <summary>
 /// 二维码认证配置选项

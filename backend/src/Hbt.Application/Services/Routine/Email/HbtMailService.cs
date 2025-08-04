@@ -8,13 +8,13 @@
 //===================================================================
 
 using System.Linq.Expressions;
-using Hbt.Cur.Application.Dtos.Routine;
-using Hbt.Cur.Common.Enums;
-using Hbt.Cur.Domain.Entities.Routine;
-using Hbt.Cur.Domain.IServices.SignalR;
+using Hbt.Application.Dtos.Routine;
+using Hbt.Common.Enums;
+using Hbt.Domain.Entities.Routine;
+using Hbt.Domain.IServices.SignalR;
 using Microsoft.AspNetCore.Http;
 
-namespace Hbt.Cur.Application.Services.Routine.Email
+namespace Hbt.Application.Services.Routine.Email
 {
     /// <summary>
     /// 邮件服务实现

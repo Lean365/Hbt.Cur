@@ -12,7 +12,7 @@
 
 using SqlSugar;
 
-namespace Hbt.Cur.Domain.Entities.Accounting.Budget
+namespace Hbt.Domain.Entities.Accounting.Budget
 {
     /// <summary>
     /// 模具预算实体类 (基于SAP FI模具预算管理)

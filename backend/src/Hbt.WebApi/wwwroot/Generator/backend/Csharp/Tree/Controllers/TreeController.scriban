@@ -17,12 +17,12 @@ using System.IO;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Mapster;
-using Hbt.Cur.Application.Dtos.{{ table.module_name }};
-using Hbt.Cur.Application.Services.{{ table.module_name }};
-using Hbt.Cur.Domain.IServices.Extensions;
-using Hbt.Cur.Infrastructure.Security.Attributes;
+using Hbt.Application.Dtos.{{ table.module_name }};
+using Hbt.Application.Services.{{ table.module_name }};
+using Hbt.Domain.IServices.Extensions;
+using Hbt.Infrastructure.Security.Attributes;
 
-namespace Hbt.Cur.WebApi.Controllers.{{ table.module_name }};
+namespace Hbt.WebApi.Controllers.{{ table.module_name }};
 
 /// <summary>
 /// {{ table.comment }}控制器

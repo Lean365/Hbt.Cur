@@ -14,22 +14,22 @@ global using System.Data;
 global using System.Threading.Tasks;
 
 // 项目依赖
-global using Hbt.Cur.Domain.Entities;
-global using Hbt.Cur.Domain.IServices.Extensions;
-global using Hbt.Cur.Domain.Repositories;
-global using Hbt.Cur.Domain.Interfaces;
-global using Hbt.Cur.Infrastructure.Repositories;
+global using Hbt.Domain.Entities;
+global using Hbt.Domain.IServices.Extensions;
+global using Hbt.Domain.Repositories;
+global using Hbt.Domain.Interfaces;
+global using Hbt.Infrastructure.Repositories;
 
-global using Hbt.Cur.Application.Services.Routine.Contract;
-global using Hbt.Cur.Application.Services.Routine.Metting;
-global using Hbt.Cur.Application.Services.Routine.Project;
-global using Hbt.Cur.Application.Services.Routine.Schedule;
-global using Hbt.Cur.Application.Services.Routine.Vehicle;
-global using Hbt.Cur.Application.Services.Routine.Quartz;
-global using Hbt.Cur.Application.Services.Routine.Document;
-global using Hbt.Cur.Application.Services.Routine.Notice;
-global using Hbt.Cur.Application.Services.Routine.Email;
-global using Hbt.Cur.Application.Services.Routine.News;
+global using Hbt.Application.Services.Routine.Contract;
+global using Hbt.Application.Services.Routine.Metting;
+global using Hbt.Application.Services.Routine.Project;
+global using Hbt.Application.Services.Routine.Schedule;
+global using Hbt.Application.Services.Routine.Vehicle;
+global using Hbt.Application.Services.Routine.Quartz;
+global using Hbt.Application.Services.Routine.Document;
+global using Hbt.Application.Services.Routine.Notice;
+global using Hbt.Application.Services.Routine.Email;
+global using Hbt.Application.Services.Routine.News;
 
 // Microsoft 扩展
 global using Microsoft.Extensions.Configuration;

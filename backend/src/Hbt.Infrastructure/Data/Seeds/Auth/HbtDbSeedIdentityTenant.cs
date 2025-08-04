@@ -7,10 +7,10 @@
 // 描述   : 租户数据初始化类
 //===================================================================
 
-using Hbt.Cur.Domain.Entities.Identity;
-using Hbt.Cur.Domain.Repositories;
+using Hbt.Domain.Entities.Identity;
+using Hbt.Domain.Repositories;
 
-namespace Hbt.Cur.Infrastructure.Data.Seeds;
+namespace Hbt.Infrastructure.Data.Seeds;
 
 /// <summary>
 /// 租户数据初始化类 - 支持多库模式

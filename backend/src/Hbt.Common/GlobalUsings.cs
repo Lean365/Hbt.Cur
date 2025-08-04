@@ -16,9 +16,9 @@ global using System.Text;
 global using System.Threading.Tasks;
 // 第三方库
 global using FluentValidation;
-global using Hbt.Cur.Common.Constants;
+global using Hbt.Common.Constants;
 // 项目命名空间
-global using Hbt.Cur.Common.Options;
+global using Hbt.Common.Options;
 // Microsoft 扩展
 global using Microsoft.Extensions.Options;
 global using Newtonsoft.Json;

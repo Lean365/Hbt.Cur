@@ -1,4 +1,4 @@
-namespace Hbt.Cur.Common.Options
+namespace Hbt.Common.Options
 {
     /// <summary>
     /// SignalR缓存配置选项

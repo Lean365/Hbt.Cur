@@ -1,4 +1,4 @@
-namespace Hbt.Cur.Application.Services.Generator.CodeGenerator.Models;
+namespace Hbt.Application.Services.Generator.CodeGenerator.Models;
 
 /// <summary>
 /// 代码生成模型

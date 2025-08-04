@@ -7,7 +7,7 @@
 // 描述    : 登录策略接口
 //===================================================================
 
-namespace Hbt.Cur.Domain.IServices.Security
+namespace Hbt.Domain.IServices.Security
 {
     /// <summary>
     /// 登录策略接口

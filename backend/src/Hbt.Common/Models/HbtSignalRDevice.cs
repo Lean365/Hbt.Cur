@@ -8,10 +8,10 @@
 //===================================================================
 
 using System;
-using Hbt.Cur.Common.Enums;
+using Hbt.Common.Enums;
 using System.Text.Json.Serialization;
 
-namespace Hbt.Cur.Common.Models;
+namespace Hbt.Common.Models;
 
 /// <summary>
 /// SignalR设备信息

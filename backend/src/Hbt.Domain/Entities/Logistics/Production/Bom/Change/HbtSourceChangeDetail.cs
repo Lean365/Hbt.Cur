@@ -2,7 +2,7 @@
 
 using SqlSugar;
 
-namespace Hbt.Cur.Domain.Entities.Logistics.Production.Change
+namespace Hbt.Domain.Entities.Logistics.Production.Change
 {
     /// <summary>
     /// 源设变明细实体类

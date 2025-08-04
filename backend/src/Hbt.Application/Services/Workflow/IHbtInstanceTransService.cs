@@ -7,9 +7,9 @@
 // 描述    : 工作流实例流转历史服务接口
 //===================================================================
 
-using Hbt.Cur.Application.Dtos.Workflow;
+using Hbt.Application.Dtos.Workflow;
 
-namespace Hbt.Cur.Application.Services.Workflow;
+namespace Hbt.Application.Services.Workflow;
 
 /// <summary>
 /// 工作流实例流转历史服务接口

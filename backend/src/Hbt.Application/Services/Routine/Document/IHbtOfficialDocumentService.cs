@@ -7,7 +7,7 @@
 // 描述   : 公文文档服务接口
 //===================================================================
 
-namespace Hbt.Cur.Application.Services.Routine.Document
+namespace Hbt.Application.Services.Routine.Document
 {
     /// <summary>
     /// 公文文档服务接口

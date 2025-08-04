@@ -9,14 +9,14 @@
 // 描述    : {{ table.comment }}服务实现类
 //===================================================================
 
-using Hbt.Cur.Domain.Entities.{{ table.module_name }};
-using Hbt.Cur.Domain.Repositories.{{ table.module_name }};
-using Hbt.Cur.Domain.Dtos.{{ table.module_name }};
-using Hbt.Cur.Domain.Interfaces.{{ table.module_name }};
-using Hbt.Cur.Infrastructure.Exceptions;
+using Hbt.Domain.Entities.{{ table.module_name }};
+using Hbt.Domain.Repositories.{{ table.module_name }};
+using Hbt.Domain.Dtos.{{ table.module_name }};
+using Hbt.Domain.Interfaces.{{ table.module_name }};
+using Hbt.Infrastructure.Exceptions;
 using Microsoft.Extensions.Logging;
 
-namespace Hbt.Cur.Application.Services.{{ table.module_name }};
+namespace Hbt.Application.Services.{{ table.module_name }};
 
 /// <summary>
 /// {{ table.comment }}服务实现类

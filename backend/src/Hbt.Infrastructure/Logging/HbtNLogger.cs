@@ -7,10 +7,10 @@
 // 描述    : NLog日志实现
 //===================================================================
 
-using Hbt.Cur.Domain.IServices.Extensions;
+using Hbt.Domain.IServices.Extensions;
 using NLog;
 
-namespace Hbt.Cur.Infrastructure.Logging
+namespace Hbt.Infrastructure.Logging
 {
     /// <summary>
     /// NLog日志实现

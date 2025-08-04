@@ -1,4 +1,4 @@
-namespace Hbt.Cur.Common.Enums
+namespace Hbt.Common.Enums
 {
     /// <summary>
     /// 消息类型枚举

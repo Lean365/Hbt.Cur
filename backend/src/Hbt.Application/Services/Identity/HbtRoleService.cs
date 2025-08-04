@@ -9,7 +9,7 @@
 
 using Microsoft.AspNetCore.Http;
 
-namespace Hbt.Cur.Application.Services.Identity
+namespace Hbt.Application.Services.Identity
 {
     /// <summary>
     /// 角色服务实现类

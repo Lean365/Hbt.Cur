@@ -8,13 +8,13 @@
 //===================================================================
 
 using System.Linq.Expressions;
-using Hbt.Cur.Domain.Repositories;
+using Hbt.Domain.Repositories;
 using Microsoft.AspNetCore.Http;
 using SqlSugar;
 using System.Data;
 using System.Data.Common;
 
-namespace Hbt.Cur.Application.Services.Identity;
+namespace Hbt.Application.Services.Identity;
 
 /// <summary>
 /// 租户服务实现

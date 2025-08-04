@@ -10,7 +10,7 @@
 using System.Text.Json.Serialization;
 using Newtonsoft.Json;
 
-namespace Hbt.Cur.Common.Models
+namespace Hbt.Common.Models
 {
     /// <summary>
     /// API统一响应模型

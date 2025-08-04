@@ -1,5 +1,5 @@
 //===================================================================
-// 项目名 : Hbt.Cur.Application
+// 项目名 : Hbt.Application
 // 文件名 : HbtContractDto.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-26 14:30
@@ -9,7 +9,7 @@
 
 using System.ComponentModel.DataAnnotations;
 
-namespace Hbt.Cur.Application.Dtos.Routine.Contract
+namespace Hbt.Application.Dtos.Routine.Contract
 {
     /// <summary>
     /// 合同基础DTO

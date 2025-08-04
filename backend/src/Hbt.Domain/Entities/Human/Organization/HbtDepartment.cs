@@ -11,7 +11,7 @@
 
 using SqlSugar;
 
-namespace Hbt.Cur.Domain.Entities.Human.Organization;
+namespace Hbt.Domain.Entities.Human.Organization;
 
 /// <summary>
 /// 部门实体

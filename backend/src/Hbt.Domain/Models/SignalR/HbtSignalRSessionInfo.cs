@@ -1,4 +1,4 @@
-namespace Hbt.Cur.Domain.Models.SignalR
+namespace Hbt.Domain.Models.SignalR
 {
     /// <summary>
     /// SignalR会话信息

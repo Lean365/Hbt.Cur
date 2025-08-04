@@ -11,7 +11,7 @@
 
 using Microsoft.AspNetCore.Http;
 
-namespace Hbt.Cur.Application.Services.Routine.Document
+namespace Hbt.Application.Services.Routine.Document
 {
     /// <summary>
     /// 文件服务实现

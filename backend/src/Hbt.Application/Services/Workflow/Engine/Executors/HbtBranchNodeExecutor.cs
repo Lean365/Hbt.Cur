@@ -9,13 +9,13 @@
 // 描述    : 工作流分支节点执行器
 //===================================================================
 
-using Hbt.Cur.Application.Services.Workflow.Engine;
-using Hbt.Cur.Application.Services.Workflow.Engine.Expressions;
-using Hbt.Cur.Application.Services.Workflow.Engine.Resolvers;
-using Hbt.Cur.Domain.IServices;
+using Hbt.Application.Services.Workflow.Engine;
+using Hbt.Application.Services.Workflow.Engine.Expressions;
+using Hbt.Application.Services.Workflow.Engine.Resolvers;
+using Hbt.Domain.IServices;
 using System.Text.Json;
 
-namespace Hbt.Cur.Application.Services.Workflow.Engine.Executors
+namespace Hbt.Application.Services.Workflow.Engine.Executors
 {
     /// <summary>
     /// 工作流分支节点执行器

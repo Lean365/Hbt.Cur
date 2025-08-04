@@ -9,7 +9,7 @@
 // 描述    : 日志清理策略配置
 //===================================================================
 
-namespace Hbt.Cur.Common.Options
+namespace Hbt.Common.Options
 {
     /// <summary>
     /// 日志清理策略配置

@@ -1,5 +1,5 @@
 //===================================================================
-// 项目名 : Hbt.Cur.Domain.Entities.Routine
+// 项目名 : Hbt.Domain.Entities.Routine
 // 文件名 : HbtVehicleReminder.cs
 // 创建者 : Lean365
 // 创建时间: 2024-01-26 14:30
@@ -7,7 +7,7 @@
 // 描述   : 车辆提醒管理实体
 //===================================================================
 
-namespace Hbt.Cur.Domain.Entities.Routine.Vehicle
+namespace Hbt.Domain.Entities.Routine.Vehicle
 {
     /// <summary>
     /// 车辆提醒管理实体

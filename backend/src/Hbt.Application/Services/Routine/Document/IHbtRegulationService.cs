@@ -7,7 +7,7 @@
 // 描述   : 规章制度服务接口
 //===================================================================
 
-namespace Hbt.Cur.Application.Services.Routine.Document.Regulations
+namespace Hbt.Application.Services.Routine.Document.Regulations
 {
     /// <summary>
     /// 规章制度服务接口

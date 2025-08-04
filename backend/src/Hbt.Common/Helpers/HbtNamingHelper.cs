@@ -11,7 +11,7 @@
 
 using System.Text;
 
-namespace Hbt.Cur.Common.Helpers;
+namespace Hbt.Common.Helpers;
 
 /// <summary>
 /// 命名辅助类

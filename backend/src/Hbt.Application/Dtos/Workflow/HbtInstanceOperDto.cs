@@ -1,5 +1,5 @@
 //===================================================================
-// 项目名: Hbt.Cur.Application
+// 项目名: Hbt.Application
 // 文件名: HbtInstanceOperDto.cs
 // 创建者: Claude
 // 创建时间: 2024-12-01
@@ -10,7 +10,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Hbt.Cur.Application.Dtos.Workflow
+namespace Hbt.Application.Dtos.Workflow
 {
     /// <summary>
     /// 工作流实例操作记录基础DTO（与HbtInstanceOper实体字段严格对应）

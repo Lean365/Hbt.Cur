@@ -2,13 +2,13 @@
 
 ## 1. 项目命名规范
 
-- 所有项目必须以`Lean.Hbt`开头
+- 所有项目必须以`Hbt.Cur`开头
 - 按照DDD分层命名:
-  - `Lean.Hbt.Domain` - 领域层
-  - `Lean.Hbt.Application` - 应用层
-  - `Lean.Hbt.Infrastructure` - 基础设施层
-  - `Lean.Hbt.Common` - 公共层
-  - `Lean.Hbt.WebApi` - 接口层
+  - `Hbt.Cur.Domain` - 领域层
+  - `Hbt.Cur.Application` - 应用层
+  - `Hbt.Cur.Infrastructure` - 基础设施层
+  - `Hbt.Cur.Common` - 公共层
+  - `Hbt.Cur.WebApi` - 接口层
 
 ## 2. 目录命名规范
 

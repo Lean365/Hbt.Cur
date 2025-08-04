@@ -11,7 +11,7 @@ using System.ComponentModel;
 using System.Reflection;
 
 
-namespace Hbt.Cur.Common.Extensions;
+namespace Hbt.Common.Extensions;
 
 /// <summary>
 /// 枚举扩展方法

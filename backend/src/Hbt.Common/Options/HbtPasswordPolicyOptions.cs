@@ -7,7 +7,7 @@
 // 描述    : 密码策略配置选项
 //===================================================================
 
-namespace Hbt.Cur.Common.Options
+namespace Hbt.Common.Options
 {
     /// <summary>
     /// 密码策略配置选项

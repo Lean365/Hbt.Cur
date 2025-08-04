@@ -9,9 +9,9 @@
 // 描述    : 工作流缓存接口
 //===================================================================
 
-using Hbt.Cur.Domain.Entities.Workflow;
+using Hbt.Domain.Entities.Workflow;
 
-namespace Hbt.Cur.Application.Services.Workflow.Engine.Cache
+namespace Hbt.Application.Services.Workflow.Engine.Cache
 {
     /// <summary>
     /// 工作流缓存接口

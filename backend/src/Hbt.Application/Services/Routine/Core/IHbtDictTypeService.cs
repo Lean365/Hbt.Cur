@@ -9,12 +9,12 @@
 
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using Hbt.Cur.Common.Models;
-using Hbt.Cur.Common.Enums;
+using Hbt.Common.Models;
+using Hbt.Common.Enums;
 using System.IO;
-using Hbt.Cur.Application.Dtos.Routine.Core;
+using Hbt.Application.Dtos.Routine.Core;
 
-namespace Hbt.Cur.Application.Services.Core
+namespace Hbt.Application.Services.Core
 {
     /// <summary>
     /// 字典类型服务接口

@@ -11,7 +11,7 @@
 
 using SqlSugar;
 
-namespace Hbt.Cur.Domain.Entities.Human.Employee
+namespace Hbt.Domain.Entities.Human.Employee
 {
     /// <summary>
     /// 员工晋升历史记录实体

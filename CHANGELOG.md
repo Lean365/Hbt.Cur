@@ -1,12 +1,12 @@
 # Changelog
 
-## [Unreleased](https://github.com/Lean365/Lean.Hbt/tree/HEAD)
+## [Unreleased](https://github.com/Lean365/Hbt.Cur/tree/HEAD)
 
-[Full Changelog](https://github.com/Lean365/Lean.Hbt/compare/4fa6974d761eef05f12885fee9b422987f19fed0...HEAD)
+[Full Changelog](https://github.com/Lean365/Hbt.Cur/compare/4fa6974d761eef05f12885fee9b422987f19fed0...HEAD)
 
 **Merged pull requests:**
 
-- Feature/update user entity [\#1](https://github.com/Lean365/Lean.Hbt/pull/1) ([Lean365](https://github.com/Lean365))
+- Feature/update user entity [\#1](https://github.com/Lean365/Hbt.Cur/pull/1) ([Lean365](https://github.com/Lean365))
 
 
 

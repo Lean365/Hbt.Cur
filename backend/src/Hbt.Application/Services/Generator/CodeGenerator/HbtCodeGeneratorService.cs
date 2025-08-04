@@ -1,11 +1,11 @@
 using System.IO.Compression;
 using System.Text.Json;
-using Hbt.Cur.Application.Services.Generator.CodeGenerator.Models;
-using Hbt.Cur.Application.Services.Generator.CodeGenerator.Templates;
+using Hbt.Application.Services.Generator.CodeGenerator.Models;
+using Hbt.Application.Services.Generator.CodeGenerator.Templates;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 
-namespace Hbt.Cur.Application.Services.Generator.CodeGenerator;
+namespace Hbt.Application.Services.Generator.CodeGenerator;
 
 /// <summary>
 /// 代码生成服务实现

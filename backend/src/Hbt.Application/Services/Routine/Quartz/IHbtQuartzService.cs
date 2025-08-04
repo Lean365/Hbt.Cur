@@ -8,10 +8,10 @@
 //===================================================================
 
 using System.Threading.Tasks;
-using Hbt.Cur.Application.Dtos.Routine;
-using Hbt.Cur.Common.Models;
+using Hbt.Application.Dtos.Routine;
+using Hbt.Common.Models;
 
-namespace Hbt.Cur.Application.Services.Routine.Quartz
+namespace Hbt.Application.Services.Routine.Quartz
 {
     /// <summary>
     /// 定时任务服务接口

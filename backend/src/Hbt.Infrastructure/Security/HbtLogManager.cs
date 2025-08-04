@@ -8,11 +8,11 @@
 //===================================================================
 
 using System.Text.Json;
-using Hbt.Cur.Domain.Entities.Audit;
-using Hbt.Cur.Infrastructure.Data.Contexts;
+using Hbt.Domain.Entities.Audit;
+using Hbt.Infrastructure.Data.Contexts;
 using Microsoft.AspNetCore.Http;
 
-namespace Hbt.Cur.Infrastructure.Security;
+namespace Hbt.Infrastructure.Security;
 
 /// <summary>
 /// 日志记录器实现

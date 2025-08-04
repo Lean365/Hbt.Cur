@@ -13,23 +13,23 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.IO;
-using Hbt.Cur.Common.Models;
-using Hbt.Cur.Domain.Entities.Routine;
-using Hbt.Cur.Application.Dtos.Routine;
-using Hbt.Cur.Common.Exceptions;
-using Hbt.Cur.Common.Helpers;
-using Hbt.Cur.Domain.Repositories;
+using Hbt.Common.Models;
+using Hbt.Domain.Entities.Routine;
+using Hbt.Application.Dtos.Routine;
+using Hbt.Common.Exceptions;
+using Hbt.Common.Helpers;
+using Hbt.Domain.Repositories;
 using SqlSugar;
 using Mapster;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Http;
-using Hbt.Cur.Common.Utils;
-using Hbt.Cur.Domain.Utils;
-using Hbt.Cur.Common.Constants;
-using Hbt.Cur.Domain.IServices.SignalR;
-using Hbt.Cur.Common.Enums;
+using Hbt.Common.Utils;
+using Hbt.Domain.Utils;
+using Hbt.Common.Constants;
+using Hbt.Domain.IServices.SignalR;
+using Hbt.Common.Enums;
 
-namespace Hbt.Cur.Application.Services.Routine.Project
+namespace Hbt.Application.Services.Routine.Project
 {
     /// <summary>
     /// 项目服务实现

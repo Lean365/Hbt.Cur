@@ -11,7 +11,7 @@
 
 using SqlSugar;
 
-namespace Hbt.Cur.Domain.Entities.Human.Recruitment
+namespace Hbt.Domain.Entities.Human.Recruitment
 {
     /// <summary>
     /// 职位申请实体（内部职位调动申请）

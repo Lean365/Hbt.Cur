@@ -10,10 +10,10 @@
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.IO;
-using Hbt.Cur.Common.Models;
-using Hbt.Cur.Application.Dtos.Routine.Contract;
+using Hbt.Common.Models;
+using Hbt.Application.Dtos.Routine.Contract;
 
-namespace Hbt.Cur.Application.Services.Routine.Contract
+namespace Hbt.Application.Services.Routine.Contract
 {
     /// <summary>
     /// 合同服务接口

@@ -9,7 +9,7 @@
 // 描述    : 登录环境日志实体类
 //===================================================================
 
-namespace Hbt.Cur.Domain.Entities.Audit
+namespace Hbt.Domain.Entities.Audit
 {
     /// <summary>
     /// 登录环境日志实体

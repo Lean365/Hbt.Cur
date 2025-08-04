@@ -7,7 +7,7 @@
 // 描述    : 短信认证配置选项
 //===================================================================
 
-namespace Hbt.Cur.Common.Options;
+namespace Hbt.Common.Options;
 
 /// <summary>
 /// 短信认证配置选项

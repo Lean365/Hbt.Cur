@@ -17,9 +17,9 @@
 // 描述   : 新闻服务接口
 //===================================================================
 
-using Hbt.Cur.Application.Dtos.Routine.Document;
+using Hbt.Application.Dtos.Routine.Document;
 
-namespace Hbt.Cur.Application.Services.Routine.News
+namespace Hbt.Application.Services.Routine.News
 {
     /// <summary>
     /// 新闻服务接口

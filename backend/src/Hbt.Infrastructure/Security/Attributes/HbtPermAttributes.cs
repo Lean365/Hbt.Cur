@@ -9,7 +9,7 @@
 
 using System;
 
-namespace Hbt.Cur.Infrastructure.Security.Attributes
+namespace Hbt.Infrastructure.Security.Attributes
 {
     /// <summary>
     /// 权限特性

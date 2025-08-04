@@ -1,5 +1,5 @@
 //===================================================================
-// 项目名 : Hbt.Cur.Application
+// 项目名 : Hbt.Application
 // 文件名 : HbtUserPostDto.cs
 // 创建者 : Lean365
 // 创建时间: 2024-06-xx
@@ -10,7 +10,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Hbt.Cur.Application.Dtos.Identity
+namespace Hbt.Application.Dtos.Identity
 {
     /// <summary>
     /// 用户岗位关联DTO
