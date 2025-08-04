@@ -1,0 +1,255 @@
+#nullable enable
+
+//===================================================================
+// 项目名 : Lean.Hbt
+// 文件名 : HbtGenConfigService.cs
+// 创建者 : Lean365
+// 创建时间: 2024-03-20
+// 版本号 : V0.0.1
+// 描述    : 生成配置服务实现类
+//===================================================================
+
+using Microsoft.AspNetCore.Http;
+
+namespace Hbt.Cur.Application.Services.Generator;
+
+/// <summary>
+/// 生成配置服务实现类
+/// </summary>
+/// <remarks>
+/// 创建者: Lean365
+/// 创建时间: 2024-01-22
+/// </remarks>
+public class HbtGenConfigService : HbtBaseService, IHbtGenConfigService
+{
+    /// <summary>
+    /// 工厂仓储
+    /// </summary>
+    protected readonly IHbtRepositoryFactory _repositoryFactory;
+    private IHbtRepository<HbtGenConfig> ConfigRepository => _repositoryFactory.GetGeneratorRepository<HbtGenConfig>();
+
+    /// <summary>
+    /// 构造函数
+    /// </summary>
+    /// <param name="repositoryFactory">配置仓储</param>
+    /// <param name="logger">日志服务</param>
+    /// <param name="httpContextAccessor">HTTP上下文访问器</param>
+    /// <param name="currentUser">当前用户服务</param>
+    /// <param name="localization">本地化服务</param>
+    public HbtGenConfigService(
+        IHbtRepositoryFactory repositoryFactory,
+        IHbtLogger logger,
+        IHttpContextAccessor httpContextAccessor,
+        IHbtCurrentUser currentUser,
+        IHbtLocalizationService localization) : base(logger, httpContextAccessor, currentUser, localization)
+    {
+        _repositoryFactory = repositoryFactory ?? throw new ArgumentNullException(nameof(repositoryFactory));
+    }
+
+    /// <summary>
+    /// 获取配置分页列表
+    /// </summary>
+    /// <param name="query">查询条件</param>
+    /// <returns>配置分页列表</returns>
+    public async Task<HbtPagedResult<HbtGenConfigDto>> GetListAsync(HbtGenConfigQueryDto query)
+    {
+        query ??= new HbtGenConfigQueryDto();
+
+        var result = await ConfigRepository.GetPagedListAsync(
+            QueryExpression(query),
+            query.PageIndex,
+            query.PageSize,
+            x => x.Id,
+            OrderByType.Asc);
+
+        return new HbtPagedResult<HbtGenConfigDto>
+        {
+            TotalNum = result.TotalNum,
+            PageIndex = query.PageIndex,
+            PageSize = query.PageSize,
+            Rows = result.Rows.Adapt<List<HbtGenConfigDto>>()
+        };
+    }
+
+    /// <summary>
+    /// 获取配置详情
+    /// </summary>
+    /// <param name="id">配置ID</param>
+    /// <returns>配置详情</returns>
+    public async Task<HbtGenConfigDto?> GetByIdAsync(long id)
+    {
+        var config = await ConfigRepository.GetByIdAsync(id);
+        return config?.Adapt<HbtGenConfigDto>();
+    }
+
+    /// <summary>
+    /// 创建配置
+    /// </summary>
+    /// <param name="input">创建对象</param>
+    /// <returns>配置信息</returns>
+    public async Task<HbtGenConfigDto> CreateAsync(HbtGenConfigCreateDto input)
+    {
+        // 验证字段是否已存在
+        await HbtValidateUtils.ValidateFieldExistsAsync(ConfigRepository, "GenConfigName", input.GenConfigName);
+
+        var config = input.Adapt<HbtGenConfig>();
+        var result = await ConfigRepository.CreateAsync(config);
+        if (result <= 0)
+            throw new HbtException(L("Generator.Config.CreateFailed"));
+
+        return config.Adapt<HbtGenConfigDto>();
+    }
+
+    /// <summary>
+    /// 更新配置
+    /// </summary>
+    /// <param name="input">更新对象</param>
+    /// <returns>更新后的配置信息</returns>
+    public async Task<HbtGenConfigDto> UpdateAsync(HbtGenConfigUpdateDto input)
+    {
+        var config = await ConfigRepository.GetByIdAsync(input.GenConfigId)
+            ?? throw new HbtException(L("Generator.Config.NotFound", input.GenConfigId));
+
+        // 验证字段是否已存在
+        if (config.GenConfigName != input.GenConfigName)
+            await HbtValidateUtils.ValidateFieldExistsAsync(ConfigRepository, "GenConfigName", input.GenConfigName, input.GenConfigId);
+
+        input.Adapt(config);
+        var result = await ConfigRepository.UpdateAsync(config);
+        if (result <= 0)
+            throw new HbtException(L("Generator.Config.UpdateFailed"));
+
+        return config.Adapt<HbtGenConfigDto>();
+    }
+
+    /// <summary>
+    /// 删除配置
+    /// </summary>
+    /// <param name="id">配置ID</param>
+    /// <returns>是否成功</returns>
+    public async Task<bool> DeleteAsync(long id)
+    {
+        var config = await ConfigRepository.GetByIdAsync(id)
+            ?? throw new HbtException(L("Generator.Config.NotFound", id));
+
+        return await ConfigRepository.DeleteAsync(id) > 0;
+    }
+
+    /// <summary>
+    /// 批量删除配置
+    /// </summary>
+    /// <param name="ids">配置ID集合</param>
+    /// <returns>是否成功</returns>
+    public async Task<bool> BatchDeleteAsync(long[] ids)
+    {
+        if (ids == null || ids.Length == 0) return false;
+        return await ConfigRepository.DeleteRangeAsync(ids.Cast<object>().ToList()) > 0;
+    }
+
+    /// <summary>
+    /// 更新生成配置状态
+    /// </summary>
+    /// <param name="input">状态更新参数</param>
+    /// <returns>是否更新成功</returns>
+    public async Task<bool> UpdateStatusAsync(HbtGenConfigStatusDto input)
+    {
+        var config = await ConfigRepository.GetByIdAsync(input.GenConfigId)
+            ?? throw new HbtException(L("Generator.Config.NotFound", input.GenConfigId));
+        config.Status = input.Status;
+        var result = await ConfigRepository.UpdateAsync(config);
+        return result > 0;
+    }
+
+    /// <summary>
+    /// 导入配置
+    /// </summary>
+    /// <param name="fileStream">Excel文件流</param>
+    /// <param name="sheetName">工作表名称</param>
+    /// <returns>导入结果</returns>
+    public async Task<(int success, int fail)> ImportConfigsAsync(Stream fileStream, string sheetName = "HbtGenConfig")
+    {
+        var configs = await HbtExcelHelper.ImportAsync<HbtGenConfigDto>(fileStream, sheetName);
+        if (configs == null || !configs.Any()) return (0, 0);
+
+        var (success, fail) = (0, 0);
+        foreach (var config in configs)
+        {
+            try
+            {
+                // 验证字段是否已存在
+                await HbtValidateUtils.ValidateFieldExistsAsync(ConfigRepository, "GenConfigName", config.GenConfigName);
+
+                await ConfigRepository.CreateAsync(config.Adapt<HbtGenConfig>());
+                success++;
+            }
+            catch
+            {
+                fail++;
+            }
+        }
+
+        return (success, fail);
+    }
+
+    /// <summary>
+    /// 导出配置
+    /// </summary>
+    /// <param name="query">查询条件</param>
+    /// <param name="sheetName">工作表名称</param>
+    /// <returns>返回导出的Excel文件内容</returns>
+    public async Task<(string fileName, byte[] content)> ExportConfigsAsync(HbtGenConfigQueryDto query, string sheetName = "Config")
+    {
+        try
+        {
+            var list = await ConfigRepository.GetListAsync(QueryExpression(query));
+            return await HbtExcelHelper.ExportAsync(list.Adapt<List<HbtGenConfigDto>>(), sheetName, L("Generator.Config.ExportTitle"));
+        }
+        catch (Exception ex)
+        {
+            _logger.Error(L("Generator.Config.ExportFailed", ex.Message), ex);
+            throw new HbtException(L("Generator.Config.ExportFailed"));
+        }
+    }
+
+    /// <summary>
+    /// 获取导入模板
+    /// </summary>
+    /// <param name="sheetName">工作表名称</param>
+    /// <returns>Excel模板文件</returns>
+    public async Task<(string fileName, byte[] content)> GetTemplateAsync(string sheetName = "Sheet1")
+    {
+        return await HbtExcelHelper.GenerateTemplateAsync<HbtGenConfigDto>(sheetName);
+    }
+
+
+    /// <summary>
+    /// 获取生成配置选项列表（用于下拉选择）
+    /// </summary>
+    /// <returns>生成配置选项列表</returns>
+    public async Task<List<HbtSelectOption>> GetOptionsAsync()
+    {
+        var configs = await ConfigRepository.GetListAsync(_ => true);
+        return configs.Select(c => new HbtSelectOption
+        {
+            Label = c.GenConfigName,
+            Value = c.Id
+        }).ToList();
+    }
+
+    /// <summary>
+    /// 构建查询条件
+    /// </summary>
+    private Expression<Func<HbtGenConfig, bool>> QueryExpression(HbtGenConfigQueryDto query)
+    {
+        return Expressionable.Create<HbtGenConfig>()
+            .AndIF(!string.IsNullOrEmpty(query.GenConfigName), x => x.GenConfigName.Contains(query.GenConfigName!))
+            .AndIF(!string.IsNullOrEmpty(query.ProjectName), x => x.ProjectName.Contains(query.ProjectName!))
+            .AndIF(!string.IsNullOrEmpty(query.ModuleName), x => x.ModuleName.Contains(query.ModuleName!))
+            .AndIF(!string.IsNullOrEmpty(query.BusinessName), x => x.BusinessName.Contains(query.BusinessName!))
+            .AndIF(!string.IsNullOrEmpty(query.FunctionName), x => x.FunctionName.Contains(query.FunctionName!))
+            .AndIF(query.GenMethod.HasValue && query.GenMethod.Value != -1, x => x.GenMethod == query.GenMethod.Value)
+            .AndIF(query.Status.HasValue && query.Status.Value != -1, x => x.Status == query.Status.Value)
+            .ToExpression();
+    }
+
+}
